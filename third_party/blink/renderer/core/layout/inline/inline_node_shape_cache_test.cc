@@ -39,14 +39,14 @@ class InlineNodeShapeCacheTest : public RenderingTest,
   }
 
   static const ShapeResult* FirstShapeResult(
-      const LayoutBlockFlow* block_flow) {
-    return To<LayoutText>(block_flow->FirstChild())
+      const LayoutObject* layout_object) {
+    return To<LayoutText>(layout_object->SlowFirstChild())
         ->InlineItems()
         .front()
         .TextShapeResult();
   }
-  static const ShapeResult* LastShapeResult(const LayoutBlockFlow* block_flow) {
-    return To<LayoutText>(block_flow->LastChild())
+  static const ShapeResult* LastShapeResult(const LayoutObject* layout_object) {
+    return To<LayoutText>(layout_object->SlowLastChild())
         ->InlineItems()
         .back()
         .TextShapeResult();
@@ -58,6 +58,13 @@ TEST_F(InlineNodeShapeCacheTest, ShapeCacheMultipleItems) {
   InlineNodeForTest node = CreateInlineNode(GetLayoutBlockFlowByElementId("t"));
   EXPECT_EQ(5u, node.Items().size());
   EXPECT_FALSE(node.IsNGShapeCacheAllowed());
+}
+
+TEST_F(InlineNodeShapeCacheTest, ShapeCacheOpenAndCloseTags) {
+  SetBodyInnerHTML("<div id=t><span>abc</span></div>");
+  InlineNodeForTest node = CreateInlineNode(GetLayoutBlockFlowByElementId("t"));
+  EXPECT_EQ(3u, node.Items().size());
+  EXPECT_TRUE(node.IsNGShapeCacheAllowed());
 }
 
 TEST_F(InlineNodeShapeCacheTest, ShapeCacheSpacingRequired) {
@@ -128,6 +135,19 @@ TEST_F(InlineNodeShapeCacheTest, ShapeResultPointerEqualFloatsAndOutOfFlow) {
   EXPECT_EQ(LastShapeResult(target1)->NumCharacters(), 4u);
   EXPECT_EQ(FirstShapeResult(target1), FirstShapeResult(target2));
   EXPECT_EQ(LastShapeResult(target1), LastShapeResult(target2));
+}
+
+TEST_F(InlineNodeShapeCacheTest, ShapeResultPointerEqualInline) {
+  // As long a the font matches for the first item we can hit the cache.
+  SetBodyInnerHTML(
+      "<div id=target1 style='font-family: monospace'>abc</div>"
+      "<div><span id=target2 style='font-family: monospace'>abc</span></div>");
+
+  const LayoutObject* target1 = GetLayoutObjectByElementId("target1");
+  const LayoutObject* target2 = GetLayoutObjectByElementId("target2");
+
+  EXPECT_EQ(FirstShapeResult(target1)->NumCharacters(), 3u);
+  EXPECT_EQ(FirstShapeResult(target1), FirstShapeResult(target2));
 }
 
 }  // namespace blink

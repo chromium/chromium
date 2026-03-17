@@ -1510,14 +1510,31 @@ bool InlineNode::IsNGShapeCacheAllowed(const String& text_content,
         // split the text similar to control items (resulting in multiple shape
         // calls with different start/end offsets).
         break;
+      case InlineItem::kOpenTag:
+        if (!RuntimeEnabledFeatures::ExtendedShapeCacheEnabled()) {
+          return false;
+        }
+        // As we get the font from the first item, we can allow an open tag if
+        // its the first.
+        if (item != items.front()) {
+          return false;
+        }
+        break;
+      case InlineItem::kCloseTag:
+        if (!RuntimeEnabledFeatures::ExtendedShapeCacheEnabled()) {
+          return false;
+        }
+        // Similarly allow the a close tag if its the last.
+        if (item != items.back()) {
+          return false;
+        }
+        break;
       case InlineItem::kAtomicInline:
       case InlineItem::kBlockInInline:
-      case InlineItem::kCloseTag:
       case InlineItem::kInitialLetterBox:
       case InlineItem::kListMarker:
       case InlineItem::kBidiControl:
       case InlineItem::kOpenRubyColumn:
-      case InlineItem::kOpenTag:
       case InlineItem::kCloseRubyColumn:
       case InlineItem::kRubyLinePlaceholder:
         return false;
