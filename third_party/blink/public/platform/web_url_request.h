@@ -163,10 +163,6 @@ class BLINK_PLATFORM_EXPORT WebURLRequest {
   WebString ReferrerString() const;
   network::mojom::ReferrerPolicy GetReferrerPolicy() const;
 
-  // Sets an HTTP origin header if it is empty and the HTTP method of the
-  // request requires it.
-  void SetHttpOriginIfNeeded(const WebSecurityOrigin&);
-
   // True if the request was user initiated.
   bool HasUserGesture() const;
   void SetHasUserGesture(bool);

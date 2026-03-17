@@ -260,10 +260,6 @@ network::mojom::ReferrerPolicy WebURLRequest::GetReferrerPolicy() const {
   return resource_request_->GetReferrerPolicy();
 }
 
-void WebURLRequest::SetHttpOriginIfNeeded(const WebSecurityOrigin& origin) {
-  resource_request_->SetHttpOriginIfNeeded(origin.Get());
-}
-
 bool WebURLRequest::HasUserGesture() const {
   return resource_request_->HasUserGesture();
 }

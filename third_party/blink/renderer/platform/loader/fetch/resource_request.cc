@@ -348,11 +348,6 @@ void ResourceRequestHead::ClearHTTPOrigin() {
   http_header_fields_.Remove(http_names::kOrigin);
 }
 
-void ResourceRequestHead::SetHttpOriginIfNeeded(const SecurityOrigin* origin) {
-  if (NeedsHTTPOrigin())
-    SetHTTPOrigin(origin);
-}
-
 void ResourceRequestHead::SetHTTPOriginToMatchReferrerPolicyIfNeeded(
     const SecurityOrigin* origin) {
   if (!NeedsHTTPOrigin()) {
