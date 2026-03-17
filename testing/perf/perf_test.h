@@ -6,6 +6,7 @@
 #define TESTING_PERF_PERF_TEST_H_
 
 #include <string>
+#include <string_view>
 
 namespace perf_test {
 
@@ -22,92 +23,92 @@ namespace perf_test {
 // produced for various builds, using the combined |measurement| + |modifier|
 // string to specify a particular graph and the |trace| to identify a trace
 // (i.e., data series) on that graph.
-void PrintResult(const std::string& measurement,
-                 const std::string& modifier,
-                 const std::string& trace,
+void PrintResult(std::string_view measurement,
+                 std::string_view modifier,
+                 std::string_view trace,
                  size_t value,
-                 const std::string& units,
+                 std::string_view units,
                  bool important);
-void PrintResult(const std::string& measurement,
-                 const std::string& modifier,
-                 const std::string& trace,
+void PrintResult(std::string_view measurement,
+                 std::string_view modifier,
+                 std::string_view trace,
                  double value,
-                 const std::string& units,
+                 std::string_view units,
                  bool important);
 
 void AppendResult(std::string& output,
-                  const std::string& measurement,
-                  const std::string& modifier,
-                  const std::string& trace,
+                  std::string_view measurement,
+                  std::string_view modifier,
+                  std::string_view trace,
                   size_t value,
-                  const std::string& units,
+                  std::string_view units,
                   bool important);
 
 // Like the above version of PrintResult(), but takes a std::string value
 // instead of a size_t.
-void PrintResult(const std::string& measurement,
-                 const std::string& modifier,
-                 const std::string& trace,
-                 const std::string& value,
-                 const std::string& units,
+void PrintResult(std::string_view measurement,
+                 std::string_view modifier,
+                 std::string_view trace,
+                 std::string_view value,
+                 std::string_view units,
                  bool important);
 
 void AppendResult(std::string& output,
-                  const std::string& measurement,
-                  const std::string& modifier,
-                  const std::string& trace,
-                  const std::string& value,
-                  const std::string& units,
+                  std::string_view measurement,
+                  std::string_view modifier,
+                  std::string_view trace,
+                  std::string_view value,
+                  std::string_view units,
                   bool important);
 
 // Like PrintResult(), but prints a (mean, standard deviation) result pair.
 // The |<values>| should be two comma-separated numbers, the mean and
 // standard deviation (or other error metric) of the measurement.
-void PrintResultMeanAndError(const std::string& measurement,
-                             const std::string& modifier,
-                             const std::string& trace,
-                             const std::string& mean_and_error,
-                             const std::string& units,
+void PrintResultMeanAndError(std::string_view measurement,
+                             std::string_view modifier,
+                             std::string_view trace,
+                             std::string_view mean_and_error,
+                             std::string_view units,
                              bool important);
 
 void AppendResultMeanAndError(std::string& output,
-                              const std::string& measurement,
-                              const std::string& modifier,
-                              const std::string& trace,
-                              const std::string& mean_and_error,
-                              const std::string& units,
+                              std::string_view measurement,
+                              std::string_view modifier,
+                              std::string_view trace,
+                              std::string_view mean_and_error,
+                              std::string_view units,
                               bool important);
 
 // Like PrintResult(), but prints an entire list of results. The |values|
 // will generally be a list of comma-separated numbers. A typical
 // post-processing step might produce plots of their mean and standard
 // deviation.
-void PrintResultList(const std::string& measurement,
-                     const std::string& modifier,
-                     const std::string& trace,
-                     const std::string& values,
-                     const std::string& units,
+void PrintResultList(std::string_view measurement,
+                     std::string_view modifier,
+                     std::string_view trace,
+                     std::string_view values,
+                     std::string_view units,
                      bool important);
 
 void AppendResultList(std::string& output,
-                      const std::string& measurement,
-                      const std::string& modifier,
-                      const std::string& trace,
-                      const std::string& values,
-                      const std::string& units,
+                      std::string_view measurement,
+                      std::string_view modifier,
+                      std::string_view trace,
+                      std::string_view values,
+                      std::string_view units,
                       bool important);
 
 // Prints memory commit charge stats for use by perf graphs.
-void PrintSystemCommitCharge(const std::string& test_name,
+void PrintSystemCommitCharge(std::string_view test_name,
                              size_t charge,
                              bool important);
 
 void PrintSystemCommitCharge(FILE* target,
-                             const std::string& test_name,
+                             std::string_view test_name,
                              size_t charge,
                              bool important);
 
-std::string SystemCommitChargeToString(const std::string& test_name,
+std::string SystemCommitChargeToString(std::string_view test_name,
                                        size_t charge,
                                        bool important);
 

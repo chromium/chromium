@@ -6,39 +6,40 @@
 
 #include <stdio.h>
 
+#include <string_view>
+
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/stringprintf.h"
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
 
 namespace {
 
-std::string ResultsToString(const std::string& measurement,
-                            const std::string& modifier,
-                            const std::string& trace,
-                            const std::string& values,
-                            const std::string& prefix,
-                            const std::string& suffix,
-                            const std::string& units,
+std::string ResultsToString(std::string_view measurement,
+                            std::string_view modifier,
+                            std::string_view trace,
+                            std::string_view values,
+                            std::string_view prefix,
+                            std::string_view suffix,
+                            std::string_view units,
                             bool important) {
   // <*>RESULT <graph_name>: <trace_name>= <value> <units>
   // <*>RESULT <graph_name>: <trace_name>= {<mean>, <std deviation>} <units>
   // <*>RESULT <graph_name>: <trace_name>= [<value>,value,value,...,] <units>
-  return base::StringPrintf("%sRESULT %s%s: %s= %s%s%s %s\n",
-         important ? "*" : "", measurement.c_str(), modifier.c_str(),
-         trace.c_str(), prefix.c_str(), values.c_str(), suffix.c_str(),
-         units.c_str());
+  return absl::StrFormat("%sRESULT %s%s: %s= %s%s%s %s\n", important ? "*" : "",
+                         measurement, modifier, trace, prefix, values, suffix,
+                         units);
 }
 
-void PrintResultsImpl(const std::string& measurement,
-                      const std::string& modifier,
-                      const std::string& trace,
-                      const std::string& values,
-                      const std::string& prefix,
-                      const std::string& suffix,
-                      const std::string& units,
+void PrintResultsImpl(std::string_view measurement,
+                      std::string_view modifier,
+                      std::string_view trace,
+                      std::string_view values,
+                      std::string_view prefix,
+                      std::string_view suffix,
+                      std::string_view units,
                       bool important) {
   fflush(stdout);
-  printf("%s", ResultsToString(measurement, modifier, trace, values,
-                               prefix, suffix, units, important).c_str());
+  absl::PrintF("%s", ResultsToString(measurement, modifier, trace, values,
+                                     prefix, suffix, units, important));
   fflush(stdout);
 }
 
@@ -46,139 +47,121 @@ void PrintResultsImpl(const std::string& measurement,
 
 namespace perf_test {
 
-void PrintResult(const std::string& measurement,
-                 const std::string& modifier,
-                 const std::string& trace,
+void PrintResult(std::string_view measurement,
+                 std::string_view modifier,
+                 std::string_view trace,
                  size_t value,
-                 const std::string& units,
+                 std::string_view units,
                  bool important) {
   PrintResultsImpl(measurement, modifier, trace, base::NumberToString(value),
-                   std::string(), std::string(), units, important);
+                   "", "", units, important);
 }
 
-void PrintResult(const std::string& measurement,
-                 const std::string& modifier,
-                 const std::string& trace,
+void PrintResult(std::string_view measurement,
+                 std::string_view modifier,
+                 std::string_view trace,
                  double value,
-                 const std::string& units,
+                 std::string_view units,
                  bool important) {
   PrintResultsImpl(measurement, modifier, trace, base::NumberToString(value),
-                   std::string(), std::string(), units, important);
+                   "", "", units, important);
 }
 
 void AppendResult(std::string& output,
-                  const std::string& measurement,
-                  const std::string& modifier,
-                  const std::string& trace,
+                  std::string_view measurement,
+                  std::string_view modifier,
+                  std::string_view trace,
                   size_t value,
-                  const std::string& units,
+                  std::string_view units,
                   bool important) {
   output +=
       ResultsToString(measurement, modifier, trace, base::NumberToString(value),
-                      std::string(), std::string(), units, important);
+                      "", "", units, important);
 }
 
-void PrintResult(const std::string& measurement,
-                 const std::string& modifier,
-                 const std::string& trace,
-                 const std::string& value,
-                 const std::string& units,
+void PrintResult(std::string_view measurement,
+                 std::string_view modifier,
+                 std::string_view trace,
+                 std::string_view value,
+                 std::string_view units,
                  bool important) {
-  PrintResultsImpl(measurement,
-                   modifier,
-                   trace,
-                   value,
-                   std::string(),
-                   std::string(),
-                   units,
+  PrintResultsImpl(measurement, modifier, trace, value, "", "", units,
                    important);
 }
 
 void AppendResult(std::string& output,
-                  const std::string& measurement,
-                  const std::string& modifier,
-                  const std::string& trace,
-                  const std::string& value,
-                  const std::string& units,
+                  std::string_view measurement,
+                  std::string_view modifier,
+                  std::string_view trace,
+                  std::string_view value,
+                  std::string_view units,
                   bool important) {
-  output += ResultsToString(measurement,
-                            modifier,
-                            trace,
-                            value,
-                            std::string(),
-                            std::string(),
-                            units,
+  output += ResultsToString(measurement, modifier, trace, value, "", "", units,
                             important);
 }
 
-void PrintResultMeanAndError(const std::string& measurement,
-                             const std::string& modifier,
-                             const std::string& trace,
-                             const std::string& mean_and_error,
-                             const std::string& units,
+void PrintResultMeanAndError(std::string_view measurement,
+                             std::string_view modifier,
+                             std::string_view trace,
+                             std::string_view mean_and_error,
+                             std::string_view units,
                              bool important) {
-  PrintResultsImpl(measurement, modifier, trace, mean_and_error,
-                   "{", "}", units, important);
+  PrintResultsImpl(measurement, modifier, trace, mean_and_error, "{", "}",
+                   units, important);
 }
 
 void AppendResultMeanAndError(std::string& output,
-                              const std::string& measurement,
-                              const std::string& modifier,
-                              const std::string& trace,
-                              const std::string& mean_and_error,
-                              const std::string& units,
+                              std::string_view measurement,
+                              std::string_view modifier,
+                              std::string_view trace,
+                              std::string_view mean_and_error,
+                              std::string_view units,
                               bool important) {
-  output += ResultsToString(measurement, modifier, trace, mean_and_error,
-                            "{", "}", units, important);
+  output += ResultsToString(measurement, modifier, trace, mean_and_error, "{",
+                            "}", units, important);
 }
 
-void PrintResultList(const std::string& measurement,
-                     const std::string& modifier,
-                     const std::string& trace,
-                     const std::string& values,
-                     const std::string& units,
+void PrintResultList(std::string_view measurement,
+                     std::string_view modifier,
+                     std::string_view trace,
+                     std::string_view values,
+                     std::string_view units,
                      bool important) {
-  PrintResultsImpl(measurement, modifier, trace, values,
-                   "[", "]", units, important);
+  PrintResultsImpl(measurement, modifier, trace, values, "[", "]", units,
+                   important);
 }
 
 void AppendResultList(std::string& output,
-                      const std::string& measurement,
-                      const std::string& modifier,
-                      const std::string& trace,
-                      const std::string& values,
-                      const std::string& units,
+                      std::string_view measurement,
+                      std::string_view modifier,
+                      std::string_view trace,
+                      std::string_view values,
+                      std::string_view units,
                       bool important) {
-  output += ResultsToString(measurement, modifier, trace, values,
-                            "[", "]", units, important);
+  output += ResultsToString(measurement, modifier, trace, values, "[", "]",
+                            units, important);
 }
 
-void PrintSystemCommitCharge(const std::string& test_name,
+void PrintSystemCommitCharge(std::string_view test_name,
                              size_t charge,
                              bool important) {
   PrintSystemCommitCharge(stdout, test_name, charge, important);
 }
 
 void PrintSystemCommitCharge(FILE* target,
-                             const std::string& test_name,
+                             std::string_view test_name,
                              size_t charge,
                              bool important) {
-  fprintf(target, "%s", SystemCommitChargeToString(test_name, charge,
-                                                   important).c_str());
+  absl::FPrintF(target, "%s",
+                SystemCommitChargeToString(test_name, charge, important));
 }
 
-std::string SystemCommitChargeToString(const std::string& test_name,
+std::string SystemCommitChargeToString(std::string_view test_name,
                                        size_t charge,
                                        bool important) {
-  std::string trace_name(test_name);
   std::string output;
-  AppendResult(output,
-               "commit_charge",
-               std::string(),
-               "cc" + trace_name,
-               charge,
-               "kb",
-               important);
+  AppendResult(output, "commit_charge", "", "cc" + std::string(test_name),
+               charge, "kb", important);
   return output;
 }
 

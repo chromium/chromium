@@ -5,6 +5,7 @@
 #include "testing/perf/perf_result_reporter.h"
 
 #include <ostream>
+#include <string_view>
 #include <vector>
 
 #include "base/check.h"
@@ -18,7 +19,7 @@ namespace {
 static const base::NoDestructor<std::vector<std::string>> kInvalidCharacters{
     {"/", ":", "="}};
 
-void CheckForInvalidCharacters(const std::string& str) {
+void CheckForInvalidCharacters(std::string_view str) {
   for (const auto& invalid : *kInvalidCharacters) {
     CHECK(!str.contains(invalid))
         << "Given invalid character for perf names '" << invalid << "'";
@@ -29,8 +30,8 @@ void CheckForInvalidCharacters(const std::string& str) {
 
 namespace perf_test {
 
-PerfResultReporter::PerfResultReporter(const std::string& metric_basename,
-                                       const std::string& story_name)
+PerfResultReporter::PerfResultReporter(std::string_view metric_basename,
+                                       std::string_view story_name)
     : metric_basename_(metric_basename), story_name_(story_name) {
   CheckForInvalidCharacters(metric_basename_);
   CheckForInvalidCharacters(story_name_);
@@ -38,18 +39,17 @@ PerfResultReporter::PerfResultReporter(const std::string& metric_basename,
 
 PerfResultReporter::~PerfResultReporter() = default;
 
-void PerfResultReporter::RegisterFyiMetric(const std::string& metric_suffix,
-                                           const std::string& units) {
+void PerfResultReporter::RegisterFyiMetric(std::string_view metric_suffix,
+                                           std::string_view units) {
   RegisterMetric(metric_suffix, units, false);
 }
 
-void PerfResultReporter::RegisterImportantMetric(
-    const std::string& metric_suffix,
-    const std::string& units) {
+void PerfResultReporter::RegisterImportantMetric(std::string_view metric_suffix,
+                                                 std::string_view units) {
   RegisterMetric(metric_suffix, units, true);
 }
 
-void PerfResultReporter::AddResult(const std::string& metric_suffix,
+void PerfResultReporter::AddResult(std::string_view metric_suffix,
                                    size_t value) const {
   auto info = GetMetricInfoOrFail(metric_suffix);
 
@@ -57,7 +57,7 @@ void PerfResultReporter::AddResult(const std::string& metric_suffix,
               info.important);
 }
 
-void PerfResultReporter::AddResult(const std::string& metric_suffix,
+void PerfResultReporter::AddResult(std::string_view metric_suffix,
                                    double value) const {
   auto info = GetMetricInfoOrFail(metric_suffix);
 
@@ -65,15 +65,15 @@ void PerfResultReporter::AddResult(const std::string& metric_suffix,
               info.important);
 }
 
-void PerfResultReporter::AddResult(const std::string& metric_suffix,
-                                   const std::string& value) const {
+void PerfResultReporter::AddResult(std::string_view metric_suffix,
+                                   std::string_view value) const {
   auto info = GetMetricInfoOrFail(metric_suffix);
 
   PrintResult(metric_basename_, metric_suffix, story_name_, value, info.units,
               info.important);
 }
 
-void PerfResultReporter::AddResult(const std::string& metric_suffix,
+void PerfResultReporter::AddResult(std::string_view metric_suffix,
                                    base::TimeDelta value) const {
   auto info = GetMetricInfoOrFail(metric_suffix);
 
@@ -99,8 +99,8 @@ void PerfResultReporter::AddResult(const std::string& metric_suffix,
               info.important);
 }
 
-void PerfResultReporter::AddResultList(const std::string& metric_suffix,
-                                       const std::string& values) const {
+void PerfResultReporter::AddResultList(std::string_view metric_suffix,
+                                       std::string_view values) const {
   auto info = GetMetricInfoOrFail(metric_suffix);
 
   PrintResultList(metric_basename_, metric_suffix, story_name_, values,
@@ -108,15 +108,15 @@ void PerfResultReporter::AddResultList(const std::string& metric_suffix,
 }
 
 void PerfResultReporter::AddResultMeanAndError(
-    const std::string& metric_suffix,
-    const std::string& mean_and_error) {
+    std::string_view metric_suffix,
+    std::string_view mean_and_error) {
   auto info = GetMetricInfoOrFail(metric_suffix);
 
   PrintResultMeanAndError(metric_basename_, metric_suffix, story_name_,
                           mean_and_error, info.units, info.important);
 }
 
-bool PerfResultReporter::GetMetricInfo(const std::string& metric_suffix,
+bool PerfResultReporter::GetMetricInfo(std::string_view metric_suffix,
                                        MetricInfo* out) const {
   auto iter = metric_map_.find(metric_suffix);
   if (iter == metric_map_.end()) {
@@ -127,16 +127,16 @@ bool PerfResultReporter::GetMetricInfo(const std::string& metric_suffix,
   return true;
 }
 
-void PerfResultReporter::RegisterMetric(const std::string& metric_suffix,
-                                        const std::string& units,
+void PerfResultReporter::RegisterMetric(std::string_view metric_suffix,
+                                        std::string_view units,
                                         bool important) {
   CheckForInvalidCharacters(metric_suffix);
   CHECK(metric_map_.count(metric_suffix) == 0);
-  metric_map_.insert({metric_suffix, {units, important}});
+  metric_map_.emplace(metric_suffix, MetricInfo{std::string(units), important});
 }
 
 MetricInfo PerfResultReporter::GetMetricInfoOrFail(
-    const std::string& metric_suffix) const {
+    std::string_view metric_suffix) const {
   MetricInfo info;
   CHECK(GetMetricInfo(metric_suffix, &info))
       << "Attempted to use unregistered metric " << metric_suffix;
