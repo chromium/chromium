@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller_mac.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
+#include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/pref_names.h"
@@ -27,6 +28,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
+#include "ui/base/hit_test.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #import "ui/views/cocoa/native_widget_mac_ns_window_host.h"
 #include "ui/views/widget/any_widget_observer.h"
@@ -572,4 +574,42 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
 
   // Verify MinimumContentOffset resets to 0.
   EXPECT_EQ(controller->GetMinimumContentOffset(), 0);
+}
+
+IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
+                       VerticalTabsNonClientHitTest) {
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+
+  // Toggle vertical tabs on
+  tabs::VerticalTabStripStateController::From(browser())
+      ->SetVerticalTabsEnabled(true);
+  RunScheduledLayouts();
+
+  // Enter Fullscreen Immersive mode
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
+  ImmersiveModeController* controller =
+      ImmersiveModeController::From(browser());
+  EXPECT_TRUE(controller->IsEnabled());
+
+  auto* vertical_tab_strip =
+      browser_view->vertical_tab_strip_region_view_for_testing();
+  ASSERT_TRUE(vertical_tab_strip);
+  EXPECT_TRUE(vertical_tab_strip->GetVisible());
+
+  // Test a point in the empty area of the vertical tab strip
+  gfx::Point point_in_view(vertical_tab_strip->width() / 2,
+                           vertical_tab_strip->height() - 50);
+  gfx::Point screen_point = point_in_view;
+  views::View::ConvertPointToScreen(vertical_tab_strip, &screen_point);
+
+  gfx::Point point_in_ncv = screen_point;
+  views::View::ConvertPointFromScreen(
+      browser_view->GetWidget()->non_client_view(), &point_in_ncv);
+
+  int hit_test = browser_view->GetWidget()->non_client_view()->NonClientHitTest(
+      point_in_ncv);
+
+  // In immersive fullscreen with vertical tabs, hitting the empty space of the
+  // vertical tab strip should return HTCAPTION.
+  EXPECT_EQ(hit_test, HTCAPTION);
 }
