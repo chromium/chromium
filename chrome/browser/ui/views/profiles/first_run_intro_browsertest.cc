@@ -30,6 +30,7 @@ struct FirstRunTestParam {
   bool use_longer_strings = false;
   bool decline_signin_cta_experiment_enabled = false;
   bool use_primary_and_tonal_buttons_for_promos_enabled = false;
+  bool use_refresh = false;
 };
 
 // To be passed as 4th argument to `INSTANTIATE_TEST_SUITE_P()`, allows the test
@@ -62,6 +63,18 @@ const FirstRunTestParam kTestParams[] = {
      .use_longer_strings = true},
     {.pixel_test_param = {.test_suffix = "RightToLeftLanguage",
                           .use_right_to_left_language = true}},
+    // Refresh parameters
+    {.pixel_test_param = {.test_suffix = "RefreshDefault"},
+     .use_refresh = true},
+    {.pixel_test_param = {.test_suffix = "RefreshDarkTheme",
+                          .use_dark_theme = true},
+     .use_refresh = true},
+    {.pixel_test_param = {.test_suffix = "RefreshRightToLeftLanguage",
+                          .use_right_to_left_language = true},
+     .use_refresh = true},
+    {.pixel_test_param = {.test_suffix = "RefreshUsePrimaryAndTonalButtons"},
+     .use_primary_and_tonal_buttons_for_promos_enabled = true,
+     .use_refresh = true},
 };
 
 const char kMakeCardDescriptionLongerJsString[] =
@@ -86,7 +99,8 @@ class FirstRunIntroPixelTest
         {{switches::kProfileCreationDeclineSigninCTAExperiment,
           GetParam().decline_signin_cta_experiment_enabled},
          {switches::kUsePrimaryAndTonalButtonsForPromos,
-          GetParam().use_primary_and_tonal_buttons_for_promos_enabled}});
+          GetParam().use_primary_and_tonal_buttons_for_promos_enabled},
+         {switches::kFirstRunDesktopRefresh, GetParam().use_refresh}});
   }
 
   void ShowUi(const std::string& name) override {

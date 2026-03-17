@@ -12,7 +12,8 @@
  * #css_wrapper_metadata_end */
 
 :host {
-  --card-background-color: var(--google-white);
+  --card-background-color: var(--cr-fallback-color-surface);
+  --card-icon-background-color: var(--cr-fallback-color-on-surface);
   --card-bottom-padding: 1.5rem;
   --card-description-color: var(--cr-secondary-text-color);
   --card-description-font-size: 0.81rem;
@@ -24,11 +25,9 @@
   --card-width: 11.75rem;
   --content-width:
       calc(3 * var(--card-horizontal-size) + 2 * var(--gap-between-cards));
-  --disclaimer-border-color: var(--google-grey-200);
+  --disclaimer-border-color: var(--cr-fallback-color-surface-variant);
   --disclaimer-color: var(--google-grey-700);
   --gap-between-cards: 0.75rem;
-  --icon-color: var(--google-blue-600);
-  --icon-container-color: var(--google-grey-100);
   --product-logo-size: 4.5rem;
   align-items: center;
   box-sizing: border-box;
@@ -44,10 +43,8 @@
 
 @media (prefers-color-scheme: dark) {
   :host {
-    --card-background-color: var(--google-grey-800);
-    --card-description-color: white;
-    --icon-color: var(--google-blue-300);
-    --icon-container-color: var(--google-grey-700);
+    --card-background-color: var(--cr-fallback-color-surface2);
+    --card-description-color: var(--cr-fallback-color-on-surface);
     --disclaimer-border-color: var(--google-grey-600);
     --disclaimer-color: var(--google-grey-100);
   }
@@ -249,6 +246,7 @@ h2 {
 
 .cr-icon {
   --cr-icon-size: 36px;
+  background-color: var(--card-icon-background-color);
   margin: 0;
 }
 
