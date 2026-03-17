@@ -16,6 +16,8 @@ enum class AccountMenuAccessPoint {
   // A button on a Gaia web page, called something like "Use another account" or
   // "Manage accounts".
   kWeb,
+  // The account button in the app bar.
+  kAppBar,
 };
 
 // The accessibility identifier of the view controller's view.

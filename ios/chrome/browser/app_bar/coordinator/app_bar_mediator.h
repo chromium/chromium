@@ -23,19 +23,31 @@ class IdentityManager;
 class PrefService;
 @protocol SceneCommands;
 @protocol TabGridCommands;
+@protocol SettingsCommands;
+@protocol BWGCommands;
 @class TabGridState;
 @protocol TabGroupsCommands;
 class TemplateURLService;
 class UrlLoadingBrowserAgent;
 class WebStateList;
 
+@protocol AppBarMediatorDelegate
+
+// Indicates to the delegate to show the account menu anchored to `anchorView`.
+- (void)showAccountMenu:(UIView*)anchorView;
+
+@end
+
 // Mediator for the App Bar coordinator.
 @interface AppBarMediator : NSObject <AppBarMutator>
+
+// The base view controller for presenting modals.
+@property(nonatomic, weak) UIViewController* baseViewController;
 
 // Handler for the scene commands.
 @property(nonatomic, weak) id<SceneCommands> sceneHandler;
 
-// Handler for the scene commands.
+// Handler for the tab grid commands.
 @property(nonatomic, weak) id<TabGridCommands> tabGridHandler;
 
 // The regular Tab Groups command handler.
@@ -43,6 +55,12 @@ class WebStateList;
 
 // The incognito Tab Groups command handler.
 @property(nonatomic, weak) id<TabGroupsCommands> incognitoTabGroupsCommands;
+
+// Handler for the settings commands.
+@property(nonatomic, weak) id<SettingsCommands> settingsHandler;
+
+// Handler for the BWG commands.
+@property(nonatomic, weak) id<BWGCommands> geminiHandler;
 
 // The consumer of this mediator.
 @property(nonatomic, weak) id<AppBarConsumer, FullscreenUIElement> consumer;

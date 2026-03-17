@@ -16,6 +16,7 @@
 #import "components/tab_groups/tab_group_id.h"
 #import "components/tab_groups/tab_group_visual_data.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_consumer.h"
+#import "ios/chrome/browser/browsing_data/model/browsing_data_remover_factory.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/test/test_fullscreen_controller.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service_factory.h"
@@ -34,10 +35,15 @@
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/qr_scanner_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
+#import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
+#import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
+#import "ios/chrome/browser/shared/public/commands/tab_groups_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -89,9 +95,6 @@ class AppBarMediatorTest : public PlatformTest {
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetFactoryWithDelegate(
             std::make_unique<FakeAuthenticationServiceDelegate>()));
-    builder.AddTestingFactory(
-        OptimizationGuideServiceFactory::GetInstance(),
-        OptimizationGuideServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateMockSyncService));
     builder.AddTestingFactory(BwgServiceFactory::GetInstance(),
@@ -102,6 +105,11 @@ class AppBarMediatorTest : public PlatformTest {
 
     regular_profile_ = std::move(builder).Build();
     incognito_profile_ = TestProfileIOS::Builder().Build();
+
+    // IdentityTestEnvironment requires the SigninClient, which is created
+    // when the profile is built. But it can also be used as a member.
+    // We don't need to initialize it with the profile's manager on iOS
+    // as they share the same global SystemIdentityManager.
 
     auth_service_ =
         AuthenticationServiceFactory::GetForProfile(regular_profile_.get());
@@ -196,6 +204,10 @@ class AppBarMediatorTest : public PlatformTest {
     consumer_ = OCMProtocolMock(@protocol(TestAppBarConsumer));
     mediator_.consumer = consumer_;
     mediator_.sceneHandler = mock_scene_handler_;
+    mock_settings_handler_ = OCMProtocolMock(@protocol(SettingsCommands));
+    mediator_.settingsHandler = mock_settings_handler_;
+    mock_gemini_handler_ = OCMProtocolMock(@protocol(BWGCommands));
+    mediator_.geminiHandler = mock_gemini_handler_;
   }
 
   ~AppBarMediatorTest() override { [mediator_ disconnect]; }
@@ -259,11 +271,13 @@ class AppBarMediatorTest : public PlatformTest {
   raw_ptr<AuthenticationService> auth_service_;
   std::unique_ptr<BwgService> gemini_service_ptr_;
   raw_ptr<ChromeAccountManagerService> account_manager_service_;
+  id<AppBarConsumer, FullscreenUIElement> consumer_;
   id mock_scene_handler_;
   id mock_browser_coordinator_handler_;
   id mock_lens_handler_;
   id mock_qr_scanner_handler_;
-  id<AppBarConsumer, FullscreenUIElement> consumer_;
+  id mock_settings_handler_;
+  id mock_gemini_handler_;
 };
 
 // Tests that the consumer is updated when a web state is added.
@@ -561,4 +575,50 @@ TEST_F(AppBarMediatorTest, TestAssistantButtonStateAsk) {
                                         avatar:nil]);
   [mediator_ updateAssistantButton];
   EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Tests that tapping the assistant button in the signed out state dispatches
+// the sign-in command.
+TEST_F(AppBarMediatorTest, TestAssistantButtonTappedSignedOut) {
+  OCMExpect([mock_scene_handler_
+              showSignin:[OCMArg checkWithBlock:^BOOL(
+                                     ShowSigninCommand* command) {
+                return command.operation ==
+                           AuthenticationOperation::kSigninOnly &&
+                       command.accessPoint ==
+                           signin_metrics::AccessPoint::kIosAppBar;
+              }]
+      baseViewController:[OCMArg any]]);
+  [mediator_
+      assistantButtonTappedWithState:AppBarAssistantButtonState::kSignedOut];
+  EXPECT_OCMOCK_VERIFY(mock_scene_handler_);
+}
+
+// Tests that tapping the assistant button in the account state dispatches
+// the account settings command.
+TEST_F(AppBarMediatorTest, TestAssistantButtonTappedAccount) {
+  SignInAndSetCapability(false);
+  [mediator_ updateAssistantButton];
+
+  OCMExpect([mock_settings_handler_
+      showAccountsSettingsFromViewController:[OCMArg any]
+                        skipIfUINotAvailable:NO]);
+  [mediator_
+      assistantButtonTappedWithState:AppBarAssistantButtonState::kAccount];
+  EXPECT_OCMOCK_VERIFY(mock_settings_handler_);
+}
+
+// Tests that tapping the assistant button in the ask state dispatches the
+// Gemini command.
+TEST_F(AppBarMediatorTest, TestAssistantButtonTappedEligible) {
+  SignInAndSetCapability(true);
+  [mediator_ updateAssistantButton];
+
+  OCMExpect([mock_gemini_handler_
+      startGeminiFlowWithStartupState:[OCMArg checkWithBlock:^BOOL(
+                                                  GeminiStartupState* state) {
+        return state.entryPoint == gemini::EntryPoint::AppBar;
+      }]]);
+  [mediator_ assistantButtonTappedWithState:AppBarAssistantButtonState::kAsk];
+  EXPECT_OCMOCK_VERIFY(mock_gemini_handler_);
 }

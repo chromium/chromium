@@ -504,6 +504,8 @@
       continuation = CreateChangeProfileOpensURLContinuation(_url);
       break;
     }
+    case AccountMenuAccessPoint::kAppBar:
+      break;
   }
   void (^completion)() = base::CallbackToBlock(
       base::BindOnce(std::move(readyCompletion), std::move(continuation)));

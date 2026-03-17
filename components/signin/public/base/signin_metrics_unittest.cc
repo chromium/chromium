@@ -240,6 +240,8 @@ class SigninMetricsTest : public ::testing::Test {
         return "AvatarPillExpandPromo";
       case AccessPoint::kSearchAIModeBubble:
         return "SearchAIModeBubble";
+      case AccessPoint::kIosAppBar:
+        return "IOSAppBar";
     }
   }
 };

@@ -142,6 +142,7 @@ std::optional<AccessPoint> AccessPointFromInt(int value) {
     case AccessPoint::kAshChromeSessionManager:
     case AccessPoint::kAvatarPillExpandPromo:
     case AccessPoint::kSearchAIModeBubble:
+    case AccessPoint::kIosAppBar:
       return access_point;
   }
 
@@ -725,6 +726,11 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::kAvatarPillExpandPromo:
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_FromAvatarPillExpandPromo"));
+      break;
+    case AccessPoint::kIosAppBar:
+      base::RecordAction(
+          base::UserMetricsAction("Signin_Signin_FromIOSAppBar"));
+      break;
   }
 }
 
@@ -852,6 +858,10 @@ void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::kCredentialExchangeImport:
       base::RecordAction(base::UserMetricsAction(
           "Signin_Impression_FromCredentialExchangeImport"));
+      break;
+    case AccessPoint::kIosAppBar:
+      base::RecordAction(
+          base::UserMetricsAction("Signin_Impression_FromIOSAppBar"));
       break;
     case AccessPoint::kExtensions:
     case AccessPoint::kMachineLogon:

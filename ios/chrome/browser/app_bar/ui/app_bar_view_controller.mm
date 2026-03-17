@@ -507,7 +507,7 @@ UIImage* CustomAppBarSymbol(NSString* symbol_name) {
 // Called when the Assistant button is tapped.
 - (void)didTapAssistantButton {
   base::RecordAction(base::UserMetricsAction("MobileToolbarAssistant"));
-  [self.sceneHandler showAssistantWithContext:[CobrowseContext defaultContext]];
+  [self.mutator assistantButtonTappedWithState:_assistantButtonState];
 }
 
 // Called when the New Tab button is tapped.

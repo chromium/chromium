@@ -1,7 +1,13 @@
 include_rules = [
   # keep-sorted start
+  "+components/signin/public/base/signin_metrics.h",
+  "+ios/chrome/browser/authentication/account_menu/coordinator/account_menu_coordinator.h",
+  "+ios/chrome/browser/authentication/account_menu/coordinator/account_menu_coordinator_delegate.h",
+  "+ios/chrome/browser/authentication/account_menu/public/account_menu_constants.h",
+  "+ios/chrome/browser/authentication/ui_bundled/signin",
   "+ios/chrome/browser/fullscreen/ui_bundled",
   "+ios/chrome/browser/intelligence/bwg/model",
+  "+ios/chrome/browser/intelligence/bwg/utils",
   "+ios/chrome/browser/intelligence/features/features.h",
   "+ios/chrome/browser/intents/model/intents_donation_helper.h",
   "+ios/chrome/browser/lens/ui_bundled/lens_availability.h",

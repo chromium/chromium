@@ -13,12 +13,15 @@
 #import "base/metrics/user_metrics_action.h"
 #import "components/open_from_clipboard/clipboard_recent_content.h"
 #import "components/search/search.h"
+#import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_consumer.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_element.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_updater.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intents/model/intents_donation_helper.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_availability.h"
@@ -32,8 +35,11 @@
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
+#import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
+#import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_groups_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -368,6 +374,41 @@
 - (void)createNewTabGroupFromView:(UIView*)sender {
   // Create an empty Tab Group.
   [self createNewTabGroupWithTabs:{}];
+}
+
+- (void)assistantButtonTappedWithState:(AppBarAssistantButtonState)state {
+  switch (state) {
+    case AppBarAssistantButtonState::kSignedOut: {
+      ShowSigninCommand* command = [[ShowSigninCommand alloc]
+          initWithOperation:AuthenticationOperation::kSigninOnly
+                accessPoint:signin_metrics::AccessPoint::kIosAppBar];
+      [self.sceneHandler showSignin:command
+                 baseViewController:self.baseViewController];
+      break;
+    }
+    case AppBarAssistantButtonState::kAccount: {
+      [self.settingsHandler
+          showAccountsSettingsFromViewController:self.baseViewController
+                            skipIfUINotAvailable:NO];
+      break;
+    }
+    case AppBarAssistantButtonState::kAsk: {
+      if (!_authenticationService->HasPrimaryIdentity(
+              signin::ConsentLevel::kSignin)) {
+        // TODO(crbug.com/484000888): Prompt user to sign in.
+        return;
+      }
+      if (!_geminiService || !_geminiService->IsProfileEligibleForGemini()) {
+        // TODO(crbug.com/484000888): If user is not eligible, then show prompt
+        // notifying ineligibility.
+        return;
+      }
+      GeminiStartupState* startupState = [[GeminiStartupState alloc]
+          initWithEntryPoint:gemini::EntryPoint::AppBar];
+      [self.geminiHandler startGeminiFlowWithStartupState:startupState];
+      break;
+    }
+  }
 }
 
 #pragma mark - Properties
