@@ -61,8 +61,9 @@
 #include "components/trusted_vault/proto/vault.pb.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "crypto/aead.h"
-#include "crypto/hkdf.h"
+#include "crypto/hash.h"
 #include "crypto/hmac.h"
+#include "crypto/kdf.h"
 #include "crypto/scoped_fake_unexportable_key_provider.h"
 #include "crypto/scoped_fake_user_verifying_key_provider.h"
 #include "crypto/user_verifying_key.h"
@@ -228,11 +229,10 @@ std::vector<uint8_t> DecryptWrappedPin(
       0x3a, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x65, 0x3a, 0x47, 0x50, 0x4d,
       0x20, 0x50, 0x49, 0x4e, 0x20, 0x64, 0x61, 0x74, 0x61, 0x20, 0x77,
       0x72, 0x61, 0x70, 0x70, 0x69, 0x6e, 0x67, 0x20, 0x6b, 0x65, 0x79};
-  const std::array<uint8_t, 32> derived_key = crypto::HkdfSha256<32>(
-      security_domain_secret, /*salt=*/base::span<const uint8_t>(),
-      kKeyPurposePinDataKey);
-  crypto::Aead aead(crypto::Aead::AeadAlgorithm::AES_256_GCM);
-  aead.Init(derived_key);
+  const std::array<uint8_t, 32> derived_key = crypto::kdf::Hkdf<32>(
+      crypto::hash::kSha256, security_domain_secret,
+      /*salt=*/base::span<const uint8_t>(), kKeyPurposePinDataKey);
+  crypto::Aead aead(crypto::Aead::AeadAlgorithm::AES_256_GCM, derived_key);
   std::optional<std::vector<uint8_t>> pin = aead.Open(
       encrypted_pin, nonce, /*additional_data=*/base::span<const uint8_t>());
   CHECK(pin.has_value());

@@ -85,7 +85,8 @@
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "crypto/aead.h"
-#include "crypto/hkdf.h"
+#include "crypto/hash.h"
+#include "crypto/kdf.h"
 #include "crypto/random.h"
 #include "crypto/sha2.h"
 #include "crypto/unexportable_key.h"
@@ -4032,8 +4033,8 @@ std::unique_ptr<enclave::ClaimedPIN> EnclaveManager::MakeClaimedPINSlowly(
 
   static constexpr uint8_t kAAD[] = {'P', 'I', 'N', ' ', 'c',
                                      'l', 'a', 'i', 'm'};
-  crypto::Aead aead(crypto::Aead::AeadAlgorithm::AES_256_GCM);
-  aead.Init(base::as_byte_span(wrapped_pin->claim_key()));
+  crypto::Aead aead(crypto::Aead::AeadAlgorithm::AES_256_GCM,
+                    base::as_byte_span(wrapped_pin->claim_key()));
   uint8_t nonce[12];
   crypto::RandBytes(nonce);
   std::vector<uint8_t> ciphertext = aead.Seal(hashed, nonce, kAAD);
@@ -4141,11 +4142,10 @@ std::vector<uint8_t> EnclaveManager::EncryptWrappedPIN(
       0x3a, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x65, 0x3a, 0x47, 0x50, 0x4d,
       0x20, 0x50, 0x49, 0x4e, 0x20, 0x64, 0x61, 0x74, 0x61, 0x20, 0x77,
       0x72, 0x61, 0x70, 0x70, 0x69, 0x6e, 0x67, 0x20, 0x6b, 0x65, 0x79};
-  const std::array<uint8_t, 32> derived_key = crypto::HkdfSha256<32>(
-      security_domain_secret, /*salt=*/base::span<const uint8_t>(),
-      kKeyPurposePinDataKey);
-  crypto::Aead aead(crypto::Aead::AeadAlgorithm::AES_256_GCM);
-  aead.Init(derived_key);
+  const std::array<uint8_t, 32> derived_key = crypto::kdf::Hkdf<32>(
+      crypto::hash::kSha256, security_domain_secret,
+      /*salt=*/base::span<const uint8_t>(), kKeyPurposePinDataKey);
+  crypto::Aead aead(crypto::Aead::AeadAlgorithm::AES_256_GCM, derived_key);
   uint8_t nonce[12];
   crypto::RandBytes(nonce);
   std::vector<uint8_t> wrapped_pin = aead.Seal(
