@@ -358,7 +358,7 @@ void AutofillHandler::OnFillOrPreviewForm(
           autofill::GetFillingValueAndTypeForProfile(
               *profile_used_to_fill_form, locale, field->Type(), *field,
               manager.client().GetAddressNormalizer(), &failure_to_fill)
-              .first;
+              .value;
     }
     filled_fields_to_be_sent_to_devtools->push_back(
         protocol::Autofill::FilledField::Create()

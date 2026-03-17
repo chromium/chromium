@@ -18,6 +18,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/data_quality/addresses/address_normalizer.h"
 #include "components/autofill/core/browser/geo/alternative_state_name_map.h"
 #include "components/autofill/core/browser/geo/country_names.h"
 #include "components/autofill/core/browser/geo/state_names.h"
@@ -140,6 +141,27 @@ std::optional<SelectOption> GetSelectControlOptionTokenMatch(
 }
 
 }  // namespace
+
+FillingValueAndType::FillingValueAndType() = default;
+FillingValueAndType::FillingValueAndType(const FillingValueAndType&) = default;
+FillingValueAndType::FillingValueAndType(FillingValueAndType&&) = default;
+FillingValueAndType::~FillingValueAndType() = default;
+
+FillingValueAndType& FillingValueAndType::operator=(
+    const FillingValueAndType&) = default;
+FillingValueAndType& FillingValueAndType::operator=(FillingValueAndType&&) =
+    default;
+
+FillingValueAndType::FillingValueAndType(std::u16string value,
+                                         FieldType filling_type)
+    : value(std::move(value)), filling_type(filling_type) {}
+
+FillingValueAndType::FillingValueAndType(std::u16string value,
+                                         std::u16string select_text,
+                                         FieldType filling_type)
+    : value(std::move(value)),
+      select_text(std::move(select_text)),
+      filling_type(filling_type) {}
 
 std::optional<SelectOption> GetSelectControlOption(
     const std::u16string& value,

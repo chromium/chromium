@@ -9,10 +9,31 @@
 #include <string>
 
 #include "base/containers/span.h"
-#include "components/autofill/core/browser/data_quality/addresses/address_normalizer.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/form_field_data.h"
 
 namespace autofill {
+
+class AddressNormalizer;
+
+struct FillingValueAndType {
+  FillingValueAndType();
+  FillingValueAndType(std::u16string value, FieldType filling_type);
+  FillingValueAndType(std::u16string value,
+                      std::u16string select_text,
+                      FieldType filling_type);
+  FillingValueAndType(const FillingValueAndType&);
+  FillingValueAndType(FillingValueAndType&&);
+  FillingValueAndType& operator=(const FillingValueAndType&);
+  FillingValueAndType& operator=(FillingValueAndType&&);
+  ~FillingValueAndType();
+
+  std::u16string value = u"";
+  // `select_text` is only specified for <select> fields to disambiguate
+  // multiple options that have the same `SelectOption::value`.
+  std::optional<std::u16string> select_text = std::nullopt;
+  FieldType filling_type = NO_SERVER_DATA;
+};
 
 // This file contains functions that are generically usefull for filling or
 // functions that are used by multiple filling subdirectories.

@@ -14,6 +14,7 @@
 #include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/filling/field_filling_skip_reason.h"
+#include "components/autofill/core/browser/filling/field_filling_util.h"
 #include "components/autofill/core/browser/filling/form_autofill_history.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_suggestion.h"
@@ -71,11 +72,6 @@ using FillingPayload = std::variant<const AutofillProfile*,
 // It holds any state that is only relevant for [re]filling.
 class FormFiller {
  public:
-  struct ValueAndType {
-    std::u16string value;
-    FieldType type = NO_SERVER_DATA;
-  };
-
   explicit FormFiller(BrowserAutofillManager& manager);
 
   FormFiller(const FormFiller&) = delete;
@@ -232,7 +228,7 @@ class FormFiller {
                      AutofillTriggerSource trigger_source,
                      RefillTriggerReason refill_trigger_reason);
 
-  struct ValueAndTypeAndOverride : public ValueAndType {
+  struct ValueAndTypeAndOverride : public FillingValueAndType {
     bool value_is_an_override = false;
   };
 
@@ -241,7 +237,7 @@ class FormFiller {
   ValueAndTypeAndOverride GetFieldFillingData(
       const AutofillField& autofill_field,
       const AugmentedFillingPayload& filling_payload,
-      const std::map<FieldGlobalId, ValueAndType>& forced_fill_values,
+      const std::map<FieldGlobalId, FillingValueAndType>& forced_fill_values,
       const FormFieldData& field_data,
       mojom::ActionPersistence action_persistence,
       std::string* failure_to_fill);
@@ -256,7 +252,7 @@ class FormFiller {
   std::optional<FieldType> FillField(
       const AutofillField& autofill_field,
       const AugmentedFillingPayload& filling_payload,
-      const std::map<FieldGlobalId, ValueAndType>& forced_fill_values,
+      const std::map<FieldGlobalId, FillingValueAndType>& forced_fill_values,
       FormFieldData& field_data,
       mojom::ActionPersistence action_persistence,
       AutofillTriggerSource trigger_source,

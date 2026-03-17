@@ -33,6 +33,7 @@
 #include "components/autofill/core/browser/filling/addresses/field_filling_address_util.h"
 #include "components/autofill/core/browser/filling/autofill_ai/field_filling_entity_util.h"
 #include "components/autofill/core/browser/filling/field_filling_skip_reason.h"
+#include "components/autofill/core/browser/filling/field_filling_util.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/filling/payments/field_filling_payments_util.h"
 #include "components/autofill/core/browser/form_processing/autofill_ai/determine_attribute_types.h"
@@ -287,7 +288,7 @@ bool ShouldRecordFillingHistory(FillingProduct filling_product) {
 // refill value in case the website used JavaScript to reformat an expiration
 // date like "05/2023" into "05 / 20" (i.e. it broke the year by cutting the
 // last two digits instead of stripping the first two digits).
-std::optional<FormFiller::ValueAndType> GetRefillValueForExpirationDate(
+std::optional<FillingValueAndType> GetRefillValueForExpirationDate(
     const FormFieldData& field,
     const std::u16string& old_value) {
   // We currently support a single case of refilling credit card expiration
@@ -299,6 +300,9 @@ std::optional<FormFiller::ValueAndType> GetRefillValueForExpirationDate(
     return std::nullopt;
   }
   if (old_value == field.value()) {
+    return std::nullopt;
+  }
+  if (field.IsSelectElement()) {
     return std::nullopt;
   }
   static constexpr char16_t kFormatRegEx[] =
@@ -330,8 +334,7 @@ std::optional<FormFiller::ValueAndType> GetRefillValueForExpirationDate(
   CHECK(refill_value.size() >= 2);
   refill_value[refill_value.size() - 1] = '0' + (old_year % 10);
   refill_value[refill_value.size() - 2] = '0' + ((old_year % 100) / 10);
-  return FormFiller::ValueAndType(refill_value,
-                                  CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR);
+  return FillingValueAndType(refill_value, CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR);
 }
 
 // During filling operations, each field gets assigned a set of
@@ -511,7 +514,7 @@ struct FormFiller::RefillContext {
   DenseSet<FieldTypeGroup> type_groups_originally_filled;
   // If populated, this map determines which values will be filled into a
   // field (it does not matter whether the field already contains a value).
-  std::map<FieldGlobalId, ValueAndType> forced_fill_values;
+  std::map<FieldGlobalId, FillingValueAndType> forced_fill_values;
   // The form filled in the first attempt for filling. Used to check whether
   // a refill should be attempted upon parsing an updated FormData.
   std::optional<FormData> filled_form;
@@ -973,9 +976,9 @@ void FormFiller::FillOrPreviewForm(
     }
 
     std::string failure_to_fill;  // Reason for failing to fill.
-    const std::map<FieldGlobalId, ValueAndType>& forced_fill_values =
+    const std::map<FieldGlobalId, FillingValueAndType>& forced_fill_values =
         refill_context ? refill_context->forced_fill_values
-                       : std::map<FieldGlobalId, ValueAndType>();
+                       : std::map<FieldGlobalId, FillingValueAndType>();
 
     bool allow_suggestion_swapping =
         // TODO(crbug.com/393114125): Change to use
@@ -1266,7 +1269,7 @@ void FormFiller::MaybeScheduleAutomaticRefill(
       break;
     case RefillTriggerReason::kExpirationDateFormatted:
       CHECK(field && old_value);
-      if (std::optional<ValueAndType> refill_value =
+      if (std::optional<FillingValueAndType> refill_value =
               GetRefillValueForExpirationDate(*field, *old_value)) {
         refill_context->forced_fill_values[field->global_id()] =
             *std::move(refill_value);
@@ -1377,7 +1380,7 @@ FormFiller::RefillContext* FormFiller::GetRefillContext(const FillId& fill_id) {
 FormFiller::ValueAndTypeAndOverride FormFiller::GetFieldFillingData(
     const AutofillField& autofill_field,
     const AugmentedFillingPayload& filling_payload,
-    const std::map<FieldGlobalId, ValueAndType>& forced_fill_values,
+    const std::map<FieldGlobalId, FillingValueAndType>& forced_fill_values,
     const FormFieldData& field_data,
     mojom::ActionPersistence action_persistence,
     std::string* failure_to_fill) {
@@ -1385,54 +1388,48 @@ FormFiller::ValueAndTypeAndOverride FormFiller::GetFieldFillingData(
       it != forced_fill_values.end()) {
     return {it->second, /*value_is_an_override=*/true};
   }
-  const auto& [value_to_fill, filled_field_type] = std::visit(
+  FillingValueAndType filling_value_and_type = std::visit(
       absl::Overload{
-          [&](const AutofillProfile* profile)
-              -> std::pair<std::u16string, FieldType> {
+          [&](const AutofillProfile* profile) {
             return GetFillingValueAndTypeForProfile(
                 CHECK_DEREF(profile), manager_->client().GetAppLocale(),
                 autofill_field.Type(), field_data,
                 manager_->client().GetAddressNormalizer(), failure_to_fill);
           },
-          [&](const CreditCard* credit_card)
-              -> std::pair<std::u16string, FieldType> {
-            return {
-                GetFillingValueForCreditCard(
-                    CHECK_DEREF(credit_card), manager_->client().GetAppLocale(),
-                    action_persistence, autofill_field,
-                    manager_->client().IsCvcSavingSupported(), failure_to_fill),
-                autofill_field.Type().GetCreditCardType()};
+          [&](const CreditCard* credit_card) {
+            return GetFillingValueAndTypeForCreditCard(
+                CHECK_DEREF(credit_card), manager_->client().GetAppLocale(),
+                action_persistence, autofill_field,
+                manager_->client().IsCvcSavingSupported(), failure_to_fill);
           },
           [&](const AugmentedFillingPayload::EntityPayload&
-                  entity_and_fields_and_types)
-              -> std::pair<std::u16string, FieldType> {
+                  entity_and_fields_and_types) {
             const EntityInstance& entity =
                 CHECK_DEREF(entity_and_fields_and_types.first);
             const std::vector<AutofillFieldWithAttributeType>& fields =
                 entity_and_fields_and_types.second;
-            return {GetFillValueForEntity(
-                        entity, fields, autofill_field, action_persistence,
-                        manager_->client().GetAppLocale(),
-                        manager_->client().GetAddressNormalizer()),
-                    autofill_field.Type().GetAutofillAiType(entity.type())};
+            return GetFillingValueAndTypeForEntity(
+                entity, fields, autofill_field, action_persistence,
+                manager_->client().GetAppLocale(),
+                manager_->client().GetAddressNormalizer());
           },
-          [&](const VerifiedProfile* profile)
-              -> std::pair<std::u16string, FieldType> {
+          [&](const VerifiedProfile* profile) {
             const FieldType field_type =
                 autofill_field.Type().GetIdentityCredentialType();
             auto it = profile->find(field_type);
             std::u16string value = it == profile->end() ? u"" : it->second;
-            return {value, field_type};
+            return FillingValueAndType(value, field_type);
           },
-          [&](const OtpFillData* otp_fill_data)
-              -> std::pair<std::u16string, FieldType> {
+          [&](const OtpFillData* otp_fill_data) {
             auto it = otp_fill_data->find(field_data.global_id());
             const std::u16string& value =
                 it == otp_fill_data->end() ? u"" : it->second;
-            return {value, autofill_field.Type().GetPasswordManagerType()};
+            return FillingValueAndType(
+                value, autofill_field.Type().GetPasswordManagerType());
           }},
       filling_payload.variant);
-  CHECK(filled_field_type != UNKNOWN_TYPE ||
+
+  CHECK(filling_value_and_type.filling_type != UNKNOWN_TYPE ||
             // The skip reasons lump all Autofill AI types together because
             // there is only a single FillingProduct for Autofill AI. Therefore,
             // when two Autofill AI FieldTypes of different entities appear in
@@ -1441,14 +1438,14 @@ FormFiller::ValueAndTypeAndOverride FormFiller::GetFieldFillingData(
             std::holds_alternative<AugmentedFillingPayload::EntityPayload>(
                 filling_payload.variant),
         base::NotFatalUntil::M143);
-  return {{value_to_fill, filled_field_type},
+  return {filling_value_and_type,
           /*value_is_an_override=*/false};
 }
 
 std::optional<FieldType> FormFiller::FillField(
     const AutofillField& autofill_field,
     const AugmentedFillingPayload& filling_payload,
-    const std::map<FieldGlobalId, ValueAndType>& forced_fill_values,
+    const std::map<FieldGlobalId, FillingValueAndType>& forced_fill_values,
     FormFieldData& field_data,
     mojom::ActionPersistence action_persistence,
     AutofillTriggerSource trigger_source,
@@ -1488,7 +1485,7 @@ std::optional<FieldType> FormFiller::FillField(
   // set here so that the form is sent to the renderer and the renderer is able
   // to fill them and update the background accordingly.
   field_data.set_is_autofilled_according_to_renderer(should_mark_as_autofilled);
-  return filling_content.type;
+  return filling_content.filling_type;
 }
 
 void FormFiller::AppendFillLogEvents(

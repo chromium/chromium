@@ -10,6 +10,7 @@
 #include <string>
 
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/filling/field_filling_util.h"
 
 namespace autofill {
 
@@ -23,7 +24,7 @@ class FormFieldData;
 // Returns an empty string if no value could be found for the given `field_data`
 // and `field_type`.
 // TODO(crbug.com/40264633): Pass a `FieldType` instead of `AutofillType`.
-std::pair<std::u16string, FieldType> GetFillingValueAndTypeForProfile(
+FillingValueAndType GetFillingValueAndTypeForProfile(
     const AutofillProfile& profile,
     const std::string& app_locale,
     const AutofillType& field_type,

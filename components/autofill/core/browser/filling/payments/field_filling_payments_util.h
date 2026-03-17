@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "components/autofill/core/browser/autofill_trigger_source.h"
+#include "components/autofill/core/browser/filling/field_filling_util.h"
 #include "components/autofill/core/browser/suggestions/suggestion_util.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 
@@ -21,7 +22,7 @@ class FormFieldData;
 // Returns the appropriate `credit_card` value based on `field_type` to fill
 // into `field`, and an empty string if no value could be found for the given
 // `field`.
-std::u16string GetFillingValueForCreditCard(
+FillingValueAndType GetFillingValueAndTypeForCreditCard(
     const CreditCard& credit_card,
     const std::string& app_locale,
     mojom::ActionPersistence action_persistence,

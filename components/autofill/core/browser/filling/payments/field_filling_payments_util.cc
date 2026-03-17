@@ -480,7 +480,7 @@ std::optional<SelectOption> GetFillingOptionForCreditCardSelectControl(
 
 }  // namespace
 
-std::u16string GetFillingValueForCreditCard(
+FillingValueAndType GetFillingValueAndTypeForCreditCard(
     const CreditCard& credit_card,
     const std::string& app_locale,
     mojom::ActionPersistence action_persistence,
@@ -489,23 +489,28 @@ std::u16string GetFillingValueForCreditCard(
     std::string* failure_to_fill) {
   CHECK(field.Type().GetGroups().contains_any(
       {FieldTypeGroup::kCreditCard, FieldTypeGroup::kStandaloneCvcField}));
-  std::u16string value =
+  FillingValueAndType filling_value_and_type(
       credit_card.record_type() == CreditCard::RecordType::kVirtualCard &&
               action_persistence == mojom::ActionPersistence::kPreview
           ? GetValueForVirtualCardInputPreview(credit_card, app_locale, field,
                                                failure_to_fill)
           : GetFillingValueForCreditCardForInput(
                 credit_card, app_locale, action_persistence, field,
-                is_cvc_filling_supported, failure_to_fill);
+                is_cvc_filling_supported, failure_to_fill),
+      field.Type().GetCreditCardType());
 
-  if (!field.IsSelectElement() || value.empty()) {
-    return value;
+  if (field.IsSelectElement() && !filling_value_and_type.value.empty()) {
+    std::optional<SelectOption> select_control_option =
+        GetFillingOptionForCreditCardSelectControl(
+            filling_value_and_type.value, app_locale, field, failure_to_fill);
+
+    filling_value_and_type.value =
+        select_control_option ? std::move(select_control_option->value) : u"";
+    filling_value_and_type.select_text =
+        select_control_option ? std::move(select_control_option->text) : u"";
   }
 
-  std::optional<SelectOption> select_control_option =
-      GetFillingOptionForCreditCardSelectControl(value, app_locale, field,
-                                                 failure_to_fill);
-  return select_control_option ? std::move(select_control_option->value) : u"";
+  return filling_value_and_type;
 }
 
 bool WillFillCreditCardNumberOrCvc(

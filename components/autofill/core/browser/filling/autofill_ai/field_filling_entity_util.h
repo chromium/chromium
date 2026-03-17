@@ -13,6 +13,7 @@
 #include "base/containers/span.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/filling/field_filling_util.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-forward.h"
 #include "components/autofill/core/common/unique_ids.h"
 
@@ -39,7 +40,7 @@ base::flat_set<FieldGlobalId> GetFieldsFillableByAutofillAi(
     const AutofillClient& client);
 
 // Returns the value from `entity` to fill into `field`.
-std::u16string GetFillValueForEntity(
+FillingValueAndType GetFillingValueAndTypeForEntity(
     const EntityInstance& entity,
     base::span<const AutofillFieldWithAttributeType> fields_and_types,
     const AutofillField& field,
