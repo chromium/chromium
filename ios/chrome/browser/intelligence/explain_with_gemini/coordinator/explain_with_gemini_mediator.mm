@@ -76,19 +76,9 @@ typedef void (^ProceduralBlockWithBlockWithItemArray)(
   return l10n_util::GetNSString(IDS_IOS_EXPLAIN_GEMINI_EDIT_MENU);
 }
 
-// When shown after Search, the button is prepended with the Gemini icon to match
-// the style of the other items in the list.
+// When entry point is shown in the expanded menu, the button is prepended
+// with the Gemini icon to match the style of the other items in the list.
 - (UIImage*)imageSymbol {
-  if (ExplainGeminiEditMenuPosition() ==
-      PositionForExplainGeminiEditMenu::kAfterSearch) {
-    return [self askGeminiIcon];
-  } else {
-    return nil;
-  }
-}
-
-// Returns the symbol for the Ask Gemini button.
-- (UIImage*)askGeminiIcon {
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   return CustomSymbolWithPointSize(kGeminiBrandedLogoSymbol,
                                    kSymbolActionPointSize);
