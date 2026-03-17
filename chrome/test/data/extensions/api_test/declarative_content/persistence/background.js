@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var hostPrefix = chrome.extension.inIncognitoContext ? 'test_split' :
+const hostPrefix = chrome.extension.inIncognitoContext ? 'test_split' :
     'test_normal';
 
-var rule = {
+const rule = {
   conditions: [
     new chrome.declarativeContent.PageStateMatcher({
         pageUrl: {hostPrefix: hostPrefix}})
@@ -20,7 +20,7 @@ function sendMessage(message) {
     chrome.test.sendMessage(chrome.extension.lastError.message);
   } else {
     chrome.test.sendMessage(
-        message + (chrome.extension.inIncognitoContext ? " (split)" : ""));
+        message + (chrome.extension.inIncognitoContext ? ' (split)' : ''));
   }
 }
 
@@ -28,14 +28,14 @@ function sendMessage(message) {
 // chrome.runtime.onInstalled for this rather than recording in
 // chrome.storage.local, but the onInstalled event only gets sent for the
 // non-incognito side of the extension in split incognito mode.
-var key = chrome.extension.inIncognitoContext ? "split" : "normal";
+const key = chrome.extension.inIncognitoContext ? 'split' : 'normal';
 chrome.storage.local.get(key, function(items) {
   if (!(key in items)) {
     chrome.declarativeContent.onPageChanged.addRules([rule], function() {
-      items[key] = "added";
-      chrome.storage.local.set(items, sendMessage.bind(null, "ready"));
+      items[key] = 'added';
+      chrome.storage.local.set(items, sendMessage.bind(null, 'ready'));
     });
   } else {
-    sendMessage("second run ready");
+    sendMessage('second run ready');
   }
 });
