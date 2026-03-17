@@ -172,12 +172,6 @@ BASE_FEATURE_PARAM(int,
                    "timeout_ms",
                    kDefaultImmediateMediationTimeoutMs);
 
-// Enabled by default. Remove the flag and the logic (as if the flag is in
-// disabled state) when the WebAuthenticationImmediateGet origin trial is over.
-BASE_FEATURE(kWebAuthnImmediateGetAutoselect,
-             "WebAuthenticationImmediateGetAutoselect",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Deprecation flag. Disabled by default in M142. Remove in or after M145.
 BASE_FEATURE(kWebAuthnSendPinGeneration,
              "WebAuthenticationSendPinGeneration",

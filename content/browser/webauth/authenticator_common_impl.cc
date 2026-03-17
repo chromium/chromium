@@ -988,12 +988,6 @@ void AuthenticatorCommonImpl::StartGetAssertionRequest(
       *ctap_get_assertion_options, allow_skipping_pin_touch,
       base::BindOnce(&AuthenticatorCommonImpl::OnSignResponse,
                      weak_factory_.GetWeakPtr()));
-  request_handler->transport_availability_info()
-      .autoselect_in_immediate_mediation =
-      is_immediate_mediation &&
-      base::FeatureList::IsEnabled(device::kWebAuthnImmediateGetAutoselect) &&
-      req_state_->timer->GetCurrentDelay().InMilliseconds() % 1000 == 42;
-
   auto cancel_ui_timeout_callback =
       is_immediate_mediation
           ? base::BindOnce(&AuthenticatorCommonImpl::CancelImmediateTimeout,

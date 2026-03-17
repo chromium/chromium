@@ -2331,23 +2331,6 @@ AuthenticatorRequestDialogController::IndexOfImmediateGetPriorityMechanism() {
           EnclaveUserVerificationMethod::kUnsatisfiable) ==
       EnclaveUserVerificationMethod::kUVKeyWithChromeUI;
 
-  if (transport_availability_.autoselect_in_immediate_mediation) {
-    bool is_password =
-        std::holds_alternative<Mechanism::Password>(mechanism.type);
-    bool is_chrome_profile =
-        std::holds_alternative<Mechanism::Credential>(mechanism.type) &&
-        std::get<Mechanism::Credential>(mechanism.type).value().source ==
-            AuthenticatorType::kTouchID;
-    if (is_password || is_chrome_profile ||
-        (is_enclave && !chrome_does_uv_for_gpm)) {
-      // Password and Chrome Profile UV does not display account details.
-      // Similarly non-Chrome user verification UI for enclave passkeys does not
-      // display the selected account details. Show the Chrome UI first.
-      return std::nullopt;
-    }
-    return 0;
-  }
-
   if (is_enclave && chrome_does_uv_for_gpm) {
     return 0;
   }

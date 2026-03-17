@@ -189,12 +189,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
     // specific to makeCredential requests.
     std::optional<AuthenticatorAttachment> make_credential_attachment;
 
-    // If true, the only available credential may be selected by default in
-    // immediate mediation requests.
-    // TODO(crbug.com/393055190): Remove this field while cleaning up
-    // WebAuthenticationImmediateGetAutoselect once the autoselect experiment is
-    // complete.
-    bool autoselect_in_immediate_mediation = false;
   };
 
   class COMPONENT_EXPORT(DEVICE_FIDO) Observer {
