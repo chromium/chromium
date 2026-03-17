@@ -101,7 +101,7 @@ TEST_F(EventFilterUnittest, DontMatchUnlessMatcherMatches) {
 
 TEST_F(EventFilterUnittest, RemovingAnEventMatcherStopsItMatching) {
   int id = event_filter_.AddEventMatcher("event1", AllURLs());
-  event_filter_.RemoveEventMatcher(id);
+  event_filter_.RemoveEventMatcher(id, nullptr);
   std::set<int> matches = event_filter_.MatchEvent("event1", empty_event_,
                                                    IPC::mojom::kRoutingIdNone);
   ASSERT_TRUE(matches.empty());
@@ -160,7 +160,7 @@ TEST_F(EventFilterUnittest, TestStillMatchesAfterRemoval) {
   int id1 = event_filter_.AddEventMatcher("event1", AllURLs());
   int id2 = event_filter_.AddEventMatcher("event1", AllURLs());
 
-  event_filter_.RemoveEventMatcher(id1);
+  event_filter_.RemoveEventMatcher(id1, nullptr);
   {
     std::set<int> matches = event_filter_.MatchEvent(
         "event1", google_event_, IPC::mojom::kRoutingIdNone);
@@ -187,9 +187,9 @@ TEST_F(EventFilterUnittest, TestGetMatcherCountForEvent) {
   ASSERT_EQ(1, event_filter_.GetMatcherCountForEventForTesting("event1"));
   int id2 = event_filter_.AddEventMatcher("event1", AllURLs());
   ASSERT_EQ(2, event_filter_.GetMatcherCountForEventForTesting("event1"));
-  event_filter_.RemoveEventMatcher(id1);
+  event_filter_.RemoveEventMatcher(id1, nullptr);
   ASSERT_EQ(1, event_filter_.GetMatcherCountForEventForTesting("event1"));
-  event_filter_.RemoveEventMatcher(id2);
+  event_filter_.RemoveEventMatcher(id2, nullptr);
   ASSERT_EQ(0, event_filter_.GetMatcherCountForEventForTesting("event1"));
 }
 
@@ -198,9 +198,9 @@ TEST_F(EventFilterUnittest, RemoveEventMatcherReturnsEventName) {
   int id2 = event_filter_.AddEventMatcher("event1", AllURLs());
   int id3 = event_filter_.AddEventMatcher("event2", AllURLs());
 
-  ASSERT_EQ("event1", event_filter_.RemoveEventMatcher(id1));
-  ASSERT_EQ("event1", event_filter_.RemoveEventMatcher(id2));
-  ASSERT_EQ("event2", event_filter_.RemoveEventMatcher(id3));
+  ASSERT_EQ("event1", event_filter_.RemoveEventMatcher(id1, nullptr));
+  ASSERT_EQ("event1", event_filter_.RemoveEventMatcher(id2, nullptr));
+  ASSERT_EQ("event2", event_filter_.RemoveEventMatcher(id3, nullptr));
 }
 
 TEST_F(EventFilterUnittest, InvalidURLFilterCantBeAdded) {
@@ -229,8 +229,42 @@ TEST_F(EventFilterUnittest,
   int id =
       event_filter_.AddEventMatcher("event1", HostSuffixMatcher("google.com"));
   ASSERT_FALSE(event_filter_.IsURLMatcherEmptyForTesting());
-  event_filter_.RemoveEventMatcher(id);
+  event_filter_.RemoveEventMatcher(id, nullptr);
   ASSERT_TRUE(event_filter_.IsURLMatcherEmptyForTesting());
+}
+
+// Verifies that RemoveEventMatchers correctly removes all matchers.
+TEST_F(EventFilterUnittest, TestRemoveEventMatchers) {
+  int id1 =
+      event_filter_.AddEventMatcher("event1", HostSuffixMatcher("google.com"));
+  int id2 =
+      event_filter_.AddEventMatcher("event1", HostSuffixMatcher("yahoo.com"));
+  ASSERT_FALSE(event_filter_.IsURLMatcherEmptyForTesting());
+
+  std::vector<int> ids = {id1, id2};
+  event_filter_.RemoveEventMatchers(ids);
+
+  ASSERT_TRUE(event_filter_.IsURLMatcherEmptyForTesting());
+  std::set<int> matches = event_filter_.MatchEvent("event1", google_event_,
+                                                   IPC::mojom::kRoutingIdNone);
+  EXPECT_TRUE(matches.empty());
+  matches = event_filter_.MatchEvent("event1", yahoo_event_,
+                                     IPC::mojom::kRoutingIdNone);
+  EXPECT_TRUE(matches.empty());
+}
+
+// Regression test to verify that removing event matchers does not leak memory.
+TEST_F(EventFilterUnittest, TestConditionSetIdMapDoesNotLeak) {
+  ASSERT_EQ(0u,
+            event_filter_.GetConditionSetIdToEventMatcherIdMapSizeForTesting());
+  int id =
+      event_filter_.AddEventMatcher("event1", HostSuffixMatcher("google.com"));
+  ASSERT_NE(0u,
+            event_filter_.GetConditionSetIdToEventMatcherIdMapSizeForTesting());
+
+  event_filter_.RemoveEventMatcher(id, nullptr);
+  EXPECT_EQ(0u,
+            event_filter_.GetConditionSetIdToEventMatcherIdMapSizeForTesting());
 }
 
 TEST_F(EventFilterUnittest, EmptyURLsShouldBeMatchedByEmptyURLFilters) {
