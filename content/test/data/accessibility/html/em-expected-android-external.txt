@@ -1,5 +1,5 @@
 WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
 ++View actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]
-++++TextView text:"One word is " actions:[AX_FOCUS, NEXT, PREVIOUS, SET_EXTENDED_SELECTION] bundle:[chromeRole="staticText"]
-++++View text:"emphasized" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="emphasis"]
-++++TextView text:"." actions:[AX_FOCUS, NEXT, PREVIOUS, SET_EXTENDED_SELECTION] bundle:[chromeRole="staticText"]
+++++TextView text:"One word is " actions:[AX_FOCUS, NEXT, PREVIOUS, SET_SELECTION] bundle:[chromeRole="staticText"]
+++++View text:"emphasized" actions:[AX_FOCUS, NEXT, PREVIOUS, SET_SELECTION] bundle:[chromeRole="emphasis"]
+++++TextView text:"." actions:[AX_FOCUS, NEXT, PREVIOUS, SET_SELECTION] bundle:[chromeRole="staticText"]

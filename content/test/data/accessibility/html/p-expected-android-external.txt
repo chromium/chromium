@@ -1,4 +1,4 @@
 WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
-++TextView text:"Before" actions:[AX_FOCUS, NEXT, PREVIOUS, SET_EXTENDED_SELECTION] bundle:[chromeRole="staticText"]
-++TextView text:"Paragraph" actions:[AX_FOCUS, NEXT, PREVIOUS, SET_EXTENDED_SELECTION] bundle:[chromeRole="paragraph"]
-++TextView text:"After" actions:[AX_FOCUS, NEXT, PREVIOUS, SET_EXTENDED_SELECTION] bundle:[chromeRole="staticText"]
+++TextView text:"Before" actions:[AX_FOCUS, NEXT, PREVIOUS, SET_SELECTION] bundle:[chromeRole="staticText"]
+++TextView text:"Paragraph" actions:[AX_FOCUS, NEXT, PREVIOUS, SET_SELECTION] bundle:[chromeRole="paragraph"]
+++TextView text:"After" actions:[AX_FOCUS, NEXT, PREVIOUS, SET_SELECTION] bundle:[chromeRole="staticText"]
