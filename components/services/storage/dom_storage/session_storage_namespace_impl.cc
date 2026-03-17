@@ -154,10 +154,9 @@ void SessionStorageNamespaceImpl::RemoveStorageKeyData(
     std::move(callback).Run();
     return;
   }
-  // Renderer process expects |source| to always be two newline separated
-  // strings.
-  it->second->DeleteAll("\n", /*new_observer=*/mojo::NullRemote(),
-                        std::move(callback));
+  it->second->DeleteAll(
+      /*source=*/nullptr,
+      /*new_observer=*/mojo::NullRemote(), std::move(callback));
   it->second->NotifyObserversAllDeleted();
   it->second->data_map()->storage_area()->ScheduleImmediateCommit();
 }

@@ -235,7 +235,8 @@ TEST_P(SessionStorageNamespaceImplTest, MetadataLoadWithMapOperations) {
       .Times(1)
       .WillOnce([&](auto error) { commit_loop.Quit(); });
   test::PutSync(storage_area_1.get(), StdStringToUint8Vector("key2"),
-                StdStringToUint8Vector("data2"), std::nullopt, "");
+                StdStringToUint8Vector("data2"), std::nullopt,
+                test::MakeStorageAreaSource());
   commit_loop.Run();
 
   std::vector<blink::mojom::KeyValuePtr> data =
@@ -290,7 +291,8 @@ TEST_P(SessionStorageNamespaceImplTest, CloneBeforeBind) {
       .WillRepeatedly([&](auto error) { commit_callback.Run(); });
   EXPECT_CALL(listener_, OnDataMapCreation(/*map_id=*/1, testing::_)).Times(1);
   test::PutSync(storage_area_2.get(), StdStringToUint8Vector("key2"),
-                StdStringToUint8Vector("data2"), std::nullopt, "");
+                StdStringToUint8Vector("data2"), std::nullopt,
+                test::MakeStorageAreaSource());
   commit_loop.Run();
 
   std::vector<blink::mojom::KeyValuePtr> data =
@@ -356,7 +358,8 @@ TEST_P(SessionStorageNamespaceImplTest, CloneAfterBind) {
       .Times(1)
       .WillOnce([&](auto error) { commit_loop.Quit(); });
   test::PutSync(storage_area_n2_o2.get(), StdStringToUint8Vector("key2"),
-                StdStringToUint8Vector("data2"), std::nullopt, "");
+                StdStringToUint8Vector("data2"), std::nullopt,
+                test::MakeStorageAreaSource());
   commit_loop.Run();
 
   std::vector<blink::mojom::KeyValuePtr> data =
@@ -399,7 +402,7 @@ TEST_P(SessionStorageNamespaceImplTest, RemoveStorageKeyData) {
   storage_area_1.FlushForTesting();
 
   base::RunLoop loop;
-  EXPECT_CALL(mock_observer, AllDeleted(true, "\n"))
+  EXPECT_CALL(mock_observer, AllDeleted(true, testing::_))
       .WillOnce(base::test::RunClosure(loop.QuitClosure()));
 
   base::RunLoop commit_loop;

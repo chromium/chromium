@@ -37,26 +37,26 @@ void MockStorageArea::Put(
     const Vector<uint8_t>& key,
     const Vector<uint8_t>& value,
     const std::optional<Vector<uint8_t>>& client_old_value,
-    const String& source,
+    mojom::blink::StorageAreaSourcePtr source,
     PutCallback callback) {
-  observed_puts_.push_back(ObservedPut{key, value, source});
+  observed_puts_.push_back(ObservedPut(key, value, std::move(source)));
   std::move(callback).Run(true);
 }
 
 void MockStorageArea::Delete(
     const Vector<uint8_t>& key,
     const std::optional<Vector<uint8_t>>& client_old_value,
-    const String& source,
+    mojom::blink::StorageAreaSourcePtr source,
     DeleteCallback callback) {
-  observed_deletes_.push_back(ObservedDelete{key, source});
+  observed_deletes_.push_back(ObservedDelete(key, std::move(source)));
   std::move(callback).Run();
 }
 
 void MockStorageArea::DeleteAll(
-    const String& source,
+    mojom::blink::StorageAreaSourcePtr source,
     mojo::PendingRemote<mojom::blink::StorageAreaObserver> new_observer,
     DeleteAllCallback callback) {
-  observed_delete_alls_.push_back(source);
+  observed_delete_alls_.push_back(std::move(source));
   ++observer_count_;
   std::move(callback).Run();
 }

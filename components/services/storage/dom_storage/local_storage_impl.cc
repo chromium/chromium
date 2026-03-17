@@ -227,12 +227,12 @@ void LocalStorageImpl::DeleteStorage(const blink::StorageKey& storage_key,
 
   auto found = areas_.find(storage_key);
   if (found != areas_.end()) {
-    // Renderer process expects |source| to always be two newline separated
-    // strings. We don't bother passing an observer because this is a one-shot
-    // event and we only care about observing its completion, for which the
-    // reply alone is sufficient.
+    // We don't bother passing an observer because this is a one-shot event and
+    // we only care about observing its completion, for which the reply alone is
+    // sufficient.
     found->second->storage_area()->DeleteAll(
-        "\n", /*new_observer=*/mojo::NullRemote(), std::move(callback));
+        /*source=*/nullptr,
+        /*new_observer=*/mojo::NullRemote(), std::move(callback));
     found->second->storage_area()->ScheduleImmediateCommit();
   } else if (database_) {
     std::vector<DomStorageDatabase::MapLocator> maps_to_delete;

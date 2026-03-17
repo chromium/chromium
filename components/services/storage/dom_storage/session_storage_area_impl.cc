@@ -11,6 +11,7 @@
 #include "components/services/storage/dom_storage/session_storage_data_map.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/leveldatabase/env_chromium.h"
+#include "url/gurl.h"
 
 namespace storage {
 
@@ -53,13 +54,13 @@ std::unique_ptr<SessionStorageAreaImpl> SessionStorageAreaImpl::Clone(
 
 void SessionStorageAreaImpl::NotifyObserversAllDeleted() {
   for (auto& observer : observers_) {
-    // Renderer process expects |source| to always be two newline separated
-    // strings. Note that we don't bother checking if storage was actually
-    // empty since that might require loading the map where we otherwise
-    // wouldn't need to. A side-effect is that browser-initiated storage removal
-    // may result in a redundant "clear" StorageEvent on an already-empty
-    // StorageArea.
-    observer->AllDeleted(/*was_nonempty=*/true, "\n");
+    // Note that we don't bother checking if storage was actually empty since
+    // that might require loading the map where we otherwise wouldn't need to.
+    // A side-effect is that browser-initiated storage removal may result in a
+    // redundant "clear" StorageEvent on an already-empty StorageArea.
+    observer->AllDeleted(
+        /*was_nonempty=*/true,
+        /*source=*/nullptr);
   };
 }
 
@@ -73,46 +74,46 @@ void SessionStorageAreaImpl::Put(
     const std::vector<uint8_t>& key,
     const std::vector<uint8_t>& value,
     const std::optional<std::vector<uint8_t>>& client_old_value,
-    const std::string& source,
+    blink::mojom::StorageAreaSourcePtr source,
     PutCallback callback) {
   CHECK(IsBound());
   CHECK(!shared_data_map_->map_locator().session_ids().empty());
   if (shared_data_map_->map_locator().session_ids().size() >= 2) {
-    CreateNewMap(NewMapType::FORKED, std::nullopt);
+    CreateNewMap(NewMapType::FORKED);
   }
-  shared_data_map_->storage_area()->Put(key, value, client_old_value, source,
-                                        std::move(callback));
+  shared_data_map_->storage_area()->Put(key, value, client_old_value,
+                                        std::move(source), std::move(callback));
 }
 
 void SessionStorageAreaImpl::Delete(
     const std::vector<uint8_t>& key,
     const std::optional<std::vector<uint8_t>>& client_old_value,
-    const std::string& source,
+    blink::mojom::StorageAreaSourcePtr source,
     DeleteCallback callback) {
   CHECK(IsBound());
   CHECK(!shared_data_map_->map_locator().session_ids().empty());
   if (shared_data_map_->map_locator().session_ids().size() >= 2) {
-    CreateNewMap(NewMapType::FORKED, std::nullopt);
+    CreateNewMap(NewMapType::FORKED);
   }
-  shared_data_map_->storage_area()->Delete(key, client_old_value, source,
-                                           std::move(callback));
+  shared_data_map_->storage_area()->Delete(
+      key, client_old_value, std::move(source), std::move(callback));
 }
 
 void SessionStorageAreaImpl::DeleteAll(
-    const std::string& source,
+    blink::mojom::StorageAreaSourcePtr source,
     mojo::PendingRemote<blink::mojom::StorageAreaObserver> new_observer,
     DeleteAllCallback callback) {
   // Note: This can be called by the Clear Browsing Data flow, and thus doesn't
   // have to be bound.
   if (shared_data_map_->map_locator().session_ids().size() >= 2) {
-    CreateNewMap(NewMapType::EMPTY_FROM_DELETE_ALL, source);
+    CreateNewMap(NewMapType::EMPTY_FROM_DELETE_ALL);
     if (new_observer)
       AddObserver(std::move(new_observer));
     std::move(callback).Run();
     return;
   }
   shared_data_map_->storage_area()->DeleteAll(
-      source, /*new_observer=*/mojo::NullRemote(),
+      std::move(source), /*new_observer=*/mojo::NullRemote(),
       base::BindOnce(&SessionStorageAreaImpl::OnDeleteAllResult,
                      weak_ptr_factory_.GetWeakPtr(), std::move(new_observer),
                      std::move(callback)));
@@ -157,9 +158,7 @@ void SessionStorageAreaImpl::OnDeleteAllResult(
     AddObserver(std::move(new_observer));
 }
 
-void SessionStorageAreaImpl::CreateNewMap(
-    NewMapType map_type,
-    const std::optional<std::string>& delete_all_source) {
+void SessionStorageAreaImpl::CreateNewMap(NewMapType map_type) {
   bool bound = IsBound();
   if (bound)
     shared_data_map_->RemoveBindingReference();

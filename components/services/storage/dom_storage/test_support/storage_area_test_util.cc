@@ -8,6 +8,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "url/gurl.h"
 
 namespace storage {
 namespace test {
@@ -23,6 +24,11 @@ void SuccessCallback(base::OnceClosure callback,
 
 }  // namespace
 
+blink::mojom::StorageAreaSourcePtr MakeStorageAreaSource(GURL url,
+                                                         base::Token id) {
+  return blink::mojom::StorageAreaSource::New(std::move(url), id);
+}
+
 base::OnceCallback<void(bool)> MakeSuccessCallback(base::OnceClosure callback,
                                                    bool* success_out) {
   return base::BindOnce(&SuccessCallback, std::move(callback), success_out);
@@ -32,10 +38,10 @@ bool PutSync(blink::mojom::StorageArea* area,
              const std::vector<uint8_t>& key,
              const std::vector<uint8_t>& value,
              const std::optional<std::vector<uint8_t>>& old_value,
-             const std::string& source) {
+             blink::mojom::StorageAreaSourcePtr source) {
   bool success = false;
   base::RunLoop loop;
-  area->Put(key, value, old_value, source,
+  area->Put(key, value, old_value, std::move(source),
             base::BindLambdaForTesting([&](bool success_in) {
               success = success_in;
               loop.Quit();
@@ -73,16 +79,17 @@ std::vector<blink::mojom::KeyValuePtr> GetAllSync(
 void DeleteSync(blink::mojom::StorageArea* area,
                 const std::vector<uint8_t>& key,
                 const std::optional<std::vector<uint8_t>>& client_old_value,
-                const std::string& source) {
+                blink::mojom::StorageAreaSourcePtr source) {
   base::RunLoop loop;
-  area->Delete(key, client_old_value, source, loop.QuitClosure());
+  area->Delete(key, client_old_value, std::move(source), loop.QuitClosure());
   loop.Run();
 }
 
-void DeleteAllSync(blink::mojom::StorageArea* area, const std::string& source) {
+void DeleteAllSync(blink::mojom::StorageArea* area,
+                   blink::mojom::StorageAreaSourcePtr source) {
   base::RunLoop loop;
-  area->DeleteAll(source, /*new_observer=*/mojo::NullRemote(),
-                  loop.QuitClosure());
+  area->DeleteAll(std::move(source),
+                  /*new_observer=*/mojo::NullRemote(), loop.QuitClosure());
   loop.Run();
 }
 

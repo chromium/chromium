@@ -23,20 +23,49 @@ class MockStorageArea : public mojom::blink::StorageArea {
   struct ObservedPut {
     Vector<uint8_t> key;
     Vector<uint8_t> value;
-    String source;
+    mojom::blink::StorageAreaSourcePtr source;
+
+    ObservedPut(Vector<uint8_t> key,
+                Vector<uint8_t> value,
+                mojom::blink::StorageAreaSourcePtr source)
+        : key(std::move(key)),
+          value(std::move(value)),
+          source(std::move(source)) {}
+    ObservedPut(const ObservedPut& other)
+        : key(other.key), value(other.value), source(other.source.Clone()) {}
+    ObservedPut(ObservedPut&&) = default;
+    ObservedPut& operator=(const ObservedPut& other) {
+      key = other.key;
+      value = other.value;
+      source = other.source.Clone();
+      return *this;
+    }
+    ObservedPut& operator=(ObservedPut&&) = default;
 
     bool operator==(const ObservedPut& other) const {
-      return std::tie(key, value, source) ==
-             std::tie(other.key, other.value, other.source);
+      return key == other.key && value == other.value && source == other.source;
     }
   };
 
   struct ObservedDelete {
     Vector<uint8_t> key;
-    String source;
+    mojom::blink::StorageAreaSourcePtr source;
+
+    ObservedDelete(Vector<uint8_t> key,
+                   mojom::blink::StorageAreaSourcePtr source)
+        : key(std::move(key)), source(std::move(source)) {}
+    ObservedDelete(const ObservedDelete& other)
+        : key(other.key), source(other.source.Clone()) {}
+    ObservedDelete(ObservedDelete&&) = default;
+    ObservedDelete& operator=(const ObservedDelete& other) {
+      key = other.key;
+      source = other.source.Clone();
+      return *this;
+    }
+    ObservedDelete& operator=(ObservedDelete&&) = default;
 
     bool operator==(const ObservedDelete& other) const {
-      return std::tie(key, source) == std::tie(other.key, other.source);
+      return key == other.key && source == other.source;
     }
   };
 
@@ -59,14 +88,14 @@ class MockStorageArea : public mojom::blink::StorageArea {
   void Put(const Vector<uint8_t>& key,
            const Vector<uint8_t>& value,
            const std::optional<Vector<uint8_t>>& client_old_value,
-           const String& source,
+           mojom::blink::StorageAreaSourcePtr source,
            PutCallback callback) override;
   void Delete(const Vector<uint8_t>& key,
               const std::optional<Vector<uint8_t>>& client_old_value,
-              const String& source,
+              mojom::blink::StorageAreaSourcePtr source,
               DeleteCallback callback) override;
   void DeleteAll(
-      const String& source,
+      mojom::blink::StorageAreaSourcePtr source,
       mojo::PendingRemote<mojom::blink::StorageAreaObserver> new_observer,
       DeleteAllCallback callback) override;
   void GetAll(
@@ -96,16 +125,19 @@ class MockStorageArea : public mojom::blink::StorageArea {
   const Vector<ObservedDelete>& observed_deletes() const {
     return observed_deletes_;
   }
-  const Vector<String>& observed_delete_alls() const {
+
+  const Vector<mojom::blink::StorageAreaSourcePtr>& observed_delete_alls()
+      const {
     return observed_delete_alls_;
   }
+
   size_t observer_count() const { return observer_count_; }
 
  private:
   int observed_get_alls_ = 0;
   Vector<ObservedPut> observed_puts_;
   Vector<ObservedDelete> observed_deletes_;
-  Vector<String> observed_delete_alls_;
+  Vector<mojom::blink::StorageAreaSourcePtr> observed_delete_alls_;
   size_t observer_count_ = 0;
 
   Vector<KeyValue> key_values_;

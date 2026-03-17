@@ -4,6 +4,17 @@
 
 module blink.mojom;
 
+import "mojo/public/mojom/base/token.mojom";
+import "url/mojom/url.mojom";
+
+// Identifies the source of a storage mutation for observer notifications.
+struct StorageAreaSource {
+  // The URL of the page that initiated the storage operation.
+  url.mojom.Url page_url;
+  // An opaque identifier for the specific StorageArea instance.
+  mojo_base.mojom.Token storage_area_id;
+};
+
 // Gives information about changes to a StorageArea.
 //
 // NOTE: When used for Local Storage, all of the events defined here may be
@@ -12,25 +23,30 @@ module blink.mojom;
 // removal. This is because every Session Storage area is effectively owned by
 // a single client and there is no need to incur IPC overhead by repeating the
 // client's changes back to itself.
+//
+// Several methods below take a nullable `source` parameter. It is null when
+// the mutation is not initiated by a specific renderer StorageArea instance
+// (e.g. browser-initiated operations such as clearing browsing data).
 interface StorageAreaObserver {
   // Notifies the observer that a key's value was changed. If `old_value` is
   // null, the key was newly added and had no previous value stored.
   KeyChanged(array<uint8> key, array<uint8> new_value, array<uint8>? old_value,
-             string source);
+             StorageAreaSource? source);
 
   // Notifies the observer that a requested key change failed. This is generally
   // only of interest to the client corresponding to `source` which attempted to
   // change the key (e.g. to roll back a cache update).
-  KeyChangeFailed(array<uint8> key, string source);
+  KeyChangeFailed(array<uint8> key, StorageAreaSource? source);
 
   // Notifies the observer that a key was deleted. `old_value` may be null if
   // the deleted key didn't have an entry prior to this call.
-  KeyDeleted(array<uint8> key, array<uint8>? old_value, string source);
+  KeyDeleted(array<uint8> key, array<uint8>? old_value,
+             StorageAreaSource? source);
 
   // Notifies the observer that all keys were deleted. `was_nonempty` indicates
   // whether the StorageArea had at least one key-value stored at when the
   // corresponding `DeleteAll()` call was received.
-  AllDeleted(bool was_nonempty, string source);
+  AllDeleted(bool was_nonempty, StorageAreaSource? source);
 
   // Tells the client if it should send the old values for the key on `Put()`
   // and `Delete()` calls for sending notifications. Clients should assume they
@@ -46,7 +62,8 @@ struct KeyValue {
 
 // The mojo interface representing the connection to a single Local Storage or
 // Session Storage storage area. Every area represents an isolated key-value
-// store.
+// store. See `StorageAreaObserver` above for the semantics of the nullable
+// `source` parameter used by several methods below.
 interface StorageArea {
   // The quota for each storage area.
   // This value is enforced in renderer processes and the browser process.
@@ -86,7 +103,7 @@ interface StorageArea {
   // contents should rely only on sequential StorageAreaObserver events from
   // an observer bound via `GetAll()` or `DeleteAll()`.
   Put(array<uint8> key, array<uint8> value, array<uint8>? client_old_value,
-      string source)
+      StorageAreaSource? source)
       => (bool success);
 
   // Remove the database entry (if any) for `key`.
@@ -104,13 +121,15 @@ interface StorageArea {
   // interested in maintaining a consistent local cache of the stored contents
   // should rely only on sequential StorageAreaObserver events from an observer
   // bound via `GetAll()` or `DeleteAll()`.
-  Delete(array<uint8> key, array<uint8>? client_old_value, string source) => ();
+  Delete(array<uint8> key, array<uint8>? client_old_value,
+         StorageAreaSource? source) => ();
 
   // Removes all entries. If `new_observer` is non-null, it will be added to
   // the StorageArea's set of observers immediately BEFORE broadcasting the
   // corresponding `AllDeleted()` event, such that `new_observer`'s receiver
   // will always receive that `AllDeleted()` as its first observed event.
-  DeleteAll(string source, pending_remote<StorageAreaObserver>? new_observer) => ();
+  DeleteAll(StorageAreaSource? source,
+            pending_remote<StorageAreaObserver>? new_observer) => ();
 
   // Returns all key/value pairs and optionally adds a new StorageAreaObserver
   // which will observe all events on the StorageArea which occur after the

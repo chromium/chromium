@@ -2283,6 +2283,15 @@ _CONFIG = [
     },
     {
         'paths': [
+            'third_party/blink/renderer/modules/storage/cached_storage_area.cc',
+            'third_party/blink/renderer/modules/storage/cached_storage_area.h',
+        ],
+        'allowed': [
+            'absl::flat_hash_map',
+        ],
+    },
+    {
+        'paths': [
             'third_party/blink/renderer/modules/animationworklet/',
         ],
         'allowed': [

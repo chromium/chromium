@@ -11,15 +11,23 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/token.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/mojom/dom_storage/storage_area.mojom.h"
+#include "url/gurl.h"
 
 // Utility functions and classes for testing StorageArea implementations.
 
 namespace storage {
 namespace test {
+
+// Creates a StorageAreaSource for testing. Helper to avoid verbose struct
+// creation at every call site.
+blink::mojom::StorageAreaSourcePtr MakeStorageAreaSource(
+    GURL url = GURL("https://example.url"),
+    base::Token id = base::Token(1, 2));
 
 // Creates a callback that sets the given |success_out| to the boolean argument,
 // and then calls |callback|.
@@ -32,7 +40,7 @@ bool PutSync(blink::mojom::StorageArea* area,
              const std::vector<uint8_t>& key,
              const std::vector<uint8_t>& value,
              const std::optional<std::vector<uint8_t>>& old_value,
-             const std::string& source);
+             blink::mojom::StorageAreaSourcePtr source);
 
 std::optional<std::vector<uint8_t>> GetSync(blink::mojom::StorageArea* area,
                                             const std::vector<uint8_t>& key);
@@ -45,11 +53,12 @@ std::vector<blink::mojom::KeyValuePtr> GetAllSync(
 void DeleteSync(blink::mojom::StorageArea* area,
                 const std::vector<uint8_t>& key,
                 const std::optional<std::vector<uint8_t>>& client_old_value,
-                const std::string& source);
+                blink::mojom::StorageAreaSourcePtr source);
 
 // Does a |DeleteAll| call on the area and waits until the response is
 // received.
-void DeleteAllSync(blink::mojom::StorageArea* area, const std::string& source);
+void DeleteAllSync(blink::mojom::StorageArea* area,
+                   blink::mojom::StorageAreaSourcePtr source);
 
 // Creates a callback that simply sets the  |*_out| variables to the arguments.
 blink::mojom::StorageArea::GetAllCallback MakeGetAllCallback(
@@ -66,15 +75,17 @@ class MockStorageAreaObserver : public blink::mojom::StorageAreaObserver {
                void(const std::vector<uint8_t>& key,
                     const std::vector<uint8_t>& new_value,
                     const std::optional<std::vector<uint8_t>>& old_value,
-                    const std::string& source));
+                    blink::mojom::StorageAreaSourcePtr source));
   MOCK_METHOD2(KeyChangeFailed,
                void(const std::vector<uint8_t>& key,
-                    const std::string& source));
+                    blink::mojom::StorageAreaSourcePtr source));
   MOCK_METHOD3(KeyDeleted,
                void(const std::vector<uint8_t>& key,
                     const std::optional<std::vector<uint8_t>>& old_value,
-                    const std::string& source));
-  MOCK_METHOD2(AllDeleted, void(bool was_nonempty, const std::string& source));
+                    blink::mojom::StorageAreaSourcePtr source));
+  MOCK_METHOD2(AllDeleted,
+               void(bool was_nonempty,
+                    blink::mojom::StorageAreaSourcePtr source));
   MOCK_METHOD1(ShouldSendOldValueOnMutations, void(bool value));
 
   mojo::PendingRemote<blink::mojom::StorageAreaObserver> Bind();

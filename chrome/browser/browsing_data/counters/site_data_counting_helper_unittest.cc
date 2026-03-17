@@ -90,7 +90,8 @@ class SiteDataCountingHelperTest : public testing::Test {
       bool success = false;
       base::RunLoop put_run_loop;
       area->Put({'k', 'e', 'y'}, {'v', 'a', 'l', 'u', 'e'}, std::nullopt,
-                "source", base::BindLambdaForTesting([&](bool success_in) {
+                /*source=*/nullptr,
+                base::BindLambdaForTesting([&](bool success_in) {
                   success = success_in;
                   put_run_loop.Quit();
                 }));

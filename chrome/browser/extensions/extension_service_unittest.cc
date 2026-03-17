@@ -5677,7 +5677,7 @@ TEST_F(ExtensionServiceTest, ClearExtensionData) {
   {
     base::test::TestFuture<bool> future;
     area->Put({'k', 'e', 'y'}, {'v', 'a', 'l', 'u', 'e'}, std::nullopt,
-              "source", future.GetCallback());
+              /*source=*/nullptr, future.GetCallback());
     ASSERT_TRUE(future.Get());
   }
 
@@ -5824,7 +5824,7 @@ TEST_F(ExtensionServiceTest, ClearAppData) {
   {
     base::test::TestFuture<bool> future;
     area->Put({'k', 'e', 'y'}, {'v', 'a', 'l', 'u', 'e'}, std::nullopt,
-              "source", future.GetCallback());
+              /*source=*/nullptr, future.GetCallback());
     ASSERT_TRUE(future.Get());
   }
 

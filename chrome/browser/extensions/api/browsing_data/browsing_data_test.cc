@@ -215,7 +215,7 @@ void CreateLocalStorageForKey(Profile* profile, const blink::StorageKey& key) {
   {
     base::test::TestFuture<bool> put_future;
     area->Put({'k', 'e', 'y'}, {'v', 'a', 'l', 'u', 'e'}, std::nullopt,
-              "source", put_future.GetCallback());
+              /*source=*/nullptr, put_future.GetCallback());
     ASSERT_TRUE(put_future.Get());
   }
 }

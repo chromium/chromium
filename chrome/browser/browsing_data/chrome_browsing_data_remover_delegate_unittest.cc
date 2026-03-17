@@ -1412,8 +1412,8 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveLensOverlayWebUIStorage) {
 
   // Add the fake data to the Lens Overlay WebUI origin.
   base::test::TestFuture<bool> added_data_future;
-  area->Put({'k', 'e', 'y'}, {'v', 'a', 'l', 'u', 'e'}, std::nullopt, "source",
-            added_data_future.GetCallback());
+  area->Put({'k', 'e', 'y'}, {'v', 'a', 'l', 'u', 'e'}, std::nullopt,
+            /*source=*/nullptr, added_data_future.GetCallback());
   ASSERT_TRUE(added_data_future.Get());
 
   // Next, run the function that is supposed to remove this storage.
@@ -4434,8 +4434,8 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, ClearNewTabPageLocalStorage) {
   local_storage_control->BindStorageArea(key,
                                          area.BindNewPipeAndPassReceiver());
   base::test::TestFuture<bool> put_future;
-  area->Put({'k', 'e', 'y'}, {'v', 'a', 'l', 'u', 'e'}, std::nullopt, "source",
-            put_future.GetCallback());
+  area->Put({'k', 'e', 'y'}, {'v', 'a', 'l', 'u', 'e'}, std::nullopt,
+            /*source=*/nullptr, put_future.GetCallback());
   ASSERT_TRUE(put_future.Get());
 
   // Verify fake data has been persisted into local storage.
