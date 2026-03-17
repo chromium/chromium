@@ -226,7 +226,7 @@ public class HistoryManager
                 mContentManager.getRecyclerView(),
                 edgeToEdgePadAdjusterGenerator);
         boolean isLargeScreenWithKeyboard =
-                DeviceInput.supportsKeyboard(mActivity)
+                DeviceInput.supportsKeyboard()
                         && DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity);
         if (mContentManager.showAppFilter() || isLargeScreenWithKeyboard) {
             // Now the search mode can have a header. Let the layout ignore it to
@@ -508,7 +508,7 @@ public class HistoryManager
     public void onSearchTextChanged(String query) {
         assumeNonNull(mSelectionDelegate);
         boolean isLargeScreenWithKeyboard =
-                DeviceInput.supportsKeyboard(mActivity)
+                DeviceInput.supportsKeyboard()
                         && DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity);
         if (isLargeScreenWithKeyboard && mSelectionDelegate.isSelectionEnabled()) {
             mSelectionDelegate.clearSelection();

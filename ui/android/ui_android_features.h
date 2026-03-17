@@ -63,9 +63,6 @@ UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kSelectFileOpenDocument);
 UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(
     kSendTouchMovesToEventForwarderObservers);
 
-// Kill switch to turn off new supportKeyabord method
-UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kSupportKeyboard);
-
 // Enables the new ETC1 encoder (used in tab and back/forward thumbnails).
 UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kUseNewEtc1Encoder);
 

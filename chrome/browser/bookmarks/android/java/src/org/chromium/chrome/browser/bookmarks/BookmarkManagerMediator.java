@@ -1792,7 +1792,7 @@ class BookmarkManagerMediator
     /** The search box only focused on LFF device with a hardware keyboard attached. */
     private void maybeAutoFocusSearchBox() {
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)
-                && DeviceInput.supportsKeyboard(mContext)) {
+                && DeviceInput.supportsKeyboard()) {
             mRecyclerView.post(
                     () -> {
                         // The search box might not be in the model list yet, so guard this call.

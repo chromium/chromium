@@ -16,6 +16,7 @@ import android.view.View;
 import com.google.android.material.tabs.TabLayout;
 
 import org.chromium.base.test.transit.Facility;
+import org.chromium.base.test.transit.Trip;
 import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.build.annotations.Nullable;
@@ -26,7 +27,9 @@ import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.ChromeActivityTabModelBoundStation;
+import org.chromium.chrome.test.transit.SoftKeyboardFacility;
 import org.chromium.chrome.test.transit.layouts.LayoutTypeVisibleCondition;
+import org.chromium.ui.base.DeviceFormFactor;
 
 /** The base station for Hub, with several panes and a toolbar. */
 public abstract class HubBaseStation
@@ -142,7 +145,14 @@ public abstract class HubBaseStation
         }
 
         TripBuilder tripBuilder = selectPaneTo(PaneId.HISTORY, HistoryPaneStation.class);
-        return tripBuilder.complete().get(HistoryPaneStation.class);
+
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(getActivity())) {
+            Trip trip = tripBuilder.enterFacilityAnd(new SoftKeyboardFacility()).complete();
+            trip.get(SoftKeyboardFacility.class).close();
+            return trip.get(HistoryPaneStation.class);
+        } else {
+            return tripBuilder.complete().get(HistoryPaneStation.class);
+        }
     }
 
     public class SwitchPaneButtonFacility extends Facility<HubBaseStation> {
