@@ -105,15 +105,11 @@ IN_PROC_BROWSER_TEST_F(PermissionsApiTest, MAYBE_FaviconPermission) {
   ASSERT_TRUE(RunExtensionTest("permissions/favicon")) << message_;
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Test functions and APIs that are always allowed (even if you ask for no
 // permissions).
-// TODO(crbug.com/371432155): Port to desktop Android when chrome.tabs API
-// is available.
 IN_PROC_BROWSER_TEST_F(PermissionsApiTest, AlwaysAllowed) {
   ASSERT_TRUE(RunExtensionTest("permissions/always_allowed")) << message_;
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Tests that the optional permissions API works correctly.
 IN_PROC_BROWSER_TEST_F(PermissionsApiTest, OptionalPermissionsGranted) {
@@ -271,13 +267,13 @@ IN_PROC_BROWSER_TEST_F(PermissionsApiTest, HostSubsets) {
   EXPECT_TRUE(RunExtensionTest("permissions/host_subsets")) << message_;
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if !BUILDFLAG(IS_ANDROID)
 // Tests that requesting an optional permission from a background page, with
 // another window open, grants the permission and updates the bindings
 // (chrome.whatever, in this case chrome.alarms). Regression test for
 // crbug.com/40394805, see details there for trickiness.
-// TODO(crbug.com/371432155): Port to desktop Android when chrome.tabs API
-// is available.
+// NOTE: Not tested on desktop Android because it requires a background page,
+// which is a MV2 feature. Android only supports MV3 / service worker.
 // TODO(https://crbug.com/491516661): This uses an MV2 extension because it
 // involves a different page reaching into the background page to call a
 // function, which isn't directly supported in SWs.
@@ -285,7 +281,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsApiTest, OptionalPermissionsUpdatesBindings) {
   ASSERT_TRUE(RunExtensionTest("permissions/optional_updates_bindings"))
       << message_;
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 class PermissionsApiHostAccessRequestsTest : public PermissionsApiTest {
  public:
