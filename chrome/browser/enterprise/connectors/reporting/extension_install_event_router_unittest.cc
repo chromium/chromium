@@ -82,6 +82,8 @@ class ExtensionInstallEventRouterTest
             RealtimeReportingClientFactory::GetForProfile(profile_));
     mock_realtime_reporting_client_->SetProfileUserNameForTesting(
         kFakeProfileUsername);
+    ON_CALL(*mock_realtime_reporting_client_, GetProfileIdentifier())
+        .WillByDefault(Return(profile_->GetPath().AsUTF8Unsafe()));
 
     test::SetOnSecurityEventReporting(
         profile_->GetPrefs(), /*enabled=*/true,
@@ -181,6 +183,8 @@ TEST_P(ExtensionInstallEventRouterTest, CheckInstallEventReported) {
     extension_event->set_extension_version(kFakeExtensionVersion);
     extension_event->set_extension_source(
         expected_extension_source_proto_format());
+    extension_event->set_profile_user_name(kFakeProfileUsername);
+    extension_event->set_profile_identifier(profile_->GetPath().AsUTF8Unsafe());
 
     EXPECT_CALL(*mock_realtime_reporting_client_,
                 ReportEvent(EqualsProto(expected_event_proto), _))
@@ -221,6 +225,8 @@ TEST_P(ExtensionInstallEventRouterTest, CheckUpdateEventReported) {
     extension_event->set_extension_version(kFakeExtensionVersion);
     extension_event->set_extension_source(
         expected_extension_source_proto_format());
+    extension_event->set_profile_user_name(kFakeProfileUsername);
+    extension_event->set_profile_identifier(profile_->GetPath().AsUTF8Unsafe());
 
     EXPECT_CALL(*mock_realtime_reporting_client_,
                 ReportEvent(EqualsProto(expected_event_proto), _))
@@ -262,6 +268,8 @@ TEST_P(ExtensionInstallEventRouterTest, CheckUninstallEventReported) {
     extension_event->set_extension_version(kFakeExtensionVersion);
     extension_event->set_extension_source(
         expected_extension_source_proto_format());
+    extension_event->set_profile_user_name(kFakeProfileUsername);
+    extension_event->set_profile_identifier(profile_->GetPath().AsUTF8Unsafe());
 
     EXPECT_CALL(*mock_realtime_reporting_client_,
                 ReportEvent(EqualsProto(expected_event_proto), _))

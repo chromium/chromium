@@ -93,8 +93,11 @@ class ExtensionTelemetryEventRouterTest : public testing::Test {
     mock_realtime_reporting_client_ =
         static_cast<test::MockRealtimeReportingClient*>(
             RealtimeReportingClientFactory::GetForProfile(profile_));
+
     mock_realtime_reporting_client_->SetProfileUserNameForTesting(
         kFakeProfileUsername);
+    ON_CALL(*mock_realtime_reporting_client_, GetProfileIdentifier())
+        .WillByDefault(Return(profile_->GetPath().AsUTF8Unsafe()));
 
     test::SetOnSecurityEventReporting(
         profile_->GetPrefs(), /*enabled=*/true,

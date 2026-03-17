@@ -28,6 +28,8 @@ class MockRealtimeReportingClient : public RealtimeReportingClient {
                void(::chrome::cros::reporting::proto::Event event,
                     const ReportingSettings& settings));
 
+  MOCK_METHOD0(GetProfileIdentifier, std::string());
+
   MOCK_METHOD4(ReportPastEvent,
                void(const std::string& name,
                     const ReportingSettings& settings,

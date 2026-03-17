@@ -88,6 +88,10 @@ void ExtensionInstallEventRouter::ReportExtensionInstallEvent(
   extension_event->set_extension_action_type(extension_action);
   extension_event->set_extension_version(extension->GetVersionForDisplay());
   extension_event->set_extension_source(GetExtensionSource(extension));
+  extension_event->set_profile_user_name(
+      reporting_client_->GetProfileUserName());
+  extension_event->set_profile_identifier(
+      reporting_client_->GetProfileIdentifier());
 
   reporting_client_->ReportEvent(std::move(event), std::move(settings.value()));
 }
