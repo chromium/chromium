@@ -1121,7 +1121,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         }
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_TASKS)) {
-            mContextualTasksBridge = new ContextualTasksBridge();
+            mContextualTasksBridge =
+                    new ContextualTasksBridge(
+                            mProfileSupplier.get().getOriginalProfile(),
+                            mChromeAndroidTaskSupplier.get());
         }
 
         initiateTabBottomSheetManagers();

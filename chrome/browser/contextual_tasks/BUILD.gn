@@ -132,16 +132,20 @@ source_set("ui") {
     "contextual_tasks_internals_page_handler.h",
     "contextual_tasks_navigation_throttle.h",
     "contextual_tasks_page_handler.h",
+    "contextual_tasks_side_panel_coordinator.h",
     "contextual_tasks_ui_service.h",
     "contextual_tasks_ui_service_factory.h",
     "entry_point_eligibility_manager.h",
   ]
 
+  if (is_android) {
+    sources += [ "android/contextual_tasks_panel_host_android.h" ]
+  }
+
   if (!is_android) {
     sources += [
       "contextual_tasks_composebox_handler.h",
       "contextual_tasks_panel_host_desktop_impl.h",
-      "contextual_tasks_side_panel_coordinator.h",
       "contextual_tasks_ui.h",
       "contextual_tasks_web_view.h",
     ]
@@ -195,18 +199,22 @@ source_set("ui_impl") {
     "contextual_tasks_cookie_synchronizer.cc",
     "contextual_tasks_internals_page_handler.cc",
     "contextual_tasks_page_handler.cc",
+    "contextual_tasks_side_panel_coordinator.cc",
     "contextual_tasks_ui_service.cc",
     "contextual_tasks_ui_service_factory.cc",
     "contextual_tasks_url_loader_factory_interceptor.h",
     "entry_point_eligibility_manager.cc",
   ]
 
+  if (is_android) {
+    sources += [ "android/contextual_tasks_panel_host_android.cc" ]
+  }
+
   if (!is_android) {
     sources += [
       "contextual_tasks_composebox_handler.cc",
       "contextual_tasks_navigation_throttle.cc",
       "contextual_tasks_panel_host_desktop_impl.cc",
-      "contextual_tasks_side_panel_coordinator.cc",
       "contextual_tasks_ui.cc",
       "contextual_tasks_url_loader_factory_interceptor.cc",
       "contextual_tasks_web_view.cc",
@@ -233,8 +241,10 @@ source_set("ui_impl") {
     "//chrome/browser/signin",
     "//chrome/browser/tab_list",
     "//chrome/browser/ui",
+    "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/hats",
     "//chrome/browser/ui/select_file_policy",
     "//chrome/browser/ui/webui:webui_util",
     "//components/application_locale_storage",
@@ -467,6 +477,8 @@ if (is_android) {
     deps = [
       "//base:base_java",
       "//build/android:build_java",
+      "//chrome/browser/profiles/android:java",
+      "//chrome/browser/ui/browser_window/public/android:java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
     ]

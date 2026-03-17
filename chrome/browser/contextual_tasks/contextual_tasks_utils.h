@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_UTILS_H_
 #define CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_UTILS_H_
 
+#include "components/contextual_search/contextual_search_context_controller.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace content {
@@ -21,6 +22,12 @@ class Page;
 }  // namespace mojom
 
 class ContextualTasksUIInterface;
+
+// Utility method to create config params for the
+// ContextualSearchContextController.
+std::unique_ptr<
+    contextual_search::ContextualSearchContextController::ConfigParams>
+CreateQueryControllerConfigParams();
 
 // Finds the UI interface associated with the given WebContents. Returns nullptr
 // if the `web_contents` does not have an associated UI.

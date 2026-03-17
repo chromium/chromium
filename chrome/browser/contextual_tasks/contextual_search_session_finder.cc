@@ -6,6 +6,8 @@
 
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
@@ -78,8 +80,8 @@ void UpdateContextualSearchWebContentsHelperForTask(
   // Either way, update the ContextualSearchWebContentsHelper with the task ID
   // and session handle.
   contextual_search::ContextualSearchSessionHandle* existing_session =
-      contextual_tasks::FindSessionForTask(task_id, contextual_tasks_service,
-                                           browser_window, panel_controller);
+      FindSessionForTask(task_id, contextual_tasks_service, browser_window,
+                         panel_controller);
 
   std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
       session_handle;
@@ -88,7 +90,7 @@ void UpdateContextualSearchWebContentsHelperForTask(
         existing_session->session_id(), existing_session->invocation_source());
   } else {
     session_handle = contextual_search_service->CreateSession(
-        ntp_composebox::CreateQueryControllerConfigParams(),
+        CreateQueryControllerConfigParams(),
         contextual_search::ContextualSearchSource::kContextualTasks,
         lens::LensOverlayInvocationSource::kContextualTasksComposebox);
     session_handle->NotifySessionStarted();

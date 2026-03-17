@@ -34,22 +34,12 @@
 #include "chrome/browser/contextual_tasks/entry_point_eligibility_manager.h"
 #include "chrome/browser/devtools/devtools_ui_bindings.h"
 #include "chrome/browser/devtools/devtools_window.h"
-#include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/hats/hats_service.h"
-#include "chrome/browser/ui/hats/hats_service_factory.h"
-#include "chrome/browser/ui/hats/survey_config.h"
-#include "chrome/browser/ui/lens/lens_search_controller.h"
-#include "chrome/browser/ui/side_panel/side_panel_entry.h"
-#include "chrome/browser/ui/side_panel/side_panel_entry_scope.h"
-#include "chrome/browser/ui/side_panel/side_panel_enums.h"
-#include "chrome/browser/ui/side_panel/side_panel_registry.h"
-#include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
@@ -74,15 +64,23 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
-#include "extensions/browser/view_type_utils.h"
-#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/compositor/layer.h"
-#include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
-#include "ui/views/controls/webview/webview.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
+#include "chrome/browser/ui/hats/hats_service.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/hats/survey_config.h"
+#include "chrome/browser/ui/lens/lens_search_controller.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "extensions/browser/view_type_utils.h"
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 namespace {
 
+#if !BUILDFLAG(IS_ANDROID)
 // LINT.IfChange(GetContextualTasksArmShortName)
 std::string GetContextualTasksArmShortName() {
   using contextual_tasks::ExpandButtonOption;
@@ -119,6 +117,7 @@ std::string GetContextualTasksArmShortName() {
   return "Default";
 }
 // LINT.ThenChange(chrome/browser/about_flags.cc)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 std::unique_ptr<content::WebContents> CreateWebContents(
     BrowserWindowInterface* browser_window,
@@ -240,6 +239,7 @@ void ContextualTasksSidePanelCoordinator::Show(
   // Increment the impression count and attempt to show the HaTS survey.
   int impression_count =
       pref_service_->GetInteger(prefs::kContextualTasksNextPanelOpenCount);
+#if !BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(
           features::kHappinessTrackingSurveysForDesktopNextPanel) &&
       impression_count >= 1) {
@@ -253,26 +253,24 @@ void ContextualTasksSidePanelCoordinator::Show(
           kHatsSurveyTriggerNextPanel, 90000, {},
           {{"Experiment ID", experiment_id},
            {"ContextualTasksExpandButtonOptions",
-            contextual_tasks::GetExpandButtonOption() ==
-                    contextual_tasks::ExpandButtonOption::kSidePanelExpandButton
+            GetExpandButtonOption() ==
+                    ExpandButtonOption::kSidePanelExpandButton
                 ? "side-panel-expand-button"
                 : "toolbar-close-button"},
            {"ContextualTasksOpenSidePanelOnLinkClicked",
-            contextual_tasks::kOpenSidePanelOnLinkClicked.Get() ? "true"
-                                                                : "false"},
+            kOpenSidePanelOnLinkClicked.Get() ? "true" : "false"},
            {"ContextualTasksEnableLensInContextualTasks",
-            contextual_tasks::GetEnableLensInContextualTasks() ? "true"
-                                                               : "false"},
+            GetEnableLensInContextualTasks() ? "true" : "false"},
            {"ContextualTasksTabAutoSuggestionChipEnabled",
-            contextual_tasks::GetIsTabAutoSuggestionChipEnabled() ? "true"
-                                                                  : "false"}});
+            GetIsTabAutoSuggestionChipEnabled() ? "true" : "false"}});
     }
   }
+#endif  // !BUILDFLAG(IS_ANDROID)
   pref_service_->SetInteger(prefs::kContextualTasksNextPanelOpenCount,
                             impression_count + 1);
 
   tabs::TabInterface* active_tab_interface =
-      browser_window_->GetActiveTabInterface();
+      TabListInterface::From(browser_window_)->GetActiveTab();
   CHECK(active_tab_interface);
   if (!GetCurrentTask()) {
     // If no task is found, create a new task and associate it with the active
@@ -295,6 +293,7 @@ void ContextualTasksSidePanelCoordinator::Show(
   ObserveWebContentsOnActiveTab();
   NotifyActiveTaskContextProvider();
 
+#if !BUILDFLAG(IS_ANDROID)
   // Hide the GLIC nudge when the panel is opened.
   if (auto* glic_nudge_controller =
           browser_window_->GetFeatures().glic_nudge_controller()) {
@@ -303,6 +302,7 @@ void ContextualTasksSidePanelCoordinator::Show(
         glic::GlicNudgeActivity::kNudgeIgnoredOpenedContextualTasksSidePanel,
         base::DoNothing());
   }
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 void ContextualTasksSidePanelCoordinator::Close() {
@@ -419,10 +419,12 @@ ContextualTasksSidePanelCoordinator::DetachWebContentsForTask(
     webui::SetBrowserWindowInterface(web_contents.get(),
                                      /*browser_window_interface=*/nullptr);
     MaybeDetachWebContents(web_contents.get());
+#if BUILDFLAG(ENABLE_EXTENSIONS)
     // Set ViewType to kTabContents so `ChromeSpeechRecognitionManagerDelegate`
     // allows speech recognition in `CheckRenderFrameType()`.
     extensions::SetViewType(web_contents.get(),
                             extensions::mojom::ViewType::kTabContents);
+#endif
     // Clear the WebContents delegate since `ContextualTasksWebView` will no
     // longer be a valid delegate when WebContents is moved to a tab.
     web_contents->SetDelegate(nullptr);
@@ -551,7 +553,7 @@ void ContextualTasksSidePanelCoordinator::OnTabRemoved(
 std::optional<ContextualTask>
 ContextualTasksSidePanelCoordinator::GetCurrentTask() {
   tabs::TabInterface* active_tab_interface =
-      browser_window_->GetActiveTabInterface();
+      TabListInterface::From(browser_window_)->GetActiveTab();
   if (!active_tab_interface) {
     return std::nullopt;
   }
@@ -774,7 +776,7 @@ void ContextualTasksSidePanelCoordinator::ObserveWebContentsOnActiveTab() {
   }
 
   tabs::TabInterface* active_tab_interface =
-      browser_window_->GetActiveTabInterface();
+      TabListInterface::From(browser_window_)->GetActiveTab();
   if (!active_tab_interface) {
     return;
   }
@@ -833,7 +835,8 @@ void ContextualTasksSidePanelCoordinator::UpdateOpenState(bool is_open) {
       CloseLensSessionsForTask(*task);
     }
   } else {
-    tabs::TabInterface* active_tab = browser_window_->GetActiveTabInterface();
+    tabs::TabInterface* active_tab =
+        TabListInterface::From(browser_window_)->GetActiveTab();
     if (!active_tab) {
       return;
     }
@@ -846,12 +849,14 @@ void ContextualTasksSidePanelCoordinator::UpdateOpenState(bool is_open) {
       tab_scoped_open_state_[tab_id] = is_open;
     }
 
+#if !BUILDFLAG(IS_ANDROID)
     if (auto* lens_controller = LensSearchController::From(active_tab)) {
       if (!is_open && !lens_controller->IsOff()) {
         lens_controller->CloseLensAsync(
             lens::LensOverlayDismissalSource::kSidePanelCloseButton);
       }
     }
+#endif  // !BUILDFLAG(IS_ANDROID)
   }
 }
 
@@ -860,7 +865,8 @@ void ContextualTasksSidePanelCoordinator::MaybeInitTabScopedOpenState() {
     return;
   }
 
-  tabs::TabInterface* active_tab = browser_window_->GetActiveTabInterface();
+  tabs::TabInterface* active_tab =
+      TabListInterface::From(browser_window_)->GetActiveTab();
   if (!active_tab) {
     return;
   }
@@ -886,7 +892,8 @@ bool ContextualTasksSidePanelCoordinator::ShouldBeOpen() {
     }
     return false;
   } else {
-    tabs::TabInterface* active_tab = browser_window_->GetActiveTabInterface();
+    tabs::TabInterface* active_tab =
+        TabListInterface::From(browser_window_)->GetActiveTab();
     if (!active_tab) {
       return false;
     }
@@ -911,11 +918,13 @@ void ContextualTasksSidePanelCoordinator::CloseLensSessionsForTask(
         std::find(associated_tab_ids.begin(), associated_tab_ids.end(),
                   sessions::SessionTabHelper::IdForTab(tab->GetContents()));
     if (it != associated_tab_ids.end()) {
+#if !BUILDFLAG(IS_ANDROID)
       if (auto* lens_controller = LensSearchController::From(tab);
           !lens_controller->IsOff()) {
         lens_controller->CloseLensAsync(
             lens::LensOverlayDismissalSource::kSidePanelCloseButton);
       }
+#endif  // !BUILDFLAG(IS_ANDROID)
     }
   }
 }
@@ -928,7 +937,7 @@ ContextualTasksSidePanelCoordinator::GetSessionHandleForActiveTabOrPanel() {
     web_contents = GetActiveWebContents();
   } else {
     tabs::TabInterface* active_tab_interface =
-        browser_window_->GetActiveTabInterface();
+        TabListInterface::From(browser_window_)->GetActiveTab();
     if (active_tab_interface) {
       web_contents = active_tab_interface->GetContents();
       if (web_contents &&
@@ -992,7 +1001,7 @@ ContextualTasksSidePanelCoordinator::GetAutoSuggestedTabHandle() {
   }
 
   tabs::TabInterface* active_tab_interface =
-      browser_window_->GetActiveTabInterface();
+      TabListInterface::From(browser_window_)->GetActiveTab();
   return active_tab_interface
              ? std::make_optional(active_tab_interface->GetHandle())
              : std::nullopt;

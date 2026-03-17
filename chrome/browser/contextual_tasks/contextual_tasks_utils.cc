@@ -18,6 +18,17 @@
 
 namespace contextual_tasks {
 
+std::unique_ptr<
+    contextual_search::ContextualSearchContextController::ConfigParams>
+CreateQueryControllerConfigParams() {
+  auto config_params = std::make_unique<
+      contextual_search::ContextualSearchContextController::ConfigParams>();
+  config_params->send_lns_surface = true;
+  config_params->enable_viewport_images = true;
+  config_params->attach_page_title_and_url_to_suggest_requests = false;
+  return config_params;
+}
+
 void ShowAndRecordErrorPage(mojo::Remote<contextual_tasks::mojom::Page>& page,
                             contextual_search::ContextualSearchSource source) {
   if (page) {

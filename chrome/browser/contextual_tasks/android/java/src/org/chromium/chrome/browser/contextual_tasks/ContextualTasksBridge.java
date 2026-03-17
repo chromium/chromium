@@ -5,10 +5,14 @@
 package org.chromium.chrome.browser.contextual_tasks;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 
 /**
  * Java bridge for Contextual Tasks. Owned by the activity's TabbedRootUiCoordinator. Owns its
@@ -19,8 +23,12 @@ import org.chromium.build.annotations.NullMarked;
 public class ContextualTasksBridge implements Destroyable {
     private long mNativeContextualTasksBridge;
 
-    public ContextualTasksBridge() {
-        mNativeContextualTasksBridge = ContextualTasksBridgeJni.get().init(this);
+    public ContextualTasksBridge(@Nullable Profile profile, @Nullable ChromeAndroidTask task) {
+        assert profile != null : "Profile should not be null";
+        assert task != null : "ChromeAndroidTask should not be null";
+        long browserWindowPtr = task.getOrCreateNativeBrowserWindowPtr(profile);
+        mNativeContextualTasksBridge =
+                ContextualTasksBridgeJni.get().init(this, browserWindowPtr, profile);
     }
 
     @Override
@@ -33,7 +41,10 @@ public class ContextualTasksBridge implements Destroyable {
 
     @NativeMethods
     interface Natives {
-        long init(ContextualTasksBridge obj);
+        long init(
+                ContextualTasksBridge obj,
+                long browserWindowPtr,
+                @JniType("Profile*") Profile profile);
 
         void destroy(long nativeContextualTasksBridge);
     }

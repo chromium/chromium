@@ -30,12 +30,10 @@ namespace webui {
 base::CallbackListSubscription InitEmbeddingContext(
     tabs::TabInterface* tab_interface);
 
-#if !BUILDFLAG(IS_ANDROID)
 // Called by embedders to set the browser for `host_contents`.
 void SetBrowserWindowInterface(
     content::WebContents* host_contents,
     BrowserWindowInterface* browser_window_interface);
-#endif
 
 // Gets the interface for the embedding browser. Clients should not persist this
 // reference. May be null.
