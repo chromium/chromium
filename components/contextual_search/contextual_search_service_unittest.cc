@@ -621,4 +621,16 @@ TEST_F(ContextualSearchServiceTest,
       file_token, file_name, file_mime_type, std::move(buffer), std::nullopt);
 }
 
+TEST(ContextualSearchTypesTest, ContextUploadStatus_EnumSize) {
+  // The expected value should be the integer value of `kMaxValue`.
+  // The current kMaxValue is `kUploadReplaced`, which has a value of 8.
+  EXPECT_EQ(static_cast<int>(ContextUploadStatus::kMaxValue), 8);
+}
+
+TEST(ContextualSearchTypesTest, ContextUploadErrorType_EnumSize) {
+  // The expected value should be the integer value of `kMaxValue`.
+  // The current kMaxValue is `kImageProcessingError`, which has a value of 6.
+  EXPECT_EQ(static_cast<int>(ContextUploadErrorType::kMaxValue), 6);
+}
+
 }  // namespace contextual_search

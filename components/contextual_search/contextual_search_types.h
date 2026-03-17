@@ -42,6 +42,10 @@ enum class ContextUploadStatus {
   kProcessingSuggestSignalsReady = 7,
   // File is being replaced.
   kUploadReplaced = 8,
+
+  // Add new enumerators above this line.
+  // This must always be the last valid enum.
+  kMaxValue = kUploadReplaced,
 };
 
 // For upload error notifications and metrics.
@@ -60,6 +64,10 @@ enum class ContextUploadErrorType {
   kAborted = 5,
   // Image processing error.
   kImageProcessingError = 6,
+
+  // Add new enumerators above this line.
+  // This must always be the last valid enum.
+  kMaxValue = kImageProcessingError,
 };
 
 // Struct containing file information for a file upload.
