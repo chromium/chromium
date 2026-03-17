@@ -969,6 +969,17 @@ export class CaptureRegionObserverImpl implements CaptureRegionObserver {
     this.connectToSource();
   }
 
+  disconnectFromSource() {
+    if (!this.receiver) {
+      return;
+    }
+    this.sender.sendWhenActive('glicWebClientCaptureRegionUpdate', {
+      reason: enumToClient(CaptureRegionErrorReasonMojo.kUnknown),
+      observationId: this.observationId,
+    });
+    this.destroy();
+  }
+
   // Stops requesting updates.
   destroy() {
     if (!this.receiver) {
