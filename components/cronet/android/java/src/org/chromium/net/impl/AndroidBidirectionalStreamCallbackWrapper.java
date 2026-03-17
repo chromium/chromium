@@ -11,6 +11,7 @@ import android.net.http.HttpException;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.annotation.RequiresExtension;
 
 import org.chromium.net.CronetException;
@@ -19,6 +20,9 @@ import org.chromium.net.RequestFinishedInfo;
 import java.nio.ByteBuffer;
 import java.util.Objects;
 
+// Note we specify both RequiresApi and RequiresExtension because some older linters may only
+// recognize the former.
+@RequiresApi(EXT_API_LEVEL)
 @RequiresExtension(extension = EXT_API_LEVEL, version = EXT_VERSION)
 @SuppressWarnings("Override")
 class AndroidBidirectionalStreamCallbackWrapper

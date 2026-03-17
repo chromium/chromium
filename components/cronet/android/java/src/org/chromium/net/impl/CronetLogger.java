@@ -4,6 +4,10 @@
 
 package org.chromium.net.impl;
 
+import android.os.Build;
+
+import androidx.annotation.RequiresApi;
+
 import org.chromium.net.ConnectionCloseSource;
 
 import java.time.Duration;
@@ -191,9 +195,9 @@ public abstract class CronetLogger {
     }
 
     /**
-     * Aggregates the information about request and response traffic for a
-     * particular CronetEngine.
+     * Aggregates the information about request and response traffic for a particular CronetEngine.
      */
+    @RequiresApi(Build.VERSION_CODES.O)
     public static class CronetTrafficInfo {
         public static enum RequestTerminalState {
             SUCCEEDED,

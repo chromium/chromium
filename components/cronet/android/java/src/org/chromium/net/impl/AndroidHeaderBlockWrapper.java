@@ -7,12 +7,16 @@ package org.chromium.net.impl;
 import static org.chromium.net.impl.HttpEngineNativeProvider.EXT_API_LEVEL;
 import static org.chromium.net.impl.HttpEngineNativeProvider.EXT_VERSION;
 
+import androidx.annotation.RequiresApi;
 import androidx.annotation.RequiresExtension;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+// Note we specify both RequiresApi and RequiresExtension because some older linters may only
+// recognize the former.
+@RequiresApi(EXT_API_LEVEL)
 @RequiresExtension(extension = EXT_API_LEVEL, version = EXT_VERSION)
 class AndroidHeaderBlockWrapper extends org.chromium.net.UrlResponseInfo.HeaderBlock {
     private final android.net.http.HeaderBlock mBackend;

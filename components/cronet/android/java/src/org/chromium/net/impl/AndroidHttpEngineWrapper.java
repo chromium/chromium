@@ -12,6 +12,7 @@ import android.net.http.HttpEngine;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.annotation.RequiresExtension;
 
 import org.chromium.base.Log;
@@ -37,6 +38,9 @@ import java.util.Map.Entry;
 import java.util.concurrent.Executor;
 import java.util.concurrent.RejectedExecutionException;
 
+// Note we specify both RequiresApi and RequiresExtension because some older linters may only
+// recognize the former.
+@RequiresApi(EXT_API_LEVEL)
 @RequiresExtension(extension = EXT_API_LEVEL, version = EXT_VERSION)
 class AndroidHttpEngineWrapper extends CronetEngineBase {
     private static final String TAG = "HttpEngineWrapper";

@@ -7,8 +7,12 @@ package org.chromium.net.impl;
 import static org.chromium.net.impl.HttpEngineNativeProvider.EXT_API_LEVEL;
 import static org.chromium.net.impl.HttpEngineNativeProvider.EXT_VERSION;
 
+import androidx.annotation.RequiresApi;
 import androidx.annotation.RequiresExtension;
 
+// Note we specify both RequiresApi and RequiresExtension because some older linters may only
+// recognize the former.
+@RequiresApi(EXT_API_LEVEL)
 @RequiresExtension(extension = EXT_API_LEVEL, version = EXT_VERSION)
 class AndroidCallbackExceptionWrapper extends org.chromium.net.CallbackException {
     protected AndroidCallbackExceptionWrapper(android.net.http.CallbackException e) {

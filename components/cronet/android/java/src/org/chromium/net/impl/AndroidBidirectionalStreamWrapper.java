@@ -7,6 +7,7 @@ package org.chromium.net.impl;
 import static org.chromium.net.impl.HttpEngineNativeProvider.EXT_API_LEVEL;
 import static org.chromium.net.impl.HttpEngineNativeProvider.EXT_VERSION;
 
+import androidx.annotation.RequiresApi;
 import androidx.annotation.RequiresExtension;
 
 import org.chromium.net.CronetEngine;
@@ -17,6 +18,9 @@ import org.chromium.net.RequestFinishedInfo.Listener;
 import java.nio.ByteBuffer;
 import java.util.Collection;
 
+// Note we specify both RequiresApi and RequiresExtension because some older linters may only
+// recognize the former.
+@RequiresApi(EXT_API_LEVEL)
 @RequiresExtension(extension = EXT_API_LEVEL, version = EXT_VERSION)
 class AndroidBidirectionalStreamWrapper extends org.chromium.net.ExperimentalBidirectionalStream {
     private final android.net.http.BidirectionalStream mBackend;

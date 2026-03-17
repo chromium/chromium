@@ -11,6 +11,7 @@ import android.content.Context;
 import android.net.http.HttpEngine;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.annotation.RequiresExtension;
 import androidx.annotation.VisibleForTesting;
 
@@ -29,6 +30,9 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+// Note we specify both RequiresApi and RequiresExtension because some older linters may only
+// recognize the former.
+@RequiresApi(EXT_API_LEVEL)
 @RequiresExtension(extension = EXT_API_LEVEL, version = EXT_VERSION)
 class AndroidHttpEngineBuilderWrapper extends ICronetEngineBuilder {
     private static final String TAG = "HttpEngBuilderWrap";
