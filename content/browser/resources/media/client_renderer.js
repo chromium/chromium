@@ -103,7 +103,7 @@ export class ClientRenderer {
           generalAudioInformationTableElement.querySelector('tbody');
     }
 
-    this.players = null;
+    this.players = {};
     this.selectedPlayer = null;
     this.selectedAudioComponentType = null;
     this.selectedAudioComponentId = null;
@@ -116,7 +116,13 @@ export class ClientRenderer {
     };
     this.filterText = $('filter-text');
     if (this.filterText) {
-      this.filterText.onkeyup = this.onTextChange_.bind(this);
+      this.filterText.addEventListener('input', this.onTextChange_.bind(this));
+    }
+
+    this.playerFilterText = $('player-filter-text');
+    if (this.playerFilterText) {
+      this.playerFilterText.addEventListener(
+          'input', this.onPlayerFilterChange_.bind(this));
     }
 
     this.copyLogButton = $('copy-log-button');
@@ -270,6 +276,8 @@ export class ClientRenderer {
         key === 'event' && value === 'kWebMediaPlayerDestroyed' &&
         player.playerState !== 'errored') {
       player.playerState = 'ended';
+    } else if (key === 'url') {
+      player.loweredUrl = value.toLowerCase();
     }
     if ([
           'url',
@@ -469,6 +477,12 @@ export class ClientRenderer {
       const player = players[id];
       const p = player.properties;
 
+      if (!player.loweredUrl) {
+        player.loweredUrl = (p.url || 'Player ' + player.id).toLowerCase();
+      }
+
+      const url = p.url || 'Player ' + player.id;
+
       const treeItem = document.createElement('div');
       treeItem.classList.add('tree-item');
       if (player.playerState === 'errored') {
@@ -486,7 +500,6 @@ export class ClientRenderer {
 
       const playerName = document.createElement('div');
       playerName.classList.add('player-name');
-      const url = p.url || 'Player ' + player.id;
       if (url.length > 64) {
         playerName.textContent = url.substring(0, 61) + '...';
       } else {
@@ -526,12 +539,30 @@ export class ClientRenderer {
     removeChildren(this.playerListElement);
     this.playerListElement.appendChild(fragment);
 
+    this.applyPlayerFilter_();
+
     if (this.selectedPlayer && this.selectedPlayer.id in players) {
       // Re-select the selected player since the button was just recreated.
       const element = this.playerListElement.querySelector(
           `.tree-item[data-id="${this.selectedPlayer.id}"]`);
       if (element) {
         element.classList.add('selected');
+      }
+    }
+  }
+
+  applyPlayerFilter_() {
+    const filterText =
+        this.playerFilterText ? this.playerFilterText.value.toLowerCase() : '';
+    const items = this.playerListElement.querySelectorAll('.tree-item');
+    for (const item of items) {
+      const id = item.dataset.id;
+      const player = this.players[id];
+      if (filterText && player && player.loweredUrl &&
+          !player.loweredUrl.includes(filterText)) {
+        item.hidden = true;
+      } else {
+        item.hidden = false;
       }
     }
   }
@@ -729,6 +760,10 @@ export class ClientRenderer {
       this.selectedPlayerLogIndex = 0;
       this.drawLog_();
     }
+  }
+
+  onPlayerFilterChange_(event) {
+    this.applyPlayerFilter_();
   }
 
   createAudioFocusSessionRow_(session) {
