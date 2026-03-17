@@ -25,7 +25,6 @@
   (global-name "com.apple.cvmsServ")
   (global-name "com.apple.gpumemd.source")
   (global-name "com.apple.lsd.mapdb")
-  (global-name "com.apple.lsd.modifydb")
   (global-name "com.apple.powerlog.plxpclogger.xpc")
   (global-name "com.apple.PowerManagement.control")
   (global-name "com.apple.SecurityServer")
@@ -119,7 +118,10 @@
 )
 
 ; crbug.com/980134
-(allow file-read* file-write*
+; Restrict file-write to data/create/unlink only — the GPU process does not need
+; file-write-xattr or file-write-mode.
+; TODO(crbug.com/491422244): Remove file-write-owner needed by WebNN.
+(allow file-read* file-write-data file-write-create file-write-owner file-write-unlink
   (subpath (param darwin-user-cache-dir))
   (subpath (param darwin-user-dir))
   (subpath (param darwin-user-temp-dir))
