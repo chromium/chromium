@@ -317,8 +317,8 @@ void GlicInstanceCoordinatorImpl::InvokeInternal(
   GlicInstanceImpl* instance = nullptr;
 
   instance = std::visit(
-      absl::Overload{[&](const ConversationId& conversation_id) {
-                       if (conversation_id.empty()) {
+      absl::Overload{[&](const ConversationId& conv_id) {
+                       if (conv_id.conversation_id.empty()) {
                          if (options.on_error) {
                            std::move(options.on_error)
                                .Run(GlicInvokeError::kInvalidConversationId);
@@ -328,7 +328,7 @@ void GlicInstanceCoordinatorImpl::InvokeInternal(
                          return (GlicInstanceImpl*)nullptr;
                        }
                        return GetOrCreateInstanceImplForConversationId(
-                           conversation_id);
+                           conv_id.conversation_id, conv_id.turn_id);
                      },
                      [&](NewConversation) { return CreateGlicInstance(); },
                      [&](DefaultConversation) {
@@ -536,14 +536,25 @@ GlicInstanceImpl* GlicInstanceCoordinatorImpl::GetInstanceImplForConversationId(
 
 GlicInstanceImpl*
 GlicInstanceCoordinatorImpl::GetOrCreateInstanceImplForConversationId(
-    const std::string& conversation_id) {
+    const std::string& conversation_id,
+    const std::optional<std::string>& turn_id) {
   GlicInstanceImpl* instance =
       GetInstanceImplForConversationId(conversation_id);
   if (!instance) {
     instance = CreateGlicInstance();
     auto info = mojom::ConversationInfo::New();
     info->conversation_id = conversation_id;
+    if (turn_id.has_value()) {
+      info->turn_id = turn_id.value();
+    }
     instance->RegisterConversation(std::move(info), base::DoNothing());
+  } else if (turn_id.has_value()) {
+    // Instance exists, update turn_id if provided.
+    auto info = instance->GetConversationInfo();
+    if (info && info->turn_id != turn_id.value()) {
+      info->turn_id = turn_id.value();
+      instance->RegisterConversation(std::move(info), base::DoNothing());
+    }
   }
   return instance;
 }

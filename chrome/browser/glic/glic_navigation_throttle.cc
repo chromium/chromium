@@ -10,6 +10,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/strings/escape.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/values.h"
 #include "build/buildflag.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic_pref_names.h"
@@ -165,6 +166,7 @@ GlicNavigationThrottle::WillStartRequest() {
   GURL url = navigation_handle()->GetURL();
   std::optional<std::string> cid;
   std::optional<std::string> target_url_str;
+  std::optional<std::string> turn_id;
 
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
@@ -173,6 +175,7 @@ GlicNavigationThrottle::WillStartRequest() {
   size_t max_cid_length = features::kGlicWebContinuityMaxCIDLength.Get();
   size_t max_target_url_length =
       features::kGlicWebContinuityMaxTargetUrlLength.Get();
+  size_t max_turn_id_length = features::kGlicWebContinuityMaxTurnIdLength.Get();
 
   for (net::QueryIterator it(url); !it.IsAtEnd(); it.Advance()) {
     if (it.GetKey() == "cid") {
@@ -188,6 +191,13 @@ GlicNavigationThrottle::WillStartRequest() {
       if (target_url_str->length() > max_target_url_length) {
         LogCaptureResult(is_glic_enabled,
                          GeminiNavigationCaptureResult::kTargetUrlTooLong);
+        return PROCEED;
+      }
+    } else if (it.GetKey() == "turnId") {
+      turn_id = it.GetUnescapedValue();
+      if (turn_id->length() > max_turn_id_length) {
+        LogCaptureResult(is_glic_enabled,
+                         GeminiNavigationCaptureResult::kTurnIdTooLong);
         return PROCEED;
       }
     }
@@ -216,12 +226,12 @@ GlicNavigationThrottle::WillStartRequest() {
     tabs::TabInterface* tab =
         tabs::TabInterface::MaybeGetFromContents(web_contents);
     if (tab && tab->GetBrowserWindowInterface()) {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-      glic_service->ShowUiWithConversationID(
-          tab->GetBrowserWindowInterface(),
-          glic::mojom::InvocationSource::kNavigationCapture, cid ? *cid : "");
-#pragma clang diagnostic pop
+      GlicInvokeOptions options(
+          glic::mojom::InvocationSource::kNavigationCapture);
+      if (cid) {
+        options.conversation = glic::ConversationId(*cid, turn_id);
+      }
+      glic_service->Invoke(tab, std::move(options));
     }
   }
 

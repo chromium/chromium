@@ -333,19 +333,6 @@ void GlicKeyedService::ToggleUI(BrowserWindowInterface* bwi,
   ToggleUI(bwi, prevent_close, source, std::nullopt);
 }
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-void GlicKeyedService::ShowUiWithConversationID(BrowserWindowInterface* bwi,
-                                                mojom::InvocationSource source,
-                                                std::string conversation_id) {
-  CHECK(source == mojom::InvocationSource::kNavigationCapture);
-
-  ToggleUIInternal(
-      bwi, /*prevent_close=*/true, source, /*prompt_suggestion=*/std::nullopt,
-      /*auto_send=*/false, std::make_optional(std::move(conversation_id)));
-}
-#pragma clang diagnostic pop
-
 void GlicKeyedService::ToggleUIInternal(
     BrowserWindowInterface* bwi,
     bool prevent_close,

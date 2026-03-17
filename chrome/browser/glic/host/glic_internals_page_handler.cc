@@ -166,7 +166,8 @@ void GlicInternalsPageHandler::TriggerInvokeFromInternalsAction(
   if (mojo_options->conversation->is_new_conversation()) {
     options.conversation = NewConversation();
   } else if (mojo_options->conversation->is_conversation_id()) {
-    options.conversation = mojo_options->conversation->get_conversation_id();
+    options.conversation = ConversationId{
+        mojo_options->conversation->get_conversation_id(), std::nullopt};
   } else {
     options.conversation = DefaultConversation();
   }
