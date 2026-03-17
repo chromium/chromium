@@ -3146,10 +3146,17 @@ TEST_F(PaymentsSuggestionGeneratorTest,
       ShouldShowVirtualCardOptionForTest(local_card, autofill_client()));
 }
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_IOS)
 TEST_F(PaymentsSuggestionGeneratorTest,
        GenerateLocalSaveAndFillSuggestion_CreditCardUploadDisabled) {
+#if BUILDFLAG(IS_IOS)
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillEnableBottomSheetScanCardAndFill);
+#else
   base::test::ScopedFeatureList scoped_feature_list(
       features::kAutofillEnableSaveAndFill);
+#endif  // BUILDFLAG(IS_IOS)
   SetCreditCardUploadEnabledForTest(/*credit_card_upload_enabled=*/false);
 
   MockSaveAndFillManager& mock_save_and_fill_manager =
@@ -3180,23 +3187,32 @@ TEST_F(PaymentsSuggestionGeneratorTest,
   // `suggestions` should contain 3 suggestions which are save and fill
   // suggestion, separator, and manage cards footer.
   ASSERT_GE(suggestions.size(), 3ul);
-  EXPECT_THAT(
-      suggestions[0],
-      EqualsSuggestion(
-          SuggestionType::kSaveAndFillCreditCardEntry,
-          l10n_util::GetStringUTF16(
-              IDS_AUTOFILL_SAVE_AND_FILL_SUGGESTION_TITLE),
-          Suggestion::Icon::kSaveAndFill,
-          {{Suggestion::Text(l10n_util::GetStringUTF16(
-              IDS_AUTOFILL_LOCAL_SAVE_AND_FILL_SUGGESTION_DESCRIPTION))}}));
+  EXPECT_THAT(suggestions[0],
+#if BUILDFLAG(IS_IOS)
+              EqualsSuggestion(SuggestionType::kSaveAndFillCreditCardEntry)
+#else
+              EqualsSuggestion(
+                  SuggestionType::kSaveAndFillCreditCardEntry,
+                  l10n_util::GetStringUTF16(
+                      IDS_AUTOFILL_SAVE_AND_FILL_SUGGESTION_TITLE),
+                  Suggestion::Icon::kSaveAndFill,
+                  {{Suggestion::Text(l10n_util::GetStringUTF16(
+                      IDS_AUTOFILL_LOCAL_SAVE_AND_FILL_SUGGESTION_DESCRIPTION))}})
+#endif  // BUILDFLAG(IS_IOS)
+  );
   EXPECT_THAT(suggestions,
               ContainsCreditCardFooterSuggestions(/*with_gpay_logo=*/false));
 }
 
 TEST_F(PaymentsSuggestionGeneratorTest,
        GenerateServerSaveAndFillSuggestion_CreditCardUploadEnabled) {
+#if BUILDFLAG(IS_IOS)
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillEnableBottomSheetScanCardAndFill);
+#else
   base::test::ScopedFeatureList scoped_feature_list(
       features::kAutofillEnableSaveAndFill);
+#endif  // BUILDFLAG(IS_IOS)
   SetCreditCardUploadEnabledForTest(/*credit_card_upload_enabled=*/true);
 
   MockSaveAndFillManager& mock_save_and_fill_manager =
@@ -3227,17 +3243,21 @@ TEST_F(PaymentsSuggestionGeneratorTest,
   // `suggestions` should contain 3 suggestions which are save and fill
   // suggestion, separator, and manage cards footer.
   ASSERT_GE(suggestions.size(), 3ul);
-  EXPECT_THAT(
-      suggestions[0],
-      EqualsSuggestion(
-          SuggestionType::kSaveAndFillCreditCardEntry,
-          l10n_util::GetStringUTF16(
-              IDS_AUTOFILL_SAVE_AND_FILL_SUGGESTION_TITLE),
-          Suggestion::Icon::kSaveAndFill,
-          {{Suggestion::Text(l10n_util::GetStringUTF16(
-              IDS_AUTOFILL_SERVER_SAVE_AND_FILL_SUGGESTION_DESCRIPTION))}}));
-  EXPECT_THAT(suggestions,
-              ContainsCreditCardFooterSuggestions(/*with_gpay_logo=*/true));
+  EXPECT_THAT(suggestions[0],
+#if BUILDFLAG(IS_IOS)
+              EqualsSuggestion(SuggestionType::kSaveAndFillCreditCardEntry)
+#else
+              EqualsSuggestion(
+                  SuggestionType::kSaveAndFillCreditCardEntry,
+                  l10n_util::GetStringUTF16(
+                      IDS_AUTOFILL_SAVE_AND_FILL_SUGGESTION_TITLE),
+                  Suggestion::Icon::kSaveAndFill,
+                  {{Suggestion::Text(l10n_util::GetStringUTF16(
+                      IDS_AUTOFILL_SERVER_SAVE_AND_FILL_SUGGESTION_DESCRIPTION))}})
+#endif  // BUILDFLAG(IS_IOS)
+  );
+  EXPECT_THAT(suggestions, ContainsCreditCardFooterSuggestions(
+                               /*with_gpay_logo=*/!BUILDFLAG(IS_IOS)));
 }
 
 TEST_F(PaymentsSuggestionGeneratorTest,
@@ -3264,8 +3284,13 @@ TEST_F(PaymentsSuggestionGeneratorTest,
 
 TEST_F(PaymentsSuggestionGeneratorTest,
        SaveAndFillSuggestion_NotOfferedWhenCreditCardIsSavedInProfile) {
+#if BUILDFLAG(IS_IOS)
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillEnableBottomSheetScanCardAndFill);
+#else
   base::test::ScopedFeatureList scoped_feature_list(
       features::kAutofillEnableSaveAndFill);
+#endif  // BUILDFLAG(IS_IOS)
 
   MockSaveAndFillManager& mock_save_and_fill_manager =
       static_cast<MockSaveAndFillManager&>(
@@ -3303,8 +3328,13 @@ TEST_F(PaymentsSuggestionGeneratorTest,
 
 TEST_F(PaymentsSuggestionGeneratorTest,
        SaveAndFillSuggestion_NotOfferedWhenCreditCardFormIsIncomplete) {
+#if BUILDFLAG(IS_IOS)
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillEnableBottomSheetScanCardAndFill);
+#else
   base::test::ScopedFeatureList scoped_feature_list(
       features::kAutofillEnableSaveAndFill);
+#endif  // BUILDFLAG(IS_IOS)
 
   MockSaveAndFillManager& mock_save_and_fill_manager =
       static_cast<MockSaveAndFillManager&>(
@@ -3334,8 +3364,13 @@ TEST_F(PaymentsSuggestionGeneratorTest,
 
 TEST_F(PaymentsSuggestionGeneratorTest,
        SaveAndFillSuggestion_NotOfferedWhenIncognito) {
+#if BUILDFLAG(IS_IOS)
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillEnableBottomSheetScanCardAndFill);
+#else
   base::test::ScopedFeatureList scoped_feature_list(
       features::kAutofillEnableSaveAndFill);
+#endif  // BUILDFLAG(IS_IOS)
   autofill_client().set_is_off_the_record(true);
 
   MockSaveAndFillManager& mock_save_and_fill_manager =
@@ -3371,8 +3406,13 @@ TEST_F(PaymentsSuggestionGeneratorTest,
 
 TEST_F(PaymentsSuggestionGeneratorTest,
        SaveAndFillSuggestion_NotOfferedWhenFieldHasMoreThanThreeChars) {
+#if BUILDFLAG(IS_IOS)
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillEnableBottomSheetScanCardAndFill);
+#else
   base::test::ScopedFeatureList scoped_feature_list(
       features::kAutofillEnableSaveAndFill);
+#endif  // BUILDFLAG(IS_IOS)
 
   FormBundle form_bundle = GetFormWithTypes(
       {.fields = {
@@ -3395,8 +3435,13 @@ TEST_F(PaymentsSuggestionGeneratorTest,
 
 TEST_F(PaymentsSuggestionGeneratorTest,
        SaveAndFillSuggestion_NoOfferedWhenSaveAndFillFeatureIsBlocked) {
+#if BUILDFLAG(IS_IOS)
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillEnableBottomSheetScanCardAndFill);
+#else
   base::test::ScopedFeatureList scoped_feature_list(
       features::kAutofillEnableSaveAndFill);
+#endif  // BUILDFLAG(IS_IOS)
   SetCreditCardUploadEnabledForTest(/*credit_card_upload_enabled=*/true);
 
   MockSaveAndFillManager& mock_save_and_fill_manager =
@@ -3440,8 +3485,13 @@ TEST_F(PaymentsSuggestionGeneratorTest,
 // entered, and the strike database limit is not exceeded.
 TEST_F(PaymentsSuggestionGeneratorTest,
        SaveAndFillSuggestion_OfferedWhenCriteriaMet) {
+#if BUILDFLAG(IS_IOS)
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillEnableBottomSheetScanCardAndFill);
+#else
   base::test::ScopedFeatureList scoped_feature_list(
       features::kAutofillEnableSaveAndFill);
+#endif  // BUILDFLAG(IS_IOS)
   SetCreditCardUploadEnabledForTest(/*credit_card_upload_enabled=*/true);
 
   MockSaveAndFillManager& mock_save_and_fill_manager =
@@ -3472,11 +3522,27 @@ TEST_F(PaymentsSuggestionGeneratorTest,
 
   EXPECT_THAT(
       suggestions,
-      ElementsAre(
-          EqualsSuggestion(SuggestionType::kSaveAndFillCreditCardEntry),
-          EqualsSuggestion(SuggestionType::kSeparator),
-          EqualsManagePaymentsMethodsSuggestion(/*with_gpay_logo=*/true)));
+      ElementsAre(EqualsSuggestion(SuggestionType::kSaveAndFillCreditCardEntry),
+                  EqualsSuggestion(SuggestionType::kSeparator),
+                  EqualsManagePaymentsMethodsSuggestion(
+                      /*with_gpay_logo=*/!BUILDFLAG(IS_IOS))));
 }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_IOS)
+
+#if BUILDFLAG(IS_IOS)
+TEST_F(PaymentsSuggestionGeneratorTest, CreateSaveAndFillSuggestion_IOS) {
+  bool display_gpay_logo = false;
+  Suggestion suggestion =
+      CreateSaveAndFillSuggestion(autofill_client(), display_gpay_logo);
+
+  EXPECT_EQ(suggestion.type, SuggestionType::kSaveAndFillCreditCardEntry);
+  EXPECT_TRUE(suggestion.main_text.value.empty());
+  EXPECT_TRUE(suggestion.labels.empty());
+  EXPECT_EQ(suggestion.icon, Suggestion::Icon::kNoIcon);
+  EXPECT_FALSE(display_gpay_logo);
+}
+#endif  // BUILDFLAG(IS_IOS)
 
 // This class helps test the credit card contents that are displayed in
 // Autofill suggestions. It covers suggestions on Desktop/Android dropdown,

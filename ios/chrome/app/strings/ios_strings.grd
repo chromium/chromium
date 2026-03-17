@@ -182,6 +182,18 @@
   </translations>
   <release seq="1">
     <messages fallback_to_english="true">
+      <message name="IDS_AUTOFILL_SCAN_CARD_AND_AUTOFILL_PROMPT_CANCEL_BUTTON_LABEL" desc="Label for the cancel button of scan card and save prompt offer. This prompt is shown if the user clicks on the credit card form field and there are no saved cards on file on IOS devices.">
+        No thanks
+      </message>
+      <message name="IDS_AUTOFILL_SCAN_CARD_AND_AUTOFILL_PROMPT_PRIMARY_BUTTON_LABEL" desc="Label for the primary button of scan card and save prompt offer. This prompt is shown if the user clicks on the credit card form field and there are no saved cards on file on IOS devices.">
+        Scan Card and Autofill
+      </message>
+      <message name="IDS_AUTOFILL_SCAN_SAVE_AND_FILL_BOTTOM_SHEET_DESCRIPTION" desc="Description for the `Scan, Save and Fill` suggestion shown in the Autofill bottom sheet for users who don't have any cards saved in Autofill. When the suggestion is clicked, users are offered to scan, save and fill a credit card with a single click.">
+        Save your card in your Google Account to autofill it for this purchase and future purchases made on Chrome
+      </message>
+      <message name="IDS_AUTOFILL_SCAN_SAVE_AND_FILL_BOTTOM_SHEET_TITLE" desc="Title for the `Scan, Save and Fill` suggestion shown in the Autofill bottom sheet for users who don't have any cards saved in Autofill. When the suggestion is clicked, users are offered to scan, save and fill a credit card with a single click.">
+        Check out faster with autofill across your devices
+      </message>
       <message name="IDS_IOS_ACCNAME_CLEAR_TEXT" desc="The accessibility label for the clear text button in the location bar [Length: unlimited].">
         Clear text
       </message>

@@ -68,6 +68,18 @@ Suggestion CreateBnplSuggestion(
   return bnpl_suggestion;
 }
 
+bool IsSaveAndFillEnabled() {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+  return base::FeatureList::IsEnabled(features::kAutofillEnableSaveAndFill);
+#elif BUILDFLAG(IS_IOS)
+  return base::FeatureList::IsEnabled(
+      autofill::features::kAutofillEnableBottomSheetScanCardAndFill);
+#else
+  return false;
+#endif
+}
+
 // Fetches SuggestionData, used for credit card or cvc field suggestion
 // generation. Fetched data will be used in
 // GenerateCreditCardOrCvcFieldSuggestionsSync.
@@ -488,7 +500,7 @@ void CreditCardSuggestionGenerator::FetchSuggestionData(
       FormStructure::CreditCardFormCompleteness::
           kCompleteCreditCardFormIncludingCvcAndName);
 
-  if (base::FeatureList::IsEnabled(features::kAutofillEnableSaveAndFill) &&
+  if (IsSaveAndFillEnabled() &&
       ShouldShowCreditCardSaveAndFill(const_cast<AutofillClient&>(client),
                                       is_complete_form, trigger_field)) {
     callback({SuggestionDataSource::kSaveAndFillPromo,

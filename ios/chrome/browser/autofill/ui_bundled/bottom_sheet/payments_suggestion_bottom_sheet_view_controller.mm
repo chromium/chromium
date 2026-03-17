@@ -275,7 +275,10 @@ CGFloat const kTitleLogoHeight = 32;
   cell = [self layoutCell:cell
         forTableViewWidth:tableWidth
               atIndexPath:[NSIndexPath indexPathForRow:index inSection:0]];
-  return [cell systemLayoutSizeFittingSize:CGSizeMake(tableWidth, 1)].height;
+  return [cell systemLayoutSizeFittingSize:CGSizeMake(tableWidth, 1)
+             withHorizontalFittingPriority:UILayoutPriorityRequired
+                   verticalFittingPriority:UILayoutPriorityFittingSizeLevel]
+      .height;
 }
 
 #pragma mark - UIResponder

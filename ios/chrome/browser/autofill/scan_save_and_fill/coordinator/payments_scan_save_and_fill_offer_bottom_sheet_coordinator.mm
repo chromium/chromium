@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/autofill/scan_save_and_fill/coordinator/payments_scan_save_and_fill_offer_bottom_sheet_coordinator.h"
 
 #import "ios/chrome/browser/autofill/scan_save_and_fill/coordinator/payments_scan_save_and_fill_offer_bottom_sheet_mediator.h"
+#import "ios/chrome/browser/autofill/scan_save_and_fill/ui/payments_scan_save_and_fill_offer_bottom_sheet_consumer.h"
 #import "ios/chrome/browser/autofill/scan_save_and_fill/ui/payments_scan_save_and_fill_offer_bottom_sheet_delegate.h"
 #import "ios/chrome/browser/autofill/scan_save_and_fill/ui/payments_scan_save_and_fill_offer_bottom_sheet_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -50,6 +51,15 @@
                       params:std::move(*_params)];
     _params.reset();
   }
+
+  _mediator.consumer = _viewController;
+
+  _viewController.parentViewControllerHeight =
+      self.baseViewController.view.frame.size.height;
+
+  [self.baseViewController presentViewController:_viewController
+                                        animated:YES
+                                      completion:nil];
 
   // Dismiss right away if the presentation failed to avoid having a zombie
   // coordinator.
