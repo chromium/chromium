@@ -126,7 +126,8 @@ BASE_FEATURE(kMarkAllCredentialsAsLeaked, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kOtpPhishGuard, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-BASE_FEATURE(kPasswordDateLastFilled, base::FEATURE_ENABLED_BY_DEFAULT);
+// Temporarily disabled as mitigation for crbug.com/485895402.
+BASE_FEATURE(kPasswordDateLastFilled, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPasswordChangeImmediateSubmission,
              base::FEATURE_DISABLED_BY_DEFAULT);
