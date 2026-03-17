@@ -65,6 +65,7 @@ bool ShouldSerializeEvent(Event event_type) {
   switch (event_type) {
     // TODO(crbug.com/40672441): Add events here as needed.
     case Event::kLocationChanged:
+    case Event::kScrollPositionChanged:
     case Event::kTreeChanged:
     case Event::kRowCollapsed:
     case Event::kRowExpanded:
