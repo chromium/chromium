@@ -96,7 +96,7 @@ std::pair<std::string, std::string> GetLabelAndNameForType(FieldType type) {
 
 }  // anonymous namespace
 
-FormData ConstructFormDateFromTypeValuePairs(TypeValuePairs type_value_pairs,
+FormData ConstructFormDataFromTypeValuePairs(TypeValuePairs type_value_pairs,
                                              std::string url) {
   FormData form;
   form.set_url(GURL(url));
@@ -131,7 +131,7 @@ std::unique_ptr<FormStructure> ConstructFormStructureFromFormData(
 std::unique_ptr<FormStructure> ConstructFormStructureFromTypeValuePairs(
     TypeValuePairs type_value_pairs,
     std::string url) {
-  FormData form = ConstructFormDateFromTypeValuePairs(type_value_pairs, url);
+  FormData form = ConstructFormDataFromTypeValuePairs(type_value_pairs, url);
   return ConstructFormStructureFromFormData(form);
 }
 
@@ -248,7 +248,7 @@ std::unique_ptr<FormStructure> ConstructShippingAndBillingFormStructure() {
 }
 
 FormData ConstructDefaultFormData() {
-  return ConstructFormDateFromTypeValuePairs(GetDefaultProfileTypeValuePairs());
+  return ConstructFormDataFromTypeValuePairs(GetDefaultProfileTypeValuePairs());
 }
 
 void AddFullCreditCardForm(FormData* form,

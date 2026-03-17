@@ -108,7 +108,7 @@ FormData ConstructDefaultFormDataWithTwoAddresses() {
   TypeValuePairs b = GetSecondProfileTypeValuePairs();
   a.reserve(a.size() + b.size());
   std::ranges::move(b, std::back_inserter(a));
-  return ConstructFormDateFromTypeValuePairs(a);
+  return ConstructFormDataFromTypeValuePairs(a);
 }
 
 // Matches an AddressProfile or CreditCard pointer according to Compare().

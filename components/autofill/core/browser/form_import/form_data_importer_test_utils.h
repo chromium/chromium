@@ -26,7 +26,7 @@ using TypeValuePairs = std::vector<std::pair<FieldType, std::string>>;
 // that defines a sequence of fields and the filled values.
 // The field names and labels for the different types are relieved from
 // `GetLabelAndNameForType(type)`
-FormData ConstructFormDateFromTypeValuePairs(
+FormData ConstructFormDataFromTypeValuePairs(
     TypeValuePairs type_value_pairs,
     std::string url = "https://www.foo.com");
 

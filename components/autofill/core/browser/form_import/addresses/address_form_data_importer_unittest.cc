@@ -154,7 +154,7 @@ std::unique_ptr<FormStructure> ConstructDefaultEmailFormStructure() {
   // The autocomplete attribute is set manually, because for small forms (number
   // of fields < kMinRequiredFieldsForHeuristics), no heuristics are used.
   FormData form =
-      ConstructFormDateFromTypeValuePairs({{EMAIL_ADDRESS, kDefaultMail}});
+      ConstructFormDataFromTypeValuePairs({{EMAIL_ADDRESS, kDefaultMail}});
   const char* autocomplete = "email";
   test_api(form).field(0).set_autocomplete_attribute(autocomplete);
   test_api(form).field(0).set_parsed_autocomplete(
@@ -165,7 +165,7 @@ std::unique_ptr<FormStructure> ConstructDefaultEmailFormStructure() {
 // Same as `ConstructDefaultFormData()` but split into two parts to test multi-
 // step imports (see `GetSplitDefaultProfileTypeValuePairs()`).
 FormData ConstructSplitDefaultFormData(int part) {
-  return ConstructFormDateFromTypeValuePairs(
+  return ConstructFormDataFromTypeValuePairs(
       GetSplitDefaultProfileTypeValuePairs(part));
 }
 
@@ -1030,7 +1030,7 @@ TEST_F(AddressFormDataImporterTest,
   enable_import_when_multiple_phones_feature.InitAndEnableFeature(
       features::kAutofillEnableImportWhenMultiplePhoneNumbers);
 
-  FormData form_data = ConstructFormDateFromTypeValuePairs(
+  FormData form_data = ConstructFormDataFromTypeValuePairs(
       {{NAME_FIRST, kDefaultFirstName},
        {NAME_LAST, kDefaultLastName},
        {EMAIL_ADDRESS, kDefaultMail},
@@ -1138,7 +1138,7 @@ TEST_F(AddressFormDataImporterTest, ImportAddressProfiles_MinimumAddressGI) {
 
 TEST_F(AddressFormDataImporterTest,
        ImportAddressProfiles_PhoneNumberSplitAcrossMultipleFields) {
-  FormData form_data = ConstructFormDateFromTypeValuePairs(
+  FormData form_data = ConstructFormDataFromTypeValuePairs(
       {{NAME_FIRST, kDefaultFirstName},
        {NAME_LAST, kDefaultLastName},
        {EMAIL_ADDRESS, kDefaultMail},
@@ -1649,7 +1649,7 @@ TEST_F(AddressFormDataImporterTest,
       features::kAutofillEnableImportOfUnchangedValuesForCountryAndState};
 
   // Create a form with a prefilled state and country.
-  FormData form = ConstructFormDateFromTypeValuePairs({
+  FormData form = ConstructFormDataFromTypeValuePairs({
       {NAME_FULL, "Pablo Diego Ruiz y Picasso"},
       {EMAIL_ADDRESS, "theprez@gmail.com"},
       {ADDRESS_HOME_LINE1, "21 Laussat St"},
