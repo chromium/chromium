@@ -30,6 +30,7 @@
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/profiles/profile_shortcut_manager.h"
 #include "chrome/common/buildflags.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/profiles/delete_profile_helper.h"
@@ -427,9 +428,12 @@ class ProfileManager : public Profile::Delegate {
     // Returns a non-created ProfileInfo that does not own |profile|.
     static std::unique_ptr<ProfileInfo> FromUnownedProfile(Profile* profile);
 
-    // Takes ownership of |profile|, so it gets destroyed when this ProfileInfo
-    // is deleted.
-    void TakeOwnershipOfProfile(std::unique_ptr<Profile> profile);
+    // Takes ownership of `profile`, so it gets destroyed when this
+    // `ProfileInfo` is deleted.
+    void TakeOwnershipOfProfile(
+        std::unique_ptr<Profile> profile,
+        base::OnceCallback<void(std::unique_ptr<Profile>)>
+            destroy_profile_callback);
 
     // Marks the Profile as created, so GetCreatedProfile() returns non-null.
     void MarkProfileAsCreated(Profile* profile);
@@ -459,15 +463,18 @@ class ProfileManager : public Profile::Delegate {
     std::vector<ProfileLoadedCallback> created_callbacks;
 
    private:
-    // Callers should use FromOwned/UnownedProfile() instead.
+    // Callers should use `UnownedProfile()` instead.
     ProfileInfo();
 
     // The Profile pointed to by this ProfileInfo.
     raw_ptr<Profile> unowned_profile_ = nullptr;
 
-    // For when the Profile is owned, via FromOwnedProfile() or
-    // TakeOwnershipOfProfile().
+    // For when the Profile is owned, via `TakeOwnershipOfProfile()`.
     std::unique_ptr<Profile> owned_profile_;
+
+    // Callback to be run in `~ProfileInfo()` to destroy the profile.
+    base::OnceCallback<void(std::unique_ptr<Profile>)>
+        destroy_profile_callback_;
 
     // Whether profile has been fully loaded (created and initialized). See
     // MarkProfileAsCreated().
@@ -544,6 +551,21 @@ class ProfileManager : public Profile::Delegate {
   void SetNonPersonalProfilePrefs(Profile* profile);
 
   void SaveActiveProfiles();
+
+  // Takes ownership of `profile`, so it gets destroyed when this
+  // `ProfileManager` is deleted.
+  void TakeOwnershipOfProfile(std::unique_ptr<Profile> profile,
+                              ProfileInfo* info);
+
+  // Starts the destruction of `profile`. Adds it to
+  // `profiles_pending_destruction_` and transfer the ownership of `profile`
+  // to `ProfileDestroyer`.
+  void StartProfileDestruction(std::unique_ptr<Profile> profile);
+
+  // Called when a profile has finished destruction by `ProfileDestroyer`. This
+  // is used to remove the profile from the list of pending destructions and to
+  // run any callbacks that were queued to run after the profile was destroyed.
+  void OnProfileDestructionComplete(const base::FilePath& profile_path);
 
 #if !BUILDFLAG(IS_ANDROID)
   void OnBrowserOpened(Browser* browser);
@@ -648,6 +670,11 @@ class ProfileManager : public Profile::Delegate {
 
   bool defer_async_loading_ = true;
   std::vector<base::OnceClosure> deferred_asynchronous_loads_;
+
+  // Callbacks queued to run after a profile finishes destruction, mapped by
+  // the profile path.
+  absl::flat_hash_map<base::FilePath, std::vector<base::OnceClosure>>
+      profiles_pending_destruction_;
 
   // TODO(chrome/browser/profiles/OWNERS): Usage of this in profile_manager.cc
   // should likely be turned into DCHECK_CURRENTLY_ON(BrowserThread::UI) for

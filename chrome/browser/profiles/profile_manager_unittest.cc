@@ -43,6 +43,7 @@
 #include "chrome/browser/profiles/profile_attributes_init_params.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
+#include "chrome/browser/profiles/profile_destroyer.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -64,6 +65,7 @@
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_utils.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -643,6 +645,128 @@ TEST_P(ProfileManagerTest, CreateProfileAsyncExisting) {
   EXPECT_CALL(mock_observer, OnProfileInitialized(profile));
   EXPECT_CALL(mock_observer, OnProfileCreated).Times(0);
   CreateProfileAsync(profile_manager, profile_path, &mock_observer);
+
+  content::RunAllTasksUntilIdle();
+}
+
+// A trivial RenderProcessHost mock that can be used to keep a ProfileDestroyer
+// alive.
+class KeepAliveRenderProcessHost : public content::MockRenderProcessHost {
+ public:
+  explicit KeepAliveRenderProcessHost(content::BrowserContext* browser_context)
+      : content::MockRenderProcessHost(browser_context) {}
+};
+
+TEST_P(ProfileManagerTest, CreateProfileAsyncRace) {
+  if (!base::FeatureList::IsEnabled(features::kDestroyProfileOnBrowserClose)) {
+    GTEST_SKIP() << "Profile keep-alives are not supported on this platform.";
+  }
+
+  const base::FilePath profile_path =
+      temp_dir_.GetPath().AppendASCII("New Profile");
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+
+  // 1. Create the profile originally.
+  MockObserver mock_observer;
+  EXPECT_CALL(mock_observer, OnProfileInitialized(testing::NotNull()));
+  EXPECT_CALL(mock_observer, OnProfileCreated(testing::NotNull()));
+  CreateProfileAsync(profile_manager, profile_path, &mock_observer);
+  content::RunAllTasksUntilIdle();
+
+  Profile* profile = profile_manager->GetProfile(profile_path);
+  ASSERT_TRUE(profile);
+
+  // 2. Schedule destruction for the profile. Do not let it complete yet.
+  // We use a mock RenderProcessHost to prevent the ProfileDestroyer from
+  // terminating immediately.
+  auto keep_alive_rph = std::make_unique<KeepAliveRenderProcessHost>(profile);
+  ProfileDestroyer::SetDestroyProfileTimeoutForTesting(base::Days(1));
+  profile_manager->ClearFirstBrowserWindowKeepAlive(profile);
+
+  // The profile manager should no longer know about the profile since it's
+  // pending destruction.
+  EXPECT_FALSE(profile_manager->GetProfileByPath(profile_path));
+
+  // 3. Try to create the profile asynchronously again while it's being
+  // destroyed. This should trigger the new deferral logic.
+  MockObserver race_observer;
+  bool was_deferred = false;
+  EXPECT_CALL(race_observer, OnProfileInitialized(testing::NotNull()))
+      .WillOnce(
+          [&was_deferred](Profile* profile) { EXPECT_TRUE(was_deferred); });
+  EXPECT_CALL(race_observer, OnProfileCreated(testing::NotNull()))
+      .WillOnce(
+          [&was_deferred](Profile* profile) { EXPECT_TRUE(was_deferred); });
+
+  CreateProfileAsync(profile_manager, profile_path, &race_observer);
+
+  content::RunAllTasksUntilIdle();
+  was_deferred = true;
+
+  // 4. Simulate the render process host closing.
+  // This should trigger the ProfileDestroyer to complete destruction
+  // and run the deferred profile creation callbacks.
+  keep_alive_rph.reset();
+
+  content::RunAllTasksUntilIdle();
+}
+
+TEST_P(ProfileManagerTest, CreateProfileAsyncRace_MultipleCreations) {
+  if (!base::FeatureList::IsEnabled(features::kDestroyProfileOnBrowserClose)) {
+    GTEST_SKIP() << "Profile keep-alives are not supported on this platform.";
+  }
+
+  const base::FilePath profile_path =
+      temp_dir_.GetPath().AppendASCII("New Profile");
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+
+  // 1. Create the profile originally.
+  MockObserver mock_observer;
+  EXPECT_CALL(mock_observer, OnProfileInitialized(testing::NotNull()));
+  EXPECT_CALL(mock_observer, OnProfileCreated(testing::NotNull()));
+  CreateProfileAsync(profile_manager, profile_path, &mock_observer);
+  content::RunAllTasksUntilIdle();
+
+  Profile* profile = profile_manager->GetProfile(profile_path);
+  ASSERT_TRUE(profile);
+
+  // 2. Schedule destruction for the profile. Do not let it complete yet.
+  auto keep_alive_rph = std::make_unique<KeepAliveRenderProcessHost>(profile);
+  ProfileDestroyer::SetDestroyProfileTimeoutForTesting(base::Days(1));
+  profile_manager->ClearFirstBrowserWindowKeepAlive(profile);
+
+  // The profile manager should no longer know about the profile.
+  EXPECT_FALSE(profile_manager->GetProfileByPath(profile_path));
+
+  // 3. Try to create the profile asynchronously multiple times while it's being
+  // destroyed. This should trigger the new deferral logic for both attempts.
+  MockObserver race_observer1;
+  bool was_deferred1 = false;
+  EXPECT_CALL(race_observer1, OnProfileInitialized(testing::NotNull()))
+      .WillOnce(
+          [&was_deferred1](Profile* profile) { EXPECT_TRUE(was_deferred1); });
+  EXPECT_CALL(race_observer1, OnProfileCreated(testing::NotNull()))
+      .WillOnce(
+          [&was_deferred1](Profile* profile) { EXPECT_TRUE(was_deferred1); });
+
+  MockObserver race_observer2;
+  bool was_deferred2 = false;
+  EXPECT_CALL(race_observer2, OnProfileInitialized(testing::NotNull()))
+      .WillOnce(
+          [&was_deferred2](Profile* profile) { EXPECT_TRUE(was_deferred2); });
+  EXPECT_CALL(race_observer2, OnProfileCreated(testing::NotNull()))
+      .WillOnce(
+          [&was_deferred2](Profile* profile) { EXPECT_TRUE(was_deferred2); });
+
+  CreateProfileAsync(profile_manager, profile_path, &race_observer1);
+  CreateProfileAsync(profile_manager, profile_path, &race_observer2);
+
+  content::RunAllTasksUntilIdle();
+  was_deferred1 = true;
+  was_deferred2 = true;
+
+  // 4. Simulate the render process host closing. This resumes destruction.
+  keep_alive_rph.reset();
 
   content::RunAllTasksUntilIdle();
 }
