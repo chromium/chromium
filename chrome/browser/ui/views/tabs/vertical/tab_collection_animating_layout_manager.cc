@@ -139,6 +139,17 @@ int TabCollectionAnimatingLayoutManager::GetPreferredHeightForWidth(
   return target_layout_manager_->GetPreferredHeightForWidth(host, width);
 }
 
+void TabCollectionAnimatingLayoutManager::OnLayoutChanged() {
+  // If a new layout target was computed call `InterpolateLayout()` to ensure
+  // layout metadata is available for preferred size calculations. Running this
+  // once to compute metadata is more efficient than having preferred size
+  // methods interpolating layout on each function call.
+  if (RecalculateTarget()) {
+    InterpolateLayout(0.0);
+  }
+  LayoutManagerBase::OnLayoutChanged();
+}
+
 void TabCollectionAnimatingLayoutManager::AnimationProgressed(
     const gfx::Animation* animation) {
   if (current_offset_ == animation->GetCurrentValue()) {
@@ -180,6 +191,9 @@ TabCollectionAnimatingLayoutManager::CalculateProposedLayout(
 }
 
 void TabCollectionAnimatingLayoutManager::LayoutImpl() {
+  // TODO(crbug.com/490964477): It should not be necessary to call this here
+  // given it is called in `OnLayoutChange()`, however there is a tab-dragging
+  // dependency on this behavior. Once this has been resolved remove this call.
   RecalculateTarget();
 
   if (animation_.is_animating()) {
@@ -245,9 +259,9 @@ void TabCollectionAnimatingLayoutManager::SetTargetLayout(
   target_layout_ = target_layout;
 }
 
-void TabCollectionAnimatingLayoutManager::RecalculateTarget() {
+bool TabCollectionAnimatingLayoutManager::RecalculateTarget() {
   if (!host_view()) {
-    return;
+    return false;
   }
 
   // Calculate the target layout with unbounded height and the width given to
@@ -257,7 +271,7 @@ void TabCollectionAnimatingLayoutManager::RecalculateTarget() {
 
   // If the layout hasn't changed, we are done.
   if (new_target == target_layout_) {
-    return;
+    return false;
   }
 
   // Animating horizontal bounds is not supported and layout should immediately
@@ -269,7 +283,7 @@ void TabCollectionAnimatingLayoutManager::RecalculateTarget() {
     SetTargetLayout(new_target);
     starting_offset_ = 0.0;
     current_offset_ = 1.0;
-    return;
+    return true;
   }
 
   SetTargetLayout(new_target);
@@ -277,7 +291,7 @@ void TabCollectionAnimatingLayoutManager::RecalculateTarget() {
   // If we haven't actually rendered a frame yet keep the original
   // starting_layout.
   if (animation_.is_animating() && current_offset_ == starting_offset_) {
-    return;
+    return true;
   }
 
   constexpr double kResetAnimationThreshold = 0.8;
@@ -300,6 +314,7 @@ void TabCollectionAnimatingLayoutManager::RecalculateTarget() {
   if (!animation_.is_animating()) {
     animation_.Show();
   }
+  return true;
 }
 
 void TabCollectionAnimatingLayoutManager::ResetViewsToTargetLayout(
@@ -317,6 +332,9 @@ void TabCollectionAnimatingLayoutManager::ResetViewsToTargetLayout(
   }
   SetStartingLayout(starting_layout_);
   SetTargetLayout(target_layout_);
+  // Call `InterpolateLayout()` to ensure layout metadata is available for
+  // preferred size calculations
+  InterpolateLayout(0.0);
   InvalidateHost(/*mark_layouts_changed=*/true);
 }
 
