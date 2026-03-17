@@ -80,7 +80,7 @@ void Key::Transform(KeyType target_key_type, const std::string& salt) {
     }
     case KEY_TYPE_SALTED_PBKDF2_AES256_1234: {
       std::array<uint8_t, 32> derived;
-      crypto::kdf::DeriveKeyPbkdf2HmacSha1(
+      crypto::kdf::Pbkdf2HmacSha1(
           {.iterations = 1234}, base::as_byte_span(secret_),
           base::as_byte_span(salt), derived, crypto::SubtlePassKey{});
       secret_ = base::Base64Encode(derived);

@@ -61,9 +61,9 @@ uint64_t CalculatePasswordHash(std::u16string_view text,
   };
 
   std::array<uint8_t, 8> result;
-  crypto::kdf::DeriveKeyScrypt(kScryptParams, base::as_byte_span(text),
-                               base::as_byte_span(salt), result,
-                               MakeCryptoPassKeyForPasswordHash());
+  crypto::kdf::Scrypt(kScryptParams, base::as_byte_span(text),
+                      base::as_byte_span(salt), result,
+                      MakeCryptoPassKeyForPasswordHash());
 
   uint64_t val = base::U64FromLittleEndian(result);
   // Take 37 bits of |hash|.

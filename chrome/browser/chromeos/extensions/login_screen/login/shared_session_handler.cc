@@ -268,9 +268,9 @@ std::string SharedSessionHandler::GetHashFromScrypt(const std::string& password,
       .max_memory_bytes = 1024 * 1024 * 32,
   };
   std::array<uint8_t, kHashKeyLength> result;
-  crypto::kdf::DeriveKeyScrypt(kScryptParams, base::as_byte_span(password),
-                               base::as_byte_span(salt), result,
-                               MakeCryptoPassKeyForSharedSessionHandler());
+  crypto::kdf::Scrypt(kScryptParams, base::as_byte_span(password),
+                      base::as_byte_span(salt), result,
+                      MakeCryptoPassKeyForSharedSessionHandler());
   return std::string(base::as_string_view(result));
 }
 

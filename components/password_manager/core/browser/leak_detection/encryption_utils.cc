@@ -116,10 +116,9 @@ std::string ScryptHashUsernameAndPassword(
       {canonicalized_username, base::as_string_view(kPasswordHashSalt)});
 
   std::string result(kHashKeyLength, 0);
-  crypto::kdf::DeriveKeyScrypt(
-      kScryptParams, base::as_byte_span(username_password),
-      base::as_byte_span(salt), base::as_writable_byte_span(result),
-      MakeCryptoPassKey());
+  crypto::kdf::Scrypt(kScryptParams, base::as_byte_span(username_password),
+                      base::as_byte_span(salt),
+                      base::as_writable_byte_span(result), MakeCryptoPassKey());
   return result;
 }
 

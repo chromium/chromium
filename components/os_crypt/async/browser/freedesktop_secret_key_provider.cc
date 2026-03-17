@@ -832,7 +832,7 @@ void FreedesktopSecretKeyProvider::DeriveKeyFromSecret(
     base::span<const uint8_t> secret) {
   static_assert(kDerivedKeySizeInBits % 8 == 0);
   std::array<uint8_t, kDerivedKeySizeInBits / 8> key_bytes;
-  crypto::kdf::DeriveKeyPbkdf2HmacSha1(
+  crypto::kdf::Pbkdf2HmacSha1(
       {kEncryptionIterations}, secret,
       base::as_byte_span(base::span_from_cstring(kSalt)), key_bytes,
       crypto::SubtlePassKey{});

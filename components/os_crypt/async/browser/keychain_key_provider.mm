@@ -58,9 +58,9 @@ base::expected<Encryptor::Key, KeyProvider::KeyError> GetKeyTask(
   }
 
   std::array<uint8_t, kDerivedKeySize> key_bytes;
-  crypto::kdf::DeriveKeyPbkdf2HmacSha1({.iterations = kIterations},
-                                       base::as_byte_span(password), kSalt,
-                                       key_bytes, subtle_passkey);
+  crypto::kdf::Pbkdf2HmacSha1({.iterations = kIterations},
+                              base::as_byte_span(password), kSalt, key_bytes,
+                              subtle_passkey);
 
   return Encryptor::Key(key_bytes, mojom::Algorithm::kAES128CBC);
 }

@@ -30,9 +30,9 @@ TEST(KDFTest, Pbkdf2HmacSha1KnownAnswers) {
 
   for (const auto& c : cases) {
     std::vector<uint8_t> key(c.len);
-    crypto::kdf::DeriveKeyPbkdf2HmacSha1(
-        c.params, base::as_byte_span(c.password), base::as_byte_span(c.salt),
-        key, crypto::SubtlePassKey::ForTesting());
+    crypto::kdf::Pbkdf2HmacSha1(c.params, base::as_byte_span(c.password),
+                                base::as_byte_span(c.salt), key,
+                                crypto::SubtlePassKey::ForTesting());
 
     std::vector<uint8_t> result_bytes(c.len);
     ASSERT_TRUE(base::HexStringToSpan(c.result, result_bytes));
@@ -63,9 +63,9 @@ TEST(KDFTest, ScryptKnownAnswers) {
 
   for (const auto& c : cases) {
     std::vector<uint8_t> key(c.len);
-    crypto::kdf::DeriveKeyScrypt(c.params, base::as_byte_span(c.password),
-                                 base::as_byte_span(c.salt), key,
-                                 crypto::SubtlePassKey::ForTesting());
+    crypto::kdf::Scrypt(c.params, base::as_byte_span(c.password),
+                        base::as_byte_span(c.salt), key,
+                        crypto::SubtlePassKey::ForTesting());
 
     std::vector<uint8_t> result_bytes(c.len);
     ASSERT_TRUE(base::HexStringToSpan(c.result, result_bytes));
@@ -83,9 +83,9 @@ TEST(KDFTest, InvalidScryptParameters) {
   for (const auto& c : cases) {
     std::vector<uint8_t> key(64);
     EXPECT_DEATH_IF_SUPPORTED(
-        crypto::kdf::DeriveKeyScrypt(c, base::as_byte_span("password"),
-                                     base::as_byte_span("NaCl"), key,
-                                     crypto::SubtlePassKey::ForTesting()),
+        crypto::kdf::Scrypt(c, base::as_byte_span("password"),
+                            base::as_byte_span("NaCl"), key,
+                            crypto::SubtlePassKey::ForTesting()),
         "");
   }
 }

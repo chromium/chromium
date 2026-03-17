@@ -288,8 +288,8 @@ crypto::SubtlePassKey OSCryptImpl::MakeCryptoPassKey() {
 std::array<uint8_t, OSCryptImpl::kDerivedKeyBytes> OSCryptImpl::Pbkdf2(
     const std::string& key) {
   std::array<uint8_t, OSCryptImpl::kDerivedKeyBytes> result;
-  crypto::kdf::DeriveKeyPbkdf2HmacSha1(kParams, base::as_byte_span(key), kSalt,
-                                       result, MakeCryptoPassKey());
+  crypto::kdf::Pbkdf2HmacSha1(kParams, base::as_byte_span(key), kSalt, result,
+                              MakeCryptoPassKey());
   return result;
 }
 

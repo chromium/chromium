@@ -37,8 +37,8 @@ CryptohomeTokenEncryptor::CryptohomeTokenEncryptor(
   CHECK(!system_salt.empty());
 
   auto salt = base::as_byte_span(system_salt);
-  crypto::kdf::DeriveKeyPbkdf2HmacSha1(kPbkdf2Params, salt, salt, key_,
-                                       crypto::SubtlePassKey{});
+  crypto::kdf::Pbkdf2HmacSha1(kPbkdf2Params, salt, salt, key_,
+                              crypto::SubtlePassKey{});
   base::span(nonce_).copy_from(salt.first<kNonceSize>());
 }
 

@@ -123,19 +123,19 @@ void Nigori::Keys::InitByDerivationUsingPbkdf2(const std::string& password) {
 
   // Kuser = PBKDF2(P, Suser, Nuser, 16)
   user_key = std::make_optional<std::array<uint8_t, kKeySizeBytes>>();
-  crypto::kdf::DeriveKeyPbkdf2HmacSha1(
+  crypto::kdf::Pbkdf2HmacSha1(
       crypto::kdf::Pbkdf2HmacSha1Params{.iterations = 1002},
       base::as_byte_span(password), kSalt, user_key.value(),
       Nigori::MakeCryptoPassKey());
 
   // Kenc = PBKDF2(P, Suser, Nenc, 16)
-  crypto::kdf::DeriveKeyPbkdf2HmacSha1(
+  crypto::kdf::Pbkdf2HmacSha1(
       crypto::kdf::Pbkdf2HmacSha1Params{.iterations = 1003},
       base::as_byte_span(password), kSalt, encryption_key,
       Nigori::MakeCryptoPassKey());
 
   // Kmac = PBKDF2(P, Suser, Nmac, 16)
-  crypto::kdf::DeriveKeyPbkdf2HmacSha1(
+  crypto::kdf::Pbkdf2HmacSha1(
       crypto::kdf::Pbkdf2HmacSha1Params{.iterations = 1004},
       base::as_byte_span(password), kSalt, mac_key,
       Nigori::MakeCryptoPassKey());
@@ -158,9 +158,8 @@ void Nigori::Keys::InitByDerivationUsingScrypt(const std::string& salt,
   };
 
   std::array<uint8_t, kKeySizeBytes * 2> keys;
-  crypto::kdf::DeriveKeyScrypt(params, base::as_byte_span(password),
-                               base::as_byte_span(salt), keys,
-                               MakeCryptoPassKey());
+  crypto::kdf::Scrypt(params, base::as_byte_span(password),
+                      base::as_byte_span(salt), keys, MakeCryptoPassKey());
 
   base::span(encryption_key).copy_from(base::span(keys).first(kKeySizeBytes));
   base::span(mac_key).copy_from(base::span(keys).subspan(kKeySizeBytes));

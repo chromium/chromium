@@ -147,9 +147,9 @@ bool OSCryptImpl::DeriveKey() {
   static constexpr size_t kIterations = 1003;
 
   std::array<uint8_t, kDerivedKeySize> key;
-  crypto::kdf::DeriveKeyPbkdf2HmacSha1({.iterations = kIterations},
-                                       base::as_byte_span(password), kSalt, key,
-                                       crypto::SubtlePassKey{});
+  crypto::kdf::Pbkdf2HmacSha1({.iterations = kIterations},
+                              base::as_byte_span(password), kSalt, key,
+                              crypto::SubtlePassKey{});
   key_ = key;
   return true;
 }
