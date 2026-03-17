@@ -9263,9 +9263,6 @@ crbug.com/412431600 [ Win10.20h2 ] virtual/webnn-service-on-cpu/external/wpt/web
 crbug.com/418169805 [ Win ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/subgraph.https.any.serviceworker.html?cpu [ Failure Pass ]
 crbug.com/418173365 [ Win ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/subgraph.https.any.worker.html?cpu [ Failure Pass ]
 
-crbug.com/491849980 external/wpt/storage-access-api/storage-access-beyond-cookies.BlobURLSharedWorker.sub.https.tentative.window.html [ Failure Pass Timeout ]
-crbug.com/491849980 external/wpt/storage-access-api/storage-access-beyond-cookies.blobStorage.sub.https.window.html [ Failure Pass Timeout ]
-
 # Gardener 2025-05-05
 crbug.com/413289778 [ Mac12 ] wpt_internal/fedcm/fedcm-cache-manifest.https.html [ Failure ]
 
