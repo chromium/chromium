@@ -25,6 +25,7 @@ class MockAimEligibilityService : public AimEligibilityService {
   MOCK_METHOD(bool, IsCobrowseEligible, (), (const, override));
   MOCK_METHOD(bool, IsDeepSearchEligible, (), (const, override));
   MOCK_METHOD(bool, IsCreateImagesEligible, (), (const, override));
+  MOCK_METHOD(bool, IsFuseboxEligible, (), (const, override));
   MOCK_METHOD(base::CallbackListSubscription,
               RegisterEligibilityChangedCallback,
               (base::RepeatingClosure),

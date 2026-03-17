@@ -664,6 +664,8 @@ std::unique_ptr<KeyedService> BuildMockAimServiceEligibilityServiceInstance(
       .WillRepeatedly(testing::Return(true));
   EXPECT_CALL(*mock_aim_eligibility_service, IsAimLocallyEligible())
       .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(*mock_aim_eligibility_service, IsFuseboxEligible())
+      .WillRepeatedly(testing::Return(true));
 
   return std::move(mock_aim_eligibility_service);
 }
