@@ -11,25 +11,21 @@ found in the LICENSE file.
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:id="@+id/fusebox_view_group"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="vertical"
         android:paddingStart="8dp"
         android:paddingEnd="8dp"
         android:paddingTop="4dp"
-        android:paddingBottom="4dp"
-        tools:ignore="MissingConstraints">
-        <!--
-        Horizontal placement constraints supplied by styles for uniformity.
-        -->
+        android:paddingBottom="4dp">
+
         <org.chromium.ui.widget.ButtonCompat
             style="@style/Fusebox.PopupMenu.Item"
             android:id="@+id/fusebox_add_current_tab"
             android:visibility="gone"
-            android:text="@string/fusebox_add_current_tab"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/fusebox_paste_from_clipboard_button"/>
+            android:text="@string/fusebox_add_current_tab"/>
 
         <org.chromium.ui.widget.ButtonCompat
             style="@style/Fusebox.PopupMenu.Item"
@@ -37,9 +33,7 @@ found in the LICENSE file.
             android:visibility="gone"
             android:drawableStart="@drawable/ic_features_24dp"
             android:text="@string/omnibox_navattach_tabs"
-            android:contentDescription="@string/accessibility_omnibox_add_tabs"
-            app:layout_constraintTop_toBottomOf="@id/fusebox_paste_from_clipboard_button"
-            app:layout_constraintBottom_toTopOf="@id/fusebox_camera_button"/>
+            android:contentDescription="@string/accessibility_omnibox_add_tabs"/>
 
         <!--
         TODO(crbug.com/436888404): either drop clipboard or use proper strings.
@@ -49,42 +43,32 @@ found in the LICENSE file.
             android:id="@+id/fusebox_paste_from_clipboard_button"
             android:visibility="gone"
             android:drawableStart="@drawable/ic_content_copy"
-            android:text="@string/clipboard_permission_title"
-            app:layout_constraintTop_toBottomOf="@id/fusebox_add_current_tab"
-            app:layout_constraintBottom_toTopOf="@id/fusebox_pick_tabs_button"/>
+            android:text="@string/clipboard_permission_title"/>
 
         <org.chromium.ui.widget.ButtonCompat
             style="@style/Fusebox.PopupMenu.Item"
             android:id="@+id/fusebox_camera_button"
             android:drawableStart="@drawable/ic_photo_camera"
             android:text="@string/photo_picker_camera"
-            android:contentDescription="@string/accessibility_omnibox_add_camera_picture"
-            app:layout_constraintTop_toBottomOf="@id/fusebox_pick_tabs_button"
-            app:layout_constraintBottom_toTopOf="@id/fusebox_pick_picture_button"/>
+            android:contentDescription="@string/accessibility_omnibox_add_camera_picture"/>
 
         <org.chromium.ui.widget.ButtonCompat
             style="@style/Fusebox.PopupMenu.Item"
             android:id="@+id/fusebox_pick_picture_button"
             android:drawableStart="@drawable/ic_photo_library_fill_24dp"
             android:text="@string/omnibox_navattach_gallery"
-            android:contentDescription="@string/accessibility_omnibox_add_images"
-            app:layout_constraintTop_toBottomOf="@id/fusebox_camera_button"
-            app:layout_constraintBottom_toTopOf="@id/fusebox_pick_file_button"/>
+            android:contentDescription="@string/accessibility_omnibox_add_images"/>
 
         <org.chromium.ui.widget.ButtonCompat
             style="@style/Fusebox.PopupMenu.Item"
             android:id="@+id/fusebox_pick_file_button"
             android:drawableStart="@drawable/ic_attach_file_24dp"
             android:text="@string/omnibox_navattach_files"
-            android:contentDescription="@string/accessibility_omnibox_add_files"
-            app:layout_constraintTop_toBottomOf="@id/fusebox_pick_picture_button"
-            app:layout_constraintBottom_toTopOf="@id/fusebox_tools_divider"/>
+            android:contentDescription="@string/accessibility_omnibox_add_files"/>
 
         <View
             style="@style/Fusebox.PopupMenu.Divider"
-            android:id="@+id/fusebox_tools_divider"
-            app:layout_constraintTop_toBottomOf="@id/fusebox_pick_file_button"
-            app:layout_constraintBottom_toTopOf="@id/fusebox_tools_header"/>
+            android:id="@+id/fusebox_tools_divider"/>
 
         <TextView
             android:id="@+id/fusebox_tools_header"
@@ -94,49 +78,37 @@ found in the LICENSE file.
             android:textAlignment="viewStart"
             android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
             android:paddingHorizontal="8dp"
-            android:importantForAccessibility="no"
-            app:layout_constraintTop_toBottomOf="@id/fusebox_tools_divider"
-            app:layout_constraintBottom_toTopOf="@id/fusebox_ai_mode_button"/>
+            android:importantForAccessibility="no"/>
 
         <org.chromium.ui.widget.ButtonCompat
             style="@style/Fusebox.PopupMenu.Item"
             android:id="@+id/fusebox_ai_mode_button"
             android:drawableStart="@drawable/search_spark_black_24dp"
             android:text="@string/ai_mode_entrypoint_label"
-            android:contentDescription="@string/accessibility_omnibox_enable_ai_mode"
-            app:layout_constraintTop_toBottomOf="@id/fusebox_tools_header"
-            app:layout_constraintBottom_toTopOf="@id/fusebox_create_image_button"/>
+            android:contentDescription="@string/accessibility_omnibox_enable_ai_mode"/>
 
         <org.chromium.ui.widget.ButtonCompat
             style="@style/Fusebox.PopupMenu.Item"
             android:id="@+id/fusebox_create_image_button"
             android:drawableStart="@drawable/create_image_24dp"
             android:text="@string/omnibox_create_image"
-            android:contentDescription="@string/accessibility_omnibox_create_image"
-            app:layout_constraintTop_toBottomOf="@id/fusebox_ai_mode_button"
-            app:layout_constraintBottom_toTopOf="@id/fusebox_deep_search_button"/>
+            android:contentDescription="@string/accessibility_omnibox_create_image"/>
 
         <org.chromium.ui.widget.ButtonCompat
             style="@style/Fusebox.PopupMenu.Item"
             android:id="@+id/fusebox_deep_search_button"
             android:drawableStart="@drawable/travel_explore_24dp"
-            android:text="@string/ntp_compose_deep_search"
-            app:layout_constraintTop_toBottomOf="@id/fusebox_create_image_button"
-            app:layout_constraintBottom_toTopOf="@id/fusebox_canvas_button"/>
+            android:text="@string/ntp_compose_deep_search"/>
 
         <org.chromium.ui.widget.ButtonCompat
             style="@style/Fusebox.PopupMenu.Item"
             android:id="@+id/fusebox_canvas_button"
             android:drawableStart="@drawable/draft_spark_24dp"
-            android:text="@string/ntp_compose_canvas"
-            app:layout_constraintTop_toBottomOf="@id/fusebox_deep_search_button"
-            app:layout_constraintBottom_toTopOf="@id/fusebox_models_divider"/>
+            android:text="@string/ntp_compose_canvas"/>
 
         <View
             style="@style/Fusebox.PopupMenu.Divider"
-            android:id="@+id/fusebox_models_divider"
-            app:layout_constraintTop_toBottomOf="@id/fusebox_canvas_button"
-            app:layout_constraintBottom_toTopOf="@id/fusebox_models_header"/>
+            android:id="@+id/fusebox_models_divider"/>
 
         <TextView
             android:id="@+id/fusebox_models_header"
@@ -146,26 +118,20 @@ found in the LICENSE file.
             android:textAlignment="viewStart"
             android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
             android:paddingHorizontal="8dp"
-            android:importantForAccessibility="no"
-            app:layout_constraintTop_toBottomOf="@id/fusebox_models_divider"
-            app:layout_constraintBottom_toTopOf="@id/fusebox_auto_button"/>
+            android:importantForAccessibility="no"/>
 
         <org.chromium.ui.widget.ButtonCompat
             style="@style/Fusebox.PopupMenu.Item"
             android:id="@+id/fusebox_auto_button"
             android:drawableStart="@drawable/autorenew_24dp"
-            android:text="@string/ntp_compose_auto_model"
-            app:layout_constraintTop_toBottomOf="@id/fusebox_models_header"
-            app:layout_constraintBottom_toTopOf="@id/fusebox_pro_button"/>
+            android:text="@string/ntp_compose_auto_model"/>
 
         <org.chromium.ui.widget.ButtonCompat
             style="@style/Fusebox.PopupMenu.Item"
             android:id="@+id/fusebox_pro_button"
             android:drawableStart="@drawable/ic_timer"
-            android:text="@string/fusebox_model_pro"
-            app:layout_constraintTop_toBottomOf="@id/fusebox_auto_button"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            android:text="@string/fusebox_model_pro"/>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
 
 </ScrollView>

@@ -32,8 +32,6 @@ found in the LICENSE file.
         <item name="android:textAppearance">
             @style/TextAppearance.TextMedium.Primary
         </item>
-        <item name="layout_constraintStart_toStartOf">parent</item>
-        <item name="layout_constraintEnd_toEndOf">parent</item>
         <item name="drawableTint">
             @color/default_icon_color_tint_list
         </item>
@@ -41,13 +39,11 @@ found in the LICENSE file.
     </style>
 
     <style name="Fusebox.PopupMenu.Divider">
-        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">1dp</item>
         <item name="android:layout_marginTop">4dp</item>
         <item name="android:layout_marginBottom">4dp</item>
         <item name="android:background">?android:attr/listDivider</item>
-        <item name="layout_constraintStart_toStartOf">parent</item>
-        <item name="layout_constraintEnd_toEndOf">parent</item>
     </style>
 
     <style name="OmniboxIcon" parent="LocationBarButton">
