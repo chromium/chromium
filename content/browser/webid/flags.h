@@ -66,6 +66,9 @@ bool IsNavigationInterceptionEnabled();
 // Whether embedder initiated login is enabled.
 bool IsEmbedderInitiatedLoginEnabled();
 
+// Whether the ambient UI is enabled.
+bool IsFedCmAmbientUIEnabled();
+
 }  // namespace content::webid
 
 #endif  // CONTENT_BROWSER_WEBID_FLAGS_H_

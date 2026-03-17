@@ -500,6 +500,9 @@ class CONTENT_EXPORT RequestService
 
   bool IsNewlyLoggedIn(const IdentityRequestAccount& account);
 
+  // Returns whether we'll be using an ambient UI for a passive call.
+  bool IsUsingAmbient() const;
+
   RpMode GetRpMode() const { return rp_mode_; }
 
   // If the client metadata has not been received yet the UI may not be able to

@@ -1633,7 +1633,7 @@ void RequestService::OnDismissFailureDialog(
       dismiss_reason == IdentityRequestDialogController::DismissReason::kSwipe;
   fedcm_metrics_->RecordCancelReason(dismiss_reason);
 
-  should_embargo &= rp_mode_ == RpMode::kPassive;
+  should_embargo &= rp_mode_ == RpMode::kPassive && !IsUsingAmbient();
   if (should_embargo) {
     api_permission_delegate_->RecordDismissAndEmbargo(GetEmbeddingOrigin());
   }
@@ -1693,7 +1693,7 @@ void RequestService::OnDialogDismissed(
   }
   fedcm_metrics_->RecordCancelReason(dismiss_reason);
 
-  should_embargo &= rp_mode_ == RpMode::kPassive;
+  should_embargo &= rp_mode_ == RpMode::kPassive && !IsUsingAmbient();
   if (should_embargo) {
     api_permission_delegate_->RecordDismissAndEmbargo(GetEmbeddingOrigin());
   }
@@ -2982,6 +2982,22 @@ bool RequestService::HandlePendingRequestAndCancelNewRequest(
   idp_order_ = std::move(new_idp_order);
 
   return false;
+}
+
+bool RequestService::IsUsingAmbient() const {
+  if (!IsFedCmAmbientUIEnabled() || rp_mode_ != RpMode::kPassive ||
+      idp_order_.size() != 1u) {
+    return false;
+  }
+
+  size_t accounts_count = accounts_.size();
+
+  // Currently, the Ambient UI only supports single accounts, for returning
+  // users and new users. As we develop it, we'll allow more cases to be
+  // handled by the Ambient UI, such as multiple accounts, multiple IdPs and
+  // mismatch cases.
+
+  return accounts_count == 1u;
 }
 
 RelyingPartyData RequestService::CreateRpData(

@@ -95,4 +95,8 @@ bool IsEmbedderInitiatedLoginEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmEmbedderInitiatedLogin);
 }
 
+bool IsFedCmAmbientUIEnabled() {
+  return base::FeatureList::IsEnabled(features::kFedCmAmbientUI);
+}
+
 }  // namespace content::webid
