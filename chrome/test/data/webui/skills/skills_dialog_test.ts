@@ -56,6 +56,8 @@ suite('SkillsDialogAppPage', function() {
     dialogHandler.setResultFor(
         'refineSkill', Promise.resolve({refinedSkill: {}}));
     dialogHandler.setResultFor(
+        'generateNameAndEmoji', Promise.resolve({refinedSkill: {}}));
+    dialogHandler.setResultFor(
         'getSignedInEmail', Promise.resolve({email: ''}));
     const emptySkill: Skill = {
       id: '',
@@ -730,7 +732,7 @@ suite('SkillsDialogAppPage', function() {
     // 1. Setup the mock response for the auto-population call.
     const generatedName = 'Auto Generated Name';
     const generatedIcon = '🤖';
-    dialogHandler.setResultFor('refineSkill', Promise.resolve({
+    dialogHandler.setResultFor('generateNameAndEmoji', Promise.resolve({
       refinedSkill: {
         id: '',
         sourceSkillId: '',
@@ -767,7 +769,7 @@ suite('SkillsDialogAppPage', function() {
 
   test('AutoPopulateDoesNotOverwriteExistingData', async function() {
     // 1. Setup mock response
-    dialogHandler.setResultFor('refineSkill', Promise.resolve({
+    dialogHandler.setResultFor('generateNameAndEmoji', Promise.resolve({
       refinedSkill: {
         name: 'Should Not Be Used',
         icon: '❌',
@@ -801,7 +803,7 @@ suite('SkillsDialogAppPage', function() {
   test('AutoPopulateLoadingState', async function() {
     // 1. Control the promise to check loading state
     const resolver = new PromiseResolver<{refinedSkill: Skill}>();
-    dialogHandler.refineSkill = () => resolver.promise;
+    dialogHandler.generateNameAndEmoji = () => resolver.promise;
 
     const newSkill: Skill = {
       id: '',
@@ -855,9 +857,9 @@ suite('SkillsDialogAppPage', function() {
   });
 
   test('AutoPopulateTimesOut', async function() {
-    // 1. Setup a hanging promise for refineSkill
+    // 1. Setup a hanging promise for generateNameAndEmoji
     const resolver = new PromiseResolver<{refinedSkill: Skill}>();
-    dialogHandler.refineSkill = () => resolver.promise;
+    dialogHandler.generateNameAndEmoji = () => resolver.promise;
 
     const newSkill: Skill = {
       id: '',
@@ -915,8 +917,8 @@ suite('SkillsDialogAppPage', function() {
     // 2. Mount the component.
     await setupDialogInitialState(preNamedSkill, SkillsDialogType.kAdd);
 
-    // 3. Verify that refineSkill was NEVER called.
-    assertEquals(0, dialogHandler.getCallCount('refineSkill'));
+    // 3. Verify that generateNameAndEmoji was NEVER called.
+    assertEquals(0, dialogHandler.getCallCount('generateNameAndEmoji'));
 
     // 4. Verify no loading state is shown and name remains unchanged.
     const loader =

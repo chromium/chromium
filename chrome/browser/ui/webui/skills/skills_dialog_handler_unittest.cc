@@ -196,7 +196,7 @@ TEST_F(SkillsDialogHandlerTest, RefineSkill_NoService_LogsServiceUnavailable) {
 
 TEST_F(SkillsDialogHandlerTest,
        RefineSkill_ModelFails_LogsModelExecutionFailed) {
-  SetModelResponse(std::nullopt);  // Force a total server failure
+  SetModelResponse(std::nullopt);
   RunRefineSkillAndExpectError(
       handler_.get(), "test prompt",
       skills::SkillsRefineResult::kModelExecutionFailed);
@@ -215,6 +215,146 @@ TEST_F(SkillsDialogHandlerTest,
 
   RunRefineSkillAndExpectError(handler_.get(), "test prompt",
                                skills::SkillsRefineResult::kNoSuggestions);
+}
+
+TEST_F(SkillsDialogHandlerTest, GenerateNameAndEmojiSuccess) {
+  optimization_guide::proto::SkillsResponse response;
+  auto* suggestion = response.add_suggestions();
+  suggestion->set_prompt("refined prompt");
+  suggestion->set_name("suggested name");
+  suggestion->set_icon("🤖");
+
+  SetModelResponse(response.SerializeAsString());
+
+  skills::Skill skill;
+  skill.prompt = "test prompt";
+  base::MockCallback<mojom::DialogHandler::GenerateNameAndEmojiCallback>
+      callback;
+
+  EXPECT_CALL(callback,
+              Run(Optional(AllOf(Field(&skills::Skill::name, "suggested name"),
+                                 Field(&skills::Skill::icon, "🤖")))));
+
+  handler_->GenerateNameAndEmoji(std::move(skill), callback.Get());
+
+  histogram_tester_.ExpectUniqueSample("Skills.Refine.Result",
+                                       skills::SkillsRefineResult::kSuccess, 1);
+}
+
+TEST_F(SkillsDialogHandlerTest, GenerateNameAndEmoji_SetsTaskType) {
+  skills::Skill skill;
+  skill.prompt = "test prompt";
+  base::MockCallback<mojom::DialogHandler::GenerateNameAndEmojiCallback>
+      callback;
+
+  EXPECT_CALL(mock_opt_guide_service_, ExecuteModel(_, _, _, _))
+      .WillOnce([](auto capability,
+                   const google::protobuf::MessageLite& request,
+                   std::optional<optimization_guide::ModelExecutionOptions>
+                       options,
+                   optimization_guide::
+                       OptimizationGuideModelExecutionResultCallback cb) {
+        EXPECT_EQ(capability,
+                  optimization_guide::ModelBasedCapabilityKey::kSkills);
+        auto* skills_request =
+            static_cast<const optimization_guide::proto::SkillsRequest*>(
+                &request);
+        EXPECT_EQ(skills_request->task_type(),
+                  optimization_guide::proto::SkillsRequest::GENERATE_METADATA);
+        std::move(cb).Run(
+            optimization_guide::OptimizationGuideModelExecutionResult(
+                base::unexpected(
+                    optimization_guide::OptimizationGuideModelExecutionError::
+                        FromModelExecutionError(
+                            optimization_guide::
+                                OptimizationGuideModelExecutionError::
+                                    ModelExecutionError::kGenericFailure)),
+                nullptr),
+            nullptr);
+      });
+
+  handler_->GenerateNameAndEmoji(std::move(skill), callback.Get());
+}
+
+TEST_F(SkillsDialogHandlerTest,
+       GenerateNameAndEmoji_EmptyPrompt_LogsInvalidRequest) {
+  skills::Skill skill;
+  skill.prompt = "";
+  base::MockCallback<mojom::DialogHandler::GenerateNameAndEmojiCallback>
+      callback;
+
+  handler_->GenerateNameAndEmoji(std::move(skill), callback.Get());
+
+  histogram_tester_.ExpectUniqueSample(
+      "Skills.Refine.Result", skills::SkillsRefineResult::kInvalidRequest, 1);
+}
+
+TEST_F(SkillsDialogHandlerTest,
+       GenerateNameAndEmoji_NoService_LogsServiceUnavailable) {
+  // Disconnect the pipe from Setup().
+  receiver_.reset();
+  // Create a handler with a nullptr for Optimization Guide
+  auto orphan_handler = std::make_unique<TestSkillsDialogHandler>(
+      receiver_.BindNewPipeAndPassReceiver(), web_contents_.get(), nullptr,
+      mock_skill_, SkillsDialogEntryPoint::kWebClientPrefilled,
+      mock_dialog_type_, mock_delegate_.GetWeakPtr());
+
+  skills::Skill skill;
+  skill.prompt = "test prompt";
+  base::MockCallback<mojom::DialogHandler::GenerateNameAndEmojiCallback>
+      callback;
+
+  orphan_handler->GenerateNameAndEmoji(std::move(skill), callback.Get());
+
+  histogram_tester_.ExpectUniqueSample(
+      "Skills.Refine.Result", skills::SkillsRefineResult::kServiceUnavailable,
+      1);
+}
+
+TEST_F(SkillsDialogHandlerTest,
+       GenerateNameAndEmoji_ModelFails_LogsModelExecutionFailed) {
+  SetModelResponse(std::nullopt);  // Force a total server failure
+
+  skills::Skill skill;
+  skill.prompt = "test prompt";
+  base::MockCallback<mojom::DialogHandler::GenerateNameAndEmojiCallback>
+      callback;
+
+  handler_->GenerateNameAndEmoji(std::move(skill), callback.Get());
+
+  histogram_tester_.ExpectUniqueSample(
+      "Skills.Refine.Result", skills::SkillsRefineResult::kModelExecutionFailed,
+      1);
+}
+
+TEST_F(SkillsDialogHandlerTest, GenerateNameAndEmoji_BadProto_LogsParseError) {
+  SetModelResponse("garbage data", "type.googleapis.com/WrongType");
+
+  skills::Skill skill;
+  skill.prompt = "test prompt";
+  base::MockCallback<mojom::DialogHandler::GenerateNameAndEmojiCallback>
+      callback;
+
+  handler_->GenerateNameAndEmoji(std::move(skill), callback.Get());
+
+  histogram_tester_.ExpectUniqueSample(
+      "Skills.Refine.Result", skills::SkillsRefineResult::kParseError, 1);
+}
+
+TEST_F(SkillsDialogHandlerTest,
+       GenerateNameAndEmoji_EmptySuggestions_LogsNoSuggestions) {
+  optimization_guide::proto::SkillsResponse response;  // Valid, but empty
+  SetModelResponse(response.SerializeAsString());
+
+  skills::Skill skill;
+  skill.prompt = "test prompt";
+  base::MockCallback<mojom::DialogHandler::GenerateNameAndEmojiCallback>
+      callback;
+
+  handler_->GenerateNameAndEmoji(std::move(skill), callback.Get());
+
+  histogram_tester_.ExpectUniqueSample(
+      "Skills.Refine.Result", skills::SkillsRefineResult::kNoSuggestions, 1);
 }
 
 TEST_F(SkillsDialogHandlerTest, CloseDialog_LogsCancelled) {

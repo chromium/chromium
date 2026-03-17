@@ -468,7 +468,7 @@ export class SkillsDialogAppElement extends CrLitElement {
     }
 
     this.isAutoGenerationLoading_ = true;
-    return this.requestRefinedSkillWithTimeout_(this.skill_)
+    return this.requestGenerateNameAndEmojiWithTimeout_(this.skill_)
         .then(({refinedSkill}) => {
           if (refinedSkill) {
             const newName =
@@ -511,6 +511,20 @@ export class SkillsDialogAppElement extends CrLitElement {
     });
 
     return Promise.race([refineRequest, timeout]);
+  }
+
+  private requestGenerateNameAndEmojiWithTimeout_(skillToRefine: Skill) {
+    const generateRequest =
+        SkillsDialogBrowserProxy.getInstance().handler.generateNameAndEmoji(
+            skillToRefine);
+
+    const timeout = new Promise<never>((_, reject) => {
+      WindowProxyImpl.getInstance().setTimeout(
+          () => reject(new Error('Generate name and emoji timed out')),
+          REFINE_SKILL_TIMEOUT_MS);
+    });
+
+    return Promise.race([generateRequest, timeout]);
   }
 }
 
