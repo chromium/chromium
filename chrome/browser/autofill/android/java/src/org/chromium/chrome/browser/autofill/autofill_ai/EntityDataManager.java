@@ -222,6 +222,12 @@ public class EntityDataManager implements Destroyable {
                         mNativeEntityDataManagerAndroid);
     }
 
+    public boolean isWalletPublicPassStorageEnabled() {
+        ThreadUtils.assertOnUiThread();
+        return EntityDataManagerJni.get()
+                .isWalletPublicPassStorageEnabled(mNativeEntityDataManagerAndroid);
+    }
+
     @NativeMethods
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
@@ -243,6 +249,8 @@ public class EntityDataManager implements Destroyable {
 
         boolean getIsAutofillAiEnabledByEnterprisePolicyWithoutLogging(
                 long nativeEntityDataManagerAndroid);
+
+        boolean isWalletPublicPassStorageEnabled(long nativeEntityDataManagerAndroid);
 
         void removeEntityInstance(
                 long nativeEntityDataManagerAndroid, @JniType("std::string") String guid);

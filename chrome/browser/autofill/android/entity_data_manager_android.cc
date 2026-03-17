@@ -234,16 +234,22 @@ bool EntityDataManagerAndroid::CanEnableOrDisableAutofillAi(JNIEnv* env) {
   return RunMayPerformAutofillAiAction(AutofillAiAction::kEnableOrDisable);
 }
 
+bool EntityDataManagerAndroid::IsWalletPublicPassStorageEnabledHelper() {
+  return account_setting_service_ &&
+         account_setting_service_->IsWalletPrivacyContextualSurfacingEnabled();
+}
+
+bool EntityDataManagerAndroid::IsWalletPublicPassStorageEnabled(JNIEnv* env) {
+  return IsWalletPublicPassStorageEnabledHelper();
+}
+
 bool EntityDataManagerAndroid::RunMayPerformAutofillAiAction(
     AutofillAiAction action) {
-  const bool is_wallet_public_pass_storage_enabled =
-      account_setting_service_ &&
-      account_setting_service_->IsWalletPrivacyContextualSurfacingEnabled();
-
   return autofill::MayPerformAutofillAiAction(
       google_groups_manager_, prefs_, &entity_data_manager(), identity_manager_,
-      sync_service_, is_wallet_public_pass_storage_enabled, is_off_the_record_,
-      entity_data_manager_->GetVariationCountryCode(), action);
+      sync_service_, IsWalletPublicPassStorageEnabledHelper(),
+      is_off_the_record_, entity_data_manager_->GetVariationCountryCode(),
+      action);
 }
 
 }  // namespace autofill

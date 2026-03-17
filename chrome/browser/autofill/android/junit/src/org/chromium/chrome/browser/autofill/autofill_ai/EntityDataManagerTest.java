@@ -213,6 +213,13 @@ public class EntityDataManagerTest {
     }
 
     @Test
+    public void testIsWalletPublicPassStorageEnabled() {
+        when(mEntityDataManagerJniMock.isWalletPublicPassStorageEnabled(NATIVE_PTR))
+                .thenReturn(true);
+        assertTrue(mEntityDataManager.isWalletPublicPassStorageEnabled());
+    }
+
+    @Test
     public void testObservers() {
         EntityDataManager.EntityDataManagerObserver observer =
                 mock(EntityDataManager.EntityDataManagerObserver.class);
