@@ -105,8 +105,6 @@ class PasswordIssuesCoordinatorTest : public PlatformTest {
         baseNavigationController:base_navigation_controller_
                          browser:browser_.get()];
 
-    coordinator_.reauthModule = mock_reauth_module_;
-
     scoped_window_.Get().rootViewController = base_navigation_controller_;
   }
 

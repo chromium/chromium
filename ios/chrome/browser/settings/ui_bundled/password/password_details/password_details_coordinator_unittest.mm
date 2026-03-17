@@ -117,7 +117,6 @@ class PasswordDetailsCoordinatorTest : public PlatformTest {
         initWithBaseNavigationController:navigation_controller
                                  browser:browser_.get()
                          affiliatedGroup:GetTestAffiliatedGroup()
-                            reauthModule:mock_reauth_module_
                                  context:DetailsContext::kPasswordSettings];
 
     scoped_window_.Get().rootViewController = navigation_controller;

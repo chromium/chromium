@@ -169,12 +169,6 @@ NSInteger GetDismissedWarningsCount(
   // Used to only update the consumer when the data it displays changed.
   NSInteger _dismissedWarningsCount;
 
-  // Object storing the time of the previous successful re-authentication.
-  // This is meant to be used by the `ReauthenticationModule` for keeping
-  // re-authentications valid for a certain time interval within the scope
-  // of the Password Issues Screen.
-  __strong NSDate* _successfulReauthTime;
-
   // FaviconLoader is a keyed service that uses LargeIconService to retrieve
   // favicon images.
   raw_ptr<FaviconLoader> _faviconLoader;
@@ -363,16 +357,6 @@ NSInteger GetDismissedWarningsCount(
   return dismissedWarningsCount != _dismissedWarningsCount ||
          !_insecureCredentials.has_value() ||
          _insecureCredentials.value() != *insecureCredentials;
-}
-
-#pragma mark SuccessfulReauthTimeAccessor
-
-- (void)updateSuccessfulReauthTime {
-  _successfulReauthTime = [[NSDate alloc] init];
-}
-
-- (NSDate*)lastSuccessfulReauthTime {
-  return _successfulReauthTime;
 }
 
 #pragma mark - TableViewFaviconDataSource

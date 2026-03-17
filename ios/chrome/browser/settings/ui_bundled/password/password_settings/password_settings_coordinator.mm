@@ -35,7 +35,6 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings/password_settings_mediator.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings/password_settings_metrics_utils.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings/password_settings_view_controller.h"
-#import "ios/chrome/browser/settings/ui_bundled/password/password_settings/scoped_password_settings_reauth_module_override.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_in_other_apps/passwords_in_other_apps_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/local_reauthentication_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_navigation_controller.h"
@@ -793,7 +792,6 @@ constexpr const char* kDeleteAllSavedDataButtonClicked =
   _reauthCoordinator = [[LocalReauthenticationCoordinator alloc]
       initWithBaseNavigationController:_settingsNavigationController
                                browser:self.browser
-                reauthenticationModule:_reauthModule
                            authOnStart:authOnStart];
 
   _reauthCoordinator.delegate = self;

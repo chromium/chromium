@@ -435,13 +435,9 @@
 // while credential import is opened.
 // TODO(crbug.com/458733320): Explore EG test feasibility.
 - (void)startReauthCoordinator {
-  id<ReauthenticationProtocol> reauthModule =
-      ReauthenticationServiceFactory::GetForProfile(self.profile)
-          ->GetReauthModule();
   _reauthCoordinator = [[LocalReauthenticationCoordinator alloc]
       initWithBaseNavigationController:_navigationController
                                browser:self.browser
-                reauthenticationModule:reauthModule
                            authOnStart:NO];
   _reauthCoordinator.delegate = self;
   [_reauthCoordinator start];

@@ -127,7 +127,6 @@ class PasswordCheckupCoordinatorTest
     coordinator_ = [[PasswordCheckupCoordinator alloc]
         initWithBaseNavigationController:base_navigation_controller_
                                  browser:browser_.get()
-                            reauthModule:mock_reauth_module_
                                 referrer:GetParam()];
 
     scoped_window_.Get().rootViewController = base_navigation_controller_;

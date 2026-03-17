@@ -10,7 +10,6 @@
 
 class Browser;
 @class PasswordIssuesCoordinator;
-@protocol ReauthenticationProtocol;
 @protocol SceneCommands;
 
 namespace password_manager {
@@ -36,9 +35,6 @@ enum class WarningType;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
-
-// Reauthentication module used by password details coordinator.
-@property(nonatomic, strong) id<ReauthenticationProtocol> reauthModule;
 
 @property(nonatomic, weak) id<PasswordIssuesCoordinatorDelegate> delegate;
 

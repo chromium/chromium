@@ -88,12 +88,6 @@ struct PasswordManagerActiveWidgetPromoData
   // Sync observer.
   std::unique_ptr<SyncObserverBridge> _syncObserver;
 
-  // Object storing the time of the previous successful re-authentication.
-  // This is meant to be used by the `ReauthenticationModule` for keeping
-  // re-authentications valid for a certain time interval within the scope
-  // of the Passwords Screen.
-  __strong NSDate* _successfulReauthTime;
-
   // FaviconLoader is a keyed service that uses LargeIconService to retrieve
   // favicon images.
   raw_ptr<FaviconLoader> _faviconLoader;
@@ -432,16 +426,6 @@ struct PasswordManagerActiveWidgetPromoData
 
 - (void)savedPasswordsDidChange {
   [self providePasswordsToConsumer];
-}
-
-#pragma mark SuccessfulReauthTimeAccessor
-
-- (void)updateSuccessfulReauthTime {
-  _successfulReauthTime = [[NSDate alloc] init];
-}
-
-- (NSDate*)lastSuccessfulReauthTime {
-  return _successfulReauthTime;
 }
 
 #pragma mark - TableViewFaviconDataSource

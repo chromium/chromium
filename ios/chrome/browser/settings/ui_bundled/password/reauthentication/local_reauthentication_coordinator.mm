@@ -93,8 +93,6 @@ enum class ReauthenticationState {
 - (instancetype)initWithBaseNavigationController:
                     (UINavigationController*)navigationController
                                          browser:(Browser*)browser
-                          reauthenticationModule:(id<ReauthenticationProtocol>)
-                                                     reauthenticationModule
                                      authOnStart:(BOOL)authOnStart {
   self = [super initWithBaseViewController:navigationController
                                    browser:browser];

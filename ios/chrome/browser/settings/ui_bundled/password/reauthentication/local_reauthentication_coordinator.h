@@ -9,7 +9,6 @@
 
 @class LocalReauthenticationCoordinator;
 @class UINavigationController;
-@protocol ReauthenticationProtocol;
 
 @protocol LocalReauthenticationCoordinatorDelegate <NSObject>
 
@@ -65,14 +64,11 @@
 // Creates a coordinator for blocking the top view controller in
 // `navigationController`.
 //
-// - reauthenticationModule: Used for triggering Local Authentication.
 // - authOnStart: Whether authentication should be required when this
 // coordinator is started.
 - (instancetype)initWithBaseNavigationController:
                     (UINavigationController*)navigationController
                                          browser:(Browser*)browser
-                          reauthenticationModule:(id<ReauthenticationProtocol>)
-                                                     reauthenticationModule
                                      authOnStart:(BOOL)authOnStart
     NS_DESIGNATED_INITIALIZER;
 

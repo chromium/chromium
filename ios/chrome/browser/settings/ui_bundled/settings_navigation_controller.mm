@@ -18,7 +18,6 @@
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_credit_card_util.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
-#import "ios/chrome/browser/passwords/coordinator/password_utils.h"
 #import "ios/chrome/browser/settings/google_services/manage_accounts/coordinator/manage_accounts_coordinator.h"
 #import "ios/chrome/browser/settings/google_services/manage_accounts/coordinator/manage_accounts_coordinator_delegate.h"
 #import "ios/chrome/browser/settings/google_services/manage_accounts/public/manage_accounts_table_view_controller_constants.h"
@@ -62,7 +61,6 @@
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/sync/model/enterprise_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
-#import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/user_feedback/user_feedback_api.h"
@@ -903,8 +901,6 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
       initWithBaseNavigationController:self
                                browser:self.browser
                             credential:credential
-                          reauthModule:password_manager::
-                                           BuildReauthenticationModule()
                                context:DetailsContext::kOutsideSettings];
   self.passwordDetailsCoordinator.delegate = self;
   self.passwordDetailsCoordinator.openInEditMode = editMode;

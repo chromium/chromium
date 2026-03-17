@@ -93,7 +93,6 @@ class ReauthenticationCoordinatorTest : public PlatformTest {
     coordinator_ = [[LocalReauthenticationCoordinator alloc]
         initWithBaseNavigationController:base_navigation_controller_
                                  browser:browser_.get()
-                  reauthenticationModule:mock_reauth_module_
                              authOnStart:NO];
     coordinator_.delegate = delegate_;
 

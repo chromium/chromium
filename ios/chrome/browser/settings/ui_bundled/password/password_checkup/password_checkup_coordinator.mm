@@ -38,7 +38,6 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
-#import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -64,9 +63,6 @@ using password_manager::PasswordCheckReferrer;
 
   // Coordinator for password issues.
   PasswordIssuesCoordinator* _passwordIssuesCoordinator;
-
-  // Reauthentication module used by password issues coordinator.
-  id<ReauthenticationProtocol> _reauthModule;
 
   // Coordinator for blocking Password Checkup until Local Authentication is
   // passed. Used for requiring authentication when opening Password Checkup
@@ -94,7 +90,6 @@ using password_manager::PasswordCheckReferrer;
     initWithBaseNavigationController:
         (UINavigationController*)navigationController
                              browser:(Browser*)browser
-                        reauthModule:(id<ReauthenticationProtocol>)reauthModule
                             referrer:(PasswordCheckReferrer)referrer {
   self = [super initWithBaseViewController:navigationController
                                    browser:browser];
@@ -111,7 +106,6 @@ using password_manager::PasswordCheckReferrer;
     }
 
     _baseNavigationController = navigationController;
-    _reauthModule = reauthModule;
     _dispatcher =
         HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
     _referrer = referrer;
@@ -208,7 +202,6 @@ using password_manager::PasswordCheckReferrer;
   // was already authenticated when opening the password manager.
   _passwordIssuesCoordinator.skipAuthenticationOnStart = YES;
   _passwordIssuesCoordinator.delegate = self;
-  _passwordIssuesCoordinator.reauthModule = _reauthModule;
   [_passwordIssuesCoordinator start];
 }
 
@@ -415,7 +408,6 @@ using password_manager::PasswordCheckReferrer;
   _reauthCoordinator = [[LocalReauthenticationCoordinator alloc]
       initWithBaseNavigationController:_baseNavigationController
                                browser:self.browser
-                reauthenticationModule:_reauthModule
                            authOnStart:authOnStart];
 
   _reauthCoordinator.delegate = self;

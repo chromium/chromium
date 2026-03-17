@@ -9,7 +9,6 @@
 
 #import "ios/chrome/browser/shared/ui/table_view/table_view_favicon_data_source.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
-#import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 
 namespace password_manager {
 enum class WarningType;
@@ -20,8 +19,7 @@ class IOSChromePasswordCheckManager;
 @protocol PasswordIssuesConsumer;
 
 // This mediator fetches and organises the credentials for its consumer.
-@interface PasswordIssuesMediator
-    : NSObject <SuccessfulReauthTimeAccessor, TableViewFaviconDataSource>
+@interface PasswordIssuesMediator : NSObject <TableViewFaviconDataSource>
 
 - (instancetype)initForWarningType:(password_manager::WarningType)warningType
               passwordCheckManager:(IOSChromePasswordCheckManager*)manager

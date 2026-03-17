@@ -47,7 +47,6 @@
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
-#import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_state.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -124,7 +123,6 @@ const CGFloat kShareSpinnerMinTimeInSeconds = 0.5;
                           credential:
                               (const password_manager::CredentialUIEntry&)
                                   credential
-                        reauthModule:(id<ReauthenticationProtocol>)reauthModule
                              context:(DetailsContext)context {
   self = [super initWithBaseViewController:navigationController
                                    browser:browser];
@@ -133,7 +131,6 @@ const CGFloat kShareSpinnerMinTimeInSeconds = 0.5;
 
     _baseNavigationController = navigationController;
     _credential = credential;
-    _reauthenticationModule = reauthModule;
     _context = context;
   }
   return self;
@@ -145,7 +142,6 @@ const CGFloat kShareSpinnerMinTimeInSeconds = 0.5;
                              browser:(Browser*)browser
                      affiliatedGroup:(const password_manager::AffiliatedGroup&)
                                          affiliatedGroup
-                        reauthModule:(id<ReauthenticationProtocol>)reauthModule
                              context:(DetailsContext)context {
   self = [super initWithBaseViewController:navigationController
                                    browser:browser];
@@ -154,7 +150,6 @@ const CGFloat kShareSpinnerMinTimeInSeconds = 0.5;
 
     _baseNavigationController = navigationController;
     _affiliatedGroup = affiliatedGroup;
-    _reauthenticationModule = reauthModule;
     _context = context;
   }
   return self;
@@ -532,7 +527,6 @@ const CGFloat kShareSpinnerMinTimeInSeconds = 0.5;
   _reauthCoordinator = [[LocalReauthenticationCoordinator alloc]
       initWithBaseNavigationController:_baseNavigationController
                                browser:self.browser
-                reauthenticationModule:_reauthenticationModule
                            authOnStart:[self shouldRequireAuthOnStart]];
   _reauthCoordinator.delegate = self;
   [_reauthCoordinator start];

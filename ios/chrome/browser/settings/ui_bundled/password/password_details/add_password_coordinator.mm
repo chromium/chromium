@@ -177,7 +177,6 @@
   _reauthCoordinator = [[LocalReauthenticationCoordinator alloc]
       initWithBaseNavigationController:_baseNavigationController
                                browser:self.browser
-                reauthenticationModule:nil
                            authOnStart:NO];
 
   _reauthCoordinator.delegate = self;

@@ -1925,7 +1925,6 @@ void OnListFamilyMembersResponse(
   _passwordCheckupCoordinator = [[PasswordCheckupCoordinator alloc]
       initWithBaseNavigationController:_settingsNavigationController
                                browser:_regularBrowser.get()
-                          reauthModule:nil
                               referrer:referrer];
   _passwordCheckupCoordinator.delegate = self;
   [_passwordCheckupCoordinator start];
