@@ -9,6 +9,8 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 
+import androidx.annotation.IntDef;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.actor.ui.R;
@@ -25,6 +27,22 @@ import org.chromium.components.browser_ui.notifications.NotificationWrapperBuild
 /** Builds all types of notifications for Actor tasks. */
 @NullMarked
 public class ActorNotificationFactory {
+    @IntDef({
+        NotificationCategory.RUNNING,
+        NotificationCategory.PAUSED,
+        NotificationCategory.USER_INPUT,
+        NotificationCategory.SUCCESS,
+        NotificationCategory.INTERRUPTED
+    })
+    @java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.SOURCE)
+    private @interface NotificationCategory {
+        int RUNNING = 0;
+        int PAUSED = 1;
+        int USER_INPUT = 2;
+        int SUCCESS = 3;
+        int INTERRUPTED = 4;
+    }
+
     /**
      * Builds a notification for an actor task with an state.
      *
@@ -58,6 +76,30 @@ public class ActorNotificationFactory {
         } else {
             return buildInterruptedNotification(builder, context, task);
         }
+    }
+
+    /**
+     * Determines whether a notification update is required when transitioning between two states.
+     *
+     * @param oldState The previous {@link ActorTaskState}.
+     * @param newState The new {@link ActorTaskState}.
+     * @return True if the notification should be updated, false otherwise.
+     */
+    public static boolean shouldUpdateNotification(
+            @ActorTaskState int oldState, @ActorTaskState int newState) {
+        return getNotificationCategory(oldState) != getNotificationCategory(newState);
+    }
+
+    private static @NotificationCategory int getNotificationCategory(@ActorTaskState int state) {
+        if (state == ActorTaskState.ACTING || state == ActorTaskState.REFLECTING) {
+            return NotificationCategory.RUNNING;
+        }
+        if (state == ActorTaskState.PAUSED_BY_ACTOR || state == ActorTaskState.PAUSED_BY_USER) {
+            return NotificationCategory.PAUSED;
+        }
+        if (state == ActorTaskState.WAITING_ON_USER) return NotificationCategory.USER_INPUT;
+        if (state == ActorTaskState.FINISHED) return NotificationCategory.SUCCESS;
+        return NotificationCategory.INTERRUPTED;
     }
 
     private static NotificationWrapper buildRunningNotification(

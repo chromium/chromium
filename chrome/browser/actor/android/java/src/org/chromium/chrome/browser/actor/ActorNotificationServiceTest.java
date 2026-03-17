@@ -170,4 +170,45 @@ public class ActorNotificationServiceTest {
         assertNull(mNotificationService.getCachedNotification(taskId2));
         assertEquals(0, mMockNotificationManager.getNotifications().size());
     }
+
+    @Test
+    public void testUpdateNotificationForTask_SkipRedundantUpdates() {
+        int taskId = 1;
+        when(mTask.getId()).thenReturn(taskId);
+        when(mTask.getTitle()).thenReturn("Test Task");
+        when(mKeyedService.getTask(taskId)).thenReturn(mTask);
+
+        // First update.
+        mNotificationService.updateNotificationForTask(taskId, ActorTaskState.ACTING);
+        assertEquals(1, mMockNotificationManager.getMutationCountAndDecrement());
+
+        // Update to REFLECTING should be skipped.
+        mNotificationService.updateNotificationForTask(taskId, ActorTaskState.REFLECTING);
+        assertEquals(0, mMockNotificationManager.getMutationCountAndDecrement());
+
+        // Update to PAUSED_BY_USER should NOT be skipped.
+        mNotificationService.updateNotificationForTask(taskId, ActorTaskState.PAUSED_BY_USER);
+        assertEquals(1, mMockNotificationManager.getMutationCountAndDecrement());
+
+        // Update to PAUSED_BY_ACTOR should be skipped.
+        mNotificationService.updateNotificationForTask(taskId, ActorTaskState.PAUSED_BY_ACTOR);
+        assertEquals(0, mMockNotificationManager.getMutationCountAndDecrement());
+    }
+
+    @Test
+    public void testGetCachedNotification_UpdatesStateCache() {
+        int taskId = 1;
+        when(mTask.getId()).thenReturn(taskId);
+        when(mTask.getTitle()).thenReturn("Test Task");
+        when(mTask.getState()).thenReturn(ActorTaskState.ACTING);
+        when(mKeyedService.getTask(taskId)).thenReturn(mTask);
+
+        // This should populate the state cache.
+        mNotificationService.getCachedNotification(taskId);
+        assertEquals(0, mMockNotificationManager.getMutationCountAndDecrement());
+
+        // Now updateNotificationForTask with REFLECTING should be skipped.
+        mNotificationService.updateNotificationForTask(taskId, ActorTaskState.REFLECTING);
+        assertEquals(0, mMockNotificationManager.getMutationCountAndDecrement());
+    }
 }

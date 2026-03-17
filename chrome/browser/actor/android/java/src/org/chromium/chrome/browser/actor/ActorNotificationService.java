@@ -23,6 +23,7 @@ import java.util.Map;
 @NullMarked
 public class ActorNotificationService {
     private final Map<Integer, NotificationWrapper> mNotificationCache = new HashMap<>();
+    private final Map<Integer, Integer> mTaskStates = new HashMap<>();
     private static final String TAG = "ActNotification";
     private final BaseNotificationManagerProxy mNotificationManager;
     private final ActorKeyedService mKeyedService;
@@ -63,6 +64,14 @@ public class ActorNotificationService {
         if (task == null) {
             mNotificationManager.cancel(taskId);
             mNotificationCache.remove(taskId);
+            mTaskStates.remove(taskId);
+            return;
+        }
+
+        Integer oldState = mTaskStates.get(taskId);
+        if (oldState != null
+                && !ActorNotificationFactory.shouldUpdateNotification(oldState, newState)) {
+            mTaskStates.put(taskId, newState);
             return;
         }
 
@@ -70,6 +79,7 @@ public class ActorNotificationService {
                 ActorNotificationFactory.buildNotification(task, newState);
         mNotificationManager.notify(notification);
         mNotificationCache.put(taskId, notification);
+        mTaskStates.put(taskId, newState);
     }
 
     /**
@@ -84,8 +94,10 @@ public class ActorNotificationService {
         if (notification == null) {
             ActorTask task = mKeyedService.getTask(taskId);
             if (task != null) {
-                notification = ActorNotificationFactory.buildNotification(task, task.getState());
+                int state = task.getState();
+                notification = ActorNotificationFactory.buildNotification(task, state);
                 mNotificationCache.put(taskId, notification);
+                mTaskStates.put(taskId, state);
             }
         }
         return notification != null ? notification.getNotification() : null;
@@ -95,5 +107,6 @@ public class ActorNotificationService {
     public void clearAll() {
         mNotificationManager.cancelAll();
         mNotificationCache.clear();
+        mTaskStates.clear();
     }
 }
