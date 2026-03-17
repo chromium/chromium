@@ -19,4 +19,9 @@ ContextualSearchWebContentsHelper::TakeInputStateModel() {
   return std::move(input_state_model_);
 }
 
+std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
+ContextualSearchWebContentsHelper::TakeSessionHandle() {
+  return std::move(session_handle_);
+}
+
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ContextualSearchWebContentsHelper);

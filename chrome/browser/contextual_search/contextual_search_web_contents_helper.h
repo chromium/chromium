@@ -47,8 +47,14 @@ class ContextualSearchWebContentsHelper
     return session_handle_.get();
   }
 
-  // Returns the input state model. May return nullptr.
+  // Returns the input state model. May return nullptr. This transfers
+  // ownership to the caller.
   std::unique_ptr<contextual_search::InputStateModel> TakeInputStateModel();
+
+  // Returns the session handle. May return nullptr. This transfers ownership
+  // to the caller.
+  std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
+  TakeSessionHandle();
 
   // Returns the task ID associated with the current contextual search session.
   // std::nullopt if the web_contents isn't showing a contextual task.
