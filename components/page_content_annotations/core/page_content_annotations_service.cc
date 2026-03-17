@@ -34,7 +34,6 @@
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "components/page_content_annotations/core/page_content_annotations_switches.h"
 #include "components/page_content_annotations/core/page_content_annotations_validator.h"
-#include "components/passage_embeddings/core/passage_embeddings_types.h"
 #include "components/search/search.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -186,8 +185,6 @@ PageContentAnnotationsService::PageContentAnnotationsService(
     const base::FilePath& database_dir,
     OptimizationGuideLogger* optimization_guide_logger,
     optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
-    passage_embeddings::EmbedderMetadataProvider* embedder_metadata_provider,
-    passage_embeddings::Embedder* embedder,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner)
     : min_page_category_score_to_persist_(
           features::GetMinimumPageCategoryScoreToPersist()),
@@ -221,12 +218,10 @@ PageContentAnnotationsService::PageContentAnnotationsService(
     annotation_types_to_execute_.push_back(AnnotationType::kContentVisibility);
   }
 
-  if (base::FeatureList::IsEnabled(features::kOnDeviceCategoryClassifier) &&
-      embedder_metadata_provider && embedder) {
+  if (base::FeatureList::IsEnabled(features::kOnDeviceCategoryClassifier)) {
     on_device_category_classifier_ =
         std::make_unique<OnDeviceCategoryClassifier>(
-            optimization_guide_model_provider, embedder_metadata_provider,
-            embedder);
+            optimization_guide_model_provider);
   }
 #endif
 
@@ -925,19 +920,10 @@ void PageContentAnnotationsService::OnOptimizationGuideResponseReceived(
   }
 }
 
-void PageContentAnnotationsService::ClassifyCategoriesForText(
-    const std::string& text,
-    base::OnceCallback<void(std::vector<Category>)> callback) {
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  if (!on_device_category_classifier_) {
-    std::move(callback).Run({});
-    return;
-  }
-
-  on_device_category_classifier_->ClassifyText(text, std::move(callback));
-#else
-  std::move(callback).Run({});
-#endif
+void PageContentAnnotationsService::SetPageCategoryClassifierBridge(
+    std::unique_ptr<PageCategoryClassifierBridge>
+        page_category_classifier_bridge) {
+  page_category_classifier_bridge_ = std::move(page_category_classifier_bridge);
 }
 
 HistoryVisit::HistoryVisit() = default;

@@ -56,6 +56,8 @@ source_set("page_embeddings") {
   sources = [
     "embeddings_candidate_generator.cc",
     "embeddings_candidate_generator.h",
+    "page_category_classifier_bridge_impl.cc",
+    "page_category_classifier_bridge_impl.h",
     "page_embeddings_service.cc",
     "page_embeddings_service.h",
   ]
@@ -70,6 +72,7 @@ source_set("page_embeddings") {
 
   deps = [
     "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/page_content_annotations/core",
     "//components/passage_embeddings/core:passage_embeddings_types",
     "//services/passage_embeddings/public/mojom",
   ]
