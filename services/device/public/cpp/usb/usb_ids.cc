@@ -10,7 +10,10 @@ namespace device {
 
 // static
 const UsbVendor* UsbIds::FindVendor(uint16_t vendor_id) {
-  const UsbVendor key = {/*name=*/{}, /*products=*/{}, vendor_id};
+  const UsbVendor key = {
+      /*unused name*/ base::subtle::IndexPointer<char, usb_strings>(0),
+      vendor_id,
+      /*products=*/{}};
   auto it = std::ranges::lower_bound(
       vendors_, key, [](const auto& a, const auto& b) { return a.id < b.id; });
   if (it == vendors_.end() || it->id != vendor_id) {
@@ -35,7 +38,9 @@ const char* UsbIds::GetProductName(uint16_t vendor_id, uint16_t product_id) {
     return nullptr;
   }
 
-  const UsbProduct key = {product_id, /*name=*/{}};
+  const UsbProduct key = {
+      product_id,
+      /*unused name*/ base::subtle::IndexPointer<char, usb_strings>(0)};
   auto it = std::ranges::lower_bound(
       vendor->products, key,
       [](const auto& a, const auto& b) { return a.id < b.id; });

@@ -379,6 +379,7 @@ component("base") {
     "memory/available_memory_monitor.cc",
     "memory/available_memory_monitor.h",
     "memory/free_deleter.h",
+    "memory/index_pointer.h",
     "memory/memory_pressure_level.h",
     "memory/memory_pressure_listener.cc",
     "memory/memory_pressure_listener.h",

@@ -75,6 +75,9 @@ namespace base::subtle {
 //
 // While this has a small runtime cost (typically a PC-relative load), modern
 // CPUs are quite good at this sort of math.
+//
+// See also IndexPointer, which can be used as IndexPointer<char, ...> for
+// C-style strings without an explicitly stored length.
 template <size_t N, const char (&kData)[N]>
 struct StringSlice {
   using IndexType = typename internal::IndexTypeForSize<N>::Type;

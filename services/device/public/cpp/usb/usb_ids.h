@@ -9,13 +9,16 @@
 #include <stdint.h>
 
 #include "base/containers/span.h"
+#include "base/memory/index_pointer.h"
 #include "base/memory/raw_ptr_exclusion.h"
 
 namespace device {
 
+extern const char usb_strings[];
+
 struct UsbProduct {
   const uint16_t id;
-  const char* name;
+  base::subtle::IndexPointer<char, usb_strings> name;
 };
 
 // This structure is used in an array so the cumulative size is significant.
@@ -23,10 +26,10 @@ struct UsbProduct {
 // Chose field size based on contained data to further reduce structure size.
 // For example, uint16_t instead of size_t.
 struct UsbVendor {
-  const char* name;
+  base::subtle::IndexPointer<char, usb_strings> name;
+  const uint16_t id;
   // TODO(367764863) Rewrite to base::raw_span.
   RAW_PTR_EXCLUSION const base::span<const UsbProduct> products;
-  const uint16_t id;
 };
 
 // UsbIds provides a static mapping from a vendor ID to a name, as well as a
