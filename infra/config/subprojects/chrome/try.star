@@ -60,6 +60,13 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    builder = "android-internal-desktop-x64-rel",
+    tryjob = try_.job(
+        experiment_percentage = 5,
+    ),
+)
+
+chrome_internal_verifier(
     builder = "linux-chromeos-compile-chrome",
     tryjob = try_.job(),
 )
