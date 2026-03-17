@@ -43,28 +43,22 @@ void ChromeContentBrowserClientExtensionsPart::
         const content::ServiceWorkerVersionBaseInfo&
             service_worker_version_info,
         blink::AssociatedInterfaceRegistry& associated_registry) {
-  CHECK(service_worker_version_info.process_id !=
-        content::ChildProcessHost::kInvalidUniqueID);
-  // TODO(crbug.com/379869738) Remove FromUnsafeValue.
+  CHECK(service_worker_version_info.process_id);
   associated_registry.AddInterface<mojom::RendererHost>(
       base::BindRepeating(&RendererStartupHelper::BindForRenderer,
-                          content::ChildProcessId::FromUnsafeValue(
-                              service_worker_version_info.process_id)));
-  associated_registry.AddInterface<mojom::ServiceWorkerHost>(
-      base::BindRepeating(&ServiceWorkerHost::BindReceiver,
                           service_worker_version_info.process_id));
+  // TODO(crbug.com/379869738) Remove GetUnsafeValue.
+  associated_registry.AddInterface<mojom::ServiceWorkerHost>(
+      base::BindRepeating(
+          &ServiceWorkerHost::BindReceiver,
+          service_worker_version_info.process_id.GetUnsafeValue()));
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  // TODO(crbug.com/379869738) Remove FromUnsafeValue.
   associated_registry.AddInterface<mojom::RendererAutomationRegistry>(
       base::BindRepeating(&AutomationEventRouter::BindForRenderer,
-                          content::ChildProcessId::FromUnsafeValue(
-                              service_worker_version_info.process_id)));
+                          service_worker_version_info.process_id));
 #endif
-  // TODO(crbug.com/379869738) Remove FromUnsafeValue.
-  associated_registry.AddInterface<mojom::EventRouter>(
-      base::BindRepeating(&EventRouter::BindForRenderer,
-                          content::ChildProcessId::FromUnsafeValue(
-                              service_worker_version_info.process_id)));
+  associated_registry.AddInterface<mojom::EventRouter>(base::BindRepeating(
+      &EventRouter::BindForRenderer, service_worker_version_info.process_id));
 }
 
 void ChromeContentBrowserClientExtensionsPart::

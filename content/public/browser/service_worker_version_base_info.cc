@@ -12,7 +12,7 @@ ServiceWorkerVersionBaseInfo::ServiceWorkerVersionBaseInfo(
     const blink::StorageKey& storage_key,
     int64_t registration_id,
     int64_t version_id,
-    int process_id,
+    ChildProcessId process_id,
     blink::mojom::AncestorFrameType ancestor_frame_type)
     : script_url(script_url),
       scope(scope),

@@ -282,12 +282,11 @@ void ServiceWorkerContextWatcher::OnVersionDevToolsRoutingIdChanged(
   if (it == version_info_map_.end())
     return;
   ServiceWorkerVersionInfo* version = it->second.get();
-  // TODO(crbug.com/379869738) Remove GetUnsafeValue.
-  if (version->process_id == process_id.GetUnsafeValue() &&
+  if (version->process_id == process_id &&
       version->devtools_agent_route_id == devtools_agent_route_id) {
     return;
   }
-  version->process_id = process_id.GetUnsafeValue();
+  version->process_id = process_id;
   version->devtools_agent_route_id = devtools_agent_route_id;
   SendVersionInfo(*version);
   if (IsStoppedAndRedundant(*version))

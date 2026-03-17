@@ -465,10 +465,12 @@ ServiceWorkerVersionInfo ServiceWorkerVersion::GetInfo() {
   if (router_evaluator_) {
     router_rules = router_evaluator_->ToString();
   }
+  // TODO(crbug.com/379869738) Remove FromUnsafeValue.
   ServiceWorkerVersionInfo info(
       running_status(), status(), fetch_handler_type_,
       navigation_preload_state_, script_url(), scope(), key(),
-      registration_id(), version_id(), embedded_worker()->process_id(),
+      registration_id(), version_id(),
+      ChildProcessId::FromUnsafeValue(embedded_worker()->process_id()),
       embedded_worker()->thread_id(),
       embedded_worker()->worker_devtools_agent_route_id(), ukm_source_id(),
       ancestor_frame_type_, router_rules);

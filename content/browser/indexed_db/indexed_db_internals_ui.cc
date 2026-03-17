@@ -88,9 +88,10 @@ scoped_refptr<DevToolsAgentHostImpl> GetDevToolsAgentHostForClient(
       }
       ServiceWorkerVersion* version =
           service_worker_context->GetLiveVersion(version_id);
+      // TODO(crbug.com/379869738) Remove GetUnsafeValue.
       return version ? ServiceWorkerDevToolsManager::GetInstance()
                            ->GetDevToolsAgentHostForWorker(
-                               version->GetInfo().process_id,
+                               version->GetInfo().process_id.GetUnsafeValue(),
                                version->GetInfo().devtools_agent_route_id)
                      : nullptr;
     }

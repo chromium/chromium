@@ -42,7 +42,7 @@ struct CONTENT_EXPORT ServiceWorkerVersionInfo
       const blink::StorageKey& storage_key,
       int64_t registration_id,
       int64_t version_id,
-      int process_id,
+      ChildProcessId process_id,
       int thread_id,
       int devtools_agent_route_id,
       ukm::SourceId ukm_source_id,
