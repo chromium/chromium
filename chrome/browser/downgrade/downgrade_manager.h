@@ -12,6 +12,8 @@ class Version;
 
 namespace downgrade {
 
+class DowngradeManagerDelegate;
+
 // An encapsulation of processing relating to the handling of browser launches
 // where the User Data directory was last written by a higher version of the
 // browser (a "downgrade"). It can detect if downgrade processing is needed,
@@ -32,7 +34,8 @@ class DowngradeManager {
   // |false| if it is usable by the current version. Note: this must be called
   // within the protection of the process singleton.
   bool PrepareUserDataDirectoryForCurrentVersion(
-      const base::FilePath& user_data_dir);
+      const base::FilePath& user_data_dir,
+      DowngradeManagerDelegate* delegate);
 
   // Writes the current version number into the "Last Version" file in
   // |user_data_dir|.
@@ -42,11 +45,13 @@ class DowngradeManager {
   // PrepareUserDataDirectoryForCurrentVersion or ProcessDowngrade. This
   // operation is idempotent, and may be safely called when no such directories
   // exist.
-  void DeleteMovedUserDataSoon(const base::FilePath& user_data_dir);
+  void DeleteMovedUserDataSoon(const base::FilePath& user_data_dir,
+                               DowngradeManagerDelegate* delegate);
 
   // Process a previously-detected downgrade of |user_data_dir|. This must be
   // called late in shutdown while the process singleton is still held.
-  void ProcessDowngrade(const base::FilePath& user_data_dir);
+  void ProcessDowngrade(const base::FilePath& user_data_dir,
+                        DowngradeManagerDelegate* delegate);
 
   static void EnableSnapshotsForTesting(bool enable);
 

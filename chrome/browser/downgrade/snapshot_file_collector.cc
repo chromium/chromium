@@ -26,13 +26,6 @@
 
 namespace downgrade {
 
-SnapshotItemDetails::SnapshotItemDetails(base::FilePath path,
-                                         ItemType item_type,
-                                         uint64_t data_types)
-    : path(std::move(path)),
-      is_directory(item_type == ItemType::kDirectory),
-      data_types(data_types) {}
-
 // Returns a list of items to snapshot that should be directly under the user
 // data  directory.
 std::vector<SnapshotItemDetails> CollectUserDataItems() {

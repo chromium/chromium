@@ -22,6 +22,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/downgrade/downgrade_manager.h"
+#include "chrome/browser/downgrade/downgrade_manager_delegate_impl.h"
 #include "chrome/browser/downgrade/user_data_downgrade.h"
 #include "chrome/browser/first_run/scoped_relaunch_chrome_browser_override.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -472,8 +473,9 @@ IN_PROC_BROWSER_TEST_F(InProcessBrowserTest, SameMilestoneSnapshot) {
   // No snapshots for same version.
   base::WriteFile(user_data_dir.Append(kDowngradeLastVersionFile),
                   current_version);
+  downgrade::DowngradeManagerDelegateImpl delegate;
   EXPECT_FALSE(downgrade_manager.PrepareUserDataDirectoryForCurrentVersion(
-      user_data_dir));
+      user_data_dir, &delegate));
   EXPECT_FALSE(
       base::PathExists(user_data_dir.Append(downgrade::kSnapshotsDir)));
 
@@ -491,7 +493,7 @@ IN_PROC_BROWSER_TEST_F(InProcessBrowserTest, SameMilestoneSnapshot) {
                   last_minor_version);
 
   EXPECT_FALSE(downgrade_manager.PrepareUserDataDirectoryForCurrentVersion(
-      user_data_dir));
+      user_data_dir, &delegate));
   EXPECT_FALSE(
       base::PathExists(user_data_dir.Append(downgrade::kSnapshotsDir)));
 }
@@ -512,8 +514,10 @@ IN_PROC_BROWSER_TEST_F(InProcessBrowserTest, CanarySameMilestoneSnapshot) {
   // No snapshots for same version.
   base::WriteFile(user_data_dir.Append(kDowngradeLastVersionFile),
                   current_version);
+
+  downgrade::DowngradeManagerDelegateImpl delegate;
   EXPECT_FALSE(downgrade_manager.PrepareUserDataDirectoryForCurrentVersion(
-      user_data_dir));
+      user_data_dir, &delegate));
   EXPECT_FALSE(
       base::PathExists(user_data_dir.Append(downgrade::kSnapshotsDir)));
 
@@ -531,7 +535,7 @@ IN_PROC_BROWSER_TEST_F(InProcessBrowserTest, CanarySameMilestoneSnapshot) {
                   last_minor_version);
 
   EXPECT_FALSE(downgrade_manager.PrepareUserDataDirectoryForCurrentVersion(
-      user_data_dir));
+      user_data_dir, &delegate));
   EXPECT_TRUE(base::PathExists(user_data_dir.Append(downgrade::kSnapshotsDir)));
 }
 #endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)

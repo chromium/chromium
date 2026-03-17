@@ -21,7 +21,7 @@
 #include "content/public/common/result_codes.h"
 
 #if BUILDFLAG(ENABLE_DOWNGRADE_PROCESSING)
-#include "chrome/browser/downgrade/downgrade_manager.h"
+#include "chrome/browser/downgrade/downgrade_manager.h"  // nogncheck
 #endif
 
 class BrowserProcessImpl;

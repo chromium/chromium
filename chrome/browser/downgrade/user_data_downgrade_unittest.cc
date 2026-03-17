@@ -140,13 +140,35 @@ TEST(UserDataDowngradeTests, RemoveDataForProfile) {
   base::File::Info snapshot_info;
   ASSERT_TRUE(base::GetFileInfo(snapshot_dir, &snapshot_info));
 
+  auto remove_data_for_profile = [](base::Time delete_begin,
+                                    const base::FilePath& profile_path,
+                                    uint64_t remove_mask) {
+    bool delete_all =
+        (((remove_mask & chrome_browsing_data_remover::WIPE_PROFILE) ==
+          chrome_browsing_data_remover::WIPE_PROFILE) ||
+         ((remove_mask & chrome_browsing_data_remover::ALL_DATA_TYPES) ==
+          chrome_browsing_data_remover::ALL_DATA_TYPES)) &&
+        delete_begin.is_null();
+    std::optional<std::vector<base::FilePath>> files_to_delete;
+    if (!delete_all) {
+      files_to_delete.emplace();
+      for (const auto& item : CollectProfileItems()) {
+        if (item.data_types & remove_mask) {
+          files_to_delete->push_back(item.path);
+        }
+      }
+    }
+    RemoveDataForProfile(delete_begin, profile_path,
+                         std::move(files_to_delete));
+  };
+
   // Nothing should be deleted from |profile_path_default| since delete_begin
   // is after the snapshot has been created.
-  RemoveDataForProfile(base::Time::Max(), profile_path_default,
-                       chrome_browsing_data_remover::DATA_TYPE_BOOKMARKS);
+  remove_data_for_profile(base::Time::Max(), profile_path_default,
+                          chrome_browsing_data_remover::DATA_TYPE_BOOKMARKS);
   // Only the bookmarks should be deleted.
-  RemoveDataForProfile(base::Time::Min(), profile_path_1,
-                       chrome_browsing_data_remover::DATA_TYPE_BOOKMARKS);
+  remove_data_for_profile(base::Time::Min(), profile_path_1,
+                          chrome_browsing_data_remover::DATA_TYPE_BOOKMARKS);
   EXPECT_TRUE(base::PathExists(
       snapshot_profile_path_default.Append(chrome::kPreferencesFilename)));
   EXPECT_TRUE(base::PathExists(
@@ -173,15 +195,15 @@ TEST(UserDataDowngradeTests, RemoveDataForProfile) {
       chrome_browsing_data_remover::DATA_TYPE_FORM_DATA;
 
   // Delete some data from default profile.
-  RemoveDataForProfile(base::Time::Min(), profile_path_default, remove_mask);
+  remove_data_for_profile(base::Time::Min(), profile_path_default, remove_mask);
   for (const auto& item : profile_items) {
     EXPECT_EQ(
         (item.data_types & remove_mask) == 0ULL,
         base::PathExists(snapshot_profile_path_default.Append(item.path)));
   }
   // Wipe profile 1
-  RemoveDataForProfile(base::Time(), profile_path_1,
-                       chrome_browsing_data_remover::WIPE_PROFILE);
+  remove_data_for_profile(base::Time(), profile_path_1,
+                          chrome_browsing_data_remover::WIPE_PROFILE);
   EXPECT_FALSE(base::PathExists(snapshot_profile_path_1));
 }
 

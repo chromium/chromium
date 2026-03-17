@@ -36,11 +36,6 @@ base::FilePath GetLastVersionFile(const base::FilePath& user_data_dir);
 std::optional<base::Version> GetLastVersion(
     const base::FilePath& user_data_dir);
 
-// Return the disk cache directory override if one is set via administrative
-// policy or a command line switch; otherwise, an empty path (the disk cache is
-// within the User Data directory).
-base::FilePath GetDiskCacheDir();
-
 // Returns the versions that have a complete snapshot available.
 base::flat_set<base::Version> GetAvailableSnapshots(
     const base::FilePath& snapshot_dir);
@@ -57,11 +52,11 @@ std::optional<base::Version> GetSnapshotToRestore(
     const base::FilePath& user_data_dir);
 
 // Removes snapshot data created after |delete_begin| for |profile_path|.
-// |remove_mask| (of bits from ChromeBrowsingDataRemoverDelegate::DataType)
-// indicates the types of data to be cleared from the profile's snapshots.
-void RemoveDataForProfile(base::Time delete_begin,
-                          const base::FilePath& profile_path,
-                          uint64_t remove_mask);
+// If |files_to_delete| is nullopt, all data for the profile is removed.
+void RemoveDataForProfile(
+    base::Time delete_begin,
+    const base::FilePath& profile_path,
+    std::optional<std::vector<base::FilePath>> files_to_delete);
 
 }  // namespace downgrade
 

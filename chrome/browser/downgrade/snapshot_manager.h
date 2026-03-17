@@ -11,12 +11,26 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/version.h"
 
 namespace downgrade {
 
-struct SnapshotItemDetails;
+struct SnapshotItemDetails {
+  enum class ItemType { kFile, kDirectory };
+
+  SnapshotItemDetails(base::FilePath path, ItemType type, uint64_t data_types);
+  ~SnapshotItemDetails() = default;
+  const base::FilePath path;
+  const bool is_directory;
+
+  // Bitfield from ChromeBrowsingDataRemoverDelegate::DataType representing
+  // the data types affected by this item.
+  const uint64_t data_types;
+};
+
+class DowngradeManagerDelegate;
 
 // Class that handles saving snapshots of some user data after a browser
 // upgrade, and loading the appropriate snapshot after a downgrade.
@@ -25,12 +39,13 @@ class SnapshotManager {
   // Instantiates a SnapshotManager that will handle taking a snapshot and
   // restoring snapshots for the data from |user_data_dir| for the current
   // chrome version.
-  explicit SnapshotManager(const base::FilePath& user_data_dir);
+  SnapshotManager(const base::FilePath& user_data_dir,
+                  const DowngradeManagerDelegate* delegate);
 
   SnapshotManager(const SnapshotManager& other) = delete;
   SnapshotManager& operator=(const SnapshotManager&) = delete;
 
-  ~SnapshotManager();
+  virtual ~SnapshotManager();
 
   // Copies specified files from |user_data_dir_| for |version| into the
   // appropriate snapshot directory.
@@ -50,18 +65,15 @@ class SnapshotManager {
                                    std::optional<uint32_t> milestone) const;
 
   // Deletes snapshot data created after |delete_begin| for |profile_base_name|.
-  // |remove_mask| (of bits from ChromeBrowsingDataRemoverDelegate::DataType)
-  // indicates the types of data to be cleared from the profile's snapshots.
-  void DeleteSnapshotDataForProfile(base::Time delete_begin,
-                                    const base::FilePath& profile_base_name,
-                                    uint64_t remove_mask);
+  // If |files_to_delete| is nullopt, all data for the profile is removed.
+  void DeleteSnapshotDataForProfile(
+      base::Time delete_begin,
+      const base::FilePath& profile_base_name,
+      std::optional<std::vector<base::FilePath>> files_to_delete);
 
  private:
-  virtual std::vector<SnapshotItemDetails> GetUserSnapshotItemDetails() const;
-  virtual std::vector<SnapshotItemDetails> GetProfileSnapshotItemDetails()
-      const;
-
   const base::FilePath user_data_dir_;
+  const raw_ptr<const DowngradeManagerDelegate> delegate_;
 };
 
 }  // namespace downgrade

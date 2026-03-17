@@ -14,13 +14,19 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
-#include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
+#include "chrome/browser/downgrade/downgrade_manager_delegate.h"
 #include "chrome/browser/downgrade/downgrade_utils.h"
-#include "chrome/browser/downgrade/snapshot_file_collector.h"
 #include "chrome/browser/downgrade/user_data_downgrade.h"
 #include "chrome/common/chrome_constants.h"
 
 namespace downgrade {
+
+SnapshotItemDetails::SnapshotItemDetails(base::FilePath path,
+                                         ItemType item_type,
+                                         uint64_t data_types)
+    : path(std::move(path)),
+      is_directory(item_type == ItemType::kDirectory),
+      data_types(data_types) {}
 
 namespace {
 
@@ -125,8 +131,9 @@ void MoveFolderForLaterDeletion(const base::FilePath& source,
 
 }  // namespace
 
-SnapshotManager::SnapshotManager(const base::FilePath& user_data_dir)
-    : user_data_dir_(user_data_dir) {}
+SnapshotManager::SnapshotManager(const base::FilePath& user_data_dir,
+                                 const DowngradeManagerDelegate* delegate)
+    : user_data_dir_(user_data_dir), delegate_(delegate) {}
 
 SnapshotManager::~SnapshotManager() = default;
 
@@ -152,12 +159,13 @@ void SnapshotManager::TakeSnapshot(const base::Version& version) {
     return;
 
   // Copy items to be preserved at the top-level of User Data.
-  for (const auto& file : GetUserSnapshotItemDetails()) {
+  for (const auto& file : delegate_->GetUserDataSnapshotItems()) {
     CopyItemToSnapshotDirectory(base::FilePath(file.path), user_data_dir_,
                                 snapshot_dir, file.is_directory);
   }
 
-  const auto profile_snapshot_item_details = GetProfileSnapshotItemDetails();
+  const auto profile_snapshot_item_details =
+      delegate_->GetProfileSnapshotItems();
 
   // Copy items to be preserved in each Profile directory.
   for (const auto& profile_dir : GetUserProfileDirectories(user_data_dir_)) {
@@ -306,23 +314,12 @@ void SnapshotManager::PurgeInvalidAndOldSnapshots(
 void SnapshotManager::DeleteSnapshotDataForProfile(
     base::Time delete_begin,
     const base::FilePath& profile_base_name,
-    uint64_t remove_mask) {
-  using chrome_browsing_data_remover::ALL_DATA_TYPES;
-  using chrome_browsing_data_remover::WIPE_PROFILE;
+    std::optional<std::vector<base::FilePath>> files_to_delete) {
+  bool delete_all = !files_to_delete.has_value();
 
-  bool delete_all = (((remove_mask & WIPE_PROFILE) == WIPE_PROFILE) ||
-                     ((remove_mask & ALL_DATA_TYPES) == ALL_DATA_TYPES)) &&
-                    delete_begin.is_null();
-  std::vector<base::FilePath> files_to_delete;
-  if (!delete_all) {
-    for (const auto& item : CollectProfileItems()) {
-      if (item.data_types & remove_mask)
-        files_to_delete.push_back(item.path);
-    }
-  }
-
-  if (!delete_all && files_to_delete.empty())
+  if (!delete_all && files_to_delete->empty()) {
     return;
+  }
 
   const auto snapshot_dir = user_data_dir_.Append(kSnapshotsDir);
   auto available_snapshots = GetAvailableSnapshots(snapshot_dir);
@@ -341,7 +338,7 @@ void SnapshotManager::DeleteSnapshotDataForProfile(
       base::DeletePathRecursively(profile_absolute_path);
     } else if (delete_begin <= file_info.creation_time &&
                base::PathExists(profile_absolute_path)) {
-      for (const auto& filename : files_to_delete) {
+      for (const auto& filename : files_to_delete.value()) {
         base::DeletePathRecursively(profile_absolute_path.Append(filename));
       }
       // Non recursive deletion will fail if the directory is not empty. In this
@@ -349,16 +346,6 @@ void SnapshotManager::DeleteSnapshotDataForProfile(
       base::DeleteFile(profile_absolute_path);
     }
   }
-}
-
-std::vector<SnapshotItemDetails>
-SnapshotManager::GetProfileSnapshotItemDetails() const {
-  return CollectProfileItems();
-}
-
-std::vector<SnapshotItemDetails> SnapshotManager::GetUserSnapshotItemDetails()
-    const {
-  return CollectUserDataItems();
 }
 
 }  // namespace downgrade

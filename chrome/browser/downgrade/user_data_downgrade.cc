@@ -13,10 +13,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/downgrade/snapshot_manager.h"
-#include "chrome/common/pref_names.h"
-#include "components/prefs/pref_service.h"
 
 namespace downgrade {
 
@@ -70,14 +67,6 @@ std::optional<base::Version> GetLastVersion(
   return std::nullopt;
 }
 
-base::FilePath GetDiskCacheDir() {
-  base::FilePath disk_cache_dir =
-      g_browser_process->local_state()->GetFilePath(prefs::kDiskCacheDir);
-  if (disk_cache_dir.ReferencesParent())
-    return base::MakeAbsoluteFilePath(disk_cache_dir);
-  return disk_cache_dir;
-}
-
 base::flat_set<base::Version> GetAvailableSnapshots(
     const base::FilePath& snapshot_dir) {
   std::vector<base::Version> result;
@@ -121,12 +110,13 @@ std::optional<base::Version> GetSnapshotToRestore(
   return std::nullopt;
 }
 
-void RemoveDataForProfile(base::Time delete_begin,
-                          const base::FilePath& profile_path,
-                          uint64_t remove_mask) {
-  SnapshotManager snapshot_manager(profile_path.DirName());
+void RemoveDataForProfile(
+    base::Time delete_begin,
+    const base::FilePath& profile_path,
+    std::optional<std::vector<base::FilePath>> files_to_delete) {
+  SnapshotManager snapshot_manager(profile_path.DirName(), nullptr);
   snapshot_manager.DeleteSnapshotDataForProfile(
-      delete_begin, profile_path.BaseName(), remove_mask);
+      delete_begin, profile_path.BaseName(), std::move(files_to_delete));
 }
 
 }  // namespace downgrade

@@ -12463,6 +12463,7 @@ if (!is_android && !is_chromeos_device) {
 
     if (enable_downgrade_processing) {
       sources += [ "../browser/downgrade/user_data_snapshot_browsertest.cc" ]
+      deps += [ "//chrome/browser/downgrade" ]
     }
 
     if (enable_chrome_notifications) {

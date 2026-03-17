@@ -10,6 +10,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/string_number_conversions.h"
+#include "chrome/browser/downgrade/downgrade_manager_delegate.h"
 #include "chrome/browser/downgrade/downgrade_utils.h"
 #include "chrome/browser/downgrade/snapshot_file_collector.h"
 #include "chrome/browser/downgrade/user_data_downgrade.h"
@@ -111,21 +112,23 @@ class TestFolderAndFiles {
 
 }  // namespace
 
-class TestSnapshotManager : public SnapshotManager {
+class TestDowngradeManagerDelegate : public DowngradeManagerDelegate {
  public:
-  explicit TestSnapshotManager(base::FilePath path) : SnapshotManager(path) {}
-  ~TestSnapshotManager() = default;
+  TestDowngradeManagerDelegate() = default;
+  ~TestDowngradeManagerDelegate() override = default;
 
- private:
-  std::vector<SnapshotItemDetails> GetUserSnapshotItemDetails() const override {
+  int GetMaxNumberOfSnapshots() const override { return 3; }
+  bool UserDataSnapshotEnabled() const override { return true; }
+  base::FilePath GetDiskCacheDir() const override { return base::FilePath(); }
+
+  std::vector<SnapshotItemDetails> GetUserDataSnapshotItems() const override {
     return std::vector<SnapshotItemDetails>{
         SnapshotItemDetails(base::FilePath(kUserDataFile),
                             SnapshotItemDetails::ItemType::kFile, 0),
         SnapshotItemDetails(base::FilePath(kUserDataFolder),
                             SnapshotItemDetails::ItemType::kDirectory, 0)};
   }
-  std::vector<SnapshotItemDetails> GetProfileSnapshotItemDetails()
-      const override {
+  std::vector<SnapshotItemDetails> GetProfileSnapshotItems() const override {
     return std::vector<SnapshotItemDetails>{
         SnapshotItemDetails(base::FilePath(kProfileDataFile),
                             SnapshotItemDetails::ItemType::kFile, 0),
@@ -202,7 +205,8 @@ TEST_F(SnapshotManagerTest, TakeSnapshot) {
     ASSERT_NO_FATAL_FAILURE(TestFolderAndFiles::CreateFilesAndFolders(path));
   }
 
-  TestSnapshotManager snapshot_manager(user_data_dir());
+  TestDowngradeManagerDelegate delegate;
+  SnapshotManager snapshot_manager(user_data_dir(), &delegate);
   snapshot_manager.TakeSnapshot(version);
 
   auto snapshot_dir = GetSnapshotDirectory(version);
@@ -265,7 +269,8 @@ TEST_F(SnapshotManagerTest, RestoreSnapshotOlderVersionAvailable) {
         TestFolderAndFiles::CreateFilesAndFolders(profile_folder));
   }
 
-  SnapshotManager snapshot_manager(user_data_dir());
+  TestDowngradeManagerDelegate delegate;
+  SnapshotManager snapshot_manager(user_data_dir(), &delegate);
   snapshot_manager.RestoreSnapshot(base::Version("11.0.0"));
 
   EXPECT_TRUE(TestFolderAndFiles::AllPathExists(user_data_dir()));
@@ -301,7 +306,8 @@ TEST_F(SnapshotManagerTest, RestoreSnapshotTargetVersionAvailable) {
         TestFolderAndFiles::CreateFilesAndFolders(profile_folder));
   }
 
-  SnapshotManager snapshot_manager(user_data_dir());
+  TestDowngradeManagerDelegate delegate;
+  SnapshotManager snapshot_manager(user_data_dir(), &delegate);
   snapshot_manager.RestoreSnapshot(version);
 
   EXPECT_TRUE(TestFolderAndFiles::AllPathExists(user_data_dir()));
@@ -343,7 +349,8 @@ TEST_F(SnapshotManagerTest, RestoreSnapshotIgnoresIncompleteSnapshots) {
         TestFolderAndFiles::CreateFilesAndFolders(profile_folder));
   }
 
-  SnapshotManager snapshot_manager(user_data_dir());
+  TestDowngradeManagerDelegate delegate;
+  SnapshotManager snapshot_manager(user_data_dir(), &delegate);
   snapshot_manager.RestoreSnapshot(newer_version);
 
   EXPECT_TRUE(TestFolderAndFiles::AllPathExists(user_data_dir()));
@@ -383,7 +390,8 @@ TEST_F(SnapshotManagerTest, PurgeInvalidAndOldSnapshotsKeepsMaxValidSnapshots) {
   }
 
   int max_number_of_snapshots = 3;
-  SnapshotManager snapshot_manager(user_data_dir());
+  TestDowngradeManagerDelegate delegate;
+  SnapshotManager snapshot_manager(user_data_dir(), &delegate);
   snapshot_manager.PurgeInvalidAndOldSnapshots(max_number_of_snapshots,
                                                std::nullopt);
 
@@ -420,7 +428,8 @@ TEST_F(SnapshotManagerTest, PurgeInvalidAndOldSnapshotsKeepsValidSnapshots) {
   }
 
   int max_number_of_snapshots = 3;
-  SnapshotManager snapshot_manager(user_data_dir());
+  TestDowngradeManagerDelegate delegate;
+  SnapshotManager snapshot_manager(user_data_dir(), &delegate);
   snapshot_manager.PurgeInvalidAndOldSnapshots(max_number_of_snapshots,
                                                std::nullopt);
 
@@ -444,7 +453,8 @@ TEST_F(SnapshotManagerTest,
   }
 
   int max_number_of_snapshots = 1;
-  SnapshotManager snapshot_manager(user_data_dir());
+  TestDowngradeManagerDelegate delegate;
+  SnapshotManager snapshot_manager(user_data_dir(), &delegate);
   snapshot_manager.PurgeInvalidAndOldSnapshots(max_number_of_snapshots, 20);
 
   EXPECT_TRUE(base::PathExists(valid_snapshot_paths[0]));

@@ -58,6 +58,10 @@
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/chrome_browser_main_extra_parts_profiles.h"
 #include "chrome/browser/profiles/profile.h"
+
+#if BUILDFLAG(ENABLE_DOWNGRADE_PROCESSING)
+#include "chrome/browser/downgrade/downgrade_manager_delegate_impl.h"  // nogncheck
+#endif
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/profiles/profiles_state.h"
@@ -1781,9 +1785,12 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
 #if BUILDFLAG(ENABLE_DOWNGRADE_PROCESSING) && !BUILDFLAG(IS_ANDROID)
   // Begin relaunch processing immediately if User Data migration is required
   // to handle a version downgrade.
-  if (downgrade_manager_.PrepareUserDataDirectoryForCurrentVersion(
-          user_data_dir_)) {
-    return CHROME_RESULT_CODE_DOWNGRADE_AND_RELAUNCH;
+  {
+    downgrade::DowngradeManagerDelegateImpl downgrade_delegate;
+    if (downgrade_manager_.PrepareUserDataDirectoryForCurrentVersion(
+            user_data_dir_, &downgrade_delegate)) {
+      return CHROME_RESULT_CODE_DOWNGRADE_AND_RELAUNCH;
+    }
   }
   downgrade_manager_.UpdateLastVersion(user_data_dir_);
 #endif
@@ -2079,7 +2086,11 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
 
 #if BUILDFLAG(ENABLE_DOWNGRADE_PROCESSING)
   // Clean up old user data directory, snapshots and disk cache directory.
-  downgrade_manager_.DeleteMovedUserDataSoon(user_data_dir_);
+  {
+    downgrade::DowngradeManagerDelegateImpl downgrade_delegate;
+    downgrade_manager_.DeleteMovedUserDataSoon(user_data_dir_,
+                                               &downgrade_delegate);
+  }
 #endif
 
   // This should be invoked as close as possible to the start of the browser's
@@ -2240,7 +2251,8 @@ void ChromeBrowserMainParts::PostDestroyThreads() {
 #if BUILDFLAG(ENABLE_DOWNGRADE_PROCESSING)
   if (result_code_ == CHROME_RESULT_CODE_DOWNGRADE_AND_RELAUNCH) {
     // Process a pending User Data downgrade before restarting.
-    downgrade_manager_.ProcessDowngrade(user_data_dir_);
+    downgrade::DowngradeManagerDelegateImpl downgrade_delegate;
+    downgrade_manager_.ProcessDowngrade(user_data_dir_, &downgrade_delegate);
 
     // It's impossible for there to also be a user-driven relaunch since the
     // browser never fully starts in this case.

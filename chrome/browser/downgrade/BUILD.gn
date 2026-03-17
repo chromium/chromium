@@ -1,0 +1,78 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/browser/downgrade/buildflags.gni")
+
+source_set("downgrade") {
+  public = [
+    "downgrade_manager.h",
+    "downgrade_manager_delegate.h",
+    "downgrade_prefs.h",
+    "downgrade_utils.h",
+    "snapshot_manager.h",
+    "user_data_downgrade.h",
+  ]
+
+  if (enable_downgrade_processing) {
+    public += [
+      "downgrade_manager_delegate_impl.h",
+      "snapshot_file_collector.h",
+    ]
+  }
+
+  public_deps = [ "//base" ]
+}
+
+source_set("impl") {
+  sources = [
+    "downgrade_manager.cc",
+    "downgrade_prefs.cc",
+    "downgrade_utils.cc",
+    "snapshot_manager.cc",
+    "user_data_downgrade.cc",
+  ]
+
+  if (enable_downgrade_processing) {
+    sources += [
+      "downgrade_manager_delegate_impl.cc",
+      "snapshot_file_collector.cc",
+    ]
+  }
+
+  public_deps = [ ":downgrade" ]
+
+  deps = [
+    "//base",
+    "//chrome/common:buildflags",
+    "//chrome/common:channel_info",
+    "//chrome/common:constants",
+    "//components/prefs",
+    "//components/version_info",
+    "//content/public/browser",
+  ]
+
+  if (enable_downgrade_processing) {
+    deps += [
+      "//chrome/browser:browser_process",
+      "//chrome/browser:browser_public_dependencies",
+      "//chrome/browser/browsing_data:constants",
+      "//chrome/browser/profiles:profile_util",
+      "//components/affiliations/core/browser:affiliations",
+      "//components/bookmarks/common",
+      "//components/enterprise",
+      "//components/history/core/browser",
+      "//components/password_manager/core/browser",
+      "//components/sessions",
+      "//components/strike_database",
+      "//components/webdata/common",
+    ]
+  }
+
+  if (is_win) {
+    deps += [ "//chrome/installer/util:with_no_strings" ]
+    if (enable_downgrade_processing) {
+      deps += [ "//chrome/browser/web_applications/chrome_pwa_launcher:util" ]
+    }
+  }
+}

@@ -6939,20 +6939,8 @@ static_library("browser") {
   }
 
   if (enable_downgrade_processing) {
-    sources += [
-      "downgrade/downgrade_manager.cc",
-      "downgrade/downgrade_manager.h",
-      "downgrade/downgrade_prefs.cc",
-      "downgrade/downgrade_prefs.h",
-      "downgrade/downgrade_utils.cc",
-      "downgrade/downgrade_utils.h",
-      "downgrade/snapshot_file_collector.cc",
-      "downgrade/snapshot_file_collector.h",
-      "downgrade/snapshot_manager.cc",
-      "downgrade/snapshot_manager.h",
-      "downgrade/user_data_downgrade.cc",
-      "downgrade/user_data_downgrade.h",
-    ]
+    public_deps += [ "//chrome/browser/downgrade:impl" ]
+    allow_circular_includes_from += [ "//chrome/browser/downgrade:impl" ]
   }
 
   if (is_android || is_chromeos || is_win) {
