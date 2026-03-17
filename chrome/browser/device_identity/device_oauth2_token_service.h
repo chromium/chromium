@@ -154,11 +154,11 @@ class DeviceOAuth2TokenService : public OAuth2AccessTokenManager::Delegate,
 
   // Flushes |pending_requests_|, indicating the specified result.
   void FlushPendingRequests(bool token_is_valid,
-                            GoogleServiceAuthError::State error);
+                            const GoogleServiceAuthError& error);
 
   // Signals failure on the specified request, passing |error| as the reason.
   void FailRequest(OAuth2AccessTokenManager::RequestImpl* request,
-                   GoogleServiceAuthError::State error);
+                   const GoogleServiceAuthError& error);
 
   // Starts the token validation flow, i.e. token info fetch.
   void StartValidation();
@@ -168,7 +168,7 @@ class DeviceOAuth2TokenService : public OAuth2AccessTokenManager::Delegate,
   // Returns the refresh token for the robot account id.
   std::string GetRefreshToken() const;
 
-  void ReportServiceError(GoogleServiceAuthError::State error);
+  void ReportServiceError(const GoogleServiceAuthError& error);
 
   // Returns true if this object has already received the validation result for
   // the token, false otherwise.
