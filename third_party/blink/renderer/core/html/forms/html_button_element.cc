@@ -207,6 +207,12 @@ bool HTMLButtonElement::CanBeCommandInvoker() const {
   return !IsFormAssociatedSubmitButton();
 }
 
+bool HTMLButtonElement::IsValidInterestInvoker(Element& target) const {
+  DCHECK(RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled());
+  // Buttons need to be enabled in order to support interest invokers.
+  return !IsDisabledFormControl();
+}
+
 bool HTMLButtonElement::IsFormAssociatedSubmitButton() const {
   return Form() && FastHasAttribute(html_names::kTypeAttr) && type_ == kSubmit;
 }

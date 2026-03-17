@@ -112,8 +112,6 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
     return PopoverTriggerSupport::kNone;
   }
 
-  bool IsValidInterestInvoker(Element& target) const override;
-
   void DefaultEventHandler(Event&) override;
 
   bool willValidate() const override;

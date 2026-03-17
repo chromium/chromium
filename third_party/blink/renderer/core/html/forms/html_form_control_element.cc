@@ -410,12 +410,6 @@ HTMLFormControlElement::popoverTargetElement() {
   return PopoverTargetElement{.popover = target_popover, .action = action};
 }
 
-bool HTMLFormControlElement::IsValidInterestInvoker(Element& target) const {
-  DCHECK(RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled());
-  // Buttons need to be enabled in order to support interest invokers.
-  return !IsDisabledFormControl();
-}
-
 void HTMLFormControlElement::DefaultEventHandler(Event& event) {
   HTMLElement::DefaultEventHandler(event);
   // Buttons that aren't form participants might be Invoker buttons or Popover

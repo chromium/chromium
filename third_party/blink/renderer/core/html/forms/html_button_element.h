@@ -53,6 +53,7 @@ class CORE_EXPORT HTMLButtonElement final : public HTMLFormControlElement {
   HTMLSelectElement* OwnerSelect() const;
 
   bool CanBeCommandInvoker() const override;
+  bool IsValidInterestInvoker(Element& target) const override;
 
  private:
   // The type attribute of HTMLButtonElement is an enumerated attribute:
