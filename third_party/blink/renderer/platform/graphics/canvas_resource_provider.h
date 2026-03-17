@@ -409,7 +409,6 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
 
   bool IsValid() const override;
 
-  void RasterRecord(cc::PaintRecord last_recording) override;
   sk_sp<SkSurface> CreateSkSurface() const override;
   void OnFlushForImage(cc::PaintImage::ContentId content_id);
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd) final;
@@ -450,6 +449,8 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   void EndWriteAccess();
   std::unique_ptr<gpu::RasterScopedAccess> WillDrawInternal();
 
+  CanvasImageProvider* GetOrCreateCanvasImageProvider();
+
   scoped_refptr<StaticBitmapImage> cached_snapshot_;
 
   bool resource_recycling_enabled_ = true;
@@ -459,8 +460,12 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   // The resource that is currently being used by this provider.
   scoped_refptr<CanvasResourceSharedImage> resource_;
 
+  base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
+  bool current_resource_has_write_access_ = false;
+  bool is_software_ = false;
+  bool is_cleared_ = false;
+
  private:
-  CanvasImageProvider* GetOrCreateCanvasImageProvider();
   scoped_refptr<CanvasResourceSharedImage> CreateResource();
   void DisableLineDrawingAsPathsIfNecessary() override;
   ScopedRasterTimer CreateScopedRasterTimer() override;
@@ -505,8 +510,6 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   // BitmapGpuChannelLostObserver:
   void OnGpuChannelLost() final;
 
-  base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
-
   // If this instance is single-buffered or |resource_recycling_enabled_| is
   // false, |unused_resources_| will be empty.
   Vector<UnusedResource> unused_resources_;
@@ -522,9 +525,6 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   scoped_refptr<viz::RasterContextProvider> raster_context_provider_;
   base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>
       shared_image_interface_provider_;
-  bool current_resource_has_write_access_ = false;
-  bool is_software_ = false;
-  bool is_cleared_ = false;
 
   cc::PaintImage::ContentId cached_content_id_ =
       cc::PaintImage::kInvalidContentId;
@@ -584,6 +584,7 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
   ~Canvas2DResourceProviderSharedImage() override = default;
 
   // CanvasResourceProvider:
+  void RasterRecord(cc::PaintRecord last_recording) override;
   Canvas2DResourceProviderSharedImage* As2DSharedImageProvider() final {
     return this;
   }
@@ -688,6 +689,9 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
       WebGraphicsSharedImageInterfaceProvider*,
       Delegate*);
   ~CanvasNon2DResourceProviderSharedImage() override = default;
+
+  // CanvasResourceProvider:
+  void RasterRecord(cc::PaintRecord last_recording) override;
 
   // Drops the cached snapshot (if any) and invokes `draw_callback` on this
   // instance's canvas.
