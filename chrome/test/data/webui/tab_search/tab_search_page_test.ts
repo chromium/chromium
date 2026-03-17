@@ -613,9 +613,8 @@ suite('TabSearchAppTest', () => {
     tabSearchItem.click();
 
     // Assert switchToTab() was called appropriately for an unfiltered tab list.
-    await testProxy.whenCalled('switchToTab').then(([tabInfo]) => {
-      assertEquals(1, tabInfo.tabId);
-    });
+    let [tabInfo] = await testProxy.whenCalled('switchToTab');
+    assertEquals(1, tabInfo.tabId);
 
     testProxy.reset();
     // Click the first element with tabId 6.
@@ -624,9 +623,8 @@ suite('TabSearchAppTest', () => {
     tabSearchItem.click();
 
     // Assert switchToTab() was called appropriately for an unfiltered tab list.
-    await testProxy.whenCalled('switchToTab').then(([tabInfo]) => {
-      assertEquals(6, tabInfo.tabId);
-    });
+    [tabInfo] = await testProxy.whenCalled('switchToTab');
+    assertEquals(6, tabInfo.tabId);
 
     // Force a change to filtered tab data that would result in a
     // re-render.
@@ -642,9 +640,8 @@ suite('TabSearchAppTest', () => {
 
     // Assert switchToTab() was called appropriately for a tab list fitlered by
     // the search query.
-    await testProxy.whenCalled('switchToTab').then(([tabInfo]) => {
-      assertEquals(2, tabInfo.tabId);
-    });
+    [tabInfo] = await testProxy.whenCalled('switchToTab');
+    assertEquals(2, tabInfo.tabId);
   });
 
   test('Verify maybeShowUi() is called correctly', async () => {

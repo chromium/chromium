@@ -110,17 +110,16 @@ suite('<history-item> integration test', function() {
     assertFalse(items[5]!.hasTimeGap);
   });
 
-  test('separator insertion for search', function() {
+  test('separator insertion for search', async function() {
     element.addNewResults(SEARCH_HISTORY_RESULTS, false, true);
     element.searchedTerm = 'search';
 
-    return microtasksFinished().then(function() {
-      const items = element.shadowRoot.querySelectorAll('history-item');
+    await microtasksFinished();
+    const items = element.shadowRoot.querySelectorAll('history-item');
 
-      assertTrue(items[0]!.hasTimeGap, '0');
-      assertFalse(items[1]!.hasTimeGap, '1');
-      assertFalse(items[2]!.hasTimeGap, '2');
-    });
+    assertTrue(items[0]!.hasTimeGap, '0');
+    assertFalse(items[1]!.hasTimeGap, '1');
+    assertFalse(items[2]!.hasTimeGap, '2');
   });
 
   test('separator insertion after deletion', async function() {

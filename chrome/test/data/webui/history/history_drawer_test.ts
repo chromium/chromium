@@ -27,33 +27,33 @@ suite('drawer-test', function() {
     ]);
   });
 
-  test('drawer has correct selection', function() {
+  test('drawer has correct selection', async function() {
     navigateTo('/syncedTabs', app);
     app.setHasDrawerForTesting(true);
-    return microtasksFinished().then(function() {
-      const drawerLazyRender = app.$.drawer;
-      assertTrue(!!drawerLazyRender);
+    await microtasksFinished();
 
-      // Drawer side bar doesn't exist until the first time the drawer is
-      // opened.
-      let drawerSideBar = app.shadowRoot.querySelector<HistorySideBarElement>(
-          '#drawer-side-bar');
-      assertFalse(!!drawerSideBar);
+    const drawerLazyRender = app.$.drawer;
+    assertTrue(!!drawerLazyRender);
 
-      const menuButton =
-          app.$.toolbar.$.mainToolbar.shadowRoot.querySelector<HTMLElement>(
-              '#menuButton');
-      assertTrue(!!menuButton);
+    // Drawer side bar doesn't exist until the first time the drawer is
+    // opened.
+    let drawerSideBar =
+        app.shadowRoot.querySelector<HistorySideBarElement>('#drawer-side-bar');
+    assertFalse(!!drawerSideBar);
 
-      menuButton.click();
-      const drawer = drawerLazyRender.getIfExists();
-      assertTrue(!!drawer);
-      assertTrue(drawer.open);
-      drawerSideBar = app.shadowRoot.querySelector<HistorySideBarElement>(
-          '#drawer-side-bar');
-      assertTrue(!!drawerSideBar);
+    const menuButton =
+        app.$.toolbar.$.mainToolbar.shadowRoot.querySelector<HTMLElement>(
+            '#menuButton');
+    assertTrue(!!menuButton);
 
-      assertEquals('syncedTabs', drawerSideBar.$.menu.selected);
-    });
+    menuButton.click();
+    const drawer = drawerLazyRender.getIfExists();
+    assertTrue(!!drawer);
+    assertTrue(drawer.open);
+    drawerSideBar =
+        app.shadowRoot.querySelector<HistorySideBarElement>('#drawer-side-bar');
+    assertTrue(!!drawerSideBar);
+
+    assertEquals('syncedTabs', drawerSideBar.$.menu.selected);
   });
 });

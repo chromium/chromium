@@ -38,36 +38,30 @@ suite('history-list supervised-user', function() {
     return testService.handler.whenCalled('queryHistory');
   });
 
-  test('checkboxes disabled for supervised user', function() {
-    return microtasksFinished().then(function() {
-      const items = historyList.shadowRoot.querySelectorAll('history-item');
+  test('checkboxes disabled for supervised user', async function() {
+    await microtasksFinished();
+    const items = historyList.shadowRoot.querySelectorAll('history-item');
 
-      items[0]!.$.checkbox.click();
+    items[0]!.$.checkbox.click();
 
-      assertFalse(items[0]!.selected);
-    });
+    assertFalse(items[0]!.selected);
   });
 
-  test('deletion disabled for supervised user', function() {
-    return microtasksFinished()
-        .then(function() {
-          const whenChecked =
-              eventToPromise('history-checkbox-select', historyList);
-          // Manually dispatch the event since the checkboxes are disabled due
-          // to the test configuration.
-          historyList.shadowRoot.querySelector('history-item')!.dispatchEvent(
-              new CustomEvent('history-checkbox-select', {
-                bubbles: true,
-                composed: true,
-                detail: {index: 0, shiftKey: false},
-              }));
-          return whenChecked;
-        })
-        .then(() => {
-          toolbar.deleteSelectedItems();
-          // Make sure that removeVisits is not being called.
-          assertEquals(0, testService.handler.getCallCount('removeVisits'));
-        });
+  test('deletion disabled for supervised user', async function() {
+    await microtasksFinished();
+    const whenChecked = eventToPromise('history-checkbox-select', historyList);
+    // Manually dispatch the event since the checkboxes are disabled due
+    // to the test configuration.
+    historyList.shadowRoot.querySelector('history-item')!.dispatchEvent(
+        new CustomEvent('history-checkbox-select', {
+          bubbles: true,
+          composed: true,
+          detail: {index: 0, shiftKey: false},
+        }));
+    await whenChecked;
+    toolbar.deleteSelectedItems();
+    // Make sure that removeVisits is not being called.
+    assertEquals(0, testService.handler.getCallCount('removeVisits'));
   });
 
   test('remove history menu button disabled', function() {

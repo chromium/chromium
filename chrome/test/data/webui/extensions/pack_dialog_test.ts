@@ -65,13 +65,6 @@ suite('ExtensionPackDialogTests', function() {
     assertEquals('', packDialog.$.rootDir.value);
     const kRootPath = 'this/is/a/path';
 
-    const promises = [];
-    promises.push(mockDelegate.rootPromise.promise.then(function() {
-      return microtasksFinished().then(() => {
-        assertEquals(kRootPath, packDialog.$.rootDir.value);
-      });
-    }));
-
     assertEquals('', packDialog.$.keyFile.value);
     packDialog.$.keyFileBrowse.click();
     await microtasksFinished();
@@ -79,16 +72,17 @@ suite('ExtensionPackDialogTests', function() {
     assertEquals('', packDialog.$.keyFile.value);
     const kKeyPath = 'here/is/another/path';
 
-    promises.push(mockDelegate.keyPromise.promise.then(function() {
-      return microtasksFinished().then(() => {
-        assertEquals(kKeyPath, packDialog.$.keyFile.value);
-      });
-    }));
-
     mockDelegate.rootPromise.resolve(kRootPath);
     mockDelegate.keyPromise.resolve(kKeyPath);
 
-    await Promise.all(promises);
+    await mockDelegate.rootPromise.promise;
+    await microtasksFinished();
+    assertEquals(kRootPath, packDialog.$.rootDir.value);
+
+    await mockDelegate.keyPromise.promise;
+    await microtasksFinished();
+    assertEquals(kKeyPath, packDialog.$.keyFile.value);
+
     packDialog.shadowRoot.querySelector<HTMLElement>('.action-button')!.click();
     await microtasksFinished();
     assertEquals(kRootPath, mockDelegate.rootPath);

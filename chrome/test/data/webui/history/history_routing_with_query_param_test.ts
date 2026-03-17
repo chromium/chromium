@@ -45,17 +45,12 @@ suite('routing-with-query-param', function() {
     expectedQuery = 'query';
   });
 
-  test('search initiated on load', function() {
-    return testService.handler.whenCalled('queryHistory')
-        .then(query => {
-          assertEquals(expectedQuery, query[0]);
-          return microtasksFinished();
-        })
-        .then(function() {
-          assertEquals(
-              expectedQuery,
-              app.$.toolbar.$.mainToolbar.getSearchField().getValue());
-        });
+  test('search initiated on load', async function() {
+    const query = await testService.handler.whenCalled('queryHistory');
+    assertEquals(expectedQuery, query[0]);
+    await microtasksFinished();
+    assertEquals(
+        expectedQuery, app.$.toolbar.$.mainToolbar.getSearchField().getValue());
   });
 
   test('search with after date', async () => {

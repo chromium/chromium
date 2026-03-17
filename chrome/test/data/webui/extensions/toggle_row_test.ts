@@ -25,18 +25,15 @@ suite('extensions-toggle-row', function() {
 
 
   // Test that the control is toggled when the user taps on the text label.
-  test('TestToggleByLabelTap', function() {
+  test('TestToggleByLabelTap', async function() {
     let whenChanged = eventToPromise('change', row);
     row.getLabel().click();
-    return whenChanged
-        .then(function() {
-          assertTrue(row.checked);
-          whenChanged = eventToPromise('change', row);
-          row.getLabel().click();
-          return whenChanged;
-        })
-        .then(function() {
-          assertFalse(row.checked);
-        });
+    await whenChanged;
+    assertTrue(row.checked);
+
+    whenChanged = eventToPromise('change', row);
+    row.getLabel().click();
+    await whenChanged;
+    assertFalse(row.checked);
   });
 });

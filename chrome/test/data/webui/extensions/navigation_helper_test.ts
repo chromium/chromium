@@ -28,7 +28,7 @@ suite('ExtensionNavigationHelperTest', function() {
     navigationHelper = new NavigationHelper();
   });
 
-  test('Basic', function() {
+  test('Basic', async function() {
     const id = 'a'.repeat(32);
     const mock = new MockMethod();
 
@@ -51,18 +51,14 @@ suite('ExtensionNavigationHelperTest', function() {
     mock.addExpectation({page: Page.DETAILS, extensionId: id});
     const waitForPop = getOnPopState();
     history.back();
-    return waitForPop
-        .then(() => {
-          mock.verifyMock();
+    await waitForPop;
+    mock.verifyMock();
 
-          mock.addExpectation({page: Page.LIST});
-          const waitForNextPop = getOnPopState();
-          history.back();
-          return waitForNextPop;
-        })
-        .then(() => {
-          mock.verifyMock();
-        });
+    mock.addExpectation({page: Page.LIST});
+    const waitForNextPop = getOnPopState();
+    history.back();
+    await waitForNextPop;
+    mock.verifyMock();
   });
 
   test('Conversions', function() {
