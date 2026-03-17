@@ -9,7 +9,6 @@
 #include <optional>
 #include <string>
 
-#include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -194,8 +193,10 @@ class AppBannerManagerAndroid
   base::WeakPtr<AppBannerManagerAndroid> GetAndroidWeakPtr();
 
   // TODO(b/323192242): Remove.
-  base::android::ScopedJavaLocalRef<jobject> GetNativeJavaAppDataForTesting()
-      const;
+  const base::android::ScopedJavaGlobalRef<jobject>&
+  native_java_app_data_for_testing() const {
+    return native_java_app_data_;
+  }
 
  private:
   friend class content::WebContentsUserData<AppBannerManagerAndroid>;
@@ -243,12 +244,8 @@ class AppBannerManagerAndroid
   // The Java-side AppBannerManager.
   base::android::ScopedJavaGlobalRef<jobject> java_banner_manager_;
 
-  // A weak ref to the Java-side AppData. As a strong ref this is owned by the
-  // `java_banner_manager_` and points to the last acquired data. This is
-  // converted to a ScopedJavaGlobalRef when creating AddToHomescreenParams.
-  // A weak ref is used to prevent consuming an entry in the finite global ref
-  // table as much as possible.
-  JavaObjectWeakGlobalRef native_java_app_data_;
+  // Java-side object containing data about a native app.
+  base::android::ScopedJavaGlobalRef<jobject> native_java_app_data_;
 
   int next_native_request_id_ = 0;
   std::optional<int> current_native_request_id_;
