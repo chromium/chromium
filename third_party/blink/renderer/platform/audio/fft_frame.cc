@@ -103,15 +103,13 @@ void FFTFrame::InterpolateFrequencyComponents(const FFTFrame& frame1,
   double last_phase1 = 0.0;
   double last_phase2 = 0.0;
 
-  const float* real_p1_data = real1.Data();
-  const float* real_p2_data = real2.Data();
-  const float* imag_p1_data = imag1.Data();
-  const float* imag_p2_data = imag2.Data();
+  base::span<const float> real1_span = real1.as_span();
+  base::span<const float> real2_span = real2.as_span();
+  base::span<const float> imag1_span = imag1.as_span();
+  base::span<const float> imag2_span = imag2.as_span();
 
-  real[0] = static_cast<float>(s1base * real_p1_data[0] +
-                                         s2base * real_p2_data[0]);
-  imag[0] = static_cast<float>(s1base * imag_p1_data[0] +
-                                         s2base * imag_p2_data[0]);
+  real[0] = static_cast<float>(s1base * real1_span[0] + s2base * real2_span[0]);
+  imag[0] = static_cast<float>(s1base * imag1_span[0] + s2base * imag2_span[0]);
 
   int n = fft_size_ / 2;
 
@@ -121,10 +119,8 @@ void FFTFrame::InterpolateFrequencyComponents(const FFTFrame& frame1,
   DCHECK_GE(imag2.size(), static_cast<uint32_t>(n));
 
   for (int i = 1; i < n; ++i) {
-    std::complex<double> c1(UNSAFE_TODO(real_p1_data[i]),
-                            UNSAFE_TODO(imag_p1_data[i]));
-    std::complex<double> c2(UNSAFE_TODO(real_p2_data[i]),
-                            UNSAFE_TODO(imag_p2_data[i]));
+    std::complex<double> c1(real1_span[i], imag1_span[i]);
+    std::complex<double> c2(real2_span[i], imag2_span[i]);
 
     double mag1 = abs(c1);
     double mag2 = abs(c2);
