@@ -42,6 +42,9 @@ interface Page {
   // Called when searchbox context is added outside of a OnShow call.
   AddContext(searchbox.mojom.SearchContext context);
 
+  // Called when the composebox text input field needs to be explicitly focused.
+  FocusInput();
+
   // Called when the popup is hidden. The page is expected to perform any
   // necessary cleanup and return the input text via the callback.
   ClearPopup() => (string input);

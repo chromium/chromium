@@ -39,6 +39,7 @@ class MockOmniboxPopupAimPage : public omnibox_popup_aim::mojom::Page {
               AddContext,
               (searchbox::mojom::SearchContextPtr context),
               (override));
+  MOCK_METHOD(void, FocusInput, (), (override));
   MOCK_METHOD(void, ClearPopup, (ClearPopupCallback callback), (override));
   MOCK_METHOD(void,
               SetPreserveContextOnClose,

@@ -66,12 +66,13 @@ export class OmniboxAimAppElement extends CrLitElement {
       this.callbackRouter_.onPopupShown.addListener(
           this.onPopupShown_.bind(this)),
       this.callbackRouter_.addContext.addListener(this.addContext_.bind(this)),
+      this.callbackRouter_.focusInput.addListener(this.focusInput_.bind(this)),
       this.callbackRouter_.clearPopup.addListener(this.clearPopup_.bind(this)),
       this.callbackRouter_.setPreserveContextOnClose.addListener(
           this.setPreserveContextOnClose_.bind(this)),
     ];
 
-    this.$.composebox.focusInput();
+    this.focusInput_();
 
     this.setupLocalizedLinkListener();
   }
@@ -125,12 +126,16 @@ export class OmniboxAimAppElement extends CrLitElement {
       this.$.composebox.setDefaultModel();
     }
     this.$.composebox.addSearchContext(context);
-    this.$.composebox.focusInput();
+    this.focusInput_();
     this.preserveContextOnClose_ = false;
   }
 
   private addContext_(context: SearchContext) {
     this.$.composebox.addSearchContext(context);
+    this.focusInput_();
+  }
+
+  private focusInput_() {
     this.$.composebox.focusInput();
   }
 

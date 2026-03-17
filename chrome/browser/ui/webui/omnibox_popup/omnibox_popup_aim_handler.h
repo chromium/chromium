@@ -64,6 +64,9 @@ class OmniboxPopupAimHandler : public omnibox_popup_aim::mojom::PageHandler {
   // used to notify the page that searchbox context has been added.
   void AddContext(std::unique_ptr<SearchboxContextData::Context> context);
 
+  // Forwards a `FocusInput()` call to the page.
+  void FocusInput();
+
  protected:
   virtual OmniboxAimPopupWebUIContent* GetAimPopupContent();
 
