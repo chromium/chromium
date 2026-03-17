@@ -30,6 +30,7 @@
 #include "chrome/browser/glic/host/context/glic_screenshot_capturer.h"
 #include "chrome/browser/glic/host/context/glic_sharing_manager_coordinator.h"
 #include "chrome/browser/glic/host/context/glic_sharing_manager_impl.h"
+#include "chrome/browser/glic/host/glic.mojom-shared.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
 #include "chrome/browser/glic/public/features.h"
@@ -537,8 +538,19 @@ void GlicInstanceImpl::CreateTask(
         base::unexpected(mojom::CreateTaskErrorReason::kTaskSystemUnavailable));
     return;
   }
+
+  // Conversation ID must be available since a turn is required to create a task
+  // and an ID becomes available at first turn. If you hit this in a test you
+  // probably need to call RegisterConversation on your GlicInstance.
+  std::optional<std::string> id = conversation_id();
+  if (!id.has_value()) {
+    std::move(callback).Run(base::unexpected(
+        mojom::CreateTaskErrorReason::kConversationNotRegistered));
+    return;
+  }
+
   instance_metrics_.OnCreateTask();
-  actor_task_manager_->CreateTask(weak_ptr_factory_.GetWeakPtr(),
+  actor_task_manager_->CreateTask(weak_ptr_factory_.GetWeakPtr(), id.value(),
                                   std::move(options), std::move(callback));
 }
 

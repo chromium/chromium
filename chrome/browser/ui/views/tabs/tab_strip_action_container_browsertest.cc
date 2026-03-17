@@ -223,8 +223,8 @@ class TabStripActionContainerBrowserTest : public InProcessBrowserTest {
   }
 
   actor::TaskId CreateTask() {
-    actor::TaskId task_id =
-        actor_service()->CreateTask(actor::NoEnterprisePolicyChecker());
+    actor::TaskId task_id = actor_service()->CreateTask(
+        actor::TestTaskSourceInfo(), actor::NoEnterprisePolicyChecker());
     actor::ActorTask* task = actor_service()->GetTask(task_id);
     actor::ui::StartTask start_task_event(task_id);
     actor_service()->GetActorUiStateManager()->OnUiEvent(start_task_event);
@@ -504,8 +504,8 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
   EXPECT_FALSE(GlicActorButtonContainer()->GetVisible());
 
   auto* actor_service = actor::ActorKeyedService::Get(browser()->GetProfile());
-  actor::TaskId task_id =
-      actor_service->CreateTask(actor::NoEnterprisePolicyChecker());
+  actor::TaskId task_id = actor_service->CreateTask(
+      actor::TestTaskSourceInfo(), actor::NoEnterprisePolicyChecker());
   actor::ui::StartTask start_task_event(task_id);
   actor_service->GetActorUiStateManager()->OnUiEvent(start_task_event);
   actor_service->StopTask(task_id,

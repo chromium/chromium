@@ -32,6 +32,7 @@
 #include "chrome/common/actor/task_id.h"
 #include "chrome/common/extensions/api/experimental_actor.h"
 #include "chrome/common/extensions/api/tabs.h"
+#include "components/actor/task_source_info.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/optimization_guide/proto/features/model_prototyping.pb.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -171,7 +172,10 @@ ExperimentalActorCreateTaskFunction::~ExperimentalActorCreateTaskFunction() =
 
 ExtensionFunction::ResponseAction ExperimentalActorCreateTaskFunction::Run() {
   auto* actor_service = actor::ActorKeyedService::Get(browser_context());
-  actor::TaskId task_id = actor_service->CreateTask(&GetNullPolicyChecker());
+  actor::TaskId task_id = actor_service->CreateTask(
+      actor::TaskSourceInfo(actor::TaskSourceInfo::Client::kExperimentalActor,
+                            /*id=*/std::nullopt),
+      &GetNullPolicyChecker());
 
   return RespondNow(ArgumentList(
       api::experimental_actor::CreateTask::Results::Create(task_id.value())));

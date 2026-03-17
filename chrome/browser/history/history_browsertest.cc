@@ -1160,8 +1160,8 @@ class HistoryTaskTagBrowserTest : public HistoryBrowserTest {
 
   actor::TaskId CreateActingTask(content::WebContents* web_contents) {
     auto* actor_service = actor::ActorKeyedService::Get(profile());
-    actor::TaskId id =
-        actor_service->CreateTask(actor::NoEnterprisePolicyChecker());
+    actor::TaskId id = actor_service->CreateTask(
+        actor::TestTaskSourceInfo(), actor::NoEnterprisePolicyChecker());
     std::unique_ptr<actor::ToolRequest> action = actor::MakeClickRequest(
         *tabs::TabInterface::GetFromContents(web_contents), gfx::Point(0, 0));
 

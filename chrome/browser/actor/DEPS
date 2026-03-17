@@ -1,5 +1,6 @@
 include_rules = [
   '-chrome/browser/actor/ui',
+  '+components/actor',
 ]
 
 specific_include_rules = {

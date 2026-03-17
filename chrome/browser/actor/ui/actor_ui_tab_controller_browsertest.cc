@@ -147,8 +147,8 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerTest,
                        TabSpinnerNotVisibleWhenWaitingOnUser) {
   // Start task on tab.
   auto* actor_service = actor::ActorKeyedService::Get(browser()->GetProfile());
-  actor::TaskId task_id =
-      actor_service->CreateTask(NoEnterprisePolicyChecker());
+  actor::TaskId task_id = actor_service->CreateTask(
+      TestTaskSourceInfo(), NoEnterprisePolicyChecker());
   actor::ActorTask* task = actor_service->GetTask(task_id);
   actor::ui::StartTask start_task_event(task_id);
   actor_service->GetActorUiStateManager()->OnUiEvent(start_task_event);
@@ -209,8 +209,8 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerTest,
 
 IN_PROC_BROWSER_TEST_F(ActorUiTabControllerTest,
                        RecordsUserActionOnActiveStatusChange) {
-  TaskId task_id =
-      actor_keyed_service()->CreateTask(NoEnterprisePolicyChecker());
+  TaskId task_id = actor_keyed_service()->CreateTask(
+      TestTaskSourceInfo(), NoEnterprisePolicyChecker());
 
   ASSERT_TRUE(AddTabAtIndex(0, GURL("about:blank?1"),
                             ::ui::PageTransition::PAGE_TRANSITION_TYPED));

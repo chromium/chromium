@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_GLIC_ACTOR_GLIC_ACTOR_TASK_MANAGER_H_
 #define CHROME_BROWSER_GLIC_ACTOR_GLIC_ACTOR_TASK_MANAGER_H_
 
+#include <string_view>
+
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
@@ -42,6 +44,7 @@ class GlicActorTaskManager {
   ~GlicActorTaskManager();
 
   void CreateTask(base::WeakPtr<actor::ActorTaskDelegate> delegate,
+                  std::string_view conversation_id,
                   actor::webui::mojom::TaskOptionsPtr options,
                   mojom::WebClientHandler::CreateTaskCallback callback);
   void PerformActions(const std::vector<uint8_t>& actions_proto,

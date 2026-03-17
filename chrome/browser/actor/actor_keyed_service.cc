@@ -336,30 +336,35 @@ void ActorKeyedService::ResetForTesting() {
 }
 
 TaskId ActorKeyedService::CreateTask(
+    const TaskSourceInfo& source_info,
     const EnterprisePolicyUrlChecker* policy_checker) {
-  return CreateTaskWithOptions(policy_checker, nullptr, nullptr);
+  return CreateTaskWithOptions(source_info, policy_checker, nullptr, nullptr);
 }
 
 TaskId ActorKeyedService::CreateTaskWithOptions(
+    const TaskSourceInfo& source_info,
     const EnterprisePolicyUrlChecker* policy_checker,
     webui::mojom::TaskOptionsPtr options,
     base::WeakPtr<ActorTaskDelegate> delegate) {
   return CreateTaskImpl(ui::NewUiEventDispatcher(GetActorUiStateManager()),
-                        policy_checker, std::move(options),
+                        source_info, policy_checker, std::move(options),
                         std::move(delegate));
 }
 
 TaskId ActorKeyedService::CreateTaskForTesting(
     std::unique_ptr<actor::ui::UiEventDispatcher> ui_event_dispatcher,
+    const TaskSourceInfo& source_info,
     const EnterprisePolicyUrlChecker* policy_checker,
     webui::mojom::TaskOptionsPtr options,
     base::WeakPtr<ActorTaskDelegate> delegate) {
-  return CreateTaskImpl(std::move(ui_event_dispatcher), policy_checker,
-                        std::move(options), std::move(delegate));
+  return CreateTaskImpl(std::move(ui_event_dispatcher), source_info,
+                        policy_checker, std::move(options),
+                        std::move(delegate));
 }
 
 TaskId ActorKeyedService::CreateTaskImpl(
     std::unique_ptr<actor::ui::UiEventDispatcher> ui_event_dispatcher,
+    const TaskSourceInfo& source_info,
     const EnterprisePolicyUrlChecker* policy_checker,
     webui::mojom::TaskOptionsPtr options,
     base::WeakPtr<ActorTaskDelegate> delegate) {
@@ -369,8 +374,8 @@ TaskId ActorKeyedService::CreateTaskImpl(
   const TaskId task_id = next_task_id_.GenerateNextId();
   auto actor_task = std::make_unique<ActorTask>(
       base::PassKey<ActorKeyedService>(), *this, task_id,
-      std::move(ui_event_dispatcher), std::move(options), policy_checker,
-      std::move(delegate));
+      std::move(ui_event_dispatcher), std::move(options), source_info,
+      policy_checker, std::move(delegate));
 
   const ActorTask::State task_state = actor_task->GetState();
   active_tasks_[task_id] = std::move(actor_task);

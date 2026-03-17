@@ -13,6 +13,7 @@
 #include "chrome/browser/actor/actor_task_metadata.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller.h"
+#include "chrome/browser/glic/actor/glic_actor_test_util.h"
 #include "chrome/browser/glic/browser_ui/context_sharing_border_view.h"
 #include "chrome/browser/glic/browser_ui/context_sharing_border_view_controller_impl.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
@@ -1015,8 +1016,8 @@ IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewWithActorGlowUiTest,
   ASSERT_TRUE(actor_keyed_service);
 
   // Create a new task.
-  const actor::TaskId task_id =
-      actor_keyed_service->CreateTask(actor::NoEnterprisePolicyChecker());
+  const actor::TaskId task_id = actor_keyed_service->CreateTask(
+      MockGlicTaskSourceInfo(), actor::NoEnterprisePolicyChecker());
   actor_keyed_service->GetTask(task_id)->AddTab(
       browser()->GetActiveTabInterface()->GetHandle(), base::DoNothing());
 
@@ -1078,8 +1079,8 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(actor_keyed_service);
 
   // Create a new task.
-  const actor::TaskId task_id =
-      actor_keyed_service->CreateTask(actor::NoEnterprisePolicyChecker());
+  const actor::TaskId task_id = actor_keyed_service->CreateTask(
+      MockGlicTaskSourceInfo(), actor::NoEnterprisePolicyChecker());
   actor_keyed_service->GetTask(task_id)->AddTab(
       browser()->GetActiveTabInterface()->GetHandle(), base::DoNothing());
 

@@ -22,6 +22,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/browser_management_service.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#include "chrome/browser/glic/actor/glic_actor_test_util.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
@@ -465,7 +466,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorPolicyCheckerBrowserTestManagedBrowser,
   std::unique_ptr<ToolRequest> action =
       MakeNavigateRequest(active_tab(), url.spec());
   ActResultFuture result;
-  TaskId task_id = GetActorService().CreateTask(&GetPolicyChecker());
+  TaskId task_id = GetActorService().CreateTask(MockGlicTaskSourceInfo(),
+                                                &GetPolicyChecker());
   ActorTask* task = GetActorService().GetTask(task_id);
   ASSERT_TRUE(task);
 
@@ -582,7 +584,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorPolicyCheckerBrowserTestManagedBrowser,
 
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
-  TaskId task_id = GetActorService().CreateTask(&GetPolicyChecker());
+  TaskId task_id = GetActorService().CreateTask(MockGlicTaskSourceInfo(),
+                                                &GetPolicyChecker());
   ActorTask* task = GetActorService().GetTask(task_id);
   ASSERT_TRUE(task);
 
@@ -616,7 +619,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorPolicyCheckerBrowserTestManagedBrowser,
 
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
-  TaskId task_id = GetActorService().CreateTask(&GetPolicyChecker());
+  TaskId task_id = GetActorService().CreateTask(MockGlicTaskSourceInfo(),
+                                                &GetPolicyChecker());
   ActorTask* task = GetActorService().GetTask(task_id);
   ASSERT_TRUE(task);
 
@@ -649,7 +653,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorPolicyCheckerBrowserTestManagedBrowser,
 
   ASSERT_TRUE(content::NavigateToURL(web_contents(), link_page_url));
 
-  TaskId task_id = GetActorService().CreateTask(&GetPolicyChecker());
+  TaskId task_id = GetActorService().CreateTask(MockGlicTaskSourceInfo(),
+                                                &GetPolicyChecker());
   ActorTask* task = GetActorService().GetTask(task_id);
   ASSERT_TRUE(task);
 
@@ -690,7 +695,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorPolicyCheckerBrowserTestManagedBrowser,
 
   ASSERT_TRUE(content::NavigateToURL(web_contents(), link_page_url));
 
-  TaskId task_id = GetActorService().CreateTask(&GetPolicyChecker());
+  TaskId task_id = GetActorService().CreateTask(MockGlicTaskSourceInfo(),
+                                                &GetPolicyChecker());
   ActorTask* task = GetActorService().GetTask(task_id);
   ASSERT_TRUE(task);
 

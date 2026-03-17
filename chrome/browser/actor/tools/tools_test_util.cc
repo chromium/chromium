@@ -135,8 +135,9 @@ void ActorToolsTest::SetUpOnMainThread() {
   PlatformBrowserTest::SetUpOnMainThread();
   host_resolver()->AddRule("*", "127.0.0.1");
 
-  task_id_ = ActorKeyedService::Get(GetProfile())
-                 ->CreateTask(NoEnterprisePolicyChecker());
+  task_id_ =
+      ActorKeyedService::Get(GetProfile())
+          ->CreateTask(TestTaskSourceInfo(), NoEnterprisePolicyChecker());
 
   // Optimization guide uses this histogram to signal initialization in tests.
   auto* optimization_guide_init_histogram =

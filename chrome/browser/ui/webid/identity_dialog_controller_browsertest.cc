@@ -180,8 +180,8 @@ class IdentityDialogControllerBrowserTest : public InProcessBrowserTest {
         actor::ActorKeyedService::Get(browser()->profile());
     CHECK(actor_service);
 
-    actor::TaskId task_id =
-        actor_service->CreateTask(actor::NoEnterprisePolicyChecker());
+    actor::TaskId task_id = actor_service->CreateTask(
+        actor::TestTaskSourceInfo(), actor::NoEnterprisePolicyChecker());
 
     // Perform an arbitrary action in a tab to put the task into
     // UnderActorControl state and add the tab to the task.

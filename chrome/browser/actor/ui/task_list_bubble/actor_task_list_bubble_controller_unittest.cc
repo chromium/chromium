@@ -138,8 +138,8 @@ TEST_F(ActorTaskListBubbleControllerTest, ShowBubbleRecordsHistogram) {
       actor::ActorKeyedService::Get(profile_.get());
   tabs::GlicActorTaskIconManager* manager =
       tabs::GlicActorTaskIconManagerFactory::GetForProfile(profile_.get());
-  actor::TaskId task_id =
-      actor_service->CreateTask(actor::NoEnterprisePolicyChecker());
+  actor::TaskId task_id = actor_service->CreateTask(
+      actor::TestTaskSourceInfo(), actor::NoEnterprisePolicyChecker());
   actor_service->GetTask(task_id)->Pause(true);
   manager->UpdateTaskIconComponents(task_id);
 
@@ -157,8 +157,8 @@ TEST_F(ActorTaskListBubbleControllerTest, ShowBubbleRecordsHistogram) {
   manager->UpdateTaskIconComponents(task_id);
 
   for (int i = 0; i < 3; i++) {
-    actor::TaskId new_task_id =
-        actor_service->CreateTask(actor::NoEnterprisePolicyChecker());
+    actor::TaskId new_task_id = actor_service->CreateTask(
+        actor::TestTaskSourceInfo(), actor::NoEnterprisePolicyChecker());
     actor_service->GetTask(new_task_id)->Pause(true);
     manager->UpdateTaskIconComponents(new_task_id);
   }

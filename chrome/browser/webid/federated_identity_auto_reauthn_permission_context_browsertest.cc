@@ -55,8 +55,8 @@ IN_PROC_BROWSER_TEST_F(FederatedIdentityAutoReauthnPermissionContextTest,
 
   // Create actor task and attach it to the current tab.
   auto* actor_service = actor::ActorKeyedService::Get(browser()->profile());
-  actor::TaskId task_id =
-      actor_service->CreateTask(actor::NoEnterprisePolicyChecker());
+  actor::TaskId task_id = actor_service->CreateTask(
+      actor::TestTaskSourceInfo(), actor::NoEnterprisePolicyChecker());
 
   // Perform an arbitrary action in a tab to put the task into
   // UnderActorControl state and add the tab to the task.

@@ -68,6 +68,7 @@ source_set("actor") {
     "//chrome/browser/subscription_eligibility",
     "//chrome/common",
     "//chrome/common:actor_webui_mojom",
+    "//components/actor",
     "//components/autofill/core/browser/integrators/actor:actor_form_filling_types",
     "//components/download/content/public",
     "//components/optimization_guide/content/browser",

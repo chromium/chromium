@@ -42,7 +42,8 @@ class ActorNavigationThrottleTest : public ChromeRenderViewHostTestHarness {
 
 TEST_F(ActorNavigationThrottleTest, PrerenderedMainFrame_CancelIfDeferred) {
   ActorKeyedService* service = ActorKeyedService::Get(profile());
-  TaskId task_id = service->CreateTask(NoEnterprisePolicyChecker());
+  TaskId task_id =
+      service->CreateTask(TestTaskSourceInfo(), NoEnterprisePolicyChecker());
   ActorTask* task = service->GetTask(task_id);
   ASSERT_TRUE(task);
 
@@ -67,7 +68,8 @@ TEST_F(ActorNavigationThrottleTest, PrerenderedMainFrame_CancelIfDeferred) {
 TEST_F(ActorNavigationThrottleTest, PrerenderedMainFrame_ProceedIfSameOrigin) {
   const GURL kPageUrl("https://example.com");
   ActorKeyedService* service = ActorKeyedService::Get(profile());
-  TaskId task_id = service->CreateTask(NoEnterprisePolicyChecker());
+  TaskId task_id =
+      service->CreateTask(TestTaskSourceInfo(), NoEnterprisePolicyChecker());
   ActorTask* task = service->GetTask(task_id);
   ASSERT_TRUE(task);
 

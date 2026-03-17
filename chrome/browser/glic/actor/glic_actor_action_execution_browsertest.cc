@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/glic/actor/glic_actor_functional_browsertest.h"
+#include "chrome/browser/glic/actor/glic_actor_test_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
@@ -86,10 +87,10 @@ IN_PROC_BROWSER_TEST_F(GlicActorActionExecutionFunctionalBrowserTest,
 IN_PROC_BROWSER_TEST_F(GlicActorActionExecutionFunctionalBrowserTest,
                        PerformConcurrentAsyncWaitActions) {
   // Manually create tasks via ActorKeyedService.
-  TaskId task_id_1 =
-      actor_keyed_service()->CreateTask(::actor::NoEnterprisePolicyChecker());
-  TaskId task_id_2 =
-      actor_keyed_service()->CreateTask(::actor::NoEnterprisePolicyChecker());
+  TaskId task_id_1 = actor_keyed_service()->CreateTask(
+      MockGlicTaskSourceInfo(), ::actor::NoEnterprisePolicyChecker());
+  TaskId task_id_2 = actor_keyed_service()->CreateTask(
+      MockGlicTaskSourceInfo(), ::actor::NoEnterprisePolicyChecker());
 
   // Create tabs for each task using CreateActorTab API to ensure a
   // TabObservation is included in its result.

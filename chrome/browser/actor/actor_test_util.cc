@@ -38,6 +38,7 @@
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/actor_constants.h"
 #include "chrome/common/actor/task_id.h"
+#include "components/actor/task_source_info.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/core/filters/bloom_filter.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
@@ -837,6 +838,12 @@ const EnterprisePolicyUrlChecker* NoEnterprisePolicyChecker() {
   static base::NoDestructor<MockPolicyChecker> checker(
       EnterprisePolicyBlockReason::kNotBlocked);
   return checker.get();
+}
+
+const TaskSourceInfo& TestTaskSourceInfo() {
+  static base::NoDestructor<TaskSourceInfo> task_source_info(
+      TaskSourceInfo::Client::kTest, /*id=*/std::nullopt);
+  return *task_source_info.get();
 }
 
 TestTabState::TestTabState(content::WebContents* web_contents) {

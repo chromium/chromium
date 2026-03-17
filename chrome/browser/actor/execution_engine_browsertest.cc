@@ -162,7 +162,8 @@ class ExecutionEngineBrowserTest : public InProcessBrowserTest {
     }
     ASSERT_TRUE(embedded_https_test_server().Start());
 
-    task_id_ = actor_keyed_service()->CreateTask(NoEnterprisePolicyChecker());
+    task_id_ = actor_keyed_service()->CreateTask(actor::TestTaskSourceInfo(),
+                                                 NoEnterprisePolicyChecker());
 
     // Optimization guide uses this histogram to signal initialization in tests.
     optimization_guide::RetryForHistogramUntilCountReached(

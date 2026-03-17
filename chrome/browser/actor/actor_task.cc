@@ -137,10 +137,12 @@ ActorTask::ActorTask(base::PassKey<ActorKeyedService, ActorTask>,
                      TaskId id,
                      std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher,
                      webui::mojom::TaskOptionsPtr options,
+                     const TaskSourceInfo& source_info,
                      const EnterprisePolicyUrlChecker* policy_checker,
                      base::WeakPtr<ActorTaskDelegate> delegate)
     : service_(service),
       id_(id),
+      source_info_(source_info),
       create_time_(base::TimeTicks::Now()),
       action_tracker_for_metrics_(std::make_unique<ActionTrackerForMetrics>()),
       ui_event_dispatcher_(std::move(ui_event_dispatcher)),
@@ -167,11 +169,12 @@ std::unique_ptr<ActorTask> ActorTask::CreateForTesting(
     TaskId id,
     std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher,
     webui::mojom::TaskOptionsPtr options,
+    const TaskSourceInfo& source_info,
     const EnterprisePolicyUrlChecker* policy_checker,
     base::WeakPtr<ActorTaskDelegate> delegate) {
   return std::make_unique<ActorTask>(
       base::PassKey<ActorTask>(), service, id, std::move(ui_event_dispatcher),
-      std::move(options), policy_checker, std::move(delegate));
+      std::move(options), source_info, policy_checker, std::move(delegate));
 }
 
 ExecutionEngine& ActorTask::GetExecutionEngine() const {

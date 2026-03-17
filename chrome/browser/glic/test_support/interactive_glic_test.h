@@ -324,9 +324,11 @@ class InteractiveGlicTestMixin : public T {
 
   // Activate one of the glic entrypoints.
   // In single-instance, this will open floaty, in multi-instance it will open
-  // side panel.
-  auto OpenGlic(GlicInstrumentMode instrument_mode =
-                    GlicInstrumentMode::kHostAndContents) {
+  // side panel. Registers a conversation by default but tests can choose to
+  // pass in nullopt for conversation_id to prevent registration.
+  auto OpenGlic(
+      GlicInstrumentMode instrument_mode = GlicInstrumentMode::kHostAndContents,
+      std::optional<std::string> conversation_id = "conversation_id_default") {
     // NOTE: The use of "Api::" here is required because this is a template
     // class with weakly-specified base class; it is not necessary in derived
     // test classes.
@@ -336,6 +338,11 @@ class InteractiveGlicTestMixin : public T {
                    // already ensured that it's closed.
                    ToggleGlicWindow(GlicWindowMode::kDetached),
                    WaitForAndInstrumentGlic(instrument_mode));
+
+    if (conversation_id.has_value()) {
+      steps.push_back(RegisterConversation(*conversation_id));
+    }
+
     Api::AddDescriptionPrefix(steps, "OpenGlicWindow");
     return steps;
   }
@@ -343,19 +350,28 @@ class InteractiveGlicTestMixin : public T {
   // Activate one of the glic entrypoints.
   // If `instrument_glic_contents` is true both the host and contents will be
   // instrumented (see `WaitForAndInstrumentGlic()`) else only the host will be
-  // instrumented (`WaitForAndInstrumentGlicHostOnly()`).
-  auto DeprecatedOpenGlicWindow(GlicWindowMode window_mode,
-                                GlicInstrumentMode instrument_mode =
-                                    GlicInstrumentMode::kHostAndContents) {
+  // instrumented (`WaitForAndInstrumentGlicHostOnly()`). Registers a
+  // conversation by default but tests can choose to pass in nullopt for
+  // conversation_id to prevent registration.
+  auto DeprecatedOpenGlicWindow(
+      GlicWindowMode window_mode,
+      GlicInstrumentMode instrument_mode = GlicInstrumentMode::kHostAndContents,
+      std::optional<std::string> conversation_id = "conversation_id_default") {
     // NOTE: The use of "Api::" here is required because this is a template
     // class with weakly-specified base class; it is not necessary in derived
     // test classes.
+    const std::string kConversationId = "conversation_id_default";
     auto steps =
         Api::Steps(Api::Log("Opening glic window"), CheckGlicIsClosed(),
                    // Technically, this toggles the window, but we've
                    // already ensured that it's closed.
                    ToggleGlicWindow(window_mode),
                    WaitForAndInstrumentGlic(instrument_mode));
+
+    if (conversation_id.has_value()) {
+      steps.push_back(RegisterConversation(*conversation_id));
+    }
+
     Api::AddDescriptionPrefix(steps, "OpenGlicWindow");
     return steps;
   }
@@ -432,8 +448,9 @@ class InteractiveGlicTestMixin : public T {
     return steps;
   }
 
-  auto OpenGlicFloatingWindow(GlicInstrumentMode instrument_mode =
-                                  GlicInstrumentMode::kHostAndContents) {
+  auto OpenGlicFloatingWindow(
+      GlicInstrumentMode instrument_mode = GlicInstrumentMode::kHostAndContents,
+      std::optional<std::string> conversation_id = "conversation_id_default") {
     if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
       auto steps = Api::Steps(
           Api::Do([this]() {
@@ -444,6 +461,11 @@ class InteractiveGlicTestMixin : public T {
                 /*conversation_id=*/std::nullopt);
           }),
           WaitForAndInstrumentGlic(instrument_mode), WaitForGlicOpen());
+
+      if (conversation_id.has_value()) {
+        steps.push_back(RegisterConversation(*conversation_id));
+      }
+
       Api::AddDescriptionPrefix(steps, "OpenGlicFloatingWindow");
       return steps;
     } else {

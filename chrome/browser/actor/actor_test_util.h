@@ -48,6 +48,9 @@ class TabInterface;
 }  // namespace tabs
 
 namespace actor {
+
+struct TaskSourceInfo;
+
 template <typename T>
 auto UiEventDispatcherCallback(
     base::RepeatingCallback<mojom::ActionResultPtr()> result_fn) {
@@ -338,6 +341,9 @@ class MockPolicyChecker : public EnterprisePolicyUrlChecker {
 // Returns a passthrough EnterprisePolicyUrlChecker tests can use to avoid
 // policy checks.
 const EnterprisePolicyUrlChecker* NoEnterprisePolicyChecker();
+
+// Returns a common mock TaskSourceInfo used by actor tests.
+const TaskSourceInfo& TestTaskSourceInfo();
 
 // Helper struct for unit tests that require a mock TabInterface and its
 // associated ActorTabData.

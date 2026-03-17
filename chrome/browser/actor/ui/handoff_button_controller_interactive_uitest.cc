@@ -354,7 +354,8 @@ class ActorUiHandoffButtonSplitViewTest
     tabs::TabInterface* tab = tabs::TabInterface::GetFromContents(wc);
     ASSERT_NE(tab, nullptr);
 
-    task_id = actor_keyed_service()->CreateTask(NoEnterprisePolicyChecker());
+    task_id = actor_keyed_service()->CreateTask(actor::TestTaskSourceInfo(),
+                                                NoEnterprisePolicyChecker());
     TestFuture<actor::mojom::ActionResultPtr> future;
     actor_keyed_service()->GetTask(task_id)->AddTab(tab->GetHandle(),
                                                     future.GetCallback());

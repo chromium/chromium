@@ -706,8 +706,10 @@ void GlicKeyedService::CreateTask(
     actor::webui::mojom::TaskOptionsPtr options,
     mojom::WebClientHandler::CreateTaskCallback callback) {
   if (actor_task_manager_) {
+    // No conversation id but this code path is going away so it's ok.
     actor_task_manager_->CreateTask(weak_ptr_factory_.GetWeakPtr(),
-                                    std::move(options), std::move(callback));
+                                    /*conversation_id=*/"", std::move(options),
+                                    std::move(callback));
   } else {
     std::move(callback).Run(
         base::unexpected(mojom::CreateTaskErrorReason::kTaskSystemUnavailable));

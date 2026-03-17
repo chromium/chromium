@@ -25,8 +25,8 @@ void ActorUiInteractiveBrowserTest::SetUpCommandLine(
 }
 
 void ActorUiInteractiveBrowserTest::StartActingOnTab() {
-  task_id_ =
-      actor_keyed_service()->CreateTask(actor::NoEnterprisePolicyChecker());
+  task_id_ = actor_keyed_service()->CreateTask(
+      actor::TestTaskSourceInfo(), actor::NoEnterprisePolicyChecker());
   TestFuture<actor::mojom::ActionResultPtr> future;
   actor_keyed_service()->GetTask(task_id_)->AddTab(
       browser()->GetActiveTabInterface()->GetHandle(), future.GetCallback());

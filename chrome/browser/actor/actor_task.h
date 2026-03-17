@@ -26,6 +26,7 @@
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/common/actor/task_id.h"
 #include "chrome/common/actor_webui.mojom-forward.h"
+#include "components/actor/task_source_info.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/visibility.h"
@@ -71,6 +72,7 @@ class ActorTask : public base::SupportsUserData {
             TaskId id,
             std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher,
             webui::mojom::TaskOptionsPtr options,
+            const TaskSourceInfo& source_info,
             const EnterprisePolicyUrlChecker* policy_checker,
             base::WeakPtr<ActorTaskDelegate> delegate = nullptr);
   ~ActorTask() override;
@@ -84,10 +86,13 @@ class ActorTask : public base::SupportsUserData {
       TaskId id,
       std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher,
       webui::mojom::TaskOptionsPtr options,
+      const TaskSourceInfo& source_info,
       const EnterprisePolicyUrlChecker* policy_checker,
       base::WeakPtr<ActorTaskDelegate> delegate);
 
   TaskId id() const { return id_; }
+
+  const TaskSourceInfo& source_info() const { return source_info_; }
 
   const std::string& title() const { return title_; }
   base::WeakPtr<ActorTaskDelegate> delegate() const { return delegate_; }
@@ -306,6 +311,8 @@ class ActorTask : public base::SupportsUserData {
   const raw_ref<ActorKeyedService> service_;
 
   TaskId id_;
+
+  TaskSourceInfo source_info_;
 
   // The time at which the task was created.
   base::TimeTicks create_time_;

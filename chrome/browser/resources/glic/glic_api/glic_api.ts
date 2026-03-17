@@ -2456,6 +2456,9 @@ export enum CreateTaskErrorReason {
   EXISTING_ACTIVE_TASK = 2,
   // The user's browser policy or account settings prevent creating actor tasks.
   BLOCKED_BY_POLICY = 3,
+  // CreateTask was called on a Glic instance which does not have a registered
+  // conversation.
+  CONVERSATION_NOT_REGISTERED = 4,
 }
 
 ///////////////////////////////////////////////

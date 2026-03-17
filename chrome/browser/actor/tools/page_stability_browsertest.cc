@@ -64,8 +64,9 @@ class ActorPageStabilityTestBase : public PageStabilityTest {
 
   void SetUpOnMainThread() override {
     PageStabilityTest::SetUpOnMainThread();
-    task_id_ = ActorKeyedService::Get(browser()->profile())
-                   ->CreateTask(NoEnterprisePolicyChecker());
+    task_id_ =
+        ActorKeyedService::Get(browser()->profile())
+            ->CreateTask(TestTaskSourceInfo(), NoEnterprisePolicyChecker());
   }
 
   void TearDownOnMainThread() override {

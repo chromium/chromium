@@ -281,7 +281,7 @@ class ExecutionEngineTest : public ChromeRenderViewHostTestHarness {
     task_ = ActorTask::CreateForTesting(
         *ActorKeyedService::Get(profile()), TaskId(1),
         std::move(task_ui_event_dispatcher),
-        /*options=*/nullptr, &no_enterprise_checker_,
+        /*options=*/nullptr, TestTaskSourceInfo(), &no_enterprise_checker_,
         mock_actor_task_delegate_.GetWeakPtr());
 
     for (auto& mock :

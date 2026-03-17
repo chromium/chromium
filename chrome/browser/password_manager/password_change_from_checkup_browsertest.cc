@@ -98,8 +98,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeFromCheckupDelegateBrowserTest,
 
   EXPECT_TRUE(delegate->HasActorTaskSubscriptionForTesting());
   // Simulate the actor starting and then finishing a task.
-  actor::TaskId task_id =
-      actor_service->CreateTask(actor::NoEnterprisePolicyChecker());
+  actor::TaskId task_id = actor_service->CreateTask(
+      actor::TestTaskSourceInfo(), actor::NoEnterprisePolicyChecker());
 
   actor_service->StopTask(task_id,
                           actor::ActorTask::StoppedReason::kTaskComplete);
@@ -160,8 +160,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeFromCheckupDelegateBrowserTest,
                     optimization_guide::AnyWrapProto(response), nullptr);
             std::move(callback).Run(std::move(result), nullptr);
           })));
-  actor::TaskId task_id =
-      actor_service->CreateTask(actor::NoEnterprisePolicyChecker());
+  actor::TaskId task_id = actor_service->CreateTask(
+      actor::TestTaskSourceInfo(), actor::NoEnterprisePolicyChecker());
   actor_service->StopTask(task_id,
                           actor::ActorTask::StoppedReason::kTaskComplete);
   run_loop.Run();
@@ -193,8 +193,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeFromCheckupDelegateBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_NE(originator_contents, actuation_contents);
 
-  actor::TaskId task_id =
-      actor_service->CreateTask(actor::NoEnterprisePolicyChecker());
+  actor::TaskId task_id = actor_service->CreateTask(
+      actor::TestTaskSourceInfo(), actor::NoEnterprisePolicyChecker());
   int originator_index =
       browser()->tab_strip_model()->GetIndexOfWebContents(originator_contents);
   browser()->tab_strip_model()->ActivateTabAt(originator_index);
@@ -231,8 +231,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeFromCheckupDelegateBrowserTest,
                                     originator_contents->GetWeakPtr());
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return delegate->HasActorTaskSubscriptionForTesting(); }));
-  actor::TaskId task_id =
-      actor_service->CreateTask(actor::NoEnterprisePolicyChecker());
+  actor::TaskId task_id = actor_service->CreateTask(
+      actor::TestTaskSourceInfo(), actor::NoEnterprisePolicyChecker());
   content::WebContents* actuation_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   int originator_index =

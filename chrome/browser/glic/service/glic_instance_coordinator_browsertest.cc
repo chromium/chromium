@@ -13,6 +13,9 @@
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 #include "chrome/browser/glic/fre/glic_fre_controller.h"
+#include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/host/glic.mojom-shared.h"
+#include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_web_contents_warming_pool.h"
 #include "chrome/browser/glic/host/webui_contents_container.h"
 #include "chrome/browser/glic/public/features.h"
@@ -827,6 +830,16 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorActorTaskTest,
   GlicInstanceImpl* instance = OpenGlicForActiveTab();
   ASSERT_TRUE(instance);
 
+  {
+    auto info = glic::mojom::ConversationInfo::New();
+    info->conversation_id = "conversation_id";
+    base::test::TestFuture<
+        std::optional<mojom::RegisterConversationErrorReason>>
+        future;
+    instance->RegisterConversation(std::move(info), future.GetCallback());
+    ASSERT_TRUE(future.Wait());
+  }
+
   // Wait for WebUI to be ready to ensure handler_info_ is set.
   EXPECT_TRUE(base::test::RunUntil([&]() {
     return instance->host().GetPrimaryWebUiState() ==
@@ -849,7 +862,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorActorTaskTest,
   // Wait for StopTask to complete and verify that it is no longer actuating.
   EXPECT_TRUE(base::test::RunUntil([&]() { return !instance->IsActuating(); }));
 
-  // verify that task can be crreated again.
+  // verify that task can be created again.
   base::test::TestFuture<
       base::expected<int32_t, glic::mojom::CreateTaskErrorReason>>
       create_task_future2;
