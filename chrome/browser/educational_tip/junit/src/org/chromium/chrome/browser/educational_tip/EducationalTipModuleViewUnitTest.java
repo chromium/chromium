@@ -10,6 +10,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
+import android.os.Build;
 import android.text.StaticLayout;
 import android.view.LayoutInflater;
 import android.view.View.OnLayoutChangeListener;
@@ -172,5 +173,11 @@ public class EducationalTipModuleViewUnitTest {
 
         Assert.assertFalse(buttonView.isEnabled());
         Assert.assertEquals(disabledColor, buttonView.getCurrentTextColor());
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            Assert.assertEquals(
+                    mContext.getString(R.string.educational_tip_accessibility_item_completed),
+                    mModuleView.getStateDescription());
+        }
     }
 }

@@ -104,6 +104,7 @@ public class EducationalTipModuleTwoCellView extends LinearLayout {
 
     private void applyCompletedStyle(
             TextView titleView, TextView descriptionView, View itemLayout, boolean isCompleted) {
+        itemLayout.setLongClickable(false);
         if (isCompleted) {
             int disabledColor = getContext().getColor(R.color.default_text_color_disabled_list);
             titleView.setTextColor(disabledColor);
@@ -113,10 +114,12 @@ public class EducationalTipModuleTwoCellView extends LinearLayout {
             descriptionView.setPaintFlags(
                     descriptionView.getPaintFlags() | android.graphics.Paint.STRIKE_THRU_TEXT_FLAG);
 
-            // Disable clicks on the item layout
+            itemLayout.setForeground(null);
+
+            // Accessibility
             itemLayout.setOnClickListener(null);
             itemLayout.setClickable(false);
-            itemLayout.setForeground(null);
+            SetupListModuleUtils.setCompletedAccessibilityStateDescription(itemLayout);
         } else {
             int titleColor = getContext().getColor(R.color.default_text_color_list);
             int descriptionColor = getContext().getColor(R.color.default_text_color_secondary_list);

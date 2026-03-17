@@ -15,6 +15,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.educational_tip.R;
+import org.chromium.chrome.browser.setup_list.SetupListModuleUtils;
 
 /**
  * The list item view within a {@link EducationalTipBottomSheetListContainerView} that is in a
@@ -62,5 +63,7 @@ public class EducationalTipSetupListBottomSheetListItemView extends ConstraintLa
         this.setOnClickListener(null);
         this.setClickable(false);
         findViewById(R.id.chevron).setVisibility(INVISIBLE);
+
+        SetupListModuleUtils.setCompletedAccessibilityStateDescription(this);
     }
 }
