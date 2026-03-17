@@ -704,6 +704,58 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
 #endif
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+class GlicInstanceCoordinatorActorTaskTest
+    : public GlicInstanceCoordinatorBrowserTest {
+ public:
+  GlicInstanceCoordinatorActorTaskTest() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        ::features::kGlicActor,
+        {{::features::kGlicActorPolicyControlExemption.name, "true"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorActorTaskTest,
+                       ReloadCancelsActorTask) {
+  GlicInstanceImpl* instance = OpenGlicForActiveTab();
+  ASSERT_TRUE(instance);
+
+  // Wait for WebUI to be ready to ensure handler_info_ is set.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return instance->host().GetPrimaryWebUiState() ==
+               glic::mojom::WebUiState::kReady &&
+           instance->host().GetPrimaryWebClient();
+  }));
+
+  // Create a task to make it "actuating".
+  base::test::TestFuture<
+      base::expected<int32_t, glic::mojom::CreateTaskErrorReason>>
+      create_task_future;
+  instance->CreateTask(nullptr, actor::webui::mojom::TaskOptions::New(),
+                       create_task_future.GetCallback());
+  ASSERT_TRUE(create_task_future.Get().has_value());
+  EXPECT_TRUE(instance->IsActuating());
+
+  // Reload the instance.
+  instance->host().Reload();
+
+  // Wait for StopTask to complete and verify that it is no longer actuating.
+  EXPECT_TRUE(base::test::RunUntil([&]() { return !instance->IsActuating(); }));
+
+  // verify that task can be crreated again.
+  base::test::TestFuture<
+      base::expected<int32_t, glic::mojom::CreateTaskErrorReason>>
+      create_task_future2;
+  instance->CreateTask(nullptr, actor::webui::mojom::TaskOptions::New(),
+                       create_task_future2.GetCallback());
+  ASSERT_TRUE(create_task_future2.Get().has_value());
+  EXPECT_TRUE(instance->IsActuating());
+}
+#endif
+
 class GlicInstanceCoordinatorToggleWithConversationTest
     : public GlicInstanceCoordinatorBrowserTest {
  public:

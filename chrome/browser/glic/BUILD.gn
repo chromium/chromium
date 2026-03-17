@@ -625,9 +625,7 @@ source_set("browser_tests") {
     deps += [ "//ui/ozone" ]
   }
 
-  if (!is_android) {
-    data_deps = [ "//chrome/test/data/webui/glic:generate_test_files" ]
-  }
+  data_deps = [ "//chrome/test/data/webui/glic:generate_test_files" ]
 
   # TODO(crbug.com/432285114): Fix code that adds exit-time destructors and
   # enable the diagnostic by removing this line.

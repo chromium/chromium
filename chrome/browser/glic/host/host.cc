@@ -247,6 +247,9 @@ void Host::Reload() {
 
   if (GlicEnabling::IsMultiInstanceEnabled() &&
       base::FeatureList::IsEnabled(kGlicReloadUsesFreshWebContents)) {
+    if (handler_info_ && handler_info_->web_client) {
+      UnsetWebClient(handler_info_->web_client);
+    }
     Shutdown();
     CreateContents(/*initially_hidden=*/false);
     delegate_->OnReload();
