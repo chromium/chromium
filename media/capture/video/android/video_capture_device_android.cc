@@ -165,8 +165,7 @@ void VideoCaptureDeviceAndroid::AllocateAndStart(
   }
 
   // TODO(julien.isorce): Use Camera.SENSOR_COLOR_TRANSFORM2 to build a
-  // gfx::ColorSpace, and rename VideoCaptureDeviceAndroid::GetColorspace()
-  // to GetPixelFormat, see http://crbug.com/959901.
+  // gfx::ColorSpace. see http://crbug.com/959901.
   capture_color_space_ = gfx::ColorSpace();
 
   capture_format_.frame_size.SetSize(
@@ -174,7 +173,7 @@ void VideoCaptureDeviceAndroid::AllocateAndStart(
       Java_VideoCapture_queryHeight(env, j_capture_));
   capture_format_.frame_rate =
       Java_VideoCapture_queryFrameRate(env, j_capture_);
-  capture_format_.pixel_format = GetColorspace();
+  capture_format_.pixel_format = GetPixelFormat();
   DCHECK_NE(capture_format_.pixel_format, PIXEL_FORMAT_UNKNOWN);
   CHECK(capture_format_.frame_size.GetArea() > 0);
   CHECK(!(capture_format_.frame_size.width() % 2));
@@ -730,11 +729,11 @@ void VideoCaptureDeviceAndroid::SendIncomingDataToClient(
       /*capture_begin_timestamp=*/std::nullopt, /*metadata=*/std::nullopt);
 }
 
-VideoPixelFormat VideoCaptureDeviceAndroid::GetColorspace() {
+VideoPixelFormat VideoCaptureDeviceAndroid::GetPixelFormat() {
   JNIEnv* env = AttachCurrentThread();
-  const int current_capture_colorspace =
-      Java_VideoCapture_getColorspace(env, j_capture_);
-  switch (current_capture_colorspace) {
+  const int current_pixel_format =
+      Java_VideoCapture_getPixelFormat(env, j_capture_);
+  switch (current_pixel_format) {
     case ANDROID_IMAGE_FORMAT_YV12:
       return PIXEL_FORMAT_YV12;
     case ANDROID_IMAGE_FORMAT_YUV_420_888:

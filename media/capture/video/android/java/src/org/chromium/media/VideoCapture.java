@@ -169,7 +169,7 @@ public abstract class VideoCapture {
     }
 
     @CalledByNative
-    public final int getColorspace() {
+    public final int getPixelFormat() {
         assumeNonNull(mCaptureFormat);
         switch (mCaptureFormat.mPixelFormat) {
             case ImageFormat.YV12:
