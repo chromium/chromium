@@ -2940,13 +2940,7 @@ INSTANTIATE_TEST_SUITE_P(
       return SunfishScannerTestName(sunfish_enabled, scanner_enabled);
     });
 
-// TODO(crbug.com/1291073): Flaky on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_CaptureAtPixelsFullscreen DISABLED_CaptureAtPixelsFullscreen
-#else
-#define MAYBE_CaptureAtPixelsFullscreen CaptureAtPixelsFullscreen
-#endif
-TEST_P(CaptureModeRecordingSizeTest, MAYBE_CaptureAtPixelsFullscreen) {
+TEST_P(CaptureModeRecordingSizeTest, CaptureAtPixelsFullscreen) {
   float dsf = 1.6f;
   SetDeviceScaleFactor(dsf);
   EXPECT_EQ(dsf, window_->GetHost()->device_scale_factor());
@@ -3004,8 +2998,7 @@ TEST_P(CaptureModeRecordingSizeTest, MAYBE_CaptureAtPixelsFullscreen) {
                    ->GetNumberOfVideoEncoderReconfigures());
 }
 
-// The test is flaky. https://crbug.com/1287724.
-TEST_P(CaptureModeRecordingSizeTest, DISABLED_CaptureAtPixelsRegion) {
+TEST_P(CaptureModeRecordingSizeTest, CaptureAtPixelsRegion) {
   float dsf = 1.6f;
   SetDeviceScaleFactor(dsf);
   EXPECT_EQ(dsf, window_->GetHost()->device_scale_factor());
@@ -3052,8 +3045,7 @@ TEST_P(CaptureModeRecordingSizeTest, DISABLED_CaptureAtPixelsRegion) {
                    ->GetNumberOfVideoEncoderReconfigures());
 }
 
-// The test is flaky. https://crbug.com/1287724.
-TEST_P(CaptureModeRecordingSizeTest, DISABLED_CaptureAtPixelsWindow) {
+TEST_P(CaptureModeRecordingSizeTest, CaptureAtPixelsWindow) {
   float dsf = 1.6f;
   SetDeviceScaleFactor(dsf);
   EXPECT_EQ(dsf, window_->GetHost()->device_scale_factor());
