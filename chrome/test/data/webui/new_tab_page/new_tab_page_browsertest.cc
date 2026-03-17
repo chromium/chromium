@@ -138,7 +138,13 @@ IN_PROC_BROWSER_TEST_F(NewTabPageTest, ComposeboxContextMenu) {
           "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(NewTabPageTest, ComposeboxUpload) {
+// TODO(https://crbug.com/492773182): Fix the flakiness.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_ComposeboxUpload DISABLED_ComposeboxUpload
+#else
+#define MAYBE_ComposeboxUpload ComposeboxUpload
+#endif
+IN_PROC_BROWSER_TEST_F(NewTabPageTest, MAYBE_ComposeboxUpload) {
   RunTest("new_tab_page/composebox/composebox_upload_test.js", "mocha.run()");
 }
 
