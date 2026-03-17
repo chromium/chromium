@@ -29,7 +29,6 @@
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "ui/base/l10n/l10n_util.h"
 
-using chrome_test_util::SettingsAccountButton;
 using chrome_test_util::SettingsDoneButton;
 
 namespace {
@@ -277,8 +276,7 @@ void DismissBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
   // Resolve the passphrase error from Account settings.
   // Open settings.
-  [ChromeEarlGreyUI openSettingsMenu];
-  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+  [SigninEarlGreyUI openSyncSettings];
   // Verify the error section is showing.
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(kSyncErrorButtonIdentifier)]

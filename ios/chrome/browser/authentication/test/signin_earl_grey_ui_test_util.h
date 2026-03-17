@@ -88,6 +88,8 @@
 + (void)dismissSigninConfirmationSnackbarForIdentity:
             (FakeSystemIdentity*)identity
                                        assertVisible:(BOOL)assertVisible;
+// Opens settings > identity.
++ (void)openSyncSettings;
 
 // Opens settings > identity > account menu.
 + (void)openAccountsListFromSettings;

@@ -329,9 +329,7 @@ static const char* kInterstitialDetails = "Details";
 // Tests that the Encryption item is disabled for supervised users.
 - (void)testEncryptionItemDisabledForSupervisedUsers {
   [self signInSupervisedUser];
-  [ChromeEarlGreyUI openSettingsMenu];
-  [ChromeEarlGreyUI
-      tapSettingsMenuButton:chrome_test_util::SettingsAccountButton()];
+  [SigninEarlGreyUI openSyncSettings];
 
   [[[EarlGrey selectElementWithMatcher:
                   grey_allOf(chrome_test_util::ButtonWithAccessibilityLabelId(

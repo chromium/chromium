@@ -67,7 +67,6 @@ using ::chrome::cros::reporting::proto::UploadEventsRequest;
 using Identity =
     ::chrome::cros::reporting::proto::PasswordBreachEvent::Identity;
 using chrome_test_util::GREYAssertErrorNil;
-using chrome_test_util::SettingsAccountButton;
 using chrome_test_util::SettingsDoneButton;
 using chrome_test_util::TapWebElementWithId;
 using chrome_test_util::UseSuggestedPasswordMatcher;
@@ -659,8 +658,7 @@ void LoginOnUff() {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
   // Disable Passwords toggle in account settings.
-  [ChromeEarlGreyUI openSettingsMenu];
-  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+  [SigninEarlGreyUI openSyncSettings];
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(kSyncPasswordsIdentifier)]
       performAction:chrome_test_util::TurnTableViewSwitchOn(/*on=*/NO)];
@@ -711,8 +709,7 @@ void LoginOnUff() {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
   // Verify encryption error is showing in in account settings.
-  [ChromeEarlGreyUI openSettingsMenu];
-  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+  [SigninEarlGreyUI openSyncSettings];
   // Verify the error section is showing.
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(kSyncErrorButtonIdentifier)]

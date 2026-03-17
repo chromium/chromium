@@ -117,8 +117,7 @@ void WaitForForcedSigninScreenAndSignin(FakeSystemIdentity* fakeIdentity) {
 
 // Opens account settings and signs out from them.
 void OpenAccountSettingsAndSignOut() {
-  [ChromeEarlGreyUI openSettingsMenu];
-  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+  [SigninEarlGreyUI openSyncSettings];
   // We're now in the "manage sync" view, and the signout button is at the very
   // bottom. Scroll there.
   id<GREYMatcher> scrollViewMatcher =
@@ -469,8 +468,7 @@ void CompleteSigninFlow() {
       performAction:grey_tap()];
 
   // Open account settings and verify the content of the sign-out footer.
-  [ChromeEarlGreyUI openSettingsMenu];
-  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+  [SigninEarlGreyUI openSyncSettings];
   [[EarlGrey
       selectElementWithMatcher:
           grey_allOf(

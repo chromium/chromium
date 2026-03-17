@@ -5,6 +5,7 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
+#import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/sync/sync_encryption_constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
@@ -22,9 +23,7 @@
 - (void)testSyncPassphraseSettingsTwice {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
-  [ChromeEarlGreyUI openSettingsMenu];
-  [ChromeEarlGreyUI
-      tapSettingsMenuButton:chrome_test_util::SettingsAccountButton()];
+  [SigninEarlGreyUI openSyncSettings];
 
   id<GREYMatcher> scrollViewMatcher =
       grey_accessibilityID(kManageSyncTableViewAccessibilityIdentifier);

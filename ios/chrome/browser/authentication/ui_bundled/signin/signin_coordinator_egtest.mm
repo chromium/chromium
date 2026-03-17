@@ -921,9 +921,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
       waitForSufficientlyVisibleElementWithMatcher:SettingsDoneButton()];
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
       performAction:grey_tap()];
-  [ChromeEarlGreyUI openSettingsMenu];
-
-  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+  [SigninEarlGreyUI openSyncSettings];
 
   // Check the user is not invited to enter the passphrase
   [[EarlGrey

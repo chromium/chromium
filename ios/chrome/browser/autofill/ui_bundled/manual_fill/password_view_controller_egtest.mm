@@ -44,7 +44,6 @@ using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::CancelButton;
 using chrome_test_util::NavigationBarCancelButton;
 using chrome_test_util::NavigationBarDoneButton;
-using chrome_test_util::SettingsAccountButton;
 using chrome_test_util::SettingsDoneButton;
 using chrome_test_util::SettingsPasswordMatcher;
 using chrome_test_util::SettingsPasswordSearchMatcher;
@@ -955,8 +954,7 @@ void CheckKeyboardIsUpAndNotCovered() {
   [ChromeEarlGrey waitForSyncTransportStateActiveWithTimeout:base::Seconds(10)];
 
   // Disable Passwords toggle in account settings.
-  [ChromeEarlGreyUI openSettingsMenu];
-  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+  [SigninEarlGreyUI openSyncSettings];
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(kSyncPasswordsIdentifier)]
       performAction:chrome_test_util::TurnTableViewSwitchOn(/*on=*/NO)];
@@ -1001,8 +999,7 @@ void CheckKeyboardIsUpAndNotCovered() {
   [ChromeEarlGrey waitForSyncTransportStateActiveWithTimeout:base::Seconds(10)];
 
   // Verify encryption error is showing in in account settings.
-  [ChromeEarlGreyUI openSettingsMenu];
-  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+  [SigninEarlGreyUI openSyncSettings];
   // Verify the error section is showing.
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(kSyncErrorButtonIdentifier)]

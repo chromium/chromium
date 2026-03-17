@@ -28,11 +28,7 @@
 namespace {
 
 void ClickSignOutInAccountSettings() {
-  [ChromeEarlGreyUI openSettingsMenu];
-
-  // Open the "Account Settings" view.
-  [ChromeEarlGreyUI
-      tapSettingsMenuButton:chrome_test_util::SettingsAccountButton()];
+  [SigninEarlGreyUI openSyncSettings];
 
   // We're now in the "manage sync" view, and the signout button is at the very
   // bottom. Scroll there.
