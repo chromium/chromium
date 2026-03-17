@@ -8685,6 +8685,9 @@ grit("resources") {
   use_brotli = true
 
   defines = chrome_grit_defines
+
+  defines += [ "enable_src_internal=$enable_src_internal" ]
+
   if (enable_hangout_services_extension) {
     defines += [ "enable_hangout_services_extension" ]
   }

@@ -7,17 +7,14 @@
 #include <string>
 #include <string_view>
 
-#include "base/base_paths.h"
-#include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
-#include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
@@ -27,7 +24,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/grit/browser_resources.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
+#include "ui/base/resource/resource_bundle.h"
 // TODO(crbug.com/485620841): Make delegate not dependent on client and move
 // this back to /password_change.
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
@@ -55,17 +54,12 @@ std::string GetFallbackPromptToReachForm(std::string_view domain,
 
 std::string GetReachChangeFormPrompt(const std::string& domain,
                                      const std::string& username) {
-  base::FilePath source_root;
-  if (!base::PathService::Get(base::DIR_CURRENT, &source_root)) {
-    return std::string();
-  }
+#if defined(IDR_APC_PROMPTS_JSON)
+  std::string json_data =
+      ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+          IDR_APC_PROMPTS_JSON);
 
-  base::FilePath json_file_path = source_root.AppendASCII("internal")
-                                      .AppendASCII("password_manager")
-                                      .AppendASCII("apc_prompts.json");
-
-  std::string json_data;
-  if (!base::ReadFileToString(json_file_path, &json_data)) {
+  if (json_data.empty()) {
     return std::string();
   }
 
@@ -89,6 +83,10 @@ std::string GetReachChangeFormPrompt(const std::string& domain,
   base::ReplaceSubstringsAfterOffset(&final_prompt, 0, "{username}", username);
 
   return final_prompt;
+
+#else
+  return std::string();
+#endif
 }
 
 std::u16string GeneratePassword(
