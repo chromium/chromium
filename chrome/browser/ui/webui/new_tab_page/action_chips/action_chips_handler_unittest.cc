@@ -61,6 +61,7 @@ using ::action_chips::mojom::Page;
 using ::action_chips::mojom::SuggestTemplateInfo;
 using ::action_chips::mojom::TabInfo;
 using ::action_chips::mojom::TabInfoPtr;
+using ::action_chips::mojom::ToolMode;
 using ::base::Bucket;
 using ::base::BucketsAreArray;
 using ::testing::_;
@@ -133,6 +134,7 @@ struct ActionChipFields {
   std::string primary_text;
   std::string secondary_text;
   std::optional<TabInfoFields> tab;
+  ToolMode preselected_tool = ToolMode::kUnspecified;
 };
 
 base::Time GetTimeAt(const size_t index) {
@@ -151,7 +153,8 @@ ActionChipPtr MakeActionChip(const ActionChipFields& fields) {
       fields.suggestion,
       SuggestTemplateInfo::New(fields.icon_type,
                                CreateFormattedString(fields.primary_text),
-                               CreateFormattedString(fields.secondary_text)),
+                               CreateFormattedString(fields.secondary_text),
+                               fields.preselected_tool),
       std::move(tab));
 }
 
@@ -496,13 +499,15 @@ TEST_F(
               "suggention1",
               SuggestTemplateInfo::New(IconType::kIconTypeUnspecified,
                                        CreateFormattedString("title1"),
-                                       CreateFormattedString("subtitle1")),
+                                       CreateFormattedString("subtitle1"),
+                                       ToolMode::kUnspecified),
               nullptr),
           ActionChip::New(
               "suggention2",
               SuggestTemplateInfo::New(IconType::kIconTypeUnspecified,
                                        CreateFormattedString("title2"),
-                                       CreateFormattedString("subtitle2")),
+                                       CreateFormattedString("subtitle2"),
+                                       ToolMode::kUnspecified),
               nullptr))));
 
   // Act

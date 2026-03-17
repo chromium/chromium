@@ -35,6 +35,22 @@ enum IconType {
 };
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/new_tab_page/enums.xml:ActionChipIconType)
+
+// This enum is mapped to third_party/omnibox_proto/tool_mode.proto.
+enum ToolMode {
+  kUnspecified = 0,
+  kDeepSearch = 1,
+  kCanvas = 2,
+  kGeminiPro = 3,
+  kImageGen = 4,
+  kDeepBrowse = 5,
+  kImageGenSelfie = 6,
+  kImageGenUpload = 7,
+  kDisableSuggest = 8,
+  kAim = 9,
+  kAimGenPrompt = 10,
+};
+
 struct FormattedString {
   string text;
   string? a11y_text;
@@ -47,6 +63,7 @@ struct SuggestTemplateInfo {
   IconType type_icon;
   FormattedString? primary_text;
   FormattedString? secondary_text;
+  ToolMode preselected_tool;
 };
 
 // The information representing a single action chip.

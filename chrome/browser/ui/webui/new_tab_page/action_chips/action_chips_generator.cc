@@ -64,6 +64,7 @@ using ::action_chips::mojom::SuggestTemplateInfo;
 using ::action_chips::mojom::SuggestTemplateInfoPtr;
 using ::action_chips::mojom::TabInfo;
 using ::action_chips::mojom::TabInfoPtr;
+using ::action_chips::mojom::ToolMode;
 using ::tabs::TabInterface;
 
 // A class representing scenarios/use cases around action chips.
@@ -152,6 +153,11 @@ void SyncProtoToMojo<omnibox::SuggestTemplateInfo,
   }
   if (a.has_secondary_text()) {
     AssignMojoField(a.secondary_text(), b->secondary_text);
+  }
+  if (a.has_fusebox_action()) {
+    AssignMojoField(a.fusebox_action().preselected_tool(), b->preselected_tool);
+  } else {
+    b->preselected_tool = ToolMode::kUnspecified;
   }
 }
 
@@ -250,6 +256,7 @@ ActionChipPtr CreateRecentTabChip(TabInfoPtr tab, std::string_view suggestion) {
   chip->suggest_template_info->secondary_text =
       action_chips::mojom::FormattedString::New();
   chip->suggest_template_info->secondary_text->text = chip->tab->title;
+  chip->suggest_template_info->preselected_tool = ToolMode::kUnspecified;
   return chip;
 }
 
@@ -268,6 +275,7 @@ ActionChipPtr CreateDeepSearchChip(std::string_view suggestion) {
       !suggestion.empty()
           ? std::string(suggestion)
           : l10n_util::GetStringUTF8(IDS_NTP_ACTION_CHIP_DEEP_SEARCH_BODY);
+  chip->suggest_template_info->preselected_tool = ToolMode::kDeepSearch;
   return chip;
 }
 
@@ -296,6 +304,7 @@ ActionChipPtr CreateImageCreationChip(std::string_view suggestion) {
       !suggestion.empty()
           ? std::string(suggestion)
           : l10n_util::GetStringUTF8(IDS_NTP_ACTION_CHIP_CREATE_IMAGE_BODY_1);
+  chip->suggest_template_info->preselected_tool = ToolMode::kImageGen;
   return chip;
 }
 
@@ -324,6 +333,7 @@ ActionChipPtr CreateCanvasChip(std::string_view suggestion) {
       !suggestion.empty()
           ? std::string(suggestion)
           : l10n_util::GetStringUTF8(IDS_NTP_ACTION_CHIP_CANVAS_BODY);
+  chip->suggest_template_info->preselected_tool = ToolMode::kCanvas;
   return chip;
 }
 
@@ -349,6 +359,7 @@ ActionChipPtr CreateDeepDiveChip(TabInfoPtr tab,
   chip->suggest_template_info->secondary_text =
       action_chips::mojom::FormattedString::New();
   chip->suggest_template_info->secondary_text->text = suggestion_string;
+  chip->suggest_template_info->preselected_tool = ToolMode::kUnspecified;
   return chip;
 }
 
