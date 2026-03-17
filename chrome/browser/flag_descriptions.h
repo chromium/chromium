@@ -1112,13 +1112,6 @@ inline constexpr char kAutofillTouchToFillShowManualFillForVcnFixDescription[] =
     "successful and the user clicks on the 'show card' button to fill the card "
     "manually.";
 
-inline constexpr char kAutofillUnmaskCardRequestTimeoutName[] =
-    "Timeout for the credit card unmask request";
-inline constexpr char kAutofillUnmaskCardRequestTimeoutDescription[] =
-    "When enabled, sets a client-side timeout on the Autofill credit card "
-    "unmask request. Upon timeout, the client will terminate the current "
-    "unmask server call, which may or may not terminate the ongoing unmask UI.";
-
 inline constexpr char kAutofillVcnEnrollStrikeExpiryTimeName[] =
     "Expiry duration for VCN enrollment strikes";
 inline constexpr char kAutofillVcnEnrollStrikeExpiryTimeDescription[] =

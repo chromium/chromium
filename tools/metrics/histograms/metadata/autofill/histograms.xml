@@ -276,7 +276,6 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="Autofill.PaymentsRequestType">
-  <variant name="UnmaskCardRequest" summary="credit card unmask"/>
   <variant name="UpdateVirtualCardEnrollment_Enroll" summary="VCN enrollment"/>
   <variant name="UploadCardRequest" summary="credit card upload"/>
 </variants>

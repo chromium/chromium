@@ -148,9 +148,6 @@ extern const char kAutofillThrottleDocumentFormScanDescription[];
 extern const char kAutofillThrottleFilteredDocumentFormScanName[];
 extern const char kAutofillThrottleFilteredDocumentFormScanDescription[];
 
-extern const char kAutofillUnmaskCardRequestTimeoutName[];
-extern const char kAutofillUnmaskCardRequestTimeoutDescription[];
-
 extern const char kAutofillUseRendererIDsName[];
 extern const char kAutofillUseRendererIDsDescription[];
 

@@ -543,15 +543,6 @@ std::string UnmaskCardRequest::GetHistogramName() const {
   return "UnmaskCardRequest";
 }
 
-std::optional<base::TimeDelta> UnmaskCardRequest::GetTimeout() const {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillUnmaskCardRequestTimeout)) {
-    return std::nullopt;
-  }
-  // Hardcode 30s to be consistent with the server side timeout.
-  return base::Seconds(30);
-}
-
 bool UnmaskCardRequest::IsAllCardInformationValidIncludingDcvv() {
   return !response_details_.real_pan.empty() &&
          !response_details_.expiration_month.empty() &&
