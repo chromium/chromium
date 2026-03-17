@@ -543,33 +543,52 @@ suite('AppContent', () => {
 
   suite('on image toggle', () => {
     const altText = 'No man is worth the aggravation';
+    const textNodeContent = 'Some text';
 
     setup(() => {
-      readingMode.getHtmlTag = () => 'img';
+      readingMode.rootId = 1;
+      readingMode.getHtmlTag = (id) => {
+        if (id === 1) {
+          return 'div';
+        }
+        if (id === 2) {
+          return 'img';
+        }
+        return '';
+      };
       readingMode.getAltText = () => altText;
-      readingMode.getChildren = () => [];
+      readingMode.getChildren = (id) => {
+        if (id === 1) {
+          return [2, 3];
+        }
+        return [];
+      };
+      readingMode.getTextContent = (id) => id === 3 ? textNodeContent : '';
     });
 
     test('shows images when enabled', async () => {
       readingMode.imagesFeatureEnabled = true;
-      const expectedHtml = '<canvas dir="ltr" alt="' + altText +
-          '" class="downloaded-image" lang="en-us" style=""></canvas>';
       app.updateContent();
       await microtasksFinished();
       assertTrue(contentController.hasContent());
 
       readingMode.imagesEnabled = true;
+      const expectedHtmlWithImage =
+          '<div dir="ltr" lang="en-us"><canvas dir="ltr" alt="' + altText +
+          '" class="downloaded-image" lang="en-us" style=""></canvas>' +
+          textNodeContent + '</div>';
       emitEvent(app, ToolbarEvent.IMAGES);
       await microtasksFinished();
 
-      assertEquals(expectedHtml, app.$.container.innerHTML);
+      assertEquals(expectedHtmlWithImage, app.$.container.innerHTML);
     });
 
     test('hides images when disabled', async () => {
       readingMode.imagesFeatureEnabled = true;
-      const expectedHtml = '<canvas dir="ltr" alt="' + altText +
-          '" class="downloaded-image" lang="en-us" style="display: none;">' +
-          '</canvas>';
+      const expectedHtml =
+          '<div dir="ltr" lang="en-us"><canvas dir="ltr" alt="' + altText +
+          '" class="downloaded-image" lang="en-us" style="display: none;"></canvas>' +
+          textNodeContent + '</div>';
       app.updateContent();
       await microtasksFinished();
       assertTrue(contentController.hasContent());
@@ -583,9 +602,10 @@ suite('AppContent', () => {
 
     test('does not show images when feature flag disabled', async () => {
       readingMode.imagesFeatureEnabled = false;
-      const expectedHtml = '<canvas dir="ltr" alt="' + altText +
-          '" class="downloaded-image" lang="en-us" style="display: none;">' +
-          '</canvas>';
+      const expectedHtml =
+          '<div dir="ltr" lang="en-us"><canvas dir="ltr" alt="' + altText +
+          '" class="downloaded-image" lang="en-us" style="display: none;"></canvas>' +
+          textNodeContent + '</div>';
       app.updateContent();
       await microtasksFinished();
 
