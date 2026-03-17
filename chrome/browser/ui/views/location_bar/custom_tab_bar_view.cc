@@ -425,7 +425,7 @@ const LocationBarModel* CustomTabBarView::GetLocationBarModel() const {
 }
 
 ui::ImageModel CustomTabBarView::GetLocationIcon(
-    LocationIconView::Delegate::IconFetchedCallback on_icon_fetched) const {
+    LocationIconView::Delegate::IconFetchedCallback on_icon_fetched) {
   return ui::ImageModel::FromVectorIcon(
       delegate_->GetLocationBarModel()->GetVectorIcon(),
       GetSecurityChipColor(GetLocationBarModel()->GetSecurityLevel()),

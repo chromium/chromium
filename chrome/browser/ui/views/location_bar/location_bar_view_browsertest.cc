@@ -648,9 +648,7 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewAddContextButtonBrowserTest,
   // The "Add Context" button doesn't show up when the Omnibox popup is
   // closed.
   EXPECT_FALSE(location_bar_view->GetOmniboxController()->IsPopupOpen());
-  EXPECT_FALSE(location_bar_view->GetOmniboxController()
-                   ->edit_model()
-                   ->ShouldShowAddContextButton());
+  EXPECT_FALSE(location_bar_view->ShouldShowAddContextButton());
   const auto icon_when_closed =
       location_icon_view->GetImageModel(views::Button::STATE_NORMAL);
 
@@ -658,12 +656,10 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewAddContextButtonBrowserTest,
   location_bar_view->FocusLocation(/*is_user_initiated=*/true,
                                    /*clear_focus_if_failed=*/false);
   omnibox_view->SetUserText(u"test");
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return location_bar_view->GetOmniboxController()->IsPopupOpen();
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return location_bar_view->GetOmniboxController()->IsPopupOpen() &&
+           location_bar_view->ShouldShowAddContextButton();
   }));
-  EXPECT_TRUE(location_bar_view->GetOmniboxController()
-                  ->edit_model()
-                  ->ShouldShowAddContextButton());
   const auto icon_when_open =
       location_icon_view->GetImageModel(views::Button::STATE_NORMAL);
   EXPECT_NE(icon_when_closed->GetVectorIcon().vector_icon(),
@@ -697,8 +693,6 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewAddContextButtonBrowserTest,
   LocationBarView* location_bar_view = GetLocationBarView();
   OmniboxViewViews* omnibox_view = location_bar_view->omnibox_view();
   PrefService* prefs = browser()->profile()->GetPrefs();
-  OmniboxEditModel* edit_model =
-      location_bar_view->GetOmniboxController()->edit_model();
 
   // pref is initially true to show the button.
   prefs->SetBoolean(omnibox::kShowAiModeOmniboxButton, true);
@@ -711,14 +705,14 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewAddContextButtonBrowserTest,
     return location_bar_view->GetOmniboxController()->IsPopupOpen();
   }));
   ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return edit_model->ShouldShowAddContextButton(); }));
+      [&]() { return location_bar_view->ShouldShowAddContextButton(); }));
 
   // Set pref to false.
   prefs->SetBoolean(omnibox::kShowAiModeOmniboxButton, false);
   ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return !edit_model->ShouldShowAddContextButton(); }));
+      [&]() { return !location_bar_view->ShouldShowAddContextButton(); }));
   // Set pref to true again.
   prefs->SetBoolean(omnibox::kShowAiModeOmniboxButton, true);
   ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return edit_model->ShouldShowAddContextButton(); }));
+      [&]() { return location_bar_view->ShouldShowAddContextButton(); }));
 }

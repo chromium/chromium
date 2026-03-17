@@ -81,8 +81,8 @@ class CustomTabBarView : public views::AccessiblePaneView,
       security_state::SecurityLevel security_level) const override;
   bool ShowPageInfoDialog() override;
   const LocationBarModel* GetLocationBarModel() const override;
-  ui::ImageModel GetLocationIcon(LocationIconView::Delegate::IconFetchedCallback
-                                     on_icon_fetched) const override;
+  ui::ImageModel GetLocationIcon(
+      LocationIconView::Delegate::IconFetchedCallback on_icon_fetched) override;
 
   // Methods for testing.
   std::u16string title_for_testing() const { return last_title_; }

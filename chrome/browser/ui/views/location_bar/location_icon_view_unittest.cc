@@ -46,8 +46,7 @@ class TestLocationIconDelegate : public IconLabelBubbleView::Delegate,
   const LocationBarModel* GetLocationBarModel() const override {
     return location_bar_model_;
   }
-  ui::ImageModel GetLocationIcon(
-      IconFetchedCallback on_icon_fetched) const override {
+  ui::ImageModel GetLocationIcon(IconFetchedCallback on_icon_fetched) override {
     return ui::ImageModel();
   }
 

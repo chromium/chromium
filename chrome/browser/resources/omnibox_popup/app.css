@@ -72,8 +72,8 @@
   margin-top: 2px;
 }
 
-:host([searchbox-layout-mode_='TallBottomContext']) .context-menu-container,
-:host([searchbox-layout-mode_='Compact']) .context-menu-container {
+:host([searchbox-layout-mode_='TallBottomContext']) .context-menu-container:has(*),
+:host([searchbox-layout-mode_='Compact']) .context-menu-container:has(*) {
   height: 40px;
 }
 
@@ -86,7 +86,8 @@
   }
 }
 
-:host([searchbox-layout-mode_='Compact']) {
+:host([searchbox-layout-mode_='Compact']),
+:host([searchbox-layout-mode_^='Tall']) .context-menu-container:not(:has(#context)) {
   --contextual-entrypoint-and-carousel-context-menu-container-padding-inline-start: 12px;
 }
 
