@@ -111,7 +111,7 @@ public class SigninButtonCoordinatorTest {
         // Sign-in button should be visible on NTP with signed-out description.
         ViewUtils.waitForVisibleView(
                 allOf(
-                        withId(R.id.signin_button),
+                        withId(R.id.avatar_button),
                         isDisplayed(),
                         withContentDescription(
                                 R.string.accessibility_toolbar_btn_signed_out_identity_disc)));
@@ -127,7 +127,7 @@ public class SigninButtonCoordinatorTest {
         // Initially shows signed-out avatar.
         ViewUtils.waitForVisibleView(
                 allOf(
-                        withId(R.id.signin_button),
+                        withId(R.id.avatar_button),
                         isDisplayed(),
                         withContentDescription(
                                 R.string.accessibility_toolbar_btn_signed_out_identity_disc)));
@@ -137,7 +137,7 @@ public class SigninButtonCoordinatorTest {
         // Avatar should update to a personalized disc with a name and email in its description.
         ViewUtils.waitForVisibleView(
                 allOf(
-                        withId(R.id.signin_button),
+                        withId(R.id.avatar_button),
                         isDisplayed(),
                         withContentDescription(mContentDescriptionWithNameAndEmail)));
     }
@@ -152,7 +152,7 @@ public class SigninButtonCoordinatorTest {
         // Initially shows signed-out avatar.
         ViewUtils.waitForVisibleView(
                 allOf(
-                        withId(R.id.signin_button),
+                        withId(R.id.avatar_button),
                         isDisplayed(),
                         withContentDescription(
                                 R.string.accessibility_toolbar_btn_signed_out_identity_disc)));
@@ -170,7 +170,7 @@ public class SigninButtonCoordinatorTest {
                                 TestAccounts.CHILD_ACCOUNT_NON_DISPLAYABLE_EMAIL.getFullName());
         ViewUtils.waitForVisibleView(
                 allOf(
-                        withId(R.id.signin_button),
+                        withId(R.id.avatar_button),
                         isDisplayed(),
                         withContentDescription(expectedDescription)));
     }
@@ -187,7 +187,7 @@ public class SigninButtonCoordinatorTest {
         // Initially shows the user's avatar with a personalized description.
         ViewUtils.waitForVisibleView(
                 allOf(
-                        withId(R.id.signin_button),
+                        withId(R.id.avatar_button),
                         isDisplayed(),
                         withContentDescription(mContentDescriptionWithNameAndEmail)));
 
@@ -196,7 +196,7 @@ public class SigninButtonCoordinatorTest {
         // Avatar should update back to the signed-out identity disc.
         ViewUtils.waitForVisibleView(
                 allOf(
-                        withId(R.id.signin_button),
+                        withId(R.id.avatar_button),
                         isDisplayed(),
                         withContentDescription(
                                 R.string.accessibility_toolbar_btn_signed_out_identity_disc)));
@@ -223,7 +223,7 @@ public class SigninButtonCoordinatorTest {
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
         ViewUtils.waitForVisibleView(
                 allOf(
-                        withId(R.id.signin_button),
+                        withId(R.id.avatar_button),
                         isDisplayed(),
                         withContentDescription(mContentDescriptionWithNameAndEmail)));
 
@@ -240,7 +240,7 @@ public class SigninButtonCoordinatorTest {
                                 TestAccounts.ACCOUNT1.getEmail());
         ViewUtils.waitForVisibleView(
                 allOf(
-                        withId(R.id.signin_button),
+                        withId(R.id.avatar_button),
                         isDisplayed(),
                         withContentDescription(expectedErrorContentDescription)));
 
@@ -248,7 +248,7 @@ public class SigninButtonCoordinatorTest {
         mFakeSyncServiceImpl.setRequiresClientUpgrade(false);
         ViewUtils.waitForVisibleView(
                 allOf(
-                        withId(R.id.signin_button),
+                        withId(R.id.avatar_button),
                         isDisplayed(),
                         withContentDescription(mContentDescriptionWithNameAndEmail)));
     }
@@ -340,7 +340,7 @@ public class SigninButtonCoordinatorTest {
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
         ViewUtils.waitForVisibleView(
                 allOf(
-                        withId(R.id.signin_button),
+                        withId(R.id.avatar_button),
                         isDisplayed(),
                         withContentDescription(mContentDescriptionWithNameAndEmail)));
 

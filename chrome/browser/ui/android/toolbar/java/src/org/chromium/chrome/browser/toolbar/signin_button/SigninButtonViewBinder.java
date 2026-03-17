@@ -33,7 +33,8 @@ final class SigninButtonViewBinder {
         } else if (SigninButtonProperties.ON_CLICK.equals(propertyKey)) {
             view.getAvatarButton().setOnClickListener(model.get(SigninButtonProperties.ON_CLICK));
         } else if (SigninButtonProperties.CONTENT_DESCRIPTION.equals(propertyKey)) {
-            view.setContentDescription(model.get(SigninButtonProperties.CONTENT_DESCRIPTION));
+            view.getAvatarButton()
+                    .setContentDescription(model.get(SigninButtonProperties.CONTENT_DESCRIPTION));
         }
     }
 }
