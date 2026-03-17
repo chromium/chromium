@@ -38,6 +38,10 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Dummy"/>
 </enum>
 
+<enum name="FieldTrialNameHash">
+  <int value="0" label="Dummy"/>
+</enum>
+
 <enum name="JsonDeserializationError">
   <summary>
     Captures errors codes that can be given by
@@ -192,14 +196,6 @@ chromium-metrics-reviews@google.com.
       label="Incomplete layer validation (errors found post validation)"/>
   <int value="11"
       label="Simultaneously active low and limited entropy systems"/>
-</enum>
-
-<enum name="VariationsLogInvalidValue">
-  <summary>
-    All values in this enum are invalid, this enum exists only so we have a nice
-    UI.
-  </summary>
-  <int value="0" label="dummy enum value"/>
 </enum>
 
 <enum name="VariationsPermanentConsistencyCountryResult">

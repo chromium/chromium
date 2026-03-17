@@ -150,7 +150,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.FieldTriamParamsLogInvalidValue"
-    enum="VariationsLogInvalidValue" expires_after="2026-11-01">
+    enum="FieldTrialNameHash" expires_after="2026-11-01">
   <owner>thiabaud@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -747,7 +747,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.StickyAfterQuery.Activation"
-    enum="VariationsLogInvalidValue" expires_after="2026-11-01">
+    enum="FieldTrialNameHash" expires_after="2026-11-01">
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
