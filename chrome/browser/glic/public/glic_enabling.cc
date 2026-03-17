@@ -68,7 +68,7 @@ namespace glic {
 //   - If the size is 1 and the string is "*", then all countries are enabled.
 //   - Otherwise, the country must be in this list to be enabled.
 
-// Comma separated list of countries to enable GLIC, by default, if country
+// Comma separated list of countries to enable Glic, by default, if country
 // filtering is enabled.
 constexpr char kDefaultEnabledCountries[] = "us";
 
@@ -83,7 +83,7 @@ constexpr char kDefaultEnabledCountries[] = "us";
 //   - If the size is 1 and the string is "*", then all locales are enabled.
 //   - Otherwise, the locale must be in this list to be enabled.
 
-// Comma separated list of locales to enable GLIC, by default, if locale
+// Comma separated list of locales to enable Glic, by default, if locale
 // filtering is enabled.
 constexpr char kDefaultEnabledLocales[] = "en-us";
 
@@ -442,7 +442,7 @@ bool GlicGlobalEnabling::IsEnabledByFlags() {
   static const bool supported_system_requirements = [] {
     constexpr base::ByteCount kMinimumMemoryThreshold = base::GiB(8);
 
-    // TODO(b:468055370): Remove the bypassing once the glic is fully launched.
+    // TODO(b:468055370): Remove the bypassing once Glic is fully launched.
     const bool bypass_cbx_requirement =
         base::FeatureList::IsEnabled(
             chromeos::features::kGlicEnableFor8GbDevices) &&
@@ -601,7 +601,7 @@ bool GlicEnabling::IsChromeOSProfileEligible(const Profile* profile) {
   switch (user->GetType()) {
     case user_manager::UserType::kRegular:
     case user_manager::UserType::kChild:
-      // These are ok to use glic.
+      // These are ok to use Glic.
       break;
     case user_manager::UserType::kGuest:
     case user_manager::UserType::kPublicAccount:
