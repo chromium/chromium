@@ -7,8 +7,8 @@ description: Instructions for creating a unit test in the chrome/browser/web_app
 
 This skill guides the process of creating a unit test in the
 chrome/browser/web_applications directory. First, read
-[/docs/webapps/README.md](/docs/webapps/README.md) to understand how the
-WebAppProvider system works.
+[WebAppProvider README](../../../README.md) to understand how the WebAppProvider
+system works.
 
 ## 1. Test Base Class & System Startup
 

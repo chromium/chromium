@@ -1,6 +1,6 @@
 # How to create WebApp Integration Tests
 
-Please see the the [Integration Testing Framework document][integration-testing-framework] for more information about specifics.
+Please see the the [Integration Testing Framework document](integration-testing-framework.md) for more information about specifics.
 
 ## 1. Familiarize yourself with the test generation, building, and running process.
 
@@ -14,10 +14,10 @@ Please see the the [Integration Testing Framework document][integration-testing-
 
 ## 2. Determine what actions are needed for new critical user journeys
 
-The goal of this step is to put all critical user journeys for the feature into the [critical user journeys file][cuj-spreadsheet] and any new actions/enums into their respective files ([actions][cuj-actions-sheet], [enums][cuj-enums-sheet]).
+The goal of this step is to put all critical user journeys for the feature into the [critical user journeys file](/chrome/test/webapps/data/critical_user_journeys.md) and any new actions/enums into their respective files ([actions](/chrome/test/webapps/data/actions.md), [enums](/chrome/test/webapps/data/enums.md)).
 
 Steps:
-1. Explore the existing [actions][cuj-actions] and [critical user journeys][cuj-spreadsheet] to get familiar with the existing support.
+1. Explore the existing [actions](/chrome/test/webapps/data/actions.md) and [critical user journeys](/chrome/test/webapps/data/critical_user_journeys.md) to get familiar with the existing support.
 2. Draft, possibly just in english, what all of the critical user journeys are.
   * Tip: Try not to 'collapse' multiple user journeys into one. It's easier to catalog them this way, and the testing framework script will collapse journeys for you during test generation.
 3. (optional) Draft what new actions (or sites) will need to be implemented for these new journeys.
@@ -31,11 +31,11 @@ The browsertest files are split into two sections, manual tests and script-gener
 1. Implement the new actions that were determined by the last step.
 2. Include a simple 'manual' test to verify it is working correctly.
 
-See the [example browsertest][regular-browsertests] file to see the manual tests at the top, written by the action authors.
+See the [example browsertest](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/views/web_apps/web_app_integration_browsertest.cc) file to see the manual tests at the top, written by the action authors.
 
-For details about how to implement actions, see [Creating Actions in the `WebAppIntegrationTestDriver`][creating-actions]. Implementing or changing actions is usually done in [`WebAppIntegrationTestDriver`](https://source.chromium.org/search?q=WebAppIntegrationTestDriver&ss=chromium). If the action only works with the sync system, then it may have to be implemented in the `TestDelegate` interface and then in the [`WebAppIntegrationTestBase`](https://source.chromium.org/search?q=WebAppIntegrationTestBase&sq=&ss=chromium). The [dPWA team](#contact-the-team) should have informed you if there was anything specific you need to do here.
+For details about how to implement actions, see [Creating Actions in the `WebAppIntegrationTestDriver`](integration-testing-framework.md#creating-action-implementations). Implementing or changing actions is usually done in [`WebAppIntegrationTestDriver`](https://source.chromium.org/search?q=WebAppIntegrationTestDriver&ss=chromium). If the action only works with the sync system, then it may have to be implemented in the `TestDelegate` interface and then in the [`WebAppIntegrationTestBase`](https://source.chromium.org/search?q=WebAppIntegrationTestBase&sq=&ss=chromium). The [dPWA team](#contact-the-team) should have informed you if there was anything specific you need to do here.
 
-Before submitting, make sure to also [run the trybots on mac][running-mac-tests], as these are sometimes disabled on the CQ.
+Before submitting, make sure to also [run the trybots on mac](integration-testing-framework.md#running-the-tests-on-mac), as these are sometimes disabled on the CQ.
 
 If in Step 2 above the team concluded a "Site" must be modified or created, these are located in the [test data directory](/chrome/test/data/web_apps/).
 
@@ -44,21 +44,21 @@ See the example [below](#example---uninstallfromlist).
 ### Why write a 'manual' test when they are about to ge generated?
 Implementing an action is often flaky and uncovers bugs. If all of the tests are in the first CL and it has problems, this causes large reverts or (even worse) sheriffs to manually disable many tests over the next few days. To prevent this complexity, this first CL should only include a few manual tests to make sure that everything is working correctly before more tests are generated.
 
-## 4. Add the new Critical User Journeys to the [file][cuj-spreadsheet], generate, and submit them.
+## 4. Add the new Critical User Journeys to the [file](/chrome/test/webapps/data/critical_user_journeys.md), generate, and submit them.
 
 Finally, now that the changes are implemented and tested, they can be used in generated critical user journey tests.
 
 ### 4.1. Mark the action as supported.
 
-Add to (or modify) this [file][supported-actions] marking the new actions as supported.
+Add to (or modify) this [file](../../chrome/test/webapps/data/framework_supported_actions.csv) marking the new actions as supported.
 
-To have the script actually generate tests using the new actions, they must be marked as supported in the [supported actions file][supported-actions]. The support is specified by a symbol per platform:
+To have the script actually generate tests using the new actions, they must be marked as supported in the [supported actions file](../../chrome/test/webapps/data/framework_supported_actions.csv). The support is specified by a symbol per platform:
 
 - 🌕 - Full coverage - This means that the driver implements this action in a way that completely matches (or almost matches) the code paths that are used when the user triggers this action.
 - 🌓 - Partial coverage - This means that the testing framework implements this action in a way that accomplishes the state change or check, but does not fully match the code path that is used when the user triggers this action.
 - 🌑 - No coverage - This means the action is not supported and any tests using this action will only be partially generated.
 
-If the action you have implemented is not present in the [file][supported-actions], please add it.
+If the action you have implemented is not present in the [file](../../chrome/test/webapps/data/framework_supported_actions.csv), please add it.
 
 ### 4.2. Generate test changes.
 
@@ -69,7 +69,7 @@ chrome/test/webapps/generate_framework_tests_and_coverage.py
 ```
 
 The output should:
-1. Generate a coverage report for the change in the [data directory][script-data-dir].
+1. Generate a coverage report for the change in the [data directory](../../chrome/test/webapps/data/).
 2. Print new tests that need to be manually copied to the integration browsertest files.
 3. Print out test ids that need to be removed.
 
@@ -85,7 +85,7 @@ Possible issues / Things to know:
 
 After all tests are added, `git cl format` is often required. It's a good idea to test all of the new tests locally if you can, and then after local verification a patch can be uploaded, the the trybots can be run, and a review can be requested from the team.
 
-Before submitting, make sure to also [run the trybots on mac][running-mac-tests], as these are sometimes disabled on the CQ.
+Before submitting, make sure to also [run the trybots on mac](integration-testing-framework.md#running-the-tests-on-mac), as these are sometimes disabled on the CQ.
 
 ### 4.3. Run new tests locally.
 
@@ -143,7 +143,7 @@ What critical user journeys will be needed? Generally:
   - "deny without remember" will NOT launch the app. If the file is launched again, the user should be presented with the dialog again.
   - "deny with remember" will NOT launch the app and unregister the app as a file handler. The operating system should no longer have the file registered with the web app.
 
-The existing [actions][cuj-actions-sheet] already have a lot of support for installing, launching, checking if a window was created, etc. The following changes will have to happen:
+The existing [actions](/chrome/test/webapps/data/actions.md) already have a lot of support for installing, launching, checking if a window was created, etc. The following changes will have to happen:
 - Modify an existing site (maybe Site B?), or create a new site (Site D? File Handler?), which handles a test file type in it's manifest.
   - Because multiple browsertests can be running at the same time on a trybot, this type will probably have to be uniquely generated per test to avoid conflicts.
 - Action 1: detect if a file type is registered on an operating system.
@@ -156,14 +156,3 @@ The existing [actions][cuj-actions-sheet] already have a lot of support for inst
 
 To contact the team for help, send an email to pwa-dev@chromium.org and/or post on #pwas on Chromium Slack.
 
-[cuj-spreadsheet]: /chrome/test/webapps/data/critical_user_journeys.md
-[cuj-actions-sheet]: /chrome/test/webapps/data/actions.md
-[cuj-enums-sheet]: /chrome/test/webapps/data/enums.md
-[regular-browsertests]: https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/views/web_apps/web_app_integration_browsertest.cc
-[regular-browsertests-wml]: https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/views/web_apps/web_app_integration_browsertest_mac_win_linux.cc
-[sync-browsertests-wml]: https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/sync/test/integration/two_client_web_apps_integration_test_mac_win_linux.cc
-[supported-actions]: ../../chrome/test/webapps/data/framework_supported_actions.csv
-[script-data-dir]: ../../chrome/test/webapps/data/
-[integration-testing-framework]: integration-testing-framework.md
-[creating-actions]: integration-testing-framework.md#creating-action-implementations
-[running-mac-tests]: integration-testing-framework.md#running-the-tests-on-mac

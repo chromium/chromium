@@ -9,7 +9,7 @@ These guidelines are open to modification. Feel free to contact the team for exc
 ## Expectations of owners
 
 *   See [/docs/code_reviews.md#expectations-of-owners](../code_reviews.md#expectations-of-owners), but instead of 'last 90 days', 6 months is fine.
-*   Familiar with the project [README](README.md), architecture, common system constructs, testing, & the bespoke integration tests system.
+*   Familiar with the project [README](../README.md), architecture, common system constructs, testing, & the bespoke integration tests system.
 *   Routes questions to appropriate specialists for sensitive areas (e.g. windows os integration code, app service integration, etc).
 
 Expected code review feedback examples (to give an idea of the types of things OWNERs should be thinking about when reviewing code):

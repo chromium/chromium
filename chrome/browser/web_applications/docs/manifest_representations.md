@@ -1,4 +1,4 @@
-# [Web Apps](../../README.md) - Manifest representations in code
+# [Web Apps](../README.md) - Manifest representations in code
 
 This is a list of all the places where we represent
 [manifest](https://w3c.github.io/manifest/) data in our codebase.
