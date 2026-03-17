@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/passwords/bottom_sheet/coordinator/credential_suggestion_bottom_sheet_mediator_base+Subclassing.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/ui/credential_suggestion_bottom_sheet_consumer.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -65,7 +66,12 @@
 
   [self.consumer
       setPrimaryActionString:l10n_util::GetNSString(
-                                 IDS_IOS_CREDENTIAL_BOTTOM_SHEET_CONTINUE)];
+                                 IDS_IOS_CREDENTIAL_BOTTOM_SHEET_CONTINUE)
+       secondaryActionString:l10n_util::GetNSString(
+                                 IDS_IOS_CREDENTIAL_BOTTOM_SHEET_MORE_PASSKEYS)
+        secondaryActionImage:DefaultSymbolWithPointSize(
+                                 kPersonBadgeKeyFillSymbol,
+                                 kSymbolActionPointSize)];
 }
 
 - (void)disconnect {

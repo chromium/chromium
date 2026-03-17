@@ -28,8 +28,10 @@
 // not display it all.
 - (void)setAvatarImage:(UIImage*)avatarImage;
 
-// Sets the primary action label.
-- (void)setPrimaryActionString:(NSString*)primaryActionString;
+// Sets the primary and secondary action labels and images.
+- (void)setPrimaryActionString:(NSString*)primaryActionString
+         secondaryActionString:(NSString*)secondaryActionString
+          secondaryActionImage:(UIImage*)secondaryActionImage;
 
 @end
 

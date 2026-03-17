@@ -116,7 +116,10 @@ TEST_F(PasskeySuggestionBottomSheetMediatorTest, InitializeSuggestions) {
            andDomain:[OCMArg isNotNil]]);
   OCMExpect([consumer_
       setPrimaryActionString:l10n_util::GetNSString(
-                                 IDS_IOS_CREDENTIAL_BOTTOM_SHEET_CONTINUE)]);
+                                 IDS_IOS_CREDENTIAL_BOTTOM_SHEET_CONTINUE)
+       secondaryActionString:l10n_util::GetNSString(
+                                 IDS_IOS_CREDENTIAL_BOTTOM_SHEET_MORE_PASSKEYS)
+        secondaryActionImage:[OCMArg any]]);
 
   [mediator_ setConsumer:consumer_];
 

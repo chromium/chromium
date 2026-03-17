@@ -42,6 +42,9 @@ namespace {
 // Width of the image for suggestion.
 CGFloat const kSuggestionImageWidth = 30;
 
+// Spacing aroung the secondary action button icon.
+CGFloat const kSecondaryActionButtonIconSpacing = 8;
+
 // Returns the username to display for the given `suggestion`.
 NSString* GetSuggestionDisplayUsername(FormSuggestion* suggestion) {
   NSString* username = suggestion.value;
@@ -110,10 +113,6 @@ void LogSuggestionAcceptedMetrics(BOOL is_backup_suggestion,
                             URL:(const GURL&)URL {
   ButtonStackConfiguration* configuration =
       [[ButtonStackConfiguration alloc] init];
-  configuration.secondaryActionString =
-      l10n_util::GetNSString(IDS_IOS_CREDENTIAL_BOTTOM_SHEET_USE_KEYBOARD);
-  configuration.secondaryActionImage =
-      DefaultSymbolWithPointSize(kKeyboardSymbol, kSymbolActionPointSize);
   self = [super initWithConfiguration:configuration];
   if (self) {
     self.handler = handler;
@@ -147,6 +146,11 @@ void LogSuggestionAcceptedMetrics(BOOL is_backup_suggestion,
   }
 
   [super viewDidLoad];
+
+  UIButtonConfiguration* buttonConfiguration =
+      self.secondaryActionButton.configuration;
+  buttonConfiguration.imagePadding = kSecondaryActionButtonIconSpacing;
+  self.secondaryActionButton.configuration = buttonConfiguration;
 
   [self adjustTransactionsPrimaryActionButtonHorizontalConstraints];
 }
@@ -189,8 +193,12 @@ void LogSuggestionAcceptedMetrics(BOOL is_backup_suggestion,
   self.image = avatarImage;
 }
 
-- (void)setPrimaryActionString:(NSString*)primaryActionString {
+- (void)setPrimaryActionString:(NSString*)primaryActionString
+         secondaryActionString:(NSString*)secondaryActionString
+          secondaryActionImage:(UIImage*)secondaryActionImage {
   self.configuration.primaryActionString = primaryActionString;
+  self.configuration.secondaryActionString = secondaryActionString;
+  self.configuration.secondaryActionImage = secondaryActionImage;
   [self reloadConfiguration];
 }
 
