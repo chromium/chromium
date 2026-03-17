@@ -22,7 +22,7 @@
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "crypto/aead.h"
 #include "crypto/hash.h"
-#include "crypto/hkdf.h"
+#include "crypto/kdf.h"
 #include "crypto/keypair.h"
 #include "crypto/random.h"
 #include "crypto/sign.h"
@@ -91,8 +91,8 @@ std::array<uint8_t, kEncryptionSecretSize> DerivePasskeyEncryptionSecret(
     base::span<const uint8_t> trusted_vault_key) {
   constexpr std::string_view kHkdfInfo =
       "KeychainApplicationKey:gmscore_module:com.google.android.gms.fido";
-  return crypto::HkdfSha256<kEncryptionSecretSize>(
-      trusted_vault_key,
+  return crypto::kdf::Hkdf<kEncryptionSecretSize>(
+      crypto::hash::kSha256, trusted_vault_key,
       /*salt=*/base::span<const uint8_t>(),
       base::as_bytes(base::span(kHkdfInfo)));
 }
@@ -101,8 +101,8 @@ std::array<uint8_t, kHmacSecretSize> DeriveHmacSecretFromPrivateKey(
     base::span<const uint8_t> private_key) {
   CHECK(!private_key.empty());
   constexpr std::string_view kHkdfInfo = "derived PRF HMAC secret";
-  return crypto::HkdfSha256<kEncryptionSecretSize>(
-      private_key,
+  return crypto::kdf::Hkdf<kHmacSecretSize>(
+      crypto::hash::kSha256, private_key,
       /*salt=*/base::span<const uint8_t>(),
       base::as_bytes(base::span(kHkdfInfo)));
 }
