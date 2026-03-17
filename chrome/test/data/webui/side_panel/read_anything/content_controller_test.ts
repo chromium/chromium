@@ -277,18 +277,41 @@ suite('ContentController', () => {
     });
 
     test('loads images with flag enabled', () => {
+      const rootId = 1;
       const imgId1 = 89;
       const imgId2 = 88;
       readingMode.imagesFeatureEnabled = true;
-      readingMode.getHtmlTag = () => '';
-      readingMode.getTextContent = () => 'okay like I know I ramble';
+      chrome.readingMode.rootId = rootId;
+
+      readingMode.getHtmlTag = (id) => {
+        if (id === rootId) {
+          return 'div';
+        }
+        if (id === imgId1 || id === imgId2) {
+          return 'img';
+        }
+        return '';
+      };
+
+      // So that nodeStore.addImageToFetch(imgId1) is called in updateContent
+      readingMode.getChildren = (id) => {
+        if (id === rootId) {
+          return [imgId1];
+        }
+        return [];
+      };
 
       readingMode.imagesEnabled = true;
-      nodeStore.addImageToFetch(imgId1);
       contentController.updateContent();
 
+      // So that nodeStore.addImageToFetch(imgId2) is called in updateContent
+      readingMode.getChildren = (id) => {
+        if (id === rootId) {
+          return [imgId2];
+        }
+        return [];
+      };
       readingMode.imagesEnabled = false;
-      nodeStore.addImageToFetch(imgId2);
       contentController.updateContent();
 
       assertArrayEquals([imgId1, imgId2], readingMode.fetchedImages);

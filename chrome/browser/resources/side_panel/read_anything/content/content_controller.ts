@@ -227,7 +227,7 @@ export class ContentController {
 
     this.speechController_.saveReadAloudState();
     this.speechController_.resetForNewContent();
-    this.nodeStore_.clearDomNodes();
+    this.nodeStore_.clear();
 
     if (isDistilledByReadability()) {
       return this.updateContentForReadability();
