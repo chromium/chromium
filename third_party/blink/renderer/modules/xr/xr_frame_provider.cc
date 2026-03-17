@@ -871,13 +871,12 @@ void XRFrameProvider::SubmitFrame(
     image_refs.push_back(std::move(layer.current_frame_image));
   }
 
-  // The backend expects an empty layer ID list if the 'layers' feature is not
-  // enabled.
+  // The backend expects layer ID list to contain a single element (i.e. the
+  // base layer) if the 'layers' feature is not enabled.
   if (!layer_manager_.is_bound()) {
     // At this case, only a single layer should exist since the
     // layers feature is not enabled.
     CHECK_EQ(layers_.size(), 1U);
-    layer_ids.clear();
   }
 
   bool succeeded = frame_transport_->FrameSubmit(

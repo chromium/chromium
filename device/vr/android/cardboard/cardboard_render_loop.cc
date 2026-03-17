@@ -468,7 +468,8 @@ void CardboardRenderLoop::SubmitFrameDrawnIntoTexture(
                "frame", frame_index);
   DVLOG(2) << __func__ << ": frame=" << frame_index;
 
-  if (!layer_ids.empty()) {
+  // |layer_ids| is expected to contain only the base layer.
+  if (layer_ids.size() != 1) {
     presentation_receiver_.ReportBadMessage(
         "Layers feature not enabled for this session");
     return;
