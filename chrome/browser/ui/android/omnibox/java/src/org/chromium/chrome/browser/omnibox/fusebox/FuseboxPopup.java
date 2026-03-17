@@ -17,6 +17,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /** A popup for the Fusebox component. */
@@ -44,8 +45,6 @@ class FuseboxPopup {
     /* package */ final Button mCanvasButton;
     /* package */ final View mModelsDivider;
     /* package */ final TextView mModelsHeader;
-    /* package */ final Button mAutoButton;
-    /* package */ final Button mProButton;
     /* package */ final List<Button> mButtons;
     /* package */ final List<View> mDividers;
     /* package */ final List<TextView> mHeaders;
@@ -78,23 +77,20 @@ class FuseboxPopup {
 
         mModelsDivider = contentView.findViewById(R.id.fusebox_models_divider);
         mModelsHeader = contentView.findViewById(R.id.fusebox_models_header);
-        mAutoButton = contentView.findViewById(R.id.fusebox_auto_button);
-        mProButton = contentView.findViewById(R.id.fusebox_pro_button);
 
         mButtons =
-                List.of(
-                        mAddCurrentTab,
-                        mClipboardButton,
-                        mTabButton,
-                        mCameraButton,
-                        mGalleryButton,
-                        mFileButton,
-                        mAiModeButton,
-                        mCreateImageButton,
-                        mDeepSearchButton,
-                        mCanvasButton,
-                        mAutoButton,
-                        mProButton);
+                new ArrayList<>(
+                        List.of(
+                                mAddCurrentTab,
+                                mClipboardButton,
+                                mTabButton,
+                                mCameraButton,
+                                mGalleryButton,
+                                mFileButton,
+                                mAiModeButton,
+                                mCreateImageButton,
+                                mDeepSearchButton,
+                                mCanvasButton));
         mDividers = List.of(mToolsDivider, mModelsDivider);
         mHeaders = List.of(mToolsHeader, mModelsHeader);
     }
