@@ -474,6 +474,9 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
                 pref.setTitle(entity.getEntityInstanceLabel());
                 pref.setSummary(entity.getEntityInstanceSubLabel());
                 pref.setKey(entity.getGuid());
+                if (entity.isStoredInWallet()) {
+                    pref.setIcon(R.drawable.google_wallet_24dp);
+                }
                 pref.setOnPreferenceClickListener(
                         preference -> {
                             if (entity.isStoredInWallet()) {
