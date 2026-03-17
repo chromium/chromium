@@ -43,6 +43,7 @@ FakeModelBroker::FakeModelBroker(const Options& options) : options_(options) {
   if (options.performance_class != OnDeviceModelPerformanceClass::kUnknown) {
     UpdatePerformanceClassPref(&local_state_.local_state(),
                                options.performance_class);
+    UpdateVramPref(&local_state_.local_state(), options.vram_mb);
   }
   if (options.preinstall_base_model) {
     InstallBaseModel(std::make_unique<FakeBaseModelAsset>());

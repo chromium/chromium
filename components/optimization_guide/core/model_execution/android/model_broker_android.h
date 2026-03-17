@@ -65,7 +65,7 @@ class ModelBrokerAndroid final : public OnDeviceCapability {
   };
 
   // Initialize SolutionFactory, if not already initialized.
-  void EnsureSolutionFactory(base::OnceClosure done_callback);
+  void EnsureSolutionFactory(ModelBrokerImpl::InitCallback done_callback);
 
   void OnModelDisconnected(
       proto::ModelExecutionFeature feature,

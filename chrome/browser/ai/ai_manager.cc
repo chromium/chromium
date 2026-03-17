@@ -89,80 +89,75 @@ const char kExperimentalLanguageWarning[] =
 BASE_FEATURE(kBuiltInAIEagerInit, base::FEATURE_ENABLED_BY_DEFAULT);
 
 blink::mojom::ModelAvailabilityCheckResult
-ConvertOnDeviceModelEligibilityReasonToModelAvailabilityCheckResult(
-    optimization_guide::OnDeviceModelEligibilityReason
-        on_device_model_eligibility_reason) {
-  auto availability = optimization_guide::AvailabilityFromEligibilityReason(
-      on_device_model_eligibility_reason);
-  if (availability ==
-      optimization_guide::mojom::ModelUnavailableReason::kPendingAssets) {
-    return blink::mojom::ModelAvailabilityCheckResult::kDownloading;
-  }
-  if (availability ==
-      optimization_guide::mojom::ModelUnavailableReason::kPendingUsage) {
-    return blink::mojom::ModelAvailabilityCheckResult::kDownloadable;
+ConvertModelNotSupportedReasonToModelAvailabilityCheckResult(
+    std::optional<optimization_guide::mojom::ModelNotSupportedDetailedReason>
+        reason) {
+  if (!reason.has_value()) {
+    return blink::mojom::ModelAvailabilityCheckResult::kUnavailableUnknown;
   }
 
-  switch (on_device_model_eligibility_reason) {
-    case optimization_guide::OnDeviceModelEligibilityReason::kUnknown:
-      return blink::mojom::ModelAvailabilityCheckResult::kUnavailableUnknown;
-    case optimization_guide::OnDeviceModelEligibilityReason::kFeatureNotEnabled:
+  switch (reason.value()) {
+    case optimization_guide::mojom::ModelNotSupportedDetailedReason::
+        kFeatureNotEnabled:
       return blink::mojom::ModelAvailabilityCheckResult::
           kUnavailableFeatureNotEnabled;
-    case optimization_guide::OnDeviceModelEligibilityReason::
-        kConfigNotAvailableForFeature:
-      return blink::mojom::ModelAvailabilityCheckResult::
-          kUnavailableConfigNotAvailableForFeature;
-    case optimization_guide::OnDeviceModelEligibilityReason::kGpuBlocked:
+    case optimization_guide::mojom::ModelNotSupportedDetailedReason::
+        kGpuBlocked:
       return blink::mojom::ModelAvailabilityCheckResult::kUnavailableGpuBlocked;
-    case optimization_guide::OnDeviceModelEligibilityReason::
+    case optimization_guide::mojom::ModelNotSupportedDetailedReason::
         kTooManyRecentCrashes:
       return blink::mojom::ModelAvailabilityCheckResult::
           kUnavailableTooManyRecentCrashes;
-    case optimization_guide::OnDeviceModelEligibilityReason::
-        kSafetyModelNotAvailable:
-      return blink::mojom::ModelAvailabilityCheckResult::
-          kUnavailableSafetyModelNotAvailable;
-    case optimization_guide::OnDeviceModelEligibilityReason::
+    case optimization_guide::mojom::ModelNotSupportedDetailedReason::
         kSafetyConfigNotAvailableForFeature:
       return blink::mojom::ModelAvailabilityCheckResult::
           kUnavailableSafetyConfigNotAvailableForFeature;
-    case optimization_guide::OnDeviceModelEligibilityReason::
-        kLanguageDetectionModelNotAvailable:
-      return blink::mojom::ModelAvailabilityCheckResult::
-          kUnavailableLanguageDetectionModelNotAvailable;
-    case optimization_guide::OnDeviceModelEligibilityReason::
+    case optimization_guide::mojom::ModelNotSupportedDetailedReason::
         kFeatureExecutionNotEnabled:
       return blink::mojom::ModelAvailabilityCheckResult::
           kUnavailableFeatureExecutionNotEnabled;
-    case optimization_guide::OnDeviceModelEligibilityReason::
-        kModelAdaptationNotAvailable:
-      return blink::mojom::ModelAvailabilityCheckResult::
-          kUnavailableModelAdaptationNotAvailable;
-    case optimization_guide::OnDeviceModelEligibilityReason::kModelNotEligible:
-      return blink::mojom::ModelAvailabilityCheckResult::
-          kUnavailableModelNotEligible;
-    case optimization_guide::OnDeviceModelEligibilityReason::kValidationPending:
-      return blink::mojom::ModelAvailabilityCheckResult::
-          kUnavailableValidationPending;
-    case optimization_guide::OnDeviceModelEligibilityReason::kValidationFailed:
+    case optimization_guide::mojom::ModelNotSupportedDetailedReason::
+        kValidationFailed:
       return blink::mojom::ModelAvailabilityCheckResult::
           kUnavailableValidationFailed;
-    case optimization_guide::OnDeviceModelEligibilityReason::
+    case optimization_guide::mojom::ModelNotSupportedDetailedReason::
+        kModelNotEligible:
+      return blink::mojom::ModelAvailabilityCheckResult::
+          kUnavailableModelNotEligible;
+    case optimization_guide::mojom::ModelNotSupportedDetailedReason::
         kInsufficientDiskSpace:
       return blink::mojom::ModelAvailabilityCheckResult::
           kUnavailableInsufficientDiskSpace;
-    case optimization_guide::OnDeviceModelEligibilityReason::
-        kModelToBeInstalled:
-    case optimization_guide::OnDeviceModelEligibilityReason::
-        kNoOnDeviceFeatureUsed:
-      // Shouldn't reach here since it's handled by checking `availability`.
-      NOTREACHED();
-    case optimization_guide::OnDeviceModelEligibilityReason::
-        kDeprecatedModelNotAvailable:
-    case optimization_guide::OnDeviceModelEligibilityReason::kSuccess:
-      NOTREACHED();
+    case optimization_guide::mojom::ModelNotSupportedDetailedReason::
+        kModelAdaptationNotAvailable:
+      return blink::mojom::ModelAvailabilityCheckResult::
+          kUnavailableModelAdaptationNotAvailable;
   }
+
+  NOTREACHED();
+}
+
+blink::mojom::ModelAvailabilityCheckResult
+ConvertModelEligibilityReasonToModelAvailabilityCheckResult(
+    std::optional<optimization_guide::mojom::ModelUnavailableReason> reason,
+    std::optional<optimization_guide::mojom::ModelNotSupportedDetailedReason>
+        detailed_reason) {
+  if (!reason.has_value()) {
+    return blink::mojom::ModelAvailabilityCheckResult::kAvailable;
+  }
+
+  switch (reason.value()) {
+    case optimization_guide::mojom::ModelUnavailableReason::kUnknown:
+      return blink::mojom::ModelAvailabilityCheckResult::kUnavailableUnknown;
+    case optimization_guide::mojom::ModelUnavailableReason::kPendingAssets:
+      return blink::mojom::ModelAvailabilityCheckResult::kDownloading;
+    case optimization_guide::mojom::ModelUnavailableReason::kPendingUsage:
+      return blink::mojom::ModelAvailabilityCheckResult::kDownloadable;
+    case optimization_guide::mojom::ModelUnavailableReason::kNotSupported:
+      return ConvertModelNotSupportedReasonToModelAvailabilityCheckResult(
+          detailed_reason);
+  }
+
   NOTREACHED();
 }
 
@@ -969,53 +964,27 @@ void AIManager::CanCreateSession(
                        weak_factory_.GetWeakPtr(), model_path.value()));
   }
 
-  // Check if the optimization guide service can create session.
-  OptimizationGuideKeyedService* service =
-      OptimizationGuideKeyedServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(browser_context_));
-
-  // If the `OptimizationGuideKeyedService` cannot be retrieved, return false.
-  if (!service) {
+  if (!model_broker_client_) {
     std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::
                                 kUnavailableServiceNotRunning);
     return;
   }
 
-  service->GetOnDeviceModelEligibilityAsync(
-      capability, capabilities,
-      base::BindOnce(&AIManager::FinishCanCreateSession,
-                     weak_factory_.GetWeakPtr(), capability, capabilities,
-                     std::move(callback)));
+  model_broker_client_->GetSubscriber(capability)
+      .CanCreateSession(
+          capabilities,
+          base::BindOnce(&AIManager::FinishCanCreateSession,
+                         weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void AIManager::FinishCanCreateSession(
-    optimization_guide::mojom::OnDeviceFeature capability,
-    on_device_model::Capabilities capabilities,
     CanCreateLanguageModelCallback callback,
-    optimization_guide::OnDeviceModelEligibilityReason eligibility) {
-  OptimizationGuideKeyedService* service =
-      OptimizationGuideKeyedServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(browser_context_));
-
-  // If the `OptimizationGuideKeyedService` cannot create new session, return
-  // the reason.
-  if (eligibility !=
-      optimization_guide::OnDeviceModelEligibilityReason::kSuccess) {
-    std::move(callback).Run(
-        ConvertOnDeviceModelEligibilityReasonToModelAvailabilityCheckResult(
-            eligibility));
-    return;
-  }
-
-  if (!capabilities.empty() &&
-      !ModelSupportsCapabilities(service, capabilities)) {
-    std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::
-                                kUnavailableModelAdaptationNotAvailable);
-    return;
-  }
-
+    std::optional<optimization_guide::mojom::ModelUnavailableReason> reason,
+    std::optional<optimization_guide::mojom::ModelNotSupportedDetailedReason>
+        detailed_reason) {
   std::move(callback).Run(
-      blink::mojom::ModelAvailabilityCheckResult::kAvailable);
+      ConvertModelEligibilityReasonToModelAvailabilityCheckResult(
+          reason, detailed_reason));
 }
 
 template <typename ContextBoundObjectType,
@@ -1104,28 +1073,9 @@ void AIManager::MaybeTryEagerInit() {
         optimization_guide::mojom::OnDeviceFeature::kSummarize,
         optimization_guide::mojom::OnDeviceFeature::kWritingAssistanceApi}) {
     // TODO(crbug.com/447192715): Gate on runtime determined component size.
-    if (tried_init_.insert(feature).second) {
-      OptimizationGuideKeyedService* service =
-          OptimizationGuideKeyedServiceFactory::GetForProfile(
-              Profile::FromBrowserContext(browser_context_));
-      service->GetOnDeviceModelEligibilityAsync(
-          feature, on_device_model::Capabilities{},
-          base::BindOnce(&AIManager::MaybeTryEagerInitWithEligibility,
-                         weak_factory_.GetWeakPtr(), feature));
+    if (tried_init_.insert(feature).second && model_broker_client_) {
+      model_broker_client_->RequestAssetsFor(feature);
     }
-  }
-}
-
-void AIManager::MaybeTryEagerInitWithEligibility(
-    optimization_guide::mojom::OnDeviceFeature feature,
-    optimization_guide::OnDeviceModelEligibilityReason eligibility) {
-  if (optimization_guide::AvailabilityFromEligibilityReason(eligibility) ==
-      optimization_guide::mojom::ModelUnavailableReason::kPendingUsage) {
-    // TODO(crbug.com/447174556): Init features without creating sessions.
-    VLOG(1) << "Eagerly initializing " << base::ToString(feature);
-    model_broker_client_->CreateSession(
-        feature, ::optimization_guide::SessionConfigParams{},
-        base::DoNothing());
   }
 }
 

@@ -68,6 +68,11 @@ bool RequirePersistentModeForFeature(mojom::OnDeviceFeature feature) {
   }
 }
 
+on_device_model::Capabilities AICoreModelCapabilities() {
+  // AICore interface supports image input but doesn't support audio input.
+  return {on_device_model::CapabilityFlags::kImageInput};
+}
+
 class SolutionImpl : public ModelBrokerImpl::Solution {
  public:
   SolutionImpl(base::WeakPtr<ModelBrokerAndroid> parent,
@@ -123,6 +128,7 @@ mojom::ModelSolutionConfigPtr SolutionImpl::MakeConfig() const {
   // TODO: crbug.com/442914748 - Add safety config.
   config->text_safety_config =
       mojo_base::ProtoWrapper(proto::FeatureTextSafetyConfiguration());
+  config->model_capabilities = AICoreModelCapabilities();
   return config;
 }
 
@@ -407,11 +413,12 @@ ModelBrokerAndroid::GetOrCreateModelRemote(
 }
 
 void ModelBrokerAndroid::EnsureSolutionFactory(
-    base::OnceClosure done_callback) {
+    ModelBrokerImpl::InitCallback done_callback) {
   if (!solution_factory_) {
     solution_factory_ = std::make_unique<SolutionFactory>(*this);
   }
-  std::move(done_callback).Run();
+
+  std::move(done_callback).Run(AICoreModelCapabilities());
 }
 
 void ModelBrokerAndroid::OnModelDisconnected(

@@ -136,10 +136,10 @@ class AIManager : public base::SupportsUserData::Data,
       content::RenderWidgetHost* widget_host) override;
 
   void FinishCanCreateSession(
-      optimization_guide::mojom::OnDeviceFeature capability,
-      on_device_model::Capabilities capabilities,
       CanCreateLanguageModelCallback callback,
-      optimization_guide::OnDeviceModelEligibilityReason eligibility);
+      std::optional<optimization_guide::mojom::ModelUnavailableReason> reason,
+      std::optional<optimization_guide::mojom::ModelNotSupportedDetailedReason>
+          detailed_reason);
 
   template <typename ContextBoundObjectType,
             typename ContextBoundObjectReceiverInterface,
@@ -163,10 +163,6 @@ class AIManager : public base::SupportsUserData::Data,
 
   // Eagerly initializes a broad set of features.
   void MaybeTryEagerInit();
-  // Eagerly initialize a feature depending on its eligibility.
-  void MaybeTryEagerInitWithEligibility(
-      optimization_guide::mojom::OnDeviceFeature feature,
-      optimization_guide::OnDeviceModelEligibilityReason eligibility);
 
   void MaybeLogMissingOutputLanguageWarning(
       const std::string_view api_name,
@@ -178,6 +174,12 @@ class AIManager : public base::SupportsUserData::Data,
       const std::string_view api_name,
       const base::flat_set<std::string>& default_supported_languages);
 
+  // |model_broker_client_| is keeping |CanCreateLanguageModel| callbacks alive
+  // until it is destroyed, so we need to ensure those callbacks are safely
+  // dropped by closing the pipes first. Declaring |model_broker_client_|
+  // before |receivers_| ensures the correct destruction order.
+  std::unique_ptr<optimization_guide::ModelBrokerClient> model_broker_client_;
+
   mojo::ReceiverSet<blink::mojom::AIManager> receivers_;
 
   AIContextBoundObjectSet context_bound_object_set_;
@@ -186,8 +188,6 @@ class AIManager : public base::SupportsUserData::Data,
   base::ScopedObservation<content::RenderWidgetHost,
                           content::RenderWidgetHostObserver>
       widget_observer_{this};
-
-  std::unique_ptr<optimization_guide::ModelBrokerClient> model_broker_client_;
 
   content::WeakDocumentPtr rfh_;
 

@@ -81,7 +81,8 @@ class ModelBrokerState final : public OnDeviceCapability {
 
  private:
   // Ensure any delayed initialization tasks are complete, then call `callback`.
-  void EnsureInitialization(base::OnceClosure callback);
+  void EnsureInitialization(ModelBrokerImpl::InitCallback callback);
+  void EnsureInitializationComplete(ModelBrokerImpl::InitCallback callback);
 
   void FinishGetOnDeviceModelEligibility(
       mojom::OnDeviceFeature feature,

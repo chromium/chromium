@@ -180,8 +180,17 @@ std::optional<const proto::Any> ModelBrokerState::GetFeatureMetadata(
   return solution.value()->GetAdapter()->GetFeatureMetadata();
 }
 
-void ModelBrokerState::EnsureInitialization(base::OnceClosure callback) {
-  performance_classifier_.EnsurePerformanceClassAvailable(std::move(callback));
+void ModelBrokerState::EnsureInitialization(
+    ModelBrokerImpl::InitCallback callback) {
+  performance_classifier_.EnsurePerformanceClassAvailable(
+      base::BindOnce(&ModelBrokerState::EnsureInitializationComplete,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ModelBrokerState::EnsureInitializationComplete(
+    ModelBrokerImpl::InitCallback callback) {
+  std::move(callback).Run(
+      performance_classifier_.GetPossibleOnDeviceCapabilities());
 }
 
 void ModelBrokerState::FinishGetOnDeviceModelEligibility(

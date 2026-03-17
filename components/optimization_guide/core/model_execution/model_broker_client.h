@@ -6,6 +6,7 @@
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_MODEL_BROKER_CLIENT_H_
 
 #include <memory>
+#include <tuple>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
@@ -56,6 +57,9 @@ class ModelClient final : public TextSafetyClient {
   }
 
   uint32_t max_tokens() const { return max_tokens_; }
+  const on_device_model::Capabilities& model_capabilities() const {
+    return model_capabilities_;
+  }
 
   const proto::FeatureTextSafetyConfiguration& safety_config() const {
     return safety_config_;
@@ -73,6 +77,7 @@ class ModelClient final : public TextSafetyClient {
   proto::OnDeviceModelVersions model_versions_;
   // The full combined limit for input and output tokens.
   uint32_t max_tokens_ = 0;
+  on_device_model::Capabilities model_capabilities_;
   mojom::OnDeviceFeature feature_;
   base::WeakPtrFactory<ModelClient> weak_ptr_factory_{this};
 };
@@ -85,6 +90,9 @@ class ModelSubscriberImpl : public mojom::ModelSubscriber {
   using CreateSessionResult = std::unique_ptr<OnDeviceSession>;
   using CreateSessionCallback = base::OnceCallback<void(CreateSessionResult)>;
   using ClientCallback = base::OnceCallback<void(base::WeakPtr<ModelClient>)>;
+  using CanCreateSessionCallback = base::OnceCallback<void(
+      std::optional<mojom::ModelUnavailableReason>,
+      std::optional<mojom::ModelNotSupportedDetailedReason>)>;
 
   // Get info about whether the model is / will be available.
   std::optional<mojom::ModelUnavailableReason> unavailable_reason() const {
@@ -103,18 +111,34 @@ class ModelSubscriberImpl : public mojom::ModelSubscriber {
   // Calls the callback with nullptr if the state become NotSupported.
   void WaitForClient(ClientCallback callback);
 
+  // Check whether a session can be created with the given capabilities, and
+  // return the reason if not.
+  void CanCreateSession(const on_device_model::Capabilities& capabilities,
+                        CanCreateSessionCallback callback);
+
  protected:
   // mojom::ModelSubscriber
-  void Unavailable(mojom::ModelUnavailableReason) override;
+  void Unavailable(mojom::ModelUnavailableReason reason,
+                   std::optional<mojom::ModelNotSupportedDetailedReason>
+                       detailed_reason) override;
   void Available(mojom::ModelSolutionConfigPtr config,
                  mojo::PendingRemote<mojom::ModelSolution> remote) override;
+  void CapabilitiesUpdated(
+      const on_device_model::Capabilities& capabilities) override;
 
   // Fire all pending callbacks
   void FlushCallbacks();
 
+  // Fire all pending CanCreateSession callbacks.
+  void FlushCanCreateSessionCallbacks();
+
   std::vector<ClientCallback> callbacks_;
-  std::optional<mojom::ModelUnavailableReason> unavailable_reason_ =
-      mojom::ModelUnavailableReason::kUnknown;
+  std::optional<mojom::ModelUnavailableReason> unavailable_reason_;
+  std::optional<mojom::ModelNotSupportedDetailedReason> detailed_reason_;
+  std::vector<
+      std::pair<on_device_model::Capabilities, CanCreateSessionCallback>>
+      can_create_session_callbacks_;
+  std::optional<on_device_model::Capabilities> capabilities_;
   std::optional<ModelClient> client_;
 };
 

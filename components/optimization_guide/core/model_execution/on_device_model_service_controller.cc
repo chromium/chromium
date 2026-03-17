@@ -578,6 +578,7 @@ OnDeviceModelServiceController::Solution::MakeConfig() const {
   config->max_tokens = adapter_->GetTokenLimits().max_tokens;
   config->text_safety_config =
       mojo_base::ProtoWrapper(safety_checker_->safety_cfg().proto());
+  config->model_capabilities = controller_->GetCapabilities();
   return config;
 }
 

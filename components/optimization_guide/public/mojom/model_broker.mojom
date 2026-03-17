@@ -30,6 +30,7 @@ struct ModelSolutionConfig {
   mojo_base.mojom.ProtoWrapper text_safety_config;
   mojo_base.mojom.ProtoWrapper model_versions;
   int32 max_tokens;
+  on_device_model.mojom.Capabilities model_capabilities;
 };
 
 // An interface for creating the models required for a particular
@@ -64,6 +65,35 @@ enum ModelUnavailableReason {
   kPendingUsage = 4,
 };
 
+enum ModelNotSupportedDetailedReason {
+  // The feature flag gating on-device model execution was disabled.
+  kFeatureNotEnabled = 1,
+  // The GPU is blocked.
+  kGpuBlocked = 2,
+  // The on-device model process crashed too many times for this version.
+  kTooManyRecentCrashes = 3,
+  // The on-device safety model was available but there was not a safety config
+  // available for the feature.
+  kSafetyConfigNotAvailableForFeature = 4,
+  // On-device model execution for this feature was not enabled.
+  kFeatureExecutionNotEnabled = 5,
+  // Validation failed for the model.
+  kValidationFailed = 6,
+  // The device is not eligible for running the on-device model.
+  kModelNotEligible = 7,
+  // The device does not have enough space to download and install the
+  // on-device model.
+  kInsufficientDiskSpace = 8,
+  // On-device model adaptation was required but not available.
+  //
+  // Since model adaptations are bundled with feature configs, for general
+  // error cases when server cannot provide model adaptation,
+  // `kConfigNotAvailableForFeature` is returned instead.
+  // `kModelAdaptationNotAvailable` is only emitted in certain special cases
+  // (e.g. if the requested capability will never be supported by the device).
+  kModelAdaptationNotAvailable = 9,
+};
+
 // A consumer that needs to the current configs and models for some feature.
 // The receiver end may be held by any process, the remote will be in the
 // browser process.
@@ -71,13 +101,19 @@ interface ModelSubscriber {
   // Indicates that a model solution is currently unavailable and whether it is
   // expected to become available. A disconnect may be sent shortly if the
   // model will not become available later.
-  Unavailable(ModelUnavailableReason reason);
+  // The second argument provides more details when the reason is
+  // `kNotSupported`.
+  Unavailable(ModelUnavailableReason reason,
+              ModelNotSupportedDetailedReason? detailed_reason);
 
   // Indicates that the model solution is available, and provides the config for
   // how to use it. The solution may still become unavailable later or be
   // replaced with a different solution.
   Available(
       ModelSolutionConfig config, pending_remote<ModelSolution> solution);
+
+  // Indicates that capabilities have been updated.
+  CapabilitiesUpdated(on_device_model.mojom.Capabilities capabilities);
 };
 
 // Options for ModelBroker::Subscribe
@@ -90,7 +126,7 @@ struct ModelSubscriptionOptions {
 interface ModelBroker {
   // Starts listening for models that provide the requested feature.
   Subscribe(ModelSubscriptionOptions options,
-            pending_remote<ModelSubscriber> subcriber);
+            pending_remote<ModelSubscriber> subscriber);
 
   // Start listening for download progress updates for models.
   // TODO: crbug.com/474999857 Implement this method on Android.

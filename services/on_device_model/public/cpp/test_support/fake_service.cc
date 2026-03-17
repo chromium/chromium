@@ -542,6 +542,7 @@ void FakeOnDeviceModelService::GetDeviceAndPerformanceInfo(
     GetDeviceAndPerformanceInfoCallback callback) {
   auto performance_info = mojom::DevicePerformanceInfo::New();
   performance_info->performance_class = settings_->performance_class;
+  performance_info->vram_mb = settings_->vram_mb;
   auto device_info = mojom::DeviceInfo::New();
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,

@@ -33,8 +33,10 @@
 #include "components/on_device_ai/ai_utils.h"
 #include "components/optimization_guide/core/model_execution/multimodal_message.h"
 #include "components/optimization_guide/core/model_execution/on_device_capability.h"
+#include "components/optimization_guide/core/model_execution/test/feature_config_builder.h"
 #include "components/optimization_guide/core/model_execution/test/mock_download_progress_observer.h"
 #include "components/optimization_guide/core/model_execution/test/mock_on_device_capability.h"
+#include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
@@ -375,6 +377,18 @@ class AILanguageModelTest : public AITestUtils::AITestBase {
     EXPECT_OK(result);
     return mojo::Remote<blink::mojom::AILanguageModel>(
         std::move(result.value().language_model));
+  }
+
+  void EnsureModelIsReady() {
+    blink::mojom::AILanguageModelCreateOptionsPtr options =
+        blink::mojom::AILanguageModelCreateOptions::New();
+
+    TestCreateLanguageModelClient language_model_client;
+    GetAIManagerRemote()->CreateLanguageModel(
+        language_model_client.BindNewPipeAndPassRemote(), std::move(options));
+
+    auto result = language_model_client.result().Take();
+    EXPECT_OK(result);
   }
 
  protected:
@@ -1281,31 +1295,33 @@ TEST_F(AILanguageModelTest, CrashRecoveryMeasureInputUsage) {
   EXPECT_EQ(measure_future.Get(), std::string("UfooE").size());
 }
 
-TEST_F(AILanguageModelTest, CanCreate_WaitsForEligibility) {
-  base::test::TestFuture<base::OnceCallback<void(
-      optimization_guide::OnDeviceModelEligibilityReason)>>
-      eligibility_future;
-  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
-              GetOnDeviceModelEligibilityAsync(_, _, _))
-      .WillOnce([&](auto feature, auto capabilities, auto callback) {
-        eligibility_future.SetValue(std::move(callback));
-      });
+TEST_F(AILanguageModelTest, CanCreate_DefaultOptions) {
+  blink::mojom::AILanguageModelCreateOptionsPtr options =
+      blink::mojom::AILanguageModelCreateOptions::New();
 
-  base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult>
-      result_future;
-  GetAIManagerInterface()->CanCreateLanguageModel({},
-                                                  result_future.GetCallback());
+  {
+    base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
+    GetAIManagerInterface()->CanCreateLanguageModel(options.Clone(),
+                                                    future.GetCallback());
+    EXPECT_EQ(future.Get(),
+              blink::mojom::ModelAvailabilityCheckResult::kDownloadable);
+  }
 
-  // Session should not be ready until eligibility callback has run.
-  EXPECT_FALSE(result_future.IsReady());
-  eligibility_future.Take().Run(
-      optimization_guide::OnDeviceModelEligibilityReason::kSuccess);
-  EXPECT_EQ(result_future.Get(),
-            blink::mojom::ModelAvailabilityCheckResult::kAvailable);
+  // After model is ready, `CanCreateLanguageModel` should return available.
+  EnsureModelIsReady();
+
+  {
+    base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
+    GetAIManagerInterface()->CanCreateLanguageModel(options.Clone(),
+                                                    future.GetCallback());
+    EXPECT_EQ(future.Get(),
+              blink::mojom::ModelAvailabilityCheckResult::kAvailable);
+  }
 }
 
 TEST_F(AILanguageModelTest, CanCreate_SupportedLanguages) {
-  base::MockCallback<AIManager::CanCreateLanguageModelCallback> callback;
+  EnsureModelIsReady();
+
   auto options = blink::mojom::AILanguageModelCreateOptions::New();
   options->expected_inputs.emplace();
   options->expected_inputs->push_back(
@@ -1317,10 +1333,12 @@ TEST_F(AILanguageModelTest, CanCreate_SupportedLanguages) {
       blink::mojom::AILanguageModelExpected::New(
           blink::mojom::AILanguageModelPromptType::kText,
           AITestUtils::ToMojoLanguageCodes({"en"})));
-  EXPECT_CALL(callback,
-              Run(blink::mojom::ModelAvailabilityCheckResult::kAvailable));
+
+  base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
   GetAIManagerInterface()->CanCreateLanguageModel(std::move(options),
-                                                  callback.Get());
+                                                  future.GetCallback());
+  EXPECT_EQ(future.Get(),
+            blink::mojom::ModelAvailabilityCheckResult::kAvailable);
 }
 
 TEST_F(AILanguageModelTest, CanCreate_UnsupportedInputLanguages) {
@@ -1351,21 +1369,158 @@ TEST_F(AILanguageModelTest, CanCreate_UnsupportedOutputLanguages) {
                                                   callback.Get());
 }
 
-TEST_F(AILanguageModelTest, CanCreate_UnavailableWhenAdaptationNotAvailable) {
-  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
-              GetOnDeviceModelEligibilityAsync(_, _, _))
-      .WillOnce([](auto feature, auto capabilities, auto callback) {
-        std::move(callback).Run(
-            optimization_guide::OnDeviceModelEligibilityReason::
-                kModelAdaptationNotAvailable);
-      });
+TEST_F(AILanguageModelTest, CanCreate_TextInputCapabilities) {
+  blink::mojom::AILanguageModelCreateOptionsPtr options =
+      blink::mojom::AILanguageModelCreateOptions::New();
 
-  base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult>
-      result_future;
-  GetAIManagerInterface()->CanCreateLanguageModel({},
-                                                  result_future.GetCallback());
-  EXPECT_EQ(result_future.Get(), blink::mojom::ModelAvailabilityCheckResult::
-                                     kUnavailableModelAdaptationNotAvailable);
+  EnsureModelIsReady();
+
+  {
+    base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
+    GetAIManagerInterface()->CanCreateLanguageModel(options.Clone(),
+                                                    future.GetCallback());
+    EXPECT_EQ(future.Get(),
+              blink::mojom::ModelAvailabilityCheckResult::kAvailable);
+  }
+  {
+    auto image_input = blink::mojom::AILanguageModelExpected::New();
+    image_input->type = blink::mojom::AILanguageModelPromptType::kImage;
+    options->expected_inputs.emplace();
+    options->expected_inputs->push_back(std::move(image_input));
+
+    base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
+    GetAIManagerInterface()->CanCreateLanguageModel(options.Clone(),
+                                                    future.GetCallback());
+    EXPECT_EQ(future.Get(), blink::mojom::ModelAvailabilityCheckResult::
+                                kUnavailableModelAdaptationNotAvailable);
+  }
+
+  {
+    auto audio_input = blink::mojom::AILanguageModelExpected::New();
+    audio_input->type = blink::mojom::AILanguageModelPromptType::kAudio;
+    options->expected_inputs.emplace();
+    options->expected_inputs->push_back(std::move(audio_input));
+
+    base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
+    GetAIManagerInterface()->CanCreateLanguageModel(options.Clone(),
+                                                    future.GetCallback());
+    EXPECT_EQ(future.Get(), blink::mojom::ModelAvailabilityCheckResult::
+                                kUnavailableModelAdaptationNotAvailable);
+  }
+}
+
+TEST_F(AILanguageModelTest, CanCreate_ImageAndAudioInputCapabilities) {
+  fake_broker_->InstallBaseModel(
+      {.config = optimization_guide::ExecutionConfigWithCapabilities(
+           {optimization_guide::proto::OnDeviceModelCapability::
+                ON_DEVICE_MODEL_CAPABILITY_IMAGE_INPUT,
+            optimization_guide::proto::OnDeviceModelCapability::
+                ON_DEVICE_MODEL_CAPABILITY_AUDIO_INPUT})});
+
+  EnsureModelIsReady();
+
+  blink::mojom::AILanguageModelCreateOptionsPtr options =
+      blink::mojom::AILanguageModelCreateOptions::New();
+  {
+    base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
+    GetAIManagerInterface()->CanCreateLanguageModel(options.Clone(),
+                                                    future.GetCallback());
+    EXPECT_EQ(future.Get(),
+              blink::mojom::ModelAvailabilityCheckResult::kAvailable);
+  }
+  {
+    auto image_input = blink::mojom::AILanguageModelExpected::New();
+    image_input->type = blink::mojom::AILanguageModelPromptType::kImage;
+    options->expected_inputs.emplace();
+    options->expected_inputs->push_back(std::move(image_input));
+
+    base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
+    GetAIManagerInterface()->CanCreateLanguageModel(options.Clone(),
+                                                    future.GetCallback());
+    EXPECT_EQ(future.Get(),
+              blink::mojom::ModelAvailabilityCheckResult::kAvailable);
+  }
+  {
+    auto audio_input = blink::mojom::AILanguageModelExpected::New();
+    audio_input->type = blink::mojom::AILanguageModelPromptType::kAudio;
+    options->expected_inputs->push_back(std::move(audio_input));
+
+    base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
+    GetAIManagerInterface()->CanCreateLanguageModel(options.Clone(),
+                                                    future.GetCallback());
+    EXPECT_EQ(future.Get(),
+              blink::mojom::ModelAvailabilityCheckResult::kAvailable);
+  }
+}
+
+TEST_F(AILanguageModelTest, CanCreate_DeviceCapabilities) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{optimization_guide::features::kOnDeviceModelPerformanceParams,
+        {{"compatible_on_device_performance_classes", "3,4,5,6"}}}},
+      {{on_device_model::features::kOnDeviceModelCpuBackend}});
+
+  fake_broker_->service_settings().performance_class =
+      PerformanceClass::kVeryLow;
+
+  auto options = blink::mojom::AILanguageModelCreateOptions::New();
+  {
+    auto image_input = blink::mojom::AILanguageModelExpected::New();
+    image_input->type = blink::mojom::AILanguageModelPromptType::kImage;
+    options->expected_inputs.emplace();
+    options->expected_inputs->push_back(std::move(image_input));
+
+    base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
+    GetAIManagerInterface()->CanCreateLanguageModel(options.Clone(),
+                                                    future.GetCallback());
+    EXPECT_EQ(future.Get(), blink::mojom::ModelAvailabilityCheckResult::
+                                kUnavailableModelAdaptationNotAvailable);
+  }
+
+  {
+    auto audio_input = blink::mojom::AILanguageModelExpected::New();
+    audio_input->type = blink::mojom::AILanguageModelPromptType::kAudio;
+    options->expected_inputs.emplace();
+    options->expected_inputs->push_back(std::move(audio_input));
+
+    base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
+    GetAIManagerInterface()->CanCreateLanguageModel(options.Clone(),
+                                                    future.GetCallback());
+    EXPECT_EQ(future.Get(), blink::mojom::ModelAvailabilityCheckResult::
+                                kUnavailableModelAdaptationNotAvailable);
+  }
+}
+
+TEST_F(AILanguageModelTest, CanCreate_DeviceAudioCapabilities) {
+  fake_broker_->service_settings().vram_mb =
+      optimization_guide::kOnDeviceModelAudioVramMinMb - 1;
+
+  auto options = blink::mojom::AILanguageModelCreateOptions::New();
+  {
+    auto image_input = blink::mojom::AILanguageModelExpected::New();
+    image_input->type = blink::mojom::AILanguageModelPromptType::kImage;
+    options->expected_inputs.emplace();
+    options->expected_inputs->push_back(std::move(image_input));
+
+    base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
+    GetAIManagerInterface()->CanCreateLanguageModel(options.Clone(),
+                                                    future.GetCallback());
+    EXPECT_EQ(future.Get(),
+              blink::mojom::ModelAvailabilityCheckResult::kDownloadable);
+  }
+
+  {
+    auto audio_input = blink::mojom::AILanguageModelExpected::New();
+    audio_input->type = blink::mojom::AILanguageModelPromptType::kAudio;
+    options->expected_inputs.emplace();
+    options->expected_inputs->push_back(std::move(audio_input));
+
+    base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
+    GetAIManagerInterface()->CanCreateLanguageModel(options.Clone(),
+                                                    future.GetCallback());
+    EXPECT_EQ(future.Get(), blink::mojom::ModelAvailabilityCheckResult::
+                                kUnavailableModelAdaptationNotAvailable);
+  }
 }
 
 TEST_F(AILanguageModelTest, CreateLanguageModelModelNotEligible) {

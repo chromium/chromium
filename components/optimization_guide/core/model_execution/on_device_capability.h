@@ -186,6 +186,9 @@ std::ostream& operator<<(std::ostream& out,
 // Simplify an eligibility reason to an availability state.
 std::optional<mojom::ModelUnavailableReason> AvailabilityFromEligibilityReason(
     OnDeviceModelEligibilityReason);
+std::optional<mojom::ModelNotSupportedDetailedReason>
+    NotSupportedDetailedReasonFromEligibilityReason(
+        OnDeviceModelEligibilityReason);
 
 // Observer that is notified when the on-device model availability changes for
 // the on-device eligible features.

@@ -106,12 +106,6 @@ void AITestUtils::AITestBase::SetupMockOptimizationGuideKeyedService() {
                     return std::make_unique<
                         testing::NiceMock<MockOptimizationGuideKeyedService>>();
                   })));
-  ON_CALL(*mock_optimization_guide_keyed_service_,
-          GetOnDeviceModelEligibilityAsync(testing::_, testing::_, testing::_))
-      .WillByDefault([](auto feature, auto capabilities, auto callback) {
-        std::move(callback).Run(
-            optimization_guide::OnDeviceModelEligibilityReason::kSuccess);
-      });
   ON_CALL(*mock_optimization_guide_keyed_service_, CreateModelBrokerClient())
       .WillByDefault([&]() {
         return std::make_unique<optimization_guide::ModelBrokerClient>(

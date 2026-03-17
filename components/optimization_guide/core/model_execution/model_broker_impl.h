@@ -28,8 +28,11 @@ class UsageTracker;
 // A ModelBroker implementation that serves solutions fed to it.
 class ModelBrokerImpl final : public mojom::ModelBroker {
  public:
-  // A function that calls a closure once some init has been completed.
-  using EnsureInitCallback = base::RepeatingCallback<void(base::OnceClosure)>;
+  // A callback that is invoked once the initialization is complete.
+  using InitCallback =
+      base::OnceCallback<void(const on_device_model::Capabilities&)>;
+  // A function that calls |InitCallback| once some init has been completed.
+  using EnsureInitCallback = base::RepeatingCallback<void(InitCallback)>;
 
   // A set of (references to) compatible, versioned dependencies that implement
   // an OnDeviceFeature.
@@ -58,7 +61,8 @@ class ModelBrokerImpl final : public mojom::ModelBroker {
     explicit SolutionProvider(mojom::OnDeviceFeature feature);
     ~SolutionProvider();
 
-    void AddSubscriber(mojo::PendingRemote<mojom::ModelSubscriber> pending);
+    void AddSubscriber(mojo::PendingRemote<mojom::ModelSubscriber> pending,
+                       const on_device_model::Capabilities& capabilities);
     void AddObserver(OnDeviceModelAvailabilityObserver* observer);
     void RemoveObserver(OnDeviceModelAvailabilityObserver* observer);
 
@@ -73,6 +77,9 @@ class ModelBrokerImpl final : public mojom::ModelBroker {
     void UpdateSubscribers();
     void UpdateSubscriber(mojom::ModelSubscriber& client);
     void UpdateObservers();
+    void UpdatePossibleCapabilities(
+        mojom::ModelSubscriber& subscriber,
+        const on_device_model::Capabilities& capabilities);
 
     mojom::OnDeviceFeature feature_;
     mojo::RemoteSet<mojom::ModelSubscriber> subscribers_;
@@ -108,11 +115,13 @@ class ModelBrokerImpl final : public mojom::ModelBroker {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   // Finishes Subscribe after initialization is finished.
-  void SubscribeInternal(
-      mojom::ModelSubscriptionOptionsPtr options,
-      mojo::PendingRemote<mojom::ModelSubscriber> subscriber);
+  void SubscribeInternal(mojom::ModelSubscriptionOptionsPtr options,
+                         mojo::PendingRemote<mojom::ModelSubscriber> subscriber,
+                         const on_device_model::Capabilities& capabilities);
   // Finishes `RequestAssetsFor` after initialization is finished.
-  void RequestAssetsForInternal(mojom::OnDeviceFeature feature);
+  void RequestAssetsForInternal(
+      mojom::OnDeviceFeature feature,
+      const on_device_model::Capabilities& capabilities);
 
   raw_ref<UsageTracker> usage_tracker_;
   EnsureInitCallback ensure_init_callback_;
