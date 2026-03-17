@@ -94,7 +94,10 @@ source_set("user_activity_browser_agent") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "user_activity_browser_agent_unittest.mm" ]
+  sources = [
+    "user_activity_browser_agent_unittest.mm",
+    "user_activity_compatibility_util_unittest.mm",
+  ]
   deps = [
     ":constants",
     ":user_activity_browser_agent",

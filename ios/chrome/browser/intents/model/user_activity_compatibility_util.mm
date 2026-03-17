@@ -29,23 +29,37 @@ enum ActivityCompatibilityMode {
 ActivityCompatibilityMode CompatibleModeForActivityType(
     NSString* activity_type) {
   if ([activity_type isEqualToString:CSSearchableItemActionType] ||
-      [activity_type isEqualToString:kShortcutNewSearch] ||
-      [activity_type isEqualToString:kShortcutVoiceSearch] ||
-      [activity_type isEqualToString:kShortcutQRScanner] ||
-      [activity_type isEqualToString:kShortcutLensFromAppIconLongPress] ||
+      [activity_type isEqualToString:handoff::kChromeHandoffActivityType] ||
       [activity_type isEqualToString:kSiriShortcutAddBookmarkToChrome] ||
       [activity_type isEqualToString:kSiriShortcutAddReadingListItemToChrome] ||
       [activity_type isEqualToString:kSiriShortcutSearchInChrome] ||
-      [activity_type isEqualToString:NSUserActivityTypeBrowsingWeb]) {
+      [activity_type isEqualToString:NSUserActivityTypeBrowsingWeb] ||
+      [activity_type isEqualToString:kSiriOpenLatestTab] ||
+      [activity_type isEqualToString:kSiriOpenReadingList] ||
+      [activity_type isEqualToString:kSiriOpenBookmarks] ||
+      [activity_type isEqualToString:kSiriOpenTabGrid] ||
+      [activity_type isEqualToString:kSiriVoiceSearch] ||
+      [activity_type isEqualToString:kSiriOpenNewTab] ||
+      [activity_type isEqualToString:kSiriPlayDinoGame] ||
+      [activity_type isEqualToString:kSiriSetChromeDefaultBrowser] ||
+      [activity_type isEqualToString:kSiriManagePaymentMethods] ||
+      [activity_type isEqualToString:kSiriRunSafetyCheck] ||
+      [activity_type isEqualToString:kSiriManagePasswords] ||
+      [activity_type isEqualToString:kSiriManageSettings] ||
+      [activity_type isEqualToString:kSiriOpenLensFromIntents]) {
     return ActivityCompatibilityMode::kRegularAndIncognito;
   }
-  if ([activity_type isEqualToString:kSiriShortcutOpenInChrome]) {
+  if ([activity_type isEqualToString:kSiriShortcutOpenInChrome] ||
+      [activity_type isEqualToString:kSiriOpenRecentTabs] ||
+      [activity_type isEqualToString:kSiriViewHistory] ||
+      [activity_type isEqualToString:kSiriClearBrowsingData]) {
     return ActivityCompatibilityMode::kRegularMode;
   }
-  if ([activity_type isEqualToString:kShortcutNewIncognitoSearch] ||
-      [activity_type isEqualToString:kSiriShortcutOpenInIncognito]) {
+  if ([activity_type isEqualToString:kSiriShortcutOpenInIncognito] ||
+      [activity_type isEqualToString:kSiriOpenNewIncognitoTab]) {
     return ActivityCompatibilityMode::kIncognitoMode;
   }
+
   // Use 32 as the maximum length of the reported value for this key (31
   // characters + '\0'). See NSUserActivityTypes in Info.plist for the list of
   // expected values.
