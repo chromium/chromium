@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.toolbar.signin_button;
 
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
+import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -30,12 +31,16 @@ final class SigninButtonProperties {
     public static final WritableObjectPropertyKey<ColorStateList> AVATAR_TINT =
             new WritableObjectPropertyKey<>();
 
+    // The click listener for the signin button to handle interactions with the button.
+    public static final WritableObjectPropertyKey<View.OnClickListener> ON_CLICK =
+            new WritableObjectPropertyKey<>("on_click");
+
     // The content description for the signin button.
     public static final WritableObjectPropertyKey<String> CONTENT_DESCRIPTION =
             new WritableObjectPropertyKey<>();
 
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
-                SHOW_BUTTON, SHOW_AVATAR, BUTTON_AVATAR, AVATAR_TINT, CONTENT_DESCRIPTION
+                SHOW_BUTTON, SHOW_AVATAR, BUTTON_AVATAR, AVATAR_TINT, ON_CLICK, CONTENT_DESCRIPTION
             };
 }

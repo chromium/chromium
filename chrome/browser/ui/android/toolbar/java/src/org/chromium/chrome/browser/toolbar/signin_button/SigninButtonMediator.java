@@ -4,17 +4,22 @@
 
 package org.chromium.chrome.browser.toolbar.signin_button;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
+import android.content.Intent;
+import android.view.View;
 
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.signin.services.BadgeConfig;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -22,15 +27,25 @@ import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.NoAccountSigninMode;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.WithAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
+import org.chromium.chrome.browser.ui.signin.SigninSurveyController;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
+import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
+import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
+import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
+import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserActionableError;
 import org.chromium.ui.base.ActivityResultTracker;
@@ -41,7 +56,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 /**
  * The mediator for a signin button on the NTP toolbar. Listens for sign in state changes and drives
  * corresponding changes to the property model values which back the SigninButton view
- * TODO(crbug.com/475816843): Implement empty methods and add remaining functionality.
  */
 @NullMarked
 final class SigninButtonMediator
@@ -53,7 +67,14 @@ final class SigninButtonMediator
     private final PropertyModel mModel;
     private final MonotonicObservableSupplier<Profile> mProfileSupplier;
     private final Callback<Profile> mProfileSupplierObserver = this::setProfile;
+    private final WindowAndroid mWindowAndroid;
+    private final ActivityResultTracker mActivityResultTracker;
+    private final DeviceLockActivityLauncher mDeviceLockActivityLauncher;
+    private final BottomSheetController mBottomSheetController;
+    private final ModalDialogManager mModalDialogManager;
+    private final SnackbarManager mSnackbarManager;
     private @Nullable Profile mProfile;
+    private @Nullable BottomSheetSigninAndHistorySyncCoordinator mSigninCoordinator;
 
     // We observe IdentityManager to receive primary account state change notifications.
     private @Nullable IdentityManager mIdentityManager;
@@ -65,6 +86,8 @@ final class SigninButtonMediator
     private @Nullable SyncService mSyncService;
 
     private @UserActionableError int mIdentityError = UserActionableError.NONE;
+
+    private final SigninAndHistorySyncActivityLauncher mSigninAndHistorySyncActivityLauncher;
 
     /**
      * @param context The {@link Context} to retrieve resources.
@@ -96,6 +119,13 @@ final class SigninButtonMediator
         mModel = model;
         mProfileSupplier = profileSupplier;
         mProfileSupplier.addSyncObserverAndPostIfNonNull(mProfileSupplierObserver);
+        mWindowAndroid = windowAndroid;
+        mActivityResultTracker = activityResultTracker;
+        mDeviceLockActivityLauncher = deviceLockActivityLauncher;
+        mModalDialogManager = modalDialogManager;
+        mSnackbarManager = snackbarManager;
+        mBottomSheetController = bottomSheetController;
+        mSigninAndHistorySyncActivityLauncher = signinAndHistorySyncActivityLauncher;
     }
 
     /**
@@ -189,6 +219,7 @@ final class SigninButtonMediator
             mModel.set(SigninButtonProperties.AVATAR_TINT, null);
         }
         mModel.set(SigninButtonProperties.SHOW_AVATAR, true);
+        mModel.set(SigninButtonProperties.ON_CLICK, this::onClick);
     }
 
     /**
@@ -206,6 +237,10 @@ final class SigninButtonMediator
             mSyncService.removeSyncStateChangedListener(this);
             mSyncService = null;
         }
+        if (mSigninCoordinator != null) {
+            mSigninCoordinator.destroy();
+            mSigninCoordinator = null;
+        }
         if (profile == null || profile.isOffTheRecord()) {
             return;
         }
@@ -219,7 +254,83 @@ final class SigninButtonMediator
         if (mSyncService != null) {
             mSyncService.addSyncStateChangedListener(this);
         }
+        if (SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)) {
+            initializeSigninCoordinator();
+        }
         updateButtonState();
+    }
+
+    private void onClick(View view) {
+        if (mProfile == null) {
+            return;
+        }
+
+        Profile originalProfile = mProfile.getOriginalProfile();
+        if (assumeNonNull(IdentityServicesProvider.get().getSigninManager(mProfile))
+                .isSigninAllowed()) {
+            AccountPickerBottomSheetStrings bottomSheetStrings =
+                    new AccountPickerBottomSheetStrings.Builder(
+                                    mContext.getString(
+                                            R.string.signin_account_picker_bottom_sheet_title))
+                            .setSubtitleString(
+                                    mContext.getString(
+                                            R.string
+                                                    .signin_account_picker_bottom_sheet_benefits_subtitle))
+                            .build();
+            BottomSheetSigninAndHistorySyncConfig config =
+                    new BottomSheetSigninAndHistorySyncConfig.Builder(
+                                    bottomSheetStrings,
+                                    NoAccountSigninMode.BOTTOM_SHEET,
+                                    WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                                    HistorySyncConfig.OptInMode.OPTIONAL,
+                                    mContext.getString(R.string.history_sync_title),
+                                    mContext.getString(R.string.history_sync_subtitle))
+                            .signinSurveyType(
+                                    SigninSurveyController.SigninSurveyType.NTP_SIGNIN_BUTTON)
+                            .build();
+            if (SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)) {
+                assumeNonNull(mSigninCoordinator).startSigninFlow(config);
+            } else {
+                @Nullable Intent intent =
+                        mSigninAndHistorySyncActivityLauncher
+                                .createBottomSheetSigninIntentOrShowError(
+                                        mContext,
+                                        originalProfile,
+                                        config,
+                                        SigninAccessPoint.NTP_SIGNED_OUT_ICON);
+                if (intent != null) {
+                    mContext.startActivity(intent);
+                }
+            }
+        } else {
+            SettingsNavigation settingsNavigation =
+                    SettingsNavigationFactory.createSettingsNavigation();
+            settingsNavigation.startSettings(mContext);
+            SigninSurveyController.registerTrigger(
+                    originalProfile,
+                    SigninSurveyController.SigninSurveyType.NTP_ACCOUNT_AVATAR_TAP);
+        }
+    }
+
+    private void initializeSigninCoordinator() {
+        if (mSigninCoordinator == null) {
+            OneshotSupplierImpl<Profile> profileSupplier = new OneshotSupplierImpl<>();
+            profileSupplier.set(assumeNonNull(mProfile));
+
+            mSigninCoordinator =
+                    mSigninAndHistorySyncActivityLauncher
+                            .createBottomSheetSigninCoordinatorAndObserveAddAccountResult(
+                                    mWindowAndroid,
+                                    assertNonNull(mWindowAndroid.getActivity().get()),
+                                    mActivityResultTracker,
+                                    this,
+                                    mDeviceLockActivityLauncher,
+                                    profileSupplier,
+                                    () -> mBottomSheetController,
+                                    mModalDialogManager,
+                                    mSnackbarManager,
+                                    SigninAccessPoint.NTP_SIGNED_OUT_ICON);
+        }
     }
 
     private void resetProfileDataCache() {

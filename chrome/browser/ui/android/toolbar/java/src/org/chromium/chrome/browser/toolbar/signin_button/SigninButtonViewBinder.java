@@ -30,6 +30,8 @@ final class SigninButtonViewBinder {
         } else if (SigninButtonProperties.AVATAR_TINT.equals(propertyKey)) {
             ImageViewCompat.setImageTintList(
                     view.getAvatarButton(), model.get(SigninButtonProperties.AVATAR_TINT));
+        } else if (SigninButtonProperties.ON_CLICK.equals(propertyKey)) {
+            view.getAvatarButton().setOnClickListener(model.get(SigninButtonProperties.ON_CLICK));
         } else if (SigninButtonProperties.CONTENT_DESCRIPTION.equals(propertyKey)) {
             view.setContentDescription(model.get(SigninButtonProperties.CONTENT_DESCRIPTION));
         }
