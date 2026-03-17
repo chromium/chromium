@@ -23,8 +23,8 @@ import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowMetricsUtils.WindowingMode;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.preferences.MultiInstancePreferenceKeys;
+import org.chromium.chrome.browser.preferences.MultiInstanceSharedPreferences;
 
 import java.util.Collections;
 
@@ -40,7 +40,7 @@ public class MultiWindowMetricsUtilsUnitTest {
     @Before
     public void setup() {
         MockitoAnnotations.openMocks(this);
-        mSharedPreferencesManager = ChromeSharedPreferences.getInstance();
+        mSharedPreferencesManager = MultiInstanceSharedPreferences.getInstance();
     }
 
     @After
@@ -58,19 +58,19 @@ public class MultiWindowMetricsUtilsUnitTest {
                 1,
                 mSharedPreferencesManager
                         .readStringSet(
-                                ChromePreferenceKeys.MULTI_WINDOW_MODE_ACTIVITIES.createKey(
+                                MultiInstancePreferenceKeys.MULTI_WINDOW_MODE_ACTIVITIES.createKey(
                                         WindowingMode.FULLSCREEN),
                                 Collections.emptySet())
                         .size());
         assertTrue(
                 "Start time should be recorded.",
                 mSharedPreferencesManager.contains(
-                        ChromePreferenceKeys.MULTI_WINDOW_MODE_START_TIME.createKey(
+                        MultiInstancePreferenceKeys.MULTI_WINDOW_MODE_START_TIME.createKey(
                                 WindowingMode.FULLSCREEN)));
         assertTrue(
                 "Cycle start time should be recorded.",
                 mSharedPreferencesManager.contains(
-                        ChromePreferenceKeys.MULTI_WINDOW_MODE_CYCLE_START_TIME));
+                        MultiInstancePreferenceKeys.MULTI_WINDOW_MODE_CYCLE_START_TIME));
 
         // Simulate another activity resuming in fullscreen mode, count should be 2.
         MultiWindowMetricsUtils.recordWindowingMode(WindowingMode.FULLSCREEN, 2, true);
@@ -79,7 +79,7 @@ public class MultiWindowMetricsUtilsUnitTest {
                 2,
                 mSharedPreferencesManager
                         .readStringSet(
-                                ChromePreferenceKeys.MULTI_WINDOW_MODE_ACTIVITIES.createKey(
+                                MultiInstancePreferenceKeys.MULTI_WINDOW_MODE_ACTIVITIES.createKey(
                                         WindowingMode.FULLSCREEN),
                                 Collections.emptySet())
                         .size());
@@ -93,20 +93,20 @@ public class MultiWindowMetricsUtilsUnitTest {
                 0,
                 mSharedPreferencesManager
                         .readStringSet(
-                                ChromePreferenceKeys.MULTI_WINDOW_MODE_ACTIVITIES.createKey(
+                                MultiInstancePreferenceKeys.MULTI_WINDOW_MODE_ACTIVITIES.createKey(
                                         WindowingMode.FULLSCREEN),
                                 Collections.emptySet())
                         .size());
         assertFalse(
                 "Start time should be removed.",
                 mSharedPreferencesManager.contains(
-                        ChromePreferenceKeys.MULTI_WINDOW_MODE_START_TIME.createKey(
+                        MultiInstancePreferenceKeys.MULTI_WINDOW_MODE_START_TIME.createKey(
                                 WindowingMode.FULLSCREEN)));
         assertEquals(
                 "Duration should be recorded.",
                 1000,
                 mSharedPreferencesManager.readLong(
-                        ChromePreferenceKeys.MULTI_WINDOW_MODE_DURATION_MS.createKey(
+                        MultiInstancePreferenceKeys.MULTI_WINDOW_MODE_DURATION_MS.createKey(
                                 WindowingMode.FULLSCREEN),
                         0));
     }
@@ -115,7 +115,7 @@ public class MultiWindowMetricsUtilsUnitTest {
     public void recordTimeSpentInWindowingMode_withinCycle() {
         long t0 = TimeUtils.elapsedRealtimeMillis();
         mSharedPreferencesManager.writeLong(
-                ChromePreferenceKeys.MULTI_WINDOW_MODE_CYCLE_START_TIME, t0);
+                MultiInstancePreferenceKeys.MULTI_WINDOW_MODE_CYCLE_START_TIME, t0);
 
         // Start in fullscreen mode.
         MultiWindowMetricsUtils.recordWindowingMode(WindowingMode.FULLSCREEN, 1, true);
@@ -131,13 +131,13 @@ public class MultiWindowMetricsUtilsUnitTest {
                 "Fullscreen duration should be the time elapsed.",
                 1000,
                 mSharedPreferencesManager.readLong(
-                        ChromePreferenceKeys.MULTI_WINDOW_MODE_DURATION_MS.createKey(
+                        MultiInstancePreferenceKeys.MULTI_WINDOW_MODE_DURATION_MS.createKey(
                                 WindowingMode.FULLSCREEN),
                         -1L));
         assertFalse(
                 "Start time for fullscreen mode should be removed.",
                 mSharedPreferencesManager.contains(
-                        ChromePreferenceKeys.MULTI_WINDOW_MODE_START_TIME.createKey(
+                        MultiInstancePreferenceKeys.MULTI_WINDOW_MODE_START_TIME.createKey(
                                 WindowingMode.FULLSCREEN)));
     }
 
@@ -145,7 +145,7 @@ public class MultiWindowMetricsUtilsUnitTest {
     public void recordTimeSpentInWindowingMode_cycleBoundary_stoppingModeDurationNotLost() {
         long t0 = TimeUtils.elapsedRealtimeMillis();
         mSharedPreferencesManager.writeLong(
-                ChromePreferenceKeys.MULTI_WINDOW_MODE_CYCLE_START_TIME, t0);
+                MultiInstancePreferenceKeys.MULTI_WINDOW_MODE_CYCLE_START_TIME, t0);
 
         // Start in fullscreen mode.
         MultiWindowMetricsUtils.recordWindowingMode(WindowingMode.FULLSCREEN, 1, true);
@@ -161,7 +161,7 @@ public class MultiWindowMetricsUtilsUnitTest {
                 "Fullscreen duration in new cycle is incorrect.",
                 100,
                 mSharedPreferencesManager.readLong(
-                        ChromePreferenceKeys.MULTI_WINDOW_MODE_DURATION_MS.createKey(
+                        MultiInstancePreferenceKeys.MULTI_WINDOW_MODE_DURATION_MS.createKey(
                                 WindowingMode.FULLSCREEN),
                         -1L));
     }
@@ -170,7 +170,7 @@ public class MultiWindowMetricsUtilsUnitTest {
     public void recordTimeSpentInWindowingMode_cycleBoundary_activeModeHandled() {
         long t0 = TimeUtils.elapsedRealtimeMillis();
         mSharedPreferencesManager.writeLong(
-                ChromePreferenceKeys.MULTI_WINDOW_MODE_CYCLE_START_TIME, t0);
+                MultiInstancePreferenceKeys.MULTI_WINDOW_MODE_CYCLE_START_TIME, t0);
 
         // Start in fullscreen mode.
         MultiWindowMetricsUtils.recordWindowingMode(WindowingMode.FULLSCREEN, 1, true);
@@ -191,11 +191,11 @@ public class MultiWindowMetricsUtilsUnitTest {
         assertFalse(
                 "Fullscreen duration key should be removed after histogram recording.",
                 mSharedPreferencesManager.contains(
-                        ChromePreferenceKeys.MULTI_WINDOW_MODE_DURATION_MS.createKey(
+                        MultiInstancePreferenceKeys.MULTI_WINDOW_MODE_DURATION_MS.createKey(
                                 WindowingMode.FULLSCREEN)));
         long newFullscreenStartTime =
                 mSharedPreferencesManager.readLong(
-                        ChromePreferenceKeys.MULTI_WINDOW_MODE_START_TIME.createKey(
+                        MultiInstancePreferenceKeys.MULTI_WINDOW_MODE_START_TIME.createKey(
                                 WindowingMode.FULLSCREEN),
                         -1L);
         // The new start time will be aligned to the cycle boundary.
@@ -211,13 +211,13 @@ public class MultiWindowMetricsUtilsUnitTest {
                 "Desktop window duration in new cycle is incorrect.",
                 1000,
                 mSharedPreferencesManager.readLong(
-                        ChromePreferenceKeys.MULTI_WINDOW_MODE_DURATION_MS.createKey(
+                        MultiInstancePreferenceKeys.MULTI_WINDOW_MODE_DURATION_MS.createKey(
                                 WindowingMode.DESKTOP_WINDOW),
                         -1L));
         assertFalse(
                 "Desktop window start time key should be removed.",
                 mSharedPreferencesManager.contains(
-                        ChromePreferenceKeys.MULTI_WINDOW_MODE_START_TIME.createKey(
+                        MultiInstancePreferenceKeys.MULTI_WINDOW_MODE_START_TIME.createKey(
                                 WindowingMode.DESKTOP_WINDOW)));
     }
 
@@ -261,7 +261,7 @@ public class MultiWindowMetricsUtilsUnitTest {
                 "Cycle start time should be updated to the end of the last recorded cycle.",
                 t0 + CYCLE_LENGTH_MS,
                 mSharedPreferencesManager.readLong(
-                        ChromePreferenceKeys.MULTI_WINDOW_MODE_CYCLE_START_TIME, -1L));
+                        MultiInstancePreferenceKeys.MULTI_WINDOW_MODE_CYCLE_START_TIME, -1L));
         histogramWatcher.assertExpected();
     }
 
@@ -274,7 +274,7 @@ public class MultiWindowMetricsUtilsUnitTest {
                 1,
                 mSharedPreferencesManager
                         .readStringSet(
-                                ChromePreferenceKeys.MULTI_WINDOW_MODE_ACTIVITIES.createKey(
+                                MultiInstancePreferenceKeys.MULTI_WINDOW_MODE_ACTIVITIES.createKey(
                                         WindowingMode.FULLSCREEN),
                                 Collections.emptySet())
                         .size());
@@ -286,7 +286,7 @@ public class MultiWindowMetricsUtilsUnitTest {
                 1,
                 mSharedPreferencesManager
                         .readStringSet(
-                                ChromePreferenceKeys.MULTI_WINDOW_MODE_ACTIVITIES.createKey(
+                                MultiInstancePreferenceKeys.MULTI_WINDOW_MODE_ACTIVITIES.createKey(
                                         WindowingMode.FULLSCREEN),
                                 Collections.emptySet())
                         .size());

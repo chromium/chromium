@@ -95,8 +95,8 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.InstanceAllo
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.UiUtils.NameWindowDialogSource;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.preferences.MultiInstancePreferenceKeys;
+import org.chromium.chrome.browser.preferences.MultiInstanceSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
@@ -1966,9 +1966,10 @@ public class MultiInstanceManagerApi31UnitTest {
         verify(mMessageDispatcher).enqueueWindowScopedMessage(any(), eq(false));
         assertTrue(
                 "SharedPref for tracking restoration message should be updated.",
-                ChromeSharedPreferences.getInstance()
+                MultiInstanceSharedPreferences.getInstance()
                         .readBoolean(
-                                ChromePreferenceKeys.MULTI_INSTANCE_RESTORATION_MESSAGE_SHOWN,
+                                MultiInstancePreferenceKeys
+                                        .MULTI_INSTANCE_RESTORATION_MESSAGE_SHOWN,
                                 false));
     }
 
@@ -1997,9 +1998,9 @@ public class MultiInstanceManagerApi31UnitTest {
                 ChromeMultiInstancePersistentStore.readTaskId(0));
         assertTrue(
                 "SharedPref for tracking downgrade should be updated.",
-                ChromeSharedPreferences.getInstance()
+                MultiInstanceSharedPreferences.getInstance()
                         .readBoolean(
-                                ChromePreferenceKeys
+                                MultiInstancePreferenceKeys
                                         .MULTI_INSTANCE_INSTANCE_LIMIT_DOWNGRADE_TRIGGERED,
                                 false));
 
@@ -2042,9 +2043,9 @@ public class MultiInstanceManagerApi31UnitTest {
                 ChromeMultiInstancePersistentStore.readTaskId(0));
         assertFalse(
                 "SharedPref for tracking downgrade should not be updated.",
-                ChromeSharedPreferences.getInstance()
+                MultiInstanceSharedPreferences.getInstance()
                         .readBoolean(
-                                ChromePreferenceKeys
+                                MultiInstancePreferenceKeys
                                         .MULTI_INSTANCE_INSTANCE_LIMIT_DOWNGRADE_TRIGGERED,
                                 false));
     }

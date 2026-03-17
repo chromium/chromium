@@ -13,7 +13,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.MultiInstancePreferenceKeys;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -94,11 +94,11 @@ public class MultiWindowMetricsUtils {
             long currentTime = TimeUtils.elapsedRealtimeMillis();
             MultiInstancePersistentStore.writeMultiWindowModeStartTime(mode, currentTime);
             if (!MultiInstancePersistentStore.contains(
-                    ChromePreferenceKeys.MULTI_WINDOW_MODE_CYCLE_START_TIME)) {
+                    MultiInstancePreferenceKeys.MULTI_WINDOW_MODE_CYCLE_START_TIME)) {
                 MultiInstancePersistentStore.writeMultiWindowModeCycleStartTime(currentTime);
             }
         } else if (MultiInstancePersistentStore.contains(
-                ChromePreferenceKeys.MULTI_WINDOW_MODE_START_TIME.createKey(mode))) {
+                MultiInstancePreferenceKeys.MULTI_WINDOW_MODE_START_TIME.createKey(mode))) {
             recordTimeSpentInWindowingMode(mode);
         }
     }

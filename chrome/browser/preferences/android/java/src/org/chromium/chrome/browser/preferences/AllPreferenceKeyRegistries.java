@@ -19,7 +19,10 @@ import java.util.Set;
 public class AllPreferenceKeyRegistries {
     @VisibleForTesting
     static final Set<PreferenceKeyRegistry> KNOWN_REGISTRIES =
-            Set.of(ChromeSharedPreferences.REGISTRY, CachedFlagsSharedPreferences.REGISTRY);
+            Set.of(
+                    ChromeSharedPreferences.REGISTRY,
+                    CachedFlagsSharedPreferences.REGISTRY,
+                    MultiInstanceSharedPreferences.REGISTRY);
 
     public static void initializeKnownRegistries() {
         KnownPreferenceKeyRegistries.initializeKnownRegistries(KNOWN_REGISTRIES);

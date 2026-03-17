@@ -8,7 +8,7 @@ import org.chromium.base.TimeUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.MultiInstancePreferenceKeys;
 import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
 
 import java.util.HashSet;
@@ -34,7 +34,7 @@ class ChromeMultiInstancePersistentStore extends MultiInstancePersistentStore {
         Map<String, Long> lastAccessedTimeMap =
                 getManager()
                         .readLongsWithPrefix(
-                                ChromePreferenceKeys.MULTI_INSTANCE_LAST_ACCESSED_TIME);
+                                MultiInstancePreferenceKeys.MULTI_INSTANCE_LAST_ACCESSED_TIME);
         Pattern pattern = Pattern.compile("(\\d+)$");
 
         Set<Integer> ids = new HashSet<>();
@@ -84,7 +84,7 @@ class ChromeMultiInstancePersistentStore extends MultiInstancePersistentStore {
     }
 
     static Map<String, Integer> readTaskMap() {
-        return getManager().readIntsWithPrefix(ChromePreferenceKeys.MULTI_INSTANCE_TASK_MAP);
+        return getManager().readIntsWithPrefix(MultiInstancePreferenceKeys.MULTI_INSTANCE_TASK_MAP);
     }
 
     static int readTaskId(int instanceId) {
@@ -229,63 +229,66 @@ class ChromeMultiInstancePersistentStore extends MultiInstancePersistentStore {
     }
 
     private static String lastAccessedTimeKey(int instanceId) {
-        return ChromePreferenceKeys.MULTI_INSTANCE_LAST_ACCESSED_TIME.createKey(
+        return MultiInstancePreferenceKeys.MULTI_INSTANCE_LAST_ACCESSED_TIME.createKey(
                 String.valueOf(instanceId));
     }
 
     private static String closureTimeKey(int instanceId) {
-        return ChromePreferenceKeys.MULTI_INSTANCE_CLOSURE_TIME.createKey(
+        return MultiInstancePreferenceKeys.MULTI_INSTANCE_CLOSURE_TIME.createKey(
                 String.valueOf(instanceId));
     }
 
     private static String taskIdKey(int instanceId) {
-        return ChromePreferenceKeys.MULTI_INSTANCE_TASK_MAP.createKey(String.valueOf(instanceId));
+        return MultiInstancePreferenceKeys.MULTI_INSTANCE_TASK_MAP.createKey(
+                String.valueOf(instanceId));
     }
 
     private static String normalTabCountKey(int instanceId) {
-        return ChromePreferenceKeys.MULTI_INSTANCE_TAB_COUNT.createKey(String.valueOf(instanceId));
+        return MultiInstancePreferenceKeys.MULTI_INSTANCE_TAB_COUNT.createKey(
+                String.valueOf(instanceId));
     }
 
     private static String incognitoTabCountKey(int instanceId) {
-        return ChromePreferenceKeys.MULTI_INSTANCE_INCOGNITO_TAB_COUNT.createKey(
+        return MultiInstancePreferenceKeys.MULTI_INSTANCE_INCOGNITO_TAB_COUNT.createKey(
                 String.valueOf(instanceId));
     }
 
     private static String tabCountForRelaunchKey(int instanceId) {
-        return ChromePreferenceKeys.MULTI_INSTANCE_TAB_COUNT_FOR_RELAUNCH.createKey(
+        return MultiInstancePreferenceKeys.MULTI_INSTANCE_TAB_COUNT_FOR_RELAUNCH.createKey(
                 String.valueOf(instanceId));
     }
 
     private static String urlKey(int instanceId) {
-        return ChromePreferenceKeys.MULTI_INSTANCE_URL.createKey(String.valueOf(instanceId));
+        return MultiInstancePreferenceKeys.MULTI_INSTANCE_URL.createKey(String.valueOf(instanceId));
     }
 
     private static String activeTabTitleKey(int instanceId) {
-        return ChromePreferenceKeys.MULTI_INSTANCE_TITLE.createKey(String.valueOf(instanceId));
+        return MultiInstancePreferenceKeys.MULTI_INSTANCE_TITLE.createKey(
+                String.valueOf(instanceId));
     }
 
     private static String customTitleKey(int instanceId) {
-        return ChromePreferenceKeys.MULTI_INSTANCE_CUSTOM_TITLE.createKey(
+        return MultiInstancePreferenceKeys.MULTI_INSTANCE_CUSTOM_TITLE.createKey(
                 String.valueOf(instanceId));
     }
 
     private static String profileTypeKey(int instanceId) {
-        return ChromePreferenceKeys.MULTI_INSTANCE_PROFILE_TYPE.createKey(
+        return MultiInstancePreferenceKeys.MULTI_INSTANCE_PROFILE_TYPE.createKey(
                 String.valueOf(instanceId));
     }
 
     private static String latestPersistentStateIdKey(int instanceId) {
-        return ChromePreferenceKeys.MULTI_INSTANCE_LATEST_PERSISTENT_STATE_ID.createKey(
+        return MultiInstancePreferenceKeys.MULTI_INSTANCE_LATEST_PERSISTENT_STATE_ID.createKey(
                 String.valueOf(instanceId));
     }
 
     private static String incognitoSelectedKey(int instanceId) {
-        return ChromePreferenceKeys.MULTI_INSTANCE_IS_INCOGNITO_SELECTED.createKey(
+        return MultiInstancePreferenceKeys.MULTI_INSTANCE_IS_INCOGNITO_SELECTED.createKey(
                 String.valueOf(instanceId));
     }
 
     private static String markedForDeletionKey(int instanceId) {
-        return ChromePreferenceKeys.MULTI_INSTANCE_MARKED_FOR_DELETION.createKey(
+        return MultiInstancePreferenceKeys.MULTI_INSTANCE_MARKED_FOR_DELETION.createKey(
                 String.valueOf(instanceId));
     }
 }

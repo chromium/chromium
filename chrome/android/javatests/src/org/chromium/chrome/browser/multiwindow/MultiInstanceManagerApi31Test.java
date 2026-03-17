@@ -53,8 +53,8 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowApp
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.ntp.RecentlyClosedEntry;
 import org.chromium.chrome.browser.ntp.RecentlyClosedWindow;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.preferences.MultiInstancePreferenceKeys;
+import org.chromium.chrome.browser.preferences.MultiInstanceSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -112,10 +112,12 @@ public class MultiInstanceManagerApi31Test {
 
     @After
     public void teardown() throws InterruptedException {
-        ChromeSharedPreferences.getInstance()
-                .removeKey(ChromePreferenceKeys.MULTI_INSTANCE_RESTORATION_MESSAGE_SHOWN);
-        ChromeSharedPreferences.getInstance()
-                .removeKey(ChromePreferenceKeys.MULTI_INSTANCE_INSTANCE_LIMIT_DOWNGRADE_TRIGGERED);
+        MultiInstanceSharedPreferences.getInstance()
+                .removeKey(MultiInstancePreferenceKeys.MULTI_INSTANCE_RESTORATION_MESSAGE_SHOWN);
+        MultiInstanceSharedPreferences.getInstance()
+                .removeKey(
+                        MultiInstancePreferenceKeys
+                                .MULTI_INSTANCE_INSTANCE_LIMIT_DOWNGRADE_TRIGGERED);
         for (ChromeTabbedActivity activity : mExtraActivities) {
             ThreadUtils.runOnUiThreadBlocking(
                     () ->
