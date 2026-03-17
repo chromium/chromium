@@ -9672,8 +9672,6 @@ crbug.com/486315292 external/wpt/geolocation/enabled-by-permissions-policy.https
 # Temporary to unblock crrev.com/c/7639450 landing.
 crbug.com/490314415 http/tests/devtools/elements/elements-img-tooltip.js [ Failure Pass ]
 
-# Gardener 2026-02-27: Flaky on headless_shell_wpt_tests Mac bot
-crbug.com/488351815 [ Mac ] external/wpt/html/semantics/forms/the-textarea-element/wrapping-transformation.window.html [ Failure Pass ]
 
 # Gardener 2026-03-03: Flaky on multiple Mac bots
 crbug.com/489297473 [ Mac ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/gemm.https.any.html?cpu [ Failure Pass ]
