@@ -20,6 +20,7 @@
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "gpu/config/gpu_finch_features.h"
+#include "third_party/blink/public/common/switches.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
 
@@ -281,7 +282,17 @@ IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, MAYBE_Textarea) {
   if (SkipTestForOldAndroidVersions())
     return;
 
-  RunTest("form_controls_browsertest_textarea",
+  std::string screenshot_filename = "form_controls_browsertest_textarea";
+#if BUILDFLAG(IS_ANDROID)
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          blink::switches::kEnableDesktopAndroidScrollbars)) {
+    // Desktop style scrollbars have large thickness than mobile scrollbars
+    // which affects the size of the textarea resizer.
+    screenshot_filename += "_with_desktop_scrollbars";
+  }
+#endif
+
+  RunTest(screenshot_filename,
           R"HTML(
            <style>
              body {margin: 8px} textarea {width: 150px; margin-bottom: 18px}

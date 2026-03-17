@@ -7463,6 +7463,7 @@ data/forms/form_controls_browsertest_textarea_ios.png
 data/forms/form_controls_browsertest_textarea_linux.png
 data/forms/form_controls_browsertest_textarea_mac.png
 data/forms/form_controls_browsertest_textarea_win.png
+data/forms/form_controls_browsertest_textarea_with_desktop_scrollbars_android_T.png
 data/fragment.html
 data/frame-ancestors-none.html
 data/frame-ancestors-none.html.mock-http-headers
