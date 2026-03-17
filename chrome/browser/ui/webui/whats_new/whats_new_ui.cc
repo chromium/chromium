@@ -50,7 +50,7 @@ void CreateAndAddWhatsNewUIHtmlSource(Profile* profile, bool enable_staging) {
 
   // Allow embedding of iframe from chrome.com
   source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::ChildSrc,
+      network::mojom::CSPDirectiveName::FrameSrc,
       enable_staging
           ? "frame-src chrome://webui-test https://www.google.com/ "
             "https://chrome-staging.corp.google.com/;"
