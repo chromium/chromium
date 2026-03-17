@@ -584,6 +584,7 @@ chromium-metrics-reviews@google.com.
   <int value="42" label="Agent paused"/>
   <int value="43" label="Agent resumed"/>
   <int value="44" label="Agent canceled"/>
+  <int value="45" label="View actor task"/>
 </enum>
 
 <enum name="SystemNotificationType">

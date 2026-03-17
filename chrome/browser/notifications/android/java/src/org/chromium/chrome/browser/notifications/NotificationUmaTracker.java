@@ -184,6 +184,7 @@ public class NotificationUmaTracker {
         ActionType.ACTOR_PAUSE,
         ActionType.ACTOR_RESUME,
         ActionType.ACTOR_CANCEL,
+        ActionType.ACTOR_VIEW,
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface ActionType {
@@ -292,9 +293,11 @@ public class NotificationUmaTracker {
         int ACTOR_RESUME = 43;
         // Cancel button on actor notification.
         int ACTOR_CANCEL = 44;
+        // View button on actor notification.
+        int ACTOR_VIEW = 45;
 
         // Number of real entries, excluding `UNKNOWN`.
-        int NUM_ENTRIES = 45;
+        int NUM_ENTRIES = 46;
     }
 
     /**
