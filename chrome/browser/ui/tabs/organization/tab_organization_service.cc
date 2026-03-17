@@ -47,10 +47,11 @@ TabOrganizationService::TabOrganizationService(
 TabOrganizationService::~TabOrganizationService() = default;
 
 void TabOrganizationService::OnTriggerOccured(const Browser* browser) {
-  if (browser_session_map_.contains(browser)) {
+  TabOrganizationSession* session = GetSessionForBrowser(browser);
+  if (session != nullptr) {
     // If the organizations havent been fully accepted or rejected, then it does
     // not need to be reset.
-    if (!GetSessionForBrowser(browser)->IsComplete()) {
+    if (!session->IsComplete()) {
       return;
     } else {
       RemoveBrowserFromSessionMap(browser);
@@ -64,16 +65,18 @@ void TabOrganizationService::OnTriggerOccured(const Browser* browser) {
 
 const TabOrganizationSession* TabOrganizationService::GetSessionForBrowser(
     const Browser* browser) const {
-  if (browser_session_map_.contains(browser)) {
-    return browser_session_map_.at(browser).get();
+  if (auto it = browser_session_map_.find(browser);
+      it != browser_session_map_.end()) {
+    return it->second.get();
   }
   return nullptr;
 }
 
 TabOrganizationSession* TabOrganizationService::GetSessionForBrowser(
     const Browser* browser) {
-  if (browser_session_map_.contains(browser)) {
-    return browser_session_map_.at(browser).get();
+  if (auto it = browser_session_map_.find(browser);
+      it != browser_session_map_.end()) {
+    return it->second.get();
   }
   return nullptr;
 }
@@ -293,9 +296,10 @@ void TabOrganizationService::OnActionUIDismissed(const Browser* browser) {
 
 void TabOrganizationService::RemoveBrowserFromSessionMap(
     const Browser* browser) {
-  CHECK(browser_session_map_.contains(browser));
+  auto it = browser_session_map_.find(browser);
+  CHECK(it != browser_session_map_.end());
   browser->tab_strip_model()->RemoveObserver(this);
-  browser_session_map_.erase(browser);
+  browser_session_map_.erase(it);
 }
 
 const Browser* TabOrganizationService::GetBrowserForTabStripModel(
