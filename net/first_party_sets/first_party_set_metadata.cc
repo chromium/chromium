@@ -4,7 +4,6 @@
 
 #include "net/first_party_sets/first_party_set_metadata.h"
 
-#include <tuple>
 #include <utility>
 
 #include "base/types/optional_util.h"

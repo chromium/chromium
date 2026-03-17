@@ -15,7 +15,6 @@
 #include "net/first_party_sets/first_party_sets_context_config.h"
 #include "net/first_party_sets/local_set_declaration.h"
 #include "net/first_party_sets/sets_mutation.h"
-#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"

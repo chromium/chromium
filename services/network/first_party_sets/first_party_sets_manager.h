@@ -5,10 +5,8 @@
 #ifndef SERVICES_NETWORK_FIRST_PARTY_SETS_FIRST_PARTY_SETS_MANAGER_H_
 #define SERVICES_NETWORK_FIRST_PARTY_SETS_FIRST_PARTY_SETS_MANAGER_H_
 
-#include <map>
 #include <memory>
 #include <optional>
-#include <set>
 
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
@@ -16,7 +14,6 @@
 #include "base/functional/callback.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
-#include "base/timer/elapsed_timer.h"
 #include "base/types/optional_ref.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"

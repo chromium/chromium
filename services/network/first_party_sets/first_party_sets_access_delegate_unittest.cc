@@ -5,8 +5,6 @@
 #include "services/network/first_party_sets/first_party_sets_access_delegate.h"
 
 #include <optional>
-#include <set>
-#include <string>
 
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_helpers.h"
@@ -15,7 +13,6 @@
 #include "base/test/test_future.h"
 #include "base/version.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/features.h"
 #include "net/base/schemeful_site.h"
@@ -26,7 +23,6 @@
 #include "net/first_party_sets/first_party_sets_context_config.h"
 #include "net/first_party_sets/global_first_party_sets.h"
 #include "services/network/public/mojom/first_party_sets_access_delegate.mojom.h"
-#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"

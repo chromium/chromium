@@ -5,8 +5,6 @@
 #include "net/first_party_sets/first_party_sets_cache_filter.h"
 
 #include "net/base/schemeful_site.h"
-#include "testing/gmock/include/gmock/gmock-matchers.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 

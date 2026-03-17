@@ -5,8 +5,6 @@
 #include "net/first_party_sets/first_party_sets_validator.h"
 
 #include <initializer_list>
-#include <utility>
-#include <vector>
 
 #include "net/base/schemeful_site.h"
 #include "testing/gtest/include/gtest/gtest.h"

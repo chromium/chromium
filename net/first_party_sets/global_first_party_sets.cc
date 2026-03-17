@@ -5,13 +5,11 @@
 #include "net/first_party_sets/global_first_party_sets.h"
 
 #include <algorithm>
-#include <functional>
 #include <initializer_list>
 #include <iterator>
 #include <map>
 #include <optional>
 #include <set>
-#include <tuple>
 #include <utility>
 
 #include "base/containers/flat_map.h"
@@ -19,7 +17,6 @@
 #include "base/containers/map_util.h"
 #include "base/functional/function_ref.h"
 #include "base/types/optional_ref.h"
-#include "base/types/optional_util.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/addition_overlaps_union_find.h"
 #include "net/first_party_sets/first_party_set_entry.h"
