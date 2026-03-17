@@ -6,17 +6,25 @@ import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
 
 android_library("java") {
-  sources = [ "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarConfigUtils.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBar.java",
+    "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarConfigUtils.java",
+    "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarHostManager.java",
+  ]
   deps = [
     "//base:base_java",
     "//build/android:build_java",
     "//chrome/browser/flags:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
 }
 
 robolectric_library("junit") {
-  sources = [ "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarConfigUtilsUnitTest.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarConfigUtilsUnitTest.java",
+    "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarHostManagerUnitTest.java",
+  ]
   deps = [
     ":java",
     "//base:base_java",
