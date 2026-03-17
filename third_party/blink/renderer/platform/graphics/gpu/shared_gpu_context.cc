@@ -435,14 +435,16 @@ bool SharedGpuContext::LowLatencyUsageSupportedForCanvas2D(
 #if BUILDFLAG(IS_CHROMEOS)
   // Low-latency usage is always supported for Canvas2D on ChromeOS.
   return true;
+#elif BUILDFLAG(IS_ANDROID)
+  return base::FeatureList::IsEnabled(
+      features::kLowLatencyUsageSupportedForCanvas2D);
 #else
   // NOTE: crbug.com/41435781 would need to be resolved in order to support
   // low-latency usage on Mac (currently setting the desynchronized attribute
   // on a canvas is a no-op on Mac). If/once that bug is resolved, determine
   // whether this method can then return true on Apple if
   // IsDelegatedCompositingEnabled() holds.
-  return base::FeatureList::IsEnabled(
-      features::kLowLatencyUsageSupportedForCanvas2D);
+  return false;
 #endif
 }
 
