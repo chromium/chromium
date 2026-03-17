@@ -1722,4 +1722,31 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
       assertWithMatcher:grey_notVisible()];
 }
 
+- (void)testManageAccountsRemoveManagedAccount {
+  FakeSystemIdentity* managedIdentity =
+      [FakeSystemIdentity fakeManagedIdentity];
+  [SigninEarlGrey
+      signinWithFakeManagedIdentityInPersonalProfile:managedIdentity];
+  [SigninEarlGreyUI openAccountsListFromSettings];
+
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kSettingsEditAccountListTableViewId)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Tap remove button for the managed account.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(
+              [kSettingsAccountsRemoveAccountButtonAccessibilityIdentifier
+                  stringByAppendingString:managedIdentity.userEmail])]
+      performAction:grey_tap()];
+
+  // Confirm account removal.
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ActionSheetItemWithAccessibilityLabelId(
+                     IDS_IOS_REMOVE_ACCOUNT_LABEL)] performAction:grey_tap()];
+
+  [SigninEarlGrey verifySignedOut];
+}
+
 @end
