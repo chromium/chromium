@@ -199,7 +199,7 @@ void DCOMPTextureWrapperImpl::CreateVideoFrame(
 
   scoped_refptr<gpu::ClientSharedImage> shared_image =
       dcomp_texture_resources_->GetSharedImage();
-
+  CHECK(shared_image);
   auto frame = media::VideoFrame::WrapSharedImage(
       media::PIXEL_FORMAT_BGRA, shared_image, gpu::SyncToken(),
       base::BindPostTask(
