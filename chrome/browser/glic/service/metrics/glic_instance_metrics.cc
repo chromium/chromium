@@ -305,6 +305,13 @@ void GlicInstanceMetrics::OnShowInSidePanel(tabs::TabInterface* tab) {
   if (!tab) {
     return;
   }
+  if (!initial_entrypoint_.has_value()) {
+    // If a side panel is opened outside of the ToggleFlow (e.g. for daisy
+    // chaining on new tab) we would log the default value "Other".
+    initial_entrypoint_ =
+        GetEntrypointFromInvocationSource(last_invocation_source_);
+  }
+
   if (side_panel_open_times_.contains(tab->GetHandle())) {
     base::UmaHistogramEnumeration(
         "Glic.Instance.Metrics.Error",
@@ -389,6 +396,17 @@ void GlicInstanceMetrics::OnSidePanelClosed(
   base::UmaHistogramCustomTimes("Glic.Instance.SidePanel.OpenDuration",
                                 base::TimeTicks::Now() - it->second,
                                 base::Milliseconds(1), base::Hours(1), 50);
+
+  if (!first_side_panel_close_recorded_) {
+    first_side_panel_close_recorded_ = true;
+    GlicEntrypoint entrypoint =
+        initial_entrypoint_.value_or(GlicEntrypoint::kOther);
+    base::UmaHistogramCustomTimes(
+        base::StrCat({"Glic.Instance.", GetEntrypointString(entrypoint),
+                      ".SidePanelFirstOpenDuration"}),
+        base::TimeTicks::Now() - it->second, base::Milliseconds(1),
+        base::Hours(1), 50);
+  }
   side_panel_open_times_.erase(it);
 }
 
@@ -416,7 +434,18 @@ void GlicInstanceMetrics::OnUnbindEmbedder(EmbedderKey key) {
       base::UmaHistogramCustomTimes("Glic.Instance.SidePanel.OpenDuration",
                                     base::TimeTicks::Now() - it->second,
                                     base::Milliseconds(1), base::Hours(1), 50);
+      if (!first_side_panel_close_recorded_) {
+        first_side_panel_close_recorded_ = true;
+        GlicEntrypoint entrypoint =
+            initial_entrypoint_.value_or(GlicEntrypoint::kOther);
+        base::UmaHistogramCustomTimes(
+            base::StrCat({"Glic.Instance.", GetEntrypointString(entrypoint),
+                          ".SidePanelFirstOpenDuration"}),
+            base::TimeTicks::Now() - it->second, base::Milliseconds(1),
+            base::Hours(1), 50);
+      }
       side_panel_open_times_.erase(it);
+
     } else {
       base::UmaHistogramEnumeration(
           "Glic.Instance.Metrics.Error",
