@@ -139,8 +139,6 @@ void HeadlessScreen::CreateDisplayList() {
       internal_display_ids.insert(display.id());
     }
 
-    is_natural_landscape_map_.insert({display.id(), display.is_landscape()});
-
     display_list_.AddDisplay(display, type);
 
     type = DisplayList::Type::NOT_PRIMARY;
