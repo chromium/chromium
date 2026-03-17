@@ -284,6 +284,14 @@ std::string ProfileAuthServersSyncBridge::GetStorageKey(
   return entity_data.specifics.printers_authorization_server().uri();
 }
 
+sync_pb::EntitySpecifics
+ProfileAuthServersSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
+    const sync_pb::EntitySpecifics& entity_specifics) const {
+  // Clears all fields by default to avoid the memory and I/O overhead of an
+  // additional copy of the data.
+  return sync_pb::EntitySpecifics();
+}
+
 bool ProfileAuthServersSyncBridge::IsEntityDataValid(
     const syncer::EntityData& entity_data) const {
   DCHECK(entity_data.specifics.has_printers_authorization_server());

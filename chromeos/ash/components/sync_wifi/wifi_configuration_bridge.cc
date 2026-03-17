@@ -289,6 +289,14 @@ std::string WifiConfigurationBridge::GetStorageKey(
       .SerializeToString();
 }
 
+sync_pb::EntitySpecifics
+WifiConfigurationBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
+    const sync_pb::EntitySpecifics& entity_specifics) const {
+  // Clears all fields by default to avoid the memory and I/O overhead of an
+  // additional copy of the data.
+  return sync_pb::EntitySpecifics();
+}
+
 bool WifiConfigurationBridge::IsEntityDataValid(
     const syncer::EntityData& entity_data) const {
   const sync_pb::WifiConfigurationSpecifics& specifics =

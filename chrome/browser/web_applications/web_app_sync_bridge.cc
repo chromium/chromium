@@ -886,6 +886,14 @@ std::string WebAppSyncBridge::GetStorageKey(
   return GetClientTag(entity_data);
 }
 
+sync_pb::EntitySpecifics
+WebAppSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
+    const sync_pb::EntitySpecifics& entity_specifics) const {
+  // Clears all fields by default to avoid the memory and I/O overhead of an
+  // additional copy of the data.
+  return sync_pb::EntitySpecifics();
+}
+
 bool WebAppSyncBridge::IsEntityDataValid(
     const syncer::EntityData& entity_data) const {
   if (!entity_data.specifics.has_web_app()) {

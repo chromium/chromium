@@ -333,6 +333,14 @@ std::string SyncableServiceBasedBridge::GetStorageKey(
   return syncable_service_->GetClientTag(entity_data);
 }
 
+sync_pb::EntitySpecifics
+SyncableServiceBasedBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
+    const sync_pb::EntitySpecifics& entity_specifics) const {
+  // Clears all fields by default to avoid the memory and I/O overhead of an
+  // additional copy of the data.
+  return sync_pb::EntitySpecifics();
+}
+
 bool SyncableServiceBasedBridge::IsEntityDataValid(
     const EntityData& entity_data) const {
   // Implementation is trivial as this bridge is meant to cache locally a copy

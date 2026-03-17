@@ -53,6 +53,12 @@ std::string StubDataTypeSyncBridge::GetStorageKey(
   return std::string();
 }
 
+sync_pb::EntitySpecifics
+StubDataTypeSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
+    const sync_pb::EntitySpecifics& entity_specifics) const {
+  return sync_pb::EntitySpecifics();
+}
+
 bool StubDataTypeSyncBridge::IsEntityDataValid(
     const EntityData& entity_data) const {
   return true;

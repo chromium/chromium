@@ -60,6 +60,8 @@ class AccountSettingSyncBridge : public syncer::DataTypeSyncBridge {
       const syncer::EntityData& entity_data) const override;
   std::string GetStorageKey(
       const syncer::EntityData& entity_data) const override;
+  sync_pb::EntitySpecifics TrimAllSupportedFieldsFromRemoteSpecifics(
+      const sync_pb::EntitySpecifics& entity_specifics) const override;
 
  private:
   // Callbacks for various asynchronous operations of the `store_`.

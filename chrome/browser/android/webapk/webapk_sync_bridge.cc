@@ -510,6 +510,14 @@ std::string WebApkSyncBridge::GetStorageKey(
   return GetClientTag(entity_data);
 }
 
+sync_pb::EntitySpecifics
+WebApkSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
+    const sync_pb::EntitySpecifics& entity_specifics) const {
+  // Clears all fields by default to avoid the memory and I/O overhead of an
+  // additional copy of the data.
+  return sync_pb::EntitySpecifics();
+}
+
 bool WebApkSyncBridge::IsEntityDataValid(
     const syncer::EntityData& entity_data) const {
   return !entity_data.specifics.web_apk().manifest_id().empty();

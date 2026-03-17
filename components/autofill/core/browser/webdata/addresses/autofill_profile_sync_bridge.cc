@@ -305,6 +305,14 @@ std::string AutofillProfileSyncBridge::GetStorageKey(
       entity_data.specifics.autofill_profile());
 }
 
+sync_pb::EntitySpecifics
+AutofillProfileSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
+    const sync_pb::EntitySpecifics& entity_specifics) const {
+  // Clears all fields by default to avoid the memory and I/O overhead of an
+  // additional copy of the data.
+  return sync_pb::EntitySpecifics();
+}
+
 bool AutofillProfileSyncBridge::IsEntityDataValid(
     const EntityData& entity_data) const {
   CHECK(entity_data.specifics.has_autofill_profile());

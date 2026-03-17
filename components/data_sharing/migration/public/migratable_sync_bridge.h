@@ -19,6 +19,7 @@
 #include "components/sync/model/data_type_local_change_processor.h"
 #include "components/sync/model/data_type_store.h"
 #include "components/sync/model/data_type_sync_bridge.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
 
 class PrefService;
 namespace syncer {
@@ -85,6 +86,8 @@ class COMPONENT_EXPORT(DATA_SHARING_MIGRATION) MigratableSyncBridge
       syncer::EntityChangeList entity_changes) override;
   void ApplyDisableSyncChanges(std::unique_ptr<syncer::MetadataChangeList>
                                    delete_metadata_change_list) override;
+  sync_pb::EntitySpecifics TrimAllSupportedFieldsFromRemoteSpecifics(
+      const sync_pb::EntitySpecifics& entity_specifics) const override;
 
  protected:
   // Pure virtual methods to be implemented by the feature-specific bridge.

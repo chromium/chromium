@@ -558,6 +558,14 @@ std::string DeviceInfoSyncBridge::GetStorageKey(
   return entity_data.specifics.device_info().cache_guid();
 }
 
+sync_pb::EntitySpecifics
+DeviceInfoSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
+    const sync_pb::EntitySpecifics& entity_specifics) const {
+  // Clears all fields by default to avoid the memory and I/O overhead of an
+  // additional copy of the data.
+  return sync_pb::EntitySpecifics();
+}
+
 bool DeviceInfoSyncBridge::IsEntityDataValid(
     const EntityData& entity_data) const {
   CHECK(entity_data.specifics.has_device_info());

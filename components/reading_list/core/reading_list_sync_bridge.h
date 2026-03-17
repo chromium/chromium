@@ -157,6 +157,8 @@ class ReadingListSyncBridge : public syncer::DataTypeSyncBridge {
   // should be.
   std::string GetStorageKey(
       const syncer::EntityData& entity_data) const override;
+  sync_pb::EntitySpecifics TrimAllSupportedFieldsFromRemoteSpecifics(
+      const sync_pb::EntitySpecifics& entity_specifics) const override;
 
   // Invoked when sync is permanently stopped.
   void ApplyDisableSyncChanges(std::unique_ptr<syncer::MetadataChangeList>

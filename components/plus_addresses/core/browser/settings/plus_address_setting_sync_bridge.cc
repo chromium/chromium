@@ -181,6 +181,14 @@ PlusAddressSettingSyncBridge::GetAllDataForDebugging() {
   return batch;
 }
 
+sync_pb::EntitySpecifics
+PlusAddressSettingSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
+    const sync_pb::EntitySpecifics& entity_specifics) const {
+  // Clears all fields by default to avoid the memory and I/O overhead of an
+  // additional copy of the data.
+  return sync_pb::EntitySpecifics();
+}
+
 bool PlusAddressSettingSyncBridge::IsEntityDataValid(
     const syncer::EntityData& entity_data) const {
   CHECK(entity_data.specifics.has_plus_address_setting());

@@ -185,6 +185,14 @@ std::string SharingMessageBridgeImpl::GetStorageKey(
   return entity_data.specifics.sharing_message().message_id();
 }
 
+sync_pb::EntitySpecifics
+SharingMessageBridgeImpl::TrimAllSupportedFieldsFromRemoteSpecifics(
+    const sync_pb::EntitySpecifics& entity_specifics) const {
+  // Clears all fields by default to avoid the memory and I/O overhead of an
+  // additional copy of the data.
+  return sync_pb::EntitySpecifics();
+}
+
 bool SharingMessageBridgeImpl::IsEntityDataValid(
     const syncer::EntityData& entity_data) const {
   // SHARING_MESSAGE is a commit only data type so this method is not called.

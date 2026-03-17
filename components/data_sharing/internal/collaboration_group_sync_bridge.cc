@@ -192,6 +192,14 @@ void CollaborationGroupSyncBridge::ApplyDisableSyncChanges(
   }
 }
 
+sync_pb::EntitySpecifics
+CollaborationGroupSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
+    const sync_pb::EntitySpecifics& entity_specifics) const {
+  // Clears all fields by default to avoid the memory and I/O overhead of an
+  // additional copy of the data.
+  return sync_pb::EntitySpecifics();
+}
+
 bool CollaborationGroupSyncBridge::IsEntityDataValid(
     const syncer::EntityData& entity_data) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

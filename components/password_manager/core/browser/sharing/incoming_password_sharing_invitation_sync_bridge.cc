@@ -150,6 +150,14 @@ void IncomingPasswordSharingInvitationSyncBridge::ApplyDisableSyncChanges(
   sync_metadata_store_->DeleteAllDataAndMetadata(base::DoNothing());
 }
 
+sync_pb::EntitySpecifics IncomingPasswordSharingInvitationSyncBridge::
+    TrimAllSupportedFieldsFromRemoteSpecifics(
+        const sync_pb::EntitySpecifics& entity_specifics) const {
+  // Clears all fields by default to avoid the memory and I/O overhead of an
+  // additional copy of the data.
+  return sync_pb::EntitySpecifics();
+}
+
 bool IncomingPasswordSharingInvitationSyncBridge::IsEntityDataValid(
     const syncer::EntityData& entity_data) const {
   // Verify that the invitation has some basic correct fields. All the other

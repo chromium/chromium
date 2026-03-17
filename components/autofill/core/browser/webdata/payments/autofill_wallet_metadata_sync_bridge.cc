@@ -408,6 +408,14 @@ std::string AutofillWalletMetadataSyncBridge::GetStorageKey(
       entity_data.specifics.wallet_metadata().id());
 }
 
+sync_pb::EntitySpecifics
+AutofillWalletMetadataSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
+    const sync_pb::EntitySpecifics& entity_specifics) const {
+  // Clears all fields by default to avoid the memory and I/O overhead of an
+  // additional copy of the data.
+  return sync_pb::EntitySpecifics();
+}
+
 bool AutofillWalletMetadataSyncBridge::IsEntityDataValid(
     const syncer::EntityData& entity_data) const {
   CHECK(entity_data.specifics.has_wallet_metadata());

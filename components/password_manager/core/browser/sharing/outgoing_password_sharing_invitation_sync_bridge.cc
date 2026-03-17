@@ -195,6 +195,14 @@ std::string OutgoingPasswordSharingInvitationSyncBridge::GetStorageKey(
       entity_data.specifics.outgoing_password_sharing_invitation());
 }
 
+sync_pb::EntitySpecifics OutgoingPasswordSharingInvitationSyncBridge::
+    TrimAllSupportedFieldsFromRemoteSpecifics(
+        const sync_pb::EntitySpecifics& entity_specifics) const {
+  // Clears all fields by default to avoid the memory and I/O overhead of an
+  // additional copy of the data.
+  return sync_pb::EntitySpecifics();
+}
+
 bool OutgoingPasswordSharingInvitationSyncBridge::IsEntityDataValid(
     const syncer::EntityData& entity_data) const {
   // OUTGOING_PASSWORD_SHARING_INVITATION is a commit only data type so

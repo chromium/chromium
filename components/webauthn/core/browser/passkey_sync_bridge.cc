@@ -208,6 +208,14 @@ std::unique_ptr<syncer::DataBatch> PasskeySyncBridge::GetAllDataForDebugging() {
   return batch;
 }
 
+sync_pb::EntitySpecifics
+PasskeySyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
+    const sync_pb::EntitySpecifics& entity_specifics) const {
+  // Clears all fields by default to avoid the memory and I/O overhead of an
+  // additional copy of the data.
+  return sync_pb::EntitySpecifics();
+}
+
 bool PasskeySyncBridge::IsEntityDataValid(
     const syncer::EntityData& entity_data) const {
   return passkey_model_utils::IsPasskeyValid(

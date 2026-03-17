@@ -9,6 +9,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/sync/model/data_type_local_change_processor.h"
 #include "components/sync/model/metadata_change_list.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
 
 namespace data_sharing::migration {
 
@@ -66,6 +67,14 @@ void MigratableSyncBridge::ApplyDisableSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   NOTIMPLEMENTED();
+}
+
+sync_pb::EntitySpecifics
+MigratableSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
+    const sync_pb::EntitySpecifics& entity_specifics) const {
+  // Clears all fields by default to avoid the memory and I/O overhead of an
+  // additional copy of the data.
+  return sync_pb::EntitySpecifics();
 }
 
 }  // namespace data_sharing::migration

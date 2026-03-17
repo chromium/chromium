@@ -274,6 +274,14 @@ std::string DeskSyncBridge::GetStorageKey(
   return entity_data.specifics.workspace_desk().uuid();
 }
 
+sync_pb::EntitySpecifics
+DeskSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
+    const sync_pb::EntitySpecifics& entity_specifics) const {
+  // Clears all fields by default to avoid the memory and I/O overhead of an
+  // additional copy of the data.
+  return sync_pb::EntitySpecifics();
+}
+
 bool DeskSyncBridge::IsEntityDataValid(
     const syncer::EntityData& entity_data) const {
   return desk_template_conversion::FromSyncProto(

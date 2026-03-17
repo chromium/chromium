@@ -84,14 +84,6 @@ size_t DataTypeSyncBridge::EstimateSyncOverheadMemoryUsage() const {
   return 0U;
 }
 
-sync_pb::EntitySpecifics
-DataTypeSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
-    const sync_pb::EntitySpecifics& entity_specifics) const {
-  // Clears all fields by default to avoid the memory and I/O overhead of an
-  // additional copy of the data.
-  return sync_pb::EntitySpecifics();
-}
-
 DataTypeLocalChangeProcessor* DataTypeSyncBridge::change_processor() {
   return change_processor_.get();
 }

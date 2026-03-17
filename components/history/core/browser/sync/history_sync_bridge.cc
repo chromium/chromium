@@ -763,6 +763,14 @@ std::string HistorySyncBridge::GetStorageKey(
       history.visit_time_windows_epoch_micros());
 }
 
+sync_pb::EntitySpecifics
+HistorySyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
+    const sync_pb::EntitySpecifics& entity_specifics) const {
+  // Clears all fields by default to avoid the memory and I/O overhead of an
+  // additional copy of the data.
+  return sync_pb::EntitySpecifics();
+}
+
 bool HistorySyncBridge::IsEntityDataValid(
     const syncer::EntityData& entity_data) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

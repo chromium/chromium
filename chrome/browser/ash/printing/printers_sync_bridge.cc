@@ -321,6 +321,14 @@ std::string PrintersSyncBridge::GetStorageKey(
   return entity_data.specifics.printer().id();
 }
 
+sync_pb::EntitySpecifics
+PrintersSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
+    const sync_pb::EntitySpecifics& entity_specifics) const {
+  // Clears all fields by default to avoid the memory and I/O overhead of an
+  // additional copy of the data.
+  return sync_pb::EntitySpecifics();
+}
+
 bool PrintersSyncBridge::IsEntityDataValid(
     const syncer::EntityData& entity_data) const {
   DCHECK(entity_data.specifics.has_printer());

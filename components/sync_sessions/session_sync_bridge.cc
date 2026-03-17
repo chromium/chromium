@@ -293,6 +293,14 @@ std::string SessionSyncBridge::GetStorageKey(
   return SessionStore::GetStorageKey(entity_data.specifics.session());
 }
 
+sync_pb::EntitySpecifics
+SessionSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
+    const sync_pb::EntitySpecifics& entity_specifics) const {
+  // Clears all fields by default to avoid the memory and I/O overhead of an
+  // additional copy of the data.
+  return sync_pb::EntitySpecifics();
+}
+
 bool SessionSyncBridge::IsEntityDataValid(
     const syncer::EntityData& entity_data) const {
   return SessionStore::AreValidSpecifics(entity_data.specifics.session());

@@ -294,6 +294,14 @@ bool SendTabToSelfBridge::IsEntityDataValid(
   return !specifics.guid().empty() && GURL(specifics.url()).is_valid();
 }
 
+sync_pb::EntitySpecifics
+SendTabToSelfBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
+    const sync_pb::EntitySpecifics& entity_specifics) const {
+  // Clears all fields by default to avoid the memory and I/O overhead of an
+  // additional copy of the data.
+  return sync_pb::EntitySpecifics();
+}
+
 void SendTabToSelfBridge::ApplyDisableSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
   DCHECK(store_);
