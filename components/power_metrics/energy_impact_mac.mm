@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "components/power_metrics/energy_impact_mac.h"
 
 #include <Foundation/Foundation.h>
@@ -10,6 +9,7 @@
 
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
+#include "base/compiler_specific.h"
 #include "base/mac/scoped_ioobject.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/time/time.h"
@@ -80,26 +80,30 @@ double ComputeEnergyImpactForResourceUsage(
 
   cpu_time_equivalent_ns +=
       coefficients.kqos_background *
-      MachTimeToNs(data_sample.cpu_time_eqos[THREAD_QOS_BACKGROUND],
-                   mach_timebase);
+      MachTimeToNs(
+          UNSAFE_TODO(data_sample.cpu_time_eqos[THREAD_QOS_BACKGROUND]),
+          mach_timebase);
   cpu_time_equivalent_ns +=
       coefficients.kqos_default *
-      MachTimeToNs(data_sample.cpu_time_eqos[THREAD_QOS_DEFAULT],
+      MachTimeToNs(UNSAFE_TODO(data_sample.cpu_time_eqos[THREAD_QOS_DEFAULT]),
                    mach_timebase);
   cpu_time_equivalent_ns +=
       coefficients.kqos_legacy *
-      MachTimeToNs(data_sample.cpu_time_eqos[THREAD_QOS_LEGACY], mach_timebase);
+      MachTimeToNs(UNSAFE_TODO(data_sample.cpu_time_eqos[THREAD_QOS_LEGACY]),
+                   mach_timebase);
   cpu_time_equivalent_ns +=
       coefficients.kqos_user_initiated *
-      MachTimeToNs(data_sample.cpu_time_eqos[THREAD_QOS_USER_INITIATED],
-                   mach_timebase);
+      MachTimeToNs(
+          UNSAFE_TODO(data_sample.cpu_time_eqos[THREAD_QOS_USER_INITIATED]),
+          mach_timebase);
   cpu_time_equivalent_ns +=
       coefficients.kqos_user_interactive *
-      MachTimeToNs(data_sample.cpu_time_eqos[THREAD_QOS_USER_INTERACTIVE],
-                   mach_timebase);
+      MachTimeToNs(
+          UNSAFE_TODO(data_sample.cpu_time_eqos[THREAD_QOS_USER_INTERACTIVE]),
+          mach_timebase);
   cpu_time_equivalent_ns +=
       coefficients.kqos_utility *
-      MachTimeToNs(data_sample.cpu_time_eqos[THREAD_QOS_UTILITY],
+      MachTimeToNs(UNSAFE_TODO(data_sample.cpu_time_eqos[THREAD_QOS_UTILITY]),
                    mach_timebase);
 
   // The conversion ratio for CPU time/EnergyImpact is ns/10ms

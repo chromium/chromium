@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "components/allocation_recorder/testing/crashpad_fake_objects.h"
+
+#include "base/compiler_specific.h"
 
 namespace crashpad::test {
 namespace {
@@ -25,7 +23,7 @@ bool BufferExtensionStreamDataSourceDelegate::ExtensionStreamDataSourceRead(
     const void* data,
     size_t size) {
   const uint8_t* const typed_data = reinterpret_cast<const uint8_t*>(data);
-  data_.insert(data_.end(), typed_data, typed_data + size);
+  data_.insert(data_.end(), typed_data, UNSAFE_TODO(typed_data + size));
 
   return true;
 }

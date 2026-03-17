@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 
 #include <stddef.h>
@@ -19,6 +14,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
@@ -245,7 +241,8 @@ BrowserStartupMetricRecorder::GetHardFaultCountForCurrentProcess() {
   while (index < buffer.size()) {
     DCHECK_LE(index + sizeof(SYSTEM_PROCESS_INFORMATION_EX), buffer.size());
     SYSTEM_PROCESS_INFORMATION_EX* proc_info =
-        reinterpret_cast<SYSTEM_PROCESS_INFORMATION_EX*>(buffer.data() + index);
+        UNSAFE_TODO(reinterpret_cast<SYSTEM_PROCESS_INFORMATION_EX*>(
+            buffer.data() + index));
     if (base::win::HandleToUint32(proc_info->UniqueProcessId) == proc_id) {
       return proc_info->HardFaultCount;
     }

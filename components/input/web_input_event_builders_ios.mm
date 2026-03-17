@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/input/web_input_event_builders_ios.h"
 
 #import <UIKit/UIKit.h>
 
 #include "base/apple/foundation_util.h"
+#include "base/compiler_specific.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
@@ -36,7 +32,7 @@ static UITouch* g_active_touches[MAX_POINTERS] = {};
 
 size_t GetTouchPointerId(UITouch* touch) {
   for (size_t i = 0; i < MAX_POINTERS; ++i) {
-    if (g_active_touches[i] == touch) {
+    if (UNSAFE_TODO(g_active_touches[i]) == touch) {
       return i + 1;
     }
   }
@@ -46,8 +42,8 @@ size_t GetTouchPointerId(UITouch* touch) {
 void AddUITouch(UITouch* touch) {
   CHECK(GetTouchPointerId(touch) == 0);
   for (size_t i = 0; i < MAX_POINTERS; ++i) {
-    if (!g_active_touches[i]) {
-      g_active_touches[i] = touch;
+    if (!UNSAFE_TODO(g_active_touches[i])) {
+      UNSAFE_TODO(g_active_touches[i]) = touch;
       return;
     }
   }
@@ -55,8 +51,8 @@ void AddUITouch(UITouch* touch) {
 
 void RemoveUITouch(UITouch* touch) {
   for (size_t i = 0; i < MAX_POINTERS; ++i) {
-    if (g_active_touches[i] == touch) {
-      g_active_touches[i] = nil;
+    if (UNSAFE_TODO(g_active_touches[i]) == touch) {
+      UNSAFE_TODO(g_active_touches[i]) = nil;
       return;
     }
   }
@@ -300,9 +296,10 @@ blink::WebKeyboardEvent WebKeyboardEventBuilder::Build(gfx::NativeEvent event) {
 
   if ([text_str length] < blink::WebKeyboardEvent::kTextLengthCap &&
       [unmodified_str length] < blink::WebKeyboardEvent::kTextLengthCap) {
-    [text_str getCharacters:reinterpret_cast<UniChar*>(&result.text[0])];
-    [unmodified_str
-        getCharacters:reinterpret_cast<UniChar*>(&result.unmodified_text[0])];
+    [text_str
+        getCharacters:reinterpret_cast<UniChar*>(UNSAFE_TODO(&result.text[0]))];
+    [unmodified_str getCharacters:reinterpret_cast<UniChar*>(
+                                      UNSAFE_TODO(&result.unmodified_text[0]))];
   } else {
     NOTIMPLEMENTED();
   }
@@ -337,7 +334,7 @@ blink::WebTouchEvent WebTouchEventBuilder::Build(
   if (type == blink::WebInputEvent::Type::kTouchStart) {
     AddUITouch(touch);
   }
-  result.touches[touch_index] =
+  UNSAFE_TODO(result.touches[touch_index]) =
       CreateWebTouchPoint(view, touch, /*was_changed=*/true, view_offset);
   ++touch_index;
   if (type == blink::WebInputEvent::Type::kTouchCancel ||
@@ -349,11 +346,13 @@ blink::WebTouchEvent WebTouchEventBuilder::Build(
   // WebTouchEvent for each touch point changing. But event.allTouches will have
   // it all already.
   for (size_t i = 0; i < MAX_POINTERS; ++i) {
-    if (!g_active_touches[i] || g_active_touches[i] == touch) {
+    if (!UNSAFE_TODO(g_active_touches[i]) ||
+        UNSAFE_TODO(g_active_touches[i]) == touch) {
       continue;
     }
-    result.touches[touch_index] = CreateWebTouchPoint(
-        view, g_active_touches[i], /*was_changed=*/false, view_offset);
+    UNSAFE_TODO(result.touches[touch_index]) =
+        CreateWebTouchPoint(view, UNSAFE_TODO(g_active_touches[i]),
+                            /*was_changed=*/false, view_offset);
     ++touch_index;
   }
   result.touches_length = touch_index;

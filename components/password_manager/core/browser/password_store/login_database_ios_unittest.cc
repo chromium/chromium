@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO: crbug.com/352295124 - Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/password_manager/core/browser/password_store/login_database.h"
 
 #include <CoreFoundation/CoreFoundation.h>
@@ -18,6 +13,7 @@
 
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
+#include "base/compiler_specific.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
@@ -86,12 +82,13 @@ TEST_F(LoginDatabaseIOSTest, KeychainStorage) {
   for (unsigned int i = 0; i < std::size(test_passwords); i++) {
     EncryptDecryptInterface* encryptor_decryptor = login_db_.get();
     std::string encrypted;
-    EXPECT_EQ(EncryptionResult::kSuccess, encryptor_decryptor->EncryptedString(
-                                              test_passwords[i], &encrypted));
+    EXPECT_EQ(EncryptionResult::kSuccess,
+              encryptor_decryptor->EncryptedString(
+                  UNSAFE_TODO(test_passwords[i]), &encrypted));
     std::u16string decrypted;
     EXPECT_EQ(EncryptionResult::kSuccess,
               encryptor_decryptor->DecryptedString(encrypted, &decrypted));
-    EXPECT_STREQ(UTF16ToUTF8(test_passwords[i]).c_str(),
+    EXPECT_STREQ(UTF16ToUTF8(UNSAFE_TODO(test_passwords[i])).c_str(),
                  UTF16ToUTF8(decrypted).c_str());
   }
 }
@@ -195,7 +192,7 @@ TEST_F(LoginDatabaseIOSTest, RemoveLoginsCreatedBetween) {
   forms[2].in_store = PasswordForm::Store::kProfileStore;
 
   for (size_t i = 0; i < std::size(forms); i++) {
-    std::ignore = login_db_->AddLogin(forms[i]);
+    std::ignore = UNSAFE_TODO(login_db_->AddLogin(forms[i]));
   }
 
   PasswordFormDigest form = {PasswordForm::Scheme::kHtml,
@@ -263,7 +260,7 @@ TEST_F(LoginDatabaseIOSTest, DeleteAndRecreateDatabaseFile) {
   forms[2].in_store = PasswordForm::Store::kProfileStore;
 
   for (size_t i = 0; i < std::size(forms); i++) {
-    std::ignore = login_db_->AddLogin(forms[i]);
+    std::ignore = UNSAFE_TODO(login_db_->AddLogin(forms[i]));
   }
 
   PasswordFormDigest form = {PasswordForm::Scheme::kHtml,

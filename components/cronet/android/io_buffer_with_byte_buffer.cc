@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/cronet/android/io_buffer_with_byte_buffer.h"
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/numerics/safe_conversions.h"
 
 namespace cronet {
@@ -20,9 +16,9 @@ IOBufferWithByteBuffer::IOBufferWithByteBuffer(
     int32_t position,
     int32_t limit)
     : net::WrappedIOBuffer(
-          base::span(static_cast<char*>(
-                         env->GetDirectBufferAddress(jbyte_buffer.obj())),
-                     base::checked_cast<size_t>(limit))
+          UNSAFE_TODO(base::span(static_cast<char*>(env->GetDirectBufferAddress(
+                                     jbyte_buffer.obj())),
+                                 base::checked_cast<size_t>(limit)))
               .subspan(base::checked_cast<size_t>(position))),
       byte_buffer_(env, jbyte_buffer),
       initial_position_(position),

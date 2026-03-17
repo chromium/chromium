@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/input/web_input_event_builders_mac.h"
 
 #include <Carbon/Carbon.h>
@@ -19,6 +14,7 @@
 #include "base/apple/owned_objc.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/mac/mac_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversion_utils.h"
@@ -237,8 +233,8 @@ TEST(WebInputEventBuilderMacTest, NumPadMapping) {
 // pressed simultaneously.
 TEST(WebInputEventFactoryTestMac, SimultaneousModifierKeys) {
   for (size_t i = 0; i < std::size(kModifierKeys) / 2; ++i) {
-    const ModifierKey& left = kModifierKeys[2 * i];
-    const ModifierKey& right = kModifierKeys[2 * i + 1];
+    const ModifierKey& left = UNSAFE_TODO(kModifierKeys[2 * i]);
+    const ModifierKey& right = UNSAFE_TODO(kModifierKeys[2 * i + 1]);
     // Press the left key.
     NSEvent* mac_event =
         BuildFakeKeyEvent(left.mac_key_code, 0,

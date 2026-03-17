@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "components/exo/wayland/clients/client_base.h"
 
@@ -371,7 +367,8 @@ VkShaderModule CreateShaderModule(VkDevice device,
   VkShaderModuleCreateInfo create_info{
       .sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
       .codeSize = shader_code.size(),
-      .pCode = reinterpret_cast<const uint32_t*>(shader_code.data())};
+      .pCode =
+          UNSAFE_TODO(reinterpret_cast<const uint32_t*>(shader_code.data()))};
 
   VkResult result =
       vkCreateShaderModule(device, &create_info, nullptr, &shader_module);
@@ -612,8 +609,9 @@ uint32_t FindMemoryType(VkInstance vk_instance,
   vkGetPhysicalDeviceMemoryProperties(physical_device, &memProperties);
 
   for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++) {
-    if ((typeFilter & (1 << i)) && (memProperties.memoryTypes[i].propertyFlags &
-                                    properties) == properties) {
+    if ((typeFilter & (1 << i)) &&
+        (UNSAFE_TODO(memProperties.memoryTypes[i]).propertyFlags &
+         properties) == properties) {
       return i;
     }
   }
@@ -773,7 +771,7 @@ void CreateTexture(VkInstance vk_instance,
 
   void* data;
   vkMapMemory(device, stagingBufferMemory, 0, imageSize, 0, &data);
-  memset(data, 128, static_cast<size_t>(imageSize));
+  UNSAFE_TODO(memset(data, 128, static_cast<size_t>(imageSize)));
   vkUnmapMemory(device, stagingBufferMemory);
 
   VkImageCreateInfo imageInfo{
@@ -937,7 +935,8 @@ bool ClientBase::InitParams::FromCommandLine(
     const base::CommandLine& command_line) {
   if (command_line.HasSwitch(switches::kSize)) {
     std::string size_str = command_line.GetSwitchValueASCII(switches::kSize);
-    if (sscanf(size_str.c_str(), "%zdx%zd", &width, &height) != 2) {
+    if (UNSAFE_TODO(sscanf(size_str.c_str(), "%zdx%zd", &width, &height)) !=
+        2) {
       LOG(ERROR) << "Invalid value for " << switches::kSize;
       return false;
     }
@@ -1101,7 +1100,8 @@ bool ClientBase::Init(const InitParams& params) {
       // We can't actually use the virtual GEM, so discard it like we do in CrOS
       if (base::EqualsCaseInsensitiveASCII("vgem", drm_version->name))
         continue;
-      if (strstr(drm_version->name, params.use_drm_value.c_str())) {
+      if (UNSAFE_TODO(
+              strstr(drm_version->name, params.use_drm_value.c_str()))) {
         drm_fd_ = std::move(drm_fd);
         break;
       }
@@ -1566,7 +1566,8 @@ std::unique_ptr<ClientBase::Buffer> ClientBase::CreateBuffer(
         return nullptr;
       }
 
-      base::span<uint8_t> mapped_span(mapped_data, length);
+      base::span<uint8_t> mapped_span =
+          UNSAFE_TODO(base::span<uint8_t>(mapped_data, length));
       buffer->shared_memory_mapping = MemfdMemoryMapping(mapped_span);
       buffer->shm_pool.reset(
           wl_shm_create_pool(globals_.shm.get(), memfd, length));

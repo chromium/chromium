@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "components/os_crypt/async/browser/dpapi_key_provider.h"
 
@@ -14,6 +10,7 @@
 #include <wincrypt.h>
 
 #include "base/base64.h"
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -57,7 +54,7 @@ std::optional<std::vector<uint8_t>> DecryptKeyWithDPAPI(
   auto local_alloc = base::win::TakeLocalAlloc(output.pbData);
 
   return std::vector<uint8_t>(local_alloc.get(),
-                              local_alloc.get() + output.cbData);
+                              UNSAFE_TODO(local_alloc.get() + output.cbData));
 }
 
 }  // namespace

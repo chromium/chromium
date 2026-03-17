@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/gwp_asan/crash_handler/crash_analyzer.h"
 
 #include <stddef.h>
@@ -18,6 +13,7 @@
 #include <string>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/process/process_metrics.h"
@@ -59,7 +55,7 @@ class ReadToPointer : public crashpad::MemorySnapshot::Delegate {
   ReadToPointer(void* ptr) : ptr_(ptr) {}
 
   bool MemorySnapshotDelegateRead(void* data, size_t size) override {
-    memcpy(ptr_, data, size);
+    UNSAFE_TODO(memcpy(ptr_, data, size));
     return true;
   }
 
@@ -525,7 +521,8 @@ bool CrashAnalyzer::AnalyzeCrashedAllocator(
   }
 
   if (ret == GetMetadataReturnType::kGwpAsanCrash) {
-    AllocatorState::SlotMetadata& metadata = metadata_arr[metadata_idx];
+    AllocatorState::SlotMetadata& metadata =
+        UNSAFE_TODO(metadata_arr[metadata_idx]);
     AllocatorState::ErrorType error_type =
         valid_state.GetErrorType(exception_addr, metadata.alloc.trace_collected,
                                  metadata.dealloc.trace_collected);
@@ -576,7 +573,7 @@ void CrashAnalyzer::ReadAllocationInfo(
 
   uintptr_t unpacked_stack_trace[AllocatorState::kMaxPackedTraceLength];
   size_t unpacked_len =
-      Unpack(stack_trace + stack_trace_offset, slot_info.trace_len,
+      Unpack(UNSAFE_TODO(stack_trace + stack_trace_offset), slot_info.trace_len,
              unpacked_stack_trace, AllocatorState::kMaxPackedTraceLength);
   if (!unpacked_len) {
     DLOG(ERROR) << "Failed to unpack stack trace.";
@@ -588,7 +585,7 @@ void CrashAnalyzer::ReadAllocationInfo(
   proto_info->mutable_stack_trace()->Resize(unpacked_len, 0);
   uint64_t* output = proto_info->mutable_stack_trace()->mutable_data();
   for (size_t i = 0; i < unpacked_len; i++)
-    output[i] = unpacked_stack_trace[i];
+    UNSAFE_TODO(output[i]) = UNSAFE_TODO(unpacked_stack_trace[i]);
 }
 
 Crash_Mode CrashAnalyzer::LightweightDetectorModeToGwpAsanMode(

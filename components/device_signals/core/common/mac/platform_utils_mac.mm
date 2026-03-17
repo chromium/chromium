@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/device_signals/core/common/platform_utils.h"
 
 #import <Foundation/Foundation.h>
@@ -16,6 +11,7 @@
 #include <net/if_dl.h>
 
 #include "base/apple/foundation_util.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/mac/login_util.h"
@@ -144,11 +140,14 @@ std::vector<std::string> internal::GetMacAddressesImpl() {
     if (!sdl || sdl->sdl_alen != 6) {
       continue;
     }
-    char* link_address = static_cast<char*>(LLADDR(sdl));
-    result.push_back(base::StringPrintf(
-        "%02x:%02x:%02x:%02x:%02x:%02x", link_address[0] & 0xff,
-        link_address[1] & 0xff, link_address[2] & 0xff, link_address[3] & 0xff,
-        link_address[4] & 0xff, link_address[5] & 0xff));
+    char* link_address = static_cast<char*>(UNSAFE_TODO(LLADDR(sdl)));
+    result.push_back(base::StringPrintf("%02x:%02x:%02x:%02x:%02x:%02x",
+                                        UNSAFE_TODO(link_address[0]) & 0xff,
+                                        UNSAFE_TODO(link_address[1]) & 0xff,
+                                        UNSAFE_TODO(link_address[2]) & 0xff,
+                                        UNSAFE_TODO(link_address[3]) & 0xff,
+                                        UNSAFE_TODO(link_address[4]) & 0xff,
+                                        UNSAFE_TODO(link_address[5]) & 0xff));
   }
   freeifaddrs(ifa);
 

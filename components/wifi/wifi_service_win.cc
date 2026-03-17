@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/wifi/wifi_service.h"
 
 #include <objbase.h>
@@ -26,6 +21,7 @@
 #include <utility>
 
 #include "base/base_paths_win.h"
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -1099,10 +1095,11 @@ DWORD WiFiServiceImpl::OpenClientHandle() {
         interface_guid_ = interface_list->InterfaceInfo[0].InterfaceGuid;
         // Try to find a connected interface.
         for (DWORD itf = 0; itf < interface_list->dwNumberOfItems; ++itf) {
-          if (interface_list->InterfaceInfo[itf].isState ==
+          if (UNSAFE_TODO(interface_list->InterfaceInfo[itf].isState) ==
               wlan_interface_state_connected) {
             // Found connected interface, remember it!
-            interface_guid_ = interface_list->InterfaceInfo[itf].InterfaceGuid;
+            interface_guid_ =
+                UNSAFE_TODO(interface_list->InterfaceInfo[itf].InterfaceGuid);
             break;
           }
         }
@@ -1152,10 +1149,9 @@ DWORD WiFiServiceImpl::FindAdapterIndexMapByGUID(
     error = GetInterfaceInfo(interface_info, &buffer_length);
     if (error == ERROR_SUCCESS) {
       for (int adapter = 0; adapter < interface_info->NumAdapters; ++adapter) {
-        if (base::EndsWith(
-                interface_info->Adapter[adapter].Name, guid_string,
-                base::CompareCase::INSENSITIVE_ASCII)) {
-          *adapter_index_map = interface_info->Adapter[adapter];
+        if (base::EndsWith(UNSAFE_TODO(interface_info->Adapter[adapter].Name),
+                           guid_string, base::CompareCase::INSENSITIVE_ASCII)) {
+          *adapter_index_map = UNSAFE_TODO(interface_info->Adapter[adapter]);
           break;
         }
       }
@@ -1256,9 +1252,8 @@ DOT11_SSID WiFiServiceImpl::SSIDFromGUID(
   DOT11_SSID ssid = {0};
   if (network_guid.length() <= DOT11_SSID_MAX_LENGTH) {
     ssid.uSSIDLength = static_cast<ULONG>(network_guid.length());
-    strncpy(reinterpret_cast<char*>(ssid.ucSSID),
-            network_guid.c_str(),
-            ssid.uSSIDLength);
+    UNSAFE_TODO(strncpy(reinterpret_cast<char*>(ssid.ucSSID),
+                        network_guid.c_str(), ssid.uSSIDLength));
   } else {
     NOTREACHED();
   }
@@ -1326,11 +1321,11 @@ void WiFiServiceImpl::UpdateNetworkPropertiesFromBssList(
 
   DOT11_SSID ssid = SSIDFromGUID(network_guid);
   for (size_t bss = 0; bss < wlan_bss_list.dwNumberOfItems; ++bss) {
-    const WLAN_BSS_ENTRY& bss_entry(wlan_bss_list.wlanBssEntries[bss]);
+    const WLAN_BSS_ENTRY& bss_entry(
+        UNSAFE_TODO(wlan_bss_list.wlanBssEntries[bss]));
     if (bss_entry.dot11Ssid.uSSIDLength == ssid.uSSIDLength &&
-        0 == memcmp(bss_entry.dot11Ssid.ucSSID,
-                    ssid.ucSSID,
-                    bss_entry.dot11Ssid.uSSIDLength)) {
+        0 == UNSAFE_TODO(memcmp(bss_entry.dot11Ssid.ucSSID, ssid.ucSSID,
+                                bss_entry.dot11Ssid.uSSIDLength))) {
       std::string bssid = NetworkProperties::MacAddressAsString(
           bss_entry.dot11Bssid);
       Frequency frequency = GetNormalizedFrequency(
@@ -1372,7 +1367,8 @@ DWORD WiFiServiceImpl::GetVisibleNetworkList(NetworkList* network_list) {
       for (DWORD i = 0; i < available_network_list->dwNumberOfItems; ++i) {
         NetworkProperties network_properties;
         NetworkPropertiesFromAvailableNetwork(
-            available_network_list->Network[i], &network_properties);
+            UNSAFE_TODO(available_network_list->Network[i]),
+            &network_properties);
         UpdateNetworkPropertiesFromBssList(network_properties.guid, *bss_list,
                                            &network_properties);
         // Check for duplicate network guids.
@@ -1526,12 +1522,13 @@ DWORD WiFiServiceImpl::GetDesiredBssList(
 
     // Go through bss_list and find best quality BSSID with matching frequency.
     for (size_t bss = 0; bss < bss_list->dwNumberOfItems; ++bss) {
-      const WLAN_BSS_ENTRY& bss_entry(bss_list->wlanBssEntries[bss]);
+      const WLAN_BSS_ENTRY& bss_entry(
+          UNSAFE_TODO(bss_list->wlanBssEntries[bss]));
       if (bss_entry.dot11Ssid.uSSIDLength != ssid.uSSIDLength ||
-          0 != memcmp(bss_entry.dot11Ssid.ucSSID,
-                      ssid.ucSSID,
-                      bss_entry.dot11Ssid.uSSIDLength))
+          0 != UNSAFE_TODO(memcmp(bss_entry.dot11Ssid.ucSSID, ssid.ucSSID,
+                                  bss_entry.dot11Ssid.uSSIDLength))) {
         continue;
+      }
 
       bss_frequency = GetNormalizedFrequency(
           bss_entry.ulChCenterFrequency / 1000);
@@ -1544,7 +1541,8 @@ DWORD WiFiServiceImpl::GetDesiredBssList(
 
     // If any matching BSS were found, prepare the header.
     if (best_quality > 0) {
-      const WLAN_BSS_ENTRY& bss_entry(bss_list->wlanBssEntries[best_index]);
+      const WLAN_BSS_ENTRY& bss_entry(
+          UNSAFE_TODO(bss_list->wlanBssEntries[best_index]));
       std::unique_ptr<DOT11_BSSID_LIST> selected_list(new DOT11_BSSID_LIST);
 
       selected_list->Header.Revision = DOT11_BSSID_LIST_REVISION_1;
@@ -1552,9 +1550,9 @@ DWORD WiFiServiceImpl::GetDesiredBssList(
       selected_list->Header.Type = NDIS_OBJECT_TYPE_DEFAULT;
       selected_list->uNumOfEntries = 1;
       selected_list->uTotalNumOfEntries = 1;
-      std::copy(bss_entry.dot11Bssid,
-                bss_entry.dot11Bssid + sizeof(bss_entry.dot11Bssid),
-                selected_list->BSSIDs[0]);
+      UNSAFE_TODO(std::copy(bss_entry.dot11Bssid,
+                            bss_entry.dot11Bssid + sizeof(bss_entry.dot11Bssid),
+                            selected_list->BSSIDs[0]));
       desired_list->swap(selected_list);
       DVLOG(1) << "Quality: " << best_quality << " BSS: "
                << NetworkProperties::MacAddressAsString(bss_entry.dot11Bssid);

@@ -6,16 +6,12 @@
 
 #include <cstddef>
 #include <optional>
-#include <tuple>
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -241,7 +237,8 @@ bool CronetBidirectionalStreamAdapter::WritevData(
     env->GetIntArrayRegion(pending_write_data->jwrite_buffer_limit_list.obj(),
                            i, 1, &limit);
     auto write_buffer = base::MakeRefCounted<net::WrappedIOBuffer>(
-        base::span(static_cast<char*>(data), base::checked_cast<size_t>(limit))
+        UNSAFE_TODO(base::span(static_cast<char*>(data),
+                               base::checked_cast<size_t>(limit)))
             .subspan(base::checked_cast<size_t>(pos)));
     pending_write_data->write_buffer_list.push_back(write_buffer);
     pending_write_data->write_buffer_len_list.push_back(write_buffer->size());

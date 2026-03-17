@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/power_metrics/resource_coalition_mac.h"
 
 #include <optional>
 
+#include "base/compiler_specific.h"
 #include "base/rand_util.h"
 #include "components/power_metrics/energy_impact_mac.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -142,8 +138,9 @@ TEST(ResourceCoalitionMacTest, Difference) {
   EXPECT_EQ(diff.cpu_time_eqos_len,
             static_cast<uint64_t>(COALITION_NUM_THREAD_QOS_TYPES));
 
-  for (int i = 0; i < COALITION_NUM_THREAD_QOS_TYPES; ++i)
-    EXPECT_EQ(diff.cpu_time_eqos[i], 1U);
+  for (int i = 0; i < COALITION_NUM_THREAD_QOS_TYPES; ++i) {
+    EXPECT_EQ(UNSAFE_TODO(diff.cpu_time_eqos[i]), 1U);
+  }
 
   EXPECT_EQ(diff.cpu_instructions, 1U);
   EXPECT_EQ(diff.cpu_cycles, 1U);
@@ -201,7 +198,7 @@ std::unique_ptr<coalition_resource_usage> GetCoalitionResourceUsageRateTestData(
                                           kIntervalDuration.InNanoseconds());
   test_data->energy = kExpectedPowerNW * kIntervalDuration.InSecondsF();
   for (int i = 0; i < COALITION_NUM_THREAD_QOS_TYPES; ++i) {
-    test_data->cpu_time_eqos[i] =
+    UNSAFE_TODO(test_data->cpu_time_eqos[i]) =
         scale_to_timebase(i * kExpectedQoSTimeBucketIdMultiplier *
                           kIntervalDuration.InNanoseconds());
   }
@@ -235,7 +232,7 @@ TEST(ResourceCoalitionMacTest, GetDataRate_NoEnergyImpact_Intel) {
 
   for (int i = 0; i < COALITION_NUM_THREAD_QOS_TYPES; ++i) {
     EXPECT_DOUBLE_EQ(i * kExpectedQoSTimeBucketIdMultiplier,
-                     rate->qos_time_per_second[i]);
+                     UNSAFE_TODO(rate->qos_time_per_second[i]));
   }
 }
 
@@ -265,7 +262,7 @@ TEST(ResourceCoalitionMacTest, GetDataRate_NoEnergyImpact_M1) {
 
   for (int i = 0; i < COALITION_NUM_THREAD_QOS_TYPES; ++i) {
     EXPECT_DOUBLE_EQ(i * kExpectedQoSTimeBucketIdMultiplier,
-                     rate->qos_time_per_second[i]);
+                     UNSAFE_TODO(rate->qos_time_per_second[i]));
   }
 }
 
@@ -293,7 +290,7 @@ TEST(ResourceCoalitionMacTest, GetDataRate_WithEnergyImpact_Intel) {
 
   for (int i = 0; i < COALITION_NUM_THREAD_QOS_TYPES; ++i) {
     EXPECT_DOUBLE_EQ(i * kExpectedQoSTimeBucketIdMultiplier,
-                     rate->qos_time_per_second[i]);
+                     UNSAFE_TODO(rate->qos_time_per_second[i]));
   }
 }
 
@@ -321,7 +318,7 @@ TEST(ResourceCoalitionMacTest, GetDataRate_WithEnergyImpact_M1) {
 
   for (int i = 0; i < COALITION_NUM_THREAD_QOS_TYPES; ++i) {
     EXPECT_DOUBLE_EQ(i * kExpectedQoSTimeBucketIdMultiplier,
-                     rate->qos_time_per_second[i]);
+                     UNSAFE_TODO(rate->qos_time_per_second[i]));
   }
 }
 
@@ -332,8 +329,8 @@ bool DataOverflowInvalidatesDiffImpl(
     std::unique_ptr<coalition_resource_usage> t1,
     uint64_t* field_to_overflow) {
   // Initialize all fields to a non zero value.
-  ::memset(t0.get(), 1000, sizeof(coalition_resource_usage));
-  ::memset(t1.get(), 1000, sizeof(coalition_resource_usage));
+  UNSAFE_TODO(::memset(t0.get(), 1000, sizeof(coalition_resource_usage)));
+  UNSAFE_TODO(::memset(t1.get(), 1000, sizeof(coalition_resource_usage)));
   *field_to_overflow = 0;
   t1->cpu_time_eqos_len = COALITION_NUM_THREAD_QOS_TYPES;
   return !GetCoalitionResourceUsageRate(*t0, *t1, kIntervalDuration,
@@ -360,7 +357,7 @@ bool DataOverflowInvalidatesDiff(
       std::make_unique<coalition_resource_usage>();
   std::unique_ptr<coalition_resource_usage> t1_data =
       std::make_unique<coalition_resource_usage>();
-  auto* ptr = &(t1_data.get()->*member_ptr)[index_to_check];
+  auto* ptr = &UNSAFE_TODO((t1_data.get()->*member_ptr)[index_to_check]);
   return DataOverflowInvalidatesDiffImpl(std::move(t0_data), std::move(t1_data),
                                          ptr);
 }

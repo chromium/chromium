@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/crash/core/app/crashpad.h"
 
 #import <Foundation/Foundation.h>
 
+#include "base/compiler_specific.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/crash/core/app/crash_reporter_client.h"
@@ -70,9 +66,9 @@ TEST_F(CrashpadIOS, ProcessExternalDump) {
   ASSERT_EQ(reports.size(), 0u);
   std::string attachment_name = "external-source";
   const char attachment_data[] = "external-dump-data";
-  base::span<const uint8_t> data(
+  base::span<const uint8_t> data = UNSAFE_TODO(base::span<const uint8_t>(
       reinterpret_cast<const uint8_t*>(attachment_data),
-      sizeof(attachment_data));
+      sizeof(attachment_data)));
   crash_reporter::ProcessExternalDump(attachment_name, data, {});
 
   reports.clear();
@@ -91,5 +87,7 @@ TEST_F(CrashpadIOS, ProcessExternalDump) {
   ASSERT_NE(attachments.find(attachment_name), attachments.end());
   char result_buffer[sizeof(attachment_data)];
   attachments[attachment_name]->Read(result_buffer, sizeof(result_buffer));
-  EXPECT_EQ(memcmp(attachment_data, result_buffer, sizeof(attachment_data)), 0);
+  EXPECT_EQ(UNSAFE_TODO(memcmp(attachment_data, result_buffer,
+                               sizeof(attachment_data))),
+            0);
 }
