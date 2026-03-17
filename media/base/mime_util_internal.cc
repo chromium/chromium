@@ -918,7 +918,13 @@ SupportsType MimeUtil::IsCodecSupported(std::string_view mime_type_lower_case,
       // http://crbug.com/784993
       video_codec != VideoCodec::kAV1) {
     DCHECK_NE(video_profile, VIDEO_CODEC_PROFILE_UNKNOWN);
-    DCHECK_GT(video_level, 0u);
+
+    // Zero isn't a valid HEVC level, but it appears in the wild and is
+    // supported by Safari, so treat it as has having no level. See
+    // https://crbug.com/491512328
+    if (video_codec != VideoCodec::kHEVC) {
+      DCHECK_GT(video_level, 0u);
+    }
   }
 
   // Check for cases of ambiguous platform support.
