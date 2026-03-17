@@ -243,6 +243,14 @@ SkPath TabStyleViewsImpl::GetPath(TabStyle::PathType path_type,
       tab_height -= GetLayoutConstant(LayoutConstant::kTabStripPadding) * scale;
       tab_height -=
           GetLayoutConstant(LayoutConstant::kTabstripToolbarOverlap) * scale;
+
+      if (base::FeatureList::IsEnabled(features::kDetachedTabs) &&
+          tab()->group().has_value()) {
+        tab_height -=
+            GetLayoutConstant(
+                LayoutConstant::kDetachedTabGroupUnderlineBottomSpacing) *
+            scale;
+      }
     }
 
     // Don't round the bottom corners to avoid creating dead space between tabs.
@@ -252,8 +260,17 @@ SkPath TabStyleViewsImpl::GetPath(TabStyle::PathType path_type,
     }
 
     float left = aligned_bounds.x() + extension_corner_radius;
-    int top = aligned_bounds.y() +
-              GetLayoutConstant(LayoutConstant::kTabStripPadding) * scale;
+    float top = aligned_bounds.y() +
+                GetLayoutConstant(LayoutConstant::kTabStripPadding) * scale;
+
+    if (base::FeatureList::IsEnabled(features::kDetachedTabs) &&
+        tab()->group().has_value()) {
+      top += (GetLayoutConstant(
+                  LayoutConstant::kDetachedTabGroupUnderlineBottomSpacing) /
+              2.0f) *
+             scale;
+    }
+
     float right = aligned_bounds.right() - extension_corner_radius;
     const int bottom = top + tab_height;
 
@@ -562,6 +579,15 @@ gfx::Insets TabStyleViewsImpl::GetContentsInsets() const {
   }
   if (IsLeftSplitTab(tab())) {
     split_insets.set_right(total_separator_width / -2);
+  }
+
+  if (base::FeatureList::IsEnabled(features::kDetachedTabs) &&
+      tab()->group().has_value()) {
+    const int vertical_padding =
+        GetLayoutConstant(
+            LayoutConstant::kDetachedTabGroupUnderlineBottomSpacing) /
+        2;
+    base_style_insets += gfx::Insets::VH(vertical_padding, 0);
   }
 
   return gfx::Insets::TLBR(

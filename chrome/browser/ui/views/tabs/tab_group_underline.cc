@@ -120,8 +120,13 @@ gfx::Rect TabGroupUnderline::CalculateTabGroupUnderlineBounds(
   gfx::Rect group_bounds = ToEnclosingRect(leading_bounds);
   group_bounds.UnionEvenIfEmpty(ToEnclosingRect(trailing_bounds));
 
-  const int y = group_bounds.bottom() -
-                GetLayoutConstant(LayoutConstant::kTabstripToolbarOverlap);
+  int y = group_bounds.bottom() -
+          GetLayoutConstant(LayoutConstant::kTabstripToolbarOverlap);
+
+  if (base::FeatureList::IsEnabled(features::kDetachedTabs)) {
+    y -= GetLayoutConstant(
+        LayoutConstant::kDetachedTabGroupUnderlineBottomSpacing);
+  }
 
   return gfx::Rect(group_bounds.x(), y - kStrokeThickness, group_bounds.width(),
                    kStrokeThickness);

@@ -96,8 +96,12 @@ gfx::Point TabGroupStyle::GetTitleChipOffset(
       GetLayoutConstant(LayoutConstant::kTabstripToolbarOverlap);
   if (base::FeatureList::IsEnabled(features::kDetachedTabs) &&
       text_height.has_value()) {
-    return gfx::Point(TabStyle::Get()->GetTabOverlap() - 2,
-                      GetLayoutConstant(LayoutConstant::kTabStripPadding));
+    return gfx::Point(
+        TabStyle::Get()->GetTabOverlap() - 2,
+        GetLayoutConstant(LayoutConstant::kTabStripPadding) +
+            (GetLayoutConstant(
+                 LayoutConstant::kDetachedTabGroupUnderlineBottomSpacing) /
+             2));
   }
   return gfx::Point(TabStyle::Get()->GetTabOverlap() - 2, total_space / 2);
 }
@@ -140,7 +144,10 @@ float TabGroupStyle::GetAttentionIndicatorWidth() const {
 
 float TabGroupStyle::GetDetachedChipHeight() const {
   return GetLayoutConstant(LayoutConstant::kTabHeight) -
-         GetLayoutConstant(LayoutConstant::kTabStripPadding);
+         GetLayoutConstant(LayoutConstant::kTabStripPadding) -
+         GetLayoutConstant(LayoutConstant::kTabstripToolbarOverlap) -
+         GetLayoutConstant(
+             LayoutConstant::kDetachedTabGroupUnderlineBottomSpacing);
 }
 
 int TabGroupStyle::GetChipCornerRadius() const {

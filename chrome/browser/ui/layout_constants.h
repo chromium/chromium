@@ -135,6 +135,9 @@ enum class LayoutConstant {
   // The total tab strip height, including all interior padding.
   kTabStripHeight,
 
+  // The spacing between the bottom of the tab group underline and the toolbar.
+  kDetachedTabGroupUnderlineBottomSpacing,
+
   // The padding value shared between the area above the tab, the bottom of the
   // detached tab, and on all sides of the controls padding.
   kTabStripPadding,

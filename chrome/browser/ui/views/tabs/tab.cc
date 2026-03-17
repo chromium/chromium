@@ -383,9 +383,15 @@ void Tab::Layout(PassKey) {
     if (base::FeatureList::IsEnabled(features::kDetachedTabs)) {
       // For detached tabs, the glow should align with the bottom of the tab
       // body.
-      const int tab_bottom =
+      int tab_bottom =
           GetLayoutConstant(LayoutConstant::kTabHeight) -
           GetLayoutConstant(LayoutConstant::kTabstripToolbarOverlap);
+      if (group().has_value()) {
+        tab_bottom -=
+            GetLayoutConstant(
+                LayoutConstant::kDetachedTabGroupUnderlineBottomSpacing) /
+            2;
+      }
       const int glow_height = 8;
       glic_bounds =
           gfx::Rect(0, tab_bottom - glow_height, size().width(), glow_height);
