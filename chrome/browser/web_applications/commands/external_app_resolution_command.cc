@@ -51,6 +51,7 @@
 #include "components/webapps/browser/web_contents/web_app_url_loader.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_contents.h"
+#include "url/origin.h"
 
 namespace web_app {
 
@@ -721,6 +722,18 @@ void ExternalAppResolutionCommand::InstallFromInfo() {
   // trusted ones.
   web_app_info_->trusted_icons = web_app_info_->manifest_icons;
   web_app_info_->trusted_icon_bitmaps = web_app_info_->icon_bitmaps;
+
+  if (!web_app_info_->scope.is_valid() ||
+      !url::IsSameOriginWith(web_app_info_->scope,
+                             web_app_info_->start_url()) ||
+      !base::StartsWith(web_app_info_->start_url().spec(),
+                        web_app_info_->scope.spec(),
+                        base::CompareCase::SENSITIVE)) {
+    DLOG(ERROR) << "Invalid scope "
+                << web_app_info_->scope.possibly_invalid_spec()
+                << " for start_url " << web_app_info_->start_url();
+    web_app_info_->scope = web_app_info_->start_url().GetWithoutFilename();
+  }
 
   if (!apps_lock_) {
     apps_lock_ = std::make_unique<SharedWebContentsWithAppLock>();
