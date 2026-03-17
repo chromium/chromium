@@ -354,15 +354,6 @@ namespace blink {
 
 namespace features {
 
-// Enabled-by-default, except for Android where SW encoder for H264 and AV1 are
-// not available. The existence of this flag remains only for testing purposes.
-BASE_FEATURE(kForceSoftwareForLowResolutions,
-#if !BUILDFLAG(IS_ANDROID)
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 // Avoids large latencies to build up by dropping frames when the number of
 // frames that are sent to a hardware video encoder reaches a certain limit.
 // See b/298660336 for details.
@@ -635,14 +626,10 @@ bool UseSoftwareForLowResolution(const webrtc::VideoCodecType codec,
   // situations where a codec like H264 is available in HW but not SW in which
   // case SW fallback would result in a change of codec, see
   // https://crbug.com/1469318.
+  // Note: This flag will be rolled and enabled everywhere since we now check
+  // for actual software code availability when determining if it's possible.
   if (!base::FeatureList::IsEnabled(
-          features::kForceSoftwareForLowResolutions)) {
-    return false;
-  }
-
-  // H.265 does not support SW fallback, so it is excluded from low resoloution
-  // fallback.
-  if (codec == webrtc::kVideoCodecH265) {
+          media::kForceSoftwareForRtcLowResolutions)) {
     return false;
   }
 
@@ -2489,9 +2476,11 @@ RTCVideoEncoder::RTCVideoEncoder(
     bool is_constrained_h264,
     media::GpuVideoAcceleratorFactories* gpu_factories,
     scoped_refptr<media::MojoVideoEncoderMetricsProviderFactory>
-        encoder_metrics_provider_factory)
+        encoder_metrics_provider_factory,
+    bool is_software_fallback_available)
     : profile_(profile),
       is_constrained_h264_(is_constrained_h264),
+      is_software_fallback_available_(is_software_fallback_available),
       gpu_factories_(gpu_factories),
       encoder_metrics_provider_factory_(
           std::move(encoder_metrics_provider_factory)),
@@ -2703,7 +2692,8 @@ int32_t RTCVideoEncoder::InitEncode(
 
   codec_settings_ = converted_settings;
 
-  if (UseSoftwareForLowResolution(codec_settings_.codecType,
+  if (is_software_fallback_available_ &&
+      UseSoftwareForLowResolution(codec_settings_.codecType,
                                   codec_settings_.width,
                                   codec_settings_.height)) {
     return initialization_error_message;

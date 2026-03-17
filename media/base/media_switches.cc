@@ -674,9 +674,19 @@ BASE_FEATURE(kFileDialogsTuckPictureInPicture,
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+// Forces software video encoders to be used for low resolutions.
+// Enabled-by-default, except for Android where SW encoder for H26x and AV1 are
+// (sometimes) not available.
+// TODO: crbug.com/40068556 - Enable for Android and remove this flag.
+BASE_FEATURE(kForceSoftwareForRtcLowResolutions,
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
+
 // Auto-dismiss global media controls.
 BASE_FEATURE(kGlobalMediaControlsAutoDismiss, base::FEATURE_ENABLED_BY_DEFAULT);
-
 
 #if !BUILDFLAG(IS_ANDROID)
 // If enabled, users can request Media Remoting without fullscreen-in-tab.

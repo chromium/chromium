@@ -405,6 +405,22 @@ void RTCVideoEncoderFactory::CheckAndWaitEncoderSupportStatusIfNeeded() const {
   }
 }
 
+void RTCVideoEncoderFactory::SetAvailableSoftwareFallbackCodecs(
+    std::vector<webrtc::SdpVideoFormat> codecs) {
+  available_software_fallback_codecs_ =
+      blink::Vector<webrtc::SdpVideoFormat>(codecs);
+}
+
+bool RTCVideoEncoderFactory::IsSoftwareFallbackAvailable(
+    const webrtc::SdpVideoFormat& format) const {
+  for (const auto& fallback_format : available_software_fallback_codecs_) {
+    if (format.IsSameCodec(fallback_format)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 std::unique_ptr<webrtc::VideoEncoder> RTCVideoEncoderFactory::Create(
     const webrtc::Environment& env,
     const webrtc::SdpVideoFormat& format) {
@@ -412,6 +428,7 @@ std::unique_ptr<webrtc::VideoEncoder> RTCVideoEncoderFactory::Create(
 
   std::unique_ptr<webrtc::VideoEncoder> encoder;
   bool is_constrained_h264 = IsConstrainedH264(format);
+  bool is_software_fallback_available = IsSoftwareFallbackAvailable(format);
   auto supported_formats =
       GetSupportedFormatsInternal(gpu_factories_, disabled_profiles_);
   if (!supported_formats.unknown) {
@@ -419,7 +436,7 @@ std::unique_ptr<webrtc::VideoEncoder> RTCVideoEncoderFactory::Create(
       if (format.IsSameCodec(supported_formats.sdp_formats[i])) {
         encoder = std::make_unique<RTCVideoEncoder>(
             supported_formats.profiles[i], is_constrained_h264, gpu_factories_,
-            encoder_metrics_provider_factory_);
+            encoder_metrics_provider_factory_, is_software_fallback_available);
         break;
       }
     }
@@ -428,7 +445,7 @@ std::unique_ptr<webrtc::VideoEncoder> RTCVideoEncoderFactory::Create(
     if (profile) {
       encoder = std::make_unique<RTCVideoEncoder>(
           *profile, is_constrained_h264, gpu_factories_,
-          encoder_metrics_provider_factory_);
+          encoder_metrics_provider_factory_, is_software_fallback_available);
     }
   }
 

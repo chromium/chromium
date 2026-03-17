@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/peerconnection/gpu_codec_support_waiter.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/webrtc/api/video_codecs/video_encoder_factory.h"
 #include "third_party/webrtc/modules/video_coding/include/video_codec_interface.h"
 
@@ -42,6 +43,9 @@ class PLATFORM_EXPORT RTCVideoEncoderFactory
   RTCVideoEncoderFactory& operator=(const RTCVideoEncoderFactory&) = delete;
   ~RTCVideoEncoderFactory() override;
 
+  void SetAvailableSoftwareFallbackCodecs(
+      std::vector<webrtc::SdpVideoFormat> codecs);
+
   // webrtc::VideoEncoderFactory implementation.
   std::unique_ptr<webrtc::VideoEncoder> Create(
       const webrtc::Environment& env,
@@ -57,6 +61,7 @@ class PLATFORM_EXPORT RTCVideoEncoderFactory
 
  private:
   void CheckAndWaitEncoderSupportStatusIfNeeded() const;
+  bool IsSoftwareFallbackAvailable(const webrtc::SdpVideoFormat& format) const;
 
   raw_ptr<media::GpuVideoAcceleratorFactories> gpu_factories_;
 
@@ -69,6 +74,10 @@ class PLATFORM_EXPORT RTCVideoEncoderFactory
   // encoder for even if the underlying GPU factories has support.
   std::vector<media::VideoCodecProfile> disabled_profiles_
       ALLOW_DISCOURAGED_TYPE("Matches webrtc API");
+
+  // List of codecs that support falling back to a software implementation in
+  // case the hardware encoder fails.
+  blink::Vector<webrtc::SdpVideoFormat> available_software_fallback_codecs_;
 };
 
 }  // namespace blink
