@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <vector>
 
+#include "base/at_exit.h"
 #include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/numerics/safe_conversions.h"
@@ -529,6 +530,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   if (size < 1) {
     return 0;
   }
+
+  base::AtExitManager at_exit_manager;
 
   FuzzedDataProvider fdp(data, size);
   std::vector<uint8_t> final_bitstream;
