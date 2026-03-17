@@ -5406,6 +5406,7 @@
         resolver: "bottom",
       },
       valid_for_permission_element: true,
+      affected_by_zoom: true,
     },
     {
       name: "scroll-margin-inline-end",
@@ -5441,6 +5442,7 @@
         resolver: "left",
       },
       valid_for_permission_element: true,
+      affected_by_zoom: true,
     },
     {
       name: "scroll-margin-right",
@@ -5456,6 +5458,7 @@
         resolver: "right",
       },
       valid_for_permission_element: true,
+      affected_by_zoom: true,
     },
     {
       name: "scroll-margin-top",
@@ -5471,6 +5474,7 @@
         resolver: "top",
       },
       valid_for_permission_element: true,
+      affected_by_zoom: true,
     },
     {
       name: "scroll-padding-block-end",
@@ -5517,6 +5521,7 @@
       },
       valid_for_permission_element: true,
       percentages_depend_on_used_value: true,
+      affected_by_zoom: true,
     },
     {
       name: "scroll-padding-inline-end",
@@ -5563,6 +5568,7 @@
       },
       valid_for_permission_element: true,
       percentages_depend_on_used_value: true,
+      affected_by_zoom: true,
     },
     {
       name: "scroll-padding-right",
@@ -5579,6 +5585,7 @@
       },
       valid_for_permission_element: true,
       percentages_depend_on_used_value: true,
+      affected_by_zoom: true,
     },
     {
       name: "scroll-padding-top",
@@ -5595,6 +5602,7 @@
       },
       valid_for_permission_element: true,
       percentages_depend_on_used_value: true,
+      affected_by_zoom: true,
     },
     {
       name: "scroll-snap-align",

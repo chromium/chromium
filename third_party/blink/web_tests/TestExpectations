@@ -1280,9 +1280,6 @@ crbug.com/393395931 external/wpt/css/css-shadow/slotted-has-002.html [ Failure ]
 crbug.com/393395931 external/wpt/css/css-shadow/slotted-has-003.html [ Failure ]
 crbug.com/393395931 external/wpt/css/css-shadow/slotted-has-004.html [ Failure ]
 
-# Incorrect scroll-padding-* zoom
-crbug.com/490355858 external/wpt/css/css-viewport/zoom/scroll-padding.html [ Failure ]
-
 # URL modifiers
 # https://drafts.csswg.org/css-values-5/#request-url-modifiers
 crbug.com/435625756 external/wpt/css/css-values/urls/cross-origin/url-image-cross-origin-anonymous.sub.html [ Failure ]
@@ -1306,7 +1303,6 @@ crbug.com/435625756 external/wpt/css/css-values/urls/referrer-policy/unsafe-url/
 
 # border-radius with zoom
 crbug.com/490355657 external/wpt/css/css-viewport/zoom/border-radius.html [ Failure ]
-crbug.com/490355657 external/wpt/css/css-viewport/zoom/scroll-margin.html [ Failure ]
 
 # Media queries
 crbug.com/1001078 external/wpt/css/mediaqueries/mq-non-matching-lazy-load.tentative.html [ Failure ]
