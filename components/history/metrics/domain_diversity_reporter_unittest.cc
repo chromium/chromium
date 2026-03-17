@@ -63,15 +63,22 @@ class DomainDiversityReporterTest : public testing::Test {
     DomainDiversityReporter::RegisterProfilePrefs(pref_service_.registry());
     ASSERT_TRUE(history_dir_.CreateUniqueTempDir());
 
-    // Creates HistoryService, but does not load it yet. Use LoadHistory() from
-    // tests to control loading of HistoryService.
+    // Creates HistoryService.
     history_service_ = std::make_unique<history::HistoryService>();
+    history_service_->Init(
+        history::TestHistoryDatabaseParamsForPath(history_dir_.GetPath()));
 
     // Sets the internal clock's current time to 10:00am. This avoids
     // issues in time arithmetic caused by uneven day lengths due to Daylight
     // Saving Time.
     test_clock_.SetTime(MidnightNDaysLater(test_clock_.Now(), 0) +
                         base::Hours(10));
+  }
+
+  void TearDown() override {
+    // Ensure that HistoryService background task are complete before
+    // destroying the temporary directory.
+    Wait();
   }
 
   void CreateDomainDiversityReporter() {
@@ -103,12 +110,8 @@ class DomainDiversityReporterTest : public testing::Test {
     Wait();
   }
 
-  bool LoadHistory() {
-    if (!history_service_->Init(
-            history::TestHistoryDatabaseParamsForPath(history_dir_.GetPath())))
-      return false;
+  void LoadHistory() {
     history::BlockUntilHistoryProcessesPendingRequests(history_service());
-    return true;
   }
 
   DomainDiversityReporter* reporter() const { return reporter_.get(); }
@@ -144,7 +147,6 @@ TEST_F(DomainDiversityReporterTest, HistoryNotLoaded) {
   EXPECT_FALSE(history_service()->backend_loaded());
 
   CreateDomainDiversityReporter();
-  task_environment_.RunUntilIdle();
 
   // Since History is not yet loaded, there should be no histograms.
   histograms().ExpectTotalCount("History.DomainCount1Day_V3", 0);
@@ -155,7 +157,7 @@ TEST_F(DomainDiversityReporterTest, HistoryNotLoaded) {
   histograms().ExpectTotalCount("History.DomainCount28Day_V4", 0);
 
   // Load history. This should trigger reporter, via HistoryService observer.
-  ASSERT_TRUE(LoadHistory());
+  LoadHistory();
   Wait();
 
   // No domains were visited, but there should be 7 samples. The last
@@ -170,7 +172,7 @@ TEST_F(DomainDiversityReporterTest, HistoryNotLoaded) {
 
 TEST_F(DomainDiversityReporterTest, HistoryLoaded) {
   EXPECT_FALSE(history_service()->backend_loaded());
-  ASSERT_TRUE(LoadHistory());
+  LoadHistory();
 
   // Set the last reporting date to 1 day ago.
   prefs()->SetTime(kDomainDiversityReportingTimestamp,
@@ -191,7 +193,7 @@ TEST_F(DomainDiversityReporterTest, HistoryLoaded) {
 }
 
 TEST_F(DomainDiversityReporterTest, HostAddedSimple) {
-  ASSERT_TRUE(LoadHistory());
+  LoadHistory();
 
   // The last report was 3 days ago.
   prefs()->SetTime(kDomainDiversityReportingTimestamp,
@@ -228,7 +230,7 @@ TEST_F(DomainDiversityReporterTest, HostAddedSimple) {
 }
 
 TEST_F(DomainDiversityReporterTest, HostAddedLongAgo) {
-  ASSERT_TRUE(LoadHistory());
+  LoadHistory();
 
   base::Time time_29_days_ago = MidnightNDaysLater(test_clock().Now(), -29);
   base::Time time_31_days_ago = MidnightNDaysLater(test_clock().Now(), -31);
@@ -277,7 +279,7 @@ TEST_F(DomainDiversityReporterTest, HostAddedLongAgo) {
 
 TEST_F(DomainDiversityReporterTest, ScheduleNextDay) {
   // Test if the next domain metrics reporting task is scheduled every 24 hours
-  ASSERT_TRUE(LoadHistory());
+  LoadHistory();
 
   // Last report was emitted 4 days ago. So the report emitted today
   // will emit one set of histogram values of each of the last 4 days.
@@ -364,7 +366,7 @@ TEST_F(DomainDiversityReporterTest, ScheduleNextDay) {
 TEST_F(DomainDiversityReporterTest, DISABLED_ScheduleNextDaySuspended) {
   // Test if the next domain metrics reporting task is scheduled every 24 hours,
   // even if the computer is sleeping.
-  ASSERT_TRUE(LoadHistory());
+  LoadHistory();
 
   // Last report was emitted 4 days ago. So the report emitted today
   // will emit one set of histogram values of each of the last 4 days.
@@ -446,7 +448,7 @@ TEST_F(DomainDiversityReporterTest, DISABLED_ScheduleNextDaySuspended) {
 }
 
 TEST_F(DomainDiversityReporterTest, SaveTimestampInPreference) {
-  ASSERT_TRUE(LoadHistory());
+  LoadHistory();
   base::Time last_midnight = MidnightNDaysLater(test_clock().Now(), -1);
   prefs()->SetTime(kDomainDiversityReportingTimestamp, last_midnight);
   prefs()->SetTime(kDomainDiversityReportingTimestampV4, last_midnight);
@@ -466,7 +468,7 @@ TEST_F(DomainDiversityReporterTest, SaveTimestampInPreference) {
 }
 
 TEST_F(DomainDiversityReporterTest, OnlyOneReportPerDay) {
-  ASSERT_TRUE(LoadHistory());
+  LoadHistory();
 
   base::Time last_midnight = MidnightNDaysLater(test_clock().Now(), -1);
 
