@@ -211,6 +211,15 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
     Mock::VerifyAndClearExpectations(distiller_);
   }
 
+  void TearDown() override {
+    // `controller_` owns `distiller_` and RenderFrame (indirectly) owns
+    // `controller_`: it is a garbage-collected object owned by Oilpan and its
+    // lifetime is tied to the RenderFrame's lifetime.
+    controller_ = nullptr;
+    distiller_ = nullptr;
+    ChromeRenderViewTest::TearDown();
+  }
+
   ReadAnythingAppController& controller() { return *controller_; }
   ReadAnythingAppModel& model() { return controller_->model_; }
   ReadAloudAppModel& read_aloud_model() {
@@ -382,13 +391,13 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
   static constexpr ui::AXNodeID kId5 = 100;
 
   ui::AXTreeID tree_id_;
-  raw_ptr<MockAXTreeDistiller, DanglingUntriaged> distiller_ = nullptr;
+  raw_ptr<MockAXTreeDistiller> distiller_ = nullptr;
   testing::StrictMock<MockReadAnythingUntrustedPageHandler> page_handler_;
   base::test::ScopedFeatureList scoped_feature_list_;
 
   // ReadAnythingAppController constructor and destructor are protected so
   // it's not accessible by std::make_unique.
-  raw_ptr<ReadAnythingAppController, DanglingUntriaged> controller_ = nullptr;
+  raw_ptr<ReadAnythingAppController> controller_ = nullptr;
 };
 
 #if BUILDFLAG(IS_CHROMEOS)
