@@ -46,6 +46,18 @@ found in the LICENSE file.
         <item name="android:background">?android:attr/listDivider</item>
     </style>
 
+    <style name="Fusebox.PopupMenu.Header">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textAlignment">viewStart</item>
+        <item name="android:textAppearance">
+            @style/TextAppearance.TextSmall.Secondary
+        </item>
+        <item name="android:paddingHorizontal">8dp</item>
+        <item name="android:importantForAccessibility">no</item>
+        <item name="android:layout_marginTop">4dp</item>
+    </style>
+
     <style name="OmniboxIcon" parent="LocationBarButton">
         <item name="android:layout_width">
             @dimen/location_bar_status_icon_width
