@@ -57,6 +57,7 @@ constexpr char kExtensions[] = "extensions";
 
 // Event keys and types.
 constexpr char kEvent[] = "event";
+constexpr char kCancelRequest[] = "cancelRequest";
 constexpr char kHandleGetRequest[] = "handleGetRequest";
 constexpr char kHandleCreateRequest[] = "handleCreateRequest";
 constexpr char kLogGetRequest[] = "logGetRequest";
@@ -713,6 +714,14 @@ TEST_F(PasskeyRequestParserTest, ParseSimpleEventTypes) {
     auto result = ParsePasskeyScriptEvent(dict, &IsGpmPasskey);
     ASSERT_TRUE(result.has_value());
     EXPECT_EQ(*result, PasskeyScriptEvent::kLogCreateRequest);
+  }
+  // Test case 5: Cancel Request.
+  {
+    base::DictValue dict;
+    dict.Set(kEvent, kCancelRequest);
+    auto result = ParsePasskeyScriptEvent(dict, &IsGpmPasskey);
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(*result, PasskeyScriptEvent::kCancelRequest);
   }
 }
 

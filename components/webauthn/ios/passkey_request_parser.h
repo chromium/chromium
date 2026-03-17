@@ -14,6 +14,7 @@ namespace webauthn {
 
 // Events received from the Passkey JavaScript shim.
 enum class PasskeyScriptEvent {
+  kCancelRequest,
   kHandleGetRequest,
   kHandleCreateRequest,
   kLogGetRequest,

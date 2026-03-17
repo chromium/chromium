@@ -16,6 +16,7 @@ namespace {
 constexpr char kEvent[] = "event";
 
 // Message event types.
+constexpr char kCancelRequest[] = "cancelRequest";
 constexpr char kHandleGetRequest[] = "handleGetRequest";
 constexpr char kHandleCreateRequest[] = "handleCreateRequest";
 constexpr char kLogGetRequest[] = "logGetRequest";
@@ -530,6 +531,9 @@ std::optional<PasskeyScriptEvent> ParsePasskeyScriptEvent(
     return std::nullopt;
   }
 
+  if (*event_string == kCancelRequest) {
+    return PasskeyScriptEvent::kCancelRequest;
+  }
   if (*event_string == kHandleGetRequest) {
     return PasskeyScriptEvent::kHandleGetRequest;
   }

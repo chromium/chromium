@@ -114,6 +114,8 @@ WebAuthenticationIOSContentAreaEvent ToWebAuthenticationIOSContentAreaEvent(
       return WebAuthenticationIOSContentAreaEvent::kCreateResolvedGpm;
     case PasskeyScriptEvent::kLogCreateResolvedNonGpm:
       return WebAuthenticationIOSContentAreaEvent::kCreateResolvedNonGpm;
+    case PasskeyScriptEvent::kCancelRequest:
+      return WebAuthenticationIOSContentAreaEvent::kCancelRequested;
   }
 }
 
@@ -275,8 +277,10 @@ void PasskeyJavaScriptFeature::ScriptMessageReceived(
       (*event == PasskeyScriptEvent::kHandleGetRequest);
   bool is_handle_create_request_event =
       (*event == PasskeyScriptEvent::kHandleCreateRequest);
+  bool is_cancel_request_event = (*event == PasskeyScriptEvent::kCancelRequest);
 
-  if (!is_handle_get_request_event && !is_handle_create_request_event) {
+  if (!is_handle_get_request_event && !is_handle_create_request_event &&
+      !is_cancel_request_event) {
     return;
   }
 
@@ -290,6 +294,11 @@ void PasskeyJavaScriptFeature::ScriptMessageReceived(
   if (!request_info.has_value()) {
     base::UmaHistogramEnumeration("WebAuthentication.IOS.PasskeyParsingError",
                                   request_info.error());
+    return;
+  }
+
+  if (is_cancel_request_event) {
+    passkey_tab_helper->HandleCancelRequestEvent(std::move(*request_info));
     return;
   }
 

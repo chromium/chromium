@@ -160,6 +160,11 @@ void PasskeyTabHelper::LogEvent(
                                 event_type);
 }
 
+void PasskeyTabHelper::HandleCancelRequestEvent(
+    webauthn::IOSPasskeyClient::RequestInfo request_info) {
+  // TODO(crbug.com/491303127): Implement UI teardown and state cleanup.
+}
+
 void PasskeyTabHelper::HandleGetRequestedEvent(AssertionRequestParams params) {
   // If the request is invalid, the request can't be processed.
   const IOSPasskeyClient::RequestInfo& request_info = params.RequestInfo();

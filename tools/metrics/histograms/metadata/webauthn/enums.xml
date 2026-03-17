@@ -494,6 +494,9 @@ chromium-metrics-reviews@google.com.
     The Incognito interstitial warning was shown to the user during passkey
     creation.
   </int>
+  <int value="7" label="CancelRequested">
+    Page cancelled a WebAuthn credential request via an AbortSignal.
+  </int>
 </enum>
 
 <!-- LINT.ThenChange(//components/webauthn/ios/passkey_tab_helper.h) -->

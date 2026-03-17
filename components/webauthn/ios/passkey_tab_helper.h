@@ -49,7 +49,8 @@ class PasskeyTabHelper : public web::WebStateObserver,
     kCreateResolvedGpm,
     kCreateResolvedNonGpm,
     kIncognitoInterstitialShown,
-    kMaxValue = kIncognitoInterstitialShown,
+    kCancelRequested,
+    kMaxValue = kCancelRequested,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/webauthn/enums.xml)
 
@@ -60,6 +61,10 @@ class PasskeyTabHelper : public web::WebStateObserver,
 
   // Logs metric indicating that an event of the given type occurred.
   void LogEvent(WebAuthenticationIOSContentAreaEvent event_type);
+
+  // Handles passkey cancellation requests triggered by an AbortSignal.
+  void HandleCancelRequestEvent(
+      webauthn::IOSPasskeyClient::RequestInfo request_info);
 
   // Handles passkey assertion requests. Yields if the request ID is missing.
   void HandleGetRequestedEvent(AssertionRequestParams params);
