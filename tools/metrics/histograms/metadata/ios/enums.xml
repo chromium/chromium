@@ -1503,7 +1503,7 @@ chromium-metrics-reviews@google.com.
   <int value="16" label="Post-default browser abandonment alert."/>
   <int value="17" label="Fullscreen sign-in promo."/>
   <int value="18" label="Welcome Back promo"/>
-  <int value="19" label="BWG promo"/>
+  <int value="19" label="(Obsolete) BWG promo"/>
   <int value="20" label="Safari Import (Remind Me Later)"/>
   <int value="21" label="Default Browser off cycle promo"/>
 </enum>

@@ -65,7 +65,6 @@
 #import "ios/chrome/browser/first_run/model/first_run.h"
 #import "ios/chrome/browser/geolocation/model/geolocation_manager.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_scene_agent.h"
-#import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_promo_scene_agent.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intents/model/user_activity_browser_agent.h"
 #import "ios/chrome/browser/intents/model/user_activity_compatibility_util.h"
@@ -1475,10 +1474,6 @@ void InjectNTP(Browser* browser) {
                           prefService:prefService]];
   }
 
-  if (IsPageActionMenuEnabled()) {
-    [sceneState addAgent:[[GeminiPromoSceneAgent alloc]
-                             initWithPromosManager:promosManager]];
-  }
 }
 
 // Adds agents that may depend on profileState. Called after a profileState has

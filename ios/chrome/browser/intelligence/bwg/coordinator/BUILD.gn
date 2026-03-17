@@ -14,8 +14,6 @@ source_set("coordinator") {
     "gemini_first_run_mediator.h",
     "gemini_first_run_mediator.mm",
     "gemini_first_run_mediator_delegate.h",
-    "gemini_promo_scene_agent.h",
-    "gemini_promo_scene_agent.mm",
   ]
   deps = [
     "//base",
@@ -54,7 +52,6 @@ source_set("unit_tests") {
   sources = [
     "gemini_coordinator_unittest.mm",
     "gemini_first_run_coordinator_unittest.mm",
-    "gemini_promo_scene_agent_unittest.mm",
   ]
 
   deps = [
