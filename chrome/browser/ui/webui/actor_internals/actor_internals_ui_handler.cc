@@ -94,7 +94,8 @@ void ActorInternalsUIHandler::StartLogging() {
   }
 
   PrefService* local_state = g_browser_process->local_state();
-  if (!local_state->GetBoolean(prefs::kAllowFileSelectionDialogs)) {
+  if (local_state->FindPreference(prefs::kAllowFileSelectionDialogs) &&
+      !local_state->GetBoolean(prefs::kAllowFileSelectionDialogs)) {
     return;
   }
 
