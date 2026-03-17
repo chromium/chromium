@@ -42,6 +42,7 @@
 #include "media/audio/audio_features.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_glitch_info.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -109,7 +110,7 @@ int AudioDestination::Render(base::TimeDelta delay,
                              base::TimeTicks delay_timestamp,
                              const media::AudioGlitchInfo& glitch_info,
                              media::AudioBus* dest) {
-  base::TimeTicks start_timestamp = base::TimeTicks::Now();
+  const base::TimeTicks start_timestamp = base::TimeTicks::Now();
   const uint32_t number_of_frames = dest->frames();
 
   TRACE_EVENT("webaudio", "AudioDestination::Render", "frames",
@@ -148,6 +149,14 @@ int AudioDestination::Render(base::TimeDelta delay,
   for (unsigned i = 0; i < number_of_output_channels_; ++i) {
     output_bus_->SetChannelMemory(i, dest->channel(i).data(), number_of_frames);
   }
+
+  absl::Cleanup cleanup_and_report_metrics = [this, start_timestamp] {
+    uma_reporter_.AddRenderDuration(/*duration=*/base::TimeTicks::Now() -
+                                    start_timestamp);
+    for (unsigned i = 0; i < number_of_output_channels_; ++i) {
+      output_bus_->SetChannelMemory(i, nullptr, 0);
+    }
+  };
 
   if (is_output_buffer_bypassed_) {
     // Fill the FIFO if necessary.
@@ -201,67 +210,60 @@ int AudioDestination::Render(base::TimeDelta delay,
       CHECK(state_change_underrun_in_bypass_mode_);
       output_bus_->Zero();
       fifo_->Pull(output_bus_.get(), frames_after_render);
-      uma_reporter_.AddRenderDuration(/*duration=*/base::TimeTicks::Now() -
-                                      start_timestamp);
       return frames_after_render;
-    } else {
-      fifo_->Pull(output_bus_.get(), number_of_frames);
-      uma_reporter_.AddRenderDuration(/*duration=*/base::TimeTicks::Now() -
-                                      start_timestamp);
-      return number_of_frames;
     }
 
-  } else {
-    // Fill the FIFO.
-    if (worklet_task_runner_) {
-      // Use the dual-thread rendering if the AudioWorklet is activated.
-      auto result =
-          fifo_->PullAndUpdateEarmark(output_bus_.get(), number_of_frames);
-      // The audio that we just pulled from the fifo will be played before the
-      // audio that we are about to request, so we add that duration to the
-      // delay of the audio we request. Note that it doesn't matter if there was
-      // a fifo underrun, the delay will be the same either way.
-      delay += audio_utilities::FramesToTime(number_of_frames,
-                                             web_audio_device_->SampleRate());
-
-      media::AudioGlitchInfo combined_glitch_info = glitch_info;
-      bool has_fifo_underrun_occurred = false;
-      if (result.frames_provided < number_of_frames) {
-        media::AudioGlitchInfo underrun{
-            // FIFO contains audio at the output device sample rate.
-            .duration = audio_utilities::FramesToTime(
-                number_of_frames - result.frames_provided,
-                web_audio_device_->SampleRate()),
-            .count = 1};
-        underrun.MaybeAddTraceEvent();
-        combined_glitch_info += underrun;
-        has_fifo_underrun_occurred = true;
-      }
-
-      PostCrossThreadTask(
-          *worklet_task_runner_, FROM_HERE,
-          CrossThreadBindOnce(IgnoreResult(&AudioDestination::RequestRender),
-                              WrapRefCounted(this), number_of_frames,
-                              result.frames_to_render, delay, delay_timestamp,
-                              combined_glitch_info,
-                              /*request_timestamp=*/base::TimeTicks::Now(),
-                              has_fifo_underrun_occurred));
-    } else {
-      // Otherwise use the single-thread rendering.
-      const size_t frames_to_render =
-          fifo_->Pull(output_bus_.get(), number_of_frames);
-      // The audio that we just pulled from the fifo will be played before the
-      // audio that we are about to request, so we add that duration to the
-      // delay of the audio we request.
-      delay += audio_utilities::FramesToTime(number_of_frames,
-                                             web_audio_device_->SampleRate());
-      RequestRender(number_of_frames, frames_to_render, delay, delay_timestamp,
-                    glitch_info, /*request_timestamp=*/base::TimeTicks::Now());
-    }
-    uma_reporter_.AddRenderDuration(/*duration=*/base::TimeTicks::Now() -
-                                    start_timestamp);
+    fifo_->Pull(output_bus_.get(), number_of_frames);
     return number_of_frames;
   }
+
+  // Fill the FIFO.
+  if (worklet_task_runner_) {
+    // Use the dual-thread rendering if the AudioWorklet is activated.
+    auto result =
+        fifo_->PullAndUpdateEarmark(output_bus_.get(), number_of_frames);
+    // The audio that we just pulled from the fifo will be played before the
+    // audio that we are about to request, so we add that duration to the
+    // delay of the audio we request. Note that it doesn't matter if there was
+    // a fifo underrun, the delay will be the same either way.
+    delay += audio_utilities::FramesToTime(number_of_frames,
+                                           web_audio_device_->SampleRate());
+
+    media::AudioGlitchInfo combined_glitch_info = glitch_info;
+    bool has_fifo_underrun_occurred = false;
+    if (result.frames_provided < number_of_frames) {
+      media::AudioGlitchInfo underrun{
+          // FIFO contains audio at the output device sample rate.
+          .duration = audio_utilities::FramesToTime(
+              number_of_frames - result.frames_provided,
+              web_audio_device_->SampleRate()),
+          .count = 1};
+      underrun.MaybeAddTraceEvent();
+      combined_glitch_info += underrun;
+      has_fifo_underrun_occurred = true;
+    }
+
+    PostCrossThreadTask(
+        *worklet_task_runner_, FROM_HERE,
+        CrossThreadBindOnce(IgnoreResult(&AudioDestination::RequestRender),
+                            WrapRefCounted(this), number_of_frames,
+                            result.frames_to_render, delay, delay_timestamp,
+                            combined_glitch_info,
+                            /*request_timestamp=*/base::TimeTicks::Now(),
+                            has_fifo_underrun_occurred));
+  } else {
+    // Otherwise use the single-thread rendering.
+    const size_t frames_to_render =
+        fifo_->Pull(output_bus_.get(), number_of_frames);
+    // The audio that we just pulled from the fifo will be played before the
+    // audio that we are about to request, so we add that duration to the
+    // delay of the audio we request.
+    delay += audio_utilities::FramesToTime(number_of_frames,
+                                           web_audio_device_->SampleRate());
+    RequestRender(number_of_frames, frames_to_render, delay, delay_timestamp,
+                  glitch_info, /*request_timestamp=*/base::TimeTicks::Now());
+  }
+  return number_of_frames;
 }
 
 void AudioDestination::OnRenderError() {

@@ -59,6 +59,11 @@ void MediaMultiChannelResampler::ProvideResamplerInput(
         resampler_output_bus->frames());
   }
   read_cb_.Run(resampler_frame_delay, resampler_output_bus_wrapper_.get());
+
+  for (unsigned i = 0; i < resampler_output_bus_wrapper_->NumberOfChannels();
+       ++i) {
+    resampler_output_bus_wrapper_->SetChannelMemory(i, nullptr, 0);
+  }
 }
 
 }  // namespace blink
