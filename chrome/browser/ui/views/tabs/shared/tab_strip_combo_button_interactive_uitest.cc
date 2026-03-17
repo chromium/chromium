@@ -8,7 +8,6 @@
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_combo_button.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_flat_edge_button.h"
-#include "chrome/browser/ui/views/test/tab_strip_interactive_test_mixin.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -16,17 +15,19 @@
 #include "components/saved_tab_groups/public/features.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/gfx/animation/animation_test_api.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/view_utils.h"
 
 namespace {
 
-class TabStripComboButtonInteractiveUiTest
-    : public TabStripInteractiveTestMixin<InteractiveBrowserTest> {
+class TabStripComboButtonInteractiveUiTest : public InteractiveBrowserTest {
  public:
   TabStripComboButtonInteractiveUiTest() {
     scoped_feature_list_.InitWithFeatures(
         {tabs::kHorizontalTabStripComboButton, tab_groups::kProjectsPanel}, {});
+    animation_mode_reset_ = gfx::AnimationTestApi::SetRichAnimationRenderMode(
+        gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
   }
   ~TabStripComboButtonInteractiveUiTest() override = default;
 
@@ -79,6 +80,7 @@ class TabStripComboButtonInteractiveUiTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  gfx::AnimationTestApi::RenderModeResetter animation_mode_reset_;
 };
 
 IN_PROC_BROWSER_TEST_F(TabStripComboButtonInteractiveUiTest,
@@ -160,9 +162,8 @@ IN_PROC_BROWSER_TEST_F(TabStripComboButtonInteractiveUiTest,
       SetPinned(prefs::kTabSearchPinnedToTabstrip, false),
       WaitForHide(kTabSearchButtonElementId),
       // Trigger ephemeral state.
-      TriggerEphemeralState(), FinishTabstripAnimations(),
-      WaitForShow(kTabSearchButtonElementId), TriggerBubbleDestroying(),
-      FinishTabstripAnimations(),
+      TriggerEphemeralState(), WaitForShow(kTabSearchButtonElementId),
+      TriggerBubbleDestroying(),
       // Button should disappear after a couple seconds.
       WaitForHide(kTabSearchButtonElementId));
 }
@@ -174,17 +175,15 @@ IN_PROC_BROWSER_TEST_F(TabStripComboButtonInteractiveUiTest,
       SetPinned(prefs::kTabSearchPinnedToTabstrip, false),
       WaitForHide(kTabSearchButtonElementId),
       // Trigger ephemeral state.
-      TriggerEphemeralState(), FinishTabstripAnimations(),
-      WaitForShow(kTabSearchButtonElementId),
+      TriggerEphemeralState(), WaitForShow(kTabSearchButtonElementId),
       ExecuteCommand(kTabSearchButtonElementId, IDC_TAB_SEARCH_TOGGLE_PIN),
-      FinishTabstripAnimations(),
       // Button should still be visible.
       CheckView(kTabSearchButtonElementId,
                 [](views::View* view) { return view->GetVisible(); }));
 }
 
 class TabStripComboButtonEverythingMenuInteractiveUiTest
-    : public TabStripInteractiveTestMixin<InteractiveBrowserTest> {
+    : public InteractiveBrowserTest {
  public:
   TabStripComboButtonEverythingMenuInteractiveUiTest() {
     scoped_feature_list_.InitWithFeatures(

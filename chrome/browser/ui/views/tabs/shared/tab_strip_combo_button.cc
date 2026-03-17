@@ -53,8 +53,11 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabStripComboButton,
 TabStripComboButton::TabStripComboButton(BrowserWindowInterface* browser)
     : browser_(browser),
       action_view_controller_(std::make_unique<views::ActionViewController>()) {
-  start_button_animation_.SetSlideDuration(kAnimationDuration);
-  end_button_animation_.SetSlideDuration(kAnimationDuration);
+  base::TimeDelta animation_duration =
+      gfx::Animation::ShouldRenderRichAnimation() ? kAnimationDuration
+                                                  : base::TimeDelta();
+  start_button_animation_.SetSlideDuration(animation_duration);
+  end_button_animation_.SetSlideDuration(animation_duration);
   SetProperty(views::kElementIdentifierKey, kTabStripComboButtonElementId);
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
