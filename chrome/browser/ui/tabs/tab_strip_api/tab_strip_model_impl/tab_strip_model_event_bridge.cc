@@ -68,7 +68,17 @@ void BridgeInstance::OnChildrenAdded(
 void BridgeInstance::OnChildrenRemoved(
     const tabs::TabCollection::Position& position,
     const tabs::TabCollectionNodes& handles) {
-  ForwardToObserver(events::ToEvent(handles));
+  tabs::TabCollectionNodes filtered_handles;
+  for (const auto& handle : handles) {
+    // We only forward TabCollectionHandles because tab removal events do not
+    // bubble up to the root when their parent collection is detached from the
+    // tree (e.g. closing the last tab in a group removes the group first).
+    // Tab removals are instead handled via OnTabStripModelChanged.
+    if (std::holds_alternative<tabs::TabCollectionHandle>(handle)) {
+      filtered_handles.push_back(handle);
+    }
+  }
+  ForwardToObserver(events::ToEvent(filtered_handles));
 }
 
 void BridgeInstance::OnChildMoved(
@@ -85,7 +95,15 @@ void BridgeInstance::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
-  // Avoid listening to add, remove and move changes as this is handled by the
+  if (change.type() == TabStripModelChange::Type::kRemoved) {
+    const TabStripModelChange::Remove* remove = change.GetRemove();
+    tabs::TabCollectionNodes removed_nodes;
+    for (const auto& contents : remove->contents) {
+      removed_nodes.push_back(contents.tab->GetHandle());
+    }
+    ForwardToObserver(events::ToEvent(removed_nodes));
+  }
+  // Avoid listening to add and move changes as this is handled by the
   // TabCollection observation methods.
   if (change.type() == TabStripModelChange::Type::kReplaced) {
     NOTIMPLEMENTED();

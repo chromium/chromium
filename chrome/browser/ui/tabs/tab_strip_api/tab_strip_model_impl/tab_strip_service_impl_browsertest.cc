@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/adapters/browser_adapter.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/observation/tab_strip_api_batched_observer.h"
@@ -71,6 +72,7 @@ class TestTabStripClient : public tabs_api::mojom::TabsObserver {
     for (auto& id : event->tabs) {
       tabs.erase(std::string(id.Id()));
     }
+    tab_closed_events.push_back(event.Clone());
   }
 
   void OnNodeMoved(tabs_api::mojom::OnNodeMovedEventPtr event) {
@@ -127,6 +129,7 @@ class TestTabStripClient : public tabs_api::mojom::TabsObserver {
   std::vector<tabs_api::mojom::OnNodeMovedEventPtr> move_events;
   std::vector<tabs_api::mojom::OnCollectionCreatedEventPtr> created_events;
   std::vector<tabs_api::mojom::OnTabsCreatedEventPtr> tab_created_events;
+  std::vector<tabs_api::mojom::OnTabsClosedEventPtr> tab_closed_events;
 
   std::map<std::string, tabs_api::mojom::TabPtr> tabs;
 };
@@ -266,6 +269,31 @@ class TabStripServiceImplBrowserTest : public InProcessBrowserTest {
     return std::nullopt;
   }
 
+  tabs_api::mojom::TabPtr CreateTabAt(
+      mojo::Remote<TabStripService>& remote,
+      std::optional<tabs_api::Position> position = std::nullopt,
+      std::optional<GURL> url = std::nullopt) {
+    base::RunLoop run_loop;
+    TabStripService::CreateTabAtResult result;
+    remote->CreateTabAt(
+        position, url,
+        base::BindLambdaForTesting([&](TabStripService::CreateTabAtResult in) {
+          result = std::move(in);
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+    EXPECT_TRUE(result.has_value());
+    return result.has_value() ? std::move(result.value()) : nullptr;
+  }
+
+  void CreateTabs(mojo::Remote<TabStripService>& remote,
+                  int count,
+                  std::optional<GURL> url = std::nullopt) {
+    for (int i = 0; i < count; ++i) {
+      CreateTabAt(remote, std::nullopt, url);
+    }
+  }
+
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<TabStripServiceMojoHandler> tab_strip_service_mojo_handler_;
 };
@@ -325,23 +353,13 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, CreateTabAt) {
   const int expected_tab_count = model->count() + 1;
   const GURL url("http://example.com/");
 
-  base::RunLoop run_loop;
+  auto tab = CreateTabAt(remote, tabs_api::Position(0), url);
 
-  TabStripService::CreateTabAtResult result;
-  remote->CreateTabAt(
-      tabs_api::Position(0), std::make_optional(url),
-      base::BindLambdaForTesting([&](TabStripService::CreateTabAtResult in) {
-        result = std::move(in);
-        run_loop.Quit();
-      }));
-  run_loop.Run();
-
-  ASSERT_TRUE(result.has_value());
-  EXPECT_TRUE(result.value());
+  ASSERT_TRUE(tab);
   EXPECT_EQ(model->count(), expected_tab_count);
 
   auto handle = model->GetTabAtIndex(0)->GetHandle();
-  ASSERT_EQ(base::NumberToString(handle.raw_value()), result.value()->id.Id());
+  ASSERT_EQ(base::NumberToString(handle.raw_value()), tab->id.Id());
   // Assert that newly created tabs are also activated.
   ASSERT_EQ(model->GetActiveTab()->GetHandle(), handle);
 }
@@ -375,15 +393,8 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest,
   std::optional<GURL> url("http://example.com/");
   auto [pinned_path, unpinned_path] = get_snapshot_collection_paths();
   // Test creating a tab in the pinned collection
-  base::RunLoop pinned_create_loop;
-  observation->remote->CreateTabAt(
-      tabs_api::Position(0, tabs_api::Path(pinned_path)), url,
-      base::BindLambdaForTesting(
-          [&](TabStripService::CreateTabAtResult result) {
-            ASSERT_TRUE(result.has_value());
-            pinned_create_loop.Quit();
-          }));
-  pinned_create_loop.Run();
+  CreateTabAt(observation->remote,
+              tabs_api::Position(0, tabs_api::Path(pinned_path)), url);
   observation->receiver.FlushForTesting();
   ASSERT_EQ(model->count(), 2);
   ASSERT_TRUE(model->IsTabPinned(0));
@@ -396,15 +407,8 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest,
   EXPECT_EQ(0u, pinned_event->tabs[0]->position.index());
 
   // Test creating the tab in an unpinned collection.
-  base::RunLoop unpinned_create_loop;
-  observation->remote->CreateTabAt(
-      tabs_api::Position(0, tabs_api::Path(unpinned_path)), url,
-      base::BindLambdaForTesting(
-          [&](TabStripService::CreateTabAtResult result) {
-            ASSERT_TRUE(result.has_value());
-            unpinned_create_loop.Quit();
-          }));
-  unpinned_create_loop.Run();
+  CreateTabAt(observation->remote,
+              tabs_api::Position(0, tabs_api::Path(unpinned_path)), url);
   observation->receiver.FlushForTesting();
 
   ASSERT_EQ(model->count(), 3);
@@ -425,15 +429,8 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest,
   std::vector<tabs_api::NodeId> group_path = unpinned_path;
   group_path.push_back(group_node_id);
 
-  base::RunLoop group_create_loop;
-  observation->remote->CreateTabAt(
-      tabs_api::Position(0, tabs_api::Path(group_path)), url,
-      base::BindLambdaForTesting(
-          [&](TabStripService::CreateTabAtResult result) {
-            ASSERT_TRUE(result.has_value());
-            group_create_loop.Quit();
-          }));
-  group_create_loop.Run();
+  CreateTabAt(observation->remote,
+              tabs_api::Position(0, tabs_api::Path(group_path)), url);
   observation->receiver.FlushForTesting();
 
   ASSERT_EQ(model->count(), 4);
@@ -454,7 +451,6 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, Observation) {
   uint32_t target_index = 0;
   auto original_tab_id = tabs_api::NodeId::FromTabHandle(
       GetTabStripModel()->GetTabAtIndex(0)->GetHandle());
-  base::RunLoop run_loop;
 
   base::RunLoop get_tabs_loop;
   remote->GetTabs(
@@ -466,22 +462,13 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, Observation) {
       }));
   get_tabs_loop.Run();
 
-  TabStripService::CreateTabAtResult result;
-  remote->CreateTabAt(
-      tabs_api::Position(target_index), std::make_optional(url),
-      base::BindLambdaForTesting([&](TabStripService::CreateTabAtResult in) {
-        result = std::move(in);
-        run_loop.Quit();
-      }));
-  run_loop.Run();
+  auto created_tab = CreateTabAt(remote, tabs_api::Position(target_index), url);
 
   // Ensure that we've received the observation callback, which are not
   // guaranteed to happen immediately.
   receiver.FlushForTesting();
 
-  ASSERT_TRUE(result.has_value())
-      << "CreateTabAt failed: " << (result.error()->message);
-  auto created_tab = std::move(result.value());
+  ASSERT_TRUE(created_tab);
 
   ASSERT_EQ(1ul, client.tabs.size());
   ASSERT_TRUE(client.tabs.contains(std::string(created_tab->id.Id())));
@@ -517,15 +504,7 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, CloseTabs) {
 
   const int starting_num_tabs = GetTabStripModel()->count();
 
-  base::RunLoop create_loop;
-  remote->CreateTabAt(tabs_api::Position(0),
-                      std::make_optional(GURL("http://dark.web")),
-                      base::BindLambdaForTesting(
-                          [&](TabStripService::CreateTabAtResult result) {
-                            ASSERT_TRUE(result.has_value());
-                            create_loop.Quit();
-                          }));
-  create_loop.Run();
+  CreateTabAt(remote, tabs_api::Position(0), GURL("http://dark.web"));
 
   // We should now have one more tab than when we first started.
   ASSERT_EQ(starting_num_tabs + 1, GetTabStripModel()->count());
@@ -546,21 +525,37 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, CloseTabs) {
   ASSERT_EQ(starting_num_tabs, GetTabStripModel()->count());
 }
 
+IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, RemoveTabGroup) {
+  mojo::Remote<TabStripService> remote;
+  tab_strip_service_mojo_handler_->Accept(remote.BindNewPipeAndPassReceiver());
+  auto observation = SetUpObservation();
+  TabStripModel* model = GetTabStripModel();
+  CreateTabs(remote, 3, GURL("http://somwewhere.nowhere"));
+  ASSERT_EQ(model->count(), 4);
+
+  const tab_groups::TabGroupId group_id = model->AddToNewGroup({0, 1, 2});
+  observation->receiver.FlushForTesting();
+
+  model->CloseAllTabsInGroup(group_id);
+  observation->receiver.FlushForTesting();
+
+  // Total number of nodes closed (3 tabs + 1 group collection).
+  int closed_node_count = 0;
+  for (const auto& event : observation->client.tab_closed_events) {
+    closed_node_count += event->tabs.size();
+  }
+  EXPECT_EQ(closed_node_count, 4);
+  EXPECT_EQ(model->count(), 1);
+}
+
 IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, ActivateTab) {
   mojo::Remote<TabStripService> remote;
   tab_strip_service_mojo_handler_->Accept(remote.BindNewPipeAndPassReceiver());
 
   tabs_api::NodeId created_id;
-  base::RunLoop create_loop;
   // Append a new tab to the end, which will also focus it.
-  remote->CreateTabAt(std::nullopt, std::make_optional(GURL("http://dark.web")),
-                      base::BindLambdaForTesting(
-                          [&](TabStripService::CreateTabAtResult result) {
-                            ASSERT_TRUE(result.has_value());
-                            created_id = result.value()->id;
-                            create_loop.Quit();
-                          }));
-  create_loop.Run();
+  auto tab = CreateTabAt(remote, std::nullopt, GURL("http://dark.web"));
+  created_id = tab->id;
 
   auto old_tab_handle = GetTabStripModel()->GetTabAtIndex(0)->GetHandle();
   // Creating a new tab should have caused the old tab to lose active state.
@@ -590,17 +585,7 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, SetSelectedTabs) {
   auto observation = SetUpObservation();
 
   // Created 5 tabs.
-  for (int i = 0; i < 5; ++i) {
-    base::RunLoop create_loop;
-    remote->CreateTabAt(std::nullopt,
-                        std::make_optional(GURL("http://some.where/nowhere")),
-                        base::BindLambdaForTesting(
-                            [&](TabStripService::CreateTabAtResult result) {
-                              ASSERT_TRUE(result.has_value());
-                              create_loop.Quit();
-                            }));
-    create_loop.Run();
-  }
+  CreateTabs(remote, 5, GURL("http://some.where/nowhere"));
   observation->receiver.FlushForTesting();
 
   // TODO(crbug.com/412738255): need to account for the initial tab.
@@ -659,15 +644,7 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, MoveTab) {
   auto observation = SetUpObservation();
 
   // Append a new tab to the end, so we have two tabs to work with.
-  base::RunLoop create_loop;
-  remote->CreateTabAt(std::nullopt,
-                      std::make_optional(GURL("http://somwewhere.nowhere")),
-                      base::BindLambdaForTesting(
-                          [&](TabStripService::CreateTabAtResult result) {
-                            ASSERT_TRUE(result.has_value());
-                            create_loop.Quit();
-                          }));
-  create_loop.Run();
+  CreateTabAt(remote, std::nullopt, GURL("http://somwewhere.nowhere"));
 
   auto handle_to_move = GetTabStripModel()->GetTabAtIndex(0)->GetHandle();
   auto to_move_id =
@@ -704,17 +681,7 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, MoveTabIntoGroup) {
   auto observation = SetUpObservation();
 
   TabStripModel* model = GetTabStripModel();
-  for (int i = 0; i < 3; i++) {
-    base::RunLoop create_loop;
-    remote->CreateTabAt(std::nullopt,
-                        std::make_optional(GURL("http://somwewhere.nowhere")),
-                        base::BindLambdaForTesting(
-                            [&](TabStripService::CreateTabAtResult result) {
-                              ASSERT_TRUE(result.has_value());
-                              create_loop.Quit();
-                            }));
-    create_loop.Run();
-  }
+  CreateTabs(remote, 3, GURL("http://somwewhere.nowhere"));
   ASSERT_EQ(model->count(), 4);
 
   const tab_groups::TabGroupId group_id = model->AddToNewGroup({0, 1});
@@ -777,17 +744,7 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, MoveGroupCollection) {
   tab_strip_service_mojo_handler_->Accept(remote.BindNewPipeAndPassReceiver());
 
   TabStripModel* model = GetTabStripModel();
-  for (int i = 0; i < 3; i++) {
-    base::RunLoop create_loop;
-    remote->CreateTabAt(std::nullopt,
-                        std::make_optional(GURL("http://somwewhere.nowhere")),
-                        base::BindLambdaForTesting(
-                            [&](TabStripService::CreateTabAtResult result) {
-                              ASSERT_TRUE(result.has_value());
-                              create_loop.Quit();
-                            }));
-    create_loop.Run();
-  }
+  CreateTabs(remote, 3, GURL("http://somwewhere.nowhere"));
   ASSERT_EQ(model->count(), 4);
 
   const tab_groups::TabGroupId group_id = model->AddToNewGroup({2, 3});
@@ -822,17 +779,7 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, MoveSplitCollection) {
   tab_strip_service_mojo_handler_->Accept(remote.BindNewPipeAndPassReceiver());
 
   TabStripModel* model = GetTabStripModel();
-  for (int i = 0; i < 3; i++) {
-    base::RunLoop create_loop;
-    remote->CreateTabAt(std::nullopt,
-                        std::make_optional(GURL("http://somwewhere.nowhere")),
-                        base::BindLambdaForTesting(
-                            [&](TabStripService::CreateTabAtResult result) {
-                              ASSERT_TRUE(result.has_value());
-                              create_loop.Quit();
-                            }));
-    create_loop.Run();
-  }
+  CreateTabs(remote, 3, GURL("http://somwewhere.nowhere"));
   ASSERT_EQ(model->count(), 4);
 
   model->ActivateTabAt(2);
@@ -872,17 +819,7 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, ReplaceTabInSplit) {
       experiment_remote.BindNewPipeAndPassReceiver());
 
   TabStripModel* model = GetTabStripModel();
-  for (int i = 0; i < 3; i++) {
-    base::RunLoop create_loop;
-    remote->CreateTabAt(std::nullopt,
-                        std::make_optional(GURL("http://somewhere.nowhere")),
-                        base::BindLambdaForTesting(
-                            [&](TabStripService::CreateTabAtResult result) {
-                              ASSERT_TRUE(result.has_value());
-                              create_loop.Quit();
-                            }));
-    create_loop.Run();
-  }
+  CreateTabs(remote, 3, GURL("http://somewhere.nowhere"));
   ASSERT_EQ(model->count(), 4);
 
   // Create a split with tabs at index 2 and 3.
@@ -927,15 +864,7 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest,
       experiment_remote.BindNewPipeAndPassReceiver());
   TabStripModel* model = GetTabStripModel();
 
-  base::RunLoop create_loop;
-  remote->CreateTabAt(std::nullopt,
-                      std::make_optional(GURL("http://somewhere.nowhere")),
-                      base::BindLambdaForTesting(
-                          [&](TabStripService::CreateTabAtResult result) {
-                            ASSERT_TRUE(result.has_value());
-                            create_loop.Quit();
-                          }));
-  create_loop.Run();
+  CreateTabAt(remote, std::nullopt, GURL("http://somewhere.nowhere"));
 
   ASSERT_EQ(model->count(), 2);
   const tab_groups::TabGroupId group_id = model->AddToNewGroup({0, 1});
@@ -980,16 +909,9 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, ShowTabContextMenu) {
       experiment_remote.BindNewPipeAndPassReceiver());
 
   tabs_api::NodeId created_id;
-  base::RunLoop create_loop;
-  remote->CreateTabAt(std::nullopt,
-                      std::make_optional(GURL("http://somewhere.nowhere")),
-                      base::BindLambdaForTesting(
-                          [&](TabStripService::CreateTabAtResult result) {
-                            ASSERT_TRUE(result.has_value());
-                            created_id = result.value()->id;
-                            create_loop.Quit();
-                          }));
-  create_loop.Run();
+  auto tab =
+      CreateTabAt(remote, std::nullopt, GURL("http://somewhere.nowhere"));
+  created_id = tab->id;
 
   base::RunLoop run_loop;
   experiment_remote->ShowTabContextMenu(
