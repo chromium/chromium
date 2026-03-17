@@ -77,14 +77,17 @@ struct ShapeCacheKey {
                 unsigned start_offset,
                 unsigned end_offset,
                 const AtomicString& locale,
+                base::span<const FontFeatureRange> font_features,
                 TextDirection direction)
       : text_(text),
         start_offset_(start_offset),
         end_offset_(end_offset),
         locale_(locale),
+        font_features_(font_features),
         direction_(direction) {
     DCHECK_NE(text_, g_empty_string);
   }
+
   explicit ShapeCacheKey(HashTableDeletedValueType) : text_(g_empty_string) {}
 
   bool IsHashTableDeletedValue() const { return text_ == g_empty_string; }
@@ -94,6 +97,8 @@ struct ShapeCacheKey {
     AddIntToHash(hash, start_offset_);
     AddIntToHash(hash, end_offset_);
     AddIntToHash(hash, locale_ ? blink::GetHash(locale_) : 0);
+    AddIntToHash(hash,
+                 StringHasher::HashMemory(base::as_byte_span(font_features_)));
     AddIntToHash(hash, static_cast<unsigned>(direction_));
     return hash;
   }
@@ -101,6 +106,7 @@ struct ShapeCacheKey {
   bool operator==(const ShapeCacheKey& other) const {
     return text_ == other.text_ && start_offset_ == other.start_offset_ &&
            end_offset_ == other.end_offset_ && locale_ == other.locale_ &&
+           font_features_ == other.font_features_ &&
            direction_ == other.direction_;
   }
 
@@ -111,6 +117,7 @@ struct ShapeCacheKey {
   unsigned start_offset_ = 0u;
   unsigned end_offset_ = 0u;
   AtomicString locale_;
+  Vector<FontFeatureRange, 1> font_features_;
   TextDirection direction_ = TextDirection::kLtr;
 };
 

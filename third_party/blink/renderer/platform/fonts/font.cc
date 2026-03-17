@@ -218,6 +218,10 @@ bool Font::HasNonInitialFontFeatures() const {
   return EnsureFontFallbackList()->HasNonInitialFontFeatures(font_description_);
 }
 
+bool Font::HasSimpleFontFeatures() const {
+  return EnsureFontFallbackList()->HasSimpleFontFeatures(font_description_);
+}
+
 bool Font::CanShapeWordByWord() const {
   return EnsureFontFallbackList()->CanShapeWordByWord(GetFontDescription());
 }

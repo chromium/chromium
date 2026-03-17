@@ -120,6 +120,14 @@ TEST_F(InlineNodeShapeCacheTest, ShapeCacheOutOfFlowPositioned) {
   EXPECT_TRUE(node.IsNGShapeCacheAllowed());
 }
 
+TEST_F(InlineNodeShapeCacheTest, ShapeCacheFontFeatures) {
+  SetBodyInnerHTML(
+      "<style> div { font-feature-settings: 'liga' off; }</style>"
+      "<div id=t style=>abc</div>");
+  InlineNodeForTest node = CreateInlineNode(GetLayoutBlockFlowByElementId("t"));
+  EXPECT_TRUE(node.IsNGShapeCacheAllowed());
+}
+
 TEST_F(InlineNodeShapeCacheTest, ShapeResultPointerEqualFloatsAndOutOfFlow) {
   // We can have a mismatch in the number and type of float/OOF-positioned
   // items as they are transparent to shaping.

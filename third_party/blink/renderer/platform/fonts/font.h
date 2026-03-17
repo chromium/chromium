@@ -164,6 +164,9 @@ class PLATFORM_EXPORT Font : public GarbageCollected<Font> {
   // `GetFontFeatures()` but also features computed in later stages.
   bool HasNonInitialFontFeatures() const;
 
+  // True if `this` has font-features which encompass the entire range.
+  bool HasSimpleFontFeatures() const;
+
   // Access the NG shape cache associated with this particular font object.
   // Should *not* be retained across layout calls as it may become invalid.
   NGShapeCache& GetNGShapeCache() const;

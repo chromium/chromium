@@ -173,7 +173,7 @@ class ReusingTextShaper final {
       return font.PrimaryFont()->GetShapeCache().GetOrCreate(
           ShapeCacheKey(shaper_.GetText(), start_item.StartOffset(), end_offset,
                         locale ? locale->LocaleString() : g_null_atom,
-                        start_item.Direction()),
+                        font.GetFontFeatures(), start_item.Direction()),
           ShapeFunc);
     }
     return ShapeFunc().shape_result;
@@ -1546,11 +1546,18 @@ bool InlineNode::IsNGShapeCacheAllowed(const String& text_content,
     return false;
   }
 
-  // Only allow the cache for initial font features.
   const Font& font =
       override_font ? *override_font : items.front()->FontWithSvgScaling();
-  if (font.HasNonInitialFontFeatures()) [[unlikely]] {
-    return false;
+  if (RuntimeEnabledFeatures::ExtendedShapeCacheEnabled()) {
+    // Only allow the cache for features we can cache.
+    if (!font.HasSimpleFontFeatures()) [[unlikely]] {
+      return false;
+    }
+  } else {
+    // Only allow the cache for initial font features.
+    if (font.HasNonInitialFontFeatures()) [[unlikely]] {
+      return false;
+    }
   }
 
   // We mutate the shape-result if there is spacing, it isn't safe to cache.
