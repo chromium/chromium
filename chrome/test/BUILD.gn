@@ -7229,7 +7229,6 @@ test("unit_tests") {
     "//chrome/browser/ui/login:unit_tests",
     "//chrome/browser/ui/page_info:unit_tests",
     "//chrome/browser/ui/passwords:unit_tests",
-    "//chrome/browser/ui/passwords/settings:unit_tests",
     "//chrome/browser/ui/plus_addresses:unit_tests",
     "//chrome/browser/ui/profiles",
     "//chrome/browser/ui/profiles:unit_tests",
@@ -9034,6 +9033,7 @@ test("unit_tests") {
     deps += [
       "//chrome/browser/accessibility_annotator/content_annotator:unit_tests",
       "//chrome/browser/ui/contextual_search:unit_tests",
+      "//chrome/browser/ui/passwords/settings:unit_tests",
       "//chrome/browser/ui/search",
       "//chrome/browser/ui/views/location_bar",
     ]

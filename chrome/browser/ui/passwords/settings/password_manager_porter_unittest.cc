@@ -336,10 +336,6 @@ class PasswordManagerPorterTest : public ChromeRenderViewHostTestHarness {
   MockImportFileDeletion import_file_deletion_callback_;
 };
 
-// Password importing and exporting using a |SelectFileDialog| is not yet
-// supported on Android.
-#if !BUILDFLAG(IS_ANDROID)
-
 TEST_F(PasswordManagerPorterTest, PasswordExport) {
   std::unique_ptr<MockPasswordManagerExporter> mock_password_manager_exporter_ =
       std::make_unique<StrictMock<MockPasswordManagerExporter>>();
@@ -610,7 +606,5 @@ INSTANTIATE_TEST_SUITE_P(
                  "https://example.com,u,p",
                  {{"https://example.com/somepath", "x", "y"},
                   {"https://example.com/", "u", "p"}}}));
-
-#endif
 
 }  // namespace

@@ -28,7 +28,6 @@
 
 namespace {
 
-#if !BUILDFLAG(IS_ANDROID)
 // The default directory and filename when importing and exporting passwords.
 base::FilePath GetDefaultFilepathForPasswordFile(
     const base::FilePath::StringType& default_extension) {
@@ -43,7 +42,6 @@ base::FilePath GetDefaultFilepathForPasswordFile(
 #endif
   return default_path.Append(file_name).AddExtension(default_extension);
 }
-#endif  // !IS_ANDROID
 
 }  // namespace
 
@@ -223,19 +221,14 @@ void PasswordManagerPorter::ExportFileSelectListener::FileSelectionCanceled() {
   owner_->select_file_dialog_.reset();
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 static ui::SelectFileDialog::FileTypeInfo FileTypeInfoForImportExport() {
   ui::SelectFileDialog::FileTypeInfo info{{FILE_PATH_LITERAL("csv")}};
   info.include_all_files = true;
   return info;
 }
-#endif
 
 void PasswordManagerPorter::PresentImportFileSelector(
     content::WebContents* web_contents) {
-// This method should never be called on Android (as there is no file selector),
-// and the relevant IDS constants are not present for Android.
-#if !BUILDFLAG(IS_ANDROID)
   // Early return if the select file dialog is already active.
   if (select_file_dialog_) {
     return;
@@ -251,14 +244,10 @@ void PasswordManagerPorter::PresentImportFileSelector(
       l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_IMPORT_DIALOG_TITLE),
       GetDefaultFilepathForPasswordFile(info.extensions[0][0]), &info, 1,
       info.extensions[0][0], web_contents->GetTopLevelNativeWindow());
-#endif
 }
 
 void PasswordManagerPorter::PresentExportFileSelector(
     content::WebContents* web_contents) {
-// This method should never be called on Android (as there is no file selector),
-// and the relevant IDS constants are not present for Android.
-#if !BUILDFLAG(IS_ANDROID)
   // Early return if the select file dialog is already active.
   if (select_file_dialog_) {
     return;
@@ -274,7 +263,6 @@ void PasswordManagerPorter::PresentExportFileSelector(
       l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_EXPORT_DIALOG_TITLE),
       GetDefaultFilepathForPasswordFile(info.extensions[0][0]), &info, 1,
       info.extensions[0][0], web_contents->GetTopLevelNativeWindow(), nullptr);
-#endif
 }
 
 void PasswordManagerPorter::ExportPasswordsToPath(const base::FilePath& path) {

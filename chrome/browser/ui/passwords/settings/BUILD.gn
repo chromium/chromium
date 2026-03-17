@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+assert(!is_android, "Password import/export file selection are desktop-only.")
+
 source_set("settings") {
   sources = [
     "password_manager_porter.h",
