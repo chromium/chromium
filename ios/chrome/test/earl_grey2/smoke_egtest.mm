@@ -6,8 +6,8 @@
 
 #import "base/ios/ios_util.h"
 #import "ios/chrome/browser/bookmarks/test/bookmark_earl_grey.h"
+#import "ios/chrome/browser/device_reauth/test/reauthentication_app_interface.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings/password_settings_constants.h"
-#import "ios/chrome/browser/settings/ui_bundled/password/password_settings_app_interface.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_table_view_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_root_table_constants.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -74,8 +74,7 @@
   [ChromeEarlGreyUI openSettingsMenu];
 
   // Mock successful reauth when opening the Password Manager.
-  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
-  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+  [ReauthenticationAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kSuccess];
   [ChromeEarlGreyUI
       tapSettingsMenuButton:chrome_test_util::SettingsMenuPasswordsButton()];
@@ -105,9 +104,6 @@
   // Close Password Manager.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsDoneButton()]
       performAction:grey_tap()];
-
-  // Remove mock to keep the app in the same state as before running the test.
-  [PasswordSettingsAppInterface removeMockReauthenticationModule];
 }
 
 // Tests that helpers from chrome_earl_grey.h are available for use in tests.
