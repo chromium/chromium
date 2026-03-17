@@ -737,7 +737,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.RegisterDataHostOutcome"
-    enum="ConversionRegisterDataHostOutcome" expires_after="2026-04-26">
+    enum="ConversionRegisterDataHostOutcome" expires_after="2026-06-01">
   <owner>apaseltiner@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
