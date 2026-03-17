@@ -46,6 +46,8 @@ struct FederatedPermission {
 using ListPermissionsResult =
     base::OnceCallback<void(std::vector<FederatedPermission>)>;
 
+using DeletePermissionResult = base::OnceCallback<void(bool)>;
+
 // Manages actor login permissions.
 // Currently this only manages federated permissions but the long-term goal is
 // to manage all actor login permissions through this service.
@@ -55,6 +57,11 @@ class ActorLoginPermissionService : public KeyedService {
 
   // Lists actor login permissions for the primary profile.
   virtual void ListAllPermissions(ListPermissionsResult callback) = 0;
+
+  // Deletes permission for the given embedder origin. If the origin is opaque,
+  // the callback will be called with false.
+  virtual void DeletePermission(const url::Origin& embedder_origin,
+                                DeletePermissionResult callback) = 0;
 };
 
 }  // namespace actor_login

@@ -15,6 +15,7 @@
 #include "components/password_manager/core/browser/actor_login/actor_login_permission_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "url/origin.h"
 
 namespace actor_login {
 
@@ -30,6 +31,8 @@ class ActorLoginPermissionServiceImpl : public ActorLoginPermissionService {
 
   // ActorLoginPermissionService:
   void ListAllPermissions(ListPermissionsResult callback) override;
+  void DeletePermission(const url::Origin& embedder_origin,
+                        DeletePermissionResult callback) override;
 
  private:
   class Request;
@@ -39,6 +42,8 @@ class ActorLoginPermissionServiceImpl : public ActorLoginPermissionService {
   std::vector<FederatedPermission> OnListRequestCompleted(
       Request* request,
       std::optional<std::string> response_body);
+  bool OnDeleteRequestCompleted(Request* request,
+                                std::optional<std::string> response_body);
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 

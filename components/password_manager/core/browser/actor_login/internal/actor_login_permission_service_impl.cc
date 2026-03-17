@@ -12,6 +12,7 @@
 #include "base/json/json_writer.h"
 #include "base/strings/strcat.h"
 #include "base/values.h"
+#include "net/base/net_errors.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -98,6 +99,17 @@ base::DictValue CreateFederatedPermissionFilter(
 
   return base::DictValue().Set("federatedCredentialPermissionFilter",
                                std::move(federated_filter));
+}
+
+std::string CreateDeleteRequestBody(const url::Origin& embedder_origin) {
+  base::ListValue filters;
+  filters.Append(
+      CreateFederatedPermissionFilter({.embedder_origin = embedder_origin}));
+  auto request_dict = base::DictValue().Set("filter", std::move(filters));
+
+  std::string post_data;
+  base::JSONWriter::Write(request_dict, &post_data);
+  return post_data;
 }
 
 std::string CreateListRequestBody(
@@ -190,6 +202,8 @@ class ActorLoginPermissionServiceImpl::Request {
 
   void Start();
 
+  bool success() const;
+
  private:
   void OnSimpleLoaderComplete(std::optional<std::string> response_body);
 
@@ -239,6 +253,10 @@ void ActorLoginPermissionServiceImpl::Request::OnSimpleLoaderComplete(
   std::move(completion_callback_).Run(this, std::move(response_body));
 }
 
+bool ActorLoginPermissionServiceImpl::Request::success() const {
+  return loader_ && loader_->NetError() == net::OK;
+}
+
 ActorLoginPermissionServiceImpl::ActorLoginPermissionServiceImpl(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : url_loader_factory_(std::move(url_loader_factory)) {}
@@ -253,6 +271,24 @@ void ActorLoginPermissionServiceImpl::ListAllPermissions(
   StartRequest(std::make_unique<Request>(
       url, post_data, url_loader_factory_,
       base::BindOnce(&ActorLoginPermissionServiceImpl::OnListRequestCompleted,
+                     base::Unretained(this))
+          .Then(std::move(callback))));
+}
+
+void ActorLoginPermissionServiceImpl::DeletePermission(
+    const url::Origin& embedder_origin,
+    DeletePermissionResult callback) {
+  if (embedder_origin.opaque()) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  GURL url(base::StrCat({kActorLoginPermissionServiceUrlBase, "delete"}));
+  std::string post_data = CreateDeleteRequestBody(embedder_origin);
+
+  StartRequest(std::make_unique<Request>(
+      url, post_data, url_loader_factory_,
+      base::BindOnce(&ActorLoginPermissionServiceImpl::OnDeleteRequestCompleted,
                      base::Unretained(this))
           .Then(std::move(callback))));
 }
@@ -284,6 +320,18 @@ ActorLoginPermissionServiceImpl::OnListRequestCompleted(
   }
 
   return ParseFederatedPermissionsList(*response);
+}
+
+bool ActorLoginPermissionServiceImpl::OnDeleteRequestCompleted(
+    Request* request,
+    std::optional<std::string> response_body) {
+  bool success = request->success();
+  std::erase_if(pending_requests_,
+                [&](const std::unique_ptr<Request>& pending_request) {
+                  return pending_request.get() == request;
+                });
+
+  return success;
 }
 
 }  // namespace actor_login

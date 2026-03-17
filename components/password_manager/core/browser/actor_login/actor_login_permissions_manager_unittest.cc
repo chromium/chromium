@@ -40,6 +40,10 @@ class MockObserver : public ActorLoginPermissionsManager::Observer {
 class MockActorLoginPermissionService : public ActorLoginPermissionService {
  public:
   MOCK_METHOD(void, ListAllPermissions, (ListPermissionsResult), (override));
+  MOCK_METHOD(void,
+              DeletePermission,
+              (const url::Origin&, DeletePermissionResult),
+              (override));
 };
 
 PasswordForm CreateApprovedForm(const std::string& signon_realm,
@@ -154,6 +158,11 @@ TEST_F(ActorLoginPermissionsManagerTest, RevokePermission) {
   base::RunLoop revoke_run_loop;
   EXPECT_CALL(observer, OnPermissionsChanged)
       .WillOnce(testing::Invoke(&revoke_run_loop, &base::RunLoop::Quit));
+
+  EXPECT_CALL(
+      actor_login_permission_service_,
+      DeletePermission(url::Origin::Create(GURL("https://example.com/")), _));
+
   permissions_manager_->RevokePermission("https://example.com/");
   revoke_run_loop.Run();
 
@@ -276,6 +285,36 @@ TEST_F(ActorLoginPermissionsManagerTest,
                                     std::pair(u"user2", "https://example.com/"),
                                     std::pair(u"user1", "https://other.com/")));
 #endif
+}
+
+TEST_F(ActorLoginPermissionsManagerTest,
+       RevokePermission_FederatedPermission_NotifiesObserverOnSuccess) {
+  MockObserver observer;
+  permissions_manager_->AddObserver(&observer);
+
+  EXPECT_CALL(
+      actor_login_permission_service_,
+      DeletePermission(url::Origin::Create(GURL("https://example.com/")), _))
+      .WillOnce(base::test::RunOnceCallback<1>(true));
+
+  EXPECT_CALL(observer, OnPermissionsChanged);
+
+  permissions_manager_->RevokePermission("https://example.com/");
+}
+
+TEST_F(ActorLoginPermissionsManagerTest,
+       RevokePermission_FederatedPermission_DoesNotNotifyObserverOnFailure) {
+  MockObserver observer;
+  permissions_manager_->AddObserver(&observer);
+
+  EXPECT_CALL(
+      actor_login_permission_service_,
+      DeletePermission(url::Origin::Create(GURL("https://example.com/")), _))
+      .WillOnce(base::test::RunOnceCallback<1>(false));
+
+  EXPECT_CALL(observer, OnPermissionsChanged).Times(0);
+
+  permissions_manager_->RevokePermission("https://example.com/");
 }
 
 }  // namespace actor_login

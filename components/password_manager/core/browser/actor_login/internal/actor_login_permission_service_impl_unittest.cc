@@ -7,9 +7,11 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/test/values_test_util.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "services/network/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -17,9 +19,12 @@
 namespace actor_login {
 
 namespace {
-const char kTestUrl[] =
+const char kTestListUrl[] =
     "https://staging-agenticpermission.pa.sandbox.googleapis.com/v1/"
     "permissions:list";
+const char kTestDeleteUrl[] =
+    "https://staging-agenticpermission.pa.sandbox.googleapis.com/v1/"
+    "permissions:delete";
 }  // namespace
 
 class ActorLoginPermissionServiceImplTest : public testing::Test {
@@ -35,7 +40,8 @@ TEST_F(ActorLoginPermissionServiceImplTest, ListAllPermissionsReturnsEmpty) {
   base::test::TestFuture<std::vector<FederatedPermission>> future;
   service_.ListAllPermissions(future.GetCallback());
 
-  test_url_loader_factory_.SimulateResponseForPendingRequest(kTestUrl, "{}");
+  test_url_loader_factory_.SimulateResponseForPendingRequest(kTestListUrl,
+                                                             "{}");
 
   EXPECT_TRUE(future.Get().empty());
 }
@@ -71,7 +77,7 @@ TEST_F(ActorLoginPermissionServiceImplTest,
     ]
   })";
 
-  test_url_loader_factory_.SimulateResponseForPendingRequest(kTestUrl,
+  test_url_loader_factory_.SimulateResponseForPendingRequest(kTestListUrl,
                                                              kValidResponse);
 
   std::vector<FederatedPermission> permissions = future.Get();
@@ -99,7 +105,7 @@ TEST_F(ActorLoginPermissionServiceImplTest,
   service_.ListAllPermissions(future.GetCallback());
 
   test_url_loader_factory_.SimulateResponseForPendingRequest(
-      kTestUrl, "", net::HTTP_INTERNAL_SERVER_ERROR);
+      kTestListUrl, "", net::HTTP_INTERNAL_SERVER_ERROR);
 
   EXPECT_TRUE(future.Get().empty());
 }
@@ -109,7 +115,7 @@ TEST_F(ActorLoginPermissionServiceImplTest,
   base::test::TestFuture<std::vector<FederatedPermission>> future;
   service_.ListAllPermissions(future.GetCallback());
 
-  test_url_loader_factory_.SimulateResponseForPendingRequest(kTestUrl,
+  test_url_loader_factory_.SimulateResponseForPendingRequest(kTestListUrl,
                                                              "{ invalid json");
 
   EXPECT_TRUE(future.Get().empty());
@@ -135,7 +141,7 @@ TEST_F(ActorLoginPermissionServiceImplTest,
       }
     ]
   })";
-  test_url_loader_factory_.SimulateResponseForPendingRequest(kTestUrl,
+  test_url_loader_factory_.SimulateResponseForPendingRequest(kTestListUrl,
                                                              kResponse1);
 
   // Resolve the second request.
@@ -153,7 +159,7 @@ TEST_F(ActorLoginPermissionServiceImplTest,
       }
     ]
   })";
-  test_url_loader_factory_.SimulateResponseForPendingRequest(kTestUrl,
+  test_url_loader_factory_.SimulateResponseForPendingRequest(kTestListUrl,
                                                              kResponse2);
 
   std::vector<FederatedPermission> permissions1 = future1.Get();
@@ -167,6 +173,56 @@ TEST_F(ActorLoginPermissionServiceImplTest,
             permissions2[0].idp_origin);
   EXPECT_EQ(url::Origin::Create(GURL("https://idp3.com")),
             permissions2[1].idp_origin);
+}
+
+TEST_F(ActorLoginPermissionServiceImplTest,
+       DeletePermissionSendsCorrectRequest) {
+  base::test::TestFuture<bool> future;
+  service_.DeletePermission(url::Origin::Create(GURL("https://embedder.com")),
+                            future.GetCallback());
+
+  ASSERT_EQ(1, test_url_loader_factory_.NumPending());
+  const network::ResourceRequest& request =
+      test_url_loader_factory_.GetPendingRequest(0)->request;
+
+  EXPECT_EQ(kTestDeleteUrl, request.url.spec());
+  EXPECT_EQ("POST", request.method);
+  EXPECT_EQ(network::mojom::CredentialsMode::kOmit, request.credentials_mode);
+  EXPECT_EQ(base::test::ParseJson(R"({
+              "filter": [
+                {
+                  "federatedCredentialPermissionFilter": {
+                    "matchAffiliatedRequesterOrigins": true,
+                    "rpEmbedderOrigin": "https://embedder.com"
+                  }
+                }
+              ]
+            })"),
+            base::test::ParseJson(network::GetUploadData(request)));
+}
+
+TEST_F(ActorLoginPermissionServiceImplTest,
+       DeletePermissionReturnsTrueOnSuccess) {
+  base::test::TestFuture<bool> future;
+  service_.DeletePermission(url::Origin::Create(GURL("https://embedder.com")),
+                            future.GetCallback());
+
+  test_url_loader_factory_.SimulateResponseForPendingRequest(kTestDeleteUrl,
+                                                             "{}");
+
+  EXPECT_TRUE(future.Get());
+}
+
+TEST_F(ActorLoginPermissionServiceImplTest,
+       DeletePermissionReturnsFalseOnError) {
+  base::test::TestFuture<bool> future;
+  service_.DeletePermission(url::Origin::Create(GURL("https://embedder.com")),
+                            future.GetCallback());
+
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      kTestDeleteUrl, "", net::HTTP_INTERNAL_SERVER_ERROR);
+
+  EXPECT_FALSE(future.Get());
 }
 
 }  // namespace actor_login

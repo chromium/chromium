@@ -92,6 +92,14 @@ void ActorLoginPermissionsManagerImpl::RemoveObserver(
 void ActorLoginPermissionsManagerImpl::RevokePermission(
     const std::string& signon_realm) {
   presenter_.RevokeActorLoginPermission(signon_realm);
+  // The service is constructed via a factory that returns a nullptr for
+  // incognito and guest profiles. The settings page is not accessible for those
+  // profiles, so we can assert that the service is valid.
+  CHECK(actor_login_permission_service_);
+  actor_login_permission_service_->DeletePermission(
+      url::Origin::Create(GURL(signon_realm)),
+      base::BindOnce(&ActorLoginPermissionsManagerImpl::OnPermissionDeleted,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ActorLoginPermissionsManagerImpl::GetAllPermissions(
@@ -109,11 +117,21 @@ void ActorLoginPermissionsManagerImpl::GetAllPermissions(
           .Then(std::move(callback)));
 }
 
-void ActorLoginPermissionsManagerImpl::OnSavedPasswordsChanged(
-    const password_manager::PasswordStoreChangeList& changes) {
+void ActorLoginPermissionsManagerImpl::NotifyObservers() {
   for (ActorLoginPermissionsManager::Observer& observer : observers_) {
     observer.OnPermissionsChanged();
   }
+}
+
+void ActorLoginPermissionsManagerImpl::OnPermissionDeleted(bool success) {
+  if (success) {
+    NotifyObservers();
+  }
+}
+
+void ActorLoginPermissionsManagerImpl::OnSavedPasswordsChanged(
+    const password_manager::PasswordStoreChangeList& changes) {
+  NotifyObservers();
 }
 
 }  // namespace actor_login
