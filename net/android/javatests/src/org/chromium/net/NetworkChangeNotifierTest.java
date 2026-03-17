@@ -937,7 +937,7 @@ public class NetworkChangeNotifierTest {
                     }
 
                     @Override
-                    Network getDefaultNetwork() {
+                    public Network getDefaultNetwork() {
                         return mNetworks[1];
                     }
 

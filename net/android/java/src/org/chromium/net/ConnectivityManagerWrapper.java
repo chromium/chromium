@@ -207,6 +207,11 @@ public class ConnectivityManagerWrapper {
         return networks == null ? new Network[0] : networks;
     }
 
+    /** Returns all connected networks that are accessible to Chrome. */
+    public Network[] getAllNetworks(@Nullable Network ignoreNetwork) {
+        return NetworkChangeNotifierAutoDetect.getAllNetworksFiltered(this, ignoreNetwork);
+    }
+
     /**
      * Returns {@code true} if {@code network} applies to (and hence is accessible) to the current
      * user.
@@ -289,7 +294,8 @@ public class ConnectivityManagerWrapper {
     }
 
     /** Returns the current default {@link Network}, or {@code null} if disconnected. */
-    @Nullable Network getDefaultNetwork() {
+    @Nullable
+    public Network getDefaultNetwork() {
         Network defaultNetwork = null;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             defaultNetwork = mConnectivityManager.getActiveNetwork();

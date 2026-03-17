@@ -5,10 +5,12 @@
 package org.chromium.net.impl;
 
 import android.content.Context;
+import android.net.Network;
 
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.ScopedSysTraceEvent;
+import org.chromium.net.ConnectivityManagerWrapper;
 import org.chromium.net.httpflags.ResolvedFlags;
 
 import java.net.URI;
@@ -82,5 +84,20 @@ final class CronetAdaptiveRequestContext {
             }
             return false;
         }
+    }
+
+    /**
+     * Returns an alternative network, or {@link CronetUrlRequestContext#DEFAULT_NETWORK_HANDLE} if
+     * none is available.
+     */
+    public static long computeAlternativeNetwork(
+            ConnectivityManagerWrapper connectivityManagerWrapper) {
+        Network[] networks =
+                connectivityManagerWrapper.getAllNetworks(
+                        connectivityManagerWrapper.getDefaultNetwork());
+        if (networks.length > 0) {
+            return networks[0].getNetworkHandle();
+        }
+        return CronetEngineBase.DEFAULT_NETWORK_HANDLE;
     }
 }
