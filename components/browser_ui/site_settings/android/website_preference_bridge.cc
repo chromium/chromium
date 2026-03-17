@@ -34,6 +34,7 @@
 #include "components/content_settings/browser/ui/cookie_controls_util.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/content_settings_uma_util.h"
+#include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/browser/permission_settings_registry.h"
@@ -93,6 +94,7 @@ namespace {
 
 const char kHttpPortSuffix[] = ":80";
 const char kHttpsPortSuffix[] = ":443";
+const char kExtensionSlashSuffix[] = "/";
 
 BrowserContext* unwrap(const JavaRef<jobject>& jbrowser_context_handle) {
   return content::BrowserContextFromJavaHandle(jbrowser_context_handle);
@@ -153,6 +155,12 @@ ScopedJavaLocalRef<jstring> ConvertOriginToJavaString(
                             base::CompareCase::INSENSITIVE_ASCII)) {
     return ConvertUTF8ToJavaString(
         env, origin.substr(0, origin.size() - strlen(kHttpPortSuffix)));
+  } else if (base::StartsWith(origin, content_settings::kExtensionScheme,
+                              base::CompareCase::INSENSITIVE_ASCII) &&
+             base::EndsWith(origin, kExtensionSlashSuffix,
+                            base::CompareCase::INSENSITIVE_ASCII)) {
+    return ConvertUTF8ToJavaString(
+        env, origin.substr(0, origin.size() - strlen(kExtensionSlashSuffix)));
   } else {
     return ConvertUTF8ToJavaString(env, origin);
   }

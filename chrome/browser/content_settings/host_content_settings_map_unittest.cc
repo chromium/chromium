@@ -68,6 +68,17 @@
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "extensions/browser/extension_registry.h"
+#include "extensions/common/extension.h"
+#include "extensions/common/extension_builder.h"
+#include "extensions/common/mojom/api_permission_id.mojom.h"
+#include "extensions/common/permissions/api_permission_set.h"
+#include "extensions/common/permissions/manifest_permission.h"
+#include "extensions/common/permissions/permissions_data.h"
+#include "extensions/common/url_pattern_set.h"
+#endif
+
 using content_settings::SettingSource;
 using content_settings::mojom::SessionModel;
 using ::testing::_;
@@ -2989,7 +3000,51 @@ TEST_F(HostContentSettingsMapTest, ExtensionContentSetting) {
             map->GetContentSetting(domain_url, domain_url,
                                    ContentSettingsType::SOUND));
 }
-#endif
+
+TEST_F(HostContentSettingsMapTest, ExtensionPermissionsProvider) {
+  TestingProfile profile;
+
+  scoped_refptr<const extensions::Extension> ext1 =
+      extensions::ExtensionBuilder("Test Extension 1").Build();
+  scoped_refptr<const extensions::Extension> ext2 =
+      extensions::ExtensionBuilder("Test Extension 2").Build();
+  auto* registry = extensions::ExtensionRegistry::Get(&profile);
+  registry->AddEnabled(ext1);
+  registry->AddEnabled(ext2);
+
+  // Add api permission geolocation for ext1.
+  extensions::APIPermissionSet apis;
+  apis.insert(extensions::mojom::APIPermissionID::kGeolocation);
+  ext1->permissions_data()->SetPermissions(
+      std::make_unique<extensions::PermissionSet>(
+          std::move(apis), extensions::ManifestPermissionSet(),
+          extensions::URLPatternSet(), extensions::URLPatternSet()),
+      std::make_unique<extensions::PermissionSet>());
+
+  // Validate ext1 is allowed, ext2 is ask.
+  HostContentSettingsMap* map =
+      HostContentSettingsMapFactory::GetForProfile(&profile);
+  EXPECT_EQ(CONTENT_SETTING_ALLOW,
+            map->GetContentSetting(ext1->url(), ext1->url(),
+                                   ContentSettingsType::GEOLOCATION));
+  EXPECT_EQ(CONTENT_SETTING_ASK,
+            map->GetContentSetting(ext2->url(), ext2->url(),
+                                   ContentSettingsType::GEOLOCATION));
+
+  // Override ext1 to block, ext2 still ask.
+  map->SetContentSettingCustomScope(
+      ContentSettingsPattern::FromURL(ext1->url()),
+      ContentSettingsPattern::Wildcard(), ContentSettingsType::GEOLOCATION,
+      CONTENT_SETTING_BLOCK);
+  EXPECT_EQ(CONTENT_SETTING_BLOCK,
+            map->GetContentSetting(ext1->url(), ext1->url(),
+                                   ContentSettingsType::GEOLOCATION));
+  EXPECT_EQ(CONTENT_SETTING_ASK,
+            map->GetContentSetting(ext2->url(), ext2->url(),
+                                   ContentSettingsType::GEOLOCATION));
+}
+
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 TEST_F(HostContentSettingsMapTest, RecordDefaultSensorsSetting) {
   TestingProfile profile;

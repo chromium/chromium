@@ -727,6 +727,7 @@ SiteSettingSource ProviderTypeToSiteSettingsSource(
     case ProviderType::kSupervisedProvider:
       return SiteSettingSource::kPolicy;
     case ProviderType::kCustomExtensionProvider:
+    case ProviderType::kExtensionInstallTimePermissionProvider:
       return SiteSettingSource::kExtension;
     case ProviderType::kInstalledWebappProvider:
       return SiteSettingSource::kHostedApp;
@@ -753,6 +754,7 @@ std::string_view ProviderToDefaultSettingSourceString(
     case ProviderType::kSupervisedProvider:
       return "supervised_user";
     case ProviderType::kCustomExtensionProvider:
+    case ProviderType::kExtensionInstallTimePermissionProvider:
       return "extension";
     case ProviderType::kOneTimePermissionProvider:
     case ProviderType::kPrefProvider:

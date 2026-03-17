@@ -26,6 +26,7 @@ chromium-metrics-reviews@google.com.
   <variant name="ComponentExtensionProvider"/>
   <variant name="CustomExtensionProvider"/>
   <variant name="DefaultProvider"/>
+  <variant name="ExtensionInstallTimePermissionProvider"/>
   <variant name="InstalledWebappProvider"/>
   <variant name="JavascriptOptimizerAndroidProvider"/>
   <variant name="NotificationAndroidProvider"/>

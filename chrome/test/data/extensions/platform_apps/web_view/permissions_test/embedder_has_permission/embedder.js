@@ -95,9 +95,7 @@ embedder.registerAndWaitForPostMessage_ = function(testName, expectedResult) {
 // access to geolocation and allows geolocation for the guest.
 function testAllowGeolocation() {
   navigator.permissions.query({name: 'geolocation'}).then(function(permission) {
-    // TODO(crbug.com/40215363) Geolocation state is `prompt` even despite it is
-    // declared in the manifest.
-    if (permission.state === 'prompt') {
+    if (permission.state === 'granted') {
       var webview = embedder.setUpGuest_();
 
       var onPermissionRequest = function(e) {
@@ -116,9 +114,7 @@ function testAllowGeolocation() {
 
 function testDenyGeolocation() {
   navigator.permissions.query({name: 'geolocation'}).then(function(permission) {
-    // TODO(crbug.com/40215363) Geolocation state is `prompt` even despite it is
-    // declared in the manifest.
-    if (permission.state === 'prompt') {
+    if (permission.state === 'granted') {
       var webview = embedder.setUpGuest_();
 
       var onPermissionRequest = function(e) {

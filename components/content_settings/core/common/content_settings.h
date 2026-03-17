@@ -187,6 +187,7 @@ constexpr SettingSource GetSettingSourceFromProviderType(
     case ProviderType::kSupervisedProvider:
       return SettingSource::kSupervised;
     case ProviderType::kCustomExtensionProvider:
+    case ProviderType::kExtensionInstallTimePermissionProvider:
       return SettingSource::kExtension;
     case ProviderType::kInstalledWebappProvider:
       return SettingSource::kInstalledWebApp;

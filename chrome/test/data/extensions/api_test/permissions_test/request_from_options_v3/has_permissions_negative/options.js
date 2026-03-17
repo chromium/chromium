@@ -25,7 +25,7 @@ chrome.test.runTests([
   function checkGeolocation() {
     navigator.permissions.query({ name: 'geolocation' })
       .then(function (permission) {
-        if (permission.state === 'prompt') {
+        if (permission.state === 'granted') {
           chrome.test.succeed();
         } else {
           chrome.test.fail();

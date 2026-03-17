@@ -30,6 +30,9 @@
 #include "base/trace_event/trace_event.h"
 #include "extensions/browser/api/content_settings/content_settings_custom_extension_provider.h"  // nogncheck
 #include "extensions/browser/api/content_settings/content_settings_service.h"  // nogncheck
+#include "extensions/browser/content_settings_extension_install_time_permission_provider.h"
+#include "extensions/browser/extension_registrar_factory.h"
+#include "extensions/browser/extension_registry.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 #if BUILDFLAG(IS_ANDROID)
@@ -72,6 +75,7 @@ HostContentSettingsMapFactory::HostContentSettingsMapFactory()
   DependsOn(OneTimePermissionsTrackerFactory::GetInstance());
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   DependsOn(extensions::ContentSettingsService::GetFactoryInstance());
+  DependsOn(extensions::ExtensionRegistrarFactory::GetInstance());
 #endif
 #if BUILDFLAG(IS_CHROMEOS)
   DependsOn(extensions::ComponentExtensionContentSettingsAllowlistFactory::
@@ -150,6 +154,11 @@ scoped_refptr<RefcountedKeyedService>
           // the case where profile->IsOffTheRecord() is true? And what is the
           // interaction with profile->IsGuestSession()?
           false));
+
+  settings_map->RegisterProvider(
+      ProviderType::kExtensionInstallTimePermissionProvider,
+      std::make_unique<extensions::ExtensionInstallTimePermissionProvider>(
+          extensions::ExtensionRegistry::Get(context)));
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
   supervised_user::FamilyLinkSettingsService* family_link_settings_service =

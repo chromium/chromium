@@ -1909,14 +1909,13 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestFromExtension,
             content::EvalJs(iframe_with_embedded_extension, kCheckNotifications,
                             content::EXECUTE_SCRIPT_DEFAULT_OPTIONS, 1));
 
-  EXPECT_EQ(false,
+  EXPECT_EQ(true,
             content::EvalJs(iframe_with_embedded_extension, kCheckGeolocation,
                             content::EXECUTE_SCRIPT_DEFAULT_OPTIONS, 1));
   EXPECT_EQ("granted",
             content::EvalJs(iframe_with_embedded_extension, kRequestGeolocation,
                             content::EXECUTE_SCRIPT_DEFAULT_OPTIONS, 1));
-  // Despite Geolocation being granted above, its state is `prompt`.
-  EXPECT_EQ(false,
+  EXPECT_EQ(true,
             content::EvalJs(iframe_with_embedded_extension, kCheckGeolocation,
                             content::EXECUTE_SCRIPT_DEFAULT_OPTIONS, 1));
 

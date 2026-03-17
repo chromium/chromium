@@ -205,6 +205,8 @@ std::string GetProviderNameForHistograms(
       return "OneTimePermissionProvider";
     case ProviderType::kPrefProvider:
       return "PrefProvider";
+    case ProviderType::kExtensionInstallTimePermissionProvider:
+      return "ExtensionInstallTimePermissionProvider";
     case ProviderType::kDefaultProvider:
       return "DefaultProvider";
     case ProviderType::kProviderForTests:

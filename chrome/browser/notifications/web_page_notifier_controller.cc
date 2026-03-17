@@ -21,6 +21,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/favicon/core/favicon_service.h"
+#include "extensions/common/constants.h"
 
 WebPageNotifierController::WebPageNotifierController(Observer* observer)
     : observer_(observer) {}
@@ -45,6 +46,15 @@ std::vector<ash::NotifierMetadata> WebPageNotifierController::GetNotifierList(
     if (iter->primary_pattern == ContentSettingsPattern::Wildcard() &&
         iter->secondary_pattern == ContentSettingsPattern::Wildcard() &&
         iter->source != content_settings::ProviderType::kPrefProvider) {
+      continue;
+    }
+    // Ignore extensions which are handled by
+    // ExtensionInstallTimePermissionProvider. HostContentSettingsMap was
+    // updated with new ExtensionInstallTimePermissionProvider to include
+    // extension permissions.  MessageCenter previously required and and still
+    // uses ExtensionNotifierController, but it could likely be removed and have
+    // extensions included in WebPageNotifierController.
+    if (iter->primary_pattern.GetScheme() == extensions::kExtensionScheme) {
       continue;
     }
 
