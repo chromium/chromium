@@ -8,6 +8,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
+#include "base/test/run_until.h"
 #include "build/build_config.h"
 #include "chrome/browser/data_sharing/data_sharing_service_factory.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
@@ -400,31 +401,13 @@ class RecentActivityBubbleDialogViewActionBrowserTest
   }
 
   void WaitForAvatar(int log_index) {
-    CHECK(!run_loop_);
-    run_loop_ = std::make_unique<base::RunLoop>();
-    PollForAvatarLoaded(10, log_index);
-    run_loop_->Run();
-    run_loop_.reset();
-  }
-
-  void PollForAvatarLoaded(int tries_left, int log_index) {
     auto* bubble = BubbleCoordinator()->GetBubble();
-
-    CHECK(tries_left > 0);
-    CHECK(run_loop_);
-    CHECK(bubble);
-
-    // If activity row should show avatar, loading is complete.
-    if (bubble->GetRowForTesting(log_index)->image_view()->ShouldShowAvatar()) {
-      run_loop_->Quit();
-    } else {
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-          FROM_HERE,
-          base::BindOnce(&RecentActivityBubbleDialogViewActionBrowserTest::
-                             PollForAvatarLoaded,
-                         base::Unretained(this), tries_left - 1, log_index),
-          base::Milliseconds(200));
-    }
+    ASSERT_TRUE(bubble);
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return bubble->GetRowForTesting(log_index)
+          ->image_view()
+          ->ShouldShowAvatar();
+    }));
   }
 
   tabs::TabInterface* CreateTab(
@@ -515,7 +498,6 @@ class RecentActivityBubbleDialogViewActionBrowserTest
  private:
   const std::string avatar_url_ =
       base::StringPrintf("/avatar=s%d-cc-rp-ns", kAvatarSize);
-  std::unique_ptr<base::RunLoop> run_loop_;
 };
 
 // Trigger kFocusTab action from the recent activity dialog.
