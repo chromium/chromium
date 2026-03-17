@@ -50,12 +50,6 @@ BASE_FEATURE_PARAM(bool,
                    "data_block_io_scheduler",
                    true);
 
-// Controls ACTION_BOOT_COMPLETED broadcast for third party applications on ARC.
-// When disabled, third party apps will not receive this broadcast.
-BASE_FEATURE(kBootCompletedBroadcastFeature,
-             "ArcBootCompletedBroadcast",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Defers the ARC actvation until the user session start up tasks
 // are completed to give more resources to critical tasks for user session
 // starting.

@@ -33,9 +33,7 @@ UpgradeParams::PackageCacheMode GetPackagesCacheMode() {
 }  // namespace
 
 UpgradeParams::UpgradeParams()
-    : skip_boot_completed_broadcast(
-          !base::FeatureList::IsEnabled(arc::kBootCompletedBroadcastFeature)),
-      packages_cache_mode(GetPackagesCacheMode()),
+    : packages_cache_mode(GetPackagesCacheMode()),
       skip_gms_core_cache(base::CommandLine::ForCurrentProcess()->HasSwitch(
           ash::switches::kArcDisableGmsCoreCache)),
       skip_tts_cache(base::CommandLine::ForCurrentProcess()->HasSwitch(

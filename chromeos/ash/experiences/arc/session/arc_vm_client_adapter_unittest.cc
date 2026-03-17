@@ -89,7 +89,6 @@ StartParams GetPopulatedStartParams() {
 UpgradeParams GetPopulatedUpgradeParams() {
   UpgradeParams params;
   params.account_id = "fee1dead";
-  params.skip_boot_completed_broadcast = true;
   params.packages_cache_mode = UpgradeParams::PackageCacheMode::COPY_ON_INIT;
   params.skip_gms_core_cache = true;
   params.management_transition = ArcManagementTransition::CHILD_TO_REGULAR;

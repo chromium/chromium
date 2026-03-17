@@ -151,8 +151,7 @@ std::vector<std::string> GenerateUpgradeProps(
     const std::string& serial_number,
     const std::string& prefix) {
   std::vector<std::string> result = {
-      base::StringPrintf("%s.disable_boot_completed=%d", prefix.c_str(),
-                         upgrade_params.skip_boot_completed_broadcast),
+      base::StringPrintf("%s.disable_boot_completed=0", prefix.c_str()),
       base::StringPrintf("%s.enable_adb_sideloading=%d", prefix.c_str(),
                          upgrade_params.is_adb_sideloading_enabled),
       base::StringPrintf("%s.copy_packages_cache=%d", prefix.c_str(),

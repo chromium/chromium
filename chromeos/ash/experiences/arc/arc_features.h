@@ -22,7 +22,6 @@ BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kArcOnDemandInactiveInterval);
 BASE_DECLARE_FEATURE(kArcVmGki);
 BASE_DECLARE_FEATURE(kBlockIoScheduler);
 BASE_DECLARE_FEATURE_PARAM(bool, kEnableDataBlockIoScheduler);
-BASE_DECLARE_FEATURE(kBootCompletedBroadcastFeature);
 BASE_DECLARE_FEATURE(kDeferArcActivationUntilUserSessionStartUpTaskCompletion);
 BASE_DECLARE_FEATURE_PARAM(int, kDeferArcActivationHistoryWindow);
 BASE_DECLARE_FEATURE_PARAM(int, kDeferArcActivationHistoryThreshold);
