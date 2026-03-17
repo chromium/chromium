@@ -462,7 +462,7 @@ base::WeakPtr<SpdySession> CreateSpdySessionHelper(
       socket_params, /*proxy_annotation_tag=*/std::nullopt, MEDIUM,
       key.socket_tag(), ClientSocketPool::RespectLimits::ENABLED,
       callback.callback(), ClientSocketPool::ProxyAuthCallback(),
-      http_session->GetSocketPool(HttpNetworkSession::NORMAL_SOCKET_POOL,
+      http_session->GetSocketPool(HttpNetworkSession::SocketPoolType::kNormal,
                                   ProxyChain::Direct()),
       net_log);
   rv = callback.GetResult(rv);

@@ -81,7 +81,7 @@ ClientSocketPool* ClientSocketPoolManagerImpl::GetSocketPool(
   std::unique_ptr<ClientSocketPool> new_pool;
 
   // Use specialized WebSockets pool for WebSockets when no proxies are in use.
-  if (pool_type_ == HttpNetworkSession::WEBSOCKET_SOCKET_POOL &&
+  if (pool_type_ == HttpNetworkSession::SocketPoolType::kWebSocket &&
       proxy_chain.is_direct()) {
     new_pool = std::make_unique<WebSocketTransportClientSocketPool>(
         sockets_per_proxy_chain, additional_capacity, proxy_chain,
@@ -90,7 +90,7 @@ ClientSocketPool* ClientSocketPoolManagerImpl::GetSocketPool(
     new_pool = std::make_unique<TransportClientSocketPool>(
         sockets_per_proxy_chain, sockets_per_group, additional_capacity,
         unused_idle_socket_timeout(pool_type_), proxy_chain,
-        pool_type_ == HttpNetworkSession::WEBSOCKET_SOCKET_POOL,
+        pool_type_ == HttpNetworkSession::SocketPoolType::kWebSocket,
         &common_connect_job_params_, cleanup_on_ip_address_change_);
   }
 

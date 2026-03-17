@@ -177,8 +177,8 @@ class WebSocketClientSocketHandleAdapterTest : public TestWithTaskEnvironment {
         socks_params, /*proxy_annotation_tag=*/TRAFFIC_ANNOTATION_FOR_TESTS,
         MEDIUM, SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
         callback.callback(), ClientSocketPool::ProxyAuthCallback(),
-        network_session_->GetSocketPool(HttpNetworkSession::NORMAL_SOCKET_POOL,
-                                        ProxyChain::Direct()),
+        network_session_->GetSocketPool(
+            HttpNetworkSession::SocketPoolType::kNormal, ProxyChain::Direct()),
         NetLogWithSource());
     rv = callback.GetResult(rv);
     return rv == OK;

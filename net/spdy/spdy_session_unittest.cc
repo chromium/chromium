@@ -179,9 +179,9 @@ class SpdySessionTest : public PlatformTest, public WithTaskEnvironment {
                                base::test::TaskEnvironment::TimeSource::DEFAULT)
       : WithTaskEnvironment(time_source),
         old_max_group_sockets_(ClientSocketPoolManager::max_sockets_per_group(
-            HttpNetworkSession::NORMAL_SOCKET_POOL)),
+            HttpNetworkSession::SocketPoolType::kNormal)),
         old_socket_soft_cap_(ClientSocketPoolManager::socket_soft_cap_per_pool(
-            HttpNetworkSession::NORMAL_SOCKET_POOL)),
+            HttpNetworkSession::SocketPoolType::kNormal)),
         test_url_(kDefaultUrl),
         test_server_(test_url_),
         key_(HostPortPair::FromURL(test_url_),
@@ -201,9 +201,9 @@ class SpdySessionTest : public PlatformTest, public WithTaskEnvironment {
     // Important to restore the per-pool limit first, since the pool limit must
     // always be greater than group limit, and the tests reduce both limits.
     ClientSocketPoolManager::set_socket_soft_cap_per_pool_for_test(
-        HttpNetworkSession::NORMAL_SOCKET_POOL, old_socket_soft_cap_);
+        HttpNetworkSession::SocketPoolType::kNormal, old_socket_soft_cap_);
     ClientSocketPoolManager::set_max_sockets_per_group_for_test(
-        HttpNetworkSession::NORMAL_SOCKET_POOL, old_max_group_sockets_);
+        HttpNetworkSession::SocketPoolType::kNormal, old_max_group_sockets_);
   }
 
   void SetUp() override {
@@ -3401,9 +3401,9 @@ TEST_F(SpdySessionTest, ProtocolNegotiation) {
 // pointers to the idle session are currently held.
 TEST_F(SpdySessionTest, CloseOneIdleConnection) {
   ClientSocketPoolManager::set_max_sockets_per_group_for_test(
-      HttpNetworkSession::NORMAL_SOCKET_POOL, 1);
+      HttpNetworkSession::SocketPoolType::kNormal, 1);
   ClientSocketPoolManager::set_socket_soft_cap_per_pool_for_test(
-      HttpNetworkSession::NORMAL_SOCKET_POOL, 1);
+      HttpNetworkSession::SocketPoolType::kNormal, 1);
 
   MockRead reads[] = {
     MockRead(SYNCHRONOUS, ERR_IO_PENDING)  // Stall forever.
@@ -3417,7 +3417,7 @@ TEST_F(SpdySessionTest, CloseOneIdleConnection) {
   CreateNetworkSession();
 
   ClientSocketPool* pool = http_session_->GetSocketPool(
-      HttpNetworkSession::NORMAL_SOCKET_POOL, ProxyChain::Direct());
+      HttpNetworkSession::SocketPoolType::kNormal, ProxyChain::Direct());
 
   // Create an idle SPDY session.
   CreateSpdySession();
@@ -3453,9 +3453,9 @@ TEST_F(SpdySessionTest, CloseOneIdleConnection) {
 // has an alias.
 TEST_F(SpdySessionTest, CloseOneIdleConnectionWithAlias) {
   ClientSocketPoolManager::set_max_sockets_per_group_for_test(
-      HttpNetworkSession::NORMAL_SOCKET_POOL, 1);
+      HttpNetworkSession::SocketPoolType::kNormal, 1);
   ClientSocketPoolManager::set_socket_soft_cap_per_pool_for_test(
-      HttpNetworkSession::NORMAL_SOCKET_POOL, 1);
+      HttpNetworkSession::SocketPoolType::kNormal, 1);
 
   MockRead reads[] = {
     MockRead(SYNCHRONOUS, ERR_IO_PENDING)  // Stall forever.
@@ -3472,7 +3472,7 @@ TEST_F(SpdySessionTest, CloseOneIdleConnectionWithAlias) {
   CreateNetworkSession();
 
   ClientSocketPool* pool = http_session_->GetSocketPool(
-      HttpNetworkSession::NORMAL_SOCKET_POOL, ProxyChain::Direct());
+      HttpNetworkSession::SocketPoolType::kNormal, ProxyChain::Direct());
 
   SpdySessionKey key1(HostPortPair("www.example.org", 80),
                       PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
@@ -3566,9 +3566,9 @@ TEST_F(SpdySessionTest, CloseOneIdleConnectionWithAlias) {
 // a lower layer pool stalled on the per-pool socket limit.
 TEST_F(SpdySessionTest, CloseSessionOnIdleWhenPoolStalled) {
   ClientSocketPoolManager::set_max_sockets_per_group_for_test(
-      HttpNetworkSession::NORMAL_SOCKET_POOL, 1);
+      HttpNetworkSession::SocketPoolType::kNormal, 1);
   ClientSocketPoolManager::set_socket_soft_cap_per_pool_for_test(
-      HttpNetworkSession::NORMAL_SOCKET_POOL, 1);
+      HttpNetworkSession::SocketPoolType::kNormal, 1);
 
   MockRead reads[] = {
     MockRead(SYNCHRONOUS, ERR_IO_PENDING)  // Stall forever.
@@ -3594,7 +3594,7 @@ TEST_F(SpdySessionTest, CloseSessionOnIdleWhenPoolStalled) {
   CreateNetworkSession();
 
   ClientSocketPool* pool = http_session_->GetSocketPool(
-      HttpNetworkSession::NORMAL_SOCKET_POOL, ProxyChain::Direct());
+      HttpNetworkSession::SocketPoolType::kNormal, ProxyChain::Direct());
 
   // Create a SPDY session.
   CreateSpdySession();

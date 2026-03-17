@@ -821,13 +821,13 @@ void NetworkService::SetMaxConnectionsPerProxyChain(uint32_t max_connections) {
   // Clamp the value between min_limit and max_limit.
   size_t max_limit = 99;
   size_t min_limit = net::ClientSocketPoolManager::max_sockets_per_group(
-      net::HttpNetworkSession::NORMAL_SOCKET_POOL);
+      net::HttpNetworkSession::SocketPoolType::kNormal);
   size_t new_limit = std::clamp(base::saturated_cast<size_t>(max_connections),
                                 min_limit, max_limit);
 
   // Assign the global limit.
   net::ClientSocketPoolManager::set_max_sockets_per_proxy_chain(
-      net::HttpNetworkSession::NORMAL_SOCKET_POOL, new_limit);
+      net::HttpNetworkSession::SocketPoolType::kNormal, new_limit);
 }
 
 bool NetworkService::HasRawHeadersAccess(

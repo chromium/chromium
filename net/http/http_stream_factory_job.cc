@@ -358,7 +358,7 @@ bool HttpStreamFactory::Job::TargettedSocketGroupHasActiveSocket() const {
   DCHECK(!using_quic_);
   DCHECK(!is_websocket_);
   ClientSocketPool* pool = session_->GetSocketPool(
-      HttpNetworkSession::NORMAL_SOCKET_POOL, proxy_info_.proxy_chain());
+      HttpNetworkSession::SocketPoolType::kNormal, proxy_info_.proxy_chain());
   DCHECK(pool);
   ClientSocketPool::GroupId connection_group(
       destination_, request_info_.privacy_mode,

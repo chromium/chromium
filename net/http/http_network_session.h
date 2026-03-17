@@ -199,10 +199,10 @@ struct NET_EXPORT HttpNetworkSessionContext {
 // This class holds session objects used by HttpNetworkTransaction objects.
 class NET_EXPORT HttpNetworkSession : public base::PowerSuspendObserver {
  public:
-  enum SocketPoolType {
-    NORMAL_SOCKET_POOL,
-    WEBSOCKET_SOCKET_POOL,
-    NUM_SOCKET_POOL_TYPES
+  enum class SocketPoolType {
+    kNormal = 0,
+    kWebSocket = 1,
+    kMaxValue = kWebSocket,
   };
 
   HttpNetworkSession(const HttpNetworkSessionParams& params,

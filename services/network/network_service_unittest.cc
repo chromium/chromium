@@ -1130,7 +1130,7 @@ TEST_F(NetworkServiceTest, AuthAndroidNegotiateAccountType) {
 
 static size_t GetGlobalMaxConnectionsPerProxyChain() {
   return net::ClientSocketPoolManager::max_sockets_per_proxy_chain(
-      net::HttpNetworkSession::NORMAL_SOCKET_POOL);
+      net::HttpNetworkSession::SocketPoolType::kNormal);
 }
 
 // Tests that NetworkService::SetMaxConnectionsPerProxyChain() (1) modifies

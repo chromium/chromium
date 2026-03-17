@@ -287,9 +287,10 @@ TEST_P(ProxyResolvingClientSocketTest, NetworkIsolationKeyWithH2Proxy) {
 // (ClientSocketPoolManager::max_sockets_per_group) doesn't apply to this
 // type of sockets.
 TEST_P(ProxyResolvingClientSocketTest, SocketLimitNotApply) {
-  const int kNumSockets = net::ClientSocketPoolManager::max_sockets_per_group(
-                              net::HttpNetworkSession::NORMAL_SOCKET_POOL) +
-                          10;
+  const int kNumSockets =
+      net::ClientSocketPoolManager::max_sockets_per_group(
+          net::HttpNetworkSession::SocketPoolType::kNormal) +
+      10;
   const GURL kDestination("https://example.com:443");
   net::MockClientSocketFactory socket_factory;
   net::MockWrite writes[] = {

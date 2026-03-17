@@ -28,7 +28,7 @@ class NET_EXPORT_PRIVATE ClientSocketPoolManagerImpl
  public:
   // `websocket_common_connect_job_params` is only used for direct WebSocket
   // connections (No proxies in use). It's never used if `pool_type` is not
-  // HttpNetworkSession::SocketPoolType::WEBSOCKET_SOCKET_POOL.
+  // HttpNetworkSession::SocketPoolType::kWebSocket.
   ClientSocketPoolManagerImpl(
       const CommonConnectJobParams& common_connect_job_params,
       const CommonConnectJobParams& websocket_common_connect_job_params,

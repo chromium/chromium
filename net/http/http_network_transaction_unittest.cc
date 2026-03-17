@@ -202,7 +202,7 @@ int GetIdleSocketCountInTransportSocketPool(HttpNetworkSession* session) {
     return session->http_stream_pool()->TotalIdleStreamCount();
   }
   return session
-      ->GetSocketPool(HttpNetworkSession::NORMAL_SOCKET_POOL,
+      ->GetSocketPool(HttpNetworkSession::SocketPoolType::kNormal,
                       ProxyChain::Direct())
       ->IdleSocketCount();
 }
@@ -216,7 +216,7 @@ bool IsTransportSocketPoolStalled(HttpNetworkSession* session) {
     return session->http_stream_pool()->IsPoolStalled();
   }
   return session
-      ->GetSocketPool(HttpNetworkSession::NORMAL_SOCKET_POOL,
+      ->GetSocketPool(HttpNetworkSession::SocketPoolType::kNormal,
                       ProxyChain::Direct())
       ->IsStalled();
 }
@@ -445,9 +445,9 @@ class HttpNetworkTransactionTestBase : public PlatformTest,
     // Important to restore the per-pool limit first, since the pool limit must
     // always be greater than group limit, and the tests reduce both limits.
     ClientSocketPoolManager::set_socket_soft_cap_per_pool_for_test(
-        HttpNetworkSession::NORMAL_SOCKET_POOL, old_socket_soft_cap_);
+        HttpNetworkSession::SocketPoolType::kNormal, old_socket_soft_cap_);
     ClientSocketPoolManager::set_max_sockets_per_group_for_test(
-        HttpNetworkSession::NORMAL_SOCKET_POOL, old_max_group_sockets_);
+        HttpNetworkSession::SocketPoolType::kNormal, old_max_group_sockets_);
   }
 
  protected:
@@ -476,9 +476,9 @@ class HttpNetworkTransactionTestBase : public PlatformTest,
         spdy_util_(/*use_priority_header=*/true),
         ssl_(ASYNC, OK),
         old_max_group_sockets_(ClientSocketPoolManager::max_sockets_per_group(
-            HttpNetworkSession::NORMAL_SOCKET_POOL)),
+            HttpNetworkSession::SocketPoolType::kNormal)),
         old_socket_soft_cap_(ClientSocketPoolManager::socket_soft_cap_per_pool(
-            HttpNetworkSession::NORMAL_SOCKET_POOL)) {
+            HttpNetworkSession::SocketPoolType::kNormal)) {
     session_deps_.enable_http2_alternative_service = true;
   }
 
@@ -6459,7 +6459,7 @@ TEST_P(HttpNetworkTransactionTest, SameDestinationForDifferentProxyTypes) {
     EXPECT_EQ(test_case.expected_idle_socks4_sockets,
               session
                   ->GetSocketPool(
-                      HttpNetworkSession::NORMAL_SOCKET_POOL,
+                      HttpNetworkSession::SocketPoolType::kNormal,
                       ProxyChain(ProxyServer::SCHEME_SOCKS4,
                                  SameProxyWithDifferentSchemesProxyResolver::
                                      ProxyHostPortPair()))
@@ -6467,7 +6467,7 @@ TEST_P(HttpNetworkTransactionTest, SameDestinationForDifferentProxyTypes) {
     EXPECT_EQ(test_case.expected_idle_socks5_sockets,
               session
                   ->GetSocketPool(
-                      HttpNetworkSession::NORMAL_SOCKET_POOL,
+                      HttpNetworkSession::SocketPoolType::kNormal,
                       ProxyChain(ProxyServer::SCHEME_SOCKS5,
                                  SameProxyWithDifferentSchemesProxyResolver::
                                      ProxyHostPortPair()))
@@ -6475,7 +6475,7 @@ TEST_P(HttpNetworkTransactionTest, SameDestinationForDifferentProxyTypes) {
     EXPECT_EQ(test_case.expected_idle_http_sockets,
               session
                   ->GetSocketPool(
-                      HttpNetworkSession::NORMAL_SOCKET_POOL,
+                      HttpNetworkSession::SocketPoolType::kNormal,
                       ProxyChain(ProxyServer::SCHEME_HTTP,
                                  SameProxyWithDifferentSchemesProxyResolver::
                                      ProxyHostPortPair()))
@@ -6483,7 +6483,7 @@ TEST_P(HttpNetworkTransactionTest, SameDestinationForDifferentProxyTypes) {
     EXPECT_EQ(test_case.expected_idle_https_sockets,
               session
                   ->GetSocketPool(
-                      HttpNetworkSession::NORMAL_SOCKET_POOL,
+                      HttpNetworkSession::SocketPoolType::kNormal,
                       ProxyChain(ProxyServer::SCHEME_HTTPS,
                                  SameProxyWithDifferentSchemesProxyResolver::
                                      ProxyHostPortPair()))
@@ -22540,9 +22540,9 @@ TEST_P(HttpNetworkTransactionTest, ErrorSocketNotConnected) {
 
 TEST_P(HttpNetworkTransactionTest, CloseIdleSpdySessionToOpenNewOne) {
   ClientSocketPoolManager::set_max_sockets_per_group_for_test(
-      HttpNetworkSession::NORMAL_SOCKET_POOL, 1);
+      HttpNetworkSession::SocketPoolType::kNormal, 1);
   ClientSocketPoolManager::set_socket_soft_cap_per_pool_for_test(
-      HttpNetworkSession::NORMAL_SOCKET_POOL, 1);
+      HttpNetworkSession::SocketPoolType::kNormal, 1);
 
   // Use two different hosts with different IPs so they don't get pooled.
   session_deps_.host_resolver->rules()->AddRule("www.a.com", "10.0.0.1");
@@ -22908,9 +22908,9 @@ TEST_P(HttpNetworkTransactionTest, HttpAsyncReadError) {
 // if the transport socket pool is stalled on the global socket limit.
 TEST_P(HttpNetworkTransactionTest, CloseSSLSocketOnIdleForHttpRequest) {
   ClientSocketPoolManager::set_max_sockets_per_group_for_test(
-      HttpNetworkSession::NORMAL_SOCKET_POOL, 1);
+      HttpNetworkSession::SocketPoolType::kNormal, 1);
   ClientSocketPoolManager::set_socket_soft_cap_per_pool_for_test(
-      HttpNetworkSession::NORMAL_SOCKET_POOL, 1);
+      HttpNetworkSession::SocketPoolType::kNormal, 1);
 
   // Set up SSL request.
 
@@ -23006,9 +23006,9 @@ TEST_P(HttpNetworkTransactionTest, CloseSSLSocketOnIdleForHttpRequest) {
 // is stalled on the global socket limit.
 TEST_P(HttpNetworkTransactionTest, CloseSSLSocketOnIdleForHttpRequest2) {
   ClientSocketPoolManager::set_max_sockets_per_group_for_test(
-      HttpNetworkSession::NORMAL_SOCKET_POOL, 1);
+      HttpNetworkSession::SocketPoolType::kNormal, 1);
   ClientSocketPoolManager::set_socket_soft_cap_per_pool_for_test(
-      HttpNetworkSession::NORMAL_SOCKET_POOL, 1);
+      HttpNetworkSession::SocketPoolType::kNormal, 1);
 
   // Set up an ssl request.
 
@@ -28355,18 +28355,18 @@ TEST_P(HttpNetworkTransactionTest, ProxyAdditionalCapacity) {
       });
   std::unique_ptr<HttpNetworkSession> session = CreateSession(&session_deps_);
   EXPECT_EQ(session
-                ->GetSocketPool(HttpNetworkSession::NORMAL_SOCKET_POOL,
+                ->GetSocketPool(HttpNetworkSession::SocketPoolType::kNormal,
                                 ProxyChain::Direct())
                 ->AdditionalCapacityForTest(),
             SocketPoolAdditionalCapacity::CreateForTest(0.1, 2, 0.3, 0.4));
   EXPECT_EQ(session
-                ->GetSocketPool(HttpNetworkSession::WEBSOCKET_SOCKET_POOL,
+                ->GetSocketPool(HttpNetworkSession::SocketPoolType::kWebSocket,
                                 ProxyChain::Direct())
                 ->AdditionalCapacityForTest(),
             SocketPoolAdditionalCapacity::CreateForTest(0.1, 2, 0.3, 0.4));
   EXPECT_EQ(session
                 ->GetSocketPool(
-                    HttpNetworkSession::NORMAL_SOCKET_POOL,
+                    HttpNetworkSession::SocketPoolType::kNormal,
                     ProxyChain(ProxyServer::SCHEME_HTTPS,
                                SameProxyWithDifferentSchemesProxyResolver::
                                    ProxyHostPortPair()))
@@ -28374,7 +28374,7 @@ TEST_P(HttpNetworkTransactionTest, ProxyAdditionalCapacity) {
             SocketPoolAdditionalCapacity::CreateEmpty());
   EXPECT_EQ(session
                 ->GetSocketPool(
-                    HttpNetworkSession::WEBSOCKET_SOCKET_POOL,
+                    HttpNetworkSession::SocketPoolType::kWebSocket,
                     ProxyChain(ProxyServer::SCHEME_HTTPS,
                                SameProxyWithDifferentSchemesProxyResolver::
                                    ProxyHostPortPair()))

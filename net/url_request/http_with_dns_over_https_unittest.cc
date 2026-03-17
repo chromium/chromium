@@ -313,7 +313,7 @@ TEST_F(HttpsWithDnsOverHttpsTest, EndToEnd) {
   } else {
     idle_socket_count =
         network_session
-            ->GetSocketPool(HttpNetworkSession::NORMAL_SOCKET_POOL,
+            ->GetSocketPool(HttpNetworkSession::SocketPoolType::kNormal,
                             ProxyChain::Direct())
             ->IdleSocketCountInGroup(group_id);
   }

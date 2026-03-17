@@ -501,7 +501,7 @@ TEST_F(PacFileFetcherImplTest, DataURLs) {
 TEST_F(PacFileFetcherImplTest, IgnoresLimits) {
   // Enough requests to exceed the per-group limit.
   int num_requests = 2 + ClientSocketPoolManager::max_sockets_per_group(
-                             HttpNetworkSession::NORMAL_SOCKET_POOL);
+                             HttpNetworkSession::SocketPoolType::kNormal);
 
   net::test_server::SimpleConnectionListener connection_listener(
       num_requests, net::test_server::SimpleConnectionListener::

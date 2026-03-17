@@ -8278,14 +8278,14 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyMultipleRequestsError) {
 
   int original_max_sockets_per_group =
       ClientSocketPoolManager::max_sockets_per_group(
-          HttpNetworkSession::SocketPoolType::NORMAL_SOCKET_POOL);
+          HttpNetworkSession::SocketPoolType::kNormal);
   ClientSocketPoolManager::set_max_sockets_per_group_for_test(
-      HttpNetworkSession::SocketPoolType::NORMAL_SOCKET_POOL, 1);
+      HttpNetworkSession::SocketPoolType::kNormal, 1);
   int original_socket_soft_cap_per_pool =
       ClientSocketPoolManager::socket_soft_cap_per_pool(
-          HttpNetworkSession::SocketPoolType::NORMAL_SOCKET_POOL);
+          HttpNetworkSession::SocketPoolType::kNormal);
   ClientSocketPoolManager::set_socket_soft_cap_per_pool_for_test(
-      HttpNetworkSession::SocketPoolType::NORMAL_SOCKET_POOL, 1);
+      HttpNetworkSession::SocketPoolType::kNormal, 1);
   CreateSession();
 
   request_.url = GURL("https://mail.example.org/");
@@ -8310,10 +8310,10 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyMultipleRequestsError) {
   EXPECT_EQ(ERR_FAILED, callback2.WaitForResult());
 
   ClientSocketPoolManager::set_socket_soft_cap_per_pool_for_test(
-      HttpNetworkSession::SocketPoolType::NORMAL_SOCKET_POOL,
+      HttpNetworkSession::SocketPoolType::kNormal,
       original_socket_soft_cap_per_pool);
   ClientSocketPoolManager::set_max_sockets_per_group_for_test(
-      HttpNetworkSession::SocketPoolType::NORMAL_SOCKET_POOL,
+      HttpNetworkSession::SocketPoolType::kNormal,
       original_max_sockets_per_group);
 }
 

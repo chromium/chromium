@@ -617,9 +617,8 @@ class NetworkContextTest : public testing::Test {
     return context->url_request_context()
         ->http_transaction_factory()
         ->GetSession()
-        ->GetSocketPool(
-            net::HttpNetworkSession::SocketPoolType::NORMAL_SOCKET_POOL,
-            net::ProxyChain::Direct())
+        ->GetSocketPool(net::HttpNetworkSession::SocketPoolType::kNormal,
+                        net::ProxyChain::Direct())
         ->GetInfoAsValue("", "")
         .GetDict()
         .FindInt(name)
@@ -654,9 +653,8 @@ class NetworkContextTest : public testing::Test {
         context->url_request_context()
             ->http_transaction_factory()
             ->GetSession()
-            ->GetSocketPool(
-                net::HttpNetworkSession::SocketPoolType::NORMAL_SOCKET_POOL,
-                net::ProxyChain::Direct())
+            ->GetSocketPool(net::HttpNetworkSession::SocketPoolType::kNormal,
+                            net::ProxyChain::Direct())
             ->GetInfoAsValue("", "")
             .TakeDict();
 
