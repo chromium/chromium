@@ -1109,6 +1109,11 @@ void HTMLConstructionSite::InsertTextNode(const StringView& string,
     } else {
       dummy_task.parent = template_element->InsertionTarget();
     }
+    // If the Document was detached in the middle of parsing, the template
+    // element won't be able to initialize its contents, so bail out.
+    if (!dummy_task.parent) {
+      return;
+    }
   }
 
   // Unclear when parent != case occurs. Somehow we insert text into two
