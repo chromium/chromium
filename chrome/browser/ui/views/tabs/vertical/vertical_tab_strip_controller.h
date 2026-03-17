@@ -92,6 +92,8 @@ class VerticalTabStripController : public TabContextMenuController::Delegate {
     return hover_card_controller_.get();
   }
 
+  const tabs::TabInterface* GetActiveTab() const;
+
   // Notifies BrowserCommandController that the tab with keyboard focus has
   // changed.
   void TabKeyboardFocusChangedTo(const tabs::TabInterface* tab);
