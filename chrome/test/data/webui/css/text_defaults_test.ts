@@ -12,13 +12,13 @@ function getExpectedFontFamily(expectingSystemFont: boolean): string {
 
   const fontFamily =
       // <if expr="is_linux">
-      'DejaVu Sans';
+      '"DejaVu Sans"';
       // </if>
       // <if expr="is_macosx">
       'system-ui';
       // </if>
       // <if expr="is_win">
-      'Segoe UI';
+      '"Segoe UI"';
       // </if>
       // <if expr="is_chromeos">
       'Roboto';

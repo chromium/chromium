@@ -47,7 +47,7 @@ chrome.test.getConfig(function(testConfig) {
 
 function startTest(tabId) {
   var kDefaultColor = 'rgb(0, 0, 0)';
-  var kExpectedFontFamily = 'expected font-family';
+  var kExpectedFontFamily = '"expected font-family"';
   var kExpectedColor = 'rgb(123, 123, 123)';
 
   // The page has a child frame containing a HTTP 204 page.

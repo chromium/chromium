@@ -41,7 +41,7 @@
 {
    "color": "rgb(0, 0, 0)",
    "display": "block",
-   "font-family": "Times New Roman",
+   "font-family": "\"Times New Roman\"",
    "font-style": "normal",
    "margin-bottom": "0px",
    "margin-left": "0px",
@@ -51,7 +51,7 @@
 {
    "color": "rgb(0, 0, 0)",
    "display": "block",
-   "font-family": "Times New Roman",
+   "font-family": "\"Times New Roman\"",
    "font-style": "normal",
    "margin-bottom": "8px",
    "margin-left": "8px",
@@ -61,7 +61,7 @@
 {
    "color": "rgb(0, 0, 0)",
    "display": "block",
-   "font-family": "SlightHintedTimesNewRoman, Times New Roman",
+   "font-family": "SlightHintedTimesNewRoman, \"Times New Roman\"",
    "font-style": "normal",
    "margin-bottom": "21.44px",
    "margin-left": "0px",
