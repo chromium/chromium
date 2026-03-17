@@ -3986,11 +3986,6 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
           {"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NotServed.",
            histogram_suffix}),
       0);
-  histogram_tester.ExpectTotalCount(
-      base::StrCat(
-          {"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NotServed.",
-           histogram_suffix}),
-      0);
   histogram_tester.ExpectUniqueSample(
       base::StrCat(
           {"Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate.",
