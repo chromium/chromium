@@ -39,9 +39,12 @@
   // The child modulators owned by this coordinator.
   NSMutableArray<PanelBlockModulator*>* _modulators;
 
-  // The contextual panel tab helper to use for this panel.
-  raw_ptr<ContextualPanelTabHelper, DanglingUntriaged>
-      _contextualPanelTabHelper;
+  // The contextual panel tab helper for the tab that opened this panel. Cached
+  // at -start time because the active WebState may change before
+  // -viewWillDisappear fires (e.g. when a tab is closed, the active tab changes
+  // before metrics are recorded), which would cause a dynamic lookup to return
+  // the wrong tab's data.
+  raw_ptr<ContextualPanelTabHelper> _contextualPanelTabHelper;
 
   // Read-write version of `self.baseViewController` as the base view
   // controller for this coordinator changes during its lifetime.
@@ -140,6 +143,7 @@
     [self removeViewControllerFromBaseViewController];
   }
   _viewController = nil;
+  _contextualPanelTabHelper = nullptr;
 }
 
 #pragma mark - Public
