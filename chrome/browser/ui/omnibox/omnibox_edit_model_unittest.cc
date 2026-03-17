@@ -1968,3 +1968,35 @@ TEST_F(OmniboxEditModelPopupTest,
   // 5. Verify selection was reset to 0.
   EXPECT_EQ(0u, model()->GetPopupSelection().line);
 }
+
+TEST_F(OmniboxEditModelPopupTest, OpenFeaturedSearchMatch) {
+  // Populate the TemplateURLService with starter pack entries.
+  std::vector<std::unique_ptr<TemplateURLData>> turls =
+      template_url_starter_pack_data::GetStarterPackEngines();
+  for (auto& starter_turl : turls) {
+    controller()->client()->GetTemplateURLService()->Add(
+        std::make_unique<TemplateURL>(std::move(*starter_turl)));
+  }
+
+  // Create a featured search match.
+  AutocompleteMatch match(nullptr, 1000, false,
+                          AutocompleteMatchType::STARTER_PACK);
+  match.keyword = u"@bookmarks";
+  match.associated_keyword = u"@bookmarks";
+  match.destination_url = GURL("chrome://bookmarks");
+
+  ACMatches matches;
+  matches.push_back(match);
+  AutocompleteResult* result = &AutocompleteControllerPublishedResult();
+  result->AppendMatches(matches);
+
+  model()->OnPopupResultChanged();
+
+  // Selecting the match with NORMAL state should enter keyword mode.
+  model()->OpenSelection(
+      OmniboxPopupSelection(0, OmniboxPopupSelection::NORMAL));
+
+  EXPECT_TRUE(model()->is_keyword_selected());
+  EXPECT_EQ(u"@bookmarks", model()->keyword());
+  EXPECT_FALSE(model()->is_keyword_hint());
+}

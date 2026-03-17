@@ -656,17 +656,6 @@ bool OmniboxResultView::OnMouseDragged(const ui::MouseEvent& event) {
 }
 
 void OmniboxResultView::OnMouseReleased(const ui::MouseEvent& event) {
-  if (AutocompleteMatch::IsFeaturedSearchType(match_.type)) {
-    // Featured search matches in the keyword mode refresh are a special case
-    // that does not commit the omnibox by opening a selected match.
-    OmniboxEditModel* model = popup_view_->controller()->edit_model();
-    model->ClearKeyword();
-    model->SetPopupSelection(OmniboxPopupSelection(
-        model_index_, OmniboxPopupSelection::LineState::KEYWORD_MODE));
-    model->AcceptKeyword(metrics::OmniboxEventProto::TAB);
-    return;
-  }
-
   if (event.IsOnlyMiddleMouseButton() || event.IsOnlyLeftMouseButton()) {
     const auto disposition = event.IsOnlyLeftMouseButton()
                                  ? WindowOpenDisposition::CURRENT_TAB

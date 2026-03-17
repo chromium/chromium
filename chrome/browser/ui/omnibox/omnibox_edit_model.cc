@@ -876,6 +876,17 @@ void OmniboxEditModel::OpenSelection(OmniboxPopupSelection selection,
   const AutocompleteMatch& match =
       autocomplete_controller()->result().match_at(selection.line);
 
+  // Selecting a featured search match should enter keyword mode instead of
+  // navigating to the suggestion.
+  if (selection.state == OmniboxPopupSelection::NORMAL &&
+      AutocompleteMatch::IsFeaturedSearchType(match.type)) {
+    ClearKeyword();
+    SetPopupSelection(OmniboxPopupSelection(
+        selection.line, OmniboxPopupSelection::LineState::KEYWORD_MODE));
+    AcceptKeyword(metrics::OmniboxEventProto::TAB);
+    return;
+  }
+
   if (selection.state == OmniboxPopupSelection::FOCUSED_BUTTON_THUMBS_UP) {
     UpdateFeedbackOnMatch(selection.line, FeedbackType::kThumbsUp);
   } else if (selection.state ==
