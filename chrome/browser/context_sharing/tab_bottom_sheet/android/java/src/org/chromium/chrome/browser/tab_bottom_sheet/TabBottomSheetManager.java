@@ -73,6 +73,8 @@ public class TabBottomSheetManager implements Destroyable {
             NativeInterfaceDelegate nativeInterfaceDelegate,
             CoBrowseViews coBrowseViews,
             boolean startsExpanded) {
+        // Close any existing bottom sheet before showing a new one.
+        tryToCloseBottomSheet();
         mTabBottomSheetCoordinator =
                 new TabBottomSheetCoordinator(mBottomSheetController, coBrowseViews);
 
