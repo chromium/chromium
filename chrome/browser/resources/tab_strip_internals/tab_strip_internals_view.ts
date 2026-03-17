@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from '//resources/js/assert.js';
+
 import type {ModelNode} from './tab_strip_internals_adapter.js';
 import type {TabStripInternalsViewModel, ViewModelObserver} from './tab_strip_internals_viewmodel.js';
 import {ViewModelChange} from './tab_strip_internals_viewmodel.js';
@@ -81,6 +83,7 @@ export class TabStripInternalsView implements ViewModelObserver {
    * the navigation panel present on the left side.
    */
   private renderTreeViewPane_() {
+    assert(this.viewModel_.root);
     const rootEl = this.renderTreeNode_(this.viewModel_.root);
     this.treeViewPaneEl_.replaceChildren(rootEl);
   }

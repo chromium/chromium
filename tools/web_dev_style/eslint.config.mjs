@@ -61,6 +61,11 @@ const noRestrictedSyntaxCases = [
     message:
         'Disallowed extensionless import. Explicitly specify the extension suffix.',
   },
+  {
+    selector: ':matches(PropertyDefinition, AccessorProperty)[definite=true]',
+    message:
+        'Do not use the non-null assertion operator (!) on class property declarations. Initialize properties with dummy or default values instead.',
+  },
 ];
 
 const noRestrictedImportsPaths = [

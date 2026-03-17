@@ -8,8 +8,10 @@ import {textEndsWithOpeningPunctuation} from './speech_presentation_rules.js';
 // Wrapper class for Intl.Segmenter that manages Intl.Segmenter instances to
 // be used to segment text.
 export class TextSegmenter {
-  private wordSegmenter_!: Intl.Segmenter;
-  private sentenceSegmenter_!: Intl.Segmenter;
+  private wordSegmenter_: Intl.Segmenter =
+      new Intl.Segmenter(undefined, {granularity: 'word'});
+  private sentenceSegmenter_: Intl.Segmenter =
+      new Intl.Segmenter(undefined, {granularity: 'sentence'});
 
   constructor() {
     // If no language code has been provided, Intl.Segmenter will use the system

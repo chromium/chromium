@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from '//resources/js/assert.js';
+
 import type {Container} from './tab_strip_internals.mojom-webui.js';
 import {DataModelAdapter, type ModelNode} from './tab_strip_internals_adapter.js';
 import {TabStripInternalsApiProxyImpl} from './tab_strip_internals_api_proxy.js';
@@ -32,7 +34,7 @@ export class TabStripInternalsViewModel {
 
   // View state
   /** Represents the root node of the navigation pane hierarchy. */
-  private root_!: ModelNode;
+  private root_: ModelNode|null = null;
   /** Currently selected node's unique identifier. */
   private selectedNodeId_: string|null = null;
   /** A set of expanded nodes represented by their unique Ids. */
@@ -252,9 +254,10 @@ export class TabStripInternalsViewModel {
     this.root_ = DataModelAdapter.build(data);
     this.rebuildNodeMap_();
 
+    assert(this.root_);
     // Default selection to root node and ensure it's always expanded.
     if (!this.selectedNodeId_) {
-      this.selectedNodeId_ = this.root.path;
+      this.selectedNodeId_ = this.root_.path;
     }
     this.expandedNodeIds_.add(this.root_.path);
 
@@ -285,6 +288,7 @@ export class TabStripInternalsViewModel {
       return;
     }
     // DFS traversal.
+    assert(this.root_);
     const stack = [this.root_];
     while (stack.length) {
       const node = stack.pop()!;

@@ -21,6 +21,7 @@ import './ghost_loader.js';
 import './top_toolbar.js';
 
 import type {ChromeEvent} from '/tools/typescript/definitions/chrome_event.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -279,7 +280,7 @@ export class ContextualTasksAppElement extends CrLitElement {
   private listenerIds_: number[] = [];
   private eventTracker_: EventTracker = new EventTracker();
   private commonSearchParams_: {[key: string]: string} = {};
-  private postMessageHandler_!: PostMessageHandler;
+  private postMessageHandler_: PostMessageHandler|null = null;
   private forcedEmbeddedPageHost =
       loadTimeData.getString('forcedEmbeddedPageHost');
   private signInDomains_: string[] =
@@ -568,6 +569,7 @@ export class ContextualTasksAppElement extends CrLitElement {
           // TODO(crbug.com/483737358): Sending an object instead of a proto
           // is a temporary solution to unblock the prototype. Remove this
           // method once the proto is implemented on the webview side.
+          assert(this.postMessageHandler_);
           this.postMessageHandler_.sendObjectMessage({
             type: 'composebox-height-update',
             height: e.detail.height,
@@ -765,6 +767,7 @@ export class ContextualTasksAppElement extends CrLitElement {
       if (currentHeight !== inputRect.height) {
         // If the height that the client reports for the composebox is different
         // from the height that the server is reporting, update the server.
+        assert(this.postMessageHandler_);
         this.postMessageHandler_.sendObjectMessage({
           type: 'composebox-height-update',
           height: currentHeight,
@@ -927,6 +930,7 @@ export class ContextualTasksAppElement extends CrLitElement {
   }
 
   private postMessageToWebview(message: number[]) {
+    assert(this.postMessageHandler_);
     this.postMessageHandler_.sendMessage(new Uint8Array(message));
   }
 
@@ -941,6 +945,7 @@ export class ContextualTasksAppElement extends CrLitElement {
   }
 
   private onHandshakeComplete() {
+    assert(this.postMessageHandler_);
     this.postMessageHandler_.completeHandshake();
   }
 

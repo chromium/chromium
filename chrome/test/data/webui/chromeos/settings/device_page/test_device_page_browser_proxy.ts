@@ -23,8 +23,9 @@ export class TestDevicePageBrowserProxy extends TestBrowserProxy implements
   private hasPointingStick_ = true;
   private hasTouchpad_ = true;
   private fakeBatteryStatus_: BatteryStatus = {} as BatteryStatus;
-  private onNoteTakingAppsUpdated_!:
-      (apps: NoteAppInfo[], waitingForAndroid: boolean) => void;
+  private onNoteTakingAppsUpdated_:
+      (apps: NoteAppInfo[],
+       waitingForAndroid: boolean) => void = (_apps, _waitingForAndroid) => {};
 
   constructor() {
     super([

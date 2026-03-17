@@ -17,7 +17,7 @@ export class KeyArrowNavigationService {
    * flat format sorted by tab order.
    */
   private elements_: HTMLElement[] = [];
-  private rootElement_!: HTMLElement;
+  private rootElement_: HTMLElement;
   private focusIndex_: number = 0;
   private childrenQuerySelector_: string = '';
 
