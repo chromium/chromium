@@ -15,8 +15,8 @@ import fetch_common
 
 _REPO_URL = 'https://repo.maven.apache.org/maven2'
 SPEC = fetch_common.Spec(repo_url=_REPO_URL,
-                         group_name='org/mockito',
-                         module_name='mockito-android',
+                         group_name='com/linkedin/dexmaker',
+                         module_name='dexmaker-mockito-inline',
                          file_ext='aar',
                          patch_version='cr2',
                          version_override=None,
