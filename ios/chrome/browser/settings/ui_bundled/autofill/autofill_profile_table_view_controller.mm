@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_profile_table_view_controller.h"
 
+#import <algorithm>
+
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/i18n/message_formatter.h"
@@ -343,7 +345,7 @@ bool CanDeleteItemType(NSInteger itemType) {
   std::vector<const autofill::EntityInstance*> identityDocs;
   std::vector<const autofill::EntityInstance*> travelDocs;
 
-  for (const autofill::EntityInstance& instance : instances) {
+  for (const auto& instance : instances) {
     if (kIdentityDocs.contains(instance.type().name())) {
       identityDocs.push_back(&instance);
     } else if (kTravel.contains(instance.type().name())) {
@@ -605,6 +607,18 @@ bool CanDeleteItemType(NSInteger itemType) {
                                         .empty();
 }
 
+// Checks if there are any local entities.
+- (BOOL)hasLocalEntities {
+  if (_settingsAreDismissed || !_entityDataManager) {
+    return NO;
+  }
+  return std::ranges::any_of(
+      _entityDataManager->GetEntityInstances(), [](const auto& instance) {
+        return instance.record_type() !=
+               autofill::EntityInstance::RecordType::kServerWallet;
+      });
+}
+
 #pragma mark - LoadModel Helpers for Enhanced Autofill
 
 // Populates the Verification and Wallet related section.
@@ -739,7 +753,9 @@ bool CanDeleteItemType(NSInteger itemType) {
 #pragma mark - SettingsRootTableViewController
 
 - (BOOL)editButtonEnabled {
-  return [self localProfilesExist];
+  // Entities stored in Google Wallet are not editable by the app.
+  // So, here only local entities are considered.
+  return [self localProfilesExist] || [self hasLocalEntities];
 }
 
 - (BOOL)shouldHideToolbar {

@@ -7,6 +7,7 @@
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/autofill/autofill_ai/public/autofill_ai_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
+#import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_settings_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -20,6 +21,9 @@
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
+
+NSString* const kOwnerName = @"autofilltestuser";
+NSString* const kRedressNumber = @"1234567";
 
 // Save button on the infobar.
 id<GREYMatcher> infoBarSaveButton() {
@@ -38,6 +42,54 @@ id<GREYMatcher> saveEntityButton() {
       l10n_util::GetNSString(IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_OK_BUTTON_LABEL));
 }
 
+// Taps the infobar save button.
+void TapInfoBarSaveButton() {
+  [[EarlGrey selectElementWithMatcher:infoBarSaveButton()]
+      performAction:grey_tap()];
+}
+
+// Taps the save entity button.
+void TapSaveEntityButton() {
+  [[EarlGrey selectElementWithMatcher:saveEntityButton()]
+      performAction:grey_tap()];
+}
+
+// Verifies if the view to show the entity is visible.
+void VerifyEntityVisibility(bool is_visible) {
+  [[EarlGrey selectElementWithMatcher:entitiesView()]
+      assertWithMatcher:is_visible ? grey_sufficientlyVisible() : grey_nil()];
+}
+
+// Label within a table view cell in "Addresses and more" settings.
+id<GREYMatcher> GetMatcherForLabel(NSString* label) {
+  return grey_allOf(
+      grey_accessibilityLabel(label),
+      grey_ancestor(grey_accessibilityID(kAutofillProfileTableViewID)),
+      grey_interactable(), nil);
+}
+
+// Verifies if a cell with the given label is visible.
+void VerifyCellVisibility(NSString* entity_label, bool is_visible) {
+  [[EarlGrey selectElementWithMatcher:GetMatcherForLabel(entity_label)]
+      assertWithMatcher:is_visible ? grey_sufficientlyVisible()
+                                   : grey_notVisible()];
+}
+
+// Verifies the flow of saving a new entity from the infobar banner.
+void VerifySaveNewEntityFlow() {
+  // Tap the infobar save button.
+  TapInfoBarSaveButton();
+
+  // Verify the save entity UI is shown.
+  VerifyEntityVisibility(true);
+
+  // Tap the save entity button.
+  TapSaveEntityButton();
+
+  // Verify the save entity UI is gone.
+  VerifyEntityVisibility(false);
+}
+
 }  // namespace
 
 @interface AutofillAIEGTest : ChromeTestCase
@@ -49,6 +101,10 @@ id<GREYMatcher> saveEntityButton() {
   AppLaunchConfiguration config;
   config.features_enabled.push_back(
       autofill::features::kAutofillAiWithDataSchema);
+  config.features_enabled.push_back(
+      autofill::features::kAutofillAiCreateEntityDataManager);
+  config.features_enabled.push_back(
+      autofill::features::kAutofillAiReauthRequired);
   return config;
 }
 
@@ -63,21 +119,46 @@ id<GREYMatcher> saveEntityButton() {
   // Simulate a trigger for the infobar.
   [AutofillAppInterface showAutofillAiSaveEntityBubble];
 
-  // Tap the banner.
-  [[EarlGrey selectElementWithMatcher:infoBarSaveButton()]
+  // Verify the infobar banner shows and can be tapped. Once tapped, the
+  // detailed save entity UI is shown, and save button can be tapped.
+  VerifySaveNewEntityFlow();
+}
+
+// Tests entity deletion from "Addresses and more" in Settings.
+- (void)testEntityDeletion {
+  GREYAssertTrue(
+      [AutofillAppInterface saveRedressNumberEntityWithName:kOwnerName
+                                                     number:kRedressNumber],
+      @"Failed to create an entity.");
+  // Open "Addresses and more" from settings.
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI
+      tapSettingsMenuButton:chrome_test_util::AddressesAndMoreButton()];
+
+  // Verify the entity just saved is visible in settings.
+  VerifyCellVisibility(kOwnerName, true);
+
+  // Tap the Toolbar Edit button to enter edit mode.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::SettingsToolbarEditButton()]
       performAction:grey_tap()];
 
-  // Verify the detailed UI.
-  [[EarlGrey selectElementWithMatcher:entitiesView()]
-      assertWithMatcher:grey_notNil()];
-
-  // Tap the final Save button.
-  [[EarlGrey selectElementWithMatcher:saveEntityButton()]
+  // Select the cell containing the entity.
+  [[EarlGrey selectElementWithMatcher:GetMatcherForLabel(kOwnerName)]
       performAction:grey_tap()];
 
-  // Verify the detailed UI is gone.
-  [[EarlGrey selectElementWithMatcher:entitiesView()]
-      assertWithMatcher:grey_nil()];
+  // Tap the delete button in the bottom toolbar.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          SettingsBottomToolbarDeleteButton()]
+      performAction:grey_tap()];
+
+  // Tap the delete action sheet button to confirm deletion.
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ActionSheetItemWithAccessibilityLabelId(
+                     IDS_IOS_DELETE_ACTION_TITLE)] performAction:grey_tap()];
+
+  // Ensure it's deleted.
+  VerifyCellVisibility(kOwnerName, false);
 }
 
 @end

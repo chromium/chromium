@@ -163,6 +163,10 @@ enum CreditCardSaveManagerObserverEvent : int {
 // Triggers the Autofill AI save entity bubble.
 + (void)showAutofillAiSaveEntityBubble;
 
+// Saves a Redress Number entity with the given name and number.
++ (BOOL)saveRedressNumberEntityWithName:(NSString*)name
+                                 number:(NSString*)number;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_AUTOFILL_APP_INTERFACE_H_
