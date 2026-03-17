@@ -4866,56 +4866,56 @@ int BrowserView::NonClientHitTest(const gfx::Point& point) {
     }
   }
 
-  // Determine if the TabStrip exists and is capable of being clicked on. We
-  // might be a popup window without a TabStrip. Use `GetTabStripVisible` as the
-  // tabstrip might have been hidden in immersive mode.
-  if (GetTabStripVisible()) {
-    if (vertical_tab_strip_region_view_ &&
-        vertical_tab_strip_region_view_->GetVisible()) {
-      // See if the mouse pointer is within the bounds of the
-      // VerticalTabStripRegionView.
-      gfx::Point test_point(point);
-      if (ConvertedHitTest(parent(), vertical_tab_strip_region_view_,
-                           &test_point)) {
-        if (vertical_tab_strip_region_view_->IsPositionInWindowCaption(
-                test_point)) {
-          return HTCAPTION;
-        }
-        return HTCLIENT;
-      } else {
-        gfx::Point test_point2(point);
-        if (ConvertedHitTest(parent(), top_container_, &test_point2) &&
-            top_container_->IsPositionInWindowCaption(test_point2)) {
-          return HTCAPTION;
-        }
+  if (vertical_tab_strip_region_view_ &&
+      vertical_tab_strip_region_view_->GetVisible()) {
+    // See if the mouse pointer is within the bounds of the
+    // VerticalTabStripRegionView.
+    gfx::Point test_point(point);
+    if (ConvertedHitTest(parent(), vertical_tab_strip_region_view_,
+                         &test_point)) {
+      if (vertical_tab_strip_region_view_->IsPositionInWindowCaption(
+              test_point)) {
+        return HTCAPTION;
       }
+      return HTCLIENT;
     } else {
-      // See if the mouse pointer is within the bounds of the
-      // HorizontalTabStripRegionView.
-      gfx::Point test_point(point);
-      if (ConvertedHitTest(parent(), horizontal_tab_strip_region_view_,
-                           &test_point)) {
-        if (horizontal_tab_strip_region_view_->IsPositionInWindowCaption(
-                test_point)) {
-          return HTCAPTION;
-        }
-        return HTCLIENT;
+      gfx::Point test_point2(point);
+      if (ConvertedHitTest(parent(), top_container_, &test_point2) &&
+          top_container_->IsPositionInWindowCaption(test_point2)) {
+        return HTCAPTION;
       }
+    }
+  } else if (GetTabStripVisible()) {
+    // Determine if the Horizontal TabStrip exists and is capable of being
+    // clicked on. We might be a popup window without a TabStrip. Use
+    // `GetTabStripVisible` as the tabstrip might have been hidden in immersive
+    // mode.
 
-      // The top few pixels of the TabStrip are a drop-shadow - as we're pretty
-      // starved of draggable area, let's give it to window dragging (this also
-      // makes sense visually).
-      // TODO(tluk): Investigate the impact removing this has on draggable area
-      // given the tab strip no longer uses shadows.
-      views::Widget* widget = GetWidget();
-      if (!(widget->IsMaximized() || widget->IsFullscreen()) &&
-          (point_in_browser_view_coords.y() <
-           (horizontal_tab_strip_region_view_->y() + kTabShadowSize))) {
-        // We return HTNOWHERE as this is a signal to our containing
-        // NonClientView that it should figure out what the correct hit-test
-        // code is given the mouse position...
-        return HTNOWHERE;
+    // See if the mouse pointer is within the bounds of the
+    // HorizontalTabStripRegionView.
+    gfx::Point test_point(point);
+    if (ConvertedHitTest(parent(), horizontal_tab_strip_region_view_,
+                         &test_point)) {
+      if (horizontal_tab_strip_region_view_->IsPositionInWindowCaption(
+              test_point)) {
+        return HTCAPTION;
       }
+      return HTCLIENT;
+    }
+
+    // The top few pixels of the TabStrip are a drop-shadow - as we're pretty
+    // starved of draggable area, let's give it to window dragging (this also
+    // makes sense visually).
+    // TODO(tluk): Investigate the impact removing this has on draggable area
+    // given the tab strip no longer uses shadows.
+    views::Widget* widget = GetWidget();
+    if (!(widget->IsMaximized() || widget->IsFullscreen()) &&
+        (point_in_browser_view_coords.y() <
+         (horizontal_tab_strip_region_view_->y() + kTabShadowSize))) {
+      // We return HTNOWHERE as this is a signal to our containing
+      // NonClientView that it should figure out what the correct hit-test
+      // code is given the mouse position...
+      return HTNOWHERE;
     }
   }
 
