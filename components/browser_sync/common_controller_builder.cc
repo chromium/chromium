@@ -636,7 +636,6 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
             plus_address_webdata_service_.value()->GetSyncControllerDelegate(),
             /*delegate_for_transport_mode=*/
             plus_address_webdata_service_.value()->GetSyncControllerDelegate(),
-            sync_service, identity_manager_.value(),
             google_groups_manager_.value()));
   }
 
@@ -652,7 +651,6 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
             plus_address_setting_service_.value()->GetSyncControllerDelegate(),
             /*delegate_for_transport_mode=*/
             plus_address_setting_service_.value()->GetSyncControllerDelegate(),
-            sync_service, identity_manager_.value(),
             google_groups_manager_.value()));
   }
 
