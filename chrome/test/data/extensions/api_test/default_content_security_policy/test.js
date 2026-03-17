@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-window.externalCanary = "Alive";
+window.externalCanary = 'Alive';
 
 chrome.test.getConfig(function(config) {
 
@@ -14,7 +14,7 @@ chrome.test.getConfig(function(config) {
   function externalScriptDoesRun() {
     // This test is somewhat zen in the sense that if external scripts are
     // blocked, we don't be able to even execute the test harness...
-    chrome.test.assertEq(window.externalCanary, "Alive");
+    chrome.test.assertEq(window.externalCanary, 'Alive');
     chrome.test.succeed();
   }
 
