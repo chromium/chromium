@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.search_engines.settings.common;
 import android.content.Context;
 import android.graphics.Bitmap;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -110,7 +112,7 @@ public abstract class BaseSiteSearchMediator
         GURL faviconUrl = url.getFaviconURL();
         if (faviconUrl == null) return;
 
-        SearchEngineIconUtils.updateIcon(
+        executeIconUpdate(
                 mContext,
                 model,
                 SiteSearchProperties.ICON,
@@ -118,6 +120,20 @@ public abstract class BaseSiteSearchMediator
                 faviconUrl,
                 mLargeIconBridge,
                 mIconCache);
+    }
+
+    /** Wrapper for the static SearchEngineIconUtils.updateIcon to allow mocking in tests. */
+    @VisibleForTesting
+    void executeIconUpdate(
+            Context context,
+            PropertyModel model,
+            PropertyModel.WritableObjectPropertyKey<Bitmap> propertyKey,
+            TemplateUrl templateUrl,
+            GURL faviconUrl,
+            LargeIconBridge largeIconBridge,
+            Map<GURL, Bitmap> iconCache) {
+        SearchEngineIconUtils.updateIcon(
+                context, model, propertyKey, templateUrl, faviconUrl, largeIconBridge, iconCache);
     }
 
     /**
