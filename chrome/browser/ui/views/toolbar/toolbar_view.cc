@@ -1795,7 +1795,7 @@ ReloadControl* ToolbarView::GetReloadButton() {
 }
 
 IntentChipButton* ToolbarView::GetIntentChipButton() {
-  return location_bar_view()->intent_chip();
+  return location_bar_view() ? location_bar_view()->intent_chip() : nullptr;
 }
 
 ToolbarButton* ToolbarView::GetDownloadButton() {
