@@ -3,18 +3,18 @@
 // found in the LICENSE file.
 
 const notifications = chrome.notifications;
-var theOnlyTestDone = null;
+let theOnlyTestDone = null;
 
-var notificationData = {
-  type: "basic",
-  iconUrl: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAA" +
-           "CNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHw" +
-           "AAAABJRU5ErkJggg==",
-  title: "Attention!",
-  message: "Check out Cirque du Soleil"
+const notificationData = {
+  type: 'basic',
+  iconUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAA' +
+           'CNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHw' +
+           'AAAABJRU5ErkJggg==',
+  title: 'Attention!',
+  message: 'Check out Cirque du Soleil'
 };
 
-var results = {
+const results = {
   FOO: false,
   BAR: true,
   BAT: false,
@@ -27,39 +27,39 @@ function createCallback(id) { }
 
 function notifyPass() { chrome.test.notifyPass(); }
 
-var onClosedHooks = {
+const onClosedHooks = {
   FOO: notifyPass,
   BAR: notifyPass,
   BIFF: function() {
-    notifications.create("BLAT", notificationData, function () {
+    notifications.create('BLAT', notificationData, function () {
       if (chrome.runtime.lastError) {
         chrome.test.notifyFail(lastError.message);
         return;
       }
-      notifications.create("BLOT", notificationData, function () {
+      notifications.create('BLOT', notificationData, function () {
         if (chrome.runtime.lastError) {
           chrome.test.notifyFail(lastError.message);
           return;
         }
-        chrome.test.notifyPass("Created the new notifications.");
+        chrome.test.notifyPass('Created the new notifications.');
       });
     });
   },
 };
 
-function onClosedListener(id, by_user) {
-  if (results[id] !== by_user) {
-    chrome.test.notifyFail("Notification " + id +
-                           " closed with bad by_user param ( "+ by_user +" )");
+function onClosedListener(id, byUser) {
+  if (results[id] !== byUser) {
+    chrome.test.notifyFail(
+        `Notification ${id} closed with bad byUser param ( ${byUser} )`);
     return;
   }
   delete results[id];
 
-  if (typeof onClosedHooks[id] === "function")
+  if (typeof onClosedHooks[id] === 'function')
     onClosedHooks[id]();
 
   if (Object.keys(results).length === 0) {
-    chrome.test.notifyPass("Done!");
+    chrome.test.notifyPass('Done!');
     theOnlyTestDone();
   }
 }
@@ -69,15 +69,15 @@ notifications.onClosed.addListener(onClosedListener);
 function theOnlyTest() {
   // This test coordinates with the browser test.  First, 4 notifications are
   // created.  Then 2 are manually cancelled in C++.  Then clearAll is called
-  // with false |by_user|.  Then once the BIFF notification is cleared, we
+  // with false |byUser|.  Then once the BIFF notification is cleared, we
   // create two more notifications in JS, and C++ calls the clearAll with true
-  // |by_user|.
+  // |byUser|.
   theOnlyTestDone = chrome.test.callbackAdded();
 
-  notifications.create("FOO", notificationData, createCallback);
-  notifications.create("BAR", notificationData, createCallback);
-  notifications.create("BAT", notificationData, createCallback);
-  notifications.create("BIFF", notificationData, createCallback);
+  notifications.create('FOO', notificationData, createCallback);
+  notifications.create('BAR', notificationData, createCallback);
+  notifications.create('BAT', notificationData, createCallback);
+  notifications.create('BIFF', notificationData, createCallback);
 }
 
 chrome.test.runTests([ theOnlyTest ]);

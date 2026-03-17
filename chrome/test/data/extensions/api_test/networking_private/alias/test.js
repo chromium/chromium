@@ -42,7 +42,7 @@ chrome.test.runTests([
                 },
                 // ENS, ICCID, IMEI, MDN, MEID, and MIN are filtered for
                 // networkingOnc.
-                ModelID:"test_model_id",
+                ModelID:'test_model_id',
                 NetworkTechnology: 'GSM',
                 RoamingState: 'Home',
                 SIMLockStatus: {
@@ -85,7 +85,7 @@ chrome.test.runTests([
           }));
     },
     function verifyNoAccessToNetworkingPrivateOnlyMethods() {
-      var expectedError = 'Requires networkingPrivate API access.';
+      const expectedError = 'Requires networkingPrivate API access.';
       chrome.networking.onc.getVisibleNetworks('All',
           chrome.test.callbackFail(expectedError));
       chrome.networking.onc.getEnabledNetworkTypes(

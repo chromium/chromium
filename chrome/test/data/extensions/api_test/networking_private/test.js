@@ -6,42 +6,42 @@
 // that callbacks are correctly invoked, expected parameters are correct,
 // and failures are detected.
 
-var callbackPass = chrome.test.callbackPass;
+const callbackPass = chrome.test.callbackPass;
 
-var kFailure = 'Failure';
-var kGuid = 'SOME_GUID';
+const FAILURE = 'Failure';
+const GUID = 'SOME_GUID';
 
 function callbackResult(result) {
   if (chrome.runtime.lastError)
     chrome.test.fail(chrome.runtime.lastError.message);
-  else if (result == false || result == kFailure)
-    chrome.test.fail('Failed: ' + result);
+  else if (result == false || result == FAILURE)
+    chrome.test.fail(`Failed: ${result}`);
 }
 
-var availableTests = [
+const availableTests = [
   function getProperties() {
     chrome.networkingPrivate.getProperties(
-        kGuid, callbackPass(callbackResult));
+        GUID, callbackPass(callbackResult));
   },
   function getManagedProperties() {
     chrome.networkingPrivate.getManagedProperties(
-        kGuid, callbackPass(callbackResult));
+        GUID, callbackPass(callbackResult));
   },
   function getState() {
     chrome.networkingPrivate.getState(
-        kGuid, callbackPass(callbackResult));
+        GUID, callbackPass(callbackResult));
   },
   function setProperties() {
     chrome.networkingPrivate.setProperties(
-        kGuid, { 'GUID': kGuid }, callbackPass(callbackResult));
+        GUID, { GUID: GUID }, callbackPass(callbackResult));
   },
   function createNetwork() {
     chrome.networkingPrivate.createNetwork(
-        false, { 'GUID': kGuid }, callbackPass(callbackResult));
+        false, { GUID: GUID }, callbackPass(callbackResult));
   },
   function forgetNetwork() {
     chrome.networkingPrivate.forgetNetwork(
-        kGuid, callbackPass(callbackResult));
+        GUID, callbackPass(callbackResult));
   },
   function getNetworks() {
     chrome.networkingPrivate.getNetworks(
@@ -73,39 +73,39 @@ var availableTests = [
   },
   function startConnect() {
     chrome.networkingPrivate.startConnect(
-        kGuid, callbackPass(callbackResult));
+        GUID, callbackPass(callbackResult));
   },
   function startDisconnect() {
     chrome.networkingPrivate.startDisconnect(
-        kGuid, callbackPass(callbackResult));
+        GUID, callbackPass(callbackResult));
   },
   function startActivate() {
     chrome.networkingPrivate.startActivate(
-        kGuid, '' /* carrier */, callbackPass(callbackResult));
+        GUID, '' /* carrier */, callbackPass(callbackResult));
   },
   function getCaptivePortalStatus() {
     chrome.networkingPrivate.getCaptivePortalStatus(
-        kGuid, callbackPass(callbackResult));
+        GUID, callbackPass(callbackResult));
   },
   function unlockCellularSim() {
     chrome.networkingPrivate.unlockCellularSim(
-        kGuid, '1111', callbackPass(callbackResult));
+        GUID, '1111', callbackPass(callbackResult));
   },
   function setCellularSimState() {
-    var simState = { requirePin: true, currentPin: '1111', newPin: '1234' };
+    const simState = { requirePin: true, currentPin: '1111', newPin: '1234' };
     chrome.networkingPrivate.setCellularSimState(
-        kGuid, simState, callbackPass(callbackResult));
+        GUID, simState, callbackPass(callbackResult));
   },
   function selectCellularMobileNetwork() {
     chrome.networkingPrivate.selectCellularMobileNetwork(
-        kGuid, 'fakeId', callbackPass(callbackResult));
+        GUID, 'fakeId', callbackPass(callbackResult));
   },
   function getGlobalPolicy() {
     chrome.networkingPrivate.getGlobalPolicy(callbackPass(callbackResult));
   }
 ];
 
-var testToRun = window.location.search.substring(1);
+const testToRun = window.location.search.substring(1);
 chrome.test.runTests(availableTests.filter(function(op) {
   return op.name == testToRun;
 }));
