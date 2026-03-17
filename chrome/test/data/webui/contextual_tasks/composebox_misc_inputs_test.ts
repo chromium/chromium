@@ -25,7 +25,7 @@ import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestContextualTasksBrowserProxy} from './test_contextual_tasks_browser_proxy.js';
-import {ADD_FILE_CONTEXT_FN, assertStyle, deleteLastFile, FAKE_TOKEN_STRING, installMock, mockInputState} from './test_utils.js';
+import {ADD_FILE_CONTEXT_FN, assertStyle, deleteLastFile, FAKE_TOKEN_STRING, fixtureUrl, installMock, mockInputState} from './test_utils.js';
 
 async function dispatchDragAndDropEvent(dropZone: Element, files: File[]) {
   if (!dropZone) {
@@ -169,7 +169,7 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
       composeboxShowContextMenu: true,
     });
 
-    testProxy = new TestContextualTasksBrowserProxy('https://google.com');
+    testProxy = new TestContextualTasksBrowserProxy(fixtureUrl);
     BrowserProxyImpl.setInstance(testProxy);
 
     mockComposeboxPageHandler = TestMock.fromClass(ComposeboxPageHandlerRemote);

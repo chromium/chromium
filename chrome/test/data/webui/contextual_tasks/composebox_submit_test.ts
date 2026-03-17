@@ -21,7 +21,7 @@ import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestContextualTasksBrowserProxy} from './test_contextual_tasks_browser_proxy.js';
-import {ADD_TAB_CONTEXT_FN, assertStyle, FAKE_TOKEN_STRING, FAKE_TOKEN_STRING_2, getSubmitButton, getSubmitContainer, installMock, mockInputState, setupAutocompleteResults, simulateUserInput, uploadFileAndVerify} from './test_utils.js';
+import {ADD_TAB_CONTEXT_FN, assertStyle, FAKE_TOKEN_STRING, FAKE_TOKEN_STRING_2, fixtureUrl, getSubmitButton, getSubmitContainer, installMock, mockInputState, setupAutocompleteResults, simulateUserInput, uploadFileAndVerify} from './test_utils.js';
 
 function pressEnter(element: HTMLElement) {
   element.dispatchEvent(new KeyboardEvent('keydown', {
@@ -87,7 +87,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
       composeboxShowContextMenu: true,
     });
 
-    testProxy = new TestContextualTasksBrowserProxy('https://google.com');
+    testProxy = new TestContextualTasksBrowserProxy(fixtureUrl);
     BrowserProxyImpl.setInstance(testProxy);
 
     mockComposeboxPageHandler = TestMock.fromClass(ComposeboxPageHandlerRemote);
@@ -205,7 +205,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
         await mockSearchboxPageHandler.whenCalled('openAutocompleteMatch');
 
     assertEquals(0, matchIndex);
-    assertEquals(`https://google.com/search?q=${TEST_QUERY}`, url);
+    assertEquals(`${fixtureUrl}/search?q=${TEST_QUERY}`, url);
     mockTimer.tick(0);
 
     // Cannot use `await microTasksFinished()` here because the transition to
@@ -688,7 +688,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
     contextEntrypoint.fire('add-tab-context', {
       id: 0,
       title: 'test',
-      url: new URL('https://google.com'),
+      url: new URL(fixtureUrl),
       delayUpload: false,
       onContextAdded: callback,
     });
@@ -843,7 +843,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
     contextEntrypoint.fire('add-tab-context', {
       id: 0,
       title: 'test',
-      url: new URL('https://google.com'),
+      url: new URL(fixtureUrl),
       delayUpload: true,
       onContextAdded: callback,
     });

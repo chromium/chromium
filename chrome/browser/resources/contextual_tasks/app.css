@@ -726,6 +726,11 @@ error-page {
   padding-inline-end: 2px;
 }
 
+:host([is-load-error_]) #composeboxHeaderWrapper,
+:host([is-load-error_]) #composebox {
+  display: none;
+}
+
 .name-shimmer-dark {
   --bg-gradient: linear-gradient(
     to bottom,

@@ -19,7 +19,7 @@ import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestContextualTasksBrowserProxy} from './test_contextual_tasks_browser_proxy.js';
-import {assertStyle, deleteLastFile, FAKE_TOKEN_STRING, FAKE_TOKEN_STRING_2, getSubmitButton, getSubmitContainer, mockInputState, setupAutocompleteResults, simulateUserInput, uploadFileAndVerify} from './test_utils.js';
+import {assertStyle, deleteLastFile, FAKE_TOKEN_STRING, FAKE_TOKEN_STRING_2, fixtureUrl, getSubmitButton, getSubmitContainer, mockInputState, setupAutocompleteResults, simulateUserInput, uploadFileAndVerify} from './test_utils.js';
 
 function pressEnter(element: HTMLElement) {
   element.dispatchEvent(new KeyboardEvent('keydown', {
@@ -88,9 +88,10 @@ suite('ContextualTasksComposeboxTest', () => {
       composeboxHintTextAskAboutThisTab: 'Ask about this tab',
       composeboxHintTextAskAboutThisImage: 'Ask about this image',
       composeboxHintTextAskAboutThisDoc: 'Ask about this doc',
+      forcedEmbeddedPageHost: '',
     });
 
-    testProxy = new TestContextualTasksBrowserProxy('https://google.com');
+    testProxy = new TestContextualTasksBrowserProxy(fixtureUrl);
     BrowserProxyImpl.setInstance(testProxy);
 
     mockComposeboxPageHandler = TestMock.fromClass(ComposeboxPageHandlerRemote);
@@ -1064,5 +1065,92 @@ suite('ContextualTasksComposeboxTest', () => {
     await microtasksFinished();
     await innerComposebox.updateComplete;
     assertEquals('', innerComposebox.getInputText());
+  });
+
+  test('OfflineStatusReconsideredOnReload', async () => {
+    // 1. Initial state: Online.
+    Object.defineProperty(window.navigator, 'onLine', {
+      get: () => true,
+      configurable: true,
+    });
+
+    const threadFrame = contextualTasksApp.$.threadFrame;
+    const composebox = contextualTasksApp.$.composebox;
+
+    // Simulate a load to initialize state.
+    const loadStartEventOnline = new CustomEvent('loadstart') as any;
+    loadStartEventOnline.isTopLevel = true;
+    loadStartEventOnline.url = fixtureUrl;
+    threadFrame.dispatchEvent(loadStartEventOnline);
+
+    await microtasksFinished();
+    await contextualTasksApp.updateComplete;
+
+    assertFalse(
+        contextualTasksApp.isLoadErrorForTesting, 'Should be online initially');
+    assertTrue(isVisible(composebox), 'Composebox should be visible initially');
+    assertEquals(mockSearchboxPageHandler.getCallCount('queryAutocomplete'), 1);
+
+    // 2. Go offline.
+    Object.defineProperty(window.navigator, 'onLine', {
+      get: () => false,
+      configurable: true,
+    });
+
+    // Verify it's still visible because no reload happened yet.
+    assertFalse(
+        contextualTasksApp.isLoadErrorForTesting,
+        'isLoadError_ should still be false before reload');
+    assertTrue(
+        isVisible(composebox),
+        'Composebox should still be visible before reload');
+
+    // 3. Simulate reload while offline.
+    const loadStartEventOffline = new CustomEvent('loadstart') as any;
+    loadStartEventOffline.isTopLevel = true;
+    loadStartEventOffline.url = fixtureUrl;
+    threadFrame.dispatchEvent(loadStartEventOffline);
+
+    await microtasksFinished();
+    await contextualTasksApp.updateComplete;
+
+    assertTrue(
+        contextualTasksApp.isLoadErrorForTesting,
+        'Should be error after reload');
+    assertFalse(
+        isVisible(composebox),
+        'Composebox should be hidden when in error state');
+
+    // 4. Go back online.
+    Object.defineProperty(window.navigator, 'onLine', {
+      get: () => true,
+      configurable: true,
+    });
+
+    // Verify it's still hidden because no reload happened yet.
+    assertTrue(
+        contextualTasksApp.isLoadErrorForTesting,
+        'isLoadError_ should still be true before reload');
+    assertFalse(
+        isVisible(composebox),
+        'Composebox should still be hidden before reload');
+
+    // 5. Simulate reload while online.
+    testProxy.callbackRouterRemote.onZeroStateChange(true);
+    const loadStartEventBackOnline = new CustomEvent('loadstart') as any;
+    loadStartEventBackOnline.isTopLevel = true;
+    loadStartEventBackOnline.url = fixtureUrl;
+    threadFrame.dispatchEvent(loadStartEventBackOnline);
+
+    await microtasksFinished();
+    await contextualTasksApp.updateComplete;
+
+    assertFalse(
+        contextualTasksApp.isLoadErrorForTesting,
+        'Should be online after reload');
+    assertTrue(
+        isVisible(composebox), 'Composebox should be visible after reload');
+
+    await microtasksFinished();
   });
 });
