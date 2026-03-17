@@ -7,6 +7,8 @@
 #import "base/check.h"
 #import "base/metrics/user_metrics.h"
 #import "components/sync/service/sync_service.h"
+#import "ios/chrome/browser/device_reauth/model/reauthentication_service.h"
+#import "ios/chrome/browser/device_reauth/model/reauthentication_service_factory.h"
 #import "ios/chrome/browser/settings/google_services/bulk_upload/coordinator/bulk_upload_coordinator_delegate.h"
 #import "ios/chrome/browser/settings/google_services/bulk_upload/coordinator/bulk_upload_mediator.h"
 #import "ios/chrome/browser/settings/google_services/bulk_upload/coordinator/bulk_upload_mediator_delegate.h"
@@ -56,8 +58,13 @@
   signin::IdentityManager* identityManager =
       IdentityManagerFactory::GetForProfile(profile);
   syncer::SyncService* syncService = SyncServiceFactory::GetForProfile(profile);
-  _mediator = [[BulkUploadMediator alloc] initWithSyncService:syncService
-                                              identityManager:identityManager];
+  id<ReauthenticationProtocol> reauthenticationModule =
+      ReauthenticationServiceFactory::GetForProfile(self.profile)
+          ->GetReauthModule();
+  _mediator =
+      [[BulkUploadMediator alloc] initWithSyncService:syncService
+                                      identityManager:identityManager
+                               reauthenticationModule:reauthenticationModule];
   _mediator.delegate = self;
   _mediator.consumer = _viewController;
   _viewController.mutator = _mediator;

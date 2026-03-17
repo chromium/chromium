@@ -16,7 +16,6 @@
 #import "components/sync/base/data_type.h"
 #import "components/sync/service/local_data_description.h"
 #import "components/sync/service/sync_service.h"
-#import "ios/chrome/browser/passwords/coordinator/password_utils.h"
 #import "ios/chrome/browser/settings/google_services/bulk_upload/coordinator/bulk_upload_mediator_delegate.h"
 #import "ios/chrome/browser/settings/google_services/bulk_upload/ui/bulk_upload_consumer.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
@@ -88,7 +87,9 @@ const std::array<BulkUploadModelItem, 3> GetUploadModelItems() {
 }
 
 - (instancetype)initWithSyncService:(syncer::SyncService*)syncService
-                    identityManager:(signin::IdentityManager*)identityManager {
+                    identityManager:(signin::IdentityManager*)identityManager
+             reauthenticationModule:
+                 (id<ReauthenticationProtocol>)reauthenticationModule {
   self = [super init];
   CHECK(syncService);
   CHECK(identityManager);
@@ -97,6 +98,7 @@ const std::array<BulkUploadModelItem, 3> GetUploadModelItems() {
     _identityManager = identityManager;
     _identityObserverBridge.reset(
         new signin::IdentityManagerObserverBridge(identityManager, self));
+    _reauthenticationModule = reauthenticationModule;
   }
 
   return self;
@@ -224,8 +226,7 @@ const std::array<BulkUploadModelItem, 3> GetUploadModelItems() {
     [self save];
     return;
   }
-  // Use util from password_utils to create reauth module to allow easy testing.
-  _reauthenticationModule = password_manager::BuildReauthenticationModule();
+
   if (![_reauthenticationModule canAttemptReauth]) {
     base::RecordAction(
         base::UserMetricsAction("Signin_BulkUpload_FaceID_CannotBeStarted"));

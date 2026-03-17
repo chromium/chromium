@@ -11,6 +11,7 @@
 
 @protocol BulkUploadConsumer;
 @protocol BulkUploadMediatorDelegate;
+@protocol ReauthenticationProtocol;
 
 namespace signin {
 class IdentityManager;
@@ -27,6 +28,8 @@ class SyncService;
 
 - (instancetype)initWithSyncService:(syncer::SyncService*)syncService
                     identityManager:(signin::IdentityManager*)identityManager
+             reauthenticationModule:
+                 (id<ReauthenticationProtocol>)reauthenticationModule
     NS_DESIGNATED_INITIALIZER;
 
 // Setting the consumer immediately sends it information on local items.

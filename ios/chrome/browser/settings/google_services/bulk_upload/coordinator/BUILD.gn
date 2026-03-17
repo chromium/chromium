@@ -20,7 +20,7 @@ source_set("coordinator") {
     "//components/sync/base",
     "//components/sync/service",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/passwords/coordinator",
+    "//ios/chrome/browser/device_reauth/model",
     "//ios/chrome/browser/settings/google_services/bulk_upload/public",
     "//ios/chrome/browser/settings/google_services/bulk_upload/ui",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",

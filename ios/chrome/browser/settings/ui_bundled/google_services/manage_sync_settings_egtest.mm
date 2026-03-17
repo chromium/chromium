@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/views/views_constants.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_storage_type.h"
 #import "ios/chrome/browser/bookmarks/test/bookmark_earl_grey.h"
+#import "ios/chrome/browser/device_reauth/test/reauthentication_app_interface.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/policy/model/policy_app_interface.h"
 #import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
@@ -28,7 +29,6 @@
 #import "ios/chrome/browser/settings/ui_bundled/google_services/google_services_settings_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_manager_egtest_utils.h"
-#import "ios/chrome/browser/settings/ui_bundled/password/password_settings_app_interface.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
@@ -1161,12 +1161,11 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
       performAction:chrome_test_util::TurnTableViewSwitchOn(NO)];
 
   // Mock reauth since passwords needs upload.
-  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
-  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+  [ReauthenticationAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kSuccess];
   // Delay the auth result to be able to validate that the passwords are not
   // visible until the result is emitted.
-  [PasswordSettingsAppInterface mockReauthenticationModuleShouldSkipReAuth:NO];
+  [ReauthenticationAppInterface mockReauthenticationModuleShouldSkipReAuth:NO];
 
   // Tap on the save button.
   [[EarlGrey
@@ -1176,13 +1175,10 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
   // Successful auth should remove blocking view and "manage sync" view should
   // be fully visible.
-  [PasswordSettingsAppInterface mockReauthenticationModuleReturnMockedResult];
+  [ReauthenticationAppInterface mockReauthenticationModuleReturnMockedResult];
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:
           grey_accessibilityID(kManageSyncTableViewAccessibilityIdentifier)];
-
-  // Remove mock to keep the app in the same state as before running the test.
-  [PasswordSettingsAppInterface removeMockReauthenticationModule];
 
   // Ensure the correct snackbar appears.
   ExpectBatchUploadConfirmationSnackbar(1, fakeIdentity.userEmail);
@@ -1332,12 +1328,11 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
                      YES)] assertWithMatcher:grey_sufficientlyVisible()];
 
   // Mock reauth since passwords needs upload.
-  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
-  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+  [ReauthenticationAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kSuccess];
   // Delay the auth result to be able to validate that the passwords are not
   // visible until the result is emitted.
-  [PasswordSettingsAppInterface mockReauthenticationModuleShouldSkipReAuth:NO];
+  [ReauthenticationAppInterface mockReauthenticationModuleShouldSkipReAuth:NO];
 
   // Tap on the save button.
   [[EarlGrey
@@ -1354,13 +1349,10 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
   // Successful auth should remove blocking view and "manage sync" view should
   // be visible.
-  [PasswordSettingsAppInterface mockReauthenticationModuleReturnMockedResult];
+  [ReauthenticationAppInterface mockReauthenticationModuleReturnMockedResult];
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:
           grey_accessibilityID(kManageSyncTableViewAccessibilityIdentifier)];
-
-  // Remove mock to keep the app in the same state as before running the test.
-  [PasswordSettingsAppInterface removeMockReauthenticationModule];
 
   // Ensure the correct snackbar appears.
   ExpectBatchUploadConfirmationSnackbar(3, fakeIdentity.userEmail);
