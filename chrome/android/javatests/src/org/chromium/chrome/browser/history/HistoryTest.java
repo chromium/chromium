@@ -275,6 +275,7 @@ public class HistoryTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/493318914")
     @Features.EnableFeatures(ChromeFeatureList.ANDROID_HISTORY_CLUSTERING)
     public void testHistoryClustering_ExpandCollapse() throws Exception {
         mActivityTestRule.startOnBlankPage();
@@ -333,6 +334,7 @@ public class HistoryTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/493318914")
     @Features.EnableFeatures(ChromeFeatureList.ANDROID_HISTORY_CLUSTERING)
     public void testHistoryClustering_RemoveItem() throws Exception {
         mActivityTestRule.startOnBlankPage();
@@ -386,6 +388,7 @@ public class HistoryTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/493318914")
     @Features.EnableFeatures(ChromeFeatureList.ANDROID_HISTORY_CLUSTERING)
     public void testHistoryClustering_RemoveCluster() throws Exception {
         mActivityTestRule.startOnBlankPage();
