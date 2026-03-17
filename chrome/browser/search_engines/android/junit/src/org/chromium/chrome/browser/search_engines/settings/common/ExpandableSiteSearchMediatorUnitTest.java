@@ -6,13 +6,14 @@ package org.chromium.chrome.browser.search_engines.settings.common;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.withSettings;
 
 import android.content.Context;
-import android.view.View;
+import android.view.ContextThemeWrapper;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -21,16 +22,16 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.components.favicon.LargeIconBridgeJni;
-import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
-import org.chromium.ui.listmenu.ListMenuDelegate;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -38,149 +39,122 @@ import org.chromium.ui.modelutil.PropertyModel;
 /** Unit tests for {@link ExpandableSiteSearchMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class ExpandableSiteSearchMediatorUnitTest {
-    // TODO(crbug.com/492059926): This abstract class should be tested with mock and verify the
-    // methods called instead.
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Profile mProfile;
-    @Mock private LargeIconBridgeJni mLargeIconBridgeJni;
     @Mock private TemplateUrlService mTemplateUrlService;
-    @Mock private TemplateUrl mTemplateUrl;
-    @Mock private View mMockView;
+    @Mock private LargeIconBridgeJni mLargeIconBridgeJni;
 
     private Context mContext;
     private ModelList mModelList;
-    private TestBaseMediator mMediator;
-
-    private class TestBaseMediator extends ExpandableSiteSearchMediator {
-        private int mUrlsToSimulate;
-
-        public TestBaseMediator(Context context, ModelList modelList, Profile profile) {
-            super(context, modelList, profile);
-            initializeTemplateUrlService();
-        }
-
-        public void setUrlsToSimulate(int count) {
-            mUrlsToSimulate = count;
-            refreshList();
-        }
-
-        @Override
-        protected void refreshList() {
-            mModelList.clear();
-            clearHiddenItems();
-
-            for (int i = 0; i < mUrlsToSimulate; i++) {
-                ListItem item = createListItem(mTemplateUrl);
-                if (i < DEFAULT_MAX_ROWS) {
-                    mModelList.add(item);
-                } else {
-                    addHiddenItem(item);
-                }
-            }
-
-            // Simulating an 'Add' button to ensure dynamic index math works properly
-            mModelList.add(new ListItem(SiteSearchProperties.ViewType.ADD, new PropertyModel()));
-
-            setUpMoreButtonIfNeeded(mUrlsToSimulate);
-        }
-
-        @Override
-        protected ListMenuDelegate createMenuDelegate(TemplateUrl url) {
-            return null;
-        }
-    }
+    private ExpandableSiteSearchMediator mMediator;
 
     @Before
     public void setUp() {
-        mContext = ApplicationProvider.getApplicationContext();
-        mModelList = new ModelList();
+        mContext =
+                new ContextThemeWrapper(
+                        ApplicationProvider.getApplicationContext(),
+                        R.style.Theme_BrowserUI_DayNight);
 
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
         LargeIconBridgeJni.setInstanceForTesting(mLargeIconBridgeJni);
-        doAnswer(
-                        invocation -> {
-                            Runnable runnable = invocation.getArgument(0);
-                            runnable.run();
-                            return null;
-                        })
-                .when(mTemplateUrlService)
-                .runWhenLoaded(any());
+        mModelList = new ModelList();
 
-        when(mTemplateUrl.getShortName()).thenReturn("Test");
-
-        mMediator = new TestBaseMediator(mContext, mModelList, mProfile);
+        mMediator =
+                mock(
+                        ExpandableSiteSearchMediator.class,
+                        withSettings()
+                                .useConstructor(mContext, mModelList, mProfile)
+                                .defaultAnswer(Mockito.CALLS_REAL_METHODS));
     }
 
     @Test
-    public void testSetUpMoreButton_LessThanDefaultMaxRows() {
-        mMediator.setUrlsToSimulate(3); // Less than DEFAULT_MAX_ROWS (5)
+    public void testOnTemplateURLServiceChanged() {
+        PropertyModel buttonModel = new PropertyModel(SiteSearchProperties.ALL_KEYS);
+        mMediator.onMoreButtonClicked(buttonModel);
+        assertTrue(mMediator.isExpandedForTesting());
 
-        // ModelList should contain: 3 engines + 1 Add button = 4 items
-        assertEquals(4, mModelList.size());
+        mMediator.onTemplateURLServiceChanged();
 
-        // Verify no MORE button exists
-        for (ListItem item : mModelList) {
-            assertFalse(item.type == SiteSearchProperties.ViewType.MORE);
-        }
+        assertFalse(mMediator.isExpandedForTesting());
+        verify(mMediator).refreshList();
     }
 
     @Test
-    public void testSetUpMoreButton_GreaterThanDefaultMaxRows() {
-        mMediator.setUrlsToSimulate(8); // Greater than DEFAULT_MAX_ROWS (5)
+    public void testHiddenItemsManagement() {
+        assertTrue(mMediator.areHiddenItemsEmpty());
 
-        // ModelList should contain: 5 engines + 1 Add button + 1 More button = 7 items
-        assertEquals(7, mModelList.size());
+        ListItem item1 = new ListItem(0, null);
+        ListItem item2 = new ListItem(0, null);
 
-        ListItem lastItem = mModelList.get(mModelList.size() - 1);
-        assertEquals(SiteSearchProperties.ViewType.MORE, lastItem.type);
+        mMediator.addHiddenItem(item1);
+        mMediator.addHiddenItem(item2);
 
-        PropertyModel moreButtonModel = lastItem.model;
-        assertFalse(moreButtonModel.get(SiteSearchProperties.IS_EXPANDED));
+        assertFalse(mMediator.areHiddenItemsEmpty());
+
+        mMediator.clearHiddenItems();
+
+        assertTrue(mMediator.areHiddenItemsEmpty());
     }
 
     @Test
-    public void testExpandAndCollapse_DynamicRowsCount() {
-        mMediator.setUrlsToSimulate(8); // 3 hidden items
+    public void testSetUpMoreButtonIfNeeded_AtThreshold() {
+        mMediator.setUpMoreButtonIfNeeded(ExpandableSiteSearchMediator.DEFAULT_MAX_ROWS);
 
-        ListItem moreButtonItem = mModelList.get(mModelList.size() - 1);
-        PropertyModel moreButtonModel = moreButtonItem.model;
+        assertEquals(0, mModelList.size());
+    }
 
-        int initialListSize = mModelList.size(); // Should be 7
+    @Test
+    public void testSetUpMoreButtonIfNeeded_AboveThreshold() {
+        mMediator.setUpMoreButtonIfNeeded(ExpandableSiteSearchMediator.DEFAULT_MAX_ROWS + 1);
 
-        // --- EXPAND ---
-        // Trigger the click listener on the More button
-        moreButtonModel.get(SiteSearchProperties.ON_CLICK).onClick(mMockView);
+        assertEquals(1, mModelList.size());
+        ListItem moreItem = mModelList.get(0);
+        assertEquals(SiteSearchProperties.ViewType.MORE, moreItem.type);
+        assertFalse(moreItem.model.get(SiteSearchProperties.IS_EXPANDED));
+        assertNotNull(moreItem.model.get(SiteSearchProperties.ON_CLICK));
+    }
+
+    @Test
+    public void testOnMoreButtonClicked_ExpandAndCollapse() {
+        ListItem baseItem = new ListItem(0, null);
+        mModelList.add(baseItem);
+
+        ListItem hiddenItem1 = new ListItem(0, null);
+        ListItem hiddenItem2 = new ListItem(0, null);
+        mMediator.addHiddenItem(hiddenItem1);
+        mMediator.addHiddenItem(hiddenItem2);
+
+        PropertyModel moreButtonModel =
+                new PropertyModel.Builder(SiteSearchProperties.ALL_KEYS)
+                        .with(SiteSearchProperties.IS_EXPANDED, false)
+                        .build();
+        mModelList.add(new ListItem(SiteSearchProperties.ViewType.MORE, moreButtonModel));
+
+        assertFalse(mMediator.isExpandedForTesting());
+        assertEquals(2, mModelList.size()); // baseItem + moreButton
+
+        // Click to expand
+        mMediator.onMoreButtonClicked(moreButtonModel);
 
         assertTrue(mMediator.isExpandedForTesting());
         assertTrue(moreButtonModel.get(SiteSearchProperties.IS_EXPANDED));
+        verify(mMediator).prepareHiddenItemsIfNeeded();
 
-        // Size should grow by the 3 hidden items (7 + 3 = 10)
-        assertEquals(initialListSize + 3, mModelList.size());
+        // ModelList should now have 4 items: baseItem, moreButton, hiddenItem1, hiddenItem2
+        assertEquals(4, mModelList.size());
+        assertEquals(hiddenItem1, mModelList.get(2));
+        assertEquals(hiddenItem2, mModelList.get(3));
 
-        // --- COLLAPSE ---
-        // Trigger the click listener again
-        moreButtonModel.get(SiteSearchProperties.ON_CLICK).onClick(mMockView);
+        // Click to collapse
+        mMediator.onMoreButtonClicked(moreButtonModel);
 
         assertFalse(mMediator.isExpandedForTesting());
         assertFalse(moreButtonModel.get(SiteSearchProperties.IS_EXPANDED));
 
-        assertEquals(initialListSize, mModelList.size());
-    }
-
-    @Test
-    public void testOnTemplateURLServiceChanged_ResetsExpandedState() {
-        mMediator.setUrlsToSimulate(8);
-
-        // Expand it
-        ListItem moreButtonItem = mModelList.get(mModelList.size() - 1);
-        moreButtonItem.model.get(SiteSearchProperties.ON_CLICK).onClick(mMockView);
-        assertTrue(mMediator.isExpandedForTesting());
-
-        // Trigger a data change
-        mMediator.onTemplateURLServiceChanged();
-
-        // State should be reset to false
-        assertFalse(mMediator.isExpandedForTesting());
+        // Hidden items should be removed, leaving only the baseItem and moreButton
+        assertEquals(2, mModelList.size());
+        assertEquals(baseItem, mModelList.get(0));
+        assertEquals(SiteSearchProperties.ViewType.MORE, mModelList.get(1).type);
     }
 }

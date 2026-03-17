@@ -114,7 +114,9 @@ public abstract class ExpandableSiteSearchMediator extends BaseSiteSearchMediato
 
         if (mIsExpanded) {
             prepareHiddenItemsIfNeeded();
-            mModelList.addAll(mHiddenItems);
+            if (!mHiddenItems.isEmpty()) {
+                mModelList.addAll(mHiddenItems);
+            }
         } else {
             // Dynamically calculate where the hidden items start by removing them from the tail.
             // This safely accounts for any buttons (Add, More) that might precede the hidden items.
