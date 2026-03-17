@@ -10,9 +10,9 @@ only, so you are not "on call" while shepherding.
 
 ## Guiding Principles
 
-Your overarching goal is to get security bugs in Chrome fixed, which means
-ensuring that valid, actionable reports end up assigned to engineers who can fix
-them.
+Your overarching goal is to get security bugs in Chrome to people or machines
+which can fix them, which means ensuring that valid, actionable reports enter
+the process.
 
 Remember that you are **triaging** bugs. There are usually many bug reports,
 far too many for you to actually investigate all of them in detail. You are
@@ -54,14 +54,18 @@ in Chrome, with security consequences for Chrome users?
 Prefer to quickly WontFix bugs with a reason at this stage. Reporters can and
 will open a new issue if they have further information to provide.
 
-If it could plausibly be a security bug, is there enough evidence to convince
-you?
+If it could plausibly be a security bug, does it come with the evidence we
+need to reproduce it? Ask this before attempting to reproduce or understand
+the issue:
 
 1. If it claims code execution, is there an attached PoC?
-2. If it claims an ASAN crash, is there an attached ASAN stack trace?
+2. If it claims an ASAN crash, is there an attached symbolized ASAN stack trace?
 3. If it claims a v8 / d8 crash or sandbox violation, is there an attached
-   JS file that hits those conditions?
-4. If it's a UI spoof, is there an attached video?
+   JS file?
+4. If it's a UI spoof, is there a short, attached video?
+
+If evidence for the issue is not attached to the issue, close it noting what
+is missing. Do not use Needs-Feedback at this stage.
 
 Do not be shy about asking for _clear_ evidence. The burden of proof at this
 point is primarily on the reporter - they need to convince you that the bug
@@ -77,28 +81,31 @@ exists and could plausibly be exploited. These things aren't enough evidence:
 
 If the PoC looks sketchy, ask the reporter to fix it or minimize it - don't
 spend your own time trying to minimize it or read through half a megabyte of
-wasm bytecode to figure out what's going on.
+wasm bytecode to figure out what's going on. Use WontFix and do not use
+Needs-Feedback.
 
 At this stage, you should lean towards marking bugs as WontFix if you are in
 doubt. Unfortunately, most incoming bug reports are not valid security bugs, and
 time spent triaging those reports in detail is time not spent triaging bugs
 which _are_ valid. As a rule:
 
-* If the bug is **not probably valid**, WontFix and remove visibility
-  restrictions
+* If the bug is **not probably valid**, WontFix
 * If the bug is probably valid but doesn't have security consequences,
   change it to type Bug and remove visibility restrictions
 * If the bug is probably valid but you're missing something critical
   (reporter forgot to attach a PoC, forgot to specify build args for a v8 bug,
-  etc) or you need the reporter to minimize the PoC, reply asking and mark
-  `Needs-Feedback`
-* Otherwise, move on to handling special-case bugs
+  etc) or you need the reporter to minimize the PoC, close the issue as
+  WontFix and note what is missing.
+* If the report points to a commit or bisect within the last seven days, remind
+  the reporter that we do accept security bugs found on HEAD and close the issue
+  as WontFix.
 
 ### Handling special-case bugs
 
 * **If the bug is an in-the-wild report**:
     * Start a thread in the Shepherding chat immediately
 * If the bug is a v8 bug (including wasm):
+    * Do not attempt to reproduce!
     * Assign it to [the current v8 shepherd](https://goto.google.com/current-v8-sheriff)
     * Set it to High Severity (S1)
     * Set the OS field to all platforms we use v8 on (everything except iOS)
@@ -118,7 +125,7 @@ which _are_ valid. As a rule:
       Privacy](https://issues.chromium.org/components/1457044/edit).
     * You are now done triaging this bug, congratulations!
 
-Now, move on to...
+Now, before reproducing or deeply understanding the issue, move on to...
 
 ### Assessing Severity and Impact
 
@@ -128,6 +135,9 @@ which contain lots of examples of bugs of different severities and detailed
 writeups of the various factors. The severity is based on **your judgment** of
 the consequences of exploitation of the bug, not on the reporter's assessment in
 the bug report.
+
+* If the bug is Low Severity (S3) assign it a plausible component and set
+  the Severity to Low (S3). Do not attempt to reproduce. Take no further action.
 
 If the report requires you to enable a specific feature or pass a specific
 command-line argument, and that feature isn't default-enabled **for any Chrome
@@ -140,37 +150,12 @@ dashboard](https://uma.googleplex.com/p/chrome/variations/state) may be helpful.
 If you're in doubt about severity, ask for help in the Shepherd chat. This step
 benefits a lot from judgment and experience!
 
-Once you've assessed the severity and impact:
+### Attempt to reproduce Medium, High and Critical Bugs
 
-* If the bug is Low Severity (S3) or `Security_Impact-None`, move on to
-  "Assigning the Bug" - you can ignore FoundIn and OS for these bugs;
-* Otherwise, move on to "Assessing FoundIn and OS"
-
-### Assessing FoundIn and OS
-
-At this point, you need the ability to know if a specific OS + version
-combination (up to the oldest [active
-branch](https://chromiumdash.appspot.com/branches)) is affected by the bug, so
-you need to either:
-
-* Know what the root cause was and when it was introduced (a revision number) -
-  particularly good reports may include this info, or
-* Have [ClusterFuzz](clusterfuzz-for-shepherds.md) do this detection for you,
-  for PoCs that work on and are safe to run on ClusterFuzz, or
-* Manually reproduce it yourself across OS + version combos to check
-
-In all cases, FoundIn should contain the _oldest_ milestone number which is
-still [active](https://chromiumdash.appspot.com/branches) and has the bug. This
-should be based on your investigation and the evidence in the bug, **not** on
-what versions the reporter reported the bug against - those are often just what
-the reporter happens to be testing on.
-
-It's ok if the OS field is a guess. There is no need to manually test every OS +
-version combination, but please do remember to set this field.
-
-ClusterFuzz is far quicker than manual reproduction, and will automatically do
-bisection and set FoundIn for you, so you should use ClusterFuzz if at all
-possible. If you have to manually reproduce a bug instead:
+[ClusterFuzz](clusterfuzz-for-shepherds.md) is far quicker than manual
+reproduction, and will automatically do bisection and set FoundIn for you, so
+you should use ClusterFuzz if at all possible. If you have to manually reproduce
+a bug instead:
 
 * Assume that test cases may be malicious. You should only reproduce bugs
   on your local machine if you're completely certain that you understand
@@ -195,6 +180,28 @@ possible. If you have to manually reproduce a bug instead:
   again using a different job type with a more mature tool (e.g. ASan on Linux).
   It may give more complete information.
 
+### Assessing FoundIn and OS
+
+At this point, you need the ability to know if a specific OS + version
+combination (up to the oldest [active
+branch](https://chromiumdash.appspot.com/branches)) is affected by the bug, so
+you need to either:
+
+* Know what the root cause was and when it was introduced (a revision number) -
+  particularly good reports may include this info, or
+* Have [ClusterFuzz](clusterfuzz-for-shepherds.md) do this detection for you,
+  for PoCs that work on and are safe to run on ClusterFuzz, or
+* Manually reproduce it yourself across OS + version combos to check
+
+In all cases, FoundIn should contain the _oldest_ milestone number which is
+still [active](https://chromiumdash.appspot.com/branches) and has the bug. This
+should be based on your investigation and the evidence in the bug, **not** on
+what versions the reporter reported the bug against - those are often just what
+the reporter happens to be testing on.
+
+It's ok if the OS field is a guess. There is no need to manually test every OS +
+version combination, but please do remember to set this field.
+
 Now, it's time to assign the bug:
 
 ### Assign the bug
@@ -204,9 +211,13 @@ Now, it's time to assign the bug:
   or `git blame` if in doubt
 * Set CCs to everyone else in a relevant OWNERs file and everyone recently
   appearing in blame - people cannot see security issues if not CCed!
+* Do not assign to a single person with a request to see if it is a bug or not,
+  if you need to do this CC a bunch of people as well for visibility.
 * Add a comment on the bug explaining that it's coming from a security shepherd,
   as well as anything else they might need to know about the bug (whether you
   reproed it locally or not, etc)
+* Upload any logs or asan traces you've generated, and the command line,
+  build flags and git revision you used to reproduce the bug.
 
 ### Shift handoff
 
@@ -324,19 +335,14 @@ right side of the banner, and triage the report as you normally would.
 ### Shepherding Scheduling
 
 * [Current Shepherds](http://go/whos-the-shepherd)
-* [Rotation schedule](https://docs.google.com/spreadsheets/d/10sLYZbi6QfLcXrhO-j5eSc82uc7NKnBz_o1pR9y8h7U/edit#gid=0)
 * A calendar invite will be sent for your upcoming shift. Please accept it to
   acknowledge your upcoming shepherding duty.
 * If you **cannot make the shift**:
   * Declining the invite does not alert anyone or trigger any re-assignment.
   * If you are OOO or the assigned shift is during a holiday, please do your
     best to [swap shifts](https://goto.google.com/swap) with someone! You are
-    not expected to shepherd on a holiday (: but we do want to maximize
-    coverage where/when possible.
+    not expected to shepherd on a holiday but we do want to maximize coverage
+    where/when possible.
   * Ask around (shepherding chat is a good place!) for a volunteer and then
-  update the [rotation sheet](https://docs.google.com/spreadsheets/d/10sLYZbi6QfLcXrhO-j5eSc82uc7NKnBz_o1pR9y8h7U/edit#gid=0).
-  The calendar invites should be updated in ~10 minutes.
+  update the [rotation](http://go/whos-the-shepherd).
 * To become a shepherd, please reach out to the Chrome Product Security team.
-* To stop shepherding, remove yourself from g/chrome-security-shepherds. Please
-  find suitable substitutes for shifts that have already been assigned to you.
-  Automation should take care of the rest.
