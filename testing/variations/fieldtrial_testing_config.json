@@ -20216,27 +20216,6 @@
             ]
         }
     ],
-    "ServiceWorkerStaticRouterRaceNetworkRequestPerformanceImprovement": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ServiceWorkerStaticRouterRaceNetworkRequestPerformanceImprovement",
-                        "ServiceWorkerStaticRouterRaceRequestFix2"
-                    ]
-                }
-            ]
-        }
-    ],
     "ServiceWorkerSyntheticResponse": [
         {
             "platforms": [

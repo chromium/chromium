@@ -1418,7 +1418,11 @@ bool ServiceWorkerMainResourceLoader::ShouldDelayDeletion() {
 
 void ServiceWorkerMainResourceLoader::InvalidateAndDeleteIfNeeded() {
   if (ShouldDelayDeletion()) {
-    CHECK(fetch_dispatcher_);
+    // `kRaceNetworkAndCache` doesn't dispatch a fetch event.
+    CHECK(fetch_dispatcher_ ||
+          IsMatchedRouterSourceType(
+              network::mojom::ServiceWorkerRouterSourceType::
+                  kRaceNetworkAndCache));
     return;
   }
 
