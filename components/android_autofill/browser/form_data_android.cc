@@ -61,6 +61,17 @@ bool FormDataAndroid::GetSimilarFieldIndex(const FormFieldData& field,
   return false;
 }
 
+bool FormDataAndroid::GetFieldByGlobalId(const FormFieldData& field,
+                                         size_t* index) {
+  for (size_t i = 0; i < form_.fields().size(); ++i) {
+    if (fields_[i]->global_id() == field.global_id()) {
+      *index = i;
+      return true;
+    }
+  }
+  return false;
+}
+
 bool FormDataAndroid::SimilarFieldsAs(const FormData& form) const {
   if (fields_.size() != form.fields().size()) {
     return false;

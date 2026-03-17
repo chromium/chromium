@@ -366,6 +366,13 @@ BASE_FEATURE(kAutofillAndroidDesktopSuppressAccessoryOnEmpty,
 BASE_FEATURE(kAutofillAndroidDisableSuggestionsOnJSFocus,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, on Android, form fields are retrieved
+// by comparing FormFieldIds instead of the set of attributes. This flag affects
+// some of the logic in AndroidAutofillProvider.
+// TODO(crbug.com/456526604): Remove when launched.
+BASE_FEATURE(kAutofillAndroidFormDataCompareFieldGlobalId,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, on Android, the Autofill keyboard accessory will not be
 // displayed attached to the keyboard but will be placed below or above the
 // focused field. It works only for large form factor devices like tablets or

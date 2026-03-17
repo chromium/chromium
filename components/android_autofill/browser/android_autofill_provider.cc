@@ -454,7 +454,11 @@ void AndroidAutofillProvider::OnTextFieldDidScroll(
   CHECK(session_state_ && session_state_->form);
 
   // IsLinkedForm ensures session_state_ and session_state_->form exist.
-  if (!session_state_->form->GetSimilarFieldIndex(field, &field_info.index)) {
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillAndroidFormDataCompareFieldGlobalId)
+          ? !session_state_->form->GetFieldByGlobalId(field, &field_info.index)
+          : !session_state_->form->GetSimilarFieldIndex(field,
+                                                        &field_info.index)) {
     return;
   }
 
@@ -551,8 +555,12 @@ std::optional<FieldInfo> AndroidAutofillProvider::StartFocusChange(
   }
   CHECK(session_state_ && session_state_->form);
   FieldInfo field_to_focus;
-  if (!session_state_->form->GetSimilarFieldIndex(field,
-                                                  &field_to_focus.index)) {
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillAndroidFormDataCompareFieldGlobalId)
+          ? !session_state_->form->GetFieldByGlobalId(field,
+                                                      &field_to_focus.index)
+          : !session_state_->form->GetSimilarFieldIndex(
+                field, &field_to_focus.index)) {
     return std::nullopt;
   }
   field_to_focus.bounds = ToClientAreaBound(field.bounds());
@@ -574,7 +582,11 @@ void AndroidAutofillProvider::MaybeFireFormFieldDidChange(
     return;
   }
   CHECK(session_state_ && session_state_->form);
-  if (!session_state_->form->GetSimilarFieldIndex(field, &field_info.index)) {
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillAndroidFormDataCompareFieldGlobalId)
+          ? !session_state_->form->GetFieldByGlobalId(field, &field_info.index)
+          : !session_state_->form->GetSimilarFieldIndex(field,
+                                                        &field_info.index)) {
     return;
   }
   // Propagate the changed values to Java.

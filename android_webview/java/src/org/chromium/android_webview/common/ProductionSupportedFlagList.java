@@ -379,6 +379,10 @@ public final class ProductionSupportedFlagList {
                         + "MergeMode::kMergeChildrenAndReformatIfNeeded will be also added to all"
                         + "the nodes where required."),
         Flag.baseFeature(
+                AutofillFeatures.AUTOFILL_ANDROID_FORM_DATA_COMPARE_FIELD_GLOBAL_ID,
+                "If enabled, form fields are retrieved by comparing FormFieldIds"
+                        + "instead of the set of attributes."),
+        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_SUPPORT_PHONETIC_NAME_FOR_JP,
                 "When enabled, Autofill will support phonetic name for Japan."),
         Flag.baseFeature(

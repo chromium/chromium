@@ -117,6 +117,8 @@ BASE_DECLARE_FEATURE(kAutofillAndroidDesktopSuppressAccessoryOnEmpty);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillAndroidDisableSuggestionsOnJSFocus);
 COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kAutofillAndroidFormDataCompareFieldGlobalId);
+COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillAndroidKeyboardAccessoryDynamicPositioning);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillAtMemory);

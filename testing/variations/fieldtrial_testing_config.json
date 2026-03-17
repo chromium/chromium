@@ -2268,6 +2268,22 @@
             ]
         }
     ],
+    "AutofillAndroidFormDataCompareFieldGlobalId": [
+        {
+            "platforms": [
+                "android",
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillAndroidFormDataCompareFieldGlobalId"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillAndroidKeyboardAccessoryDynamicPositioning": [
         {
             "platforms": [

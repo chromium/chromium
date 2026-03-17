@@ -45,9 +45,13 @@ class FormDataAndroid {
   // dynamically, but the change has no impact on autofill purpose. Examples are
   // CSS style changes - see `FormFieldDataAndroid::SimilarFieldAs()` for
   // details.
-  // TODO(crbug.com/456526604): Consider removing and compare only by
-  // `FieldGlobalId` instead.
+  // TODO(crbug.com/456526604): Remove when
+  // `AutofillAndroidFormDataCompareFieldGlobalId` launches.
   bool GetSimilarFieldIndex(const FormFieldData& field, size_t* index);
+
+  // Gets the index of a given field based on `FieldGlobalId`-check. It returns
+  // `true` and sets the `index` if a similar field is found.
+  bool GetFieldByGlobalId(const FormFieldData& field, size_t* index);
 
   // Returns true if this form is similar to the given form.
   // `SimilarFormAs` checks `FormData` members that are unlikely to have been
