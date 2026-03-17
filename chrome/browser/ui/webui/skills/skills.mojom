@@ -7,12 +7,12 @@ module skills.mojom;
 import "components/skills/public/skill.mojom";
 import "components/skills/public/skill_metrics.mojom";
 
-// The type of skills dialog to open.
-enum SkillsDialogType {
-  // Add dialog.
-  kAdd,
-  // Edit dialog.
-  kEdit,
+// Initial data needed when opening a dialog.
+struct InitialDialogState {
+  // The type of dialog to open.
+  skills.mojom.SkillsDialogType dialog_type;
+  // The skill to be edited or remixed.
+  skills.mojom.Skill skill;
 };
 
 // Factory ensures that the Page and PageHandler interfaces are always created
@@ -41,7 +41,8 @@ interface PageHandler {
   // - If `skill` is passed in edit, populates the dialog with passed in
   //   skill information.
   //   In edit mode, the `skill` should always be passed in.
-  OpenSkillsDialog(SkillsDialogType dialog_type, skills.mojom.Skill? skill);
+  OpenSkillsDialog(skills.mojom.SkillsDialogType dialog_type,
+                   skills.mojom.Skill? skill);
 
   // Gets the initial list of user skills.
   GetInitialUserSkills() => (array<skills.mojom.Skill> skills);
@@ -101,9 +102,8 @@ interface DialogHandler {
   // Trigger the OS picker
   ShowEmojiPicker();
 
-  // Called when dialog is opened to get the initial skill when
-  // editing/remixing.
-  GetInitialSkill() => (skills.mojom.Skill skill);
+  // Called when dialog is opened to get the initial state.
+  GetInitialState() => (InitialDialogState initial_dialog_state);
 
   // Gets the signed in user's email.
   GetSignedInEmail() => (string email);

@@ -27,7 +27,7 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {Skill} from './skill.mojom-webui.js';
-import {SkillSource} from './skill.mojom-webui.js';
+import {SkillsDialogType, SkillSource} from './skill.mojom-webui.js';
 import {getCss} from './skills_dialog.css.js';
 import {getHtml} from './skills_dialog_app.html.js';
 import {SkillsDialogBrowserProxy} from './skills_dialog_browser_proxy.js';
@@ -114,6 +114,7 @@ export class SkillsDialogAppElement extends CrLitElement {
       isAutoGenerationLoading_: {type: Boolean},
       hasSaveError_: {type: Boolean},
       hasNameCharLimitError_: {type: Boolean},
+      isAddDialog_: {type: Boolean},
     };
   }
 
@@ -142,6 +143,7 @@ export class SkillsDialogAppElement extends CrLitElement {
   protected accessor isAutoGenerationLoading_: boolean = false;
   protected accessor hasSaveError_: boolean = false;
   protected accessor hasNameCharLimitError_: boolean = false;
+  protected accessor isAddDialog_: boolean = true;
 
   private originalPrompt_: string = '';
   private refinedPrompt_: string = '';
@@ -158,28 +160,28 @@ export class SkillsDialogAppElement extends CrLitElement {
     return this.promptError_ !== PromptError.NONE;
   }
 
-  // TODO(crbug.com/489076508): Update to passing in dialogType from dialog
-  // creation.
-  protected isAddDialog_(): boolean {
-    return !this.skill_.id || this.skill_.source === SkillSource.kFirstParty;
-  }
-
   /** Initializes dialog. */
   override connectedCallback() {
     super.connectedCallback();
     ColorChangeUpdater.forDocument().start();
-    SkillsDialogBrowserProxy.getInstance().handler.getInitialSkill().then(
-        ({skill}) => {
-          if (skill) {
-            this.skill_ = skill;
-            this.skill_.source = skill.source || SkillSource.kUserCreated;
-            if (this.isAddDialog_()) {
-              // Creating a new skill or remixing a first party skill.
-              this.dialogTitle_ = loadTimeData.getString('addSkillHeader');
-              this.autoPopulateNameAndIcon_();
-            } else {
-              // Editing a user created skill.
-              this.dialogTitle_ = loadTimeData.getString('editSkillHeader');
+    SkillsDialogBrowserProxy.getInstance().handler.getInitialState().then(
+        ({initialDialogState}) => {
+          if (initialDialogState) {
+            this.skill_ = initialDialogState.skill;
+            this.skill_.source =
+                initialDialogState.skill.source || SkillSource.kUserCreated;
+            switch (initialDialogState.dialogType) {
+              case SkillsDialogType.kAdd:
+                this.dialogTitle_ = loadTimeData.getString('addSkillHeader');
+                this.autoPopulateNameAndIcon_();
+                this.isAddDialog_ = true;
+                break;
+              case SkillsDialogType.kEdit:
+                this.dialogTitle_ = loadTimeData.getString('editSkillHeader');
+                this.isAddDialog_ = false;
+                break;
+              default:
+                break;
             }
           }
         });

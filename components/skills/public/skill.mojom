@@ -55,3 +55,11 @@ struct Skill {
 // clang-format off
 // LINT.ThenChange(//components/skills/public/skill.h:Skill, //chrome/browser/glic/host/glic.mojom:Skill)
 // clang-format on
+
+// The type of skills dialog to open.
+enum SkillsDialogType {
+  // Add dialog.
+  kAdd,
+  // Edit dialog.
+  kEdit,
+};

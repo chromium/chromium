@@ -98,6 +98,7 @@
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/skills/public/skill.mojom.h"
 #include "components/skills/public/skills_metrics.h"
 #include "components/sync/protocol/skill_specifics.pb.h"
 #include "components/tabs/public/tab_interface.h"
@@ -1402,8 +1403,9 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     skills::Skill skill(request->id, request->name, request->icon,
                         request->prompt, request->description,
                         FromMojomSkillSource(request->source));
-    host().skills_manager().LaunchSkillsDialog(profile_, std::move(skill),
-                                               std::move(scoped_callback));
+    host().skills_manager().LaunchSkillsDialog(
+        profile_, std::move(skill), skills::mojom::SkillsDialogType::kAdd,
+        std::move(scoped_callback));
 #else
     receiver_.ReportBadMessage("CreateSkill isn't supported on Android.");
 #endif  //  !BUILDFLAG(IS_ANDROID)
@@ -1427,8 +1429,9 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         skills::SkillsServiceFactory::GetForProfile(profile_);
     if (const skills::Skill* skill =
             skills_service->GetSkillById(request->id)) {
-      host().skills_manager().LaunchSkillsDialog(profile_, *skill,
-                                                 std::move(scoped_callback));
+      host().skills_manager().LaunchSkillsDialog(
+          profile_, *skill, skills::mojom::SkillsDialogType::kEdit,
+          std::move(scoped_callback));
     }
 #else
     receiver_.ReportBadMessage("UpdateSkill isn't supported on Android.");

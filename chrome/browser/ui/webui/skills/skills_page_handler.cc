@@ -89,7 +89,8 @@ void SkillsPageHandler::OpenSkillsDialog(
           tabs::TabInterface::GetFromContents(&web_contents_.get()))) {
     tab_controller->ShowDialog(
         skill.value_or(skills::Skill()),
-        ResolveEntryPointForManagementPage(base::OptionalToPtr(skill)));
+        ResolveEntryPointForManagementPage(base::OptionalToPtr(skill)),
+        dialog_type);
   } else {
     RecordSkillsManagementError(SkillsManagementError::kTabControllerDNE);
   }

@@ -105,6 +105,7 @@ tabs::TabInterface* GlicSkillsManagerImpl::EnsureTabForSkills() {
 void GlicSkillsManagerImpl::LaunchSkillsDialog(
     Profile* profile,
     skills::Skill skill,
+    skills::mojom::SkillsDialogType dialog_type,
     base::OnceCallback<void(bool)> callback) {
 #if BUILDFLAG(IS_ANDROID)
   return;
@@ -117,7 +118,7 @@ void GlicSkillsManagerImpl::LaunchSkillsDialog(
   }
   // Delegate the race-condition handling to the Skills launcher.
   skills::SkillsDialogLauncher::CreateForTab(target_tab, std::move(skill),
-                                             std::move(callback));
+                                             dialog_type, std::move(callback));
 #endif
 }
 

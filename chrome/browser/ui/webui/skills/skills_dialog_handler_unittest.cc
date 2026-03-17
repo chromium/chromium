@@ -74,12 +74,13 @@ class SkillsDialogHandlerTest : public testing::Test {
                                        -> std::unique_ptr<KeyedService> {
           return std::make_unique<NiceMock<MockSkillsService>>();
         }));
+    mock_dialog_type_ = mojom::SkillsDialogType::kAdd;
     web_contents_ = content::WebContents::Create(
         content::WebContents::CreateParams(&profile_));
     web_ui_.set_web_contents(web_contents_.get());
     handler_ = std::make_unique<TestSkillsDialogHandler>(
         receiver_.BindNewPipeAndPassReceiver(), web_ui_.GetWebContents(),
-        &mock_opt_guide_service_, mock_skill_, entrypoint_,
+        &mock_opt_guide_service_, mock_skill_, entrypoint_, mock_dialog_type_,
         mock_delegate_.GetWeakPtr());
   }
 
@@ -142,6 +143,7 @@ class SkillsDialogHandlerTest : public testing::Test {
   SkillsDialogEntryPoint entrypoint_ =
       SkillsDialogEntryPoint::kWebClientPrefilled;
   Skill mock_skill_;
+  mojom::SkillsDialogType mock_dialog_type_;
   NiceMock<MockSkillsDialogDelegate> mock_delegate_;
   mojo::Remote<mojom::DialogHandler> receiver_;
   std::unique_ptr<TestSkillsDialogHandler> handler_;
@@ -186,7 +188,7 @@ TEST_F(SkillsDialogHandlerTest, RefineSkill_NoService_LogsServiceUnavailable) {
   auto orphan_handler = std::make_unique<TestSkillsDialogHandler>(
       receiver_.BindNewPipeAndPassReceiver(), web_contents_.get(), nullptr,
       mock_skill_, SkillsDialogEntryPoint::kWebClientPrefilled,
-      mock_delegate_.GetWeakPtr());
+      mock_dialog_type_, mock_delegate_.GetWeakPtr());
 
   RunRefineSkillAndExpectError(orphan_handler.get(), "test prompt",
                                skills::SkillsRefineResult::kServiceUnavailable);
@@ -266,7 +268,7 @@ TEST_F(SkillsDialogHandlerTest, SubmitSkill_LogsUiContextLostWhenDialogClosed) {
   auto orphan_handler = std::make_unique<TestSkillsDialogHandler>(
       receiver_.BindNewPipeAndPassReceiver(), web_contents_.get(),
       &mock_opt_guide_service_, mock_skill_,
-      SkillsDialogEntryPoint::kWebClientPrefilled,
+      SkillsDialogEntryPoint::kWebClientPrefilled, mock_dialog_type_,
       base::WeakPtr<MockSkillsDialogDelegate>());
 
   // Attempt to submit the skill.
@@ -290,30 +292,36 @@ TEST_F(SkillsDialogHandlerTest, DeleteSkill_LogsDeleted) {
                                       SkillsDialogAction::kDeleted, 1);
 }
 
-// Tests that GetInitialSkill returns the skill passed in during construction.
-TEST_F(SkillsDialogHandlerTest, GetInitialSkillReturnsCorrectData) {
+// Tests that GetInitialState returns the skill and dialog type passed in during
+// construction.
+TEST_F(SkillsDialogHandlerTest, GetInitialStateReturnsCorrectData) {
   skills::Skill test_skill;
   test_skill.name = "Unit Test Skill";
   test_skill.prompt = "Unit Test Prompt";
   test_skill.icon = "🧪";
+  mojom::SkillsDialogType test_dialog_type = mojom::SkillsDialogType::kEdit;
 
   // Re-initialize the handler with this data.
   receiver_.reset();
   handler_ = std::make_unique<TestSkillsDialogHandler>(
       receiver_.BindNewPipeAndPassReceiver(), web_contents_.get(),
       &mock_opt_guide_service_, test_skill,
-      SkillsDialogEntryPoint::kWebClientPrefilled, mock_delegate_.GetWeakPtr());
+      SkillsDialogEntryPoint::kWebClientPrefilled, test_dialog_type,
+      mock_delegate_.GetWeakPtr());
 
   // Call the API using a lambda as the callback.
-  skills::Skill received_skill;
-  handler_->GetInitialSkill(
-      base::BindOnce([](skills::Skill* out_skill,
-                        const skills::Skill& result) { *out_skill = result; },
-                     &received_skill));
+  mojom::InitialDialogStatePtr received_state;
+  handler_->GetInitialState(base::BindOnce(
+      [](mojom::InitialDialogStatePtr* out_state,
+         mojom::InitialDialogStatePtr result) {
+        *out_state = std::move(result);
+      },
+      &received_state));
 
-  EXPECT_EQ(received_skill.name, "Unit Test Skill");
-  EXPECT_EQ(received_skill.prompt, "Unit Test Prompt");
-  EXPECT_EQ(received_skill.icon, "🧪");
+  EXPECT_EQ(received_state->dialog_type, test_dialog_type);
+  EXPECT_EQ(received_state->skill.name, test_skill.name);
+  EXPECT_EQ(received_state->skill.prompt, test_skill.prompt);
+  EXPECT_EQ(received_state->skill.icon, test_skill.icon);
 }
 
 }  // namespace

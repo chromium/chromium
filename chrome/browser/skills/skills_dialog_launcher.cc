@@ -6,6 +6,7 @@
 
 #include "chrome/browser/skills/skills_ui_tab_controller_interface.h"
 #include "components/skills/public/skill.h"
+#include "components/skills/public/skill.mojom-forward.h"
 #include "components/skills/public/skills_metrics.h"
 #include "components/sync/protocol/skill_specifics.pb.h"
 #include "components/tabs/public/tab_interface.h"
@@ -20,6 +21,7 @@ WEB_CONTENTS_USER_DATA_KEY_IMPL(SkillsDialogLauncher);
 // static
 void SkillsDialogLauncher::TriggerDialog(tabs::TabInterface* tab,
                                          Skill skill,
+                                         mojom::SkillsDialogType dialog_type,
                                          SkillResultCallback callback) {
   if (!tab) {
     return;
@@ -27,7 +29,7 @@ void SkillsDialogLauncher::TriggerDialog(tabs::TabInterface* tab,
 
   if (auto* controller = SkillsUiTabControllerInterface::From(tab)) {
     SkillsDialogEntryPoint entrypoint = ResolveEntryPointForWebClient(&skill);
-    controller->ShowDialog(std::move(skill), entrypoint);
+    controller->ShowDialog(std::move(skill), entrypoint, dialog_type);
     std::move(callback).Run(true);
   }
 }
@@ -35,6 +37,7 @@ void SkillsDialogLauncher::TriggerDialog(tabs::TabInterface* tab,
 // static
 void SkillsDialogLauncher::CreateForTab(tabs::TabInterface* tab,
                                         Skill skill,
+                                        mojom::SkillsDialogType dialog_type,
                                         SkillResultCallback callback) {
   content::WebContents* contents = tab->GetContents();
   if (!contents) {
@@ -42,7 +45,7 @@ void SkillsDialogLauncher::CreateForTab(tabs::TabInterface* tab,
   }
   // Page is already loaded, show immediately.
   if (!contents->IsLoading()) {
-    TriggerDialog(tab, std::move(skill), std::move(callback));
+    TriggerDialog(tab, std::move(skill), dialog_type, std::move(callback));
     return;
   }
   // If there is already a request in flight, return false to indicate failure.
@@ -53,17 +56,20 @@ void SkillsDialogLauncher::CreateForTab(tabs::TabInterface* tab,
 
   // CreateForWebContents will attach the object to the tab.
   // If one already exists, it does nothing (prevents double-launch).
-  CreateForWebContents(contents, tab, std::move(skill), std::move(callback));
+  CreateForWebContents(contents, tab, std::move(skill), std::move(dialog_type),
+                       std::move(callback));
 }
 
 SkillsDialogLauncher::SkillsDialogLauncher(content::WebContents* contents,
                                            tabs::TabInterface* tab,
                                            Skill skill,
+                                           mojom::SkillsDialogType dialog_type,
                                            SkillResultCallback callback)
     : content::WebContentsObserver(contents),
       content::WebContentsUserData<SkillsDialogLauncher>(*contents),
       tab_(tab->GetWeakPtr()),
       skill_(std::move(skill)),
+      dialog_type_(dialog_type),
       callback_(std::move(callback)) {}
 
 SkillsDialogLauncher::~SkillsDialogLauncher() = default;
@@ -80,7 +86,8 @@ void SkillsDialogLauncher::DidFinishNavigation(
 
 void SkillsDialogLauncher::Show() {
   if (tab_ && tab_->GetContents() == web_contents()) {
-    TriggerDialog(tab_.get(), std::move(skill_), std::move(callback_));
+    TriggerDialog(tab_.get(), std::move(skill_), std::move(dialog_type_),
+                  std::move(callback_));
   } else if (callback_) {
     std::move(callback_).Run(false);
   }
