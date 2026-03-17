@@ -617,7 +617,7 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
     // Setup a listener on the suggestions container to adjust the ghost loader
     // number of suggestions.
     this.searchboxBoundingClientRectObserver.observe(
-        this.$.searchbox.getSuggestionsElement());
+        this.$.searchbox.getDropdownElement());
   }
 
   private onSearchboxFocusOut_(event: FocusEvent) {
@@ -641,7 +641,7 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
 
   private onSearchboxBoundsChanged() {
     this.searchboxSuggestionCount =
-        this.$.searchbox.getSuggestionsElement().selectableMatchElements.length;
+        this.$.searchbox.getDropdownElement().selectableMatchElements.length;
   }
 
   private computeShowGhostLoader(): boolean {

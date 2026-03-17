@@ -25,7 +25,7 @@ suite('Lens search', () => {
   async function areMatchesShowing(): Promise<boolean> {
     await testProxy.callbackRouterRemote.$.flushForTesting();
     await microtasksFinished();
-    return window.getComputedStyle(realbox.getSuggestionsElement()).display !==
+    return window.getComputedStyle(realbox.getDropdownElement()).display !==
         'none';
   }
 

@@ -60,7 +60,7 @@ suite('SearchboxFocusTest', () => {
     // Force a synchronous render.
     await testProxy.callbackRouterRemote.$.flushForTesting();
     await microtasksFinished();
-    return window.getComputedStyle(realbox.getSuggestionsElement()).display !==
+    return window.getComputedStyle(realbox.getDropdownElement()).display !==
         'none';
   }
 

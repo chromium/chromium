@@ -488,7 +488,7 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
     // Setup a listener on the suggestions container to change the shimmer when
     // the searchbox changes sizes or the selection overlay changes size.
     this.searchboxBoundingClientRectObserver.observe(
-        this.$.searchbox.getSuggestionsElement());
+        this.$.searchbox.getDropdownElement());
     this.searchboxBoundingClientRectObserver.observe(this.$.selectionOverlay);
   }
 
@@ -512,11 +512,11 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
     this.focusShimmerOnSearchbox();
 
     this.searchboxSuggestionCount =
-        this.$.searchbox.getSuggestionsElement().selectableMatchElements.length;
+        this.$.searchbox.getDropdownElement().selectableMatchElements.length;
   }
 
   private focusShimmerOnSearchbox() {
-    const suggestionsContainer = this.$.searchbox.getSuggestionsElement();
+    const suggestionsContainer = this.$.searchbox.getDropdownElement();
     const areSuggestionsShowing =
         suggestionsContainer.offsetWidth * suggestionsContainer.offsetHeight >
         0;
