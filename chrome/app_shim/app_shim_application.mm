@@ -8,6 +8,9 @@
 #include "chrome/app_shim/app_shim_delegate.h"
 #include "chrome/common/mac/app_shim.mojom.h"
 
+// https://crbug.com/491147240: Clean up code that is duplicate here and in
+// chrome/browser/chrome_browser_application_mac.mm.
+
 @implementation AppShimApplication {
   BOOL _handlingSendEvent;
 }

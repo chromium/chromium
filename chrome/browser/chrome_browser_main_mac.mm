@@ -149,9 +149,10 @@ void ChromeBrowserMainPartsMac::PreCreateMainMessageLoop() {
   // apps after a restart, and puts them all on the current space when an app
   // is manually quit and relaunched. If Chrome restarted itself, set a flag in
   // Views to have it restore spaces.
-  views::NativeWidgetMacNSWindowHost::
-      SetMoveWindowsToOriginalSpacesUponRestoration(
-          local_state->GetBoolean(prefs::kWasRestarted));
+  if (local_state->GetBoolean(prefs::kWasRestarted)) {
+    views::NativeWidgetMacNSWindowHost::
+        MoveWindowsToOriginalSpacesUponRestoration();
+  }
 }
 
 void ChromeBrowserMainPartsMac::PostCreateMainMessageLoop() {

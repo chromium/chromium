@@ -5,6 +5,7 @@
 #import "chrome/browser/chrome_browser_application_mac.h"
 
 #include <Carbon/Carbon.h>  // for <HIToolbox/Events.h>
+#include <CoreServices/CoreServices.h>
 
 #include "base/apple/call_with_eh_frame.h"
 #include "base/check.h"
@@ -27,6 +28,10 @@
 #include "content/public/common/content_features.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/base/cocoa/accessibility_focus_overrider.h"
+#include "ui/views/cocoa/native_widget_mac_ns_window_host.h"
+
+// https://crbug.com/491147240: Clean up code that is duplicate here and in
+// chrome/app_shim/app_shim_application.mm.
 
 namespace chrome_browser_application_mac {
 
@@ -115,6 +120,11 @@ std::string DescriptionForNSEvent(NSEvent* event) {
 
 }  // namespace
 
+@interface NSApplication (SPI)
+- (void)_handleCoreEvent:(NSAppleEventDescriptor*)event
+          withReplyEvent:(NSAppleEventDescriptor*)reply;
+@end
+
 @interface BrowserCrApplication () <NativeEventProcessor> {
   // A counter for enhanced user interface enable (+1) and disable (-1)
   // requests.
@@ -176,6 +186,49 @@ std::string DescriptionForNSEvent(NSEvent* event) {
       << " for " << [[self className] UTF8String];
 
   return app;
+}
+
+- (void)_handleCoreEvent:(NSAppleEventDescriptor*)event
+          withReplyEvent:(NSAppleEventDescriptor*)reply {
+  // AppleEvents date back to MacOS System 7, and kAEOpenApplication has been
+  // used continuously since then to provide context to a newly-launched
+  // application. When Mac OS X was introduced, NSApplication methods were
+  // layered on top of these AppleEvents, and within an AppKit app, the official
+  // way to inspect an AppleEvent such as kAEOpenApplication has been to
+  // implement an appropriate NSApplicationDelegate method and call
+  // NSAppleEventManager.sharedAppleEventManager.currentAppleEvent.
+  //
+  // Unfortunately, that's not always a viable option. In some cases (and
+  // specifically in this case), the NSApplication method handling the
+  // AppleEvent performs further processing before calling its
+  // NSApplicationDelegate method, and by the time the delegate method is
+  // invoked, it's too late to intercept the AppleEvent.
+  //
+  // The specific parameter needed here is keyAERestoreAppState, whose header
+  // documentation reads:
+  //
+  //   "If present in a kAEOpenApplication or kAEReopenApplication AppleEvent,
+  //    with the value kAEYes, then any saved application state should be
+  //    restored; if present and kAENo, then any saved application state should
+  //    not be restored."
+  //
+  // One thing to note is that this parameter might be present on either
+  // kAEOpenApplication or kAEReopenApplication. Those are both kCoreEventClass,
+  // therefore that is why _handleCoreEvent:withReplyEvent: is overridden, as
+  // that is the funnel for all incoming kCoreEventClass AppleEvents.
+  //
+  // The other thing to note is that Chromium does not care about macOS's
+  // decision to restore or not restore application state; Chromium has its own
+  // preference for that. However, if the keyAERestoreAppState parameter is
+  // present, that means that macOS launched Chromium as relaunching quit apps
+  // after a system restart, and therefore the existence of that parameter is
+  // all that needs to be determined.
+  if ([event paramDescriptorForKeyword:keyAERestoreAppState]) {
+    views::NativeWidgetMacNSWindowHost::
+        MoveWindowsToOriginalSpacesUponRestoration();
+  }
+
+  [super _handleCoreEvent:event withReplyEvent:reply];
 }
 
 - (void)finishLaunching {
