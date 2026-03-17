@@ -10,22 +10,19 @@
 #include "base/i18n/rtl.h"
 #include "base/strings/string_util.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/omnibox/browser/omnibox_field_trial.h"
-#include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
-#include "components/search_engines/template_url_starter_pack_data.h"
 #include "components/search_engines/ui_utils.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/table_model_observer.h"
 
 TemplateURLTableModel::TemplateURLTableModel(
     TemplateURLService* template_url_service,
-    bool ai_mode_enabled)
+    template_url_starter_pack_data::StarterPackIdSet disabled_starter_pack_ids)
     : observer_(nullptr),
       template_url_service_(template_url_service),
-      ai_mode_enabled_(ai_mode_enabled) {
+      disabled_starter_pack_ids_(disabled_starter_pack_ids) {
   DCHECK(template_url_service);
   template_url_service_->AddObserver(this);
   template_url_service_->Load();
@@ -44,22 +41,7 @@ void TemplateURLTableModel::Reload() {
       extension_entries;
   // Keywords that can be made the default first.
   for (TemplateURL* template_url : urls) {
-    // Skip @gemini if feature disabled.
-    if (template_url->starter_pack_id() ==
-            template_url_starter_pack_data::StarterPackId::kGemini &&
-        !OmniboxFieldTrial::IsStarterPackExpansionEnabled()) {
-      continue;
-    }
-    // Skip @page if feature disabled.
-    if (template_url->starter_pack_id() ==
-            template_url_starter_pack_data::StarterPackId::kPage &&
-        !omnibox_feature_configs::ContextualSearch::Get().starter_pack_page) {
-      continue;
-    }
-    // Skip @aimode if feature disabled.
-    if (template_url->starter_pack_id() ==
-            template_url_starter_pack_data::StarterPackId::kAiMode &&
-        !ai_mode_enabled_) {
+    if (disabled_starter_pack_ids_.Has(template_url->starter_pack_id())) {
       continue;
     }
 

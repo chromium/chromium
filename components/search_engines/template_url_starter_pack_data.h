@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/enum_set.h"
 #include "components/search_engines/search_engine_type.h"
 
 struct TemplateURLData;
@@ -35,6 +36,11 @@ enum class StarterPackId {
 
   kMaxStarterPackId
 };
+
+using StarterPackIdSet = base::EnumSet<
+    template_url_starter_pack_data::StarterPackId,
+    template_url_starter_pack_data::StarterPackId::kNone,
+    template_url_starter_pack_data::StarterPackId::kMaxStarterPackId>;
 
 struct StarterPackEngine {
   int name_message_id;

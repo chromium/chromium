@@ -4,6 +4,8 @@
 
 #include "components/search_engines/ui_utils.h"
 
+#include "components/omnibox/common/omnibox_feature_configs.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/template_url.h"
 
 namespace internal {
@@ -72,6 +74,31 @@ std::string OrderTemplateUrlsByManagedAndAlphabetically::GetShortNameSortKey(
   }
 
   return std::string(reinterpret_cast<const char*>(buffer), sort_key_length);
+}
+
+template_url_starter_pack_data::StarterPackIdSet GetDisabledStarterPackIds(
+    bool ai_mode_enabled) {
+  template_url_starter_pack_data::StarterPackIdSet disabled_starter_pack_ids;
+
+  // Skip @gemini if feature disabled.
+  if (!base::FeatureList::IsEnabled(omnibox::kStarterPackExpansion)) {
+    disabled_starter_pack_ids.Put(
+        template_url_starter_pack_data::StarterPackId::kGemini);
+  }
+
+  // Skip @page if feature disabled.
+  if (!omnibox_feature_configs::ContextualSearch::Get().starter_pack_page) {
+    disabled_starter_pack_ids.Put(
+        template_url_starter_pack_data::StarterPackId::kPage);
+  }
+
+  // Skip @aimode if feature disabled.
+  if (!ai_mode_enabled) {
+    disabled_starter_pack_ids.Put(
+        template_url_starter_pack_data::StarterPackId::kAiMode);
+  }
+
+  return disabled_starter_pack_ids;
 }
 
 }  // namespace internal

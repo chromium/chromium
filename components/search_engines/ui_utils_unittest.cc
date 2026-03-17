@@ -9,6 +9,9 @@
 #include <vector>
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
+#include "components/omnibox/common/omnibox_feature_configs.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
@@ -289,4 +292,61 @@ TEST_F(OrderTemplateUrlsByManagedAndAlphabeticallyTest,
     EXPECT_LT(sort_key.length(), 1000u);
     (void)result;  // Suppress unused variable warning
   });
+}
+
+class GetDisabledStarterPackIdsTest : public testing::Test {};
+
+TEST_F(GetDisabledStarterPackIdsTest, AiMode) {
+  auto disabled_ids_with_ai =
+      internal::GetDisabledStarterPackIds(/*ai_mode_enabled*/ true);
+  EXPECT_FALSE(disabled_ids_with_ai.Has(
+      template_url_starter_pack_data::StarterPackId::kAiMode));
+
+  auto disabled_ids_without_ai =
+      internal::GetDisabledStarterPackIds(/*ai_mode_enabled*/ false);
+  EXPECT_TRUE(disabled_ids_without_ai.Has(
+      template_url_starter_pack_data::StarterPackId::kAiMode));
+}
+
+TEST_F(GetDisabledStarterPackIdsTest, GeminiWithStarterPackExpansion) {
+  base::test::ScopedFeatureList feature_list{omnibox::kStarterPackExpansion};
+
+  auto disabled_ids =
+      internal::GetDisabledStarterPackIds(/*ai_mode_enabled*/ true);
+  EXPECT_FALSE(
+      disabled_ids.Has(template_url_starter_pack_data::StarterPackId::kGemini));
+}
+
+TEST_F(GetDisabledStarterPackIdsTest, GeminiWithoutStarterPackExpansion) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(omnibox::kStarterPackExpansion);
+
+  auto disabled_ids =
+      internal::GetDisabledStarterPackIds(/*ai_mode_enabled*/ true);
+  EXPECT_TRUE(
+      disabled_ids.Has(template_url_starter_pack_data::StarterPackId::kGemini));
+}
+
+TEST_F(GetDisabledStarterPackIdsTest, PageWithStarterPackPage) {
+  omnibox_feature_configs::ScopedConfigForTesting<
+      omnibox_feature_configs::ContextualSearch>
+      scoped_config;
+  scoped_config.Get().starter_pack_page = true;
+
+  auto disabled_ids =
+      internal::GetDisabledStarterPackIds(/*ai_mode_enabled*/ true);
+  EXPECT_FALSE(
+      disabled_ids.Has(template_url_starter_pack_data::StarterPackId::kPage));
+}
+
+TEST_F(GetDisabledStarterPackIdsTest, PageWithoutStarterPackPage) {
+  omnibox_feature_configs::ScopedConfigForTesting<
+      omnibox_feature_configs::ContextualSearch>
+      scoped_config;
+  scoped_config.Get().starter_pack_page = false;
+
+  auto disabled_ids =
+      internal::GetDisabledStarterPackIds(/*ai_mode_enabled*/ true);
+  EXPECT_TRUE(
+      disabled_ids.Has(template_url_starter_pack_data::StarterPackId::kPage));
 }

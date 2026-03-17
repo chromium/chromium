@@ -12,6 +12,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/search_engines/template_url_service_observer.h"
+#include "components/search_engines/template_url_starter_pack_data.h"
 #include "ui/base/models/table_model.h"
 
 class TemplateURL;
@@ -35,7 +36,8 @@ class TemplateURLTableModel : public ui::TableModel,
                               TemplateURLServiceObserver {
  public:
   TemplateURLTableModel(TemplateURLService* template_url_service,
-                        bool ai_mode_enabled);
+                        template_url_starter_pack_data::StarterPackIdSet
+                            disabled_starter_pack_ids);
 
   TemplateURLTableModel(const TemplateURLTableModel&) = delete;
   TemplateURLTableModel& operator=(const TemplateURLTableModel&) = delete;
@@ -124,8 +126,8 @@ class TemplateURLTableModel : public ui::TableModel,
   // group boundaries.
   size_t last_other_engine_index_;
 
-  // Whether to show the @aimode keyword. This depends on user eligibility.
-  bool ai_mode_enabled_;
+  // Contains the starter pack ids that should not be included in the table.
+  template_url_starter_pack_data::StarterPackIdSet disabled_starter_pack_ids_;
 };
 
 #endif  // CHROME_BROWSER_UI_SEARCH_ENGINES_TEMPLATE_URL_TABLE_MODEL_H_

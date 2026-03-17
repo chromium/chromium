@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SEARCH_ENGINES_UI_UTILS_H_
 #define COMPONENTS_SEARCH_ENGINES_UI_UTILS_H_
 
+#include "components/search_engines/template_url_starter_pack_data.h"
 #include "third_party/icu/source/i18n/unicode/coll.h"
 
 class TemplateURL;
@@ -32,6 +33,9 @@ class OrderTemplateUrlsByManagedAndAlphabetically {
  private:
   std::unique_ptr<icu::Collator> collator_;
 };
+
+template_url_starter_pack_data::StarterPackIdSet GetDisabledStarterPackIds(
+    bool ai_mode_enabled);
 
 }  // namespace internal
 

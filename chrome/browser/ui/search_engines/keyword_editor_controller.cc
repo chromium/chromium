@@ -14,6 +14,7 @@
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/search_engines/ui_utils.h"
 
 using base::UserMetricsAction;
 
@@ -21,8 +22,8 @@ KeywordEditorController::KeywordEditorController(Profile* profile)
     : url_model_(TemplateURLServiceFactory::GetForProfile(profile)) {
   bool ai_mode_enabled = OmniboxFieldTrial::IsAimStarterPackEnabled(
       AimEligibilityServiceFactory::GetForProfile(profile));
-  table_model_ =
-      std::make_unique<TemplateURLTableModel>(url_model_, ai_mode_enabled);
+  table_model_ = std::make_unique<TemplateURLTableModel>(
+      url_model_, internal::GetDisabledStarterPackIds(ai_mode_enabled));
 }
 
 KeywordEditorController::~KeywordEditorController() = default;
