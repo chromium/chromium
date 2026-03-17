@@ -9,7 +9,10 @@ visibility = [ "//third_party/blink/renderer/*" ]
 
 blink_modules_sources("v8") {
   visibility = []
-  visibility = [ "//third_party/blink/renderer/modules" ]
+  visibility = [
+    "//third_party/blink/renderer/modules",
+    "//third_party/blink/renderer/modules/mediastream",
+  ]
 
   sources =
       generated_async_iterator_sources_in_modules +

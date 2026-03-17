@@ -7,11 +7,12 @@
 
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_constraints.h"
 #include "third_party/blink/renderer/core/html/html_user_media_element.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
-class UserMediaElementConstraints final
+class MODULES_EXPORT UserMediaElementConstraints final
     : public GarbageCollected<UserMediaElementConstraints>,
       public Supplement<HTMLUserMediaElement> {
  public:
