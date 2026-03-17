@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/chrome_finds_internals/chrome_finds_agent_factory.h"
 
+#include "chrome/browser/finds/finds_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -32,6 +33,7 @@ ChromeFindsAgentFactory::ChromeFindsAgentFactory()
               .Build()) {
   DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
   DependsOn(HistoryServiceFactory::GetInstance());
+  DependsOn(finds::FindsServiceFactory::GetInstance());
 }
 
 ChromeFindsAgentFactory::~ChromeFindsAgentFactory() = default;
@@ -43,7 +45,8 @@ ChromeFindsAgentFactory::BuildServiceInstanceForBrowserContext(
   return std::make_unique<ChromeFindsAgent>(
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
       HistoryServiceFactory::GetForProfile(profile,
-                                           ServiceAccessType::EXPLICIT_ACCESS));
+                                           ServiceAccessType::EXPLICIT_ACCESS),
+      finds::FindsServiceFactory::GetForProfile(profile));
 }
 
 }  // namespace chrome_finds_internals

@@ -7105,6 +7105,7 @@ test("unit_tests") {
     "//chrome/browser/feedback:unit_tests",
     "//chrome/browser/file_system_access",
     "//chrome/browser/file_system_access:unit_tests",
+    "//chrome/browser/finds/core:unit_tests",
     "//chrome/browser/first_party_sets",
     "//chrome/browser/gcm",
     "//chrome/browser/gcm:unit_tests",

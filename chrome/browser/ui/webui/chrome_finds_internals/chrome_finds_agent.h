@@ -21,6 +21,8 @@ namespace history {
 class HistoryService;
 }
 
+#include "chrome/browser/finds/core/finds_service.h"
+
 namespace chrome_finds_internals {
 
 // A profile-keyed agent for Chrome Finds that manages events and notifies
@@ -33,7 +35,8 @@ class ChromeFindsAgent : public KeyedService {
   };
 
   ChromeFindsAgent(OptimizationGuideKeyedService* opt_guide_service,
-                   history::HistoryService* history_service);
+                   history::HistoryService* history_service,
+                   finds::FindsService* finds_service);
   ~ChromeFindsAgent() override;
 
   ChromeFindsAgent(const ChromeFindsAgent&) = delete;
@@ -44,6 +47,9 @@ class ChromeFindsAgent : public KeyedService {
 
   // Starts the AI notification process.
   void Start(const std::string& prompt, int32_t history_count);
+
+  // Sends a notification with the prompt via FindsService.
+  void GetFindsServiceModelResponse();
 
   // Retrieves history and returns it as a JSON string via callback.
   void GetHistoryJson(int32_t history_count,
@@ -60,9 +66,11 @@ class ChromeFindsAgent : public KeyedService {
   void OnModelExecutionComplete(
       optimization_guide::OptimizationGuideModelExecutionResult result,
       std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
+  void OnModelResponseComplete(finds::FindsService::Result result);
 
   raw_ptr<OptimizationGuideKeyedService> opt_guide_service_;
   raw_ptr<history::HistoryService> history_service_;
+  raw_ptr<finds::FindsService> finds_service_;
   std::vector<std::string> logs_;
   base::ObserverList<Observer> observers_;
   base::CancelableTaskTracker history_task_tracker_;

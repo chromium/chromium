@@ -11,6 +11,8 @@ static_library("finds") {
   deps = [
     "//base",
     "//chrome/browser/finds/core",
+    "//chrome/browser/history",
+    "//chrome/browser/optimization_guide",
     "//chrome/browser/profiles:profile",
   ]
 }

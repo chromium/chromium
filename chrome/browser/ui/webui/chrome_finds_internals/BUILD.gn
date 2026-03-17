@@ -25,6 +25,8 @@ static_library("chrome_finds_internals") {
   ]
 
   deps = [
+    "//chrome/browser/finds",
+    "//chrome/browser/finds/core",
     "//chrome/browser/optimization_guide",
     "//chrome/common",
     "//chrome/common:constants",

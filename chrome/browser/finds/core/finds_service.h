@@ -5,9 +5,22 @@
 #ifndef CHROME_BROWSER_FINDS_CORE_FINDS_SERVICE_H_
 #define CHROME_BROWSER_FINDS_CORE_FINDS_SERVICE_H_
 
+#include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/supports_user_data.h"
+#include "base/task/cancelable_task_tracker.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/optimization_guide/core/model_execution/remote_model_executor.h"
+
+namespace history {
+class HistoryService;
+class QueryResults;
+}  // namespace history
+
+class OptimizationGuideKeyedService;
 
 namespace finds {
 
@@ -20,7 +33,8 @@ class FindsService : public KeyedService, public base::SupportsUserData {
     virtual void OnOptInCriteriaFulfilled() = 0;
   };
 
-  FindsService();
+  explicit FindsService(OptimizationGuideKeyedService* opt_guide_service,
+                        history::HistoryService* history_service);
   ~FindsService() override;
 
   FindsService(const FindsService&) = delete;
@@ -29,8 +43,35 @@ class FindsService : public KeyedService, public base::SupportsUserData {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
+  struct Result {
+    enum class Status {
+      kSuccess,
+      kHistoryServiceUnavailable,
+      kOptimizationGuideUnavailable,
+      kEmptyHistory,
+      kModelExecutionFailed,
+      kResponseParsingFailed,
+    };
+    Status status;
+    std::string message;
+  };
+
+  void GetModelResponse(base::OnceCallback<void(Result)> callback);
+
  private:
+  void OnModelExecutionComplete(
+      base::OnceCallback<void(Result)> callback,
+      optimization_guide::OptimizationGuideModelExecutionResult result,
+      std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
+
+  void OnHistoryQueryComplete(base::OnceCallback<void(Result)> callback,
+                              history::QueryResults results);
+
+  raw_ptr<OptimizationGuideKeyedService> opt_guide_service_;
+  raw_ptr<history::HistoryService> history_service_;
   base::ObserverList<Observer> observers_;
+  base::CancelableTaskTracker history_task_tracker_;
+  base::WeakPtrFactory<FindsService> weak_ptr_factory_{this};
 };
 
 }  // namespace finds

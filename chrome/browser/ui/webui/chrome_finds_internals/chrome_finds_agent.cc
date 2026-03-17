@@ -9,6 +9,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/values.h"
+#include "chrome/browser/finds/core/finds_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
@@ -25,9 +26,11 @@ namespace chrome_finds_internals {
 
 ChromeFindsAgent::ChromeFindsAgent(
     OptimizationGuideKeyedService* opt_guide_service,
-    history::HistoryService* history_service)
+    history::HistoryService* history_service,
+    finds::FindsService* finds_service)
     : opt_guide_service_(opt_guide_service),
-      history_service_(history_service) {}
+      history_service_(history_service),
+      finds_service_(finds_service) {}
 
 ChromeFindsAgent::~ChromeFindsAgent() = default;
 
@@ -60,6 +63,21 @@ void ChromeFindsAgent::Start(const std::string& prompt, int32_t history_count) {
       base::BindOnce(&ChromeFindsAgent::OnHistoryQueryComplete,
                      weak_ptr_factory_.GetWeakPtr()),
       &history_task_tracker_);
+}
+
+void ChromeFindsAgent::GetFindsServiceModelResponse() {
+  AddLogMessage("ChromeFindsAgent::GetFindsServiceModelResponse() called.");
+
+  if (!finds_service_) {
+    AddLogMessage("Error: FindsService not available.");
+    return;
+  }
+
+  AddLogMessage("Executing model via FindsService...");
+
+  finds_service_->GetModelResponse(
+      base::BindOnce(&ChromeFindsAgent::OnModelResponseComplete,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ChromeFindsAgent::GetHistoryJson(
@@ -153,6 +171,19 @@ void ChromeFindsAgent::OnModelExecutionComplete(
     AddLogMessage(response->value());
   } else {
     AddLogMessage("Model execution successful, but failed to parse response.");
+  }
+}
+
+void ChromeFindsAgent::OnModelResponseComplete(
+    finds::FindsService::Result result) {
+  AddLogMessage(
+      base::StringPrintf("Result status: %d", static_cast<int>(result.status)));
+  if (result.status != finds::FindsService::Result::Status::kSuccess) {
+    AddLogMessage(result.message);
+    return;
+  }
+  if (!result.message.empty()) {
+    AddLogMessage(result.message);
   }
 }
 

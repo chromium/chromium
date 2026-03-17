@@ -45,6 +45,10 @@ class PageHandlerImpl : public mojom::PageHandler,
     agent_->Start(prompt, history_count);
   }
 
+  void GetFindsServiceModelResponse() override {
+    agent_->GetFindsServiceModelResponse();
+  }
+
   void GetHistoryJson(int32_t history_count,
                       GetHistoryJsonCallback callback) override {
     agent_->GetHistoryJson(history_count, std::move(callback));
