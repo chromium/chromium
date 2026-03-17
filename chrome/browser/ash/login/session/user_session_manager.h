@@ -488,7 +488,7 @@ class UserSessionManager
   void UpdateTokenHandle(Profile* const profile, const AccountId& account_id);
 
   // Test API methods.
-  void InjectAuthenticatorBuilder(
+  void InjectAuthenticatorBuilderForTesting(
       std::unique_ptr<AuthenticatorBuilder> builder);
 
   // Controls whether browser instance should be launched after sign in
