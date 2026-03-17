@@ -8,7 +8,7 @@
  * #css_wrapper_metadata_end */
 
 :host {
-  --cursor-img-url: url('lens/lens.svg');
+  --cursor-img-url: url('glic_region_selection_cursor_icon.svg');
   align-items: center;
   display: flex;
   height: 100%;
