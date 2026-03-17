@@ -44,6 +44,10 @@ class MockActorLoginPermissionService : public ActorLoginPermissionService {
               DeletePermission,
               (const url::Origin&, DeletePermissionResult),
               (override));
+  MOCK_METHOD(void,
+              GrantPermission,
+              (const FederatedPermission&, GrantPermissionResult),
+              (override));
 };
 
 PasswordForm CreateApprovedForm(const std::string& signon_realm,

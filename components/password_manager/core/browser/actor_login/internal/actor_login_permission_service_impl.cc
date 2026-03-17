@@ -112,6 +112,29 @@ std::string CreateDeleteRequestBody(const url::Origin& embedder_origin) {
   return post_data;
 }
 
+std::string CreateGrantRequestBody(const FederatedPermission& permission) {
+  // All fields in `permission` are required to be meaningful except for
+  // `affiliated_requester_origins`.
+  CHECK(!permission.idp_origin.opaque());
+  CHECK(!permission.rp_embedder_origin.opaque());
+  CHECK(!permission.rp_requester_origin.opaque());
+  CHECK(!permission.chosen_account_id.empty());
+  CHECK(!permission.chosen_account_email.empty());
+
+  auto federated_permission_dict =
+      base::DictValue()
+          .Set("idpOrigin", permission.idp_origin.Serialize())
+          .Set("rpEmbedderOrigin", permission.rp_embedder_origin.Serialize())
+          .Set("rpRequesterOrigin", permission.rp_requester_origin.Serialize())
+          .Set("chosenAccountId", permission.chosen_account_id);
+  auto request_dict = base::DictValue().Set(
+      "federatedCredentialPermission", std::move(federated_permission_dict));
+
+  std::string post_data;
+  base::JSONWriter::Write(request_dict, &post_data);
+  return post_data;
+}
+
 std::string CreateListRequestBody(
     const std::vector<FederatedOrigins>& origins) {
   base::ListValue filters;
@@ -288,8 +311,27 @@ void ActorLoginPermissionServiceImpl::DeletePermission(
 
   StartRequest(std::make_unique<Request>(
       url, post_data, url_loader_factory_,
-      base::BindOnce(&ActorLoginPermissionServiceImpl::OnDeleteRequestCompleted,
-                     base::Unretained(this))
+      base::BindOnce(
+          &ActorLoginPermissionServiceImpl::OnGenericRequestCompleted,
+          base::Unretained(this))
+          .Then(std::move(callback))));
+}
+
+void ActorLoginPermissionServiceImpl::GrantPermission(
+    const FederatedPermission& permission,
+    GrantPermissionResult callback) {
+  GURL url(base::StrCat(
+      // allow_missing means that if the permission does not exist, it will be
+      // created. This effectively means that the request becomes a "Grant or
+      // update" request.
+      {kActorLoginPermissionServiceUrlBase, "update?allow_missing=true"}));
+  std::string post_data = CreateGrantRequestBody(permission);
+
+  StartRequest(std::make_unique<Request>(
+      url, post_data, url_loader_factory_,
+      base::BindOnce(
+          &ActorLoginPermissionServiceImpl::OnGenericRequestCompleted,
+          base::Unretained(this))
           .Then(std::move(callback))));
 }
 
@@ -322,7 +364,7 @@ ActorLoginPermissionServiceImpl::OnListRequestCompleted(
   return ParseFederatedPermissionsList(*response);
 }
 
-bool ActorLoginPermissionServiceImpl::OnDeleteRequestCompleted(
+bool ActorLoginPermissionServiceImpl::OnGenericRequestCompleted(
     Request* request,
     std::optional<std::string> response_body) {
   bool success = request->success();

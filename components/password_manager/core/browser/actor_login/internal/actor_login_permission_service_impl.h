@@ -33,6 +33,8 @@ class ActorLoginPermissionServiceImpl : public ActorLoginPermissionService {
   void ListAllPermissions(ListPermissionsResult callback) override;
   void DeletePermission(const url::Origin& embedder_origin,
                         DeletePermissionResult callback) override;
+  void GrantPermission(const FederatedPermission& permission,
+                       GrantPermissionResult callback) override;
 
  private:
   class Request;
@@ -42,8 +44,8 @@ class ActorLoginPermissionServiceImpl : public ActorLoginPermissionService {
   std::vector<FederatedPermission> OnListRequestCompleted(
       Request* request,
       std::optional<std::string> response_body);
-  bool OnDeleteRequestCompleted(Request* request,
-                                std::optional<std::string> response_body);
+  bool OnGenericRequestCompleted(Request* request,
+                                 std::optional<std::string> response_body);
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 

@@ -48,6 +48,8 @@ using ListPermissionsResult =
 
 using DeletePermissionResult = base::OnceCallback<void(bool)>;
 
+using GrantPermissionResult = base::OnceCallback<void(bool)>;
+
 // Manages actor login permissions.
 // Currently this only manages federated permissions but the long-term goal is
 // to manage all actor login permissions through this service.
@@ -62,6 +64,12 @@ class ActorLoginPermissionService : public KeyedService {
   // the callback will be called with false.
   virtual void DeletePermission(const url::Origin& embedder_origin,
                                 DeletePermissionResult callback) = 0;
+
+  // Stores `permission` in the permission database for the primary profile.
+  // All fields in `permission` are required to be meaningful except for
+  // `affiliated_requester_origins`.
+  virtual void GrantPermission(const FederatedPermission& permission,
+                               GrantPermissionResult callback) = 0;
 };
 
 }  // namespace actor_login

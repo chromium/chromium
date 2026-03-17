@@ -25,6 +25,21 @@ const char kTestListUrl[] =
 const char kTestDeleteUrl[] =
     "https://staging-agenticpermission.pa.sandbox.googleapis.com/v1/"
     "permissions:delete";
+const char kTestUpdateUrl[] =
+    "https://staging-agenticpermission.pa.sandbox.googleapis.com/v1/"
+    "permissions:update?allow_missing=true";
+
+FederatedPermission CreateValidPermission() {
+  FederatedPermission permission;
+  permission.idp_origin = url::Origin::Create(GURL("https://idp.com"));
+  permission.rp_embedder_origin =
+      url::Origin::Create(GURL("https://embedder.com"));
+  permission.rp_requester_origin =
+      url::Origin::Create(GURL("https://requester.com"));
+  permission.chosen_account_id = "account123";
+  permission.chosen_account_email = "user@idp.com";
+  return permission;
+}
 }  // namespace
 
 class ActorLoginPermissionServiceImplTest : public testing::Test {
@@ -221,6 +236,52 @@ TEST_F(ActorLoginPermissionServiceImplTest,
 
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       kTestDeleteUrl, "", net::HTTP_INTERNAL_SERVER_ERROR);
+
+  EXPECT_FALSE(future.Get());
+}
+
+TEST_F(ActorLoginPermissionServiceImplTest,
+       GrantPermissionSendsCorrectRequest) {
+  base::test::TestFuture<bool> future;
+  service_.GrantPermission(CreateValidPermission(), future.GetCallback());
+
+  ASSERT_EQ(1, test_url_loader_factory_.NumPending());
+  const network::ResourceRequest& request =
+      test_url_loader_factory_.GetPendingRequest(0)->request;
+
+  EXPECT_EQ(kTestUpdateUrl, request.url.spec());
+  EXPECT_EQ("POST", request.method);
+  EXPECT_EQ(network::mojom::CredentialsMode::kOmit, request.credentials_mode);
+
+  EXPECT_EQ(base::test::ParseJson(R"({
+              "federatedCredentialPermission": {
+                "chosenAccountId": "account123",
+                "idpOrigin": "https://idp.com",
+                "rpEmbedderOrigin": "https://embedder.com",
+                "rpRequesterOrigin": "https://requester.com"
+              }
+            })"),
+            base::test::ParseJson(network::GetUploadData(request)));
+}
+
+TEST_F(ActorLoginPermissionServiceImplTest,
+       GrantPermissionReturnsTrueOnSuccess) {
+  base::test::TestFuture<bool> future;
+  service_.GrantPermission(CreateValidPermission(), future.GetCallback());
+
+  test_url_loader_factory_.SimulateResponseForPendingRequest(kTestUpdateUrl,
+                                                             "{}");
+
+  EXPECT_TRUE(future.Get());
+}
+
+TEST_F(ActorLoginPermissionServiceImplTest,
+       GrantPermissionReturnsFalseOnError) {
+  base::test::TestFuture<bool> future;
+  service_.GrantPermission(CreateValidPermission(), future.GetCallback());
+
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      kTestUpdateUrl, "", net::HTTP_INTERNAL_SERVER_ERROR);
 
   EXPECT_FALSE(future.Get());
 }
