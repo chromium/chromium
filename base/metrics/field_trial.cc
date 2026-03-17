@@ -648,15 +648,13 @@ void FieldTrialList::CreateTrialsInChildProcess(const CommandLine& cmd_line) {
   global_->create_trials_in_child_process_called_ = true;
 
 #if BUILDFLAG(USE_BLINK)
-  // TODO(crbug.com/41403903): Change to a CHECK.
-  if (cmd_line.HasSwitch(switches::kFieldTrialHandle)) {
-    std::string switch_value =
-        cmd_line.GetSwitchValueASCII(switches::kFieldTrialHandle);
-    SharedMemoryError result = CreateTrialsFromSwitchValue(switch_value);
-    SCOPED_CRASH_KEY_NUMBER("FieldTrialList", "SharedMemoryError",
-                            static_cast<int>(result));
-    CHECK_EQ(result, SharedMemoryError::kNoError);
-  }
+  std::string switch_value =
+      cmd_line.GetSwitchValueASCII(switches::kFieldTrialHandle);
+  CHECK(!switch_value.empty(), base::NotFatalUntil::M150);
+  SharedMemoryError result = CreateTrialsFromSwitchValue(switch_value);
+  SCOPED_CRASH_KEY_NUMBER("FieldTrialList", "SharedMemoryError",
+                          static_cast<int>(result));
+  CHECK_EQ(result, SharedMemoryError::kNoError);
 #endif  // BUILDFLAG(USE_BLINK)
 }
 
@@ -664,10 +662,8 @@ void FieldTrialList::CreateTrialsInChildProcess(const CommandLine& cmd_line) {
 void FieldTrialList::ApplyFeatureOverridesInChildProcess(
     FeatureList* feature_list) {
   CHECK(global_->create_trials_in_child_process_called_);
-  // TODO(crbug.com/41403903): Change to a CHECK.
-  if (global_->field_trial_allocator_) {
-    feature_list->InitFromSharedMemory(global_->field_trial_allocator_.get());
-  }
+  CHECK(global_->field_trial_allocator_, base::NotFatalUntil::M150);
+  feature_list->InitFromSharedMemory(global_->field_trial_allocator_.get());
 }
 
 #if BUILDFLAG(USE_BLINK)
