@@ -174,18 +174,3 @@ void IOSChromePasskeyClient::AllowPasskeyCreationInfobar(bool allowed) {
   }
 #endif  // BUILDFLAG(IOS_CREDENTIAL_PROVIDER_ENABLED)
 }
-
-password_manager::WebAuthnCredentialsDelegate*
-IOSChromePasskeyClient::GetWebAuthnCredentialsDelegateForDriver(
-    IOSPasswordManagerDriver* driver) {
-  PasswordTabHelper* password_tab_helper =
-      PasswordTabHelper::FromWebState(web_state_.get());
-  if (!password_tab_helper) {
-    return nullptr;
-  }
-
-  password_manager::PasswordManagerClient* client =
-      password_tab_helper->GetPasswordManagerClient();
-  CHECK(client);
-  return client->GetWebAuthnCredentialsDelegateForDriver(driver);
-}

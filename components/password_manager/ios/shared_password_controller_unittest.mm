@@ -4,6 +4,7 @@
 
 #import "components/password_manager/ios/shared_password_controller.h"
 
+#import "base/base64.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -57,6 +58,11 @@
 #import "components/password_manager/ios/shared_password_controller+private.h"
 #import "components/password_manager/ios/test_helpers.h"
 #import "components/test/ios/test_utils.h"
+#import "components/webauthn/core/browser/test_passkey_model.h"
+#import "components/webauthn/ios/fake_ios_passkey_client.h"
+#import "components/webauthn/ios/ios_webauthn_credentials_delegate.h"
+#import "components/webauthn/ios/ios_webauthn_credentials_delegate_factory.h"
+#import "components/webauthn/ios/passkey_tab_helper.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
@@ -141,6 +147,18 @@ FormData CreateSignupForm(
   return form_data;
 }
 
+// Creates a passkey credential stored in a vector of credentials.
+std::vector<PasskeyCredential> CreateCredential() {
+  std::vector<PasskeyCredential> passkeys;
+  passkeys.emplace_back(
+      PasskeyCredential(PasskeyCredential::Source::kGooglePasswordManager,
+                        PasskeyCredential::RpId("example.com"),
+                        PasskeyCredential::CredentialId({1, 2, 3, 4}),
+                        PasskeyCredential::UserId(),
+                        PasskeyCredential::Username("passkey_username")));
+  return passkeys;
+}
+
 }  // namespace
 
 class MockPasswordGenerationFrameHelper : public PasswordGenerationFrameHelper {
@@ -158,14 +176,6 @@ class MockPasswordGenerationFrameHelper : public PasswordGenerationFrameHelper {
 
   explicit MockPasswordGenerationFrameHelper()
       : PasswordGenerationFrameHelper(nullptr, nullptr) {}
-};
-
-class MockPasswordManagerClient : public StubPasswordManagerClient {
- public:
-  MOCK_METHOD(WebAuthnCredentialsDelegate*,
-              GetWebAuthnCredentialsDelegateForDriver,
-              (PasswordManagerDriver*),
-              (override));
 };
 
 class SharedPasswordControllerTest : public PlatformTest {
@@ -265,19 +275,34 @@ class SharedPasswordControllerTest : public PlatformTest {
     AddWebFrame(std::move(frame), [OCMArg any]);
   }
 
+  // Set up the real delegate with a passkey.
+  void SetupWebAuthnCredentialsDelegate() {
+    passkey_model_ = std::make_unique<webauthn::TestPasskeyModel>();
+    webauthn::PasskeyTabHelper::CreateForWebState(
+        &web_state_, passkey_model_.get(),
+        std::make_unique<webauthn::FakeIOSPasskeyClient>());
+
+    webauthn::IOSWebAuthnCredentialsDelegateFactory* factory =
+        webauthn::IOSWebAuthnCredentialsDelegateFactory::GetFactory(
+            &web_state_);
+    webauthn::IOSWebAuthnCredentialsDelegate* delegate =
+        factory->GetDelegateForFrameId(SysNSStringToUTF8(kTestFrameID));
+    delegate->OnCredentialsReceived(CreateCredential(), "request-id");
+  }
+
   base::test::TaskEnvironment task_environment_;
   autofill::test::AutofillUnitTestEnvironment autofill_test_environment_;
   std::unique_ptr<autofill::TestAutofillClientIOS> autofill_client_;
   std::unique_ptr<TestAutofillManagerInjector<TestBrowserAutofillManager>>
       autofill_manager_injector_;
+  std::unique_ptr<webauthn::TestPasskeyModel> passkey_model_;
   web::FakeWebState web_state_;
   raw_ptr<web::FakeWebFramesManager> web_frames_manager_;
   testing::StrictMock<MockPasswordManager> password_manager_;
   testing::StrictMock<MockPasswordGenerationFrameHelper>
       password_generation_helper_;
-  testing::StrictMock<password_manager::MockWebAuthnCredentialsDelegate>
-      webauthn_credentials_delegate_;
-  testing::NiceMock<MockPasswordManagerClient> password_manager_client_;
+
+  StubPasswordManagerClient password_manager_client_;
   id form_helper_;
   id suggestion_helper_;
   id driver_helper_;
@@ -688,19 +713,7 @@ TEST_F(SharedPasswordControllerTest, ReturnsSuggestionsIfAvailable) {
 // Tests that both passkey and password suggestions can be retrieved at once.
 TEST_F(SharedPasswordControllerTest,
        ReturnsPasskeyAndPasswordSuggestionsWhenAvailable) {
-  EXPECT_CALL(password_manager_client_, GetWebAuthnCredentialsDelegateForDriver)
-      .WillRepeatedly(Return(&webauthn_credentials_delegate_));
-
-  // Set up the `webauthn_credentials_delegate_` with a passkey.
-  std::vector<PasskeyCredential> passkeys;
-  passkeys.emplace_back(
-      PasskeyCredential(PasskeyCredential::Source::kGooglePasswordManager,
-                        PasskeyCredential::RpId("example.com"),
-                        PasskeyCredential::CredentialId({1, 2, 3, 4}),
-                        PasskeyCredential::UserId(),
-                        PasskeyCredential::Username("passkey_username")));
-  EXPECT_CALL(webauthn_credentials_delegate_, GetPasskeys)
-      .WillOnce(Return(base::ok(&passkeys)));
+  SetupWebAuthnCredentialsDelegate();
 
   // Set up the `suggestion_helper_` with a password suggestion.
   FormSuggestion* suggestion = [FormSuggestion
@@ -1007,14 +1020,10 @@ TEST_F(SharedPasswordControllerTest, SelectPasskeySuggestion) {
       web::FakeWebFrame::Create(SysNSStringToUTF8(kTestFrameID),
                                 /*is_main_frame=*/true, GURL(kTestURL));
   AddWebFrame(std::move(web_frame));
-
-  // Set up the mocks.
-  EXPECT_CALL(password_manager_client_, GetWebAuthnCredentialsDelegateForDriver)
-      .WillRepeatedly(Return(&webauthn_credentials_delegate_));
-  std::string credential_id = "credential_id";
-  EXPECT_CALL(webauthn_credentials_delegate_, SelectPasskey(credential_id, _));
+  SetupWebAuthnCredentialsDelegate();
 
   // Create and select a passkey suggestion.
+  std::string credential_id = base::Base64Encode("credential_id");
   FormSuggestion* suggestion = [FormSuggestion
       suggestionWithValue:@"passkey"
        displayDescription:@"description"

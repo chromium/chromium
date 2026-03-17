@@ -36,7 +36,7 @@ IOSWebAuthnCredentialsDelegateFactory::GetFactory(web::WebState* web_state) {
 }
 
 IOSWebAuthnCredentialsDelegate*
-IOSWebAuthnCredentialsDelegateFactory::GetDelegateForFrame(
+IOSWebAuthnCredentialsDelegateFactory::GetDelegateForFrameId(
     const std::string& frame_id) {
   if (frame_id.empty()) {
     return nullptr;

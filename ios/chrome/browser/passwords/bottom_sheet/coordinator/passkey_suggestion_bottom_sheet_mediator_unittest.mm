@@ -68,7 +68,7 @@ class PasskeySuggestionBottomSheetMediatorTest : public PlatformTest {
 
     webauthn::IOSWebAuthnCredentialsDelegateFactory* factory =
         webauthn::IOSWebAuthnCredentialsDelegateFactory::GetFactory(web_state_);
-    webauthn_credentials_delegate_ = factory->GetDelegateForFrame(kFrameId);
+    webauthn_credentials_delegate_ = factory->GetDelegateForFrameId(kFrameId);
 
     consumer_ =
         OCMProtocolMock(@protocol(CredentialSuggestionBottomSheetConsumer));

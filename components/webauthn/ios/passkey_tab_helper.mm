@@ -9,7 +9,6 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
 #import "components/password_manager/core/browser/passkey_credential.h"
-#import "components/password_manager/ios/ios_password_manager_driver_factory.h"
 #import "components/webauthn/core/browser/client_data_json.h"
 #import "components/webauthn/core/browser/common_utils.h"
 #import "components/webauthn/core/browser/passkey_model.h"
@@ -17,6 +16,7 @@
 #import "components/webauthn/core/browser/remote_validation.h"
 #import "components/webauthn/core/browser/webauthn_security_utils.h"
 #import "components/webauthn/ios/ios_webauthn_credentials_delegate.h"
+#import "components/webauthn/ios/ios_webauthn_credentials_delegate_factory.h"
 #import "components/webauthn/ios/passkey_java_script_feature.h"
 #import "crypto/hash.h"
 #import "ios/web/public/browser_state.h"
@@ -203,24 +203,14 @@ void PasskeyTabHelper::HandleGetRequestedEvent(web::WebFrame* web_frame,
 }
 
 void PasskeyTabHelper::HandleAssertion(AssertionRequestParams params) {
-  web::WebFrame* web_frame = GetWebFrame(params.FrameId());
-  if (!web_frame) {
-    return;
-  }
-
   // Get available passkeys for the request.
   std::vector<password_manager::PasskeyCredential> filtered_passkeys =
       password_manager::PasskeyCredential::FromCredentialSpecifics(
           GetFilteredPasskeys(params));
 
-  IOSPasswordManagerDriver* driver =
-      IOSPasswordManagerDriverFactory::FromWebStateAndWebFrame(web_state_.get(),
-                                                               web_frame);
-  CHECK(driver);
-
   IOSWebAuthnCredentialsDelegate* delegate =
-      static_cast<IOSWebAuthnCredentialsDelegate*>(
-          client_->GetWebAuthnCredentialsDelegateForDriver(driver));
+      IOSWebAuthnCredentialsDelegateFactory::GetFactory(web_state_.get())
+          ->GetDelegateForFrameId(params.FrameId());
   CHECK(delegate);
 
   const std::string& passkey_request_id = params.RequestId();

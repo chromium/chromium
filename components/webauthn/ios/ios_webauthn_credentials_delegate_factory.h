@@ -38,7 +38,7 @@ class IOSWebAuthnCredentialsDelegateFactory
 
   // Returns the delegate for the given `frame`, creating one if it doesn't
   // already exist.
-  IOSWebAuthnCredentialsDelegate* GetDelegateForFrame(
+  IOSWebAuthnCredentialsDelegate* GetDelegateForFrameId(
       const std::string& frame_id);
 
  private:

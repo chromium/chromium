@@ -36,7 +36,7 @@
     _webAuthnCredentialsDelegate =
         webauthn::IOSWebAuthnCredentialsDelegateFactory::GetFactory(
             webStateList->GetActiveWebState())
-            ->GetDelegateForFrame(_requestInfo->frame_id);
+            ->GetDelegateForFrameId(_requestInfo->frame_id);
     if (_webAuthnCredentialsDelegate) {
       base::expected<const std::vector<password_manager::PasskeyCredential>*,
                      password_manager::WebAuthnCredentialsDelegate::

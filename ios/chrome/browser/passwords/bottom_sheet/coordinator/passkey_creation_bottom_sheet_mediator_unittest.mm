@@ -76,7 +76,7 @@ class PasskeyCreationBottomSheetMediatorTest : public PlatformTest {
     mock_reauth_module_ = OCMProtocolMock(@protocol(ReauthenticationProtocol));
     OCMStub([mock_reauth_module_ canAttemptReauth]).andReturn(YES);
 
-    auto client = std::make_unique<webauthn::FakeIOSPasskeyClient>(web_state_);
+    auto client = std::make_unique<webauthn::FakeIOSPasskeyClient>();
     fake_client_ = client.get();
     webauthn::PasskeyTabHelper::CreateForWebState(web_state_, model_.get(),
                                                   std::move(client));

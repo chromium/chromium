@@ -8,6 +8,7 @@
 #import "base/strings/string_number_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/run_until.h"
+#import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/password_manager/core/browser/mock_password_manager.h"
 #import "components/password_manager/ios/ios_password_manager_driver_factory.h"
 #import "components/password_manager/ios/shared_password_controller.h"
@@ -15,6 +16,7 @@
 #import "components/webauthn/core/browser/test_passkey_model.h"
 #import "components/webauthn/ios/fake_ios_passkey_client.h"
 #import "components/webauthn/ios/ios_webauthn_credentials_delegate.h"
+#import "components/webauthn/ios/ios_webauthn_credentials_delegate_factory.h"
 #import "components/webauthn/ios/passkey_java_script_feature.h"
 #import "components/webauthn/ios/passkey_test_util.h"
 #import "ios/web/public/test/fakes/fake_browser_state.h"
@@ -61,15 +63,19 @@ class PasskeyTabHelperTest : public PlatformTest {
   PasskeyTabHelperTest()
       : scoped_web_client_(std::make_unique<web::FakeWebClient>()) {
     static_cast<web::FakeWebClient*>(scoped_web_client_.Get())
-        ->SetJavaScriptFeatures({PasskeyJavaScriptFeature::GetInstance()});
+        ->SetJavaScriptFeatures(
+            {PasskeyJavaScriptFeature::GetInstance(),
+             autofill::AutofillJavaScriptFeature::GetInstance()});
     fake_web_state_.SetBrowserState(&fake_browser_state_);
     fake_browser_state_.SetSharedURLLoaderFactory(
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_));
     web::test::OverrideJavaScriptFeatures(
-        &fake_browser_state_, {PasskeyJavaScriptFeature::GetInstance()});
+        &fake_browser_state_,
+        {PasskeyJavaScriptFeature::GetInstance(),
+         autofill::AutofillJavaScriptFeature::GetInstance()});
 
-    auto client = std::make_unique<FakeIOSPasskeyClient>(&fake_web_state_);
+    auto client = std::make_unique<FakeIOSPasskeyClient>();
     client_ = client.get();
     PasskeyTabHelper::CreateForWebState(&fake_web_state_, passkey_model_.get(),
                                         std::move(client));
@@ -92,13 +98,29 @@ class PasskeyTabHelperTest : public PlatformTest {
 
   // Sets up a web frame manager with a web frame.
   void SetUpWebFramesManagerAndWebFrame(const GURL& origin) {
+    web::ContentWorld passkey_world =
+        PasskeyJavaScriptFeature::GetInstance()->GetSupportedContentWorld();
     auto frames_manager = std::make_unique<web::FakeWebFramesManager>();
     auto frame = web::FakeWebFrame::CreateMainWebFrame(origin);
     frame->set_browser_state(&fake_browser_state_);
     frames_manager->AddWebFrame(std::move(frame));
-    fake_web_state_.SetWebFramesManager(
-        PasskeyJavaScriptFeature::GetInstance()->GetSupportedContentWorld(),
-        std::move(frames_manager));
+    fake_web_state_.SetWebFramesManager(passkey_world,
+                                        std::move(frames_manager));
+
+    // Also set up a manager for AutofillJavaScriptFeature if it uses a
+    // different world.
+    web::ContentWorld autofill_world =
+        autofill::AutofillJavaScriptFeature::GetInstance()
+            ->GetSupportedContentWorld();
+    if (passkey_world != autofill_world) {
+      auto autofill_frames_manager =
+          std::make_unique<web::FakeWebFramesManager>();
+      auto autofill_frame = web::FakeWebFrame::CreateMainWebFrame(origin);
+      autofill_frame->set_browser_state(&fake_browser_state_);
+      autofill_frames_manager->AddWebFrame(std::move(autofill_frame));
+      fake_web_state_.SetWebFramesManager(autofill_world,
+                                          std::move(autofill_frames_manager));
+    }
   }
 
   // Sets up the IOSPasswordManagerDriver needed to retrieve the
@@ -292,8 +314,12 @@ TEST_F(PasskeyTabHelperTest, SendPasskeysToWebAuthnCredentialsDelegate) {
   sync_pb::WebauthnCredentialSpecifics passkey = GetTestPasskey(kCredentialId);
   passkey_model_->AddNewPasskeyForTesting(std::move(passkey));
 
+  IOSWebAuthnCredentialsDelegate* delegate =
+      IOSWebAuthnCredentialsDelegateFactory::GetFactory(&fake_web_state_)
+          ->GetDelegateForFrameId(web::kMainFakeFrameId);
+
   // Verify that the delegate has no passkeys initially.
-  auto passkeys_before = client_->delegate()->GetPasskeys();
+  auto passkeys_before = delegate->GetPasskeys();
   ASSERT_FALSE(passkeys_before.has_value());
   EXPECT_EQ(passkeys_before.error(),
             password_manager::WebAuthnCredentialsDelegate::
@@ -303,7 +329,7 @@ TEST_F(PasskeyTabHelperTest, SendPasskeysToWebAuthnCredentialsDelegate) {
   passkey_tab_helper()->HandleGetRequestedEvent(std::move(params));
 
   // Verify that the delegate has received the passkey.
-  auto passkeys_after = client_->delegate()->GetPasskeys();
+  auto passkeys_after = delegate->GetPasskeys();
   ASSERT_TRUE(passkeys_after.has_value());
   EXPECT_EQ(passkeys_after.value()->size(), 1u);
   EXPECT_EQ(passkeys_after.value()->at(0).credential_id(),

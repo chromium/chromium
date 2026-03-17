@@ -48,7 +48,7 @@ class IOSWebAuthnCredentialsDelegateFactoryTest : public PlatformTest {
 // Tests that the factory creates a delegate for a given frame.
 TEST_F(IOSWebAuthnCredentialsDelegateFactoryTest, FactoryCreatesDelegate) {
   IOSWebAuthnCredentialsDelegate* delegate =
-      factory()->GetDelegateForFrame(kFrameId1);
+      factory()->GetDelegateForFrameId(kFrameId1);
 
   EXPECT_TRUE(delegate);
 }
@@ -56,7 +56,8 @@ TEST_F(IOSWebAuthnCredentialsDelegateFactoryTest, FactoryCreatesDelegate) {
 // Tests that the factory doesn't create a delegate for an empty frame ID.
 TEST_F(IOSWebAuthnCredentialsDelegateFactoryTest,
        ReturnsNullptrForEmptyFrameId) {
-  IOSWebAuthnCredentialsDelegate* delegate = factory()->GetDelegateForFrame("");
+  IOSWebAuthnCredentialsDelegate* delegate =
+      factory()->GetDelegateForFrameId("");
 
   EXPECT_FALSE(delegate);
 }
@@ -64,10 +65,10 @@ TEST_F(IOSWebAuthnCredentialsDelegateFactoryTest,
 // Tests that the factory returns the same delegate for the same frame.
 TEST_F(IOSWebAuthnCredentialsDelegateFactoryTest, SameDelegateForSameFrame) {
   IOSWebAuthnCredentialsDelegate* delegate1 =
-      factory()->GetDelegateForFrame(kFrameId1);
+      factory()->GetDelegateForFrameId(kFrameId1);
 
   IOSWebAuthnCredentialsDelegate* delegate2 =
-      factory()->GetDelegateForFrame(kFrameId1);
+      factory()->GetDelegateForFrameId(kFrameId1);
 
   EXPECT_EQ(delegate1, delegate2);
 }
@@ -76,10 +77,10 @@ TEST_F(IOSWebAuthnCredentialsDelegateFactoryTest, SameDelegateForSameFrame) {
 TEST_F(IOSWebAuthnCredentialsDelegateFactoryTest,
        DifferentDelegateForDifferentFrame) {
   IOSWebAuthnCredentialsDelegate* delegate1 =
-      factory()->GetDelegateForFrame(kFrameId1);
+      factory()->GetDelegateForFrameId(kFrameId1);
 
   IOSWebAuthnCredentialsDelegate* delegate2 =
-      factory()->GetDelegateForFrame(kFrameId2);
+      factory()->GetDelegateForFrameId(kFrameId2);
 
   EXPECT_NE(delegate1, delegate2);
 }
@@ -92,7 +93,7 @@ TEST_F(IOSWebAuthnCredentialsDelegateFactoryTest, DelegateDestroyedWithFrame) {
 
   // Getting the delegate should create it.
   IOSWebAuthnCredentialsDelegate* old_delegate =
-      factory()->GetDelegateForFrame(kFrameId1);
+      factory()->GetDelegateForFrameId(kFrameId1);
   EXPECT_TRUE(old_delegate);
 
   // Removing the frame should destroy the delegate.
@@ -100,12 +101,12 @@ TEST_F(IOSWebAuthnCredentialsDelegateFactoryTest, DelegateDestroyedWithFrame) {
 
   // Create another delegate for a different frame to make it less likely
   // that the memory address of `old_delegate` is reused.
-  factory()->GetDelegateForFrame(kFrameId2);
+  factory()->GetDelegateForFrameId(kFrameId2);
 
   // Getting the delegate again for the frame with ID `kFrameId1` should create
   // a new one.
   IOSWebAuthnCredentialsDelegate* new_delegate =
-      factory()->GetDelegateForFrame(kFrameId1);
+      factory()->GetDelegateForFrameId(kFrameId1);
   EXPECT_TRUE(new_delegate);
   EXPECT_NE(old_delegate, new_delegate);
 }

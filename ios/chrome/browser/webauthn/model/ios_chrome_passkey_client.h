@@ -32,9 +32,6 @@ class IOSChromePasskeyClient : public webauthn::IOSPasskeyClient {
   void ShowCreationBottomSheet(RequestInfo request_info) override;
   void ShowInterstitial(InterstitialCallback callback) override;
   void AllowPasskeyCreationInfobar(bool allowed) override;
-  password_manager::WebAuthnCredentialsDelegate*
-  GetWebAuthnCredentialsDelegateForDriver(
-      IOSPasswordManagerDriver* driver) override;
 
   id<IOSPasskeyClientCommands> GetCommandHandler() const;
 

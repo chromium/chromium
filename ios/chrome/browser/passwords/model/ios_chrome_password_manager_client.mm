@@ -402,7 +402,7 @@ IOSChromePasswordManagerClient::GetWebAuthnCredentialsDelegateForDriver(
 
   return webauthn::IOSWebAuthnCredentialsDelegateFactory::GetFactory(
              bridge_.webState)
-      ->GetDelegateForFrame(
+      ->GetDelegateForFrameId(
           static_cast<IOSPasswordManagerDriver*>(driver)->web_frame_id());
 }
 
