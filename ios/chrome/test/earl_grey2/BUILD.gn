@@ -274,6 +274,11 @@ chrome_ios_eg2_test("ios_chrome_ui_eg2tests_module") {
     "//ios/chrome/browser/webui/ui_bundled/interstitials:eg2_tests",
     "//ios/chrome/browser/webui/ui_bundled/optimization_guide_internals:eg2_tests",
   ]
+
+  if (target_environment == "device") {
+    deps += [ "//ios/chrome/browser/picture_in_picture/test:eg2_tests" ]
+  }
+
   data_deps = [ ":ios_chrome_eg2tests" ]
 }
 
