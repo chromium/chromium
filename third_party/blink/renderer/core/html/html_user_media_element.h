@@ -7,10 +7,13 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/html_capability_element_base.h"
+#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
-class CORE_EXPORT HTMLUserMediaElement : public HTMLCapabilityElementBase {
+class CORE_EXPORT HTMLUserMediaElement
+    : public HTMLCapabilityElementBase,
+      public Supplementable<HTMLUserMediaElement> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -29,6 +32,7 @@ class CORE_EXPORT HTMLUserMediaElement : public HTMLCapabilityElementBase {
       const AtomicString& type);
 
   // HTMLCapabilityElementBase:
+  void Trace(Visitor*) const override;
   mojom::blink::EmbeddedPermissionRequestDescriptorPtr
   CreateEmbeddedPermissionRequestDescriptor() override;
 };

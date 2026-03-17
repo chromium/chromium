@@ -1287,6 +1287,7 @@ html element usermedia
     property onstream
     property onvalidationstatuschange
     property permissionStatus
+    property setConstraints
     property type
 html element var
 html element video

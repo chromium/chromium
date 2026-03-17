@@ -121,4 +121,9 @@ Vector<PermissionDescriptorPtr> HTMLUserMediaElement::ParseType(
   return ParsePermissionDescriptorsFromString(type);
 }
 
+void HTMLUserMediaElement::Trace(Visitor* visitor) const {
+  HTMLCapabilityElementBase::Trace(visitor);
+  Supplementable<HTMLUserMediaElement>::Trace(visitor);
+}
+
 }  // namespace blink

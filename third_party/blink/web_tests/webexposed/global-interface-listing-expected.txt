@@ -5417,6 +5417,7 @@ interface HTMLUserMediaElement : HTMLElement
     getter permissionStatus
     getter type
     method constructor
+    method setConstraints
     setter onpromptaction
     setter onpromptdismiss
     setter onstream
