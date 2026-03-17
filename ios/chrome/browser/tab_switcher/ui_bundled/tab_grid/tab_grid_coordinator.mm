@@ -1770,6 +1770,12 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 }
 
 - (void)exitTabGrid {
+  // Prevent exiting if a transition is currently in progress.
+  // `self.transitionHandler` is set to nil at the end of a transition.
+  if (self.transitionHandler) {
+    return;
+  }
+
   [_viewController updateActivePageToCurrent];
   TabGridPage targetPage = _viewController.activePage;
 
