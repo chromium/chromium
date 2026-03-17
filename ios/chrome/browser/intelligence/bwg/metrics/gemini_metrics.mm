@@ -78,6 +78,8 @@ const char kEntryPointHistogram[] = "IOS.Gemini.EntryPoint";
 const char kEntryPointImpressionHistogram[] =
     "IOS.Gemini.EntryPoint.Impression";
 
+const char kEntryPointAvailableHistogram[] = "IOS.Gemini.EntryPoint.Available";
+
 const char kFeedbackHistogram[] = "IOS.Gemini.Feedback";
 
 const char kImageActionButtonHistogram[] = "IOS.Gemini.ImageActionButton";
@@ -298,6 +300,12 @@ void RecordGeminiEntryPointImpression(gemini::EntryPoint entry_point) {
     base::UmaHistogramEnumeration(kEntryPointImpressionHistogram, entry_point);
     last_impression_time = now;
   }
+}
+
+void RecordGeminiEntryPointAvailable(gemini::EntryPoint entry_point) {
+  base::RecordAction(
+      base::UserMetricsAction("MobileGeminiEntryPointAvailable"));
+  base::UmaHistogramEnumeration(kEntryPointAvailableHistogram, entry_point);
 }
 
 void RecordFREShown() {

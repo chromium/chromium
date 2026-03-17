@@ -159,6 +159,7 @@ typedef void (^ProceduralBlockWithBlockWithItemArray)(
   UIAction* action = [self actionWithHandler:^(UIAction* a) {
     [weakSelf triggerExplainWithGeminiForText:text webState:webState];
   }];
+  RecordGeminiEntryPointAvailable(gemini::EntryPoint::EditMenu);
   completion(@[ action ]);
 }
 
@@ -172,7 +173,7 @@ typedef void (^ProceduralBlockWithBlockWithItemArray)(
   }
 
   NSString* prepopulatedPrompt =
-      [NSString stringWithFormat:@"%@ : %@",
+      [NSString stringWithFormat:@"%@ %@",
                                  l10n_util::GetNSString(
                                      IDS_IOS_EXPLAIN_GEMINI_PROMPT_PREFIX),
                                  text];
@@ -212,6 +213,7 @@ typedef void (^ProceduralBlockWithBlockWithItemArray)(
   __weak __typeof(self) weakSelf = self;
   UIMenuElement* menuElement = nil;
   if (ShouldShowEditMenuItemsSynchronously()) {
+    RecordGeminiEntryPointAvailable(gemini::EntryPoint::EditMenu);
     menuElement = [self actionWithHandler:^(UIAction* a) {
       [weakSelf fetchSelectionForWebState:weakWebState];
     }];

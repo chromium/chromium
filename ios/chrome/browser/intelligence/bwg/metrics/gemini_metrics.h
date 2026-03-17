@@ -46,6 +46,9 @@ extern const char kEligibilityHistogram[];
 // UMA histogram key for IOS.Gemini.EntryPoint.
 extern const char kEntryPointHistogram[];
 
+// UMA histogram key for IOS.Gemini.EntryPoint.Available.
+extern const char kEntryPointAvailableHistogram[];
+
 // UMA histogram key for IOS.Gemini.FRE.EntryPoint.
 extern const char kFREEntryPointHistogram[];
 
@@ -383,6 +386,12 @@ void RecordGeminiSessionLengthByType(base::TimeDelta session_duration,
 // Records when user sees the Gemini entry point impression.
 // Can be called once every 10 minutes to avoid spam logging.
 void RecordGeminiEntryPointImpression(gemini::EntryPoint entry_point);
+
+// Records when the Gemini entry point is available to the user.
+// Only used for entry points that are not available on almost all pages.
+// For example the edit menu entry point is only available once the user has
+// selected some text, and is eligible to use the feature.
+void RecordGeminiEntryPointAvailable(gemini::EntryPoint entry_point);
 
 // Records that the Gemini FRE was shown.
 void RecordFREShown();
