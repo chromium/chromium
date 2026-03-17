@@ -2,26 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var assertFalse = chrome.test.assertFalse;
-var assertTrue = chrome.test.assertTrue;
-var assertEq = chrome.test.assertEq;
-var pass = chrome.test.callbackPass;
+const assertFalse = chrome.test.assertFalse;
+const assertTrue = chrome.test.assertTrue;
+const assertEq = chrome.test.assertEq;
+const pass = chrome.test.callbackPass;
 
-var NO_BOOKMARKS_PERMISSION =
+const NO_BOOKMARKS_PERMISSION =
     "You do not have permission to use 'bookmarks.getTree'.";
 
 chrome.test.getConfig(function(config) {
 
   function doReq(domain, callback) {
-    var url = domain + ":PORT/extensions/test_file.txt";
+    let url = `${domain}:PORT/extensions/test_file.txt`;
     url = url.replace(/PORT/, config.testServer.port);
 
-    chrome.test.log("Requesting url: " + url);
+    chrome.test.log(`Requesting url: ${url}`);
     fetch(url).then(function(response) {
       assertEq(200, response.status);
       return response.text();
     }).then(function(text) {
-      assertEq("Hello!", text);
+      assertEq('Hello!', text);
       callback(true);
     }).catch(function(error) {
       chrome.test.log(error.toString());

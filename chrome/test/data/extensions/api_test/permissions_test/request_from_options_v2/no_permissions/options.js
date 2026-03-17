@@ -49,7 +49,7 @@ chrome.test.runTests([
     })
   },
   function requestCamera() {
-    var constraints = {video: true};
+    const constraints = {video: true};
     navigator.mediaDevices.getUserMedia(constraints)
         .then(function(stream) {
           chrome.test.succeed();
@@ -69,7 +69,7 @@ chrome.test.runTests([
         })
   },
   function requestMicrophone() {
-    var constraints = {audio: true};
+    const constraints = {audio: true};
     navigator.mediaDevices.getUserMedia(constraints)
         .then(function(stream) {
           chrome.test.succeed();

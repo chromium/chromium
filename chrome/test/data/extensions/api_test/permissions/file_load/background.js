@@ -2,29 +2,29 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var callbackPass = chrome.test.callbackPass;
+const callbackPass = chrome.test.callbackPass;
 
-var test_dir;
+let testDir;
 
 function requestListener() {
   chrome.test.succeed();
 }
 
-var tests = [
+const tests = [
   function testDirectoryListing() {
-    fetch(test_dir).then(requestListener).catch(function(err) {
+    fetch(testDir).then(requestListener).catch(function(err) {
       chrome.test.fail(err.toString());
     });
   },
 
   function testFile() {
-    fetch(test_dir + "/empty.html").then(requestListener).catch(function(err) {
+    fetch(`${testDir}/empty.html`).then(requestListener).catch(function(err) {
       chrome.test.fail(err.toString());
     });
   }
 ];
 
 chrome.test.getConfig(function(config) {
-  test_dir = "file://" + config.customArg;
+  testDir = `file://${config.customArg}`;
   chrome.test.runTests(tests);
 })

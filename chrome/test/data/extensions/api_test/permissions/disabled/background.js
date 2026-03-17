@@ -8,7 +8,7 @@
 chrome.test.runTests([
   function history() {
     try {
-      var query = { 'text': '', 'maxResults': 1 };
+      const query = { text: '', maxResults: 1 };
       chrome.history.search(query, function(results) {
         chrome.test.fail();
       });
@@ -43,7 +43,7 @@ chrome.test.runTests([
         return;
       } else {
         try {
-          chrome.tabs.create({'url': '1'}, function(tab) {
+          chrome.tabs.create({url: '1'}, function(tab) {
             // Tabs strip sensitive data without permissions.
             chrome.test.assertFalse('url' in tab);
             chrome.test.succeed();

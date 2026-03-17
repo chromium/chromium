@@ -2,36 +2,36 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var assertEq = chrome.test.assertEq;
-var assertFalse = chrome.test.assertFalse;
-var assertTrue = chrome.test.assertTrue;
-var assertThrows = chrome.test.assertThrows;
-var fail = chrome.test.callbackFail;
-var pass = chrome.test.callbackPass;
-var listenOnce = chrome.test.listenOnce;
+const assertEq = chrome.test.assertEq;
+const assertFalse = chrome.test.assertFalse;
+const assertTrue = chrome.test.assertTrue;
+const assertThrows = chrome.test.assertThrows;
+const fail = chrome.test.callbackFail;
+const pass = chrome.test.callbackPass;
+const listenOnce = chrome.test.listenOnce;
 
-var NOT_OPTIONAL_ERROR =
-    "Only permissions specified in the manifest may be requested.";
+const NOT_OPTIONAL_ERROR =
+    'Only permissions specified in the manifest may be requested.';
 
-var REQUIRED_ERROR =
-    "You cannot remove required permissions.";
+const REQUIRED_ERROR =
+    'You cannot remove required permissions.';
 
-var UNKNOWN_PERMISSIONS_ERROR =
+const UNKNOWN_PERMISSIONS_ERROR =
     "'*' is not a recognized permission.";
 
-var emptyPermissions = {permissions: [], origins: []};
+const emptyPermissions = {permissions: [], origins: []};
 
-var initialPermissions = {
+const initialPermissions = {
   permissions: ['management'],
   origins: ['http://a.com/*', "http://contentscript.com/*"]
 };
 
-var permissionsWithBookmarks = {
+const permissionsWithBookmarks = {
   permissions: ['management', 'bookmarks'],
   origins: ['http://a.com/*', "http://contentscript.com/*"]
 }
 
-var permissionsWithOrigin = {
+const permissionsWithOrigin = {
   permissions: ['management'],
   origins: ['http://a.com/*', 'http://*.c.com/*', "http://contentscript.com/*"]
 }
@@ -40,7 +40,7 @@ function checkEqualSets(set1, set2) {
   if (set1.length != set2.length)
     return false;
 
-  for (var x = 0; x < set1.length; x++) {
+  for (let x = 0; x < set1.length; x++) {
     if (!set2.some(function(v) { return v == set1[x]; }))
       return false;
   }
@@ -58,7 +58,7 @@ function checkResponse(response) {
     assertEq(200, response.status);
     return response;
   }
-  var error = new Error(response.statusText);
+  const error = new Error(response.statusText);
   error.response = response;
   throw error;
 }
@@ -66,7 +66,7 @@ function checkResponse(response) {
 chrome.test.getConfig(function(config) {
 
   function doReq(domain, callback) {
-    var url = domain + ":PORT/extensions/test_file.txt";
+    let url = domain + ":PORT/extensions/test_file.txt";
     url = url.replace(/PORT/, config.testServer.port);
 
     chrome.test.log("Requesting url: " + url);
@@ -201,7 +201,7 @@ chrome.test.getConfig(function(config) {
     },
 
     function unknownPermission() {
-      var error_msg = UNKNOWN_PERMISSIONS_ERROR.replace('*', 'asdf');
+      const error_msg = UNKNOWN_PERMISSIONS_ERROR.replace('*', 'asdf');
       chrome.permissions.request(
           {permissions: ['asdf']}, fail(error_msg));
     },
@@ -263,7 +263,7 @@ chrome.test.getConfig(function(config) {
     // Tests that the changed permissions have taken effect from inside the
     // onAdded and onRemoved event listeners.
     function eventListenerPermissions() {
-      var isInstanceOfServiceWorkerGlobalScope =
+      const isInstanceOfServiceWorkerGlobalScope =
           ('ServiceWorkerGlobalScope' in self) &&
           (self instanceof ServiceWorkerGlobalScope);
       if (isInstanceOfServiceWorkerGlobalScope) {

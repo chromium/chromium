@@ -10,7 +10,7 @@ function runTest(otherWindow) {
       chrome.test.assertTrue(granted);
       // Assert that the bindings have been updated on ourselves the background
       // page, and the tab that was created.
-      var expectedAlarmsKeys = [
+      const expectedAlarmsKeys = [
           'clear', 'clearAll', 'create', 'get', 'getAll', 'onAlarm'];
       [window, otherWindow].forEach(function(w) {
         chrome.test.assertEq(expectedAlarmsKeys,

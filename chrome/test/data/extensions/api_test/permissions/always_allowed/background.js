@@ -10,8 +10,8 @@ chrome.test.runTests([
   // Test the tabs API.
   function tabs() {
     try {
-      chrome.tabs.create({url: "404_is_enough.html"}, function(tab1) {
-        chrome.tabs.update(tab1.id, {url: "404_again.html"}, function(tab2) {
+      chrome.tabs.create({url: '404_is_enough.html'}, function(tab1) {
+        chrome.tabs.update(tab1.id, {url: '404_again.html'}, function(tab2) {
           chrome.tabs.onRemoved.addListener(function(tabId, removeInfo) {
             chrome.test.assertEq(tab1.id, tabId);
             chrome.test.succeed();
@@ -27,7 +27,7 @@ chrome.test.runTests([
   // Negative test for the tabs API.
   function tabsNegative() {
     try {
-      var tab = chrome.tabs.query();
+      const tab = chrome.tabs.query();
       chrome.test.fail();
     } catch (e) {
       chrome.test.succeed();

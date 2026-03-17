@@ -8,7 +8,7 @@ import {openTab} from '/_test_resources/test_util/tabs_util.js';
 async function navigateTo(origin) {
   const config = await chrome.test.getConfig();
   const url = `http://${origin}:${config.testServer.port}/simple.html`;
-  let tab = await openTab(url);
+  const tab = await openTab(url);
   return tab;
 }
 
@@ -69,7 +69,7 @@ chrome.test.runTests([
       chrome.test.succeed();
       return;
     }
-    let tab = await navigateTo('requested.com');
+    const tab = await navigateTo('requested.com');
 
     const request = {tabId: tab.id};
     await chrome.test.assertPromiseRejects(
@@ -83,8 +83,9 @@ chrome.test.runTests([
   // Tests that an error is returned when the extension adds a request for a
   // documentId that it can already access its current web contents.
   async function accessAlreadyGrantedForDocumentId() {
-    let tab = await navigateTo('requested.com');
-    let frame = await chrome.webNavigation.getFrame({frameId: 0, tabId: tab.id})
+    const tab = await navigateTo('requested.com');
+    const frame =
+        await chrome.webNavigation.getFrame({frameId: 0, tabId: tab.id})
 
     const request = {documentId: frame.documentId};
     await chrome.test.assertPromiseRejects(
@@ -98,7 +99,7 @@ chrome.test.runTests([
   // Tests that an error is returned when the extension adds a request with an
   // invalid pattern.
   async function invalidPattern() {
-    let tab = await navigateTo('requested.com');
+    const tab = await navigateTo('requested.com');
 
     const request = {tabId: tab.id, pattern: 'invalid pattern'};
     await chrome.test.assertPromiseRejects(

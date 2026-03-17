@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var assertTrue = chrome.test.assertTrue;
-var fail = chrome.test.callbackFail;
-var pass = chrome.test.callbackPass;
+const assertTrue = chrome.test.assertTrue;
+const fail = chrome.test.callbackFail;
+const pass = chrome.test.callbackPass;
 
-var BLOCKED_BY_ENTERPRISE_ERROR =
-    "Permissions are blocked by enterprise policy.";
+const BLOCKED_BY_ENTERPRISE_ERROR =
+    'Permissions are blocked by enterprise policy.';
 
 chrome.test.getConfig(function(config) {
 

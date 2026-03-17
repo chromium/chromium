@@ -91,7 +91,7 @@ chrome.test.runTests([
       chrome.test.succeed();
       return;
     }
-    let tab = await navigateTo('requested.com');
+    const tab = await navigateTo('requested.com');
 
     const request = {tabId: tab.id, pattern: 'invalid pattern'};
     await chrome.test.assertPromiseRejects(

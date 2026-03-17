@@ -5,12 +5,12 @@
 // All of the calls to chrome.* functions should succeed, since this extension
 // has requested all required permissions.
 
-var pass = chrome.test.callbackPass;
+const pass = chrome.test.callbackPass;
 
 chrome.test.runTests([
   function history() {
     try {
-      var query = { 'text': '', 'maxResults': 1 };
+      const query = { text: '', maxResults: 1 };
       chrome.history.search(query, pass(function(results) {}));
     } catch (e) {
       chrome.test.fail();

@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var ERROR = 'Only permissions specified in the manifest may be requested.';
-var test = chrome.test;
+const ERROR = 'Only permissions specified in the manifest may be requested.';
+const test = chrome.test;
 
 // The URL patterns that we've supposedly been granted access to so far. Use
 // this to verify queried hosts for each test.
-var grantedHosts = [];
+const grantedHosts = [];
 
 // Pushes a value onto an array, asserting that it's unique in the array.
 function pushUniqueValue(array, value) {
@@ -17,7 +17,7 @@ function pushUniqueValue(array, value) {
 
 // Removes a value from an array, asserting that it's unique in the array.
 function removeUniqueValue(array, value) {
-  var indexOfValue = array.indexOf(value);
+  const indexOfValue = array.indexOf(value);
   test.assertTrue(indexOfValue >= 0);
   array.splice(indexOfValue, 1);
   test.assertEq(-1, array.indexOf(value));
@@ -35,7 +35,7 @@ function assertSetEq(expected, actual) {
 function checkGrantedHosts(callback) {
   chrome.permissions.getAll(test.callbackPass(function(permissions) {
     assertSetEq(grantedHosts, permissions.origins);
-    var countDown = grantedHosts.length;
+    let countDown = grantedHosts.length;
     if (countDown == 0) {
       callback();
       return;
@@ -62,11 +62,11 @@ function requestHost(host, expectedGranted, expectedError) {
       if (expectedGranted) {
         test.assertTrue(
             granted,
-            "Access to " + host + " was not granted, but should have been");
+            `Access to ${host} was not granted, but should have been`);
       } else {
         test.assertFalse(
             !!granted,
-            "Access to " + host + " was granted, but should not have been");
+            `Access to ${host} was granted, but should not have been`);
       }
       checkGrantedHosts(callback);
     }, expectedError));
@@ -80,10 +80,10 @@ function removeHost(host, expectedRemoved) {
     chrome.permissions.remove({origins: [host]},
                               test.callbackPass(function(removed) {
       if (removed) {
-        test.assertTrue(expectedRemoved, "Access to " + host + " removed");
+        test.assertTrue(expectedRemoved, `Access to ${host} removed`);
         removeUniqueValue(grantedHosts, host);
       } else {
-        test.assertFalse(expectedRemoved, "Access to " + host + " not removed");
+        test.assertFalse(expectedRemoved, `Access to ${host} not removed`);
       }
       checkGrantedHosts(callback);
     }));
@@ -108,12 +108,12 @@ function contains(host, expected) {
 //
 // The test is kept alive until all callbacks in the chain have been run.
 function chain(callbacks) {
-  var head = callbacks[0], tail = callbacks.slice(1);
+  const head = callbacks[0], tail = callbacks.slice(1);
   if (tail.length == 0) {
     head();
     return;
   }
-  var callbackCompleted = chrome.test.callbackAdded();
+  const callbackCompleted = chrome.test.callbackAdded();
   head(function() {
     try {
       chain(tail);
