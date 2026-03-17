@@ -5603,8 +5603,19 @@ void GLES2Implementation::RemoveMappedBufferRangeById(GLuint buffer) {
     auto iter = mapped_buffer_range_map_.find(buffer);
     if (iter != mapped_buffer_range_map_.end() &&
         !iter->second.shm_memory.empty()) {
-      mapped_memory_->FreePendingToken(iter->second.shm_memory.data(),
-                                       helper_->InsertToken());
+      if (iter->second.shm_id != 0) {
+        // This was a normal transfer buffer allocation.
+        mapped_memory_->FreePendingToken(iter->second.shm_memory.data(),
+                                         helper_->InsertToken());
+      } else {
+        // This was a shadow copy for readback. It's owned by the
+        // readback_buffer_shadow_tracker_, so we just need to unmap it.
+        auto* shadow_buffer =
+            readback_buffer_shadow_tracker_->GetBuffer(iter->first);
+        if (shadow_buffer) {
+          shadow_buffer->UnmapReadbackShm();
+        }
+      }
       mapped_buffer_range_map_.erase(iter);
     }
   }
@@ -5613,8 +5624,19 @@ void GLES2Implementation::RemoveMappedBufferRangeById(GLuint buffer) {
 void GLES2Implementation::ClearMappedBufferRangeMap() {
   for (auto& buffer_range : mapped_buffer_range_map_) {
     if (!buffer_range.second.shm_memory.empty()) {
-      mapped_memory_->FreePendingToken(buffer_range.second.shm_memory.data(),
-                                       helper_->InsertToken());
+      if (buffer_range.second.shm_id != 0) {
+        // This was a normal transfer buffer allocation.
+        mapped_memory_->FreePendingToken(buffer_range.second.shm_memory.data(),
+                                         helper_->InsertToken());
+      } else {
+        // This was a shadow copy for readback. It's owned by the
+        // readback_buffer_shadow_tracker_, so we just need to unmap it.
+        auto* shadow_buffer =
+            readback_buffer_shadow_tracker_->GetBuffer(buffer_range.first);
+        if (shadow_buffer) {
+          shadow_buffer->UnmapReadbackShm();
+        }
+      }
     }
   }
   mapped_buffer_range_map_.clear();
@@ -6200,10 +6222,13 @@ void GLES2Implementation::AllocateShadowCopiesForReadback() {
     if (!buffer) {
       continue;
     }
-    int32_t shm_id = 0;
+    int32_t shm_id = -1;
     uint32_t shm_offset = 0;
     bool already_allocated = false;
     uint32_t size = buffer->Alloc(&shm_id, &shm_offset, &already_allocated);
+    if (shm_id == -1) {
+      continue;
+    }
     if (already_allocated) {
       SendErrorMessage(
           "performance warning: READ-usage buffer was written, then "

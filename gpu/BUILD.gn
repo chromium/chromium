@@ -414,6 +414,7 @@ test("gpu_unittests") {
     "command_buffer/client/query_tracker_unittest.cc",
     "command_buffer/client/raster_implementation_unittest.cc",
     "command_buffer/client/raster_implementation_unittest_autogen.h",
+    "command_buffer/client/readback_buffer_shadow_tracker_unittest.cc",
     "command_buffer/client/ring_buffer_test.cc",
     "command_buffer/client/shared_image_pool_unittest.cc",
     "command_buffer/client/transfer_buffer_cmd_copy_helpers_unittest.cc",

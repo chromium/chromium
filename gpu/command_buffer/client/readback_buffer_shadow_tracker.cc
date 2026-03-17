@@ -30,6 +30,10 @@ uint32_t ReadbackBufferShadowTracker::Buffer::Alloc(int32_t* shm_id,
   *already_allocated = !readback_buffer_.empty();
   if (readback_buffer_.empty()) {
     readback_buffer_ = mapped_memory_->Alloc(size_, &shm_id_, &shm_offset_);
+    if (readback_buffer_.empty()) {
+      shm_id_ = -1;
+      shm_offset_ = 0;
+    }
   }
   *shm_id = shm_id_;
   *shm_offset = shm_offset_;
