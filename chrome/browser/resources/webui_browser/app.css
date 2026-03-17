@@ -73,6 +73,7 @@ cr-icon-button {
 cr-searchbox {
   --cr-searchbox-font-size: 14px;
   --cr-searchbox-height: 32px;
+  --cr-searchbox-input-height: 32px;
   --cr-searchbox-shadow: 0 0 0px 1px #20212451;
   --cr-searchbox-icon-left-position: 12px;
   --cr-searchbox-icon-size-in-searchbox: 20px;
