@@ -16,6 +16,7 @@ import android.view.ViewPropertyAnimator;
 import android.view.ViewTreeObserver;
 
 import org.chromium.base.ObserverList;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
@@ -263,7 +264,7 @@ public class SplashController extends CustomTabTabObserver
                 .getCompositorView()
                 .surfaceRedrawNeededAsync(
                         () -> {
-                            animateHideSplash(tab);
+                            ThreadUtils.runOnUiThread(() -> animateHideSplash(tab));
                         });
     }
 
