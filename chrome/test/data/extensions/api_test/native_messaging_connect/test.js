@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var appName = 'com.google.chrome.test.echo';
-var inServiceWorker = 'ServiceWorkerGlobalScope' in self;
-var extensionUrl = chrome.runtime.getURL('/');
+const APP_NAME = 'com.google.chrome.test.echo';
+const inServiceWorker = 'ServiceWorkerGlobalScope' in self;
+const extensionUrl = chrome.runtime.getURL('/');
 
 function checkMessageUrl(url) {
   if (inServiceWorker) {
@@ -17,11 +17,11 @@ function checkMessageUrl(url) {
 chrome.test.getConfig(function(config) {
   chrome.test.runTests([
     function connect() {
-      var messagesToSend =
+      const messagesToSend =
           [{'text': 'foo'}, {'text': 'bar', 'funCount': 9001}, {}];
-      var currentMessage = 0;
+      let currentMessage = 0;
 
-      port = chrome.runtime.connectNative(appName);
+      const port = chrome.runtime.connectNative(APP_NAME);
       port.postMessage(messagesToSend[currentMessage]);
 
       port.onMessage.addListener(function(message) {
@@ -40,7 +40,7 @@ chrome.test.getConfig(function(config) {
 
     // Verify that the case when host stops itself is handled properly.
     function stopHost() {
-      port = chrome.runtime.connectNative(appName);
+      const port = chrome.runtime.connectNative(APP_NAME);
 
       port.onDisconnect.addListener(
           chrome.test.callback(function() {}, 'Native host has exited.'));

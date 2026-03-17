@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var appName = 'com.google.chrome.test.echo';
-var inServiceWorker = 'ServiceWorkerGlobalScope' in self;
-var extensionUrl = chrome.runtime.getURL('/');
+const APP_NAME = 'com.google.chrome.test.echo';
+const inServiceWorker = 'ServiceWorkerGlobalScope' in self;
+const extensionUrl = chrome.runtime.getURL('/');
 
 function checkMessageUrl(url) {
   if (inServiceWorker) {
@@ -17,7 +17,7 @@ function checkMessageUrl(url) {
 chrome.test.getConfig(function(config) {
   chrome.test.runTests([
     function invalidHostName() {
-      var message = {'text': 'Hello!'};
+      const message = {text: 'Hello!'};
       chrome.runtime.sendNativeMessage(
           'not.installed.app', message,
           chrome.test.callbackFail(
@@ -27,7 +27,7 @@ chrome.test.getConfig(function(config) {
     },
 
     function nonexistentHost() {
-      var message = {'text': 'Hello!'};
+      const message = {text: 'Hello!'};
       chrome.runtime.sendNativeMessage(
           'com.google.chrome.test.host_binary_missing', message,
           chrome.test.callbackFail(
@@ -37,9 +37,9 @@ chrome.test.getConfig(function(config) {
     },
 
     function sendMessageWithCallback() {
-      var message = {'text': 'Hi there!', 'number': 3};
+      const message = {text: 'Hi there!', number: 3};
       chrome.runtime.sendNativeMessage(
-          appName, message, chrome.test.callbackPass(function(response) {
+          APP_NAME, message, chrome.test.callbackPass(function(response) {
             chrome.test.assertEq(1, response.id);
             chrome.test.assertEq(message, response.echo);
             checkMessageUrl(response.caller_url);
@@ -48,17 +48,17 @@ chrome.test.getConfig(function(config) {
 
     // The goal of this test is just not to crash.
     function sendMessageWithoutCallback() {
-      var message = {'text': 'Hi there!', 'number': 3};
-      chrome.runtime.sendNativeMessage(appName, message);
+      const message = {text: 'Hi there!', number: 3};
+      chrome.runtime.sendNativeMessage(APP_NAME, message);
       chrome.test.succeed();  // Mission Complete
     },
 
     function bigMessage() {
       // Create a special message for which the test host must try sending a
       // message that is bigger than the limit.
-      var message = {'bigMessageTest': true};
+      const message = {bigMessageTest: true};
       chrome.runtime.sendNativeMessage(
-          appName, message,
+          APP_NAME, message,
           chrome.test.callbackFail(
               'Error when communicating with the native messaging host.',
               function(response) {
@@ -68,9 +68,9 @@ chrome.test.getConfig(function(config) {
 
     function invalidMessage() {
       // Create a special message that's not valid JSON.
-      var message = {sendInvalidResponse: true};
+      const message = {sendInvalidResponse: true};
       chrome.runtime.sendNativeMessage(
-          appName, message,
+          APP_NAME, message,
           chrome.test.callbackFail(
               'The sender sent an invalid JSON message; message ignored.',
               function(response) {

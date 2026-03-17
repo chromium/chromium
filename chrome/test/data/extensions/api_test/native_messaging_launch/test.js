@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var appName = 'com.google.chrome.test.inbound_native_echo';
+const APP_NAME = 'com.google.chrome.test.inbound_native_echo';
 
 chrome.runtime.onConnectNative.addListener(port => {
   chrome.test.getConfig(function(config) {
     chrome.test.runTests([
       function sender() {
-        chrome.test.assertEq(port.sender.nativeApplication, appName);
+        chrome.test.assertEq(port.sender.nativeApplication, APP_NAME);
         chrome.test.succeed();
       },
 
       function sendMessages() {
-        var messagesToSend =
+        const messagesToSend =
             [{'text': 'foo'}, {'text': 'bar', 'funCount': 9001}, {}];
-        var currentMessage = 0;
+        let currentMessage = 0;
 
         port.postMessage(messagesToSend[currentMessage]);
 
@@ -23,14 +23,14 @@ chrome.runtime.onConnectNative.addListener(port => {
           chrome.test.assertEq(currentMessage + 1, message.id);
           chrome.test.assertEq(messagesToSend[currentMessage], message.echo);
           chrome.test.assertEq(
-              message.caller_url, window.location.origin + '/');
+              message.caller_url, `${window.location.origin}/`);
 
           chrome.test.assertTrue(!!message.args);
           chrome.test.assertTrue(message.args.includes(
-              '--native-messaging-connect-extension=' +
-              document.location.host));
+              `--native-messaging-connect-extension=${
+                  document.location.host}`));
           chrome.test.assertTrue(message.args.includes(
-              '--native-messaging-connect-host=' + appName));
+              `--native-messaging-connect-host=${APP_NAME}`));
           chrome.test.assertEq('test-connect-id', message.connect_id);
 
           currentMessage++;
