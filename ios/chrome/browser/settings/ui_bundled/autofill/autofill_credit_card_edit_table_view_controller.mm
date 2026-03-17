@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_credit_card_edit_table_view_controller.h"
 
 #import "base/apple/foundation_util.h"
-#import "base/feature_list.h"
 #import "base/format_macros.h"
 #import "base/ios/block_types.h"
 #import "base/memory/raw_ptr.h"
@@ -18,7 +17,6 @@
 #import "components/autofill/core/browser/data_quality/autofill_data_util.h"
 #import "components/autofill/core/browser/field_types.h"
 #import "components/autofill/core/browser/payments/payments_service_url.h"
-#import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/autofill/core/common/credit_card_network_identifiers.h"
 #import "components/autofill/core/common/credit_card_number_validation.h"
 #import "components/autofill/ios/browser/credit_card_util.h"
@@ -231,11 +229,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
     [model addItem:item toSectionWithIdentifier:SectionIdentifierFields];
   }
 
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableCvcStorageAndFilling)) {
-    [model addItem:[self cvcItem:isEditing]
-        toSectionWithIdentifier:SectionIdentifierFields];
-  }
+  [model addItem:[self cvcItem:isEditing]
+      toSectionWithIdentifier:SectionIdentifierFields];
 }
 
 #pragma mark - TableViewTextEditItemDelegate
@@ -497,11 +492,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   NSString* expirationYear =
       [self textfieldValueForItemType:ItemTypeExpirationYear];
   NSString* nickname = [self textfieldValueForItemType:ItemTypeNickname];
-  NSString* cvc = @"";
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableCvcStorageAndFilling)) {
-    cvc = [self textfieldValueForItemType:ItemTypeCvc];
-  }
+  NSString* cvc = [self textfieldValueForItemType:ItemTypeCvc];
   return [AutofillCreditCardUtil
       isValidCreditCard:cardNumber
         expirationMonth:expirationMonth

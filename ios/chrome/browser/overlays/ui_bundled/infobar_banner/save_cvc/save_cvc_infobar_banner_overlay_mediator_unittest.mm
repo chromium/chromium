@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_banner/save_cvc/save_cvc_infobar_banner_overlay_mediator.h"
 
-#import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
@@ -13,7 +12,6 @@
 #import "components/autofill/core/browser/data_model/payments/credit_card.h"
 #import "components/autofill/core/browser/foundations/autofill_client.h"
 #import "components/autofill/core/browser/test_utils/autofill_test_utils.h"
-#import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_type.h"
@@ -48,10 +46,6 @@ constexpr char kSaveCvcPromptResultHistogramStringForUploadSave[] =
 // Test fixture for SaveCVCInfobarBannerOverlayMediator.
 class SaveCVCInfobarBannerOverlayMediatorTest : public PlatformTest {
  public:
-  SaveCVCInfobarBannerOverlayMediatorTest() {
-    feature_list_.InitAndEnableFeature(
-        autofill::features::kAutofillEnableCvcStorageAndFilling);
-  }
   ~SaveCVCInfobarBannerOverlayMediatorTest() override {
     EXPECT_OCMOCK_VERIFY((id)mediator_);
   }
@@ -82,7 +76,6 @@ class SaveCVCInfobarBannerOverlayMediatorTest : public PlatformTest {
   }
 
  protected:
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<InfoBarIOS> infobar_;
   std::unique_ptr<OverlayRequest> request_;
   raw_ptr<MockAutofillSaveCardInfoBarDelegateMobile> delegate_ = nil;

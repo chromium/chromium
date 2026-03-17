@@ -269,9 +269,6 @@ void FillAndSubmitXframeCreditCardForm() {
   }
   // DISABLED_testUserData_LocalSave_UserAccepts_Xframe
 
-  config.features_enabled.push_back(
-      autofill::features::kAutofillEnableCvcStorageAndFilling);
-
   return config;
 }
 

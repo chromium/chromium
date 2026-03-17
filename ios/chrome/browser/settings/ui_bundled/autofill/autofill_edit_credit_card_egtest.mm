@@ -4,7 +4,6 @@
 
 #import "base/ios/ios_util.h"
 #import "base/test/metrics/user_action_tester.h"
-#import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -64,14 +63,6 @@ id<GREYMatcher> CvcTextField() {
 }  // namespace
 
 @implementation AutofillEditCreditCardTestCase
-
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  config.features_enabled.push_back(
-      autofill::features::kAutofillEnableCvcStorageAndFilling);
-  // Add feature configs here.
-  return config;
-}
 
 - (void)setUp {
   [super setUp];
@@ -203,13 +194,6 @@ id<GREYMatcher> CvcTextField() {
 @end
 
 @implementation AutofillEditCreditCardCvcMetricTestCase
-
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  config.features_enabled.push_back(
-      autofill::features::kAutofillEnableCvcStorageAndFilling);
-  return config;
-}
 
 - (void)setUp {
   [super setUp];

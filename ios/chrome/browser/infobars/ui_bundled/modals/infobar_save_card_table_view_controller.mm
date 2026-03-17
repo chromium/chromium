@@ -211,19 +211,16 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [model addItem:self.expirationYearItem
       toSectionWithIdentifier:SectionIdentifierContent];
 
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableCvcStorageAndFilling)) {
-    self.cardCvcItem =
-        [self textEditItemWithType:ItemTypeCardCvc
-                fieldNameLabelText:l10n_util::GetNSString(IDS_IOS_AUTOFILL_CVC)
-                    textFieldValue:self.cardCvc
-                  textFieldEnabled:self.supportsEditing];
-    self.cardCvcItem.keyboardType = UIKeyboardTypeNumberPad;
-    self.cardCvcItem.customTextfieldAccessibilityIdentifier =
-        kSaveCardModalCVCTextFieldIdentifier;
-    [model addItem:self.cardCvcItem
-        toSectionWithIdentifier:SectionIdentifierContent];
-  }
+  self.cardCvcItem =
+      [self textEditItemWithType:ItemTypeCardCvc
+              fieldNameLabelText:l10n_util::GetNSString(IDS_IOS_AUTOFILL_CVC)
+                  textFieldValue:self.cardCvc
+                textFieldEnabled:self.supportsEditing];
+  self.cardCvcItem.keyboardType = UIKeyboardTypeNumberPad;
+  self.cardCvcItem.customTextfieldAccessibilityIdentifier =
+      kSaveCardModalCVCTextFieldIdentifier;
+  [model addItem:self.cardCvcItem
+      toSectionWithIdentifier:SectionIdentifierContent];
 
   // Add a `TableViewTextLinkItem` for each legal message and add logo to the
   // last item.

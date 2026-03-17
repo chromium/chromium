@@ -104,17 +104,6 @@ extern const char kAutofillEnableCardBenefitsSyncDescription[];
 extern const char kAutofillEnableCardInfoRuntimeRetrievalName[];
 extern const char kAutofillEnableCardInfoRuntimeRetrievalDescription[];
 
-extern const char kAutofillEnableCvcStorageAndFillingEnhancementName[];
-extern const char kAutofillEnableCvcStorageAndFillingEnhancementDescription[];
-
-extern const char kAutofillEnableCvcStorageAndFillingName[];
-extern const char kAutofillEnableCvcStorageAndFillingDescription[];
-
-extern const char
-    kAutofillEnableCvcStorageAndFillingStandaloneFormEnhancementName[];
-extern const char
-    kAutofillEnableCvcStorageAndFillingStandaloneFormEnhancementDescription[];
-
 extern const char kAutofillEnableFlatRateCardBenefitsFromCurinosName[];
 extern const char kAutofillEnableFlatRateCardBenefitsFromCurinosDescription[];
 
@@ -947,9 +936,6 @@ extern const char
 
 extern const char kSupervisedUserUseUrlFilteringServiceName[];
 extern const char kSupervisedUserUseUrlFilteringServiceDescription[];
-
-extern const char kSyncAutofillWalletCredentialDataName[];
-extern const char kSyncAutofillWalletCredentialDataDescription[];
 
 extern const char kSyncSandboxName[];
 extern const char kSyncSandboxDescription[];

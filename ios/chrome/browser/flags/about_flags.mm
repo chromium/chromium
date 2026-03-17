@@ -2242,33 +2242,6 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
     {"omnibox-drs-prototype", flag_descriptions::kOmniboxDRSPrototypeName,
      flag_descriptions::kOmniboxDRSPrototypeDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kOmniboxDRSPrototype)},
-    {"sync-autofill-wallet-credential-data",
-     flag_descriptions::kSyncAutofillWalletCredentialDataName,
-     flag_descriptions::kSyncAutofillWalletCredentialDataDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(syncer::kSyncAutofillWalletCredentialData)},
-    {"autofill-enable-cvc-storage-and-filling",
-     flag_descriptions::kAutofillEnableCvcStorageAndFillingName,
-     flag_descriptions::kAutofillEnableCvcStorageAndFillingDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillEnableCvcStorageAndFilling)},
-    {"autofill-enable-cvc-storage-and-filling-enhancement",
-     flag_descriptions::kAutofillEnableCvcStorageAndFillingEnhancementName,
-     flag_descriptions::
-         kAutofillEnableCvcStorageAndFillingEnhancementDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillEnableCvcStorageAndFillingEnhancement)},
-    {"autofill-enable-cvc-storage-and-filling-standalone-form-enhancement",
-     flag_descriptions::
-         kAutofillEnableCvcStorageAndFillingStandaloneFormEnhancementName,
-     flag_descriptions::
-         kAutofillEnableCvcStorageAndFillingStandaloneFormEnhancementDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(
-         autofill::features::
-             kAutofillEnableCvcStorageAndFillingStandaloneFormEnhancement)},
     {"rcaps-dynamic-profile-country",
      flag_descriptions::kRcapsDynamicProfileCountryName,
      flag_descriptions::kRcapsDynamicProfileCountryDescription,

@@ -10,7 +10,6 @@
 #import "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #import "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #import "components/autofill/core/browser/test_utils/autofill_test_utils.h"
-#import "components/autofill/core/common/autofill_features.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_add_credit_card_mediator_delegate.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -47,8 +46,6 @@ class AutofillAddCreditCardMediatorTest : public PlatformTest {
   autofill::TestPersonalDataManager personal_data_manager_;
   AutofillAddCreditCardMediator* add_credit_card_mediator_;
   id add_credit_card_mediator_delegate_mock_;
-  base::test::ScopedFeatureList feature_list_{
-      autofill::features::kAutofillEnableCvcStorageAndFilling};
 };
 
 // Test saving a credit card with invalid card number.

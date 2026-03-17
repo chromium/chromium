@@ -111,8 +111,6 @@ id<GREYMatcher> CardNumberIconView(NSString* icon_type) {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   // Add feature configs here.
-  config.features_enabled.push_back(
-      autofill::features::kAutofillEnableCvcStorageAndFilling);
   if ([self isRunningTest:@selector
             (testUseCameraButtonShownWhenFeatureEnabled)]) {
     config.features_enabled.push_back(

@@ -155,11 +155,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
       toSectionWithIdentifier:SectionIdentifierCreditCardDetails];
   [model addItem:[self cardNicknameItem]
       toSectionWithIdentifier:SectionIdentifierCreditCardDetails];
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableCvcStorageAndFilling)) {
-    [model addItem:cardCvcItem
-        toSectionWithIdentifier:SectionIdentifierCreditCardDetails];
-  }
+  [model addItem:cardCvcItem
+      toSectionWithIdentifier:SectionIdentifierCreditCardDetails];
 
   if (base::FeatureList::IsEnabled(
           autofill::features::kAutofillCreditCardScannerIos)) {
@@ -358,11 +355,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [self readTextFromItemtype:ItemTypeCardNickname
                sectionIdentifier:SectionIdentifierCreditCardDetails];
 
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableCvcStorageAndFilling)) {
-    _cardCvc = [self readTextFromItemtype:ItemTypeCardCvc
-                        sectionIdentifier:SectionIdentifierCreditCardDetails];
-  }
+  _cardCvc = [self readTextFromItemtype:ItemTypeCardCvc
+                      sectionIdentifier:SectionIdentifierCreditCardDetails];
 }
 
 // Reads and returns the data from the item with passed `itemType` and

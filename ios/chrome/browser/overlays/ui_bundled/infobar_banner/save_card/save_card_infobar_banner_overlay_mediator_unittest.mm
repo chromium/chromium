@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_banner/save_card/save_card_infobar_banner_overlay_mediator.h"
 
-#import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/strcat.h"
@@ -67,8 +66,6 @@ class SaveCardInfobarBannerOverlayMediatorTest : public PlatformTest {
       autofill::payments::PaymentsAutofillClient::CardSaveType card_save_type =
           autofill::payments::PaymentsAutofillClient::CardSaveType::
               kCardSaveOnly) {
-    feature_list_.InitAndEnableFeature(
-        autofill::features::kAutofillEnableCvcStorageAndFilling);
 
     autofill::CreditCard credit_card(
         base::Uuid::GenerateRandomV4().AsLowercaseString(),
@@ -112,7 +109,6 @@ class SaveCardInfobarBannerOverlayMediatorTest : public PlatformTest {
   FakeInfobarBannerConsumer* consumer_ = nil;
   SaveCardInfobarBannerOverlayMediator* mediator_ = nil;
   id mock_snackbar_commands_handler_ = nil;
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<base::test::TaskEnvironment> task_environment_;
 };
 

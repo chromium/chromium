@@ -149,27 +149,6 @@ const char kAutofillEnableCardInfoRuntimeRetrievalDescription[] =
     "When enabled, runtime retrieval of CVC along with card number and expiry "
     "from issuer for enrolled cards will be enabled during form fill.";
 
-const char kAutofillEnableCvcStorageAndFillingEnhancementName[] =
-    "Enable CVC storage and filling enhancement for payments autofill";
-const char kAutofillEnableCvcStorageAndFillingEnhancementDescription[] =
-    "When enabled, will enhance CVV storage project. Provide better "
-    "suggestion, resolve conflict with COF project and add logging.";
-
-const char kAutofillEnableCvcStorageAndFillingName[] =
-    "Enable CVC storage and filling for payments autofill";
-const char kAutofillEnableCvcStorageAndFillingDescription[] =
-    "When enabled, we will store CVC for both local and server credit cards. "
-    "This will also allow the users to autofill their CVCs on checkout pages.";
-
-const char kAutofillEnableCvcStorageAndFillingStandaloneFormEnhancementName[] =
-    "Enable CVC storage and filling standalone form enhancement for payments "
-    "autofill";
-const char
-    kAutofillEnableCvcStorageAndFillingStandaloneFormEnhancementDescription[] =
-        "When enabled, this will enhance the CVV storage project. The "
-        "enhancement will enable CVV storage suggestions for standalone CVC "
-        "fields.";
-
 const char kAutofillEnableFlatRateCardBenefitsFromCurinosName[] =
     "Enable showing flat rate card benefits sourced from Curinos";
 const char kAutofillEnableFlatRateCardBenefitsFromCurinosDescription[] =
@@ -1555,11 +1534,6 @@ const char kSupervisedUserUseUrlFilteringServiceDescription[] =
     "Use the SupervisedUserUrlFilteringService to get URL filtering settings "
     "directly from supervision services instead of using PrefService (no "
     "user-visible effect).";
-
-const char kSyncAutofillWalletCredentialDataName[] =
-    "Sync Autofill Wallet Credential Data";
-const char kSyncAutofillWalletCredentialDataDescription[] =
-    "When enabled, allows syncing of the autofill wallet credential data type.";
 
 const char kSyncSandboxName[] = "Use Chrome Sync sandbox";
 const char kSyncSandboxDescription[] =

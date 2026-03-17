@@ -340,8 +340,6 @@ TEST_F(
 TEST_F(IOSChromePaymentsAutofillClientTest,
        UsesSaveCvcInfobarTypeForUploadSaveCvc) {
   // Set up the save options for a CVC-only save.
-  base::test::ScopedFeatureList features(
-      features::kAutofillEnableCvcStorageAndFilling);
   payments::PaymentsAutofillClient::SaveCreditCardOptions options;
   options.card_save_type =
       payments::PaymentsAutofillClient::CardSaveType::kCvcSaveOnly;
@@ -365,8 +363,6 @@ TEST_F(IOSChromePaymentsAutofillClientTest,
 // save.
 TEST_F(IOSChromePaymentsAutofillClientTest,
        UsesSaveCvcInfobarTypeForLocalSaveCvc) {
-  base::test::ScopedFeatureList features(
-      features::kAutofillEnableCvcStorageAndFilling);
   // Set up the save options for a CVC-only save.
   payments::PaymentsAutofillClient::SaveCreditCardOptions options;
   options.card_save_type =
@@ -620,8 +616,6 @@ TEST_F(IOSChromePaymentsAutofillClientTest,
 TEST_F(IOSChromePaymentsAutofillClientTest,
        DoesNotLogNotShownForCvcOnlySave_WhenBottomSheetNotShown) {
   base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList features(
-      autofill::features::kAutofillEnableCvcStorageAndFilling);
 
   payments::PaymentsAutofillClient::SaveCreditCardOptions options;
   options.card_save_type =
@@ -647,8 +641,6 @@ TEST_F(IOSChromePaymentsAutofillClientTest,
 TEST_F(IOSChromePaymentsAutofillClientTest,
        LogsNotShownForCardSaveWithCvc_WhenBottomSheetNotShown) {
   base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList features(
-      autofill::features::kAutofillEnableCvcStorageAndFilling);
 
   payments::PaymentsAutofillClient::SaveCreditCardOptions options;
   options.card_save_type =

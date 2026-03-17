@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_modal/save_card/save_card_infobar_modal_overlay_mediator.h"
 
-#import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/strcat.h"
@@ -17,7 +16,6 @@
 #import "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 #import "components/autofill/core/browser/payments/test_legal_message_line.h"
 #import "components/autofill/core/browser/test_utils/autofill_test_utils.h"
-#import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "ios/chrome/browser/autofill/model/message/save_card_message_with_links.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
@@ -133,8 +131,6 @@ class SaveCardInfobarModalOverlayMediatorTest : public PlatformTest {
               kCardSaveOnly)
       : mediator_delegate_(
             OCMStrictProtocolMock(@protocol(OverlayRequestMediatorDelegate))) {
-    feature_list_.InitAndEnableFeature(
-        autofill::features::kAutofillEnableCvcStorageAndFilling);
     task_environment_ = std::make_unique<web::WebTaskEnvironment>(
         base::test::TaskEnvironment::TimeSource::MOCK_TIME);
     autofill::CreditCard credit_card(
@@ -184,7 +180,6 @@ class SaveCardInfobarModalOverlayMediatorTest : public PlatformTest {
   raw_ptr<MockAutofillSaveCardInfoBarDelegateMobile> delegate_ = nil;
   SaveCardInfobarModalOverlayMediator* mediator_ = nil;
   id<OverlayRequestMediatorDelegate> mediator_delegate_ = nil;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests that a SaveCardInfobarModalOverlayMediator correctly sets up its

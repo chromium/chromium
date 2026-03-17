@@ -5,7 +5,6 @@
 #import <XCTest/XCTest.h>
 
 #import "base/test/metrics/user_action_tester.h"
-#import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_settings_constants.h"
@@ -52,13 +51,6 @@ id<GREYMatcher> DeleteConfirmationButton() {
 @end
 
 @implementation AutofillCvcStorageSettingsTestCase
-
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  config.features_enabled.push_back(
-      autofill::features::kAutofillEnableCvcStorageAndFilling);
-  return config;
-}
 
 - (void)setUp {
   [super setUp];

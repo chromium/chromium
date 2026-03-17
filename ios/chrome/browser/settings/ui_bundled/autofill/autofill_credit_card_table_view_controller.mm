@@ -6,7 +6,6 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
-#import "base/feature_list.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
@@ -14,7 +13,6 @@
 #import "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #import "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #import "components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h"
-#import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "components/autofill/ios/browser/credit_card_util.h"
 #import "components/autofill/ios/browser/personal_data_manager_observer_bridge.h"
@@ -226,14 +224,11 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
   [model setFooter:[self mandatoryReauthSwitchFooter]
       forSectionWithIdentifier:SectionIdentifierMandatoryReauthSwitch];
 
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableCvcStorageAndFilling)) {
-    [model addSectionWithIdentifier:SectionIdentifierCVCStorage];
-    [model addItem:[self cvcStorageItem]
-        toSectionWithIdentifier:SectionIdentifierCVCStorage];
-    [model setFooter:[self cvcStorageFooter]
-        forSectionWithIdentifier:SectionIdentifierCVCStorage];
-  }
+  [model addSectionWithIdentifier:SectionIdentifierCVCStorage];
+  [model addItem:[self cvcStorageItem]
+      toSectionWithIdentifier:SectionIdentifierCVCStorage];
+  [model setFooter:[self cvcStorageFooter]
+      forSectionWithIdentifier:SectionIdentifierCVCStorage];
 
   [self populateCardSection];
 }

@@ -58,11 +58,9 @@ bool IsPaymentsBottomSheetTriggeringField(autofill::FieldType type) {
     case autofill::CREDIT_CARD_EXP_4_DIGIT_YEAR:
     case autofill::CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR:
     case autofill::CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR:
-      return true;
     case autofill::CREDIT_CARD_VERIFICATION_CODE:
     case autofill::CREDIT_CARD_STANDALONE_VERIFICATION_CODE:
-      return base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableCvcStorageAndFilling);
+      return true;
     default:
       return false;
   }

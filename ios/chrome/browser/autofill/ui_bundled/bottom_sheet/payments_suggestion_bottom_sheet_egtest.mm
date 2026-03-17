@@ -110,8 +110,6 @@ id<GREYMatcher> KeyboardAccessoryCreditCardSuggestionChip() {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  config.features_enabled.push_back(
-      autofill::features::kAutofillEnableCvcStorageAndFilling);
   if ([self isRunningTest:@selector
             (testOpenPaymentsBottomSheetUseCreditCardOnV3)] ||
       [self isRunningTest:@selector
