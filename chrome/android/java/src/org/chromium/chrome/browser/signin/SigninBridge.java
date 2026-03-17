@@ -205,6 +205,19 @@ final class SigninBridge {
                         createWebSigninBridgeCallback(tab, continueUrl, initialTabURL));
     }
 
+    /**
+     * Redirects to the continueUrl in the given tab if refresh tokens and cookies are minted for
+     * the account associated with the selectedAccountId.
+     */
+    private static void waitForCookiesAndRedirect(
+            Tab tab, CoreAccountId selectedAccountId, GURL continueUrl, GURL initialTabURL) {
+        new WebSigninBridge.Factory()
+                .createWithCoreAccountId(
+                        tab.getProfile(),
+                        selectedAccountId,
+                        createWebSigninBridgeCallback(tab, continueUrl, initialTabURL));
+    }
+
     private static Callback<@WebSigninTrackerResult Integer> createWebSigninBridgeCallback(
             Tab tab, GURL continueUrl, GURL initialTabURL) {
         return (result) -> {
@@ -355,18 +368,24 @@ final class SigninBridge {
      * Starts the flow to reauthenticate.
      *
      * @param tab The target tab for the continueUrl navigation.
+     * @param continueUrl The URL to navigate to after the reauthentication. This will not be an
+     *     empty string.
      * @param selectedAccountId The account to be reauthenticated .
      */
     @CalledByNative
     private static void startUpdateCredentialsFlow(
-            Tab tab, @JniType("CoreAccountId") CoreAccountId selectedAccountId) {
+            Tab tab,
+            @JniType("GURL") GURL continueUrl,
+            @JniType("CoreAccountId") CoreAccountId selectedAccountId) {
         assert selectedAccountId != null;
+        assert continueUrl != null;
         WindowAndroid windowAndroid = tab.getWindowAndroid();
         if (windowAndroid == null || !tab.isUserInteractable()) {
             // The page is opened in the background, ignore the header. See
             // https://crbug.com/1145031#c5 and https://crbug.com/323424409 for details.
             return;
         }
+        GURL initialTabURL = tab.getUrl();
         AccountManagerFacade accountManagerFacade = AccountManagerFacadeProvider.getInstance();
         Profile profile = tab.getProfile().getOriginalProfile();
         IdentityManager identityManager =
@@ -376,8 +395,11 @@ final class SigninBridge {
                 assertNonNull(
                         identityManager.findExtendedAccountInfoByAccountId(selectedAccountId)),
                 assumeNonNull(windowAndroid.getActivity().get()),
-                (response) -> {
-                    // TODO(crbug.com/465701665): Redirect user if there is a specified URL.
+                (success) -> {
+                    if (success && !tab.isDestroyed() && tab.getUrl().equals(initialTabURL)) {
+                        waitForCookiesAndRedirect(
+                                tab, selectedAccountId, continueUrl, initialTabURL);
+                    }
                 });
     }
 

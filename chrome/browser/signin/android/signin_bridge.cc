@@ -59,7 +59,7 @@ void SigninBridge::StartUpdateCredentialsFlow(TabAndroid* tab,
   }
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_SigninBridge_startUpdateCredentialsFlow(env, tab->GetJavaObject(),
-                                               account_id);
+                                               continue_url, account_id);
 }
 
 DEFINE_JNI(SigninBridge)
