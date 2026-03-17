@@ -45,7 +45,7 @@ class StackStringViewAllocator {
 template <typename CharType1, typename CharType2>
 int CodeUnitCompareIgnoringAsciiCase(base::span<const CharType1> c1,
                                      base::span<const CharType2> c2) {
-  return CodeUnitCompare(c1, c2, [](auto c) { return ToASCIILower(c); });
+  return CodeUnitCompare(c1, c2, [](auto c) { return ToAsciiLower(c); });
 }
 
 }  // namespace

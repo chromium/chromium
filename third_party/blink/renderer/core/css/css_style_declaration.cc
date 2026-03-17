@@ -83,7 +83,7 @@ CSSPropertyID ParseCSSPropertyID(const ExecutionContext* execution_context,
 
   bool has_seen_upper = IsASCIIUpper(property_name[i]);
 
-  builder.Append(ToASCIILower(property_name[i++]));
+  builder.Append(ToAsciiLower(property_name[i++]));
 
   for (; i < length; ++i) {
     UChar c = property_name[i];
@@ -95,7 +95,7 @@ CSSPropertyID ParseCSSPropertyID(const ExecutionContext* execution_context,
     } else {
       has_seen_upper = true;
       builder.Append('-');
-      builder.Append(ToASCIILower(c));
+      builder.Append(ToAsciiLower(c));
     }
   }
 

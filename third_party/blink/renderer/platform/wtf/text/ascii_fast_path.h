@@ -143,7 +143,7 @@ class LowerConverter {
 
   template <typename CharType>
   ALWAYS_INLINE static CharType Convert(CharType ch) {
-    return ToASCIILower(ch);
+    return ToAsciiLower(ch);
   }
 };
 

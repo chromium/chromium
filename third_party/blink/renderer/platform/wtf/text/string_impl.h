@@ -753,7 +753,7 @@ inline bool EqualIgnoringAsciiCase(base::span<const CharacterTypeA> a,
   while (length--) {
     // Avoid base::span::operator[] for better performance.
     // SAFETY: This function ensures a_data and b_data move inside their spans.
-    if (UNSAFE_BUFFERS(ToASCIILower(*a_data++) != ToASCIILower(*b_data++))) {
+    if (UNSAFE_BUFFERS(ToAsciiLower(*a_data++) != ToAsciiLower(*b_data++))) {
       return false;
     }
   }
@@ -787,7 +787,7 @@ ALWAYS_INLINE bool SimdEqualIgnoringAsciiCase(base::span<const LChar> a,
       }
     }
     for (; i < a.size(); ++i) {
-      if (ToASCIILower(a.data()[i]) != ToASCIILower(b.data()[i])) {
+      if (ToAsciiLower(a.data()[i]) != ToAsciiLower(b.data()[i])) {
         return false;
       }
     }
@@ -825,7 +825,7 @@ ALWAYS_INLINE bool SimdEqualIgnoringAsciiCase(base::span<const UChar> a,
       }
     }
     for (; i < a.size(); ++i) {
-      if (ToASCIILower(a.data()[i]) != ToASCIILower(b.data()[i])) {
+      if (ToAsciiLower(a.data()[i]) != ToAsciiLower(b.data()[i])) {
         return false;
       }
     }
@@ -859,7 +859,7 @@ ALWAYS_INLINE bool SimdEqualIgnoringAsciiCase(base::span<const UChar> a,
       }
     }
     for (; i < a.size(); ++i) {
-      if (ToASCIILower(a.data()[i]) != ToASCIILower(b.data()[i])) {
+      if (ToAsciiLower(a.data()[i]) != ToAsciiLower(b.data()[i])) {
         return false;
       }
     }

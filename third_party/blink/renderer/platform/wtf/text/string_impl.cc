@@ -465,7 +465,7 @@ scoped_refptr<StringImpl> StringImpl::FoldCase() {
     const base::span<const LChar> source8 = Span8();
     for (size_t i = 0; i < source8.size(); ++i) {
       const LChar c = source8[i];
-      data8[i] = ToASCIILower(c);
+      data8[i] = ::blink::ToAsciiLower(c);
       ored |= c;
     }
 
@@ -488,7 +488,7 @@ scoped_refptr<StringImpl> StringImpl::FoldCase() {
   const base::span<const UChar> source16 = Span16();
   for (size_t i = 0; i < source16.size(); ++i) {
     const UChar c = source16[i];
-    data16[i] = ToASCIILower(c);
+    data16[i] = ::blink::ToAsciiLower(c);
     ored |= c;
   }
   if (!(ored & ~0x7F))

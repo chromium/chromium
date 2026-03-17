@@ -259,7 +259,7 @@ static inline bool QuasiLowercaseIntoBuffer(base::span<const UChar> chars,
     if (c == 0 || c >= 0x7F) {  // illegal character
       return false;
     }
-    UNSAFE_BUFFERS(dst[i++]) = ToASCIILower(c);
+    UNSAFE_BUFFERS(dst[i++]) = ToAsciiLower(c);
   }
   return true;
 }
@@ -268,7 +268,7 @@ static inline bool QuasiLowercaseIntoBuffer(base::span<const UChar> chars,
 // CSS properties and values are restricted to [a-zA-Z0-9-]. Crucially,
 // this means we can do whatever we want to the six characters @[\]^_,
 // because they cannot match any known values anyway. We use this to
-// get a faster lowercasing than ToASCIILower() (which uses a table)
+// get a faster lowercasing than ToAsciiLower() (which uses a table)
 // can give us; we take anything in the range [0x40, 0x7f] and just
 // set the 0x20 bit. This converts A-Z to a-z and messes up @[\]^_
 // (so that they become `{|}~<DEL>, respectively). Things outside this
@@ -349,7 +349,7 @@ static CSSPropertyID UnresolvedCSSPropertyID(
 #if DCHECK_IS_ON()
   // Verify that we get the same answer with standard lowercasing.
   for (unsigned i = 0; i < length; ++i) {
-    UNSAFE_BUFFERS(buffer[i] = ToASCIILower(property_name[i]));
+    UNSAFE_BUFFERS(buffer[i] = ToAsciiLower(property_name[i]));
   }
   DCHECK_EQ(hash_table_entry, FindProperty(buffer, length));
 #endif
@@ -394,7 +394,7 @@ static CSSValueID CssValueKeywordID(
 #if DCHECK_IS_ON()
   // Verify that we get the same answer with standard lowercasing.
   for (unsigned i = 0; i < length; ++i) {
-    UNSAFE_BUFFERS(buffer[i] = ToASCIILower(value_keyword[i]));
+    UNSAFE_BUFFERS(buffer[i] = ToAsciiLower(value_keyword[i]));
   }
   DCHECK_EQ(hash_table_entry, FindValue(buffer, length));
 #endif

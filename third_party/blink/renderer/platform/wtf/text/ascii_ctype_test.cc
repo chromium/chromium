@@ -11,7 +11,7 @@ namespace blink {
 TEST(ASCIICTypeTest, ASCIICaseFoldTable) {
   LChar symbol = 0xff;
   while (symbol--) {
-    EXPECT_EQ(ToASCIILower<LChar>(symbol), kASCIICaseFoldTable[symbol]);
+    EXPECT_EQ(ToAsciiLower<LChar>(symbol), kASCIICaseFoldTable[symbol]);
   }
 }
 

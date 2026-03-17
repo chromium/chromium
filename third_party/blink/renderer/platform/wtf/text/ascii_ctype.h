@@ -142,15 +142,15 @@ inline constexpr std::array<LChar, 256> kASCIICaseFoldTable = {
     0xfc, 0xfd, 0xfe, 0xff};
 
 template <typename CharType>
-inline CharType ToASCIILower(CharType c) {
+inline CharType ToAsciiLower(CharType c) {
   return c | ((c >= 'A' && c <= 'Z') << 5);
 }
 
-inline LChar ToASCIILower(LChar c) {
+inline LChar ToAsciiLower(LChar c) {
   return kASCIICaseFoldTable[c];
 }
 
-inline char ToASCIILower(char c) {
+inline char ToAsciiLower(char c) {
   return static_cast<char>(kASCIICaseFoldTable[static_cast<LChar>(c)]);
 }
 

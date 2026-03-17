@@ -20,7 +20,7 @@ struct AsciiLowerHashReader {
   static constexpr unsigned kExpansionFactor = 1;
 
   ALWAYS_INLINE static uint64_t Lowercase(CharType ch) {
-    return ToASCIILower(ch);
+    return ToAsciiLower(ch);
   }
 
   // SAFETY: rapidhash callback.
@@ -76,7 +76,7 @@ struct AsciiLowerHashReader {
       // with 1, 2 or 3, it means we must be a UTF-16 string with a single
       // code point (i.e., two bytes). Furthermore, we know that this code point
       // must be above 0xFF, or the HashTranslatorLowercaseBuffer constructor
-      // would not have called us. Thus, ToASCIILower() on this code point would
+      // would not have called us. Thus, ToAsciiLower() on this code point would
       // do nothing, and this, we should just hash it exactly as PlainHashReader
       // would have done.
       DCHECK_EQ(size, 2u);
@@ -97,7 +97,7 @@ struct AsciiConvertTo8AndLowerHashReader {
   static constexpr unsigned kCompressionFactor = 2;
   static constexpr unsigned kExpansionFactor = 1;
 
-  static uint64_t Lowercase(uint16_t ch) { return ToASCIILower(ch); }
+  static uint64_t Lowercase(uint16_t ch) { return ToAsciiLower(ch); }
 
   // SAFETY: rapidhash callback.
   UNSAFE_BUFFER_USAGE static uint64_t Read64(const uint8_t* ptr) {

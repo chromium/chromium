@@ -70,7 +70,7 @@ static AtRuleDescriptorID AsAtRuleDescriptorID(
     if (c == 0 || c >= 0x7F) {
       return AtRuleDescriptorID::Invalid;  // illegal character
     }
-    buffer[i] = ToASCIILower(c);
+    buffer[i] = ToAsciiLower(c);
   }
   buffer[length] = '\0';
 

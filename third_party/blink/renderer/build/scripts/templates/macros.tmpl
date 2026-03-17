@@ -41,7 +41,7 @@ break;
 if (
     {%- for c in name -%}
         {%- if lowercase_data -%}
-    {{ " && " if not loop.first }}ToASCIILower(data[{{index + loop.index0}}]) == '{{c}}'
+    {{ " && " if not loop.first }}ToAsciiLower(data[{{index + loop.index0}}]) == '{{c}}'
         {%- else -%}
     {{ " && " if not loop.first }}data[{{index + loop.index0}}] == '{{c}}'
         {%- endif -%}
@@ -61,7 +61,7 @@ return {{ return_macro(value) }};
 {{ trie_leaf(index, trie, return_macro, lowercase_data, is_lchar) -}}
 {% else %}
     {% if lowercase_data %}
-switch (ToASCIILower(data[{{index}}])) {
+switch (ToAsciiLower(data[{{index}}])) {
     {% else %}
 switch (data[{{index}}]) {
     {% endif %}

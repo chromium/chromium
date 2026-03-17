@@ -280,8 +280,9 @@ struct LowercaseLookupTranslator {
       return VisitCharacters(*query, [&](auto qch) {
         wtf_size_t len = query->length();
         for (wtf_size_t i = 0; i < len; ++i) {
-          if (bch[i] != ToASCIILower(qch[i]))
+          if (bch[i] != ToAsciiLower(qch[i])) {
             return false;
+          }
         }
         return true;
       });

@@ -107,7 +107,7 @@ std::string WebDXFeatureEnumToString(WebDXFeature feature) {
     if (i > 0 && IsASCIIUpper(c)) {
       result.push_back('-');
     }
-    result.push_back(ToASCIILower(c));
+    result.push_back(ToAsciiLower(c));
   }
   return result;
 }

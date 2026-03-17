@@ -133,7 +133,7 @@ inline const NamedColor* FindNamedColor(const String& name) {
     const UChar c = name[i];
     if (!c || c > 0x7F)
       return nullptr;
-    buffer[i] = ToASCIILower(static_cast<char>(c));
+    buffer[i] = ToAsciiLower(static_cast<char>(c));
   }
   return FindColor(base::as_string_view(base::span(buffer).first(length)));
 }

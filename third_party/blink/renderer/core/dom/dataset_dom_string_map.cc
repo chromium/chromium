@@ -139,7 +139,7 @@ static AtomicString ConvertPropertyNameToAttributeName(const String& name) {
     UChar character = name[i];
     if (IsASCIIUpper(character)) {
       builder.Append('-');
-      builder.Append(ToASCIILower(character));
+      builder.Append(ToAsciiLower(character));
     } else {
       builder.Append(character);
     }

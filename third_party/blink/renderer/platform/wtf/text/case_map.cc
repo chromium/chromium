@@ -230,7 +230,7 @@ scoped_refptr<StringImpl> CaseMap::TryFastToLowerInvariant(StringImpl* source) {
       if (ch & ~0x7F) [[unlikely]] {
         lowered_ch = static_cast<LChar>(blink::unicode::ToLower(ch));
       } else {
-        lowered_ch = ToASCIILower(ch);
+        lowered_ch = ToAsciiLower(ch);
       }
       data8_tail[i] = lowered_ch;
     }
@@ -261,7 +261,7 @@ scoped_refptr<StringImpl> CaseMap::TryFastToLowerInvariant(StringImpl* source) {
         StringImpl::CreateUninitialized(source16.size(), data16);
 
     for (size_t i = 0; i < source16.size(); ++i) {
-      data16[i] = ToASCIILower(source16[i]);
+      data16[i] = ToAsciiLower(source16[i]);
     }
     return new_impl;
   }

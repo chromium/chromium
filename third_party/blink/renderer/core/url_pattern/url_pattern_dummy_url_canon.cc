@@ -234,7 +234,7 @@ base::expected<String, String> CanonicalizeIPv6HostnameInternal(
           {"Invalid IPv6 hostname character '", String(std::string_view(&c, 1)),
            "' in '", input, "'."}));
     }
-    result += blink::ToASCIILower(c);
+    result += blink::ToAsciiLower(c);
   }
   return base::ok(String::FromUTF8(result));
 }
