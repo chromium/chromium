@@ -139,6 +139,17 @@ public class TitleBitmapFactory {
                     Bitmap.createBitmap(
                             mFaviconDimension, mFaviconDimension, Bitmap.Config.ARGB_8888);
             Canvas c = new Canvas(b);
+
+            // Disable density scaling on the canvas so bitmaps are drawn at their exact pixel
+            // dimensions. This prevents any automatic DPI-based scaling by the canvas.
+            c.setDensity(Bitmap.DENSITY_NONE);
+
+            // Smooth edges and apply bilinear filtering when the bitmap is scaled to prevent
+            // pixelation.
+            Paint paint = new Paint();
+            paint.setAntiAlias(true);
+            paint.setFilterBitmap(true);
+
             if (favicon.getWidth() > mFaviconDimension || favicon.getHeight() > mFaviconDimension) {
                 float scale =
                         (float) mFaviconDimension
@@ -149,7 +160,7 @@ public class TitleBitmapFactory {
                         Math.round((mFaviconDimension - favicon.getWidth()) / 2.0f),
                         Math.round((mFaviconDimension - favicon.getHeight()) / 2.0f));
             }
-            c.drawBitmap(favicon, 0, 0, null);
+            c.drawBitmap(favicon, 0, 0, paint);
             return b;
         } catch (OutOfMemoryError ex) {
             Log.e(TAG, "OutOfMemoryError while building favicon texture.");
