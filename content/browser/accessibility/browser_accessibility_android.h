@@ -43,6 +43,7 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid
   std::u16string GetLocalizedStringForImageAnnotationStatus(
       ax::mojom::ImageAnnotationStatus status) const override;
 
+  bool CanSetExtendedSelection() const;
   bool IsAndroidTextView() const;
   bool IsCheckable() const;
   bool IsChecked() const;
@@ -77,6 +78,7 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid
   bool IsSubscript() const;
   bool IsSuperscript() const;
   bool IsTableHeader() const;
+  bool IsTextSelectable() const;
   bool IsVisibleToUser() const;
   bool ShouldUsePaneTitle() const;
 
