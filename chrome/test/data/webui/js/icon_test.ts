@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {getFavicon, getFaviconForPageURL, getFaviconUrl, type GetFaviconUrlParams, getFileIconUrl} from 'chrome://resources/js/icon.js';
+import {getFavicon, getFaviconForPageURL, getFaviconUrl, getFileIconUrl} from 'chrome://resources/js/icon.js';
+import type {GetFaviconUrlParams} from 'chrome://resources/js/icon.js';
 import {isAndroid, isChromeOS, isLinux, isMac, isWindows} from 'chrome://resources/js/platform.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 

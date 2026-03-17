@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 import type {HistorySyncOptInBrowserProxy} from 'chrome://history-sync-optin/browser_proxy.js';
-import type {PageRemote} from 'chrome://history-sync-optin/history_sync_optin.mojom-webui.js';
-import {PageCallbackRouter, type PageHandlerInterface} from 'chrome://history-sync-optin/history_sync_optin.mojom-webui.js';
+import {PageCallbackRouter} from 'chrome://history-sync-optin/history_sync_optin.mojom-webui.js';
+import type {PageHandlerInterface, PageRemote} from 'chrome://history-sync-optin/history_sync_optin.mojom-webui.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestHistorySyncOptInHandler extends TestBrowserProxy implements
