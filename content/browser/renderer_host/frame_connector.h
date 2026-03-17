@@ -207,24 +207,14 @@ class FrameConnector : public input::ChildFrameInputHelper::Delegate {
   // if not.
   virtual void SetLocalFrameSize(const gfx::Size& local_frame_size) = 0;
 
-  // Called to resize the child renderer. |rect_in_parent_view| is in physical
+  // Called to resize the child renderer. `rect_in_parent_view` is in physical
   // pixels.
   virtual void SetRectInParentView(const gfx::Rect& rect_in_parent_view) = 0;
 
-  virtual void SetIsInert(bool inert) = 0;
-
-  // Handlers for messages received from the parent frame called
-  // from RenderFrameProxyHost to be sent to |view_|.
-  virtual void OnSetInheritedEffectiveTouchAction(cc::TouchAction) = 0;
+  // Handler for visibility updates received from the parent frame to be sent to
+  // `view_`.
   virtual void OnVisibilityChanged(
       blink::mojom::FrameVisibility visibility) = 0;
-
-  virtual void UpdateRenderThrottlingStatus(bool is_throttled,
-                                            bool subtree_throttled,
-                                            bool display_locked) = 0;
-  virtual void UpdateViewportIntersection(
-      const blink::mojom::ViewportIntersectionState& intersection_state,
-      const std::optional<blink::FrameVisualProperties>& visual_properties) = 0;
 
   // Returns whether the child widget is actually visible to the user.  This is
   // different from the IsHidden override, and takes into account viewport
