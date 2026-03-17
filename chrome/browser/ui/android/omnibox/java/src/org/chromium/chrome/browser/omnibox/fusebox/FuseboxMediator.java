@@ -56,6 +56,7 @@ import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.IconResourceIdsProto.IconResourceIds;
+import org.chromium.components.omnibox.InputTypeProto.InputType;
 import org.chromium.components.omnibox.ModelConfigProto.ModelConfig;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxFocusReason;
@@ -620,6 +621,7 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
 
     private void updatePopupButtonEnabledStates() {
         if (!isInInputSession()) return;
+        if (OmniboxFeatures.sShowModelPicker.getValue()) return;
 
         // Disable Camera and Gallery Selection popup buttons if no remaining attachments are left.
         boolean allowByCapacity = mModelList.getRemainingAttachments() > 0;
@@ -854,6 +856,20 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
         assert OmniboxFeatures.sShowModelPicker.getValue();
         // Note that some of the time that this method is called in the middle of beginInput(), so
         // checking avoid checking isInInputSession() or using mModelList.
+
+        // TODO(https://crbug.com/480976526): Control visibility as well.
+        boolean tabsEnabled =
+                !inputState.disabledInputTypes.contains(InputType.INPUT_TYPE_BROWSER_TAB_VALUE);
+        boolean imagesEnabled =
+                !inputState.disabledInputTypes.contains(InputType.INPUT_TYPE_LENS_IMAGE_VALUE);
+        boolean filesEnabled =
+                !inputState.disabledInputTypes.contains(InputType.INPUT_TYPE_LENS_FILE_VALUE);
+        mModel.set(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_ENABLED, tabsEnabled);
+        mModel.set(FuseboxProperties.POPUP_ATTACH_TAB_PICKER_ENABLED, tabsEnabled);
+        mModel.set(FuseboxProperties.POPUP_ATTACH_CLIPBOARD_ENABLED, imagesEnabled);
+        mModel.set(FuseboxProperties.POPUP_ATTACH_CAMERA_ENABLED, imagesEnabled);
+        mModel.set(FuseboxProperties.POPUP_ATTACH_GALLERY_ENABLED, imagesEnabled);
+        mModel.set(FuseboxProperties.POPUP_ATTACH_FILE_ENABLED, filesEnabled);
 
         boolean deepSearchVisible = inputState.isToolVisible(ToolMode.TOOL_MODE_DEEP_SEARCH_VALUE);
         boolean canvasVisible = inputState.isToolVisible(ToolMode.TOOL_MODE_CANVAS_VALUE);

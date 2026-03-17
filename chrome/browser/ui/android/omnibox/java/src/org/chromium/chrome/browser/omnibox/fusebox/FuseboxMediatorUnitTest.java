@@ -90,6 +90,7 @@ import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.IconProto.Icon;
 import org.chromium.components.omnibox.IconResourceIdsProto.IconResourceIds;
+import org.chromium.components.omnibox.InputTypeProto.InputType;
 import org.chromium.components.omnibox.ModelConfigProto.ModelConfig;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.ToolModeProto.ToolMode;
@@ -1284,5 +1285,27 @@ public class FuseboxMediatorUnitTest {
         mInput.setRequestType(AutocompleteRequestType.SEARCH);
         modelButtons = mModel.get(FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST);
         assertFalse(modelButtons.get(0).selected);
+    }
+
+    @Test
+    public void onInputStateChange_updatesEnabledStates() {
+        OmniboxFeatures.sShowModelPicker.setForTesting(true);
+        recreateMediator();
+
+        InputState state =
+                new InputState.Builder()
+                        .withDisabledInputTypes(
+                                InputType.INPUT_TYPE_BROWSER_TAB_VALUE,
+                                InputType.INPUT_TYPE_LENS_FILE_VALUE)
+                        .build();
+
+        mInputStateSupplier.set(state);
+
+        assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_ENABLED));
+        assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_TAB_PICKER_ENABLED));
+        assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_CLIPBOARD_ENABLED));
+        assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_CAMERA_ENABLED));
+        assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_GALLERY_ENABLED));
+        assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_FILE_ENABLED));
     }
 }
