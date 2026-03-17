@@ -45,16 +45,7 @@ class EventFilter {
   const std::string& GetEventName(MatcherID id) const;
 
   // Removes an event matcher, returning the name of the event that it was for.
-  // If `condition_sets_for_bulk_removal` is non-null, the
-  // `MatcherStringPattern::ID`s are appended to
-  // `condition_sets_for_bulk_removal` and should be unregistered in batch via
-  // `URLMatcher::RemoveConditionSets()`.
-  std::string RemoveEventMatcher(MatcherID id,
-                                 std::vector<base::MatcherStringPattern::ID>*
-                                     condition_sets_for_bulk_removal);
-
-  // Removes all event matchers in `ids`.
-  void RemoveEventMatchers(const std::vector<MatcherID>& ids);
+  std::string RemoveEventMatcher(MatcherID id);
 
   // Match an event named `event_name` with filtering info `event_info` against
   // our set of event matchers. Returns a set of ids that correspond to the
@@ -67,10 +58,6 @@ class EventFilter {
   int GetMatcherCountForEventForTesting(const std::string& event_name) const;
 
   bool IsURLMatcherEmptyForTesting() const { return url_matcher_.IsEmpty(); }
-
-  size_t GetConditionSetIdToEventMatcherIdMapSizeForTesting() const {
-    return condition_set_id_to_event_matcher_id_.size();
-  }
 
  private:
   class EventMatcherEntry {
@@ -96,11 +83,6 @@ class EventFilter {
     void DontRemoveConditionSetsInDestructor();
 
     EventMatcher* event_matcher() { return event_matcher_.get(); }
-
-    const std::vector<base::MatcherStringPattern::ID>& condition_set_ids()
-        const {
-      return condition_set_ids_;
-    }
 
    private:
     std::unique_ptr<EventMatcher> event_matcher_;

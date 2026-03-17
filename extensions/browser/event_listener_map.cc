@@ -192,15 +192,13 @@ bool EventListenerMap::RemoveListener(const EventListener* listener) {
   ListenerList& listeners = listener_itr->second;
   for (auto& it : listeners) {
     if (it->Equals(listener)) {
-      std::vector<MatcherID> matcher_ids_to_remove;
-      CleanupListener(it.get(), matcher_ids_to_remove);
+      CleanupListener(it.get());
       // Popping from the back should be cheaper than erase(it).
       std::swap(it, listeners.back());
       listeners.pop_back();
       if (listeners.empty()) {
         listeners_.erase(listener_itr);
       }
-      event_filter_.RemoveEventMatchers(matcher_ids_to_remove);
       delegate_->OnListenerRemoved(listener);
       return true;
     }
@@ -379,16 +377,14 @@ std::set<const EventListener*> EventListenerMap::GetEventListeners(
 void EventListenerMap::RemoveListenersForProcess(
     const content::RenderProcessHost* process) {
   CHECK(process);
-  std::vector<MatcherID> matcher_ids_to_remove;
-  std::vector<std::unique_ptr<EventListener>> removed_listeners;
   for (auto it = listeners_.begin(); it != listeners_.end();) {
     auto& listener_list = it->second;
     for (auto it2 = listener_list.begin(); it2 != listener_list.end();) {
       if ((*it2)->process() == process) {
         std::unique_ptr<EventListener> listener_removed = std::move(*it2);
-        CleanupListener(listener_removed.get(), matcher_ids_to_remove);
+        CleanupListener(listener_removed.get());
         it2 = listener_list.erase(it2);
-        removed_listeners.push_back(std::move(listener_removed));
+        delegate_->OnListenerRemoved(listener_removed.get());
       } else {
         ++it2;
       }
@@ -400,10 +396,6 @@ void EventListenerMap::RemoveListenersForProcess(
     } else {
       ++it;
     }
-  }
-  event_filter_.RemoveEventMatchers(matcher_ids_to_remove);
-  for (const auto& listener : removed_listeners) {
-    delegate_->OnListenerRemoved(listener.get());
   }
 }
 
@@ -411,16 +403,14 @@ void EventListenerMap::RemoveListenersForExtensionImpl(
     const ExtensionId& extension_id,
     base::RepeatingCallback<bool(const ExtensionId&, EventListener*)>
         removal_predicate) {
-  std::vector<MatcherID> matcher_ids_to_remove;
-  std::vector<std::unique_ptr<EventListener>> removed_listeners;
   for (auto it = listeners_.begin(); it != listeners_.end();) {
     auto& listener_list = it->second;
     for (auto it2 = listener_list.begin(); it2 != listener_list.end();) {
       if (removal_predicate.Run(extension_id, it2->get())) {
         std::unique_ptr<EventListener> listener_removed = std::move(*it2);
-        CleanupListener(listener_removed.get(), matcher_ids_to_remove);
+        CleanupListener(listener_removed.get());
         it2 = listener_list.erase(it2);
-        removed_listeners.push_back(std::move(listener_removed));
+        delegate_->OnListenerRemoved(listener_removed.get());
       } else {
         ++it2;
       }
@@ -433,15 +423,9 @@ void EventListenerMap::RemoveListenersForExtensionImpl(
       ++it;
     }
   }
-  event_filter_.RemoveEventMatchers(matcher_ids_to_remove);
-  for (const auto& listener : removed_listeners) {
-    delegate_->OnListenerRemoved(listener.get());
-  }
 }
 
-void EventListenerMap::CleanupListener(
-    EventListener* listener,
-    std::vector<MatcherID>& matcher_ids_to_remove) {
+void EventListenerMap::CleanupListener(EventListener* listener) {
   // If the listener doesn't have a filter then we have nothing to clean up.
   if (listener->matcher_id() == -1) {
     return;
@@ -452,7 +436,7 @@ void EventListenerMap::CleanupListener(
   if (iter->second.size() == 1) {
     filtered_events_.erase(iter->first);
   }
-  matcher_ids_to_remove.push_back(listener->matcher_id());
+  event_filter_.RemoveEventMatcher(listener->matcher_id());
   CHECK_EQ(1u, listeners_by_matcher_id_.erase(listener->matcher_id()));
 }
 

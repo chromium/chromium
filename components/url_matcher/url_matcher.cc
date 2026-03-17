@@ -876,9 +876,6 @@ URLMatcher::~URLMatcher() = default;
 
 void URLMatcher::AddConditionSets(
     const URLMatcherConditionSet::Vector& condition_sets) {
-  if (condition_sets.empty()) {
-    return;
-  }
   for (const auto& condition_set : condition_sets) {
     DCHECK(url_matcher_condition_sets_.find(condition_set->id()) ==
            url_matcher_condition_sets_.end());
@@ -889,9 +886,6 @@ void URLMatcher::AddConditionSets(
 
 void URLMatcher::RemoveConditionSets(
     const std::vector<base::MatcherStringPattern::ID>& condition_set_ids) {
-  if (condition_set_ids.empty()) {
-    return;
-  }
   for (auto id : condition_set_ids) {
     DCHECK(url_matcher_condition_sets_.find(id) !=
            url_matcher_condition_sets_.end());
