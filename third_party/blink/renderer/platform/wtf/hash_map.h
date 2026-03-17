@@ -64,11 +64,11 @@ struct KeyValuePairExtractor {
   static void ClearValue(T& p) {
     using ValueType = typename T::ValueType;
     if (IsTraceableV<ValueType>) {
-      // SAFTEY: compiler-deduced size for ValueType.
+      // SAFETY: size of `p.value` determined by compiler.
       UNSAFE_BUFFERS(
           AtomicMemzero<sizeof(ValueType), alignof(ValueType)>(&p.value));
     } else {
-      // SAFETY: compiler-deduced size for ValueType.
+      // SAFETY: size of `p.value` determined by compiler.
       UNSAFE_BUFFERS(memset(static_cast<void*>(&p.value), 0, sizeof(p.value)));
     }
   }

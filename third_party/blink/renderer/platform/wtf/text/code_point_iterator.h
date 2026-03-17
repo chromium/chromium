@@ -104,14 +104,16 @@ class CodePointIterator {
   }
 
   UChar32 operator*() const { return is_8bit_ ? *Data() : *utf16_; }
-  void operator++() {
-    is_8bit_
-        ? static_cast<void>(
-              // SAFETY: safe to increment as we're not deref, caller
-              // should check the returned value is not equal to
-              // `CodePointIterator::End(<same string>)` before dereferencing.
-              UNSAFE_BUFFERS(++DataRef()))
-        : ++utf16_;
+
+  // PRECONDITIONS: iterator is not equal to CodePointIterator::End().
+  // POSTCONDITION: caller must check the returned value is not equal to
+  // `CodePointIterator::End(<same string>)` before dereferencing.
+  UNSAFE_BUFFER_USAGE void operator++() {
+    is_8bit_ ? static_cast<void>(
+                   // SAFETY: safe to increment as we're not deref, required
+                   // from caller via UNSAFE_BUFFER_USAGE.
+                   UNSAFE_BUFFERS(++DataRef()))
+             : ++utf16_;
   }
 
   bool operator==(const CodePointIterator& other) const {
@@ -157,7 +159,7 @@ inline void CodePointIterator::Utf16::AdvanceByCodeUnits(wtf_size_t by) {
 inline void CodePointIterator::Utf16::operator++() {
   if (!code_point_length_) [[unlikely]] {
     // `code_point_length_` is cached by `operator*()`. If not, compute it.
-    // SAFETY: call into icu functions.
+    // SAFETY: call into icu functions which check `length_`.
     UNSAFE_BUFFERS(U16_FWD_1(data_, code_point_length_, length_););
   }
   AdvanceByCodeUnits(code_point_length_);

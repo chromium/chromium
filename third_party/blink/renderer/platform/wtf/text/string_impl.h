@@ -752,7 +752,8 @@ inline bool EqualIgnoringAsciiCase(base::span<const CharacterTypeA> a,
   const CharacterTypeB* b_data = b.data();
   while (length--) {
     // Avoid base::span::operator[] for better performance.
-    // SAFETY: This function ensures a_data and b_data move inside their spans.
+    // SAFETY: This function ensures a_data and b_data move inside their spans,
+    // since CHECK() above ensures a and b have same size.
     if (UNSAFE_BUFFERS(ToAsciiLower(*a_data++) != ToAsciiLower(*b_data++))) {
       return false;
     }

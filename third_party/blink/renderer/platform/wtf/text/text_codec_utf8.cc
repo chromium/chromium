@@ -482,9 +482,10 @@ upConvertTo16Bit:
             if (!IsAllAscii<LChar>(chunk)) {
               break;
             }
-
-            CopyAsciiMachineWord(
-                chunk, destination16.take_first<sizeof(MachineWord)>().data());
+            // SAFETY: `take_first<sizeof(MachineWord)>()` ensures sufficient
+            // size.
+            UNSAFE_BUFFERS(CopyAsciiMachineWord(
+                chunk, destination16.take_first<sizeof(MachineWord)>().data()));
             source.take_first<sizeof(MachineWord)>();
           }
           if (source.empty()) {

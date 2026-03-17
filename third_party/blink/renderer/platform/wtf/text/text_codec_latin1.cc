@@ -29,6 +29,7 @@
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/types/to_address.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_fast_path.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -197,8 +198,9 @@ upConvertTo16Bit:
           }
 
           static constexpr size_t kMachineWordSize = sizeof(MachineWord);
-          CopyAsciiMachineWord(
-              chunk, destination16.take_first<kMachineWordSize>().data());
+          // SAFTEY: `take_first<kMachineWordSize>()` ensures sufficient size.
+          UNSAFE_BUFFERS(CopyAsciiMachineWord(
+              chunk, destination16.take_first<kMachineWordSize>().data()));
           source.take_first<kMachineWordSize>();
         }
 

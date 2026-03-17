@@ -37,18 +37,18 @@ struct UCharByteFiller;
 
 template <>
 struct UCharByteFiller<4> {
-  static void Copy(MachineWord word, LChar* destination) {
-    // SAFETY: This is only used in a few places, and only copies
-    // a MachineWord buffer, the caller guarantees that destination
-    // holds at least 4 elements.
+  // PRECONDITIONS: `destination` must hold at least 4 elements.
+  UNSAFE_BUFFER_USAGE static void Copy(MachineWord word, LChar* destination) {
+    // SAFETY: Required from caller, enforced by UNSAFE_BUFFER_USAGE. This is
+    // only used in a few places, and only copies a MachineWord buffer.
     UNSAFE_BUFFERS(memcpy(destination, &word, 4));
   }
 
-  static void Copy(MachineWord word, UChar* destination) {
+  // PRECONDITIONS: `destination` must hold at least 4 elements.
+  UNSAFE_BUFFER_USAGE static void Copy(MachineWord word, UChar* destination) {
     auto source = base::byte_span_from_ref(word);
-    // SAFETY: This is only used in a few places, and only copies
-    // a MachineWord buffer, the caller guarantees that destination
-    // holds at least 4 elements.
+    // SAFETY: Required from caller, enforced by UNSAFE_BUFFER_USAGE. This is
+    // only used in a few places, and only copies a MachineWord buffer.
     UNSAFE_BUFFERS({
       destination[0] = source[0];
       destination[1] = source[1];
@@ -60,18 +60,18 @@ struct UCharByteFiller<4> {
 
 template <>
 struct UCharByteFiller<8> {
-  static void Copy(MachineWord word, LChar* destination) {
-    // SAFETY: This is only used in a few places, and only copies
-    // a MachineWord buffer, the caller guarantees that destination
-    // holds at least 8 elements.
+  // PRECONDITIONS: `destination` must hold at least 8 elements.
+  UNSAFE_BUFFER_USAGE static void Copy(MachineWord word, LChar* destination) {
+    // SAFETY: Required from caller, enforced by UNSAFE_BUFFER_USAGE. This is
+    // only used in a few places, and only copies a MachineWord buffer.
     UNSAFE_BUFFERS(memcpy(destination, &word, 8));
   }
 
-  static void Copy(MachineWord word, UChar* destination) {
+  // PRECONDITIONS: `destination` must hold at least 8 elements.
+  UNSAFE_BUFFER_USAGE static void Copy(MachineWord word, UChar* destination) {
     auto source = base::byte_span_from_ref(word);
-    // SAFETY: This is only used in a few places, and only copies
-    // a MachineWord buffer, the caller guarantees that destination
-    // holds at least 8 elements.
+    // SAFETY: Required from caller, enforced by UNSAFE_BUFFER_USAGE. This is
+    // only used in a few places, and only copies a MachineWord buffer.
     UNSAFE_BUFFERS({
       destination[0] = source[0];
       destination[1] = source[1];
@@ -85,12 +85,17 @@ struct UCharByteFiller<8> {
   }
 };
 
+// PRECONDITIONS: `destination` must be valid for sizeof(MachineWord).
 inline void CopyAsciiMachineWord(MachineWord word, LChar* destination) {
-  UCharByteFiller<sizeof(MachineWord)>::Copy(word, destination);
+  // SAFETY: required from caller, enforced by UNSAFE_BUFFER_USAGE.
+  UNSAFE_BUFFERS(UCharByteFiller<sizeof(MachineWord)>::Copy(word, destination));
 }
 
-inline void CopyAsciiMachineWord(MachineWord word, UChar* destination) {
-  UCharByteFiller<sizeof(MachineWord)>::Copy(word, destination);
+// PRECONDITIONS: `destination` must be valid for sizeof(MachineWord).
+UNSAFE_BUFFER_USAGE inline void CopyAsciiMachineWord(MachineWord word,
+                                                     UChar* destination) {
+  // SAFETY: required from caller, enforced by UNSAFE_BUFFER_USAGE.
+  UNSAFE_BUFFERS(UCharByteFiller<sizeof(MachineWord)>::Copy(word, destination));
 }
 
 }  // namespace blink

@@ -301,9 +301,8 @@ void StringBuilder::AppendFormat(const char* format, ...) {
   Vector<char, kDefaultSize> buffer(kDefaultSize);
 
   va_start(args, format);
-  // SAFETY: The safety of this code depends on the content of `format`. Since
-  // unsafe usage is marked with UNSAFE_TODO or UNSAFE_BUFFERS at the call
-  // site, no action is required here.
+  // SAFETY: The safety of this code depends on the content of `format`.
+  // Required from caller, Enforced by UNSAFE_BUFFER_USAGE in header.
   int length = UNSAFE_BUFFERS(base::VSpanPrintf(buffer, format, args));
   va_end(args);
   DCHECK_GE(length, 0);
