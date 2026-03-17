@@ -214,6 +214,7 @@ import org.chromium.chrome.browser.ui.side_panel_container.dev.SidePanelDevFeatu
 import org.chromium.chrome.browser.ui.side_panel_container.dev.SidePanelDevFeatureFactory;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinatorFactory;
+import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
 import org.chromium.chrome.browser.ui.signin.FullscreenSigninPromoLauncher;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController.StatusBarColorProvider;
 import org.chromium.chrome.browser.webapps.PwaRestorePromoUtils;
@@ -328,6 +329,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private @Nullable SidePanelContainerCoordinator mSidePanelContainerCoordinator;
     private @Nullable SidePanelDevFeature mSidePanelDevFeature;
     private final OneshotSupplierImpl<Boolean> mTrackerInitializedOneshotSupplier =
+            new OneshotSupplierImpl<>();
+    private final OneshotSupplierImpl<SideUiStateProvider> mSideUiStateProviderSupplier =
             new OneshotSupplierImpl<>();
     private ContextualTasksBridge mContextualTasksBridge;
     private @Nullable ActorOverlayCoordinator mActorOverlayCoordinator;
@@ -986,6 +989,12 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             mTabObscuringHandlerSupplier.get(),
                             assumeNonNull(mSnackbarManagerSupplier.get()),
                             mLayoutManagerSupplier);
+        }
+
+        if (ChromeFeatureList.sEnableAndroidSidePanel.isEnabled()) {
+            mCompositorViewHolderSupplier
+                    .get()
+                    .setSideUiStateProviderSupplier(mSideUiStateProviderSupplier);
         }
     }
 
@@ -1878,7 +1887,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             mProfileSupplier, mSidePanelContainerCoordinator, mWindowAndroid);
         }
 
-        mCompositorViewHolderSupplier.get().setSideUiStateProvider(mSideUiCoordinator);
+        mSideUiStateProviderSupplier.set(mSideUiCoordinator);
     }
 
     private void destroySideUi() {
@@ -2293,5 +2302,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         mTrackerInitializedOneshotSupplier.set(true);
                     });
         }
+    }
+
+    /** Returns the {@link OneshotSupplier} for the {@link SideUiStateProvider}. */
+    public OneshotSupplier<SideUiStateProvider> getSideUiStateProviderSupplier() {
+        return mSideUiStateProviderSupplier;
     }
 }

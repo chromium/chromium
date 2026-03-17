@@ -51,6 +51,7 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
@@ -184,6 +185,7 @@ public class CompositorViewHolder extends FrameLayout
 
     private TabModelSelector mTabModelSelector;
     private @Nullable BrowserControlsManager mBrowserControlsManager;
+    private @Nullable OneshotSupplier<SideUiStateProvider> mSideUiStateProviderSupplier;
     private @Nullable SideUiStateProvider mSideUiStateProvider;
     @VisibleForTesting @Nullable View mAccessibilityView;
     private @Nullable CompositorAccessibilityProvider mNodeProvider;
@@ -719,6 +721,9 @@ public class CompositorViewHolder extends FrameLayout
         if (mOnscreenContentProvider != null) mOnscreenContentProvider.destroy();
         if (mContentView != null) {
             mContentView.removeOnHierarchyChangeListener(this);
+        }
+        if (mSideUiStateProvider != null) {
+            mSideUiStateProvider.removeObserver(this);
         }
     }
 
@@ -1491,14 +1496,20 @@ public class CompositorViewHolder extends FrameLayout
     }
 
     /**
-     * Sets the {@link SideUiStateProvider}. Will only be called if the related feature flag is
-     * enabled.
+     * Sets the {@link OneshotSupplier} for {@link SideUiStateProvider}. Will only be called if the
+     * related feature flag is enabled.
      *
-     * @param sideUiStateProvider The {@link SideUiStateProvider}.
+     * @param sideUiStateProviderSupplier The {@link OneshotSupplier} for {@link
+     *     SideUiStateProvider}.
      */
-    public void setSideUiStateProvider(SideUiStateProvider sideUiStateProvider) {
-        mSideUiStateProvider = sideUiStateProvider;
-        mSideUiStateProvider.addObserver(this);
+    public void setSideUiStateProviderSupplier(
+            OneshotSupplier<SideUiStateProvider> sideUiStateProviderSupplier) {
+        mSideUiStateProviderSupplier = sideUiStateProviderSupplier;
+        mSideUiStateProviderSupplier.onAvailable(
+                (sideUiStateProvider) -> {
+                    mSideUiStateProvider = sideUiStateProvider;
+                    mSideUiStateProvider.addObserver(this);
+                });
     }
 
     public int getTopControlsHeightPixels() {

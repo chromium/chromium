@@ -56,6 +56,7 @@ import org.chromium.base.InputHintChecker;
 import org.chromium.base.InputHintCheckerJni;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -203,6 +204,7 @@ public class CompositorViewHolderUnitTest {
     private ApplicationViewportInsetTracker mViewportInsets;
     private SettableNonNullObservableSupplier<Integer> mKeyboardInsetSupplier;
     private SettableNonNullObservableSupplier<Integer> mKeyboardAccessoryInsetSupplier;
+    private OneshotSupplierImpl<SideUiStateProvider> mSideUiStateProviderSupplier;
     private final UserDataHost mUserDataHost = new UserDataHost();
 
     @Before
@@ -224,6 +226,7 @@ public class CompositorViewHolderUnitTest {
         mViewportInsets.setKeyboardInsetSupplier(mKeyboardInsetSupplier);
         mKeyboardAccessoryInsetSupplier = ObservableSuppliers.createNonNull(0);
         mViewportInsets.setKeyboardAccessoryInsetSupplier(mKeyboardAccessoryInsetSupplier);
+        mSideUiStateProviderSupplier = new OneshotSupplierImpl<>();
 
         when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
 
@@ -278,6 +281,7 @@ public class CompositorViewHolderUnitTest {
         mCompositorViewHolder.setApplicationViewportInsetSupplier(mViewportInsets);
         mCompositorViewHolder.onFinishNativeInitialization(
                 mTabModelSelector, null, ObservableSuppliers.alwaysZero());
+        mCompositorViewHolder.setSideUiStateProviderSupplier(mSideUiStateProviderSupplier);
         when(mCompositorViewHolder.getCurrentTab()).thenReturn(mTab);
         when(mCompositorViewHolder.getRootWindowInsets())
                 .thenReturn(VISIBLE_SYSTEM_BARS_WINDOW_INSETS.toWindowInsets());
@@ -1221,10 +1225,11 @@ public class CompositorViewHolderUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL)
-    public void testSetSideUiStateProvider() {
+    public void testSetSideUiStateProviderSupplier() {
         when(mSideUiStateProvider.getCurrentSideUiSpecs())
                 .thenReturn(SideUiSpecs.EMPTY_SIDE_UI_SPECS);
-        mCompositorViewHolder.setSideUiStateProvider(mSideUiStateProvider);
+        mSideUiStateProviderSupplier.set(mSideUiStateProvider);
+        runCurrentTasks();
 
         verify(mSideUiStateProvider).addObserver(mCompositorViewHolder);
     }
@@ -1246,7 +1251,8 @@ public class CompositorViewHolderUnitTest {
         int endContainerWidth = 200;
         SideUiSpecs currentSideUiSpecs = new SideUiSpecs(startContainerWidth, endContainerWidth);
         when(mSideUiStateProvider.getCurrentSideUiSpecs()).thenReturn(currentSideUiSpecs);
-        mCompositorViewHolder.setSideUiStateProvider(mSideUiStateProvider);
+        mSideUiStateProviderSupplier.set(mSideUiStateProvider);
+        runCurrentTasks();
 
         // Act. Pass empty specs, as the CompositorViewHolder is expected to instead query from
         // the set SideUiStateProvider.
@@ -1279,7 +1285,8 @@ public class CompositorViewHolderUnitTest {
         int endContainerWidth = 150;
         SideUiSpecs currentSideUiSpecs = new SideUiSpecs(startContainerWidth, endContainerWidth);
         when(mSideUiStateProvider.getCurrentSideUiSpecs()).thenReturn(currentSideUiSpecs);
-        mCompositorViewHolder.setSideUiStateProvider(mSideUiStateProvider);
+        mSideUiStateProviderSupplier.set(mSideUiStateProvider);
+        runCurrentTasks();
 
         // Act.
         mCompositorViewHolder.onSideUiSpecsChanged(currentSideUiSpecs);
