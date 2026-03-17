@@ -263,7 +263,7 @@
     return;
   }
   [self updateButtonsForCurrentTabGridPage];
-  self.currentWebStateList = _incognitoWebStateList;
+  [self updateForIncognitoVisible:YES];
 }
 
 - (void)willExitIncognitoForState:(IncognitoState*)incognitoState {
@@ -271,7 +271,7 @@
     return;
   }
   [self updateButtonsForCurrentTabGridPage];
-  self.currentWebStateList = _regularWebStateList;
+  [self updateForIncognitoVisible:NO];
 }
 
 - (void)didUpdateAuthenticationRequirementForState:
@@ -463,6 +463,7 @@
 
 // Updates for entering tab grid `page`.
 - (void)updateForTabGridPage:(TabGridPage)page {
+  _currentPage = page;
   switch (page) {
     case TabGridPageIncognitoTabs:
       self.currentWebStateList = _incognitoWebStateList;
@@ -526,6 +527,8 @@
 
 // Updates for `incognito` being visible.
 - (void)updateForIncognitoVisible:(BOOL)incognitoVisible {
+  _currentPage =
+      incognitoVisible ? TabGridPageIncognitoTabs : TabGridPageRegularTabs;
   if (incognitoVisible) {
     self.currentWebStateList = _incognitoWebStateList;
   } else {
