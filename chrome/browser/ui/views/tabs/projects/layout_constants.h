@@ -55,6 +55,9 @@ inline constexpr gfx::Insets kListsSeparatorMargins = gfx::Insets::VH(12, 20);
 // any affected histograms.
 inline constexpr size_t kMaxNumberOfRecentThreads = 300;
 
+// Number of threads visible when the threads section when collapsed.
+inline constexpr int kNumThreadsVisibleWhenCollapsed = 3;
+
 // Minimum width of the projects panel.
 inline constexpr int kProjectsPanelMinWidth = 240;
 
