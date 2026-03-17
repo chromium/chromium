@@ -153,7 +153,8 @@ bool IsNtpComposeboxEnabled(Profile* profile) {
   }
 
   return base::FeatureList::IsEnabled(kNtpComposebox) &&
-         aim_eligibility_service->IsAimEligible();
+         aim_eligibility_service->IsAimEligible() &&
+         aim_eligibility_service->IsFuseboxEligible();
 }
 
 bool IsDeepSearchEnabled(Profile* profile) {
