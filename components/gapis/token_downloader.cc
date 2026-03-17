@@ -80,37 +80,8 @@ void TokenDownloader::FetchToken(FetchTokenCallback callback,
       net::HttpRequestHeaders::kAuthorization,
       base::StringPrintf("Bearer %s", access_token.c_str()));
 
-  net::NetworkTrafficAnnotationTag traffic_annotation =
-      net::DefineNetworkTrafficAnnotation("gapis_token_downloader", R"(
-        semantics {
-          sender: "Chrome Sync"
-          description:
-            "A network request to download a token from the Sync service."
-          trigger: "Request to Google APIs service."
-          data: "An OAuth2 access token."
-          destination: GOOGLE_OWNED_SERVICE
-          user_data {
-            type: ACCESS_TOKEN
-          }
-          internal {
-            contacts {
-              email: "rushans@google.com"
-            }
-            contacts {
-              email: "msarda@chromium.org"
-            }
-          }
-          last_reviewed: "2026-02-26"
-        }
-        policy {
-          cookies_allowed: NO
-          setting: "This feature cannot be disabled by settings."
-          policy_exception_justification: "Prototype feature behind a feature"
-            " toggle disabled by default."
-        })");
-
   simple_url_loader_ = network::SimpleURLLoader::Create(
-      std::move(resource_request), traffic_annotation);
+      std::move(resource_request), MISSING_TRAFFIC_ANNOTATION);
 
   gapis_pb::ObtainTokenRequest request_proto;
   request_proto.set_signed_challenge(signed_challenge);

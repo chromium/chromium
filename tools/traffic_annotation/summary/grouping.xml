@@ -401,7 +401,6 @@ after discussions on the right group.
       <annotation id="indigo_alpha_generate"/>
       <annotation id="indigo_alpha_status"/>
       <annotation id="devtools_gca_service"/>
-      <annotation id="gapis_token_downloader"/>
       <annotation id="actor_login_permission_service"/>
     </sender>
   </group>
