@@ -70,6 +70,7 @@
 #include "sql/statement_id.h"
 #include "sql/streaming_blob_handle.h"
 #include "sql/transaction.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_proto.h"
 #include "third_party/sqlite/sqlite3.h"
 
@@ -577,6 +578,11 @@ bool Database::Open(const base::FilePath& path) {
   DCHECK(!path.empty());
   DCHECK_NE(path_string, kSqliteOpenInMemoryPath)
       << "Path conflicts with SQLite magic identifier";
+
+  absl::Cleanup report_success = [this, open_timer = base::ElapsedTimer()] {
+    RecordTimingHistogram("Sql.Database.DatabaseOpenTime.",
+                          open_timer.Elapsed());
+  };
 
   // Preload the database before opening it to ensure it's working with the
   // exclusive mode.
