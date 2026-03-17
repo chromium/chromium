@@ -286,16 +286,22 @@ ActorLoginPermissionServiceImpl::ActorLoginPermissionServiceImpl(
 
 ActorLoginPermissionServiceImpl::~ActorLoginPermissionServiceImpl() = default;
 
-void ActorLoginPermissionServiceImpl::ListAllPermissions(
+void ActorLoginPermissionServiceImpl::ListPermissions(
+    const std::vector<FederatedOrigins>& origins,
     ListPermissionsResult callback) {
   GURL url(base::StrCat({kActorLoginPermissionServiceUrlBase, "list"}));
-  std::string post_data = CreateListRequestBody({});
+  std::string post_data = CreateListRequestBody(origins);
 
   StartRequest(std::make_unique<Request>(
       url, post_data, url_loader_factory_,
       base::BindOnce(&ActorLoginPermissionServiceImpl::OnListRequestCompleted,
                      base::Unretained(this))
           .Then(std::move(callback))));
+}
+
+void ActorLoginPermissionServiceImpl::ListAllPermissions(
+    ListPermissionsResult callback) {
+  ListPermissions({}, std::move(callback));
 }
 
 void ActorLoginPermissionServiceImpl::DeletePermission(

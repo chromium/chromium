@@ -39,6 +39,10 @@ class MockObserver : public ActorLoginPermissionsManager::Observer {
 
 class MockActorLoginPermissionService : public ActorLoginPermissionService {
  public:
+  MOCK_METHOD(void,
+              ListPermissions,
+              (const std::vector<FederatedOrigins>&, ListPermissionsResult),
+              (override));
   MOCK_METHOD(void, ListAllPermissions, (ListPermissionsResult), (override));
   MOCK_METHOD(void,
               DeletePermission,

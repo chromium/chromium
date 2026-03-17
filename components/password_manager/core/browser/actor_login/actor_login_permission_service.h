@@ -57,7 +57,13 @@ class ActorLoginPermissionService : public KeyedService {
  public:
   ~ActorLoginPermissionService() override = default;
 
-  // Lists actor login permissions for the primary profile.
+  // Lists actor login permissions for the primary profile by applying the given
+  // origins as filters. Opaque origins are ignored, meaning setting all
+  // origins to opaque is equivalent to calling `ListAllPermissions`.
+  virtual void ListPermissions(const std::vector<FederatedOrigins>& origins,
+                               ListPermissionsResult callback) = 0;
+
+  // Lists all actor login permissions for the primary profile.
   virtual void ListAllPermissions(ListPermissionsResult callback) = 0;
 
   // Deletes permission for the given embedder origin. If the origin is opaque,

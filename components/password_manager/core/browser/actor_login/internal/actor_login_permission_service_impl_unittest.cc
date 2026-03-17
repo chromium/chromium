@@ -51,6 +51,21 @@ class ActorLoginPermissionServiceImplTest : public testing::Test {
           &test_url_loader_factory_)};
 };
 
+TEST_F(ActorLoginPermissionServiceImplTest,
+       ListAllPermissionsSendsCorrectRequest) {
+  base::test::TestFuture<std::vector<FederatedPermission>> future;
+  service_.ListAllPermissions(future.GetCallback());
+
+  ASSERT_EQ(1, test_url_loader_factory_.NumPending());
+  const network::ResourceRequest& request =
+      test_url_loader_factory_.GetPendingRequest(0)->request;
+
+  EXPECT_EQ(kTestListUrl, request.url.spec());
+  EXPECT_EQ("POST", request.method);
+  EXPECT_EQ(network::mojom::CredentialsMode::kOmit, request.credentials_mode);
+  EXPECT_EQ("{\"filters\":[]}", network::GetUploadData(request));
+}
+
 TEST_F(ActorLoginPermissionServiceImplTest, ListAllPermissionsReturnsEmpty) {
   base::test::TestFuture<std::vector<FederatedPermission>> future;
   service_.ListAllPermissions(future.GetCallback());
@@ -59,6 +74,44 @@ TEST_F(ActorLoginPermissionServiceImplTest, ListAllPermissionsReturnsEmpty) {
                                                              "{}");
 
   EXPECT_TRUE(future.Get().empty());
+}
+
+TEST_F(ActorLoginPermissionServiceImplTest,
+       ListPermissionsSendsCorrectRequest) {
+  base::test::TestFuture<std::vector<FederatedPermission>> future;
+  std::vector<FederatedOrigins> origins = {
+      {url::Origin::Create(GURL("https://embedder1.com")),
+       url::Origin::Create(GURL("https://requester1.com"))},
+      {url::Origin::Create(GURL("https://embedder2.com")),
+       url::Origin::Create(GURL("https://requester2.com"))}};
+  service_.ListPermissions(origins, future.GetCallback());
+
+  ASSERT_EQ(1, test_url_loader_factory_.NumPending());
+  const network::ResourceRequest& request =
+      test_url_loader_factory_.GetPendingRequest(0)->request;
+
+  EXPECT_EQ(kTestListUrl, request.url.spec());
+  EXPECT_EQ("POST", request.method);
+  EXPECT_EQ(network::mojom::CredentialsMode::kOmit, request.credentials_mode);
+  EXPECT_EQ(base::test::ParseJson(R"({
+              "filters": [
+                {
+                  "federatedCredentialPermissionFilter": {
+                    "matchAffiliatedRequesterOrigins": true,
+                    "rpEmbedderOrigin": "https://embedder1.com",
+                    "rpRequesterOrigin": "https://requester1.com"
+                  }
+                },
+                {
+                  "federatedCredentialPermissionFilter": {
+                    "matchAffiliatedRequesterOrigins": true,
+                    "rpEmbedderOrigin": "https://embedder2.com",
+                    "rpRequesterOrigin": "https://requester2.com"
+                  }
+                }
+              ]
+            })"),
+            base::test::ParseJson(network::GetUploadData(request)));
 }
 
 TEST_F(ActorLoginPermissionServiceImplTest,
