@@ -15,6 +15,8 @@ enum class ComposeboxModelOption {
   kAuto,
   // The system utilizes the thinking reasoning engine.
   kThinking,
+  // The system utilizes the thinking reasoning engine with no gen UI mode.
+  kThinkingNoGenUI,
 };
 
 #endif  // IOS_CHROME_BROWSER_COMPOSEBOX_PUBLIC_COMPOSEBOX_MODEL_OPTION_H_
