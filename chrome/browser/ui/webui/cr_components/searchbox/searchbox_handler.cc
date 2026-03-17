@@ -6,6 +6,7 @@
 
 #include "base/base64.h"
 #include "base/base64url.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -1145,49 +1146,41 @@ void SearchboxHandler::ExecuteAction(uint8_t line,
 
 void SearchboxHandler::GetPlaceholderConfig(
     GetPlaceholderConfigCallback callback) {
-  const auto placeholder_config = ntp_composebox::FeatureConfig::Get()
-                                      .config.composebox()
-                                      .placeholder_config();
-  std::vector<std::u16string> placeholders = {};
-  for (auto& text : placeholder_config.placeholders()) {
-    switch (text) {
-      case omnibox::NTPComposeboxConfig_PlaceholderConfig_Placeholder_ASK:
-        placeholders.emplace_back(l10n_util::GetStringUTF16(
-            IDS_NTP_SEARCH_BOX_DYNAMIC_PLACEHOLDER_ASK_GOOGLE));
-        break;
-      case omnibox::NTPComposeboxConfig_PlaceholderConfig_Placeholder_PLAN:
-        placeholders.emplace_back(l10n_util::GetStringUTF16(
-            IDS_NTP_SEARCH_BOX_DYNAMIC_PLACEHOLDER_PLAN));
-        break;
-      case omnibox::NTPComposeboxConfig_PlaceholderConfig_Placeholder_COMPARE:
-        placeholders.emplace_back(l10n_util::GetStringUTF16(
-            IDS_NTP_SEARCH_BOX_DYNAMIC_PLACEHOLDER_COMPARE));
-        break;
-      case omnibox::NTPComposeboxConfig_PlaceholderConfig_Placeholder_RESEARCH:
-        placeholders.emplace_back(l10n_util::GetStringUTF16(
-            IDS_NTP_SEARCH_BOX_DYNAMIC_PLACEHOLDER_RESEARCH));
-        break;
-      case omnibox::NTPComposeboxConfig_PlaceholderConfig_Placeholder_TEACH:
-        placeholders.emplace_back(l10n_util::GetStringUTF16(
-            IDS_NTP_SEARCH_BOX_DYNAMIC_PLACEHOLDER_TEACH));
-        break;
-      case omnibox::NTPComposeboxConfig_PlaceholderConfig_Placeholder_WRITE:
-        placeholders.emplace_back(l10n_util::GetStringUTF16(
-            IDS_NTP_SEARCH_BOX_DYNAMIC_PLACEHOLDER_WRITE));
-        break;
-      case omnibox::NTPComposeboxConfig_PlaceholderConfig_Placeholder_IMAGE:
-        placeholders.emplace_back(l10n_util::GetStringUTF16(
-            IDS_NTP_SEARCH_BOX_DYNAMIC_PLACEHOLDER_IMAGE));
-        break;
-      case omnibox::NTPComposeboxConfig_PlaceholderConfig_Placeholder_ASK_TAB:
-        placeholders.emplace_back(l10n_util::GetStringUTF16(
-            IDS_NTP_SEARCH_BOX_DYNAMIC_PLACEHOLDER_TAB));
-        break;
-      default:
-        NOTREACHED();
+  std::vector<std::u16string> placeholders;
+
+  // Try PEC API first to get the dynamic placeholder text.
+  AimEligibilityService* service =
+      AimEligibilityServiceFactory::GetForProfile(profile_);
+
+  const omnibox::SearchboxConfig* searchbox_config =
+      service ? service->GetSearchboxConfig() : nullptr;
+
+  if (searchbox_config) {
+    // Non-tool-dependent: always first per UX spec.
+    placeholders.emplace_back(l10n_util::GetStringUTF16(
+        IDS_NTP_SEARCH_BOX_DYNAMIC_PLACEHOLDER_ASK_GOOGLE));
+
+    static constexpr auto kToolPlaceholderMap =
+        base::MakeFixedFlatMap<omnibox::ToolMode, int>({
+            {omnibox::TOOL_MODE_IMAGE_GEN,
+             IDS_NTP_SEARCH_BOX_DYNAMIC_PLACEHOLDER_IMAGE},
+            {omnibox::TOOL_MODE_DEEP_SEARCH,
+             IDS_NTP_SEARCH_BOX_DYNAMIC_PLACEHOLDER_RESEARCH},
+            {omnibox::TOOL_MODE_CANVAS,
+             IDS_NTP_SEARCH_BOX_DYNAMIC_PLACEHOLDER_CANVAS},
+        });
+
+    for (const auto& tool_config : searchbox_config->tool_configs()) {
+      auto it = kToolPlaceholderMap.find(tool_config.tool());
+      if (it != kToolPlaceholderMap.end()) {
+        placeholders.emplace_back(l10n_util::GetStringUTF16(it->second));
+      }
     }
   }
 
+  const auto placeholder_config = ntp_composebox::FeatureConfig::Get()
+                                      .config.composebox()
+                                      .placeholder_config();
   searchbox::mojom::PlaceholderConfigPtr config =
       searchbox::mojom::PlaceholderConfig::New();
   config->texts = std::move(placeholders);
