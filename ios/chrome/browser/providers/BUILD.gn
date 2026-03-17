@@ -40,6 +40,7 @@ group("chromium_providers") {
     "//ios/chrome/browser/providers/raccoon:chromium_raccoon",
     "//ios/chrome/browser/providers/risk_data:chromium_risk_data",
     "//ios/chrome/browser/providers/safari_data_import:chromium_safari_data_import",
+    "//ios/chrome/browser/providers/screenshot_protection:chromium_screenshot_protection",
     "//ios/chrome/browser/providers/share_kit:chromium_share_kit",
     "//ios/chrome/browser/providers/signin:chromium_choice",
     "//ios/chrome/browser/providers/signin:chromium_signin_error",
