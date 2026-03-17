@@ -1321,6 +1321,7 @@ CreateInputDataFromAnnotatedPageContent(
     // through the standard search navigation flow.
     if (IsAimCobrowseEnabled() && [self isActiveTabAttached]) {
       CobrowseContext* context = [[CobrowseContext alloc] initWithURL:URL];
+      context.attachedItems = _items.containedItems;
       [_browserCoordinatorHandler hideComposebox];
       [_sceneHandler showAssistantWithContext:context];
       return;

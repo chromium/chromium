@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+@class ComposeboxInputItem;
 class GURL;
 
 // Context for the Cobrowse flow.
@@ -26,6 +27,9 @@ class GURL;
 // The server-side ID of the conversation.
 // Corresponds to the "mtid" query parameter.
 @property(nonatomic, copy, readonly) NSString* serverID;
+
+// The items attached from the composebox.
+@property(nonatomic, copy) NSArray<ComposeboxInputItem*>* attachedItems;
 
 // Returns a default context with the base search URL, used mainly for debugging
 // purposes.
