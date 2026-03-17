@@ -61,6 +61,10 @@ export class ComposeboxFileThumbnailElement extends CrLitElement {
     supportsUnimodal: true,
   };
 
+  getIsUploadingForTesting(): boolean {
+    return this.isUploading_;
+  }
+
   protected accessor isUploading_: boolean = false;
 
   override willUpdate(changedProperties: PropertyValues<this>) {

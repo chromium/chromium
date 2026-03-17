@@ -1920,6 +1920,10 @@ export class ComposeboxElement extends I18nMixinLit
         this.result_?.matches[this.selectedMatchIndex_] || null;
   }
 
+  getFilesForTesting(): ComposeboxFile[] {
+    return [...this.files_.values()];
+  }
+
   getResultForTesting(): AutocompleteResult|null {
     return this.result_;
   }
