@@ -26,6 +26,13 @@ namespace proto {
 class WebApp;
 }  // namespace proto
 
+// A fake implementation of AbstractWebAppDatabaseFactory that provides an
+// in-memory database store (using syncer::InMemoryDataTypeStore) for the web
+// app registry. This avoids real disk I/O in unit tests.
+// Note: tests should strongly prefer acting through the public web app APIs
+// (like WebAppCommandScheduler) rather than directly poking this database.
+// This factory is primarily useful for testing startup conditions or migration
+// logic that requires a specific pre-existing database state.
 class FakeWebAppDatabaseFactory : public AbstractWebAppDatabaseFactory {
  public:
   FakeWebAppDatabaseFactory();

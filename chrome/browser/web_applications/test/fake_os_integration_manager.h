@@ -17,6 +17,12 @@ namespace web_app {
 class WebAppFileHandlerManager;
 class WebAppProtocolHandlerManager;
 
+// A fake implementation of OsIntegrationManager that prevents the web app
+// system from making actual modifications to the host operating system (e.g.,
+// creating shortcuts, registering file handlers, or adding uninstall entries).
+// This is typically the default manager in unit tests, ensuring tests remain
+// isolated and side-effect free. It can also be configured to mock existing
+// OS state (like existing shortcuts) to test system behavior.
 class FakeOsIntegrationManager : public OsIntegrationManager {
  public:
   FakeOsIntegrationManager(

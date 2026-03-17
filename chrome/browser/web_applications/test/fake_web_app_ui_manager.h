@@ -29,6 +29,11 @@ class MlInstallOperationTracker;
 }  // namespace webapps
 namespace web_app {
 
+// A fake implementation of WebAppUiManager used in unit tests to prevent
+// actually opening browser windows or showing UI dialogs.
+// It allows tests to track UI interactions (like tab reparenting and window
+// launches) and can be configured to automatically accept or reject dialogs
+// (e.g., install dialogs, identity update dialogs).
 class FakeWebAppUiManager : public WebAppUiManager {
  public:
   FakeWebAppUiManager();

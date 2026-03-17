@@ -24,6 +24,10 @@ namespace web_app {
 
 // All WebAppDataRetriever operations are async, so this class posts tasks
 // when running callbacks to simulate async behavior in tests as well.
+// This class is essential for mocking the interaction with a `WebContents`
+// during the web app installation flow. It allows tests to provide artificial
+// manifest data, icon bitmaps, and installability checks without needing a
+// real web page or network connection.
 class FakeDataRetriever : public WebAppDataRetriever {
  public:
   FakeDataRetriever();

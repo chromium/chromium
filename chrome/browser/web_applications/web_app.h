@@ -68,6 +68,13 @@ class InstalledByPassKey {
   InstalledByPassKey() = default;
 };
 
+// Represents an installed web app in RAM. Its member fields largely reflect all
+// the ways a site can configure their web app manifest, plus miscellaneous
+// internal bookkeeping and user settings.
+//
+// Some settings on this class can also be influenced by other sources of truth
+// like policy. Thus it is often safer to access properties via getters on the
+// WebAppRegistrar, which combines these sources of truth.
 class WebApp {
  public:
   // This creates a web app object, and will CHECK-fail if the arguments are

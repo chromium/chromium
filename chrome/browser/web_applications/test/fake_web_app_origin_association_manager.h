@@ -13,6 +13,10 @@
 namespace web_app {
 
 // Fake implementation of WebAppOriginAssociationManager.
+// When tested components need to validate origin associations (e.g. for scope
+// extensions or migrations), tests can either use `SetData` to mock specific
+// validation responses, or call `set_pass_through(true)` to simply bypass the
+// network request entirely and return the inputted associations as valid.
 class FakeWebAppOriginAssociationManager
     : public WebAppOriginAssociationManager {
  public:

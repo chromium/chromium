@@ -91,12 +91,25 @@ enum class ManifestIdParseResult {
 // While WebAppRegistrar is a read-only model, WebAppSyncBridge is a
 // controller for that model. WebAppSyncBridge is responsible for:
 // - Registry initialization (reading model from a persistent storage like
-// LevelDb or prefs).
+//   LevelDb or prefs).
 // - Writing all the registry updates to a persistent store and sync.
 //
-// WebAppSyncBridge is the key class to support integration with Unified Sync
-// and Storage (USS) system. The sync bridge exclusively owns
+// WebAppSyncBridge is the key class to support integration with the Unified
+// Sync and Storage (USS) system. The sync bridge exclusively owns
 // DataTypeLocalChangeProcessor and WebAppDatabase (the storage).
+//
+// This is "bridge" between the WebAppProvider system's in-memory representation
+// of web apps and the Unified Sync and Storage (USS) system's database
+// representation. See syncer::DataTypeSyncBridge for more information about
+// this integration. It installs new apps, uninstalls apps the user uninstalled
+// elsewhere, and updates metadata. It also tells the sync system if there are
+// local changes.
+//
+// Note: This only stores per-web-app data, and that data will be deleted if the
+// web app is uninstalled. To store data that persists after uninstall, or
+// applies to a more general scope than a single web app, then the
+// `proto::DatabaseMetadata` object can be used (preferred), or the
+// `PrefService` on the `Profile` object or on the browser process.
 class WebAppSyncBridge : public syncer::DataTypeSyncBridge {
  public:
   // Disable the logic that resumes pending sync installs, and fixes cases where

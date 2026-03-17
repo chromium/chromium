@@ -1,37 +1,36 @@
 ## Web Apps
 
-### What are web apps?
+Web apps are websites with app-like qualities or capabilities. Chromium supports 'installing' a web app (or any website), which is sometimes required for some of these capabilities to function (e.g. file handlers or window controls overlay).
 
-Simply put web apps are sites that the user installs onto their machine mimicking a native app installed on their respective operating system.
+See [useful concepts and definitions here][4].
 
-#### User entry points
+### User entry points
 
-Sites that meet our install promotion requirements will have an install prompt appear in the omnibox on the right. Users can also install any site they like via `Menu > More tools > Create shortcut`....
+**Desktop**: If a site has a manifest attached with a name, icon, start_url, and display field specified, an installation icon will appear in the omnibox. Users can also install any site they like via `Menu > More tools > Install Page as App`. Apps are visible on chrome://apps on non-CrOS desktop.
+**Android**: An ML model is used to selectively show the blocking installation banner for users who are likely to install the app.  Otherwise installation is accessible via `3-dot menu > Add to Homescreen`.
 
-- Example site: https://developers.google.com/
-
-Users can see all of their web apps on chrome://apps (viewable on non-ChromeOS).
-
-#### Developer interface
+### Developer interface
 
 Sites customize how their installed site integrates at the OS level using a [web app manifest][2]. See developer guides for in depth overviews:
 
 - https://web.dev/progressive-web-apps/
 - https://web.dev/codelab-make-installable/
 
-#### Presentation
 
-See [https://tinyurl.com/dpwa-architecture-public][3] for presentation slides.
+## Web Apps on Desktop
 
-### Terms & Phrases
+TODO(https://crbug.com/492285240): Move this desktop documentation to `/chrome/browser/web_applications`.
 
-See [Web Apps - Concepts][4].
+See [https://tinyurl.com/dpwa-architecture-public][3] for presentation slides about the WebAppProvider system architecture.
 
 ### Debugging
 
-Use [chrome://web-app-internals][5] to inspect internal web app state. For Chromium versions prior to M93 use [chrome://internals/web-app][6].
+Use `chrome://web-app-internals` (generated [here][57]) to inspect internal web app state.
+Test failures will print this information out automatically to help with debugging.
 
-To test the behavior of the web app itself, Chrome DevTools Protocol can be used. See [Instruction of using PWA via CDP][59].
+The codebase has a number of useful DVLOGs (like in `web_app_command_manager.cc` and `web_app_lock_manager.cc`). Use the normal vmodule command line args to see these (e.g. `--vmodule=web_app*=1`).
+
+For developers wanting to test the behavior of the web app itself, Chrome DevTools Protocol can be used. See [Instruction of using PWA via CDP][59].
 
 ### Documentation Guidelines
 
@@ -45,9 +44,7 @@ To test the behavior of the web app itself, Chrome DevTools Protocol can be used
 - Class-level documentation (documentation in header files):
   - Answers questions like: Why does this class exist? What is the responsibility of this class? If this class involves a process with stages, what are those stages / steps?
   - Should be updated actively when that given file is changed.
-- Documentation inside of methods
-  - Should explain the "why" of code if it is not clear.
-  - Should be avoided otherwise.
+- Documentation inside of methods should only be used to explain the "why" of code if it is not obvious.
 
 ### What makes up Chromium's implementation?
 
@@ -55,7 +52,7 @@ The task of turning websites into "apps" in the user's OS environment has many p
 
 ![](webappprovider_component_ownership.jpg)
 
-See source [here][7].
+See the drawing source [here][7].
 
 - The `WebAppProvider` core system lives on the `Profile` object.
 - The `WebAppUiManagerImpl` also lives on the `Profile` object (to avoid deps issues).
@@ -70,39 +67,15 @@ Older presentation: [https://tinyurl.com/bmo-public][9]
 
 ### Architecture Philosophy
 
-There are a lot of great guidelines within Chromium
-
-- [Style guides][45]
-- [Dos and Don'ts][47]
-- etc.
-
-Other than general guidance of minimal complexity and having single-responsibility classes, some goals of our system:
-
-- Tests should operate on the [public interface][48] as much as possible. Refactors to the internal system should not involve fixing / modifying tests.
+- Tests (especially browser tests / integration tests) should generally operate on the [public interface][48] as much as possible. Unit tests can touch internals where convenient to set up initial state, but generally still test the operations via the public interface.
 - [External dependencies][49] should be behind fake-able interfaces, allowing unit & browser tests to swap these out. However, internal parts of our system should not be mocked out or faked - this tightly couples the internal implementation to our tests. If it is impossible to trigger a condition with the public interface, then that condition should be removed (or the public interface improved).
-  - Here is a nice [presentation][44] about testing that might clarify our approach.
+  - See [this presentation][44] about testing that might clarify our approach.
 
-### Public Interface
+### Usage
 
-This public interface should (and will) be improved, however this is the basic state as of 2022/11/09:
+The safest way to use the WebAppProvider system is using the `WebAppCommandScheduler` (via `WebAppProvider::scheduler()`), which serves as an entry point for operations on the system for safely reading or writing state. Unsafe state access is available via `WebAppProvider::registrar_unsafe()`, but this in not guaranteed to be consistent as an async operation could be occurring at any time (install, uninstall, update, etc).
 
-- `WebAppCommandScheduler`. Internally this schedules `WebAppCommand`s to do safe operations on the system.
-  - This already includes a variety of operations like installation, launching, etc.
-- Observers like the `AppRegistrarObserver` or `WebAppInstallManagerObserver`. However, users of these MUST NOT modify the web app system in the observation call - this can cause race conditions and weird re-entry bugs.
-- To query for apps with specific capabilities (like being installable, opening
-  in a window, etc.), use a [`WebAppFilter`][web-app-filter]. This is the
-  preferred way to find apps that match a given criteria.
-- Items exposed from the locks given to commands or callbacks:
-  - `WebAppRegistrar`
-  - Writing to the database using `ScopedRegistryUpdate` and the `WebAppSyncBridge`.
-  - Pref reading & writing
-  - `WebAppIconManager` supports icon fetch for a given web app.
-  - etc - see the documentation on the lock for more guidance.
-
-Some parts of the system that are used within commands:
-
-- `WebAppUrlLoader` & `WebAppDataRetriever` are used in commands, but this interface could be improved & does not have a formal factory yet.
-- `WebAppInstallFinalizer` is used in commands and could be improved.
+For information about creating safe read/write operations on the system, see the [commands README.md](/chrome/browser/web_applications/commands/README.md).
 
 ### External Dependencies
 
@@ -116,10 +89,9 @@ The goal is to have all of these behind an abstraction that has a fake to allow 
   `WebAppDataRetriever` and `WebAppIconDownloader` respectively), and observing
   navigations and destruction. The `WebContentsManager` serves as a centralized
   point of dependency for these interactions and acts as a factory for these
-  components, allowing for easier management and faking in tests.
+  components, allowing for easier management and faking in tests via the `FakeWebContentsManager`.
 - **OS Integration**: Each OS integration has fairly custom code on each OS to
-  do the operation. This is difficult to coordinate and test. Currently the
-  `OsIntegrationManger` manages this, which has a fake version.
+  do the operation. The `OsIntegrationManger` and the respective sub-managers own this.
 - **Sync system**: There is a tight coupling between our system and the sync
   system through the WebAppSyncBridge. Faking this is easy and is handled by
   the `FakeWebAppProvider`.
@@ -142,47 +114,32 @@ These store data for our system. Some of it is per-web-app, and some of it is gl
   - UserUninstalledPreinstalledWebAppPrefs
 - **OS Integration**: Various OS integration requires storing state on the operating system. Sometimes we are able to read this state back, sometimes not.
 
-None of this information should be accessed without an applicable 'lock' on the system.
+Accessing any of this information without an applicable 'lock' on the system is considered unsafe.
 
-### Managers
+### Relevant Classes & Managers
 
-These are used to encapsulate common responsibilities or in-memory state that
-needs to be stored.
+The **[`WebAppProvider`][/chrome/browser/web_applications/web_app_provider.h]** is the per-profile object housing most of the various web app subsystems, acting as the "main()" of the web app implementation where everything starts. Unit tests use the `FakeWebAppProvider` version which allows tests to swap out some managers with fakes (and does this by default for a few).
 
-#### `WebContentsManager`
+The objects that live on the WebAppProvider, often called 'Managers', are used to encapsulate common responsibilities or in-memory state that needs to be stored. See the respective header files for more detailed information:
 
-*   **Purpose**: Manages dependencies on `content::WebContents` for the
-    WebAppProvider system. It acts as a factory for `WebAppUrlLoader`,
-    `WebAppDataRetriever`, and `WebAppIconDownloader`.
-*   **Key Responsibilities**:
-    *   Provides concrete implementations of URL loading and data retrieval
-        abstractions.
-    *   Enables the use of fakes for these components in unit tests, reducing
-        the need for a full browser environment.
-*   **Location**:
-    `chrome/browser/web_applications/web_contents/web_contents_manager.h`
+- **`WebAppCommandManager` & `WebAppCommandScheduler`**: The entry point for performing asynchronous operations safely via locks.
+- **`WebAppRegistrar`**: Provides a queryable in-memory view of all installed web apps.
+- **`WebAppSyncBridge`**: Synchronizes the in-memory registrar with the on-disk database and Chrome Sync; faked with an in-memory database and sync disabled by default.
+- **`WebAppInstallManager`**: Orchestrates the installation of web apps.
+- **`ManifestUpdateManager`**: Monitors and applies updates to web app manifests.
+- **`ExternallyManagedAppManager`**: Handles installations from external sources like policies or preinstalled configurations.
+- **`WebAppPolicyManager`**: Manages apps installed via enterprise policy.
+- **`PreinstalledWebAppManager`**: Manages the installation of default "preinstalled" web apps.
+- **`WebAppIconManager`**: Manages the loading and storage of app icons on disk.
+- **`OsIntegrationManager`**: Manages all integrations with the host operating system. `FakeOsIntegrationManager` is used by default in unit tests.
+- **`WebAppUiManager`**: Interface for performing UI operations like showing dialogs. `FakeWebAppUiManager` is used by default in unit tests.
+- **`WebContentsManager`**: Factory for WebContents-based dependencies, wrapping the WebContents / network dependency for the entire system. `FakeWebContentsManager` is used by default in unit tests.
+- **`FileUtilsWrapper`**: Utility for file system access. `TestFileUtils` is used by default in unit tests.
 
-### Commands
+Other relevant classes:
 
-Commands are used to encapsulate operations in the system, and use Locks to
-ensure that your operation has isolation from other operations.
-- If you need to change something in the WebAppProvider system, you should probably use a command.
-- Commands talk to the system using locks they are granted. The locks should offer access to "managers" that the commands can use.
-- Commands expose a `ToDebugValue()` method that is logged on completion and exposed in the chrome://web-app-internals. This can be very helpful for debugging and bug reports.
-
-Note: There are DVLOGs in the `WebAppCommandManager` that can be helpful.
-
-### Locks / `WebAppLockManager`
-
-Locks allow operations to receive appropriate protections for what they are doing. For example, an `AppLock` will guarantee that no one is modifying, installing, or uninstalling that AppId while it is granted.
-
-Locks contain assessors that allow the user to access parts of the web app system. This is the safest way to read from the system.
-
-Note: There are DVLOGs in the `WebAppLockManager` that can be helpful.
-
-### OS Integration
-
-Anything that involves talking to the operating system. Usually has to do with adding, modifying, or removing the os entity that we register for the web app.
+- **[`WebApp`][13]**: The representation of an installed web app in RAM, reflecting how a site configures its web app manifest plus internal bookkeeping. This does not include information like policy information, so usage of this class is often discouraged over the WebAppRegistrar, which combined multiple sources of truth holistically.
+- **[`AppShimRegistry`][33]**: (Mac-only) Stores state in Chrome's "Local State" (global preferences) to reason about installed PWAs across all profiles without loading those profiles into memory.
 
 ## Deep Dives
 
@@ -193,110 +150,20 @@ Anything that involves talking to the operating system. Usually has to do with a
 - [/docs/webapps/manifest_update_process.md][51]
 - [/docs/webapps/isolated_web_apps.md][52]
 - [/docs/webapps/webui_web_app.md][54]
-
-## How To Use
-
-See the [public interface][48] section about which areas are generally "publicly available".
-
-The system is generally unit-test-compabible through the [`FakeWebAppProvider`][40], which is created by default in the `TestingProfile`. Sometimes tests require using the [`AwaitStartWebAppProviderAndSubsystems`][41] function in the setup function of the test to actually start the web app system & wait for it to complete startup. See [testing.md][58] for more information.
-
-There is a long-term goal of having the system be easily fake-able for customers using it. The best current 'public interface' distinction of the system is the `WebAppCommandScheduler`.
-
-To access or change information about a web app:
-
-- Obtain a lock from the `WebAppLockManager`, or (preferably) create a command with the relevant lock description.
-- When the lock is obtained (or the command is started with the lock), use the lock to access the data you need.
-  - Generally, you should use the `WebAppRegistrar` to get the data you need. This unifies many of our data sources into one place.
-- If changing data, change the data depending on the source of truth.
-  - For information in the database, use a `ScopedRegistryUpdate`.
-  - Otherwise use the relevant manager / helper to modify the data.
-  - Some things expect "observers" to be notified. That integration is currently in `WebAppSyncBridge`, but can be pulled out.
-
-Other guides:
-
 - [/docs/webapps/why-is-this-test-failing.md][36]
 - [/docs/webapps/how-to-create-webapp-integration-tests.md][37]
-
-## Debugging
-
-### chrome://web-app-internals
-
-This page allows you to see all of the internal information about the WebAppProvider system, including a truncated log of the debug information of the last run commands.
-
-It is often very useful to ask users to attach a copy of this page in bug reports.
-
-The integration tests will print out the [contents of this page][57] if a test fails, which can help debug that failure as well.
-
-### DVLOGs
-
-The codebase has a number of useful DVLOGs:
-- web_app_command_manager.cc: These will log various state changes of commands and the debug values on completion.
-- web_app_lock_manager.cc: This will log lock requests and any 'held or pending' lock holders for the requested lock at the time of the request. This does not necessarily mean those locks are blocking (as they may be shared locks) so you will have to look at the request locations to determine the status.
 
 ## Testing
 
 Please see [testing.md][58].
 
-## Relevant Classes
-
-#### [`WebAppProvider`][12]
-
-This is a per-profile object housing all the various web app subsystems. This is the "main()" of the web app implementation where everything starts.
-
-#### [`WebApp`][13]
-
-This is the representation of an installed web app in RAM. Its member fields largely reflect all the ways a site can configure their [web app manifest][2] plus miscellaneous internal bookkeeping and user settings.
-
-#### [`WebAppRegistrar`][14]
-
-This is where all the [`WebApps`][13] live in memory, and what many other subsystems query to look up any given web app's fields. Mutations to the registry have to go via ScopedRegistryUpdate or [WebAppSyncBridge][16].
-
-Accessing the registrar should happen through a Lock. If you access it through the `WebAppProvider`, then know that you are reading uncommitted (and thus unsafe) data.
-
-Why is it full of `GetAppXYZ()` getters for every field instead of just returning a `WebApp` reference? This is primarily done because the value may depend on multiple sources of truth. For example, whether the app should be run on OS login depends on both the user preference (stored in our database) and the administrator's policy (stored separately & given to us in-memory using prefs) Historically this was originally done because WebApps used be stored both in our database and extensions, and this served to unify the two.
-
-#### [`WebAppSyncBridge`][16]
-
-This is "bridge" between the WebAppProvider system's in-memory representation of web apps and the sync system's database representation (along with sync system functionality like add/remove/modify operations). This integration is a little complex and deserves it's own document, but it basically: _Stores all WebApps into a database and updates the database if any fields change_. Updates the system when there are changes from the sync system. _Installs new apps, uninstalls apps the user uninstalled elsewhere, updates metadata like user display mode preference, etc_. Tells the sync system if there are local changes (installs, uninstalls, etc).
-
-There is also a slide in a presentation [here][18] which illustrates how this system works, but it may be out of date.
-
-Note: This only stores per-web-app data, and that data will be deleted if the web app is uninstalled. To store data that persists after uninstall, or applies to a more general scope than a single web app, then the `PrefService` can be used, either on the `Profile` object (per-profile data, `profile->GetPrefs()`) or on the browser process `(`g_browser_process->local_state()``). Example of needing prefs: Storing if an app was previously installed as a preinstalled app in the past. Information is needed during chrome startup before profiles are loaded. A feature needs to store global data - e.g. "When was the last time we showed the in-product-help banner for any webapp?"
-
-#### [`ExternallyManagedAppManager`][19]
-
-This is for all installs that are not initiated by the user. This includes [preinstalled apps][20], [policy installed apps][21] and [system web apps][22].
-
-These all specify a set of [install URLs][23] which the `ExternallyManagedAppManager` synchronises the set of currently installed web apps with.
-
-#### [`WebAppInstallFinalizer`][24]
-
-This is the tail end of the installation process where we write all our web app metadata to [disk][25] and deploy OS integrations (like [desktop shortcuts][26] and [file handlers][27] using the [`OsIntegrationManager`][28].
-
-#### [`WebAppUiManager`][29]
-
-Sometimes we need to query window state from chrome/browser/ui land even though our BUILD.gn targets disallow this as it would be a circular dependency. This [abstract class][30] + [impl][31] injects the dependency at link time (see [`WebAppUiManager::Create()`'s`][32] `declaration and definition locations`).
-
-#### [`AppShimRegistry`][33]
-
-On Mac OS we sometimes need to reason about the state of installed PWAs in all profiles without loading those profiles into memory. For this purpose, `AppShimRegistry` stores the needed information in Chrome's "Local State" (global preferences). The information stored here includes:
-
-  - All profiles a particular web app is installed in.
-  - What profiles a particular web app was open in when it was last used.
-  - What file and protocol handlers are enabled for a web app in each profile it is installed in.
-
-This information is used when launching a web app (to determine what profile or profiles to open the web app in), as well as when updating an App Shim (to make sure all file and protocol handlers for the app are accounted for).
-
 [2]: https://www.w3.org/TR/appmanifest/
 [3]: https://tinyurl.com/dpwa-architecture-public
 [4]: concepts.md
-[5]: chrome://web-app-internals
-[6]: chrome://internals/web-app
 [7]: https://docs.google.com/drawings/d/1TqUF2Pqh2S5qPGyA6njQWxOgSgKQBPePKPIH_srGeRk/edit?usp=sharing
 [8]: #webappsyncbridge
 [9]: https://tinyurl.com/bmo-public
 [11]: integration-testing-framework.md
-[12]: /chrome/browser/web_applications/web_app_provider.h
 [13]: /chrome/browser/web_applications/web_app.h
 [14]: /chrome/browser/web_applications/web_app_registrar.h
 [16]: /chrome/browser/web_applications/web_app_sync_bridge.h
@@ -335,4 +202,3 @@ This information is used when launching a web app (to determine what profile or 
 [57]: https://source.chromium.org/search?q=WebAppInternalsHandler::BuildDebugInfo
 [58]: testing.md
 [59]: cdp-integration.md
-[web-app-filter]: /chrome/browser/web_applications/web_app_filter.h

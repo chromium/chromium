@@ -1,5 +1,5 @@
-# Use of this source code is governed by a BSD-style license that can be
 # Copyright 2018 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//chrome/browser/buildflags.gni")
@@ -968,6 +968,7 @@ source_set("web_applications_unit_tests") {
     "commands/fetch_installability_for_chrome_management_unittest.cc",
     "commands/fetch_manifest_and_install_command_unittest.cc",
     "commands/fetch_manifest_and_update_command_unittest.cc",
+    "commands/generated_icon_fix_command_unittest.cc",
     "commands/install_app_locally_command_unittest.cc",
     "commands/install_from_sync_command_unittest.cc",
     "commands/install_migrate_to_app_command_unittest.cc",

@@ -56,6 +56,21 @@ class OsIntegrationTestOverrideImpl;
 // saved `scoped_refptr<OsIntegrationTestOverride>`. This ensures that all os
 // integration (disk folders, windows registry changes, etc) have been removed.
 //
+// This overrides the execution of actual OS integration at the lowest layer,
+// simulating success without altering the developer's raw OS environment,
+// allowing tests to read the 'expected' state of OS integrations cleanly.
+//
+// Usage in tests:
+// 1. Setup an `OsIntegrationTestOverrideImpl::BlockingRegistration` inside of
+//    `SetUp()` (needs `ScopedAllowBlockingForTesting`).
+// 2. Utilize the provider to check states:
+//    `OsIntegrationTestOverrideImpl::Get()->IsShortcutCreated(...)`.
+// 3. IMPORTANT TEARDOWN RULE: App uninstallation does file I/O operations and
+//    expects the override to still be alive. So, perform
+//    `test::UninstallAllWebApps(profile());` in `TearDown()` before resetting
+//    the override. Note that `WebAppTest::TearDown()` handles this cleanup
+//    automatically.
+//
 // `test_override()` can be used to view or modify the OS state.
 //
 // Note: This override does not apply if there is a

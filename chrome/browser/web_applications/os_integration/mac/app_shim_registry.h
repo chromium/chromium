@@ -26,11 +26,18 @@ class PrefService;
 class PrefRegistrySimple;
 
 // This class is used to store information about which app shims have been
-// installed for which profiles in local storage. This is used to:
+// installed for which profiles in local storage. This is needed to reason
+// about the state of installed PWAs in all profiles without loading those
+// profiles into memory. For this purpose, `AppShimRegistry` stores the needed
+// information in Chrome's "Local State" (global preferences).
+// This is used to:
 //  - Open the last active profile when an app shim is launched.
 //  - Populate the profile switcher menu in the app with only those profile
 //    for which the app is installed.
 //  - Only delete the app shim when it has been uninstalled for all profiles.
+//  - Store what file and protocol handlers are enabled for a web app in each
+//    profile it is installed in (to make sure all file and protocol handlers
+//    for the app are accounted for when updating the App Shim).
 // All base::FilePath arguments to functions are expected to be full profile
 // paths (e.g, the result of calling Profile::GetPath).
 //

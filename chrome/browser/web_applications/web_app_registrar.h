@@ -126,6 +126,20 @@ BASE_DECLARE_FEATURE(kPreinstalledBrowserTabWebAppsCaptureOnDefault);
 BASE_DECLARE_FEATURE(kPreinstalledBrowserTabWebAppsForcedDefaultCaptureOff);
 
 // A registry model. This is a read-only container, which owns WebApp objects.
+// This is where all the WebApps live in memory, and what many other subsystems
+// query to look up any given web app's fields. Mutations to the registry must
+// use a ScopedRegistryUpdate, and this must occur within a command or job
+// (where a lock is held).
+//
+// Accessing the registrar should happen through a lock that has
+// `WithAppResources` (e.g. AppLock). If accessed through the WebAppProvider,
+// then any data read is potentially uncommmited (and thus unsafe).
+//
+// Other responsibilities of this class:
+// - Operations that compare or operate on multiple web apps, (e.g.
+//   FindAppThatCapturesLinksInScope).
+// - Combining multiple sources of truth (e.g. GetAppRunOnOsLoginMode, which
+//   must consider both the user's preference AND the admin's policy).
 class WebAppRegistrar {
  public:
   // Returns if the given display mode is supported for navigation capturing.

@@ -73,6 +73,8 @@ class IwaBundleCacheManager;
 // Connects Web App features, such as the installation of default and
 // policy-managed web apps, with Profiles (as WebAppProvider is a
 // Profile-linked KeyedService) and their associated PrefService.
+// This is a per-profile object housing all the various web app subsystems.
+// This is the "main()" of the web app implementation where everything starts.
 //
 // Lifecycle notes:
 // - WebAppProvider and its sub-managers are not ready for use until the
