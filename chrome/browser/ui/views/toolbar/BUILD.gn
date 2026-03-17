@@ -162,6 +162,7 @@ source_set("impl") {
     "//chrome/browser/actor/ui/task_list_bubble:controller",
     "//chrome/browser/bookmarks",
     "//chrome/browser/extensions",
+    "//chrome/browser/external_protocol",
     "//chrome/browser/feedback",
     "//chrome/browser/glic/browser_ui",
     "//chrome/browser/media/router:media_router_feature",

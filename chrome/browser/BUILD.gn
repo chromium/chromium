@@ -441,12 +441,6 @@ static_library("browser") {
     "enterprise/util/managed_browser_utils.cc",
     "enterprise/util/managed_browser_utils.h",
     "expired_flags_list.h",
-    "external_protocol/constants.cc",
-    "external_protocol/constants.h",
-    "external_protocol/external_protocol_handler.cc",
-    "external_protocol/external_protocol_handler.h",
-    "external_protocol/external_protocol_observer.cc",
-    "external_protocol/external_protocol_observer.h",
     "file_select_helper.cc",
     "file_select_helper.h",
     "file_util_service.cc",
@@ -1460,7 +1454,6 @@ static_library("browser") {
     # TODO(crbug.com/353332589): Remove this circular dependency once the following
     # headers get componentized:
     # c/b/custom_handlers/protocol_handler_registry_factory.h"
-    # c/b/external_protocol/external_protocol_handler.h"
     # c/b/profiles/profile_io_data.h"
     # c/b/history/top_sites_factory.h"
     # c/b/history_embeddings/history_embeddings_service_factory.h"
@@ -1519,6 +1512,7 @@ static_library("browser") {
     # should be added to browser_generated_files.
     ":browser_public_dependencies",
     ":chrome_content_browser_client_parts",
+    "//chrome/browser/external_protocol",
     "//chrome/browser/google",
     "//chrome/browser/headless",
     "//chrome/browser/history_embeddings",
@@ -1635,6 +1629,7 @@ static_library("browser") {
     "//chrome/browser/enterprise/browser_management:management_identity",
     "//chrome/browser/enterprise/browser_management:management_identity_impl",
     "//chrome/browser/enterprise/platform_auth:features",
+    "//chrome/browser/external_protocol:impl",
     "//chrome/browser/favicon:impl",
     "//chrome/browser/feature_engagement",
     "//chrome/browser/feature_engagement:impl",
@@ -4315,6 +4310,9 @@ static_library("browser") {
       # TODO(crbug.com/40761673): Remove cycles and simplify all dependencies.
       "//chrome/browser/web_applications",
 
+      "//chrome/browser/external_protocol",
+      "//chrome/browser/external_protocol:impl",
+
       # TODO(crbug.com/40251079): Remove circular dependencies.
       "//chrome/browser/web_applications/app_service",
 
@@ -4486,8 +4484,6 @@ static_library("browser") {
         "download/download_ui_context_menu.h",
         "enterprise/remote_commands/cbcm_remote_commands_factory.cc",
         "enterprise/remote_commands/cbcm_remote_commands_factory.h",
-        "external_protocol/auto_launch_protocols_policy_handler.cc",
-        "external_protocol/auto_launch_protocols_policy_handler.h",
         "first_run/upgrade_util.cc",
         "first_run/upgrade_util.h",
         "hid/hid_status_icon.cc",

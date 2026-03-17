@@ -300,6 +300,7 @@ static_library("ui") {
     "//chrome/browser/devtools",
     "//chrome/browser/engagement",
     "//chrome/browser/enterprise/browser_management:management_identity",
+    "//chrome/browser/external_protocol",
     "//chrome/browser/favicon",
     "//chrome/browser/feedback:feedback_impl",
     "//chrome/browser/file_system_access",

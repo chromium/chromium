@@ -39,16 +39,33 @@
 #include "url/origin.h"
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/sharing/click_to_call/click_to_call_ui_controller.h"
-#include "chrome/browser/sharing/click_to_call/click_to_call_utils.h"
+#include "chrome/browser/sharing/click_to_call/click_to_call_ui_controller.h"  // nogncheck
+#include "chrome/browser/sharing/click_to_call/click_to_call_utils.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/navigation_interception/intercept_navigation_delegate.h"
 #else
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/browser.h"               // nogncheck
+#include "chrome/browser/ui/browser_finder.h"        // nogncheck
+#include "chrome/browser/ui/tabs/tab_strip_model.h"  // nogncheck
+#include "components/url_formatter/elide_url.h"
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
+#endif
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "chrome/browser/safe_browsing/safe_browsing_service.h"
+#endif
+
+#include "content/public/browser/web_contents.h"
+#include "ui/base/page_transition_types.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "components/navigation_interception/intercept_navigation_delegate.h"
+#else
+#include "chrome/browser/ui/browser.h"               // nogncheck
+#include "chrome/browser/ui/browser_finder.h"        // nogncheck
+#include "chrome/browser/ui/tabs/tab_strip_model.h"  // nogncheck
 #include "components/url_formatter/elide_url.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #endif

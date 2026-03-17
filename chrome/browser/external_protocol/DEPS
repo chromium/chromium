@@ -1,0 +1,35 @@
+include_rules = [
+  "-chrome/browser",
+  "+chrome/browser/browser_process.h",
+  "+chrome/browser/external_protocol",
+  "+chrome/browser/platform_util.h",
+  "+chrome/browser/profiles/profile.h",
+  "+chrome/browser/safe_browsing/safe_browsing_service.h",
+  "+chrome/browser/sharing/click_to_call/click_to_call_ui_controller.h",
+  "+chrome/browser/sharing/click_to_call/click_to_call_utils.h",
+  "+chrome/browser/shell_integration.h",
+  "+chrome/browser/ui/browser.h",
+  "+chrome/browser/ui/browser_finder.h",
+  "+chrome/browser/ui/tabs/tab_strip_model.h",
+  "+chrome/common/pref_names.h",
+  "+components/navigation_interception",
+  "+components/policy/core/browser",
+  "+components/prefs",
+  "+components/url_formatter",
+  "+components/url_matcher",
+  "+components/web_modal",
+  "+content/public/browser",
+  "+services/network/public/cpp",
+  "+services/network/public/mojom",
+  "+third_party/blink/public/mojom/devtools/console_message.mojom.h",
+  "+ui/base",
+]
+
+specific_include_rules = {
+  ".*(test|test_utils)\.cc": [
+    "+chrome/browser/browser_features.h",
+    "+chrome/browser/policy/policy_test_utils.h",
+    "+chrome/browser/prefs/browser_prefs.h",
+    "+chrome/browser/ui/tabs/tab_strip_model_observer.h",
+  ]
+}

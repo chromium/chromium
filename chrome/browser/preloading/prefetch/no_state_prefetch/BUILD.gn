@@ -77,6 +77,7 @@ if (!is_android) {
     ]
     deps = [
       "//base",
+      "//chrome/browser/external_protocol",
       "//chrome/browser/ui",
       "//chrome/common",
       "//net:test_support",

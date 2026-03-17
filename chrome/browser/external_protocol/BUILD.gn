@@ -1,0 +1,61 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+source_set("external_protocol") {
+  sources = [
+    "constants.h",
+    "external_protocol_handler.h",
+    "external_protocol_observer.h",
+  ]
+
+  public_deps = [
+    "//chrome/browser:shell_integration",
+    "//content/public/browser",
+    "//ui/base",
+  ]
+
+  if (!is_android && !is_chromeos) {
+    sources += [ "auto_launch_protocols_policy_handler.h" ]
+    public_deps += [ "//components/policy/core/browser" ]
+  }
+}
+
+source_set("impl") {
+  sources = [
+    "constants.cc",
+    "external_protocol_handler.cc",
+    "external_protocol_observer.cc",
+  ]
+
+  public_deps = [ ":external_protocol" ]
+
+  deps = [
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:primitives",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/safe_browsing",
+    "//chrome/common:constants",
+    "//components/prefs",
+    "//components/url_matcher",
+    "//services/network/public/cpp",
+    "//third_party/blink/public/common",
+    "//url",
+  ]
+
+  if (is_android) {
+    deps += [ "//components/navigation_interception" ]
+  } else {
+    deps += [
+      "//components/url_formatter",
+      "//components/web_modal",
+    ]
+  }
+
+  if (!is_android && !is_chromeos) {
+    sources += [ "auto_launch_protocols_policy_handler.cc" ]
+  }
+}

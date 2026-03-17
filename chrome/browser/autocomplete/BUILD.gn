@@ -84,6 +84,7 @@ source_set("impl") {
     "//chrome/browser/bitmap_fetcher",
     "//chrome/browser/bookmarks",
     "//chrome/browser/custom_handlers",
+    "//chrome/browser/external_protocol",
     "//chrome/browser/history",
     "//chrome/browser/history_clusters",
     "//chrome/browser/history_embeddings",
