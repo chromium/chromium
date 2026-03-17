@@ -107,6 +107,22 @@ source_set("test_support") {
   ]
 }
 
+source_set("ios_chrome_test_with_web_state") {
+  testonly = true
+  sources = [
+    "ios_chrome_test_with_web_state.h",
+    "ios_chrome_test_with_web_state.mm",
+  ]
+  deps = [
+    "//base/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/web/public/js_messaging",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest",
+  ]
+}
+
 source_set("eg_test_support+eg2") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true

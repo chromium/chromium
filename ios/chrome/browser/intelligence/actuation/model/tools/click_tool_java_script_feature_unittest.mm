@@ -4,25 +4,18 @@
 
 #import "ios/chrome/browser/intelligence/actuation/model/tools/click_tool_java_script_feature.h"
 
-#import "base/test/bind.h"
-#import "base/test/ios/wait_util.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/test_future.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actuation/model/actuation_error.h"
 #import "ios/chrome/browser/intelligence/actuation/model/tools/actuation_tool.h"
-#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/test/ios_chrome_test_with_web_state.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
-#import "ios/web/public/test/fakes/fake_web_client.h"
-#import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/js_test_util.h"
-#import "ios/web/public/test/scoped_testing_web_client.h"
 #import "ios/web/public/test/web_state_test_util.h"
-#import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_state.h"
 #import "testing/gtest/include/gtest/gtest.h"
-#import "testing/platform_test.h"
 
 using optimization_guide::proto::ClickAction;
 
@@ -34,34 +27,22 @@ constexpr int kHtmlHeight = 500;
 constexpr int kMidPointX = kHtmlWidth / 2;
 constexpr int kMidPointY = kHtmlHeight / 2;
 
-// TODO(crbug.com/472289820): Use ChromeTestWithWebState once it's introduced.
-class ClickToolJavaScriptFeatureTest : public PlatformTest {
+class ClickToolJavaScriptFeatureTest : public IOSChromeTestWithWebState {
  protected:
-  ClickToolJavaScriptFeatureTest()
-      : web_client_(std::make_unique<web::FakeWebClient>()) {
-    // TODO(crbug.com/483433952): Remove this once it's enabled by default.
+  ClickToolJavaScriptFeatureTest() {
     scoped_feature_list_.InitAndEnableFeature(
         web::features::kAssertOnJavaScriptErrors);
-    profile_ = TestProfileIOS::Builder().Build();
-
-    web::WebState::CreateParams params(profile_.get());
-    web_state_ = web::WebState::Create(params);
-    web_state_->GetView();
-    web_state_->SetKeepRenderProcessAlive(true);
-
-    web::test::OverrideJavaScriptFeatures(profile_.get(), {feature()});
   }
 
   void SetUp() override {
-    PlatformTest::SetUp();
+    IOSChromeTestWithWebState::SetUp();
+    fake_web_client()->SetJavaScriptFeatures({feature()});
     NSString* html = [NSString
         stringWithFormat:
             @"<html><body style='width: %dpx; height: %dpx;'></body></html>",
             kHtmlWidth, kHtmlHeight];
-    web::test::LoadHtml(html, web_state());
+    LoadHtml(html);
   }
-
-  web::WebState* web_state() { return web_state_.get(); }
 
   ClickToolJavaScriptFeature* feature() {
     return ClickToolJavaScriptFeature::GetInstance();
@@ -77,28 +58,12 @@ class ClickToolJavaScriptFeatureTest : public PlatformTest {
         optimization_guide::proto::Coordinate::PIXEL_TYPE_DIPS);
     return action;
   }
-
-  web::WebFrame* WaitForMainFrame() {
-    __block web::WebFrame* main_frame = nullptr;
-    CHECK(base::test::ios::WaitUntilConditionOrTimeout(
-        base::test::ios::kWaitForJSCompletionTimeout, ^bool {
-          web::WebFramesManager* frames_manager =
-              feature()->GetWebFramesManager(web_state());
-          main_frame = frames_manager->GetMainWebFrame();
-          return main_frame != nullptr;
-        }));
-    return main_frame;
-  }
-
   base::test::ScopedFeatureList scoped_feature_list_;
-  web::ScopedTestingWebClient web_client_;
-  web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestProfileIOS> profile_;
-  std::unique_ptr<web::WebState> web_state_;
 };
 
 TEST_F(ClickToolJavaScriptFeatureTest, JsReturnsNonDict) {
-  web::WebFrame* main_frame = WaitForMainFrame();
+  web::WebFrame* main_frame = WaitForMainFrame(feature());
+  ASSERT_TRUE(main_frame);
 
   // Override the JS function to return a string.
   web::test::ExecuteJavaScriptForFeature(
@@ -121,7 +86,8 @@ TEST_F(ClickToolJavaScriptFeatureTest, JsReturnsNonDict) {
 }
 
 TEST_F(ClickToolJavaScriptFeatureTest, JsReturnsError) {
-  web::WebFrame* main_frame = WaitForMainFrame();
+  web::WebFrame* main_frame = WaitForMainFrame(feature());
+  ASSERT_TRUE(main_frame);
 
   // Override the JS function to return an error dictionary.
   web::test::ExecuteJavaScriptForFeature(
@@ -145,7 +111,8 @@ TEST_F(ClickToolJavaScriptFeatureTest, JsReturnsError) {
 }
 
 TEST_F(ClickToolJavaScriptFeatureTest, JsReturnsErrorWithoutMessage) {
-  web::WebFrame* main_frame = WaitForMainFrame();
+  web::WebFrame* main_frame = WaitForMainFrame(feature());
+  ASSERT_TRUE(main_frame);
 
   // Override the JS function to return an error dictionary without message.
   web::test::ExecuteJavaScriptForFeature(
@@ -178,7 +145,8 @@ TEST_F(ClickToolJavaScriptFeatureTest, ClickFailure) {
                                  @"</body></html>",
                                  kIframeSize, kIframeSize];
   web::test::LoadHtml(html, web_state());
-  web::WebFrame* main_frame = WaitForMainFrame();
+  web::WebFrame* main_frame = WaitForMainFrame(feature());
+  ASSERT_TRUE(main_frame);
 
   ClickAction action = CreateClickAction(kIframeSize / 2, kIframeSize / 2);
 
@@ -193,7 +161,8 @@ TEST_F(ClickToolJavaScriptFeatureTest, ClickFailure) {
 }
 
 TEST_F(ClickToolJavaScriptFeatureTest, ClickSuccess) {
-  web::WebFrame* main_frame = WaitForMainFrame();
+  web::WebFrame* main_frame = WaitForMainFrame(feature());
+  ASSERT_TRUE(main_frame);
   ClickAction action = CreateClickAction();
 
   base::test::TestFuture<ActuationTool::ActuationResult> future;

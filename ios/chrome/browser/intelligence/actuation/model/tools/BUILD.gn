@@ -114,6 +114,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/browser/url_loading/model:test_support",
+    "//ios/chrome/test:ios_chrome_test_with_web_state",
     "//ios/web/common:features",
     "//ios/web/public/js_messaging",
     "//ios/web/public/test",
