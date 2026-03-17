@@ -12,21 +12,16 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/enterprise/connectors/analysis/request_handler_base.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/file_opening_job.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_request.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_service.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/file_opening_job.h"
 #include "components/file_access/scoped_file_access.h"
 
-namespace safe_browsing {
-
-class FileAnalysisRequest;
-class FileOpeningJob;
-
-}  // namespace safe_browsing
-
 namespace enterprise_connectors {
+
+class FileAnalysisRequestBase;
 
 // Handles deep scanning requests for multiple files which are specified by
 // `paths_`. Files are scanned in parallel and piped to the BinaryUploadService
@@ -101,7 +96,8 @@ class FilesRequestHandler : public RequestHandlerBase {
  private:
   // Prepares an upload request for the file at `path`.  If the file
   // cannot be uploaded it will have a failure verdict added to `result_`.
-  safe_browsing::FileAnalysisRequest* PrepareFileRequest(size_t index);
+  enterprise_connectors::FileAnalysisRequestBase* PrepareFileRequest(
+      size_t index);
 
   // Called when the file info for `path` has been fetched. Also begins the
   // upload process.

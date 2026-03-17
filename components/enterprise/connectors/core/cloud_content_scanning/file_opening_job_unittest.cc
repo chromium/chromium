@@ -2,33 +2,47 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/safe_browsing/cloud_content_scanning/file_opening_job.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/file_opening_job.h"
 
 #include <memory>
 
 #include "base/command_line.h"
 #include "base/containers/span.h"
+#include "base/files/file.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_command_line.h"
+#include "base/test/task_environment.h"
 #include "build/build_config.h"
-#include "chrome/browser/enterprise/connectors/common.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/file_analysis_request.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
-#include "content/public/test/browser_task_environment.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/file_analysis_request_base.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace safe_browsing {
+namespace enterprise_connectors {
+class MockFileAnalysisRequestBase : public FileAnalysisRequestBase {
+ public:
+  using FileAnalysisRequestBase::FileAnalysisRequestBase;
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  MOCK_METHOD1(ProcessZipFile, void(Data));
+  MOCK_METHOD1(ProcessRarFile, void(Data));
+#endif
+};
+}  // namespace enterprise_connectors
+
+namespace safe_browsing {
 class FileOpeningJobTest : public testing::Test {
  public:
   void SetUp() override { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }
 
-  void OnGotFileData(std::unique_ptr<FileAnalysisRequest> request,
-                     enterprise_connectors::ScanRequestUploadResult result,
-                     enterprise_connectors::BinaryUploadRequest::Data data) {
+  void OnGotFileData(
+      std::unique_ptr<enterprise_connectors::MockFileAnalysisRequestBase>
+          request,
+      enterprise_connectors::ScanRequestUploadResult result,
+      enterprise_connectors::BinaryUploadRequest::Data data) {
     EXPECT_EQ(enterprise_connectors::ScanRequestUploadResult::kSuccess, result);
     EXPECT_TRUE(data.contents.empty());
     EXPECT_FALSE(data.mime_type.empty());
@@ -39,8 +53,9 @@ class FileOpeningJobTest : public testing::Test {
         data.hash);
 
     ++on_got_file_data_count_;
-    if (on_got_file_data_count_ == quit_file_count_)
+    if (on_got_file_data_count_ == quit_file_count_) {
       quit_closure_.Run();
+    }
   }
 
   std::vector<FileOpeningJob::FileOpeningTask> CreateFilesAndTasks(int num) {
@@ -53,11 +68,15 @@ class FileOpeningJobTest : public testing::Test {
       base::File file(path, base::File::FLAG_CREATE | base::File::FLAG_WRITE);
       file.WriteAtCurrentPos(base::byte_span_from_cstring("foo"));
 
-      auto request = std::make_unique<FileAnalysisRequest>(
-          enterprise_connectors::AnalysisSettings(), path, path.BaseName(),
-          /*mime_type*/ "",
-          /*delay_opening_file*/ true, base::DoNothing());
-      auto* request_raw = request.get();
+      auto request =
+          std::make_unique<enterprise_connectors::MockFileAnalysisRequestBase>(
+              enterprise_connectors::AnalysisSettings(), path, path.BaseName(),
+              /*mime_type*/ "",
+              /*delay_opening_file*/ true, base::DoNothing(),
+              base::NullCallback(),
+              base::SingleThreadTaskRunner::GetCurrentDefault());
+      enterprise_connectors::FileAnalysisRequestBase* request_raw =
+          request.get();
       request_raw->GetRequestData(
           base::BindOnce(&FileOpeningJobTest::OnGotFileData,
                          weak_factory_.GetWeakPtr(), std::move(request)));
@@ -69,7 +88,7 @@ class FileOpeningJobTest : public testing::Test {
 
  protected:
   base::ScopedTempDir temp_dir_;
-  content::BrowserTaskEnvironment browser_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
   int next_file_id_ = 0;
   int on_got_file_data_count_ = 0;

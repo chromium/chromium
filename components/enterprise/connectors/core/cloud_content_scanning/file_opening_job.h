@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SAFE_BROWSING_CLOUD_CONTENT_SCANNING_FILE_OPENING_JOB_H_
-#define CHROME_BROWSER_SAFE_BROWSING_CLOUD_CONTENT_SCANNING_FILE_OPENING_JOB_H_
+#ifndef COMPONENTS_ENTERPRISE_CONNECTORS_CORE_CLOUD_CONTENT_SCANNING_FILE_OPENING_JOB_H_
+#define COMPONENTS_ENTERPRISE_CONNECTORS_CORE_CLOUD_CONTENT_SCANNING_FILE_OPENING_JOB_H_
 
 #include <atomic>
 #include <vector>
@@ -11,12 +11,16 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/post_job.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/file_analysis_request.h"
+
+namespace enterprise_connectors {
+class FileAnalysisRequestBase;
+}  // namespace enterprise_connectors
 
 namespace safe_browsing {
 
 // This class encapsulates a base::PostJob call made to open multiple files to
-// set up multiple FileAnalysiRequests to avoid using too many system resources.
+// set up multiple FileAnalysisRequestBases to avoid using too many system
+// resources.
 class FileOpeningJob {
  public:
   // Struct to store data necessary for a synchronized file opening task.
@@ -25,7 +29,8 @@ class FileOpeningJob {
     ~FileOpeningTask();
 
     // Non-owning pointer to the request corresponding to the file to open.
-    raw_ptr<safe_browsing::FileAnalysisRequest, AcrossTasksDanglingUntriaged>
+    raw_ptr<enterprise_connectors::FileAnalysisRequestBase,
+            AcrossTasksDanglingUntriaged>
         request = nullptr;
 
     // Indicates if this task has been taken and is owned by a thread.
@@ -72,4 +77,4 @@ class FileOpeningJob {
 
 }  // namespace safe_browsing
 
-#endif  // CHROME_BROWSER_SAFE_BROWSING_CLOUD_CONTENT_SCANNING_FILE_OPENING_JOB_H_
+#endif  // COMPONENTS_ENTERPRISE_CONNECTORS_CORE_CLOUD_CONTENT_SCANNING_FILE_OPENING_JOB_H_

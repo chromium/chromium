@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/safe_browsing/cloud_content_scanning/file_opening_job.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/file_opening_job.h"
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/task_traits.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/file_analysis_request_base.h"
 #include "components/safe_browsing/core/common/safebrowsing_switches.h"
 
 namespace safe_browsing {
@@ -57,8 +58,9 @@ FileOpeningJob::FileOpeningJob(std::vector<FileOpeningTask> tasks)
 }
 
 FileOpeningJob::~FileOpeningJob() {
-  if (file_opening_job_handle_)
+  if (file_opening_job_handle_) {
     file_opening_job_handle_.Cancel();
+  }
 }
 
 void FileOpeningJob::ProcessNextTask(base::JobDelegate* job_delegate) {
@@ -70,8 +72,9 @@ void FileOpeningJob::ProcessNextTask(base::JobDelegate* job_delegate) {
     // be true indicates we were the not the thread that took it.
     // std::memory_order_relaxed is safe here since `taken` is not synchronized
     // with other state.
-    if (tasks_[i].taken.exchange(true, std::memory_order_relaxed))
+    if (tasks_[i].taken.exchange(true, std::memory_order_relaxed)) {
       continue;
+    }
 
     // Since we know we now have taken `tasks_[i]`, we can do the file opening
     // work safely.
