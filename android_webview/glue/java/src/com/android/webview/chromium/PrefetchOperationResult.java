@@ -31,7 +31,6 @@ public class PrefetchOperationResult {
 
     public static PrefetchOperationResult fromPrefetchStatusCode(
             @StatusCode int statusCode, @Nullable Bundle extras) {
-        // TODO(crbug.com/372915075) : Implement tests.
         switch (statusCode) {
             case StatusCode.PREFETCH_RESPONSE_COMPLETED:
                 return new PrefetchOperationResult(PrefetchOperationStatusCode.SUCCESS);
@@ -46,7 +45,7 @@ public class PrefetchOperationResult {
                             extras.getInt(AwPrefetchCallback.EXTRA_HTTP_RESPONSE_CODE));
                 }
                 return new PrefetchOperationResult(PrefetchOperationStatusCode.SERVER_FAILURE);
-            case StatusCode.PREFETCH_START_FAILED_DUPLICATE:
+            case StatusCode.DUPLICATE_REQUEST:
                 return new PrefetchOperationResult(PrefetchOperationStatusCode.DUPLICATE_REQUEST);
             default:
                 throw new IllegalArgumentException(

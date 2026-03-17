@@ -206,7 +206,7 @@ public class AwPrefetchTest extends AwParameterizedTest {
         callback2.mOnStatusUpdatedHelper.waitForNext();
         Assert.assertEquals(1, callback2.getOnStatusUpdatedHelper().getCallCount());
         Assert.assertEquals(
-                AwPrefetchCallback.StatusCode.PREFETCH_START_FAILED_DUPLICATE,
+                AwPrefetchCallback.StatusCode.DUPLICATE_REQUEST,
                 callback2.getOnStatusUpdatedHelper().getStatusCode());
         Assert.assertNull(callback2.getOnStatusUpdatedHelper().getExtras());
         Assert.assertNull(callback2.getOnErrorHelper().mError);
@@ -220,7 +220,7 @@ public class AwPrefetchTest extends AwParameterizedTest {
         callback3.mOnStatusUpdatedHelper.waitForNext();
         Assert.assertEquals(1, callback3.getOnStatusUpdatedHelper().getCallCount());
         Assert.assertNotEquals(
-                AwPrefetchCallback.StatusCode.PREFETCH_START_FAILED_DUPLICATE,
+                AwPrefetchCallback.StatusCode.DUPLICATE_REQUEST,
                 callback3.getOnStatusUpdatedHelper().getStatusCode());
         Assert.assertNull(callback3.getOnStatusUpdatedHelper().getExtras());
         Assert.assertNull(callback3.getOnErrorHelper().mError);

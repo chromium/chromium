@@ -22,7 +22,7 @@ public interface AwPrefetchCallback {
         StatusCode.PREFETCH_RESPONSE_COMPLETED,
         StatusCode.PREFETCH_RESPONSE_SERVER_ERROR,
         StatusCode.PREFETCH_RESPONSE_GENERIC_ERROR,
-        StatusCode.PREFETCH_START_FAILED_DUPLICATE,
+        StatusCode.DUPLICATE_REQUEST,
     })
     @Retention(RetentionPolicy.SOURCE)
     @interface StatusCode {
@@ -30,7 +30,7 @@ public interface AwPrefetchCallback {
         int PREFETCH_RESPONSE_COMPLETED = 1;
         int PREFETCH_RESPONSE_SERVER_ERROR = 2;
         int PREFETCH_RESPONSE_GENERIC_ERROR = 3;
-        int PREFETCH_START_FAILED_DUPLICATE = 4;
+        int DUPLICATE_REQUEST = 4;
     }
 
     String EXTRA_HTTP_RESPONSE_CODE = "HttpResponseCode";

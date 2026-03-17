@@ -108,6 +108,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                 Features.SPECULATIVE_LOADING,
                 Features.BACK_FORWARD_CACHE,
                 Features.PREFETCH_WITH_URL,
+                Features.PREFETCH_WITH_CALLBACK_RESULT_V1,
                 Features.PREFETCH_CACHE + Features.DEV_SUFFIX,
                 Features.SET_MAX_PRERENDERS + Features.DEV_SUFFIX,
                 Features.DEFAULT_TRAFFICSTATS_TAGGING,

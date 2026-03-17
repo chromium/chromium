@@ -242,7 +242,7 @@ public class AwPrefetchManager {
     public void onPrefetchStartFailedDuplicate(
             AwPrefetchCallback callback, Executor callbackExecutor) {
         callbackExecutor.execute(
-                () -> callback.onStatusUpdated(StatusCode.PREFETCH_START_FAILED_DUPLICATE, null));
+                () -> callback.onStatusUpdated(StatusCode.DUPLICATE_REQUEST, null));
     }
 
     @CalledByNative
