@@ -6222,6 +6222,7 @@
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       independent: true,
       inherited: true,
+      field_group: "inherited",
       field_template: "multi_keyword",
       keywords: ["none", "capitalize", "uppercase", "lowercase", "full-width", "full-size-kana", "math-auto"],
       type_name: "ETextTransform",
