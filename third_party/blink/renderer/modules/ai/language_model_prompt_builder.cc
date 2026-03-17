@@ -362,9 +362,11 @@ void LanguageModelPromptBuilder::Build(const V8LanguageModelPrompt* input) {
             content_sequence.size()),
         message->prefix()));
 
-    bool is_multimodal = false;  // True if any content is not text.
+    bool is_multimodal = false;
     for (const auto& content : content_sequence) {
-      if (content->type().AsEnum() != V8LanguageModelMessageType::Enum::kText) {
+      V8LanguageModelMessageType::Enum content_type = content->type().AsEnum();
+      if (content_type == V8LanguageModelMessageType::Enum::kImage ||
+          content_type == V8LanguageModelMessageType::Enum::kAudio) {
         is_multimodal = true;
         break;
       }
