@@ -187,6 +187,8 @@ class SchedulerLoopQuarantineBranch {
     }
   };
 
+  int PausedCountForTesting() { return pause_quarantine_; }
+
  private:
   // `ToBeFreedArray` is used in `Quarantine` and
   // `PurgeInternalWithDefferedFree`. See the function comment about the

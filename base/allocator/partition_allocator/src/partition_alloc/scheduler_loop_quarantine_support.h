@@ -128,6 +128,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC)
   bool IsQuarantined(void* object);
   size_t GetCapacityInBytes();
   void Purge();
+  int PausedCount();
 
  private:
   std::variant<internal::GlobalSchedulerLoopQuarantineBranch*,
