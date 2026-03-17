@@ -489,4 +489,45 @@ id<GREYMatcher> identityDiscMatcher() {
   [self assertAccountMenuIsNotShown];
 }
 
+// Tests remove managed account from the edit accounts menu.
+- (void)testEditAccountsListRemoveManagedAccount {
+  [SigninEarlGrey
+      signinWithFakeManagedIdentityInPersonalProfile:kManagedIdentity1];
+  [self selectIdentityDisc];
+  // Tap on the Ellipsis button.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kAccountMenuSecondaryActionMenuButtonId)]
+      performAction:grey_tap()];
+  // Tap on Edit account list.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_text(l10n_util::GetNSString(
+                                       IDS_IOS_ACCOUNT_MENU_EDIT_ACCOUNT_LIST)),
+                                   grey_interactable(), nil)]
+      performAction:grey_tap()];
+  // Checks the account settings is shown
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kSettingsEditAccountListTableViewId)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Tap on Remove kManagedIdentity1 button.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(
+              [kSettingsAccountsRemoveAccountButtonAccessibilityIdentifier
+                  stringByAppendingString:kManagedIdentity1.userEmail])]
+      performAction:grey_tap()];
+
+  // Tap on kManagedIdentity1 confirm remove button.
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ActionSheetItemWithAccessibilityLabelId(
+                     IDS_IOS_REMOVE_ACCOUNT_LABEL)] performAction:grey_tap()];
+
+  [SigninEarlGrey verifySignedOut];
+
+  // Verify the Account Menu is dismissed.
+  [self assertAccountMenuIsNotShown];
+}
+
 @end
