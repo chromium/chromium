@@ -4,6 +4,7 @@
 
 #include "components/multistep_filter/core/annotation_index/annotation_index_client_impl.h"
 
+#include <memory>
 #include <optional>
 #include <string_view>
 #include <utility>
@@ -17,6 +18,11 @@
 #include "url/gurl.h"
 
 namespace multistep_filter {
+
+// static
+std::unique_ptr<AnnotationIndexClient> AnnotationIndexClient::Create() {
+  return std::make_unique<AnnotationIndexClientImpl>();
+}
 
 AnnotationIndexClientImpl::AnnotationIndexClientImpl() = default;
 AnnotationIndexClientImpl::~AnnotationIndexClientImpl() = default;

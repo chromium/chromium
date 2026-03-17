@@ -6,34 +6,82 @@
 #define COMPONENTS_MULTISTEP_FILTER_CORE_SUGGESTION_FILTER_SUGGESTION_GENERATOR_H_
 
 #include <optional>
+#include <string>
+#include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "components/multistep_filter/core/data_models/url_filter_suggestion.h"
 #include "url/gurl.h"
 
 namespace multistep_filter {
 
-// Generates filter suggestions for a given URL.
-//
-// Analyzes a URL to determine if a filter suggestion should be displayed.
-//
-// This class is owned by MultistepFilterService and shares its lifecycle.
+class AnnotationIndexClient;
+class FilterStore;
+struct FilterAnnotation;
+
+// Responsible for orchestrating the suggestion generation process for a given
+// URL. This class is owned by the `MultistepFilterService` and shares its
+// lifecycle.
 class FilterSuggestionGenerator {
  public:
-  FilterSuggestionGenerator();
+  FilterSuggestionGenerator(AnnotationIndexClient& annotation_index_client,
+                            FilterStore& filter_store);
   virtual ~FilterSuggestionGenerator();
 
   FilterSuggestionGenerator(const FilterSuggestionGenerator&) = delete;
   FilterSuggestionGenerator& operator=(const FilterSuggestionGenerator&) =
       delete;
 
-  // Evaluates `url` to determine if a filter suggestion is applicable.
-  //
-  // Invokes `callback` with a suggestion if one is generated, or with
+  // Evaluates `url` to determine if a filter suggestion is applicable, and
+  // invokes `callback` with a suggestion if one is generated, or with
   // std::nullopt if no suggestion is applicable.
+  //
+  // The generation process follows these steps:
+  // 1) Query the server via the `AnnotationIndexClient` to determine the
+  //    supported tasks for the current domain.
+  // 2) On the first server response (`OnSupportedTaskTypesFetched()`), query
+  //    the `FilterStore` to retrieve relevant historical user annotations.
+  // 3) On the store response (`OnAllAnnotationsFetched()`), query the server
+  //    via the `AnnotationIndexClient` a second time to evaluate these
+  //    candidates and generate concrete filter suggestions.
+  // 4) On the second server response (`OnUrlFilterSuggestionsFetched()`),
+  //    invoke the `callback` with the first suggestion if available, or
+  //    std::nullopt otherwise.
   virtual void GenerateSuggestion(
       const GURL& url,
       base::OnceCallback<void(std::optional<UrlFilterSuggestion>)> callback);
+
+ private:
+  // See documentation of `GenerateSuggestion()` for more details.
+  void OnSupportedTaskTypesFetched(
+      const GURL& url,
+      base::OnceCallback<void(std::optional<UrlFilterSuggestion>)> callback,
+      std::optional<std::vector<std::string>> supported_task_types);
+  void OnAllAnnotationsFetched(
+      const GURL& url,
+      base::OnceCallback<void(std::optional<UrlFilterSuggestion>)> callback,
+      std::vector<std::vector<FilterAnnotation>> filter_annotations);
+  void OnUrlFilterSuggestionsFetched(
+      base::OnceCallback<void(std::optional<UrlFilterSuggestion>)> callback,
+      std::optional<std::vector<UrlFilterSuggestion>> suggestions);
+
+  // The client used to fetch supported task types and URL filter suggestions.
+  // This is a non-owning reference. The lifetime of the `AnnotationIndexClient`
+  // object is managed by the `MultistepFilterService` instance that owns this
+  // `FilterSuggestionGenerator`.
+  const base::raw_ref<AnnotationIndexClient> annotation_index_client_;
+
+  // The store used to retrieve past annotations. This is a non-owning
+  // reference. The lifetime of the `FilterStore` object is managed by the
+  // `MultistepFilterService` instance that owns this
+  // `FilterSuggestionGenerator`.
+  const base::raw_ref<FilterStore> filter_store_;
+
+  // This should be kept at the end so that it is the first member to be
+  // destroyed.
+  base::WeakPtrFactory<FilterSuggestionGenerator> weak_ptr_factory_{this};
 };
 
 }  // namespace multistep_filter

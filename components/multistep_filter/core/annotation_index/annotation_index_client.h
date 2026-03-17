@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_MULTISTEP_FILTER_CORE_ANNOTATION_INDEX_ANNOTATION_INDEX_CLIENT_H_
 #define COMPONENTS_MULTISTEP_FILTER_CORE_ANNOTATION_INDEX_ANNOTATION_INDEX_CLIENT_H_
 
+#include <memory>
 #include <optional>
 #include <string_view>
 #include <vector>
@@ -36,6 +37,9 @@ class UrlFilterSuggestion;
 //    packaging it into clean, lightweight C++ structs for callers.
 class AnnotationIndexClient {
  public:
+  // Creates a default instance of `AnnotationIndexClient`.
+  static std::unique_ptr<AnnotationIndexClient> Create();
+
   virtual ~AnnotationIndexClient() = default;
 
   // Evaluates potential filter candidates and generates a list of

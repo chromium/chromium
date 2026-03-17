@@ -7,6 +7,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/multistep_filter/core/annotation_index/annotation_index_client.h"
 #include "components/multistep_filter/core/features.h"
 #include "components/multistep_filter/core/multistep_filter_service.h"
 #include "components/multistep_filter/core/suggestion/filter_suggestion_generator.h"
@@ -43,8 +44,17 @@ MultistepFilterServiceFactory::BuildServiceInstanceForBrowserContext(
   Profile* profile = Profile::FromBrowserContext(context);
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
+
+  std::unique_ptr<AnnotationIndexClient> annotation_index_client =
+      AnnotationIndexClient::Create();
+  std::unique_ptr<FilterStore> filter_store = std::make_unique<FilterStore>();
+  std::unique_ptr<FilterSuggestionGenerator> filter_suggestion_generator =
+      std::make_unique<FilterSuggestionGenerator>(*annotation_index_client,
+                                                  *filter_store);
+
   return std::make_unique<MultistepFilterService>(
-      std::make_unique<FilterSuggestionGenerator>(), identity_manager);
+      std::move(annotation_index_client), std::move(filter_store),
+      std::move(filter_suggestion_generator), identity_manager);
 }
 
 }  // namespace multistep_filter

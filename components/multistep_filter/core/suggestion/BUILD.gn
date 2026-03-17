@@ -7,6 +7,11 @@ source_set("suggestion") {
     "filter_suggestion_generator.cc",
     "filter_suggestion_generator.h",
   ]
+  deps = [
+    "//components/multistep_filter/core:features",
+    "//components/multistep_filter/core/annotation_index",
+    "//components/multistep_filter/core/storage",
+  ]
   public_deps = [
     "//base",
     "//components/multistep_filter/core/data_models",
@@ -19,7 +24,10 @@ source_set("unit_tests") {
   sources = [ "filter_suggestion_generator_unittest.cc" ]
   deps = [
     ":suggestion",
+    "//base",
     "//base/test:test_support",
+    "//components/multistep_filter/core/annotation_index:test_support",
+    "//components/multistep_filter/core/storage",
     "//testing/gmock",
     "//testing/gtest",
     "//url",

@@ -27,7 +27,11 @@ namespace {
 
 class MockMultistepFilterService : public MultistepFilterService {
  public:
-  MockMultistepFilterService() : MultistepFilterService(nullptr, nullptr) {}
+  MockMultistepFilterService()
+      : MultistepFilterService(/*annotation_index_client=*/nullptr,
+                               /*filter_store=*/nullptr,
+                               /*filter_suggestion_generator=*/nullptr,
+                               /*identity_manager=*/nullptr) {}
 
   MOCK_METHOD(void, GenerateFilterSuggestions, (const GURL& url));
 

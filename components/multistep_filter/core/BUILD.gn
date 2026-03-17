@@ -22,7 +22,9 @@ source_set("core") {
     "//url",
   ]
   public_deps = [
+    "//components/multistep_filter/core/annotation_index",
     "//components/multistep_filter/core/data_models",
+    "//components/multistep_filter/core/storage",
     "//components/multistep_filter/core/suggestion",
   ]
 }
@@ -34,8 +36,10 @@ source_set("unit_tests") {
     ":core",
     "//base",
     "//base/test:test_support",
+    "//components/multistep_filter/core/annotation_index:test_support",
     "//components/multistep_filter/core/data_models:unit_tests",
     "//components/multistep_filter/core/extraction:unit_tests",
+    "//components/multistep_filter/core/storage",
     "//components/multistep_filter/core/storage:unit_tests",
     "//components/multistep_filter/core/suggestion",
     "//components/multistep_filter/core/suggestion:unit_tests",

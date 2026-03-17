@@ -7,40 +7,164 @@
 #include <optional>
 
 #include "base/functional/bind.h"
-#include "base/test/mock_callback.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/test/task_environment.h"
+#include "base/test/test_future.h"
+#include "base/time/time.h"
+#include "base/uuid.h"
+#include "components/multistep_filter/core/annotation_index/mock_annotation_index_client.h"
+#include "components/multistep_filter/core/data_models/filter_annotation.h"
 #include "components/multistep_filter/core/data_models/url_filter_suggestion.h"
+#include "components/multistep_filter/core/storage/filter_store.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 namespace multistep_filter {
 
+namespace {
+
+constexpr char kTestUrl[] = "https://example.com";
+constexpr char kTestDomain[] = "example.com";
+constexpr char kShoppingTask[] = "SHOPPING";
+constexpr char kTestAttributeKey[] = "category";
+constexpr char kTestAttributeValue[] = "shoes";
+constexpr char kTestSuggestionTitle[] = "Shoes";
+constexpr char kTestSuggestionUrl[] = "https://example.com/shoes";
+
+using testing::_;
+using testing::Return;
+
 class FilterSuggestionGeneratorTest : public testing::Test {
  public:
   FilterSuggestionGeneratorTest() = default;
   ~FilterSuggestionGeneratorTest() override = default;
 
+  void SetUp() override {
+    store_ = std::make_unique<FilterStore>();
+    generator_ =
+        std::make_unique<FilterSuggestionGenerator>(mock_client_, *store_);
+  }
+
+  void TearDown() override {
+    generator_.reset();
+    if (store_) {
+      store_.reset();
+      base::ThreadPoolInstance::Get()->FlushForTesting();
+    }
+  }
+
  protected:
-  FilterSuggestionGenerator generator_;
+  MockAnnotationIndexClient& mock_client() { return mock_client_; }
+  FilterStore* store() { return store_.get(); }
+  FilterSuggestionGenerator* generator() { return generator_.get(); }
+
+ private:
+  base::test::TaskEnvironment task_environment_;
+  testing::NiceMock<MockAnnotationIndexClient> mock_client_;
+  std::unique_ptr<FilterStore> store_;
+  std::unique_ptr<FilterSuggestionGenerator> generator_;
 };
 
-TEST_F(FilterSuggestionGeneratorTest, CreateAndDestroy) {
-  // Verifies the service can be created and destroyed without crashing.
-  EXPECT_FALSE(HasFatalFailure());
+TEST_F(FilterSuggestionGeneratorTest,
+       GenerateSuggestion_SuccessfulSuggestionGenerated) {
+  const GURL url(kTestUrl);
+
+  EXPECT_CALL(mock_client(), GetSupportedTaskTypesForDomain(kTestDomain, _))
+      .WillOnce(
+          [](std::string_view domain,
+             base::OnceCallback<void(std::optional<std::vector<std::string>>)>
+                 cb) {
+            std::move(cb).Run(std::vector<std::string>{kShoppingTask});
+          });
+
+  base::Uuid id = base::Uuid::GenerateRandomV4();
+  std::vector<FilterAttribute> attributes = {
+      {kTestAttributeKey, kTestAttributeValue}};
+  FilterAnnotation annotation(id, kShoppingTask, kTestDomain, base::Time::Now(),
+                              attributes);
+
+  base::test::TestFuture<bool> store_future;
+  store()->StoreAnnotation(annotation, store_future.GetCallback());
+  ASSERT_TRUE(store_future.Get());
+
+  UrlFilterSuggestion expected_suggestion(kTestSuggestionTitle,
+                                          GURL(kTestSuggestionUrl));
+
+  EXPECT_CALL(mock_client(), GetUrlFilterSuggestions(url, _, _))
+      .WillOnce([expected_suggestion](
+                    const GURL& u,
+                    base::span<const FilterAnnotation> filter_annotations,
+                    base::OnceCallback<void(
+                        std::optional<std::vector<UrlFilterSuggestion>>)> cb) {
+        ASSERT_EQ(filter_annotations.size(), 1u);
+        EXPECT_EQ(filter_annotations[0].task_type, kShoppingTask);
+        std::move(cb).Run(
+            std::vector<UrlFilterSuggestion>{expected_suggestion});
+      });
+
+  base::test::TestFuture<std::optional<UrlFilterSuggestion>> future;
+  generator()->GenerateSuggestion(url, future.GetCallback());
+
+  EXPECT_EQ(future.Get(), expected_suggestion);
 }
 
-TEST_F(FilterSuggestionGeneratorTest, GenerateSuggestion) {
-  // Since implementation is NOTIMPLEMENTED, we just verify it can be called.
-  // We use a MockCallback to verify the interface.
-  base::MockCallback<
-      base::OnceCallback<void(std::optional<UrlFilterSuggestion>)>>
-      callback;
+// Tests that `std::nullopt` is returned when the server does not support any
+// task types for the given domain.
+TEST_F(FilterSuggestionGeneratorTest,
+       GenerateSuggestion_NoSupportedTaskTypesReturnsNullopt) {
+  const GURL url(kTestUrl);
 
-  // We expect the callback to be run with std::nullopt.
-  EXPECT_CALL(callback, Run(testing::Eq(std::nullopt)));
+  EXPECT_CALL(mock_client(), GetSupportedTaskTypesForDomain(kTestDomain, _))
+      .WillOnce(
+          [](std::string_view domain,
+             base::OnceCallback<void(std::optional<std::vector<std::string>>)>
+                 cb) { std::move(cb).Run(std::nullopt); });
 
-  const GURL url("http://www.google.com");
-  generator_.GenerateSuggestion(url, callback.Get());
+  base::test::TestFuture<std::optional<UrlFilterSuggestion>> future;
+  generator()->GenerateSuggestion(url, future.GetCallback());
+
+  EXPECT_EQ(future.Get(), std::nullopt);
 }
+
+// Tests that `std::nullopt` is returned when the server returns an empty list
+// of supported task types for the given domain.
+TEST_F(FilterSuggestionGeneratorTest,
+       GenerateSuggestion_EmptySupportedTaskTypesReturnsNullopt) {
+  const GURL url(kTestUrl);
+
+  EXPECT_CALL(mock_client(), GetSupportedTaskTypesForDomain(kTestDomain, _))
+      .WillOnce(
+          [](std::string_view domain,
+             base::OnceCallback<void(std::optional<std::vector<std::string>>)>
+                 cb) { std::move(cb).Run(std::vector<std::string>()); });
+
+  base::test::TestFuture<std::optional<UrlFilterSuggestion>> future;
+  generator()->GenerateSuggestion(url, future.GetCallback());
+
+  EXPECT_EQ(future.Get(), std::nullopt);
+}
+
+// Tests that `std::nullopt` is returned when no annotations are found for the
+// given domain.
+TEST_F(FilterSuggestionGeneratorTest,
+       GenerateSuggestion_NoAnnotationsReturnsNullopt) {
+  const GURL url(kTestUrl);
+
+  EXPECT_CALL(mock_client(), GetSupportedTaskTypesForDomain(kTestDomain, _))
+      .WillOnce(
+          [](std::string_view domain,
+             base::OnceCallback<void(std::optional<std::vector<std::string>>)>
+                 cb) {
+            std::move(cb).Run(std::vector<std::string>{kShoppingTask});
+          });
+
+  base::test::TestFuture<std::optional<UrlFilterSuggestion>> future;
+  generator()->GenerateSuggestion(url, future.GetCallback());
+
+  EXPECT_EQ(future.Get(), std::nullopt);
+}
+
+}  // namespace
 
 }  // namespace multistep_filter

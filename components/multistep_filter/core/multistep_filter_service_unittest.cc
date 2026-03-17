@@ -7,6 +7,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "components/multistep_filter/core/annotation_index/mock_annotation_index_client.h"
 #include "components/multistep_filter/core/data_models/url_filter_suggestion.h"
 #include "components/multistep_filter/core/suggestion/filter_suggestion_generator.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -18,6 +19,10 @@ namespace multistep_filter {
 
 class MockFilterSuggestionGenerator : public FilterSuggestionGenerator {
  public:
+  MockFilterSuggestionGenerator(AnnotationIndexClient& client,
+                                FilterStore& store)
+      : FilterSuggestionGenerator(client, store) {}
+
   void GenerateSuggestion(
       const GURL& url,
       base::OnceCallback<void(std::optional<UrlFilterSuggestion>)> callback)
@@ -36,7 +41,13 @@ class MultistepFilterServiceTest : public testing::Test {
 
 TEST_F(MultistepFilterServiceTest, CreateAndDestroy) {
   // Verifies the service can be created and destroyed without crashing.
-  MultistepFilterService service(std::make_unique<FilterSuggestionGenerator>(),
+  auto mock_client = std::make_unique<MockAnnotationIndexClient>();
+  auto store = std::make_unique<FilterStore>();
+  auto generator =
+      std::make_unique<FilterSuggestionGenerator>(*mock_client, *store);
+
+  MultistepFilterService service(std::move(mock_client), std::move(store),
+                                 std::move(generator),
                                  identity_test_env_.identity_manager());
 }
 
@@ -44,9 +55,14 @@ TEST_F(MultistepFilterServiceTest, GenerateFilterSuggestions) {
   identity_test_env_.MakePrimaryAccountAvailable("test@gmail.com",
                                                  signin::ConsentLevel::kSignin);
 
-  auto mock_generator = std::make_unique<MockFilterSuggestionGenerator>();
+  auto mock_client = std::make_unique<MockAnnotationIndexClient>();
+  auto store = std::make_unique<FilterStore>();
+  auto mock_generator =
+      std::make_unique<MockFilterSuggestionGenerator>(*mock_client, *store);
   MockFilterSuggestionGenerator* mock_generator_ptr = mock_generator.get();
-  MultistepFilterService service(std::move(mock_generator),
+
+  MultistepFilterService service(std::move(mock_client), std::move(store),
+                                 std::move(mock_generator),
                                  identity_test_env_.identity_manager());
 
   const GURL kUrl("http://example.com");
@@ -62,9 +78,14 @@ TEST_F(MultistepFilterServiceTest, GenerateFilterSuggestions) {
 }
 
 TEST_F(MultistepFilterServiceTest, GenerateFilterSuggestions_NotSignedIn) {
-  auto mock_generator = std::make_unique<MockFilterSuggestionGenerator>();
+  auto mock_client = std::make_unique<MockAnnotationIndexClient>();
+  auto store = std::make_unique<FilterStore>();
+  auto mock_generator =
+      std::make_unique<MockFilterSuggestionGenerator>(*mock_client, *store);
   MockFilterSuggestionGenerator* mock_generator_ptr = mock_generator.get();
-  MultistepFilterService service(std::move(mock_generator),
+
+  MultistepFilterService service(std::move(mock_client), std::move(store),
+                                 std::move(mock_generator),
                                  identity_test_env_.identity_manager());
 
   const GURL kUrl("http://example.com");
@@ -82,8 +103,11 @@ TEST_F(MultistepFilterServiceTest, GenerateFilterSuggestions_NotSignedIn) {
 TEST_F(MultistepFilterServiceTest, GenerateFilterSuggestions_NoGenerator) {
   identity_test_env_.MakePrimaryAccountAvailable("test@gmail.com",
                                                  signin::ConsentLevel::kSignin);
+  auto mock_client = std::make_unique<MockAnnotationIndexClient>();
+  auto store = std::make_unique<FilterStore>();
 
-  MultistepFilterService service(nullptr,
+  MultistepFilterService service(std::move(mock_client), std::move(store),
+                                 /*filter_suggestion_generator=*/nullptr,
                                  identity_test_env_.identity_manager());
 
   const GURL kUrl("http://example.com");
