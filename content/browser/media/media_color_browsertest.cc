@@ -10,9 +10,14 @@
 #include "media/base/test_data_util.h"
 #include "media/media_buildflags.h"
 
+#define REQUIRE_CODEC_SUPPORT()            \
+  if (ShouldSkipProprietaryCodecsTest()) { \
+    GTEST_SKIP();                          \
+  }
+
 namespace content {
 
-class MediaColorTest : public MediaBrowserTest {
+class MediaColorTest : public MaybeAcceleratedVideoDecodingTest {
  public:
   void SetUpOnMainThread() override {
     embedded_test_server()->ServeFilesFromSourceDirectory(
@@ -39,63 +44,72 @@ class MediaColorTest : public MediaBrowserTest {
   }
   void SetUp() override {
     EnablePixelOutput();
-    MediaBrowserTest::SetUp();
+    MaybeAcceleratedVideoDecodingTest::SetUp();
   }
 };
 
-IN_PROC_BROWSER_TEST_F(MediaColorTest, Yuv420pVp8) {
+IN_PROC_BROWSER_TEST_P(MediaColorTest, Yuv420pVp8) {
   RunBlackWhiteTest("yuv420p.webm");
 }
 
-IN_PROC_BROWSER_TEST_F(MediaColorTest, Yuv444pVp9) {
+IN_PROC_BROWSER_TEST_P(MediaColorTest, Yuv444pVp9) {
   RunBlackWhiteTest("yuv444p.webm");
 }
 
-IN_PROC_BROWSER_TEST_F(MediaColorTest, GbrpVp9) {
+IN_PROC_BROWSER_TEST_P(MediaColorTest, GbrpVp9) {
   RunGBRPTest("vp9.mp4");
 }
 
 // Fuchsia isn't able to playback 4:4:4 av1.
 #if !BUILDFLAG(IS_FUCHSIA)
-IN_PROC_BROWSER_TEST_F(MediaColorTest, GbrpAv1) {
+IN_PROC_BROWSER_TEST_P(MediaColorTest, GbrpAv1) {
   RunGBRPTest("av1.mp4");
 }
 #endif
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS) && BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
 
-IN_PROC_BROWSER_TEST_F(MediaColorTest, Yuv420pH264) {
+IN_PROC_BROWSER_TEST_P(MediaColorTest, Yuv420pH264) {
+  REQUIRE_CODEC_SUPPORT();
   RunBlackWhiteTest("yuv420p.mp4");
 }
 
-IN_PROC_BROWSER_TEST_F(MediaColorTest, Yuvj420pH264) {
+IN_PROC_BROWSER_TEST_P(MediaColorTest, Yuvj420pH264) {
+  REQUIRE_CODEC_SUPPORT();
   RunBlackWhiteTest("yuvj420p.mp4");
 }
 
-IN_PROC_BROWSER_TEST_F(MediaColorTest, Yuv420pRec709H264) {
+IN_PROC_BROWSER_TEST_P(MediaColorTest, Yuv420pRec709H264) {
+  REQUIRE_CODEC_SUPPORT();
   RunBlackWhiteTest("yuv420p_rec709.mp4");
 }
 
-IN_PROC_BROWSER_TEST_F(MediaColorTest, Yuv420pHighBitDepth) {
+IN_PROC_BROWSER_TEST_P(MediaColorTest, Yuv420pHighBitDepth) {
+  REQUIRE_CODEC_SUPPORT();
   RunBlackWhiteTest("yuv420p_hi10p.mp4");
 }
 
-IN_PROC_BROWSER_TEST_F(MediaColorTest, Yuv422pH264) {
+IN_PROC_BROWSER_TEST_P(MediaColorTest, Yuv422pH264) {
+  REQUIRE_CODEC_SUPPORT();
   RunBlackWhiteTest("yuv422p.mp4");
 }
 
-IN_PROC_BROWSER_TEST_F(MediaColorTest, Yuv444pH264) {
+IN_PROC_BROWSER_TEST_P(MediaColorTest, Yuv444pH264) {
+  REQUIRE_CODEC_SUPPORT();
   RunBlackWhiteTest("yuv444p.mp4");
 }
 
 // TODO(crbug.com/343014700): Add GbrpH265 test for H265 after resolving
 // color space full range issue on macOS, and validate HEVC 4:4:4 + GBR
 // video on Windows is working as expected.
-IN_PROC_BROWSER_TEST_F(MediaColorTest, GbrpH264) {
+IN_PROC_BROWSER_TEST_P(MediaColorTest, GbrpH264) {
+  REQUIRE_CODEC_SUPPORT();
   RunGBRPTest("h264.mp4");
 }
 
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS) &&
         // BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
+
+INSTANTIATE_TEST_SUITE_P(Default, MediaColorTest, ::testing::Bool());
 
 }  // namespace content
