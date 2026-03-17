@@ -4075,6 +4075,48 @@ TEST_P(PageContextWrapperTest, PopulatePageContext_RichExtraction_Canvas) {
             100);
 }
 
+// Tests that SVG inner text is extracted correctly.
+TEST_P(PageContextWrapperTest, PopulatePageContext_RichExtraction_Svg) {
+  if (!IsRefactored()) {
+    return;
+  }
+  auto page_structure = HtmlPage(
+      "RichExtraction_Svg",
+      RawHtml("<svg width=\"100\" height=\"100\"><title>Title</title><text>SVG "
+              "Text</text></svg>"));
+
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder().SetUseRichExtraction(true).Build();
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), config, ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  const auto& page_context = *response.value();
+  const auto& root_node = page_context.annotated_page_content().root_node();
+
+  // Root -> SVG
+  ASSERT_EQ(root_node.children_nodes_size(), 1);
+  const auto& svg_node = root_node.children_nodes(0);
+  EXPECT_EQ(svg_node.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_SVG_ROOT);
+  EXPECT_FALSE(svg_node.content_attributes().has_svg_root_data());
+
+  // Verify that the child text was extracted.
+  ASSERT_EQ(svg_node.children_nodes_size(), 1);
+  const auto& text_node = svg_node.children_nodes(0);
+  EXPECT_EQ(text_node.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_TEXT);
+  EXPECT_EQ(text_node.content_attributes().text_data().text_content(),
+            "SVG Text");
+}
+
 // Tests that Video Metadata is extracted correctly.
 TEST_P(PageContextWrapperTest, PopulatePageContext_RichExtraction_Video) {
   if (!IsRefactored()) {
