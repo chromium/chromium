@@ -113,11 +113,8 @@ class HistogramTesterWrapper {
 constexpr static char kSearchTerms_502OnPrefetch[] = "502-on-prefetch";
 
 std::optional<net::HttpNoVarySearchData> ParseNoVarySearchData(std::string s) {
-  auto headers =
-      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK\n");
-  headers->AddHeader("No-Vary-Search", s);
   auto maybe_no_vary_search_data =
-      net::HttpNoVarySearchData::ParseFromHeaders(*headers);
+      net::HttpNoVarySearchData::ParseFromHeaderValue(s);
   if (!maybe_no_vary_search_data.has_value()) {
     return std::nullopt;
   }

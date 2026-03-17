@@ -17,6 +17,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -101,6 +102,40 @@ TEST(HttpNoVarySearchCreateTest, CreateFromVaryParamsEmptyVaryOnKeyOrder) {
   EXPECT_THAT(no_vary_search.GetAffectedParams(), IsEmpty());
   EXPECT_TRUE(no_vary_search.vary_on_key_order());
   EXPECT_FALSE(no_vary_search.vary_by_default());
+}
+
+TEST(HttpNoVarySearchDataTest, ParseFromHeaderValueSuccess) {
+  ASSERT_OK_AND_ASSIGN(const auto no_vary_search,
+                       HttpNoVarySearchData::ParseFromHeaderValue(
+                           R"(key-order, params=("j" "b"))"));
+  EXPECT_FALSE(no_vary_search.vary_on_key_order());
+  EXPECT_TRUE(no_vary_search.vary_by_default());
+  EXPECT_THAT(no_vary_search.GetAffectedParams(),
+              UnorderedElementsAreArray({"j", "b"}));
+}
+
+TEST(HttpNoVarySearchDataTest, ParseFromHeaderValueFailure) {
+  struct FailureCase {
+    std::string_view description;
+    std::string_view header_value;
+    HttpNoVarySearchData::ParseErrorEnum expected_error;
+  };
+  using enum HttpNoVarySearchData::ParseErrorEnum;
+  static constexpr FailureCase cases[] = {
+      {"empty", "", kDefaultValue},
+      {"params-not-bool-or-list", "params=1", kParamsNotStringList},
+      {"except-not-list", "params, except=a", kExceptNotStringList},
+      {"except-without-params", "except=(\"a\")", kExceptWithoutTrueParams},
+      {"key-order-not-bool", "key-order=1", kNonBooleanKeyOrder},
+      {"unknown-dict-key", "unknown=a", kDefaultValue},
+      {"not-a-dictionary", "(\"a\", \"b\")", kNotDictionary},
+  };
+  for (const auto& c : cases) {
+    SCOPED_TRACE(c.description);
+    const auto result =
+        HttpNoVarySearchData::ParseFromHeaderValue(c.header_value);
+    EXPECT_THAT(result, base::test::ErrorIs(c.expected_error));
+  }
 }
 
 struct TestData {
@@ -344,6 +379,11 @@ FailureData response_header_failed[] = {
      "No-Vary-Search: params=?1\r\n"
      "No-Vary-Search: except\r\n\r\n",
      HttpNoVarySearchData::ParseErrorEnum::kExceptNotStringList},
+
+    {// empty header value
+     "HTTP/1.1 200 OK\r\n"
+     "No-Vary-Search:",
+     HttpNoVarySearchData::ParseErrorEnum::kDefaultValue},
 };
 
 const TestData response_headers_tests[] = {
@@ -764,40 +804,29 @@ TEST(HttpNoVarySearchAreEquivalentTest, CheckUrlEqualityWithSpecialCharacters) {
       {"@", "%40"},    {"[", "%5B"},    {"]", R"(%5D)"}, {"^", R"(%5E)"},
       {"_", R"(%5F)"}, {"`", "%60"},    {"{", "%7B"},    {"|", R"(%7C)"},
       {"}", R"(%7D)"}, {"~", R"(%7E)"}, {"", ""}};
-  const std::string_view raw_headers =
-      "HTTP/1.1 200 OK\r\n"
-      R"(No-Vary-Search: params=("c"))"
-      "\r\n\r\n";
 
-  const auto no_vary_search_data = CreateFromRawHeaders(raw_headers);
+  ASSERT_OK_AND_ASSIGN(
+      const auto no_vary_search_data,
+      HttpNoVarySearchData::ParseFromHeaderValue(R"(params=("c"))"));
 
   for (const auto& [key, value] : percent_encoding) {
-    std::string request_url_template =
-        R"(https://a.test/index.html?$key=$value)";
-    std::string cached_url_template =
-        R"(https://a.test/index.html?c=3&$key=$value)";
+    std::string request_url =
+        base::StringPrintf("https://a.test/index.html?%s=%s", value, value);
+    std::string cached_url =
+        base::StringPrintf("https://a.test/index.html?c=3&%s=%s", value, value);
 
-    base::ReplaceSubstringsAfterOffset(&request_url_template, 0, "$key", value);
-    base::ReplaceSubstringsAfterOffset(&request_url_template, 0, "$value",
-                                       value);
-    base::ReplaceSubstringsAfterOffset(&cached_url_template, 0, "$key", value);
-    base::ReplaceSubstringsAfterOffset(&cached_url_template, 0, "$value",
-                                       value);
+    EXPECT_TRUE(
+        no_vary_search_data.AreEquivalent(GURL(request_url), GURL(cached_url)));
 
-    EXPECT_TRUE(no_vary_search_data.AreEquivalent(GURL(request_url_template),
-                                                  GURL(cached_url_template)));
+    std::string header_value =
+        base::StringPrintf(R"(params, except=("%s"))", key);
 
-    std::string header_template =
-        "HTTP/1.1 200 OK\r\n"
-        R"(No-Vary-Search: params, except=("$key"))"
-        "\r\n\r\n";
-    base::ReplaceSubstringsAfterOffset(&header_template, 0, "$key", key);
-
-    const auto no_vary_search_data_special_char =
-        CreateFromRawHeaders(header_template);
+    ASSERT_OK_AND_ASSIGN(
+        const auto no_vary_search_data_special_char,
+        HttpNoVarySearchData::ParseFromHeaderValue(header_value));
 
     EXPECT_TRUE(no_vary_search_data_special_char.AreEquivalent(
-        GURL(request_url_template), GURL(cached_url_template)));
+        GURL(request_url), GURL(cached_url)));
   }
 }
 
@@ -859,49 +888,41 @@ INSTANTIATE_TEST_SUITE_P(HttpNoVarySearchAreEquivalentTest,
 TEST_P(HttpNoVarySearchAreEquivalentTest,
        CheckUrlEqualityWithPercentEncodedNonASCIICharactersExcept) {
   for (const auto& [key, value] : kPercentEncodedNonAsciiKeys) {
-    std::string request_url_template = R"(https://a.test/index.html?$key=c)";
-    std::string cached_url_template = R"(https://a.test/index.html?c=3&$key=c)";
-    base::ReplaceSubstringsAfterOffset(&request_url_template, 0, "$key", key);
-    base::ReplaceSubstringsAfterOffset(&cached_url_template, 0, "$key", key);
-    std::string header_template =
-        "HTTP/1.1 200 OK\r\n"
-        R"(No-Vary-Search: params, except=("$key"))"
-        "\r\n\r\n";
-    base::ReplaceSubstringsAfterOffset(&header_template, 0, "$key", value);
+    std::string request_url =
+        base::StringPrintf("https://a.test/index.html?%s=c", key);
+    std::string cached_url =
+        base::StringPrintf("https://a.test/index.html?c=3&%s=c", key);
+    std::string header_value =
+        base::StringPrintf("params, except=(\"%s\")", value);
 
-    const auto no_vary_search_data_special_char =
-        CreateFromRawHeaders(header_template);
+    ASSERT_OK_AND_ASSIGN(
+        const auto no_vary_search_data_special_char,
+        HttpNoVarySearchData::ParseFromHeaderValue(header_value));
 
     EXPECT_TRUE(no_vary_search_data_special_char.AreEquivalent(
-        GURL(request_url_template), GURL(cached_url_template)))
-        << "request_url = " << request_url_template
-        << " cached_url = " << cached_url_template
-        << " headers = " << header_template;
+        GURL(request_url), GURL(cached_url)))
+        << "request_url = " << request_url << " cached_url = " << cached_url
+        << " header_value = " << header_value;
   }
 }
 
 TEST_P(HttpNoVarySearchAreEquivalentTest,
        CheckUrlEqualityWithPercentEncodedNonASCIICharacters) {
   for (const auto& [key, value] : kPercentEncodedNonAsciiKeys) {
-    std::string request_url_template =
-        R"(https://a.test/index.html?a=2&$key=c)";
-    std::string cached_url_template = R"(https://a.test/index.html?$key=d&a=2)";
-    base::ReplaceSubstringsAfterOffset(&request_url_template, 0, "$key", key);
-    base::ReplaceSubstringsAfterOffset(&cached_url_template, 0, "$key", key);
-    std::string header_template =
-        "HTTP/1.1 200 OK\r\n"
-        R"(No-Vary-Search: params=("$key"))"
-        "\r\n\r\n";
-    base::ReplaceSubstringsAfterOffset(&header_template, 0, "$key", value);
+    std::string request_url =
+        base::StringPrintf("https://a.test/index.html?a=2&%s=c", key);
+    std::string cached_url =
+        base::StringPrintf("https://a.test/index.html?%s=d&a=2", key);
+    std::string header_value = base::StringPrintf("params=(\"%s\")", value);
 
-    const auto no_vary_search_data_special_char =
-        CreateFromRawHeaders(header_template);
+    ASSERT_OK_AND_ASSIGN(
+        const auto no_vary_search_data_special_char,
+        HttpNoVarySearchData::ParseFromHeaderValue(header_value));
 
     EXPECT_TRUE(no_vary_search_data_special_char.AreEquivalent(
-        GURL(request_url_template), GURL(cached_url_template)))
-        << "request_url = " << request_url_template
-        << " cached_url = " << cached_url_template
-        << " headers = " << header_template;
+        GURL(request_url), GURL(cached_url)))
+        << "request_url = " << request_url << " cached_url = " << cached_url
+        << " header_value = " << header_value;
   }
 }
 
@@ -1264,11 +1285,8 @@ TEST_P(HttpNoVarySearchCanonicalizeQueryTest, ResultsSameAsAreEquivalent) {
 
 TEST(HttpNoVarySearchResponseHeadersParseHistogramTest, NoUnrecognizedKeys) {
   base::HistogramTester histogram_tester;
-  const std::string raw_headers = HttpUtil::AssembleRawHeaders(
-      "HTTP/1.1 200 OK\r\nNo-Vary-Search: params\r\n\r\n");
-  const auto parsed = base::MakeRefCounted<HttpResponseHeaders>(raw_headers);
   const auto no_vary_search_data =
-      HttpNoVarySearchData::ParseFromHeaders(*parsed);
+      HttpNoVarySearchData::ParseFromHeaderValue("params");
   EXPECT_THAT(no_vary_search_data, base::test::HasValue());
   histogram_tester.ExpectUniqueSample(
       "Net.HttpNoVarySearch.HasUnrecognizedKeys", false, 1);
@@ -1276,11 +1294,8 @@ TEST(HttpNoVarySearchResponseHeadersParseHistogramTest, NoUnrecognizedKeys) {
 
 TEST(HttpNoVarySearchResponseHeadersParseHistogramTest, UnrecognizedKeys) {
   base::HistogramTester histogram_tester;
-  const std::string raw_headers = HttpUtil::AssembleRawHeaders(
-      "HTTP/1.1 200 OK\r\nNo-Vary-Search: params, rainbows\r\n\r\n");
-  const auto parsed = base::MakeRefCounted<HttpResponseHeaders>(raw_headers);
   const auto no_vary_search_data =
-      HttpNoVarySearchData::ParseFromHeaders(*parsed);
+      HttpNoVarySearchData::ParseFromHeaderValue("params, rainbows");
   EXPECT_THAT(no_vary_search_data, base::test::HasValue());
   histogram_tester.ExpectUniqueSample(
       "Net.HttpNoVarySearch.HasUnrecognizedKeys", true, 1);
@@ -1292,10 +1307,7 @@ TEST(HttpNoVarySearchDataTest, ComparisonOperators) {
        R"(params=("b"))", R"(params, except=("a"))", R"(params, except=("b"))",
        R"(params, except=("a"), key-order)"});
   auto data_vector = base::ToVector(kValues, [](std::string_view value) {
-    auto headers = HttpResponseHeaders::Builder({1, 1}, "200 OK")
-                       .AddHeader("No-Vary-Search", value)
-                       .Build();
-    auto result = HttpNoVarySearchData::ParseFromHeaders(*headers);
+    auto result = HttpNoVarySearchData::ParseFromHeaderValue(value);
     CHECK(result.has_value());
     return result.value();
   });

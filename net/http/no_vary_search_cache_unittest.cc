@@ -1303,8 +1303,8 @@ TEST_P(NoVarySearchCacheReplayTest, MergeFrom) {
     InSequence s;
     for (const auto& [description, to_insert, no_vary_search_value, to_lookup] :
          test_cases) {
-      auto expected_nvs_data = HttpNoVarySearchData::ParseFromHeaders(
-          TestHeaders(no_vary_search_value));
+      auto expected_nvs_data =
+          HttpNoVarySearchData::ParseFromHeaderValue(no_vary_search_value);
       const GURL& url = to_insert.url;
       std::optional<std::string_view> query;
       if (url.has_query()) {

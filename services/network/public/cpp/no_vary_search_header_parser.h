@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/component_export.h"
 #include "services/network/public/mojom/no_vary_search.mojom.h"
@@ -18,6 +19,10 @@ class HttpResponseHeaders;
 }  // namespace net
 
 namespace network {
+
+COMPONENT_EXPORT(NETWORK_CPP)
+mojom::NoVarySearchWithParseErrorPtr ParseNoVarySearchHeaderValue(
+    std::string_view header_value);
 
 COMPONENT_EXPORT(NETWORK_CPP)
 mojom::NoVarySearchWithParseErrorPtr ParseNoVarySearch(

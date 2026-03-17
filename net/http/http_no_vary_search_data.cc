@@ -154,6 +154,19 @@ HttpNoVarySearchData HttpNoVarySearchData::CreateFromVaryParams(
 
 // static
 base::expected<HttpNoVarySearchData, HttpNoVarySearchData::ParseErrorEnum>
+HttpNoVarySearchData::ParseFromHeaderValue(std::string_view value) {
+  // The no-vary-search header is a dictionary type structured field.
+  const auto dict = structured_headers::ParseDictionary(value);
+  if (!dict.has_value()) {
+    // We don't recognize anything else. So this is an authoring error.
+    return base::unexpected(ParseErrorEnum::kNotDictionary);
+  }
+
+  return ParseNoVarySearchDictionary(dict.value());
+}
+
+// static
+base::expected<HttpNoVarySearchData, HttpNoVarySearchData::ParseErrorEnum>
 HttpNoVarySearchData::ParseFromHeaders(
     const HttpResponseHeaders& response_headers) {
   std::optional<std::string> normalized_header =
@@ -163,14 +176,7 @@ HttpNoVarySearchData::ParseFromHeaders(
     return base::unexpected(ParseErrorEnum::kOk);
   }
 
-  // The no-vary-search header is a dictionary type structured field.
-  const auto dict = structured_headers::ParseDictionary(*normalized_header);
-  if (!dict.has_value()) {
-    // We don't recognize anything else. So this is an authoring error.
-    return base::unexpected(ParseErrorEnum::kNotDictionary);
-  }
-
-  return ParseNoVarySearchDictionary(dict.value());
+  return ParseFromHeaderValue(*normalized_header);
 }
 
 bool HttpNoVarySearchData::operator==(const HttpNoVarySearchData& rhs) const =

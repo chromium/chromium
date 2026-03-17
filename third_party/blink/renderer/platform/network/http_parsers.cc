@@ -1150,14 +1150,11 @@ network::mojom::blink::TimingAllowOriginPtr ParseTimingAllowOrigin(
 
 network::mojom::blink::NoVarySearchWithParseErrorPtr ParseNoVarySearch(
     const String& header_value) {
-  // Parse the No-Vary-Search hint value by making a header in order to
-  // reuse existing code.
-  auto headers =
-      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK\n");
-  headers->AddHeader("No-Vary-Search", header_value.Utf8());
-
-  auto parsed_nvs_with_error =
-      ConvertToBlink(network::ParseNoVarySearch(*headers));
+  // `header_value` is usually ASCII, so StringUtf8Adaptor avoids allocating a
+  // string.
+  StringUtf8Adaptor adaptor(header_value);
+  auto parsed_nvs_with_error = ConvertToBlink(
+      network::ParseNoVarySearchHeaderValue(adaptor.AsStringView()));
   // `parsed_nvs_with_error` cannot be null here. Because we know the header is
   // available, we will get a parse error or a No-Vary-Search.
   CHECK(parsed_nvs_with_error);
