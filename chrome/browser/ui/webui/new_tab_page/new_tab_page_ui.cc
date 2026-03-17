@@ -250,6 +250,12 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
   source->AddBoolean("logoEnabled",
                      base::FeatureList::IsEnabled(ntp_features::kNtpLogo));
   source->AddBoolean(
+      "animatedDoodlesEnabled",
+      base::FeatureList::IsEnabled(ntp_features::kNtpAnimatedDoodles));
+  source->AddBoolean(
+      "doodleMuralsEnabled",
+      base::FeatureList::IsEnabled(ntp_features::kNtpDoodleMurals));
+  source->AddBoolean(
       "middleSlotPromoEnabled",
       base::FeatureList::IsEnabled(ntp_features::kNtpMiddleSlotPromo) &&
           profile->GetPrefs()->GetBoolean(prefs::kNtpPromoVisible));

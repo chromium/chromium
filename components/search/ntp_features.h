@@ -85,6 +85,8 @@ BASE_DECLARE_FEATURE(kNtpTabGroupsModuleZeroState);
 BASE_DECLARE_FEATURE(kNtpFeatureOptimizationModuleRemoval);
 BASE_DECLARE_FEATURE(kNtpFeatureOptimizationShortcutsRemoval);
 BASE_DECLARE_FEATURE(kNtpFeatureOptimizationDismissModulesRemoval);
+BASE_DECLARE_FEATURE(kNtpAnimatedDoodles);
+BASE_DECLARE_FEATURE(kNtpDoodleMurals);
 
 // Parameter for controlling the luminosity difference for NTP elements on light
 // backgrounds.

@@ -7206,6 +7206,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kNtpMiddleSlotPromoDismissal,
                                     kNtpMiddleSlotPromoDismissalVariations,
                                     "DesktopNtpModules")},
+    {"ntp-animated-doodles", flag_descriptions::kNtpAnimatedDoodlesName,
+     flag_descriptions::kNtpAnimatedDoodlesDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(ntp_features::kNtpAnimatedDoodles)},
+
+    {"ntp-doodle-murals", flag_descriptions::kNtpDoodleMuralsName,
+     flag_descriptions::kNtpDoodleMuralsDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(ntp_features::kNtpDoodleMurals)},
 
     {"ntp-module-sign-in-requirement",
      flag_descriptions::kNtpModuleSignInRequirementName,

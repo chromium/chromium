@@ -6275,6 +6275,14 @@ inline constexpr char kNtpFeatureOptimizationShortcutsRemovalName[] =
 inline constexpr char kNtpFeatureOptimizationShortcutsRemovalDescription[] =
     "Enables auto-removal of stale shortcuts from the NTP.";
 
+inline constexpr char kNtpAnimatedDoodlesName[] = "NTP Animated Doodles";
+inline constexpr char kNtpAnimatedDoodlesDescription[] =
+    "Enables animated Doodles on the NTP.";
+
+inline constexpr char kNtpDoodleMuralsName[] = "NTP Doodle Murals";
+inline constexpr char kNtpDoodleMuralsDescription[] =
+    "Enables Doodle Murals on the NTP.";
+
 inline constexpr char kNtpFooterName[] = "NTP Footer";
 inline constexpr char kNtpFooterDescription[] =
     "Adds footer to New Tab Page that encapsulates customize buttons and "

@@ -13028,6 +13028,7 @@ from previous Chrome versions.
   <int value="-504952236" label="AutocorrectParamsTuning:disabled"/>
   <int value="-504485318"
       label="AutofillFixServerQueriesIfPasswordManagerIsEnabled:enabled"/>
+  <int value="-503839607" label="NtpDoodleMurals:enabled"/>
   <int value="-503636510"
       label="UnifiedPasswordManagerSyncOnlyInGMSCore:disabled"/>
   <int value="-503601144" label="UserDataSnapshot:disabled"/>
@@ -13484,6 +13485,7 @@ from previous Chrome versions.
   <int value="-344357771"
       label="WebAuthenticationCrosPlatformAuthenticator:enabled"/>
   <int value="-344343842" label="disable-experimental-app-list"/>
+  <int value="-344076279" label="NtpAnimatedDoodles:enabled"/>
   <int value="-343971624" label="BorealisPermitted:disabled"/>
   <int value="-343769596" label="ServiceWorkerScriptStreaming:disabled"/>
   <int value="-343314036" label="WebBluetooth:enabled"/>
@@ -16921,6 +16923,7 @@ from previous Chrome versions.
   <int value="807734471" label="tab-management-experiment-type-disabled"/>
   <int value="808855873" label="RequestDesktopSiteGlobal:disabled"/>
   <int value="809404981" label="CrosBatterySaver:enabled"/>
+  <int value="810556985" label="NtpAnimatedDoodles:disabled"/>
   <int value="811057677" label="ConfirmNtpSuggestionRemovals:disabled"/>
   <int value="811158245" label="DevToolsPwaHandler:disabled"/>
   <int value="811374216" label="disable-new-bookmark-apps"/>
@@ -20767,6 +20770,7 @@ from previous Chrome versions.
   <int value="2100708771" label="AutofillVcnEnrollRequestTimeout:disabled"/>
   <int value="2101124624" label="WebUIDownloadShelf:disabled"/>
   <int value="2101151142" label="disable-direct-write"/>
+  <int value="2101244145" label="NtpDoodleMurals:disabled"/>
   <int value="2102772909"
       label="EnableGenericOidcAuthProfileManagement:disabled"/>
   <int value="2103800063"

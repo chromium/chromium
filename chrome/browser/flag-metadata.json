@@ -6878,6 +6878,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "ntp-animated-doodles",
+    "owners": [ "giannich@google.com", "rtatum@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "ntp-background-color-slider",
     "owners": [
       "pabouchard@google.com",
@@ -6916,6 +6921,11 @@
   {
     "name": "ntp-customize-chrome-auto-open",
     "owners": [ "kbajkiewicz@google.com", "chrome-signin-desktop-team@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
+    "name": "ntp-doodle-murals",
+    "owners": [ "giannich@google.com", "rtatum@google.com" ],
     "expiry_milestone": 160
   },
   {
