@@ -140,6 +140,8 @@ void FedCmAccountSelectionView::OnPageActionClicked() {
 
     // If the anchored message is still showing, we immediately trigger the
     // account selection.
+    controller->Hide(kActionFederation);
+    controller->HideAnchoredMessage(kActionFederation);
     state_ = State::VERIFYING;
     NotifyDelegateOfAccountSelection(*accounts_[0], *idp_list_[0]);
   } else {
