@@ -15,6 +15,10 @@ namespace contextual_tasks {
 struct Thread;
 }
 
+namespace views {
+class BoxLayout;
+}
+
 class ProjectsPanelRecentThreadsView : public views::View,
                                        public gfx::AnimationDelegate {
   METADATA_HEADER(ProjectsPanelRecentThreadsView, views::View)
@@ -38,6 +42,9 @@ class ProjectsPanelRecentThreadsView : public views::View,
   void SetExpanded(bool expanded);
   bool expanded() { return expanded_; }
 
+  // Applies an inside border inset to the list.
+  void SetInsideBorderInsets(const gfx::Insets& insets);
+
   // views::View:
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
@@ -54,6 +61,8 @@ class ProjectsPanelRecentThreadsView : public views::View,
 
  private:
   void UpdateDisplayedThreads();
+
+  raw_ptr<views::BoxLayout> layout_ = nullptr;
 
   std::vector<contextual_tasks::Thread> threads_;
   bool expanded_ = false;

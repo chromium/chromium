@@ -21,8 +21,8 @@ static bool disable_animations_for_testing_ = false;
 ProjectsPanelRecentThreadsView::ProjectsPanelRecentThreadsView(
     ThreadPressedCallback thread_button_callback)
     : thread_button_callback_(std::move(thread_button_callback)) {
-  SetLayoutManager(std::make_unique<views::BoxLayout>())
-      ->SetOrientation(views::BoxLayout::Orientation::kVertical);
+  layout_ = SetLayoutManager(std::make_unique<views::BoxLayout>());
+  layout_->SetOrientation(views::BoxLayout::Orientation::kVertical);
 
   expansion_animation_.SetTweenType(gfx::Tween::Type::EASE_IN_OUT_EMPHASIZED);
 }
@@ -55,6 +55,11 @@ void ProjectsPanelRecentThreadsView::SetExpanded(bool expanded) {
   expansion_animation_.Reset(0.0);
   expansion_animation_.SetSlideDuration(kExpandAnimationTime);
   expansion_animation_.Show();
+}
+
+void ProjectsPanelRecentThreadsView::SetInsideBorderInsets(
+    const gfx::Insets& insets) {
+  layout_->set_inside_border_insets(insets);
 }
 
 void ProjectsPanelRecentThreadsView::UpdateDisplayedThreads() {

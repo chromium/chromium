@@ -26,6 +26,8 @@ constexpr int kThreadsContainerPreferredHeight = 150;
 
 constexpr int kSeparatorViewPreferredWidth = 100;
 constexpr int kSeparatorViewPreferredHeight = 1;
+
+constexpr int kHostViewWidth = 300;
 }  // namespace
 
 class ProjectsPanelViewLayoutTest : public ChromeViewsTestBase {
@@ -85,11 +87,12 @@ TEST_F(ProjectsPanelViewLayoutTest, PreferredSize) {
 
 TEST_F(ProjectsPanelViewLayoutTest, LayoutAllVisible) {
   // Set host size.
-  host_->SetBounds(0, 0, 300, 500);
+  host_->SetBounds(0, 0, kHostViewWidth, 500);
   views::test::RunScheduledLayout(host_.get());
 
   int expected_width =
-      300 - projects_panel::kProjectsPanelRegionInteriorMargins.width();
+      kHostViewWidth -
+      projects_panel::kProjectsPanelRegionInteriorMargins.width();
   int x = projects_panel::kProjectsPanelRegionInteriorMargins.left();
   int y = projects_panel::kProjectsPanelRegionInteriorMargins.top();
 
@@ -103,9 +106,10 @@ TEST_F(ProjectsPanelViewLayoutTest, LayoutAllVisible) {
   // separator margins pref_height_tg = kTabGroupsContainerPreferredHeight
   // pref_height_th = kThreadsContainerPreferredHeight
 
+  // The tab groups container should fill the entire width.
   EXPECT_EQ(
       tab_groups_container_->bounds(),
-      gfx::Rect(x, y, expected_width, kTabGroupsContainerPreferredHeight));
+      gfx::Rect(0, y, kHostViewWidth, kTabGroupsContainerPreferredHeight));
   y += kTabGroupsContainerPreferredHeight;
 
   // Separator.
@@ -115,9 +119,9 @@ TEST_F(ProjectsPanelViewLayoutTest, LayoutAllVisible) {
   y += kSeparatorViewPreferredHeight;
   y += projects_panel::kListsSeparatorMargins.bottom();
 
-  // Threads container.
+  // The threads container should fill the entire width.
   EXPECT_EQ(threads_container_->bounds(),
-            gfx::Rect(x, y, expected_width, kThreadsContainerPreferredHeight));
+            gfx::Rect(0, y, kHostViewWidth, kThreadsContainerPreferredHeight));
 }
 
 TEST_F(ProjectsPanelViewLayoutTest, LimitedSpaceDistribution) {
@@ -130,7 +134,7 @@ TEST_F(ProjectsPanelViewLayoutTest, LimitedSpaceDistribution) {
   const int available_height = 101;
   const int host_height = fixed_height + available_height;
 
-  host_->SetBounds(0, 0, 300, host_height);
+  host_->SetBounds(0, 0, kHostViewWidth, host_height);
   views::test::RunScheduledLayout(host_.get());
 
   // total_pref_height = kTabGroupsContainerPreferredHeight +
@@ -143,19 +147,17 @@ TEST_F(ProjectsPanelViewLayoutTest, LimitedSpaceDistribution) {
   // tg_height = 101 / 2 = 50
   // th_height = 101 - 50 = 51
 
-  int expected_width =
-      300 - projects_panel::kProjectsPanelRegionInteriorMargins.width();
   EXPECT_EQ(tab_groups_container_->bounds().height(), 50);
   EXPECT_EQ(threads_container_->bounds().height(), 51);
-  EXPECT_EQ(tab_groups_container_->bounds().width(), expected_width);
-  EXPECT_EQ(threads_container_->bounds().width(), expected_width);
+  EXPECT_EQ(tab_groups_container_->bounds().width(), kHostViewWidth);
+  EXPECT_EQ(threads_container_->bounds().width(), kHostViewWidth);
 }
 
 TEST_F(ProjectsPanelViewLayoutTest, HideViews) {
   separator_view_->SetVisible(false);
   threads_container_->SetVisible(false);
 
-  host_->SetBounds(0, 0, 300, 500);
+  host_->SetBounds(0, 0, kHostViewWidth, 500);
   views::test::RunScheduledLayout(host_.get());
 
   // fixed_height = (y after controls) + interior bottom
@@ -167,10 +169,8 @@ TEST_F(ProjectsPanelViewLayoutTest, HideViews) {
       projects_panel::kProjectsPanelRegionInteriorMargins.height();
   int expected_tg_height = 500 - fixed_height;
 
-  int expected_width =
-      300 - projects_panel::kProjectsPanelRegionInteriorMargins.width();
   EXPECT_EQ(tab_groups_container_->bounds().height(), expected_tg_height);
-  EXPECT_EQ(tab_groups_container_->bounds().width(), expected_width);
+  EXPECT_EQ(tab_groups_container_->bounds().width(), kHostViewWidth);
   EXPECT_FALSE(threads_container_->GetVisible());
   EXPECT_FALSE(separator_view_->GetVisible());
 }
@@ -189,7 +189,7 @@ TEST_F(ProjectsPanelViewLayoutTest, TallSectionShrinks) {
       projects_panel::kListsSeparatorMargins.height();
   const int host_height = fixed_height + 230;
 
-  host_->SetBounds(0, 0, 300, host_height);
+  host_->SetBounds(0, 0, kHostViewWidth, host_height);
   views::test::RunScheduledLayout(host_.get());
 
   EXPECT_EQ(tab_groups_container_->bounds().height(),

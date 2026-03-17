@@ -25,6 +25,7 @@ class OSExchangeData;
 
 namespace views {
 class ActionViewController;
+class BoxLayout;
 class Label;
 }  // namespace views
 
@@ -60,6 +61,9 @@ class ProjectsPanelTabGroupsView : public views::View,
 
   // Sets the tab groups shown in the list.
   void SetTabGroups(const std::vector<tab_groups::SavedTabGroup>& tab_groups);
+
+  // Applies an inside border inset to the list.
+  void SetInsideBorderInsets(const gfx::Insets& insets);
 
   // views::View:
   bool GetDropFormats(int* formats,
@@ -130,6 +134,8 @@ class ProjectsPanelTabGroupsView : public views::View,
 
   // Returns the bounds of the drop indicator, if one should be shown.
   std::optional<gfx::Rect> GetDropIndicatorBounds() const;
+
+  raw_ptr<views::BoxLayout> layout_ = nullptr;
 
   ProjectsPanelTabGroupsItemView::TabGroupPressedCallback
       tab_group_button_callback_;
