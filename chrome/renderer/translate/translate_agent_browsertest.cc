@@ -4,6 +4,7 @@
 
 #include "components/translate/content/renderer/translate_agent.h"
 
+#include <memory>
 #include <tuple>
 #include <utility>
 
@@ -12,7 +13,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
@@ -179,7 +179,7 @@ class TestTranslateAgent : public translate::TranslateAgent {
 
 class TranslateAgentBrowserTest : public ChromeRenderViewTest {
  public:
-  TranslateAgentBrowserTest() : translate_agent_(nullptr) {}
+  TranslateAgentBrowserTest() = default;
 
   TranslateAgentBrowserTest(const TranslateAgentBrowserTest&) = delete;
   TranslateAgentBrowserTest& operator=(const TranslateAgentBrowserTest&) =
@@ -188,7 +188,8 @@ class TranslateAgentBrowserTest : public ChromeRenderViewTest {
  protected:
   void SetUp() override {
     ChromeRenderViewTest::SetUp();
-    translate_agent_ = new TestTranslateAgent(GetMainRenderFrame());
+    translate_agent_ =
+        std::make_unique<TestTranslateAgent>(GetMainRenderFrame());
 
     GetMainRenderFrame()->GetBrowserInterfaceBroker().SetBinderForTesting(
         translate::mojom::ContentTranslateDriver::Name_,
@@ -203,11 +204,11 @@ class TranslateAgentBrowserTest : public ChromeRenderViewTest {
     GetMainRenderFrame()->GetBrowserInterfaceBroker().SetBinderForTesting(
         translate::mojom::ContentTranslateDriver::Name_, {});
 
-    delete translate_agent_;
+    translate_agent_.reset();
     ChromeRenderViewTest::TearDown();
   }
 
-  raw_ptr<TestTranslateAgent, DanglingUntriaged> translate_agent_;
+  std::unique_ptr<TestTranslateAgent> translate_agent_;
   FakeContentTranslateDriver fake_translate_driver_;
 };
 
