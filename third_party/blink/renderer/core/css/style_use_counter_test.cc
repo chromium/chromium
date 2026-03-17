@@ -65,4 +65,17 @@ TEST_F(StyleUseCounterTest, ViewportUnitVariants) {
   EXPECT_TRUE(IsCountedOnParsing(feature, "body { top: 10dvmax; }"));
 }
 
+TEST_F(StyleUseCounterTest, CSSDiscardedVarWithValidArgumentGrammar) {
+  WebFeature feature = WebFeature::kCSSDiscardedVarWithValidArgumentGrammar;
+  EXPECT_FALSE(IsCountedOnParsing(feature, "html { --p: var(--foo); }"));
+  EXPECT_FALSE(IsCountedOnParsing(feature, "html { --p: var(--foo, blue); }"));
+  EXPECT_FALSE(IsCountedOnParsing(feature, "html { --p: var(!); }"));
+  EXPECT_FALSE(IsCountedOnParsing(feature, "html { --p: var(); }"));
+  EXPECT_FALSE(IsCountedOnParsing(feature, "html { --p: var(--foo;); }"));
+  EXPECT_TRUE(IsCountedOnParsing(feature, "html { --p: var(foo); }"));
+  EXPECT_TRUE(IsCountedOnParsing(feature, "html { --p: var(--foo bar); }"));
+  EXPECT_TRUE(IsCountedOnParsing(feature, "html { --p: var(--foo bar,); }"));
+  EXPECT_TRUE(IsCountedOnParsing(feature, "html { --p: var(foo, bar); }"));
+}
+
 }  // namespace blink

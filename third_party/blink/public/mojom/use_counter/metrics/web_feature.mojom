@@ -5148,6 +5148,7 @@ enum WebFeature {
   kSubtleCryptoEncapsulateBits = 5831,
   kSubtleCryptoDecapsulateKey = 5832,
   kSubtleCryptoDecapsulateBits = 5833,
+  kCSSDiscardedVarWithValidArgumentGrammar = 5834,
 
   // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra

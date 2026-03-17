@@ -102,6 +102,48 @@ static bool ConsumeUnparsedValue(CSSParserTokenStream& stream,
                                  VariableDataFeatures& features,
                                  const CSSParserContext& context);
 
+// Argument grammar:
+// ( <declaration-value>, <declaration-value>? )
+// A common argument grammar shared by several arbitrary substitution functions,
+// like var(), attr(), etc.
+static bool ConsumeCommonArgumentGrammar(CSSParserTokenStream& stream,
+                                         VariableDataFeatures& features,
+                                         const CSSParserContext& context) {
+  CSSParserTokenStream::BlockGuard guard(stream);
+  stream.ConsumeWhitespace();
+
+  wtf_size_t start_offset = stream.Offset();
+  if (!ConsumeUnparsedValue(stream, /*restricted_value=*/false,
+                            /*comma_ends_declaration=*/true, features,
+                            context) ||
+      stream.Offset() == start_offset) {
+    return false;
+  }
+
+  if (stream.AtEnd()) {
+    // The fallback is optional.
+    return true;
+  }
+
+  if (stream.Peek().GetType() != kCommaToken) {
+    return false;
+  }
+  stream.ConsumeIncludingWhitespace();
+
+  if (stream.AtEnd()) {
+    // The fallback may be empty.
+    return true;
+  }
+
+  // Parse the fallback value.
+  if (!ConsumeUnparsedValue(stream, /*restricted_value=*/false,
+                            /*comma_ends_declaration=*/false, features,
+                            context)) {
+    return false;
+  }
+  return stream.AtEnd();
+}
+
 static bool ConsumeVariableReference(CSSParserTokenStream& stream,
                                      VariableDataFeatures& features,
                                      const CSSParserContext& context) {
@@ -520,9 +562,11 @@ static bool ConsumeUnparsedValue(CSSParserTokenStream& stream,
     // First check if this is a valid substitution function (e.g. var(),
     // then handle the next token accordingly.
     if (token.GetBlockType() == CSSParserToken::kBlockStart) {
+      CSSParserTokenStream::State state = stream.Save();
+      CSSValueID function_id = token.FunctionId();
       // A block may have both var and env references. They can also be nested
       // and used as fallbacks.
-      switch (token.FunctionId()) {
+      switch (function_id) {
         case CSSValueID::kInvalid:
           // Not a built-in function, but it might be an author-defined
           // CSS function (e.g. --foo()).
@@ -542,6 +586,14 @@ static bool ConsumeUnparsedValue(CSSParserTokenStream& stream,
           [[fallthrough]];
         case CSSValueID::kVar:
           if (!ConsumeVariableReference(stream, features, context)) {
+            if (function_id == CSSValueID::kVar) {
+              stream.EnsureLookAhead();
+              stream.Restore(state);
+              if (ConsumeCommonArgumentGrammar(stream, features, context)) {
+                context.Count(
+                    WebFeature::kCSSDiscardedVarWithValidArgumentGrammar);
+              }
+            }
             error = true;
           }
           features |= static_cast<VariableDataFeatures>(

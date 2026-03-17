@@ -6472,6 +6472,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5831" label="SubtleCryptoEncapsulateBits"/>
   <int value="5832" label="SubtleCryptoDecapsulateKey"/>
   <int value="5833" label="SubtleCryptoDecapsulateBits"/>
+  <int value="5834" label="CSSDiscardedVarWithValidArgumentGrammar"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
