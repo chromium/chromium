@@ -12,9 +12,10 @@ package omnibox;
 
 import "answer_data.proto";
 import "chrome_searchbox_stats.proto";
+import "tool_mode.proto";
 
 // Suggest Template rendering data.
-// Next ID: 8
+// Next ID: 9
 message SuggestTemplateInfo {
   enum StandardSuggestStyle {
     SUGGEST_STYLE_UNSPECIFIED = 0;
@@ -131,4 +132,14 @@ message SuggestTemplateInfo {
 
   // List of possible actions for the suggestion.
   repeated TemplateAction action_suggestions = 7;
+
+  // This sends information about what the Fusebox action does. For example,
+  // it might preselect a tool, a model or something else.
+  // Next ID: 2
+  message FuseboxAction {
+    // Which tool gets preselected when the user clicks on the suggestion.
+    optional ToolMode preselected_tool = 1;
+  }
+
+  optional FuseboxAction fusebox_action = 8;
 }
