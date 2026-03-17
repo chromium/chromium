@@ -8,10 +8,10 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/device_reauth/test/reauthentication_app_interface.h"
 #import "ios/chrome/browser/settings/clear_browsing_data/public/features.h"
 #import "ios/chrome/browser/settings/clear_browsing_data/public/quick_delete_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_manager_egtest_utils.h"
-#import "ios/chrome/browser/settings/ui_bundled/password/password_settings_app_interface.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -121,16 +121,6 @@ void ExpectCellVisibilities(bool passwords_and_passkeys_cell,
 @end
 
 @implementation QuickDeleteOtherDataTestCase
-
-- (void)setUp {
-  [super setUp];
-  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
-}
-
-- (void)tearDownHelper {
-  [PasswordSettingsAppInterface removeMockReauthenticationModule];
-  [super tearDownHelper];
-}
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
@@ -303,11 +293,11 @@ void ExpectCellVisibilities(bool passwords_and_passkeys_cell,
 // Tests that the "Passwords and passkeys" cell opens the "Password Settings"
 // page.
 - (void)testPasswordsAndPasskeysCellRedirection {
-  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+  [ReauthenticationAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kSuccess];
   // Disable skipping so that the re-authentication view controller persists
   // long enough for EarlGrey to detect it.
-  [PasswordSettingsAppInterface mockReauthenticationModuleShouldSkipReAuth:NO];
+  [ReauthenticationAppInterface mockReauthenticationModuleShouldSkipReAuth:NO];
 
   // Open the Quick Delete Other Data page.
   OpenQuickDeleteOtherDataPage(/*is_dse_google=*/YES);
@@ -321,7 +311,7 @@ void ExpectCellVisibilities(bool passwords_and_passkeys_cell,
       waitForUIElementToAppearWithMatcher:ReauthenticationController()];
 
   // Manually trigger the successful re-authentication result.
-  [PasswordSettingsAppInterface mockReauthenticationModuleReturnMockedResult];
+  [ReauthenticationAppInterface mockReauthenticationModuleReturnMockedResult];
 
   // Verify that the redirection to Password Settings is successful.
   [ChromeEarlGrey
