@@ -15,7 +15,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
-#include "chrome/browser/mandatory_reauth/android/mandatory_reauth_opt_in_view_android.h"
+#include "chrome/browser/mandatory_reauth/android/mandatory_reauth_opt_in_view_android.h"  // nogncheck
 #endif
 
 namespace autofill {

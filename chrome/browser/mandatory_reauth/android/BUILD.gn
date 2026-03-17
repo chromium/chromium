@@ -4,6 +4,22 @@
 
 import("//build/config/android/rules.gni")
 
+source_set("mandatory_reauth") {
+  public = [ "mandatory_reauth_opt_in_view_android.h" ]
+  sources = [ "mandatory_reauth_opt_in_view_android.cc" ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui/autofill",
+    "//chrome/browser/ui/autofill/payments",
+    "//content/public/browser",
+  ]
+  deps = [
+    ":jni_headers",
+    "//ui/android",
+  ]
+}
+
 android_library("java") {
   sources = [ "java/src/org/chromium/chrome/browser/mandatory_reauth/MandatoryReauthOptInBottomSheetComponent.java" ]
 
