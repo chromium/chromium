@@ -36,31 +36,6 @@ domain Page
       AdFrameType adFrameType
       optional array of AdFrameExplanation explanations
 
-  # Identifies the script which caused a script or frame to be labelled as an
-  # ad.
-  experimental type AdScriptId extends object
-    properties
-      # Script Id of the script which caused a script or frame to be labelled as
-      # an ad.
-      Runtime.ScriptId scriptId
-      # Id of scriptId's debugger.
-      Runtime.UniqueDebuggerId debuggerId
-
-  # Encapsulates the script ancestry and the root script filterlist rule that
-  # caused the frame to be labelled as an ad. Only created when `ancestryChain`
-  # is not empty.
-  experimental type AdScriptAncestry extends object
-    properties
-      # A chain of `AdScriptId`s representing the ancestry of an ad script that
-      # led to the creation of a frame. The chain is ordered from the script
-      # itself (lower level) up to its root ancestor that was flagged by
-      # filterlist.
-      array of AdScriptId ancestryChain
-      # The filterlist rule that caused the root (last) script in
-      # `ancestryChain` to be ad-tagged. Only populated if the rule is
-      # available.
-      optional string rootScriptFilterlistRule
-
   # Indicates whether the frame is a secure context and why it is the case.
   experimental type SecureContextType extends string
     enum
@@ -843,7 +818,7 @@ domain Page
       # chain is ordered from the most immediate script (in the frame creation
       # stack) to more distant ancestors (that created the immediately preceding
       # script). Only sent if frame is labelled as an ad and ids are available.
-      optional AdScriptAncestry adScriptAncestry
+      optional Network.AdAncestry adScriptAncestry
 
   # Returns present frame tree structure.
   command getFrameTree

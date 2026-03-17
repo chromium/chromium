@@ -64,6 +64,7 @@
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/html/parser/text_resource_decoder.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/inspector/ad_tagging_utils.h"
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/inspector/inspected_frames.h"
 #include "third_party/blink/renderer/core/inspector/inspector_css_agent.h"
@@ -804,35 +805,10 @@ void InspectorPageAgent::getResourceContent(
 
 protocol::Response InspectorPageAgent::getAdScriptAncestry(
     const String& frame_id,
-    std::unique_ptr<protocol::Page::AdScriptAncestry>* out_ad_script_ancestry) {
+    std::unique_ptr<protocol::Network::AdAncestry>* out_ad_script_ancestry) {
   auto it = frame_ad_script_ancestry_.find(frame_id);
   if (it != frame_ad_script_ancestry_.end()) {
-    const AdTracker::AdScriptAncestry& ad_script_ancestry = it->value;
-    CHECK(!ad_script_ancestry.ancestry_chain.empty());
-
-    std::vector<std::unique_ptr<protocol::Page::AdScriptId>> ancestry_chain;
-    for (const auto& ad_script_identifier : ad_script_ancestry.ancestry_chain) {
-      ancestry_chain.push_back(
-          protocol::Page::AdScriptId::create()
-              .setScriptId(String::Number(ad_script_identifier.id.value()))
-              .setDebuggerId(ToCoreString(
-                  ad_script_identifier.context_id.toString()->string()))
-              .build());
-    }
-
-    std::unique_ptr<protocol::Page::AdScriptAncestry> ancestry =
-        protocol::Page::AdScriptAncestry::create()
-            .setAncestryChain(
-                std::make_unique<protocol::Array<protocol::Page::AdScriptId>>(
-                    std::move(ancestry_chain)))
-            .build();
-
-    if (ad_script_ancestry.root_script_filterlist_rule.IsValid()) {
-      ancestry->setRootScriptFilterlistRule(
-          String(ad_script_ancestry.root_script_filterlist_rule.ToString()));
-    }
-
-    *out_ad_script_ancestry = std::move(ancestry);
+    *out_ad_script_ancestry = CreateAdAncestryProtocolObject(it->value);
   }
 
   return protocol::Response::Success();

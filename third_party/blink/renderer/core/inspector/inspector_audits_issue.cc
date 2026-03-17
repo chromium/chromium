@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
+#include "third_party/blink/renderer/core/inspector/ad_tagging_utils.h"
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/inspector/protocol/audits.h"
 #include "third_party/blink/renderer/core/inspector/protocol/network.h"
@@ -1052,31 +1053,10 @@ void AuditsIssue::ReportSelectivePermissionsInterventionIssue(
     const String& api_name,
     const AdTracker::AdScriptAncestry& ad_ancestry,
     const SourceLocation& source_location) {
-  auto ancestry_chain =
-      std::make_unique<protocol::Array<protocol::Audits::AdScriptIdentifier>>();
-  for (const auto& ad_script : ad_ancestry.ancestry_chain) {
-    ancestry_chain->emplace_back(
-        protocol::Audits::AdScriptIdentifier::create()
-            .setScriptId(String::Number(ad_script.id.value()))
-            .setDebuggerId(
-                ToCoreString(ad_script.context_id.toString()->string()))
-            .setName(ad_script.name)
-            .build());
-  }
-
-  auto ad_ancestry_protocol = protocol::Audits::AdAncestry::create()
-                                  .setAdAncestryChain(std::move(ancestry_chain))
-                                  .build();
-
-  if (ad_ancestry.root_script_filterlist_rule.IsValid()) {
-    ad_ancestry_protocol->setRootScriptFilterlistRule(
-        String::FromUTF8(ad_ancestry.root_script_filterlist_rule.ToString()));
-  }
-
   auto intervention_details =
       protocol::Audits::SelectivePermissionsInterventionIssueDetails::create()
           .setApiName(api_name)
-          .setAdAncestry(std::move(ad_ancestry_protocol))
+          .setAdAncestry(CreateAdAncestryProtocolObject(ad_ancestry))
           .build();
 
   if (source_location.HasStackTrace()) {

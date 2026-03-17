@@ -1799,6 +1799,32 @@ domain Network
       IPAddressSpace initiatorIPAddressSpace
       LocalNetworkAccessRequestPolicy localNetworkAccessRequestPolicy
 
+  # Identifies the script on the stack that caused a resource or element to be
+  # labeled as an ad. For resources, this indicates the context that triggered
+  # the fetch. For elements, this indicates the context that caused the element
+  # to be appended to the DOM.
+  experimental type AdScriptIdentifier extends object
+    properties
+      # The script's V8 identifier.
+      Runtime.ScriptId scriptId
+      # V8's debugging ID for the v8::Context.
+      Runtime.UniqueDebuggerId debuggerId
+      # The script's url (or generated name based on id if inline script).
+      string name
+
+  # Encapsulates the script ancestry and the root script filter list rule that
+  # caused the resource or element to be labeled as an ad.
+  experimental type AdAncestry extends object
+    properties
+      # A chain of `AdScriptIdentifier`s representing the ancestry of an ad
+      # script that led to the creation of a resource or element. The chain is
+      # ordered from the script itself (lowest level) up to its root ancestor
+      # that was flagged by a filter list.
+      array of AdScriptIdentifier ancestryChain
+      # The filter list rule that caused the root (last) script in
+      # `ancestryChain` to be tagged as an ad.
+      optional string rootScriptFilterlistRule
+
   # Fired when additional information about a requestWillBeSent event is available from the
   # network stack. Not every requestWillBeSent event will have an additional
   # requestWillBeSentExtraInfo fired for it, and there is no guarantee whether requestWillBeSent

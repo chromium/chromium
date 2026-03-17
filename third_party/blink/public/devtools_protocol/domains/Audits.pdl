@@ -688,30 +688,6 @@ experimental domain Audits
       # Used for messages about activation disabled reason
       optional string disableReason
 
-  # Metadata about the ad script that was on the stack that caused the current
-  # script in the `AdAncestry` to be considered ad related.
-  type AdScriptIdentifier extends object
-    properties
-      # The script's v8 identifier.
-      Runtime.ScriptId scriptId
-      # v8's debugging id for the v8::Context.
-      Runtime.UniqueDebuggerId debuggerId
-      # The script's url (or generated name based on id if inline script).
-      string name
-
-  # Providence about how an ad script was determined to be such. It is an ad
-  # because its url matched a filterlist rule, or because some other ad script
-  # was on the stack when this script was loaded.
-  type AdAncestry extends object
-    properties
-      # The ad-script in the stack when the offending script was loaded. This is
-      # recursive down to the root script that was tagged due to the filterlist
-      # rule.
-      array of AdScriptIdentifier adAncestryChain
-      # The filterlist rule that caused the root (last) script in
-      # `adAncestry` to be ad-tagged.
-      optional string rootScriptFilterlistRule
-
   # The issue warns about blocked calls to privacy sensitive APIs via the
   # Selective Permissions Intervention.
   type SelectivePermissionsInterventionIssueDetails extends object
@@ -719,7 +695,7 @@ experimental domain Audits
       # Which API was intervened on.
       string apiName
       # Why the ad script using the API is considered an ad.
-      AdAncestry adAncestry
+      Network.AdAncestry adAncestry
       # The stack trace at the time of the intervention.
       optional Runtime.StackTrace stackTrace
 

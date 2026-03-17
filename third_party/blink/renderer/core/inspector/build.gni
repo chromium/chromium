@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 
 blink_core_sources_inspector = [
+  "ad_tagging_utils.cc",
+  "ad_tagging_utils.h",
   "agent_registry.h",
   "console_message.cc",
   "console_message.h",

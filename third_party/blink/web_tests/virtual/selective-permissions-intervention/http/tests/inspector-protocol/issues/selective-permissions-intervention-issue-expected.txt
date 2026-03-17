@@ -6,7 +6,7 @@ Inspector issue: {
         details : {
             selectivePermissionsInterventionIssueDetails : {
                 adAncestry : {
-                    adAncestryChain : [
+                    ancestryChain : [
                         [0] : {
                             debuggerId : <string>
                             name : .../issues/resources/trigger-geo.js
