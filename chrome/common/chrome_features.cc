@@ -1450,18 +1450,6 @@ BASE_FEATURE(kSafetyHubTrustSafetySentimentSurvey,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-// Controls whether SCT audit reports are queued and the rate at which they
-// should be sampled. Default sampling rate is 1/10,000 certificates.
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kSCTAuditing, base::FEATURE_ENABLED_BY_DEFAULT);
-#else
-// This requires backend infrastructure and a data collection policy.
-// Non-Chrome builds should not use Chrome's infrastructure.
-BASE_FEATURE(kSCTAuditing, base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-constexpr base::FeatureParam<double> kSCTAuditingSamplingRate{
-    &kSCTAuditing, "sampling_rate", 0.0001};
-
 // SCT auditing hashdance allows Chrome clients who are not opted-in to Enhanced
 // Safe Browsing Reporting to perform a k-anonymous query to see if Google knows
 // about an SCT seen in the wild. If it hasn't been seen, then it is considered

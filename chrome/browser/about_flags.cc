@@ -2869,22 +2869,6 @@ const FeatureEntry::Choice kCrostiniContainerChoices[] = {
 };
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if !BUILDFLAG(IS_ANDROID)
-// SCT Auditing feature variations.
-const FeatureEntry::FeatureParam kSCTAuditingSamplingRateNone[] = {
-    {"sampling_rate", "0.0"}};
-const FeatureEntry::FeatureParam kSCTAuditingSamplingRateAlternativeOne[] = {
-    {"sampling_rate", "0.0001"}};
-const FeatureEntry::FeatureParam kSCTAuditingSamplingRateAlternativeTwo[] = {
-    {"sampling_rate", "0.001"}};
-
-const FeatureEntry::FeatureVariation kSCTAuditingVariations[] = {
-    {"Sampling rate 0%", kSCTAuditingSamplingRateNone, nullptr},
-    {"Sampling rate 0.01%", kSCTAuditingSamplingRateAlternativeOne, nullptr},
-    {"Sampling rate 0.1%", kSCTAuditingSamplingRateAlternativeTwo, nullptr},
-};
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 #if BUILDFLAG(IS_CHROMEOS)
 const FeatureEntry::FeatureParam kLauncherItemSuggest_LongDelay10Mins[] = {
     {"long_delay_minutes", "10"}};
@@ -8626,14 +8610,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPrivacySandboxInternalsName,
      flag_descriptions::kPrivacySandboxInternalsDescription, kOsAll,
      FEATURE_VALUE_TYPE(privacy_sandbox::kPrivacySandboxInternalsDevUI)},
-
-#if !BUILDFLAG(IS_ANDROID)
-    {"sct-auditing", flag_descriptions::kSCTAuditingName,
-     flag_descriptions::kSCTAuditingDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kSCTAuditing,
-                                    kSCTAuditingVariations,
-                                    "SCTAuditingVariations")},
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
     {"incognito-screenshot", flag_descriptions::kIncognitoScreenshotName,

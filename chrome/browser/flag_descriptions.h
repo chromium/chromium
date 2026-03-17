@@ -6381,11 +6381,6 @@ inline constexpr char kSavePasswordsContextualUiDescription[] =
     "Improved page action indicator and dialog UI when the user has "
     "blocklisted the current site for password saving.";
 
-inline constexpr char kSCTAuditingName[] = "SCT auditing";
-inline constexpr char kSCTAuditingDescription[] =
-    "Enables SCT auditing for users who have opted in to Safe Browsing "
-    "Extended Reporting.";
-
 inline constexpr char kSmartCardWebApiName[] = "Smart Card API";
 inline constexpr char kSmartCardWebApiDescription[] =
     "Enable access to the Smart Card API. See "

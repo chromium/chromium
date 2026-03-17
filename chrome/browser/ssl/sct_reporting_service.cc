@@ -4,12 +4,14 @@
 
 #include "chrome/browser/ssl/sct_reporting_service.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/escape.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
@@ -103,6 +105,10 @@ constexpr char kHashdanceLookupQueryURL[] =
     "https://sctauditing-pa.googleapis.com/v1/knownscts/"
     "length/$1/prefix/$2?key=";
 
+// Default sampling rate is 1/10,000 certificates.
+constexpr double kDefaultSamplingRate = 0.0001;
+static std::optional<double> sampling_rate_for_testing;
+
 // The maximum number of reports currently allowed to be sent by hashdance
 // clients, browser-wide. When this limit is reached, no more auditing reports
 // will be sent by the client.
@@ -128,7 +134,8 @@ GURL& SCTReportingService::GetHashdanceLookupQueryURLInstance() {
 // static
 void SCTReportingService::ReconfigureAfterNetworkRestart() {
   network::mojom::SCTAuditingConfigurationPtr configuration(std::in_place);
-  configuration->sampling_rate = features::kSCTAuditingSamplingRate.Get();
+  configuration->sampling_rate =
+      sampling_rate_for_testing.value_or(kDefaultSamplingRate);
   configuration->log_expected_ingestion_delay =
       features::kSCTLogExpectedIngestionDelay.Get();
   configuration->log_max_ingestion_random_delay =
@@ -141,6 +148,10 @@ void SCTReportingService::ReconfigureAfterNetworkRestart() {
   configuration->hashdance_traffic_annotation =
       net::MutableNetworkTrafficAnnotationTag(kSCTHashdanceTrafficAnnotation);
   content::GetNetworkService()->ConfigureSCTAuditing(std::move(configuration));
+}
+// static
+void SCTReportingService::SetSamplingRateForTesting(double rate) {
+  sampling_rate_for_testing = rate;
 }
 
 // static
@@ -204,8 +215,12 @@ SCTReportingService::SCTReportingService(
 SCTReportingService::~SCTReportingService() = default;
 
 network::mojom::SCTAuditingMode SCTReportingService::GetReportingMode() {
-  if (profile_->IsOffTheRecord() ||
-      !base::FeatureList::IsEnabled(features::kSCTAuditing)) {
+  bool is_sct_auditing_enabled = false;
+#if !BUILDFLAG(IS_ANDROID)
+  is_sct_auditing_enabled =
+      SystemNetworkContextManager::IsCertificateTransparencyEnabled();
+#endif
+  if (profile_->IsOffTheRecord() || !is_sct_auditing_enabled) {
     return network::mojom::SCTAuditingMode::kDisabled;
   }
   if (safe_browsing::IsSafeBrowsingEnabled(*pref_service_)) {

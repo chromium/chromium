@@ -131,10 +131,7 @@ class SCTReportingServiceBrowserTest : public CertVerifierBrowserTest {
  public:
   SCTReportingServiceBrowserTest() {
     // Set sampling rate to 1.0 to ensure deterministic behavior.
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kSCTAuditing,
-          {{features::kSCTAuditingSamplingRate.name, "1.0"}}}},
-        {});
+    SCTReportingService::SetSamplingRateForTesting(1.0);
     SystemNetworkContextManager::SetEnableCertificateTransparencyForTesting(
         true);
     // The report server must be initialized here so the reporting URL can be
@@ -442,7 +439,6 @@ class SCTReportingServiceBrowserTest : public CertVerifierBrowserTest {
 
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
   net::EmbeddedTestServer report_server_{net::EmbeddedTestServer::TYPE_HTTPS};
-  base::test::ScopedFeatureList scoped_feature_list_;
 
   scoped_refptr<net::X509Certificate> cert_with_precert_;
   std::unique_ptr<net::test_server::SimpleConnectionListener>
@@ -762,19 +758,13 @@ class SCTReportingServiceZeroSamplingRateBrowserTest
     : public SCTReportingServiceBrowserTest {
  public:
   SCTReportingServiceZeroSamplingRateBrowserTest() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kSCTAuditing,
-          {{features::kSCTAuditingSamplingRate.name, "0.0"}}}},
-        {});
+    SCTReportingService::SetSamplingRateForTesting(0.0);
   }
 
   SCTReportingServiceZeroSamplingRateBrowserTest(
       const SCTReportingServiceZeroSamplingRateBrowserTest&) = delete;
   const SCTReportingServiceZeroSamplingRateBrowserTest& operator=(
       const SCTReportingServiceZeroSamplingRateBrowserTest&) = delete;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that the embedder is not notified when the sampling rate is zero.

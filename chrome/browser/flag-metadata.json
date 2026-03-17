@@ -8636,11 +8636,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "sct-auditing",
-    "owners": [ "cthomp@chromium.org", "estark@chromium.org", "jdeblasio@chromium.org" ],
-    "expiry_milestone": 92
-  },
-  {
     "name": "search-engine-explicit-choice-dialog",
     "owners": [
       "cjgrant@chromium.org",

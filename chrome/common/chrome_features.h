@@ -1103,9 +1103,6 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kSafetyHubTrustSafetySentimentSurvey);
 #endif
 
-COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kSCTAuditing);
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::FeatureParam<double> kSCTAuditingSamplingRate;
 COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kSCTAuditingHashdance);
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<base::TimeDelta> kSCTLogExpectedIngestionDelay;

@@ -33,6 +33,9 @@ class SCTReportingService : public KeyedService {
   static GURL& GetHashdanceLookupQueryURLInstance();
   static void ReconfigureAfterNetworkRestart();
 
+  // Sets the sampling rate for testing.
+  static void SetSamplingRateForTesting(double rate);
+
   // Returns whether the browser can send another SCT auditing report (i.e.,
   // whether the maximum report limit has been reached).
   static bool CanSendSCTAuditingReport();
