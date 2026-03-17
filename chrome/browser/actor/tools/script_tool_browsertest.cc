@@ -127,7 +127,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, NavigateAfterResponse) {
   EXPECT_EQ(response->result, "This is an example sentence.");
 }
 
-IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, DeclarativeToolCrossDocument) {
+// TODO(crbug.com/492477322): Re-enable this test.
+IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, DISABLED_DeclarativeToolCrossDocument) {
   const GURL url = embedded_test_server()->GetURL(
       "/actor/declarative_script_tool_cross_document.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
