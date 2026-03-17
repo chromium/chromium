@@ -4,7 +4,8 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {FONT_SIZE_MAX, FONT_SIZE_MIN, type WatermarkAppElement} from './app.js';
+import {FONT_SIZE_MAX, FONT_SIZE_MIN} from './app.js';
+import type {WatermarkAppElement} from './app.js';
 
 // TODO(crbug.com/434714853): Replace with i18n strings
 

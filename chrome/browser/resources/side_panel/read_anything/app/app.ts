@@ -16,9 +16,11 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {ContentController, ContentType} from '../content/content_controller.js';
 import type {ContentListener, ContentState} from '../content/content_controller.js';
-import {LineFocusController, type LineFocusListener} from '../content/line_focus_controller.js';
+import {LineFocusController} from '../content/line_focus_controller.js';
+import type {LineFocusListener} from '../content/line_focus_controller.js';
 import {NodeStore} from '../content/node_store.js';
-import {DEFAULT_SETTINGS, type LineFocusMovement, type LineFocusStyle, LineFocusType, type SettingsPrefs} from '../content/read_anything_types.js';
+import {DEFAULT_SETTINGS, LineFocusType} from '../content/read_anything_types.js';
+import type {LineFocusMovement, LineFocusStyle, SettingsPrefs} from '../content/read_anything_types.js';
 import {SelectionController} from '../content/selection_controller.js';
 import type {LanguageToastElement} from '../read_aloud/language_toast.js';
 import type {Segment} from '../read_aloud/read_aloud_types.js';

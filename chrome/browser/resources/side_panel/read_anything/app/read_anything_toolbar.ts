@@ -28,8 +28,8 @@ import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
-import {CrLitElement, html, type TemplateResult} from '//resources/lit/v3_0/lit.rollup.js';
-import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
+import {CrLitElement, html} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues, TemplateResult} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {DEFAULT_SETTINGS, SettingsOption, ToolbarEvent} from '../content/read_anything_types.js';
 import type {LineFocusMovement, LineFocusStyle, SettingsPrefs} from '../content/read_anything_types.js';

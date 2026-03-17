@@ -4,7 +4,8 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {SettingsItemType, type SettingsMenuElement} from './settings_menu.js';
+import {SettingsItemType} from './settings_menu.js';
+import type {SettingsMenuElement} from './settings_menu.js';
 
 
 export function getHtml(this: SettingsMenuElement) {

@@ -6,7 +6,8 @@ import './icons.html.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';
 
 import {getFaviconForPageURL} from '//resources/js/icon.js';
-import {CrLitElement, type PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './bookmark.css.js';
 import {getHtml} from './bookmark.html.js';

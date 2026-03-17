@@ -9,12 +9,12 @@ import './split_tabs_button_icons.html.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {SplitTabActiveLocation} from './toolbar_ui_api_data_model.mojom-webui.js';
-import {ContextMenuType} from './toolbar_ui_api_data_model.mojom-webui.js';
-import {type BrowserProxy, BrowserProxyImpl} from './browser_proxy.js';
+import {BrowserProxyImpl} from './browser_proxy.js';
+import type {BrowserProxy} from './browser_proxy.js';
 import {getCss} from './split_tabs_button.css.js';
 import {getHtml} from './split_tabs_button.html.js';
 import {getClickSourceType, getContextMenuPosition, getContextMenuSourceType} from './toolbar_button.js';
+import {ContextMenuType, SplitTabActiveLocation} from './toolbar_ui_api_data_model.mojom-webui.js';
 import type {SplitTabsControlState} from './toolbar_ui_api_data_model.mojom-webui.js';
 
 export class SplitTabsButtonElement extends CrLitElement {

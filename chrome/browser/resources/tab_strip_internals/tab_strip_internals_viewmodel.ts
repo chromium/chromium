@@ -5,7 +5,8 @@
 import {assert} from '//resources/js/assert.js';
 
 import type {Container} from './tab_strip_internals.mojom-webui.js';
-import {DataModelAdapter, type ModelNode} from './tab_strip_internals_adapter.js';
+import {DataModelAdapter} from './tab_strip_internals_adapter.js';
+import type {ModelNode} from './tab_strip_internals_adapter.js';
 import {TabStripInternalsApiProxyImpl} from './tab_strip_internals_api_proxy.js';
 import type {TabStripInternalsApiProxy} from './tab_strip_internals_api_proxy.js';
 

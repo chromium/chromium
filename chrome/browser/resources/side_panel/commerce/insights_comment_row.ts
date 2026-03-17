@@ -9,7 +9,8 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './insights_comment_row.html.js';
-import {type PriceInsightsBrowserProxy, PriceInsightsBrowserProxyImpl} from './price_insights_browser_proxy.js';
+import {PriceInsightsBrowserProxyImpl} from './price_insights_browser_proxy.js';
+import type {PriceInsightsBrowserProxy} from './price_insights_browser_proxy.js';
 
 export class InsightsCommentRow extends PolymerElement {
   static get is() {
