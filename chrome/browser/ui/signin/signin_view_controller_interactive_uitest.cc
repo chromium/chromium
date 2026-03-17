@@ -8,6 +8,7 @@
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/no_destructor.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/task/current_thread.h"
@@ -37,6 +38,7 @@
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/features.h"
@@ -259,12 +261,32 @@ enum class ButtonToClick : int {
 class HistorySyncOptinViewControllerInteractiveBrowserTest
     : public SigninBrowserTestBaseT<InteractiveBrowserTest>,
       public testing::WithParamInterface<ButtonToClick> {
- public:
-  const InteractiveBrowserTest::DeepQuery kHistoryOptinAcceptButton = {
-      "history-sync-optin-app", "#acceptButton"};
-  const InteractiveBrowserTest::DeepQuery kHistoryOptinRejectButton = {
-      "history-sync-optin-app", "#rejectButton"};
+ protected:
   const char* kIsDisabledFn = "(e) => { return e.disabled; }";
+
+  const InteractiveBrowserTest::DeepQuery& GetHistoryOptinAcceptButtonQuery() {
+    if (base::FeatureList::IsEnabled(switches::kFirstRunDesktopRefresh)) {
+      static const base::NoDestructor<InteractiveBrowserTest::DeepQuery> kQuery(
+          {"history-sync-optin-app-refresh", "#acceptButton"});
+      return *kQuery;
+    } else {
+      static const base::NoDestructor<InteractiveBrowserTest::DeepQuery> kQuery(
+          {"history-sync-optin-app", "#acceptButton"});
+      return *kQuery;
+    }
+  }
+
+  const InteractiveBrowserTest::DeepQuery& GetHistoryOptinRejectButtonQuery() {
+    if (base::FeatureList::IsEnabled(switches::kFirstRunDesktopRefresh)) {
+      static const base::NoDestructor<InteractiveBrowserTest::DeepQuery> kQuery(
+          {"history-sync-optin-app-refresh", "#rejectButton"});
+      return *kQuery;
+    } else {
+      static const base::NoDestructor<InteractiveBrowserTest::DeepQuery> kQuery(
+          {"history-sync-optin-app", "#rejectButton"});
+      return *kQuery;
+    }
+  }
 
   auto ClickButton(ui::ElementIdentifier parent_element_id,
                    DeepQuery button_query) {
@@ -275,18 +297,19 @@ class HistorySyncOptinViewControllerInteractiveBrowserTest
   auto CheckButtonsState(ui::ElementIdentifier parent_element_id,
                          DialogButtonEnableState state) {
     bool is_disabled = state == DialogButtonEnableState::kDisabled;
-    return Steps(CheckJsResultAt(parent_element_id, kHistoryOptinAcceptButton,
-                                 kIsDisabledFn, is_disabled),
-                 CheckJsResultAt(parent_element_id, kHistoryOptinRejectButton,
-                                 kIsDisabledFn, is_disabled));
+    return Steps(
+        CheckJsResultAt(parent_element_id, GetHistoryOptinAcceptButtonQuery(),
+                        kIsDisabledFn, is_disabled),
+        CheckJsResultAt(parent_element_id, GetHistoryOptinRejectButtonQuery(),
+                        kIsDisabledFn, is_disabled));
   }
 
   const InteractiveBrowserTest::DeepQuery& GetButtonToClick() {
     switch (GetParam()) {
       case ButtonToClick::kAcceptButton:
-        return kHistoryOptinAcceptButton;
+        return GetHistoryOptinAcceptButtonQuery();
       case ButtonToClick::kRejectButton:
-        return kHistoryOptinRejectButton;
+        return GetHistoryOptinRejectButtonQuery();
     }
   }
 
