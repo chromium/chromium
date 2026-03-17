@@ -118,6 +118,7 @@ const UChar kLeftToRightMark = 0x200E;
 const UChar kRightToLeftMark = 0x200F;
 const UChar kHyphen = 0x2010;
 const UChar kNonBreakingHyphen = 0x2011;
+const UChar kEnDash = 0x2013;
 const UChar kLeftSingleQuotationMark = 0x2018;
 const UChar kRightSingleQuotationMark = 0x2019;
 const UChar kLeftDoubleQuotationMark = 0x201C;

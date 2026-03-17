@@ -295,6 +295,21 @@ inline unsigned LazyLineBreakIterator::NextBreakablePosition(
 
     if constexpr (line_break_type == LineBreakType::kBreakAll) {
       if (!U16_IS_LEAD(context.current.ch)) {
+        // https://drafts.csswg.org/css-text-4/#line-break-property
+        // * The following breaks are allowed for 'loose' line breaking if the
+        //   preceding character belongs to the Unicode line breaking class ID
+        //   ...:
+        //   breaks before hyphens:
+        //   U+2010, U+2013
+        if (strictness_ == LineBreakStrictness::kLoose &&
+            (context.current.ch == uchar::kHyphen ||
+             context.current.ch == uchar::kEnDash) &&
+            (last_line_break == U_LB_NUMERIC ||
+             last_line_break == U_LB_ALPHABETIC ||
+             last_line_break == U_LB_COMPLEX_CONTEXT ||
+             last_line_break == U_LB_IDEOGRAPHIC)) {
+          return i;
+        }
         ULineBreak line_break =
             LineBreakPropertyValue(context.last.ch, context.current.ch);
         if (ShouldBreakAfterBreakAll(last_line_break, line_break)) {
