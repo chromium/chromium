@@ -47,281 +47,225 @@ class ReadAnythingMochaBrowserTest : public WebUIMochaBrowserTest {
 
 using ReadAnythingMochaTest = ReadAnythingMochaBrowserTest;
 
-class ReadAnythingMochaParameterizedTest
-    : public ReadAnythingMochaBrowserTest,
-      public ::testing::WithParamInterface<bool> {
- protected:
-  ReadAnythingMochaParameterizedTest() {
-    std::vector<base::test::FeatureRef> enabled_features = {
-        features::kReadAnythingImagesViaAlgorithm};
-    if (IsTsSegmentationEnabled()) {
-      enabled_features.push_back(
-          features::kReadAnythingReadAloudTSTextSegmentation);
-    }
-    scoped_feature_list_.InitWithFeatures(
-        enabled_features, {features::kReadAnythingReadAloudPhraseHighlighting,
-                           features::kReadAnythingDocsIntegration});
-  }
-
-  bool IsTsSegmentationEnabled() const { return GetParam(); }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_P(ReadAnythingMochaParameterizedTest, Speech) {
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, Speech) {
   RunSidePanelTest("side_panel/read_anything/speech_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_P(ReadAnythingMochaParameterizedTest,
-                       SpeechPresentationRules) {
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, SpeechPresentationRules) {
   RunSidePanelTest("side_panel/read_anything/speech_presentation_rules_test.js",
                    "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_P(ReadAnythingMochaParameterizedTest, NodeStore) {
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, NodeStore) {
   RunSidePanelTest("side_panel/read_anything/node_store_test.js",
                    "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_P(ReadAnythingMochaParameterizedTest,
-                       SpeechControllerContent) {
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, SpeechControllerContent) {
   RunSidePanelTest("side_panel/read_anything/speech_controller_content_test.js",
                    "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_P(ReadAnythingMochaParameterizedTest, HighlightMenu) {
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, HighlightMenu) {
   RunSidePanelTest("side_panel/read_anything/highlight_menu_test.js",
                    "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_P(ReadAnythingMochaParameterizedTest, TextSegmenter) {
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, TextSegmenter) {
   RunSidePanelTest("side_panel/read_anything/text_segmenter_test.js",
                    "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_P(ReadAnythingMochaParameterizedTest, SpeechModel) {
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, SpeechModel) {
   RunSidePanelTest("side_panel/read_anything/speech_model_test.js",
                    "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_P(ReadAnythingMochaParameterizedTest, ContentController) {
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, ContentController) {
   RunSidePanelTest("side_panel/read_anything/content_controller_test.js",
                    "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_P(ReadAnythingMochaParameterizedTest, WordBoundaries) {
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, WordBoundaries) {
   RunSidePanelTest("side_panel/read_anything/word_boundaries_test.js",
                    "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_P(ReadAnythingMochaParameterizedTest,
-                       WordBoundariesUsedForSpeech) {
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, WordBoundariesUsedForSpeech) {
   RunSidePanelTest("side_panel/read_anything/word_boundaries_speech_test.js",
                    "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_P(ReadAnythingMochaParameterizedTest,
-                       UpdateContentIntegration) {
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, UpdateContentIntegration) {
   RunSidePanelTest(
       "side_panel/read_anything/update_content_integration_test.js",
       "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_P(ReadAnythingMochaParameterizedTest, Highlighter) {
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, Highlighter) {
   RunSidePanelTest("side_panel/read_anything/highlighter_test.js",
                    "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_P(ReadAnythingMochaParameterizedTest,
-                       VoiceLanguageController) {
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, VoiceLanguageController) {
   RunSidePanelTest("side_panel/read_anything/voice_language_controller_test.js",
                    "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_P(ReadAnythingMochaParameterizedTest, VoiceLanguageModel) {
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, VoiceLanguageModel) {
   RunSidePanelTest("side_panel/read_anything/voice_language_model_test.js",
                    "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_P(ReadAnythingMochaParameterizedTest,
-                       SelectionController) {
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, SelectionController) {
   RunSidePanelTest("side_panel/read_anything/selection_controller_test.js",
                    "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_P(ReadAnythingMochaParameterizedTest, SpeechController) {
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, SpeechController) {
   RunSidePanelTest("side_panel/read_anything/speech_controller_test.js",
                    "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_P(ReadAnythingMochaParameterizedTest, Common) {
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, Common) {
   RunSidePanelTest("side_panel/read_anything/common_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_P(ReadAnythingMochaParameterizedTest, Logger) {
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, Logger) {
   RunSidePanelTest("side_panel/read_anything/read_anything_logger_test.js",
                    "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_P(ReadAnythingMochaParameterizedTest, AppContent) {
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, AppContent) {
   RunSidePanelTest("side_panel/read_anything/app_content_test.js",
                    "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_P(ReadAnythingMochaParameterizedTest, VoiceSelectionMenu) {
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, VoiceSelectionMenu) {
   RunSidePanelTest("side_panel/read_anything/voice_selection_menu_test.js",
                    "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_P(ReadAnythingMochaParameterizedTest, VoiceLanguageUtil) {
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, VoiceLanguageUtil) {
   RunSidePanelTest(
       "side_panel/read_anything/voice_language_conversions_test.js",
       "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_P(ReadAnythingMochaParameterizedTest, KeyboardUtil) {
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, KeyboardUtil) {
   RunSidePanelTest("side_panel/read_anything/keyboard_util_test.js",
                    "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_P(ReadAnythingMochaParameterizedTest,
-                       VoiceNotificationManager) {
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, VoiceNotificationManager) {
   RunSidePanelTest(
       "side_panel/read_anything/voice_notification_manager_test.js",
       "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_P(ReadAnythingMochaParameterizedTest, FontSize) {
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, FontSize) {
   RunSidePanelTest("side_panel/read_anything/font_size_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_P(ReadAnythingMochaParameterizedTest, FontMenu) {
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, FontMenu) {
   RunSidePanelTest("side_panel/read_anything/font_menu_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_P(ReadAnythingMochaParameterizedTest, SimpleActionMenu) {
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, SimpleActionMenu) {
   RunSidePanelTest("side_panel/read_anything/simple_action_menu_test.js",
                    "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_P(ReadAnythingMochaParameterizedTest, ColorMenu) {
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, ColorMenu) {
   RunSidePanelTest("side_panel/read_anything/color_menu_test.js",
                    "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_P(ReadAnythingMochaParameterizedTest, LineFocusMenu) {
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, LineFocusMenu) {
   RunSidePanelTest("side_panel/read_anything/line_focus_menu_test.js",
                    "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_P(ReadAnythingMochaParameterizedTest, LetterSpacing) {
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, LetterSpacing) {
   RunSidePanelTest("side_panel/read_anything/letter_spacing_test.js",
                    "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_P(ReadAnythingMochaParameterizedTest, LineSpacing) {
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, LineSpacing) {
   RunSidePanelTest("side_panel/read_anything/line_spacing_test.js",
                    "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_P(ReadAnythingMochaParameterizedTest, Movement) {
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, Movement) {
   RunSidePanelTest("side_panel/read_anything/movement_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_P(ReadAnythingMochaParameterizedTest, Toolbar) {
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, Toolbar) {
   RunSidePanelTest("side_panel/read_anything/toolbar_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_P(ReadAnythingMochaParameterizedTest,
-                       AppReceivesToolbarChanges) {
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, AppReceivesToolbarChanges) {
   RunSidePanelTest(
       "side_panel/read_anything/app_receives_toolbar_changes_test.js",
       "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_P(ReadAnythingMochaParameterizedTest, AppStyleUpdater) {
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, AppStyleUpdater) {
   RunSidePanelTest("side_panel/read_anything/app_style_updater_test.js",
                    "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_P(ReadAnythingMochaParameterizedTest, LanguageMenu) {
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, LanguageMenu) {
   RunSidePanelTest("side_panel/read_anything/language_menu_test.js",
                    "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_P(ReadAnythingMochaParameterizedTest, LanguageToast) {
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, LanguageToast) {
   RunSidePanelTest("side_panel/read_anything/language_toast_test.js",
                    "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_P(ReadAnythingMochaParameterizedTest, RateMenu) {
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, RateMenu) {
   RunSidePanelTest("side_panel/read_anything/rate_menu_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_P(ReadAnythingMochaParameterizedTest, ToolbarOverflow) {
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, ToolbarOverflow) {
   RunSidePanelTest("side_panel/read_anything/toolbar_overflow_test.js",
                    "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_P(ReadAnythingMochaParameterizedTest,
-                       SpeechUsesMaxTextLength) {
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, SpeechUsesMaxTextLength) {
   RunSidePanelTest(
       "side_panel/read_anything/speech_uses_max_text_length_test.js",
       "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_P(ReadAnythingMochaParameterizedTest, ReadAloudHighlight) {
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, ReadAloudHighlight) {
   RunSidePanelTest("side_panel/read_anything/read_aloud_highlighting_test.js",
                    "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_P(ReadAnythingMochaParameterizedTest,
-                       LineFocusController) {
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, LineFocusController) {
   RunSidePanelTest("side_panel/read_anything/line_focus_controller_test.js",
                    "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_P(ReadAnythingMochaParameterizedTest, DomQueries) {
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, DomQueries) {
   RunSidePanelTest("side_panel/read_anything/dom_queries_test.js",
                    "mocha.run()");
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    ReadAnythingMochaParameterized,
-    ReadAnythingMochaParameterizedTest,
-    ::testing::Bool(),
-    [](const testing::TestParamInfo<
-        ReadAnythingMochaParameterizedTest::ParamType>& info) {
-      return info.param ? "WithTsSegmentation" : "WithoutTsSegmentation";
-    });
-
-class ReadAnythingReadAloudTsSegmentationMochaTest
-    : public ReadAnythingMochaBrowserTest {
- protected:
-  ReadAnythingReadAloudTsSegmentationMochaTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kReadAnythingReadAloudTSTextSegmentation}, {});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudTsSegmentationMochaTest,
-                       ReadAloudNodeStore) {
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, ReadAloudNodeStore) {
   RunSidePanelTest("side_panel/read_anything/read_aloud_node_store_test.js",
                    "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudTsSegmentationMochaTest,
-                       DomReadAloudNode) {
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, DomReadAloudNode) {
   RunSidePanelTest("side_panel/read_anything/dom_read_aloud_node_test.js",
                    "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudTsSegmentationMochaTest,
-                       ReadAloudModel) {
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, ReadAloudModel) {
   RunSidePanelTest("side_panel/read_anything/read_aloud_model_test.js",
                    "mocha.run()");
 }
