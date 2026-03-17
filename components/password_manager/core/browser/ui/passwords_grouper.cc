@@ -203,7 +203,12 @@ PasswordsGrouper::GetAffiliatedGroupsWithGroupingInfo() const {
     // Convert each credential into CredentialUIEntry.
     std::vector<CredentialUIEntry> credentials;
     for (auto const& [username_password_key, forms] : affiliated_group.forms) {
-      credentials.emplace_back(forms);
+      std::vector<PasswordForm> copied_forms;
+      copied_forms.reserve(forms.size());
+      for (const auto& form_ptr : forms) {
+        copied_forms.push_back(*form_ptr);
+      }
+      credentials.emplace_back(copied_forms);
     }
     for (auto const& passkey : SortedPasskeysView(affiliated_group.passkeys)) {
       credentials.emplace_back(passkey);
@@ -256,7 +261,12 @@ std::vector<CredentialUIEntry> PasswordsGrouper::GetAllCredentials() const {
        map_group_id_to_credentials_) {
     for (const auto& [username_password_key, forms] :
          affiliated_credentials.forms) {
-      credentials.emplace_back(forms);
+      std::vector<PasswordForm> copied_forms;
+      copied_forms.reserve(forms.size());
+      for (const auto& form_ptr : forms) {
+        copied_forms.push_back(*form_ptr);
+      }
+      credentials.emplace_back(copied_forms);
     }
     for (const auto& passkey :
          SortedPasskeysView(affiliated_credentials.passkeys)) {
@@ -272,7 +282,7 @@ std::vector<CredentialUIEntry> PasswordsGrouper::GetBlockedSites() const {
   results.reserve(blocked_sites_.size());
   std::ranges::transform(blocked_sites_, std::back_inserter(results),
                          [](const auto& key_value) {
-                           return CredentialUIEntry(key_value.second.front());
+                           return CredentialUIEntry(*key_value.second.front());
                          });
   // Sort blocked sites.
   std::sort(results.begin(), results.end());
@@ -289,7 +299,10 @@ std::vector<PasswordForm> PasswordsGrouper::GetPasswordFormsFor(
         credential.GetAffiliatedDomains().front().name;
     const auto& iterator = blocked_sites_.find(displayed_name);
     if (iterator != blocked_sites_.end()) {
-      return iterator->second;
+      for (const auto& form_ptr : iterator->second) {
+        forms.push_back(*form_ptr);
+      }
+      return forms;
     }
     return forms;
   }
@@ -310,7 +323,8 @@ std::vector<PasswordForm> PasswordsGrouper::GetPasswordFormsFor(
   }
 
   // Get all password forms with matching username/password.
-  const std::map<UsernamePasswordKey, std::vector<PasswordForm>>&
+  const std::map<UsernamePasswordKey,
+                 std::vector<std::unique_ptr<PasswordForm>>>&
       username_to_forms = group_iterator->second.forms;
   auto forms_iterator = username_to_forms.find(
       UsernamePasswordKey(CreateUsernamePasswordSortKey(credential)));
@@ -319,7 +333,12 @@ std::vector<PasswordForm> PasswordsGrouper::GetPasswordFormsFor(
   }
   CheckHeapIntegrity();
 
-  return forms_iterator->second;
+  std::vector<PasswordForm> result;
+  result.reserve(forms_iterator->second.size());
+  for (const auto& form_ptr : forms_iterator->second) {
+    result.push_back(*form_ptr);
+  }
+  return result;
 }
 
 std::optional<PasskeyCredential> PasswordsGrouper::GetPasskeyFor(
@@ -358,9 +377,10 @@ void PasswordsGrouper::CheckHeapIntegrity() const {
   for (const auto& pair : map_group_id_to_credentials_) {
     const Credentials& credentials = pair.second;
     for (const auto& forms_pair : credentials.forms) {
-      const std::vector<PasswordForm>& password_form_vector = forms_pair.second;
+      const std::vector<std::unique_ptr<PasswordForm>>& password_form_vector =
+          forms_pair.second;
       for (const auto& form : password_form_vector) {
-        base::CheckHeapIntegrity(&form);
+        base::CheckHeapIntegrity(form.get());
       }
     }
     for (const auto& passkey : credentials.passkeys) {
@@ -386,7 +406,8 @@ void PasswordsGrouper::GroupPasswordsImpl(
       CredentialUIEntry credential(form);
       std::string displayed_name =
           credential.GetAffiliatedDomains().front().name;
-      blocked_sites_[displayed_name].push_back(std::move(form));
+      blocked_sites_[displayed_name].push_back(
+          std::make_unique<PasswordForm>(std::move(form)));
       continue;
     }
     std::string facet_uri = GetFacetRepresentation(form);
@@ -402,7 +423,7 @@ void PasswordsGrouper::GroupPasswordsImpl(
         CreateUsernamePasswordSortKey(CredentialUIEntry(form)));
     CheckHeapIntegrity();
     map_group_id_to_credentials_[group_id].forms[key].push_back(
-        std::move(form));
+        std::make_unique<PasswordForm>(std::move(form)));
     CheckHeapIntegrity();
   }
 
