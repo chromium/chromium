@@ -800,6 +800,63 @@ suite('ContextualTasksComposeboxTest', () => {
     assertFalse(isImage);
   });
 
+  test('composebox is hidden until isZeroState is not undefined', async () => {
+    // Clear the body and reset the mock to test a fresh instance.
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    mockSearchboxPageHandler.reset();
+    mockSearchboxPageHandler.setResultFor('getInputState', Promise.resolve({
+      state: {
+        allowedModels: [],
+        allowedTools: [],
+        allowedInputTypes: [],
+        activeModel: 0,
+        activeTool: 0,
+        disabledModels: [],
+        disabledTools: [],
+        disabledInputTypes: [],
+      },
+    }));
+
+    const app = document.createElement('contextual-tasks-app');
+    document.body.appendChild(app);
+
+    await app.updateComplete;
+    await microtasksFinished();
+
+    // Since connectedCallback immediately resolves the isZeroState promise
+    // and sets it to false, we force it back to undefined here to test the
+    // initial rendering state.
+    app.setIsZeroStateForTesting(undefined as unknown as boolean);
+    app.requestUpdate();
+    await app.updateComplete;
+    await microtasksFinished();
+
+    const composeboxWrapper = app.$.composebox;
+    assertTrue(
+        composeboxWrapper.hasAttribute('hidden'),
+        'Composebox should be hidden when isZeroState is undefined');
+
+    // Mock 'isZeroState_' updating value from parent to true.
+    testProxy.callbackRouterRemote.onZeroStateChange(true);
+    await testProxy.callbackRouterRemote.$.flushForTesting();
+    await app.updateComplete;
+    await microtasksFinished();
+
+    assertFalse(
+        composeboxWrapper.hasAttribute('hidden'),
+        'Composebox should be visible when isZeroState is true');
+
+    // Mock 'isZeroState_' updating value from parent to false.
+    testProxy.callbackRouterRemote.onZeroStateChange(false);
+    await testProxy.callbackRouterRemote.$.flushForTesting();
+    await app.updateComplete;
+    await microtasksFinished();
+
+    assertFalse(
+        composeboxWrapper.hasAttribute('hidden'),
+        'Composebox should be visible when isZeroState is false');
+  });
+
   test('queries autocomplete on load when isZeroState is true', async () => {
     // Clear the body and reset the mock to test a fresh instance.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
