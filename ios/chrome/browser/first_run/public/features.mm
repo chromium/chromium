@@ -18,7 +18,7 @@ BASE_FEATURE(kBestFeaturesScreenInFirstRun,
              "BestFeaturesScreenInFirstRunExperience",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kManualLogUploadsInTheFRE, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kManualLogUploadsInTheFRE, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSkipDefaultBrowserPromoInFirstRun,
              base::FEATURE_DISABLED_BY_DEFAULT);

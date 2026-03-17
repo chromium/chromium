@@ -12513,21 +12513,6 @@
             ]
         }
     ],
-    "IOSManualLogUploadsInTheFRE": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ManualLogUploadsInTheFRE"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSMostVisitedTilesCustomization": [
         {
             "platforms": [
