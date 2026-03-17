@@ -803,9 +803,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsInternalsBrowserTest,
   auto* privacy_sandbox_service =
       PrivacySandboxServiceFactory::GetForProfile(browser()->profile());
 
-  privacy_sandbox_service->PromptActionOccurred(
-      PrivacySandboxService::PromptAction::kConsentAccepted,
-      PrivacySandboxService::SurfaceType::kDesktop);
+  privacy_sandbox_service->TopicsToggleChanged(true);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), GURL(kBrowsingTopicsInternalsConsentInfoUrl)));
@@ -813,7 +811,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsInternalsBrowserTest,
   auto consent_string = GetConsentInfoTabContent();
   auto expected_string = BuildExpectedConsentInfoString(
       IDS_PRIVACY_SANDBOX_TOPICS_CONSENT_ACTIVE,
-      IDS_PRIVACY_SANDBOX_TOPICS_CONSENT_UPDATE_SOURCE_CONFIRMATION);
+      IDS_PRIVACY_SANDBOX_TOPICS_CONSENT_UPDATE_SOURCE_SETTINGS);
 
   EXPECT_EQ(expected_string, consent_string);
 }
