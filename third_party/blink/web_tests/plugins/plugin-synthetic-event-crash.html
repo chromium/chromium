@@ -24,12 +24,10 @@ eventTypes.forEach(function(eventType) {
     });
 });
 
-var event = document.createEvent("PopStateEvent");
-event.initEvent("touchmove", true, true);
+var event = new PopStateEvent("touchmove", {bubbles: true, cancelable: true});
 plugin.dispatchEvent(event);
 
-event = document.createEvent("PopStateEvent");
-event.initEvent("mousewheel", true, true);
+event = new PopStateEvent("mousewheel", {bubbles: true, cancelable: true});
 plugin.dispatchEvent(event);
 </script>
 </body>

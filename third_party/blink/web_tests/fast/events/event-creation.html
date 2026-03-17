@@ -5,11 +5,6 @@
 <script>
     description("This tests that document.createEvent is hooked up for all Event interfaces (and alternatives) and creates the right instance.")
 
-    // AnimationEvent
-    shouldBeTrue("document.createEvent('AnimationEvent') instanceof window.AnimationEvent");
-    shouldBeTrue("document.createEvent('AnimationEvent') instanceof window.Event");
-    shouldBeTrue("document.createEvent('AnimationEvent').constructor === window.AnimationEvent");
-
     // Event
     shouldBeTrue("document.createEvent('Event') instanceof window.Event");
     shouldBeTrue("document.createEvent('Event').constructor === window.Event");
@@ -40,11 +35,6 @@
     shouldBeTrue("document.createEvent('CustomEvENt') instanceof window.CustomEvent");
     shouldBeTrue("document.createEvent('CustomEvENt') instanceof window.Event");
     shouldBeTrue("document.createEvent('CustomEvENt').constructor === window.CustomEvent");
-
-    // ErrorEvent
-    shouldBeTrue("document.createEvent('ErrorEvent') instanceof window.ErrorEvent");
-    shouldBeTrue("document.createEvent('ErrorEvent') instanceof window.Event");
-    shouldBeTrue("document.createEvent('ErrorEvent').constructor === window.ErrorEvent");
 
     // HashChangeEvent
     shouldBeTrue("document.createEvent('HashChangeEvent') instanceof window.HashChangeEvent");
@@ -88,16 +78,6 @@
     shouldBeTrue("document.createEvent('MouseEvENts') instanceof window.Event");
     shouldBeTrue("document.createEvent('MouseEvENts').constructor === window.MouseEvent");
 
-    // PageTransitionEvent
-    shouldBeTrue("document.createEvent('PageTransitionEvent') instanceof window.PageTransitionEvent");
-    shouldBeTrue("document.createEvent('PageTransitionEvent') instanceof window.Event");
-    shouldBeTrue("document.createEvent('PageTransitionEvent').constructor === window.PageTransitionEvent");
-
-    // PopStateEvent
-    shouldBeTrue("document.createEvent('PopStateEvent') instanceof window.PopStateEvent");
-    shouldBeTrue("document.createEvent('PopStateEvent') instanceof window.Event");
-    shouldBeTrue("document.createEvent('PopStateEvent').constructor === window.PopStateEvent");
-
     // TextEvent
     shouldBeTrue("document.createEvent('TextEvent') instanceof window.TextEvent");
     shouldBeTrue("document.createEvent('TextEvent') instanceof window.UIEvent");
@@ -125,13 +105,6 @@
     shouldBeTrue("document.createEvent('TransitionEvent') instanceof window.Event");
     shouldBeTrue("document.createEvent('TransitionEvent').constructor === window.TransitionEvent");
 
-    // WheelEvent
-    shouldBeTrue("document.createEvent('WheelEvent') instanceof window.WheelEvent");
-    shouldBeTrue("document.createEvent('WheelEvent') instanceof window.MouseEvent");
-    shouldBeTrue("document.createEvent('WheelEvent') instanceof window.UIEvent");
-    shouldBeTrue("document.createEvent('WheelEvent') instanceof window.Event");
-    shouldBeTrue("document.createEvent('WheelEvent').constructor === window.WheelEvent");
-
     // StorageEvent
     shouldBeTrue("document.createEvent('StorageEvent') instanceof window.StorageEvent");
     shouldBeTrue("document.createEvent('StorageEvent') instanceof window.Event");
@@ -140,11 +113,6 @@
     // SVGEvents (Event alternative)
     shouldBeTrue("document.createEvent('SVGEvents') instanceof window.Event");
     shouldBeTrue("document.createEvent('SVGEvents').constructor === window.Event");
-
-    // CloseEvent
-    shouldBeTrue("document.createEvent('CloseEvent') instanceof window.CloseEvent");
-    shouldBeTrue("document.createEvent('CloseEvent') instanceof window.Event");
-    shouldBeTrue("document.createEvent('CloseEvent').constructor === window.CloseEvent");
 
     // The following are here for completeness, but won't until there is more widespread support for them.
 

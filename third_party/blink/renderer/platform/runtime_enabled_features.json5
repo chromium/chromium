@@ -4560,6 +4560,14 @@
       status: "stable",
     },
     {
+      // Remove non-allowlisted event interfaces from document.createEvent().
+      // This was added in M148 and can be removed after M150.
+      // https://chromestatus.com/feature/5095987863486464
+      // https://issues.chromium.org/issues/41228793
+      name: "RemoveNonAllowlistedCreateEvent",
+      status: "stable",
+    },
+    {
       // See https://issues.chromium.org/issues/40779139
       name: "RemoveScrollNodeWorkaround",
       status: "stable",

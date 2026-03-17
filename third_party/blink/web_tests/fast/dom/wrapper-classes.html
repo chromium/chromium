@@ -105,7 +105,7 @@ function runTest()
     test("document.createEvent('MouseEvent')", "MouseEvent");
     test("document.createEvent('TextEvent')", "TextEvent");
     test("document.createEvent('UIEvent')", "UIEvent");
-    test("document.createEvent('WheelEvent')", "WheelEvent");
+    test("new WheelEvent('wheel')", "WheelEvent");
 
     debug('');
     debug('CSS DOM');

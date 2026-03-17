@@ -56,17 +56,27 @@ def needs_script_state(name):
 # to the spec and moved to the above list (causing them to be matched
 # case-insensitively) or be deprecated/removed.
 def create_event_ignore_case_and_measure_list(name):
-    return (name == 'AnimationEvent' or name == 'BeforeUnloadEvent'
-            or name == 'CloseEvent' or name == 'CompositionEvent'
+    return (name == 'BeforeUnloadEvent' or name == 'CompositionEvent'
             or name == 'DeviceMotionEvent' or name == 'DeviceOrientationEvent'
-            or name == 'DragEvent' or name == 'ErrorEvent'
-            or name == 'FocusEvent' or name == 'HashChangeEvent'
-            or name == 'IDBVersionChangeEvent' or name == 'KeyboardEvents'
+            or name == 'DragEvent' or name == 'FocusEvent'
+            or name == 'HashChangeEvent' or name == 'StorageEvent'
+            or name == 'SVGEvents' or name == 'TextEvent')
+
+
+# This events removed behind the RemoveNonAllowlistedCreateEvent flag.
+# https://issues.chromium.org/issues/41228793#comment38
+def create_event_removed_by_flag(name):
+    return (name == 'AnimationEvent' or name == 'CloseEvent'
+            or name == 'ErrorEvent' or name == 'IDBVersionChangeEvent'
             or name == 'PageTransitionEvent' or name == 'PopStateEvent'
-            or name == 'StorageEvent' or name == 'SVGEvents'
-            or name == 'TextEvent' or name == 'TrackEvent'
-            or name == 'TransitionEvent' or name == 'WebGLContextEvent'
+            or name == 'TrackEvent' or name == 'WebGLContextEvent'
             or name == 'WheelEvent')
+
+
+# This events deprecated in M148, to be removed in M151.
+# https://issues.chromium.org/issues/41228793#comment38
+def create_event_deprecated(name):
+    return (name == 'KeyboardEvents' or name == 'TransitionEvent')
 
 
 def measure_name(name):
@@ -88,6 +98,8 @@ class EventFactoryWriter(json5_generator.Writer):
         'cpp_name': name_utilities.cpp_name,
         'name': lambda entry: entry['name'].original,
         'create_event_ignore_case_list': create_event_ignore_case_list,
+        'create_event_removed_by_flag': create_event_removed_by_flag,
+        'create_event_deprecated': create_event_deprecated,
         'measure_name': measure_name,
         'needs_script_state': needs_script_state,
     }
@@ -131,7 +143,9 @@ class EventFactoryWriter(json5_generator.Writer):
         target_events = [
             event for event in self.json5_file.name_dictionaries if
             (create_event_ignore_case_list(event['name'].original) or
-             create_event_ignore_case_and_measure_list(event['name'].original))
+             create_event_ignore_case_and_measure_list(event['name'].original)
+             or create_event_removed_by_flag(event['name'].original)
+             or create_event_deprecated(event['name'].original))
         ]
         return {
             'include_header_paths':

@@ -46,7 +46,7 @@ function test()
     e = document.createEvent("MouseEvents");
     printPrototypes(e);
 
-    e = document.createEvent("KeyboardEvents");
+    e = new KeyboardEvent("keydown");
     printPrototypes(e);
 }
 

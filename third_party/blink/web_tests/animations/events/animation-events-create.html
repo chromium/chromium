@@ -3,7 +3,7 @@
 <script src="../../resources/testharnessreport.js"></script>
 <script>
 test(() => {
-  var ev = document.createEvent('AnimationEvent');
+  var ev = new AnimationEvent("animationstart");
   assert_equals(typeof(ev), 'object');
   assert_equals(ev.animationName, '');
   assert_equals(ev.elapsedTime, 0.0);

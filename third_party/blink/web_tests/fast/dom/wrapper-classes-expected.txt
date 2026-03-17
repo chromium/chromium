@@ -95,10 +95,10 @@ PASS classString(document.createEvent('UIEvent')) is "UIEvent"
 FAIL classString(document.createEvent('UIEvent').__proto__) should be UIEventPrototype. Was UIEvent.
 PASS classString(document.createEvent('UIEvent').constructor) is "Function"
 PASS document.createEvent('UIEvent').constructor.name is "UIEvent"
-PASS classString(document.createEvent('WheelEvent')) is "WheelEvent"
-FAIL classString(document.createEvent('WheelEvent').__proto__) should be WheelEventPrototype. Was WheelEvent.
-PASS classString(document.createEvent('WheelEvent').constructor) is "Function"
-PASS document.createEvent('WheelEvent').constructor.name is "WheelEvent"
+PASS classString(new WheelEvent('wheel')) is "WheelEvent"
+FAIL classString(new WheelEvent('wheel').__proto__) should be WheelEventPrototype. Was WheelEvent.
+PASS classString(new WheelEvent('wheel').constructor) is "Function"
+PASS new WheelEvent('wheel').constructor.name is "WheelEvent"
 
 
 CSS DOM

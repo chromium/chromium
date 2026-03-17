@@ -179,6 +179,26 @@
       milestone: 119,
     },
     {
+      name: "DocumentCreateEventKeyboardEvents",
+      message: "document.createEvent('KeyboardEvents') is deprecated and will be removed. Use `new KeyboardEvent()` instead.",
+      translation_note: "Warning displayed to developers when document.createEvent() is called with 'KeyboardEvents', which is a non-standard event interface that will be removed.",
+      web_features: [
+        "kDocumentCreateEventKeyboardEvents",
+      ],
+      chrome_status_feature: 5095987863486464,
+      milestone: 151,
+    },
+    {
+      name: "DocumentCreateEventTransitionEvent",
+      message: "document.createEvent('TransitionEvent') is deprecated and will be removed. Use `new TransitionEvent()` instead.",
+      translation_note: "Warning displayed to developers when document.createEvent() is called with 'TransitionEvent', which is a non-standard event interface that will be removed.",
+      web_features: [
+        "kDocumentCreateEventTransitionEvent",
+      ],
+      chrome_status_feature: 5095987863486464,
+      milestone: 151,
+    },
+    {
       name: "ExampleBrowserProcessDeprecation",
       message: "This is an example for showing the code required for a browser process reported deprecation.",
       translation_note: "Translation is not needed, this will never be exposed in production code.",

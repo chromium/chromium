@@ -6,8 +6,7 @@ if (window.testRunner)
     testRunner.dumpAsText();
 var input = document.getElementById("input");
 input.setSelectionRange(2, 6);
-var event = document.createEvent("KeyboardEvents");
-event.initKeyboardEvent("keypress", true, true, document.defaultView, "Enter", 0, false, false, false, false, false);
+var event = new KeyboardEvent("keypress", {bubbles: true, cancelable: true, view: document.defaultView, key: "Enter", location: 0, ctrlKey: false, altKey: false, shiftKey: false, metaKey: false, repeat: false});
 input.dispatchEvent(event);
 if (window.eventSender)
     eventSender.keyDown('\n', []);

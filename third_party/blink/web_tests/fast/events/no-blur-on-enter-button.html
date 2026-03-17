@@ -16,8 +16,7 @@
         // hit enter
         var bt = document.getElementById('i_bt');
         bt.focus();
-        var enterEvent = document.createEvent("KeyboardEvents");
-        enterEvent.initKeyboardEvent("keypress", true, false, window, "Enter", 0, false, false, false, false, false);
+        var enterEvent = new KeyboardEvent("keypress", {bubbles: true, cancelable: false, view: window, key: "Enter", location: 0, ctrlKey: false, altKey: false, shiftKey: false, metaKey: false, repeat: false});
         bt.dispatchEvent(enterEvent);
 
         if (inputBlurFired)
@@ -27,8 +26,7 @@
 
         bt = document.getElementById('b_bt');
         bt.focus();
-        var enterEvent2 = document.createEvent("KeyboardEvents");
-        enterEvent2.initKeyboardEvent("keypress", true, false, window, "Enter", 0, false, false, false, false, false);
+        var enterEvent2 = new KeyboardEvent("keypress", {bubbles: true, cancelable: false, view: window, key: "Enter", location: 0, ctrlKey: false, altKey: false, shiftKey: false, metaKey: false, repeat: false});
 
         bt.dispatchEvent(enterEvent2);
 
