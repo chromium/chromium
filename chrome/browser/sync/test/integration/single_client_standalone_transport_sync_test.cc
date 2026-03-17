@@ -21,6 +21,7 @@
 #include "components/data_sharing/public/features.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/skills/features.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
 #include "components/sync/service/glue/sync_transport_data_prefs.h"
@@ -223,6 +224,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
 
   if (base::FeatureList::IsEnabled(syncer::kSyncAccountSettings)) {
     expected_types.Put(syncer::ACCOUNT_SETTING);
+  }
+
+  if (base::FeatureList::IsEnabled(features::kSkillsEnabled)) {
+    expected_types.Put(syncer::SKILL);
   }
 
   EXPECT_THAT(GetSyncService(0)->GetActiveDataTypes(),
