@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.search_engines.settings;
 
-
+import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
@@ -21,8 +21,11 @@ import org.chromium.chrome.browser.regional_capabilities.RegionalCapabilitiesSer
 import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.chrome.browser.settings.ProfileDependentSetting;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
+import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
 import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
+import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
+import org.chromium.components.browser_ui.settings.search.SettingsIndexData.Entry;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.regional_capabilities.RegionalCapabilitiesService;
 
@@ -36,6 +39,8 @@ import org.chromium.components.regional_capabilities.RegionalCapabilitiesService
 @NullMarked
 public class SearchEngineSettings extends ListFragment
         implements EmbeddableSettingsPage, ProfileDependentSetting {
+    private static final String PREF_KEY_MANAGE_SEARCH_ENGINES_AND_SITE_SEARCH =
+            "manage_search_engines_and_site_search";
     private SearchEngineAdapter mSearchEngineAdapter;
     private @Nullable Profile mProfile;
     private final SettableMonotonicObservableSupplier<String> mPageTitle =
@@ -143,4 +148,24 @@ public class SearchEngineSettings extends ListFragment
                         /* fragmentArgs= */ null,
                         /* addToBackStack= */ true);
     }
+
+    public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
+            new ChromeBaseSearchIndexProvider(SearchEngineSettings.class.getName(), 0) {
+                @Override
+                public void updateDynamicPreferences(Context context, SettingsIndexData indexData) {
+                    if (!OmniboxFeatures.sOmniboxSiteSearch.isEnabled()) {
+                        return;
+                    }
+                    String uniqueId = getUniqueId(PREF_KEY_MANAGE_SEARCH_ENGINES_AND_SITE_SEARCH);
+                    Entry entry =
+                            new Entry.Builder(
+                                            uniqueId,
+                                            PREF_KEY_MANAGE_SEARCH_ENGINES_AND_SITE_SEARCH,
+                                            context.getString(
+                                                    R.string.manage_search_engines_and_site_search),
+                                            SearchEngineSettings.class.getName())
+                                    .build();
+                    indexData.addEntry(uniqueId, entry);
+                }
+            };
 }

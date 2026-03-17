@@ -42,6 +42,8 @@ public final class SearchIndexProviderRegistry {
                             .SEARCH_INDEX_DATA_PROVIDER,
                     org.chromium.chrome.browser.about_settings.LegalInformationSettings
                             .SEARCH_INDEX_DATA_PROVIDER,
+                    org.chromium.chrome.browser.search_engines.settings.SearchEngineSettings
+                            .SEARCH_INDEX_DATA_PROVIDER,
                     org.chromium.chrome.browser.sync.settings.PersonalizeGoogleServicesSettings
                             .SEARCH_INDEX_DATA_PROVIDER,
                     org.chromium.chrome.browser.privacy.secure_dns.SecureDnsSettings
