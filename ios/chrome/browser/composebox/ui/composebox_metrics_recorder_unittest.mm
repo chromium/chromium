@@ -146,3 +146,19 @@ TEST_F(ComposeboxMetricsRecorderTest, FocusResultedInNavigation) {
 
   histogram_tester_.ExpectTotalCount("Omnibox.FocusResultedInNavigation", 4);
 }
+
+TEST_F(ComposeboxMetricsRecorderTest, AttachmentsMenuOpenedWithVisibleButtons) {
+  std::vector<FuseboxAttachmentButtonType> visibleButtons = {
+      FuseboxAttachmentButtonType::kCamera,
+      FuseboxAttachmentButtonType::kFiles};
+  [recorder_ recordAttachmentsMenuOpenedWithVisibleButtons:visibleButtons];
+
+  histogram_tester_.ExpectBucketCount(
+      "Omnibox.MobileFusebox.AttachmentsPopupToggled", true, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Omnibox.MobileFusebox.AttachmentButtonShown",
+      static_cast<int>(FuseboxAttachmentButtonType::kCamera), 1);
+  histogram_tester_.ExpectBucketCount(
+      "Omnibox.MobileFusebox.AttachmentButtonShown",
+      static_cast<int>(FuseboxAttachmentButtonType::kFiles), 1);
+}

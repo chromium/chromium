@@ -11,6 +11,7 @@
 
 @protocol ComposeboxInputPlateMutator;
 @protocol ComposeboxInputPlateViewControllerDelegate;
+@class ComposeboxMetricsRecorder;
 @class ComposeboxTheme;
 @protocol TextFieldViewContaining;
 
@@ -21,6 +22,7 @@
 @property(nonatomic, weak) id<ComposeboxInputPlateViewControllerDelegate>
     delegate;
 @property(nonatomic, weak) id<ComposeboxInputPlateMutator> mutator;
+@property(nonatomic, weak) ComposeboxMetricsRecorder* metricsRecorder;
 
 /// Height of the input view.
 @property(nonatomic, readonly) CGFloat inputHeight;

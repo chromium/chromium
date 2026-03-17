@@ -879,6 +879,27 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   [self.delegate composeboxViewControllerMayShowGalleryPicker:self];
 }
 
+- (void)plusButtonDidOpenMenu {
+  std::vector<FuseboxAttachmentButtonType> visibleButtons;
+  if (!_attachCurrentTabActionHidden) {
+    visibleButtons.push_back(FuseboxAttachmentButtonType::kCurrentTab);
+  }
+  if (!_attachTabActionsHidden) {
+    visibleButtons.push_back(FuseboxAttachmentButtonType::kTabPicker);
+  }
+  if (!_cameraActionsHidden) {
+    visibleButtons.push_back(FuseboxAttachmentButtonType::kCamera);
+  }
+  if (!_galleryActionsHidden) {
+    visibleButtons.push_back(FuseboxAttachmentButtonType::kGallery);
+  }
+  if (!_attachFileActionsHidden) {
+    visibleButtons.push_back(FuseboxAttachmentButtonType::kFiles);
+  }
+  [self.metricsRecorder
+      recordAttachmentsMenuOpenedWithVisibleButtons:visibleButtons];
+}
+
 - (void)micButtonTapped {
   [self.delegate composeboxViewController:self didTapMicButton:_micButton];
 }
@@ -1319,6 +1340,9 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   [plusButton addTarget:self
                  action:@selector(plusButtonTouchDown)
        forControlEvents:UIControlEventTouchDown];
+  [plusButton addTarget:self
+                 action:@selector(plusButtonDidOpenMenu)
+       forControlEvents:UIControlEventMenuActionTriggered];
   plusButton.showsMenuAsPrimaryAction = YES;
 
   return plusButton;
