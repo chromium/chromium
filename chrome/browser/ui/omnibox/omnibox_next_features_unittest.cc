@@ -259,6 +259,7 @@ class TestingAimEligibilityService : public ChromeAimEligibilityService {
         is_aim_eligible_(is_aim_eligible) {}
 
   bool IsAimEligible() const override { return is_aim_eligible_; }
+  bool IsFuseboxEligible() const override { return is_aim_eligible_; }
   bool IsAimAllowedByDse() const override { return is_aim_eligible_; }
 
  private:

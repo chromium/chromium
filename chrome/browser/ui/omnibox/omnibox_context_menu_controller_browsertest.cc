@@ -61,6 +61,7 @@ class OmniboxContextMenuControllerBrowserTest : public InProcessBrowserTest {
            {omnibox::kShowToolsAndModels.name, "true"}}},
          {omnibox::kWebUIOmniboxPopup, {}}},
         /*disabled_features=*/{omnibox::kAimServerEligibilityEnabled,
+                               omnibox::kAimFuseboxEligibilityCheckEnabled,
                                omnibox::kAimUsePecApi});
   }
 
@@ -291,7 +292,8 @@ class OmniboxContextMenuControllerPecBrowserTest : public InProcessBrowserTest {
            {omnibox::kShowToolsAndModels.name, "true"}}},
          {omnibox::kWebUIOmniboxPopup, {}},
          {omnibox::kAimUsePecApi, {}}},
-        /*disabled_features=*/{omnibox::kAimServerEligibilityEnabled});
+        /*disabled_features=*/{omnibox::kAimServerEligibilityEnabled,
+                               omnibox::kAimFuseboxEligibilityCheckEnabled});
   }
 
   OmniboxContextMenuControllerPecBrowserTest(
