@@ -2212,19 +2212,6 @@ inline constexpr char kExtensionDisableUnsupportedDeveloperName[] =
 inline constexpr char kExtensionDisableUnsupportedDeveloperDescription[] =
     "When enabled, disable unpacked extensions if developer mode is off.";
 
-inline constexpr char kExtensionsToolbarZeroStateName[] =
-    "Extensions Toolbar Zero State";
-inline constexpr char kExtensionsToolbarZeroStateDescription[] =
-    "When enabled, show an IPH to prompt users with zero extensions installed "
-    "to interact with the Extensions Toolbar Button. Upon the user clicking "
-    "the toolbar button, display a submenu that suggests exploring the Chrome "
-    "Web Store.";
-inline constexpr char kExtensionsToolbarZeroStateChoicesDisabled[] = "Disabled";
-inline constexpr char kExtensionsToolbarZeroStateVistWebStore[] =
-    "Visit Chrome Web Store";
-inline constexpr char kExtensionsToolbarZeroStateExploreExtensionsByCategory[] =
-    "Explore CWS extensions by category";
-
 inline constexpr char kExtensionsOnChromeUrlsName[] =
     "Extensions on chrome:// URLs";
 inline constexpr char kExtensionsOnChromeUrlsDescription[] =

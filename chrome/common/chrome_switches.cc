@@ -142,16 +142,6 @@ const char kCheckForUpdateIntervalSec[] = "check-for-update-interval";
 // Comma-separated list of SSL cipher suites to disable.
 const char kCipherSuiteBlacklist[] = "cipher-suite-blacklist";
 
-// Comma-separated list of BrowserThreads that cause browser process to crash if
-// the given browser thread is not responsive. UI/IO are the BrowserThreads that
-// are supported.
-//
-// For example:
-//    --crash-on-hang-threads=UI:18,IO:18 --> Crash the browser if UI or IO is
-//    not responsive for 18 seconds while the other browser thread is
-//    responsive.
-const char kCrashOnHangThreads[] = "crash-on-hang-threads";
-
 // Some platforms like ChromeOS default to empty desktop.
 // Browser tests may need to add this switch so that at least one browser
 // instance is created on startup.
@@ -273,10 +263,6 @@ const char kEnableAutoReload[] = "enable-auto-reload";
 // Enables the multi-level undo system for bookmarks.
 const char kEnableBookmarkUndo[] = "enable-bookmark-undo";
 
-// This applies only when the process type is "service". Enables the Cloud Print
-// Proxy component within the service process.
-const char kEnableCloudPrintProxy[] = "enable-cloud-print-proxy";
-
 #if BUILDFLAG(IS_CHROMEOS)
 // If enabled, DevTools will allow creating pwa_handler, to enable executing
 // CDP methods (i.e. PWA.install) on browsers connected remotely
@@ -342,20 +328,6 @@ const char kExtensionExperimentalActor[] = "enable-extension-actor-api";
 // When a user with zero extensions installed clicks on the extensions puzzle
 // piece in the Chrome toolbar, Chrome displays a submenu suggesting the user
 // to explore the Chrome Web Store.
-const char kExtensionsToolbarZeroStateVariation[] =
-    "extensions-toolbar-zero-state-variation";
-
-// This variation of the Zero State extensions toolbar recommendation presents
-// the user with a single link to the Chrome Web Store home page.
-const char kExtensionsToolbarZeroStateSingleWebStoreLink[] =
-    "extensions-toolbar-zero-state-single-web-store-link";
-
-// This variation of the Zero State extensions toolbar recommendation suggests
-// extension categories the user can explore in the Chrome Web Store.
-// (e.g. find coupons, increase productivity)
-const char kExtensionsToolbarZeroStateExploreExtensionsByCategory[] =
-    "extensions-toolbar-zero-state-explore-extensions-by-category";
-
 // Forces application mode. This hides certain system UI elements and forces
 // the app to be installed if it hasn't been already.
 const char kForceAppMode[] = "force-app-mode";
@@ -487,11 +459,6 @@ const char kNoPings[] = "no-pings";
 // other proxy server flags that are passed.
 const char kNoProxyServer[] = "no-proxy-server";
 
-// Disables the service process from adding itself as an autorun process. This
-// does not delete existing autorun registrations, it just prevents the service
-// from registering a new one.
-const char kNoServiceAutorun[] = "no-service-autorun";
-
 // Does not automatically open a browser window on startup (used when
 // launching Chrome for the purpose of hosting background apps).
 const char kNoStartupWindow[] = "no-startup-window";
@@ -616,9 +583,6 @@ const char kSimulateBrowsingDataLifetime[] = "simulate-browsing-data-lifetime";
 
 // Simulates a critical update being available.
 const char kSimulateCriticalUpdate[] = "simulate-critical-update";
-
-// Simulates that elevation is needed to recover upgrade channel.
-const char kSimulateElevatedRecovery[] = "simulate-elevated-recovery";
 
 // Simulates that current version is outdated.
 const char kSimulateOutdated[] = "simulate-outdated";
@@ -947,7 +911,6 @@ const char kDebugPrint[] = "debug-print";
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
-const char kEnableNewAppMenuIcon[] = "enable-new-app-menu-icon";
 
 // Causes the browser to launch directly in guest mode.
 const char kGuest[] = "guest";

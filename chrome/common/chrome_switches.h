@@ -61,7 +61,6 @@ extern const char kBypassAccountAlreadyUsedByAnotherProfileCheck[];
 extern const char kCaptureAutoReject[];
 extern const char kCheckForUpdateIntervalSec[];
 extern const char kCipherSuiteBlacklist[];
-extern const char kCrashOnHangThreads[];
 extern const char kCreateBrowserOnStartupForTests[];
 extern const char kCredits[];
 extern const char kCustomDevtoolsFrontend[];
@@ -96,7 +95,6 @@ extern const char kDumpBrowserHistograms[];
 extern const char kEnableAudioDebugRecordingsFromExtension[];
 extern const char kEnableAutoReload[];
 extern const char kEnableBookmarkUndo[];
-extern const char kEnableCloudPrintProxy[];
 extern const char kEnableDomainReliability[];
 extern const char kEnableDevToolsGreenDevUi[];
 #if BUILDFLAG(IS_CHROMEOS)
@@ -117,9 +115,6 @@ extern const char kExtensionContentVerificationBootstrap[];
 extern const char kExtensionContentVerificationEnforce[];
 extern const char kExtensionContentVerificationEnforceStrict[];
 extern const char kExtensionExperimentalActor[];
-extern const char kExtensionsToolbarZeroStateVariation[];
-extern const char kExtensionsToolbarZeroStateSingleWebStoreLink[];
-extern const char kExtensionsToolbarZeroStateExploreExtensionsByCategory[];
 extern const char kForceAppMode[];
 #if BUILDFLAG(IS_CHROMEOS)
 extern const char kForceDevToolsAvailable[];
@@ -153,7 +148,6 @@ extern const char kNoExperiments[];
 extern const char kNoFirstRun[];
 extern const char kNoPings[];
 extern const char kNoProxyServer[];
-extern const char kNoServiceAutorun[];
 extern const char kNoStartupWindow[];
 extern const char kOnTheFlyMhtmlHashComputation[];
 extern const char kOpenInNewWindow[];
@@ -183,7 +177,6 @@ extern const char kSilentDebuggerExtensionAPI[];
 extern const char kSilentLaunch[];
 extern const char kSimulateBrowsingDataLifetime[];
 extern const char kSimulateCriticalUpdate[];
-extern const char kSimulateElevatedRecovery[];
 extern const char kSimulateOutdated[];
 extern const char kSimulateOutdatedNoAU[];
 extern const char kSimulateUpgrade[];
@@ -289,7 +282,6 @@ extern const char kDebugPrint[];
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
-extern const char kEnableNewAppMenuIcon[];
 extern const char kGuest[];
 #endif
 
