@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_dom_activity_logger.h"
 #include "third_party/blink/renderer/platform/bindings/v8_dom_wrapper.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
@@ -77,6 +78,7 @@ v8::Local<v8::Value> Location::Wrap(ScriptState* script_state) {
 
 void Location::Trace(Visitor* visitor) const {
   visitor->Trace(dom_window_);
+  visitor->Trace(ancestor_origins_list_);
   ScriptWrappable::Trace(visitor);
 }
 
@@ -123,16 +125,25 @@ String Location::origin() const {
   return DOMURLUtilsReadOnly::origin(Url());
 }
 
-DOMStringList* Location::ancestorOrigins() const {
-  auto* origins = MakeGarbageCollected<DOMStringList>();
-  if (!IsAttached())
-    return origins;
-  for (Frame* frame = dom_window_->GetFrame()->Tree().Parent(); frame;
-       frame = frame->Tree().Parent()) {
-    origins->Append(
-        frame->GetSecurityContext()->GetSecurityOrigin()->ToString());
+DOMStringList* Location::ancestorOrigins() {
+  if (!IsAttached()) {
+    if (!ancestor_origins_list_ || !ancestor_origins_list_->IsEmpty() ||
+        !RuntimeEnabledFeatures::AncestorOriginsStoredOnDocumentEnabled()) {
+      ancestor_origins_list_ = MakeGarbageCollected<DOMStringList>();
+    }
+    return ancestor_origins_list_.Get();
   }
-  return origins;
+
+  if (!ancestor_origins_list_ ||
+      !RuntimeEnabledFeatures::AncestorOriginsStoredOnDocumentEnabled()) {
+    ancestor_origins_list_ = MakeGarbageCollected<DOMStringList>();
+    for (Frame* frame = dom_window_->GetFrame()->Tree().Parent(); frame;
+         frame = frame->Tree().Parent()) {
+      ancestor_origins_list_->Append(
+          frame->GetSecurityContext()->GetSecurityOrigin()->ToString());
+    }
+  }
+  return ancestor_origins_list_.Get();
 }
 
 String Location::toString() const {

@@ -549,6 +549,15 @@
       base_feature: "none",
     },
     {
+      // Instead of creating a new DOMStringList on every access to
+      // location.ancestorOrigins, return the ancestor origins list
+      // stored on Document.
+      // This was added in M147 and can be removed after M149.
+      // https://issues.chromium.org/issues/483610021
+      name: "AncestorOriginsStoredOnDocument",
+      status: "stable",
+    },
+    {
       // Enables the new behavior for this spec change:
       // https://github.com/whatwg/html/pull/11457
       // https://issues.chromium.org/issues/433545121

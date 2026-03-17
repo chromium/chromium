@@ -42,7 +42,6 @@
     [CallWith=Isolate, CrossOrigin, RaisesException, LegacyUnforgeable] void replace(USVString url);
     [LegacyUnforgeable] void reload();
 
-    // TODO(foolip): |ancestorOrigins| should have [LegacyUnforgeable, SameObject].
     [LegacyUnforgeable] readonly attribute DOMStringList ancestorOrigins;
 
     [SetterCallWith=Isolate, CrossOrigin=Setter, RaisesException=Setter, LegacyUnforgeable] attribute USVString href;

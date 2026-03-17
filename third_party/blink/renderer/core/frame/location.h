@@ -79,7 +79,7 @@ class CORE_EXPORT Location final : public ScriptWrappable {
   String hash() const;
   String origin() const;
 
-  DOMStringList* ancestorOrigins() const;
+  DOMStringList* ancestorOrigins();
 
   // Just return the |this| object the way the normal valueOf function on the
   // Object prototype would.  The valueOf function is only added to make sure
@@ -114,6 +114,9 @@ class CORE_EXPORT Location final : public ScriptWrappable {
   const KURL& Url() const;
 
   const Member<DOMWindow> dom_window_;
+
+  // https://html.spec.whatwg.org/#ancestor-origins
+  Member<DOMStringList> ancestor_origins_list_;
 };
 
 }  // namespace blink
