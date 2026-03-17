@@ -1,31 +1,33 @@
 # Generating Local Code Coverage for Fuzz Tests
 
-This guide explains how to generate a local code coverage report for a FuzzTest
-integrated into a gtest suite. This is useful for visualizing which code paths
-your new fuzz test exercises, ensuring it covers the intended logic before you
-upload a CL.
+This document explains how to generate a local code coverage report for a
+FuzzTest integrated into a gtest suite. A local coverage report helps you
+visualize which code paths your fuzz test exercises so you can verify the logic
+before you upload a CL.
 
-We will use the central
-[coverage.py script](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/code_coverage.md#local-coverage-script),
-which automates the process of building with coverage instrumentation, running
-the test, and generating an HTML report.
+To complete this process, use the
+[coverage.py script](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/code_coverage.md#local-coverage-script)
+script to automate building with coverage instrumentation, running the test, and
+generating an HTML report.
 
-## Step 1: Ensure Your Toolchain is Up to Date
+## Update the toolchain
 
-The coverage script and build system depend on the Clang compiler and specific
-LLVM tools. Before starting, ensure these are downloaded and current. From the
-src directory, run:
+The coverage script and build system require the Clang compiler and specific
+LLVM tools.
 
-```
-# This downloads the main Clang compiler needed for the build.
+In your terminal, navigate to the src directory and update the required tools:
+
+```shell
 vpython3 tools/clang/scripts/update.py
 ```
 
-## Step 2: Configure the Build with GN
+## Configure the build
 
-From the src directory, run:
+Create a dedicated build configuration for your coverage build.
 
-```
+In your terminal, from the src directory, generate the configuration:
+
+```shell
 # It's recommended to use a descriptive name like 'out/fuzz_coverage'
 # to keep it separate from your regular builds.
 gn gen out/fuzz_coverage --args='
@@ -33,71 +35,106 @@ use_clang_coverage=true
 is_component_build=false
 is_debug=false
 dcheck_always_on=true
-use_remoteexec=true
-'
+use_remoteexec=true'
 ```
 
-### Argument Breakdown:
+### Argument breakdown:
 
-*   `use_clang_coverage=true`: The essential flag that instructs the compiler to
-    add coverage instrumentation.
-*   `is_component_build=false`: Required for coverage builds to work correctly.
-*   `is_debug=false`: Coverage works best with optimized builds.
-*   `dcheck_always_on=true`: Recommended for catching issues during test runs.
-*   `use_remoteexec=true`: Recommended for compiling Chromium fast.
+*   `use_clang_coverage=true`: Instructs the compiler to add coverage
+    instrumentation.
+*   `is_component_build=false`: (Recommended) Code coverage instrumentation
+    works with both component and non-component builds, but setting this to true
+    causes the tests to run significantly slower.
+*   `is_debug=false`: (Recommended) Optimizes the build for coverage.
+*   `dcheck_always_on=true`: (Recommended) Catches issues during test runs.
+*   `use_remoteexec=true`: (Recommended) Compiles Chromium fast.
 
-## Step 3: Build the Instrumented Test Target
+## Build the test target
 
 Compile the test suite that contains your FuzzTest. For example, if your fuzz
 test `MyFuzzer.MyTest` is located in `//foo/my_fuzzer_unittest.cc`, and this
 file is part of the `foo_unittests` target, you would build `foo_unittests`.
 
-```
+In your terminal, compile the test target:
+
+```shell
 # Replace foo_unittests with your actual test target
 autoninja -C out/fuzz_coverage foo_unittests
 ```
 
-## Step 4: Run the Coverage Script
+## Run the coverage script
 
-Now, execute the `coverage.py` script. The key is to use the `--gtest_filter`
-argument to run only your specific fuzz test. This gives you a precise report on
-the coverage contributed by that test alone.
+Run the `coverage.py` script. Use the `--gtest_filter` argument to run only your
+specific fuzz test. Isolating the test produces a precise report on the coverage
+contributed by that test alone.
 
-```
+In your terminal, run the script:
+
+```shell
 # Customize the arguments below for your specific test.
 vpython3 tools/code_coverage/coverage.py \
-    foo_unittests \
-    -b out/fuzz_coverage \
-    -o out/my_fuzz_test_report \
-    -c 'out/fuzz_coverage/foo_unittests --gtest_filter=MyFuzzTestSuite.*' \
-    -f foo/ \
-    --no-component-view
+foo_unittests \
+-b out/fuzz_coverage \
+-o out/my_fuzz_test_report \
+-c 'out/fuzz_coverage/foo_unittests --gtest_filter=MyFuzzTestSuite.*' \
+-f foo/ \
+--no-component-view
 ```
 
-#### Command Breakdown:
+### Command breakdown:
 
-*   `foo_unittests`: The name of the test target you are analyzing.
+*   `foo_unittests`: Specifies the test target you are analyzing.
 *   `-b out/fuzz_coverage`: Specifies the build directory from Step 2.
-*   `-o out/my_fuzz_test_report`: A new directory where the final HTML report
-    will be saved.
-*   `-c '...'`: The exact command to execute.
-    *   `out/fuzz_coverage/foo_unittests`: The path to the instrumented test
+*   `-o out/my_fuzz_test_report`: Specifies the output directory for the final
+    HTML report.
+*   `-c '...'`: Defines the command to execute the test binary.
+    *   `out/fuzz_coverage/foo_unittests`: Specifies the path to the test
         binary.
-    *   `--gtest_filter=MyFuzzTestSuite.*`: (Crucial) Isolates your fuzz test.
-        Replace MyFuzzTestSuite with the name of your test suite. Using .* runs
-        all tests within that suite.
-*   `-f foo/`: (Optional, but highly recommended) Filters the report to only
-    show files in the specified directory, making it easier to analyze your
-    changes.
+    *   `--gtest_filter=MyFuzzTestSuite.*`: Isolates your fuzz test. Replace
+        MyFuzzTestSuite with the name of your test suite. Using .* runs all
+        tests within that suite.
+*   `-f foo/`: (Recommended) Filters the report to only show files in the
+    specified directory.
 *   `--no-component-view`: Prevents the script from fetching a
-    directory-to-component mapping from the network, which can avoid potential
-    403 Forbidden errors in some network environments.
+    directory-to-component mapping from the network, which avoids a 403
+    Forbidden error.
 
-## Step 5: View the Report
+## View the report
 
-The script will generate a set of HTML files in the output directory you
-specified (-o). Open the main index.html file in a browser to view the report.
+The script generates a set of HTML files in your specified output directory. To
+organize the data, the script creates a sub-directory named after your target
+operating system (for example, `linux`, `mac`, or `win`). The index.html file is
+located inside this platform sub-directory.
 
-Navigate through the directory view to your changed files. Lines covered by your
-fuzz test will be highlighted in green, giving you a clear visual confirmation
-of its impact.
+### View on a local machine
+
+If you build the test on your local machine, open the
+`out/my_fuzz_test_report/<PLATFORM>/index.html` file in a browser. Replace
+`<PLATFORM>` with your target operating system
+
+### View from a remote machine
+
+If you build the test on a remote machine or virtual machine, start an HTTP
+server to access the report from your local browser.
+
+In your remote terminal, navigate to the out directory:
+
+```shell
+cd out/my_fuzz_test_report
+```
+
+Start an HTTP server:
+
+```shell
+python3 -m http.server 8000
+```
+
+On your local machine, open a browser and navigate to
+`<REMOTE_IP>:8000/<PLATFORM>/index.html`. Replace `<REMOTE_IP>` with your remote
+machine's IP address or hostname, and replace `<PLATFORM>` with your target
+operating system (for example, `linux`).
+
+
+When you open the report, navigate the directory view to your changed files. The
+report highlights lines covered by your fuzz test in green so you can verify the
+test's impact.
