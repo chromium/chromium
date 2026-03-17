@@ -206,11 +206,10 @@ template <typename Container, typename ContainerMemberType>
 inline wtf_size_t
 AttributeCollectionGeneric<Container, ContainerMemberType>::FindIndex(
     const QualifiedName& name) const {
-  iterator end = this->end();
-  wtf_size_t index = 0;
-  for (iterator it = begin(); it != end; UNSAFE_TODO(++it), ++index) {
-    if (it->GetName().Matches(name))
+  for (wtf_size_t index = 0; index < size(); ++index) {
+    if (at(index).GetName().Matches(name)) {
       return index;
+    }
   }
   return kNotFound;
 }
@@ -234,13 +233,13 @@ AttributeCollectionGeneric<Container, ContainerMemberType>::FindHinted(
 
   // Optimize for the case where the attribute exists and its name exactly
   // matches.
-  iterator end = this->end();
-  for (iterator it = begin(); it != end; UNSAFE_TODO(++it)) {
+  for (unsigned index = 0; index < size(); ++index) {
     // FIXME: Why check the prefix? Namespaces should be all that matter.
     // Most attributes (all of HTML and CSS) have no namespace.
-    if (!it->GetName().HasPrefix()) {
-      if (hint == it->LocalName()) {
-        return it;
+    auto& item = at(index);
+    if (!item.GetName().HasPrefix()) {
+      if (hint == item.LocalName()) {
+        return &item;
       }
     } else {
       has_attributes_with_prefixes = true;
@@ -259,10 +258,11 @@ inline typename AttributeCollectionGeneric<Container,
                                            ContainerMemberType>::iterator
 AttributeCollectionGeneric<Container, ContainerMemberType>::Find(
     const QualifiedName& name) const {
-  iterator end = this->end();
-  for (iterator it = begin(); it != end; UNSAFE_TODO(++it)) {
-    if (it->GetName().Matches(name))
-      return it;
+  for (unsigned index = 0; index < size(); ++index) {
+    auto& item = at(index);
+    if (item.GetName().Matches(name)) {
+      return &item;
+    }
   }
   return nullptr;
 }
@@ -274,18 +274,18 @@ AttributeCollectionGeneric<Container, ContainerMemberType>::FindWithPrefix(
   // Check all attributes with prefixes. This is a case sensitive check.
   // Attributes with empty prefixes are expected to be handled outside this
   // function.
-  iterator end = this->end();
-  for (iterator it = begin(); it != end; UNSAFE_TODO(++it)) {
-    if (!it->GetName().HasPrefix()) {
+  for (unsigned index = 0; index < size(); ++index) {
+    auto& item = at(index);
+    if (!item.GetName().HasPrefix()) {
       // Skip attributes with no prefixes because they must be checked in
       // FindIndex(const AtomicString&).
-      DCHECK(!(name == it->LocalName()));
+      DCHECK(!(name == item.LocalName()));
     } else {
       // FIXME: Would be faster to do this comparison without calling ToString,
       // which generates a temporary string by concatenation. But this branch is
       // only reached if the attribute name has a prefix, which is rare in HTML.
-      if (name == it->GetName().ToString()) {
-        return it;
+      if (name == item.GetName().ToString()) {
+        return &item;
       }
     }
   }
