@@ -59,6 +59,8 @@
 
 #if BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
 #include "third_party/dawn/include/dawn/native/OpenGLBackend.h"
+#include "ui/gl/gl_bindings.h"
+#include "ui/gl/gl_context.h"
 #include "ui/gl/gl_surface_egl.h"
 #endif
 
@@ -835,6 +837,8 @@ bool DawnSharedContext::Initialize(
 #if BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
   dawn::native::opengl::RequestAdapterOptionsGetGLProc
       adapter_options_get_gl_proc = {};
+  dawn::native::opengl::RequestAdapterOptionsAngleVirtualizationGroup group =
+      {};
   if (adapter_options.backendType == wgpu::BackendType::OpenGLES) {
     adapter_options_get_gl_proc.getProc = gl::GetGLProcAddress;
     gl::GLDisplayEGL* gl_display = gl::GLSurfaceEGL::GetGLDisplayEGL();
@@ -845,6 +849,12 @@ bool DawnSharedContext::Initialize(
     }
     adapter_options_get_gl_proc.nextInChain = adapter_options.nextInChain;
     adapter_options.nextInChain = &adapter_options_get_gl_proc;
+    if (gl_display->ext->b_EGL_ANGLE_context_virtualization) {
+      group.angleVirtualizationGroup = static_cast<GLuint>(
+          gl::AngleContextVirtualizationGroup::kGraphiteDawnSharedContext);
+      group.nextInChain = adapter_options.nextInChain;
+      adapter_options.nextInChain = &group;
+    }
   }
 #endif
 
