@@ -50,8 +50,6 @@ class MockPrivacySandboxServiceTestInterface
   MOCK_METHOD(base::Time, TopicsConsentLastUpdateTime, (), (override, const));
   MOCK_METHOD(std::string, TopicsConsentLastUpdateText, (), (override, const));
   MOCK_METHOD(void, ForceChromeBuildForTests, (bool), (override, const));
-  MOCK_METHOD(int, GetRequiredPromptType, (int), (override, const));
-  MOCK_METHOD(void, PromptActionOccurred, (int, int), (override, const));
 };
 
 }  // namespace
@@ -336,14 +334,6 @@ TEST_F(PrivacySandboxBaseTestUtilTest, VerifyAdvanceClockByStateKey) {
   base::Time start_time = base::Time::Now();
   ApplyTestState(StateKey::kAdvanceClockBy, base::Hours(1));
   EXPECT_EQ(start_time + base::Hours(1), base::Time::Now());
-}
-
-TEST_F(PrivacySandboxBaseTestUtilTest, VerifyPromptActionOccurredInputKey) {
-  constexpr int kArbitraryValue = 7;
-  testing::Mock::VerifyAndClearExpectations(mock_privacy_sandbox_service());
-  EXPECT_CALL(*mock_privacy_sandbox_service(),
-              PromptActionOccurred(kArbitraryValue, /*kDesktop*/ 0));
-  ProvideInput(InputKey::kPromptAction, kArbitraryValue);
 }
 
 TEST_F(PrivacySandboxBaseTestUtilTest,

@@ -16,10 +16,6 @@ namespace content {
 class BrowserContext;
 }
 
-namespace views {
-class Widget;
-}
-
 class KeyedService;
 
 class MockPrivacySandboxService : public PrivacySandboxService {
@@ -27,29 +23,6 @@ class MockPrivacySandboxService : public PrivacySandboxService {
   MockPrivacySandboxService();
   ~MockPrivacySandboxService() override;
 
-  MOCK_METHOD(PrivacySandboxService::PromptType,
-              GetRequiredPromptType,
-              (PrivacySandboxService::SurfaceType),
-              (override));
-  MOCK_METHOD(void,
-              PromptActionOccurred,
-              (PrivacySandboxService::PromptAction,
-               PrivacySandboxService::SurfaceType),
-              (override));
-#if !BUILDFLAG(IS_ANDROID)
-  MOCK_METHOD(void,
-              PromptOpenedForBrowser,
-              (BrowserWindowInterface*, views::Widget*),
-              (override));
-  MOCK_METHOD(void,
-              PromptClosedForBrowser,
-              (BrowserWindowInterface*),
-              (override));
-  MOCK_METHOD(bool,
-              IsPromptOpenForBrowser,
-              (BrowserWindowInterface*),
-              (override));
-#endif  // !BUILDFLAG(IS_ANDROID)
   MOCK_METHOD(void, ForceChromeBuildForTests, (bool), (override));
   // Mock this method to enable opening the settings page in tests.
   MOCK_METHOD(bool, IsPrivacySandboxRestricted, (), (override));

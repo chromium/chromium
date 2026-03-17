@@ -315,10 +315,8 @@ void ProvideInput(const std::pair<InputKey, TestCaseItemValue>& input,
       return;
     }
     case (InputKey::kPromptAction): {
-      // TODO(crbug.com/359902106): Test various SurfaceTypes like we do for
-      // PromptAction here.
-      privacy_sandbox_service->PromptActionOccurred(
-          GetItemValue<int>(input_value), /*kDesktop*/ 0);
+      // OutputKey::kPromptAction is not used.
+      // TODO(crbug.com/474716334): Remove this case when the enum is removed.
       return;
     }
     default: {
@@ -874,14 +872,8 @@ void CheckOutput(
       return;
     }
     case (OutputKey::kPromptType): {
-      SCOPED_TRACE("Check Output: PrivacySandboxService.GetRequiredPromptType");
-      auto prompt_type = GetItemValue<int>(output_value);
-      auto force_chrome_build =
-          GetItemValueForKey<bool>(InputKey::kForceChromeBuild, input);
-      privacy_sandbox_service->ForceChromeBuildForTests(force_chrome_build);
-      // TODO(crbug.com/359902106): Test various SurfaceTypes here.
-      EXPECT_EQ(prompt_type,
-                privacy_sandbox_service->GetRequiredPromptType(/*kDesktop*/ 0));
+      // OutputKey::kPromptType is not used.
+      // TODO(crbug.com/474716334): Remove this case when the enum is removed.
       return;
     }
     case (OutputKey::kM1PromptSuppressedReason): {

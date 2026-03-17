@@ -39,8 +39,6 @@ class PrivacySandboxServiceTestInterface {
   virtual base::Time TopicsConsentLastUpdateTime() const = 0;
   virtual std::string TopicsConsentLastUpdateText() const = 0;
   virtual void ForceChromeBuildForTests(bool force_chrome_build) const = 0;
-  virtual int GetRequiredPromptType(int surface_type) const = 0;
-  virtual void PromptActionOccurred(int action, int surface_type) const = 0;
 };
 
 // Allow tests to access private variables and functions from
@@ -163,6 +161,8 @@ enum class InputKey {
   kAccessingOrigin = 7,
   kTopicsToggleNewValue = 8,
   kForceChromeBuild = 9,
+  // kPromptAction is Obsolete.
+  // TODO(crbug.com/474716334): Remove this enum.
   kPromptAction = 10,
   kEventReportingDestinationOrigin = 11,
   kOutSharedStorageDebugMessage = 12,
@@ -193,6 +193,8 @@ enum class OutputKey {
   kTopicsConsentLastUpdateReason = 18,
   kTopicsConsentLastUpdateTime = 19,
   kTopicsConsentStringIdentifiers = 20,
+  // kPromptType is Obsolete.
+  // TODO(crbug.com/474716334): Remove this enum.
   kPromptType = 21,
   kM1PromptSuppressedReason = 22,
   kM1ConsentDecisionMade = 23,
