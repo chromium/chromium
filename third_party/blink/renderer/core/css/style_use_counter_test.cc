@@ -116,4 +116,38 @@ TEST_F(StyleUseCounterTest, CSSDiscardedEnvWithValidArgumentGrammar) {
       feature, "html { --p: env(titlebar-area-width 3 foo, fallback); }"));
 }
 
+TEST_F(StyleUseCounterTest, CSSDiscardedIfWithValidArgumentGrammar) {
+  WebFeature feature = WebFeature::kCSSDiscardedIfWithValidArgumentGrammar;
+  EXPECT_TRUE(IsCountedOnParsing(feature, "html { --p: if(a : b); }"));
+  EXPECT_TRUE(IsCountedOnParsing(feature, "html { --p: if(a : b;); }"));
+  EXPECT_TRUE(IsCountedOnParsing(feature, "html { --p: if(a : ); }"));
+  EXPECT_TRUE(IsCountedOnParsing(feature, "html { --p: if(a : ;); }"));
+  EXPECT_TRUE(IsCountedOnParsing(feature, "html { --p: if(a : ; c : ); }"));
+  EXPECT_TRUE(IsCountedOnParsing(feature, "html { --p: if(a : ; c : ;); }"));
+  EXPECT_TRUE(IsCountedOnParsing(feature, "html { --p: if(a : b; c : d);}"));
+  EXPECT_TRUE(IsCountedOnParsing(feature, "html { --p: if(a : b; c : d;);}"));
+  EXPECT_TRUE(IsCountedOnParsing(feature, "html { --p: if(a : b : c); }"));
+
+  // Invalid argument grammar
+  EXPECT_FALSE(IsCountedOnParsing(feature, "html { --p: if(a , b); }"));
+  EXPECT_FALSE(IsCountedOnParsing(feature, "html { --p: if(a; b); }"));
+  EXPECT_FALSE(IsCountedOnParsing(feature, "html { --p: if(a b); }"));
+  EXPECT_FALSE(IsCountedOnParsing(feature, "html { --p: if(a! : b); }"));
+  EXPECT_FALSE(IsCountedOnParsing(feature, "html { --p: if(a : }); }"));
+  EXPECT_FALSE(IsCountedOnParsing(feature, "html { --p: if(a : b;!); }"));
+  EXPECT_FALSE(IsCountedOnParsing(feature, "html { --p: if(a : ;;); }"));
+  EXPECT_FALSE(IsCountedOnParsing(feature, "html { --p: if(: b); }"));
+  EXPECT_FALSE(IsCountedOnParsing(feature, "html { --p: if(a : b;;); }"));
+
+  // Parse time valid if() values
+  EXPECT_FALSE(IsCountedOnParsing(
+      feature, "html { --p: if(style(--prop: abc): true_val;); }"));
+  EXPECT_FALSE(
+      IsCountedOnParsing(feature, "html { --p: if(style(--prop: abc): ); }"));
+  EXPECT_FALSE(IsCountedOnParsing(
+      feature,
+      "html { --p: if(supports((display: table-cell) and (display: "
+      "list-item)): true_val; else: false_val;); }"));
+}
+
 }  // namespace blink
