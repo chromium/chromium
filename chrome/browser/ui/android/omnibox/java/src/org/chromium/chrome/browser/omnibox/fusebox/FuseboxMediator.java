@@ -205,11 +205,13 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
         mModel.set(
                 FuseboxProperties.POPUP_ATTACH_FILE_VISIBLE,
                 mComposeboxQueryControllerBridge.isPdfUploadEligible());
-        mModel.set(
-                FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_VISIBLE,
-                mComposeboxQueryControllerBridge.isCreateImagesEligible()
-                        && (OmniboxFeatures.sShowImageGenerationButtonInIncognito.getValue()
-                                || !mProfile.isIncognitoBranded()));
+        if (!OmniboxFeatures.sShowModelPicker.getValue()) {
+            mModel.set(
+                    FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_VISIBLE,
+                    mComposeboxQueryControllerBridge.isCreateImagesEligible()
+                            && (OmniboxFeatures.sShowImageGenerationButtonInIncognito.getValue()
+                                    || !mProfile.isIncognitoBranded()));
+        }
     }
 
     private void setModelList(@Nullable FuseboxAttachmentModelList modelList) {
@@ -474,10 +476,13 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
     private void onAttachmentsChanged() {
         if (!isInInputSession()) return;
         mModel.set(FuseboxProperties.ATTACHMENTS_VISIBLE, !mModelList.isEmpty());
-        mModel.set(
-                FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_ENABLED,
-                areAttachmentsCompatibleWithCreateImage());
-        updatePopupButtonEnabledStates();
+
+        if (!OmniboxFeatures.sShowModelPicker.getValue()) {
+            mModel.set(
+                    FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_ENABLED,
+                    areAttachmentsCompatibleWithCreateImage());
+            updatePopupButtonEnabledStates();
+        }
     }
 
     private boolean areAttachmentsCompatibleWithCreateImage() {
@@ -610,18 +615,21 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
                 type == AutocompleteRequestType.SEARCH
                         && OmniboxFeatures.sCompactFusebox.getValue());
         mModel.set(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE, type);
-        updatePopupButtonEnabledStates();
-        if (OmniboxFeatures.sShowModelPicker.getValue() && isInInputSession()) {
+
+        if (OmniboxFeatures.sShowModelPicker.getValue()) {
+            if (!isInInputSession()) return;
             InputState inputState = mComposeboxQueryControllerBridge.getInputStateSupplier().get();
             if (inputState != null) {
                 onInputStateChange(inputState);
             }
+        } else {
+            updatePopupButtonEnabledStates();
         }
     }
 
     private void updatePopupButtonEnabledStates() {
+        assert !OmniboxFeatures.sShowModelPicker.getValue();
         if (!isInInputSession()) return;
-        if (OmniboxFeatures.sShowModelPicker.getValue()) return;
 
         // Disable Camera and Gallery Selection popup buttons if no remaining attachments are left.
         boolean allowByCapacity = mModelList.getRemainingAttachments() > 0;
@@ -873,6 +881,15 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
 
         boolean deepSearchVisible = inputState.isToolVisible(ToolMode.TOOL_MODE_DEEP_SEARCH_VALUE);
         boolean canvasVisible = inputState.isToolVisible(ToolMode.TOOL_MODE_CANVAS_VALUE);
+
+        mModel.set(
+                FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_VISIBLE,
+                inputState.isImageGenToolVisible()
+                        && (OmniboxFeatures.sShowImageGenerationButtonInIncognito.getValue()
+                                || !mProfile.isIncognitoBranded()));
+        mModel.set(
+                FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_ENABLED,
+                inputState.isImageGenToolEnabled());
 
         mModel.set(FuseboxProperties.POPUP_TOOL_DEEP_SEARCH_VISIBLE, deepSearchVisible);
         mModel.set(
