@@ -382,7 +382,8 @@ void ProcessMirrorHeader(
 
   if (target_account_info &&
       identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
-          target_account_info->account_id)) {
+          target_account_info->account_id) &&
+      base::FeatureList::IsEnabled(switches::kSupportWebSigninAddSession)) {
     // The target account was found on the device, but it has a persistent auth
     // error, trigger a reauth flow to resolve it
     SigninBridgeFactory::GetForProfile(profile)->StartUpdateCredentialsFlow(
