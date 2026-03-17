@@ -12,16 +12,19 @@ source_set("info_singleton") {
     "web_ui_info_singleton.h",
   ]
 
-  deps = [
-    ":event_observer",
+  public_deps = [
     ":util",
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/core/browser",
     "//components/safe_browsing/core/browser:download_check_result",
     "//components/safe_browsing/core/browser/hashprefix_realtime:hash_realtime_service",
     "//components/safe_browsing/core/browser/realtime:url_lookup_service_base",
-    "//components/sync/protocol",
     "//services/network/public/mojom",
+  ]
+
+  deps = [
+    ":event_observer",
+    "//components/sync/protocol",
   ]
 }
 
@@ -112,4 +115,16 @@ source_set("util") {
   if (!is_android) {
     deps += [ "//components/enterprise/common/proto:upload_request_response_extras_to_value" ]
   }
+}
+
+source_set("cr_safe_browsing_log") {
+  sources = [
+    "cr_safe_browsing_log.cc",
+    "cr_safe_browsing_log.h",
+  ]
+
+  deps = [
+    ":info_singleton",
+    "//base",
+  ]
 }

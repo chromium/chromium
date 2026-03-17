@@ -5,8 +5,7 @@
 #ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_WEB_UI_SAFE_BROWSING_UI_H_
 #define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_WEB_UI_SAFE_BROWSING_UI_H_
 
-#include <sstream>
-
+#include "components/safe_browsing/core/browser/web_ui/cr_safe_browsing_log.h"
 #include "components/safe_browsing/core/browser/web_ui/safe_browsing_local_state_delegate.h"
 #include "content/public/browser/web_ui_controller.h"
 
@@ -29,36 +28,18 @@ class SafeBrowsingUI : public content::WebUIController {
   ~SafeBrowsingUI() override;
 };
 
-// Used for streaming messages to the WebUIContentInfoSingleton. Collects
-// streamed messages, then sends them to the WebUIContentInfoSingleton when
-// destroyed. Intended to be used in CRSBLOG macro.
-class CrSBLogMessage {
+class CrSBContentLogMessage : public CrSBLogMessage {
  public:
-  CrSBLogMessage();
-  ~CrSBLogMessage();
+  CrSBContentLogMessage();
 
-  std::ostream& stream() { return stream_; }
-
- private:
-  std::ostringstream stream_;
-};
-
-// Used to consume a stream so that we don't even evaluate the streamed data if
-// there are no chrome://safe-browsing tabs open.
-class CrSBLogVoidify {
- public:
-  CrSBLogVoidify() = default;
-
-  // This has to be an operator with a precedence lower than <<,
-  // but higher than ?:
-  void operator&(std::ostream&) {}
+  ~CrSBContentLogMessage() override;
 };
 
 #define CRSBLOG                                                               \
   (!::safe_browsing::WebUIContentInfoSingleton::GetInstance()->HasListener()) \
       ? static_cast<void>(0)                                                  \
       : ::safe_browsing::CrSBLogVoidify() &                                   \
-            ::safe_browsing::CrSBLogMessage().stream()
+            ::safe_browsing::CrSBContentLogMessage().stream()
 
 }  // namespace safe_browsing
 

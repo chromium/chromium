@@ -44,11 +44,11 @@ SafeBrowsingUI::SafeBrowsingUI(
 
 SafeBrowsingUI::~SafeBrowsingUI() = default;
 
-CrSBLogMessage::CrSBLogMessage() = default;
+CrSBContentLogMessage::CrSBContentLogMessage() = default;
 
-CrSBLogMessage::~CrSBLogMessage() {
-  WebUIContentInfoSingleton::GetInstance()->LogMessage(stream_.str());
-  DLOG(WARNING) << stream_.str();
+CrSBContentLogMessage::~CrSBContentLogMessage() {
+  CrSBLogMessage::LogStreamToInfoSingleton(
+      WebUIContentInfoSingleton::GetInstance());
 }
 
 }  // namespace safe_browsing
