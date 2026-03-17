@@ -3,9 +3,49 @@
 # found in the LICENSE file.
 
 # This whole package is android only
+assert(is_android)
+
 import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
 import("//third_party/jni_zero/jni_zero.gni")
+
+source_set("wallet_android") {
+  public = [ "boarding_pass_detector.h" ]
+
+  sources = [
+    "boarding_pass_bridge.cc",
+    "boarding_pass_detector.cc",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/common/wallet:mojo_bindings",
+    "//mojo/public/cpp/bindings",
+  ]
+
+  deps = [
+    ":jni_headers",
+    "//base",
+    "//chrome/common:chrome_features",
+    "//content/public/browser",
+    "//services/service_manager/public/cpp",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "boarding_pass_detector_unittest.cc" ]
+
+  deps = [
+    ":wallet_android",
+    "//base/test:test_support",
+    "//chrome/common:chrome_features",
+    "//chrome/common/wallet:mojo_bindings",
+    "//mojo/public/cpp/bindings",
+    "//testing/gtest",
+  ]
+}
+
 android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/wallet/BoardingPassBridge.java",

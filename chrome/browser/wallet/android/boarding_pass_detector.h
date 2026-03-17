@@ -6,9 +6,15 @@
 #define CHROME_BROWSER_WALLET_ANDROID_BOARDING_PASS_DETECTOR_H_
 
 #include <string>
+#include <vector>
+
+#include "base/functional/callback.h"
 #include "chrome/common/wallet/boarding_pass_extractor.mojom.h"
-#include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/remote.h"
+
+namespace content {
+class WebContents;
+}  // namespace content
 
 namespace wallet {
 

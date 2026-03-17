@@ -5,9 +5,8 @@
 #include "components/wallet/content/browser/walletable_pass_barcode_detector.h"
 
 #include <memory>
-#include <optional>
+#include <string>
 
-#include "base/base64.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -15,8 +14,6 @@
 #include "components/wallet/content/browser/walletable_pass_barcode_detector_impl.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"

@@ -9,6 +9,7 @@
 #include "base/strings/string_split.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 
 namespace wallet {

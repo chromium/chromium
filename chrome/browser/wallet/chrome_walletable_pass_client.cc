@@ -20,7 +20,6 @@
 #include "components/tabs/public/tab_interface.h"
 #include "components/variations/service/variations_service.h"
 #include "content/public/browser/web_contents.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace wallet {
 
