@@ -23,7 +23,6 @@
 #include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
-#include "chrome/browser/ui/tabs/projects/projects_panel_state_controller.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_metrics.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -435,28 +434,6 @@ void SavedTabGroupBar::ShowEverythingMenu() {
     if (auto* interface = BrowserUserEducationInterface::From(browser_)) {
       user_education::FeaturePromoParams params(
           feature_engagement::kIPHResumptionRailFeature);
-
-      // Determine the appropriate promo text based on the eligibility of AIM
-      // and Gemini threads. We default to a generic message if neither are
-      // available or if the controller itself isn't present.
-      int string_id = IDS_RESUMPTION_RAIL_IPH_BODY_NO_THREADS;
-      auto* projects_panel_state_controller =
-          ProjectsPanelStateController::From(browser_);
-      CHECK(projects_panel_state_controller);
-      const bool can_show_aim =
-          projects_panel_state_controller->CanShowAimThreads();
-      const bool can_show_gemini =
-          projects_panel_state_controller->CanShowGeminiThreads();
-
-      if (can_show_aim && can_show_gemini) {
-        string_id = IDS_RESUMPTION_RAIL_IPH_BODY;
-      } else if (can_show_aim) {
-        string_id = IDS_RESUMPTION_RAIL_IPH_BODY_ONLY_AI_MODE;
-      } else if (can_show_gemini) {
-        string_id = IDS_RESUMPTION_RAIL_IPH_BODY_ONLY_GEMINI;
-      }
-      params.body_params = l10n_util::GetStringUTF16(string_id);
-
       params.close_callback =
           base::BindOnce(&SavedTabGroupBar::OnResumptionRailPromoClosed,
                          weak_ptr_factory_.GetWeakPtr());
