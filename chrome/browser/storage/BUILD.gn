@@ -1,0 +1,152 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//extensions/buildflags/buildflags.gni")
+
+source_set("storage") {
+  public = [
+    "persistent_storage_permission_context.h",
+    "storage_notification_service_factory.h",
+    "storage_notification_service_impl.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//components/bookmarks/browser",
+    "//components/keyed_service/core",
+    "//components/permissions",
+    "//content/public/browser",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "persistent_storage_permission_context.cc",
+    "storage_notification_service_factory.cc",
+    "storage_notification_service_impl.cc",
+  ]
+
+  deps = [
+    ":storage",
+    "//chrome/browser/bookmarks",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/engagement",
+    "//chrome/browser/ui",
+    "//chrome/common:non_code_constants",
+    "//components/content_settings/core/browser",
+    "//components/content_settings/core/browser:cookie_settings",
+    "//third_party/blink/public/common:headers",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "persistent_storage_permission_context_unittest.cc" ]
+
+  deps = [
+    ":impl",
+    ":storage",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/bookmarks",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/engagement",
+    "//chrome/test:test_support",
+    "//components/bookmarks/test",
+    "//components/content_settings/core/browser",
+    "//components/content_settings/core/browser:cookie_settings",
+    "//components/permissions",
+    "//content/public/browser",
+    "//testing/gtest",
+  ]
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+
+    sources = [ "persistent_storage_browsertest.cc" ]
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    deps = [
+      ":impl",
+      ":storage",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser",
+      "//chrome/browser/bookmarks",
+      "//chrome/browser/content_settings:content_settings_factory",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/common:non_code_constants",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//components/bookmarks/browser",
+      "//components/bookmarks/test",
+      "//components/content_settings/core/browser",
+      "//components/content_settings/core/browser:cookie_settings",
+      "//content/public/browser",
+      "//content/public/common",
+      "//content/test:test_support",
+      "//net",
+      "//net:test_support",
+      "//testing/gtest",
+    ]
+  }
+}
+
+source_set("platform_browser_tests") {
+  testonly = true
+
+  sources = [ "shared_storage_browsertest.cc" ]
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  deps = [
+    ":storage",
+    "//base",
+    "//base/test:test_config",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/common:non_code_constants",
+    "//chrome/test:test_support",
+    "//components/content_settings/core/browser",
+    "//components/content_settings/core/browser:cookie_settings",
+    "//components/content_settings/core/common",
+    "//components/metrics:content",
+    "//components/prefs",
+    "//components/privacy_sandbox:features",
+    "//components/privacy_sandbox:privacy_sandbox_prefs",
+    "//components/privacy_sandbox:test_support",
+    "//components/privacy_sandbox/privacy_sandbox_attestations",
+    "//components/privacy_sandbox/privacy_sandbox_attestations:test_support",
+    "//components/services/storage",
+    "//content/public/browser",
+    "//content/public/common",
+    "//content/test:test_support",
+    "//extensions/buildflags",
+    "//net",
+    "//net:test_support",
+    "//services/network/public/cpp:flags_and_switches",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/blink/public/common:headers",
+    "//url",
+  ]
+
+  if (enable_extensions) {
+    deps += [
+      "//extensions:test_support",
+      "//extensions/browser",
+    ]
+  }
+}
