@@ -197,16 +197,21 @@ ResourceRequest FrameLoader::ResourceRequestForReload(
 
   // ClientRedirectPolicy is an indication that this load was triggered by some
   // direct interaction with the page. If this reload is not a client redirect,
-  // we should reuse the referrer from the original load of the current
-  // document. If this reload is a client redirect (e.g., location.reload()), it
-  // was initiated by something in the current document and should therefore
-  // show the current document's url as the referrer.
+  // we should reuse the referrer and (if applicable) `Origin` header from the
+  // original load of the current document. If this reload is a client redirect
+  // (e.g., location.reload()), it was initiated by something in the current
+  // document and should therefore show the current document's url as the
+  // referrer, and, when applicable (i.e., non-HEAD or -GET request), use its
+  // current origin as the `Origin` header.
   if (client_redirect_policy == ClientRedirectPolicy::kClientRedirect) {
     LocalDOMWindow* window = frame_->DomWindow();
     Referrer referrer = SecurityPolicy::GenerateReferrer(
         window->GetReferrerPolicy(), window->Url(), window->OutgoingReferrer());
     request.SetReferrerString(referrer.referrer);
     request.SetReferrerPolicy(referrer.referrer_policy);
+    request.ClearHTTPOrigin();
+    request.SetHTTPOriginToMatchReferrerPolicyIfNeeded(
+        window->GetSecurityOrigin());
   }
 
   request.SetSkipServiceWorker(frame_load_type ==

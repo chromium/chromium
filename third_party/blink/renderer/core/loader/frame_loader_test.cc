@@ -350,4 +350,35 @@ TEST_F(FrameLoaderTest, HTTPOriginOpaqueOnReload) {
                         .Get(http_names::kOrigin));
 }
 
+// Tests that on a "client redirect" reload (e.g., `document.reload()`), the
+// HTTP `Origin` header is set properly to the current document's origin.
+TEST_F(FrameLoaderTest, HTTPOriginOnClientRedirect) {
+  WebViewImpl* web_view_impl = web_view_helper_.Initialize();
+
+  const KURL& url = KURL(NullUrl(), "https://www.example.com/bar.html");
+  std::unique_ptr<WebNavigationParams> params =
+      WebNavigationParams::CreateWithEmptyHTMLForTesting(url);
+  params->http_method = "POST";
+  WebHTTPBody body;
+  body.Initialize();
+  body.AppendData(blink::WebData(base::byte_span_from_cstring("blah")));
+  params->http_body = body;
+  params->requestor_origin =
+      WebSecurityOrigin::CreateFromString("https://foo.test");
+  params->referrer = "";
+  LocalFrame* local_frame =
+      To<LocalFrame>(web_view_impl->GetPage()->MainFrame());
+  local_frame->Loader().CommitNavigation(std::move(params), nullptr);
+  auto* window = local_frame->DomWindow();
+  window->GetSecurityContext().SetSecurityOriginForTesting(
+      SecurityOrigin::CreateFromString("https://www.example.com"));
+
+  ASSERT_EQ("https://www.example.com",
+            local_frame->Loader()
+                .ResourceRequestForReload(WebFrameLoadType::kReload,
+                                          ClientRedirectPolicy::kClientRedirect)
+                .HttpHeaderFields()
+                .Get(http_names::kOrigin));
+}
+
 }  // namespace blink
