@@ -607,11 +607,6 @@ void ToolbarView::Init() {
       if (action_item) {
         action_item->SetVisible(true);
         action_item->SetEnabled(true);
-        ai_overlay_dialog_button_ =
-            pinned_toolbar_actions_container()->CreatePermanentButtonFor(
-                kActionShowAiOverlayDialog);
-        ai_overlay_dialog_button_->SetProperty(views::kCrossAxisAlignmentKey,
-                                               views::LayoutAlignment::kCenter);
         PinnedToolbarActionsModel::Get(browser_->profile())
             ->UpdatePinnedState(kActionShowAiOverlayDialog, true);
       }
