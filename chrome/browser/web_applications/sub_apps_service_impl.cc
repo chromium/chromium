@@ -536,6 +536,13 @@ void SubAppsServiceImpl::Remove(
   for (const std::string& manifest_id_path : manifest_id_paths) {
     RemoveSubApp(manifest_id_path, concurrent.CreateCallback(),
                  GetAppId(render_frame_host()));
+    // RemoveSubApp() may call ReportBadMessageAndDeleteThis() which deletes
+    // `this`. The remaining callbacks in `concurrent` will be destroyed when
+    // `concurrent` goes out of scope (it is a local), so they will not fire.
+    // The weak_ptr-guarded .Done() callback below is also safe.
+    if (!weak_ptr) {
+      return;
+    }
   }
   std::move(concurrent)
       .Done(base::BindOnce(&SubAppsServiceImpl::NotifyUninstall, weak_ptr,

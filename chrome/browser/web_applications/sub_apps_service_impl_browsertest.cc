@@ -1321,6 +1321,27 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, RemoveFailWrongOrigin) {
   EXPECT_FALSE(UninstallNotificationShown());
 }
 
+// Remove with a cross-origin path followed by a valid path should not crash.
+// Regression test: RemoveSubApp() calls ReportBadMessageAndDeleteThis() for the
+// cross-origin path, deleting `this`. Without the weak_ptr check after each
+// iteration, the loop continues and accesses freed memory.
+IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
+                       RemoveWrongOriginFollowedByValidPath) {
+  content::RenderFrameHost* iwa_frame = InstallAndOpenParentIwaApp();
+  BindRemote(iwa_frame);
+
+  base::test::TestFuture<void> disconnect_handler_future;
+  remote_.set_disconnect_handler(disconnect_handler_future.GetCallback());
+  remote_->Remove({kDifferentDomain, kSubAppPath},
+                  base::BindLambdaForTesting(
+                      [](std::vector<SubAppsServiceRemoveResultPtr> result) {
+                        ADD_FAILURE() << "Callback unexpectedly invoked.";
+                      }));
+  ASSERT_TRUE(disconnect_handler_future.Wait())
+      << "Disconnect handler not invoked.";
+  EXPECT_FALSE(UninstallNotificationShown());
+}
+
 /******** Tests for policy-disabled scenarios ********/
 
 // Test class for SubApps API when WebAppInstallByUserEnabled policy is
