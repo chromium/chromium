@@ -1325,13 +1325,6 @@
       "expiry_milestone": 137
   },
   {
-    "name": "browsing-history-actor-integration-M1",
-    "owners": [
-      "rainhard@google.com",
-      "chrome-browser-privacy-team@google.com"],
-    "expiry_milestone": 148
-  },
-  {
     "name": "browsing-history-actor-integration-M2",
     "owners": [
       "rainhard@google.com",

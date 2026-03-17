@@ -278,8 +278,7 @@ inline constexpr char kBookmarksTreeViewDescription[] =
 inline constexpr char kBrowsingHistoryActorIntegrationM2Name[] =
     "Browsing History Actor Integration M2";
 inline constexpr char kBrowsingHistoryActorIntegrationM2Description[] =
-    "Enables the browsing history glic actor integration M2. Requires "
-    "browsing-history-actor-integration-M1 to be enabled as well.";
+    "Enables the browsing history glic actor integration M2.";
 
 inline constexpr char kBrowsingHistoryActorIntegrationM3Name[] =
     "Browsing History Actor Integration M3";
