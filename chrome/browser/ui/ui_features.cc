@@ -475,7 +475,7 @@ bool IsAndroidAnimatedProgressBarInBrowserEnabled() {
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-BASE_FEATURE(kWhatsNewDesktopRefresh, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kWhatsNewDesktopRefresh, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAiOverlayDialog, base::FEATURE_DISABLED_BY_DEFAULT);
 

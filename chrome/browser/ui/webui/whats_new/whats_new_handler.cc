@@ -37,9 +37,6 @@
 
 namespace {
 
-// The trigger ID for the HaTS survey for the What's New refresh page.
-constexpr char kHatsSurveyEnSiteID[] = "en_site_id";
-
 }  // namespace
 
 WhatsNewHandler::WhatsNewHandler(
@@ -280,14 +277,6 @@ void WhatsNewHandler::TryShowHatsSurveyWithTimeout() {
         /*navigation_behavior=*/HatsService::REQUIRE_SAME_ORIGIN,
         base::DoNothing(), base::DoNothing(), survey_override.value());
   } else {
-    // Temporary survey for the refresh experiment.
-    const std::optional<std::string> survey_trigger_override =
-        base::FeatureList::IsEnabled(features::kWhatsNewDesktopRefresh)
-            ? std::make_optional(base::FeatureParam<std::string>(
-                                     &features::kWhatsNewDesktopRefresh,
-                                     kHatsSurveyEnSiteID, "")
-                                     .Get())
-            : std::nullopt;
     hats_service->LaunchDelayedSurveyForWebContents(
         kHatsSurveyTriggerWhatsNew, web_contents_,
         features::kHappinessTrackingSurveysForDesktopWhatsNewTime.Get()
@@ -295,6 +284,6 @@ void WhatsNewHandler::TryShowHatsSurveyWithTimeout() {
         /*product_specific_bits_data=*/{},
         /*product_specific_string_data=*/{},
         /*navigation_behavior=*/HatsService::REQUIRE_SAME_ORIGIN,
-        base::DoNothing(), base::DoNothing(), survey_trigger_override);
+        base::DoNothing(), base::DoNothing(), std::nullopt);
   }
 }
