@@ -808,8 +808,9 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
 }
 
 // Tests that showing a chooser bubble exits tab fullscreen.
+// TODO(http://crbug.com/493319451): Re-enable when the flakiness is fixed.
 IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
-                       ChooserBubbleExitsTabFullscreen) {
+                       DISABLED_ChooserBubbleExitsTabFullscreen) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
