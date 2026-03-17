@@ -22,10 +22,6 @@ class FormStructure;
 
 using TypeValuePairs = std::vector<std::pair<FieldType, std::string>>;
 
-// For a given FieldType `type` returns a pair of field name and label that
-// should be parsed into this type by our field type parsers.
-std::pair<std::string, std::string> GetLabelAndNameForType(FieldType type);
-
 // Constructs a FormData instance for `url` from a vector of type value pairs
 // that defines a sequence of fields and the filled values.
 // The field names and labels for the different types are relieved from
@@ -63,11 +59,6 @@ void SetValueForType(TypeValuePairs& pairs,
                      FieldType type,
                      const std::string& value);
 
-// Wraps `GetDefaultProfileTypeValuePairs()` but replaces `kDefaultCountry` with
-// `country`. If `country` is empty, ADDRESS_HOME_COUNTRY is removed entirely.
-TypeValuePairs GetDefaultProfileTypeValuePairsWithOverriddenCountry(
-    const std::string& country);
-
 // Same as `GetDefaultProfileTypeValuePairs()`, but split into two parts to test
 // multi-step imports. No part by itself satisfies the import requirements.
 // `part` specifies the requested half and can be either 1 or 2.
@@ -76,10 +67,6 @@ TypeValuePairs GetSplitDefaultProfileTypeValuePairs(int part);
 // Same as `GetDefaultProfileTypeValuePairs()` but with the second profile
 // information.
 TypeValuePairs GetSecondProfileTypeValuePairs();
-
-// Same as `GetDefaultProfileTypeValuePairs()` but with the third profile
-// information.
-TypeValuePairs GetThirdProfileTypeValuePairs();
 
 // Same as `GetDefaultProfileTypeValuePairs()`, but for credit cards.
 TypeValuePairs GetDefaultCreditCardTypeValuePairs();
@@ -90,31 +77,15 @@ AutofillProfile ConstructDefaultProfile();
 // Returns the second AutofillProfile used in this test file.
 AutofillProfile ConstructSecondProfile();
 
-// Returns the third AutofillProfile used in this test file.
-AutofillProfile ConstructThirdProfile();
-
 // Returns a form with the default profile. The AutofillProfile that is imported
 // from this form should be similar to the profile create by calling
 // `ConstructDefaultProfile()`.
 std::unique_ptr<FormStructure> ConstructDefaultProfileFormStructure();
 
-// Constructs a form structure containing only an email field, set to
-// `kDefaultMail`. This is useful for testing multi-step complements.
-std::unique_ptr<FormStructure> ConstructDefaultEmailFormStructure();
-
 // Same as `ConstructDefaultFormStructure()` but split into two parts to test
 // multi-step imports (see `GetSplitDefaultProfileTypeValuePairs()`).
 std::unique_ptr<FormStructure> ConstructSplitDefaultProfileFormStructure(
     int part);
-
-// Same as `ConstructDefaultFormStructure()` but for credit cards.
-std::unique_ptr<FormStructure> ConstructDefaultCreditCardFormStructure();
-
-// Same as `ConstructDefaultFormStructure()` but for the second profile.
-std::unique_ptr<FormStructure> ConstructSecondProfileFormStructure();
-
-// Same as `ConstructDefaultFormStructure()` but for the third profile.
-std::unique_ptr<FormStructure> ConstructThirdProfileFormStructure();
 
 // Constructs a FormStructure with two address sections by concatenating
 // the default profile and second profile form structures.
@@ -123,10 +94,6 @@ std::unique_ptr<FormStructure> ConstructShippingAndBillingFormStructure();
 // Constructs a `FormData` instance that carries the information of the default
 // profile.
 FormData ConstructDefaultFormData();
-
-// Same as `ConstructDefaultFormData()` but split into two parts to test multi-
-// step imports (see `GetSplitDefaultProfileTypeValuePairs()`).
-FormData ConstructSplitDefaultFormData(int part);
 
 // Adds a full credit card form to `form`, given the parameters `name`,
 // `number`, `month`, and `year`. The parameters represent field values and are

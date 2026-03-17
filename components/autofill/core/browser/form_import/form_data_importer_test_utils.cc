@@ -33,6 +33,9 @@
 namespace autofill {
 
 namespace {
+
+using test::CreateTestFormField;
+
 // Define values for the default address profile.
 constexpr char kDefaultFirstName[] = "Thomas";
 constexpr char kDefaultLastName[] = "Anderson";
@@ -54,28 +57,13 @@ constexpr char kSecondCity[] = "Los Angeles";
 constexpr char kSecondState[] = "California";
 constexpr char kSecondPhone[] = "+1 651-666-1111";
 
-// Define values for a third address profile.
-constexpr char kThirdFirstName[] = "Homer";
-constexpr char kThirdLastName[] = "Simpson";
-constexpr char kThirdMail[] = "donut@whatever.net";
-constexpr char kThirdAddressLine1[] = "742 Evergreen Terrace";
-constexpr char kThirdZip[] = "65619";
-constexpr char kThirdCity[] = "Springfield";
-constexpr char kThirdState[] = "Oregon";
-constexpr char kThirdPhone[] = "+1 850-777-2222";
-
-constexpr char kDefaultPhoneGermany[] = "+49 89 123456";
-constexpr char kDefaultPhoneMexico[] = "+52 55 1234 5678";
-constexpr char kDefaultPhoneArmenia[] = "+374 10 123456";
-}  // anonymous namespace
-
-using test::CreateTestFormField;
-
 constexpr char kDefaultCreditCardName[] = "Biggie Smalls";
 constexpr char kDefaultCreditCardNumber[] = "4111 1111 1111 1111";
 constexpr char kDefaultCreditCardExpMonth[] = "01";
 constexpr char kDefaultCreditCardExpYear[] = "2999";
 
+// For a given FieldType `type` returns a pair of field name and label that
+// should be parsed into this type by our field type parsers.
 std::pair<std::string, std::string> GetLabelAndNameForType(FieldType type) {
   static const std::map<FieldType, std::pair<std::string, std::string>>
       name_type_map = {
@@ -105,6 +93,8 @@ std::pair<std::string, std::string> GetLabelAndNameForType(FieldType type) {
   }
   return it->second;
 }
+
+}  // anonymous namespace
 
 FormData ConstructFormDateFromTypeValuePairs(TypeValuePairs type_value_pairs,
                                              std::string url) {
@@ -187,20 +177,6 @@ void SetValueForType(TypeValuePairs& pairs,
   }
 }
 
-TypeValuePairs GetDefaultProfileTypeValuePairsWithOverriddenCountry(
-    const std::string& country) {
-  auto pairs = GetDefaultProfileTypeValuePairs();
-  SetValueForType(pairs, ADDRESS_HOME_COUNTRY, country);
-  if (country == "DE" || country == "Germany") {
-    SetValueForType(pairs, PHONE_HOME_WHOLE_NUMBER, kDefaultPhoneGermany);
-  } else if (country == "MX" || country == "Mexico") {
-    SetValueForType(pairs, PHONE_HOME_WHOLE_NUMBER, kDefaultPhoneMexico);
-  } else if (country == "AM" || country == "Armenien") {
-    SetValueForType(pairs, PHONE_HOME_WHOLE_NUMBER, kDefaultPhoneArmenia);
-  }
-  return pairs;
-}
-
 TypeValuePairs GetSplitDefaultProfileTypeValuePairs(int part) {
   DCHECK(part == 1 || part == 2);
   if (part == 1) {
@@ -235,20 +211,6 @@ TypeValuePairs GetSecondProfileTypeValuePairs() {
   };
 }
 
-TypeValuePairs GetThirdProfileTypeValuePairs() {
-  return {
-      {NAME_FIRST, kThirdFirstName},
-      {NAME_LAST, kThirdLastName},
-      {EMAIL_ADDRESS, kThirdMail},
-      {PHONE_HOME_WHOLE_NUMBER, kThirdPhone},
-      {ADDRESS_HOME_LINE1, kThirdAddressLine1},
-      {ADDRESS_HOME_CITY, kThirdCity},
-      {ADDRESS_HOME_STATE, kThirdState},
-      {ADDRESS_HOME_ZIP, kThirdZip},
-      {ADDRESS_HOME_COUNTRY, kDefaultCountry},
-  };
-}
-
 TypeValuePairs GetDefaultCreditCardTypeValuePairs() {
   return {
       {CREDIT_CARD_NAME_FULL, kDefaultCreditCardName},
@@ -266,46 +228,15 @@ AutofillProfile ConstructSecondProfile() {
   return ConstructProfileFromTypeValuePairs(GetSecondProfileTypeValuePairs());
 }
 
-AutofillProfile ConstructThirdProfile() {
-  return ConstructProfileFromTypeValuePairs(GetThirdProfileTypeValuePairs());
-}
-
 std::unique_ptr<FormStructure> ConstructDefaultProfileFormStructure() {
   return ConstructFormStructureFromTypeValuePairs(
       GetDefaultProfileTypeValuePairs());
-}
-
-std::unique_ptr<FormStructure> ConstructDefaultEmailFormStructure() {
-  // The autocomplete attribute is set manually, because for small forms (number
-  // of fields < kMinRequiredFieldsForHeuristics), no heuristics are used.
-  FormData form =
-      ConstructFormDateFromTypeValuePairs({{EMAIL_ADDRESS, kDefaultMail}});
-  const char* autocomplete = "email";
-  test_api(form).field(0).set_autocomplete_attribute(autocomplete);
-  test_api(form).field(0).set_parsed_autocomplete(
-      ParseAutocompleteAttribute(autocomplete));
-  return ConstructFormStructureFromFormData(form);
 }
 
 std::unique_ptr<FormStructure> ConstructSplitDefaultProfileFormStructure(
     int part) {
   return ConstructFormStructureFromTypeValuePairs(
       GetSplitDefaultProfileTypeValuePairs(part));
-}
-
-std::unique_ptr<FormStructure> ConstructDefaultCreditCardFormStructure() {
-  return ConstructFormStructureFromTypeValuePairs(
-      GetDefaultCreditCardTypeValuePairs());
-}
-
-std::unique_ptr<FormStructure> ConstructSecondProfileFormStructure() {
-  return ConstructFormStructureFromTypeValuePairs(
-      GetSecondProfileTypeValuePairs());
-}
-
-std::unique_ptr<FormStructure> ConstructThirdProfileFormStructure() {
-  return ConstructFormStructureFromTypeValuePairs(
-      GetThirdProfileTypeValuePairs());
 }
 
 std::unique_ptr<FormStructure> ConstructShippingAndBillingFormStructure() {
@@ -318,11 +249,6 @@ std::unique_ptr<FormStructure> ConstructShippingAndBillingFormStructure() {
 
 FormData ConstructDefaultFormData() {
   return ConstructFormDateFromTypeValuePairs(GetDefaultProfileTypeValuePairs());
-}
-
-FormData ConstructSplitDefaultFormData(int part) {
-  return ConstructFormDateFromTypeValuePairs(
-      GetSplitDefaultProfileTypeValuePairs(part));
 }
 
 void AddFullCreditCardForm(FormData* form,

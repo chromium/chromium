@@ -53,6 +53,12 @@ auto UnorderedElementsCompareEqual(Matchers... matchers) {
   return UnorderedElementsAre(Pointee(ComparesEqual(std::move(matchers)))...);
 }
 
+// Same as `ConstructDefaultFormStructure()` but for credit cards.
+std::unique_ptr<FormStructure> ConstructDefaultCreditCardFormStructure() {
+  return ConstructFormStructureFromTypeValuePairs(
+      GetDefaultCreditCardTypeValuePairs());
+}
+
 // TODO(crbug.com/40270301): Move MockCreditCardSaveManager to new header and cc
 // file.
 class MockCreditCardSaveManager : public TestCreditCardSaveManager {
