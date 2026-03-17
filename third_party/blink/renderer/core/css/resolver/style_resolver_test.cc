@@ -731,7 +731,7 @@ TEST_F(StyleResolverTest, SingleAxisAdjustOverflow) {
   {
     ScopedSingleAxisScrollContainersForTest single_axis_feature(true);
     run_test("clip", EOverflow::kClip, EOverflow::kScroll);
-    run_test("visible", EOverflow::kVisible, EOverflow::kScroll);
+    run_test("visible", EOverflow::kAuto, EOverflow::kScroll);
   }
 }
 

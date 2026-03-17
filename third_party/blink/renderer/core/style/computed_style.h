@@ -1946,17 +1946,10 @@ class ComputedStyle final : public ComputedStyleBase {
 
   // Returns true if 'overflow' is 'visible' or 'clip' along both axes.
   bool IsOverflowVisibleOrClip() const {
-    // With this feature enabled, a scrollable overflow vale on one axis does
-    // not force the other axis to a scrollable overflow value - so both axes
-    // need to be checked.
-    if (RuntimeEnabledFeatures::SingleAxisScrollContainersEnabled()) {
-      return IsOverflowValueScrollableX() && IsOverflowValueScrollableY();
-    }
-    bool overflow_x =
-        OverflowX() == EOverflow::kVisible || OverflowX() == EOverflow::kClip;
-    DCHECK(!overflow_x || OverflowY() == EOverflow::kVisible ||
-           OverflowY() == EOverflow::kClip);
-    return overflow_x;
+    return (OverflowX() == EOverflow::kVisible ||
+            OverflowX() == EOverflow::kClip) &&
+           (OverflowY() == EOverflow::kVisible ||
+            OverflowY() == EOverflow::kClip);
   }
 
   // An overflow value of visible or clip is not a scroll container, all other

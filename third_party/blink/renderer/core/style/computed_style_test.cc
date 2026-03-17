@@ -2467,6 +2467,40 @@ TEST_F(ComputedStyleTest, SingleAxisScrollContainers) {
   EXPECT_FALSE(vertical->IsOverflowValueScrollableBlock());
 }
 
+TEST_F(ComputedStyleTest, SingleAxisIsOverflowVisibleOrClip) {
+  ScopedSingleAxisScrollContainersForTest enabled_scoped(true);
+
+  ComputedStyleBuilder builder = CreateComputedStyleBuilder();
+  builder.SetOverflowX(EOverflow::kVisible);
+  builder.SetOverflowY(EOverflow::kVisible);
+  EXPECT_TRUE(builder.TakeStyle()->IsOverflowVisibleOrClip());
+
+  builder = CreateComputedStyleBuilder();
+  builder.SetOverflowX(EOverflow::kClip);
+  builder.SetOverflowY(EOverflow::kClip);
+  EXPECT_TRUE(builder.TakeStyle()->IsOverflowVisibleOrClip());
+
+  builder = CreateComputedStyleBuilder();
+  builder.SetOverflowX(EOverflow::kVisible);
+  builder.SetOverflowY(EOverflow::kClip);
+  EXPECT_TRUE(builder.TakeStyle()->IsOverflowVisibleOrClip());
+
+  builder = CreateComputedStyleBuilder();
+  builder.SetOverflowX(EOverflow::kVisible);
+  builder.SetOverflowY(EOverflow::kScroll);
+  EXPECT_FALSE(builder.TakeStyle()->IsOverflowVisibleOrClip());
+
+  builder = CreateComputedStyleBuilder();
+  builder.SetOverflowX(EOverflow::kScroll);
+  builder.SetOverflowY(EOverflow::kVisible);
+  EXPECT_FALSE(builder.TakeStyle()->IsOverflowVisibleOrClip());
+
+  builder = CreateComputedStyleBuilder();
+  builder.SetOverflowX(EOverflow::kScroll);
+  builder.SetOverflowY(EOverflow::kScroll);
+  EXPECT_FALSE(builder.TakeStyle()->IsOverflowVisibleOrClip());
+}
+
 TEST_F(ComputedStyleTest, ApplyTextTransformUpdateOffsetMap) {
   using Entry = TextOffsetMap::Entry;
 
