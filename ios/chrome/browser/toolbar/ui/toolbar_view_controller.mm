@@ -183,7 +183,7 @@ constexpr CGFloat kButtonMinScale = 0.2;
 }
 
 - (void)setLocationBarHidden:(BOOL)hidden {
-  _locationBarContainer.hidden = hidden;
+  _locationBarContainer.hidden = hidden || !_visible;
 }
 
 - (UIView*)locationBarContainerCopy {
