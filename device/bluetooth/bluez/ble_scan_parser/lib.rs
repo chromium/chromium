@@ -52,11 +52,7 @@ fn parse_impl<'a>(
     // original C++ implementation does not bother initializing this.
     let mut tx_power: i8 = 0;
 
-    loop {
-        let Some((&length, remainder)) = advertisement_data.split_first() else {
-            break;
-        };
-
+    while let Some((&length, remainder)) = advertisement_data.split_first() {
         let length: usize = length.into();
 
         if length <= 1 || length > remainder.len() {
