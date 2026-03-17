@@ -129,4 +129,24 @@ public class HubBottomToolbarCoordinatorUnitTest {
 
         coordinator.destroy();
     }
+
+    @Test
+    public void testAttachBottomBarView() {
+        HubBottomToolbarDelegate emptyDelegate = spy(new EmptyHubBottomToolbarDelegate());
+        HubBottomToolbarCoordinator coordinator =
+                new HubBottomToolbarCoordinator(
+                        mActivity,
+                        mContainer,
+                        mPaneManager,
+                        mHubColorMixer,
+                        emptyDelegate,
+                        mEdgeToEdgeSupplier);
+
+        View childView = new View(mActivity);
+        coordinator.attachBottomBarView(childView);
+
+        verify(emptyDelegate).attachBottomBarView(childView);
+
+        coordinator.destroy();
+    }
 }

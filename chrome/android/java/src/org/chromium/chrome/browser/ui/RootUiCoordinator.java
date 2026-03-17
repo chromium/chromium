@@ -180,6 +180,7 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinatorFactory;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuObserver;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarHostManager;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.ui.desktop_windowing.TopControlsLockCoordinator;
@@ -427,6 +428,7 @@ public class RootUiCoordinator
             mReaderModeIphControllerSupplier = ObservableSuppliers.createMonotonic();
     protected @Nullable OpenInAppEntryPoint mOpenInAppEntryPoint;
     protected @Nullable OmniboxChipManager mOmniboxChipManager;
+    protected @Nullable BottomBarHostManager mBottomBarHostManager;
 
     /**
      * Create a new {@link RootUiCoordinator} for the given activity.
@@ -523,7 +525,8 @@ public class RootUiCoordinator
             NonNullObservableSupplier<Integer> overviewColorSupplier,
             EdgeToEdgeManager edgeToEdgeManager,
             NonNullObservableSupplier<Boolean> xrSpaceModeObservableSupplier,
-            @Nullable DesktopWindowStateManager desktopWindowStateManager) {
+            @Nullable DesktopWindowStateManager desktopWindowStateManager,
+            @Nullable BottomBarHostManager bottomBarHostManager) {
         mCallbackController = new CallbackController();
         mActivity = activity;
         mWindowAndroid = windowAndroid;
@@ -566,6 +569,7 @@ public class RootUiCoordinator
         mEdgeToEdgeManager = edgeToEdgeManager;
         mXrSpaceModeObservableSupplier = xrSpaceModeObservableSupplier;
         mDesktopWindowStateManager = desktopWindowStateManager;
+        mBottomBarHostManager = bottomBarHostManager;
         mAppMenuSupplier = new OneshotSupplierImpl<>();
         mIsTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity);
         mActionModeControllerCallback = new ToolbarActionModeCallback();
@@ -1934,7 +1938,8 @@ public class RootUiCoordinator
                             mXrSpaceModeObservableSupplier,
                             mPageZoomManager,
                             assertNonNull(mSnackbarManagerSupplier.get()),
-                            mOmniboxChipManager);
+                            mOmniboxChipManager,
+                            mBottomBarHostManager);
             if (!mSupportsAppMenuSupplier.getAsBoolean()) {
                 mToolbarManager.getToolbar().disableMenuButton();
             }

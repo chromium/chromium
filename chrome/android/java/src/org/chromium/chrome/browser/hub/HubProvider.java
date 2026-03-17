@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarHostManager;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
@@ -69,6 +70,7 @@ public class HubProvider {
             BackPressManager backPressManager,
             MenuOrKeyboardActionController menuOrKeyboardActionController,
             Supplier<SnackbarManager> snackbarManagerSupplier,
+            @Nullable BottomBarHostManager bottomBarHostManager,
             Supplier<TabModelSelector> tabModelSelectorSupplier,
             Supplier<MenuButtonCoordinator> menuButtonCoordinatorSupplier,
             MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
@@ -95,6 +97,7 @@ public class HubProvider {
                                     backPressManager,
                                     menuOrKeyboardActionController,
                                     snackbarManager,
+                                    bottomBarHostManager,
                                     tabSupplier,
                                     menuButtonCoordinatorSupplier.get(),
                                     mHubShowPaneHelper,

@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.ui.actions.DisplayButtonData;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarHostManager;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
@@ -83,6 +84,7 @@ public class HubProviderUnitTest {
     @Mock private BackPressManager mBackPressManagerMock;
     @Mock private MenuOrKeyboardActionController mMenuOrKeyboardActionController;
     @Mock private SnackbarManager mSnackbarManager;
+    @Mock private BottomBarHostManager mBottomBarHostManager;
     @Mock private MenuButtonCoordinator mMenuButtonCoordinator;
     @Mock private SearchActivityClient mSearchActivityClient;
 
@@ -123,6 +125,7 @@ public class HubProviderUnitTest {
                         mBackPressManagerMock,
                         mMenuOrKeyboardActionController,
                         () -> mSnackbarManager,
+                        mBottomBarHostManager,
                         () -> mTabModelSelector,
                         () -> mMenuButtonCoordinator,
                         mEdgeToEdgeSupplier,

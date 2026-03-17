@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.hub;
 import static org.chromium.chrome.browser.hub.HubColorMixer.COLOR_MIXER;
 
 import android.content.Context;
+import android.view.View;
 import android.view.ViewGroup;
 
 import org.chromium.base.supplier.MonotonicObservableSupplier;
@@ -82,5 +83,10 @@ public class HubBottomToolbarCoordinator {
             mEdgeToEdgePadAdjuster.destroy();
             mEdgeToEdgePadAdjuster = null;
         }
+    }
+
+    /** Attaches the provided bottom bar view to the container. */
+    public void attachBottomBarView(View view) {
+        mDelegate.attachBottomBarView(view);
     }
 }

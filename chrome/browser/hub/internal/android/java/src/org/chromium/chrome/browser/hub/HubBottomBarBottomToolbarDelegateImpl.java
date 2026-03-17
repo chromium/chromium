@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.hub;
 
 import android.content.Context;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import org.chromium.base.supplier.NonNullObservableSupplier;
@@ -53,9 +54,18 @@ public class HubBottomBarBottomToolbarDelegateImpl implements HubBottomToolbarDe
                                         container,
                                         /* attachToRoot= */ false);
 
-        container.addView(mHubBottomToolbarView);
+        ViewGroup.LayoutParams params =
+                new ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        container.addView(mHubBottomToolbarView, params);
 
         return mHubBottomToolbarView;
+    }
+
+    /** Attaches the provided bottom bar view to the container. */
+    @Override
+    public void attachBottomBarView(View view) {
+        mHubBottomToolbarView.addView(view);
     }
 
     @Override

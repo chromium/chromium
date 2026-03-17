@@ -34,15 +34,25 @@ public class BottomBarHostManager {
     }
 
     private @Nullable BottomBar mBottomBar;
+    private @Nullable Callback<View> mDefaultAttachCallback;
 
     /**
      * Registers the bottom bar. This method should only ever be called once.
      *
      * @param bottomBar The bottom bar to register.
+     * @param defaultAttachCallback A callback to attach the bottom bar view to the default host.
      */
-    public void registerBottomBar(BottomBar bottomBar) {
+    public void registerBottomBar(BottomBar bottomBar, Callback<View> defaultAttachCallback) {
         assert mBottomBar == null : "registerBottomBar should only be called once";
         mBottomBar = bottomBar;
+        mDefaultAttachCallback = defaultAttachCallback;
+        resetOwnership();
+    }
+
+    /** Resets ownership of the bottom bar view to the default owner (TABBED mode). */
+    public void resetOwnership() {
+        assert mDefaultAttachCallback != null : "Default attach callback not set";
+        takeOwnership(Host.TABBED, mDefaultAttachCallback);
     }
 
     /**

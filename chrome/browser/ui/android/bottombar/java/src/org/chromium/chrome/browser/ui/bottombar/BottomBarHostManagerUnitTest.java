@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui.bottombar;
 
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -31,6 +32,7 @@ public class BottomBarHostManagerUnitTest {
     @Mock private View mView;
     @Mock private ViewGroup mParentView;
     @Mock private Callback<View> mCallback;
+    @Mock private Callback<View> mDefaultAttachCallback;
 
     private BottomBarHostManager mHostManager;
 
@@ -41,8 +43,17 @@ public class BottomBarHostManagerUnitTest {
     }
 
     @Test
+    public void testRegisterBottomBar() {
+        mHostManager.registerBottomBar(mBottomBar, mDefaultAttachCallback);
+        verify(mBottomBar).setParent(Host.TABBED);
+    }
+
+    @Test
     public void testTakeOwnership() {
-        mHostManager.registerBottomBar(mBottomBar);
+        mHostManager.registerBottomBar(mBottomBar, mDefaultAttachCallback);
+
+        verify(mDefaultAttachCallback).onResult(mView);
+        verify(mBottomBar).setParent(Host.TABBED);
 
         mHostManager.takeOwnership(Host.HUB, mCallback);
 
@@ -51,27 +62,44 @@ public class BottomBarHostManagerUnitTest {
     }
 
     @Test
-    public void testTakeOwnership_WithParent() {
-        when(mView.getParent()).thenReturn(mParentView);
-        mHostManager.registerBottomBar(mBottomBar);
+    public void testResetOwnership() {
+        mHostManager.registerBottomBar(mBottomBar, mDefaultAttachCallback);
 
-        mHostManager.takeOwnership(Host.TABBED, mCallback);
+        mHostManager.resetOwnership();
+
+        verify(mDefaultAttachCallback, times(2)).onResult(mView);
+        verify(mBottomBar, times(2)).setParent(Host.TABBED);
+    }
+
+    @Test
+    public void testTakeOwnership_WithParent() {
+        mHostManager.registerBottomBar(mBottomBar, mDefaultAttachCallback);
+
+        when(mView.getParent()).thenReturn(mParentView);
+
+        mHostManager.takeOwnership(Host.HUB, mCallback);
 
         verify(mCallback).onResult(mView);
         verify(mParentView).removeView(mView);
-        verify(mBottomBar).setParent(Host.TABBED);
+        verify(mBottomBar).setParent(Host.HUB);
     }
 
     @Test(expected = AssertionError.class)
     public void testRegisterBottomBarTwice() {
-        mHostManager.registerBottomBar(mBottomBar);
+        mHostManager.registerBottomBar(mBottomBar, mDefaultAttachCallback);
         // This should trigger the assertion
-        mHostManager.registerBottomBar(mBottomBar);
+        mHostManager.registerBottomBar(mBottomBar, mDefaultAttachCallback);
     }
 
     @Test(expected = AssertionError.class)
     public void testTakeOwnership_WithoutRegistration() {
         // This should trigger the assertion because mBottomBar is null
         mHostManager.takeOwnership(Host.HUB, mCallback);
+    }
+
+    @Test(expected = AssertionError.class)
+    public void testResetOwnership_WithoutRegistration() {
+        // This should trigger the assertion because defaultAttachCallback is null
+        mHostManager.resetOwnership();
     }
 }

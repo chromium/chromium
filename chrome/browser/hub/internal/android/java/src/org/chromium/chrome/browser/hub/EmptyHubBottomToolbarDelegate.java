@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.hub;
 
 import android.content.Context;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import org.chromium.base.supplier.NonNullObservableSupplier;
@@ -61,4 +62,7 @@ public class EmptyHubBottomToolbarDelegate implements HubBottomToolbarDelegate {
     public void destroy() {
         // No resources to clean up in the empty implementation
     }
+
+    @Override
+    public void attachBottomBarView(View view) {}
 }

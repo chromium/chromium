@@ -369,6 +369,13 @@ public class HubCoordinator implements PaneHubController, BackPressHandler, OnPa
         return mHubPaneHostCoordinator.getSnackbarContainer();
     }
 
+    /** Attaches the provided bottom bar view to the container. */
+    public void attachBottomBarView(View view) {
+        if (mHubBottomToolbarCoordinator != null) {
+            mHubBottomToolbarCoordinator.attachBottomBarView(view);
+        }
+    }
+
     private @Nullable Pane getFocusedPane() {
         return mPaneManager.getFocusedPaneSupplier().get();
     }

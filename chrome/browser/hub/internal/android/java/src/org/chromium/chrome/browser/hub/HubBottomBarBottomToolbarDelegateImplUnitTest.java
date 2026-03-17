@@ -9,6 +9,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
@@ -77,6 +78,23 @@ public class HubBottomBarBottomToolbarDelegateImplUnitTest {
         assertNotNull(view);
         assertEquals(1, mContainer.getChildCount());
         assertEquals(view, mContainer.getChildAt(0));
+
+        delegate.destroy();
+    }
+
+    @Test
+    public void testAttachBottomBarView() {
+        HubBottomBarBottomToolbarDelegateImpl delegate =
+                new HubBottomBarBottomToolbarDelegateImpl(mActivity);
+        HubBottomToolbarView parentView =
+                delegate.initializeBottomToolbarView(
+                        mActivity, mContainer, mPaneManager, mHubColorMixer);
+
+        View childView = new View(mActivity);
+        delegate.attachBottomBarView(childView);
+
+        assertEquals(1, parentView.getChildCount());
+        assertEquals(childView, parentView.getChildAt(0));
 
         delegate.destroy();
     }

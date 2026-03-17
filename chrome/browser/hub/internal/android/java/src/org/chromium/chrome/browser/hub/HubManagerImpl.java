@@ -19,6 +19,7 @@ import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
+import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -26,6 +27,8 @@ import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarHostManager;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
@@ -60,6 +63,7 @@ public class HubManagerImpl implements HubManager, HubController {
     private final MonotonicObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;
     private final SearchActivityClient mSearchActivityClient;
     private final HubColorMixer mHubColorMixer;
+    private final @Nullable BottomBarHostManager mBottomBarHostManager;
 
     // This is effectively NonNull and final once the HubLayout is initialized.
     private @MonotonicNonNull HubLayoutController mHubLayoutController;
@@ -78,6 +82,7 @@ public class HubManagerImpl implements HubManager, HubController {
             BackPressManager backPressManager,
             MenuOrKeyboardActionController menuOrKeyboardActionController,
             SnackbarManager snackbarManager,
+            @Nullable BottomBarHostManager bottomBarHostManager,
             NullableObservableSupplier<Tab> tabSupplier,
             MenuButtonCoordinator menuButtonCoordinator,
             HubShowPaneHelper hubShowPaneHelper,
@@ -91,6 +96,7 @@ public class HubManagerImpl implements HubManager, HubController {
         mBackPressManager = backPressManager;
         mMenuOrKeyboardActionController = menuOrKeyboardActionController;
         mSnackbarManager = snackbarManager;
+        mBottomBarHostManager = bottomBarHostManager;
         mTabSupplier = tabSupplier;
         mMenuButtonCoordinator = menuButtonCoordinator;
         mHubShowPaneHelper = hubShowPaneHelper;
@@ -200,10 +206,19 @@ public class HubManagerImpl implements HubManager, HubController {
     public void onHubLayoutShow() {
         mHubVisibilitySupplier.set(true);
         ensureHubCoordinatorIsInitialized();
+
+        if (mBottomBarHostManager != null && BottomBarConfigUtils.shouldShowOnGts()) {
+            mBottomBarHostManager.takeOwnership(
+                    BottomBarHostManager.Host.HUB, mHubCoordinator::attachBottomBarView);
+        }
     }
 
     @Override
     public void onHubLayoutDoneHiding() {
+        if (mBottomBarHostManager != null && BottomBarConfigUtils.shouldShowOnGts()) {
+            mBottomBarHostManager.resetOwnership();
+        }
+
         // TODO(crbug.com/40283238): Consider deferring this destruction till after a timeout.
         mHubContainerView.removeAllViews();
         mHubVisibilitySupplier.set(false);
@@ -230,6 +245,7 @@ public class HubManagerImpl implements HubManager, HubController {
         return mHubColorMixer;
     }
 
+    @EnsuresNonNull("mHubCoordinator")
     private void ensureHubCoordinatorIsInitialized() {
         if (mHubCoordinator != null) return;
 

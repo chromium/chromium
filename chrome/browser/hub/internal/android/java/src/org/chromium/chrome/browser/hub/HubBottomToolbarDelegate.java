@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.hub;
 
 import android.content.Context;
+import android.view.View;
 import android.view.ViewGroup;
 
 import org.chromium.base.supplier.NonNullObservableSupplier;
@@ -58,4 +59,7 @@ public interface HubBottomToolbarDelegate {
 
     /** Cleans up resources and unregisters any observers or callbacks. */
     void destroy();
+
+    /** Attaches the provided bottom bar view to the container. */
+    void attachBottomBarView(View view);
 }
