@@ -171,7 +171,7 @@ cargo_crate("{{../name}}") {
   output_dir = "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
   cpp_api_from_rust = {
     target_name = "{{../name}}_bindings"
-    cpp_namespace = "rs_{{../name}}"
+    cpp_namespace = "rs::{{../name}}"
     deps = []
     {{#each deps}}
       {{#if @first}}

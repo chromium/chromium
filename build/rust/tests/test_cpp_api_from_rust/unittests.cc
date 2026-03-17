@@ -29,6 +29,6 @@ TEST(RustCcBindingsFromRs, TransitiveDep) {
 }
 
 TEST(RustCcBindingsFromRs, TransitiveOnStandardLibrary) {
-  auto duration = rust_lib::create_duration_from_seconds(7);
+  rs::core::time::Duration duration = rust_lib::create_duration_from_seconds(7);
   EXPECT_EQ(7u, duration.as_secs());
 }

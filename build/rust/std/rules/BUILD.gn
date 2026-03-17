@@ -82,7 +82,7 @@ cargo_crate("addr2line") {
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
   cpp_api_from_rust = {
     target_name = "addr2line_bindings"
-    cpp_namespace = "rs_addr2line"
+    cpp_namespace = "rs::addr2line"
     deps = []
     deps += []
     if (!is_win) {
@@ -151,7 +151,7 @@ cargo_crate("adler2") {
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
   cpp_api_from_rust = {
     target_name = "adler2_bindings"
-    cpp_namespace = "rs_adler2"
+    cpp_namespace = "rs::adler2"
     deps = []
     deps += []
     if (!is_win) {
@@ -279,7 +279,7 @@ cargo_crate("alloc") {
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
   cpp_api_from_rust = {
     target_name = "alloc_bindings"
-    cpp_namespace = "rs_alloc"
+    cpp_namespace = "rs::alloc"
     deps = []
     deps += [
       ":compiler_builtins_bindings",
@@ -337,7 +337,7 @@ cargo_crate("cfg_if") {
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
   cpp_api_from_rust = {
     target_name = "cfg_if_bindings"
-    cpp_namespace = "rs_cfg_if"
+    cpp_namespace = "rs::cfg_if"
     deps = []
     deps += [ ":rustc_std_workspace_core_bindings" ]
   }
@@ -592,7 +592,7 @@ cargo_crate("compiler_builtins") {
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
   cpp_api_from_rust = {
     target_name = "compiler_builtins_bindings"
-    cpp_namespace = "rs_compiler_builtins"
+    cpp_namespace = "rs::compiler_builtins"
     deps = []
     deps += [ ":core_bindings" ]
   }
@@ -1146,7 +1146,7 @@ cargo_crate("core") {
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
   cpp_api_from_rust = {
     target_name = "core_bindings"
-    cpp_namespace = "rs_core"
+    cpp_namespace = "rs::core"
     deps = []
   }
 }
@@ -1206,7 +1206,7 @@ cargo_crate("getopts") {
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
   cpp_api_from_rust = {
     target_name = "getopts_bindings"
-    cpp_namespace = "rs_getopts"
+    cpp_namespace = "rs::getopts"
     deps = []
     deps += [
       ":rustc_std_workspace_core_bindings",
@@ -1318,7 +1318,7 @@ cargo_crate("gimli") {
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
   cpp_api_from_rust = {
     target_name = "gimli_bindings"
-    cpp_namespace = "rs_gimli"
+    cpp_namespace = "rs::gimli"
     deps = []
     deps += []
     if (!is_win) {
@@ -1413,7 +1413,7 @@ cargo_crate("hashbrown") {
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
   cpp_api_from_rust = {
     target_name = "hashbrown_bindings"
-    cpp_namespace = "rs_hashbrown"
+    cpp_namespace = "rs::hashbrown"
     deps = []
     deps += [
       ":rustc_std_workspace_alloc_bindings",
@@ -1784,7 +1784,7 @@ cargo_crate("libc") {
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
   cpp_api_from_rust = {
     target_name = "libc_bindings"
-    cpp_namespace = "rs_libc"
+    cpp_namespace = "rs::libc"
     deps = []
     deps += []
     if (!is_win) {
@@ -1891,7 +1891,7 @@ cargo_crate("memchr") {
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
   cpp_api_from_rust = {
     target_name = "memchr_bindings"
-    cpp_namespace = "rs_memchr"
+    cpp_namespace = "rs::memchr"
     deps = []
     deps += []
     if (!is_win) {
@@ -1974,7 +1974,7 @@ cargo_crate("miniz_oxide") {
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
   cpp_api_from_rust = {
     target_name = "miniz_oxide_bindings"
-    cpp_namespace = "rs_miniz_oxide"
+    cpp_namespace = "rs::miniz_oxide"
     deps = []
     deps += []
     if (!is_win) {
@@ -2136,7 +2136,7 @@ cargo_crate("object") {
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
   cpp_api_from_rust = {
     target_name = "object_bindings"
-    cpp_namespace = "rs_object"
+    cpp_namespace = "rs::object"
     deps = []
     deps += []
     if (!is_win) {
@@ -2203,7 +2203,7 @@ cargo_crate("panic_abort") {
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
   cpp_api_from_rust = {
     target_name = "panic_abort_bindings"
-    cpp_namespace = "rs_panic_abort"
+    cpp_namespace = "rs::panic_abort"
     deps = []
     deps += [ ":rustc_std_workspace_core_bindings" ]
     if (is_android) {
@@ -2277,7 +2277,7 @@ cargo_crate("proc_macro") {
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
   cpp_api_from_rust = {
     target_name = "proc_macro_bindings"
-    cpp_namespace = "rs_proc_macro"
+    cpp_namespace = "rs::proc_macro"
     deps = []
     deps += [
       ":core_bindings",
@@ -2323,7 +2323,7 @@ cargo_crate("profiler_builtins") {
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
   cpp_api_from_rust = {
     target_name = "profiler_builtins_bindings"
-    cpp_namespace = "rs_profiler_builtins"
+    cpp_namespace = "rs::profiler_builtins"
     deps = []
   }
 }
@@ -2381,7 +2381,7 @@ cargo_crate("rustc_demangle") {
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
   cpp_api_from_rust = {
     target_name = "rustc_demangle_bindings"
-    cpp_namespace = "rs_rustc_demangle"
+    cpp_namespace = "rs::rustc_demangle"
     deps = []
     deps += [ ":rustc_std_workspace_core_bindings" ]
   }
@@ -2432,7 +2432,7 @@ cargo_crate("rustc_literal_escaper") {
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
   cpp_api_from_rust = {
     target_name = "rustc_literal_escaper_bindings"
-    cpp_namespace = "rs_rustc_literal_escaper"
+    cpp_namespace = "rs::rustc_literal_escaper"
     deps = []
     deps += [ ":rustc_std_workspace_core_bindings" ]
   }
@@ -2478,7 +2478,7 @@ cargo_crate("rustc_std_workspace_alloc") {
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
   cpp_api_from_rust = {
     target_name = "rustc_std_workspace_alloc_bindings"
-    cpp_namespace = "rs_rustc_std_workspace_alloc"
+    cpp_namespace = "rs::rustc_std_workspace_alloc"
     deps = []
     deps += [ ":alloc_bindings" ]
   }
@@ -2525,7 +2525,7 @@ cargo_crate("rustc_std_workspace_core") {
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
   cpp_api_from_rust = {
     target_name = "rustc_std_workspace_core_bindings"
-    cpp_namespace = "rs_rustc_std_workspace_core"
+    cpp_namespace = "rs::rustc_std_workspace_core"
     deps = []
     deps += [
       ":compiler_builtins_bindings",
@@ -2574,7 +2574,7 @@ cargo_crate("rustc_std_workspace_std") {
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
   cpp_api_from_rust = {
     target_name = "rustc_std_workspace_std_bindings"
-    cpp_namespace = "rs_rustc_std_workspace_std"
+    cpp_namespace = "rs::rustc_std_workspace_std"
     deps = []
     deps += [ ":std_bindings" ]
   }
@@ -3391,7 +3391,7 @@ cargo_crate("std") {
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
   cpp_api_from_rust = {
     target_name = "std_bindings"
-    cpp_namespace = "rs_std"
+    cpp_namespace = "rs::std"
     deps = []
     deps += [
       ":alloc_bindings",
@@ -3511,7 +3511,7 @@ cargo_crate("std_detect") {
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
   cpp_api_from_rust = {
     target_name = "std_detect_bindings"
-    cpp_namespace = "rs_std_detect"
+    cpp_namespace = "rs::std_detect"
     deps = []
     deps += [
       ":rustc_std_workspace_alloc_bindings",
@@ -3569,7 +3569,7 @@ cargo_crate("sysroot") {
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
   cpp_api_from_rust = {
     target_name = "sysroot_bindings"
-    cpp_namespace = "rs_sysroot"
+    cpp_namespace = "rs::sysroot"
     deps = []
     deps += [
       ":proc_macro_bindings",
@@ -3660,7 +3660,7 @@ cargo_crate("test") {
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
   cpp_api_from_rust = {
     target_name = "test_bindings"
-    cpp_namespace = "rs_test"
+    cpp_namespace = "rs::test"
     deps = []
     deps += [
       ":core_bindings",
@@ -3725,7 +3725,7 @@ cargo_crate("unwind") {
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
   cpp_api_from_rust = {
     target_name = "unwind_bindings"
-    cpp_namespace = "rs_unwind"
+    cpp_namespace = "rs::unwind"
     deps = []
     deps += [ ":rustc_std_workspace_core_bindings" ]
     if (!is_win) {
@@ -3774,7 +3774,7 @@ cargo_crate("windows_link") {
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
   cpp_api_from_rust = {
     target_name = "windows_link_bindings"
-    cpp_namespace = "rs_windows_link"
+    cpp_namespace = "rs::windows_link"
     deps = []
   }
 }
