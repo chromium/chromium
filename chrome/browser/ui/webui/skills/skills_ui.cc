@@ -34,8 +34,8 @@ SkillsUI::SkillsUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
       profile, chrome::kChromeUISkillsHost);
   webui::SetupWebUIDataSource(source, kSkillsResources, IDR_SKILLS_SKILLS_HTML);
   source->AddResourcePath("dialog", IDR_SKILLS_SKILLS_DIALOG_HTML);
-  bool isGlicEnabled = glic::GlicEnabling::IsEnabledForProfile(profile);
-  source->AddBoolean("isGlicEnabled", isGlicEnabled);
+  source->AddBoolean("isGlicEnabled",
+                     glic::GlicEnabling::IsReadyForProfile(profile));
   source->AddInteger("MAX_NAME_CHAR_COUNT", kMaxNameCharCount);
   source->AddInteger("MAX_PROMPT_CHAR_COUNT", kMaxPromptCharCount);
   static constexpr webui::LocalizedString kStrings[] = {
