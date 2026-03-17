@@ -239,6 +239,7 @@ static_library("ui") {
     "//chrome/browser:primitives",
     "//chrome/browser/feedback",
     "//chrome/browser/headless",
+    "//chrome/browser/loader",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/memory",
     "//chrome/browser/search",

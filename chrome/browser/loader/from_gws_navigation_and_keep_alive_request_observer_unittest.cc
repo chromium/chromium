@@ -98,7 +98,7 @@ class FromGWSNavigationAndKeepAliveRequestObserverTestBase
   }
 
   void enable_feature() {
-    static const FeaturesType enabled_features = {
+    const FeaturesType enabled_features = {
         {page_load_metrics::features::kBeaconLeakageLogging,
          {{"category_prefix", kRequestCategoryPrefix}}}};
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features, {});

@@ -449,7 +449,10 @@ if (!is_android) {
   }
 
   source_set("impl") {
-    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+    public_deps = [
+      "//chrome/browser:browser_public_dependencies",
+      "//chrome/browser/loader",
+    ]
 
     sources = [
       "contents_observing_tab_feature.cc",

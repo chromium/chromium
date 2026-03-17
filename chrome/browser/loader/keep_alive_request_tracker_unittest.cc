@@ -59,7 +59,7 @@ class ChromeKeepAliveRequestTrackerTestBase : public testing::Test {
   using FeaturesType = std::vector<base::test::FeatureRefAndParams>;
 
   ChromeKeepAliveRequestTrackerTestBase() {
-    static const FeaturesType enabled_features = {
+    const FeaturesType enabled_features = {
         {page_load_metrics::features::kBeaconLeakageLogging,
          {{"category_prefix", kRequestCategoryPrefix}}}};
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
@@ -105,14 +105,14 @@ class ChromeKeepAliveRequestTrackerTestBase : public testing::Test {
 
 // A type to support parameterized testing for the category of the request.
 struct CategoryTestCase {
-  std::string test_case;
-  std::string category;
+  const char* test_case;
+  const char* category;
   bool expected;
 };
 
 // A type to support parameterized testing for the request type of the request.
 struct RequestTypeTestCase {
-  std::string test_case;
+  const char* test_case;
   RequestType request_type;
 };
 
@@ -148,12 +148,12 @@ INSTANTIATE_TEST_SUITE_P(
                      testing::ValuesIn(kRequestTypeTestCases)),
     [](const testing::TestParamInfo<
         std::tuple<CategoryTestCase, RequestTypeTestCase>>& info) {
-      return std::get<0>(info.param).test_case + "_" +
+      return std::string(std::get<0>(info.param).test_case) + "_" +
              std::get<1>(info.param).test_case;
     });
 
 TEST_P(MaybeCreateKeepAliveRequestTrackerForCategoryTest, WithCategory) {
-  auto url_category = std::get<0>(GetParam()).category;
+  const char* url_category = std::get<0>(GetParam()).category;
   auto request = CreateRequest(GetUrlWithCategory(url_category));
 
   auto tracker = CreateTracker(request);
@@ -208,7 +208,7 @@ INSTANTIATE_TEST_SUITE_P(
     ChromeKeepAliveRequestTrackerTest,
     testing::ValuesIn(kRequestTypeTestCases),
     [](const testing::TestParamInfo<RequestTypeTestCase>& info) {
-      return info.param.test_case;
+      return std::string(info.param.test_case);
     });
 
 TEST_P(ChromeKeepAliveRequestTrackerTest, NotLogForNonValidCategoryRequest) {
