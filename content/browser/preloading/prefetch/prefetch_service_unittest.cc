@@ -14,7 +14,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -1290,10 +1289,10 @@ TEST_P(PrefetchServiceTest, SuccessCase) {
       "PrefetchProxy.AfterClick.RedirectChainSize", 1, 1);
 
   histogram_tester.ExpectUniqueSample(
-      base::StringPrintf(
-          "Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate.%s",
-          GetMetricsSuffixTriggerTypeAndEagerness(
-              prefetch_type, /*embedder_histogram_suffix=*/std::nullopt)),
+      base::StrCat(
+          {"Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate.",
+           GetMetricsSuffixTriggerTypeAndEagerness(
+               prefetch_type, /*embedder_histogram_suffix=*/std::nullopt)}),
       false, 1);
 
   histogram_tester.ExpectUniqueSample(
@@ -1368,12 +1367,12 @@ TEST_P(PrefetchServiceTest, SuccessCase_Browser) {
             GURL("https://example.com/?b=1"));
 
   histogram_tester.ExpectUniqueSample(
-      base::StringPrintf(
-          "Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate.%s",
-          GetMetricsSuffixTriggerTypeAndEagerness(
-              PrefetchType(PreloadingTriggerType::kEmbedder,
-                           /*use_prefetch_proxy=*/false),
-              test::kPreloadingEmbedderHistgramSuffixForTesting)),
+      base::StrCat(
+          {"Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate.",
+           GetMetricsSuffixTriggerTypeAndEagerness(
+               PrefetchType(PreloadingTriggerType::kEmbedder,
+                            /*use_prefetch_proxy=*/false),
+               test::kPreloadingEmbedderHistgramSuffixForTesting)}),
       false, 1);
 
   histogram_tester.ExpectUniqueSample(
@@ -1700,11 +1699,11 @@ TEST_P(PrefetchServiceTest, SuccessCase_Embedder) {
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.AfterClick.RedirectChainSize", 1, 1);
   histogram_tester.ExpectUniqueSample(
-      base::StringPrintf(
-          "Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate.%s",
-          GetMetricsSuffixTriggerTypeAndEagerness(
-              prefetch_type,
-              test::kPreloadingEmbedderHistgramSuffixForTesting)),
+      base::StrCat(
+          {"Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate.",
+           GetMetricsSuffixTriggerTypeAndEagerness(
+               prefetch_type,
+               test::kPreloadingEmbedderHistgramSuffixForTesting)}),
       false, 1);
 
   histogram_tester.ExpectUniqueSample(
@@ -3901,19 +3900,19 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
   std::string histogram_suffix =
       GetMetricsSuffixTriggerTypeAndEagerness(prefetch_type, std::nullopt);
   histogram_tester.ExpectUniqueTimeSample(
-      base::StringPrintf(
-          "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Served.%s",
-          histogram_suffix),
+      base::StrCat(
+          {"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Served.",
+           histogram_suffix}),
       base::Milliseconds(500), 1);
   histogram_tester.ExpectTotalCount(
-      base::StringPrintf(
-          "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NotServed.%s",
-          histogram_suffix),
+      base::StrCat(
+          {"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NotServed.",
+           histogram_suffix}),
       0);
   histogram_tester.ExpectUniqueSample(
-      base::StringPrintf(
-          "Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate.%s",
-          histogram_suffix),
+      base::StrCat(
+          {"Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate.",
+           histogram_suffix}),
       true, 1);
 }
 
@@ -3978,24 +3977,24 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
   std::string histogram_suffix =
       GetMetricsSuffixTriggerTypeAndEagerness(prefetch_type, std::nullopt);
   histogram_tester.ExpectUniqueTimeSample(
-      base::StringPrintf(
-          "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Served.%s",
-          histogram_suffix),
+      base::StrCat(
+          {"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Served.",
+           histogram_suffix}),
       base::Milliseconds(600), 1);
   histogram_tester.ExpectTotalCount(
-      base::StringPrintf(
-          "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NotServed.%s",
-          histogram_suffix),
+      base::StrCat(
+          {"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NotServed.",
+           histogram_suffix}),
       0);
   histogram_tester.ExpectTotalCount(
-      base::StringPrintf(
-          "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NotServed.%s",
-          histogram_suffix),
+      base::StrCat(
+          {"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NotServed.",
+           histogram_suffix}),
       0);
   histogram_tester.ExpectUniqueSample(
-      base::StringPrintf(
-          "Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate.%s",
-          histogram_suffix),
+      base::StrCat(
+          {"Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate.",
+           histogram_suffix}),
       true, 1);
 
   histogram_tester.ExpectUniqueSample(
@@ -4065,19 +4064,19 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
   std::string histogram_suffix =
       GetMetricsSuffixTriggerTypeAndEagerness(prefetch_type, std::nullopt);
   histogram_tester.ExpectTotalCount(
-      base::StringPrintf(
-          "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Served.%s",
-          histogram_suffix),
+      base::StrCat(
+          {"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Served.",
+           histogram_suffix}),
       0);
   histogram_tester.ExpectUniqueTimeSample(
-      base::StringPrintf(
-          "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NotServed.%s",
-          histogram_suffix),
+      base::StrCat(
+          {"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NotServed.",
+           histogram_suffix}),
       base::Milliseconds(700), 1);
   histogram_tester.ExpectUniqueSample(
-      base::StringPrintf(
-          "Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate.%s",
-          histogram_suffix),
+      base::StrCat(
+          {"Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate.",
+           histogram_suffix}),
       true, 1);
 
   histogram_tester.ExpectUniqueSample(
@@ -4151,19 +4150,19 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
   std::string histogram_suffix =
       GetMetricsSuffixTriggerTypeAndEagerness(prefetch_type, std::nullopt);
   histogram_tester.ExpectTotalCount(
-      base::StringPrintf(
-          "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Served.%s",
-          histogram_suffix),
+      base::StrCat(
+          {"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Served.",
+           histogram_suffix}),
       0);
   histogram_tester.ExpectUniqueTimeSample(
-      base::StringPrintf(
-          "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NotServed.%s",
-          histogram_suffix),
+      base::StrCat(
+          {"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NotServed.",
+           histogram_suffix}),
       base::Milliseconds(kAddedToURLRequestStartLatency + kHeaderLatency), 1);
   histogram_tester.ExpectUniqueSample(
-      base::StringPrintf(
-          "Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate.%s",
-          histogram_suffix),
+      base::StrCat(
+          {"Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate.",
+           histogram_suffix}),
       true, 1);
 
   histogram_tester.ExpectUniqueSample(
@@ -4246,19 +4245,19 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
   std::string histogram_suffix =
       GetMetricsSuffixTriggerTypeAndEagerness(prefetch_type, std::nullopt);
   histogram_tester.ExpectTotalCount(
-      base::StringPrintf(
-          "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Served.%s",
-          histogram_suffix),
+      base::StrCat(
+          {"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Served.",
+           histogram_suffix}),
       0);
   histogram_tester.ExpectUniqueTimeSample(
-      base::StringPrintf(
-          "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NotServed.%s",
-          histogram_suffix),
+      base::StrCat(
+          {"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NotServed.",
+           histogram_suffix}),
       base::Milliseconds(800), 1);
   histogram_tester.ExpectUniqueSample(
-      base::StringPrintf(
-          "Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate.%s",
-          histogram_suffix),
+      base::StrCat(
+          {"Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate.",
+           histogram_suffix}),
       true, 1);
 
   histogram_tester.ExpectUniqueSample(
@@ -4311,19 +4310,19 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
       prefetch_type, /*should_disable_block_until_head_timeout=*/false,
       /*is_nav_prerender=*/false);
   histogram_tester.ExpectTotalCount(
-      base::StringPrintf(
-          "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Served.%s",
-          histogram_suffix),
+      base::StrCat(
+          {"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Served.",
+           histogram_suffix}),
       0);
   histogram_tester.ExpectUniqueTimeSample(
-      base::StringPrintf(
-          "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NotServed.%s",
-          histogram_suffix),
+      base::StrCat(
+          {"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NotServed.",
+           histogram_suffix}),
       block_until_head_timeout, 1);
   histogram_tester.ExpectUniqueSample(
-      base::StringPrintf(
-          "Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate.%s",
-          histogram_suffix),
+      base::StrCat(
+          {"Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate.",
+           histogram_suffix}),
       true, 1);
 
   histogram_tester.ExpectUniqueSample(
@@ -4391,19 +4390,19 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
   std::string histogram_suffix =
       GetMetricsSuffixTriggerTypeAndEagerness(prefetch_type, std::nullopt);
   histogram_tester.ExpectTotalCount(
-      base::StringPrintf(
-          "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Served.%s",
-          histogram_suffix),
+      base::StrCat(
+          {"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Served.",
+           histogram_suffix}),
       0);
   histogram_tester.ExpectUniqueTimeSample(
-      base::StringPrintf(
-          "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NotServed.%s",
-          histogram_suffix),
+      base::StrCat(
+          {"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NotServed.",
+           histogram_suffix}),
       base::Milliseconds(kBlockUntilHeadTimeout), 2);
   histogram_tester.ExpectUniqueSample(
-      base::StringPrintf(
-          "Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate.%s",
-          histogram_suffix),
+      base::StrCat(
+          {"Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate.",
+           histogram_suffix}),
       true, 2);
 
   // The third navigation is started after the PrefetchContainer became not
@@ -4419,19 +4418,19 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
   // PrefetchContainer was not servable when the third navigation starts and
   // thus shouldn't be considered as a candidate in the first place.
   histogram_tester.ExpectTotalCount(
-      base::StringPrintf(
-          "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Served.%s",
-          histogram_suffix),
+      base::StrCat(
+          {"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Served.",
+           histogram_suffix}),
       0);
   histogram_tester.ExpectUniqueTimeSample(
-      base::StringPrintf(
-          "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NotServed.%s",
-          histogram_suffix),
+      base::StrCat(
+          {"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NotServed.",
+           histogram_suffix}),
       base::Milliseconds(kBlockUntilHeadTimeout), 2);
   histogram_tester.ExpectUniqueSample(
-      base::StringPrintf(
-          "Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate.%s",
-          histogram_suffix),
+      base::StrCat(
+          {"Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate.",
+           histogram_suffix}),
       true, 2);
 }
 
@@ -4479,19 +4478,19 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
   std::string histogram_suffix =
       GetMetricsSuffixTriggerTypeAndEagerness(prefetch_type, std::nullopt);
   histogram_tester.ExpectTotalCount(
-      base::StringPrintf(
-          "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Served.%s",
-          histogram_suffix),
+      base::StrCat(
+          {"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Served.",
+           histogram_suffix}),
       0);
   histogram_tester.ExpectUniqueTimeSample(
-      base::StringPrintf(
-          "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NotServed.%s",
-          histogram_suffix),
+      base::StrCat(
+          {"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NotServed.",
+           histogram_suffix}),
       base::Milliseconds(300), 1);
   histogram_tester.ExpectUniqueSample(
-      base::StringPrintf(
-          "Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate.%s",
-          histogram_suffix),
+      base::StrCat(
+          {"Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate.",
+           histogram_suffix}),
       true, 1);
 
   histogram_tester.ExpectUniqueSample(
@@ -4610,19 +4609,19 @@ TEST_P(
   std::string histogram_suffix =
       GetMetricsSuffixTriggerTypeAndEagerness(prefetch_type, std::nullopt);
   histogram_tester.ExpectUniqueTimeSample(
-      base::StringPrintf(
-          "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Served.%s",
-          histogram_suffix),
+      base::StrCat(
+          {"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Served.",
+           histogram_suffix}),
       base::Milliseconds(kAddedToURLRequestStartLatency + kHeaderLatency), 1);
   histogram_tester.ExpectTotalCount(
-      base::StringPrintf(
-          "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NotServed.%s",
-          histogram_suffix),
+      base::StrCat(
+          {"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NotServed.",
+           histogram_suffix}),
       0);
   histogram_tester.ExpectUniqueSample(
-      base::StringPrintf(
-          "Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate.%s",
-          histogram_suffix),
+      base::StrCat(
+          {"Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate.",
+           histogram_suffix}),
       true, 1);
 }
 
@@ -4902,19 +4901,19 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
   std::string histogram_suffix =
       GetMetricsSuffixTriggerTypeAndEagerness(prefetch_type, std::nullopt);
   histogram_tester.ExpectTotalCount(
-      base::StringPrintf(
-          "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Served.%s",
-          histogram_suffix),
+      base::StrCat(
+          {"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Served.",
+           histogram_suffix}),
       0);
   histogram_tester.ExpectUniqueTimeSample(
-      base::StringPrintf(
-          "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NotServed.%s",
-          histogram_suffix),
+      base::StrCat(
+          {"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NotServed.",
+           histogram_suffix}),
       base::Milliseconds(0), 1);
   histogram_tester.ExpectUniqueSample(
-      base::StringPrintf(
-          "Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate.%s",
-          histogram_suffix),
+      base::StrCat(
+          {"Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate.",
+           histogram_suffix}),
       true, 1);
 }
 
@@ -4965,19 +4964,19 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
   std::string histogram_suffix =
       GetMetricsSuffixTriggerTypeAndEagerness(prefetch_type, std::nullopt);
   histogram_tester.ExpectTotalCount(
-      base::StringPrintf(
-          "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Served.%s",
-          histogram_suffix),
+      base::StrCat(
+          {"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Served.",
+           histogram_suffix}),
       0);
   histogram_tester.ExpectUniqueTimeSample(
-      base::StringPrintf(
-          "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NotServed.%s",
-          histogram_suffix),
+      base::StrCat(
+          {"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NotServed.",
+           histogram_suffix}),
       base::Milliseconds(1000), 1);
   histogram_tester.ExpectUniqueSample(
-      base::StringPrintf(
-          "Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate.%s",
-          histogram_suffix),
+      base::StrCat(
+          {"Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate.",
+           histogram_suffix}),
       true, 1);
 
   histogram_tester.ExpectUniqueSample(
@@ -5034,19 +5033,19 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
   std::string histogram_suffix =
       GetMetricsSuffixTriggerTypeAndEagerness(prefetch_type, std::nullopt);
   histogram_tester.ExpectTotalCount(
-      base::StringPrintf(
-          "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Served.%s",
-          histogram_suffix),
+      base::StrCat(
+          {"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Served.",
+           histogram_suffix}),
       0);
   histogram_tester.ExpectUniqueTimeSample(
-      base::StringPrintf(
-          "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NotServed.%s",
-          histogram_suffix),
+      base::StrCat(
+          {"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NotServed.",
+           histogram_suffix}),
       base::Milliseconds(1000), 1);
   histogram_tester.ExpectUniqueSample(
-      base::StringPrintf(
-          "Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate.%s",
-          histogram_suffix),
+      base::StrCat(
+          {"Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate.",
+           histogram_suffix}),
       true, 1);
 
   histogram_tester.ExpectUniqueSample(
@@ -5111,19 +5110,19 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
   std::string histogram_suffix =
       GetMetricsSuffixTriggerTypeAndEagerness(prefetch_type, std::nullopt);
   histogram_tester.ExpectTotalCount(
-      base::StringPrintf(
-          "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Served.%s",
-          histogram_suffix),
+      base::StrCat(
+          {"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Served.",
+           histogram_suffix}),
       0);
   histogram_tester.ExpectUniqueTimeSample(
-      base::StringPrintf(
-          "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NotServed.%s",
-          histogram_suffix),
+      base::StrCat(
+          {"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NotServed.",
+           histogram_suffix}),
       base::Milliseconds(1000), 2);
   histogram_tester.ExpectUniqueSample(
-      base::StringPrintf(
-          "Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate.%s",
-          histogram_suffix),
+      base::StrCat(
+          {"Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate.",
+           histogram_suffix}),
       true, 2);
 }
 
@@ -5200,19 +5199,19 @@ TEST_P(PrefetchServiceDisableBlockUntilHeadTimeoutTest,
                    /*use_prefetch_proxy=*/false),
       test::kPreloadingEmbedderHistgramSuffixForTesting);
   histogram_tester.ExpectUniqueSample(
-      base::StringPrintf(
-          "Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate.%s",
-          metrics_suffix),
+      base::StrCat(
+          {"Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate.",
+           metrics_suffix}),
       true, 1);
   histogram_tester.ExpectUniqueTimeSample(
-      base::StringPrintf(
-          "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NotServed.%s",
-          metrics_suffix),
+      base::StrCat(
+          {"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NotServed.",
+           metrics_suffix}),
       base::Milliseconds(kBlockUntilHeadTimeout), 1);
   histogram_tester.ExpectTotalCount(
-      base::StringPrintf(
-          "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Served.%s",
-          metrics_suffix),
+      base::StrCat(
+          {"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Served.",
+           metrics_suffix}),
       0);
 }
 
@@ -5260,19 +5259,19 @@ TEST_P(PrefetchServiceDisableBlockUntilHeadTimeoutTest,
                    /*use_prefetch_proxy=*/false),
       test::kPreloadingEmbedderHistgramSuffixForTesting);
   histogram_tester.ExpectUniqueSample(
-      base::StringPrintf(
-          "Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate.%s",
-          metrics_suffix),
+      base::StrCat(
+          {"Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate.",
+           metrics_suffix}),
       true, 1);
   histogram_tester.ExpectUniqueTimeSample(
-      base::StringPrintf(
-          "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Served.%s",
-          metrics_suffix),
+      base::StrCat(
+          {"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Served.",
+           metrics_suffix}),
       base::Milliseconds(kBlockUntilHeadTimeout), 1);
   histogram_tester.ExpectTotalCount(
-      base::StringPrintf(
-          "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NotServed.%s",
-          metrics_suffix),
+      base::StrCat(
+          {"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NotServed.",
+           metrics_suffix}),
       0);
 }
 
