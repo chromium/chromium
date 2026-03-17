@@ -16,9 +16,9 @@ AndroidBnplStrategy::GetNextActionOnSuggestionShown() {
       kSkipNotifyingUpdateCallbackOfSuggestionsShownResponse;
 }
 
-BnplStrategy::BnplSuggestionAcceptedNextAction
-AndroidBnplStrategy::GetNextActionOnBnplSuggestionAcceptance() {
-  return BnplSuggestionAcceptedNextAction::
+BnplStrategy::UserDecisionToUseBnplNextAction
+AndroidBnplStrategy::GetNextActionOnUserDecisionToUseBnpl() {
+  return UserDecisionToUseBnplNextAction::
       kCheckAmountExtractionBeforeContinuingFlowForAndroid;
 }
 

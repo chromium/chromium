@@ -278,6 +278,11 @@ class BnplManager {
   void OnBnplPaymentInstrumentUpdated(
       PaymentsAutofillClient::PaymentsRpcResult result);
 
+  // Updates the existing suggestions list based on the amount extraction
+  // response.
+  void UpdateSuggestionsOnAiAmountExtractionResponse(
+      const std::vector<payments::BnplIssuerContext>& issuer_contexts);
+
 #if BUILDFLAG(IS_ANDROID)
   // Callback triggered when Issuer selection is cancelled during Touch To Fill
   // flow.
@@ -313,6 +318,16 @@ class BnplManager {
   std::optional<base::RepeatingCallback<void(
       std::variant<SuggestionsShownResponse, std::optional<int64_t>>)>>
       update_suggestions_barrier_callback_;
+
+  // Trigger source for the current autofill suggestions. Set when the
+  // suggestions are generated, right before they are shown to the user. Reset
+  // when the flow is over.
+  std::optional<AutofillSuggestionTriggerSource>
+      autofill_suggestion_trigger_source_;
+
+  // Callback for updating the currently shown payments autofill suggestions.
+  // Set when suggestions are shown, and reset when a BNPL flow is finished.
+  UpdateSuggestionsCallback update_suggestions_callback_;
 
   base::WeakPtrFactory<BnplManager> weak_factory_{this};
 };

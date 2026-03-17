@@ -40,34 +40,6 @@ namespace {
 using SuggestionDataSource = SuggestionGenerator::SuggestionDataSource;
 using SuggestionData = SuggestionGenerator::SuggestionData;
 
-Suggestion CreateBnplSuggestion(
-    const payments::BnplIssuerContext& issuer_context,
-    const std::string& app_locale,
-    const bool is_card_number_field_empty) {
-  const bool is_linked = issuer_context.issuer.payment_instrument().has_value();
-
-  Suggestion bnpl_suggestion(SuggestionType::kBnplEntry);
-  bnpl_suggestion.main_text =
-      Suggestion::Text(issuer_context.issuer.GetDisplayName(),
-                       Suggestion::Text::IsPrimary(true));
-  if (is_card_number_field_empty) {
-    bnpl_suggestion.labels = {
-        {Suggestion::Text(payments::GetBnplIssuerSelectionOptionText(
-            issuer_context.issuer.issuer_id(), app_locale,
-            base::span_from_ref(issuer_context)))}};
-  } else {
-    bnpl_suggestion.labels = {{Suggestion::Text(l10n_util::GetStringUTF16(
-        IDS_AUTOFILL_CARD_BNPL_PAY_LATER_CLEAR_FORM_TO_ENABLE))}};
-    bnpl_suggestion.acceptability =
-        Suggestion::Acceptability::kUnacceptableWithDeactivatedStyle;
-  }
-  bnpl_suggestion.icon = payments::GetBnplSuggestionIcon(
-      issuer_context.issuer.issuer_id(), is_linked);
-  bnpl_suggestion.payload = Suggestion::BnplIssuer(issuer_context.issuer);
-
-  return bnpl_suggestion;
-}
-
 bool IsSaveAndFillEnabled() {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
@@ -227,12 +199,10 @@ std::vector<Suggestion> GenerateCreditCardOrCvcFieldSuggestionsSync(
           payments_data_manager.GetBnplIssuers().size();
       suggestions.push_back(std::move(loading_suggestion));
     } else {
-      for (const payments::BnplIssuerContext& context :
-           payments::GetSortedBnplIssuerContext(
-               client, /*checkout_amount=*/std::nullopt)) {
-        suggestions.push_back(CreateBnplSuggestion(
-            context, client.GetAppLocale(), is_card_number_field_empty));
-      }
+      suggestions.append_range(GetSuggestionsForBnpl(
+          payments::GetSortedBnplIssuerContext(
+              client, /*checkout_amount=*/std::nullopt),
+          client.GetAppLocale(), is_card_number_field_empty));
     }
   }
 
@@ -393,6 +363,42 @@ std::vector<Suggestion> GetSuggestionsForCreditCards(
       std::move(on_suggestion_data_returned));
 
   return suggestions;
+}
+
+std::vector<Suggestion> GetSuggestionsForBnpl(
+    std::vector<payments::BnplIssuerContext> issuer_contexts,
+    const std::string& app_locale,
+    const bool is_card_number_field_empty) {
+  std::vector<Suggestion> bnpl_suggestions;
+  bnpl_suggestions.reserve(issuer_contexts.size());
+
+  for (payments::BnplIssuerContext& issuer_context : issuer_contexts) {
+    const bool is_linked =
+        issuer_context.issuer.payment_instrument().has_value();
+
+    Suggestion bnpl_suggestion(SuggestionType::kBnplEntry);
+    bnpl_suggestion.main_text =
+        Suggestion::Text(issuer_context.issuer.GetDisplayName(),
+                         Suggestion::Text::IsPrimary(true));
+    if (is_card_number_field_empty) {
+      bnpl_suggestion.labels = {
+          {Suggestion::Text(payments::GetBnplIssuerSelectionOptionText(
+              issuer_context.issuer.issuer_id(), app_locale,
+              base::span_from_ref(issuer_context)))}};
+    } else {
+      bnpl_suggestion.labels = {{Suggestion::Text(l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_CARD_BNPL_PAY_LATER_CLEAR_FORM_TO_ENABLE))}};
+      bnpl_suggestion.acceptability =
+          Suggestion::Acceptability::kUnacceptableWithDeactivatedStyle;
+    }
+    bnpl_suggestion.icon = payments::GetBnplSuggestionIcon(
+        issuer_context.issuer.issuer_id(), is_linked);
+    bnpl_suggestion.payload =
+        Suggestion::BnplIssuer(std::move(issuer_context.issuer));
+    bnpl_suggestions.emplace_back(bnpl_suggestion);
+  }
+
+  return bnpl_suggestions;
 }
 
 CreditCardSuggestionGenerator::CreditCardSuggestionGenerator(

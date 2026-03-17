@@ -48,6 +48,7 @@
 #include "components/autofill/core/browser/ui/payments/bnpl_tos_controller.h"
 #include "components/autofill/core/browser/ui/payments/bnpl_ui_delegate.h"
 #include "components/autofill/core/browser/ui/payments/select_bnpl_issuer_dialog_controller.h"
+#include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -240,7 +241,7 @@ class BnplManagerTest : public Test,
   const std::string kContextToken = "CONTEXT_TOKEN";
   const GURL kRedirectUrl = GURL("REDIRECT_URL");
   const GURL kPopupUrl = GURL("https://test.url/sometestpath/");
-  const std::string kAppLocale = "en-GB";
+  const std::string kAppLocale = "en-US";
   const std::u16string kLegalMessage = u"LEGAL_MESSAGE";
   const std::string kCurrency = "USD";
   const GURL kDomain = GURL("https://dummytest.com/somepathforurl");
@@ -2964,7 +2965,77 @@ TEST_F(BnplManagerTest,
   bnpl_manager_->OnAmountExtractionReturnedFromAi(
       base::unexpected(AiAmountExtractionResult::Error::kUnsupportedCurrency));
 }
-
 #endif  // !BUILDFLAG(IS_IOS)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+TEST_F(
+    BnplManagerTest,
+    OnAmountExtractionReturnedFromAi_IssuerNotSelectedYet_PayLaterTabsUpdatesSuggestions) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnablePayNowPayLaterTabs};
+
+  base::MockRepeatingCallback<void(std::vector<Suggestion>,
+                                   AutofillSuggestionTriggerSource)>
+      mock_update_suggestions_callback;
+  bnpl_manager_->NotifyOfSuggestionGeneration(
+      AutofillSuggestionTriggerSource::kFormControlElementClicked);
+  bnpl_manager_->OnSuggestionsShown(
+      {Suggestion(SuggestionType::kCreditCardEntry),
+       Suggestion(SuggestionType::kManageCreditCard)},
+      mock_update_suggestions_callback.Get());
+
+  EXPECT_CALL(GetBnplUiDelegate(), ShowSelectBnplIssuerUi).Times(0);
+  EXPECT_CALL(GetBnplUiDelegate(), ShowProgressUi).Times(0);
+  bnpl_manager_->OnUserDecisionToUseBnpl(
+      /*final_checkout_amount=*/std::nullopt,
+      /*on_bnpl_vcn_fetched_callback=*/base::DoNothing());
+
+  SetUpLinkedBnplIssuer(/*price_lower_bound_in_micros=*/40'000'000,
+                        /*price_higher_bound_in_micros=*/1'000'000'000,
+                        IssuerId::kBnplAffirm,
+                        /*instrument_id=*/1234);
+  SetUpUnlinkedBnplIssuer(/*price_lower_bound_in_micros=*/1'000'000'000,
+                          /*price_higher_bound_in_micros=*/2'000'000'000,
+                          IssuerId::kBnplZip);
+  SetUpLinkedBnplIssuer(/*price_lower_bound_in_micros=*/40'000'000,
+                        /*price_higher_bound_in_micros=*/1'000'000'000,
+                        IssuerId::kBnplKlarna,
+                        /*instrument_id=*/5678);
+
+  autofill_client().SetAutofillSuggestions(
+      {Suggestion(SuggestionType::kLoadingThrobber),
+       Suggestion(SuggestionType::kBnplFootnote)});
+
+  using BnplIssuerAlias = autofill::Suggestion::BnplIssuer;
+  EXPECT_CALL(
+      mock_update_suggestions_callback,
+      Run(UnorderedElementsAre(
+              AllOf(Field(&Suggestion::type, SuggestionType::kBnplEntry),
+                    Field(&Suggestion::payload,
+                          VariantWith<BnplIssuerAlias>(
+                              Property(&BnplIssuerAlias::value,
+                                       Property(&BnplIssuer::issuer_id,
+                                                Eq(IssuerId::kBnplAffirm)))))),
+              AllOf(Field(&Suggestion::type, SuggestionType::kBnplEntry),
+                    Field(&Suggestion::payload,
+                          VariantWith<BnplIssuerAlias>(
+                              Property(&BnplIssuerAlias::value,
+                                       Property(&BnplIssuer::issuer_id,
+                                                Eq(IssuerId::kBnplKlarna)))))),
+              AllOf(Field(&Suggestion::type, SuggestionType::kBnplEntry),
+                    Field(&Suggestion::payload,
+                          VariantWith<BnplIssuerAlias>(
+                              Property(&BnplIssuerAlias::value,
+                                       Property(&BnplIssuer::issuer_id,
+                                                Eq(IssuerId::kBnplZip)))))),
+              Field(&Suggestion::type, SuggestionType::kBnplFootnote)),
+          AutofillSuggestionTriggerSource::kFormControlElementClicked));
+
+  bnpl_manager_->OnAmountExtractionReturnedFromAi(
+      std::make_pair(1'000'000, "USD"));
+}
+#endif  // #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace autofill::payments

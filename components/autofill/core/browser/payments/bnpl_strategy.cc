@@ -15,8 +15,8 @@ BnplStrategy::GetNextActionOnSuggestionShown() {
   NOTREACHED();
 }
 
-BnplStrategy::BnplSuggestionAcceptedNextAction
-BnplStrategy::GetNextActionOnBnplSuggestionAcceptance() {
+BnplStrategy::UserDecisionToUseBnplNextAction
+BnplStrategy::GetNextActionOnUserDecisionToUseBnpl() {
   NOTREACHED();
 }
 

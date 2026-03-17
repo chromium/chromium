@@ -17,6 +17,7 @@ class BnplStrategy {
   // Defines the next step that the BnplManager should take after the user has
   // been shown a payment method autofill suggestion. The strategy
   // implementation determines which action to return based on the platform.
+  // TODO(crbug.com/477689220): Rename to SuggestionsShownNextAction.
   enum class SuggestionShownNextAction {
     // The flow should check if a BNPL suggestion is currently being shown.
     // If it isn't, then run the update suggestions barrier callback.
@@ -29,9 +30,9 @@ class BnplStrategy {
   };
 
   // Defines the next step that the BnplManager should take after the user has
-  // accepted a BNPL autofill suggestion. The strategy implementation determines
-  // which action to return based on the platform.
-  enum class BnplSuggestionAcceptedNextAction {
+  // decided to use BNPL. The strategy implementation determines which action to
+  // return based on the platform.
+  enum class UserDecisionToUseBnplNextAction {
     // The flow should show the Select BNPL Issuer UI.
     kShowSelectBnplIssuerUiForDesktop = 0,
 
@@ -40,7 +41,11 @@ class BnplStrategy {
     // screen. Otherwise, show the progress screen.
     kCheckAmountExtractionBeforeContinuingFlowForAndroid = 1,
 
-    kMaxValue = kCheckAmountExtractionBeforeContinuingFlowForAndroid,
+    // The flow logic will handle the next step, nothing needs to be done and
+    // the UI does not need to be notified of anything.
+    kDoNothing = 2,
+
+    kMaxValue = kDoNothing,
   };
 
   // Defines the next step that the BnplManager should take after amount
@@ -76,10 +81,9 @@ class BnplStrategy {
   // method autofill suggestion.
   virtual SuggestionShownNextAction GetNextActionOnSuggestionShown();
 
-  // Returns the next action to take after the user has accepted a BNPL
-  // suggestion.
-  virtual BnplSuggestionAcceptedNextAction
-  GetNextActionOnBnplSuggestionAcceptance();
+  // Returns the next action to take after the user has decided to use BNPL.
+  virtual UserDecisionToUseBnplNextAction
+  GetNextActionOnUserDecisionToUseBnpl();
 
   // Returns the next action to take after the amount extraction is finished.
   virtual BnplAmountExtractionReturnedNextAction

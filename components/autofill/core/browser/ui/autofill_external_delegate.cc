@@ -992,6 +992,22 @@ void AutofillExternalDelegate::DidEndTextFieldEditing() {
       SuggestionHidingReason::kEndEditing);
 }
 
+void AutofillExternalDelegate::OnPayLaterTabOpened() {
+  manager_->GetPaymentsBnplManager()->OnUserDecisionToUseBnpl(
+      std::nullopt, base::BindOnce(
+                        [](base::WeakPtr<AutofillExternalDelegate> delegate,
+                           const CreditCard& card) {
+                          if (delegate) {
+                            delegate->manager_->FillOrPreviewForm(
+                                mojom::ActionPersistence::kFill,
+                                delegate->query_form_,
+                                delegate->query_field_.global_id(), &card,
+                                AutofillTriggerSource::kPopup);
+                          }
+                        },
+                        GetWeakPtr()));
+}
+
 void AutofillExternalDelegate::ClearPreviewedForm() {
   manager_->driver().RendererShouldClearPreviewedForm();
 }

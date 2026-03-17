@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/payments/desktop_bnpl_strategy.h"
 
+#include "base/test/scoped_feature_list.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill::payments {
@@ -25,12 +27,22 @@ TEST_F(DesktopBnplStrategyTest, GetNextActionOnSuggestionShown) {
                 kNotifyUpdateCallbackOfSuggestionsShownResponse);
 }
 
-// Verify that GetNextActionOnBnplSuggestionAcceptance() returns the correct
+// Verify that GetNextActionOnUserDecisionToUseBnpl() returns the correct
 // action for the desktop platform.
-TEST_F(DesktopBnplStrategyTest, GetNextActionOnBnplSuggestionAcceptance) {
-  EXPECT_EQ(desktop_bnpl_strategy_.GetNextActionOnBnplSuggestionAcceptance(),
-            BnplStrategy::BnplSuggestionAcceptedNextAction::
+TEST_F(DesktopBnplStrategyTest, GetNextActionOnUserDecisionToUseBnpl) {
+  EXPECT_EQ(desktop_bnpl_strategy_.GetNextActionOnUserDecisionToUseBnpl(),
+            BnplStrategy::UserDecisionToUseBnplNextAction::
                 kShowSelectBnplIssuerUiForDesktop);
+}
+
+// Verify that GetNextActionOnUserDecisionToUseBnpl() returns the correct
+// action for the desktop platform in the Pay later tabs case.
+TEST_F(DesktopBnplStrategyTest,
+       GetNextActionOnUserDecisionToUseBnpl_PayLaterTabs) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnablePayNowPayLaterTabs};
+  EXPECT_EQ(desktop_bnpl_strategy_.GetNextActionOnUserDecisionToUseBnpl(),
+            BnplStrategy::UserDecisionToUseBnplNextAction::kDoNothing);
 }
 
 // Verify that GetNextActionOnAmountExtractionReturned() returns the correct

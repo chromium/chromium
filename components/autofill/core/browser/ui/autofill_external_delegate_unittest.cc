@@ -1021,6 +1021,49 @@ TEST_F(AutofillExternalDelegateTest, ShowTabbedPopup_FeatureDisabled) {
   OnSuggestionsReturned(queried_field().global_id(),
                         {Suggestion(SuggestionType::kCreditCardEntry)});
 }
+
+// Ensures the BNPL Manager is notified of the user deciding to use BNPL when a
+// pay later tab is opened.
+TEST_F(AutofillExternalDelegateTest, OnPayLaterTabOpened) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableAmountExtraction,
+                            features::kAutofillEnableBuyNowPayLaterSyncing,
+                            features::kAutofillEnableBuyNowPayLater,
+                            features::kAutofillEnableAiBasedAmountExtraction,
+                            features::kAutofillEnablePayNowPayLaterTabs},
+      /*disabled_features=*/{});
+
+  base::OnceCallback<void(const CreditCard&)> captured_fill_callback;
+  EXPECT_CALL(*autofill_manager().GetPaymentsBnplManager(),
+              OnUserDecisionToUseBnpl(
+                  /*final_checkout_amount=*/testing::Eq(std::nullopt),
+                  /*on_bnpl_vcn_fetched_callback=*/testing::_))
+      .Times(1)
+      .WillOnce([&](std::optional<long>,
+                    base::OnceCallback<void(const CreditCard&)> callback) {
+        captured_fill_callback = std::move(callback);
+      });
+
+  external_delegate().OnPayLaterTabOpened();
+
+  ASSERT_FALSE(captured_fill_callback.is_null());
+
+  CreditCard test_card = test::GetCreditCard();
+
+  EXPECT_CALL(
+      autofill_manager(),
+      FillOrPreviewForm(
+          /*action_persistence=*/mojom::ActionPersistence::kFill,
+          /*form=*/testing::_,
+          /*field_id=*/testing::_,
+          /*filling_payload=*/
+          testing::VariantWith<const CreditCard*>(testing::Eq(&test_card)),
+          /*trigger_source=*/testing::_))
+      .Times(1);
+
+  std::move(captured_fill_callback).Run(test_card);
+}
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 

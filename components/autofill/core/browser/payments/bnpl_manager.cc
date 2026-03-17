@@ -36,6 +36,7 @@
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/payments_request_details.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
+#include "components/autofill/core/browser/suggestions/payments/credit_card_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator_util.h"
 #include "components/autofill/core/browser/ui/payments/autofill_progress_ui_type.h"
 #include "components/autofill/core/browser/ui/payments/bnpl_tos_controller.h"
@@ -121,10 +122,10 @@ void BnplManager::OnUserDecisionToUseBnpl(
       &BnplManager::OnPrefetchedRiskDataLoaded, weak_factory_.GetWeakPtr()));
 
   CHECK(payments_autofill_client().GetBnplStrategy());
-  using enum BnplStrategy::BnplSuggestionAcceptedNextAction;
+  using enum BnplStrategy::UserDecisionToUseBnplNextAction;
   switch (payments_autofill_client()
               .GetBnplStrategy()
-              ->GetNextActionOnBnplSuggestionAcceptance()) {
+              ->GetNextActionOnUserDecisionToUseBnpl()) {
     case kShowSelectBnplIssuerUiForDesktop: {
       CHECK_DEREF(payments_autofill_client().GetBnplUiDelegate())
           .ShowSelectBnplIssuerUi(
@@ -170,7 +171,10 @@ void BnplManager::OnUserDecisionToUseBnpl(
       }
       break;
     }
+    case kDoNothing:
+      break;
   }
+
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableAiBasedAmountExtraction)) {
     if (HasSeenAmountExtractionAiTerms()) {
@@ -202,6 +206,7 @@ void BnplManager::NotifyOfSuggestionGeneration(
       std::variant<SuggestionsShownResponse, std::optional<int64_t>>>(
       2U, base::BindOnce(&BnplManager::MaybeUpdateDesktopSuggestionsWithBnpl,
                          weak_factory_.GetWeakPtr(), trigger_source));
+  autofill_suggestion_trigger_source_ = trigger_source;
 }
 
 void BnplManager::OnSuggestionsShown(
@@ -217,6 +222,8 @@ void BnplManager::OnSuggestionsShown(
     browser_autofill_manager_->GetCreditCardFormEventLogger()
         .OnBnplSuggestionShown();
   }
+
+  update_suggestions_callback_ = update_suggestions_callback;
 
   if (!update_suggestions_barrier_callback_.has_value()) {
     return;
@@ -337,6 +344,9 @@ void BnplManager::OnAmountExtractionReturnedFromAi(
             ->RemoveSelectBnplIssuerOrProgressUi();
     }
 
+    // TODO(crbug.com/477689220): Ensure error handling is done in a way
+    // where a new flow is not re-initiated if the user goes back to pay later
+    // tab.
     switch (result.error()) {
       case AiAmountExtractionResult::Error::kFailureToGenerateApc:
       case AiAmountExtractionResult::Error::kMissingServerResponse:
@@ -366,23 +376,29 @@ void BnplManager::OnAmountExtractionReturnedFromAi(
     // issuer.
     OnIssuerSelectedAndCheckoutAmountAvailable();
   } else {
-    bool is_amount_supported_by_any_issuer =
-        IsExtractedAmountSupportedByAnyBnplIssuer(
-            payments_autofill_client()
-                .GetPaymentsDataManager()
-                .GetBnplIssuers(),
-            ongoing_flow_state_->final_checkout_amount);
-    // If the selected issuer is not eligible, update UI.
-    CHECK_DEREF(payments_autofill_client().GetBnplUiDelegate())
-        .UpdateBnplIssuerUi(
-            GetSortedBnplIssuerContext(
-                browser_autofill_manager_->client(),
-                ongoing_flow_state_->final_checkout_amount),
-            ongoing_flow_state_->final_checkout_amount,
-            is_amount_supported_by_any_issuer, ongoing_flow_state_->app_locale,
-            base::BindOnce(&BnplManager::OnIssuerSelected,
-                           weak_factory_.GetWeakPtr()),
-            base::BindOnce(&BnplManager::Reset, weak_factory_.GetWeakPtr()));
+    std::vector<BnplIssuerContext> issuer_contexts =
+        GetSortedBnplIssuerContext(browser_autofill_manager_->client(),
+                                   ongoing_flow_state_->final_checkout_amount);
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillEnablePayNowPayLaterTabs)) {
+      UpdateSuggestionsOnAiAmountExtractionResponse(issuer_contexts);
+    } else {
+      bool is_amount_supported_by_any_issuer =
+          IsExtractedAmountSupportedByAnyBnplIssuer(
+              payments_autofill_client()
+                  .GetPaymentsDataManager()
+                  .GetBnplIssuers(),
+              ongoing_flow_state_->final_checkout_amount);
+      // If the selected issuer is not eligible, update UI.
+      CHECK_DEREF(payments_autofill_client().GetBnplUiDelegate())
+          .UpdateBnplIssuerUi(
+              issuer_contexts, ongoing_flow_state_->final_checkout_amount,
+              is_amount_supported_by_any_issuer,
+              ongoing_flow_state_->app_locale,
+              base::BindOnce(&BnplManager::OnIssuerSelected,
+                             weak_factory_.GetWeakPtr()),
+              base::BindOnce(&BnplManager::Reset, weak_factory_.GetWeakPtr()));
+    }
   }
 }
 
@@ -436,6 +452,8 @@ void BnplManager::Reset() {
   payments_autofill_client().GetPaymentsNetworkInterface()->CancelRequest();
   browser_autofill_manager_->GetAmountExtractionManager().Reset();
   ongoing_flow_state_.reset();
+  autofill_suggestion_trigger_source_.reset();
+  update_suggestions_callback_.Reset();
   weak_factory_.InvalidateWeakPtrs();
 }
 
@@ -946,6 +964,32 @@ void BnplManager::OnBnplPaymentInstrumentUpdated(
   } else {
     OnFailureAfterTosAccepted(result);
   }
+}
+
+void BnplManager::UpdateSuggestionsOnAiAmountExtractionResponse(
+    const std::vector<payments::BnplIssuerContext>& issuer_contexts) {
+  std::vector<Suggestion> suggestions = base::ToVector(
+      browser_autofill_manager_->client().GetAutofillSuggestions());
+  std::vector<Suggestion> bnpl_suggestions = GetSuggestionsForBnpl(
+      issuer_contexts, browser_autofill_manager_->client().GetAppLocale(),
+      /*is_card_number_field_empty=*/true);
+
+  // Replace the loading throbber suggestion with the BNPL suggestions from
+  // `bnpl_suggestions`. This ensures that suggestions such as footers are kept
+  // after the newly added suggestions.
+  auto throbber_it = std::find_if(
+      suggestions.begin(), suggestions.end(), [](const Suggestion& suggestion) {
+        return suggestion.type == SuggestionType::kLoadingThrobber;
+      });
+  CHECK(throbber_it != suggestions.end());
+  throbber_it = suggestions.erase(throbber_it);
+  suggestions.insert(throbber_it,
+                     std::make_move_iterator(bnpl_suggestions.begin()),
+                     std::make_move_iterator(bnpl_suggestions.end()));
+
+  CHECK(autofill_suggestion_trigger_source_.has_value());
+  update_suggestions_callback_.Run(std::move(suggestions),
+                                   autofill_suggestion_trigger_source_.value());
 }
 
 }  // namespace autofill::payments

@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/payments/desktop_bnpl_strategy.h"
 
+#include "components/autofill/core/common/autofill_payments_features.h"
+
 namespace autofill::payments {
 
 DesktopBnplStrategy::DesktopBnplStrategy() = default;
@@ -16,9 +18,14 @@ DesktopBnplStrategy::GetNextActionOnSuggestionShown() {
       kNotifyUpdateCallbackOfSuggestionsShownResponse;
 }
 
-BnplStrategy::BnplSuggestionAcceptedNextAction
-DesktopBnplStrategy::GetNextActionOnBnplSuggestionAcceptance() {
-  return BnplSuggestionAcceptedNextAction::kShowSelectBnplIssuerUiForDesktop;
+BnplStrategy::UserDecisionToUseBnplNextAction
+DesktopBnplStrategy::GetNextActionOnUserDecisionToUseBnpl() {
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnablePayNowPayLaterTabs)) {
+    return UserDecisionToUseBnplNextAction::kDoNothing;
+  }
+
+  return UserDecisionToUseBnplNextAction::kShowSelectBnplIssuerUiForDesktop;
 }
 
 BnplStrategy::BnplAmountExtractionReturnedNextAction

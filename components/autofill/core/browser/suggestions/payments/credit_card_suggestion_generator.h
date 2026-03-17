@@ -47,6 +47,11 @@ std::vector<Suggestion> GetSuggestionsForCreditCards(
     const AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
     bool exclude_virtual_cards);
 
+std::vector<Suggestion> GetSuggestionsForBnpl(
+    std::vector<payments::BnplIssuerContext> issuer_contexts,
+    const std::string& app_locale,
+    const bool is_card_number_field_empty);
+
 // A `SuggestionGenerator` for `FillingProduct::kCreditCard`.
 //
 // This class encapsulates logic used exclusively for generating credit card

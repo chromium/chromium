@@ -25,11 +25,11 @@ TEST_F(AndroidBnplStrategyTest, GetNextActionOnSuggestionShown) {
                 kSkipNotifyingUpdateCallbackOfSuggestionsShownResponse);
 }
 
-// Verify that GetNextActionOnBnplSuggestionAcceptance() returns the correct
+// Verify that GetNextActionOnUserDecisionToUseBnpl() returns the correct
 // action for the Android platform.
-TEST_F(AndroidBnplStrategyTest, GetNextActionOnBnplSuggestionAcceptance) {
-  EXPECT_EQ(android_bnpl_strategy_.GetNextActionOnBnplSuggestionAcceptance(),
-            BnplStrategy::BnplSuggestionAcceptedNextAction::
+TEST_F(AndroidBnplStrategyTest, GetNextActionOnUserDecisionToUseBnpl) {
+  EXPECT_EQ(android_bnpl_strategy_.GetNextActionOnUserDecisionToUseBnpl(),
+            BnplStrategy::UserDecisionToUseBnplNextAction::
                 kCheckAmountExtractionBeforeContinuingFlowForAndroid);
 }
 

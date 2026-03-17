@@ -122,6 +122,9 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate {
   // used to help record the metrics of when a new popup is shown.
   void DidEndTextFieldEditing();
 
+  // Triggered when the pay later tab is opened in the autofill dropdown.
+  void OnPayLaterTabOpened();
+
   const FormData& query_form() const { return query_form_; }
 
   void AttemptToDisplayAutofillSuggestionsForTest(

@@ -218,6 +218,7 @@ struct Suggestion {
 
   using IsLoading = base::StrongAlias<class IsLoadingTag, bool>;
   using InstrumentId = base::StrongAlias<class InstrumentIdTag, uint64_t>;
+  // TODO(crbug.com/477689220): Directly use BnplIssuer and remove the alias.
   using BnplIssuer = base::StrongAlias<class BnplIssuerTag, BnplIssuer>;
   using Payload = std::variant<Guid,
                                InstrumentId,
