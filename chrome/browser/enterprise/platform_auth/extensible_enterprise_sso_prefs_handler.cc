@@ -11,6 +11,7 @@
 #include "base/apple/scoped_cftyperef.h"
 #include "base/check_is_test.h"
 #include "base/check_op.h"
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
@@ -28,6 +29,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/common/content_switches.h"
 
 namespace enterprise_auth {
 
@@ -93,6 +95,20 @@ base::ListValue ReadAndParseConfiguration(
 
 }  // namespace
 
+// Stub implementation for tests that don't explicitly use an override.
+class StubCFPreferencesObserver : public CFPreferencesObserver {
+ public:
+  StubCFPreferencesObserver() {}
+  void Subscribe(base::RepeatingClosure on_update) override {}
+  void Unsubscribe() override {}
+  base::OnceCallback<Config()> GetReadConfigCallback() override {
+    return base::BindOnce([]() {
+      return Config(ScopedPropList(nullptr), ScopedPropList(nullptr),
+                    ScopedPropList(nullptr));
+    });
+  }
+};
+
 CFPreferencesObserver::Config::Config(ScopedPropList extension_id,
                                       ScopedPropList team_id,
                                       ScopedPropList hosts)
@@ -109,6 +125,7 @@ CFPreferencesObserver::Config::~Config() = default;
 
 class CFPreferencesObserverImpl final : public CFPreferencesObserver {
  public:
+  CFPreferencesObserverImpl() { CHECK_IS_NOT_TEST(); }
   ~CFPreferencesObserverImpl() override { Unsubscribe(); }
 
   static void OnNotification(CFNotificationCenterRef center,
@@ -180,7 +197,19 @@ ExtensibleEnterpriseSSOPrefsHandler::ExtensibleEnterpriseSSOPrefsHandler(
     CHECK_IS_TEST();
     cf_preferences_observer_ = g_cf_prefs_observer_override_for_testing->Run();
   } else {
-    cf_preferences_observer_ = std::make_unique<CFPreferencesObserverImpl>();
+    // This class is used to make an OS call on browser process's construction,
+    // which would cause the OS call to be made in browser tests that don't
+    // directly override the prefs handler.
+    const auto* command_line = base::CommandLine::ForCurrentProcess();
+    if (command_line->HasSwitch(switches::kBrowserTest) ||
+        command_line->HasSwitch(switches::kTestType) ||
+        command_line->GetProgram().BaseName().value().find(FILE_PATH_LITERAL(
+            "interactive_ui_tests")) != base::FilePath::StringType::npos) {
+      // Real implementation should never be used in tests.
+      cf_preferences_observer_ = std::make_unique<StubCFPreferencesObserver>();
+    } else {
+      cf_preferences_observer_ = std::make_unique<CFPreferencesObserverImpl>();
+    }
   }
 
   DCHECK(cf_preferences_observer_);
