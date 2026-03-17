@@ -300,11 +300,15 @@ TopControlsSlideControllerChromeOS::TopControlsSlideControllerChromeOS(
   DCHECK(browser_view->browser());
   DCHECK(browser_view->GetIsNormalType());
   DCHECK(browser_view->browser()->tab_strip_model());
-  DCHECK(browser_view->GetLocationBarView());
-  DCHECK(browser_view->GetLocationBarView()->omnibox_view());
 
-  observed_omni_box_ = browser_view->GetLocationBarView()->omnibox_view();
-  observed_omni_box_->AddObserver(this);
+  // TODO(crbug.com/474059135): If WebUILocationBar ship on ChromeOS,
+  // this will need adjustment.
+  if (browser_view->GetLocationBarView()) {
+    DCHECK(browser_view->GetLocationBarView()->omnibox_view());
+
+    observed_omni_box_ = browser_view->GetLocationBarView()->omnibox_view();
+    observed_omni_box_->AddObserver(this);
+  }
 
   browser_view_->browser()->tab_strip_model()->AddObserver(this);
 

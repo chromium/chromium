@@ -18,11 +18,6 @@
 #include "content/public/test/browser_test.h"
 #include "ui/webui/tracked_element/tracked_element_web_ui.h"
 
-// kWebUILocationBar currently doesn't work on CrOS because
-// TopControlsSlideControllerChromeOS relies on LocationBarView; but CrOS
-// is also not a targeted platform.
-#if !BUILDFLAG(IS_CHROMEOS)
-
 namespace {
 
 class WebUILocationBarBrowserTest : public InProcessBrowserTest {
@@ -72,5 +67,3 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest, GetAnchor) {
 }
 
 }  // namespace
-
-#endif
