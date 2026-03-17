@@ -913,7 +913,7 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
       web_contents->GetPrimaryMainFrame()->GetSiteInstance()->GetSiteURL());
   EXPECT_EQ(ProcessLock::FromSiteInfo(SiteInfo::CreateForTesting(
                 IsolationContext(browser_context), regular_url())),
-            policy->GetProcessLock(process2->GetDeprecatedID()));
+            policy->GetProcessLock(process2->GetID()));
 
   // Ensure also that the regular url process didn't change midway through the
   // navigation.

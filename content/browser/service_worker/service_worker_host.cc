@@ -215,9 +215,11 @@ void ServiceWorkerHost::CreateCodeCacheHost(
         std::make_unique<CodeCacheHostImpl::ReceiverSet>(
             storage_partition->GetGeneratedCodeCacheContext());
   }
-  code_cache_host_receivers_->Add(version_->embedded_worker()->process_id(),
-                                  GetNetworkIsolationKey(),
-                                  GetBucketStorageKey(), std::move(receiver));
+  // TODO(crbug.com/379869738) Remove FromUnsafeValue.
+  code_cache_host_receivers_->Add(
+      ChildProcessId::FromUnsafeValue(
+          version_->embedded_worker()->process_id()),
+      GetNetworkIsolationKey(), GetBucketStorageKey(), std::move(receiver));
 }
 
 void ServiceWorkerHost::CreateBroadcastChannelProvider(

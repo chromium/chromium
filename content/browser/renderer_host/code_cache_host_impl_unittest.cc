@@ -63,7 +63,7 @@ class CodeCacheHostImplTest : public testing::Test,
 
     ChildProcessSecurityPolicyImpl* p =
         ChildProcessSecurityPolicyImpl::GetInstance();
-    for (int renderer_id : added_renderers_) {
+    for (auto renderer_id : added_renderers_) {
       p->Remove(renderer_id);
     }
   }
@@ -77,7 +77,7 @@ class CodeCacheHostImplTest : public testing::Test,
 
   bool IsSitePerProcessOrStricter() { return GetParam(); }
 
-  void SetupRendererWithLock(int process_id, const GURL& url) {
+  void SetupRendererWithLock(ChildProcessId process_id, const GURL& url) {
     ChildProcessSecurityPolicyImpl* p =
         ChildProcessSecurityPolicyImpl::GetInstance();
     p->AddForTesting(process_id, &browser_context_);
@@ -85,8 +85,7 @@ class CodeCacheHostImplTest : public testing::Test,
     scoped_refptr<SiteInstanceImpl> site_instance =
         SiteInstanceImpl::CreateForTesting(&browser_context_, url);
     ChildProcessSecurityPolicyImpl::GetInstance()->LockProcess(
-        site_instance->GetIsolationContext(),
-        ChildProcessId::FromUnsafeValue(process_id), false,
+        site_instance->GetIsolationContext(), process_id, false,
         ProcessLock::FromSiteInfo(site_instance->GetSiteInfo()));
 
     added_renderers_.push_back(process_id);
@@ -95,7 +94,7 @@ class CodeCacheHostImplTest : public testing::Test,
  protected:
   BrowserTaskEnvironment task_environment_;
   base::HistogramTester histogram_tester;
-  std::vector<int> added_renderers_;
+  std::vector<ChildProcessId> added_renderers_;
   TestBrowserContext browser_context_;
   base::test::ScopedFeatureList feature_list_;
   base::ScopedTempDir temp_dir_;
@@ -118,7 +117,7 @@ TEST_P(CodeCacheHostImplTest, PersistentCacheNoCachingWhenNoProperIsolation) {
   // The lack of a SetupRendererWithLock call for this process ID means
   // `GetSecondaryKeyForCodeCache` will return an empty GURL, which causes this
   // renderer to use the shared context key.
-  const int process_id = 12;
+  const ChildProcessId process_id(12);
   {
     base::RunLoop runloop;
     auto quit_closure = runloop.QuitClosure();
@@ -190,13 +189,13 @@ TEST_P(CodeCacheHostImplTest,
   net::NetworkIsolationKey nik(net::SchemefulSite{url},
                                net::SchemefulSite{url});
 
-  const int locked_process_id = 12;
+  const ChildProcessId locked_process_id(12);
   SetupRendererWithLock(locked_process_id, url);
 
   // The lack of a SetupRendererWithLock call for this process ID means
   // `GetSecondaryKeyForCodeCache` will return an empty GURL, which causes this
   // renderer to use the shared context key.
-  const int unlocked_process_id = 24;
+  const ChildProcessId unlocked_process_id(24);
 
   // Locked process stores data.
   {
@@ -303,7 +302,7 @@ TEST_P(CodeCacheHostImplTest, PersistentCacheWriteAndReadFullIsolationSetup) {
     net::NetworkIsolationKey nik(net::SchemefulSite{url},
                                  net::SchemefulSite{url});
 
-    const int process_id = 12;
+    const ChildProcessId process_id(12);
     SetupRendererWithLock(process_id, url);
 
     GeneratedCodeCacheContext::RunOrPostTask(
@@ -347,7 +346,7 @@ TEST_P(CodeCacheHostImplTest, PersistentCacheWriteAndReadFullIsolationSetup) {
     net::NetworkIsolationKey nik(net::SchemefulSite{url},
                                  net::SchemefulSite{url});
 
-    const int process_id = 24;
+    const ChildProcessId process_id(24);
     SetupRendererWithLock(process_id, url);
 
     GeneratedCodeCacheContext::RunOrPostTask(
@@ -383,12 +382,12 @@ TEST_P(CodeCacheHostImplTest, WebUiObliviousToOpenWeb) {
   const GURL resource_url("https://best.web.site.com/script.js");
 
   // State for a site on the open web that loads the above resource.
-  static constexpr int kOpenWebProcessId = 12;
+  const ChildProcessId kOpenWebProcessId(12);
   const GURL open_web_site("https://best.web.site.com/");
   SetupRendererWithLock(kOpenWebProcessId, open_web_site);
 
   // State for a WebUI page that also loads the above resource.
-  static constexpr int kWebUiProcessId = 13;
+  const ChildProcessId kWebUiProcessId(13);
   const GURL web_ui_site(
       base::StrCat({kChromeUIScheme, "://some.chrome.page"}));
   SetupRendererWithLock(kWebUiProcessId, web_ui_site);
@@ -438,13 +437,13 @@ TEST_P(CodeCacheHostImplTest, OpenWebObliviousToWebUi) {
       base::StrCat({kChromeUIScheme, "://settings/settings.js"}));
 
   // State for a WebUI page that loads the above resource.
-  static constexpr int kWebUiProcessId = 12;
+  const ChildProcessId kWebUiProcessId(12);
   const GURL web_ui_site(base::StrCat({kChromeUIScheme, "://settings"}));
   SetupRendererWithLock(kWebUiProcessId, web_ui_site);
 
   // State for a site on the open web that wants to modify the cached data for
   // the above resource.
-  static constexpr int kOpenWebProcessId = 13;
+  const ChildProcessId kOpenWebProcessId(13);
   const GURL open_web_site("https://somewhere.com");
   SetupRendererWithLock(kOpenWebProcessId, open_web_site);
 

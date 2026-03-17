@@ -568,7 +568,7 @@ class RemoveCodeCacheTester {
   // Returns the origin to which the render frame host is locked.
   GURL GetOriginLock() {
     return ChildProcessSecurityPolicyImpl::GetInstance()
-        ->GetProcessLock(render_frame_host_->GetProcess()->GetDeprecatedID())
+        ->GetProcessLock(render_frame_host_->GetProcess()->GetID())
         .GetProcessLockURL();
   }
 

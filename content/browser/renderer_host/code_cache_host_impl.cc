@@ -57,7 +57,7 @@ enum class Operation {
 };
 
 bool CheckSecurityForAccessingCodeCacheData(const GURL& resource_url,
-                                            int render_process_id,
+                                            ChildProcessId render_process_id,
                                             Operation operation) {
   if (!resource_url.is_valid()) {
     return false;
@@ -132,7 +132,7 @@ bool CheckSecurityForAccessingCodeCacheData(const GURL& resource_url,
 // Case 4. origin_lock if the scheme of origin_lock is
 // Http/Https/chrome/chrome-untrusted.
 // Case 5. std::nullopt otherwise.
-std::optional<GURL> GetOriginLock(int render_process_id) {
+std::optional<GURL> GetOriginLock(ChildProcessId render_process_id) {
   ProcessLock process_lock =
       ChildProcessSecurityPolicyImpl::GetInstance()->GetProcessLock(
           render_process_id);
@@ -193,7 +193,7 @@ void DidGenerateCacheableMetadataInCacheStorageOnUI(
     base::Time expected_response_time,
     mojo_base::BigBuffer data,
     const std::string& cache_storage_cache_name,
-    int render_process_id,
+    ChildProcessId render_process_id,
     const blink::StorageKey& code_cache_storage_key,
     storage::mojom::CacheStorageControl* cache_storage_control_for_testing,
     mojo::ReportBadMessageCallback bad_message_callback) {
@@ -258,7 +258,7 @@ void DidGenerateCacheableMetadataInCacheStorageOnUI(
 void AddCodeCacheReceiver(
     mojo::UniqueReceiverSet<blink::mojom::CodeCacheHost>* receiver_set,
     scoped_refptr<GeneratedCodeCacheContext> context,
-    int render_process_id,
+    ChildProcessId render_process_id,
     const net::NetworkIsolationKey& nik,
     const blink::StorageKey& storage_key,
     mojo::PendingReceiver<blink::mojom::CodeCacheHost> receiver,
@@ -279,7 +279,7 @@ void AddCodeCacheReceiver(
 class NoopCodeCacheHost : public CodeCacheHostImpl {
  public:
   NoopCodeCacheHost(
-      int render_process_id,
+      ChildProcessId render_process_id,
       scoped_refptr<GeneratedCodeCacheContext> generated_code_cache_context,
       const net::NetworkIsolationKey& nik,
       const blink::StorageKey& storage_key)
@@ -316,7 +316,7 @@ class NoopCodeCacheHost : public CodeCacheHostImpl {
 class LocalCodeCacheHost : public CodeCacheHostImpl {
  public:
   LocalCodeCacheHost(
-      int render_process_id,
+      ChildProcessId render_process_id,
       scoped_refptr<GeneratedCodeCacheContext> generated_code_cache_context,
       const net::NetworkIsolationKey& nik,
       const blink::StorageKey& storage_key)
@@ -433,7 +433,7 @@ class LocalCodeCacheHost : public CodeCacheHostImpl {
   // Case 4. std::nullopt otherwise.
   static std::optional<GURL> GetSecondaryKeyForCodeCache(
       const GURL& resource_url,
-      int render_process_id,
+      ChildProcessId render_process_id,
       Operation operation) {
     if (use_empty_secondary_key_for_testing_) {
       return GURL();
@@ -480,7 +480,7 @@ class LocalCodeCacheHost : public CodeCacheHostImpl {
 class CodeCacheWithPersistentCacheHost : public CodeCacheHostImpl {
  public:
   CodeCacheWithPersistentCacheHost(
-      int render_process_id,
+      ChildProcessId render_process_id,
       scoped_refptr<GeneratedCodeCacheContext> generated_code_cache_context,
       const net::NetworkIsolationKey& nik,
       const blink::StorageKey& storage_key)
@@ -663,7 +663,7 @@ CodeCacheHostImpl::ReceiverSet::ReceiverSet(
 CodeCacheHostImpl::ReceiverSet::~ReceiverSet() = default;
 
 void CodeCacheHostImpl::ReceiverSet::Add(
-    int render_process_id,
+    ChildProcessId render_process_id,
     const net::NetworkIsolationKey& nik,
     const blink::StorageKey& storage_key,
     mojo::PendingReceiver<blink::mojom::CodeCacheHost> receiver,
@@ -684,7 +684,7 @@ void CodeCacheHostImpl::ReceiverSet::Add(
 }
 
 void CodeCacheHostImpl::ReceiverSet::Add(
-    int render_process_id,
+    ChildProcessId render_process_id,
     const net::NetworkIsolationKey& nik,
     const blink::StorageKey& storage_key,
     mojo::PendingReceiver<blink::mojom::CodeCacheHost> receiver) {
@@ -699,7 +699,7 @@ void CodeCacheHostImpl::ReceiverSet::Clear() {
 // CodeCacheHostImpl -----------------------------------------------------------
 
 std::unique_ptr<CodeCacheHostImpl> CodeCacheHostImpl::Create(
-    int render_process_id,
+    ChildProcessId render_process_id,
     scoped_refptr<GeneratedCodeCacheContext> generated_code_cache_context,
     const net::NetworkIsolationKey& nik,
     const blink::StorageKey& storage_key) {
@@ -738,7 +738,7 @@ void CodeCacheHostImpl::SetUseEmptySecondaryKeyForTesting() {
 }
 
 CodeCacheHostImpl::CodeCacheHostImpl(
-    int render_process_id,
+    ChildProcessId render_process_id,
     scoped_refptr<GeneratedCodeCacheContext> generated_code_cache_context,
     const net::NetworkIsolationKey& nik,
     const blink::StorageKey& storage_key)

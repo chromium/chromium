@@ -176,7 +176,7 @@ void FileSystemManagerTestcase::SetUpOnUIThread(
   // content/browser/file_system/file_system_manager_impl.h
   for (size_t i = 0; i < kNumRenderers; i++) {
     // Process IDs must be greater than 0.
-    uint32_t process_id = i + 1;
+    content::ChildProcessId process_id(i + 1);
 
     p->Add(process_id, &browser_context_);
     file_system_manager_impls_[i] = std::make_unique<FileSystemManagerImpl>(
@@ -211,7 +211,7 @@ void FileSystemManagerTestcase::TearDownOnUIThread(
       ChildProcessSecurityPolicyImpl::GetInstance();
 
   for (size_t process_id = 1; process_id <= kNumRenderers; process_id++) {
-    p->Remove(process_id);
+    p->Remove(content::ChildProcessId(process_id));
   }
 
   GetIOThreadTaskRunner({})->PostTask(

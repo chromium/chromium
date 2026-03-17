@@ -3148,16 +3148,18 @@ TEST_P(ChildProcessSecurityPolicyTest, NoBrowsingInstanceIDs_OriginKeyed) {
             /*is_fenced=*/false,
             /*is_fixed_storage_partition=*/false);
 
-    p->Add(kRendererID, &context);
+    p->Add(kRendererProcess, &context);
     p->LockProcess(foo_instance->GetIsolationContext(), kRendererProcess,
                    /*is_process_used=*/false,
                    ProcessLock::FromSiteInfo(foo_instance->GetSiteInfo()));
     p->AddCommittedOrigin(kRendererID, foo);
 
-    EXPECT_TRUE(p->GetProcessLock(kRendererID).IsLockedToSite());
-    EXPECT_TRUE(
-        p->GetProcessLock(kRendererID).agent_cluster_key().IsOriginKeyed());
-    EXPECT_EQ(foo.GetURL(), p->GetProcessLock(kRendererID).GetProcessLockURL());
+    EXPECT_TRUE(p->GetProcessLock(kRendererProcess).IsLockedToSite());
+    EXPECT_TRUE(p->GetProcessLock(kRendererProcess)
+                    .agent_cluster_key()
+                    .IsOriginKeyed());
+    EXPECT_EQ(foo.GetURL(),
+              p->GetProcessLock(kRendererProcess).GetProcessLockURL());
 
     EXPECT_TRUE(ProcessLock::FromSiteInfo(foo_instance->GetSiteInfo())
                     .agent_cluster_key()
@@ -3199,7 +3201,7 @@ TEST_P(ChildProcessSecurityPolicyTest_NoOriginKeyedProcessesByDefault,
   // Create a SiteInstance for sub.foo.com in a new BrowsingInstance.
   TestBrowserContext context;
   {
-    p->Add(kRendererID, &context);
+    p->Add(kRendererProcess, &context);
     // Isolate foo.com so we can't get a default SiteInstance. This will mean
     // that https://sub.foo.com will end up in a site-keyed SiteInstance, which
     // is what we need.
@@ -3218,13 +3220,15 @@ TEST_P(ChildProcessSecurityPolicyTest_NoOriginKeyedProcessesByDefault,
                    ProcessLock::FromSiteInfo(foo_instance->GetSiteInfo()));
     p->AddCommittedOrigin(kRendererID, sub_foo_origin);
 
-    EXPECT_TRUE(p->GetProcessLock(kRendererID).IsLockedToSite());
+    EXPECT_TRUE(p->GetProcessLock(kRendererProcess).IsLockedToSite());
     // Note: This might become true in the future if we convert legacy isolated
     // origins to create origin-keyed AgentClusterKeys instead of site-keyed.
-    EXPECT_FALSE(
-        p->GetProcessLock(kRendererID).agent_cluster_key().IsOriginKeyed());
-    EXPECT_EQ(SiteInfo::GetSiteForOrigin(sub_foo_origin),
-              p->GetProcessLock(kRendererID).agent_cluster_key().GetSite());
+    EXPECT_FALSE(p->GetProcessLock(kRendererProcess)
+                     .agent_cluster_key()
+                     .IsOriginKeyed());
+    EXPECT_EQ(
+        SiteInfo::GetSiteForOrigin(sub_foo_origin),
+        p->GetProcessLock(kRendererProcess).agent_cluster_key().GetSite());
 
     EXPECT_FALSE(ProcessLock::FromSiteInfo(foo_instance->GetSiteInfo())
                      .agent_cluster_key()

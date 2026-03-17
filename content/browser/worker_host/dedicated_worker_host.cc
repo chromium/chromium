@@ -915,7 +915,7 @@ void DedicatedWorkerHost::CreateCodeCacheHost(
     mojo::PendingReceiver<blink::mojom::CodeCacheHost> receiver) {
   // Create a new CodeCacheHostImpl and bind it to the given receiver.
   RenderProcessHost* rph = GetProcessHost();
-  code_cache_host_receivers_.Add(rph->GetDeprecatedID(),
+  code_cache_host_receivers_.Add(rph->GetID(),
                                  isolation_info_.network_isolation_key(),
                                  GetStorageKey(), std::move(receiver));
 }

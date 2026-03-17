@@ -438,21 +438,11 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   // this method exactly once. This call must be made on the UI thread.
   void Add(ChildProcessId child_id, BrowserContext* browser_context);
 
-  // TODO(crbug.com/379869738) Remove this method when usages are ported.
-  inline void Add(int child_id, BrowserContext* browser_context) {
-    Add(ChildProcessId::FromUnsafeValue(child_id), browser_context);
-  }
-
   // Helper method for unit tests that calls Add() and
   // LockProcess() with an "allow_any_site" lock. This ensures that the process
   // policy is always in a state where it is valid to call
   // CanAccessDataForOrigin().
   void AddForTesting(ChildProcessId child_id, BrowserContext* browser_context);
-
-  // TODO(crbug.com/379869738) Remove this method when usages are ported.
-  inline void AddForTesting(int child_id, BrowserContext* browser_context) {
-    AddForTesting(ChildProcessId::FromUnsafeValue(child_id), browser_context);
-  }
 
   // Upon destruction, child processes should unregister themselves by calling
   // this method exactly once. This call must be made on the UI thread.
@@ -464,11 +454,6 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   // thread, for this |child_id| are allowed to run before access is completely
   // revoked.
   void Remove(ChildProcessId child_id);
-
-  // TODO(crbug.com/379869738) Remove this method when usages are ported.
-  inline void Remove(int child_id) {
-    Remove(ChildProcessId::FromUnsafeValue(child_id));
-  }
 
   // Whenever the browser processes commands the child process to commit a URL,
   // it should call this method to grant the child process the capability to

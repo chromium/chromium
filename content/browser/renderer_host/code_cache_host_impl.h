@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "components/services/storage/public/mojom/cache_storage_control.mojom-forward.h"
 #include "content/common/content_export.h"
+#include "content/public/common/child_process_id.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -72,12 +73,12 @@ class CONTENT_EXPORT CodeCacheHostImpl : public blink::mojom::CodeCacheHost {
         CodeCacheHostImpl*,
         mojo::ReceiverId,
         mojo::UniqueReceiverSet<blink::mojom::CodeCacheHost>&)>;
-    void Add(int render_process_id,
+    void Add(ChildProcessId render_process_id,
              const net::NetworkIsolationKey& nik,
              const blink::StorageKey& storage_key,
              mojo::PendingReceiver<blink::mojom::CodeCacheHost> receiver,
              CodeCacheHostReceiverHandler handler);
-    void Add(int render_process_id,
+    void Add(ChildProcessId render_process_id,
              const net::NetworkIsolationKey& nik,
              const blink::StorageKey& storage_key,
              mojo::PendingReceiver<blink::mojom::CodeCacheHost> receiver);
@@ -95,7 +96,7 @@ class CONTENT_EXPORT CodeCacheHostImpl : public blink::mojom::CodeCacheHost {
   // should be used by the fetch requests. This could be null in tests that use
   // SetCacheStorageControlForTesting.
   static std::unique_ptr<CodeCacheHostImpl> Create(
-      int render_process_id,
+      ChildProcessId render_process_id,
       scoped_refptr<GeneratedCodeCacheContext> generated_code_cache_context,
       const net::NetworkIsolationKey& nik,
       const blink::StorageKey& storage_key);
@@ -112,12 +113,12 @@ class CONTENT_EXPORT CodeCacheHostImpl : public blink::mojom::CodeCacheHost {
 
  protected:
   CodeCacheHostImpl(
-      int render_process_id,
+      ChildProcessId render_process_id,
       scoped_refptr<GeneratedCodeCacheContext> generated_code_cache_context,
       const net::NetworkIsolationKey& nik,
       const blink::StorageKey& storage_key);
 
-  int render_process_id() const { return render_process_id_; }
+  ChildProcessId render_process_id() const { return render_process_id_; }
 
   GeneratedCodeCacheContext* generated_code_cache_context() {
     return generated_code_cache_context_.get();
@@ -148,7 +149,7 @@ class CONTENT_EXPORT CodeCacheHostImpl : public blink::mojom::CodeCacheHost {
       const std::string& cache_storage_cache_name) override;
 
   // Our render process host ID, used to bind to the correct render process.
-  const int render_process_id_;
+  const ChildProcessId render_process_id_;
 
   const scoped_refptr<GeneratedCodeCacheContext> generated_code_cache_context_;
 

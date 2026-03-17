@@ -53,7 +53,7 @@ TEST(BrowserFileSystemHelperTest,
   TestBrowserContext browser_context;
   ChildProcessSecurityPolicyImpl* p =
       ChildProcessSecurityPolicyImpl::GetInstance();
-  p->AddForTesting(kRendererID, &browser_context);
+  p->AddForTesting(kRendererProcess, &browser_context);
 
   // Prepare |original_file| FileSystemURL that comes from a |sensitive_origin|.
   // This attempts to simulate for unit testing the drive URL from
@@ -144,7 +144,7 @@ TEST(BrowserFileSystemHelperTest,
   EXPECT_FALSE(p->CanCopyIntoFileSystemFile(kRendererProcess, dropped_file));
   EXPECT_FALSE(p->CanDeleteFileSystemFile(kRendererProcess, dropped_file));
 
-  p->Remove(kRendererID);
+  p->Remove(kRendererProcess);
 }
 
 TEST(BrowserFileSystemHelperTest, PrepareDropDataForChildProcess_LocalFiles) {
@@ -173,7 +173,7 @@ TEST(BrowserFileSystemHelperTest, PrepareDropDataForChildProcess_LocalFiles) {
   TestBrowserContext browser_context;
   ChildProcessSecurityPolicyImpl* p =
       ChildProcessSecurityPolicyImpl::GetInstance();
-  p->AddForTesting(kRendererID, &browser_context);
+  p->AddForTesting(kRendererProcess, &browser_context);
 
   // Prepare content::DropData containing some local files.
   const base::FilePath kDraggedFile =
@@ -224,7 +224,7 @@ TEST(BrowserFileSystemHelperTest, PrepareDropDataForChildProcess_LocalFiles) {
   EXPECT_FALSE(
       p->CanCommitURL(kRendererID, net::FilePathToFileURL(kOtherFile)));
 
-  p->Remove(kRendererID);
+  p->Remove(kRendererProcess);
   SetBrowserClientForTesting(old_browser_client);
 }
 
