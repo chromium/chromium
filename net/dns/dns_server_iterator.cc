@@ -162,4 +162,14 @@ bool ClassicDnsServerIterator::AttemptAvailable() {
   return false;
 }
 
+size_t OneShotDnsServerIterator::GetNextAttemptIndex() {
+  DCHECK(attempt_available_);
+  attempt_available_ = false;
+  return 0;
+}
+
+bool OneShotDnsServerIterator::AttemptAvailable() {
+  return attempt_available_;
+}
+
 }  // namespace net

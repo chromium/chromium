@@ -51,6 +51,7 @@ source_set("dns") {
     "dns_http_attempt.h",
     "dns_names_util.cc",
     "dns_names_util.h",
+    "dns_platform_attempt_factory.h",
     "dns_query.cc",
     "dns_query.h",
     "dns_reloader.cc",
@@ -149,10 +150,25 @@ source_set("dns") {
 
   if (is_android) {
     sources += [
-      "dns_config_service_android.cc",
-      "dns_config_service_android.h",
       "dns_platform_android_attempt.cc",
       "dns_platform_android_attempt.h",
+      "dns_platform_attempt_factory_android.cc",
+      "dns_platform_attempt_factory_android.h",
+    ]
+  } else {
+    sources += [
+      # These are specific here, instead of the main sources, to make sure they
+      # cannot be references while compiling for Android. Doing so is always a
+      # mistake.
+      "dns_platform_attempt_factory_not_implemented.cc",
+      "dns_platform_attempt_factory_not_implemented.h",
+    ]
+  }
+
+  if (is_android) {
+    sources += [
+      "dns_config_service_android.cc",
+      "dns_config_service_android.h",
     ]
   } else if (is_linux) {
     sources += [
@@ -472,6 +488,8 @@ source_set("tests") {
     sources += [
       "dns_config_service_android_unittest.cc",
       "dns_platform_android_attempt_unittest.cc",
+      "mock_dns_platform_android_attempt_delegate.cc",
+      "mock_dns_platform_android_attempt_delegate.h",
     ]
   } else if (is_linux) {
     sources += [ "dns_config_service_linux_unittest.cc" ]

@@ -92,8 +92,10 @@ class NET_EXPORT_PRIVATE DnsTransactionFactory {
   // Defines the underlying implementation used to implement a single DNS
   // exchange.
   enum class AttemptMode {
-    kClassic,  // Plaintext DNS (either over TCP or UDP)
-    kHttp,  // DNS-over-HTTPS (DoH)
+    kClassic,   // Plaintext DNS (either over TCP or UDP)
+    kHttp,      // DNS-over-HTTPS (DoH)
+    kPlatform,  // Platform DNS API (currently this is only supported on
+                // Android)
   };
 
   DnsTransactionFactory();

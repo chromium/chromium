@@ -33,6 +33,7 @@
 #include "net/cookies/cookie_monster.h"
 #include "net/disk_cache/buildflags.h"
 #include "net/dns/context_host_resolver.h"
+#include "net/dns/dns_platform_attempt_factory.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/host_resolver_manager.h"
 #include "net/dns/stale_host_resolver.h"
@@ -540,6 +541,9 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
       context.get(), &network_session_context,
       suppress_setting_socket_performance_watcher_factory_for_testing_,
       client_socket_factory_raw_);
+
+  context->set_dns_platform_attempt_factory(
+      std::move(dns_platform_attempt_factory_));
 
   context->set_http_network_session(std::make_unique<HttpNetworkSession>(
       http_network_session_params_, network_session_context));

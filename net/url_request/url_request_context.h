@@ -35,6 +35,7 @@ class UnexportableKeyService;
 namespace net {
 class CertVerifier;
 class ClientSocketFactory;
+class DnsPlatformAttemptFactory;
 class CookieStore;
 class HostResolver;
 class HttpAuthHandlerFactory;
@@ -179,6 +180,10 @@ class NET_EXPORT URLRequestContext final {
 
   QuicContext* quic_context() const { return quic_context_.get(); }
 
+  DnsPlatformAttemptFactory* dns_platform_attempt_factory() const {
+    return dns_platform_attempt_factory_.get();
+  }
+
   // Gets the URLRequest objects that hold a reference to this
   // URLRequestContext.
   std::set<raw_ptr<const URLRequest, SetExperimental>>* url_requests() const {
@@ -299,6 +304,9 @@ class NET_EXPORT URLRequestContext final {
       std::unique_ptr<ClientSocketFactory> client_socket_factory);
   void set_cache_encryption_delegate(
       std::unique_ptr<CacheEncryptionDelegate> cache_encryption_delegate);
+  void set_dns_platform_attempt_factory(
+      std::unique_ptr<DnsPlatformAttemptFactory> dns_platform_attempt_factory);
+
 #if BUILDFLAG(ENABLE_REPORTING)
   void set_persistent_reporting_and_nel_store(
       std::unique_ptr<PersistentReportingAndNelStore>
@@ -355,6 +363,7 @@ class NET_EXPORT URLRequestContext final {
   std::unique_ptr<QuicContext> quic_context_;
   std::unique_ptr<ClientSocketFactory> client_socket_factory_;
   std::unique_ptr<CacheEncryptionDelegate> cache_encryption_delegate_;
+  std::unique_ptr<DnsPlatformAttemptFactory> dns_platform_attempt_factory_;
 
   // The storage duplication for URLRequestJobFactory is needed because of
   // SetJobFactoryForTesting. Once this method is removable, we can only store a

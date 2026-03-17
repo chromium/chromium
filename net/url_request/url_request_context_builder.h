@@ -38,6 +38,7 @@
 #include "net/base/proxy_delegate.h"
 #include "net/disk_cache/buildflags.h"
 #include "net/disk_cache/disk_cache.h"
+#include "net/dns/dns_platform_attempt_factory.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/stale_host_resolver.h"
 #include "net/http/http_network_session.h"
@@ -49,6 +50,12 @@
 #include "net/ssl/ssl_config_service.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_packets.h"
 #include "net/url_request/url_request_job_factory.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "net/dns/dns_platform_attempt_factory_android.h"
+#else
+#include "net/dns/dns_platform_attempt_factory_not_implemented.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace net {
 
@@ -456,6 +463,11 @@ class NET_EXPORT URLRequestContextBuilder {
     suppress_setting_socket_performance_watcher_factory_for_testing_ = true;
   }
 
+  void set_dns_platform_attempt_factory(
+      std::unique_ptr<DnsPlatformAttemptFactory> dns_platform_attempt_factory) {
+    dns_platform_attempt_factory_ = std::move(dns_platform_attempt_factory);
+  }
+
  protected:
   // Lets subclasses override ProxyResolutionService creation, using a
   // ProxyResolutionService that uses the URLRequestContext itself to get PAC
@@ -553,6 +565,20 @@ class NET_EXPORT URLRequestContextBuilder {
       device_bound_session_service_;
   base::FilePath device_bound_sessions_file_path_;
 #endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+  // When DnsTransaction receives AttemptMode == kPlatform, it uses
+  // URLRequestContext::dns_platform_attempt_factory() to build the DnsAttempt
+  // backed by platform-specific APIs. Having said that, currently only Android
+  // supports kPlatform. With that in mind:
+  // * When building for Android, we inject a working Android-specific factory
+  // * When building for other platforms, we inject a factory that does crashes
+  //   if interacted with. The expectation is for other platforms to never
+  //   specify AttemptMode::kPlatform until they support it.
+  std::unique_ptr<DnsPlatformAttemptFactory> dns_platform_attempt_factory_ =
+#if BUILDFLAG(IS_ANDROID)
+      DnsPlatformAttemptFactoryAndroid::Create();
+#else
+      std::make_unique<DnsPlatformAttemptFactoryNotImplemented>();
+#endif  // BUILDFLAG(IS_ANDROID)
 
   raw_ptr<ClientSocketFactory> client_socket_factory_raw_ = nullptr;
 };

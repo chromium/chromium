@@ -25,6 +25,7 @@
 #include "base/test/test_future.h"
 #include "net/base/net_errors.h"
 #include "net/dns/host_resolver_internal_result.h"
+#include "net/dns/mock_dns_platform_android_attempt_delegate.h"
 #include "net/dns/public/dns_query_type.h"
 #include "net/test/gtest_util.h"
 #include "net/test/test_with_task_environment.h"
@@ -50,31 +51,6 @@ using ResultsCallbackTestFuture = base::test::TestFuture<int>;
 static constexpr char kSkipTestOnAndroidVersionBelow29[] =
     "This test is skipped because it's being run on Android 28-, while the "
     "class that it tests is available only on Android 29+.";
-
-base::ScopedFD CreateFdWithUnreadData() {
-  std::array<int, 2> fds;
-  PCHECK(pipe(fds.data()) == 0);
-  base::ScopedFD read_fd(fds[0]);
-  base::ScopedFD write_fd(fds[1]);
-
-  std::string_view data = "any data";
-  write(write_fd.get(), data.data(), data.size());
-
-  return read_fd;
-}
-
-class MockDelegate : public DnsPlatformAndroidAttempt::Delegate {
- public:
-  MockDelegate() = default;
-  ~MockDelegate() override = default;
-
-  MOCK_METHOD(int,
-              Query,
-              (net_handle_t, base::cstring_view, uint16_t),
-              (override));
-
-  MOCK_METHOD(int, Result, (int, int*, base::span<uint8_t>), (override));
-};
 
 class DnsPlatformAndroidAttemptTest : public TestWithTaskEnvironment {};
 
@@ -123,9 +99,10 @@ const base::span<const uint8_t> kQName = base::as_byte_span(kQNameData);
 
 TEST_F(DnsPlatformAndroidAttemptTest, Success) {
   if (__builtin_available(android 29, *)) {
-    base::ScopedFD fd = CreateFdWithUnreadData();
+    base::ScopedFD fd =
+        MockAndroidDnsPlatformAttemptDelegate::CreateFdWithUnreadData();
 
-    MockDelegate delegate;
+    MockAndroidDnsPlatformAttemptDelegate delegate;
 
     EXPECT_CALL(delegate, Query(NETWORK_UNSPECIFIED, StrEq("www.google.com"),
                                 dns_protocol::kTypeA))
@@ -165,7 +142,7 @@ TEST_F(DnsPlatformAndroidAttemptTest, Success) {
 TEST_F(DnsPlatformAndroidAttemptTest,
        FailOnAndroidResNqueryNegativeReturnValue) {
   if (__builtin_available(android 29, *)) {
-    MockDelegate delegate;
+    MockAndroidDnsPlatformAttemptDelegate delegate;
     EXPECT_CALL(delegate, Query(NETWORK_UNSPECIFIED, StrEq("www.google.com"),
                                 dns_protocol::kTypeA))
         .WillOnce(Return(-42));
@@ -188,9 +165,10 @@ TEST_F(DnsPlatformAndroidAttemptTest,
 TEST_F(DnsPlatformAndroidAttemptTest,
        FailOnAndroidResNresultNegativeReturnValue) {
   if (__builtin_available(android 29, *)) {
-    base::ScopedFD fd = CreateFdWithUnreadData();
+    base::ScopedFD fd =
+        MockAndroidDnsPlatformAttemptDelegate::CreateFdWithUnreadData();
 
-    MockDelegate delegate;
+    MockAndroidDnsPlatformAttemptDelegate delegate;
     EXPECT_CALL(delegate, Query(NETWORK_UNSPECIFIED, StrEq("www.google.com"),
                                 dns_protocol::kTypeA))
         .WillOnce(Return(fd.get()));
@@ -212,9 +190,10 @@ TEST_F(DnsPlatformAndroidAttemptTest,
 
 TEST_F(DnsPlatformAndroidAttemptTest, FailOnAndroidResNresultErrorRcode) {
   if (__builtin_available(android 29, *)) {
-    base::ScopedFD fd = CreateFdWithUnreadData();
+    base::ScopedFD fd =
+        MockAndroidDnsPlatformAttemptDelegate::CreateFdWithUnreadData();
 
-    MockDelegate delegate;
+    MockAndroidDnsPlatformAttemptDelegate delegate;
     EXPECT_CALL(delegate, Query(NETWORK_UNSPECIFIED, StrEq("www.google.com"),
                                 dns_protocol::kTypeA))
         .WillOnce(Return(fd.get()));
@@ -240,9 +219,10 @@ TEST_F(DnsPlatformAndroidAttemptTest, FailOnAndroidResNresultErrorRcode) {
 
 TEST_F(DnsPlatformAndroidAttemptTest, FailOnMalformedDnsResponse) {
   if (__builtin_available(android 29, *)) {
-    base::ScopedFD fd = CreateFdWithUnreadData();
+    base::ScopedFD fd =
+        MockAndroidDnsPlatformAttemptDelegate::CreateFdWithUnreadData();
 
-    MockDelegate delegate;
+    MockAndroidDnsPlatformAttemptDelegate delegate;
     EXPECT_CALL(delegate, Query(NETWORK_UNSPECIFIED, StrEq("www.google.com"),
                                 dns_protocol::kTypeA))
         .WillOnce(Return(fd.get()));
@@ -269,9 +249,10 @@ TEST_F(DnsPlatformAndroidAttemptTest, FailOnMalformedDnsResponse) {
 
 TEST_F(DnsPlatformAndroidAttemptTest, FailOnResponseFlagsNxdomain) {
   if (__builtin_available(android 29, *)) {
-    base::ScopedFD fd = CreateFdWithUnreadData();
+    base::ScopedFD fd =
+        MockAndroidDnsPlatformAttemptDelegate::CreateFdWithUnreadData();
 
-    MockDelegate delegate;
+    MockAndroidDnsPlatformAttemptDelegate delegate;
     EXPECT_CALL(delegate, Query(NETWORK_UNSPECIFIED, StrEq("www.google.com"),
                                 dns_protocol::kTypeA))
         .WillOnce(Return(fd.get()));
@@ -298,9 +279,10 @@ TEST_F(DnsPlatformAndroidAttemptTest, FailOnResponseFlagsNxdomain) {
 
 TEST_F(DnsPlatformAndroidAttemptTest, FailOnResponseTCFlag) {
   if (__builtin_available(android 29, *)) {
-    base::ScopedFD fd = CreateFdWithUnreadData();
+    base::ScopedFD fd =
+        MockAndroidDnsPlatformAttemptDelegate::CreateFdWithUnreadData();
 
-    MockDelegate delegate;
+    MockAndroidDnsPlatformAttemptDelegate delegate;
     EXPECT_CALL(delegate, Query(NETWORK_UNSPECIFIED, StrEq("www.google.com"),
                                 dns_protocol::kTypeA))
         .WillOnce(Return(fd.get()));
