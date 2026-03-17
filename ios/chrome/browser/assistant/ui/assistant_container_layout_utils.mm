@@ -17,7 +17,7 @@ constexpr CGFloat kRubberBandCoefficient = 0.10;
 const CGFloat kMorphingBaseMargin = 10.0;
 const CGFloat kMorphingMediumMargin = 5.0;
 const CGFloat kMorphingBaseCornerRadius = 36.0;
-const CGFloat kMaxBackgroundDimmingAlpha = 0.4;
+const CGFloat kMaxBackgroundDimmingAlpha = 0.11;
 
 NSInteger RubberBandDistance(NSInteger offset, NSInteger dimension) {
   CGFloat float_offset = static_cast<CGFloat>(offset);
