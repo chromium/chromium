@@ -94,8 +94,7 @@ BASE_FEATURE(kIdbSqliteOnDiskRollout, base::FEATURE_DISABLED_BY_DEFAULT);
 constexpr base::FeatureParam<SqliteRolloutStage>::Option
     kIdbSqliteOnDiskRolloutStages[] = {
         {SqliteRolloutStage::kUseLevelDbOnly, "UseLevelDbOnly"},
-        {SqliteRolloutStage::kUseLevelDbAsControl,
-         "UseExperimentalVariantforNewStores"},
+        {SqliteRolloutStage::kUseLevelDbAsControl, "UseLevelDbAsControl"},
         {SqliteRolloutStage::kUseSqliteForNewStores, "UseSqliteForNewStores"},
         {SqliteRolloutStage::kUseSqliteOnly, "UseSqliteOnly"},
 };
