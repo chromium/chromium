@@ -90,6 +90,12 @@ inline const char kUnusedSitePermissionsRevocationEnabled[] =
 inline const char kUnusedSitePermissionsRevocationMigrationCompleted[] =
     "safety_hub.unused_site_permissions_revocation.migration_completed";
 
+// Boolean that indicates whether permissions that existed before
+// auto-revocation was launched for them have successfully been marked eligible
+// for the auto-revocation.
+inline const char kUnusedSitePermissionsRevocationBackfillCompleted[] =
+    "safety_hub.unused_site_permissions_revocation.backfill_completed";
+
 }  // namespace safety_hub_prefs
 
 void RegisterSafetyHubProfilePrefs(PrefRegistrySimple* registry);

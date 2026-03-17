@@ -117,6 +117,8 @@ class RevokedPermissionsService final : public SafetyHubService,
   // Test support:
   void SetClockForTesting(base::Clock* clock);
   std::vector<ContentSettingEntry> GetTrackedUnusedPermissionsForTesting();
+  UnusedSitePermissionsManager::UntimestampedPermissionList
+  GetUntimestampedPermissionsForTesting();
 
  private:
   // Called by TabHelper when a URL was visited.

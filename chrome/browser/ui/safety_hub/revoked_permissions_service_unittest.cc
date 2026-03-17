@@ -15,6 +15,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/default_clock.h"
@@ -51,6 +52,7 @@
 #include "components/history/core/test/test_history_database.h"
 #include "components/keyed_service/core/refcounted_keyed_service.h"
 #include "components/permissions/constants.h"
+#include "components/permissions/features.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -1909,3 +1911,203 @@ INSTANTIATE_TEST_SUITE_P(
         /*should_setup_abusive_notification_sites=*/testing::Bool(),
         /*should_setup_unused_sites=*/testing::Bool(),
         /*should_setup_disruptive_sites=*/testing::Bool()));
+
+// TODO(crbug.com/40267370): Clean-up after the backfill is done.
+class RevokedPermissionsServiceBackfillTest
+    : public ChromeRenderViewHostTestHarness {
+ public:
+  RevokedPermissionsServiceBackfillTest() = default;
+
+  void SetUp() override {
+    ChromeRenderViewHostTestHarness::SetUp();
+    base::Time time;
+    ASSERT_TRUE(base::Time::FromString("2025-09-07 13:00", &time));
+    clock_.SetNow(time);
+
+    prefs()->SetBoolean(
+        safety_hub_prefs::kUnusedSitePermissionsRevocationEnabled, true);
+    prefs()->SetBoolean(
+        safety_hub_prefs::kUnusedSitePermissionsRevocationBackfillCompleted,
+        false);
+
+    ResetService();
+
+    callback_count_ = 0;
+
+    // The following lines also serve to first access and thus create the two
+    // services.
+    hcsm()->SetClockForTesting(&clock_);
+    service()->SetClockForTesting(&clock_);
+  }
+
+  void TearDown() override {
+    service()->SetClockForTesting(base::DefaultClock::GetInstance());
+    hcsm()->SetClockForTesting(base::DefaultClock::GetInstance());
+
+    // ~BrowserTaskEnvironment() will properly call Shutdown on the services.
+    ChromeRenderViewHostTestHarness::TearDown();
+  }
+
+  TestingProfile::TestingFactories GetTestingFactories() const override {
+    return {// Needed for background UKM reporting.
+            TestingProfile::TestingFactory{
+                HistoryServiceFactory::GetInstance(),
+                base::BindRepeating(&BuildTestHistoryService)}};
+  }
+
+  void ResetService() {
+    // Setting the factory has the side effect of resetting the service
+    // instance.
+    RevokedPermissionsServiceFactory::GetInstance()->SetTestingFactory(
+        profile(), base::BindRepeating(&BuildRevokedPermissionsService));
+  }
+
+  base::SimpleTestClock* clock() { return &clock_; }
+
+  RevokedPermissionsService* service() {
+    return RevokedPermissionsServiceFactory::GetForProfile(profile());
+  }
+
+  HostContentSettingsMap* hcsm() {
+    return HostContentSettingsMapFactory::GetForProfile(profile());
+  }
+
+  sync_preferences::TestingPrefServiceSyncable* prefs() {
+    return profile()->GetTestingPrefService();
+  }
+
+  base::test::ScopedFeatureList* feature_list() { return &feature_list_; }
+
+  uint8_t callback_count() { return callback_count_; }
+
+  ContentSettingsForOneType GetRevokedUnusedPermissions(
+      HostContentSettingsMap* hcsm) {
+    return hcsm->GetSettingsForOneType(revoked_unused_site_type);
+  }
+
+  void SetUntrackedContentSettingForType(
+      std::string url,
+      ContentSettingsType setting_type,
+      ContentSetting setting_value = ContentSetting::CONTENT_SETTING_ALLOW) {
+    content_settings::ContentSettingConstraints constraint;
+    constraint.set_track_last_visit_for_autoexpiration(false);
+    hcsm()->SetContentSettingDefaultScope(GURL(url), GURL(url), setting_type,
+                                          setting_value, constraint);
+  }
+
+ private:
+  base::SimpleTestClock clock_;
+  uint8_t callback_count_;
+  base::test::ScopedFeatureList feature_list_;
+  scoped_refptr<MockSafeBrowsingDatabaseManager> fake_database_manager_;
+  std::unique_ptr<safe_browsing::TestSafeBrowsingServiceFactory>
+      safe_browsing_factory_;
+};
+
+TEST_F(RevokedPermissionsServiceBackfillTest,
+       LastVisitedBackfill_NothingToBackfill) {
+  feature_list()->InitAndEnableFeature(
+      permissions::features::
+          kSafetyHubUnusedPermissionRevocationForAllSurfaces);
+
+  // Check that backfill status is 'not completed' before triggering the
+  // backfill.
+  EXPECT_FALSE(prefs()->GetBoolean(
+      safety_hub_prefs::kUnusedSitePermissionsRevocationBackfillCompleted));
+
+  // Trigger the background task and check that it did not find any
+  // untimestamped permissions.
+  safety_hub_test_util::UpdateRevokedPermissionsServiceAsync(service());
+  EXPECT_EQ(service()->GetUntimestampedPermissionsForTesting().size(), 0u);
+
+  // Check that UI thread that starts on background task completion marked the
+  // backfill as completed.
+  EXPECT_TRUE(prefs()->GetBoolean(
+      safety_hub_prefs::kUnusedSitePermissionsRevocationBackfillCompleted));
+}
+TEST_F(RevokedPermissionsServiceBackfillTest,
+       LastVisitedBackfill_SuccessfullCompletion) {
+  feature_list()->InitAndEnableFeature(
+      permissions::features::
+          kSafetyHubUnusedPermissionRevocationForAllSurfaces);
+
+  // Add two permissions without `last_visited` timestamp.
+  SetUntrackedContentSettingForType(url5, geolocation_type);
+  SetUntrackedContentSettingForType(url4, mediastream_type);
+
+  // Trigger the background task and check that it added both permissions to
+  // `untimestamped_permissions_` list.
+  safety_hub_test_util::UpdateRevokedPermissionsServiceAsync(service());
+  EXPECT_EQ(service()->GetUntimestampedPermissionsForTesting().size(), 2u);
+  EXPECT_EQ(service()->GetUntimestampedPermissionsForTesting()[0].type,
+            geolocation_type);
+  EXPECT_EQ(service()->GetUntimestampedPermissionsForTesting()[1].type,
+            mediastream_type);
+
+  // Check that UI thread that starts on background task completion performed
+  // the backfill process on the `untimestampe_permissions_` leaving them
+  // timestamped with `last_visited` that lies within the past 7 days.
+  //
+  // The `last_visited` is coarsed by `GetCoarseVisitedTime` [1] due to privacy.
+  // It rounds given timestamp down to the nearest multiple of 7 in the past.
+  // [1] components/content_settings/core/browser/content_settings_utils.cc
+  const base::Time now = clock()->Now();
+  content_settings::SettingInfo info;
+  hcsm()->GetWebsiteSetting(GURL(url5), GURL(), geolocation_type, &info);
+  EXPECT_GE(info.metadata.last_visited(), now - base::Days(7));
+  EXPECT_LE(info.metadata.last_visited(), now);
+  hcsm()->GetWebsiteSetting(GURL(url4), GURL(), mediastream_type, &info);
+  EXPECT_GE(info.metadata.last_visited(), now - base::Days(7));
+  EXPECT_LE(info.metadata.last_visited(), now);
+  EXPECT_TRUE(prefs()->GetBoolean(
+      safety_hub_prefs::kUnusedSitePermissionsRevocationBackfillCompleted));
+}
+
+TEST_F(RevokedPermissionsServiceBackfillTest,
+       LastVisitedBackfill_RevokedAsUsual) {
+  feature_list()->InitAndEnableFeature(
+      permissions::features::
+          kSafetyHubUnusedPermissionRevocationForAllSurfaces);
+
+  // Add two permissions without `last_visited` timestamp.
+  SetUntrackedContentSettingForType(url5, geolocation_type);
+  SetUntrackedContentSettingForType(url4, mediastream_type);
+
+  // Trigger the backfill and check both permissions were timestamped.
+  safety_hub_test_util::UpdateRevokedPermissionsServiceAsync(service());
+  EXPECT_EQ(service()->GetUntimestampedPermissionsForTesting().size(), 2u);
+  EXPECT_TRUE(prefs()->GetBoolean(
+      safety_hub_prefs::kUnusedSitePermissionsRevocationBackfillCompleted));
+
+  // Check that backfilled permissions start being tracked as unused just like
+  // permissions stamped on creation.
+  clock()->Advance(base::Days(10));
+  safety_hub_test_util::UpdateRevokedPermissionsServiceAsync(service());
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return service()->GetTrackedUnusedPermissionsForTesting().size() == 2u;
+  })) << "Backfilled permissions are not being tracked as unused.";
+  EXPECT_EQ(GetRevokedUnusedPermissions(hcsm()).size(), 0u);
+
+  // Check that backfilled permissions get auto-revoked just like
+  // permissions stamped on creation.
+  clock()->Advance(base::Days(60));
+  safety_hub_test_util::UpdateRevokedPermissionsServiceAsync(service());
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return GetRevokedUnusedPermissions(hcsm()).size() == 2u;
+  })) << "Backfilled permissions are not being auto-revoked.";
+  EXPECT_EQ(service()->GetTrackedUnusedPermissionsForTesting().size(), 0u);
+}
+
+TEST_F(RevokedPermissionsServiceBackfillTest, LastVisitedBackfill_FlagIsOff) {
+  feature_list()->InitAndDisableFeature(
+      permissions::features::
+          kSafetyHubUnusedPermissionRevocationForAllSurfaces);
+
+  // Trigger the UpdateAsync() that would perform the backfill if the flag was
+  // enabled.
+  safety_hub_test_util::UpdateRevokedPermissionsServiceAsync(service());
+
+  // Check that backfill did not run.
+  EXPECT_FALSE(prefs()->GetBoolean(
+      safety_hub_prefs::kUnusedSitePermissionsRevocationBackfillCompleted));
+}

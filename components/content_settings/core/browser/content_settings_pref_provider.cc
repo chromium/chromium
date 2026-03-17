@@ -288,12 +288,9 @@ bool PrefProvider::SetLastVisitTime(
                rule.secondary_pattern == secondary_pattern;
       },
       [&](Rule& rule) -> bool {
-        // This should only be updated for settings that are
-        // already tracked.
-        DCHECK_NE(rule.metadata.last_visited(), base::Time());
-
+        // TODO(crbug.com/40267370): Re-add the DCHECK to ensure the existing
+        // `last_visited` is not null.
         rule.metadata.set_last_visited(time);
-
         return true;
       });
 }

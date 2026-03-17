@@ -37,6 +37,9 @@ void RegisterSafetyHubProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(
       safety_hub_prefs::kUnusedSitePermissionsRevocationEnabled, true);
   registry->RegisterBooleanPref(
+      safety_hub_prefs::kUnusedSitePermissionsRevocationBackfillCompleted,
+      false);
+  registry->RegisterBooleanPref(
       safety_hub_prefs::kUnusedSitePermissionsRevocationMigrationCompleted,
       false);
 }

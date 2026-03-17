@@ -52,7 +52,8 @@ class UnusedSitePermissionsManager {
   // permissions should be revoked.
   static std::unique_ptr<SafetyHubResult> UpdateOnBackgroundThread(
       base::Clock* clock,
-      const scoped_refptr<HostContentSettingsMap> hcsm);
+      const scoped_refptr<HostContentSettingsMap> hcsm,
+      bool revocation_backfill_completed);
 
   // Helper to convert content settings type into its string representation.
   static std::string ConvertContentSettingsTypeToKey(ContentSettingsType type);
@@ -106,6 +107,9 @@ class UnusedSitePermissionsManager {
   // Test support:
   void SetClockForTesting(base::Clock* clock);
   std::vector<ContentSettingEntry> GetTrackedUnusedPermissionsForTesting();
+  using UntimestampedPermissionList =
+      RevokedPermissionsResult::UntimestampedPermissionList;
+  UntimestampedPermissionList GetUntimestampedPermissionsForTesting();
 
   using UnusedPermissionMap = RevokedPermissionsResult::UnusedPermissionMap;
 
@@ -127,6 +131,14 @@ class UnusedSitePermissionsManager {
   // permission represented by integer.
   void UpdateIntegerValuesToGroupName();
 
+  // Backfill untimestamped permissions' `last_visited` with the current date.
+  //
+  // The `last_visited` is coarsed by `GetCoarseVisitedTime` [1] due to privacy.
+  // It rounds given timestamp down to the nearest multiple of 7 in the past.
+  // [1] components/content_settings/core/browser/content_settings_utils.cc
+  void MaybePerformLastVisitedBackfill(
+      RevokedPermissionsResult* interim_result);
+
   // Pointer to an object that allows us to manage site permissions.
   HostContentSettingsMap* hcsm() {
     return HostContentSettingsMapFactory::GetForProfile(browser_context_.get());
@@ -140,6 +152,8 @@ class UnusedSitePermissionsManager {
 
   // Set of permissions that haven't been used for at least a week.
   UnusedPermissionMap recently_unused_permissions_;
+
+  UntimestampedPermissionList untimestamped_permissions_;
 
   // Returns true if automatic check and revocation of unused site permissions
   // is occurring. This value is used in `OnContentSettingChanged` to help

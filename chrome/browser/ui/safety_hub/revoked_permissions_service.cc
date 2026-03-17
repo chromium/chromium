@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/safety_hub/safety_hub_result.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_util.h"
+#include "chrome/browser/ui/safety_hub/unused_site_permissions_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "components/content_settings/core/browser/content_settings_info.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -348,8 +349,12 @@ void RevokedPermissionsService::OnPageVisited(const url::Origin& origin) {
 
 base::OnceCallback<std::unique_ptr<SafetyHubResult>()>
 RevokedPermissionsService::GetBackgroundTask() {
+  bool revocation_backfill_completed =
+      pref_change_registrar_->prefs()->GetBoolean(
+          safety_hub_prefs::kUnusedSitePermissionsRevocationBackfillCompleted);
   return base::BindOnce(&UnusedSitePermissionsManager::UpdateOnBackgroundThread,
-                        clock_, base::WrapRefCounted(hcsm()));
+                        clock_, base::WrapRefCounted(hcsm()),
+                        revocation_backfill_completed);
 }
 
 std::unique_ptr<SafetyHubResult> RevokedPermissionsService::UpdateOnUIThread(
@@ -584,6 +589,12 @@ std::vector<ContentSettingEntry>
 RevokedPermissionsService::GetTrackedUnusedPermissionsForTesting() {
   return unused_site_permissions_manager_
       ->GetTrackedUnusedPermissionsForTesting();  // IN-TEST
+}
+
+UnusedSitePermissionsManager::UntimestampedPermissionList
+RevokedPermissionsService::GetUntimestampedPermissionsForTesting() {
+  return unused_site_permissions_manager_
+      ->GetUntimestampedPermissionsForTesting();  // IN-TEST
 }
 
 void RevokedPermissionsService::SetClockForTesting(base::Clock* clock) {
