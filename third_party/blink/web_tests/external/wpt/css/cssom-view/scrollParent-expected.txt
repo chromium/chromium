@@ -15,11 +15,13 @@ This is a testharness.js-based test.
   childOfRoot.scrollParent is not a function
 [FAIL] scrollParent of fixed element contained within root is document scrolling element.
   fixedContainedByRoot.scrollParent is not a function
-[FAIL] scrollParent of body is null.
+[FAIL] scrollParent of body is document scrolling element when body is not document scrolling element.
   document.body.scrollParent is not a function
 [FAIL] scrollParent of root is null.
   document.documentElement.scrollParent is not a function
 [FAIL] scrollParent skips ancestors with `display: contents`.
   childOfDisplayContents.scrollParent is not a function
+[FAIL] scrollParent of scrolling element is null.
+  document.scrollingElement.scrollParent is not a function
 Harness: the test ran to completion.
 

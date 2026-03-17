@@ -4654,7 +4654,14 @@ Element* LayoutObject::ScrollParent(const Element* base) const {
 
   // 1. If any of the following holds true,
   //    return null and terminate this algorithm...
-  if (IsDocumentElement() || IsBody()) {
+  if (IsDocumentElement()) {
+    return nullptr;
+  }
+
+  // Body element should only return null iif it's the scrolling element.
+  // See:
+  // https://github.com/w3c/csswg-drafts/issues/12723#issuecomment-3998966905
+  if (IsBody() && GetDocument().ScrollingElementNoLayout() == GetNode()) {
     return nullptr;
   }
 
