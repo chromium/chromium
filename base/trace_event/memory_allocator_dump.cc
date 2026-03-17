@@ -158,11 +158,17 @@ MemoryAllocatorDump::Entry& MemoryAllocatorDump::Entry::operator=(
 MemoryAllocatorDump::Entry::Entry(std::string name,
                                   std::string units,
                                   uint64_t value)
-    : name(name), units(units), entry_type(kUint64), value_uint64(value) {}
+    : name(std::move(name)),
+      units(std::move(units)),
+      entry_type(kUint64),
+      value_uint64(value) {}
 MemoryAllocatorDump::Entry::Entry(std::string name,
                                   std::string units,
                                   std::string value)
-    : name(name), units(units), entry_type(kString), value_string(value) {}
+    : name(std::move(name)),
+      units(std::move(units)),
+      entry_type(kString),
+      value_string(std::move(value)) {}
 
 bool MemoryAllocatorDump::Entry::operator==(const Entry& rhs) const {
   if (!(name == rhs.name && units == rhs.units &&

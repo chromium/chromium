@@ -543,10 +543,10 @@ void TraceConfig::InitializeFromStrings(std::string_view category_filter_string,
           continue;
         }
         enable_systrace_ = true;
-        const std::vector<std::string> split_systrace_events = SplitString(
+        std::vector<std::string> split_systrace_events = SplitString(
             system_events.substr(1), " ", TRIM_WHITESPACE, SPLIT_WANT_NONEMPTY);
-        for (const std::string& systrace_event : split_systrace_events) {
-          systrace_events_.insert(systrace_event);
+        for (std::string& systrace_event : split_systrace_events) {
+          systrace_events_.insert(std::move(systrace_event));
         }
       } else if (token == kEnableArgumentFilter) {
         enable_argument_filter_ = true;

@@ -312,7 +312,7 @@ void CreateLaunchOptionsWithXdgActivation(
          std::string token) {
         base::LaunchOptions options;
         if (!token.empty()) {
-          options.environment[kXdgActivationTokenEnvVar] = token;
+          options.environment[kXdgActivationTokenEnvVar] = std::move(token);
         }
         std::move(launch_options_cb).Run(options);
       };
