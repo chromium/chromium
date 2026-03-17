@@ -12,6 +12,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "media/capture/video/apple/test/fake_av_capture_device_format.h"
 #import "media/capture/video/apple/test/video_capture_test_utils.h"
+#include "media/capture/video/apple/video_capture_device_avfoundation.h"
 #include "media/capture/video/apple/video_capture_device_avfoundation_utils.h"
 #include "media/capture/video/apple/video_capture_device_factory_apple.h"
 #include "media/capture/video/apple/video_capture_device_frame_receiver.h"

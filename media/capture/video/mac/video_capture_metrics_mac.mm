@@ -12,8 +12,12 @@
 #include "base/apple/bridging.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/metrics/histogram_functions.h"
-#import "media/capture/video/apple/video_capture_device_avfoundation.h"
+#include "media/base/video_types.h"
 #include "media/capture/video/video_capture_device_info.h"
+
+@interface VideoCaptureDeviceAVFoundation : NSObject
++ (media::VideoPixelFormat)FourCCToChromiumPixelFormat:(FourCharCode)code;
+@end
 
 @interface AVCaptureDevice (SPI)
 - (UInt32)connectionID;

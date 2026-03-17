@@ -4,20 +4,11 @@
 
 #include "media/capture/video/apple/video_capture_device_avfoundation_utils.h"
 
-#include "base/mac/mac_util.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/strings/string_util.h"
-#include "base/strings/sys_string_conversions.h"
-#include "media/base/mac/video_capture_device_avfoundation_helpers.h"
-#include "media/base/media_switches.h"
-#include "media/capture/video/apple/video_capture_device_apple.h"
-#include "media/capture/video/apple/video_capture_device_avfoundation.h"
-#include "media/capture/video/apple/video_capture_device_factory_apple.h"
-#include "media/capture/video_capture_types.h"
-
 #if BUILDFLAG(IS_MAC)
 #import <IOKit/audio/IOAudioTypes.h>
 #endif
+
+#include "base/check_op.h"
 
 namespace media {
 

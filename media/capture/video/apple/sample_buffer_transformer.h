@@ -12,15 +12,16 @@
 
 #include "base/apple/scoped_cftyperef.h"
 #include "media/capture/capture_export.h"
-#include "media/capture/video/apple/pixel_buffer_pool.h"
-#include "media/capture/video/apple/pixel_buffer_transferer.h"
 #include "ui/gfx/geometry/size.h"
 
 #if BUILDFLAG(IS_IOS)
-#include "media/capture/video/ios/pixel_buffer_rotator.h"
+class PixelBufferRotator;
 #endif
 
 namespace media {
+
+class PixelBufferPool;
+class PixelBufferTransferer;
 
 // Capable of converting from any supported capture format (NV12, YUY2, UYVY and
 // MJPEG) to NV12 or I420 and doing rescaling. This class can be configured to

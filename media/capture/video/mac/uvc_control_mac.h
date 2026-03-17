@@ -5,10 +5,10 @@
 #ifndef MEDIA_CAPTURE_VIDEO_MAC_UVC_CONTROL_MAC_H_
 #define MEDIA_CAPTURE_VIDEO_MAC_UVC_CONTROL_MAC_H_
 
-#import <Foundation/Foundation.h>
 #include <IOKit/usb/IOUSBLib.h>
 
 #include <string_view>
+#include <vector>
 
 #include "base/check.h"
 #include "base/logging.h"

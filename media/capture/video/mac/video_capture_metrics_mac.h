@@ -7,10 +7,8 @@
 
 #import <AVFoundation/AVFoundation.h>
 #include <CoreMedia/CoreMedia.h>
-#import <Foundation/Foundation.h>
 
 #include "media/capture/capture_export.h"
-#include "ui/gfx/geometry/size.h"
 
 namespace media {
 

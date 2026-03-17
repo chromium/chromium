@@ -169,6 +169,8 @@ component("capture_lib") {
     "//third_party/libyuv",
     "//ui/display",
     "//ui/gfx",
+    "//ui/gfx:color_space",
+    "//ui/gfx/geometry",
   ]
 
   if (is_android) {
@@ -199,8 +201,8 @@ component("capture_lib") {
         "video/apple/video_capture_device_factory_apple.mm",
         "video/apple/video_capture_device_frame_receiver.h",
       ]
+      deps += [ "//components/crash/core/common:crash_key" ]
     }
-    deps += [ "//components/crash/core/common:crash_key" ]
     frameworks = [
       "AVFoundation.framework",
       "CoreFoundation.framework",
@@ -227,6 +229,7 @@ component("capture_lib") {
       # Needed for the logging of camera information for
       # https://crbug.com/461717105; remove when that logging is removed.
       "CoreMediaIO.framework",
+      "IOKit.framework",
     ]
   }
 
@@ -235,6 +238,7 @@ component("capture_lib") {
       "video/ios/pixel_buffer_rotator.cc",
       "video/ios/pixel_buffer_rotator.h",
     ]
+    frameworks += [ "UIKit.framework" ]
   }
 
   if (is_win) {
@@ -358,6 +362,7 @@ test("capture_unittests") {
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/libyuv",
+    "//ui/gfx:color_space",
     "//ui/gfx:test_support",
   ]
 
@@ -401,6 +406,7 @@ test("capture_unittests") {
       "AVFoundation.framework",
       "CoreMedia.framework",
       "CoreVideo.framework",
+      "Foundation.framework",
     ]
   }
 
@@ -411,6 +417,7 @@ test("capture_unittests") {
 
   if (is_ios) {
     deps += [ "//media:unit_tests_bundle_data" ]
+    frameworks += [ "UIKit.framework" ]
   }
 
   if (is_win) {

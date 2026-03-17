@@ -12,8 +12,14 @@
 #include "base/notreached.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
+#include "media/capture/video/apple/pixel_buffer_pool.h"
+#include "media/capture/video/apple/pixel_buffer_transferer.h"
 #include "third_party/libyuv/include/libyuv.h"
 #include "third_party/libyuv/include/libyuv/scale.h"
+
+#if BUILDFLAG(IS_IOS)
+#include "media/capture/video/ios/pixel_buffer_rotator.h"
+#endif
 
 namespace media {
 

@@ -7,8 +7,6 @@
 
 #import <ScreenCaptureKit/ScreenCaptureKit.h>
 
-#include "base/apple/foundation_util.h"
-
 @interface FakeSCRunningApplication : NSObject
 @property(readonly) pid_t processID;
 @property(readonly, copy) NSString* applicationName;

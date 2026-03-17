@@ -9,7 +9,6 @@
 
 #include "base/apple/scoped_cftyperef.h"
 #include "media/capture/capture_export.h"
-#include "media/capture/video/apple/pixel_buffer_pool.h"
 
 namespace media {
 

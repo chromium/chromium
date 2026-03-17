@@ -8,14 +8,14 @@
 #ifndef MEDIA_CAPTURE_VIDEO_MAC_VIDEO_CAPTURE_DEVICE_DECKLINK_MAC_H_
 #define MEDIA_CAPTURE_VIDEO_MAC_VIDEO_CAPTURE_DEVICE_DECKLINK_MAC_H_
 
-#include "media/capture/video/video_capture_device.h"
-
-#import <Foundation/Foundation.h>
 #include <stddef.h>
 #include <stdint.h>
 
+#include <vector>
+
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
+#include "media/capture/video/video_capture_device.h"
 
 namespace {
 class DeckLinkCaptureDelegate;

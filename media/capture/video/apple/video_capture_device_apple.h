@@ -10,14 +10,13 @@
 
 #import <Foundation/Foundation.h>
 #include <stdint.h>
-#include "base/time/time.h"
 
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#import "media/capture/video/apple/video_capture_device_avfoundation.h"
+#include "base/time/time.h"
+#include "media/capture/video/apple/video_capture_device_frame_receiver.h"
 #include "media/capture/video/video_capture_device.h"
 #include "media/capture/video_capture_types.h"
 
@@ -28,6 +27,8 @@ class SingleThreadTaskRunner;
 namespace base {
 class Location;
 }  // namespace base
+
+@class VideoCaptureDeviceAVFoundation;
 
 // Small class to bundle device name and connection type into a dictionary.
 CAPTURE_EXPORT

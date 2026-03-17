@@ -5,19 +5,19 @@
 #ifndef MEDIA_CAPTURE_VIDEO_APPLE_VIDEO_CAPTURE_DEVICE_AVFOUNDATION_UTILS_H_
 #define MEDIA_CAPTURE_VIDEO_APPLE_VIDEO_CAPTURE_DEVICE_AVFOUNDATION_UTILS_H_
 
-#import <AVFoundation/AVFoundation.h>
 #import <CoreMedia/CoreMedia.h>
 #import <CoreVideo/CoreVideo.h>
 
-#include "media/capture/video/apple/video_capture_device_apple.h"
-#include "media/capture/video/video_capture_device_descriptor.h"
-#include "media/capture/video_capture_types.h"
+#include <optional>
+#include <string>
+
+#include "media/capture/capture_export.h"
+#include "ui/gfx/geometry/size.h"
 
 #if BUILDFLAG(IS_IOS)
+#import <AVFoundation/AVFoundation.h>
 #import <UIKit/UIKit.h>
 #endif
-
-@class DeviceNameAndTransportType;
 
 namespace media {
 

@@ -34,6 +34,7 @@
 #include "media/base/mac/color_space_util_mac.h"
 #include "media/base/timestamp_constants.h"
 #include "media/base/video_types.h"
+#include "media/capture/video/apple/sample_buffer_transformer.h"
 #include "media/capture/video/apple/video_capture_device_apple.h"
 #import "media/capture/video/apple/video_capture_device_avfoundation_utils.h"
 #include "media/capture/video/apple/video_capture_device_factory_apple.h"

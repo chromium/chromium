@@ -15,6 +15,8 @@
 #include "base/logging.h"
 #include "base/mac/mac_util.h"
 #include "build/build_config.h"
+#include "media/capture/video/apple/pixel_buffer_pool.h"
+#include "media/capture/video/apple/pixel_buffer_transferer.h"
 #include "media/capture/video/apple/test/pixel_buffer_test_utils.h"
 #include "media/capture/video/apple/video_capture_device_avfoundation_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"

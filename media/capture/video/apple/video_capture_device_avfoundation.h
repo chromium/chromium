@@ -9,16 +9,15 @@
 #import <Foundation/Foundation.h>
 
 #include "base/functional/callback_forward.h"
-#include "base/synchronization/lock.h"
-#include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_checker.h"
 #include "base/time/time.h"
-#include "media/capture/video/apple/sample_buffer_transformer.h"
-#include "media/capture/video/apple/video_capture_device_frame_receiver.h"
-#include "media/capture/video/video_capture_device.h"
+#include "media/base/video_types.h"
+#include "media/capture/capture_export.h"
 #include "media/capture/video_capture_types.h"
+#include "ui/gfx/color_space.h"
 
 namespace media {
+
+class VideoCaptureDeviceAVFoundationFrameReceiver;
 
 // Find the best capture format from |formats| for the specified dimensions and
 // frame rate. Returns an element of |formats|, or nil.
