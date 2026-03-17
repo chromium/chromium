@@ -12,7 +12,7 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {ComposeboxFile} from './common.js';
-import {ContextUploadStatus} from './composebox_query.mojom-webui.js';
+import {ContextUploadStatus, InputType} from './composebox_query.mojom-webui.js';
 import {getCss} from './file_thumbnail.css.js';
 import {getHtml} from './file_thumbnail.html.js';
 
@@ -50,6 +50,7 @@ export class ComposeboxFileThumbnailElement extends CrLitElement {
   accessor file: ComposeboxFile = {
     name: '',
     type: '',
+    inputType: InputType.kLensFile,
     objectUrl: null,
     dataUrl: null,
     uuid: '',

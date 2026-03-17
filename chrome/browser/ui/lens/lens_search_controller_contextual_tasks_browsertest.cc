@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/check_deref.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
@@ -26,6 +28,7 @@
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/lens/lens_overlay_permission_utils.h"
+#include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
@@ -39,6 +42,54 @@
 #include "ui/views/view_utils.h"
 
 namespace {
+
+std::unique_ptr<KeyedService> BuildMockAimServiceEligibilityServiceInstance(
+    content::BrowserContext* context) {
+  Profile* profile = Profile::FromBrowserContext(context);
+  std::unique_ptr<MockAimEligibilityService> mock_aim_eligibility_service =
+      std::make_unique<MockAimEligibilityService>(
+          CHECK_DEREF(profile->GetPrefs()), /*template_url_service=*/nullptr,
+          /*url_loader_factory=*/nullptr, /*identity_manager=*/nullptr,
+          AimEligibilityService::Configuration{});
+
+  EXPECT_CALL(*mock_aim_eligibility_service, IsServerEligibilityEnabled())
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(*mock_aim_eligibility_service, IsAimEligible())
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(*mock_aim_eligibility_service, IsAimLocallyEligible())
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(*mock_aim_eligibility_service, IsFuseboxEligible())
+      .WillRepeatedly(testing::Return(true));
+
+  omnibox::RuleSet* rule_set =
+      mock_aim_eligibility_service->config().mutable_rule_set();
+  auto* input_rule = rule_set->add_input_type_rules();
+  input_rule->set_input_type(omnibox::INPUT_TYPE_LENS_IMAGE);
+  input_rule->set_max_instance(1);
+  input_rule->add_allowed_input_types(omnibox::INPUT_TYPE_LENS_IMAGE);
+
+  auto* input_rule2 = rule_set->add_input_type_rules();
+  input_rule2->set_input_type(omnibox::INPUT_TYPE_BROWSER_TAB);
+  input_rule2->set_max_instance(5);
+  input_rule2->add_allowed_input_types(omnibox::INPUT_TYPE_LENS_IMAGE);
+  input_rule2->add_allowed_input_types(omnibox::INPUT_TYPE_LENS_FILE);
+  input_rule2->add_allowed_input_types(omnibox::INPUT_TYPE_BROWSER_TAB);
+
+  mock_aim_eligibility_service->config()
+      .add_input_type_configs()
+      ->set_input_type(omnibox::INPUT_TYPE_LENS_IMAGE);
+  mock_aim_eligibility_service->config()
+      .add_input_type_configs()
+      ->set_input_type(omnibox::INPUT_TYPE_LENS_FILE);
+  mock_aim_eligibility_service->config()
+      .add_input_type_configs()
+      ->set_input_type(omnibox::INPUT_TYPE_BROWSER_TAB);
+
+  EXPECT_CALL(*mock_aim_eligibility_service, GetSearchboxConfig())
+      .WillRepeatedly(testing::Return(&mock_aim_eligibility_service->config()));
+
+  return std::move(mock_aim_eligibility_service);
+}
 
 constexpr char kDocumentWithNamedElement[] = "/select.html";
 
@@ -98,6 +149,16 @@ std::unique_ptr<LensSearchController> CreateLensSearchControllerHelper(
 
 class ContextualTasksLensInteractionBrowserTestBase
     : public InProcessBrowserTest {
+ public:
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    InProcessBrowserTest::SetUpBrowserContextKeyedServices(context);
+
+    AimEligibilityServiceFactory::GetInstance()->SetTestingFactory(
+        context,
+        base::BindOnce(&BuildMockAimServiceEligibilityServiceInstance));
+  }
+
  public:
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();

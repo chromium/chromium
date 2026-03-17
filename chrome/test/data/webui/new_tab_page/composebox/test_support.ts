@@ -6,7 +6,7 @@ import {ComposeboxElement, ComposeboxProxyImpl} from 'chrome://new-tab-page/lazy
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
 import type {ComposeboxFile} from 'chrome://resources/cr_components/composebox/common.js';
 import {PageCallbackRouter, PageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
-import {ContextUploadStatus, ToolMode as ComposeboxToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
+import {ContextUploadStatus, InputType, ToolMode as ComposeboxToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {PageRemote as SearchboxPageRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
@@ -37,6 +37,7 @@ export function createComposeboxFile(
       {
         name: `file${index}`,
         type: 'application/pdf',
+        inputType: InputType.kLensFile,
         objectUrl: null,
         dataUrl: null,
         uuid: `${index}`,

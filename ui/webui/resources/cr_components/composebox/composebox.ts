@@ -35,9 +35,8 @@ import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {FILE_VALIDATION_ERRORS_MAP} from './common.js';
-import type {ComposeboxFile, ContextualUpload, TabUpload} from './common.js';
-import {recordBoolean, recordContextAdditionMethod, recordEnumerationValue, recordUserAction, TabUploadOrigin} from './common.js';
+import {ComposeboxFile, FILE_VALIDATION_ERRORS_MAP, recordBoolean, recordContextAdditionMethod, recordEnumerationValue, recordUserAction, TabUploadOrigin} from './common.js';
+import type {ContextualUpload, TabUpload} from './common.js';
 import {getCss} from './composebox.css.js';
 import {getHtml} from './composebox.html.js';
 import type {PageHandlerRemote} from './composebox.mojom-webui.js';
@@ -352,7 +351,6 @@ export class ComposeboxElement extends I18nMixinLit
 
   // Retains the latest version of the pending automatic active tab's title.
   protected pendingAutomaticActiveTabTitle_: string = '';
-
   protected dragAndDropHandler_: DragAndDropHandler;
   private showTypedSuggest_: boolean =
       loadTimeData.getBoolean('composeboxShowTypedSuggest');
@@ -1017,20 +1015,14 @@ export class ComposeboxElement extends I18nMixinLit
         continue;
       }
 
-      const attachment: ComposeboxFile = {
-        uuid: token,
-        name: file.name,
-        dataUrl: null,
-        objectUrl: file.type.includes('image') ? URL.createObjectURL(file) :
-                                                 null,
-        type: file.type,
-        status: ContextUploadStatus.kNotUploaded,
-        url: null,
-        tabId: null,
-        isDeletable: true,
-        iconName: null,
-        supportsUnimodal: true,
-      };
+      const attachment = ComposeboxFile.createFromFile(
+          token, file, ContextUploadStatus.kNotUploaded, {
+            dataUrl: null,
+            objectUrl: file.type.includes('image') ? URL.createObjectURL(file) :
+                                                     null,
+            iconName: null,
+            supportsUnimodal: true,
+          });
       composeboxFiles.set(token, attachment);
       const announcer = getAnnouncerInstance();
       announcer.announce(this.i18n('composeboxFileUploadStartedText'));
@@ -1049,6 +1041,8 @@ export class ComposeboxElement extends I18nMixinLit
       dataUrl: fileInfo.imageDataUrl ?? null,
       objectUrl: null,
       type: fileInfo.imageDataUrl ? 'image' : 'pdf',
+      inputType: fileInfo.imageDataUrl ? InputType.kLensImage :
+                                         InputType.kLensFile,
       status: fileInfo.imageDataUrl ? ContextUploadStatus.kUploadSuccessful :
                                       ContextUploadStatus.kNotUploaded,
       url: null,
@@ -1064,50 +1058,42 @@ export class ComposeboxElement extends I18nMixinLit
   injectInput(
       title: string, thumbnail: string, fileToken: UnguessableToken,
       supportsUnimodal: boolean, iconName?: string) {
-    const attachment: ComposeboxFile = {
-      uuid: fileToken,
-      name: title,
-      dataUrl: thumbnail,
-      objectUrl: thumbnail,
-      type: 'injectedinput',
-      status: ContextUploadStatus.kUploadSuccessful,
-      url: null,
-      tabId: null,
-      isDeletable: true,
-      iconName: iconName ?? null,
-      supportsUnimodal: supportsUnimodal,
-    };
+    const attachment = ComposeboxFile.createFromInjectedInput(
+        fileToken, thumbnail, title, iconName ?? null);
+    attachment.supportsUnimodal = supportsUnimodal;
 
     this.onFileContextAdded_(attachment);
   }
 
   private updateAutoSuggestedTabContext_(tab: TabInfo|null) {
-    if (!tab) {
-      if (this.automaticActiveTab_) {
-        this.deleteFile(this.automaticActiveTab_.uuid);
-        this.automaticActiveTab_ = null;
-        // TODO(crbug.com/482150500): Correctly query for url based suggestions
-        // when delayed tab is present. Right now, while url-based suggestions
-        // are not set-up, clear autocomplete matches if current autochip is
-        // being cleared.
+    const shouldDeleteAutomaticActiveTab = this.automaticActiveTab_ &&
+        (!tab || this.automaticActiveTab_.url !== tab.url);
+    if (shouldDeleteAutomaticActiveTab) {
+      this.deleteFile(this.automaticActiveTab_!.uuid);
+      this.automaticActiveTab_ = null;
+
+      // TODO(crbug.com/482150500): Correctly query for url based suggestions
+      // when delayed tab is present. Right now, while url-based suggestions are
+      // not set-up, clear the autocomplete matches.
+      if (!tab) {
         this.queryAutocomplete_(/* clearMatches= */ true);
       }
       return;
     }
 
-    // If the last fully uploaded tab is the same as the current potential
-    // auto chip, do not update the auto chip or its title. Note that
-    // last uploading tab != last uploaded tab. Tabs can be uploading AND not
-    // be stored in `automaticActiveTab_`, as `automaticActiveTab_` is async
-    // state (runs too late) & represents the last fully uploaded auto chip.
-    const tabDifferentfromLastUploaded =
-        !this.automaticActiveTab_ || (this.automaticActiveTab_.url !== tab.url);
-    if (tabDifferentfromLastUploaded) {
-      if (this.automaticActiveTab_) {
-        this.deleteFile(this.automaticActiveTab_.uuid);
-        this.automaticActiveTab_ = null;
+    if (tab) {
+      // Ignore the `TabInfo` update if there is a matching
+      // `automaticActiveTab_`.
+      if (this.automaticActiveTab_ &&
+          tab.url === this.automaticActiveTab_.url &&
+          tab.tabId === this.automaticActiveTab_.tabId) {
+        return;
       }
-      // If current tab is the same as the currently uploading tab (same url),
+
+      // If an autochip is currently being uploaded but carousel attachment has
+      // not been created yet, allow updates to its title. Absence of this
+      // url means that there is no currently no auto active tab uploading.
+      // If the url is the same, this is an update for the same tab so just
       // allow updates to the uploading tab's title from this update,
       // but do not upload it again.
       if (this.pendingAutomaticActiveTabUrl_ === tab.url) {
@@ -1117,6 +1103,7 @@ export class ComposeboxElement extends I18nMixinLit
       // Otherwise, prepare to replace the auto chip:
       this.pendingAutomaticActiveTabUrl_ = tab.url;
       this.pendingAutomaticActiveTabTitle_ = tab.title;
+
 
       // Do not reset above pending states in this async callback since
       // later requests make any older async callback updates irrelevant.
@@ -1139,6 +1126,13 @@ export class ComposeboxElement extends I18nMixinLit
 
   private onInputStateChanged_(inputState: InputState) {
     this.inputState_ = inputState;
+
+    const allowedTypes = this.inputState_.allowedInputTypes;
+    this.files_.forEach((file, uuid) => {
+      if (!allowedTypes.includes(file.inputType)) {
+        this.deleteFile(uuid);
+      }
+    });
   }
 
   protected onDeleteFile_(
@@ -1175,25 +1169,16 @@ export class ComposeboxElement extends I18nMixinLit
       if (!token) {
         return;
       }
-      const attachment: ComposeboxFile = {
-        uuid: token,
-        // Adding a tab is asynchronous. For auto active tabs, a title update
-        // might be received after the upload process has been started. In order
-        // to prevent adding duplicate chips from this update, simply update the
-        // title of the initial upload instead based on whatever the latest
-        // title update received is.
-        name: replaceAutoActiveTabToken ? this.pendingAutomaticActiveTabTitle_ :
-                                          tabUpload.title,
-        dataUrl: null,
-        objectUrl: null,
-        type: 'tab',
-        status: ContextUploadStatus.kNotUploaded,
-        url: tabUpload.url,
-        tabId: tabUpload.tabId,
-        isDeletable: true,
-        iconName: null,
-        supportsUnimodal: true,
-      };
+      // Adding a tab is asynchronous. For auto active tabs, a title update
+      // might be received after the upload process has been started. In order
+      // to prevent adding duplicate chips from this update, simply update the
+      // title of the initial upload instead based on whatever the latest
+      // title update received is.
+      const attachment = ComposeboxFile.createFromTab(
+          token, tabUpload.tabId,
+          replaceAutoActiveTabToken ? this.pendingAutomaticActiveTabTitle_ :
+                                      tabUpload.title,
+          tabUpload.url, {supportsUnimodal: true});
 
       this.files_ = new Map(
           [...this.files_.entries(), [attachment.uuid, attachment]]);
@@ -2349,6 +2334,7 @@ export class ComposeboxElement extends I18nMixinLit
           objectUrl: null,
           dataUrl: null,
           type: '',
+          inputType: InputType.kLensFile,
           // Override this since first upload status is this or processing.
           // Need this or processing in order to show tab spinner.
           status: ContextUploadStatus.kUploadStarted,
@@ -2485,19 +2471,11 @@ export class ComposeboxElement extends I18nMixinLit
       return;
     }
     const pendingStatus = this.files_.get(fileAttachment.uuid)?.status;
-    const composeboxFile: ComposeboxFile = {
-      uuid: fileAttachment.uuid,
-      name: fileAttachment.name,
-      objectUrl: null,
-      dataUrl: fileAttachment.imageDataUrl ?? null,
-      type: fileAttachment.mimeType,
-      status: pendingStatus ?? ContextUploadStatus.kNotUploaded,
-      url: null,
-      tabId: null,
-      isDeletable: true,
-      iconName: null,
-      supportsUnimodal: true,
-    };
+    const composeboxFile = ComposeboxFile.createFromFile(
+        fileAttachment.uuid as unknown as UnguessableToken,
+        {name: fileAttachment.name, type: fileAttachment.mimeType},
+        pendingStatus ?? ContextUploadStatus.kNotUploaded,
+        {dataUrl: fileAttachment.imageDataUrl ?? null, supportsUnimodal: true});
     this.onFileContextAdded_(composeboxFile);
   }
 

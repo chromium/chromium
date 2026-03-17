@@ -6,8 +6,7 @@ import {ComposeboxContextAddedMethod} from '//resources/cr_components/search/con
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {ContextUploadErrorType} from './composebox_query.mojom-webui.js';
-import type {ContextUploadStatus} from './composebox_query.mojom-webui.js';
+import {ContextUploadErrorType, ContextUploadStatus, InputType} from './composebox_query.mojom-webui.js';
 
 export const FILE_VALIDATION_ERRORS_MAP =
     new Map<ContextUploadErrorType, string>([
@@ -29,18 +28,71 @@ export const FILE_VALIDATION_ERRORS_MAP =
       ],
     ]);
 
-export interface ComposeboxFile {
+export class ComposeboxFile {
   uuid: UnguessableToken;
   name: string;
   objectUrl: string|null;
   dataUrl: string|null;
   type: string;
+  inputType: InputType;
   status: ContextUploadStatus;
   url: Url|null;
   tabId: number|null;
   isDeletable: boolean;
   iconName: string|null;
   supportsUnimodal: boolean;
+
+  constructor(
+      uuid: UnguessableToken, name: string, type: string, inputType: InputType,
+      options?: Partial<ComposeboxFile>) {
+    this.uuid = uuid;
+    this.name = name;
+    this.type = type;
+    this.inputType = inputType;
+    this.objectUrl = options?.objectUrl ?? null;
+    this.dataUrl = options?.dataUrl ?? null;
+    this.status = options?.status ?? ContextUploadStatus.kNotUploaded;
+    this.url = options?.url ?? null;
+    this.tabId = options?.tabId ?? null;
+    this.isDeletable = options?.isDeletable ?? true;
+    this.iconName = options?.iconName ?? null;
+    this.supportsUnimodal = options?.supportsUnimodal ?? false;
+  }
+
+  static createFromFile(
+      uuid: UnguessableToken, file: File|{name: string, type: string},
+      status: ContextUploadStatus = ContextUploadStatus.kNotUploaded,
+      options?: Partial<ComposeboxFile>): ComposeboxFile {
+    const inputType = file.type.includes('image') ? InputType.kLensImage :
+                                                    InputType.kLensFile;
+    return new ComposeboxFile(uuid, file.name, file.type, inputType, {
+      status,
+      ...options,
+    });
+  }
+
+  static createFromTab(
+      uuid: UnguessableToken, tabId: number, title: string, url: Url,
+      options?: Partial<ComposeboxFile>): ComposeboxFile {
+    return new ComposeboxFile(uuid, title, 'tab', InputType.kBrowserTab, {
+      status: ContextUploadStatus.kUploadSuccessful,
+      tabId,
+      url,
+      ...options,
+    });
+  }
+
+  static createFromInjectedInput(
+      uuid: UnguessableToken, dataUrl: string, name: string = 'Pasted Image',
+      iconName: string|null = null): ComposeboxFile {
+    return new ComposeboxFile(
+        uuid, name, 'injectedinput', InputType.kLensImage, {
+          dataUrl,
+          objectUrl: dataUrl,
+          status: ContextUploadStatus.kUploadSuccessful,
+          iconName,
+        });
+  }
 }
 
 export interface FileUpload {
