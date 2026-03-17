@@ -55,6 +55,11 @@ IdentityDialogController::IdentityDialogController(
     actor_task_state_subscription_ = actor_service->AddTaskStateChangedCallback(
         base::BindRepeating(&IdentityDialogController::OnActorTaskStateChanged,
                             weak_ptr_factory_.GetWeakPtr()));
+    const actor::ActorTask* acting_task =
+        actor_service->GetActingActorTaskForWebContents(rp_web_contents_);
+    if (acting_task) {
+      acting_task_id_ = acting_task->id();
+    }
   }
 
   if (!base::FeatureList::IsEnabled(
@@ -529,6 +534,11 @@ bool IdentityDialogController::DidShowUi() const {
 void IdentityDialogController::SetAccountSelectionViewForTesting(
     std::unique_ptr<AccountSelectionView> account_view) {
   account_view_ = std::move(account_view);
+}
+
+void IdentityDialogController::SetActingTaskIdForTesting(
+    actor::TaskId task_id) {
+  UpdateTaskId(task_id);
 }
 
 bool IdentityDialogController::TrySetAccountView() {

@@ -162,6 +162,9 @@ class IdentityDialogController
   void SetAccountSelectionViewForTesting(
       std::unique_ptr<AccountSelectionView> account_view);
 
+  // Set acting_task_id for testing purposes.
+  void SetActingTaskIdForTesting(actor::TaskId task_id);
+
   // Requests a UI volume recommendation from |segmentation_platform_service_|.
   void RequestUiVolumeRecommendation(
       segmentation_platform::ClassificationResultCallback callback);

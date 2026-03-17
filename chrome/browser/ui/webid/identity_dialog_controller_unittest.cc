@@ -128,6 +128,8 @@ class MockAccountSelectionView : public AccountSelectionView {
   MOCK_METHOD(void, CloseModalDialog, (), (override));
 
   MOCK_METHOD(content::WebContents*, GetRpWebContents, (), (override));
+
+  MOCK_METHOD(void, SetCanShowWidget, (bool), (override));
 };
 
 class IdentityDialogControllerTest : public ChromeRenderViewHostTestHarness {
@@ -347,6 +349,28 @@ TEST_F(IdentityDialogControllerTest, Accept) {
   Accept(manager);
 
   EXPECT_FALSE(prompt_factory->is_visible());
+}
+
+TEST_F(IdentityDialogControllerTest, ActorTaskSuppressesUi) {
+  std::unique_ptr<IdentityDialogController> controller =
+      std::make_unique<IdentityDialogController>(web_contents());
+  auto mock_view = std::make_unique<MockAccountSelectionView>();
+  MockAccountSelectionView* view_ptr = mock_view.get();
+
+  // 1. Simulate an active actor task. This should call SetCanShowWidget(false).
+  EXPECT_CALL(*view_ptr, SetCanShowWidget(false));
+  controller->SetAccountSelectionViewForTesting(std::move(mock_view));
+  controller->SetActingTaskIdForTesting(actor::TaskId::FromUnsafeValue(1));
+
+  // 2. Even if there is an active task, ShowLoadingDialog should be called.
+  // The visibility control happens inside the real view implementation,
+  // or via the SetCanShowWidget(false) call we just verified.
+  EXPECT_CALL(*view_ptr, ShowLoadingDialog).WillOnce(testing::Return(true));
+
+  EXPECT_TRUE(controller->ShowLoadingDialog(
+      content::RelyingPartyData(kTopFrameEtldPlusOne, u""), kIdpEtldPlusOne,
+      blink::mojom::RpContext::kSignIn, blink::mojom::RpMode::kActive,
+      base::DoNothing()));
 }
 
 TEST_F(IdentityDialogControllerTest, Deny) {
