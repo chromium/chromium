@@ -10799,6 +10799,7 @@ from previous Chrome versions.
   <int value="-1248478422" label="enable-zip-archiver-packer"/>
   <int value="-1248232229"
       label="UsernameFirstFlowWithIntermediateValuesPredictions:enabled"/>
+  <int value="-1247919270" label="SyncGeminiThread:enabled"/>
   <int value="-1246840031" label="OptInImeMenu:disabled"/>
   <int value="-1246477455" label="ClipboardUnsanitizedContent:disabled"/>
   <int value="-1246125067" label="SearchInSettings:enabled"/>
@@ -12164,6 +12165,7 @@ from previous Chrome versions.
   <int value="-780798969" label="disable-single-click-autofill"/>
   <int value="-780646596"
       label="CustomizeChromeWallpaperSearchInspirationCard:enabled"/>
+  <int value="-780566251" label="SyncAIThread:enabled"/>
   <int value="-779220222" label="WebXRLayers:disabled"/>
   <int value="-778126349" label="DownloadsLocationChange:enabled"/>
   <int value="-778098896" label="EnableAggregatedMlSearchRanking:disabled"/>
@@ -18722,6 +18724,7 @@ from previous Chrome versions.
       label="CCTRealTimeEngagementSignalsAlternativeImpl:enabled"/>
   <int value="1442854659"
       label="IncrementLocalSurfaceIdForMainframeSameDocNavigation:enabled"/>
+  <int value="1443079902" label="SyncAIThread:disabled"/>
   <int value="1443542260" label="WebAppManifestProtocolHandlerSupport:enabled"/>
   <int value="1443830588" label="VerticalSnap:disabled"/>
   <int value="1443836294"
@@ -18843,6 +18846,7 @@ from previous Chrome versions.
   <int value="1474268803" label="TabCaptureInfobarLinks:enabled"/>
   <int value="1474433736" label="NtpRealboxTailSuggest:enabled"/>
   <int value="1474707811" label="Jelly:enabled"/>
+  <int value="1474822376" label="SyncGeminiThread:disabled"/>
   <int value="1474861626" label="disable-multi-mirroring"/>
   <int value="1475210901" label="AvatarToolbarButton:disabled"/>
   <int value="1475771788" label="BackgroundResourceFetch:enabled"/>

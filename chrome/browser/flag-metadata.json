@@ -9181,12 +9181,32 @@
     "expiry_milestone": 152
   },
   {
+    "name": "sync-ai-threads",
+    "owners": [
+      "chazzy@chromium.org",
+      "davidjm@google.com",
+      "chrome-shopping-eng@google.com",
+      "top-chrome-desktop-ui@google.com"
+    ],
+    "expiry_milestone": 155
+  },
+  {
     "name": "sync-autofill-wallet-credential-data",
     "owners": [
       "koulvipul@google.com", "treib@chromium.org",
       "yiwenqian@google.com", "payments-autofill-team@google.com"
     ],
     "expiry_milestone": 150
+  },
+  {
+    "name": "sync-gemini-threads",
+    "owners": [
+      "chazzy@chromium.org",
+      "davidjm@google.com",
+      "chrome-shopping-eng@google.com",
+      "top-chrome-desktop-ui@google.com"
+    ],
+    "expiry_milestone": 155
   },
   {
     "name": "sync-themes-ios",

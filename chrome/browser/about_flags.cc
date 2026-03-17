@@ -12637,6 +12637,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(tab_groups::kProjectsPanel,
                                     kProjectsPanelVariations,
                                     "ProjectsPanel")},
+    {"sync-ai-threads", flag_descriptions::kSyncAIThreadsName,
+     flag_descriptions::kSyncAIThreadsDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(syncer::kSyncAIThread)},
+    {"sync-gemini-threads", flag_descriptions::kSyncGeminiThreadsName,
+     flag_descriptions::kSyncGeminiThreadsDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(syncer::kSyncGeminiThread)},
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
         // BUILDFLAG(IS_CHROMEOS)
 
