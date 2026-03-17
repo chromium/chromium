@@ -213,6 +213,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="1900260903084164610">Wenn du fortfährst, akzeptierst du damit die <ph name="BEGIN_TOS_LINK" />Nutzungsbedingungen<ph name="END_TOS_LINK" />.</translation>
 <translation id="1904580727789512086">Die von dir besuchten URLs werden in deinem Google-Konto gespeichert</translation>
 <translation id="1910950723001426294">Die Liste der Freigabeoptionen ist geschlossen.</translation>
+<translation id="1912367671208932516">Menü „Erweiterungen“ öffnen</translation>
 <translation id="191726024256261717">Berechtigungen prüfen</translation>
 <translation id="1917766536967060661">Du verlierst dann sofort den Zugriff auf die Tabgruppe „<ph name="GROUP_NAME" />“ und <ph name="BLOCKED_MEMBER_FULL_NAME" /> (<ph name="BLOCKED_MEMBER_EMAIL" />) kann nicht mehr über Google-Dienste mit dir interagieren.</translation>
 <translation id="1919130412786645364">Anmeldung in Chrome zulassen</translation>
@@ -414,6 +415,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="2789486458103222910">Ok</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome hat ein mehrfach verwendetes Passwort gefunden, dessen Sicherheit du verbessern kannst}other{Chrome hat # mehrfach verwendete Passwörter gefunden, deren Sicherheit du verbessern kannst}}</translation>
 <translation id="2794551654724114396">Aktiviere Benachrichtigungen für Tipps zur optimalen Nutzung von Chrome</translation>
+<translation id="2798977804328097977">Nahtlos auf jedem Gerät fortfahren</translation>
 <translation id="2805210243313393104">Lesezeichen und andere Daten auf allen deinen Geräten abrufen</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="2819849308549746319">Alle abbestellen</translation>
@@ -469,6 +471,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="2977350910003566746">Nach „Zuletzt geöffnet“ sortieren</translation>
 <translation id="297771753501244313">Nach „Zuletzt geöffnet“ sortieren</translation>
 <translation id="2979639724566107830">In neuem Fenster öffnen</translation>
+<translation id="2980545254049127870">Links aus Nachrichten, Dokumenten und anderen Apps ganz einfach öffnen</translation>
 <translation id="2983102365694924129">Basierend auf deinen Aktivitäten auf einer Website. Diese Einstellung ist deaktiviert.</translation>
 <translation id="2983398917942897288">Inaktiv (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2983835398644161987">Bild-in-Bild-Modus beenden</translation>
@@ -730,6 +733,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="4137746084635924146">Aktuelle Gerätesprache</translation>
 <translation id="414128724510021958">Desktopwebsites werden standardmäßig angefordert</translation>
 <translation id="4162867837470729563">Die Liste der Freigabeoptionen ist vollständig geöffnet.</translation>
+<translation id="4164642020717536140">Schnelles und sicheres Surfen im Web</translation>
 <translation id="4165077084524712774">Weitere Tools</translation>
 <translation id="4170011742729630528">Der Dienst ist momentan nicht verfügbar. Bitte versuche es später erneut.</translation>
 <translation id="4170577491341606575">Daten werden abgerufen\u2026</translation>
@@ -854,6 +858,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 kompromittiertes Passwort}other{# kompromittierte Passwörter}}</translation>
 <translation id="4641919525231168205">Zur nächsten Seite</translation>
 <translation id="4642472735733036929">Preis-Tracking gestoppt</translation>
+<translation id="4643661539340338954">Benachrichtigungen von „Chrome Finds“ aktiviert</translation>
 <translation id="4649493483932335039">Zuletzt geöffnete Tabs ansehen</translation>
 <translation id="465657074423018424">Safe Browsing schützt dich vor betrügerischen Websites. Wenn du Safe Browsing deaktivierst, solltest du besonders vorsichtig sein, wenn du im Internet surfst, besonders wenn du Passwörter eingibst.</translation>
 <translation id="4662373422909645029">Der Alias darf keine Zahlen enthalten</translation>
@@ -1652,6 +1657,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="7686086654630106285">Weitere Informationen zu Werbung, die von Websites vorgeschlagen wird</translation>
 <translation id="7690596512217303514">Chrome konnte auf deinem Gerät nicht geöffnet werden. Lade das aktuelle Chrome-Update aus deinem App-Shop herunter, um das Problem zu beheben.</translation>
 <translation id="7692761875510935111">Schnell im Browser öffnen. Zum Ändern Button gedrückt halten.</translation>
+<translation id="7695270712963178084">Chrome Finds</translation>
 <translation id="7697383401610880082">Ziehpunkt</translation>
 <translation id="7698359219371678927">E-Mail in <ph name="APP_NAME" /> erstellen</translation>
 <translation id="7702420606070050505">Ansicht mit den letzten Aktivitäten am unteren Rand vollständig geöffnet</translation>

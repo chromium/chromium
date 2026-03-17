@@ -754,6 +754,7 @@
 <translation id="2184405333245229118">{COUNT,plural, =1{1 адрес}one{# адрес}few{# адреса}many{# адресов}other{# адреса}}</translation>
 <translation id="2188375229972301266">Несколько отверстий снизу</translation>
 <translation id="218940509700321686">Файл в формате CSV</translation>
+<translation id="2190094353033916816">Это правило имеет разные значения на уровне компьютера и пользователя. Правило работает корректно.</translation>
 <translation id="2191980191135734720">На следующем шаге разблокируйте экран, например с помощью отпечатка пальца. Вы также можете <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Важная информация</translation>
 <translation id="2198183835992354675">Личный номер пассажира, присвоенный TSA</translation>
@@ -3192,6 +3193,7 @@
 <translation id="6042308850641462728">Ещё</translation>
 <translation id="6043357981274314628">Готово</translation>
 <translation id="6045164183059402045">Шаблон спуска полос</translation>
+<translation id="6046026831939367176">Сайт <ph name="URL" /> запрашивает доступ к приблизительному местоположению</translation>
 <translation id="6046892054959167494">Введите "<ph name="SEARCH_AGGREGATOR_KEYWORD" />" для поиска или спросите <ph name="SEARCH_AGGREGATOR_SHORT_NAME" /></translation>
 <translation id="6047927260846328439">Посещение этой страницы может привести к установке вредоносной программы или хищению вашей личной информации. <ph name="BEGIN_LINK" />Все равно продолжить<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">Конверт B4</translation>
@@ -3641,7 +3643,6 @@
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">камера</translation>
 <translation id="6734506549556896534">Игры-симуляторы</translation>
-<translation id="6735589846038045679">Платежи в рассрочку доступны при соответствии требованиям. <ph name="BEGIN_BOLD" />Для показа этих вариантов в Google передаются данные о контенте на странице покупки.<ph name="END_BOLD" /> Чтобы скрыть варианты оплаты в рассрочку, перейдите в <ph name="BEGIN_LINK" />платежные настройки<ph name="END_LINK" />.</translation>
 <translation id="6737708609449480586">Выпечка</translation>
 <translation id="6738516213925468394">Данные были зашифрованы <ph name="TIME" /> с помощью <ph name="BEGIN_LINK" />кодовой фразы<ph name="END_LINK" />. Введите ее, чтобы начать синхронизацию.</translation>
 <translation id="6740851646645036700">Вы достигли лимита на генерацию текстов. Повторите попытку позже.</translation>
@@ -4991,6 +4992,7 @@
 <translation id="8870700989640064057">Распечатать конфиденциальный файл?</translation>
 <translation id="8871485335898060555">Антиквариат и предметы коллекционирования</translation>
 <translation id="8871553383647848643">Настроить внешний вид браузера</translation>
+<translation id="887350038812854047">Это правило имеет одинаковое значение на уровне компьютера и пользователя. Правило работает корректно.</translation>
 <translation id="8874790741333031443">Попробуйте временно разрешить сторонние файлы cookie. Браузер будет хуже защищен, но функции сайта могут начать работать правильно.</translation>
 <translation id="8874824191258364635">Введите действительный номер карты.</translation>
 <translation id="8877780815363510165">Рыбалка</translation>

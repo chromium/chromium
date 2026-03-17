@@ -125,7 +125,6 @@
 <translation id="2228071138934252756"><ph name="APP_NAME" /> ला तुमचा कॅमेरा ॲक्सेस करू देण्यासाठी, <ph name="BEGIN_LINK" />Android सेटिंग्ज<ph name="END_LINK" /> मध्येदेखील कॅमेरा सुरू करा.</translation>
 <translation id="2231160360698766265">साइट संरक्षित आशय प्ले करू शकतात</translation>
 <translation id="2235344399760031203">तृतीय पक्ष कुकी ब्लॉक केल्या आहेत</translation>
-<translation id="2238944249568001759">तुमच्या मागील टॅबनुसार सुचवलेले शोध</translation>
 <translation id="2241587408274973373">नवीन टॅब पेज कार्ड</translation>
 <translation id="2241634353105152135">फक्त एकदाच</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> काढून टाका</translation>
@@ -214,7 +213,6 @@
 <translation id="3069226013421428034">विशिष्ट साइटसाठी तृतीय पक्ष साइन-इनला अनुमती द्या.</translation>
 <translation id="310297983047869047">मागील स्लाइड</translation>
 <translation id="3108122610701115301">डीफॉल्ट म्हणून सेट करा</translation>
-<translation id="3109724472072898302">संकुचित केलेले</translation>
 <translation id="310979712355504754">सर्व हटवा</translation>
 <translation id="311394601889664316">साइटना तुमच्या डिव्हाइसवरील फाइल किंवा फोल्डर संपादित करण्याची अनुमती देऊ नका</translation>
 <translation id="3114012059975132928">व्‍हिडिओ प्‍लेअर</translation>
@@ -262,7 +260,6 @@
 <translation id="3602290021589620013">पूर्वावलोकन</translation>
 <translation id="3611658447322220736">नुकत्याच बंद केलेल्या साइट डेटा पाठवणे आणि मिळवणे पूर्ण करू शकतात</translation>
 <translation id="3619294456800709762">चित्रात-चित्र यामध्ये साइट आपोआप प्रवेश करू शकतात</translation>
-<translation id="3628308229821498208">सुचवलेले शोध</translation>
 <translation id="3632460243282703117">सदस्यत्व घ्या</translation>
 <translation id="363748948745453283">अंदाजे स्थान वापरत आहे</translation>
 <translation id="3641456520301071208">साइट तुमचे स्थान विचारू शकतात</translation>
@@ -490,6 +487,7 @@
 <translation id="5922853908706496913">तुमची स्क्रीन शेअर करत आहे</translation>
 <translation id="5922967540311291836">तृतीय पक्ष कुकी ब्लॉक करा:</translation>
 <translation id="5923512600150154850">यामुळे साइटनी स्टोअर केलेल्या डेटा आणि कुकीचा <ph name="DATASIZE" /> हटवला जाईल.</translation>
+<translation id="5930707844513754220">आणखी सेटअप सूची पहा</translation>
 <translation id="5939518447894949180">रीसेट करा</translation>
 <translation id="5948139900367969951">तुमच्यासाठी महत्त्वाचे असलेले लवकर मिळवा</translation>
 <translation id="5964247741333118902">एंबेड केलेला आशय</translation>
@@ -498,6 +496,7 @@
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
 <translation id="5998071268779572583">Discover फीड सुरू करा</translation>
 <translation id="6012967556075291653">पिन केलेला शॉर्टकट</translation>
+<translation id="6013003831291591200">टास्क पूर्ण झाली आहे</translation>
 <translation id="6015775454662021376">या साइटला तुमच्‍या डिव्हाइसचा असलेला अ‍ॅक्सेस नियंत्रित करा</translation>
 <translation id="6022659036123304283">Chrome ला तुमच्या आवडीनुसार बनवा</translation>
 <translation id="6040143037577758943">बंद करा</translation>
@@ -522,7 +521,6 @@
 <translation id="6231752747840485235">'<ph name="APP_NAME" />' अनइंस्टॉल करायचे आहे का?</translation>
 <translation id="6234351944623978659">ब्राउझर अ‍ॅप &gt; Chrome वर टॅप करा</translation>
 <translation id="6260830281887654268">नवीन टॅब पेज स्वरूपाच्या थीम संग्रहांच्या तळाशी असलेली शीट अर्ध्या उंचीवर उघडली आहे</translation>
-<translation id="6262191102408817757">तुमच्या शेवटच्या टॅबवर आधारित</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> आणि <ph name="PERMISSION_2" /> ला ब्लॉक केले</translation>
 <translation id="6270391203985052864">साइट सूचना पाठवण्यास सांगू शकतात</translation>
 <translation id="6295158916970320988">सर्व साइट</translation>
@@ -602,7 +600,6 @@
 <translation id="7180611975245234373">रिफ्रेश करा</translation>
 <translation id="7188508872042490670">डिव्‍हाइसवरील साइट डेटा</translation>
 <translation id="7201549776650881587">ही कृती <ph name="ORIGIN" /> अंतर्गत किंवा तुमच्या होम स्क्रीनवर त्याच्या अ‍ॅपने सर्व साइटनी स्टोअर केलेला सर्व डेटा आणि कुकी हटवेल</translation>
-<translation id="7203150201908454328">विस्‍तृत केलेले</translation>
 <translation id="7213166370492037743">साइटना तुमच्या स्थानिक नेटवर्कवरील कोणत्याही डिव्हाइससोबत कनेक्ट करण्याची अनुमती देऊ नका</translation>
 <translation id="7219254577985949841">साइट डेटा हटवायचा आहे का?</translation>
 <translation id="723171743924126238">इमेज निवडा</translation>

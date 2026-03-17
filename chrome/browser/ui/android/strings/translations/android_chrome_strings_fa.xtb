@@ -213,6 +213,7 @@
 <translation id="1900260903084164610">درصورت ادامه دادن، موافقتتان را با <ph name="BEGIN_TOS_LINK" />شرایط خدمات<ph name="END_TOS_LINK" /> اعلام می‌کنید.</translation>
 <translation id="1904580727789512086">‏نشانی‌های وبی که بازدید می‌کنید در «حساب Google» شما ذخیره می‌شوند</translation>
 <translation id="1910950723001426294">فهرست گزینه‌های هم‌رسانی بسته است.</translation>
+<translation id="1912367671208932516">باز کردن منو افزونه‌ها</translation>
 <translation id="191726024256261717">مرور اجازه‌ها</translation>
 <translation id="1917766536967060661">‏دسترسی به گروه زبانه «<ph name="GROUP_NAME" />» را فوراً ازدست می‌دهید و <ph name="BLOCKED_MEMBER_FULL_NAME" />‏ (<ph name="BLOCKED_MEMBER_EMAIL" />) دیگر نمی‌تواند در سرویس‌های Google با شما تعامل داشته باشد.</translation>
 <translation id="1919130412786645364">‏مجاز کردن ورود به سیستم Chrome</translation>
@@ -414,6 +415,7 @@
 <translation id="2789486458103222910">تأیید</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{‏‫Chrome یک مورد استفاده مجدد از گذرواژه پیدا کرده است که می‌توانید آن را بهبود دهید}one{‏‫Chrome ‏# مورد استفاده مجدد از گذرواژه پیدا کرده است که می‌توانید آن‌ها را بهبود دهید}other{‏‫Chrome ‏# مورد استفاده مجدد از گذرواژه پیدا کرده است که می‌توانید آن‌ها را بهبود دهید}}</translation>
 <translation id="2794551654724114396">‏برای داشتن بهترین تجربه در Chrome، اعلان‌های مربوط به دریافت نکات مفید را روشن کنید</translation>
+<translation id="2798977804328097977">به‌طور یکپارچه در هر دستگاهی ادامه دهید</translation>
 <translation id="2805210243313393104">در همه دستگاه‌هایتان به نشانک‌ها و موارد دیگر دسترسی داشته باشید</translation>
 <translation id="2805756323405976993">برنامه‌ها</translation>
 <translation id="2819849308549746319">لغو اشتراک از همه</translation>
@@ -469,6 +471,7 @@
 <translation id="2977350910003566746">ترتیب براساس آخرین باز شدن</translation>
 <translation id="297771753501244313">به‌ترتیب آخرین باز شدن</translation>
 <translation id="2979639724566107830">باز کردن در پنجرهٔ جدید</translation>
+<translation id="2980545254049127870">پیوندهای موجود در پیام‌ها، اسناد، و دیگر برنامه‌ها را به‌راحتی باز کنید</translation>
 <translation id="2983102365694924129">براساس فعالیت شما در سایت. این تنظیم خاموش است.</translation>
 <translation id="2983398917942897288">غیرفعال (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2983835398644161987">خروج از تصویردرتصویر</translation>
@@ -730,6 +733,7 @@
 <translation id="4137746084635924146">زبان کنونی دستگاه</translation>
 <translation id="414128724510021958">به‌طور پیش‌فرض سایت‌های ویژه رایانه درخواست می‌شود</translation>
 <translation id="4162867837470729563">فهرست گزینه‌های هم‌رسانی به‌صورت کامل باز شده است.</translation>
+<translation id="4164642020717536140">مرور سریع و ایمن وب</translation>
 <translation id="4165077084524712774">ابزارهای بیشتر</translation>
 <translation id="4170011742729630528">این سرویس در دسترس نیست؛ بعداً دوباره امتحان کنید.</translation>
 <translation id="4170577491341606575">‏درحال دریافت چیزهای شما\u2026</translation>
@@ -854,6 +858,7 @@
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{۱ گذرواژه لورفته}one{# گذرواژه لورفته}other{# گذرواژه لورفته}}</translation>
 <translation id="4641919525231168205">رفتن به صفحه بعدی</translation>
 <translation id="4642472735733036929">ردیابی قیمت متوقف شد</translation>
+<translation id="4643661539340338954">‏اعلان‌های «یافته‌های Chrome» روشن شد</translation>
 <translation id="4649493483932335039">مشاهده زبانه‌های اخیر</translation>
 <translation id="465657074423018424">«مرور ایمن» از شما دربرابر وب‌سایت‌های فریب‌کار محافظت می‌کند. اگر آن را خاموش کنید، هنگام مرور کردن بیشتر مراقب باشید؛ مخصوصاً قبل از وارد کردن گذرواژه‌ها.</translation>
 <translation id="4662373422909645029">نام مستعار نباید حاوی عدد باشد</translation>
@@ -1652,6 +1657,7 @@
 <translation id="7686086654630106285">اطلاعات بیشتر درباره آگهی‌های پیشنهادی سایت</translation>
 <translation id="7690596512217303514">‏دستگاه شما Chrome را باز نکرد. برای رفع مشکل، جدیدترین به‌روزرسانی Chrome را از فروشگاه برنامه بارگیری کنید.</translation>
 <translation id="7692761875510935111">به‌سرعت در مرورگر باز می‌شود. برای ویرایش این میان‌بر، لمس کنید و نگه دارید.</translation>
+<translation id="7695270712963178084">‏یافته‌های Chrome</translation>
 <translation id="7697383401610880082">دستگیره کشاندن</translation>
 <translation id="7698359219371678927">ایجاد ایمیل در <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">برگ زیرین فعالیت اخیر به‌صورت کامل باز شده است</translation>

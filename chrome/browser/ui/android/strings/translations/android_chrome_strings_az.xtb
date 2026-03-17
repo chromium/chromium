@@ -213,6 +213,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="1900260903084164610">Davam etməklə, <ph name="BEGIN_TOS_LINK" />Xidmət Şərtləri<ph name="END_TOS_LINK" /> ilə razılaşırsınız.</translation>
 <translation id="1904580727789512086">Ziyarət etdiyiniz keçidlər Google Hesabınızda saxlanılır</translation>
 <translation id="1910950723001426294">Paylaşım seçimlərinin siyahısı bağlıdır.</translation>
+<translation id="1912367671208932516">Artırmalar menyusunu açın</translation>
 <translation id="191726024256261717">İcazələri nəzərdən keçirin</translation>
 <translation id="1917766536967060661">"<ph name="GROUP_NAME" />" tab qrupuna girişi dərhal itirəcəksiniz və <ph name="BLOCKED_MEMBER_FULL_NAME" /> (<ph name="BLOCKED_MEMBER_EMAIL" />) daha Google xidmətlərində sizinlə əlaqə saxlaya bilməyəcək.</translation>
 <translation id="1919130412786645364">Chrome girişinə icazə verin</translation>
@@ -414,6 +415,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="2789486458103222910">Oldu</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome təkmilləşdirə biləcəyiniz təkrar işlənən parol aşkarladı}other{Chrome təkmilləşdirə biləcəyiniz # təkrar işlənən parol aşkarladı}}</translation>
 <translation id="2794551654724114396">Chrome-dan maksimum yararlanmağınıza kömək edəcək faydalı ipucular üçün bildirişləri aktiv edin</translation>
+<translation id="2798977804328097977">İstənilən cihazda problemsiz davam edin</translation>
 <translation id="2805210243313393104">Əlfəcinləri və digər məlumatları bütün cihazlarınızda əldə edin</translation>
 <translation id="2805756323405976993">Tətbiq</translation>
 <translation id="2819849308549746319">Bütün abunəliklərdən çıxın</translation>
@@ -469,6 +471,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="2977350910003566746">Sonuncu açılan əsasında çeşidlənir</translation>
 <translation id="297771753501244313">Çeşidləyin: Son açılan</translation>
 <translation id="2979639724566107830">Yeni pəncərədə açın</translation>
+<translation id="2980545254049127870">Mesaj, sənəd və digər tətbiqlərdəki keçidləri asanlıqla açın</translation>
 <translation id="2983102365694924129">Saytdakı fəaliyyətinizə əsaslanır. Bu ayar deaktivdir.</translation>
 <translation id="2983398917942897288">Qeyri-aktiv (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2983835398644161987">Şəkil içində şəkil rejimindən çıxın</translation>
@@ -730,6 +733,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="4137746084635924146">Cari cihaz dili</translation>
 <translation id="414128724510021958">Defolt olaraq tələb olunan masaüstü saytlar</translation>
 <translation id="4162867837470729563">Paylaşım seçimlərinin siyahısı tam yüksəklikdədir.</translation>
+<translation id="4164642020717536140">Sürətli və təhlükəsiz veb axtarışı</translation>
 <translation id="4165077084524712774">Daha çox alət</translation>
 <translation id="4170011742729630528">Xidmət əlçatmazdır. Yenidən cəhd edin.</translation>
 <translation id="4170577491341606575">Məlumatlarınız əldə edilir\u2026</translation>
@@ -854,6 +858,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 oğurlanmış parol}other{# oğurlanmış parol}}</translation>
 <translation id="4641919525231168205">Növbəti səhifəyə keçin</translation>
 <translation id="4642472735733036929">Qiymət izlənilməsi dayandı</translation>
+<translation id="4643661539340338954">Chrome bildirişlərin aktiv olduğunu aşkarlayır</translation>
 <translation id="4649493483932335039">Son tablara baxın</translation>
 <translation id="465657074423018424">Təhlükəsiz Baxış sizi aldadıcı vebsaytlardan qoruyur. Onu deaktiv etsəniz, baxış zamanı, xüsusən də parolları daxil etməzdən əvvəl daha diqqətli olun.</translation>
 <translation id="4662373422909645029">Ləqəbdə rəqəm olmamalıdır</translation>
@@ -1650,6 +1655,7 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="7686086654630106285">Saytın təklif etdiyi reklamlar haqqında ətraflı</translation>
 <translation id="7690596512217303514">Cihaz Chrome-u aça bilmədi. Tətbiq mağazasından son Chrome güncəllənməsini endirin.</translation>
 <translation id="7692761875510935111">Sürətlə brauzerdə açın. Bu qısayolu redaktə etmək üçün toxunub saxlayın.</translation>
+<translation id="7695270712963178084">Chrome aşkarlayır</translation>
 <translation id="7697383401610880082">Dəstəyi çəkin</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" /> tətbiqində e-poçt yaradın</translation>
 <translation id="7702420606070050505">Son fəaliyyət üzrə aşağıdakı vərəq tam hündürlükdə açıldı</translation>

@@ -414,6 +414,7 @@
 <translation id="2789486458103222910">OK</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome našiel recyklované heslo, ktoré môžete zlepšiť}few{Chrome našiel # recyklované heslá, ktoré môžete zlepšiť}many{Chrome found # reused passwords that you could improve}other{Chrome našiel # recyklovaných hesiel, ktoré môžete zlepšiť}}</translation>
 <translation id="2794551654724114396">Zapnite upozornenia na užitočné tipy, ktoré vám pomôžu využívať Chrome naplno</translation>
+<translation id="2798977804328097977">Možnosť plynule pokračovať v ľubovoľnom zariadení</translation>
 <translation id="2805210243313393104">Majte svoje záložky a ďalší obsah k dispozícii vo všetkých zariadeniach</translation>
 <translation id="2805756323405976993">Aplikácie</translation>
 <translation id="2819849308549746319">Zrušiť odber všetkého</translation>
@@ -469,6 +470,7 @@
 <translation id="2977350910003566746">Zoraďuje sa podľa posledného otvorenia</translation>
 <translation id="297771753501244313">Zoradiť podľa posl. otv.</translation>
 <translation id="2979639724566107830">Otvoriť v novom okne</translation>
+<translation id="2980545254049127870">Jednoduché otváranie odkazov v správach, dokumentoch a iných aplikáciách</translation>
 <translation id="2983102365694924129">Založené na vašej aktivite na webe. Toto nastavenie je vypnuté.</translation>
 <translation id="2983398917942897288">Neaktívne (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2983835398644161987">Ukončiť obraz v obraze</translation>
@@ -730,6 +732,7 @@
 <translation id="4137746084635924146">Aktuálny jazyk zariadenia</translation>
 <translation id="414128724510021958">V predvolenom nastavení sú požadované weby pre počítače</translation>
 <translation id="4162867837470729563">Zoznam možností zdieľania je otvorený na celú výšku.</translation>
+<translation id="4164642020717536140">Rýchle a bezpečné prehliadanie internetu</translation>
 <translation id="4165077084524712774">Ďalšie nástroje</translation>
 <translation id="4170011742729630528">Služba nie je k dispozícii. Skúste to neskôr.</translation>
 <translation id="4170577491341606575">Váš obsah sa načítava\u2026</translation>

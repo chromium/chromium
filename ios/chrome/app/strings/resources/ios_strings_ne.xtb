@@ -636,6 +636,7 @@
 <translation id="3324193307694657476">ठेगाना 2</translation>
 <translation id="3328801116991980348">साइट जानकारी</translation>
 <translation id="333229797575847124">यो सुविधा अन गर्ने तरिका</translation>
+<translation id="334004756946755423">यसका बारेमा वर्णन गर</translation>
 <translation id="3344233834747405775">कार्डवालाको नाम अवैध छ</translation>
 <translation id="3344485292736684439">{count,plural, =1{यो बुकमार्क तपाईंको खाता ({email}) मा भएको "{title}" मा सेभ गरियो}other{यी बुकमार्कहरू तपाईंको खाता ({email}) मा भएको "{title}" मा सेभ गरिए}}</translation>
 <translation id="334690320928261823">हालसालै बन्द गरिएका ट्याबहरू</translation>
@@ -959,6 +960,7 @@
 <translation id="454217142158335225">तपाईं हालसालै खोलिएका ट्याब वा ट्याब समूहहरू खण्डमा गई बन्द गरिएका सामग्रीहरू फेरि खोल्न सक्नुहुन्छ। तपाईंका पिन गरिएका ट्याबहरू बन्द गरिने छैनन्।</translation>
 <translation id="4547181496285029457">भर्खरै खोलिएको ट्याबमा जानुहोस्</translation>
 <translation id="4552042254369397518">कपी गरिँदै छ…</translation>
+<translation id="4553044860350038560">थप पासकीहरू</translation>
 <translation id="4564893319561643483">"<ph name="TITLE" />" लुकाउनुहोस्</translation>
 <translation id="4565377596337484307">पासवर्ड लुकाउनुहोस्</translation>
 <translation id="4568230126482344545">"हालसालैका ट्याबहरू" लुकाउनुहोस्</translation>

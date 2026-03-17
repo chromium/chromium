@@ -754,6 +754,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2184405333245229118">{COUNT,plural, =1{1 adres}other{# adresse}}</translation>
 <translation id="2188375229972301266">Veelvuldige pons onder</translation>
 <translation id="218940509700321686">Kommageskeide waardes</translation>
+<translation id="2190094353033916816">Hierdie beleid het verskillende waardes wat op die masjien- en gebruikervlak toegepas word. Die beleid werk soos dit moet.</translation>
 <translation id="2191980191135734720">Ontsluit jou skerm tydens die volgende stap, gewoonlik met jou vingerafdruk. Jy kan ook <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Dinge om in ag te neem</translation>
 <translation id="2198183835992354675">Bekende reisigernommer</translation>
@@ -3193,6 +3194,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="6042308850641462728">Meer</translation>
 <translation id="6043357981274314628">Klaar!</translation>
 <translation id="6045164183059402045">Inslaanwerktemplaat</translation>
+<translation id="6046026831939367176"><ph name="URL" /> wil jou benaderde ligging gebruik</translation>
 <translation id="6046892054959167494">Tik <ph name="SEARCH_AGGREGATOR_KEYWORD" /> in om <ph name="SEARCH_AGGREGATOR_SHORT_NAME" /> te soek of te vra</translation>
 <translation id="6047927260846328439">Hierdie inhoud mag jou dalk probeer mislei om sagteware wat persoonlike inligting openbaar, te installeer. <ph name="BEGIN_LINK" />Wys in elk geval<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">Koevert B4</translation>
@@ -3642,7 +3644,6 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6734506549556896534">Simulasiespeletjies</translation>
-<translation id="6735589846038045679">Betaalpakkette is onderworpe aan geskiktheid. <ph name="BEGIN_BOLD" />Inhoud op die betaalpuntbladsy word met Google gedeel om hierdie opsies te bied.<ph name="END_BOLD" /> Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Betaal Later-opsies te versteek</translation>
 <translation id="6737708609449480586">Gebakte goedere</translation>
 <translation id="6738516213925468394">Jou data is om <ph name="TIME" /> met jou <ph name="BEGIN_LINK" />sinkroniseringwagfrase<ph name="END_LINK" /> geënkripeer. Voer dit in om sinkronisering te begin.</translation>
 <translation id="6740851646645036700">Jy het vir eers jou skryfhulplimiet bereik. Probeer later weer.</translation>
@@ -4991,6 +4992,7 @@ Bykomende besonderhede:
 <translation id="8870700989640064057">Druk vertroulike lêer?</translation>
 <translation id="8871485335898060555">Antieke ware en versamelstukke</translation>
 <translation id="8871553383647848643">Pasmaak die voorkoms van jou blaaier</translation>
+<translation id="887350038812854047">Hierdie beleid het dieselfde waarde wat op die masjien- en gebruikervlak toegepas word. Die beleid werk soos dit moet.</translation>
 <translation id="8874790741333031443">Probeer om derdepartywebkoekies tydelik toe te laat, wat minder blaaibeskerming beteken, maar werfkenmerke is meer geneig om te werk soos verwag word.</translation>
 <translation id="8874824191258364635">Voer 'n geldige kaartnommer in</translation>
 <translation id="8877780815363510165">Visvang</translation>

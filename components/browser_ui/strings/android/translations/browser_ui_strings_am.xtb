@@ -125,7 +125,6 @@
 <translation id="2228071138934252756">የእርስዎን ካሜራ <ph name="APP_NAME" /> እንዲደርስበት ለማድረግ፣ በ <ph name="BEGIN_LINK" />Android ቅንብሮች<ph name="END_LINK" /> ውስጥ ካሜራን በተጨማሪ ያብሩ።</translation>
 <translation id="2231160360698766265">ጣቢያዎች የተጠበቁ ይዘቶችን ማጫወት ይችላሉ</translation>
 <translation id="2235344399760031203">የሦስተኛ ወገን ኩኪዎች ታግደዋል</translation>
-<translation id="2238944249568001759">በእርስዎ የመጨረሻ ትር ላይ በመመስረት የተጠቆሙ ፍለጋዎች</translation>
 <translation id="2241587408274973373">አዲስ የትር ገጽ ካርዶች</translation>
 <translation id="2241634353105152135">አንድ ጊዜ ብቻ</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" />ን አስወግድ</translation>
@@ -214,7 +213,6 @@
 <translation id="3069226013421428034">ለአንድ የተወሰነ ጣቢያ የሦስተኛ ወገን መግባትን ይፍቀዱ።</translation>
 <translation id="310297983047869047">ቀዳሚ ተንሸራታች</translation>
 <translation id="3108122610701115301">ነባሪ አዘጋጅ</translation>
-<translation id="3109724472072898302">ተሰብስቧል</translation>
 <translation id="310979712355504754">ሁሉንም ይሰርዙ</translation>
 <translation id="311394601889664316">ጣቢያዎች በመሣሪያዎ ላይ ፋይሎችን ወይም አቃፊዎችን እንዲያርትዑ አይፍቀዱ</translation>
 <translation id="3114012059975132928">ቪዲዮ ማጫወቻ</translation>
@@ -262,7 +260,6 @@
 <translation id="3602290021589620013">ቅድመ-ዕይታ</translation>
 <translation id="3611658447322220736">በቅርቡ የተዘጉ ጣቢያዎች ውሂብን መላክ እና መቀበል መጨረስ ይችላሉ</translation>
 <translation id="3619294456800709762">ጣቢያዎች በራስ-ሰር ስዕል-ላይ-ስዕል መግባት ይችላሉ</translation>
-<translation id="3628308229821498208">የተጠቆሙ ፍለጋዎች</translation>
 <translation id="3632460243282703117">ለደንበኝነት ይመዝገቡ</translation>
 <translation id="363748948745453283">ግምታዊ አካባቢን በመጠቀም ላይ</translation>
 <translation id="3641456520301071208">ጣቢያዎች አካባቢዎን ሊጠይቁ ይችላሉ</translation>
@@ -490,6 +487,7 @@
 <translation id="5922853908706496913">ማያ ገጽዎን በማጋራት ላይ</translation>
 <translation id="5922967540311291836">የሶስተኛ ወገን ኩኪዎችን ያግዱ፦</translation>
 <translation id="5923512600150154850">ይህ በጣቢያዎች የተከማቹ <ph name="DATASIZE" /> ውሂብ እና ኩኪዎችን ይሰርዛል።</translation>
+<translation id="5930707844513754220">ተጨማሪ የውቅረት ዝርዝርን አሳይ</translation>
 <translation id="5939518447894949180">ዳግም አስጀምር</translation>
 <translation id="5948139900367969951">ለእርስዎ አስፈላጊ ወደሆነው ነገር በፍጥነት ይድረሱ</translation>
 <translation id="5964247741333118902">የተከተተ ይዘት</translation>
@@ -498,6 +496,7 @@
 <translation id="5976059395673079613"><ph name="PERMISSION" />፣ <ph name="WARNING_MESSAGE" /></translation>
 <translation id="5998071268779572583">ምግብ ያግኙን ያብሩ</translation>
 <translation id="6012967556075291653">ፒን የተደረገ አቋራጭ</translation>
+<translation id="6013003831291591200">ተግባር ተጠናቅቋል</translation>
 <translation id="6015775454662021376">ይህ ጣቢያ የሚኖረው የመሣሪያዎን መዳረሻ ይቆጣጠሩ</translation>
 <translation id="6022659036123304283">Chromeን የራስዎ ያድርጉት</translation>
 <translation id="6040143037577758943">ዝጋ</translation>
@@ -522,7 +521,6 @@
 <translation id="6231752747840485235">«<ph name="APP_NAME" />» ይራገፍ?</translation>
 <translation id="6234351944623978659">የአሳሽ መተግበሪያ &gt; Chrome ላይ መታ ያድርጉ</translation>
 <translation id="6260830281887654268">የአዲስ ትር ገፅ መልክ ገጽታ ስብስቦች የግርጌ ሉህ በግማሽ ቁመት ተከፍቷል</translation>
-<translation id="6262191102408817757">በእርስዎ የመጨረሻ ትር ላይ በመመስረት</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> እና <ph name="PERMISSION_2" /> ታግደዋል</translation>
 <translation id="6270391203985052864">ጣቢያዎች ማሳወቂያዎችን ለመላክ መጠየቅ ይችላሉ</translation>
 <translation id="6295158916970320988">ሁሉም ጣቢያዎች</translation>
@@ -602,7 +600,6 @@
 <translation id="7180611975245234373">አድስ</translation>
 <translation id="7188508872042490670">በመሣሪያ ላይ ያለ የጣቢያ ውሂብ</translation>
 <translation id="7201549776650881587">ይህ እርምጃ <ph name="ORIGIN" /> ሥር ባሉ ሁሉም ጣቢያዎች ወይም በመነሻ ማያ ገፅዎ ላይ ባለው መተግበሪያው የተከማቹ ሁሉንም ውሂብ እና ኩኪዎች ይሰርዛል</translation>
-<translation id="7203150201908454328">ተዘርግቷል</translation>
 <translation id="7213166370492037743">ጣቢያዎች በአካባቢያዊ አውታረ መረብዎ ላይ ካለ ማንኛውም መሣሪያ ጋር እንዲገናኙ አትፍቀድ</translation>
 <translation id="7219254577985949841">የጣቢያ ውሂብ ይሰረዝ?</translation>
 <translation id="723171743924126238">ምስሎችን ይምረጡ</translation>

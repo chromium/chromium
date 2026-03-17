@@ -125,7 +125,6 @@
 <translation id="2228071138934252756"><ph name="APP_NAME" /> તમારો કૅમેરા ઍક્સેસ કરી શકે તે માટે <ph name="BEGIN_LINK" />Android સેટિંગ<ph name="END_LINK" />માં પણ કૅમેરા ચાલુ કરો.</translation>
 <translation id="2231160360698766265">સાઇટ સંરક્ષિત કન્ટેન્ટ ચલાવી શકે છે</translation>
 <translation id="2235344399760031203">ત્રીજા પક્ષની કુકી બ્લૉક કરવામાં આવી છે</translation>
-<translation id="2238944249568001759">તમારા છેલ્લા ટૅબ પર આધારિત સૂચવેલી શોધ</translation>
 <translation id="2241587408274973373">નવા ટૅબ પેજ કાર્ડ</translation>
 <translation id="2241634353105152135">માત્ર એક વખત</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> કાઢી નાખો</translation>
@@ -214,7 +213,6 @@
 <translation id="3069226013421428034">ચોક્કસ સાઇટ માટે ત્રીજા પક્ષ દ્વારા સાઇન-ઇનને મંજૂરી આપો.</translation>
 <translation id="310297983047869047">પાછલી સ્લાઇડ</translation>
 <translation id="3108122610701115301">ડિફૉલ્ટ સેટ કરો</translation>
-<translation id="3109724472072898302">સંકુચિત</translation>
 <translation id="310979712355504754">બધુ ડિલીટ કરો</translation>
 <translation id="311394601889664316">સાઇટને તમારા ડિવાઇસમાંની ફાઇલો કે ફોલ્ડરોમાં ફેરફાર કરવાની મંજૂરી આપશો નહીં</translation>
 <translation id="3114012059975132928">વીડિયો પ્લેયર</translation>
@@ -262,7 +260,6 @@
 <translation id="3602290021589620013">પ્રીવ્યૂ કરો</translation>
 <translation id="3611658447322220736">તાજેતરમાં બંધ કરેલી સાઇટ ડેટા મોકલવાનું અને મેળવવાનું પૂર્ણ કરી શકે છે</translation>
 <translation id="3619294456800709762">સાઇટ ચિત્ર-માં-ચિત્ર મોડમાં ઑટોમૅટિક રીતે દાખલ થઈ શકે છે</translation>
-<translation id="3628308229821498208">સૂચવેલી શોધ</translation>
 <translation id="3632460243282703117">સબ્સ્ક્રાઇબ કરો</translation>
 <translation id="363748948745453283">અંદાજિત લોકેશનનો ઉપયોગ કરું છું</translation>
 <translation id="3641456520301071208">સાઇટ તમારા સ્થાનની માહિતી પૂછી શકે છે</translation>
@@ -524,7 +521,6 @@
 <translation id="6231752747840485235">'<ph name="APP_NAME" />' અનઇન્સ્ટૉલ કરીએ?</translation>
 <translation id="6234351944623978659">ઍપ બ્રાઉઝ કરો &gt; Chrome પર ટૅપ કરો</translation>
 <translation id="6260830281887654268">નવા ટૅબ પેજના દેખાવની થીમના સંગ્રહોની બોટમ શીટ અડધી ઊંચાઈએ ખૂલી ગઈ છે</translation>
-<translation id="6262191102408817757">તમારા છેલ્લા ટૅબના આધારે</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> અને <ph name="PERMISSION_2" />ને બ્લૉક કર્યા</translation>
 <translation id="6270391203985052864">સાઇટ તમને નોટિફિકેશન મોકલવા માટે પૂછી શકે છે</translation>
 <translation id="6295158916970320988">બધી સાઇટ</translation>
@@ -604,7 +600,6 @@
 <translation id="7180611975245234373">રિફ્રેશ કરો</translation>
 <translation id="7188508872042490670">ડિવાઇસ પર સાઇટનો ડેટા</translation>
 <translation id="7201549776650881587">આ ક્રિયાના પરિણામે <ph name="ORIGIN" /> હેઠળની બધી સાઇટ અથવા તેની ઍપ દ્વારા તમારી હોમ સ્ક્રીન પર સ્ટોર કરવામાં આવેલો બધો ડેટા અને કુકી ડિલીટ થઈ જશે</translation>
-<translation id="7203150201908454328">વિસ્તૃત કરેલ</translation>
 <translation id="7213166370492037743">તમારા સ્થાનિક નેટવર્ક પરના કોઈપણ ડિવાઇસ સાથે સાઇટને કનેક્ટ થવાની મંજૂરી આપશો નહીં</translation>
 <translation id="7219254577985949841">શું સાઇટનો ડેટા ડિલીટ કરીએ?</translation>
 <translation id="723171743924126238">છબીઓ પસંદ કરો</translation>

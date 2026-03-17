@@ -70,7 +70,6 @@
 <translation id="1041181446722933623">“<ph name="LOCAL_BOOKMARK" />“ માત્ર આ ડિવાઇસ પર સાચવવામાં આવ્યું છે. તમારા અન્ય ડિવાઇસમાં તેનો ઉપયોગ કરવા માટે, તેને તમારા એકાઉન્ટમાં “<ph name="ACCOUNT_FOLDER" />” સાચવો.</translation>
 <translation id="1041263367839475438">ઉપલબ્ધ ડિવાઇસ</translation>
 <translation id="1041607257468256895">Chromeમાં વેબસાઇટના લોકેશનની પરવાનગીઓને મેનેજ કરો</translation>
-<translation id="1042174272890264476">તમારા કમ્પ્યુટરની સાથે <ph name="SHORT_PRODUCT_NAME" /> ની RLZ લાઇબ્રેરી બિલ્ટ ઇન પણ આવે છે. RLZ વિશેષ પ્રચારાત્મક ઝુંબેશ દ્વારા ચલાવવામાં આવતી શોધ અને <ph name="SHORT_PRODUCT_NAME" /> ઉપયોગને માપવા માટે બિન-અદ્વિતીય, બિન-વ્યક્તિગત રીતે ઓળખી શકાય તેવા ટૅગ સોંપે છે. આ લેબલ કેટલીકવાર <ph name="PRODUCT_NAME" />માં Google Search ક્વેરીમાં દેખાય છે.</translation>
 <translation id="1042248468362992359">હૉટસ્પૉટનો ઉપયોગ કરવા માટે, મોબાઇલ ડેટાથી કનેક્ટ થાઓ. <ph name="BEGIN_LINK_LEARN_MORE" />વધુ જાણો<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="104385770822424034">ઍક્શન ઉમેરો</translation>
 <translation id="1045487161760507186">તમારે પાસવર્ડ યાદ રાખવાની જરૂર નથી કારણ કે તેને તમારા માટે Google Password Managerમાં સાચવવામાં આવે છે</translation>
@@ -968,7 +967,6 @@
 <translation id="1644574205037202324">ઇતિહાસ</translation>
 <translation id="1644852018355792105"><ph name="DEVICE" /> ડિવાઇસ માટે બ્લૂટૂથ પાસકી દાખલ કરો</translation>
 <translation id="1645004815457365098">અજાણ્યો સ્રોત</translation>
-<translation id="1645516838734033527">તમારા <ph name="DEVICE_TYPE" />ને સુરક્ષિત રાખવા માટે, Smart Lockને તમારા ફોન પર સ્ક્રીન લૉકની જરૂર છે.</translation>
 <translation id="1646045728251578877">સૉફ્ટવેર અપડેટ ઉપલબ્ધ છે</translation>
 <translation id="1647408325348388858"><ph name="FILE_NAME" />ને આ વેબ ઍપમાં ખોલીને તેમાં ફેરફાર કરીએ?</translation>
 <translation id="1647986356840967552">પાછલું પેજ</translation>
@@ -1448,7 +1446,6 @@
 <translation id="1975841812214822307">દૂર કરો ...</translation>
 <translation id="1976150099241323601">સુરક્ષા ઉપકરણ પર સાઇન ઇન કરો </translation>
 <translation id="1976823515278601587">વધુ પ્રમાણમાં મેમરી બચત</translation>
-<translation id="1977965994116744507">તમારા <ph name="DEVICE_TYPE" />ને અનલૉક કરવા તમારા ફોનને વધુ નજીક લાવો.</translation>
 <translation id="1978249384651349182"><ph name="BEGIN_DESCRIPTION" />તમારા ડિવાઇસની નોંધણી તમારી સંસ્થામાં કરવાથી કેન્દ્રીયકૃત ડિવાઇસ મેનેજમેન્ટનું સેટઅપ થઈ જાય છે. એક કરતાં વધુ કારણસર તમારી સંસ્થામાં નોંધણી કરવાની આવશ્યકતા હોઈ શકે છે:<ph name="END_DESCRIPTION" />
     <ph name="BEGIN_SUBTITLE1" /><ph name="BEGIN_BOLD" />વધારે સુરક્ષા<ph name="END_BOLD" /><ph name="END_SUBTITLE1" />
     <ph name="BEGIN_DESCRIPTION1" />વધારાના સુરક્ષા સેટિંગની ગોઠવણી કરવાથી, તમારી સંસ્થા વપરાશકર્તાનો તેમજ ડિવાઇસનો ડેટા સલામત રાખી શકે છે. તે ખોવાયેલા કોઈ ડિવાઇસને દૂરથી રીસેટ કે બંધ કરવા જેવી ક્રિયાઓ પણ કરી શકે છે.<ph name="END_DESCRIPTION1" />
@@ -1481,6 +1478,7 @@
 <translation id="1989288015781834552">અપડેટ પૂર્ણ કરવા માટે ફરીથી લૉન્ચ કરો. તમારા ટૅબ ફરીથી ખૂલશે.</translation>
 <translation id="1989903373608997757">હંમેશાં ઉપયોગ કરો</translation>
 <translation id="1990046457226896323">સ્પીચ ફાઇલો ડાઉનલોડ કરી</translation>
+<translation id="1991829061375381344">આ Google Meet હાર્ડવેર ડિવાઇસની નોંધણી કરવા માટે તમે પૂરતા ઉપલબ્ધ લાઇસન્સ ધરાવતા નથી. વધુ ખરીદવા માટે કૃપા કરીને તમારા પુનઃવિક્રેતાનો સંપર્ક કરો. જો તમે માનતા હો કે આ મેસેજ તમને ભૂલથી દેખાઈ રહ્યો છે, તો કૃપા કરીને તમારા પુન:ર્વિક્રેતાનો સંપર્ક કરો.</translation>
 <translation id="199191324030140441">'ખલેલ પાડશો નહીં' સુવિધા બંધ કરો</translation>
 <translation id="1992397118740194946">સેટ નથી</translation>
 <translation id="1994173015038366702">સાઈટ URL</translation>
@@ -1609,7 +1607,6 @@
 <translation id="2089925163047119068">અથવા</translation>
 <translation id="2090165459409185032">તમારી એકાઉન્ટ માહિતી ફરીથી મેળવવા માટે, આના પર જાઓ: google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">જ્યારે તમે સાઇન ઇન કરો ત્યારે ઑટોમૅટિક રીતે કનેક્ટ કરે છે</translation>
-<translation id="2090876986345970080">સિસ્ટમ સુરક્ષા સેટિંગ</translation>
 <translation id="2091523941449737894">તમારા ટચપૅડને ઝડપથી ખસેડવાથી કર્સર આગળ ખસેડાશે</translation>
 <translation id="2091887806945687916">ધ્વનિ</translation>
 <translation id="2092356157625807382"><ph name="BEGIN_H3" />ડિબગીંગની સુવિધાઓ<ph name="END_H3" />
@@ -2627,7 +2624,6 @@
 <translation id="2757338480560142065"><ph name="WEBSITE" /> માટેના તમારા પાસવર્ડ સાથે, તમે સાચવી રહ્યાં છો તે પાસવર્ડ મેળ ખાતો હોવાની ખાતરી કરો</translation>
 <translation id="2761632996810146912"><ph name="HASHTAG_SETTINGS" /> <ph name="SEARCH_QUERY" /> માટે કોઈ શોધ પરિણામો મળ્યા નથી</translation>
 <translation id="2762441749940182211">કૅમેરા બ્લૉક કર્યો</translation>
-<translation id="2763165257813209348"><ph name="FILE_NAME" />માં સંવેદનશીલ અથવા જોખમી ડેટા છે. તમારી સંસ્થા તેને ક્લાઉડ સ્ટોરેજમાં સાચવવાનો અથવા કાઢી નાખવાનો વિકલ્પ તમને પસંદ કરવા આપશે</translation>
 <translation id="2764786626780673772">VPNની વિગતો</translation>
 <translation id="2764920001292228569">પ્રોફાઇલ નામ દાખલ કરો</translation>
 <translation id="2765100602267695013">કૃપા કરીને તમારા મોબાઇલ નેટવર્ક પ્રદાતાનો સંપર્ક કરો</translation>
@@ -3951,7 +3947,6 @@
 <translation id="3688794912214798596">ભાષાઓ બદલો...</translation>
 <translation id="3690369331356918524">જો ડેટા ઉલ્લંઘનમાં પાસવર્ડ જાહેર થાય તો તમને ચેતવણી આપવામાં આવે છે</translation>
 <translation id="3691231116639905343">કીબોર્ડ ઍપ</translation>
-<translation id="369135240373237088">સ્કૂલ એકાઉન્ટ વડે ફરી સાઇન ઇન કરો</translation>
 <translation id="3693415264595406141">પાસવર્ડ:</translation>
 <translation id="3694027410380121301">પાછલું ટૅબ પસંદ કરો</translation>
 <translation id="3694122362646626770">વેબસાઇટ્સ</translation>
@@ -4325,7 +4320,6 @@
 <translation id="3914894336972817683">અપલોડ કરી શકાતી નથી. ફાઇલ ખાલી હોય એવું લાગે છે.</translation>
 <translation id="3915280005470252504">વૉઇસ દ્વારા શોધો</translation>
 <translation id="3916445069167113093">આ પ્રકારની ફાઇલ તમારા કમ્પ્યુટરને નુકસાન પહોંચાડી શકે છે. શું તમે તો પણ <ph name="FILE_NAME" /> ને રાખવા માગો છો?</translation>
-<translation id="3917184139185490151">તમારું કમ્પ્યુટર સુરક્ષા મૉડ્યૂલ ધરાવે છે, જેનો ઉપયોગ ChromeOSમાં ઘણી મહત્ત્વપૂર્ણ સુરક્ષા સુવિધાઓ લાગુ કરવા માટે કરવામાં આવે છે. વધુ જાણવા માટે Chromebook સહાયતા કેન્દ્રની મુલાકાત લો: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="3917644013202553949">તમારી ફાઇલો સિંક કરવા માટે પર્યાપ્ત સ્ટોરેજ નથી. સ્પેસ ખાલી કરવાનો પ્રયાસ કરો.</translation>
 <translation id="3919145445993746351">તમારા બધા કમ્પ્યુટર પર તમારા એક્સ્ટેંશન મેળવવા માટે સિંક કરવાનું ચાલુ કરો</translation>
 <translation id="3919229493046408863">ડિવાઇસ આસપાસ હોય ત્યારે નોટિફિકેશન બંધ કરો</translation>
@@ -4411,6 +4405,7 @@
 <translation id="3968739731834770921">કાના</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">ગણના કરી રહ્યું છે...</translation>
+<translation id="3971154761614127188">કેટલીક સુવિધાઓ અપરિચિત સાઇટને ધીમી કરી શકે છે</translation>
 <translation id="3971355433478412726">Gemini માટેની સૂચનાઓ</translation>
 <translation id="3971764089670057203">આ સિક્યુરિટી કીમાંના ફિંગરપ્રિન્ટ</translation>
 <translation id="3973005893595042880">વપરાશકર્તા કોઈ મંજૂરી ધરાવતા નથી</translation>
@@ -4454,7 +4449,6 @@
 <translation id="3992008114154328194"><ph name="FILE_NAME" /> ડાઉનલોડ કરી રહ્યાં છીએ, <ph name="STATUS" /></translation>
 <translation id="3994075804072562819"><ph name="SPECIFIC_NAME" />ને USB ડિવાઇસને નિયંત્રિત કરવાની સુવિધા આપો.</translation>
 <translation id="3994318741694670028">કમનસીબે, તમારું કમ્પ્યુટર દૂષિત હાર્ડવેર ID સાથે કન્ફિગર કરવામાં આવ્યું છે. આ ChromeOS Flexને નવીનતમ સુરક્ષા સુધારાની સાથે અપડેટ થતું અટકાવે છે અને તમારું કમ્પ્યુટર <ph name="BEGIN_BOLD" />દુર્ભાવનાપૂર્ણ હુમલાઓ પ્રત્યે સંવેદનશીલ હોઈ શકે છે<ph name="END_BOLD" />.</translation>
-<translation id="3994374631886003300">તમારો ફોન અનલૉક કરો અને તમારા <ph name="DEVICE_TYPE" />ને અનલૉક કરવા માટે તેને વધુ નજીક લાવો.</translation>
 <translation id="3994522032746736727"><ph name="EMAIL" /> તરીકે સાઇન ઇન કરો</translation>
 <translation id="3994530503403062649">તમારા ટૅબ્લેટ પર બટન શોધો</translation>
 <translation id="3994708120330953242">તમારા કેટલાક પાસવર્ડ ડેટા ઉલ્લંઘનમાં હોવાનું જણાયું છે. તમારા એકાઉન્ટને સુરક્ષિત કરવા માટે, તમારે હમણાં જ આ પાસવર્ડ બદલવા જોઈએ.</translation>
@@ -4810,7 +4804,6 @@
 <translation id="426564820080660648">અપડેટ માટે તપાસ કરવા, કૃપા કરીને ઇથરનેટ, વાઇ-ફાઇ અથવા મોબાઇલ ડેટાનો ઉપયોગ કરો.</translation>
 <translation id="426652736638196239">આ IBAN માત્ર આ ડિવાઇસમાં જ સાચવવામાં આવશે</translation>
 <translation id="4266679478228765574">ફોલ્ડર કાઢી નાખવાથી શેર કરવાનું બંધ થશે પણ ફાઇલો ડિલીટ થશે નહીં.</translation>
-<translation id="4267455501101322486">શૈક્ષણિક સંસાધનોના ઍક્સેસ માટે એકાઉન્ટ ઉમેરવા, તમને પરવાનગી આપવાનું માતાપિતાને કહો</translation>
 <translation id="4267792239557443927">{COUNT,plural, =0{કોઈ પાસવર્ડ મળ્યો નથી}=1{1 પરિણામ મળ્યું}one{{COUNT} પરિણામ મળ્યું}other{{COUNT} પરિણામ મળ્યા}}</translation>
 <translation id="4267924571297947682">માતાપિતાને પરવાનગી માટે કહો</translation>
 <translation id="4267953847983678297">સેલ્યુલર નેટવર્કથી ઑટોમૅટિક રીતે કનેક્ટ થાઓ</translation>
@@ -5149,7 +5142,6 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         તમે કાર્ડ મેનૂમાં જઈને સેટિંગ મેનેજ કરી શકો છો અથવા 'Chromeને કસ્ટમાઇઝ કરો'માં વધુ વિકલ્પો જોઈ શકો છો.</translation>
-<translation id="4503748371388753124">તમારું કમ્પ્યુટર વિશ્વસનીય પ્લૅટફૉર્મ મૉડ્યૂલ (TPM) સુરક્ષા ડિવાઇસ ધરાવે છે, જેનો ઉપયોગ ChromeOS Flexમાં ઘણી મહત્ત્વપૂર્ણ સુરક્ષા સુવિધાઓ લાગુ કરવા માટે કરવામાં આવે છે. વધુ જાણવા માટે, Chromebook સહાયતા કેન્દ્રની મુલાકાત લો: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4504940961672722399">આ આયકન પર ક્લિક કરીને અથવા <ph name="EXTENSION_SHORTCUT" /> દબાવીને આ એક્સ્ટેંશનનો ઉપયોગ કરો.</translation>
 <translation id="4505469832694348179">આ QR કોડ વડે Chrome ડાઉનલોડ કરો અને તમારા Google એકાઉન્ટમાં સાઇન ઇન કરો.</translation>
 <translation id="450552327874992444">શબ્દ પહેલેથી ઉમેરાઈ ગયો છે</translation>
@@ -5162,7 +5154,6 @@
 <translation id="4509421746503122514">અપડેટ કરવા માટે ફરીથી લૉન્ચ કરો</translation>
 <translation id="4509741852167209430">સાઇટની જાહેરાતોનું પર્ફોર્મન્સ માપવા માટે, તેમની વચ્ચે મર્યાદિત પ્રકારના ડેટાને શેર કરવામાં આવે છે, જેમ કે સાઇટની મુલાકાત લીધા પછી તમે કોઈ ખરીદી કરી છે કે નહીં</translation>
 <translation id="4510195992002502722">પ્રતિસાદ મોકલવામાં નિષ્ફળ રહ્યાં. ફરીથી પ્રયાસ કરી રહ્યાં છીએ...</translation>
-<translation id="4510479820467554003">માતાપિતાના એકાઉન્ટની સૂચિ</translation>
 <translation id="4511344327646819192">અન્ય લોકોને તમારા પાસવર્ડનો ઉપયોગ કરતાં રોકવા માટે, તેને <ph name="WEBSITE" /> પર બદલો</translation>
 <translation id="4513072860957814107">&amp;બ્રાઉઝિંગ ડેટા ડિલીટ કરો...</translation>
 <translation id="4513872120116766993">પૂર્વાનુમાનિત લેખન</translation>
@@ -6211,7 +6202,6 @@
 <translation id="5244234799035360187">Files ઍપમાં હવે OneDrive દેખાશે</translation>
 <translation id="5244466461749935369">હાલ પૂરતું જાળવો</translation>
 <translation id="5244474230056479698"><ph name="EMAIL" /> પર સમન્વયિત કરી રહ્યાં છે</translation>
-<translation id="5245610266855777041">સ્કૂલ એકાઉન્ટ વડે શરૂઆત કરો</translation>
 <translation id="5246282308050205996"><ph name="APP_NAME" /> ક્રેશ થયું છે. એપ્લિકેશનને ફરીથી પ્રારંભ કરવા માટે આ બલૂન ક્લિક કરો.</translation>
 <translation id="5247051749037287028">ડિસ્પ્લે નામ (વૈકલ્પિક)</translation>
 <translation id="5247243947166567755"><ph name="BOOKMARK_TITLE" /> પસંદ કરો</translation>
@@ -6366,7 +6356,6 @@
 <translation id="5365881113273618889">તમે પસંદ કરેલું ફોલ્ડર સંવેદનશીલ ફાઇલો ધરાવે છે. શું તમે ખરેખર "<ph name="APP_NAME" />"ને આ ફોલ્ડરની કાયમી લખવાનો ઍક્સેસ આપવા માંગો છો?</translation>
 <translation id="536638840841140142">એકપણ નહીં</translation>
 <translation id="5368246151595623328"><ph name="DEVICE_NAME" />માંથી '<ph name="NETWORK_NAME" />'ની લૉગ ઇન વિગત સાચવી છે</translation>
-<translation id="5368720394188453070">તમારો ફોન લૉક કરેલો છે. દાખલ કરવા માટે તેને અનલૉક કરો.</translation>
 <translation id="536882527576164740">{0,plural, =1{છૂપો મોડ}one{છૂપો મોડ (#)}other{છૂપો મોડ (#)}}</translation>
 <translation id="5369694795837229225">Linux ડેવલપમેન્ટ વાતાવરણ સેટઅપ કરો</translation>
 <translation id="5370819323174483825">&amp;ફરીથી લોડ કરો</translation>
@@ -6862,7 +6851,6 @@
 <translation id="5707674184620508665">તમારી સંસ્થા, <ph name="ACCOUNT_MANAGER" />, તમારો વર્તમાન ડેટા જોઈ કે મેનેજ કરી શકશે નહીં. તે હાલની પ્રોફાઇલમાં જ રહેશે.</translation>
 <translation id="5708171344853220004">Microsoft Principal Name</translation>
 <translation id="5711010025974903573">સેવાના લૉગ</translation>
-<translation id="5711983031544731014">અનલૉક કરવામાં અસમર્થ છે. તમારો પાસવર્ડ દાખલ કરો.</translation>
 <translation id="5712153969432126546">સાઇટ અમુક વખતે PDFs પ્રકાશિત કરે છે, જેમ કે દસ્તાવેજો, કરારો અને ફોર્મ</translation>
 <translation id="571222594670061844">સાઇટ ઓળખ સેવાઓના સાઇન ઇન કરવાના સંકેતો બતાવી શકે છે</translation>
 <translation id="5713158217420111469"><ph name="DEVICE" />થી કનેક્ટેડ છે</translation>
@@ -7442,7 +7430,6 @@ USB ડિવાઇસ</translation>
 <translation id="6112931163620622315">તમારો ફોન તપાસો</translation>
 <translation id="6113434369102685411">Chrome બ્રાઉઝર અને <ph name="DEVICE_TYPE" /> લૉન્ચર માટે તમારું ડિફૉલ્ટ શોધ એન્જિન સેટ કરો</translation>
 <translation id="6113832060210023016">લૉન્ચર + ક્લિક</translation>
-<translation id="6113942107547980621">Smart Lockનો ઉપયોગ કરવા માટે, તમારા ફોન પર પ્રાથમિક વપરાશકર્તા પ્રોફાઇલ પર સ્વિચ કરો</translation>
 <translation id="6116921718742659598">ભાષા અને ઇનપુટ સેટિંગ બદલો</translation>
 <translation id="6119008366402292080">કોઈ પ્રિન્ટર ઉપલબ્ધ નથી</translation>
 <translation id="6119972796024789243">રંગ સુધારણા</translation>
@@ -7849,7 +7836,6 @@ USB ડિવાઇસ</translation>
 <translation id="6400360390396538896">હંમેશાં ચાલુ <ph name="ORIGIN" /></translation>
 <translation id="6401118106417399952">તમારા ડિવાઇસનો EID <ph name="EID_NUMBER" /> અને ડિવાઇસનો અનુક્રમ નંબર <ph name="SERIAL_NUMBER" /> છે. સેવા સક્રિય કરવામાં સહાય માટે આ નંબરનો ઉપયોગ કરી શકાય છે.</translation>
 <translation id="6401458660421980302">આ ટૅબને અન્ય ડિવાઇસ પર મોકલવા માટે, એ ડિવાઇસના Chromeમાં સાઇન ઇન કરો</translation>
-<translation id="6401597285454423070">તમારું કમ્પ્યુટર વિશ્વસનીય પ્લૅટફૉર્મ મૉડ્યૂલ (TPM) સુરક્ષા ડિવાઇસ ધરાવે છે, જેનો ઉપયોગ ChromeOSમાં ઘણી મહત્ત્વપૂર્ણ સુરક્ષા સુવિધાઓ લાગુ કરવા માટે કરવામાં આવે છે. વધુ જાણવા માટે, Chromebook સહાયતા કેન્દ્રની મુલાકાત લો: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6402921224457714577">Sites તમારા MIDI ડિવાઇસ નિયંત્રિત અને ફરીથી પ્રોગ્રામ કરવા માટે પૂછી શકે છે</translation>
 <translation id="6404511346730675251">બુકમાર્કમાં ફેરફાર કરો</translation>
 <translation id="640457954117263537">ChromeOS અને Android ઍપ અને સેવાઓ માટે લોકેશનનો ઉપયોગ કરો.</translation>
@@ -8432,7 +8418,6 @@ USB ડિવાઇસ</translation>
 <translation id="6805236548654699520">તમારા સેટિંગને સલામત ડિફૉલ્ટ પર રિસ્ટોર કરીને અનિચ્છિત પૉપ-અપ કાઢી નાખો, નેટવર્ક સંબંધિત સમસ્યાઓ ઠીક કરો અને બીજું ઘણું કરો.</translation>
 <translation id="6805478749741295868">આ એક પ્રાયોગિક AI સુવિધા છે અને તે હંમેશાં સાચી જ હોય, એવું જરૂરી નથી.</translation>
 <translation id="6805647936811177813"><ph name="HOST_NAME" /> તરફથી ક્લાયંટ પ્રમાણપત્ર આયાત કરવા માટે કૃપા કરીને <ph name="TOKEN_NAME" /> પર સાઇન ઇન કરો.</translation>
-<translation id="680572642341004180"><ph name="SHORT_PRODUCT_OS_NAME" /> પર RLZ ટ્રેકિંગને ચાલુ કરો.</translation>
 <translation id="6805817411033102703">શેર કરેલા ટૅબના ગ્રૂપ વિશેનો પ્રતિસાદ</translation>
 <translation id="6806089545527108739">મંજૂરી આપશો નહીં પરંતુ પછીથી પૂછશો</translation>
 <translation id="6806781719264274042">માત્ર Google એકાઉન્ટમાંના તમારા સંપર્કો. <ph name="LINK_BEGIN" />સંપર્કો જુઓ<ph name="LINK_END" /></translation>
@@ -8882,7 +8867,6 @@ USB ડિવાઇસ</translation>
 <translation id="7113502843173351041">તમારું ઇમેઇલ ઍડ્રેસ જાણો</translation>
 <translation id="7113974454301513811">હવે તમારા હાલના ટૅબને તમારી સૂચિમાં ઉમેરો</translation>
 <translation id="7114054701490058191">પાસવર્ડ્સ મેળ ખાતા નથી</translation>
-<translation id="7114648273807173152">તમારા Google એકાઉન્ટમાં સાઇન ઇન કરવા માટે SmartLockનો ઉપયોગ કરવા, સેટિંગ &gt; કનેક્ટ કરેલાં ડિવાઇસ &gt; તમારો ફોન &gt; SmartLock પર જાઓ.</translation>
 <translation id="7115361495406486998">જેના સુધી પહોંચી શકાય તેવો કોઈ સંપર્ક નથી</translation>
 <translation id="7116554090938189816">પ્રિન્ટરના SSL સર્ટિફિકેટની સમયસીમા સમાપ્ત થઈ ગઈ છે. પ્રિન્ટર ફરી શરૂ કરો અને ફરી પ્રયાસ કરો.</translation>
 <translation id="7117228822971127758">કૃપા કરીને થોડા સમય પછી ફરી પ્રયાસ કરો</translation>
@@ -9515,7 +9499,6 @@ USB ડિવાઇસ</translation>
 <translation id="7553242001898162573">તમારો પાસવર્ડ દાખલ કરો</translation>
 <translation id="755472745191515939">તમારા વ્યવસ્થાપક આ ભાષાની મંજૂરી આપતા નથી</translation>
 <translation id="7554791636758816595">નવું ટૅબ</translation>
-<translation id="7556033326131260574">Smart Lock તમારા એકાઉન્ટને ચકાસી શક્યું નથી. દાખલ થવા માટે તમારો પાસવર્ડ ટાઇપ કરો.</translation>
 <translation id="7556228616802995437">તાજેતરની ચૅટ અને થ્રેડ</translation>
 <translation id="7556242789364317684">કમનસીબે, <ph name="SHORT_PRODUCT_NAME" /> તમારા સેટિંગને રિકવર કરી શકતાં નથી. ભૂલને સુધારવા માટે, <ph name="SHORT_PRODUCT_NAME" /> એ Powerwash સાથે તમારા ડિવાઇસને રીસેટ કરવું આવશ્યક છે.</translation>
 <translation id="7557194624273628371">Linux પોર્ટ ફૉરવર્ડિંગ</translation>
@@ -9863,6 +9846,7 @@ USB ડિવાઇસ</translation>
 <translation id="7784067724422331729">તમારા કમ્પ્યુટર પરની સુરક્ષા સેટિંગે આ ફાઇલ બ્લૉક કરી છે.</translation>
 <translation id="7784796923038949829">સાઇટના ડેટાને વાંચી કે બદલી શકતા નથી</translation>
 <translation id="778480864305029524">ફટાફટ ઇન્ટરનેટ શેર કરવાની સુવિધાનો ઉપયોગ કરવા માટે Google Play સેવાઓના નોટિફિકેશન ચાલુ કરો.</translation>
+<translation id="7784875615510899699">આ Google Beam ડિવાઇસની નોંધણી કરવા માટે તમે પૂરતા ઉપલબ્ધ લાઇસન્સ ધરાવતા નથી. વધુ ખરીદવા માટે કૃપા કરીને તમારા પુનઃવિક્રેતાનો સંપર્ક કરો. જો તમે માનતા હો કે આ મેસેજ તમને ભૂલથી દેખાઈ રહ્યો છે, તો કૃપા કરીને તમારા પુન:ર્વિક્રેતાનો સંપર્ક કરો.</translation>
 <translation id="77855763949601045">અતિથિની પ્રોફાઇલ &amp;ખોલો</translation>
 <translation id="7786663536153819505">QR કોડ સ્કૅન કરવા માટે તમારા ફોન પરની સૂચનાઓ ફૉલો કરો. ખાતરી કરો કે તમારા ફોનનું બ્લૂટૂથ ચાલુ છે.
     <ph name="BR" />
@@ -9889,6 +9873,7 @@ USB ડિવાઇસ</translation>
 <translation id="7800518121066352902">ઘ&amp;ડિયાળની વિપરિત દિશામાં ફેરવો</translation>
 <translation id="780301667611848630">ના, આભાર</translation>
 <translation id="7803657407897251194">તમારા Android ડિવાઇસ વડે સેટઅપ ચાલુ રાખવા માટે તમારા <ph name="DEVICE_TYPE" />ને નેટવર્ક સાથે કનેક્ટ કરો</translation>
+<translation id="7803714812705886512">જોખમોની ભાળ મેળવવા માટે Google ઓછા ડેટાનો ઉપયોગ કરે છે (ઉદાહરણ તરીકે, URLsના ભાગો, ડાઉનલોડની માહિતી)</translation>
 <translation id="7804072833593604762">ટૅબ બંધ કરી છે</translation>
 <translation id="7805371082115476536">હળવો</translation>
 <translation id="7805768142964895445">સ્થિતિ</translation>
@@ -9913,6 +9898,7 @@ USB ડિવાઇસ</translation>
 <translation id="7820400255539998692"><ph name="FILENAME" /> ડિલીટ કરો, જેથી આ ડિવાઇસનો ઉપયોગ કરતા અન્ય લોકો તમારા પાસવર્ડ જોઈ શકશે નહીં</translation>
 <translation id="7820561748632634942">શું વધારાની સ્વિચ માટે સોંપણી કરીએ?</translation>
 <translation id="782057141565633384">વીડિયો ઍડ્રેસ કૉ&amp;પિ કરો</translation>
+<translation id="7823975162954158194">સશક્ત સુરક્ષા પ્રદાન કરે છે</translation>
 <translation id="7824665136384946951">તમારી સંસ્થા દ્વારા Safe Browsingની સુવિધા બંધ કરવામાં આવી છે</translation>
 <translation id="7824864914877854148">ભૂલને કારણે બૅકઅપ પૂર્ણ ન કરી શકાયું</translation>
 <translation id="7825289983414309119">પર્વત</translation>
@@ -9960,7 +9946,6 @@ USB ડિવાઇસ</translation>
 <translation id="7853747251428735">વધુ સા&amp;ધનો</translation>
 <translation id="7855258394151767387">માઉસનું બટન દબાવવા માટે “w”નો ઉપયોગ કરો</translation>
 <translation id="7855678561139483478">ટૅબને નવી વિંડોમાં ખસેડો</translation>
-<translation id="7857004848504343806">તમારું કમ્પ્યુટર સુરક્ષા મૉડ્યૂલ ધરાવે છે, જેનો ઉપયોગ ChromeOS Flexમાં ઘણી મહત્ત્વપૂર્ણ સુરક્ષા સુવિધાઓ લાગુ કરવા માટે કરવામાં આવે છે. વધુ જાણવા માટે Chromebook સહાયતા કેન્દ્રની મુલાકાત લો: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">ટેક્સ્ટ સૂચનો</translation>
 <translation id="7858120906780498731">ChromeOS સાથે કનેકટેડ ઇનપુટ ડિવાઇસ</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
@@ -10007,7 +9992,6 @@ USB ડિવાઇસ</translation>
 <translation id="7892005672811746207">"ગ્રૂપ સાચવો" ચાલુ કરો</translation>
 <translation id="7892384782944609022">જોડાણ કરી શકાયું નથી. ફરી પ્રયાસ કરવા માટે ડિવાઇસ પસંદ કરો.</translation>
 <translation id="7893008570150657497">તમારા કમ્પ્યુટર પરથી ફોટો, સંગીત અને અન્ય મીડિયા ઍક્સેસ કરો</translation>
-<translation id="7893153962594818789">આ <ph name="DEVICE_TYPE" />માં Bluetooth બંધ છે. તમારો પાસવર્ડ દાખલ કરો અને Bluetooth ચાલુ કરો.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (ડિફૉલ્ટ)</translation>
 <translation id="7896292361319775586"><ph name="FILE" />ને સાચવીએ?</translation>
 <translation id="789722939441020330">સાઇટને ઑટોમૅટિક રીતે એક કરતાં વધુ ફાઇલો ડાઉનલોડ કરવાની મંજૂરી આપશો નહીં</translation>
@@ -10845,7 +10829,6 @@ USB ડિવાઇસ</translation>
 <translation id="8453400752347156012">આ બુકમાર્કને માત્ર આ ડિવાઇસમાં સાચવવામાં આવ્યું છે. જો તમે તેને આ "<ph name="ACCOUNT_FOLDER" />"માં સાચવશો, તો આ બુકમાર્કને પણ તમારા એકાઉન્ટમાં સાચવવામાં આવશે.</translation>
 <translation id="8455775311562941553"><ph name="HOST_DEVICE_NAME" /> સાથે કનેક્ટેડ છે</translation>
 <translation id="8456067150616457342">તમારું ડિફૉલ્ટ બ્રાઉઝર સેટ કરો</translation>
-<translation id="845702320058262034">કનેક્ટ કરી શકાતું નથી. તમારા ફોનનું બ્લૂટૂથ ચાલુ હોવાની ખાતરી કરો.</translation>
 <translation id="8457251154056341970">તમને આ પેજ પર ફરીથી <ph name="MODULE_NAME" /> દેખાશે નહીં</translation>
 <translation id="8457451314607652708">બુકમાર્ક આયાત કરો</translation>
 <translation id="8458341576712814616">શૉર્ટકટ</translation>
@@ -11046,6 +11029,7 @@ USB ડિવાઇસ</translation>
 <translation id="8601206103050338563">TLS WWW ક્લાયંટ પ્રમાણીકરણ</translation>
 <translation id="8602674530529411098">Apps (બીટા)</translation>
 <translation id="8602851771975208551">તમારા કમ્પ્યુટર પરના બીજા પ્રોગ્રામે એક ઍપ્લિકેશન ઉમેરી જે Chrome કાર્ય કરે છે તે રીતને બદલી શકે છે.</translation>
+<translation id="8602867356511778172">જોખમોની વધુ ઝડપથી અને વધુ સચોટ રીતે ભાળ મેળવવા માટે, Google વધુ ડેટાનો ઉપયોગ કરે છે (ઉદાહરણ તરીકે, URLs, પેજ કન્ટેન્ટના સેમ્પલ, સિસ્ટમની માહિતી)</translation>
 <translation id="860399903490378651">આ વ્યૂ બંધ કરો</translation>
 <translation id="8605428685123651449">SQLite મેમરી</translation>
 <translation id="8607171490667464784">જ્યારે નિષ્ક્રિય અને બૅટરી પર ચાલતુ હોય</translation>

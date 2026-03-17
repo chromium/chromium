@@ -754,6 +754,7 @@
 <translation id="2184405333245229118">{COUNT,plural, =1{1 adresă}few{# adrese}other{# de adrese}}</translation>
 <translation id="2188375229972301266">Perforare multiplă în partea de jos</translation>
 <translation id="218940509700321686">Valori separate prin virgulă</translation>
+<translation id="2190094353033916816">Această politică are valori diferite aplicate la nivel de dispozitiv și de utilizator. Politica funcționează corespunzător.</translation>
 <translation id="2191980191135734720">Deblochează ecranul la pasul următor, de obicei cu amprenta. Poți și să <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">De reținut</translation>
 <translation id="2198183835992354675">Numărul de călător cunoscut</translation>
@@ -3193,6 +3194,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="6042308850641462728">Mai multe</translation>
 <translation id="6043357981274314628">Terminat!</translation>
 <translation id="6045164183059402045">Șablon de impunere</translation>
+<translation id="6046026831939367176">Site-ul <ph name="URL" /> solicită folosirea locației aproximative.</translation>
 <translation id="6046892054959167494">Introdu <ph name="SEARCH_AGGREGATOR_KEYWORD" /> pentru a căuta sau pentru a întreba <ph name="SEARCH_AGGREGATOR_SHORT_NAME" /></translation>
 <translation id="6047927260846328439">Acest conținut ar putea încerca să te păcălească să instalezi software sau să dezvălui informații cu caracter personal. <ph name="BEGIN_LINK" />Afișează oricum<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">Plic B4</translation>
@@ -3642,7 +3644,6 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">Cameră</translation>
 <translation id="6734506549556896534">Jocuri de simulare</translation>
-<translation id="6735589846038045679">Planurile de plată se supun condițiilor de eligibilitate. <ph name="BEGIN_BOLD" />Conținutul paginii de finalizare a achiziției este trimis la Google pentru a oferi aceste opțiuni.<ph name="END_BOLD" /> Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LINK" />setările pentru plăți<ph name="END_LINK" />.</translation>
 <translation id="6737708609449480586">Alimente coapte</translation>
 <translation id="6738516213925468394">Datele au fost criptate cu <ph name="BEGIN_LINK" />expresia de acces pentru sincronizare<ph name="END_LINK" /> la <ph name="TIME" />. Introdu expresia de acces pentru a începe sincronizarea.</translation>
 <translation id="6740851646645036700">Deocamdată ai atins limita pentru ajutor la scriere. Încearcă din nou mai târziu.</translation>
@@ -4993,6 +4994,7 @@ Detalii suplimentare:
 <translation id="8870700989640064057">Imprimi fișierul confidențial?</translation>
 <translation id="8871485335898060555">Antichități și obiecte de colecție</translation>
 <translation id="8871553383647848643">Personalizează aspectul browserului</translation>
+<translation id="887350038812854047">Această politică are aceeași valoare aplicată la nivel de dispozitiv și de utilizator. Politica funcționează corespunzător.</translation>
 <translation id="8874790741333031443">Încearcă să permiți temporar cookie-urile terță parte, ceea ce înseamnă mai puțină protecție pentru navigare, dar există șanse mai mari ca funcțiile site-urilor să funcționeze conform așteptărilor.</translation>
 <translation id="8874824191258364635">Introdu un număr de card valid</translation>
 <translation id="8877780815363510165">Pescuit</translation>

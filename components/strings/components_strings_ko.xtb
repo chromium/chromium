@@ -754,6 +754,7 @@
 <translation id="2184405333245229118">{COUNT,plural, =1{주소 1개}other{주소 #개}}</translation>
 <translation id="2188375229972301266">하단 다공 펀칭</translation>
 <translation id="218940509700321686">쉼표로 구분된 값</translation>
+<translation id="2190094353033916816">이 정책은 머신 및 사용자 수준에서 서로 다른 값을 적용합니다. 정책이 의도한 대로 작동하고 있습니다.</translation>
 <translation id="2191980191135734720">다음 단계에서는 일반적으로 지문을 사용하여 화면을 잠금 해제합니다. <ph name="LINK_TEXT" />도 가능합니다.</translation>
 <translation id="2194856509914051091">고려사항</translation>
 <translation id="2198183835992354675">KTN(Known Traveler Number)</translation>
@@ -3193,6 +3194,7 @@
 <translation id="6042308850641462728">더보기</translation>
 <translation id="6043357981274314628">완료</translation>
 <translation id="6045164183059402045">적용 템플릿</translation>
+<translation id="6046026831939367176"><ph name="URL" />에서 사용자의 대략적인 위치 정보에 액세스하려고 합니다</translation>
 <translation id="6046892054959167494"><ph name="SEARCH_AGGREGATOR_KEYWORD" />을(를) 입력하여 검색하거나 <ph name="SEARCH_AGGREGATOR_SHORT_NAME" />에게 질문하세요.</translation>
 <translation id="6047927260846328439">이 콘텐츠는 사용자를 속여 소프트웨어를 설치하거나 개인정보를 유출할 수도 있습니다. <ph name="BEGIN_LINK" />표시하기<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">봉투 B4</translation>
@@ -3642,7 +3644,6 @@
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">카메라</translation>
 <translation id="6734506549556896534">시뮬레이션 게임</translation>
-<translation id="6735589846038045679">요금제는 자격 요건을 충족해야 이용할 수 있습니다. <ph name="BEGIN_BOLD" />이러한 옵션을 제공하기 위해 결제 페이지의 페이지 콘텐츠가 Google과 공유됩니다.<ph name="END_BOLD" /> 후불 결제 옵션을 숨기려면 <ph name="BEGIN_LINK" />결제 설정<ph name="END_LINK" />으로 이동하세요.</translation>
 <translation id="6737708609449480586">베이커리 제품</translation>
 <translation id="6738516213925468394"><ph name="TIME" />자로 <ph name="BEGIN_LINK" />동기화 암호<ph name="END_LINK" />를 통해 데이터가 암호화되었습니다. 동기화를 시작하려면 암호를 입력하세요.</translation>
 <translation id="6740851646645036700">현재 쓰기 지원 한도에 도달했습니다. 나중에 다시 시도해 주세요.</translation>
@@ -4991,6 +4992,7 @@
 <translation id="8870700989640064057">기밀 파일을 인쇄하시겠습니까?</translation>
 <translation id="8871485335898060555">골동품 및 수집품</translation>
 <translation id="8871553383647848643">브라우저 테마 맞춤설정</translation>
+<translation id="887350038812854047">이 정책은 머신 및 사용자 수준 모두에서 동일한 값을 갖습니다. 정책이 의도한 대로 작동하고 있습니다.</translation>
 <translation id="8874790741333031443">서드 파티 쿠키를 일시적으로 허용해 보세요. 인터넷 사용 시 보안은 취약해지지만 사이트 기능이 예상대로 작동할 가능성은 높아집니다.</translation>
 <translation id="8874824191258364635">올바른 카드 번호를 입력하세요.</translation>
 <translation id="8877780815363510165">낚시</translation>

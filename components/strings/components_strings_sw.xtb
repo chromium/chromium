@@ -754,6 +754,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="2184405333245229118">{COUNT,plural, =1{Anwani 1}other{Anwani #}}</translation>
 <translation id="2188375229972301266">Toboa mara kadhaa chini</translation>
 <translation id="218940509700321686">Thamani Zilizotenganishwa kwa Koma</translation>
+<translation id="2190094353033916816">Sera hii ina thamani tofauti zinazotumika katika viwango vya mashine na mtumiaji. Sera inafanya kazi kama ilivyokusudiwa.</translation>
 <translation id="2191980191135734720">Fungua skrini yako katika hatua inayofuata, kwa kawaida ukitumia alama yako ya kidole. Unaweza pia <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Mambo ya kuzingatia</translation>
 <translation id="2198183835992354675">Namba ya Msafiri Inayojulikana</translation>
@@ -3193,6 +3194,7 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="6042308850641462728">Zaidi</translation>
 <translation id="6043357981274314628">Imekamilika!</translation>
 <translation id="6045164183059402045">Kiolezo cha kuweka karatasi</translation>
+<translation id="6046026831939367176"><ph name="URL" /> ingependa kutumia data yako ya eneo linalokadiriwa</translation>
 <translation id="6046892054959167494">Andika <ph name="SEARCH_AGGREGATOR_KEYWORD" /> ili utafute au uulize<ph name="SEARCH_AGGREGATOR_SHORT_NAME" /></translation>
 <translation id="6047927260846328439">Maudhui haya yanaweza kukuhadaa kusakinisha programu au kuonyesha maelezo yako ya binafsi. <ph name="BEGIN_LINK" />Onyesha tu<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">Bahasha ya ukubwa wa B4</translation>
@@ -3642,7 +3644,6 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6734506549556896534">Michezo ya Uigaji Matukio</translation>
-<translation id="6735589846038045679">Mipango ya malipo inategemea kutimiza masharti. <ph name="BEGIN_BOLD" />Google itaruhusiwa ifikie maudhui kwenye ukurasa wa kulipa ili kuweka chaguo hizi.<ph name="END_BOLD" /> Nenda kwenye <ph name="BEGIN_LINK" />mipangilio ya malipo<ph name="END_LINK" /> ili ufiche chaguo za kulipa baadaye</translation>
 <translation id="6737708609449480586">Bidhaa Zilizookwa</translation>
 <translation id="6738516213925468394">Data yako ilisimbwa kwa kutumia <ph name="BEGIN_LINK" />kauli ya siri ya usawazishaji<ph name="END_LINK" /> mnamo <ph name="TIME" />. Iweke ili uanze kusawazisha.</translation>
 <translation id="6740851646645036700">Umefikia kikomo chako cha usaidizi wa kuandika kwa sasa. Jaribu tena baadaye.</translation>
@@ -4989,6 +4990,7 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="8870700989640064057">Ungependa kuchapisha faili ya siri?</translation>
 <translation id="8871485335898060555">Mikusanyiko ya Zana za Mambo ya Kale</translation>
 <translation id="8871553383647848643">Weka mapendeleo ya mwonekano wa kivinjari chako</translation>
+<translation id="887350038812854047">Sera hii ina thamani sawa inayotumika katika viwango vya mashine na mtumiaji. Sera inafanya kazi kama ilivyokusudiwa.</translation>
 <translation id="8874790741333031443">Jaribu kuruhusu kwa muda vidakuzi vya washirika wengine, hatua hii inamaanisha kuwa ulinzi wa kuvinjari utapungua lakini vipengele vya tovuti vina uwezekano mkubwa wa kufanya kazi inavyotarajiwa.</translation>
 <translation id="8874824191258364635">Andika namba sahihi ya kadi</translation>
 <translation id="8877780815363510165">Uvuvi</translation>

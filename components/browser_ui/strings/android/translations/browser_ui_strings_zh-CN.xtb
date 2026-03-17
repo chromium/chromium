@@ -125,7 +125,6 @@
 <translation id="2228071138934252756">若要允许 <ph name="APP_NAME" /> 使用您的摄像头，您还需在 <ph name="BEGIN_LINK" />Android 设置<ph name="END_LINK" />中开启摄像头。</translation>
 <translation id="2231160360698766265">网站可以播放受保护内容</translation>
 <translation id="2235344399760031203">已阻止第三方 Cookie</translation>
-<translation id="2238944249568001759">根据您上次浏览的标签页建议的搜索</translation>
 <translation id="2241587408274973373">“新标签页”页面卡片</translation>
 <translation id="2241634353105152135">仅一次</translation>
 <translation id="2253414712144136228">移除“<ph name="NAME_OF_LIST_ITEM" />”</translation>
@@ -214,7 +213,6 @@
 <translation id="3069226013421428034">允许使用第三方账号登录特定网站。</translation>
 <translation id="310297983047869047">上一张幻灯片</translation>
 <translation id="3108122610701115301">设为默认</translation>
-<translation id="3109724472072898302">已收起</translation>
 <translation id="310979712355504754">全部删除</translation>
 <translation id="311394601889664316">不允许网站修改您设备上的文件或文件夹</translation>
 <translation id="3114012059975132928">视频播放器</translation>
@@ -262,7 +260,6 @@
 <translation id="3602290021589620013">预览</translation>
 <translation id="3611658447322220736">最近关闭的网站可以完成数据收发操作</translation>
 <translation id="3619294456800709762">网站可以自动进入画中画模式</translation>
-<translation id="3628308229821498208">建议的搜索</translation>
 <translation id="3632460243282703117">订阅</translation>
 <translation id="363748948745453283">正在使用大致位置信息</translation>
 <translation id="3641456520301071208">网站可以请求获取您的位置信息</translation>
@@ -490,6 +487,7 @@
 <translation id="5922853908706496913">正在共享您的屏幕</translation>
 <translation id="5922967540311291836">阻止第三方 Cookie：</translation>
 <translation id="5923512600150154850">此操作会删除网站存储的 <ph name="DATASIZE" /> 数据和 Cookie。</translation>
+<translation id="5930707844513754220">查看更多设置列表</translation>
 <translation id="5939518447894949180">重置</translation>
 <translation id="5948139900367969951">快速获取重要信息</translation>
 <translation id="5964247741333118902">嵌入式内容</translation>
@@ -498,6 +496,7 @@
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
 <translation id="5998071268779572583">开启探索信息流</translation>
 <translation id="6012967556075291653">固定的快捷方式</translation>
+<translation id="6013003831291591200">任务已完成</translation>
 <translation id="6015775454662021376">控制此网站对您的设备的访问权限</translation>
 <translation id="6022659036123304283">定制您的专属 Chrome</translation>
 <translation id="6040143037577758943">关闭</translation>
@@ -522,7 +521,6 @@
 <translation id="6231752747840485235">卸载“<ph name="APP_NAME" />”？</translation>
 <translation id="6234351944623978659">依次点按“浏览器应用”&gt;“Chrome”</translation>
 <translation id="6260830281887654268">“新标签页”页面外观主题集合底部动作条已按一半高度显示</translation>
-<translation id="6262191102408817757">基于您的上一个标签页</translation>
 <translation id="6262279340360821358">已禁用“<ph name="PERMISSION_1" />”权限和“<ph name="PERMISSION_2" />”权限</translation>
 <translation id="6270391203985052864">网站可以询问能否向您发送通知</translation>
 <translation id="6295158916970320988">所有网站</translation>
@@ -602,7 +600,6 @@
 <translation id="7180611975245234373">刷新</translation>
 <translation id="7188508872042490670">设备端网站数据</translation>
 <translation id="7201549776650881587">此操作会删除 <ph name="ORIGIN" /> 下属所有网站或其在主屏幕中安装的应用存储的全部数据和 Cookie</translation>
-<translation id="7203150201908454328">已展开</translation>
 <translation id="7213166370492037743">不允许网站连接到本地网络上的任何设备</translation>
 <translation id="7219254577985949841">删除网站数据？</translation>
 <translation id="723171743924126238">选择图片</translation>

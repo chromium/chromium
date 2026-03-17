@@ -213,6 +213,7 @@
 <translation id="1900260903084164610">ਜਾਰੀ ਰੱਖ ਕੇ, ਤੁਸੀਂ <ph name="BEGIN_TOS_LINK" />ਸੇਵਾ ਦੇ ਨਿਯਮਾਂ<ph name="END_TOS_LINK" /> ਨਾਲ ਸਹਿਮਤ ਹੁੰਦੇ ਹੋ।</translation>
 <translation id="1904580727789512086">ਉਹ URL ਤੁਹਾਡੇ Google ਖਾਤੇ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤੇ ਜਾਂਦੇ ਹਨ, ਜਿਨ੍ਹਾਂ 'ਤੇ ਤੁਸੀਂ ਗਏ ਹੋ</translation>
 <translation id="1910950723001426294">ਸਾਂਝਾਕਰਨ ਵਿਕਲਪਾਂ ਦੀ ਸੂਚੀ ਬੰਦ ਹੈ।</translation>
+<translation id="1912367671208932516">ਐਕਸਟੈਂਸ਼ਨ ਮੀਨੂ ਖੋਲ੍ਹੋ</translation>
 <translation id="191726024256261717">ਇਜਾਜ਼ਤਾਂ ਦੀ ਸਮੀਖਿਆ ਕਰੋ</translation>
 <translation id="1917766536967060661">ਤੁਸੀਂ ਤੁਰੰਤ “<ph name="GROUP_NAME" />” ਟੈਬ ਗਰੁੱਪ ਤੱਕ ਪਹੁੰਚ ਗੁਆ ਬੈਠੋਗੇ ਅਤੇ <ph name="BLOCKED_MEMBER_FULL_NAME" /> (<ph name="BLOCKED_MEMBER_EMAIL" />) ਵੱਲੋਂ ਹੁਣ Google ਸੇਵਾਵਾਂ 'ਤੇ ਤੁਹਾਡੇ ਨਾਲ ਅੰਤਰਕਿਰਿਆ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕੇਗੀ।</translation>
 <translation id="1919130412786645364">Chrome ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰਨ ਦਿਓ</translation>
@@ -857,6 +858,7 @@
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 ਪਾਸਵਰਡ ਨਾਲ ਛੇੜਛਾੜ ਹੋਈ}one{# ਪਾਸਵਰਡ ਨਾਲ ਛੇੜਛਾੜ ਹੋਈ}other{# ਪਾਸਵਰਡਾਂ ਨਾਲ ਛੇੜਛਾੜ ਹੋਈ}}</translation>
 <translation id="4641919525231168205">ਅਗਲੇ ਪੰਨੇ 'ਤੇ ਜਾਓ</translation>
 <translation id="4642472735733036929">ਕੀਮਤਾਂ ਦੀ ਟਰੈਕਿੰਗ ਨੂੰ ਰੋਕਿਆ ਗਿਆ</translation>
+<translation id="4643661539340338954">Chrome Finds ਦੀਆਂ ਸੂਚਨਾਵਾਂ ਚਾਲੂ ਹਨ</translation>
 <translation id="4649493483932335039">ਹਾਲੀਆ ਟੈਬਾਂ ਦੇਖੋ</translation>
 <translation id="465657074423018424">ਸੁਰੱਖਿਅਤ ਬ੍ਰਾਊਜ਼ਿੰਗ ਭਰਮਾਊ ਵੈੱਬਸਾਈਟਾਂ ਤੋਂ ਤੁਹਾਡੀ ਸੁਰੱਖਿਆ ਕਰਦੀ ਹੈ। ਜੇ ਤੁਸੀਂ ਇਸਨੂੰ ਬੰਦ ਕਰਦੇ ਹੋ, ਤਾਂ ਬ੍ਰਾਊਜ਼ਿੰਗ ਕਰਨ ਦੌਰਾਨ ਜ਼ਿਆਦਾ ਸਾਵਧਾਨ ਰਹੋ, ਖਾਸ ਕਰਕੇ ਪਾਸਵਰਡ ਦਾਖਲ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ।</translation>
 <translation id="4662373422909645029">ਉਪਨਾਮ 'ਚ ਅੰਕ ਨਹੀਂ ਹੋ ਸਕਦੇ</translation>
@@ -1655,6 +1657,7 @@
 <translation id="7686086654630106285">ਸਾਈਟਾਂ ਵੱਲੋਂ ਸੁਝਾਏ ਗਏ ਵਿਗਿਆਪਨਾਂ ਬਾਰੇ ਹੋਰ ਜਾਣਕਾਰੀ</translation>
 <translation id="7690596512217303514">ਤੁਹਾਡੇ ਡੀਵਾਈਸ 'ਤੇ Chrome ਖੁੱਲ੍ਹ ਨਹੀਂ ਸਕਿਆ। ਸਮੱਸਿਆ ਨੂੰ ਠੀਕ ਕਰਨ ਲਈ, ਆਪਣੇ ਐਪ ਸਟੋਰ ਤੋਂ Chrome ਦਾ ਨਵੀਨਤਮ ਅੱਪਡੇਟ ਡਾਊਨਲੋਡ ਕਰੋ।</translation>
 <translation id="7692761875510935111">ਬ੍ਰਾਊਜ਼ਰ ਵਿੱਚ ਤੁਰੰਤ ਖੋਲ੍ਹੋ। ਇਸ ਸ਼ਾਰਟਕੱਟ ਦਾ ਸੰਪਾਦਨ ਕਰਨ ਲਈ, ਸਪਰਸ਼ ਕਰ ਕੇ ਰੱਖੋ।</translation>
+<translation id="7695270712963178084">Chrome Finds</translation>
 <translation id="7697383401610880082">ਘਸੀਟਣ ਵਾਲਾ ਹੈਂਡਲ</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" /> ਵਿੱਚ ਈਮੇਲ ਬਣਾਓ</translation>
 <translation id="7702420606070050505">ਹਾਲੀਆ ਸਰਗਰਮੀ ਸੰਬੰਧੀ ਹੇਠਲੀ ਸ਼ੀਟ ਪੂਰੀ ਉਚਾਈ ਤੱਕ ਖੁੱਲ੍ਹੀ ਹੈ</translation>

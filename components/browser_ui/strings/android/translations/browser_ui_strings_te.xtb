@@ -125,7 +125,6 @@
 <translation id="2228071138934252756">మీ కెమెరాను యాక్సెస్ చేయడానికి <ph name="APP_NAME" />ని అనుమతించడానికి, <ph name="BEGIN_LINK" />Android సెట్టింగ్‌ల<ph name="END_LINK" />లో కూడా కెమెరాను ఆన్ చేయండి.</translation>
 <translation id="2231160360698766265">సురక్షితమైన కంటెంట్‌ను సైట్‌లు ప్లే చేయగలవు</translation>
 <translation id="2235344399760031203">థర్డ్-పార్టీ కుక్కీలు బ్లాక్ చేయబడ్డాయి</translation>
-<translation id="2238944249568001759">మీ చివరి ట్యాబ్ ఆధారంగా సూచించబడిన సెర్చ్‌లు</translation>
 <translation id="2241587408274973373">కొత్త ట్యాబ్ పేజీ కార్డ్‌లు</translation>
 <translation id="2241634353105152135">ఒకసారి మాత్రమే</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" />‌ను తీసివేయండి</translation>
@@ -214,7 +213,6 @@
 <translation id="3069226013421428034">నిర్దిష్ట సైట్ కోసం థర్డ్-పార్టీ సైన్-ఇన్‌ను అనుమతిస్తుంది.</translation>
 <translation id="310297983047869047">మునుపటి స్లయిడ్</translation>
 <translation id="3108122610701115301">ఆటోమేటిక్ సెట్టింగ్‌గా చేయండి</translation>
-<translation id="3109724472072898302">కుదించబడింది</translation>
 <translation id="310979712355504754">అందరినీ తొలగించండి</translation>
 <translation id="311394601889664316">మీ పరికరంలోని ఫైళ్లు లేదా ఫోల్డర్‌లను ఎడిట్ చేయడానికి సైట్‌లను అనుమతించకండి</translation>
 <translation id="3114012059975132928">వీడియో ప్లేయర్</translation>
@@ -262,7 +260,6 @@
 <translation id="3602290021589620013">ప్రివ్యూ</translation>
 <translation id="3611658447322220736">ఇటీవల మూసివేసిన సైట్‌లు డేటాను పంపడాన్ని, అందుకోవడాన్ని పూర్తి చేయగలవు</translation>
 <translation id="3619294456800709762">సైట్‌లు పిక్చర్-ఇన్-పిక్చర్ మోడ్‌కు ఆటోమేటిక్‌గా ప్రవేశించగలవు</translation>
-<translation id="3628308229821498208">సెర్చ్ సూచనలు</translation>
 <translation id="3632460243282703117">సబ్‌స్క్రయిబ్ చేయండి</translation>
 <translation id="363748948745453283">సుమారుగా ఉన్న లొకేషన్‌ను ఉపయోగిస్తోంది</translation>
 <translation id="3641456520301071208">సైట్‌లు మీ లొకేషన్‌ను అడగవచ్చు</translation>
@@ -524,7 +521,6 @@
 <translation id="6231752747840485235">'<ph name="APP_NAME" />'ను అన్‌ఇన్‌స్టాల్ చేయాలా?</translation>
 <translation id="6234351944623978659">బ్రౌజర్ యాప్‌ను &gt; Chromeను ట్యాప్ చేయండి</translation>
 <translation id="6260830281887654268">సగం స్క్రీన్‌లో తెరిచిన, కొత్త ట్యాబ్ పేజీలో కనిపించే థీమ్ కలెక్షన్‌లను చూపే దిగువున ఉన్న షీట్</translation>
-<translation id="6262191102408817757">మీ చివరి ట్యాబ్ ఆధారంగా</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> బ్లాక్ చేయబడ్డాయి</translation>
 <translation id="6270391203985052864">నోటిఫికేషన్‌లను పంపడానికి సైట్‌లు అడుగగలవు</translation>
 <translation id="6295158916970320988">అన్ని సైట్‌లు</translation>
@@ -604,7 +600,6 @@
 <translation id="7180611975245234373">రిఫ్రెష్ చేయండి</translation>
 <translation id="7188508872042490670">పరికరంలో సైట్ డేటా</translation>
 <translation id="7201549776650881587">ఈ చర్య వలన, <ph name="ORIGIN" /> కింద ఉండే సైట్‌లన్నీ స్టోర్ చేసిన, లేదా మీ మొదటి స్క్రీన్‌లో ఉండే దాని యాప్ స్టోర్ చేసిన మొత్తం డేటాతో పాటు కుక్కీలన్నీ కూడా తొలగిపోతాయి</translation>
-<translation id="7203150201908454328">విస్తరించబడింది</translation>
 <translation id="7213166370492037743">మీ లోకల్ నెట్‌వర్క్‌లో ఏదైనా డివైజ్‌కు కనెక్ట్ చేయడానికి, సైట్‌లను అనుమతించవద్దు</translation>
 <translation id="7219254577985949841">సైట్ డేటాను తొలగించాలా?</translation>
 <translation id="723171743924126238">చిత్రాలను ఎంచుకోండి</translation>

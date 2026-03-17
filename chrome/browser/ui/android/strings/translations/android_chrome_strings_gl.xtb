@@ -213,6 +213,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="1900260903084164610">Ao continuar, aceptas as <ph name="BEGIN_TOS_LINK" />Condicións de servizo<ph name="END_TOS_LINK" />.</translation>
 <translation id="1904580727789512086">Os URL que visitas gárdanse na túa Conta de Google</translation>
 <translation id="1910950723001426294">A lista de opcións para compartir está pechada.</translation>
+<translation id="1912367671208932516">Abrir menú de extensións</translation>
 <translation id="191726024256261717">Revisar os permisos</translation>
 <translation id="1917766536967060661">Perderás inmediatamente o acceso ao grupo de pestanas "<ph name="GROUP_NAME" />" e <ph name="BLOCKED_MEMBER_FULL_NAME" /> (<ph name="BLOCKED_MEMBER_EMAIL" />) xa non poderá interactuar contigo nos servizos de Google.</translation>
 <translation id="1919130412786645364">Permitir inicio de sesión en Chrome</translation>
@@ -414,6 +415,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="2789486458103222910">Aceptar</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome encontrou un contrasinal reutilizado que poderías mellorar}other{Chrome encontrou # contrasinais reutilizados que poderías mellorar}}</translation>
 <translation id="2794551654724114396">Activa as notificacións para recibir consellos útiles que che axudarán a tirar o máximo proveito de Chrome</translation>
+<translation id="2798977804328097977">Continúa sen problemas en calquera dispositivo</translation>
 <translation id="2805210243313393104">Accede aos teus marcadores e moito máis en todos os teus dispositivos</translation>
 <translation id="2805756323405976993">Aplicacións</translation>
 <translation id="2819849308549746319">Cancelar a subscrición a todos</translation>
@@ -469,6 +471,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="2977350910003566746">Ordenando pola data de última apertura</translation>
 <translation id="297771753501244313">Ordenar: Última apertura</translation>
 <translation id="2979639724566107830">Abre o marcador nunha ventá nova</translation>
+<translation id="2980545254049127870">Abre facilmente as ligazóns de mensaxes, documentos e outras aplicacións</translation>
 <translation id="2983102365694924129">En función da túa actividade nun sitio. Esta opción de configuración está desactivada.</translation>
 <translation id="2983398917942897288">Inactivas (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2983835398644161987">Saír do modo de pantalla superposta</translation>
@@ -730,6 +733,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="4137746084635924146">Idioma actual do dispositivo</translation>
 <translation id="414128724510021958">Os sitios para ordenadores solicítanse de forma predeterminada</translation>
 <translation id="4162867837470729563">A lista de opcións para compartir está aberta a pantalla completa.</translation>
+<translation id="4164642020717536140">Navega pola Web de maneira rápida e segura</translation>
 <translation id="4165077084524712774">Máis ferramentas</translation>
 <translation id="4170011742729630528">O servizo non está dispoñible. Téntao de novo máis tarde.</translation>
 <translation id="4170577491341606575">Cargando o teu contido\u2026</translation>
@@ -854,6 +858,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 contrasinal vulnerado}other{# contrasinais vulnerados}}</translation>
 <translation id="4641919525231168205">Ir á páxina seguinte</translation>
 <translation id="4642472735733036929">Detívose o seguimento de prezos</translation>
+<translation id="4643661539340338954">Activáronse as notificacións de achados de Chrome</translation>
 <translation id="4649493483932335039">Ver pestanas recentes</translation>
 <translation id="465657074423018424">A función Navegación segura protéxete contra os sitios web enganosos. Se a desactivas, ten moito coidado ao navegar, sobre todo antes de escribir contrasinais.</translation>
 <translation id="4662373422909645029">O alcume non pode ter números</translation>
@@ -1652,6 +1657,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="7686086654630106285">Máis información sobre os anuncios suxeridos polos sitios</translation>
 <translation id="7690596512217303514">O teu dispositivo non puido abrir Chrome. Para solucionar o problema, descarga a actualización máis recente de Chrome desde a tenda de aplicacións.</translation>
 <translation id="7692761875510935111">Ábreo rapidamente no navegador. Para editar este atallo, mantén premido o botón.</translation>
+<translation id="7695270712963178084">Achados de Chrome</translation>
 <translation id="7697383401610880082">Controlador de arrastre</translation>
 <translation id="7698359219371678927">Crea un correo electrónico en <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">Panel inferior de actividade recente aberto a altura completa</translation>

@@ -754,6 +754,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2184405333245229118">{COUNT,plural, =1{1 cím}other{# cím}}</translation>
 <translation id="2188375229972301266">Több lyuk alul</translation>
 <translation id="218940509700321686">Vesszővel tagolt értékek</translation>
+<translation id="2190094353033916816">Ez a házirend különböző értékeket alkalmaz a gép és a felhasználó szintjén. A házirend a várakozásoknak megfelelően működik.</translation>
 <translation id="2191980191135734720">A következő lépésben oldja fel a képernyőt, például az ujjlenyomatával. <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Megfontolandó szempontok</translation>
 <translation id="2198183835992354675">Ismert utazói szám (known traveler number, KTN)</translation>
@@ -3190,6 +3191,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="6042308850641462728">Továbbiak</translation>
 <translation id="6043357981274314628">Kész</translation>
 <translation id="6045164183059402045">Ráhelyezési sablon</translation>
+<translation id="6046026831939367176">A(z) <ph name="URL" /> használni szeretné az Ön hozzávetőleges helyét</translation>
 <translation id="6046892054959167494">Írja be a(z) <ph name="SEARCH_AGGREGATOR_KEYWORD" /> kifejezést a kereséshez vagy a(z) <ph name="SEARCH_AGGREGATOR_SHORT_NAME" /> megkérdezéséhez</translation>
 <translation id="6047927260846328439">Lehet, hogy ez a tartalom megpróbálja rávenni Önt szoftver telepítésére vagy személyes adatok kiadására. <ph name="BEGIN_LINK" />Megjelenítés mindenképpen<ph name="END_LINK" />.</translation>
 <translation id="6049056807983403918">B4 boríték</translation>
@@ -3639,7 +3641,6 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6734506549556896534">Szimulációs játékok</translation>
-<translation id="6735589846038045679">A fizetési konstrukciók a jogosultságtól függnek. <ph name="BEGIN_BOLD" />A fizetési oldal tartalmát megosztjuk a Google-lal, hogy felkínálhassuk ezeket a lehetőségeket.<ph name="END_BOLD" /> A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LINK" />fizetési beállításokhoz<ph name="END_LINK" />.</translation>
 <translation id="6737708609449480586">Pékáruk</translation>
 <translation id="6738516213925468394">Adatai titkosítva lettek <ph name="BEGIN_LINK" />összetett szinkronizálási jelszavával<ph name="END_LINK" /> a következő időpontban: <ph name="TIME" />. Adja meg a jelszót a szinkronizálás megkezdéséhez.</translation>
 <translation id="6740851646645036700">Egyelőre elérte az írással kapcsolatos segítség korlátját. Próbálkozzon újra később.</translation>
@@ -4991,6 +4992,7 @@ További részletek:
 <translation id="8870700989640064057">Biztosan kinyomtatja a bizalmas fájlt?</translation>
 <translation id="8871485335898060555">Antikvitás, gyűjtemények</translation>
 <translation id="8871553383647848643">Személyre szabhatja a böngésző megjelenését</translation>
+<translation id="887350038812854047">Ez a házirend ugyanazt az értéket alkalmazza a gép és a felhasználó szintjén. A házirend a várakozásoknak megfelelően működik.</translation>
 <translation id="8874790741333031443">Próbálja meg átmenetileg engedélyezni a harmadik felektől származó cookie-kat, ami kisebb böngészési védelmet jelent, de a webhelyfunkciók nagyobb valószínűséggel működnek majd megfelelően.</translation>
 <translation id="8874824191258364635">Érvényes kártyaszámot adjon meg</translation>
 <translation id="8877780815363510165">Halászat és horgászat</translation>

@@ -637,6 +637,7 @@
 <translation id="3324193307694657476">Aadress 2</translation>
 <translation id="3328801116991980348">Saiditeave</translation>
 <translation id="333229797575847124">Selle funktsiooni lubamine</translation>
+<translation id="334004756946755423">Selgita mulle:</translation>
 <translation id="3344233834747405775">Vale kaardiomaniku nimi</translation>
 <translation id="3344485292736684439">{count,plural, =1{Järjehoidja salvestati teie kontol {email} kausta „{title}“}other{Järjehoidjad salvestati teie kontol {email} kausta „{title}“}}</translation>
 <translation id="334690320928261823">Hiljutised vahelehed</translation>
@@ -961,6 +962,7 @@
 <translation id="454217142158335225">Saate suletud üksused uuesti avada hiljutiste vahelehtede või vahelehegruppide jaotistest. Teie kinnitatud vahelehti ei suleta.</translation>
 <translation id="4547181496285029457">Naasmine eelmisele vahelehele</translation>
 <translation id="4552042254369397518">Kopeerimine …</translation>
+<translation id="4553044860350038560">Rohkem pääsuvõtmeid</translation>
 <translation id="4564893319561643483">Peida moodul „<ph name="TITLE" />”</translation>
 <translation id="4565377596337484307">Peida parool</translation>
 <translation id="4568230126482344545">Peida valik „Hiljutised vahelehed“</translation>

@@ -70,7 +70,6 @@
 <translation id="1041181446722933623">Обележувачот „<ph name="LOCAL_BOOKMARK" />“ е зачуван само на овој уред. За да го користите на другите ваши уреди, зачувајте го во „<ph name="ACCOUNT_FOLDER" />“ во вашата сметка.</translation>
 <translation id="1041263367839475438">Достапни уреди</translation>
 <translation id="1041607257468256895">Управувајте со дозволите за локација за веб-сајтовите во Chrome</translation>
-<translation id="1042174272890264476">Вашиот компјутер е со вградена <ph name="SHORT_PRODUCT_NAME" /> RLZ библиотека. RLZ доделува неуникатна, не-лична идентификувачка картичка за мерење на пребарувањата и користење на <ph name="SHORT_PRODUCT_NAME" /> поттикнато од одредена промотивна кампања. Овие ознаки понекогаш се појавуваат во прашалници за пребарување на Google во <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1042248468362992359">Поврзете се на мобилен интернет за да користите точка на пристап. <ph name="BEGIN_LINK_LEARN_MORE" />Дознајте повеќе<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="104385770822424034">Додајте дејство</translation>
 <translation id="1045487161760507186">Не треба да ја памтите лозинката бидејќи се зачувува за вас во Google Password Manager</translation>
@@ -970,7 +969,6 @@
 <translation id="1644574205037202324">Историја</translation>
 <translation id="1644852018355792105">Внесете лозинка за Bluetooth за уредот <ph name="DEVICE" /></translation>
 <translation id="1645004815457365098">Непознат извор</translation>
-<translation id="1645516838734033527">За безбедност на <ph name="DEVICE_TYPE" />, Smart Lock бара заклучување екран на вашиот телефон.</translation>
 <translation id="1646045728251578877">Достапно е ажурирање на софтверот</translation>
 <translation id="1647408325348388858">Да се отвори и измени <ph name="FILE_NAME" /> во оваа веб-апликација?</translation>
 <translation id="1647986356840967552">Претходна страница</translation>
@@ -1458,7 +1456,6 @@
 <translation id="1975841812214822307">Отстрани...</translation>
 <translation id="1976150099241323601">Најавете се на безбедносниот уред</translation>
 <translation id="1976823515278601587">Големи заштеди</translation>
-<translation id="1977965994116744507">Приближете го вашиот телефон за да го отклучите вашиот <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1978249384651349182"><ph name="BEGIN_DESCRIPTION" />Ако ги регистрирате вашите уреди во вашата организација, ќе ги поставите за централизирано управување со уредите. Вашата организација може да бара регистрација од повеќе причини:<ph name="END_DESCRIPTION" />
     <ph name="BEGIN_SUBTITLE1" /><ph name="BEGIN_BOLD" />Подобрување на безбедноста<ph name="END_BOLD" /><ph name="END_SUBTITLE1" />
     <ph name="BEGIN_DESCRIPTION1" />Со конфигурирање дополнителни безбедносни поставки, организацијата може да ги штити податоците на корисникот и уредот. Може да врши и дејства како ресетирање од далечина или оневозможување на изгубен уред.<ph name="END_DESCRIPTION1" />
@@ -1618,7 +1615,6 @@
 <translation id="2089925163047119068">ИЛИ</translation>
 <translation id="2090165459409185032">За да ги обновите информациите за вашата сметка, одете на: google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">Автоматски се поврзува кога ќе се најавите</translation>
-<translation id="2090876986345970080">Поставка за системска безбедност</translation>
 <translation id="2091523941449737894">Побрзите движења на допирната подлога ќе го поместат курсорот подалеку</translation>
 <translation id="2091887806945687916">Звук</translation>
 <translation id="2092356157625807382"><ph name="BEGIN_H3" />Функции за отстранување грешки<ph name="END_H3" />
@@ -2286,6 +2282,7 @@
 <translation id="252418934079508528">Инсталирајте <ph name="DEVICE_OS" /></translation>
 <translation id="252513908494776481">Прашајте за картичкава</translation>
 <translation id="2525746158911982776">Ажурирањето не успеа бидејќи системот нема доволно простор за складирање.</translation>
+<translation id="2525842906387880861">Нема веќе да гледате предлози на страницава</translation>
 <translation id="2526590354069164005">Десктоп</translation>
 <translation id="2526619973349913024">Провери за ажурирање</translation>
 <translation id="2527167509808613699">Секаков вид на поврзување</translation>
@@ -2634,7 +2631,6 @@
 <translation id="2757338480560142065">Погрижете се лозинката што ја зачувувате да се совпаѓа со лозинката за <ph name="WEBSITE" /></translation>
 <translation id="2761632996810146912"><ph name="HASHTAG_SETTINGS" /> Не добивме резултати од пребарување за <ph name="SEARCH_QUERY" /></translation>
 <translation id="2762441749940182211">Камерата е блокирана</translation>
-<translation id="2763165257813209348">Датотеката <ph name="FILE_NAME" /> содржи чувствителни или опасни податоци. Вашата организација ќе ви дозволи да ја зачувате во просторот во облакот или да ја отфрлите</translation>
 <translation id="2764786626780673772">Детали за VPN</translation>
 <translation id="2764920001292228569">Внесете име на профил</translation>
 <translation id="2765100602267695013">Контактирајте со мобилниот оператор</translation>
@@ -3955,7 +3951,6 @@
 <translation id="3688794912214798596">Променете ги јазиците…</translation>
 <translation id="3690369331356918524">Ве предупредува ако лозинките се откриени при упад во податоците</translation>
 <translation id="3691231116639905343">Апликации за тастатура</translation>
-<translation id="369135240373237088">Најавете се повторно со училишна сметка</translation>
 <translation id="3693415264595406141">Лозинка:</translation>
 <translation id="3694027410380121301">Избери претходна картичка</translation>
 <translation id="3694122362646626770">Веб-страници</translation>
@@ -4329,7 +4324,6 @@
 <translation id="3914894336972817683">Не може да се прикачи. Се чини дека датотеката е празна.</translation>
 <translation id="3915280005470252504">Барај со глас</translation>
 <translation id="3916445069167113093">Овој тип на датотека може да го оштети компјутерот. Дали сепак сакате да ја задржите датотеката <ph name="FILE_NAME" />?</translation>
-<translation id="3917184139185490151">Вашиот компјутер содржи безбедносен модул што се користи за имплементирање на многу важни безбедносни функции во Chrome OS. Посетете го „Центарот за помош на Chromebook“ за да дознаете повеќе: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="3917644013202553949">Нема доволно простор за синхронизација на вашите датотеки. Обидете се да ослободите простор.</translation>
 <translation id="3919145445993746351">За да ги добиете екстензиите на сите ваши компјутери, вклучете ја синхронизацијата</translation>
 <translation id="3919229493046408863">Не добивајте известување кога има уреди во близина</translation>
@@ -4458,7 +4452,6 @@
 <translation id="3992008114154328194">Се презема <ph name="FILE_NAME" />, <ph name="STATUS" /></translation>
 <translation id="3994075804072562819">Дозволете <ph name="SPECIFIC_NAME" /> да ги контролира USB-уредите.</translation>
 <translation id="3994318741694670028">За жал, вашиот компјутер е конфигуриран со деформиран ИД на хардвер. Ова го спречува ChromeOS Flex да ги ажурира најновите безбедносни поправки и вашиот компјутер <ph name="BEGIN_BOLD" />може да е ранлив на напади од злонамерен софтвер<ph name="END_BOLD" />.</translation>
-<translation id="3994374631886003300">Отклучете го телефонот и приближете го за отклучување на вашиот <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3994522032746736727">Најавете се како <ph name="EMAIL" /></translation>
 <translation id="3994530503403062649">Лоцирајте ги копчињата на таблетот</translation>
 <translation id="3994708120330953242">Некои од вашите лозинки беа откриени при упад во податоци. За да ги заштитите вашите сметки, треба да ги промените лозинкиве веднаш.</translation>
@@ -4814,7 +4807,6 @@
 <translation id="426564820080660648">За да се проверат ажурирања, користете етернет, Wi-Fi или мобилен интернет.</translation>
 <translation id="426652736638196239">Овој IBAN ќе се зачува само на овој уред</translation>
 <translation id="4266679478228765574">Ако ги отстраните папките, тоа ќе го сопре споделувањето, но нема да ги избрише датотеките.</translation>
-<translation id="4267455501101322486">За да додадеш сметка за пристап до едукативни ресурси, побарај дозвола од родителот</translation>
 <translation id="4267792239557443927">{COUNT,plural, =0{Не се најдени лозинки}=1{Најдени резултати: 1}one{Најдени резултати: {COUNT}}other{Најдени резултати: {COUNT}}}</translation>
 <translation id="4267924571297947682">Побарај дозвола од родител</translation>
 <translation id="4267953847983678297">Поврзувај се на мобилната мрежа автоматски</translation>
@@ -5153,7 +5145,6 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         Може да управувате со поставките од менито со картички или да видите повеќе опции во „Приспособете го Chrome“.</translation>
-<translation id="4503748371388753124">Вашиот компјутер содржи безбедносен уред Trusted Platform Module (TPM) кој се користи за имплементирање на многу критични безбедносни функции во ChromeOS Flex. Посетете го Центарот за помош на Chromebook за да дознаете повеќе: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4504940961672722399">Користете ја наставката со кликнување на иконата или со притискање на <ph name="EXTENSION_SHORTCUT" />.</translation>
 <translation id="4505469832694348179">Преземете го Chrome со овој QR-код и најавете се на вашата сметка на Google.</translation>
 <translation id="450552327874992444">Зборот веќе е додаден</translation>
@@ -5166,7 +5157,6 @@
 <translation id="4509421746503122514">Рестартирајте за да се ажурира</translation>
 <translation id="4509741852167209430">меѓу сајтовите се споделуваат ограничени типови податоци за мерење на перформансите на нивните реклами, на пр., дали сте купиле нешто по отворањето конкретен сајт</translation>
 <translation id="4510195992002502722">Не успејаа да се испратат повратните информации. Се обидуваме повторно…</translation>
-<translation id="4510479820467554003">Список со сметки на родители</translation>
 <translation id="4511344327646819192">За да сопрете други да ја користат вашата лозинка, променете ја на <ph name="WEBSITE" /></translation>
 <translation id="4513072860957814107">&amp;Избришете ги податоците од прелистување…</translation>
 <translation id="4513872120116766993">Предвидливо пишување</translation>
@@ -6213,7 +6203,6 @@
 <translation id="5244234799035360187">Сега OneDrive ќе се појави во апликацијата „Датотеки“</translation>
 <translation id="5244466461749935369">Задржи засега</translation>
 <translation id="5244474230056479698">Синхронизирање со <ph name="EMAIL" /></translation>
-<translation id="5245610266855777041">Започнете со училишна сметка</translation>
 <translation id="5246282308050205996"><ph name="APP_NAME" /> падна. Кликнете на балонот за да ја рестартирате апликацијата.</translation>
 <translation id="5247051749037287028">Име за прикажување (изборно)</translation>
 <translation id="5247243947166567755">Изберете <ph name="BOOKMARK_TITLE" /></translation>
@@ -6368,7 +6357,6 @@
 <translation id="5365881113273618889">Папката што ја избравте содржи чувствителни датотеки. Дали сигурно сакате да ѝ доделите на <ph name="APP_NAME" /> постојан пристап за пишување во оваа папка?</translation>
 <translation id="536638840841140142">Нема</translation>
 <translation id="5368246151595623328">„<ph name="NETWORK_NAME" />“ зачувано од <ph name="DEVICE_NAME" /></translation>
-<translation id="5368720394188453070">Вашиот телефон е заклучен. Отклучете го за да влезете.</translation>
 <translation id="536882527576164740">{0,plural, =1{Инкогнито}one{Инкогнито (#)}other{Инкогнито (#)}}</translation>
 <translation id="5369694795837229225">Поставете Linux-околина за програмирање</translation>
 <translation id="5370819323174483825">&amp;Повторно вчитај</translation>
@@ -6861,7 +6849,6 @@
 <translation id="5707674184620508665">Вашата организација (<ph name="ACCOUNT_MANAGER" />) нема да може да ги гледа или да управува со постојните податоци. Ќе останат во постојниот профил.</translation>
 <translation id="5708171344853220004">Главно име на Microsoft</translation>
 <translation id="5711010025974903573">Евиденција за услугата за одржување</translation>
-<translation id="5711983031544731014">Не може да се отклучи. Внесете ја лозинката.</translation>
 <translation id="5712153969432126546">Сајтовите понекогаш објавуваат документи, договори и формулари во PDF-формат</translation>
 <translation id="571222594670061844">Сајтовите може да прикажуваат prompt за најавување од услуги за идентификација</translation>
 <translation id="5713158217420111469">Поврзан со <ph name="DEVICE" /></translation>
@@ -7438,7 +7425,6 @@
 <translation id="6112931163620622315">Проверете го телефонот</translation>
 <translation id="6113434369102685411">Поставете го стандардниот пребарувач за прелистувачот Chrome и стартерот на <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113832060210023016">стартер + клик</translation>
-<translation id="6113942107547980621">За да користите Smart Lock, префрлете се на примарниот кориснички профил на телефонот</translation>
 <translation id="6116921718742659598">Промени поставки за јазик и внесување...</translation>
 <translation id="6119008366402292080">Не е достапен печатач</translation>
 <translation id="6119972796024789243">Корекција на боите</translation>
@@ -7845,7 +7831,6 @@
 <translation id="6400360390396538896">Секогаш на <ph name="ORIGIN" /></translation>
 <translation id="6401118106417399952">EID-бројот на вашиот уред е <ph name="EID_NUMBER" />, а серискиот број на уредот е <ph name="SERIAL_NUMBER" />. Броевиве може да се користат за активирање услуга.</translation>
 <translation id="6401458660421980302">За да ја испратите картичкава на друг уред, најавете се на Chrome таму</translation>
-<translation id="6401597285454423070">Вашиот компјутер содржи безбедносен уред Trusted Platform Module (TPM) што се користи за имплементирање на многу важни безбедносни функции во Chrome OS. Посетете го „Центарот за помош на Chromebook“ за да дознаете повеќе: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6402921224457714577">Сајтот може да побара да ги контролира и репрограмира MIDI-уредите</translation>
 <translation id="6404511346730675251">Измени обележувач</translation>
 <translation id="640457954117263537">Користење на локацијата за апликациите и услугите за ChromeOS и Android.</translation>
@@ -8427,7 +8412,6 @@
 <translation id="6805236548654699520">Отстранете ги несаканите скокачки прозорци, решете ги проблемите со мрежата и друго така што ќе ги вратите поставките на безбедни стандардни поставки.</translation>
 <translation id="6805478749741295868">Ова е експериментална AI-функција, па нема секогаш да прикажува точни информации.</translation>
 <translation id="6805647936811177813">Најави се на <ph name="TOKEN_NAME" /> за да увезеш сертификат на клиент од <ph name="HOST_NAME" />.</translation>
-<translation id="680572642341004180">Овозможи следење RLZ на <ph name="SHORT_PRODUCT_OS_NAME" />.</translation>
 <translation id="6805817411033102703">Повратни информации за „Споделени групи картички“</translation>
 <translation id="6806089545527108739">Не дозволувај, но прашувај подоцна</translation>
 <translation id="6806781719264274042">Само вашите контакти со сметка на Google. <ph name="LINK_BEGIN" />Прегледајте ги контактите<ph name="LINK_END" /></translation>
@@ -8875,7 +8859,6 @@
 <translation id="7113502843173351041">Знајте си ја адресата на е-пошта</translation>
 <translation id="7113974454301513811">Сега додајте ја тековната картичка во списокот</translation>
 <translation id="7114054701490058191">Лозинките не се совпаѓаат</translation>
-<translation id="7114648273807173152">За да ја користите Smart Lock за најавување на вашата сметка на Google, одете во „Поставки &gt; Поврзани уреди &gt; Вашиот телефон &gt; Smart Lock“.</translation>
 <translation id="7115361495406486998">Нема достапни контакти</translation>
 <translation id="7116554090938189816">SSL-сертификатот на печатачот е истечен. Рестартирајте го печатачот, па обидете се повторно.</translation>
 <translation id="7117228822971127758">Обидете се повторно подоцна</translation>
@@ -9507,7 +9490,6 @@
 <translation id="7553242001898162573">Внесете ја вашата лозинка</translation>
 <translation id="755472745191515939">Администраторот не го дозволува јазиков</translation>
 <translation id="7554791636758816595">Нова картичка</translation>
-<translation id="7556033326131260574">Smart Lock не успеа да ја потврди вашата сметка. Внесете ја лозинката за да влезете.</translation>
 <translation id="7556228616802995437">Неодамнешни разговори и нишки</translation>
 <translation id="7556242789364317684">За жал, <ph name="SHORT_PRODUCT_NAME" /> не е во можност да ги обнови вашите поставки. За да ја поправите грешката, <ph name="SHORT_PRODUCT_NAME" /> мора да го ресетира вашиот уред со Powerwash.</translation>
 <translation id="7557194624273628371">Проследување порти на Linux</translation>
@@ -9950,7 +9932,6 @@
 <translation id="7853747251428735">&amp;Повеќе алатки</translation>
 <translation id="7855258394151767387">Користете „W“ за да притиснете копче на глувчето</translation>
 <translation id="7855678561139483478">Преместете ја картичката во нов прозорец</translation>
-<translation id="7857004848504343806">Вашиот компјутер содржи заштитен модул што се користи за имплементирање многу важни безбедносни функции во ChromeOS Flex. Посетете го „Центарот за помош на Chromebook“ за да дознаете повеќе: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">Предлози за текст</translation>
 <translation id="7858120906780498731">Поврзани влезни уреди на ChromeOS</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
@@ -9997,7 +9978,6 @@
 <translation id="7892005672811746207">Вклучете „Зачувај група“</translation>
 <translation id="7892384782944609022">Не можеше да се спари. Изберете уред и обидете се повторно.</translation>
 <translation id="7893008570150657497">Пристап до фотографии, музика и други медиуми од вашиот компјутер</translation>
-<translation id="7893153962594818789">Bluetooth е исклучен на овој <ph name="DEVICE_TYPE" />. Внесете ја лозинката и вклучете Bluetooth.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (Стандардно)</translation>
 <translation id="7896292361319775586">Да се зачува <ph name="FILE" />?</translation>
 <translation id="789722939441020330">Не им дозволувај на сајтовите автоматски да преземаат повеќе датотеки</translation>
@@ -10843,7 +10823,6 @@
 <translation id="8453400752347156012">Обележувачов е зачуван само на овој уред. Ако го зачувате во „<ph name="ACCOUNT_FOLDER" />“, обележувачов ќе се зачува и во вашата сметка.</translation>
 <translation id="8455775311562941553">Поврзано со <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="8456067150616457342">Поставете го вашиот стандарден прелистувач</translation>
-<translation id="845702320058262034">Не може да се поврзе. Проверете дали ви е вклучен Bluetooth на телефонот.</translation>
 <translation id="8457251154056341970">Нема да гледате <ph name="MODULE_NAME" /> на страницава повторно</translation>
 <translation id="8457451314607652708">Увези обележувачи</translation>
 <translation id="8458341576712814616">Кратенка</translation>

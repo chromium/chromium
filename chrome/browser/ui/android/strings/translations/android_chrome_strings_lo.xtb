@@ -213,6 +213,7 @@
 <translation id="1900260903084164610">ໂດຍການດຳເນີນການຕໍ່, ແມ່ນຖືວ່າທ່ານຍອມຮັບ <ph name="BEGIN_TOS_LINK" />ຂໍ້ກຳນົດບໍລິການ<ph name="END_TOS_LINK" />.</translation>
 <translation id="1904580727789512086">URL ທີ່ທ່ານເຂົ້ານັ້ນຖືກບັນທຶກໄປໃສ່ບັນຊີ Google ທ່ານແລ້ວ</translation>
 <translation id="1910950723001426294">ປິດລາຍຊື່ຂອງຕົວເລືອກການແບ່ງປັນແລ້ວ.</translation>
+<translation id="1912367671208932516">ເປີດເມນູສ່ວນຂະຫຍາຍ</translation>
 <translation id="191726024256261717">ກວດສອບການອະນຸຍາດ</translation>
 <translation id="1917766536967060661">ທ່ານຈະສູນເສຍສິດເຂົ້າເຖິງກຸ່ມແຖບ “<ph name="GROUP_NAME" />” ທັນທີ ແລະ <ph name="BLOCKED_MEMBER_FULL_NAME" /> (<ph name="BLOCKED_MEMBER_EMAIL" />) ຈະບໍ່ສາມາດໂຕ້ຕອບກັບທ່ານໃນທົ່ວບໍລິການ Google ໄດ້ອີກຕໍ່ໄປ.</translation>
 <translation id="1919130412786645364">ອະນຸຍາດການເຂົ້າສູ່ລະບົບ Chrome</translation>
@@ -414,6 +415,7 @@
 <translation id="2789486458103222910">ຕົກລົງ</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome ພົບລະຫັດຜ່ານທີ່ໃຊ້ຊ້ຳທີ່ທ່ານສາມາດປັບປຸງໄດ້}other{Chrome ພົບ # ລະຫັດຜ່ານທີ່ໃຊ້ຊ້ຳທີ່ທ່ານສາມາດປັບປຸງໄດ້}}</translation>
 <translation id="2794551654724114396">ເປີດການແຈ້ງເຕືອນເພື່ອຮັບເຄັດລັບທີ່ເປັນປະໂຫຍດທີ່ຈະຊ່ວຍໃຫ້ທ່ານໄດ້ຮັບປະໂຫຍດສູງສຸດຈາກ Chrome</translation>
+<translation id="2798977804328097977">ດຳເນີນການຕໍ່ໄດ້ຢ່າງລ່ຽນໄຫຼໃນທຸກອຸປະກອນ</translation>
 <translation id="2805210243313393104">ເຂົ້າເຖິງບຸກມາກ ແລະ ຂໍ້ມູນອື່ນໆຂອງທ່ານໃນອຸປະກອນທຸກເຄື່ອງຂອງທ່ານ</translation>
 <translation id="2805756323405976993">ແອັບ</translation>
 <translation id="2819849308549746319">ຍົກເລີກການຮັບການແຈ້ງເຕືອນທັງໝົດ</translation>
@@ -469,6 +471,7 @@
 <translation id="2977350910003566746">ການຈັດຮຽງຕາມເປີດຫຼ້າສຸດ</translation>
 <translation id="297771753501244313">ຈັດຮຽງຕາມເວລາເປີດຫຼ້າສຸດ</translation>
 <translation id="2979639724566107830">ເປີດໃນໜ້າຈໍໃໝ່</translation>
+<translation id="2980545254049127870">ເປີດລິ້ງຈາກຂໍ້ຄວາມ, ເອກະສານ ແລະ ແອັບອື່ນໆໄດ້ຢ່າງງ່າຍດາຍ</translation>
 <translation id="2983102365694924129">ອີງຕາມການເຄື່ອນໄຫວຂອງທ່ານຢູ່ເວັບໄຊ. ການຕັ້ງຄ່ານີ້ປິດຢູ່.</translation>
 <translation id="2983398917942897288">ບໍ່ໄດ້ນຳໃຊ້ (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2983835398644161987">ອອກຈາກໂໝດສະແດງຜົນຊ້ອນກັນ</translation>
@@ -730,6 +733,7 @@
 <translation id="4137746084635924146">ພາສາອຸປະກອນປັດຈຸບັນ</translation>
 <translation id="414128724510021958">ເວັບໄຊເດັສທັອບຖືກຮ້ອງຂໍໂດຍຄ່າເລີ່ມຕົ້ນ</translation>
 <translation id="4162867837470729563">ລາຍຊື່ຂອງຕົວເລືອກການແບ່ງປັນແບບຄວາມສູງແບບເຕັມ.</translation>
+<translation id="4164642020717536140">ການທ່ອງເວັບທີ່ວ່ອງໄວ ແລະ ປອດໄພ</translation>
 <translation id="4165077084524712774">ເຄື່ອງມືເພີ່ມເຕີມ</translation>
 <translation id="4170011742729630528">ບໍ່ມີການບໍລິການໃຫ້ຢູ່, ລອງໃໝ່ອີກພາຍຫຼັງ.</translation>
 <translation id="4170577491341606575">ກຳລັງດຶງຂໍ້ມູນຂອງທ່ານ\u2026</translation>
@@ -854,6 +858,7 @@
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{ມີລະຫັດຜ່ານທີ່ຖືກລະເມີດ 1 ລາຍການ}other{ມີລະຫັດຜ່ານທີ່ຖືກລະເມີດ # ລາຍການ}}</translation>
 <translation id="4641919525231168205">ເຂົ້າໄປໜ້າຕໍ່ໄປ</translation>
 <translation id="4642472735733036929">ຢຸດການຕິດຕາມລາຄາແລ້ວ</translation>
+<translation id="4643661539340338954">ເປີດການແຈ້ງເຕືອນ Chrome Finds ແລ້ວ</translation>
 <translation id="4649493483932335039">ເບິ່ງແຖບຫຼ້າສຸດ</translation>
 <translation id="465657074423018424">Safe Browsing ປົກປ້ອງທ່ານຈາກເວັບໄຊຫຼອກລວງ. ຖ້າທ່ານປິດມັນໄວ້, ກະລຸນາລະມັດລະວັງເພີ່ມເຕີມໃນເວລາທ່ອງເວັບ ໂດຍສະເພາະກ່ອນທີ່ຈະປ້ອນລະຫັດຜ່ານ.</translation>
 <translation id="4662373422909645029">ຊື່ຫຼິ້ນບໍ່ສາມາດຮວມມີຕົວເລກໄດ້</translation>
@@ -1652,6 +1657,7 @@
 <translation id="7686086654630106285">ເພີ່ມເຕີມກ່ຽວກັບການໂຄສະນາທີ່ແນະນໍາຈາກເວັບໄຊ</translation>
 <translation id="7690596512217303514">ອຸປະກອນຂອງທ່ານບໍ່ສາມາດເປີດ Chrome ໄດ້. ເພື່ອແກ້ໄຂບັນຫາ, ໃຫ້ດາວໂຫຼດການອັບເດດ Chrome ເວີຊັນຫຼ້າສຸດຈາກ App Store ຂອງທ່ານ.</translation>
 <translation id="7692761875510935111">ເປີດໃນໂປຣແກຣມທ່ອງເວັບຢ່າງວ່ອງໄວ. ເພື່ອແກ້ໄຂທາງລັດນີ້, ໃຫ້ແຕະຄ້າງໄວ້.</translation>
+<translation id="7695270712963178084">Chrome Finds</translation>
 <translation id="7697383401610880082">ບ່ອນຈັບລາກ</translation>
 <translation id="7698359219371678927">ສ້າງອີເມວໃນ <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">ເປີດຊີດລຸ່ມສຸດທີ່ສະແດງການເຄື່ອນໄຫວຫຼ້າສຸດແບບເຕັມໜ້າແລ້ວ</translation>

@@ -125,7 +125,6 @@
 <translation id="2228071138934252756">Til að veita <ph name="APP_NAME" /> aðgang að myndavélinni þarftu einnig að kveikja á henni í <ph name="BEGIN_LINK" />stillingum Android<ph name="END_LINK" />.</translation>
 <translation id="2231160360698766265">Vefsvæði mega spilað varið efni</translation>
 <translation id="2235344399760031203">Lokað er á fótspor frá þriðju aðilum</translation>
-<translation id="2238944249568001759">Leitartillögur byggðar á síðasta flipa</translation>
 <translation id="2241587408274973373">Kort nýrrar flipasíðu</translation>
 <translation id="2241634353105152135">Bara einu sinni</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> Fjarlægja</translation>
@@ -214,7 +213,6 @@
 <translation id="3069226013421428034">Leyfa innskráningu þriðja aðila á tilteknu vefsvæði.</translation>
 <translation id="310297983047869047">Fyrri skyggna</translation>
 <translation id="3108122610701115301">Velja sem sjálfgefið</translation>
-<translation id="3109724472072898302">Minnkað</translation>
 <translation id="310979712355504754">Eyða öllum</translation>
 <translation id="311394601889664316">Ekki leyfa vefsvæðum að breyta skrám eða möppum í tækinu</translation>
 <translation id="3114012059975132928">Myndspilari</translation>
@@ -262,7 +260,6 @@
 <translation id="3602290021589620013">Forskoða</translation>
 <translation id="3611658447322220736">Vefsvæði sem nýlega var lokað geta lokið við að senda og taka á móti gögnum</translation>
 <translation id="3619294456800709762">Vefsvæði geta farið sjálfkrafa í mynd í mynd</translation>
-<translation id="3628308229821498208">Leitartillögur</translation>
 <translation id="3632460243282703117">Gerast áskrifandi</translation>
 <translation id="363748948745453283">Notar áætlaða staðsetningu</translation>
 <translation id="3641456520301071208">Vefsvæði geta beðið um staðsetningarupplýsingar</translation>
@@ -524,7 +521,6 @@
 <translation id="6231752747840485235">Fjarlægja „<ph name="APP_NAME" />“?</translation>
 <translation id="6234351944623978659">Ýttu á Vafraforrit &gt; Chrome</translation>
 <translation id="6260830281887654268">Blað neðst með útlitsþemasöfnum fyrir síðu nýrra flipa, opnað í hálfri hæð</translation>
-<translation id="6262191102408817757">Byggt á síðasta flipa hjá þér</translation>
 <translation id="6262279340360821358">Lokað er fyrir <ph name="PERMISSION_1" /> og <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Vefsvæði geta óskað eftir því að senda tilkynningar</translation>
 <translation id="6295158916970320988">Öll vefsvæði</translation>
@@ -604,7 +600,6 @@
 <translation id="7180611975245234373">Endurnýja</translation>
 <translation id="7188508872042490670">Vefsvæðagögn í tækinu</translation>
 <translation id="7201549776650881587">Þessi aðgerð eyðir öllum gögnum og fótsporum sem eru vistuð á öllum vefsvæðum undir <ph name="ORIGIN" /> eða í forriti þess á heimaskjánum hjá þér</translation>
-<translation id="7203150201908454328">Stækkað</translation>
 <translation id="7213166370492037743">Vefsvæði mega ekki tengjast neinu tæki á staðarnetinu þínu.</translation>
 <translation id="7219254577985949841">Eyða vefsvæðagögnum?</translation>
 <translation id="723171743924126238">Veldu myndir</translation>

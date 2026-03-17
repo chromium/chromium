@@ -394,6 +394,7 @@
 <translation id="2360196772093551345">Omba Tovuti ya Kifaa cha Mkononi</translation>
 <translation id="2362083820973145409">Umeingia katika akaunti ukitumia <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Hufungua mipangilio.</translation>
 <translation id="2371084566192454134">Vichupo na vikundi vya vichupo</translation>
+<translation id="2371303771137626249">Mpya</translation>
 <translation id="2381405137052800939">Mambo ya Msingi</translation>
 <translation id="2384692388811649784">Ficha Vichupo vya faragha</translation>
 <translation id="2386793615875593361">1 iliyochaguliwa</translation>
@@ -636,6 +637,7 @@
 <translation id="3324193307694657476">Anwani ya 2</translation>
 <translation id="3328801116991980348">Maelezo ya tovuti</translation>
 <translation id="333229797575847124">Jinsi ya kuwasha kipengele hiki</translation>
+<translation id="334004756946755423">Nifafanulie hili:</translation>
 <translation id="3344233834747405775">Jina la mwenye kadi si sahihi</translation>
 <translation id="3344485292736684439">{count,plural, =1{Alamisho imehifadhiwa kwenye "{title}" katika akaunti yako, {email}}other{Alamisho zimehifadhiwa kwenye "{title}" katika akaunti yako, {email}}}</translation>
 <translation id="334690320928261823">Vichupo vya Hivi Majuzi</translation>
@@ -689,6 +691,7 @@
 <translation id="3530206579861815432">Pata kwa haraka vichupo ulivyofungua na ulivyofunga hivi karibuni kwenye vifaa vyako vilivyosawazishwa.</translation>
 <translation id="3530767473765895035">Dhibiti akaunti kwenye kifaa hiki…</translation>
 <translation id="3533436815740441613">Kichupo Kipya</translation>
+<translation id="3534738261102690620">Uliza Gemini</translation>
 <translation id="3540141921715814660">Ongeza kwenye Alamisho</translation>
 <translation id="3546122170015471515">Matoleo ya Kuhakiki Ramani kwenye Google.com</translation>
 <translation id="3547356470684043247">Soma tathmini za wateja kuhusu bidhaa, huduma au matumizi ili kusaidia ufanye maamuzi bora kupitia maoni</translation>
@@ -959,6 +962,7 @@
 <translation id="454217142158335225">Unaweza kufungua upya vipengee ulivyofunga kwenye sehemu za vikundi vya vichupo au vichupo vya hivi majuzi. Vichupo ulivyobandika havitafungwa.</translation>
 <translation id="4547181496285029457">Kurudi kwenye kichupo cha hivi majuzi</translation>
 <translation id="4552042254369397518">Inanakili…</translation>
+<translation id="4553044860350038560">Funguo zaidi za siri</translation>
 <translation id="4564893319561643483">Ficha "<ph name="TITLE" />"</translation>
 <translation id="4565377596337484307">Ficha nenosiri</translation>
 <translation id="4568230126482344545">Kuficha Vichupo vya hivi majuzi</translation>
@@ -1087,6 +1091,7 @@
 <translation id="4944543191714094452">Pata katika Ukurasa…</translation>
 <translation id="4945756290001680296">Fikia mipangilio ya nenosiri</translation>
 <translation id="4949302115427722371">Dhibiti mipangilio…</translation>
+<translation id="4952050521954075618">Picha zilizo kwenye Albamu ya Kamera hazitasawazishwa kwenye vifaa vyako</translation>
 <translation id="4958444002117714549">Panua orodha</translation>
 <translation id="496392417432935267">Imefunguliwa kwingine</translation>
 <translation id="4970724460420203313">Kutumia Chrome kwenye akaunti yako inayosimamiwa hukusaidia kutenganisha shughuli za kuvinjari zinazohusiana na shirika lako (ikiwa ni pamoja na vichupo, historia na manenosiri) na shughuli zako nyingine za kuvinjari</translation>
@@ -1286,6 +1291,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="5647702255748985085">Ungependa kuondoka kwenye kikundi?</translation>
 <translation id="5648166631817621825">Siku 7 zilizopita</translation>
 <translation id="5652623411397330904">Bidhaa unazofuatilia zitaonekana hapa.</translation>
+<translation id="5653100054596780862">Vichupo vyote</translation>
 <translation id="5656431592348714536">Kalenda Iliyoboreshwa</translation>
 <translation id="5659593005791499971">Barua pepe</translation>
 <translation id="5665739277590037307"><ph name="GOOGLE_TERMS" /> na <ph name="GEMINI_APPS_PRIVACY" /> yanatumika. Gemini inaweza kukosea, kwa hivyo kagua majibu yake.</translation>
@@ -1751,6 +1757,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="7300448350764260141">Weka safu ya ziada ya ulinzi dhidi ya vitisho vya mtandaoni.</translation>
 <translation id="7311244614769792472">Hakuna matokeo yaliyopatikana</translation>
 <translation id="7313347584264171202">Utapata vichupo fiche hapa</translation>
+<translation id="7322186060879266048">{count,plural, =1{Chaguo {count} la kujaza kiotomatiki juu ya kibodi yako.}other{Chaguo {count} za kujaza kiotomatiki juu ya kibodi yako.}}</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241">Faili imepakuliwa asilimia <ph name="PERCENT" /></translation>
 <translation id="7345061034321640811">Huruhusiwi kupakia</translation>

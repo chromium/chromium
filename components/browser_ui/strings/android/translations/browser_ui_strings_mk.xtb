@@ -125,7 +125,6 @@
 <translation id="2228071138934252756">За да овозможите <ph name="APP_NAME" /> да пристапува до вашата камера, вклучете ја дозволата за камерата и во <ph name="BEGIN_LINK" />Поставки за Android<ph name="END_LINK" />.</translation>
 <translation id="2231160360698766265">Сајтовите може да пуштаат заштитени содржини</translation>
 <translation id="2235344399760031203">Блокирани се колачиња од трети страни</translation>
-<translation id="2238944249568001759">Предложени пребарувања според вашата последна картичка</translation>
 <translation id="2241587408274973373">Картички за страница во нова картичка</translation>
 <translation id="2241634353105152135">Само еднаш</translation>
 <translation id="2253414712144136228">Отстранете <ph name="NAME_OF_LIST_ITEM" /></translation>
@@ -214,7 +213,6 @@
 <translation id="3069226013421428034">Дозволете најавување на трети лица за конкретен сајт.</translation>
 <translation id="310297983047869047">Претходен слајд</translation>
 <translation id="3108122610701115301">Постави го како стандарден</translation>
-<translation id="3109724472072898302">Собрано</translation>
 <translation id="310979712355504754">Избриши сè</translation>
 <translation id="311394601889664316">Не им дозволувај на сајтовите да изменуваат датотеки или папки на уредот</translation>
 <translation id="3114012059975132928">Видеоплеер</translation>
@@ -262,7 +260,6 @@
 <translation id="3602290021589620013">Преглед</translation>
 <translation id="3611658447322220736">Неодамна затворените сајтови може да ги довршуваат испраќањето и примањето податоци</translation>
 <translation id="3619294456800709762">Сајтовите може да влегуваат во „Слика во слика“ автоматски</translation>
-<translation id="3628308229821498208">Предложени пребарувања</translation>
 <translation id="3632460243282703117">Претплатете се</translation>
 <translation id="363748948745453283">Се користи приближна локација</translation>
 <translation id="3641456520301071208">Сајтовите може да прашуваат за вашата локација</translation>
@@ -522,7 +519,6 @@
 <translation id="6231752747840485235">Да се деинсталира „<ph name="APP_NAME" />“?</translation>
 <translation id="6234351944623978659">Допрете „Апликација за прелистување &gt; Chrome“</translation>
 <translation id="6260830281887654268">Долниот лист со „Збирки теми за изгледот на страницата во нова картичка“ е отворен на половина висина</translation>
-<translation id="6262191102408817757">Според вашата последна картичка</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> и <ph name="PERMISSION_2" /> се блокирани</translation>
 <translation id="6270391203985052864">Сајтовите можат да прашуваат дали да испраќаат известувања</translation>
 <translation id="6295158916970320988">Сите локации</translation>
@@ -602,7 +598,6 @@
 <translation id="7180611975245234373">Освежи</translation>
 <translation id="7188508872042490670">Податоци за сајт на уред</translation>
 <translation id="7201549776650881587">Дејствово ќе ги избрише сите податоци и колачиња што ги складирале сите сајтови под сајтот <ph name="ORIGIN" /> или неговата апликација на почетниот екран</translation>
-<translation id="7203150201908454328">Проширено</translation>
 <translation id="7213166370492037743">Не дозволувај сајтовите да се поврзуваат со кој било уред во вашата локална мрежа</translation>
 <translation id="7219254577985949841">Да се избришат податоците од сајтот?</translation>
 <translation id="723171743924126238">Изберете слики</translation>

@@ -213,6 +213,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="1900260903084164610">Aurrera egiten baduzu, onartu egingo dituzu <ph name="BEGIN_TOS_LINK" />Zerbitzu-baldintzak<ph name="END_TOS_LINK" />.</translation>
 <translation id="1904580727789512086">Bisitatzen dituzun URLak Google-ko kontuan gordetzen dira</translation>
 <translation id="1910950723001426294">Partekatze-aukeren zerrenda itxita dago.</translation>
+<translation id="1912367671208932516">Ireki luzapenen menua</translation>
 <translation id="191726024256261717">Berrikusi baimenak</translation>
 <translation id="1917766536967060661">Berehala galduko duzu "<ph name="GROUP_NAME" />" fitxa talderako sarbidea, eta aurrerantzean <ph name="BLOCKED_MEMBER_FULL_NAME" /> (<ph name="BLOCKED_MEMBER_EMAIL" />) erabiltzaileak ezingo du jardun interakzioan zurekin Google-ren zerbitzuetan.</translation>
 <translation id="1919130412786645364">Baimendu Chrome-n saioa hastea</translation>
@@ -414,6 +415,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="2789486458103222910">Ados</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Hobe dezakezun beste nonbait erabilitako pasahitz bat aurkitu du Chrome-k}other{Hobe ditzakezun beste nonbait erabilitako # pasahitz aurkitu ditu Chrome-k}}</translation>
 <translation id="2794551654724114396">Aktibatu Chrome-ri etekinik handiena ateratzen laguntzen dizuten aholku erabilgarriak jasotzeko jakinarazpenak</translation>
+<translation id="2798977804328097977">Edozein gailutan erraz jarraitu</translation>
 <translation id="2805210243313393104">Atzitu laster-markak eta bestelako datuak gailu guztietan</translation>
 <translation id="2805756323405976993">Aplikazioak</translation>
 <translation id="2819849308549746319">Kendu guztietarako harpidetza</translation>
@@ -469,6 +471,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="2977350910003566746">Azken irekitze-dataren arabera ordenatzen</translation>
 <translation id="297771753501244313">Ordenatu: azken irekitzea</translation>
 <translation id="2979639724566107830">Ireki beste leiho batean</translation>
+<translation id="2980545254049127870">Mezu, dokumentu eta bestelako aplikazioetako estekak erraz ireki</translation>
 <translation id="2983102365694924129">Webgune batean egin dituzun jardueretan oinarrituta. Desaktibatuta dago ezarpena.</translation>
 <translation id="2983398917942897288">Inaktibo (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2983835398644161987">Irten pantaila txikiko eginbidetik</translation>
@@ -730,6 +733,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="4137746084635924146">Gailuak une honetan darabilen hizkuntza</translation>
 <translation id="414128724510021958">Ordenagailuetarako webguneak modu lehenetsian eskatzen dira</translation>
 <translation id="4162867837470729563">Partekatze-aukeren zerrenda altuera osoan irekita dago.</translation>
+<translation id="4164642020717536140">Webguneak bizkor eta segurtasunez arakatu</translation>
 <translation id="4165077084524712774">Tresna gehiago</translation>
 <translation id="4170011742729630528">Zerbitzua ez dago erabilgarri. Saiatu berriro geroago.</translation>
 <translation id="4170577491341606575">Zure datuak eskuratzen\u2026</translation>
@@ -854,6 +858,7 @@ Baliteke Google-ko kontuak arakatze-historiako bestelako datu batzuk (adibidez, 
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 pasahitz dago arriskuan}other{# pasahitz daude arriskuan}}</translation>
 <translation id="4641919525231168205">Joan hurrengo orrira</translation>
 <translation id="4642472735733036929">Prezioaren jarraipena egiteari utzi zaio</translation>
+<translation id="4643661539340338954">Aktibatu dira Chrome-ren aurkikuntzen jakinarazpenak</translation>
 <translation id="4649493483932335039">Ikusi azkenaldiko fitxak</translation>
 <translation id="465657074423018424">Arakatze seguruak webgune arriskutsuen aurka babesten zaitu. Hura desaktibatuz gero, ibili tentuz arakatzean, bereziki pasahitzak idatzi baino lehen.</translation>
 <translation id="4662373422909645029">Goitizenak ezin du eduki zenbakirik</translation>
@@ -1652,6 +1657,7 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chrome-ko datuak
 <translation id="7686086654630106285">Webguneek iradokitako iragarkiei buruzko informazio gehiago</translation>
 <translation id="7690596512217303514">Gailuak ezin izan du ireki Chrome. Arazoa konpontzeko, deskargatu Chrome-ren azken eguneratzea aplikazio-dendatik.</translation>
 <translation id="7692761875510935111">Ireki bizkor arakatzailean. Lasterbidea editatzeko, eduki ezazu sakatuta.</translation>
+<translation id="7695270712963178084">Chrome-ren aurkikuntzak</translation>
 <translation id="7697383401610880082">Arrastatzeko kontrol-puntua</translation>
 <translation id="7698359219371678927">Sortu mezu elektronikoa <ph name="APP_NAME" /> aplikazioan</translation>
 <translation id="7702420606070050505">Pantailaren behealdean ainguratutako orria, azkenaldiko jarduerak dituena, altuera osoan irekita dago</translation>

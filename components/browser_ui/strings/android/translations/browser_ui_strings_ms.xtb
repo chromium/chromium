@@ -125,7 +125,6 @@
 <translation id="2228071138934252756">Untuk membolehkan <ph name="APP_NAME" /> mengakses kamera anda, hidupkan juga kamera dalam <ph name="BEGIN_LINK" />Tetapan Android<ph name="END_LINK" />.</translation>
 <translation id="2231160360698766265">Laman boleh memainkan kandungan yang dilindungi</translation>
 <translation id="2235344399760031203">Kuki pihak ketiga disekat</translation>
-<translation id="2238944249568001759">Carian cadangan berdasarkan tab terakhir anda</translation>
 <translation id="2241587408274973373">Kad halaman tab baharu</translation>
 <translation id="2241634353105152135">Hanya sekali</translation>
 <translation id="2253414712144136228">Alih keluar <ph name="NAME_OF_LIST_ITEM" /></translation>
@@ -214,7 +213,6 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="3069226013421428034">Benarkan log masuk pihak ketiga untuk laman tertentu.</translation>
 <translation id="310297983047869047">Slaid sebelumnya</translation>
 <translation id="3108122610701115301">Tetapkan lalai</translation>
-<translation id="3109724472072898302">Diruntuhkan</translation>
 <translation id="310979712355504754">Padamkan semua</translation>
 <translation id="311394601889664316">Jangan benarkan laman mengedit fail atau folder pada peranti anda</translation>
 <translation id="3114012059975132928">Pemain video</translation>
@@ -262,7 +260,6 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="3602290021589620013">Pratonton</translation>
 <translation id="3611658447322220736">Laman yang ditutup baru-baru ini boleh menyelesaikan penghantaran dan penerimaan data</translation>
 <translation id="3619294456800709762">Laman dapat memasukkan gambar dalam gambar secara automatik</translation>
-<translation id="3628308229821498208">Carian cadangan</translation>
 <translation id="3632460243282703117">Langgan</translation>
 <translation id="363748948745453283">Menggunakan lokasi anggaran</translation>
 <translation id="3641456520301071208">Laman boleh meminta lokasi anda</translation>
@@ -524,7 +521,6 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="6231752747840485235">Nyahpasang '<ph name="APP_NAME" />'?</translation>
 <translation id="6234351944623978659">Ketik Apl penyemak imbas &gt; Chrome</translation>
 <translation id="6260830281887654268">Helaian bawah koleksi tema penampilan halaman tab baharu dibuka pada ketinggian separuh</translation>
-<translation id="6262191102408817757">Berdasarkan tab terakhir anda</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> dan <ph name="PERMISSION_2" /> disekat</translation>
 <translation id="6270391203985052864">Tapak boleh membuat permintaan untuk menghantar pemberitahuan</translation>
 <translation id="6295158916970320988">Semua tapak</translation>
@@ -604,7 +600,6 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="7180611975245234373">Muat semula</translation>
 <translation id="7188508872042490670">Data laman pada peranti</translation>
 <translation id="7201549776650881587">Tindakan ini akan memadamkan semua data dan kuki yang disimpan oleh semua laman di bawah <ph name="ORIGIN" /> atau disimpan oleh apl laman tersebut pada Skrin utama anda</translation>
-<translation id="7203150201908454328">Diperluas</translation>
 <translation id="7213166370492037743">Jangan benarkan laman menyambung kepada mana-mana peranti pada rangkaian setempat anda</translation>
 <translation id="7219254577985949841">Padamkan data laman?</translation>
 <translation id="723171743924126238">Pilih imej</translation>

@@ -125,7 +125,6 @@
 <translation id="2228071138934252756">Да бисте дозволили да <ph name="APP_NAME" /> приступа камери, укључите камеру и у <ph name="BEGIN_LINK" />Android подешавањима<ph name="END_LINK" />.</translation>
 <translation id="2231160360698766265">Сајтови могу да пуштају заштићен садржај</translation>
 <translation id="2235344399760031203">Колачићи треће стране су блокирани</translation>
-<translation id="2238944249568001759">Предложене претраге на основу ваше последње картице</translation>
 <translation id="2241587408274973373">Картице на страници нове картице</translation>
 <translation id="2241634353105152135">Само једном</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> Уклоните</translation>
@@ -214,7 +213,6 @@
 <translation id="3069226013421428034">Дозволите пријављивање трећих страна за одређени сајт.</translation>
 <translation id="310297983047869047">Претходни слајд</translation>
 <translation id="3108122610701115301">Постави на подразумевано</translation>
-<translation id="3109724472072898302">Скупљено</translation>
 <translation id="310979712355504754">Избриши све</translation>
 <translation id="311394601889664316">Не дозвољавај сајтовима да мењају фајлове или фолдере на уређају</translation>
 <translation id="3114012059975132928">Видео плејер</translation>
@@ -262,7 +260,6 @@
 <translation id="3602290021589620013">Преглед</translation>
 <translation id="3611658447322220736">Недавно затворени сајтови могу да заврше слање и пријем података</translation>
 <translation id="3619294456800709762">Сајтови могу аутоматски да уђу у слику у слици</translation>
-<translation id="3628308229821498208">Предложене претраге</translation>
 <translation id="3632460243282703117">Прати</translation>
 <translation id="363748948745453283">Користи се приближна локација</translation>
 <translation id="3641456520301071208">Сајтови могу да вам траже локацију</translation>
@@ -522,7 +519,6 @@
 <translation id="6231752747840485235">Желите да деинсталатирате „<ph name="APP_NAME" />“?</translation>
 <translation id="6234351944623978659">Додирните апликацију Прегледач &gt; Chrome</translation>
 <translation id="6260830281887654268">Доња табела са колекцијама тема за изглед странице нове картице је отворена до половине екрана</translation>
-<translation id="6262191102408817757">На основу последње картице</translation>
 <translation id="6262279340360821358">Дозволе <ph name="PERMISSION_1" /> и <ph name="PERMISSION_2" /> су блокиране</translation>
 <translation id="6270391203985052864">Сајтови могу да траже да шаљу обавештења</translation>
 <translation id="6295158916970320988">Сви сајтови</translation>
@@ -602,7 +598,6 @@
 <translation id="7180611975245234373">Освежи</translation>
 <translation id="7188508872042490670">Подаци о сајтовима на уређају</translation>
 <translation id="7201549776650881587">Ова радња ће обрисати све податке и колачиће које чувају сви сајтови у оквиру домена <ph name="ORIGIN" /> или које чува повезана апликација на почетном екрану</translation>
-<translation id="7203150201908454328">Проширено</translation>
 <translation id="7213166370492037743">Не дозвољавај сајтовима да се повезују са било којим уређајем на локалној мрежи</translation>
 <translation id="7219254577985949841">Желите да избришете податке сајта?</translation>
 <translation id="723171743924126238">Изаберите слике</translation>

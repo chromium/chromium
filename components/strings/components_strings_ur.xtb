@@ -754,6 +754,7 @@
 <translation id="2184405333245229118">{COUNT,plural, =1{1 پتہ}other{# پتے}}</translation>
 <translation id="2188375229972301266">نیچے متعدد سوراخ</translation>
 <translation id="218940509700321686">کوما سے الگ کردہ اقدار</translation>
+<translation id="2190094353033916816">اس پالیسی کی مشین اور صارف کی سطح پر مختلف اقدار لاگو ہوتی ہیں۔ پالیسی حسب منشا کام کر رہی ہے۔</translation>
 <translation id="2191980191135734720">عام طور پر اپنے فنگر پرنٹ کا استعمال کر کے، اگلے مرحلے میں اپنی اسکرین کو غیر مقفل کریں۔ آپ <ph name="LINK_TEXT" /> بھی کر سکتے ہیں۔</translation>
 <translation id="2194856509914051091">قابل غور چیزیں</translation>
 <translation id="2198183835992354675">معلوم مسافر نمبر</translation>
@@ -3194,6 +3195,7 @@
 <translation id="6042308850641462728">مزید</translation>
 <translation id="6043357981274314628">ہو گیا!</translation>
 <translation id="6045164183059402045">نفاذ کی تمثیل</translation>
+<translation id="6046026831939367176"><ph name="URL" /> آپ کا تخمینی مقام استعمال کرنا چاہتا ہے</translation>
 <translation id="6046892054959167494"><ph name="SEARCH_AGGREGATOR_SHORT_NAME" /> میں تلاش کرنے یا پوچھنے کیلئے <ph name="SEARCH_AGGREGATOR_KEYWORD" /> ٹائپ کریں</translation>
 <translation id="6047927260846328439">یہ مواد آپ سے دھوکہ سے سافٹ ویئر انسٹال کروا سکتا ہے یا ذاتی معلومات حاصل کر سکتا ہے۔ <ph name="BEGIN_LINK" />بہر صورت دکھائیں<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">‏B4 لفافہ</translation>
@@ -3644,7 +3646,6 @@
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">کیمرا</translation>
 <translation id="6734506549556896534">سمیولیشن گیمز</translation>
-<translation id="6735589846038045679">‏ادائیگی کے پلانز اہلیت کے ساتھ مشروط ہیں۔ <ph name="BEGIN_BOLD" />ان اختیارات کی پیشکش کرنے کیلئے، چیک آؤٹ صفحے سے صفحے کے مواد کا اشتراک Google کے ساتھ کیا جاتا ہے۔<ph name="END_BOLD" /> بعد میں ادائیگی کے اختیارات کو چھپانے کے لیے، <ph name="BEGIN_LINK" />ادائیگی کی ترتیبات<ph name="END_LINK" /> پر جائیں</translation>
 <translation id="6737708609449480586">سینکی ہوئی اشیاء</translation>
 <translation id="6738516213925468394">آپ کے ڈیٹا کی آپ کے <ph name="BEGIN_LINK" />مطابقت پذیر پاس فریز<ph name="END_LINK" /> کے ساتھ <ph name="TIME" /> کو مرموز کاری کی گئی تھی۔ مطابقت پذیری شروع کرنے کیلئے اسے درج کریں۔</translation>
 <translation id="6740851646645036700">آپ ابھی کے لیے اپنی تحریری مدد کی حد کو پہنچ گئے ہیں۔ بعد میں دوبارہ کوشش کریں۔</translation>
@@ -4993,6 +4994,7 @@
 <translation id="8870700989640064057">رازدارانہ فائل پرنٹ کریں؟</translation>
 <translation id="8871485335898060555">قدیم اور قابل ذخیرہ چیزیں</translation>
 <translation id="8871553383647848643">اپنے براؤزر کی شکل کو حسب ضرورت بنائیں</translation>
+<translation id="887350038812854047">اس پالیسی کی مشین اور صارف کی سطح پر ایک ہی قدر لاگو ہوتی ہے۔ پالیسی حسب منشا کام کر رہی ہے۔</translation>
 <translation id="8874790741333031443">فریق ثالث کوکیز کو عارضی طور پر اجازت دے کر آزمائیں، جس کا مطلب براؤزنگ کا کم تحفظ ہے لیکن سائٹ کی خصوصیات کے توقع کے مطابق کام کرنے کا زیادہ امکان ہے۔</translation>
 <translation id="8874824191258364635">درست کارڈ نمبر درج کریں</translation>
 <translation id="8877780815363510165">ماہی گیری</translation>

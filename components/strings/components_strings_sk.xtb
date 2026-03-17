@@ -754,6 +754,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2184405333245229118">{COUNT,plural, =1{1 adresa}few{# adresy}many{# adresy}other{# adries}}</translation>
 <translation id="2188375229972301266">Viacero dierok dole</translation>
 <translation id="218940509700321686">Hodnoty oddelené čiarkou</translation>
+<translation id="2190094353033916816">Tieto pravidlá majú rôzne hodnoty uplatňované na úrovni počítača a používateľa. Pravidlá fungujú podľa očakávaní.</translation>
 <translation id="2191980191135734720">V ďalšom kroku odomknite obrazovku (zvyčajne odtlačkom prsta). Okrem toho môžete <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Čo je potrebné zohľadniť</translation>
 <translation id="2198183835992354675">Číslo Known Traveler Number</translation>
@@ -3189,6 +3190,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="6042308850641462728">Viac</translation>
 <translation id="6043357981274314628">Hotovo!</translation>
 <translation id="6045164183059402045">Šablóna zavedenia</translation>
+<translation id="6046026831939367176"><ph name="URL" /> chce používať vašu približnú polohu</translation>
 <translation id="6046892054959167494">Ak chcete vyhľadávať, napíšte <ph name="SEARCH_AGGREGATOR_KEYWORD" />, alebo zadajte dopyt <ph name="SEARCH_AGGREGATOR_SHORT_NAME" /></translation>
 <translation id="6047927260846328439">Tento obsah sa vás môže podvodom pokúsiť presvedčiť, aby ste si nainštalovali softvér alebo poskytli osobné informácie. <ph name="BEGIN_LINK" />Napriek tomu zobraziť<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">Obálka B4</translation>
@@ -3637,7 +3639,6 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">fotoaparát</translation>
 <translation id="6734506549556896534">Simulačné hry</translation>
-<translation id="6735589846038045679">Ak chcete používať platobné tarify, musíte spĺňať podmienky. <ph name="BEGIN_BOLD" />Obsah stránky platby sa zdieľa s Googlom, aby sa vám mohli ponúkať tieto možnosti.<ph name="END_BOLD" /> Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGIN_LINK" />Nastavenia platieb<ph name="END_LINK" />.</translation>
 <translation id="6737708609449480586">Pekárenské výrobky</translation>
 <translation id="6738516213925468394">Vaše údaje boli <ph name="TIME" /> zašifrované pomocou <ph name="BEGIN_LINK" />prístupovej frázy synchronizácie<ph name="END_LINK" />. Synchronizácia sa spustí po jej zadaní.</translation>
 <translation id="6740851646645036700">Nateraz ste dosiahli limit pomoci s písaním. Skúste to znova neskôr.</translation>
@@ -4988,6 +4989,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="8870700989640064057">Chcete vytlačiť dôverný súbor?</translation>
 <translation id="8871485335898060555">Starožitnosti a zberateľské predmety</translation>
 <translation id="8871553383647848643">Prispôsobiť vzhľad prehliadača</translation>
+<translation id="887350038812854047">Tieto pravidlá majú rovnakú hodnotu uplatňovanú na úrovni počítača a používateľa. Pravidlá fungujú podľa očakávaní.</translation>
 <translation id="8874790741333031443">Vyskúšajte dočasne povoliť súbory cookie tretích strán, čo znamená nižšiu ochranu pri prehliadaní, ale funkcie webu budú s väčšou pravdepodobnosťou fungovať podľa očakávaní.</translation>
 <translation id="8874824191258364635">Zadajte platné číslo karty</translation>
 <translation id="8877780815363510165">Rybolov</translation>

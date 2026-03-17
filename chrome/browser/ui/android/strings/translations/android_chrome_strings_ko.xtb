@@ -213,6 +213,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="1900260903084164610">계속하면 <ph name="BEGIN_TOS_LINK" />서비스 약관<ph name="END_TOS_LINK" />에 동의하는 것으로 간주됩니다.</translation>
 <translation id="1904580727789512086">내가 방문한 URL이 Google 계정에 저장됩니다.</translation>
 <translation id="1910950723001426294">공유 옵션 목록이 닫혔습니다.</translation>
+<translation id="1912367671208932516">확장 프로그램 메뉴 열기</translation>
 <translation id="191726024256261717">권한 검토</translation>
 <translation id="1917766536967060661">'<ph name="GROUP_NAME" />' 탭 그룹에 대한 액세스 권한을 즉시 잃게 되며, <ph name="BLOCKED_MEMBER_FULL_NAME" />(<ph name="BLOCKED_MEMBER_EMAIL" />)님이 Google 서비스 전반에서 나와 더 이상 소통할 수 없게 됩니다.</translation>
 <translation id="1919130412786645364">Chrome 로그인 허용</translation>
@@ -414,6 +415,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2789486458103222910">확인</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome에서 개선이 가능한 재사용된 비밀번호를 찾았습니다.}other{Chrome에서 개선이 가능한 재사용된 비밀번호 #개를 찾았습니다.}}</translation>
 <translation id="2794551654724114396">알림을 사용 설정하여 Chrome을 최대한 활용하는 데 도움이 되는 유용한 팁을 받아 보세요.</translation>
+<translation id="2798977804328097977">모든 기기에서 원활하게 계속 사용하세요</translation>
 <translation id="2805210243313393104">모든 기기에 북마크 등을 가져오세요</translation>
 <translation id="2805756323405976993">앱</translation>
 <translation id="2819849308549746319">모두 수신 거부</translation>
@@ -469,6 +471,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2977350910003566746">마지막으로 연 시간순으로 정렬</translation>
 <translation id="297771753501244313">최근 연 날짜순으로 정렬</translation>
 <translation id="2979639724566107830">새 창에서 열기</translation>
+<translation id="2980545254049127870">메시지, 문서, 기타 앱에서 링크를 간편하게 여세요</translation>
 <translation id="2983102365694924129">사이트 내 활동을 기반으로 추천됩니다. 설정이 사용 중지되어 있습니다.</translation>
 <translation id="2983398917942897288">비활성(<ph name="ITEM_COUNT" />)</translation>
 <translation id="2983835398644161987">PIP 모드 종료</translation>
@@ -730,6 +733,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="4137746084635924146">기기의 현재 언어</translation>
 <translation id="414128724510021958">기본적으로 요청되는 데스크톱 사이트</translation>
 <translation id="4162867837470729563">공유 옵션 목록이 전체 높이로 열렸습니다.</translation>
+<translation id="4164642020717536140">빠르고 안전하게 웹을 탐색하세요</translation>
 <translation id="4165077084524712774">도구 더보기</translation>
 <translation id="4170011742729630528">서비스를 사용할 수 없습니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="4170577491341606575">데이터를 가져오는 중\u2026</translation>
@@ -854,6 +858,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{유출된 비밀번호 1개}other{유출된 비밀번호 #개}}</translation>
 <translation id="4641919525231168205">다음 페이지로 이동</translation>
 <translation id="4642472735733036929">가격 추적이 중지됨</translation>
+<translation id="4643661539340338954">'Chrome에서 찾은 항목' 알림이 사용 설정되었습니다.</translation>
 <translation id="4649493483932335039">최근 탭 보기</translation>
 <translation id="465657074423018424">세이프 브라우징은 사기성 웹사이트로부터 사용자를 보호합니다. 이 기능을 사용 중지하는 경우 인터넷을 탐색할 때, 특히 비밀번호를 입력할 때 주의하시기 바랍니다.</translation>
 <translation id="4662373422909645029">닉네임에 숫자를 포함할 수 없음</translation>
@@ -1652,6 +1657,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7686086654630106285">사이트 추천 광고에 관해 자세히 알아보기</translation>
 <translation id="7690596512217303514">기기에서 Chrome을 열 수 없습니다. 문제를 해결하려면 앱 스토어에서 최신 Chrome 업데이트를 다운로드하세요.</translation>
 <translation id="7692761875510935111">브라우저에서 빠르게 엽니다. 바로가기를 수정하려면 길게 터치하세요.</translation>
+<translation id="7695270712963178084">Chrome에서 찾은 항목</translation>
 <translation id="7697383401610880082">드래그 핸들</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" />에서 이메일 만들기</translation>
 <translation id="7702420606070050505">최근 활동 하단 시트가 전체 높이로 열림</translation>

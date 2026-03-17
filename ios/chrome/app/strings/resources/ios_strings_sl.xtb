@@ -394,6 +394,7 @@
 <translation id="2360196772093551345">Zahtevaj spletno mesto za mobilno napravo</translation>
 <translation id="2362083820973145409">Prijavljen kot <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Odpre nastavitve.</translation>
 <translation id="2371084566192454134">Zavihki in skupine zavihkov</translation>
+<translation id="2371303771137626249">Novo</translation>
 <translation id="2381405137052800939">Basics</translation>
 <translation id="2384692388811649784">Skrij anonimne zavihke</translation>
 <translation id="2386793615875593361">1 izbrana</translation>
@@ -636,6 +637,7 @@
 <translation id="3324193307694657476">Naslov 2</translation>
 <translation id="3328801116991980348">Podatki o mestu</translation>
 <translation id="333229797575847124">Kako omogočite to funkcijo</translation>
+<translation id="334004756946755423">Pojasni mi to:</translation>
 <translation id="3344233834747405775">Neveljavno ime imetnika kartice</translation>
 <translation id="3344485292736684439">{count,plural, =1{Zaznamek je shranjen v »{title}« v vašem računu, {email}}one{Zaznamki so shranjeni v »{title}« v vašem računu, {email}}two{Zaznamki so shranjeni v »{title}« v vašem računu, {email}}few{Zaznamki so shranjeni v »{title}« v vašem računu, {email}}other{Zaznamki so shranjeni v »{title}« v vašem računu, {email}}}</translation>
 <translation id="334690320928261823">Nedavni zavihki</translation>
@@ -689,6 +691,7 @@
 <translation id="3530206579861815432">Hitro poiščite odprte in nedavno zaprte zavihke v sinhroniziranih napravah.</translation>
 <translation id="3530767473765895035">Upravljanje računov v tej napravi …</translation>
 <translation id="3533436815740441613">Nov zavihek</translation>
+<translation id="3534738261102690620">Vprašajte Geminija</translation>
 <translation id="3540141921715814660">Dodajanje med zaznamke</translation>
 <translation id="3546122170015471515">Predogledi Zemljevidov na Google.com</translation>
 <translation id="3547356470684043247">Preberite ocene strank glede izdelkov, storitev ali izkušnje, da se boste lažje odločili glede mnenj</translation>
@@ -959,6 +962,7 @@
 <translation id="454217142158335225">Zaprte elemente lahko znova odprete v razdelkih nedavnih zavihkov ali skupin zavihkov. Pripeti zavihki ne bodo zaprti.</translation>
 <translation id="4547181496285029457">Nazaj na prejšnji zavihek</translation>
 <translation id="4552042254369397518">Kopiranje …</translation>
+<translation id="4553044860350038560">Več ključev za dostop</translation>
 <translation id="4564893319561643483">Skrij »<ph name="TITLE" />«</translation>
 <translation id="4565377596337484307">Skrij geslo</translation>
 <translation id="4568230126482344545">Skrij nedavne zavihke</translation>
@@ -1087,6 +1091,7 @@
 <translation id="4944543191714094452">Najdi na strani …</translation>
 <translation id="4945756290001680296">Dostop do nastavitev gesel</translation>
 <translation id="4949302115427722371">Upravljanje nastavitev …</translation>
+<translation id="4952050521954075618">Fotografije iz naprav se ne bodo sinhronizirale v vseh napravah</translation>
 <translation id="4958444002117714549">Razširi seznam</translation>
 <translation id="496392417432935267">Odprto drugje</translation>
 <translation id="4970724460420203313">Če Chrome uporabljate z upravljanim računom, lahko ločite brskanje, povezano z organizacijo (vključno z zavihki, zgodovino in gesli), od drugega brskanja</translation>
@@ -1286,6 +1291,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5647702255748985085">Želite zapustiti skupino?</translation>
 <translation id="5648166631817621825">Zadnjih 7 dni</translation>
 <translation id="5652623411397330904">Izdelki, ki jih spremljate, bodo prikazani tukaj.</translation>
+<translation id="5653100054596780862">Vsi zavihki</translation>
 <translation id="5656431592348714536">Izboljšan koledar</translation>
 <translation id="5659593005791499971">E-pošta</translation>
 <translation id="5665739277590037307">Veljata dokumenta <ph name="GOOGLE_TERMS" /> in <ph name="GEMINI_APPS_PRIVACY" />. Gemini se lahko tudi zmoti, zato preverite njegove odgovore.</translation>
@@ -1751,6 +1757,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="7300448350764260141">Dodajte še eno raven zaščite pred spletnimi grožnjami.</translation>
 <translation id="7311244614769792472">Ni rezultatov</translation>
 <translation id="7313347584264171202">Tu bodo prikazani anonimni zavihki</translation>
+<translation id="7322186060879266048">{count,plural, =1{Nad tipkovnico je na voljo {count} možnost samodejnega izpolnjevanja.}one{Nad tipkovnico je na voljo {count} možnost samodejnega izpolnjevanja.}two{Nad tipkovnico sta na voljo {count} možnosti samodejnega izpolnjevanja.}few{Nad tipkovnico so na voljo {count} možnosti samodejnega izpolnjevanja.}other{Nad tipkovnico je na voljo {count} možnosti samodejnega izpolnjevanja.}}</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241">Preneseno: <ph name="PERCENT" /> %</translation>
 <translation id="7345061034321640811">Uvoz ni dovoljen</translation>

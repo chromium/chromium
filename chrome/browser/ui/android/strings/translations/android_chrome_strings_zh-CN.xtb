@@ -213,6 +213,7 @@
 <translation id="1900260903084164610">继续操作即表示您同意遵守<ph name="BEGIN_TOS_LINK" />《服务条款》<ph name="END_TOS_LINK" />。</translation>
 <translation id="1904580727789512086">系统会将您访问的网址保存到您的 Google 账号中</translation>
 <translation id="1910950723001426294">分享选项列表已关闭。</translation>
+<translation id="1912367671208932516">打开扩展程序菜单</translation>
 <translation id="191726024256261717">查看权限</translation>
 <translation id="1917766536967060661">您将立即失去对标签页分组“<ph name="GROUP_NAME" />”的访问权限，并且<ph name="BLOCKED_MEMBER_FULL_NAME" /> (<ph name="BLOCKED_MEMBER_EMAIL" />) 将无法再在各项 Google 服务中与您互动。</translation>
 <translation id="1919130412786645364">允许登录 Chrome</translation>
@@ -857,6 +858,7 @@
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{有 1 个密码已遭泄露}other{有 # 个密码已遭泄露}}</translation>
 <translation id="4641919525231168205">前往下一页</translation>
 <translation id="4642472735733036929">已停止跟踪价格</translation>
+<translation id="4643661539340338954">Chrome 查找功能通知已开启</translation>
 <translation id="4649493483932335039">查看最近打开的标签页</translation>
 <translation id="465657074423018424">“安全浏览”功能会保护您免受诈骗网站的侵害。如果您关闭此功能，当浏览网站时（特别是在输入密码之前），请一定多加小心。</translation>
 <translation id="4662373422909645029">昵称不能包含数字</translation>
@@ -1653,6 +1655,7 @@
 <translation id="7686086654630106285">详细了解网站建议的广告</translation>
 <translation id="7690596512217303514">您的设备无法打开 Chrome。若要解决此问题，请从应用商店下载最新的 Chrome 更新。</translation>
 <translation id="7692761875510935111">快速在浏览器中打开。若要修改此快捷方式，请轻触并按住这里。</translation>
+<translation id="7695270712963178084">Chrome 查找</translation>
 <translation id="7697383401610880082">拖动手柄</translation>
 <translation id="7698359219371678927">在 <ph name="APP_NAME" /> 中创建电子邮件</translation>
 <translation id="7702420606070050505">显示近期活动的底部动作条已全屏打开</translation>

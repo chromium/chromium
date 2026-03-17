@@ -754,6 +754,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2184405333245229118">{COUNT,plural, =1{1 adresas}one{# adresas}few{# adresai}many{# adreso}other{# adresų}}</translation>
 <translation id="2188375229972301266">Kelios skylės apačioje</translation>
 <translation id="218940509700321686">Kableliais atskirtos vertės</translation>
+<translation id="2190094353033916816">Taikomos skirtingos šios politikos vertės įrenginio ir naudotojo lygiuose. Politika veikia, kaip numatyta.</translation>
 <translation id="2191980191135734720">Atrakinkite ekraną atlikdami kitą žingsnį, paprastai naudodami piršto atspaudą. Taip pat galite <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Į ką reikėtų atsižvelgti</translation>
 <translation id="2198183835992354675">Žinomo keliautojo numeris</translation>
@@ -3194,6 +3195,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="6042308850641462728">Daugiau</translation>
 <translation id="6043357981274314628">Atlikta!</translation>
 <translation id="6045164183059402045">Paskyrimo šablonas</translation>
+<translation id="6046026831939367176"><ph name="URL" /> nori naudoti jūsų apytikslę vietovę</translation>
 <translation id="6046892054959167494">Įveskite <ph name="SEARCH_AGGREGATOR_KEYWORD" />, jei norite ieškoti, arba paklauskite <ph name="SEARCH_AGGREGATOR_SHORT_NAME" /></translation>
 <translation id="6047927260846328439">Šiuo turiniu gali būti bandoma apgaule priversti jus įdiegti programinę įrangą arba atskleisti asmens informaciją. <ph name="BEGIN_LINK" />Rodyti vis tiek<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">B4 vokas</translation>
@@ -3643,7 +3645,6 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">fotoaparatas</translation>
 <translation id="6734506549556896534">Simuliaciniai žaidimai</translation>
-<translation id="6735589846038045679">Mokėjimo planai priklauso nuo tinkamumo. <ph name="BEGIN_BOLD" />Turinys iš atsiskaitymo puslapio bendrinamas su „Google“, kad būtų galima pasiūlyti šias parinktis.<ph name="END_BOLD" /> Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK" />mokėjimo nustatymus<ph name="END_LINK" /></translation>
 <translation id="6737708609449480586">Kepti gaminiai</translation>
 <translation id="6738516213925468394"><ph name="TIME" /> duomenys buvo užšifruoti naudojant <ph name="BEGIN_LINK" />sinchronizavimo slaptafrazę<ph name="END_LINK" />. Įveskite ją, kad pradėtumėte sinchronizuoti.</translation>
 <translation id="6740851646645036700">Kol kas pasiekėte rašymo pagalbos apribojimą. Vėliau bandykite dar kartą.</translation>
@@ -4994,6 +4995,7 @@ Papildoma išsami informacija:
 <translation id="8870700989640064057">Spausdinti konfidencialų failą?</translation>
 <translation id="8871485335898060555">Antikvariniai ir kolekcionuojami daiktai</translation>
 <translation id="8871553383647848643">Tinkinti naršyklės išvaizdą</translation>
+<translation id="887350038812854047">Taikomos vienodos šios politikos vertės įrenginio ir naudotojo lygiuose. Politika veikia, kaip numatyta.</translation>
 <translation id="8874790741333031443">Pabandykite laikinai leisti trečiųjų šalių slapukus: tai reiškia, kad naršydami būsite mažiau apsaugoti, bet labiau tikėtina, kad svetainės funkcijos tinkamai veiks.</translation>
 <translation id="8874824191258364635">Įveskite tinkamą kortelės numerį</translation>
 <translation id="8877780815363510165">Žvejyba</translation>

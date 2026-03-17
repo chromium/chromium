@@ -394,6 +394,7 @@
 <translation id="2360196772093551345">मोबाइल साइटची विनंती करा</translation>
 <translation id="2362083820973145409"><ph name="USER_NAME" /> म्हणून साइन इन केले. <ph name="USER_EMAIL" />. सेटिंग उघडते.</translation>
 <translation id="2371084566192454134">टॅब आणि टॅब गट</translation>
+<translation id="2371303771137626249">नवीन</translation>
 <translation id="2381405137052800939">मूलतत्त्वे</translation>
 <translation id="2384692388811649784">गुप्त टॅब लपवा</translation>
 <translation id="2386793615875593361">1 निवडले</translation>
@@ -636,6 +637,7 @@
 <translation id="3324193307694657476">पत्ता 2</translation>
 <translation id="3328801116991980348">साइट माहिती</translation>
 <translation id="333229797575847124">हे वैशिष्ट्य कसे सुरू करावे</translation>
+<translation id="334004756946755423">मला हे समजव:</translation>
 <translation id="3344233834747405775">कार्डधारकाचे नाव चुकीचे आहे</translation>
 <translation id="3344485292736684439">{count,plural, =1{बुकमार्क तुमच्या {email} खात्यामध्ये "{title}" वर सेव्ह केला आहे}other{बुकमार्क तुमच्या {email} खात्यामध्ये "{title}" वर सेव्ह केले आहेत}}</translation>
 <translation id="334690320928261823">अलीकडील टॅब</translation>
@@ -689,6 +691,7 @@
 <translation id="3530206579861815432">तुमच्या सिंक केलेल्या सर्व डिव्हाइसवर उघडे आणि अलीकडे बंद केलेले टॅब झटपट शोधा.</translation>
 <translation id="3530767473765895035">या डिव्हाइसवरील खाती व्यवस्थापित करा…</translation>
 <translation id="3533436815740441613">नवीन टॅब</translation>
+<translation id="3534738261102690620">Gemini ला विचारा</translation>
 <translation id="3540141921715814660">बुकमार्क मध्ये जोडा</translation>
 <translation id="3546122170015471515">Google.com वर Maps पूर्वावलोकने</translation>
 <translation id="3547356470684043247">परीक्षणांद्वारे तुमचे निर्णय अधिक माहितीपूर्ण पद्धतीने घेण्यात मदत व्हावी, यासाठी उत्पादने, सेवा किंवा अनुभवासंबंधित ग्राहक मूल्यमापने वाचा</translation>
@@ -959,6 +962,7 @@
 <translation id="454217142158335225">तुम्ही अलीकडील टॅब किंवा टॅब गट या विभागांमधील बंद केलेले आयटम पुन्हा उघडू शकता. तुमचे पिन केलेले टॅब बंद केले जाणार नाहीत.</translation>
 <translation id="4547181496285029457">अलीकडील टॅबवर परत जा</translation>
 <translation id="4552042254369397518">कॉपी करत आहे…</translation>
+<translation id="4553044860350038560">आणखी पासकी</translation>
 <translation id="4564893319561643483">"<ph name="TITLE" />" लपवा</translation>
 <translation id="4565377596337484307">पासवर्ड लपवा</translation>
 <translation id="4568230126482344545">अलीकडील टॅब लपवा</translation>
@@ -1087,6 +1091,7 @@
 <translation id="4944543191714094452">या पेजमध्ये शोधा…</translation>
 <translation id="4945756290001680296">पासवर्ड सेटिंग्ज अ‍ॅक्सेस करा</translation>
 <translation id="4949302115427722371">सेटिंग्ज व्यवस्थापित करा…</translation>
+<translation id="4952050521954075618">कॅमेरा रोल मधील फोटो तुमच्या सर्व डिव्हाइसवर सिंक होणार नाहीत</translation>
 <translation id="4958444002117714549">सूची विस्तार करा</translation>
 <translation id="496392417432935267">इतरत्र उघडले आहे</translation>
 <translation id="4970724460420203313">तुमच्या व्यवस्थापित केलेल्या खात्यासह Chrome वापरल्यामुळे, तुम्हाला तुमच्या संस्थेशी संबंधित ब्राउझिंग (टॅब, इतिहास आणि पासवर्ड यांच्या समावेशासह) तुमच्या इतर ब्राउझिंगपासून वेगळे ठेवण्यात मदत होते</translation>
@@ -1286,6 +1291,7 @@
 <translation id="5647702255748985085">गट सोडायचा आहे का?</translation>
 <translation id="5648166631817621825">अखेरच्या 7 दिवसांमधील</translation>
 <translation id="5652623411397330904">तुम्ही माग ठेवत असलेली उत्पादने येथे दिसतील.</translation>
+<translation id="5653100054596780862">सर्व टॅब</translation>
 <translation id="5656431592348714536">वर्धित केलेले कॅलेंडर</translation>
 <translation id="5659593005791499971">ई-मेल</translation>
 <translation id="5665739277590037307"><ph name="GOOGLE_TERMS" /> आणि <ph name="GEMINI_APPS_PRIVACY" /> लागू होतात. Gemini चुका करू शकते, त्यामुळे ते दोनदा तपासा.</translation>
@@ -1719,6 +1725,7 @@
 <translation id="7149893636342594995">शेवटच्या 72 तासांमधील</translation>
 <translation id="7154417656353909837">पत्ते काढून टाका</translation>
 <translation id="7161230316646448869">सर्व डिव्हाइसवर तुमचे बुकमार्क, इतिहास आणि बरेच काही सिंक करा</translation>
+<translation id="7165323152084385463">VIN</translation>
 <translation id="7173114856073700355">सेटिंग्ज उघडा</translation>
 <translation id="7173721738069475737">{count,plural, =1{बुकमार्क सेव्ह केला आहे}other{{count} बुकमार्क सेव्ह केले आहेत}}</translation>
 <translation id="7176183551031110427">झूम आउट करा</translation>
@@ -1752,6 +1759,7 @@
 <translation id="7300448350764260141">ऑनलाइन धोक्यांपासून बचाव करण्यासाठी संरक्षणाचा अतिरिक्त स्तर जोडा.</translation>
 <translation id="7311244614769792472">कोणतेही परिणाम आढळले नाहीत</translation>
 <translation id="7313347584264171202">तुमचे गुप्त टॅब तुम्हाला येथे सापडतील</translation>
+<translation id="7322186060879266048">{count,plural, =1{तुमच्या कीबोर्डच्या वरती {count} ऑटोफिल पर्याय उपलब्ध आहे.}other{तुमच्या कीबोर्डच्या वरती {count} ऑटोफिल पर्याय उपलब्ध आहेत.}}</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> टक्के डाउनलोड केले</translation>
 <translation id="7345061034321640811">इंपोर्ट करण्याची अनुमती नाही</translation>

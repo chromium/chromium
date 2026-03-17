@@ -754,6 +754,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2184405333245229118">{COUNT,plural, =1{1 address}other{# addresses}}</translation>
 <translation id="2188375229972301266">Multiple punch bottom</translation>
 <translation id="218940509700321686">Comma-separated values</translation>
+<translation id="2190094353033916816">This policy has different values applied at the machine and user levels. The policy is working as intended.</translation>
 <translation id="2191980191135734720">Unlock your screen in the next step, typically using your fingerprint. You can also <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Things to consider</translation>
 <translation id="2198183835992354675">Known traveller number</translation>
@@ -3193,6 +3194,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="6042308850641462728">More</translation>
 <translation id="6043357981274314628">Done!</translation>
 <translation id="6045164183059402045">Imposition template</translation>
+<translation id="6046026831939367176"><ph name="URL" /> wants to use your approximate location</translation>
 <translation id="6046892054959167494">Type <ph name="SEARCH_AGGREGATOR_KEYWORD" /> to search or ask <ph name="SEARCH_AGGREGATOR_SHORT_NAME" /></translation>
 <translation id="6047927260846328439">This content might try to trick you into installing software or revealing personal information. <ph name="BEGIN_LINK" />Show anyway<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">Envelope B4</translation>
@@ -3642,7 +3644,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">camera</translation>
 <translation id="6734506549556896534">Simulation games</translation>
-<translation id="6735589846038045679">Payment plans are subject to eligibility. <ph name="BEGIN_BOLD" />Content from the checkout page is shared with Google to offer these options.<ph name="END_BOLD" /> To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph name="END_LINK" /></translation>
 <translation id="6737708609449480586">Baked Goods</translation>
 <translation id="6738516213925468394">Your data was encrypted with your <ph name="BEGIN_LINK" />sync passphrase<ph name="END_LINK" /> on <ph name="TIME" />. Enter it to start sync.</translation>
 <translation id="6740851646645036700">You've reached your writing help limit for now. Please try again later.</translation>
@@ -4992,6 +4993,7 @@ Additional details:
 <translation id="8870700989640064057">Print confidential file?</translation>
 <translation id="8871485335898060555">Antiques and collectibles</translation>
 <translation id="8871553383647848643">Customise the look of your browser</translation>
+<translation id="887350038812854047">This policy has the same value applied at the machine and user levels. The policy is working as intended.</translation>
 <translation id="8874790741333031443">Try temporarily allowing third-party cookies, which means less browsing protection but site features are more likely to work as expected.</translation>
 <translation id="8874824191258364635">Enter a valid card number</translation>
 <translation id="8877780815363510165">Fishing</translation>

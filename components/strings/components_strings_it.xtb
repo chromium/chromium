@@ -754,6 +754,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2184405333245229118">{COUNT,plural, =1{1 indirizzo}other{# indirizzi}}</translation>
 <translation id="2188375229972301266">Perforatura multipla in basso</translation>
 <translation id="218940509700321686">Valori separati da virgola</translation>
+<translation id="2190094353033916816">Questa policy ha valori differenti applicati a livello di macchina e utente. La policy funziona come previsto.</translation>
 <translation id="2191980191135734720">Sblocca lo schermo nel passaggio successivo, in genere usando la tua impronta. Puoi anche <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Aspetti da considerare</translation>
 <translation id="2198183835992354675">Known Traveler Number</translation>
@@ -3190,6 +3191,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="6042308850641462728">Altro</translation>
 <translation id="6043357981274314628">Operazione completata.</translation>
 <translation id="6045164183059402045">Modello imposizione</translation>
+<translation id="6046026831939367176"><ph name="URL" /> vuole usare la tua posizione approssimativa</translation>
 <translation id="6046892054959167494">Digita <ph name="SEARCH_AGGREGATOR_KEYWORD" /> per cercare o chiedi a <ph name="SEARCH_AGGREGATOR_SHORT_NAME" /></translation>
 <translation id="6047927260846328439">Questi contenuti potrebbero cercare di indurti con l'inganno a installare software o a rivelare informazioni personali. <ph name="BEGIN_LINK" />Mostra comunque<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">Busta B4</translation>
@@ -3638,7 +3640,6 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">fotocamera</translation>
 <translation id="6734506549556896534">Giochi di simulazione</translation>
-<translation id="6735589846038045679">I piani di pagamento sono soggetti a idoneità. <ph name="BEGIN_BOLD" />I contenuti della pagina di pagamento vengono condivisi con Google per offrire queste opzioni.<ph name="END_BOLD" /> Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LINK" />impostazioni di pagamento<ph name="END_LINK" /></translation>
 <translation id="6737708609449480586">Prodotti da forno</translation>
 <translation id="6738516213925468394">I tuoi dati sono stati criptati con la tua <ph name="BEGIN_LINK" />passphrase di sincronizzazione<ph name="END_LINK" /> in data <ph name="TIME" />. Inseriscila per avviare la sincronizzazione.</translation>
 <translation id="6740851646645036700">Per il momento, hai raggiunto il limite di aiuto per la scrittura. Riprova più tardi.</translation>
@@ -4988,6 +4989,7 @@ Ulteriori dettagli:
 <translation id="8870700989640064057">Vuoi stampare il file riservato?</translation>
 <translation id="8871485335898060555">Antiquariato e collezionismo</translation>
 <translation id="8871553383647848643">Personalizza l'aspetto del browser</translation>
+<translation id="887350038812854047">Questa policy ha lo stesso valore applicato a livello di macchina e utente. La policy funziona come previsto.</translation>
 <translation id="8874790741333031443">Prova a consentire temporaneamente i cookie di terze parti. In questo modo avrai meno protezione durante la navigazione, ma è più probabile che le funzionalità del sito operino come previsto.</translation>
 <translation id="8874824191258364635">Inserisci un numero di carta di credito valido</translation>
 <translation id="8877780815363510165">Pesca</translation>

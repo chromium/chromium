@@ -754,6 +754,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2184405333245229118">{COUNT,plural, =1{1 adress}other{# adresser}}</translation>
 <translation id="2188375229972301266">Flera hål längst ned</translation>
 <translation id="218940509700321686">Kommaavgränsade värden</translation>
+<translation id="2190094353033916816">Den här principen har olika värden som tillämpas på dator- och användarnivå. Principen fungerar som avsett.</translation>
 <translation id="2191980191135734720">Lås upp skärmen i nästa steg, vanligtvis med fingeravtryck. Du kan även <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Tänk på detta</translation>
 <translation id="2198183835992354675">Known Traveler Number</translation>
@@ -3193,6 +3194,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="6042308850641462728">Mer</translation>
 <translation id="6043357981274314628">Klart!</translation>
 <translation id="6045164183059402045">Utskjutningsmall</translation>
+<translation id="6046026831939367176"><ph name="URL" /> vill använda din ungefärliga plats</translation>
 <translation id="6046892054959167494">Skriv <ph name="SEARCH_AGGREGATOR_KEYWORD" /> för att söka på eller fråga <ph name="SEARCH_AGGREGATOR_SHORT_NAME" /></translation>
 <translation id="6047927260846328439">Sidan kan ha till syfte att försöka lura dig att installera mjukvara eller avslöja personliga uppgifter. <ph name="BEGIN_LINK" />Visa ändå<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">B4-kuvert</translation>
@@ -3642,7 +3644,6 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6734506549556896534">Simuleringsspel</translation>
-<translation id="6735589846038045679">Kvalificering krävs för betalningsplaner. <ph name="BEGIN_BOLD" />Innehåll från kassasidan delas med Google för att erbjuda dessa alternativ.<ph name="END_BOLD" /> Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /> om du vill dölja alternativen för att betala senare.</translation>
 <translation id="6737708609449480586">Bageri- och konditorivaror</translation>
 <translation id="6738516213925468394">Din data krypterades med din <ph name="BEGIN_LINK" />lösenfras för synkronisering<ph name="END_LINK" /> den <ph name="TIME" />. Ange den om du vill starta synkroniseringen.</translation>
 <translation id="6740851646645036700">Du har nått gränsen för skrivhjälp. Försök igen senare.</translation>
@@ -4993,6 +4994,7 @@ Mer information:
 <translation id="8870700989640064057">Vill du skriva ut den konfidentiella filen?</translation>
 <translation id="8871485335898060555">Antikviteter och samlarobjekt</translation>
 <translation id="8871553383647848643">Anpassa webbläsarens utseende</translation>
+<translation id="887350038812854047">Den här principen har samma värde som tillämpas på maskin- och användarnivå. Principen fungerar som avsett.</translation>
 <translation id="8874790741333031443">Testa att tillfälligt tillåta tredjepartscookies, vilket innebär mindre skydd när du surfar men större sannolikhet att webbplatsfunktionerna fungerar som förväntat.</translation>
 <translation id="8874824191258364635">Ange ett giltigt kortnummer</translation>
 <translation id="8877780815363510165">Fiske</translation>

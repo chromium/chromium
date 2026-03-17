@@ -394,6 +394,7 @@
 <translation id="2360196772093551345">Voir la version pour appareil mobile</translation>
 <translation id="2362083820973145409">Connecté en tant que <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Ouvre les paramètres.</translation>
 <translation id="2371084566192454134">Onglets et groupes d'onglets</translation>
+<translation id="2371303771137626249">Nouveau</translation>
 <translation id="2381405137052800939">Paramètres de base</translation>
 <translation id="2384692388811649784">Masquer les onglets de navigation privée</translation>
 <translation id="2386793615875593361">1 sélectionné</translation>
@@ -636,6 +637,7 @@
 <translation id="3324193307694657476">Ligne adresse 2</translation>
 <translation id="3328801116991980348">Information sur le site</translation>
 <translation id="333229797575847124">Comment activer cette fonctionnalité</translation>
+<translation id="334004756946755423">Explique-moi ceci :</translation>
 <translation id="3344233834747405775">Nom du titulaire de la carte non valide</translation>
 <translation id="3344485292736684439">{count,plural, =1{Favori enregistré dans « {title} » dans votre compte, {email}}one{Favoris enregistrés dans « {title} » dans votre compte, {email}}other{Favoris enregistrés dans « {title} » dans votre compte, {email}}}</translation>
 <translation id="334690320928261823">Onglets récents</translation>
@@ -689,6 +691,7 @@
 <translation id="3530206579861815432">Trouvez rapidement les onglets ouverts et récemment fermés sur tous vos appareils synchronisés.</translation>
 <translation id="3530767473765895035">Gérer les comptes sur cet appareil…</translation>
 <translation id="3533436815740441613">Nouvel onglet</translation>
+<translation id="3534738261102690620">Demand. Gemini</translation>
 <translation id="3540141921715814660">Ajouter aux favoris</translation>
 <translation id="3546122170015471515">Aperçus Maps sur Google.com</translation>
 <translation id="3547356470684043247">Lisez les évaluations des clients sur les produits, les services ou l'expérience pour vous aider à prendre des décisions éclairées à l'aide de leurs avis</translation>
@@ -959,6 +962,7 @@
 <translation id="454217142158335225">Vous pouvez rouvrir les éléments fermés à partir des sections Onglets récents ou Groupes d'onglets. Vos onglets épinglés ne seront pas fermés.</translation>
 <translation id="4547181496285029457">Revenir au dernier onglet</translation>
 <translation id="4552042254369397518">Copie en cours…</translation>
+<translation id="4553044860350038560">Plus de clés d'accès</translation>
 <translation id="4564893319561643483">Masquez « <ph name="TITLE" /> »</translation>
 <translation id="4565377596337484307">Masquer le mot de passe</translation>
 <translation id="4568230126482344545">Masquer les onglets récents</translation>
@@ -1087,6 +1091,7 @@
 <translation id="4944543191714094452">Rechercher dans la page…</translation>
 <translation id="4945756290001680296">Accéder aux paramètres des mots de passe</translation>
 <translation id="4949302115427722371">Gérer les paramètres…</translation>
+<translation id="4952050521954075618">Les photos de la pellicule ne seront pas synchronisées sur vos appareils</translation>
 <translation id="4958444002117714549">Développer la liste</translation>
 <translation id="496392417432935267">Ouvert ailleurs</translation>
 <translation id="4970724460420203313">L'utilisation de Chrome avec votre compte géré vous permet de séparer la navigation liée à votre organisation (y compris les onglets, l'historique et les mots de passe) de vos autres navigations</translation>
@@ -1286,6 +1291,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="5647702255748985085">Quitter le groupe?</translation>
 <translation id="5648166631817621825">Sept derniers jours</translation>
 <translation id="5652623411397330904">Les produits que vous suivez s'afficheront ici.</translation>
+<translation id="5653100054596780862">Tous onglets</translation>
 <translation id="5656431592348714536">Agenda amélioré</translation>
 <translation id="5659593005791499971">Courriel</translation>
 <translation id="5665739277590037307">La <ph name="GOOGLE_TERMS" /> et la <ph name="GEMINI_APPS_PRIVACY" /> s'appliquent. Gemini peut se tromper. Veuillez donc vérifier ses réponses.</translation>
@@ -1751,6 +1757,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="7300448350764260141">Ajoutez une couche de protection supplémentaire contre les menaces en ligne.</translation>
 <translation id="7311244614769792472">Aucun résultat trouvé</translation>
 <translation id="7313347584264171202">Vous trouverez vos onglets de navigation privée ici</translation>
+<translation id="7322186060879266048">{count,plural, =1{{count} option de remplissage automatique accessible au-dessus de votre clavier.}one{{count} option de remplissage automatique accessible au-dessus de votre clavier.}other{{count} options de remplissage automatique accessibles au-dessus de votre clavier.}}</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> pour cent téléchargé(s)</translation>
 <translation id="7345061034321640811">Importation non autorisée</translation>

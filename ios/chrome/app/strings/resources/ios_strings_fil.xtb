@@ -962,6 +962,7 @@
 <translation id="454217142158335225">Puwede mong buksan ulit ang mga isinarang item mula sa mga seksyon ng mga kamakailang tab o grupo ng tab. Hindi isasara ang iyong mga naka-pin na tab.</translation>
 <translation id="4547181496285029457">Bumalik sa kamakailang tab</translation>
 <translation id="4552042254369397518">Kinokopya…</translation>
+<translation id="4553044860350038560">Higit pang passkey</translation>
 <translation id="4564893319561643483">I-hide ang "<ph name="TITLE" />"</translation>
 <translation id="4565377596337484307">Itago ang password</translation>
 <translation id="4568230126482344545">I-hide ang Mga kamakailang tab</translation>
@@ -1723,6 +1724,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="7149893636342594995">Nakalipas na 24 na oras</translation>
 <translation id="7154417656353909837">Alisin ang mga address</translation>
 <translation id="7161230316646448869">I-sync ang iyong mga bookmark, history, at higit pa sa lahat ng device</translation>
+<translation id="7165323152084385463">VIN</translation>
 <translation id="7173114856073700355">Buksan ang Mga Setting</translation>
 <translation id="7173721738069475737">{count,plural, =1{Na-save ang bookmark}one{Na-save ang {count} bookmark}other{Na-save ang {count} na bookmark}}</translation>
 <translation id="7176183551031110427">Mag-zoom out</translation>

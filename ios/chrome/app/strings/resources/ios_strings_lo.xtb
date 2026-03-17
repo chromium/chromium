@@ -394,6 +394,7 @@
 <translation id="2360196772093551345">ຮ້ອງຂໍເວັບໄຊມືຖື</translation>
 <translation id="2362083820973145409">ເຂົ້າສູ່ລະບົບເປັນ <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. ເປີດການຕັ້ງຄ່າ.</translation>
 <translation id="2371084566192454134">ແຖບ ແລະ ກຸ່ມແຖບ</translation>
+<translation id="2371303771137626249">ໃໝ່</translation>
 <translation id="2381405137052800939">ພື້ນ​ຖານ</translation>
 <translation id="2384692388811649784">ເຊື່ອງແຖບບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
 <translation id="2386793615875593361">1 ຖືກເລືອກແລ້ວ</translation>
@@ -636,6 +637,7 @@
 <translation id="3324193307694657476">ທີ່ຢູ່ 2</translation>
 <translation id="3328801116991980348">ຂໍ້​ມູນ​ເວັບ​ໄຊທ໌</translation>
 <translation id="333229797575847124">ວິທີເປີດການນຳໃຊ້ຄຸນສົມບັດນີ້</translation>
+<translation id="334004756946755423">ອະທິບາຍສິ່ງນີ້ໃຫ້ຂ້ອຍຟັງ:</translation>
 <translation id="3344233834747405775">ຊື່ຜູ້ຖືບັດບໍ່ຖືກຕ້ອງ</translation>
 <translation id="3344485292736684439">{count,plural, =1{ບັນທຶກບຸກມາກໃສ່ "{title}" ໃນບັນຊີຂອງທ່ານ, {email}}other{ບັນທຶກບຸກມາກໃສ່ "{title}" ໃນບັນຊີຂອງທ່ານ, {email}}}</translation>
 <translation id="334690320928261823">ແຖບຫຼ້າສຸດ</translation>
@@ -689,6 +691,7 @@
 <translation id="3530206579861815432">ຊອກຫາແຖບທີ່ເປີດ ແລະ ປິດຫຼ້າສຸດໃນອຸປະກອນທີ່ຊິ້ງຂໍ້ມູນໄວ້ຂອງທ່ານ.</translation>
 <translation id="3530767473765895035">ຈັດການບັນຊີຢູ່ອຸປະກອນນີ້…</translation>
 <translation id="3533436815740441613">ແຖບໃໝ່</translation>
+<translation id="3534738261102690620">ຖາມ Gemini</translation>
 <translation id="3540141921715814660">ເພີ່ມໃສ່ບຸກມາກ</translation>
 <translation id="3546122170015471515">ແຜນທີ່ເວີຊັນຕົວຢ່າງຢູ່ Google.com</translation>
 <translation id="3547356470684043247">ອ່ານການປະເມີນຜະລິດຕະພັນ, ບໍລິການ ຫຼື ປະສົບການຂອງລູກຄ້າເພື່ອຊ່ວຍໃນການຕັດສິນໃຈຂອງທ່ານດ້ວຍຄຳຕິຊົມ</translation>
@@ -959,6 +962,7 @@
 <translation id="454217142158335225">ທ່ານສາມາດເປີດລາຍການທີ່ປິດໄປແລ້ວຄືນໃໝ່ໄດ້ຈາກພາກສ່ວນແຖບ ຫຼື ກຸ່ມແຖບຫຼ້າສຸດ. ລະບົບຈະບໍ່ປິດແຖບທີ່ປັກໝຸດໄວ້ຂອງທ່ານ.</translation>
 <translation id="4547181496285029457">ກັບໄປຫາແຖບຫຼ້າສຸດ</translation>
 <translation id="4552042254369397518">ກຳລັງສຳເນົາ…</translation>
+<translation id="4553044860350038560">ກະແຈຜ່ານເພີ່ມເຕີມ</translation>
 <translation id="4564893319561643483">ເຊື່ອງ "<ph name="TITLE" />"</translation>
 <translation id="4565377596337484307">ເຊື່ອງລະຫັດຜ່ານ</translation>
 <translation id="4568230126482344545">ເຊື່ອງ ແຖບຫຼ້າສຸດ</translation>
@@ -1087,6 +1091,7 @@
 <translation id="4944543191714094452">ຊອກຫາໃນໜ້າ…</translation>
 <translation id="4945756290001680296">ເຂົ້າເຖິງການຕັ້ງຄ່າລະຫັດຜ່ານ</translation>
 <translation id="4949302115427722371">ຈັດການການຕັ້ງຄ່າ…</translation>
+<translation id="4952050521954075618">ຮູບພາບຈາກຮູບຈາກອະລະບ້ຳກ້ອງຈະບໍ່ຊິ້ງໃນອຸປະກອນຕ່າງໆຂອງທ່ານ</translation>
 <translation id="4958444002117714549">ຂະ​ຫຍາຍ​ລາຍ​ຊື່</translation>
 <translation id="496392417432935267">ເປີດຢູ່ບ່ອນອື່ນແລ້ວ</translation>
 <translation id="4970724460420203313">ການນຳໃຊ້ Chrome ດ້ວຍບັນຊີທີ່ມີການຈັດການຂອງທ່ານຈະຊ່ວຍແຍກການທ່ອງເວັບທີ່ກ່ຽວຂ້ອງກັບອົງກອນຂອງທ່ານ (ເຊິ່ງຮວມທັງແຖບ, ປະຫວັດ ແລະ ລະຫັດຜ່ານ) ອອກຈາກການທ່ອງເວັບອື່ນໆຂອງທ່ານ</translation>
@@ -1286,6 +1291,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="5647702255748985085">ອອກຈາກກຸ່ມບໍ?</translation>
 <translation id="5648166631817621825">7 ມື້ທີ່ຜ່ານມາ</translation>
 <translation id="5652623411397330904">ສິນຄ້າທີ່ທ່ານຕິດຕາມຈະສະແດງຢູ່ບ່ອນນີ້.</translation>
+<translation id="5653100054596780862">ແຖບທັງໝົດ</translation>
 <translation id="5656431592348714536">ປະຕິທິນທີ່ປັບປຸງໃຫ້ດີຂຶ້ນແລ້ວ</translation>
 <translation id="5659593005791499971">ອີເມວ</translation>
 <translation id="5665739277590037307">ໂດຍເປັນໄປຕາມ <ph name="GOOGLE_TERMS" /> ແລະ <ph name="GEMINI_APPS_PRIVACY" />. Gemini ອາດເຮັດຜິດພາດໄດ້, ດັ່ງນັ້ນກະລຸນາກວດສອບຄຳຕອບຊ້ຳ.</translation>
@@ -1751,6 +1757,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="7300448350764260141">ເພີ່ມການປົກປ້ອງຕໍ່ກັບໄພຂົ່ມຂູ່ທາງອອນລາຍອີກຊັ້ນໜຶ່ງ.</translation>
 <translation id="7311244614769792472">ບໍ່ພົບຜົນການຊອກຫາ</translation>
 <translation id="7313347584264171202">ທ່ານຈະເຫັນແຖບທີ່ບໍ່ເປີດເຜີຍຕົວຕົນຂອງທ່ານຢູ່ບ່ອນນີ້</translation>
+<translation id="7322186060879266048">{count,plural, =1{ຕົວເລືອກການຕື່ມຂໍ້ມູນອັດຕະໂນມັດ {count} ລາຍການພ້ອມໃຫ້ນຳໃຊ້ຢູ່ເທິງແປ້ນພິມຂອງທ່ານ.}other{ຕົວເລືອກການຕື່ມຂໍ້ມູນອັດຕະໂນມັດ {count} ລາຍການພ້ອມໃຫ້ນຳໃຊ້ຢູ່ເທິງແປ້ນພິມຂອງທ່ານ.}}</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> ເປີ​ເຊັນ​ຖືກ​ດາວ​ໂຫຼດ​ແລ້ວ</translation>
 <translation id="7345061034321640811">ບໍ່ອະນຸຍາດໃຫ້ນຳເຂົ້າ</translation>

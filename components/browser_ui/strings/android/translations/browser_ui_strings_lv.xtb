@@ -125,7 +125,6 @@
 <translation id="2228071138934252756">Lai atļautu lietotnei <ph name="APP_NAME" /> piekļūt jūsu kamerai, ieslēdziet kameru arī <ph name="BEGIN_LINK" />Android iestatījumos<ph name="END_LINK" />.</translation>
 <translation id="2231160360698766265">Atļaut vietnēm atskaņot aizsargātu saturu</translation>
 <translation id="2235344399760031203">Trešo pušu sīkfaili ir bloķēti</translation>
-<translation id="2238944249568001759">Pamatojoties uz jūsu pēdējo cilni, ieteiktie meklēšanas vaicājumi</translation>
 <translation id="2241587408274973373">Kartītes jaunas cilnes lapā</translation>
 <translation id="2241634353105152135">Tikai vienreiz</translation>
 <translation id="2253414712144136228">Noņemt vienumu “<ph name="NAME_OF_LIST_ITEM" />”</translation>
@@ -214,7 +213,6 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus
 <translation id="3069226013421428034">Atļauja trešajai pusei pierakstīties konkrētā vietnē</translation>
 <translation id="310297983047869047">Iepriekšējais slaids</translation>
 <translation id="3108122610701115301">Iestatīt kā noklusējumu</translation>
-<translation id="3109724472072898302">Sakļauts</translation>
 <translation id="310979712355504754">Dzēst visu</translation>
 <translation id="311394601889664316">Neļaut vietnēm rediģēt failus vai mapes jūsu ierīcē</translation>
 <translation id="3114012059975132928">Videoklipu atskaņotājs</translation>
@@ -262,7 +260,6 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus
 <translation id="3602290021589620013">Priekšskatīt</translation>
 <translation id="3611658447322220736">Atļaut nesen aizvērtām vietnēm pabeigt datu nosūtīšanu un saņemšanu</translation>
 <translation id="3619294456800709762">Vietnēs drīkst automātiski aktivizēt režīmu “Attēls attēlā”</translation>
-<translation id="3628308229821498208">Ieteiktie meklēšanas vaicājumi</translation>
 <translation id="3632460243282703117">Abonēt</translation>
 <translation id="363748948745453283">Tiek izmantota aptuvena atrašanās vieta.</translation>
 <translation id="3641456520301071208">Atļaut vietnēm pieprasīt atļauju piekļūt jūsu atrašanās vietas datiem</translation>
@@ -522,7 +519,6 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus
 <translation id="6231752747840485235">Vai atinstalēt lietotni <ph name="APP_NAME" />?</translation>
 <translation id="6234351944623978659">Pieskarieties vienumam Pārlūka lietotne &gt; Chrome.</translation>
 <translation id="6260830281887654268">Jaunas cilnes lapas izskata motīvu kolekciju ekrāna apakšdaļas lapa ir atvērta pusekrāna augstumā</translation>
-<translation id="6262191102408817757">Pamatojoties uz pēdējās cilnes saturu</translation>
 <translation id="6262279340360821358">Bloķētas: <ph name="PERMISSION_1" /> un <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Vietnēs var lūgt atļauju sūtīt paziņojumus</translation>
 <translation id="6295158916970320988">Visas vietnes</translation>
@@ -602,7 +598,6 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus
 <translation id="7180611975245234373">Atsvaidzināt</translation>
 <translation id="7188508872042490670">Vietnes dati ierīcē</translation>
 <translation id="7201549776650881587">Veicot šo darbību, tiks izdzēsti visi dati un sīkfaili, ko jūsu sākuma ekrānā glabā vietņu grupa <ph name="ORIGIN" /> vai tās lietotne.</translation>
-<translation id="7203150201908454328">Izvērsts</translation>
 <translation id="7213166370492037743">Neļaut vietnēm izveidot savienojumu ne ar vienu ierīci jūsu lokālajā tīklā</translation>
 <translation id="7219254577985949841">Vai dzēst vietnes datus?</translation>
 <translation id="723171743924126238">Atlasīt attēlus</translation>

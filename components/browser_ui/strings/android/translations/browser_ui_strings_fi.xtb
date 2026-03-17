@@ -125,7 +125,6 @@
 <translation id="2228071138934252756">Laita kamera päälle myös <ph name="BEGIN_LINK" />Androidin asetuksista<ph name="END_LINK" />, jotta <ph name="APP_NAME" /> saa pääsyn kameraasi.</translation>
 <translation id="2231160360698766265">Sivustot voivat toistaa suojattua sisältöä</translation>
 <translation id="2235344399760031203">Kolmannen osapuolen evästeet on estetty</translation>
-<translation id="2238944249568001759">Viime välilehteen perustuvat hakuehdotukset</translation>
 <translation id="2241587408274973373">Uusi välilehti ‐sivun kortit</translation>
 <translation id="2241634353105152135">Vain kerran</translation>
 <translation id="2253414712144136228">Poista <ph name="NAME_OF_LIST_ITEM" /></translation>
@@ -214,7 +213,6 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="3069226013421428034">Salli kolmannen osapuolen sisäänkirjautuminen tietylle sivustolle.</translation>
 <translation id="310297983047869047">Edellinen dia</translation>
 <translation id="3108122610701115301">Aseta oletukseksi</translation>
-<translation id="3109724472072898302">Tiivistetty</translation>
 <translation id="310979712355504754">Poista kaikki</translation>
 <translation id="311394601889664316">Älä salli sivustojen muokata laitteen tiedostoja tai kansioita</translation>
 <translation id="3114012059975132928">Videosoitin</translation>
@@ -262,7 +260,6 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="3602290021589620013">Esikatselu</translation>
 <translation id="3611658447322220736">Äskettäin suljetut sivustot saavat viimeistellä datan lähetyksen ja vastaanoton</translation>
 <translation id="3619294456800709762">Sivustot voivat siirtyä pikkuruututilaan automaattisesti</translation>
-<translation id="3628308229821498208">Ehdotetut haut</translation>
 <translation id="3632460243282703117">Tilaa</translation>
 <translation id="363748948745453283">Likimääräinen sijainti käytössä</translation>
 <translation id="3641456520301071208">Sivustot voivat pyytää sijaintiasi</translation>
@@ -490,6 +487,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="5922853908706496913">Näyttösi jaetaan</translation>
 <translation id="5922967540311291836">Estä kolmannen osapuolen evästeet:</translation>
 <translation id="5923512600150154850">Tämä poistaa <ph name="DATASIZE" /> dataa ja sivustojen tallentamat evästeet</translation>
+<translation id="5930707844513754220">Näytä enemmän käyttöönottolistaa</translation>
 <translation id="5939518447894949180">Tyhjennä</translation>
 <translation id="5948139900367969951">Löydä tärkeät asiat nopeasti</translation>
 <translation id="5964247741333118902">Upotettu sisältö</translation>
@@ -498,6 +496,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
 <translation id="5998071268779572583">Laita Discover-fiidi päälle</translation>
 <translation id="6012967556075291653">Kiinnitetty pikakuvake</translation>
+<translation id="6013003831291591200">Valmis tehtävä</translation>
 <translation id="6015775454662021376">Valitse, mitä tämä sivusto saa tehdä laitteellasi</translation>
 <translation id="6022659036123304283">Tee Chromesta näköisesi</translation>
 <translation id="6040143037577758943">Sulje</translation>
@@ -522,7 +521,6 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="6231752747840485235">Poistetaanko <ph name="APP_NAME" />?</translation>
 <translation id="6234351944623978659">Valitse Selainsovellus &gt; Chrome</translation>
 <translation id="6260830281887654268">Uusi välilehti ‐sivun ulkoasun teemakokoelmien alapaneeli avattu puoliksi</translation>
-<translation id="6262191102408817757">Perustuu viimeisimpään välilehteen</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> ja <ph name="PERMISSION_2" /> estetty</translation>
 <translation id="6270391203985052864">Sivustot saavat pyytää lupaa lähettää ilmoituksia</translation>
 <translation id="6295158916970320988">Kaikki sivustot</translation>
@@ -602,7 +600,6 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="7180611975245234373">Päivitä</translation>
 <translation id="7188508872042490670">Laitepohjainen sivustodata</translation>
 <translation id="7201549776650881587">Tämä toiminto poistaa kaiken datan ja kaikki evästeet sivuston <ph name="ORIGIN" /> alla olevilta sivustoilta tai sen sovelluksesta aloitusnäytöllä</translation>
-<translation id="7203150201908454328">Laajennettu</translation>
 <translation id="7213166370492037743">Älä salli sivustojen yhdistää mihinkään paikallisessa verkossa olevaan laitteeseen</translation>
 <translation id="7219254577985949841">Poistetaanko sivustodata?</translation>
 <translation id="723171743924126238">Valitse kuvat</translation>

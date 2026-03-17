@@ -414,6 +414,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="2789486458103222910">Potvrdi</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome je pronašao lozinku koju koristite za više naloga i koju možete da poboljšate}one{Chrome je pronašao # lozinku koju koristite za više naloga i koju možete da poboljšate}few{Chrome je pronašao # lozinke koje koristite za više naloga i koje možete da poboljšate}other{Chrome je pronašao # lozinki koje koristite za više naloga i koje možete da poboljšate}}</translation>
 <translation id="2794551654724114396">Uključite obaveštenja o korisnim savetima koji će vam pomoći da iskoristite Chrome na najbolji način</translation>
+<translation id="2798977804328097977">Lako nastavite na bilo kom uređaju</translation>
 <translation id="2805210243313393104">Neka vam obeleživači i drugi sadržaj budu dostupni na svim uređajima</translation>
 <translation id="2805756323405976993">Aplikacije</translation>
 <translation id="2819849308549746319">Otkaži prijavu na sve</translation>
@@ -469,6 +470,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="2977350910003566746">Sortira se prema poslednjem otvaranju</translation>
 <translation id="297771753501244313">Po poslednjem otvaranju</translation>
 <translation id="2979639724566107830">Otvorite u novom prozoru</translation>
+<translation id="2980545254049127870">Lako otvarajte linkove iz poruka, dokumenata i drugih aplikacija</translation>
 <translation id="2983102365694924129">Na osnovu vaše aktivnosti na sajtu. Ovo podešavanje je isključeno.</translation>
 <translation id="2983398917942897288">Neaktivne (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2983835398644161987">Izađi iz režima slike u slici</translation>
@@ -730,6 +732,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="4137746084635924146">Aktuelni jezik uređaja</translation>
 <translation id="414128724510021958">Verzije sajtova za računar koje se podrazumevano zahtevaju</translation>
 <translation id="4162867837470729563">Lista opcija za deljenje je otvorena na celom ekranu.</translation>
+<translation id="4164642020717536140">Brzo i bezbedno pregledanje veba</translation>
 <translation id="4165077084524712774">Još alatki</translation>
 <translation id="4170011742729630528">Usluga nije dostupna. Probajte ponovo kasnije.</translation>
 <translation id="4170577491341606575">Preuzimaju se stvari\u2026</translation>

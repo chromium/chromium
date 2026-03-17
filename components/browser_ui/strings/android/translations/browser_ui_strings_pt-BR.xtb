@@ -125,7 +125,6 @@
 <translation id="2228071138934252756">Para permitir que o app <ph name="APP_NAME" /> acesse sua câmera, ative-a também nas <ph name="BEGIN_LINK" />configurações do Android<ph name="END_LINK" />.</translation>
 <translation id="2231160360698766265">Os sites podem abrir conteúdo protegido</translation>
 <translation id="2235344399760031203">Cookies de terceiros foram bloqueados</translation>
-<translation id="2238944249568001759">Pesquisas sugeridas com base na sua última guia</translation>
 <translation id="2241587408274973373">Cards da página Nova guia</translation>
 <translation id="2241634353105152135">Apenas uma vez</translation>
 <translation id="2253414712144136228">Remover <ph name="NAME_OF_LIST_ITEM" /></translation>
@@ -214,7 +213,6 @@ A Proteção Avançada controla estas configurações do Chrome:
 <translation id="3069226013421428034">Permita o login de terceiros em um site específico.</translation>
 <translation id="310297983047869047">Slide anterior</translation>
 <translation id="3108122610701115301">Definir padrão</translation>
-<translation id="3109724472072898302">Recolhido</translation>
 <translation id="310979712355504754">Excluir tudo</translation>
 <translation id="311394601889664316">Não permitir que os sites editem arquivos e pastas no dispositivo</translation>
 <translation id="3114012059975132928">Player de vídeo</translation>
@@ -262,7 +260,6 @@ A Proteção Avançada controla estas configurações do Chrome:
 <translation id="3602290021589620013">Prévia</translation>
 <translation id="3611658447322220736">Os sites fechados recentemente podem terminar de enviar e receber dados</translation>
 <translation id="3619294456800709762">Os sites podem entrar no modo picture-in-picture automaticamente</translation>
-<translation id="3628308229821498208">Pesquisas sugeridas</translation>
 <translation id="3632460243282703117">Inscreva-se</translation>
 <translation id="363748948745453283">Usando o local aproximado</translation>
 <translation id="3641456520301071208">Os sites podem solicitar sua localização</translation>
@@ -524,7 +521,6 @@ A Proteção Avançada controla estas configurações do Chrome:
 <translation id="6231752747840485235">Desinstalar <ph name="APP_NAME" />?</translation>
 <translation id="6234351944623978659">Toque em App de navegação &gt; Chrome.</translation>
 <translation id="6260830281887654268">A página inferior de coleções de temas para a página "Nova guia" está aberta na metade da altura</translation>
-<translation id="6262191102408817757">Com base na sua última guia</translation>
 <translation id="6262279340360821358">Bloqueadas: <ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Os sites podem pedir para enviar notificações</translation>
 <translation id="6295158916970320988">Todos os sites</translation>
@@ -604,7 +600,6 @@ A Proteção Avançada controla estas configurações do Chrome:
 <translation id="7180611975245234373">Atualizar</translation>
 <translation id="7188508872042490670">Dados do site no dispositivo</translation>
 <translation id="7201549776650881587">Essa ação vai excluir todos os dados e cookies armazenados por todos os sites relacionados a <ph name="ORIGIN" /> ou pelo app na sua tela inicial</translation>
-<translation id="7203150201908454328">Expandido</translation>
 <translation id="7213166370492037743">Não permitir que os sites se conectem aos dispositivos na sua rede local</translation>
 <translation id="7219254577985949841">Excluir dados do site?</translation>
 <translation id="723171743924126238">Selecionar imagens</translation>

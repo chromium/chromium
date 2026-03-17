@@ -125,7 +125,6 @@
 <translation id="2228071138934252756">Pokud aplikaci <ph name="APP_NAME" /> chcete umožnit přístup k fotoaparátu, zapněte fotoaparát také v <ph name="BEGIN_LINK" />Nastavení Android<ph name="END_LINK" />.</translation>
 <translation id="2231160360698766265">Weby mohou přehrávat chráněný obsah</translation>
 <translation id="2235344399760031203">Soubory cookie třetích stran jsou blokovány</translation>
-<translation id="2238944249568001759">Navrhovaná vyhledávání na základě poslední karty</translation>
 <translation id="2241587408274973373">Karty na stránce Nová karta</translation>
 <translation id="2241634353105152135">Pouze jednou</translation>
 <translation id="2253414712144136228">Odstranit položku <ph name="NAME_OF_LIST_ITEM" /></translation>
@@ -214,7 +213,6 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="3069226013421428034">Povolení přihlášení třetích stran na konkrétní web.</translation>
 <translation id="310297983047869047">Předchozí snímek</translation>
 <translation id="3108122610701115301">Výchozí nastavení</translation>
-<translation id="3109724472072898302">Sbaleno</translation>
 <translation id="310979712355504754">Smazat vše</translation>
 <translation id="311394601889664316">Nepovolovat webům upravovat soubory a složky v zařízení</translation>
 <translation id="3114012059975132928">Přehrávač videa</translation>
@@ -262,7 +260,6 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="3602290021589620013">Náhled</translation>
 <translation id="3611658447322220736">Nedávno zavřené weby mohou dokončit odeslání a příjem dat</translation>
 <translation id="3619294456800709762">Weby mohou automaticky aktivovat režim obrazu v obraze</translation>
-<translation id="3628308229821498208">Navrhovaná vyhledávání</translation>
 <translation id="3632460243282703117">Odebírat</translation>
 <translation id="363748948745453283">Používá se přibližná poloha</translation>
 <translation id="3641456520301071208">Weby se mohou dotázat na vaši polohu</translation>
@@ -522,7 +519,6 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="6231752747840485235">Odinstalovat aplikaci <ph name="APP_NAME" />?</translation>
 <translation id="6234351944623978659">Klepněte na aplikaci Prohlížeč &gt; Chrome</translation>
 <translation id="6260830281887654268">Spodní panel se sbírkami motivů pro vzhled stránky Nová karta otevřený na polovinu výšky</translation>
-<translation id="6262191102408817757">Na základě vaší poslední karty</translation>
 <translation id="6262279340360821358">Oprávnění <ph name="PERMISSION_1" /> a <ph name="PERMISSION_2" /> jsou zablokována</translation>
 <translation id="6270391203985052864">Weby mohou žádat o oprávnění zasílat vám oznámení</translation>
 <translation id="6295158916970320988">Všechny weby</translation>
@@ -602,7 +598,6 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="7180611975245234373">Obnovit</translation>
 <translation id="7188508872042490670">Data webu v zařízení</translation>
 <translation id="7201549776650881587">Touto akcí vymažete veškerá data a soubory cookie, které uložily weby v doméně <ph name="ORIGIN" /> nebo její aplikací na ploše</translation>
-<translation id="7203150201908454328">Rozbaleno</translation>
 <translation id="7213166370492037743">Nepovolovat webům připojení k zařízením v místní síti</translation>
 <translation id="7219254577985949841">Vymazat data webu?</translation>
 <translation id="723171743924126238">Vyberte fotky</translation>

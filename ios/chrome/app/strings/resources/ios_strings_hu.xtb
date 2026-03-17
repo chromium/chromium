@@ -394,6 +394,7 @@
 <translation id="2360196772093551345">Mobilwebhely kérése</translation>
 <translation id="2362083820973145409">Bejelentkezve a következőként: <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Megnyitja a beállításokat.</translation>
 <translation id="2371084566192454134">Lapok és lapcsoportok</translation>
+<translation id="2371303771137626249">Új</translation>
 <translation id="2381405137052800939">Alapok</translation>
 <translation id="2384692388811649784">Inkognitó lapok elrejtése</translation>
 <translation id="2386793615875593361">1 kijelölve</translation>
@@ -636,6 +637,7 @@
 <translation id="3324193307694657476">Cím 2. sora</translation>
 <translation id="3328801116991980348">Webhelyadatok</translation>
 <translation id="333229797575847124">A funkció engedélyezése</translation>
+<translation id="334004756946755423">Magyarázd ezt el nekem:</translation>
 <translation id="3344233834747405775">Érvénytelen a kártyatulajdonos neve</translation>
 <translation id="3344485292736684439">{count,plural, =1{A könyvjelzőt {email} fiókja következő mappájába mentettük: „{title}”}other{A könyvjelzőket {email} fiókja következő mappájába mentettük: „{title}”}}</translation>
 <translation id="334690320928261823">Nemrég megnyitott lapok</translation>
@@ -689,6 +691,7 @@
 <translation id="3530206579861815432">Gyorsan megtalálhatja a megnyitott és a nemrégiben bezárt lapokat a szinkronizált eszközökön.</translation>
 <translation id="3530767473765895035">Fiókok kezelése ezen az eszközön…</translation>
 <translation id="3533436815740441613">Új lap</translation>
+<translation id="3534738261102690620">Kérdezés a Geminitől</translation>
 <translation id="3540141921715814660">Hozzáadás a könyvjelzőkhöz</translation>
 <translation id="3546122170015471515">Térkép-előzetesek a Google.com-on</translation>
 <translation id="3547356470684043247">Olvassa el az ügyfelek által a termékekről, a szolgáltatásokról vagy az élményekről készített értékeléseket, amelyek segítségével megalapozott döntéseket hozhat.</translation>
@@ -959,6 +962,7 @@
 <translation id="454217142158335225">A bezárt elemeket a Nemrég megnyitott lapok vagy a Lapcsoportok szakaszban nyithatja meg újra. A rögzített lapok nem lesznek bezárva.</translation>
 <translation id="4547181496285029457">Vissza a legutóbbi lapra</translation>
 <translation id="4552042254369397518">Másolás…</translation>
+<translation id="4553044860350038560">További azonosítókulcsok</translation>
 <translation id="4564893319561643483">A(z) „<ph name="TITLE" />” elrejtése</translation>
 <translation id="4565377596337484307">Jelszó elrejtése</translation>
 <translation id="4568230126482344545">A nemrég megnyitott lapok elrejtése</translation>
@@ -1087,6 +1091,7 @@
 <translation id="4944543191714094452">Keresés az oldalon…</translation>
 <translation id="4945756290001680296">Hozzáférés a jelszóbeállításokhoz</translation>
 <translation id="4949302115427722371">Beállítások kezelése…</translation>
+<translation id="4952050521954075618">A galériából származó fotók nem szinkronizálódnak az eszközei között.</translation>
 <translation id="4958444002117714549">Lista részletes nézete</translation>
 <translation id="496392417432935267">Máshol megnyitva</translation>
 <translation id="4970724460420203313">A Chrome felügyelt fiókkal való használatával segíthet elkülöníteni a szervezetéhez kapcsolódó böngészési adatokat (például a lapokat, az előzményeket és a jelszavakat) a többi böngészési adatától.</translation>
@@ -1286,6 +1291,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="5647702255748985085">Elhagyja a csoportot?</translation>
 <translation id="5648166631817621825">Az elmúlt 7 napból</translation>
 <translation id="5652623411397330904">Az Ön által nyomon követett termékek itt jelennek meg.</translation>
+<translation id="5653100054596780862">Összes lap</translation>
 <translation id="5656431592348714536">Továbbfejlesztett naptár</translation>
 <translation id="5659593005791499971">E-mail</translation>
 <translation id="5665739277590037307">A(z) <ph name="GOOGLE_TERMS" /> és a(z) <ph name="GEMINI_APPS_PRIVACY" /> van érvényben. A Gemini hibázhat, ezért ellenőrizze a válaszait.</translation>
@@ -1751,6 +1757,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="7300448350764260141">Plusz biztonsági réteg hozzáadása az internetes fenyegetések elleni védekezés érdekében.</translation>
 <translation id="7311244614769792472">Nincs találat</translation>
 <translation id="7313347584264171202">Itt láthatja majd az inkognitó lapjait</translation>
+<translation id="7322186060879266048">{count,plural, =1{{count} automatikus kitöltési lehetőség áll rendelkezésre a billentyűzet felett.}other{{count} automatikus kitöltési lehetőség áll rendelkezésre a billentyűzet felett.}}</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> százalék letöltve</translation>
 <translation id="7345061034321640811">Az importálás nem engedélyezett</translation>

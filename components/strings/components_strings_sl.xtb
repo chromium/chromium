@@ -754,6 +754,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2184405333245229118">{COUNT,plural, =1{1 naslov}one{# naslov}two{# naslova}few{# naslovi}other{# naslovov}}</translation>
 <translation id="2188375229972301266">Večkratno luknjanje spodaj</translation>
 <translation id="218940509700321686">Vrednosti, ločene z vejico</translation>
+<translation id="2190094353033916816">Ta pravilnik ima različne vrednosti, ki se uporabljajo na ravni računalnika in uporabnika. Pravilnik deluje, kot je predvideno.</translation>
 <translation id="2191980191135734720">V naslednjem koraku odklenite zaslon, običajno s prstnim odtisom. Na voljo je tudi <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Kaj morate upoštevati</translation>
 <translation id="2198183835992354675">Številka rednega potnika</translation>
@@ -3193,6 +3194,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6042308850641462728">Več</translation>
 <translation id="6043357981274314628">Končano.</translation>
 <translation id="6045164183059402045">Predloga za razvrstitev strani za tiskanje</translation>
+<translation id="6046026831939367176"><ph name="URL" /> želi uporabljati vašo približno lokacijo</translation>
 <translation id="6046892054959167494">Vnesite <ph name="SEARCH_AGGREGATOR_KEYWORD" />, če želite iskati, ali izgovorite <ph name="SEARCH_AGGREGATOR_SHORT_NAME" />.</translation>
 <translation id="6047927260846328439">Ta vsebina vas morda poskuša zavesti, da namestite programsko opremo ali razkrijete osebne podatke. <ph name="BEGIN_LINK" />Vseeno prikaži<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">Kuverta B4</translation>
@@ -3642,7 +3644,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">fotoaparat</translation>
 <translation id="6734506549556896534">Simulacijske igre</translation>
-<translation id="6735589846038045679">Plačilni paketi so odvisni od primernosti. <ph name="BEGIN_BOLD" />Vsebina s strani za zaključek nakupa se deli z Googlom, da je mogoče ponuditi te možnosti.<ph name="END_BOLD" /> Če želite skriti možnosti poznejšega plačila, odprite <ph name="BEGIN_LINK" />nastavitve plačil<ph name="END_LINK" /></translation>
 <translation id="6737708609449480586">Pecivo</translation>
 <translation id="6738516213925468394">Podatki so bili šifrirani (<ph name="TIME" />) z vašim <ph name="BEGIN_LINK" />geslom za sinhronizacijo<ph name="END_LINK" />. Vnesite ga, če želite začeti sinhronizacijo.</translation>
 <translation id="6740851646645036700">Dosegli ste trenutno omejitev pomoči pri pisanju. Poskusite znova pozneje.</translation>
@@ -4992,6 +4993,7 @@ Dodatne podrobnosti:
 <translation id="8870700989640064057">Želite natisniti zaupno datoteko?</translation>
 <translation id="8871485335898060555">Starine in zbirateljski predmeti</translation>
 <translation id="8871553383647848643">Prilagajanje videza brskalnika</translation>
+<translation id="887350038812854047">Ta pravilnik ima enako vrednost, ki se uporablja na ravni računalnika in uporabnika. Pravilnik deluje, kot je predvideno.</translation>
 <translation id="8874790741333031443">Poskusite začasno omogočiti piškotke tretjih oseb, kar pomeni manj zaščite brskanja, vendar je bolj verjetno, da bodo funkcije spletnega mesta delovale po pričakovanjih.</translation>
 <translation id="8874824191258364635">Vnesite veljavno številko kartice</translation>
 <translation id="8877780815363510165">Ribarjenje</translation>

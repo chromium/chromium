@@ -125,7 +125,6 @@
 <translation id="2228071138934252756"><ph name="APP_NAME" />에서 카메라에 액세스하도록 허용하려면 <ph name="BEGIN_LINK" />Android 설정<ph name="END_LINK" />에서도 카메라를 사용 설정하세요.</translation>
 <translation id="2231160360698766265">사이트가 보호된 콘텐츠를 재생할 수 있음</translation>
 <translation id="2235344399760031203">타사 쿠키가 차단됨</translation>
-<translation id="2238944249568001759">마지막 탭을 바탕으로 한 추천 검색어</translation>
 <translation id="2241587408274973373">새 탭 페이지 카드</translation>
 <translation id="2241634353105152135">한 번만</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> 삭제</translation>
@@ -214,7 +213,6 @@
 <translation id="3069226013421428034">특정 사이트에 대해 서드 파티 로그인을 허용합니다.</translation>
 <translation id="310297983047869047">이전 슬라이드</translation>
 <translation id="3108122610701115301">기본으로 설정</translation>
-<translation id="3109724472072898302">접힘</translation>
 <translation id="310979712355504754">모두 삭제</translation>
 <translation id="311394601889664316">사이트에서 기기에 있는 파일이나 폴더를 수정하도록 허용하지 않음</translation>
 <translation id="3114012059975132928">동영상 플레이어</translation>
@@ -262,7 +260,6 @@
 <translation id="3602290021589620013">미리보기</translation>
 <translation id="3611658447322220736">최근에 닫은 사이트에서 데이터 송수신을 완료할 수 있음</translation>
 <translation id="3619294456800709762">사이트에서 PIP 모드를 자동으로 시작할 수 있음</translation>
-<translation id="3628308229821498208">추천 검색어</translation>
 <translation id="3632460243282703117">수신</translation>
 <translation id="363748948745453283">대략적인 위치 사용 중</translation>
 <translation id="3641456520301071208">사이트에서 위치 정보를 요청할 수 있음</translation>
@@ -490,6 +487,7 @@
 <translation id="5922853908706496913">화면 공유</translation>
 <translation id="5922967540311291836">서드 파티 쿠키 차단:</translation>
 <translation id="5923512600150154850">이렇게 하면 사이트에서 저장한 <ph name="DATASIZE" />의 데이터와 쿠키가 삭제됩니다.</translation>
+<translation id="5930707844513754220">설정 목록 더보기</translation>
 <translation id="5939518447894949180">초기화</translation>
 <translation id="5948139900367969951">나에게 중요한 항목을 빠르게 확인하세요</translation>
 <translation id="5964247741333118902">삽입한 콘텐츠</translation>
@@ -498,6 +496,7 @@
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
 <translation id="5998071268779572583">디스커버 피드 사용 설정</translation>
 <translation id="6012967556075291653">고정된 바로가기</translation>
+<translation id="6013003831291591200">작업 완료됨</translation>
 <translation id="6015775454662021376">기기에 대한 이 사이트의 액세스를 제어합니다.</translation>
 <translation id="6022659036123304283">나만의 Chrome 만들기</translation>
 <translation id="6040143037577758943">닫기</translation>
@@ -522,7 +521,6 @@
 <translation id="6231752747840485235">'<ph name="APP_NAME" />' 앱을 제거하시겠습니까?</translation>
 <translation id="6234351944623978659">브라우저 앱 &gt; Chrome을 탭합니다.</translation>
 <translation id="6260830281887654268">새 탭 페이지 모양 테마 모음 하단 시트가 절반 높이로 열림</translation>
-<translation id="6262191102408817757">마지막 탭 기준</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> 및 <ph name="PERMISSION_2" /> 차단됨</translation>
 <translation id="6270391203985052864">사이트에서 알림 전송 허용을 요청할 수 있음</translation>
 <translation id="6295158916970320988">모든 사이트</translation>
@@ -602,7 +600,6 @@
 <translation id="7180611975245234373">새로고침</translation>
 <translation id="7188508872042490670">기기 내 사이트 데이터</translation>
 <translation id="7201549776650881587">이 작업을 실행하면 <ph name="ORIGIN" />의 모든 하위 사이트 또는 홈 화면에 있는 앱에서 저장한 데이터와 쿠키가 모두 삭제됩니다.</translation>
-<translation id="7203150201908454328">펼쳐짐</translation>
 <translation id="7213166370492037743">사이트에서 로컬 네트워크의 모든 기기에 연결하도록 허용하지 않음</translation>
 <translation id="7219254577985949841">사이트 데이터를 삭제하시겠습니까?</translation>
 <translation id="723171743924126238">이미지 선택</translation>

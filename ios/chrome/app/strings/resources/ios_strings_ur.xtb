@@ -394,6 +394,7 @@
 <translation id="2360196772093551345">موبائل سائٹ کی درخواست کریں</translation>
 <translation id="2362083820973145409"><ph name="USER_NAME" /> کے بطور سائن ان کردہ۔ <ph name="USER_EMAIL" />۔ ترتیبات کھولتا ہے۔</translation>
 <translation id="2371084566192454134">ٹیبز اور ٹیب گروپس</translation>
+<translation id="2371303771137626249">نئی</translation>
 <translation id="2381405137052800939">مبادیات</translation>
 <translation id="2384692388811649784">پوشیدگی ٹیبز کو چھپائیں</translation>
 <translation id="2386793615875593361">1 کو منتخب کیا گیا</translation>
@@ -636,6 +637,7 @@
 <translation id="3324193307694657476">پتہ 2</translation>
 <translation id="3328801116991980348">سائٹ کی معلومات</translation>
 <translation id="333229797575847124">اس خصوصیت کو فعال کرنے کا طریقہ</translation>
+<translation id="334004756946755423">یہ مجھے سمجھائیں:</translation>
 <translation id="3344233834747405775">کارڈ کے حامل کا نام غلط ہے</translation>
 <translation id="3344485292736684439">{count,plural, =1{بُک مارک کو آپ کے اکاؤنٹ {email} میں "{title}" میں محفوظ کیا گیا}other{بُک مارکس کو آپ کے اکاؤنٹ {email} میں "{title}" میں محفوظ کیا گیا}}</translation>
 <translation id="334690320928261823">حالیہ ٹیبز</translation>
@@ -689,6 +691,7 @@
 <translation id="3530206579861815432">اپنے مطابقت پذیر آلات پر کھلے اور حال ہی میں بند ٹیبز کو تیزی سے تلاش کریں۔</translation>
 <translation id="3530767473765895035">اس آلے پر اکاؤنٹس کا نظم کریں…</translation>
 <translation id="3533436815740441613">نیا ٹیب</translation>
+<translation id="3534738261102690620">‏‫Gemini سے پوچھیں</translation>
 <translation id="3540141921715814660">بُک مارکس میں شامل کریں</translation>
 <translation id="3546122170015471515">‏‫Google.com پر Maps کے پیش مناظر</translation>
 <translation id="3547356470684043247">کسٹمر کے پروڈکٹس، سروسز یا تجربوں کے تجزیے پڑھیں تاکہ تجزیوں کے ساتھ اپنے فیصلوں کو مطلع کرنے میں مدد مل سکے</translation>
@@ -959,6 +962,7 @@
 <translation id="454217142158335225">آپ حالیہ ٹیبز یا ٹیب گروپس کے سیکشنز سے بند آئٹمز کو دوبارہ کھول سکتے ہیں۔ آپ کے پن کردہ ٹیبز بند نہیں ہوں گے۔</translation>
 <translation id="4547181496285029457">حالیہ ٹیب میں واپس جائیں</translation>
 <translation id="4552042254369397518">کاپی ہو رہی ہے…</translation>
+<translation id="4553044860350038560">مزید پاس کیز</translation>
 <translation id="4564893319561643483">"<ph name="TITLE" />" کو پوشیدہ کریں</translation>
 <translation id="4565377596337484307">پاس ورڈ چھپائیں</translation>
 <translation id="4568230126482344545">حالیہ ٹیبز کو چھپائیں</translation>
@@ -1087,6 +1091,7 @@
 <translation id="4944543191714094452">صفحہ میں تلاش کریں…</translation>
 <translation id="4945756290001680296">پاس ورڈ کی ترتیبات تک رسائی حاصل کریں</translation>
 <translation id="4949302115427722371">ترتیبات کا نظم کریں…</translation>
+<translation id="4952050521954075618">کیمرا رول کی تصاویر آپ کے تمام آلات پر مطابقت پذیر نہیں ہوں گی</translation>
 <translation id="4958444002117714549">فہرست پھیلائیں</translation>
 <translation id="496392417432935267">دوسری ونڈو میں کھلی ہے</translation>
 <translation id="4970724460420203313">‏اپنے نظم کردہ اکاؤنٹ کے ساتھ Chrome استعمال کرنے سے آپ کو اپنی تنظیم سے متعلق براؤزنگ (بشمول ٹیبز، سرگزشت اور پاس ورڈز) کو اپنی دوسری براؤزنگ سے الگ رکھنے میں مدد ملتی ہے</translation>
@@ -1286,6 +1291,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="5647702255748985085">گروپ چھوڑیں؟</translation>
 <translation id="5648166631817621825">آخری 7 دن</translation>
 <translation id="5652623411397330904">آپ جو پروڈکٹس ٹریک کرتے ہیں وہ یہاں نظر آئیں گے۔</translation>
+<translation id="5653100054596780862">سبھی ٹیبز</translation>
 <translation id="5656431592348714536">بہتر کردہ کیلنڈر</translation>
 <translation id="5659593005791499971">ای میل</translation>
 <translation id="5665739277590037307">‏<ph name="GOOGLE_TERMS" /> اور <ph name="GEMINI_APPS_PRIVACY" /> لاگو ہوتی ہیں۔ ‫Gemini غلطیاں کر سکتا ہے، لہذا اسے دو بار چیک کریں۔</translation>
@@ -1751,6 +1757,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7300448350764260141">آن لائن خطرات سے تحفظ کی ایک اضافی پرت شامل کریں۔</translation>
 <translation id="7311244614769792472">کوئی نتیجہ نہیں ملا</translation>
 <translation id="7313347584264171202">آپ کو اپنے پوشیدگی ٹیبز یہاں ملیں گے</translation>
+<translation id="7322186060879266048">{count,plural, =1{آپ کے کی بورڈ کے اوپر {count} آٹو فل اختیار دستیاب ہے۔}other{آپ کے کی بورڈ کے اوپر {count} آٹو فل اختیارات دستیاب ہیں۔}}</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> فیصد ڈاؤن لوڈ ہوگئی۔</translation>
 <translation id="7345061034321640811">درآمد کرنے کی اجازت نہیں ہے</translation>

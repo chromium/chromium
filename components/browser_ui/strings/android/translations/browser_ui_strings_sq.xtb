@@ -125,7 +125,6 @@
 <translation id="2228071138934252756">Për të lejuar që <ph name="APP_NAME" /> të ketë qasje te kamera jote, aktivizo gjithashtu kamerën në <ph name="BEGIN_LINK" />Cilësimet e Android<ph name="END_LINK" />.</translation>
 <translation id="2231160360698766265">Sajtet mund të luajnë përmbajtje të mbrojtura</translation>
 <translation id="2235344399760031203">Kukit e palëve të treta janë bllokuar</translation>
-<translation id="2238944249568001759">Kërkimet e sugjeruara bazuar në skedën tënde të fundit</translation>
 <translation id="2241587408274973373">Kartat në faqen e skedës së re</translation>
 <translation id="2241634353105152135">Vetëm një herë</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> - Hiq</translation>
@@ -214,7 +213,6 @@
 <translation id="3069226013421428034">Lejo identifikimin e palëve të treta për një sajt specifik.</translation>
 <translation id="310297983047869047">Diapozitivi i mëparshëm</translation>
 <translation id="3108122610701115301">Cakto si të parazgjedhur</translation>
-<translation id="3109724472072898302">Palosur</translation>
 <translation id="310979712355504754">Fshiji të gjitha</translation>
 <translation id="311394601889664316">Mos lejo që sajtet të modifikojnë skedarët ose dosjet në pajisjen tënde</translation>
 <translation id="3114012059975132928">Luajtësi i videos</translation>
@@ -262,7 +260,6 @@
 <translation id="3602290021589620013">Pamje paraprake</translation>
 <translation id="3611658447322220736">Sajtet e mbyllura së fundi mund të përfundojnë dërgimin dhe marrjen e të dhënave</translation>
 <translation id="3619294456800709762">Sajtet mund të kalojnë automatikisht në modalitetin "figurë brenda figurës"</translation>
-<translation id="3628308229821498208">Kërkimet e sugjeruara</translation>
 <translation id="3632460243282703117">Abonohu</translation>
 <translation id="363748948745453283">Po përdoret vendndodhja e përafërt</translation>
 <translation id="3641456520301071208">Sajtet mund të pyesin për vendndodhjen tënde</translation>
@@ -524,7 +521,6 @@
 <translation id="6231752747840485235">Të çinstalohet "<ph name="APP_NAME" />"?</translation>
 <translation id="6234351944623978659">Trokit tek Aplikacioni i shfletuesit &gt; Chrome</translation>
 <translation id="6260830281887654268">Fleta e poshtme e koleksioneve të temave për pamjen e faqeve të skedave të reja u hap në gjysmë lartësi</translation>
-<translation id="6262191102408817757">Bazuar në skedën tënde të fundit</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> dhe <ph name="PERMISSION_2" /> të bllokuara</translation>
 <translation id="6270391203985052864">Sajtet mund të kërkojnë të dërgojnë njoftime</translation>
 <translation id="6295158916970320988">Të gjitha sajtet</translation>
@@ -604,7 +600,6 @@
 <translation id="7180611975245234373">Rifresko</translation>
 <translation id="7188508872042490670">Të dhënat e sajteve në pajisje</translation>
 <translation id="7201549776650881587">Ky veprim do të fshijë të gjitha të dhënat dhe kukit e ruajtura nga të gjitha sajtet nën <ph name="ORIGIN" /> ose nga aplikacioni përkatës në ekranin bazë</translation>
-<translation id="7203150201908454328">I zgjeruar</translation>
 <translation id="7213166370492037743">Mos i lejo sajtet të lidhen me asnjë pajisje në rrjetin tënd lokal</translation>
 <translation id="7219254577985949841">Të fshihen të dhënat e sajtit?</translation>
 <translation id="723171743924126238">Zgjidh imazhet</translation>

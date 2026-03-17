@@ -125,7 +125,6 @@
 <translation id="2228071138934252756">‏כדי לאפשר ל-<ph name="APP_NAME" /> לגשת אל המצלמה, צריך להפעיל אותה גם ב<ph name="BEGIN_LINK" />הגדרות Android<ph name="END_LINK" />.</translation>
 <translation id="2231160360698766265">אתרים יכולים להפעיל תוכן מוגן</translation>
 <translation id="2235344399760031203">‏קובצי cookie של צד שלישי חסומים</translation>
-<translation id="2238944249568001759">הצעות לחיפושים על סמך הכרטיסייה האחרונה שלך</translation>
 <translation id="2241587408274973373">כרטיסים בדף 'כרטיסייה חדשה'</translation>
 <translation id="2241634353105152135">פעם אחת בלבד</translation>
 <translation id="2253414712144136228">הסרה של <ph name="NAME_OF_LIST_ITEM" /></translation>
@@ -214,7 +213,6 @@
 <translation id="3069226013421428034">אישור הכניסה של צד שלישי לאתר ספציפי.</translation>
 <translation id="310297983047869047">לשקף הקודם</translation>
 <translation id="3108122610701115301">קבע כברירת מחדל</translation>
-<translation id="3109724472072898302">מכווץ</translation>
 <translation id="310979712355504754">מחיקת הכול</translation>
 <translation id="311394601889664316">לא לאפשר לאתרים לערוך קבצים או תיקיות במכשיר</translation>
 <translation id="3114012059975132928">נגן וידאו</translation>
@@ -262,7 +260,6 @@
 <translation id="3602290021589620013">תצוגה מקדימה</translation>
 <translation id="3611658447322220736">אתרים שנסגרו לאחרונה יכולים לסיים שליחה וקבלה של נתונים</translation>
 <translation id="3619294456800709762">אתרים יכולים להפעיל את מצב 'תמונה בתוך תמונה' אוטומטית</translation>
-<translation id="3628308229821498208">הצעות לחיפוש</translation>
 <translation id="3632460243282703117">הרשמה</translation>
 <translation id="363748948745453283">האתר משתמש במיקום המשוער</translation>
 <translation id="3641456520301071208">אתרים יכולים לבקש הרשאת גישה למיקומך</translation>
@@ -523,7 +520,6 @@
 <translation id="6231752747840485235">להסיר את '<ph name="APP_NAME" />'?</translation>
 <translation id="6234351944623978659">‏לוחצים על אפליקציית הדפדפן &gt; Chrome</translation>
 <translation id="6260830281887654268">הגיליון התחתון של אוספי העיצובים בדף הכרטיסייה החדשה נפתח בחצי מגובה המסך</translation>
-<translation id="6262191102408817757">על סמך הכרטיסייה האחרונה שלך</translation>
 <translation id="6262279340360821358">ההרשאות <ph name="PERMISSION_1" /> וגם <ph name="PERMISSION_2" /> חסומות</translation>
 <translation id="6270391203985052864">אתרים יכולים לבקש לשלוח התראות</translation>
 <translation id="6295158916970320988">כל האתרים</translation>
@@ -603,7 +599,6 @@
 <translation id="7180611975245234373">רענון</translation>
 <translation id="7188508872042490670">נתונים מאתרים ששמורים במכשיר</translation>
 <translation id="7201549776650881587">‏הפעולה הזו תמחק את כל הנתונים וקובצי ה-Cookie שאוחסנו על ידי כל אתרי המשנה של <ph name="ORIGIN" /> או על ידי האפליקציה שלו במסך הבית</translation>
-<translation id="7203150201908454328">מורחב</translation>
 <translation id="7213166370492037743">אין הרשאה לאתרים להתחבר למכשירים ברשת המקומית</translation>
 <translation id="7219254577985949841">למחוק את הנתונים מהאתר?</translation>
 <translation id="723171743924126238">בחירת תמונות</translation>

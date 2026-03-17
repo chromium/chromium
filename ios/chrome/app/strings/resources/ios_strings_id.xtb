@@ -394,6 +394,7 @@
 <translation id="2360196772093551345">Minta Situs Seluler</translation>
 <translation id="2362083820973145409">Login sebagai <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Membuka setelan.</translation>
 <translation id="2371084566192454134">Tab dan grup tab</translation>
+<translation id="2371303771137626249">Baru</translation>
 <translation id="2381405137052800939">Dasar</translation>
 <translation id="2384692388811649784">Sembunyikan tab Samaran</translation>
 <translation id="2386793615875593361">1 dipilih</translation>
@@ -636,6 +637,7 @@
 <translation id="3324193307694657476">Alamat 2</translation>
 <translation id="3328801116991980348">Informasi situs</translation>
 <translation id="333229797575847124">Cara mengaktifkan fitur ini</translation>
+<translation id="334004756946755423">Jelaskan hal ini:</translation>
 <translation id="3344233834747405775">Nama pemegang kartu tidak valid</translation>
 <translation id="3344485292736684439">{count,plural, =1{Bookmark disimpan ke "{title}" di akun Anda, {email}}other{Bookmark disimpan ke "{title}" di akun Anda, {email}}}</translation>
 <translation id="334690320928261823">Tab Terbaru</translation>
@@ -689,6 +691,7 @@
 <translation id="3530206579861815432">Temukan dengan cepat tab yang terbuka atau yang baru saja ditutup di semua perangkat yang disinkronkan.</translation>
 <translation id="3530767473765895035">Kelola akun di perangkat ini…</translation>
 <translation id="3533436815740441613">Tab Baru</translation>
+<translation id="3534738261102690620">Minta Gemini</translation>
 <translation id="3540141921715814660">Tambahkan ke Bookmark</translation>
 <translation id="3546122170015471515">Pratinjau Maps di Google.com</translation>
 <translation id="3547356470684043247">Baca evaluasi pelanggan terkait produk, layanan, atau pengalaman untuk membantu menentukan keputusan Anda dengan ulasan</translation>
@@ -959,6 +962,7 @@
 <translation id="454217142158335225">Anda dapat membuka kembali item yang ditutup dari bagian tab terbaru atau grup tab. Tab yang disematkan tidak akan ditutup.</translation>
 <translation id="4547181496285029457">Kembali ke tab terbaru</translation>
 <translation id="4552042254369397518">Menyalin…</translation>
+<translation id="4553044860350038560">Kunci sandi lainnya</translation>
 <translation id="4564893319561643483">Sembunyikan "<ph name="TITLE" />"</translation>
 <translation id="4565377596337484307">Sembunyikan sandi</translation>
 <translation id="4568230126482344545">Sembunyikan Tab terbaru</translation>
@@ -1087,6 +1091,7 @@
 <translation id="4944543191714094452">Cari di Halaman…</translation>
 <translation id="4945756290001680296">Akses setelan sandi</translation>
 <translation id="4949302115427722371">Kelola setelan…</translation>
+<translation id="4952050521954075618">Foto dari Rol Kamera tidak akan disinkronkan di seluruh perangkat Anda</translation>
 <translation id="4958444002117714549">Luaskan daftar</translation>
 <translation id="496392417432935267">Dibuka di tempat lain</translation>
 <translation id="4970724460420203313">Menggunakan Chrome dengan akun terkelola Anda akan membantu penjelajahan yang terkait dengan organisasi Anda (termasuk tab, histori, dan sandi) terpisah dari penjelajahan lainnya</translation>
@@ -1286,6 +1291,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="5647702255748985085">Keluar dari grup?</translation>
 <translation id="5648166631817621825">7 hari terakhir</translation>
 <translation id="5652623411397330904">Produk yang Anda pantau akan muncul di sini.</translation>
+<translation id="5653100054596780862">Semua tab</translation>
 <translation id="5656431592348714536">Kalender yang Ditingkatkan</translation>
 <translation id="5659593005791499971">Email</translation>
 <translation id="5665739277590037307"><ph name="GOOGLE_TERMS" /> dan <ph name="GEMINI_APPS_PRIVACY" /> berlaku. Gemini dapat membuat kesalahan, jadi periksa kembali responsnya.</translation>
@@ -1752,6 +1758,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="7300448350764260141">Berikan lapisan perlindungan tambahan terhadap ancaman online.</translation>
 <translation id="7311244614769792472">Tidak ditemukan hasil</translation>
 <translation id="7313347584264171202">Tab Samaran Anda akan ditampilkan di sini</translation>
+<translation id="7322186060879266048">{count,plural, =1{{count} opsi isi otomatis tersedia di atas keyboard Anda.}other{{count} opsi isi otomatis tersedia di atas keyboard Anda.}}</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> persen berhasil didownload</translation>
 <translation id="7345061034321640811">Impor tidak diizinkan</translation>

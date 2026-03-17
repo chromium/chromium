@@ -125,7 +125,6 @@
 <translation id="2228071138934252756"><ph name="APP_NAME" />-მა კამერით რომ ისარგებლოს, გაააქტიურეთ კამერაზე წვდომის ნებართვაც <ph name="BEGIN_LINK" />Android-ის პარამეტრებიდან<ph name="END_LINK" />.</translation>
 <translation id="2231160360698766265">ვებსაიტებს შეუძლია დაცული კონტენტის დაკვრა</translation>
 <translation id="2235344399760031203">მესამე მხარის ქუქი-ჩანაწერები დაბლოკილია</translation>
-<translation id="2238944249568001759">თქვენი ბოლო ჩანართის მიხედვით შემოთავაზებული ძიებები</translation>
 <translation id="2241587408274973373">ახალი ჩანართის გვერდის ბარათები</translation>
 <translation id="2241634353105152135">მხოლოდ ერთხელ</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> — ამოშლა</translation>
@@ -214,7 +213,6 @@
 <translation id="3069226013421428034">მესამე მხარის მეშვეობით სისტემაში შესვლის დაშვება კონკრეტული საიტისთვის.</translation>
 <translation id="310297983047869047">წინა სლაიდი</translation>
 <translation id="3108122610701115301">ნაგულისხმევად დაყენება</translation>
-<translation id="3109724472072898302">აკეცილი</translation>
 <translation id="310979712355504754">ყველას წაშლა</translation>
 <translation id="311394601889664316">საიტებისთვის თქვენს მოწყობილობაზე არსებული ფაილებისა თუ საქაღალდეების რედაქტირების აკრძალვა</translation>
 <translation id="3114012059975132928">ვიდეოდამკვრელი</translation>
@@ -262,7 +260,6 @@
 <translation id="3602290021589620013">გადახედვა</translation>
 <translation id="3611658447322220736">ბოლო დროს დახურულ საიტებს შეუძლია მონაცემთა გაგზავნისა და მიღების დასრულება</translation>
 <translation id="3619294456800709762">საიტებს შეუძლია რეჟიმში „ეკრანი ეკრანში“ ავტომატურად შესვლა</translation>
-<translation id="3628308229821498208">შემოთავაზებული ძიებები</translation>
 <translation id="3632460243282703117">გამოწერა</translation>
 <translation id="363748948745453283">იყენებს მიახლოებით მდებარეობას</translation>
 <translation id="3641456520301071208">საიტებს შეუძლია თქვენი მდებარეობის გამოყენების თხოვნა</translation>
@@ -490,6 +487,7 @@
 <translation id="5922853908706496913">თქვენი ეკრანი ზიარდება</translation>
 <translation id="5922967540311291836">მესამე მხარის ქუქი-ჩანაწერების დაბლოკვა:</translation>
 <translation id="5923512600150154850">ამ მოქმედებით წაიშლება საიტების მიერ შენახული მონაცემებისა და ქუქი-ჩანაწერების <ph name="DATASIZE" />.</translation>
+<translation id="5930707844513754220">დაყენების მეტი სიის ნახვა</translation>
 <translation id="5939518447894949180">გადატვირთვა</translation>
 <translation id="5948139900367969951">სწრაფად მიიღეთ, რაც თქვენთვის მნიშვნელოვანია</translation>
 <translation id="5964247741333118902">ჩაშენებული კონტენტი</translation>
@@ -498,6 +496,7 @@
 <translation id="5976059395673079613"><ph name="PERMISSION" /> — <ph name="WARNING_MESSAGE" /></translation>
 <translation id="5998071268779572583">Discover არხის ჩართვა</translation>
 <translation id="6012967556075291653">ჩამაგრებული მალსახმობი</translation>
+<translation id="6013003831291591200">ამოცანა დასრულებულია</translation>
 <translation id="6015775454662021376">გაანკონტროლეთ ამ საიტის თქვენს მოწყობილობაზე წვდომა</translation>
 <translation id="6022659036123304283">მოირგეთ Chrome</translation>
 <translation id="6040143037577758943">დახურვა</translation>
@@ -522,7 +521,6 @@
 <translation id="6231752747840485235">გსურთ <ph name="APP_NAME" />-ის დეინსტალაცია?</translation>
 <translation id="6234351944623978659">შეეხეთ: ბრაუზერის აპი &gt; Chrome</translation>
 <translation id="6260830281887654268">ახალი ჩანართის გარეგანი იერი, თემა, კოლექციები, ქვედა ფურცელი გაიხსნა ნახევარ სიმაღლეზე</translation>
-<translation id="6262191102408817757">თქვენი ბოლო ჩანართის საფუძველზე</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> და <ph name="PERMISSION_2" /> დაბლოკილია</translation>
 <translation id="6270391203985052864">საიტებს შეუძლიათ შეტყობინებების გამოგზავნის თხოვნა</translation>
 <translation id="6295158916970320988">ყველა საიტი</translation>
@@ -602,7 +600,6 @@
 <translation id="7180611975245234373">განახლება</translation>
 <translation id="7188508872042490670">მოწყობილობაზე შენახული საიტების მონაცემები</translation>
 <translation id="7201549776650881587">ეს მოქმედება წაშლის ყველა მონაცემსა და ქუქი-ჩანაწერს, რომლებიც შენახულია როგორც <ph name="ORIGIN" />-ის ნებისმიერი ქვესაიტის, ისე თქვენს მთავარი ეკრანზე არსებული მისი აპის მიერ</translation>
-<translation id="7203150201908454328">გაშლილი</translation>
 <translation id="7213166370492037743">თქვენს ლოკალურ ქსელში ჩართულ ნებისმიერ მოწყობილობასთან დაკავშირების აკრძალვა</translation>
 <translation id="7219254577985949841">გსურთ, წაშალოთ საიტის მონაცემები?</translation>
 <translation id="723171743924126238">აირჩიეთ სურათები</translation>

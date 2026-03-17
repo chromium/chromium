@@ -753,6 +753,7 @@
 <translation id="2184405333245229118">{COUNT,plural, =1{1 個地址}other{# 個地址}}</translation>
 <translation id="2188375229972301266">多孔 (底部)</translation>
 <translation id="218940509700321686">逗號分隔值</translation>
+<translation id="2190094353033916816">這項政策在電腦和使用者層級套用了不同的值。政策運作正常。</translation>
 <translation id="2191980191135734720">在下一個步驟中解鎖螢幕 (通常是使用指紋)。你也可以<ph name="LINK_TEXT" />。</translation>
 <translation id="2194856509914051091">注意事項</translation>
 <translation id="2198183835992354675">已知旅客號碼</translation>
@@ -3191,6 +3192,7 @@
 <translation id="6042308850641462728">更多</translation>
 <translation id="6043357981274314628">完成！</translation>
 <translation id="6045164183059402045">拼版範本</translation>
+<translation id="6046026831939367176">「<ph name="URL" />」想使用你的大概位置</translation>
 <translation id="6046892054959167494">輸入「<ph name="SEARCH_AGGREGATOR_KEYWORD" />」即可在 <ph name="SEARCH_AGGREGATOR_SHORT_NAME" /> 上搜尋或提問</translation>
 <translation id="6047927260846328439">這項內容可能會試圖誘使你安裝軟體或提供個人資訊。<ph name="BEGIN_LINK" />仍要顯示<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">Envelope B4</translation>
@@ -3640,7 +3642,6 @@
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">攝影機</translation>
 <translation id="6734506549556896534">模擬遊戲</translation>
-<translation id="6735589846038045679">付款方案須符合資格條件。<ph name="BEGIN_BOLD" />系統會將結帳頁面的內容提供給 Google，以便提供這些選項。<ph name="END_BOLD" /> 如要隱藏「先買後付」選項，請前往<ph name="BEGIN_LINK" />付款設定<ph name="END_LINK" /></translation>
 <translation id="6737708609449480586">烘焙製品</translation>
 <translation id="6738516213925468394">你在 <ph name="TIME" />已使用<ph name="BEGIN_LINK" />同步通關密語<ph name="END_LINK" />將資料加密。如要開始同步處理資料，請輸入通關密語。</translation>
 <translation id="6740851646645036700">「幫我寫」功能目前已達使用上限，請稍後再試。</translation>
@@ -4990,6 +4991,7 @@
 <translation id="8870700989640064057">要列印機密檔案嗎？</translation>
 <translation id="8871485335898060555">古董與收藏品</translation>
 <translation id="8871553383647848643">自訂瀏覽器外觀</translation>
+<translation id="887350038812854047">這項政策在電腦和使用者層級套用了相同的值。政策運作正常。</translation>
 <translation id="8874790741333031443">請嘗試暫時允許使用第三方 Cookie。這個操作會降低瀏覽防護程度，但會增加網站功能正常運作的機率。</translation>
 <translation id="8874824191258364635">請輸入有效的信用卡號碼</translation>
 <translation id="8877780815363510165">釣魚</translation>

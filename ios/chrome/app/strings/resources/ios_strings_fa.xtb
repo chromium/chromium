@@ -394,6 +394,7 @@
 <translation id="2360196772093551345">درخواست سایت ویژه دستگاه همراه</translation>
 <translation id="2362083820973145409">با <ph name="USER_NAME" /> به سیستم وارد شده‌اید. <ph name="USER_EMAIL" />. تنظیمات را باز می‌کند.</translation>
 <translation id="2371084566192454134">زبانه‌ها و گروه زبانه‌ها</translation>
+<translation id="2371303771137626249">جدید</translation>
 <translation id="2381405137052800939">ساده</translation>
 <translation id="2384692388811649784">پنهان کردن برگه‌های ناشناس</translation>
 <translation id="2386793615875593361">۱ مورد انتخاب شد</translation>
@@ -636,6 +637,7 @@
 <translation id="3324193307694657476">آدرس ۲</translation>
 <translation id="3328801116991980348">اطلاعات سایت</translation>
 <translation id="333229797575847124">نحوه فعال کردن این ویژگی</translation>
+<translation id="334004756946755423">این را برایم توضیح بده</translation>
 <translation id="3344233834747405775">نام دارنده کارت نامعتبر است</translation>
 <translation id="3344485292736684439">{count,plural, =1{نشانک در «{title}» در حساب شما ({email}) ذخیره شد}one{نشانک در «{title}» در حساب شما ({email}) ذخیره شد}other{نشانک‌ها در «{title}» در حساب شما ({email}) ذخیره شد}}</translation>
 <translation id="334690320928261823">زبانه‌های اخیر</translation>
@@ -689,6 +691,7 @@
 <translation id="3530206579861815432">برگه‌های باز و اخیراً بسته‌شده را سریع در دستگاه‌های همگام‌سازی‌شده پیدا کنید.</translation>
 <translation id="3530767473765895035">مدیریت حساب‌ها در این دستگاه…</translation>
 <translation id="3533436815740441613">زبانه جدید</translation>
+<translation id="3534738261102690620">‏پرسیدن از Gemini</translation>
 <translation id="3540141921715814660">افزودن به نشانک‌ها</translation>
 <translation id="3546122170015471515">‏«پیش‌نمایش Maps» در Google.com</translation>
 <translation id="3547356470684043247">ارزیابی‌های مشتریان از محصولات، خدمات، یا تجربه‌ها را بخوانید تا به کمک مرورها تصمیم‌های آگاهانه‌ای بگیرید</translation>
@@ -959,6 +962,7 @@
 <translation id="454217142158335225">می‌توانید موارد بسته‌شده را از بخش زبانه‌های اخیر یا گروه‌های زبانه دوباره باز کنید. زبانه‌های سنجاق‌شده بسته نخواهند شد.</translation>
 <translation id="4547181496285029457">برگشتن به زبانه اخیر</translation>
 <translation id="4552042254369397518">درحال کپی کردن…</translation>
+<translation id="4553044860350038560">گذرکلیدهای بیشتر</translation>
 <translation id="4564893319561643483">پنهان کردن «<ph name="TITLE" />»</translation>
 <translation id="4565377596337484307">عدم نمایش گذرواژه</translation>
 <translation id="4568230126482344545">پنهان کردن برگه‌های اخیر</translation>
@@ -1087,6 +1091,7 @@
 <translation id="4944543191714094452">یافتن در صفحه…</translation>
 <translation id="4945756290001680296">دسترسی به تنظیمات گذرواژه</translation>
 <translation id="4949302115427722371">مدیریت کردن تنظیمات…</translation>
+<translation id="4952050521954075618">عکس‌های «حلقه فیلم دوربین» در دستگاه‌هایتان همگام‌سازی نخواهد شد</translation>
 <translation id="4958444002117714549">بزرگ کردن فهرست</translation>
 <translation id="496392417432935267">در جای دیگری باز شده است</translation>
 <translation id="4970724460420203313">‏استفاده از Chrome با حساب مدیریت‌شده‌تان به شما کمک می‌کند داده‌های مرور مربوط به سازمانتان (مانند زبانه‌ها، سابقه، و گذرواژه‌ها) را از دیگر داده‌های مرور جدا نگه دارید</translation>
@@ -1286,6 +1291,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="5647702255748985085">گروه را ترک می‌کنید؟</translation>
 <translation id="5648166631817621825">۷ روز گذشته</translation>
 <translation id="5652623411397330904">محصولاتی که پیگیری می‌کنید اینجا نمایش داده می‌شوند.</translation>
+<translation id="5653100054596780862">همه زبانه‌ها</translation>
 <translation id="5656431592348714536">تقویم بهبودیافته</translation>
 <translation id="5659593005791499971">ایمیل</translation>
 <translation id="5665739277590037307">‏<ph name="GOOGLE_TERMS" /> و <ph name="GEMINI_APPS_PRIVACY" /> اعمال می‌شود. Gemini ممکن است اشتباه کند، بنابراین پاسخ‌هایش را دوباره‌سنجی کنید.</translation>
@@ -1751,6 +1757,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7300448350764260141">لایه محافظتی بیشتری دربرابر تهدیدهای آنلاین اضافه کنید.</translation>
 <translation id="7311244614769792472">نتیجه‌ای پیدا نشد</translation>
 <translation id="7313347584264171202">برگه‌های ناشناس را اینجا خواهید دید</translation>
+<translation id="7322186060879266048">{count,plural, =1{‫{count} گزینه تکمیل خودکار در بالای صفحه‌کلید وجود دارد.}one{‫{count} گزینه تکمیل خودکار در بالای صفحه‌کلید وجود دارد.}other{‫{count} گزینه تکمیل خودکار در بالای صفحه‌کلید وجود دارد.}}</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> درصد بارگیری شد</translation>
 <translation id="7345061034321640811">وارد کردن مجاز نیست</translation>

@@ -755,6 +755,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2184405333245229118">{COUNT,plural, =1{1 alamat}other{# alamat}}</translation>
 <translation id="2188375229972301266">Beberapa lubang di bawah</translation>
 <translation id="218940509700321686">Comma Separated Values</translation>
+<translation id="2190094353033916816">Kebijakan ini memiliki nilai berbeda yang diterapkan di tingkat perangkat dan pengguna. Kebijakan ini berfungsi sebagaimana mestinya.</translation>
 <translation id="2191980191135734720">Buka kunci layar di langkah berikutnya, biasanya menggunakan sidik jari Anda. Anda juga dapat <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Hal-hal yang perlu dipertimbangkan</translation>
 <translation id="2198183835992354675">Known Traveler Number</translation>
@@ -3193,6 +3194,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="6042308850641462728">Lainnya</translation>
 <translation id="6043357981274314628">Selesai.</translation>
 <translation id="6045164183059402045">Template imposisi</translation>
+<translation id="6046026831939367176"><ph name="URL" /> ingin menggunakan perkiraan lokasi Anda</translation>
 <translation id="6046892054959167494">Ketik <ph name="SEARCH_AGGREGATOR_KEYWORD" /> untuk menelusuri atau mengajukan pertanyaan tentang <ph name="SEARCH_AGGREGATOR_SHORT_NAME" /></translation>
 <translation id="6047927260846328439">Konten ini mungkin mencoba mengelabui Anda agar menginstal software atau mengungkapkan informasi pribadi. <ph name="BEGIN_LINK" />Tetap tampilkan<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">Envelope B4</translation>
@@ -3642,7 +3644,6 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6734506549556896534">Game Simulasi</translation>
-<translation id="6735589846038045679">Paket pembayaran bergantung pada kelayakan. <ph name="BEGIN_BOLD" />Konten dari halaman checkout dibagikan kepada Google untuk menawarkan opsi ini.<ph name="END_BOLD" /> Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pembayaran<ph name="END_LINK" /></translation>
 <translation id="6737708609449480586">Kue Panggang</translation>
 <translation id="6738516213925468394">Data Anda dienkripsi dengan <ph name="BEGIN_LINK" />frasa sandi sinkronisasi<ph name="END_LINK" /> pada tanggal <ph name="TIME" />. Masukkan frasa sandi untuk memulai sinkronisasi.</translation>
 <translation id="6740851646645036700">Anda telah mencapai batas bantuan menulis untuk saat ini. Coba lagi nanti.</translation>
@@ -4988,6 +4989,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="8870700989640064057">Cetak file rahasia?</translation>
 <translation id="8871485335898060555">Barang Antik &amp; Barang Koleksi</translation>
 <translation id="8871553383647848643">Sesuaikan tampilan browser Anda</translation>
+<translation id="887350038812854047">Kebijakan ini memiliki nilai sama yang diterapkan di tingkat perangkat dan pengguna. Kebijakan ini berfungsi sebagaimana mestinya.</translation>
 <translation id="8874790741333031443">Coba izinkan cookie pihak ketiga untuk sementara. Jika demikian, Anda akan mendapatkan lebih sedikit perlindungan terhadap penjelajahan, tetapi fitur situs cenderung berfungsi seperti yang diharapkan.</translation>
 <translation id="8874824191258364635">Masukkan nomor kartu yang valid</translation>
 <translation id="8877780815363510165">Memancing</translation>

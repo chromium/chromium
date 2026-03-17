@@ -125,7 +125,6 @@
 <translation id="2228071138934252756">Per consentire all'app <ph name="APP_NAME" /> di accedere alla fotocamera, attiva la fotocamera anche nelle <ph name="BEGIN_LINK" />Impostazioni Android<ph name="END_LINK" />.</translation>
 <translation id="2231160360698766265">I siti possono riprodurre contenuti protetti</translation>
 <translation id="2235344399760031203">I cookie di terze parti sono bloccati</translation>
-<translation id="2238944249568001759">Ricerche suggerite in base all'ultima scheda</translation>
 <translation id="2241587408274973373">Contenuti nuove schede</translation>
 <translation id="2241634353105152135">Solo una volta</translation>
 <translation id="2253414712144136228">Rimuovi <ph name="NAME_OF_LIST_ITEM" /></translation>
@@ -214,7 +213,6 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="3069226013421428034">Consenti l'accesso di terze parti per un sito specifico.</translation>
 <translation id="310297983047869047">Diapositiva precedente</translation>
 <translation id="3108122610701115301">Imposta come predefinito</translation>
-<translation id="3109724472072898302">Compresso</translation>
 <translation id="310979712355504754">Elimina tutti</translation>
 <translation id="311394601889664316">Non consentire ai siti di modificare file o cartelle sul dispositivo</translation>
 <translation id="3114012059975132928">Video player</translation>
@@ -262,7 +260,6 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="3602290021589620013">Anteprima</translation>
 <translation id="3611658447322220736">I siti chiusi di recente possono terminare l'invio e la ricezione di dati</translation>
 <translation id="3619294456800709762">I siti possono attivare automaticamente la modalità Picture in picture</translation>
-<translation id="3628308229821498208">Ricerche suggerite</translation>
 <translation id="3632460243282703117">Iscriviti</translation>
 <translation id="363748948745453283">Posizione approssimativa in uso</translation>
 <translation id="3641456520301071208">I siti possono chiederti la posizione</translation>
@@ -490,6 +487,7 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="5922853908706496913">Condivisione dello schermo</translation>
 <translation id="5922967540311291836">Blocca cookie di terze parti:</translation>
 <translation id="5923512600150154850">Verranno eliminati <ph name="DATASIZE" /> di dati e cookie memorizzati dai siti.</translation>
+<translation id="5930707844513754220">Visualizza più elementi dell'elenco di configurazione</translation>
 <translation id="5939518447894949180">Reimposta</translation>
 <translation id="5948139900367969951">Accedi rapidamente a ciò che ti interessa</translation>
 <translation id="5964247741333118902">Contenuti incorporati</translation>
@@ -498,6 +496,7 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
 <translation id="5998071268779572583">Attiva il Feed personalizzato</translation>
 <translation id="6012967556075291653">Scorciatoia fissata</translation>
+<translation id="6013003831291591200">Attività completata</translation>
 <translation id="6015775454662021376">Controlla l'accesso di questo sito al tuo dispositivo</translation>
 <translation id="6022659036123304283">Personalizza il tuo Chrome</translation>
 <translation id="6040143037577758943">Chiudi</translation>
@@ -522,7 +521,6 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="6231752747840485235">Vuoi disinstallare "<ph name="APP_NAME" />"?</translation>
 <translation id="6234351944623978659">Tocca App browser &gt; Chrome</translation>
 <translation id="6260830281887654268">Riquadro inferiore di Raccolte di temi per l'aspetto della pagina Nuova scheda aperto nella parte inferiore dello schermo</translation>
-<translation id="6262191102408817757">In base all'ultima scheda</translation>
 <translation id="6262279340360821358">Autorizzazioni <ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" /> bloccate</translation>
 <translation id="6270391203985052864">I siti possono chiedere di inviare notifiche</translation>
 <translation id="6295158916970320988">Tutti i siti</translation>
@@ -602,7 +600,6 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="7180611975245234373">Aggiorna</translation>
 <translation id="7188508872042490670">Dati dei siti sul dispositivo</translation>
 <translation id="7201549776650881587">Questa azione eliminerà tutti i dati e i cookie memorizzati da tutti i siti in <ph name="ORIGIN" /> o dalla relativa app nella schermata Home</translation>
-<translation id="7203150201908454328">Espanso</translation>
 <translation id="7213166370492037743">Non consentire ai siti di connettersi a dispositivi sulla rete locale</translation>
 <translation id="7219254577985949841">Vuoi eliminare i dati del sito?</translation>
 <translation id="723171743924126238">Seleziona immagini</translation>

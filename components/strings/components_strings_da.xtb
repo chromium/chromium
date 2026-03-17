@@ -754,6 +754,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2184405333245229118">{COUNT,plural, =1{1 adresse}one{# adresse}other{# adresser}}</translation>
 <translation id="2188375229972301266">Flere huller nederst</translation>
 <translation id="218940509700321686">Kommaseparerede værdier</translation>
+<translation id="2190094353033916816">Denne politik har forskellige værdier, der anvendes på maskin- og brugerniveau. Politikken fungerer efter hensigten.</translation>
 <translation id="2191980191135734720">Lås din skærm op i næste trin – typisk ved hjælp af dit fingeraftryk. Du kan også <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Vigtige oplysninger</translation>
 <translation id="2198183835992354675">Known Traveler-nummer</translation>
@@ -3193,6 +3194,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="6042308850641462728">Mere</translation>
 <translation id="6043357981274314628">Udført</translation>
 <translation id="6045164183059402045">Skabelon for indførelse</translation>
+<translation id="6046026831939367176"><ph name="URL" /> vil bruge din omtrentlige lokation</translation>
 <translation id="6046892054959167494">Skriv <ph name="SEARCH_AGGREGATOR_KEYWORD" /> for at søge i eller spørge <ph name="SEARCH_AGGREGATOR_SHORT_NAME" /></translation>
 <translation id="6047927260846328439">Dette indhold forsøger muligvis at narre dig til at installere software eller afsløre personlige oplysninger. <ph name="BEGIN_LINK" />Vis alligevel<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">Konvolut B4</translation>
@@ -3642,7 +3644,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6734506549556896534">Simulationsspil</translation>
-<translation id="6735589846038045679">Betalingsplaner forudsætter, at du er kvalificeret. <ph name="BEGIN_BOLD" />Indhold fra betalingssiden deles med Google for at give disse valgmuligheder.<ph name="END_BOLD" /> Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> for at skjule valgmuligheder for Betal senere</translation>
 <translation id="6737708609449480586">Bagværk</translation>
 <translation id="6738516213925468394">Dine data blev krypteret med din <ph name="BEGIN_LINK" />adgangssætning til synkronisering<ph name="END_LINK" /> <ph name="TIME" />. Indtast adgangssætningen for at starte synkroniseringen.</translation>
 <translation id="6740851646645036700">Du har nået grænsen for skrivehjælp for indeværende. Prøv igen senere.</translation>
@@ -4993,6 +4994,7 @@ Yderligere oplysninger:
 <translation id="8870700989640064057">Vil du udskrive den fortrolige fil?</translation>
 <translation id="8871485335898060555">Antikviteter og samleobjekter</translation>
 <translation id="8871553383647848643">Tilpas din browsers udseende</translation>
+<translation id="887350038812854047">Denne politik har den samme værdi, der anvendes på maskin- og brugerniveau. Politikken fungerer efter hensigten.</translation>
 <translation id="8874790741333031443">Prøv midlertidigt at tillade tredjepartscookies, hvilket vil betyde mindre browserbeskyttelse, men større sandsynlighed for, at websitefunktionerne fungerer som forventet.</translation>
 <translation id="8874824191258364635">Angiv et gyldigt kortnummer</translation>
 <translation id="8877780815363510165">Fiskeri</translation>

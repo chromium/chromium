@@ -125,7 +125,6 @@
 <translation id="2228071138934252756">Aby zezwolić aplikacji <ph name="APP_NAME" /> na dostęp do aparatu, musisz go też włączyć w <ph name="BEGIN_LINK" />Ustawieniach Androida<ph name="END_LINK" />.</translation>
 <translation id="2231160360698766265">Strony mogą odtwarzać treści chronione</translation>
 <translation id="2235344399760031203">Pliki cookie innych firm są blokowane</translation>
-<translation id="2238944249568001759">Sugerowane wyszukiwania na podstawie ostatnio otwartej karty</translation>
 <translation id="2241587408274973373">Karty na stronie nowej karty</translation>
 <translation id="2241634353105152135">Tylko raz</translation>
 <translation id="2253414712144136228">Usuń <ph name="NAME_OF_LIST_ITEM" /></translation>
@@ -214,7 +213,6 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="3069226013421428034">Zezwalanie na logowanie przez usługę zewnętrzną w określonej witrynie.</translation>
 <translation id="310297983047869047">Poprzedni slajd</translation>
 <translation id="3108122610701115301">Ustaw jako wartość domyślną</translation>
-<translation id="3109724472072898302">Zwinięty</translation>
 <translation id="310979712355504754">Usuń wszystkie</translation>
 <translation id="311394601889664316">Nie zezwalaj witrynom na edytowanie plików ani folderów na urządzeniu</translation>
 <translation id="3114012059975132928">Odtwarzacz</translation>
@@ -262,7 +260,6 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="3602290021589620013">Podgląd</translation>
 <translation id="3611658447322220736">Niedawno zamknięte strony mogą dokończyć wysyłanie i odbieranie danych</translation>
 <translation id="3619294456800709762">Witryny mogą automatycznie włączać obraz w obrazie</translation>
-<translation id="3628308229821498208">Sugerowane wyszukiwania</translation>
 <translation id="3632460243282703117">Subskrybuj</translation>
 <translation id="363748948745453283">Używana jest przybliżona lokalizacja</translation>
 <translation id="3641456520301071208">Strony mogą prosić o informacje o Twojej lokalizacji</translation>
@@ -524,7 +521,6 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="6231752747840485235">Odinstalować aplikację „<ph name="APP_NAME" />”?</translation>
 <translation id="6234351944623978659">Kliknij Przeglądarka &gt; Chrome.</translation>
 <translation id="6260830281887654268">Plansza dolna kolekcji motywów wyglądu strony Nowa karta otwarta do połowy wysokości</translation>
-<translation id="6262191102408817757">Na podstawie ostatniej karty</translation>
 <translation id="6262279340360821358">Zablokowane: <ph name="PERMISSION_1" /> i <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Witryny mogą prosić o zgodę na wysyłanie powiadomień</translation>
 <translation id="6295158916970320988">Wszystkie witryny</translation>
@@ -604,7 +600,6 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="7180611975245234373">Odśwież</translation>
 <translation id="7188508872042490670">Dane witryn na urządzeniu</translation>
 <translation id="7201549776650881587">Spowoduje to usunięcie wszystkich danych i plików cookie zapisanych przez strony internetowe w grupie <ph name="ORIGIN" /> lub jej aplikację na ekranie głównym</translation>
-<translation id="7203150201908454328">Rozwinięty</translation>
 <translation id="7213166370492037743">Nie zezwalaj witrynom na łączenie się z żadnym urządzeniem w sieci lokalnej</translation>
 <translation id="7219254577985949841">Usunąć dane witryny?</translation>
 <translation id="723171743924126238">Wybierz zdjęcia</translation>

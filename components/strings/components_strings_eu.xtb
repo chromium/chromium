@@ -754,6 +754,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2184405333245229118">{COUNT,plural, =1{1 helbide}other{# helbide}}</translation>
 <translation id="2188375229972301266">Hainbat zulo behean</translation>
 <translation id="218940509700321686">Komaz bereizitako balioak</translation>
+<translation id="2190094353033916816">Gidalerro honek balio desberdinak ditu makina- eta erabiltzaile-mailetan. Gidalerroak espero bezala funtzionatzen du.</translation>
 <translation id="2191980191135734720">Desblokeatu pantaila hurrengo urratsean, normalean hatz-marka erabiliz. Bestela, <ph name="LINK_TEXT" /> dezakezu.</translation>
 <translation id="2194856509914051091">Kontuan hartu beharrekoak</translation>
 <translation id="2198183835992354675">Bidaiari ezagunaren zenbakia</translation>
@@ -3189,6 +3190,7 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="6042308850641462728">Gehiago</translation>
 <translation id="6043357981274314628">Eginda!</translation>
 <translation id="6045164183059402045">Ezarritako txantiloia</translation>
+<translation id="6046026831939367176"><ph name="URL" /> webguneak zure gutxi gorabeherako kokapena erabili behar du</translation>
 <translation id="6046892054959167494">Idatzi <ph name="SEARCH_AGGREGATOR_KEYWORD" /> bilatzeko, edo galdetu <ph name="SEARCH_AGGREGATOR_SHORT_NAME" /></translation>
 <translation id="6047927260846328439">Eduki hau iruzur egiten saia liteke softwarea instala dezazun edo informazio pertsonala eman diezaiozun. <ph name="BEGIN_LINK" />Erakutsi, hala ere<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">B4 gutun-azala</translation>
@@ -3637,7 +3639,6 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6734506549556896534">Simulazio-jokoak</translation>
-<translation id="6735589846038045679">Ordainketa-planak baldintza batzuk betetzen dituztenentzat daude erabilgarri. <ph name="BEGIN_BOLD" />Ordainketa-orriaren edukia Google-rekin partekatzen da aukera horiek eskaintzeko.<ph name="END_BOLD" /> Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa-ezarpenak<ph name="END_LINK" /> atalera.</translation>
 <translation id="6737708609449480586">Labean egindako produktuak</translation>
 <translation id="6738516213925468394">Data honetan hasi ziren enkriptatzen zure datuak <ph name="BEGIN_LINK" />Sinkronizatzeko pasaesaldiaren<ph name="END_LINK" /> bidez: <ph name="TIME" />. Idatz ezazu sinkronizatzen hasteko.</translation>
 <translation id="6740851646645036700">Idazteko laguntzaren mugara iritsi zara oraingoz. Saiatu berriro geroago.</translation>
@@ -4986,6 +4987,7 @@ Xehetasun gehiago:
 <translation id="8870700989640064057">Isilpeko fitxategia inprimatu nahi duzu?</translation>
 <translation id="8871485335898060555">Zaharkinak eta bildumak</translation>
 <translation id="8871553383647848643">Pertsonalizatu arakatzailearen itxura</translation>
+<translation id="887350038812854047">Gidalerro honek balio bera du makina- eta erabiltzaile-mailetan. Gidalerroak espero bezala funtzionatzen du.</translation>
 <translation id="8874790741333031443">Eman hirugarrenen cookieak erabiltzeko baimena aldi baterako. Babes txikiagoa izango duzu arakatzean, baina webgunearen eginbideek espero bezala funtzionatzeko probabilitate handiagoa izango dute.</translation>
 <translation id="8874824191258364635">Idatzi balio duen txartel-zenbaki bat</translation>
 <translation id="8877780815363510165">Arrantza</translation>

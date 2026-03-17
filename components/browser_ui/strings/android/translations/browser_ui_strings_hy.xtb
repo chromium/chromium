@@ -125,7 +125,6 @@
 <translation id="2228071138934252756">Որպեսզի տեսախցիկը հասանելի դառնա <ph name="APP_NAME" />-ին, միացրեք այն <ph name="BEGIN_LINK" />Android-ի կարգավորումներում<ph name="END_LINK" />։</translation>
 <translation id="2231160360698766265">Կայքերը կարող են նվագարկել պաշտպանված բովանդակություն</translation>
 <translation id="2235344399760031203">Երրորդ կողմի քուքիներն արգելափակված են</translation>
-<translation id="2238944249568001759">Առաջարկվող որոնման հարցումներ ձեր վերջին ներդիրի հիման վրա</translation>
 <translation id="2241587408274973373">Քարտեր նոր ներդիրի էջում</translation>
 <translation id="2241634353105152135">Միայն այս անգամ</translation>
 <translation id="2253414712144136228">Հեռացնել «<ph name="NAME_OF_LIST_ITEM" />» կետը</translation>
@@ -214,7 +213,6 @@ Chrome-ի այս կարգավորումները կառավարվում են լր
 <translation id="3069226013421428034">Նշեք այն կայքերը, որոնց համար երրորդ կողմի ծառայությունների միջոցով մուտքը պետք է թույլատրվի։</translation>
 <translation id="310297983047869047">Նախորդ սլայդը</translation>
 <translation id="3108122610701115301">Սահմանել որպես կանխադրված</translation>
-<translation id="3109724472072898302">Կոծկված</translation>
 <translation id="310979712355504754">Ջնջել բոլորը</translation>
 <translation id="311394601889664316">Թույլ չտալ կայքերին խմբագրել ֆայլեր և պանակներ ձեր սարքում</translation>
 <translation id="3114012059975132928">Տեսանվագարկիչ</translation>
@@ -262,7 +260,6 @@ Chrome-ի այս կարգավորումները կառավարվում են լր
 <translation id="3602290021589620013">Նախադիտում</translation>
 <translation id="3611658447322220736">Վերջերս փակված կայքերը կարող են ավարտել տվյալների ուղարկումն ու ստացումը</translation>
 <translation id="3619294456800709762">Կայքերը կարող են ավտոմատ բացել «Նկար նկարի մեջ» պատուհանները</translation>
-<translation id="3628308229821498208">Որոնման առաջարկվող հարցումներ</translation>
 <translation id="3632460243282703117">Բաժանորդագրվել</translation>
 <translation id="363748948745453283">Օգտագործվում է մոտավոր տեղադրությունը</translation>
 <translation id="3641456520301071208">Կայքերը կարող են ձեր տեղադրության տվյալներն օգտագործելու թույլտվություն հայցել</translation>
@@ -490,6 +487,7 @@ Chrome-ի այս կարգավորումները կառավարվում են լր
 <translation id="5922853908706496913">Էկրանը ցուցադրվում է</translation>
 <translation id="5922967540311291836">Արգելափակել երրորդ կողմի քուքիները․</translation>
 <translation id="5923512600150154850">Կջնջվեն կայքերի կողմից պահված <ph name="DATASIZE" /> ծավալով տվյալներն ու քուքիները։</translation>
+<translation id="5930707844513754220">Տեսնել այլ կարգավորումներ</translation>
 <translation id="5939518447894949180">Վերակայել</translation>
 <translation id="5948139900367969951">Արագ անցեք կարևորին</translation>
 <translation id="5964247741333118902">Զետեղված բովանդակություն</translation>
@@ -498,6 +496,7 @@ Chrome-ի այս կարգավորումները կառավարվում են լր
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
 <translation id="5998071268779572583">Միացնել Discover ֆիդը</translation>
 <translation id="6012967556075291653">Ամրացված դյուրանցում</translation>
+<translation id="6013003831291591200">Առաջադրանքը կատարված է</translation>
 <translation id="6015775454662021376">Կառավարեք այս կայքի՝ ձեր սարքն օգտագործելու թույլտվությունները</translation>
 <translation id="6022659036123304283">Անհատականացրեք Chrome դիտարկիչը</translation>
 <translation id="6040143037577758943">Փակել</translation>
@@ -522,7 +521,6 @@ Chrome-ի այս կարգավորումները կառավարվում են լր
 <translation id="6231752747840485235">Ապատեղադրե՞լ <ph name="APP_NAME" /> հավելվածը</translation>
 <translation id="6234351944623978659">Հպեք «Դիտարկիչի հավելված» &gt; Chrome</translation>
 <translation id="6260830281887654268">Նոր ներդիրի էջի համար թեմաների հավաքածուներով ներքևի էկրանը բացված է կիսով չափ</translation>
-<translation id="6262191102408817757">Ձեր վերջին ներդիրի հիման վրա</translation>
 <translation id="6262279340360821358">Արգելափակված են՝ «<ph name="PERMISSION_1" />» և «<ph name="PERMISSION_2" />»</translation>
 <translation id="6270391203985052864">Կայքերը կարող են խնդրել ծանուցումներ ուղարկել</translation>
 <translation id="6295158916970320988">Բոլոր կայքերը</translation>
@@ -602,7 +600,6 @@ Chrome-ի այս կարգավորումները կառավարվում են լր
 <translation id="7180611975245234373">Թարմացնել</translation>
 <translation id="7188508872042490670">Կայքերի տվյալները սարքում</translation>
 <translation id="7201549776650881587">Կջնջվեն բոլոր տվյալներն ու քուքիները, որոնք հիմնական էկրանին են պահվել <ph name="ORIGIN" /> կայքերի խմբի կամ դրա հավելվածի կողմից</translation>
-<translation id="7203150201908454328">Ընդլայնված</translation>
 <translation id="7213166370492037743">Արգելել կայքերին միանալ ձեր լոկալ ցանցի սարքերին</translation>
 <translation id="7219254577985949841">Ջնջե՞լ կայքի տվյալները</translation>
 <translation id="723171743924126238">Ընտրեք պատկերներ</translation>

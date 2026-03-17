@@ -70,7 +70,6 @@
 <translation id="1041181446722933623">התיקייה "<ph name="LOCAL_BOOKMARK" />" שמורה רק במכשיר הזה. כדי להשתמש בה במכשירים אחרים, עליך לשמור אותה בתיקייה "<ph name="ACCOUNT_FOLDER" />" בחשבון שלך.</translation>
 <translation id="1041263367839475438">מכשירים זמינים</translation>
 <translation id="1041607257468256895">‏ניהול הרשאות המיקום של אתרים ב-Chrome</translation>
-<translation id="1042174272890264476">‏המחשב שלך מגיע גם עם ספריית ה-RLZ המובנה של <ph name="SHORT_PRODUCT_NAME" />‏. RLZ מקצה תג שאינו ייחודי ואינו ניתן לזיהוי על מנת למדוד את החיפוש ואת השימוש ב-<ph name="SHORT_PRODUCT_NAME" /> המונעים על ידי קמפיין ספציפי לקידום מכירות. התוויות האלה מופיעות לעתים בשאילתות החיפוש של Google ב-<ph name="PRODUCT_NAME" />.</translation>
 <translation id="1042248468362992359">כדי להשתמש בנקודה לשיתוף אינטרנט, צריך להפעיל את חבילת הגלישה. <ph name="BEGIN_LINK_LEARN_MORE" />מידע נוסף<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="104385770822424034">הוספת פעולה</translation>
 <translation id="1045487161760507186">‏אין צורך לזכור את הסיסמה כי היא נשמרת בשבילך במנהל הסיסמאות של Google</translation>
@@ -969,7 +968,6 @@
 <translation id="1644574205037202324">היסטוריה</translation>
 <translation id="1644852018355792105">‏עליך להזין את קוד הסיסמה של ה-Bluetooth למכשיר <ph name="DEVICE" /></translation>
 <translation id="1645004815457365098">מקור לא מוכר</translation>
-<translation id="1645516838734033527">‏כדי לשמור על הבטיחות של <ph name="DEVICE_TYPE" />, Smart Lock מחייב נעילת מסך בטלפון שלך.</translation>
 <translation id="1646045728251578877">יש עדכון תוכנה</translation>
 <translation id="1647408325348388858">לפתוח ולערוך את <ph name="FILE_NAME" /> באפליקציית האינטרנט הזו?</translation>
 <translation id="1647986356840967552">לדף הקודם</translation>
@@ -1457,7 +1455,6 @@
 <translation id="1975841812214822307">הסרה...</translation>
 <translation id="1976150099241323601">צריך להיכנס אל התקן אבטחה</translation>
 <translation id="1976823515278601587">חיסכון של נפח גדול</translation>
-<translation id="1977965994116744507">יש לקרב את הטלפון כדי לבטל את הנעילה של <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1978249384651349182"><ph name="BEGIN_DESCRIPTION" />רישום המכשירים שלך לארגון מגדיר אותם לניהול מכשירים מרוכז. הארגון שלך עשוי לדרוש הרשמה מכמה סיבות:<ph name="END_DESCRIPTION" />
     <ph name="BEGIN_SUBTITLE1" /><ph name="BEGIN_BOLD" />שיפור האבטחה<ph name="END_BOLD" /><ph name="END_SUBTITLE1" />
     <ph name="BEGIN_DESCRIPTION1" />קביעת הגדרות אבטחה נוספות מאפשרת לארגון לשמור על האבטחה של נתוני המשתמש והמכשיר. הוא יכול גם לבצע פעולות כמו איפוס מרחוק או השבתה של מכשיר שאבד.<ph name="END_DESCRIPTION1" />
@@ -1617,7 +1614,6 @@
 <translation id="2089925163047119068">או</translation>
 <translation id="2090165459409185032">‏כדי לשחזר את המידע מהחשבון, יש לעבור אל: google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">חיבור באופן אוטומטי עם ההתחברות</translation>
-<translation id="2090876986345970080">הגדרה של אבטחת מערכת</translation>
 <translation id="2091523941449737894">תנועות מהירות יותר על לוח המגע יזיזו את הסמן רחוק יותר</translation>
 <translation id="2091887806945687916">צליל</translation>
 <translation id="2092356157625807382">‏<ph name="BEGIN_H3" />תכונות לניפוי באגים<ph name="END_H3" />
@@ -2635,7 +2631,6 @@
 <translation id="2757338480560142065">יש לוודא שהסיסמה שנשמרת זהה לסיסמה שלך עבור <ph name="WEBSITE" />.</translation>
 <translation id="2761632996810146912"><ph name="HASHTAG_SETTINGS" /> לא הוחזרו תוצאות חיפוש לשאילתה <ph name="SEARCH_QUERY" /></translation>
 <translation id="2762441749940182211">לא ניתן להשתמש במצלמה בדף זה</translation>
-<translation id="2763165257813209348">הקובץ <ph name="FILE_NAME" /> מכיל נתונים רגישים או מסוכנים. הארגון שלך יאפשר לך לשמור אותו באחסון בענן או למחוק אותו</translation>
 <translation id="2764786626780673772">‏פרטי VPN</translation>
 <translation id="2764920001292228569">יש להזין שם לפרופיל</translation>
 <translation id="2765100602267695013">עליך לפנות לספק השירות הסלולרי שלך</translation>
@@ -3958,7 +3953,6 @@
 <translation id="3688794912214798596">שינוי שפות...</translation>
 <translation id="3690369331356918524">במצב הזה המערכת מזהירה אותך אם סיסמאות נחשפות כתוצאה מפרצה באבטחת המידע</translation>
 <translation id="3691231116639905343">אפליקציות מקלדת</translation>
-<translation id="369135240373237088">כניסה מחדש באמצעות חשבון בית ספרי</translation>
 <translation id="3693415264595406141">סיסמה:</translation>
 <translation id="3694027410380121301">בחירה בכרטיסייה הקודמת</translation>
 <translation id="3694122362646626770">אתרים</translation>
@@ -4332,7 +4326,6 @@
 <translation id="3914894336972817683">לא ניתן להעלות את הקובץ. נראה שהקובץ ריק.</translation>
 <translation id="3915280005470252504">חיפוש קולי</translation>
 <translation id="3916445069167113093">סוג קובץ זה עלול לגרום נזק למחשב שלך. האם ברצונך לשמור את <ph name="FILE_NAME" /> בכל מקרה?</translation>
-<translation id="3917184139185490151">‏המחשב שלך מכיל מודול מאובטח המשמש ליישום תכונות אבטחה קריטיות רבות ב-ChromeOS. אפשר להיכנס למרכז העזרה של Chromebook כדי לקבל מידע נוסף: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="3917644013202553949">אין מספיק נפח אחסון לסנכרון הקבצים. כדאי לפנות מקום.</translation>
 <translation id="3919145445993746351">כדי לקבל גישה אל התוספים שלך בכל המחשבים שברשותך, יש להפעיל את הסנכרון</translation>
 <translation id="3919229493046408863">השבתת ההתראה כשמזוהים מכשירים בקרבת מקום</translation>
@@ -4461,7 +4454,6 @@
 <translation id="3992008114154328194">מתבצעת הורדה לקובץ <ph name="FILE_NAME" />,‏ <ph name="STATUS" /></translation>
 <translation id="3994075804072562819">‏מתן שליטה ל-<ph name="SPECIFIC_NAME" /> על התקני USB.</translation>
 <translation id="3994318741694670028">‏לצערנו, המחשב שלך מוגדר באמצעות מזהה חומרה פגום. המצב הזה מונע מ-ChromeOS Flex להתקין את עדכוני האבטחה האחרונים, <ph name="BEGIN_BOLD" />ויכול להיות שהמחשב שלך יהיה חשוף להתקפות זדוניות<ph name="END_BOLD" />.</translation>
-<translation id="3994374631886003300">עליך לבטל את נעילת הטלפון ולקרב אותו ל-<ph name="DEVICE_TYPE" /> כדי לבטל את הנעילה שלו.</translation>
 <translation id="3994522032746736727">כניסה בתור <ph name="EMAIL" /></translation>
 <translation id="3994530503403062649">איתור כפתורים בטאבלט</translation>
 <translation id="3994708120330953242">חלק מהסיסמאות שלך נחשפו בפרצה באבטחת מידע. כדי לאבטח את החשבונות שלך, עליך לשנות את הסיסמאות האלה עכשיו.</translation>
@@ -4817,7 +4809,6 @@
 <translation id="426564820080660648">‏כדי לבדוק אם יש עדכונים, צריך להשתמש ב-Ethernet, ב-Wi-Fi או בחבילת גלישה.</translation>
 <translation id="426652736638196239">‏ה-IBAN הזה יישמר רק במכשיר הזה</translation>
 <translation id="4266679478228765574">הסרה של תיקיות תפסיק את השיתוף, אבל לא תמחק קבצים.</translation>
-<translation id="4267455501101322486">כדי להוסיף חשבון לצורך גישה למקורות מידע חינוכיים, יש לבקש הרשאה מהורה</translation>
 <translation id="4267792239557443927">{COUNT,plural, =0{לא נמצאו סיסמאות}=1{נמצאה תוצאה אחת}one{נמצאו {COUNT} תוצאות}two{נמצאו {COUNT} תוצאות}other{נמצאו {COUNT} תוצאות}}</translation>
 <translation id="4267924571297947682">בקשת רשות מההורים</translation>
 <translation id="4267953847983678297">התחברות אוטומטית אל רשת סלולרית</translation>
@@ -5157,7 +5148,6 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         אפשר לנהל את ההגדרות דרך התפריט בכרטיס או לראות עוד אפשרויות בקטע "התאמה אישית של Chrome".</translation>
-<translation id="4503748371388753124">‏המחשב שלך מכיל התקן אבטחה מסוג Trusted Platform Module‏ (TPM), המשמש ליישום תכונות אבטחה קריטיות רבות של ChromeOS Flex. במרכז העזרה של Chromebook מפורט מידע נוסף: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4504940961672722399">אפשר להשתמש בתוסף הזה על ידי לחיצה על הסמל או על ידי הקשה על <ph name="EXTENSION_SHORTCUT" />.</translation>
 <translation id="4505469832694348179">‏צריך להוריד את דפדפן Chrome עם קוד ה-QR הזה ולהיכנס לחשבון Google.</translation>
 <translation id="450552327874992444">המילה כבר נוספה</translation>
@@ -5170,7 +5160,6 @@
 <translation id="4509421746503122514">הפעלה מחדש לצורך עדכון</translation>
 <translation id="4509741852167209430">רק סוגים מסוימים של נתונים ישותפו בין אתרים כדי למדוד את ביצועי המודעות שלהם. למשל, אם ביצעת רכישה אחרי ביקור באתר.</translation>
 <translation id="4510195992002502722">שליחת המשוב נכשלה. מתבצע ניסיון נוסף…</translation>
-<translation id="4510479820467554003">רשימת חשבונות הורים</translation>
 <translation id="4511344327646819192">כדי למנוע מאנשים אחרים להשתמש בסיסמה שלך, עליך לשנות אותה בכתובת <ph name="WEBSITE" /></translation>
 <translation id="4513072860957814107">מחיקת נתוני הגלישה…</translation>
 <translation id="4513872120116766993">השלמה אוטומטית</translation>
@@ -6218,7 +6207,6 @@
 <translation id="5244234799035360187">‏OneDrive יופיע עכשיו באפליקציה 'קבצים'</translation>
 <translation id="5244466461749935369">לשמור בינתיים</translation>
 <translation id="5244474230056479698">הסנכרון ל-<ph name="EMAIL" /> מתבצע</translation>
-<translation id="5245610266855777041">תחילת העבודה עם חשבון בית ספרי</translation>
 <translation id="5246282308050205996">אפליקציית <ph name="APP_NAME" /> קרסה. יש ללחוץ על הבלון הזה כדי להפעיל מחדש את האפליקציה.</translation>
 <translation id="5247051749037287028">שם תצוגה (אופציונלי)</translation>
 <translation id="5247243947166567755">בחירת <ph name="BOOKMARK_TITLE" /></translation>
@@ -6373,7 +6361,6 @@
 <translation id="5365881113273618889">התיקייה שבחרת מכילה קבצים רגישים. האפליקציה <ph name="APP_NAME" /> תקבל הרשאת כתיבה קבועה לתיקייה הזו. להמשיך?</translation>
 <translation id="536638840841140142">ללא</translation>
 <translation id="5368246151595623328">הרשת '<ph name="NETWORK_NAME" />' נשמרה דרך <ph name="DEVICE_NAME" /></translation>
-<translation id="5368720394188453070">הטלפון שלך נעול. יש לבטל את הנעילה כדי להיכנס.</translation>
 <translation id="536882527576164740">{0,plural, =1{אנונימי}one{אנונימי (#)}two{אנונימי (#)}other{אנונימי (#)}}</translation>
 <translation id="5369694795837229225">‏הגדרה של סביבת הפיתוח של Linux</translation>
 <translation id="5370819323174483825">&amp;טעינה מחדש</translation>
@@ -6867,7 +6854,6 @@
 <translation id="5707674184620508665">הארגון שלך, <ph name="ACCOUNT_MANAGER" />, לא יוכל לראות או לנהל את הנתונים הקיימים שלך. הם יישארו בפרופיל הקיים.</translation>
 <translation id="5708171344853220004">‏שם ראשי של Microsoft</translation>
 <translation id="5711010025974903573">יומני שירות</translation>
-<translation id="5711983031544731014">לא ניתן לבטל את הנעילה. יש להזין את הסיסמה שלך.</translation>
 <translation id="5712153969432126546">‏לפעמים אתרים מפרסמים קובצי PDF, כמו מסמכים, חוזים וטפסים</translation>
 <translation id="571222594670061844">אתרים יכולים להציג בקשות כניסה משירותי זיהוי</translation>
 <translation id="5713158217420111469">יש חיבור אל <ph name="DEVICE" /></translation>
@@ -7444,7 +7430,6 @@
 <translation id="6112931163620622315">בדיקת הטלפון</translation>
 <translation id="6113434369102685411">‏עליך להגדיר את מנוע החיפוש שיוגדר כברירת המחדל לדפדפן Chrome ולמרכז האפליקציות של <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113832060210023016">מרכז האפליקציות + לחיצה</translation>
-<translation id="6113942107547980621">‏כדי להשתמש ב-Smart Lock יש לעבור אל פרופיל המשתמש הראשי בטלפון</translation>
 <translation id="6116921718742659598">שינוי הגדרות הקלט והשפה</translation>
 <translation id="6119008366402292080">אין מדפסות זמינות</translation>
 <translation id="6119972796024789243">תיקון צבע</translation>
@@ -7851,7 +7836,6 @@
 <translation id="6400360390396538896">תמיד ב-<ph name="ORIGIN" /></translation>
 <translation id="6401118106417399952">‏ה-EID של המכשיר הוא <ph name="EID_NUMBER" /> והמספר הסידורי של המכשיר הוא <ph name="SERIAL_NUMBER" />. המספרים האלה יכולים לשמש להפעלת השירות.</translation>
 <translation id="6401458660421980302">‏כדי לשלוח את הכרטיסייה הזו למכשיר אחר, צריך להיכנס ל-Chrome במכשיר האחר</translation>
-<translation id="6401597285454423070">‏המחשב שלך מכיל התקן אבטחה מסוג Trusted Platform Module ‏(TPM), המשמש ליישום תכונות אבטחה קריטיות רבות ב-ChromeOS. במרכז העזרה של Chromebook מפורט מידע נוסף: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6402921224457714577">‏אתרים יכולים לבקש הרשאה לשלוט במכשירי ה-MIDI ולתכנת אותם מחדש</translation>
 <translation id="6404511346730675251">עריכת סימנייה</translation>
 <translation id="640457954117263537">‏שימוש בנתוני המיקום באפליקציות ובשירותים של ChromeOS ו-Android.</translation>
@@ -8435,7 +8419,6 @@
 <translation id="6805236548654699520">אפשר להסיר חלונות קופצים לא רצויים, לתקן בעיות ברשת ועוד על ידי שחזור ההגדרות לברירות מחדל בטוחות.</translation>
 <translation id="6805478749741295868">‏זוהי תכונה ניסיונית שמבוססת על AI ויכול להיות שהתוצאה לא תמיד תתאים לך.</translation>
 <translation id="6805647936811177813">יש להיכנס אל <ph name="TOKEN_NAME" /> כדי לייבא אישור לקוח מ-<ph name="HOST_NAME" />.</translation>
-<translation id="680572642341004180">‏הפעלת מעקב RLZ ב-<ph name="SHORT_PRODUCT_OS_NAME" />.</translation>
 <translation id="6805817411033102703">משוב על קבוצות משותפות של כרטיסיות</translation>
 <translation id="6806089545527108739">אין אישור, אבל יש לשאול מאוחר יותר</translation>
 <translation id="6806781719264274042">‏רק אנשי קשר עם חשבון Google. <ph name="LINK_BEGIN" />אל אנשי הקשר<ph name="LINK_END" /></translation>
@@ -8885,7 +8868,6 @@
 <translation id="7113502843173351041">לדעת את כתובת האימייל שלך</translation>
 <translation id="7113974454301513811">עכשיו צריך להוסיף את הכרטיסייה הנוכחית לרשימה</translation>
 <translation id="7114054701490058191">הסיסמאות לא תואמות</translation>
-<translation id="7114648273807173152">‏כדי להשתמש ב-Smart Lock על מנת להיכנס אל חשבון Google צריך לעבור אל 'הגדרות' &gt; 'מכשירים מחוברים' &gt; 'הטלפון שלך' &gt; Smart Lock.</translation>
 <translation id="7115361495406486998">אין אנשי קשר זמינים</translation>
 <translation id="7116554090938189816">‏פג התוקף של אישור ה-SSL של המדפסת. צריך להפעיל את המדפסת מחדש ולנסות שוב.</translation>
 <translation id="7117228822971127758">אפשר לנסות שוב מאוחר יותר</translation>
@@ -9517,7 +9499,6 @@
 <translation id="7553242001898162573">הזנת הסיסמה</translation>
 <translation id="755472745191515939">השפה הזו לא מאושרת על ידי מנהל המערכת</translation>
 <translation id="7554791636758816595">כרטיסייה חדשה</translation>
-<translation id="7556033326131260574">‏מערכת Smart Lock לא הצליחה לאמת את חשבונך. כדי להיכנס, יש להזין את הסיסמה.</translation>
 <translation id="7556228616802995437">שיחות ושרשורים מהזמן האחרון</translation>
 <translation id="7556242789364317684">‏לצערנו, <ph name="SHORT_PRODUCT_NAME" /> לא יכול לשחזר את ההגדרות שלך. כדי לתקן את השגיאה, <ph name="SHORT_PRODUCT_NAME" /> צריך לאפס את המכשיר שלך באמצעות Powerwash.</translation>
 <translation id="7557194624273628371">‏העברה ליציאה אחרת ב-Linux</translation>
@@ -9961,7 +9942,6 @@
 <translation id="7853747251428735">&amp;כלים נוספים</translation>
 <translation id="7855258394151767387">‏משתמשים במקש W כדי ללחוץ על כפתור העכבר</translation>
 <translation id="7855678561139483478">העברת כרטיסייה לחלון חדש</translation>
-<translation id="7857004848504343806">‏המחשב שלך מכיל מודול אבטחה המשמש ליישום תכונות אבטחה קריטיות רבות ב-ChromeOS Flex. מידע נוסף מפורט במרכז העזרה של Chromebook‏: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">הצעות לטקסט</translation>
 <translation id="7858120906780498731">‏מכשירים מחוברים לקליטת נתונים של ChromeOS</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
@@ -10008,7 +9988,6 @@
 <translation id="7892005672811746207">מפעילים את האפשרות 'שמירת הקבוצה'</translation>
 <translation id="7892384782944609022">ההתאמה נכשלה. כדי לנסות שוב, צריך לבחור מכשיר.</translation>
 <translation id="7893008570150657497">לגשת לתמונות, מוזיקה ומדיה נוספת מהמחשב שלך</translation>
-<translation id="7893153962594818789">‏Bluetooth מושבת ב-<ph name="DEVICE_TYPE" /> זה. עליך להזין את הסיסמה שלך כדי להפעיל את Bluetooth.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (ברירת מחדל)</translation>
 <translation id="7896292361319775586">לשמור את <ph name="FILE" />?</translation>
 <translation id="789722939441020330">לא לאפשר לאתרים להוריד באופן אוטומטי קבצים מרובים</translation>
@@ -10853,7 +10832,6 @@
 <translation id="8453400752347156012">הסימנייה הזו שמורה רק במכשיר הזה. אם הסימנייה תישמר ב-"<ph name="ACCOUNT_FOLDER" />", היא תישמר גם בחשבון שלך.</translation>
 <translation id="8455775311562941553">מחובר אל <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="8456067150616457342">הגדרת דפדפן ברירת המחדל</translation>
-<translation id="845702320058262034">‏לא ניתן להתחבר. יש לוודא שה-Bluetooth של הטלפון מופעל.</translation>
 <translation id="8457251154056341970">לא יוצגו לך יותר <ph name="MODULE_NAME" /> בדף הזה</translation>
 <translation id="8457451314607652708">ייבוא סימניות</translation>
 <translation id="8458341576712814616">קיצור דרך</translation>

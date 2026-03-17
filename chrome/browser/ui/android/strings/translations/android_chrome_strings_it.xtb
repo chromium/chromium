@@ -213,6 +213,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="1900260903084164610">Se continui, accetti i <ph name="BEGIN_TOS_LINK" />Termini di servizio<ph name="END_TOS_LINK" />.</translation>
 <translation id="1904580727789512086">Gli URL che visiti vengono salvati nel tuo Account Google</translation>
 <translation id="1910950723001426294">L'elenco di opzioni di condivisione è chiuso.</translation>
+<translation id="1912367671208932516">Apri il menu Estensioni</translation>
 <translation id="191726024256261717">Rivedi le autorizzazioni</translation>
 <translation id="1917766536967060661">Perderai immediatamente l'accesso al gruppo di schede "<ph name="GROUP_NAME" />" e <ph name="BLOCKED_MEMBER_FULL_NAME" /> (<ph name="BLOCKED_MEMBER_EMAIL" />) non potrà più interagire con te nei servizi Google.</translation>
 <translation id="1919130412786645364">Consenti l'accesso a Chrome</translation>
@@ -414,6 +415,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="2789486458103222910">OK</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome ha rilevato una password riutilizzata che potresti migliorare}other{Chrome ha rilevato # password riutilizzate che potresti migliorare}}</translation>
 <translation id="2794551654724114396">Attiva le notifiche per ricevere suggerimenti utili che ti aiuteranno a usare Chrome al meglio</translation>
+<translation id="2798977804328097977">Passa da un dispositivo all'altro senza interruzioni</translation>
 <translation id="2805210243313393104">Trova i preferiti e altri dati su tutti i tuoi dispositivi</translation>
 <translation id="2805756323405976993">App</translation>
 <translation id="2819849308549746319">Annulla l'iscrizione per tutti i siti</translation>
@@ -469,6 +471,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="2977350910003566746">Ordinamento per ultimo aperto</translation>
 <translation id="297771753501244313">Ordina per ultimo aperto</translation>
 <translation id="2979639724566107830">Apri in un'altra finestra</translation>
+<translation id="2980545254049127870">Apri facilmente i link da messaggi, documenti e altre app</translation>
 <translation id="2983102365694924129">In base alla tua attività svolta su un sito. Questa impostazione non è attiva.</translation>
 <translation id="2983398917942897288">Non attive: <ph name="ITEM_COUNT" /></translation>
 <translation id="2983835398644161987">Esci da Picture in picture</translation>
@@ -730,6 +733,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="4137746084635924146">Lingua attuale del dispositivo</translation>
 <translation id="414128724510021958">Siti desktop richiesti per impostazione predefinita</translation>
 <translation id="4162867837470729563">Elenco di opzioni di condivisione a schermo intero.</translation>
+<translation id="4164642020717536140">Navigazione sul web veloce e sicura</translation>
 <translation id="4165077084524712774">Altri strumenti</translation>
 <translation id="4170011742729630528">Il servizio non è disponibile, riprova più tardi.</translation>
 <translation id="4170577491341606575">Recupero dei tuoi dati in corso…</translation>
@@ -854,6 +858,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 password compromessa}other{# password compromesse}}</translation>
 <translation id="4641919525231168205">Vai alla pagina successiva</translation>
 <translation id="4642472735733036929">Monitoraggio del prezzo interrotto</translation>
+<translation id="4643661539340338954">Notifiche di Chrome Finds attivate</translation>
 <translation id="4649493483932335039">Visualizza schede recenti</translation>
 <translation id="465657074423018424">Navigazione sicura ti protegge da siti web ingannevoli. Se la disattivi, fai molta attenzione quando navighi su internet, soprattutto prima di inserire delle password.</translation>
 <translation id="4662373422909645029">Il nickname non può includere numeri</translation>
@@ -1652,6 +1657,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="7686086654630106285">Scopri di più sugli annunci suggeriti dai siti</translation>
 <translation id="7690596512217303514">Impossibile aprire Chrome sul dispositivo. Per risolvere il problema, scarica l'ultimo aggiornamento di Chrome dallo store.</translation>
 <translation id="7692761875510935111">Apri rapidamente nel browser. Per modificare questa scorciatoia, tocca e tieni premuto.</translation>
+<translation id="7695270712963178084">Chrome Finds</translation>
 <translation id="7697383401610880082">Punto di trascinamento</translation>
 <translation id="7698359219371678927">Crea email in <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">Riquadro inferiore Attività recente aperto a schermo intero</translation>

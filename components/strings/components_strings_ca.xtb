@@ -754,6 +754,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2184405333245229118">{COUNT,plural, =1{1 adreça}other{# adreces}}</translation>
 <translation id="2188375229972301266">Encunyació múltiple a la part inferior</translation>
 <translation id="218940509700321686">Valors separats per comes</translation>
+<translation id="2190094353033916816">Aquesta política té diferents valors aplicats als nivells d'equip i d'usuari. La política funciona de la manera prevista.</translation>
 <translation id="2191980191135734720">Desbloqueja la pantalla al pas següent, normalment amb l'empremta digital. També pots <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Aspectes que cal tenir en compte</translation>
 <translation id="2198183835992354675">Número de viatger conegut</translation>
@@ -3193,6 +3194,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="6042308850641462728">Més</translation>
 <translation id="6043357981274314628">Fet!</translation>
 <translation id="6045164183059402045">Plantilla d'imposició</translation>
+<translation id="6046026831939367176"><ph name="URL" /> vol utilitzar la teva ubicació aproximada</translation>
 <translation id="6046892054959167494">Escriu <ph name="SEARCH_AGGREGATOR_KEYWORD" /> per cercar o preguntar a <ph name="SEARCH_AGGREGATOR_SHORT_NAME" /></translation>
 <translation id="6047927260846328439">Aquest contingut pot provar d'enganyar-te perquè instal·lis programari o proporcionis informació personal. <ph name="BEGIN_LINK" />Mostra igualment<ph name="END_LINK" />.</translation>
 <translation id="6049056807983403918">Sobre B4</translation>
@@ -3642,7 +3644,6 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">càmera</translation>
 <translation id="6734506549556896534">Jocs de simulació</translation>
-<translation id="6735589846038045679">Els plans de pagament estan subjectes a la idoneïtat. <ph name="BEGIN_BOLD" />El contingut de la pàgina de tramitació de la compra es comparteix amb Google per oferir aquestes opcions<ph name="END_BOLD" />. Per amagar les opcions que permeten pagar més tard, ves a la <ph name="BEGIN_LINK" />configuració de pagament<ph name="END_LINK" />.</translation>
 <translation id="6737708609449480586">Pa i brioixeria</translation>
 <translation id="6738516213925468394">Les teves dades es van encriptar el dia <ph name="TIME" /> amb la teva <ph name="BEGIN_LINK" />frase de contrasenya de sincronització<ph name="END_LINK" />. Introdueix-la per començar la sincronització.</translation>
 <translation id="6740851646645036700">Has arribat al límit d'ajuda amb l'escriptura per ara. Torna-ho a provar més tard.</translation>
@@ -4992,6 +4993,7 @@ Detalls addicionals:
 <translation id="8870700989640064057">Vols imprimir el fitxer confidencial?</translation>
 <translation id="8871485335898060555">Antiguitats i articles de col·leccionista</translation>
 <translation id="8871553383647848643">Personalitza l'aspecte del teu navegador</translation>
+<translation id="887350038812854047">Aquesta política té el mateix valor aplicat als nivells d'equip i d'usuari. La política funciona de la manera prevista.</translation>
 <translation id="8874790741333031443">Prova de permetre temporalment les galetes de tercers. Això implica menys protecció de navegació, però és més probable que les funcions del lloc web funcionin de la manera prevista.</translation>
 <translation id="8874824191258364635">Introdueix un número de targeta vàlid</translation>
 <translation id="8877780815363510165">Pesca</translation>

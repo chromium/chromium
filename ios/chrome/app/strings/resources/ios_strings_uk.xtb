@@ -962,6 +962,7 @@
 <translation id="454217142158335225">Закриті вкладки й групи можна знову відкрити в розділах "Останні вкладки" й "Групи вкладок". Закріплені вкладки не закриються.</translation>
 <translation id="4547181496285029457">Повернутися на останню вкладку</translation>
 <translation id="4552042254369397518">Копіювання…</translation>
+<translation id="4553044860350038560">Інші ключі доступу</translation>
 <translation id="4564893319561643483">Приховати модуль "<ph name="TITLE" />"</translation>
 <translation id="4565377596337484307">Сховати пароль</translation>
 <translation id="4568230126482344545">Сховати опцію "Останні вкладки"</translation>
@@ -1723,6 +1724,7 @@
 <translation id="7149893636342594995">Останні 24 години</translation>
 <translation id="7154417656353909837">Видалити адреси</translation>
 <translation id="7161230316646448869">Синхронізуйте свої закладки, історію тощо на всіх пристроях</translation>
+<translation id="7165323152084385463">Номер VIN</translation>
 <translation id="7173114856073700355">Відкрити налаштування</translation>
 <translation id="7173721738069475737">{count,plural, =1{Закладку збережено}one{{count} закладку збережено}few{{count} закладки збережено}many{{count} закладок збережено}other{{count} закладки збережено}}</translation>
 <translation id="7176183551031110427">Віддалити</translation>

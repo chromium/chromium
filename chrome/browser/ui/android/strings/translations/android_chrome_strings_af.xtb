@@ -213,6 +213,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="1900260903084164610">Deur voort te gaan, stem jy in tot die <ph name="BEGIN_TOS_LINK" />diensbepalings<ph name="END_TOS_LINK" />.</translation>
 <translation id="1904580727789512086">Die URL'e wat jy besoek, word in jou Google-rekening gestoor</translation>
 <translation id="1910950723001426294">Lys deelopsies is gesluit.</translation>
+<translation id="1912367671208932516">Maak uitbreidingkieslys oop</translation>
 <translation id="191726024256261717">Gaan toestemmings na</translation>
 <translation id="1917766536967060661">Jy sal onmiddellik toegang tot die “<ph name="GROUP_NAME" />”-oortjiegroep verloor, en <ph name="BLOCKED_MEMBER_FULL_NAME" /> (<ph name="BLOCKED_MEMBER_EMAIL" />) sal nie meer met jou oor Google-dienste kan kommunikeer nie.</translation>
 <translation id="1919130412786645364">Laat Chrome-aanmelding toe</translation>
@@ -414,6 +415,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="2789486458103222910">OK</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome het ’n hergebruikte wagwoord gevind wat jy kan verbeter}other{Chrome het # hergebruikte wagwoorde gevind wat jy kan verbeter}}</translation>
 <translation id="2794551654724114396">Skakel kennisgewings aan vir nuttige wenke om jou te help om die beste uit Chrome te kry</translation>
+<translation id="2798977804328097977">Gaan sonder moeite op enige toestel voort</translation>
 <translation id="2805210243313393104">Kry jou boekmerke en meer op al jou toestelle</translation>
 <translation id="2805756323405976993">Programme</translation>
 <translation id="2819849308549746319">Teken by alles uit</translation>
@@ -469,6 +471,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="2977350910003566746">Sorteer volgens laas oopgemaak</translation>
 <translation id="297771753501244313">Sorteer: laas oopgemaak</translation>
 <translation id="2979639724566107830">Maak in nuwe venster oop</translation>
+<translation id="2980545254049127870">Maak maklik skakels van boodskappe, dokumente en ander apps af oop</translation>
 <translation id="2983102365694924129">Gegrond op jou aktiwiteit op ’n werf. Hierdie instelling is af.</translation>
 <translation id="2983398917942897288">Onaktief (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2983835398644161987">Verlaat prent-in-prent</translation>
@@ -730,6 +733,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="4137746084635924146">Huidige toesteltaal</translation>
 <translation id="414128724510021958">Rekenaarwerwe wat by verstek versoek is</translation>
 <translation id="4162867837470729563">Lys deelopsies teen volle hoogte.</translation>
+<translation id="4164642020717536140">Vinnige en veilige webblaai</translation>
 <translation id="4165077084524712774">Meer nutsgoed</translation>
 <translation id="4170011742729630528">Die diens is nie beskikbaar nie, probeer later weer.</translation>
 <translation id="4170577491341606575">Kry tans jou goed \u2026</translation>
@@ -854,6 +858,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 gekompromitteerde wagwoord}other{# gekompromitteerde wagwoorde}}</translation>
 <translation id="4641919525231168205">Gaan na volgende bladsy</translation>
 <translation id="4642472735733036929">Prysnasporing is gestop</translation>
+<translation id="4643661539340338954">Kennisgewings vir Chrome-vondste is aangeskakel</translation>
 <translation id="4649493483932335039">Bekyk onlangse oortjies</translation>
 <translation id="465657074423018424">Veiligblaai beskerm jou teen misleidende werwe. As jy dit afskakel, moet jy baie versigtig wees wanneer jy blaai – veral voordat jy wagwoorde invoer.</translation>
 <translation id="4662373422909645029">Laat syfers uit bynaam</translation>
@@ -1652,6 +1657,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="7686086654630106285">Meer oor advertensies wat deur ’n werf voorgestel is</translation>
 <translation id="7690596512217303514">Jou toestel kon nie Chrome oopmaak nie. Laai die jongste Chrome-opdatering uit jou appwinkel af om die kwessie reg te stel.</translation>
 <translation id="7692761875510935111">Maak vinnig in blaaier oop. Raak en hou om hierdie kortpad te wysig.</translation>
+<translation id="7695270712963178084">Chrome-vondste</translation>
 <translation id="7697383401610880082">Sleephandvatsel</translation>
 <translation id="7698359219371678927">Skep e-pos in <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">Onderste blad van onlangse aktiwiteit is teen volle hoogte oopgemaak</translation>

@@ -754,6 +754,7 @@
 <translation id="2184405333245229118">{COUNT,plural, =1{1 पत्ता}other{# पत्ते}}</translation>
 <translation id="2188375229972301266">मल्टिपल पंच बॉटम</translation>
 <translation id="218940509700321686">स्वल्पविरामाने विभक्त केलेली मूल्ये</translation>
+<translation id="2190094353033916816">या धोरणामध्ये मशीन आणि वापरकर्ता या पातळ्यांवर वेगवेगळी मूल्ये लागू केली आहेत. धोरण अपेक्षेप्रमाणे काम करत आहे.</translation>
 <translation id="2191980191135734720">तुम्ही पुढील पायरीमध्ये साधारणपणे तुमची फिंगरप्रिंट वापरून तुमची स्क्रीन अनलॉक करा. तुम्ही <ph name="LINK_TEXT" /> देखील करू शकता.</translation>
 <translation id="2194856509914051091">विचार करण्याच्या गोष्टी</translation>
 <translation id="2198183835992354675">ओळखीच्या प्रवाशाचा नंबर</translation>
@@ -3192,6 +3193,7 @@
 <translation id="6042308850641462728">अधिक</translation>
 <translation id="6043357981274314628">पूर्ण झाले!</translation>
 <translation id="6045164183059402045">लागू करण्याचे टेम्पलेट</translation>
+<translation id="6046026831939367176"><ph name="URL" /> ला तुमचे अंदाजे स्थान वापरायचे आहे</translation>
 <translation id="6046892054959167494"><ph name="SEARCH_AGGREGATOR_SHORT_NAME" /> विषयी शोधण्यासाठी किंवा शोधण्यासाठी <ph name="SEARCH_AGGREGATOR_KEYWORD" /> टाइप करा</translation>
 <translation id="6047927260846328439">हा आशय तुम्हाला सॉफ्टवेअर इंस्टॉल करण्याचा किंवा वैयक्तिक माहिती उघड करण्याचा फसवा प्रयत्न करू शकेल. <ph name="BEGIN_LINK" />तरीही दाखवा<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">एन्व्हलप बी४</translation>
@@ -3642,7 +3644,6 @@
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">कॅमेरा</translation>
 <translation id="6734506549556896534">सिम्युलेशन गेम</translation>
-<translation id="6735589846038045679">पेमेंट प्लॅन हे पात्रतेच्या अधीन आहेत. <ph name="BEGIN_BOLD" />हे पर्याय देण्यासाठी चेकआउट पेजवरील आशय Google सोबत शेअर केला जातो.<ph name="END_BOLD" /> नंतर पेमेंट करण्याचे पर्याय लपवण्यासाठी, <ph name="BEGIN_LINK" />पेमेंट सेटिंग्ज<ph name="END_LINK" /> वर जा</translation>
 <translation id="6737708609449480586">बेक केलेले खाद्यपदार्थ</translation>
 <translation id="6738516213925468394">तुमचा डेटा तुमच्या <ph name="BEGIN_LINK" />सिंक पासफ्रेज<ph name="END_LINK" /> ने <ph name="TIME" /> वाजता एंक्रिप्ट केला गेला होता. सिंक सुरू करण्यासाठी तो एंटर करा.</translation>
 <translation id="6740851646645036700">तुम्ही सध्या तुमच्या लिहिण्याची मर्यादा गाठली आहे. नंतर पुन्हा प्रयत्न करा.</translation>
@@ -4992,6 +4993,7 @@
 <translation id="8870700989640064057">गोपनीय फाइल प्रिंट करायची आहे का?</translation>
 <translation id="8871485335898060555">पुरातन आणि संग्रहणीय वस्तू</translation>
 <translation id="8871553383647848643">तुमच्या ब्राउझरचे रूप कस्टमाइझ करा</translation>
+<translation id="887350038812854047">या धोरणामध्ये मशीन आणि वापरकर्ता या दोन्ही पातळ्यांवर समान मूल्य लागू केले आहे. धोरण अपेक्षेप्रमाणे काम करत आहे.</translation>
 <translation id="8874790741333031443">तृतीय पक्ष कुकीना तात्पुरती अनुमती देऊन पहा, ज्यामुळे ब्राउझ करण्यासंबंधित संरक्षण कमी मिळेल, पण साइटची वैशिष्ट्ये अपेक्षेनुसार काम करण्याची अधिक शक्यता आहे.</translation>
 <translation id="8874824191258364635">वैध कार्ड नंबर एंटर करा</translation>
 <translation id="8877780815363510165">मासेमारी</translation>

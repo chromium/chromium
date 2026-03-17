@@ -7384,6 +7384,7 @@ Có thể tăng cường chế độ hạn chế tài khoản bằng chính sác
 <translation id="5815990343032461023">Hành vi cũ: Hệ thống tiện ích sẽ cập nhật các ứng dụng Kiosk Chrome bằng cách sử dụng URL cập nhật trong tệp kê khai tiện ích, cũng như bằng trình quản lý bộ nhớ đệm sử dụng URL cập nhật trong chính sách</translation>
 <translation id="5816688024515869030">Tắt trình cung cấp <ph name="UIA_NAME" />.</translation>
 <translation id="581737504822041364">Cho phép ServiceWorker gửi yêu cầu điều hướng mà không cần chờ tính năng này khởi động</translation>
+<translation id="5827464697821627670">Có thể đặt chính sách cho thiết bị và người dùng</translation>
 <translation id="5828008775808363753">Không chạy trình duyệt khi khởi động</translation>
 <translation id="582857022372205358">Bật chế độ in hai mặt với cạnh ngắn</translation>
 <translation id="5830196507442186669">Cho phép các thiết bị sử dụng <ph name="BOREALIS_NAME" /> trên <ph name="PRODUCT_OS_NAME" /></translation>
@@ -10743,6 +10744,21 @@ Nếu bạn đặt chính sách <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> th
 <translation id="7933141401888114454">Cho phép tạo người dùng được giám sát</translation>
 <translation id="793473937901685727">Đặt mức độ khả dụng của chứng chỉ cho ứng dụng ARC</translation>
 <translation id="7936302526928951356">Chuỗi User-Agent sẽ không làm phiên bản lớn dừng lại.</translation>
+<translation id="7936632434238618620">Khi đặt chính sách này, bạn có thể tạo danh sách các mẫu URL chỉ định trang web mà Chrome có thể tự động chọn chứng chỉ máy khách. Giá trị là một mảng từ điển JSON phân thành chuỗi, mỗi mảng có dạng <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_EXAMPLE" />, trong đó <ph name="URL_PATTERN_PLACEHOLDER" /> là mẫu thông tin cài đặt nội dung. <ph name="FILTER_PLACEHOLDER" /> giới hạn các chứng chỉ máy khách mà trình duyệt sẽ tự động chọn. Bất kể bộ lọc là gì, chỉ các chứng chỉ khớp với yêu cầu chứng chỉ của máy chủ mới được chọn. Trên Android và iOS, Chrome chỉ có thể chọn những chứng chỉ máy khách mà trình duyệt tự cung cấp chứ không thể truy cập vào những chứng chỉ được cài đặt ở cấp hệ điều hành.
+
+      Ví dụ về cách sử dụng phần <ph name="FILTER_PLACEHOLDER" />:
+
+      * Khi bạn đặt <ph name="FILTER_PLACEHOLDER" /> thành <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_FILTER_EXAMPLE" />, chỉ các chứng chỉ máy khách do chứng chỉ có CommonName <ph name="ISSUER_CN_PLACEHOLDER" /> cấp mới được chọn.
+
+      * Khi <ph name="FILTER_PLACEHOLDER" /> chứa phần <ph name="ISSUER_STRING_VALUE" /> và <ph name="SUBJECT_STRING_VALUE" />, chỉ các chứng chỉ máy khách thoả mãn cả hai điều kiện mới được chọn.
+
+      * Khi <ph name="FILTER_PLACEHOLDER" /> chứa phần <ph name="SUBJECT_STRING_VALUE" /> với giá trị <ph name="FILTER_STRING_ORGANIZATION" />, chứng chỉ phải có ít nhất một tổ chức khớp với giá trị đã chỉ định thì mới được chọn.
+
+      * Khi <ph name="FILTER_PLACEHOLDER" /> chứa phần <ph name="SUBJECT_STRING_VALUE" /> với giá trị <ph name="FILTER_STRING_ORGANIZATIONAL_UNIT" />, chứng chỉ phải có ít nhất một đơn vị tổ chức khớp với giá trị đã chỉ định thì mới được chọn.
+
+      * Khi bạn đặt <ph name="FILTER_PLACEHOLDER" /> thành <ph name="EMPTY_DICTIONARY" />, việc chọn chứng chỉ máy khách sẽ không có các hạn chế bổ sung. Xin lưu ý rằng các bộ lọc mà máy chủ web cung cấp sẽ vẫn áp dụng.
+
+      Nếu bạn không đặt chính sách này thì Chrome sẽ không được tự động chọn đối với bất cứ trang web nào.</translation>
 <translation id="7937766917976512374">Cho phép hoặc từ chối quay video</translation>
 <translation id="7937825205289116563">Nếu bạn đặt chính sách này thành Bật hoặc không đặt chính sách này, thì người dùng có thể sử dụng chữ ký đặc biệt cho ứng dụng gốc được tạo ra khi cài đặt Ứng dụng web tiến bộ (PWA). Điều này đảm bảo rằng mỗi ứng dụng được cài đặt đều có danh tính riêng đối với các thành phần hệ thống <ph name="MAC_OS_NAME" />.
 

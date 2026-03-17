@@ -394,6 +394,7 @@
 <translation id="2360196772093551345">Solicitar sitio para móbiles</translation>
 <translation id="2362083820973145409">Iniciaches sesión como <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Abre a configuración.</translation>
 <translation id="2371084566192454134">Pestanas e grupos de pestanas</translation>
+<translation id="2371303771137626249">Novo</translation>
 <translation id="2381405137052800939">Opcións básicas</translation>
 <translation id="2384692388811649784">Ocultar pestanas do modo de incógnito</translation>
 <translation id="2386793615875593361">Seleccionouse un</translation>
@@ -636,6 +637,7 @@
 <translation id="3324193307694657476">Enderezo 2</translation>
 <translation id="3328801116991980348">Información do sitio</translation>
 <translation id="333229797575847124">Como activar esta función</translation>
+<translation id="334004756946755423">Explícame isto:</translation>
 <translation id="3344233834747405775">O nome da persoa titular da tarxeta non é válido</translation>
 <translation id="3344485292736684439">{count,plural, =1{O marcador gardouse no cartafol "{title}" da túa conta ({email})}other{Os marcadores gardáronse no cartafol "{title}" da túa conta ({email})}}</translation>
 <translation id="334690320928261823">Pestanas recentes</translation>
@@ -689,6 +691,7 @@
 <translation id="3530206579861815432">Atopa con rapidez pestanas abertas e pechadas recentemente nos teus dispositivos sincronizados.</translation>
 <translation id="3530767473765895035">Xestionar contas neste dispositivo…</translation>
 <translation id="3533436815740441613">Nova pestana</translation>
+<translation id="3534738261102690620">Pregúntalle a Gemini</translation>
 <translation id="3540141921715814660">Engadir aos marcadores</translation>
 <translation id="3546122170015471515">Vista previa de Maps en google.com</translation>
 <translation id="3547356470684043247">Ler as avaliacións dos clientes sobre produtos, servizos ou experiencias para poder tomar decisións fundadas</translation>
@@ -959,6 +962,7 @@
 <translation id="454217142158335225">Podes volver abrir os elementos pechados nas seccións de pestanas recentes ou grupos de pestanas. As pestanas fixadas non se pecharán.</translation>
 <translation id="4547181496285029457">Volver á pestana recente</translation>
 <translation id="4552042254369397518">Copiando…</translation>
+<translation id="4553044860350038560">Máis claves de acceso</translation>
 <translation id="4564893319561643483">Ocultar <ph name="TITLE" /></translation>
 <translation id="4565377596337484307">Ocultar contrasinal</translation>
 <translation id="4568230126482344545">Ocultar Pestanas recentes</translation>
@@ -1087,6 +1091,7 @@
 <translation id="4944543191714094452">Buscar na páxina…</translation>
 <translation id="4945756290001680296">Acceder á configuración do contrasinal</translation>
 <translation id="4949302115427722371">Xestionar configuración…</translation>
+<translation id="4952050521954075618">As fotos do carrete non se sincronizarán nos teus dispositivos</translation>
 <translation id="4958444002117714549">Ampliar lista</translation>
 <translation id="496392417432935267">Opción aberta noutro lugar</translation>
 <translation id="4970724460420203313">Usar Chrome coa túa conta xestionada axudarache a separar a navegación relacionada coa túa organización, como as pestanas, o historial e os contrasinais, da outra navegación que fagas</translation>
@@ -1286,6 +1291,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="5647702255748985085">Queres saír do grupo?</translation>
 <translation id="5648166631817621825">Últimos 7 días</translation>
 <translation id="5652623411397330904">Os produtos dos que fagas seguimento aparecerán aquí.</translation>
+<translation id="5653100054596780862">Todas as pestanas</translation>
 <translation id="5656431592348714536">Calendario mellorado</translation>
 <translation id="5659593005791499971">Correo electrónico</translation>
 <translation id="5665739277590037307">Aplícanse as <ph name="GOOGLE_TERMS" /> e o <ph name="GEMINI_APPS_PRIVACY" />. Gemini pode cometer erros, polo que é recomendable que verifiques as respostas.</translation>
@@ -1751,6 +1757,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="7300448350764260141">Engade unha capa máis de protección contra as ameazas en liña.</translation>
 <translation id="7311244614769792472">Non se encontraron resultados</translation>
 <translation id="7313347584264171202">Aquí atoparás as túas pestanas do modo de incógnito</translation>
+<translation id="7322186060879266048">{count,plural, =1{Hai {count} opción de autocompletado dispoñible enriba do teclado.}other{Hai {count} opcións de autocompletado dispoñibles enriba do teclado.}}</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> por cento descargado</translation>
 <translation id="7345061034321640811">Non se permite a importación</translation>

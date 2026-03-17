@@ -125,7 +125,6 @@
 <translation id="2228071138934252756">‏برای اینکه به <ph name="APP_NAME" /> اجازه دهید به دوربین دسترسی پیدا کند، دوربین را در <ph name="BEGIN_LINK" />تنظیمات Android<ph name="END_LINK" /> نیز روشن کنید.</translation>
 <translation id="2231160360698766265">سایت‌ها می‌توانند محتوای محافظت‌شده را پخش کنند</translation>
 <translation id="2235344399760031203">کوکی‌های طرف سوم مسدود شده‌اند</translation>
-<translation id="2238944249568001759">جستجوهای پیشنهادی براساس آخرین زبانه شما</translation>
 <translation id="2241587408274973373">کارت‌های صفحه زبانه جدید</translation>
 <translation id="2241634353105152135">فقط یک بار</translation>
 <translation id="2253414712144136228">برداشتن <ph name="NAME_OF_LIST_ITEM" /></translation>
@@ -214,7 +213,6 @@
 <translation id="3069226013421428034">ورود به سیستم طرف سوم برای سایت خاصی مجاز می‌شود.</translation>
 <translation id="310297983047869047">اسلاید قبلی</translation>
 <translation id="3108122610701115301">تنظیم پیش‌فرض</translation>
-<translation id="3109724472072898302">جمع شده</translation>
 <translation id="310979712355504754">حذف همه</translation>
 <translation id="311394601889664316">به سایت‌ها اجازه داده نشود فایل‌ها یا پوشه‌های درون دستگاه را ویرایش کنند</translation>
 <translation id="3114012059975132928">پخش‌کننده ویدیو</translation>
@@ -262,7 +260,6 @@
 <translation id="3602290021589620013">پیش‌نمایش</translation>
 <translation id="3611658447322220736">سایت‌هایی که اخیراً بسته شده‌اند می‌توانند ارسال و دریافت داده را تکمیل کنند</translation>
 <translation id="3619294456800709762">سایت‌ها می‌توانند به‌طور خودکار به حالت تصویر در تصویر بروند</translation>
-<translation id="3628308229821498208">جستجوهای پیشنهادی</translation>
 <translation id="3632460243282703117">مشترک شدن</translation>
 <translation id="363748948745453283">درحال استفاده از مکان تقریبی</translation>
 <translation id="3641456520301071208">اجازه داشتن سایت‌ها برای خواستن مکان شما</translation>
@@ -490,6 +487,7 @@
 <translation id="5922853908706496913">درحال هم‌رسانی صفحه‌نمایش</translation>
 <translation id="5922967540311291836">مسدود کردن کوکی‌های طرف سوم:</translation>
 <translation id="5923512600150154850">با این کار <ph name="DATASIZE" /> از داده‌ها و کوکی‌هایی که سایت ذخیره کرده است حذف خواهد شد.</translation>
+<translation id="5930707844513754220">دیدن فهرست راه‌اندازی بیشتر</translation>
 <translation id="5939518447894949180">بازنشانی</translation>
 <translation id="5948139900367969951">به‌سرعت به آنچه برایتان مهم است برسید</translation>
 <translation id="5964247741333118902">محتوای جاسازی‌شده</translation>
@@ -498,6 +496,7 @@
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
 <translation id="5998071268779572583">روشن کردن فید یافته‌ها</translation>
 <translation id="6012967556075291653">میان‌بر سنجاق‌شده</translation>
+<translation id="6013003831291591200">تکلیف انجام شد</translation>
 <translation id="6015775454662021376">کنترل کردن دسترسی این سایت به دستگاه</translation>
 <translation id="6022659036123304283">‏Chrome را برای خود اختصاصی کنید</translation>
 <translation id="6040143037577758943">بستن</translation>
@@ -522,7 +521,6 @@
 <translation id="6231752747840485235">«<ph name="APP_NAME" />» حذف نصب شود؟</translation>
 <translation id="6234351944623978659">‏روی «برنامه مرورگر &gt; Chrome» تک‌ضرب بزنید</translation>
 <translation id="6260830281887654268">برگ زیرین مجموعه زمینه‌های ظاهر صفحه زبانه جدید به‌صورت نیمه باز شده است</translation>
-<translation id="6262191102408817757">براساس آخرین زبانه شما</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> و <ph name="PERMISSION_2" /> مسدود هستند</translation>
 <translation id="6270391203985052864">سایت‌ها می‌توانند برای ارسال اعلان درخواست دهند</translation>
 <translation id="6295158916970320988">همه سایت‌ها</translation>
@@ -602,7 +600,6 @@
 <translation id="7180611975245234373">بازآوری</translation>
 <translation id="7188508872042490670">داده‌های سایت‌ها در دستگاه</translation>
 <translation id="7201549776650881587">با این کار همه داده‌ها و کوکی‌های ذخیره‌شده توسط همه سایت‌های تحت <ph name="ORIGIN" /> یا برنامه آن در صفحه اصلی حذف خواهد شد</translation>
-<translation id="7203150201908454328">باز شده</translation>
 <translation id="7213166370492037743">به سایت‌ها اجازه داده نشود به دستگاه‌های موجود در شبکه محلی شما متصل شوند</translation>
 <translation id="7219254577985949841">داده‌های سایت حذف شود؟</translation>
 <translation id="723171743924126238">انتخاب تصاویر</translation>

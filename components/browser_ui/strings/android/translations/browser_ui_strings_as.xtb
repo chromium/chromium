@@ -125,7 +125,6 @@
 <translation id="2228071138934252756"><ph name="APP_NAME" />ক আপোনাৰ কেমেৰা এক্সেছ কৰিবলৈ দিবলৈ <ph name="BEGIN_LINK" />Android ছেটিংসমূহ<ph name="END_LINK" />তো কেমেৰা অন কৰক।</translation>
 <translation id="2231160360698766265">ছাইটে সুৰক্ষিত সমল প্লে' কৰিব পাৰে</translation>
 <translation id="2235344399760031203">তৃতীয় পক্ষৰ কুকিসমূহ অৱৰোধ কৰা হৈছে</translation>
-<translation id="2238944249568001759">আপোনাৰ অন্তিম টেবটোৰ আধাৰত পৰামৰ্শিত সন্ধানসমূহ</translation>
 <translation id="2241587408274973373">নতুন টেবৰ পৃষ্ঠাৰ কার্ড</translation>
 <translation id="2241634353105152135">মাত্ৰ এবাৰ</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> আঁতৰাওক</translation>
@@ -214,7 +213,6 @@
 <translation id="3069226013421428034">নিৰ্দিষ্ট কোনো ছাইটৰ বাবে তৃতীয় পক্ষৰ ছাইন ইনৰ অনুমতি দিয়ক।</translation>
 <translation id="310297983047869047">পূৰ্বৱৰ্তী শ্লাইড</translation>
 <translation id="3108122610701115301">ডিফ’ল্ট ছেট কৰক</translation>
-<translation id="3109724472072898302">সংকুচিত কৰা আছে</translation>
 <translation id="310979712355504754">সকলো মচক</translation>
 <translation id="311394601889664316">ছাইটক আপোনাৰ ডিভাইচত ফাইল আৰু ফ’ল্ডাৰ সম্পাদনা কৰাৰ অনুমতি নিদিব</translation>
 <translation id="3114012059975132928">ভিডিঅ’ প্লে’য়াৰ</translation>
@@ -262,7 +260,6 @@
 <translation id="3602290021589620013">পূৰ্বদৰ্শন</translation>
 <translation id="3611658447322220736">শেহতীয়াকৈ বন্ধ কৰা ছাইটসমূহে ডেটা পঠিওৱা আৰু গ্ৰহণ কৰা কাৰ্যটো সম্পূৰ্ণ কৰিব পাৰে</translation>
 <translation id="3619294456800709762">ছাইটসমূহ স্বয়ংক্ৰিয়ভাৱে picture-in-picture ম’ডলৈ যাব পাৰে</translation>
-<translation id="3628308229821498208">পৰামৰ্শিত সন্ধানসমূহ</translation>
 <translation id="3632460243282703117">ছাবস্ক্ৰাইব কৰক</translation>
 <translation id="363748948745453283">আনুমানিক অৱস্থান ব্যৱহাৰ কৰি থকা হৈছে</translation>
 <translation id="3641456520301071208">ছাইটে আপোনাৰ অৱস্থান বিচাৰিব পাৰে</translation>
@@ -524,7 +521,6 @@
 <translation id="6231752747840485235">'<ph name="APP_NAME" />' আনইনষ্টল কৰিবনে?</translation>
 <translation id="6234351944623978659">ব্ৰাউজাৰ এপ্ &gt; Chromeত টিপক</translation>
 <translation id="6260830281887654268">নতুন টেবৰ পৃষ্ঠাখন প্ৰদৰ্শিত হোৱা থীমৰ সংগ্ৰহৰ তলৰ শ্বীটখন অৰ্ধ উচ্চতাত খোলা হৈছে</translation>
-<translation id="6262191102408817757">আপোনাৰ অন্তিম টেবটোৰ ভিত্তিত</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> আৰু <ph name="PERMISSION_2" />ক অৱৰোধ কৰা আছে</translation>
 <translation id="6270391203985052864">ছাইটসমূহে জাননী পঠিয়াবলৈ ক’ব পাৰে</translation>
 <translation id="6295158916970320988">সকলো ছাইট</translation>
@@ -604,7 +600,6 @@
 <translation id="7180611975245234373">ৰিফ্ৰেশ্ব কৰক</translation>
 <translation id="7188508872042490670">ডিভাইচত থকা ছাইটৰ ডেটা</translation>
 <translation id="7201549776650881587">এই কাৰ্যটোৱে <ph name="ORIGIN" />ৰ অন্তৰ্গত আটাইবোৰ ছাইটে অথবা ইয়াৰ এপ্‌সমূহে আপোনাৰ গৃহ স্ক্ৰীনত ষ্ট’ৰ কৰা আটাইবোৰ ডেটা আৰু কুকি মচিব</translation>
-<translation id="7203150201908454328">বিস্তাৰিত</translation>
 <translation id="7213166370492037743">আপোনাৰ স্থানীয় নেটৱৰ্কৰ যিকোনো ডিভাইচৰ সৈতে সংযোগ কৰিবলৈ অনুমতি নিদিব</translation>
 <translation id="7219254577985949841">ছাইটৰ ডেটা মচিবনে?</translation>
 <translation id="723171743924126238">ছবি বাছনি কৰক</translation>

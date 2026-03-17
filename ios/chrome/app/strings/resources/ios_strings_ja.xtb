@@ -394,6 +394,7 @@
 <translation id="2360196772093551345">モバイルサイトをリクエスト</translation>
 <translation id="2362083820973145409"><ph name="USER_NAME" />（<ph name="USER_EMAIL" />）としてログインしています。設定を開きます。</translation>
 <translation id="2371084566192454134">タブとタブグループ</translation>
+<translation id="2371303771137626249">新規</translation>
 <translation id="2381405137052800939">基本設定</translation>
 <translation id="2384692388811649784">シークレット タブを非表示にする</translation>
 <translation id="2386793615875593361">1 枚選択されています</translation>
@@ -690,6 +691,7 @@
 <translation id="3530206579861815432">同期したデバイスで開いているタブや最近閉じたタブが簡単に見つかります。</translation>
 <translation id="3530767473765895035">このデバイスのアカウントを管理…</translation>
 <translation id="3533436815740441613">新しいタブ</translation>
+<translation id="3534738261102690620">Gemini に相談</translation>
 <translation id="3540141921715814660">ブックマークに追加する</translation>
 <translation id="3546122170015471515">Google.com のマップ プレビュー</translation>
 <translation id="3547356470684043247">レビューで製品、サービス、使い勝手に関する購入者の評価を確認し、判断材料にすることができます</translation>
@@ -960,6 +962,7 @@
 <translation id="454217142158335225">閉じたタブやタブグループは、[最近使ったタブ] または [タブグループ] で再度開くことができます。固定タブは閉じられません。</translation>
 <translation id="4547181496285029457">最近使用したタブに戻る</translation>
 <translation id="4552042254369397518">コピー中…</translation>
+<translation id="4553044860350038560">その他のパスキー</translation>
 <translation id="4564893319561643483">「<ph name="TITLE" />」を非表示にする</translation>
 <translation id="4565377596337484307">パスワードを表示しない</translation>
 <translation id="4568230126482344545">最近使ったタブを非表示</translation>
@@ -1088,6 +1091,7 @@
 <translation id="4944543191714094452">ページ内を検索…</translation>
 <translation id="4945756290001680296">パスワードの設定にアクセスします</translation>
 <translation id="4949302115427722371">設定を管理…</translation>
+<translation id="4952050521954075618">デバイス間でカメラロールの写真が同期されなくなります</translation>
 <translation id="4958444002117714549">リストを展開する</translation>
 <translation id="496392417432935267">別の場所で開かれています</translation>
 <translation id="4970724460420203313">管理対象アカウントで Chrome を使用すると、組織に関連するブラウジング（タブ、履歴、パスワードなど）を他のブラウジングと分けて管理できます</translation>
@@ -1287,6 +1291,7 @@
 <translation id="5647702255748985085">グループから退出しますか？</translation>
 <translation id="5648166631817621825">過去 7 日間</translation>
 <translation id="5652623411397330904">トラッキングしている商品がここに表示されます。</translation>
+<translation id="5653100054596780862">すべてのタブ</translation>
 <translation id="5656431592348714536">拡張カレンダー</translation>
 <translation id="5659593005791499971">メール</translation>
 <translation id="5665739277590037307"><ph name="GOOGLE_TERMS" /> と <ph name="GEMINI_APPS_PRIVACY" /> が適用されます。Gemini は不正確な情報を表示することがあるため、生成された回答を再確認するようにしてください。</translation>
@@ -1752,6 +1757,7 @@
 <translation id="7300448350764260141">オンラインの脅威に対する保護を強化しましょう。</translation>
 <translation id="7311244614769792472">一致する結果は見つかりませんでした</translation>
 <translation id="7313347584264171202">シークレット タブはここに表示されます</translation>
+<translation id="7322186060879266048">{count,plural, =1{キーボードの上部に自動入力の候補が {count} 件表示されています。}other{キーボードの上部に自動入力の候補が {count} 件表示されています。}}</translation>
 <translation id="7328162502911382168">（<ph name="COUNT" />）</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" />%ダウンロード</translation>
 <translation id="7345061034321640811">インポートは許可されていません</translation>

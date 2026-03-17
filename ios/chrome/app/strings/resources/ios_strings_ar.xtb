@@ -394,6 +394,7 @@
 <translation id="2360196772093551345">طلب موقع إلكتروني متوافق مع الأجهزة الجوَّالة</translation>
 <translation id="2362083820973145409">تم تسجيل الدخول باسم "<ph name="USER_NAME" />". عنوان البريد الإلكتروني للمستخدم هو <ph name="USER_EMAIL" />. يفتح هذا الزر صفحة الإعدادات.</translation>
 <translation id="2371084566192454134">علامات التبويب ومجموعات علامات التبويب</translation>
+<translation id="2371303771137626249">جديد</translation>
 <translation id="2381405137052800939">الإعدادات الأساسية</translation>
 <translation id="2384692388811649784">إخفاء علامات التبويب في وضع التصفّح المتخفي</translation>
 <translation id="2386793615875593361">تم اختيار عنصر واحد</translation>
@@ -636,6 +637,7 @@
 <translation id="3324193307694657476">العنوان 2</translation>
 <translation id="3328801116991980348">معلومات الموقع الإلكتروني</translation>
 <translation id="333229797575847124">طريقة تفعيل هذه الميزة</translation>
+<translation id="334004756946755423">أريد شرحًا لهذا:</translation>
 <translation id="3344233834747405775">اسم حامل البطاقة غير صالح</translation>
 <translation id="3344485292736684439">{count,plural, =1{تم حفظ الإشارة المرجعية في "{title}" ضمن حسابك ({email}).}zero{تم حفظ الإشارات المرجعية في "{title}" ضمن حسابك ({email}).}two{تم حفظ الإشارتَين المرجعيتَين في "{title}" ضمن حسابك ({email}).}few{تم حفظ الإشارات المرجعية في "{title}" ضمن حسابك ({email}).}many{تم حفظ الإشارات المرجعية في "{title}" ضمن حسابك ({email}).}other{تم حفظ الإشارات المرجعية في "{title}" ضمن حسابك ({email}).}}</translation>
 <translation id="334690320928261823">علامات التبويب الأخيرة</translation>
@@ -689,6 +691,7 @@
 <translation id="3530206579861815432">يمكنك العثور بسرعة على علامات التبويب المفتوحة وتلك التي تم إغلاقها مؤخرًا على جميع أجهزتك التي تمت مزامنتها.</translation>
 <translation id="3530767473765895035">إدارة الحسابات على هذا الجهاز…</translation>
 <translation id="3533436815740441613">علامة تبويب جديدة</translation>
+<translation id="3534738261102690620">‏اسأل Gemini</translation>
 <translation id="3540141921715814660">الإضافة إلى الإشارات المرجعية</translation>
 <translation id="3546122170015471515">‏"معاينة الخرائط" (Maps Previews) على Google.com</translation>
 <translation id="3547356470684043247">اطّلِع على تقييمات العملاء للمنتجات أو الخدمات أو التجارب لمساعدتك في اتخاذ قرارات مدروسة بشأن المراجعات</translation>
@@ -959,6 +962,7 @@
 <translation id="454217142158335225">يمكنك إعادة فتح علامات التبويب المغلقة من قسمَي "علامات التبويب الأخيرة" و"مجموعات علامات التبويب". ولن يتم إغلاق علامات التبويب المثبَّتة.</translation>
 <translation id="4547181496285029457">العودة إلى أحدث علامة تبويب</translation>
 <translation id="4552042254369397518">جارٍ النسخ…</translation>
+<translation id="4553044860350038560">المزيد من مفاتيح المرور</translation>
 <translation id="4564893319561643483">إخفاء "<ph name="TITLE" />"</translation>
 <translation id="4565377596337484307">إخفاء كلمة المرور</translation>
 <translation id="4568230126482344545">إخفاء "علامات التبويب الأخيرة"</translation>
@@ -1087,6 +1091,7 @@
 <translation id="4944543191714094452">البحث في الصفحة…</translation>
 <translation id="4945756290001680296">الوصول إلى إعدادات كلمات المرور</translation>
 <translation id="4949302115427722371">إدارة الإعدادات…</translation>
+<translation id="4952050521954075618">لن تتم مزامنة الصور من ألبوم الكاميرا على جميع أجهزتك</translation>
 <translation id="4958444002117714549">توسيع القائمة</translation>
 <translation id="496392417432935267">مفتوح في نافذة أخرى</translation>
 <translation id="4970724460420203313">‏يساعد استخدام Chrome من خلال حسابك المُدار في فصل بيانات التصفّح المتعلقة بمؤسستك (بما في ذلك علامات التبويب والسجلّ وكلمات المرور) عن بيانات التصفّح الأخرى</translation>
@@ -1284,6 +1289,7 @@
 <translation id="5647702255748985085">هل المطلوب مغادرة المجموعة؟</translation>
 <translation id="5648166631817621825">آخر 7 أيام</translation>
 <translation id="5652623411397330904">ستظهر هنا المنتجات التي يتم تتبُّع أسعارها.</translation>
+<translation id="5653100054596780862">جميع علامات التبويب</translation>
 <translation id="5656431592348714536">‏"تقويم Google" المحسَّن</translation>
 <translation id="5659593005791499971">البريد الإلكتروني</translation>
 <translation id="5665739277590037307">‏تسري <ph name="GOOGLE_TERMS" /> و<ph name="GEMINI_APPS_PRIVACY" />. قد يعرض Gemini معلومات خاطئة، لذا ننصحك بالتحقّق من ردوده.</translation>
@@ -1749,6 +1755,7 @@
 <translation id="7300448350764260141">يمكنك إضافة طبقة حماية إضافية من التهديدات على الإنترنت.</translation>
 <translation id="7311244614769792472">لم يتم العثور على نتائج.</translation>
 <translation id="7313347584264171202">ستظهر لك علامات تبويب في وضع التصفّح المتخفي هنا</translation>
+<translation id="7322186060879266048">{count,plural, =1{يتوفّر خيار واحد ({count}) للملء التلقائي أعلى لوحة المفاتيح.}zero{يتوفّر {count} خيار للملء التلقائي أعلى لوحة المفاتيح.}two{يتوفّر خيارَين ({count}) للملء التلقائي أعلى لوحة المفاتيح.}few{تتوفّر {count} خيارات للملء التلقائي أعلى لوحة المفاتيح.}many{يتوفّر {count} خيارًا للملء التلقائي أعلى لوحة المفاتيح.}other{يتوفّر {count} خيار للملء التلقائي أعلى لوحة المفاتيح.}}</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241">تم تنزيل <ph name="PERCENT" /> بالمائة</translation>
 <translation id="7345061034321640811">غير مسموح بالاستيراد</translation>

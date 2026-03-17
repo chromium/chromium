@@ -125,7 +125,6 @@
 <translation id="2228071138934252756"><ph name="APP_NAME" /> браузері камераны пайдалануы үшін, <ph name="BEGIN_LINK" />Android параметрлерінде<ph name="END_LINK" /> оны да қосыңыз.</translation>
 <translation id="2231160360698766265">Сайттар қорғалған контентті ойната алады.</translation>
 <translation id="2235344399760031203">Үшінші тараптың cookie файлдары бөгелді</translation>
-<translation id="2238944249568001759">Соңғы ашылған қойындыға негізделіп ұсынылатын іздеу сұраулары</translation>
 <translation id="2241587408274973373">Жаңа қойынды бетінің карталары</translation>
 <translation id="2241634353105152135">Бір-ақ рет</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> элементін жою</translation>
@@ -214,7 +213,6 @@
 <translation id="3069226013421428034">Белгілі бір сайт үшін бөгде қызметтер арқылы кіруге рұқсат беру.</translation>
 <translation id="310297983047869047">Алдыңғы слайд</translation>
 <translation id="3108122610701115301">Әдепкі ретінде орнату</translation>
-<translation id="3109724472072898302">Жиылған</translation>
 <translation id="310979712355504754">Барлығын жою</translation>
 <translation id="311394601889664316">Сайттардың құрылғыңыздағы файлдарды немесе қалталарды өзгертуіне рұқсат бермеу</translation>
 <translation id="3114012059975132928">Бейне ойнатқыш</translation>
@@ -262,7 +260,6 @@
 <translation id="3602290021589620013">Алдын ала көру</translation>
 <translation id="3611658447322220736">Соңғы кездері жабылған сайттар деректерді жіберу және қабылдау процесін аяқтай алады</translation>
 <translation id="3619294456800709762">Сайттар "суреттегі сурет" режимін автоматты түрде ашады</translation>
-<translation id="3628308229821498208">Ұсынылған іздеу сұраулары</translation>
 <translation id="3632460243282703117">Жазылу</translation>
 <translation id="363748948745453283">Болжалды локация пайдаланылып жатыр.</translation>
 <translation id="3641456520301071208">Сайттар локацияңызды сұрай алады.</translation>
@@ -490,6 +487,7 @@
 <translation id="5922853908706496913">Экранды бөлісіп жатырсыз.</translation>
 <translation id="5922967540311291836">Үшінші тарап cookie файлдарын бөгеу:</translation>
 <translation id="5923512600150154850">Сайттар сақтаған <ph name="DATASIZE" /> деректер мен cookie файлдары жойылады.</translation>
+<translation id="5930707844513754220">Басқа реттеу тізімін көру</translation>
 <translation id="5939518447894949180">Қалпына келтіру</translation>
 <translation id="5948139900367969951">Маңызды ақпаратты жылдам ашыңыз.</translation>
 <translation id="5964247741333118902">Ендірілген контент</translation>
@@ -498,6 +496,7 @@
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
 <translation id="5998071268779572583">Discover фидін қосу</translation>
 <translation id="6012967556075291653">Бекітілген таңбаша</translation>
+<translation id="6013003831291591200">Тапсырма орындалды.</translation>
 <translation id="6015775454662021376">Осы сайттың құрылғыңызға кіруін басқарыңыз.</translation>
 <translation id="6022659036123304283">Chrome браузерін өз талғамыңызға сай реттеңіз</translation>
 <translation id="6040143037577758943">Жабу</translation>
@@ -522,7 +521,6 @@
 <translation id="6231752747840485235">"<ph name="APP_NAME" />" қолданбасы жойылсын ба?</translation>
 <translation id="6234351944623978659">"Браузер қолданбасы &gt; Chrome" тармағын түртіңіз.</translation>
 <translation id="6260830281887654268">Жаңа қойынды бетіне арналған көрініс тақырыптарының жинақтары бар төменгі парақша жартылай ашылды.</translation>
-<translation id="6262191102408817757">Соңғы ашылған қойындыға негізделген.</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> және <ph name="PERMISSION_2" /> үшін тыйым салынған.</translation>
 <translation id="6270391203985052864">Сайттар хабарландырулар жіберу рұқсатын сұрай алады</translation>
 <translation id="6295158916970320988">Барлық сайттар</translation>
@@ -602,7 +600,6 @@
 <translation id="7180611975245234373">Жаңарту</translation>
 <translation id="7188508872042490670">Құрылғыдағы сайт деректері</translation>
 <translation id="7201549776650881587"><ph name="ORIGIN" /> доменіндегі барлық сайт немесе негізгі экрандағы оның қолданбасы сақтаған барлық дерек пен cookie файлы жойылады.</translation>
-<translation id="7203150201908454328">Кеңейтілген</translation>
 <translation id="7213166370492037743">Сайттарға жергілікті желідегі құрылғыларға қосылуға рұқсат бермеу</translation>
 <translation id="7219254577985949841">Сайт деректерін жою керек пе?</translation>
 <translation id="723171743924126238">Кескіндерді таңдау</translation>

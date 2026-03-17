@@ -125,7 +125,6 @@
 <translation id="2228071138934252756">Pour autoriser <ph name="APP_NAME" /> à accéder à votre appareil photo, activez aussi celui-ci dans les <ph name="BEGIN_LINK" />paramètres d'Android<ph name="END_LINK" />.</translation>
 <translation id="2231160360698766265">Les sites peuvent faire jouer du contenu protégé</translation>
 <translation id="2235344399760031203">Les témoins tiers sont bloqués</translation>
-<translation id="2238944249568001759">Recherches suggérées en fonction de votre dernier onglet</translation>
 <translation id="2241587408274973373">Cartes de la page Nouvel onglet</translation>
 <translation id="2241634353105152135">Une fois</translation>
 <translation id="2253414712144136228">Retirer l'élément suivant : <ph name="NAME_OF_LIST_ITEM" /></translation>
@@ -214,7 +213,6 @@ La protection avancée contrôle ces paramètres Chrome :
 <translation id="3069226013421428034">Autorisez la connexion de tiers pour un site particulier.</translation>
 <translation id="310297983047869047">Diapositive précédente</translation>
 <translation id="3108122610701115301">Définir par défaut</translation>
-<translation id="3109724472072898302">Réduit</translation>
 <translation id="310979712355504754">Tout supprimer</translation>
 <translation id="311394601889664316">Ne pas autoriser les sites à modifier les fichiers ni les dossiers sur votre appareil</translation>
 <translation id="3114012059975132928">Lecteur vidéo</translation>
@@ -262,7 +260,6 @@ La protection avancée contrôle ces paramètres Chrome :
 <translation id="3602290021589620013">Aperçu</translation>
 <translation id="3611658447322220736">Les sites fermés récemment peuvent terminer l'envoi et la réception de données</translation>
 <translation id="3619294456800709762">Les sites peuvent entrer automatiquement l'Incrustation d'image</translation>
-<translation id="3628308229821498208">Recherches suggérées</translation>
 <translation id="3632460243282703117">S'abonner</translation>
 <translation id="363748948745453283">Utilisation de la position approximative</translation>
 <translation id="3641456520301071208">Les sites peuvent vous demander votre position</translation>
@@ -490,6 +487,7 @@ La protection avancée contrôle ces paramètres Chrome :
 <translation id="5922853908706496913">Partage de votre écran en cours…</translation>
 <translation id="5922967540311291836">Bloquer les témoins tiers :</translation>
 <translation id="5923512600150154850">Cette action supprimera <ph name="DATASIZE" /> de données et de témoins stockés par des sites.</translation>
+<translation id="5930707844513754220">Afficher plus de la liste de configuration</translation>
 <translation id="5939518447894949180">Recommencer</translation>
 <translation id="5948139900367969951">Accédez rapidement à ce qui compte pour vous</translation>
 <translation id="5964247741333118902">Contenu intégré</translation>
@@ -498,6 +496,7 @@ La protection avancée contrôle ces paramètres Chrome :
 <translation id="5976059395673079613"><ph name="PERMISSION" /> : <ph name="WARNING_MESSAGE" /></translation>
 <translation id="5998071268779572583">Activer le flux Découvertes</translation>
 <translation id="6012967556075291653">Raccourci épinglé</translation>
+<translation id="6013003831291591200">Tâche terminée</translation>
 <translation id="6015775454662021376">Gérez l'accès de ce site à votre appareil</translation>
 <translation id="6022659036123304283">Appropriez-vous Chrome</translation>
 <translation id="6040143037577758943">Fermer</translation>
@@ -522,7 +521,6 @@ La protection avancée contrôle ces paramètres Chrome :
 <translation id="6231752747840485235">Désinstaller « <ph name="APP_NAME" /> »?</translation>
 <translation id="6234351944623978659">Touchez Appli de navigation &gt; Chrome.</translation>
 <translation id="6260830281887654268">Zone de contenu dans le bas de l'écran concernant les collections de thèmes de l'apparence de la page Nouvel onglet ouverte à mi-hauteur</translation>
-<translation id="6262191102408817757">En fonction de votre dernier onglet</translation>
 <translation id="6262279340360821358">Autorisations <ph name="PERMISSION_1" /> et <ph name="PERMISSION_2" /> bloquées</translation>
 <translation id="6270391203985052864">Les sites peuvent vous demander l'autorisation d'envoyer des notifications</translation>
 <translation id="6295158916970320988">Tous les sites</translation>
@@ -602,7 +600,6 @@ La protection avancée contrôle ces paramètres Chrome :
 <translation id="7180611975245234373">Actualiser</translation>
 <translation id="7188508872042490670">Données relatives aux sites sur l’appareil</translation>
 <translation id="7201549776650881587">Cette action supprimera toutes les données et tous les témoins stockés par tous les sites subordonnés de <ph name="ORIGIN" /> ou par son application sur votre écran d'accueil</translation>
-<translation id="7203150201908454328">Agrandi</translation>
 <translation id="7213166370492037743">Ne pas autoriser les sites à se connecter à un appareil de votre réseau local</translation>
 <translation id="7219254577985949841">Supprimer les données relatives aux sites?</translation>
 <translation id="723171743924126238">Sélectionner des images</translation>

@@ -213,6 +213,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="1900260903084164610">En continuar, acceptes les <ph name="BEGIN_TOS_LINK" />condicions del servei<ph name="END_TOS_LINK" />.</translation>
 <translation id="1904580727789512086">Els URL que visites es desen al teu Compte de Google</translation>
 <translation id="1910950723001426294">La llista d'opcions de compartició està tancada.</translation>
+<translation id="1912367671208932516">Obre el menú d'extensions</translation>
 <translation id="191726024256261717">Revisa els permisos</translation>
 <translation id="1917766536967060661">Perdràs immediatament l'accés al grup de pestanyes "<ph name="GROUP_NAME" />" i <ph name="BLOCKED_MEMBER_FULL_NAME" /> (<ph name="BLOCKED_MEMBER_EMAIL" />) ja no podrà interaccionar amb tu als serveis de Google.</translation>
 <translation id="1919130412786645364">Permet l'inici de sessió a Chrome</translation>
@@ -414,6 +415,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="2789486458103222910">D'acord</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome ha trobat una contrasenya reutilitzada que podries millorar}other{Chrome ha trobat # contrasenyes reutilitzades que podries millorar}}</translation>
 <translation id="2794551654724114396">Activa les notificacions per rebre consells útils que t'ajudaran a treure el màxim profit de Chrome</translation>
+<translation id="2798977804328097977">Continua sense problemes en qualsevol dispositiu</translation>
 <translation id="2805210243313393104">Accedeix a les teves adreces d'interès i altres dades en tots els dispositius</translation>
 <translation id="2805756323405976993">Aplicacions</translation>
 <translation id="2819849308549746319">Cancel·la la subscripció de tots els llocs web</translation>
@@ -469,6 +471,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="2977350910003566746">S'ordena per última obertura</translation>
 <translation id="297771753501244313">Ordena per última obertura</translation>
 <translation id="2979639724566107830">Obre-ho en una finestra nova</translation>
+<translation id="2980545254049127870">Obre fàcilment enllaços de missatges, documents i altres aplicacions</translation>
 <translation id="2983102365694924129">Segons la teva activitat en un lloc web. Aquesta opció de configuració està desactivada.</translation>
 <translation id="2983398917942897288">Inactives (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2983835398644161987">Surt del mode de pantalla en pantalla</translation>
@@ -730,6 +733,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="4137746084635924146">Idioma actual del dispositiu</translation>
 <translation id="414128724510021958">Llocs web per a ordinadors sol·licitats de manera predeterminada</translation>
 <translation id="4162867837470729563">Llista d'opcions de compartició a alçada completa.</translation>
+<translation id="4164642020717536140">Navegació web ràpida i segura</translation>
 <translation id="4165077084524712774">Més eines</translation>
 <translation id="4170011742729630528">El servei no està disponible. Torneu-ho a provar més tard.</translation>
 <translation id="4170577491341606575">S'estan obtenint les teves coses\u2026</translation>
@@ -854,6 +858,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 contrasenya en perill}other{# contrasenyes en perill}}</translation>
 <translation id="4641919525231168205">Ves a la pàgina següent</translation>
 <translation id="4642472735733036929">S'ha aturat el seguiment dels preus</translation>
+<translation id="4643661539340338954">Les notificacions de Chrome Finds estan activades</translation>
 <translation id="4649493483932335039">Mostra les pestanyes recents</translation>
 <translation id="465657074423018424">Navegació segura et protegeix de llocs web perillosos. Si la desactives, ves molt amb compte quan naveguis, especialment abans d'introduir contrasenyes.</translation>
 <translation id="4662373422909645029">L'àlies no pot incloure nombres</translation>
@@ -1652,6 +1657,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="7686086654630106285">Més informació sobre els anuncis suggerits per llocs web</translation>
 <translation id="7690596512217303514">El dispositiu no ha pogut obrir Chrome. Per resoldre el problema, baixa l'actualització més recent de Chrome de la botiga d'aplicacions.</translation>
 <translation id="7692761875510935111">Obre ràpidament al navegador. Mantén premuda aquesta drecera per editar-la.</translation>
+<translation id="7695270712963178084">Chrome Finds</translation>
 <translation id="7697383401610880082">Ansa de posicionament</translation>
 <translation id="7698359219371678927">Crea una adreça electrònica a <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">Full inferior de l'activitat recent obert a alçada completa</translation>

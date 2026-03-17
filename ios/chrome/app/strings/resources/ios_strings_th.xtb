@@ -394,6 +394,7 @@
 <translation id="2360196772093551345">ขอเว็บไซต์เวอร์ชันมือถือ</translation>
 <translation id="2362083820973145409">ลงชื่อเข้าใช้ด้วย <ph name="USER_NAME" /> <ph name="USER_EMAIL" /> เปิดการตั้งค่า</translation>
 <translation id="2371084566192454134">แท็บและกลุ่มแท็บ</translation>
+<translation id="2371303771137626249">ใหม่</translation>
 <translation id="2381405137052800939">พื้นฐาน</translation>
 <translation id="2384692388811649784">ซ่อนแท็บที่ไม่ระบุตัวตน</translation>
 <translation id="2386793615875593361">เลือก 1 รูป</translation>
@@ -690,6 +691,7 @@
 <translation id="3530206579861815432">ค้นหาแท็บที่เปิดอยู่และแท็บที่เพิ่งปิดได้อย่างรวดเร็วในอุปกรณ์ที่ซิงค์</translation>
 <translation id="3530767473765895035">จัดการบัญชีในอุปกรณ์นี้…</translation>
 <translation id="3533436815740441613">แท็บใหม่</translation>
+<translation id="3534738261102690620">ขอความช่วยเหลือจาก Gemini</translation>
 <translation id="3540141921715814660">เพิ่มไปยังบุ๊กมาร์ก</translation>
 <translation id="3546122170015471515">การแสดงตัวอย่างแผนที่ใน Google.com</translation>
 <translation id="3547356470684043247">อ่านการประเมินผลิตภัณฑ์ บริการ หรือประสบการณ์ของลูกค้าเพื่อช่วยในการตัดสินด้วยรีวิว</translation>
@@ -960,6 +962,7 @@
 <translation id="454217142158335225">คุณเปิดรายการที่ปิดไปแล้วอีกครั้งได้จากส่วนแท็บหรือกลุ่มแท็บล่าสุด ระบบจะไม่ปิดแท็บที่ปักหมุดไว้</translation>
 <translation id="4547181496285029457">กลับไปที่แท็บล่าสุด</translation>
 <translation id="4552042254369397518">กำลังคัดลอก…</translation>
+<translation id="4553044860350038560">พาสคีย์เพิ่มเติม</translation>
 <translation id="4564893319561643483">ซ่อน "<ph name="TITLE" />"</translation>
 <translation id="4565377596337484307">ซ่อนรหัสผ่าน</translation>
 <translation id="4568230126482344545">ซ่อน "แท็บล่าสุด"</translation>
@@ -1088,6 +1091,7 @@
 <translation id="4944543191714094452">ค้นหาในหน้าเว็บ…</translation>
 <translation id="4945756290001680296">เข้าถึงการตั้งค่ารหัสผ่าน</translation>
 <translation id="4949302115427722371">จัดการการตั้งค่า…</translation>
+<translation id="4952050521954075618">รูปภาพจากรูปภาพจากกล้องจะไม่ซิงค์ในอุปกรณ์ต่างๆ</translation>
 <translation id="4958444002117714549">ขยายรายการ</translation>
 <translation id="496392417432935267">เปิดอยู่ที่อื่น</translation>
 <translation id="4970724460420203313">การใช้งาน Chrome ด้วยบัญชีที่จัดการจะช่วยแยกการท่องเว็บที่เกี่ยวข้องกับองค์กรของคุณ (รวมถึงแท็บ ประวัติการเข้าชม และรหัสผ่าน) ออกจากการท่องเว็บอื่นๆ</translation>
@@ -1287,6 +1291,7 @@
 <translation id="5647702255748985085">ออกจากกลุ่มใช่ไหม</translation>
 <translation id="5648166631817621825">7 วันที่ผ่านมา</translation>
 <translation id="5652623411397330904">ผลิตภัณฑ์ที่คุณติดตามจะแสดงที่นี่</translation>
+<translation id="5653100054596780862">แท็บทั้งหมด</translation>
 <translation id="5656431592348714536">ปฏิทินที่มีประสิทธิภาพมากขึ้น</translation>
 <translation id="5659593005791499971">อีเมล</translation>
 <translation id="5665739277590037307">เป็นไปตาม<ph name="GOOGLE_TERMS" />และ<ph name="GEMINI_APPS_PRIVACY" /> Gemini อาจทำผิดพลาดได้ ดังนั้นโปรดตรวจสอบคำตอบอีกครั้ง</translation>
@@ -1752,6 +1757,7 @@
 <translation id="7300448350764260141">เพิ่มการป้องกันภัยคุกคามทางออนไลน์ขึ้นอีกชั้น</translation>
 <translation id="7311244614769792472">ไม่พบผลการค้นหา</translation>
 <translation id="7313347584264171202">คุณจะเห็นแท็บที่ไม่ระบุตัวตนที่นี่</translation>
+<translation id="7322186060879266048">{count,plural, =1{ตัวเลือกป้อนข้อความอัตโนมัติ {count} รายการพร้อมให้ใช้งานอยู่เหนือแป้นพิมพ์}other{ตัวเลือกการป้อนข้อความอัตโนมัติ {count} รายการพร้อมให้ใช้งานอยู่เหนือแป้นพิมพ์}}</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241">ดาวน์โหลดแล้ว <ph name="PERCENT" /> เปอร์เซ็นต์</translation>
 <translation id="7345061034321640811">ไม่อนุญาตให้นำเข้า</translation>

@@ -125,7 +125,6 @@
 <translation id="2228071138934252756">Để cho phép <ph name="APP_NAME" /> truy cập vào máy ảnh của bạn, hãy bật cả máy ảnh trong phần <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" />.</translation>
 <translation id="2231160360698766265">Các trang web có thể phát nội dung được bảo vệ</translation>
 <translation id="2235344399760031203">Đã chặn các cookie bên thứ ba</translation>
-<translation id="2238944249568001759">Cụm từ tìm kiếm đề xuất dựa trên thẻ gần đây nhất của bạn</translation>
 <translation id="2241587408274973373">Thẻ trên trang thẻ mới</translation>
 <translation id="2241634353105152135">Chỉ một lần</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> Xoá</translation>
@@ -213,7 +212,6 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="3069226013421428034">Cho phép đăng nhập qua bên thứ ba cho một trang web cụ thể.</translation>
 <translation id="310297983047869047">Trang trình bày trước</translation>
 <translation id="3108122610701115301">Đặt làm mặc định</translation>
-<translation id="3109724472072898302">Đã thu gọn</translation>
 <translation id="310979712355504754">Xóa tất cả</translation>
 <translation id="311394601889664316">Không cho phép các trang web chỉnh sửa tệp hoặc thư mục trên thiết bị</translation>
 <translation id="3114012059975132928">Trình phát video</translation>
@@ -261,7 +259,6 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="3602290021589620013">Xem trước</translation>
 <translation id="3611658447322220736">Các trang web đã đóng gần đây có thể hoàn tất thao tác gửi và nhận dữ liệu</translation>
 <translation id="3619294456800709762">Các trang web có thể tự động chuyển sang chế độ hình trong hình</translation>
-<translation id="3628308229821498208">Cụm từ tìm kiếm đề xuất</translation>
 <translation id="3632460243282703117">Đăng ký</translation>
 <translation id="363748948745453283">Sử dụng vị trí ước chừng</translation>
 <translation id="3641456520301071208">Các trang web có thể yêu cầu thông tin vị trí của bạn</translation>
@@ -523,7 +520,6 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="6231752747840485235">Gỡ cài đặt "<ph name="APP_NAME" />"?</translation>
 <translation id="6234351944623978659">Nhấn vào Ứng dụng trình duyệt &gt; Chrome</translation>
 <translation id="6260830281887654268">Bảng bộ sưu tập giao diện trang thẻ mới ở dưới cùng đã mở trên một nửa màn hình</translation>
-<translation id="6262191102408817757">Dựa trên thẻ gần đây nhất của bạn</translation>
 <translation id="6262279340360821358">Đã chặn: <ph name="PERMISSION_1" /> và <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Các trang web có thể yêu cầu gửi thông báo</translation>
 <translation id="6295158916970320988">Tất cả các trang web</translation>
@@ -603,7 +599,6 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="7180611975245234373">Làm mới</translation>
 <translation id="7188508872042490670">Dữ liệu trang web trên máy</translation>
 <translation id="7201549776650881587">Thao tác này sẽ xoá toàn bộ dữ liệu và cookie do tất cả trang web thuộc miền <ph name="ORIGIN" /> hoặc ứng dụng liên quan trên Màn hình chính lưu trữ</translation>
-<translation id="7203150201908454328">Được mở rộng</translation>
 <translation id="7213166370492037743">Không cho phép các trang web kết nối với bất kỳ thiết bị nào trên mạng cục bộ của bạn</translation>
 <translation id="7219254577985949841">Xoá dữ liệu trang web?</translation>
 <translation id="723171743924126238">Chọn hình ảnh</translation>

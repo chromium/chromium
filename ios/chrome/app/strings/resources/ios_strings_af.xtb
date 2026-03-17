@@ -394,6 +394,7 @@
 <translation id="2360196772093551345">Versoek mobiele werf</translation>
 <translation id="2362083820973145409">Aangemeld as <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Maak instellings oop.</translation>
 <translation id="2371084566192454134">Oortjies en oortjiegroepe</translation>
+<translation id="2371303771137626249">Nuut</translation>
 <translation id="2381405137052800939">Basiese beginsels</translation>
 <translation id="2384692388811649784">Versteek Incognito-oortjies</translation>
 <translation id="2386793615875593361">1 gekies</translation>
@@ -636,6 +637,7 @@
 <translation id="3324193307694657476">Adres 2</translation>
 <translation id="3328801116991980348">Werfinligting</translation>
 <translation id="333229797575847124">Hoe om hierdie kenmerk te aktiveer</translation>
+<translation id="334004756946755423">Verduidelik dit vir my:</translation>
 <translation id="3344233834747405775">Ongeldige kaarthouernaam</translation>
 <translation id="3344485292736684439">{count,plural, =1{Boekmerk is gestoor in “{title}” in jou rekening, {email}}other{Boekmerke is gestoor in “{title}” in jou rekening, {email}}}</translation>
 <translation id="334690320928261823">Onlangse oortjies</translation>
@@ -689,6 +691,7 @@
 <translation id="3530206579861815432">Kry oortjies wat oop en onlangs toegemaak is vinnig op al jou gesinkroniseerde toestelle.</translation>
 <translation id="3530767473765895035">Bestuur rekeninge op hierdie toestel …</translation>
 <translation id="3533436815740441613">Nuwe oortjie</translation>
+<translation id="3534738261102690620">Vra Gemini</translation>
 <translation id="3540141921715814660">Voeg by Boekmerke</translation>
 <translation id="3546122170015471515">Maps-voorskou op Google.com</translation>
 <translation id="3547356470684043247">Lees klantevaluasies van produkte, dienste of ervarings om te help om jou besluite met resensies in te lig</translation>
@@ -959,6 +962,7 @@
 <translation id="454217142158335225">Jy kan toegemaakte items weer oopmaak vanuit die Onlangse Oortjies- of Oortjiegroepe-afdeling. Jou vasgespelde oortjies sal nie toegemaak word nie.</translation>
 <translation id="4547181496285029457">Keer terug na onlangse oortjie</translation>
 <translation id="4552042254369397518">Kopieer tans …</translation>
+<translation id="4553044860350038560">Meer toegangsleutels</translation>
 <translation id="4564893319561643483">Versteek “<ph name="TITLE" />”</translation>
 <translation id="4565377596337484307">Versteek wagwoord</translation>
 <translation id="4568230126482344545">Versteek Onlangs-oortjies</translation>
@@ -1087,6 +1091,7 @@
 <translation id="4944543191714094452">Soek op bladsy …</translation>
 <translation id="4945756290001680296">Gaan by wagwoordinstelling in</translation>
 <translation id="4949302115427722371">Bestuur instellings …</translation>
+<translation id="4952050521954075618">Foto’s op die kameraspoel sal nie tussen jou toestelle sinkroniseer nie</translation>
 <translation id="4958444002117714549">Vou lys uit</translation>
 <translation id="496392417432935267">Elders oopgemaak</translation>
 <translation id="4970724460420203313">As jy Chrome met jou bestuurde rekening gebruik, help dit jou om webblaai wat met jou organisasie te doen het (insluitend oortjies, geskiedenis en wagwoorde), afsonderlik van jou ander webblaai te hou</translation>
@@ -1286,6 +1291,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="5647702255748985085">Verlaat groep?</translation>
 <translation id="5648166631817621825">Afgelope 7 dae</translation>
 <translation id="5652623411397330904">Die produkte wat jy naspoor, sal hier verskyn.</translation>
+<translation id="5653100054596780862">Alle oortjies</translation>
 <translation id="5656431592348714536">Versterkte Kalender</translation>
 <translation id="5659593005791499971">E-pos</translation>
 <translation id="5665739277590037307"><ph name="GOOGLE_TERMS" /> en <ph name="GEMINI_APPS_PRIVACY" /> geld. Gemini kan foute maak, daarom moet jy dit dubbelkontroleer.</translation>
@@ -1751,6 +1757,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="7300448350764260141">Voeg ’n ekstra laag beskerming teen aanlynbedreigings by.</translation>
 <translation id="7311244614769792472">Geen resultate gekry nie</translation>
 <translation id="7313347584264171202">Jy sal jou incognito-oortjies hier kry</translation>
+<translation id="7322186060879266048">{count,plural, =1{{count} outovulopsie is bo jou sleutelbord beskikbaar.}other{{count} outovulopsies is bo jou sleutelbord beskikbaar.}}</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> persent afgelaai</translation>
 <translation id="7345061034321640811">Invoer word nie toegelaat nie</translation>

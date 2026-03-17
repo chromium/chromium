@@ -394,6 +394,7 @@
 <translation id="2360196772093551345">切換為行動版網站</translation>
 <translation id="2362083820973145409">目前登入的帳戶是<ph name="USER_NAME" />。<ph name="USER_EMAIL" />。開啟設定。</translation>
 <translation id="2371084566192454134">分頁和分頁群組</translation>
+<translation id="2371303771137626249">新增</translation>
 <translation id="2381405137052800939">基本</translation>
 <translation id="2384692388811649784">隱藏無痕分頁</translation>
 <translation id="2386793615875593361">已選取 1 張</translation>
@@ -689,6 +690,7 @@
 <translation id="3530206579861815432">快速尋找所有已同步裝置上目前開啟和最近關閉的分頁</translation>
 <translation id="3530767473765895035">管理這部裝置上的帳戶</translation>
 <translation id="3533436815740441613">新分頁</translation>
+<translation id="3534738261102690620">問問 Gemini</translation>
 <translation id="3540141921715814660">加入書籤</translation>
 <translation id="3546122170015471515">Google.com 上的地圖預覽</translation>
 <translation id="3547356470684043247">閱讀消費者的產品/服務/體驗評價後再做決定</translation>
@@ -959,6 +961,7 @@
 <translation id="454217142158335225">你可以透過「最近關閉的分頁」或「分頁群組」部分，重新開啟關閉的項目。系統不會關閉固定分頁。</translation>
 <translation id="4547181496285029457">返回「最近」分頁</translation>
 <translation id="4552042254369397518">複製中…</translation>
+<translation id="4553044860350038560">更多密碼金鑰</translation>
 <translation id="4564893319561643483">隱藏「<ph name="TITLE" />」</translation>
 <translation id="4565377596337484307">隱藏密碼</translation>
 <translation id="4568230126482344545">隱藏「最近開啟的分頁」</translation>
@@ -1087,6 +1090,7 @@
 <translation id="4944543191714094452">在網頁中尋找…</translation>
 <translation id="4945756290001680296">存取密碼設定</translation>
 <translation id="4949302115427722371">管理設定…</translation>
+<translation id="4952050521954075618">相機膠卷中的相片不會在各裝置間同步</translation>
 <translation id="4958444002117714549">展開清單</translation>
 <translation id="496392417432935267">已在其他視窗開啟</translation>
 <translation id="4970724460420203313">使用代管帳戶登入 Chrome 後，就能將貴機構相關瀏覽資料 (包括分頁、歷史記錄和密碼) 與其他瀏覽資料分開</translation>
@@ -1286,6 +1290,7 @@
 <translation id="5647702255748985085">要退出群組嗎？</translation>
 <translation id="5648166631817621825">過去 7 天</translation>
 <translation id="5652623411397330904">你追蹤的產品會顯示在這裡。</translation>
+<translation id="5653100054596780862">所有分頁</translation>
 <translation id="5656431592348714536">加強型日曆</translation>
 <translation id="5659593005791499971">電子郵件</translation>
 <translation id="5665739277590037307">適用《<ph name="GOOGLE_TERMS" />》和《<ph name="GEMINI_APPS_PRIVACY" />》。Gemini 可能會&lt;br&gt;出錯，因此請查證回覆內容。</translation>
@@ -1751,6 +1756,7 @@
 <translation id="7300448350764260141">多添一層防護，有效防範線上威脅。</translation>
 <translation id="7311244614769792472">找不到任何結果</translation>
 <translation id="7313347584264171202">這裡會顯示你的無痕分頁</translation>
+<translation id="7322186060879266048">{count,plural, =1{鍵盤上方顯示 {count} 個自動填入選項。}other{鍵盤上方顯示 {count} 個自動填入選項。}}</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241">已下載 <ph name="PERCENT" /> %</translation>
 <translation id="7345061034321640811">不允許匯入</translation>

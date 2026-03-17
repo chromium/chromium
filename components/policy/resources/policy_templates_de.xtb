@@ -7268,6 +7268,7 @@ Mit der Richtlinie „<ph name="MICROSOFT_ONE_DRIVE_ACCOUNT_RESTRICTIONS" />“ 
 <translation id="5815990343032461023">Altes Verhalten: Kiosk-Chrome-Apps werden über das Erweiterungssystem anhand der Update-URL aus dem Erweiterungsmanifest aktualisiert sowie über die Caching-Verwaltung anhand der Update-URL aus der Richtlinie</translation>
 <translation id="5816688024515869030">Anbieter der <ph name="UIA_NAME" /> deaktivieren.</translation>
 <translation id="581737504822041364">Zulassen, dass der ServiceWorker Navigationsanfragen sendet, ohne zu warten, bis er gestartet wird</translation>
+<translation id="5827464697821627670">Kann auf Computer- und Nutzerebene festgelegt werden</translation>
 <translation id="5828008775808363753">Browser nicht nach dem Anmelden starten</translation>
 <translation id="582857022372205358">Duplexdruck (kurze Kante) aktivieren</translation>
 <translation id="5830196507442186669">Geräten die Verwendung von <ph name="BOREALIS_NAME" /> unter <ph name="PRODUCT_OS_NAME" /> erlauben</translation>
@@ -10539,6 +10540,21 @@ Wenn die Richtlinie „<ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" />“ deaktivi
 <translation id="7933141401888114454">Erstellung von betreuten Nutzern aktivieren</translation>
 <translation id="793473937901685727">Verfügbarkeit von Zertifikaten für ARC-Apps festlegen</translation>
 <translation id="7936302526928951356">Im User-Agent-String wird die Hauptversion nicht festgeschrieben.</translation>
+<translation id="7936632434238618620">Mit dieser Richtlinie kannst du eine Liste von URL-Mustern erstellen, durch die Websites angegeben werden, für die Chrome automatisch ein Clientzertifikat auswählen kann. Der Wert ist ein Array von String-JSON-Wörterbüchern. Jedes Wörterbuch muss das Format <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_EXAMPLE" /> haben, wobei <ph name="URL_PATTERN_PLACEHOLDER" /> ein Muster zum Festlegen der Inhalte ist. <ph name="FILTER_PLACEHOLDER" /> schränkt ein, aus welchen Clientzertifikaten der Browser automatisch auswählt. Unabhängig vom Filter werden nur Zertifikate ausgewählt, die mit der Zertifizierungsanforderung des Servers übereinstimmen. Unter Android und iOS kann Chrome nur Clientzertifikate auswählen, die Chrome selbst bereitgestellt hat. Chrome kann nicht auf Zertifikate zugreifen, die auf Betriebssystemebene installiert sind.
+
+      Beispiele für die Verwendung des Abschnitts <ph name="FILTER_PLACEHOLDER" />:
+
+      * Wenn für <ph name="FILTER_PLACEHOLDER" /> <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_FILTER_EXAMPLE" /> festgelegt ist, werden nur Clientzertifikate ausgewählt, die über ein Zertifikat mit dem CommonName <ph name="ISSUER_CN_PLACEHOLDER" /> ausgestellt wurden.
+
+      * Wenn <ph name="FILTER_PLACEHOLDER" /> sowohl den Abschnitt <ph name="ISSUER_STRING_VALUE" /> als auch den Abschnitt <ph name="SUBJECT_STRING_VALUE" /> enthält, werden nur Clientzertifikate ausgewählt, die beide Bedingungen erfüllen.
+
+      * Wenn <ph name="FILTER_PLACEHOLDER" /> einen <ph name="SUBJECT_STRING_VALUE" />-Abschnitt mit dem Wert <ph name="FILTER_STRING_ORGANIZATION" /> enthält, muss ein Zertifikat mindestens eine Organisation haben, die mit dem angegebenen Wert übereinstimmt, um ausgewählt zu werden.
+
+      * Wenn <ph name="FILTER_PLACEHOLDER" /> einen <ph name="SUBJECT_STRING_VALUE" />-Abschnitt mit einem <ph name="FILTER_STRING_ORGANIZATIONAL_UNIT" />-Wert enthält, muss ein Zertifikat mindestens eine Organisationseinheit haben, die mit dem angegebenen Wert übereinstimmt, um ausgewählt zu werden.
+
+      * Wenn für <ph name="FILTER_PLACEHOLDER" /> <ph name="EMPTY_DICTIONARY" /> festgelegt ist, wird die Auswahl der Clientzertifikate nicht zusätzlich eingeschränkt. Beachte, dass vom Webserver bereitgestellte Filter weiterhin gelten.
+
+      Wenn die Richtlinie nicht konfiguriert ist, findet für keine Website eine automatische Auswahl statt.</translation>
 <translation id="7937766917976512374">Videoaufzeichnung gestatten oder ablehnen</translation>
 <translation id="7937825205289116563">Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist, ist die Verwendung von Ad‑hoc‑Signaturen für die native Anwendung erlaubt, die bei der Installation einer progressiven Webanwendung (PWA) erstellt wird. So wird sichergestellt, dass jede installierte Anwendung eine eindeutige Identität für <ph name="MAC_OS_NAME" />-Systemkomponenten hat.
 

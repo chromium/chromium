@@ -70,7 +70,6 @@
 <translation id="1041181446722933623">Záložka <ph name="LOCAL_BOOKMARK" /> je uložená jen na tomto zařízení. Pokud ji chcete používat i na jiných zařízeních, uložte si ji do složky <ph name="ACCOUNT_FOLDER" /> ve svém účtu Google.</translation>
 <translation id="1041263367839475438">Dostupná zařízení</translation>
 <translation id="1041607257468256895">Spravovat oprávnění webů pro přístup k poloze v Chromu</translation>
-<translation id="1042174272890264476">Počítač je dodáván s integrovanou knihovnou RLZ prohlížeče <ph name="SHORT_PRODUCT_NAME" />. RLZ přiřadí značku, která slouží k vyhodnocení vyhledávání a využití prohlížečů <ph name="SHORT_PRODUCT_NAME" />, které pocházejí z konkrétní propagační kampaně. Tato značka není jedinečná a neumožňuje osobní identifikaci. Tyto značky jsou někdy v prohlížeči <ph name="PRODUCT_NAME" /> uváděny v dotazech ve Vyhledávání Google.</translation>
 <translation id="1042248468362992359">Pokud chcete používat hotspot, připojte se k mobilním datům. <ph name="BEGIN_LINK_LEARN_MORE" />Další informace<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="104385770822424034">Přidat akci</translation>
 <translation id="1045487161760507186">Heslo si nemusíte pamatovat, protože se vám uloží ve Správci hesel Google</translation>
@@ -971,7 +970,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="1644574205037202324">Historie</translation>
 <translation id="1644852018355792105">Zadejte přístupový klíč Bluetooth pro zařízení <ph name="DEVICE" /></translation>
 <translation id="1645004815457365098">Neznámý zdroj</translation>
-<translation id="1645516838734033527">Smart Lock z důvodu zajištění bezpečnosti zařízení <ph name="DEVICE_TYPE" /> vyžaduje, aby byl v telefonu nastaven zámek obrazovky.</translation>
 <translation id="1646045728251578877">K dispozici je aktualizace softwaru</translation>
 <translation id="1647408325348388858">Otevřít a upravit soubor <ph name="FILE_NAME" /> v této webové aplikaci?</translation>
 <translation id="1647986356840967552">Předchozí stránka</translation>
@@ -1451,7 +1449,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="1975841812214822307">Odstranit</translation>
 <translation id="1976150099241323601">Přihlášení do zabezpečeného zařízení</translation>
 <translation id="1976823515278601587">Velká úspora</translation>
-<translation id="1977965994116744507">Chcete-li odemknout své zařízení <ph name="DEVICE_TYPE" />, umístěte telefon blíže k němu.</translation>
 <translation id="1978249384651349182"><ph name="BEGIN_DESCRIPTION" />Tím, že zařízení zaregistrujete do organizace, je nastavíte pro centralizovanou správu zařízení. Vaše organizace může registraci vyžadovat z několika důvodů:<ph name="END_DESCRIPTION" />
     <ph name="BEGIN_SUBTITLE1" /><ph name="BEGIN_BOLD" />Vylepšení zabezpečení<ph name="END_BOLD" /><ph name="END_SUBTITLE1" />
     <ph name="BEGIN_DESCRIPTION1" />Organizace může nakonfigurovat další nastavení zabezpečení, aby data uživatelů a zařízení byla v bezpečí. Může také provést akce, jako je vzdálené resetování nebo deaktivace ztraceného zařízení.<ph name="END_DESCRIPTION1" />
@@ -1611,7 +1608,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2089925163047119068">NEBO</translation>
 <translation id="2090165459409185032">Chcete-li obnovit informace o svém účtu, přejděte na web google.com/accounts/recovery.</translation>
 <translation id="2090507354966565596">Po přihlášení se automaticky připojí</translation>
-<translation id="2090876986345970080">Bezpečnostní nastavení systému</translation>
 <translation id="2091523941449737894">Rychlejší pohyby na touchpadu posunou kurzor dále</translation>
 <translation id="2091887806945687916">Zvuk</translation>
 <translation id="2092356157625807382"><ph name="BEGIN_H3" />Funkce ladění<ph name="END_H3" />
@@ -2626,7 +2622,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2757338480560142065">Zkontrolujte, zda se ukládané heslo shoduje s heslem pro web <ph name="WEBSITE" />.</translation>
 <translation id="2761632996810146912"><ph name="HASHTAG_SETTINGS" /> Na dotaz <ph name="SEARCH_QUERY" /> nebyly vráceny žádné výsledky vyhledávání</translation>
 <translation id="2762441749940182211">Kamera je blokována</translation>
-<translation id="2763165257813209348">Soubor <ph name="FILE_NAME" /> obsahuje citlivá nebo nebezpečná data. Vaše organizace vám umožní uložit ho do cloudového úložiště nebo ho zahodit</translation>
 <translation id="2764786626780673772">Podrobnosti sítě VPN</translation>
 <translation id="2764920001292228569">Zadejte název profilu</translation>
 <translation id="2765100602267695013">Obraťte se na svého mobilního operátora.</translation>
@@ -3947,7 +3942,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3688794912214798596">Změnit jazyky...</translation>
 <translation id="3690369331356918524">Upozorní vás v případě vyzrazení hesel při porušení zabezpečení</translation>
 <translation id="3691231116639905343">Klávesnice</translation>
-<translation id="369135240373237088">Znovu se přihlaste pomocí školního účtu</translation>
 <translation id="3693415264595406141">Heslo:</translation>
 <translation id="3694027410380121301">Vybrat předchozí kartu</translation>
 <translation id="3694122362646626770">Webové stránky</translation>
@@ -4321,7 +4315,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3914894336972817683">Soubor nelze nahrát. Zdá se být prázdný.</translation>
 <translation id="3915280005470252504">Vyhledávat hlasem</translation>
 <translation id="3916445069167113093">Tento typ souboru může poškodit počítač. Chcete soubor <ph name="FILE_NAME" /> i přesto uložit?</translation>
-<translation id="3917184139185490151">V počítači je bezpečnostní modul, pomocí něhož je do systému ChromeOS implementováno mnoho důležitých bezpečnostních prvků. Další informace naleznete v centru nápovědy k Chromebookům: http://support.google.com/chromebook/?p=sm</translation>
 <translation id="3917644013202553949">K synchronizaci souborů není k dispozici dostatek místa. Zkuste nějaké uvolnit.</translation>
 <translation id="3919145445993746351">Chcete-li svá rozšíření mít na všech svých počítačích, zapněte synchronizaci</translation>
 <translation id="3919229493046408863">Vypnout oznámení o zařízeních v okolí</translation>
@@ -4449,7 +4442,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3992008114154328194">Stahování souboru <ph name="FILE_NAME" />, <ph name="STATUS" /></translation>
 <translation id="3994075804072562819">Povolit pluginu <ph name="SPECIFIC_NAME" /> ovládat zařízení USB.</translation>
 <translation id="3994318741694670028">Váš počítač je bohužel nakonfigurován pomocí chybného čísla hardwaru. Systému ChromeOS Flex to zabraňuje získat aktualizace s nejnovějšími bezpečnostními opravami, a počítač tak <ph name="BEGIN_BOLD" />může být zranitelnější v případě útoků<ph name="END_BOLD" />.</translation>
-<translation id="3994374631886003300">Chcete-li zařízení <ph name="DEVICE_TYPE" /> odemknout, odemkněte telefon a umístěte jej blíže.</translation>
 <translation id="3994522032746736727">Přihlaste se jako <ph name="EMAIL" /></translation>
 <translation id="3994530503403062649">Najděte tlačítka na tabletu</translation>
 <translation id="3994708120330953242">Při porušení zabezpečení údajů byla vyzrazena některá vaše hesla. Za účelem zabezpečení účtů tato hesla ihned změňte.</translation>
@@ -4805,7 +4797,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="426564820080660648">Chcete-li zkontrolovat dostupnost aktualizací, použijte síť Ethernet, Wi-Fi nebo mobilní datové připojení.</translation>
 <translation id="426652736638196239">Toto číslo IBAN bude uloženo jen na tomto zařízení</translation>
 <translation id="4266679478228765574">Odstraněním složek ukončíte sdílení, ale soubory tím nevymažete.</translation>
-<translation id="4267455501101322486">Jestli chceš přidat účet pro přístup ke vzdělávacím materiálům, požádej rodiče, aby ti udělili oprávnění</translation>
 <translation id="4267792239557443927">{COUNT,plural, =0{Nebyla nalezena žádná hesla}=1{Byl nalezen 1 výsledek}few{Byly nalezeny {COUNT} výsledky}many{Bylo nalezeno {COUNT} výsledku}other{Bylo nalezeno {COUNT} výsledků}}</translation>
 <translation id="4267924571297947682">Požádej rodiče o oprávnění</translation>
 <translation id="4267953847983678297">Automaticky se připojit k mobilní síti</translation>
@@ -5144,7 +5135,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
         <ph name="BREAK" />
         <ph name="BREAK" />
         Nastavení můžete spravovat v nabídce karty. Další možnosti najdete v sekci Přizpůsobit Chrome.</translation>
-<translation id="4503748371388753124">Váš počítač obsahuje bezpečnostní zařízení TPM (Trusted Platform Module), jehož pomocí je do systému ChromeOS Flex implementováno mnoho důležitých funkcí zabezpečení. Další informace najdete v centru nápovědy k Chromebookům: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4504940961672722399">Toto rozšíření aktivujete kliknutím na tuto ikonu nebo klávesovou zkratkou <ph name="EXTENSION_SHORTCUT" />.</translation>
 <translation id="4505469832694348179">Pomocí tohoto QR kódu si stáhněte Chrome a přihlaste se ke svému účtu Google.</translation>
 <translation id="450552327874992444">Slovo už bylo přidáno</translation>
@@ -5157,7 +5147,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4509421746503122514">Spustit znovu a aktualizovat</translation>
 <translation id="4509741852167209430">Mezi weby jsou sdíleny omezené typy dat za účelem měření výkonu reklam (například aby weby mohly zjistit, zda jste po návštěvě webu uskutečnili nákup)</translation>
 <translation id="4510195992002502722">Zpětnou vazbu se nepodařilo odeslat. Další pokus...</translation>
-<translation id="4510479820467554003">Seznam účtů rodičů</translation>
 <translation id="4511344327646819192">Pokud ostatním v používání vašeho hesla budete chtít zabránit, změňte ho na webu <ph name="WEBSITE" /></translation>
 <translation id="4513072860957814107">&amp;Vymazat údaje o prohlížení…</translation>
 <translation id="4513872120116766993">Předvídání psaní</translation>
@@ -6204,7 +6193,6 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="5244234799035360187">OneDrive se nyní objeví v aplikaci Soubory</translation>
 <translation id="5244466461749935369">Zatím ponechat</translation>
 <translation id="5244474230056479698">Údaje se synchronizují do účtu <ph name="EMAIL" /></translation>
-<translation id="5245610266855777041">Začínáme se školním účtem</translation>
 <translation id="5246282308050205996">Aplikace <ph name="APP_NAME" /> selhala. Klinutím na tuto bublinu aplikaci restartujete.</translation>
 <translation id="5247051749037287028">Zobrazovaný název (volitelné)</translation>
 <translation id="5247243947166567755">Vybrat záložku <ph name="BOOKMARK_TITLE" /></translation>
@@ -6358,7 +6346,6 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="5365881113273618889">Vybraná složka obsahuje citlivé soubory. Opravdu chcete aplikaci <ph name="APP_NAME" /> udělit trvalý přístup k zápisu do této složky?</translation>
 <translation id="536638840841140142">Žádné</translation>
 <translation id="5368246151595623328"><ph name="NETWORK_NAME" /> – uloženo ze zařízení <ph name="DEVICE_NAME" /></translation>
-<translation id="5368720394188453070">Telefon je uzamčen. Chcete-li pokračovat, odemkněte jej.</translation>
 <translation id="536882527576164740">{0,plural, =1{Anonymní}few{Anonymní (#)}many{Anonymní (#)}other{Anonymní (#)}}</translation>
 <translation id="5369694795837229225">Nastavte vývojářské prostředí Linuxu</translation>
 <translation id="5370819323174483825">Načíst &amp;znovu</translation>
@@ -6850,7 +6837,6 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="5707674184620508665">Vaše organizace <ph name="ACCOUNT_MANAGER" /> nebude moci zobrazit ani spravovat vaše stávající data. Zůstanou ve stávajícím profilu.</translation>
 <translation id="5708171344853220004">Hlavní název Microsoft</translation>
 <translation id="5711010025974903573">Protokoly služby</translation>
-<translation id="5711983031544731014">Zařízení nelze odemknout. Zadejte heslo.</translation>
 <translation id="5712153969432126546">Weby někdy publikují soubory PDF, např. dokumenty, smlouvy a formuláře</translation>
 <translation id="571222594670061844">Weby mohou zobrazovat výzvy k přihlášení od služeb ověření identity</translation>
 <translation id="5713158217420111469">Připojeno k síti <ph name="DEVICE" /></translation>
@@ -7426,7 +7412,6 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6112931163620622315">Zkontrolujte telefon</translation>
 <translation id="6113434369102685411">Nastavte výchozí vyhledávač pro prohlížeč Chrome a pro Spouštěč zařízení <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113832060210023016">spouštěč + kliknutí</translation>
-<translation id="6113942107547980621">Chcete-li použít funkci Smart Lock, přejděte na primární uživatelský profil na telefonu</translation>
 <translation id="6116921718742659598">Změnit nastavení jazyka a vstupu</translation>
 <translation id="6119008366402292080">Není k dispozici žádná tiskárna</translation>
 <translation id="6119972796024789243">Korekce barev</translation>
@@ -7833,7 +7818,6 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6400360390396538896">Vždy zapnuto <ph name="ORIGIN" /></translation>
 <translation id="6401118106417399952">EID vašeho zařízení je <ph name="EID_NUMBER" /> a jeho sériové číslo je <ph name="SERIAL_NUMBER" />. Tato čísla lze použít k aktivaci služby.</translation>
 <translation id="6401458660421980302">Pokud tuto kartu chcete odeslat do jiného zařízení, přihlaste se na něm do Chromu</translation>
-<translation id="6401597285454423070">Váš počítač obsahuje bezpečnostní zařízení TPM (Trusted Platform Module), jehož pomocí je do systému ChromeOS implementováno mnoho důležitých funkcí zabezpečení. Další informace najdete v centru nápovědy k Chromebookům: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6402921224457714577">Weby mohou žádat o ovládání a přeprogramování vašich zařízení MIDI</translation>
 <translation id="6404511346730675251">Upravit záložku</translation>
 <translation id="640457954117263537">Používat polohu pro aplikace a služby pro Chrome OS a Android.</translation>
@@ -8417,7 +8401,6 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="6805236548654699520">Odstranit nechtěná vyskakovací okna, opravit problémy se sítí a mnoho dalšího obnovením nastavení na bezpečné výchozí hodnoty.</translation>
 <translation id="6805478749741295868">Toto je experimentální funkce založená na umělé inteligenci a nemusí vždy fungovat správně.</translation>
 <translation id="6805647936811177813">Chcete-li importovat certifikát klienta z adresy <ph name="HOST_NAME" />, přihlaste se prosím do zařízení <ph name="TOKEN_NAME" />.</translation>
-<translation id="680572642341004180">Aktivovat v systému <ph name="SHORT_PRODUCT_OS_NAME" /> sledování RLZ.</translation>
 <translation id="6805817411033102703">Zpětná vazba ke sdíleným skupinám karet</translation>
 <translation id="6806089545527108739">Nepovolovat, ale později se zeptat</translation>
 <translation id="6806781719264274042">Pouze vaše kontakty s účtem Google. <ph name="LINK_BEGIN" />Zobrazit kontakty<ph name="LINK_END" /></translation>
@@ -8867,7 +8850,6 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7113502843173351041">Znát vaši e-mailovou adresu</translation>
 <translation id="7113974454301513811">Teď do seznamu přidejte aktuální kartu</translation>
 <translation id="7114054701490058191">Hesla nejsou shodná</translation>
-<translation id="7114648273807173152">Chcete-li se ke svému účtu Google přihlašovat pomocí funkce Smart Lock, přejděte na Nastavení &gt; Připojená zařízení &gt; Váš telefon &gt; Smart Lock.</translation>
 <translation id="7115361495406486998">Žádné dostupné kontakty</translation>
 <translation id="7116554090938189816">Platnost certifikátu SSL tiskárny vypršela. Restartujte tiskárnu a zkuste to znovu.</translation>
 <translation id="7117228822971127758">Zkuste to znovu později</translation>
@@ -9498,7 +9480,6 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7553242001898162573">Zadejte heslo.</translation>
 <translation id="755472745191515939">Váš administrátor tento jazyk nepovolil</translation>
 <translation id="7554791636758816595">Nová karta</translation>
-<translation id="7556033326131260574">Funkci Smart Lock se nepodařilo ověřit váš účet. Chcete-li zařízení otevřít, zadejte heslo.</translation>
 <translation id="7556228616802995437">Nedávné chaty a konverzace</translation>
 <translation id="7556242789364317684">Litujeme, prohlížeč <ph name="SHORT_PRODUCT_NAME" /> vaše nastavení nedokáže obnovit. Aby prohlížeč <ph name="SHORT_PRODUCT_NAME" /> mohl chybu odstranit, musí zařízení resetovat pomocí funkce Powerwash.</translation>
 <translation id="7557194624273628371">Přesměrování portů Linuxu</translation>
@@ -9942,7 +9923,6 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="7853747251428735">&amp;Další nástroje</translation>
 <translation id="7855258394151767387">Klávesou „w“ stisknete tlačítko myši</translation>
 <translation id="7855678561139483478">Přesunout kartu do nového okna</translation>
-<translation id="7857004848504343806">Ve vašem počítači je bezpečnostní modul, jehož pomocí je do systému ChromeOS Flex implementováno mnoho důležitých bezpečnostních prvků. Další informace najdete v centru nápovědy k Chromebookům: http://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">Textové návrhy</translation>
 <translation id="7858120906780498731">Připojená vstupní zařízení ChromeOS</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
@@ -9989,7 +9969,6 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="7892005672811746207">Zapněte možnost Uložit skupinu</translation>
 <translation id="7892384782944609022">Nelze párovat. Po výběru zařízení to můžete zkusit znovu.</translation>
 <translation id="7893008570150657497">Přistupovat k fotografiím, hudbě a dalším médiím z vašeho počítače</translation>
-<translation id="7893153962594818789">V tomto zařízení <ph name="DEVICE_TYPE" /> je vypnut Bluetooth. Zadejte heslo a zapněte Bluetooth.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (Předvolba)</translation>
 <translation id="7896292361319775586">Uložit <ph name="FILE" />?</translation>
 <translation id="789722939441020330">Nepovolovat webům stahovat automaticky několik souborů</translation>
@@ -10832,7 +10811,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8453400752347156012">Tato záložka je uložená jen na tomto zařízení. Pokud ji uložíte do složky <ph name="ACCOUNT_FOLDER" />, bude uložena také ve vašem účtu.</translation>
 <translation id="8455775311562941553">Připojeno k zařízení <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="8456067150616457342">Nastavte si výchozí prohlížeč</translation>
-<translation id="845702320058262034">Nelze se připojit. Zkontrolujte, zda na telefonu máte zapnuté rozhraní Bluetooth.</translation>
 <translation id="8457251154056341970">Na této stránce již modul <ph name="MODULE_NAME" /> neuvidíte</translation>
 <translation id="8457451314607652708">Import záložek</translation>
 <translation id="8458341576712814616">Zkratka</translation>

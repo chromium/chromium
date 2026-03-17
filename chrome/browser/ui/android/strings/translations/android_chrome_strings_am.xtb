@@ -213,6 +213,7 @@
 <translation id="1900260903084164610">በመቀጠል፣ በ<ph name="BEGIN_TOS_LINK" />የአገልግሎት ውል<ph name="END_TOS_LINK" /> ይስማማሉ።</translation>
 <translation id="1904580727789512086">የሚጎበኟቸው ዩአርኤሎች በGoogle መለያዎ ላይ ይቀመጣሉ።</translation>
 <translation id="1910950723001426294">የማጋሪያ አማራጮች ዝርዝር ተዘግቷል።</translation>
+<translation id="1912367671208932516">የቅጥያዎች ምናሌን ክፈት</translation>
 <translation id="191726024256261717">ፈቃዶችን ይገምግሙ</translation>
 <translation id="1917766536967060661">እርስዎ ወዲያውኑ የ«<ph name="GROUP_NAME" />» የትር ቡድን መዳረሻን ያጣሉ እና <ph name="BLOCKED_MEMBER_FULL_NAME" /> (<ph name="BLOCKED_MEMBER_EMAIL" />) ከእንግዲህ በመላው የGoogle አገልግሎቶች ላይ ከእርስዎ ጋር መስተጋብር መፍጠር አይችሉም።</translation>
 <translation id="1919130412786645364">የChrome በመለያ መግባትን ይፍቀዱ</translation>
@@ -414,6 +415,7 @@
 <translation id="2789486458103222910">እሺ</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome ሊያሻሽሉት የሚችሉት ዳግም ጥቅም ላይ የዋለ የይለፍ ቃል አግኝቷል}one{Chrome ሊያሻሽሉት የሚችሉት # ዳግም ጥቅም ላይ የዋለ የይለፍ ቃል አግኝቷል}other{Chrome ሊያሻሽሏቸው የሚችሏቸው # ዳግም ጥቅም ላይ የዋሉ የይለፍ ቃላትን አግኝቷል}}</translation>
 <translation id="2794551654724114396">ከChrome ምርጡን ለማግኘት እንዲያግዙዎት ለአጋዥ ጠቃሚ ምክሮች ማሳወቂያዎችን ያብሩ</translation>
+<translation id="2798977804328097977">በማንኛውም መሣሪያ ላይ ያለእንከን ይቀጥሉ</translation>
 <translation id="2805210243313393104">የእርስዎን ዕልባቶች እና ሌሎችም በሁሉም መሣሪያዎችዎ ላይ ያግኙ</translation>
 <translation id="2805756323405976993">መተግበሪያዎች</translation>
 <translation id="2819849308549746319">ከሁሉም የደንበኝነት ምዝገባ ውጣ</translation>
@@ -469,6 +471,7 @@
 <translation id="2977350910003566746">መጨረሻ ላይ በተከፈተው በመደርደር ላይ</translation>
 <translation id="297771753501244313">መጨረሻ በተከፈተ ደርድር</translation>
 <translation id="2979639724566107830">በአዲስ መስኮት ክፈት</translation>
+<translation id="2980545254049127870">ከመልዕክት፣ ሰነዶች እና ሌሎች መተግበሪያዎች አገናኞችን በቀላሉ ይክፈቱ</translation>
 <translation id="2983102365694924129">በአንድ ጣቢያ ላይ ባለዎት እንቅስቃሴ ላይ የተመሠረተ። ይህ ቅንብር ጠፍቷል።</translation>
 <translation id="2983398917942897288">ያልነቃ (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2983835398644161987">ከሥዕል-ውስጥ-ሥዕል ውጣ</translation>
@@ -730,6 +733,7 @@
 <translation id="4137746084635924146">የአሁኑ የመሣሪያ ቋንቋ</translation>
 <translation id="414128724510021958">በነባሪ የተጠየቁ የዴስክቶፕ ጣቢያዎች</translation>
 <translation id="4162867837470729563">በሙሉ ቁመታቸው ያሉ የማጋሪያ አማራጮች ዝርዝር።</translation>
+<translation id="4164642020717536140">ፈጣን እና ደኅንነቱ የተጠበቀ የድር አሰሳ</translation>
 <translation id="4165077084524712774">ተጨማሪ መሣሪያዎች</translation>
 <translation id="4170011742729630528">አገልግሎቱ አይገኝም፤ ቆይተው እንደገና ይሞክሩ።</translation>
 <translation id="4170577491341606575">የእርስዎን ነገሮች በማግኘት ላይ\u2026</translation>
@@ -854,6 +858,7 @@
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 የተጠለፈ የይለፍ ቃል}one{# የተጠለፉ የይለፍ ቃላት}other{# የተጠለፉ የይለፍ ቃላት}}</translation>
 <translation id="4641919525231168205">ወደ ቀጣይ ገፅ ሂድ</translation>
 <translation id="4642472735733036929">የዋጋ ክትትል ቆሟል</translation>
+<translation id="4643661539340338954">Chrome ማሳወቂያዎች እንደበሩ አግኝቷል</translation>
 <translation id="4649493483932335039">የቅርብ ጊዜ ትሮችን አሳይ</translation>
 <translation id="465657074423018424">ደህንነቱ የተጠበቀ አሰሳ ከአሳሳች ድር ጣቢያዎች እርስዎን ይጠብቃል። ካጠፉት፣ በማሰስ ጊዜ በተለይም የይለፍ ቃላትን ሲያስገቡ የበለጠ ጥንቃቄ ይውሰዱ።</translation>
 <translation id="4662373422909645029">ቅጥያ ስም ቁጥሮችን ማካተት አይችልም</translation>
@@ -1652,6 +1657,7 @@
 <translation id="7686086654630106285">ስለ በጣቢያ የተጠቆሙ ማስታወቂያዎች ተጨማሪ</translation>
 <translation id="7690596512217303514">መሣሪያዎ Chromeን መክፈት አልቻለም። ችግሩን ለማስተካከል የቅርብ የሆነውን የChrome ዝማኔ ከመተግበሪያ መደብርዎ ያውርዱ።</translation>
 <translation id="7692761875510935111">በፍጥነት አሳሸ ውስጥ ክፈት። ይህን አቋራጭ ለማርትዕ ይንኩ እና ይያዙ።</translation>
+<translation id="7695270712963178084">Chrome ያገኛል</translation>
 <translation id="7697383401610880082">መያዣ ይጎትቱ</translation>
 <translation id="7698359219371678927">በ<ph name="APP_NAME" /> ውስጥ ኢሜይል ይፍጠሩ</translation>
 <translation id="7702420606070050505">የቅርብ ጊዜ እንቅስቃሴ የግርጌ ሉህ ሙሉ ርዝመት ላይ ተከፍቷል</translation>

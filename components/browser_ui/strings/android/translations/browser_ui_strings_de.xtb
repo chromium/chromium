@@ -125,7 +125,6 @@
 <translation id="2228071138934252756">Um <ph name="APP_NAME" /> Zugriff auf deine Kamera zu gewähren, muss die Kameraberechtigung auch in den <ph name="BEGIN_LINK" />Android-Einstellungen<ph name="END_LINK" /> aktiviert werden.</translation>
 <translation id="2231160360698766265">Websites können geschützte Inhalte wiedergeben</translation>
 <translation id="2235344399760031203">Drittanbieter-Cookies werden blockiert</translation>
-<translation id="2238944249568001759">Vorgeschlagene Suchanfragen basierend auf deinem letzten Tab</translation>
 <translation id="2241587408274973373">Karten auf „Neuer Tab“-Seite</translation>
 <translation id="2241634353105152135">Nur einmal</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> entfernen</translation>
@@ -214,7 +213,6 @@ Diese Chrome-Einstellungen werden durch das erweiterte Sicherheitsprogramm geste
 <translation id="3069226013421428034">Hier kannst du Websites angeben, für die die Anmeldung über Drittanbieter erlaubt werden soll.</translation>
 <translation id="310297983047869047">Vorherige Folie</translation>
 <translation id="3108122610701115301">Als Standard festlegen</translation>
-<translation id="3109724472072898302">Minimiert</translation>
 <translation id="310979712355504754">Alle löschen</translation>
 <translation id="311394601889664316">Websites dürfen keine Dateien oder Ordner auf meinem Gerät bearbeiten</translation>
 <translation id="3114012059975132928">Videoplayer</translation>
@@ -262,7 +260,6 @@ Diese Chrome-Einstellungen werden durch das erweiterte Sicherheitsprogramm geste
 <translation id="3602290021589620013">Vorschau</translation>
 <translation id="3611658447322220736">Kürzlich geschlossene Websites dürfen den Datenversand und -empfang abschließen</translation>
 <translation id="3619294456800709762">Websites können den Bild-im-Bild-Modus automatisch aktivieren</translation>
-<translation id="3628308229821498208">Vorgeschlagene Suchanfragen</translation>
 <translation id="3632460243282703117">Abonnieren</translation>
 <translation id="363748948745453283">Ungefährer Standort wird verwendet</translation>
 <translation id="3641456520301071208">Websites dürfen nach meinem Standort fragen</translation>
@@ -490,6 +487,7 @@ Diese Chrome-Einstellungen werden durch das erweiterte Sicherheitsprogramm geste
 <translation id="5922853908706496913">Bildschirmfreigabe läuft</translation>
 <translation id="5922967540311291836">Drittanbieter-Cookies blockieren:</translation>
 <translation id="5923512600150154850">Dadurch werden <ph name="DATASIZE" /> an von Websites gespeicherten Daten und Cookies gelöscht.</translation>
+<translation id="5930707844513754220">Mehr von der Einrichtungsliste anzeigen</translation>
 <translation id="5939518447894949180">Zurücksetzen</translation>
 <translation id="5948139900367969951">Schnell zu den Seiten gelangen, die dich interessieren</translation>
 <translation id="5964247741333118902">Eingebettete Inhalte</translation>
@@ -498,6 +496,7 @@ Diese Chrome-Einstellungen werden durch das erweiterte Sicherheitsprogramm geste
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
 <translation id="5998071268779572583">Discover-Feed aktivieren</translation>
 <translation id="6012967556075291653">Angepinnte Verknüpfung</translation>
+<translation id="6013003831291591200">Aufgabe abgeschlossen</translation>
 <translation id="6015775454662021376">Zugriff dieser Website auf dein Gerät verwalten</translation>
 <translation id="6022659036123304283">Chrome personalisieren</translation>
 <translation id="6040143037577758943">Schließen</translation>
@@ -522,7 +521,6 @@ Diese Chrome-Einstellungen werden durch das erweiterte Sicherheitsprogramm geste
 <translation id="6231752747840485235">„<ph name="APP_NAME" />“ deinstallieren?</translation>
 <translation id="6234351944623978659">Tippe auf „Browser-App“ &gt; „Chrome“</translation>
 <translation id="6260830281887654268">Die Ansicht am unteren Rand mit Designsammlungen für die Seite „Neuer Tab“ ist halb geöffnet</translation>
-<translation id="6262191102408817757">Basierend auf deinem letzten Tab</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> und <ph name="PERMISSION_2" /> blockiert</translation>
 <translation id="6270391203985052864">Websites können fragen, ob du Benachrichtigungen erhalten möchtest</translation>
 <translation id="6295158916970320988">Alle Websites</translation>
@@ -602,7 +600,6 @@ Diese Chrome-Einstellungen werden durch das erweiterte Sicherheitsprogramm geste
 <translation id="7180611975245234373">Aktualisieren</translation>
 <translation id="7188508872042490670">Websitedaten auf dem Gerät</translation>
 <translation id="7201549776650881587">Durch diese Aktion werden alle Daten und Cookies gelöscht, die von allen Websites unter <ph name="ORIGIN" /> oder von der zugehörigen App auf dem Startbildschirm gespeichert wurden</translation>
-<translation id="7203150201908454328">Erweitert</translation>
 <translation id="7213166370492037743">Websites nicht erlauben, eine Verbindung zu Geräten in deinem lokalen Netzwerk herzustellen</translation>
 <translation id="7219254577985949841">Websitedaten löschen?</translation>
 <translation id="723171743924126238">Bilder auswählen</translation>

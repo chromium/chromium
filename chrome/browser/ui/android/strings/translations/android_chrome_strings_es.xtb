@@ -213,6 +213,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="1900260903084164610">Si continúas, confirmas que aceptas los <ph name="BEGIN_TOS_LINK" />Términos del Servicio<ph name="END_TOS_LINK" />.</translation>
 <translation id="1904580727789512086">Las URLs que visitas se guardan en tu cuenta de Google</translation>
 <translation id="1910950723001426294">La lista de opciones para compartir está cerrada.</translation>
+<translation id="1912367671208932516">Abrir menú de extensiones</translation>
 <translation id="191726024256261717">Revisar permisos</translation>
 <translation id="1917766536967060661">Perderás inmediatamente el acceso al grupo de pestañas <ph name="GROUP_NAME" /> y <ph name="BLOCKED_MEMBER_FULL_NAME" /> (<ph name="BLOCKED_MEMBER_EMAIL" />) ya no podrá interactuar contigo en los servicios de Google</translation>
 <translation id="1919130412786645364">Permitir el inicio de sesión en Chrome</translation>
@@ -414,6 +415,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="2789486458103222910">Aceptar</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome ha detectado una contraseña reutilizada que podrías mejorar}other{Chrome ha detectado # contraseñas reutilizadas que podrías mejorar}}</translation>
 <translation id="2794551654724114396">Activa las notificaciones para recibir consejos útiles que te ayudarán a sacar el máximo partido de Chrome</translation>
+<translation id="2798977804328097977">Continúa sin problemas en cualquier dispositivo</translation>
 <translation id="2805210243313393104">Accede a tus marcadores y más desde todos tus dispositivos</translation>
 <translation id="2805756323405976993">Aplicaciones</translation>
 <translation id="2819849308549746319">Darse de baja en todos</translation>
@@ -469,6 +471,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="2977350910003566746">Ordenados por última apertura</translation>
 <translation id="297771753501244313">Ordenar: último abierto</translation>
 <translation id="2979639724566107830">Abrir en una ventana nueva</translation>
+<translation id="2980545254049127870">Abre fácilmente enlaces de mensajes, documentos y otras aplicaciones</translation>
 <translation id="2983102365694924129">Se basa en tu actividad en un sitio. Esta opción está desactivada.</translation>
 <translation id="2983398917942897288">Inactivas (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2983835398644161987">Salir del modo imagen en imagen</translation>
@@ -730,6 +733,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="4137746084635924146">Idioma actual del dispositivo</translation>
 <translation id="414128724510021958">Sitios para ordenadores solicitados de forma predeterminada</translation>
 <translation id="4162867837470729563">Lista de opciones para compartir abierta a altura completa.</translation>
+<translation id="4164642020717536140">Navegación web rápida y segura</translation>
 <translation id="4165077084524712774">Más herramientas</translation>
 <translation id="4170011742729630528">El servicio no está disponible. Vuelve a intentarlo más tarde.</translation>
 <translation id="4170577491341606575">Obteniendo tus cosas\u2026</translation>
@@ -854,6 +858,7 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 contraseña vulnerada}other{# contraseñas vulneradas}}</translation>
 <translation id="4641919525231168205">Ir a la página siguiente</translation>
 <translation id="4642472735733036929">Seguimiento de precios detenido</translation>
+<translation id="4643661539340338954">Notificaciones de Hallazgos de Chrome activadas</translation>
 <translation id="4649493483932335039">Ver pestañas recientes</translation>
 <translation id="465657074423018424">Navegación segura te protege frente a sitios web engañosos. Si desactivas esta función, debes extremar la precaución al navegar, en especial, antes de escribir contraseñas.</translation>
 <translation id="4662373422909645029">El apodo no puede incluir números</translation>
@@ -1652,6 +1657,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="7686086654630106285">Más información sobre anuncios sugeridos por sitios</translation>
 <translation id="7690596512217303514">Tu dispositivo no ha podido abrir Chrome. Para solucionar el problema, descarga la última actualización de Chrome desde tu tienda de aplicaciones.</translation>
 <translation id="7692761875510935111">Ábrelo rápidamente en el navegador. Para editar este acceso directo, mantenlo pulsado.</translation>
+<translation id="7695270712963178084">Hallazgos de Chrome</translation>
 <translation id="7697383401610880082">Controlador de arrastre</translation>
 <translation id="7698359219371678927">Crear correo electrónico en <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">Hoja inferior de actividad reciente abierta a altura completa</translation>

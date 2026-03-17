@@ -213,6 +213,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="1900260903084164610">Ako nastavite, pristajete na <ph name="BEGIN_TOS_LINK" />Uslove korištenja usluge<ph name="END_TOS_LINK" />.</translation>
 <translation id="1904580727789512086">URL-ovi koje posjećujete pohranjuju se na vaš Google račun</translation>
 <translation id="1910950723001426294">Lista opcija dijeljenja je zatvorena.</translation>
+<translation id="1912367671208932516">Otvori meni ekstenzija</translation>
 <translation id="191726024256261717">Pregledajte odobrenja</translation>
 <translation id="1917766536967060661">Odmah ćete izgubiti pristup grupi kartica "<ph name="GROUP_NAME" />", a <ph name="BLOCKED_MEMBER_FULL_NAME" /> (<ph name="BLOCKED_MEMBER_EMAIL" />) više neće moći stupati u interakciju s vama na Googleovim uslugama.</translation>
 <translation id="1919130412786645364">Omogući prijavu na Chrome</translation>
@@ -414,6 +415,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="2789486458103222910">Uredu</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome je pronašao već korištenu lozinku koju možete poboljšati}one{Chrome je pronašao # već korištenu lozinku koje možete poboljšati}few{Chrome je pronašao # već korištene lozinke koje možete poboljšati}other{Chrome je pronašao # već korištenih lozinki koje možete poboljšati}}</translation>
 <translation id="2794551654724114396">Uključite obavještenja o korisnim savjetima koji će vam pomoći da iskoristite sve prednosti Chromea</translation>
+<translation id="2798977804328097977">Neometano nastavite na bilo kojem uređaju</translation>
 <translation id="2805210243313393104">Dobijajte oznake i druge stavke na svim svojim uređajima</translation>
 <translation id="2805756323405976993">Aplikacije</translation>
 <translation id="2819849308549746319">Otkaži pretplatu za sve</translation>
@@ -469,6 +471,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="2977350910003566746">Sortiranje prema posljednjem otvorenom</translation>
 <translation id="297771753501244313">Poredaj po poslj. otvaranju</translation>
 <translation id="2979639724566107830">Otvori u novom prozoru</translation>
+<translation id="2980545254049127870">Jednostavno otvarajte linkove iz poruka, dokumenata i drugih aplikacija</translation>
 <translation id="2983102365694924129">Na osnovu vaše aktivnosti na web lokaciji. Postavka je isključena.</translation>
 <translation id="2983398917942897288">Neaktivno (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2983835398644161987">Izađi iz funkcije slika u slici</translation>
@@ -730,6 +733,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="4137746084635924146">Trenutni jezik uređaja</translation>
 <translation id="414128724510021958">Web lokacije za računar se zahtijevaju prema zadanim postavkama</translation>
 <translation id="4162867837470729563">Lista opcija dijeljenja u punoj visini.</translation>
+<translation id="4164642020717536140">Brzo i sigurno pregledanje weba</translation>
 <translation id="4165077084524712774">Više alata</translation>
 <translation id="4170011742729630528">Ova usluge nije dostupna. Pokušajte ponovo kasnije.</translation>
 <translation id="4170577491341606575">Preuzimanje vaših stvari\u2026</translation>
@@ -854,6 +858,7 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 ugrožena lozinka}one{# ugrožena lozinka}few{# ugrožene lozinke}other{# ugroženih lozinki}}</translation>
 <translation id="4641919525231168205">Odlazak na sljedeću stranicu</translation>
 <translation id="4642472735733036929">Praćenje cijene se zaustavilo</translation>
+<translation id="4643661539340338954">Obavještenja o Chromeovim pronalascima su uključena</translation>
 <translation id="4649493483932335039">Prikaži nedavne kartice</translation>
 <translation id="465657074423018424">Sigurno pregledanje vas štiti od obmanjujućih web lokacija. Ako ga isključite, budite posebno oprezni prilikom pregledanja, naročito prije unošenja lozinki.</translation>
 <translation id="4662373422909645029">Nadimak ne može imati brojeve</translation>
@@ -1652,6 +1657,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromea 
 <translation id="7686086654630106285">Više o oglasima koje predlažu web lokacije</translation>
 <translation id="7690596512217303514">Otvaranje Chromea na uređaju nije uspjelo. Da riješite problem, preuzmite najnovije ažuriranje Chromea iz trgovine aplikacija.</translation>
 <translation id="7692761875510935111">Brzo otvorite u pregledniku. Dodirnite i zadržite da uredite ovu prečicu.</translation>
+<translation id="7695270712963178084">Chromeovi pronalasci</translation>
 <translation id="7697383401610880082">Ručica za prevlačenje</translation>
 <translation id="7698359219371678927">Kreirajte e-poruku u aplikaciji <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">Donja tabela nedavne aktivnosti je otvorena u punoj visini</translation>

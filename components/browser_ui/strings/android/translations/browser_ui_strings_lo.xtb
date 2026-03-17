@@ -125,7 +125,6 @@
 <translation id="2228071138934252756">ເພື່ອອະນຸຍາດໃຫ້ <ph name="APP_NAME" /> ເຂົ້າເຖິງກ້ອງຖ່າຍຮູບຂອງທ່ານ, ກະລຸນາເປີດກ້ອງຖ່າຍຮູບໃນ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າ Android<ph name="END_LINK" /> ນຳ.</translation>
 <translation id="2231160360698766265">ເວັບໄຊສາມາດຫຼິ້ນເນື້ອຫາທີ່ມີການປົກປ້ອງໄດ້</translation>
 <translation id="2235344399760031203">ບລັອກຄຸກກີ້ພາກສ່ວນທີສາມໄວ້</translation>
-<translation id="2238944249568001759">ການຊອກຫາທີ່ແນະນຳໂດຍອ້າງອີງໃສ່ແຖບຫຼ້າສຸດຂອງທ່ານ</translation>
 <translation id="2241587408274973373">ບັດໜ້າແຖບໃໝ່</translation>
 <translation id="2241634353105152135">ຄັ້ງ​ດຽວ​ເທົ່າ​ນັ້ນ</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> ລຶບອອກ</translation>
@@ -214,7 +213,6 @@
 <translation id="3069226013421428034">ອະນຸຍາດໃຫ້ເຂົ້າສູ່ລະບົບພາກສ່ວນທີສາມສຳລັບເວັບໄຊສະເພາະໃດໜຶ່ງ.</translation>
 <translation id="310297983047869047">ສະໄລ້ກ່ອນໜ້າ</translation>
 <translation id="3108122610701115301">ຕັ້ງເປັນຄ່າເລີ່ມຕົ້ນ</translation>
-<translation id="3109724472072898302">ຫຍໍ້ລົງ</translation>
 <translation id="310979712355504754">ລຶບ​ທັງ​ຫມົດ</translation>
 <translation id="311394601889664316">ບໍ່ອະນຸຍາດໃຫ້ເວັບໄຊແກ້ໄຂໄຟລ໌ ຫຼື ໂຟນເດີຢູ່ອຸປະກອນຂອງທ່ານ</translation>
 <translation id="3114012059975132928">ໂປຣແກຣມຫຼິ້ນວິດີໂອ</translation>
@@ -262,7 +260,6 @@
 <translation id="3602290021589620013">ເບິ່ງຕົວຢ່າງ</translation>
 <translation id="3611658447322220736">ເວັບໄຊທີ່ປິດຫຼ້າສຸດສາມາດສົ່ງ ແລະ ຮັບຂໍ້ມູນໃຫ້ແລ້ວໄດ້</translation>
 <translation id="3619294456800709762">ເວັບໄຊສາມາດເຂົ້າໄປການສະແດງຜົນຊ້ອນກັນໂດຍອັດຕະໂນມັດໄດ້</translation>
-<translation id="3628308229821498208">ການຊອກຫາທີ່ແນະນຳ</translation>
 <translation id="3632460243282703117">ສະໝັກໃຊ້</translation>
 <translation id="363748948745453283">ກຳລັງໃຊ້ສະຖານທີ່ໂດຍປະມານ</translation>
 <translation id="3641456520301071208">ເວັບໄຊສາມາດຂໍສະຖານທີ່ຂອງທ່ານໄດ້</translation>
@@ -490,6 +487,7 @@
 <translation id="5922853908706496913">ກຳລັງແບ່ງປັນໜ້າຈໍຂອງທ່ານ</translation>
 <translation id="5922967540311291836">ບລັອກຄຸກກີ້ພາກສ່ວນທີສາມ:</translation>
 <translation id="5923512600150154850">ການດຳເນີນການນີ້ຈະລຶບຂໍ້ມູນ ແລະ ຄຸກກີ້ທີ່ເວັບໄຊຕ່າງໆຈັດເກັບໄວ້ທັງໝົດ <ph name="DATASIZE" />.</translation>
+<translation id="5930707844513754220">ເບິ່ງລາຍຊື່ການຕັ້ງຄ່າເພີ່ມເຕີມ</translation>
 <translation id="5939518447894949180">ຕັ້ງຄ່າຄືນໃໝ່</translation>
 <translation id="5948139900367969951">ເຂົ້າເຖິງສິ່ງສຳຄັນຕໍ່ທ່ານໄດ້ຢ່າງວ່ອງໄວ</translation>
 <translation id="5964247741333118902">ເນື້ອຫາທີ່ຝັງໄວ້</translation>
@@ -498,6 +496,7 @@
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
 <translation id="5998071268779572583">ເປີດຟີດການຄົ້ນພົບ</translation>
 <translation id="6012967556075291653">ທາງລັດທີ່ປັກໝຸດໄວ້</translation>
+<translation id="6013003831291591200">ໜ້າວຽກສຳເລັດແລ້ວ</translation>
 <translation id="6015775454662021376">ຄວບຄຸມສິດເຂົ້າເຖິງອຸປະກອນຂອງທ່ານຂອງເວັບໄຊນີ້</translation>
 <translation id="6022659036123304283">ເຮັດໃຫ້ Chrome ເປັນຂອງທ່ານ</translation>
 <translation id="6040143037577758943">ປິດ</translation>
@@ -522,7 +521,6 @@
 <translation id="6231752747840485235">ຖອນການຕິດຕັ້ງ '<ph name="APP_NAME" />' ບໍ?</translation>
 <translation id="6234351944623978659">ແຕະແອັບໂປຣແກຣມທ່ອງເວັບ &gt; Chrome</translation>
 <translation id="6260830281887654268">ຊີດລຸ່ມສຸດຄໍເລັກຊັນຮູບແບບສີສັນລັກສະນະທີ່ປາກົດຂອງໜ້າແຖບໃໝ່ເປີດຢູ່ລະດັບຄວາມສູງເຄິ່ງໜຶ່ງຂອງໜ້າຈໍ</translation>
-<translation id="6262191102408817757">ໂດຍອ້າງອີງຈາກແຖບຫຼ້າສຸດຂອງທ່ານ</translation>
 <translation id="6262279340360821358">ບລັອກ <ph name="PERMISSION_1" /> ແລະ <ph name="PERMISSION_2" /> ໄວ້ແລ້ວ</translation>
 <translation id="6270391203985052864">ເວັບໄຊສາມາດຂໍໃຫ້ສົ່ງການແຈ້ງເຕືອນໄດ້</translation>
 <translation id="6295158916970320988">ທຸກ​ເວັບ​ໄຊ​ທ໌</translation>
@@ -602,7 +600,6 @@
 <translation id="7180611975245234373">ຣີເຟຣຊ</translation>
 <translation id="7188508872042490670">ຂໍ້ມູນເວັບໄຊຢູ່ອຸປະກອນ</translation>
 <translation id="7201549776650881587">ຄຳສັ່ງນີ້ຈະລຶບຂໍ້ມູນ ແລະ ຄຸກກີ້ທັງໝົດທີ່ທຸກເວັບໄຊຈາກ <ph name="ORIGIN" /> ຫຼື ແອັບທີ່ຢູ່ໃນໂຮມສະກຣີນຂອງທ່ານຈັດເກັບໄວ້</translation>
-<translation id="7203150201908454328">ຂະ​ຫຍາຍ​ແລ້ວ</translation>
 <translation id="7213166370492037743">ບໍ່ອະນຸຍາດໃຫ້ເວັບໄຊເຊື່ອມຕໍ່ກັບອຸປະກອນໃດກໍຕາມໃນເຄືອຂ່າຍທ້ອງຖິ່ນຂອງທ່ານ</translation>
 <translation id="7219254577985949841">ລຶບຂໍ້ມູນເວັບໄຊອອກບໍ?</translation>
 <translation id="723171743924126238">ເລືອກຮູບ</translation>

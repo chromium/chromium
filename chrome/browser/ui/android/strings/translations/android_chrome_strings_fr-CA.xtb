@@ -213,6 +213,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="1900260903084164610">En continuant, vous acceptez les <ph name="BEGIN_TOS_LINK" />conditions d'utilisation<ph name="END_TOS_LINK" />.</translation>
 <translation id="1904580727789512086">Les adresses URL que vous visitez sont enregistrées dans votre compte Google</translation>
 <translation id="1910950723001426294">La liste d'options de partage est fermée.</translation>
+<translation id="1912367671208932516">Ouvrir menu des extensions</translation>
 <translation id="191726024256261717">Examiner les autorisations</translation>
 <translation id="1917766536967060661">Vous perdrez immédiatement l'accès au groupe d'onglets « <ph name="GROUP_NAME" /> » et <ph name="BLOCKED_MEMBER_FULL_NAME" /> (<ph name="BLOCKED_MEMBER_EMAIL" />) ne pourra plus interagir avec vous dans les services Google.</translation>
 <translation id="1919130412786645364">Autoriser la connexion à Google Chrome</translation>
@@ -414,6 +415,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="2789486458103222910">OK</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome a trouvé un mot de passe réutilisé que vous pourriez améliorer}one{Chrome a trouvé # mot de passe réutilisé que vous pourriez améliorer}other{Chrome a trouvé # mots de passe réutilisés que vous pourriez améliorer}}</translation>
 <translation id="2794551654724114396">Activez les notifications pour recevoir des conseils utiles qui vous aideront à tirer le plein potentiel de Chrome</translation>
+<translation id="2798977804328097977">Continuez en toute fluidité sur n'importe quel appareil</translation>
 <translation id="2805210243313393104">Accédez à vos favoris et plus encore sur tous vos appareils</translation>
 <translation id="2805756323405976993">Applications</translation>
 <translation id="2819849308549746319">Se désabonner de tous ces sites</translation>
@@ -469,6 +471,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="2977350910003566746">Tri par dernière ouverture</translation>
 <translation id="297771753501244313">Trier : dernière ouvert.</translation>
 <translation id="2979639724566107830">Ouvrir dans une nouvelle fenêtre</translation>
+<translation id="2980545254049127870">Ouvrez facilement des liens à partir de messages, de documents et d'autres applis</translation>
 <translation id="2983102365694924129">En fonction de votre activité sur un site. Ce paramètre est désactivé.</translation>
 <translation id="2983398917942897288">Inactif (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2983835398644161987">Quitter le mode d'incrustation d'image</translation>
@@ -730,6 +733,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="4137746084635924146">Langue actuelle de l'appareil</translation>
 <translation id="414128724510021958">Sites pour ordinateurs demandés par défaut</translation>
 <translation id="4162867837470729563">Liste d'options de partage à pleine hauteur.</translation>
+<translation id="4164642020717536140">Navigation Web rapide et sécurisée</translation>
 <translation id="4165077084524712774">Plus d'outils</translation>
 <translation id="4170011742729630528">Le service n'est pas disponible. Veuillez réessayer plus tard.</translation>
 <translation id="4170577491341606575">Récupération de vos données en cours…</translation>
@@ -854,6 +858,7 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 mot de passe compromis}one{# mot de passe compromis}other{# mots de passe compromis}}</translation>
 <translation id="4641919525231168205">Accéder à la page suivante</translation>
 <translation id="4642472735733036929">Suivi des prix arrêté</translation>
+<translation id="4643661539340338954">Notifications de Chrome Finds activées</translation>
 <translation id="4649493483932335039">Afficher les onglets récents</translation>
 <translation id="465657074423018424">La navigation sécurisée vous protège contre les sites Web trompeurs. Si vous la désactivez, faites bien attention durant la navigation, surtout lorsque vous entrez des mots de passe.</translation>
 <translation id="4662373422909645029">Aucun chiffre dans le pseudo</translation>
@@ -1652,6 +1657,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="7686086654630106285">En savoir plus sur les annonces suggérées par les sites</translation>
 <translation id="7690596512217303514">Votre appareil n'a pas pu ouvrir Chrome. Pour résoudre le problème, téléchargez la dernière mise à jour de Chrome depuis votre boutique d'applications.</translation>
 <translation id="7692761875510935111">Ouvrir rapidement dans le navigateur. Pour modifier ce raccourci, maintenez le doigt sur celui-ci.</translation>
+<translation id="7695270712963178084">Chrome Finds</translation>
 <translation id="7697383401610880082">Poignée de déplacement</translation>
 <translation id="7698359219371678927">Créer un courriel dans <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">Zone de contenu dans le bas de l'écran concernant l'activité récente ouverte à pleine hauteur</translation>

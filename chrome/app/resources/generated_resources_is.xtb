@@ -70,7 +70,6 @@
 <translation id="1041181446722933623">„<ph name="LOCAL_BOOKMARK" />“ er eingöngu vistuð í þessu tæki. Vistaðu það í „<ph name="ACCOUNT_FOLDER" />“ á reikningnum þínum til að geta nálgast það í hinum tækjunum þínum.</translation>
 <translation id="1041263367839475438">Tæki í boði</translation>
 <translation id="1041607257468256895">Stjórnaðu staðsetningarheimildum vefsvæða í Chrome</translation>
-<translation id="1042174272890264476">RLZ-safn <ph name="SHORT_PRODUCT_NAME" /> er einnig innbyggt í tölvuna. RLZ úthlutar merki sem er ekki einkvæmt og ekki persónugreinanlegt til að mæla leitarvirkni og notkun <ph name="SHORT_PRODUCT_NAME" /> hjá tiltekinni auglýsingaherferð. Þessi merki birtast stundum í leitarfyrirspurnum á Google í <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1042248468362992359">Tengstu farsímagögnum til að nota heitan reit. <ph name="BEGIN_LINK_LEARN_MORE" />Nánar<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="104385770822424034">Bæta aðgerð við</translation>
 <translation id="1045487161760507186">Þú þarft ekki að leggja aðgangsorðið á minnið því það er vistað fyrir þig í Google-aðgangsorðastjórnun</translation>
@@ -972,7 +971,6 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="1644574205037202324">Ferill</translation>
 <translation id="1644852018355792105">Sláðu inn Bluetooth-lykilorðið fyrir tækið <ph name="DEVICE" /></translation>
 <translation id="1645004815457365098">Óþekktur uppruni</translation>
-<translation id="1645516838734033527">Smart Lock krefst þess að skjálás sé settur upp í símanum til að tryggja öryggi <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1646045728251578877">Hugbúnaðaruppfærsla er í boði</translation>
 <translation id="1647408325348388858">Opna og breyta <ph name="FILE_NAME" /> í þessu vefforriti?</translation>
 <translation id="1647986356840967552">Fyrri síða</translation>
@@ -1461,7 +1459,6 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="1975841812214822307">Fjarlægja...</translation>
 <translation id="1976150099241323601">Innskráning á öryggistæki</translation>
 <translation id="1976823515278601587">Mikill sparnaður</translation>
-<translation id="1977965994116744507">Færðu símann nær til að taka <ph name="DEVICE_TYPE" /> úr lás.</translation>
 <translation id="1978249384651349182"><ph name="BEGIN_DESCRIPTION" />Ef tækin eru skráð innan fyrirtækisins verða þau sett upp fyrir miðlæga tækjastjórnun. Fyrirtækið þitt kann að fara fram á skráningu af mörgum ástæðum, t.d. til að:<ph name="END_DESCRIPTION" />
     <ph name="BEGIN_SUBTITLE1" /><ph name="BEGIN_BOLD" />Auka öryggi<ph name="END_BOLD" /><ph name="END_SUBTITLE1" />
     <ph name="BEGIN_DESCRIPTION1" />Með því að stilla viðbótaröryggisstillingar getur fyrirtækið haldið notanda- og tækjagögnum öruggum. Það getur einnig framkvæmt aðgerðir á borð við fjartengda endurstillingu eða gert týnt tæki óvirkt.<ph name="END_DESCRIPTION1" />
@@ -1623,7 +1620,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2089925163047119068">EÐA</translation>
 <translation id="2090165459409185032">Til að endurheimta reikningsupplýsingarnar þínar skaltu fara á: google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">Tengist sjálfkrafa þegar þú skráir þig inn.</translation>
-<translation id="2090876986345970080">Öryggisstilling kerfis</translation>
 <translation id="2091523941449737894">Hraðari hreyfingar á snertifletinum hreyfa bendilinn lengra</translation>
 <translation id="2091887806945687916">Hljóð</translation>
 <translation id="2092356157625807382"><ph name="BEGIN_H3" />Eiginleikar villuleitar<ph name="END_H3" />
@@ -2643,7 +2639,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2757338480560142065">Gakktu úr skugga um að aðgangsorðið sem þú ert að vista passi við aðgangsorðið fyrir <ph name="WEBSITE" />.</translation>
 <translation id="2761632996810146912"><ph name="HASHTAG_SETTINGS" /> Engar leitarniðurstöður fundust fyrir <ph name="SEARCH_QUERY" /></translation>
 <translation id="2762441749940182211">Lokað á myndavél</translation>
-<translation id="2763165257813209348"><ph name="FILE_NAME" /> inniheldur viðkvæm eða hættuleg gögn. Fyrirtækið þitt mun leyfa þér að vista það í skýjageymslu eða farga því</translation>
 <translation id="2764786626780673772">Upplýsingar um VPN-netið</translation>
 <translation id="2764920001292228569">Sláðu inn prófílnafn</translation>
 <translation id="2765100602267695013">Hafðu samband við farsímafyrirtækið</translation>
@@ -3967,7 +3962,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3688794912214798596">Breyta tungumálum...</translation>
 <translation id="3690369331356918524">Lætur þig vita ef aðgangsorð eru afhjúpuð vegna öryggisbrots</translation>
 <translation id="3691231116639905343">Lyklaborðsforrit</translation>
-<translation id="369135240373237088">Skráðu þig inn aftur með skólareikningi</translation>
 <translation id="3693415264595406141">Aðgangsorð:</translation>
 <translation id="3694027410380121301">Velja fyrri flipa</translation>
 <translation id="3694122362646626770">Vefsvæði</translation>
@@ -4341,7 +4335,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3914894336972817683">Ekki hægt að hlaða upp. Skráin virðist vera tóm.</translation>
 <translation id="3915280005470252504">Nota raddleit</translation>
 <translation id="3916445069167113093">Þessi gerð skráar getur skaðað tölvuna þína. Viltu samt halda <ph name="FILE_NAME" />?</translation>
-<translation id="3917184139185490151">Tölvan inniheldur örugga einingu sem er notuð til að innleiða fjölda mikilvægra öryggiseiginleika í ChromeOS. Farðu í hjálparmiðstöð Chromebook til að fá frekari upplýsingar: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="3917644013202553949">Ekki er nægilegt geymslurými til að samstilla skrárnar þínar. Prófaðu að losa um geymslurými.</translation>
 <translation id="3919145445993746351">Kveiktu á samstillingu til að fá viðbæturnar þínar í allar tölvurnar þínar</translation>
 <translation id="3919229493046408863">Slökkva á tilkynningu þegar tæki eru nálæg</translation>
@@ -4471,7 +4464,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3992008114154328194">Sækir <ph name="FILE_NAME" />, <ph name="STATUS" /></translation>
 <translation id="3994075804072562819">Leyfa <ph name="SPECIFIC_NAME" /> að stjórna USB-tækjum.</translation>
 <translation id="3994318741694670028">Tölvan er því miður grunnstillt með gölluðu vélbúnaðarauðkenni. Þetta kemur í veg fyrir að ChromeOS Flex geti uppfært í nýjustu öryggisúrræði og tölvan <ph name="BEGIN_BOLD" />kann að vera berskjölduð gagnvart árásum<ph name="END_BOLD" />.</translation>
-<translation id="3994374631886003300">Taktu símann úr lás og færðu hann nær <ph name="DEVICE_TYPE" /> til að taka úr lás.</translation>
 <translation id="3994522032746736727">Skrá inn sem <ph name="EMAIL" /></translation>
 <translation id="3994530503403062649">Finndu hnappana á spjaldtölvunni</translation>
 <translation id="3994708120330953242">Einhver aðgangsorðanna þinna fundust í öryggisbroti. Þú ættir að breyta þessum aðgangsorðum núna til að vernda reikningana þína.</translation>
@@ -4827,7 +4819,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="426564820080660648">Notaðu Ethernet, Wi-Fi eða farsímagögn til að leita að uppfærslum.</translation>
 <translation id="426652736638196239">Þetta IBAN-númer verður aðeins vistað í þessu tæki</translation>
 <translation id="4266679478228765574">Ef möppur eru fjarlægðar verður hætt að deila en skrám verður ekki eytt.</translation>
-<translation id="4267455501101322486">Til að bæta við reikningi og fá aðgang að menntabrunnum skaltu biðja foreldri um að gefa þér leyfi</translation>
 <translation id="4267792239557443927">{COUNT,plural, =0{Engin aðgangsorð fundust}=1{1 niðurstaða fannst}one{{COUNT} niðurstaða fannst}other{{COUNT} niðurstöður fundust}}</translation>
 <translation id="4267924571297947682">Biddu foreldri um heimild</translation>
 <translation id="4267953847983678297">Tengjast sjálfkrafa við farsímanet</translation>
@@ -5166,7 +5157,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
         <ph name="BREAK" />
         <ph name="BREAK" />
         Þú getur stjórnað stillingum í spjaldavalmyndinni eða séð fleiri valkosti í Sérsníða Chrome.</translation>
-<translation id="4503748371388753124">Tölvan inniheldur TPM-öryggistæki (Trusted Platform Module) sem notað er til að innleiða fjölda mikilvægra öryggiseiginleika í ChromeOS Flex. Farðu í hjálparmiðstöð Chromebook til að fá frekari upplýsingar: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4504940961672722399">Notaðu þessa viðbót með því að smella á þetta tákn eða ýta á <ph name="EXTENSION_SHORTCUT" />.</translation>
 <translation id="4505469832694348179">Sæktu Chrome með þessum QR-kóða og skráðu þig inn á Google-reikninginn þinn.</translation>
 <translation id="450552327874992444">Orðinu hefur þegar verið bætt við</translation>
@@ -5179,7 +5169,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4509421746503122514">Endurræstu til að uppfæra</translation>
 <translation id="4509741852167209430">Tilteknum gerðum gagna er deilt á milli vefsvæða til að mæla árangur auglýsinga þeirra, t.d. hvort þú hafir keypti vöru eftir að hafa skoðað vefsvæði</translation>
 <translation id="4510195992002502722">Ekki tókst að senda ábendingu. Reynir aftur...</translation>
-<translation id="4510479820467554003">Listi foreldrareikninga</translation>
 <translation id="4511344327646819192">Til að koma í veg fyrir að aðrir noti aðgangsorðið þitt skaltu breyta því á <ph name="WEBSITE" /></translation>
 <translation id="4513072860957814107">Eyða vefskoðunargögnum...</translation>
 <translation id="4513872120116766993">Textatillögur</translation>
@@ -6228,7 +6217,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5244234799035360187">OneDrive mun nú birtast í forritinu Skrár</translation>
 <translation id="5244466461749935369">Halda í bili</translation>
 <translation id="5244474230056479698">Samstillir við <ph name="EMAIL" /></translation>
-<translation id="5245610266855777041">Byrjaðu að nota skólareikning</translation>
 <translation id="5246282308050205996"><ph name="APP_NAME" /> hrundi. Smelltu á þessa blöðru til að endurræsa forritið.</translation>
 <translation id="5247051749037287028">Skjáheiti (valfrjálst)</translation>
 <translation id="5247243947166567755">Velja <ph name="BOOKMARK_TITLE" /></translation>
@@ -6383,7 +6371,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5365881113273618889">Mappan sem þú valdir inniheldur viðkvæmar skrár. Ertu viss um að þú viljir veita „<ph name="APP_NAME" />“ varanlegan skrifaðgang að þessari möppu?</translation>
 <translation id="536638840841140142">Engar</translation>
 <translation id="5368246151595623328">„<ph name="NETWORK_NAME" />“ vistað úr: <ph name="DEVICE_NAME" /></translation>
-<translation id="5368720394188453070">Síminn er læstur. Taktu hann úr lás til að komast inn.</translation>
 <translation id="536882527576164740">{0,plural, =1{Í huliðsstillingu}one{Í huliðsstillingu (#)}other{Í huliðsstillingu (#)}}</translation>
 <translation id="5369694795837229225">Setja upp Linux-forritunarumhverfi</translation>
 <translation id="5370819323174483825">Endu&amp;rhlaða</translation>
@@ -6878,7 +6865,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5707674184620508665">Fyrirtækið þitt, <ph name="ACCOUNT_MANAGER" />, mun ekki geta séð eða stjórnað fyrirliggjandi gögnum þínum. Þau verða áfram á fyrirliggjandi prófíl.</translation>
 <translation id="5708171344853220004">Microsoft-aðalnefni</translation>
 <translation id="5711010025974903573">Þjónustuannálar</translation>
-<translation id="5711983031544731014">Ekki tókst að opna. Sláðu inn aðgangsorðið þitt.</translation>
 <translation id="5712153969432126546">Stundum birta vefsvæði PDF-skjöl, t.d. fylgiskjöl, samninga og eyðublöð</translation>
 <translation id="571222594670061844">Vefsvæði geta nú birt innskráningartilkynningar frá auðkenningarþjónustum</translation>
 <translation id="5713158217420111469">Tengt við <ph name="DEVICE" /></translation>
@@ -7457,7 +7443,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="6112931163620622315">Athugaðu símann</translation>
 <translation id="6113434369102685411">Stilltu sjálfgefna leitarvél fyrir Chrome vafrann og ræsiforrit <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113832060210023016">ræsilykill + smella</translation>
-<translation id="6113942107547980621">Til að nota Smart Lock skaltu skipta yfir í prófíl aðalnotanda símans</translation>
 <translation id="6116921718742659598">Breyta tungumála- og innsláttarstillingum</translation>
 <translation id="6119008366402292080">Enginn prentari tiltækur</translation>
 <translation id="6119972796024789243">Litaleiðrétting</translation>
@@ -7864,7 +7849,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="6400360390396538896">Alltaf á <ph name="ORIGIN" /></translation>
 <translation id="6401118106417399952">EID-númer tækis er <ph name="EID_NUMBER" /> og raðnúmer tækis er <ph name="SERIAL_NUMBER" />. Hægt er að nota þessi númer til að hjálpa til við virkjun þjónustu.</translation>
 <translation id="6401458660421980302">Til að senda þennan flipa í annað tæki þarftu að skrá þig þar inn í Chrome</translation>
-<translation id="6401597285454423070">Tölvan inniheldur TPM-öryggistæki (Trusted Platform Module) sem notað er til að innleiða fjölda mikilvægra öryggiseiginleika í ChromeOS. Farðu í hjálparmiðstöð Chromebook til að fá frekari upplýsingar: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6402921224457714577">Vefsvæði geta beðið um að stjórna og endurforrita MIDI-tækin þín</translation>
 <translation id="6404511346730675251">Breyta bókamerki</translation>
 <translation id="640457954117263537">Nota staðsetningu fyrir ChromeOS- og Android-forrit og -þjónustur.</translation>
@@ -8447,7 +8431,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="6805236548654699520">Fjarlægðu óæskilega sprettiglugga, lagaðu netkerfisvandamál og fleira með því að endurheimta stillingarnar þínar og gera þær að öruggum, sjálfgefnum stillingum.</translation>
 <translation id="6805478749741295868">Þetta er gervigreindareiginleiki á tilraunastigi sem getur gert villur.</translation>
 <translation id="6805647936811177813">Skráðu þig inn á <ph name="TOKEN_NAME" /> til að flytja inn biðlaravottorð frá <ph name="HOST_NAME" />.</translation>
-<translation id="680572642341004180">Virkja RLZ-rakningu á <ph name="SHORT_PRODUCT_OS_NAME" />.</translation>
 <translation id="6805817411033102703">Ábendingar um samnýtta flipahópa</translation>
 <translation id="6806089545527108739">Ekki leyfa en spyrja síðar</translation>
 <translation id="6806781719264274042">Aðeins tengiliðir með Google-reikning. <ph name="LINK_BEGIN" />Skoða tengiliði<ph name="LINK_END" /></translation>
@@ -8896,7 +8879,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7113502843173351041">Vita netfangið þitt</translation>
 <translation id="7113974454301513811">Nú skaltu bæta núverandi flipa á listann</translation>
 <translation id="7114054701490058191">Aðgangsorðin stemma ekki</translation>
-<translation id="7114648273807173152">Þú getur notað Smart Lock til að skrá þig inn á Google reikninginn þinn með því að fara í Stillingar &gt; Tengd tæki &gt; Síminn þinn &gt; Smart Lock.</translation>
 <translation id="7115361495406486998">Ekki næst í neina tengiliði</translation>
 <translation id="7116554090938189816">SSL-vottorð prentara er útrunnið. Endurræstu prentarann og reyndu aftur.</translation>
 <translation id="7117228822971127758">Reyndu aftur síðar</translation>
@@ -9529,7 +9511,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7553242001898162573">Sláðu inn aðgangsorðið þitt</translation>
 <translation id="755472745191515939">Stjórnandinn þinn leyfir ekki þetta tungumál</translation>
 <translation id="7554791636758816595">Nýr flipi</translation>
-<translation id="7556033326131260574">Smart Lock gat ekki staðfest reikninginn þinn. Sláðu inn aðgangsorðið þitt til að komast inn.</translation>
 <translation id="7556228616802995437">Nýlegt spjall og þræðir</translation>
 <translation id="7556242789364317684">Því miður gat <ph name="SHORT_PRODUCT_NAME" /> ekki endurheimt stillingarnar þínar. Til að leiðrétta þessa villu verður <ph name="SHORT_PRODUCT_NAME" /> að endurstilla tækið þitt með djúphreinsun.</translation>
 <translation id="7557194624273628371">Framsending gáttar í Linux</translation>
@@ -9977,7 +9958,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7853747251428735">F&amp;leiri verkfæri</translation>
 <translation id="7855258394151767387">Notaðu „w“ til að ýta á músarhnapp</translation>
 <translation id="7855678561139483478">Færa flipa í nýjan glugga</translation>
-<translation id="7857004848504343806">Tölvan inniheldur örugga einingu sem er notuð til að innleiða fjölda mikilvægra öryggiseiginleika í ChromeOS Flex. Farðu í hjálparmiðstöð Chromebook til að fá frekari upplýsingar: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">Textatillögur</translation>
 <translation id="7858120906780498731">Inntakstæki tengd við ChromeOS</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
@@ -10024,7 +10004,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7892005672811746207">Kveiktu á „Vista hóp“</translation>
 <translation id="7892384782944609022">Ekki tókst að para. Veldu tæki til að reyna aftur.</translation>
 <translation id="7893008570150657497">Fá aðgang að myndum, tónlist og öðru margmiðlunarefni í tölvunni þinni</translation>
-<translation id="7893153962594818789">Slökkt er á Bluetooth í þessu <ph name="DEVICE_TYPE" />. Færðu inn aðgangsorðið þitt og kveiktu á Bluetooth.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (sjálfgefin)</translation>
 <translation id="7896292361319775586">Vista <ph name="FILE" />?</translation>
 <translation id="789722939441020330">Ekki leyfa vefsvæðum að hlaða mörgum skrám niður sjálfkrafa</translation>
@@ -10867,7 +10846,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8453400752347156012">Þetta bókamerki er eingöngu vistað í þessu tæki. Ef þú vistar það í „<ph name="ACCOUNT_FOLDER" />“ verður það einnig vistað á reikningnum þínum.</translation>
 <translation id="8455775311562941553">Tengt við <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="8456067150616457342">Velja sjálfgefinn vafra</translation>
-<translation id="845702320058262034">Ekki tókst að tengjast. Gakktu úr skugga um að kveikt sé á Bluetooth í símanum.</translation>
 <translation id="8457251154056341970">Þú sérð ekki <ph name="MODULE_NAME" /> á þessari síðu framar</translation>
 <translation id="8457451314607652708">Flytja bókamerki inn</translation>
 <translation id="8458341576712814616">Flýtileið</translation>

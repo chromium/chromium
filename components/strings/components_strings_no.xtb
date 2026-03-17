@@ -754,6 +754,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2184405333245229118">{COUNT,plural, =1{1 adresse}other{# adresser}}</translation>
 <translation id="2188375229972301266">Flere hull bunn</translation>
 <translation id="218940509700321686">Kommadelte verdier</translation>
+<translation id="2190094353033916816">Denne regelen har ulike verdier som brukes på maskin- og brukernivå. Regelen fungerer som den skal.</translation>
 <translation id="2191980191135734720">Lås opp skjermen i neste trinn, vanligvis med fingeravtrykket ditt. Du kan også <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Ting å tenke på</translation>
 <translation id="2198183835992354675">Known traveler-nummer</translation>
@@ -3193,6 +3194,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="6042308850641462728">Mer</translation>
 <translation id="6043357981274314628">Ferdig!</translation>
 <translation id="6045164183059402045">Imposisjonsmal</translation>
+<translation id="6046026831939367176"><ph name="URL" /> bruker den omtrentlige posisjonen din</translation>
 <translation id="6046892054959167494">Skriv <ph name="SEARCH_AGGREGATOR_KEYWORD" /> for å søke eller spør <ph name="SEARCH_AGGREGATOR_SHORT_NAME" /></translation>
 <translation id="6047927260846328439">Dette innholdet kan prøve å lure deg til å installere programvare eller oppgi personopplysninger. <ph name="BEGIN_LINK" />Vis det likevel<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">B4-konvolutt</translation>
@@ -3642,7 +3644,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6734506549556896534">Simulatorspill</translation>
-<translation id="6735589846038045679">Betalingsavtaler er avhengig av kvalifikasjon. <ph name="BEGIN_BOLD" />Innhold fra betalingssiden deles med Google for å tilby disse alternativene.<ph name="END_BOLD" /> Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> for å skjule alternativene for å betale senere.</translation>
 <translation id="6737708609449480586">Bakst</translation>
 <translation id="6738516213925468394">Dataene dine ble kryptert med <ph name="BEGIN_LINK" />passordfrasen for synkronisering<ph name="END_LINK" /> <ph name="TIME" />. Skriv den inn for å starte synkroniseringen.</translation>
 <translation id="6740851646645036700">Du har nådd grensen for skrivehjelp inntil videre. Prøv igjen senere.</translation>
@@ -4991,6 +4992,7 @@ Mer informasjon:
 <translation id="8870700989640064057">Vil du skrive ut den konfidensielle filen?</translation>
 <translation id="8871485335898060555">Antikviteter og samleobjekter</translation>
 <translation id="8871553383647848643">Tilpass nettleserens utseende</translation>
+<translation id="887350038812854047">Denne regelen har samme verdi på maskin- og brukernivå. Regelen fungerer som den skal.</translation>
 <translation id="8874790741333031443">Prøv å tillate informasjonskapsler fra tredjeparter midlertidig. Det innebærer mindre beskyttelse under surfing, men øker sannsynligheten for at nettstedsfunksjoner virker som forventet.</translation>
 <translation id="8874824191258364635">Angi et gyldig kortnummer</translation>
 <translation id="8877780815363510165">Fiske</translation>

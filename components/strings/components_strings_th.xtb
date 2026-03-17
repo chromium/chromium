@@ -754,6 +754,7 @@
 <translation id="2184405333245229118">{COUNT,plural, =1{ที่อยู่ 1 รายการ}other{ที่อยู่ # รายการ}}</translation>
 <translation id="2188375229972301266">เจาะรูด้านล่างหลายรู</translation>
 <translation id="218940509700321686">ค่าที่คั่นด้วยคอมมา</translation>
+<translation id="2190094353033916816">นโยบายนี้มีค่าที่แตกต่างกันซึ่งใช้ในระดับเครื่องและระดับผู้ใช้ นโยบายทำงานตามที่ตั้งใจไว้</translation>
 <translation id="2191980191135734720">ปลดล็อกหน้าจอในขั้นตอนถัดไป โดยปกติจะใช้ลายนิ้วมือ หรืออาจ<ph name="LINK_TEXT" /></translation>
 <translation id="2194856509914051091">สิ่งที่ควรพิจารณา</translation>
 <translation id="2198183835992354675">หมายเลขประจำตัวผู้เดินทางที่ตรวจสอบแล้ว (KTN)</translation>
@@ -3192,6 +3193,7 @@
 <translation id="6042308850641462728">แสดงเพิ่ม</translation>
 <translation id="6043357981274314628">เสร็จแล้ว</translation>
 <translation id="6045164183059402045">เทมเพลตการจัดเรียงหน้าก่อนพิมพ์</translation>
+<translation id="6046026831939367176"><ph name="URL" /> ต้องการใช้ตำแหน่งโดยประมาณของคุณ</translation>
 <translation id="6046892054959167494">พิมพ์ <ph name="SEARCH_AGGREGATOR_KEYWORD" /> เพื่อค้นหาหรือถาม <ph name="SEARCH_AGGREGATOR_SHORT_NAME" /></translation>
 <translation id="6047927260846328439">เนื้อหานี้อาจพยายามหลอกล่อให้คุณติดตั้งซอฟต์แวร์หรือเปิดเผยข้อมูลส่วนบุคคล <ph name="BEGIN_LINK" />แสดงเนื้อหา<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">Envelope B4</translation>
@@ -3641,7 +3643,6 @@
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">กล้อง</translation>
 <translation id="6734506549556896534">เกมจำลองเหตุการณ์</translation>
-<translation id="6735589846038045679">แพ็กเกจการชำระเงินขึ้นอยู่กับสิทธิ์ <ph name="BEGIN_BOLD" />ระบบจะแชร์เนื้อหาจากหน้าชำระเงินกับ Google เพื่อเสนอตัวเลือกเหล่านี้<ph name="END_BOLD" /> หากต้องการซ่อนตัวเลือกการชำระเงินภายหลัง ให้ไปที่<ph name="BEGIN_LINK" />การตั้งค่าการชำระเงิน<ph name="END_LINK" /></translation>
 <translation id="6737708609449480586">สินค้าเบเกอรี</translation>
 <translation id="6738516213925468394">ข้อมูลของคุณเข้ารหัสลับไว้ด้วย<ph name="BEGIN_LINK" />รหัสผ่านการซิงค์<ph name="END_LINK" />เมื่อ <ph name="TIME" /> ป้อนรหัสผ่านเพื่อเริ่มซิงค์</translation>
 <translation id="6740851646645036700">ขณะนี้คุณขอความช่วยเหลือในการเขียนถึงขีดจำกัดแล้ว โปรดลองอีกครั้งในภายหลัง</translation>
@@ -4992,6 +4993,7 @@
 <translation id="8870700989640064057">พิมพ์ไฟล์ลับไหม</translation>
 <translation id="8871485335898060555">วัตถุโบราณและของสะสม</translation>
 <translation id="8871553383647848643">ปรับแต่งรูปลักษณ์ของเบราว์เซอร์</translation>
+<translation id="887350038812854047">นโยบายนี้มีค่าเดียวกันที่ใช้ในระดับเครื่องและระดับผู้ใช้ นโยบายทำงานตามที่ตั้งใจไว้</translation>
 <translation id="8874790741333031443">ลองอนุญาตคุกกี้ของบุคคลที่สามชั่วคราว ซึ่งหมายความว่าการปกป้องขณะท่องเว็บจะลดลง แต่ฟีเจอร์ของเว็บไซต์มีแนวโน้มที่จะทํางานตามที่คาดได้มากกว่า</translation>
 <translation id="8874824191258364635">ป้อนหมายเลขบัตรที่ถูกต้อง</translation>
 <translation id="8877780815363510165">การตกปลา</translation>

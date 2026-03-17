@@ -213,6 +213,7 @@
 <translation id="1900260903084164610">جاری رکھ کر آپ <ph name="BEGIN_TOS_LINK" />سروس کی شرائط<ph name="END_TOS_LINK" /> سے اتفاق کرتے ہیں۔</translation>
 <translation id="1904580727789512086">‏آپ کے ملاحظہ کردہ URLs آپ کے Google اکاؤنٹ میں محفوظ ہوتے ہیں</translation>
 <translation id="1910950723001426294">اشتراک کرنے کے اختیارات کی فہرست بند ہے۔</translation>
+<translation id="1912367671208932516">ایکسٹینشنز مینیو کھولیں</translation>
 <translation id="191726024256261717">اجازتوں کا جائزہ لیں</translation>
 <translation id="1917766536967060661">‏آپ فوری طور پر "<ph name="GROUP_NAME" />" ٹیب گروپ تک رسائی سے محروم ہو جائیں گے اور <ph name="BLOCKED_MEMBER_FULL_NAME" /> (<ph name="BLOCKED_MEMBER_EMAIL" />) تمام Google سروسز پر آپ کے ساتھ تعامل نہیں کر سکے گا۔</translation>
 <translation id="1919130412786645364">‏Chrome میں سائن ان کی اجازت دیں</translation>
@@ -414,6 +415,7 @@
 <translation id="2789486458103222910">ٹھیک ہے</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{‏‫Chrome کو دوبارہ استعمال کردہ پاس ورڈ ملا ہے جسے آپ بہتر بنا سکتے ہیں}other{‏‫Chrome کو دوبارہ استعمال کردہ # پاس ورڈ ملے ہیں جنہیں آپ بہتر بنا سکتے ہیں}}</translation>
 <translation id="2794551654724114396">‏‫Chrome سے بہترین فائدہ اٹھانے میں آپ کی مدد کرنے کے لیے مفید تجاویز کے لیے اطلاعات کو آن کریں</translation>
+<translation id="2798977804328097977">کسی بھی آلہ پر آسانی سے جاری رکھیں</translation>
 <translation id="2805210243313393104">اپنے تمام آلات پر اپنے بُک مارکس وغیرہ حاصل کریں</translation>
 <translation id="2805756323405976993">اطلاقات</translation>
 <translation id="2819849308549746319">سبھی کو اَن سبسکرائب کریں</translation>
@@ -469,6 +471,7 @@
 <translation id="2977350910003566746">آخری بار کھولا گیا کے لحاظ سے ترتیب دیا جا رہا ہے</translation>
 <translation id="297771753501244313">بلحاظ آخری بار کھولا گیا سے ترتیب دیں</translation>
 <translation id="2979639724566107830">نئی ونڈو میں کھولیں</translation>
+<translation id="2980545254049127870">پیغام، دستاویزات اور دیگر ایپس سے آسانی سے لنکس کھولیں</translation>
 <translation id="2983102365694924129">سائٹ پر آپ کی سرگرمی کی بنیاد پر۔ یہ ترتیب آف ہے۔</translation>
 <translation id="2983398917942897288">غیر فعال (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2983835398644161987">'تصویر میں تصویر' سے باہر نکلیں</translation>
@@ -730,6 +733,7 @@
 <translation id="4137746084635924146">آلہ کی موجودہ زبان</translation>
 <translation id="414128724510021958">بطور ڈیفالٹ درخواست کردہ ڈیسک ٹاپ سائٹس</translation>
 <translation id="4162867837470729563">اشتراک کرنے کے اختیارات کی فہرست اونچائی پر کھلی ہوئی ہے۔</translation>
+<translation id="4164642020717536140">تیز اور محفوظ ویب براؤزنگ</translation>
 <translation id="4165077084524712774">مزید ٹولز</translation>
 <translation id="4170011742729630528">سروس دستیاب نہیں ہے؛ بعد میں دوبارہ کوشش کریں۔</translation>
 <translation id="4170577491341606575">‏آپ کا ڈیٹا حاصل کیا جا رہا ہے‎\u2026</translation>
@@ -854,6 +858,7 @@
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 متاثرہ پاس ورڈ}other{# متاثرہ پاس ورڈز}}</translation>
 <translation id="4641919525231168205">اگلے صفحے پر جائیں</translation>
 <translation id="4642472735733036929">قیمت کی ٹریکنگ بند کی گئی</translation>
+<translation id="4643661539340338954">‏‫Chrome Finds کی اطلاعات آن ہیں</translation>
 <translation id="4649493483932335039">حالیہ ٹیبز دیکھیں</translation>
 <translation id="465657074423018424">محفوظ براؤزنگ گمراہ کن ویب سائٹس سے آپ کی حفاظت کرتی ہے۔ اگر آپ اسے آف کرتے ہیں تو براؤز کرتے وقت، خاص طور پر پاس ورڈ داخل کرنے سے پہلے خوب محتاط رہیں۔</translation>
 <translation id="4662373422909645029">عرفی نام میں نمبرز شامل نہیں ہو سکتے</translation>
@@ -1652,6 +1657,7 @@
 <translation id="7686086654630106285">سائٹ کے تجویز کردہ اشتہارات کے بارے میں مزید</translation>
 <translation id="7690596512217303514">‏آپ کا آلہ Chrome کو نہیں کھول سکا۔ مسئلہ حل کرنے کے لیے، اپنے App اسٹور سے تازہ ترین Chrome اپ ڈیٹ ڈاؤن لوڈ کریں۔</translation>
 <translation id="7692761875510935111">فوری طور پر براؤزر میں کھولیں۔ اس شارٹ کٹ میں ترمیم کرنے کے لیے، ٹچ کریں اور دبائے رکھیں۔</translation>
+<translation id="7695270712963178084">‏‫Chrome کی تلاشیں</translation>
 <translation id="7697383401610880082">گھسیٹنے کا ہینڈل</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" /> میں ای میل تخلیق کریں</translation>
 <translation id="7702420606070050505">حالیہ سرگرمی کی نیچے کی شیٹ پوری کھلی ہے</translation>

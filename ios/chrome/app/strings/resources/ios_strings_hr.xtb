@@ -394,6 +394,7 @@
 <translation id="2360196772093551345">Zatraži mobilnu web-lokaciju</translation>
 <translation id="2362083820973145409">Prijavljeni ste kao <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Otvara postavke.</translation>
 <translation id="2371084566192454134">Kartice i grupe kartica</translation>
+<translation id="2371303771137626249">Novo</translation>
 <translation id="2381405137052800939">Osnove</translation>
 <translation id="2384692388811649784">Sakrivanje anonimnih kartica</translation>
 <translation id="2386793615875593361">1 odabrana</translation>
@@ -636,6 +637,7 @@
 <translation id="3324193307694657476">2. adresni redak</translation>
 <translation id="3328801116991980348">Informacije o web-lokaciji</translation>
 <translation id="333229797575847124">Kako omogućiti tu značajku</translation>
+<translation id="334004756946755423">Objasni mi ovo:</translation>
 <translation id="3344233834747405775">Nevažeće ime vlasnika kartice</translation>
 <translation id="3344485292736684439">{count,plural, =1{Oznaka je spremljena u "{title}" na vašem računu, {email}}one{Oznake spremljene na "{title}" na vašem računu, {email}}few{Oznake spremljene na "{title}" na vašem računu, {email}}other{Oznake spremljene na "{title}" na vašem računu, {email}}}</translation>
 <translation id="334690320928261823">Nedavne kartice</translation>
@@ -689,6 +691,7 @@
 <translation id="3530206579861815432">Brzo pronađite otvorene i nedavno zatvorene kartice na svim sinkroniziranim uređajima.</translation>
 <translation id="3530767473765895035">Upravljajte računima na ovom uređaju…</translation>
 <translation id="3533436815740441613">Nova kartica</translation>
+<translation id="3534738261102690620">Pitajte Gemini</translation>
 <translation id="3540141921715814660">Dodaj u Oznake</translation>
 <translation id="3546122170015471515">Pregledi karata na Google.com</translation>
 <translation id="3547356470684043247">Pročitajte korisničke procjene proizvoda, usluga ili doživljaja kako biste lakše odlučili o svojim recenzijama</translation>
@@ -959,6 +962,7 @@
 <translation id="454217142158335225">Zatvorene stavke možete ponovo otvoriti u odjeljcima nedavnih kartica ili grupa kartica. Prikvačene kartice neće se zatvoriti.</translation>
 <translation id="4547181496285029457">Natrag na karticu Nedavno</translation>
 <translation id="4552042254369397518">Kopiranje…</translation>
+<translation id="4553044860350038560">Više pristupnih ključeva</translation>
 <translation id="4564893319561643483">Sakrij <ph name="TITLE" /></translation>
 <translation id="4565377596337484307">Sakrij zaporku</translation>
 <translation id="4568230126482344545">Sakrij stavku Nedavne kartice</translation>
@@ -1087,6 +1091,7 @@
 <translation id="4944543191714094452">Traži na stranici…</translation>
 <translation id="4945756290001680296">Pristupite postavkama zaporke</translation>
 <translation id="4949302115427722371">Upravljajte postavkama…</translation>
+<translation id="4952050521954075618">Fotografije iz snimljenih fotografija neće se sinkronizirati na vašim uređajima</translation>
 <translation id="4958444002117714549">Proširi popis</translation>
 <translation id="496392417432935267">Otvoreno negdje drugdje</translation>
 <translation id="4970724460420203313">Upotreba Chromea s upravljanim računom omogućuje vam da pregledavate sadržaj povezan s vašom organizacijom (uključujući kartice, povijest i zaporke) zasebno od vašeg ostalog sadržaja</translation>
@@ -1286,6 +1291,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="5647702255748985085">Želite li napustiti grupu?</translation>
 <translation id="5648166631817621825">Posljednjih 7 dana</translation>
 <translation id="5652623411397330904">Ovdje će se prikazivati proizvodi koje pratite.</translation>
+<translation id="5653100054596780862">Sve kartice</translation>
 <translation id="5656431592348714536">Poboljšani kalendar</translation>
 <translation id="5659593005791499971">e-pošta</translation>
 <translation id="5665739277590037307">Primjenjuju se <ph name="GOOGLE_TERMS" /> i <ph name="GEMINI_APPS_PRIVACY" />. Gemini može pogriješiti, pa provjerite njegove odgovore.</translation>
@@ -1751,6 +1757,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="7300448350764260141">Dodajte još jednu razinu zaštite od online prijetnji.</translation>
 <translation id="7311244614769792472">Nema rezultata</translation>
 <translation id="7313347584264171202">Ovdje ćete pronaći svoje anonimne kartice</translation>
+<translation id="7322186060879266048">{count,plural, =1{Iznad tipkovnice dostupna je {count} opcija automatskog popunjavanja.}one{Iznad tipkovnice dostupna je {count} opcija automatskog popunjavanja.}few{Iznad tipkovnice dostupne su {count} opcije automatskog popunjavanja.}other{Iznad tipkovnice dostupno je {count} opcija automatskog popunjavanja.}}</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> posto preuzeto</translation>
 <translation id="7345061034321640811">Uvoz nije dopušten</translation>

@@ -415,6 +415,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="2789486458103222910">OK</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome đã phát hiện một mật khẩu trùng lặp mà bạn có thể cải thiện}other{Chrome đã phát hiện # mật khẩu trùng lặp mà bạn có thể cải thiện}}</translation>
 <translation id="2794551654724114396">Bật thông báo để nhận các mẹo hữu ích giúp bạn tận dụng Chrome</translation>
+<translation id="2798977804328097977">Tiếp tục một cách liền mạch trên mọi thiết bị</translation>
 <translation id="2805210243313393104">Sử dụng dấu trang và các dữ liệu khác trên mọi thiết bị của bạn</translation>
 <translation id="2805756323405976993">Ứng dụng</translation>
 <translation id="2819849308549746319">Huỷ đăng ký tất cả</translation>
@@ -470,6 +471,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="2977350910003566746">Sắp xếp theo lần mở gần nhất</translation>
 <translation id="297771753501244313">Xếp theo lần mở gần nhất</translation>
 <translation id="2979639724566107830">Mở trong cửa sổ mới</translation>
+<translation id="2980545254049127870">Dễ dàng mở đường liên kết từ tin nhắn, tài liệu và các ứng dụng khác</translation>
 <translation id="2983102365694924129">Dựa vào hoạt động của bạn trên một trang web. Chế độ cài đặt này đang tắt.</translation>
 <translation id="2983398917942897288">Không hoạt động (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2983835398644161987">Thoát chế độ hình trong hình</translation>
@@ -731,6 +733,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="4137746084635924146">Ngôn ngữ hiện tại của thiết bị</translation>
 <translation id="414128724510021958">Yêu cầu trang web dành cho máy tính (theo mặc định)</translation>
 <translation id="4162867837470729563">Danh sách các lựa chọn chia sẻ được mở trên toàn màn hình.</translation>
+<translation id="4164642020717536140">Duyệt web nhanh chóng và an toàn</translation>
 <translation id="4165077084524712774">Công cụ khác</translation>
 <translation id="4170011742729630528">Dịch vụ không khả dụng; thử lại sau.</translation>
 <translation id="4170577491341606575">Đang tải dữ liệu của bạn\u2026</translation>

@@ -394,6 +394,7 @@
 <translation id="2360196772093551345">Vyžiadať stránky pre mobil</translation>
 <translation id="2362083820973145409">Prihlásili ste sa ako <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Otvorí nastavenia.</translation>
 <translation id="2371084566192454134">Karty a skupiny kariet</translation>
+<translation id="2371303771137626249">Nová</translation>
 <translation id="2381405137052800939">Základy</translation>
 <translation id="2384692388811649784">Skrývať karty inkognito</translation>
 <translation id="2386793615875593361">Počet vybratých fotografií: 1</translation>
@@ -689,6 +690,7 @@
 <translation id="3530206579861815432">Rýchlo nájdite otvorené a nedávno zavreté karty vo svojich synchronizovaných zariadeniach.</translation>
 <translation id="3530767473765895035">Spravovať účty v tomto zariadení…</translation>
 <translation id="3533436815740441613">Nová karta</translation>
+<translation id="3534738261102690620">Opýtať sa Gemini</translation>
 <translation id="3540141921715814660">Pridať medzi záložky</translation>
 <translation id="3546122170015471515">Predbežné verzie Máp na Google.com</translation>
 <translation id="3547356470684043247">Prečítajte si hodnotenia zákazníkov týkajúce sa výrobkov, služieb alebo ich skúseností. Na základe týchto recenzií sa potom budete môcť informovane rozhodovať.</translation>
@@ -959,6 +961,7 @@
 <translation id="454217142158335225">Zavreté položky môžete znova otvoriť v sekciách Nedávne karty alebo Skupiny kariet. Pripnuté karty sa nezavrú.</translation>
 <translation id="4547181496285029457">Návrat na poslednú kartu</translation>
 <translation id="4552042254369397518">Kopíruje sa…</translation>
+<translation id="4553044860350038560">Ďalšie prístupové kľúče</translation>
 <translation id="4564893319561643483">Skryť <ph name="TITLE" /></translation>
 <translation id="4565377596337484307">Skryť heslo</translation>
 <translation id="4568230126482344545">Skryť Nedávne karty</translation>
@@ -1087,6 +1090,7 @@
 <translation id="4944543191714094452">Nájsť na stránke…</translation>
 <translation id="4945756290001680296">Prejdite do nastavení hesla</translation>
 <translation id="4949302115427722371">Spravovať Nastavenia…</translation>
+<translation id="4952050521954075618">Fotky z galérie zariadenia sa nebudú synchronizovať vo vašich zariadeniach</translation>
 <translation id="4958444002117714549">Rozbaliť zoznam</translation>
 <translation id="496392417432935267">Otvorené inde</translation>
 <translation id="4970724460420203313">Ak používate Chrome so spravovaným účtom, budete môcť prehliadanie súvisiace s vašou organizáciou (vrátane kariet, histórie a hesiel) ponechať oddelené od ostatného prehliadania</translation>
@@ -1286,6 +1290,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="5647702255748985085">Chcete skupinu opustiť?</translation>
 <translation id="5648166631817621825">Posledných 7 dní</translation>
 <translation id="5652623411397330904">Tu sa zobrazia výrobky, ktoré sledujete.</translation>
+<translation id="5653100054596780862">Všetky karty</translation>
 <translation id="5656431592348714536">Zlepšený kalendár</translation>
 <translation id="5659593005791499971">E-mail</translation>
 <translation id="5665739277590037307">Platia <ph name="GOOGLE_TERMS" /> a <ph name="GEMINI_APPS_PRIVACY" />. Gemini môže robiť chyby, preto si jeho odpovede overujte.</translation>
@@ -1751,6 +1756,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="7300448350764260141">Pridajte ďalšiu úroveň ochrany pred hrozbami na internete.</translation>
 <translation id="7311244614769792472">Neboli nájdené žiadne výsledky</translation>
 <translation id="7313347584264171202">Tu nájdete svoje karty inkognito</translation>
+<translation id="7322186060879266048">{count,plural, =1{Nad klávesnicou je k dispozícii {count} možnosť automatického dopĺňania.}few{Nad klávesnicou sú k dispozícii {count} možnosti automatického dopĺňania.}many{{count} autofill options available above your keyboard.}other{Nad klávesnicou je k dispozícii {count} možností automatického dopĺňania.}}</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241">Stiahnuté: <ph name="PERCENT" /> percent</translation>
 <translation id="7345061034321640811">Import nie je povolený</translation>

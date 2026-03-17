@@ -754,6 +754,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2184405333245229118">{COUNT,plural, =1{Una dirección}other{# direcciones}}</translation>
 <translation id="2188375229972301266">Perforado múltiple en la parte inferior</translation>
 <translation id="218940509700321686">Valores separados por comas</translation>
+<translation id="2190094353033916816">Esta política tiene valores distintos aplicados a nivel de equipo y a nivel de usuario. La política funciona según lo previsto.</translation>
 <translation id="2191980191135734720">Desbloquea la pantalla en el siguiente paso, normalmente con tu huella digital. También puedes <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Notas importantes</translation>
 <translation id="2198183835992354675">Número de viajero conocido</translation>
@@ -3193,6 +3194,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="6042308850641462728">Más</translation>
 <translation id="6043357981274314628">Hecho.</translation>
 <translation id="6045164183059402045">Plantilla de imposición</translation>
+<translation id="6046026831939367176"><ph name="URL" /> quiere usar tu ubicación aproximada</translation>
 <translation id="6046892054959167494">Escribe <ph name="SEARCH_AGGREGATOR_KEYWORD" /> para buscar o preguntar a <ph name="SEARCH_AGGREGATOR_SHORT_NAME" /></translation>
 <translation id="6047927260846328439">Es posible que este contenido intente engañarte para que instales software o reveles información personal. <ph name="BEGIN_LINK" />Mostrar de todos modos<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">Sobre B4</translation>
@@ -3642,7 +3644,6 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">cámara</translation>
 <translation id="6734506549556896534">Juegos de simulación</translation>
-<translation id="6735589846038045679">Los planes de pagos están sujetos a requisitos. <ph name="BEGIN_BOLD" />El contenido de la página de tramitación de la compra se comparte con Google para ofrecer estas opciones.<ph name="END_BOLD" /> Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />configuración de pago<ph name="END_LINK" />.</translation>
 <translation id="6737708609449480586">Alimentos horneados</translation>
 <translation id="6738516213925468394">Tus datos están cifrados con tu <ph name="BEGIN_LINK" />frase de contraseña de sincronización<ph name="END_LINK" /> desde el <ph name="TIME" />. Introdúcela para iniciar la sincronización.</translation>
 <translation id="6740851646645036700">Has alcanzado tu límite de ayuda de escritura por ahora. Inténtalo de nuevo más tarde.</translation>
@@ -4992,6 +4993,7 @@ Más información:
 <translation id="8870700989640064057">¿Imprimir archivo confidencial?</translation>
 <translation id="8871485335898060555">Antigüedades y coleccionables</translation>
 <translation id="8871553383647848643">Personaliza el aspecto de tu navegador</translation>
+<translation id="887350038812854047">Esta política tiene el mismo valor aplicado a nivel de equipo y a nivel de usuario. La política funciona según lo previsto.</translation>
 <translation id="8874790741333031443">Prueba a permitir temporalmente las cookies de terceros, lo que disminuirá la protección al navegar, pero aumentará la probabilidad de que las opciones de los sitios funcionen como se espera.</translation>
 <translation id="8874824191258364635">Introduce un número de tarjeta válido</translation>
 <translation id="8877780815363510165">Pesca</translation>

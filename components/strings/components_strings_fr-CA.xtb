@@ -754,6 +754,7 @@
 <translation id="2184405333245229118">{COUNT,plural, =1{1 adresse}one{# adresse}other{# adresses}}</translation>
 <translation id="2188375229972301266">Perforation multiple en bas</translation>
 <translation id="218940509700321686">Valeurs séparées par des virgules</translation>
+<translation id="2190094353033916816">Cette politique a des valeurs différentes appliquées au niveau de la machine et de l'utilisateur. La politique fonctionne comme prévu.</translation>
 <translation id="2191980191135734720">Déverrouillez votre écran à l'étape suivante, habituellement à l'aide de votre empreinte digitale. Vous pouvez également <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Points à prendre en compte</translation>
 <translation id="2198183835992354675">Numéro de voyageur connu</translation>
@@ -3193,6 +3194,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6042308850641462728">Plus</translation>
 <translation id="6043357981274314628">Terminé!</translation>
 <translation id="6045164183059402045">Modèle d'imposition</translation>
+<translation id="6046026831939367176"><ph name="URL" /> souhaite utiliser votre position approximative</translation>
 <translation id="6046892054959167494">Tapez <ph name="SEARCH_AGGREGATOR_KEYWORD" /> pour effectuer une recherche ou pour demander à <ph name="SEARCH_AGGREGATOR_SHORT_NAME" /></translation>
 <translation id="6047927260846328439">Ce contenu pourrait essayer de vous faire installer un logiciel ou de vous faire dévoiler des renseignements personnels. <ph name="BEGIN_LINK" />Afficher quand même<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">Enveloppe B4</translation>
@@ -3642,7 +3644,6 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">Appareil photo</translation>
 <translation id="6734506549556896534">Jeux de simulation</translation>
-<translation id="6735589846038045679">Les forfaits de paiement sont assujettis à des critères d'admissibilité. <ph name="BEGIN_BOLD" />Le contenu de la page de paiement est partagé avec Google pour proposer ces options.<ph name="END_BOLD" /> Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LINK" />paramètres des paiements<ph name="END_LINK" /></translation>
 <translation id="6737708609449480586">Produits de boulangerie-pâtisserie</translation>
 <translation id="6738516213925468394">Vos données ont été chiffrées avec votre <ph name="BEGIN_LINK" />phrase de passe de synchronisation<ph name="END_LINK" /> le <ph name="TIME" />. Veuillez l'entrer pour commencer la synchronisation.</translation>
 <translation id="6740851646645036700">Vous avez atteint votre limite d'aide à la rédaction pour le moment. Réessayez plus tard.</translation>
@@ -4991,6 +4992,7 @@ Détails supplémentaires :
 <translation id="8870700989640064057">Imprimer le fichier confidentiel?</translation>
 <translation id="8871485335898060555">Antiquités et objets de collection</translation>
 <translation id="8871553383647848643">Personnaliser le style de votre navigateur</translation>
+<translation id="887350038812854047">Cette politique a la même valeur appliquée au niveau de la machine et de l'utilisateur. La politique fonctionne comme prévu.</translation>
 <translation id="8874790741333031443">Essayez d'autoriser temporairement les témoins tiers, ce qui signifie que la navigation est moins protégée, mais que les fonctionnalités des sites sont plus susceptibles de fonctionner comme prévu.</translation>
 <translation id="8874824191258364635">Veuillez entrer un numéro de carte valide</translation>
 <translation id="8877780815363510165">Pêche</translation>

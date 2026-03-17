@@ -754,6 +754,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2184405333245229118">{COUNT,plural, =1{1 adresa}one{# adresa}few{# adrese}other{# adresa}}</translation>
 <translation id="2188375229972301266">Višestruko bušenje na donjoj strani</translation>
 <translation id="218940509700321686">Vrijednosti odvojene zarezima</translation>
+<translation id="2190094353033916816">Ovo pravilo ima različite vrijednosti primijenjene na nivou uređaja i korisnika. Pravilo funkcionira kako je predviđeno.</translation>
 <translation id="2191980191135734720">U sljedećem koraku otključajte ekran, obično pomoću otiska prsta. Možete i <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Stvari za razmatranje</translation>
 <translation id="2198183835992354675">Broj poznatog putnika</translation>
@@ -3193,6 +3194,7 @@ Da sakrijete opcije kasnijeg plaćanja, idite u <ph name="BEGIN_LINK" />postavke
 <translation id="6042308850641462728">Više</translation>
 <translation id="6043357981274314628">Gotovo!</translation>
 <translation id="6045164183059402045">Šablon položaja</translation>
+<translation id="6046026831939367176"><ph name="URL" /> želi koristiti vašu približnu lokaciju</translation>
 <translation id="6046892054959167494">Upišite <ph name="SEARCH_AGGREGATOR_KEYWORD" /> da pretražite ili pitate <ph name="SEARCH_AGGREGATOR_SHORT_NAME" /></translation>
 <translation id="6047927260846328439">Ovaj sadržaj vas može navesti da instalirate softver ili otkrijete lične informacije. <ph name="BEGIN_LINK" />Ipak pokaži<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">Koverta B4</translation>
@@ -3642,7 +3644,6 @@ Da sakrijete opcije kasnijeg plaćanja, idite u <ph name="BEGIN_LINK" />postavke
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6734506549556896534">Simulacijske igre</translation>
-<translation id="6735589846038045679">Planovi plaćanja su podložni ispunjavanju uslova. <ph name="BEGIN_BOLD" />Sadržaj stranice za nastavak na plaćanje se dijeli s Googleom da ponudi ove opcije.<ph name="END_BOLD" /> Da sakrijete opcije kasnijeg plaćanja, idite u <ph name="BEGIN_LINK" />postavke plaćanja<ph name="END_LINK" /></translation>
 <translation id="6737708609449480586">Pekarski proizvodi</translation>
 <translation id="6738516213925468394">Vaši podaci su šifrirani vašim <ph name="BEGIN_LINK" />izrazom za pristup sinhroniziranju<ph name="END_LINK" /> u <ph name="TIME" />. Unesite ga da započnete sinhronizaciju.</translation>
 <translation id="6740851646645036700">Zasad se dosegnuli ograničenje pomoći za pisanje. Pokušajte ponovo kasnije.</translation>
@@ -4992,6 +4993,7 @@ Dodatni detalji:
 <translation id="8870700989640064057">Štampati povjerljiv fajl?</translation>
 <translation id="8871485335898060555">Antikviteti i kolekcionarstvo</translation>
 <translation id="8871553383647848643">Prilagodite izgled preglednika</translation>
+<translation id="887350038812854047">Ovo pravilo ima istu vrijednost primijenjenu na nivou računara i korisnika. Pravilo funkcionira kako je predviđeno.</translation>
 <translation id="8874790741333031443">Pokušajte privremeno dozvoliti kolačiće treće strane, što podrazumijeva manju zaštitu prilikom pregledanja, ali i veću vjerovatnost da će funkcije web lokacije funkcionirati prema očekivanjima.</translation>
 <translation id="8874824191258364635">Unesite važeći broj kartice</translation>
 <translation id="8877780815363510165">Pecanje</translation>

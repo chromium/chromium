@@ -414,6 +414,7 @@
 <translation id="2789486458103222910">確定</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome 發現重複使用的密碼，建議改用其他密碼}other{Chrome 發現 # 個重複使用的密碼，建議改用其他密碼}}</translation>
 <translation id="2794551654724114396">開啟通知功能，取得有助充分運用 Chrome 的實用提示</translation>
+<translation id="2798977804328097977">在任何裝置上無縫接續進度</translation>
 <translation id="2805210243313393104">在所有裝置上存取書籤和其他資料</translation>
 <translation id="2805756323405976993">應用程式</translation>
 <translation id="2819849308549746319">全部取消訂閱</translation>
@@ -469,6 +470,7 @@
 <translation id="2977350910003566746">依上次開啟時間排序</translation>
 <translation id="297771753501244313">依上次開啟時間排序</translation>
 <translation id="2979639724566107830">於新視窗中開啟</translation>
+<translation id="2980545254049127870">輕鬆開啟訊息、文件和其他應用程式中的連結</translation>
 <translation id="2983102365694924129">以你的網站活動做為依據。這項設定已關閉。</translation>
 <translation id="2983398917942897288">未啟用 (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2983835398644161987">離開子母畫面</translation>
@@ -730,6 +732,7 @@
 <translation id="4137746084635924146">目前裝置語言</translation>
 <translation id="414128724510021958">預設設定要求顯示電腦版網站</translation>
 <translation id="4162867837470729563">分享選項清單已開啟，顯示於整個畫面。</translation>
+<translation id="4164642020717536140">快速又安全的網路瀏覽體驗</translation>
 <translation id="4165077084524712774">更多工具</translation>
 <translation id="4170011742729630528">服務無法使用，請稍後再試。</translation>
 <translation id="4170577491341606575">正在擷取你的資料\u2026</translation>

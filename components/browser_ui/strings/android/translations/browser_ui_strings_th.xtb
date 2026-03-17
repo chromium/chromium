@@ -125,7 +125,6 @@
 <translation id="2228071138934252756">หากต้องการอนุญาตให้ <ph name="APP_NAME" /> เข้าถึงกล้องถ่ายรูป ให้เปิดใช้กล้องใน<ph name="BEGIN_LINK" />การตั้งค่า Android<ph name="END_LINK" /> ด้วย</translation>
 <translation id="2231160360698766265">เว็บไซต์เล่นเนื้อหาที่มีการคุ้มครองได้</translation>
 <translation id="2235344399760031203">บล็อกคุกกี้ของบุคคลที่สามอยู่</translation>
-<translation id="2238944249568001759">การค้นหาที่แนะนําโดยอิงจากแท็บล่าสุด</translation>
 <translation id="2241587408274973373">การ์ดหน้าแท็บใหม่</translation>
 <translation id="2241634353105152135">เพียงครั้งเดียว</translation>
 <translation id="2253414712144136228">นำ<ph name="NAME_OF_LIST_ITEM" />ออก</translation>
@@ -214,7 +213,6 @@
 <translation id="3069226013421428034">อนุญาตการลงชื่อเข้าใช้ของบุคคลที่สามสำหรับบางเว็บไซต์</translation>
 <translation id="310297983047869047">สไลด์ก่อนหน้า</translation>
 <translation id="3108122610701115301">ตั้งเป็นค่าเริ่มต้น</translation>
-<translation id="3109724472072898302">ยุบแล้ว</translation>
 <translation id="310979712355504754">ลบทั้งหมด</translation>
 <translation id="311394601889664316">ไม่อนุญาตให้เว็บไซต์แก้ไขไฟล์หรือโฟลเดอร์ในอุปกรณ์ของคุณ</translation>
 <translation id="3114012059975132928">วิดีโอเพลเยอร์</translation>
@@ -262,7 +260,6 @@
 <translation id="3602290021589620013">ดูตัวอย่าง</translation>
 <translation id="3611658447322220736">เว็บไซต์ที่เพิ่งปิดไปจะส่งและรับข้อมูลจนเสร็จสิ้นได้</translation>
 <translation id="3619294456800709762">เว็บไซต์สามารถเข้าสู่การแสดงภาพซ้อนภาพโดยอัตโนมัติได้</translation>
-<translation id="3628308229821498208">การค้นหาที่แนะนำ</translation>
 <translation id="3632460243282703117">สมัครรับการแจ้งเตือน</translation>
 <translation id="363748948745453283">กำลังใช้ตำแหน่งโดยประมาณ</translation>
 <translation id="3641456520301071208">เว็บไซต์ขอตำแหน่งของคุณได้</translation>
@@ -524,7 +521,6 @@
 <translation id="6231752747840485235">ถอนการติดตั้ง "<ph name="APP_NAME" />" ไหม</translation>
 <translation id="6234351944623978659">แตะแอปเบราว์เซอร์ &gt; Chrome</translation>
 <translation id="6260830281887654268">Bottom Sheet คอลเล็กชันธีมลักษณะที่ปรากฏของหน้าแท็บใหม่เปิดอยู่ครึ่งหน้าจอ</translation>
-<translation id="6262191102408817757">อิงจากแท็บล่าสุด</translation>
 <translation id="6262279340360821358">บล็อก<ph name="PERMISSION_1" />และ<ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">เว็บไซต์ขอส่งการแจ้งเตือนได้</translation>
 <translation id="6295158916970320988">เว็บไซต์ทั้งหมด</translation>
@@ -604,7 +600,6 @@
 <translation id="7180611975245234373">รีเฟรช</translation>
 <translation id="7188508872042490670">ข้อมูลเว็บไซต์ในอุปกรณ์</translation>
 <translation id="7201549776650881587">การดำเนินการนี้จะลบข้อมูลและคุกกี้ทั้งหมดที่ทุกเว็บไซต์จาก <ph name="ORIGIN" /> หรือแอปในหน้าจอหลักจัดเก็บไว้</translation>
-<translation id="7203150201908454328">ขยาย</translation>
 <translation id="7213166370492037743">ไม่อนุญาตให้เว็บไซต์เชื่อมต่อกับอุปกรณ์ในเครือข่ายภายในของคุณ</translation>
 <translation id="7219254577985949841">ลบข้อมูลเว็บไซต์ใช่ไหม</translation>
 <translation id="723171743924126238">เลือกภาพ</translation>

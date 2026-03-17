@@ -7387,6 +7387,7 @@ Microsoft SharePoint 및 OneDrive 카드에는 추가 관리자 구성이 필요
 <translation id="5815990343032461023">이전 행동: 키오스크 Chrome 앱이 확장 프로그램 매니페스트의 업데이트 URL을 사용하는 확장 프로그램 시스템 및 정책의 업데이트 URL을 사용하는 캐싱 관리자에 의해 업데이트됨</translation>
 <translation id="5816688024515869030"><ph name="UIA_NAME" /> 제공자를 사용 중지합니다.</translation>
 <translation id="581737504822041364">ServiceWorker가 시작되기를 기다리지 않고 탐색 요청을 전송하도록 허용</translation>
+<translation id="5827464697821627670">머신 및 사용자 단위로 설정 가능</translation>
 <translation id="5828008775808363753">시작 시 브라우저를 실행하지 않음</translation>
 <translation id="582857022372205358">짧은 쪽 양면 인쇄 사용 설정</translation>
 <translation id="5830196507442186669">기기가 <ph name="PRODUCT_OS_NAME" />에서 <ph name="BOREALIS_NAME" />를 사용하도록 허용</translation>
@@ -10746,6 +10747,21 @@ https://chromeenterprise.google/policies/url-patterns를 참고하세요.
 <translation id="7933141401888114454">관리 대상 사용자 생성을 허용합니다.</translation>
 <translation id="793473937901685727">ARC 앱에 인증서 사용 가능 여부 설정</translation>
 <translation id="7936302526928951356">메이저 버전에서는 사용자 에이전트 문자열이 고정되지 않습니다.</translation>
+<translation id="7936632434238618620">정책을 설정하면 Chrome에서 클라이언트 인증서를 자동으로 선택할 사이트를 지정하는 URL 패턴 목록을 작성할 수 있습니다. 값은 각각 <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_EXAMPLE" /> 형식의 문자열화된 JSON 사전 배열이며, 여기에서 <ph name="URL_PATTERN_PLACEHOLDER" />은 콘텐츠 설정 패턴입니다. <ph name="FILTER_PLACEHOLDER" />는 브라우저에서 자동으로 선택할 클라이언트 인증서를 제한합니다. 필터와 관계없이 서버의 인증서 요청과 일치하는 인증서만 선택됩니다. Android 및 iOS에서 Chrome은 자체적으로 프로비저닝한 클라이언트 인증서만 선택할 수 있으며 운영체제 수준에서 설치된 인증서에는 액세스할 수 없습니다.
+
+      <ph name="FILTER_PLACEHOLDER" /> 섹션 사용의 예:
+
+      * <ph name="FILTER_PLACEHOLDER" />를 <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_FILTER_EXAMPLE" />으로 설정하면 CommonName이 <ph name="ISSUER_CN_PLACEHOLDER" />인 인증서에서 발급한 클라이언트 인증서만 선택됩니다.
+
+      * <ph name="FILTER_PLACEHOLDER" />에 <ph name="ISSUER_STRING_VALUE" /> 및 <ph name="SUBJECT_STRING_VALUE" /> 섹션이 모두 포함된 경우 두 조건을 모두 만족하는 클라이언트 인증서만 선택됩니다.
+
+      * <ph name="FILTER_PLACEHOLDER" />에 <ph name="FILTER_STRING_ORGANIZATION" /> 값이 있는 <ph name="SUBJECT_STRING_VALUE" /> 섹션이 포함된 경우 선택되려면 인증서에 지정된 값과 일치하는 조직이 하나 이상 있어야 합니다.
+
+      * <ph name="FILTER_PLACEHOLDER" />에 <ph name="FILTER_STRING_ORGANIZATIONAL_UNIT" /> 값이 있는 <ph name="SUBJECT_STRING_VALUE" /> 섹션이 포함된 경우 선택되려면 인증서에 지정된 값과 일치하는 조직 단위가 하나 이상 있어야 합니다.
+
+      * <ph name="FILTER_PLACEHOLDER" />를 <ph name="EMPTY_DICTIONARY" />로 설정하면 클라이언트 인증서 선택에 추가로 적용되는 제한은 없습니다. 웹 서버에서 제공한 필터가 계속 적용됩니다.
+
+      정책을 설정하지 않으면 어느 사이트에서도 자동으로 인증서가 선택되지 않습니다.</translation>
 <translation id="7937766917976512374">동영상 캡처 허용 또는 거부</translation>
 <translation id="7937825205289116563">이 정책을 사용 설정하거나 설정하지 않은 상태로 두면 프로그레시브 웹 애플리케이션(PWA)을 설치할 때 생성되는 네이티브 애플리케이션에 임시 서명을 사용할 수 있습니다. 이렇게 하면 설치되어 있는 각 애플리케이션이 <ph name="MAC_OS_NAME" /> 시스템 구성요소에 대한 고유한 ID를 갖게 됩니다.
 

@@ -213,6 +213,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="1900260903084164610">Si continúas, aceptas las <ph name="BEGIN_TOS_LINK" />Condiciones del Servicio<ph name="END_TOS_LINK" />.</translation>
 <translation id="1904580727789512086">Las URLs que visitas se guardan en tu Cuenta de Google</translation>
 <translation id="1910950723001426294">La lista de opciones para compartir está cerrada.</translation>
+<translation id="1912367671208932516">Abrir el menú de extensiones</translation>
 <translation id="191726024256261717">Revisar permisos</translation>
 <translation id="1917766536967060661">Perderás de inmediato el acceso al grupo de pestañas “<ph name="GROUP_NAME" />”, y <ph name="BLOCKED_MEMBER_FULL_NAME" /> (<ph name="BLOCKED_MEMBER_EMAIL" />) ya no podrá interactuar contigo en los servicios de Google.</translation>
 <translation id="1919130412786645364">Permitir el acceso a Chrome</translation>
@@ -854,6 +855,7 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 contraseña hackeada}other{# contraseñas hackeadas}}</translation>
 <translation id="4641919525231168205">Ir a la página siguiente</translation>
 <translation id="4642472735733036929">Se detuvo el seguimiento de precios</translation>
+<translation id="4643661539340338954">Se activaron las notificaciones de Chrome Finds</translation>
 <translation id="4649493483932335039">Ver pestañas recientes</translation>
 <translation id="465657074423018424">La Navegación segura te protege ante sitios web engañosos. Si la desactivas, debes tener mucho cuidado cuando navegas, en especial al ingresar contraseñas.</translation>
 <translation id="4662373422909645029">El sobrenombre no admite números</translation>
@@ -1652,6 +1654,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="7686086654630106285">Obtén más información sobre los anuncios sugeridos por sitios</translation>
 <translation id="7690596512217303514">No se pudo abrir Chrome en tu dispositivo. Para solucionar este problema, descarga la actualización más reciente de Chrome desde tu tienda de aplicaciones.</translation>
 <translation id="7692761875510935111">Abre rápidamente en el navegador. Para editar este atajo, mantenlo presionado.</translation>
+<translation id="7695270712963178084">Chrome Finds</translation>
 <translation id="7697383401610880082">Controlador de arrastre</translation>
 <translation id="7698359219371678927">Crear correo electrónico en <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">La hoja inferior de la actividad reciente está totalmente abierta</translation>

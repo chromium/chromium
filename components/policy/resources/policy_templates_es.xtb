@@ -7309,6 +7309,7 @@ Es posible añadir más restricciones de cuentas con la política <ph name="MICR
 <translation id="5815990343032461023">Comportamiento antiguo: el sistema de extensiones actualiza las aplicaciones de kiosco de Chrome mediante la URL de actualización del archivo de manifiesto de la extensión. También las puede actualizar el gestor de almacenamiento en caché mediante la URL de actualización de la política.</translation>
 <translation id="5816688024515869030">Inhabilitar el proveedor de <ph name="UIA_NAME" />.</translation>
 <translation id="581737504822041364">Permitir que ServiceWorker envíe solicitudes de navegación sin esperar a que se inicie</translation>
+<translation id="5827464697821627670">Se puede definir para el equipo y para el usuario</translation>
 <translation id="5828008775808363753">No abrir el navegador al iniciar</translation>
 <translation id="582857022372205358">Habilitar impresión de borde corto por las dos caras</translation>
 <translation id="5830196507442186669">Permite que los dispositivos utilicen <ph name="BOREALIS_NAME" /> en <ph name="PRODUCT_OS_NAME" /></translation>
@@ -10607,6 +10608,21 @@ Si se inhabilita la política <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" />, el 
 <translation id="7933141401888114454">Habilitar la creación de usuarios supervisados</translation>
 <translation id="793473937901685727">Establecer la disponibilidad del certificado para las aplicaciones ARC</translation>
 <translation id="7936302526928951356">La cadena user-agent no bloqueará la versión principal.</translation>
+<translation id="7936632434238618620">Si configuras esta política, podrás crear una lista de patrones de URL donde se especifique en qué sitios web podrá usar Chrome un certificado de cliente de forma automática. El valor debe ser un conjunto de diccionarios JSON de tipo string, cada uno con el formato <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_EXAMPLE" />, donde <ph name="URL_PATTERN_PLACEHOLDER" /> es un patrón de configuración de contenido. <ph name="FILTER_PLACEHOLDER" /> restringe los certificados de cliente entre los que puede elegir automáticamente el navegador. Independientemente del filtro, solo se seleccionarán los certificados que coincidan con la solicitud de certificado del servidor. En Android y iOS, Chrome solo puede seleccionar certificados de cliente que haya aprovisionado él mismo; no puede acceder a los certificados instalados a nivel de sistema operativo.
+
+      Ejemplos del uso de la sección <ph name="FILTER_PLACEHOLDER" />:
+
+      * Si se asigna el valor <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_FILTER_EXAMPLE" /> a <ph name="FILTER_PLACEHOLDER" />, solo se seleccionarán los certificados de cliente emitidos por un certificado en el que CommonName tenga el valor <ph name="ISSUER_CN_PLACEHOLDER" />.
+
+      * Si <ph name="FILTER_PLACEHOLDER" /> contiene las secciones <ph name="ISSUER_STRING_VALUE" /> y <ph name="SUBJECT_STRING_VALUE" />, solo se seleccionarán los certificados de cliente que cumplan ambas condiciones.
+
+      * Si <ph name="FILTER_PLACEHOLDER" /> contiene una sección <ph name="SUBJECT_STRING_VALUE" /> con el valor <ph name="FILTER_STRING_ORGANIZATION" />, el certificado debe contener al menos una organización que coincida con el valor especificado para que se pueda seleccionar.
+
+      * Si <ph name="FILTER_PLACEHOLDER" /> contiene una sección <ph name="SUBJECT_STRING_VALUE" /> con un valor <ph name="FILTER_STRING_ORGANIZATIONAL_UNIT" />, el certificado debe contener al menos una unidad organizativa que coincida con el valor especificado para que se pueda seleccionar.
+
+      * Si se asigna el valor <ph name="EMPTY_DICTIONARY" /> a <ph name="FILTER_PLACEHOLDER" />, no se aplicarán más restricciones a la selección de certificados de cliente. Ten en cuenta que seguirán aplicándose los filtros proporcionados por el servidor web.
+
+      Si no se asigna ningún valor a esta política, no se aplicará la selección automática en ningún sitio web.</translation>
 <translation id="7937766917976512374">Permitir o denegar captura de vídeo</translation>
 <translation id="7937825205289116563">Si se habilita esta política o no se define, se permitirá que se usen firmas específicas para la aplicación nativa que se crea al instalar una aplicación web progresiva (PWA). De esta forma, cada aplicación instalada tiene una identidad única para los componentes del sistema de <ph name="MAC_OS_NAME" />.
 

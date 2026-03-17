@@ -125,7 +125,6 @@
 <translation id="2228071138934252756">‏للسماح لتطبيق <ph name="APP_NAME" /> بالوصول إلى الكاميرا، يُرجى أيضًا تفعيل الكاميرا في <ph name="BEGIN_LINK" />إعدادات Android<ph name="END_LINK" />.</translation>
 <translation id="2231160360698766265">السماح للمواقع الإلكترونية بتشغيل المحتوى المحمي</translation>
 <translation id="2235344399760031203">تم حظر ملفات تعريف الارتباط التابعة لجهات خارجية.</translation>
-<translation id="2238944249568001759">عمليات البحث المقترَحة استنادًا إلى علامة التبويب الأخيرة</translation>
 <translation id="2241587408274973373">البطاقات في صفحة "علامة تبويب جديدة"</translation>
 <translation id="2241634353105152135">مرة واحدة فقط</translation>
 <translation id="2253414712144136228">إزالة <ph name="NAME_OF_LIST_ITEM" /></translation>
@@ -214,7 +213,6 @@
 <translation id="3069226013421428034">يمكنك السماح بتسجيل الدخول في الخدمات التابعة لجهات خارجية في موقع إلكتروني محدَّد.</translation>
 <translation id="310297983047869047">الشريحة السابقة</translation>
 <translation id="3108122610701115301">الضبط كمتصفّح تلقائي</translation>
-<translation id="3109724472072898302">مصغّر</translation>
 <translation id="310979712355504754">حذف الكل</translation>
 <translation id="311394601889664316">عدم السماح للمواقع الإلكترونية بتعديل الملفات أو المجلدات على جهازك</translation>
 <translation id="3114012059975132928">مشغّل الفيديو</translation>
@@ -262,7 +260,6 @@
 <translation id="3602290021589620013">معاينة</translation>
 <translation id="3611658447322220736">السماح للمواقع الإلكترونية التي تم إغلاقها مؤخرًا بإنهاء إرسال البيانات واستلامها</translation>
 <translation id="3619294456800709762">يمكن للمواقع الإلكترونية فتح النوافذ في وضع "نافذة ضمن النافذة" تلقائيًا</translation>
-<translation id="3628308229821498208">عمليات البحث المُقترَحة</translation>
 <translation id="3632460243282703117">اشتراك</translation>
 <translation id="363748948745453283">يتم حاليًا استخدام الموقع الجغرافي التقريبي</translation>
 <translation id="3641456520301071208">السماح للمواقع الإلكترونية بطلب معرفة موقعك الجغرافي</translation>
@@ -490,6 +487,7 @@
 <translation id="5922853908706496913">جارٍ مشاركة شاشتك</translation>
 <translation id="5922967540311291836">حظر ملفات تعريف الارتباط التابعة لجهات خارجية:</translation>
 <translation id="5923512600150154850">سيؤدي هذا الإجراء إلى حذف <ph name="DATASIZE" /> من البيانات وملفات تعريف الارتباط التي تخزّنها المواقع الإلكترونية.</translation>
+<translation id="5930707844513754220">عرض المزيد من قائمة الإعداد</translation>
 <translation id="5939518447894949180">إعادة الضبط</translation>
 <translation id="5948139900367969951">استمتِع بالوصول السريع إلى المحتوى الذي يهمّك</translation>
 <translation id="5964247741333118902">المحتوى المضمَّن</translation>
@@ -498,6 +496,7 @@
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
 <translation id="5998071268779572583">تفعيل خلاصة "الاقتراحات"</translation>
 <translation id="6012967556075291653">الاختصار المثبَّت</translation>
+<translation id="6013003831291591200">اكتملت المهمة</translation>
 <translation id="6015775454662021376">يمكنك التحكّم بإمكانية وصول هذا الموقع إلى جهازك.</translation>
 <translation id="6022659036123304283">‏اجعل Chrome متصفِّحك الدائم</translation>
 <translation id="6040143037577758943">إغلاق</translation>
@@ -522,7 +521,6 @@
 <translation id="6231752747840485235">هل تريد إلغاء تثبيت "<ph name="APP_NAME" />"؟</translation>
 <translation id="6234351944623978659">‏انقر على تطبيق المتصفِّح &gt; Chrome</translation>
 <translation id="6260830281887654268">تم فتح البطاقة السفلية لمجموعات مظاهر صفحة "علامة تبويب جديدة" في نصف الشاشة</translation>
-<translation id="6262191102408817757">استنادًا إلى علامة التبويب الأخيرة</translation>
 <translation id="6262279340360821358">تم حظر <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" />.</translation>
 <translation id="6270391203985052864">السماح للمواقع الإلكترونية بطلب إرسال إشعارات</translation>
 <translation id="6295158916970320988">جميع المواقع الإلكترونية</translation>
@@ -602,7 +600,6 @@
 <translation id="7180611975245234373">إعادة التحميل</translation>
 <translation id="7188508872042490670">بيانات المواقع الإلكترونية على الجهاز فقط</translation>
 <translation id="7201549776650881587">سيؤدي هذا الإجراء إلى حذف جميع البيانات وملفات تعريف الارتباط المُخزَّنة من خلال جميع المواقع الإلكترونية المندرجة ضِمن الموقع الإلكتروني <ph name="ORIGIN" /> أو من خلال التطبيق التابع لهذا الموقع الإلكتروني على الشاشة الرئيسية.</translation>
-<translation id="7203150201908454328">موسع</translation>
 <translation id="7213166370492037743">عدم السماح للمواقع الإلكترونية بالاتصال بأي جهاز على شبكتك المحلية</translation>
 <translation id="7219254577985949841">هل تريد حذف بيانات الموقع الإلكتروني؟</translation>
 <translation id="723171743924126238">اختيار الصور</translation>

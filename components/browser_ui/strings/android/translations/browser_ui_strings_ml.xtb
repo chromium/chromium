@@ -125,7 +125,6 @@
 <translation id="2228071138934252756"><ph name="APP_NAME" /> ആപ്പിനെ നിങ്ങളുടെ ക്യാമറ ആക്‌സസ് ചെയ്യാൻ അനുവദിക്കുന്നതിന്, <ph name="BEGIN_LINK" />Android ക്രമീകരണത്തിലും<ph name="END_LINK" /> ക്യാമറ ഓണാക്കുക.</translation>
 <translation id="2231160360698766265">പരിരക്ഷിത ഉള്ളടക്കം പ്ലേ ചെയ്യാൻ സൈറ്റുകൾക്ക് കഴിയും</translation>
 <translation id="2235344399760031203">മൂന്നാം കക്ഷി കുക്കികൾ ബ്ലോക്ക് ചെയ്‍തു</translation>
-<translation id="2238944249568001759">നിങ്ങളുടെ അവസാന ടാബ് അടിസ്ഥാനമാക്കി നിർദ്ദേശിക്കുന്ന തിരയലുകൾ</translation>
 <translation id="2241587408274973373">പുതിയ ടാബ് പേജ് കാർഡുകൾ</translation>
 <translation id="2241634353105152135">ഒരിക്കൽ മാത്രം</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> നീക്കം ചെയ്യുക</translation>
@@ -214,7 +213,6 @@
 <translation id="3069226013421428034">നിർദ്ദിഷ്ട സൈറ്റിനായി മൂന്നാം കക്ഷി സൈൻ ഇൻ അനുവദിക്കുക.</translation>
 <translation id="310297983047869047">മുമ്പത്തെ സ്ലൈഡ്</translation>
 <translation id="3108122610701115301">ഡിഫോൾട്ടായി സജ്ജീകരിക്കുക</translation>
-<translation id="3109724472072898302">ചുരുക്കിയത്</translation>
 <translation id="310979712355504754">എല്ലാം ഇല്ലാതാക്കുക</translation>
 <translation id="311394601889664316">നിങ്ങളുടെ ഉപകരണത്തിലെ ഫയലുകളോ ഫോൾഡറുകളോ എഡിറ്റ് ചെയ്യാൻ സൈറ്റുകളെ അനുവദിക്കരുത്</translation>
 <translation id="3114012059975132928">വീഡിയോ പ്ലേയർ</translation>
@@ -262,7 +260,6 @@
 <translation id="3602290021589620013">പ്രിവ്യൂ</translation>
 <translation id="3611658447322220736">അടുത്തിടെ അടച്ച സൈറ്റുകൾക്ക് ഡാറ്റ അയയ്‌ക്കുന്നതും സ്വീകരിക്കുന്നതും പൂർത്തിയാക്കാം</translation>
 <translation id="3619294456800709762">സൈറ്റുകൾക്ക് ചിത്രത്തിനുള്ളിൽ ചിത്രത്തിലേക്ക് സ്വയമേവ കടക്കാനാകും</translation>
-<translation id="3628308229821498208">നിർദ്ദേശിക്കുന്ന തിരയലുകൾ</translation>
 <translation id="3632460243282703117">വരിക്കാരാകുക</translation>
 <translation id="363748948745453283">ഏകദേശ ലൊക്കേഷൻ ഉപയോഗിക്കുന്നു</translation>
 <translation id="3641456520301071208">സൈറ്റുകൾക്ക് നിങ്ങളുടെ ലൊക്കേഷൻ ആവശ്യപ്പെടാം</translation>
@@ -490,6 +487,7 @@
 <translation id="5922853908706496913">നിങ്ങളുടെ സ്‌ക്രീൻ പങ്കിടുന്നു</translation>
 <translation id="5922967540311291836">മൂന്നാം-കക്ഷി കുക്കികള്‍ ബ്ലോക്ക് ചെയ്യുക:</translation>
 <translation id="5923512600150154850">സൈറ്റുകൾ സംഭരിച്ച <ph name="DATASIZE" /> ഡാറ്റയും കുക്കികളും ഇത് ഇല്ലാതാക്കും.</translation>
+<translation id="5930707844513754220">കൂടുതൽ സജ്ജീകരണ ലിസ്റ്റ് കാണുക</translation>
 <translation id="5939518447894949180">റീസെറ്റ് ചെയ്യുക</translation>
 <translation id="5948139900367969951">നിങ്ങൾ പ്രാധാന്യം നൽകുന്ന കാര്യങ്ങൾ അതിവേഗം ആക്സസ് ചെയ്യുക</translation>
 <translation id="5964247741333118902">ഉൾച്ചേർത്ത ഉള്ളടക്കം</translation>
@@ -498,6 +496,7 @@
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
 <translation id="5998071268779572583">Discover ഫീഡ് ഓണാക്കുക</translation>
 <translation id="6012967556075291653">പിൻ ചെയ്ത കുറുക്കുവഴി</translation>
+<translation id="6013003831291591200">ടാസ്‌ക് പൂർത്തിയായി</translation>
 <translation id="6015775454662021376">നിങ്ങളുടെ ഉപകരണത്തിലേക്ക് ഈ സൈറ്റിനുള്ള ആക്‌സസ് നിയന്ത്രിക്കുക</translation>
 <translation id="6022659036123304283">Chrome-നെ നിങ്ങളുടേതാക്കുക</translation>
 <translation id="6040143037577758943">അടയ്ക്കുക</translation>
@@ -522,7 +521,6 @@
 <translation id="6231752747840485235">'<ph name="APP_NAME" />' അൺഇൻസ്റ്റാൾ ചെയ്യണോ?</translation>
 <translation id="6234351944623978659">ബ്രൗസർ ആപ്പ് &gt; Chrome എന്നിങ്ങനെ ടാപ്പ് ചെയ്യുക</translation>
 <translation id="6260830281887654268">പുതിയ ടാബ് പേജിന്റെ രൂപം ഇഷ്ടാനുസൃതമാക്കുന്നതിനുള്ള തീം ശേഖരങ്ങളുടെ ബോട്ടം ഷീറ്റ് സ്ക്രീനിന്റെ പകുതി ഉയരത്തിൽ തുറന്നു</translation>
-<translation id="6262191102408817757">നിങ്ങളുടെ അവസാന ടാബിനെ അടിസ്ഥാനമാക്കി</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" />,<ph name="PERMISSION_2" /> എന്നിവ ബ്ലോക്ക് ചെയ്‌തു</translation>
 <translation id="6270391203985052864">അറിയിപ്പുകൾ അയയ്ക്കാൻ സൈറ്റുകൾക്ക് അനുവാദം ചോദിക്കേണ്ടി വരും</translation>
 <translation id="6295158916970320988">എല്ലാ സൈറ്റുകളും</translation>
@@ -602,7 +600,6 @@
 <translation id="7180611975245234373">റീഫ്രഷ് ചെയ്യുക</translation>
 <translation id="7188508872042490670">ഉപകരണത്തിലുള്ള സൈറ്റ് ഡാറ്റ</translation>
 <translation id="7201549776650881587"><ph name="ORIGIN" /> -ന് കീഴിലുള്ള എല്ലാ സൈറ്റുകളും അതിന്റെ ആപ്പും നിങ്ങളുടെ ഹോം സ്‌ക്രീനിൽ സംഭരിച്ച എല്ലാ ഡാറ്റയും കുക്കികളും ഈ പ്രവർത്തനം ഇല്ലാതാക്കും</translation>
-<translation id="7203150201908454328">വിപുലീകരിച്ചത്</translation>
 <translation id="7213166370492037743">നിങ്ങളുടെ പ്രാദേശിക നെറ്റ്‌വർക്കിൽ ഒരു ഉപകരണത്തിലേക്കും കണക്റ്റ് ചെയ്യാൻ സൈറ്റുകളെ അനുവദിക്കരുത്</translation>
 <translation id="7219254577985949841">സൈറ്റ് ഡാറ്റ ഇല്ലാതാക്കണോ?</translation>
 <translation id="723171743924126238">ചിത്രങ്ങൾ തിരഞ്ഞെടുക്കുക</translation>

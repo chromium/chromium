@@ -213,6 +213,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="1900260903084164610">Dengan melanjutkan, Anda menyetujui <ph name="BEGIN_TOS_LINK" />Persyaratan Layanan<ph name="END_TOS_LINK" />.</translation>
 <translation id="1904580727789512086">URL yang Anda buka disimpan ke Akun Google Anda</translation>
 <translation id="1910950723001426294">Daftar opsi berbagi ditutup.</translation>
+<translation id="1912367671208932516">Buka menu ekstensi</translation>
 <translation id="191726024256261717">Tinjau izin</translation>
 <translation id="1917766536967060661">Anda akan segera kehilangan akses ke grup tab “<ph name="GROUP_NAME" />”, dan <ph name="BLOCKED_MEMBER_FULL_NAME" /> (<ph name="BLOCKED_MEMBER_EMAIL" />) tidak akan dapat lagi berinteraksi dengan Anda di berbagai layanan Google.</translation>
 <translation id="1919130412786645364">Izinkan login Chrome</translation>
@@ -414,6 +415,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="2789486458103222910">Oke</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome menemukan sandi yang digunakan ulang yang dapat Anda perbaiki}other{Chrome menemukan # sandi yang digunakan ulang yang dapat Anda perbaiki}}</translation>
 <translation id="2794551654724114396">Aktifkan notifikasi untuk mendapatkan tips bermanfaat yang membantu Anda mengoptimalkan penggunaan Chrome</translation>
+<translation id="2798977804328097977">Lanjutkan dengan lancar di perangkat apa pun</translation>
 <translation id="2805210243313393104">Dapatkan bookmark dan info Anda yang lain di semua perangkat Anda</translation>
 <translation id="2805756323405976993">Aplikasi</translation>
 <translation id="2819849308549746319">Hentikan semua langganan</translation>
@@ -469,6 +471,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="2977350910003566746">Mengurutkan berdasarkan terakhir dibuka</translation>
 <translation id="297771753501244313">Urutkan menurut terakhir dibuka</translation>
 <translation id="2979639724566107830">Buka di jendela baru</translation>
+<translation id="2980545254049127870">Buka link dengan mudah dari pesan, dokumen, dan aplikasi lainnya</translation>
 <translation id="2983102365694924129">Berdasarkan aktivitas Anda di situs. Setelan ini nonaktif.</translation>
 <translation id="2983398917942897288">Tidak aktif (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2983835398644161987">Keluar dari Mode Picture-in-Picture</translation>
@@ -730,6 +733,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="4137746084635924146">Bahasa perangkat saat ini</translation>
 <translation id="414128724510021958">Situs desktop diminta secara default</translation>
 <translation id="4162867837470729563">Daftar opsi berbagi terbuka sepenuhnya.</translation>
+<translation id="4164642020717536140">Penjelajahan web yang cepat dan aman</translation>
 <translation id="4165077084524712774">Alat lainnya</translation>
 <translation id="4170011742729630528">Layanan tidak tersedia; coba lagi nanti.</translation>
 <translation id="4170577491341606575">Mengambil data Anda\u2026</translation>
@@ -854,6 +858,7 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 sandi telah dibobol}other{# sandi telah dibobol}}</translation>
 <translation id="4641919525231168205">Buka halaman berikutnya</translation>
 <translation id="4642472735733036929">Pemantauan harga dihentikan</translation>
+<translation id="4643661539340338954">Notifikasi Chrome menemukan diaktifkan</translation>
 <translation id="4649493483932335039">Lihat tab terbaru</translation>
 <translation id="465657074423018424">Safe Browsing melindungi Anda dari situs yang tidak jujur. Jika dinonaktifkan, Anda harus lebih berhati-hati saat menjelajah, terutama sebelum memasukkan sandi.</translation>
 <translation id="4662373422909645029">Nama panggilan tidak boleh berisi angka</translation>
@@ -1652,6 +1657,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="7686086654630106285">Selengkapnya tentang iklan yang disarankan situs</translation>
 <translation id="7690596512217303514">Perangkat Anda tidak dapat membuka Chrome. Untuk memperbaiki masalah ini, download update Chrome terbaru dari app store.</translation>
 <translation id="7692761875510935111">Buka dengan cepat di browser. Sentuh lama untuk mengedit pintasan ini.</translation>
+<translation id="7695270712963178084">Chrome menemukan</translation>
 <translation id="7697383401610880082">Handel geser</translation>
 <translation id="7698359219371678927">Buat email di <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">Sheet bawah aktivitas terbaru terbuka sepenuhnya</translation>

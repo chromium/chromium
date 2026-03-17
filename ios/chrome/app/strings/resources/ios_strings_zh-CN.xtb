@@ -637,6 +637,7 @@
 <translation id="3324193307694657476">地址第2行</translation>
 <translation id="3328801116991980348">网站信息</translation>
 <translation id="333229797575847124">如何启用此功能</translation>
+<translation id="334004756946755423">给我解释一下：</translation>
 <translation id="3344233834747405775">无效持卡人姓名</translation>
 <translation id="3344485292736684439">{count,plural, =1{已将书签保存到账号 {email} 中的“{title}”}other{已将书签保存到账号 {email} 中的“{title}”}}</translation>
 <translation id="334690320928261823">最近打开的标签页</translation>
@@ -961,6 +962,7 @@
 <translation id="454217142158335225">您可以从最近打开的标签页或标签页分组部分重新打开已关闭的项。固定标签页不会关闭。</translation>
 <translation id="4547181496285029457">返回到最近打开的标签页</translation>
 <translation id="4552042254369397518">正在复制…</translation>
+<translation id="4553044860350038560">更多通行密钥</translation>
 <translation id="4564893319561643483">隐藏“<ph name="TITLE" />”</translation>
 <translation id="4565377596337484307">隐藏密码</translation>
 <translation id="4568230126482344545">隐藏“最近打开的标签页”</translation>

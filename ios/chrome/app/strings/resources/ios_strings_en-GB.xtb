@@ -394,6 +394,7 @@
 <translation id="2360196772093551345">Request Mobile Site</translation>
 <translation id="2362083820973145409">Signed in as <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Opens settings.</translation>
 <translation id="2371084566192454134">Tabs and tab groups</translation>
+<translation id="2371303771137626249">New</translation>
 <translation id="2381405137052800939">Basics</translation>
 <translation id="2384692388811649784">Hide Incognito tabs</translation>
 <translation id="2386793615875593361">1 selected</translation>
@@ -636,6 +637,7 @@
 <translation id="3324193307694657476">Address 2</translation>
 <translation id="3328801116991980348">Site information</translation>
 <translation id="333229797575847124">How to enable this feature</translation>
+<translation id="334004756946755423">Explain this to me:</translation>
 <translation id="3344233834747405775">Invalid cardholder name</translation>
 <translation id="3344485292736684439">{count,plural, =1{Bookmark saved to ‘{title}’ in your account, {email}}other{Bookmarks saved to ‘{title}’ in your account, {email}}}</translation>
 <translation id="334690320928261823">Recent tabs</translation>
@@ -689,6 +691,7 @@
 <translation id="3530206579861815432">Quickly find open and recently closed tabs across your synced devices.</translation>
 <translation id="3530767473765895035">Manage accounts on this device…</translation>
 <translation id="3533436815740441613">New tab</translation>
+<translation id="3534738261102690620">Ask Gemini</translation>
 <translation id="3540141921715814660">Add to Bookmarks</translation>
 <translation id="3546122170015471515">Maps Preview on Google.com</translation>
 <translation id="3547356470684043247">Read customer evaluations of products, services or experiences to help inform your decisions with reviews.</translation>
@@ -959,6 +962,7 @@
 <translation id="454217142158335225">You can reopen closed items from the recent tabs or tab groups sections. Your pinned tabs won't be closed.</translation>
 <translation id="4547181496285029457">Return to recent tab</translation>
 <translation id="4552042254369397518">Copying…</translation>
+<translation id="4553044860350038560">More passkeys</translation>
 <translation id="4564893319561643483">Hide '<ph name="TITLE" />'</translation>
 <translation id="4565377596337484307">Hide password</translation>
 <translation id="4568230126482344545">Hide Recent tabs</translation>
@@ -1087,6 +1091,7 @@
 <translation id="4944543191714094452">Find in page…</translation>
 <translation id="4945756290001680296">Access password settings</translation>
 <translation id="4949302115427722371">Manage settings…</translation>
+<translation id="4952050521954075618">Photos from camera roll won't sync across your devices</translation>
 <translation id="4958444002117714549">Expand list</translation>
 <translation id="496392417432935267">Opened elsewhere</translation>
 <translation id="4970724460420203313">Using Chrome with your managed account helps you keep browsing related to your organisation (including tabs, history and passwords) separate from your other browsing</translation>
@@ -1286,6 +1291,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5647702255748985085">Leave group?</translation>
 <translation id="5648166631817621825">Last 7 days</translation>
 <translation id="5652623411397330904">The products that you track will show up here.</translation>
+<translation id="5653100054596780862">All tabs</translation>
 <translation id="5656431592348714536">Enhanced calendar</translation>
 <translation id="5659593005791499971">Email</translation>
 <translation id="5665739277590037307"><ph name="GOOGLE_TERMS" /> and the <ph name="GEMINI_APPS_PRIVACY" /> apply. Gemini can make mistakes, so double-check it.</translation>
@@ -1751,6 +1757,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="7300448350764260141">Add an extra layer of protection against online threats.</translation>
 <translation id="7311244614769792472">No results found</translation>
 <translation id="7313347584264171202">You'll find your Incognito tabs here</translation>
+<translation id="7322186060879266048">{count,plural, =1{{count} autofill option available above your keyboard.}other{{count} autofill options available above your keyboard.}}</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> percent downloaded</translation>
 <translation id="7345061034321640811">Import not allowed</translation>

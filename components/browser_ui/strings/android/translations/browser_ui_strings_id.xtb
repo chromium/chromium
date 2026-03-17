@@ -125,7 +125,6 @@
 <translation id="2228071138934252756">Untuk mengizinkan <ph name="APP_NAME" /> mengakses kamera Anda, aktifkan juga kamera di <ph name="BEGIN_LINK" />Setelan Android<ph name="END_LINK" />.</translation>
 <translation id="2231160360698766265">Situs dapat memutar konten yang dilindungi</translation>
 <translation id="2235344399760031203">Cookie pihak ketiga diblokir</translation>
-<translation id="2238944249568001759">Penelusuran yang disarankan berdasarkan tab terakhir Anda</translation>
 <translation id="2241587408274973373">Kartu halaman tab baru</translation>
 <translation id="2241634353105152135">Sekali ini saja</translation>
 <translation id="2253414712144136228">Hapus <ph name="NAME_OF_LIST_ITEM" /></translation>
@@ -214,7 +213,6 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="3069226013421428034">Izinkan login pihak ketiga untuk situs tertentu.</translation>
 <translation id="310297983047869047">Slide sebelumnya</translation>
 <translation id="3108122610701115301">Jadikan default</translation>
-<translation id="3109724472072898302">Diciutkan</translation>
 <translation id="310979712355504754">Hapus semua</translation>
 <translation id="311394601889664316">Jangan izinkan situs mengedit file atau folder di perangkat Anda</translation>
 <translation id="3114012059975132928">Pemutar video</translation>
@@ -262,7 +260,6 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="3602290021589620013">Pratinjau</translation>
 <translation id="3611658447322220736">Situs yang baru saja ditutup dapat menyelesaikan pengiriman dan penerimaan data</translation>
 <translation id="3619294456800709762">Situs dapat masuk ke mode picture-in-picture secara otomatis</translation>
-<translation id="3628308229821498208">Penelusuran yang disarankan</translation>
 <translation id="3632460243282703117">Berlangganan</translation>
 <translation id="363748948745453283">Menggunakan perkiraan lokasi</translation>
 <translation id="3641456520301071208">Situs dapat meminta lokasi Anda</translation>
@@ -490,6 +487,7 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="5922853908706496913">Membagikan layar Anda</translation>
 <translation id="5922967540311291836">Blokir cookie pihak ketiga:</translation>
 <translation id="5923512600150154850">Tindakan ini akan menghapus <ph name="DATASIZE" /> data dan cookie yang disimpan oleh situs.</translation>
+<translation id="5930707844513754220">Lihat daftar konfigurasi lainnya</translation>
 <translation id="5939518447894949180">Reset</translation>
 <translation id="5948139900367969951">Akses cepat hal yang penting bagi Anda</translation>
 <translation id="5964247741333118902">Konten yang disematkan</translation>
@@ -498,6 +496,7 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
 <translation id="5998071268779572583">Aktifkan feed Discover</translation>
 <translation id="6012967556075291653">Pintasan yang disematkan</translation>
+<translation id="6013003831291591200">Tugas selesai</translation>
 <translation id="6015775454662021376">Mengontrol akses situs ini ke perangkat Anda</translation>
 <translation id="6022659036123304283">Sesuaikan Chrome dengan selera Anda</translation>
 <translation id="6040143037577758943">Tutup</translation>
@@ -522,7 +521,6 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="6231752747840485235">Uninstal '<ph name="APP_NAME" />'?</translation>
 <translation id="6234351944623978659">Ketuk Aplikasi browser &gt; Chrome</translation>
 <translation id="6260830281887654268">Panel bawah koleksi tema tampilan halaman tab baru terbuka setengah</translation>
-<translation id="6262191102408817757">Berdasarkan tab terakhir Anda</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> dan <ph name="PERMISSION_2" /> diblokir</translation>
 <translation id="6270391203985052864">Situs dapat meminta izin mengirimkan notifikasi</translation>
 <translation id="6295158916970320988">Semua situs</translation>
@@ -602,7 +600,6 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="7180611975245234373">Perbarui</translation>
 <translation id="7188508872042490670">Data situs di perangkat</translation>
 <translation id="7201549776650881587">Tindakan ini akan menghapus semua data dan cookie yang disimpan oleh semua situs di bawah <ph name="ORIGIN" /> atau oleh aplikasinya di Layar utama</translation>
-<translation id="7203150201908454328">Diperluas</translation>
 <translation id="7213166370492037743">Jangan izinkan situs terhubung ke perangkat apa pun di jaringan lokal Anda</translation>
 <translation id="7219254577985949841">Hapus data situs?</translation>
 <translation id="723171743924126238">Pilih gambar</translation>

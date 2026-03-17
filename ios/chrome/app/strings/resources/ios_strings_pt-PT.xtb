@@ -394,6 +394,7 @@
 <translation id="2360196772093551345">Pedir site para dispositivos móveis</translation>
 <translation id="2362083820973145409">Com sessão iniciada como <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Abre as definições.</translation>
 <translation id="2371084566192454134">Separadores e grupos de separadores</translation>
+<translation id="2371303771137626249">Novo</translation>
 <translation id="2381405137052800939">Noções básicas</translation>
 <translation id="2384692388811649784">Oculte os separadores de navegação anónima</translation>
 <translation id="2386793615875593361">1 selecionada</translation>
@@ -636,6 +637,7 @@
 <translation id="3324193307694657476">Morada 2</translation>
 <translation id="3328801116991980348">Informações do site</translation>
 <translation id="333229797575847124">Como ativar esta funcionalidade</translation>
+<translation id="334004756946755423">Explica-me isto:</translation>
 <translation id="3344233834747405775">Nome do titular do cartão inválido</translation>
 <translation id="3344485292736684439">{count,plural, =1{Marcador guardado em "{title}" na sua conta, {email}}other{Marcadores guardados em "{title}" na sua conta, {email}}}</translation>
 <translation id="334690320928261823">Separadores recentes</translation>
@@ -689,6 +691,7 @@
 <translation id="3530206579861815432">Encontre rapidamente separadores abertos e fechados recentemente nos seus dispositivos sincronizados.</translation>
 <translation id="3530767473765895035">Gerir contas neste dispositivo…</translation>
 <translation id="3533436815740441613">Novo separador</translation>
+<translation id="3534738261102690620">Pedir ao Gemini</translation>
 <translation id="3540141921715814660">Adicionar aos marcadores</translation>
 <translation id="3546122170015471515">Pré-visualizações do Maps em Google.com</translation>
 <translation id="3547356470684043247">Leia as avaliações dos clientes sobre produtos, serviços ou experiências para tomar decisões informadas com críticas</translation>
@@ -959,6 +962,7 @@
 <translation id="454217142158335225">Pode reabrir itens fechados a partir das secções de separadores recentes ou grupos de separadores. Os separadores fixos não vão ser fechados.</translation>
 <translation id="4547181496285029457">Volte ao separador Recentes</translation>
 <translation id="4552042254369397518">A copiar…</translation>
+<translation id="4553044860350038560">Mais chaves de acesso</translation>
 <translation id="4564893319561643483">Oculte "<ph name="TITLE" />"</translation>
 <translation id="4565377596337484307">Ocultar palavra-passe</translation>
 <translation id="4568230126482344545">Ocultar Separadores recentes</translation>
@@ -1087,6 +1091,7 @@
 <translation id="4944543191714094452">Localizar na página…</translation>
 <translation id="4945756290001680296">Aceder às definições de palavras-passe</translation>
 <translation id="4949302115427722371">Gerir definições…</translation>
+<translation id="4952050521954075618">As fotos do rolo da câmara não são sincronizadas nos seus dispositivos</translation>
 <translation id="4958444002117714549">Expandir lista</translation>
 <translation id="496392417432935267">Aberta noutro local</translation>
 <translation id="4970724460420203313">Usar o Chrome com a sua conta gerida ajuda a manter a navegação relacionada com a sua organização (incluindo separadores, histórico e palavras-passe) separada da restante navegação</translation>
@@ -1286,6 +1291,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="5647702255748985085">Sair do grupo?</translation>
 <translation id="5648166631817621825">Últimos 7 dias</translation>
 <translation id="5652623411397330904">Os produtos que monitorizar aparecem aqui.</translation>
+<translation id="5653100054596780862">Separadores</translation>
 <translation id="5656431592348714536">Calendário melhorado</translation>
 <translation id="5659593005791499971">Email</translation>
 <translation id="5665739277590037307">Aplicam-se os <ph name="GOOGLE_TERMS" /> e o <ph name="GEMINI_APPS_PRIVACY" />. O Gemini pode cometer erros, por isso, verifique as informações.</translation>
@@ -1751,6 +1757,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="7300448350764260141">Adicione uma camada extra de proteção contra ameaças online.</translation>
 <translation id="7311244614769792472">Não foram encontrados resultados</translation>
 <translation id="7313347584264171202">Os seus separadores de navegação anónima serão apresentados aqui</translation>
+<translation id="7322186060879266048">{count,plural, =1{{count} opção de preenchimento automático disponível acima do teclado.}other{{count} opções de preenchimento automático disponíveis acima do teclado.}}</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> por cento transferido</translation>
 <translation id="7345061034321640811">Importação não permitida</translation>

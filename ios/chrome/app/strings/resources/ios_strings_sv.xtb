@@ -394,6 +394,7 @@
 <translation id="2360196772093551345">Använd mobilversion</translation>
 <translation id="2362083820973145409">Inloggad som <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Öppnar inställningarna.</translation>
 <translation id="2371084566192454134">Flikar och flikgrupper</translation>
+<translation id="2371303771137626249">Ny</translation>
 <translation id="2381405137052800939">Grunderna</translation>
 <translation id="2384692388811649784">Dölj inkognitoflikar</translation>
 <translation id="2386793615875593361">1 markerat foto</translation>
@@ -690,6 +691,7 @@
 <translation id="3530206579861815432">Du hittar snabbt öppna och nyligen stängda flikar på alla dina synkroniserade enheter.</translation>
 <translation id="3530767473765895035">Hantera konton på den här enheten …</translation>
 <translation id="3533436815740441613">Ny flik</translation>
+<translation id="3534738261102690620">Fråga Gemini</translation>
 <translation id="3540141921715814660">Lägg till i bokmärken</translation>
 <translation id="3546122170015471515">Förhandsgranskningar av Maps på Google.com</translation>
 <translation id="3547356470684043247">Läs kundutvärderingar av produkter, tjänster eller upplevelser som underlag för dina beslut med recensioner.</translation>
@@ -960,6 +962,7 @@
 <translation id="454217142158335225">Du kan öppna stängda objekt igen från avsnitten Senaste flikarna eller Flikgrupper. Dina fästa flikar stängs inte.</translation>
 <translation id="4547181496285029457">Återgå till den senaste fliken</translation>
 <translation id="4552042254369397518">Kopierar …</translation>
+<translation id="4553044860350038560">Fler nycklar</translation>
 <translation id="4564893319561643483">Dölj <ph name="TITLE" /></translation>
 <translation id="4565377596337484307">Dölj lösenord</translation>
 <translation id="4568230126482344545">Dölj Senaste flikarna</translation>
@@ -1088,6 +1091,7 @@
 <translation id="4944543191714094452">Hitta på sida …</translation>
 <translation id="4945756290001680296">Åtkomst till lösenordsinställningar</translation>
 <translation id="4949302115427722371">Hantera inställningar …</translation>
+<translation id="4952050521954075618">Foton från kamerarullen synkroniseras inte på dina enheter</translation>
 <translation id="4958444002117714549">Expandera lista</translation>
 <translation id="496392417432935267">Har öppnats någon annanstans</translation>
 <translation id="4970724460420203313">Genom att använda Chrome med ditt hanterade konto kan du skilja på webbinformationen som är kopplad till organisationen, till exempel flikar, historik och lösenord, från annan webbinformation.</translation>
@@ -1287,6 +1291,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="5647702255748985085">Vill du lämna gruppen?</translation>
 <translation id="5648166631817621825">Senaste sju dagarna</translation>
 <translation id="5652623411397330904">Produkterna du bevakar visas här.</translation>
+<translation id="5653100054596780862">Alla flikar</translation>
 <translation id="5656431592348714536">Förbättrad kalender</translation>
 <translation id="5659593005791499971">E-post</translation>
 <translation id="5665739277590037307"><ph name="GOOGLE_TERMS" /> och <ph name="GEMINI_APPS_PRIVACY" /> gäller. Gemini kan göra misstag, så dubbelkolla svaren.</translation>
@@ -1752,6 +1757,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="7300448350764260141">Lägg till ett extra skydd mot hot online.</translation>
 <translation id="7311244614769792472">Inga resultat hittades</translation>
 <translation id="7313347584264171202">Du hittar dina inkognitoflikar här</translation>
+<translation id="7322186060879266048">{count,plural, =1{{count} alternativ för autofyll visas ovanför tangentbordet.}other{{count} alternativ för autofyll visas ovanför tangentbordet.}}</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> procent har laddats ned</translation>
 <translation id="7345061034321640811">Import tillåts inte</translation>

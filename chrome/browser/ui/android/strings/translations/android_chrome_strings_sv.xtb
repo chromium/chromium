@@ -415,6 +415,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2789486458103222910">OK</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome har hittat ett återanvänt lösenord som du kan förbättra}other{Chrome har hittat # återanvända lösenord som du kan förbättra}}</translation>
 <translation id="2794551654724114396">Aktivera aviseringar om användbara tips som hjälper dig att få ut mesta möjliga av Chrome</translation>
+<translation id="2798977804328097977">Fortsätt sömlöst på vilken enhet som helst</translation>
 <translation id="2805210243313393104">Använd dina bokmärken med mera på alla dina enheter</translation>
 <translation id="2805756323405976993">Appar</translation>
 <translation id="2819849308549746319">Avsluta prenumerationen på alla</translation>
@@ -470,6 +471,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2977350910003566746">Sorterar efter senast öppnade</translation>
 <translation id="297771753501244313">Sortera efter sist öppnad</translation>
 <translation id="2979639724566107830">Öppna i nytt fönster</translation>
+<translation id="2980545254049127870">Öppna enkelt länkar från meddelanden, dokument och andra appar</translation>
 <translation id="2983102365694924129">Baserat på din aktivitet på en webbplats. Inställningen är inaktiverad.</translation>
 <translation id="2983398917942897288">Inaktiva (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2983835398644161987">Avsluta bild-i-bild-läge</translation>
@@ -732,6 +734,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="4137746084635924146">Aktuellt enhetsspråk</translation>
 <translation id="414128724510021958">Webbplatser för dator begärs som standard</translation>
 <translation id="4162867837470729563">Lista över delningsalternativ har öppnats över hela skärmen.</translation>
+<translation id="4164642020717536140">Snabb och säker webbsökning</translation>
 <translation id="4165077084524712774">Fler verktyg</translation>
 <translation id="4170011742729630528">Tjänsten är inte tillgänglig, försök igen senare.</translation>
 <translation id="4170577491341606575">Hämtar dina grejer \u2026</translation>

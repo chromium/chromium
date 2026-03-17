@@ -125,7 +125,6 @@
 <translation id="2228071138934252756">Da biste dozvolili da <ph name="APP_NAME" /> pristupa kameri, uključite kameru i u <ph name="BEGIN_LINK" />Android podešavanjima<ph name="END_LINK" />.</translation>
 <translation id="2231160360698766265">Sajtovi mogu da puštaju zaštićen sadržaj</translation>
 <translation id="2235344399760031203">Kolačići treće strane su blokirani</translation>
-<translation id="2238944249568001759">Predložene pretrage na osnovu vaše poslednje kartice</translation>
 <translation id="2241587408274973373">Kartice na stranici nove kartice</translation>
 <translation id="2241634353105152135">Samo jednom</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> Uklonite</translation>
@@ -214,7 +213,6 @@ Napredna zaštita kontroliše ova Chrome podešavanja:
 <translation id="3069226013421428034">Dozvolite prijavljivanje trećih strana za određeni sajt.</translation>
 <translation id="310297983047869047">Prethodni slajd</translation>
 <translation id="3108122610701115301">Postavi na podrazumevano</translation>
-<translation id="3109724472072898302">Skupljeno</translation>
 <translation id="310979712355504754">Izbriši sve</translation>
 <translation id="311394601889664316">Ne dozvoljavaj sajtovima da menjaju fajlove ili foldere na uređaju</translation>
 <translation id="3114012059975132928">Video plejer</translation>
@@ -262,7 +260,6 @@ Napredna zaštita kontroliše ova Chrome podešavanja:
 <translation id="3602290021589620013">Pregled</translation>
 <translation id="3611658447322220736">Nedavno zatvoreni sajtovi mogu da završe slanje i prijem podataka</translation>
 <translation id="3619294456800709762">Sajtovi mogu automatski da uđu u sliku u slici</translation>
-<translation id="3628308229821498208">Predložene pretrage</translation>
 <translation id="3632460243282703117">Prati</translation>
 <translation id="363748948745453283">Koristi se približna lokacija</translation>
 <translation id="3641456520301071208">Sajtovi mogu da vam traže lokaciju</translation>
@@ -522,7 +519,6 @@ Napredna zaštita kontroliše ova Chrome podešavanja:
 <translation id="6231752747840485235">Želite da deinstalatirate „<ph name="APP_NAME" />“?</translation>
 <translation id="6234351944623978659">Dodirnite aplikaciju Pregledač &gt; Chrome</translation>
 <translation id="6260830281887654268">Donja tabela sa kolekcijama tema za izgled stranice nove kartice je otvorena do polovine ekrana</translation>
-<translation id="6262191102408817757">Na osnovu poslednje kartice</translation>
 <translation id="6262279340360821358">Dozvole <ph name="PERMISSION_1" /> i <ph name="PERMISSION_2" /> su blokirane</translation>
 <translation id="6270391203985052864">Sajtovi mogu da traže da šalju obaveštenja</translation>
 <translation id="6295158916970320988">Svi sajtovi</translation>
@@ -602,7 +598,6 @@ Napredna zaštita kontroliše ova Chrome podešavanja:
 <translation id="7180611975245234373">Osveži</translation>
 <translation id="7188508872042490670">Podaci o sajtovima na uređaju</translation>
 <translation id="7201549776650881587">Ova radnja će obrisati sve podatke i kolačiće koje čuvaju svi sajtovi u okviru domena <ph name="ORIGIN" /> ili koje čuva povezana aplikacija na početnom ekranu</translation>
-<translation id="7203150201908454328">Prošireno</translation>
 <translation id="7213166370492037743">Ne dozvoljavaj sajtovima da se povezuju sa bilo kojim uređajem na lokalnoj mreži</translation>
 <translation id="7219254577985949841">Želite da izbrišete podatke sajta?</translation>
 <translation id="723171743924126238">Izaberite slike</translation>

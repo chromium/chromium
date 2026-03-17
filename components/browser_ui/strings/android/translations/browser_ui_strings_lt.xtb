@@ -125,7 +125,6 @@
 <translation id="2228071138934252756">Norėdami leisti „<ph name="APP_NAME" />“ pasiekti jūsų kamerą, taip pat įjunkite ją <ph name="BEGIN_LINK" />„Android“ nustatymuose<ph name="END_LINK" />.</translation>
 <translation id="2231160360698766265">Svetainėse gali būti leidžiamas apsaugotas turinys</translation>
 <translation id="2235344399760031203">Trečiųjų šalių slapukai užblokuoti</translation>
-<translation id="2238944249568001759">Siūlomos paieškos atsižvelgiant į paskutinį skirtuką</translation>
 <translation id="2241587408274973373">Naujų skirtukų puslapių kortelės</translation>
 <translation id="2241634353105152135">Tik vieną kartą</translation>
 <translation id="2253414712144136228">Pašalinti „<ph name="NAME_OF_LIST_ITEM" />“</translation>
@@ -214,7 +213,6 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="3069226013421428034">Leisti trečiajai šaliai prisijungti prie konkrečios svetainės.</translation>
 <translation id="310297983047869047">Ankstesnė skaidrė</translation>
 <translation id="3108122610701115301">Nustatyti numatytuosius nustatymus</translation>
-<translation id="3109724472072898302">Suskleista</translation>
 <translation id="310979712355504754">Ištrinti viską</translation>
 <translation id="311394601889664316">Neleisti svetainėms redaguoti failų ar aplankų jūsų įrenginyje</translation>
 <translation id="3114012059975132928">Vaizdo įrašų leistuvė</translation>
@@ -262,7 +260,6 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="3602290021589620013">Peržiūra</translation>
 <translation id="3611658447322220736">Neseniai uždarytose svetainėse galima baigti siųsti ir gauti duomenis</translation>
 <translation id="3619294456800709762">Svetainėse galima automatiškai įjungti vaizdo vaizde režimą</translation>
-<translation id="3628308229821498208">Siūlomos paieškos</translation>
 <translation id="3632460243282703117">Prenumeruoti</translation>
 <translation id="363748948745453283">Naudojama apytikslė vietovė</translation>
 <translation id="3641456520301071208">Svetainės gali klausti jūsų vietovės</translation>
@@ -524,7 +521,6 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="6231752747840485235">Pašalinti „<ph name="APP_NAME" />“?</translation>
 <translation id="6234351944623978659">Palieskite „Naršyklės programa“ &gt; „Chrome“</translation>
 <translation id="6260830281887654268">Naujo skirtuko puslapio išvaizdos temų rinkinių apatinis lapas atidarytas iki pusės ekrano aukščio</translation>
-<translation id="6262191102408817757">Pagal paskutinį skirtuką</translation>
 <translation id="6262279340360821358">Užblokuota: <ph name="PERMISSION_1" /> ir <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Svetainės gali prašyti siųsti pranešimus</translation>
 <translation id="6295158916970320988">Visos svetainės</translation>
@@ -604,7 +600,6 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="7180611975245234373">Atnaujinti</translation>
 <translation id="7188508872042490670">Įrenginyje esantys svetainių duomenys</translation>
 <translation id="7201549776650881587">Atlikus šį veiksmą bus ištrinti visi duomenys ir slapukai, kuriuos visos domeno <ph name="ORIGIN" /> svetainės arba jo programa saugo jūsų pagrindiniame ekrane</translation>
-<translation id="7203150201908454328">Išskleista</translation>
 <translation id="7213166370492037743">Neleisti svetainėms prisijungti prie bet kurio įrenginio vietiniame tinkle</translation>
 <translation id="7219254577985949841">Ištrinti svetainės duomenis?</translation>
 <translation id="723171743924126238">Pasirinkti vaizdus</translation>

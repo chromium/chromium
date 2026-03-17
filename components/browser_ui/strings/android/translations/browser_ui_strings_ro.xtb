@@ -125,7 +125,6 @@
 <translation id="2228071138934252756">Pentru a permite aplicației <ph name="APP_NAME" /> să acceseze camera, activează camera și în <ph name="BEGIN_LINK" />Setările Android<ph name="END_LINK" />.</translation>
 <translation id="2231160360698766265">Site-urile pot reda conținut protejat</translation>
 <translation id="2235344399760031203">Cookie-urile terță parte sunt blocate</translation>
-<translation id="2238944249568001759">Căutări sugerate pe baza ultimei file</translation>
 <translation id="2241587408274973373">Carduri din pagina Filă nouă</translation>
 <translation id="2241634353105152135">Numai o singură dată</translation>
 <translation id="2253414712144136228">Elimină <ph name="NAME_OF_LIST_ITEM" /></translation>
@@ -214,7 +213,6 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="3069226013421428034">Permite conectarea terță parte pentru un anumit site.</translation>
 <translation id="310297983047869047">Slide-ul anterior</translation>
 <translation id="3108122610701115301">Setează ca prestabilit</translation>
-<translation id="3109724472072898302">Restrâns</translation>
 <translation id="310979712355504754">Ștergeți tot</translation>
 <translation id="311394601889664316">Nu permite site-urilor să modifice fișierele sau dosarele de pe dispozitiv</translation>
 <translation id="3114012059975132928">Player video</translation>
@@ -262,7 +260,6 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="3602290021589620013">Previzualizare</translation>
 <translation id="3611658447322220736">Site-urile închise recent pot să finalizeze trimiterea sau primirea datelor</translation>
 <translation id="3619294456800709762">Site-urile pot intra automat în modul picture-in-picture</translation>
-<translation id="3628308229821498208">Căutări sugerate</translation>
 <translation id="3632460243282703117">Abonează-te</translation>
 <translation id="363748948745453283">Se folosește locația aproximativă</translation>
 <translation id="3641456520301071208">Site-urile pot solicita permisiunea de a accesa locația</translation>
@@ -490,6 +487,7 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="5922853908706496913">Se permite accesul la ecran</translation>
 <translation id="5922967540311291836">Blochează cookie-urile terță parte:</translation>
 <translation id="5923512600150154850">Astfel, se vor șterge <ph name="DATASIZE" /> din datele și cookie-urile stocate de site-uri.</translation>
+<translation id="5930707844513754220">Vezi mai multe în lista de configurare</translation>
 <translation id="5939518447894949180">Resetează</translation>
 <translation id="5948139900367969951">Accesează rapid informații care te interesează</translation>
 <translation id="5964247741333118902">Conținut încorporat</translation>
@@ -498,6 +496,7 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
 <translation id="5998071268779572583">Activează feedul Discover</translation>
 <translation id="6012967556075291653">Comandă rapidă fixată</translation>
+<translation id="6013003831291591200">Activitate finalizată</translation>
 <translation id="6015775454662021376">Gestionează accesul acestui site la dispozitivul tău</translation>
 <translation id="6022659036123304283">Personalizează Chrome</translation>
 <translation id="6040143037577758943">Închide</translation>
@@ -522,7 +521,6 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="6231752747840485235">Dezinstalezi <ph name="APP_NAME" />?</translation>
 <translation id="6234351944623978659">Atinge Aplicația browser &gt; Chrome</translation>
 <translation id="6260830281887654268">Foaia din partea de jos cu colecțiile de teme pentru aspectul paginii Filă nouă deschisă la jumătate din înălțime</translation>
-<translation id="6262191102408817757">Pe baza ultimei file</translation>
 <translation id="6262279340360821358">Sunt blocate <ph name="PERMISSION_1" /> și <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Site-urile îți pot solicita să îți trimită notificări</translation>
 <translation id="6295158916970320988">Toate site-urile</translation>
@@ -602,7 +600,6 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="7180611975245234373">Actualizați</translation>
 <translation id="7188508872042490670">Date privind site-urile pe dispozitiv</translation>
 <translation id="7201549776650881587">Această acțiune va șterge toate datele și cookie-urile stocate de toate site-urile subordonate <ph name="ORIGIN" /> sau de aplicația asociată de pe ecranul de pornire</translation>
-<translation id="7203150201908454328">Extins</translation>
 <translation id="7213166370492037743">Nu permite site-urilor să se conecteze la niciun dispozitiv din rețeaua locală</translation>
 <translation id="7219254577985949841">Ștergi datele privind site-ul?</translation>
 <translation id="723171743924126238">Selectează imagini</translation>

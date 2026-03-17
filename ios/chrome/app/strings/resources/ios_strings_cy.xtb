@@ -962,6 +962,7 @@
 <translation id="454217142158335225">Gallwch ailagor eitemau sydd ar gau o'r adrannau tabiau diweddar neu grwpiau tabiau. Ni fydd eich tabiau sydd wedi'u pinio yn cael eu cau.</translation>
 <translation id="4547181496285029457">Dychwelyd i dab diweddar</translation>
 <translation id="4552042254369397518">Wrthi'n copïo…</translation>
+<translation id="4553044860350038560">Rhagor o godau pas</translation>
 <translation id="4564893319561643483">Cuddio '<ph name="TITLE" />'</translation>
 <translation id="4565377596337484307">Cuddio'r cyfrinair</translation>
 <translation id="4568230126482344545">Cuddio tabiau diweddar</translation>
@@ -1723,6 +1724,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="7149893636342594995">24 awr ddiwethaf</translation>
 <translation id="7154417656353909837">Tynnu cyfeiriadau</translation>
 <translation id="7161230316646448869">Cysonwch eich nodau tudalen, hanes a rhagor ar bob dyfais</translation>
+<translation id="7165323152084385463">VIN</translation>
 <translation id="7173114856073700355">Agor y Gosodiadau</translation>
 <translation id="7173721738069475737">{count,plural, =1{Mae'r nod tudalen wedi'i gadw}zero{Mae {count} nod tudalen wedi'u cadw}two{Mae {count} nod tudalen wedi'u cadw}few{Mae {count} nod tudalen wedi'u cadw}many{Mae {count} nod tudalen wedi'u cadw}other{Mae {count} nod tudalen wedi'u cadw}}</translation>
 <translation id="7176183551031110427">Pellhau</translation>

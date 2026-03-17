@@ -125,7 +125,6 @@
 <translation id="2228071138934252756">Om du vill ge <ph name="APP_NAME" /> åtkomst till kameran måste du även aktivera kameran i <ph name="BEGIN_LINK" />Android-inställningarna<ph name="END_LINK" />.</translation>
 <translation id="2231160360698766265">Webbplatser kan spela upp skyddat innehåll</translation>
 <translation id="2235344399760031203">Cookies från tredje part har blockerats</translation>
-<translation id="2238944249568001759">Föreslagna sökningar utifrån din senaste flik</translation>
 <translation id="2241587408274973373">Kort på sidan Ny flik</translation>
 <translation id="2241634353105152135">Bara en gång</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> Ta bort</translation>
@@ -214,7 +213,6 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="3069226013421428034">Tillåt tredjepartsinloggning på en viss webbplats.</translation>
 <translation id="310297983047869047">Föregående bild</translation>
 <translation id="3108122610701115301">Ange standard</translation>
-<translation id="3109724472072898302">Komprimerat</translation>
 <translation id="310979712355504754">Ta bort alla</translation>
 <translation id="311394601889664316">Tillåt inte att webbplatser redigerar filer eller mappar på enheten</translation>
 <translation id="3114012059975132928">Videospelare</translation>
@@ -262,7 +260,6 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="3602290021589620013">Förhandsgranskning</translation>
 <translation id="3611658447322220736">Webbplatser som stängts nyligen får fortsätta att skicka och ta emot data</translation>
 <translation id="3619294456800709762">Webbplatser kan öppna bild-i-bild automatiskt</translation>
-<translation id="3628308229821498208">Föreslagna sökningar</translation>
 <translation id="3632460243282703117">Prenumerera</translation>
 <translation id="363748948745453283">Använder ungefärlig plats</translation>
 <translation id="3641456520301071208">Webbplatser får fråga efter din plats</translation>
@@ -524,7 +521,6 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="6231752747840485235">Vill du avinstallera <ph name="APP_NAME" />?</translation>
 <translation id="6234351944623978659">Tryck på Webbläsarapp &gt; Chrome</translation>
 <translation id="6260830281887654268">Arket på nedre delen av skärmen för temasamlingar för utseende på sidan Ny flik har öppnats över halva skärmen</translation>
-<translation id="6262191102408817757">Utifrån din senaste flik</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> och <ph name="PERMISSION_2" /> blockeras</translation>
 <translation id="6270391203985052864">Webbplatser får be om tillåtelse att skicka aviseringar</translation>
 <translation id="6295158916970320988">Alla webbplatser</translation>
@@ -604,7 +600,6 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="7180611975245234373">Uppdatera</translation>
 <translation id="7188508872042490670">Webbplatsdata på enheten</translation>
 <translation id="7201549776650881587">När du gör detta raderas all data och alla cookies som lagras av alla underordnade webbplatser för <ph name="ORIGIN" /> eller tillhörande app på startskärmen</translation>
-<translation id="7203150201908454328">Utökat</translation>
 <translation id="7213166370492037743">Tillåt inte att webbplatser ansluter till enheter i det lokala nätverket</translation>
 <translation id="7219254577985949841">Vill du radera webbplatsdata?</translation>
 <translation id="723171743924126238">Välj bilder</translation>

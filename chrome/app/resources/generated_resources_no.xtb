@@ -70,7 +70,6 @@
 <translation id="1041181446722933623">«<ph name="LOCAL_BOOKMARK" />» er bare lagret på denne enheten. For å bruke det på andre enheter, lagre det i «<ph name="ACCOUNT_FOLDER" />» i kontoen din.</translation>
 <translation id="1041263367839475438">Tilgjengelige enheter</translation>
 <translation id="1041607257468256895">Administrer posisjonstillatelser for nettsteder i Chrome</translation>
-<translation id="1042174272890264476">Datamaskinen din har <ph name="SHORT_PRODUCT_NAME" />s RLZ-bibliotek innebygget. RLZ tildeler en ikke-unik, ikke-personlig tagg for å måle søk og <ph name="SHORT_PRODUCT_NAME" />-bruk drevet av en bestemt markedsføringskampanje. Disse etikettene vises noen ganger i Google-søk i <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1042248468362992359">Koble til mobildata for å bruke wifi-sone. <ph name="BEGIN_LINK_LEARN_MORE" />Finn ut mer<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="104385770822424034">Legg til handling</translation>
 <translation id="1045487161760507186">Du trenger ikke å huske passordet, fordi det blir lagret for deg i Google Passordlagring</translation>
@@ -967,7 +966,6 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1644574205037202324">Logg</translation>
 <translation id="1644852018355792105">Skriv inn Bluetooth-passordet for enheten <ph name="DEVICE" /></translation>
 <translation id="1645004815457365098">Ukjent kilde</translation>
-<translation id="1645516838734033527">Smart Lock krever en skjermlås på telefonen for å holde <ph name="DEVICE_TYPE" />-enheten trygg.</translation>
 <translation id="1646045728251578877">En programvareoppdatering er tilgjengelig</translation>
 <translation id="1647408325348388858">Vil du åpne og redigere <ph name="FILE_NAME" /> i denne nettappen?</translation>
 <translation id="1647986356840967552">Forrige side</translation>
@@ -1453,7 +1451,6 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1975841812214822307">Fjern</translation>
 <translation id="1976150099241323601">Logg på sikkerhetsenhet</translation>
 <translation id="1976823515278601587">Store besparelser</translation>
-<translation id="1977965994116744507">Hold telefonen nærmere for å låse opp <ph name="DEVICE_TYPE" />-enheten.</translation>
 <translation id="1978249384651349182"><ph name="BEGIN_DESCRIPTION" />Når du registrerer enhetene i organisasjonen din, konfigureres de for sentralisert enhetsadministrering. Det kan være flere årsaker til at organisasjonen din krever registrering:<ph name="END_DESCRIPTION" />
     <ph name="BEGIN_SUBTITLE1" /><ph name="BEGIN_BOLD" />Bedre sikkerhet<ph name="END_BOLD" /><ph name="END_SUBTITLE1" />
     <ph name="BEGIN_DESCRIPTION1" />Ved å konfigurere flere sikkerhetsinnstillinger kan organisasjonen holde brukeren og enhetsdataene trygge. Den kan også utføre handlinger som ekstern tilbakestilling eller deaktivering av mistede enheter.<ph name="END_DESCRIPTION1" />
@@ -1485,6 +1482,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1989288015781834552">Start på nytt for å fullføre oppdateringen. Fanene dine åpnes på nytt.</translation>
 <translation id="1989903373608997757">Bruk alltid</translation>
 <translation id="1990046457226896323">Talefiler er lastet ned</translation>
+<translation id="1991829061375381344">Du har ikke nok ledige lisenser til å registrere denne Google Meet-enheten. Kontakt forhandleren din for å kjøpe flere. Hvis du mener dette er en feil, kan du kontakte forhandleren din.</translation>
 <translation id="199191324030140441">Slå av Ikke forstyrr</translation>
 <translation id="1992397118740194946">Ikke angitt</translation>
 <translation id="1994173015038366702">Nettadressen til nettstedet</translation>
@@ -1613,7 +1611,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2089925163047119068">ELLER</translation>
 <translation id="2090165459409185032">For å gjenopprette kontoinformasjonen din, gå til: google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">Kobles automatisk til når du logger på</translation>
-<translation id="2090876986345970080">Systemets sikkerhetsinnstillinger</translation>
 <translation id="2091523941449737894">Raskere bevegelser på styreflaten flytter markøren lenger</translation>
 <translation id="2091887806945687916">Lyd</translation>
 <translation id="2092356157625807382"><ph name="BEGIN_H3" />Feilsøkingsfunksjoner<ph name="END_H3" />
@@ -2282,6 +2279,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="252418934079508528">Installer <ph name="DEVICE_OS" /></translation>
 <translation id="252513908494776481">Spør om denne fanen</translation>
 <translation id="2525746158911982776">Oppdateringen mislyktes fordi systemet ikke har nok lagringsplass.</translation>
+<translation id="2525842906387880861">Du vil ikke se forslag på denne siden igjen</translation>
 <translation id="2526590354069164005">Skrivebordet</translation>
 <translation id="2526619973349913024">Se etter oppdateringer</translation>
 <translation id="2527167509808613699">Alle typer tilkobling</translation>
@@ -2631,7 +2629,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2757338480560142065">Sørg for at passordet du lagrer, samsvarer med passordet ditt for <ph name="WEBSITE" />.</translation>
 <translation id="2761632996810146912"><ph name="HASHTAG_SETTINGS" /> Fant ingen søkeresultater for <ph name="SEARCH_QUERY" /></translation>
 <translation id="2762441749940182211">Kameraet er blokkert</translation>
-<translation id="2763165257813209348"><ph name="FILE_NAME" /> inneholder sensitive eller farlige data. Organisasjonen din lar deg lagre den i skylagring eller forkaste den</translation>
 <translation id="2764786626780673772">VPN-detaljer</translation>
 <translation id="2764920001292228569">Skriv inn et profilnavn</translation>
 <translation id="2765100602267695013">Kontakt mobiloperatøren din</translation>
@@ -3954,7 +3951,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3688794912214798596">Endre språk</translation>
 <translation id="3690369331356918524">Advarer deg hvis passord blir avdekket i databrudd</translation>
 <translation id="3691231116639905343">Tastaturapper</translation>
-<translation id="369135240373237088">Logg på igjen med en skolekonto</translation>
 <translation id="3693415264595406141">Passord:</translation>
 <translation id="3694027410380121301">Velg forrige fane</translation>
 <translation id="3694122362646626770">Nettsteder</translation>
@@ -4328,7 +4324,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3914894336972817683">Kan ikke laste opp. Filen ser ut til å være tom.</translation>
 <translation id="3915280005470252504">Søk med tale</translation>
 <translation id="3916445069167113093">Denne filtypen kan skade datamaskinen. Ønsker du å beholde <ph name="FILE_NAME" /> likevel?</translation>
-<translation id="3917184139185490151">Datamaskinen din inneholder en sikker modul, som brukes til å implementere mange viktige sikkerhetsfunksjoner i ChromeOS. Gå til Chromebook-brukerstøtten for å finne ut mer: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="3917644013202553949">Du har ikke nok lagringsplass til å synkronisere filene dine. Prøv å frigjøre plass.</translation>
 <translation id="3919145445993746351">For å få utvidelsene dine på alle datamaskinene dine, slå på synkronisering</translation>
 <translation id="3919229493046408863">Slå av varsler fra enheter i nærheten</translation>
@@ -4455,7 +4450,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3992008114154328194">Laster ned <ph name="FILE_NAME" /> – <ph name="STATUS" /></translation>
 <translation id="3994075804072562819">Gi <ph name="SPECIFIC_NAME" /> kontroll over USB-enheter.</translation>
 <translation id="3994318741694670028">Dessverre er datamaskinen konfigurert med en feilformatert maskinvare-ID. Dette forhindrer ChromeOS Flex fra å ta i bruk de siste sikkerhetsoppdateringene, og datamaskinen <ph name="BEGIN_BOLD" />kan være sårbar for skadelige angrep<ph name="END_BOLD" />.</translation>
-<translation id="3994374631886003300">Lås opp telefonen, og hold den nærmere for å låse opp <ph name="DEVICE_TYPE" />-enheten.</translation>
 <translation id="3994522032746736727">Logg på som <ph name="EMAIL" /></translation>
 <translation id="3994530503403062649">Finn knappene på tegnebrettet</translation>
 <translation id="3994708120330953242">Noen av passordene dine ble funnet i et databrudd. Du bør endre disse passordene nå for å beskytte kontoene dine.</translation>
@@ -4811,7 +4805,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="426564820080660648">For å sjekke etter oppdateringer, kan du bruke Ethernet eller Wifi.</translation>
 <translation id="426652736638196239">Dette IBAN-nummeret lagres bare på denne enheten</translation>
 <translation id="4266679478228765574">Hvis du fjerner mapper, deles de ikke lenger, men filene blir ikke slettet.</translation>
-<translation id="4267455501101322486">For å legge til en konto for tilgang til læringsressurser, be en forelder om å gi deg tillatelse</translation>
 <translation id="4267792239557443927">{COUNT,plural, =0{Fant ingen passord}=1{Fant 1 resultat}other{Fant {COUNT} resultater}}</translation>
 <translation id="4267924571297947682">Spør en forelder om tillatelse</translation>
 <translation id="4267953847983678297">Koble til mobilnettverk automatisk</translation>
@@ -5150,7 +5143,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
         <ph name="BREAK" />
         <ph name="BREAK" />
         Du kan administrere innstillinger via kortmenyen eller se flere alternativer i Tilpass Chrome.</translation>
-<translation id="4503748371388753124">Datamaskinen din inneholder en TPM-sikkerhetsenhet (Trusted Platform Module), som brukes til å implementere mange viktige sikkerhetsfunksjoner i ChromeOS Flex. Gå til Chromebook-brukerstøtten for å finne ut mer: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4504940961672722399">Bruk denne utvidelsen ved å klikke på ikonet eller trykke på <ph name="EXTENSION_SHORTCUT" />.</translation>
 <translation id="4505469832694348179">Last ned Chrome med denne QR-koden, og logg på Google-kontoen din.</translation>
 <translation id="450552327874992444">Ordet er allerede lagt til</translation>
@@ -5163,7 +5155,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4509421746503122514">Start på nytt for å oppdatere</translation>
 <translation id="4509741852167209430">Nettsteder deler begrensede typer data mellom seg for å måle annonseresultatene sine, for eksempel om du har kjøpt noe etter å ha besøkt et nettsted</translation>
 <translation id="4510195992002502722">Kunne ikke sende tilbakemeldingen. Prøver på nytt …</translation>
-<translation id="4510479820467554003">Liste over foreldrekontoer</translation>
 <translation id="4511344327646819192">For å forhindre andre fra å bruke passordet ditt, endre det på <ph name="WEBSITE" /></translation>
 <translation id="4513072860957814107">&amp;Slett nettlesingsdata…</translation>
 <translation id="4513872120116766993">Prediktiv skriving</translation>
@@ -6210,7 +6201,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5244234799035360187">Nå kommer OneDrive til å vises i Filer-appen</translation>
 <translation id="5244466461749935369">Behold inntil videre</translation>
 <translation id="5244474230056479698">Synkroniserer til <ph name="EMAIL" /></translation>
-<translation id="5245610266855777041">Kom i gang med en skolekonto</translation>
 <translation id="5246282308050205996"><ph name="APP_NAME" /> har krasjet. Klikk på denne ballongen for å starten programmet på nytt.</translation>
 <translation id="5247051749037287028">Visningsnavn (valgfritt)</translation>
 <translation id="5247243947166567755">Velg <ph name="BOOKMARK_TITLE" /></translation>
@@ -6364,7 +6354,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5365881113273618889">Mappen du valgte, inneholder sensitive filer. Er du sikker på at du vil gi «<ph name="APP_NAME" />» permanent skrivetilgang til denne mappen?</translation>
 <translation id="536638840841140142">Ingen</translation>
 <translation id="5368246151595623328">«<ph name="NETWORK_NAME" />» ble lagret fra <ph name="DEVICE_NAME" /></translation>
-<translation id="5368720394188453070">Telefonen er låst. Lås den opp for å få tilgang.</translation>
 <translation id="536882527576164740">{0,plural, =1{Inkognito}other{Inkognito (#)}}</translation>
 <translation id="5369694795837229225">Konfigurer Linux-utviklingsmiljø</translation>
 <translation id="5370819323174483825">&amp;Last inn på nytt</translation>
@@ -6857,7 +6846,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5707674184620508665">Organisasjonen din, <ph name="ACCOUNT_MANAGER" />, kan ikke se eller administrere de eksisterende dataene dine. De blir værende i den eksisterende profilen.</translation>
 <translation id="5708171344853220004">Microsoft hovednavn</translation>
 <translation id="5711010025974903573">Tjenestelogger</translation>
-<translation id="5711983031544731014">Kan ikke låse opp. Skriv inn passordet ditt.</translation>
 <translation id="5712153969432126546">Nettsteder publiserer av og til PDF-filer, for eksempel dokumenter, kontrakter og skjemaer</translation>
 <translation id="571222594670061844">Nettsteder kan vise påloggingsforespørsler fra identitetstjenester</translation>
 <translation id="5713158217420111469">Koblet til <ph name="DEVICE" /></translation>
@@ -7434,7 +7422,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6112931163620622315">Sjekk telefonen din</translation>
 <translation id="6113434369102685411">Angi standard søkemotor for Chrome-nettleseren og appoversikten på <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113832060210023016">Appoversikt-tasten + klikk</translation>
-<translation id="6113942107547980621">For å bruke Smart Lock, bytt til den primære brukerprofilen på telefonen din</translation>
 <translation id="6116921718742659598">Endre språk- og inndatainnstillinger</translation>
 <translation id="6119008366402292080">Ingen skriver er tilgjengelig</translation>
 <translation id="6119972796024789243">Fargekorrigering</translation>
@@ -7841,7 +7828,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6400360390396538896">Alltid på <ph name="ORIGIN" /></translation>
 <translation id="6401118106417399952">Enhetens EID er <ph name="EID_NUMBER" />, og enhetens serienummer er <ph name="SERIAL_NUMBER" />. Disse numrene kan brukes til å aktivere tjenesten.</translation>
 <translation id="6401458660421980302">For å sende denne fanen til en annen enhet, logg på Chrome der</translation>
-<translation id="6401597285454423070">Datamaskinen din inneholder en TPM-sikkerhetsenhet (Trusted Platform Module), som brukes til å implementere mange viktige sikkerhetsfunksjoner i ChromeOS. Gå til Chromebook-brukerstøtten for å finne ut mer: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6402921224457714577">Nettsteder kan be om å få kontrollere og omprogrammere MIDI-enhetene dine</translation>
 <translation id="6404511346730675251">Rediger bokmerket</translation>
 <translation id="640457954117263537">Bruk posisjon for ChromeOS- og Android-apper og -tjenester.</translation>
@@ -8421,7 +8407,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6805236548654699520">Fjern uønskede forgrunnsvinduer, løs nettverksproblemer med mer ved å tilbakestille innstillingene til trygge standardverdier.</translation>
 <translation id="6805478749741295868">Dette er en AI-funksjon på forsøksstadiet. Det kan hende at den gjør feil.</translation>
 <translation id="6805647936811177813">Logg på <ph name="TOKEN_NAME" /> for å importere klientsertifikat fra <ph name="HOST_NAME" />.</translation>
-<translation id="680572642341004180">Aktiver RLZ-sporing for <ph name="SHORT_PRODUCT_OS_NAME" />.</translation>
 <translation id="6805817411033102703">Tilbakemeldinger om delte fanegrupper</translation>
 <translation id="6806089545527108739">Ikke tillat, men spør senere</translation>
 <translation id="6806781719264274042">Bare kontaktene dine med Google-konto. <ph name="LINK_BEGIN" />Se kontakter<ph name="LINK_END" /></translation>
@@ -8871,7 +8856,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7113502843173351041">se e-postadressen din</translation>
 <translation id="7113974454301513811">Legg til den aktive fanen på listen din</translation>
 <translation id="7114054701490058191">Passordene er ikke like</translation>
-<translation id="7114648273807173152">For å bruke Smart Lock til å logge på Google-kontoen din, gå til Innstillinger &gt; Tilkoblede enheter &gt; Telefonen din &gt; Smart Lock.</translation>
 <translation id="7115361495406486998">Ingen kontakter kan nås</translation>
 <translation id="7116554090938189816">SSL-sertifikatet for skriveren er utløpt. Start skriveren på nytt, og prøv igjen.</translation>
 <translation id="7117228822971127758">Prøv på nytt senere</translation>
@@ -9503,7 +9487,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7553242001898162573">Skriv inn passordet ditt</translation>
 <translation id="755472745191515939">Administratoren din tillater ikke dette språket</translation>
 <translation id="7554791636758816595">Ny fane</translation>
-<translation id="7556033326131260574">Smart Lock kunne ikke bekrefte kontoen din. Skriv inn passordet for å få tilgang.</translation>
 <translation id="7556228616802995437">Nylige chatter og tråder</translation>
 <translation id="7556242789364317684">Dessverre kan ikke <ph name="SHORT_PRODUCT_NAME" /> gjenopprette innstillingene dine. For å reparere feilen må <ph name="SHORT_PRODUCT_NAME" /> tilbakestille enheten med Powerwash.</translation>
 <translation id="7557194624273628371">Viderekobling av porter for Linux</translation>
@@ -9850,6 +9833,7 @@ Trykk på en tilordnet bryter eller tast for å fjerne tilordningen.</translatio
 <translation id="7784067724422331729">Sikkerhetsinnstillingene på datamaskinen din blokkerte denne filen.</translation>
 <translation id="7784796923038949829">Kan ikke lese eller endre data på nettstedet</translation>
 <translation id="778480864305029524">For å bruke umiddelbar internettdeling, slå på varsler for Google Play Tjenester.</translation>
+<translation id="7784875615510899699">Du har ikke nok ledige lisenser til å registrere denne Google Beam-enheten. Kontakt forhandleren din for å kjøpe flere. Hvis du mener dette er en feil, kan du kontakte forhandleren din.</translation>
 <translation id="77855763949601045">&amp;Åpne gjesteprofil</translation>
 <translation id="7786663536153819505">Følg veiledningen på telefonen for å skanne QR-koden. Kontroller at Bluetooth er påslått på telefonen.
     <ph name="BR" />
@@ -9947,7 +9931,6 @@ Trykk på en tilordnet bryter eller tast for å fjerne tilordningen.</translatio
 <translation id="7853747251428735">Flere verktø&amp;y</translation>
 <translation id="7855258394151767387">Bruk «W» for å trykke på en museknapp</translation>
 <translation id="7855678561139483478">Flytt fanen til et nytt vindu</translation>
-<translation id="7857004848504343806">Datamaskinen din inneholder en sikker modul, som brukes til å implementere mange viktige sikkerhetsfunksjoner i ChromeOS Flex. Gå til Chromebook-brukerstøtten for å finne ut mer: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">Tekstforslag</translation>
 <translation id="7858120906780498731">ChromeOS – tilkoblede inndataenheter</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
@@ -9994,7 +9977,6 @@ Trykk på en tilordnet bryter eller tast for å fjerne tilordningen.</translatio
 <translation id="7892005672811746207">Slå på «Lagre gruppe»</translation>
 <translation id="7892384782944609022">Kunne ikke koble sammen. Velg enhet for å prøve på nytt.</translation>
 <translation id="7893008570150657497">Åpne bilder, musikk og andre mediefiler fra datamaskinen din</translation>
-<translation id="7893153962594818789">Bluetooth er slått av på denne <ph name="DEVICE_TYPE" />-enheten. Skriv inn passordet ditt, og slå på Bluetooth.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (Standard)</translation>
 <translation id="7896292361319775586">Vil du lagre <ph name="FILE" />?</translation>
 <translation id="789722939441020330">Ikke la nettsteder laste ned flere filer automatisk</translation>
@@ -10837,7 +10819,6 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8453400752347156012">Dette bokmerket er bare lagret på denne enheten. Hvis du lagrer det i «<ph name="ACCOUNT_FOLDER" />», blir dette bokmerket også lagret i kontoen din.</translation>
 <translation id="8455775311562941553">Koblet til <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="8456067150616457342">Angi standardnettleser</translation>
-<translation id="845702320058262034">Kan ikke koble til. Kontroller at telefonens Bluetooth er på.</translation>
 <translation id="8457251154056341970">Du kommer ikke til å se <ph name="MODULE_NAME" /> på denne siden igjen</translation>
 <translation id="8457451314607652708">Importér bokmerker</translation>
 <translation id="8458341576712814616">Snarvei</translation>

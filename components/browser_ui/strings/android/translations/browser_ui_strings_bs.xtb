@@ -125,7 +125,6 @@
 <translation id="2228071138934252756">Da omogućite aplikaciji <ph name="APP_NAME" /> pristup kameri, također uključite kameru u <ph name="BEGIN_LINK" />Postavkama Androida<ph name="END_LINK" />.</translation>
 <translation id="2231160360698766265">Web lokacije mogu reproducirati zaštićeni sadržaj</translation>
 <translation id="2235344399760031203">Kolačići treće strane su blokirani</translation>
-<translation id="2238944249568001759">Predložena pretraživanja na osnovu vaše posljednje kartice</translation>
 <translation id="2241587408274973373">Kartice na stranici nove kartice</translation>
 <translation id="2241634353105152135">Samo ovaj put</translation>
 <translation id="2253414712144136228">Uklanjanje stavke <ph name="NAME_OF_LIST_ITEM" /></translation>
@@ -214,7 +213,6 @@ Napredna zaštita upravlja ovim postavkama Chromea:
 <translation id="3069226013421428034">Dozvolite prijavu trećih stana za određenu web lokaciju.</translation>
 <translation id="310297983047869047">Prethodni slajd</translation>
 <translation id="3108122610701115301">Postavi zadano</translation>
-<translation id="3109724472072898302">Skupljeno</translation>
 <translation id="310979712355504754">Izbriši sve</translation>
 <translation id="311394601889664316">Nemoj dozvoliti web lokacijama uređivanje fajlova ili foldera na mom uređaju</translation>
 <translation id="3114012059975132928">Video plejer</translation>
@@ -262,7 +260,6 @@ Napredna zaštita upravlja ovim postavkama Chromea:
 <translation id="3602290021589620013">Pregled</translation>
 <translation id="3611658447322220736">Nedavno zatvorene web lokacije mogu završiti slanje i primanje podataka</translation>
 <translation id="3619294456800709762">Web lokacije mogu automatski unositi sliku u slici</translation>
-<translation id="3628308229821498208">Predložena pretraživanja</translation>
 <translation id="3632460243282703117">Pretplatite se</translation>
 <translation id="363748948745453283">Korištenje približne lokacije</translation>
 <translation id="3641456520301071208">Web lokacije mogu tražiti vašu lokaciju</translation>
@@ -490,6 +487,7 @@ Napredna zaštita upravlja ovim postavkama Chromea:
 <translation id="5922853908706496913">Dijeljenje ekrana</translation>
 <translation id="5922967540311291836">Blokirajte kolačiće treće strane:</translation>
 <translation id="5923512600150154850">Ovim će se izbrisati <ph name="DATASIZE" /> podataka i kolačića koje su pohranile web lokacije.</translation>
+<translation id="5930707844513754220">Prikaži više na listi za postavljanje</translation>
 <translation id="5939518447894949180">Vrati na zadano</translation>
 <translation id="5948139900367969951">Brzo pristupite onome što vam je važno</translation>
 <translation id="5964247741333118902">Ugrađeni sadržaj</translation>
@@ -498,6 +496,7 @@ Napredna zaštita upravlja ovim postavkama Chromea:
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
 <translation id="5998071268779572583">Uključivanje sažetka sadržaja Discovera</translation>
 <translation id="6012967556075291653">Zakačena prečica</translation>
+<translation id="6013003831291591200">Zadatak je završen</translation>
 <translation id="6015775454662021376">Upravljanje pristupom ove web lokacije vašem uređaju</translation>
 <translation id="6022659036123304283">Prilagodite Chrome svojim potrebama</translation>
 <translation id="6040143037577758943">Zatvori</translation>
@@ -522,7 +521,6 @@ Napredna zaštita upravlja ovim postavkama Chromea:
 <translation id="6231752747840485235">Deinstalirati aplikaciju <ph name="APP_NAME" />?</translation>
 <translation id="6234351944623978659">Dodirnite aplikaciju Preglednik &gt; Chrome.</translation>
 <translation id="6260830281887654268">Donja tabela kolekcija tema izgleda stranice Nova kartica je otvorena na pola visine</translation>
-<translation id="6262191102408817757">Na osnovu vaše posljednje kartice</translation>
 <translation id="6262279340360821358">Blokirano: <ph name="PERMISSION_1" /> i <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Web lokacije mogu tražiti da šalju obavještenja</translation>
 <translation id="6295158916970320988">Sve web lokacije</translation>
@@ -602,7 +600,6 @@ Napredna zaštita upravlja ovim postavkama Chromea:
 <translation id="7180611975245234373">Osvježi</translation>
 <translation id="7188508872042490670">Podaci web lokacije na uređaju</translation>
 <translation id="7201549776650881587">Ova radnja će izbrisati sve podatke i kolačiće koje su pohranile sve web lokacije na domeni <ph name="ORIGIN" /> ili pripadajuća aplikacija na početnom ekranu</translation>
-<translation id="7203150201908454328">Prošireno</translation>
 <translation id="7213166370492037743">Nemoj dozvoliti web lokacijama da se povežu s ijednim uređajem na lokalnoj mreži</translation>
 <translation id="7219254577985949841">Izbrisati podatke web lokacije?</translation>
 <translation id="723171743924126238">Odaberi slike</translation>

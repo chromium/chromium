@@ -70,7 +70,6 @@
 <translation id="1041181446722933623">「<ph name="LOCAL_BOOKMARK" />」只會儲存到這部裝置。如要在其他裝置上使用，請儲存到 Google 帳戶的「<ph name="ACCOUNT_FOLDER" />」。</translation>
 <translation id="1041263367839475438">可用的裝置</translation>
 <translation id="1041607257468256895">在 Chrome 中管理網站位置存取權</translation>
-<translation id="1042174272890264476">你的電腦也內建了 <ph name="SHORT_PRODUCT_NAME" /> 的 RLZ 程式庫。RLZ 可指定非重複、非個人的可辨識標記，以評估特定宣傳廣告活動所提升的搜尋數與 <ph name="SHORT_PRODUCT_NAME" /> 使用量。這些標籤有時也會顯示在 <ph name="PRODUCT_NAME" /> 的 Google 搜尋查詢中。</translation>
 <translation id="1042248468362992359">連線至行動數據即可使用無線基地台。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="104385770822424034">新增動作</translation>
 <translation id="1045487161760507186">你不必記住密碼，因為系統會替你儲存到 Google 密碼管理工具</translation>
@@ -969,7 +968,6 @@
 <translation id="1644574205037202324">歷史記錄</translation>
 <translation id="1644852018355792105">輸入 <ph name="DEVICE" /> 裝置的藍牙密碼金鑰</translation>
 <translation id="1645004815457365098">來源不明</translation>
-<translation id="1645516838734033527">為了確保你的 <ph name="DEVICE_TYPE" /> 安全無虞，你必須為手機啟用螢幕鎖定，才能使用 Smart Lock。</translation>
 <translation id="1646045728251578877">有可用的軟體更新</translation>
 <translation id="1647408325348388858">要在這個網頁應用程式中開啟並編輯「<ph name="FILE_NAME" />」嗎？</translation>
 <translation id="1647986356840967552">上一頁</translation>
@@ -1449,7 +1447,6 @@
 <translation id="1975841812214822307">移除...</translation>
 <translation id="1976150099241323601">登入安全性裝置</translation>
 <translation id="1976823515278601587">節省量：大</translation>
-<translation id="1977965994116744507">讓你的手機靠近 <ph name="DEVICE_TYPE" />，即可將其解鎖。</translation>
 <translation id="1978249384651349182"><ph name="BEGIN_DESCRIPTION" />在貴機構中註冊裝置，可設定裝置供集中管理。貴機構可能會基於多種原因而要求你註冊：<ph name="END_DESCRIPTION" />
     <ph name="BEGIN_SUBTITLE1" /><ph name="BEGIN_BOLD" />強化安全性<ph name="END_BOLD" /><ph name="END_SUBTITLE1" />
     <ph name="BEGIN_DESCRIPTION1" />指定額外的安全性設定後，機構就能保護使用者和裝置資料，也可以執行遠端重設或停用遺失裝置等動作。<ph name="END_DESCRIPTION1" />
@@ -1609,7 +1606,6 @@
 <translation id="2089925163047119068">或</translation>
 <translation id="2090165459409185032">如要還原您的帳戶資訊，請前往 google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">登入時自動連線</translation>
-<translation id="2090876986345970080">系統安全性設定</translation>
 <translation id="2091523941449737894">在觸控板上移動得越快，游標就移動得越遠</translation>
 <translation id="2091887806945687916">音訊</translation>
 <translation id="2092356157625807382"><ph name="BEGIN_H3" />偵錯功能<ph name="END_H3" />
@@ -2275,6 +2271,7 @@
 <translation id="252418934079508528">安裝 <ph name="DEVICE_OS" /></translation>
 <translation id="252513908494776481">詢問這個分頁的內容</translation>
 <translation id="2525746158911982776">因系統儲存空間不足無法更新。</translation>
+<translation id="2525842906387880861">這個頁面不會再顯示建議</translation>
 <translation id="2526590354069164005">桌面</translation>
 <translation id="2526619973349913024">檢查更新</translation>
 <translation id="2527167509808613699">任何類型的連線</translation>
@@ -2624,7 +2621,6 @@
 <translation id="2757338480560142065">請確認要儲存的密碼與 <ph name="WEBSITE" /> 上的密碼相符</translation>
 <translation id="2761632996810146912"><ph name="HASHTAG_SETTINGS" /> 找不到與「<ph name="SEARCH_QUERY" />」相符的搜尋結果</translation>
 <translation id="2762441749940182211">無法使用攝影機</translation>
-<translation id="2763165257813209348">「<ph name="FILE_NAME" />」含有機密或危險的資料。根據貴機構政策，你只能儲存到雲端空間或捨棄檔案</translation>
 <translation id="2764786626780673772">VPN 詳細資料</translation>
 <translation id="2764920001292228569">請輸入設定檔名稱</translation>
 <translation id="2765100602267695013">請與你的行動服務供應商聯絡</translation>
@@ -3944,7 +3940,6 @@
 <translation id="3688794912214798596">變更語言...</translation>
 <translation id="3690369331356918524">可在發生資料侵害事件導致密碼外洩時顯示警告訊息</translation>
 <translation id="3691231116639905343">鍵盤應用程式</translation>
-<translation id="369135240373237088">請使用學校帳戶重新登入</translation>
 <translation id="3693415264595406141">密碼：</translation>
 <translation id="3694027410380121301">選取前一個分頁</translation>
 <translation id="3694122362646626770">網站</translation>
@@ -4318,7 +4313,6 @@
 <translation id="3914894336972817683">無法上傳。檔案似乎沒有任何內容。</translation>
 <translation id="3915280005470252504">語音搜尋</translation>
 <translation id="3916445069167113093">這種類型的檔案可能會損害你的電腦，你要保留 <ph name="FILE_NAME" /> 這個檔案嗎？</translation>
-<translation id="3917184139185490151">你的電腦含有安全性模組，可用於實作 Chrome OS 中許多重要的安全性功能。如要瞭解詳情，請造訪 Chromebook 說明中心：https://support.google.com/chromebook/?p=sm</translation>
 <translation id="3917644013202553949">儲存空間不足，無法同步處理檔案。請嘗試釋出空間。</translation>
 <translation id="3919145445993746351">如要在所有電腦上使用你的擴充功能，請開啟同步功能</translation>
 <translation id="3919229493046408863">附近有其他裝置時關閉通知</translation>
@@ -4446,7 +4440,6 @@
 <translation id="3992008114154328194">正在下載「<ph name="FILE_NAME" />」，<ph name="STATUS" /></translation>
 <translation id="3994075804072562819">授權「<ph name="SPECIFIC_NAME" />」控制 USB 裝置。</translation>
 <translation id="3994318741694670028">很抱歉，你的電腦是由格式錯誤的硬體 ID 所設定。這導致 ChromeOS Flex 無法使用最新的安全性修正程式進行更新，你的電腦也可能因此<ph name="BEGIN_BOLD" />容易遭受惡意攻擊<ph name="END_BOLD" />。</translation>
-<translation id="3994374631886003300">解除手機的鎖定狀態，並且讓你的手機與 <ph name="DEVICE_TYPE" /> 更靠近，即可進入解鎖模式。</translation>
 <translation id="3994522032746736727">以「<ph name="EMAIL" />」身分登入</translation>
 <translation id="3994530503403062649">點選平板電腦上的按鈕</translation>
 <translation id="3994708120330953242">你有一些密碼在資料侵害事件中外洩。為保護你的帳戶，建議立即變更這些密碼。</translation>
@@ -4802,7 +4795,6 @@
 <translation id="426564820080660648">如要檢查更新，請使用 Wi-Fi 或行動數據。</translation>
 <translation id="426652736638196239">這個 IBAN 只會儲存在這部裝置上</translation>
 <translation id="4266679478228765574">移除資料夾會停止與他人共用檔案，但不會刪除檔案。</translation>
-<translation id="4267455501101322486">你必須要求家長授予權限，才能新增可存取教育資源的帳戶</translation>
 <translation id="4267792239557443927">{COUNT,plural, =0{找不到密碼}=1{找到 1 筆結果}other{找到 {COUNT} 筆結果}}</translation>
 <translation id="4267924571297947682">請要求家長授予權限</translation>
 <translation id="4267953847983678297">自動連線至行動數據網路</translation>
@@ -5138,7 +5130,6 @@
 <translation id="4502423230170890588">從這個裝置中移除</translation>
 <translation id="4502477450742595012">在分頁標籤上按一下滑鼠右鍵，選取「將分頁加入新群組」</translation>
 <translation id="4503362512377701151">系統顯示最近使用的分頁群組，方便你接續先前的瀏覽進度。<ph name="BREAK" /><ph name="BREAK" />你可以透過三點選單管理設定，也可以前往「自訂 Chrome」查看更多選項。</translation>
-<translation id="4503748371388753124">你的電腦含有可信任平台模組 (TPM) 安全性裝置，可用於實作 ChromeOS Flex 中許多重要的安全性功能。如需瞭解詳情，請造訪 Chromebook 說明中心：https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4504940961672722399">按一下這個圖示或按下 <ph name="EXTENSION_SHORTCUT" />，即可使用這項擴充功能。</translation>
 <translation id="4505469832694348179">使用這個 QR code 下載 Chrome，然後登入 Google 帳戶。</translation>
 <translation id="450552327874992444">已新增該字詞</translation>
@@ -5151,7 +5142,6 @@
 <translation id="4509421746503122514">重新啟動即可更新</translation>
 <translation id="4509741852167209430">為評估廣告成效，網站間會分享某些特定資料，例如使用者是否在造訪網站後購物</translation>
 <translation id="4510195992002502722">無法傳送意見。重試中...</translation>
-<translation id="4510479820467554003">家長帳戶清單</translation>
 <translation id="4511344327646819192">如果不希望他人使用你的密碼，請前往 <ph name="WEBSITE" /> 變更密碼</translation>
 <translation id="4513072860957814107">刪除瀏覽資料…</translation>
 <translation id="4513872120116766993">預測書寫建議</translation>
@@ -6198,7 +6188,6 @@
 <translation id="5244234799035360187">OneDrive 現在會顯示在「檔案」應用程式中</translation>
 <translation id="5244466461749935369">暫時保留</translation>
 <translation id="5244474230056479698">同步到 <ph name="EMAIL" /></translation>
-<translation id="5245610266855777041">登入學校帳戶即可開始使用</translation>
 <translation id="5246282308050205996"><ph name="APP_NAME" /> 當機了，請按一下這個提示框來重新啟動應用程式。</translation>
 <translation id="5247051749037287028">顯示名稱 (選填)</translation>
 <translation id="5247243947166567755">請選取「<ph name="BOOKMARK_TITLE" />」</translation>
@@ -6352,7 +6341,6 @@
 <translation id="5365881113273618889">你選取的資料夾包含敏感檔案。你確定要將這個資料夾的寫入權限永久授予「<ph name="APP_NAME" />」嗎？</translation>
 <translation id="536638840841140142">無</translation>
 <translation id="5368246151595623328">透過 <ph name="DEVICE_NAME" /> 儲存「<ph name="NETWORK_NAME" />」</translation>
-<translation id="5368720394188453070">你的手機已鎖定，必須解鎖才能繼續操作。</translation>
 <translation id="536882527576164740">{0,plural, =1{無痕視窗}other{無痕視窗 (#)}}</translation>
 <translation id="5369694795837229225">設定 Linux 開發環境</translation>
 <translation id="5370819323174483825">重新載入(&amp;R)</translation>
@@ -6844,7 +6832,6 @@
 <translation id="5707674184620508665">貴機構 <ph name="ACCOUNT_MANAGER" /> 將無法查看或管理你的現有資料，這些資料會保留在現有設定檔中。</translation>
 <translation id="5708171344853220004">Microsoft 主要名稱</translation>
 <translation id="5711010025974903573">服務記錄</translation>
-<translation id="5711983031544731014">無法解鎖，請輸入你的密碼。</translation>
 <translation id="5712153969432126546">網站有時會發布文件、合約和表單等 PDF 檔案</translation>
 <translation id="571222594670061844">網站可以顯示身分識別服務的登入提示</translation>
 <translation id="5713158217420111469">已連線至「<ph name="DEVICE" />」</translation>
@@ -7419,7 +7406,6 @@
 <translation id="6112931163620622315">請查看你的手機</translation>
 <translation id="6113434369102685411">設定 Chrome 瀏覽器和 <ph name="DEVICE_TYPE" /> 啟動器的預設搜尋引擎</translation>
 <translation id="6113832060210023016">啟動鍵 + 滑鼠左鍵</translation>
-<translation id="6113942107547980621">如要使用 Smart Lock，請在手機上切換到主要使用者設定檔</translation>
 <translation id="6116921718742659598">變更語言和輸入設定</translation>
 <translation id="6119008366402292080">沒有可用的印表機</translation>
 <translation id="6119972796024789243">色彩校正</translation>
@@ -7826,7 +7812,6 @@
 <translation id="6400360390396538896">一律在 <ph name="ORIGIN" /> 上執行</translation>
 <translation id="6401118106417399952">裝置 EID 為 <ph name="EID_NUMBER" />，裝置序號為 <ph name="SERIAL_NUMBER" />。你可以使用這些號碼啟用服務。</translation>
 <translation id="6401458660421980302">如要將這個分頁傳送到其他裝置，請在該裝置上登入 Chrome</translation>
-<translation id="6401597285454423070">你的電腦含有信任平台模組 (TPM) 安全性裝置，可用於實作 Chrome OS 中許多重要的安全性功能。如需瞭解詳情，請造訪 Chromebook 說明中心：https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6402921224457714577">網站可以要求控制 MIDI 裝置及重設程式</translation>
 <translation id="6404511346730675251">編輯書籤</translation>
 <translation id="640457954117263537">允許 ChromeOS 和 Android 應用程式及服務使用位置資訊。</translation>
@@ -8406,7 +8391,6 @@
 <translation id="6805236548654699520">如要移除不必要的彈出式視窗、修正網路問題等等，可以將設定還原為安全預設值。</translation>
 <translation id="6805478749741295868">這項 AI 功能仍在實驗階段，提供的建議不一定符合需求。</translation>
 <translation id="6805647936811177813">登入 <ph name="TOKEN_NAME" /> 即可從 <ph name="HOST_NAME" /> 匯入用戶端憑證。</translation>
-<translation id="680572642341004180">針對 <ph name="SHORT_PRODUCT_OS_NAME" /> 啟用 RLZ  追蹤功能。</translation>
 <translation id="6805817411033102703">共用分頁群組意見回饋</translation>
 <translation id="6806089545527108739">不允許但稍後再詢問</translation>
 <translation id="6806781719264274042">僅限擁有 Google 帳戶的聯絡人。<ph name="LINK_BEGIN" />查看聯絡人<ph name="LINK_END" /></translation>
@@ -8856,7 +8840,6 @@
 <translation id="7113502843173351041">存取你的電子郵件地址</translation>
 <translation id="7113974454301513811">現在，將現有分頁加入清單</translation>
 <translation id="7114054701490058191">密碼不符</translation>
-<translation id="7114648273807173152">如要使用 Smart Lock 登入 Google 帳戶，請依序前往 [設定] &gt; [已連接的裝置] &gt; [你的手機] &gt; [Smart Lock]。</translation>
 <translation id="7115361495406486998">沒有可建立連線的聯絡人</translation>
 <translation id="7116554090938189816">印表機 SSL 憑證已過期。請重新啟動印表機，然後再試一次。</translation>
 <translation id="7117228822971127758">請稍後再試</translation>
@@ -9487,7 +9470,6 @@
 <translation id="7553242001898162573">請輸入您的密碼</translation>
 <translation id="755472745191515939">管理員已禁止使用這種語言</translation>
 <translation id="7554791636758816595">新分頁</translation>
-<translation id="7556033326131260574">Smart Lock 無法驗證您的帳戶，請輸入您的密碼。</translation>
 <translation id="7556228616802995437">近期對話和討論串</translation>
 <translation id="7556242789364317684">很抱歉，<ph name="SHORT_PRODUCT_NAME" /> 無法復原你的設定。如要修正錯誤，<ph name="SHORT_PRODUCT_NAME" /> 必須透過 Powerwash 重設你的裝置。</translation>
 <translation id="7557194624273628371">Linux 連接埠轉送</translation>
@@ -9931,7 +9913,6 @@
 <translation id="7853747251428735">更多工具(&amp;L)</translation>
 <translation id="7855258394151767387">按下「w」表示按下滑鼠按鍵</translation>
 <translation id="7855678561139483478">將分頁移到新視窗</translation>
-<translation id="7857004848504343806">你的電腦含有安全性模組，可用於實作 ChromeOS Flex 中許多重要的安全性功能。如需瞭解詳情，請造訪 Chromebook 說明中心：https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">文字建議</translation>
 <translation id="7858120906780498731">ChromeOS 已連接的輸入裝置</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
@@ -9978,7 +9959,6 @@
 <translation id="7892005672811746207">開啟「儲存群組」</translation>
 <translation id="7892384782944609022">無法配對。請選取裝置後再試一次。</translation>
 <translation id="7893008570150657497">存取你電腦中的相片、音樂及其他媒體</translation>
-<translation id="7893153962594818789">這部 <ph name="DEVICE_TYPE" /> 的藍牙已關閉。請輸入你的密碼，然後開啟藍牙。</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (預設)</translation>
 <translation id="7896292361319775586">要儲存 <ph name="FILE" /> 嗎？</translation>
 <translation id="789722939441020330">禁止網站自動下載多個檔案</translation>
@@ -10821,7 +10801,6 @@
 <translation id="8453400752347156012">這個書籤只會儲存到這部裝置。如果儲存到「<ph name="ACCOUNT_FOLDER" />」，這個書籤也會儲存到你的帳戶。</translation>
 <translation id="8455775311562941553">已連線到「<ph name="HOST_DEVICE_NAME" />」</translation>
 <translation id="8456067150616457342">設定預設瀏覽器</translation>
-<translation id="845702320058262034">無法連線。請確認手機的藍牙功能已開啟。</translation>
 <translation id="8457251154056341970">這個頁面不會再顯示「<ph name="MODULE_NAME" />」</translation>
 <translation id="8457451314607652708">匯入書籤</translation>
 <translation id="8458341576712814616">搜尋捷徑</translation>

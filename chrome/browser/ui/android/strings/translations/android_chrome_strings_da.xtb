@@ -415,6 +415,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="2789486458103222910">OK</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome har fundet en genbrugt adgangskode, som du kan forbedre}one{Chrome har fundet # genbrugt adgangskode, som du kan forbedre}other{Chrome har fundet # genbrugte adgangskoder, som du kan forbedre}}</translation>
 <translation id="2794551654724114396">Aktivér notifikationer for at få nyttige tips, der hjælper dig med at få mest muligt ud af Chrome</translation>
+<translation id="2798977804328097977">Fortsæt nemt på en hvilken som helst enhed</translation>
 <translation id="2805210243313393104">Få dine bogmærker m.m. på alle dine enheder</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="2819849308549746319">Frameld alle</translation>
@@ -470,6 +471,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="2977350910003566746">Sorteres efter sidst åbnet</translation>
 <translation id="297771753501244313">Sortér efter sidst åbnet</translation>
 <translation id="2979639724566107830">Åbn i nyt vindue</translation>
+<translation id="2980545254049127870">Åbn nemt links fra beskeder, dokumenter og andre apps</translation>
 <translation id="2983102365694924129">Baseret på din aktivitet på et website. Denne indstilling er deaktiveret.</translation>
 <translation id="2983398917942897288">Inaktive (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2983835398644161987">Afslut integreret billede</translation>
@@ -731,6 +733,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="4137746084635924146">Aktuelt enhedssprog</translation>
 <translation id="414128724510021958">Der anmodes som standard om computerwebsites</translation>
 <translation id="4162867837470729563">Listen over delingsindstillinger er åbnet i fuld højde.</translation>
+<translation id="4164642020717536140">Hurtig og sikker webbrowsing</translation>
 <translation id="4165077084524712774">Flere værktøjer</translation>
 <translation id="4170011742729630528">Tjenesten er ikke tilgængelig. Prøv igen senere.</translation>
 <translation id="4170577491341606575">Henter dine data\u2026</translation>

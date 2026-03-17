@@ -213,6 +213,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="1900260903084164610">Z nadaljevanjem se strinjate s <ph name="BEGIN_TOS_LINK" />pogoji storitve<ph name="END_TOS_LINK" />.</translation>
 <translation id="1904580727789512086">URL-ji, ki jih obiščete, se shranijo v račun Google.</translation>
 <translation id="1910950723001426294">Seznam možnosti deljenja z drugimi je zaprt.</translation>
+<translation id="1912367671208932516">Odpiranje menija razširitev</translation>
 <translation id="191726024256261717">Pregled dovoljenj</translation>
 <translation id="1917766536967060661">Takoj boste izgubili dostop do skupine zavihkov »<ph name="GROUP_NAME" />« in član <ph name="BLOCKED_MEMBER_FULL_NAME" /> (<ph name="BLOCKED_MEMBER_EMAIL" />) ne bo več mogel komunicirati z vami v Googlovih storitvah.</translation>
 <translation id="1919130412786645364">Omogočanje prijave v Chrome</translation>
@@ -414,6 +415,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="2789486458103222910">V redu</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome je našel znova uporabljeno geslo, ki ga lahko izboljšate}one{Chrome je našel # znova uporabljeno geslo, ki ga lahko izboljšate}two{Chrome je našel # znova uporabljeni gesli, ki ju lahko izboljšate}few{Chrome je našel # znova uporabljena gesla, ki jih lahko izboljšate}other{Chrome je našel # znova uporabljenih gesel, ki jih lahko izboljšate}}</translation>
 <translation id="2794551654724114396">Vklopite obvestila, če želite prejemati koristne nasvete, s katerimi boste lahko izkoristili najboljše, kar ponuja Chrome</translation>
+<translation id="2798977804328097977">Preprosto nadaljujte v kateri koli napravi</translation>
 <translation id="2805210243313393104">Dostop do zaznamkov in drugih podatkov v vseh vaših napravah</translation>
 <translation id="2805756323405976993">Aplikacije</translation>
 <translation id="2819849308549746319">Odjavi me od vseh</translation>
@@ -469,6 +471,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="2977350910003566746">Razvrščanje po nazadnje odprtih</translation>
 <translation id="297771753501244313">Razvrsti po naz. odprt.</translation>
 <translation id="2979639724566107830">Odpri v novem oknu</translation>
+<translation id="2980545254049127870">Preprosto odpirajte povezave iz sporočil, dokumentov in drugih aplikacij</translation>
 <translation id="2983102365694924129">Na podlagi vaše dejavnosti na spletnem mestu. Ta nastavitev je izklopljena.</translation>
 <translation id="2983398917942897288">Neaktivno (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2983835398644161987">Zapri način slike v sliki</translation>
@@ -730,6 +733,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="4137746084635924146">Trenutni jezik naprave</translation>
 <translation id="414128724510021958">Namizna spletna mesta so privzeto zahtevana</translation>
 <translation id="4162867837470729563">Seznam možnosti deljenja z drugimi je odprt pri polni višini.</translation>
+<translation id="4164642020717536140">Hitro in varno spletno brskanje</translation>
 <translation id="4165077084524712774">Več orodij</translation>
 <translation id="4170011742729630528">Storitev ni na voljo; poskusite znova pozneje.</translation>
 <translation id="4170577491341606575">Pridobivanje vaših stvari \u2026</translation>
@@ -854,6 +858,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 ogroženo geslo}one{# ogroženo geslo}two{# ogroženi gesli}few{# ogrožena gesla}other{# ogroženih gesel}}</translation>
 <translation id="4641919525231168205">Na naslednjo stran</translation>
 <translation id="4642472735733036929">Sledenje cenam je ustavljeno</translation>
+<translation id="4643661539340338954">Obvestila za stvari, ki jih najde Chrome, so vklopljena</translation>
 <translation id="4649493483932335039">Ogled nedavnih zavihkov</translation>
 <translation id="465657074423018424">Varno brskanje vas ščiti pred zavajajočimi spletnimi mesti. Če ga izklopite, bodite zelo previdni pri brskanju, zlasti pred vnašanjem gesel.</translation>
 <translation id="4662373422909645029">Vzdevek ne sme vsebovati številk</translation>
@@ -1652,6 +1657,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="7686086654630106285">Več o oglasih, ki jih predlaga spletno mesto</translation>
 <translation id="7690596512217303514">Naprava ni mogla odpreti Chroma. Če želite odpraviti težavo, prenesite najnovejšo posodobitev za Chrome iz trgovine z aplikacijami.</translation>
 <translation id="7692761875510935111">Hitro odprite v brskalniku. Če želite urediti to bližnjico, pridržite.</translation>
+<translation id="7695270712963178084">Chrome najde</translation>
 <translation id="7697383401610880082">Ročica za vlečenje</translation>
 <translation id="7698359219371678927">Ustvarite e-poštno sporočilo v aplikaciji <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">Razdelek na dnu zaslona za nedavno dejavnost je odprt pri polni višini</translation>

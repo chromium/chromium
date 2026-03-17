@@ -754,6 +754,7 @@
 <translation id="2184405333245229118">{COUNT,plural, =1{1 件のアドレス}other{# 件のアドレス}}</translation>
 <translation id="2188375229972301266">多穴パンチ（下）</translation>
 <translation id="218940509700321686">カンマ区切り値</translation>
+<translation id="2190094353033916816">このポリシーでは、マシンレベルとユーザーレベルで異なる値が適用されます。ポリシーは想定どおりに機能しています。</translation>
 <translation id="2191980191135734720">次のステップで画面のロックを解除します（通常は指紋認証を使用します）。<ph name="LINK_TEXT" />こともできます。</translation>
 <translation id="2194856509914051091">留意事項</translation>
 <translation id="2198183835992354675">Known Traveler 番号</translation>
@@ -3193,6 +3194,7 @@
 <translation id="6042308850641462728">もっと見る</translation>
 <translation id="6043357981274314628">完了しました。</translation>
 <translation id="6045164183059402045">面付けテンプレート</translation>
+<translation id="6046026831939367176"><ph name="URL" /> がおおよその位置情報の使用をリクエストしています</translation>
 <translation id="6046892054959167494"><ph name="SEARCH_AGGREGATOR_KEYWORD" /> を入力して検索するか、<ph name="SEARCH_AGGREGATOR_SHORT_NAME" /> に質問してください</translation>
 <translation id="6047927260846328439">アクセス先のコンテンツは、ユーザーをだましてソフトウェアをインストールさせようとしたり、個人情報を危険にさらしたりする可能性があります。<ph name="BEGIN_LINK" />危険性を理解したうえで表示する<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">B4 封筒</translation>
@@ -3642,7 +3644,6 @@
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">カメラ</translation>
 <translation id="6734506549556896534">シミュレーション ゲーム</translation>
-<translation id="6735589846038045679">お支払いプランは、ご利用条件を満たしていることが条件となります。<ph name="BEGIN_BOLD" />購入手続きページのコンテンツは、これらのオプションを提供するために Google と共有されます。<ph name="END_BOLD" />後払いオプションを非表示にするには、<ph name="BEGIN_LINK" />お支払い設定<ph name="END_LINK" />に移動してください。</translation>
 <translation id="6737708609449480586">パン、焼菓子</translation>
 <translation id="6738516213925468394">データは <ph name="TIME" />に<ph name="BEGIN_LINK" />同期パスフレーズ<ph name="END_LINK" />で暗号化されました。同期を開始するには、同期パスフレーズを入力してください。</translation>
 <translation id="6740851646645036700">文書作成サポートの使用上限に達しました。しばらくしてからもう一度お試しください。</translation>
@@ -4993,6 +4994,7 @@
 <translation id="8870700989640064057">機密ファイルを印刷しますか？</translation>
 <translation id="8871485335898060555">アンティーク、コレクション</translation>
 <translation id="8871553383647848643">ブラウザのデザインをカスタマイズします</translation>
+<translation id="887350038812854047">このポリシーでは、マシンレベルとユーザーレベルで同じ値が適用されます。ポリシーは想定どおりに機能しています。</translation>
 <translation id="8874790741333031443">サードパーティ Cookie を一時的に許可してみてください。ブラウジング保護の強度は低下しますが、サイトの機能が想定どおりに動作する可能性が高くなります。</translation>
 <translation id="8874824191258364635">有効なカード番号を入力してください</translation>
 <translation id="8877780815363510165">釣り</translation>

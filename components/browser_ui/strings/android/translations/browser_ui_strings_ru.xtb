@@ -125,7 +125,6 @@
 <translation id="2228071138934252756">Чтобы у приложения "<ph name="APP_NAME" />" был доступ к камере, включите ее в <ph name="BEGIN_LINK" />настройках Android<ph name="END_LINK" />.</translation>
 <translation id="2231160360698766265">Разрешить сайтам воспроизводить защищенный контент</translation>
 <translation id="2235344399760031203">Сторонние файлы cookie блокируются</translation>
-<translation id="2238944249568001759">Варианты поисковых запросов, основанные на данных последней вкладки</translation>
 <translation id="2241587408274973373">Карточки на новой вкладке</translation>
 <translation id="2241634353105152135">Однократно</translation>
 <translation id="2253414712144136228">Удалить пункт "<ph name="NAME_OF_LIST_ITEM" />"</translation>
@@ -214,7 +213,6 @@
 <translation id="3069226013421428034">Разрешить вход через сторонние сервисы для определенного сайта.</translation>
 <translation id="310297983047869047">Предыдущий слайд</translation>
 <translation id="3108122610701115301">Установить по умолчанию</translation>
-<translation id="3109724472072898302">Свернуто</translation>
 <translation id="310979712355504754">Удалить все</translation>
 <translation id="311394601889664316">Запретить сайтам изменять файлы и папки на устройстве</translation>
 <translation id="3114012059975132928">Видеопроигрыватель</translation>
@@ -262,7 +260,6 @@
 <translation id="3602290021589620013">Предварительный просмотр</translation>
 <translation id="3611658447322220736">Разрешить недавно закрытым сайтам завершать отправку и получение данных</translation>
 <translation id="3619294456800709762">Разрешить сайтам автоматически открывать окна "Картинка в картинке"</translation>
-<translation id="3628308229821498208">Варианты поисковых запросов</translation>
 <translation id="3632460243282703117">Подписаться</translation>
 <translation id="363748948745453283">Используется приблизительное местоположение</translation>
 <translation id="3641456520301071208">Разрешить сайтам запрашивать ваше местоположение</translation>
@@ -490,6 +487,7 @@
 <translation id="5922853908706496913">Предоставлен доступ к вашему экрану</translation>
 <translation id="5922967540311291836">Блокировать сторонние файлы cookie</translation>
 <translation id="5923512600150154850">Будут удалены данные и файлы cookie, сохраненные сайтами (<ph name="DATASIZE" />).</translation>
+<translation id="5930707844513754220">Посмотреть другие настройки</translation>
 <translation id="5939518447894949180">Сбросить</translation>
 <translation id="5948139900367969951">Быстро переходите к тому, что важно.</translation>
 <translation id="5964247741333118902">Встроенный контент</translation>
@@ -498,6 +496,7 @@
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
 <translation id="5998071268779572583">Включить ленту рекомендаций</translation>
 <translation id="6012967556075291653">Закрепленный ярлык</translation>
+<translation id="6013003831291591200">Задача выполнена</translation>
 <translation id="6015775454662021376">Настройки доступа сайта к данным на устройстве.</translation>
 <translation id="6022659036123304283">Настройте Chrome для себя</translation>
 <translation id="6040143037577758943">Закрыть</translation>
@@ -522,7 +521,6 @@
 <translation id="6231752747840485235">Удалить приложение "<ph name="APP_NAME" />"?</translation>
 <translation id="6234351944623978659">Нажмите "Браузер &gt; Chrome".</translation>
 <translation id="6260830281887654268">Нижний экран с подборками тем для страницы быстрого доступа открыт наполовину</translation>
-<translation id="6262191102408817757">На основе данных последней использованной вкладки</translation>
 <translation id="6262279340360821358">Заблокировано: <ph name="PERMISSION_1" /> и <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Сайты могут запрашивать разрешения на отправку уведомлений</translation>
 <translation id="6295158916970320988">Все сайты</translation>
@@ -602,7 +600,6 @@
 <translation id="7180611975245234373">Обновить</translation>
 <translation id="7188508872042490670">Данные сайтов, сохраненные на устройстве</translation>
 <translation id="7201549776650881587">Будут удалены все данные и файлы cookie, сохраненные сайтами, которые связаны с <ph name="ORIGIN" />, или их приложением, добавленным на главный экран.</translation>
-<translation id="7203150201908454328">Развернуто</translation>
 <translation id="7213166370492037743">Запретить сайтам подключаться к устройствам в локальной сети</translation>
 <translation id="7219254577985949841">Удалить данные сайта?</translation>
 <translation id="723171743924126238">Выберите изображения</translation>

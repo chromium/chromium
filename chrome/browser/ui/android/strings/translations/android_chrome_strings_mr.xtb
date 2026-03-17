@@ -213,6 +213,7 @@
 <translation id="1900260903084164610">पुढे सुरू ठेवून, तुम्ही <ph name="BEGIN_TOS_LINK" />सेवा अटी<ph name="END_TOS_LINK" /> यांना सहमती दर्शवता.</translation>
 <translation id="1904580727789512086">तुम्ही भेट दिलेल्या URL तुमच्या Google खाते मध्ये सेव्ह केल्या जातात</translation>
 <translation id="1910950723001426294">शेअरिंग पर्यांयाची सूची बंद आहे.</translation>
+<translation id="1912367671208932516">एक्स्टेंशन मेनू उघडा</translation>
 <translation id="191726024256261717">परवानग्यांचे पुनरावलोकन करा</translation>
 <translation id="1917766536967060661">तुम्ही लगेच “<ph name="GROUP_NAME" />” या टॅब गटाचा ॲक्सेस गमवाल आणि<ph name="BLOCKED_MEMBER_FULL_NAME" /> (<ph name="BLOCKED_MEMBER_EMAIL" />) यांना यापुढे सर्व Google सेवांवर तुमच्याशी संवाद साधता येणार नाही.</translation>
 <translation id="1919130412786645364">Chrome मध्ये साइन इन करण्यासाठी अनुमती द्या</translation>
@@ -414,6 +415,7 @@
 <translation id="2789486458103222910">ठीक आहे</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome ला पुन्हा वापरलेला पासवर्ड आढळला आहे, ज्यामध्ये तुम्ही सुधारणा करू शकता}other{Chrome ला # पुन्हा वापरलेले पासवर्ड आढळले आहेत, ज्यांमध्ये तुम्ही सुधारणा करू शकता}}</translation>
 <translation id="2794551654724114396">तुम्हाला Chrome चा पुरेपूर वापर करण्यात मदत व्हावी, यासाठीच्या उपयुक्त टिपांकरिता नोटिफिकेशन सुरू करा</translation>
+<translation id="2798977804328097977">कोणत्याही डिव्हाइसवर अखंडपणे पुढे सुरू ठेवा</translation>
 <translation id="2805210243313393104">तुमच्या सर्व डिव्हाइसवर तुमचे बुकमार्क आणि आणखी बरेच काही मिळवा</translation>
 <translation id="2805756323405976993">ॲप्लिकेशन</translation>
 <translation id="2819849308549746319">सर्वांचे सदस्यत्व रद्द करा</translation>
@@ -469,6 +471,7 @@
 <translation id="2977350910003566746">शेवटचा उघडलेला यानुसार क्रमाने लावत आहे</translation>
 <translation id="297771753501244313">शेवटचा उघडलेला यानुसार क्रमाने लावा</translation>
 <translation id="2979639724566107830">नवीन विंडोमध्ये उघडा</translation>
+<translation id="2980545254049127870">मेसेज, दस्तऐवज आणि इतर अ‍ॅप्समधील लिंक सहजपणे उघडा</translation>
 <translation id="2983102365694924129">साइटवरील तुमच्या अ‍ॅक्टिव्हिटीवर आधारित. हे सेटिंग बंद आहे.</translation>
 <translation id="2983398917942897288">इनॅक्टिव्ह (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2983835398644161987">चित्रात-चित्र मधून बाहेर पडा</translation>
@@ -730,6 +733,7 @@
 <translation id="4137746084635924146">डिव्हाइसची सध्याची भाषा</translation>
 <translation id="414128724510021958">बाय डीफॉल्ट डेस्कटॉप साइटची विनंती केली आहे</translation>
 <translation id="4162867837470729563">पूर्ण उघडलेली शेअरिंग पर्यायांची सूची.</translation>
+<translation id="4164642020717536140">जलद आणि सुरक्षित वेब ब्राउझिंग</translation>
 <translation id="4165077084524712774">आणखी टूल</translation>
 <translation id="4170011742729630528">सेवा उपलब्ध नाही; नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="4170577491341606575">तुमचा आशय मिळवत आहे\u2026</translation>
@@ -854,6 +858,7 @@
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{एक धोक्यात असलेला पासवर्ड}other{# धोक्यात असलेले पासवर्ड}}</translation>
 <translation id="4641919525231168205">पुढील पेजवर जा</translation>
 <translation id="4642472735733036929">किमतीचा माग ठेवणे थांबले आहे</translation>
+<translation id="4643661539340338954">Chrome Finds नोटिफिकेशन सुरू केली आहेत</translation>
 <translation id="4649493483932335039">अलीकडील टॅब पहा</translation>
 <translation id="465657074423018424">सुरक्षित ब्राउझिंग फसव्या वेबसाइटपासून तुमचे संरक्षण करते. तुम्ही ते बंद केल्यास, ब्राउझ करताना, विशेषत: पासवर्ड एंटर करताना अतिरिक्त सावधगिरी बाळगा.</translation>
 <translation id="4662373422909645029">टोपणनावामध्ये अंकांचा समावेश असू शकत नाही</translation>
@@ -1652,6 +1657,7 @@
 <translation id="7686086654630106285">साइटने सुचवलेल्या जाहिरातींबद्दल आणखी</translation>
 <translation id="7690596512217303514">तुमच्या डिव्हाइसला Chrome उघडता आले नाही. समस्येचे निराकरण करण्यासाठी, तुमच्या अ‍ॅप स्टोअरवरून नवीनतम Chrome अपडेट डाउनलोड करा.</translation>
 <translation id="7692761875510935111">ब्राउझरमध्ये झटपट उघडा. हा शॉर्टकट संपादित करण्यासाठी, स्‍पर्श करून धरून ठेवा.</translation>
+<translation id="7695270712963178084">Chrome Finds</translation>
 <translation id="7697383401610880082">ड्रॅग हॅंडल</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" /> मध्ये ईमेल तयार करा</translation>
 <translation id="7702420606070050505">अलीकडील अ‍ॅक्टिव्हिटीची तळाशी असलेली शीट पूर्णपणे उघडली आहे</translation>

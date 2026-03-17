@@ -125,7 +125,6 @@
 <translation id="2228071138934252756"><ph name="APP_NAME" />-д камертаа хандахыг зөвшөөрөхийн тулд камерыг мөн <ph name="BEGIN_LINK" />Андройдын тохиргоо<ph name="END_LINK" />-нд асаана уу.</translation>
 <translation id="2231160360698766265">Сайтууд хамгаалагдсан контентыг тоглуулах боломжтой</translation>
 <translation id="2235344399760031203">Гуравдагч талын күүкиг блоклосон</translation>
-<translation id="2238944249568001759">Таны сүүлийн табд тулгуурласан санал болгосон хайлтууд</translation>
 <translation id="2241587408274973373">Шинэ табын хуудасны картууд</translation>
 <translation id="2241634353105152135">Ганц удаа</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" />-г хасах</translation>
@@ -214,7 +213,6 @@
 <translation id="3069226013421428034">Тодорхой сайтын гуравдагч талын нэвтрэлтийг зөвшөөрнө үү.</translation>
 <translation id="310297983047869047">Өмнөх слайд</translation>
 <translation id="3108122610701115301">Өгөгдмөл болгох</translation>
-<translation id="3109724472072898302">Задарсан</translation>
 <translation id="310979712355504754">Бүгдийг устгах</translation>
 <translation id="311394601889664316">Сайтуудад таны төхөөрөмж дээрх файлууд эсвэл фолдеруудыг засахыг бүү зөвшөөр</translation>
 <translation id="3114012059975132928">Видео тоглуулагч</translation>
@@ -262,7 +260,6 @@
 <translation id="3602290021589620013">Мэдээллийг урьдчилж харах</translation>
 <translation id="3611658447322220736">Саяхан хаасан сайтууд өгөгдөл илгээх болон хүлээн авахаа дуусгах боломжтой</translation>
 <translation id="3619294456800709762">Сайтууд дэлгэц доторх дэлгэцэд автоматаар орох боломжтой</translation>
-<translation id="3628308229821498208">Санал болгосон хайлтууд</translation>
 <translation id="3632460243282703117">Захиалах</translation>
 <translation id="363748948745453283">Барагцаалсан байршлыг ашиглаж байна</translation>
 <translation id="3641456520301071208">Сайтууд таны байршлыг асуух боломжтой</translation>
@@ -524,7 +521,6 @@
 <translation id="6231752747840485235"><ph name="APP_NAME" />-г устгах уу?</translation>
 <translation id="6234351944623978659">Хөтчийн апп &gt; Chrome дээр товшино уу</translation>
 <translation id="6260830281887654268">Шинэ таб хуудасны харагдах байдлын загварын цуглуулгын доод хүснэгтийг тал өндрөөр нээсэн</translation>
-<translation id="6262191102408817757">Таны сүүлийн табд тулгуурласан</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> болон <ph name="PERMISSION_2" />-г блоклосон</translation>
 <translation id="6270391203985052864">Сайтууд нь танд мэдэгдэл илгээх зөвшөөрөл асуух боломжтой</translation>
 <translation id="6295158916970320988">Бүх сайт</translation>
@@ -604,7 +600,6 @@
 <translation id="7180611975245234373">Дахин сэргээх</translation>
 <translation id="7188508872042490670">Төхөөрөмж дээрх сайтын өгөгдөл</translation>
 <translation id="7201549776650881587">Энэ үйлдэл <ph name="ORIGIN" />-н доорх бүх сайтын эсвэл таны Үндсэн нүүрэн дээрх аппынх нь хадгалсан бүх өгөгдөл, күүкиг устгана</translation>
-<translation id="7203150201908454328">Өргөтгөсөн</translation>
 <translation id="7213166370492037743">Сайтад таны дотоод сүлжээн дээрх ямар нэг төхөөрөмжид холбогдохыг бүү зөвшөөр</translation>
 <translation id="7219254577985949841">Сайтын өгөгдлийг устгах уу?</translation>
 <translation id="723171743924126238">Зураг сонгох</translation>

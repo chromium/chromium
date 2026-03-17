@@ -636,6 +636,7 @@
 <translation id="3324193307694657476">Adres 2</translation>
 <translation id="3328801116991980348">Site bilgileri</translation>
 <translation id="333229797575847124">Bu özellik nasıl etkinleştirilir?</translation>
+<translation id="334004756946755423">Şunu bana açıkla:</translation>
 <translation id="3344233834747405775">Geçersiz kart sahibi adı</translation>
 <translation id="3344485292736684439">{count,plural, =1{Yer işareti {email} hesabınızda "{title}" konumuna kaydedildi}other{Yer işaretleri {email} hesabınızda "{title}" konumuna kaydedildi}}</translation>
 <translation id="334690320928261823">Son Sekmeler</translation>
@@ -959,6 +960,7 @@
 <translation id="454217142158335225">Kapatılan öğeleri, son sekmeler veya sekme grupları bölümlerinden yeniden açabilirsiniz. Sabit sekmeleriniz kapatılmaz.</translation>
 <translation id="4547181496285029457">Son sekmeye dön</translation>
 <translation id="4552042254369397518">Kopyalanıyor…</translation>
+<translation id="4553044860350038560">Diğer geçiş anahtarları</translation>
 <translation id="4564893319561643483">"<ph name="TITLE" />" öğesini gizle</translation>
 <translation id="4565377596337484307">Şifreyi gizle</translation>
 <translation id="4568230126482344545">Son Sekmeler seçeneğini gizle</translation>

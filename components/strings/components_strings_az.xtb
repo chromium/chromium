@@ -754,6 +754,7 @@
 <translation id="2184405333245229118">{COUNT,plural, =1{1 ünvan}other{# ünvan}}</translation>
 <translation id="2188375229972301266">Aşağıdan çoxsaylı deşik açın</translation>
 <translation id="218940509700321686">Vergüllə ayrılmış dəyərlər</translation>
+<translation id="2190094353033916816">Bu siyasətin cihaz və istifadəçi səviyyələrində tətbiq edilən fərqli dəyərləri var. Siyasət nəzərdə tutulduğu kimi işləyir.</translation>
 <translation id="2191980191135734720">Növbəti addımda tipik olaraq barmaq izinizdən istifadə etməklə ekran kilidini açın. Həmçinin bu üsulla da edə bilərsiniz: <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Nəzərə alınmalı amillər</translation>
 <translation id="2198183835992354675">Məlum səyahətçi nömrəsi</translation>
@@ -3189,6 +3190,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="6042308850641462728">Daha çox</translation>
 <translation id="6043357981274314628">Hazırdır!</translation>
 <translation id="6045164183059402045">Tətbiq şablonu</translation>
+<translation id="6046026831939367176"><ph name="URL" /> təxmini məkandan istifadə etmək istəyir</translation>
 <translation id="6046892054959167494"><ph name="SEARCH_AGGREGATOR_SHORT_NAME" /> axtarışı və ya sorğusu üçün <ph name="SEARCH_AGGREGATOR_KEYWORD" /> daxil edin</translation>
 <translation id="6047927260846328439">Bu kontent Sizi proqram təminatı quraşdırmaq və ya şəxsi məlumatı aşkar etmək üçün aldatmağa cəhd edə bilər. <ph name="BEGIN_LINK" />Hər bir halda göstərin<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">Zərf B4</translation>
@@ -3638,7 +3640,6 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6734506549556896534">Simulasiya Oyunları</translation>
-<translation id="6735589846038045679">Ödəniş planları uyğunluqdan asılıdır. <ph name="BEGIN_BOLD" />Bu seçimləri təklif etmək üçün ödəniş səhifəsindəki kontent Google ilə paylaşılır.<ph name="END_BOLD" /> Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəniş ayarlarına<ph name="END_LINK" /> keçin</translation>
 <translation id="6737708609449480586">Bişmiş məhsullar</translation>
 <translation id="6738516213925468394">Data <ph name="TIME" /> tarixində <ph name="BEGIN_LINK" />sinxronizasiya parolu<ph name="END_LINK" /> ilə şifrələnib. Sinxronizasiyanı başlatmaq üçün klikləyin.</translation>
 <translation id="6740851646645036700">Yazı köməyi limitinə çatdınız. Sonra cəhd edin.</translation>
@@ -4987,6 +4988,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="8870700989640064057">Məxfi fayl çap edilsin?</translation>
 <translation id="8871485335898060555">Əntiq Əşyalar və Kolleksiyalar</translation>
 <translation id="8871553383647848643">Brauzerinizin görünüşünü fərdiləşdirin</translation>
+<translation id="887350038812854047">Bu siyasət maşın və istifadəçi səviyyələrində tətbiq edilən eyni dəyərə malikdir. Siyasət nəzərdə tutulduğu kimi işləyir.</translation>
 <translation id="8874790741333031443">Üçüncü tərəf kukilərinə müvəqqəti icazə verin. Axtarış zamanı qoruma az olsa da, funksiyaların gözlənilən kimi işləmə ehtimalı yüksəkdir.</translation>
 <translation id="8874824191258364635">Düzgün kart nömrəsi daxil edin</translation>
 <translation id="8877780815363510165">Balıqçılıq</translation>

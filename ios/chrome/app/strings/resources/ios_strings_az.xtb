@@ -394,6 +394,7 @@
 <translation id="2360196772093551345">Mobil Sayt formatına keçid</translation>
 <translation id="2362083820973145409"><ph name="USER_NAME" /> olaraq daxil olunub. <ph name="USER_EMAIL" />. Ayarları açır.</translation>
 <translation id="2371084566192454134">Tablar və tab qrupları</translation>
+<translation id="2371303771137626249">Yeni</translation>
 <translation id="2381405137052800939">Əsaslar</translation>
 <translation id="2384692388811649784">Anonim tabları gizlədin</translation>
 <translation id="2386793615875593361">1 ədəd seçildi</translation>
@@ -636,6 +637,7 @@
 <translation id="3324193307694657476">Ünvan 2</translation>
 <translation id="3328801116991980348">Sayt haqqında</translation>
 <translation id="333229797575847124">Bu funksiyanı aktivləşdirmə qaydası</translation>
+<translation id="334004756946755423">Bunu mənə izah et:</translation>
 <translation id="3344233834747405775">Keçərsiz kart sahibi adı</translation>
 <translation id="3344485292736684439">{count,plural, =1{Əlfəcin hesabda ({email}) "{title}" bölməsində saxlandı}other{Əlfəcinlər hesabda ({email}) "{title}" bölməsində saxlandı}}</translation>
 <translation id="334690320928261823">Son tablar</translation>
@@ -689,6 +691,7 @@
 <translation id="3530206579861815432">Sinxronlaşdırılmış cihazlarda açıq və son bağlanmış tabları tez tapın.</translation>
 <translation id="3530767473765895035">Bu cihazdakı hesabları idarə edin…</translation>
 <translation id="3533436815740441613">Yeni Tab</translation>
+<translation id="3534738261102690620">Gemini-dan soruşun</translation>
 <translation id="3540141921715814660">Əlfəcinlərə əlavə edin</translation>
 <translation id="3546122170015471515">Google.com-da Xəritə Önizləmələri</translation>
 <translation id="3547356470684043247">Rəy əsasında qərar vermək üçün məhsul, xidmət və ya təcrübələrlə bağlı müştəri dəyərləndirmələrini oxuyun</translation>
@@ -959,6 +962,7 @@
 <translation id="454217142158335225">Son tablar və ya tab qrupları bölmələrində bağlanmış elementləri yenidən aça bilərsiniz. Bərkidilmiş tablar bağlanmayacaq.</translation>
 <translation id="4547181496285029457">Son taba qayıdın</translation>
 <translation id="4552042254369397518">Kopiyalanır…</translation>
+<translation id="4553044860350038560">Digər giriş açarları</translation>
 <translation id="4564893319561643483">Gizlədin: "<ph name="TITLE" />"</translation>
 <translation id="4565377596337484307">Parolu gizlədin</translation>
 <translation id="4568230126482344545">Son tabları gizlədin</translation>
@@ -1087,6 +1091,7 @@
 <translation id="4944543191714094452">Səhifədə tapın…</translation>
 <translation id="4945756290001680296">Parol ayarlarına daxil olun</translation>
 <translation id="4949302115427722371">Ayarları idarə edin…</translation>
+<translation id="4952050521954075618">Foto Lentdəki fotolar cihazlarınız arasında sinxronlaşdırılmayacaq</translation>
 <translation id="4958444002117714549">Siyahını genişləndirin</translation>
 <translation id="496392417432935267">Başqa yerdə açılıb</translation>
 <translation id="4970724460420203313">İdarə olunan hesabınız ilə Chrome-dan istifadə etmək təşkilatınızla əlaqəli axtarışı (tablar, tarixçə və parollar daxil olmaqla) digər axtarışdan ayırmağa kömək edir</translation>
@@ -1286,6 +1291,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="5647702255748985085">Qrupdan çıxırsınız?</translation>
 <translation id="5648166631817621825">Son 7 gün</translation>
 <translation id="5652623411397330904">İzlədiyiniz məhsullar burada görünəcək.</translation>
+<translation id="5653100054596780862">Bütün tablar</translation>
 <translation id="5656431592348714536">Təkmilləşdirilmiş Təqvim</translation>
 <translation id="5659593005791499971">E-poçt</translation>
 <translation id="5665739277590037307"><ph name="GOOGLE_TERMS" /> və <ph name="GEMINI_APPS_PRIVACY" /> tətbiq olunur. Gemini səhvlərə yol verə bilər, ona görə də yenidən yoxlayın.</translation>
@@ -1751,6 +1757,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="7300448350764260141">Onlayn təhlükələrə qarşı əlavə qoruma səviyyəsi əlavə edin.</translation>
 <translation id="7311244614769792472">Nəticə tapılmadı</translation>
 <translation id="7313347584264171202">Anonim tabları burada tapa bilərsiniz</translation>
+<translation id="7322186060879266048">{count,plural, =1{Klaviaturanın yuxarısında əlçatan olan {count} avtodoldurma seçimi.}other{Klaviaturanın yuxarısında əlçatan olan {count} avtodoldurma seçimi.}}</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> faiz endirilib</translation>
 <translation id="7345061034321640811">İmporta icazə verilmir</translation>

@@ -125,7 +125,6 @@
 <translation id="2228071138934252756">Ahhoz, hogy a(z) <ph name="APP_NAME" /> hozzáférhessen a kamerához, a kamerát az <ph name="BEGIN_LINK" />Android-beállítások<ph name="END_LINK" /> között is be kell kapcsolni.</translation>
 <translation id="2231160360698766265">A webhelyek lejátszhatnak védett tartalmakat</translation>
 <translation id="2235344399760031203">A harmadik felektől származó cookie-k le vannak tiltva</translation>
-<translation id="2238944249568001759">Javasolt keresések a legutóbbi lap alapján</translation>
 <translation id="2241587408274973373">Az Új lap oldal kártyái</translation>
 <translation id="2241634353105152135">Csak egyszer</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> eltávolítása</translation>
@@ -214,7 +213,6 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="3069226013421428034">Engedélyezheti a harmadik félen keresztüli bejelentkezést adott webhelyeken.</translation>
 <translation id="310297983047869047">Előző dia</translation>
 <translation id="3108122610701115301">Beállítás alapértelmezettként</translation>
-<translation id="3109724472072898302">Összecsukott</translation>
 <translation id="310979712355504754">Az összes törlése</translation>
 <translation id="311394601889664316">A webhelyek nem szerkeszthetik az eszközén lévő fájlokat és mappákat</translation>
 <translation id="3114012059975132928">Videólejátszó</translation>
@@ -262,7 +260,6 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="3602290021589620013">Előnézet</translation>
 <translation id="3611658447322220736">A nemrégiben bezárt webhelyek befejezhetik az adatok küldését és fogadását</translation>
 <translation id="3619294456800709762">A webhelyek automatikusan bekapcsolhatják a kép a képben módot</translation>
-<translation id="3628308229821498208">Javasolt keresések</translation>
 <translation id="3632460243282703117">Feliratkozás</translation>
 <translation id="363748948745453283">Jelenleg a hozzávetőleges hely van használatban</translation>
 <translation id="3641456520301071208">A webhelyek lekérhetik az Ön helyadatait</translation>
@@ -490,6 +487,7 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="5922853908706496913">Képernyő megosztása</translation>
 <translation id="5922967540311291836">Harmadik féltől származó cookie-k letiltása</translation>
 <translation id="5923512600150154850">Ezzel <ph name="DATASIZE" /> mennyiségű, webhelyek által tárolt adatot és cookie-t töröl.</translation>
+<translation id="5930707844513754220">A beállítási lista további elemeinek megtekintése</translation>
 <translation id="5939518447894949180">Visszaállítás</translation>
 <translation id="5948139900367969951">Gyorsan hozzáférhet az Ön számára fontos dolgokhoz</translation>
 <translation id="5964247741333118902">Beágyazott tartalom</translation>
@@ -498,6 +496,7 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
 <translation id="5998071268779572583">Discover-hírcsatorna bekapcsolása</translation>
 <translation id="6012967556075291653">Kitűzött gyorsparancs</translation>
+<translation id="6013003831291591200">Feladat befejezve</translation>
 <translation id="6015775454662021376">A webhelynek az eszközhöz való hozzáférésének vezérlése</translation>
 <translation id="6022659036123304283">Tegye személyessé a Chrome-ot</translation>
 <translation id="6040143037577758943">Bezárás</translation>
@@ -522,7 +521,6 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="6231752747840485235">Eltávolítja ezt az alkalmazást: <ph name="APP_NAME" />?</translation>
 <translation id="6234351944623978659">Koppintson a Böngésző &gt; Chrome lehetőségre</translation>
 <translation id="6260830281887654268">Az Új lap oldal megjelenéséhez tartozó témagyűjtemények alsó lapja félmagasságban van megnyitva</translation>
-<translation id="6262191102408817757">A legutóbbi lap alapján</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> és <ph name="PERMISSION_2" /> letiltva</translation>
 <translation id="6270391203985052864">A webhelyek rákérdezhetnek, hogy küldjenek-e Önnek értesítéseket</translation>
 <translation id="6295158916970320988">Az összes webhely</translation>
@@ -602,7 +600,6 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="7180611975245234373">Frissítés</translation>
 <translation id="7188508872042490670">Eszközön tárolt webhelyadatok</translation>
 <translation id="7201549776650881587">A művelet törli a(z) <ph name="ORIGIN" /> alatti összes webhelyen tárolt és az eredetnek az Ön kezdőképernyőjén található alkalmazása által tárolt összes adatot és cookie-t.</translation>
-<translation id="7203150201908454328">Kibontott</translation>
 <translation id="7213166370492037743">A webhelyek nem csatlakozhatnak a helyi hálózaton lévő eszközökhöz</translation>
 <translation id="7219254577985949841">Törli a webhelyadatokat?</translation>
 <translation id="723171743924126238">Képek kiválasztása</translation>

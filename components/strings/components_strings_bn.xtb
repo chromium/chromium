@@ -755,6 +755,7 @@
 <translation id="2184405333245229118">{COUNT,plural, =1{১টি ঠিকানা}one{ #টি ঠিকানা}other{ #টি ঠিকানা}}</translation>
 <translation id="2188375229972301266">নিচে মাল্টিপল পাঞ্চ</translation>
 <translation id="218940509700321686">comma-separated values</translation>
+<translation id="2190094353033916816">এই নীতিতে মেশিন ও ব্যবহারকারীর লেভেলে আলাদা আলাদা ভ্যালু প্রয়োগ করা হয়েছে। নীতিটি সঠিকভাবে কাজ করছে।</translation>
 <translation id="2191980191135734720">পরবর্তী ধাপে আপনার স্ক্রিন আনলক করুন, সাধারণত ফিঙ্গারপ্রিন্ট ব্যবহার করে করা হয়। আপনি এভাবেও করতে পারেন <ph name="LINK_TEXT" /></translation>
 <translation id="2194856509914051091">যা যা দেখে নেওয়া প্রয়োজন</translation>
 <translation id="2198183835992354675">পরিচিত পর্যটকের নম্বর</translation>
@@ -3194,6 +3195,7 @@
 <translation id="6042308850641462728">আরও</translation>
 <translation id="6043357981274314628">হয়ে গেছে!</translation>
 <translation id="6045164183059402045">ইম্পোজিশন টেমপ্লেট</translation>
+<translation id="6046026831939367176"><ph name="URL" /> আপনার আনুমানিক লোকেশন ব্যবহার করতে চায়</translation>
 <translation id="6046892054959167494"><ph name="SEARCH_AGGREGATOR_SHORT_NAME" /> সার্চ বা এই সম্পর্কে প্রশ্ন করতে <ph name="SEARCH_AGGREGATOR_KEYWORD" /> টাইপ করুন</translation>
 <translation id="6047927260846328439">এই কন্টেন্ট প্রতারণার মাধ্যমে আপনাকে দিয়ে কোনও সফ্টওয়্যার ইনস্টল করাতে অথবা আপনার ব্যক্তিগত তথ্য জেনে নেওয়ার চেষ্টা করতে পারে। <ph name="BEGIN_LINK" />তবুও এটি দেখতে চাই<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">এনভেলপ B4</translation>
@@ -3642,7 +3644,6 @@
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">ক্যামেরা</translation>
 <translation id="6734506549556896534">সিমুলেশন গেম</translation>
-<translation id="6735589846038045679">পেমেন্ট প্ল্যান উপযুক্ততার উপর নির্ভর করে। <ph name="BEGIN_BOLD" />এইসব বিকল্প অফার করতে, চেক-আউট করার পৃষ্ঠা থেকে কন্টেন্ট Google-এর সাথে শেয়ার করা হয়।<ph name="END_BOLD" /> পরে পেমেন্ট করার বিকল্প লুকাতে, <ph name="BEGIN_LINK" />পেমেন্ট সেটিংসে<ph name="END_LINK" /> যান</translation>
 <translation id="6737708609449480586">বেক করা প্রোডাক্ট</translation>
 <translation id="6738516213925468394"><ph name="TIME" />-এ আপনার <ph name="BEGIN_LINK" />সিঙ্ক পাসফ্রেজ<ph name="END_LINK" /> দিয়ে ডেটা এনক্রিপ্ট করা হয়েছিল। সিঙ্ক শুরু করতে সেটি লিখুন।</translation>
 <translation id="6740851646645036700">আপনি এখন আপনার লেখার সহায়তার সীমাতে পৌঁছে গেছেন। পরে আবার চেষ্টা করুন। পরে আবার চেষ্টা করুন।</translation>
@@ -4992,6 +4993,7 @@
 <translation id="8870700989640064057">গোপনীয় ফাইল প্রিন্ট করবেন?</translation>
 <translation id="8871485335898060555">প্রাচীন এবং সংগ্রহযোগ্য</translation>
 <translation id="8871553383647848643">আপনার ব্রাউজার কেমন দেখাবে তা কাস্টমাইজ করুন</translation>
+<translation id="887350038812854047">এই নীতিতে মেশিন ও ব্যবহারকারী লেভেলে একই ভ্যালু প্রয়োগ করা হয়েছে। নীতিটি সঠিকভাবে কাজ করছে।</translation>
 <translation id="8874790741333031443">সাময়িকভাবে থার্ড-পার্টি কুকিকে অনুমতি দিন। এর মানে হল সাইটের ফিচার প্রত্যাশা অনুযায়ী কাজ করবে কিন্তু আপনার ব্রাউজিং সুরক্ষা কম হয়ে যাবে।</translation>
 <translation id="8874824191258364635">একটি সঠিক কার্ড নম্বর লিখুন</translation>
 <translation id="8877780815363510165">মাছ ধরা</translation>

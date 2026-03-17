@@ -70,7 +70,6 @@
 <translation id="1041181446722933623">"<ph name="LOCAL_BOOKMARK" />" จะบันทึกไว้ในอุปกรณ์นี้เท่านั้น หากต้องการใช้งานในอุปกรณ์อื่นๆ ให้บันทึกไปที่ "<ph name="ACCOUNT_FOLDER" />" ในบัญชีของคุณ</translation>
 <translation id="1041263367839475438">อุปกรณ์ที่ใช้ได้</translation>
 <translation id="1041607257468256895">จัดการสิทธิ์เข้าถึงตำแหน่งของเว็บไซต์ใน Chrome</translation>
-<translation id="1042174272890264476">คอมพิวเตอร์ของคุณมาพร้อมกับไลบรารี RLZ ของ <ph name="SHORT_PRODUCT_NAME" /> ในตัว โดย RLZ จะระบุแท็กที่ซ้ำกันได้และไม่สามารถระบุตัวบุคคลเพื่อวัดการค้นหาและการใช้งาน <ph name="SHORT_PRODUCT_NAME" /> ที่ทำงานโดยแคมเปญส่งเสริมการขายบางรายการ บางครั้งป้ายกำกับจะปรากฏในคำค้นหาของ Google Search ใน <ph name="PRODUCT_NAME" /></translation>
 <translation id="1042248468362992359">เชื่อมต่ออินเทอร์เน็ตมือถือเพื่อใช้ฮอตสปอต <ph name="BEGIN_LINK_LEARN_MORE" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="104385770822424034">เพิ่มการดำเนินการ</translation>
 <translation id="1045487161760507186">คุณไม่ต้องจดจำรหัสผ่านเนื่องจากระบบจะบันทึกไว้ให้คุณในเครื่องมือจัดการรหัสผ่านของ Google</translation>
@@ -970,7 +969,6 @@
 <translation id="1644574205037202324">ประวัติการเข้าชม</translation>
 <translation id="1644852018355792105">ป้อนรหัสผ่านบลูทูธของอุปกรณ์ <ph name="DEVICE" /></translation>
 <translation id="1645004815457365098">แหล่งที่มาที่ไม่รู้จัก</translation>
-<translation id="1645516838734033527">Smart Lock จำเป็นต้องใช้การล็อกหน้าจอในโทรศัพท์เพื่อรักษา <ph name="DEVICE_TYPE" /> ของคุณให้ปลอดภัย</translation>
 <translation id="1646045728251578877">มีการอัปเดตซอฟต์แวร์</translation>
 <translation id="1647408325348388858">เปิดและแก้ไข <ph name="FILE_NAME" /> ในเว็บแอปนี้ใช่ไหม</translation>
 <translation id="1647986356840967552">หน้าที่แล้ว</translation>
@@ -1450,7 +1448,6 @@
 <translation id="1975841812214822307">นำออก...</translation>
 <translation id="1976150099241323601">ลงชื่อเข้าใช้อุปกรณ์รักษาความปลอดภัย</translation>
 <translation id="1976823515278601587">ประหยัดหน่วยความจำได้มาก</translation>
-<translation id="1977965994116744507">นำโทรศัพท์เข้ามาใกล้ๆ เพื่อปลดล็อก <ph name="DEVICE_TYPE" /></translation>
 <translation id="1978249384651349182"><ph name="BEGIN_DESCRIPTION" />การลงทะเบียนอุปกรณ์ในองค์กรเป็นการตั้งค่าการจัดการอุปกรณ์ส่วนกลาง องค์กรของคุณอาจกำหนดให้ต้องลงทะเบียนด้วยเหตุผลหลายประการดังต่อไปนี้<ph name="END_DESCRIPTION" />
     <ph name="BEGIN_SUBTITLE1" /><ph name="BEGIN_BOLD" />เพิ่มความปลอดภัย<ph name="END_BOLD" /><ph name="END_SUBTITLE1" />
     <ph name="BEGIN_DESCRIPTION1" />องค์กรจะรักษาข้อมูลผู้ใช้และอุปกรณ์ให้ปลอดภัยได้ด้วยการกำหนดการตั้งค่าความปลอดภัยเพิ่มเติม อีกทั้งยังสามารถดำเนินการต่างๆ เช่น รีเซ็ตจากระยะไกลหรือปิดใช้อุปกรณ์ที่สูญหาย<ph name="END_DESCRIPTION1" />
@@ -1611,7 +1608,6 @@
 <translation id="2089925163047119068">หรือ</translation>
 <translation id="2090165459409185032">หากต้องการกู้คืนข้อมูลบัญชี โปรดไปที่ google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">เชื่อมต่ออัตโนมัติเมื่อคุณลงชื่อเข้าสู่ระบบ</translation>
-<translation id="2090876986345970080">การตั้งค่าความปลอดภัยของระบบ</translation>
 <translation id="2091523941449737894">การเคลื่อนไหวที่เร็วขึ้นบนทัชแพดจะเลื่อนเคอร์เซอร์ไปไกลกว่าเดิม</translation>
 <translation id="2091887806945687916">เสียง</translation>
 <translation id="2092356157625807382"><ph name="BEGIN_H3" />ฟีเจอร์การแก้ไขข้อบกพร่อง<ph name="END_H3" />
@@ -2278,6 +2274,7 @@
 <translation id="252418934079508528">ติดตั้ง <ph name="DEVICE_OS" /></translation>
 <translation id="252513908494776481">ถามเกี่ยวกับแท็บนี้</translation>
 <translation id="2525746158911982776">อัปเดตไม่สำเร็จเนื่องจากระบบมีพื้นที่เก็บข้อมูลไม่เพียงพอ</translation>
+<translation id="2525842906387880861">คุณจะไม่เห็นคำแนะนำในหน้านี้อีก</translation>
 <translation id="2526590354069164005">เดสก์ท็อป</translation>
 <translation id="2526619973349913024">ตรวจหาอัปเดต</translation>
 <translation id="2527167509808613699">การเชื่อมต่อทุกประเภท</translation>
@@ -2627,7 +2624,6 @@
 <translation id="2757338480560142065">ตรวจสอบว่ารหัสผ่านที่คุณจะบันทึกตรงกับรหัสผ่านสำหรับ <ph name="WEBSITE" /></translation>
 <translation id="2761632996810146912"><ph name="HASHTAG_SETTINGS" /> ไม่พบผลการค้นหาสําหรับ <ph name="SEARCH_QUERY" /></translation>
 <translation id="2762441749940182211">บล็อกกล้องถ่ายรูป</translation>
-<translation id="2763165257813209348"><ph name="FILE_NAME" /> มีข้อมูลที่ละเอียดอ่อนหรือเป็นอันตราย องค์กรจะอนุญาตให้คุณบันทึกลงในพื้นที่เก็บข้อมูลระบบคลาวด์หรือทิ้ง</translation>
 <translation id="2764786626780673772">รายละเอียด VPN</translation>
 <translation id="2764920001292228569">ป้อนชื่อโปรไฟล์</translation>
 <translation id="2765100602267695013">โปรดติดต่อผู้ให้บริการมือถือ</translation>
@@ -3949,7 +3945,6 @@
 <translation id="3688794912214798596">เปลี่ยนภาษา...</translation>
 <translation id="3690369331356918524">เตือนคุณในกรณีที่รหัสผ่านรั่วไหลจากการละเมิดข้อมูล</translation>
 <translation id="3691231116639905343">แอปแป้นพิมพ์</translation>
-<translation id="369135240373237088">ลงชื่อเข้าใช้อีกครั้งด้วยบัญชีโรงเรียน</translation>
 <translation id="3693415264595406141">รหัสผ่าน:</translation>
 <translation id="3694027410380121301">เลือกแท็บก่อนหน้า</translation>
 <translation id="3694122362646626770">เว็บไซต์</translation>
@@ -4323,7 +4318,6 @@
 <translation id="3914894336972817683">อัปโหลดไม่ได้ ดูเหมือนว่าไฟล์จะว่างเปล่า</translation>
 <translation id="3915280005470252504">ค้นหาด้วยเสียง</translation>
 <translation id="3916445069167113093">ไฟล์ประเภทนี้อาจเป็นอันตรายต่อคอมพิวเตอร์ของคุณ คุณต้องการเก็บ <ph name="FILE_NAME" /> ไว้หรือไม่</translation>
-<translation id="3917184139185490151">คอมพิวเตอร์ของคุณมีโมดูลความปลอดภัย ซึ่งใช้เพื่อนำฟีเจอร์การรักษาความปลอดภัยที่สำคัญจำนวนมากมาใช้ใน Chrome OS ดูข้อมูลเพิ่มเติมได้จากศูนย์ช่วยเหลือของ Chromebook ซึ่งอยู่ที่ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="3917644013202553949">มีพื้นที่เก็บข้อมูลไม่เพียงพอที่จะซิงค์ไฟล์ของคุณ โปรดลองเพิ่มพื้นที่ว่าง</translation>
 <translation id="3919145445993746351">เปิดการซิงค์เพื่อรับส่วนขยายในคอมพิวเตอร์ทุกเครื่อง</translation>
 <translation id="3919229493046408863">ปิดการแจ้งเตือนเมื่อมีอุปกรณ์อยู่ใกล้เคียง</translation>
@@ -4452,7 +4446,6 @@
 <translation id="3992008114154328194">กำลังดาวน์โหลด <ph name="FILE_NAME" /> <ph name="STATUS" /></translation>
 <translation id="3994075804072562819">ให้ <ph name="SPECIFIC_NAME" /> ควบคุมอุปกรณ์ USB</translation>
 <translation id="3994318741694670028">ขออภัย คอมพิวเตอร์ของคุณกำหนดค่าด้วยรหัสฮาร์ดแวร์ที่มีรูปแบบไม่ถูกต้อง ซึ่งทำให้ Chrome OS Flex อัปเดตการแก้ไขปัญหาความปลอดภัยล่าสุดไม่ได้ และคอมพิวเตอร์<ph name="BEGIN_BOLD" />อาจเสี่ยงต่อการโจมตีที่เป็นอันตราย<ph name="END_BOLD" /></translation>
-<translation id="3994374631886003300">ปลดล็อกโทรศัพท์และนำเข้ามาใกล้ๆ เพื่อปลดล็อก <ph name="DEVICE_TYPE" /></translation>
 <translation id="3994522032746736727">ลงชื่อเข้าใช้ด้วย <ph name="EMAIL" /></translation>
 <translation id="3994530503403062649">ค้นหาปุ่มบนแท็บเล็ต</translation>
 <translation id="3994708120330953242">พบรหัสผ่านบางรายการของคุณในการละเมิดข้อมูล คุณควรเปลี่ยนรหัสผ่านเหล่านี้ทันทีเพื่อรักษาบัญชีให้ปลอดภัย</translation>
@@ -4808,7 +4801,6 @@
 <translation id="426564820080660648">ในการตรวจหาการอัปเดต โปรดใช้อีเทอร์เน็ต WiFi หรือข้อมูลมือถือ</translation>
 <translation id="426652736638196239">IBAN นี้จะบันทึกอยู่ในอุปกรณ์เครื่องนี้เท่านั้น</translation>
 <translation id="4266679478228765574">การนำโฟลเดอร์ออกจะหยุดการแชร์ แต่จะไม่ลบไฟล์</translation>
-<translation id="4267455501101322486">หากต้องการเพิ่มบัญชีเพื่อเข้าถึงทรัพยากรทางการศึกษา ให้ขออนุญาตจากผู้ปกครอง</translation>
 <translation id="4267792239557443927">{COUNT,plural, =0{ไม่พบรหัสผ่าน}=1{พบผลลัพธ์ 1 รายการ}other{พบผลลัพธ์ {COUNT} รายการ}}</translation>
 <translation id="4267924571297947682">ขออนุญาตจากผู้ปกครอง</translation>
 <translation id="4267953847983678297">เชื่อมต่อกับเครือข่ายมือถือโดยอัตโนมัติ</translation>
@@ -5147,7 +5139,6 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         คุณสามารถจัดการการตั้งค่าจากเมนูการ์ดหรือดูตัวเลือกเพิ่มเติมได้ใน "ปรับแต่ง Chrome"</translation>
-<translation id="4503748371388753124">คอมพิวเตอร์ของคุณมีอุปกรณ์รักษาความปลอดภัย Trusted Platform Module (TPM) ซึ่งใช้เพื่อนำฟีเจอร์การรักษาความปลอดภัยที่สำคัญจำนวนมากมาใช้ใน Chrome OS Flex โปรดดูข้อมูลเพิ่มเติมที่ศูนย์ช่วยเหลือของ Chromebook ซึ่งอยู่ที่ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4504940961672722399">ใช้ส่วนขยายนี้โดยคลิกที่ไอคอนนี้ หรือกด <ph name="EXTENSION_SHORTCUT" /></translation>
 <translation id="4505469832694348179">ดาวน์โหลด Chrome ด้วยคิวอาร์โค้ดนี้ แล้วลงชื่อเข้าใช้บัญชี Google</translation>
 <translation id="450552327874992444">เพิ่มคำนี้ไปแล้ว</translation>
@@ -5160,7 +5151,6 @@
 <translation id="4509421746503122514">เปิดอีกครั้งเพื่ออัปเดต</translation>
 <translation id="4509741852167209430">ระบบจะแชร์เฉพาะข้อมูลบางประเภทระหว่างเว็บไซต์เพื่อวัดประสิทธิภาพของโฆษณา เช่น คุณซื้อสินค้าหลังจากเข้าชมเว็บไซต์หรือไม่</translation>
 <translation id="4510195992002502722">ส่งความคิดเห็นไม่สำเร็จ กำลังลองอีกครั้ง...</translation>
-<translation id="4510479820467554003">รายการบัญชีผู้ปกครอง</translation>
 <translation id="4511344327646819192">หากไม่ต้องการให้ผู้อื่นใช้รหัสผ่านของคุณ ให้เปลี่ยนรหัสผ่านใน <ph name="WEBSITE" /></translation>
 <translation id="4513072860957814107">&amp;ลบข้อมูลการท่องเว็บ...</translation>
 <translation id="4513872120116766993">การเขียนแบบช่วยคาดเดา</translation>
@@ -6208,7 +6198,6 @@
 <translation id="5244234799035360187">ตอนนี้ OneDrive จะปรากฏในแอป Files</translation>
 <translation id="5244466461749935369">เก็บไว้ก่อน</translation>
 <translation id="5244474230056479698">กำลังซิงค์กับ <ph name="EMAIL" /></translation>
-<translation id="5245610266855777041">เริ่มต้นใช้งานบัญชีโรงเรียน</translation>
 <translation id="5246282308050205996"><ph name="APP_NAME" /> ขัดข้อง คลิกที่บอลลูนนี้เพื่อรีสตาร์ตแอปพลิเคชันนี้</translation>
 <translation id="5247051749037287028">ชื่อที่แสดง (ไม่บังคับ)</translation>
 <translation id="5247243947166567755">เลือก <ph name="BOOKMARK_TITLE" /></translation>
@@ -6362,7 +6351,6 @@
 <translation id="5365881113273618889">โฟลเดอร์ที่คุณเลือกมีไฟล์ที่ละเอียดอ่อน แน่ใจไหมว่าต้องการให้สิทธิ์การเข้าถึงในการเขียนโฟลเดอร์นี้อย่างถาวรแก่ "<ph name="APP_NAME" />"</translation>
 <translation id="536638840841140142">ไม่มี</translation>
 <translation id="5368246151595623328">บันทึก "<ph name="NETWORK_NAME" />" จาก <ph name="DEVICE_NAME" /> แล้ว</translation>
-<translation id="5368720394188453070">โทรศัพท์ล็อกอยู่ โปรดปลดล็อกเพื่อเข้าใช้งาน</translation>
 <translation id="536882527576164740">{0,plural, =1{ไม่ระบุตัวตน}other{ไม่ระบุตัวตน (#)}}</translation>
 <translation id="5369694795837229225">ตั้งค่าสภาพแวดล้อมในการพัฒนาซอฟต์แวร์ Linux</translation>
 <translation id="5370819323174483825">&amp;โหลดซ้ำ</translation>
@@ -6855,7 +6843,6 @@
 <translation id="5707674184620508665">องค์กรของคุณ (<ph name="ACCOUNT_MANAGER" />) จะดูหรือจัดการข้อมูลที่มีอยู่ไม่ได้ โดยจะยังคงอยู่ในโปรไฟล์ที่มีอยู่</translation>
 <translation id="5708171344853220004">ชื่อหลักของ Microsoft</translation>
 <translation id="5711010025974903573">บันทึกของบริการ</translation>
-<translation id="5711983031544731014">ไม่สามารถปลดล็อก โปรดใส่รหัสผ่าน</translation>
 <translation id="5712153969432126546">บางครั้งเว็บไซต์จะเผยแพร่ PDF เช่น เอกสาร สัญญา แบบฟอร์ม</translation>
 <translation id="571222594670061844">เว็บไซต์สามารถแสดงข้อความแจ้งให้ลงชื่อเข้าใช้จากบริการระบุตัวตนได้</translation>
 <translation id="5713158217420111469">เชื่อมต่อกับ <ph name="DEVICE" /> แล้ว</translation>
@@ -7433,7 +7420,6 @@
 <translation id="6112931163620622315">ตรวจสอบโทรศัพท์</translation>
 <translation id="6113434369102685411">ตั้งค่าเครื่องมือค้นหาเริ่มต้นสำหรับเบราว์เซอร์ Chrome และ Launcher ของ <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113832060210023016">Launcher + คลิก</translation>
-<translation id="6113942107547980621">โปรดเปลี่ยนเป็นโปรไฟล์ผู้ใช้หลักในโทรศัพท์เพื่อใช้ Smart Lock</translation>
 <translation id="6116921718742659598">เปลี่ยนการตั้งค่าภาษาและการป้อนข้อมูล</translation>
 <translation id="6119008366402292080">ไม่มีเครื่องพิมพ์</translation>
 <translation id="6119972796024789243">การแก้สี</translation>
@@ -7840,7 +7826,6 @@
 <translation id="6400360390396538896">ตลอดเวลาใน <ph name="ORIGIN" /></translation>
 <translation id="6401118106417399952">EID ของอุปกรณ์คือ <ph name="EID_NUMBER" /> และหมายเลขซีเรียลของอุปกรณ์คือ <ph name="SERIAL_NUMBER" /> คุณใช้หมายเลขเหล่านี้เพื่อช่วยเปิดใช้งานบริการได้</translation>
 <translation id="6401458660421980302">หากต้องการส่งแท็บนี้ไปยังอุปกรณ์อื่น ให้ลงชื่อเข้าใช้ Chrome ในอุปกรณ์นั้น</translation>
-<translation id="6401597285454423070">คอมพิวเตอร์ของคุณมีอุปกรณ์รักษาความปลอดภัย Trusted Platform Module (TPM) ซึ่งใช้เพื่อนำฟีเจอร์การรักษาความปลอดภัยที่สำคัญจำนวนมากมาใช้ใน Chrome OS ดูข้อมูลเพิ่มเติมได้จากศูนย์ช่วยเหลือของ Chromebook ซึ่งอยู่ที่ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6402921224457714577">เว็บไซต์ขอควบคุมและตั้งโปรแกรมอุปกรณ์ MIDI ใหม่ได้</translation>
 <translation id="6404511346730675251">แก้ไขบุ๊กมาร์ก</translation>
 <translation id="640457954117263537">ใช้ตำแหน่งสำหรับ ChromeOS รวมถึงแอปและบริการ Android</translation>
@@ -8421,7 +8406,6 @@
 <translation id="6805236548654699520">นำป๊อปอัปที่ไม่ต้องการออก แก้ไขปัญหาเครือข่าย และอื่นๆ อีกมากมายด้วยการกู้คืนการตั้งค่าเป็นค่าเริ่มต้นที่ปลอดภัย</translation>
 <translation id="6805478749741295868">นี่เป็นฟีเจอร์ AI เวอร์ชันทดลองและอาจไม่ถูกต้องเสมอไป</translation>
 <translation id="6805647936811177813">โปรดลงชื่อเข้าใช้ <ph name="TOKEN_NAME" /> เพื่อนำเข้าใบรับรองไคลเอ็นต์จาก <ph name="HOST_NAME" /></translation>
-<translation id="680572642341004180">เปิดใช้งานการติดตาม RLZ บน <ph name="SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="6805817411033102703">ความคิดเห็นเกี่ยวกับกลุ่มแท็บที่แชร์</translation>
 <translation id="6806089545527108739">ไม่อนุญาตแต่ถามทีหลัง</translation>
 <translation id="6806781719264274042">เฉพาะรายชื่อติดต่อที่มีบัญชี Google <ph name="LINK_BEGIN" />ดูรายชื่อติดต่อ<ph name="LINK_END" /></translation>
@@ -8871,7 +8855,6 @@
 <translation id="7113502843173351041">ทราบที่อยู่อีเมลของคุณ</translation>
 <translation id="7113974454301513811">เพิ่มแท็บปัจจุบันลงในรายการ</translation>
 <translation id="7114054701490058191">รหัสผ่านไม่ตรงกัน</translation>
-<translation id="7114648273807173152">หากต้องการใช้ Smart Lock ในการลงชื่อเข้าใช้ Google ให้ไปที่การตั้งค่า &gt; อุปกรณ์ที่เชื่อมต่อ &gt; โทรศัพท์ของคุณ &gt; Smart Lock</translation>
 <translation id="7115361495406486998">ไม่มีรายชื่อติดต่อที่ติดต่อได้</translation>
 <translation id="7116554090938189816">ใบรับรอง SSL ของเครื่องพิมพ์หมดอายุแล้ว รีสตาร์ทเครื่องพิมพ์แล้วลองอีกครั้ง</translation>
 <translation id="7117228822971127758">โปรดลองอีกครั้งในภายหลัง</translation>
@@ -9503,7 +9486,6 @@
 <translation id="7553242001898162573">ป้อนรหัสผ่าน</translation>
 <translation id="755472745191515939">ผู้ดูแลระบบไม่อนุญาตภาษานี้</translation>
 <translation id="7554791636758816595">แท็บใหม่</translation>
-<translation id="7556033326131260574">Smart Lock ไม่สามารถยืนยันบัญชีของคุณได้ โปรดพิมพ์รหัสผ่านเพื่อเข้าใช้งาน</translation>
 <translation id="7556228616802995437">แชทและชุดข้อความล่าสุด</translation>
 <translation id="7556242789364317684">ขออภัย <ph name="SHORT_PRODUCT_NAME" /> ไม่สามารถกู้คืนการตั้งค่าของคุณได้ หากต้องการแก้ไขข้อผิดพลาด <ph name="SHORT_PRODUCT_NAME" /> ต้องรีเซ็ตอุปกรณ์ของคุณด้วย Powerwash</translation>
 <translation id="7557194624273628371">การส่งต่อพอร์ต Linux</translation>
@@ -9948,7 +9930,6 @@
 <translation id="7853747251428735">เครื่องมือเ&amp;พิ่มเติม</translation>
 <translation id="7855258394151767387">ใช้ปุ่ม "w" เพื่อกดปุ่มเมาส์</translation>
 <translation id="7855678561139483478">ย้ายแท็บไปที่หน้าต่างใหม่</translation>
-<translation id="7857004848504343806">คอมพิวเตอร์ของคุณมีโมดูลความปลอดภัย ซึ่งใช้เพื่อนำฟีเจอร์การรักษาความปลอดภัยที่สำคัญจำนวนมากมาใช้ใน Chrome OS Flex ดูข้อมูลเพิ่มเติมได้จากศูนย์ช่วยเหลือของ Chromebook ที่ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">คำแนะนำข้อความ</translation>
 <translation id="7858120906780498731">อุปกรณ์อินพุตที่เชื่อมต่อกับ ChromeOS</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
@@ -9995,7 +9976,6 @@
 <translation id="7892005672811746207">เปิด "บันทึกกลุ่ม"</translation>
 <translation id="7892384782944609022">จับคู่ไม่สำเร็จ เลือกอุปกรณ์เพื่อลองอีกครั้ง</translation>
 <translation id="7893008570150657497">เข้าถึงรูปภาพ เพลง และสื่ออื่นๆ จากคอมพิวเตอร์ของคุณ</translation>
-<translation id="7893153962594818789"><ph name="DEVICE_TYPE" /> ปิดบลูทูธอยู่ โปรดป้อนรหัสผ่านแล้วเปิดบลูทูธ</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (ค่าเริ่มต้น)</translation>
 <translation id="7896292361319775586">บันทึก <ph name="FILE" /> ไหม</translation>
 <translation id="789722939441020330">ไม่อนุญาตให้เว็บไซต์ดาวน์โหลดหลายไฟล์โดยอัตโนมัติ</translation>
@@ -10838,7 +10818,6 @@
 <translation id="8453400752347156012">บุ๊กมาร์กข้างต้นจะบันทึกไว้ในอุปกรณ์นี้เท่านั้น หากบันทึกลงใน "<ph name="ACCOUNT_FOLDER" />" ระบบจะบันทึกบุ๊กมาร์กนี้ไว้ในบัญชีด้วย</translation>
 <translation id="8455775311562941553">เชื่อมต่อกับ<ph name="HOST_DEVICE_NAME" /> แล้ว</translation>
 <translation id="8456067150616457342">ตั้งค่าเบราว์เซอร์เริ่มต้น</translation>
-<translation id="845702320058262034">เชื่อมต่อไม่ได้ ตรวจสอบว่าบลูทูธโทรศัพท์เปิดอยู่</translation>
 <translation id="8457251154056341970">คุณจะไม่เห็น <ph name="MODULE_NAME" /> ในหน้านี้อีก</translation>
 <translation id="8457451314607652708">นำเข้าบุ๊กมาร์ก</translation>
 <translation id="8458341576712814616">ทางลัด</translation>

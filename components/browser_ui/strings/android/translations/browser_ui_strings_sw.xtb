@@ -125,7 +125,6 @@
 <translation id="2228071138934252756">Ili uruhusu <ph name="APP_NAME" /> ifikie kamera yako, washa pia kamera katika <ph name="BEGIN_LINK" />Mipangilio ya Android<ph name="END_LINK" />.</translation>
 <translation id="2231160360698766265">Tovuti zinaweza kucheza maudhui yanayolindwa</translation>
 <translation id="2235344399760031203">Vidakuzi vya washirika wengine vimezuiwa</translation>
-<translation id="2238944249568001759">Utafutaji unaopendekezwa kulingana na kichupo chako ulichofungua mara ya mwisho</translation>
 <translation id="2241587408274973373">Kadi za ukurasa wa kichupo kipya</translation>
 <translation id="2241634353105152135">Mara moja tu</translation>
 <translation id="2253414712144136228">Ondoa <ph name="NAME_OF_LIST_ITEM" /></translation>
@@ -214,7 +213,6 @@ Ulinzi wa Hali ya Juu hudhibiti mipangilio hii ya Chrome:
 <translation id="3069226013421428034">Ruhusu uingiaji wa wahusika wengine katika akaunti kwenye tovuti mahususi.</translation>
 <translation id="310297983047869047">Slaidi iliyotangulia</translation>
 <translation id="3108122610701115301">Weka chaguomsingi</translation>
-<translation id="3109724472072898302">Imekunjwa</translation>
 <translation id="310979712355504754">Futa zote</translation>
 <translation id="311394601889664316">Usiruhusu tovuti zibadilishe faili au folda kwenye kifaa chako</translation>
 <translation id="3114012059975132928">Kicheza video</translation>
@@ -262,7 +260,6 @@ Ulinzi wa Hali ya Juu hudhibiti mipangilio hii ya Chrome:
 <translation id="3602290021589620013">Hakiki</translation>
 <translation id="3611658447322220736">Tovuti ulizofunga hivi punde zinaweza kumaliza kutuma na kupokea data</translation>
 <translation id="3619294456800709762">Tovuti zinaweza kutumia kipengele cha kupachika picha ndani ya picha nyingine kiotomatiki</translation>
-<translation id="3628308229821498208">Utafutaji unaopendekezwa</translation>
 <translation id="3632460243282703117">Jisajili</translation>
 <translation id="363748948745453283">Inatumia maelezo ya eneo linalokadiriwa</translation>
 <translation id="3641456520301071208">Tovuti zinaweza kuomba maelezo ya mahali ulipo</translation>
@@ -490,6 +487,7 @@ Ulinzi wa Hali ya Juu hudhibiti mipangilio hii ya Chrome:
 <translation id="5922853908706496913">Inashiriki skrini yako</translation>
 <translation id="5922967540311291836">Kuzuia vidakuzi vya washirika wengine:</translation>
 <translation id="5923512600150154850">Hatua hii itafuta data na vidakuzi vya ukubwa wa <ph name="DATASIZE" /> vilivyohifadhiwa na tovuti.</translation>
+<translation id="5930707844513754220">Angalia orodha zaidi ya mipangilio</translation>
 <translation id="5939518447894949180">Weka upya</translation>
 <translation id="5948139900367969951">Nenda haraka kwenye maudhui yanayokufaa</translation>
 <translation id="5964247741333118902">Maudhui yaliyopachikwa</translation>
@@ -498,6 +496,7 @@ Ulinzi wa Hali ya Juu hudhibiti mipangilio hii ya Chrome:
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
 <translation id="5998071268779572583">Washa mipasho ya gundua</translation>
 <translation id="6012967556075291653">Njia ya mkato iliyobandikwa</translation>
+<translation id="6013003831291591200">Umekamilisha jukumu</translation>
 <translation id="6015775454662021376">Dhibiti ufikiaji wa tovuti hii kwenye kifaa chako</translation>
 <translation id="6022659036123304283">Weka mapendeleo kwenye Chrome iwe unavyopenda</translation>
 <translation id="6040143037577758943">Funga</translation>
@@ -522,7 +521,6 @@ Ulinzi wa Hali ya Juu hudhibiti mipangilio hii ya Chrome:
 <translation id="6231752747840485235">Ungependa kuondoa '<ph name="APP_NAME" />'?</translation>
 <translation id="6234351944623978659">Gusa programu ya Kivinjari &gt; Chrome</translation>
 <translation id="6260830281887654268">Umefungua laha ya chini ya mikusanyiko ya mandhari ya mwonekano wa kichupo kipya katika skrini nusu</translation>
-<translation id="6262191102408817757">Kulingana na kichupo chako ulichofungua mara ya mwisho</translation>
 <translation id="6262279340360821358">Umezuia <ph name="PERMISSION_1" /> na <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Tovuti zinaweza kukuuliza kutuma arifa</translation>
 <translation id="6295158916970320988">Tovuti zote</translation>
@@ -602,7 +600,6 @@ Ulinzi wa Hali ya Juu hudhibiti mipangilio hii ya Chrome:
 <translation id="7180611975245234373">Onyesha upya</translation>
 <translation id="7188508872042490670">Data ya tovuti kwenye kifaa</translation>
 <translation id="7201549776650881587">Kitendo hiki kitafuta data na vidakuzi vyote vilivyohifadhiwa na tovuti zote zinazosimamiwa na <ph name="ORIGIN" /> au na programu yake kwenye Skrini yako ya kwanza</translation>
-<translation id="7203150201908454328">Imepanuliwa</translation>
 <translation id="7213166370492037743">Usiruhusu tovuti ziunganishe na kifaa chochote kwenye mtandao wako wa karibu</translation>
 <translation id="7219254577985949841">Je, ungependa kufuta data ya tovuti?</translation>
 <translation id="723171743924126238">Chagua picha</translation>

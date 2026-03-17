@@ -125,7 +125,6 @@
 <translation id="2228071138934252756">如要允許 <ph name="APP_NAME" /> 存取裝置的相機，請一併在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中開啟相機。</translation>
 <translation id="2231160360698766265">網站可以播放受保護的內容</translation>
 <translation id="2235344399760031203">已封鎖第三方 Cookie</translation>
-<translation id="2238944249568001759">根據最近開啟的分頁提供搜尋建議</translation>
 <translation id="2241587408274973373">新分頁資訊卡</translation>
 <translation id="2241634353105152135">只有這一次</translation>
 <translation id="2253414712144136228">移除<ph name="NAME_OF_LIST_ITEM" /></translation>
@@ -214,7 +213,6 @@
 <translation id="3069226013421428034">允許特定網站使用第三方登入功能。</translation>
 <translation id="310297983047869047">上一張投影片</translation>
 <translation id="3108122610701115301">設為預設值</translation>
-<translation id="3109724472072898302">已收合</translation>
 <translation id="310979712355504754">全部刪除</translation>
 <translation id="311394601889664316">禁止網站編輯裝置上的檔案或資料夾</translation>
 <translation id="3114012059975132928">影片播放器</translation>
@@ -262,7 +260,6 @@
 <translation id="3602290021589620013">預覽</translation>
 <translation id="3611658447322220736">最近關閉的網站可以完成資料收發作業</translation>
 <translation id="3619294456800709762">網站可以自動進入子母畫面</translation>
-<translation id="3628308229821498208">建議搜尋</translation>
 <translation id="3632460243282703117">訂閱</translation>
 <translation id="363748948745453283">使用大概位置</translation>
 <translation id="3641456520301071208">網站可以要求取得你的位置資訊</translation>
@@ -522,7 +519,6 @@
 <translation id="6231752747840485235">要解除安裝「<ph name="APP_NAME" />」嗎？</translation>
 <translation id="6234351944623978659">依序輕觸「瀏覽器應用程式」&gt;「Chrome」</translation>
 <translation id="6260830281887654268">新分頁外觀主題系列底部功能表已開啟，並顯示在畫面下半部</translation>
-<translation id="6262191102408817757">依據你的最後一個分頁</translation>
 <translation id="6262279340360821358">已封鎖「<ph name="PERMISSION_1" />」和「<ph name="PERMISSION_2" />」</translation>
 <translation id="6270391203985052864">網站可以要求傳送通知給你</translation>
 <translation id="6295158916970320988">所有網站</translation>
@@ -602,7 +598,6 @@
 <translation id="7180611975245234373">重新整理</translation>
 <translation id="7188508872042490670">網站在裝置端的資料</translation>
 <translation id="7201549776650881587">這項操作會刪除 <ph name="ORIGIN" /> 底下所有網站或該網站在主畫面上的應用程式儲存的所有資料和 Cookie</translation>
-<translation id="7203150201908454328">已展開</translation>
 <translation id="7213166370492037743">不允許網站連線到區域網路上的任何裝置</translation>
 <translation id="7219254577985949841">要刪除網站資料嗎？</translation>
 <translation id="723171743924126238">選取圖片</translation>

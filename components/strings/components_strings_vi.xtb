@@ -754,6 +754,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2184405333245229118">{COUNT,plural, =1{1 địa chỉ}other{# địa chỉ}}</translation>
 <translation id="2188375229972301266">Đục nhiều lỗ dưới cùng</translation>
 <translation id="218940509700321686">Giá trị được phân tách bằng dấu phẩy</translation>
+<translation id="2190094353033916816">Với chính sách này, các giá trị khác nhau sẽ được áp dụng ở cấp thiết bị và cấp người dùng. Chính sách này đang hoạt động như dự kiến.</translation>
 <translation id="2191980191135734720">Mở khoá màn hình ở bước tiếp theo, thường là bằng vân tay. Bạn cũng có thể <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Những yếu tố cần xem xét</translation>
 <translation id="2198183835992354675">Mã số hành khách đã biết</translation>
@@ -3193,6 +3194,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6042308850641462728">Xem thêm</translation>
 <translation id="6043357981274314628">Xong!</translation>
 <translation id="6045164183059402045">Mẫu áp dụng</translation>
+<translation id="6046026831939367176"><ph name="URL" /> muốn sử dụng thông tin vị trí ước chừng của bạn</translation>
 <translation id="6046892054959167494">Nhập <ph name="SEARCH_AGGREGATOR_KEYWORD" /> để tìm kiếm hoặc hỏi <ph name="SEARCH_AGGREGATOR_SHORT_NAME" /></translation>
 <translation id="6047927260846328439">Nội dung này có thể tìm cách đánh lừa bạn cài đặt phần mềm hoặc tiết lộ thông tin cá nhân. <ph name="BEGIN_LINK" />Vẫn hiển thị<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">Phong bì B4</translation>
@@ -3642,7 +3644,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">camera</translation>
 <translation id="6734506549556896534">Trò chơi mô phỏng</translation>
-<translation id="6735589846038045679">Gói thanh toán sẽ phụ thuộc vào điều kiện áp dụng. <ph name="BEGIN_BOLD" />Nội dung trên trang thanh toán sẽ được chia sẻ với Google để cung cấp những lựa chọn này.<ph name="END_BOLD" /> Để ẩn các lựa chọn trả sau, hãy chuyển đến phần <ph name="BEGIN_LINK" />cài đặt thông tin thanh toán<ph name="END_LINK" /></translation>
 <translation id="6737708609449480586">Bánh nướng</translation>
 <translation id="6738516213925468394">Dữ liệu của bạn đã được mã hóa bằng <ph name="BEGIN_LINK" />cụm mật khẩu đồng bộ hóa<ph name="END_LINK" /> vào <ph name="TIME" />. Hãy nhập cụm mật khẩu đó để bắt đầu đồng bộ hóa.</translation>
 <translation id="6740851646645036700">Số lần bạn sử dụng tính năng trợ giúp khi viết hiện đã đạt mức tối đa. Hãy thử lại sau.</translation>
@@ -4993,6 +4994,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8870700989640064057">In tệp bảo mật?</translation>
 <translation id="8871485335898060555">Đồ cổ và đồ sưu tầm</translation>
 <translation id="8871553383647848643">Tùy chỉnh giao diện trình duyệt của bạn</translation>
+<translation id="887350038812854047">Với chính sách này, giá trị giống nhau sẽ được áp dụng ở cấp thiết bị và cấp người dùng. Chính sách này đang hoạt động như dự kiến.</translation>
 <translation id="8874790741333031443">Hãy thử tạm thời cho phép cookie của bên thứ ba. Chế độ cài đặt này sẽ làm giảm khả năng bảo vệ khi duyệt web nhưng các tính năng của trang có thể sẽ hoạt động đúng như mong đợi.</translation>
 <translation id="8874824191258364635">Nhập số thẻ hợp lệ</translation>
 <translation id="8877780815363510165">Câu cá</translation>

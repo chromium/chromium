@@ -394,6 +394,7 @@
 <translation id="2360196772093551345">Be om mobilversjonen av nettstedet</translation>
 <translation id="2362083820973145409">Logget på som <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Åpner innstillinger.</translation>
 <translation id="2371084566192454134">Faner og fanegrupper</translation>
+<translation id="2371303771137626249">Ny</translation>
 <translation id="2381405137052800939">Grunninnstillinger</translation>
 <translation id="2384692388811649784">Skjul inkognitofaner</translation>
 <translation id="2386793615875593361">1 er valgt</translation>
@@ -689,6 +690,7 @@
 <translation id="3530206579861815432">Du kan raskt finne åpne og nylig lukkede faner på alle de synkroniserte enhetene dine.</translation>
 <translation id="3530767473765895035">Administrer kontoer på denne enheten…</translation>
 <translation id="3533436815740441613">Ny fane</translation>
+<translation id="3534738261102690620">Spør Gemini</translation>
 <translation id="3540141921715814660">Legg til i bokmerker</translation>
 <translation id="3546122170015471515">Forhåndsvisninger i Maps på Google.com</translation>
 <translation id="3547356470684043247">Med anmeldelser kan du lese kundevurderinger av produkter, tjenester eller erfaringer for å gjøre det lettere å ta beslutninger</translation>
@@ -959,6 +961,7 @@
 <translation id="454217142158335225">Du kan gjenåpne lukkede elementer fra Nylige faner- eller Fanegrupper-delen. De festede fanene dine lukkes ikke.</translation>
 <translation id="4547181496285029457">Gå tilbake til nylig fane</translation>
 <translation id="4552042254369397518">Kopierer …</translation>
+<translation id="4553044860350038560">Flere passnøkler</translation>
 <translation id="4564893319561643483">Skjul «<ph name="TITLE" />»</translation>
 <translation id="4565377596337484307">Skjul passord</translation>
 <translation id="4568230126482344545">Skjul nylige faner</translation>
@@ -1087,6 +1090,7 @@
 <translation id="4944543191714094452">Finn på siden</translation>
 <translation id="4945756290001680296">Åpne passordinnstillingene</translation>
 <translation id="4949302115427722371">Administrer innstillinger…</translation>
+<translation id="4952050521954075618">Bilder fra kamerabildene synkroniseres ikke på enhetene dine</translation>
 <translation id="4958444002117714549">Utvid liste</translation>
 <translation id="496392417432935267">Åpnet et annet sted</translation>
 <translation id="4970724460420203313">Hvis du logger på med den administrerte kontoen din når du bruker Chrome, kan du holde nettlesingen som er knyttet til organisasjonen din (inkludert faner, logg og passord), atskilt fra annen nettlesing</translation>
@@ -1286,6 +1290,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="5647702255748985085">Vil du forlate gruppen?</translation>
 <translation id="5648166631817621825">Siste 7 dager</translation>
 <translation id="5652623411397330904">Produktene du sporer, vises her.</translation>
+<translation id="5653100054596780862">Alle faner</translation>
 <translation id="5656431592348714536">Forbedret kalender</translation>
 <translation id="5659593005791499971">E-post</translation>
 <translation id="5665739277590037307"><ph name="GOOGLE_TERMS" /> og <ph name="GEMINI_APPS_PRIVACY" /> gjelder. Gemini kan gjøre feil, så dobbeltsjekk svaret.</translation>
@@ -1751,6 +1756,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="7300448350764260141">Legg til et ekstra lag med beskyttelse mot trusler på nettet.</translation>
 <translation id="7311244614769792472">Fant ingen resultater</translation>
 <translation id="7313347584264171202">Her finner du inkognitofanene dine</translation>
+<translation id="7322186060879266048">{count,plural, =1{{count} autofyllalternativ er tilgjengelig over tastaturet.}other{{count} autofyllalternativer er tilgjengelige over tastaturet.}}</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> prosent fullført</translation>
 <translation id="7345061034321640811">Import er ikke tillatt</translation>

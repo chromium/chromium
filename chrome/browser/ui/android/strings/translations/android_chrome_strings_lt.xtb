@@ -415,6 +415,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="2789486458103222910">Gerai</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{„Chrome“ aptiko pakartotinai naudojamą slaptažodį, kurį galėtumėte patobulinti}one{„Chrome“ aptiko # pakartotinai naudojamą slaptažodį, kurį galėtumėte patobulinti}few{„Chrome“ aptiko # pakartotinai naudojamus slaptažodžius, kuriuos galėtumėte patobulinti}many{„Chrome“ aptiko # pakartotinai naudojamo slaptažodžio, kuriuos galėtumėte patobulinti}other{„Chrome“ aptiko # pakartotinai naudojamų slaptažodžių, kuriuos galėtumėte patobulinti}}</translation>
 <translation id="2794551654724114396">Įjunkite pranešimus, kad gautumėte naudingų patarimų, padedančių išnaudoti visas „Chrome“ galimybes</translation>
+<translation id="2798977804328097977">Sklandžiai tęskite bet kuriame įrenginyje</translation>
 <translation id="2805210243313393104">Pasiekite žymes ir kitus duomenis visuose įrenginiuose</translation>
 <translation id="2805756323405976993">Taikomosios programos</translation>
 <translation id="2819849308549746319">Atšaukti visko prenumeratą</translation>
@@ -470,6 +471,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="2977350910003566746">Rūšiuojama pagal paskutinį atidarymą</translation>
 <translation id="297771753501244313">Rūšiuoti pagal paskutinį atidarymą</translation>
 <translation id="2979639724566107830">Atidaryti naujame lange</translation>
+<translation id="2980545254049127870">Lengvai atidarykite nuorodas iš pranešimų, dokumentų ir kitų programų</translation>
 <translation id="2983102365694924129">Pagrįsta jūsų veikla svetainėje. Šis nustatymas išjungtas.</translation>
 <translation id="2983398917942897288">Neaktyvu (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2983835398644161987">Išeiti iš vaizdo vaizde</translation>
@@ -731,6 +733,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="4137746084635924146">Dabartinės įrenginio kalba</translation>
 <translation id="414128724510021958">Svetainės kompiuteriams, kurių užklausos pateikiamos pagal numatytuosius nustatymus</translation>
 <translation id="4162867837470729563">Bendrinimo parinkčių sąrašas per visą ekrano aukštį.</translation>
+<translation id="4164642020717536140">Naršykite žiniatinklį sparčiai ir saugiai</translation>
 <translation id="4165077084524712774">Daugiau įrankių</translation>
 <translation id="4170011742729630528">Paslauga nepasiekiama; vėliau bandykite dar kartą.</translation>
 <translation id="4170577491341606575">Gaunami jūsų duomenys\u2026</translation>

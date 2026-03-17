@@ -394,6 +394,7 @@
 <translation id="2360196772093551345">Захтевај мобилни сајт</translation>
 <translation id="2362083820973145409">Пријављени сте као <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Отвара подешавања.</translation>
 <translation id="2371084566192454134">Картице и групе картица</translation>
+<translation id="2371303771137626249">Ново</translation>
 <translation id="2381405137052800939">Основе</translation>
 <translation id="2384692388811649784">Сакриј картице без архивирања</translation>
 <translation id="2386793615875593361">Изабрана је 1 слика</translation>
@@ -689,6 +690,7 @@
 <translation id="3530206579861815432">Брзо пронађите отворене и недавно затворене картице на синхронизованим уређајима.</translation>
 <translation id="3530767473765895035">Управљај налозима на овом уређају…</translation>
 <translation id="3533436815740441613">Нова картица</translation>
+<translation id="3534738261102690620">Упитајте Gemini</translation>
 <translation id="3540141921715814660">Додај у обележиваче</translation>
 <translation id="3546122170015471515">Прегледи Мапа на Google.com</translation>
 <translation id="3547356470684043247">Прочитајте процене производа, услуга или доживљаја од стране клијената да бисте донели утемељеније одлуке у вези са рецензијама</translation>
@@ -959,6 +961,7 @@
 <translation id="454217142158335225">Затворене ставке можете поново да отворите у одељцима Недавне картице или Групе картица. Прикачене картице се неће затворити.</translation>
 <translation id="4547181496285029457">Вратите се на недавну картицу</translation>
 <translation id="4552042254369397518">Копира се…</translation>
+<translation id="4553044860350038560">Још приступних кључева</translation>
 <translation id="4564893319561643483">Сакријте „<ph name="TITLE" />“</translation>
 <translation id="4565377596337484307">Сакриј лозинку</translation>
 <translation id="4568230126482344545">Сакриј Недавне картице</translation>
@@ -1087,6 +1090,7 @@
 <translation id="4944543191714094452">Пронађи на страници…</translation>
 <translation id="4945756290001680296">Приступите подешавањима лозинки</translation>
 <translation id="4949302115427722371">Управљај подешавањима</translation>
+<translation id="4952050521954075618">Слике са уређаја неће се синхронизовати на свим уређајима</translation>
 <translation id="4958444002117714549">Прошири листу</translation>
 <translation id="496392417432935267">Отворено негде другде</translation>
 <translation id="4970724460420203313">Коришћење Chrome-а помоћу управљаног налога помаже вам да одвојите прегледање повезано са организацијом (укључујући картице, историју и лозинке) од осталог прегледања</translation>
@@ -1286,6 +1290,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="5647702255748985085">Желите да напустите групу?</translation>
 <translation id="5648166631817621825">Последњих 7 дана</translation>
 <translation id="5652623411397330904">Производи које пратите ће се приказивати овде.</translation>
+<translation id="5653100054596780862">Све картице</translation>
 <translation id="5656431592348714536">Побољшани календар</translation>
 <translation id="5659593005791499971">Имејл</translation>
 <translation id="5665739277590037307">Примењују се <ph name="GOOGLE_TERMS" /> и <ph name="GEMINI_APPS_PRIVACY" />. Gemini може да погреши, зато проверите одговоре.</translation>
@@ -1751,6 +1756,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7300448350764260141">Додајте још један ниво заштите од онлајн претњи.</translation>
 <translation id="7311244614769792472">Није пронађен ниједан резултат</translation>
 <translation id="7313347584264171202">Овде ћете пронаћи картице без архивирања</translation>
+<translation id="7322186060879266048">{count,plural, =1{{count} опција аутоматског попуњавања доступна је изнад тастатуре.}one{{count} опција аутоматског попуњавања доступна је изнад тастатуре.}few{{count} опције аутоматског попуњавања доступне су изнад тастатуре.}other{{count} опција аутоматског попуњавања доступно је изнад тастатуре.}}</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241">Проценат преузимања: <ph name="PERCENT" /></translation>
 <translation id="7345061034321640811">Увоз није дозвољен</translation>

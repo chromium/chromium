@@ -754,6 +754,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2184405333245229118">{COUNT,plural, =1{1 enderezo}other{# enderezos}}</translation>
 <translation id="2188375229972301266">Varias perforacións na parte inferior</translation>
 <translation id="218940509700321686">Valores separados por comas</translation>
+<translation id="2190094353033916816">Esta política aplicou valores diferentes aos niveis de usuario e de máquina. Aínda así, funciona segundo o previsto.</translation>
 <translation id="2191980191135734720">Desbloquea a pantalla no seguinte paso, normalmente coa túa impresión dixital. Tamén podes <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Cuestións que se deben ter en conta</translation>
 <translation id="2198183835992354675">Número de viaxeiro coñecido</translation>
@@ -3152,7 +3153,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="598637245381783098">Non se pode abrir a aplicación para pagos</translation>
 <translation id="5989320800837274978">Non se especificaron nin servidores proxy fixos nin un URL de script .pac.</translation>
 <translation id="5989917734461988169">Podes usar os enderezos gardados nos produtos de Google. Isto non cambiará o teu enderezo particular actual, que se gardará na túa Conta de Google (<ph name="ACCOUNT" />).</translation>
-<translation id="5992691462791905444">Dobrez en Z para enxeñaría</translation>
+<translation id="5992691462791905444">Dobrez en zigzag asimétrico</translation>
 <translation id="5992805036496113940">Ver que información se usa para mostrarche anuncios</translation>
 <translation id="5995727681868049093">Xestionar a información, a privacidade e a seguranza na túa Conta de Google</translation>
 <translation id="5996255674476750320">Salóns do automóbil</translation>
@@ -3193,6 +3194,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="6042308850641462728">Máis</translation>
 <translation id="6043357981274314628">Feito!</translation>
 <translation id="6045164183059402045">Modelo de imposición</translation>
+<translation id="6046026831939367176"><ph name="URL" /> quere usar a túa localización aproximada</translation>
 <translation id="6046892054959167494">Escribe <ph name="SEARCH_AGGREGATOR_KEYWORD" /> para facer buscas ou pregúntalle a <ph name="SEARCH_AGGREGATOR_SHORT_NAME" /></translation>
 <translation id="6047927260846328439">É posible que con este contido se pretenda enganarte para instalar software ou revelar información persoal. <ph name="BEGIN_LINK" />Mostrar igualmente<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">Sobre B4</translation>
@@ -3642,7 +3644,6 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">cámara</translation>
 <translation id="6734506549556896534">Xogos de simulación</translation>
-<translation id="6735589846038045679">Os plans de pago están suxeitos ao cumprimento de requisitos. <ph name="BEGIN_BOLD" />O contido da páxina de tramitación da compra compártese con Google para poder ofrecer estas opcións.<ph name="END_BOLD" /> Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />configuración de pago<ph name="END_LINK" /></translation>
 <translation id="6737708609449480586">Produtos de pastelaría</translation>
 <translation id="6738516213925468394">Os teus datos encriptáronse coa túa <ph name="BEGIN_LINK" />frase de acceso de sincronización<ph name="END_LINK" /> o <ph name="TIME" />. Introdúcea para comezar a sincronización.</translation>
 <translation id="6740851646645036700">Por agora alcanzaches o límite máximo de axuda para escribir. Téntao de novo máis tarde.</translation>
@@ -4991,6 +4992,7 @@ Detalles adicionais:
 <translation id="8870700989640064057">Queres imprimir o ficheiro confidencial?</translation>
 <translation id="8871485335898060555">Antigüidades e artigos para coleccionar</translation>
 <translation id="8871553383647848643">Personalizar o aspecto do navegador</translation>
+<translation id="887350038812854047">Esta política aplicou o mesmo valor aos niveis de máquina e de usuario. Aínda así, funciona segundo o previsto.</translation>
 <translation id="8874790741333031443">Proba a permitir de maneira temporal as cookies de terceiros. Terás menos protección, pero é máis probable que as funcións do sitio vaian segundo o previsto.</translation>
 <translation id="8874824191258364635">Introduce un número de tarxeta válido</translation>
 <translation id="8877780815363510165">Pesca</translation>

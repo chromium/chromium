@@ -125,7 +125,6 @@
 <translation id="2228071138934252756">Каб праграма "<ph name="APP_NAME" />" атрымала доступ да камеры, уключыце камеру таксама ў <ph name="BEGIN_LINK" />Наладах Android<ph name="END_LINK" />.</translation>
 <translation id="2231160360698766265">Сайты могуць прайграваць абароненае змесціва</translation>
 <translation id="2235344399760031203">Староннія файлы cookie заблакіраваны</translation>
-<translation id="2238944249568001759">Пошукавыя запыты, прапанаваныя на падставе змесціва апошняй укладкі</translation>
 <translation id="2241587408274973373">Карткі старонкі новай укладкі</translation>
 <translation id="2241634353105152135">Толькі адзін раз</translation>
 <translation id="2253414712144136228">Выдаліць: <ph name="NAME_OF_LIST_ITEM" /></translation>
@@ -214,7 +213,6 @@
 <translation id="3069226013421428034">Дазволіць уваход праз староннія сэрвісы для канкрэтнага сайта.</translation>
 <translation id="310297983047869047">Папярэдні слайд</translation>
 <translation id="3108122610701115301">Задаць у якасці стандартнага</translation>
-<translation id="3109724472072898302">Згорнута</translation>
 <translation id="310979712355504754">Выдаліць усе</translation>
 <translation id="311394601889664316">Не дазваляць сайтам змяняць файлы або папкі на прыладзе</translation>
 <translation id="3114012059975132928">Відэапрайгравальнік</translation>
@@ -262,7 +260,6 @@
 <translation id="3602290021589620013">Перадпрагляд</translation>
 <translation id="3611658447322220736">Нядаўна закрытыя сайты могуць завяршаць адпраўку і атрыманне даных</translation>
 <translation id="3619294456800709762">Сайты могуць аўтаматычна запускаць рэжым "відарыс у відарысе"</translation>
-<translation id="3628308229821498208">Прапанаваныя пошукавыя запыты</translation>
 <translation id="3632460243282703117">Падпісацца</translation>
 <translation id="363748948745453283">Выкарыстоўваецца прыблізнае месцазнаходжанне</translation>
 <translation id="3641456520301071208">Сайты могуць запытваць ваша месцазнаходжанне</translation>
@@ -490,6 +487,7 @@
 <translation id="5922853908706496913">Ваш экран абагульваецца</translation>
 <translation id="5922967540311291836">Блакіраваць староннія файлы cookie:</translation>
 <translation id="5923512600150154850">Будуць выдалены даныя і файлы cookie (<ph name="DATASIZE" />), захаваныя сайтамі.</translation>
+<translation id="5930707844513754220">Паказаць больш налад</translation>
 <translation id="5939518447894949180">Скінуць</translation>
 <translation id="5948139900367969951">Хутка знаходзьце тое, што вас цікавіць</translation>
 <translation id="5964247741333118902">Убудаванае змесціва</translation>
@@ -498,6 +496,7 @@
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
 <translation id="5998071268779572583">Уключыць стужку рэкамендацый</translation>
 <translation id="6012967556075291653">Замацаваны ярлык</translation>
+<translation id="6013003831291591200">Задача выканана</translation>
 <translation id="6015775454662021376">Кіруйце доступам гэтага сайта да вашай прылады</translation>
 <translation id="6022659036123304283">Наладзьце Chrome пад сябе</translation>
 <translation id="6040143037577758943">Закрыць</translation>
@@ -522,7 +521,6 @@
 <translation id="6231752747840485235">Выдаліць "<ph name="APP_NAME" />"?</translation>
 <translation id="6234351944623978659">Націсніце "Браўзер &gt; Chrome"</translation>
 <translation id="6260830281887654268">Ніжні аркуш калекцый тэм "Выгляд старонкі новай укладкі" адкрыты на палову экрана</translation>
-<translation id="6262191102408817757">На падставе даных вашай апошняй укладкі</translation>
 <translation id="6262279340360821358">Заблакіравана: <ph name="PERMISSION_1" /> і <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Сайтам дазволена запытваць дазвол на паказ апавяшчэнняў</translation>
 <translation id="6295158916970320988">Усе сайты</translation>
@@ -602,7 +600,6 @@
 <translation id="7180611975245234373">Абнавіць</translation>
 <translation id="7188508872042490670">Даныя сайтаў, захаваныя на прыладзе</translation>
 <translation id="7201549776650881587">Будуць выдалены ўсе даныя і файлы cookie, захаваныя сайтамі дамена <ph name="ORIGIN" /> або яго праграмай, дададзенай на галоўны экран.</translation>
-<translation id="7203150201908454328">Разгорнута</translation>
 <translation id="7213166370492037743">Забараніць сайтам падключацца да прылад у лакальнай сетцы</translation>
 <translation id="7219254577985949841">Выдаліць гэтыя даныя?</translation>
 <translation id="723171743924126238">Выберыце відарысы</translation>

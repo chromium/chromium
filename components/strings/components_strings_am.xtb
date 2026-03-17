@@ -754,6 +754,7 @@
 <translation id="2184405333245229118">{COUNT,plural, =1{1 አድራሻ}one{# አድራሻዎች}other{# አድራሻዎች}}</translation>
 <translation id="2188375229972301266">በርካታ ብስ ግርጌ</translation>
 <translation id="218940509700321686">በነጠላ ሰረዝ የተለዩ እሴቶች</translation>
+<translation id="2190094353033916816">ይህ መመሪያ በማሽን እና በተጠቃሚ ደረጃዎች ላይ የተለያዩ እሴቶች አሉት። መመሪያው እንደታሰበው እየሰራ ነው።</translation>
 <translation id="2191980191135734720">በተለምዶ የጣት አሻራዎን በመጠቀም በቀጣዩ እርምጃ ውስጥ ማያ ገጽዎን ይክፈቱ። እንዲሁም <ph name="LINK_TEXT" /> ይችላሉ።</translation>
 <translation id="2194856509914051091">ከግምት ውስጥ መግባት ያለባቸው ነገሮች</translation>
 <translation id="2198183835992354675">የታወቀ የተጓዥ ቁጥር</translation>
@@ -3192,6 +3193,7 @@
 <translation id="6042308850641462728">ተጨማሪ</translation>
 <translation id="6043357981274314628">ተከናውኗል!</translation>
 <translation id="6045164183059402045">የማስፈጸሚያ ቅንብር ደንብ</translation>
+<translation id="6046026831939367176"><ph name="URL" /> ግምታዊ አካባቢዎን መጠቀም ይፈልጋል</translation>
 <translation id="6046892054959167494">ለመፈለግ <ph name="SEARCH_AGGREGATOR_KEYWORD" /> ይተይቡ ወይም <ph name="SEARCH_AGGREGATOR_SHORT_NAME" /> ይጠይቁ</translation>
 <translation id="6047927260846328439">ይህ ይዘት ሶፍትዌር እንዲጭኑ ወይም የግል መረጃ ገልጸው እንዲያሳዩ እርስዎን ለማሳሳት ሊሞክር ይችል ይሆናል። <ph name="BEGIN_LINK" />የሆነው ሆኖ አሳይ<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">ቢ4 ፖስታ</translation>
@@ -3641,7 +3643,6 @@
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">ካሜራ</translation>
 <translation id="6734506549556896534">የማስመሰያ ጨዋታዎች</translation>
-<translation id="6735589846038045679">የክፍያ ዕቅዶች ለብቁነት ተገዢ ናቸው። <ph name="BEGIN_BOLD" />እነዚህን አማራጮች ለማቅረብ ከክፍያ ማጠናቀቂያ ገጽ ላይ የመጣ ይዘት ከGoogle ጋር ይጋራል።<ph name="END_BOLD" /> የበኋላ ላይ መክፈል አማራጮችን ለመደበቅ ወደ <ph name="BEGIN_LINK" />የክፍያ ቅንብሮች<ph name="END_LINK" /> ይሂዱ</translation>
 <translation id="6737708609449480586">የተጋገሩ ምርቶች</translation>
 <translation id="6738516213925468394">የእርስዎ ውሂብ በ<ph name="TIME" /> ላይ በእርስዎ <ph name="BEGIN_LINK" />የስምረት ይለፍ ሐረግ<ph name="END_LINK" /> ተመስጥሯል። ስምረትን ለመጀመር ያስገቡት።</translation>
 <translation id="6740851646645036700">ለአሁን የመጻፍ እገዛ ገደብዎ ላይ ደርሰዋል። ቆይተው እንደገና ይሞክሩ።</translation>
@@ -4992,6 +4993,7 @@
 <translation id="8870700989640064057">ሚስጥራዊ ፋይል ይታተም?</translation>
 <translation id="8871485335898060555">ቅርሶች እና የሚሰበሰቡ እቃዎች</translation>
 <translation id="8871553383647848643">የአሳሽዎን ገጽታ ያብጁ</translation>
+<translation id="887350038812854047">ይህ መመሪያ በማሽን እና በተጠቃሚ ደረጃዎች ላይ ተመሳሳይ እሴት አለው። መመሪያው እንደታሰበው እየሰራ ነው።</translation>
 <translation id="8874790741333031443">በጊዜያዊነት የሦስተኛ ወገን ኩኪዎችን ለመፍቀድ ይሞክሩ፣ ይህ ማለት ያነሰ የአሰሳ ጥበቃ ነው ነገር ግን የጣቢያ ባህሪያት እንደተጠበቀው የመሥራት ዕድላቸው ከፍተኛ ነው።</translation>
 <translation id="8874824191258364635">የሚሰራ የካርድ ቁጥር ያስገቡ</translation>
 <translation id="8877780815363510165">አሳ ማጥመድ</translation>
