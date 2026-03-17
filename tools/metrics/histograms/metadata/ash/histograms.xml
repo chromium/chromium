@@ -5592,7 +5592,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.NotificationPopup.AnimationSmoothness" units="%"
-    expires_after="2026-07-14">
+    expires_after="2026-09-13">
   <owner>amehfooz@chromium.org</owner>
   <owner>tbarzic@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
@@ -8650,7 +8650,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.StatusArea.TrayBackgroundView.Hide" units="%"
-    expires_after="2026-07-14">
+    expires_after="2026-09-13">
   <owner>newcomer@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>

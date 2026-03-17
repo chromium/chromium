@@ -7394,7 +7394,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Media.Ui.GetDisplayMedia.TabSharingInfoBarInteraction"
     enum="MediaUiGetDisplayMediaTabSharingInfoBarInteraction"
-    expires_after="2026-07-12">
+    expires_after="2026-09-13">
   <owner>tovep@chromium.org</owner>
   <owner>eladalon@chromium.org</owner>
   <summary>
