@@ -47,9 +47,8 @@ class GlicSkillsManager {
   // Shows the Manage Skills UI.
   virtual void ShowManageSkillsUi() = 0;
 
-  // Get a contextual skill for the given tab.
-  virtual glic::mojom::SkillPtr GetContextualSkill(
-      std::string_view skill_id) = 0;
+  // Notify that a glic panel associated with the skill manager is being opened.
+  virtual void NotifyPanelOpenedOrActivated() = 0;
 };
 
 }  // namespace glic

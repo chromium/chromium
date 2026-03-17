@@ -46,7 +46,7 @@ class SkillsUpdateObserver : public content::WebContentsObserver {
     return contextual_skills_.get();
   }
 
-  std::vector<glic::mojom::SkillPtr> GetContextualSkills() const;
+  std::vector<glic::mojom::SkillPreviewPtr> GetContextualSkillPreviews() const;
 
  private:
   void OnOptimizationGuideDecision(

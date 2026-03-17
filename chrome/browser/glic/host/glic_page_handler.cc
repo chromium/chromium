@@ -224,6 +224,11 @@ GlicUnpinTrigger FromMojomUnpinTrigger(mojom::UnpinTrigger trigger) {
 // NEEDS_ANDROID_IMPL: (crbug.com/477622144) Remove desktop-only restrictions
 // from Skills backend.
 #if !BUILDFLAG(IS_ANDROID)
+mojom::SkillPreviewPtr ToMojomSkillPreview(const skills::proto::Skill& skill) {
+  return mojom::SkillPreview::New(skill.id(), skill.name(), skill.icon(),
+                                  mojom::SkillSource::kFirstParty,
+                                  skill.description());
+}
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // Monitors the panel state and the browser widget state. Emits an event any
@@ -999,6 +1004,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
       base::UmaHistogramBoolean("Glic.Host.OpenedInRegularTab", true);
       web_client_->NotifyPanelWillOpen(std::move(panel_opening_data),
                                        base::DoNothing());
+      host().skills_manager().NotifyPanelOpenedOrActivated();
     }
   }
 
@@ -1855,6 +1861,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
               std::move(done).Run(std::move(info));
             },
             std::move(done), glic_service_->metrics()));
+    host().skills_manager().NotifyPanelOpenedOrActivated();
   }
 
   void PanelWasClosed(base::OnceClosure done) override {
@@ -1895,6 +1902,9 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   void ActiveStateChanged(bool is_active) override {
     if (web_client_) {
       web_client_->NotifyPanelActiveChange(is_active);
+      if (is_active) {
+        host().skills_manager().NotifyPanelOpenedOrActivated();
+      }
     }
   }
 
@@ -2075,6 +2085,24 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     }
     host().skills_manager().UpdateSkillPreviews(std::nullopt);
     web_client_->NotifySkillPreviewsChanged(GetSkillPreviewsList());
+  }
+
+  void OnDiscoverySkillsUpdated(
+      const skills::SkillsService::SkillsMap* skills_map) override {
+    // If skills_map is null, this means we don't have an updated value so we
+    // shouldn't modify the stored 1p map.
+    if (skills_map == nullptr) {
+      return;
+    }
+    if (!web_client_) {
+      return;
+    }
+    host().skills_manager().UpdateSkillPreviews(std::nullopt);
+    web_client_->NotifySkillPreviewsChanged(GetSkillPreviewsList());
+  }
+
+  bool Require1PSkillRefresh() override {
+    return active_state_calculator_.IsActive();
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -2377,14 +2405,10 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 // NEEDS_ANDROID_IMPL: (crbug.com/477622144) Remove desktop-only restrictions
 // from Skills backend.
 #if !BUILDFLAG(IS_ANDROID)
-    glic::mojom::SkillPtr contextual_skill =
-        host().skills_manager().GetContextualSkill(skill_id);
-    if (contextual_skill) {
-      return contextual_skill;
-    }
     if (!skills_service_) {
       return nullptr;
     }
+
     const skills::Skill* skill = skills_service_->GetSkillById(skill_id);
     if (!skill) {
       return nullptr;
@@ -2417,6 +2441,23 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
       skill_previews.push_back(
           skills::SkillToGlicMojomSkillPreview(skill.get()));
     }
+
+    auto& first_party_skills_map = skills_service_->Get1PSkills();
+    std::vector<mojom::SkillPreviewPtr> first_party_skills;
+    for (const auto& it : first_party_skills_map) {
+      first_party_skills.push_back(ToMojomSkillPreview(it.second));
+    }
+
+    std::sort(first_party_skills.begin(), first_party_skills.end(),
+              [](const mojom::SkillPreviewPtr& skill_a,
+                 const mojom::SkillPreviewPtr& skill_b) {
+                return skill_a->name < skill_b->name;
+              });
+
+    skill_previews.reserve(skill_previews.size() + first_party_skills.size());
+    skill_previews.insert(skill_previews.end(),
+                          std::make_move_iterator(first_party_skills.begin()),
+                          std::make_move_iterator(first_party_skills.end()));
 #endif  //  !BUILDFLAG(IS_ANDROID)
     return skill_previews;
   }

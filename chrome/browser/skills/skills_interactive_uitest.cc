@@ -13,10 +13,12 @@
 #include "chrome/browser/skills/skills_glic_mojom_util.h"
 #include "chrome/browser/skills/skills_service_factory.h"
 #include "chrome/browser/skills/skills_ui_window_controller.h"
+#include "chrome/browser/sync/data_type_store_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/views/test/tab_strip_interactive_test_mixin.h"
 #include "chrome/browser/ui/webui/skills/skills_dialog_view.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -26,11 +28,16 @@
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/skills/features.h"
+#include "components/skills/internal/skills_downloader.h"
+#include "components/skills/internal/skills_service_impl.h"
 #include "components/skills/public/skill.h"
 #include "components/skills/public/skills_service.h"
+#include "components/sync/model/data_type_store_service.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "ui/base/interaction/interactive_test.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
 
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTabId);
@@ -125,6 +132,38 @@ class SkillsInteractiveUiTest : public TabStripInteractiveTestMixin<
     element_enabled.where = element;
     element_enabled.test_function = "(el) => !el.disabled";
     return WaitForStateChange(contents_id, element_enabled);
+  }
+
+  void SetUpOnMainThread() override {
+    glic::test::InteractiveGlicTest::SetUpOnMainThread();
+
+    skills::SkillsServiceFactory::GetInstance()->SetTestingFactory(
+        browser()->profile(),
+        base::BindRepeating(&SkillsInteractiveUiTest::CreateSkillsService,
+                            base::Unretained(this)));
+
+    skills::SkillsServiceFactory::GetForProfile(browser()->profile())
+        ->SetServiceStatusForTesting(
+            skills::SkillsService::ServiceStatus::kReady);
+
+    // Initially seed zero 1p Skills.
+    skills::proto::SkillsList skills_list;
+    std::string response_data;
+    ASSERT_TRUE(skills_list.SerializeToString(&response_data));
+    GURL expected_url(skills::kSkillsDownloaderGstaticUrl);
+    test_url_loader_factory_.AddResponse(expected_url.spec(), response_data,
+                                         net::HTTP_OK);
+  }
+
+  std::unique_ptr<KeyedService> CreateSkillsService(
+      content::BrowserContext* context) {
+    Profile* profile = Profile::FromBrowserContext(context);
+    return std::make_unique<skills::SkillsServiceImpl>(
+        OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
+        chrome::GetChannel(),
+        DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory(),
+        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+            &test_url_loader_factory_));
   }
 
   auto UpdateContextualSkillPreviews(
@@ -248,6 +287,33 @@ class SkillsInteractiveUiTest : public TabStripInteractiveTestMixin<
         WaitForAndInstrumentGlic(GlicInstrumentMode::kHostAndContents));
   }
 
+  auto Seed1PSkills(const std::vector<skills::proto::Skill>& skills) {
+    return Do([this, skills]() {
+      skills::proto::SkillsList skills_list;
+      for (const auto& skill : skills) {
+        *skills_list.add_skills() = skill;
+      }
+
+      std::string response_data;
+      ASSERT_TRUE(skills_list.SerializeToString(&response_data));
+
+      GURL expected_url(skills::kSkillsDownloaderGstaticUrl);
+      test_url_loader_factory_.AddResponse(expected_url.spec(), response_data,
+                                           net::HTTP_OK);
+    });
+  }
+
+  auto WaitFor1PSkills() {
+    return PollUntil(
+        [this]() {
+          return !skills::SkillsServiceFactory::GetForProfile(
+                      browser()->profile())
+                      ->Get1PSkills()
+                      .empty();
+        },
+        "polling until 1P skills are not empty.");
+  }
+
   // Waits for the nth `tab` to be open to `url`.
   auto WaitForTabOpenedTo(int tab, GURL url) {
     return Steps(
@@ -289,6 +355,8 @@ class SkillsInteractiveUiTest : public TabStripInteractiveTestMixin<
                                      "cr-button#cancelButton"};
 
  private:
+  network::TestURLLoaderFactory test_url_loader_factory_;
+  base::HistogramTester histogram_tester_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -464,4 +532,38 @@ IN_PROC_BROWSER_TEST_F(SkillsInteractiveUiTest, RemixFirstPartySkill) {
   ASSERT_TRUE(remixed_skill);
   EXPECT_THAT(remixed_skill,
               VerifyRemixedFirstPartySkill(edited_skill, mock_skill));
+}
+
+IN_PROC_BROWSER_TEST_F(SkillsInteractiveUiTest,
+                       Ensure1PSkillLoadsAfterOpeningGlicPanel) {
+  std::string skill_id = "1p_skill_id";
+  skills::proto::Skill skill;
+  skill.set_id("1p_skill_id");
+  skill.set_name("1P Skill Name");
+  skill.set_icon("1P Skill Icon");
+  skill.set_prompt("1P Skill Prompt");
+  skill.set_description("1P Skill Description");
+
+  RunTestSequence(
+      Seed1PSkills({skill}), ToggleGlicWindow(GlicWindowMode::kAttached),
+      PollForAndAcceptFre(),
+      WaitForAndInstrumentGlic(GlicInstrumentMode::kHostAndContents),
+      WaitFor1PSkills());
+}
+
+IN_PROC_BROWSER_TEST_F(SkillsInteractiveUiTest, Invoke1PSkill) {
+  std::string skill_id = "1p_skill_id";
+  skills::proto::Skill skill;
+  skill.set_id("1p_skill_id");
+  skill.set_name("1P Skill Name");
+  skill.set_icon("1P Skill Icon");
+  skill.set_prompt("1P Skill Prompt");
+  skill.set_description("1P Skill Description");
+
+  RunTestSequence(
+      Seed1PSkills({skill}), ToggleGlicWindow(GlicWindowMode::kAttached),
+      PollForAndAcceptFre(),
+      WaitForAndInstrumentGlic(GlicInstrumentMode::kHostAndContents),
+      WaitFor1PSkills(), InvokeSkillDirectly(&skill_id),
+      VerifyInvocationInWebUI("1P Skill Prompt"));
 }
