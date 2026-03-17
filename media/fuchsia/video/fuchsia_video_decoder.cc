@@ -120,10 +120,8 @@ class FuchsiaVideoDecoder::OutputMailbox {
       gfx::GpuMemoryBufferHandle gmb_handle,
       gfx::Size& size,
       viz::SharedImageFormat& format,
-      gfx::ClientNativePixmapFactory* pixmap_factory,
       const gfx::ColorSpace& color_space)
       : raster_context_provider_(raster_context_provider),
-        size_(size),
         weak_factory_(this) {
     gpu::SharedImageUsageSet usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                                      gpu::SHARED_IMAGE_USAGE_SCANOUT |
@@ -135,6 +133,7 @@ class FuchsiaVideoDecoder::OutputMailbox {
         raster_context_provider_->SharedImageInterface()->CreateSharedImage(
             {format, size, color_space, usage, "FuchsiaVideoDecoder"},
             std::move(gmb_handle));
+    CHECK(shared_image_);
 
     create_sync_token_ = raster_context_provider_->SharedImageInterface()
                              ->GenVerifiedSyncToken();
@@ -148,8 +147,7 @@ class FuchsiaVideoDecoder::OutputMailbox {
   }
 
   const gpu::Mailbox& mailbox() { return shared_image_->mailbox(); }
-
-  const gfx::Size& size() { return size_; }
+  gfx::Size size() { return shared_image_->size(); }
 
   // Create a new video frame that wraps the mailbox. |reuse_callback| will be
   // called when the mailbox can be reused.
@@ -216,8 +214,6 @@ class FuchsiaVideoDecoder::OutputMailbox {
   }
 
   const scoped_refptr<viz::RasterContextProvider> raster_context_provider_;
-
-  gfx::Size size_;
 
   scoped_refptr<gpu::ClientSharedImage> shared_image_;
 
@@ -600,8 +596,7 @@ void FuchsiaVideoDecoder::OnStreamProcessorOutputPacket(
     output_mailboxes_[buffer_index] = new OutputMailbox(
         raster_context_provider_,
         gfx::GpuMemoryBufferHandle(std::move(native_pixmap_handle)), coded_size,
-        si_format, client_native_pixmap_factory_.get(),
-        current_config_.color_space_info().ToGfxColorSpace());
+        si_format, current_config_.color_space_info().ToGfxColorSpace());
   } else {
     raster_context_provider_->SharedImageInterface()->UpdateSharedImage(
         gpu::SyncToken(), output_mailboxes_[buffer_index]->mailbox());
