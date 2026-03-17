@@ -28,11 +28,11 @@ AggregatedJournal::Entry::~Entry() = default;
 
 AggregatedJournal::PendingAsyncEntry::PendingAsyncEntry(
     base::PassKey<AggregatedJournal>,
-    base::SafeRef<AggregatedJournal> journal,
+    base::WeakPtr<AggregatedJournal> journal,
     TaskId task_id,
     std::string_view event_name,
     uint64_t track_uuid)
-    : journal_(journal),
+    : journal_(std::move(journal)),
       task_id_(task_id),
       event_name_(event_name),
       begin_time_(base::TimeTicks::Now()),
@@ -46,7 +46,7 @@ AggregatedJournal::PendingAsyncEntry::~PendingAsyncEntry() {
 
 void AggregatedJournal::PendingAsyncEntry::EndEntry(
     std::vector<JournalDetails> details) {
-  if (terminated_) {
+  if (terminated_ || !journal_) {
     return;
   }
   terminated_ = true;
@@ -54,8 +54,8 @@ void AggregatedJournal::PendingAsyncEntry::EndEntry(
                         event_name_, track_uuid_, std::move(details));
 }
 
-AggregatedJournal& AggregatedJournal::PendingAsyncEntry::GetJournal() {
-  return *journal_;
+AggregatedJournal* AggregatedJournal::PendingAsyncEntry::GetJournal() {
+  return journal_.get();
 }
 
 TaskId AggregatedJournal::PendingAsyncEntry::GetTaskId() {
@@ -92,7 +92,7 @@ AggregatedJournal::CreatePendingAsyncEntry(
       std::make_unique<Entry>(url.possibly_invalid_spec(), std::move(entry)));
 
   return std::make_unique<PendingAsyncEntry>(base::PassKey<AggregatedJournal>(),
-                                             GetSafeRef(), task_id, event_name,
+                                             GetWeakPtr(), task_id, event_name,
                                              track_uuid);
 }
 

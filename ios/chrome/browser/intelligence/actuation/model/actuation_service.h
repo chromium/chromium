@@ -20,12 +20,15 @@ class Action;
 }  // namespace optimization_guide
 
 class ActuationToolFactory;
+class AggregatedJournal;
 class ProfileIOS;
 
 // Service responsible for handling browser actuation requests.
 class ActuationService : public KeyedService {
  public:
   explicit ActuationService(ProfileIOS* profile);
+  ActuationService(ProfileIOS* profile,
+                   std::unique_ptr<ActuationToolFactory> tool_factory);
   ~ActuationService() override;
 
   // KeyedService:
@@ -35,9 +38,13 @@ class ActuationService : public KeyedService {
   void ExecuteAction(const optimization_guide::proto::Action& action,
                      ActuationTool::ActuationCallback callback);
 
+  // Returns the aggregated journal for this service.
+  AggregatedJournal* GetJournal() { return journal_.get(); }
+
  private:
   raw_ptr<ProfileIOS> profile_;
   std::unique_ptr<ActuationToolFactory> tool_factory_;
+  std::unique_ptr<AggregatedJournal> journal_;
 };
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_ACTUATION_MODEL_ACTUATION_SERVICE_H_

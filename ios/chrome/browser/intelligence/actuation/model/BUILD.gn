@@ -29,6 +29,7 @@ source_set("model") {
     "//base",
     "//components/keyed_service/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
+    "//ios/chrome/browser/intelligence/actuation:actuation_util",
     "//ios/chrome/browser/intelligence/actuation/model/tools:actuation_interface",
     "//ios/chrome/browser/intelligence/actuation/model/tools:click_tool",
     "//ios/chrome/browser/intelligence/actuation/model/tools:navigate_tool",
@@ -45,6 +46,7 @@ source_set("model") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "actuation_service_journal_unittest.mm",
     "actuation_service_unittest.mm",
     "aggregated_journal_unittest.mm",
   ]
@@ -56,6 +58,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/intelligence/actuation/model/tools:navigate_tool",
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/shared/model/profile/test",
+    "//testing/gmock",
     "//testing/gtest",
     "//url",
   ]

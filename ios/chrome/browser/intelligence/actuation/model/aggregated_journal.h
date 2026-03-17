@@ -66,7 +66,7 @@ class AggregatedJournal {
   class PendingAsyncEntry {
    public:
     PendingAsyncEntry(base::PassKey<AggregatedJournal>,
-                      base::SafeRef<AggregatedJournal> journal,
+                      base::WeakPtr<AggregatedJournal> journal,
                       TaskId task_id,
                       std::string_view event_name,
                       uint64_t track_uuid);
@@ -75,7 +75,7 @@ class AggregatedJournal {
     // End a pending entry with additional details.
     void EndEntry(std::vector<JournalDetails> details);
 
-    AggregatedJournal& GetJournal();
+    AggregatedJournal* GetJournal();
     TaskId GetTaskId();
 
     const std::string& event_name() const { return event_name_; }
@@ -83,7 +83,7 @@ class AggregatedJournal {
 
    private:
     bool terminated_ = false;
-    base::SafeRef<AggregatedJournal> journal_;
+    base::WeakPtr<AggregatedJournal> journal_;
     TaskId task_id_;
     std::string event_name_;
     base::TimeTicks begin_time_;
