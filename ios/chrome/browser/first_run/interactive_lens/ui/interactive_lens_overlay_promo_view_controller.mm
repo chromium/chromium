@@ -235,7 +235,7 @@ const CGFloat kHUDViewTopMargin = 20.0;
   ]];
   NSLayoutConstraint* heightConstraint = [_textScrollView.heightAnchor
       constraintEqualToAnchor:_textScrollView.contentLayoutGuide.heightAnchor];
-  heightConstraint.priority = UILayoutPriorityDefaultHigh - 1;
+  heightConstraint.priority = UILayoutPriorityDefaultHigh;
   heightConstraint.active = YES;
 
   AddSameConstraintsToSides(
@@ -263,7 +263,7 @@ const CGFloat kHUDViewTopMargin = 20.0;
         constraintEqualToAnchor:view.safeAreaLayoutGuide.bottomAnchor
                        constant:-kButtonBottomMargin],
     [_actionButton.topAnchor constraintEqualToAnchor:_separatorLine.bottomAnchor
-                                            constant:kButtonVerticalInsets]
+                                            constant:kButtonVerticalInsets],
   ]];
 
   AddSameConstraintsToSides(
@@ -276,9 +276,13 @@ const CGFloat kHUDViewTopMargin = 20.0;
   NSLayoutConstraint* lensViewTopAnchor =
       [lensView.topAnchor constraintEqualToAnchor:_textScrollView.bottomAnchor
                                          constant:kLensViewTopMargin];
-  lensViewTopAnchor.priority = UILayoutPriorityDefaultLow;
+  lensViewTopAnchor.priority = UILayoutPriorityDefaultLow - 1;
+  NSLayoutConstraint* maximizeLensViewHeight =
+      [lensView.heightAnchor constraintEqualToAnchor:view.heightAnchor];
+  maximizeLensViewHeight.priority = UILayoutPriorityDefaultHigh - 1;
   [NSLayoutConstraint activateConstraints:@[
     lensViewTopAnchor,
+    maximizeLensViewHeight,
     [lensView.heightAnchor
         constraintGreaterThanOrEqualToAnchor:view.heightAnchor
                                   multiplier:kLensViewMinHeightMultiplier],
@@ -390,7 +394,10 @@ const CGFloat kHUDViewTopMargin = 20.0;
         constraintEqualToAnchor:scrollView.contentLayoutGuide.bottomAnchor],
     [textStack.widthAnchor
         constraintEqualToAnchor:scrollView.frameLayoutGuide.widthAnchor],
-    [textStack.centerXAnchor constraintEqualToAnchor:scrollView.centerXAnchor],
+    [textStack.leadingAnchor
+        constraintEqualToAnchor:scrollView.contentLayoutGuide.leadingAnchor],
+    [textStack.trailingAnchor
+        constraintEqualToAnchor:scrollView.contentLayoutGuide.trailingAnchor],
   ]];
 
   return scrollView;
