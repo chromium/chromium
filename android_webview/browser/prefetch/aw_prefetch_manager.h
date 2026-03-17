@@ -86,15 +86,6 @@ class AwPrefetchManager {
 
   void CancelPrefetch(JNIEnv* env, int32_t prefetch_key);
 
-  // Registers an external experiment (synthetic trial) in UMA for the current
-  // prefetch request. The experiment ID is derived from the Variations ID
-  // provided by the embedder.
-  //
-  // This is called during `StartPrefetchRequest()` to ensure the metrics state
-  // reflects the parameters of the most recent request. If no Variations ID is
-  // provided, any previously registered prefetch experiment will be cleared.
-  void SetOrClearExternalPrefetchExperiment(std::optional<int> variations_id);
-
   bool GetIsPrefetchInCacheForTesting(JNIEnv* env, int32_t prefetch_key);
 
   // Updates Time-To-Live (TTL) for the prefetched content in seconds.
@@ -154,6 +145,23 @@ class AwPrefetchManager {
   base::android::ScopedJavaLocalRef<jobject> GetJavaPrefetchManager();
 
  private:
+  // Registers an external experiment (synthetic trial) in UMA for the current
+  // prefetch request. The experiment ID is derived from the Variations ID
+  // provided by the embedder.
+  //
+  // This is called during `StartPrefetchRequest()` to ensure the metrics state
+  // reflects the parameters of the most recent request. If no Variations ID is
+  // provided, any previously registered prefetch experiment will be cleared.
+  static void SetOrClearExternalPrefetchExperiment(
+      std::optional<int> variations_id);
+
+  int32_t GetNextPrefetchKey() const { return last_prefetch_key_ + 1; }
+
+  void UpdateLastPrefetchKey(int new_key) {
+    CHECK(new_key > last_prefetch_key_);
+    last_prefetch_key_ = new_key;
+  }
+
   raw_ref<content::BrowserContext> browser_context_;
 
   int ttl_in_sec_ = kDefaultTtlInSec;
@@ -170,13 +178,6 @@ class AwPrefetchManager {
   // inside of `all_prefetches_map_` since `std::map` stores keys
   // in a sorted order.
   int32_t last_prefetch_key_ = -1;
-
-  int32_t GetNextPrefetchKey() const { return last_prefetch_key_ + 1; }
-
-  void UpdateLastPrefetchKey(int new_key) {
-    CHECK(new_key > last_prefetch_key_);
-    last_prefetch_key_ = new_key;
-  }
 };
 
 }  // namespace android_webview

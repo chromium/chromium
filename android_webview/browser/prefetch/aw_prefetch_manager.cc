@@ -90,21 +90,39 @@ AwPrefetchManager::AwPrefetchManager(content::BrowserContext* browser_context)
 
 AwPrefetchManager::~AwPrefetchManager() = default;
 
+// static
 bool AwPrefetchManager::IsPrefetchRequest(
     const network::ResourceRequest& resource_request) {
   return AwPrefetchManager::IsSecPurposeForPrefetch(
       resource_request.headers.GetHeader(blink::kSecPurposeHeaderName));
 }
 
+// static
 bool AwPrefetchManager::IsPrerenderRequest(
     const network::ResourceRequest& resource_request) {
   return blink::IsSecPurposeForPrerender(
       resource_request.headers.GetHeader(blink::kSecPurposeHeaderName));
 }
 
+// static
 bool AwPrefetchManager::IsSecPurposeForPrefetch(
     std::optional<std::string> sec_purpose_header_value) {
   return blink::IsSecPurposeForPrefetch(sec_purpose_header_value);
+}
+
+// static
+void AwPrefetchManager::SetOrClearExternalPrefetchExperiment(
+    std::optional<int> variations_id) {
+  std::vector<int> experiment_ids;
+  if (variations_id.has_value()) {
+    experiment_ids.push_back(variations_id.value());
+  }
+
+  // Always invoke registration to ensure the metrics state is synchronized
+  // with the current request. Providing an empty ID list is necessary to
+  // clear state from previous requests if the current one lacks a
+  // Variations ID.
+  AwMetricsServiceAccessor::RegisterExternalExperiment(experiment_ids);
 }
 
 int AwPrefetchManager::StartPrefetchRequest(
@@ -133,7 +151,7 @@ int AwPrefetchManager::StartPrefetchRequest(
 
   std::optional<int> variations_id =
       GetVariationsIdFromPrefetchParameters(env, prefetch_params);
-  SetOrClearExternalPrefetchExperiment(variations_id);
+  AwPrefetchManager::SetOrClearExternalPrefetchExperiment(variations_id);
 
   std::unique_ptr<content::PrefetchRequestStatusListener>
       request_status_listener =
@@ -200,20 +218,6 @@ void AwPrefetchManager::CancelPrefetch(JNIEnv* env, int32_t prefetch_key) {
   if (it != all_prefetches_map_.end()) {
     all_prefetches_map_.erase(it);
   }
-}
-
-void AwPrefetchManager::SetOrClearExternalPrefetchExperiment(
-    std::optional<int> variations_id) {
-  std::vector<int> experiment_ids;
-  if (variations_id.has_value()) {
-    experiment_ids.push_back(variations_id.value());
-  }
-
-  // Always invoke registration to ensure the metrics state is synchronized
-  // with the current request. Providing an empty ID list is necessary to
-  // clear state from previous requests if the current one lacks a
-  // Variations ID.
-  AwMetricsServiceAccessor::RegisterExternalExperiment(experiment_ids);
 }
 
 bool AwPrefetchManager::GetIsPrefetchInCacheForTesting(JNIEnv* env,
