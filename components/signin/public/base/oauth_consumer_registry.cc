@@ -122,6 +122,7 @@ constexpr char kSyncDeviceStatisticsMetricsName[] =
 constexpr char kPrivateAiServiceName[] = "private_ai_service";
 constexpr char kWalletPassesName[] = "wallet_passes";
 constexpr char kAimEligibilityServiceName[] = "aim_eligibility_service";
+constexpr char kAccessibilityAnnotatorName[] = "accessibility_annotator";
 
 }  // namespace
 
@@ -551,6 +552,11 @@ OAuthConsumer OAuthConsumerRegistry::GetOAuthConsumerFromId(
       return OAuthConsumer(
           /*name=*/kDevtoolsAiCodeName,
           /*scopes=*/{GaiaConstants::kAiCodeOAuth2Scope});
+    case OAuthConsumerId::kAccessibilityAnnotator:
+      // TODO(b/493530228): Use narrow scope for the accessibility annotator.
+      return OAuthConsumer(
+          /*name=*/kAccessibilityAnnotatorName,
+          /*scopes=*/{GaiaConstants::kChromeSyncOAuth2Scope});
   }
 }
 

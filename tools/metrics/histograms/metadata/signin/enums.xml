@@ -752,6 +752,7 @@ chromium-metrics-reviews@google.com.
   <int value="88" label="Wallet Passes Service"/>
   <int value="89" label="Aim Eligibility Service"/>
   <int value="90" label="DevTools AiCode Client"/>
+  <int value="91" label="Accessibility Annotator"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/signin/public/base/oauth_consumer_id.h:OAuthConsumerId) -->
