@@ -9,6 +9,7 @@
 
 #include "chrome/browser/ui/views/save_to_drive/account_chooser_view_delegate.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/button/radio_button.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -60,6 +61,8 @@ class AccountChooserRadioGroupView : public views::BoxLayoutView,
                                      public AccountChooserRadioButtonDelegate {
   METADATA_HEADER(AccountChooserRadioGroupView, views::BoxLayoutView)
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kFirstAccountRadioButtonId);
+
   // Precondition: accounts.size() > 1
   AccountChooserRadioGroupView(AccountChooserViewDelegate& parent_dialog,
                                const std::vector<AccountInfo>& accounts,

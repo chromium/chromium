@@ -76,6 +76,8 @@ class AccountChooserView : public views::FlexLayoutView {
   // Updates the header view with the new accounts.
   void UpdateHeaderView(const std::vector<AccountInfo>& accounts);
 
+  bool is_single_account_ = true;
+
   raw_ptr<AccountChooserViewDelegate> parent_dialog_ = nullptr;
 
   // View containing the logo of the identity provider and the title.

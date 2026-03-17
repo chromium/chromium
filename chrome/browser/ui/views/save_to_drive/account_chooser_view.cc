@@ -38,6 +38,7 @@ AccountChooserView::AccountChooserView(
     : parent_dialog_(parent_dialog) {
   SetProperty(views::kElementIdentifierKey, kTopViewId);
   SetOrientation(views::LayoutOrientation::kVertical);
+  is_single_account_ = IsSingleAccount(accounts);
   header_view_ = AddChildView(CreateHeaderView(accounts));
   body_view_ = AddChildView(CreateBodyView(accounts, primary_account_id));
   footer_view_ = AddChildView(CreateFooterView());
@@ -47,12 +48,18 @@ AccountChooserView::~AccountChooserView() = default;
 void AccountChooserView::UpdateView(
     const std::vector<AccountInfo>& accounts,
     std::optional<CoreAccountId> primary_account_id) {
+  is_single_account_ = IsSingleAccount(accounts);
   UpdateHeaderView(accounts);
   UpdateBodyView(accounts, primary_account_id);
 }
 
 views::View* AccountChooserView::GetInitiallyFocusedView() {
-  return footer_view_->GetViewByElementId(kSaveButtonId);
+  if (is_single_account_) {
+    return footer_view_->GetViewByElementId(kAddAccountButtonId);
+  } else {
+    return body_view_->GetViewByElementId(
+        AccountChooserRadioGroupView::kFirstAccountRadioButtonId);
+  }
 }
 
 std::unique_ptr<views::View> AccountChooserView::CreateBodyMultiAccount(
@@ -108,7 +115,7 @@ std::unique_ptr<views::View> AccountChooserView::CreateBodyView(
   CHECK(IsSingleAccount(accounts) || IsMultiAccount(accounts))
       << "Account chooser view should "
          "only be used if there are one or more accounts.";
-  if (IsSingleAccount(accounts)) {
+  if (is_single_account_) {
     parent_dialog_->OnAccountSelected(accounts.front());
     return CreateBodySingleAccount(accounts.front());
   } else {
