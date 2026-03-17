@@ -361,6 +361,7 @@ source_set("test_support") {
       "//chrome/browser/ash/login/users:test_support",
       "//chrome/browser/ash/profiles",
       "//chrome/browser/sync",
+      "//chrome/browser/trusted_vault",
       "//chrome/test:test_support",
       "//chromeos/dbus/power",
       "//components/services/app_service/public/cpp:instance_update",

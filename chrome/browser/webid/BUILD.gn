@@ -153,6 +153,7 @@ source_set("unit_tests") {
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/sync",
     "//chrome/browser/sync:factories",
+    "//chrome/browser/trusted_vault",
     "//chrome/test:test_support",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/browser:cookie_settings",
