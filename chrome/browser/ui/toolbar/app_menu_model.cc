@@ -505,18 +505,22 @@ ProfileSubMenuModel::ProfileSubMenuModel(
     // If the profile is being deleted, profile_attributes may be null.
     if (profile_attributes) {
       AccountInfo account_info = GetAccountInfoFromProfile(profile);
-      gfx::Image avatar_image =
+      auto [avatar_image, icon_type] =
           account_info.IsEmpty()
-              ? profile_attributes->GetAvatarIcon(
+              ? profile_attributes->GetAvatarIconWithType(
                     avatar_icon_size, /*use_high_res_file=*/true,
                     GetPlaceholderAvatarIconParamsDependingOnTheme(
                         ThemeServiceFactory::GetForProfile(profile),
                         /*background_color_id=*/ui::kColorMenuBackground,
                         *color_provider))
-              : account_info.account_image;
+              : std::make_pair(account_info.account_image,
+                               AvatarIconType::kNonPlaceholder);
       // The avatar image can be empty if the account image hasn't been
       // fetched yet, if there is no image, or in tests.
-      if (!avatar_image.IsEmpty()) {
+      // Keep the default vector icon for placeholder avatars so that
+      // MenuItemView can re-color it on hover in forced-colors mode.
+      if (!avatar_image.IsEmpty() &&
+          icon_type != AvatarIconType::kPlaceholder) {
         avatar_image_model_ =
             ui::ImageModel::FromImage(profiles::GetSizedAvatarIcon(
                 avatar_image, avatar_icon_size, avatar_icon_size,
