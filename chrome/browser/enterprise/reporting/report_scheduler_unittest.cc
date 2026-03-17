@@ -81,6 +81,7 @@ ACTION_P(ScheduleGeneratorCallback, request_number) {
   ReportRequestQueue requests;
   for (int i = 0; i < request_number; i++)
     requests.push(std::make_unique<ReportRequest>(ReportType::kFull));
+
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(arg0), std::move(requests)));
 }
@@ -88,8 +89,17 @@ ACTION_P(ScheduleGeneratorCallback, request_number) {
 ACTION(ScheduleProfileRequestGeneratorCallback) {
   ReportRequestQueue requests;
   requests.push(std::make_unique<ReportRequest>(ReportType::kProfileReport));
+
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(arg0), std::move(requests)));
+}
+
+ACTION(ScheduleProfileRequestGeneratorEmptyReportCallback) {
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          std::move(arg0),
+          base::unexpected(ReportGenerationError::kProfileEmptyReport)));
 }
 
 class MockReportGenerator : public ReportGenerator {
@@ -1229,6 +1239,39 @@ TEST_F(EnabledProfileSecuritySignalsReportSchedulerTest,
   run_loop.Run();
 
   histogram_tester_.ExpectTotalCount(kSignalsReportingModeMetricName, 0);
+}
+
+// Tests that an error during base profile report generation (e.g.,
+// the profile was not fully loaded yet) resets the timer for the next cycle.
+TEST_F(EnabledProfileSecuritySignalsReportSchedulerTest,
+       UploadReportTransientError_ProfileEmpty) {
+  EXPECT_CALL(*profile_request_generator_, OnGenerate(_))
+      .WillOnce(
+          WithArgs<0>(ScheduleProfileRequestGeneratorEmptyReportCallback()));
+  EXPECT_CALL(*uploader_, SetRequestAndUpload(_, _, _)).Times(0);
+
+  TestingProfile* profile = profile_manager_.CreateTestingProfile("profile");
+  SetUserSecuritySignalsPolicy(profile, /*enabled=*/false);
+  profile->GetTestingPrefService()->SetManagedPref(
+      kCloudProfileReportingEnabled, std::make_unique<base::Value>(true));
+
+  SetLastUploadInHour(base::Hours(25), profile);
+
+  CreateSchedulerForProfileReporting(profile);
+  EXPECT_TRUE(scheduler_->IsNextReportScheduledForTesting());
+
+  task_environment_.FastForwardBy(base::TimeDelta());
+
+  EXPECT_TRUE(scheduler_->IsNextReportScheduledForTesting());
+  auto current_last_upload_timestamp =
+      profile->GetPrefs()->GetTime(kLastUploadTimestamp);
+  EXPECT_EQ(base::Time::Now(), current_last_upload_timestamp);
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.CloudReportingReportGenerationError",
+      ReportGenerationError::kProfileEmptyReport, 1);
+  ::testing::Mock::VerifyAndClearExpectations(client_);
+  ::testing::Mock::VerifyAndClearExpectations(profile_request_generator_);
+  ::testing::Mock::VerifyAndClearExpectations(uploader_);
 }
 
 #endif  // !BUILDFLAG(IS_CHROMEOS)

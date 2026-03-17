@@ -6,6 +6,7 @@
 
 #include "base/files/file_path.h"
 #include "base/json/json_writer.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "components/enterprise/connectors/core/reporting_constants.h"
@@ -290,6 +291,12 @@ std::string GetSecuritySignalsInReport(
       signals_dict, base::JSONWriter::OPTIONS_PRETTY_PRINT, &signals_json);
 
   return signals_json;
+}
+
+void RecordReportGenerationErrorMetric(ReportGenerationError error) {
+  static constexpr char kReportGenerationErrorMetricsName[] =
+      "Enterprise.CloudReportingReportGenerationError";
+  base::UmaHistogramEnumeration(kReportGenerationErrorMetricsName, error);
 }
 
 }  // namespace enterprise_reporting

@@ -12,6 +12,7 @@
 #include "build/build_config.h"
 #include "components/enterprise/browser/reporting/profile_report_generator.h"
 #include "components/enterprise/browser/reporting/report_request.h"
+#include "components/enterprise/browser/reporting/report_util.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
 namespace enterprise_reporting {
@@ -40,8 +41,10 @@ class ReportRequestQueueGenerator {
 
   // Generate a queue of requests including full profile info based on given
   // basic request. Will invoke `callback` with the queue when done.
-  void Generate(std::unique_ptr<ReportRequest> basic_request,
-                base::OnceCallback<void(ReportRequestQueue)> callback);
+  void Generate(
+      std::unique_ptr<ReportRequest> basic_request,
+      base::OnceCallback<void(
+          base::expected<ReportRequestQueue, ReportGenerationError>)> callback);
 
  private:
   using IndexedProfileReport =
@@ -60,7 +63,8 @@ class ReportRequestQueueGenerator {
   // generated.
   void OnAllProfileReportsGenerated(
       std::unique_ptr<ReportRequest> basic_request,
-      base::OnceCallback<void(ReportRequestQueue)> callback,
+      base::OnceCallback<void(
+          base::expected<ReportRequestQueue, ReportGenerationError>)> callback,
       std::vector<IndexedProfileReport> indexed_reports);
 
  private:

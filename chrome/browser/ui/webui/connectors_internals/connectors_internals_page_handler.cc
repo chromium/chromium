@@ -9,6 +9,7 @@
 #include "base/i18n/time_formatting.h"
 #include "base/json/json_writer.h"
 #include "base/notimplemented.h"
+#include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/client_certificates/certificate_provisioning_service_factory.h"
@@ -334,14 +335,24 @@ void ConnectorsInternalsPageHandler::OnSignalsCollected(
 void ConnectorsInternalsPageHandler::OnReportGenerated(
     GetSignalsReportingStateCallback callback,
     connectors_internals::mojom::SignalsReportingStatePtr state,
-    enterprise_reporting::ReportRequestQueue requests) {
-  if (requests.empty()) {
-    state->error_info = "Report generator returned an empty queue.";
+    base::expected<enterprise_reporting::ReportRequestQueue,
+                   enterprise_reporting::ReportGenerationError> result) {
+  std::string error_message;
+  if (!result.has_value()) {
+    error_message = base::StringPrintf(
+        "Report generation failed with error code: %d", result.error());
+  } else if (result.value().empty()) {
+    error_message = "Report generator returned an empty queue.";
+  }
+
+  if (!error_message.empty()) {
+    state->error_info = std::move(error_message);
     std::move(callback).Run(std::move(state));
     request_generator_.reset();
     return;
   }
 
+  enterprise_reporting::ReportRequestQueue requests = std::move(result).value();
   std::unique_ptr<enterprise_reporting::ReportRequest> request =
       std::move(requests.front());
 

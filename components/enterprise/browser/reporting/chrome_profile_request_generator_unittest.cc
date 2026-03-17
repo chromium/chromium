@@ -335,15 +335,18 @@ class ChromeProfileRequestGeneratorTest
 
 TEST_P(ChromeProfileRequestGeneratorTest, GenerateFullReportNoSecuritySignals) {
   EXPECT_CALL(mock_aggregator_, GetSignals(_, _)).Times(0);
-  base::test::TestFuture<ReportRequestQueue> test_future;
+  base::test::TestFuture<
+      base::expected<ReportRequestQueue, ReportGenerationError>>
+      test_future;
   generator_.Generate(ReportGenerationConfig(ReportTrigger::kTriggerTimer,
                                              ReportType::kProfileReport,
                                              SecuritySignalsMode::kNoSignals,
                                              /*use_cookies=*/false),
                       test_future.GetCallback());
 
+  const auto& requests = test_future.Get();
   VerifyReportContent(
-      test_future.Get(), em::ChromeProfileReportRequest::PROFILE_REPORT,
+      requests.value(), em::ChromeProfileReportRequest::PROFILE_REPORT,
       /*is_profile_id_null=*/false, is_new_signal_collection_enabled());
 }
 
@@ -359,7 +362,9 @@ TEST_P(ChromeProfileRequestGeneratorTest,
         std::move(callback).Run(CreateFilledResponse());
       });
 
-  base::test::TestFuture<ReportRequestQueue> test_future;
+  base::test::TestFuture<
+      base::expected<ReportRequestQueue, ReportGenerationError>>
+      test_future;
   generator_.Generate(
       ReportGenerationConfig(ReportTrigger::kTriggerTimer,
                              ReportType::kProfileReport,
@@ -367,8 +372,9 @@ TEST_P(ChromeProfileRequestGeneratorTest,
                              /*use_cookies=*/false),
       test_future.GetCallback());
 
+  const auto& requests = test_future.Get();
   VerifyReportContent(
-      test_future.Get(),
+      requests.value(),
       em::ChromeProfileReportRequest::PROFILE_REPORT_WITH_SECURITY_SIGNALS,
       /*is_profile_id_null=*/false, new_signal_collection_enabled);
 }
@@ -383,13 +389,18 @@ TEST_P(ChromeProfileRequestGeneratorTest, GenerateSecuritySignalsOnlyReport) {
                        device_signals::SignalsAggregationResponse)> callback) {
         std::move(callback).Run(CreateFilledResponse());
       });
-  base::test::TestFuture<ReportRequestQueue> test_future;
+  base::test::TestFuture<
+      base::expected<ReportRequestQueue, ReportGenerationError>>
+      test_future;
+
   generator_.Generate(ReportGenerationConfig(ReportTrigger::kTriggerNone,
                                              ReportType::kProfileReport,
                                              SecuritySignalsMode::kSignalsOnly,
                                              /*use_cookies=*/false),
                       test_future.GetCallback());
-  VerifyReportContent(test_future.Get(),
+
+  const auto& requests = test_future.Get();
+  VerifyReportContent(requests.value(),
                       em::ChromeProfileReportRequest::PROFILE_SECURITY_SIGNALS,
                       /*is_profile_id_null=*/false,
                       new_signal_collection_enabled);
@@ -408,13 +419,18 @@ TEST_P(ChromeProfileRequestGeneratorTest, NoProfileId) {
         std::move(callback).Run(
             CreateFilledResponse(/*nullify_profile_id=*/true));
       });
-  base::test::TestFuture<ReportRequestQueue> test_future;
+  base::test::TestFuture<
+      base::expected<ReportRequestQueue, ReportGenerationError>>
+      test_future;
+
   generator_.Generate(ReportGenerationConfig(ReportTrigger::kTriggerNone,
                                              ReportType::kProfileReport,
                                              SecuritySignalsMode::kSignalsOnly,
                                              /*use_cookies=*/false),
                       test_future.GetCallback());
-  VerifyReportContent(test_future.Get(),
+
+  const auto& requests = test_future.Get();
+  VerifyReportContent(requests.value(),
                       em::ChromeProfileReportRequest::PROFILE_SECURITY_SIGNALS,
                       /*is_profile_id_null=*/true,
                       new_signal_collection_enabled);
@@ -422,17 +438,47 @@ TEST_P(ChromeProfileRequestGeneratorTest, NoProfileId) {
 
 TEST_P(ChromeProfileRequestGeneratorTest, IncorrectReportType) {
   EXPECT_CALL(mock_aggregator_, GetSignals(_, _)).Times(0);
-  base::test::TestFuture<ReportRequestQueue> test_future;
+  base::test::TestFuture<
+      base::expected<ReportRequestQueue, ReportGenerationError>>
+      test_future;
   generator_.Generate(ReportGenerationConfig(), test_future.GetCallback());
 
-  const ReportRequestQueue& requests = test_future.Get();
-
+  const auto& requests = test_future.Get();
   // When the wrong report type is provided, generator should still return the
   // correct request, but with empty content.
-  ASSERT_EQ(1u, requests.size());
-  ReportRequest* request = requests.front().get();
+  ASSERT_EQ(1u, requests->size());
+  ReportRequest* request = requests->front().get();
   ASSERT_TRUE(request);
   ASSERT_FALSE(request->GetDeviceReportRequest().has_browser_report());
+}
+
+// Tests that if the base profile report generation results in empty reports,
+// the generator aborts the entire process, skips security signal collection,
+// and returns an empty queue.
+TEST_P(ChromeProfileRequestGeneratorTest, AbortsWhenProfileReportIsEmpty) {
+  if (!is_new_signal_collection_enabled()) {
+    GTEST_SKIP()
+        << "Test only applies when PolicyDataCollectionEnabled is true.";
+  }
+  // Simulate that generating a report failed.
+  delegate_factory_.SetProfileInitResult(false);
+  ChromeProfileRequestGenerator generator(
+      base::FilePath(kProfilePath), &delegate_factory_, &mock_aggregator_);
+  EXPECT_CALL(mock_aggregator_, GetSignals(testing::_, testing::_)).Times(0);
+  base::test::TestFuture<
+      base::expected<ReportRequestQueue, ReportGenerationError>>
+      test_future;
+
+  generator.Generate(
+      ReportGenerationConfig(ReportTrigger::kTriggerTimer,
+                             ReportType::kProfileReport,
+                             SecuritySignalsMode::kSignalsAttached,
+                             /*use_cookies=*/false),
+      test_future.GetCallback());
+
+  const auto& result = test_future.Get();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), ReportGenerationError::kProfileEmptyReport);
 }
 
 INSTANTIATE_TEST_SUITE_P(, ChromeProfileRequestGeneratorTest, testing::Bool());

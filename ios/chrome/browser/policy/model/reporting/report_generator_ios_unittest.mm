@@ -13,6 +13,7 @@
 #import "base/test/scoped_feature_list.h"
 #import "components/enterprise/browser/identifiers/profile_id_service.h"
 #import "components/enterprise/browser/reporting/report_request.h"
+#import "components/enterprise/browser/reporting/report_util.h"
 #import "components/policy/core/common/cloud/cloud_policy_util.h"
 #import "components/policy/core/common/mock_policy_service.h"
 #import "components/policy/core/common/policy_map.h"
@@ -111,15 +112,24 @@ class ReportGeneratorIOSTest : public PlatformTest,
     histogram_tester_ = std::make_unique<base::HistogramTester>();
     base::RunLoop run_loop;
     std::vector<std::unique_ptr<ReportRequest>> reqs;
-    generator_.Generate(ReportType::kFull,
-                        base::BindLambdaForTesting(
-                            [&run_loop, &reqs](ReportRequestQueue requests) {
-                              while (!requests.empty()) {
-                                reqs.push_back(std::move(requests.front()));
-                                requests.pop();
-                              }
-                              run_loop.Quit();
-                            }));
+
+    generator_.Generate(
+        ReportType::kFull,
+        base::BindLambdaForTesting(
+            [&run_loop, &reqs](base::expected<ReportRequestQueue,
+                                              ReportGenerationError> result) {
+              // Check if the expected object contains the success value
+              if (result.has_value()) {
+                // Move the queue out of the expected object
+                ReportRequestQueue requests = std::move(result).value();
+                while (!requests.empty()) {
+                  reqs.push_back(std::move(requests.front()));
+                  requests.pop();
+                }
+              }
+              run_loop.Quit();
+            }));
+
     run_loop.Run();
     VerifyMetrics(reqs);
     return reqs;
