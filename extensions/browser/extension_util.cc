@@ -26,6 +26,7 @@
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_map.h"
 #include "extensions/browser/script_injection_tracker.h"
+#include "extensions/browser/shared_module_service.h"
 #include "extensions/browser/ui_util.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
@@ -147,7 +148,10 @@ bool IsExtensionIdle(const std::string& extension_id,
     // We have to check all the extensions that use this shared module for idle
     // to tell whether it is really 'idle'.
     std::unique_ptr<ExtensionSet> dependents =
-        ExtensionSystem::Get(context)->GetDependentExtensions(extension);
+        ExtensionsBrowserClient::Get()
+            ->GetSharedModuleService(context)
+            ->GetDependentExtensions(extension);
+
     for (const auto& dependent : *dependents) {
       ids_to_check.push_back(dependent->id());
     }

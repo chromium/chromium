@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_EXTENSIONS_SHARED_MODULE_SERVICE_H_
-#define CHROME_BROWSER_EXTENSIONS_SHARED_MODULE_SERVICE_H_
+#ifndef EXTENSIONS_BROWSER_SHARED_MODULE_SERVICE_H_
+#define EXTENSIONS_BROWSER_SHARED_MODULE_SERVICE_H_
 
 #include <list>
 
@@ -42,8 +42,6 @@ class SharedModuleService : public KeyedService,
     // imports for an extension not in the webstore).
     IMPORT_STATUS_UNRECOVERABLE
   };
-
-  static SharedModuleService* Get(content::BrowserContext* context);
 
   SharedModuleService(const SharedModuleService&) = delete;
   SharedModuleService& operator=(const SharedModuleService&) = delete;
@@ -99,4 +97,4 @@ class SharedModuleService : public KeyedService,
 
 }  // namespace extensions
 
-#endif  // CHROME_BROWSER_EXTENSIONS_SHARED_MODULE_SERVICE_H_
+#endif  // EXTENSIONS_BROWSER_SHARED_MODULE_SERVICE_H_

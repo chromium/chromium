@@ -421,8 +421,6 @@ source_set("extensions") {
     "safe_browsing_verdict_handler.h",
     "settings_api_helpers.cc",
     "settings_api_helpers.h",
-    "shared_module_service.cc",
-    "shared_module_service.h",
     "shared_module_service_factory.cc",
     "shared_module_service_factory.h",
     "side_panel_helper.cc",

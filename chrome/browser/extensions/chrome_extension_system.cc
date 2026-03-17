@@ -27,7 +27,7 @@
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/install_verifier_factory.h"
-#include "chrome/browser/extensions/shared_module_service.h"
+#include "chrome/browser/extensions/shared_module_service_factory.h"
 #include "chrome/browser/extensions/sync/extension_sync_service.h"
 #include "chrome/browser/notifications/notifier_state_tracker.h"
 #include "chrome/browser/notifications/notifier_state_tracker_factory.h"
@@ -56,6 +56,7 @@
 #include "extensions/browser/load_error_reporter.h"
 #include "extensions/browser/quota_service.h"
 #include "extensions/browser/service_worker_manager.h"
+#include "extensions/browser/shared_module_service.h"
 #include "extensions/browser/state_store.h"
 #include "extensions/browser/unpacked_installer.h"
 #include "extensions/browser/update_install_gate.h"
@@ -195,7 +196,7 @@ void ChromeExtensionSystem::Shared::InitInstallGates() {
       ExtensionPrefs::DelayReason::kWaitForIdle, update_install_gate_.get());
   delayed_install_manager->RegisterInstallGate(
       ExtensionPrefs::DelayReason::kWaitForImports,
-      SharedModuleService::Get(profile_));
+      SharedModuleServiceFactory::GetForBrowserContext(profile_));
 #if BUILDFLAG(IS_CHROMEOS)
   if (IsRunningInForcedAppMode()) {
     kiosk_app_update_install_gate_ =
@@ -451,11 +452,6 @@ AppSorting* ChromeExtensionSystem::app_sorting() {
 
 ContentVerifier* ChromeExtensionSystem::content_verifier() {
   return shared_->content_verifier();
-}
-
-std::unique_ptr<ExtensionSet> ChromeExtensionSystem::GetDependentExtensions(
-    const Extension* extension) {
-  return SharedModuleService::Get(profile_)->GetDependentExtensions(extension);
 }
 
 void ChromeExtensionSystem::InstallUpdate(

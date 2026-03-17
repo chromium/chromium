@@ -339,4 +339,12 @@ InstallTracker* ExtensionsBrowserClient::GetInstallTracker(
   return nullptr;
 }
 
+SharedModuleService* ExtensionsBrowserClient::GetSharedModuleService(
+    content::BrowserContext* context) {
+  return nullptr;
+}
+
+void ExtensionsBrowserClient::UpdateCheckIfEnabled(
+    content::BrowserContext* context) {}
+
 }  // namespace extensions

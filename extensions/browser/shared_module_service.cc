@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/shared_module_service.h"
+#include "extensions/browser/shared_module_service.h"
 
 #include <set>
 #include <vector>
@@ -10,10 +10,9 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/version.h"
-#include "chrome/browser/extensions/shared_module_service_factory.h"
-#include "chrome/browser/extensions/updater/extension_updater.h"
 #include "extensions/browser/delayed_install_manager.h"
 #include "extensions/browser/extension_registrar.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/pending_extension_manager.h"
 #include "extensions/browser/uninstall_reason.h"
 #include "extensions/buildflags/buildflags.h"
@@ -35,12 +34,6 @@ bool IsSharedModule(const Extension* extension,
 }
 
 }  // namespace
-
-// static
-SharedModuleService* SharedModuleService::Get(
-    content::BrowserContext* context) {
-  return SharedModuleServiceFactory::GetForBrowserContext(context);
-}
 
 SharedModuleService::SharedModuleService(content::BrowserContext* context)
     : browser_context_(context) {
@@ -71,9 +64,8 @@ SharedModuleService::ImportStatus SharedModuleService::CheckImports(
   const ImportInfoVector& imports = SharedModuleInfo::GetImports(extension);
   for (auto iter = imports.begin(); iter != imports.end(); ++iter) {
     base::Version version_required(iter->minimum_version);
-    const Extension* imported_module =
-        registry->GetExtensionById(iter->extension_id,
-                                   ExtensionRegistry::EVERYTHING);
+    const Extension* imported_module = registry->GetExtensionById(
+        iter->extension_id, ExtensionRegistry::EVERYTHING);
     if (!imported_module) {
       if (extension->from_webstore()) {
         status = IMPORT_STATUS_UNSATISFIED;
@@ -110,16 +102,12 @@ SharedModuleService::ImportStatus SharedModuleService::SatisfyImports(
 
   if (status == IMPORT_STATUS_UNSATISFIED) {
     for (ImportInfoList::const_iterator iter = missing_modules.begin();
-         iter != missing_modules.end();
-         ++iter) {
+         iter != missing_modules.end(); ++iter) {
       pending_extension_manager->AddFromExtensionImport(
           iter->extension_id, extension_urls::GetWebstoreUpdateUrl(),
           IsSharedModule);
     }
-    auto* extension_updater = ExtensionUpdater::Get(browser_context_);
-    if (extension_updater->enabled()) {
-      extension_updater->CheckSoon();
-    }
+    ExtensionsBrowserClient::Get()->UpdateCheckIfEnabled(browser_context_);
   }
   return status;
 }
@@ -138,8 +126,7 @@ std::unique_ptr<ExtensionSet> SharedModuleService::GetDependentExtensions(
         DelayedInstallManager::Get(browser_context_)->delayed_installs());
 
     for (ExtensionSet::const_iterator iter = set_to_check.begin();
-         iter != set_to_check.end();
-         ++iter) {
+         iter != set_to_check.end(); ++iter) {
       if (SharedModuleInfo::ImportsExtensionById(iter->get(),
                                                  extension->id())) {
         dependents->Insert(*iter);
@@ -178,10 +165,10 @@ void SharedModuleService::PruneSharedModules() {
   std::set<std::string> used_shared_modules;
 
   for (ExtensionSet::const_iterator iter = set_to_check.begin();
-       iter != set_to_check.end();
-       ++iter) {
-    if (SharedModuleInfo::IsSharedModule(iter->get()))
+       iter != set_to_check.end(); ++iter) {
+    if (SharedModuleInfo::IsSharedModule(iter->get())) {
       shared_modules.push_back(iter->get()->id());
+    }
 
     const ImportInfoVector& imports = SharedModuleInfo::GetImports(iter->get());
     for (auto imports_iter = imports.begin(); imports_iter != imports.end();
@@ -192,10 +179,10 @@ void SharedModuleService::PruneSharedModules() {
 
   std::vector<std::string>::const_iterator shared_modules_iter;
   for (shared_modules_iter = shared_modules.begin();
-       shared_modules_iter != shared_modules.end();
-       shared_modules_iter++) {
-    if (used_shared_modules.count(*shared_modules_iter))
+       shared_modules_iter != shared_modules.end(); shared_modules_iter++) {
+    if (used_shared_modules.count(*shared_modules_iter)) {
       continue;
+    }
     registrar->UninstallExtension(
         *shared_modules_iter,
         extensions::UNINSTALL_REASON_ORPHANED_SHARED_MODULE,
@@ -207,8 +194,9 @@ void SharedModuleService::OnExtensionInstalled(
     content::BrowserContext* browser_context,
     const Extension* extension,
     bool is_update) {
-  if (is_update)
+  if (is_update) {
     PruneSharedModules();
+  }
 }
 
 void SharedModuleService::OnExtensionUninstalled(
@@ -217,8 +205,9 @@ void SharedModuleService::OnExtensionUninstalled(
     extensions::UninstallReason reason) {
   // Do not call PruneSharedModules() for an uninstall that we were responsible
   // for.
-  if (reason == extensions::UNINSTALL_REASON_ORPHANED_SHARED_MODULE)
+  if (reason == extensions::UNINSTALL_REASON_ORPHANED_SHARED_MODULE) {
     return;
+  }
 
   PruneSharedModules();
 }

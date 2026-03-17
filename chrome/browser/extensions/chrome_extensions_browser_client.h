@@ -309,6 +309,9 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
   InstallStageTracker* GetInstallStageTracker(
       content::BrowserContext* context) override;
   InstallTracker* GetInstallTracker(content::BrowserContext* context) override;
+  SharedModuleService* GetSharedModuleService(
+      content::BrowserContext* context) override;
+  void UpdateCheckIfEnabled(content::BrowserContext* context) override;
 
   static void set_did_chrome_update_for_testing(bool did_update);
 

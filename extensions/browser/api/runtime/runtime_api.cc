@@ -36,6 +36,7 @@
 #include "extensions/browser/lazy_context_id.h"
 #include "extensions/browser/lazy_context_task_queue.h"
 #include "extensions/browser/process_manager_factory.h"
+#include "extensions/browser/shared_module_service.h"
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/api/runtime.h"
 #include "extensions/common/constants.h"
@@ -534,7 +535,9 @@ void RuntimeEventRouter::DispatchOnInstalledEvent(
             extension_id);
     if (extension && SharedModuleInfo::IsSharedModule(extension)) {
       std::unique_ptr<ExtensionSet> dependents =
-          system->GetDependentExtensions(extension);
+          ExtensionsBrowserClient::Get()
+              ->GetSharedModuleService(context)
+              ->GetDependentExtensions(extension);
       for (ExtensionSet::const_iterator i = dependents->begin();
            i != dependents->end(); i++) {
         base::ListValue sm_event_args;

@@ -34,7 +34,7 @@
 #include "chrome/browser/download/download_stats.h"
 #include "chrome/browser/extensions/install_tracker_factory.h"
 #include "chrome/browser/extensions/install_verifier_factory.h"
-#include "chrome/browser/extensions/shared_module_service.h"
+#include "chrome/browser/extensions/shared_module_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -58,6 +58,7 @@
 #include "extensions/browser/install_tracker.h"
 #include "extensions/browser/install_verifier.h"
 #include "extensions/browser/manifest_check_level.h"
+#include "extensions/browser/shared_module_service.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
@@ -258,7 +259,7 @@ void WebstoreInstaller::Start() {
   }
 
   if (approval_.get() && approval_->dummy_extension.get()) {
-    SharedModuleService::Get(profile_)->CheckImports(
+    SharedModuleServiceFactory::GetForBrowserContext(profile_)->CheckImports(
         approval_->dummy_extension.get(), &pending_modules_, &pending_modules_);
     // Do not check the return value of CheckImports, the CRX installer
     // will report appropriate error messages and fail to install if there

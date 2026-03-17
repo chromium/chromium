@@ -537,6 +537,8 @@ source_set("browser_sources") {
     "service_worker/worker_id_set.h",
     "service_worker_manager.cc",
     "service_worker_manager.h",
+    "shared_module_service.cc",
+    "shared_module_service.h",
     "state_store.cc",
     "state_store.h",
     "state_store_test_observer.cc",

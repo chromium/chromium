@@ -114,6 +114,7 @@ class RuntimeAPIDelegate;
 class SafeBrowsingDelegate;
 class ScopedBrowserContextKeepAlive;
 class ScriptExecutor;
+class SharedModuleService;
 class SitePermissionsHelper;
 class UserScriptListener;
 
@@ -638,6 +639,13 @@ class ExtensionsBrowserClient {
 
   // Returns InstallTracker associated with `context`.
   virtual InstallTracker* GetInstallTracker(content::BrowserContext* context);
+
+  // Returns SharedModuleService associated with `context`.
+  virtual SharedModuleService* GetSharedModuleService(
+      content::BrowserContext* context);
+
+  // Run an update check if the updater is enabled.
+  virtual void UpdateCheckIfEnabled(content::BrowserContext* context);
 
  protected:
   std::unique_ptr<ExtensionAssetsManager> assets_manager_;

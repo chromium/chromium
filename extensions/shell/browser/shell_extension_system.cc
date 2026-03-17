@@ -131,11 +131,6 @@ ContentVerifier* ShellExtensionSystem::content_verifier() {
   return nullptr;
 }
 
-std::unique_ptr<ExtensionSet> ShellExtensionSystem::GetDependentExtensions(
-    const Extension* extension) {
-  return std::make_unique<ExtensionSet>();
-}
-
 void ShellExtensionSystem::InstallUpdate(
     const ExtensionId& extension_id,
     const std::string& public_key,

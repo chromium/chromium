@@ -31,7 +31,7 @@
 #include "chrome/browser/extensions/extension_service_test_with_install.h"
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker_factory.h"
 #include "chrome/browser/extensions/load_error_waiter.h"
-#include "chrome/browser/extensions/shared_module_service.h"
+#include "chrome/browser/extensions/shared_module_service_factory.h"
 #include "chrome/browser/extensions/sync/extension_sync_data.h"
 #include "chrome/browser/extensions/sync/extension_sync_service.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
@@ -73,6 +73,7 @@
 #include "extensions/browser/install_verifier.h"
 #include "extensions/browser/pending_extension_manager.h"
 #include "extensions/browser/scoped_ignore_content_verifier_for_test.h"
+#include "extensions/browser/shared_module_service.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/browser/unpacked_installer.h"
 #include "extensions/browser/updater/extension_cache_fake.h"
@@ -318,7 +319,8 @@ class ExtensionPolicyTest : public ExtensionPolicyTestBase {
   }
 
   extensions::SharedModuleService* shared_module_service() {
-    return extensions::SharedModuleService::Get(profile());
+    return extensions::SharedModuleServiceFactory::GetForBrowserContext(
+        profile());
   }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)

@@ -19,7 +19,6 @@
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/external_provider_manager.h"
-#include "chrome/browser/extensions/shared_module_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/prefs/pref_service.h"
@@ -264,11 +263,6 @@ bool TestExtensionSystem::is_ready() const {
 
 ContentVerifier* TestExtensionSystem::content_verifier() {
   return content_verifier_.get();
-}
-
-std::unique_ptr<ExtensionSet> TestExtensionSystem::GetDependentExtensions(
-    const Extension* extension) {
-  return SharedModuleService::Get(profile_)->GetDependentExtensions(extension);
 }
 
 void TestExtensionSystem::InstallUpdate(

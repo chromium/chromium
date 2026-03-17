@@ -24,7 +24,7 @@
 #include "chrome/browser/extensions/extension_garbage_collector_factory.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/external_provider_manager.h"
-#include "chrome/browser/extensions/shared_module_service.h"
+#include "chrome/browser/extensions/shared_module_service_factory.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
@@ -55,6 +55,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/load_error_reporter.h"
 #include "extensions/browser/pref_names.h"
+#include "extensions/browser/shared_module_service.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extensions_client.h"
@@ -523,7 +524,7 @@ void ExtensionServiceTestBase::CreateExtensionService(
 
   DelayedInstallManager::Get(profile())->RegisterInstallGate(
       ExtensionPrefs::DelayReason::kWaitForImports,
-      SharedModuleService::Get(profile()));
+      SharedModuleServiceFactory::GetForBrowserContext(profile()));
 
 #if BUILDFLAG(IS_CHROMEOS)
   if (!enable_install_limiter) {

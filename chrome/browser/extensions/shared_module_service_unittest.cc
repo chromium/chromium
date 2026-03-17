@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/shared_module_service.h"
+#include "extensions/browser/shared_module_service.h"
 
 #include <memory>
 #include <string>
@@ -12,6 +12,7 @@
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
+#include "chrome/browser/extensions/shared_module_service_factory.h"
 #include "components/crx_file/id_util.h"
 #include "components/sync/model/string_ordinal.h"
 #include "components/version_info/version_info.h"
@@ -137,7 +138,8 @@ TEST_F(SharedModuleServiceUnitTest, AddDependentSharedModules) {
 
   // Try to satisfy imports for the extension. This should queue the imported
   // module's installation.
-  SharedModuleService::Get(profile())->SatisfyImports(extension.get());
+  SharedModuleServiceFactory::GetForBrowserContext(profile())->SatisfyImports(
+      extension.get());
   EXPECT_TRUE(pending_extension_manager->IsIdPending(import_id));
 }
 

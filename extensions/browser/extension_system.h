@@ -35,9 +35,7 @@ namespace extensions {
 
 class AppSorting;
 class ContentVerifier;
-class Extension;
 class ExtensionService;
-class ExtensionSet;
 class ManagementPolicy;
 class QuotaService;
 class ServiceWorkerManager;
@@ -111,12 +109,6 @@ class ExtensionSystem : public KeyedService {
 
   // Returns the content verifier, if any.
   virtual ContentVerifier* content_verifier() = 0;
-
-  // Get a set of extensions that depend on the given extension.
-  // TODO(elijahtaylor): Move SharedModuleService out of chrome/browser
-  // so it can be retrieved from ExtensionSystem directly.
-  virtual std::unique_ptr<ExtensionSet> GetDependentExtensions(
-      const Extension* extension) = 0;
 
   // Install an updated version of `extension_id` with the version given in
   // `unpacked_dir`. If `install_immediately` is true, the system will install
