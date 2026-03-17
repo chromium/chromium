@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_mediator.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/legacy_fullscreen_mediator.h"
 
 #import "base/check_op.h"
 #import "base/memory/ptr_util.h"
@@ -19,8 +19,9 @@
 #import "ios/public/provider/chrome/browser/fullscreen/fullscreen_api.h"
 #import "ios/web/public/web_state.h"
 
-FullscreenMediator::FullscreenMediator(FullscreenController* controller,
-                                       FullscreenModel* model)
+LegacyFullscreenMediator::LegacyFullscreenMediator(
+    FullscreenController* controller,
+    FullscreenModel* model)
     : controller_(controller),
       model_(model),
       resizer_([[FullscreenWebViewResizer alloc] initWithModel:model]) {
@@ -29,17 +30,18 @@ FullscreenMediator::FullscreenMediator(FullscreenController* controller,
   model_->AddObserver(this);
 }
 
-FullscreenMediator::~FullscreenMediator() {
+LegacyFullscreenMediator::~LegacyFullscreenMediator() {
   // Disconnect() is expected to be called before deallocation.
   DCHECK(!controller_);
   DCHECK(!model_);
 }
 
-void FullscreenMediator::SetWebState(web::WebState* webState) {
+void LegacyFullscreenMediator::SetWebState(web::WebState* webState) {
   resizer_.webState = webState;
 }
 
-void FullscreenMediator::SetIsBrowserTraitCollectionUpdating(bool updating) {
+void LegacyFullscreenMediator::SetIsBrowserTraitCollectionUpdating(
+    bool updating) {
   if (updating_browser_trait_collection_ == updating) {
     return;
   }
@@ -64,13 +66,13 @@ void FullscreenMediator::SetIsBrowserTraitCollectionUpdating(bool updating) {
   }
 }
 
-void FullscreenMediator::EnterFullscreen() {
+void LegacyFullscreenMediator::EnterFullscreen() {
   if (model_->enabled()) {
     AnimateWithStyle(FullscreenAnimatorStyle::ENTER_FULLSCREEN);
   }
 }
 
-void FullscreenMediator::ExitFullscreen(
+void LegacyFullscreenMediator::ExitFullscreen(
     FullscreenModeTransitionTrigger fullscreen_exit_trigger) {
   if (model_->IsForceFullscreenMode()) {
     return;
@@ -84,15 +86,15 @@ void FullscreenMediator::ExitFullscreen(
   AnimateWithStyle(FullscreenAnimatorStyle::EXIT_FULLSCREEN);
 }
 
-void FullscreenMediator::ForceEnterFullscreen() {
+void LegacyFullscreenMediator::ForceEnterFullscreen() {
   model_->ForceEnterFullscreen();
 }
 
-void FullscreenMediator::ExitFullscreenWithoutAnimation() {
+void LegacyFullscreenMediator::ExitFullscreenWithoutAnimation() {
   model_->ResetForNavigation();
 }
 
-void FullscreenMediator::Disconnect() {
+void LegacyFullscreenMediator::Disconnect() {
   for (auto& observer : observers_) {
     observer.FullscreenControllerWillShutDown(controller_);
   }
@@ -105,7 +107,7 @@ void FullscreenMediator::Disconnect() {
   controller_ = nullptr;
 }
 
-void FullscreenMediator::FullscreenModelToolbarHeightsUpdated(
+void LegacyFullscreenMediator::FullscreenModelToolbarHeightsUpdated(
     FullscreenModel* model) {
   for (auto& observer : observers_) {
     observer.FullscreenViewportInsetRangeChanged(controller_,
@@ -130,7 +132,7 @@ void FullscreenMediator::FullscreenModelToolbarHeightsUpdated(
   resizer_.compensateFrameChangeByOffset = compensateFrameChangeByOffset;
 }
 
-void FullscreenMediator::FullscreenModelProgressUpdated(
+void LegacyFullscreenMediator::FullscreenModelProgressUpdated(
     FullscreenModel* model) {
   DCHECK_EQ(model_, model);
   // Stops the animation only if there is a current animation running.
@@ -144,7 +146,7 @@ void FullscreenMediator::FullscreenModelProgressUpdated(
   [resizer_ updateForCurrentState];
 }
 
-void FullscreenMediator::FullscreenModelEnabledStateChanged(
+void LegacyFullscreenMediator::FullscreenModelEnabledStateChanged(
     FullscreenModel* model) {
   DCHECK_EQ(model_, model);
   // Stops the animation only if there is a current animation running.
@@ -156,7 +158,7 @@ void FullscreenMediator::FullscreenModelEnabledStateChanged(
   }
 }
 
-void FullscreenMediator::FullscreenModelScrollEventStarted(
+void LegacyFullscreenMediator::FullscreenModelScrollEventStarted(
     FullscreenModel* model) {
   DCHECK_EQ(model_, model);
   start_progress_ = model_->progress();
@@ -170,7 +172,7 @@ void FullscreenMediator::FullscreenModelScrollEventStarted(
   }
 }
 
-void FullscreenMediator::FullscreenModelScrollEventEnded(
+void LegacyFullscreenMediator::FullscreenModelScrollEventEnded(
     FullscreenModel* model) {
   DCHECK_EQ(model_, model);
   if (ios::provider::IsFullscreenSmoothScrollingSupported()) {
@@ -204,7 +206,7 @@ void FullscreenMediator::FullscreenModelScrollEventEnded(
   }
 }
 
-void FullscreenMediator::FullscreenModelWasReset(FullscreenModel* model) {
+void LegacyFullscreenMediator::FullscreenModelWasReset(FullscreenModel* model) {
   has_reached_bottom_once_ = false;
   // Stop any in-progress animations.  Don't update the model because this
   // callback occurs after the model's state is reset, and updating the model
@@ -222,7 +224,7 @@ void FullscreenMediator::FullscreenModelWasReset(FullscreenModel* model) {
   [resizer_ updateForCurrentState];
 }
 
-void FullscreenMediator::AnimateWithStyle(FullscreenAnimatorStyle style) {
+void LegacyFullscreenMediator::AnimateWithStyle(FullscreenAnimatorStyle style) {
   if (animator_ && animator_.style == style) {
     return;
   }
@@ -239,17 +241,18 @@ void FullscreenMediator::AnimateWithStyle(FullscreenAnimatorStyle style) {
   // Create the animator and set up its completion block.
   animator_ = [[FullscreenAnimator alloc] initWithStartProgress:start_progress
                                                           style:style];
-  base::WeakPtr<FullscreenMediator> weak_mediator = weak_factory_.GetWeakPtr();
+  base::WeakPtr<LegacyFullscreenMediator> weak_mediator =
+      weak_factory_.GetWeakPtr();
   [animator_ addAnimations:^{
     // Updates the WebView frame during the animation to have it animated.
-    FullscreenMediator* mediator = weak_mediator.get();
+    LegacyFullscreenMediator* mediator = weak_mediator.get();
     if (mediator) {
       [mediator->resizer_ forceToUpdateToProgress:final_progress];
     }
   }];
   [animator_ addCompletion:^(UIViewAnimatingPosition finalPosition) {
     DCHECK_EQ(finalPosition, UIViewAnimatingPositionEnd);
-    FullscreenMediator* mediator = weak_mediator.get();
+    LegacyFullscreenMediator* mediator = weak_mediator.get();
     if (!mediator) {
       return;
     }
@@ -283,7 +286,7 @@ void FullscreenMediator::AnimateWithStyle(FullscreenAnimatorStyle style) {
   }
 }
 
-void FullscreenMediator::StopAnimating(bool update_model) {
+void LegacyFullscreenMediator::StopAnimating(bool update_model) {
   if (!animator_) {
     return;
   }
@@ -296,13 +299,14 @@ void FullscreenMediator::StopAnimating(bool update_model) {
   animator_ = nil;
 }
 
-void FullscreenMediator::ResizeHorizontalInsets() {
+void LegacyFullscreenMediator::ResizeHorizontalInsets() {
   for (auto& observer : observers_) {
     observer.ResizeHorizontalInsets(controller_);
   }
 }
 
-FullscreenAnimatorStyle FullscreenMediator::AnimatorStyleFromScrollDirection(
+FullscreenAnimatorStyle
+LegacyFullscreenMediator::AnimatorStyleFromScrollDirection(
     FullscreenModelScrollDirection direction) {
   switch (direction) {
     case FullscreenModelScrollDirection::kUp:
@@ -320,7 +324,7 @@ FullscreenAnimatorStyle FullscreenMediator::AnimatorStyleFromScrollDirection(
   }
 }
 
-void FullscreenMediator::RecordFullscreenExitMode() {
+void LegacyFullscreenMediator::RecordFullscreenExitMode() {
   CHECK(fullscreen_exit_trigger_.has_value());
   base::UmaHistogramEnumeration(kExitFullscreenModeTransitionTriggerHistogram,
                                 fullscreen_exit_trigger_.value());

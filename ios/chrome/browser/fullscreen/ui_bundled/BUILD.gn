@@ -48,8 +48,6 @@ source_set("internal") {
     "fullscreen_content_adjustment_util.mm",
     "fullscreen_controller_impl.h",
     "fullscreen_controller_impl.mm",
-    "fullscreen_mediator.h",
-    "fullscreen_mediator.mm",
     "fullscreen_model.h",
     "fullscreen_model.mm",
     "fullscreen_model_observer.h",
@@ -65,6 +63,8 @@ source_set("internal") {
     "fullscreen_web_view_proxy_observer.mm",
     "fullscreen_web_view_resizer.h",
     "fullscreen_web_view_resizer.mm",
+    "legacy_fullscreen_mediator.h",
+    "legacy_fullscreen_mediator.mm",
   ]
 
   deps = [
@@ -109,13 +109,13 @@ source_set("ui") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "fullscreen_mediator_unittest.mm",
     "fullscreen_metrics_unittest.mm",
     "fullscreen_model_unittest.mm",
     "fullscreen_ui_updater_unittest.mm",
     "fullscreen_web_state_list_observer_unittest.mm",
     "fullscreen_web_state_observer_unittest.mm",
     "fullscreen_web_view_resizer_unittest.mm",
+    "legacy_fullscreen_mediator_unittest.mm",
   ]
 
   deps = [

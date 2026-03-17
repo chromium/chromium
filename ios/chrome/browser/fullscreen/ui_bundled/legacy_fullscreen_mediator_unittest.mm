@@ -2,34 +2,35 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_mediator.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/legacy_fullscreen_mediator.h"
 
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_model.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/test/fullscreen_model_test_util.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/test/test_fullscreen_controller.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/test/test_fullscreen_controller_observer.h"
-#import "ios/chrome/browser/fullscreen/ui_bundled/test/test_fullscreen_mediator.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/test/test_legacy_fullscreen_mediator.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/fullscreen/toolbars_size.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/fullscreen/toolbars_size_browser_agent.h"
 #import "testing/platform_test.h"
 
-// Test fixture for FullscreenMediator.
-class FullscreenMediatorTest : public PlatformTest {
+// Test fixture for LegacyFullscreenMediator.
+class LegacyFullscreenMediatorTest : public PlatformTest {
  public:
-  FullscreenMediatorTest() {
+  LegacyFullscreenMediatorTest() {
     profile_ = TestProfileIOS::Builder().Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());
     ToolbarsSizeBrowserAgent::CreateForBrowser(browser_.get());
     TestFullscreenController::CreateForBrowser(browser_.get());
-    mediator_ = std::make_unique<TestFullscreenMediator>(controller(), model());
+    mediator_ =
+        std::make_unique<TestLegacyFullscreenMediator>(controller(), model());
     observer_ = std::make_unique<TestFullscreenControllerObserver>();
     SetUpFullscreenModelForTesting(model(), 100);
     mediator_->AddObserver(observer_.get());
   }
-  ~FullscreenMediatorTest() override {
+  ~LegacyFullscreenMediatorTest() override {
     mediator_->Disconnect();
     mediator_->RemoveObserver(observer_.get());
     EXPECT_TRUE(observer_->is_shut_down());
@@ -46,13 +47,13 @@ class FullscreenMediatorTest : public PlatformTest {
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
-  std::unique_ptr<TestFullscreenMediator> mediator_;
+  std::unique_ptr<TestLegacyFullscreenMediator> mediator_;
   std::unique_ptr<TestFullscreenControllerObserver> observer_;
 };
 
 // Tests that the browser remains in fullscreen after the first scroll to
 // bottom.
-TEST_F(FullscreenMediatorTest, StaysFullscreenOnFirstScrollToBottom) {
+TEST_F(LegacyFullscreenMediatorTest, StaysFullscreenOnFirstScrollToBottom) {
   SimulateFullscreenUserScrollForProgress(model(), 1.0);
   EXPECT_EQ(model()->progress(), 1.0);
 
@@ -63,7 +64,7 @@ TEST_F(FullscreenMediatorTest, StaysFullscreenOnFirstScrollToBottom) {
 }
 
 // Tests that the browser exits fullscreen on the second scroll to the bottom.
-TEST_F(FullscreenMediatorTest, ExitsFullscreenOnSecondScrollToBottom) {
+TEST_F(LegacyFullscreenMediatorTest, ExitsFullscreenOnSecondScrollToBottom) {
   SimulateFullscreenUserScrollForProgress(model(), 1.0);
   SimulateScrollToBottom(model());
 
@@ -77,7 +78,7 @@ TEST_F(FullscreenMediatorTest, ExitsFullscreenOnSecondScrollToBottom) {
 }
 
 // Tests that the enabled state is correctly forwarded to the observer.
-TEST_F(FullscreenMediatorTest, ObserveEnabledState) {
+TEST_F(LegacyFullscreenMediatorTest, ObserveEnabledState) {
   EXPECT_TRUE(observer().enabled());
   model()->IncrementDisabledCounter();
   EXPECT_FALSE(observer().enabled());
@@ -86,7 +87,7 @@ TEST_F(FullscreenMediatorTest, ObserveEnabledState) {
 }
 
 // Tests that changes to the model's toolbar heights are forwarded to observers.
-TEST_F(FullscreenMediatorTest, ObserveViewportInsets) {
+TEST_F(LegacyFullscreenMediatorTest, ObserveViewportInsets) {
   const CGFloat kExpandedTopToolbarHeight = 100.0;
   const CGFloat kCollapsedTopToolbarHeight = 50.0;
   const CGFloat kExpandedBottomToolbarHeight = 60.0;

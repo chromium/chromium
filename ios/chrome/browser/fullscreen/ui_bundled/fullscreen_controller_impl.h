@@ -6,9 +6,9 @@
 #define IOS_CHROME_BROWSER_FULLSCREEN_UI_BUNDLED_FULLSCREEN_CONTROLLER_IMPL_H_
 
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
-#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_mediator.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_model.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_web_state_list_observer.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/legacy_fullscreen_mediator.h"
 
 class Browser;
 @class ChromeBroadcastOberverBridge;
@@ -61,7 +61,7 @@ class FullscreenControllerImpl : public FullscreenController {
   // The model used to calculate fullscreen state.
   std::unique_ptr<FullscreenModel> model_ = nullptr;
   // Object that manages sending signals to FullscreenControllerImplObservers.
-  FullscreenMediator mediator_;
+  LegacyFullscreenMediator mediator_;
   // A WebStateListObserver that updates `model_` for WebStateList changes.
   FullscreenWebStateListObserver web_state_list_observer_;
   // The bridge used to forward brodcasted UI to `model_`.

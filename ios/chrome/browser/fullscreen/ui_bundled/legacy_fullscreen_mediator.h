@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_FULLSCREEN_UI_BUNDLED_FULLSCREEN_MEDIATOR_H_
-#define IOS_CHROME_BROWSER_FULLSCREEN_UI_BUNDLED_FULLSCREEN_MEDIATOR_H_
+#ifndef IOS_CHROME_BROWSER_FULLSCREEN_UI_BUNDLED_LEGACY_FULLSCREEN_MEDIATOR_H_
+#define IOS_CHROME_BROWSER_FULLSCREEN_UI_BUNDLED_LEGACY_FULLSCREEN_MEDIATOR_H_
 
 #import <Foundation/Foundation.h>
 
@@ -31,14 +31,15 @@ class WebState;
 
 // A helper object that listens to FullscreenModel changes and forwards this
 // information to FullscreenControllerObservers.
-class FullscreenMediator : public FullscreenModelObserver {
+class LegacyFullscreenMediator : public FullscreenModelObserver {
  public:
-  FullscreenMediator(FullscreenController* controller, FullscreenModel* model);
+  LegacyFullscreenMediator(FullscreenController* controller,
+                           FullscreenModel* model);
 
-  FullscreenMediator(const FullscreenMediator&) = delete;
-  FullscreenMediator& operator=(const FullscreenMediator&) = delete;
+  LegacyFullscreenMediator(const LegacyFullscreenMediator&) = delete;
+  LegacyFullscreenMediator& operator=(const LegacyFullscreenMediator&) = delete;
 
-  ~FullscreenMediator() override;
+  ~LegacyFullscreenMediator() override;
 
   // Adds and removes FullscreenControllerObservers.
   void AddObserver(FullscreenControllerObserver* observer) {
@@ -99,7 +100,6 @@ class FullscreenMediator : public FullscreenModelObserver {
   // Records fullscreen exit entrypoints in a histogram.
   void RecordFullscreenExitMode();
 
-
   // Progress value when scroll event started.
   float start_progress_;
   // The controller.
@@ -125,7 +125,7 @@ class FullscreenMediator : public FullscreenModelObserver {
   // Whether the user has scrolled to the bottom of the page for the first time
   // on the current page. This is reset to false as soon as the user scrolls up.
   bool has_reached_bottom_once_ = false;
-  base::WeakPtrFactory<FullscreenMediator> weak_factory_{this};
+  base::WeakPtrFactory<LegacyFullscreenMediator> weak_factory_{this};
 };
 
-#endif  // IOS_CHROME_BROWSER_FULLSCREEN_UI_BUNDLED_FULLSCREEN_MEDIATOR_H_
+#endif  // IOS_CHROME_BROWSER_FULLSCREEN_UI_BUNDLED_LEGACY_FULLSCREEN_MEDIATOR_H_

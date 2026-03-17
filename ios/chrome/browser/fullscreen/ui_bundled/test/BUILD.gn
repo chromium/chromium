@@ -11,10 +11,10 @@ source_set("test") {
     "test_fullscreen_controller.mm",
     "test_fullscreen_controller_observer.h",
     "test_fullscreen_controller_observer.mm",
-    "test_fullscreen_mediator.h",
-    "test_fullscreen_mediator.mm",
     "test_fullscreen_model_observer.h",
     "test_fullscreen_model_observer.mm",
+    "test_legacy_fullscreen_mediator.h",
+    "test_legacy_fullscreen_mediator.mm",
   ]
 
   deps = [

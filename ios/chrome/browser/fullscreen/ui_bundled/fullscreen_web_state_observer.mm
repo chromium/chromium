@@ -6,10 +6,10 @@
 
 #import "base/check_op.h"
 #import "base/ios/ios_util.h"
-#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_mediator.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_metrics.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_model.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_web_view_proxy_observer.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/legacy_fullscreen_mediator.h"
 #import "ios/public/provider/chrome/browser/fullscreen/fullscreen_api.h"
 #import "ios/web/common/features.h"
 #import "ios/web/common/url_util.h"
@@ -23,7 +23,7 @@
 FullscreenWebStateObserver::FullscreenWebStateObserver(
     FullscreenController* controller,
     FullscreenModel* model,
-    FullscreenMediator* mediator)
+    LegacyFullscreenMediator* mediator)
     : controller_(controller),
       model_(model),
       mediator_(mediator),

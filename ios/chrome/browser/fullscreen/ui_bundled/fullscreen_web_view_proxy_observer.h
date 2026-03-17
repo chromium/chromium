@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 
 @protocol CRWWebViewProxy;
-class FullscreenMediator;
+class LegacyFullscreenMediator;
 class FullscreenModel;
 
 // Helper object that observes the active WebState's CRWWebViewProxy.
@@ -19,7 +19,8 @@ class FullscreenModel;
 
 // Designated initializer for an observer that uses `model` to update its proxy.
 - (nullable instancetype)initWithModel:(nonnull FullscreenModel*)model
-                              mediator:(nonnull FullscreenMediator*)mediator
+                              mediator:
+                                  (nonnull LegacyFullscreenMediator*)mediator
     NS_DESIGNATED_INITIALIZER;
 - (nullable instancetype)init NS_UNAVAILABLE;
 

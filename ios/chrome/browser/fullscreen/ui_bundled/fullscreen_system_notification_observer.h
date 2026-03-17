@@ -8,7 +8,7 @@
 #import <UIKit/UIKit.h>
 
 class FullscreenController;
-class FullscreenMediator;
+class LegacyFullscreenMediator;
 
 // Helper class that listens for system notifications.  This class will disable
 // fullscreen when:
@@ -21,7 +21,7 @@ class FullscreenMediator;
 // notifications.
 - (nullable instancetype)
     initWithController:(nonnull FullscreenController*)controller
-              mediator:(nonnull FullscreenMediator*)mediator
+              mediator:(nonnull LegacyFullscreenMediator*)mediator
     NS_DESIGNATED_INITIALIZER;
 - (nullable instancetype)init NS_UNAVAILABLE;
 

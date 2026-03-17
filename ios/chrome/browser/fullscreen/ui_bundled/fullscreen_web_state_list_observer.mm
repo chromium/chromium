@@ -15,7 +15,7 @@
 FullscreenWebStateListObserver::FullscreenWebStateListObserver(
     FullscreenController* controller,
     FullscreenModel* model,
-    FullscreenMediator* mediator)
+    LegacyFullscreenMediator* mediator)
     : controller_(controller),
       model_(model),
       web_state_observer_(controller, model, mediator) {

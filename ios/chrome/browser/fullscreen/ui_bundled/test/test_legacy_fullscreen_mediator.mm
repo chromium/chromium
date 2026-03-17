@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/fullscreen/ui_bundled/test/test_fullscreen_mediator.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/test/test_legacy_fullscreen_mediator.h"
 
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller_observer.h"
 
@@ -18,15 +18,16 @@ class TestNoopAnimationProvider : public FullscreenControllerObserver {
   }
 };
 
-#pragma mark - TestFullscreenMediator
+#pragma mark - TestLegacyFullscreenMediator
 
-TestFullscreenMediator::TestFullscreenMediator(FullscreenController* controller,
-                                               FullscreenModel* model)
-    : FullscreenMediator(controller, model),
+TestLegacyFullscreenMediator::TestLegacyFullscreenMediator(
+    FullscreenController* controller,
+    FullscreenModel* model)
+    : LegacyFullscreenMediator(controller, model),
       noopAnimationProvider_(std::make_unique<TestNoopAnimationProvider>()) {
   AddObserver(noopAnimationProvider_.get());
 }
 
-TestFullscreenMediator::~TestFullscreenMediator() {
+TestLegacyFullscreenMediator::~TestLegacyFullscreenMediator() {
   RemoveObserver(noopAnimationProvider_.get());
 }

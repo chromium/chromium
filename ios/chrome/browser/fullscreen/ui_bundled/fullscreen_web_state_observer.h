@@ -11,7 +11,7 @@
 #include "url/gurl.h"
 
 class FullscreenController;
-class FullscreenMediator;
+class LegacyFullscreenMediator;
 class FullscreenModel;
 @class FullscreenWebViewProxyObserver;
 
@@ -22,7 +22,7 @@ class FullscreenWebStateObserver : public web::WebStateObserver,
   // Constructor for an observer that updates `controller` and `model`.
   FullscreenWebStateObserver(FullscreenController* controller,
                              FullscreenModel* model,
-                             FullscreenMediator* mediator);
+                             LegacyFullscreenMediator* mediator);
   ~FullscreenWebStateObserver() override;
 
   // Tells the observer to start observing `web_state`.
@@ -48,7 +48,7 @@ class FullscreenWebStateObserver : public web::WebStateObserver,
   // The model passed on construction.
   raw_ptr<FullscreenModel> model_ = nullptr;
   // The mediator passed on construction.
-  raw_ptr<FullscreenMediator> mediator_ = nullptr;
+  raw_ptr<LegacyFullscreenMediator> mediator_ = nullptr;
   // Observer for `web_state_`'s scroll view proxy.
   __strong FullscreenWebViewProxyObserver* web_view_proxy_observer_;
   // The URL received in the NavigationContext of the last finished navigation.

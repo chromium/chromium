@@ -8,12 +8,12 @@
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_animator.h"
-#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_mediator.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_model.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/legacy_fullscreen_mediator.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/test/fullscreen_model_test_util.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/test/test_fullscreen_controller.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/test/test_fullscreen_controller_observer.h"
-#import "ios/chrome/browser/fullscreen/ui_bundled/test/test_fullscreen_mediator.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/test/test_legacy_fullscreen_mediator.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/fullscreen/toolbars_size_browser_agent.h"
@@ -28,7 +28,8 @@ class FullscreenMetricsTest : public PlatformTest {
     browser_ = std::make_unique<TestBrowser>(profile_.get());
     ToolbarsSizeBrowserAgent::CreateForBrowser(browser_.get());
     TestFullscreenController::CreateForBrowser(browser_.get());
-    mediator_ = std::make_unique<TestFullscreenMediator>(controller(), model());
+    mediator_ =
+        std::make_unique<TestLegacyFullscreenMediator>(controller(), model());
     observer_ = std::make_unique<TestFullscreenControllerObserver>();
     // Set toolbar height to 100 for easy progress calculations.
     SetUpFullscreenModelForTesting(model(), 100);
@@ -49,7 +50,7 @@ class FullscreenMetricsTest : public PlatformTest {
   // Manually finishes the animator to trigger the completion block.
   // In unit tests, UIViewPropertyAnimator does not automatically finish.
   // We must manually stop and finish it to trigger the completion block
-  // in FullscreenMediator, which is responsible for recording the metric.
+  // in LegacyFullscreenMediator, which is responsible for recording the metric.
   // We set fractionComplete to 1.0 so that currentProgress becomes
   // finalProgress, which ensures the mediator records the correct transition
   // (Enter vs Exit).
@@ -66,7 +67,7 @@ class FullscreenMetricsTest : public PlatformTest {
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
-  std::unique_ptr<TestFullscreenMediator> mediator_;
+  std::unique_ptr<TestLegacyFullscreenMediator> mediator_;
   std::unique_ptr<TestFullscreenControllerObserver> observer_;
 };
 
@@ -126,7 +127,7 @@ TEST_F(FullscreenMetricsTest, RecordsExitUserControlled) {
       FullscreenModeTransitionTrigger::kUserControlled, 1);
 }
 
-// Tests that FullscreenMediator records kUserInitiatedFinishedByCode when
+// Tests that LegacyFullscreenMediator records kUserInitiatedFinishedByCode when
 // entering fullscreen via small scroll that triggers animation.
 TEST_F(FullscreenMetricsTest, RecordsEnterUserInitiatedFinishedByCode) {
   base::test::ScopedFeatureList feature_list;
@@ -154,7 +155,7 @@ TEST_F(FullscreenMetricsTest, RecordsEnterUserInitiatedFinishedByCode) {
       FullscreenModeTransitionTrigger::kUserInitiatedFinishedByCode, 1);
 }
 
-// Tests that FullscreenMediator records kUserInitiatedFinishedByCode when
+// Tests that LegacyFullscreenMediator records kUserInitiatedFinishedByCode when
 // entering fullscreen via small scroll with smooth scrolling disabled.
 TEST_F(FullscreenMetricsTest,
        RecordsEnterUserInitiatedFinishedByCodeWithSmoothScrollingDisabled) {
@@ -183,7 +184,7 @@ TEST_F(FullscreenMetricsTest,
       FullscreenModeTransitionTrigger::kUserInitiatedFinishedByCode, 1);
 }
 
-// Tests that FullscreenMediator records kUserInitiatedFinishedByCode when
+// Tests that LegacyFullscreenMediator records kUserInitiatedFinishedByCode when
 // exiting fullscreen via small scroll up that triggers animation.
 TEST_F(FullscreenMetricsTest, RecordsExitUserInitiatedFinishedByCode) {
   base::test::ScopedFeatureList feature_list;
@@ -217,7 +218,7 @@ TEST_F(FullscreenMetricsTest, RecordsExitUserInitiatedFinishedByCode) {
       FullscreenModeTransitionTrigger::kUserInitiatedFinishedByCode, 1);
 }
 
-// Tests that FullscreenMediator records kUserInitiatedFinishedByCode when
+// Tests that LegacyFullscreenMediator records kUserInitiatedFinishedByCode when
 // exiting fullscreen via small scroll with smooth scrolling disabled.
 TEST_F(FullscreenMetricsTest,
        RecordsExitUserInitiatedFinishedByCodeWithSmoothScrollingDisabled) {
@@ -251,8 +252,8 @@ TEST_F(FullscreenMetricsTest,
       FullscreenModeTransitionTrigger::kUserInitiatedFinishedByCode, 1);
 }
 
-// Tests that FullscreenMediator records kForcedByCode when exiting fullscreen
-// is forced by code.
+// Tests that LegacyFullscreenMediator records kForcedByCode when exiting
+// fullscreen is forced by code.
 TEST_F(FullscreenMetricsTest, RecordsExitForcedByCode) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures({},
@@ -277,8 +278,8 @@ TEST_F(FullscreenMetricsTest, RecordsExitForcedByCode) {
       FullscreenModeTransitionTrigger::kForcedByCode, 1);
 }
 
-// Tests that FullscreenMediator records kBottomReached when exiting fullscreen
-// because the bottom of the page was reached twice.
+// Tests that LegacyFullscreenMediator records kBottomReached when exiting
+// fullscreen because the bottom of the page was reached twice.
 TEST_F(FullscreenMetricsTest, RecordsExitBottomReached) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures({},
@@ -311,7 +312,8 @@ TEST_F(FullscreenMetricsTest, RecordsExitBottomReached) {
       FullscreenModeTransitionTrigger::kBottomReached, 1);
 }
 
-// Tests that FullscreenMediator records kUserTapped when exiting fullscreen.
+// Tests that LegacyFullscreenMediator records kUserTapped when exiting
+// fullscreen.
 TEST_F(FullscreenMetricsTest, RecordsExitUserTapped) {
   model()->ResetForNavigation();
   model()->SetScrollViewHeight(200.0);
