@@ -30,6 +30,7 @@ import androidx.recyclerview.widget.RecyclerView.LayoutManager;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.PopupButtonData;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.omnibox.AutocompleteRequestType;
@@ -37,6 +38,7 @@ import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.ChromeImageView;
 
@@ -157,15 +159,12 @@ class FuseboxViewBinder {
                     model,
                     FuseboxProperties.POPUP_ATTACH_TAB_PICKER_VISIBLE,
                     view.popup.mTabButton);
-        } else if (propertyKey == FuseboxProperties.POPUP_MODEL_AUTO_CLICKED) {
-            view.popup.mAutoButton.setOnClickListener(
-                    v -> model.get(FuseboxProperties.POPUP_MODEL_AUTO_CLICKED).run());
-        } else if (propertyKey == FuseboxProperties.POPUP_MODEL_AUTO_ENABLED) {
-            view.popup.mAutoButton.setEnabled(
-                    model.get(FuseboxProperties.POPUP_MODEL_AUTO_ENABLED));
-        } else if (propertyKey == FuseboxProperties.POPUP_MODEL_AUTO_VISIBLE) {
-            updateButtonVisibility(
-                    model, FuseboxProperties.POPUP_MODEL_AUTO_VISIBLE, view.popup.mAutoButton);
+        } else if (propertyKey == FuseboxProperties.POPUP_MODEL_AUTO_DATA) {
+            bindPopupButtonData(
+                    model,
+                    FuseboxProperties.POPUP_MODEL_AUTO_DATA,
+                    view.popup.mAutoButton,
+                    R.drawable.autorenew_24dp);
         } else if (propertyKey == FuseboxProperties.POPUP_MODEL_DIVIDER_VISIBLE) {
             view.popup.mModelsDivider.setVisibility(
                     model.get(FuseboxProperties.POPUP_MODEL_DIVIDER_VISIBLE)
@@ -176,25 +175,11 @@ class FuseboxViewBinder {
                     model.get(FuseboxProperties.POPUP_MODEL_HEADER_VISIBLE)
                             ? View.VISIBLE
                             : View.GONE);
-        } else if (propertyKey == FuseboxProperties.POPUP_MODEL_PRO_CLICKED) {
-            view.popup.mProButton.setOnClickListener(
-                    v -> model.get(FuseboxProperties.POPUP_MODEL_PRO_CLICKED).run());
-        } else if (propertyKey == FuseboxProperties.POPUP_MODEL_PRO_ENABLED) {
-            view.popup.mProButton.setEnabled(model.get(FuseboxProperties.POPUP_MODEL_PRO_ENABLED));
-        } else if (propertyKey == FuseboxProperties.POPUP_MODEL_PRO_VISIBLE) {
-            updateButtonVisibility(
-                    model, FuseboxProperties.POPUP_MODEL_PRO_VISIBLE, view.popup.mProButton);
-        } else if (propertyKey == FuseboxProperties.POPUP_MODEL_AUTO_SELECTED) {
-            updateModelButtonDrawables(
+        } else if (propertyKey == FuseboxProperties.POPUP_MODEL_PRO_DATA) {
+            bindPopupButtonData(
                     model,
-                    view.popup.mAutoButton,
-                    FuseboxProperties.POPUP_MODEL_AUTO_SELECTED,
-                    R.drawable.autorenew_24dp);
-        } else if (propertyKey == FuseboxProperties.POPUP_MODEL_PRO_SELECTED) {
-            updateModelButtonDrawables(
-                    model,
+                    FuseboxProperties.POPUP_MODEL_PRO_DATA,
                     view.popup.mProButton,
-                    FuseboxProperties.POPUP_MODEL_PRO_SELECTED,
                     R.drawable.ic_timer);
         } else if (propertyKey == FuseboxProperties.POPUP_TOOL_AI_MODE_CLICKED) {
             view.popup.mAiModeButton.setOnClickListener(
@@ -342,16 +327,24 @@ class FuseboxViewBinder {
     }
 
     private static void updateModelButtonDrawables(
-            PropertyModel model,
-            Button button,
-            ReadableBooleanPropertyKey selectedKey,
-            @DrawableRes int startDrawableRes) {
+            Button button, boolean selected, @DrawableRes int startDrawableRes) {
         Context context = button.getContext();
-        Drawable checkmark =
-                model.get(selectedKey) ? context.getDrawable(R.drawable.m3_ic_check_24px) : null;
+        Drawable checkmark = selected ? context.getDrawable(R.drawable.m3_ic_check_24px) : null;
         Drawable startDrawable = context.getDrawable(startDrawableRes);
         button.setCompoundDrawablesRelativeWithIntrinsicBounds(
                 startDrawable, null, checkmark, null);
+    }
+
+    private static void bindPopupButtonData(
+            PropertyModel model,
+            WritableObjectPropertyKey<PopupButtonData> propertyKey,
+            Button button,
+            @DrawableRes int startDrawable) {
+        PopupButtonData data = model.get(propertyKey);
+        button.setOnClickListener(v -> data.onClicked.run());
+        button.setVisibility(data.visible ? View.VISIBLE : View.GONE);
+        button.setEnabled(data.enabled);
+        updateModelButtonDrawables(button, data.selected, startDrawable);
     }
 
     private static void updateButtonsA11yAnnouncements(
