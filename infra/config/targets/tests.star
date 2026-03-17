@@ -3317,6 +3317,18 @@ targets.tests.gpu_telemetry_test(
 )
 
 targets.tests.gpu_telemetry_test(
+    name = "webgpu_cts_default_features_tests",
+    telemetry_test_name = "webgpu_cts",
+    mixins = [
+        "has_native_resultdb_integration",
+    ],
+    args = [
+        "--enable-default-webgpu-features",
+    ],
+    module_scheme = "webgpucts",
+)
+
+targets.tests.gpu_telemetry_test(
     name = "webgpu_cts_fxc_tests",
     telemetry_test_name = "webgpu_cts",
     mixins = [
