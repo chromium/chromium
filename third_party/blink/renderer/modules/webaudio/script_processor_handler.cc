@@ -170,9 +170,12 @@ void ScriptProcessorHandler::Process(uint32_t frames_to_process) {
     for (uint32_t i = 0; i < number_of_input_channels_; ++i) {
       internal_input_bus_->SetChannelMemory(
           i,
-          UNSAFE_TODO(
-              static_cast<float*>(shared_input_buffer->channels()[i].Data()) +
-              buffer_read_write_index_),
+          reinterpret_cast<float*>(
+              shared_input_buffer->channels()[i]
+                  .ByteSpan()
+                  .subspan(buffer_read_write_index_ * sizeof(float),
+                           frames_to_process * sizeof(float))
+                  .data()),
           frames_to_process);
     }
 
@@ -181,12 +184,12 @@ void ScriptProcessorHandler::Process(uint32_t frames_to_process) {
     }
 
     for (uint32_t i = 0; i < number_of_output_channels_; ++i) {
-      float* destination = output_bus->Channel(i)->MutableData();
-      const float* source = UNSAFE_TODO(
-          static_cast<float*>(shared_output_buffer->channels()[i].Data()) +
-          buffer_read_write_index_);
-      UNSAFE_TODO(
-          memcpy(destination, source, sizeof(float) * frames_to_process));
+      as_writable_bytes(
+          base::allow_nonunique_obj,
+          output_bus->Channel(i)->MutableSpan().first(frames_to_process))
+          .copy_from(shared_output_buffer->channels()[i].ByteSpan().subspan(
+              buffer_read_write_index_ * sizeof(float),
+              frames_to_process * sizeof(float)));
     }
   }
 
