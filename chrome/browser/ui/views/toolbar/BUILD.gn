@@ -74,6 +74,7 @@ source_set("toolbar") {
     "//components/bookmarks/browser",
     "//components/prefs",
     "//components/saved_tab_groups/public",
+    "//components/ukm/content",
     "//components/user_education/common",
     "//components/viz/host",
     "//components/webui/flags",

@@ -40,6 +40,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/ukm/content/source_url_recorder.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/navigation_handle.h"
@@ -172,6 +173,8 @@ WebUIToolbarWebView::WebUIToolbarWebView(
       web_view->GetWebContents(GURL(chrome::kChromeUIWebUIToolbarURL));
   // PLM has to be initialized before loading the URL.
   InitializePageLoadMetricsForWebContents(web_contents);
+  // Needed for UKM PageLoad metrics.
+  ukm::InitializeSourceUrlRecorderForWebContents(web_contents);
 
   web_contents->SetPageBaseBackgroundColor(SK_ColorTRANSPARENT);
   web_contents->SetIgnoreZoomGestures(true);
