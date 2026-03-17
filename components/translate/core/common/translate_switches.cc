@@ -16,8 +16,9 @@ const char kTranslateSecurityOrigin[] = "translate-security-origin";
 // Overrides the URL from which the translate ranker model is downloaded.
 const char kTranslateRankerModelURL[] = "translate-ranker-model-url";
 
-// Overrides the target language for translation.
-const char kTranslateTargetLanguage[] = "translate-target-language";
+// Overrides the target language for translation and forces translation of all
+// pages to the new target language.
+const char kForcedTranslateLanguage[] = "forced-translate-language";
 
 }  // namespace switches
 }  // namespace translate

@@ -20,6 +20,7 @@ struct TranslateTriggerDecision {
   void PreventAllTriggering();
 
   void PreventAutoTranslate();
+  void ForceAutoTranslate();
   bool can_auto_translate() const;
 
   void PreventShowingUI();
@@ -52,6 +53,7 @@ struct TranslateTriggerDecision {
   bool IsTriggeringPossible() const;
 
   bool ShouldAutoTranslate() const;
+  bool will_force_auto_translate() const { return should_force_auto_translate_; }
 
   // Returns true iff:
   // 1. Showing the UI is disallowed (otherwise it would be chosen over showing
@@ -77,6 +79,8 @@ struct TranslateTriggerDecision {
 
   bool can_auto_href_translate_ = true;
   bool can_show_href_translate_ui_ = true;
+
+  bool should_force_auto_translate_ = false;
 
   // Whether the UI should be shown for a predefined target language
   // which was set via SetPredefinedTargetLanguage call.

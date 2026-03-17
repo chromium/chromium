@@ -234,6 +234,7 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Changed by user"/>
   <int value="6" label="Uninitialized"/>
   <int value="7" label="Auto Translate"/>
+  <int value="8" label="Forced translate language"/>
 </enum>
 
 <enum name="TranslateTriggerDecision">

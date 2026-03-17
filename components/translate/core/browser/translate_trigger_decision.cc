@@ -23,8 +23,13 @@ void TranslateTriggerDecision::PreventAllTriggering() {
 void TranslateTriggerDecision::PreventAutoTranslate() {
   can_auto_translate_ = false;
 }
+
+void TranslateTriggerDecision::ForceAutoTranslate() {
+  should_force_auto_translate_ = true;
+}
+
 bool TranslateTriggerDecision::can_auto_translate() const {
-  return can_auto_translate_;
+  return can_auto_translate_ || should_force_auto_translate_;
 }
 
 void TranslateTriggerDecision::PreventShowingUI() {
@@ -64,14 +69,14 @@ bool TranslateTriggerDecision::should_suppress_from_ranker() const {
 }
 
 bool TranslateTriggerDecision::IsTriggeringPossible() const {
-  return can_auto_translate_ || can_show_ui_;
+  return can_auto_translate() || can_show_ui_;
 }
 
 bool TranslateTriggerDecision::ShouldAutoTranslate() const {
-  return can_auto_translate_;
+  return can_auto_translate();
 }
 
 bool TranslateTriggerDecision::ShouldShowUI() const {
-  return !can_auto_translate_ && can_show_ui_ && !should_suppress_from_ranker_;
+  return !can_auto_translate() && can_show_ui_ && !should_suppress_from_ranker_;
 }
 }  // namespace translate

@@ -300,6 +300,12 @@ class TranslateManager {
                            TranslatePrefs* translate_prefs,
                            const std::string& page_language_code);
 
+  // Forces the translation language to the language specified by the command
+  // line and mutates |decision| accordingly.
+  void FilterForForcedTranslateLanguage(const std::string_view page_language_code,
+                                        TranslateTriggerDecision* decision,
+                                        TranslatePrefs* translate_prefs);
+
   // Determines whether user prefs prohibit translations for this specific
   // navigation. For example, a user can select "never translate this language".
   // Mutates |decision| accordingly.
