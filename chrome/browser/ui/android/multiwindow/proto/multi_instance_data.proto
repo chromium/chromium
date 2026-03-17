@@ -1,0 +1,98 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package org.chromium.chrome.browser.multiwindow;
+
+option java_package = "org.chromium.chrome.browser.multiwindow";
+option java_outer_classname = "MultiInstanceDataProto";
+
+// Data representing the state of all Chrome instances for multi-instance
+// support.
+message MultiInstanceData {
+
+  optional int64 multi_window_start_time = 1;
+
+  // Start timestamp of 1-day period for measuring the max count of instances
+  // used simultaneously.
+  optional int64 multi_instance_max_count_time = 2;
+
+  optional int64 multi_instance_start_time = 3;
+
+  // Start timestamp of 1-day period for measuring the duration of disjoint time
+  // spent in various windowing modes.
+  optional int64 multi_window_mode_cycle_start_time = 4;
+
+  optional int32 multi_instance_max_instance_limit = 5;
+
+  // Max count of active Chrome instances used in a day.
+  optional int32 multi_instance_max_active_instance_count = 6;
+
+  // Max count of Chrome instances used in a day.
+  optional int32 multi_instance_max_instance_count = 7;
+
+  // Max count of Chrome Incognito instances used in a day.
+  optional int32 multi_instance_max_instance_count_incognito = 8;
+
+  optional bool multi_instance_close_window_skip_confirm = 9;
+
+  optional bool multi_instance_instance_limit_downgrade_triggered = 10;
+
+  optional bool multi_instance_restoration_message_shown = 11;
+
+  // Per-instance data, keyed by instance ID.
+  map<int32, InstanceData> instances = 12;
+
+  // Per-windowing mode data, keyed by mode index.
+  map<int32, WindowModeData> window_modes = 13;
+}
+
+// Data representing the state of a single Chrome instance.
+message InstanceData {
+  optional int64 last_accessed_time = 1;
+
+  optional int64 closure_time = 2;
+
+  // {Instance:Task} ID mapping for multi-instance support.
+  optional int32 task_id = 3;
+
+  // Information on each instance. Normal tab count
+  optional int32 normal_tab_count = 4;
+
+  optional int32 incognito_tab_count = 5;
+
+  // The total tab count at the time Chrome is shut down for use during
+  // relaunch. This value may not be accurate if Chrome remains active in the
+  // foreground or background without being terminated.
+  optional int32 tab_count_for_relaunch = 6;
+
+  optional int32 profile_type = 7;
+
+  optional int32 latest_persistent_state_id = 8;
+
+  optional string url = 9;
+
+  // The default window title, equivalent to the active tab title.
+  optional string active_tab_title = 10;
+
+  // A custom window title set by the user.
+  optional string custom_title = 11;
+
+  optional bool incognito_selected = 12;
+
+  optional bool marked_for_deletion = 13;
+}
+
+// Data representing the state of a specific windowing mode.
+message WindowModeData {
+  // Start timestamp of the current windowing mode.
+  optional int64 start_time = 1;
+
+  // Aggregated duration of time spent in a given windowing mode.
+  optional int64 duration_ms = 2;
+
+  // Tracks window IDs of activities in a given windowing mode.
+  repeated string activities = 3;
+}

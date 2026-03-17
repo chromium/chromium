@@ -540,6 +540,7 @@ if (_is_default_toolchain) {
       "//chrome/browser/ui/android/logo:utils_java",
       "//chrome/browser/ui/android/management:java",
       "//chrome/browser/ui/android/multiwindow:java",
+      "//chrome/browser/ui/android/multiwindow:multi_instance_data_proto_java",
       "//chrome/browser/ui/android/native_page:java",
       "//chrome/browser/ui/android/night_mode:java",
       "//chrome/browser/ui/android/omnibox:java",
