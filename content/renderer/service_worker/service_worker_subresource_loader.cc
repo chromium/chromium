@@ -831,6 +831,10 @@ void ServiceWorkerSubresourceLoader::UpdateResponseTiming(
     // dispatching the fetch event, so set it to |dispatch_event_time|.
     response_head_->load_timing.service_worker_ready_time =
         timing->dispatch_event_time;
+    // Exposed as PerformanceResourceTiming#requestStart.
+    response_head_->load_timing.send_start = timing->dispatch_event_time;
+    // Recorded for the DevTools.
+    response_head_->load_timing.send_end = timing->dispatch_event_time;
     response_head_->load_timing.service_worker_fetch_start =
         timing->dispatch_event_time;
     response_head_->load_timing.service_worker_respond_with_settled =
