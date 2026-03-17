@@ -705,7 +705,6 @@ VideoPixelFormatAsSkYUVAInfoValues(VideoPixelFormat format) {
 std::unique_ptr<gpu::RasterScopedAccess> CopySharedImageDirectlyToGLTexture(
     gpu::gles2::GLES2Interface* destination_gl,
     scoped_refptr<gpu::ClientSharedImage> shared_image,
-    gfx::Size src_size,
     gfx::Rect src_rect,
     const gpu::SyncToken& acquire_sync_token,
     bool is_opaque,
@@ -721,8 +720,8 @@ std::unique_ptr<gpu::RasterScopedAccess> CopySharedImageDirectlyToGLTexture(
   if (destination_gl->CanCopySharedImageToGLTextureViaTextureCopy(
           shared_image.get())) {
     destination_gl->CopySharedImageToGLTextureViaTextureCopy(
-        src_size, src_rect, shared_image.get(), acquire_sync_token, target,
-        texture, internal_format, format, type, level, dst_alpha_type,
+        shared_image->size(), src_rect, shared_image.get(), acquire_sync_token,
+        target, texture, internal_format, format, type, level, dst_alpha_type,
         dst_origin);
     destination_gl->ShallowFlushCHROMIUM();
   } else {
@@ -774,8 +773,7 @@ void CopyVideoFrameDirectlyToGLTexture(
   std::unique_ptr<gpu::RasterScopedAccess> destination_access =
       CopySharedImageDirectlyToGLTexture(
           destination_gl, video_frame->shared_image(),
-          video_frame->coded_size(), video_frame->visible_rect(),
-          video_frame->acquire_sync_token(),
+          video_frame->visible_rect(), video_frame->acquire_sync_token(),
           media::IsOpaque(video_frame->format()), target, texture,
           internal_format, format, type, level, dst_alpha_type, dst_origin);
 
