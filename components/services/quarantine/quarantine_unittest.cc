@@ -30,9 +30,9 @@ const char kInternetURL[] = "http://example.com/some-url";
 const char kInternetReferrerURL[] = "http://example.com/some-other-url";
 const char kTestGUID[] = "69f8621d-c46a-4e88-b915-1ce5415cb008";
 
-void CheckQuarantineResult(QuarantineFileResult result,
-                           QuarantineFileResult expected_result) {
-  EXPECT_EQ(expected_result, result);
+void CheckQuarantineResult(QuarantineFileResult expected,
+                           QuarantineFileResult actual) {
+  EXPECT_EQ(expected, actual);
 }
 
 class QuarantineTest : public testing::Test {
