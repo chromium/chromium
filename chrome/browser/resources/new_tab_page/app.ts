@@ -16,8 +16,7 @@ import 'chrome://resources/cr_components/composebox/threads_rail.js';
 import type {CustomizeButtonsElement} from 'chrome://new-tab-page/shared/customize_buttons/customize_buttons.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {GlifAnimationState} from 'chrome://resources/cr_components/composebox/common.js';
-import type {ContextualUpload} from 'chrome://resources/cr_components/composebox/common.js';
-import type {ComposeboxElement} from 'chrome://resources/cr_components/composebox/composebox.js';
+import type {ComposeboxElement, ComposeboxState} from 'chrome://resources/cr_components/composebox/composebox.js';
 import {VoiceSearchAction as ComposeVoiceSearchAction} from 'chrome://resources/cr_components/composebox/composebox.js';
 import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
 import type {OpenComposeboxEventDetail, SearchboxElement} from 'chrome://resources/cr_components/searchbox/searchbox.js';
@@ -33,7 +32,6 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {getTrustedScriptURL} from 'chrome://resources/js/static_types.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
-import {ModelMode, ToolMode} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 
 import {ActionChipsRetrievalState} from './action_chips/action_chips.js';
@@ -188,6 +186,10 @@ export class AppElement extends AppElementBase {
 
   static override get properties() {
     return {
+      // TODO(crbug.com/491126593): Reorder to ensure public properties precede
+      // private properties.
+      composeboxState_: {type: Object},
+
       oneGoogleBarIframeOrigin_: {type: String},
       oneGoogleBarIframePath_: {type: String},
       oneGoogleBarLoaded_: {type: Boolean},
@@ -339,6 +341,7 @@ export class AppElement extends AppElementBase {
     };
   }
 
+  protected accessor composeboxState_: ComposeboxState|null = null;
   protected accessor oneGoogleBarIframeOrigin_: string = OGB_IFRAME_ORIGIN;
   protected accessor oneGoogleBarIframePath_: string|undefined;
   protected accessor oneGoogleBarLoaded_: boolean = false;
@@ -451,10 +454,6 @@ export class AppElement extends AppElementBase {
   private backgroundImageLoadStart_: number = 0;
   private showWebstoreToastListenerId_: number|null = null;
   private pendingUndoToasts_: Array<{message: string, undo: () => void}> = [];
-  private pendingComposeboxContextFiles_: ContextualUpload[] = [];
-  private pendingComposeboxText_: string = '';
-  private pendingComposeboxMode_: ToolMode = ToolMode.kUnspecified;
-  private pendingComposeboxModel_: ModelMode = ModelMode.kUnspecified;
 
   constructor() {
     performance.mark('app-creation-start');
@@ -858,33 +857,18 @@ export class AppElement extends AppElementBase {
     return false;
   }
 
-  protected onComposeboxInitialized_(e: CustomEvent<{
-    initializeComposeboxState:
-        (text: string, files: ContextualUpload[], mode: ToolMode,
-         model: number) => void,
-  }>) {
-    e.detail.initializeComposeboxState(
-        this.pendingComposeboxText_, this.pendingComposeboxContextFiles_,
-        this.pendingComposeboxMode_, this.pendingComposeboxModel_);
-    this.pendingComposeboxContextFiles_ = [];
-    this.pendingComposeboxText_ = '';
-    this.pendingComposeboxMode_ = ToolMode.kUnspecified;
-    this.pendingComposeboxModel_ = ModelMode.kUnspecified;
-  }
-
   protected onActionChipClick_(e: CustomEvent<OpenComposeboxEventDetail>) {
     this.onOpenComposebox_(e);
   }
 
   protected onOpenComposebox_(e: CustomEvent<OpenComposeboxEventDetail>) {
-    if (e.detail.searchboxText) {
-      this.pendingComposeboxText_ = e.detail.searchboxText;
-    }
-    if (e.detail.contextFiles && e.detail.contextFiles.length > 0) {
-      this.pendingComposeboxContextFiles_ = e.detail.contextFiles;
-    }
-    this.pendingComposeboxMode_ = e.detail.mode;
-    this.pendingComposeboxModel_ = e.detail.model;
+    this.composeboxState_ = {
+      text: e.detail.searchboxText,
+      files: e.detail.contextFiles,
+      mode: e.detail.mode,
+      model: e.detail.model,
+    };
+
     this.toggleComposebox_();
   }
 

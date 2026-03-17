@@ -51,6 +51,15 @@ import type {ErrorScrimElement} from './error_scrim.js';
 import type {ComposeboxFileCarouselElement} from './file_carousel.js';
 import {WindowProxy} from './window_proxy.js';
 
+// TODO(crbug.com/491126593): Explore combining with OpenComposeboxEventDetail
+// to have a single interface.
+export interface ComposeboxState {
+  text?: string;
+  files?: ContextualUpload[];
+  mode?: ComposeboxToolMode;
+  model?: ModelMode;
+}
+
 export enum VoiceSearchAction {
   ACTIVATE = 0,
   QUERY_SUBMITTED = 1,
@@ -125,6 +134,7 @@ export class ComposeboxElement extends I18nMixinLit
 
   static override get properties() {
     return {
+      state: {type: Object},
       showLensButton: {type: Boolean},
       suggestionActivityEnabled: {type: Boolean},
       lensButtonTriggersOverlay: {type: Boolean},
@@ -265,6 +275,7 @@ export class ComposeboxElement extends I18nMixinLit
     };
   }
 
+  accessor state: ComposeboxState|null = null;
   accessor enableFileHint: boolean = false;
   accessor isFollowupQuery: boolean = false;
   accessor inputPlaceholderOverride: string = '';
@@ -485,10 +496,6 @@ export class ComposeboxElement extends I18nMixinLit
       if (inputState) {
         this.inputState_ = inputState.state;
     }
-    await this.updateComplete;
-    this.fire('composebox-initialized', {
-      initializeComposeboxState: this.initializeState_.bind(this),
-    });
 
     this.setupResizeObservers_();
   }
@@ -575,6 +582,11 @@ export class ComposeboxElement extends I18nMixinLit
   }
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
+
+    if (changedProperties.has('state') && this.state) {
+      this.updateState_(this.state);
+    }
+
     const changedPrivateProperties =
         changedProperties as Map<PropertyKey, unknown>;
     if (changedPrivateProperties.has('selectedMatchIndex_')) {
@@ -740,10 +752,12 @@ export class ComposeboxElement extends I18nMixinLit
     return this.selectedMatchIndex_;
   }
 
-  protected async initializeState_(
-      text: string = '', files: ContextualUpload[] = [],
-      mode: ComposeboxToolMode = ComposeboxToolMode.kUnspecified,
-      model: ModelMode = ModelMode.kUnspecified) {
+  protected async updateState_(state: ComposeboxState) {
+    const text = state.text || '';
+    const files = state.files || [];
+    const mode = state.mode ?? ComposeboxToolMode.kUnspecified;
+    let model = state.model ?? ModelMode.kUnspecified;
+
     if (text) {
       this.input_ = text;
       this.lastQueriedInput_ = text;
