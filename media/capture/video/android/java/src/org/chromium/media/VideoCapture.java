@@ -299,15 +299,6 @@ public abstract class VideoCapture {
     }
 
     // JNI wrapper methods.
-    protected void onFrameAvailable(byte[] data, int length, int rotation) {
-        synchronized (mNativeVideoCaptureLock) {
-            if (mNativeVideoCaptureDeviceAndroid != 0) {
-                VideoCaptureJni.get()
-                        .onFrameAvailable(mNativeVideoCaptureDeviceAndroid, data, length, rotation);
-            }
-        }
-    }
-
     protected void onI420FrameAvailable(
             ByteBuffer yBuffer,
             int yStride,
@@ -416,9 +407,6 @@ public abstract class VideoCapture {
     @NativeMethods
     interface Natives {
         // Method for VideoCapture implementations to call back native code.
-        void onFrameAvailable(
-                long nativeVideoCaptureDeviceAndroid, byte[] data, int length, int rotation);
-
         void onI420FrameAvailable(
                 long nativeVideoCaptureDeviceAndroid,
                 ByteBuffer yBuffer,

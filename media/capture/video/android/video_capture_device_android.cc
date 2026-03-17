@@ -288,46 +288,6 @@ void VideoCaptureDeviceAndroid::SetPhotoOptions(
   DoSetPhotoOptions(std::move(settings), std::move(callback));
 }
 
-void VideoCaptureDeviceAndroid::OnFrameAvailable(
-    JNIEnv* env,
-    const base::android::JavaRef<jbyteArray>& data,
-    int32_t length,
-    int32_t rotation) {
-  if (!IsClientConfigured())
-    return;
-
-  const base::TimeTicks current_time = base::TimeTicks::Now();
-  ProcessFirstFrameAvailable(current_time);
-  // Using |expected_next_frame_time_| to estimate a proper capture timestamp
-  // since android.hardware.Camera API doesn't expose a better timestamp.
-  const base::TimeDelta capture_time =
-      expected_next_frame_time_ - base::TimeTicks();
-
-  // Deliver the frame when it doesn't arrive too early.
-  if (ThrottleFrame(current_time)) {
-    client_->OnFrameDropped(VideoCaptureFrameDropReason::kAndroidThrottling);
-    return;
-  }
-
-  int8_t* buffer = env->GetByteArrayElements(data.obj(), NULL);
-  if (!buffer) {
-    LOG(ERROR) << "VideoCaptureDeviceAndroid::OnFrameAvailable: "
-                  "failed to GetByteArrayElements";
-    // In case of error, restore back the throttle control value.
-    expected_next_frame_time_ -= frame_interval_;
-    client_->OnFrameDropped(
-        VideoCaptureFrameDropReason::kAndroidGetByteArrayElementsFailed);
-    return;
-  }
-
-  // TODO(qiangchen): Investigate how to get raw timestamp for Android,
-  // rather than using reference time to calculate timestamp.
-  SendIncomingDataToClient(reinterpret_cast<uint8_t*>(buffer), length, rotation,
-                           current_time, capture_time);
-
-  env->ReleaseByteArrayElements(data.obj(), buffer, JNI_ABORT);
-}
-
 void VideoCaptureDeviceAndroid::OnI420FrameAvailable(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& y_buffer,
