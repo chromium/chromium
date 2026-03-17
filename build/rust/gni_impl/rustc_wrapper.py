@@ -10,6 +10,7 @@ import pathlib
 import subprocess
 import shlex
 import os
+import signal
 import sys
 import re
 
@@ -237,7 +238,42 @@ def LoadRustEnvAndFlags(path):
   return rustenv, rustflags
 
 
-def RecommendApplyFixesScript(tool, rustc_env_and_flags):
+def HandleReturnCode(completed_process, rustc_env_and_flags=None):
+  """ Takes `completed_process` returned by `subprocess.run(..., check=False)`
+      and if `returncode` is non-zero, then prints some diagnostic info and
+      calls `sys.exit(...)`.  This routine helps to avoid confusing signal-based
+      and exit-code-based failure conditions - see https://crbug.com/493357693.
+
+      If the `returncode` is non-zero and the optional `rustc_env_and_flags`
+      argument is present, then `_RecommendApplyFixesScript` will be called to
+      suggest using a script to apply machine-applicable fixes.
+  """
+  if completed_process.returncode == 0:
+    return
+
+  process_path = completed_process.args[0]
+  process_name = os.path.basename(process_path)
+  return_code = completed_process.returncode
+  if return_code < 0:
+    signal_code = -return_code
+    try:
+      signal_name = signal.Signals(signal_code).name
+    except:
+      signal_name = "<unrecognized signal>"
+    print(f'ERROR: `{process_name}` was terminated by '\
+          f'signal {signal_code} ({signal_name})',
+          file=sys.stderr)
+  else:
+    exit_code = return_code
+    print(f'ERROR: `{process_name}` exited with '\
+          f'a non-zero exit code: {exit_code}',
+          file=sys.stderr)
+    if rustc_env_and_flags:
+      _RecommendApplyFixesScript(process_path, rustc_env_and_flags)
+  sys.exit(return_code if return_code >= 0 else 128 - return_code)
+
+
+def _RecommendApplyFixesScript(tool, rustc_env_and_flags):
   source_root = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                              os.pardir, os.pardir, os.pardir)
   rel_build_dir = os.path.relpath(os.getcwd(), source_root)
@@ -343,9 +379,7 @@ def main():
     print(' '.join(f'{k}={shlex.quote(v)}' for k, v in env.items()), args.rustc,
           shlex.join(rustc_args))
   r = subprocess.run([args.rustc, *rustc_args], env=env, check=False)
-  if r.returncode != 0:
-    RecommendApplyFixesScript(args.rustc, args.dump_rustc_env_and_flags)
-    sys.exit(r.returncode)
+  HandleReturnCode(r, args.dump_rustc_env_and_flags)
 
   final_depfile_lines = []
   dirty = False

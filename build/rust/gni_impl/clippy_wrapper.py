@@ -11,7 +11,7 @@ import sys
 import tempfile
 
 from rustc_wrapper import (ConvertPathsToAbsolute, LoadRustEnvAndFlags,
-                           RecommendApplyFixesScript)
+                           HandleReturnCode)
 
 
 def main():
@@ -41,13 +41,14 @@ def main():
   rustflags += ["--emit=metadata"]
 
   r = subprocess.run([args.clippy_driver, *rustflags], env=rustenv, check=False)
-  if r.returncode == 0:
-    args.build_stamp_file.touch()
-  else:
+  if r.returncode != 0:
     print("NOTE: See `//docs/rust/clippy.md` for more Clippy info.",
           file=sys.stderr)
-    RecommendApplyFixesScript(args.clippy_driver, args.rustc_env_and_flags)
-  return r.returncode
+    HandleReturnCode(r, args.rustc_env_and_flags)
+    assert False  # `HandleReturnCode` should call `sys.exit` for non-0 code.
+
+  args.build_stamp_file.touch()
+  return 0
 
 
 if __name__ == '__main__':
