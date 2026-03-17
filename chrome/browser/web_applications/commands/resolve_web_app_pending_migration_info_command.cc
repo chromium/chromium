@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
 #include "chrome/browser/web_applications/model/migration_behavior.h"
@@ -57,6 +58,7 @@ void ResolveWebAppPendingMigrationInfoCommand::StartWithLock(
   }
 
   std::vector<webapps::AppId> apps_to_notify;
+  int num_updates_applied = 0;
   {
     ScopedRegistryUpdate update = lock_->sync_bridge().BeginUpdate();
     for (const WebApp& app : lock_->registrar().GetAppsIncludingStubs()) {
@@ -91,10 +93,15 @@ void ResolveWebAppPendingMigrationInfoCommand::StartWithLock(
 
         WebApp* mutable_app = update->UpdateApp(app.app_id());
         mutable_app->SetPendingMigrationInfo(std::move(new_info));
+        num_updates_applied++;
         apps_to_notify.push_back(app.app_id());
       }
     }
   }
+
+  base::UmaHistogramCounts100(
+      "WebApp.ResolvePendingMigrationInfoCommand.UpdatesApplied",
+      num_updates_applied);
 
   for (const auto& app_id : apps_to_notify) {
     const WebApp* app = lock_->registrar().GetAppById(app_id);

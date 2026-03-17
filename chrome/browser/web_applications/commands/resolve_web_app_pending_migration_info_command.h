@@ -15,7 +15,6 @@
 #include "chrome/browser/web_applications/model/pending_migration_info.h"
 
 namespace web_app {
-
 // This command finds all apps that have a validated migration 'source' (e.g.,
 // they are the target of the migration), and ensures that all of those 'source'
 // apps have the target app as a pending migration.

@@ -2651,6 +2651,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebApp.ResolvePendingMigrationInfoCommand.Result"
+    units="count" expires_after="2027-03-11">
+  <owner>mek@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Counts the pending migration information entries updated by
+    ResolveWebAppPendingMigrationInfoCommand. This command maintains consistent
+    web app migration information, ensuring source and target apps correctly
+    reflect each other's migration status. The command is scheduled on Chrome
+    startup and upon installation of a new app, when a user visits a site with
+    new or changed manifest migration information, particularly if it relates to
+    an installed app and the metric is recorded on the completion of this
+    command.
+  </summary>
+</histogram>
+
 <histogram name="WebApp.RunOnOsLogin.CommandCompletionState"
     enum="RunOnOSLoginCommandCompletionState" expires_after="2026-07-15">
   <owner>dibyapal@chromium.org</owner>
