@@ -9,6 +9,7 @@
 #import "components/sync/base/features.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/device_reauth/test/reauthentication_app_interface.h"
 #import "ios/chrome/browser/settings/ui_bundled/elements/elements_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_details/password_details_table_view_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_manager_egtest_utils.h"
@@ -109,8 +110,7 @@ void TapShareButtonAndWaitForSpinnerToDisappear() {
 
 - (GREYElementInteraction*)saveExamplePasswordToProfileStoreAndOpenDetails {
   // Mock successful reauth for opening the Password Manager.
-  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
-  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+  [ReauthenticationAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kSuccess];
 
   SavePasswordFormToProfileStore();
@@ -120,8 +120,7 @@ void TapShareButtonAndWaitForSpinnerToDisappear() {
 
 - (GREYElementInteraction*)saveExamplePasswordsToProfileStoreAndOpenDetails {
   // Mock successful reauth for opening the Password Manager.
-  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
-  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+  [ReauthenticationAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kSuccess];
 
   SavePasswordFormToProfileStore(/*password=*/@"password1",
@@ -134,8 +133,7 @@ void TapShareButtonAndWaitForSpinnerToDisappear() {
 
 - (GREYElementInteraction*)saveExamplePasskeyToStoreAndOpenDetails {
   // Mock successful reauth for opening the Password Manager.
-  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
-  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+  [ReauthenticationAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kSuccess];
 
   SaveExamplePasskeyToStore();
@@ -145,8 +143,7 @@ void TapShareButtonAndWaitForSpinnerToDisappear() {
 
 - (GREYElementInteraction*)saveExamplePasskeyAndPasswordToStoreAndOpenDetails {
   // Mock successful reauth for opening the Password Manager.
-  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
-  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+  [ReauthenticationAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kSuccess];
 
   SaveExamplePasskeyToStore();
@@ -186,7 +183,6 @@ void TapShareButtonAndWaitForSpinnerToDisappear() {
 
 - (void)tearDownHelper {
   [PasswordSettingsAppInterface clearPasskeyStore];
-  [PasswordSettingsAppInterface removeMockReauthenticationModule];
 
   // Reset preference to its non-default state (which should be the case
   // for all tests that do not test the first run experience flow).

@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/autofill/model/features.h"
+#import "ios/chrome/browser/device_reauth/test/reauthentication_app_interface.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/omnibox/eg_tests/omnibox_app_interface.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/test/credential_suggestion_bottom_sheet_app_interface.h"
@@ -238,7 +239,6 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
   GREYAssertTrue([PasswordManagerAppInterface clearCredentials],
                  @"Clearing credentials wasn't done.");
   [PasswordSettingsAppInterface clearPasskeyStore];
-  [PasswordSettingsAppInterface removeMockReauthenticationModule];
 
   [MetricsAppInterface stopOverridingMetricsAndCrashReportingForTesting];
   chrome_test_util::GREYAssertErrorNil(
@@ -624,8 +624,7 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
   [ChromeEarlGreyUI waitForAppToIdle];
 
   // Mock local authentication result needed for opening the password manager.
-  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
-  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+  [ReauthenticationAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kSuccess];
 
   [[EarlGrey selectElementWithMatcher:PasswordManagerContextMenuItem()]
@@ -668,10 +667,9 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
 
   // Delay the auth result to be able to validate that password details is
   // not visible until the result is emitted.
-  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
-  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+  [ReauthenticationAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kSuccess];
-  [PasswordSettingsAppInterface mockReauthenticationModuleShouldSkipReAuth:NO];
+  [ReauthenticationAppInterface mockReauthenticationModuleShouldSkipReAuth:NO];
 
   // Long press to open context menu.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"user2")]
@@ -692,7 +690,7 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
   CheckPasswordDetailsVisitMetricCount(0);
 
   // Emit auth result so password details surface is revealed.
-  [PasswordSettingsAppInterface mockReauthenticationModuleReturnMockedResult];
+  [ReauthenticationAppInterface mockReauthenticationModuleReturnMockedResult];
 
   id<GREYMatcher> usernameCellMatcher =
       chrome_test_util::TextFieldForCellWithLabelId(
@@ -745,10 +743,9 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
 
   // Delay the auth result to be able to validate that password details is
   // not visible until the result is emitted.
-  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
-  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+  [ReauthenticationAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kFailure];
-  [PasswordSettingsAppInterface mockReauthenticationModuleShouldSkipReAuth:NO];
+  [ReauthenticationAppInterface mockReauthenticationModuleShouldSkipReAuth:NO];
 
   // Long press to open context menu.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"user2")]
@@ -772,7 +769,7 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
 
   // Emit auth result so password details surface is dismissed due to failed
   // auth.
-  [PasswordSettingsAppInterface mockReauthenticationModuleReturnMockedResult];
+  [ReauthenticationAppInterface mockReauthenticationModuleReturnMockedResult];
 
   // Validate the whole settings UI is gone.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsNavigationBar()]
@@ -805,8 +802,7 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
 
   [ChromeEarlGreyUI waitForAppToIdle];
 
-  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
-  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+  [ReauthenticationAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kSuccess];
 
   [[EarlGrey selectElementWithMatcher:ShowDetailsContextMenuItem()]

@@ -12,9 +12,9 @@
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_matchers.h"
+#import "ios/chrome/browser/device_reauth/test/reauthentication_app_interface.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/test/credential_suggestion_bottom_sheet_app_interface.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_manager_ui_features.h"
-#import "ios/chrome/browser/settings/ui_bundled/password/password_settings_app_interface.h"
 #import "ios/chrome/common/ui/elements/form_input_accessory_view.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
@@ -271,8 +271,7 @@ GREYElementInteraction* SearchAutofillFormButton(id<GREYMatcher> scroll_view) {
   [CredentialSuggestionBottomSheetAppInterface disableBottomSheet];
 
   // Mock successful reauth for opening the Password Manager.
-  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
-  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+  [ReauthenticationAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kSuccess];
 }
 
@@ -283,8 +282,6 @@ GREYElementInteraction* SearchAutofillFormButton(id<GREYMatcher> scroll_view) {
   [AutofillAppInterface clearProfilePasswordStore];
   [AutofillAppInterface clearCreditCardStore];
   [AutofillAppInterface clearProfilesStore];
-
-  [PasswordSettingsAppInterface removeMockReauthenticationModule];
 }
 
 // Loads the appropriate form for the passed `dataType` and opens the expanded

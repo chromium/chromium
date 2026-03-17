@@ -7,6 +7,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/device_reauth/test/reauthentication_app_interface.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_checkup/password_checkup_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_details/password_details_table_view_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_manager_egtest_utils.h"
@@ -289,14 +290,8 @@ NSString* LeakedPasswordDescription() {
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
 
   // Mock successful reauth for opening the Password Manager.
-  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
-  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+  [ReauthenticationAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kSuccess];
-}
-
-- (void)tearDownHelper {
-  [PasswordSettingsAppInterface removeMockReauthenticationModule];
-  [super tearDownHelper];
 }
 
 #pragma mark - Tests
@@ -329,9 +324,9 @@ NSString* LeakedPasswordDescription() {
   OpenPasswordCheckupHomepage(/*result_state=*/PasswordCheckStateSafe,
                               /*result_password_count=*/0);
 
-  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+  [ReauthenticationAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kFailure];
-  [PasswordSettingsAppInterface mockReauthenticationModuleShouldSkipReAuth:NO];
+  [ReauthenticationAppInterface mockReauthenticationModuleShouldSkipReAuth:NO];
 
   [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
 
@@ -342,7 +337,7 @@ NSString* LeakedPasswordDescription() {
   [[EarlGrey selectElementWithMatcher:ReauthenticationController()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  [PasswordSettingsAppInterface mockReauthenticationModuleReturnMockedResult];
+  [ReauthenticationAppInterface mockReauthenticationModuleReturnMockedResult];
 
   // Password Manager UI should be dismissed leaving the Settings UI Visible.
   [ChromeEarlGrey
@@ -552,7 +547,7 @@ NSString* LeakedPasswordDescription() {
   // Auth should not be required to open Password Issues. The user is
   // authenticated when opening the Password Manager page. Catch any unexpected
   // authentication requests.
-  [PasswordSettingsAppInterface mockReauthenticationModuleCanAttempt:NO];
+  [ReauthenticationAppInterface mockReauthenticationModuleCanAttempt:NO];
 
   // Open the compromised issues page.
   [[EarlGrey selectElementWithMatcher:
@@ -976,9 +971,9 @@ NSString* LeakedPasswordDescription() {
       performAction:grey_tap()];
   VerifyWeakPasswordIssuesPageIsVisible(/*issue_count=*/1);
 
-  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+  [ReauthenticationAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kFailure];
-  [PasswordSettingsAppInterface mockReauthenticationModuleShouldSkipReAuth:NO];
+  [ReauthenticationAppInterface mockReauthenticationModuleShouldSkipReAuth:NO];
 
   [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
 
@@ -989,7 +984,7 @@ NSString* LeakedPasswordDescription() {
   [[EarlGrey selectElementWithMatcher:ReauthenticationController()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  [PasswordSettingsAppInterface mockReauthenticationModuleReturnMockedResult];
+  [ReauthenticationAppInterface mockReauthenticationModuleReturnMockedResult];
 
   // Password Manager UI should have been dismissed leaving Settings visible.
   [ChromeEarlGrey

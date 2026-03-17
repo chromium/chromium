@@ -4,10 +4,10 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/device_reauth/test/reauthentication_app_interface.h"
 #import "ios/chrome/browser/passwords/model/password_manager_app_interface.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_manager_egtest_utils.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings/password_settings_constants.h"
-#import "ios/chrome/browser/settings/ui_bundled/password/password_settings_app_interface.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_in_other_apps/constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_in_other_apps/passwords_in_other_apps_app_interface.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_table_view_constants.h"
@@ -117,8 +117,7 @@ void OpensPasswordsInOtherApps() {
               swizzlePasswordAutoFillStatusManagerWithFake]);
 
   // Mock successful reauth when opening the Password Manager.
-  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
-  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+  [ReauthenticationAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kSuccess];
 }
 
@@ -126,8 +125,6 @@ void OpensPasswordsInOtherApps() {
   [super tearDownHelper];
   [PasswordsInOtherAppsAppInterface resetManager];
   _passwordAutoFillStatusSwizzler.reset();
-  // Remove mock to keep the app in the same state as before running the test.
-  [PasswordSettingsAppInterface removeMockReauthenticationModule];
 }
 
 #pragma mark - helper functions
@@ -335,9 +332,9 @@ void OpensPasswordsInOtherApps() {
 - (void)testTapPasswordsInOtherAppsWithFailedAuth {
   OpensPasswordsInOtherApps();
 
-  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+  [ReauthenticationAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kFailure];
-  [PasswordSettingsAppInterface mockReauthenticationModuleShouldSkipReAuth:NO];
+  [ReauthenticationAppInterface mockReauthenticationModuleShouldSkipReAuth:NO];
 
   [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
 
@@ -348,7 +345,7 @@ void OpensPasswordsInOtherApps() {
                                           ReauthenticationController()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  [PasswordSettingsAppInterface mockReauthenticationModuleReturnMockedResult];
+  [ReauthenticationAppInterface mockReauthenticationModuleReturnMockedResult];
 
   // The Password Manager UI should have been dismissed leaving Settings
   // visible.

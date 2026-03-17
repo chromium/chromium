@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_matchers.h"
+#import "ios/chrome/browser/device_reauth/test/reauthentication_app_interface.h"
 #import "ios/chrome/browser/infobars/ui_bundled/banners/infobar_banner_constants.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/test/credential_suggestion_bottom_sheet_app_interface.h"
@@ -23,7 +24,6 @@
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_details/password_details_table_view_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_manager_egtest_utils.h"
-#import "ios/chrome/browser/settings/ui_bundled/password/password_settings_app_interface.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_table_view_constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -198,9 +198,9 @@ void CheckPasswordManagerUIDismissesAfterFailedAuthentication(
   OpenPasswordManualFillView(/*has_suggestions=*/false);
 
   // Simulate failed authentication.
-  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+  [ReauthenticationAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kFailure];
-  [PasswordSettingsAppInterface mockReauthenticationModuleShouldSkipReAuth:NO];
+  [ReauthenticationAppInterface mockReauthenticationModuleShouldSkipReAuth:NO];
 
   // Tap the action in the manual fallback UI.
   [[EarlGrey selectElementWithMatcher:manual_fallback_action_matcher]
@@ -212,7 +212,7 @@ void CheckPasswordManagerUIDismissesAfterFailedAuthentication(
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Deliver authentication result should dismiss the UI.
-  [PasswordSettingsAppInterface mockReauthenticationModuleReturnMockedResult];
+  [ReauthenticationAppInterface mockReauthenticationModuleReturnMockedResult];
 
   // Verify that the whole navigation stack is gone.
   [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
@@ -273,8 +273,7 @@ void CheckKeyboardIsUpAndNotCovered() {
   [ChromeEarlGrey waitForWebStateContainingText:"hello!"];
 
   // Mock successful reauth for opening the Password Manager.
-  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
-  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+  [ReauthenticationAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kSuccess];
 
   // Set up histogram tester.
@@ -287,7 +286,6 @@ void CheckKeyboardIsUpAndNotCovered() {
 
 - (void)tearDownHelper {
   [AutofillAppInterface clearProfilePasswordStore];
-  [PasswordSettingsAppInterface removeMockReauthenticationModule];
 
   // Clean up histogram tester.
   [MetricsAppInterface stopOverridingMetricsAndCrashReportingForTesting];
@@ -635,9 +633,9 @@ void CheckKeyboardIsUpAndNotCovered() {
 // authentication.
 - (void)testOtherPasswordListUIDismissedAfterFailedAuth {
   // Setup failed authentication.
-  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+  [ReauthenticationAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kFailure];
-  [PasswordSettingsAppInterface mockReauthenticationModuleShouldSkipReAuth:NO];
+  [ReauthenticationAppInterface mockReauthenticationModuleShouldSkipReAuth:NO];
 
   [self openOtherPasswords];
 
@@ -651,7 +649,7 @@ void CheckKeyboardIsUpAndNotCovered() {
       assertWithMatcher:grey_notVisible()];
 
   // Deliver authentication result should dismiss the UI.
-  [PasswordSettingsAppInterface mockReauthenticationModuleReturnMockedResult];
+  [ReauthenticationAppInterface mockReauthenticationModuleReturnMockedResult];
 
   // Verify that the whole navigation stack is gone.
   [ChromeEarlGrey

@@ -8,11 +8,11 @@
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
+#import "ios/chrome/browser/device_reauth/test/reauthentication_app_interface.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/passwords/password_breach/public/password_breach_constants.h"
 #import "ios/chrome/browser/passwords/password_breach/test/password_breach_app_interface.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_checkup/password_checkup_constants.h"
-#import "ios/chrome/browser/settings/ui_bundled/password/password_settings_app_interface.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_table_view_constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -67,7 +67,6 @@ id<GREYMatcher> CheckPasswordButton() {
   chrome_test_util::GREYAssertErrorNil(
       [MetricsAppInterface releaseHistogramTester]);
 
-  [PasswordSettingsAppInterface removeMockReauthenticationModule];
   [SigninEarlGrey signOut];
   [super tearDownHelper];
 }
@@ -92,8 +91,7 @@ id<GREYMatcher> CheckPasswordButton() {
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Mock successful auth for opening the Password Checkup homepage.
-  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
-  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+  [ReauthenticationAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kSuccess];
 
   [[EarlGrey selectElementWithMatcher:CheckPasswordButton()]
@@ -122,8 +120,7 @@ id<GREYMatcher> CheckPasswordButton() {
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Mock successful auth for opening the Password Manager.
-  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
-  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+  [ReauthenticationAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kSuccess];
 
   [[EarlGrey selectElementWithMatcher:CheckPasswordButton()]

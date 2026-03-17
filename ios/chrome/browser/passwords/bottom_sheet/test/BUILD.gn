@@ -16,6 +16,7 @@ source_set("eg2_tests") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/authentication/test:eg_test_support+eg2",
     "//ios/chrome/browser/autofill/model:features",
+    "//ios/chrome/browser/device_reauth/test:eg_test_support+eg2",
     "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
     "//ios/chrome/browser/omnibox/eg_tests:eg_test_support+eg2",
     "//ios/chrome/browser/passwords/model:eg_test_support+eg2",
