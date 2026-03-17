@@ -152,13 +152,12 @@ std::unique_ptr<WebNNContextImpl, OnTaskRunnerDeleter> ContextImplOrt::Create(
   // The ONNX Runtime default CPU EP has a limitation that DequantizeLinear with
   // type int32 should have no zero point or all zero points should be 0. This
   // limitation will result in context lost triggered by ONNX Runtime session
-  // run failure. To avoid this issue, we should remove int32 from supported
-  // data types if the default CPU EP is selected first.
-  // TODO(crbug.com/488090100): Remove this workaround when int32 is supported
-  // by ORT 1.24.
-  bool dequantize_linear_input_support_int32 =
-      !Environment::IsDefaultCpuEpDevice(
-          session_options->first_selected_device());
+  // run failure. To avoid this issue, we use an allowlist to support int32
+  // input only for specific EPs.
+  // TODO(crbug.com/488090100): Remove this allowlist to support int32 input for
+  // all EPs when int32 input is supported by ORT 1.24.
+  bool dequantize_linear_input_support_int32 = Environment::IsEpDevice(
+      session_options->first_selected_device(), {kOpenVINOExecutionProvider});
 
   std::unique_ptr<WebNNContextImpl, OnTaskRunnerDeleter> context_impl(
       new ContextImplOrt(

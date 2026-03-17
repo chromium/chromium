@@ -112,13 +112,6 @@ ParseEpLibraryPathSwitch(std::wstring_view value) {
   return std::make_pair(ep_name, ep_library_path);
 }
 
-bool IsDmlEpDevice(const OrtEpDevice* device) {
-  const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
-
-  return UNSAFE_BUFFERS(base::cstring_view(ort_api->EpDevice_EpName(device))) ==
-         kDmlExecutionProvider;
-}
-
 bool MatchesEpVendor(const OrtEpDevice* ep_device) {
   const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
 
@@ -256,8 +249,8 @@ std::vector<const OrtEpDevice*> SelectEpDevicesForCpu(
 
   // Add the default CPU EP device to ensure maximum coverage of opsets and
   // operators.
-  if (!Environment::IsDefaultCpuEpDevice(first_cpu) &&
-      Environment::IsDefaultCpuEpDevice(sorted_devices.back())) {
+  if (!Environment::IsEpDevice(first_cpu, {kCPUExecutionProvider}) &&
+      Environment::IsEpDevice(sorted_devices.back(), {kCPUExecutionProvider})) {
     selected_devices.push_back(sorted_devices.back());
   }
 
@@ -272,7 +265,8 @@ std::vector<const OrtEpDevice*> SelectEpDevicesForGpu(
 
   if (!first_gpu) {
     return SelectEpDevicesForCpu(sorted_devices);
-  } else if (IsDmlEpDevice(first_gpu) && IsSoftwareGpu(first_gpu)) {
+  } else if (Environment::IsEpDevice(first_gpu, {kDmlExecutionProvider}) &&
+             IsSoftwareGpu(first_gpu)) {
     // Skip DirectML EP for software GPU adaptor, because it will throw
     // exception and cause GPU process to crash. See more details in
     // crbug.com/466848120.
@@ -388,8 +382,10 @@ std::vector<const OrtEpDevice*> SortEpDevices(
           return a_matches_vendor;
         }
 
-        bool a_is_default_cpu = Environment::IsDefaultCpuEpDevice(a);
-        bool b_is_default_cpu = Environment::IsDefaultCpuEpDevice(b);
+        bool a_is_default_cpu =
+            Environment::IsEpDevice(a, {kCPUExecutionProvider});
+        bool b_is_default_cpu =
+            Environment::IsEpDevice(b, {kCPUExecutionProvider});
         CHECK(!(a_is_default_cpu && b_is_default_cpu))
             << "Default CPU EP should be unique.";
 
@@ -677,11 +673,16 @@ std::vector<const OrtEpDevice*> Environment::SelectEpDevices(
 }
 
 // static
-bool Environment::IsDefaultCpuEpDevice(const OrtEpDevice* device) {
+bool Environment::IsEpDevice(const OrtEpDevice* device,
+                             base::span<const base::cstring_view> ep_names) {
   const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
+  const char* ep_name = ort_api->EpDevice_EpName(device);
+  // SAFETY: ORT guarantees that EP names are valid and null-terminated.
+  base::cstring_view ep_name_view = UNSAFE_BUFFERS(base::cstring_view(ep_name));
 
-  return UNSAFE_BUFFERS(base::cstring_view(ort_api->EpDevice_EpName(device))) ==
-         kCPUExecutionProvider;
+  return std::ranges::any_of(ep_names, [ep_name_view](base::cstring_view name) {
+    return ep_name_view == name;
+  });
 }
 
 base::span<const OrtEpDevice* const> Environment::GetRegisteredEpDevices()
