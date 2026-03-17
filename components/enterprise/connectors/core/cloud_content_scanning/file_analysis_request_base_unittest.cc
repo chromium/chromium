@@ -15,6 +15,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/test/with_feature_override.h"
 #include "build/build_config.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_service.h"
 #include "components/enterprise/connectors/core/features.h"
@@ -225,29 +226,18 @@ TEST_F(FileAnalysisRequestBaseTest, NormalFilesDataControls) {
 }
 
 class FileAnalysisRequestBaseHashInFinalInvariantTest
-    : public FileAnalysisRequestBaseTest,
-      public testing::WithParamInterface<bool> {
+    : public base::test::WithFeatureOverride,
+      public FileAnalysisRequestBaseTest {
  public:
-  bool is_content_hash_in_final_call_enabled() const { return GetParam(); }
+  FileAnalysisRequestBaseHashInFinalInvariantTest()
+      : base::test::WithFeatureOverride(
+            enterprise_connectors::kContentHashInFileUploadFinalCall) {}
 };
-
-INSTANTIATE_TEST_SUITE_P(,
-                         FileAnalysisRequestBaseHashInFinalInvariantTest,
-                         testing::Bool());
 
 TEST_P(FileAnalysisRequestBaseHashInFinalInvariantTest,
        LargeFileAlwaysHasHashWhenNotDelayOpen) {
   enterprise_connectors::ScanRequestUploadResult result;
   BinaryUploadRequest::Data data;
-  base::test::ScopedFeatureList scoped_feature_list;
-
-  if (is_content_hash_in_final_call_enabled()) {
-    scoped_feature_list.InitAndEnableFeature(
-        enterprise_connectors::kContentHashInFileUploadFinalCall);
-  } else {
-    scoped_feature_list.InitAndDisableFeature(
-        enterprise_connectors::kContentHashInFileUploadFinalCall);
-  }
 
   std::string large_file_contents(BinaryUploadService::kMaxUploadSizeBytes + 1,
                                   'a');
@@ -275,6 +265,9 @@ TEST_P(FileAnalysisRequestBaseHashInFinalInvariantTest,
   EXPECT_TRUE(IsDocMimeType(data.mime_type))
       << data.mime_type << " is not an expected mimetype";
 }
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    FileAnalysisRequestBaseHashInFinalInvariantTest);
 
 TEST_F(FileAnalysisRequestBaseTest, NewFileLimitSet) {
   base::test::ScopedFeatureList scoped_feature_list;
@@ -530,6 +523,49 @@ TEST_F(FileAnalysisRequestBaseTest, FileHashComputesAsyncWhenEnabled) {
 
   request->OpenFile();
 
+  run_loop.Run();
+  EXPECT_TRUE(run_loop.AnyQuitCalled());
+}
+
+TEST_F(FileAnalysisRequestBaseTest,
+       NoHashForHugeFilesWhenAsyncHashComputationEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      enterprise_connectors::kContentHashInFileUploadFinalCall);
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath file_path = temp_dir.GetPath().AppendASCII("huge.doc");
+
+  // Create a sparse file that reports 25GB + 1 byte.
+  const uint64_t kHugeFileSize = 25ull * 1024 * 1024 * 1024 + 1;
+  {
+    base::File file(file_path,
+                    base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+    ASSERT_TRUE(file.IsValid());
+    ASSERT_TRUE(file.SetLength(kHugeFileSize));
+  }
+
+  auto request = MakeRequest(file_path, file_path.BaseName(),
+                             /*delay_opening_file*/ true, "", false,
+                             /*force_sync_hash_computation=*/false);
+
+  base::RunLoop run_loop;
+
+  request->GetRequestData(base::BindLambdaForTesting(
+      [&request, &run_loop, &kHugeFileSize](
+          enterprise_connectors::ScanRequestUploadResult result,
+          BinaryUploadRequest::Data data) {
+        EXPECT_EQ(result, ScanRequestUploadResult::kFileTooLarge);
+        EXPECT_EQ(data.size, kHugeFileSize);
+        EXPECT_TRUE(data.hash.empty());
+        EXPECT_FALSE(request->register_on_got_hash_callback_);
+        EXPECT_TRUE(IsDocMimeType(data.mime_type))
+            << data.mime_type << " is not an expected mimetype";
+
+        run_loop.Quit();
+      }));
+
+  request->OpenFile();
   run_loop.Run();
   EXPECT_TRUE(run_loop.AnyQuitCalled());
 }
