@@ -1010,7 +1010,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Permissions.OneTimePermission.{PermissionType}.{OTPCountPermissionAction}OTPCount"
-    units="count" expires_after="2026-04-15">
+    units="count" expires_after="2026-10-15">
   <owner>elklm@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -1069,7 +1069,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Permissions.PageInfo.OnChanged.{PermissionType}.{ReloadInfoBar}"
-    enum="PermissionChangeAction" expires_after="2026-04-12">
+    enum="PermissionChangeAction" expires_after="2026-10-12">
   <owner>elklm@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -2408,7 +2408,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebsiteSettings.AllSitesAction2"
-    enum="WebSiteSettingsAllSitesAction2" expires_after="2026-04-05">
+    enum="WebSiteSettingsAllSitesAction2" expires_after="2026-10-05">
   <owner>sauski@google.com</owner>
   <owner>alimariam@google.com</owner>
   <summary>
