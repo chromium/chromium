@@ -259,6 +259,7 @@ chrome_java_resources = [
   "java/res/drawable/bg_circle_tab_strip_button.xml",
   "java/res/drawable/bg_tabstrip_tab_divider.xml",
   "java/res/drawable/blue_google_shield.xml",
+  "java/res/drawable/bolt_24dp.xml",
   "java/res/drawable/bookmark_empty_state_illustration.xml",
   "java/res/drawable/bookmark_title_bar_shadow.xml",
   "java/res/drawable/bookmark_touch_ripple.xml",
