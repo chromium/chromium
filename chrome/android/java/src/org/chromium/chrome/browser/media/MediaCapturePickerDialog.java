@@ -251,6 +251,9 @@ public class MediaCapturePickerDialog implements MediaCapturePickerTabObserver.D
                     public void onClick(@Nullable PropertyModel model, int buttonType) {
                         boolean picked = buttonType == ModalDialogProperties.ButtonType.POSITIVE;
                         assumeNonNull(mDelegate);
+                        MediaCapturePickerManager.Delegate localDelegate = mDelegate;
+                        mDelegate = null;
+
                         if (picked && mLastSelectedTabItemState != null) {
                             var tab = mLastSelectedTabItemState.mTab;
                             Log.d(
@@ -262,16 +265,23 @@ public class MediaCapturePickerDialog implements MediaCapturePickerTabObserver.D
                             var webContents = tab.getWebContents();
                             assert webContents != null;
 
-                            mDelegate.onPickTab(webContents, mAudioSwitch.isChecked());
+                            // Bring tab and its window to front. This is necessary for tabs
+                            // belonging to a minimized window, or sharing will not be able to
+                            // start.
+                            // TODO(crbug.com/454192534): reconsider this behavior when the android
+                            // system bug is fixed to keep it consistent with desktop Chrome.
+                            MediaCapturePickerManager.bringTabToFront(tab);
+
+                            Log.d(TAG, "PickerDialog: call delegate.onPickTab");
+                            localDelegate.onPickTab(webContents, mAudioSwitch.isChecked());
                             MediaCapturePickerManager.recordResult(
                                     MediaCapturePickerManager.Result.TAB_SELECTED);
                         } else {
                             Log.d(TAG, "PickerDialog: cancelled");
-                            mDelegate.onCancel();
+                            localDelegate.onCancel();
                             MediaCapturePickerManager.recordResult(
                                     MediaCapturePickerManager.Result.CANCELLED);
                         }
-                        mDelegate = null;
                         mModalDialogManager.dismissDialog(
                                 model,
                                 picked

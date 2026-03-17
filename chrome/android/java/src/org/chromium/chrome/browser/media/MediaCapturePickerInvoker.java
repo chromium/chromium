@@ -95,6 +95,14 @@ public class MediaCapturePickerInvoker {
                 tab.loadIfNeeded(TabLoadIfNeededCaller.MEDIA_CAPTURE_PICKER);
                 WebContents pickedTabwebContents = tab.getWebContents();
                 assert pickedTabwebContents != null;
+
+                // Bring tab and its window to front. This is necessary for tabs belonging to a
+                // minimized window, or sharing will not be able to start.
+                // TODO(crbug.com/454192534): reconsider this behavior when the android system bug
+                // is fixed to keep it consistent with desktop Chrome.
+                MediaCapturePickerManager.bringTabToFront(tab);
+
+                Log.d(TAG, "PickerInvoker: call delegate.onPickTab");
                 delegate.onPickTab(pickedTabwebContents, impl.shouldShareAudio());
                 MediaCapturePickerManager.recordResult(
                         MediaCapturePickerManager.Result.TAB_SELECTED);

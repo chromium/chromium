@@ -107,6 +107,7 @@ public class MediaCapturePickerInvokerTest {
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
         mPickerDelegate = new FakeMediaCapturePickerDelegate();
         ServiceLoaderUtil.setInstanceForTesting(MediaCapturePickerDelegate.class, mPickerDelegate);
+        MediaCapturePickerManager.setBringTabToFrontCallbackForTesting(tab -> {});
     }
 
     @After
