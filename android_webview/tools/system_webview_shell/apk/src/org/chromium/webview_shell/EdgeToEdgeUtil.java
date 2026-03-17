@@ -4,6 +4,9 @@
 
 package org.chromium.webview_shell;
 
+import android.view.View;
+
+import androidx.activity.ComponentActivity;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -18,10 +21,10 @@ public final class EdgeToEdgeUtil {
      * Enable edge-to-edge rendering and add padding to the content view to avoid drawing under the
      * insets.
      */
-    public static void setupEdgeToEdge(AppCompatActivity activity) {
+    public static void setupEdgeToEdge(ComponentActivity activity, View view) {
         EdgeToEdge.enable(activity);
         ViewCompat.setOnApplyWindowInsetsListener(
-                activity.findViewById(android.R.id.content),
+                view,
                 (v, windowInsets) -> {
                     int types =
                             WindowInsetsCompat.Type.systemBars()

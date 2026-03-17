@@ -65,7 +65,7 @@ public class WebViewBrowserActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         ContextUtils.initApplicationContext(getApplicationContext());
 
-        EdgeToEdgeUtil.setupEdgeToEdge(this);
+        EdgeToEdgeUtil.setupEdgeToEdge(this, findViewById(android.R.id.content));
         setContentView(R.layout.activity_webview_browser);
         setSupportActionBar((Toolbar) findViewById(R.id.browser_toolbar));
         mWebViewVersion = WebViewCompat.getCurrentWebViewPackage(this).versionName;

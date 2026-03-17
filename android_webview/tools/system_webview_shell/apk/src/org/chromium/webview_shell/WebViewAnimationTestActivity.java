@@ -72,7 +72,7 @@ public class WebViewAnimationTestActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdgeUtil.setupEdgeToEdge(this);
+        EdgeToEdgeUtil.setupEdgeToEdge(this, findViewById(android.R.id.content));
         setContentView(R.layout.activity_webview_animation_test);
         mWebView = (WebViewWithClipPath) findViewById(R.id.webview);
 

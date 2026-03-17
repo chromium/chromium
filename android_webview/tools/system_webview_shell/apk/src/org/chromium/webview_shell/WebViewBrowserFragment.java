@@ -505,6 +505,7 @@ public class WebViewBrowserFragment extends Fragment {
                             ((ViewGroup) mFullscreenView.getParent()).removeView(mFullscreenView);
                         }
                         mFullscreenView = view;
+                        EdgeToEdgeUtil.setupEdgeToEdge(getActivity(), mFullscreenView);
                         requireActivity()
                                 .getWindow()
                                 .addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
