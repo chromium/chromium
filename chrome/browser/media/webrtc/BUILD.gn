@@ -99,6 +99,7 @@ source_set("webrtc") {
     "//build:buildflag_header_h",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/tab_contents",
     "//chrome/common:mojo_bindings",
     "//components/content_settings/core/common",
     "//components/keyed_service/core",

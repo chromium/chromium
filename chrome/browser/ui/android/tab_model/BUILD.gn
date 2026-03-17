@@ -61,6 +61,7 @@ source_set("impl") {
     "//chrome/browser/sessions",
     "//chrome/browser/sync",
     "//chrome/browser/tab",
+    "//chrome/browser/tab_contents",
     "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/browser_window/internal",

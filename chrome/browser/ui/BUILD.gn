@@ -243,6 +243,7 @@ static_library("ui") {
     "//chrome/browser/media/webrtc",
     "//chrome/browser/memory",
     "//chrome/browser/search",
+    "//chrome/browser/tab_contents",
     "//chrome/browser/task_manager",
     "//chrome/browser/ui/dialogs",
     "//chrome/browser/ui/tabs:tab_enums",
