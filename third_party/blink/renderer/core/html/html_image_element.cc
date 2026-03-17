@@ -1038,17 +1038,6 @@ void HTMLImageElement::StartLoadingImageDocument(
   setAttribute(html_names::kSrcAttr, AtomicString(image_content->Url()));
 }
 
-void HTMLImageElement::DidAddUserAgentShadowRoot(ShadowRoot& shadow_root) {
-  CHECK(layout_disposition_ == LayoutDisposition::kFallbackContent ||
-        layout_disposition_ == LayoutDisposition::kImageReplacement);
-  if (layout_disposition_ == LayoutDisposition::kImageReplacement) {
-    ImageReplacement::CreateImageReplacementShadowTree(
-        base::PassKey<HTMLImageElement>(), *this);
-    return;
-  }
-  HTMLImageFallbackHelper::CreateAltTextShadowTree(*this);
-}
-
 void HTMLImageElement::EnsureFallbackForGeneratedContent() {
   // The special casing for generated content in CreateLayoutObject breaks the
   // invariant that the layout object attached to this element will always be
@@ -1105,10 +1094,11 @@ void HTMLImageElement::SetLayoutDisposition(
     CHECK_NE(layout_disposition, LayoutDisposition::kImageReplacement);
     ImageReplacement::ResetImageReplacement(base::PassKey<HTMLImageElement>(),
                                             *this, GetDocument());
-    {
-      EventDispatchForbiddenScope::AllowUserAgentEvents allow_events;
-      UserAgentShadowRoot()->RemoveChildren();
-    }
+  }
+
+  if (ShadowRoot* shadow_root = UserAgentShadowRoot()) {
+    EventDispatchForbiddenScope::AllowUserAgentEvents allow_events;
+    shadow_root->RemoveChildren();
   }
 
   layout_disposition_ = layout_disposition;
@@ -1122,6 +1112,12 @@ void HTMLImageElement::SetLayoutDisposition(
       layout_disposition_ == LayoutDisposition::kImageReplacement) {
     EventDispatchForbiddenScope::AllowUserAgentEvents allow_events;
     EnsureUserAgentShadowRoot();
+    if (layout_disposition_ == LayoutDisposition::kImageReplacement) {
+      ImageReplacement::CreateImageReplacementShadowTree(
+          base::PassKey<HTMLImageElement>(), *this);
+    } else {
+      HTMLImageFallbackHelper::CreateAltTextShadowTree(*this);
+    }
   }
 
   // ComputedStyle depends on layout_disposition_. Trigger recalc.

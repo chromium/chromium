@@ -43,7 +43,6 @@ namespace blink {
 class ExceptionState;
 class HTMLFormElement;
 class ImageCandidate;
-class ShadowRoot;
 
 class CORE_EXPORT HTMLImageElement
     : public HTMLElement,
@@ -219,7 +218,6 @@ class CORE_EXPORT HTMLImageElement
 
   void DidMoveToNewDocument(Document& old_document) override;
 
-  void DidAddUserAgentShadowRoot(ShadowRoot&) override;
   void AdjustStyle(ComputedStyleBuilder&) override;
 
  private:

@@ -49,6 +49,31 @@ class MockImageReplacementHost : public mojom::blink::ImageReplacementHost {
 
 class ImageReplacementSimTest : public SimTest {};
 
+TEST_F(ImageReplacementSimTest, ShadowTreeClearedOnLayoutDispositionChange) {
+  auto* image = MakeGarbageCollected<HTMLImageElement>(GetDocument());
+  EXPECT_FALSE(image->UserAgentShadowRoot());
+
+  // 1) Switch to fallback content.
+  image->EnsureFallbackForGeneratedContent();
+  ASSERT_TRUE(image->UserAgentShadowRoot());
+  EXPECT_TRUE(image->UserAgentShadowRoot()->HasChildren());
+
+  // 2) Switch back to primary content.
+  // This should clear the shadow tree children.
+  image->EnsurePrimaryContent();
+  ASSERT_TRUE(image->UserAgentShadowRoot());
+  EXPECT_FALSE(image->UserAgentShadowRoot()->HasChildren());
+
+  // 3) Switch to image replacement.
+  // This should create a new shadow tree for image replacement which contains
+  // exactly one child (an iframe).
+  image->StartImageReplacement();
+  ASSERT_TRUE(image->UserAgentShadowRoot());
+  ASSERT_EQ(1u, image->UserAgentShadowRoot()->CountChildren());
+  EXPECT_TRUE(
+      IsA<HTMLIFrameElement>(image->UserAgentShadowRoot()->firstChild()));
+}
+
 TEST_F(ImageReplacementSimTest, ImageReplacementLifecycle) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kImageReplacement);
