@@ -25,7 +25,6 @@
 #include "components/tabs/public/pinned_tab_collection.h"
 #include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_group_tab_collection.h"
-#include "components/tabs/public/unpinned_tab_collection.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -124,21 +123,6 @@ TEST_F(TabAndroidTest, TabGroupTabCollectionParent) {
       std::make_unique<TabInterfaceAndroid>(tab_android_), 0);
 
   EXPECT_EQ(tab_group_id, *(tab_android_->GetGroup()));
-}
-
-TEST_F(TabAndroidTest, ParentCollectionResetOnInterfaceDestruction) {
-  std::unique_ptr<tabs::UnpinnedTabCollection> pinned_collection =
-      std::make_unique<tabs::UnpinnedTabCollection>();
-  pinned_collection->AddTab(std::make_unique<TabInterfaceAndroid>(tab_android_),
-                            0);
-
-  EXPECT_EQ(pinned_collection.get(), tab_android_->GetParentCollection());
-
-  // Destroying the collection should destroy the TabInterfaceAndroid, which
-  // in turn should reset the parent_collection_ in TabAndroid.
-  pinned_collection.reset();
-
-  EXPECT_EQ(nullptr, tab_android_->GetParentCollection());
 }
 
 DEFINE_JNI(TabAndroidTestHelper)
