@@ -44,6 +44,11 @@ ExtensionsToolbarAndroid::ExtensionsToolbarAndroid(
                                            *toolbar_view_model_),
       java_object_(java_object) {
   toolbar_view_model_observation_.Observe(toolbar_view_model_.get());
+
+  if (toolbar_view_model_->AreActionsInitialized()) {
+    // We missed the observer call for initialization.
+    OnActionsInitialized();
+  }
 }
 
 ExtensionsToolbarAndroid::~ExtensionsToolbarAndroid() = default;
