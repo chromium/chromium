@@ -220,7 +220,7 @@ class MEDIA_EXPORT WASAPIAudioInputStream
   // Sets communications policy and excludes any built-in audio processing,
   // i.e., activates raw capture mode.
   // Raw capture mode is only enabled if the native number of input channels is
-  // less than |media::kMaxConcurrentChannels| (8).
+  // less than `kMaxRawCaptureChannels` (8).
   HRESULT SetCommunicationsCategoryAndMaybeRawCaptureMode(WORD channels);
   // Returns whether the desired format is supported or not and writes the
   // result of a failing system call to |*hr|, or S_OK if successful. If this
