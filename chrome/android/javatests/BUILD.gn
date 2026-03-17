@@ -1526,6 +1526,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.toolbar") {
     "src/org/chromium/chrome/browser/toolbar/adaptive/OptionalNewTabButtonControllerPhoneTest.java",
     "src/org/chromium/chrome/browser/toolbar/adaptive/OptionalNewTabButtonControllerTabletTest.java",
     "src/org/chromium/chrome/browser/toolbar/signin_button/SigninButtonCoordinatorTest.java",
+    "src/org/chromium/chrome/browser/toolbar/signin_button/SigninButtonRenderTest.java",
     "src/org/chromium/chrome/browser/toolbar/top/BrandColorTest.java",
     "src/org/chromium/chrome/browser/toolbar/top/NavigationPopupTest.java",
     "src/org/chromium/chrome/browser/toolbar/top/TabSwitcherActionMenuBatchedPTTest.java",
