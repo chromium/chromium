@@ -169,8 +169,10 @@ class ReusingTextShaper final {
       return ShapeWithoutCache(start_item, font, end_offset);
     };
     if (allow_shape_cache_) {
+      const LayoutLocale* locale = font.GetFontDescription().Locale();
       return font.PrimaryFont()->GetShapeCache().GetOrCreate(
           ShapeCacheKey(shaper_.GetText(), start_item.StartOffset(), end_offset,
+                        locale ? locale->LocaleString() : g_null_atom,
                         start_item.Direction()),
           ShapeFunc);
     }

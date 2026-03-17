@@ -76,10 +76,12 @@ struct ShapeCacheKey {
   ShapeCacheKey(const String& text,
                 unsigned start_offset,
                 unsigned end_offset,
+                const AtomicString& locale,
                 TextDirection direction)
       : text_(text),
         start_offset_(start_offset),
         end_offset_(end_offset),
+        locale_(locale),
         direction_(direction) {
     DCHECK_NE(text_, g_empty_string);
   }
@@ -91,13 +93,15 @@ struct ShapeCacheKey {
     unsigned hash = blink::GetHash(text_);
     AddIntToHash(hash, start_offset_);
     AddIntToHash(hash, end_offset_);
+    AddIntToHash(hash, locale_ ? blink::GetHash(locale_) : 0);
     AddIntToHash(hash, static_cast<unsigned>(direction_));
     return hash;
   }
 
   bool operator==(const ShapeCacheKey& other) const {
     return text_ == other.text_ && start_offset_ == other.start_offset_ &&
-           end_offset_ == other.end_offset_ && direction_ == other.direction_;
+           end_offset_ == other.end_offset_ && locale_ == other.locale_ &&
+           direction_ == other.direction_;
   }
 
   const String& GetText() const { return text_; }
@@ -106,6 +110,7 @@ struct ShapeCacheKey {
   String text_;
   unsigned start_offset_ = 0u;
   unsigned end_offset_ = 0u;
+  AtomicString locale_;
   TextDirection direction_ = TextDirection::kLtr;
 };
 
