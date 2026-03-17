@@ -30,7 +30,7 @@ ClickToolJavaScriptFeature::ClickToolJavaScriptFeature()
           {FeatureScript::CreateWithFilename(
               kScriptName,
               FeatureScript::InjectionTime::kDocumentStart,
-              // TODO (crbug.com/476090817) - Inject in all frames once we can
+              // TODO(crbug.com/476090817) - Inject in all frames once we can
               // reliably identify iframes in JS and native code.
               FeatureScript::TargetFrames::kMainFrame,
               FeatureScript::ReinjectionBehavior::kInjectOncePerWindow)}) {}

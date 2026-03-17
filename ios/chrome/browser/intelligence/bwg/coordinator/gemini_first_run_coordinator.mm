@@ -45,7 +45,7 @@
   // Handler for sending Gemini commands.
   id<BWGCommands> _geminiCommandsHandler;
 
-  // Returns the `_entryPoint` the coordinator was initialized from.
+  // The `gemini::EntryPoint` the coordinator was initialized from.
   gemini::EntryPoint _entryPoint;
 
   // Handler for sending IPH commands.
@@ -200,7 +200,7 @@
   return BwgTabHelper::FromWebState(activeWebState);
 }
 
-// Attemps to present the entry point IPH the user hasn't used the AI Hub entry
+// Attempts to present the entry point IPH the user hasn't used the AI Hub entry
 // point yet.
 - (void)presentPageActionMenuIPH {
   if (_entryPoint != gemini::EntryPoint::AIHub) {

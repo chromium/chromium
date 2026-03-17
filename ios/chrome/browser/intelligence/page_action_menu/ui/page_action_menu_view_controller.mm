@@ -91,7 +91,7 @@ const CGFloat kFeatureRowHorizontalPadding = 16;
 // The vertical padding within feature rows.
 const CGFloat kFeatureRowVerticalPadding = 12;
 
-// The width for the veritical feature row divider.
+// The width for the vertical feature row divider.
 const CGFloat kDividerWidth = 1.0;
 
 }  // namespace

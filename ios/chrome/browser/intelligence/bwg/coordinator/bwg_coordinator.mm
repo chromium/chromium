@@ -52,7 +52,7 @@ const CGFloat kPromoMaxImpressionCount = 3;
   // Handler for sending BWG commands.
   id<BWGCommands> _BWGCommandsHandler;
 
-  // Returns the `_entryPoint` the coordinator was intialized from.
+  // The `gemini::EntryPoint` the coordinator was initialized from.
   gemini::EntryPoint _entryPoint;
 
   // Handler for sending IPH commands.
@@ -270,8 +270,8 @@ const CGFloat kPromoMaxImpressionCount = 3;
   return BwgTabHelper::FromWebState(activeWebState);
 }
 
-// Attemps to present the entry point IPH the user hasn't used the AI Hub entry
-// point yet.
+// Attempts to present the entry point IPH if the user hasn't used the AI Hub
+// entry point yet.
 - (void)presentPageActionMenuIPH {
   if (_entryPoint != gemini::EntryPoint::AIHub) {
     [_helpCommandsHandler

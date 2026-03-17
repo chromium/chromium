@@ -33,7 +33,7 @@ enum class AddToCalendarIntegrationProvider;
 // Whether the calendar event is an all-day event.
 @property(nonatomic) BOOL isAllDay;
 
-// The currence state of the calendar event.
+// The recurrence state of the calendar event.
 @property(nonatomic, assign)
     optimization_guide::proto::RecurrenceState recurrence;
 

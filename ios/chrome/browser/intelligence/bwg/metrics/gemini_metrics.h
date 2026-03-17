@@ -521,17 +521,8 @@ void RecordGeminiCameraFlowBegan();
 void RecordGeminiCameraFlowOSCameraAuthorizationInitialStatus(
     IOSGeminiOSCameraAuthorizationInitialStatus authorization_status);
 
-// Records the result of an OS-level camera authorization request.
-void RecordGeminiCameraFlowOSAuthorizationResult(bool granted);
-
-// Records the result of the alert directing users to OS settings.
-void RecordGeminiCameraFlowGoToOSSettingsAlertResult(bool accepted);
-
 // Records the initial Gemini camera permission value.
 void RecordGeminiCameraFlowGeminiCameraPermissionInitialValue(bool enabled);
-
-// Records the result of the Gemini camera permission alert.
-void RecordGeminiCameraFlowGeminiCameraPermissionAlertResult(bool accepted);
 
 // Records that the camera picker was presented.
 void RecordGeminiCameraFlowPresentCameraPicker();

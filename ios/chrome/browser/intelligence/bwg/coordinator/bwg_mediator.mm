@@ -128,7 +128,7 @@
   }];
 }
 
-// Did dismisses the Consent UI.
+// Did dismiss the Consent UI.
 - (void)didRefuseGeminiConsent {
   [_delegate dismissBWGFlow];
 }

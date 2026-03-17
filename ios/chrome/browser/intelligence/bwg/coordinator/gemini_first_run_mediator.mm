@@ -154,7 +154,7 @@ const CGFloat kPromoMaxImpressionCount = 3;
   }];
 }
 
-// Did dismisses the Consent UI.
+// Did dismiss the Consent UI.
 - (void)didRefuseGeminiConsent {
   [_delegate dismissGeminiFlow];
   [self handleFRECompletion:NO];
