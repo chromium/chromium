@@ -222,11 +222,37 @@ void GlicTabObserverAndroid::OnTabCloseUndone(
   }
 }
 
+void GlicTabObserverAndroid::WillCloseTab(TabAndroid* tab) {
+  // This is the last event when `tab` is attached to a tab model.
+  TabModel* closing_tab_tab_model = TabModelList::GetTabModelForTabAndroid(tab);
+  CHECK(closing_tab_tab_model);
+
+  // Remove `tab` from `last_active_tab_map_` before the tab gets detached from
+  // its model.
+  MaybeClearLastActiveTab(closing_tab_tab_model, tab);
+}
+
+void GlicTabObserverAndroid::MaybeClearLastActiveTab(TabModel* tab_model,
+                                                     TabAndroid* tab) {
+  auto iter = last_active_tab_map_.find(tab_model);
+  if (iter == last_active_tab_map_.end() || iter->second != tab) {
+    return;
+  }
+
+  last_active_tab_map_.erase(tab_model);
+}
+
 void GlicTabObserverAndroid::ResetLastActiveTab(TabModel* tab_model) {
   if (!tab_model) {
     return;
   }
 
+  content::WebContents* active_web_contents = tab_model->GetActiveWebContents();
+  if (!active_web_contents) {
+    last_active_tab_map_.erase(tab_model);
+    return;
+  }
+
   last_active_tab_map_[tab_model] =
-      TabAndroid::FromWebContents(tab_model->GetActiveWebContents());
+      TabAndroid::FromWebContents(active_web_contents);
 }

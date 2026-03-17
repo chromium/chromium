@@ -51,6 +51,7 @@ class GlicTabObserverAndroid : public GlicTabObserver,
                          TabModel::TabClosingSource source) override;
   void TabClosureUndone(TabAndroid* tab) override;
   void OnTabCloseUndone(const std::vector<TabAndroid*>& tabs) override;
+  void WillCloseTab(TabAndroid* tab) override;
 
   // TabAndroid::Observer:
   void OnInitWebContents(TabAndroid* tab) override;
@@ -65,6 +66,7 @@ class GlicTabObserverAndroid : public GlicTabObserver,
   tabs::TabInterface* GetLastActiveTab(TabModel* tab_model);
 
   void ResetLastActiveTab(TabModel* tab_model);
+  void MaybeClearLastActiveTab(TabModel* tab_model, TabAndroid* tab);
 
   raw_ptr<Profile> profile_;
   EventCallback callback_;
