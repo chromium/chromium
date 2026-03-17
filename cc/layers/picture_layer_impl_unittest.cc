@@ -6527,6 +6527,31 @@ TEST_F(PictureLayerImplTest, ComputeCheckerboardedNeedsRecord_MultipleCases) {
       ->scroll_tree_mutable()
       .SetScrollingContentsCullRect(element_id, gfx::Rect(0, 0, 100, 100));
   EXPECT_TRUE(active_layer()->ComputeCheckerboardedNeedsRecord());
+
+  // Case 9: target_space_transform has translation and scale.
+  // scaled_cull_rect DOES contain unoccluded_recorded_visible_rect.
+  gfx::Transform transform;
+  transform.Translate(10.f, 20.f);
+  transform.Scale(2.f, 2.f);
+  active_layer()->picture_layer_tiling_set()->RemoveAllTilings();
+  SetupDrawPropertiesAndUpdateTiles(active_layer(), 2.f, 1.f, 1.f);
+  active_layer()->draw_properties().target_space_transform = transform;
+
+  host_impl()
+      ->active_tree()
+      ->property_trees()
+      ->scroll_tree_mutable()
+      .SetScrollingContentsCullRect(element_id, gfx::Rect(layer_bounds));
+  EXPECT_FALSE(active_layer()->ComputeCheckerboardedNeedsRecord());
+
+  // Case 10: target_space_transform has translation and scale.
+  // scaled_cull_rect does NOT contain unoccluded_recorded_visible_rect.
+  host_impl()
+      ->active_tree()
+      ->property_trees()
+      ->scroll_tree_mutable()
+      .SetScrollingContentsCullRect(element_id, gfx::Rect(0, 0, 100, 100));
+  EXPECT_TRUE(active_layer()->ComputeCheckerboardedNeedsRecord());
 }
 
 TEST_F(PictureLayerImplTest,
@@ -6599,6 +6624,20 @@ TEST_F(PictureLayerImplTest,
   SetupDrawPropertiesAndUpdateTiles(active_layer(), 0.75f, 1.f, 1.f);
   ASSERT_EQ(0.75f,
             active_layer()->GetMaximumContentsScaleForUseInAppendQuads());
+
+  // visible_rect is within cull_rect.
+  active_scroll_tree.SetScrollOffset(scroll_element_id, gfx::PointF(0, 0));
+  EXPECT_FALSE(active_layer()->ComputeCheckerboardedNeedsRecord());
+
+  // Scroll beyond cull_rect.
+  active_scroll_tree.SetScrollOffset(scroll_element_id, gfx::PointF(1001, 0));
+  EXPECT_TRUE(active_layer()->ComputeCheckerboardedNeedsRecord());
+
+  // Test with target_space_transform.
+  gfx::Transform transform;
+  transform.Translate(50.f, 100.f);
+  transform.Scale(1.5f, 1.5f);
+  active_layer()->draw_properties().target_space_transform = transform;
 
   // visible_rect is within cull_rect.
   active_scroll_tree.SetScrollOffset(scroll_element_id, gfx::PointF(0, 0));
