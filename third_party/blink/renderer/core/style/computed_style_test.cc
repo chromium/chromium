@@ -55,7 +55,7 @@ class ComputedStyleTest : public testing::Test {
   void SetUp() override {
     dummy_page_holder_ =
         std::make_unique<DummyPageHolder>(gfx::Size(0, 0), nullptr);
-    initial_style_ = ComputedStyle::GetInitialStyleSingleton();
+    initial_style_ = GetDocument().GetStyleResolver().InitialStyleForElement();
   }
 
   Document& GetDocument() { return dummy_page_holder_->GetDocument(); }
@@ -86,11 +86,12 @@ class ComputedStyleTest : public testing::Test {
     set_flag(&builder);
     const ComputedStyle* style = builder.TakeStyle();
     EXPECT_TRUE(get_flag(style));
-    const ComputedStyle* other = InitialComputedStyle();
-    EXPECT_FALSE(get_flag(other));
+    const ComputedStyle* initial = InitialComputedStyle();
+    EXPECT_FALSE(get_flag(initial));
     EXPECT_EQ(expected_difference,
-              ComputedStyle::ComputeDifference(style, other));
-    StyleDifference diff = style->VisualInvalidationDiff(GetDocument(), *other);
+              ComputedStyle::ComputeDifference(initial, style));
+    StyleDifference diff =
+        style->VisualInvalidationDiff(GetDocument(), *initial);
     bool expect_compositing_reasons_changed =
         expected_changes == kCompositingReasonsChanged;
     EXPECT_EQ(expect_compositing_reasons_changed, diff.HasDifference());

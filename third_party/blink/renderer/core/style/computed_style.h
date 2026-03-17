@@ -1001,6 +1001,14 @@ class ComputedStyle final : public ComputedStyleBase {
   bool InheritedEqualIncludingInheritedVariables(const ComputedStyle&) const;
 
   bool HasChildDependentFlags() const { return ChildHasExplicitInheritance(); }
+
+  void SetChildHasExplicitInheritance() const {
+    // Child-dependent flags are contextual, and must not mutate the shared
+    // initial-style singleton.
+    DCHECK(this != GetInitialStyleSingleton());
+    ComputedStyleBase::SetChildHasExplicitInheritance();
+  }
+
   void CopyChildDependentFlagsFrom(const ComputedStyle&) const;
 
   // Counters.

@@ -88,11 +88,14 @@ TEST_F(StyleBuilderTest, TextOrientationChangeDirtiesFont) {
 }
 
 TEST_F(StyleBuilderTest, HasExplicitInheritance) {
-  const auto& parent_style = GetDocument().GetStyleResolver().InitialStyle();
+  const ComputedStyle* parent_style =
+      GetDocument().GetStyleResolver().InitialStyleForElement();
   StyleResolverState state(GetDocument(), *GetDocument().body(),
                            nullptr /* StyleRecalcContext */,
-                           StyleRequest(&parent_style));
-  state.CreateNewClonedStyle(GetDocument().GetStyleResolver().InitialStyle());
+                           StyleRequest(parent_style));
+  state.CreateNewClonedStyle(*parent_style);
+
+  EXPECT_FALSE(state.ParentStyle()->ChildHasExplicitInheritance());
   EXPECT_FALSE(state.StyleBuilder().HasExplicitInheritance());
 
   const CSSValue& inherited = *CSSInheritedValue::Create();
@@ -104,6 +107,7 @@ TEST_F(StyleBuilderTest, HasExplicitInheritance) {
   StyleBuilder::ApplyProperty(GetCSSPropertyBackgroundColor(), state,
                               inherited);
   EXPECT_TRUE(state.StyleBuilder().HasExplicitInheritance());
+  EXPECT_TRUE(state.ParentStyle()->ChildHasExplicitInheritance());
 }
 
 TEST_F(StyleBuilderTest, GridTemplateAreasApplyOrder) {
