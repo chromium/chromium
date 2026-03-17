@@ -33,7 +33,9 @@ class ScrollButtonPseudoElement : public PseudoElement,
   void Trace(Visitor* v) const final;
 
  private:
-  void HandleButtonActivation();
+  // Returns true if activation behavior was performed and the event should be
+  // considered handled.
+  bool HandleButtonActivation();
 
   bool enabled_ = true;
 };

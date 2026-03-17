@@ -68,7 +68,10 @@ void ScrollButtonPseudoElement::Trace(Visitor* v) const {
   PseudoElement::Trace(v);
 }
 
-void ScrollButtonPseudoElement::HandleButtonActivation() {
+bool ScrollButtonPseudoElement::HandleButtonActivation() {
+  if (!isConnected() || !parentElement()) {
+    return false;
+  }
   Element& scrolling_element = UltimateOriginatingElement();
   LayoutBox* scroller = scrolling_element.GetLayoutBox();
   PaintLayerScrollableArea* scrollable_area =
@@ -77,7 +80,7 @@ void ScrollButtonPseudoElement::HandleButtonActivation() {
   // Future proof in case of possibility to activate scroll button
   // without an appropriate scroller via a click event from JS.
   if (!scrollable_area) {
-    return;
+    return false;
   }
 
   LogicalToPhysical<bool> mapping(
@@ -103,6 +106,7 @@ void ScrollButtonPseudoElement::HandleButtonActivation() {
                                   FocusParams(SelectionBehaviorOnFocus::kNone,
                                               mojom::blink::FocusType::kNone,
                                               /*capabilities=*/nullptr));
+  return true;
 }
 
 void ScrollButtonPseudoElement::DefaultEventHandler(Event& event) {
@@ -115,8 +119,7 @@ void ScrollButtonPseudoElement::DefaultEventHandler(Event& event) {
                       To<KeyboardEvent>(event).keyCode() == VKEY_SPACE);
   bool should_intercept =
       event.RawTarget() == this && (is_click || is_enter_or_space);
-  if (should_intercept) {
-    HandleButtonActivation();
+  if (should_intercept && HandleButtonActivation()) {
     event.SetDefaultHandled();
   }
   PseudoElement::DefaultEventHandler(event);
@@ -133,7 +136,7 @@ FocusableState ScrollButtonPseudoElement::SupportsFocus(
 bool ScrollButtonPseudoElement::UpdateSnapshot() {
   // Note: we can hit it here, since we don't unsubscribe from
   // scroll snapshot client (maybe we should).
-  if (!isConnected()) {
+  if (!isConnected() || !parentElement()) {
     return false;
   }
   LayoutBox* scroller =
