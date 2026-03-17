@@ -10,6 +10,7 @@ import static android.view.InputDevice.SOURCE_MOUSE;
 import static android.view.InputDevice.SOURCE_TOUCHPAD;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.hardware.input.InputManager;
 import android.hardware.input.InputManager.InputDeviceListener;
 import android.util.SparseArray;
@@ -98,11 +99,13 @@ public class DeviceInput implements InputDeviceListener {
     }
 
     /**
-     * @return Whether any currently connected {@link InputDevice} supports a keyboard.
+     * Checks if a numeric or alphabetic keyboard is currently attached and usable.
+     *
+     * @return true if a physical keyboard (QWERTY or 12-key) is active and not hidden.
      */
-    public static boolean supportsKeyboard() {
+    public static boolean supportsKeyboard(Context context) {
         ThreadUtils.assertOnUiThread();
-        return getInstance().supportsKeyboardImpl();
+        return getInstance().supportsKeyboardImpl(context);
     }
 
     /** Implementation of {@link #supportsAlphabeticKeyboard()}. */
@@ -120,18 +123,33 @@ public class DeviceInput implements InputDeviceListener {
     }
 
     /** Implementation of {@link #supportsKeyboard()}. */
-    public boolean supportsKeyboardImpl() {
-        ThreadUtils.assertOnUiThread();
-        if (sSupportsKeyboardForTesting != null) {
-            return sSupportsKeyboardForTesting;
-        }
-
-        for (int i = 0; i < mDeviceSnapshotsById.size(); i++) {
-            if (mDeviceSnapshotsById.valueAt(i).supportsKeyboard) {
-                return true;
+    public boolean supportsKeyboardImpl(Context context) {
+        // TODO(crbug.com/479570578): Remove the flag after this change is stalbe for awhile
+        if (UiAndroidFeatureList.sSupportKeyboard.isEnabled()) {
+            ThreadUtils.assertOnUiThread();
+            if (sSupportsKeyboardForTesting != null) {
+                return sSupportsKeyboardForTesting;
             }
+
+            Configuration config = context.getResources().getConfiguration();
+            boolean hasKeyboard =
+                    config.keyboard == Configuration.KEYBOARD_QWERTY
+                            || config.keyboard == Configuration.KEYBOARD_12KEY;
+            boolean isUncovered = config.hardKeyboardHidden == Configuration.HARDKEYBOARDHIDDEN_NO;
+            return hasKeyboard && isUncovered;
+        } else {
+            ThreadUtils.assertOnUiThread();
+            if (sSupportsKeyboardForTesting != null) {
+                return sSupportsKeyboardForTesting;
+            }
+
+            for (int i = 0; i < mDeviceSnapshotsById.size(); i++) {
+                if (mDeviceSnapshotsById.valueAt(i).supportsKeyboard) {
+                    return true;
+                }
+            }
+            return false;
         }
-        return false;
     }
 
     /** Modifies the output of {@link #supportsPrecisionPointer()} for testing. */

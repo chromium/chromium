@@ -15,6 +15,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeBookmarksUrl;
@@ -53,6 +54,7 @@ import org.chromium.chrome.test.util.TabStripUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.base.DeviceInput;
 
 /** Tests for the bookmark manager on tablet. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -177,10 +179,51 @@ public class BookmarkTabletTest {
 
     @Test
     @MediumTest
-    public void testSearchBarAutoFocus() throws Exception {
+    public void testSearchBarAutoFocusWithoutKeyboard() throws Exception {
+        DeviceInput.setSupportsKeyboardForTesting(false);
         openBookmarkManager();
+        boolean isKeyboardAttached =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> DeviceInput.supportsKeyboard(mActivityTestRule.getActivity()));
 
-        // The search bar should be focused automatically.
+        if (isKeyboardAttached) return;
+
+        // The search bar should not be automatically focused on devices without physical keyboard
+        BookmarkTestUtil.getSearchBoxViewInteraction().check(matches(not(isFocused())));
+        // users should be able to directly type "google" in the search bar
+        BookmarkTestUtil.getSearchBoxViewInteraction().perform(replaceText("google"));
+        onView(allOf(isDescendantOfA(withId(R.id.action_bar)), withText("Bookmarks")))
+                .check(matches(isDisplayed()));
+
+        onView(allOf(withId(R.id.clear_text_button), isDisplayed())).perform(click());
+        onView(withText("Mobile bookmarks")).perform(click());
+        onView(allOf(isDescendantOfA(withId(R.id.action_bar)), withText("Mobile bookmarks")))
+                .check(matches(isDisplayed()));
+
+        // After navigating to a new folder, the search bar should be focused again.
+        BookmarkTestUtil.getSearchBoxViewInteraction().check(matches(not(isFocused())));
+        // And the search text should be cleared.
+        BookmarkTestUtil.getSearchBoxViewInteraction().check(matches(withText("")));
+        // go back to the bookmark page
+        onView(withId(R.id.back_button)).perform(click());
+        // user's query is empty in the search bar
+        BookmarkTestUtil.getSearchBoxViewInteraction().perform(replaceText(""));
+        // user's query is empty the context inside bookmarks should not change
+        onView(withText("Mobile bookmarks")).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    public void testSearchBarAutoFocusWithKeyboard() throws Exception {
+        DeviceInput.setSupportsKeyboardForTesting(true);
+        openBookmarkManager();
+        boolean isKeyboardAttached =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> DeviceInput.supportsKeyboard(mActivityTestRule.getActivity()));
+
+        if (!isKeyboardAttached) return;
+
+        // The search bar should be focused automatically
         BookmarkTestUtil.getSearchBoxViewInteraction().check(matches(isFocused()));
         // users should be able to directly type "google" in the search bar
         BookmarkTestUtil.getSearchBoxViewInteraction().perform(replaceText("google"));

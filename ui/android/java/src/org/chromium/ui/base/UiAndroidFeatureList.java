@@ -60,6 +60,10 @@ public class UiAndroidFeatureList {
                     UiAndroidFeatures.ANDROID_TOUCHPAD_OVERSCROLL_HISTORY_NAVIGATION,
                     /* defaultValue= */ true);
 
+    public static final MutableFlagWithSafeDefault sSupportKeyboard =
+            newMutableFlagWithSafeDefault(
+                    UiAndroidFeatures.SUPPORT_KEYBOARD, /* defaultValue= */ true);
+
     public static final List<CachedFlag> sFlagsCachedUiAndroid =
             List.of(
                     sAndroidUseDisplayTopology,
