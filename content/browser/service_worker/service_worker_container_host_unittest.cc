@@ -32,7 +32,6 @@
 #include "content/common/content_navigation_policy.h"
 #include "content/common/url_schemes.h"
 #include "content/public/browser/child_process_host.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/origin_util.h"
 #include "content/public/test/back_forward_cache_util.h"
@@ -884,38 +883,22 @@ TEST_F(ServiceWorkerContainerHostTest,
   EXPECT_EQ(3u, bad_messages_.size());
 }
 
-class WebUIServiceWorkerContainerHostTest
-    : public ServiceWorkerContainerHostTest,
-      public testing::WithParamInterface<bool> {
- public:
-  WebUIServiceWorkerContainerHostTest() {
-    if (GetParam()) {
-      features_.InitAndEnableFeature(
-          features::kEnableServiceWorkersForChromeScheme);
-    } else {
-      features_.InitAndDisableFeature(
-          features::kEnableServiceWorkersForChromeScheme);
-    }
-  }
-
- private:
-  base::test::ScopedFeatureList features_;
-};
-
-TEST_P(WebUIServiceWorkerContainerHostTest, Register_RegistrationShouldFail) {
+// Test that chrome:// service workers are natively disallowed.
+TEST_F(ServiceWorkerContainerHostTest, Register_ChromeRegistrationShouldFail) {
   CommittedServiceWorkerClient service_worker_client =
       PrepareServiceWorkerContainerHost(GURL("chrome://testwebui/"));
 
   ASSERT_TRUE(bad_messages_.empty());
   Register(service_worker_client.host_remote().get(),
            GURL("chrome://testwebui/"), GURL("chrome://testwebui/sw.js"));
+
+  // Registration should trigger a bad message since the scheme is unsupported.
   EXPECT_EQ(1u, bad_messages_.size());
 }
 
-// Test that chrome-untrusted:// service workers are disallowed with the
-// chrome:// flag turned on.
-TEST_P(WebUIServiceWorkerContainerHostTest,
-       Register_UntrustedRegistrationShouldFail) {
+// Test that chrome-untrusted:// service workers are natively disallowed.
+TEST_F(ServiceWorkerContainerHostTest,
+       Register_ChromeUntrustedRegistrationShouldFail) {
   CommittedServiceWorkerClient service_worker_client =
       PrepareServiceWorkerContainerHost(GURL("chrome-untrusted://testwebui/"));
 
@@ -923,18 +906,10 @@ TEST_P(WebUIServiceWorkerContainerHostTest,
   Register(service_worker_client.host_remote().get(),
            GURL("chrome-untrusted://testwebui/"),
            GURL("chrome-untrusted://testwebui/sw.js"));
+
+  // Registration should trigger a bad message since the scheme is unsupported.
   EXPECT_EQ(1u, bad_messages_.size());
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         WebUIServiceWorkerContainerHostTest,
-                         testing::Bool(),
-                         [](const ::testing::TestParamInfo<bool>& info) {
-                           if (info.param) {
-                             return "ServiceWorkersForChromeEnabled";
-                           }
-                           return "ServiceWorkersForChromeDisabled";
-                         });
 
 TEST_F(ServiceWorkerContainerHostTest, EarlyContextDeletion) {
   CommittedServiceWorkerClient service_worker_client =

@@ -234,28 +234,4 @@ TEST_P(WebUIURLLoaderFactoryTest, MAYBE_RangeRequest) {
   }
 }
 
-TEST(WebUIURLLoaderFactoryErrorHandlingTest, HandlesDestroyedContext) {
-  content::BrowserTaskEnvironment task_environment;
-  auto test_context = std::make_unique<TestBrowserContext>();
-  mojo::Remote<network::mojom::URLLoaderFactory> loader_factory(
-      CreateWebUIServiceWorkerLoaderFactory(test_context.get(),
-                                            kTestWebUIScheme, {}));
-
-  // Destroy the context before sending a request.
-  test_context.reset();
-
-  network::ResourceRequest request;
-  request.url = GURL(base::StrCat({kTestWebUIScheme, "://", kTestWebUIHost}));
-
-  mojo::PendingRemote<network::mojom::URLLoader> loader;
-  network::TestURLLoaderClient loader_client;
-  loader_factory->CreateLoaderAndStart(
-      loader.InitWithNewPipeAndPassReceiver(), /*request_id=*/0,
-      /*options=*/0, request, loader_client.CreateRemote(),
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
-  loader_client.RunUntilComplete();
-
-  ASSERT_EQ(loader_client.completion_status().error_code, net::ERR_FAILED);
-}
-
 }  // namespace content

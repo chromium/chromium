@@ -41,7 +41,6 @@
 #include "content/browser/service_worker/service_worker_quota_client.h"
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/browser/storage_partition_impl.h"
-#include "content/browser/webui/web_ui_controller_factory_registry.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -52,11 +51,7 @@
 #include "content/public/browser/service_worker_registration_information.h"
 #include "content/public/browser/service_worker_running_info.h"
 #include "content/public/browser/storage_usage_info.h"
-#include "content/public/browser/web_ui_url_loader_factory.h"
-#include "content/public/browser/webui_config.h"
-#include "content/public/browser/webui_config_map.h"
 #include "content/public/common/content_client.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/origin_util.h"
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -1963,33 +1958,6 @@ ServiceWorkerContextWrapper::GetLoaderFactoryForBrowserInitiatedRequest(
       loader_factory_bundle_info =
           context()->loader_factory_bundle_for_update_check()->Clone();
 
-  if (auto* config = content::WebUIConfigMap::GetInstance().GetConfig(
-          browser_context(), scope)) {
-    // If this is a Service Worker for a WebUI, the WebUI's URLDataSource
-    // needs to be registered. Registering a URLDataSource allows the
-    // WebUIURLLoaderFactory below to serve the resources for the WebUI. We
-    // register the URLDataSource here because the WebUI's resources are
-    // needed for the Service Worker update check to be performed which
-    // fetches the service worker script.
-    //
-    // This is similar to how we create a `WebUI` object in
-    // RenderFrameHostManager::GetFrameHostForNavigation(). Creating a `WebUI`
-    // also creates a `WebUIController` which register the URLDataSource for
-    // the WebUI which allows the navigation to be served correctly. We don't
-    // create a `WebUI` or a `WebUIController` for WebUI Service Workers so we
-    // register the URLDataSource directly.
-    if (base::FeatureList::IsEnabled(
-            features::kEnableServiceWorkersForChromeScheme) &&
-        scope.scheme() == kChromeUIScheme) {
-      config->RegisterURLDataSource(browser_context());
-      static_cast<blink::PendingURLLoaderFactoryBundle*>(
-          loader_factory_bundle_info.get())
-          ->pending_scheme_specific_factories()
-          .emplace(kChromeUIScheme, CreateWebUIServiceWorkerLoaderFactory(
-                                        browser_context(), kChromeUIScheme,
-                                        base::flat_set<std::string>()));
-    }
-  }
 
   static_cast<blink::PendingURLLoaderFactoryBundle*>(
       loader_factory_bundle_info.get())

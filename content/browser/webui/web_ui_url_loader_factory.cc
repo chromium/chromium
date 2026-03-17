@@ -237,21 +237,6 @@ class WebUIURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
     return pending_remote;
   }
 
-  static mojo::PendingRemote<network::mojom::URLLoaderFactory>
-  CreateForServiceWorker(BrowserContext* browser_context,
-                         const std::string& scheme,
-                         base::flat_set<std::string> allowed_hosts) {
-    mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_remote;
-
-    // The WebUIURLLoaderFactory will delete itself when there are no more
-    // receivers - see the
-    // network::SelfDeletingURLLoaderFactory::OnDisconnect method.
-    new WebUIURLLoaderFactory(browser_context, FrameTreeNodeId(), scheme,
-                              std::move(allowed_hosts),
-                              pending_remote.InitWithNewPipeAndPassReceiver());
-    return pending_remote;
-  }
-
   WebUIURLLoaderFactory(const WebUIURLLoaderFactory&) = delete;
   WebUIURLLoaderFactory& operator=(const WebUIURLLoaderFactory&) = delete;
 
@@ -365,15 +350,6 @@ CreateWebUIURLLoaderFactory(RenderFrameHost* render_frame_host,
                             base::flat_set<std::string> allowed_hosts) {
   return WebUIURLLoaderFactory::CreateForFrame(
       FrameTreeNode::From(render_frame_host), scheme, std::move(allowed_hosts));
-}
-
-mojo::PendingRemote<network::mojom::URLLoaderFactory>
-CreateWebUIServiceWorkerLoaderFactory(
-    BrowserContext* browser_context,
-    const std::string& scheme,
-    base::flat_set<std::string> allowed_hosts) {
-  return WebUIURLLoaderFactory::CreateForServiceWorker(
-      browser_context, scheme, std::move(allowed_hosts));
 }
 
 }  // namespace content
