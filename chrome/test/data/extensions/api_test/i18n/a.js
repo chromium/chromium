@@ -3,4 +3,4 @@
 // found in the LICENSE file.
 
 chrome.runtime.sendMessage(
-    chrome.i18n.getMessage("message_with_one_placeholder", "19"));
+    chrome.i18n.getMessage('message_with_one_placeholder', '19'));
