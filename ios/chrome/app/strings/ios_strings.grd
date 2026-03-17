@@ -2916,7 +2916,7 @@
         Explain with Gemini
       </message>
       <message name="IDS_IOS_EXPLAIN_GEMINI_PROMPT_PREFIX" desc="This text will be appended before a body of text which Gemini is being asked to explain to the user.">
-          Explain this to me
+          Explain this to me:
       </message>
       <message name="IDS_IOS_EXPORT_PASSWORDS" desc="Button that the user can press to export passwords. [Length: 22em] [iOS only]">
         Export passwords…
