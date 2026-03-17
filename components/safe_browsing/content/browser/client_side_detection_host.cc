@@ -1365,6 +1365,9 @@ void ClientSideDetectionHost::OnPhishingPreClassificationDone(
     return;
   }
 
+  LogClientSideDetectionEvent(
+      ClientSideDetectionEvent::kImageClassificationBegin, request_type);
+
   phishing_detector_->StartPhishingDetection(
       current_url_, GetClientSideDetectionMojomType(request_type),
       base::BindOnce(&ClientSideDetectionHost::PhishingDetectionDone,
