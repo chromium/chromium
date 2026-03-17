@@ -83,6 +83,21 @@ class REQUIRES_ANDROID_API(NDK_MEDIA_CODEC_MIN_API) MEDIA_GPU_EXPORT
   // instead of input buffers as a way to send frames to the MediaCodec.
   static bool ShouldUseSurfaceInput();
 
+  // Returns per-layer bitrate allocation factors (summing to 1.0).
+  static std::vector<double> GetDefaultSvcBitrateRatios(
+      int num_temporal_layers);
+
+  /**
+   * Converts per-layer bitrate distribution factors into the cumulative string
+   * format expected by Android MediaCodec (KEY_VIDEO_BITRATE_LAYERING).
+   *
+   * The format is "ratio1;ratio2;...;ratioN", where N is the number of temporal
+   * layers - 1. Each ratio represents the cumulative bitrate allocation for the
+   * current layer and all lower layers, as a fraction of the total bitrate.
+   */
+  static std::string GetSvcBitrateRatiosString(
+      const std::vector<double>& ratios);
+
  private:
   struct FrameTimestampInfo {
     // The original timestamp of the input VideoFrame, it's used for

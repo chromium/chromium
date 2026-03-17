@@ -1127,6 +1127,10 @@ BASE_FEATURE(kUseAudioManagerMaxChannelLayout,
 BASE_FEATURE(kNdkVideoEncodeAcceleratorNativeSvc,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Allows setting SVC bitrate layers for NdkVideoEncodeAccelerator.
+BASE_FEATURE(kNdkVideoEncodeAcceleratorBitrateLayering,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // TODO(crbug.com/414430336): Consider restricting to IS_CHROMEOS.

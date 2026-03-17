@@ -48,9 +48,12 @@ class MEDIA_GPU_EXPORT NdkVideoEncodeAcceleratorSvcApi {
       ACodecEncoderCapabilities_getSupportedLayeringSchemas = nullptr;
 
   static bool IsTemporalLayerIdSupported();
+  static bool IsBitrateLayeringSupported();
 
   static constexpr const char* AMEDIAFORMAT_KEY_TEMPORAL_LAYER_ID =
       "temporal-layer-id";
+  static constexpr const char* AMEDIAFORMAT_KEY_VIDEO_BITRATE_LAYERING =
+      "video-bitrate-layering";
 
  private:
   friend class base::NoDestructor<NdkVideoEncodeAcceleratorSvcApi>;

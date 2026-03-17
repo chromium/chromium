@@ -66,4 +66,14 @@ bool NdkVideoEncodeAcceleratorSvcApi::IsTemporalLayerIdSupported() {
   return false;
 }
 
+// static
+bool NdkVideoEncodeAcceleratorSvcApi::IsBitrateLayeringSupported() {
+  if (__builtin_available(android 37, *)) {
+    return base::FeatureList::IsEnabled(
+        media::kNdkVideoEncodeAcceleratorBitrateLayering);
+  }
+
+  return false;
+}
+
 }  // namespace media

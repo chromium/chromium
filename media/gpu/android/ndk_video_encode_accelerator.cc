@@ -20,6 +20,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
@@ -484,6 +485,20 @@ MediaFormatPtr CreateVideoFormat(const VideoEncodeAccelerator::Config& config,
           NdkVideoEncodeAcceleratorSvcApi::AMEDIAFORMAT_KEY_TEMPORAL_LAYER_ID,
           0);
     }
+
+    if (NdkVideoEncodeAcceleratorSvcApi::IsBitrateLayeringSupported()) {
+      std::vector<double> ratios =
+          NdkVideoEncodeAccelerator::GetDefaultSvcBitrateRatios(
+              num_temporal_layers);
+      if (!ratios.empty()) {
+        AMediaFormat_setString(
+            result.get(),
+            NdkVideoEncodeAcceleratorSvcApi::
+                AMEDIAFORMAT_KEY_VIDEO_BITRATE_LAYERING,
+            NdkVideoEncodeAccelerator::GetSvcBitrateRatiosString(ratios)
+                .c_str());
+      }
+    }
   }
 
   return result;
@@ -603,6 +618,55 @@ std::string GetInitStatusHistogramName(VideoCodecProfile profile) {
        GetCodecNameForUMA(VideoCodecProfileToVideoCodec(profile))});
 }
 }  // namespace
+
+// static
+// Returns per-layer bitrate allocation factors (summing to 1.0).
+// These ratios are standard for Chromium encoders and are also used in
+// media/gpu/gpu_video_encode_accelerator_helpers.cc.
+std::vector<double> NdkVideoEncodeAccelerator::GetDefaultSvcBitrateRatios(
+    int num_temporal_layers) {
+  if (num_temporal_layers == 2) {
+    return {0.6, 0.4};
+  } else if (num_temporal_layers == 3) {
+    return {0.5, 0.2, 0.3};
+  }
+  return {};
+}
+
+// static
+/**
+ * Converts per-layer bitrate distribution factors into the cumulative string
+ * format expected by Android MediaCodec (KEY_VIDEO_BITRATE_LAYERING).
+ *
+ * The format is "ratio1;ratio2;...;ratioN", where N is the number of temporal
+ * layers - 1. Each ratio represents the cumulative bitrate allocation for the
+ * current layer and all lower layers, as a fraction of the total bitrate.
+ *
+ * For example, if there are 3 temporal layers with 50%, 20%, and 30%
+ * distribution:
+ * - Layer 0 (base): 50% -> ratio1 = "0.5"
+ * - Layer 0 + 1: 70% -> ratio2 = "0.7"
+ * - Resulting string: "0.5;0.7"
+ *
+ * Layer 2 (highest) is implicitly 1.0.
+ */
+std::string NdkVideoEncodeAccelerator::GetSvcBitrateRatiosString(
+    const std::vector<double>& ratios) {
+  if (ratios.empty()) {
+    return "";
+  }
+  std::string ratios_str;
+  double cumulative = 0;
+  // Android expects N-1 cumulative ratios for N layers.
+  for (size_t i = 0; i < ratios.size() - 1; ++i) {
+    cumulative += ratios[i];
+    ratios_str += base::NumberToString(cumulative);
+    if (i < ratios.size() - 2) {
+      ratios_str += ";";
+    }
+  }
+  return ratios_str;
+}
 
 NdkVideoEncodeAccelerator::PendingEncode::PendingEncode(
     scoped_refptr<VideoFrame> frame,
@@ -807,6 +871,9 @@ void NdkVideoEncodeAccelerator::RequestEncodingParametersChange(
     const Bitrate& bitrate,
     uint32_t framerate,
     const std::optional<gfx::Size>& size) {
+  // TODO(crbug.com/469819308): Support dynamic layered bitrate changes via
+  // VideoBitrateAllocation overload of RequestEncodingParametersChange().
+
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (size.has_value()) {
     NotifyErrorStatus({EncoderStatus::Codes::kEncoderUnsupportedConfig,
