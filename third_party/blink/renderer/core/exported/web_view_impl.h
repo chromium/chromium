@@ -33,9 +33,9 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <vector>
 
-#include "base/debug/stack_trace.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
@@ -1020,11 +1020,6 @@ class CORE_EXPORT WebViewImpl final : public WebView,
       ui::mojom::blink::VirtualKeyboardMode::kUnset;
 
   scheduler::WebAgentGroupScheduler& web_agent_group_scheduler_;
-
-  // TODO(crbug.com/1499519): Remove this temporary debugging.
-  std::optional<base::debug::StackTrace> close_task_posted_stack_trace_;
-  std::optional<base::debug::StackTrace> close_called_stack_trace_;
-  std::optional<base::debug::StackTrace> close_window_called_stack_trace_;
 
   // Indicates whether the page supports draggable regions via the app-region
   // CSS property.
