@@ -910,18 +910,20 @@ DISABLE_CFI_PERF bool ElementRuleCollector::CollectMatchingRulesInternal(
     // we cannot use range-based iterators over the attributes here
     // if we don't synchronize before the loop; we need to use
     // simple indexes and then refresh the span after every call.
+    // We also need to not hold references into the Attribute,
+    // as they would be similarly invalidated.
     base::span<const Attribute> attributes =
         GetAttributes(element, match_request.NeedStyleSynchronized());
 
     for (unsigned attr_idx = 0; attr_idx < attributes.size(); ++attr_idx) {
-      const AtomicString& attribute_name = attributes[attr_idx].LocalName();
       // NOTE: Attributes in non-default namespaces are case-sensitive.
       // There is a bug where you can set mixed-cased attributes (in
       // non-default namespaces) with setAttributeNS(), but they never match
       // anything. (The relevant code is in AnyAttributeMatches(), in
       // selector_checker.cc.) What we're doing here doesn't influence that
       // bug.
-      const AtomicString& lower_name =
+      const AtomicString& attribute_name = attributes[attr_idx].LocalName();
+      const AtomicString lower_name =
           (lower_attrs_in_default_ns &&
            attributes[attr_idx].NamespaceURI() == g_null_atom)
               ? attribute_name.ToAsciiLower()
@@ -936,15 +938,18 @@ DISABLE_CFI_PERF bool ElementRuleCollector::CollectMatchingRulesInternal(
           continue;
         }
         if (CollectMatchingRulesForList<stop_at_first_match>(
-                bundle.rule_set->AttrRules(lower_name), match_request,
-                bundle.rule_set, bundle.style_sheet_index, checker, context) &&
+                list, match_request, bundle.rule_set, bundle.style_sheet_index,
+                checker, context) &&
             stop_at_first_match) {
           return true;
         }
-      }
 
-      const AttributeCollection collection = element.AttributesWithoutUpdate();
-      attributes = base::span(collection);
+        // Refresh the attribute span, in case CollectMatchingRulesForList()
+        // reallocated it.
+        const AttributeCollection collection =
+            element.AttributesWithoutUpdate();
+        attributes = base::span(collection);
+      }
     }
   }
 
