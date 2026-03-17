@@ -1313,6 +1313,8 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Scroll, action"/>
 </enum>
 
+<!-- LINT.IfChange(IOSOverflowMenuDestination) -->
+
 <enum name="IOSOverflowMenuDestination">
   <int value="0" label="Bookmarks"/>
   <int value="1" label="History"/>
@@ -1325,7 +1327,13 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="WhatsNew"/>
   <int value="9" label="SpotlightDebugger"/>
   <int value="10" label="PriceNotifications"/>
+  <int value="11" label="Cobalt"/>
 </enum>
+
+<!-- LINT.ThenChange(
+    /ios/chrome/browser/popup_menu/overflow_menu/ui/overflow_menu_metrics.h:destination,
+    /ios/chrome/browser/popup_menu/overflow_menu/public/overflow_menu_constants.h:destination
+)-->
 
 <enum name="IOSOverflowMenuReorderingReason">
   <int value="0" label="Error Badge"/>

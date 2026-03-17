@@ -35,6 +35,8 @@ std::optional<Destination> DestinationForStringName(std::string destination) {
     return overflow_menu::Destination::WhatsNew;
   } else if (destination == "overflow_menu::Destination::SpotlightDebugger") {
     return overflow_menu::Destination::SpotlightDebugger;
+  } else if (destination == "overflow_menu::Destination::Cobalt") {
+    return overflow_menu::Destination::Cobalt;
   } else {
     return std::nullopt;
   }
@@ -68,6 +70,8 @@ std::string StringNameForDestination(Destination destination) {
       return "overflow_menu::Destination::WhatsNew";
     case overflow_menu::Destination::SpotlightDebugger:
       return "overflow_menu::Destination::SpotlightDebugger";
+    case overflow_menu::Destination::Cobalt:
+      return "overflow_menu::Destination::Cobalt";
   }
 }
 // LINT.ThenChange(:stringToDestination)
@@ -219,6 +223,9 @@ void RecordUmaActionForDestination(Destination destination) {
       break;
     case overflow_menu::Destination::SpotlightDebugger:
       // No need to log metrics for a debug-only feature.
+      break;
+    case overflow_menu::Destination::Cobalt:
+      // No need to log metrics yet.
       break;
   }
 }

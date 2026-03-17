@@ -23,8 +23,12 @@ enum class Destination {
   WhatsNew = 8,
   SpotlightDebugger = 9,
   PriceNotifications = 10,
+  Cobalt = 11,
 };
-// LINT.ThenChange(overflow_menu_metrics.h:destination)
+// LINT.ThenChange(
+// /ios/chrome/browser/popup_menu/overflow_menu/ui/overflow_menu_metrics.h:destination,
+// /tools/metrics/histograms/metadata/ios/enums.xml:IOSOverflowMenuDestination
+// )
 
 // Represents a type of action (i.e. a row). For example, both the Stop and
 // Reload actions have an `actionType` of `Reload` as they would both take

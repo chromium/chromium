@@ -26,6 +26,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/lens_overlay/coordinator:lens_overlay_availability",
     "//ios/chrome/browser/overlays/model",
+    "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/popup_menu/overflow_menu/coordinator",
     "//ios/chrome/browser/popup_menu/overflow_menu/public",
     "//ios/chrome/browser/popup_menu/overflow_menu/public:overflow_menu_constants",

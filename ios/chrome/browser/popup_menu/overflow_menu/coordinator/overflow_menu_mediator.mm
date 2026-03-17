@@ -113,7 +113,9 @@
 #import "ios/chrome/browser/window_activities/model/window_activity_helpers.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/public/provider/chrome/browser/cobalt/cobalt_api.h"
 #import "ios/public/provider/chrome/browser/user_feedback/user_feedback_api.h"
+#import "ios/web/common/features.h"
 #import "ios/web/common/user_agent.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/navigation/navigation_item.h"
@@ -227,6 +229,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 @property(nonatomic, strong) OverflowMenuDestination* whatsNewDestination;
 @property(nonatomic, strong)
     OverflowMenuDestination* spotlightDebuggerDestination;
+@property(nonatomic, strong) OverflowMenuDestination* cobaltDestination;
 
 @property(nonatomic, strong) OverflowMenuActionGroup* appActionsGroup;
 @property(nonatomic, strong) OverflowMenuActionGroup* pageActionsGroup;
@@ -327,6 +330,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   self.localStatePrefs = nullptr;
 
   self.syncService = nullptr;
+  self.browserManagementService = nullptr;
   _searchEngineObserver.reset();
 }
 
@@ -497,6 +501,12 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   }
 }
 
+- (void)setBrowserManagementService:
+    (policy::BrowserManagementService*)browserManagementService {
+  _browserManagementService = browserManagementService;
+  [self updateModel];
+}
+
 #pragma mark - Model Creation
 
 - (void)initializeModel {
@@ -529,6 +539,9 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   self.settingsDestination = [self newSettingsDestination];
 
   self.spotlightDebuggerDestination = [self newSpotlightDebuggerDestination];
+
+  // Cobalt destination.
+  self.cobaltDestination = [self newCobaltDestination];
 
   // WhatsNew destination.
   self.whatsNewDestination = [self newWhatsNewDestination];
@@ -1233,6 +1246,24 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   }];
 }
 
+- (OverflowMenuDestination*)newCobaltDestination {
+  auto destinationParameters =
+      ios::provider::GetCobaltOverflowMenuDestinationParameters();
+  if (destinationParameters.destination_name_id == 0) {
+    return nil;
+  }
+  __weak __typeof(self) weakSelf = self;
+  return [self
+      createOverflowMenuDestination:destinationParameters.destination_name_id
+                        destination:destinationParameters.destination
+                         symbolName:destinationParameters.symbol_name
+                       systemSymbol:destinationParameters.system_symbol
+                    accessibilityID:destinationParameters.accessibility_id
+                            handler:^{
+                              [weakSelf openCobalt];
+                            }];
+}
+
 - (OverflowMenuDestination*)newPriceNotificationsDestination {
   __weak __typeof(self) weakSelf = self;
   return [self createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_PRICE_TRACKING
@@ -1252,6 +1283,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
     case overflow_menu::Destination::SiteInfo:
     case overflow_menu::Destination::Settings:
     case overflow_menu::Destination::SpotlightDebugger:
+    case overflow_menu::Destination::Cobalt:
       // These items are unhideable.
       return nil;
     case overflow_menu::Destination::Bookmarks:
@@ -1491,6 +1523,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
       overflow_menu::Destination::Settings,
       overflow_menu::Destination::PriceNotifications,
       overflow_menu::Destination::WhatsNew,
+      overflow_menu::Destination::Cobalt,
   };
 
   return destinations;
@@ -2106,6 +2139,17 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
       return self.whatsNewDestination;
     case overflow_menu::Destination::SpotlightDebugger:
       return self.spotlightDebuggerDestination;
+    case overflow_menu::Destination::Cobalt:
+      if (!web::features::IsCobaltEnabled()) {
+        return nil;
+      }
+      if (!self.browserManagementService) {
+        return nil;
+      }
+      if (self.browserManagementService->IsManaged()) {
+        return nil;
+      }
+      return self.cobaltDestination;
     case overflow_menu::Destination::PriceNotifications:
       BOOL priceNotificationsActive =
           self.webState && IsPriceTrackingEnabled(ProfileIOS::FromBrowserState(
@@ -2138,6 +2182,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
       return [self newWhatsNewDestination];
     case overflow_menu::Destination::SpotlightDebugger:
       return [self newSpotlightDebuggerDestination];
+    case overflow_menu::Destination::Cobalt:
+      return [self newCobaltDestination];
     case overflow_menu::Destination::PriceNotifications:
       return [self newPriceNotificationsDestination];
   }
@@ -2653,6 +2699,12 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
       showSavedPasswordsSettingsFromViewController:self.baseViewController];
 }
 
+// Dismisses the menu and opens Cobalt.
+- (void)openCobalt {
+  [self dismissMenu];
+  // TODO(crbug.com/475807780): Open Cobalt UI.
+}
+
 // Dismisses the menu and opens price notifications list.
 - (void)openPriceNotifications {
   RecordAction(UserMetricsAction("MobileMenuPriceNotifications"));
@@ -2752,6 +2804,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
     case overflow_menu::Destination::Settings:
     case overflow_menu::Destination::WhatsNew:
     case overflow_menu::Destination::SpotlightDebugger:
+    case overflow_menu::Destination::Cobalt:
     case overflow_menu::Destination::PriceNotifications:
       // Most destinations have no corresponding destination and nothing special
       // to be done when their shown state is toggled.
