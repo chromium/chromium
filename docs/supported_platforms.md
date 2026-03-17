@@ -14,6 +14,10 @@ describing which products are officially supported on which platforms.
 **Note**: This document applies to Chromium. Some of Chromium's subcomponents like
 ANGLE or V8 currently support more platforms.
 
+**Note**: Any feedback/questions on this doc itself can go to the individuals
+listed as [per-file OWNERS of the
+doc](https://source.chromium.org/chromium/chromium/src/+/main:docs/OWNERS;l=1?q=docs%2FOWNERS&sq=&ss=chromium).
+
 Definitions of Terms
 --------------------
 
@@ -31,7 +35,7 @@ ships to users.
 engineers working in the Chromium codebase are accountable for regressions
 in that product.
 * **Officially supported platform**: A platform is officially supported if there
-are bots on [Chromium's waterfall](https://ci.chromium.org/p/chromium/g/main/console) and commit queue that build and run tests on that
+are bots on [Chromium's waterfall](https://build.chromium.org) and commit queue that build and run tests on that
 platform. Commit queue coverage means that no patches that land will break these
 platforms. Note that official platform support can and does vary by product,
 as detailed below.
