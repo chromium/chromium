@@ -1515,12 +1515,10 @@ TEST_F(GridLanesLayoutAlgorithmTest, SubgridRowsIgnoredInColumnGridLanes) {
   EXPECT_FALSE(subgrid_item.must_consider_grid_items_for_column_sizing);
   EXPECT_FALSE(subgrid_item.must_consider_grid_items_for_row_sizing);
 
-  // TODO(almaher): Both should actually be false in this case.
-  EXPECT_TRUE(subgrid_item.has_subgridded_rows);
+  EXPECT_FALSE(subgrid_item.has_subgridded_rows);
   EXPECT_FALSE(subgrid_item.has_subgridded_columns);
 
-  // TODO(almaher): This should eventually be false.
-  EXPECT_TRUE(has_nested_subgrid);
+  EXPECT_FALSE(has_nested_subgrid);
 
   // Since `must_consider_grid_items_for_column_sizing` and
   // `must_consider_grid_items_for_row_sizing` are both false,
@@ -1577,12 +1575,262 @@ TEST_F(GridLanesLayoutAlgorithmTest, SubgridColumnsIgnoredInRowGridLanes) {
   EXPECT_FALSE(subgrid_item.must_consider_grid_items_for_column_sizing);
   EXPECT_FALSE(subgrid_item.must_consider_grid_items_for_row_sizing);
 
-  // TODO(almaher): Both should actually be false in this case.
   EXPECT_FALSE(subgrid_item.has_subgridded_rows);
-  EXPECT_TRUE(subgrid_item.has_subgridded_columns);
+  EXPECT_FALSE(subgrid_item.has_subgridded_columns);
 
-  // TODO(almaher): This should eventually be false.
-  EXPECT_TRUE(has_nested_subgrid);
+  EXPECT_FALSE(has_nested_subgrid);
+
+  // Since `must_consider_grid_items_for_column_sizing` and
+  // `must_consider_grid_items_for_row_sizing` are both false,
+  // `AppendSubgriddedItems` should not add any extra items.
+  AppendSubgriddedItems(node.Style(), grid_items);
+
+  wtf_size_t total_count = 0;
+  wtf_size_t subgridded_count = 0;
+  for (const auto& item : grid_items->IncludeSubgriddedItems()) {
+    if (item.is_subgridded_to_parent_grid) {
+      ++subgridded_count;
+    }
+    ++total_count;
+  }
+  EXPECT_EQ(total_count, 2u);
+  EXPECT_EQ(subgridded_count, 0u);
+}
+
+TEST_F(GridLanesLayoutAlgorithmTest, OrthogonalAppendSubgriddedItemsColumns) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #grid-lanes {
+      display: grid-lanes;
+      grid-template-columns: 100px 100px 100px;
+    }
+    #subgrid {
+      display: grid;
+      writing-mode: vertical-rl;
+      grid-template-rows: subgrid;
+      grid-column: 2 / 4;
+    }
+    </style>
+    <div id="grid-lanes">
+      <div id="subgrid">
+        <div>A</div>
+        <div>B</div>
+      </div>
+      <div>C</div>
+    </div>
+  )HTML");
+
+  GridLanesNode node(GetLayoutBoxByElementId("grid-lanes"));
+
+  const GridLineResolver line_resolver(node.Style(), /*auto_repetitions=*/0);
+  bool has_nested_subgrid = false;
+  auto* grid_items = node.ConstructGridItems(
+      line_resolver, /*must_invalidate_placement_cache=*/nullptr,
+      /*opt_oof_children=*/nullptr, &has_nested_subgrid);
+
+  ASSERT_TRUE(has_nested_subgrid);
+  ASSERT_EQ(grid_items->Size(), 2u);
+
+  // For an orthogonal subgrid, `grid-template-rows: subgrid` maps to the
+  // parent's column axis. The subgrid item should have `must_consider*` flags
+  // set for columns (the grid axis of this grid-lanes container).
+  const auto& subgrid_item = grid_items->At(0);
+  EXPECT_TRUE(subgrid_item.must_consider_grid_items_for_column_sizing);
+  EXPECT_FALSE(subgrid_item.must_consider_grid_items_for_row_sizing);
+  EXPECT_TRUE(subgrid_item.IsSubgrid());
+
+  const auto grid_axis_direction = node.Style().GridLanesTrackSizingDirection();
+  for (auto& item : *grid_items) {
+    item.MaybeTranslateSpan(/*start_offset=*/0, grid_axis_direction);
+  }
+
+  AppendSubgriddedItems(node.Style(), grid_items);
+
+  // After appending, we should have the 2 original items + 2 subgridded items.
+  wtf_size_t total_count = 0;
+  wtf_size_t subgridded_count = 0;
+  for (const auto& item : grid_items->IncludeSubgriddedItems()) {
+    if (item.is_subgridded_to_parent_grid) {
+      ++subgridded_count;
+    }
+    ++total_count;
+  }
+  EXPECT_EQ(total_count, 4u);
+  EXPECT_EQ(subgridded_count, 2u);
+}
+
+TEST_F(GridLanesLayoutAlgorithmTest, OrthogonalAppendSubgriddedItemsRows) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #grid-lanes {
+      display: grid-lanes;
+      grid-template-rows: 50px 50px 50px;
+      grid-lanes-direction: row;
+    }
+    #subgrid {
+      display: grid;
+      writing-mode: vertical-rl;
+      grid-template-columns: subgrid;
+      grid-row: 1 / 3;
+    }
+    </style>
+    <div id="grid-lanes">
+      <div id="subgrid">
+        <div>A</div>
+        <div>B</div>
+      </div>
+      <div>C</div>
+    </div>
+  )HTML");
+
+  GridLanesNode node(GetLayoutBoxByElementId("grid-lanes"));
+
+  const GridLineResolver line_resolver(node.Style(), /*auto_repetitions=*/0);
+  bool has_nested_subgrid = false;
+  auto* grid_items = node.ConstructGridItems(
+      line_resolver, /*must_invalidate_placement_cache=*/nullptr,
+      /*opt_oof_children=*/nullptr, &has_nested_subgrid);
+
+  ASSERT_TRUE(has_nested_subgrid);
+  ASSERT_EQ(grid_items->Size(), 2u);
+
+  // For an orthogonal subgrid, `grid-template-columns: subgrid` maps to the
+  // parent's row axis. The subgrid item should have `must_consider*` flags set
+  // for rows (the grid axis of this row-direction grid-lanes container).
+  const auto& subgrid_item = grid_items->At(0);
+  EXPECT_FALSE(subgrid_item.must_consider_grid_items_for_column_sizing);
+  EXPECT_TRUE(subgrid_item.must_consider_grid_items_for_row_sizing);
+  EXPECT_TRUE(subgrid_item.IsSubgrid());
+
+  const auto grid_axis_direction = node.Style().GridLanesTrackSizingDirection();
+  for (auto& item : *grid_items) {
+    item.MaybeTranslateSpan(/*start_offset=*/0, grid_axis_direction);
+  }
+
+  AppendSubgriddedItems(node.Style(), grid_items);
+
+  // After appending, we should have the 2 original items + 2 subgridded items.
+  wtf_size_t total_count = 0;
+  wtf_size_t subgridded_count = 0;
+  for (const auto& item : grid_items->IncludeSubgriddedItems()) {
+    if (item.is_subgridded_to_parent_grid) {
+      ++subgridded_count;
+    }
+    ++total_count;
+  }
+  EXPECT_EQ(total_count, 4u);
+  EXPECT_EQ(subgridded_count, 2u);
+}
+
+TEST_F(GridLanesLayoutAlgorithmTest,
+       OrthogonalSubgridColumnsIgnoredInColumnGridLanes) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #grid-lanes {
+      display: grid-lanes;
+      grid-template-columns: 100px 100px 100px;
+    }
+    #subgrid {
+      display: grid;
+      writing-mode: vertical-rl;
+      grid-template-columns: subgrid;
+      grid-column: 1 / 3;
+    }
+    </style>
+    <div id="grid-lanes">
+      <div id="subgrid">
+        <div>A</div>
+      </div>
+      <div>C</div>
+    </div>
+  )HTML");
+
+  GridLanesNode node(GetLayoutBoxByElementId("grid-lanes"));
+
+  const GridLineResolver line_resolver(node.Style(), /*auto_repetitions=*/0);
+  bool has_nested_subgrid = false;
+  auto* grid_items = node.ConstructGridItems(
+      line_resolver, /*must_invalidate_placement_cache=*/nullptr,
+      /*opt_oof_children=*/nullptr, &has_nested_subgrid);
+
+  // An orthogonal child with `grid-template-columns: subgrid` maps to the
+  // parent's row axis after the writing-mode swap, not columns. Since the
+  // grid-lanes axis is columns, the subgridded axis doesn't match, so both
+  // `has_subgridded_*` flags should be false and the item is not a subgrid.
+  ASSERT_EQ(grid_items->Size(), 2u);
+
+  const auto& subgrid_item = grid_items->At(0);
+  EXPECT_FALSE(subgrid_item.must_consider_grid_items_for_column_sizing);
+  EXPECT_FALSE(subgrid_item.must_consider_grid_items_for_row_sizing);
+
+  EXPECT_FALSE(subgrid_item.has_subgridded_rows);
+  EXPECT_FALSE(subgrid_item.has_subgridded_columns);
+  EXPECT_FALSE(subgrid_item.IsSubgrid());
+  EXPECT_FALSE(has_nested_subgrid);
+
+  // Since `must_consider_grid_items_for_column_sizing` and
+  // `must_consider_grid_items_for_row_sizing` are both false,
+  // `AppendSubgriddedItems` should not add any extra items.
+  AppendSubgriddedItems(node.Style(), grid_items);
+
+  wtf_size_t total_count = 0;
+  wtf_size_t subgridded_count = 0;
+  for (const auto& item : grid_items->IncludeSubgriddedItems()) {
+    if (item.is_subgridded_to_parent_grid) {
+      ++subgridded_count;
+    }
+    ++total_count;
+  }
+  EXPECT_EQ(total_count, 2u);
+  EXPECT_EQ(subgridded_count, 0u);
+}
+
+TEST_F(GridLanesLayoutAlgorithmTest,
+       OrthogonalSubgridRowsIgnoredInRowGridLanes) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #grid-lanes {
+      display: grid-lanes;
+      grid-template-rows: 50px 50px 50px;
+      grid-lanes-direction: row;
+    }
+    #subgrid {
+      display: grid;
+      writing-mode: vertical-rl;
+      grid-template-rows: subgrid;
+      grid-row: 1 / 3;
+    }
+    </style>
+    <div id="grid-lanes">
+      <div id="subgrid">
+        <div>A</div>
+      </div>
+      <div>C</div>
+    </div>
+  )HTML");
+
+  GridLanesNode node(GetLayoutBoxByElementId("grid-lanes"));
+
+  const GridLineResolver line_resolver(node.Style(), /*auto_repetitions=*/0);
+  bool has_nested_subgrid = false;
+  auto* grid_items = node.ConstructGridItems(
+      line_resolver, /*must_invalidate_placement_cache=*/nullptr,
+      /*opt_oof_children=*/nullptr, &has_nested_subgrid);
+
+  // An orthogonal child with `grid-template-rows: subgrid` maps to the
+  // parent's column axis after the writing-mode swap, not rows. Since the
+  // grid-lanes axis is rows, the subgridded axis doesn't match, so both
+  // `has_subgridded_*` flags should be false and the item is not a subgrid.
+  ASSERT_EQ(grid_items->Size(), 2u);
+
+  const auto& subgrid_item = grid_items->At(0);
+  EXPECT_FALSE(subgrid_item.must_consider_grid_items_for_column_sizing);
+  EXPECT_FALSE(subgrid_item.must_consider_grid_items_for_row_sizing);
+
+  EXPECT_FALSE(subgrid_item.has_subgridded_columns);
+  EXPECT_FALSE(subgrid_item.has_subgridded_rows);
+  EXPECT_FALSE(subgrid_item.IsSubgrid());
+  EXPECT_FALSE(has_nested_subgrid);
 
   // Since `must_consider_grid_items_for_column_sizing` and
   // `must_consider_grid_items_for_row_sizing` are both false,
