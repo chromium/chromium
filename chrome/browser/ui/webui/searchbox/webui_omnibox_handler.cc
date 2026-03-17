@@ -458,7 +458,8 @@ void WebuiOmniboxHandler::OnAimEligibilityChanged() {
   if (!IsRemoteBound()) {
     return;
   }
-  bool eligible = aim_eligibility_service->IsAimEligible();
+  bool eligible = aim_eligibility_service->IsAimEligible() &&
+                  aim_eligibility_service->IsFuseboxEligible();
   page_->UpdateAimEligibility(eligible);
 }
 
