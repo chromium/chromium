@@ -72,8 +72,6 @@ TEST_F(OmniboxNextFeaturesTest, ComposeboxConfigEnabled_DefaultConfiguration) {
   EXPECT_EQ(config.entry_point().num_page_load_animations(), 3);
 
   auto composebox = config.composebox();
-  EXPECT_TRUE(composebox.close_by_escape());
-  EXPECT_TRUE(composebox.close_by_click_outside());
 
   auto image_upload = config.composebox().image_upload();
   EXPECT_EQ(image_upload.enable_webp_encoding(), false);
@@ -89,7 +87,6 @@ TEST_F(OmniboxNextFeaturesTest, ComposeboxConfigEnabled_DefaultConfiguration) {
   EXPECT_EQ(attachment_upload.max_size_bytes(), 200000000);
   EXPECT_THAT(attachment_upload.mime_types_allowed(), ".pdf,application/pdf");
 
-  EXPECT_EQ(composebox.max_num_files(), 10);
   EXPECT_EQ(composebox.input_placeholder_text(),
             l10n_util::GetStringUTF8(IDS_NTP_COMPOSE_PLACEHOLDER_TEXT));
   EXPECT_EQ(composebox.is_pdf_upload_enabled(), true);

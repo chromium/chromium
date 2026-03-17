@@ -98,8 +98,6 @@ omnibox::NTPComposeboxConfig GetNTPComposeboxConfig() {
   default_config.mutable_entry_point()->set_num_page_load_animations(3);
 
   auto* composebox = default_config.mutable_composebox();
-  composebox->set_close_by_escape(kCloseComposeboxByEscape.Get());
-  composebox->set_close_by_click_outside(kCloseComposeboxByClickOutside.Get());
 
   auto* image_upload = composebox->mutable_image_upload();
   image_upload->set_enable_webp_encoding(false);
@@ -115,7 +113,6 @@ omnibox::NTPComposeboxConfig GetNTPComposeboxConfig() {
   attachment_upload->set_max_size_bytes(200000000);
   attachment_upload->set_mime_types_allowed(".pdf,application/pdf");
 
-  composebox->set_max_num_files(kMaxNumFiles.Get());
   composebox->set_input_placeholder_text(
       l10n_util::GetStringUTF8(IDS_NTP_COMPOSE_PLACEHOLDER_TEXT));
   composebox->set_is_pdf_upload_enabled(true);

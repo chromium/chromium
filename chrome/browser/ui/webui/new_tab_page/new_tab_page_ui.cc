@@ -624,8 +624,6 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
   source->AddString("composeboxAttachmentFileTypes", attachment_mime_types);
   source->AddInteger("composeboxFileMaxSize",
                      composebox_config.attachment_upload().max_size_bytes());
-  source->AddInteger("composeboxFileMaxCount",
-                     composebox_config.max_num_files());
   source->AddString(
       "composeboxSource",
       contextual_search::ContextualSearchMetricsRecorder::
