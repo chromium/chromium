@@ -60,7 +60,7 @@ using chrome_test_util::SettingsSignInRowMatcher;
 
   // Sign In identity, then open the Sync Settings.
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
-  [SigninEarlGreyUI openAccountsListFromSettings];
+  [SigninEarlGreyUI openManageAccountsFromSettings];
 
   // Forget fakeIdentity, screens should be popped back to the Main Settings.
   [ChromeEarlGreyUI waitForAppToIdle];
@@ -84,7 +84,7 @@ using chrome_test_util::SettingsSignInRowMatcher;
 
   // Sign In fakeIdentity, then open the Account Settings.
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity1];
-  [SigninEarlGreyUI openAccountsListFromSettings];
+  [SigninEarlGreyUI openManageAccountsFromSettings];
 
   [SigninEarlGrey forgetFakeIdentity:fakeIdentity2];
 
@@ -112,7 +112,7 @@ using chrome_test_util::SettingsSignInRowMatcher;
 
   // Sign In fakeIdentity1, then open the Account Settings.
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity1];
-  [SigninEarlGreyUI openAccountsListFromSettings];
+  [SigninEarlGreyUI openManageAccountsFromSettings];
 
   // Ensure both identities show up.
   [[EarlGrey
@@ -166,7 +166,7 @@ using chrome_test_util::SettingsSignInRowMatcher;
 
   // Sign In `fakeIdentity1`, then open the Account Settings.
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity1];
-  [SigninEarlGreyUI openAccountsListFromSettings];
+  [SigninEarlGreyUI openManageAccountsFromSettings];
 
   // Tap on Remove fakeIdentity1 button.
   [[EarlGrey
@@ -205,7 +205,7 @@ using chrome_test_util::SettingsSignInRowMatcher;
 
   // Sign In `fakeIdentity1`, then open the Account Settings.
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity1];
-  [SigninEarlGreyUI openAccountsListFromSettings];
+  [SigninEarlGreyUI openManageAccountsFromSettings];
 
   // Open the remove identity confirmation dialog for the first time.
   // Tap on Remove fakeIdentity1 button.
@@ -262,7 +262,7 @@ using chrome_test_util::SettingsSignInRowMatcher;
 
   // Sign In identity, then open the Sync Settings.
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
-  [SigninEarlGreyUI openAccountsListFromSettings];
+  [SigninEarlGreyUI openManageAccountsFromSettings];
 
   for (NSString* cancelButtonId in
            signin::FakeSystemIdentityManagerStaySignedOutButtons()) {

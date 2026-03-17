@@ -415,6 +415,10 @@ id<GREYMatcher> SignOutSnackbarLabelMatcher() {
 }
 
 + (void)openAccountsListFromSettings {
+  [SigninEarlGreyUI openManageAccountsFromSettings];
+}
+
++ (void)openManageAccountsFromSettings {
   [SigninEarlGreyUI openSyncSettings];
   // Tap "Manage accounts on this device" to get to the accounts view.
   // First scroll down so that the button is visible.
