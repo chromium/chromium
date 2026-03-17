@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -1996,6 +1997,33 @@ TEST_F(ContextualTasksServiceImplTest, GetThreadUrlFromTaskId_Gemini) {
             ASSERT_TRUE(base::EndsWith(url.path(), server_id));
           },
           server_id)
+          .Then(run_loop.QuitClosure()));
+  run_loop.Run();
+}
+
+TEST_F(ContextualTasksServiceImplTest,
+       GetThreadUrlFromTaskId_GeminiWithPrefix) {
+  ContextualTask task = service_->CreateTask();
+
+  const std::string server_id = "1234";
+  const std::string server_id_with_prefix = "c_" + server_id;
+  const std::string title = "title";
+  service_->UpdateThreadForTask(task.GetTaskId(), ThreadType::kGemini,
+                                server_id_with_prefix, std::nullopt, title);
+
+  base::RunLoop run_loop;
+  service_->GetThreadUrlFromTaskId(
+      task.GetTaskId(), "en-us",
+      omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT,
+      base::BindOnce(
+          [](const std::string& server_id,
+             const std::string& server_id_with_prefix, GURL url) {
+            ASSERT_TRUE(base::StartsWith(url.host(), "gemini.google.com"));
+            ASSERT_TRUE(base::EndsWith(url.path(), server_id));
+            ASSERT_EQ(std::string::npos,
+                      url.path().find(server_id_with_prefix));
+          },
+          server_id, server_id_with_prefix)
           .Then(run_loop.QuitClosure()));
   run_loop.Run();
 }
