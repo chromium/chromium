@@ -502,8 +502,10 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
     LayoutUnit fragment_size =
         is_for_columns ? fragment.BlockSize() + margins.BlockSum()
                        : fragment.InlineSize() + margins.InlineSum();
+    const LayoutUnit visual_stacking_axis_size =
+        fragment_size + stacking_axis_gap;
     const LayoutUnit fragment_stacking_axis_contribution =
-        (fragment_size + stacking_axis_gap).ClampNegativeToZero();
+        visual_stacking_axis_size.ClampNegativeToZero();
 
     // If dense packing is set, we need to figure out if the item can possibly
     // fit into any previous track openings. If it can, then we need to adjust
@@ -546,15 +548,48 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
     // align items within their grid areas.
     if (placement_phase == PlacementPhase::kFinalPlacement) {
       // `start_offset_in_stacking_axis` specifies where in the stacking axis
-      // the item should be placed, so we need to adjust the
-      // `containing_grid_area` in the stacking axis to accommodate the newly
-      // placed item.
+      // the item should be placed, so we need to adjust the `containing_rect`
+      // in the stacking axis to accommodate the newly placed item.
+      const LayoutUnit border_scrollbar_padding_start =
+          is_for_columns ? border_scrollbar_padding.block_start
+                         : border_scrollbar_padding.inline_start;
+
+      LayoutUnit final_start_offset_in_stacking_axis =
+          start_offset_in_stacking_axis + border_scrollbar_padding_start;
+
+      // For fill-reverse, items stack from the end of the container instead
+      // of the start. We compute the base offset from the container's end so
+      // that alignment (which adds margins) works correctly without needing
+      // to mirror or swap margins after the fact.
+      //
+      // TODO(celestepan): Account for alignment with fill-reverse:
+      // justify/align-content, justify/align-items, and justify/align-self.
+      if (style.IsReverseGridLanesFillDirection()) {
+        // `ChildAvailableSize()` returns the content-box size of the container
+        // (i.e., the resolved size minus border, scrollbar, and padding). We
+        // use it here to determine the stacking-axis offset for fill-reverse.
+        //
+        // TODO(celestepan): Account for fill-reverse case with indefinite
+        // height (columns) and indefinite width (rows).
+        const LayoutUnit container_stacking_axis_size =
+            is_for_columns ? ChildAvailableSize().block_size
+                           : ChildAvailableSize().inline_size;
+
+        // Add back `stacking_axis_gap` when computing fill-reverse offsets;
+        // in fill-reverse, gaps appear before each item, so the item's offset
+        // must be increased to leave a visual gap in the stacking axis.
+        if (container_stacking_axis_size != kIndefiniteSize) {
+          final_start_offset_in_stacking_axis =
+              container_stacking_axis_size + border_scrollbar_padding_start +
+              stacking_axis_gap - start_offset_in_stacking_axis -
+              visual_stacking_axis_size;
+        }
+      }
+
       is_for_columns ? containing_grid_area.offset.block_offset =
-                           start_offset_in_stacking_axis +
-                           border_scrollbar_padding.block_start
+                           final_start_offset_in_stacking_axis
                      : containing_grid_area.offset.inline_offset =
-                           start_offset_in_stacking_axis +
-                           border_scrollbar_padding.inline_start;
+                           final_start_offset_in_stacking_axis;
 
       // TODO(celestepan): Account for extra margins from sub-grid items.
       //
