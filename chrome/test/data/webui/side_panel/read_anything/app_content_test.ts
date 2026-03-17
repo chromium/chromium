@@ -28,6 +28,11 @@ suite('AppContent', () => {
   let speech: TestSpeechBrowserProxy;
   let lineFocusController: LineFocusController;
 
+  function getLineFocusPadding(): number {
+    const val = app.style.getPropertyValue('--line-focus-padding');
+    return val ? parseInt(val) : 0;
+  }
+
   setup(async () => {
     // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -124,15 +129,12 @@ suite('AppContent', () => {
         app, ToolbarEvent.LINE_FOCUS_STYLE,
         {detail: {data: LineFocusStyle.UNDERLINE}});
     await microtasksFinished();
-    assertEquals('', app.style.getPropertyValue('--line-focus-padding'));
+    assertEquals(0, getLineFocusPadding());
 
     app.updateContent();
-    await whenCheck(
-        app, () => app.style.getPropertyValue('--line-focus-padding') !== '');
+    await whenCheck(app, () => getLineFocusPadding() !== 0);
 
-    const actualPadding =
-        +app.style.getPropertyValue('--line-focus-padding').replace('px', '');
-    assertLT(0, actualPadding);
+    assertLT(0, getLineFocusPadding());
   });
 
   test(
@@ -146,12 +148,12 @@ suite('AppContent', () => {
             app, ToolbarEvent.LINE_FOCUS_STYLE,
             {detail: {data: LineFocusStyle.UNDERLINE}});
         await microtasksFinished();
-        assertEquals('', app.style.getPropertyValue('--line-focus-padding'));
+        assertEquals(0, getLineFocusPadding());
 
         app.updateContent();
         await microtasksFinished();
 
-        assertEquals('', app.style.getPropertyValue('--line-focus-padding'));
+        assertEquals(0, getLineFocusPadding());
       });
 
   test(
@@ -165,12 +167,12 @@ suite('AppContent', () => {
             app, ToolbarEvent.LINE_FOCUS_STYLE,
             {detail: {data: LineFocusStyle.OFF}});
         await microtasksFinished();
-        assertEquals('', app.style.getPropertyValue('--line-focus-padding'));
+        assertEquals(0, getLineFocusPadding());
 
         app.updateContent();
         await microtasksFinished();
 
-        assertEquals('', app.style.getPropertyValue('--line-focus-padding'));
+        assertEquals(0, getLineFocusPadding());
       });
 
   test('line focus shortcut toggles line focus', async () => {
@@ -184,6 +186,36 @@ suite('AppContent', () => {
     keyDownOn(app, 0, undefined, 'l');
     await microtasksFinished();
     assertFalse(lineFocusController.isEnabled());
+  });
+
+  test('line focus shortcut updates padding', async () => {
+    chrome.readingMode.isLineFocusEnabled = true;
+    // Ensure app is registered as a line focus listener.
+    app.connectedCallback();
+    await microtasksFinished();
+    // Start with static line focus on.
+    emitEvent(
+        app, ToolbarEvent.LINE_FOCUS_MOVEMENT,
+        {detail: {data: LineFocusMovement.STATIC}});
+    emitEvent(
+        app, ToolbarEvent.LINE_FOCUS_STYLE,
+        {detail: {data: LineFocusStyle.UNDERLINE}});
+    await microtasksFinished();
+    assertEquals(0, getLineFocusPadding());
+    // Ensure there's content so that padding can be added.
+    app.updateContent();
+    await whenCheck(app, () => getLineFocusPadding() !== 0);
+    assertLT(0, getLineFocusPadding());
+
+    // Toggling off should remove padding.
+    keyDownOn(app, 0, undefined, 'l');
+    await microtasksFinished();
+    assertEquals(0, getLineFocusPadding());
+
+    // Toggling on should remove padding.
+    keyDownOn(app, 0, undefined, 'l');
+    await microtasksFinished();
+    assertLT(0, getLineFocusPadding());
   });
 
   test('showLoading shows spinner', async () => {

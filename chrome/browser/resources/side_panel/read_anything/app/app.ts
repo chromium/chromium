@@ -495,6 +495,8 @@ export class AppElement extends AppElementBase implements SpeechListener,
     this.lineFocusStyle_ = this.lineFocusController_.getCurrentLineFocusStyle();
     this.lineFocusMovement_ =
         this.lineFocusController_.getCurrentLineFocusMovement();
+    this.setLineFocus_();
+    this.requestUpdate();
   }
 
   onContentStateChange(): void {
