@@ -6,6 +6,7 @@
 #import "base/time/time.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/device_reauth/test/reauthentication_app_interface.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_checkup/password_checkup_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_manager_egtest_utils.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings_app_interface.h"
@@ -121,15 +122,13 @@ void ResetLastPasswordCheckTimestamp() {
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
 
   // Mock local authentication for opening Password Checkup.
-  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
-  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+  [ReauthenticationAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kSuccess];
 
   ResetLastPasswordCheckTimestamp();
 }
 
 - (void)tearDownHelper {
-  [PasswordSettingsAppInterface removeMockReauthenticationModule];
   [super tearDownHelper];
 
   [PasswordSettingsAppInterface
@@ -159,15 +158,15 @@ void ResetLastPasswordCheckTimestamp() {
 - (void)testOpenPasswordCheckupWithFailedAuth {
   SaveCompromisedPasswordFormToProfileStore();
 
-  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+  [ReauthenticationAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kFailure];
-  [PasswordSettingsAppInterface mockReauthenticationModuleShouldSkipReAuth:NO];
+  [ReauthenticationAppInterface mockReauthenticationModuleShouldSkipReAuth:NO];
 
   OpenPasswordCheckup();
 
   VerifyPasswordCheckupIsNotVisible();
 
-  [PasswordSettingsAppInterface mockReauthenticationModuleReturnMockedResult];
+  [ReauthenticationAppInterface mockReauthenticationModuleReturnMockedResult];
 
   // Password checkup should be dismissed and Safety Check module should be
   // visible again.

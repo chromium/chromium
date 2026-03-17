@@ -176,6 +176,7 @@ source_set("eg2_tests") {
     "//base/test:test_support",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/authentication/test:eg_test_support+eg2",
+    "//ios/chrome/browser/device_reauth/test:eg_test_support+eg2",
     "//ios/chrome/browser/settings/ui_bundled/password:eg_test_support",
     "//ios/chrome/browser/settings/ui_bundled/password:eg_test_support+eg2",
     "//ios/chrome/browser/settings/ui_bundled/password/password_checkup:password_checkup_constants",
