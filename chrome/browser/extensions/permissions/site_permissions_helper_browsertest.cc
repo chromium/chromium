@@ -285,11 +285,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(!ContentScriptInjected() && ExtensionWantsToRun());
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Provides test cases with an extension that executes a script programmatically
 // on every site it visits.
-// TODO(crbug.com/371432155): Port to desktop Android when the chrome.tabs API
-// is supported. chrome.tabs is used by the test extension.
 class SitePermissionsHelperExecuteSciptBrowserTest
     : public SitePermissionsHelperBrowserTest {
  public:
@@ -552,7 +549,6 @@ IN_PROC_BROWSER_TEST_F(SitePermissionsHelperExecuteSciptBrowserTest,
     EXPECT_TRUE(ExtensionWantsToRun());
   }
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 class SitePermissionsHelperContentScriptBrowserTest
     : public SitePermissionsHelperBrowserTest {
@@ -643,9 +639,6 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(ExtensionWantsToRun());
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-// TODO(crbug.com/371432155): Port to desktop Android when the chrome.tabs API
-// is supported. chrome.tabs is used by the test extension.
 class SitePermissionsHelperOptionalHostPermissions
     : public SitePermissionsHelperBrowserTest {
  public:
@@ -769,6 +762,5 @@ IN_PROC_BROWSER_TEST_F(SitePermissionsHelperOptionalHostPermissions,
     EXPECT_TRUE(ExtensionWantsToRun());
   }
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace extensions
