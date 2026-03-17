@@ -14,7 +14,8 @@ import type {DomRepeat} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 
 import {BrowserProxyImpl} from './browser_proxy.js';
 import type {BrowserProxy} from './browser_proxy.js';
-import {type CursorTooltipData, CursorTooltipType} from './cursor_tooltip.js';
+import {CursorTooltipType} from './cursor_tooltip.js';
+import type {CursorTooltipData} from './cursor_tooltip.js';
 import {findWordsInRegion} from './find_words_in_region.js';
 import {CenterRotatedBox_CoordinateType} from './geometry.mojom-webui.js';
 import type {CenterRotatedBox} from './geometry.mojom-webui.js';

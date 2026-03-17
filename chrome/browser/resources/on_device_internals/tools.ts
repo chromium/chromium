@@ -19,7 +19,8 @@ import type {FilePath} from '//resources/mojo/mojo/public/mojom/base/file_path.m
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {BrowserProxy} from './browser_proxy.js';
-import {type AudioData, type Capabilities, type InputPiece, InputSource, LoadModelResult, OnDeviceModelRemote, PerformanceClass, type ResponseChunk, type ResponseSummary, SessionRemote, StreamingResponderCallbackRouter, Token} from './on_device_model.mojom-webui.js';
+import {InputSource, LoadModelResult, OnDeviceModelRemote, PerformanceClass, SessionRemote, StreamingResponderCallbackRouter, Token} from './on_device_model.mojom-webui.js';
+import type {AudioData, Capabilities, InputPiece, ResponseChunk, ResponseSummary} from './on_device_model.mojom-webui.js';
 import {ModelPerformanceHint} from './on_device_model_service.mojom-webui.js';
 import {getCss} from './tools.css.js';
 import {getHtml} from './tools.html.js';

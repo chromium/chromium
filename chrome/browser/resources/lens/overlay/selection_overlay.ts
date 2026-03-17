@@ -21,7 +21,8 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
 import type {BrowserProxy} from './browser_proxy.js';
-import {type CursorTooltipData, CursorTooltipType} from './cursor_tooltip.js';
+import {CursorTooltipType} from './cursor_tooltip.js';
+import type {CursorTooltipData} from './cursor_tooltip.js';
 import type {CenterRotatedBox} from './geometry.mojom-webui.js';
 import {UserAction} from './lens.mojom-webui.js';
 import {INVOCATION_SOURCE} from './lens_overlay_app.js';

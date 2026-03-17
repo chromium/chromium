@@ -16,8 +16,8 @@ import {getTemplate} from './region_selection.html.js';
 import {ScreenshotBitmapBrowserProxyImpl} from './screenshot_bitmap_browser_proxy.js';
 import {renderScreenshot} from './screenshot_utils.js';
 import {RegionSource, SelectionOverlayBaseHandler} from './selection_overlay_base_handler.js';
-import {focusShimmerOnRegion, type GestureEvent, GestureState, getRelativeCoordinate, ShimmerControlRequester, unfocusShimmer} from './selection_utils.js';
-import type {Point} from './selection_utils.js';
+import {focusShimmerOnRegion, GestureState, getRelativeCoordinate, ShimmerControlRequester, unfocusShimmer} from './selection_utils.js';
+import type {GestureEvent, Point} from './selection_utils.js';
 
 // A simple interface representing a rectangle with normalized values.
 interface NormalizedRectangle {

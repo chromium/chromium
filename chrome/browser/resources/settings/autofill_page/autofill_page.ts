@@ -27,7 +27,8 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
-import {AutofillSettingsReferrer, type MetricsBrowserProxy, MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
+import {AutofillSettingsReferrer, MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
+import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
 import {routes} from '../route.js';
 import {Router} from '../router.js';
 import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';

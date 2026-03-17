@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 import {html, nothing} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {type ActionChip, IconType} from '../action_chips.mojom-webui.js';
+import {IconType} from '../action_chips.mojom-webui.js';
+import type {ActionChip} from '../action_chips.mojom-webui.js';
 
 import {type ActionChipsElement} from './action_chips.js';
 

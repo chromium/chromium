@@ -7,7 +7,8 @@ import '//resources/cr_elements/cr_button/cr_button.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {type Time} from '//resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 
-import {type MlPredictionLog, OptimizationTarget} from './autofill_ml_internals.mojom-webui.js';
+import {OptimizationTarget} from './autofill_ml_internals.mojom-webui.js';
+import type {MlPredictionLog} from './autofill_ml_internals.mojom-webui.js';
 import {getCss} from './log_list.css.js';
 import {getHtml} from './log_list.html.js';
 

@@ -19,9 +19,11 @@ import type {GestureEvent} from './selection_utils.js';
 import {getCss} from './simplified_text_layer.css.js';
 import {getHtml} from './simplified_text_layer.html.js';
 import type {Text} from './text.mojom-webui.js';
-import {createHighlightedLines, type HighlightedLine} from './text_highlights.js';
+import {createHighlightedLines} from './text_highlights.js';
+import type {HighlightedLine} from './text_highlights.js';
 import type {TextCopyCallback, TextLayerBase} from './text_layer_base.js';
-import {getTextSeparator, isWordRenderable, type TextResponse, translateWords} from './text_rendering.js';
+import {getTextSeparator, isWordRenderable, translateWords} from './text_rendering.js';
+import type {TextResponse} from './text_rendering.js';
 import {toPercent} from './values_converter.js';
 
 // A struct for holding the ID of a timeout and whether it has elapsed since
