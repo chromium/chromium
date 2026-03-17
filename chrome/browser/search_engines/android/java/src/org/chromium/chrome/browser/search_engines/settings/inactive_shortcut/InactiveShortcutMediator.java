@@ -38,7 +38,7 @@ public class InactiveShortcutMediator extends ExpandableSiteSearchMediator {
     @Override
     protected void refreshList() {
         mModelList.clear();
-        mHiddenItems.clear();
+        clearHiddenItems();
         mHiddenUrls.clear();
 
         List<TemplateUrl> urls =
@@ -63,9 +63,9 @@ public class InactiveShortcutMediator extends ExpandableSiteSearchMediator {
     @Override
     protected void prepareHiddenItemsIfNeeded() {
         // Lazy load models and fetch favicons on the first expansion.
-        if (mHiddenItems.isEmpty() && !mHiddenUrls.isEmpty()) {
+        if (!mHiddenUrls.isEmpty() && areHiddenItemsEmpty()) {
             for (TemplateUrl url : mHiddenUrls) {
-                mHiddenItems.add(createListItem(url));
+                addHiddenItem(createListItem(url));
             }
         }
     }
@@ -111,9 +111,5 @@ public class InactiveShortcutMediator extends ExpandableSiteSearchMediator {
         } else if (R.string.site_search_list_menu_delete == textId) {
             mTemplateUrlService.removeSearchEngine(url.getKeyword());
         }
-    }
-
-    boolean isExpandedForTesting() {
-        return mIsExpanded;
     }
 }

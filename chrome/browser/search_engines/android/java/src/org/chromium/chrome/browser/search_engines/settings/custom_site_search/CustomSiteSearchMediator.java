@@ -51,7 +51,7 @@ public class CustomSiteSearchMediator extends ExpandableSiteSearchMediator {
     @Override
     protected void refreshList() {
         mModelList.clear();
-        mHiddenItems.clear();
+        clearHiddenItems();
 
         List<TemplateUrl> urls =
                 mTemplateUrlService.getTemplateUrlsByCategory(
@@ -68,7 +68,7 @@ public class CustomSiteSearchMediator extends ExpandableSiteSearchMediator {
             if (i < DEFAULT_MAX_ROWS) {
                 mModelList.add(item);
             } else {
-                mHiddenItems.add(item);
+                addHiddenItem(item);
             }
         }
     }
@@ -133,9 +133,5 @@ public class CustomSiteSearchMediator extends ExpandableSiteSearchMediator {
         } else if (R.string.site_search_list_menu_delete == textId) {
             mOnRemoveSearchEngine.onResult(url);
         }
-    }
-
-    boolean isExpandedForTesting() {
-        return mIsExpanded;
     }
 }

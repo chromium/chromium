@@ -68,14 +68,14 @@ public class ExpandableSiteSearchMediatorUnitTest {
         @Override
         protected void refreshList() {
             mModelList.clear();
-            mHiddenItems.clear();
+            clearHiddenItems();
 
             for (int i = 0; i < mUrlsToSimulate; i++) {
                 ListItem item = createListItem(mTemplateUrl);
                 if (i < DEFAULT_MAX_ROWS) {
                     mModelList.add(item);
                 } else {
-                    mHiddenItems.add(item);
+                    addHiddenItem(item);
                 }
             }
 

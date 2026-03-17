@@ -24,15 +24,15 @@ public abstract class ExpandableSiteSearchMediator extends BaseSiteSearchMediato
     /** The default maximum number of items to show before displaying a "More" button. */
     protected static final int DEFAULT_MAX_ROWS = 5;
 
-    // TODO(crbug.com/492061324): Make mIsExpanded and mHiddenItems private.
-    protected boolean mIsExpanded;
+    /** Tracks whether the list is currently expanded to show all hidden items. */
+    private boolean mIsExpanded;
 
     /**
      * The items to display when the list is expanded. Subclasses are responsible for populating
      * this list during {@link #refreshList()} or lazy-loading them via {@link
      * #prepareHiddenItemsIfNeeded()}.
      */
-    protected final List<ListItem> mHiddenItems = new ArrayList<>();
+    private final List<ListItem> mHiddenItems = new ArrayList<>();
 
     /**
      * Constructs the expandable mediator.
@@ -50,6 +50,34 @@ public abstract class ExpandableSiteSearchMediator extends BaseSiteSearchMediato
         mIsExpanded = false;
         // Triggers refreshList() in the base class.
         super.onTemplateURLServiceChanged();
+    }
+
+    public boolean isExpandedForTesting() {
+        return mIsExpanded;
+    }
+
+    /** Clears all items currently staged in the hidden items list. */
+    protected void clearHiddenItems() {
+        mHiddenItems.clear();
+    }
+
+    /**
+     * Adds a new item to the hidden items list, which will be displayed when the user clicks
+     * "More".
+     *
+     * @param item The {@link ListItem} to append to the hidden list.
+     */
+    protected void addHiddenItem(ListItem item) {
+        mHiddenItems.add(item);
+    }
+
+    /**
+     * Checks if there are no items currently staged in the hidden items list.
+     *
+     * @return True if the hidden items list is empty, false otherwise.
+     */
+    protected boolean areHiddenItemsEmpty() {
+        return mHiddenItems.isEmpty();
     }
 
     /**
@@ -101,8 +129,4 @@ public abstract class ExpandableSiteSearchMediator extends BaseSiteSearchMediato
      * the initial layout.
      */
     protected void prepareHiddenItemsIfNeeded() {}
-
-    boolean isExpandedForTesting() {
-        return mIsExpanded;
-    }
 }
