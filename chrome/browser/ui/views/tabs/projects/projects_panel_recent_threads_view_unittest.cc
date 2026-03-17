@@ -7,6 +7,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
+#include "chrome/browser/ui/views/tabs/projects/layout_constants.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_thread_item_view.h"
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -115,4 +116,19 @@ TEST_F(ProjectsPanelRecentThreadsViewTest, PropagatesCallbackToItems) {
                        base::TimeTicks(), ui::EF_LEFT_MOUSE_BUTTON,
                        ui::EF_LEFT_MOUSE_BUTTON);
   views::test::ButtonTestApi(thread_item_view).NotifyClick(event);
+}
+
+TEST_F(ProjectsPanelRecentThreadsViewTest, DisplaysUpToMaxNumberOfThreads) {
+  std::vector<contextual_tasks::Thread> threads;
+  for (size_t i = 0; i < projects_panel::kMaxNumberOfRecentThreads + 50; i++) {
+    threads.emplace_back(CreateThread("Thread"));
+  }
+
+  // Create the view with more than the max number of threads.
+  auto recent_threads_view = std::make_unique<ProjectsPanelRecentThreadsView>();
+  recent_threads_view->SetThreads(threads);
+
+  // Ensure only the max number of threads are shown.
+  EXPECT_EQ(projects_panel::kMaxNumberOfRecentThreads,
+            recent_threads_view->item_views_for_testing().size());
 }

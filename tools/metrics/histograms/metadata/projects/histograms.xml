@@ -1,0 +1,67 @@
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of projects histograms along
+with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="Projects.ProjectsPanel.OpenedToEmptyState" enum="Boolean"
+    expires_after="2026-12-01">
+  <owner>chazzy@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Records whether the projects panel was opened to the empty state (no tab
+    groups or threads). Recorded upon opening the panel.
+  </summary>
+</histogram>
+
+<histogram name="Projects.ProjectsPanel.TabGroups.CountOnPanelOpen"
+    units="groups" expires_after="2026-12-01">
+  <owner>chazzy@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Records the number of tab groups displayed in the projects panel. Recorded
+    upon opening the panel.
+  </summary>
+</histogram>
+
+<histogram name="Projects.ProjectsPanel.Threads.CountOnPanelOpen"
+    units="threads" expires_after="2026-12-01">
+  <owner>chazzy@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Records the number of threads in the projects panel, if threads are enabled.
+    Up to 300 threads may be shown in the panel, and not all of these threads
+    may immediately be visible if the threads list is collapsed. Recorded upon
+    opening the panel.
+  </summary>
+</histogram>
+
+<histogram name="Projects.ProjectsPanel.TimeOpen" units="seconds"
+    expires_after="2026-12-01">
+  <owner>chazzy@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Records the amount of time the projects panel was open. Recorded when the
+    panel is closed due to any reason (user action, closing the window, browser
+    shutdown, etc.).
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>
