@@ -14,7 +14,7 @@ import {getHtml as getDropdownHtml} from './searchbox_searchbox_dropdown.html.js
 export function getHtml(this: SearchboxElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-<div id="inputWrapper" @focusout="${this.onInputWrapperFocusout_}"
+<div id="inputWrapper" @focusout="${this.onInputWrapperFocusout}"
     @keydown="${this.onInputWrapperKeydown}"
     @dragenter="${this.dragAndDropHandler?.handleDragEnter}"
     @dragover="${this.dragAndDropHandler?.handleDragOver}"

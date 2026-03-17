@@ -65,8 +65,58 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
       assertNotReached();
     }
 
+    getWrapperElement(): HTMLElement {
+      assertNotReached();
+    }
+
     pageHandler(): PageHandlerInterface {
       assertNotReached();
+    }
+
+    /**
+     * Clears the autocomplete result on the page and on the autocomplete
+     * backend.
+     */
+    clearAutocompleteMatches() {
+      this.dropdownIsVisible = false;
+      this.result = null;
+      this.getDropdownElement().unselect();
+      this.pageHandler().stopAutocomplete(/*clearResult=*/ true);
+      // Autocomplete sends updates once it is stopped. Invalidate those results
+      // by setting the |this.lastQueriedInput_| to its default value.
+      this.lastQueriedInput_ = null;
+    }
+
+    queryAutocomplete(
+        input: string, preventInlineAutocomplete: boolean = false) {
+      this.lastQueriedInput_ = input;
+
+      preventInlineAutocomplete = preventInlineAutocomplete ||
+          this.getInputElement().preventInlineAutocomplete(input);
+      this.pageHandler().queryAutocomplete(input, preventInlineAutocomplete);
+
+      this.dispatchEvent(new CustomEvent('query-autocomplete', {
+        bubbles: true,
+        composed: true,
+        detail: {inputValue: input},
+      }));
+    }
+
+    navigateToMatch(matchIndex: number, e: KeyboardEvent|MouseEvent) {
+      assert(matchIndex >= 0);
+      const match = this.result!.matches[matchIndex];
+      assert(match);
+      this.pageHandler().openAutocompleteMatch(
+          matchIndex, match.destinationUrl, this.dropdownIsVisible,
+          (e as MouseEvent).button || 0, e.altKey, e.ctrlKey, e.metaKey,
+          e.shiftKey);
+      this.getInputElement().setInput({
+        text: match.fillIntoEdit,
+        inline: '',
+        moveCursorToEnd: true,
+      });
+      this.clearAutocompleteMatches();
+      e.preventDefault();
     }
 
     async onAutocompleteResultChanged(result: AutocompleteResult) {
@@ -156,6 +206,33 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
       } else {
         this.clearAutocompleteMatches();
       }
+    }
+
+    onInputWrapperFocusout(e: FocusEvent) {
+      const newlyFocusedEl = e.relatedTarget as Element;
+      // Hide the matches and stop autocomplete only when the focus goes outside
+      // of the searchbox wrapper. If focus is still in the searchbox wrapper,
+      // exit early.
+      if (this.getWrapperElement().contains(newlyFocusedEl)) {
+        return;
+      }
+
+      if (this.lastQueriedInput_ === '') {
+        // Clear the input as well as the matches if the input was empty when
+        // the matches arrived.
+        this.getInputElement().setInput({text: '', inline: ''});
+        this.clearAutocompleteMatches();
+      } else {
+        this.dropdownIsVisible = false;
+
+        // Stop autocomplete but leave (potentially stale) results and continue
+        // listening for key presses. These stale results should never be shown.
+        // They correspond to the potentially stale suggestion left in the
+        // searchbox when blurred. That stale result may be navigated to by
+        // focusing and pressing 'Enter'.
+        this.pageHandler().stopAutocomplete(/*clearResult=*/ false);
+      }
+      this.pageHandler().onFocusChanged(false);
     }
 
     async onInputWrapperKeydown(e: KeyboardEvent) {
@@ -317,52 +394,6 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
         moveCursorToEnd: newInline.length === 0,
       });
     }
-
-    queryAutocomplete(
-        input: string, preventInlineAutocomplete: boolean = false) {
-      this.lastQueriedInput_ = input;
-
-      preventInlineAutocomplete = preventInlineAutocomplete ||
-          this.getInputElement().preventInlineAutocomplete(input);
-      this.pageHandler().queryAutocomplete(input, preventInlineAutocomplete);
-
-      this.dispatchEvent(new CustomEvent('query-autocomplete', {
-        bubbles: true,
-        composed: true,
-        detail: {inputValue: input},
-      }));
-    }
-
-    navigateToMatch(matchIndex: number, e: KeyboardEvent|MouseEvent) {
-      assert(matchIndex >= 0);
-      const match = this.result!.matches[matchIndex];
-      assert(match);
-      this.pageHandler().openAutocompleteMatch(
-          matchIndex, match.destinationUrl, this.dropdownIsVisible,
-          (e as MouseEvent).button || 0, e.altKey, e.ctrlKey, e.metaKey,
-          e.shiftKey);
-      this.getInputElement().setInput({
-        text: match.fillIntoEdit,
-        inline: '',
-        moveCursorToEnd: true,
-      });
-      this.clearAutocompleteMatches();
-      e.preventDefault();
-    }
-
-    /**
-     * Clears the autocomplete result on the page and on the autocomplete
-     * backend.
-     */
-    clearAutocompleteMatches() {
-      this.dropdownIsVisible = false;
-      this.result = null;
-      this.getDropdownElement().unselect();
-      this.pageHandler().stopAutocomplete(/*clearResult=*/ true);
-      // Autocomplete sends updates once it is stopped. Invalidate those results
-      // by setting the |this.lastQueriedInput_| to its default value.
-      this.lastQueriedInput_ = null;
-    }
   }
 
   return SearchboxMixin;
@@ -378,6 +409,7 @@ export interface SearchboxMixinInterface {
 
   getInputElement(): SearchboxInputElement;
   getDropdownElement(): SearchboxDropdownElement;
+  getWrapperElement(): HTMLElement;
   pageHandler(): PageHandlerInterface;
 
   clearAutocompleteMatches(): void;
@@ -390,5 +422,6 @@ export interface SearchboxMixinInterface {
   onInputTextUpdated(
       e: CustomEvent<{value: string, isComposing: boolean}>,
       forceAutocomplete: boolean): void;
+  onInputWrapperFocusout(e: FocusEvent): void;
   onInputWrapperKeydown(e: KeyboardEvent): void;
 }
