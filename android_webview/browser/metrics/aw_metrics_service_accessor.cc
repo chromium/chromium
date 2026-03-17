@@ -14,6 +14,7 @@
 #include "base/synchronization/lock.h"
 #include "base/trace_event/trace_event.h"
 #include "components/variations/synthetic_trial_registry.h"
+#include "content/public/browser/browser_thread.h"
 
 namespace android_webview {
 namespace {
@@ -33,6 +34,7 @@ ExperimentState& GetExperimentState() {
 // static
 void AwMetricsServiceAccessor::RegisterExternalExperiment(
     const std::vector<int>& experiment_ids) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   TRACE_EVENT0("android_webview",
                "AwMetricsServiceAccessor::RegisterExternalExperiment");
 

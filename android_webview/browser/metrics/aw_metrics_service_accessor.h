@@ -29,6 +29,8 @@ class AwMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   FRIEND_TEST_ALL_PREFIXES(AwMetricsServiceAccessorTest,
                            RegisterExternalExperimentOrderingAgnostic);
 
+  // Must be called from the UI thread because
+  // `AwMetricsServiceClient::GetInstance()` is bound to the UI thread.
   static void RegisterExternalExperiment(
       const std::vector<int>& experiment_ids);
 
