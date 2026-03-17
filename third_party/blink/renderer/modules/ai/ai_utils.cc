@@ -397,7 +397,7 @@ HeapVector<Member<LanguageModelMessageContent>> ConvertMojoToolCallsToMessages(
 
   for (const auto& tc : tool_calls) {
     v8::Local<v8::Value> arguments_v8 =
-        converter->ToV8Value(base::Value(tc->arguments.Clone()), context);
+        converter->ToV8Value(tc->arguments, context);
     if (arguments_v8.IsEmpty()) {
       exception_state.ThrowTypeError(
           "Failed to convert tool call arguments to JavaScript value");
