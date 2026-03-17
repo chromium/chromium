@@ -307,8 +307,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerInteractiveUiTest,
           1));
 }
 
-// TODO(crbug.com/466391046): Tab Group Accelerators are not defined on
-// ChromeOS.
+// Tab Group Accelerators are not defined on ChromeOS.
 #if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_KeyboardTabGroupCommands DISABLED_KeyboardTabGroupCommands
 #else
