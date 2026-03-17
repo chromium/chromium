@@ -41,10 +41,9 @@ double CSSTokenizerInputStream::GetNaturalNumberAsDouble(unsigned start,
   // complicated rounding machinery of CharactersToDouble(),
   // and can do with a much faster variant.
   if (start < end && string_.Is8Bit() && end - start <= 14) {
-    const LChar* ptr = UNSAFE_BUFFERS(rest_.Span8().data() + start);
-    double result = ptr[0] - '0';
-    for (unsigned i = 1; i < end - start; ++i) {
-      result = result * 10 + (UNSAFE_BUFFERS(ptr[i]) - '0');
+    uint64_t result = 0;
+    for (LChar ch : rest_.Span8().subspan(start, end - start)) {
+      result = result * 10 + (ch - '0');
     }
     return result;
   } else {
