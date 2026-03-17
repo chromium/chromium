@@ -31,6 +31,8 @@ BASE_DECLARE_FEATURE(kVerticalTabsPreviewBadge);
 
 BASE_DECLARE_FEATURE(kVerticalTabsNewBadge);
 
+BASE_DECLARE_FEATURE(kVerticalTabsExpandOnHover);
+
 BASE_DECLARE_FEATURE(kTabSelectionByPointer);
 
 BASE_DECLARE_FEATURE(kBackToOpener);
@@ -38,6 +40,8 @@ BASE_DECLARE_FEATURE(kBackToOpener);
 BASE_DECLARE_FEATURE(kHorizontalTabStripComboButton);
 
 bool IsVerticalTabsFeatureEnabled();
+
+bool IsVerticalTabsExpandOnHoverFeatureEnabled();
 
 }  // namespace tabs
 
