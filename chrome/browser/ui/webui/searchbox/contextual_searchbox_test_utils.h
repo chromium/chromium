@@ -96,7 +96,7 @@ class MockQueryController
 
   void NotifySuccess(const base::UnguessableToken& file_token) {
     for (auto& observer : observers_) {
-      observer.OnFileUploadStatusChanged(
+      observer.OnContextUploadStatusChanged(
           file_token, lens::MimeType::kHtml,
           contextual_search::ContextUploadStatus::kUploadSuccessful,
           std::nullopt);

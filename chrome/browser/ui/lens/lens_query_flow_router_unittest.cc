@@ -1680,7 +1680,7 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
 }
 
 TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
-       OnFileUploadStatusChanged_PassesTextAndObjectsToOverlay) {
+       OnContextUploadStatusChanged_PassesTextAndObjectsToOverlay) {
   // Arrange: Set up and create the router.
   EXPECT_CALL(*mock_lens_search_controller_,
               lens_search_contextualization_controller())
@@ -1733,14 +1733,14 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
       });
 
   // Act: Trigger file upload status changed.
-  router.OnFileUploadStatusChangedForTesting(
+  router.OnContextUploadStatusChangedForTesting(
       file_token, lens::MimeType::kPdf,
       contextual_search::ContextUploadStatus::kUploadSuccessful, std::nullopt);
 }
 
 TEST_F(
     LensQueryFlowRouterContextualTaskEnabledTest,
-    OnFileUploadStatusChanged_DoesNotPassTextAndObjectsToOverlayIfTokensDoNotMatch) {
+    OnContextUploadStatusChanged_DoesNotPassTextAndObjectsToOverlayIfTokensDoNotMatch) {
   // Arrange: Set up and create the router.
   EXPECT_CALL(*mock_lens_search_controller_,
               lens_search_contextualization_controller())
@@ -1770,7 +1770,7 @@ TEST_F(
       .Times(0);
 
   // Act: Trigger file upload status changed with a different token.
-  router.OnFileUploadStatusChangedForTesting(
+  router.OnContextUploadStatusChangedForTesting(
       base::UnguessableToken::Create(), lens::MimeType::kPdf,
       contextual_search::ContextUploadStatus::kUploadSuccessful, std::nullopt);
 }

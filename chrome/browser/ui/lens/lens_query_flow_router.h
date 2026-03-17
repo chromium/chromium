@@ -118,11 +118,11 @@ class LensQueryFlowRouter
       std::optional<SkBitmap> region_bytes,
       lens::LensOverlayInvocationSource invocation_source);
 
-  // Testing method to trigger the file upload status changed callback.
-  void OnFileUploadStatusChangedForTesting(
-      const base::UnguessableToken& file_token,
+  // Testing method to trigger the context upload status changed callback.
+  void OnContextUploadStatusChangedForTesting(
+      const base::UnguessableToken& context_token,
       lens::MimeType mime_type,
-      contextual_search::ContextUploadStatus file_upload_status,
+      contextual_search::ContextUploadStatus context_upload_status,
       const std::optional<contextual_search::ContextUploadErrorType>&
           error_type);
 
@@ -159,10 +159,10 @@ class LensQueryFlowRouter
   friend class LensQueryFlowRouterTestApi;
 
   // contextual_search::ContextualSearchContextController::FileUploadStatusObserver:
-  void OnFileUploadStatusChanged(
-      const base::UnguessableToken& file_token,
+  void OnContextUploadStatusChanged(
+      const base::UnguessableToken& context_token,
       lens::MimeType mime_type,
-      contextual_search::ContextUploadStatus file_upload_status,
+      contextual_search::ContextUploadStatus context_upload_status,
       const std::optional<contextual_search::ContextUploadErrorType>&
           error_type) override;
 

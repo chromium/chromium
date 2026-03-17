@@ -200,10 +200,10 @@ void ContextualTasksComposeboxHandler::MarkDelayedTabUploadFinished(
   MaybeSendPendingQuery();
 }
 
-void ContextualTasksComposeboxHandler::OnFileUploadStatusChanged(
-    const base::UnguessableToken& file_token,
+void ContextualTasksComposeboxHandler::OnContextUploadStatusChanged(
+    const base::UnguessableToken& context_token,
     lens::MimeType mime_type,
-    contextual_search::ContextUploadStatus file_upload_status,
+    contextual_search::ContextUploadStatus context_upload_status,
     const std::optional<contextual_search::ContextUploadErrorType>&
         error_type) {
   // If the file token corresponds to the token uploaded via Lens when the
@@ -212,34 +212,34 @@ void ContextualTasksComposeboxHandler::OnFileUploadStatusChanged(
   if (auto* controller = GetLensSearchController()) {
     if (controller->query_router() &&
         controller->query_router()->overlay_tab_context_file_token() ==
-            file_token) {
+            context_token) {
       return;
     }
   }
 
-  ContextualSearchboxHandler::OnFileUploadStatusChanged(
-      file_token, mime_type, file_upload_status, error_type);
+  ContextualSearchboxHandler::OnContextUploadStatusChanged(
+      context_token, mime_type, context_upload_status, error_type);
   // Associate tab with task.
 
   using ContextUploadStatus = contextual_search::ContextUploadStatus;
   bool is_terminal_upload_status =
-      file_upload_status == ContextUploadStatus::kUploadSuccessful ||
-      file_upload_status == ContextUploadStatus::kUploadFailed ||
-      file_upload_status == ContextUploadStatus::kUploadExpired ||
-      file_upload_status == ContextUploadStatus::kValidationFailed ||
-      file_upload_status == ContextUploadStatus::kUploadReplaced;
+      context_upload_status == ContextUploadStatus::kUploadSuccessful ||
+      context_upload_status == ContextUploadStatus::kUploadFailed ||
+      context_upload_status == ContextUploadStatus::kUploadExpired ||
+      context_upload_status == ContextUploadStatus::kValidationFailed ||
+      context_upload_status == ContextUploadStatus::kUploadReplaced;
 
   if (is_terminal_upload_status) {
-    MarkContextUploadFinished(file_token);
+    MarkContextUploadFinished(context_token);
   }
-  if (file_upload_status == ContextUploadStatus::kUploadSuccessful) {
+  if (context_upload_status == ContextUploadStatus::kUploadSuccessful) {
     auto* contextual_session_handle = GetContextualSessionHandle();
     if (!contextual_session_handle) {
       return;
     }
 
     const contextual_search::FileInfo* file_info =
-        contextual_session_handle->GetController()->GetFileInfo(file_token);
+        contextual_session_handle->GetController()->GetFileInfo(context_token);
 
     if (!file_info || !file_info->tab_session_id.has_value()) {
       return;
@@ -1075,7 +1075,7 @@ void ContextualTasksComposeboxHandler::OnLensThumbnailCreated(
 
   // Clear any existing visual selection context.
   if (visual_selection_token_) {
-    OnFileUploadStatusChanged(
+    OnContextUploadStatusChanged(
         *visual_selection_token_, lens::MimeType::kImage,
         contextual_search::ContextUploadStatus::kUploadReplaced, std::nullopt);
   }
@@ -1118,9 +1118,9 @@ void ContextualTasksComposeboxHandler::OnVisualSelectionAdded(
 
     // Since a fake visual selection file is added to the composebox for the
     // purpose of UI representation, this needs to call the
-    // OnFileUploadStatusChanged() to avoid the visual selection being
+    // OnContextUploadStatusChanged() to avoid the visual selection being
     // considered as pending upload. Assume it is kUploadSuccessful.
-    OnFileUploadStatusChanged(
+    OnContextUploadStatusChanged(
         *visual_selection_token_, lens::MimeType::kImage,
         contextual_search::ContextUploadStatus::kUploadSuccessful,
         std::nullopt);
@@ -1175,7 +1175,7 @@ void ContextualTasksComposeboxHandler::DeleteContext(
     }
   }
   if (was_delayed) {
-    OnFileUploadStatusChanged(
+    OnContextUploadStatusChanged(
         file_token, lens::MimeType::kUnknown,
         contextual_search::ContextUploadStatus::kUploadExpired, std::nullopt);
   }

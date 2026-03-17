@@ -346,17 +346,17 @@ ComposeboxQueryControllerBridge::CreateLensOverlaySuggestInputs() const {
       *suggest_inputs);
 }
 
-void ComposeboxQueryControllerBridge::OnFileUploadStatusChanged(
-    const base::UnguessableToken& file_token,
+void ComposeboxQueryControllerBridge::OnContextUploadStatusChanged(
+    const base::UnguessableToken& context_token,
     lens::MimeType mime_type,
-    contextual_search::ContextUploadStatus file_upload_status,
+    contextual_search::ContextUploadStatus context_upload_status,
     const std::optional<contextual_search::ContextUploadErrorType>&
         error_type) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  Java_ComposeboxQueryControllerBridge_onFileUploadStatusChanged(
+  Java_ComposeboxQueryControllerBridge_onContextUploadStatusChanged(
       env, java_obj_,
-      base::android::ConvertUTF8ToJavaString(env, file_token.ToString()),
-      static_cast<int>(file_upload_status));
+      base::android::ConvertUTF8ToJavaString(env, context_token.ToString()),
+      static_cast<int>(context_upload_status));
 }
 
 void ComposeboxQueryControllerBridge::OnGetTabPageContext(
@@ -365,7 +365,7 @@ void ComposeboxQueryControllerBridge::OnGetTabPageContext(
     std::unique_ptr<lens::ContextualInputData> page_content_data) {
   if (!page_content_data || !page_content_data->context_input.has_value() ||
       page_content_data->context_input->size() <= 0) {
-    OnFileUploadStatusChanged(
+    OnContextUploadStatusChanged(
         context_token, lens::MimeType::kUnknown,
         contextual_search::ContextUploadStatus::kValidationFailed,
         contextual_search::ContextUploadErrorType::kBrowserProcessingError);
@@ -390,7 +390,7 @@ void ComposeboxQueryControllerBridge::OnGetPageContentFromCache(
   // TODO(crbug.com/457869241): Merge this and the code in
   // TabContextualizationController.
   if (!page_context.has_value()) {
-    OnFileUploadStatusChanged(
+    OnContextUploadStatusChanged(
         context_token, lens::MimeType::kUnknown,
         contextual_search::ContextUploadStatus::kValidationFailed,
         contextual_search::ContextUploadErrorType::kBrowserProcessingError);

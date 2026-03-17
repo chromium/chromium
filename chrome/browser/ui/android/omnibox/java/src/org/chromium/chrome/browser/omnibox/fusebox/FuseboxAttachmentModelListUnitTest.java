@@ -340,7 +340,7 @@ public class FuseboxAttachmentModelListUnitTest {
         assertEquals("uploaded-token", attachment.getToken());
         assertFalse(attachment.isUploadComplete());
 
-        mFuseboxAttachmentModelList.onFileUploadStatusChanged(
+        mFuseboxAttachmentModelList.onContextUploadStatusChanged(
                 "uploaded-token", ContextUploadStatus.UPLOAD_SUCCESSFUL);
         assertTrue(attachment.isUploadComplete());
         verifyNoMoreInteractions(mComposeboxQueryControllerBridge);
@@ -391,9 +391,9 @@ public class FuseboxAttachmentModelListUnitTest {
         assertFalse(preTokenizedAttachment.isUploadComplete());
         assertFalse(uploadedAttachment.isUploadComplete());
 
-        mFuseboxAttachmentModelList.onFileUploadStatusChanged(
+        mFuseboxAttachmentModelList.onContextUploadStatusChanged(
                 "pretokenized-token", ContextUploadStatus.UPLOAD_SUCCESSFUL);
-        mFuseboxAttachmentModelList.onFileUploadStatusChanged(
+        mFuseboxAttachmentModelList.onContextUploadStatusChanged(
                 "uploaded-token", ContextUploadStatus.UPLOAD_FAILED);
         assertTrue(uploadFailedNotified.get());
 
@@ -520,11 +520,11 @@ public class FuseboxAttachmentModelListUnitTest {
         assertEquals("token", tabAttachment.getToken());
 
         when(mComposeboxQueryControllerBridge.addTabContext(tab)).thenReturn("token2");
-        mFuseboxAttachmentModelList.onFileUploadStatusChanged(
+        mFuseboxAttachmentModelList.onContextUploadStatusChanged(
                 "token", ContextUploadStatus.VALIDATION_FAILED);
         assertEquals("token2", tabAttachment.getToken());
 
-        mFuseboxAttachmentModelList.onFileUploadStatusChanged(
+        mFuseboxAttachmentModelList.onContextUploadStatusChanged(
                 "token2", ContextUploadStatus.VALIDATION_FAILED);
         assertTrue(mFuseboxAttachmentModelList.isEmpty());
     }
@@ -619,7 +619,7 @@ public class FuseboxAttachmentModelListUnitTest {
                     .thenReturn("token1");
             FuseboxAttachment attachment = createTestAttachment("test");
             mFuseboxAttachmentModelList.add(attachment);
-            mFuseboxAttachmentModelList.onFileUploadStatusChanged(
+            mFuseboxAttachmentModelList.onContextUploadStatusChanged(
                     "token1", ContextUploadStatus.UPLOAD_SUCCESSFUL);
         }
     }

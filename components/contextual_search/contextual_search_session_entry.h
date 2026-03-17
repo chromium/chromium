@@ -39,10 +39,10 @@ class ContextualSearchSessionEntry
       std::unique_ptr<ContextualSearchMetricsRecorder> metrics_recorder);
 
   // ContextualSearchContextController::FileUploadStatusObserver:
-  void OnFileUploadStatusChanged(
-      const base::UnguessableToken& file_token,
+  void OnContextUploadStatusChanged(
+      const base::UnguessableToken& context_token,
       lens::MimeType mime_type,
-      contextual_search::ContextUploadStatus file_upload_status,
+      contextual_search::ContextUploadStatus context_upload_status,
       const std::optional<contextual_search::ContextUploadErrorType>&
           error_type) override;
 
