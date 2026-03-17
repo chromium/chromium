@@ -77,8 +77,8 @@ class InspectorMediaEventHandlerTest : public testing::Test {
       const InspectorMediaEventHandlerTest&) = delete;
 
  protected:
-  std::unique_ptr<InspectorMediaEventHandler> handler_;
   std::unique_ptr<MockMediaInspectorContext> mock_context_;
+  std::unique_ptr<InspectorMediaEventHandler> handler_;
 
   template <media::MediaLogEvent T>
   media::MediaLogRecord CreateEvent() {
