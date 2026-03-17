@@ -120,11 +120,11 @@ void OmniboxPopupViewWebUI::UpdatePopupAppearance() {
       }
     }
 
-    if (auto* handler = presenter()
-                            ->GetWebUIContent()
-                            ->contents_wrapper()
-                            ->GetWebUIController()
-                            ->omnibox_handler()) {
+    auto* controller = presenter()
+                           ->GetWebUIContent()
+                           ->contents_wrapper()
+                           ->GetWebUIController();
+    if (auto* handler = controller ? controller->omnibox_handler() : nullptr) {
       handler->SetAimButtonVisible(omnibox_view_->AimButtonVisible());
     }
   }
@@ -146,11 +146,9 @@ void OmniboxPopupViewWebUI::GetPopupAccessibleNodeData(
 void OmniboxPopupViewWebUI::StepSelection(
     OmniboxPopupSelection::Direction direction,
     OmniboxPopupSelection::Step step) {
-  if (auto* handler = presenter()
-                          ->GetWebUIContent()
-                          ->contents_wrapper()
-                          ->GetWebUIController()
-                          ->omnibox_handler()) {
+  auto* controller =
+      presenter()->GetWebUIContent()->contents_wrapper()->GetWebUIController();
+  if (auto* handler = controller ? controller->omnibox_handler() : nullptr) {
     handler->SetAimButtonVisible(omnibox_view_->AimButtonVisible());
     handler->StepSelection(direction, step);
   }
@@ -158,11 +156,9 @@ void OmniboxPopupViewWebUI::StepSelection(
 
 void OmniboxPopupViewWebUI::OpenCurrentSelection(
     WindowOpenDisposition disposition) {
-  if (auto* handler = presenter()
-                          ->GetWebUIContent()
-                          ->contents_wrapper()
-                          ->GetWebUIController()
-                          ->omnibox_handler()) {
+  auto* controller =
+      presenter()->GetWebUIContent()->contents_wrapper()->GetWebUIController();
+  if (auto* handler = controller ? controller->omnibox_handler() : nullptr) {
     handler->OpenCurrentSelection(disposition);
   }
 }
