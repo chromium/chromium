@@ -362,34 +362,26 @@ bool PictureLayerImpl::ComputeCheckerboardedNeedsRecord() {
     }
   }
 
-  const float max_contents_scale = GetMaximumContentsScaleForUseInAppendQuads();
-  std::optional<gfx::Rect> scaled_cull_rect =
-      CalculateScaledCullRect(max_contents_scale);
-  if (!scaled_cull_rect) {
+  std::optional<gfx::Rect> cull_rect_in_layer_space =
+      CalculateCullRectInLayerSpace();
+  if (!cull_rect_in_layer_space) {
     return false;
   }
 
-  const gfx::Transform quad_to_target_transform =
-      GetScaledDrawTransform(max_contents_scale);
-  const Occlusion scaled_occlusion =
-      draw_properties()
-          .occlusion_in_content_space.GetOcclusionWithGivenDrawTransform(
-              quad_to_target_transform);
-  const gfx::Rect scaled_recorded_bounds =
-      gfx::ScaleToEnclosingRect(RecordedBounds(), max_contents_scale);
+  // The unoccluded recorded visible rect is what we might want to record.
+  // We compute this in layer space (unscaled) to avoid unnecessary scaling
+  // operations and avoid expensive GetOcclusionWithGivenDrawTransform() which
+  // involves matrix multiplication and inversion.
+  gfx::Rect recorded_visible_layer_rect = visible_layer_rect();
+  recorded_visible_layer_rect.Intersect(gfx::Rect(bounds()));
+  recorded_visible_layer_rect.Intersect(RecordedBounds());
 
-  gfx::Size scaled_bounds =
-      gfx::ScaleToCeiledSize(bounds(), max_contents_scale);
-  gfx::Rect scaled_visible_layer_rect =
-      gfx::ScaleToEnclosingRect(visible_layer_rect(), max_contents_scale);
-  scaled_visible_layer_rect.Intersect(gfx::Rect(scaled_bounds));
-
-  gfx::Rect recorded_visible_layer_rect = scaled_visible_layer_rect;
-  recorded_visible_layer_rect.Intersect(scaled_recorded_bounds);
   gfx::Rect unoccluded_recorded_visible_rect =
-      scaled_occlusion.GetUnoccludedContentRect(recorded_visible_layer_rect);
+      draw_properties().occlusion_in_content_space.GetUnoccludedContentRect(
+          recorded_visible_layer_rect);
+
   if (!unoccluded_recorded_visible_rect.IsEmpty() &&
-      !scaled_cull_rect->Contains(unoccluded_recorded_visible_rect)) {
+      !cull_rect_in_layer_space->Contains(unoccluded_recorded_visible_rect)) {
     return true;
   }
   return false;

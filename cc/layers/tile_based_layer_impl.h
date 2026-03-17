@@ -90,6 +90,7 @@ class CC_EXPORT TileBasedLayerImpl : public LayerImpl {
   std::optional<SkColor4f> solid_color() const { return solid_color_; }
   std::optional<gfx::Rect> CalculateScaledCullRect(
       float max_contents_scale) const;
+  std::optional<gfx::Rect> CalculateCullRectInLayerSpace() const;
 
   void ClearLastAppendQuadsScales() { last_append_quads_scales_.clear(); }
 
@@ -524,6 +525,24 @@ std::optional<gfx::Rect> TileBasedLayerImpl<Tiling>::CalculateScaledCullRect(
             // Convert into layer space.
             gfx::RectF(*cull_rect) - offset_to_transform_parent(),
             max_contents_scale));
+      }
+    }
+  }
+  return std::nullopt;
+}
+
+template <typename Tiling>
+std::optional<gfx::Rect>
+TileBasedLayerImpl<Tiling>::CalculateCullRectInLayerSpace() const {
+  const ScrollTree& scroll_tree =
+      layer_tree_impl()->property_trees()->scroll_tree();
+  if (const ScrollNode* scroll_node = scroll_tree.Node(scroll_tree_index())) {
+    if (transform_tree_index() == scroll_node->transform_id) {
+      if (const gfx::Rect* cull_rect =
+              scroll_tree.ScrollingContentsCullRect(scroll_node->element_id)) {
+        return gfx::ToEnclosingRect(
+            // Convert into layer space.
+            gfx::RectF(*cull_rect) - offset_to_transform_parent());
       }
     }
   }
