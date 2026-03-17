@@ -47,8 +47,8 @@ class VerticalTabGroupHeaderView : public views::FlexLayoutView,
         bool stop_context_menu_propagation) = 0;
     virtual std::u16string GetGroupContentString() const = 0;
 
-    virtual void InitHeaderDrag(const ui::MouseEvent& event) = 0;
-    virtual bool ContinueHeaderDrag(const ui::MouseEvent& event) = 0;
+    virtual void InitHeaderDrag(const ui::LocatedEvent& event) = 0;
+    virtual bool ContinueHeaderDrag(const ui::LocatedEvent& event) = 0;
     virtual void CancelHeaderDrag() = 0;
     virtual void HideHoverCard() const = 0;
 

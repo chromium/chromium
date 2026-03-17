@@ -29,8 +29,8 @@ class MockDelegate : public VerticalTabGroupHeaderView::Delegate {
               (override));
   MOCK_METHOD(views::Widget*, ShowGroupEditorBubble, (bool), (override));
   MOCK_METHOD(std::u16string, GetGroupContentString, (), (const, override));
-  MOCK_METHOD(void, InitHeaderDrag, (const ui::MouseEvent&), (override));
-  MOCK_METHOD(bool, ContinueHeaderDrag, (const ui::MouseEvent&), (override));
+  MOCK_METHOD(void, InitHeaderDrag, (const ui::LocatedEvent&), (override));
+  MOCK_METHOD(bool, ContinueHeaderDrag, (const ui::LocatedEvent&), (override));
   MOCK_METHOD(void, CancelHeaderDrag, (), (override));
   MOCK_METHOD(void, HideHoverCard, (), (const, override));
   MOCK_METHOD(void, ShiftGroupUp, (), (override));

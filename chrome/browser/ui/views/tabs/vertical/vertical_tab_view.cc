@@ -57,6 +57,7 @@
 #include "ui/base/models/list_selection_model.h"
 #include "ui/base/theme_provider.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/events/types/event_type.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
@@ -468,15 +469,46 @@ void VerticalTabView::OnGestureEvent(ui::GestureEvent* event) {
   CHECK(collection_node_);
   UpdateHoverCard(nullptr, TabSlotController::HoverCardUpdateType::kEvent);
 
+  auto* controller = collection_node_->GetController();
+  CHECK(controller);
+
+  const ui::ListSelectionModel original_selection_model =
+      collection_node_->GetController()->GetSelectionModel();
+
   switch (event->type()) {
     case ui::EventType::kGestureTapDown: {
-      auto* controller = collection_node_->GetController();
-      CHECK(controller);
-      // TAP_DOWN is only dispatched for the first touch point.
-      CHECK_EQ(1, event->details().touch_points());
+      // Handle TapDown to receive subsequent events like LongPress or Tap.
+      // We don't call InitializeDrag here to allow scrolling.
+      event->SetHandled();
+      break;
+    }
+
+    case ui::EventType::kGestureTap: {
+      // Short press release. Select the tab.
       if (!selected_) {
         controller->SelectTab(GetTabInterface(), GetGestureDetail(*event));
       }
+      event->SetHandled();
+      break;
+    }
+
+    case ui::EventType::kGestureLongPress: {
+      // Long press detected. Initialize dragging.
+      if (!selected_) {
+        // Ensure the tab is selected before dragging starts to avoid crashes.
+        controller->SelectTab(GetTabInterface(), GetGestureDetail(*event));
+      }
+      controller->GetDragHandler().InitializeDrag(
+          *collection_node_, original_selection_model, *event);
+      event->SetHandled();
+      break;
+    }
+
+    case ui::EventType::kGestureLongTap: {
+      // Show context menu on release after long press.
+      controller->ShowContextMenuForNode(collection_node_, this,
+                                         event->location(),
+                                         ui::mojom::MenuSourceType::kTouch);
       event->SetHandled();
       break;
     }

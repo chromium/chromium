@@ -262,17 +262,31 @@ void VerticalTabGroupHeaderView::OnMouseReleased(const ui::MouseEvent& event) {
 
 void VerticalTabGroupHeaderView::OnGestureEvent(ui::GestureEvent* event) {
   switch (event->type()) {
+    case ui::EventType::kGestureTapDown:
+      // Required to allow the touch system to know this is a gesture target
+      // for subsequent events like LongPress and Scroll.
+      event->SetHandled();
+      break;
+
     case ui::EventType::kGestureTap:
       delegate_->ToggleCollapsedState(
           ToggleTabGroupCollapsedStateOrigin::kGesture);
+      event->SetHandled();
       break;
+
+    case ui::EventType::kGestureLongPress:
+      delegate_->InitHeaderDrag(*event);
+      event->SetHandled();
+      break;
+
     case ui::EventType::kGestureLongTap:
       ShowEditorBubble();
+      event->SetHandled();
       break;
+
     default:
       break;
   }
-  event->SetHandled();
 }
 
 void VerticalTabGroupHeaderView::OnMouseMoved(const ui::MouseEvent& event) {

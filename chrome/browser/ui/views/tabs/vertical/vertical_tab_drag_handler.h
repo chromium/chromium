@@ -37,11 +37,11 @@ class VerticalTabDragHandler {
   virtual void InitializeDrag(
       TabCollectionNode& node,
       const ui::ListSelectionModel& original_selection_model,
-      const ui::MouseEvent& event) = 0;
+      const ui::LocatedEvent& event) = 0;
   // Triggers updates to tab dragging state based on the latest mouse event.
   // Returns a bool indicating whether the drag was successfully handled.
   virtual bool ContinueDrag(views::View& event_source_view,
-                            const ui::MouseEvent& event) = 0;
+                            const ui::LocatedEvent& event) = 0;
   // Ends the drag, if started.
   virtual void EndDrag(EndDragReason reason) = 0;
 
@@ -125,9 +125,9 @@ class VerticalTabDragHandlerImpl : public VerticalTabDragHandler,
   // VerticalTabDragHandler
   void InitializeDrag(TabCollectionNode& node,
                       const ui::ListSelectionModel& original_selection_model,
-                      const ui::MouseEvent& event) override;
+                      const ui::LocatedEvent& event) override;
   bool ContinueDrag(views::View& event_source_view,
-                    const ui::MouseEvent& event) override;
+                    const ui::LocatedEvent& event) override;
   void EndDrag(EndDragReason reason) override;
   void HandleDraggedTabsOverNode(
       const TabCollectionNode& node,
@@ -153,6 +153,7 @@ class VerticalTabDragHandlerImpl : public VerticalTabDragHandler,
 
   // TabDragContext
   bool CanAcceptEvent(const ui::Event& event) override;
+  void OnGestureEvent(ui::GestureEvent* event) override;
   void OnMouseReleased(const ui::MouseEvent& event) override;
   bool OnMouseDragged(const ui::MouseEvent& event) override;
   void OnMouseCaptureLost() override;

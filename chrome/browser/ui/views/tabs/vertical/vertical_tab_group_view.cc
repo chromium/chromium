@@ -114,6 +114,15 @@ void VerticalTabGroupView::OnThemeChanged() {
   OnDataChanged();
 }
 
+void VerticalTabGroupView::OnGestureEvent(ui::GestureEvent* event) {
+  if (event->type() == ui::EventType::kGestureLongTap) {
+    ui::GestureEvent converted_event(*event, static_cast<views::View*>(this),
+                                     static_cast<views::View*>(group_header_));
+    group_header_->OnGestureEvent(&converted_event);
+    event->SetHandled();
+  }
+}
+
 views::ProposedLayout VerticalTabGroupView::CalculateProposedLayout(
     const views::SizeBounds& size_bounds) const {
   views::ProposedLayout layouts;
@@ -489,7 +498,7 @@ VerticalTabGroupView::GetLinkDropIndex(const gfx::Point& loc_in_group) {
                                                   DragPositionHint::kAfter);
 }
 
-void VerticalTabGroupView::InitHeaderDrag(const ui::MouseEvent& event) {
+void VerticalTabGroupView::InitHeaderDrag(const ui::LocatedEvent& event) {
   CHECK(collection_node_);
   const ui::ListSelectionModel original_selection_model =
       collection_node_->GetController()->GetSelectionModel();
@@ -497,7 +506,7 @@ void VerticalTabGroupView::InitHeaderDrag(const ui::MouseEvent& event) {
                                   event);
 }
 
-bool VerticalTabGroupView::ContinueHeaderDrag(const ui::MouseEvent& event) {
+bool VerticalTabGroupView::ContinueHeaderDrag(const ui::LocatedEvent& event) {
   return GetDragHandler().ContinueDrag(*group_header_, event);
 }
 

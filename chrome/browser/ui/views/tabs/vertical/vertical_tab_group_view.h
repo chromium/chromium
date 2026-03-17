@@ -41,6 +41,7 @@ class VerticalTabGroupView
 
   // views::View:
   void OnThemeChanged() override;
+  void OnGestureEvent(ui::GestureEvent* event) override;
 
   // views::LayoutDelegate:
   views::ProposedLayout CalculateProposedLayout(
@@ -54,8 +55,8 @@ class VerticalTabGroupView
   views::Widget* ShowGroupEditorBubble(
       bool stop_context_menu_propagation) override;
   std::u16string GetGroupContentString() const override;
-  void InitHeaderDrag(const ui::MouseEvent& event) override;
-  bool ContinueHeaderDrag(const ui::MouseEvent& event) override;
+  void InitHeaderDrag(const ui::LocatedEvent& event) override;
+  bool ContinueHeaderDrag(const ui::LocatedEvent& event) override;
   void CancelHeaderDrag() override;
   void HideHoverCard() const override;
   void ShiftGroupUp() override;

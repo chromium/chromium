@@ -33,6 +33,7 @@
 #include "ui/base/test/ui_controls.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/views/interaction/interaction_test_util_mouse.h"
 #include "ui/views/interaction/interactive_views_test.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/view.h"
@@ -111,6 +112,17 @@ base::RepeatingCallback<bool()> GetDragActive() {
 
 }  // namespace
 
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTab);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kThirdTab);
+DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<size_t>,
+                                    kBrowserCountPoller);
+DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
+                                    kDragStatePoller);
+DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<URLs>,
+                                    kTabOrderPoller);
+DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<PinnedURLs>,
+                                    kPinnedTabOrderPoller);
+
 class VerticalTabDragTest
     : public VerticalTabsInteractiveTestMixin<InteractiveBrowserTest> {
  public:
@@ -134,12 +146,17 @@ class VerticalTabDragTest
   auto StartDragBetweenTabs(int from_tab_index, int to_tab_index) {
     const char kTabToDragFrom[] = "Tab to drag";
     const char kTabToDragTo[] = "Tab to drag to";
-    return Steps(Log("Start drag from " + base::NumberToString(from_tab_index) +
-                     " to " + base::NumberToString(to_tab_index)),
-                 NameTabViewAt(kTabToDragFrom, from_tab_index),
-                 NameTabViewAt(kTabToDragTo, to_tab_index),
-                 MoveMouseTo(kTabToDragFrom),
-                 DragMouseTo(kTabToDragTo, CenterPoint(), /*release=*/false));
+    return Steps(
+        Log("Start drag from " + base::NumberToString(from_tab_index) + " to " +
+            base::NumberToString(to_tab_index)),
+        NameTabViewAt(kTabToDragFrom, from_tab_index),
+        NameTabViewAt(kTabToDragTo, to_tab_index), MoveMouseTo(kTabToDragFrom),
+        ClickMouse(ui_controls::LEFT, /*release=*/false),
+        // Poll state before moving mouse in touch mode to do a long press.
+        If([this]() { return mouse_util().GetTouchMode(); },
+           Then(Steps(PollState(kDragStatePoller, GetDragActive()),
+                      WaitForState(kDragStatePoller, true)))),
+        MoveMouseTo(kTabToDragTo));
   }
 
   auto StartDragFromGroupToTab(int from_group_index, int to_tab_index) {
@@ -241,17 +258,6 @@ class VerticalTabDragTest
           gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
 };
 
-DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTab);
-DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kThirdTab);
-DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<size_t>,
-                                    kBrowserCountPoller);
-DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
-                                    kDragStatePoller);
-DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<URLs>,
-                                    kTabOrderPoller);
-DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<PinnedURLs>,
-                                    kPinnedTabOrderPoller);
-
 IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DragWithinUnpinnedContainer) {
   TabStripModel* tab_strip_model = browser()->GetTabStripModel();
   ASSERT_NE(nullptr, tab_strip_model);
@@ -261,6 +267,51 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DragWithinUnpinnedContainer) {
 
       StartDragBetweenTabs(2, 1), PollState(kDragStatePoller, GetDragActive()),
       WaitForState(kDragStatePoller, true),
+      PollState(kTabOrderPoller, GetTabOrder(tab_strip_model)),
+      WaitForState(kTabOrderPoller,
+                   URLs({url::kAboutBlankURL, chrome::kChromeUISettingsURL,
+                         chrome::kChromeUIBookmarksURL})),
+
+      ContinueDragToTab(2),
+      WaitForState(kTabOrderPoller,
+                   URLs({url::kAboutBlankURL, chrome::kChromeUIBookmarksURL,
+                         chrome::kChromeUISettingsURL})),
+
+      ContinueDragToTab(0),
+      WaitForState(kTabOrderPoller,
+                   URLs({chrome::kChromeUISettingsURL, url::kAboutBlankURL,
+                         chrome::kChromeUIBookmarksURL})),
+
+      // Release the drag and ensure tab ordering remains.
+      ReleaseMouse(), WaitForState(kDragStatePoller, false), Do([&]() {
+        ASSERT_EQ(3, tab_strip_model->count());
+        EXPECT_EQ(GURL(chrome::kChromeUISettingsURL),
+                  tab_strip_model->GetWebContentsAt(0)->GetURL());
+        EXPECT_EQ(GURL(url::kAboutBlankURL),
+                  tab_strip_model->GetWebContentsAt(1)->GetURL());
+        EXPECT_EQ(GURL(chrome::kChromeUIBookmarksURL),
+                  tab_strip_model->GetWebContentsAt(2)->GetURL());
+      }));
+}
+
+// This test uses an experimental API to replace mouse events with touch events.
+// It is currently only supported on Ash Chrome.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_DragWithinUnpinnedContainerTouch DragWithinUnpinnedContainerTouch
+#else
+#define MAYBE_DragWithinUnpinnedContainerTouch \
+  DISABLED_DragWithinUnpinnedContainerTouch
+#endif
+IN_PROC_BROWSER_TEST_F(VerticalTabDragTest,
+                       MAYBE_DragWithinUnpinnedContainerTouch) {
+  TabStripModel* tab_strip_model = browser()->GetTabStripModel();
+  ASSERT_NE(nullptr, tab_strip_model);
+  RunTestSequence(
+      Check([this]() { return mouse_util().SetTouchMode(true); }),
+      AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUIBookmarksURL), 1),
+      AddInstrumentedTab(kThirdTab, GURL(chrome::kChromeUISettingsURL), 2),
+
+      StartDragBetweenTabs(2, 1),
       PollState(kTabOrderPoller, GetTabOrder(tab_strip_model)),
       WaitForState(kTabOrderPoller,
                    URLs({url::kAboutBlankURL, chrome::kChromeUISettingsURL,
