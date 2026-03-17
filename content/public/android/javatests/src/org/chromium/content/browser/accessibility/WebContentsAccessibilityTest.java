@@ -536,16 +536,26 @@ public class WebContentsAccessibilityTest {
     public void testStaleNode_LabeledBy() throws Throwable {
         // HTML from description.
         String html =
-                "<html><body> <span id=\"label1\">Add Item</span>  <div"
-                    + " id=\"info_panel_1\">Status:OK</div>  <div id=\"info_panel_2\">Items:"
-                    + " 5</div>  <div id=\"info_panel_3\">Ready</div>  <div id=\"button1\""
-                    + " role=\"button\" aria-labelledby=\"label1\"></div>  <button"
-                    + " id=\"trigger\"onclick=\"update()\"></button>  <script>  function update() {"
-                    + "    document.getElementById('label1').textContent = 'Remove Item';   "
-                    + " document.getElementById('info_panel_1').textContent = 'Status: Done';   "
-                    + " document.getElementById('info_panel_2').textContent = 'Items: 6';   "
-                    + " document.getElementById('info_panel_3').textContent = 'Processing...'; }  "
-                    + " </script></body></html>";
+                """
+                <html>
+                  <body>
+                    <span id="label1">Add Item</span>
+                    <div id="info_panel_1">Status:OK</div>
+                    <div id="info_panel_2">Items: 5</div>
+                    <div id="info_panel_3">Ready</div>
+                    <div id="button1" role="button" aria-labelledby="label1"></div>
+                    <button id="trigger" onclick="update()"></button>
+                    <script>
+                      function update() {
+                        document.getElementById("label1").textContent = "Remove Item";
+                        document.getElementById("info_panel_1").textContent = "Status: Done";
+                        document.getElementById("info_panel_2").textContent = "Items: 6";
+                        document.getElementById("info_panel_3").textContent = "Processing...";
+                      }
+                    </script>
+                  </body>
+                </html>
+                """;
         setupTestWithHTML(html);
 
         // To avoid targeting root node
@@ -593,9 +603,11 @@ public class WebContentsAccessibilityTest {
     public void testUMAHistograms_AXModeComplete() throws Throwable {
         // Build a simple web page with a few nodes to traverse.
         setupTestWithHTMLForCompleteMode(
-                "<p>This is a test 1</p>\n"
-                        + "<p>This is a test 2</p>\n"
-                        + "<p>This is a test 3</p>",
+                """
+                <p>This is a test 1</p>
+                <p>This is a test 2</p>
+                <p>This is a test 3</p>
+                """,
                 true);
 
         // Set the relevant features and accessibility state.
@@ -628,9 +640,11 @@ public class WebContentsAccessibilityTest {
     public void testUMAHistograms_AXModeFormControls() throws Throwable {
         // Build a simple web page with a few nodes to traverse.
         setupTestWithHTMLForFormControlsMode(
-                "<p>This is a test 1</p>\n"
-                        + "<p>This is a test 2</p>\n"
-                        + "<p>This is a test 3</p>",
+                """
+                <p>This is a test 1</p>
+                <p>This is a test 2</p>
+                <p>This is a test 3</p>
+                """,
                 true);
 
         // Set the relevant features and accessibility state.
@@ -664,9 +678,11 @@ public class WebContentsAccessibilityTest {
     public void testUMAHistograms_AXModeBasic() throws Throwable {
         // Build a simple web page with a few nodes to traverse.
         setupTestWithHTMLForBasicMode(
-                "<p>This is a test 1</p>\n"
-                        + "<p>This is a test 2</p>\n"
-                        + "<p>This is a test 3</p>",
+                """
+                <p>This is a test 1</p>
+                <p>This is a test 2</p>
+                <p>This is a test 3</p>
+                """,
                 true);
 
         // Set the relevant features and screen reader state.
@@ -702,9 +718,11 @@ public class WebContentsAccessibilityTest {
     public void testUMAHistograms_AXModeComplete_100Percent() throws Throwable {
         // Build a simple web page with a few nodes to traverse.
         setupTestWithHTMLForCompleteMode(
-                "<p>This is a test 1</p>\n"
-                        + "<p>This is a test 2</p>\n"
-                        + "<p>This is a test 3</p>",
+                """
+                <p>This is a test 1</p>
+                <p>This is a test 2</p>
+                <p>This is a test 3</p>
+                """,
                 false);
 
         // Set the relevant features and screen reader state, set event type masks to empty.
@@ -743,9 +761,11 @@ public class WebContentsAccessibilityTest {
     public void testUMAHistograms_AXModeFormControls_100Percent() throws Throwable {
         // Build a simple web page with a few nodes to traverse.
         setupTestWithHTMLForFormControlsMode(
-                "<p>This is a test 1</p>\n"
-                        + "<p>This is a test 2</p>\n"
-                        + "<p>This is a test 3</p>",
+                """
+                <p>This is a test 1</p>
+                <p>This is a test 2</p>
+                <p>This is a test 3</p>
+                """,
                 false);
 
         // Set the relevant features and screen reader state, set event type masks to empty.
@@ -781,9 +801,11 @@ public class WebContentsAccessibilityTest {
     public void testUMAHistograms_AXModeBasic_100Percent() throws Throwable {
         // Build a simple web page with a few nodes to traverse.
         setupTestWithHTMLForBasicMode(
-                "<p>This is a test 1</p>\n"
-                        + "<p>This is a test 2</p>\n"
-                        + "<p>This is a test 3</p>",
+                """
+                <p>This is a test 1</p>
+                <p>This is a test 2</p>
+                <p>This is a test 3</p>
+                """,
                 false);
 
         // Set the relevant features and screen reader state, set event type masks to empty.
@@ -824,9 +846,11 @@ public class WebContentsAccessibilityTest {
     public void testUMAHistograms_Cache() throws Throwable {
         // Build a simple web page with a few nodes to traverse.
         setupTestWithHTML(
-                "<p>This is a test 1</p>\n"
-                        + "<p>This is a test 2</p>\n"
-                        + "<p>This is a test 3</p>");
+                """
+                <p>This is a test 1</p>
+                <p>This is a test 2</p>
+                <p>This is a test 3</p>
+                """);
 
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -1169,10 +1193,12 @@ public class WebContentsAccessibilityTest {
     public void testNodeInfoCache_AccessibilityFocusAndActions() throws Throwable {
         // Build a simple web page with two paragraphs that can be focused.
         setupTestWithHTML(
-                "<div>\n"
-                        + "  <p>Example Paragraph 1</p>\n"
-                        + "  <p>Example Paragraph 2</p>\n"
-                        + "</div>");
+                """
+                <div>
+                  <p>Example Paragraph 1</p>
+                  <p>Example Paragraph 2</p>
+                </div>
+                """);
 
         // Define our root node and paragraph node IDs by looking for their text.
         int vvIdP1 = waitForNodeMatching(sTextMatcher, "Example Paragraph 1");
@@ -1253,15 +1279,15 @@ public class WebContentsAccessibilityTest {
     public void testNodeInfoCache_BoundingBoxUpdatesOnWindowResize() {
         // Build a simple web page with a flex and a will-change: transform button.
         setupTestWithHTML(
-                "<div style=\"display: flex; min-height: 90vh;\">\n"
-                        + " <div style=\"display: flex; flex-grow: 1; align-items: flex-end;\">\n"
-                        + "   <div>\n"
-                        + "     <button style=\"display: inline-flex; will-change: transform;\">\n"
-                        + "       Next\n"
-                        + "     </button>\n"
-                        + "   </div>\n"
-                        + " </div>\n"
-                        + "</div>");
+                """
+                <div style="display: flex; min-height: 90vh">
+                  <div style="display: flex; flex-grow: 1; align-items: flex-end">
+                    <div>
+                      <button style="display: inline-flex; will-change: transform">Next</button>
+                    </div>
+                  </div>
+                </div>
+                """);
 
         // Find the button and get the current bounding box.
         int buttonvvId = waitForNodeMatching(sClassNameMatcher, "android.widget.Button");
@@ -1297,11 +1323,13 @@ public class WebContentsAccessibilityTest {
     public void testEvent_Combobox_disabled() throws Throwable {
         // Build a simple web page with a disabled combobox.
         setupTestWithHTML(
-                "<select disabled>\n"
-                        + "  <option>Volvo</option>\n"
-                        + "  <option>Saab</option>\n"
-                        + "  <option>Mercedes</option>\n"
-                        + "</select>");
+                """
+                <select disabled>
+                  <option>Volvo</option>
+                  <option>Saab</option>
+                  <option>Mercedes</option>
+                </select>
+                """);
 
         // Find the disabled option node and set a delegate to track focus.
         int disabledNodeId = waitForNodeMatching(sTextMatcher, "Volvo");
@@ -1728,18 +1756,20 @@ public class WebContentsAccessibilityTest {
     }
 
     /**
-     * Ensures paragraph navigation actions correctly navigate to the next paragraph and stop at
-     * the last paragraph.
+     * Ensures paragraph navigation actions correctly navigate to the next paragraph and stop at the
+     * last paragraph.
      */
     @Test
     @SmallTest
     public void testEvent_paragraphGranularity() throws Throwable {
         setupTestWithHTML(
-                "<p>Paragraph 1</p>"
-                        + "<p>Paragraph 2</p>"
-                        + "<p>Paragraph 3</p>"
-                        + "<p>Paragraph 4</p>"
-                        + "<p>Paragraph 5</p>");
+                """
+                <p>Paragraph 1</p>
+                <p>Paragraph 2</p>
+                <p>Paragraph 3</p>
+                <p>Paragraph 4</p>
+                <p>Paragraph 5</p>
+                """);
 
         // Set granularity to PARAGRAPH
         Bundle args = new Bundle();
@@ -2247,9 +2277,12 @@ public class WebContentsAccessibilityTest {
     public void testNodeInfo_extraDataAdded_imageData() {
         // Setup test page with example image (20px red square).
         setupTestWithHTML(
-                "<img id='id1' src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEU"
-                        + "gAAABQAAAAUCAIAAAAC64paAAAAGElEQVR4AWOsZiAfDLDmUc2jmk"
-                        + "c1j2oGADloCbFEqE6LAAAAAElFTkSuQmCC\"/>");
+                """
+                <img
+                  id="id1"
+                  src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAIAAAAC64paAAAAGElEQVR4AWOsZiAfDLDmUc2jmkc1j2oGADloCbFEqE6LAAAAAElFTkSuQmCC"
+                />
+                """);
 
         // Find the image node.
         int imageViewId = waitForNodeMatching(sViewIdResourceNameMatcher, "id1");
@@ -2438,11 +2471,12 @@ public class WebContentsAccessibilityTest {
     public void testNodeInfo_Actions_OverflowHidden() throws Throwable {
         // Build a simple web page with a div and overflow:hidden
         setupTestWithHTML(
-                "<div role='group' title='1234' "
-                        + "style='overflow:hidden; width: 200px; height:50px'>\n"
-                        + "  <p>Example Paragraph 1</p>\n"
-                        + "  <p>Example Paragraph 2</p>\n"
-                        + "</div>");
+                """
+                <div role="group" title="1234" style="overflow: hidden; width: 200px; height: 50px">
+                  <p>Example Paragraph 1</p>
+                  <p>Example Paragraph 2</p>
+                </div>
+                """);
 
         // Define our root node and paragraph node IDs by looking for their text.
         int vvIdDiv = waitForNodeMatching(sTextMatcher, "1234");
@@ -2483,10 +2517,12 @@ public class WebContentsAccessibilityTest {
     public void testNodeInfo_Actions_OverflowScroll() throws Throwable {
         // Build a simple web page with a div and overflow:scroll
         setupTestWithHTML(
-                "<div id='div1' title='1234' style='overflow:scroll; width: 200px; height:50px'>\n"
-                        + "  <p id='p1' tabindex=0>Example Paragraph 1</p>\n"
-                        + "  <p id='p2' tabindex=0>Example Paragraph 2</p>\n"
-                        + "</div>");
+                """
+                <div id="div1" title="1234" style="overflow: scroll; width: 200px; height: 50px">
+                  <p id="p1" tabindex="0">Example Paragraph 1</p>
+                  <p id="p2" tabindex="0">Example Paragraph 2</p>
+                </div>
+                """);
 
         // Define our root node and paragraph node IDs by looking for their ids.
         int vvIdDiv = waitForNodeMatching(sViewIdResourceNameMatcher, "div1");
@@ -2574,10 +2610,16 @@ public class WebContentsAccessibilityTest {
     @EnableFeatures(AccessibilityFeatures.ACCESSIBILITY_HANDLE_OCCLUDING_VIEWS)
     public void testOcclusion() throws Throwable {
         setupTestWithHTML(
-                "<button id='button1' style='position:absolute; left:10px; top:10px; "
-                        + "width:100px; height:50px;'>Button 1</button>"
-                        + "<button id='button2' style='position:absolute; left:10px; top:70px; "
-                        + "width:100px; height:50px;'>Button 2</button>");
+                """
+                <button id="button1"
+                    style="position: absolute; left: 10px; top: 10px; width: 100px; height: 50px">
+                  Button 1
+                </button>
+                <button id="button2"
+                    style="position: absolute; left: 10px; top: 70px; width: 100px; height: 50px">
+                  Button 2
+                </button>
+                """);
 
         // Find the buttons.
         int button1VvId = waitForNodeMatching(sViewIdResourceNameMatcher, "button1");
@@ -2628,8 +2670,12 @@ public class WebContentsAccessibilityTest {
     @EnableFeatures(AccessibilityFeatures.ACCESSIBILITY_HANDLE_OCCLUDING_VIEWS)
     public void testPartialOcclusion() throws Throwable {
         setupTestWithHTML(
-                "<button id='button1' style='position:absolute; left:10px; top:10px; "
-                        + "width:100px; height:50px;'>Button 1</button>");
+                """
+                <button id="button1"
+                    style="position: absolute; left: 10px; top: 10px; width: 100px; height: 50px">
+                  Button 1
+                </button>
+                """);
 
         int button1VvId = waitForNodeMatching(sViewIdResourceNameMatcher, "button1");
         AccessibilityNodeInfoCompat button1NodeInfo = createAccessibilityNodeInfo(button1VvId);
@@ -2763,12 +2809,14 @@ public class WebContentsAccessibilityTest {
     @SmallTest
     public void testPerformAction_setExtendedSelection_nonEditable() throws Throwable {
         setupTestWithHTML(
-                "<p id='paragraph1'>Paragraph1</p>"
-                        + "<p id='paragraph2'>Paragraph2</p>"
-                        + "<img id='image1' src=\"pipe.jpg\" alt=\"pipe\">"
-                        + "<img id='image2' src=\"pipe.jpg\" alt=\"pipe\">"
-                        + "<button id='button'>Button</button>"
-                        + "<p id='paragraph3'>Paragraph3</p>");
+                """
+                <p id="paragraph1">Paragraph1</p>
+                <p id="paragraph2">Paragraph2</p>
+                <img id="image1" src="pipe.jpg" alt="pipe" />
+                <img id="image2" src="pipe.jpg" alt="pipe" />
+                <button id="button">Button</button>
+                <p id="paragraph3">Paragraph3</p>
+                """);
 
         // Find nodes.
         int rootVvid = waitForNodeMatching(sClassNameMatcher, "android.webkit.WebView");
@@ -2904,10 +2952,12 @@ public class WebContentsAccessibilityTest {
     @SmallTest
     public void testPerformAction_setExtendedSelection_contentEditable() throws Throwable {
         setupTestWithHTML(
-                "<div id='contenteditable' contenteditable>"
-                        + "<p>Some Text></p>"
-                        + "<img src=\"pipe.jpg\" alt=\"pipe\">"
-                        + "</div>");
+                """
+                <div id="contenteditable" contenteditable>
+                  <p>Some Text></p>
+                  <img src="pipe.jpg" alt="pipe" />
+                </div>
+                """);
 
         // Find nodes.
         int rootVvid = waitForNodeMatching(sClassNameMatcher, "android.webkit.WebView");
@@ -4146,19 +4196,38 @@ public class WebContentsAccessibilityTest {
     public void testAccessibilityTreeSizeWithIframe() throws Throwable {
         // Iframe content with 12 additional nodes
         final String iframeContent =
-                "<html><body><h1>Iframe content</h1>"
-                        + "<p>Node 1</p><p>Node 2</p><p>Node 3</p>"
-                        + "<p>Node 4</p><p>Node 5</p><p>Node 6</p>"
-                        + "<p>Node 7</p><p>Node 8</p><p>Node 9</p>"
-                        + "<p>Node 10</p><p>Node 11</p>"
-                        + "</body></html>";
+                """
+                <html>
+                  <body>
+                    <h1>Iframe content</h1>
+                    <p>Node 1</p>
+                    <p>Node 2</p>
+                    <p>Node 3</p>
+                    <p>Node 4</p>
+                    <p>Node 5</p>
+                    <p>Node 6</p>
+                    <p>Node 7</p>
+                    <p>Node 8</p>
+                    <p>Node 9</p>
+                    <p>Node 10</p>
+                    <p>Node 11</p>
+                  </body>
+                </html>
+                """;
         // Main page content with an iframe
         final String html =
-                "<html><body><p>Main content</p>"
-                        + "<iframe src='data:text/html,"
+                """
+                <html>
+                  <body>
+                    <p>Main content</p>
+                    <iframe src='data:text/html,\
+                """
                         + iframeContent
-                        + "'></iframe>"
-                        + "</body></html>";
+                        + """
+                        '></iframe>
+                          </body>
+                        </html>
+                        """;
 
         setupTestWithHTML(html);
 
