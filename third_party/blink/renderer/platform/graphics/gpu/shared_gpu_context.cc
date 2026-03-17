@@ -427,17 +427,12 @@ bool SharedGpuContext::LowLatencyUsageSupportedForCanvas2D(
 
 #if BUILDFLAG(IS_ANDROID)
   // Low-latency usage on Android is possible only with SurfaceControl.
-  if (!IsSurfaceControlEnabled()) {
-    return false;
-  }
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS)
+  return IsSurfaceControlEnabled() &&
+         base::FeatureList::IsEnabled(
+             features::kLowLatencyUsageSupportedForCanvas2D);
+#elif BUILDFLAG(IS_CHROMEOS)
   // Low-latency usage is always supported for Canvas2D on ChromeOS.
   return true;
-#elif BUILDFLAG(IS_ANDROID)
-  return base::FeatureList::IsEnabled(
-      features::kLowLatencyUsageSupportedForCanvas2D);
 #else
   // NOTE: crbug.com/41435781 would need to be resolved in order to support
   // low-latency usage on Mac (currently setting the desynchronized attribute
