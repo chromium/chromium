@@ -3833,6 +3833,12 @@ Called by update_extension_permission.py.-->
 
 <!-- LINT.ThenChange(//chrome/browser/ui/webui/extensions_zero_state_promo/zero_state_promo.mojom:WebStoreLinkClicked) -->
 
+<enum name="WorkerVersionIdState">
+  <int value="0" label="New version is older"/>
+  <int value="1" label="New version is equal"/>
+  <int value="2" label="New version is newer"/>
+</enum>
+
 </enums>
 
 </histogram-configuration>

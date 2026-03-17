@@ -6,6 +6,7 @@
 
 #include "base/debug/alias.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/child_process_id.h"
@@ -20,6 +21,29 @@ namespace {
 
 // Prevent check on multiple workers per extension for testing purposes.
 bool g_allow_multiple_workers_per_extension = false;
+
+// NOTE: These values are persisted to logs. Entries should not be renumbered
+// and numeric values should never be reused.
+enum class WorkerVersionIdState {
+  kNewVersionIsOlder = 0,  // The newly received `version_id` is older.
+  kNewVersionIsEqual = 1,  // The newly received `version_id` is equal.
+  kNewVersionIsNewer = 2,  // The newly received `version_id` is newer.
+  kMaxValue = kNewVersionIsNewer,
+};
+
+void RecordWorkerVersionIdStateHistogram(int64_t new_version_id,
+                                         int64_t preexisting_version_id) {
+  WorkerVersionIdState state = WorkerVersionIdState::kNewVersionIsEqual;
+  if (new_version_id < preexisting_version_id) {
+    state = WorkerVersionIdState::kNewVersionIsOlder;
+  } else if (new_version_id > preexisting_version_id) {
+    state = WorkerVersionIdState::kNewVersionIsNewer;
+  }
+  base::UmaHistogramEnumeration(
+      "Extensions.ServiceWorkerBackground.WorkerVersionIdState_OnInitialized_"
+      "NotActive",
+      state);
+}
 
 }  // namespace
 
@@ -200,6 +224,8 @@ void ServiceWorkerState::RendererDidInitializeServiceWorkerContext(
 
     auto preexisting_version_id = worker_id_->version_id;
     auto new_version_id = worker_id.version_id;
+    RecordWorkerVersionIdStateHistogram(new_version_id, preexisting_version_id);
+
     if (new_version_id < preexisting_version_id) {
       // Drop the IPC message. It is from a stale worker version.
       // TODO(andreaorru): we can also see a stale service worker instance with

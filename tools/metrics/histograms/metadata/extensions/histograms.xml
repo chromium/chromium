@@ -4537,6 +4537,21 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram
+    name="Extensions.ServiceWorkerBackground.WorkerVersionIdState_OnInitialized_NotActive"
+    enum="WorkerVersionIdState" expires_after="2026-09-13">
+  <owner>andreaorru@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Records whether a notification for a newly initialized service worker's
+    version ID is older, equal to, or newer than the existing worker version ID.
+    This metric is emitted during
+    ServiceWorkerState::RendererDidInitializeServiceWorkerContext only when the
+    renderer state is already &quot;initialized&quot; or &quot;active&quot;
+    (i.e., not RendererState::kNotActive).
+  </summary>
+</histogram>
+
+<histogram
     name="Extensions.ServiceWorkerRenderer.ExtensionLoadStatusInWorkerScriptEvaluation"
     enum="ExtensionLoadStatusOnScriptEval" expires_after="2026-05-03">
   <owner>jlulejian@chromium.org</owner>
