@@ -529,7 +529,7 @@ bool AimEligibilityService::IsCobrowseEligible() const {
 bool AimEligibilityService::IsFuseboxEligible() const {
   if (!base::FeatureList::IsEnabled(
           omnibox::kAimFuseboxEligibilityCheckEnabled)) {
-    return true;
+    return IsAimEligible();
   }
   return IsAimEligible() && GetMostRecentResponse().is_fusebox_eligible();
 }
