@@ -144,6 +144,18 @@ void SearchIntegrity::OnAllowlistInitialized(
 
   SearchEngineAllowlist::GetInstance()->Initialize(bloom_filter_data);
 
+  if (template_url_service_->loaded()) {
+    OnTemplateURLServiceLoaded();
+  } else {
+    template_url_service_subscription_ =
+        template_url_service_->RegisterOnLoadedCallback(
+            base::BindOnce(&SearchIntegrity::OnTemplateURLServiceLoaded,
+                           weak_ptr_factory_.GetWeakPtr()));
+    template_url_service_->Load();
+  }
+}
+
+void SearchIntegrity::OnTemplateURLServiceLoaded() {
   SearchIntegrityReport report = CheckSearchEnginesReport();
 
   base::UmaHistogramBoolean("Search.Integrity.HasCustomSearchEngine",
@@ -153,6 +165,7 @@ void SearchIntegrity::OnAllowlistInitialized(
   base::UmaHistogramBoolean(
       "Search.Integrity.IsDefaultCustomWithMatchingPolicyEngine",
       report.is_default_custom_with_matching_policy_engine);
+
   if (report.referral_param_found.has_value()) {
     base::UmaHistogramEnumeration("Search.Integrity.Referral.ParameterFound",
                                   report.referral_param_found.value());

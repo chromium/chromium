@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/callback_list.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -70,6 +71,9 @@ class SearchIntegrity : public KeyedService {
   // proceeds with checking and recording metrics.
   void OnAllowlistInitialized(const std::string& bloom_filter_data);
 
+  // Callback executed after the TemplateURLService has finished loading.
+  void OnTemplateURLServiceLoaded();
+
   SearchIntegrityReport CheckSearchEnginesReport();
 
   // The template URL service, used to access se list.
@@ -77,6 +81,9 @@ class SearchIntegrity : public KeyedService {
   // The profile, used to check management status and locate the bloom filter
   // file.
   raw_ptr<Profile> profile_;
+
+  // Subscription for the TemplateURLService loaded callback.
+  base::CallbackListSubscription template_url_service_subscription_;
 
   // Factory for creating weak pointers to this instance, used for safe
   // asynchronous callbacks.
