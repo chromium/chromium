@@ -792,7 +792,7 @@
   __weak __typeof(self) weakSelf = self;
   /// If the current tab is in a group, display the "Move Tab to Group" menu.
   /// Otherwise, display the "Add Tab to Group" menu. If a user doesn't have
-  /// any Tab Groups, the "Add Tab to Group" menu will just be a "Add Tab to
+  /// any Tab Groups, the "Add Tab to Group" menu will just be an "Add Tab to
   /// New Group" button.
   if (currentGroup) {
     return [actionFactory menuToMoveTabToGroupWithGroups:allGroups
@@ -816,34 +816,25 @@
 
 // Creates a Move Tab to Group block for the Move Tab to Group menu.
 - (void)moveTabToGroupBlock:(const TabGroup*)destinationGroup {
+  CHECK(base::FeatureList::IsEnabled(kTabGroupInTabIconContextMenu));
+  CHECK([self activeWebStateInGroup]);
   int tabIndex = self.currentWebStateList->active_index();
-  if (tabIndex == WebStateList::kInvalidIndex) {
-    return;
-  }
   self.currentWebStateList->MoveToGroup({tabIndex}, destinationGroup);
 }
 
 // Creates a Remove Tab from Group block for the Move Tab to Group menu.
 - (void)removeTabFromGroupBlock {
-  CHECK(self.currentWebStateList);
-
+  CHECK(base::FeatureList::IsEnabled(kTabGroupInTabIconContextMenu));
+  CHECK([self activeWebStateInGroup]);
   int tabIndex = self.currentWebStateList->active_index();
-  if (tabIndex == WebStateList::kInvalidIndex) {
-    return;
-  }
-
   self.currentWebStateList->RemoveFromGroups({tabIndex});
 }
 
 // Creates an Add Tab to Group block for the Add Tab to Group menu.
 - (void)addTabToGroupBlock:(const TabGroup*)destinationGroup {
-  CHECK(self.currentWebStateList);
-
+  CHECK(base::FeatureList::IsEnabled(kTabGroupInTabIconContextMenu));
+  CHECK(![self activeWebStateInGroup]);
   int tabIndex = self.currentWebStateList->active_index();
-  if (tabIndex == WebStateList::kInvalidIndex) {
-    return;
-  }
-
   if (destinationGroup) {
     self.currentWebStateList->MoveToGroup({tabIndex}, destinationGroup);
   } else {
