@@ -10,6 +10,7 @@ import android.content.Context;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
@@ -30,7 +31,8 @@ public class ColorPickerBridge {
     private final ColorPickerCoordinator mColorPickerCoordinator;
 
     @CalledByNative
-    static @Nullable ColorPickerBridge create(long nativeDialog, WindowAndroid windowAndroid) {
+    static @Nullable ColorPickerBridge create(
+            long nativeDialog, @JniType("ui::WindowAndroid*") WindowAndroid windowAndroid) {
         if (windowAndroid == null) return null;
         Context context = windowAndroid.getContext().get();
         if (ContextUtils.activityFromContext(context) == null) return null;
@@ -54,7 +56,7 @@ public class ColorPickerBridge {
     }
 
     @CalledByNative
-    void addColorSuggestion(int color, String label) {
+    void addColorSuggestion(int color, @JniType("std::string") String label) {
         if (mColorPickerCoordinator != null) {
             mColorPickerCoordinator.addColorSuggestion(color, label);
         }

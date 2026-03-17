@@ -6,6 +6,7 @@ package org.chromium.components.site_engagement;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ThreadUtils;
@@ -81,9 +82,12 @@ public class SiteEngagementService {
 
         void setParamValuesForTesting();
 
-        double getScore(long nativeSiteEngagementServiceAndroid, String url);
+        double getScore(
+                long nativeSiteEngagementServiceAndroid, @JniType("std::string") String url);
 
         void resetBaseScoreForURL(
-                long nativeSiteEngagementServiceAndroid, String url, double score);
+                long nativeSiteEngagementServiceAndroid,
+                @JniType("std::string") String url,
+                double score);
     }
 }

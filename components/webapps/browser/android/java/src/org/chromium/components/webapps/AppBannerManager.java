@@ -12,6 +12,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
@@ -131,7 +132,11 @@ public class AppBannerManager {
      */
     @CalledByNative
     private void fetchAppDetails(
-            int requestId, String url, String packageName, String referrer, int iconSizeInDp) {
+            int requestId,
+            @JniType("std::string") String url,
+            @JniType("std::string") String packageName,
+            @JniType("std::string") String referrer,
+            int iconSizeInDp) {
         if (sAppDetailsDelegate == null) return;
 
         Context context = ContextUtils.getApplicationContext();
@@ -142,7 +147,8 @@ public class AppBannerManager {
     }
 
     @CalledByNative
-    private static boolean isRelatedNonWebAppInstalled(String packageName) {
+    private static boolean isRelatedNonWebAppInstalled(
+            @JniType("std::u16string") String packageName) {
         return PackageUtils.isPackageInstalled(packageName);
     }
 
@@ -177,7 +183,8 @@ public class AppBannerManager {
      * Returns the manifest id if the current page is installable, otherwise returns the empty
      * string.
      */
-    public static @Nullable String maybeGetManifestId(WebContents webContents) {
+    public static @Nullable String maybeGetManifestId(
+            @JniType("content::WebContents*") WebContents webContents) {
         AppBannerManager manager =
                 webContents != null ? AppBannerManager.forWebContents(webContents) : null;
         if (manager != null) {
@@ -187,7 +194,8 @@ public class AppBannerManager {
     }
 
     /** Returns true if the web app can be promoted into an installable application. */
-    public static boolean isProbablyPromotable(WebContents webContents) {
+    public static boolean isProbablyPromotable(
+            @JniType("content::WebContents*") WebContents webContents) {
         return AppBannerManagerJni.get().isProbablyPromotable(webContents);
     }
 
@@ -227,12 +235,13 @@ public class AppBannerManager {
     }
 
     /** Returns the AppBannerManager object. This is owned by the C++ banner manager. */
-    public static AppBannerManager forWebContents(WebContents contents) {
+    public static AppBannerManager forWebContents(
+            @JniType("content::WebContents*") WebContents contents) {
         ThreadUtils.assertOnUiThread();
         return AppBannerManagerJni.get().getJavaBannerManagerForWebContents(contents);
     }
 
-    public String getManifestId(WebContents contents) {
+    public String getManifestId(@JniType("content::WebContents*") WebContents contents) {
         return AppBannerManagerJni.get().getInstallableWebAppManifestId(contents);
     }
 
@@ -247,17 +256,20 @@ public class AppBannerManager {
     @NativeMethods
     @VisibleForTesting
     public interface Natives {
-        AppBannerManager getJavaBannerManagerForWebContents(WebContents webContents);
+        AppBannerManager getJavaBannerManagerForWebContents(
+                @JniType("content::WebContents*") WebContents webContents);
 
-        String getInstallableWebAppManifestId(WebContents webContents);
+        @JniType("std::string")
+        String getInstallableWebAppManifestId(
+                @JniType("content::WebContents*") WebContents webContents);
 
         void onAppDetailsRetrieved(
                 long nativeAppBannerManagerAndroid,
                 int requestId,
                 AppData data,
-                @Nullable String title,
-                String packageName,
-                @Nullable String imageUrl);
+                @JniType("std::u16string") @Nullable String title,
+                @JniType("std::string") String packageName,
+                @JniType("std::string") @Nullable String imageUrl);
 
         // Testing methods.
         void ignoreChromeChannelForTesting();
@@ -274,6 +286,6 @@ public class AppBannerManager {
 
         void setOverrideSegmentationResultForTesting(boolean show);
 
-        boolean isProbablyPromotable(WebContents contents);
+        boolean isProbablyPromotable(@JniType("content::WebContents*") WebContents contents);
     }
 }

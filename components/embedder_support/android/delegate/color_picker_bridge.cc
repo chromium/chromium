@@ -14,7 +14,6 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/embedder_support/android/web_contents_delegate_jni/ColorPickerBridge_jni.h"
 
-using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaRef;
 
 namespace web_contents_delegate_android {
@@ -35,7 +34,7 @@ ColorPickerBridge::ColorPickerBridge(
 
   // Create a bridge to communicate with Java-side code.
   j_color_chooser_.Reset(Java_ColorPickerBridge_create(
-      env, reinterpret_cast<intptr_t>(this), window_android->GetJavaObject()));
+      env, reinterpret_cast<intptr_t>(this), window_android));
 
   // End with the initial color if the bridge creation failed.
   if (j_color_chooser_.is_null()) {
@@ -46,8 +45,7 @@ ColorPickerBridge::ColorPickerBridge(
   // For an element that includes suggestions, send them to Java.
   for (const auto& suggestion : suggestions) {
     Java_ColorPickerBridge_addColorSuggestion(
-        env, j_color_chooser_, suggestion->color,
-        ConvertUTF8ToJavaString(env, suggestion->label));
+        env, j_color_chooser_, suggestion->color, suggestion->label);
   }
 
   // Show the color picker dialog.

@@ -46,24 +46,13 @@ SiteEngagementServiceAndroid::~SiteEngagementServiceAndroid() {
   java_service_.Reset();
 }
 
-double SiteEngagementServiceAndroid::GetScore(
-    JNIEnv* env,
-    const JavaRef<jstring>& jurl) const {
-  if (!jurl)
-    return 0;
-
-  return service_->GetScore(
-      GURL(base::android::ConvertJavaStringToUTF16(env, jurl)));
+double SiteEngagementServiceAndroid::GetScore(const std::string& url) const {
+  return service_->GetScore(GURL(url));
 }
 
-void SiteEngagementServiceAndroid::ResetBaseScoreForURL(
-    JNIEnv* env,
-    const JavaRef<jstring>& jurl,
-    double score) {
-  if (jurl) {
-    service_->ResetBaseScoreForURL(
-        GURL(base::android::ConvertJavaStringToUTF16(env, jurl)), score);
-  }
+void SiteEngagementServiceAndroid::ResetBaseScoreForURL(const std::string& url,
+                                                        double score) {
+  service_->ResetBaseScoreForURL(GURL(url), score);
 }
 
 static void JNI_SiteEngagementService_SetParamValuesForTesting(JNIEnv* env) {
