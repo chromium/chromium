@@ -3785,21 +3785,6 @@
   <message name="IDS_ARC_ACCESSIBILITY_WINDOW_TITLE_IN_PIP" is_accessibility_with_no_ui="true" desc="A hint text that is read by screen readers appended to the window title, explaning that the window is in the picture-pi-picture mode.">
     Picture in picture
   </message>
-  <message name="IDS_ASSISTANT_OPT_IN_LOADING" desc="Loading message of the Assistasnt opt-in flow dialog.">
-    Loading Google Assistant...
-  </message>
-  <message name="IDS_ASSISTANT_OPT_IN_LOAD_ERROR_TITLE" desc="Load error title of the Assistasnt opt-in flow dialog.">
-    Google Assistant
-  </message>
-  <message name="IDS_ASSISTANT_OPT_IN_LOAD_ERROR_MESSAGE" desc="Load error message of the Assistasnt opt-in flow dialog.">
-    Google Assistant was unable to load, please check your network connection and retry.
-  </message>
-  <message name="IDS_ASSISTANT_OPT_IN_SKIP_BUTTON" desc="Button label for skipping the Assistasnt opt-in flow upon error.">
-    Skip
-  </message>
-  <message name="IDS_ASSISTANT_OPT_IN_RETRY_BUTTON" desc="Button label for retry loading the Assistasnt opt-in flow.">
-    Retry
-  </message>
   <message name="IDS_WAIT_FOR_CONTAINER_READY_INTRO_MESSAGE" desc="Introduction message for the wait for container ready OOBE screen">
     Ask it questions. Tell it to do things. It's your personal Google, always ready to help.
   </message>
