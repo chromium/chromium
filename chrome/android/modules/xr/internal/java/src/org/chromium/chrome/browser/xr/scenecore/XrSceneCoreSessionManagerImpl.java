@@ -62,8 +62,7 @@ public class XrSceneCoreSessionManagerImpl implements XrSceneCoreSessionManager 
         assert result instanceof SessionCreateSuccess : "Session creation failed.";
         mXrSession = ((SessionCreateSuccess) result).getSession();
 
-        Scene scene = SessionExt.getScene(mXrSession);
-        mActivitySpace = scene.getActivitySpace();
+        mActivitySpace = getScene().getActivitySpace();
         mActivitySpace.addOnBoundsChangedListener(mBoundsChangedListener);
 
         boolean isXrFullSpaceMode =
@@ -128,7 +127,7 @@ public class XrSceneCoreSessionManagerImpl implements XrSceneCoreSessionManager 
         mIsFullSpaceModeRequested = requestFullSpaceMode;
         mXrModeSwitchCallback = completedCallback;
 
-        Scene scene = SessionExt.getScene(mXrSession);
+        Scene scene = getScene();
         if (requestFullSpaceMode) {
             scene.requestFullSpaceMode();
         } else {
@@ -151,7 +150,7 @@ public class XrSceneCoreSessionManagerImpl implements XrSceneCoreSessionManager 
     @MainThread
     @Override
     public void setMainPanelVisibility(boolean visible) {
-        SessionExt.getScene(mXrSession).getMainPanelEntity().setEnabled(visible);
+        getScene().getMainPanelEntity().setEnabled(visible);
     }
 
     @SuppressWarnings("NullAway")
@@ -163,6 +162,10 @@ public class XrSceneCoreSessionManagerImpl implements XrSceneCoreSessionManager 
         }
         mXrSession = null;
         mActivity = null;
+    }
+
+    private Scene getScene() {
+        return SessionExt.getScene(mXrSession);
     }
 
     private void boundsChangeCallback(FloatSize3d dimensions) {
