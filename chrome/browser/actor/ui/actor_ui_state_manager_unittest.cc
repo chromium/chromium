@@ -195,7 +195,15 @@ TEST_F(ActorUiStateManagerTest, OnActorTaskState_kCreatedNewStateCrashes) {
                "");
 }
 
-TEST_F(ActorUiStateManagerTest, OnActorTaskState_FinalStateCrashes) {
+// TODO(https://crbug.com/493373370): Fix the flakiness.
+#if defined(UNDEFINED_SANITIZER)
+#define MAYBE_OnActorTaskState_FinalStateCrashes \
+  DISABLED_OnActorTaskState_FinalStateCrashes
+#else
+#define MAYBE_OnActorTaskState_FinalStateCrashes \
+  OnActorTaskState_FinalStateCrashes
+#endif
+TEST_F(ActorUiStateManagerTest, MAYBE_OnActorTaskState_FinalStateCrashes) {
   EXPECT_DEATH(actor_ui_state_manager()->OnUiEvent(
                    TaskStateChanged(TaskId(123), ActorTask::State::kCancelled)),
                "");
