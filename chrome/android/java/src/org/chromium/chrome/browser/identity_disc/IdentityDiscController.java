@@ -60,7 +60,6 @@ import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.signin.SigninFeatureMap;
-import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -473,8 +472,8 @@ public class IdentityDiscController
                             .signinSurveyType(
                                     SigninSurveyController.SigninSurveyType.NTP_SIGNIN_BUTTON)
                             .build();
-            if (mSigninCoordinator != null) {
-                mSigninCoordinator.startSigninFlow(config);
+            if (SigninFeatureMap.getInstance().isActivitylessSigninAllEntryPointEnabled()) {
+                assumeNonNull(mSigninCoordinator).startSigninFlow(config);
             } else {
                 @Nullable Intent intent =
                         SigninAndHistorySyncActivityLauncherImpl.get()
@@ -507,9 +506,7 @@ public class IdentityDiscController
         assert !mProfile.isOffTheRecord();
 
         if (mSigninCoordinator == null
-                && SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
-                && SigninFeatureMap.isEnabled(
-                        SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT)) {
+                && SigninFeatureMap.getInstance().isActivitylessSigninAllEntryPointEnabled()) {
             OneshotSupplierImpl<Profile> profileSupplier = new OneshotSupplierImpl<>();
             profileSupplier.set(mProfile);
 
