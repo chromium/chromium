@@ -38,14 +38,28 @@ function setConnectedState(connected: boolean) {
   const useTokenAttestationCheckbox =
       document.getElementById('use-token-attestation-checkbox') as
       HTMLInputElement;
+  const proxyUrl =
+      document.getElementById('privateAiProxyUrl') as HTMLInputElement;
+
 
   privateAiServerUrl.disabled = connected;
   privateAiServerApiKey.disabled = connected;
   useTokenAttestationCheckbox.disabled = connected;
+  proxyUrl.disabled = connected;
 
   connectionConsole.classList.toggle('hidden', !connected);
   createConnectionButton.classList.toggle('hidden', connected);
   disconnectButton.classList.toggle('hidden', !connected);
+
+  if (connected) {
+    const consoleContainer =
+        document.getElementById('console-container') as HTMLElement;
+    consoleContainer.textContent = '';
+
+    const logsContainer =
+        document.getElementById('logs-container') as HTMLElement;
+    logsContainer.textContent = '';
+  }
 }
 
 function registerOnCreateConnectionButtonListener() {
