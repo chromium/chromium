@@ -7,3 +7,5 @@ It only hosts browser tests to verify the functionality of these extensions. The
 implementation of the APIs lives in
 `//chromeos/ash/experiences/isolated_web_app`.
 
+The only API available currently is `chromeos.isolatedWebApp.setShape`.
+

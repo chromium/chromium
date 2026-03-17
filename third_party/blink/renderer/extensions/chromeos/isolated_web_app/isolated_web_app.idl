@@ -9,5 +9,19 @@
 [
   IsolatedContext
 ] interface IsolatedWebApp {
-  // TODO(crbug.com/480146201): Introduce the `setShape` API.
+  // Sets the shape of the current window to the union of the given `rects`.
+  // Only areas of the window that are covered by at least one rectangle become
+  // visible and can be interacted with.
+  //
+  // Passing an empty list of `rects` resets the window shape back to normal.
+  //
+  // The returned promise is resolved when the operation is successful, and
+  // rejected if the shape couldn't be set (e.g. when `rects` are invalid, or
+  // the window could not be found).
+  [
+    RuntimeEnabled=BlinkExtensionChromeOSIsolatedWebAppSetShape,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  Promise<undefined> setShape(sequence<DOMRectReadOnly> rects);
 };

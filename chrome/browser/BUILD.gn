@@ -5516,6 +5516,7 @@ static_library("browser") {
       "//chromeos/ash/experiences/arc/process",
       "//chromeos/ash/experiences/guest_os/borealis/motd",
       "//chromeos/ash/experiences/guest_os/borealis/motd:mojo_bindings",
+      "//chromeos/ash/experiences/isolated_web_app",
       "//chromeos/ash/experiences/system_web_apps/types",
       "//chromeos/ash/services/assistant/public/cpp",
       "//chromeos/ash/services/auth_factor_config",

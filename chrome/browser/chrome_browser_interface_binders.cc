@@ -109,6 +109,7 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/apps/digital_goods/digital_goods_factory_impl.h"
 #include "chrome/browser/speech/cros_speech_recognition_service_factory.h"
+#include "chromeos/ash/experiences/isolated_web_app/isolated_web_app_api_bridge_impl.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
@@ -517,6 +518,8 @@ void PopulateChromeFrameBinders(
 #if BUILDFLAG(IS_CHROMEOS)
   map->Add<payments::mojom::DigitalGoodsFactory>(
       &apps::DigitalGoodsFactoryImpl::BindDigitalGoodsFactory);
+  map->Add<blink::mojom::IsolatedWebAppApiBridge>(
+      &ash::IsolatedWebAppApiBridgeImpl::Create);
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)

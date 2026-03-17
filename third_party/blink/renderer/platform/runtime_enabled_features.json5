@@ -822,6 +822,12 @@
       browser_process_read_write_access: true,
     },
     {
+      name: "BlinkExtensionChromeOSIsolatedWebAppSetShape",
+      status: {"ChromeOS": "experimental", "default": ""},
+      browser_process_read_write_access: true,
+      depends_on: ["BlinkExtensionChromeOS"],
+    },
+    {
       name: "BlinkExtensionChromeOSKiosk",
       depends_on: ["BlinkExtensionChromeOS"],
       browser_process_read_write_access: true,

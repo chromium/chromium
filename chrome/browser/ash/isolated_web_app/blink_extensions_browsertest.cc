@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/containers/fixed_flat_set.h"
+#include "base/strings/strcat.h"
+#include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
@@ -10,9 +13,11 @@
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
 
@@ -39,8 +44,9 @@ class BlinkExtensionsWithFlagSetTest
   void SetUpCommandLine(base::CommandLine* command_line) override {
     web_app::IsolatedWebAppBrowserTestHarness::SetUpCommandLine(command_line);
     // TODO(crbug.com/480133572): Enable the flag automatically.
-    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                    "BlinkExtensionChromeOS");
+    command_line->AppendSwitchASCII(
+        switches::kEnableBlinkFeatures,
+        "BlinkExtensionChromeOS,BlinkExtensionChromeOSIsolatedWebAppSetShape");
   }
 };
 
@@ -52,6 +58,50 @@ IN_PROC_BROWSER_TEST_F(BlinkExtensionsWithFlagSetTest,
   EXPECT_EQ(true, content::EvalJs(frame, "'chromeos' in window"));
   EXPECT_EQ(true,
             content::EvalJs(frame, "'isolatedWebApp' in window.chromeos"));
+}
+
+IN_PROC_BROWSER_TEST_F(BlinkExtensionsWithFlagSetTest,
+                       IsolatedWebAppCanCallSetShape) {
+  webapps::AppId app_id = InstallIsolatedWebAppAndReturnAppId(profile());
+  content::RenderFrameHost* frame = OpenApp(app_id);
+
+  // `setShape` always returns a resolved `Promise<undefined>`.
+  // TODO(crbug.com/480146201): Update once `setShape` is implemented.
+  auto result =
+      content::EvalJs(frame, "window.chromeos.isolatedWebApp.setShape([])");
+  EXPECT_EQ(base::Value(), result);
+}
+
+IN_PROC_BROWSER_TEST_F(BlinkExtensionsWithFlagSetTest, SetShapeValidation) {
+  webapps::AppId app_id = InstallIsolatedWebAppAndReturnAppId(profile());
+  content::RenderFrameHost* frame = OpenApp(app_id);
+
+  constexpr auto invalid_inputs = base::MakeFixedFlatSet<std::string_view>({
+      // Negative dimension.
+      "[new DOMRect(0, 0, -1, 200)]",
+      "[new DOMRect(0, 0, 200, -1)]",
+      // Infinite location or dimension.
+      "[new DOMRect(Infinity, 0, 200, 200)]",
+      "[new DOMRect(0, Infinity, 200, 200)]",
+      "[new DOMRect(0, 0, Infinity, 200)]",
+      "[new DOMRect(0, 0, 200, Infinity)]",
+      // NaN location or dimension.
+      "[new DOMRect(NaN, 0, 200, 200)]",
+      "[new DOMRect(0, NaN, 200, 200)]",
+      "[new DOMRect(0, 0, NaN, 200)]",
+      "[new DOMRect(0, 0, 200, NaN)]",
+      // Too many rectangles.
+      "Array(10001).fill(new DOMRect(0, 0, 200, 200))",
+  });
+  for (const auto& input : invalid_inputs) {
+    std::string script = base::StrCat({
+        "window.chromeos.isolatedWebApp.setShape(",
+        input,
+        ").catch(error => error.name)",
+    });
+    EXPECT_EQ("TypeError", content::EvalJs(frame, script))
+        << "Failed on input: " << input;
+  }
 }
 
 // In practice the `BlinkExtensionChromeOS` feature remains disabled for regular

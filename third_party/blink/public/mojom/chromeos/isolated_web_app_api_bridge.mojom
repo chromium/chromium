@@ -1,0 +1,41 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+// The service definition for blink extensions available to allowlisted IWAs in
+// ChromeOS.
+interface IsolatedWebAppApiBridge {
+  // Sets the shape of the current window to the union of the given `rects`.
+  // Only areas of the window that are covered by at least one rectangle become
+  // visible and can be interacted with.
+  //
+  // Passing an empty list of `rects` resets the window shape back to normal.
+  //
+  // If the length of `rects` exceeds `kMaxSetShapeRects`, does nothing and
+  // returns `kInvalidLength`.
+  //
+  // Returns a `SetShapeResult` indicating the result of the operation.
+  SetShape(array<gfx.mojom.Rect> rects) => (SetShapeResult result);
+};
+
+// The result of a `SetShape` call.
+enum SetShapeResult {
+  // The `SetShape` call succeeded.
+  kSuccess,
+  // More than `kMaxSetShapeRects` were sent to `SetShape`.
+  kInvalidLength,
+  // The window could not be found.
+  kNoWindow,
+};
+
+// The maximum number of rectangles allowed to be passed in to `SetShape`.
+//
+// This was chosen as a number that is large enough for expected use cases
+// while keeping memory usage and IPC overhead low:
+//   * One `Rect` has four 32-bit integers => 4 * 32 / 8 == 16 bytes.
+//   * 10,000 rectangles ==> 16 bytes * 10,000 == ~160KB.
+const uint32 kMaxSetShapeRects = 10000;
