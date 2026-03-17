@@ -85,7 +85,7 @@ std::u16string MaybeStripPrefix(const std::u16string& value,
 }
 
 // Looks for the day, month, or year from `attribute` to fill into `field`.
-std::optional<std::u16string> GetValueForDateSelect(
+std::optional<SelectOption> GetValueForDateSelect(
     const AttributeInstance& attribute,
     const AutofillField& field,
     const std::string& app_locale) {
@@ -109,15 +109,15 @@ std::optional<std::u16string> GetValueForDateSelect(
 
   if (base::optional_ref<const SelectOption> match =
           GetDayRange(field.options()).get_by_value(get_part(u"D", 1, 31))) {
-    return match->value;
+    return match.CopyAsOptional();
   }
   if (base::optional_ref<const SelectOption> match =
           GetMonthRange(field.options()).get_by_value(get_part(u"M", 1, 12))) {
-    return match->value;
+    return match.CopyAsOptional();
   }
   if (base::optional_ref<const SelectOption> match =
           GetYearRange(field.options()).get_by_value(get_part(u"YYYY"))) {
-    return match->value;
+    return match.CopyAsOptional();
   }
   return std::nullopt;
 }
@@ -153,35 +153,35 @@ std::u16string GetValueForInput(const AttributeInstance& attribute,
   }
 }
 
-std::u16string GetValueForSelect(const AttributeInstance& attribute,
-                                 const AutofillField& field,
-                                 const std::string& app_locale,
-                                 AddressNormalizer* address_normalizer) {
+std::optional<SelectOption> GetOptionForSelect(
+    const AttributeInstance& attribute,
+    const AutofillField& field,
+    const std::string& app_locale,
+    AddressNormalizer* address_normalizer) {
   const FieldType type =
       field.Type().GetAutofillAiType(attribute.type().entity_type());
   if (IsDateFieldType(type)) {
-    return GetValueForDateSelect(attribute, field, app_locale).value_or(u"");
+    return GetValueForDateSelect(attribute, field, app_locale);
   }
   std::u16string fill_value = GetValueForInput(attribute, field, app_locale);
   if (fill_value.empty()) {
-    return u"";
+    return std::nullopt;
   }
 
   switch (type) {
     case PASSPORT_ISSUING_COUNTRY:
-      return GetCountrySelectControlValue(fill_value, field.options(),
-                                          /*failure_to_fill=*/nullptr);
+      return GetCountrySelectControlOption(fill_value, field.options(),
+                                           /*failure_to_fill=*/nullptr);
     case DRIVERS_LICENSE_REGION:
     case VEHICLE_PLATE_STATE:
       // TODO(crbug.com/389625753): Support countries other than the US.
-      return GetStateSelectControlValue(fill_value, field.options(),
-                                        /*country_code=*/"US",
-                                        address_normalizer,
-                                        /*failure_to_fill=*/nullptr);
+      return GetStateSelectControlOption(fill_value, field.options(),
+                                         /*country_code=*/"US",
+                                         address_normalizer,
+                                         /*failure_to_fill=*/nullptr);
     default:
-      return GetSelectControlValue(fill_value, field.options(),
-                                   /*failure_to_fill=*/nullptr)
-          .value_or(u"");
+      return GetSelectControlOption(fill_value, field.options(),
+                                    /*failure_to_fill=*/nullptr);
   }
 }
 
@@ -272,14 +272,18 @@ std::u16string GetFillValueForEntity(
     return u"";
   }
 
-  std::u16string fill_value =
-      field.IsSelectElement()
-          ? GetValueForSelect(*attribute, field, app_locale, address_normalizer)
-          : GetValueForInput(*attribute, field, app_locale);
+  if (field.IsSelectElement()) {
+    std::optional<SelectOption> select_control_option =
+        GetOptionForSelect(*attribute, field, app_locale, address_normalizer);
+    return select_control_option ? std::move(select_control_option->value)
+                                 : u"";
+  }
+
+  std::u16string fill_value = GetValueForInput(*attribute, field, app_locale);
 
   const bool should_obfuscate =
       action_persistence != mojom::ActionPersistence::kFill &&
-      !field.IsSelectElement() && attribute->type().is_obfuscated();
+      attribute->type().is_obfuscated();
 
   return should_obfuscate ? GetObfuscatedValue(fill_value) : fill_value;
 }
