@@ -1,7 +1,7 @@
 Name: androidx.pdf:pdf-viewer-fragment
 Short Name: pdf-viewer-fragment
-URL: https://androidx.dev/snapshots/builds/15032949/artifacts/repository/androidx/pdf/pdf-viewer-fragment/1.0.0-SNAPSHOT/pdf-viewer-fragment-1.0.0-20260316.122849-1.aar
-Version: 1.0.0-SNAPSHOT
+URL: https://dl.google.com/dl/android/maven2/androidx/pdf/pdf-viewer-fragment/1.0.0-alpha13/pdf-viewer-fragment-1.0.0-alpha13.aar
+Version: 1.0.0-alpha13
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
@@ -13,7 +13,7 @@ License Android Compatible: yes
 Description:
 This library can be used in your Android application to embed a fragment that renders a PDF document and provides functionalities to interact with it.
 
-See also: https://developer.android.com/jetpack/androidx/releases/pdf#1.0.0-SNAPSHOT
+See also: https://developer.android.com/jetpack/androidx/releases/pdf#1.0.0-alpha13
 
 
 Local Modifications:
