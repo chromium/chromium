@@ -581,6 +581,7 @@ class AppListViewFocusTest : public views::ViewsTestBase,
 
   void TearDown() override {
     view_->GetWidget()->Close();
+    view_ = nullptr;
     views::ViewsTestBase::TearDown();
   }
 
@@ -823,8 +824,7 @@ class AppListViewFocusTest : public views::ViewsTestBase,
 
  private:
   AshColorProvider ash_color_provider_;
-  raw_ptr<AppListView, DanglingUntriaged> view_ =
-      nullptr;  // Owned by native widget.
+  raw_ptr<AppListView> view_ = nullptr;  // Owned by native widget.
 
   std::unique_ptr<AppListTestViewDelegate> delegate_;
   std::unique_ptr<AppsGridViewTestApi> test_api_;
