@@ -562,13 +562,17 @@ void ConvertSiteGroupMapToList(
     site_group.Set(kHasInstalledPWA, has_installed_pwa);
     site_group.Set(kNumCookies, 0);
     site_group.Set(kOriginList, std::move(origin_list));
-    if (etld_plus1.has_value() && rws_map.count(*etld_plus1)) {
-      site_group.Set(kRwsOwner, rws_map[*etld_plus1].first);
-      site_group.Set(kRwsNumMembers, rws_map[*etld_plus1].second);
-      auto schemeful_site = ConvertEtldToSchemefulSite(*etld_plus1);
-      site_group.Set(kRwsEnterpriseManaged,
-                     privacy_sandbox_service->IsPartOfManagedRelatedWebsiteSet(
-                         schemeful_site));
+    if (etld_plus1.has_value()) {
+      if (auto it = rws_map.find(*etld_plus1); it != rws_map.end()) {
+        auto& [rws_owner, rws_num_members] = it->second;
+        site_group.Set(kRwsOwner, rws_owner);
+        site_group.Set(kRwsNumMembers, rws_num_members);
+        auto schemeful_site = ConvertEtldToSchemefulSite(*etld_plus1);
+        site_group.Set(
+            kRwsEnterpriseManaged,
+            privacy_sandbox_service->IsPartOfManagedRelatedWebsiteSet(
+                schemeful_site));
+      }
     }
     list_value->Append(std::move(site_group));
   }
