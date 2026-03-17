@@ -129,8 +129,7 @@ public final class SigninUtils {
             return context.getString(R.string.accessibility_toolbar_btn_signed_out_identity_disc);
         }
 
-        // TODO: https://crbug.com/478828569 -- Add default name fallback once it is available.
-        String userName = profileData.getFullName();
+        String userName = profileData.getFullNameOrFallbackName(context);
         if (profileData.hasDisplayableEmailAddress()) {
             String email = profileData.getAccountEmail();
             return context.getString(

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.signin.services;
 
+import android.content.Context;
 import android.graphics.drawable.Drawable;
 
 import org.chromium.build.annotations.NullMarked;
@@ -59,6 +60,16 @@ public class DisplayableProfileData {
      */
     public @Nullable String getGivenName() {
         return mGivenName;
+    }
+
+    /**
+     * @return The full name of the user (e.g., "John Doe") or a default account name if the full
+     *     name wasn't fetched.
+     */
+    public String getFullNameOrFallbackName(Context context) {
+        return (mFullName == null || mFullName.isEmpty())
+                ? context.getString(R.string.default_google_account_username)
+                : mFullName;
     }
 
     /**

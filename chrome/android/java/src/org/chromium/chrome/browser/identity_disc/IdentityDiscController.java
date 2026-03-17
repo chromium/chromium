@@ -154,7 +154,8 @@ public class IdentityDiscController
                         /* canShow= */ false,
                         /* drawable= */ null,
                         /* onClickListener= */ view -> onClick(),
-                        mContext.getString(R.string.accessibility_toolbar_btn_identity_disc),
+                        /* contentDescription= */ SigninUtils.getContentDescriptionForIdentityDisc(
+                                mContext, null, UserActionableError.NONE),
                         /* supportsTinting= */ false,
                         new IphCommandBuilder(
                                 mContext.getResources(),
