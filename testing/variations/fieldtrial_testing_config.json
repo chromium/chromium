@@ -11866,24 +11866,8 @@
     "HttpCacheNoVarySearch": [
         {
             "platforms": [
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_NVS_HttpCache_Only",
-                    "enable_features": [
-                        "HttpCacheNoVarySearch"
-                    ],
-                    "disable_features": [
-                        "DsePreload2",
-                        "PrefetchPrerenderIntegration"
-                    ]
-                }
-            ]
-        },
-        {
-            "platforms": [
                 "android",
+                "android_webview",
                 "chromeos",
                 "linux",
                 "mac",

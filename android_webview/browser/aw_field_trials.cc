@@ -326,10 +326,6 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // the WebView's host, we keep the old behavior for content:// URLs.
   aw_feature_overrides.DisableFeature(blink::features::kContentSchemeIsLocal);
 
-  // Disable No-Vary-Search in disk cache on WebView.
-  // See https://crbug.com/382394774.
-  aw_feature_overrides.DisableFeature(net::features::kHttpCacheNoVarySearch);
-
   // TODO(crbug.com/489450060): Disable DirectReceiver on Viz for WebView until
   // its Viz thread is updated to handle IO.
   aw_feature_overrides.DisableFeature(
