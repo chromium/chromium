@@ -322,6 +322,14 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
         if (trySetRequestType(AutocompleteRequestType.SEARCH)) {
             assert mModelList != null;
             mModelList.clear();
+            if (OmniboxFeatures.sShowModelPicker.getValue()
+                    && mComposeboxQueryControllerBridge != null) {
+                InputState inputState =
+                        mComposeboxQueryControllerBridge.getInputStateSupplier().get();
+                if (inputState != null) {
+                    mComposeboxQueryControllerBridge.setActiveModel(inputState.defaultModel);
+                }
+            }
         }
     }
 
