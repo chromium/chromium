@@ -35,9 +35,9 @@ class BrowserUserEducationInterfaceImpl : public BrowserUserEducationInterface {
       const base::Feature& iph_feature) const override;
   bool HasFeaturePromoBeenDismissed(
       const base::Feature& iph_feature) const override;
-  void MaybeShowFeaturePromo(
+  bool MaybeShowFeaturePromo(
       user_education::FeaturePromoParams params) override;
-  void MaybeShowStartupFeaturePromo(
+  bool MaybeShowStartupFeaturePromo(
       user_education::FeaturePromoParams params) override;
   bool AbortFeaturePromo(const base::Feature& iph_feature) override;
   user_education::FeaturePromoHandle CloseFeaturePromoAndContinue(
@@ -73,7 +73,7 @@ class BrowserUserEducationInterfaceImpl : public BrowserUserEducationInterface {
           user_education::FeaturePromoResult::Failure::kError);
 
   // Implementation for showing a startup promo.
-  void MaybeShowStartupFeaturePromoImpl(
+  bool MaybeShowStartupFeaturePromoImpl(
       user_education::FeaturePromoParams params);
 
   enum class State {

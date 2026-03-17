@@ -192,11 +192,7 @@ void MerchantTrustChipButtonController::MaybeShowMerchantTrustFeaturePromo() {
   if (auto* interface =
           BrowserUserEducationInterface::MaybeGetForWebContentsInTab(
               web_contents())) {
-    bool can_show_promo = interface->CanShowFeaturePromo(
+    interface->MaybeShowFeaturePromo(
         feature_engagement::kIPHMerchantTrustFeature);
-    if (can_show_promo) {
-      interface->MaybeShowFeaturePromo(
-          feature_engagement::kIPHMerchantTrustFeature);
-    }
   }
 }

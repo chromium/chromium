@@ -120,7 +120,11 @@ class BrowserUserEducationInterface {
   // If determining whether to call this method would involve significant
   // expense, you *may* first call `CanShowFeaturePromo()` before doing the
   // required computation; otherwise just call this method.
-  virtual void MaybeShowFeaturePromo(
+  //
+  // Returns true if the promo is shown *or* queued; false if it was rejected
+  // right away. This can be used to make snap decisions on whether to show UI
+  // that could interfere with an IPH.
+  virtual bool MaybeShowFeaturePromo(
       user_education::FeaturePromoParams params) = 0;
 
   // Maybe shows an in-product help promo at startup, whenever the Feature
@@ -143,7 +147,11 @@ class BrowserUserEducationInterface {
   // some other reason*. You can therefore safely call this method at browser
   // window creation, as subsequent browser windows in the same profile won't be
   // able to re-show the promo.
-  virtual void MaybeShowStartupFeaturePromo(
+  //
+  // Returns true if the promo is shown *or* queued; false if it was rejected
+  // right away. This can be used to make snap decisions on whether to show UI
+  // that could interfere with an IPH.
+  virtual bool MaybeShowStartupFeaturePromo(
       user_education::FeaturePromoParams params) = 0;
 
   // Aborts the in-product help promo for `iph_feature` if it is showing or

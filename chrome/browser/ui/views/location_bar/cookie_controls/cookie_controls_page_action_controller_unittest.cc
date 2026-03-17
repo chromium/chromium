@@ -126,6 +126,7 @@ class CookieControlsPageActionControllerTestBase : public testing::Test {
         .WillByDefault([](user_education::FeaturePromoParams params) {
           std::move(params.show_promo_result_callback)
               .Run(user_education::FeaturePromoResult::Success());
+          return true;
         });
 
     ON_CALL(*fake_bubble_delegate_, HasBubble()).WillByDefault(Return(false));
@@ -279,6 +280,7 @@ TEST_F(CookieControlsPageActionControllerTest, ShowChipOnIPHFailure) {
       .WillOnce([](user_education::FeaturePromoParams params) {
         std::move(params.show_promo_result_callback)
             .Run(user_education::FeaturePromoResult::kError);
+        return false;
       });
   EXPECT_CALL(page_action_controller(),
               ShowSuggestionChip(kActionShowCookieControls, _))
@@ -293,6 +295,7 @@ TEST_F(CookieControlsPageActionControllerTest, SetActivityOnIPHShown) {
       .WillOnce([](user_education::FeaturePromoParams params) {
         std::move(params.show_promo_result_callback)
             .Run(user_education::FeaturePromoResult::Success());
+        return true;
       });
   EXPECT_CALL(page_action_controller(), AddActivity(kActionShowCookieControls))
       .Times(1)

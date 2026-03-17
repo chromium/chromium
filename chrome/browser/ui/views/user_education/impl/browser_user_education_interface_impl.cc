@@ -155,7 +155,7 @@ bool BrowserUserEducationInterfaceImpl::HasFeaturePromoBeenDismissed(
   return result && result->is_dismissed;
 }
 
-void BrowserUserEducationInterfaceImpl::MaybeShowFeaturePromo(
+bool BrowserUserEducationInterfaceImpl::MaybeShowFeaturePromo(
     user_education::FeaturePromoParams params) {
   // Trying to show a promo before the browser is initialized can result in a
   // failure to retrieve accelerators, which can cause issues for screen reader
@@ -179,24 +179,27 @@ void BrowserUserEducationInterfaceImpl::MaybeShowFeaturePromo(
                << state_desc << "; IPH will not be shown.";
     PostShowPromoFailure(std::move(params),
                          user_education::FeaturePromoResult::kError);
-    return;
+    return false;
   }
 
   if (auto* const controller = GetFeaturePromoController()) {
+    const auto& feature = *params.feature;
     controller->MaybeShowPromo(std::move(params), user_education_context_);
-    return;
+    return controller->IsPromoActive(
+        feature, user_education::FeaturePromoStatus::kQueued);
   }
 
   PostShowPromoFailure(std::move(params),
                        user_education::FeaturePromoResult::kBlockedByContext);
+  return false;
 }
 
-void BrowserUserEducationInterfaceImpl::MaybeShowStartupFeaturePromo(
+bool BrowserUserEducationInterfaceImpl::MaybeShowStartupFeaturePromo(
     user_education::FeaturePromoParams params) {
   if (state_ == State::kUninitialized ||
       state_ == State::kInitializationPending) {
     queued_params_.push_back(std::move(params));
-    return;
+    return true;
   }
 
   if (state_ == State::kTornDown) {
@@ -204,10 +207,10 @@ void BrowserUserEducationInterfaceImpl::MaybeShowStartupFeaturePromo(
                << " after browser shutdown; IPH will not be shown.";
     PostShowPromoFailure(std::move(params),
                          user_education::FeaturePromoResult::kError);
-    return;
+    return false;
   }
 
-  MaybeShowStartupFeaturePromoImpl(std::move(params));
+  return MaybeShowStartupFeaturePromoImpl(std::move(params));
 }
 
 bool BrowserUserEducationInterfaceImpl::AbortFeaturePromo(
@@ -286,14 +289,17 @@ BrowserUserEducationInterfaceImpl::GetUserEducationContextImpl() const {
   return user_education_context_;
 }
 
-void BrowserUserEducationInterfaceImpl::MaybeShowStartupFeaturePromoImpl(
+bool BrowserUserEducationInterfaceImpl::MaybeShowStartupFeaturePromoImpl(
     user_education::FeaturePromoParams params) {
   if (auto* const controller = GetFeaturePromoController()) {
+    const auto& feature = *params.feature;
     controller->MaybeShowStartupPromo(std::move(params),
                                       user_education_context_);
-    return;
+    return controller->IsPromoActive(
+        feature, user_education::FeaturePromoStatus::kQueued);
   }
 
   PostShowPromoFailure(std::move(params),
                        user_education::FeaturePromoResult::kBlockedByContext);
+  return false;
 }
