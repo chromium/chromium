@@ -9795,7 +9795,7 @@
             ]
         }
     ],
-    "FedCmSegmentationPlatform": [
+    "FedCmIntrusion": [
         {
             "platforms": [
                 "android",
@@ -9807,6 +9807,18 @@
                 {
                     "name": "SegmentationPlatform",
                     "enable_features": [
+                        "SegmentationPlatformFedCmUser"
+                    ],
+                    "disable_features": [
+                        "FedCmAmbientUI"
+                    ]
+                },
+                {
+                    "name": "EnableFedCmAmbientUI",
+                    "enable_features": [
+                        "FedCmAmbientUI"
+                    ],
+                    "disable_features": [
                         "SegmentationPlatformFedCmUser"
                     ]
                 }
