@@ -32,7 +32,7 @@ class ContextualTasksBrowserTest : public WebUIMochaBrowserTest {
 
 // TODO(crbug.com/487802136): Flaky on Linux.
 // TODO(crbug.com/489258910): Failing on multiple platforms
-IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, DISABLED_App) {
+IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, App) {
   RunTest("contextual_tasks/app_test.js", "mocha.run();");
 }
 
