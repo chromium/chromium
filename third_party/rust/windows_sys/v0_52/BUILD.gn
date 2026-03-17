@@ -282,7 +282,7 @@ cargo_crate("lib") {
   # //third_party/rust/chromium_crates_io/Cargo.toml to use
   # it from first-party code.
   visibility = [ "//third_party/rust/*" ]
-  visibility += [ "//build/rust/tests/windows_sys_test" ]
+  visibility += [ "//build/rust/tests/windows_sys_test:*" ]
 
   #####################################################################
   # Tweaking which GN `config`s apply to this target.

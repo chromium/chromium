@@ -57,12 +57,13 @@ see the `//build/config/compiler:default_clippy_lints` target.
 ## Clippy coverage in Chromium CQ/CI
 
 Clippy is enabled on a subset of CQ bots:
+`android-arm64-rel`,
+`linux-rel`,
+`mac-rel`,
+`win-rel`.
 
-* `android-arm64-rel`
-* `linux-rel`
-* TODO(https://crbug.com/41484295): Add other bots and target platforms - e.g.:
-  `ios-simulator`, `linux-chromeos-rel`, `mac-rel`, and
-  `win-rel`.
+TODO(https://crbug.com/41484295): Add other bots and target platforms - e.g.:
+`ios-simulator` (?) and `linux-chromeos-rel`.
 
 ## Future work
 

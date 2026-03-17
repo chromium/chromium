@@ -729,7 +729,7 @@ extra_kv = { allow_unsafe = false }
 
 [crate.windows-sys.extra_kv]
 allow_unsafe = false
-visibility = ['//build/rust/tests/windows_sys_test']
+visibility = ['//build/rust/tests/windows_sys_test:*']
 
 [crate.windows-targets.extra_kv]
 allow_unsafe = false

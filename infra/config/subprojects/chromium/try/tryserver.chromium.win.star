@@ -173,6 +173,7 @@ try_.orchestrator_builder(
             "use_clang_coverage",
             "partial_code_coverage_instrumentation",
             "enable_dangling_raw_ptr_feature_flag",
+            "enable_rust_clippy",
         ],
     ),
     compilator = "win-rel-compilator",
