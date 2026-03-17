@@ -6,6 +6,7 @@
 #define UI_VIEWS_EXAMPLES_DESIGNER_EXAMPLE_H_
 
 #include <memory>
+#include <set>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -19,6 +20,8 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/controls/table/table_view_observer.h"
+#include "ui/views/examples/designer_property_editor.h"
 #include "ui/views/examples/example_base.h"
 #include "ui/views/masked_targeter_delegate.h"
 #include "ui/views/view.h"
@@ -36,6 +39,7 @@ namespace views {
 
 class BoxLayoutView;
 class Combobox;
+class ScrollView;
 class TableView;
 
 namespace examples {
@@ -47,6 +51,7 @@ class BaseClassRegistration {
   virtual ~BaseClassRegistration();
   virtual std::unique_ptr<View> CreateView() = 0;
   virtual std::u16string GetViewClassName() = 0;
+  virtual bool IsContainer() const = 0;
 };
 
 // DesignerExample. Demonstrates a simple visual designer for creating, placing,
@@ -54,7 +59,8 @@ class BaseClassRegistration {
 class VIEWS_EXAMPLES_EXPORT DesignerExample : public ExampleBase,
                                               public ui::TableModel,
                                               public ui::ComboboxModel,
-                                              public ui::EventHandler {
+                                              public ui::EventHandler,
+                                              public views::TableViewObserver {
  public:
   enum GrabHandlePosition : int {
     kTop = 0x01,
@@ -117,10 +123,13 @@ class VIEWS_EXAMPLES_EXPORT DesignerExample : public ExampleBase,
 
     void Initialize(View* layout_panel);
     void SetAttachedView(View* view);
+    void UpdatePositions();
     bool IsGrabHandle(View* view);
+    View* layout_panel() { return layout_panel_; }
 
    private:
     std::vector<raw_ptr<GrabHandle, VectorExperimental>> grab_handles_;
+    raw_ptr<View> layout_panel_ = nullptr;
   };
 
   DesignerExample();
@@ -142,6 +151,9 @@ class VIEWS_EXAMPLES_EXPORT DesignerExample : public ExampleBase,
   // Creates the selected view class.
   void CreateView(const ui::Event& event);
 
+  // TableViewObserver overrides
+  void OnSelectionChanged() override;
+
   // ui::TableModel overrides
   size_t RowCount() override;
   std::u16string GetText(size_t row, int column_id) override;
@@ -154,21 +166,23 @@ class VIEWS_EXAMPLES_EXPORT DesignerExample : public ExampleBase,
 
   raw_ptr<BoxLayoutView> designer_container_ = nullptr;
   raw_ptr<DesignerSurface> designer_panel_ = nullptr;
-  raw_ptr<View> palette_panel_ = nullptr;
+  raw_ptr<BoxLayoutView> palette_panel_ = nullptr;
 
   raw_ptr<Combobox> view_type_ = nullptr;
+  raw_ptr<ScrollView> inspector_scroller_ = nullptr;
   raw_ptr<TableView> inspector_ = nullptr;
   raw_ptr<ui::TableModelObserver> model_observer_ = nullptr;
 
   raw_ptr<View> selected_ = nullptr;
   raw_ptr<View> dragging_ = nullptr;
   gfx::Point last_mouse_pos_;
-  std::vector<raw_ptr<ui::metadata::MemberMetaDataBase, VectorExperimental>>
-      selected_members_;
+  std::vector<std::unique_ptr<DesignerPropertyEditor>> active_editors_;
+  raw_ptr<View> active_inplace_editor_ = nullptr;
 
   GrabHandles grab_handles_;
 
   std::vector<std::unique_ptr<BaseClassRegistration>> class_registrations_;
+  std::set<View*> designer_views_;
 
   views::ViewTracker tracker_;
 };

@@ -46,6 +46,8 @@ component("views_examples_lib") {
     "create_examples.h",
     "designer_example.cc",
     "designer_example.h",
+    "designer_property_editor.cc",
+    "designer_property_editor.h",
     "dialog_example.cc",
     "dialog_example.h",
     "dialog_model_example.cc",
