@@ -585,6 +585,12 @@ static bool ConsumeUnparsedValue(CSSParserTokenStream& stream,
           continue;
         case CSSValueID::kEnv:
           if (!ConsumeEnvVariableReference(stream, features, context)) {
+            stream.EnsureLookAhead();
+            stream.Restore(state);
+            if (ConsumeCommonArgumentGrammar(stream, features, context)) {
+              context.Count(
+                  WebFeature::kCSSDiscardedEnvWithValidArgumentGrammar);
+            }
             error = true;
           }
           features |= static_cast<VariableDataFeatures>(

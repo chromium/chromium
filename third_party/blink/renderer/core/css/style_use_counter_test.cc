@@ -98,4 +98,22 @@ TEST_F(StyleUseCounterTest, CSSDiscardedAttrWithValidArgumentGrammar) {
       feature, "html { --p: attr(attr(data-foo), var(--bar)); }"));
 }
 
+TEST_F(StyleUseCounterTest, CSSDiscardedEnvWithValidArgumentGrammar) {
+  WebFeature feature = WebFeature::kCSSDiscardedEnvWithValidArgumentGrammar;
+  EXPECT_FALSE(IsCountedOnParsing(
+      feature, "html { --p: env(viewport-segment-width 0 0, 40%); }"));
+  EXPECT_FALSE(
+      IsCountedOnParsing(feature, "html { --p: env(titlebar-area-width); }"));
+  EXPECT_FALSE(IsCountedOnParsing(feature, "html { --p: env(!); }"));
+  EXPECT_FALSE(IsCountedOnParsing(feature, "html { --p: env(); }"));
+  EXPECT_FALSE(IsCountedOnParsing(
+      feature, "html { --p: env(viewport-segment-width;); }"));
+  EXPECT_TRUE(IsCountedOnParsing(feature, "html { --p: env(var(--foo)); }"));
+  EXPECT_TRUE(IsCountedOnParsing(feature, "html { --p: env(3 3); }"));
+  EXPECT_TRUE(IsCountedOnParsing(
+      feature, "html { --p: env(titlebar-area-width foo); }"));
+  EXPECT_TRUE(IsCountedOnParsing(
+      feature, "html { --p: env(titlebar-area-width 3 foo, fallback); }"));
+}
+
 }  // namespace blink
