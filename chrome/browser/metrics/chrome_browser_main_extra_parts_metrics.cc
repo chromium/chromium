@@ -817,22 +817,6 @@ void RecordAppCompatMetrics() {
   base::UmaHistogramBoolean("Windows.AcLayersLoaded", !!mod);
 }
 
-void RecordWin11HardwareRequirementsMetrics(
-    const base::win::HardwareEvaluationResult& result) {
-  base::UmaHistogramBoolean("Windows.Win11UpgradeEligible",
-                            result.IsEligible());
-  base::UmaHistogramBoolean("Windows.Win11HardwareRequirements.CPUCheck",
-                            result.cpu);
-  base::UmaHistogramBoolean("Windows.Win11HardwareRequirements.MemoryCheck",
-                            result.memory);
-  base::UmaHistogramBoolean("Windows.Win11HardwareRequirements.DiskCheck",
-                            result.disk);
-  base::UmaHistogramBoolean("Windows.Win11HardwareRequirements.FirmwareCheck",
-                            result.firmware);
-  base::UmaHistogramBoolean("Windows.Win11HardwareRequirements.TPMCheck",
-                            result.tpm);
-}
-
 void MaybeRecordOneDriveSyncMetrics() {
   if (!base::FeatureList::IsEnabled(
           cloud_synced_folder_checker::features::kCloudSyncedFolderChecker)) {
@@ -848,6 +832,28 @@ void MaybeRecordOneDriveSyncMetrics() {
                             status.desktop_synced());
   base::UmaHistogramBoolean("Windows.OneDriveSyncState.DocumentsSynced",
                             status.documents_synced());
+}
+
+void EvaluateAndRecordWin11Metrics() {
+  if (base::win::OSInfo::Kernel32Version() >= base::win::Version::WIN11) {
+    return;
+  }
+
+  base::win::HardwareEvaluationResult result =
+      base::win::EvaluateWin11HardwareRequirements();
+
+  base::UmaHistogramBoolean("Windows.Win11UpgradeEligible",
+                            result.IsEligible());
+  base::UmaHistogramBoolean("Windows.Win11HardwareRequirements.CPUCheck",
+                            result.cpu);
+  base::UmaHistogramBoolean("Windows.Win11HardwareRequirements.MemoryCheck",
+                            result.memory);
+  base::UmaHistogramBoolean("Windows.Win11HardwareRequirements.DiskCheck",
+                            result.disk);
+  base::UmaHistogramBoolean("Windows.Win11HardwareRequirements.FirmwareCheck",
+                            result.firmware);
+  base::UmaHistogramBoolean("Windows.Win11HardwareRequirements.TPMCheck",
+                            result.tpm);
 }
 
 #endif  // BUILDFLAG(IS_WIN)
@@ -922,11 +928,11 @@ void RecordStartupMetrics() {
 
   MaybeRecordOneDriveSyncMetrics();
 
-  if (base::win::OSInfo::Kernel32Version() < base::win::Version::WIN11) {
-    base::win::HardwareEvaluationResult result =
-        base::win::EvaluateWin11HardwareRequirements();
-    RecordWin11HardwareRequirementsMetrics(result);
-  }
+  base::ThreadPool::PostTask(FROM_HERE,
+                             {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+                              base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+                             base::BindOnce(&EvaluateAndRecordWin11Metrics));
+
   key_credential_manager_support::ReportKeyCredentialManagerSupport();
 #endif  // BUILDFLAG(IS_WIN)
 
