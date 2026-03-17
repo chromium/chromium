@@ -51,9 +51,7 @@ class PLATFORM_EXPORT Biquad final {
   explicit Biquad(unsigned render_quantum_frames);
   ~Biquad();
 
-  void Process(const float* source_p,
-               float* dest_p,
-               uint32_t frames_to_process);
+  void Process(base::span<const float> source, base::span<float> dest);
 
   bool HasSampleAccurateValues() const { return has_sample_accurate_values_; }
   void SetHasSampleAccurateValues(bool is_sample_accurate) {
@@ -111,12 +109,10 @@ class PLATFORM_EXPORT Biquad final {
   AudioDoubleArray a2_;
 
 #if BUILDFLAG(IS_MAC)
-  void ProcessFast(const float* source_p,
-                   float* dest_p,
-                   uint32_t frames_to_process);
-  void ProcessSliceFast(double* source_p,
-                        double* dest_p,
-                        double* coefficients_p,
+  void ProcessFast(base::span<const float> source, base::span<float> dest);
+  void ProcessSliceFast(base::span<double> source,
+                        base::span<double> dest,
+                        base::span<const double, 5> coefficients,
                         uint32_t frames_to_process);
 
   AudioDoubleArray input_buffer_;

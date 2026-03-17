@@ -34,7 +34,6 @@
 #include <complex>
 #include <limits>
 
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
@@ -48,7 +47,7 @@
 namespace blink {
 
 #if BUILDFLAG(IS_MAC)
-const int kBiquadBufferSize = 1024;
+const size_t kBiquadBufferSize = 1024;
 #endif
 
 // Compute 10^x = exp(x*log(10))
@@ -80,33 +79,26 @@ Biquad::Biquad(unsigned render_quantum_frames)
 
 Biquad::~Biquad() = default;
 
-void Biquad::Process(const float* source_p,
-                     float* dest_p,
-                     uint32_t frames_to_process) {
-  // WARNING: sourceP and destP may be pointing to the same area of memory!
-  // Be sure to read from sourceP before writing to destP!
-  if (HasSampleAccurateValues()) {
-    int n = frames_to_process;
+void Biquad::Process(base::span<const float> source, base::span<float> dest) {
+  const size_t frames_to_process = source.size();
+  DCHECK_EQ(source.size(), dest.size());
 
+  // WARNING: `source` and `dest` may be pointing to the same area of memory!
+  // Be sure to read from `source` before writing to `dest`!
+  if (HasSampleAccurateValues()) {
     // Create local copies of member variables
     double x1 = x1_;
     double x2 = x2_;
     double y1 = y1_;
     double y2 = y2_;
 
-    const double* b0 = b0_.Data();
-    const double* b1 = b1_.Data();
-    const double* b2 = b2_.Data();
-    const double* a1 = a1_.Data();
-    const double* a2 = a2_.Data();
-
-    for (int k = 0; k < n; ++k) {
+    for (size_t k = 0; k < frames_to_process; ++k) {
       // FIXME: this can be optimized by pipelining the multiply adds...
-      float x = *UNSAFE_TODO(source_p++);
-      float y = UNSAFE_TODO(b0[k] * x + b1[k] * x1 + b2[k] * x2 - a1[k] * y1 -
-                            a2[k] * y2);
+      float x = source[k];
+      float y =
+          b0_[k] * x + b1_[k] * x1 + b2_[k] * x2 - a1_[k] * y1 - a2_[k] * y2;
 
-      *UNSAFE_TODO(dest_p++) = y;
+      dest[k] = y;
 
       // Update state variables
       x2 = x1;
@@ -136,28 +128,26 @@ void Biquad::Process(const float* source_p,
     // filtering with variable coefficients (i.e., with automations) to
     // fixed coefficients (without automations).
     input_buffer_[0] = x2_;
-    UNSAFE_TODO(input_buffer_[1]) = x1_;
+    input_buffer_[1] = x1_;
     output_buffer_[0] = y2_;
-    UNSAFE_TODO(output_buffer_[1]) = y1_;
+    output_buffer_[1] = y1_;
 
     // Use vecLib if available
-    ProcessFast(source_p, dest_p, frames_to_process);
+    ProcessFast(source, dest);
 
     // Copy the last inputs and outputs to the filter memory variables.
     // This is needed because the next rendering quantum might be an
     // automation which needs the history to continue correctly.  Because
-    // sourceP and destP can be the same block of memory, we can't read from
-    // sourceP to get the last inputs.  Fortunately, processFast has put the
-    // last inputs in input_buffer_[0] and input_buffer_[1] and the last outputs
-    // in output_buffer_[0] and output_buffer_[1].
-    x1_ = UNSAFE_TODO(input_buffer_[1]);
+    // `source` and `dest` can be the same block of memory, we can't read from
+    // `source` to get the last inputs.  Fortunately, `ProcessFast` has put the
+    // last inputs in `input_buffer_[0]` and `input_buffer_[1]` and the last
+    // outputs in `output_buffer_[0]` and `output_buffer_[1]`.
+    x1_ = input_buffer_[1];
     x2_ = input_buffer_[0];
-    y1_ = UNSAFE_TODO(output_buffer_[1]);
+    y1_ = output_buffer_[1];
     y2_ = output_buffer_[0];
 
 #else
-    int n = frames_to_process;
-
     // Create local copies of member variables
     double x1 = x1_;
     double x2 = x2_;
@@ -170,12 +160,12 @@ void Biquad::Process(const float* source_p,
     double a1 = a1_[0];
     double a2 = a2_[0];
 
-    while (n--) {
+    for (size_t k = 0; k < frames_to_process; ++k) {
       // FIXME: this can be optimized by pipelining the multiply adds...
-      float x = *UNSAFE_TODO(source_p++);
+      float x = source[k];
       float y = b0 * x + b1 * x1 + b2 * x2 - a1 * y1 - a2 * y2;
 
-      *UNSAFE_TODO(dest_p++) = y;
+      dest[k] = y;
 
       // Update state variables
       x2 = x1;
@@ -198,9 +188,8 @@ void Biquad::Process(const float* source_p,
 
 // Here we have optimized version using Accelerate.framework
 
-void Biquad::ProcessFast(const float* source_p,
-                         float* dest_p,
-                         uint32_t frames_to_process) {
+void Biquad::ProcessFast(base::span<const float> source,
+                         base::span<float> dest) {
   double filter_coefficients[5];
   filter_coefficients[0] = b0_[0];
   filter_coefficients[1] = b1_[0];
@@ -208,46 +197,46 @@ void Biquad::ProcessFast(const float* source_p,
   filter_coefficients[3] = a1_[0];
   filter_coefficients[4] = a2_[0];
 
-  // Break up processing into smaller slices (kBiquadBufferSize) if necessary.
+  // Break up processing into smaller slices `kBiquadBufferSize` if necessary.
 
-  int n = frames_to_process;
+  while (!source.empty()) {
+    size_t frames_this_time = std::min(source.size(), kBiquadBufferSize);
 
-  while (n > 0) {
-    int frames_this_time = n < kBiquadBufferSize ? n : kBiquadBufferSize;
+    base::span<const float> source_segment =
+        source.take_first(frames_this_time);
+    base::span<float> dest_segment = dest.take_first(frames_this_time);
 
     // Copy input to input buffer
-    for (int i = 0; i < frames_this_time; ++i) {
-      UNSAFE_TODO(input_buffer_[i + 2]) = *UNSAFE_TODO(source_p++);
+    for (size_t i = 0; i < frames_this_time; ++i) {
+      input_buffer_[i + 2] = source_segment[i];
     }
 
-    ProcessSliceFast(input_buffer_.Data(), output_buffer_.Data(),
+    ProcessSliceFast(input_buffer_.as_span(), output_buffer_.as_span(),
                      filter_coefficients, frames_this_time);
 
     // Copy output buffer to output (converts float -> double).
-    for (int i = 0; i < frames_this_time; ++i) {
-      *UNSAFE_TODO(dest_p++) =
-          static_cast<float>(UNSAFE_TODO(output_buffer_[i + 2]));
+    for (size_t i = 0; i < frames_this_time; ++i) {
+      dest_segment[i] = static_cast<float>(output_buffer_[i + 2]);
     }
-
-    n -= frames_this_time;
   }
 }
 
-void Biquad::ProcessSliceFast(double* source_p,
-                              double* dest_p,
-                              double* coefficients_p,
+void Biquad::ProcessSliceFast(base::span<double> source,
+                              base::span<double> dest,
+                              base::span<const double, 5> coefficients,
                               uint32_t frames_to_process) {
   // Use double-precision for filter stability
-  vDSP_deq22D(source_p, 1, coefficients_p, dest_p, 1, frames_to_process);
+  vDSP_deq22D(source.data(), 1, coefficients.data(), dest.data(), 1,
+              frames_to_process);
 
-  // Save history.  Note that sourceP and destP reference m_inputBuffer and
-  // m_outputBuffer respectively.  These buffers are allocated (in the
+  // Save history.  Note that `source` and `dest` reference `input_buffer_` and
+  // `output_buffer_` respectively.  These buffers are allocated (in the
   // constructor) with space for two extra samples so it's OK to access array
-  // values two beyond framesToProcess.
-  source_p[0] = UNSAFE_TODO(source_p[frames_to_process]);
-  UNSAFE_TODO(source_p[1]) = UNSAFE_TODO(source_p[frames_to_process + 1]);
-  dest_p[0] = UNSAFE_TODO(dest_p[frames_to_process]);
-  UNSAFE_TODO(dest_p[1]) = UNSAFE_TODO(dest_p[frames_to_process + 1]);
+  // values two beyond `frames_to_process`.
+  source[0] = source[frames_to_process];
+  source[1] = source[frames_to_process + 1];
+  dest[0] = dest[frames_to_process];
+  dest[1] = dest[frames_to_process + 1];
 }
 
 #endif  // BUILDFLAG(IS_MAC)
@@ -256,10 +245,10 @@ void Biquad::Reset() {
 #if BUILDFLAG(IS_MAC)
   // Two extra samples for filter history
   input_buffer_[0] = 0;
-  UNSAFE_TODO(input_buffer_[1]) = 0;
+  input_buffer_[1] = 0;
 
   output_buffer_[0] = 0;
-  UNSAFE_TODO(output_buffer_[1]) = 0;
+  output_buffer_[1] = 0;
 
 #endif
   x1_ = x2_ = y1_ = y2_ = 0;

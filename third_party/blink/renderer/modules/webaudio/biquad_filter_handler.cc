@@ -391,11 +391,10 @@ void BiquadFilterHandler::Process(uint32_t frames_to_process) {
       // For each channel of our input, process using the corresponding
       // Biquad into the output channel.
       for (unsigned i = 0; i < biquads_.size(); ++i) {
-        DCHECK(source_bus->Channel(i)->Data());
-        DCHECK(destination_bus->Channel(i)->MutableData());
-        biquads_[i]->Process(source_bus->Channel(i)->Data(),
-                             destination_bus->Channel(i)->MutableData(),
-                             frames_to_process);
+        biquads_[i]->Process(
+            source_bus->Channel(i)->Span().first(frames_to_process),
+            destination_bus->Channel(i)->MutableSpan().first(
+                frames_to_process));
       }
     }
   }
