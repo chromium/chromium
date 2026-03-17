@@ -74,6 +74,7 @@ class TestObserver : public OnDeviceCategoryClassifier::Observer {
  public:
   void OnCategoriesClassified(
       const GURL& url,
+      ukm::SourceId source_id,
       const std::vector<Category>& categories) override {
     last_url_ = url;
     last_categories_ = categories;
@@ -122,7 +123,8 @@ TEST_F(OnDeviceCategoryClassifierTest, SkipsIfEmbedderVersionMissing) {
   classifier_->AddObserver(&observer);
 
   passage_embeddings::Embedding embedding(std::vector<float>(768, 0.1f));
-  classifier_->OnPageEmbeddingAvailable(GURL("https://example.com"), embedding);
+  classifier_->OnPageEmbeddingAvailable(GURL("https://example.com"),
+                                        /*source_id=*/0, embedding);
 
   observer.Wait();
   EXPECT_TRUE(observer.last_categories().empty());
@@ -156,7 +158,8 @@ TEST_F(OnDeviceCategoryClassifierTest, ExecutesIfVersionsMatch) {
   classifier_->AddObserver(&observer);
 
   passage_embeddings::Embedding embedding(std::vector<float>(768, 0.1f));
-  classifier_->OnPageEmbeddingAvailable(GURL("https://example.com"), embedding);
+  classifier_->OnPageEmbeddingAvailable(GURL("https://example.com"),
+                                        /*source_id=*/0, embedding);
 
   observer.Wait();
 
@@ -192,7 +195,8 @@ TEST_F(OnDeviceCategoryClassifierTest, SkipsIfVersionsMismatch) {
   classifier_->AddObserver(&observer);
 
   passage_embeddings::Embedding embedding(std::vector<float>(768, 0.1f));
-  classifier_->OnPageEmbeddingAvailable(GURL("https://example.com"), embedding);
+  classifier_->OnPageEmbeddingAvailable(GURL("https://example.com"),
+                                        /*source_id=*/0, embedding);
 
   observer.Wait();
   EXPECT_TRUE(observer.last_categories().empty());
@@ -217,7 +221,8 @@ TEST_F(OnDeviceCategoryClassifierTest, SkipsIfModelMetadataMissing) {
   classifier_->AddObserver(&observer);
 
   passage_embeddings::Embedding embedding(std::vector<float>(768, 0.1f));
-  classifier_->OnPageEmbeddingAvailable(GURL("https://example.com"), embedding);
+  classifier_->OnPageEmbeddingAvailable(GURL("https://example.com"),
+                                        /*source_id=*/0, embedding);
 
   observer.Wait();
   EXPECT_TRUE(observer.last_categories().empty());

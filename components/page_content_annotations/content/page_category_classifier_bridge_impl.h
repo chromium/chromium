@@ -13,6 +13,7 @@
 #include "components/page_content_annotations/core/on_device_category_classifier.h"
 #include "components/page_content_annotations/core/page_category_classifier_bridge.h"
 #include "components/page_content_annotations/core/page_content_annotation_type.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace page_content_annotations {
 
@@ -38,6 +39,7 @@ class PageCategoryClassifierBridgeImpl
 
   // OnDeviceCategoryClassifier::Observer:
   void OnCategoriesClassified(const GURL& url,
+                              ukm::SourceId source_id,
                               const std::vector<Category>& categories) override;
 
  private:

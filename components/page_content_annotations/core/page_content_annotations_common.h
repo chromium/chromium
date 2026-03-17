@@ -126,6 +126,10 @@ class PageContentAnnotationsResult {
       result_;
 };
 
+// Calculates the RAPPOR-style noise for a given score. The input score must be
+// in the range [0, 1].
+int64_t GenerateRapporNoisedScore(double raw_score);
+
 }  // namespace page_content_annotations
 
 #endif  // COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CORE_PAGE_CONTENT_ANNOTATIONS_COMMON_H_

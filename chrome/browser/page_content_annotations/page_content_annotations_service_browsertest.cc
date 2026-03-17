@@ -1354,7 +1354,7 @@ IN_PROC_BROWSER_TEST_F(
       {CategoryType::kShopping, 0.8},
   };
 
-  service()->OnCategoriesClassified(url, categories);
+  service()->OnCategoriesClassified(url, /*source_id=*/0, categories);
 
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return observer.last_page_content_annotations_result().has_value();
