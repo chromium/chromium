@@ -15,10 +15,12 @@ import org.chromium.build.annotations.Nullable;
  * DisplayButtonData}.
  */
 @NullMarked
-public class DelegateButtonData implements FullButtonData {
+public class DelegateButtonData implements ActionButtonData {
     private final DisplayButtonData mDelegateButtonData;
     private final @Nullable Runnable mOnPress;
     private final @Nullable Runnable mOnLongPress;
+    private boolean mIsTransparent;
+    private boolean mIsToggled;
 
     /**
      * Stores parameters until resolution time. Never invokes {@link Runnable} itself.
@@ -46,6 +48,34 @@ public class DelegateButtonData implements FullButtonData {
         mDelegateButtonData = delegateButtonData;
         mOnPress = onPress;
         mOnLongPress = onLongPress;
+    }
+
+    /**
+     * Sets whether the button should be transparent.
+     *
+     * @param isTransparent true if the button should be transparent, false otherwise.
+     */
+    public void setIsTransparent(boolean isTransparent) {
+        mIsTransparent = isTransparent;
+    }
+
+    /**
+     * Sets whether the button should be in a toggled state.
+     *
+     * @param isToggled true if the button should be toggled, false otherwise.
+     */
+    public void setIsToggled(boolean isToggled) {
+        mIsToggled = isToggled;
+    }
+
+    @Override
+    public boolean isTransparent() {
+        return mIsTransparent;
+    }
+
+    @Override
+    public boolean isToggled() {
+        return mIsToggled;
     }
 
     @Override
@@ -79,7 +109,9 @@ public class DelegateButtonData implements FullButtonData {
             return true;
         }
         if (o instanceof DelegateButtonData that) {
-            return mDelegateButtonData.equals(that.mDelegateButtonData);
+            return mDelegateButtonData.equals(that.mDelegateButtonData)
+                    && mIsToggled == that.mIsToggled
+                    && mIsTransparent == that.mIsTransparent;
         }
         return false;
     }

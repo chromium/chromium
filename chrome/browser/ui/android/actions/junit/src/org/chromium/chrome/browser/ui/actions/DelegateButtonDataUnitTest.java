@@ -120,6 +120,18 @@ public class DelegateButtonDataUnitTest {
                         new DelegateButtonData(
                                 differentDisplayButtonData, runnable1, longRunnable1)));
 
+        // Test inequality with different transparent state
+        DelegateButtonData transparentButtonData =
+                new DelegateButtonData(displayButtonData2, runnable2, longRunnable2);
+        transparentButtonData.setIsTransparent(true);
+        assertFalse(buttonData.buttonDataEquals(transparentButtonData));
+
+        // Test inequality with different toggled state
+        DelegateButtonData toggledButtonData =
+                new DelegateButtonData(displayButtonData2, runnable2, longRunnable2);
+        toggledButtonData.setIsToggled(true);
+        assertFalse(buttonData.buttonDataEquals(toggledButtonData));
+
         // Test inequality with null
         assertFalse(buttonData.buttonDataEquals(null));
 
@@ -128,6 +140,40 @@ public class DelegateButtonDataUnitTest {
 
         // Test equality with the same object
         assertTrue(buttonData.buttonDataEquals(buttonData));
+    }
+
+    @Test
+    @SmallTest
+    public void testTransparency() {
+        DelegateButtonData buttonData = new DelegateButtonData(mDisplayButtonData, mRunnable);
+
+        // Default state.
+        assertFalse(buttonData.isTransparent());
+
+        // Make it transparent.
+        buttonData.setIsTransparent(true);
+        assertTrue(buttonData.isTransparent());
+
+        // Make it opaque again.
+        buttonData.setIsTransparent(false);
+        assertFalse(buttonData.isTransparent());
+    }
+
+    @Test
+    @SmallTest
+    public void testToggledState() {
+        DelegateButtonData buttonData = new DelegateButtonData(mDisplayButtonData, mRunnable);
+
+        // Default state.
+        assertFalse(buttonData.isToggled());
+
+        // Toggle the button.
+        buttonData.setIsToggled(true);
+        assertTrue(buttonData.isToggled());
+
+        // Untoggle the button.
+        buttonData.setIsToggled(false);
+        assertFalse(buttonData.isToggled());
     }
 
     private Drawable createBitmapDrawable() {
