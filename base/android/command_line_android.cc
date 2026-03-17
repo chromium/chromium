@@ -72,6 +72,10 @@ void CommandLineInit(std::vector<std::string>& command_line) {
   CommandLine::Init(0, nullptr);
   AppendToCommandLine(command_line, true);
 }
+
+bool WasFlagsLoadedFromFile(JNIEnv* env) {
+  return static_cast<bool>(Java_CommandLine_wasFlagsLoadedFromFile(env));
+}
 }  // namespace base::android
 
 DEFINE_JNI(CommandLine)

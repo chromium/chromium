@@ -10,6 +10,7 @@ import android.text.TextUtils;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
@@ -49,6 +50,7 @@ public class CommandLine {
     private static final String SWITCH_TERMINATOR = SWITCH_PREFIX;
     private static final String SWITCH_VALUE_SEPARATOR = "=";
     private static final CommandLine sInstance = new CommandLine();
+    private static boolean sFlagsLoadedFromFile;
 
     // Fields are initialized by initInternal() and set to null upon switching to native impl.
     private @Nullable Map<String, String> mSwitches;
@@ -110,6 +112,7 @@ public class CommandLine {
         // The file existed, which should never be the case under normal operation.
         // Use a log message to help with debugging if it's the flags that are causing issues.
         if (tokenized != null) {
+            sFlagsLoadedFromFile = true;
             Log.i(TAG, "COMMAND-LINE FLAGS: %s (from %s)", Arrays.toString(tokenized), file);
         }
     }
@@ -383,6 +386,12 @@ public class CommandLine {
                 args.remove(i);
             }
         }
+    }
+
+    /** Called from native C++ to check if the flags were loaded from a file. */
+    @CalledByNative
+    private static boolean wasFlagsLoadedFromFile() {
+        return sFlagsLoadedFromFile;
     }
 
     @NativeMethods
