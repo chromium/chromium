@@ -47,13 +47,13 @@ std::unique_ptr<Connection> CreateConnectionStack(
   std::unique_ptr<Connection> connection = std::make_unique<ConnectionBasic>(
       std::move(secure_channel_factory), std::move(split_on_disconnect.first));
 
-  connection = std::make_unique<ConnectionMetrics>(std::move(connection));
-
   if (token_manager) {
     connection = std::make_unique<ConnectionTokenAttestation>(
         std::move(connection), token_manager, logger,
         std::move(split_on_disconnect.second));
   }
+
+  connection = std::make_unique<ConnectionMetrics>(std::move(connection));
 
   return connection;
 }
