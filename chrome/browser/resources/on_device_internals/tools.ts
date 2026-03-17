@@ -163,6 +163,8 @@ class OnDeviceInternalsToolsElement extends CrLitElement {
   private proxy_: BrowserProxy = BrowserProxy.getInstance();
   private responseRouter_: StreamingResponderCallbackRouter =
       new StreamingResponderCallbackRouter();
+  private sessionTemperature_: number = 0;
+  private sessionTopK_: number = 1;
 
   override firstUpdated() {
     this.getPerformanceClass_();
@@ -354,6 +356,8 @@ class OnDeviceInternalsToolsElement extends CrLitElement {
         audioInput: this.audioEnabled_(),
       },
     });
+    this.sessionTopK_ = this.topK_;
+    this.sessionTemperature_ = this.temperature_;
   }
 
   protected onCancelClick_() {
@@ -422,6 +426,10 @@ class OnDeviceInternalsToolsElement extends CrLitElement {
     }
     if (!this.$.temperatureInput.validate()) {
       return;
+    }
+    if (this.topK_ !== this.sessionTopK_ ||
+        this.temperature_ !== this.sessionTemperature_) {
+      this.startNewSession_();
     }
     const pieces = textToInputPieces(this.text_);
     if (this.imageFile_ !== null) {
