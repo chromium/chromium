@@ -13,11 +13,12 @@
 namespace {
 
 // The point size of the close button.
-const CGFloat kCloseButtonSymbolPointSize = 17.0;
+const CGFloat kCloseButtonSymbolPointSize = 15.0;
 
 // The leading and trailing padding of the header view.
 const UIEdgeInsets kHorizontalPadding = {.left = 22.0, .right = 16.0};
 const CGFloat kTitleLeadingPadding = 18.0;
+const CGFloat kCloseButtonSize = 40.0;
 
 // The logo point size.
 const CGFloat kSymbolsPointSize = 24.0;
@@ -75,9 +76,6 @@ const CGFloat kSymbolsPointSize = 24.0;
 }
 
 - (void)setUpCloseButton {
-  _closeButton = [[UIButton alloc] init];
-  _closeButton.translatesAutoresizingMaskIntoConstraints = NO;
-
   UIButtonConfiguration* buttonConfiguration;
   if (@available(iOS 26, *)) {
     if ([UIButtonConfiguration
@@ -115,6 +113,9 @@ const CGFloat kSymbolsPointSize = 24.0;
         constraintEqualToAnchor:self.trailingAnchor
                        constant:-kHorizontalPadding.right],
   ]];
+
+  AddSizeConstraints(_closeButton,
+                     CGSizeMake(kCloseButtonSize, kCloseButtonSize));
 }
 
 - (void)setupLogoView {
