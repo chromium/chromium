@@ -49,3 +49,17 @@ optional arguments:
   --dir-commit-limit DIR_COMMIT_LIMIT
                         Merge directories with less than this number of
                         commits into their parent directory. (default: 100)
+
+worktree
+========
+Automates the creation of git worktrees for Chromium checkouts.
+
+It streamlines the setup by:
+*   Validating the parent repository.
+*   Copying the `.gclient` configuration.
+*   Optionally running `gclient sync` (use `--light` to skip and save ~20GB).
+*   Preserving CL dependency chains with `--base` and `--internal-base` forking and upstream tracking.
+*   Applying VSCode title bar color presets (red, green, blue).
+
+Usage:
+    python3 tools/git/worktree.py /path/to/parent --name my_feature --base main --color green
