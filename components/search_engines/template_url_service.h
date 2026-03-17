@@ -139,6 +139,30 @@ class TemplateURLService final : public WebDataServiceConsumer,
     std::u16string search_terms;
   };
 
+  // Container for categorized search engine metadata. It groups TemplateURLs
+  // into specific buckets based on their type (e.g., prepopulated, starter
+  // pack, or custom) and their active state. This structure is primarily used
+  // to pass organized lists from the `TemplateURLService` to the WebUI settings
+  // page.
+  struct CategorizedTemplateUrls {
+    CategorizedTemplateUrls();
+    ~CategorizedTemplateUrls();
+    CategorizedTemplateUrls(const CategorizedTemplateUrls& other);
+
+    // All prepopulated engines retrieved from `GetPrepopulatedEngines()`, and
+    // custom shortcuts that are currently active. This always includes the
+    // current default search engine.
+    TemplateURLVector active_site_shortcuts;
+    // Custom shortcuts that are currently active.
+    TemplateURLVector inactive_site_shortcuts;
+    // Shortcuts with a starter pack id and extensions that are currently
+    // active.
+    TemplateURLVector active_feature_shortcuts;
+    // Shortcuts with a starter pack id and extensions that are currently
+    // inactive.
+    TemplateURLVector inactive_feature_shortcuts;
+  };
+
   // Values for an enumerated histogram used to track keyword conflicts between
   // search engines created by policy and search engines the user manually
   // edited. Keep in sync with `SearchPolicyConflictType` in
@@ -411,6 +435,22 @@ class TemplateURLService final : public WebDataServiceConsumer,
   //       1.) Unit test mode
   //       2.) The default search engine is disabled by policy.
   const TemplateURL* GetDefaultSearchProvider() const;
+
+  // Returns a CategorizedTemplateUrls object containing all TemplateURLs
+  // categorized into specific buckets (active/inactive site shortcuts and
+  // feature shortcuts).
+  //
+  // The ordering of `active_site_shortcuts` is specifically handled to ensure
+  // that prepopulated engines appear first, maintaining the natural order
+  // defined by the prepopulate_data_resolver. User-added (custom) engines
+  // are appended to the end of this list and sorted alphabetically.
+  //
+  // `disabled_starter_pack_ids` contains all `starter_pack_id`s that should not
+  // be included in either of the lists.
+  const CategorizedTemplateUrls GetCategorizedTemplateURLs(
+      template_url_starter_pack_data::StarterPackIdSet
+          disabled_starter_pack_ids =
+              template_url_starter_pack_data::StarterPackIdSet());
 
   // Returns the Origin of the user's default search engine. If a default search
   // engine is set and its URL is valid, the Origin of that URL is returned.

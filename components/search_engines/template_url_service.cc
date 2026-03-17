@@ -62,6 +62,7 @@
 #include "components/search_engines/template_url_service_client.h"
 #include "components/search_engines/template_url_service_observer.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
+#include "components/search_engines/ui_utils.h"
 #include "components/search_engines/util.h"
 #include "components/sync/base/features.h"
 #include "components/sync/model/sync_change.h"
@@ -567,7 +568,17 @@ class TemplateURLService::PreLoadingProviders {
   TemplateURLService::OwnedTemplateURLVector search_engines_;
 };
 
+// TemplateURLService::CategorizedTemplateUrls --------------------------------
+
+TemplateURLService::CategorizedTemplateUrls::CategorizedTemplateUrls() =
+    default;
+TemplateURLService::CategorizedTemplateUrls::~CategorizedTemplateUrls() =
+    default;
+TemplateURLService::CategorizedTemplateUrls::CategorizedTemplateUrls(
+    const CategorizedTemplateUrls& other) = default;
+
 // TemplateURLService ---------------------------------------------------------
+
 TemplateURLService::TemplateURLService(
     PrefService& prefs,
     search_engines::SearchEngineChoiceService& search_engine_choice_service,
@@ -1324,6 +1335,51 @@ DefaultSearchManager* TemplateURLService::GetDefaultSearchManager() {
 const TemplateURL* TemplateURLService::GetDefaultSearchProvider() const {
   return loaded_ ? default_search_provider_.get()
                  : pre_loading_providers_->default_search_provider();
+}
+
+const TemplateURLService::CategorizedTemplateUrls
+TemplateURLService::GetCategorizedTemplateURLs(
+    template_url_starter_pack_data::StarterPackIdSet
+        disabled_starter_pack_ids) {
+  CategorizedTemplateUrls data;
+
+  for (TemplateURL* url : GetTemplateURLs()) {
+    // Exclude those URL's that cannot be enabled or should be hidden.
+    if (disabled_starter_pack_ids.Has(url->starter_pack_id()) ||
+        HiddenFromLists(url)) {
+      continue;
+    }
+
+    const bool is_starter_pack =
+        url->starter_pack_id() !=
+        template_url_starter_pack_data::StarterPackId::kNone;
+    const bool is_extension = url->type() == TemplateURL::OMNIBOX_API_EXTENSION;
+
+    if (ShowInDefaultList(url)) {
+      data.active_site_shortcuts.push_back(url);
+    } else if (is_starter_pack || is_extension) {
+      if (ShowInActivesList(url)) {
+        data.active_feature_shortcuts.push_back(url);
+      } else {
+        data.inactive_feature_shortcuts.push_back(url);
+      }
+    } else {
+      if (ShowInActivesList(url)) {
+        data.active_site_shortcuts.push_back(url);
+      } else {
+        data.inactive_site_shortcuts.push_back(url);
+      }
+    }
+  }
+
+  std::ranges::sort(
+      data.active_site_shortcuts,
+      internal::OrderTemplateUrlsByPrepopulatedAndManagedAndAlphabetically(
+          prepopulate_data_resolver_->GetPrepopulatedEngines()));
+  std::ranges::sort(data.inactive_site_shortcuts,
+                    internal::OrderTemplateUrlsByManagedAndAlphabetically());
+
+  return data;
 }
 
 url::Origin TemplateURLService::GetDefaultSearchProviderOrigin() const {
