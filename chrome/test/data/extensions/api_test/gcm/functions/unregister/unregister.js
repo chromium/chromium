@@ -4,7 +4,7 @@
 
 chrome.test.runTests([
   function testUnregister() {
-    var senderIds = ["Sender1", "Sender2"];
+    const senderIds = ['Sender1', 'Sender2'];
     chrome.gcm.register(senderIds, function(registrationId) {
       if (chrome.runtime.lastError)
         chrome.test.fail();
@@ -19,7 +19,7 @@ chrome.test.runTests([
   function testUnregisterWithServerError() {
     chrome.gcm.unregister(function() {
       if (chrome.runtime.lastError != undefined &&
-          chrome.runtime.lastError.message == "Server error occurred.") {
+          chrome.runtime.lastError.message == 'Server error occurred.') {
         chrome.test.succeed();
       } else {
         chrome.test.fail();

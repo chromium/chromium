@@ -5,19 +5,19 @@
 onload = function() {
   chrome.test.runTests([
     function onSendError() {
-      var currentError = 0;
-      var totalMessages = 0;
-      var eventHandler = function(error) {
+      let currentError = 0;
+      let totalMessages = 0;
+      const eventHandler = function(error) {
         chrome.test.assertEq(3, Object.keys(error.details).length);
         chrome.test.assertTrue(
-            error.details.hasOwnProperty("expectedMessageId"));
+            error.details.hasOwnProperty('expectedMessageId'));
         chrome.test.assertTrue(
-            error.details.hasOwnProperty("expectedErrorMessage"));
+            error.details.hasOwnProperty('expectedErrorMessage'));
         chrome.test.assertEq(error.details.expectedMessageId, error.messageId);
         chrome.test.assertEq(error.details.expectedErrorMessage,
                              error.errorMessage);
         currentError += 1;
-        var tempTotalMessages = +error.details.totalMessages;
+        const tempTotalMessages = +error.details.totalMessages;
         if (totalMessages == 0)
           totalMessages = tempTotalMessages;
         else

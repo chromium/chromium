@@ -4,7 +4,7 @@
 
 chrome.test.runTests([
   function testRegister() {
-    var senderIds = ["Sender1", "Sender2"];
+    const senderIds = ['Sender1', 'Sender2'];
     chrome.gcm.register(senderIds, function(registrationId) {
       chrome.test.succeed();
     });

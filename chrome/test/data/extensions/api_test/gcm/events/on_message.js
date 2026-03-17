@@ -5,14 +5,14 @@
 onload = function() {
   chrome.test.runTests([
     function onMessage() {
-      var expectedCalls = 4;
-      var fromAndCollapseKeyTested = false;
-      var fromTested = false;
-      var collapseKeyTested = false;
-      var regularMessageTested = false;
-      var eventHandler = function(message) {
-        var hasFrom = false;
-        var hasCollapseKey = false;
+      let expectedCalls = 4;
+      let fromAndCollapseKeyTested = false;
+      let fromTested = false;
+      let collapseKeyTested = false;
+      let regularMessageTested = false;
+      const eventHandler = function(message) {
+        let hasFrom = false;
+        let hasCollapseKey = false;
         if (message.hasOwnProperty('from')) {
           // Test with from.
           chrome.test.assertEq('12345678', message.from);

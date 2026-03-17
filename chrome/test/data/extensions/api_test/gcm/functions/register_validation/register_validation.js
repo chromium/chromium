@@ -3,29 +3,29 @@
 // found in the LICENSE file.
 
 function generateSenderIds(size) {
-  var senders = [];
-  for (var i = 0; i < size; i++) {
-    senders.push("Sender" + i);
+  const senders = [];
+  for (let i = 0; i < size; i++) {
+    senders.push('Sender' + i);
   }
   return senders;
 }
 
 function toArrayDefinitionString(senderIds) {
-  var idsString = "[";
+  let idsString = '[';
   senderIds.forEach(function(element, index) {
-    if (index > 0) idsString += ", ";
-      idsString += "\"" + element + "\"";
+    if (index > 0) idsString += ', ';
+      idsString += `"${element}"`;
   });
-  idsString += "]";
+  idsString += ']';
   return idsString;
 }
 
-var registrationCount = 0;
+let registrationCount = 0;
 
 function registerSuccessfully(senderIds) {
   chrome.gcm.register(senderIds, function(registrationId) {
-    var expectedRegistrationId = senderIds.length + "-" + (registrationCount++);
-    chrome.test.assertEq("" + expectedRegistrationId, registrationId);
+    const expectedRegistrationId = `${senderIds.length}-${registrationCount++}`;
+    chrome.test.assertEq(`${expectedRegistrationId}`, registrationId);
     chrome.test.succeed();
   });
 }
@@ -33,7 +33,7 @@ function registerSuccessfully(senderIds) {
 function registerInvalidParameters(senderIds) {
   try {
     chrome.gcm.register(senderIds, function(registrationId) {
-      chrome.test.fail("Arguments: " + toArrayDefinitionString(senderIds));
+      chrome.test.fail(`Arguments: ${toArrayDefinitionString(senderIds)}`);
     });
   } catch (e) {
     chrome.test.succeed();
@@ -54,10 +54,10 @@ chrome.test.runTests([
     registerInvalidParameters([]);
   },
   function failureWithEmptySenderOnly() {
-    registerInvalidParameters([""]);
+    registerInvalidParameters(['']);
   },
   function failureWithEmptySender() {
-    registerInvalidParameters(["good", ""]);
+    registerInvalidParameters(['good', '']);
   },
   function failureWithTooManySenders() {
     registerInvalidParameters(generateSenderIds(101));
