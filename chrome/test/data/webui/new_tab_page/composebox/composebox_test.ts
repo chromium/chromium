@@ -831,6 +831,28 @@ suite('NewTabPageComposeboxTest', () => {
     assertEquals(arg, ModelMode.kGeminiPro);
   });
 
+  test('delete tool chip', async () => {
+    loadTimeData.overrideValues({composeboxSource: 'NewTabPage'});
+    createComposeboxElement(testProxy);
+    await microtasksFinished();
+
+    // Set active tool mode to DeepSearch.
+    testProxy.element['activeToolMode_'] = ComposeboxToolMode.kDeepSearch;
+    await testProxy.element.updateComplete;
+
+    // Click on the same tool mode to deselect/delete it.
+    testProxy.element['handleToolClick_'](ComposeboxToolMode.kDeepSearch);
+    await microtasksFinished();
+
+    // Assert tool mode is reset.
+    assertEquals(
+        testProxy.element['activeToolMode_'], ComposeboxToolMode.kUnspecified);
+
+    const metricName =
+        'ContextualSearch.UserAction.InputStateDeletion.Tool.NewTabPage';
+    assertEquals(1, testProxy.metrics.count(metricName, 0));
+    assertEquals(1, testProxy.metrics.count(metricName, true));
+  });
 
   test('recent tab chip click records user action', async () => {
     loadTimeData.overrideValues({composeboxSource: 'NewTabPage'});

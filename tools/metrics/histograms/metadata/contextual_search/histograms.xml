@@ -58,6 +58,12 @@ chromium-metrics-reviews@google.com.
   <variant name="RecentTabChip"/>
 </variants>
 
+<variants name="ContextualSearchInputStateDeletionType">
+  <variant name="File"/>
+  <variant name="Tab"/>
+  <variant name="Tool"/>
+</variants>
+
 <!-- LINT.IfChange(ContextualSearchSource) -->
 
 <variants name="ContextualSearchSource">
@@ -753,6 +759,21 @@ chromium-metrics-reviews@google.com.
     Records every time the user deletes the auto-suggested tab context chip from
     the composebox. Always recorded as true.
   </summary>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</histogram>
+
+<histogram
+    name="ContextualSearch.UserAction.InputStateDeletion.{ContextualSearchInputStateDeletionType}.{ContextualSearchSource}"
+    enum="Boolean" expires_after="2027-03-15">
+  <owner>niharm@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Records every time the user deletes a
+    {ContextualSearchInputStateDeletionType} from the composebox. Always
+    recorded as true.
+  </summary>
+  <token key="ContextualSearchInputStateDeletionType"
+      variants="ContextualSearchInputStateDeletionType"/>
   <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
 </histogram>
 

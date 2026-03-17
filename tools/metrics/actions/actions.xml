@@ -124,6 +124,12 @@ should be able to be added at any place in this file.
   <variant name="WithTabContext" summary="with tab context"/>
 </variants>
 
+<variants name="ContextualSearchInputStateDeletionType">
+  <variant name="File" summary="file"/>
+  <variant name="Tab" summary="tab"/>
+  <variant name="Tool" summary="tool"/>
+</variants>
+
 <variants name="ContextualSearchSource">
   <variant name="ContextualTasks" summary="Contextual tasks"/>
   <variant name="Lens" summary="Lens"/>
@@ -10964,6 +10970,19 @@ should be able to be added at any place in this file.
     A user deleted the auto-suggested tab context when using the composebox on
     {ContextualSearchSource}.
   </description>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</action>
+
+<action
+    name="ContextualSearch.UserAction.InputStateDeletion.{ContextualSearchInputStateDeletionType}.{ContextualSearchSource}">
+  <owner>niharm@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <description>
+    Recorded when a user deletes a {ContextualSearchInputStateDeletionType} from
+    the composebox on {ContextualSearchSource}.
+  </description>
+  <token key="ContextualSearchInputStateDeletionType"
+      variants="ContextualSearchInputStateDeletionType"/>
   <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
 </action>
 
