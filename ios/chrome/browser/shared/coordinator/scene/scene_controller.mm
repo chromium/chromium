@@ -1596,14 +1596,13 @@ void InjectNTP(Browser* browser) {
     (TabOpeningPostOpeningAction)action {
   __weak __typeof(self) weakSelf = self;
   switch (action) {
-    case START_VOICE_SEARCH: {
-      __weak id<BrowserCoordinatorCommands> weakHandler = HandlerForProtocol(
-          self.currentInterface.browser->GetCommandDispatcher(),
-          BrowserCoordinatorCommands);
+    case START_VOICE_SEARCH:
       return ^{
-        [weakHandler startVoiceSearch];
+        id<BrowserCoordinatorCommands> handler = HandlerForProtocol(
+            weakSelf.currentInterface.browser->GetCommandDispatcher(),
+            BrowserCoordinatorCommands);
+        [handler startVoiceSearch];
       };
-    }
     case START_QR_CODE_SCANNER:
       return ^{
         [weakSelf startQRCodeScanner];
