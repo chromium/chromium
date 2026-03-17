@@ -481,8 +481,9 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
   }));
 }
 
+// TODO(crbug.com/493362471): Flaky pixel tests.
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
-                       CheckSplitTabsButtonColor) {
+                       DISABLED_CheckSplitTabsButtonColor) {
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kPinSplitTabButton, true);
 
   ui::TrackedElement* element = nullptr;
