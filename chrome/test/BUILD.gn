@@ -4727,6 +4727,7 @@ if (!is_android) {
 
     if (enable_dice_support) {
       sources += [
+        "../browser/signin/accounts_policy_manager_browsertest.cc",
         "../browser/signin/chrome_signin_client_browsertest.cc",
         "../browser/signin/dice_browsertest.cc",
         "../browser/signin/dice_web_signin_interceptor_browsertest.cc",
