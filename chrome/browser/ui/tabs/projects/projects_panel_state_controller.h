@@ -31,6 +31,7 @@ class ProjectsPanelStateController {
       BrowserWindowInterface* browser_window);
 
   bool IsProjectsPanelVisible() const;
+
   void SetProjectsVisible(bool visible);
 
   using StateChangedCallback =
@@ -57,6 +58,9 @@ class ProjectsPanelStateController {
       on_state_changed_callback_list_;
   ui::ScopedUnownedUserData<ProjectsPanelStateController>
       scoped_unowned_user_data_;
+
+  // The browser window that this controller is attached to.
+  const raw_ptr<BrowserWindowInterface> browser_window_;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_PROJECTS_PROJECTS_PANEL_STATE_CONTROLLER_H_

@@ -8,7 +8,9 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "ui/actions/actions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/vector_icons.h"
@@ -20,7 +22,9 @@ ProjectsPanelStateController::ProjectsPanelStateController(
     actions::ActionItem* root_action_item)
     : root_action_item_(root_action_item),
       scoped_unowned_user_data_(browser_window->GetUnownedUserDataHost(),
-                                *this) {
+                                *this),
+      browser_window_(browser_window) {
+  CHECK(browser_window_);
   UpdateProjectsActionItem();
 }
 
@@ -37,10 +41,21 @@ bool ProjectsPanelStateController::IsProjectsPanelVisible() const {
 }
 
 void ProjectsPanelStateController::SetProjectsVisible(bool visible) {
-  if (is_visible_ != visible) {
-    is_visible_ = visible;
-    NotifyStateChanged();
+  if (is_visible_ == visible) {
+    return;
   }
+
+  if (visible) {
+    if (auto* interface =
+            BrowserUserEducationInterface::From(browser_window_)) {
+      interface->NotifyFeaturePromoFeatureUsed(
+          feature_engagement::kIPHResumptionRailFeature,
+          FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+    }
+  }
+
+  is_visible_ = visible;
+  NotifyStateChanged();
 }
 
 base::CallbackListSubscription
