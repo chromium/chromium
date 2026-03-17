@@ -1595,6 +1595,7 @@ source_set("platform_browser_tests") {
 
   if (enable_extensions_core) {
     sources += [
+      "../browser/extensions/all_urls_apitest.cc",
       "../browser/extensions/api/alarms/alarms_apitest.cc",
       "../browser/extensions/api/bookmarks/bookmarks_apitest.cc",
       "../browser/extensions/api/browsing_data/browsing_data_test.cc",
@@ -4830,7 +4831,6 @@ if (!is_android) {
         "../browser/controlled_frame/scoped_test_driver_proxy.h",
         "../browser/extensions/ai_language_model_browsertest.cc",
         "../browser/extensions/alert_apitest.cc",
-        "../browser/extensions/all_urls_apitest.cc",
         "../browser/extensions/api/activity_log_private/activity_log_private_apitest.cc",
         "../browser/extensions/api/autofill_private/autofill_private_api_unittest.cc",
         "../browser/extensions/api/autofill_private/autofill_private_apitest.cc",
