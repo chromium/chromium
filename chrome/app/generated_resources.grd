@@ -13579,28 +13579,28 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       </message>
 
       <!-- NSS PKCS #11 password dialog -->
-      <message name="IDS_CRYPTO_MODULE_AUTH_DIALOG_TITLE" desc="The title in the dialog that prompts for security device password.">
-       Sign in to Security Device
+      <message name="IDS_CRYPTO_MODULE_AUTH_DIALOG_TITLE" desc="The title in the dialog that prompts for security device PIN.">
+       Unlock Security Device
       </message>
-      <message name="IDS_CRYPTO_MODULE_AUTH_DIALOG_TEXT_CERT_ENROLLMENT" desc="The text in the dialog that prompts for security device password for cert enrollment.">
-       Please sign in to <ph name="TOKEN_NAME">$1<ex>Software Security Device</ex></ph> to import client certificate from <ph name="HOST_NAME">$2<ex>www.google.com</ex></ph>.
+      <message name="IDS_CRYPTO_MODULE_AUTH_DIALOG_TEXT_CERT_ENROLLMENT" desc="The text in the dialog that prompts for security device PIN for cert enrollment.">
+       Please unlock <ph name="TOKEN_NAME">$1<ex>Software Security Device</ex></ph> to import client certificate from <ph name="HOST_NAME">$2<ex>www.google.com</ex></ph>.
       </message>
-      <message name="IDS_CRYPTO_MODULE_AUTH_DIALOG_TEXT_CLIENT_AUTH" desc="The text in the dialog that prompts for security device password when doing key generation.">
-       Please sign in to <ph name="TOKEN_NAME">$1<ex>Software Security Device</ex></ph> to authenticate to <ph name="HOST_NAME">$2<ex>www.google.com</ex></ph> with your certificate.
+      <message name="IDS_CRYPTO_MODULE_AUTH_DIALOG_TEXT_CLIENT_AUTH" desc="The text in the dialog that prompts for security device PIN when doing key generation.">
+       Please unlock <ph name="TOKEN_NAME">$1<ex>Software Security Device</ex></ph> to authenticate to <ph name="HOST_NAME">$2<ex>www.google.com</ex></ph> with your certificate.
       </message>
-      <message name="IDS_CRYPTO_MODULE_AUTH_DIALOG_TEXT_LIST_CERTS" desc="The text in the dialog that prompts for security device password when using the certificate manager without taking a specific action (eg, just loading the cert manager).">
-       Please sign in to <ph name="TOKEN_NAME">$1<ex>Software Security Device</ex></ph>.
+      <message name="IDS_CRYPTO_MODULE_AUTH_DIALOG_TEXT_LIST_CERTS" desc="The text in the dialog that prompts for security device PIN when using the certificate manager without taking a specific action (eg, just loading the cert manager).">
+       Please unlock <ph name="TOKEN_NAME">$1<ex>Software Security Device</ex></ph>.
       </message>
-      <message name="IDS_CRYPTO_MODULE_AUTH_DIALOG_TEXT_CERT_IMPORT" desc="The text in the dialog that prompts for security device password when using the certificate manager to import a client certificate.">
-       Please sign in to <ph name="TOKEN_NAME">$1<ex>Software Security Device</ex></ph> to import the client certificate.
+      <message name="IDS_CRYPTO_MODULE_AUTH_DIALOG_TEXT_CERT_IMPORT" desc="The text in the dialog that prompts for security device PIN when using the certificate manager to import a client certificate.">
+       Please unlock <ph name="TOKEN_NAME">$1<ex>Software Security Device</ex></ph> to import the client certificate.
       </message>
-      <message name="IDS_CRYPTO_MODULE_AUTH_DIALOG_TEXT_CERT_EXPORT" desc="The text in the dialog that prompts for security device password when using the certificate manager to export a client certificate.">
-       Please sign in to <ph name="TOKEN_NAME">$1<ex>Software Security Device</ex></ph> to export the client certificate.
+      <message name="IDS_CRYPTO_MODULE_AUTH_DIALOG_TEXT_CERT_EXPORT" desc="The text in the dialog that prompts for security device PIN when using the certificate manager to export a client certificate.">
+       Please unlock <ph name="TOKEN_NAME">$1<ex>Software Security Device</ex></ph> to export the client certificate.
       </message>
-      <message name="IDS_CRYPTO_MODULE_AUTH_DIALOG_PASSWORD_FIELD" desc="Label for password entry in the dialog that prompts for security device password.">
-       Password:
+      <message name="IDS_CRYPTO_MODULE_AUTH_DIALOG_PASSWORD_FIELD" desc="Label for PIN entry in the dialog that prompts for security device PIN.">
+       PIN:
       </message>
-      <message name="IDS_CRYPTO_MODULE_AUTH_DIALOG_OK_BUTTON_LABEL" desc="Label for OK button in the dialog that prompts for security device password.">
+      <message name="IDS_CRYPTO_MODULE_AUTH_DIALOG_OK_BUTTON_LABEL" desc="Label for OK button in the dialog that prompts for security device PIN.">
        Unlock
       </message>
 
