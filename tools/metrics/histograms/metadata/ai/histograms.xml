@@ -288,9 +288,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AI.Translation.LoadTranslateKitErrorCode"
-    enum="WinGetLastError" expires_after="2026-04-27">
-  <owner>mych@google.com</owner>
-  <owner>fergal@google.com</owner>
+    enum="WinGetLastError" expires_after="2027-03-16">
+  <owner>evliu@google.com</owner>
   <owner>src/chrome/browser/ai/OWNERS</owner>
   <summary>
     Records the error code of a failed attempt to load the TranslateKit binary
@@ -301,9 +300,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AI.Translation.LoadTranslateKitResult"
-    enum="LoadTranslateKitResult" expires_after="2026-09-06">
-  <owner>mych@google.com</owner>
-  <owner>fergal@google.com</owner>
+    enum="LoadTranslateKitResult" expires_after="2027-03-16">
+  <owner>evliu@google.com</owner>
   <owner>src/chrome/browser/ai/OWNERS</owner>
   <summary>
     Records the result of an attempt to load the TranslateKit binary for
