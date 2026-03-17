@@ -46,6 +46,8 @@ export const BulkPinStage = chrome.fileManagerPrivate.BulkPinStage;
  */
 @customElement('xf-bulk-pinning-dialog')
 export class XfBulkPinningDialog extends XfBase {
+  // TODO(crbug.com/493624186): Fix members asserted as non-null .
+  /* eslint-disable no-restricted-syntax */
   @query('cr-dialog') private $dialog_!: CrDialogElement;
   @query('#continue-button') private $button_!: CrButtonElement;
   @query('#offline-footer') private $offlineFooter_!: HTMLElement;
@@ -56,6 +58,7 @@ export class XfBulkPinningDialog extends XfBase {
   private $notEnoughSpaceFooter_!: HTMLElement;
   @query('#ready-footer') private $readyFooter_!: HTMLElement;
   @query('#listing-files-text') private $listingFilesText_!: HTMLElement;
+  /* eslint-enable no-restricted-syntax */
 
   private store_ = getStore();
   private stage_ = '';

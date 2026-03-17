@@ -61,6 +61,8 @@ export class XfTree extends XfBase {
   }
 
   /** The default unnamed slot to let consumer pass children tree items. */
+  // TODO(crbug.com/493624186): Fix members asserted as non-null .
+  /* eslint-disable-next-line no-restricted-syntax */
   @query('slot') private $childrenSlot_!: HTMLSlotElement;
 
   /** The child tree items. */

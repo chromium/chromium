@@ -183,9 +183,12 @@ export class XfTreeItem extends XfBase {
    */
   @state() private level_ = 1;
 
+  // TODO(crbug.com/493624186): Fix members asserted as non-null .
+  /* eslint-disable no-restricted-syntax */
   @query('li') private $treeItem_!: HTMLLIElement;
   @query('.tree-row') private $treeRow_!: HTMLElement;
   @query('slot:not([name])') private $childrenSlot_!: HTMLSlotElement;
+  /* eslint-enable no-restricted-syntax */
 
   /** The child tree items. */
   private items_: XfTreeItem[] = [];

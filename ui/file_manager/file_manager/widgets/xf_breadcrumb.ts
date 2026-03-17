@@ -42,6 +42,8 @@ export class XfBreadcrumb extends XfBase {
 
   @query('button[elider]') private $eliderButton_?: HTMLButtonElement;
   @query('cr-action-menu') private $actionMenu_?: CrActionMenuElement;
+  // TODO(crbug.com/493624186): Fix members asserted as non-null .
+  /* eslint-disable-next-line no-restricted-syntax */
   @query('#first') private $firstButton_!: HTMLButtonElement;
 
   /** Indicates if the elider menu is open or not. */

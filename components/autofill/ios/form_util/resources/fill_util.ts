@@ -23,6 +23,9 @@ class JsonSafeObject {
 // TODO(crbug.com/469457516): Update the variables in the classes to follow the
 // naming convention.
 /* eslint-disable @typescript-eslint/naming-convention */
+
+// TODO(crbug.com/493624186): Fix members asserted as non-null .
+/* eslint-disable no-restricted-syntax */
 export class AutofillFormFieldData extends JsonSafeObject {
   name!: string;
   value!: string;
@@ -61,6 +64,7 @@ export class AutofillFormData extends JsonSafeObject {
   name_attribute?: string;
   id_attribute?: string;
 }
+/* eslint-enable no-restricted-syntax */
 /* eslint-enable @typescript-eslint/naming-convention */
 
 export declare interface FrameTokenWithPredecessor {

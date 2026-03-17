@@ -632,8 +632,12 @@ class DeferredPublicKeyCredentialPromise {
   // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
   public promise: Promise<PublicKeyCredential>;
   // Resolve function of the deferred promise.
+  // TODO(crbug.com/493624186): Fix members asserted as non-null .
+  /* eslint-disable-next-line no-restricted-syntax */
   private resolve!: ResolveFunction<PublicKeyCredential>;
   // Reject function of the deferred promise.
+  // TODO(crbug.com/493624186): Fix members asserted as non-null .
+  /* eslint-disable-next-line no-restricted-syntax */
   private reject!: RejectFunction;
   // Unique ID for this deferred promise.
   // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
