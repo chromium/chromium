@@ -13,23 +13,23 @@
 
 namespace {
 
-// TODO(crbug.com/483974847): Understand why this is not using a standard color.
-constexpr int kGradientBackgroundColor = 0x2F312B;
-
 // The distance at the start of which the background starts dimming out.
 constexpr CGFloat kScrollToEdgeAlphaUpdateDistance = 60;
 
 // The extra distance the lowest background should extend to.
-constexpr CGFloat kLowestBackgroundExtraDistance = 60;
+constexpr CGFloat kLowestBackgroundExtraDistance = 75;
 
 // The percentage of the blur effect.
 constexpr CGFloat kBlurEffectPercentage = 0.1;
 
 // The length of the blur effect.
-constexpr CGFloat kBlurLength = 0.2;
+constexpr CGFloat kBlurLength = 0.3;
 
-// The length of the lowest background gradient.
-constexpr CGFloat kLowestBackgroundGradientLength = 0.77;
+// The length of the top background gradient.
+constexpr CGFloat kTopBackgroundGradientLength = 0.5;
+
+// The alpha of the black color for the top background gradient.
+constexpr CGFloat kTopBackgroundBlackAlpha = 0.5;
 
 }  // namespace
 
@@ -77,12 +77,10 @@ constexpr CGFloat kLowestBackgroundGradientLength = 0.77;
 // Creates the lowest background view.
 - (UIView*)createLowestBackgroundForTop:(BOOL)isTop {
   CGPoint lowestStartPoint = isTop ? CGPointMake(0.5, 1) : CGPointMake(0.5, 0);
-  CGPoint lowestEndPoint =
-      isTop ? CGPointMake(0.5, 1 - kLowestBackgroundGradientLength)
-            : CGPointMake(0.5, kLowestBackgroundGradientLength);
+  CGPoint lowestEndPoint = isTop ? CGPointMake(0.5, 0) : CGPointMake(0.5, 1);
   UIView* lowestBackground = [[GradientView alloc]
       initWithStartColor:UIColor.clearColor
-                endColor:UIColorFromRGB(kGradientBackgroundColor)
+                endColor:UIColor.blackColor
               startPoint:lowestStartPoint
                 endPoint:lowestEndPoint
             gradientType:GradientLayerType::kEaseInThenLinear];
@@ -110,9 +108,12 @@ constexpr CGFloat kLowestBackgroundGradientLength = 0.77;
 // Creates the top background view.
 - (UIView*)createTopBackgroundForTop:(BOOL)isTop {
   CGPoint topStartPoint = isTop ? CGPointMake(0.5, 0) : CGPointMake(0.5, 1);
-  CGPoint topEndPoint = isTop ? CGPointMake(0.5, 1) : CGPointMake(0.5, 0);
+  CGPoint topEndPoint =
+      isTop ? CGPointMake(0.5, 0 + kTopBackgroundGradientLength)
+            : CGPointMake(0.5, 1 - kTopBackgroundGradientLength);
   UIView* topBackground = [[GradientView alloc]
-      initWithStartColor:[UIColor.blackColor colorWithAlphaComponent:0.5]
+      initWithStartColor:[UIColor.blackColor
+                             colorWithAlphaComponent:kTopBackgroundBlackAlpha]
                 endColor:UIColor.clearColor
               startPoint:topStartPoint
                 endPoint:topEndPoint
