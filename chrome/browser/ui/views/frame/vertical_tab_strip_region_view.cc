@@ -721,10 +721,11 @@ void VerticalTabStripRegionView::OnCollapsedStateChanged(
                                      gfx::Insets::VH(0, separator_padding));
   if (state_controller->IsCollapsed()) {
     // If the VT Strip is collapsed, then we need exactly |padding| on the top,
-    // left, and right.
+    // left, and right. The top padding is applied inside of the top container
+    // class to avoid animation issues on non-Mac platforms.
     top_button_container_->SetProperty(
         views::kMarginsKey,
-        gfx::Insets::TLBR(padding, padding, kRegionVerticalPadding, padding));
+        gfx::Insets::TLBR(0, padding, kRegionVerticalPadding, padding));
   } else {
     // If the VT Strip is not collapsed, then we want to align the heights of
     // the TopContainer w/ the the height of the toolbar. Both of these

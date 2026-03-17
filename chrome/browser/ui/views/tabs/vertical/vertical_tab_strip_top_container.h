@@ -69,6 +69,10 @@ class VerticalTabStripTopContainer : public views::View,
   // the padding between them.
   int GetPreferredWidth() const;
 
+  // Returns the minimum height required for the top container to display all
+  // its buttons at their baseline positions.
+  int GetBaselineMinHeight() const;
+
   raw_ptr<tabs::VerticalTabStripStateController> state_controller_ = nullptr;
   raw_ptr<actions::ActionItem> root_action_item_ = nullptr;
   raw_ptr<BrowserWindowInterface> browser_ = nullptr;

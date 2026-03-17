@@ -85,6 +85,20 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
     combo_button_orientation_ = views::LayoutOrientation::kVertical;
     int current_y = 0;
 
+    // Find height of the first visible button to calculate the matching
+    // baseline offset.
+    int first_button_height = 0;
+    if (unfocus_button_ && unfocus_button_->GetVisible()) {
+      first_button_height = unfocus_button_->GetPreferredSize().height();
+    } else if (collapse_button_ && collapse_button_->GetVisible()) {
+      first_button_height = collapse_button_->GetPreferredSize().height();
+    }
+
+    if (first_button_height > 0) {
+      const int baseline_height = GetBaselineMinHeight();
+      current_y = std::max(0, (baseline_height - first_button_height) / 2);
+    }
+
     if (unfocus_button_ && unfocus_button_->GetVisible()) {
       const gfx::Size pref_size = unfocus_button_->GetPreferredSize();
       gfx::Rect bounds(std::max(0, (host_size.width() - pref_size.width()) / 2),
@@ -133,29 +147,9 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
     combo_button_orientation_ = views::LayoutOrientation::kHorizontal;
     const int padding =
         GetLayoutConstant(LayoutConstant::kVerticalTabStripTopButtonPadding);
-    int min_height = 0;
-    if (unfocus_button_ && unfocus_button_->GetVisible()) {
-      min_height =
-          std::max(min_height, unfocus_button_->GetPreferredSize().height());
-    }
-    if (collapse_button_ && collapse_button_->GetVisible()) {
-      min_height =
-          std::max(min_height, collapse_button_->GetPreferredSize().height());
-    }
-    if (combo_button_) {
-      min_height = std::max(min_height, combo_button_
-                                            ->GetPreferredSizeForOrientation(
-                                                combo_button_orientation_)
-                                            .height());
-    }
 
-    // Guarantee that the height of the container is at least the height of the
-    // buttons plus padding. Use the same padding as the toolbar for approximate
-    // consistency.
-    if (toolbar_height_ == 0) {
-      min_height += GetLayoutInsets(TOOLBAR_BUTTON).height();
-    }
-    host_size.SetToMax(gfx::Size(0, min_height));
+    const int baseline_height = GetBaselineMinHeight();
+    host_size.SetToMax(gfx::Size(0, baseline_height));
 
     // If there is not enough space for the buttons on a single line with
     // caption buttons, shift them below.
@@ -310,6 +304,31 @@ int VerticalTabStripTopContainer::GetPreferredWidth() const {
   }
 
   return total_width;
+}
+
+int VerticalTabStripTopContainer::GetBaselineMinHeight() const {
+  int min_height = 0;
+  if (unfocus_button_ && unfocus_button_->GetVisible()) {
+    min_height =
+        std::max(min_height, unfocus_button_->GetPreferredSize().height());
+  }
+  if (collapse_button_ && collapse_button_->GetVisible()) {
+    min_height =
+        std::max(min_height, collapse_button_->GetPreferredSize().height());
+  }
+  if (combo_button_) {
+    min_height =
+        std::max(min_height, combo_button_
+                                 ->GetPreferredSizeForOrientation(
+                                     views::LayoutOrientation::kHorizontal)
+                                 .height());
+  }
+
+  if (toolbar_height_ == 0) {
+    min_height += GetLayoutInsets(TOOLBAR_BUTTON).height();
+  }
+
+  return std::max(toolbar_height_, min_height);
 }
 
 BEGIN_METADATA(VerticalTabStripTopContainer)
