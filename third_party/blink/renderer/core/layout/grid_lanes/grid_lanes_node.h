@@ -54,8 +54,6 @@ class CORE_EXPORT GridLanesNode final : public BlockNode {
                                 HeapVector<Member<LayoutBox>>* opt_oof_children,
                                 bool* opt_has_nested_subgrid = nullptr) const;
 
-  void AppendSubgriddedItems(GridItems* grid_items) const;
-
   // Computes the largest span size among all children by examining their
   // grid placement styles directly. Note that this may be an inaccurate value
   // if any child's span size depends on line names or numbers, as the final

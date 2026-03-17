@@ -272,6 +272,11 @@ void InitializeTrackCollection(const SubgriddedItemData& opt_subgrid_data,
 // sizing.
 bool HasBlockSizeDependentGridItem(const GridItems& grid_items);
 
+// Appends items from any subgridded children to `grid_items`, translating
+// their positions from the subgrid's coordinate space to the root grid's.
+CORE_EXPORT void AppendSubgriddedItems(const ComputedStyle& root_grid_style,
+                                       GridItems* grid_items);
+
 // Returns the synthesized logical baseline for a grid item. This is used when
 // computing min/max content contributions without a full layout result.
 LayoutUnit GetSynthesizedLogicalBaseline(

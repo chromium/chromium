@@ -50,8 +50,6 @@ class CORE_EXPORT GridNode final : public BlockNode {
                                 HeapVector<Member<LayoutBox>>* opt_oof_children,
                                 bool* opt_has_nested_subgrid = nullptr) const;
 
-  void AppendSubgriddedItems(GridItems* grid_items) const;
-
   MinMaxSizesResult ComputeSubgridMinMaxSizes(
       const GridSizingSubtree& sizing_subtree,
       const ConstraintSpace& space) const;
@@ -60,7 +58,7 @@ class CORE_EXPORT GridNode final : public BlockNode {
       const GridSizingSubtree& sizing_subtree,
       const ConstraintSpace& space) const;
 
- private:
+  // Constructs grid items with explicit subgrid parameters.
   GridItems* ConstructGridItems(
       const GridLineResolver& line_resolver,
       const ComputedStyle& root_grid_style,
