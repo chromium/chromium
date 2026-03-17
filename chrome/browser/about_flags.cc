@@ -2019,6 +2019,10 @@ const FeatureEntry::FeatureParam kOmniboxAimOriginalComposeplate[] = {
 const FeatureEntry::FeatureParam kOmniboxAimModelPickerAndCanvas[] = {
     {"multi_context", "true"},
     {"show_model_picker", "true"}};
+const FeatureEntry::FeatureParam kOmniboxAimModelPickerCompact[] = {
+    {"multi_context", "true"},
+    {"show_model_picker", "true"},
+    {"compact_fusebox", "true"}};
 
 const FeatureEntry::FeatureVariation kOmniboxMultimodalInputVariants[] = {
     {"Dedicated Button", kOmniboxAimDedicatedModeButton, "3395755"},
@@ -2031,7 +2035,8 @@ const FeatureEntry::FeatureVariation kOmniboxMultimodalInputVariants[] = {
      "3395755"},
     {"MC Compact", kOmniboxAimMultiContextCompactFusebox, "3395755"},
     {"Original Composeplate", kOmniboxAimOriginalComposeplate, "3395755"},
-    {"Model Picker & Canvas", kOmniboxAimModelPickerAndCanvas, "3395755"},
+    {"Model Picker & Tools", kOmniboxAimModelPickerAndCanvas, "3395755"},
+    {"Model Picker Compact", kOmniboxAimModelPickerCompact, "3395755"},
 };
 
 const FeatureEntry::FeatureParam kOmniboxMultilineEditFieldForAutocomplete[] = {
