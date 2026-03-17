@@ -16,12 +16,15 @@
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/public/provider/chrome/browser/lottie/lottie_animation_api.h"
+#import "ios/public/provider/chrome/browser/lottie/lottie_animation_configuration.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
 // Static image assets.
 NSString* const kLensImageName = @"mountain_webpage";
 NSString* const kHUDImageName = @"lens_overlay_hud";
+NSString* const kCirclingHandAnimationName = @"cursor+line";
 // Corner radius for the top two corners of the Lens view.
 const CGFloat kLensViewCornerRadius = 45.0;
 // Multiplier for the top padding for the Lens image.
@@ -57,18 +60,27 @@ const CGFloat kHUDViewTopMargin = 20.0;
   UIImageView* _backgroundImageView;
   // The heads-up display view that sits on top of the Lens view.
   UIImageView* _hudView;
+  // Layout guide to handle the static positioning for the bubble view. The
+  // bubble view has an animation, and that animation uses constraints between
+  // the bubble view and this layout guide.
+  UIView* _bubbleContainerView;
   // View for the tip bubble.
   BubbleView* _bubbleView;
+  // Bottom anchor constraint for the tip bubble's positioning container view.
+  // The bubble should be constrained to the lens view, but kept within the top
+  // padding area of the Lens image.
+  NSLayoutConstraint* _bubbleContainerViewBottomConstraint;
+  // Bottom anchor constraint for the bubble itself, that can be animated to
+  // move the bubble inside its container.
+  NSLayoutConstraint* _bubbleViewBottomInnerAnimationConstraint;
   // View controller for the interactive Lens instance.
   LensOverlayPromoContainerViewController* _lensViewController;
   // Scroll view containing the screen's title and subtitle.
   UIScrollView* _textScrollView;
-  // Bottom anchor constraint for the tip bubble. The bubble should be
-  // constrained to the lens view, but kept within the top padding area of the
-  // Lens image.
-  NSLayoutConstraint* _bubbleViewBottomConstraint;
   // Whether the bubble is currently being hidden.
   BOOL _isBubbleHiding;
+  // Lottie object for the circling hand animation.
+  id<LottieAnimation> _circlingHandAnimation;
   // The primary action button.
   ChromeButton* _actionButton;
   // The footer view containing the action button.
@@ -79,6 +91,8 @@ const CGFloat kHUDViewTopMargin = 20.0;
   NSMutableArray<UIGestureRecognizer*>* _disabledGestures;
   // Whether the user has interacted with the Lens view.
   BOOL _interaction;
+  // The remaining number of times the bubble animation should run.
+  int _bubbleAnimationCyclesRemaining;
 }
 
 @synthesize lensContainerViewController = _lensViewController;
@@ -103,8 +117,6 @@ const CGFloat kHUDViewTopMargin = 20.0;
 
   [self setUpViews];
   [self setUpConstraints];
-
-  [self startBubbleAnimation];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -121,7 +133,8 @@ const CGFloat kHUDViewTopMargin = 20.0;
   // Anchor the bubble to the top of the Lens image container. The 0.7
   // multiplier ensures the bubble appears within the top padded area of the
   // image (slightly below the middle of the padded area).
-  _bubbleViewBottomConstraint.constant = [self lensImageTopPadding] * 0.7;
+  _bubbleContainerViewBottomConstraint.constant =
+      [self lensImageTopPadding] * 0.7;
   if (!_lensSearchImage) {
     _lensSearchImage = [self createLensSearchImage];
     _backgroundImageView.image = _lensSearchImage;
@@ -144,6 +157,9 @@ const CGFloat kHUDViewTopMargin = 20.0;
       gesture.enabled = NO;
     }
   }
+
+  [self startBubbleAnimation];
+  [_circlingHandAnimation play];
 }
 
 #pragma mark - LensInteractivePromoResultsPagePresenterDelegate
@@ -163,6 +179,7 @@ const CGFloat kHUDViewTopMargin = 20.0;
 - (void)lensOverlayPromoContainerViewControllerDidBeginInteraction:
     (LensOverlayPromoContainerViewController*)viewController {
   [self handleHideBubbleAnimation];
+  [self hideCirclingHandAnimation];
   _interaction = YES;
 }
 
@@ -215,8 +232,15 @@ const CGFloat kHUDViewTopMargin = 20.0;
   [self.view addSubview:lensView];
   [_lensViewController didMoveToParentViewController:self];
 
+  _bubbleContainerView = [[UIView alloc] init];
+  _bubbleContainerView.translatesAutoresizingMaskIntoConstraints = NO;
+  [self.view addSubview:_bubbleContainerView];
+
   _bubbleView = [self bubbleView];
-  [self.view addSubview:_bubbleView];
+  [_bubbleContainerView addSubview:_bubbleView];
+
+  _circlingHandAnimation = [self createCirclingHandAnimation];
+  [self.view addSubview:_circlingHandAnimation.animationView];
 }
 
 // Sets up the layout constraints for the view hierarchy.
@@ -304,21 +328,36 @@ const CGFloat kHUDViewTopMargin = 20.0;
 
   CGSize bubbleViewPreferredHeight = [_bubbleView
       sizeThatFits:CGSizeMake(view.bounds.size.width, CGFLOAT_MAX)];
-  _bubbleViewBottomConstraint =
-      [_bubbleView.bottomAnchor constraintEqualToAnchor:lensView.topAnchor];
+  _bubbleContainerViewBottomConstraint = [_bubbleContainerView.bottomAnchor
+      constraintEqualToAnchor:lensView.topAnchor];
   [NSLayoutConstraint activateConstraints:@[
-    [_bubbleView.centerXAnchor constraintEqualToAnchor:view.centerXAnchor],
-    [_bubbleView.leadingAnchor
+    [_bubbleContainerView.centerXAnchor
+        constraintEqualToAnchor:view.centerXAnchor],
+    [_bubbleContainerView.leadingAnchor
         constraintEqualToAnchor:view.safeAreaLayoutGuide.leadingAnchor],
-    [_bubbleView.trailingAnchor
+    [_bubbleContainerView.trailingAnchor
         constraintEqualToAnchor:view.safeAreaLayoutGuide.trailingAnchor],
-    [_bubbleView.topAnchor
+    [_bubbleContainerView.topAnchor
         constraintGreaterThanOrEqualToAnchor:_textScrollView.bottomAnchor
                                     constant:kBubbleViewTopMargin],
+    [_bubbleContainerView.heightAnchor
+        constraintEqualToAnchor:_bubbleView.heightAnchor],
+    _bubbleContainerViewBottomConstraint,
+  ]];
+
+  _bubbleViewBottomInnerAnimationConstraint = [_bubbleContainerView.bottomAnchor
+      constraintEqualToAnchor:_bubbleView.bottomAnchor];
+  [NSLayoutConstraint activateConstraints:@[
+    [_bubbleView.leadingAnchor
+        constraintEqualToAnchor:_bubbleContainerView.leadingAnchor],
+    [_bubbleView.trailingAnchor
+        constraintEqualToAnchor:_bubbleContainerView.trailingAnchor],
+    _bubbleViewBottomInnerAnimationConstraint,
     [_bubbleView.heightAnchor
         constraintEqualToConstant:bubbleViewPreferredHeight.height],
-    _bubbleViewBottomConstraint,
   ]];
+
+  AddSameConstraints(lensView, _circlingHandAnimation.animationView);
 }
 
 // Returns a new image with the Lens search image padded at the top with white
@@ -344,6 +383,24 @@ const CGFloat kHUDViewTopMargin = 20.0;
       }];
 
   return newImage;
+}
+
+// Creates and returns the LottieAnimation view for the circling hand animation.
+- (id<LottieAnimation>)createCirclingHandAnimation {
+  LottieAnimationConfiguration* config =
+      [[LottieAnimationConfiguration alloc] init];
+  config.animationName = kCirclingHandAnimationName;
+  // The hand should circle maximum 3 times, which is built into the animation
+  // already.
+  config.shouldLoop = NO;
+  id<LottieAnimation> animation =
+      ios::provider::GenerateLottieAnimation(config);
+
+  animation.animationView.translatesAutoresizingMaskIntoConstraints = NO;
+  animation.animationView.contentMode = UIViewContentModeScaleAspectFit;
+  animation.animationView.userInteractionEnabled = NO;
+
+  return animation;
 }
 
 // The height of the white space above the Lens search image, relative to screen
@@ -417,21 +474,60 @@ const CGFloat kHUDViewTopMargin = 20.0;
 
 // Starts the animation for the tip bubble view.
 - (void)startBubbleAnimation {
-  CGFloat originalY = _bubbleView.frame.origin.y;
-  CGFloat floatHeight = 18.0;
+  _bubbleAnimationCyclesRemaining = 3;
+  [self runBubbleUpAnimation];
+}
 
-  __weak __typeof(_bubbleView) weakBubbleView = _bubbleView;
+// Run the portion of the animation to move the bubble up.
+- (void)runBubbleUpAnimation {
+  _bubbleViewBottomInnerAnimationConstraint.constant = 18;
+
+  __weak __typeof(self) weakSelf = self;
+  __weak __typeof(_bubbleContainerView) weakContainerView =
+      _bubbleContainerView;
   [UIView animateWithDuration:1.5
-                        delay:0.0
-                      options:UIViewAnimationOptionAutoreverse |
-                              UIViewAnimationOptionRepeat |
-                              UIViewAnimationOptionCurveEaseInOut
-                   animations:^{
-                     CGRect frame = weakBubbleView.frame;
-                     frame.origin.y = originalY - floatHeight;
-                     weakBubbleView.frame = frame;
-                   }
-                   completion:nil];
+      delay:0.0
+      options:UIViewAnimationOptionCurveEaseInOut
+      animations:^{
+        [weakContainerView layoutIfNeeded];
+      }
+      completion:^(BOOL success) {
+        if (!success) {
+          return;
+        }
+        [weakSelf runBubbleDownAnimation];
+      }];
+}
+
+// Run the portion of the animation to move the bubble down. And if the
+// animation has now shown enough times, stop.
+- (void)runBubbleDownAnimation {
+  _bubbleViewBottomInnerAnimationConstraint.constant = 0;
+
+  __weak __typeof(self) weakSelf = self;
+  __weak __typeof(_bubbleContainerView) weakContainerView =
+      _bubbleContainerView;
+  [UIView animateWithDuration:1.5
+      delay:0.0
+      options:UIViewAnimationOptionCurveEaseInOut
+      animations:^{
+        [weakContainerView layoutIfNeeded];
+      }
+      completion:^(BOOL success) {
+        [weakSelf completeBubbleDownAnimation:success];
+      }];
+}
+
+// Completion block for the bubble down animation.
+- (void)completeBubbleDownAnimation:(BOOL)success {
+  if (!success) {
+    return;
+  }
+  _bubbleAnimationCyclesRemaining -= 1;
+  if (_bubbleAnimationCyclesRemaining <= 0) {
+    return;
+  }
+  [self runBubbleUpAnimation];
 }
 
 // Creates and returns the footer container view, which holds the action button
@@ -544,6 +640,11 @@ const CGFloat kHUDViewTopMargin = 20.0;
 - (void)hideBubbleAfterAnimation {
   _bubbleView.hidden = YES;
   _isBubbleHiding = NO;
+}
+
+// Hides the circling hand animation.
+- (void)hideCirclingHandAnimation {
+  _circlingHandAnimation.animationView.hidden = YES;
 }
 
 @end

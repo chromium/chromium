@@ -14,3 +14,8 @@ bundle_data_xcassets("resources") {
     "Assets.xcassets/mountain_webpage.imageset/mountain_webpage@3x.png",
   ]
 }
+
+bundle_data("animation_files") {
+  sources = [ "cursor+line.json" ]
+  outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
+}
