@@ -220,8 +220,9 @@ void AwPrefetchManager::CancelPrefetch(JNIEnv* env, int32_t prefetch_key) {
   }
 }
 
-bool AwPrefetchManager::GetIsPrefetchInCacheForTesting(JNIEnv* env,
-                                                       int32_t prefetch_key) {
+bool AwPrefetchManager::GetIsPrefetchInCacheForTesting(  // IN-TEST
+    JNIEnv* env,
+    int32_t prefetch_key) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return all_prefetches_map_.find(prefetch_key) != all_prefetches_map_.end();
 }

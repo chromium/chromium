@@ -86,8 +86,6 @@ class AwPrefetchManager {
 
   void CancelPrefetch(JNIEnv* env, int32_t prefetch_key);
 
-  bool GetIsPrefetchInCacheForTesting(JNIEnv* env, int32_t prefetch_key);
-
   // Updates Time-To-Live (TTL) for the prefetched content in seconds.
   void SetTtlInSec(JNIEnv* env, std::optional<int> ttl_in_sec) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -141,6 +139,8 @@ class AwPrefetchManager {
   }
 
   int GetLastPrefetchKeyForTesting() const { return last_prefetch_key_; }
+
+  bool GetIsPrefetchInCacheForTesting(JNIEnv* env, int32_t prefetch_key) const;
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaPrefetchManager();
 
