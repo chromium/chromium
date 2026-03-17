@@ -11,6 +11,7 @@ source_set("browser_tests") {
     "sub_apps_install_dialog_controller_browsertest.cc",
     "web_app_blocked_migration_infobar_delegate_browsertest.cc",
     "web_app_identity_update_confirmation_view_browsertest.cc",
+    "web_app_install_flow_browsertest.cc",
     "web_app_update_review_dialog_browsertest.cc",
   ]
   deps = [
