@@ -7,19 +7,18 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
-#include "ui/views/controls/scrollbar/base_scroll_bar_thumb.h"
-#include "ui/views/controls/scrollbar/scroll_bar.h"
+#include "chrome/browser/ui/views/tabs/shared/rounded_scroll_bar.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace tabs {
 class VerticalTabStripStateController;
 }
 
-// The transparent vertical scrollbar which overlays its contents and expands on
-// hover. Used for the pinned and unpinned tab containers in the vertical tab
+// The scrollbar used for the pinned and unpinned tab containers in the vertical
+// tab strip that updates its thickness based on the collapsed state of the tab
 // strip.
-class VerticalTabStripScrollBar : public views::ScrollBar {
-  METADATA_HEADER(VerticalTabStripScrollBar, ScrollBar)
+class VerticalTabStripScrollBar : public tabs::RoundedScrollBar {
+  METADATA_HEADER(VerticalTabStripScrollBar, tabs::RoundedScrollBar)
 
  public:
   explicit VerticalTabStripScrollBar(
@@ -31,52 +30,10 @@ class VerticalTabStripScrollBar : public views::ScrollBar {
 
   ~VerticalTabStripScrollBar() override;
 
-  void SetIsAnimatingSize(bool is_animating);
-
-  // ScrollBar:
-  void OnMouseEntered(const ui::MouseEvent& event) override;
-  void OnMouseExited(const ui::MouseEvent& event) override;
-  bool OverlapsContent() const override;
-  gfx::Rect GetTrackBounds() const override;
-  int GetThickness() const override;
+  // tabs::RoundedScrollBar:
+  bool ShouldHaveRightMargin() const override;
 
  private:
-  class Thumb : public views::BaseScrollBarThumb {
-    METADATA_HEADER(Thumb, BaseScrollBarThumb)
-
-   public:
-    explicit Thumb(VerticalTabStripScrollBar* scroll_bar);
-
-    Thumb(const Thumb&) = delete;
-    Thumb& operator=(const Thumb&) = delete;
-
-    ~Thumb() override;
-
-    void Init();
-
-    void Show();
-    void Hide();
-    // Starts a countdown that hides the thumb when it fires.
-    void StartHideCountdown();
-
-    void set_is_animating_size(bool is_animating) {
-      is_animating_size_ = is_animating;
-    }
-
-   protected:
-    // BaseScrollBarThumb:
-    gfx::Size CalculatePreferredSize(
-        const views::SizeBounds& /*available_size*/) const override;
-    void OnPaint(gfx::Canvas* canvas) override;
-    void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
-
-   private:
-    base::OneShotTimer hide_timer_;
-    raw_ptr<VerticalTabStripScrollBar> scroll_bar_ = nullptr;
-    bool is_animating_size_ = false;
-  };
-  friend class Thumb;
-
   void OnCollapsedStateChanged(
       tabs::VerticalTabStripStateController* state_controller);
 
