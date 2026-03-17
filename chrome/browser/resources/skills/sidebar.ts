@@ -43,14 +43,14 @@ export class SkillsSidebarElement extends CrLitElement {
 
   readonly menuItems: MenuItem[] = [
     {
-      icon: 'skills:bolt',
-      name: loadTimeData.getString('userSkillsTitle'),
-      page: Page.USER_SKILLS,
-    },
-    {
       icon: 'skills:explore',
       name: loadTimeData.getString('browseSkillsTitle'),
       page: Page.DISCOVER_SKILLS,
+    },
+    {
+      icon: 'skills:bolt',
+      name: loadTimeData.getString('userSkillsTitle'),
+      page: Page.USER_SKILLS,
     },
   ];
 
