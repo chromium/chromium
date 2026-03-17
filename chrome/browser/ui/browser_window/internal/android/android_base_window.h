@@ -39,6 +39,7 @@ class AndroidBaseWindow final : public ui::BaseWindow {
   void Close() override;
   void Activate() override;
   void Deactivate() override;
+  bool CanResize(ui::WindowResizePrecheckResult& result) const override;
   void Maximize() override;
   void Minimize() override;
   void Restore() override;

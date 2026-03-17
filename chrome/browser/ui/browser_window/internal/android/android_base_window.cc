@@ -123,6 +123,14 @@ void AndroidBaseWindow::Deactivate() {
                                     java_android_base_window_);
 }
 
+bool AndroidBaseWindow::CanResize(
+    ui::WindowResizePrecheckResult& result) const {
+  result = static_cast<ui::WindowResizePrecheckResult>(
+      Java_AndroidBaseWindow_canResize(AttachCurrentThread(),
+                                       java_android_base_window_));
+  return result == ui::WindowResizePrecheckResult::kOk;
+}
+
 void AndroidBaseWindow::Maximize() {
   Java_AndroidBaseWindow_maximize(AttachCurrentThread(),
                                   java_android_base_window_);

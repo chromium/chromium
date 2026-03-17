@@ -5,9 +5,11 @@
 #ifndef UI_BASE_TEST_MOCK_BASE_WINDOW_H_
 #define UI_BASE_TEST_MOCK_BASE_WINDOW_H_
 
+#include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/base_window.h"
 #include "ui/base/mojom/window_show_state.mojom-forward.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace ui {
@@ -35,6 +37,12 @@ class MockBaseWindow : public BaseWindow {
   MOCK_METHOD(bool, IsVisible, (), (const));
   MOCK_METHOD(void, ShowInactive, (), ());
   MOCK_METHOD(void, Close, (), ());
+#if BUILDFLAG(IS_ANDROID)
+  MOCK_METHOD(bool,
+              CanResize,
+              (ui::WindowResizePrecheckResult & result),
+              (const));
+#endif
   MOCK_METHOD(void, Activate, (), ());
   MOCK_METHOD(void, Deactivate, (), ());
   MOCK_METHOD(void, Maximize, (), ());

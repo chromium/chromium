@@ -111,6 +111,12 @@ class TestBrowserWindow : public BrowserWindow,
   void SetContentsSize(const gfx::Size& size) override;
   bool IsMaximized() const override;
   bool IsMinimized() const override;
+#if BUILDFLAG(IS_ANDROID)
+  bool CanResize(ui::WindowResizePrecheckResult& result) const override {
+    result = ui::WindowResizePrecheckResult::kOk;
+    return true;
+  }
+#endif
   void Maximize() override {}
   void Minimize() override {}
   void Restore() override {}

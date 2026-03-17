@@ -7,6 +7,8 @@
 
 #include <cstdint>
 
+#include "build/build_config.h"
+
 namespace ui {
 
 // Specifies which edges of the window are tiled.
@@ -114,6 +116,52 @@ enum class OwnedWindowConstraintAdjustment : uint32_t {
   kAdjustmentFlipY = 1 << 3,
   kAdjustmentResizeX = 1 << 4,
   kAdjustmentRezizeY = 1 << 5,
+};
+
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.ui.base
+// GENERATED_JAVA_CLASS_NAME_OVERRIDE: WindowResizePrecheckResult
+// GENERATED_JAVA_PREFIX_TO_STRIP: kAndroid
+enum class WindowResizePrecheckResult {
+  // The window can be successfully resized.
+  kOk = 0,
+
+  // Window has size controls preventing resize. See
+  // ui/views/widget/widget_delegate.h for more detail.
+  kHasWindowSizeControls = 1,
+
+  // Resizing for Web API is disallowed for this window. See
+  // ui/views/widget/widget_delegate.h for more detail.
+  kNotResizableFromWebApi = 2,
+
+  // Window has a hit-test mask. See ui/views/widget/widget_delegate.h for more
+  // detail.
+  kWindowHasHitTestMask = 3,
+
+#if BUILDFLAG(IS_ANDROID)
+  // The app must hold the browser role to change window bounds.
+  kAndroidBrowserRoleNotHeld = 4,
+
+  // The Android API to change window bounds is available on BAKLAVA+. Also
+  // returned if calling R+ methods like maximize/restore on earlier versions.
+  kAndroidSdkTooLow = 5,
+
+  // Only free-form windows can change bounds (the app must be in desktop
+  // windowing mode).
+  kAndroidNotAFreeformWindow = 6,
+
+  // The Android API to change window bounds is accessed via AppTask, which can
+  // be null when ChromeAndroidTask is for a Custom Tab (CCT) window.
+  kAndroidNullAppTask = 7,
+
+  // The Android API to change window bounds is accessed via the top
+  // Activity of an Android Task, but it's possible for a Task to
+  // contain no Activity.
+  kAndroidNoActivity = 8,
+
+  // Chrome wraps the Android window resizing API in AconfigFlaggedApiDelegate,
+  // so it must be non-null.
+  kAndroidNullAconfigFlaggedApiDelegate = 9,
+#endif
 };
 
 }  // namespace ui

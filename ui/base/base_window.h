@@ -77,6 +77,15 @@ class COMPONENT_EXPORT(UI_BASE) BaseWindow {
   // window.
   virtual void Deactivate() = 0;
 
+#if BUILDFLAG(IS_ANDROID)
+  // Returns true if the window is currently in a state where it can be resized.
+  // If this returns true, |result| is set to WindowResizePrecheckResult::kOk.
+  // If this returns false, |result| is populated with the specific reason
+  // resizing is currently prohibited (e.g., the window is in a fixed-size
+  // state, not fully initialized on Android, or constrained by a modal dialog).
+  virtual bool CanResize(ui::WindowResizePrecheckResult& result) const = 0;
+#endif
+
   // Maximizes/minimizes/restores the window.
   virtual void Maximize() = 0;
   virtual void Minimize() = 0;

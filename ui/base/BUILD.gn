@@ -751,6 +751,15 @@ if (is_android) {
     # files, they should be added here as necessary.
     srcjar_deps = [ ":java_features_srcjar" ]
   }
+
+  java_cpp_enum("ui_base_types_srcjar") {
+    sources = [ "ui_base_types.h" ]
+  }
+
+  android_library("ui_base_types_java") {
+    srcjar_deps = [ ":ui_base_types_srcjar" ]
+    deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+  }
 }
 
 static_library("test_support") {

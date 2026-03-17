@@ -13,6 +13,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.base.WindowResizePrecheckResult;
 
 /** Java class for communicating with the native {@code AndroidBaseWindow}. */
 @NullMarked
@@ -108,6 +109,11 @@ final class AndroidBaseWindow {
     @CalledByNative
     private void deactivate() {
         mAndroidBrowserWindow.getTask().deactivate();
+    }
+
+    @CalledByNative
+    private @WindowResizePrecheckResult int canResize() {
+        return mAndroidBrowserWindow.getTask().canResize();
     }
 
     @CalledByNative

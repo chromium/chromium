@@ -56,6 +56,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowRoleManager;
 
+import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
@@ -82,6 +83,8 @@ import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskImpl.State
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskUnitTestSupport.ChromeAndroidTaskWithMockDeps;
 import org.chromium.chrome.browser.ui.browser_window.PendingActionManager.PendingAction;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
+import org.chromium.chrome.browser.util.AndroidTaskUtils;
+import org.chromium.ui.base.WindowResizePrecheckResult;
 import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.mojom.WindowShowState;
 
@@ -1448,6 +1451,89 @@ public class ChromeAndroidTaskImplUnitTest {
         assertEquals(2, testFeature.mTaskFocusChangeHistory.size());
         assertTrue(testFeature.mTaskFocusChangeHistory.get(0));
         assertFalse(testFeature.mTaskFocusChangeHistory.get(1));
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.BAKLAVA)
+    public void canResize_noRestrictions() {
+        // Arrange.
+        var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
+        var chromeAndroidTask = chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+
+        // Act & Assert.
+        assertEquals(WindowResizePrecheckResult.OK, chromeAndroidTask.canResize());
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.R)
+    public void canResize_sdkTooLow_returnsSdkTooLow() {
+        // Arrange.
+        var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
+        var chromeAndroidTask = chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+
+        // Act & Assert.
+        assertEquals(WindowResizePrecheckResult.SDK_TOO_LOW, chromeAndroidTask.canResize());
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.BAKLAVA)
+    public void canResize_notBrowserRole_returnsBrowserRoleNotHeld() {
+        // Arrange.
+        var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
+        var chromeAndroidTask = chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+
+        // Remove the ROLE_BROWSER that was added in setUp()
+        ShadowRoleManager.removeRoleHolder(
+                RoleManager.ROLE_BROWSER,
+                ContextUtils.getApplicationContext().getPackageName(),
+                Process.myUserHandle());
+
+        // Act & Assert.
+        assertEquals(
+                WindowResizePrecheckResult.BROWSER_ROLE_NOT_HELD, chromeAndroidTask.canResize());
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.BAKLAVA)
+    public void canResize_notInDesktopWindow_returnsNotAFreeformWindow() {
+        // Arrange.
+        var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
+        var chromeAndroidTask = chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+
+        AppHeaderUtils.setAppInDesktopWindowForTesting(false);
+
+        // Act & Assert.
+        assertEquals(
+                WindowResizePrecheckResult.NOT_A_FREEFORM_WINDOW, chromeAndroidTask.canResize());
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.BAKLAVA)
+    public void canResize_nullAppTask_returnsNullAppTask() {
+        // Arrange.
+        var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
+        var chromeAndroidTask = chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+
+        // Simulate a Custom Tab (CCT) window by setting AppTask to null
+        AndroidTaskUtils.setAppTaskForTesting(null);
+
+        // Act & Assert.
+        assertEquals(WindowResizePrecheckResult.NULL_APP_TASK, chromeAndroidTask.canResize());
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.BAKLAVA)
+    public void canResize_nullAconfigFlaggedApiDelegate_returnsNullAconfigFlaggedApiDelegate() {
+        // Arrange.
+        var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
+        var chromeAndroidTask = chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+
+        AconfigFlaggedApiDelegate.setInstanceForTesting(null);
+
+        // Act & Assert.
+        assertEquals(
+                WindowResizePrecheckResult.NULL_ACONFIG_FLAGGED_API_DELEGATE,
+                chromeAndroidTask.canResize());
     }
 
     @Test

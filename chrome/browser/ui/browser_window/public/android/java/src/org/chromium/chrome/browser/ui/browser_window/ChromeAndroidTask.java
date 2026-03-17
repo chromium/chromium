@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.ui.base.ActivityWindowAndroid;
+import org.chromium.ui.base.WindowResizePrecheckResult;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -333,6 +334,13 @@ public interface ChromeAndroidTask {
      * window.
      */
     void deactivate();
+
+    /**
+     * Determines whether the window can be resized. Returns WindowResizePrecheckResult.NONE if
+     * resizing is permitted, or a specific failure reason otherwise.
+     */
+    @WindowResizePrecheckResult
+    int canResize();
 
     /** Maximize this {@link ChromeAndroidTask}. */
     void maximize();
