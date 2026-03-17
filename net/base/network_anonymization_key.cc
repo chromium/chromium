@@ -50,11 +50,11 @@ NetworkAnonymizationKey& NetworkAnonymizationKey::operator=(
     NetworkAnonymizationKey&& network_anonymization_key) = default;
 
 NetworkAnonymizationKey::NetworkAnonymizationKey(
-    const std::optional<SchemefulSite>& top_frame_site,
+    std::optional<SchemefulSite> top_frame_site,
     bool is_cross_site,
     std::optional<base::UnguessableToken> nonce,
     NetworkIsolationPartition network_isolation_partition)
-    : data_(base::MakeRefCounted<Data>(top_frame_site,
+    : data_(base::MakeRefCounted<Data>(std::move(top_frame_site),
                                        is_cross_site,
                                        std::move(nonce),
                                        network_isolation_partition)) {}
@@ -84,7 +84,8 @@ NetworkAnonymizationKey NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
 
 NetworkAnonymizationKey NetworkAnonymizationKey::CreateTransient() {
   SchemefulSite site_with_opaque_origin;
-  return NetworkAnonymizationKey(site_with_opaque_origin, false);
+  return NetworkAnonymizationKey(std::move(site_with_opaque_origin),
+                                 /*is_cross_site=*/false);
 }
 
 std::string NetworkAnonymizationKey::ToDebugString() const {
@@ -198,7 +199,7 @@ bool NetworkAnonymizationKey::FromValue(
   }
 
   *network_anonymization_key = NetworkAnonymizationKey(
-      top_frame_site.value(), is_cross_site, /*nonce=*/std::nullopt,
+      std::move(top_frame_site), is_cross_site, /*nonce=*/std::nullopt,
       network_isolation_partition);
   return true;
 }
@@ -259,11 +260,11 @@ NetworkAnonymizationKey::Data::Data(base::PassKey<Data>)
 }
 
 NetworkAnonymizationKey::Data::Data(
-    const std::optional<SchemefulSite>& top_frame_site,
+    std::optional<SchemefulSite> top_frame_site,
     bool is_cross_site,
     std::optional<base::UnguessableToken> nonce,
     NetworkIsolationPartition network_isolation_partition)
-    : top_frame_site_(top_frame_site),
+    : top_frame_site_(std::move(top_frame_site)),
       is_cross_site_(is_cross_site),
       nonce_(std::move(nonce)),
       network_isolation_partition_(network_isolation_partition) {}

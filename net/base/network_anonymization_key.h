@@ -81,16 +81,17 @@ class NET_EXPORT NetworkAnonymizationKey {
   // Create a `NetworkAnonymizationKey` from a `top_frame_site`, assuming it is
   // same-site (see comment on the class, above) and has no nonce.
   static NetworkAnonymizationKey CreateSameSite(
-      const SchemefulSite& top_frame_site) {
-    return NetworkAnonymizationKey(top_frame_site, false, std::nullopt,
+      const SchemefulSite top_frame_site) {
+    return NetworkAnonymizationKey(std::move(top_frame_site), false,
+                                   std::nullopt,
                                    NetworkIsolationPartition::kGeneral);
   }
 
   // Create a `NetworkAnonymizationKey` from a `top_frame_site`, assuming it is
   // cross-site (see comment on the class, above) and has no nonce.
-  static NetworkAnonymizationKey CreateCrossSite(
-      const SchemefulSite& top_frame_site) {
-    return NetworkAnonymizationKey(top_frame_site, true, std::nullopt,
+  static NetworkAnonymizationKey CreateCrossSite(SchemefulSite top_frame_site) {
+    return NetworkAnonymizationKey(std::move(top_frame_site), true,
+                                   std::nullopt,
                                    NetworkIsolationPartition::kGeneral);
   }
 
@@ -113,13 +114,13 @@ class NET_EXPORT NetworkAnonymizationKey {
   // Creates a `NetworkAnonymizationKey` from its constituent parts. This
   // is intended to be used to build a NAK from Mojo, and for tests.
   static NetworkAnonymizationKey CreateFromParts(
-      const SchemefulSite& top_frame_site,
+      SchemefulSite top_frame_site,
       bool is_cross_site,
       std::optional<base::UnguessableToken> nonce = std::nullopt,
       NetworkIsolationPartition network_isolation_partition =
           NetworkIsolationPartition::kGeneral) {
-    return NetworkAnonymizationKey(top_frame_site, is_cross_site, nonce,
-                                   network_isolation_partition);
+    return NetworkAnonymizationKey(std::move(top_frame_site), is_cross_site,
+                                   nonce, network_isolation_partition);
   }
 
   // Creates a transient non-empty NetworkAnonymizationKey by creating an opaque
@@ -192,7 +193,7 @@ class NET_EXPORT NetworkAnonymizationKey {
     // Conctruct an empty data.
     explicit Data(base::PassKey<Data>);
 
-    Data(const std::optional<SchemefulSite>& top_frame_site,
+    Data(std::optional<SchemefulSite> top_frame_site,
          bool is_cross_site,
          std::optional<base::UnguessableToken> nonce,
          NetworkIsolationPartition network_isolation_partition);
@@ -268,7 +269,7 @@ class NET_EXPORT NetworkAnonymizationKey {
 
  private:
   NetworkAnonymizationKey(
-      const std::optional<SchemefulSite>& top_frame_site,
+      std::optional<SchemefulSite> top_frame_site,
       bool is_cross_site,
       std::optional<base::UnguessableToken> nonce = std::nullopt,
       NetworkIsolationPartition network_isolation_partition =
