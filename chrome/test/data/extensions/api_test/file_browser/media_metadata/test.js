@@ -310,7 +310,7 @@ function resolveTestFileSystem() {
 function resolveFileEntry(fileSystem, fileName) {
   return new Promise((resolve) => {
     const failure = (error) => {
-      chrome.test.fail('While resolving ' + fileName + ': ' + error);
+      chrome.test.fail(`While resolving ${fileName}: ${error}`);
     };
 
     fileSystem.root.getFile(fileName, {}, resolve, failure);

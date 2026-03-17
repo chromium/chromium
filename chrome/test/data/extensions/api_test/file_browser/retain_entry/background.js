@@ -8,28 +8,31 @@
  */
 function retainDirectory() {
   return new Promise(function(fulfill) {
-    chrome.app.window.create('window.html', fulfill);
-  }).then(function(appWindow) {
-    return new Promise(function(fulfill, rejected) {
-      appWindow.contentWindow.chrome.fileSystem.chooseEntry(
-          {type: "openDirectory"},
-          fulfill);
-    });
-  }).then(function(selected) {
-    chrome.test.assertTrue(selected.isDirectory);
-    var id = chrome.fileSystem.retainEntry(selected);
-    chrome.test.assertTrue(!!id);
-    return new Promise(function(fulfill, rejected) {
-      chrome.fileSystem.isRestorable(id, fulfill);
-    }).then(function(restorable) {
-      chrome.test.assertTrue(restorable);
-      return new Promise(function(fulfill, rejected) {
-        chrome.storage.local.set({id: id}, fulfill);
+           chrome.app.window.create('window.html', fulfill);
+         })
+      .then(function(appWindow) {
+        return new Promise(function(fulfill, rejected) {
+          appWindow.contentWindow.chrome.fileSystem.chooseEntry(
+              {type: 'openDirectory'}, fulfill);
+        });
+      })
+      .then(function(selected) {
+        chrome.test.assertTrue(selected.isDirectory);
+        const id = chrome.fileSystem.retainEntry(selected);
+        chrome.test.assertTrue(!!id);
+        return new Promise(function(fulfill, rejected) {
+                 chrome.fileSystem.isRestorable(id, fulfill);
+               })
+            .then(function(restorable) {
+              chrome.test.assertTrue(restorable);
+              return new Promise(function(fulfill, rejected) {
+                chrome.storage.local.set({id: id}, fulfill);
+              });
+            });
+      })
+      .then(function() {
+        chrome.runtime.reload();
       });
-    });
-  }).then(function() {
-    chrome.runtime.reload();
-  });
 }
 
 /**

@@ -45,10 +45,10 @@ function verifyFile(entry, successCallback) {
 function verifyDirectory(entry, successCallback) {
   chrome.test.assertFalse(!entry.createReader,
                           'Entry has no createReader method.');
-  var reader = entry.createReader();
+  const reader = entry.createReader();
 
-  reader.readEntries(successCallback, function (error) {
-    chrome.test.fail('Error reading directory: ' + error.name);
+  reader.readEntries(successCallback, function(error) {
+    chrome.test.fail(`Error reading directory: ${error.name}`);
   });
 }
 
@@ -76,12 +76,13 @@ chrome.test.runTests([
       {volumeId: 'drive:drive-user'},
       function (fileSystem) {
         chrome.test.assertFalse(!fileSystem, 'Failed to get file system.');
-        fileSystem.root.getDirectory('/root/test_dir', {create: false},
+        fileSystem.root.getDirectory(
+            '/root/test_dir', {create: false},
             // Also read a non-root directory. This will initiate loading of
             // the full resource metadata. As of now, 'search' only works
             // with the resource metadata fully loaded. crbug.com/181075
             function(entry) {
-              var reader = entry.createReader();
+              const reader = entry.createReader();
               reader.readEntries(
                   chrome.test.succeed,
                   function() {
@@ -96,8 +97,8 @@ chrome.test.runTests([
 
   // Tests chrome.fileManagerPrivate.searchDrive method.
   function driveSearch() {
-    var query = 'empty';
-    var expectedEntries = {
+    const query = 'empty';
+    const expectedEntries = {
       '/root/test_dir/empty_dir': 'dir',
       '/root/test_dir/empty_file.foo': 'file',
     };
@@ -111,11 +112,11 @@ chrome.test.runTests([
           // The search query should return exactly two results.
           chrome.test.assertEq(2, entries.length);
 
-          var index = -1;
-          for (var i = 0; i < entries.length; ++i) {
-            var expectedType = expectedEntries[entries[i].fullPath];
+          const index = -1;
+          for (let i = 0; i < entries.length; ++i) {
+            const expectedType = expectedEntries[entries[i].fullPath];
             chrome.test.assertTrue(!!expectedType);
-            var verifyEntry = getEntryVerifier(expectedType);
+            const verifyEntry = getEntryVerifier(expectedType);
             chrome.test.assertFalse(!verifyEntry);
             verifyEntry(entries[i], chrome.test.callbackPass());
           }
@@ -129,22 +130,18 @@ chrome.test.runTests([
     // represent their (lastAccessed, lastModified) pair.
     // The API should return 4 results, even though there are more than five
     // matches in the test file system.
-    var expectedResults = [
-        // (2012-01-02T00:00:01.000Z, 2012-01-02T00:00:0.000Z)
-        {path: '/root/test_dir', type: 'dir'},
-        // (2012-01-02T00:00:00.000Z, 2012-01-01T00:00:00.005Z)
-        {path: '/root/test_dir/test_file.xul', type: 'file'},
-        // (2012-01-02T00:00:00.000Z, 2011-04-03T11:11:10.000Z)
-        {path: '/root/test_dir/test_file.tiff', type: 'file'},
-        // (2012-01-01T11:00:00.000Z, 2012-01-01T10:00:30.00Z)
-        {path: '/root/test_dir/test_file.xul.foo', type: 'file'},
+    const expectedResults = [
+      // (2012-01-02T00:00:01.000Z, 2012-01-02T00:00:0.000Z)
+      {path: '/root/test_dir', type: 'dir'},
+      // (2012-01-02T00:00:00.000Z, 2012-01-01T00:00:00.005Z)
+      {path: '/root/test_dir/test_file.xul', type: 'file'},
+      // (2012-01-02T00:00:00.000Z, 2011-04-03T11:11:10.000Z)
+      {path: '/root/test_dir/test_file.tiff', type: 'file'},
+      // (2012-01-01T11:00:00.000Z, 2012-01-01T10:00:30.00Z)
+      {path: '/root/test_dir/test_file.xul.foo', type: 'file'},
     ];
 
-    var query = {
-      'query': 'test',
-      'types': 'ALL',
-      'maxResults': 4
-    };
+    const query = {query: 'test', types: 'ALL', maxResults: 4};
 
     chrome.fileManagerPrivate.searchDriveMetadata(
         query,
@@ -163,7 +160,7 @@ chrome.test.runTests([
             chrome.test.assertEq(expectedResults[resultIndex].path,
                                  entries[resultIndex].entry.fullPath);
 
-            var verifyEntry =
+            const verifyEntry =
                 getEntryVerifier(expectedResults[resultIndex].type);
             chrome.test.assertFalse(!verifyEntry);
 

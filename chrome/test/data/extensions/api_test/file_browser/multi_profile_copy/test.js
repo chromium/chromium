@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-const kSecondaryDriveMountPointName = 'drive-fileBrowserApiTestProfile2';
+const SECONDARY_DRIVE_MOUNT_POINT_NAME = 'drive-fileBrowserApiTestProfile2';
 
 /**
  * @param {function(...?)} fn
@@ -59,8 +59,8 @@ async function getDirectoryEntry(root, path, options) {
  * @return {function(DOMError)} Resulting callback function object.
  */
 function fileErrorCallback(callback, message) {
-  return function(error){
-    callback(message + ": " + error.name);
+  return function(error) {
+    callback(`${message}: ${error.name}`);
   };
 }
 
@@ -117,9 +117,9 @@ async function fileCopy(
  * @param {function(string)} errorCallback Callback invoked in error case.
  */
 function verifyFileExists(root, path, successCallback, errorCallback) {
-  root.getFile(path, {create: false},
-               successCallback,
-               fileErrorCallback(errorCallback, path + ' does not exist.'));
+  root.getFile(
+      path, {create: false}, successCallback,
+      fileErrorCallback(errorCallback, `${path} does not exist.`));
 }
 
 /**
@@ -178,8 +178,8 @@ async function main() {
   const entries = await promisifyWithLastError(
       chrome.fileManagerPrivate.resolveIsolatedEntries,
       [primaryFileSystem.root]);
-  const secondaryUrl =
-      entries[0].toURL().replace(/[^\/]*\/?$/, kSecondaryDriveMountPointName);
+  const secondaryUrl = entries[0].toURL().replace(
+      /[^\/]*\/?$/, SECONDARY_DRIVE_MOUNT_POINT_NAME);
   await promisifyWithLastError(
       chrome.fileManagerPrivate.grantAccess, [secondaryUrl]);
   const secondaryEntry = await promisifyWithLastError(

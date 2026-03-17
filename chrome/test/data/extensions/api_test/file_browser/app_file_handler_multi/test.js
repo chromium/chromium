@@ -8,7 +8,7 @@
  * Promise of the volume list.
  * @type {Promise}
  */
-var volumeListPromise = new Promise(function(fulfill, reject) {
+const volumeListPromise = new Promise(function(fulfill, reject) {
   chrome.fileManagerPrivate.getVolumeMetadataList(fulfill);
 });
 
@@ -19,7 +19,7 @@ var volumeListPromise = new Promise(function(fulfill, reject) {
  */
 function getFileSystem(volumeType) {
   return volumeListPromise.then(function(list) {
-    for (var i = 0; i < list.length; i++) {
+    for (let i = 0; i < list.length; i++) {
       if (list[i].volumeType == volumeType) {
         return new Promise(function(fulfill) {
           chrome.fileSystem.requestFileSystem(
@@ -27,7 +27,7 @@ function getFileSystem(volumeType) {
         });
       }
     }
-    throw new Error('The volume is not found: ' + volumeType + '.');
+    throw new Error(`The volume is not found: ${volumeType}.`);
   });
 }
 
@@ -75,9 +75,9 @@ function prepareDirectory(filesystem, name) {
  *     system and the created entries.
  */
 function prepareFiles(filesystem) {
-  var testFileA =
+  const testFileA =
       prepareFile(filesystem, 'test_file_a.txt', TEST_FILE_CONTENTS);
-  var testFileB =
+  const testFileB =
       prepareFile(filesystem, 'test_file_b.txt', TEST_FILE_CONTENTS);
   return Promise.all([testFileA, testFileB]).then(function(entries) {
     return {filesystem: filesystem, entries: entries};
@@ -92,8 +92,8 @@ function prepareFiles(filesystem) {
  *     system and the created entries.
  */
 function prepareDirectories(filesystem) {
-  var testDirA = prepareDirectory(filesystem, 'dir1');
-  var testDirB = prepareDirectory(filesystem, 'dir2');
+  const testDirA = prepareDirectory(filesystem, 'dir1');
+  const testDirB = prepareDirectory(filesystem, 'dir2');
   return Promise.all([testDirA, testDirB]).then(function(entries) {
     return {filesystem: filesystem, entries: entries};
   });
@@ -104,31 +104,31 @@ function prepareDirectories(filesystem) {
  * @type {Blob}
  * @const
  */
-var TEST_FILE_CONTENTS = new Blob(['This is a test file.']);
+const TEST_FILE_CONTENTS = new Blob(['This is a test file.']);
 
 /**
  * File system of the drive volume for files.
  * @type {Promise}
  */
-var driveFileSystemPromise = getFileSystem('drive').then(prepareFiles);
+const driveFileSystemPromise = getFileSystem('drive').then(prepareFiles);
 
 /**
  * File system of the local volume for files.
  * @type {Promise}
  */
-var localFileSystemPromise = getFileSystem('testing').then(prepareFiles);
+const localFileSystemPromise = getFileSystem('testing').then(prepareFiles);
 
 /**
  * File system of the drive volume for directories.
  * @type {Promise}
  */
-var driveDirSystemPromise = getFileSystem('drive').then(prepareDirectories);
+const driveDirSystemPromise = getFileSystem('drive').then(prepareDirectories);
 
 /**
  * File system of the local volume for directories.
  * @type {Promise}
  */
-var localDirSystemPromise = getFileSystem('drive').then(prepareDirectories);
+const localDirSystemPromise = getFileSystem('drive').then(prepareDirectories);
 
 /**
  * Calls test functions depends on the result of the promise.
@@ -161,14 +161,14 @@ function launchWithEntries(isolatedEntries) {
       .then(
           function(entries) {
             const dlpSourceUrls = entries.map(_ => '');
-            var tasksPromise = new Promise(function(fulfill) {
+            const tasksPromise = new Promise(function(fulfill) {
                                  chrome.fileManagerPrivate.getFileTasks(
                                      entries, dlpSourceUrls, fulfill);
                                }).then(function(resultingTasks) {
               const tasks = resultingTasks.tasks;
               chrome.test.assertEq(1, tasks.length);
-              chrome.test.assertEq("ChromeOS File handler extension",
-                                   tasks[0].title);
+              chrome.test.assertEq(
+                  'ChromeOS File handler extension', tasks[0].title);
               chrome.test.assertEq(
                   'pkplfbidichfdicaijlchgnapepdginl',
                   tasks[0].descriptor.appId);
@@ -176,14 +176,14 @@ function launchWithEntries(isolatedEntries) {
               chrome.test.assertEq('textAction', tasks[0].descriptor.actionId);
               return tasks[0];
             });
-            var launchDataPromise = new Promise(function(fulfill) {
+            const launchDataPromise = new Promise(function(fulfill) {
               chrome.app.runtime.onLaunched.addListener(
                   function handler(launchData) {
                     chrome.app.runtime.onLaunched.removeListener(handler);
                     fulfill(launchData);
                   });
             });
-            var taskExecutedPromise = tasksPromise.then(function(task) {
+            const taskExecutedPromise = tasksPromise.then(function(task) {
               return new Promise(function(fulfill, reject) {
                 chrome.fileManagerPrivate.executeTask(
                   task.descriptor, entries,
@@ -195,10 +195,11 @@ function launchWithEntries(isolatedEntries) {
                     });
               });
             });
-            var resolvedEntriesPromise = launchDataPromise.then(
-                function(launchData) {
-                  var entries = launchData.items.map(
-                      function(item) { return item.entry; });
+            const resolvedEntriesPromise =
+                launchDataPromise.then(function(launchData) {
+                  const entries = launchData.items.map(function(item) {
+                    return item.entry;
+                  });
                   return new Promise(function(fulfill) {
                     chrome.fileManagerPrivate.resolveIsolatedEntries(
                         entries, fulfill);

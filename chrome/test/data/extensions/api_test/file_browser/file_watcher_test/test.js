@@ -199,9 +199,9 @@ class TestEventListener {
     if (expectedEvent.eventType !== event.eventType) {
       console.log(`Marking ${this.id} as error`);
       this.onError(
-          'Unexpected event type for entryURL: ' + entryURL + '\n' +
-          ' Expected type: ' + expectedEvent.eventType + '\n' +
-          ' Actual type: ' + event.eventType + '\n');
+          `Unexpected event type for entryURL: ${entryURL}\n` +
+          ` Expected type: ${expectedEvent.eventType}\n` +
+          ` Actual type: ${event.eventType}\n`);
       return;
     }
 
@@ -213,9 +213,9 @@ class TestEventListener {
 }
 
 // Gets the path for operations. The path is relative to the mount point for
-// local entries and relative to the "My Drive" root for Drive entries.
+// local entries and relative to the 'My Drive' root for Drive entries.
 function getPath(relativePath, isOnDrive) {
-  return (isOnDrive ? 'root/' : '') + relativePath;
+  return `${isOnDrive ? 'root/' : ''}${relativePath}`;
 }
 
 /**
@@ -334,13 +334,15 @@ function initTests(callback) {
               });
             };
 
-            getFunctionAndConvert(testEntry.path, {},
+            getFunctionAndConvert(
+                testEntry.path, {},
                 function(entry) {
                   testParams.entries[testEntry.name] = entry;
                   getNextEntry();
                 },
-                callback.bind(null, testParams,
-                    'Unable to get entry: \'' + testEntry.path + '\'.'));
+                callback.bind(
+                    null, testParams,
+                    `Unable to get entry: '${testEntry.path}'.`));
           };
 
           // Trigger getting the watched entries.
@@ -352,7 +354,7 @@ function initTests(callback) {
 // Starts the test.
 initTests(function(testParams, errorMessage) {
   if (!testParams.valid) {
-    chrome.test.notifyFail('Failed to initialize tests: ' + errorMessage);
+    chrome.test.notifyFail(`Failed to initialize tests: ${errorMessage}`);
     return;
   }
 

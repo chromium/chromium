@@ -14,7 +14,7 @@
  * File for which the file browser handlers will be executed by the extension.
  * @type {string}
  */
-const kTestPaths = ['test_dir/test_file.xul', 'test_dir/test_file.tiff'];
+const TEST_PATHS = ['test_dir/test_file.xul', 'test_dir/test_file.tiff'];
 
 // Starts the test extension.
 function run() {
@@ -24,7 +24,7 @@ function run() {
    *
    * @type {!Array<!FileEntry>}
    */
-  let resolvedEntries = [];
+  const resolvedEntries = [];
   /**
    * Whether the test extension has done its job. When done is set |onError|
    * calls will be ignored.
@@ -57,14 +57,14 @@ function run() {
    */
   function onGotTasks(entry, resultingTasks) {
     if (!resultingTasks || !resultingTasks.tasks) {
-      onError('Failed getting tasks for ' + entry.fullPath);
+      onError(`Failed getting tasks for ${entry.fullPath}`);
       return;
     }
     const tasks = resultingTasks.tasks;
 
     if (tasks.length != 1) {
-      onError('Got invalid number of tasks for "' + entry.fullPath + '": ' +
-              tasks.length);
+      onError(`Got invalid number of tasks for '${entry.fullPath}': ${
+          tasks.length}`);
     }
 
     const {appId, taskType, actionId} = tasks[0].descriptor;
@@ -75,22 +75,22 @@ function run() {
     const tiffex = /.*\.tiff/;
     if (tiffex.test(entry.fullPath)) {
       if (encodedTaskId != 'pkplfbidichfdicaijlchgnapepdginl|app|image') {
-        onError(`Got invalid task ${encodedTaskId} for "${entry.fullPath}"`);
+        onError(`Got invalid task ${encodedTaskId} for '${entry.fullPath}'`);
       }
       if (!tasks[0].isDefault) {
-        onError(`Task "${encodedTaskId}" should be default for "${
-            entry.fullPath}"`);
+        onError(`Task '${encodedTaskId}' should be default for '${
+            entry.fullPath}'`);
       }
     }
     else {  // Matched file extension that's not '.tiff'
       if (encodedTaskId != 'pkplfbidichfdicaijlchgnapepdginl|app|any') {
-        onError(`Got invalid task ${encodedTaskId} for "${entry.fullPath}"`);
+        onError(`Got invalid task ${encodedTaskId} for '${entry.fullPath}'`);
       }
       if (tasks[0].isDefault) {
-        onError(`Task "${encodedTaskId}" is default for "${entry.fullPath}"`);
+        onError(`Task '${encodedTaskId}' is default for '${entry.fullPath}'`);
       }
     }
-    if (resolvedEntries.length == kTestPaths.length) {
+    if (resolvedEntries.length == TEST_PATHS.length) {
       chrome.test.succeed();
     }
   }
@@ -107,7 +107,7 @@ function run() {
         [isolatedEntry],
         function(externalEntries) {
           resolvedEntries.push(externalEntries[0]);
-          if (resolvedEntries.length == kTestPaths.length) {
+          if (resolvedEntries.length == TEST_PATHS.length) {
             resolvedEntries.forEach(function(entry) {
               chrome.fileManagerPrivate.getFileTasks(
                   [entry], [''], onGotTasks.bind(null, entry));
@@ -124,12 +124,11 @@ function run() {
    * @param {string} volumeType Type of the volume.
    */
   function onGotFileSystem(fileSystem, volumeType) {
-    var isOnDrive = volumeType == 'drive';
-    kTestPaths.forEach(function(filePath) {
+    const isOnDrive = volumeType == 'drive';
+    TEST_PATHS.forEach(function(filePath) {
       fileSystem.root.getFile(
-          (isOnDrive ? 'root/' : '') + filePath, {},
-          onGotEntry.bind(null),
-          onError.bind(null, 'Unable to get file: ' + filePath));
+          `${isOnDrive ? 'root/' : ''}${filePath}`, {}, onGotEntry.bind(null),
+          onError.bind(null, `Unable to get file: ${filePath}`));
     });
   }
 

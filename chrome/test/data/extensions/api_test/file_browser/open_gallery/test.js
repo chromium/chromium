@@ -7,7 +7,7 @@
  * types are handled by the appropriate default-installed system app.
  */
 
-const kTestPng = 'test_dir/test_file.png';
+const TEST_PNG = 'test_dir/test_file.png';
 
 /**
  * Finds the `volumeType` volume then resolves the provided `path` as an Entry.
@@ -25,7 +25,7 @@ function getFileEntry(volumeType, path) {
             },
             fileError => {
               chrome.test.fail(
-                  `Unable to getFile "${path}": ${fileError.message}`);
+                  `Unable to getFile '${path}': ${fileError.message}`);
             });
       });
     });
@@ -56,7 +56,7 @@ function openGalleryExpectOpened(entry) {
 }
 
 function testPngOpensGalleryReturnsOpened() {
-  getFileEntry('testing', kTestPng).then(openGalleryExpectOpened);
+  getFileEntry('testing', TEST_PNG).then(openGalleryExpectOpened);
 }
 
 // Handle the case where JSTestStarter has already injected a test to run.

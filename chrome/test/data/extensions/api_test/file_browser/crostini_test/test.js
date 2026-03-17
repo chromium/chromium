@@ -46,21 +46,21 @@ chrome.test.runTests([
     });
   },
   function testGetCrostiniSharedPaths() {
-    const urlPrefix = 'filesystem:chrome-extension://' + TEST_EXTENSION_ID +
+    const urlPrefix = `filesystem:chrome-extension://${TEST_EXTENSION_ID}` +
         '/external/Downloads-user';
     let observeFirstForSession = false;
     chrome.fileManagerPrivate.getCrostiniSharedPaths(
         observeFirstForSession, 'termina',
         chrome.test.callbackPass(({entries, firstForSession}) => {
           // 2 entries inserted in setup, and 1 successful entry added above.
-          chrome.test.assertEq(urlPrefix + '/share_dir', entries[0].toURL());
+          chrome.test.assertEq(`${urlPrefix}/share_dir`, entries[0].toURL());
           chrome.test.assertTrue(entries[0].isDirectory);
           chrome.test.assertEq('/share_dir', entries[0].fullPath);
           chrome.test.assertEq(3, entries.length);
-          chrome.test.assertEq(urlPrefix + '/shared1', entries[1].toURL());
+          chrome.test.assertEq(`${urlPrefix}/shared1`, entries[1].toURL());
           chrome.test.assertTrue(entries[1].isDirectory);
           chrome.test.assertEq('/shared1', entries[1].fullPath);
-          chrome.test.assertEq(urlPrefix + '/shared2', entries[2].toURL());
+          chrome.test.assertEq(`${urlPrefix}/shared2`, entries[2].toURL());
           chrome.test.assertTrue(entries[2].isDirectory);
           chrome.test.assertEq('/shared2', entries[2].fullPath);
           // When observerFirstForSession is false, firstForSession is false.

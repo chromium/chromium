@@ -32,17 +32,17 @@
  * the end of the test.
  * (root/)test_dir/test_file.xul will not change during the test.
  *
- * All files should initially have content: kInitialFileContent.
+ * All files should initially have content: INITIAL_FILE_CONTENT.
  */
 
-var kInitialFileContent = 'This is some test content.';
-var kWriteOffset = 26;
-var kWriteData = ' Yay!';
-var kFileContentAfterWrite = 'This is some test content. Yay!';
-var kTruncateShortLength = 4;
-var kFileContentAfterTruncateShort = 'This';
-var kTruncateLongLength = 6;
-var kFileContentAfterTruncateLong = 'This\0\0';
+const INITIAL_FILE_CONTENT = 'This is some test content.';
+const WRITE_OFFSET = 26;
+const WRITE_DATA = ' Yay!';
+const FILE_CONTENT_AFTER_WRITE = 'This is some test content. Yay!';
+const TRUNCATE_SHORT_LENGTH = 4;
+const FILE_CONTENT_AFTER_TRUNCATE_SHORT = 'This';
+const TRUNCATE_LONG_LENGTH = 6;
+const FILE_CONTENT_AFTER_TRUNCATE_LONG = 'This\0\0';
 
 function assertEqAndRunCallback(expectedValue, value, errorMessage,
                                 callback, callbackArg) {
@@ -60,17 +60,17 @@ function assertEqAndRunCallback(expectedValue, value, errorMessage,
  */
 
 // Gets the path for operations. The path is relative to the volume for
-// local entries and relative to the "My Drive" root for Drive entries.
+// local entries and relative to the 'My Drive' root for Drive entries.
 function getPath(relativePath, isOnDrive) {
-  return (isOnDrive ? 'root/' : '') + relativePath;
+  return `${isOnDrive ? 'root/' : ''}${relativePath}`;
 }
 
 // Gets the directory entry.
 function getDirectory(
     volumeId, entry, path, shouldCreate, expectSuccess, callback) {
-  var messagePrefix = shouldCreate ? 'Creating ' : 'Getting ';
-  var message = messagePrefix + 'directory: \'' + path +'\'.';
-  var isOnDrive = volumeId == 'drive:drive-user';
+  const messagePrefix = shouldCreate ? 'Creating ' : 'Getting ';
+  const message = `${messagePrefix}directory: '${path}'.`;
+  const isOnDrive = volumeId == 'drive:drive-user';
 
   entry.getDirectory(
       getPath(path, isOnDrive), {create: shouldCreate},
@@ -81,9 +81,9 @@ function getDirectory(
 
 // Gets the file entry.
 function getFile(volumeId, entry, path, shouldCreate, expectSuccess, callback) {
-  var messagePrefix = shouldCreate ? 'Creating ' : 'Getting ';
-  var message = messagePrefix + 'file: \'' + path +'\'.';
-  var isOnDrive = volumeId == 'drive:drive-user';
+  const messagePrefix = shouldCreate ? 'Creating ' : 'Getting ';
+  const message = `${messagePrefix}file: '${path}'.`;
+  const isOnDrive = volumeId == 'drive:drive-user';
 
   entry.getFile(
       getPath(path, isOnDrive), {create: shouldCreate},
@@ -96,112 +96,137 @@ function getFile(volumeId, entry, path, shouldCreate, expectSuccess, callback) {
 // should always succeed.
 function readFileAndExpectContent(
     volumeId, entry, path, expectedContent, callback) {
-  var message = 'Content of the file \'' + path + '\'.';
+  const message = `Content of the file '${path}'.`;
   getFile(volumeId, entry, path, false, true, function(entry) {
-    var reader = new FileReader();
+    const reader = new FileReader();
     reader.onload = function() {
       assertEqAndRunCallback(expectedContent, reader.result, message, callback);
     };
     reader.onerror = function(event) {
-      chrome.test.fail('Failed to read: ' + reader.error.name);
+      chrome.test.fail(`Failed to read: ${reader.error.name}`);
     };
-    entry.file(reader.readAsText.bind(reader),
-               function(error) {
-                 chrome.test.fail('Failed to get file: ' + error.name);
-               });
+    entry.file(reader.readAsText.bind(reader), function(error) {
+      chrome.test.fail(`Failed to get file: ${error.name}`);
+    });
   });
 }
 
 // Writes |content| to the file entry/path  with offest |offest|.
 function writeFile(
     volumeId, entry, path, offset, content, expectSuccess, callback) {
-  var message = 'Writing to file: \'' + path + '\'.';
+  const message = `Writing to file: '${path}'.`;
 
   getFile(volumeId, entry, path, false, true, function(entry) {
-    entry.createWriter(function(writer) {
-      writer.onwrite = assertEqAndRunCallback.bind(null,
-          expectSuccess, true, message, callback);
-      writer.onerror = assertEqAndRunCallback.bind(null,
-          expectSuccess, false, message, callback);
+    entry.createWriter(
+        function(writer) {
+          writer.onwrite = assertEqAndRunCallback.bind(
+              null, expectSuccess, true, message, callback);
+          writer.onerror = assertEqAndRunCallback.bind(
+              null, expectSuccess, false, message, callback);
 
-      writer.seek(offset);
-      writer.write(new Blob([content], {'type': 'text/plain'}));
-    },
-    assertEqAndRunCallback.bind(null, expectSuccess, false,
-        'Creating writer for \'' + path + '\'.', callback));
+          writer.seek(offset);
+          writer.write(new Blob([content], {type: 'text/plain'}));
+        },
+        assertEqAndRunCallback.bind(
+            null, expectSuccess, false, `Creating writer for '${path}'.`,
+            callback));
   });
 }
 
 // Starts and aborts write operation to entry/path.
 function abortWriteFile(volumeId, entry, path, callback) {
   getFile(volumeId, entry, path, false, true, function(entry) {
-    entry.createWriter(function(writer) {
-      var aborted = false;
-      var failed = false;
+    entry.createWriter(
+        function(writer) {
+          let aborted = false;
+          let failed = false;
 
-      writer.onwritestart = function() { writer.abort(); };
-      writer.onwrite = function() { failed = true; };
-      writer.onerror = function() { failed = true; };
-      writer.onabort = function() { aborted = true; };
+          writer.onwritestart = function() {
+            writer.abort();
+          };
+          writer.onwrite = function() {
+            failed = true;
+          };
+          writer.onerror = function() {
+            failed = true;
+          };
+          writer.onabort = function() {
+            aborted = true;
+          };
 
-      writer.onwriteend = function() {
-        chrome.test.assertTrue(aborted);
-        chrome.test.assertFalse(failed);
-        callback();
-      }
+          writer.onwriteend =
+              function() {
+            chrome.test.assertTrue(aborted);
+            chrome.test.assertFalse(failed);
+            callback();
+          }
 
-      writer.write(new Blob(['xxxxx'], {'type': 'text/plain'}));
-    }, function(error) {
-      chrome.test.fail('Error creating writer: ' + error.name);
-    });
+              writer.write(new Blob(['xxxxx'], {type: 'text/plain'}));
+        },
+        function(error) {
+          chrome.test.fail(`Error creating writer: ${error.name}`);
+        });
   });
 }
 
 // Truncates file entry/path to length |length|.
 function truncateFile(volumeId, entry, path, length, expectSuccess, callback) {
-  var message = 'Truncating file: \'' + path + '\' to length ' + length + '.';
+  const message = `Truncating file: '${path}' to length ${length}.`;
   getFile(volumeId, entry, path, false, true, function(entry) {
-    entry.createWriter(function(writer) {
-      writer.onwrite = assertEqAndRunCallback.bind(null,
-          expectSuccess, true, message, callback);
-      writer.onerror = assertEqAndRunCallback.bind(null,
-          expectSuccess, false, message, callback);
+    entry.createWriter(
+        function(writer) {
+          writer.onwrite = assertEqAndRunCallback.bind(
+              null, expectSuccess, true, message, callback);
+          writer.onerror = assertEqAndRunCallback.bind(
+              null, expectSuccess, false, message, callback);
 
-      writer.truncate(length);
-    },
-    assertEqAndRunCallback.bind(null, expectSuccess, false,
-        'Creating writer for \'' + path + '\'.', callback));
+          writer.truncate(length);
+        },
+        assertEqAndRunCallback.bind(
+            null, expectSuccess, false, `Creating writer for '${path}'.`,
+            callback));
   });
 }
 
 // Starts and aborts truncate operation on entry/path.
 function abortTruncateFile(volumeId, entry, path, callback) {
   getFile(volumeId, entry, path, false, true, function(entry) {
-    entry.createWriter(function(writer) {
-      var aborted = false;
-      var failed = false;
+    entry.createWriter(
+        function(writer) {
+          let aborted = false;
+          let failed = false;
 
-      writer.onwritestart = function() { writer.abort(); };
-      writer.onwrite = function() { failed = true; };
-      writer.onerror = function() { failed = true; };
-      writer.onabort = function() { aborted = true; };
+          writer.onwritestart = function() {
+            writer.abort();
+          };
+          writer.onwrite = function() {
+            failed = true;
+          };
+          writer.onerror = function() {
+            failed = true;
+          };
+          writer.onabort = function() {
+            aborted = true;
+          };
 
-      writer.onwriteend = function() {
-        chrome.test.assertTrue(aborted);
-        chrome.test.assertFalse(failed);
-        callback();
-      }
+          writer.onwriteend =
+              function() {
+            chrome.test.assertTrue(aborted);
+            chrome.test.assertFalse(failed);
+            callback();
+          }
 
-      writer.truncate(10);
-    }, function(error) {
-      chrome.test.fail('Error creating writer: ' + error.name);
-    });
+              writer.truncate(10);
+        },
+        function(error) {
+          chrome.test.fail(`Error creating writer: ${error.name}`);
+        });
   });
 }
 
 // Copies file entry/path from to entry/to/newName.
 function copyFile(volumeId, entry, from, to, newName, expectSuccess, callback) {
-  var message = 'Copying \'' + from + '\' to \'' + to + '/' + newName + '\'.';
+  const message = `Copying '${from}' to '${to}/${newName}'.`;
 
   getFile(volumeId, entry, from, false, true, function(sourceEntry) {
     getDirectory(volumeId, entry, to, false, true, function(targetDir) {
@@ -216,7 +241,7 @@ function copyFile(volumeId, entry, from, to, newName, expectSuccess, callback) {
 
 // Moves file entry/from to entry/to/newName.
 function moveFile(volumeId, entry, from, to, newName, expectSuccess, callback) {
-  var message = 'Moving \'' + from + '\' to \'' + to + '/' + newName + '\'.';
+  const message = `Moving '${from}' to '${to}/${newName}'.`;
 
   getFile(volumeId, entry, from, false, true, function(sourceEntry) {
     getDirectory(volumeId, entry, to, false, true, function(targetDir) {
@@ -231,7 +256,7 @@ function moveFile(volumeId, entry, from, to, newName, expectSuccess, callback) {
 
 // Deletes file entry/path.
 function deleteFile(volumeId, entry, path, expectSuccess, callback) {
-  var message = 'Deleting file \'' + path + '\'.';
+  const message = `Deleting file '${path}'.`;
 
   getFile(volumeId, entry, path, false, true, function(entry) {
     entry.remove(
@@ -244,7 +269,7 @@ function deleteFile(volumeId, entry, path, expectSuccess, callback) {
 
 // Deletes directory entry/path.
 function deleteDirectory(volumeId, entry, path, expectSuccess, callback) {
-  var message = 'Deleting directory \'' + path + '\'.';
+  const message = `Deleting directory '${path}'.`;
 
   getDirectory(volumeId, entry, path, false, true, function(entry) {
     entry.remove(
@@ -258,7 +283,7 @@ function deleteDirectory(volumeId, entry, path, expectSuccess, callback) {
 // Recursively deletes directory entry/path.
 function deleteDirectoryRecursively(
     volumeId, entry, path, expectSuccess, callback) {
-  var message = 'Recursively deleting directory \'' + path + '\'.';
+  const message = `Recursively deleting directory '${path}'.`;
 
   getDirectory(volumeId, entry, path, false, true, function(entry) {
     entry.removeRecursively(
@@ -278,10 +303,10 @@ function deleteDirectoryRecursively(
  */
 function collectTestsForVolumeId(volumeId, fileSystem) {
   console.log(volumeId);
-  var isReadOnly = volumeId == 'testing:restricted';
-  var isOnDrive = volumeId == 'drive:drive-user';
+  const isReadOnly = volumeId == 'testing:restricted';
+  const isOnDrive = volumeId == 'drive:drive-user';
 
-  var testsToRun = [];
+  const testsToRun = [];
 
   testsToRun.push(function getDirectoryTest() {
     getDirectory(volumeId, fileSystem.root, 'test_dir', false, true,
@@ -291,8 +316,9 @@ function collectTestsForVolumeId(volumeId, fileSystem) {
   testsToRun.push(function createDirectoryTest() {
     // callback checks whether the new directory exists after create operation.
     // It should exists iff the file system is not read only.
-    var callback = getDirectory.bind(null, volumeId, fileSystem.root,
-        'new_test_dir', false, !isReadOnly, chrome.test.succeed);
+    const callback = getDirectory.bind(
+        null, volumeId, fileSystem.root, 'new_test_dir', false, !isReadOnly,
+        chrome.test.succeed);
 
     // Create operation should succeed only for non read-only file systems.
     getDirectory(volumeId, fileSystem.root, 'new_test_dir', true, !isReadOnly,
@@ -307,8 +333,9 @@ function collectTestsForVolumeId(volumeId, fileSystem) {
   testsToRun.push(function createFileTest() {
     // Checks whether the new file exists after create operation.
     // It should exists iff the file system is not read only.
-    var callback = getFile.bind(null, volumeId, fileSystem.root,
-        'test_dir/new_file', false, !isReadOnly, chrome.test.succeed);
+    const callback = getFile.bind(
+        null, volumeId, fileSystem.root, 'test_dir/new_file', false,
+        !isReadOnly, chrome.test.succeed);
 
     // Create operation should succeed only for non read-only file systems.
     getFile(volumeId, fileSystem.root, 'test_dir/new_file', true, !isReadOnly,
@@ -317,49 +344,49 @@ function collectTestsForVolumeId(volumeId, fileSystem) {
 
   testsToRun.push(function readFileTest() {
     readFileAndExpectContent(volumeId, fileSystem.root,
-        'test_dir/test_file.xul', kInitialFileContent, chrome.test.succeed);
+        'test_dir/test_file.xul', INITIAL_FILE_CONTENT, chrome.test.succeed);
   });
 
   testsToRun.push(function writeFileTest() {
-    var expectedFinalContent = isReadOnly ? kInitialFileContent :
-                                            kFileContentAfterWrite;
+    const expectedFinalContent =
+        isReadOnly ? INITIAL_FILE_CONTENT : FILE_CONTENT_AFTER_WRITE;
     // Check file content after write operation. The content should not change
     // on read-only file system.
-    var callback = readFileAndExpectContent.bind(null, volumeId,
-        fileSystem.root, 'test_dir/test_file.tiff', expectedFinalContent,
-        chrome.test.succeed);
+    const callback = readFileAndExpectContent.bind(
+        null, volumeId, fileSystem.root, 'test_dir/test_file.tiff',
+        expectedFinalContent, chrome.test.succeed);
 
     // Write should fail only on read-only file system.
     writeFile(volumeId, fileSystem.root, 'test_dir/test_file.tiff',
-        kWriteOffset, kWriteData, !isReadOnly, callback);
+        WRITE_OFFSET, WRITE_DATA, !isReadOnly, callback);
   });
 
   testsToRun.push(function truncateFileShortTest() {
-    var expectedFinalContent = isReadOnly ? kInitialFileContent :
-                                            kFileContentAfterTruncateShort;
+    const expectedFinalContent =
+        isReadOnly ? INITIAL_FILE_CONTENT : FILE_CONTENT_AFTER_TRUNCATE_SHORT;
     // Check file content after truncate operation. The content should not
     // change on read-only file system.
-    var callback = readFileAndExpectContent.bind(null, volumeId,
-        fileSystem.root, 'test_dir/test_file.tiff', expectedFinalContent,
-        chrome.test.succeed);
+    const callback = readFileAndExpectContent.bind(
+        null, volumeId, fileSystem.root, 'test_dir/test_file.tiff',
+        expectedFinalContent, chrome.test.succeed);
 
     // Truncate should fail only on read-only file system.
     truncateFile(volumeId, fileSystem.root, 'test_dir/test_file.tiff',
-        kTruncateShortLength, !isReadOnly, callback);
+        TRUNCATE_SHORT_LENGTH, !isReadOnly, callback);
   });
 
   testsToRun.push(function truncateFileLongTest() {
-    var expectedFinalContent = isReadOnly ? kInitialFileContent :
-                                            kFileContentAfterTruncateLong;
+    const expectedFinalContent =
+        isReadOnly ? INITIAL_FILE_CONTENT : FILE_CONTENT_AFTER_TRUNCATE_LONG;
     // Check file content after truncate operation. The content should not
     // change on read-only file system.
-    var callback = readFileAndExpectContent.bind(null, volumeId,
-        fileSystem.root, 'test_dir/test_file.tiff', expectedFinalContent,
-        chrome.test.succeed);
+    const callback = readFileAndExpectContent.bind(
+        null, volumeId, fileSystem.root, 'test_dir/test_file.tiff',
+        expectedFinalContent, chrome.test.succeed);
 
     // Truncate should fail only on read-only file system.
     truncateFile(volumeId, fileSystem.root, 'test_dir/test_file.tiff',
-        kTruncateLongLength, !isReadOnly, callback);
+        TRUNCATE_LONG_LENGTH, !isReadOnly, callback);
   });
 
   // Skip abort tests for read-only file systems.
@@ -376,7 +403,7 @@ function collectTestsForVolumeId(volumeId, fileSystem) {
   }
 
   testsToRun.push(function copyFileTest() {
-    var verifyTarget = null;
+    let verifyTarget = null;
     if (isReadOnly) {
       // If the file system is read-only, the target file should not exist after
       // copy operation.
@@ -386,14 +413,14 @@ function collectTestsForVolumeId(volumeId, fileSystem) {
       // If the file system is not read-only, the target file should be created
       // during copy operation and its content should match the source file.
       verifyTarget = readFileAndExpectContent.bind(null, volumeId,
-          fileSystem.root, 'test_dir/subdir/copy', kInitialFileContent,
+          fileSystem.root, 'test_dir/subdir/copy', INITIAL_FILE_CONTENT,
           chrome.test.succeed);
     }
 
     // Verify the source file stil exists and its content hasn't changed.
-    var verifySource = readFileAndExpectContent.bind(null, volumeId,
-        fileSystem.root, 'test_dir/test_file.xul', kInitialFileContent,
-        verifyTarget);
+    const verifySource = readFileAndExpectContent.bind(
+        null, volumeId, fileSystem.root, 'test_dir/test_file.xul',
+        INITIAL_FILE_CONTENT, verifyTarget);
 
     // Copy file should fail on read-only file system.
     copyFile(volumeId, fileSystem.root, 'test_dir/test_file.xul',
@@ -401,7 +428,7 @@ function collectTestsForVolumeId(volumeId, fileSystem) {
   });
 
   testsToRun.push(function moveFileTest() {
-    var verifyTarget = null;
+    let verifyTarget = null;
     if (isReadOnly) {
       // If the file system is read-only, the target file should not be created
       // during move.
@@ -411,14 +438,15 @@ function collectTestsForVolumeId(volumeId, fileSystem) {
       // If the file system is read-only, the target file should be created
       // during move and its content should match the source file.
       verifyTarget = readFileAndExpectContent.bind(null, volumeId,
-          fileSystem.root, 'test_dir/subdir/move', kInitialFileContent,
+          fileSystem.root, 'test_dir/subdir/move', INITIAL_FILE_CONTENT,
           chrome.test.succeed);
     }
 
     // On read-only file system the source file should still exist. Otherwise
     // the source file should have been deleted during move operation.
-    var verifySource = getFile.bind(null, volumeId, fileSystem.root,
-        'test_dir/test_file.xul', false, isReadOnly, verifyTarget);
+    const verifySource = getFile.bind(
+        null, volumeId, fileSystem.root, 'test_dir/test_file.xul', false,
+        isReadOnly, verifyTarget);
 
     // Copy file should fail on read-only file system.
     moveFile(volumeId, fileSystem.root, 'test_dir/test_file.xul',
@@ -428,8 +456,9 @@ function collectTestsForVolumeId(volumeId, fileSystem) {
   testsToRun.push(function deleteFileTest() {
     // Verify that file exists after delete operation if and only if the file
     // system is read only.
-    var callback = getFile.bind(null, volumeId, fileSystem.root,
-        'test_dir/test_file.xul.foo', false, isReadOnly, chrome.test.succeed);
+    const callback = getFile.bind(
+        null, volumeId, fileSystem.root, 'test_dir/test_file.xul.foo', false,
+        isReadOnly, chrome.test.succeed);
 
     // Delete operation should fail for read-only file systems.
     deleteFile(volumeId, fileSystem.root, 'test_dir/test_file.xul.foo',
@@ -439,8 +468,9 @@ function collectTestsForVolumeId(volumeId, fileSystem) {
   testsToRun.push(function deleteEmptyDirectoryTest() {
     // Verify that the directory exists after delete operation if and only if
     // the file system is read-only.
-    var callback = getDirectory.bind(null, volumeId, fileSystem.root,
-        'test_dir/empty_dir', false, isReadOnly, chrome.test.succeed);
+    const callback = getDirectory.bind(
+        null, volumeId, fileSystem.root, 'test_dir/empty_dir', false,
+        isReadOnly, chrome.test.succeed);
 
     // Deleting empty directory should fail for read-only file systems, and
     // succeed otherwise.
@@ -450,8 +480,9 @@ function collectTestsForVolumeId(volumeId, fileSystem) {
 
   testsToRun.push(function deleteDirectoryTest() {
     // Verify that the directory still exists after the operation.
-    var callback = getDirectory.bind(null, volumeId, fileSystem.root,
-        'test_dir', false, true, chrome.test.succeed);
+    const callback = getDirectory.bind(
+        null, volumeId, fileSystem.root, 'test_dir', false, true,
+        chrome.test.succeed);
 
     // The directory should still contain some files, so non-recursive delete
     // should fail.
@@ -463,8 +494,9 @@ function collectTestsForVolumeId(volumeId, fileSystem) {
     testsToRun.push(function deleteDirectoryRecursivelyTest() {
       // Verify that the directory exists after delete operation if and only if
       // the file system is read-only.
-      var callback = getDirectory.bind(null, volumeId, fileSystem.root,
-          'test_dir', false, isReadOnly, chrome.test.succeed);
+      const callback = getDirectory.bind(
+          null, volumeId, fileSystem.root, 'test_dir', false, isReadOnly,
+          chrome.test.succeed);
 
       // Recursive delete dhouls fail only for read-only file system.
       deleteDirectoryRecursively(volumeId, fileSystem.root, 'test_dir',
@@ -485,14 +517,17 @@ function collectTestsForVolumeId(volumeId, fileSystem) {
  */
 function initTests(callback) {
   chrome.fileManagerPrivate.getVolumeMetadataList(function(volumeMetadataList) {
-    var possibleVolumeTypes = ['testing', 'drive'];
+    const possibleVolumeTypes = ['testing', 'drive'];
 
-    var sortedVolumeMetadataList = volumeMetadataList.filter(function(volume) {
-      return possibleVolumeTypes.indexOf(volume.volumeType) != -1;
-    }).sort(function(volumeA, volumeB) {
-      return possibleVolumeTypes.indexOf(volumeA.volumeType) -
-             possibleVolumeTypes.indexOf(volumeB.volumeType);
-    });
+    const sortedVolumeMetadataList =
+        volumeMetadataList
+            .filter(function(volume) {
+              return possibleVolumeTypes.indexOf(volume.volumeType) != -1;
+            })
+            .sort(function(volumeA, volumeB) {
+              return possibleVolumeTypes.indexOf(volumeA.volumeType) -
+                  possibleVolumeTypes.indexOf(volumeB.volumeType);
+            });
 
     if (sortedVolumeMetadataList.length == 0) {
       callback(null, 'No volumes available, which could be used for testing.');
@@ -510,7 +545,7 @@ function initTests(callback) {
             return;
           }
 
-          var testsToRun = collectTestsForVolumeId(
+          const testsToRun = collectTestsForVolumeId(
               sortedVolumeMetadataList[0].volumeId, fileSystem);
           callback(testsToRun, 'Success.');
         });
@@ -520,7 +555,7 @@ function initTests(callback) {
 // Trigger the tests.
 initTests(function(testsToRun, errorMessage) {
   if (!testsToRun) {
-    chrome.test.notifyFail('Failed to initialize tests: ' + errorMessage);
+    chrome.test.notifyFail(`Failed to initialize tests: ${errorMessage}`);
     return;
   }
 

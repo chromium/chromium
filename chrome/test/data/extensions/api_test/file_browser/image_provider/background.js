@@ -26,7 +26,7 @@ const PNG_FILE = new File([PNG_DATA], 'readonly.png', {type: 'image/png'});
 
 const TXT_FILE = new File(['txt_data'], 'readonly.txt', {type: 'text/plain'});
 
-const PROVIDER_NAME = "provided-file-system-provider";
+const PROVIDER_NAME = 'provided-file-system-provider';
 
 const GIF_ENTRY = Object.freeze({
   isDirectory: false,
@@ -36,10 +36,7 @@ const GIF_ENTRY = Object.freeze({
   mimeType: GIF_FILE.type,
   file: GIF_FILE,
   writable: true,
-  cloudIdentifier: {
-    providerName: PROVIDER_NAME,
-    id: "readwrite-gif-id"
-  }
+  cloudIdentifier: {providerName: PROVIDER_NAME, id: 'readwrite-gif-id'}
 });
 const PNG_ENTRY = Object.freeze({
   isDirectory: false,
@@ -59,10 +56,7 @@ const TXT_ENTRY = Object.freeze({
   mimeType: TXT_FILE.type,
   file: TXT_FILE,
   writable: false,
-  cloudIdentifier: {
-    providerName: PROVIDER_NAME,
-    id: "readonly-txt-id"
-  }
+  cloudIdentifier: {providerName: PROVIDER_NAME, id: 'readonly-txt-id'}
 });
 const ROOT_ENTRY = Object.freeze({
   isDirectory: true,
@@ -70,10 +64,7 @@ const ROOT_ENTRY = Object.freeze({
   size: 0,
   modificationTime: new Date(),
   mimeType: 'text/directory',
-  cloudIdentifier: {
-    providerName: PROVIDER_NAME,
-    id: "root-id"
-  }
+  cloudIdentifier: {providerName: PROVIDER_NAME, id: 'root-id'}
 });
 
 const ENTRY_PATHS = {
@@ -94,7 +85,7 @@ const METADATA_FIELD_NAMES = [
 
 // A mapping from |requestId| to file entry. Used to respond to subsequent file
 // read requests.
-let requestIdToFileEntry = new Map();
+const requestIdToFileEntry = new Map();
 
 function trace(...args) {
   console.log(...args);
@@ -132,7 +123,7 @@ function findEntry(entryPath, onError, options, operation) {
 
 chrome.fileSystemProvider.onGetMetadataRequested.addListener(function(
     options, onSuccess, onError) {
-  let entry = findEntry(options.entryPath, onError, options, 'metadata');
+  const entry = findEntry(options.entryPath, onError, options, 'metadata');
   if (entry) {
     onSuccess(makeEntry(entry, options));
   }
@@ -165,7 +156,7 @@ chrome.fileSystemProvider.onReadFileRequested.addListener(function(
   trace('read-file', options.requestId);
   const fileEntry = requestIdToFileEntry.get(options.openRequestId);
   if (!fileEntry) {
-    onError("INVALID_OPERATION");
+    onError('INVALID_OPERATION');
   }
 
   fileEntry.file.arrayBuffer().then(arrayBuffer => {
@@ -208,7 +199,7 @@ chrome.fileSystemProvider.onWriteFileRequested.addListener(function(
 
   const fileEntry = requestIdToFileEntry.get(options.openRequestId);
   if (!fileEntry) {
-    onError("INVALID_OPERATION");
+    onError('INVALID_OPERATION');
   }
 
   // For now, no need to update the actual file content.

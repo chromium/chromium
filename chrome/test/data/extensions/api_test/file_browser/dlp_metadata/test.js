@@ -138,16 +138,16 @@ chrome.test.getConfig(config => {
               chrome.test.assertEq(
                   [
                     {
-                      'components': [
+                      components: [
                         'android_files', 'crostini', 'guest_os', 'removable'
                       ],
-                      'level': 'block',
-                      'urls': ['https://external.com']
+                      level: 'block',
+                      urls: ['https://external.com']
                     },
                     {
-                      'components': ['drive'],
-                      'level': 'allow',
-                      'urls': ['https://internal.com']
+                      components: ['drive'],
+                      level: 'allow',
+                      urls: ['https://internal.com']
                     }
                   ],
                   dlpRestrictionDetails);
