@@ -1859,8 +1859,8 @@ void DocumentLoader::CommitSameDocumentNavigationInternal(
             [](Frame* frame) {
               // The delay might mean the frame is no longer attached to the
               // owner (e.g., iframe detach).
-              if (auto* owner = frame->Owner()) {
-                owner->DispatchLoad();
+              if (frame && frame->Owner()) {
+                frame->Owner()->DispatchLoad();
               }
             },
             WrapWeakPersistent(frame_.Get())),
