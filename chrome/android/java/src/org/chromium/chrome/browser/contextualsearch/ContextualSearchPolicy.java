@@ -19,7 +19,7 @@ import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanel;
+import org.chromium.chrome.browser.compositor.overlay_panel.contextualsearch.ContextualSearchPanel;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchInternalStateController.InternalState;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchSelectionController.SelectionType;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchUma.ContextualSearchPreference;

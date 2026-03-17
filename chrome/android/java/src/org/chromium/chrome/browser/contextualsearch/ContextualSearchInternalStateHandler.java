@@ -5,7 +5,7 @@
 package org.chromium.chrome.browser.contextualsearch;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
+import org.chromium.chrome.browser.compositor.overlay_panel.OverlayPanel.StateChangeReason;
 
 /**
  * An interface for driving operations in the Contextual Search Manager's internal state by the

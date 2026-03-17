@@ -27,7 +27,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
+import org.chromium.chrome.browser.compositor.overlay_panel.OverlayPanel;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;

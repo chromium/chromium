@@ -7,9 +7,9 @@ package org.chromium.chrome.browser.contextualsearch;
 import android.app.Activity;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
-import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelContentDelegate;
-import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanel;
+import org.chromium.chrome.browser.compositor.overlay_panel.OverlayPanel.StateChangeReason;
+import org.chromium.chrome.browser.compositor.overlay_panel.OverlayPanelContentDelegate;
+import org.chromium.chrome.browser.compositor.overlay_panel.contextualsearch.ContextualSearchPanel;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 
 /**

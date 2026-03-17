@@ -19,7 +19,7 @@ import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
+import org.chromium.chrome.browser.compositor.overlay_panel.OverlayPanel.StateChangeReason;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.locale.LocaleManager;

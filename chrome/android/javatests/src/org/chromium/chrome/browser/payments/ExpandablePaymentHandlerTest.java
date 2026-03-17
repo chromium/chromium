@@ -41,7 +41,7 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
+import org.chromium.chrome.browser.compositor.overlay_panel.OverlayPanel.StateChangeReason;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.payments.handler.PaymentHandlerContentFrameLayout;
 import org.chromium.chrome.browser.payments.handler.PaymentHandlerCoordinator;

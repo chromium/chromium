@@ -14,7 +14,7 @@ import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
+import org.chromium.chrome.browser.compositor.overlay_panel.OverlayPanel;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.GestureStateListener;
 import org.chromium.content_public.browser.SelectionPopupController;

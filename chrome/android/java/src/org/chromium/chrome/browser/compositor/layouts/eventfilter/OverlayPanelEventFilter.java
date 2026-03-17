@@ -17,8 +17,8 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
-import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.PanelState;
+import org.chromium.chrome.browser.compositor.overlay_panel.OverlayPanel;
+import org.chromium.chrome.browser.compositor.overlay_panel.OverlayPanel.PanelState;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener;
 import org.chromium.content_public.browser.WebContents;
 

@@ -29,7 +29,7 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.PanelState;
+import org.chromium.chrome.browser.compositor.overlay_panel.OverlayPanel.PanelState;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;

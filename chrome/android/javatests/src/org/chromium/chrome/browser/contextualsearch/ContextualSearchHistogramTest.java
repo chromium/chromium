@@ -21,7 +21,7 @@ import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.RelatedSearchesControl;
+import org.chromium.chrome.browser.compositor.overlay_panel.contextualsearch.RelatedSearchesControl;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchFakeServer.FakeResolveSearch;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;

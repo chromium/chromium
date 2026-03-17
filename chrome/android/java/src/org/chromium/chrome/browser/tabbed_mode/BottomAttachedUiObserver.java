@@ -20,9 +20,9 @@ import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerT
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
-import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
-import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.PanelState;
-import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelStateProvider;
+import org.chromium.chrome.browser.compositor.overlay_panel.OverlayPanel;
+import org.chromium.chrome.browser.compositor.overlay_panel.OverlayPanel.PanelState;
+import org.chromium.chrome.browser.compositor.overlay_panel.OverlayPanelStateProvider;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.AccessorySheetVisualStateProvider;

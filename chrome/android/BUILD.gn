@@ -1272,7 +1272,7 @@ if (_is_default_toolchain) {
     resources_package = "org.chromium.chrome"
 
     sources = [
-      "javatests/src/org/chromium/chrome/browser/compositor/bottombar/OverlayPanelManagerWrapper.java",
+      "javatests/src/org/chromium/chrome/browser/compositor/overlay_panel/OverlayPanelManagerWrapper.java",
       "javatests/src/org/chromium/chrome/browser/customtabs/CustomTabsIntentTestUtils.java",
       "javatests/src/org/chromium/chrome/browser/download/MockDownloadNotificationService.java",
       "javatests/src/org/chromium/chrome/browser/download/TestDownloadDirectoryProvider.java",
@@ -3000,7 +3000,7 @@ if (_is_default_toolchain) {
       "java/src/org/chromium/chrome/browser/complex_tasks/TaskTabHelper.java",
       "java/src/org/chromium/chrome/browser/compositor/CompositorView.java",
       "java/src/org/chromium/chrome/browser/compositor/LayerTitleCache.java",
-      "java/src/org/chromium/chrome/browser/compositor/bottombar/OverlayPanelContent.java",
+      "java/src/org/chromium/chrome/browser/compositor/overlay_panel/OverlayPanelContent.java",
       "java/src/org/chromium/chrome/browser/compositor/scene_layer/ContextualSearchSceneLayer.java",
       "java/src/org/chromium/chrome/browser/compositor/scene_layer/SolidColorSceneLayer.java",
       "java/src/org/chromium/chrome/browser/compositor/scene_layer/StaticTabSceneLayer.java",

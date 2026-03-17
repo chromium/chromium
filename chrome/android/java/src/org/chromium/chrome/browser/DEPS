@@ -98,7 +98,8 @@ specific_include_rules = {
     "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
   ],
   "ContextualSearchQuickActionControl\.java": [
-    "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
+    "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity2.java",
   ],
   "DownloadUtils\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"

@@ -11,12 +11,12 @@ found in the LICENSE file.
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:visibility="invisible">
-    <org.chromium.chrome.browser.compositor.bottombar.contextualsearch.NoSystemGestureFrameLayout
+    <org.chromium.chrome.browser.compositor.overlay_panel.contextualsearch.NoSystemGestureFrameLayout
         android:id="@+id/contextual_search_related_searches_view_control_id"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@macro/overlay_panel_bar_background_color"
         android:layout_gravity="top">
         <!-- ChipView elements and their container are dynamically added here. -->
-    </org.chromium.chrome.browser.compositor.bottombar.contextualsearch.NoSystemGestureFrameLayout>
+    </org.chromium.chrome.browser.compositor.overlay_panel.contextualsearch.NoSystemGestureFrameLayout>
 </FrameLayout>
