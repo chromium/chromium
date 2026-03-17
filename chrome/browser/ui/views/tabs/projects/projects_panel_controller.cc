@@ -210,40 +210,8 @@ void ProjectsPanelController::OnContextualTasksServiceInitialized() {
 }
 
 void ProjectsPanelController::OnGotThreadUrlForResumption(GURL thread_url) {
-  // Look across all browser windows, in activation order, for a tab with the
-  // thread URL.
-  BrowserWindowInterface* browser_with_thread_tab = nullptr;
-  std::optional<int> thread_tab_index_in_browser;
-  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
-      [&](BrowserWindowInterface* browser_window) {
-        if (browser_window->GetProfile() != browser_->GetProfile()) {
-          return true;
-        }
-
-        auto* tab_strip_model = browser_window->GetTabStripModel();
-        if (!tab_strip_model) {
-          return true;
-        }
-
-        for (int i = 0; i < tab_strip_model->count(); ++i) {
-          auto* web_contents = tab_strip_model->GetWebContentsAt(i);
-          if (web_contents->GetLastCommittedURL().EqualsIgnoringRef(
-                  thread_url)) {
-            browser_with_thread_tab = browser_window;
-            thread_tab_index_in_browser = i;
-            return false;
-          }
-        }
-        return true;
-      });
-
-  if (browser_with_thread_tab && thread_tab_index_in_browser.has_value()) {
-    browser_with_thread_tab->GetTabStripModel()->ActivateTabAt(
-        thread_tab_index_in_browser.value());
-    browser_with_thread_tab->GetWindow()->Activate();
-    return;
-  }
-
-  // If no tab exists for the thread, create a new one.
+  // TODO(crbug.com/491192199): Open threads in either the side panel or full
+  // tab depending on where the last turn was taken. For now, always open the
+  // thread in a new tab.
   browser_->OpenGURL(thread_url, WindowOpenDisposition::NEW_FOREGROUND_TAB);
 }

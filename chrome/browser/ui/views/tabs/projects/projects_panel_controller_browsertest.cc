@@ -66,7 +66,7 @@ class ProjectsPanelControllerBrowserTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(ProjectsPanelControllerBrowserTest,
-                       OpenThread_ActivatesExistingTab) {
+                       OpenThread_OpensNewTabInsteadOfActivatingExistingTab) {
   GURL thread_url("https://example.com/thread/123");
   const std::string server_id = "123";
   const base::Uuid task_id =
@@ -85,6 +85,8 @@ IN_PROC_BROWSER_TEST_F(ProjectsPanelControllerBrowserTest,
 
   ASSERT_NE(thread_tab_index, browser()->tab_strip_model()->active_index());
 
+  int initial_tab_count = browser()->tab_strip_model()->count();
+
   // Mock the UI service to return the thread URL.
   EXPECT_CALL(mock_contextual_tasks_ui_service_,
               GetThreadUrlFromTaskId(testing::Eq(task_id), testing::_))
@@ -93,10 +95,15 @@ IN_PROC_BROWSER_TEST_F(ProjectsPanelControllerBrowserTest,
         std::move(callback).Run(thread_url);
       });
 
+  content::TestNavigationObserver navigation_observer(thread_url);
+  navigation_observer.StartWatchingNewWebContents();
+
   controller_->OpenThread(server_id);
 
-  // Verify that the thread tab is now active.
-  EXPECT_EQ(thread_tab_index, browser()->tab_strip_model()->active_index());
+  navigation_observer.Wait();
+
+  // Verify that a new tab was opened with the correct URL and is active.
+  EXPECT_EQ(initial_tab_count + 1, browser()->tab_strip_model()->count());
   EXPECT_EQ(thread_url, browser()
                             ->tab_strip_model()
                             ->GetActiveWebContents()
@@ -133,42 +140,6 @@ IN_PROC_BROWSER_TEST_F(ProjectsPanelControllerBrowserTest,
   EXPECT_EQ(initial_tab_count + 1, browser()->tab_strip_model()->count());
   EXPECT_EQ(thread_url, browser()
                             ->tab_strip_model()
-                            ->GetActiveWebContents()
-                            ->GetLastCommittedURL());
-}
-
-IN_PROC_BROWSER_TEST_F(ProjectsPanelControllerBrowserTest,
-                       OpenThread_ActivatesTabInOtherWindow) {
-  GURL thread_url("https://example.com/thread/789");
-  const std::string server_id = "789";
-  const base::Uuid task_id =
-      base::Uuid::ParseLowercase("00000000-0000-0000-0000-000000000001");
-
-  InitializeControllerWithThread(server_id, task_id);
-
-  // Create a second browser window.
-  Browser* browser2 = CreateBrowser(browser()->profile());
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser2, thread_url));
-  int thread_tab_index = browser2->tab_strip_model()->active_index();
-
-  // Switch back to the first browser window.
-  browser()->window()->Activate();
-
-  // Mock the UI service to return the thread URL.
-  EXPECT_CALL(mock_contextual_tasks_ui_service_,
-              GetThreadUrlFromTaskId(testing::Eq(task_id), testing::_))
-      .WillOnce([thread_url](base::Uuid task_id,
-                             base::OnceCallback<void(GURL)> callback) {
-        std::move(callback).Run(thread_url);
-      });
-
-  controller_->OpenThread(server_id);
-
-  // Verify that the thread tab in the second window is now active.
-  EXPECT_EQ(thread_tab_index, browser2->tab_strip_model()->active_index());
-  ui_test_utils::WaitUntilBrowserBecomeActive(browser2);
-  EXPECT_TRUE(browser2->window()->IsActive());
-  EXPECT_EQ(thread_url, browser2->tab_strip_model()
                             ->GetActiveWebContents()
                             ->GetLastCommittedURL());
 }
