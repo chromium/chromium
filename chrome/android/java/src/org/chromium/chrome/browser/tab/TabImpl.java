@@ -2931,6 +2931,13 @@ class TabImpl implements Tab {
     }
 
     @Override
+    public boolean hasTabInterfaceAndroid() {
+        if (mNativeTabAndroid == 0) return false;
+
+        return TabImplJni.get().hasTabInterfaceAndroid(mNativeTabAndroid);
+    }
+
+    @Override
     @CalledByNative
     public boolean isMultiSelected() {
         if (mSelectionStateSupplier == null) return false;
@@ -3023,6 +3030,8 @@ class TabImpl implements Tab {
                 @JniType("std::optional<base::Token>") @Nullable Token tabGroupId);
 
         void onDraggingStateChanged(long nativeTabAndroid, boolean isDragging);
+
+        boolean hasTabInterfaceAndroid(long nativeTabAndroid);
 
         void sendDidActivateUpdate(long nativeTabAndroid);
 

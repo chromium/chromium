@@ -322,6 +322,20 @@ void TabAndroid::SetMediaState(int media_state) {
   Java_TabImpl_setMediaState(env, GetJavaObject(env), media_state);
 }
 
+void TabAndroid::SetTabInterfaceAndroid(
+    TabInterfaceAndroid* tab_interface_android,
+    base::PassKey<TabInterfaceAndroid>) {
+  last_tab_interface_android_ = tab_interface_android;
+}
+
+void TabAndroid::ResetTabInterfaceAndroid(
+    TabInterfaceAndroid* tab_interface_android,
+    base::PassKey<TabInterfaceAndroid>) {
+  if (last_tab_interface_android_ == tab_interface_android) {
+    last_tab_interface_android_ = nullptr;
+  }
+}
+
 void TabAndroid::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }
@@ -602,6 +616,10 @@ void TabAndroid::OnDraggingStateChanged(bool is_dragging) {
 base::CallbackListSubscription TabAndroid::RegisterDraggingChanged(
     base::RepeatingCallback<void(TabInterface*, bool)> callback) {
   return dragging_changed_callback_list_.Add(std::move(callback));
+}
+
+bool TabAndroid::HasTabInterfaceAndroid() const {
+  return last_tab_interface_android_ != nullptr;
 }
 
 scoped_refptr<content::DevToolsAgentHost> TabAndroid::GetDevToolsAgentHost() {

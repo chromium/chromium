@@ -500,4 +500,7 @@ public interface Tab extends TabLifecycle {
      * TabDragStateData}. This exists as a convenience method for plumbing the data to native.
      */
     boolean isDragging();
+
+    /** Returns whether the tab has a TabInterfaceAndroid object. */
+    boolean hasTabInterfaceAndroid();
 }

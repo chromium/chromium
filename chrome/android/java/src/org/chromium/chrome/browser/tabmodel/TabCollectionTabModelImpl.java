@@ -36,6 +36,7 @@ import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.CustomTabProfileType;
@@ -194,6 +195,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
 
             Token tabGroupId = tab.getTabGroupId();
             boolean restoredTabGroup = tabGroupId != null && !tabGroupExists(tabGroupId);
+            dumpIfHasTabInterfaceAndroid(tab);
             int finalIndex =
                     TabCollectionTabModelImplJni.get()
                             .addTabRecursive(
@@ -1502,6 +1504,18 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         }
     }
 
+    private void dumpIfHasTabInterfaceAndroid(Tab tab) {
+        // There appear to be cases where a native TabAndroid has multiple TabInterfaceAndroid
+        // objects. This should not be possible. The C++ state is unhelpful to know how this is
+        // triggered so instead we dump the Java stack to be able to debug this issue.
+        if (tab.hasTabInterfaceAndroid()) {
+            Throwable throwable =
+                    new Throwable(
+                            "This is not a crash. See https://crbug.com/488398095 for details.");
+            ChromePureJavaExceptionReporter.reportJavaException(throwable);
+        }
+    }
+
     private void addTabInternal(
             Tab tab, int index, @TabLaunchType int type, @TabCreationState int creationState) {
         commitAllTabClosures();
@@ -1566,6 +1580,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         // group id.
         tab.setRootId(tab.getId());
 
+        dumpIfHasTabInterfaceAndroid(tab);
         int finalIndex =
                 TabCollectionTabModelImplJni.get()
                         .addTabRecursive(
