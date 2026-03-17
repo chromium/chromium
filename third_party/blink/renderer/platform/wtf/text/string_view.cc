@@ -223,8 +223,8 @@ StringView::size_type StringView::rfind(UChar ch, size_type start) const {
   if (empty()) {
     return npos;
   }
-  return Is8Bit() ? blink::ReverseFind(Span8(), ch, start)
-                  : blink::ReverseFind(Span16(), ch, start);
+  return Is8Bit() ? internal::ReverseFind(Span8(), ch, start)
+                  : internal::ReverseFind(Span16(), ch, start);
 }
 
 StringView::size_type StringView::rfind(const StringView& value,
@@ -235,7 +235,7 @@ StringView::size_type StringView::rfind(const StringView& value,
   }
   return VisitCharacters(*this, [&](auto chars) {
     if (value_length == 1u) {
-      return blink::ReverseFind(chars, value[0], start);
+      return internal::ReverseFind(chars, value[0], start);
     }
     return VisitCharacters(value, [&](auto value_chars) {
       return internal::ReverseFind(chars, value_chars, start);

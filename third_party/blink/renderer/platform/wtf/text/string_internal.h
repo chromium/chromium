@@ -224,6 +224,47 @@ ReverseFind(base::span<const SearchCharacterType> search,
   return delta;
 }
 
+// Search the `chars` span for `match_character` from the end of the span,
+// and returns the found index or kNotFound.
+//
+// This function searches from chars[min(index, chars.size()-1)] to chars[0].
+template <typename CharType>
+inline string_size_t ReverseFind(base::span<const CharType> chars,
+                                 CharType match_character,
+                                 string_size_t index) {
+  const size_t length = chars.size();
+  if (!length) {
+    return kNotFound;
+  }
+  if (index >= length) {
+    index = length - 1;
+  }
+  const CharType* data = chars.data();
+  // We don't use chars[index] for better performance.
+  // SAFETY: The above code ensures `index` is less than characters.size().
+  while (UNSAFE_BUFFERS(data[index]) != match_character) {
+    if (!index--) {
+      return kNotFound;
+    }
+  }
+  return index;
+}
+
+ALWAYS_INLINE string_size_t ReverseFind(base::span<const UChar> chars,
+                                        LChar match_character,
+                                        string_size_t index) {
+  return ReverseFind(chars, static_cast<UChar>(match_character), index);
+}
+
+inline string_size_t ReverseFind(base::span<const LChar> chars,
+                                 UChar match_character,
+                                 string_size_t index) {
+  if (match_character & ~0xFF) {
+    return kNotFound;
+  }
+  return ReverseFind(chars, static_cast<LChar>(match_character), index);
+}
+
 template <typename StringType, typename QueryType>
 Vector<StringType> Split(const StringType& input,
                          QueryType separator,

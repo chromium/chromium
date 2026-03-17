@@ -914,8 +914,8 @@ wtf_size_t StringImpl::FindIgnoringAsciiCase(const StringView& match_string,
 
 wtf_size_t StringImpl::ReverseFind(UChar c, wtf_size_t index) const {
   if (Is8Bit())
-    return blink::ReverseFind(Span8(), c, index);
-  return blink::ReverseFind(Span16(), c, index);
+    return internal::ReverseFind(Span8(), c, index);
+  return internal::ReverseFind(Span16(), c, index);
 }
 
 wtf_size_t StringImpl::ReverseFind(const StringView& match_string,
@@ -932,8 +932,8 @@ wtf_size_t StringImpl::ReverseFind(const StringView& match_string,
   // Optimization 1: fast case for strings of length 1.
   if (match_length == 1) {
     if (Is8Bit())
-      return blink::ReverseFind(Span8(), match_string[0], index);
-    return blink::ReverseFind(Span16(), match_string[0], index);
+      return internal::ReverseFind(Span8(), match_string[0], index);
+    return internal::ReverseFind(Span16(), match_string[0], index);
   }
 
   // Check index & matchLength are in range.

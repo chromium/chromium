@@ -237,16 +237,16 @@ TEST(StringImplTest, CodeUnitCompareIgnoringAsciiCase) {
   EXPECT_TRUE(CodeUnitCompareIgnoringAsciiCaseLessThan(lchar4, lchar1));
 }
 
-TEST(StringImplTest, WtfReverseFind) {
-  const auto text = base::byte_span_from_cstring("becde");
+TEST(StringImplTest, ReverseFind) {
+  const auto text = StringImpl::Create(base::byte_span_from_cstring("becde"));
 
-  EXPECT_EQ(4u, ReverseFind(text, 'e'));
-  EXPECT_EQ(4u, ReverseFind(text, 'e', 4u));
-  EXPECT_EQ(1u, ReverseFind(text, 'e', 3u));
-  EXPECT_EQ(0u, ReverseFind(text, 'b'));
-  EXPECT_EQ(0u, ReverseFind(text, 'b', 0u));
+  EXPECT_EQ(4u, text->ReverseFind('e'));
+  EXPECT_EQ(4u, text->ReverseFind('e', 4u));
+  EXPECT_EQ(1u, text->ReverseFind('e', 3u));
+  EXPECT_EQ(0u, text->ReverseFind('b'));
+  EXPECT_EQ(0u, text->ReverseFind('b', 0u));
 
-  EXPECT_EQ(kNotFound, ReverseFind(text, 'd', 2u));
+  EXPECT_EQ(kNotFound, text->ReverseFind('d', 2u));
 }
 
 TEST(StringImplTest, Find) {
