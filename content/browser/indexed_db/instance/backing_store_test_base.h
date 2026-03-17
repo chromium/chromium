@@ -51,7 +51,8 @@ class BackingStoreTestBase : public testing::Test {
 
   // Commits both phase one and two of `transaction`. This also verifies commit
   // steps are successful.
-  void CommitTransactionAndVerify(BackingStore::Transaction& transaction);
+  void CommitTransactionAndVerify(
+      std::unique_ptr<BackingStore::Transaction> transaction);
   // Commits only phase one of `transaction` and returns true iff successful.
   bool CommitTransactionPhaseOneAndVerify(
       BackingStore::Transaction& transaction);

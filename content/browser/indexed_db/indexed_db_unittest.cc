@@ -30,6 +30,7 @@
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
+#include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
@@ -68,6 +69,8 @@
 #include "content/browser/indexed_db/instance/connection.h"
 #include "content/browser/indexed_db/instance/leveldb/backing_store.h"
 #include "content/browser/indexed_db/instance/mock_blob_storage_context.h"
+#include "content/browser/indexed_db/instance/mock_file_system_access_context.h"
+#include "content/browser/indexed_db/instance/test_blob_consumer.h"
 #include "content/browser/indexed_db/mock_mojo_indexed_db_database_callbacks.h"
 #include "content/browser/indexed_db/mock_mojo_indexed_db_factory_client.h"
 #include "content/browser/indexed_db/status.h"
@@ -82,6 +85,7 @@
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/base/features.h"
 #include "net/base/schemeful_site.h"
+#include "storage/browser/test/fake_blob.h"
 #include "storage/browser/test/mock_quota_manager.h"
 #include "storage/browser/test/mock_quota_manager_proxy.h"
 #include "storage/browser/test/mock_special_storage_policy.h"
@@ -271,10 +275,13 @@ class IndexedDBTestBase : public testing::Test {
         pending_blob_storage_context;
     blob_storage_context_.Clone(
         pending_blob_storage_context.InitWithNewPipeAndPassReceiver());
+    mojo::PendingRemote<storage::mojom::FileSystemAccessContext> fsa_context;
+    file_system_access_context_.Clone(
+        fsa_context.InitWithNewPipeAndPassReceiver());
+
     context_ = std::make_unique<IndexedDBContextImpl>(
         temp_dir_.GetPath(), quota_manager_proxy_.get(),
-        std::move(pending_blob_storage_context),
-        /*file_system_access_context=*/mojo::NullRemote(),
+        std::move(pending_blob_storage_context), std::move(fsa_context),
         base::SequencedTaskRunner::GetCurrentDefault());
     // Let the mojo pipes be bound before proceeding. See
     // IndexedDBContextImpl::BindPipesOnIDBSequence().
@@ -365,10 +372,12 @@ class IndexedDBTestBase : public testing::Test {
         pending_blob_storage_context;
     blob_storage_context_.Clone(
         pending_blob_storage_context.InitWithNewPipeAndPassReceiver());
+    mojo::PendingRemote<storage::mojom::FileSystemAccessContext> fsa_context;
+    file_system_access_context_.Clone(
+        fsa_context.InitWithNewPipeAndPassReceiver());
     context_ = std::make_unique<IndexedDBContextImpl>(
         base::FilePath(), quota_manager_proxy_.get(),
-        std::move(pending_blob_storage_context),
-        /*file_system_access_context=*/mojo::NullRemote(),
+        std::move(pending_blob_storage_context), std::move(fsa_context),
         base::SequencedTaskRunner::GetCurrentDefault());
     // The mojo pipes are bound asynchronously, and must be bound before
     // proceeding with testing.
@@ -630,6 +639,7 @@ class IndexedDBTestBase : public testing::Test {
   scoped_refptr<storage::MockQuotaManager> quota_manager_;
   scoped_refptr<storage::MockQuotaManagerProxy> quota_manager_proxy_;
   MockBlobStorageContext blob_storage_context_;
+  test::MockFileSystemAccessContext file_system_access_context_;
   std::unique_ptr<IndexedDBContextImpl> context_;
   mojo::Remote<blink::mojom::IDBFactory> factory_remote_;
 };
@@ -3517,6 +3527,147 @@ TEST_P(IndexedDBTest, IdleTasksHistograms) {
     task_environment_.FastForwardBy(kDelay);
     histograms.ExpectTotalCount("IndexedDB.BackendDuration.RunIdleTasks.OnDisk",
                                 1);
+  }
+}
+
+class IndexedDBSqliteTest : public IndexedDBTestBase {
+ public:
+  IndexedDBSqliteTest()
+      : IndexedDBTestBase(
+            /*use_default_buckets=*/true,
+            /*use_sqlite=*/true) {}
+  ~IndexedDBSqliteTest() override = default;
+};
+
+// Makes sure that reading from a blob registers as "activity" which in turn
+// defers idle maintenance tasks.
+TEST_F(IndexedDBSqliteTest, BlobReadPutsOffIdleWork) {
+  const int64_t kObjectStoreId = 10;
+  const char16_t kObjectStoreName[] = u"os";
+  const std::string kBlobData =
+      base::RandBytesAsString(TestBlobConsumer::kPipeCapacity * 3);
+
+  storage::BucketInfo bucket_info = InitBucket(GetTestStorageKey());
+  BucketLocator bucket_locator = bucket_info.ToBucketLocator();
+
+  // Bind the IDBFactory.
+  mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
+      checker_remote;
+  BindFactory(std::move(checker_remote),
+              factory_remote_.BindNewPipeAndPassReceiver(), bucket_info);
+
+  const IndexedDBKey key(u"key");
+
+  // Create a database with an object store with a record containing a blob.
+  mojo::AssociatedRemote<blink::mojom::IDBDatabase> database;
+  {
+    MockMojoFactoryClient client;
+    MockMojoDatabaseCallbacks database_callbacks;
+    mojo::AssociatedRemote<blink::mojom::IDBTransaction> transaction_remote;
+    mojo::PendingAssociatedRemote<blink::mojom::IDBDatabase> pending_database;
+    base::RunLoop upgrade_loop;
+    EXPECT_CALL(client, MockedUpgradeNeeded)
+        .WillOnce(testing::DoAll(
+            MoveArgPointee<0>(&pending_database),
+            ::base::test::RunClosure(upgrade_loop.QuitClosure())));
+    factory_remote_->Open(client.CreateInterfacePtrAndBind(),
+                          database_callbacks.CreateInterfacePtrAndBind(),
+                          kDatabaseName, /*version=*/1,
+                          transaction_remote.BindNewEndpointAndPassReceiver(),
+                          /*transaction_id=*/1, /*priority=*/0);
+    upgrade_loop.Run();
+    database.Bind(std::move(pending_database));
+
+    transaction_remote->CreateObjectStore(kObjectStoreId, kObjectStoreName,
+                                          blink::IndexedDBKeyPath(), false);
+
+    auto fake_blob = std::make_unique<storage::FakeBlob>("test-uuid");
+    fake_blob->set_body(kBlobData);
+
+    std::vector<blink::mojom::IDBExternalObjectPtr> external_objects;
+    external_objects.push_back(blink::mojom::IDBExternalObject::NewBlobOrFile(
+        blink::mojom::IDBBlobInfo::New(fake_blob->Clone(), u"text/plain",
+                                       static_cast<int64_t>(kBlobData.size()),
+                                       /*file=*/nullptr)));
+
+    auto new_value = blink::mojom::IDBValue::New();
+    new_value->bits = mojo_base::BigBuffer(base::as_byte_span("value"));
+    new_value->external_objects = std::move(external_objects);
+
+    base::MockCallback<blink::mojom::IDBTransaction::PutCallback> put_callback;
+    transaction_remote->Put(kObjectStoreId, std::move(new_value), key.Clone(),
+                            blink::mojom::IDBPutMode::AddOnly,
+                            std::vector<IndexedDBIndexKeys>(),
+                            put_callback.Get());
+    transaction_remote->Commit(0);
+  }
+
+  // Open a read transaction to get the record with the blob and verify reading
+  // the blob resets the idle timer.
+  {
+    mojo::AssociatedRemote<blink::mojom::IDBTransaction> read_transaction;
+    database->CreateTransaction(
+        read_transaction.BindNewEndpointAndPassReceiver(),
+        /*transaction_id=*/2, {kObjectStoreId},
+        blink::mojom::IDBTransactionMode::ReadOnly,
+        blink::mojom::IDBTransactionDurability::Relaxed);
+    base::test::TestFuture<blink::mojom::IDBDatabaseGetResultPtr> get_future;
+    database->Get(/*transaction_id=*/2, kObjectStoreId,
+                  blink::IndexedDBIndexMetadata::kInvalidId,
+                  blink::IndexedDBKeyRange(key.Clone(), key.Clone(),
+                                           /*lower_open=*/false,
+                                           /*upper_open=*/false),
+                  /*key_only=*/false, get_future.GetCallback());
+
+    blink::mojom::IDBDatabaseGetResultPtr result = get_future.Take();
+    ASSERT_TRUE(result->is_value());
+    ASSERT_FALSE(result->get_value()->value->external_objects.empty());
+    ASSERT_TRUE(
+        result->get_value()->value->external_objects[0]->is_blob_or_file());
+
+    mojo::Remote<blink::mojom::Blob> blob(
+        std::move(result->get_value()
+                      ->value->external_objects[0]
+                      ->get_blob_or_file()
+                      ->blob));
+    ASSERT_TRUE(blob.is_bound());
+
+    // Activity above should have started the idle timer.
+    BucketContext* bucket_context = GetBucketContext(bucket_locator.id);
+    ASSERT_TRUE(bucket_context);
+    EXPECT_TRUE(bucket_context->idle_timer_.IsRunning());
+    base::TimeTicks next_idle_maintenance_time_before =
+        bucket_context->idle_timer_.desired_run_time();
+
+    // Now read the blob. This should trigger OnActivity() and reset the timer.
+    task_environment_.FastForwardBy(BucketContext::GetIdleTimeoutForTesting() /
+                                    3);
+
+    base::TimeTicks next_idle_maintenance_time_after_partial_read;
+    base::RunLoop partial_loop;
+    auto on_partial_read = base::BindLambdaForTesting([&]() {
+      next_idle_maintenance_time_after_partial_read =
+          bucket_context->idle_timer_.desired_run_time();
+      // Inject artificial delay since in the test context, the operation
+      // completes synchronously.
+      task_environment_.FastForwardBy(
+          BucketContext::GetIdleTimeoutForTesting() / 3);
+      partial_loop.Quit();
+    });
+    base::test::TestFuture<std::string> blob_future;
+    TestBlobConsumer::ReadWholeBlob(blob, blob_future.GetCallback(),
+                                    on_partial_read);
+    partial_loop.Run();
+
+    // The idle timer's desired run time should have been pushed forward
+    // because beginning reading the blob triggered OnActivity().
+    EXPECT_GT(next_idle_maintenance_time_after_partial_read,
+              next_idle_maintenance_time_before);
+
+    // Finishing reading the blob also counts as activity.
+    EXPECT_EQ(kBlobData, blob_future.Get());
+    EXPECT_GT(bucket_context->idle_timer_.desired_run_time(),
+              next_idle_maintenance_time_after_partial_read);
   }
 }
 

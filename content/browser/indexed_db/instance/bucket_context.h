@@ -334,6 +334,7 @@ class CONTENT_EXPORT BucketContext
   FRIEND_TEST_ALL_PREFIXES(IndexedDBTest, CompactionKillSwitchWorks);
   FRIEND_TEST_ALL_PREFIXES(IndexedDBTest, TooLongOrigin);
   FRIEND_TEST_ALL_PREFIXES(IndexedDBTest, BasicFactoryCreationAndTearDown);
+  FRIEND_TEST_ALL_PREFIXES(IndexedDBSqliteTest, BlobReadPutsOffIdleWork);
   FRIEND_TEST_ALL_PREFIXES(BucketContextTest, BucketSpaceDecay);
   FRIEND_TEST_ALL_PREFIXES(BucketContextTest, MetadataRecordingStateHistory);
   FRIEND_TEST_ALL_PREFIXES(BucketContextTest,
@@ -376,9 +377,12 @@ class CONTENT_EXPORT BucketContext
   void StartClosing();
   void CloseNow();
   void StartPreCloseTasks();
-  void RunIdleTasks();
-
   void RunTasks();
+
+  // Called when there is any activity that should reset the idle timer.
+  void OnActivity();
+  // Called after a period of inactivity.
+  void RunIdleTasks();
 
   void OnGotBucketSpaceRemaining(storage::QuotaErrorOr<int64_t> space_left);
 
@@ -410,6 +414,10 @@ class CONTENT_EXPORT BucketContext
   void RecordInternalsSnapshot();
 
   std::string SanitizeErrorMessage(const std::string& message);
+
+  // Called when a Web Blob is being read from SQLite. `final_result` will hold
+  // a value IFF the read operation has completed.
+  void OnSqliteBlobActivity(std::optional<net::Error> final_result);
 
   const storage::BucketInfo bucket_info_;
 

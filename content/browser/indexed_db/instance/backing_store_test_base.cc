@@ -116,7 +116,7 @@ void BackingStoreTestBase::UpdateDatabaseVersion(
                            blink::mojom::IDBTransactionMode::VersionChange);
   transaction->Begin(CreateDummyLock());
   EXPECT_TRUE(transaction->SetDatabaseVersion(version).ok());
-  CommitTransactionAndVerify(*transaction);
+  CommitTransactionAndVerify(std::move(transaction));
 }
 
 std::unique_ptr<indexed_db::BackingStore::Transaction>
@@ -131,9 +131,9 @@ BackingStoreTestBase::CreateAndBeginTransaction(
 }
 
 void BackingStoreTestBase::CommitTransactionAndVerify(
-    BackingStore::Transaction& transaction) {
-  ASSERT_TRUE(CommitTransactionPhaseOneAndVerify(transaction));
-  EXPECT_TRUE(transaction.CommitPhaseTwo().ok());
+    std::unique_ptr<BackingStore::Transaction> transaction) {
+  ASSERT_TRUE(CommitTransactionPhaseOneAndVerify(*transaction));
+  EXPECT_TRUE(transaction->CommitPhaseTwo().ok());
 }
 
 bool BackingStoreTestBase::CommitTransactionPhaseOneAndVerify(
@@ -197,7 +197,7 @@ void BackingStoreTestBase::CreateObjectStore(BackingStore::Database& db) {
                                       /*auto_increment=*/true)
                   .ok());
   EXPECT_TRUE(transaction->SetDatabaseVersion(1).ok());
-  CommitTransactionAndVerify(*transaction);
+  CommitTransactionAndVerify(std::move(transaction));
 }
 
 void BackingStoreTestBase::DestroyFactoryAndBackingStore() {

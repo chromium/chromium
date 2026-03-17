@@ -356,6 +356,18 @@ class CONTENT_EXPORT DatabaseConnection {
   // `metadata_`).
   StatusOr<blink::IndexedDBDatabaseMetadata> GenerateIndexedDbMetadata();
 
+  // Serves as the checkpoint callback. This is static because it may be
+  // called on a different thread, and it's not possible to check the validity
+  // of a WeakPtr-bound callback on a different sequence.
+  static void OnWalFileWritten(base::WeakPtr<DatabaseConnection> db,
+                               int wal_file_page_count);
+
+  // Executes a checkpoint. This needs to first drop resources that would block
+  // a complete checkpoint. Returns true if the checkpoint finished
+  // successfully, i.e. all frames in the WAL file were written to the main DB
+  // file.
+  bool Checkpoint(bool truncate);
+
   // This enum is used to track various events of interest, mostly errors.
   //
   // LINT.IfChange(SpecificEvent)
@@ -525,8 +537,6 @@ class CONTENT_EXPORT DatabaseConnection {
   // attempting to open this database.
   IndexedDBDataLossInfo data_loss_info_;
 
-  // TODO(crbug.com/419203257): this should invalidate its weak pointers when
-  // `db_` is closed.
   base::WeakPtrFactory<DatabaseConnection> cursor_weak_factory_{this};
 
   // Only used for the callbacks passed to `blob_writers_`.
@@ -535,6 +545,8 @@ class CONTENT_EXPORT DatabaseConnection {
   // Used to vend pointers to the interfaces within `BackingStore`.
   base::WeakPtrFactory<DatabaseConnection> interface_wrapper_weak_factory_{
       this};
+
+  base::WeakPtrFactory<DatabaseConnection> wal_checkpoint_weak_factory_{this};
 };
 
 }  // namespace sqlite

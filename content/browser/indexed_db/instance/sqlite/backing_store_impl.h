@@ -33,14 +33,16 @@ class CONTENT_EXPORT BackingStoreImpl : public BackingStore {
   // assumed to already exist. `lock_database` will be called to acquire locks
   // on the given database for cleanup purposes. It is guaranteed to be called
   // when no other operation on the database is ongoing, and hence locks are
-  // expected to be granted synchronously. `on_blob_read_complete` will be
-  // called with the result of every blob read attempt across all databases.
-  BackingStoreImpl(
-      base::FilePath directory,
-      storage::mojom::BlobStorageContext& blob_storage_context,
-      base::RepeatingCallback<std::vector<PartitionedLock>(
-          const std::u16string& name)> lock_database,
-      base::RepeatingCallback<void(net::Error)> on_blob_read_complete);
+  // expected to be granted synchronously. `on_blob_activity` will be
+  // called whenever a blob is read from the database, with `nullopt` if the
+  // read is not finished, and when a read is complete, with the final result of
+  // each read (i.e. each mojom::Blob request).
+  BackingStoreImpl(base::FilePath directory,
+                   storage::mojom::BlobStorageContext& blob_storage_context,
+                   base::RepeatingCallback<std::vector<PartitionedLock>(
+                       const std::u16string& name)> lock_database,
+                   base::RepeatingCallback<void(std::optional<net::Error>)>
+                       on_blob_activity);
   BackingStoreImpl(const BackingStoreImpl&) = delete;
   BackingStoreImpl& operator=(const BackingStoreImpl&) = delete;
   ~BackingStoreImpl() override;
@@ -92,9 +94,9 @@ class CONTENT_EXPORT BackingStoreImpl : public BackingStore {
     return *blob_storage_context_;
   }
 
-  const base::RepeatingCallback<void(net::Error)>& on_blob_read_complete()
-      const {
-    return on_blob_read_complete_;
+  const base::RepeatingCallback<void(std::optional<net::Error>)>&
+  on_blob_activity() const {
+    return on_blob_activity_;
   }
 
  private:
@@ -120,7 +122,7 @@ class CONTENT_EXPORT BackingStoreImpl : public BackingStore {
       const std::u16string& name)>
       lock_database_;
 
-  base::RepeatingCallback<void(net::Error)> on_blob_read_complete_;
+  base::RepeatingCallback<void(std::optional<net::Error>)> on_blob_activity_;
 
   std::unordered_map<std::u16string, std::unique_ptr<DatabaseConnection>>
       open_connections_;

@@ -1145,6 +1145,10 @@ base::OnceClosure DatabaseConnection::GetCleanupTask(bool force_closing) && {
                                  legacy_blob_files_to_move_.empty();
   }
 
+  wal_checkpoint_weak_factory_.InvalidateWeakPtrs();
+  cursor_weak_factory_.InvalidateWeakPtrs();
+  cursor_statements_.clear();
+
   db_->DetachFromSequence();
   return base::BindOnce(&DatabaseConnection::CloseDatabase, std::move(db_),
                         path_, GetLegacyBlobDirectory(), should_delete_db,
@@ -1159,8 +1163,12 @@ Status DatabaseConnection::Init(std::optional<std::u16string_view> name) {
 
   constexpr sql::Database::Tag kSqlTag = "IndexedDB";
   constexpr sql::Database::Tag kSqlTagInMemory = "IndexedDBEphemeral";
-  auto options =
-      sql::DatabaseOptions().set_wal_mode(true).set_enable_triggers(true);
+  auto options = sql::DatabaseOptions()
+                     .set_enable_triggers(true)
+                     .set_wal_mode(true)
+                     .set_wal_commit_callback(base::BindRepeating(
+                         &DatabaseConnection::OnWalFileWritten,
+                         wal_checkpoint_weak_factory_.GetWeakPtr()));
 
 #if BUILDFLAG(IS_WIN)
   // *Enforce* exclusivity on Windows, for the purposes of reliability.
@@ -1271,6 +1279,44 @@ Status DatabaseConnection::Init(std::optional<std::u16string_view> name) {
   return Status::OK();
 }
 
+// static
+void DatabaseConnection::OnWalFileWritten(base::WeakPtr<DatabaseConnection> db,
+                                          int wal_file_page_count) {
+  // The default is to auto-checkpoint after 1000 pages, and each page is 4096
+  // bytes. We mainly rely on `PerformIdleMaintenance()` to checkpoint at times
+  // where the database (and the whole bucket thread) are not in use. However,
+  // we still want to prevent excessively large WAL files.
+  if (wal_file_page_count < 10000) {
+    return;
+  }
+
+  // `WeakPtr::IsValid()` is not thread-safe, and this may be called from the
+  // cleanup task runner, but only after `db` has been invalidated in
+  // `GetCleanupTask()`.
+  if (db.MaybeValid()) {
+    db->Checkpoint(/*truncate=*/true);
+  }
+}
+
+bool DatabaseConnection::Checkpoint(bool truncate) {
+  CHECK(!db_->HasActiveTransactions());
+
+  // Open statements would block checkpointing.
+  for (const auto& [_, statement_holder] : cursor_statements_) {
+    const auto& [statement, store_id] = statement_holder;
+    BackingStoreCursorImpl::InvalidateStatement(*statement);
+  }
+
+  // Streaming blob handles would also block checkpointing. Most of the time
+  // this will be a no-op, as each `ActiveBlobStreamer` only holds a blob handle
+  // while serving a single request.
+  for (auto& [_, active_blob] : active_blobs_) {
+    active_blob->ReleaseDatabaseResources();
+  }
+
+  return db_->CheckpointDatabase(truncate);
+}
+
 void DatabaseConnection::PerformIdleMaintenance() {
   if (active_rw_transaction_) {
     return;
@@ -1280,13 +1326,7 @@ void DatabaseConnection::PerformIdleMaintenance() {
     return;
   }
 
-  // Open statements would block checkpointing.
-  for (const auto& [_, statement_holder] : cursor_statements_) {
-    const auto& [statement, store_id] = statement_holder;
-    BackingStoreCursorImpl::InvalidateStatement(*statement);
-  }
-
-  db_->CheckpointDatabase(/*truncate=*/false);
+  Checkpoint(/*truncate=*/false);
 }
 
 bool DatabaseConnection::IsZygotic() const {
@@ -1415,6 +1455,8 @@ std::optional<sql::StreamingBlobHandle>
 DatabaseConnection::OpenBlobChunkForStreaming(int64_t blob_row_id,
                                               bool readonly,
                                               size_t chunk_index) {
+  backing_store_->on_blob_activity().Run(std::nullopt);
+
   if (chunk_index == 0) {
     return db_->GetStreamingBlob("blobs", "bytes", blob_row_id, readonly);
   }
@@ -2337,6 +2379,13 @@ DatabaseConnection::CreateAllExternalObjects(
       const bool is_legacy_blob = !object.indexed_db_file_path().empty();
       base::UmaHistogramBoolean("IndexedDB.SQLite.BlobServedFromLegacyFile",
                                 is_legacy_blob);
+
+      auto blob_read_complete = base::BindRepeating(
+          [](base::RepeatingCallback<void(std::optional<net::Error>)>
+                 on_activity,
+             net::Error error) { on_activity.Run(error); },
+          backing_store_->on_blob_activity());
+
       if (!is_legacy_blob) {
         it->second = std::make_unique<ActiveBlobStreamer>(
             object,
@@ -2348,7 +2397,7 @@ DatabaseConnection::CreateAllExternalObjects(
             base::BindOnce(&DatabaseConnection::OnBlobBecameInactive,
                            base::Unretained(this), object.blob_number(),
                            /*is_legacy_blob=*/false),
-            backing_store_->on_blob_read_complete());
+            blob_read_complete);
       } else {
         it->second = std::make_unique<BlobReader>(
             object,
@@ -2356,7 +2405,7 @@ DatabaseConnection::CreateAllExternalObjects(
             base::BindOnce(&DatabaseConnection::OnBlobBecameInactive,
                            base::Unretained(this), object.blob_number(),
                            /*is_legacy_blob=*/true),
-            backing_store_->on_blob_read_complete());
+            blob_read_complete);
       }
       if (!AddActiveBlobReference(object.blob_number())) {
         LogEvent(SpecificEvent::kAddActiveBlobReferenceFailed);
@@ -2417,7 +2466,7 @@ void DatabaseConnection::DeleteIdbDatabase(
     //
     // In the case where blobs are *not* still present, this is ensured by the
     // post-close checkpoint + WAL deletion.
-    db_->CheckpointDatabase(/*truncate=*/true);
+    Checkpoint(/*truncate=*/true);
   } else {
     // If there are any errors in the above, then blobs will probably error out
     // too, so go ahead and destroy `this`.

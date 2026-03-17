@@ -571,13 +571,7 @@ void BucketContext::QueueRunTasks() {
   }
 
   task_run_queued_ = true;
-  if (last_idle_tasks_completion_time_) {
-    base::UmaHistogramMediumTimes(
-        base::StrCat({"IndexedDB.IdleTasksCompletionToNextActivity",
-                      GetHistogramSuffix()}),
-        base::TimeTicks::Now() - *last_idle_tasks_completion_time_);
-    last_idle_tasks_completion_time_.reset();
-  }
+  OnActivity();
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
@@ -603,20 +597,27 @@ void BucketContext::RunTasks() {
   }
   if (CanClose() && closing_stage_ == ClosingState::kClosed) {
     ResetBackingStore();
-  } else {
-    // Run idle tasks after a delay if there are no more immediate tasks to run.
-    idle_timer_.Reset();
-    if (IsUsingSqlite()) {
-      // Since a `Database` may have just been destroyed, there may no longer be
-      // a need to keep `this` around. Note that this isn't necessary in LevelDB
-      // due to differences in `CanClose()`, although it likely wouldn't be
-      // harmful for LevelDB either. To be on the safe side, don't risk changing
-      // longstanding LevelDB behavior.
-      // TODO(crbug.com/419203257): consider revisiting this logic along with
-      // `CanOpportunisticallyClose()`.
-      MaybeStartClosing();
-    }
+  } else if (IsUsingSqlite()) {
+    // Since a `Database` may have just been destroyed, there may no longer be
+    // a need to keep `this` around. Note that this isn't necessary in LevelDB
+    // due to differences in `CanClose()`, although it likely wouldn't be
+    // harmful for LevelDB either. To be on the safe side, don't risk changing
+    // longstanding LevelDB behavior.
+    // TODO(crbug.com/419203257): consider revisiting this logic along with
+    // `CanOpportunisticallyClose()`.
+    MaybeStartClosing();
   }
+}
+
+void BucketContext::OnActivity() {
+  if (last_idle_tasks_completion_time_) {
+    base::UmaHistogramMediumTimes(
+        base::StrCat({"IndexedDB.IdleTasksCompletionToNextActivity",
+                      GetHistogramSuffix()}),
+        base::TimeTicks::Now() - *last_idle_tasks_completion_time_);
+    last_idle_tasks_completion_time_.reset();
+  }
+  idle_timer_.Reset();
 }
 
 void BucketContext::RunIdleTasks() {
@@ -988,6 +989,15 @@ std::string BucketContext::SanitizeErrorMessage(const std::string& message) {
   return sanitized_message;
 }
 
+void BucketContext::OnSqliteBlobActivity(
+    std::optional<net::Error> final_result) {
+  OnActivity();
+  if (final_result.has_value()) {
+    LogNetError("IndexedDB.BackingStore.ReadBlob", GetHistogramSuffix(),
+                *final_result);
+  }
+}
+
 // static
 base::AutoReset<std::optional<bool>>
 BucketContext::OverrideShouldUseSqliteForTesting(bool use_sqlite) {
@@ -1195,6 +1205,7 @@ BucketContext::InitBackingStore(bool create_if_missing) {
     backing_store_.emplace(
         std::make_unique<sqlite::BackingStoreImpl>(
             database_path, *blob_storage_context_,
+            /*lock_database=*/
             base::BindRepeating(
                 [](PartitionedLockManager& lock_manager,
                    const std::u16string& name) {
@@ -1212,8 +1223,9 @@ BucketContext::InitBackingStore(bool create_if_missing) {
                   return std::move(lock_holder.locks);
                 },
                 std::ref(*lock_manager)),
-            base::BindRepeating(&LogNetError, "IndexedDB.BackingStore.ReadBlob",
-                                histogram_suffix)),
+            /*on_blob_activity=*/
+            base::BindRepeating(&BucketContext::OnSqliteBlobActivity,
+                                base::Unretained(this))),
         /*is_sqlite=*/true, histogram_suffix);
   } else {
     std::unique_ptr<BackingStore> backing_store;

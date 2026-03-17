@@ -50,6 +50,7 @@ class ActiveBlobStreamer : public BlobEndpoint {
   // BlobEndpoint:
   void AddReceiver(mojo::PendingReceiver<blink::mojom::Blob> receiver,
                    storage::mojom::BlobStorageContext& blob_registry) override;
+  void ReleaseDatabaseResources() override;
 
   // blink::mojom::Blob:
   void Clone(mojo::PendingReceiver<blink::mojom::Blob> receiver) override;

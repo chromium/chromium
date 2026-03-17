@@ -13,8 +13,10 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
 #include "net/base/net_errors.h"
+#include "storage/browser/test/fake_blob.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content::indexed_db {
@@ -80,7 +82,14 @@ MockBlobStorageContext::~MockBlobStorageContext() = default;
 void MockBlobStorageContext::RegisterFromDataItem(
     mojo::PendingReceiver<::blink::mojom::Blob> blob,
     const std::string& uuid,
-    storage::mojom::BlobDataItemPtr item) {}
+    storage::mojom::BlobDataItemPtr item) {
+  // Create a fake blob and bind it to the receiver. This is needed so that
+  // when the blob is read back, the BlobReader has a valid registry_blob_.
+  auto fake_blob = std::make_unique<storage::FakeBlob>(uuid);
+  // Don't set a body - this blob is just a placeholder for the registry.
+  // The actual content will be read via the BlobDataItemReader interface.
+  mojo::MakeSelfOwnedReceiver(std::move(fake_blob), std::move(blob));
+}
 
 void MockBlobStorageContext::RegisterFromMemory(
     mojo::PendingReceiver<::blink::mojom::Blob> blob,

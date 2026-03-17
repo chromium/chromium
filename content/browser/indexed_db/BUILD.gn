@@ -159,6 +159,8 @@ source_set("unit_tests") {
     "instance/mock_file_system_access_context.h",
     "instance/sqlite/backing_store_sqlite_unittest.cc",
     "instance/sqlite/database_connection_unittest.cc",
+    "instance/test_blob_consumer.cc",
+    "instance/test_blob_consumer.h",
     "instance/transaction_unittest.cc",
     "mock_mojo_indexed_db_database_callbacks.cc",
     "mock_mojo_indexed_db_database_callbacks.h",

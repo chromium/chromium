@@ -25,6 +25,10 @@ class BlobEndpoint : public blink::mojom::Blob,
   virtual void AddReceiver(
       mojo::PendingReceiver<blink::mojom::Blob> receiver,
       storage::mojom::BlobStorageContext& blob_registry) = 0;
+
+  // Releases temporary database resources, if any, to unblock database
+  // operations. See implementations.
+  virtual void ReleaseDatabaseResources() {}
 };
 
 }  // namespace content::indexed_db

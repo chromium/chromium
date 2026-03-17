@@ -317,6 +317,14 @@ ActiveBlobStreamer::ActiveBlobStreamer(
 
 ActiveBlobStreamer::~ActiveBlobStreamer() = default;
 
+void ActiveBlobStreamer::ReleaseDatabaseResources() {
+  // Called to release the cached blob handle. The next read operation will
+  // request a new one. This is necessary to unblock database checkpointing
+  // since the blob handle is a database reader.
+  readable_blob_handle_.reset();
+  chunk_idx_ = -1;
+}
+
 void ActiveBlobStreamer::BindRegistryBlob(
     storage::mojom::BlobStorageContext& blob_registry) {
   CHECK(!registry_blob_.is_bound());
@@ -404,8 +412,7 @@ void ActiveBlobStreamer::BlobReadComplete(net::Error result) {
   // reads from its Blob, which causes `this->readable_blob_handle_` to be
   // initialized, and then the page retains a reference to the Blob, this step
   // is what releases the SQLite resources.
-  readable_blob_handle_.reset();
-  chunk_idx_ = -1;
+  ReleaseDatabaseResources();
   on_read_complete_.Run(result);
 }
 

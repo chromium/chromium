@@ -34,11 +34,11 @@ BackingStoreImpl::BackingStoreImpl(
     storage::mojom::BlobStorageContext& blob_storage_context,
     base::RepeatingCallback<
         std::vector<PartitionedLock>(const std::u16string& name)> lock_database,
-    base::RepeatingCallback<void(net::Error)> on_blob_read_complete)
+    base::RepeatingCallback<void(std::optional<net::Error>)> on_blob_activity)
     : directory_(std::move(directory)),
       blob_storage_context_(blob_storage_context),
       lock_database_(std::move(lock_database)),
-      on_blob_read_complete_(std::move(on_blob_read_complete)) {}
+      on_blob_activity_(std::move(on_blob_activity)) {}
 
 BackingStoreImpl::~BackingStoreImpl() = default;
 
