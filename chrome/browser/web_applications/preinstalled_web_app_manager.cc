@@ -516,13 +516,8 @@ void MaybeForceInstallForRemigration(
     std::vector<ExternalInstallOptions>* options_list,
     Profile* profile,
     const WebAppRegistrar& registrar) {
-  bool always_migrate_calculator = base::FeatureList::IsEnabled(
-      features::kPreinstalledWebAppAlwaysMigrateCalculator);
-  bool always_migrate =
-      base::FeatureList::IsEnabled(features::kPreinstalledWebAppAlwaysMigrate);
-  if (!always_migrate_calculator && !always_migrate) {
-    return;
-  }
+  bool always_migrate = base::FeatureList::IsEnabled(
+      features::kPreinstalledWebAppAlwaysMigrateForTesting);
 
   // Record Calculator remigration metrics.
   bool calculator_web_app_installed = registrar.AppMatches(
@@ -554,8 +549,7 @@ void MaybeForceInstallForRemigration(
     for (const std::string& app_id : options.uninstall_and_replace) {
       bool migration_needed = false;
       if (extensions::IsExtensionInstalled(profile, app_id)) {
-        if (always_migrate_calculator &&
-            app_id == extension_misc::kCalculatorAppId) {
+        if (app_id == extension_misc::kCalculatorAppId) {
           calculator_migration_needed = true;
           migration_needed = true;
         }

@@ -134,14 +134,9 @@ BASE_FEATURE(kPreinstalledWebAppInstallation,
 
 // Whether to force migrate preinstalled web apps whenever the old Chrome app
 // they're replacing is detected, even if the web app is already installed.
-BASE_FEATURE(kPreinstalledWebAppAlwaysMigrate,
+// Used by unit tests.
+BASE_FEATURE(kPreinstalledWebAppAlwaysMigrateForTesting,
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Whether to force migrate the calculator preinstalled web app whenever the
-// old Chrome app is detected, even if the calculator web app is already
-// installed.
-BASE_FEATURE(kPreinstalledWebAppAlwaysMigrateCalculator,
-             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)

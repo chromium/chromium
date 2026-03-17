@@ -648,12 +648,6 @@ inline constexpr char kD3D12VideoEncoderDescription[] =
     "Media Foundation video encoder if D3D12 encoder is not available "
     "or fails to initialize.";
 
-inline constexpr char kPreinstalledWebAppAlwaysMigrateCalculatorName[] =
-    "Preinstalled web app always migrate - Calculator";
-inline constexpr char kPreinstalledWebAppAlwaysMigrateCalculatorDescription[] =
-    "Whether the calculator web app preinstall should always attempt to migrate"
-    " the Calculator Chrome app if it is detected as present.";
-
 inline constexpr char kPrerender2Name[] = "Prerendering";
 inline constexpr char kPrerender2Description[] =
     "If enabled, browser features and the speculation rules API can trigger "

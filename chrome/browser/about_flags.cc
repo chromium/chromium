@@ -11605,14 +11605,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     "TouchToSearchCallout")},
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS)
-    {"preinstalled-web-app-always-migrate-calculator",
-     flag_descriptions::kPreinstalledWebAppAlwaysMigrateCalculatorName,
-     flag_descriptions::kPreinstalledWebAppAlwaysMigrateCalculatorDescription,
-     kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kPreinstalledWebAppAlwaysMigrateCalculator)},
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
     {"enable-secure-payment-confirmation-ux-refresh",
      flag_descriptions::kSecurePaymentConfirmationUxRefreshName,
      flag_descriptions::kSecurePaymentConfirmationUxRefreshDescription,
