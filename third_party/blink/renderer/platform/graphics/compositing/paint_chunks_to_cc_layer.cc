@@ -29,7 +29,6 @@
 #include "third_party/blink/renderer/platform/graphics/paint/scrollbar_display_item.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "ui/gfx/geometry/point_conversions.h"
-#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
@@ -1575,19 +1574,11 @@ LayerPropertiesUpdater::PaintedSelectionBoundToLayerSelectionBound(
   cc::LayerSelectionBound layer_bound;
   layer_bound.type = bound.type;
 
-  gfx::Rect sample;
-  if (RuntimeEnabledFeatures::SelectionEdgeVisibilityUsesFullEdgeEnabled()) {
-    // Similar to ComputeViewportSelectionBound()
-    // (cc/trees/layer_tree_impl.cc), this is a conservative pre-check: if the
-    // mapped sample is empty, the bound must stay hidden. Use the full
-    // selection edge so the handle is shown when any part of the edge is
-    // visible (not fully clipped). This handles cases where edge_end
-    // overflows the clip by more than 1px, e.g. when line-height > height on
-    // input elements (crbug.com/451833352).
-    sample = gfx::BoundingRect(bound.edge_start, bound.edge_end);
-  } else {
-    // Legacy behavior kept as a runtime fallback.
-    sample = gfx::Rect(bound.edge_end, gfx::Size());
+  // This is similar to ComputeViewportSelectionBound(). Use the end point
+  // moved 1 pixel towards the start point and expanded by 1 as the sample
+  // rect to check visibility.
+  gfx::Rect sample(bound.edge_end, gfx::Size());
+  if (RuntimeEnabledFeatures::SelectionHandleWithBottomClippedEnabled()) {
     auto offset = [](int start, int end) {
       return start < end ? -1 : start > end ? 1 : 0;
     };
