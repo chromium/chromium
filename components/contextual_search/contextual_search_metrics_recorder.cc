@@ -173,14 +173,28 @@ void ContextualSearchMetricsRecorder::RecordQueryMetrics(
   }
 
   base::RecordAction(base::UserMetricsAction(
-      base::StrCat({"ContextualSearch.UserAction.SubmitQuery.", context_state,
+      base::StrCat({"ContextualSearch.UserAction.SubmitQueryV2.", context_state,
                     ".", metrics_suffix_})
           .c_str()));
 
   base::UmaHistogramBoolean(
-      base::StrCat({"ContextualSearch.UserAction.SubmitQuery.", context_state,
+      base::StrCat({"ContextualSearch.UserAction.SubmitQueryV2.", context_state,
                     ".", metrics_suffix_}),
       true);
+
+  if (text_length == 0 && file_count > 0) {
+    base::RecordAction(base::UserMetricsAction(
+        base::StrCat(
+            {"ContextualSearch.UserAction.SubmitQueryV2.WithContextNoText.",
+             metrics_suffix_})
+            .c_str()));
+
+    base::UmaHistogramBoolean(
+        base::StrCat(
+            {"ContextualSearch.UserAction.SubmitQueryV2.WithContextNoText.",
+             metrics_suffix_}),
+        true);
+  }
 
   // Query funnel metrics.
   for (const auto& funnel : session_metrics_->active_funnels) {

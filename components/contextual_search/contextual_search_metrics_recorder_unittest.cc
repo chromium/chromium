@@ -80,6 +80,15 @@ const char kContextualSearchTabContextAddedFromPlusButton[] =
 const char kContextualSearchTabWithDuplicateTitleClicked[] =
     "ContextualSearch.TabWithDuplicateTitleClicked.V2.Unknown";
 
+const char kContextualSearchSubmitQueryV2WithoutContext[] =
+    "ContextualSearch.UserAction.SubmitQueryV2.WithoutContext.Unknown";
+const char kContextualSearchSubmitQueryV2WithTabContext[] =
+    "ContextualSearch.UserAction.SubmitQueryV2.WithTabContext.Unknown";
+const char kContextualSearchSubmitQueryV2WithNonTabContext[] =
+    "ContextualSearch.UserAction.SubmitQueryV2.WithNonTabContext.Unknown";
+const char kContextualSearchSubmitQueryV2WithContextNoText[] =
+    "ContextualSearch.UserAction.SubmitQueryV2.WithContextNoText.Unknown";
+
 std::string UploadStatusToString(ContextUploadStatus status) {
   switch (status) {
     case ContextUploadStatus::kNotUploaded:
@@ -134,13 +143,11 @@ TEST_F(ContextualSearchMetricsRecorderTest, SubmitQueryWithoutContext) {
                                  /*query_text_length=*/0,
                                  /*file_count=*/0);
 
-  EXPECT_EQ(
-      user_action_tester().GetActionCount(
-          "ContextualSearch.UserAction.SubmitQuery.WithoutContext.Unknown"),
-      1);
+  EXPECT_EQ(user_action_tester().GetActionCount(
+                kContextualSearchSubmitQueryV2WithoutContext),
+            1);
   histogram_tester().ExpectUniqueSample(
-      "ContextualSearch.UserAction.SubmitQuery.WithoutContext.Unknown", true,
-      1);
+      kContextualSearchSubmitQueryV2WithoutContext, true, 1);
 }
 
 TEST_F(ContextualSearchMetricsRecorderTest, SubmitQueryWithTabContext) {
@@ -150,13 +157,11 @@ TEST_F(ContextualSearchMetricsRecorderTest, SubmitQueryWithTabContext) {
                                  /*query_text_length=*/0,
                                  /*file_count=*/1);
 
-  EXPECT_EQ(
-      user_action_tester().GetActionCount(
-          "ContextualSearch.UserAction.SubmitQuery.WithTabContext.Unknown"),
-      1);
+  EXPECT_EQ(user_action_tester().GetActionCount(
+                kContextualSearchSubmitQueryV2WithTabContext),
+            1);
   histogram_tester().ExpectUniqueSample(
-      "ContextualSearch.UserAction.SubmitQuery.WithTabContext.Unknown", true,
-      1);
+      kContextualSearchSubmitQueryV2WithTabContext, true, 1);
 }
 
 TEST_F(ContextualSearchMetricsRecorderTest, SubmitQueryWithNonTabContext) {
@@ -167,12 +172,10 @@ TEST_F(ContextualSearchMetricsRecorderTest, SubmitQueryWithNonTabContext) {
                                  /*file_count=*/1);
 
   EXPECT_EQ(user_action_tester().GetActionCount(
-                "ContextualSearch.UserAction.SubmitQuery.WithNonTabContext."
-                "Unknown"),
+                kContextualSearchSubmitQueryV2WithNonTabContext),
             1);
   histogram_tester().ExpectUniqueSample(
-      "ContextualSearch.UserAction.SubmitQuery.WithNonTabContext.Unknown", true,
-      1);
+      kContextualSearchSubmitQueryV2WithNonTabContext, true, 1);
 }
 
 TEST_F(ContextualSearchMetricsRecorderTest, SubmitQueryWithBothContext) {
@@ -183,16 +186,13 @@ TEST_F(ContextualSearchMetricsRecorderTest, SubmitQueryWithBothContext) {
                                  /*file_count=*/2);
 
   // Tab context should take precedence.
-  EXPECT_EQ(
-      user_action_tester().GetActionCount(
-          "ContextualSearch.UserAction.SubmitQuery.WithTabContext.Unknown"),
-      1);
-  histogram_tester().ExpectUniqueSample(
-      "ContextualSearch.UserAction.SubmitQuery.WithTabContext.Unknown", true,
-      1);
   EXPECT_EQ(user_action_tester().GetActionCount(
-                "ContextualSearch.UserAction.SubmitQuery.WithNonTabContext."
-                "Unknown"),
+                kContextualSearchSubmitQueryV2WithTabContext),
+            1);
+  histogram_tester().ExpectUniqueSample(
+      kContextualSearchSubmitQueryV2WithTabContext, true, 1);
+  EXPECT_EQ(user_action_tester().GetActionCount(
+                kContextualSearchSubmitQueryV2WithNonTabContext),
             0);
 }
 
@@ -311,6 +311,18 @@ TEST_F(ContextualSearchMetricsRecorderTest, FileOnlyQuerySubmissionSession) {
       ContextualSearchMultimodalState::kFileOnly, 1);
   histogram_tester().ExpectBucketCount(kContextualSearchQueryFileCount,
                                        file_count, 1);
+
+  EXPECT_EQ(user_action_tester().GetActionCount(
+                kContextualSearchSubmitQueryV2WithTabContext),
+            1);
+  EXPECT_EQ(user_action_tester().GetActionCount(
+                kContextualSearchSubmitQueryV2WithContextNoText),
+            1);
+
+  histogram_tester().ExpectUniqueSample(
+      kContextualSearchSubmitQueryV2WithTabContext, true, 1);
+  histogram_tester().ExpectUniqueSample(
+      kContextualSearchSubmitQueryV2WithContextNoText, true, 1);
 }
 
 TEST_F(ContextualSearchMetricsRecorderTest, MultimodalQuerySubmissionSession) {
