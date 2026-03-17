@@ -514,8 +514,14 @@ template("chrome_extra_paks") {
     }
 
     if (is_win || is_mac || is_linux || is_chromeos) {
-      sources += [ "$root_gen_dir/chrome/skills_resources.pak" ]
-      deps += [ "//chrome/browser/resources/skills:resources" ]
+      sources += [
+        "$root_gen_dir/chrome/ai_overlay_dialog_untrusted_resources.pak",
+        "$root_gen_dir/chrome/skills_resources.pak",
+      ]
+      deps += [
+        "//chrome/browser/resources/ai_overlay_dialog:resources",
+        "//chrome/browser/resources/skills:resources",
+      ]
     }
 
     if (is_win || is_mac || is_linux) {

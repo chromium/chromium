@@ -19,6 +19,7 @@
 #include "chrome/browser/glic/selection/selection_overlay_untrusted_ui.h"
 #include "chrome/browser/ui/lens/lens_overlay_untrusted_ui.h"
 #include "chrome/browser/ui/lens/lens_side_panel_untrusted_ui.h"
+#include "chrome/browser/ui/webui/ai_overlay_dialog/ai_overlay_dialog_untrusted_ui.h"
 #endif  // defined(TOOLKIT_VIEWS)
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
@@ -49,6 +50,8 @@ void RegisterChromeUntrustedWebUIConfigs() {
       std::make_unique<lens::LensOverlayUntrustedUIConfig>());
   map.AddUntrustedWebUIConfig(
       std::make_unique<lens::LensSidePanelUntrustedUIConfig>());
+  map.AddUntrustedWebUIConfig(
+      std::make_unique<AiOverlayDialogUntrustedUIConfig>());
   map.AddUntrustedWebUIConfig(
       std::make_unique<ReadAnythingUIUntrustedConfig>());
   map.AddUntrustedWebUIConfig(std::make_unique<DataSharingUIConfig>());

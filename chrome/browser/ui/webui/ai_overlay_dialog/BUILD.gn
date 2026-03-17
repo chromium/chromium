@@ -1,0 +1,29 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_win || is_mac || is_linux || is_chromeos)
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("mojo_bindings") {
+  sources = [ "ai_overlay_dialog.mojom" ]
+  webui_module_path = "/"
+}
+
+source_set("ai_overlay_dialog") {
+  sources = [
+    "ai_overlay_dialog_untrusted_ui.cc",
+    "ai_overlay_dialog_untrusted_ui.h",
+  ]
+  public_deps = [ ":mojo_bindings" ]
+  deps = [
+    "//chrome/browser/glic",
+    "//chrome/browser/resources/ai_overlay_dialog:resources",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/webui/top_chrome",
+    "//chrome/common",
+    "//content/public/browser",
+    "//ui/webui",
+  ]
+}

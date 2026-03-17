@@ -31,6 +31,7 @@
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/actions/chrome_actions.h"
+#include "chrome/browser/ui/ai_overlay_dialog/ai_overlay_dialog_controller.h"
 #include "chrome/browser/ui/autofill/address_bubbles_icon_controller.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/payments/filled_card_information_bubble_controller_impl.h"
@@ -1458,6 +1459,31 @@ void BrowserActions::InitializeBrowserActions() {
                     IDS_TAB_GROUP_HEADER_CXMENU_UNFOCUS_GROUP)))
             .SetImage(ui::ImageModel::FromVectorIcon(
                 vector_icons::kArrowBackIcon, ui::kColorIcon))
+            .Build());
+  }
+
+  if (glic::GlicEnabling::IsProfileEligible(profile) &&
+      base::FeatureList::IsEnabled(features::kAiOverlayDialog)) {
+    root_action_item_->AddChild(
+        actions::ActionItem::Builder(
+            base::BindRepeating(
+                [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                   actions::ActionInvocationContext context) {
+                  if (auto* controller = AiOverlayDialogController::From(bwi)) {
+                    controller->ToggleOverlay();
+                  }
+                },
+                bwi))
+            .SetActionId(kActionShowAiOverlayDialog)
+            .SetText(l10n_util::GetStringUTF16(IDS_APPMENU_TOOLTIP))
+            .SetImage(ui::ImageModel::FromVectorIcon(
+                vector_icons::kExtensionIcon, ui::kColorIcon,
+                ui::SimpleMenuModel::kDefaultIconSize))
+            .SetProperty(
+                actions::kActionItemPinnableKey,
+                static_cast<
+                    std::underlying_type_t<actions::ActionPinnableState>>(
+                    actions::ActionPinnableState::kPinnable))
             .Build());
   }
 

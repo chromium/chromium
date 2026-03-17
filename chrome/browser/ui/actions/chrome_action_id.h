@@ -605,6 +605,7 @@
   E(kActionSplitTab, IDC_SPLIT_TAB) \
   E(kActionFederation) \
   E(kActionGlicContextualCueing) \
+  E(kActionShowAiOverlayDialog) \
 
 #define CHROME_ACTION_IDS \
     CHROME_COMMON_ACTION_IDS \

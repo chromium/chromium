@@ -6941,6 +6941,18 @@ static_library("browser") {
     ]
   }
 
+  if (is_win || is_mac || is_linux || is_chromeos) {
+    deps += [
+      "//chrome/browser/ui/webui/ai_overlay_dialog",
+      "//chrome/browser/ui/webui/ai_overlay_dialog:mojo_bindings",
+    ]
+
+    allow_circular_includes_from += [
+      "//chrome/browser/ui/webui/ai_overlay_dialog",
+      "//chrome/browser/ui/webui/ai_overlay_dialog:mojo_bindings",
+    ]
+  }
+
   if (enable_downgrade_processing) {
     sources += [
       "downgrade/downgrade_manager.cc",
@@ -8515,6 +8527,7 @@ group("browser_generated_files") {
   }
   if (is_win || is_mac || is_linux || is_chromeos) {
     public_deps += [
+      "//chrome/browser/ui/webui/ai_overlay_dialog:mojo_bindings",
       "//chrome/browser/ui/webui/skills:mojo_bindings",
       "//ui/webui/resources/cr_components/help_bubble:mojo_bindings",
     ]

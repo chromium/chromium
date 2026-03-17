@@ -6,6 +6,7 @@
 
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/webui_urls_for_test.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -42,6 +43,11 @@ WebUIAllUrlsBrowserTest::WebUIAllUrlsBrowserTest() {
   enabled_features.push_back(
       optimization_guide::features::kOptimizationGuideModelExecution);
   enabled_features.push_back(collaboration::features::kCollaborationComments);
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+  enabled_features.push_back(features::kAiOverlayDialog);
+#endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   enabled_features.push_back(whats_new::kForceEnabled);

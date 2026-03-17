@@ -35,7 +35,9 @@
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/ai_overlay_dialog/ai_overlay_dialog_controller.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_content_setting_bubble_model_delegate.h"
@@ -121,6 +123,7 @@
 #include "components/send_tab_to_self/features.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -142,8 +145,10 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/actions/action_view_controller.h"
 #include "ui/views/background.h"
 #include "ui/views/cascading_property.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
@@ -589,6 +594,28 @@ void ToolbarView::Init() {
 
   if (media_button) {
     media_button_ = AddChildView(std::move(media_button));
+  }
+
+  if (glic::GlicEnabling::IsProfileEligible(browser_view_->GetProfile())) {
+    if (base::FeatureList::IsEnabled(features::kAiOverlayDialog) &&
+        AiOverlayDialogController::From(browser_)) {
+      actions::ActionItem* action_item =
+          actions::ActionManager::Get().FindAction(
+              kActionShowAiOverlayDialog, browser_->browser_window_features()
+                                              ->browser_actions()
+                                              ->root_action_item());
+      if (action_item) {
+        action_item->SetVisible(true);
+        action_item->SetEnabled(true);
+        ai_overlay_dialog_button_ =
+            pinned_toolbar_actions_container()->CreatePermanentButtonFor(
+                kActionShowAiOverlayDialog);
+        ai_overlay_dialog_button_->SetProperty(views::kCrossAxisAlignmentKey,
+                                               views::LayoutAlignment::kCenter);
+        PinnedToolbarActionsModel::Get(browser_->profile())
+            ->UpdatePinnedState(kActionShowAiOverlayDialog, true);
+      }
+    }
   }
 
   avatar_ = AddChildView(std::make_unique<AvatarToolbarButton>(browser_view_));

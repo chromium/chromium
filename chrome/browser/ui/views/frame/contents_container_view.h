@@ -95,6 +95,7 @@ class ContentsContainerView : public views::View,
   enterprise_watermark::WatermarkView* watermark_view() {
     return watermark_view_;
   }
+  views::WebView* ai_overlay_dialog_view() { return ai_overlay_dialog_view_; }
   const ContentsContainerOutline* contents_outline_view() const {
     return container_outline_;
   }
@@ -186,6 +187,9 @@ class ContentsContainerView : public views::View,
 
   // The view that overlays a watermark on the contents container.
   raw_ptr<enterprise_watermark::WatermarkView> watermark_view_ = nullptr;
+
+  // The overlay dialog view that is displayed on top of the web contents.
+  raw_ptr<views::WebView> ai_overlay_dialog_view_ = nullptr;
 
   // The scrim view that covers the content area when a tab-modal dialog is
   // open.

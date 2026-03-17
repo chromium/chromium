@@ -402,6 +402,8 @@ class ToolbarView : public views::AccessiblePaneView,
   // container.
   std::unique_ptr<views::MouseWatcher> mouse_watcher_;
 
+  raw_ptr<ToolbarButton> ai_overlay_dialog_button_ = nullptr;
+
   const raw_ptr<Browser> browser_;
   const raw_ptr<BrowserView> browser_view_;
 

@@ -302,6 +302,10 @@ inline constexpr char kChromeUISyncConfirmationURL[] =
     "chrome://sync-confirmation/";
 inline constexpr char kChromeUISyncInternalsHost[] = "sync-internals";
 inline constexpr char kChromeUISystemInfoHost[] = "system";
+inline constexpr char kChromeUIAiOverlayDialogUntrustedHost[] =
+    "ai-overlay-dialog";
+inline constexpr char kChromeUIAiOverlayDialogUntrustedURL[] =
+    "chrome-untrusted://ai-overlay-dialog/";
 inline constexpr char kChromeUITermsHost[] = "terms";
 inline constexpr char kChromeUITermsURL[] = "chrome://terms/";
 inline constexpr char kChromeUIThemeHost[] = "theme";

@@ -38,6 +38,7 @@
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/skills/skills_ui_window_controller.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
+#include "chrome/browser/ui/ai_overlay_dialog/ai_overlay_dialog_controller.h"
 #include "chrome/browser/ui/bookmarks/bookmark_bar_controller.h"
 #include "chrome/browser/ui/breadcrumb_manager_browser_agent.h"
 #include "chrome/browser/ui/browser.h"
@@ -334,6 +335,12 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
               AimEligibilityServiceFactory::GetForProfile(
                   browser->GetProfile()),
               glic_service ? &glic_service->enabling() : nullptr);
+    }
+
+    if (base::FeatureList::IsEnabled(features::kAiOverlayDialog)) {
+      ai_overlay_dialog_controller_ =
+          GetUserDataFactory().CreateInstance<AiOverlayDialogController>(
+              *browser, browser);
     }
   }
 
@@ -917,6 +924,7 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
   live_tab_context_.reset();
   upgrade_notification_controller_.reset();
   memory_saver_opt_in_iph_controller_.reset();
+  ai_overlay_dialog_controller_.reset();
   lens_overlay_entry_point_controller_.reset();
   initial_web_ui_manager_.reset();
   tab_search_toolbar_button_controller_.reset();

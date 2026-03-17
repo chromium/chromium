@@ -477,6 +477,8 @@ bool IsAndroidAnimatedProgressBarInBrowserEnabled() {
 
 BASE_FEATURE(kWhatsNewDesktopRefresh, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAiOverlayDialog, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kTabGroupsFocusing, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE_PARAM(bool,

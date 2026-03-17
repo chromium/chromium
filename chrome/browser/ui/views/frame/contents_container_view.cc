@@ -14,6 +14,7 @@
 #include "chrome/browser/glic/browser_ui/context_sharing_border_view_controller_impl.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ai_overlay_dialog/ai_overlay_dialog_controller.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/read_anything/read_anything_immersive_overlay_view.h"
@@ -99,6 +100,15 @@ ContentsContainerView::ContentsContainerView(BrowserView* browser_view)
 
   watermark_view_ =
       AddChildView(std::make_unique<enterprise_watermark::WatermarkView>());
+
+  if (base::FeatureList::IsEnabled(features::kAiOverlayDialog)) {
+    auto ai_overlay_dialog_view =
+        std::make_unique<views::WebView>(browser_view->GetProfile());
+    ai_overlay_dialog_view->SetVisible(false);
+    ai_overlay_dialog_view->SetProperty(views::kElementIdentifierKey,
+                                        kAiOverlayDialogWebViewElementId);
+    ai_overlay_dialog_view_ = AddChildView(std::move(ai_overlay_dialog_view));
+  }
 
   if (features::IsImmersiveReadAnythingEnabled()) {
     auto read_anything_immersive_overlay_view =
@@ -274,6 +284,12 @@ void ContentsContainerView::UpdateBorderRoundedCorners() {
     actor_overlay_web_view_->holder()->SetCornerRadii(radii);
   }
 
+  if (ai_overlay_dialog_view_) {
+    // ai_overlay_dialog_view_ should use the same radii as the contents view
+    // since it acts as a layer directly over the main web content.
+    ai_overlay_dialog_view_->holder()->SetCornerRadii(radii);
+  }
+
   if (glic_selection_overlay_view_) {
     glic_selection_overlay_view_->holder()->SetCornerRadii(radii);
   }
@@ -300,6 +316,10 @@ void ContentsContainerView::ClearBorderRoundedCorners() {
 
   if (actor_overlay_web_view_) {
     actor_overlay_web_view_->holder()->SetCornerRadii(kNoRoundedCorners);
+  }
+
+  if (ai_overlay_dialog_view_) {
+    ai_overlay_dialog_view_->holder()->SetCornerRadii(kNoRoundedCorners);
   }
 
   if (glic_selection_overlay_view_) {
@@ -616,6 +636,13 @@ views::ProposedLayout ContentsContainerView::CalculateProposedLayout(
     layouts.child_layouts.emplace_back(
         actor_overlay_web_view_.get(), actor_overlay_web_view_->GetVisible(),
         non_devtools_contents_bounds, size_bounds);
+  }
+
+  if (ai_overlay_dialog_view_) {
+    layouts.child_layouts.emplace_back(
+        ai_overlay_dialog_view_.get(), ai_overlay_dialog_view_->GetVisible(),
+        non_devtools_contents_bounds,
+        views::SizeBounds(non_devtools_contents_bounds.size()));
   }
 
   if (glic_selection_overlay_view_) {

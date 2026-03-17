@@ -109,6 +109,7 @@ source_set("configs") {
     deps += [
       "//chrome/browser/ui/lens",
       "//chrome/browser/ui/views/side_panel",
+      "//chrome/browser/ui/webui/ai_overlay_dialog",
       "//chrome/browser/ui/webui/signin",
       "//chrome/browser/ui/webui/skills",
     ]

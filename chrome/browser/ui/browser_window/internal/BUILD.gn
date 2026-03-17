@@ -135,6 +135,10 @@ source_set("internal") {
       deps += [ "//chrome/browser/ui/views/session_restore_infobar" ]
     }
 
+    if (is_win || is_mac || is_linux || is_chromeos) {
+      deps += [ "//chrome/browser/ui/ai_overlay_dialog" ]
+    }
+
     if (is_chromeos) {
       deps += [
         "//chrome/browser/ash/boca/on_task",

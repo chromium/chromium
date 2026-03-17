@@ -265,6 +265,7 @@ static const char* const kChromeUrls[] = {
 // Don't add new URLs here unless there's a strong reason for them to be
 // exempted from these basic checks.
 static constexpr const char* const kChromeUntestedUrls[] = {
+    "chrome-untrusted://ai-overlay-dialog",
     "chrome-untrusted://compose",
     "chrome-untrusted://data-sharing",
     "chrome-untrusted://lens",
