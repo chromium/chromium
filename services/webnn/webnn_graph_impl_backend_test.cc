@@ -365,16 +365,14 @@ void WebNNGraphImplBackendTest::SetUp() {
       // "BuildAndComputeAddAndMulWithOnlyConstantInputs",
       // "BuildAndComputeAddWithOnlyConstantInputs",
       "BuildAndComputeConcatWithConstants",
-      "BuildAndComputeGraphWithReshapeAsIntermediateNode",
       "BuildAndComputeGraphWithReshapeAsLastNode",
 #if !BUILDFLAG(IS_WIN)
+      "BuildAndComputeGraphWithReshapeAsIntermediateNode",
       "BuildAndComputeGraphWithSplitAndReshape",
-#endif  // !BUILDFLAG(IS_WIN)
       "BuildAndComputeGraphWithTransposeAndRelu",
-#if !BUILDFLAG(IS_WIN)
       "BuildAndComputeGraphWithTransposeAndTwoOutputs",
-#endif  // !BUILDFLAG(IS_WIN)
       "BuildAndComputeGraphWithTransposeAndTwoReshape",
+#endif  // !BUILDFLAG(IS_WIN)
       "BuildAndComputeGraphWithTwoOutputs", "BuildAndComputeGraphWithTwoRelu",
       "BuildAndComputeGraphWithTwoReshape",
       "BuildAndComputeGraphWithTwoTranspose",
