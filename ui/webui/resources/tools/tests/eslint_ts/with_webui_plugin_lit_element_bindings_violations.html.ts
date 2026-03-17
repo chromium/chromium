@@ -13,7 +13,8 @@ export function getHtml(this: DummyElement) {
     aria-description="${this.description}"
     ?disabled="${this.disabled}" error-message="${this.errorMessage}"
     min="${this.limits.min}" max="${this.limits.max}"
-    ?invalid="${this.errorMessage}">
+    ?invalid="${this.errorMessage}" ?readonly="${true}"
+    ?disabled="${false}" ?some-multi-word-attr="${false}">
 </cr-input>
 `;
 }

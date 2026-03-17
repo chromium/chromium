@@ -57,7 +57,7 @@ ${this.shouldExpand_() ? html`
           .activeFolderPath="${this.activeFolderPath}"
           .contextMenuBookmark="${this.contextMenuBookmark}"
           .activeSortIndex="${this.activeSortIndex}"
-          ?has-folders="${true}">
+          has-folders>
       </power-bookmark-row>
     `)}
   `: ''}

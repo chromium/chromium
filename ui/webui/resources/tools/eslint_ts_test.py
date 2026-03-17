@@ -644,6 +644,10 @@ class EslintTsTest(unittest.TestCase):
 
     _INCORRECT_BOOLEAN_ERROR = "Incorrect assignment to property '%(propertyName)s' using boolean attribute expression '?%(attributeName)s='. Boolean attribute expressions should only be assigned to boolean properties. To bind to the truthiness of '%(propertyName)s', convert it to a boolean using '!!'"
 
+    _NO_TRUE_BINDING_ERROR = "Boolean attribute '%(attributeName)s' does not need to be bound to '${true}'. Use either '%(attributeName)s' or '.%(propertyName)s=\"${true}\"' instead"
+
+    _NO_FALSE_BINDING_ERROR = "Incorrect assignment to boolean attribute expression '?%(attributeName)s=' using '${false}'. Use property binding '.%(propertyName)s=\"${false}\"' instead"
+
     # The following strings *should* appear in the error output.
     errors = [
         _INCORRECT_ATTRIBUTE_ERROR % {
@@ -659,6 +663,18 @@ class EslintTsTest(unittest.TestCase):
         _INCORRECT_BOOLEAN_ERROR % {
             'attributeName': 'invalid',
             'propertyName': 'errorMessage',
+        },
+        _NO_TRUE_BINDING_ERROR % {
+            'attributeName': 'readonly',
+            'propertyName': 'readonly',
+        },
+        _NO_FALSE_BINDING_ERROR % {
+            'attributeName': 'disabled',
+            'propertyName': 'disabled',
+        },
+        _NO_FALSE_BINDING_ERROR % {
+            'attributeName': 'some-multi-word-attr',
+            'propertyName': 'someMultiWordAttr',
         },
     ]
     for e in errors:

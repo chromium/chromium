@@ -13,7 +13,7 @@ export function getHtml(this: SkillsAppElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
 <cr-toolbar id="toolbar" page-name="$i18n{skillsTitle}"
-    clear-label="$i18n{delete}" ?autofocus="${true}"
+    clear-label="$i18n{delete}" autofocus
     search-prompt="$i18n{searchBarPlaceholderText}"
     @cr-toolbar-menu-click="${this.onCrToolbarMenuClick_}"
     menu-label="$i18n{mainMenu}" @search-changed="${this.onSearchChanged_}"

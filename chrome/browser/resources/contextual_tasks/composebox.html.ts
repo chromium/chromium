@@ -47,7 +47,7 @@ export function getHtml(this: ContextualTasksComposeboxElement) {
         >
       <cr-composebox
           id="composebox"
-          ?autofocus="${false}"
+          .autofocus="${false}"
           carousel-on-top_
           entrypoint-name="ContextualTasks"
           searchbox-layout-mode="TallBottomContext"

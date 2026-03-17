@@ -24,6 +24,10 @@ export const litElementExpressions = ESLintUtils.RuleCreator.withoutDocs({
           'Incorrect assignment to property \'{{propertyName}}\' using attribute expression \'{{attributeExpression}}\'. Object/Array Lit properties can only be initialized with property expressions. Change to \'{{propertyExpression}}\' instead, or update the property\'s type if Object/Array is not accurate.',
       incorrectBooleanBinding:
           'Incorrect assignment to property \'{{propertyName}}\' using boolean attribute expression \'{{attributeExpression}}\'. Boolean attribute expressions should only be assigned to boolean properties. To bind to the truthiness of \'{{propertyName}}\', convert it to a boolean using \'!!\'.',
+      noTrueBinding:
+          'Boolean attribute \'{{attributeName}}\' does not need to be bound to \'${true}\'. Use either \'{{attributeName}}\' or \'.{{propertyName}}="${true}"\' instead.',
+      noFalseBinding:
+          'Incorrect assignment to boolean attribute expression \'?{{attributeName}}=\' using \'${false}\'. Use property binding \'.{{propertyName}}="${false}"\' instead.',
     },
   },
   defaultOptions: [],
@@ -97,11 +101,30 @@ export const litElementExpressions = ESLintUtils.RuleCreator.withoutDocs({
             continue;
           }
 
-          if (node.expressions[i].type !== 'MemberExpression') {
+          const expression = node.expressions[i];
+          if (!expression) {
             continue;
           }
 
-          const propName = node.expressions[i].property.name;
+          if (expression.type === 'Literal' && !!match.groups['boolName'] &&
+              (expression.value === true || expression.value === false)) {
+            const boolName = match.groups['boolName'];
+            context.report({
+              node: expression,
+              messageId: expression.value ? 'noTrueBinding' : 'noFalseBinding',
+              data: {
+                attributeName: boolName,
+                propertyName: dashCaseToCamelCase(boolName),
+              },
+            });
+            continue;
+          }
+
+          if (expression.type !== 'MemberExpression') {
+            continue;
+          }
+
+          const propName = expression.property.name;
           const declaredProp =
               declaredProps.find(prop => prop.key.name === propName);
           if (!declaredProp) {
@@ -115,7 +138,7 @@ export const litElementExpressions = ESLintUtils.RuleCreator.withoutDocs({
           if (!!match.groups['boolName'] &&
               declaredType.value.name !== 'Boolean') {
             context.report({
-              node: node.expressions[i],
+              node: expression,
               messageId: 'incorrectBooleanBinding',
               data: {
                 attributeExpression: `?${match.groups['boolName']}=`,
@@ -129,7 +152,7 @@ export const litElementExpressions = ESLintUtils.RuleCreator.withoutDocs({
               declaredType.value.name === 'Object') {
             const attrName = match.groups['attrName'];
             context.report({
-              node: node.expressions[i],
+              node: expression,
               messageId: 'incorrectAttributeBinding',
               data: {
                 attributeExpression: `${attrName}=`,
