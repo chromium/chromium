@@ -15,7 +15,9 @@
 
 namespace ash {
 
-MojoSystemInfoDispatcher::MojoSystemInfoDispatcher() = default;
+MojoSystemInfoDispatcher::MojoSystemInfoDispatcher(
+    policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash)
+    : version_info_updater_(browser_policy_connector_ash, this) {}
 
 MojoSystemInfoDispatcher::~MojoSystemInfoDispatcher() = default;
 

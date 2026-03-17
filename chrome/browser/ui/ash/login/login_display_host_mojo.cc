@@ -202,7 +202,8 @@ LoginDisplayHostMojo::LoginDisplayHostMojo(
           browser_policy_connector_ash,
           displayed_screen)),
       auth_performer_(UserDataAuthClient::Get()),
-      system_info_updater_(std::make_unique<MojoSystemInfoDispatcher>()) {
+      system_info_updater_(std::make_unique<MojoSystemInfoDispatcher>(
+          browser_policy_connector_ash)) {
   CHECK(!g_login_display_host_mojo);
   g_login_display_host_mojo = this;
 

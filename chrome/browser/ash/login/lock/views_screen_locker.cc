@@ -48,7 +48,9 @@
 namespace ash {
 
 ViewsScreenLocker::ViewsScreenLocker()
-    : system_info_updater_(std::make_unique<MojoSystemInfoDispatcher>()),
+    : system_info_updater_(std::make_unique<MojoSystemInfoDispatcher>(
+          // TODO(crbug.com/404133029): Avoid using g_browser_process.
+          g_browser_process->platform_part()->browser_policy_connector_ash())),
       auth_performer_(UserDataAuthClient::Get()) {
   LoginScreenClientImpl::Get()->SetDelegate(this);
 

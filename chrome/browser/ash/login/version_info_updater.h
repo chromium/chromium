@@ -11,13 +11,18 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 
 namespace device {
 class BluetoothAdapter;
-}
+}  // namespace device
+
+namespace policy {
+class BrowserPolicyConnectorAsh;
+}  // namespace policy
 
 namespace ash {
 
@@ -46,7 +51,10 @@ class VersionInfoUpdater : public policy::CloudPolicyStore::Observer {
     virtual void OnAdbSideloadStatusUpdated(bool enabled) = 0;
   };
 
-  explicit VersionInfoUpdater(Delegate* delegate);
+  // `browser_policy_connector_ash` must be non-null and must outlive `this`.
+  VersionInfoUpdater(
+      policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
+      Delegate* delegate);
 
   VersionInfoUpdater(const VersionInfoUpdater&) = delete;
   VersionInfoUpdater& operator=(const VersionInfoUpdater&) = delete;
@@ -91,6 +99,9 @@ class VersionInfoUpdater : public policy::CloudPolicyStore::Observer {
   void OnQueryAdbSideload(
       SessionManagerClient::AdbSideloadResponseCode response_code,
       bool enabled);
+
+  const raw_ref<policy::BrowserPolicyConnectorAsh>
+      browser_policy_connector_ash_;
 
   // Text obtained from OnVersion.
   std::optional<std::string> version_text_;

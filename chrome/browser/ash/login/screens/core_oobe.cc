@@ -22,9 +22,11 @@
 
 namespace ash {
 
-CoreOobe::CoreOobe(const std::string& display_type,
-                   base::WeakPtr<CoreOobeView> view)
-    : view_(view) {
+CoreOobe::CoreOobe(
+    policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
+    const std::string& display_type,
+    base::WeakPtr<CoreOobeView> view)
+    : version_info_updater_(browser_policy_connector_ash, this), view_(view) {
   is_oobe_display_ = display_type == OobeUI::kOobeDisplay;
 
   OobeConfiguration::Get()->AddAndFireObserver(this);

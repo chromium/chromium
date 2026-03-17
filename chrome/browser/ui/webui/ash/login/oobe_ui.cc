@@ -719,10 +719,15 @@ OobeUI::OobeUI(content::WebUI* web_ui, const GURL& url)
   LOG(WARNING) << "OobeUI created";
   display_type_ = GetDisplayType(url);
 
+  // TODO(crbug.com/489929275): Avoid using g_browser_process.
+  policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
+
   auto core_oobe_handler = std::make_unique<CoreOobeHandler>();
   core_handler_ = core_oobe_handler.get();
   core_oobe_ =
-      std::make_unique<CoreOobe>(display_type_, core_oobe_handler->AsWeakPtr());
+      std::make_unique<CoreOobe>(browser_policy_connector_ash, display_type_,
+                                 core_oobe_handler->AsWeakPtr());
   web_ui->AddMessageHandler(std::move(core_oobe_handler));
 
   ConfigureOobeDisplay();

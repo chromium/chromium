@@ -7,12 +7,18 @@
 
 #include "chrome/browser/ash/login/version_info_updater.h"
 
+namespace policy {
+class BrowserPolicyConnectorAsh;
+}  // namespace policy
+
 namespace ash {
 
 // Fetches system information and sends it over the login_screen mojo.
 class MojoSystemInfoDispatcher : public VersionInfoUpdater::Delegate {
  public:
-  MojoSystemInfoDispatcher();
+  // `browser_policy_connector_ash` must be non-null and must outlive `this`.
+  explicit MojoSystemInfoDispatcher(
+      policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash);
 
   MojoSystemInfoDispatcher(const MojoSystemInfoDispatcher&) = delete;
   MojoSystemInfoDispatcher& operator=(const MojoSystemInfoDispatcher&) = delete;
@@ -37,7 +43,7 @@ class MojoSystemInfoDispatcher : public VersionInfoUpdater::Delegate {
   void OnQueryAdbSideload(bool success, bool enabled);
 
   // Used to fetch the system/version information.
-  VersionInfoUpdater version_info_updater_{this};
+  VersionInfoUpdater version_info_updater_;
 
   std::string os_version_label_text_;
   std::string enterprise_info_;

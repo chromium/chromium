@@ -19,6 +19,10 @@ namespace display {
 enum class TabletState;
 }  // namespace display
 
+namespace policy {
+class BrowserPolicyConnectorAsh;
+}  // namespace policy
+
 namespace ash {
 
 /**
@@ -66,8 +70,10 @@ class CoreOobe : public VersionInfoUpdater::Delegate,
                  public OobeConfiguration::Observer,
                  public ChromeKeyboardControllerClient::Observer {
  public:
-  explicit CoreOobe(const std::string& display_type,
-                    base::WeakPtr<CoreOobeView> view);
+  // `browser_policy_connector_ash` must be non-null and must outlive `this`.
+  CoreOobe(policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
+           const std::string& display_type,
+           base::WeakPtr<CoreOobeView> view);
   ~CoreOobe() override;
   CoreOobe(const CoreOobe&) = delete;
   CoreOobe& operator=(const CoreOobe&) = delete;
@@ -135,7 +141,7 @@ class CoreOobe : public VersionInfoUpdater::Delegate,
   PendingFrontendCalls pending_calls_;
 
   // Updates when version info is changed.
-  VersionInfoUpdater version_info_updater_{this};
+  VersionInfoUpdater version_info_updater_;
 
   // Help application used for help dialogs.
   scoped_refptr<HelpAppLauncher> help_app_;
