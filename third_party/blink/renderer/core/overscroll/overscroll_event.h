@@ -28,10 +28,13 @@ class OverscrollEvent final : public Event {
 
   void Trace(Visitor*) const override;
 
-  Element* overscrollElement() const;
+  Element* overscrollTarget() const;
+
+  std::optional<bool> overscrolling() const;
 
  private:
-  Member<Element> overscroll_element_;
+  Member<Element> overscroll_target_;
+  std::optional<bool> overscrolling_;
 };
 
 }  // namespace blink

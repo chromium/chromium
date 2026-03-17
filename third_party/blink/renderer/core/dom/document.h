@@ -1611,6 +1611,10 @@ class CORE_EXPORT Document : public ContainerNode,
   void EnqueueScrollSnapChangingEvent(Node* target,
                                       Member<Node>& block_target,
                                       Member<Node>& inline_target);
+  void EnqueueOverscrollEvent(const AtomicString& type,
+                              Node* target,
+                              Element* overscroll_target,
+                              bool overscrolling = false);
 
   void DispatchMediaQueryListEvents();
 

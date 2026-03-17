@@ -12,8 +12,12 @@ namespace blink {
 
 OverscrollEvent::OverscrollEvent(const AtomicString& event_type,
                                  const OverscrollEventInit* init)
-    : Event(event_type, Bubbles::kNo, Cancelable::kNo),
-      overscroll_element_(init->overscrollElement()) {}
+    : Event(event_type,
+            init->bubbles() ? Bubbles::kYes : Bubbles::kNo,
+            Cancelable::kNo),
+      overscroll_target_(init->overscrollTarget()),
+      overscrolling_(init->hasOverscrolling() ? init->overscrolling()
+                                              : std::nullopt) {}
 
 OverscrollEvent::~OverscrollEvent() = default;
 
@@ -23,11 +27,15 @@ const AtomicString& OverscrollEvent::InterfaceName() const {
 
 void OverscrollEvent::Trace(Visitor* visitor) const {
   Event::Trace(visitor);
-  visitor->Trace(overscroll_element_);
+  visitor->Trace(overscroll_target_);
 }
 
-Element* OverscrollEvent::overscrollElement() const {
-  return overscroll_element_;
+Element* OverscrollEvent::overscrollTarget() const {
+  return overscroll_target_;
+}
+
+std::optional<bool> OverscrollEvent::overscrolling() const {
+  return overscrolling_;
 }
 
 }  // namespace blink

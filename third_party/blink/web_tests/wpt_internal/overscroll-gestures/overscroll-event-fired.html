@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<meta name="author" content="github.com/vmpstr">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<style>
+  html, body {
+    margin: 0;
+  }
+  #container {
+    width: 200px;
+    height: 200px;
+    overflow: auto;
+  }
+  #menu {
+    width: 100%;
+    height: 100%;
+    right: 100%; /* Overscrolls to the left of the container. */
+  }
+  #content {
+    height: 600px;
+  }
+</style>
+
+<div id="container" overscrollcontainer>
+  <div id="menu"></div>
+  <div id="content"></div>
+</div>
+<button id=button command="toggle-overscroll" commandfor="menu"></button>
+
+<script>
+function click(target) {
+  let event_received = new Promise(resolve => {
+    target.addEventListener("click", resolve, { once: true });
+  });
+  return Promise.all([test_driver.click(button), event_received]);
+}
+
+promise_test(async () => {
+  let event_promises = [
+    new Promise(resolve => container.addEventListener("overscrollstart", resolve, { once: true })),
+    new Promise(resolve => container.addEventListener("overscrollchanging", resolve, { once: true })),
+    new Promise(resolve => container.addEventListener("overscrollend", resolve, { once: true }))
+  ];
+
+  await click(button);
+
+  let events = await Promise.all(event_promises);
+  let start_event = events[0];
+  let changing_event = events[1];
+  let end_event = events[2];
+
+  assert_equals(start_event.target, container, "Event target should be the container");
+  assert_equals(start_event.overscrollTarget, menu, "overscrollTarget should be the menu");
+
+  assert_equals(changing_event.target, container, "Event target should be the container");
+  assert_equals(changing_event.overscrollTarget, menu, "overscrollTarget should be the menu");
+  assert_true(changing_event.overscrolling, "overscrolling should be true");
+
+  assert_equals(end_event.target, container, "Event target should be the container");
+  assert_equals(end_event.overscrollTarget, menu, "overscrollTarget should be the menu");
+
+  // Now close the menu
+  let event_promises2 = [
+    new Promise(resolve => container.addEventListener("overscrollstart", resolve, { once: true })),
+    new Promise(resolve => container.addEventListener("overscrollchanging", resolve, { once: true })),
+    new Promise(resolve => container.addEventListener("overscrollend", resolve, { once: true }))
+  ];
+
+  await click(button);
+
+  let events2 = await Promise.all(event_promises2);
+  let start_event2 = events2[0];
+  let changing_event2 = events2[1];
+  let end_event2 = events2[2];
+
+  assert_equals(start_event2.target, container, "Event target should be the container");
+  assert_equals(start_event2.overscrollTarget, menu, "overscrollTarget should be the menu");
+
+  assert_equals(changing_event2.target, container, "Event target should be the container");
+  assert_equals(changing_event2.overscrollTarget, menu, "overscrollTarget should be the menu");
+  assert_false(changing_event2.overscrolling, "overscrolling should be false");
+
+  assert_equals(end_event2.target, container, "Event target should be the container");
+  assert_equals(end_event2.overscrollTarget, menu, "overscrollTarget should be the menu");
+
+}, "Toggle overscroll fires overscrollstart, overscrollchanging, overscrollend events with correct overscrollTarget");
+</script>

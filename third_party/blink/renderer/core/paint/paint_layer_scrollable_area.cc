@@ -98,6 +98,7 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
+#include "third_party/blink/renderer/core/overscroll/overscroll_area_tracker.h"
 #include "third_party/blink/renderer/core/page/autoscroll_controller.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
@@ -436,6 +437,10 @@ void PaintLayerScrollableArea::UpdateScrollOffset(
   CHECK(frame_view);
 
   UpdateLastScrolled(scroll_offset_, new_offset, source_type);
+
+  // If this is the first scroll offsets on the overscroll area parent, we need
+  // to send an overscrollstart event.
+  EnqueueOverscrollStartEventIfNeeded();
 
   // The ScrollOffsetTranslation paint property depends on the scroll offset.
   // (see: PaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation).
@@ -3460,6 +3465,7 @@ void PaintLayerScrollableArea::
     rare_data.snapped_query_target_ids_ = new_target_ids;
     EnqueueScrollSnapChangeEvent();
   }
+  EnqueueOverscrollFinishedEventIfNeeded(scrollsnapchange);
 }
 
 void PaintLayerScrollableArea::SetScrollsnapchangingTargetIds(
@@ -3470,7 +3476,8 @@ void PaintLayerScrollableArea::SetScrollsnapchangingTargetIds(
 void PaintLayerScrollableArea::
     UpdateScrollSnapChangingTargetsAndEnqueueScrollSnapChanging(
         const cc::TargetSnapAreaElementIds& new_target_ids) {
-  if (!RuntimeEnabledFeatures::CSSScrollSnapChangingEventEnabled()) {
+  if (!RuntimeEnabledFeatures::CSSScrollSnapChangingEventEnabled() &&
+      !RuntimeEnabledFeatures::OverscrollGesturesEnabled()) {
     return;
   }
   const cc::SnapContainerData* container_data = GetSnapContainerData();
@@ -3482,14 +3489,29 @@ void PaintLayerScrollableArea::
 
   auto& rare_data = EnsureRareData();
   bool scrollsnapchanging =
-      (rare_data.scrollsnapchanging_target_ids_
-           ? (new_target_ids.x != rare_data.scrollsnapchanging_target_ids_->x ||
-              new_target_ids.y != rare_data.scrollsnapchanging_target_ids_->y)
-           : true);
+      !rare_data.scrollsnapchanging_target_ids_ ||
+      new_target_ids.x != rare_data.scrollsnapchanging_target_ids_->x ||
+      new_target_ids.y != rare_data.scrollsnapchanging_target_ids_->y;
+
   if (scrollsnapchanging) {
     rare_data.scrollsnapchanging_target_ids_ = new_target_ids;
     rare_data.snapped_query_target_ids_ = new_target_ids;
-    EnqueueScrollSnapChangingEvent();
+    if (RuntimeEnabledFeatures::CSSScrollSnapChangingEventEnabled()) {
+      EnqueueScrollSnapChangingEvent();
+    }
+
+    // We potentially need to send overscrollstart, since this snap change could
+    // have happened before any scroll update.
+    EnqueueOverscrollStartEventIfNeeded();
+
+    if (GetLayoutBox()->IsOverscrollAreaParent()) {
+      CHECK_EQ(container_data->size(), 2u);
+      const auto& first_data = container_data->at(0);
+
+      EnqueueOverscrollChangingEventIfNeeded(
+          new_target_ids.x != first_data.element_id ||
+          new_target_ids.y != first_data.element_id);
+    }
   }
 }
 
@@ -3656,6 +3678,56 @@ void PaintLayerScrollableArea::UpdateScrollMarkers() {
 bool PaintLayerScrollableArea::HasRunningAnimation() {
   return GetScrollAnimator().HasRunningAnimation() ||
          GetProgrammaticScrollAnimator().HasRunningAnimation();
+}
+
+void PaintLayerScrollableArea::EnqueueOverscrollStartEventIfNeeded() {
+  if (!GetLayoutBox()->IsOverscrollAreaParent() ||
+      (RareData() && RareData()->in_active_overscroll_)) {
+    return;
+  }
+
+  Element& overscroll_element = To<PseudoElement>(GetLayoutBox()->GetNode())
+                                    ->UltimateOriginatingElement();
+  Element* overscroll_container = overscroll_element.GetOverscrollContainer();
+
+  EnsureRareData().in_active_overscroll_ = true;
+  GetLayoutBox()->GetDocument().EnqueueOverscrollEvent(
+      event_type_names::kOverscrollstart, overscroll_container,
+      &overscroll_element);
+}
+
+void PaintLayerScrollableArea::EnqueueOverscrollChangingEventIfNeeded(
+    bool overscrolling) {
+  if (!GetLayoutBox()->IsOverscrollAreaParent() || !RareData() ||
+      !RareData()->in_active_overscroll_) {
+    return;
+  }
+
+  Element& overscroll_element = To<PseudoElement>(GetLayoutBox()->GetNode())
+                                    ->UltimateOriginatingElement();
+  Element* overscroll_container = overscroll_element.GetOverscrollContainer();
+
+  GetLayoutBox()->GetDocument().EnqueueOverscrollEvent(
+      event_type_names::kOverscrollchanging, overscroll_container,
+      &overscroll_element, overscrolling);
+}
+
+void PaintLayerScrollableArea::EnqueueOverscrollFinishedEventIfNeeded(
+    bool snap_changed) {
+  if (!GetLayoutBox()->IsOverscrollAreaParent() || !RareData() ||
+      !RareData()->in_active_overscroll_) {
+    return;
+  }
+
+  Element& overscroll_element = To<PseudoElement>(GetLayoutBox()->GetNode())
+                                    ->UltimateOriginatingElement();
+  Element* overscroll_container = overscroll_element.GetOverscrollContainer();
+
+  RareData()->in_active_overscroll_ = false;
+  GetLayoutBox()->GetDocument().EnqueueOverscrollEvent(
+      snap_changed ? event_type_names::kOverscrollend
+                   : event_type_names::kOverscrollcancel,
+      overscroll_container, &overscroll_element);
 }
 
 }  // namespace blink

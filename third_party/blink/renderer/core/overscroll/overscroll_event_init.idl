@@ -3,5 +3,6 @@
 // found in the LICENSE file.
 
 dictionary OverscrollEventInit : EventInit {
-  Element? overscrollElement = null;
+  Element? overscrollTarget = null;
+  boolean? overscrolling;
 };

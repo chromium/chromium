@@ -111,6 +111,9 @@ struct CORE_EXPORT PaintLayerScrollableAreaRareData final
   // PostLayoutSnapshotClient for keeping track of snapped targets in both
   // directions used for matching snapped @container queries.
   Member<SnappedQueryScrollSnapshot> snapped_query_snapshot_;
+
+  // True if an overscroll gesture is currently in progress.
+  bool in_active_overscroll_ = false;
 };
 
 // PaintLayerScrollableArea represents the scrollable area of a LayoutBox.
@@ -825,6 +828,11 @@ class CORE_EXPORT PaintLayerScrollableArea final
 
   void UpdateScrollMarkers() override;
   ScrollMarkerGroupPseudoElement* GetScrollMarkerGroup() const override;
+
+  // Overscroll events.
+  void EnqueueOverscrollStartEventIfNeeded();
+  void EnqueueOverscrollChangingEventIfNeeded(bool overscrolling);
+  void EnqueueOverscrollFinishedEventIfNeeded(bool snap_changed);
 
   // PaintLayer is destructed before PaintLayerScrollable area, during this
   // time before PaintLayerScrollableArea has been collected layer_ will

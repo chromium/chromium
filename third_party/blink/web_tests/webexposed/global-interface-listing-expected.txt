@@ -2096,7 +2096,10 @@ interface Document : Node
     getter onmouseover
     getter onmouseup
     getter onmousewheel
-    getter onoverscroll
+    getter onoverscrollcancel
+    getter onoverscrollchanging
+    getter onoverscrollend
+    getter onoverscrollstart
     getter onpaste
     getter onpause
     getter onplay
@@ -2324,7 +2327,10 @@ interface Document : Node
     setter onmouseover
     setter onmouseup
     setter onmousewheel
-    setter onoverscroll
+    setter onoverscrollcancel
+    setter onoverscrollchanging
+    setter onoverscrollend
+    setter onoverscrollstart
     setter onpaste
     setter onpause
     setter onplay
@@ -4010,7 +4016,10 @@ interface HTMLElement : Element
     getter onmouseover
     getter onmouseup
     getter onmousewheel
-    getter onoverscroll
+    getter onoverscrollcancel
+    getter onoverscrollchanging
+    getter onoverscrollend
+    getter onoverscrollstart
     getter onpaste
     getter onpause
     getter onplay
@@ -4151,7 +4160,10 @@ interface HTMLElement : Element
     setter onmouseover
     setter onmouseup
     setter onmousewheel
-    setter onoverscroll
+    setter onoverscrollcancel
+    setter onoverscrollchanging
+    setter onoverscrollend
+    setter onoverscrollstart
     setter onpaste
     setter onpause
     setter onplay
@@ -6157,7 +6169,10 @@ interface MathMLElement : Element
     getter onmouseover
     getter onmouseup
     getter onmousewheel
-    getter onoverscroll
+    getter onoverscrollcancel
+    getter onoverscrollchanging
+    getter onoverscrollend
+    getter onoverscrollstart
     getter onpaste
     getter onpause
     getter onplay
@@ -6273,7 +6288,10 @@ interface MathMLElement : Element
     setter onmouseover
     setter onmouseup
     setter onmousewheel
-    setter onoverscroll
+    setter onoverscrollcancel
+    setter onoverscrollchanging
+    setter onoverscrollend
+    setter onoverscrollstart
     setter onpaste
     setter onpause
     setter onplay
@@ -7361,7 +7379,8 @@ interface OverconstrainedError : DOMException
     method constructor
 interface OverscrollEvent : Event
     attribute @@toStringTag
-    getter overscrollElement
+    getter overscrollTarget
+    getter overscrolling
     method constructor
 interface PageRevealEvent : Event
     attribute @@toStringTag
@@ -8747,7 +8766,10 @@ interface SVGElement : Element
     getter onmouseover
     getter onmouseup
     getter onmousewheel
-    getter onoverscroll
+    getter onoverscrollcancel
+    getter onoverscrollchanging
+    getter onoverscrollend
+    getter onoverscrollstart
     getter onpaste
     getter onpause
     getter onplay
@@ -8865,7 +8887,10 @@ interface SVGElement : Element
     setter onmouseover
     setter onmouseup
     setter onmousewheel
-    setter onoverscroll
+    setter onoverscrollcancel
+    setter onoverscrollchanging
+    setter onoverscrollend
+    setter onoverscrollstart
     setter onpaste
     setter onpause
     setter onplay
@@ -13633,7 +13658,10 @@ namespace console
     getter onmove
     getter onoffline
     getter ononline
-    getter onoverscroll
+    getter onoverscrollcancel
+    getter onoverscrollchanging
+    getter onoverscrollend
+    getter onoverscrollstart
     getter onpagehide
     getter onpagereveal
     getter onpageshow
@@ -13870,7 +13898,10 @@ namespace console
     setter onmove
     setter onoffline
     setter ononline
-    setter onoverscroll
+    setter onoverscrollcancel
+    setter onoverscrollchanging
+    setter onoverscrollend
+    setter onoverscrollstart
     setter onpagehide
     setter onpagereveal
     setter onpageshow

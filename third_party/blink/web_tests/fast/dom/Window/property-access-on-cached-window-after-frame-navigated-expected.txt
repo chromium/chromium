@@ -194,7 +194,10 @@ PASS oldChildWindow.onmousewheel is newChildWindow.onmousewheel
 PASS oldChildWindow.onmove is newChildWindow.onmove
 PASS oldChildWindow.onoffline is newChildWindow.onoffline
 PASS oldChildWindow.ononline is newChildWindow.ononline
-PASS oldChildWindow.onoverscroll is newChildWindow.onoverscroll
+PASS oldChildWindow.onoverscrollcancel is newChildWindow.onoverscrollcancel
+PASS oldChildWindow.onoverscrollchanging is newChildWindow.onoverscrollchanging
+PASS oldChildWindow.onoverscrollend is newChildWindow.onoverscrollend
+PASS oldChildWindow.onoverscrollstart is newChildWindow.onoverscrollstart
 PASS oldChildWindow.onpagehide is newChildWindow.onpagehide
 PASS oldChildWindow.onpagereveal is newChildWindow.onpagereveal
 PASS oldChildWindow.onpageshow is newChildWindow.onpageshow

@@ -94,6 +94,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_focus_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_import_node_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_observable_array_css_style_sheet.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_overscroll_event_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_elementcreationoptions_string.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_htmlscriptelement_svgscriptelement.h"
@@ -310,6 +311,7 @@
 #include "third_party/blink/renderer/core/mathml_names.h"
 #include "third_party/blink/renderer/core/mobile_metrics/mobile_friendliness_checker.h"
 #include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
+#include "third_party/blink/renderer/core/overscroll/overscroll_event.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/event_with_hit_test_results.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
@@ -6575,6 +6577,22 @@ void Document::EnqueueScrollSnapChangingEvent(Node* target,
   scrollsnapchanging_event->SetTarget(target);
   scripted_animation_controller_->EnqueuePerFrameEvent(
       scrollsnapchanging_event);
+}
+
+void Document::EnqueueOverscrollEvent(const AtomicString& type,
+                                      Node* target,
+                                      Element* overscroll_target,
+                                      bool overscrolling) {
+  OverscrollEventInit* init = OverscrollEventInit::Create();
+  init->setOverscrollTarget(overscroll_target);
+  // We bubble if we're on the document.
+  init->setBubbles(target->IsDocumentNode());
+  if (type == event_type_names::kOverscrollchanging) {
+    init->setOverscrolling(overscrolling);
+  }
+  Event* overscroll_event = OverscrollEvent::Create(type, init);
+  overscroll_event->SetTarget(target);
+  scripted_animation_controller_->EnqueuePerFrameEvent(overscroll_event);
 }
 
 void Document::EnqueueMoveEvent() {
