@@ -246,34 +246,18 @@ static bool ConsumeAttributeReference(CSSParserTokenStream& stream,
   CSSParserTokenStream::BlockGuard guard(stream);
   stream.ConsumeWhitespace();
 
-  if (RuntimeEnabledFeatures::CSSArgumentGrammarEnabled()) {
-    wtf_size_t start_offset = stream.Offset();
-    if (!ConsumeUnparsedValue(stream, /*restricted_value=*/false,
-                              /*comma_ends_declaration=*/true, features,
-                              context) ||
-        stream.Offset() == start_offset) {
-      return false;
-    }
-  } else {
-    // Parse <attr-name>.
-    if (stream.Peek().GetType() != kIdentToken) {
-      return false;
-    }
-    stream.ConsumeIncludingWhitespace();  // kIdentToken
-    if (stream.AtEnd()) {
-      // attr = attr(<attr-name>) is allowed, so return true.
-      return true;
-    }
-
-    std::optional<CSSAttrType> attr_type = CSSAttrType::Consume(stream);
-    if (attr_type.has_value()) {
-      // attr = attr(<attr-name> [ type(<syntax>) | string | <unit> ]) is
-      // allowed, so return true.
-      return true;
-    }
+  // Parse <attr-name>.
+  if (stream.Peek().GetType() != kIdentToken) {
+    return false;
+  }
+  stream.ConsumeIncludingWhitespace();  // kIdentToken
+  if (stream.AtEnd()) {
+    // attr = attr(<attr-name>) is allowed, so return true.
+    return true;
   }
 
-  if (stream.AtEnd()) {
+  std::optional<CSSAttrType> attr_type = CSSAttrType::Consume(stream);
+  if (stream.AtEnd() && attr_type.has_value()) {
     // The fallback is optional.
     return true;
   }
@@ -607,7 +591,17 @@ static bool ConsumeUnparsedValue(CSSParserTokenStream& stream,
               VariableDataFeature::kHasReferences);
           continue;
         case CSSValueID::kAttr:
-          if (!ConsumeAttributeReference(stream, features, context)) {
+          if (RuntimeEnabledFeatures::CSSArgumentGrammarEnabled()) {
+            if (!ConsumeCommonArgumentGrammar(stream, features, context)) {
+              error = true;
+            }
+          } else if (!ConsumeAttributeReference(stream, features, context)) {
+            stream.EnsureLookAhead();
+            stream.Restore(state);
+            if (ConsumeCommonArgumentGrammar(stream, features, context)) {
+              context.Count(
+                  WebFeature::kCSSDiscardedAttrWithValidArgumentGrammar);
+            }
             error = true;
           }
           features |= static_cast<VariableDataFeatures>(

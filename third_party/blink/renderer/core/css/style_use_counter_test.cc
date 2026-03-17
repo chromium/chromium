@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
@@ -76,6 +77,25 @@ TEST_F(StyleUseCounterTest, CSSDiscardedVarWithValidArgumentGrammar) {
   EXPECT_TRUE(IsCountedOnParsing(feature, "html { --p: var(--foo bar); }"));
   EXPECT_TRUE(IsCountedOnParsing(feature, "html { --p: var(--foo bar,); }"));
   EXPECT_TRUE(IsCountedOnParsing(feature, "html { --p: var(foo, bar); }"));
+}
+
+TEST_F(StyleUseCounterTest, CSSDiscardedAttrWithValidArgumentGrammar) {
+  ScopedCSSArgumentGrammarForTest scoped(false);
+  WebFeature feature = WebFeature::kCSSDiscardedAttrWithValidArgumentGrammar;
+  EXPECT_FALSE(IsCountedOnParsing(
+      feature, "html { --p: attr(data-foo type(<number>)); }"));
+  EXPECT_FALSE(IsCountedOnParsing(
+      feature, "html { --p: attr(data-foo type(<number>), fallback); }"));
+  EXPECT_FALSE(IsCountedOnParsing(feature, "html { --p: attr(!); }"));
+  EXPECT_FALSE(IsCountedOnParsing(feature, "html { --p: attr(); }"));
+  EXPECT_FALSE(IsCountedOnParsing(feature, "html { --p: attr(data-foo;);}"));
+  EXPECT_TRUE(IsCountedOnParsing(feature, "html { --p: attr(foo type()); }"));
+  EXPECT_TRUE(IsCountedOnParsing(
+      feature, "html { --p: attr(foo type(<number>) fallback); }"));
+  EXPECT_TRUE(
+      IsCountedOnParsing(feature, "html { --p: attr(var(--foo), bar); }"));
+  EXPECT_TRUE(IsCountedOnParsing(
+      feature, "html { --p: attr(attr(data-foo), var(--bar)); }"));
 }
 
 }  // namespace blink
