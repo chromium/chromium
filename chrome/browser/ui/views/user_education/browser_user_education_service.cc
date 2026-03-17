@@ -1042,11 +1042,11 @@ void MaybeRegisterChromeFeaturePromos(
           feature_engagement::kIPHResumptionRailFeature,
           kVerticalTabStripProjectsButtonElementId,
           IDS_RESUMPTION_RAIL_IPH_BODY, IDS_RESUMPTION_RAIL_IPH_TITLE,
-          FeaturePromoSpecification::AcceleratorInfo(0))
+          FeaturePromoSpecification::AcceleratorInfo())
           .SetBubbleTitleText(IDS_RESUMPTION_RAIL_IPH_TITLE)
-          .SetBubbleArrow(HelpBubbleArrow::kLeftCenter)
+          .SetBubbleArrow(HelpBubbleArrow::kTopLeft)
           .SetBubbleIcon(&vector_icons::kLightbulbOutlineIcon)
-          .SetMetadata(146, "gqueen@chromium.org",
+          .SetMetadata(147, "gqueen@chromium.org",
                        "Triggered to educate users about the Resumption Rail "
                        "feature entrypoint.")));
 
