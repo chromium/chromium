@@ -5,9 +5,8 @@
 #include "chrome/browser/ui/tabs/organization/tab_sensitivity_cache.h"
 
 #include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "components/page_content_annotations/core/page_content_annotation_type.h"
 
 TabSensitivityCache::TabSensitivityCache(Profile* profile) : profile_(profile) {
@@ -43,12 +42,13 @@ void TabSensitivityCache::OnPageContentAnnotated(
 }
 
 void TabSensitivityCache::MaybeTrimCacheKeys() {
+  const std::vector<Browser*> browsers =
+      chrome::FindAllTabbedBrowsersWithProfile(profile_);
+
   size_t num_tabs_in_profile = 0;
-  ProfileBrowserCollection::GetForProfile(profile_)
-      ->ForEach([&num_tabs_in_profile](BrowserWindowInterface* browser) {
-        num_tabs_in_profile += browser->GetTabStripModel()->count();
-        return true;
-      });
+  for (auto* browser : browsers) {
+    num_tabs_in_profile += browser->tab_strip_model()->count();
+  }
 
   // Early return unless we'd remove at least half of the keys.
   if (sensitivy_scores_.size() <= 2 * num_tabs_in_profile) {
@@ -56,16 +56,14 @@ void TabSensitivityCache::MaybeTrimCacheKeys() {
   }
 
   std::unordered_set<GURL, GURLHash> open_urls;
-  ProfileBrowserCollection::GetForProfile(profile_)
-      ->ForEach([&open_urls](BrowserWindowInterface* browser) {
-        const int num_tabs = browser->GetTabStripModel()->count();
-        for (int i = 0; i < num_tabs; i++) {
-          open_urls.insert(browser->GetTabStripModel()
-                               ->GetWebContentsAt(i)
-                               ->GetLastCommittedURL());
-        }
-        return true;
-      });
+  for (auto* browser : browsers) {
+    const int num_tabs = browser->tab_strip_model()->count();
+    for (int i = 0; i < num_tabs; i++) {
+      open_urls.insert(browser->tab_strip_model()
+                           ->GetWebContentsAt(i)
+                           ->GetLastCommittedURL());
+    }
+  }
 
   std::erase_if(sensitivy_scores_, [&open_urls](auto& key_and_score) {
     return !open_urls.contains(key_and_score.first);
