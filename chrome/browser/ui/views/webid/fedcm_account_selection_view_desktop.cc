@@ -147,10 +147,6 @@ void FedCmAccountSelectionView::OnPageActionClicked() {
   } else {
     // For sign-up users, we show a full modal dialog that gathers the necessary
     // permission from the user (e.g. privacy policies and terms of services).
-    // We also hide the expanded suggestion chip (showing the
-    // "Sign up with idp.com") but keep the page action icon (with the user's
-    // profile picture) in the omnibox.
-    controller->HideSuggestionChip(kActionFederation);
     Show(*rp_data_, idp_list_, accounts_, blink::mojom::RpMode::kActive,
          new_accounts_);
   }

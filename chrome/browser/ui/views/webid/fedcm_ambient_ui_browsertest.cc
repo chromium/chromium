@@ -203,8 +203,11 @@ IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest, SignUpToActiveTransition) {
   EXPECT_TRUE(view()->GetDialogWidget());
   EXPECT_TRUE(view()->GetDialogWidget()->IsVisible());
 
-  // The Page Action icon should still be visible while the modal is shown.
+  // The Page Action icon should still be visible and expanded while the modal
+  // is shown.
   EXPECT_TRUE(observer.GetCurrentPageActionState().showing);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return observer.GetCurrentPageActionState().chip_showing; }));
 
   // Closing the widget should hide the Page Action icon.
   view()->Close(/*notify_delegate=*/false, /*hide_widget=*/false);
