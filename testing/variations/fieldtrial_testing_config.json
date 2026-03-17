@@ -23213,6 +23213,26 @@
             ]
         }
     ],
+    "VerticalTabsLaunch": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IPH_VerticalTabstripTutorialFeature",
+                        "VerticalTabsLaunch",
+                        "VerticalTabsNewBadge"
+                    ]
+                }
+            ]
+        }
+    ],
     "VideoConferenceRollout": [
         {
             "platforms": [
