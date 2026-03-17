@@ -105,16 +105,14 @@ export function getHtml(this: ComposeboxElement) {
                   ?enable-scrolling="${this.enableCarouselScrolling}"
                   @delete-file="${this.onDeleteFile_}">
                 </cr-composebox-file-carousel> ` : ''}
-                ${this.searchboxLayoutMode === 'Compact' && this.inToolMode_ && !this.showDropdown_ ? html`
+                ${this.searchboxLayoutMode === 'Compact' && this.inToolMode_ ? html`
                 <div class="context-menu-container" id="toolChipsContainer"
                     part="tool-chips-container">
-                  ${this.inToolMode_ ? html`
                     <cr-composebox-tool-chip
                       exportparts="tool-chip-label"
                       .inputState="${this.inputState_}"
                       @tool-click="${this.onToolClick_}">
                     </cr-composebox-tool-chip>
-                  `: ''}
                 </div>
                 ` : ''}
             </div>
@@ -143,18 +141,6 @@ export function getHtml(this: ComposeboxElement) {
               ?hidden="${!this.showDropdown_}"
               .lastQueriedInput="${this.lastQueriedInput_}">
           </cr-composebox-dropdown>
-          ${this.searchboxLayoutMode === 'Compact' && this.inToolMode_ && this.showDropdown_ ? html`
-            <div class="context-menu-container" id="toolChipsContainer"
-                part="tool-chips-container">
-              ${this.inToolMode_ ? html`
-                <cr-composebox-tool-chip
-                  exportparts="tool-chip-label"
-                  .inputState="${this.inputState_}"
-                  @tool-click="${this.onToolClick_}">
-                </cr-composebox-tool-chip>
-              `: ''}
-            </div>
-          ` : ''}
           ${this.searchboxLayoutMode === 'TallBottomContext' || this.searchboxLayoutMode === '' || this.isOmniboxInCompactMode_ ? html`
             ${this.contextMenuEnabled_ ? getContextMenuHtml.bind(this)() : ''}
           `: ''}

@@ -191,6 +191,10 @@ export class ComposeboxElement extends I18nMixinLit
         type: Number,
         reflect: true,
       },
+      inToolMode_: {
+        type: Boolean,
+        reflect: true,
+      },
       /**
        * Feature flag for New Tab Page Realbox Next.
        */
@@ -356,6 +360,8 @@ export class ComposeboxElement extends I18nMixinLit
   protected accessor showContextMenuDescription_: boolean =
       this.contextMenuDescriptionEnabled_;
   protected accessor isOmniboxInCompactMode_: boolean = false;
+  protected accessor inVoiceSearchMode_: boolean = false;
+  protected accessor inToolMode_: boolean = false;
   // Synchronous immediate guard used to deduplicate processing
   // autochips being added, not fully processed chips.
   protected pendingAutomaticActiveTabUrl_: string = '';
@@ -391,7 +397,6 @@ export class ComposeboxElement extends I18nMixinLit
       loadTimeData.valueExists('autoSubmitVoiceSearchQuery') ?
       loadTimeData.getBoolean('autoSubmitVoiceSearchQuery') :
       true;
-  protected accessor inVoiceSearchMode_: boolean = false;
   private selectedMatch_: AutocompleteMatch|null = null;
   // Whether the composebox is actively waiting for an autocomplete response. If
   // this is false, that means at least one response has been received (even if
@@ -412,10 +417,6 @@ export class ComposeboxElement extends I18nMixinLit
   private imageFileTypes_: string[] =
       loadTimeData.getString('composeboxImageFileTypes').split(',');
 
-  protected get inToolMode_(): boolean {
-    return this.activeToolMode_ !== ComposeboxToolMode.kUnspecified;
-  }
-
   protected get shouldShowDivider_(): boolean {
     // TODO(crbug.com/476175193): Remove `entrypointName` condition.
     if (this.entrypointName === 'Omnibox' &&
@@ -427,7 +428,7 @@ export class ComposeboxElement extends I18nMixinLit
     return this.showDropdown_ &&
         (this.showFileCarousel_ ||
          this.searchboxLayoutMode === 'TallTopContext' ||
-         this.shouldShowSubmitButton_);
+         this.shouldShowSubmitButton_ || this.inToolMode_);
   }
 
   protected get shouldShowSubmitButton_(): boolean {
@@ -550,6 +551,10 @@ export class ComposeboxElement extends I18nMixinLit
 
     const changedPrivateProperties =
         changedProperties as Map<PropertyKey, unknown>;
+    if (changedPrivateProperties.has('activeToolMode_')) {
+      this.inToolMode_ =
+          this.activeToolMode_ !== ComposeboxToolMode.kUnspecified;
+    }
     // When the result initially gets set check if dropdown should show.
     if (changedPrivateProperties.has('input_') ||
         changedPrivateProperties.has('result_') ||
