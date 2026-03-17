@@ -479,6 +479,9 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="kNotTriggeredOnPressNoSearchProviderOptIn">
     kNotTriggeredOnPressNoSearchProviderOptIn
   </int>
+  <int value="9" label="kNotTriggeredThrottledByPrewarm">
+    kNotTriggeredThrottledByPrewarm
+  </int>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/preloading/search_preload/search_preload_signal_result.h) -->

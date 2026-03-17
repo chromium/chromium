@@ -7,6 +7,9 @@
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service.h"
+#include "chrome/browser/preloading/preloading_features.h"
+#include "chrome/browser/preloading/prerender/search_prewarm_progress_service.h"
+#include "chrome/browser/preloading/prerender/search_prewarm_progress_service_factory.h"
 #include "chrome/browser/preloading/search_preload/search_preload_features.h"
 #include "chrome/browser/preloading/search_preload/search_preload_pipeline.h"
 #include "chrome/browser/preloading/search_preload/search_preload_service_factory.h"
@@ -54,6 +57,30 @@ std::optional<std::u16string> ExtractSearchTermsFromUrl(
 }  // namespace
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(SearchPreloadPipelineManager);
+
+SearchPreloadPipelineManager::TriggerPreloadsData::TriggerPreloadsData(
+    base::WeakPtr<SearchPreloadService> search_preload_service,
+    GURL canonical_url,
+    GURL prefetch_url,
+    std::optional<GURL> prerender_url,
+    std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
+    int confidence)
+    : search_preload_service(std::move(search_preload_service)),
+      canonical_url(std::move(canonical_url)),
+      prefetch_url(std::move(prefetch_url)),
+      prerender_url(std::move(prerender_url)),
+      no_vary_search_hint(std::move(no_vary_search_hint)),
+      confidence(confidence) {}
+
+SearchPreloadPipelineManager::TriggerPreloadsData::TriggerPreloadsData(
+    TriggerPreloadsData&& other) = default;
+
+SearchPreloadPipelineManager::TriggerPreloadsData&
+SearchPreloadPipelineManager::TriggerPreloadsData::operator=(
+    TriggerPreloadsData&& other) = default;
+
+SearchPreloadPipelineManager::TriggerPreloadsData::~TriggerPreloadsData() =
+    default;
 
 SearchPreloadPipelineManager::SearchPreloadPipelineManager(
     content::WebContents* web_contents)
@@ -120,29 +147,13 @@ void SearchPreloadPipelineManager::OnAutocompleteResultChanged(
     return;
   }
 
-  auto record_histograms =
-      [](std::tuple<std::optional<SearchPreloadSignalResult>,
-                    std::optional<SearchPreloadSignalResult>> signal_results) {
-        auto [signal_result_prefetch, signal_result_prerender] = signal_results;
-        if (signal_result_prefetch.has_value()) {
-          base::UmaHistogramEnumeration(
-              "Omnibox.DsePreload.SignalResult.OnSuggest.Prefetch",
-              signal_result_prefetch.value());
-        }
-        if (signal_result_prerender.has_value()) {
-          base::UmaHistogramEnumeration(
-              "Omnibox.DsePreload.SignalResult.OnSuggest.Prerender",
-              signal_result_prerender.value());
-        }
-      };
-
   if (base::FeatureList::IsEnabled(
           features::kDsePreload2OnSuggestNonDefalutMatch)) {
     for (const auto& match : result) {
       auto signal_results = OnAutocompleteResultChangedProcessOne(
           profile, search_preload_service, *template_url_service, match,
           no_vary_search_hint);
-      record_histograms(std::move(signal_results));
+      RecordPreloadHistograms(std::move(signal_results));
     }
   } else {
     if (!result.default_match()) {
@@ -153,7 +164,7 @@ void SearchPreloadPipelineManager::OnAutocompleteResultChanged(
     auto signal_results = OnAutocompleteResultChangedProcessOne(
         profile, search_preload_service, *template_url_service, match,
         no_vary_search_hint);
-    record_histograms(std::move(signal_results));
+    RecordPreloadHistograms(std::move(signal_results));
   }
 }
 
@@ -204,22 +215,61 @@ SearchPreloadPipelineManager::OnAutocompleteResultChangedProcessOne(
   }
   const GURL& canonical_url = maybe_canonical_url.value();
 
-  if (!pipelines_.contains(canonical_url)) {
-    pipelines_.insert_or_assign(
-        canonical_url, std::make_unique<SearchPreloadPipeline>(canonical_url));
-  }
-  pipelines_[canonical_url]->UpdateConfidence(GetWebContents(), confidence);
-
   CHECK(should_prefetch);
 
   const GURL prefetch_url =
       GetPrefetchUrlFromMatch(*match.search_terms_args, template_url_service,
                               /*is_navigation_likely=*/false);
+
+  std::optional<GURL> prerender_url;
+  if (should_prerender) {
+    prerender_url = GetPrerenderUrlFromMatch(*match.search_terms_args,
+                                             template_url_service);
+  }
+
+  auto* service = SearchPrewarmProgressServiceFactory::GetForProfile(&profile);
+  if (service && service->ShouldThrottleSearchPreloads()) {
+    // Defer the prefetch/prerender to reduce the network contention with the
+    // ongoing search prewarm. We only register the callback when
+    // `deferred_trigger_data_` is unset to avoid redundant callbacks. The
+    // deferred preloads will be started when `OnSearchPrewarmFinished` is
+    // called.
+    //
+    // TODO(crbug.com/40285918): Replace ad-hoc callback registration with
+    // base::CheckedObserver. With unconditional registration in the
+    // constructor, we can remove the optional callback registration here.
+    if (!deferred_trigger_data_.has_value()) {
+      service->AddSearchPrewarmFinishedCallback(
+          base::BindOnce(&SearchPreloadPipelineManager::OnSearchPrewarmFinished,
+                         weak_factory_.GetWeakPtr()));
+    }
+    deferred_trigger_data_.emplace(search_preload_service, canonical_url,
+                                   prefetch_url, prerender_url,
+                                   no_vary_search_hint, confidence);
+    return {std::nullopt, std::nullopt};
+  }
+
+  return TriggerPreloads(
+      TriggerPreloadsData(search_preload_service, canonical_url, prefetch_url,
+                          prerender_url, no_vary_search_hint, confidence));
+}
+
+std::tuple<std::optional<SearchPreloadSignalResult>,
+           std::optional<SearchPreloadSignalResult>>
+SearchPreloadPipelineManager::TriggerPreloads(TriggerPreloadsData data) {
+  if (!pipelines_.contains(data.canonical_url)) {
+    pipelines_.insert_or_assign(
+        data.canonical_url,
+        std::make_unique<SearchPreloadPipeline>(data.canonical_url));
+  }
+  pipelines_[data.canonical_url]->UpdateConfidence(GetWebContents(),
+                                                   data.confidence);
+
   const SearchPreloadSignalResult signal_result_prefetch =
-      pipelines_[canonical_url]->StartPrefetch(
-          GetWebContents(), search_preload_service, prefetch_url,
+      pipelines_[data.canonical_url]->StartPrefetch(
+          GetWebContents(), data.search_preload_service, data.prefetch_url,
           chrome_preloading_predictor::kDefaultSearchEngine,
-          no_vary_search_hint,
+          data.no_vary_search_hint,
           /*is_navigation_likely=*/false);
 
   // Trigger prerender without waiting prefetch.
@@ -228,26 +278,50 @@ SearchPreloadPipelineManager::OnAutocompleteResultChangedProcessOne(
   // https://docs.google.com/document/d/1IAIVrDBE-FnO14Qnghr8hsrxUeoFfeob5QIsV_UNRck/edit?tab=t.0#heading=h.vpxgrp4zne09
   std::optional<SearchPreloadSignalResult> signal_result_prerender =
       std::nullopt;
-  if (should_prerender) {
+  if (data.prerender_url) {
     // Unlike prefetch, we cancel the existing prerender and start new one if
     // we have a signal for prerender. This behavior comes from DSE preload 1
     // (`SearchPrefetchService`).
     //
     // TODO(https://crrev.com/421387697): Consider to use different policy.
     for (const auto& [key, value] : pipelines_) {
-      if (key != canonical_url) {
+      if (key != data.canonical_url) {
         value->CancelPrerender();
       }
     }
 
-    const GURL prerender_url = GetPrerenderUrlFromMatch(
-        *match.search_terms_args, template_url_service);
-    signal_result_prerender = pipelines_[canonical_url]->StartPrerender(
-        GetWebContents(), prerender_url,
+    signal_result_prerender = pipelines_[data.canonical_url]->StartPrerender(
+        GetWebContents(), data.prerender_url.value(),
         chrome_preloading_predictor::kDefaultSearchEngine);
   }
 
   return {signal_result_prefetch, signal_result_prerender};
+}
+
+void SearchPreloadPipelineManager::OnSearchPrewarmFinished() {
+  if (deferred_trigger_data_.has_value()) {
+    auto trigger_data = std::exchange(deferred_trigger_data_, std::nullopt);
+
+    CHECK(trigger_data->search_preload_service);
+    auto signal_results = TriggerPreloads(std::move(trigger_data).value());
+    RecordPreloadHistograms(std::move(signal_results));
+  }
+}
+
+void SearchPreloadPipelineManager::RecordPreloadHistograms(
+    std::tuple<std::optional<SearchPreloadSignalResult>,
+               std::optional<SearchPreloadSignalResult>> signal_results) {
+  auto [signal_result_prefetch, signal_result_prerender] = signal_results;
+  if (signal_result_prefetch.has_value()) {
+    base::UmaHistogramEnumeration(
+        "Omnibox.DsePreload.SignalResult.OnSuggest.Prefetch",
+        signal_result_prefetch.value());
+  }
+  if (signal_result_prerender.has_value()) {
+    base::UmaHistogramEnumeration(
+        "Omnibox.DsePreload.SignalResult.OnSuggest.Prerender",
+        signal_result_prerender.value());
+  }
 }
 
 bool SearchPreloadPipelineManager::OnNavigationLikely(
@@ -286,6 +360,13 @@ bool SearchPreloadPipelineManager::OnNavigationLikely(
     if (!does_search_provider_opt_in) {
       return SearchPreloadSignalResult::
           kNotTriggeredOnPressNoSearchProviderOptIn;
+    }
+
+    // Do not trigger the preload if there is on-going prewarm.
+    auto* service =
+        SearchPrewarmProgressServiceFactory::GetForProfile(&profile);
+    if (service && service->ShouldThrottleSearchPreloads()) {
+      return SearchPreloadSignalResult::kNotTriggeredThrottledByPrewarm;
     }
 
     // Erase to count prefetches.

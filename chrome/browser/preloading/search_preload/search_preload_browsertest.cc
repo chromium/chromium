@@ -15,8 +15,13 @@
 #include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_preload_test_response_utils.h"
+#include "chrome/browser/preloading/preloading_features.h"
+#include "chrome/browser/preloading/prerender/prerender_manager.h"
+#include "chrome/browser/preloading/prerender/search_prewarm_progress_service.h"
+#include "chrome/browser/preloading/prerender/search_prewarm_progress_service_factory.h"
 #include "chrome/browser/preloading/search_preload/search_preload_features.h"
 #include "chrome/browser/preloading/search_preload/search_preload_service.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/chrome_test_utils.h"
@@ -1814,6 +1819,163 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest_Ttl, LimitCaresTtl) {
   check("three", false);
   WaitForDuration(base::Milliseconds(1001));
   check("four", true);
+}
+
+class SearchPreloadBrowserTest_Throttle : public SearchPreloadBrowserTestBase {
+ public:
+  void InitFeatures(
+      base::test::ScopedFeatureList& scoped_feature_list) override {
+    scoped_feature_list.InitWithFeaturesAndParameters(
+        {
+            // TODO(crbug.com/423465927): Allow ScopedPrewarmFeatureList
+            // to be used in the SearchPreloadBrowserTest Currently we are
+            // running into dependency issue when using the test helper.
+            {
+                features::kPrewarm,
+                {{"throttle_prefetch", "true"}},
+            },
+            {
+                features::kPrefetchPrerenderIntegration,
+                {},
+            },
+            {
+                features::kDsePreload2,
+                {
+                    {"kDsePreload2UsePreloadServingMetrics", "true"},
+                    {"kDsePreload2DeviceMemoryThresholdMiB", "0"},
+                },
+            },
+            {
+                features::kDsePreload2OnPress,
+                {
+                    {"kDsePreload2OnPressMouseDown", "true"},
+                    {"kDsePreload2OnPressUpOrDownArrowButton", "true"},
+                    {"kDsePreload2OnPressTouchDown", "true"},
+                },
+            },
+        },
+        /*disabled_features=*/{});
+  }
+
+  void SetUpOnMainThread() override {
+    PrerenderManager::CreateForWebContents(&GetWebContents());
+    SearchPreloadBrowserTestBase::SetUpOnMainThread();
+  }
+};
+
+// Tests that search prefetch/prerender are throttled during an ongoing search
+// prewarm request and resume after the prewarm request finishes.
+// 1. Checks that preloads are deferred when a search prewarm is in progress.
+// 2. Checks that preloads are triggered once the prewarm finishes.
+IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest_Throttle, ThrottlePreload) {
+  SetUpTemplateURLService();
+  SetUpSearchPreloadService({
+      .no_vary_search_data_cache = R"(key-order, params, except=("q"))",
+  });
+
+  ASSERT_TRUE(content::NavigateToURL(
+      &GetWebContents(), embedded_test_server()->GetURL("/empty.html")));
+
+  GURL prewarm_url = embedded_test_server()->GetURL("/prewarm.html");
+  auto* prerender_manager =
+      PrerenderManager::FromWebContents(&GetWebContents());
+  prerender_manager->SetPrewarmUrlForTesting(prewarm_url);
+
+  content::TestNavigationManager navigation_manager(&GetWebContents(),
+                                                    prewarm_url);
+  EXPECT_TRUE(prerender_manager->MaybeStartPrewarmSearchResult());
+  EXPECT_TRUE(navigation_manager.WaitForRequestStart());
+  auto* service = SearchPrewarmProgressServiceFactory::GetForProfile(
+      Profile::FromBrowserContext(GetWebContents().GetBrowserContext()));
+  EXPECT_TRUE(service && service->HasOnGoingSearchPrewarm());
+
+  std::string original_query = "he";
+  std::string search_terms = "hello";
+  SearchUrls urls = GetSearchUrls(search_terms);
+
+  request_collector().Reset();
+  ChangeAutocompleteResult(original_query, search_terms, PrefetchHint::kEnabled,
+                           PrerenderHint::kEnabled);
+
+  // Verify that neither prefetch nor prerender started.
+  EXPECT_EQ(0, request_collector().CountByPath(urls.prefetch_on_suggest));
+  EXPECT_FALSE(prerender_helper().GetHostForUrl(urls.prerender));
+
+  content::test::TestPrefetchWatcher watcher;
+
+  // Release the prewarm headers.
+  navigation_manager.ResumeNavigation();
+  EXPECT_TRUE(navigation_manager.WaitForNavigationFinished());
+  EXPECT_FALSE(service && service->HasOnGoingSearchPrewarm());
+
+  // Now the deferred preload should start.
+  watcher.WaitUntilPrefetchResponseCompleted(std::nullopt,
+                                             urls.prefetch_on_suggest);
+
+  EXPECT_EQ(1, request_collector().CountByPath(urls.prefetch_on_suggest));
+  EXPECT_TRUE(prerender_helper().GetHostForUrl(urls.prerender));
+}
+
+// Tests that `OnNavigationLikely` does not trigger prefetch when a search
+// prewarm request is ongoing.
+// 1. Checks that `OnNavigationLikely` is throttled by search prewarm.
+// 2. Checks that the signal result records `kNotTriggeredThrottledByPrewarm`.
+IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest_Throttle,
+                       OnNavigationLikely_ThrottledByPrewarm) {
+  HistogramTesterWrapper uma_tester;
+  SetUpTemplateURLService(/*prefetch_likely_navigations=*/true);
+  SetUpSearchPreloadService({
+      .no_vary_search_data_cache = R"(key-order, params, except=("q"))",
+  });
+
+  ASSERT_TRUE(content::NavigateToURL(
+      &GetWebContents(), embedded_test_server()->GetURL("/empty.html")));
+
+  GURL prewarm_url = embedded_test_server()->GetURL("/prewarm.html");
+  auto* prerender_manager =
+      PrerenderManager::FromWebContents(&GetWebContents());
+  prerender_manager->SetPrewarmUrlForTesting(prewarm_url);
+
+  content::TestNavigationManager navigation_manager(&GetWebContents(),
+                                                    prewarm_url);
+  EXPECT_TRUE(prerender_manager->MaybeStartPrewarmSearchResult());
+  EXPECT_TRUE(navigation_manager.WaitForRequestStart());
+  auto* service = SearchPrewarmProgressServiceFactory::GetForProfile(
+      Profile::FromBrowserContext(GetWebContents().GetBrowserContext()));
+  EXPECT_TRUE(service && service->HasOnGoingSearchPrewarm());
+
+  std::string original_query = "he";
+  std::string search_terms = "hello";
+  SearchUrls urls = GetSearchUrls(search_terms);
+
+  request_collector().Reset();
+  AutocompleteMatch autocomplete_match = CreateSearchSuggestionMatch(
+      original_query, search_terms, PrefetchHint::kEnabled,
+      PrerenderHint::kDisabled);
+
+  // OnNavigationLikely should return false and not trigger prefetch due to
+  // ongoing prewarm.
+  const bool is_triggered_prefetch =
+      GetSearchPreloadService().OnNavigationLikely(
+          1, autocomplete_match,
+          omnibox::mojom::NavigationPredictor::kMouseDown, &GetWebContents());
+  EXPECT_FALSE(is_triggered_prefetch);
+
+  // Verify that prefetch did not start.
+  EXPECT_EQ(0, request_collector().CountByPath(urls.prefetch_on_press));
+
+  // Release the prewarm headers.
+  navigation_manager.ResumeNavigation();
+  EXPECT_TRUE(navigation_manager.WaitForNavigationFinished());
+  EXPECT_FALSE(service && service->HasOnGoingSearchPrewarm());
+
+  // OnNavigationLikely doesn't have a retry mechanism for now, so it should
+  // still be not triggered.
+  EXPECT_EQ(0, request_collector().CountByPath(urls.prefetch_on_press));
+
+  uma_tester.ExpectUma(
+      "Omnibox.DsePreload.SignalResult.OnPress.Prefetch",
+      {SearchPreloadSignalResult::kNotTriggeredThrottledByPrewarm});
 }
 
 }  // namespace

@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chrome/browser/preloading/preloading_features.h"
 
 SearchPrewarmProgressService::SearchPrewarmProgressService() = default;
 
@@ -21,6 +22,16 @@ bool SearchPrewarmProgressService::HasOnGoingSearchPrewarm() const {
 bool SearchPrewarmProgressService::IsOnGoingSearchPrewarm(
     content::PrerenderHostId host_id) const {
   return ongoing_prewarms_.contains(host_id);
+}
+
+bool SearchPrewarmProgressService::ShouldThrottleSearchPreloads() const {
+  if (!base::FeatureList::IsEnabled(features::kPrewarm)) {
+    return false;
+  }
+  if (!features::kPrewarmThrottlePrefetch.Get()) {
+    return false;
+  }
+  return HasOnGoingSearchPrewarm();
 }
 
 void SearchPrewarmProgressService::AddSearchPrewarmFinishedCallback(

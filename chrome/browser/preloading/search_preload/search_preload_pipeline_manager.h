@@ -96,6 +96,51 @@ class SearchPreloadPipelineManager
       const AutocompleteMatch& match,
       const std::optional<net::HttpNoVarySearchData>& no_vary_search_hint);
 
+  // Helper to resume the prefetch/prerender after search prewarm finishes.
+  void OnSearchPrewarmFinished();
+
+  // Helper to record histograms.
+  void RecordPreloadHistograms(
+      std::tuple<std::optional<SearchPreloadSignalResult>,
+                 std::optional<SearchPreloadSignalResult>> signal_results);
+
+  // Keeps the information of search prefetch/prerender requests, which can be
+  // used to trigger the preloads.
+  //
+  // It's a pure data structure and intended to be used in only
+  // `SearchPreloadPipelineManager`.
+  struct TriggerPreloadsData {
+    TriggerPreloadsData(
+        base::WeakPtr<SearchPreloadService> search_preload_service,
+        GURL canonical_url,
+        GURL prefetch_url,
+        std::optional<GURL> prerender_url,
+        std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
+        int confidence);
+    // Movable but not copyable.
+    TriggerPreloadsData(TriggerPreloadsData&& other);
+    TriggerPreloadsData& operator=(TriggerPreloadsData&& other);
+    TriggerPreloadsData(const TriggerPreloadsData& other) = delete;
+    TriggerPreloadsData& operator=(const TriggerPreloadsData& other) = delete;
+    ~TriggerPreloadsData();
+
+    base::WeakPtr<SearchPreloadService> search_preload_service;
+    GURL canonical_url;
+    GURL prefetch_url;
+    std::optional<GURL> prerender_url;
+    std::optional<net::HttpNoVarySearchData> no_vary_search_hint;
+    int confidence;
+  };
+
+  // Only the latest trigger data is stored, as only the latest input is the
+  // most likely to navigate.
+  std::optional<TriggerPreloadsData> deferred_trigger_data_;
+
+  // Trigger prefetch and prerender for a specific URL, which can be deferred.
+  std::tuple<std::optional<SearchPreloadSignalResult>,
+             std::optional<SearchPreloadSignalResult>>
+  TriggerPreloads(TriggerPreloadsData data);
+
   // Manages pipeline per canonical URL.
   base::flat_map<GURL, std::unique_ptr<SearchPreloadPipeline>> pipelines_;
 

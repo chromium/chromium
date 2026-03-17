@@ -28,6 +28,10 @@ class SearchPrewarmProgressService : public KeyedService {
   // Returns true if the given PrerenderHostId is tracked by this service.
   bool IsOnGoingSearchPrewarm(content::PrerenderHostId host_id) const;
 
+  // Returns true if the search preloads should be throttled by on-going search
+  // prewarm.
+  bool ShouldThrottleSearchPreloads() const;
+
   // Adds a callback to be executed when all ongoing search prewarms have
   // finished. This must only be called when `HasOnGoingSearchPrewarm()` returns
   // true.
