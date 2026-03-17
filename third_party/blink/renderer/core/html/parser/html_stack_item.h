@@ -27,6 +27,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_STACK_ITEM_H_
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/html/parser/atomic_html_token.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -73,9 +74,9 @@ class HTMLStackItem final : public GarbageCollected<HTMLStackItem> {
         is_document_fragment_node_(false) {
     // We rely on Create() allocating extra memory past our end for the
     // attributes.
+    auto attributes = TokenAttributesSpan();
     for (wtf_size_t i = 0; i < token->Attributes().size(); ++i) {
-      new (UNSAFE_TODO(TokenAttributesData() + i))
-          Attribute(token->Attributes()[i]);
+      new (&attributes[i]) Attribute(token->Attributes()[i]);
     }
   }
 
@@ -109,13 +110,13 @@ class HTMLStackItem final : public GarbageCollected<HTMLStackItem> {
 
   const HTMLTokenName& GetTokenName() const { return token_name_; }
 
-  const base::span<Attribute> Attributes() {
+  base::span<Attribute> Attributes() {
     DCHECK(LocalName());
-    return UNSAFE_TODO({TokenAttributesData(), num_token_attributes_});
+    return TokenAttributesSpan();
   }
-  const base::span<const Attribute> Attributes() const {
+  base::span<const Attribute> Attributes() const {
     DCHECK(LocalName());
-    return UNSAFE_TODO({TokenAttributesData(), num_token_attributes_});
+    return TokenAttributesSpan();
   }
   Vector<Attribute> TakeAttributes() {
     Vector<Attribute> attributes;
@@ -344,13 +345,19 @@ class HTMLStackItem final : public GarbageCollected<HTMLStackItem> {
   // The attributes are stored directly after the HTMLStackItem in memory
   // (using Oilpan's AdditionalBytes system). Space for this is guaranteed
   // by Create().
-  Attribute* TokenAttributesData() {
+  base::span<Attribute> TokenAttributesSpan() {
     static_assert(alignof(HTMLStackItem) >= alignof(Attribute));
-    return reinterpret_cast<Attribute*>(UNSAFE_TODO(this + 1));
+    // SAFETY: Create() allocates num_token_attributes_ * sizeof(Attribute)
+    // extra bytes immediately after this object via AdditionalBytes.
+    return UNSAFE_BUFFERS(base::span(reinterpret_cast<Attribute*>(this + 1),
+                                     num_token_attributes_));
   }
-  const Attribute* TokenAttributesData() const {
+  base::span<const Attribute> TokenAttributesSpan() const {
     static_assert(alignof(HTMLStackItem) >= alignof(Attribute));
-    return reinterpret_cast<const Attribute*>(UNSAFE_TODO(this + 1));
+    // SAFETY: Create() allocates num_token_attributes_ * sizeof(Attribute)
+    // extra bytes immediately after this object via AdditionalBytes.
+    return UNSAFE_BUFFERS(base::span(
+        reinterpret_cast<const Attribute*>(this + 1), num_token_attributes_));
   }
 
   Member<ContainerNode> node_;
