@@ -41,6 +41,12 @@ class ExtensionParentApproval {
         delegate.requestExtensionAuthWithResult(
                 windowAndroid,
                 (result) -> {
+                    if (result == SupervisedExtensionApprovalResult.APPROVED) {
+                        ParentApprovalMetrics.recordOutcomeMetric(
+                                ParentApprovalMetrics.FamilyLinkUserLocalApprovalOutcome
+                                        .APPROVED_BY_PARENT,
+                                ParentApprovalMetrics.EXTENSION_FLOW_NAME);
+                    }
                     ExtensionParentApprovalJni.get().onCompletion(result);
                 });
     }

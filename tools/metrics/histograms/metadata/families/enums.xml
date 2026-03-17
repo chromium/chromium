@@ -103,6 +103,56 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Both"/>
 </enum>
 
+<!-- LINT.IfChange(FamilyLinkUserLocalApprovalOutcome) -->
+
+<enum name="FamilyLinkUserLocalApprovalOutcome">
+  <int value="0" label="Approved by parent">
+    Request was approved by the parent i.e. the parent completed the
+    verification flow and approved the request. Available on Android.
+  </int>
+  <int value="1" label="Denied by parent">
+    Request was denied by the parent, i.e. the parent completed the verification
+    flow and denied the request.
+  </int>
+  <int value="2" label="Parent approval cancelled">
+    The user cancelled the local parent approval, i.e. the parent navigated away
+    from the approval widget and did not complete the verification flow.
+  </int>
+  <int value="3" label="Verification widget unsupported API call exception">
+    Feature to support parent verification is missing.
+  </int>
+  <int value="7" label="Verification widget unexpected exception">
+    An unexpected exception occured during parent verification.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/supervised_user/android/java/src/org/chromium/chrome/browser/supervised_user/ParentApprovalMetrics.java:FamilyLinkUserLocalApprovalOutcome) -->
+
+<!-- LINT.IfChange(FamilyLinkUserLocalApprovalResult) -->
+
+<enum name="FamilyLinkUserLocalApprovalResult">
+  <summary>
+    The result of local approval request. Reported by the browser once platform
+    specific approval flow finishes and returns the result.
+  </summary>
+  <int value="0" label="Approved">
+    Request was explicitely approved after parent verification.
+  </int>
+  <int value="1" label="Declined">
+    Request was explicitely declined after parent verification.
+  </int>
+  <int value="2" label="Canceled">
+    Request was canceled at any point (before, during or after parent
+    verification).
+  </int>
+  <int value="3" label="Error">
+    An error occured during the request flows, including malformed requests and
+    server-client connection errors.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//components/supervised_user/core/common/supervised_user_constants.h:LocalApprovalResult) -->
+
 <enum name="FamilyLinkUserLocalWebApprovalOutcome">
   <int value="0" label="Approved by parent">
     Request to allow visiting a host was approved by the parent i.e. the parent
@@ -126,31 +176,6 @@ chromium-metrics-reviews@google.com.
     An unexpected exception occured during parent verification.
   </int>
 </enum>
-
-<!-- LINT.IfChange(FamilyLinkUserLocalWebApprovalResult) -->
-
-<enum name="FamilyLinkUserLocalWebApprovalResult">
-  <summary>
-    The result of local web approval request. Reported by the browser once
-    platform specific approval flow finishes and returns the result.
-  </summary>
-  <int value="0" label="Approved">
-    Request was explicitely approved after parent verification.
-  </int>
-  <int value="1" label="Declined">
-    Request was explicitely declined after parent verification.
-  </int>
-  <int value="2" label="Canceled">
-    Request was canceled at any point (before, during or after parent
-    verification).
-  </int>
-  <int value="3" label="Error">
-    An error occured during the request flows, including malformed requests and
-    server-client connection errors.
-  </int>
-</enum>
-
-<!-- LINT.ThenChange(//components/supervised_user/core/common/supervised_user_constants.h:LocalApprovalResult) -->
 
 <!-- LINT.IfChange(FamilyLinkUserParentAccessWidgetError) -->
 

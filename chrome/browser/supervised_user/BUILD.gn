@@ -101,14 +101,17 @@ if (is_android) {
   }
 
   android_library("supervised_user_metrics_java") {
-    sources = [ "android/java/src/org/chromium/chrome/browser/supervised_user/WebsiteParentApprovalMetrics.java" ]
+    sources = [
+      "android/java/src/org/chromium/chrome/browser/supervised_user/ParentApprovalMetrics.java",
+      "android/java/src/org/chromium/chrome/browser/supervised_user/WebsiteParentApprovalMetrics.java",
+    ]
     deps = [
       "//base:base_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
     ]
   }
 
-  java_cpp_enum("local_web_approval_outcome_java_enum_srcjar") {
+  java_cpp_enum("local_approval_outcome_java_enum_srcjar") {
     sources =
         [ "//chrome/browser/supervised_user/android/website_parent_approval.h" ]
   }
@@ -139,7 +142,7 @@ if (is_android) {
     ]
 
     srcjar_deps = [
-      ":local_web_approval_outcome_java_enum_srcjar",
+      ":local_approval_outcome_java_enum_srcjar",
       ":website_parent_approval_jni_headers",
     ]
 
@@ -168,6 +171,7 @@ if (is_android) {
       ":parent_auth_delegate_java",
       ":parent_auth_delegate_provider_java",
       ":supervised_user_enums_java",
+      ":supervised_user_metrics_java",
       "//base:base_java",
       "//base:service_loader_java",
       "//build/android:build_java",
@@ -273,6 +277,7 @@ if (is_android) {
       "//chrome/browser/flags:java",
       "//chrome/browser/profiles/android:java",
       "//chrome/browser/signin/services/android:java",
+      "//chrome/browser/supervised_user:extension_parent_approval_java",
       "//chrome/browser/supervised_user:parent_auth_delegate_java",
       "//chrome/browser/supervised_user:parent_auth_delegate_provider_java",
       "//chrome/browser/supervised_user:supervised_user_metrics_java",
@@ -309,7 +314,7 @@ if (is_android) {
   robolectric_library("junit") {
     testonly = true
     resources_package = "org.chromium.chrome.browser.supervised_user"
-    sources = [ "android/javatests/src/org/chromium/chrome/browser/supervised_user/WebsiteParentApprovalMetricsTest.java" ]
+    sources = [ "android/javatests/src/org/chromium/chrome/browser/supervised_user/ParentApprovalMetricsTest.java" ]
     deps = [
       ":java_resources",
       ":supervised_user_metrics_java",

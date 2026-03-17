@@ -141,20 +141,20 @@ class WebsiteParentApproval {
                         new WebsiteApprovalCoordinator.CompletionCallback() {
                             @Override
                             public void onWebsiteApproved() {
-                                WebsiteParentApprovalMetrics.recordOutcomeMetric(
-                                        WebsiteParentApprovalMetrics
-                                                .FamilyLinkUserLocalWebApprovalOutcome
-                                                .APPROVED_BY_PARENT);
+                                ParentApprovalMetrics.recordOutcomeMetric(
+                                        ParentApprovalMetrics.FamilyLinkUserLocalApprovalOutcome
+                                                .APPROVED_BY_PARENT,
+                                        ParentApprovalMetrics.WEB_FLOW_NAME);
                                 WebsiteParentApprovalJni.get()
                                         .onCompletion(AndroidLocalWebApprovalFlowOutcome.APPROVED);
                             }
 
                             @Override
                             public void onWebsiteDenied() {
-                                WebsiteParentApprovalMetrics.recordOutcomeMetric(
-                                        WebsiteParentApprovalMetrics
-                                                .FamilyLinkUserLocalWebApprovalOutcome
-                                                .DENIED_BY_PARENT);
+                                ParentApprovalMetrics.recordOutcomeMetric(
+                                        ParentApprovalMetrics.FamilyLinkUserLocalApprovalOutcome
+                                                .DENIED_BY_PARENT,
+                                        ParentApprovalMetrics.WEB_FLOW_NAME);
                                 WebsiteParentApprovalJni.get()
                                         .onCompletion(AndroidLocalWebApprovalFlowOutcome.REJECTED);
                             }

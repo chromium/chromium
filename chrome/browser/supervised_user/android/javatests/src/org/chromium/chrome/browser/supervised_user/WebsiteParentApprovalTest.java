@@ -171,7 +171,7 @@ public class WebsiteParentApprovalTest {
         // Verify only histograms recorded in Java.
         var histogram =
                 HistogramWatcher.newSingleRecordWatcher(
-                        "FamilyLinkUser.LocalWebApprovalOutcome", /* value= */ 0);
+                        "FamilyLinkUser.LocalApprovalOutcome.Web", /* value= */ 0);
 
         WebsiteParentApprovalTestUtils.clickAskInPerson(mWebContents);
         WebsiteParentApprovalTestUtils.clickApprove(mBottomSheetTestSupport);
@@ -192,7 +192,7 @@ public class WebsiteParentApprovalTest {
         // Verify only histograms recorded in Java.
         var histogram =
                 HistogramWatcher.newSingleRecordWatcher(
-                        "FamilyLinkUser.LocalWebApprovalOutcome", /* value= */ 1);
+                        "FamilyLinkUser.LocalApprovalOutcome.Web", /* value= */ 1);
 
         WebsiteParentApprovalTestUtils.clickAskInPerson(mWebContents);
         WebsiteParentApprovalTestUtils.clickDoNotApprove(mBottomSheetTestSupport);

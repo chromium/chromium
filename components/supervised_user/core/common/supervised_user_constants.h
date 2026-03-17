@@ -12,12 +12,12 @@
 
 namespace supervised_user {
 
-// The result of local web approval flow.
+// The result of local approval flow.
 // Used for metrics. Those values are logged to UMA. Entries should not be
 // renumbered and numeric values should never be reused.
 // LINT.IfChange(LocalApprovalResult)
 enum class LocalApprovalResult {
-  // The parent has locally approved the website.
+  // The parent has locally approved.
   kApproved = 0,
   // The parent has explicitly declined the approval.
   kDeclined = 1,
@@ -29,7 +29,7 @@ enum class LocalApprovalResult {
   // Deprecated kMalformedPacpResult = 4,
   kMaxValue = kError
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/families/enums.xml:FamilyLinkUserLocalWebApprovalResult)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/families/enums.xml:FamilyLinkUserLocalApprovalResult)
 
 // Used for metrics. These values are logged to UMA. Entries should not be
 // renumbered and numeric values should never be reused.

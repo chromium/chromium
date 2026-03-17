@@ -406,6 +406,22 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
   </summary>
 </histogram>
 
+<histogram name="FamilyLinkUser.LocalApprovalOutcome.{Flow}"
+    enum="FamilyLinkUserLocalApprovalOutcome" expires_after="2026-11-01">
+  <owner>anthie@google.com</owner>
+  <owner>ljjlee@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
+  <owner>cros-families-eng@google.com</owner>
+  <summary>
+    The different outcomes that a user may come across the local parent approval
+    flow (extension or web). Available on Android only.
+  </summary>
+  <token key="Flow">
+    <variant name="Extension"/>
+    <variant name="Web"/>
+  </token>
+</histogram>
+
 <histogram name="FamilyLinkUser.LocalWebApprovalCompleteRequestTotalDuration"
     units="ms" expires_after="2026-07-26">
   <owner>anthie@google.com</owner>
@@ -444,7 +460,7 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
 </histogram>
 
 <histogram name="FamilyLinkUser.LocalWebApprovalResult"
-    enum="FamilyLinkUserLocalWebApprovalResult" expires_after="2026-07-26">
+    enum="FamilyLinkUserLocalApprovalResult" expires_after="2026-07-26">
   <owner>agawronska@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
