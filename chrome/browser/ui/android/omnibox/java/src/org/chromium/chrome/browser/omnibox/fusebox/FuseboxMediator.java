@@ -926,11 +926,12 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
                                 selected));
             }
         }
-        mModel.set(FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST, modelButtonDataList);
-
-        boolean anyModels = !modelButtonDataList.isEmpty();
-        mModel.set(FuseboxProperties.POPUP_MODEL_DIVIDER_VISIBLE, anyModels);
-        mModel.set(FuseboxProperties.POPUP_MODEL_HEADER_VISIBLE, anyModels);
+        boolean showModelPicker = modelButtonDataList.size() >= 2;
+        mModel.set(FuseboxProperties.POPUP_MODEL_DIVIDER_VISIBLE, showModelPicker);
+        mModel.set(FuseboxProperties.POPUP_MODEL_HEADER_VISIBLE, showModelPicker);
+        mModel.set(
+                FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST,
+                showModelPicker ? modelButtonDataList : List.of());
     }
 
     private boolean trySetRequestType(@AutocompleteRequestType int requestType) {

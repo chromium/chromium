@@ -707,21 +707,29 @@ public class FuseboxMediatorUnitTest {
         reset(mPopup);
         mInput.setRequestType(AutocompleteRequestType.SEARCH);
 
-        ModelConfig config =
+        ModelConfig config1 =
                 ModelConfig.newBuilder()
                         .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE)
                         .setMenuLabel("Auto")
                         .build();
+        ModelConfig config2 =
+                ModelConfig.newBuilder()
+                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                        .setMenuLabel("Flash")
+                        .build();
         InputState state =
                 new InputState.Builder()
                         .withActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE)
-                        .withAllowedModels(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE)
-                        .withModelConfigs(new byte[][] {config.toByteArray()})
+                        .withAllowedModels(
+                                ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE,
+                                ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                        .withModelConfigs(
+                                new byte[][] {config1.toByteArray(), config2.toByteArray()})
                         .build();
         mInputStateSupplier.set(state);
 
         List<PopupButtonData> models = mModel.get(FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST);
-        assertEquals(1, models.size());
+        assertEquals(2, models.size());
         models.get(0).onClicked.run();
 
         verify(mPopup).dismiss();
@@ -729,6 +737,51 @@ public class FuseboxMediatorUnitTest {
         assertEquals(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE, mInput.getModelMode());
         verify(mComposeboxQueryControllerBridge)
                 .setActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE);
+    }
+
+    @Test
+    public void testModelPickerVisibility_hidesIfFewerThanTwoModels() {
+        OmniboxFeatures.sShowModelPicker.setForTesting(true);
+        recreateMediator();
+
+        InputState state0 = new InputState.Builder().build();
+        mInputStateSupplier.set(state0);
+        assertEquals(0, mModel.get(FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST).size());
+        assertFalse(mModel.get(FuseboxProperties.POPUP_MODEL_DIVIDER_VISIBLE));
+        assertFalse(mModel.get(FuseboxProperties.POPUP_MODEL_HEADER_VISIBLE));
+
+        ModelConfig config1 =
+                ModelConfig.newBuilder()
+                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE)
+                        .setMenuLabel("Auto")
+                        .build();
+        InputState state1 =
+                new InputState.Builder()
+                        .withAllowedModels(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE)
+                        .withModelConfigs(new byte[][] {config1.toByteArray()})
+                        .build();
+        mInputStateSupplier.set(state1);
+        assertEquals(0, mModel.get(FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST).size());
+        assertFalse(mModel.get(FuseboxProperties.POPUP_MODEL_DIVIDER_VISIBLE));
+        assertFalse(mModel.get(FuseboxProperties.POPUP_MODEL_HEADER_VISIBLE));
+
+        ModelConfig config2 =
+                ModelConfig.newBuilder()
+                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                        .setMenuLabel("Pro")
+                        .build();
+        InputState state2 =
+                new InputState.Builder()
+                        .withAllowedModels(
+                                ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE,
+                                ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                        .withModelConfigs(
+                                new byte[][] {config1.toByteArray(), config2.toByteArray()})
+                        .build();
+        mInputStateSupplier.set(state2);
+        assertEquals(2, mModel.get(FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST).size());
+        assertTrue(mModel.get(FuseboxProperties.POPUP_MODEL_DIVIDER_VISIBLE));
+        assertTrue(mModel.get(FuseboxProperties.POPUP_MODEL_HEADER_VISIBLE));
     }
 
     @Test
@@ -1211,6 +1264,11 @@ public class FuseboxMediatorUnitTest {
                         .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
                         .setMenuLabel("Pro")
                         .build();
+        ModelConfig configAuto =
+                ModelConfig.newBuilder()
+                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE)
+                        .setMenuLabel("Auto")
+                        .build();
 
         InputState state =
                 new InputState.Builder()
@@ -1218,15 +1276,18 @@ public class FuseboxMediatorUnitTest {
                         .withAllowedTools(ToolMode.TOOL_MODE_CANVAS_VALUE)
                         .withDisabledTools(ToolMode.TOOL_MODE_CANVAS_VALUE)
                         .withActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
-                        .withAllowedModels(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                        .withAllowedModels(
+                                ModelMode.MODEL_MODE_GEMINI_PRO_VALUE,
+                                ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE)
                         .withDisabledModels(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
-                        .withModelConfigs(new byte[][] {configPro.toByteArray()})
+                        .withModelConfigs(
+                                new byte[][] {configPro.toByteArray(), configAuto.toByteArray()})
                         .build();
         mInputStateSupplier.set(state);
 
         assertTrue(mModel.get(FuseboxProperties.POPUP_TOOL_CANVAS_ENABLED));
         List<PopupButtonData> models = mModel.get(FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST);
-        assertEquals(1, models.size());
+        assertEquals(2, models.size());
         assertTrue(models.get(0).enabled);
     }
 
@@ -1240,19 +1301,29 @@ public class FuseboxMediatorUnitTest {
                         .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
                         .setMenuLabel("Pro")
                         .build();
+        ModelConfig configAuto =
+                ModelConfig.newBuilder()
+                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE)
+                        .setMenuLabel("Auto")
+                        .build();
+
         InputState state =
                 new InputState.Builder()
                         .withActiveTool(ToolMode.TOOL_MODE_CANVAS_VALUE)
                         .withAllowedTools(ToolMode.TOOL_MODE_DEEP_SEARCH_VALUE)
                         .withActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
-                        .withAllowedModels(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE)
-                        .withModelConfigs(new byte[][] {configPro.toByteArray()})
+                        .withAllowedModels(
+                                ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE,
+                                ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                        .withModelConfigs(
+                                new byte[][] {configPro.toByteArray(), configAuto.toByteArray()})
                         .build();
         mInputStateSupplier.set(state);
 
         assertTrue(mModel.get(FuseboxProperties.POPUP_TOOL_CANVAS_ENABLED));
         List<PopupButtonData> modelButtons =
                 mModel.get(FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST);
+        assertEquals(2, modelButtons.size());
         assertEquals("Pro", modelButtons.get(0).text);
     }
 
@@ -1266,16 +1337,26 @@ public class FuseboxMediatorUnitTest {
                         .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
                         .setMenuLabel("Pro")
                         .build();
+        ModelConfig configAuto =
+                ModelConfig.newBuilder()
+                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE)
+                        .setMenuLabel("Auto")
+                        .build();
+
         InputState inputState =
                 new InputState.Builder()
                         .withActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
-                        .withAllowedModels(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
-                        .withModelConfigs(new byte[][] {configPro.toByteArray()})
+                        .withAllowedModels(
+                                ModelMode.MODEL_MODE_GEMINI_PRO_VALUE,
+                                ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE)
+                        .withModelConfigs(
+                                new byte[][] {configPro.toByteArray(), configAuto.toByteArray()})
                         .build();
         mInput.setRequestType(AutocompleteRequestType.SEARCH);
         mInputStateSupplier.set(inputState);
         List<PopupButtonData> modelButtons =
                 mModel.get(FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST);
+        assertEquals(2, modelButtons.size());
         assertFalse(modelButtons.get(0).selected);
 
         mInput.setRequestType(AutocompleteRequestType.AI_MODE);
