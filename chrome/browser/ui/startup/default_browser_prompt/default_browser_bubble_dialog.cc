@@ -179,6 +179,8 @@ std::unique_ptr<views::Widget> ShowDefaultBrowserBubbleDialog(
                       /*close_dialog_callback=*/std::move(on_dismiss)),
                   views::BubbleDialogModelHost::FieldType::kControl))
           .SetElementIdentifier(kBubbleDialogId)
+          .SetAccessibleTitle(l10n_util::GetStringUTF16(
+              IDS_DEFAULT_BROWSER_BUBBLE_DIALOG_TITLE))
           .OverrideShowCloseButton(/*show_close_button=*/false)
           .DisableCloseOnDeactivate()
           .Build();
