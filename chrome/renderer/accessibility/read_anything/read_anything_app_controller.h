@@ -466,6 +466,15 @@ class ReadAnythingAppController
   // processed accessibility events.
   void ProcessModelUpdates();
 
+  // Applies accessibility updates to ensure links are properly synced
+  // between distilled Readability content and what's in the accessibility tree.
+  // This should only be called when Readability is being used as a distillation
+  // method and links are supported.
+  void ApplyAccessibilityUpdatesForReadabilityLinks(
+      const ui::AXTreeID& tree_id,
+      const std::vector<ui::AXTreeUpdate>& updates,
+      const std::vector<ui::AXEvent>& events);
+
   // Helper for forwarding reading mode hide events to the webui so we can
   // perform cleaning operations on it.
   void ReadingModeWillClose();

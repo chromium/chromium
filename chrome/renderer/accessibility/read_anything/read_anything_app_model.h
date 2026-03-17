@@ -272,7 +272,11 @@ class ReadAnythingAppModel {
     return current_content_distillation_method_ ==
            DistillationMethod::kReadability;
   }
-  bool should_apply_accessibility_updates_for_readability() const {
+  bool should_apply_accessibility_updates_for_readability_links() const {
+    // Accessibility updates for Readability shouldn't be applied outside
+    // of the regular accessibility update process if Readability is disabled
+    // or ReadAnythingWithReadabilityAllowLinksEnabled is disabled, as these
+    // updates are only needed when links are supported.
     if (!features::IsReadAnythingWithReadabilityEnabled() ||
         !features::IsReadAnythingWithReadabilityAllowLinksEnabled()) {
       return false;
