@@ -15,11 +15,9 @@ import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.signin.services.BadgeConfig;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
-import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
@@ -61,11 +59,6 @@ final class SigninButtonMediator
     // ProfileDataCache facilitates retrieving the profile picture.
     private @Nullable ProfileDataCache mProfileDataCache;
 
-    // SyncService is observed to update mIdentityError.
-    private @Nullable SyncService mSyncService;
-
-    private @UserActionableError int mIdentityError = UserActionableError.NONE;
-
     /**
      * @param context The {@link Context} to retrieve resources.
      * @param windowAndroid The {@link WindowAndroid} for the current window.
@@ -99,12 +92,12 @@ final class SigninButtonMediator
     }
 
     /**
-     * {@link SyncService.SyncStateChangedListener} implementation which updates the signin button
-     * in case a profile badge is needed due to an identity error.
+     * {@link SyncService.SyncStateChangedListener} implementation which updates identity error and
+     * profile badge if needed.
      */
     @Override
     public void syncStateChanged() {
-        updateButtonState();
+        // TODO(crbug.com/475816843): Add implementation for necessary override.
     }
 
     /**
@@ -148,30 +141,19 @@ final class SigninButtonMediator
             assert !mModel.get(SigninButtonProperties.SHOW_BUTTON);
             return;
         }
-        mIdentityError = assumeNonNull(mSyncService).getUserActionableError();
-
-        CoreAccountInfo coreAccountInfo =
-                assumeNonNull(mIdentityManager).getPrimaryAccountInfo(ConsentLevel.SIGNIN);
-        if (coreAccountInfo != null) {
-            assumeNonNull(mProfileDataCache)
-                    .setBadge(
-                            coreAccountInfo.getId(),
-                            mIdentityError == UserActionableError.NONE
-                                    ? null
-                                    : BadgeConfig.create(R.drawable.ic_error_badge_16dp)
-                                            .withToolbarIdentityDiscConfig()
-                                            .build(mContext));
-        }
-
-        @Nullable String email = CoreAccountInfo.getEmailFrom(coreAccountInfo);
+        @Nullable String email =
+                CoreAccountInfo.getEmailFrom(
+                        assumeNonNull(mIdentityManager).getPrimaryAccountInfo(ConsentLevel.SIGNIN));
         DisplayableProfileData profileData =
                 email == null
                         ? null
                         : assumeNonNull(mProfileDataCache).getProfileDataOrDefault(email);
+        // TODO(https://crbug.com/478828569): Replace UserActionableError.NONE once identity error
+        // badge functionality has been added.
         mModel.set(
                 SigninButtonProperties.CONTENT_DESCRIPTION,
                 SigninUtils.getContentDescriptionForIdentityDisc(
-                        mContext, profileData, mIdentityError));
+                        mContext, profileData, UserActionableError.NONE));
         setAvatarImage(profileData);
     }
 
@@ -202,10 +184,6 @@ final class SigninButtonMediator
             mIdentityManager.removeObserver(this);
             mIdentityManager = null;
         }
-        if (mSyncService != null) {
-            mSyncService.removeSyncStateChangedListener(this);
-            mSyncService = null;
-        }
         if (profile == null || profile.isOffTheRecord()) {
             return;
         }
@@ -215,10 +193,6 @@ final class SigninButtonMediator
                 ProfileDataCache.createWithoutBadge(
                         mContext, mIdentityManager, R.dimen.toolbar_identity_disc_size);
         mProfileDataCache.addObserver(this);
-        mSyncService = SyncServiceFactory.getForProfile(profile);
-        if (mSyncService != null) {
-            mSyncService.addSyncStateChangedListener(this);
-        }
         updateButtonState();
     }
 
