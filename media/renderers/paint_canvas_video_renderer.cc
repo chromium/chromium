@@ -720,9 +720,8 @@ std::unique_ptr<gpu::RasterScopedAccess> CopySharedImageDirectlyToGLTexture(
   if (destination_gl->CanCopySharedImageToGLTextureViaTextureCopy(
           shared_image.get())) {
     destination_gl->CopySharedImageToGLTextureViaTextureCopy(
-        shared_image->size(), src_rect, shared_image.get(), acquire_sync_token,
-        target, texture, internal_format, format, type, level, dst_alpha_type,
-        dst_origin);
+        src_rect, shared_image.get(), acquire_sync_token, target, texture,
+        internal_format, format, type, level, dst_alpha_type, dst_origin);
     destination_gl->ShallowFlushCHROMIUM();
   } else {
     CHECK(destination_gl->CanCopySharedImageToGLTextureViaSkia(
@@ -1567,9 +1566,9 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
     // copying from it on the consumer context.
     gpu::SyncToken dest_sync_token =
         destination_gl->CopySharedImageToGLTextureViaTextureCopy(
-            video_frame->coded_size(), video_frame->visible_rect(),
-            rgb_shared_image.get(), sync_token, target, texture,
-            internal_format, format, type, level, dst_alpha_type, dst_origin);
+            video_frame->visible_rect(), rgb_shared_image.get(), sync_token,
+            target, texture, internal_format, format, type, level,
+            dst_alpha_type, dst_origin);
 
     // Update the `rgb_sync_token` to be waited upon based on gles tasks
     // performed earlier.
@@ -1666,9 +1665,9 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
   // On the destination GL context, do a copy (with cropping) into the
   // destination texture.
   rgb_sync_token = destination_gl->CopySharedImageToGLTextureViaTextureCopy(
-      video_frame->coded_size(), video_frame->visible_rect(),
-      rgb_shared_image.get(), post_conversion_sync_token, target, texture,
-      internal_format, format, type, level, dst_alpha_type, dst_origin);
+      video_frame->visible_rect(), rgb_shared_image.get(),
+      post_conversion_sync_token, target, texture, internal_format, format,
+      type, level, dst_alpha_type, dst_origin);
 
   // Update the rgb sync token to be waited upon based on gles tasks performed
   // earlier.

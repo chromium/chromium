@@ -141,7 +141,6 @@ class GLES2_IMPL_EXPORT GLES2Implementation : public GLES2Interface,
       int32_t dst_level,
       SkAlphaType dst_alpha_type) override;
   gpu::SyncToken CopySharedImageToGLTextureViaTextureCopy(
-      const gfx::Size& src_size,
       const gfx::Rect& src_rect,
       ClientSharedImage* source_shared_image,
       const gpu::SyncToken& source_sync_token,

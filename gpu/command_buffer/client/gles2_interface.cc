@@ -37,7 +37,6 @@ bool GLES2Interface::CanCopySharedImageToGLTextureViaSkia(
 }
 
 gpu::SyncToken GLES2Interface::CopySharedImageToGLTextureViaTextureCopy(
-    const gfx::Size& src_size,
     const gfx::Rect& src_rect,
     ClientSharedImage* source_shared_image,
     const gpu::SyncToken& source_sync_token,

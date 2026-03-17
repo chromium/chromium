@@ -483,7 +483,6 @@ bool GLES2Implementation::CanCopySharedImageToGLTextureViaSkia(
 }
 
 gpu::SyncToken GLES2Implementation::CopySharedImageToGLTextureViaTextureCopy(
-    const gfx::Size& src_size,
     const gfx::Rect& src_rect,
     ClientSharedImage* source_shared_image,
     const gpu::SyncToken& source_sync_token,
@@ -507,13 +506,14 @@ gpu::SyncToken GLES2Implementation::CopySharedImageToGLTextureViaTextureCopy(
       source_shared_image->alpha_type() == kPremul_SkAlphaType;
 
   const bool do_flip_y = source_shared_image->surface_origin() != dst_origin;
-  if (src_rect != gfx::Rect(src_size)) {
+  if (src_rect != gfx::Rect(source_shared_image->size())) {
     // Must reallocate the destination texture and copy only a sub-portion.
 
     // There should always be enough data in the source texture to
     // cover this copy.
-    GPU_CLIENT_DCHECK(src_rect.width() <= src_size.width());
-    GPU_CLIENT_DCHECK(src_rect.height() <= src_size.height());
+    GPU_CLIENT_DCHECK(src_rect.width() <= source_shared_image->size().width());
+    GPU_CLIENT_DCHECK(src_rect.height() <=
+                      source_shared_image->size().height());
 
     BindAndTexImage2D(this, target, texture, internal_format, format, type,
                       level, src_rect.size());

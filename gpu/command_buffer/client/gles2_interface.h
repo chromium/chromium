@@ -23,7 +23,6 @@ class ImageProvider;
 
 namespace gfx {
 class Rect;
-class Size;
 class Vector2d;
 class Vector2dF;
 }  // namespace gfx
@@ -77,7 +76,6 @@ class GLES2Interface : public InterfaceBase {
   // Copies the contents of |source_shared_image| to |texture| of the current
   // context.
   virtual gpu::SyncToken CopySharedImageToGLTextureViaTextureCopy(
-      const gfx::Size& src_size,
       const gfx::Rect& src_rect,
       ClientSharedImage* source_shared_image,
       const gpu::SyncToken& source_sync_token,
