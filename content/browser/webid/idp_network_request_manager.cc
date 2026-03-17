@@ -165,9 +165,8 @@ bool IsEmptyOrWhitespace(const std::string* input) {
     return true;
   }
 
-  auto trimmed_string =
-      base::TrimWhitespace(base::UTF8ToUTF16(*input), base::TRIM_ALL);
-  return trimmed_string.empty();
+  auto utf16_string = base::UTF8ToUTF16(*input);
+  return base::TrimWhitespace(utf16_string, base::TRIM_ALL).empty();
 }
 
 GURL ExtractUrl(const base::DictValue& response, const char* key) {

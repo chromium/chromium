@@ -520,8 +520,9 @@ TEST_F(SpeechRecognizerImplTest, StopWithData) {
   proto_alternative->set_transcript("123");
   std::string msg_string;
   proto_event.SerializeToString(&msg_string);
-  msg_string.insert(0u, base::as_string_view(base::U32ToBigEndian(
-                            base::checked_cast<uint32_t>(msg_string.size()))));
+  auto msg_size_bytes =
+      base::U32ToBigEndian(base::checked_cast<uint32_t>(msg_string.size()));
+  msg_string.insert(0u, base::as_string_view(msg_size_bytes));
 
   // Issue the network callback to complete the process.
   const network::TestURLLoaderFactory::PendingRequest* downstream_request;

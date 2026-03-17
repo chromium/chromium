@@ -267,10 +267,11 @@ BASE_EXPORT bool TrimString(std::string_view input,
 
 // std::string_view versions of the above. The returned pieces refer to the
 // original buffer.
-BASE_EXPORT std::u16string_view TrimString(std::u16string_view input,
+BASE_EXPORT std::u16string_view TrimString(std::u16string_view input
+                                               LIFETIME_BOUND,
                                            std::u16string_view trim_chars,
                                            TrimPositions positions);
-BASE_EXPORT std::string_view TrimString(std::string_view input,
+BASE_EXPORT std::string_view TrimString(std::string_view input LIFETIME_BOUND,
                                         std::string_view trim_chars,
                                         TrimPositions positions);
 
@@ -279,7 +280,8 @@ BASE_EXPORT std::string_view TrimString(std::string_view input,
 BASE_EXPORT void TruncateUTF8ToByteSize(std::string_view input,
                                         const size_t byte_size,
                                         std::string* output);
-BASE_EXPORT std::string_view TruncateUTF8ToByteSize(std::string_view input,
+BASE_EXPORT std::string_view TruncateUTF8ToByteSize(std::string_view input
+                                                        LIFETIME_BOUND,
                                                     size_t byte_size);
 
 // Trims any whitespace from either end of the input string.
@@ -292,12 +294,14 @@ BASE_EXPORT std::string_view TruncateUTF8ToByteSize(std::string_view input,
 BASE_EXPORT TrimPositions TrimWhitespace(std::u16string_view input,
                                          TrimPositions positions,
                                          std::u16string* output);
-BASE_EXPORT std::u16string_view TrimWhitespace(std::u16string_view input,
+BASE_EXPORT std::u16string_view TrimWhitespace(std::u16string_view input
+                                                   LIFETIME_BOUND,
                                                TrimPositions positions);
 BASE_EXPORT TrimPositions TrimWhitespaceASCII(std::string_view input,
                                               TrimPositions positions,
                                               std::string* output);
-BASE_EXPORT std::string_view TrimWhitespaceASCII(std::string_view input,
+BASE_EXPORT std::string_view TrimWhitespaceASCII(std::string_view input
+                                                     LIFETIME_BOUND,
                                                  TrimPositions positions);
 
 // Searches for CR or LF characters.  Removes all contiguous whitespace
@@ -386,11 +390,11 @@ BASE_EXPORT bool EndsWith(
 // `case_sensitivity` argument is the same as would be passed to
 // StartsWith() above.
 BASE_EXPORT std::optional<std::string_view> RemovePrefix(
-    std::string_view string,
+    std::string_view string LIFETIME_BOUND,
     std::string_view prefix,
     CompareCase case_sensitivity = CompareCase::SENSITIVE);
 BASE_EXPORT std::optional<std::u16string_view> RemovePrefix(
-    std::u16string_view string,
+    std::u16string_view string LIFETIME_BOUND,
     std::u16string_view prefix,
     CompareCase case_sensitivity = CompareCase::SENSITIVE);
 
@@ -399,11 +403,11 @@ BASE_EXPORT std::optional<std::u16string_view> RemovePrefix(
 // `case_sensitivity` argument is the same as would be passed to
 // EndsWith() above.
 BASE_EXPORT std::optional<std::string_view> RemoveSuffix(
-    std::string_view string,
+    std::string_view string LIFETIME_BOUND,
     std::string_view suffix,
     CompareCase case_sensitivity = CompareCase::SENSITIVE);
 BASE_EXPORT std::optional<std::u16string_view> RemoveSuffix(
-    std::u16string_view string,
+    std::u16string_view string LIFETIME_BOUND,
     std::u16string_view suffix,
     CompareCase case_sensitivity = CompareCase::SENSITIVE);
 

@@ -146,7 +146,7 @@ class StringTokenizerT {
   // blocks the most obvious instances of this (e.g. passing a string literal to
   // the constructor), but caution must still be exercised.
   StringTokenizerT(
-      const str& string,
+      const str& string LIFETIME_BOUND,
       const owning_str& delims,
       WhitespacePolicy whitespace_policy = WhitespacePolicy::kIncludeInTokens) {
     Init(string.begin(), string.end(), delims, whitespace_policy);

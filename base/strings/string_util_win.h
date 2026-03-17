@@ -103,11 +103,12 @@ inline const char16_t* as_u16cstr(std::wstring_view str) {
 
 // Utility functions to convert between std::wstring_view and
 // std::u16string_view.
-inline std::wstring_view AsWStringView(std::u16string_view str) {
+inline std::wstring_view AsWStringView(std::u16string_view str LIFETIME_BOUND) {
   return std::wstring_view(as_wcstr(str.data()), str.size());
 }
 
-inline std::u16string_view AsStringPiece16(std::wstring_view str) {
+inline std::u16string_view AsStringPiece16(
+    std::wstring_view str LIFETIME_BOUND) {
   return std::u16string_view(as_u16cstr(str.data()), str.size());
 }
 
@@ -156,7 +157,7 @@ BASE_EXPORT bool TrimString(std::wstring_view input,
                             std::wstring_view trim_chars,
                             std::wstring* output);
 
-BASE_EXPORT std::wstring_view TrimString(std::wstring_view input,
+BASE_EXPORT std::wstring_view TrimString(std::wstring_view input LIFETIME_BOUND,
                                          std::wstring_view trim_chars,
                                          TrimPositions positions);
 
@@ -164,7 +165,8 @@ BASE_EXPORT TrimPositions TrimWhitespace(std::wstring_view input,
                                          TrimPositions positions,
                                          std::wstring* output);
 
-BASE_EXPORT std::wstring_view TrimWhitespace(std::wstring_view input,
+BASE_EXPORT std::wstring_view TrimWhitespace(std::wstring_view input
+                                                 LIFETIME_BOUND,
                                              TrimPositions positions);
 
 BASE_EXPORT std::wstring CollapseWhitespace(
@@ -187,7 +189,7 @@ BASE_EXPORT bool EndsWith(
     CompareCase case_sensitivity = CompareCase::SENSITIVE);
 
 BASE_EXPORT std::optional<std::wstring_view> RemovePrefix(
-    std::wstring_view string,
+    std::wstring_view string LIFETIME_BOUND,
     std::wstring_view prefix,
     CompareCase case_sensitivity = CompareCase::SENSITIVE);
 
