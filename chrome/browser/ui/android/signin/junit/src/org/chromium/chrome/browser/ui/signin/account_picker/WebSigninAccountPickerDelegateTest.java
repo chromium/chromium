@@ -25,11 +25,14 @@ import org.mockito.quality.Strictness;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtilsJni;
 import org.chromium.chrome.browser.signin.services.WebSigninBridge;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.ui.signin.DelegateContext;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.signin.browser.WebSigninTrackerResult;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
@@ -43,6 +46,9 @@ import org.chromium.url.GURL;
 @RunWith(BaseRobolectricTestRunner.class)
 public class WebSigninAccountPickerDelegateTest {
     private static final GURL CONTINUE_URL = new GURL("https://test-continue-url.com");
+    private static final int TAB_ID = 123;
+    private static final DelegateContext DELEGATE_CONTEXT =
+            new WebSigninDelegateContext(TAB_ID, CONTINUE_URL);
 
     private final FakeAccountManagerFacade mFakeAccountManagerFacade =
             spy(new FakeAccountManagerFacade());
@@ -62,88 +68,149 @@ public class WebSigninAccountPickerDelegateTest {
 
     @Mock private Tab mTabMock;
 
+    @Mock private TabModelSelector mTabModelSelectorMock;
+
     @Mock private AccountPickerDelegate.SigninStateController mSigninStateControllerMock;
 
     @Mock private SigninMetricsUtils.Natives mSigninMetricsUtilsJniMock;
+
+    @Mock private Callback<@PostSigninOperationResult Integer> mPostSigninCallbackMock;
 
     @Captor private ArgumentCaptor<LoadUrlParams> mLoadUrlParamsCaptor;
 
     @Captor
     private ArgumentCaptor<Callback<@WebSigninTrackerResult Integer>> mWebSigninCallbackCaptor;
 
-    private WebSigninAccountPickerDelegate mDelegate;
+    private @Nullable WebSigninAccountPickerDelegate mDelegate;
 
     @Before
     public void setUp() {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
-        when(mTabMock.getProfile()).thenReturn(mProfileMock);
         SigninMetricsUtilsJni.setInstanceForTesting(mSigninMetricsUtilsJniMock);
-        mDelegate =
-                new WebSigninAccountPickerDelegate(
-                        mTabMock, mWebSigninBridgeFactoryMock, CONTINUE_URL);
         when(mWebSigninBridgeFactoryMock.createWithCoreAccountId(eq(mProfileMock), any(), any()))
                 .thenReturn(mWebSigninBridgeMock);
     }
 
     @After
     public void tearDown() {
-        mDelegate.onAccountPickerDestroy();
+        if (mDelegate != null) {
+            mDelegate.onAccountPickerDestroy();
+        }
     }
 
     @Test
     public void testSignInSucceeded() {
+        when(mTabModelSelectorMock.getTabById(TAB_ID)).thenReturn(mTabMock);
+        mDelegate =
+                new WebSigninAccountPickerDelegate(
+                        mProfileMock, mTabModelSelectorMock, mWebSigninBridgeFactoryMock);
+
+        mDelegate.runPostSigninAction(
+                TestAccounts.ACCOUNT1, DELEGATE_CONTEXT, mPostSigninCallbackMock);
+
+        verifyWebSigninBridgeAndTriggerCallback(WebSigninTrackerResult.SUCCESS);
+
+        verify(mPostSigninCallbackMock).onResult(PostSigninOperationResult.SUCCESS);
+    }
+
+    // TODO(crbug.com/469772349): Remove all legacy tests (using deprecated constructor) after
+    // activityless-signin migration.
+
+    @Test
+    public void testSignInSucceeded_legacy() {
+        when(mTabMock.getProfile()).thenReturn(mProfileMock);
+        mDelegate =
+                new WebSigninAccountPickerDelegate(
+                        mTabMock, mWebSigninBridgeFactoryMock, CONTINUE_URL);
 
         mDelegate.onSignInComplete(TestAccounts.ACCOUNT1, mSigninStateControllerMock);
 
-        verify(mWebSigninBridgeFactoryMock)
-                .createWithCoreAccountId(
-                        eq(mProfileMock),
-                        eq(TestAccounts.ACCOUNT1.getId()),
-                        mWebSigninCallbackCaptor.capture());
-
-        mWebSigninCallbackCaptor.getValue().onResult(WebSigninTrackerResult.SUCCESS);
+        verifyWebSigninBridgeAndTriggerCallback(WebSigninTrackerResult.SUCCESS);
 
         verify(mSigninStateControllerMock).onSigninComplete();
-        verify(mTabMock).loadUrl(mLoadUrlParamsCaptor.capture());
-        LoadUrlParams loadUrlParams = mLoadUrlParamsCaptor.getValue();
-        Assert.assertEquals(
-                "Continue url does not match!", CONTINUE_URL.getSpec(), loadUrlParams.getUrl());
     }
 
     @Test
     public void testSignInFailedWithConnectionError() {
+        mDelegate =
+                new WebSigninAccountPickerDelegate(
+                        mProfileMock, mTabModelSelectorMock, mWebSigninBridgeFactoryMock);
+
+        mDelegate.runPostSigninAction(
+                TestAccounts.ACCOUNT1, DELEGATE_CONTEXT, mPostSigninCallbackMock);
+
+        verifyWebSigninBridgeAndTriggerCallback(WebSigninTrackerResult.OTHER_ERROR);
+
+        verify(mPostSigninCallbackMock).onResult(PostSigninOperationResult.OTHER_ERROR);
+    }
+
+    @Test
+    public void testSignInFailedWithConnectionError_legacy() {
+        when(mTabMock.getProfile()).thenReturn(mProfileMock);
+        mDelegate =
+                new WebSigninAccountPickerDelegate(
+                        mTabMock, mWebSigninBridgeFactoryMock, CONTINUE_URL);
+
         mDelegate.onSignInComplete(TestAccounts.ACCOUNT1, mSigninStateControllerMock);
 
-        verify(mWebSigninBridgeFactoryMock)
-                .createWithCoreAccountId(
-                        eq(mProfileMock),
-                        eq(TestAccounts.ACCOUNT1.getId()),
-                        mWebSigninCallbackCaptor.capture());
-
-        mWebSigninCallbackCaptor.getValue().onResult(WebSigninTrackerResult.OTHER_ERROR);
+        verifyWebSigninBridgeAndTriggerCallback(WebSigninTrackerResult.OTHER_ERROR);
 
         verify(mSigninStateControllerMock).showGenericError();
-        verify(mSigninMetricsUtilsJniMock)
-                .logAccountConsistencyPromoAction(
-                        AccountConsistencyPromoAction.GENERIC_ERROR_SHOWN,
-                        SigninAccessPoint.WEB_SIGNIN);
     }
 
     @Test
     public void testSignInFailedWithGaiaError() {
+        mDelegate =
+                new WebSigninAccountPickerDelegate(
+                        mProfileMock, mTabModelSelectorMock, mWebSigninBridgeFactoryMock);
+
+        mDelegate.runPostSigninAction(
+                TestAccounts.ACCOUNT1, DELEGATE_CONTEXT, mPostSigninCallbackMock);
+
+        verifyWebSigninBridgeAndTriggerCallback(WebSigninTrackerResult.AUTH_ERROR);
+
+        verify(mPostSigninCallbackMock).onResult(PostSigninOperationResult.AUTH_ERROR);
+    }
+
+    @Test
+    public void testSignInFailedWithGaiaError_legacy() {
+        when(mTabMock.getProfile()).thenReturn(mProfileMock);
+        mDelegate =
+                new WebSigninAccountPickerDelegate(
+                        mTabMock, mWebSigninBridgeFactoryMock, CONTINUE_URL);
+
         mDelegate.onSignInComplete(TestAccounts.ACCOUNT1, mSigninStateControllerMock);
 
+        verifyWebSigninBridgeAndTriggerCallback(WebSigninTrackerResult.AUTH_ERROR);
+        verify(mSigninStateControllerMock).showAuthError();
+    }
+
+    private void verifyWebSigninBridgeAndTriggerCallback(@WebSigninTrackerResult int result) {
         verify(mWebSigninBridgeFactoryMock)
                 .createWithCoreAccountId(
                         eq(mProfileMock),
                         eq(TestAccounts.ACCOUNT1.getId()),
                         mWebSigninCallbackCaptor.capture());
 
-        mWebSigninCallbackCaptor.getValue().onResult(WebSigninTrackerResult.AUTH_ERROR);
-        verify(mSigninStateControllerMock).showAuthError();
-        verify(mSigninMetricsUtilsJniMock)
-                .logAccountConsistencyPromoAction(
-                        AccountConsistencyPromoAction.AUTH_ERROR_SHOWN,
-                        SigninAccessPoint.WEB_SIGNIN);
+        mWebSigninCallbackCaptor.getValue().onResult(result);
+
+        if (result == WebSigninTrackerResult.SUCCESS) {
+            verify(mTabMock).loadUrl(mLoadUrlParamsCaptor.capture());
+            LoadUrlParams loadUrlParams = mLoadUrlParamsCaptor.getValue();
+            Assert.assertEquals(
+                    "Continue url does not match!", CONTINUE_URL.getSpec(), loadUrlParams.getUrl());
+        } else if (result == WebSigninTrackerResult.OTHER_ERROR) {
+            verify(mSigninMetricsUtilsJniMock)
+                    .logAccountConsistencyPromoAction(
+                            AccountConsistencyPromoAction.GENERIC_ERROR_SHOWN,
+                            SigninAccessPoint.WEB_SIGNIN);
+        } else if (result == WebSigninTrackerResult.AUTH_ERROR) {
+            verify(mSigninMetricsUtilsJniMock)
+                    .logAccountConsistencyPromoAction(
+                            AccountConsistencyPromoAction.AUTH_ERROR_SHOWN,
+                            SigninAccessPoint.WEB_SIGNIN);
+        } else {
+            throw new IllegalStateException("Unexpected result: " + result);
+        }
     }
 }
