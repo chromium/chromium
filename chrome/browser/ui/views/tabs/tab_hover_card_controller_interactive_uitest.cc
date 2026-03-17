@@ -169,6 +169,11 @@ class TabHoverCardInteractiveUiTest
         browser()->tab_strip_model()->GetTabAtIndex(index));
   }
 
+  void SetTabData(int index, tabs::TabData data) {
+    TabStrip* const tab_strip = GetTabStrip(browser());
+    tab_strip->tab_at(index)->SetDataForTesting(data);
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -339,7 +344,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
   TabStrip* const tab_strip = GetTabStrip(browser());
   ASSERT_TRUE(
       AddTabAtIndex(1, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
-  tab_strip->SetTabData(1, MakeTabData());
+  SetTabData(1, MakeTabData());
 
   SimulateHoverTab(browser(), 0);
 
@@ -351,13 +356,12 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
 
 IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
                        HoverCardDoesNotHaveFooterView) {
-  TabStrip* const tab_strip = GetTabStrip(browser());
   ASSERT_TRUE(
       AddTabAtIndex(1, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
   tabs::TabData tab_data = tabs::TabData();
   tab_data.title = kTabTitle;
   tab_data.last_committed_url = GURL(kTabUrl);
-  tab_strip->SetTabData(1, tab_data);
+  SetTabData(1, tab_data);
 
   auto* const hover_card = SimulateHoverTab(browser(), 1);
   EXPECT_FALSE(hover_card->GetFooterViewForTesting()->GetVisible());
@@ -516,10 +520,9 @@ class TabHoverCardFadeFooterInteractiveUiTest
 // the correct string is shown for the corresponding tab alert.
 IN_PROC_BROWSER_TEST_F(TabHoverCardFadeFooterInteractiveUiTest,
                        HoverCardFooterUpdatesTabAlertStatus) {
-  TabStrip* const tab_strip = GetTabStrip(browser());
   ASSERT_TRUE(
       AddTabAtIndex(1, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
-  tab_strip->SetTabData(1, MakeTabData());
+  SetTabData(1, MakeTabData());
 
   FadeAlertFooterRow* const alert_row =
       GetPrimaryAlertRowFromHoverCard(SimulateHoverTab(browser(), 1));
@@ -558,7 +561,7 @@ IN_PROC_BROWSER_TEST_P(TabHoverCardFadeFooterWithDiscardInteractiveUiTest,
       AddTabAtIndex(1, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
   tabs::TabData tab_data = MakeTabData();
   tab_data.should_show_discard_status = true;
-  tab_strip->SetTabData(1, tab_data);
+  SetTabData(1, tab_data);
 
   FadeAlertFooterRow* const alert_row =
       GetPrimaryAlertRowFromHoverCard(SimulateHoverTab(browser(), 1));
@@ -570,7 +573,7 @@ IN_PROC_BROWSER_TEST_P(TabHoverCardFadeFooterWithDiscardInteractiveUiTest,
   // performance row won't be empty.
   tabs::TabData tab_0_data = tab_strip->tab_at(0)->data();
   tab_0_data.tab_resource_usage = nullptr;
-  tab_strip->SetTabData(0, tab_0_data);
+  SetTabData(0, tab_0_data);
 
   // Hover card footer should update when we hover over another tab that is
   // not discarded
@@ -580,7 +583,7 @@ IN_PROC_BROWSER_TEST_P(TabHoverCardFadeFooterWithDiscardInteractiveUiTest,
 
   // Show discard status with memory savings
   tab_data.discarded_memory_savings = base::ByteSize(1000);
-  tab_strip->SetTabData(1, tab_data);
+  SetTabData(1, tab_data);
   SimulateHoverTab(browser(), 1);
   EXPECT_EQ(
       l10n_util::FormatString(
@@ -769,7 +772,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardFadeFooterInteractiveUiTest,
   Tab* const tab = tab_strip->tab_at(1);
   tabs::TabData data = tab->data();
   data.alert_state = {tabs::TabAlert::kAudioPlaying};
-  tab->SetData(data);
+  tab->SetDataForTesting(data);
   tab_strip->GetFocusManager()->SetFocusedView(tab);
   WaitForHoverCardVisible(tab_strip);
 
@@ -806,7 +809,6 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardFadeFooterInteractiveUiTest,
 // string is displayed on the hover card.
 IN_PROC_BROWSER_TEST_F(TabHoverCardFadeFooterInteractiveUiTest,
                        HoverCardFooterShowsCollaborationMessaging) {
-  TabStrip* const tab_strip = GetTabStrip(browser());
   ASSERT_TRUE(
       AddTabAtIndex(1, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
   tabs::TabData tab_data = MakeTabData();
@@ -831,7 +833,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardFadeFooterInteractiveUiTest,
       CreateMessage(given_name, avatar_url,
                     collaboration::messaging::CollaborationEvent::TAB_ADDED));
 
-  tab_strip->SetTabData(1, tab_data);
+  SetTabData(1, tab_data);
   FadeCollaborationMessagingFooterRow* const collaboration_messaging_row =
       GetPrimaryCollaborationMessagingRowFromHoverCard(
           SimulateHoverTab(browser(), 1));
@@ -847,7 +849,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardFadeFooterInteractiveUiTest,
 
   // Reset tab data by setting intermediate object. Without this, the new
   // tab_data is ignored because it is the same object.
-  tab_strip->SetTabData(1, MakeTabData());
+  SetTabData(1, MakeTabData());
 
   // Change username and action to show collaboration messaging with TAB_UPDATED
   // event.
@@ -857,7 +859,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardFadeFooterInteractiveUiTest,
       CreateMessage(given_name2, avatar_url2,
                     collaboration::messaging::CollaborationEvent::TAB_UPDATED));
 
-  tab_strip->SetTabData(1, tab_data);
+  SetTabData(1, tab_data);
   SimulateHoverTab(browser(), 1);
   EXPECT_EQ(u"Another User changed this tab",
             collaboration_messaging_row->footer_label()->GetText());

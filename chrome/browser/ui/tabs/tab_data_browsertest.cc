@@ -9,9 +9,11 @@
 
 #include "base/byte_size.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/favicon/favicon_utils.h"
+#include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
@@ -28,6 +30,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -39,8 +42,9 @@ namespace tabs {
 class TabDataObserverBrowserTest : public InProcessBrowserTest {
  public:
   TabDataObserverBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        data_sharing::features::kDataSharingFeature);
+    scoped_feature_list_.InitWithFeatures(
+        {data_sharing::features::kDataSharingFeature},
+        {features::kWebContentsDiscard});
   }
 
   void SetUpOnMainThread() override {
@@ -445,6 +449,32 @@ IN_PROC_BROWSER_TEST_F(TabDataObserverBrowserTest,
   }
 
   EXPECT_TRUE(data1.collaboration_messaging);
+}
+
+IN_PROC_BROWSER_TEST_F(TabDataObserverBrowserTest,
+                       ThumbnailRefreshesOnTabDiscard) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), embedded_test_server()->GetURL("example.com", "/title1.html"),
+      WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  tabs::TabInterface* const tab_interface =
+      browser()->GetTabStripModel()->GetTabAtIndex(0);
+  auto tab_data_observer = std::make_unique<TabDataObserver>(tab_interface);
+  scoped_refptr<ThumbnailImage> original_thumbnail =
+      tab_data_observer->tab_data().thumbnail;
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(url::kAboutBlankURL),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  auto* user_performance_tuning_manager = performance_manager::user_tuning::
+      UserPerformanceTuningManager::GetInstance();
+  user_performance_tuning_manager->DiscardPageForTesting(
+      tab_interface->GetContents());
+  // The thumbnail should be updated after discard because the original
+  // ThumbnailTabHelper is destroyed and a new one is created.
+  EXPECT_NE(original_thumbnail, tab_data_observer->tab_data().thumbnail);
 }
 
 }  // namespace tabs

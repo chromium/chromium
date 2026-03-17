@@ -474,7 +474,7 @@ TEST_F(BrowserViewTest, WindowTitleOmitsLowMemoryUsage) {
   AddTab(browser(), GURL("about:blank"));
   Tab* const tab =
       browser_view()->horizontal_tab_strip_for_testing()->tab_at(0);
-  tab->SetData(std::move(memory_usage));
+  tab->SetDataForTesting(std::move(memory_usage));
 
   // Expect that low memory usage isn't in the window title.
   EXPECT_EQ(SubBrowserName(u"about:blank - ", u""),
