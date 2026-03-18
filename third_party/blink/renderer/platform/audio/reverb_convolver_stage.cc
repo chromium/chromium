@@ -124,24 +124,17 @@ ReverbConvolverStage::ReverbConvolverStage(
 
 void ReverbConvolverStage::ProcessInBackground(ReverbConvolver* convolver,
                                                uint32_t frames_to_process) {
-  ReverbInputBuffer* input_buffer = convolver->InputBuffer();
-  float* source =
-      input_buffer->DirectReadFrom(&input_read_index_, frames_to_process);
-  Process(source, frames_to_process);
+  Process(convolver->InputBuffer()->DirectReadFrom(&input_read_index_,
+                                                   frames_to_process));
 }
 
-void ReverbConvolverStage::Process(const float* source,
-                                   uint32_t frames_to_process) {
-  DCHECK(source);
-  if (!source) {
-    return;
-  }
+void ReverbConvolverStage::Process(base::span<const float> source) {
+  uint32_t frames_to_process = source.size();
 
   // Deal with pre-delay stream : note special handling of zero delay.
-
-  const float* pre_delayed_source;
-  float* pre_delayed_destination;
-  float* temporary_buffer;
+  base::span<const float> pre_delayed_source;
+  base::span<float> pre_delayed_destination;
+  base::span<float> temporary_buffer;
   bool is_temporary_buffer_safe = false;
   if (pre_delay_length_ > 0) {
     // Handles both the read case (call to process() ) and the write case
@@ -156,14 +149,14 @@ void ReverbConvolverStage::Process(const float* source,
     is_temporary_buffer_safe = frames_to_process <= temporary_buffer_.size();
 
     pre_delayed_destination =
-        UNSAFE_TODO(pre_delay_buffer_.Data() + pre_read_write_index_);
+        pre_delay_buffer_.as_span().subspan(pre_read_write_index_);
     pre_delayed_source = pre_delayed_destination;
-    temporary_buffer = temporary_buffer_.Data();
+    temporary_buffer = temporary_buffer_.as_span();
   } else {
     // Zero delay
-    pre_delayed_destination = nullptr;
+    pre_delayed_destination = base::span<float>();
     pre_delayed_source = source;
-    temporary_buffer = pre_delay_buffer_.Data();
+    temporary_buffer = pre_delay_buffer_.as_span();
 
     is_temporary_buffer_safe = frames_to_process <= pre_delay_buffer_.size();
   }
@@ -183,24 +176,24 @@ void ReverbConvolverStage::Process(const float* source,
     // Now, run the convolution (into the delay buffer).
     // An expensive FFT will happen every fftSize / 2 frames.
     // We process in-place here...
-    if (!direct_mode_) {
-      fft_convolver_->Process(fft_kernel_.get(), pre_delayed_source,
-                              temporary_buffer, frames_to_process);
+    if (direct_mode_) {
+      direct_convolver_->Process(pre_delayed_source,
+                                 temporary_buffer.first(frames_to_process));
     } else {
-      direct_convolver_->Process(pre_delayed_source, temporary_buffer,
-                                 frames_to_process);
+      fft_convolver_->Process(fft_kernel_.get(), pre_delayed_source.data(),
+                              temporary_buffer.data(), frames_to_process);
     }
 
     // Now accumulate into reverb's accumulation buffer.
-    accumulation_buffer_->Accumulate(temporary_buffer, frames_to_process,
+    accumulation_buffer_->Accumulate(temporary_buffer.data(), frames_to_process,
                                      &accumulation_read_index_,
                                      post_delay_length_);
   }
 
   // Finally copy input to pre-delay.
   if (pre_delay_length_ > 0) {
-    UNSAFE_TODO(memcpy(pre_delayed_destination, source,
-                       sizeof(float) * frames_to_process));
+    pre_delayed_destination.first(frames_to_process)
+        .copy_from(source.first(frames_to_process));
     pre_read_write_index_ += frames_to_process;
 
     DCHECK_LE(pre_read_write_index_, pre_delay_length_);

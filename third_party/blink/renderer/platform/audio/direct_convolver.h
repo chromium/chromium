@@ -44,9 +44,7 @@ class DirectConvolver final {
   DirectConvolver(const DirectConvolver&) = delete;
   DirectConvolver& operator=(const DirectConvolver&) = delete;
 
-  void Process(const float* source_p,
-               float* dest_p,
-               uint32_t frames_to_process);
+  void Process(base::span<const float> source, base::span<float> destination);
 
   void Reset();
 

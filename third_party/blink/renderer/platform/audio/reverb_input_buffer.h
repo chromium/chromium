@@ -30,6 +30,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_REVERB_INPUT_BUFFER_H_
 
 #include <atomic>
+
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/audio/audio_array.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -62,7 +64,8 @@ class ReverbInputBuffer final {
   // The assumption is that the buffer's length is evenly divisible by
   // numberOfFrames.
   // FIXME: remove numberOfFrames restriction...
-  float* DirectReadFrom(size_t* read_index, size_t number_of_frames);
+  base::span<const float> DirectReadFrom(size_t* read_index,
+                                         size_t number_of_frames);
 
   void Reset();
 

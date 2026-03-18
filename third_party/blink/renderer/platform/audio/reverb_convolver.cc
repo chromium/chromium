@@ -188,7 +188,7 @@ void ReverbConvolver::Process(const AudioChannel* source_channel,
 
   // Accumulate contributions from each stage
   for (auto& stage : stages_) {
-    stage->Process(source, frames_to_process);
+    stage->Process(source_channel->Span().first(frames_to_process));
   }
 
   // Finally read from accumulation buffer
