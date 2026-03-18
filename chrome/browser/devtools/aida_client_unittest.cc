@@ -106,7 +106,7 @@ TEST_F(AidaClientTest, FailsIfNotAuthorized) {
   aida_client.PrepareRequestOrFail(base::BindOnce(
       &Delegate::FinishCallback, base::Unretained(&delegate), &run_loop));
   identity_test_env_->WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-      GoogleServiceAuthError(GoogleServiceAuthError::REQUEST_CANCELED));
+      GoogleServiceAuthError::CreateRequestCanceled());
 
   EXPECT_EQ(
       R"({"error": "Cannot get OAuth credentials", "detail": "Request canceled."})",
