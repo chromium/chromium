@@ -167,3 +167,44 @@ if (is_win || is_linux || is_android || is_chromeos) {
     generate_library = false
   }
 }
+
+source_set("privacy") {
+  public = [
+    "privacy_metrics_service.h",
+    "privacy_metrics_service_factory.h",
+  ]
+  sources = [
+    "privacy_metrics_service.cc",
+    "privacy_metrics_service_factory.cc",
+  ]
+  public_deps = [
+    "//base",
+    "//components/keyed_service/core",
+  ]
+  deps = [
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/preloading:prefs",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common:constants",
+    "//components/content_settings/core/browser",
+    "//components/prefs",
+    "//components/spellcheck/browser",
+  ]
+}
+
+if (is_android) {
+  source_set("secure_dns_bridge") {
+    sources = [ "secure_dns_bridge.cc" ]
+    deps = [
+      "//base",
+      "//chrome/browser:browser_process",
+      "//chrome/browser/preferences:java_pref_names_srcjar",
+      "//chrome/browser/privacy:jni_headers",
+      "//components/country_codes",
+      "//components/prefs",
+      "//content/public/browser",
+      "//net",
+    ]
+    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  }
+}

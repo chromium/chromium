@@ -944,10 +944,6 @@ static_library("browser") {
     "preloading/prerender/search_prewarm_progress_service.h",
     "preloading/prerender/search_prewarm_progress_service_factory.cc",
     "preloading/prerender/search_prewarm_progress_service_factory.h",
-    "privacy/privacy_metrics_service.cc",
-    "privacy/privacy_metrics_service.h",
-    "privacy/privacy_metrics_service_factory.cc",
-    "privacy/privacy_metrics_service_factory.h",
 
     # TODO(crbug.com/408801109) Remove this once the privacy_sandbox_service_factory is moved to chrome/browser/prviacy_sandbox/BUILD.
     "privacy_sandbox/notice/notice_service_factory.cc",
@@ -1705,6 +1701,7 @@ static_library("browser") {
     "//chrome/browser/preloading/prefetch/no_state_prefetch:impl",
     "//chrome/browser/preloading/prefetch/search_prefetch:field_trial_settings",
     "//chrome/browser/preloading/search_preload",
+    "//chrome/browser/privacy",
     "//chrome/browser/privacy_sandbox",
     "//chrome/browser/privacy_sandbox:headers",
     "//chrome/browser/profiles",
@@ -2999,7 +2996,6 @@ static_library("browser") {
       "prefetch/android/preload_pages_settings_bridge.cc",
       "preloading/android/preloading_data_bridge.cc",
       "preloading/android/preloading_feature_map.cc",
-      "privacy/secure_dns_bridge.cc",
       "privacy_sandbox/android/privacy_sandbox_bridge.cc",
       "privacy_sandbox/android/tracking_protection_settings_bridge.cc",
       "profiles/android/profile_manager_utils.cc",
@@ -3175,6 +3171,7 @@ static_library("browser") {
       "//chrome/browser/prefs/android:jni_cc",
       "//chrome/browser/preloading/android:jni_headers",
       "//chrome/browser/privacy:jni_headers",
+      "//chrome/browser/privacy:secure_dns_bridge",
       "//chrome/browser/privacy_sandbox/android:jni_headers",
       "//chrome/browser/quick_delete:jni_headers",
       "//chrome/browser/readaloud/android:jni_headers",
@@ -3457,6 +3454,15 @@ static_library("browser") {
       # - c/b/android/android_theme_resources.h
       # - c/b/android/resource_mapper.h
       "//chrome/browser/page_info:impl",
+
+      # TODO(crbug.com/): Remove this circular dependency when the following
+      # headers get componentized:
+      # c/b/net/dns_probe_runner.h
+      # c/b/net/secure_dns_util.h
+      # c/b/net/secure_dns_config.h
+      # c/b/net/stub_resolver_config_reader.h
+      # c/b/net/system_network_context_manager.h
+      "//chrome/browser/privacy:secure_dns_bridge",
     ]
 
     if (safe_browsing_mode == 2) {
