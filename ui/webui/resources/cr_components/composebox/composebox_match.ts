@@ -194,7 +194,11 @@ export class ComposeboxMatchElement extends CrLitElement {
         /* are_matches_showing */ true, e.button || 0, e.altKey, e.ctrlKey,
         e.metaKey, e.shiftKey);
 
-    this.fire('match-click');
+    this.fire('match-click', {
+      ctrlKey: e.ctrlKey,
+      metaKey: e.metaKey,
+      shiftKey: e.shiftKey,
+    });
   }
 
   protected onRemoveButtonClick_(e: MouseEvent) {

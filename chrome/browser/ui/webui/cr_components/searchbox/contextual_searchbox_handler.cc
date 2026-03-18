@@ -1027,10 +1027,7 @@ void ContextualSearchboxHandler::OpenUrl(
       target_web_contents->Focus();
     }
   } else {
-    // TODO(crbug.com/473009258): Override the window disposition for the
-    // ntp composebox until we correctly clear composebox input.
-    content::OpenURLParams params(url, content::Referrer(),
-                                  WindowOpenDisposition::CURRENT_TAB,
+    content::OpenURLParams params(url, content::Referrer(), disposition,
                                   ui::PAGE_TRANSITION_LINK, false);
     web_contents_->OpenURL(params, std::move(navigation_handle_callback));
   }
