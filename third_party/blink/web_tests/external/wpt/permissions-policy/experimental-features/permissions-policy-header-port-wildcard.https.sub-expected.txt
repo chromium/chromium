@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Test wildcard port policy works as expected
+  Cannot read properties of undefined (reading 'getAllowlistForFeature')
+Harness: the test ran to completion.
+

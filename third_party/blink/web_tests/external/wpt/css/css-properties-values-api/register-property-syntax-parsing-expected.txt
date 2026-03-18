@@ -1,0 +1,14 @@
+This is a testharness.js-based test.
+Found 5 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] syntax:'--foo', initialValue:'--foo' is valid
+  Failed to execute 'registerProperty' on 'CSS': The syntax provided is not a valid custom property syntax.
+[FAIL] syntax:'--foo | <color>', initialValue:'--foo' is valid
+  Failed to execute 'registerProperty' on 'CSS': The syntax provided is not a valid custom property syntax.
+[FAIL] syntax:'--foo | <color>', initialValue:'red' is valid
+  Failed to execute 'registerProperty' on 'CSS': The syntax provided is not a valid custom property syntax.
+[FAIL] syntax:'--foo+', initialValue:'--foo --foo' is valid
+  Failed to execute 'registerProperty' on 'CSS': The syntax provided is not a valid custom property syntax.
+[FAIL] syntax:'--a | --b | --c', initialValue:'--b' is valid
+  Failed to execute 'registerProperty' on 'CSS': The syntax provided is not a valid custom property syntax.
+Harness: the test ran to completion.
+

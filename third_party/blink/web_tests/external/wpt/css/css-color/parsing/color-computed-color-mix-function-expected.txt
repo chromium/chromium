@@ -1,0 +1,16 @@
+This is a testharness.js-based test.
+Found 6 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Property color value 'color-mix(in srgb, red)'
+  assert_true: 'color-mix(in srgb, red)' is a supported value for color. expected true got false
+[FAIL] Property color value 'color-mix(in srgb, red 50%)'
+  assert_true: 'color-mix(in srgb, red 50%)' is a supported value for color. expected true got false
+[FAIL] Property color value 'color-mix(in srgb, red, green, blue)'
+  assert_true: 'color-mix(in srgb, red, green, blue)' is a supported value for color. expected true got false
+[FAIL] Property color value 'color-mix(in srgb, red 50%, green 30%, blue 20%)'
+  assert_true: 'color-mix(in srgb, red 50%, green 30%, blue 20%)' is a supported value for color. expected true got false
+[FAIL] Property color value 'color-mix(in srgb, red 30%, green 60%, blue 90%)'
+  assert_true: 'color-mix(in srgb, red 30%, green 60%, blue 90%)' is a supported value for color. expected true got false
+[FAIL] Property color value 'color-mix(in srgb, red, green, blue, white)'
+  assert_true: 'color-mix(in srgb, red, green, blue, white)' is a supported value for color. expected true got false
+Harness: the test ran to completion.
+

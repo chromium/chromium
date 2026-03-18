@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] Shift+PageUp when <div contenteditable>a[]bc<br>
+  assert_not_equals: Shift+PageUp when <div contenteditable>a[]bc<br>: "selectstart" should be fired because selection is extended got disallowed value null
+[FAIL] Shift+PageDown when <div contenteditable>a[]bc<br>
+  assert_not_equals: Shift+PageDown when <div contenteditable>a[]bc<br>: "selectstart" should be fired because selection is extended got disallowed value null
+[FAIL] Shift+PageDown when 78[]9<br></div>
+  assert_not_equals: Shift+PageDown when 78[]9<br></div>: "selectstart" should be fired because selection is extended got disallowed value null
+[FAIL] Shift+PageUp when 78[]9<br></div>
+  assert_not_equals: Shift+PageUp when 78[]9<br></div>: "selectstart" should be fired because selection is extended got disallowed value null
+[FAIL] Select All when d[e]f<br>
+  assert_equals: Select All when d[e]f<br>: "selectstart" shouldn't be fired because selection was not collapsed expected null but got object "[object Event]"
+Harness: the test ran to completion.
+

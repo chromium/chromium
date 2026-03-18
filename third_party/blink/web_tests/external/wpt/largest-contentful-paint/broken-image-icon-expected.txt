@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Uncaught Error: assert_equals: Got LCP entry from colors-16x8.png. expected 1 but got 0
+Harness: the test ran to completion.
+

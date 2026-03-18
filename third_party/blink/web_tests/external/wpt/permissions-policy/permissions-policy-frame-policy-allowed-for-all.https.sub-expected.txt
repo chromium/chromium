@@ -1,0 +1,160 @@
+This is a testharness.js-based test.
+Found 78 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Test frame policy on same origin iframe inherit from header policy.
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on cross origin iframe does not inherit from header policy.
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on srcdoc iframe inherit from header policy.
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on srcdoc+ same origin iframe inherit from header policy.
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on srcdoc+ cross origin iframe inherit from header policy.
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on data: URL cross origin iframe does not inherit from header policy.
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on same origin iframe with allow = "*".
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on cross origin iframe with allow = "*".
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on srcdoc iframe with allow = "*".
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on srcdoc + same origin iframe with allow = "*".
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on srcdoc + cross origin iframe with allow = "*".
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on data: URL cross origin iframe with allow = "*".
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on same origin iframe with allow = "'self'".
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on cross origin iframe with allow = "'self'".
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on srcdoc iframe with allow = "'self'".
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on srcdoc + same origin iframe with allow = "'self'".
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on srcdoc + cross origin iframe with allow = "'self'".
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on data: URL cross origin iframe with allow = "'self'".
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on same origin iframe with allow = "'none'".
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on cross origin iframe with allow = "'none'".
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on srcdoc iframe with allow = "'none'".
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on srcdoc + same origin iframe with allow = "'none'".
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on srcdoc + cross origin iframe with allow = "'none'".
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on data: URL cross origin iframe with allow = "'none'".
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on same origin iframe with allow = "'self' https://www.web-platform.test:8444 https://www.example.com".
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on cross origin iframe with allow = "'self' https://www.web-platform.test:8444 https://www.example.com".
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on srcdoc iframe with allow = "'self' https://www.web-platform.test:8444 https://www.example.com".
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on srcdoc + same origin iframe with allow = "'self' https://www.web-platform.test:8444 https://www.example.com".
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on srcdoc + cross origin iframe with allow = "'self' https://www.web-platform.test:8444 https://www.example.com".
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on data: URL cross origin iframe with allow = "'self' https://www.web-platform.test:8444 https://www.example.com".
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on same origin iframe with allow = "*" and header policy = "Permissions-Policy: fullscreen=*;".
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on cross origin iframe with allow = "*" and header policy = "Permissions-Policy: fullscreen=*;".
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on same origin iframe with allow = "*" and header policy = "Permissions-Policy: fullscreen=self;".
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on cross origin iframe with allow = "*" and header policy = "Permissions-Policy: fullscreen=self;".
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on same origin iframe with allow = "*" and header policy = "Permissions-Policy: fullscreen=();".
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on cross origin iframe with allow = "*" and header policy = "Permissions-Policy: fullscreen=();".
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on same origin iframe with allow = "'self'" and header policy = "Permissions-Policy: fullscreen=*;".
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on cross origin iframe with allow = "'self'" and header policy = "Permissions-Policy: fullscreen=*;".
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on same origin iframe with allow = "'self'" and header policy = "Permissions-Policy: fullscreen=self;".
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on cross origin iframe with allow = "'self'" and header policy = "Permissions-Policy: fullscreen=self;".
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on same origin iframe with allow = "'self'" and header policy = "Permissions-Policy: fullscreen=();".
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on cross origin iframe with allow = "'self'" and header policy = "Permissions-Policy: fullscreen=();".
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on same origin iframe with allow = "'none'" and header policy = "Permissions-Policy: fullscreen=*;".
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on cross origin iframe with allow = "'none'" and header policy = "Permissions-Policy: fullscreen=*;".
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on same origin iframe with allow = "'none'" and header policy = "Permissions-Policy: fullscreen=self;".
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on cross origin iframe with allow = "'none'" and header policy = "Permissions-Policy: fullscreen=self;".
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on same origin iframe with allow = "'none'" and header policy = "Permissions-Policy: fullscreen=();".
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on cross origin iframe with allow = "'none'" and header policy = "Permissions-Policy: fullscreen=();".
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on same origin iframe with allow = "'self' https://www.web-platform.test:8444 https://www.example.com" and header policy = "Permissions-Policy: fullscreen=*;".
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on cross origin iframe with allow = "'self' https://www.web-platform.test:8444 https://www.example.com" and header policy = "Permissions-Policy: fullscreen=*;".
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on same origin iframe with allow = "'self' https://www.web-platform.test:8444 https://www.example.com" and header policy = "Permissions-Policy: fullscreen=self;".
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on cross origin iframe with allow = "'self' https://www.web-platform.test:8444 https://www.example.com" and header policy = "Permissions-Policy: fullscreen=self;".
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on same origin iframe with allow = "'self' https://www.web-platform.test:8444 https://www.example.com" and header policy = "Permissions-Policy: fullscreen=();".
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on cross origin iframe with allow = "'self' https://www.web-platform.test:8444 https://www.example.com" and header policy = "Permissions-Policy: fullscreen=();".
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on same origin iframe with allow = "*" and allowfullscreen.
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on cross origin iframe with allow = "*" and allowfullscreen.
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on srcdoc iframe with allow = "*" and allowfullscreen.
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on srcdoc + same origin iframe with allow = "*" and allowfullscreen.
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on srcdoc + cross origin iframe with allow = "*" and allowfullscreen.
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on data: URL cross origin iframe with allow = "*" and allowfullscreen.
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on same origin iframe with allow = "'self'" and allowfullscreen.
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on cross origin iframe with allow = "'self'" and allowfullscreen.
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on srcdoc iframe with allow = "'self'" and allowfullscreen.
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on srcdoc + same origin iframe with allow = "'self'" and allowfullscreen.
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on srcdoc + cross origin iframe with allow = "'self'" and allowfullscreen.
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on data: URL cross origin iframe with allow = "'self'" and allowfullscreen.
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on same origin iframe with allow = "'none'" and allowfullscreen.
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on cross origin iframe with allow = "'none'" and allowfullscreen.
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on srcdoc iframe with allow = "'none'" and allowfullscreen.
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on srcdoc + same origin iframe with allow = "'none'" and allowfullscreen.
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on srcdoc + cross origin iframe with allow = "'none'" and allowfullscreen.
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on data: URL cross origin iframe with allow = "'none'" and allowfullscreen.
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on same origin iframe with allow = "'self' https://www.web-platform.test:8444 https://www.example.com" and allowfullscreen.
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on cross origin iframe with allow = "'self' https://www.web-platform.test:8444 https://www.example.com" and allowfullscreen.
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on srcdoc iframe with allow = "'self' https://www.web-platform.test:8444 https://www.example.com" and allowfullscreen.
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on srcdoc + same origin iframe with allow = "'self' https://www.web-platform.test:8444 https://www.example.com" and allowfullscreen.
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on srcdoc + cross origin iframe with allow = "'self' https://www.web-platform.test:8444 https://www.example.com" and allowfullscreen.
+  Cannot read properties of undefined (reading 'allowedFeatures')
+[FAIL] Test frame policy on data: URL cross origin iframe with allow = "'self' https://www.web-platform.test:8444 https://www.example.com" and allowfullscreen.
+  Cannot read properties of undefined (reading 'allowedFeatures')
+Harness: the test ran to completion.
+

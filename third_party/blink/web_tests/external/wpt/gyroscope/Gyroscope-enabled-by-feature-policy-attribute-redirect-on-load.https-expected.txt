@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Gyroscope: Permissions-Policy allow='gyroscope' attribute allows same-origin relocation
-  test_feature_availability is not defined
-[FAIL] Gyroscope: Permissions-Policy allow='gyroscope' attribute disallows cross-origin relocation
-  test_feature_availability is not defined
-Harness: the test ran to completion.
-

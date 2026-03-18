@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] UncalibratedMagnetometer: Feature-Policy header magnetometer 'self' allows the top-level document.
-  assert_implements: UncalibratedMagnetometer is not supported. undefined
-[FAIL] UncalibratedMagnetometer: Feature-Policy header magnetometer 'self' allows same-origin iframes.
-  assert_implements: UncalibratedMagnetometer is not supported. undefined
-[FAIL] UncalibratedMagnetometer: Feature-Policy header magnetometer 'self' disallows cross-origin iframes.
-  assert_implements: UncalibratedMagnetometer is not supported. undefined
-Harness: the test ran to completion.
-

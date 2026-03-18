@@ -1,23 +1,17 @@
 This is a testharness.js-based test.
 [FAIL] ML-KEM-512 encapsulateBits basic functionality
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name"
-[FAIL] ML-KEM-512 decapsulateBits basic functionality
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name"
 [FAIL] ML-KEM-512 encapsulateBits/decapsulateBits round-trip compatibility
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name"
 [FAIL] ML-KEM-512 vector-based sampleCiphertext decapsulation
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name"
 [FAIL] ML-KEM-768 encapsulateBits basic functionality
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': ML-KEM-768: Unsupported operation: generateKey"
-[FAIL] ML-KEM-768 decapsulateBits basic functionality
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': ML-KEM-768: Unsupported operation: generateKey"
 [FAIL] ML-KEM-768 encapsulateBits/decapsulateBits round-trip compatibility
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': ML-KEM-768: Unsupported operation: generateKey"
 [FAIL] ML-KEM-768 vector-based sampleCiphertext decapsulation
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': ML-KEM-768: Unsupported operation: importKey"
 [FAIL] ML-KEM-1024 encapsulateBits basic functionality
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': ML-KEM-1024: Unsupported operation: generateKey"
-[FAIL] ML-KEM-1024 decapsulateBits basic functionality
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': ML-KEM-1024: Unsupported operation: generateKey"
 [FAIL] ML-KEM-1024 encapsulateBits/decapsulateBits round-trip compatibility
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': ML-KEM-1024: Unsupported operation: generateKey"

@@ -1,0 +1,17 @@
+This is a testharness.js-based test.
+[FAIL] Shift+PageUp when <div contenteditable>a[]bc<br>
+  assert_equals: Shift+PageUp when <div contenteditable>a[]bc<br>: selection range should not be changed if preventDefault() of "selectstart" event is called expected "(#text \\"abc\\", 1)(collapsed)" but got "(#text \\"abc\\", 0) - (#text \\"abc\\", 1)"
+[FAIL] Shift+PageDown when <div contenteditable>a[]bc<br>
+  assert_equals: Shift+PageDown when <div contenteditable>a[]bc<br>: selection range should not be changed if preventDefault() of "selectstart" event is called expected "(#text \\"abc\\", 1)(collapsed)" but got "(#text \\"abc\\", 1) - (#text \\"jkl\\", 1)"
+[FAIL] Shift+PageDown when 78[]9<br></div>
+  assert_equals: Shift+PageDown when 78[]9<br></div>: selection range should not be changed if preventDefault() of "selectstart" event is called expected "(#text \\"789\\", 2)(collapsed)" but got "(#text \\"789\\", 2) - (#text \\"789\\", 3)"
+[FAIL] Shift+PageUp when 78[]9<br></div>
+  assert_equals: Shift+PageUp when 78[]9<br></div>: selection range should not be changed if preventDefault() of "selectstart" event is called expected "(#text \\"789\\", 2)(collapsed)" but got "(#text \\"yz0\\", 2) - (#text \\"789\\", 2)"
+[FAIL] Shift+Home when <div contenteditable>[]abc<br>
+  assert_equals: Shift+Home when <div contenteditable>[]abc<br>: selection range should not be changed if preventDefault() of "selectstart" event is called expected "(<div contenteditable=\\"\\">, 0)(collapsed)" but got "(#text \\"abc\\", 0)(collapsed)"
+[FAIL] Shift+End when <div contenteditable>a[]bc<br>
+  assert_equals: Shift+End when <div contenteditable>a[]bc<br>: selection range should not be changed if preventDefault() of "selectstart" event is called expected "(<div contenteditable=\\"\\">, 1)(collapsed)" but got "(#text \\"abc\\", 3)(collapsed)"
+[FAIL] Select All when d[e]f<br>
+  assert_equals: Select All when d[e]f<br>: "selectstart" shouldn't be fired because selection was not collapsed expected null but got object "[object Event]"
+Harness: the test ran to completion.
+

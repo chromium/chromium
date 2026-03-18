@@ -1,0 +1,274 @@
+This is a testharness.js-based test.
+Found 135 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] TurboSHAKE128 with 80256 bit output, verify last 32 bytes
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE256 with 80256 bit output, verify last 32 bytes
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE128 vector #1 (256 bit output, 0 byte input)
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE128 vector #2 (512 bit output, 0 byte input)
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE128 vector #3 (256 bit output, 1 byte input)
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE128 vector #3 (256 bit output, 1 byte input) and altered buffer during call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE128 vector #3 (256 bit output, 1 byte input) and altered buffer after call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE128 vector #3 (256 bit output, 1 byte input) and transferred buffer during call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE128 vector #3 (256 bit output, 1 byte input) and transferred buffer after call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE128 vector #4 (256 bit output, 17 byte input)
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE128 vector #4 (256 bit output, 17 byte input) and altered buffer during call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE128 vector #4 (256 bit output, 17 byte input) and altered buffer after call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE128 vector #4 (256 bit output, 17 byte input) and transferred buffer during call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE128 vector #4 (256 bit output, 17 byte input) and transferred buffer after call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE128 vector #5 (256 bit output, 289 byte input)
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE128 vector #5 (256 bit output, 289 byte input) and altered buffer during call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE128 vector #5 (256 bit output, 289 byte input) and altered buffer after call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE128 vector #5 (256 bit output, 289 byte input) and transferred buffer during call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE128 vector #5 (256 bit output, 289 byte input) and transferred buffer after call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE128 vector #6 (256 bit output, 4913 byte input)
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE128 vector #6 (256 bit output, 4913 byte input) and altered buffer during call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE128 vector #6 (256 bit output, 4913 byte input) and altered buffer after call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE128 vector #6 (256 bit output, 4913 byte input) and transferred buffer during call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE128 vector #6 (256 bit output, 4913 byte input) and transferred buffer after call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE128 vector #7 (256 bit output, 83521 byte input)
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE128 vector #7 (256 bit output, 83521 byte input) and altered buffer during call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE128 vector #7 (256 bit output, 83521 byte input) and altered buffer after call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE128 vector #7 (256 bit output, 83521 byte input) and transferred buffer during call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE128 vector #7 (256 bit output, 83521 byte input) and transferred buffer after call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE128 vector #8 (256 bit output, 1419857 byte input)
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE128 vector #8 (256 bit output, 1419857 byte input) and altered buffer during call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE128 vector #8 (256 bit output, 1419857 byte input) and altered buffer after call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE128 vector #8 (256 bit output, 1419857 byte input) and transferred buffer during call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE128 vector #8 (256 bit output, 1419857 byte input) and transferred buffer after call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE128 vector #9 (256 bit output, 24137569 byte input)
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE128 vector #9 (256 bit output, 24137569 byte input) and altered buffer during call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE128 vector #9 (256 bit output, 24137569 byte input) and altered buffer after call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE128 vector #9 (256 bit output, 24137569 byte input) and transferred buffer during call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE128 vector #9 (256 bit output, 24137569 byte input) and transferred buffer after call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE128 vector #10 (256 bit output, 3 byte input, D=0x1)
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE128 vector #10 (256 bit output, 3 byte input, D=0x1) and altered buffer during call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE128 vector #10 (256 bit output, 3 byte input, D=0x1) and altered buffer after call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE128 vector #10 (256 bit output, 3 byte input, D=0x1) and transferred buffer during call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE128 vector #10 (256 bit output, 3 byte input, D=0x1) and transferred buffer after call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE128 vector #11 (256 bit output, 1 byte input, D=0x6)
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE128 vector #11 (256 bit output, 1 byte input, D=0x6) and altered buffer during call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE128 vector #11 (256 bit output, 1 byte input, D=0x6) and altered buffer after call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE128 vector #11 (256 bit output, 1 byte input, D=0x6) and transferred buffer during call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE128 vector #11 (256 bit output, 1 byte input, D=0x6) and transferred buffer after call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE128 vector #12 (256 bit output, 3 byte input, D=0x7)
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE128 vector #12 (256 bit output, 3 byte input, D=0x7) and altered buffer during call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE128 vector #12 (256 bit output, 3 byte input, D=0x7) and altered buffer after call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE128 vector #12 (256 bit output, 3 byte input, D=0x7) and transferred buffer during call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE128 vector #12 (256 bit output, 3 byte input, D=0x7) and transferred buffer after call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE128 vector #13 (256 bit output, 7 byte input, D=0xb)
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE128 vector #13 (256 bit output, 7 byte input, D=0xb) and altered buffer during call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE128 vector #13 (256 bit output, 7 byte input, D=0xb) and altered buffer after call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE128 vector #13 (256 bit output, 7 byte input, D=0xb) and transferred buffer during call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE128 vector #13 (256 bit output, 7 byte input, D=0xb) and transferred buffer after call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE128 vector #14 (256 bit output, 1 byte input, D=0x30)
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE128 vector #14 (256 bit output, 1 byte input, D=0x30) and altered buffer during call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE128 vector #14 (256 bit output, 1 byte input, D=0x30) and altered buffer after call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE128 vector #14 (256 bit output, 1 byte input, D=0x30) and transferred buffer during call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE128 vector #14 (256 bit output, 1 byte input, D=0x30) and transferred buffer after call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE128 vector #15 (256 bit output, 3 byte input, D=0x7f)
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE128 vector #15 (256 bit output, 3 byte input, D=0x7f) and altered buffer during call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE128 vector #15 (256 bit output, 3 byte input, D=0x7f) and altered buffer after call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE128 vector #15 (256 bit output, 3 byte input, D=0x7f) and transferred buffer during call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE128 vector #15 (256 bit output, 3 byte input, D=0x7f) and transferred buffer after call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE256 vector #1 (512 bit output, 0 byte input)
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE256 vector #2 (512 bit output, 1 byte input)
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE256 vector #2 (512 bit output, 1 byte input) and altered buffer during call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE256 vector #2 (512 bit output, 1 byte input) and altered buffer after call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE256 vector #2 (512 bit output, 1 byte input) and transferred buffer during call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE256 vector #2 (512 bit output, 1 byte input) and transferred buffer after call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE256 vector #3 (512 bit output, 17 byte input)
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE256 vector #3 (512 bit output, 17 byte input) and altered buffer during call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE256 vector #3 (512 bit output, 17 byte input) and altered buffer after call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE256 vector #3 (512 bit output, 17 byte input) and transferred buffer during call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE256 vector #3 (512 bit output, 17 byte input) and transferred buffer after call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE256 vector #4 (512 bit output, 289 byte input)
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE256 vector #4 (512 bit output, 289 byte input) and altered buffer during call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE256 vector #4 (512 bit output, 289 byte input) and altered buffer after call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE256 vector #4 (512 bit output, 289 byte input) and transferred buffer during call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE256 vector #4 (512 bit output, 289 byte input) and transferred buffer after call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE256 vector #5 (512 bit output, 4913 byte input)
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE256 vector #5 (512 bit output, 4913 byte input) and altered buffer during call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE256 vector #5 (512 bit output, 4913 byte input) and altered buffer after call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE256 vector #5 (512 bit output, 4913 byte input) and transferred buffer during call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE256 vector #5 (512 bit output, 4913 byte input) and transferred buffer after call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE256 vector #6 (512 bit output, 83521 byte input)
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE256 vector #6 (512 bit output, 83521 byte input) and altered buffer during call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE256 vector #6 (512 bit output, 83521 byte input) and altered buffer after call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE256 vector #6 (512 bit output, 83521 byte input) and transferred buffer during call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE256 vector #6 (512 bit output, 83521 byte input) and transferred buffer after call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE256 vector #7 (512 bit output, 1419857 byte input)
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE256 vector #7 (512 bit output, 1419857 byte input) and altered buffer during call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE256 vector #7 (512 bit output, 1419857 byte input) and altered buffer after call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE256 vector #7 (512 bit output, 1419857 byte input) and transferred buffer during call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE256 vector #7 (512 bit output, 1419857 byte input) and transferred buffer after call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE256 vector #8 (512 bit output, 24137569 byte input)
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE256 vector #8 (512 bit output, 24137569 byte input) and altered buffer during call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE256 vector #8 (512 bit output, 24137569 byte input) and altered buffer after call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE256 vector #8 (512 bit output, 24137569 byte input) and transferred buffer during call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE256 vector #8 (512 bit output, 24137569 byte input) and transferred buffer after call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE256 vector #9 (512 bit output, 3 byte input, D=0x1)
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE256 vector #9 (512 bit output, 3 byte input, D=0x1) and altered buffer during call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE256 vector #9 (512 bit output, 3 byte input, D=0x1) and altered buffer after call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE256 vector #9 (512 bit output, 3 byte input, D=0x1) and transferred buffer during call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE256 vector #9 (512 bit output, 3 byte input, D=0x1) and transferred buffer after call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE256 vector #10 (512 bit output, 1 byte input, D=0x6)
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE256 vector #10 (512 bit output, 1 byte input, D=0x6) and altered buffer during call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE256 vector #10 (512 bit output, 1 byte input, D=0x6) and altered buffer after call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE256 vector #10 (512 bit output, 1 byte input, D=0x6) and transferred buffer during call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE256 vector #10 (512 bit output, 1 byte input, D=0x6) and transferred buffer after call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE256 vector #11 (512 bit output, 3 byte input, D=0x7)
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE256 vector #11 (512 bit output, 3 byte input, D=0x7) and altered buffer during call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE256 vector #11 (512 bit output, 3 byte input, D=0x7) and altered buffer after call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE256 vector #11 (512 bit output, 3 byte input, D=0x7) and transferred buffer during call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE256 vector #11 (512 bit output, 3 byte input, D=0x7) and transferred buffer after call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE256 vector #12 (512 bit output, 7 byte input, D=0xb)
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE256 vector #12 (512 bit output, 7 byte input, D=0xb) and altered buffer during call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE256 vector #12 (512 bit output, 7 byte input, D=0xb) and altered buffer after call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE256 vector #12 (512 bit output, 7 byte input, D=0xb) and transferred buffer during call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE256 vector #12 (512 bit output, 7 byte input, D=0xb) and transferred buffer after call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE256 vector #13 (512 bit output, 1 byte input, D=0x30)
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE256 vector #13 (512 bit output, 1 byte input, D=0x30) and altered buffer during call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE256 vector #13 (512 bit output, 1 byte input, D=0x30) and altered buffer after call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE256 vector #13 (512 bit output, 1 byte input, D=0x30) and transferred buffer during call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE256 vector #13 (512 bit output, 1 byte input, D=0x30) and transferred buffer after call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE256 vector #14 (512 bit output, 3 byte input, D=0x7f)
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE256 vector #14 (512 bit output, 3 byte input, D=0x7f) and altered buffer during call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE256 vector #14 (512 bit output, 3 byte input, D=0x7f) and altered buffer after call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE256 vector #14 (512 bit output, 3 byte input, D=0x7f) and transferred buffer during call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] TurboSHAKE256 vector #14 (512 bit output, 3 byte input, D=0x7f) and transferred buffer after call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+Harness: the test ran to completion.
+
