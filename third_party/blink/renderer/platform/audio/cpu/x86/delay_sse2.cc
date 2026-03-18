@@ -52,15 +52,13 @@ ALWAYS_INLINE static __m128 WrapPositionVector(__m128 v_position,
   return _mm_sub_ps(v_position, _mm_and_ps(v_buffer_length, cmp));
 }
 
-std::tuple<unsigned, int> Delay::ProcessARateVector(
-    float* destination,
-    uint32_t frames_to_process) const {
-  const int buffer_length = buffer_.size();
-  const float* buffer = buffer_.Data();
+std::tuple<size_t, size_t> Delay::ProcessARateVector(
+    base::span<float> destination,
+    size_t frames_to_process) const {
+  const size_t buffer_length = buffer_.size();
 
   const float sample_rate = sample_rate_;
-  const float* delay_times = delay_times_.Data();
-  int w_index = write_index_;
+  size_t w_index = write_index_;
 
   const __m128 v_sample_rate = _mm_set1_ps(sample_rate);
   const __m128 v_all_zeros = _mm_setzero_ps();
@@ -82,14 +80,15 @@ std::tuple<unsigned, int> Delay::ProcessARateVector(
       _mm_set_epi32(w_index + 3, w_index + 2, w_index + 1, w_index + 0);
   v_write_index = WrapIndexVector(v_write_index, v_buffer_length_int);
 
-  const int number_of_loops = frames_to_process / 4;
-  int k = 0;
+  const size_t number_of_loops = frames_to_process / 4;
+  size_t k = 0;
 
-  for (int n = 0; n < number_of_loops; ++n, k += 4) {
+  for (size_t n = 0; n < number_of_loops; ++n, k += 4) {
     // It's possible that `delay_time` contains negative values. Make sure
     // they are greater than zero.
     const __m128 v_delay_time =
-        _mm_max_ps(_mm_loadu_ps(UNSAFE_TODO(delay_times + k)), v_all_zeros);
+        _mm_max_ps(_mm_loadu_ps(delay_times_.as_span().subspan(k, 4u).data()),
+                   v_all_zeros);
     const __m128 v_desired_delay_frames =
         _mm_mul_ps(v_delay_time, v_sample_rate);
 
@@ -116,8 +115,8 @@ std::tuple<unsigned, int> Delay::ProcessARateVector(
         reinterpret_cast<const uint32_t*>(&v_read_index2);
 
     for (int m = 0; m < 4; ++m) {
-      sample1[m] = UNSAFE_TODO(buffer[read_index1[m]]);
-      sample2[m] = UNSAFE_TODO(buffer[read_index2[m]]);
+      sample1[m] = buffer_[UNSAFE_TODO(read_index1[m])];
+      sample2[m] = buffer_[UNSAFE_TODO(read_index2[m])];
     }
 
     const __m128 v_sample1 = _mm_load_ps(sample1.data());
@@ -129,7 +128,7 @@ std::tuple<unsigned, int> Delay::ProcessARateVector(
     const __m128 sample = _mm_add_ps(
         v_sample1,
         _mm_mul_ps(interpolation_factor, _mm_sub_ps(v_sample2, v_sample1)));
-    _mm_store_ps(UNSAFE_TODO(destination + k), sample);
+    _mm_store_ps(destination.subspan(k, 4u).data(), sample);
   }
 
   // Update |w_index|_ based on how many frames we processed here, wrapping
@@ -142,8 +141,8 @@ std::tuple<unsigned, int> Delay::ProcessARateVector(
   return std::make_tuple(k, w_index);
 }
 
-void Delay::HandleNaN(float* delay_times,
-                      uint32_t frames_to_process,
+void Delay::HandleNaN(base::span<float> delay_times,
+                      size_t frames_to_process,
                       float max_time) {
   unsigned k = 0;
   const unsigned number_of_loops = frames_to_process / 4;
@@ -152,7 +151,7 @@ void Delay::HandleNaN(float* delay_times,
 
   // This is approximately 4 times faster than the scalar version.
   for (unsigned loop = 0; loop < number_of_loops; ++loop, k += 4) {
-    __m128 x = _mm_loadu_ps(UNSAFE_TODO(delay_times + k));
+    __m128 x = _mm_loadu_ps(delay_times.subspan(k, 4u).data());
     // 0xffffffff if x is NaN. Otherwise 0
     __m128 cmp = _mm_cmpunord_ps(x, x);
 
@@ -166,13 +165,13 @@ void Delay::HandleNaN(float* delay_times,
     // Merge i (bitwise or) x and cmp.  This makes x = max_time if x was NaN and
     // preserves x if not.
     x = _mm_or_ps(x, cmp);
-    _mm_storeu_ps(UNSAFE_TODO(delay_times + k), x);
+    _mm_storeu_ps(delay_times.subspan(k, 4u).data(), x);
   }
 
   // Handle any frames not done in the loop above.
   for (; k < frames_to_process; ++k) {
-    if (std::isnan(UNSAFE_TODO(delay_times[k]))) {
-      UNSAFE_TODO(delay_times[k]) = max_time;
+    if (std::isnan(delay_times[k])) {
+      delay_times[k] = max_time;
     }
   }
 }

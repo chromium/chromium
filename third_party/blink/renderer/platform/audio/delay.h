@@ -41,15 +41,15 @@ class PLATFORM_EXPORT Delay final {
 
   // Handles k-rate processing.  Call `SetDelayFrames()` or `SetDelayTime()` to
   // set the delay before calling this function.
-  void ProcessKRate(const float* source,
-                    float* destination,
-                    uint32_t frames_to_process);
+  void ProcessKRate(base::span<const float> source,
+                    base::span<float> destination,
+                    size_t frames_to_process);
 
   // Handles a-rate processing.  Fill the return value of `DelayTimes()` with
   // the delay value for each frame before calling this function.
-  void ProcessARate(const float* source,
-                    float* destination,
-                    uint32_t frames_to_process);
+  void ProcessARate(base::span<const float> source,
+                    base::span<float> destination,
+                    size_t frames_to_process);
 
   void Reset();
 
@@ -68,23 +68,22 @@ class PLATFORM_EXPORT Delay final {
   // Fill the return value of this before calling `ProcessARate()`
   base::span<float> DelayTimes() { return delay_times_.as_span(); }
 
- protected:
+ private:
   // Main processing loop for ProcessARate using scalar operations.  Returns the
   // new write_index.
-  int ProcessARateScalar(unsigned start,
-                         int w_index,
-                         float* destination,
-                         uint32_t frames_to_process) const;
+  size_t ProcessARateScalar(size_t start,
+                            size_t w_index,
+                            base::span<float> destination,
+                            size_t frames_to_process) const;
 
   // Vector version of ProcessARateScalar.  Returns the number of samples
   // process by this function and the updated wirte_index_.
-  std::tuple<unsigned, int> ProcessARateVector(
-      float* destination,
-      uint32_t frames_to_process) const;
+  std::tuple<size_t, size_t> ProcessARateVector(base::span<float> destination,
+                                                size_t frames_to_process) const;
 
   // Handle NaN values in `delay_times`.  Replace NaN with `max_time`.
-  void HandleNaN(float* delay_times,
-                 uint32_t frames_to_process,
+  void HandleNaN(base::span<float> delay_times,
+                 size_t frames_to_process,
                  float max_time);
 
   double DelayTime(float sample_rate);
@@ -99,7 +98,7 @@ class PLATFORM_EXPORT Delay final {
   // floats, so make this a float to keep everything consistent.
   float max_delay_time_;
 
-  int write_index_ = 0;
+  size_t write_index_ = 0;
   double desired_delay_frames_ = 0;
 
   AudioFloatArray delay_times_;
