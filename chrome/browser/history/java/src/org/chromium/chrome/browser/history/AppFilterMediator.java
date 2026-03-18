@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.history;
 
 import static org.chromium.build.NullUtil.assertNonNull;
-import static org.chromium.build.NullUtil.assumeNonNull;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -56,7 +55,7 @@ class AppFilterMediator {
         if (currentApp != null) {
             assert currentApp.id != null : "App id should be non-null.";
             mSelectedModel = getModelForAppId(currentApp.id);
-            assumeNonNull(mSelectedModel);
+            if (mSelectedModel == null) return;
             mSelectedModel.set(AppFilterProperties.SELECTED, true);
         }
     }
