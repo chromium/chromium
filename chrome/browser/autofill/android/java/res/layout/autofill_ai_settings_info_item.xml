@@ -32,4 +32,13 @@ found in the LICENSE file.
         android:textAlignment="viewStart"
         android:textAppearance="@style/TextAppearance.TextSmall" />
 
+    <TextView
+        android:id="@+id/info_item_summary_2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="start|center_vertical"
+        android:textAlignment="viewStart"
+        android:textAppearance="@style/TextAppearance.TextSmall"
+        android:visibility="gone" />
+
 </LinearLayout>

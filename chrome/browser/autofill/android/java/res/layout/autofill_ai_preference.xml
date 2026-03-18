@@ -24,5 +24,4 @@ found in the LICENSE file.
         android:id="@+id/autofill_ai_things_to_consider"
         layout="@layout/autofill_ai_settings_info_item" />
 
-
 </LinearLayout>

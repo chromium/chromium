@@ -17,7 +17,12 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.R;
+import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManager;
+import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManagerFactory;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.settings.ProfileDependentSetting;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 
 /**
@@ -27,11 +32,18 @@ import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
  * ChromeSwitchPreference} layout and adds the information items below it.
  */
 @NullMarked
-public class AutofillAiPreference extends ChromeSwitchPreference {
+public class AutofillAiPreference extends ChromeSwitchPreference
+        implements ProfileDependentSetting {
+    private @Nullable Profile mProfile;
 
     /** Constructor for inflating from XML. */
     public AutofillAiPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
+    }
+
+    @Override
+    public void setProfile(Profile profile) {
+        mProfile = profile;
     }
 
     @Override
@@ -43,26 +55,34 @@ public class AutofillAiPreference extends ChromeSwitchPreference {
                 R.string.settings_autofill_ai_when_on,
                 R.string.settings_autofill_ai_when_on_can_fill_difficult_fields,
                 R.drawable.text_analysis_24dp);
+
+        View thingsToConsider = holder.findViewById(R.id.autofill_ai_things_to_consider);
         setInfoItemDetails(
-                holder.findViewById(R.id.autofill_ai_things_to_consider),
+                thingsToConsider,
                 R.string.settings_autofill_ai_things_to_consider,
                 R.string.settings_autofill_ai_to_consider_data_usage,
                 R.drawable.google_24dp);
+
+        EntityDataManager manager =
+                mProfile != null ? EntityDataManagerFactory.getForProfile(mProfile) : null;
+        boolean showLoggingInfo =
+                (manager != null)
+                        && manager.getIsAutofillAiEnabledByEnterprisePolicyWithoutLogging();
+        if (showLoggingInfo) {
+            TextView summaryView =
+                    (TextView) thingsToConsider.findViewById(R.id.info_item_summary_2);
+            setTextAndIconToInfoDetails(
+                    summaryView,
+                    R.string.settings_autofill_ai_enterprise_logging_managed_disabled,
+                    R.drawable.ic_business_small);
+            summaryView.setVisibility(View.VISIBLE);
+        }
     }
 
-    private void setInfoItemDetails(
-            View infoItem,
-            @StringRes int titleId,
-            @StringRes int summaryId,
-            @DrawableRes int iconId) {
-        TextView titleView = (TextView) infoItem.findViewById(R.id.info_item_title);
-        TextView summaryView = (TextView) infoItem.findViewById(R.id.info_item_summary);
-
+    private void setTextAndIconToInfoDetails(
+            TextView summaryView, @StringRes int textId, @DrawableRes int iconId) {
         Context context = getContext();
-
-        titleView.setText(context.getString(titleId));
-        summaryView.setText(context.getString(summaryId));
-
+        summaryView.setText(context.getString(textId));
         Drawable icon = AppCompatResources.getDrawable(context, iconId);
         if (icon != null) {
             @Px
@@ -77,5 +97,18 @@ public class AutofillAiPreference extends ChromeSwitchPreference {
                             .getDimensionPixelSize(
                                     R.dimen.autofill_ai_preference_info_item_icon_padding));
         }
+    }
+
+    private void setInfoItemDetails(
+            View infoItem,
+            @StringRes int titleId,
+            @StringRes int summaryId,
+            @DrawableRes int iconId) {
+        Context context = getContext();
+        TextView titleView = (TextView) infoItem.findViewById(R.id.info_item_title);
+        titleView.setText(context.getString(titleId));
+
+        TextView summaryView = (TextView) infoItem.findViewById(R.id.info_item_summary);
+        setTextAndIconToInfoDetails(summaryView, summaryId, iconId);
     }
 }

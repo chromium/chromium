@@ -32,12 +32,16 @@ import android.text.SpannableString;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.autofill.AutofillManager;
 
 import androidx.annotation.StringRes;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentFactory;
 import androidx.fragment.app.testing.FragmentScenario;
 import androidx.lifecycle.Lifecycle.Event;
 import androidx.lifecycle.LifecycleRegistry;
+import androidx.preference.PreferenceViewHolder;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
@@ -145,13 +149,22 @@ public class AutofillOptionsTest {
                         AutofillOptionsFragment.class,
                         AutofillOptionsFragment.createRequiredArgs(
                                 AutofillOptionsReferrer.SETTINGS),
-                        R.style.Theme_BrowserUI_DayNight);
+                        R.style.Theme_BrowserUI_DayNight,
+                        new FragmentFactory() {
+                            @Override
+                            public Fragment instantiate(ClassLoader classLoader, String className) {
+                                Fragment fragment = super.instantiate(classLoader, className);
+                                if (fragment instanceof AutofillOptionsFragment) {
+                                    ((AutofillOptionsFragment) fragment).setProfile(mProfile);
+                                }
+                                return fragment;
+                            }
+                        });
         mScenario.onFragment(
                 fragment -> {
                     mFragment =
                             (AutofillOptionsFragment)
                                     fragment; // Valid until scenario is recreated.
-                    mFragment.setProfile(mProfile);
                 });
     }
 
@@ -620,13 +633,22 @@ public class AutofillOptionsTest {
                         AutofillOptionsFragment.class,
                         AutofillOptionsFragment.createRequiredArgs(
                                 AutofillOptionsReferrer.DEEP_LINK_TO_SETTINGS),
-                        R.style.Theme_BrowserUI_DayNight);
+                        R.style.Theme_BrowserUI_DayNight,
+                        new FragmentFactory() {
+                            @Override
+                            public Fragment instantiate(ClassLoader classLoader, String className) {
+                                Fragment fragment = super.instantiate(classLoader, className);
+                                if (fragment instanceof AutofillOptionsFragment) {
+                                    ((AutofillOptionsFragment) fragment).setProfile(mProfile);
+                                }
+                                return fragment;
+                            }
+                        });
         mScenario.onFragment(
                 fragment -> {
                     mFragment =
                             (AutofillOptionsFragment)
                                     fragment; // Valid until scenario is recreated.
-                    mFragment.setProfile(mProfile);
                 });
         new AutofillOptionsCoordinator(mFragment, this::assertModalNotUsed, Assert::fail)
                 .initializeNow();
@@ -793,7 +815,7 @@ public class AutofillOptionsTest {
 
         var delegate = mFragment.getAutofillAiSwitch().getManagedPreferenceDelegate();
         assertNotNull(delegate);
-        assertTrue(delegate.isPreferenceControlledByPolicy(mFragment.getAutofillAiSwitch()));
+        assertFalse(delegate.isPreferenceControlledByPolicy(mFragment.getAutofillAiSwitch()));
         assertFalse(delegate.isPreferenceClickDisabled(mFragment.getAutofillAiSwitch()));
     }
 
@@ -813,6 +835,55 @@ public class AutofillOptionsTest {
         assertNotNull(delegate);
         assertFalse(delegate.isPreferenceControlledByPolicy(mFragment.getAutofillAiSwitch()));
         assertFalse(delegate.isPreferenceClickDisabled(mFragment.getAutofillAiSwitch()));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
+    public void testAutofillAiEnterpriseDisclaimerVisible() {
+        doReturn(true)
+                .when(mMockEntityDataManager)
+                .getIsAutofillAiEnabledByEnterprisePolicyWithoutLogging();
+
+        new AutofillOptionsCoordinator(mFragment, this::assertModalNotUsed, Assert::fail)
+                .initializeNow();
+
+        AutofillAiPreference preference = (AutofillAiPreference) mFragment.getAutofillAiSwitch();
+        PreferenceViewHolder holder =
+                PreferenceViewHolder.createInstanceForTests(
+                        mFragment
+                                .getLayoutInflater()
+                                .inflate(R.layout.autofill_ai_preference, null));
+        preference.onBindViewHolder(holder);
+
+        View thingsToConsider = holder.findViewById(R.id.autofill_ai_things_to_consider);
+        assertEquals(
+                View.VISIBLE,
+                thingsToConsider.findViewById(R.id.info_item_summary_2).getVisibility());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
+    public void testAutofillAiEnterpriseDisclaimerHidden() {
+        doReturn(false)
+                .when(mMockEntityDataManager)
+                .getIsAutofillAiEnabledByEnterprisePolicyWithoutLogging();
+
+        new AutofillOptionsCoordinator(mFragment, this::assertModalNotUsed, Assert::fail)
+                .initializeNow();
+
+        AutofillAiPreference preference = (AutofillAiPreference) mFragment.getAutofillAiSwitch();
+        PreferenceViewHolder holder =
+                PreferenceViewHolder.createInstanceForTests(
+                        mFragment
+                                .getLayoutInflater()
+                                .inflate(R.layout.autofill_ai_preference, null));
+        preference.onBindViewHolder(holder);
+
+        View thingsToConsider = holder.findViewById(R.id.autofill_ai_things_to_consider);
+        assertEquals(
+                View.GONE, thingsToConsider.findViewById(R.id.info_item_summary_2).getVisibility());
     }
 
     private ModalDialogManager assertModalNotUsed() {

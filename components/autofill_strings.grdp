@@ -852,6 +852,10 @@
   </message>
   </if>
 
+  <message name="IDS_SETTINGS_AUTOFILL_AI_ENTERPRISE_LOGGING_MANAGED_DISABLED" desc="Text only seen by enterprise users (Google services provided for a company). Users should understand that their content saved with autofill won't be used to improve AI, neither AI features specifically or AI models generally." formatter_data="android_java">
+    Your content will not be used to improve AI. Your organization may change these settings at any time.
+  </message>
+
   <!-- Entities -->
   <message name="IDS_AUTOFILL_AI_DRIVERS_LICENSE_ENTITY_NAME" desc="The label for something that a user can save when submitting a form. For context, a user has been able to save credit cards within Chrome for many users. Now a user can also save a “Passport”.">
     Driver's license

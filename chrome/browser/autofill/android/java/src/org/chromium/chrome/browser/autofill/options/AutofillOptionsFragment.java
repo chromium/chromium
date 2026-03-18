@@ -126,6 +126,9 @@ public class AutofillOptionsFragment extends ChromeBaseSettingsFragment {
     public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
         setHasOptionsMenu(true);
         SettingsUtils.addPreferencesFromResource(this, R.xml.autofill_options_preferences);
+
+        AutofillAiPreference autofillAiPreference = findPreference(PREF_AUTOFILL_AI_SWITCH);
+        autofillAiPreference.setProfile(getProfile());
     }
 
     @Override

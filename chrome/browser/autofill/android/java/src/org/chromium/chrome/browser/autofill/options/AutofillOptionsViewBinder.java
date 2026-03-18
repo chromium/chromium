@@ -93,12 +93,7 @@ class AutofillOptionsViewBinder {
                                     if (manager == null) {
                                         return false;
                                     }
-                                    boolean disabled =
-                                            manager.getIsAutofillAiDisabledByEnterprisePolicy();
-                                    boolean allowedWithoutLogging =
-                                            manager
-                                                    .getIsAutofillAiEnabledByEnterprisePolicyWithoutLogging();
-                                    return disabled || allowedWithoutLogging;
+                                    return manager.getIsAutofillAiDisabledByEnterprisePolicy();
                                 }
 
                                 @Override
