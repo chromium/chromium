@@ -25,28 +25,19 @@ struct LayoutAlgorithmParams {
   STACK_ALLOCATED();
 
  public:
-  LayoutAlgorithmParams(
-      BlockNode node,
-      const FragmentGeometry& fragment_geometry,
-      const ConstraintSpace& space,
-      const BlockBreakToken* break_token = nullptr,
-      const EarlyBreak* early_break = nullptr,
-      const HeapVector<Member<EarlyBreak>>* additional_early_breaks = nullptr)
-      : node(node),
-        fragment_geometry(fragment_geometry),
-        space(space),
-        break_token(break_token),
-        early_break(early_break),
-        additional_early_breaks(additional_early_breaks) {}
+  LayoutAlgorithmParams(BlockNode node,
+                        const FragmentGeometry& fragment_geometry,
+                        const ConstraintSpace& space)
+      : node(node), fragment_geometry(fragment_geometry), space(space) {}
 
   BlockNode node;
   const FragmentGeometry& fragment_geometry;
   const ConstraintSpace& space;
-  const BlockBreakToken* break_token;
-  const EarlyBreak* early_break;
+  const BlockBreakToken* break_token = nullptr;
+  const EarlyBreak* early_break = nullptr;
   const ColumnSpannerPath* column_spanner_path = nullptr;
   const LayoutResult* previous_result = nullptr;
-  const HeapVector<Member<EarlyBreak>>* additional_early_breaks;
+  const HeapVector<Member<EarlyBreak>>* additional_early_breaks = nullptr;
 };
 
 // Base class template for all layout algorithms.
@@ -261,8 +252,10 @@ class CORE_EXPORT LayoutAlgorithm {
 
     LayoutAlgorithmParams params(
         Node(), container_builder_.InitialFragmentGeometry(),
-        new_space ? new_space.value() : GetConstraintSpace(), GetBreakToken(),
-        breakpoint, additional_early_breaks);
+        new_space ? new_space.value() : GetConstraintSpace());
+    params.break_token = GetBreakToken();
+    params.early_break = breakpoint;
+    params.additional_early_breaks = additional_early_breaks;
 
     Algorithm relayout_algorithm(params);
     relayout_algorithm.relayout_mode_ = new_relayout_mode;

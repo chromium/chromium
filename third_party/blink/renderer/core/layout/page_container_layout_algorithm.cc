@@ -292,8 +292,7 @@ void PageContainerLayoutAlgorithm::LayoutPageBorderBox(
   space_builder.SetAvailableSize(GetConstraintSpace().AvailableSize());
   space_builder.SetIsPaintedAtomically(true);
   ConstraintSpace child_space = space_builder.ToConstraintSpace();
-  LayoutAlgorithmParams params(page_border_box_node, geometry, child_space,
-                               /*break_token=*/nullptr);
+  LayoutAlgorithmParams params(page_border_box_node, geometry, child_space);
   PageBorderBoxLayoutAlgorithm child_algorithm(params, content_node_,
                                                page_area_params_);
   const LayoutResult* result = child_algorithm.Layout();

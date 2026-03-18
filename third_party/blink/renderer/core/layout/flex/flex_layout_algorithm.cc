@@ -3128,8 +3128,10 @@ const LayoutResult* FlexLayoutAlgorithm::RelayoutWithNewRowSizes() {
 
   LayoutAlgorithmParams params(Node(),
                                container_builder_.InitialFragmentGeometry(),
-                               GetConstraintSpace(), GetBreakToken(),
-                               early_break_, additional_early_breaks_);
+                               GetConstraintSpace());
+  params.break_token = GetBreakToken();
+  params.early_break = early_break_;
+  params.additional_early_breaks = additional_early_breaks_;
   FlexLayoutAlgorithm algorithm_with_row_cross_sizes(params,
                                                      &row_cross_size_updates_);
   auto& new_builder = algorithm_with_row_cross_sizes.container_builder_;

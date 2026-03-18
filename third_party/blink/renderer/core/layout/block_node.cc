@@ -509,8 +509,9 @@ const LayoutResult* BlockNode::Layout(
 
   PrepareForLayout();
 
-  LayoutAlgorithmParams params(*this, *fragment_geometry, constraint_space,
-                               break_token, early_break);
+  LayoutAlgorithmParams params(*this, *fragment_geometry, constraint_space);
+  params.break_token = break_token;
+  params.early_break = early_break;
   params.column_spanner_path = column_spanner_path;
 
   auto* block_flow = DynamicTo<LayoutBlockFlow>(box_.Get());

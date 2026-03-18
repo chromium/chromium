@@ -31,9 +31,9 @@ const LayoutResult* PageBorderBoxLayoutAlgorithm::Layout() {
   ConstraintSpace fragmentainer_space = CreateConstraintSpaceForPageArea();
   FragmentGeometry fragment_geometry = CalculateInitialFragmentGeometry(
       fragmentainer_space, content_node_, /*break_token=*/nullptr);
-  LayoutAlgorithmParams params(
-      content_node_, fragment_geometry, fragmentainer_space,
-      page_area_params_.break_token, /*early_break=*/nullptr);
+  LayoutAlgorithmParams params(content_node_, fragment_geometry,
+                               fragmentainer_space);
+  params.break_token = page_area_params_.break_token;
   const LayoutResult* result;
   if (page_area_params_.template_fragmentainer) {
     // We are creating an empty fragmentainer for OutOfFlowLayoutPart to

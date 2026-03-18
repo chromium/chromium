@@ -683,8 +683,10 @@ const LayoutResult* BlockLayoutAlgorithm::LayoutInlineChild(
       // multi-column layouts.
       LayoutAlgorithmParams cloned_param(
           Node(), container_builder_.InitialFragmentGeometry(),
-          GetConstraintSpace(), GetBreakToken(), early_break_,
-          additional_early_breaks_);
+          GetConstraintSpace());
+      cloned_param.break_token = GetBreakToken();
+      cloned_param.early_break = early_break_;
+      cloned_param.additional_early_breaks = additional_early_breaks_;
       cloned_param.column_spanner_path = column_spanner_path_;
       cloned_param.previous_result = previous_result_;
       BlockLayoutAlgorithm cloned_algorithm(cloned_param);

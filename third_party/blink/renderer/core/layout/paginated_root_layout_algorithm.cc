@@ -273,7 +273,7 @@ PaginatedRootLayoutAlgorithm::LayoutPageContainer(
                                               page_container_size};
 
   LayoutAlgorithmParams params(page_container_node, margin_box_geometry,
-                               child_space, /*break_token=*/nullptr);
+                               child_space);
   PageContainerLayoutAlgorithm child_algorithm(
       params, page_index, total_page_count, page_name, root_node,
       counters_context, page_area_params, ignore_author_page_style,

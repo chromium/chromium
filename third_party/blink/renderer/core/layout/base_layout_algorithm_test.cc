@@ -39,10 +39,9 @@ const PhysicalBoxFragment* BaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(
   FragmentGeometry fragment_geometry =
       CalculateInitialFragmentGeometry(space, node, /* break_token */ nullptr);
 
-  const LayoutResult* result =
-      BlockLayoutAlgorithm(
-          {node, fragment_geometry, space, To<BlockBreakToken>(break_token)})
-          .Layout();
+  LayoutAlgorithmParams params(node, fragment_geometry, space);
+  params.break_token = To<BlockBreakToken>(break_token);
+  const LayoutResult* result = BlockLayoutAlgorithm(params).Layout();
 
   return To<PhysicalBoxFragment>(&result->GetPhysicalFragment());
 }
@@ -56,10 +55,9 @@ const PhysicalBoxFragment* BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
   FragmentGeometry fragment_geometry =
       CalculateInitialFragmentGeometry(space, node, /* break_token */ nullptr);
 
-  const LayoutResult* result =
-      FieldsetLayoutAlgorithm(
-          {node, fragment_geometry, space, To<BlockBreakToken>(break_token)})
-          .Layout();
+  LayoutAlgorithmParams params(node, fragment_geometry, space);
+  params.break_token = To<BlockBreakToken>(break_token);
+  const LayoutResult* result = FieldsetLayoutAlgorithm(params).Layout();
 
   return To<PhysicalBoxFragment>(&result->GetPhysicalFragment());
 }

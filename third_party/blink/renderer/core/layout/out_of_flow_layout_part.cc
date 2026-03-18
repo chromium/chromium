@@ -2947,8 +2947,8 @@ void OutOfFlowLayoutPart::LayoutOOFsInFragmentainer(
   const PhysicalBoxFragment* fragmentainer = &GetChildFragment(index);
   FragmentGeometry fragment_geometry =
       CalculateInitialFragmentGeometry(space, node, /* break_token */ nullptr);
-  LayoutAlgorithmParams params(node, fragment_geometry, space,
-                               PreviousFragmentainerBreakToken(index));
+  LayoutAlgorithmParams params(node, fragment_geometry, space);
+  params.break_token = PreviousFragmentainerBreakToken(index);
   // This algorithm will be used to add new OOFs. The existing fragment passed
   // is the last fragmentainer created so far.
   SimplifiedOofLayoutAlgorithm algorithm(params, *fragmentainer);
