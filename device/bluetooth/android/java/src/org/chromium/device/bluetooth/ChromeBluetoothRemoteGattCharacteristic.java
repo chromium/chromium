@@ -8,6 +8,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
@@ -18,11 +19,10 @@ import org.chromium.device.bluetooth.wrapper.BluetoothGattDescriptorWrapper;
 import java.util.List;
 
 /**
- * Exposes android.bluetooth.BluetoothGattCharacteristic as necessary
- * for C++ device::BluetoothRemoteGattCharacteristicAndroid.
- *
- * Lifetime is controlled by
+ * Exposes android.bluetooth.BluetoothGattCharacteristic as necessary for C++
  * device::BluetoothRemoteGattCharacteristicAndroid.
+ *
+ * <p>Lifetime is controlled by device::BluetoothRemoteGattCharacteristicAndroid.
  */
 @JNINamespace("device")
 @NullMarked
@@ -115,6 +115,7 @@ final class ChromeBluetoothRemoteGattCharacteristic {
 
     // Implements BluetoothRemoteGattCharacteristicAndroid::GetUUID.
     @CalledByNative
+    @JniType("std::string")
     private String getUUID() {
         return mCharacteristic.getUuid().toString();
     }

@@ -87,19 +87,20 @@ base::android::ScopedJavaLocalRef<jobject>
 MessagingBackendServiceBridge::GetMessagesForTab(
     JNIEnv* env,
     int32_t j_local_tab_id,
-    const std::optional<base::Uuid>& sync_tab_id,
+    const std::optional<std::string>& sync_tab_id_str,
     int32_t j_type) {
   auto type = static_cast<PersistentNotificationType>(j_type);
 
   if (j_local_tab_id != kInvalidTabId) {
-    CHECK(!sync_tab_id);
+    CHECK(!sync_tab_id_str);
     tab_groups::LocalTabID tab_id = tab_groups::FromJavaTabId(j_local_tab_id);
     auto messages = service_->GetMessagesForTab(tab_id, type);
     return PersistentMessagesToJava(env, messages);
   }
-  if (sync_tab_id) {
+  if (sync_tab_id_str) {
     CHECK(j_local_tab_id == kInvalidTabId);
-    auto messages = service_->GetMessagesForTab(*sync_tab_id, type);
+    base::Uuid sync_tab_id = base::Uuid::ParseLowercase(*sync_tab_id_str);
+    auto messages = service_->GetMessagesForTab(sync_tab_id, type);
     return PersistentMessagesToJava(env, messages);
   }
 
@@ -110,21 +111,22 @@ base::android::ScopedJavaLocalRef<jobject>
 MessagingBackendServiceBridge::GetMessagesForGroup(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& j_local_group_id,
-    const std::optional<base::Uuid>& sync_group_id,
+    const std::optional<std::string>& sync_group_id_str,
     int32_t j_type) {
   auto type = static_cast<PersistentNotificationType>(j_type);
 
   if (j_local_group_id) {
-    CHECK(!sync_group_id);
+    CHECK(!sync_group_id_str);
     auto group_id =
         tab_groups::TabGroupSyncConversionsBridge::FromJavaTabGroupId(
             env, j_local_group_id);
     auto messages = service_->GetMessagesForGroup(group_id, type);
     return PersistentMessagesToJava(env, messages);
   }
-  if (sync_group_id) {
+  if (sync_group_id_str) {
     CHECK(!j_local_group_id);
-    auto messages = service_->GetMessagesForGroup(*sync_group_id, type);
+    base::Uuid sync_group_id = base::Uuid::ParseLowercase(*sync_group_id_str);
+    auto messages = service_->GetMessagesForGroup(sync_group_id, type);
     return PersistentMessagesToJava(env, messages);
   }
 
@@ -157,10 +159,11 @@ void MessagingBackendServiceBridge::ClearDirtyTabMessagesForGroup(
 
 void MessagingBackendServiceBridge::ClearPersistentMessage(
     JNIEnv* env,
-    const base::Uuid& message_id,
+    const std::string& message_id_str,
     int32_t j_type) {
   auto type = static_cast<PersistentNotificationType>(j_type);
-  service_->ClearPersistentMessage(message_id, type);
+  service_->ClearPersistentMessage(base::Uuid::ParseLowercase(message_id_str),
+                                   type);
 }
 
 void MessagingBackendServiceBridge::RunInstantaneousMessageSuccessCallback(

@@ -48,12 +48,12 @@ class MessagingBackendServiceBridge
   base::android::ScopedJavaLocalRef<jobject> GetMessagesForTab(
       JNIEnv* env,
       int32_t j_local_tab_id,
-      const std::optional<base::Uuid>& sync_tab_id,
+      const std::optional<std::string>& sync_tab_id,
       int32_t j_type);
   base::android::ScopedJavaLocalRef<jobject> GetMessagesForGroup(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& j_local_group_id,
-      const std::optional<base::Uuid>& sync_group_id,
+      const std::optional<std::string>& sync_group_id,
       int32_t j_type);
   base::android::ScopedJavaLocalRef<jobject> GetMessages(JNIEnv* env,
                                                          int32_t j_type);
@@ -63,7 +63,7 @@ class MessagingBackendServiceBridge
   void ClearDirtyTabMessagesForGroup(JNIEnv* env,
                                      const std::string& collaboration_id);
   void ClearPersistentMessage(JNIEnv* env,
-                              const base::Uuid& message_id,
+                              const std::string& message_id,
                               int32_t j_type);
 
   void RunInstantaneousMessageSuccessCallback(JNIEnv* env,

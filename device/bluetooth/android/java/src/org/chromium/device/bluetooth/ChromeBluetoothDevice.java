@@ -112,6 +112,7 @@ final class ChromeBluetoothDevice {
 
     // Implements BluetoothDeviceAndroid::GetUUIDs for classic devices.
     @CalledByNative
+    @JniType("std::vector<std::string>")
     private String[] getUuids() {
         ParcelUuid[] uuids = mDevice.getUuids();
         if (uuids == null) {
@@ -119,7 +120,7 @@ final class ChromeBluetoothDevice {
         }
         String[] uuidStrings = new String[uuids.length];
         for (int i = 0; i < uuids.length; i++) {
-            uuidStrings[i] = uuids[i].toString();
+            uuidStrings[i] = uuids[i].getUuid().toString();
         }
         return uuidStrings;
     }

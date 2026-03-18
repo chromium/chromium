@@ -13,6 +13,7 @@
 #include "base/location.h"
 #include "base/notimplemented.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/uuid.h"
 #include "device/bluetooth/bluetooth_remote_gatt_service_android.h"
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "device/bluetooth/jni_headers/ChromeBluetoothRemoteGattDescriptor_jni.h"
@@ -57,9 +58,8 @@ std::string BluetoothRemoteGattDescriptorAndroid::GetIdentifier() const {
 }
 
 BluetoothUUID BluetoothRemoteGattDescriptorAndroid::GetUUID() const {
-  return device::BluetoothUUID(
-      ConvertJavaStringToUTF8(Java_ChromeBluetoothRemoteGattDescriptor_getUUID(
-          AttachCurrentThread(), j_descriptor_)));
+  return device::BluetoothUUID(Java_ChromeBluetoothRemoteGattDescriptor_getUUID(
+      AttachCurrentThread(), j_descriptor_));
 }
 
 const std::vector<uint8_t>& BluetoothRemoteGattDescriptorAndroid::GetValue()

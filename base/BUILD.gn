@@ -1439,7 +1439,10 @@ component("base") {
       ":metrics_jni($default_toolchain)",
       ":tasks_minimal_jni($default_toolchain)",
     ]
-    public_deps += [ "//third_party/jni_zero" ]
+    public_deps += [
+      ":uuid_jni($default_toolchain)",
+      "//third_party/jni_zero",
+    ]
   }  # is_android || is_robolectric
 
   # Chromeos.
@@ -4661,6 +4664,10 @@ if (is_android) {
       "java/lang/Runtime.class",
       "java/lang/Throwable.class",
     ]
+  }
+
+  generate_jar_jni("uuid_jni") {
+    classes = [ "java/util/UUID.class" ]
   }
 
   java_cpp_features("java_features_srcjar") {

@@ -117,7 +117,9 @@ ScopedJavaLocalRef<jobject> AutocompleteMatch::GetOrCreateJavaObject(
           suggestion_group_id.value_or(omnibox::GROUP_INVALID),
           j_clipboard_image_data, has_tab_match.value_or(false), actions_list,
           allowed_to_be_default_match, inline_autocompletion, additional_text,
-          matching_tab_group_uuid.value_or(base::Uuid()),
+          matching_tab_group_uuid
+              ? std::make_optional(matching_tab_group_uuid->AsLowercaseString())
+              : std::nullopt,
           associated_keyword, j_suggest_template));
 
   return ScopedJavaLocalRef<jobject>(*java_match_);

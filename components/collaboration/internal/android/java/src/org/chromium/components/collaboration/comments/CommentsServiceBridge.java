@@ -54,32 +54,26 @@ import java.util.UUID;
             String content,
             @Nullable UUID parentCommentId,
             Callback<Boolean> successCallback) {
-        String uuidString =
-                CommentsServiceBridgeJni.get()
-                        .addComment(
-                                mNativeCommentsServiceBridge,
-                                collaborationId,
-                                url,
-                                content,
-                                parentCommentId == null ? null : parentCommentId.toString(),
-                                successCallback);
-        return UUID.fromString(uuidString);
+        return CommentsServiceBridgeJni.get()
+                .addComment(
+                        mNativeCommentsServiceBridge,
+                        collaborationId,
+                        url,
+                        content,
+                        parentCommentId,
+                        successCallback);
     }
 
     @Override
     public void editComment(UUID commentId, String newContent, Callback<Boolean> successCallback) {
         CommentsServiceBridgeJni.get()
-                .editComment(
-                        mNativeCommentsServiceBridge,
-                        commentId.toString(),
-                        newContent,
-                        successCallback);
+                .editComment(mNativeCommentsServiceBridge, commentId, newContent, successCallback);
     }
 
     @Override
     public void deleteComment(UUID commentId, Callback<Boolean> successCallback) {
         CommentsServiceBridgeJni.get()
-                .deleteComment(mNativeCommentsServiceBridge, commentId.toString(), successCallback);
+                .deleteComment(mNativeCommentsServiceBridge, commentId, successCallback);
     }
 
     @Override
@@ -112,23 +106,23 @@ import java.util.UUID;
         boolean isEmptyService(long nativeCommentsServiceBridge);
 
         @JniType("base::Uuid")
-        String addComment(
+        UUID addComment(
                 long nativeCommentsServiceBridge,
                 @JniType("std::string") String collaborationId,
                 @JniType("GURL") GURL url,
                 @JniType("std::string") String content,
-                @JniType("std::optional<base::Uuid>") @Nullable String parentCommentId,
+                @JniType("std::optional<base::Uuid>") @Nullable UUID parentCommentId,
                 Callback<Boolean> successCallback);
 
         void editComment(
                 long nativeCommentsServiceBridge,
-                @JniType("base::Uuid") String commentId,
+                @JniType("base::Uuid") UUID commentId,
                 @JniType("std::string") String newContent,
                 Callback<Boolean> successCallback);
 
         void deleteComment(
                 long nativeCommentsServiceBridge,
-                @JniType("base::Uuid") String commentId,
+                @JniType("base::Uuid") UUID commentId,
                 Callback<Boolean> successCallback);
 
         void queryComments(

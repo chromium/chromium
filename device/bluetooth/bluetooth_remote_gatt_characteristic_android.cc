@@ -14,6 +14,7 @@
 #include "base/logging.h"
 #include "base/notimplemented.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/uuid.h"
 #include "device/bluetooth/bluetooth_adapter_android.h"
 #include "device/bluetooth/bluetooth_remote_gatt_descriptor_android.h"
 #include "device/bluetooth/bluetooth_remote_gatt_service_android.h"
@@ -78,9 +79,9 @@ std::string BluetoothRemoteGattCharacteristicAndroid::GetIdentifier() const {
 }
 
 BluetoothUUID BluetoothRemoteGattCharacteristicAndroid::GetUUID() const {
-  return device::BluetoothUUID(ConvertJavaStringToUTF8(
+  return device::BluetoothUUID(
       Java_ChromeBluetoothRemoteGattCharacteristic_getUUID(
-          AttachCurrentThread(), j_characteristic_)));
+          AttachCurrentThread(), j_characteristic_));
 }
 
 const std::vector<uint8_t>& BluetoothRemoteGattCharacteristicAndroid::GetValue()

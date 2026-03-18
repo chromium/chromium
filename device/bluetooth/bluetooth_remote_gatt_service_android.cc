@@ -10,6 +10,7 @@
 #include "base/android/jni_string.h"
 #include "base/logging.h"
 #include "base/notimplemented.h"
+#include "base/uuid.h"
 #include "device/bluetooth/bluetooth_adapter_android.h"
 #include "device/bluetooth/bluetooth_device_android.h"
 #include "device/bluetooth/bluetooth_remote_gatt_characteristic_android.h"
@@ -112,9 +113,8 @@ std::string BluetoothRemoteGattServiceAndroid::GetIdentifier() const {
 }
 
 device::BluetoothUUID BluetoothRemoteGattServiceAndroid::GetUUID() const {
-  return device::BluetoothUUID(base::android::ConvertJavaStringToUTF8(
-      Java_ChromeBluetoothRemoteGattService_getUUID(AttachCurrentThread(),
-                                                    j_service_)));
+  return device::BluetoothUUID(Java_ChromeBluetoothRemoteGattService_getUUID(
+      AttachCurrentThread(), j_service_));
 }
 
 bool BluetoothRemoteGattServiceAndroid::IsPrimary() const {

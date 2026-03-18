@@ -223,7 +223,7 @@ public class AutocompleteMatch {
             boolean allowedToBeDefaultMatch,
             @JniType("std::u16string") String inlineAutocompletion,
             @JniType("std::u16string") String additionalText,
-            @JniType("base::Uuid") String localTabGroupId,
+            @JniType("std::optional<std::string>") @Nullable String localTabGroupId,
             @JniType("std::u16string") String associatedKeyword,
             byte[] serializedSuggestTemplate) {
         assert contentClassificationOffsets.length == contentClassificationStyles.length;
@@ -266,7 +266,7 @@ public class AutocompleteMatch {
                         allowedToBeDefaultMatch,
                         inlineAutocompletion,
                         additionalText,
-                        TextUtils.isEmpty(localTabGroupId) ? null : localTabGroupId,
+                        localTabGroupId,
                         TextUtils.isEmpty(associatedKeyword) ? null : associatedKeyword,
                         serializedSuggestTemplate);
         match.updateNativeObjectRef(nativeObject);

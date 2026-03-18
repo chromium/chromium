@@ -6,6 +6,7 @@ package org.chromium.device.bluetooth;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
@@ -16,11 +17,10 @@ import org.chromium.device.bluetooth.wrapper.BluetoothGattServiceWrapper;
 import java.util.List;
 
 /**
- * Exposes android.bluetooth.BluetoothGattService as necessary
- * for C++ device::BluetoothRemoteGattServiceAndroid.
- *
- * Lifetime is controlled by
+ * Exposes android.bluetooth.BluetoothGattService as necessary for C++
  * device::BluetoothRemoteGattServiceAndroid.
+ *
+ * <p>Lifetime is controlled by device::BluetoothRemoteGattServiceAndroid.
  */
 @JNINamespace("device")
 @NullMarked
@@ -63,6 +63,7 @@ final class ChromeBluetoothRemoteGattService {
 
     // Implements BluetoothRemoteGattServiceAndroid::GetUUID.
     @CalledByNative
+    @JniType("std::string")
     private String getUUID() {
         return mService.getUuid().toString();
     }

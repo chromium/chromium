@@ -207,13 +207,13 @@ import java.util.Set;
         List<PersistentMessage> getMessagesForTab(
                 long nativeMessagingBackendServiceBridge,
                 int localTabId,
-                @JniType("std::optional<base::Uuid>") @Nullable String syncTabId,
+                @JniType("std::optional<std::string>") @Nullable String syncTabId,
                 @PersistentNotificationType int type);
 
         List<PersistentMessage> getMessagesForGroup(
                 long nativeMessagingBackendServiceBridge,
                 @Nullable LocalTabGroupId localGroupId,
-                @JniType("std::optional<base::Uuid>") @Nullable String syncGroupId,
+                @JniType("std::optional<std::string>") @Nullable String syncGroupId,
                 @PersistentNotificationType int type);
 
         List<PersistentMessage> getMessages(
@@ -232,7 +232,7 @@ import java.util.Set;
 
         void clearPersistentMessage(
                 long nativeMessagingBackendServiceBridge,
-                @JniType("base::Uuid") String messageId,
+                @JniType("std::string") String messageId,
                 @PersistentNotificationType int type);
     }
 }
