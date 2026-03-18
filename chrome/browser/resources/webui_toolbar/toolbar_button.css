@@ -12,13 +12,13 @@
   display: inline-flex;
   justify-content: center;
   position: relative;
+  height: var(--toolbar-button-height);
+  width: var(--toolbar-button-height);
 }
 
 cr-icon-button {
   cursor: default;
   margin: 0;
-  height: var(--toolbar-button-height);
-  width: var(--toolbar-button-height);
   --cr-icon-button-size: var(--toolbar-button-height);
   --cr-icon-button-icon-size: var(--toolbar-button-icon-size);
   --cr-icon-button-fill-color: var(--color-toolbar-button-icon);

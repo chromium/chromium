@@ -327,14 +327,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest, Basic) {
   BasicPixelTest(browser(), "Basic");
 }
 
-// TODO(https://crbug.com/493362471): Fix the flakiness.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_IncognitoBasic DISABLED_IncognitoBasic
-#else
-#define MAYBE_IncognitoBasic IncognitoBasic
-#endif
-IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
-                       MAYBE_IncognitoBasic) {
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest, IncognitoBasic) {
   BasicPixelTest(CreateIncognitoBrowser(), "IncognitoBasic");
 }
 

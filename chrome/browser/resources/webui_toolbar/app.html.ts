@@ -17,7 +17,8 @@ ${this.isBackForwardButtonEnabled_ ? html`
    .leadingMargin="${this.navigationControlsState_.backForwardControlState.backButtonLeadingMargin}">
   </back-forward-button>
   <back-forward-button id="forward" direction="forward"
-   .state="${this.navigationControlsState_.backForwardControlState.forwardButtonState}">
+   .state="${this.navigationControlsState_.backForwardControlState.forwardButtonState}"
+   .hidden="${!this.navigationControlsState_.backForwardControlState.forwardButtonState.visible}">
   </back-forward-button>` : ''}
   ${this.isReloadButtonEnabled_ ? html`
     <reload-button id="reload"
@@ -26,7 +27,9 @@ ${this.isBackForwardButtonEnabled_ ? html`
   ` : ''}
   ${this.isSplitTabsButtonEnabled_ ? html`
     <split-tabs-button id="split-tabs"
-        .state="${this.navigationControlsState_.splitTabsControlState}">
+        .state="${this.navigationControlsState_.splitTabsControlState}"
+        .hidden="${!this.navigationControlsState_.splitTabsControlState.isPinned &&
+                   !this.navigationControlsState_.splitTabsControlState.isCurrentTabSplit}">
     </split-tabs-button>
   ` : ''}
   ${this.isLocationBarEnabled_ ? html`

@@ -11,7 +11,6 @@ export function getHtml(this: BackForwardButtonElement) {
 <cr-icon-button
     iron-icon="${
       this.direction === 'back' ? 'cr:arrow-back' : 'cr:arrow-forward'}"
-    ?hidden="${!this.state.visible}"
     ?disabled="${!this.state.enabled}"
     aria-label="${this.ariaLabel_}"
     title="${this.tooltip_}"
