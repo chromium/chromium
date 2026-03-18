@@ -5,10 +5,13 @@
 #include "chrome/browser/ui/context_highlight/context_highlight_overlay_view.h"
 
 #include "cc/paint/paint_flags.h"
+#include "components/page_content_annotations/core/tracked_element_feature.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/test/views_test_base.h"
+
+using ::page_content_annotations::TrackedElementFeature;
 
 class ContextHighlightOverlayViewTest : public views::ViewsTestBase {
  public:
@@ -32,22 +35,31 @@ TEST_F(ContextHighlightOverlayViewTest, Initialization) {
   EXPECT_FALSE(view->layer()->fills_bounds_opaquely());
 }
 
-TEST_F(ContextHighlightOverlayViewTest, UpdateHighlightBounds) {
+TEST_F(ContextHighlightOverlayViewTest, UpdateHighlightRects) {
   auto view = std::make_unique<ContextHighlightOverlayView>();
 
-  cc::TrackedElementBounds bounds;
+  cc::TrackedElementRects element_rects;
+
+  // Test with empty rects.
+  view->UpdateHighlightRects(element_rects, 1.0f);
+  auto rects = GetHighlightRects(view.get());
+  EXPECT_TRUE(rects.empty());
+
   base::Token id(1, 2);
   gfx::Rect rect(10, 20, 100, 200);
-  bounds[id] = {rect};
+  cc::TrackedElementRect data(id, rect);
+  cc::TrackedElementFeature feature = static_cast<cc::TrackedElementFeature>(
+      TrackedElementFeature::kAIHighlight);
+  element_rects.insert({feature, {data}});
 
   // Test with scale factor 1.0.
-  view->UpdateHighlightBounds(bounds, 1.0f);
-  auto rects = GetHighlightRects(view.get());
+  view->UpdateHighlightRects(element_rects, 1.0f);
+  rects = GetHighlightRects(view.get());
   ASSERT_EQ(rects.size(), 1u);
   EXPECT_EQ(rects[0], rect);
 
   // Test with scale factor 2.0.
-  view->UpdateHighlightBounds(bounds, 2.0f);
+  view->UpdateHighlightRects(element_rects, 2.0f);
   rects = GetHighlightRects(view.get());
   ASSERT_EQ(rects.size(), 1u);
   EXPECT_EQ(rects[0], gfx::Rect(5, 10, 50, 100));

@@ -67,7 +67,7 @@ struct PLATFORM_EXPORT PaintChunk {
         hit_test_data(std::move(other.hit_test_data)),
         region_capture_data(std::move(other.region_capture_data)),
         layer_selection_data(std::move(other.layer_selection_data)),
-        tracked_element_data(std::move(other.tracked_element_data)),
+        tracked_element_rects(std::move(other.tracked_element_rects)),
         bounds(other.bounds),
         drawable_bounds(other.drawable_bounds),
         rect_known_to_be_opaque(other.rect_known_to_be_opaque),
@@ -85,7 +85,7 @@ struct PLATFORM_EXPORT PaintChunk {
     visitor->Trace(properties);
     visitor->Trace(hit_test_data);
     visitor->Trace(region_capture_data);
-    visitor->Trace(tracked_element_data);
+    visitor->Trace(tracked_element_rects);
     visitor->Trace(layer_selection_data);
   }
 
@@ -165,7 +165,7 @@ struct PLATFORM_EXPORT PaintChunk {
   Member<HitTestData> hit_test_data;
   Member<RegionCaptureData> region_capture_data;
   Member<LayerSelectionData> layer_selection_data;
-  Member<TrackedElementData> tracked_element_data;
+  Member<TrackedElementRects> tracked_element_rects;
 
   // The following fields depend on the display items in this chunk.
   // They are updated when a display item is added into the chunk.

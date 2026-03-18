@@ -1215,7 +1215,7 @@ class LayerPropertiesUpdater {
 
   void UpdateForNonCompositedScrollbar(const ScrollbarDisplayItem&);
   void UpdateRegionCaptureData(const RegionCaptureData&);
-  void UpdateTrackedElementData(const TrackedElementData&);
+  void UpdateTrackedElementRects(const TrackedElementRects&);
   gfx::Point MapSelectionBoundPoint(const gfx::Point&) const;
   cc::LayerSelectionBound PaintedSelectionBoundToLayerSelectionBound(
       const PaintedSelectionBound&) const;
@@ -1238,7 +1238,7 @@ class LayerPropertiesUpdater {
 #endif
   cc::Region main_thread_scroll_hit_test_region_;
   viz::RegionCaptureBounds capture_bounds_;
-  cc::TrackedElementBounds tracked_element_bounds_;
+  cc::TrackedElementRects tracked_element_rects_;
 
   // Top-level (i.e., non-nested) non-composited scrolls. Nested non-composited
   // scrollers will force the containing top non-composited scroller to hit test
@@ -1556,12 +1556,15 @@ void LayerPropertiesUpdater::UpdateRegionCaptureData(
   }
 }
 
-void LayerPropertiesUpdater::UpdateTrackedElementData(
-    const TrackedElementData& tracked_element_data) {
-  for (const std::pair<TrackedElementId, gfx::Rect>& pair :
-       tracked_element_data.map) {
-    gfx::Rect rect = chunk_to_layer_mapper_.MapVisualRect(pair.second);
-    tracked_element_bounds_[pair.first.value()] = {rect};
+void LayerPropertiesUpdater::UpdateTrackedElementRects(
+    const TrackedElementRects& tracked_element_rects) {
+  for (const auto& [feature, element_rects] : tracked_element_rects.map) {
+    for (const auto& element_rect : element_rects) {
+      gfx::Rect rect =
+          chunk_to_layer_mapper_.MapVisualRect(element_rect.bounds);
+      cc::TrackedElementRect rect_data(element_rect.id.value(), rect);
+      tracked_element_rects_[feature].push_back(std::move(rect_data));
+    }
   }
 }
 
@@ -1630,7 +1633,7 @@ void LayerPropertiesUpdater::Update() {
         NonCompositedScrollbarDisplayItem(it, layer_);
     if ((!selection_only_ &&
          (chunk.hit_test_data || non_composited_scrollbar ||
-          chunk.region_capture_data || chunk.tracked_element_data ||
+          chunk.region_capture_data || chunk.tracked_element_rects ||
           !top_non_composited_scrolls_.empty())) ||
         chunk.layer_selection_data) {
       chunk_to_layer_mapper_.SwitchToChunk(chunk);
@@ -1651,8 +1654,8 @@ void LayerPropertiesUpdater::Update() {
       if (chunk.region_capture_data) {
         UpdateRegionCaptureData(*chunk.region_capture_data);
       }
-      if (chunk.tracked_element_data) {
-        UpdateTrackedElementData(*chunk.tracked_element_data);
+      if (chunk.tracked_element_rects) {
+        UpdateTrackedElementRects(*chunk.tracked_element_rects);
       }
     }
     if (chunk.layer_selection_data) {
@@ -1672,7 +1675,7 @@ void LayerPropertiesUpdater::Update() {
 #endif
 
     layer_.SetCaptureBounds(std::move(capture_bounds_));
-    layer_.SetTrackedElementBounds(std::move(tracked_element_bounds_));
+    layer_.SetTrackedElementRects(std::move(tracked_element_rects_));
 
     std::vector<cc::ScrollHitTestRect> non_composited_scroll_hit_test_rects;
     for (const auto& scroll : top_non_composited_scrolls_) {

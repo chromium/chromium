@@ -11,6 +11,7 @@ include_rules = [
     "+base/command_line.h",
     "+base/containers/heap_array.h",
     "+base/containers/flat_map.h",
+    "+base/containers/flat_set.h",
     "+base/containers/span.h",
     "+base/containers/span_rust.h",
     "+base/containers/auto_spanification_helper.h",

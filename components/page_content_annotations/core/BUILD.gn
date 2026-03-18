@@ -42,6 +42,7 @@ static_library("core") {
     "page_content_store.h",
     "page_embeddings_common.cc",
     "page_embeddings_common.h",
+    "tracked_element_feature.h",
     "web_state_wrapper.cc",
     "web_state_wrapper.h",
   ]

@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_ELEMENT_RARE_DATA_VECTOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_ELEMENT_RARE_DATA_VECTOR_H_
 
+#include "cc/trees/tracked_element_rects.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/css_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/element_animation_trigger_data.h"
@@ -305,10 +306,14 @@ class CORE_EXPORT ElementRareDataVector final
   [[nodiscard]] ElementRareDataVector* SetRegionCaptureCropId(
       std::unique_ptr<RegionCaptureCropId> crop_id);
 
-  const TrackedElementRect* GetTrackedElementRect() const;
-  [[nodiscard]] ElementRareDataVector* SetTrackedElementRect(
-      std::unique_ptr<TrackedElementRect> rect);
-  void ClearTrackedElementRect();
+  const TrackedElementSubRect* GetTrackedElementSubRect(
+      cc::TrackedElementFeature feature) const;
+  [[nodiscard]] ElementRareDataVector* SetTrackedElementSubRect(
+      cc::TrackedElementFeature feature,
+      const TrackedElementSubRect& rect);
+  void ClearTrackedElementSubRect(cc::TrackedElementFeature feature);
+
+  const TrackedElementSubRects* GetTrackedElementSubRects() const;
 
   // Returns the ID backing a RestrictionTarget if one was set on the Element,
   // or nullptr otherwise.

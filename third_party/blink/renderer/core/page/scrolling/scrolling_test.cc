@@ -36,6 +36,7 @@
 #include "cc/trees/scroll_node.h"
 #include "cc/trees/single_thread_proxy.h"
 #include "cc/trees/sticky_position_constraint.h"
+#include "cc/trees/tracked_element_rects.h"
 #include "content/test/test_blink_web_unit_test_support.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_cache.h"
@@ -1427,7 +1428,7 @@ TEST_P(ScrollingTest, NonCompositedMainThreadRepaintWithTrackedElement) {
                                 background: white">
       <div id="middle" style="width: 150px; height: 300px; overflow: scroll">
         <div id="inner" style="width: 100px; height: 400px; overflow: scroll">
-          <div id="highlight" style="width: 50px; height: 500px"></div>
+          <div id="tracked_element" style="width: 50px; height: 500px"></div>
           <div style="height: 1000px"></div>
         </div>
         <div style="height: 1000px"></div>
@@ -1435,20 +1436,40 @@ TEST_P(ScrollingTest, NonCompositedMainThreadRepaintWithTrackedElement) {
     </div>
   )HTML");
 
-  auto highlight_id = base::Token(1, 2);
-  auto highlight =
-      std::make_unique<TrackedElementRect>(TrackedElementId(highlight_id));
+  // Track the same element for two different features.
+  auto element_id = base::Token(1, 2);
+  cc::TrackedElementFeature feature_0 =
+      static_cast<cc::TrackedElementFeature>(0);
+  cc::TrackedElementFeature feature_1 =
+      static_cast<cc::TrackedElementFeature>(1);
+  auto feature_0_element = TrackedElementSubRect(TrackedElementId(element_id));
+  auto feature_1_element = TrackedElementSubRect(TrackedElementId(element_id));
+
   Document& document = *GetFrame()->GetDocument();
-  document.getElementById(AtomicString("highlight"))
-      ->SetTrackedElementRect(std::move(highlight));
+  document.getElementById(AtomicString("tracked_element"))
+      ->SetTrackedElementSubRect(feature_0, feature_0_element);
+  document.getElementById(AtomicString("tracked_element"))
+      ->SetTrackedElementSubRect(feature_1, feature_1_element);
 
   ForceFullCompositingUpdate();
 
   const cc::Layer* cc_layer =
       ScrollingContentsLayerByDOMElementId("composited");
-  EXPECT_EQ(1, cc_layer->tracked_element_bounds().size());
-  EXPECT_EQ(gfx::Rect(0, 0, 50, 300),
-            cc_layer->tracked_element_bounds().at(highlight_id).visible_bounds);
+  EXPECT_EQ(2, cc_layer->tracked_element_rects().size());
+
+  // Check the data for feature 0.
+  ASSERT_TRUE(cc_layer->tracked_element_rects().contains(feature_0));
+  auto feature_0_rects = cc_layer->tracked_element_rects().at(feature_0);
+  ASSERT_EQ(1, feature_0_rects.size());
+  EXPECT_EQ(element_id, feature_0_rects[0].id);
+  EXPECT_EQ(gfx::Rect(0, 0, 50, 300), feature_0_rects[0].visible_bounds);
+
+  // Check the data for feature 1.
+  ASSERT_TRUE(cc_layer->tracked_element_rects().contains(feature_1));
+  auto feature_1_rects = cc_layer->tracked_element_rects().at(feature_1);
+  ASSERT_EQ(1, feature_1_rects.size());
+  EXPECT_EQ(element_id, feature_1_rects[0].id);
+  EXPECT_EQ(gfx::Rect(0, 0, 50, 300), feature_1_rects[0].visible_bounds);
 
   ASSERT_COMPOSITED(ScrollNodeByDOMElementId("composited"));
   ASSERT_NOT_COMPOSITED(
@@ -1460,8 +1481,20 @@ TEST_P(ScrollingTest, NonCompositedMainThreadRepaintWithTrackedElement) {
 
   document.getElementById(AtomicString("middle"))->setScrollTop(200);
   ForceFullCompositingUpdate();
-  EXPECT_EQ(gfx::Rect(0, 0, 50, 200),
-            cc_layer->tracked_element_bounds().at(highlight_id).visible_bounds);
+
+  // Check the data for feature 0.
+  ASSERT_TRUE(cc_layer->tracked_element_rects().contains(feature_0));
+  feature_0_rects = cc_layer->tracked_element_rects().at(feature_0);
+  ASSERT_EQ(1, feature_0_rects.size());
+  EXPECT_EQ(gfx::Rect(0, 0, 50, 200), feature_0_rects[0].visible_bounds);
+
+  // Check the data for feature 1.
+  ASSERT_TRUE(cc_layer->tracked_element_rects().contains(feature_1));
+  feature_1_rects = cc_layer->tracked_element_rects().at(feature_1);
+  ASSERT_EQ(1, feature_1_rects.size());
+  EXPECT_EQ(element_id, feature_1_rects[0].id);
+  EXPECT_EQ(gfx::Rect(0, 0, 50, 200), feature_1_rects[0].visible_bounds);
+
   ASSERT_COMPOSITED(ScrollNodeByDOMElementId("composited"));
   ASSERT_NOT_COMPOSITED(
       ScrollNodeByDOMElementId("middle"),
@@ -1472,8 +1505,20 @@ TEST_P(ScrollingTest, NonCompositedMainThreadRepaintWithTrackedElement) {
 
   document.getElementById(AtomicString("inner"))->setScrollTop(200);
   ForceFullCompositingUpdate();
-  EXPECT_EQ(gfx::Rect(0, 0, 50, 100),
-            cc_layer->tracked_element_bounds().at(highlight_id).visible_bounds);
+
+  // Check the data for feature 0.
+  ASSERT_TRUE(cc_layer->tracked_element_rects().contains(feature_0));
+  feature_0_rects = cc_layer->tracked_element_rects().at(feature_0);
+  ASSERT_EQ(1, feature_0_rects.size());
+  EXPECT_EQ(gfx::Rect(0, 0, 50, 100), feature_0_rects[0].visible_bounds);
+
+  // Check the data for feature 1.
+  ASSERT_TRUE(cc_layer->tracked_element_rects().contains(feature_1));
+  feature_1_rects = cc_layer->tracked_element_rects().at(feature_1);
+  ASSERT_EQ(1, feature_1_rects.size());
+  EXPECT_EQ(element_id, feature_1_rects[0].id);
+  EXPECT_EQ(gfx::Rect(0, 0, 50, 100), feature_1_rects[0].visible_bounds);
+
   ASSERT_COMPOSITED(ScrollNodeByDOMElementId("composited"));
   ASSERT_NOT_COMPOSITED(
       ScrollNodeByDOMElementId("middle"),
@@ -1482,9 +1527,12 @@ TEST_P(ScrollingTest, NonCompositedMainThreadRepaintWithTrackedElement) {
       ScrollNodeByDOMElementId("inner"),
       cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText);
 
-  document.getElementById(AtomicString("highlight"))->ClearTrackedElementRect();
+  document.getElementById(AtomicString("tracked_element"))
+      ->ClearTrackedElementSubRect(feature_0);
+  document.getElementById(AtomicString("tracked_element"))
+      ->ClearTrackedElementSubRect(feature_1);
   ForceFullCompositingUpdate();
-  EXPECT_EQ(0, cc_layer->tracked_element_bounds().size());
+  EXPECT_EQ(0, cc_layer->tracked_element_rects().size());
 }
 
 TEST_P(ScrollingTest, NonCompositedMainThreadRepaintWithLayerSelection) {

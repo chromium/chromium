@@ -11948,7 +11948,7 @@ class LayerTreeHostTestTextureLayerOffscreenScroll : public LayerTreeTest {
 // This macro registers the test to be run.
 SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostTestTextureLayerOffscreenScroll);
 
-class LayerTreeHostTestTrackedElementBounds
+class LayerTreeHostTestTrackedElementRects
     : public LayerTreeHostTest,
       public RenderFrameMetadataObserver {
  public:
@@ -11980,8 +11980,9 @@ class LayerTreeHostTestTrackedElementBounds
 
   const base::Token kId1 = base::Token(1, 2);
   const base::Token kId2 = base::Token(2, 3);
+  const TrackedElementFeature kFeature = static_cast<TrackedElementFeature>(1);
 
-  LayerTreeHostTestTrackedElementBounds() { SetUseLayerLists(); }
+  LayerTreeHostTestTrackedElementRects() { SetUseLayerLists(); }
 
   void SetupTree() override {
     SetInitialRootBounds(gfx::Size(50, 50));
@@ -11996,9 +11997,11 @@ class LayerTreeHostTestTrackedElementBounds
     child_a_->SetIsDrawable(true);
     CopyProperties(root_, child_a_.get());
     CreateEffectNode(child_a_.get());
-    TrackedElementBounds trackedElementBound1;
-    trackedElementBound1[kId1] = {gfx::Rect(0, 0, 50, 50)};
-    child_a_->SetTrackedElementBounds(trackedElementBound1);
+    std::vector<TrackedElementRect> rect_data_list1 = {
+        TrackedElementRect(kId1, gfx::Rect(0, 0, 50, 50))};
+    TrackedElementRects trackedElementRects1 = {
+        {kFeature, std::move(rect_data_list1)}};
+    child_a_->SetTrackedElementRects(trackedElementRects1);
     root_->AddChild(child_a_);
 
     child_b_ = Layer::Create();
@@ -12006,9 +12009,11 @@ class LayerTreeHostTestTrackedElementBounds
     child_b_->SetIsDrawable(true);
     CopyProperties(root_, child_b_.get());
     CreateEffectNode(child_b_.get());
-    TrackedElementBounds trackedElementBound2;
-    trackedElementBound2[kId2] = {gfx::Rect(0, 0, 10, 20)};
-    child_b_->SetTrackedElementBounds(trackedElementBound2);
+    std::vector<TrackedElementRect> rect_data_list2 = {
+        TrackedElementRect(kId2, gfx::Rect(0, 0, 10, 20))};
+    TrackedElementRects trackedElementRects2 = {
+        {kFeature, std::move(rect_data_list2)}};
+    child_b_->SetTrackedElementRects(trackedElementRects2);
     root_->AddChild(child_b_);
   }
 
@@ -12020,10 +12025,17 @@ class LayerTreeHostTestTrackedElementBounds
     PostSetNeedsCommitToMainThread();
   }
 
-  void ExpectBoundsOnThread(const TrackedElementBounds& actual_bounds) {
-    EXPECT_EQ(actual_bounds.size(), 2u);
-    EXPECT_EQ(actual_bounds.at(kId1).visible_bounds, gfx::Rect(0, 0, 30, 20));
-    EXPECT_EQ(actual_bounds.at(kId2).visible_bounds, gfx::Rect(0, 0, 10, 5));
+  void ExpectRectsOnThread(const TrackedElementRects& actual_rects) {
+    EXPECT_EQ(actual_rects.size(), 1u);
+    ASSERT_TRUE(actual_rects.contains(kFeature));
+    const auto& element_list = actual_rects.at(kFeature);
+    base::flat_map<TrackedElementId, TrackedElementRect> element_map;
+    for (const auto& tracked_element_rect : element_list) {
+      element_map.insert({tracked_element_rect.id, tracked_element_rect});
+    }
+    EXPECT_EQ(element_map.size(), 2u);
+    EXPECT_EQ(element_map.at(kId1).visible_bounds, gfx::Rect(0, 0, 30, 20));
+    EXPECT_EQ(element_map.at(kId2).visible_bounds, gfx::Rect(0, 0, 10, 5));
     EndTest();
   }
 
@@ -12033,13 +12045,13 @@ class LayerTreeHostTestTrackedElementBounds
       const RenderFrameMetadata& render_frame_metadata,
       viz::CompositorFrameMetadata* compositor_frame_metadata,
       bool force_send) override {
-    ExpectBoundsOnThread(render_frame_metadata.tracked_element_bounds);
+    ExpectRectsOnThread(render_frame_metadata.tracked_element_rects);
   }
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   void DidEndScroll() override {}
 #endif
 };
-SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostTestTrackedElementBounds);
+SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostTestTrackedElementRects);
 
 }  // namespace
 }  // namespace cc

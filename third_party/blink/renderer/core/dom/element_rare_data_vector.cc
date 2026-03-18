@@ -475,23 +475,43 @@ ElementRareDataVector* ElementRareDataVector::SetRestrictionTargetId(
       FieldId::kRestrictionTargetId, std::move(id));
 }
 
-const TrackedElementRect* ElementRareDataVector::GetTrackedElementRect() const {
-  auto* value = GetWrappedField<std::unique_ptr<TrackedElementRect>>(
-      FieldId::kTrackedElementRect);
-  return value ? value->get() : nullptr;
+const TrackedElementSubRect* ElementRareDataVector::GetTrackedElementSubRect(
+    cc::TrackedElementFeature feature) const {
+  if (auto* map = GetTrackedElementSubRects()) {
+    auto it = map->find(feature);
+    if (it != map->end()) {
+      return &it->second;
+    }
+  }
+  return nullptr;
 }
 
-void ElementRareDataVector::ClearTrackedElementRect() {
-  SetFieldToNullIfExists(FieldId::kTrackedElementRect);
+void ElementRareDataVector::ClearTrackedElementSubRect(
+    cc::TrackedElementFeature feature) {
+  if (auto* map = GetWrappedField<TrackedElementSubRects>(
+          FieldId::kTrackedElementRect)) {
+    map->erase(feature);
+    // If no more features are tracking this element, remove the field entirely.
+    if (map->empty()) {
+      SetFieldToNullIfExists(FieldId::kTrackedElementRect);
+    }
+  }
 }
 
-ElementRareDataVector* ElementRareDataVector::SetTrackedElementRect(
-    std::unique_ptr<TrackedElementRect> rect) {
-  CHECK(!GetTrackedElementRect());
-  CHECK(rect);
-  CHECK(!rect->id.value().is_zero());
-  return SetWrappedField<std::unique_ptr<TrackedElementRect>>(
-      FieldId::kTrackedElementRect, std::move(rect));
+ElementRareDataVector* ElementRareDataVector::SetTrackedElementSubRect(
+    cc::TrackedElementFeature feature,
+    const TrackedElementSubRect& rect) {
+  CHECK(!rect.id.value().is_zero());
+  auto [map, vec] =
+      EnsureWrappedField<TrackedElementSubRects>(FieldId::kTrackedElementRect);
+  auto [_, inserted] = map.get().try_emplace(feature, rect);
+  CHECK(inserted);
+  return vec;
+}
+
+const TrackedElementSubRects* ElementRareDataVector::GetTrackedElementSubRects()
+    const {
+  return GetWrappedField<TrackedElementSubRects>(FieldId::kTrackedElementRect);
 }
 
 ElementRareDataVector::ResizeObserverDataMap*

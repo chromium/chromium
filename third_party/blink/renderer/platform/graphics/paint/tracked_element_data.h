@@ -7,6 +7,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/token.h"
+#include "cc/trees/tracked_element_rects.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/tracked_element_id.h"
@@ -17,7 +18,7 @@ namespace blink {
 
 // Represents a single tracked element, either tracking a full element
 // rectangle, or an arbitrary rectangle relative to the element.
-struct PLATFORM_EXPORT TrackedElementRect {
+struct PLATFORM_EXPORT TrackedElementSubRect {
   struct SubRect {
     enum class Type {
       // While tracking the rectangle, the output is intersection of specified
@@ -37,33 +38,61 @@ struct PLATFORM_EXPORT TrackedElementRect {
     bool operator==(const SubRect& other) const = default;
   };
 
-  TrackedElementRect() = default;
-  explicit TrackedElementRect(TrackedElementId id,
-                              std::optional<SubRect> sub_rect = std::nullopt)
+  TrackedElementSubRect() = default;
+  explicit TrackedElementSubRect(TrackedElementId id,
+                                 std::optional<SubRect> sub_rect = std::nullopt)
       : id(id), sub_rect(sub_rect) {}
 
   TrackedElementId id;
+  // The sub-rectangle of the element to track, or nullopt if the entire
+  // element is being tracked.
   std::optional<SubRect> sub_rect;
 
   // Comparison operators for use with WTF::HashSet and other containers.
-  bool operator==(const TrackedElementRect& other) const {
+  bool operator==(const TrackedElementSubRect& other) const {
     return id == other.id && sub_rect == other.sub_rect;
   }
-  bool operator!=(const TrackedElementRect& other) const {
+  bool operator!=(const TrackedElementSubRect& other) const {
     return !(*this == other);
   }
 
   gfx::Rect GetEffectiveBounds(const gfx::Rect& element_paint_rect) const;
 };
 
-// Wraps a map from a tracked element identifier, which is a randomly
-// generated token, to a rectangle representing the bounds of the HTML element
-// associated with the crop identifier.
-struct PLATFORM_EXPORT TrackedElementData
-    : public GarbageCollected<TrackedElementData> {
-  base::flat_map<TrackedElementId, gfx::Rect> map;
+// Used by Element and ElementRareDataVector to store tracked element data.
+// Multiple features can track the same element, so this is a map of feature to
+// the tracked element data for that feature.
+using TrackedElementSubRects =
+    base::flat_map<cc::TrackedElementFeature, TrackedElementSubRect>;
 
-  bool operator==(const TrackedElementData& rhs) const {
+// Represents the data associated with a tracked element. This includes the
+// id of the element, the bounds of the element in screen space, and other
+// optional metadata that may be set by the tracking feature.
+struct PLATFORM_EXPORT TrackedElementRect {
+  TrackedElementRect() = default;
+  TrackedElementRect(TrackedElementId id, gfx::Rect bounds)
+      : id(id), bounds(bounds) {}
+
+  // The id of the element being tracked.
+  TrackedElementId id;
+  // The bounds of the element in screen space.
+  gfx::Rect bounds;
+
+  // Comparison operators for use with WTF::HashSet and other containers.
+  bool operator==(const TrackedElementRect& other) const = default;
+
+  String ToString() const;
+};
+
+// Wraps a map from a tracked element feature to the list of tracked elements
+// being tracked by that feature. The element rectangle represents the bounds of
+// the HTML element in screen space.
+struct PLATFORM_EXPORT TrackedElementRects
+    : public GarbageCollected<TrackedElementRects> {
+  base::flat_map<cc::TrackedElementFeature, std::vector<TrackedElementRect>>
+      map;
+
+  bool operator==(const TrackedElementRects& rhs) const {
     return map == rhs.map;
   }
 

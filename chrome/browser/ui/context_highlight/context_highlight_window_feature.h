@@ -35,14 +35,14 @@ class ContextHighlightWindowFeature {
   static ContextHighlightWindowFeature* From(BrowserWindowInterface* tab);
 
   // Called when the tracked element bounds from a
-  void CheckAndUpdateTrackedElementBounds();
+  void CheckAndUpdateTrackedElementRects();
 
   DECLARE_USER_DATA(ContextHighlightWindowFeature);
 
  private:
   // content::TrackedElementObserver:
-  void OnTrackedElementBoundsChanged(const cc::TrackedElementBounds& bounds,
-                                     float device_scale_factor);
+  void OnTrackedElementRectsChanged(const cc::TrackedElementRects& rects,
+                                    float device_scale_factor);
 
   // Called when the active tab in the browser window changes.
   void OnActiveTabDidChange(BrowserWindowInterface* browser);

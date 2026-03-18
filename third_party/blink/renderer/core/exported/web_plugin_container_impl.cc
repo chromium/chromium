@@ -189,10 +189,10 @@ void WebPluginContainerImpl::Paint(const PaintInfo& paint_info,
         visual_rect);
   }
 
-  if (element_->GetTrackedElementRect()) {
-    const auto* tracked_element_rect = element_->GetTrackedElementRect();
+  if (element_->GetTrackedElementSubRects()) {
+    const auto* sub_rects = element_->GetTrackedElementSubRects();
     context.GetPaintController().RecordTrackedElementData(
-        *GetLayoutEmbeddedContent(), *tracked_element_rect, visual_rect);
+        *GetLayoutEmbeddedContent(), visual_rect, *sub_rects);
   }
 
   if (layer_) {

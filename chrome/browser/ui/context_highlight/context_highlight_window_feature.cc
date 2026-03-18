@@ -10,7 +10,10 @@
 #include "chrome/browser/ui/context_highlight/context_highlight_tab_feature.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
+#include "components/page_content_annotations/core/tracked_element_feature.h"
 #include "components/tabs/public/tab_interface.h"
+
+using ::page_content_annotations::TrackedElementFeature;
 
 ContextHighlightWindowFeature::ContextHighlightWindowFeature(
     BrowserWindowInterface& browser)
@@ -28,17 +31,21 @@ ContextHighlightWindowFeature* ContextHighlightWindowFeature::From(
   return Get(browser->GetUnownedUserDataHost());
 }
 
-void ContextHighlightWindowFeature::CheckAndUpdateTrackedElementBounds() {
+void ContextHighlightWindowFeature::CheckAndUpdateTrackedElementRects() {
   auto* tab_feature = GetActiveTabFeature();
-  OnTrackedElementBoundsChanged(tab_feature->latest_bounds(),
-                                tab_feature->latest_scale_factor());
+  OnTrackedElementRectsChanged(tab_feature->latest_rects(),
+                               tab_feature->latest_scale_factor());
 }
 
-void ContextHighlightWindowFeature::OnTrackedElementBoundsChanged(
-    const cc::TrackedElementBounds& bounds,
+void ContextHighlightWindowFeature::OnTrackedElementRectsChanged(
+    const cc::TrackedElementRects& rects,
     float device_scale_factor) {
   // View is created lazyly
-  if (!context_highlight_view_tracker_.view() && !bounds.empty()) {
+  const auto kAIHighlightFeature = static_cast<cc::TrackedElementFeature>(
+      TrackedElementFeature::kAIHighlight);
+  bool has_highlight_rects = rects.contains(kAIHighlightFeature) &&
+                             !rects.at(kAIHighlightFeature).empty();
+  if (!context_highlight_view_tracker_.view() && has_highlight_rects) {
     CreateViewForOverlay();
   }
 
@@ -46,12 +53,12 @@ void ContextHighlightWindowFeature::OnTrackedElementBoundsChanged(
     auto* host_view = BrowserElementsViews::From(browser_)->GetView(
         kContextHighlightViewElementId);
 
-    if (bounds.empty()) {
+    if (!has_highlight_rects) {
       host_view->SetVisible(false);
     } else {
       static_cast<ContextHighlightOverlayView*>(
           context_highlight_view_tracker_.view())
-          ->UpdateHighlightBounds(bounds, device_scale_factor);
+          ->UpdateHighlightRects(rects, device_scale_factor);
       host_view->SetVisible(true);
     }
   }
@@ -70,7 +77,7 @@ void ContextHighlightWindowFeature::CreateViewForOverlay() {
 
 void ContextHighlightWindowFeature::OnActiveTabDidChange(
     BrowserWindowInterface* browser) {
-  CheckAndUpdateTrackedElementBounds();
+  CheckAndUpdateTrackedElementRects();
 }
 
 tabs::ContextHighlightTabFeature*

@@ -3048,11 +3048,10 @@ void BoxFragmentPainter::RecordRegionCaptureAndTrackedElementData(
         ToPixelSnappedRect(paint_rect));
   }
 
-  if (element && element->GetTrackedElementRect()) {
-    const auto* tracked_element_rect = element->GetTrackedElementRect();
+  if (element && element->GetTrackedElementSubRects()) {
+    const auto* sub_rects = element->GetTrackedElementSubRects();
     paint_info.context.GetPaintController().RecordTrackedElementData(
-        display_item_client, *tracked_element_rect,
-        ToPixelSnappedRect(paint_rect));
+        display_item_client, ToPixelSnappedRect(paint_rect), *sub_rects);
   }
 }
 

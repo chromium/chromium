@@ -45,15 +45,13 @@ class ContextHighlightTabFeature : public content::TrackedElementObserver,
   // Returns the current RenderWidgetHost for the tab's WebContents.
   content::RenderWidgetHost* GetRenderWidgetHost() const;
 
-  const cc::TrackedElementBounds& latest_bounds() const {
-    return latest_bounds_;
-  }
+  const cc::TrackedElementRects& latest_rects() const { return latest_rects_; }
 
   float latest_scale_factor() const { return latest_scale_factor_; }
 
   // content::TrackedElementObserver:
-  void OnTrackedElementBoundsChanged(const cc::TrackedElementBounds& bounds,
-                                     float device_scale_factor) override;
+  void OnTrackedElementRectsChanged(const cc::TrackedElementRects& rects,
+                                    float device_scale_factor) override;
 
   // content::WebContentsObserver:
   void RenderViewHostChanged(content::RenderViewHost* old_host,
@@ -85,7 +83,7 @@ class ContextHighlightTabFeature : public content::TrackedElementObserver,
   base::CallbackListSubscription discard_subscription_;
   base::CallbackListSubscription tab_activate_subscription_;
 
-  cc::TrackedElementBounds latest_bounds_;
+  cc::TrackedElementRects latest_rects_;
   float latest_scale_factor_ = 1.0f;
 
   ui::ScopedUnownedUserData<ContextHighlightTabFeature> scoped_data_;

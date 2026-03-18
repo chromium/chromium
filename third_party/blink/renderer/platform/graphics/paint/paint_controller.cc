@@ -189,16 +189,14 @@ void PaintController::RecordRegionCaptureData(
 
 void PaintController::RecordTrackedElementData(
     const DisplayItemClient& client,
-    const TrackedElementRect& tracked_element_rect,
-    const gfx::Rect& rect) {
-  DCHECK(!tracked_element_rect.id->is_zero());
+    const gfx::Rect& element_paint_rect,
+    const TrackedElementSubRects& tracked_element_sub_rects) {
   PaintChunk::Id id(client.Id(), DisplayItem::kTrackedElement,
                     current_fragment_);
   CheckNewChunkId(id);
   ValidateNewChunkClient(client);
   if (paint_chunker_.AddTrackedElementDataToCurrentChunk(
-          id, client, tracked_element_rect.id,
-          tracked_element_rect.GetEffectiveBounds(rect))) {
+          id, client, element_paint_rect, tracked_element_sub_rects)) {
     CheckNewChunk();
   }
 }

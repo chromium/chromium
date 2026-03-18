@@ -5,7 +5,7 @@
 #include "cc/mojom/render_frame_metadata_mojom_traits.h"
 
 #include "build/build_config.h"
-#include "cc/mojom/tracked_element_bounds_mojom_traits.h"
+#include "cc/mojom/tracked_element_rects_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/selection_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/vertical_scroll_direction_mojom_traits.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -55,7 +55,7 @@ bool StructTraits<
          data.ReadScrollableViewportSize(&out->scrollable_viewport_size) &&
          data.ReadRootLayerSize(&out->root_layer_size) &&
 #endif
-         data.ReadTrackedElementBounds(&out->tracked_element_bounds) &&
+         data.ReadTrackedElementRects(&out->tracked_element_rects) &&
          data.ReadViewportSizeInPixels(&out->viewport_size_in_pixels) &&
          data.ReadLocalSurfaceId(&out->local_surface_id) &&
          data.ReadNewVerticalScrollDirection(

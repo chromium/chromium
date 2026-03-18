@@ -212,7 +212,7 @@ bool LayoutInline::ComputeInitialShouldCreateBoxFragment(
     if (element->MayBeImplicitAnchor()) {
       return true;
     }
-    if (element->GetTrackedElementRect()) {
+    if (element->GetTrackedElementSubRects()) {
       return true;
     }
   }

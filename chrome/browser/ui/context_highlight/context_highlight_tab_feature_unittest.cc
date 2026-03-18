@@ -5,13 +5,16 @@
 #include "chrome/browser/ui/context_highlight/context_highlight_tab_feature.h"
 
 #include "base/token.h"
-#include "cc/trees/tracked_element_bounds.h"
+#include "cc/trees/tracked_element_rects.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/page_content_annotations/core/tracked_element_feature.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/browser/render_widget_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
+
+using ::page_content_annotations::TrackedElementFeature;
 
 namespace tabs {
 
@@ -40,30 +43,38 @@ class ContextHighlightTabFeatureTest : public ChromeRenderViewHostTestHarness {
   ContextHighlightTabFeatureTest() = default;
 };
 
-TEST_F(ContextHighlightTabFeatureTest, CachedBoundsUpdated) {
+TEST_F(ContextHighlightTabFeatureTest, CachedRectsUpdated) {
   TestTabInterface tab;
   EXPECT_CALL(tab, GetContents())
       .WillRepeatedly(testing::Return(web_contents()));
 
   auto feature = std::make_unique<ContextHighlightTabFeature>(tab);
 
-  // Initially no cached bounds.
-  EXPECT_EQ(feature->latest_bounds(), cc::TrackedElementBounds());
+  // Initially no cached rects.
+  EXPECT_EQ(feature->latest_rects(), cc::TrackedElementRects());
 
-  // Simulate bounds change.
-  cc::TrackedElementBounds bounds;
+  // Test update with empty rects.
+  feature->OnTrackedElementRectsChanged(cc::TrackedElementRects(), 1.0f);
+  EXPECT_EQ(feature->latest_rects(), cc::TrackedElementRects());
+
+  // Simulate rects change.
+  cc::TrackedElementRects rects;
   base::Token id(1, 2);
-  bounds[id] = {gfx::Rect(10, 20, 100, 200)};
+  cc::TrackedElementRect data(id, gfx::Rect(10, 20, 100, 200));
+  cc::TrackedElementFeature tracked_element_feature =
+      static_cast<cc::TrackedElementFeature>(
+          TrackedElementFeature::kAIHighlight);
+  rects.insert({tracked_element_feature, {data}});
   float scale = 1.5f;
 
-  feature->OnTrackedElementBoundsChanged(bounds, scale);
+  feature->OnTrackedElementRectsChanged(rects, scale);
 
   // Verify cached values.
-  EXPECT_EQ(feature->latest_bounds(), bounds);
+  EXPECT_EQ(feature->latest_rects(), rects);
   EXPECT_EQ(feature->latest_scale_factor(), scale);
 }
 
-TEST_F(ContextHighlightTabFeatureTest, BoundsResetOnDiscard) {
+TEST_F(ContextHighlightTabFeatureTest, RectsResetOnDiscard) {
   TestTabInterface tab;
   EXPECT_CALL(tab, GetContents())
       .WillRepeatedly(testing::Return(web_contents()));
@@ -76,18 +87,22 @@ TEST_F(ContextHighlightTabFeatureTest, BoundsResetOnDiscard) {
 
   auto feature = std::make_unique<ContextHighlightTabFeature>(tab);
 
-  // Set some bounds.
-  cc::TrackedElementBounds bounds;
+  // Set some rects.
+  cc::TrackedElementRects rects;
   base::Token id(1, 2);
-  bounds[id] = {gfx::Rect(10, 20, 100, 200)};
-  feature->OnTrackedElementBoundsChanged(bounds, 1.0f);
-  EXPECT_EQ(feature->latest_bounds(), bounds);
+  cc::TrackedElementRect data(id, gfx::Rect(10, 20, 100, 200));
+  cc::TrackedElementFeature tracked_element_feature =
+      static_cast<cc::TrackedElementFeature>(
+          TrackedElementFeature::kAIHighlight);
+  rects.insert({tracked_element_feature, {data}});
+  feature->OnTrackedElementRectsChanged(rects, 1.0f);
+  EXPECT_EQ(feature->latest_rects(), rects);
 
   // Simulate discard.
   discard_callback.Run(&tab, web_contents(), nullptr);
 
-  // Bounds should be reset.
-  EXPECT_EQ(feature->latest_bounds(), cc::TrackedElementBounds());
+  // Rects should be reset.
+  EXPECT_EQ(feature->latest_rects(), cc::TrackedElementRects());
 }
 
 }  // namespace tabs

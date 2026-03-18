@@ -1187,16 +1187,16 @@ void Layer::SetCaptureBounds(viz::RegionCaptureBounds bounds) {
   SetSubtreePropertyChanged();
 }
 
-void Layer::SetTrackedElementBounds(TrackedElementBounds bounds) {
+void Layer::SetTrackedElementRects(TrackedElementRects rects) {
   DCHECK(IsPropertyChangeAllowed());
   const auto& rare_inputs = inputs_.Read(*this).rare_inputs;
-  if (!rare_inputs && bounds.empty()) {
+  if (!rare_inputs && rects.empty()) {
     return;
   }
-  if (rare_inputs && rare_inputs->tracked_element_bounds == bounds) {
+  if (rare_inputs && rare_inputs->tracked_element_rects == rects) {
     return;
   }
-  EnsureRareInputs().tracked_element_bounds = std::move(bounds);
+  EnsureRareInputs().tracked_element_rects = std::move(rects);
   SetPropertyTreesNeedRebuild();
   SetNeedsCommit();
   SetSubtreePropertyChanged();
@@ -1548,8 +1548,7 @@ void Layer::PushDirtyPropertiesTo(LayerImpl* layer,
       layer->SetNonCompositedScrollHitTestRects(
           inputs.rare_inputs->non_composited_scroll_hit_test_rects);
       layer->SetCaptureBounds(inputs.rare_inputs->capture_bounds);
-      layer->SetTrackedElementBounds(
-          inputs.rare_inputs->tracked_element_bounds);
+      layer->SetTrackedElementRects(inputs.rare_inputs->tracked_element_rects);
       layer->SetWheelEventHandlerRegion(inputs.rare_inputs->wheel_event_region);
     } else {
       layer->ResetRareProperties();

@@ -6,7 +6,7 @@
 #define CONTENT_PUBLIC_BROWSER_TRACKED_ELEMENT_OBSERVER_H_
 
 #include "base/observer_list_types.h"
-#include "cc/trees/tracked_element_bounds.h"
+#include "cc/trees/tracked_element_rects.h"
 #include "content/common/content_export.h"
 
 namespace content {
@@ -14,9 +14,9 @@ namespace content {
 // An observer API implemented by classes interested in Tracked Element changes.
 class CONTENT_EXPORT TrackedElementObserver : public base::CheckedObserver {
  public:
-  // This method is invoked when the tracked element bounds have changed.
-  virtual void OnTrackedElementBoundsChanged(
-      const cc::TrackedElementBounds& bounds,
+  // This method is invoked when the tracked element rects have changed.
+  virtual void OnTrackedElementRectsChanged(
+      const cc::TrackedElementRects& rects,
       float device_scale_factor) = 0;
 };
 

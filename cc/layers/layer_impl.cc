@@ -410,9 +410,9 @@ void LayerImpl::SetCaptureBounds(viz::RegionCaptureBounds bounds) {
   }
 }
 
-void LayerImpl::SetTrackedElementBounds(TrackedElementBounds bounds) {
-  if (rare_properties_ || !bounds.empty()) {
-    EnsureRareProperties().tracked_element_bounds = std::move(bounds);
+void LayerImpl::SetTrackedElementRects(TrackedElementRects rects) {
+  if (rare_properties_ || !rects.empty()) {
+    EnsureRareProperties().tracked_element_rects = std::move(rects);
     SetNeedsPushProperties();
   }
 }

@@ -7150,11 +7150,12 @@ const RegionCaptureCropId* Element::GetRegionCaptureCropId() const {
   return nullptr;
 }
 
-void Element::SetTrackedElementRect(std::unique_ptr<TrackedElementRect> rect) {
+void Element::SetTrackedElementSubRect(cc::TrackedElementFeature feature,
+                                       const TrackedElementSubRect& rect) {
   ElementRareDataVector& rare_data = EnsureRareData();
-  CHECK(!rare_data.GetTrackedElementRect());
+  CHECK(!rare_data.GetTrackedElementSubRect(feature));
 
-  data_ = rare_data.SetTrackedElementRect(std::move(rect));
+  data_ = rare_data.SetTrackedElementSubRect(feature, rect);
 
   // If a LayoutObject does not yet exist, this full paint invalidation
   // will occur automatically after it is created.
@@ -7167,16 +7168,17 @@ void Element::SetTrackedElementRect(std::unique_ptr<TrackedElementRect> rect) {
   }
 }
 
-const TrackedElementRect* Element::GetTrackedElementRect() const {
+const TrackedElementSubRect* Element::GetTrackedElementSubRect(
+    cc::TrackedElementFeature feature) const {
   if (const ElementRareDataVector* data = RareData()) {
-    return data->GetTrackedElementRect();
+    return data->GetTrackedElementSubRect(feature);
   }
   return nullptr;
 }
 
-void Element::ClearTrackedElementRect() {
+void Element::ClearTrackedElementSubRect(cc::TrackedElementFeature feature) {
   if (ElementRareDataVector* data = RareData()) {
-    data->ClearTrackedElementRect();
+    data->ClearTrackedElementSubRect(feature);
   }
 
   // If a LayoutObject does not yet exist, this full paint invalidation
@@ -7188,6 +7190,13 @@ void Element::ClearTrackedElementRect() {
       layout_inline->UpdateShouldCreateBoxFragment();
     }
   }
+}
+
+const TrackedElementSubRects* Element::GetTrackedElementSubRects() const {
+  if (const ElementRareDataVector* data = RareData()) {
+    return data->GetTrackedElementSubRects();
+  }
+  return nullptr;
 }
 
 void Element::SetRestrictionTargetId(std::unique_ptr<RestrictionTargetId> id) {

@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_CONTEXT_HIGHLIGHT_CONTEXT_HIGHLIGHT_OVERLAY_VIEW_H_
 #define CHROME_BROWSER_UI_CONTEXT_HIGHLIGHT_CONTEXT_HIGHLIGHT_OVERLAY_VIEW_H_
 
-#include "cc/trees/tracked_element_bounds.h"
+#include "cc/trees/tracked_element_rects.h"
 #include "ui/views/view.h"
 
 // ContextHighlightOverlayView is a view that draws AI-generated highlights over
@@ -21,9 +21,9 @@ class ContextHighlightOverlayView : public views::View {
   ContextHighlightOverlayView& operator=(const ContextHighlightOverlayView&) =
       delete;
 
-  // Updates the highlight bounds based on the latest RenderFrameMetadata.
-  void UpdateHighlightBounds(const cc::TrackedElementBounds& bounds,
-                             float device_scale_factor);
+  // Updates the highlight rects based on the latest RenderFrameMetadata.
+  void UpdateHighlightRects(const cc::TrackedElementRects& rects,
+                            float device_scale_factor);
 
  protected:
   // views::View:

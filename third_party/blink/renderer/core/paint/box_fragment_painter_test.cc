@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/paint/box_fragment_painter.h"
 
+#include "cc/trees/tracked_element_rects.h"
 #include "components/paint_preview/common/paint_preview_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -248,17 +249,18 @@ TEST_P(BoxFragmentPainterTest, TrackElementDiv) {
   // Initially all the texts are painted.
   auto* target = GetDocument().getElementById(AtomicString("target"));
 
-  auto highlight_id = base::Token(1, 2);
-  auto highlight =
-      std::make_unique<TrackedElementRect>(TrackedElementId(highlight_id));
-  target->SetTrackedElementRect(std::move(highlight));
+  auto element_id = base::Token(1, 2);
+  auto element = TrackedElementSubRect(TrackedElementId(element_id));
+  cc::TrackedElementFeature feature = static_cast<cc::TrackedElementFeature>(1);
+  target->SetTrackedElementSubRect(feature, element);
 
   UpdateAllLifecyclePhasesForTest();
 
-  auto* tracked_element_data = MakeGarbageCollected<TrackedElementData>();
+  auto* tracked_element_data = MakeGarbageCollected<TrackedElementRects>();
   // Contains background pixels (not the text pixels)
-  tracked_element_data->map[TrackedElementId(highlight_id)] =
-      gfx::Rect(8, 8, 100, 50);
+  tracked_element_data->map.insert_or_assign(
+      feature, std::vector<TrackedElementRect>{TrackedElementRect(
+                   TrackedElementId(element_id), gfx::Rect(8, 8, 100, 50))});
 
   EXPECT_THAT(ContentPaintChunks(),
               ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
@@ -279,17 +281,18 @@ TEST_P(BoxFragmentPainterTest, TrackElementSpanInlineBox) {
   // Initially all the texts are painted.
   auto* target = GetDocument().getElementById(AtomicString("target"));
 
-  auto highlight_id = base::Token(1, 2);
-  auto highlight =
-      std::make_unique<TrackedElementRect>(TrackedElementId(highlight_id));
-  target->SetTrackedElementRect(std::move(highlight));
+  auto element_id = base::Token(1, 2);
+  auto element = TrackedElementSubRect(TrackedElementId(element_id));
+  cc::TrackedElementFeature feature = static_cast<cc::TrackedElementFeature>(1);
+  target->SetTrackedElementSubRect(feature, element);
 
   UpdateAllLifecyclePhasesForTest();
 
-  auto* tracked_element_data = MakeGarbageCollected<TrackedElementData>();
+  auto* tracked_element_data = MakeGarbageCollected<TrackedElementRects>();
   // Contains only text pixels
-  tracked_element_data->map[TrackedElementId(highlight_id)] =
-      gfx::Rect(8, 8, 1, 1);
+  tracked_element_data->map.insert_or_assign(
+      feature, std::vector<TrackedElementRect>{TrackedElementRect(
+                   TrackedElementId(element_id), gfx::Rect(8, 8, 1, 1))});
 
   EXPECT_THAT(ContentPaintChunks(),
               ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
@@ -317,17 +320,18 @@ TEST_P(BoxFragmentPainterTest, TrackElementSpanShouldForceInlineBox) {
   // Initially all the texts are painted.
   auto* target = GetDocument().getElementById(AtomicString("target"));
 
-  auto highlight_id = base::Token(1, 2);
-  auto highlight =
-      std::make_unique<TrackedElementRect>(TrackedElementId(highlight_id));
-  target->SetTrackedElementRect(std::move(highlight));
+  auto element_id = base::Token(1, 2);
+  auto element = TrackedElementSubRect(TrackedElementId(element_id));
+  cc::TrackedElementFeature feature = static_cast<cc::TrackedElementFeature>(1);
+  target->SetTrackedElementSubRect(feature, element);
 
   UpdateAllLifecyclePhasesForTest();
 
-  auto* tracked_element_data = MakeGarbageCollected<TrackedElementData>();
+  auto* tracked_element_data = MakeGarbageCollected<TrackedElementRects>();
   // Contains only text pixels
-  tracked_element_data->map[TrackedElementId(highlight_id)] =
-      gfx::Rect(8, 8, 1, 1);
+  tracked_element_data->map.insert_or_assign(
+      feature, std::vector<TrackedElementRect>{TrackedElementRect(
+                   TrackedElementId(element_id), gfx::Rect(8, 8, 1, 1))});
 
   EXPECT_THAT(ContentPaintChunks(),
               ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
@@ -345,20 +349,22 @@ TEST_P(BoxFragmentPainterTest, TrackElementWithSubRect) {
   // Initially all the texts are painted.
   auto* target = GetDocument().getElementById(AtomicString("target"));
 
-  auto highlight_id = base::Token(1, 2);
-  auto highlight = std::make_unique<TrackedElementRect>(
-      TrackedElementId(highlight_id),
-      TrackedElementRect::SubRect{
+  auto element_id = base::Token(1, 2);
+  auto element = TrackedElementSubRect(
+      TrackedElementId(element_id),
+      TrackedElementSubRect::SubRect{
           gfx::Rect(10, 10, 20, 20),
-          TrackedElementRect::SubRect::Type::kIntersectWithElementRect});
-  target->SetTrackedElementRect(std::move(highlight));
+          TrackedElementSubRect::SubRect::Type::kIntersectWithElementRect});
+  cc::TrackedElementFeature feature = static_cast<cc::TrackedElementFeature>(1);
+  target->SetTrackedElementSubRect(feature, element);
 
   UpdateAllLifecyclePhasesForTest();
 
-  auto* tracked_element_data = MakeGarbageCollected<TrackedElementData>();
+  auto* tracked_element_data = MakeGarbageCollected<TrackedElementRects>();
   // 8, 8 is the default body margin. 10, 10 is the sub-rect offset.
-  tracked_element_data->map[TrackedElementId(highlight_id)] =
-      gfx::Rect(18, 18, 20, 20);
+  tracked_element_data->map.insert_or_assign(
+      feature, std::vector<TrackedElementRect>{TrackedElementRect(
+                   TrackedElementId(element_id), gfx::Rect(18, 18, 20, 20))});
 
   EXPECT_THAT(ContentPaintChunks(),
               ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
@@ -375,22 +381,24 @@ TEST_P(BoxFragmentPainterTest, TrackElementWithSubRectNoIntersection) {
   )HTML");
   auto* target = GetDocument().getElementById(AtomicString("target"));
 
-  auto highlight_id = base::Token(1, 2);
+  auto element_id = base::Token(1, 2);
   // Create a sub-rect that is larger than the element and starts at a negative
   // offset.
-  auto highlight = std::make_unique<TrackedElementRect>(
-      TrackedElementId(highlight_id),
-      TrackedElementRect::SubRect{
+  auto element = TrackedElementSubRect(
+      TrackedElementId(element_id),
+      TrackedElementSubRect::SubRect{
           gfx::Rect(-10, -10, 100, 100),
-          TrackedElementRect::SubRect::Type::kNoIntersection});
-  target->SetTrackedElementRect(std::move(highlight));
+          TrackedElementSubRect::SubRect::Type::kNoIntersection});
+  cc::TrackedElementFeature feature = static_cast<cc::TrackedElementFeature>(1);
+  target->SetTrackedElementSubRect(feature, element);
 
   UpdateAllLifecyclePhasesForTest();
 
-  auto* tracked_element_data = MakeGarbageCollected<TrackedElementData>();
+  auto* tracked_element_data = MakeGarbageCollected<TrackedElementRects>();
   // 8, 8 (margin) - 10, 10 (offset) = -2, -2. Size remains 100, 100.
-  tracked_element_data->map[TrackedElementId(highlight_id)] =
-      gfx::Rect(-2, -2, 100, 100);
+  tracked_element_data->map.insert_or_assign(
+      feature, std::vector<TrackedElementRect>{TrackedElementRect(
+                   TrackedElementId(element_id), gfx::Rect(-2, -2, 100, 100))});
 
   EXPECT_THAT(ContentPaintChunks(),
               ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,

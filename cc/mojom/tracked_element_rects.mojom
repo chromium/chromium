@@ -1,0 +1,34 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module cc.mojom;
+
+import "mojo/public/mojom/base/token.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+// Represents the data associated with a tracked element. This includes the
+// id of the element and the bounds of the element translated to the coordinate
+// space of the outputted pixels.
+struct TrackedElementRect {
+  // The tracked_element_id is represented over mojom as a base::Token,
+  // although in practice it is generated as a GUID. Since these are consumed
+  // only internally in Chrome, we use base::Token for the representation.
+  mojo_base.mojom.Token tracked_element_id;
+
+  // Screen-space rectangle representing the visible bounds of the tracked
+  // element.
+  gfx.mojom.Rect visible_bounds;
+};
+
+// TrackedElementRects are used to map a "feature" to the list of tracked
+// elements being tracked by that feature. The feature is
+// defined as an int32_t enum in cc/trees/tracked_element_rects.h. The feature
+// is represented here as merely an int32 because the specific values are not
+// defined in the cc code. Instead, cc defines an empty enum and the mappings of
+// feature to int are maintained by the higher level browser code. The element
+// rectangle represents the region of the viewport where the element is rendered
+// in a frame.
+struct TrackedElementRects {
+  map<int32, array<TrackedElementRect>> element_data;
+};

@@ -35,7 +35,7 @@
 #include "cc/tiles/tile_priority.h"
 #include "cc/trees/damage_reason.h"
 #include "cc/trees/target_property.h"
-#include "cc/trees/tracked_element_bounds.h"
+#include "cc/trees/tracked_element_rects.h"
 #include "components/viz/common/quads/shared_quad_state.h"
 #include "components/viz/common/surfaces/region_capture_bounds.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -269,7 +269,7 @@ class CC_EXPORT LayerImpl {
     // The bounds of elements marked for potential region capture, stored in
     // the coordinate space of this layer.
     viz::RegionCaptureBounds capture_bounds;
-    TrackedElementBounds tracked_element_bounds;
+    TrackedElementRects tracked_element_rects;
 
     Region main_thread_scroll_hit_test_region;
     std::vector<ScrollHitTestRect> non_composited_scroll_hit_test_rects;
@@ -335,9 +335,9 @@ class CC_EXPORT LayerImpl {
     return rare_properties_ ? &rare_properties_->capture_bounds : nullptr;
   }
 
-  void SetTrackedElementBounds(TrackedElementBounds bounds);
-  const TrackedElementBounds* tracked_element_bounds() const {
-    return rare_properties_ ? &rare_properties_->tracked_element_bounds
+  void SetTrackedElementRects(TrackedElementRects bounds);
+  const TrackedElementRects* tracked_element_rects() const {
+    return rare_properties_ ? &rare_properties_->tracked_element_rects
                             : nullptr;
   }
 

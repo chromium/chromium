@@ -199,10 +199,10 @@ MATCHER_P6(IsPaintChunk,
 MATCHER_P3(IsPaintChunkWithTrackedElementData,
            begin,
            end,
-           tracked_element_data,
+           tracked_element_rects,
            "") {
   return CheckChunk(arg, begin, end) &&
-         *arg.tracked_element_data == *tracked_element_data;
+         *arg.tracked_element_rects == *tracked_element_rects;
 }
 
 // Shorter names for frequently used display item types in tests.

@@ -3853,8 +3853,8 @@ void RenderWidgetHostImpl::OnRenderFrameMetadataChangedAfterActivation(
       render_frame_metadata_provider_.LastRenderFrameMetadata();
 
   for (TrackedElementObserver& observer : tracked_element_observers_) {
-    observer.OnTrackedElementBoundsChanged(metadata.tracked_element_bounds,
-                                           metadata.device_scale_factor);
+    observer.OnTrackedElementRectsChanged(metadata.tracked_element_rects,
+                                          metadata.device_scale_factor);
   }
 
   const bool mobile_optimized_state_changed =

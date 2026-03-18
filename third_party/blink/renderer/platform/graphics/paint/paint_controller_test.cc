@@ -6,6 +6,7 @@
 
 #include "base/dcheck_is_on.h"
 #include "build/build_config.h"
+#include "cc/trees/tracked_element_rects.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_cache_skipper.h"
@@ -2173,6 +2174,15 @@ TEST_P(PaintControllerTest, RecordRegionCaptureDataValidData) {
 TEST_P(PaintControllerTest, RecordTrackedElementData) {
   static const auto kId = TrackedElementId(base::Token::CreateRandom());
   static const gfx::Rect kBounds(1, 2, 640, 480);
+  const auto kFeature0 = static_cast<cc::TrackedElementFeature>(0);
+  const auto kFeature1 = static_cast<cc::TrackedElementFeature>(1);
+  const auto kFeature0ElementSubRect = TrackedElementSubRect(kId);
+  const auto kFeature1ElementSubRect = TrackedElementSubRect(kId);
+  TrackedElementSubRects tracked_element_sub_rects;
+  tracked_element_sub_rects.insert_or_assign(
+      kFeature0, std::move(kFeature0ElementSubRect));
+  tracked_element_sub_rects.insert_or_assign(
+      kFeature1, std::move(kFeature1ElementSubRect));
 
   FakeDisplayItemClient& client =
       *MakeGarbageCollected<FakeDisplayItemClient>("client");
@@ -2180,16 +2190,28 @@ TEST_P(PaintControllerTest, RecordTrackedElementData) {
     AutoCommitPaintController paint_controller(GetPersistentData());
     GraphicsContext context(paint_controller);
     InitRootChunk(paint_controller);
-    auto tracked_element_rect = std::make_unique<TrackedElementRect>(kId);
-    paint_controller.RecordTrackedElementData(client, *tracked_element_rect,
-                                              kBounds);
+    paint_controller.RecordTrackedElementData(client, kBounds,
+                                              tracked_element_sub_rects);
   }
 
   ASSERT_EQ(1u, GetPersistentData().GetPaintChunks().size());
   const auto& chunk = GetPersistentData().GetPaintChunks()[0];
-  ASSERT_TRUE(chunk.tracked_element_data);
-  ASSERT_EQ(1u, chunk.tracked_element_data->map.size());
-  EXPECT_EQ(kBounds, chunk.tracked_element_data->map.find(kId)->second);
+  ASSERT_TRUE(chunk.tracked_element_rects);
+  ASSERT_EQ(2u, chunk.tracked_element_rects->map.size());
+
+  // Check the data for feature 0.
+  ASSERT_TRUE(chunk.tracked_element_rects->map.contains(kFeature0));
+  const auto& feature0_rects = chunk.tracked_element_rects->map.at(kFeature0);
+  ASSERT_EQ(1u, feature0_rects.size());
+  EXPECT_EQ(kId, feature0_rects[0].id);
+  EXPECT_EQ(kBounds, feature0_rects[0].bounds);
+
+  // Check the data for feature 1.
+  ASSERT_TRUE(chunk.tracked_element_rects->map.contains(kFeature1));
+  const auto& feature1_rects = chunk.tracked_element_rects->map.at(kFeature1);
+  ASSERT_EQ(1u, feature1_rects.size());
+  EXPECT_EQ(kId, feature1_rects[0].id);
+  EXPECT_EQ(kBounds, feature1_rects[0].bounds);
 }
 
 // Death tests don't work properly on Android.

@@ -44,14 +44,14 @@ content::RenderWidgetHost* ContextHighlightTabFeature::GetRenderWidgetHost()
   return rvh->GetWidget();
 }
 
-void ContextHighlightTabFeature::OnTrackedElementBoundsChanged(
-    const cc::TrackedElementBounds& bounds,
+void ContextHighlightTabFeature::OnTrackedElementRectsChanged(
+    const cc::TrackedElementRects& rects,
     float device_scale_factor) {
-  latest_bounds_ = bounds;
+  latest_rects_ = rects;
   latest_scale_factor_ = device_scale_factor;
   if (tab_->IsActivated()) {
     ContextHighlightWindowFeature* window_feature = GetWindowFeature();
-    window_feature->CheckAndUpdateTrackedElementBounds();
+    window_feature->CheckAndUpdateTrackedElementRects();
   }
 }
 
@@ -75,7 +75,7 @@ void ContextHighlightTabFeature::OnWillDiscardContents(
     TabInterface* tab,
     content::WebContents* old_contents,
     content::WebContents* new_contents) {
-  latest_bounds_ = cc::TrackedElementBounds();
+  latest_rects_ = cc::TrackedElementRects();
   UnregisterObserverFromHost(current_host_);
   Observe(new_contents);
 

@@ -161,14 +161,14 @@ void InlineBoxFragmentPainterBase::PaintBackgroundBorderShadow(
 
   // Record tracked element data if associated with element
   Element* element = DynamicTo<Element>(node_);
-  if (element && element->GetTrackedElementRect()) {
+  if (element && element->GetTrackedElementSubRects()) {
+    const auto* sub_rects = element->GetTrackedElementSubRects();
     PhysicalRect frame_rect = inline_box_fragment_.LocalRect();
     PhysicalRect adjusted_frame_rect(paint_offset, frame_rect.size);
-    const auto* tracked_element_rect = element->GetTrackedElementRect();
 
     paint_info.context.GetPaintController().RecordTrackedElementData(
-        GetDisplayItemClient(), *tracked_element_rect,
-        ToPixelSnappedRect(adjusted_frame_rect));
+        GetDisplayItemClient(), ToPixelSnappedRect(adjusted_frame_rect),
+        *sub_rects);
   }
 
   // You can use p::first-line to specify a background. If so, the direct child
