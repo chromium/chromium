@@ -1,8 +1,5 @@
 import("../build_webui_tests.gni")
 
-assert(is_win || is_mac || is_linux || is_chromeos,
-       "This target is only supported on Windows, Mac, Linux, or ChromeOS.")
-
 build_webui_tests("build") {
   cc_test_files = [ "skills_browsertest.cc" ]
 

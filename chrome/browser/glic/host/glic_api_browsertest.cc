@@ -53,6 +53,7 @@
 #include "chrome/browser/glic/host/glic_features.mojom.h"
 #include "chrome/browser/glic/host/glic_page_handler.h"
 #include "chrome/browser/glic/host/glic_region_capture_controller.h"
+#include "chrome/browser/glic/host/glic_skills_manager.h"
 #include "chrome/browser/glic/host/glic_web_contents_warming_pool.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/host/webui_contents_container.h"
@@ -82,8 +83,10 @@
 #include "chrome/browser/skills/skills_service_factory.h"
 #include "chrome/browser/skills/skills_ui_tab_controller.h"
 #include "chrome/browser/skills/skills_ui_tab_controller_interface.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/common/actor_webui.mojom.h"
@@ -91,6 +94,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/metrics/metrics_service.h"
@@ -3927,6 +3931,34 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithSkills, testShowManageSkillsUi) {
     return tab &&
            base::StartsWith(tab->GetContents()->GetLastCommittedURL().spec(),
                             chrome::kChromeUISkillsURL);
+  }));
+}
+
+IN_PROC_BROWSER_TEST_P(GlicApiTestWithSkills, testShowManageSkillsUiNoWindow) {
+  RunTestSequence(OpenGlicFloatingWindow(GlicInstrumentMode::kHostAndContents));
+
+  Browser* main_browser = browser();
+  CloseMainBrowserWithIncognitoKeepAlive();
+
+  ui_test_utils::WaitForBrowserToClose(main_browser);
+
+  // Track the floating instance so ExecuteJsTest knows where to run.
+  TrackFloatingGlicInstance();
+  ExecuteJsTest();
+
+  tabs::TabInterface* skills_tab = nullptr;
+  ASSERT_TRUE(base::test::RunUntil([&]() -> bool {
+    auto all_bwis = GetAllBrowserWindowInterfaces();
+    for (auto* bwi : all_bwis) {
+      for (auto* tab : TabListInterface::From(bwi)->GetAllTabs()) {
+        if (tab->GetContents()->GetLastCommittedURL().spec().starts_with(
+                chrome::kChromeUISkillsURL)) {
+          skills_tab = tab;
+          return true;
+        }
+      }
+    }
+    return false;
   }));
 }
 

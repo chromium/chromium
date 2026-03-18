@@ -70,6 +70,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/skills/skills_glic_mojom_util.h"
+#include "chrome/browser/skills/skills_service_factory.h"
 #include "chrome/browser/skills/skills_ui_tab_controller_interface.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
@@ -100,8 +101,11 @@
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/skills/features.h"
+#include "components/skills/public/skill.h"
 #include "components/skills/public/skill.mojom.h"
 #include "components/skills/public/skills_metrics.h"
+#include "components/skills/public/skills_service.h"
 #include "components/sync/protocol/skill_specifics.pb.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/url_formatter/elide_url.h"
@@ -136,14 +140,10 @@
 #include "chrome/browser/glic/glic_hotkey.h"
 #include "chrome/browser/glic/host/context/glic_focused_browser_manager.h"
 #include "chrome/browser/media/audio_ducker.h"
-#include "chrome/browser/skills/skills_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "components/skills/features.h"
-#include "components/skills/public/skill.h"
-#include "components/skills/public/skills_service.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "ui/base/base_window.h"
 #endif
@@ -221,15 +221,11 @@ GlicUnpinTrigger FromMojomUnpinTrigger(mojom::UnpinTrigger trigger) {
   }
 }
 
-// NEEDS_ANDROID_IMPL: (crbug.com/477622144) Remove desktop-only restrictions
-// from Skills backend.
-#if !BUILDFLAG(IS_ANDROID)
 mojom::SkillPreviewPtr ToMojomSkillPreview(const skills::proto::Skill& skill) {
   return mojom::SkillPreview::New(skill.id(), skill.name(), skill.icon(),
                                   mojom::SkillSource::kFirstParty,
                                   skill.description());
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Monitors the panel state and the browser widget state. Emits an event any
 // time the active state changes.
@@ -636,8 +632,6 @@ class JournalHandler {
   raw_ptr<actor::ActorKeyedService> actor_keyed_service_;
 };
 
-
-
 }  // namespace
 
 // WARNING: One instance of this class is created per WebUI navigated to
@@ -653,11 +647,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
                              public GlicWebClientAccess,
                              public BrowserAttachObserver,
                              public ActiveStateCalculator::Observer,
-// NEEDS_ANDROID_IMPL: (crbug.com/477622144) Remove desktop-only restrictions
-// from Skills backend.
-#if !BUILDFLAG(IS_ANDROID)
                              public skills::SkillsService::Observer,
-#endif  //  !BUILDFLAG(IS_ANDROID)
                              public BrowserIsOpenCalculator::Observer {
  public:
   explicit GlicWebClientHandler(
@@ -838,16 +828,12 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
                   base::Unretained(this)));
     }
 
-#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
-    // NEEDS_ANDROID_IMPL: (crbug.com/477622144) Remove desktop-only
-    // restrictions from Skills backend.
     if (base::FeatureList::IsEnabled(features::kSkillsEnabled)) {
       skills_service_ = skills::SkillsServiceFactory::GetForProfile(profile_);
       if (skills_service_) {
         skills_service_->AddObserver(this);
       }
     }
-#endif
 
     auto state = glic::mojom::WebClientInitialState::New();
     state->chrome_version = version_info::GetVersion();
@@ -977,12 +963,8 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         GlicEnabling::IsTrustFirstOnboardingEnabledForProfile(profile_);
     state->onboarding_completed =
         GlicEnabling::HasConsentedForProfile(profile_);
-// NEEDS_ANDROID_IMPL: (crbug.com/477622144) Remove desktop-only restrictions
-// from Skills backend.
-#if !BUILDFLAG(IS_ANDROID)
     state->enable_skills =
         base::FeatureList::IsEnabled(features::kSkillsEnabled);
-#endif
 
     std::move(callback).Run(std::move(state));
   }
@@ -1318,9 +1300,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 
   void CreateSkill(mojom::CreateSkillRequestPtr request,
                    CreateSkillCallback callback) override {
-// NEEDS_ANDROID_IMPL: (crbug.com/477622144) Remove desktop-only restrictions
-// from Skills backend.
-#if !BUILDFLAG(IS_ANDROID)
     auto scoped_callback =
         mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback), false);
 
@@ -1341,16 +1320,10 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     host().skills_manager().LaunchSkillsDialog(
         profile_, std::move(skill), skills::mojom::SkillsDialogType::kAdd,
         std::move(scoped_callback));
-#else
-    receiver_.ReportBadMessage("CreateSkill isn't supported on Android.");
-#endif  //  !BUILDFLAG(IS_ANDROID)
   }
 
   void UpdateSkill(mojom::UpdateSkillRequestPtr request,
                    UpdateSkillCallback callback) override {
-// NEEDS_ANDROID_IMPL: (crbug.com/477622144) Remove desktop-only restrictions
-// from Skills backend.
-#if !BUILDFLAG(IS_ANDROID)
     auto scoped_callback =
         mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback), false);
 
@@ -1368,15 +1341,9 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
           profile_, *skill, skills::mojom::SkillsDialogType::kEdit,
           std::move(scoped_callback));
     }
-#else
-    receiver_.ReportBadMessage("UpdateSkill isn't supported on Android.");
-#endif  //  !BUILDFLAG(IS_ANDROID)
   }
 
   void ShowManageSkillsUi() override {
-// NEEDS_ANDROID_IMPL: (crbug.com/477622144) Remove desktop-only restrictions
-// from Skills backend.
-#if !BUILDFLAG(IS_ANDROID)
     if (!base::FeatureList::IsEnabled(features::kSkillsEnabled)) {
       receiver_.ReportBadMessage(
           "ShowManageSkillsUi cannot be called without Skills enabled.");
@@ -1384,16 +1351,9 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     }
 
     host().skills_manager().ShowManageSkillsUi();
-#else
-    receiver_.ReportBadMessage(
-        "ShowManageSkillsUi isn't supported on Android.");
-#endif  //  !BUILDFLAG(IS_ANDROID)
   }
 
   void GetSkill(const std::string& id, GetSkillCallback callback) override {
-// NEEDS_ANDROID_IMPL: (crbug.com/477622144) Remove desktop-only restrictions
-// from Skills backend.
-#if !BUILDFLAG(IS_ANDROID)
     if (!base::FeatureList::IsEnabled(features::kSkillsEnabled)) {
       receiver_.ReportBadMessage(
           "GetSkill cannot be called without Skills enabled.");
@@ -1401,9 +1361,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     }
     mojom::SkillPtr skill = GetSkillById(id);
     std::move(callback).Run(std::move(skill));
-#else
-    receiver_.ReportBadMessage("GetSkill isn't supported on Android.");
-#endif  //  !BUILDFLAG(IS_ANDROID)
   }
 
   void RecordSkillsWebClientEvent(
@@ -2033,9 +1990,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     web_client_->Invoke(std::move(options), std::move(callback));
   }
 
-// NEEDS_ANDROID_IMPL: (crbug.com/477622144) Remove desktop-only restrictions
-// from Skills backend.
-#if !BUILDFLAG(IS_ANDROID)
   // SkillsService::Observer implementation.
   void OnSkillUpdated(std::string_view skill_id,
                       skills::SkillsService::UpdateSource update_source,
@@ -2104,7 +2058,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   bool Require1PSkillRefresh() override {
     return active_state_calculator_.IsActive();
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
  private:
   bool ComputeCanAttach() const {
@@ -2138,13 +2091,9 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     if (glic_service_->zero_state_suggestions_manager()) {
       glic_service_->zero_state_suggestions_manager()->Reset();
     }
-// NEEDS_ANDROID_IMPL: (crbug.com/477622144) Remove desktop-only restrictions
-// from Skills backend.
-#if !BUILDFLAG(IS_ANDROID)
     if (skills_service_) {
       skills_service_->RemoveObserver(this);
     }
-#endif  // !BUILDFLAG(IS_ANDROID)
   }
 
   void WebClientDisconnected() { Uninstall(); }
@@ -2402,9 +2351,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   }
 
   mojom::SkillPtr GetSkillById(std::string_view skill_id) {
-// NEEDS_ANDROID_IMPL: (crbug.com/477622144) Remove desktop-only restrictions
-// from Skills backend.
-#if !BUILDFLAG(IS_ANDROID)
     if (!skills_service_) {
       return nullptr;
     }
@@ -2421,16 +2367,10 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
                 sync_pb::SkillSource::SKILL_SOURCE_DERIVED_FROM_FIRST_PARTY
             ? skill->source_skill_id
             : std::string());
-#else
-    return nullptr;
-#endif  //  !BUILDFLAG(IS_ANDROID)
   }
 
   std::vector<mojom::SkillPreviewPtr> GetSkillPreviewsList() {
     std::vector<mojom::SkillPreviewPtr> skill_previews;
-// NEEDS_ANDROID_IMPL: (crbug.com/477622144) Remove desktop-only restrictions
-// from Skills backend.
-#if !BUILDFLAG(IS_ANDROID)
     if (!skills_service_) {
       return skill_previews;
     }
@@ -2458,7 +2398,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     skill_previews.insert(skill_previews.end(),
                           std::make_move_iterator(first_party_skills.begin()),
                           std::make_move_iterator(first_party_skills.end()));
-#endif  //  !BUILDFLAG(IS_ANDROID)
     return skill_previews;
   }
 
@@ -2489,11 +2428,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   std::unique_ptr<JournalHandler> journal_handler_;
   std::unique_ptr<DebouncerDeduper> debouncer_deduper_;
   std::unique_ptr<PageMetadataManager> page_metadata_manager_;
-// NEEDS_ANDROID_IMPL: (crbug.com/477622144) Remove desktop-only restrictions
-// from Skills backend.
-#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
   raw_ptr<skills::SkillsService> skills_service_;
-#endif
   base::WeakPtr<actor::AutofillSelectionDialogEventHandler>
       autofill_selection_event_handler_;
   bool floating_panel_can_attach_ = false;
