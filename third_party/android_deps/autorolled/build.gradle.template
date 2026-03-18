@@ -48,7 +48,7 @@ dependencies {
 
     // A dependency of androidx.xr.runtime:runtime, but must be listed here in
     // order to be auto-rolled and not manually rolled.
-    compileLatest 'com.google.ar:impress:+'
+    compileLatest 'com.google.ar:impress:0.0.10'
 
     // Play Services & Firebase
     compileLatest 'com.google.android.gms:play-services-auth-api-phone:+'
