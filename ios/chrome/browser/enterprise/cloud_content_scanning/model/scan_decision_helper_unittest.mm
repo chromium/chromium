@@ -90,8 +90,8 @@ TEST_F(ScanDecisionHelperTest, ScanResultSuccess) {
 
   RequestHandlerResult result =
       CreateResult(FinalContentAnalysisResult::SUCCESS);
-  HandleScanDecision(web_state_, result, TriggerType::kSavePrompt,
-                     future.GetCallback());
+  HandleScanDecision(web_state_, TriggerType::kSavePrompt, future.GetCallback(),
+                     result);
 
   EXPECT_TRUE(future.Get());
 }
@@ -103,8 +103,8 @@ TEST_F(ScanDecisionHelperTest, ScanResultWarnProcceed) {
 
   RequestHandlerResult result =
       CreateResult(FinalContentAnalysisResult::WARNING);
-  HandleScanDecision(web_state_, result, TriggerType::kSavePrompt,
-                     future.GetCallback());
+  HandleScanDecision(web_state_, TriggerType::kSavePrompt, future.GetCallback(),
+                     result);
 
   std::move(fake_commands_handler_->_callback).Run(true);
   EXPECT_TRUE(future.Get());
@@ -117,8 +117,8 @@ TEST_F(ScanDecisionHelperTest, ScanResultWarnCancel) {
 
   RequestHandlerResult result =
       CreateResult(FinalContentAnalysisResult::WARNING);
-  HandleScanDecision(web_state_, result, TriggerType::kSavePrompt,
-                     future.GetCallback());
+  HandleScanDecision(web_state_, TriggerType::kSavePrompt, future.GetCallback(),
+                     result);
 
   std::move(fake_commands_handler_->_callback).Run(false);
   EXPECT_FALSE(future.Get());
@@ -132,8 +132,8 @@ TEST_F(ScanDecisionHelperTest, ScanResultLargeFiles) {
       showSnackbarMessageAfterDismissingKeyboard:[OCMArg any]]);
   RequestHandlerResult result =
       CreateResult(FinalContentAnalysisResult::LARGE_FILES);
-  HandleScanDecision(web_state_, result, TriggerType::kSavePrompt,
-                     future.GetCallback());
+  HandleScanDecision(web_state_, TriggerType::kSavePrompt, future.GetCallback(),
+                     result);
 
   EXPECT_FALSE(future.Get());
   [mock_snackbar_handler_ verify];
@@ -147,8 +147,8 @@ TEST_F(ScanDecisionHelperTest, ScanResultFailure) {
       showSnackbarMessageAfterDismissingKeyboard:[OCMArg any]]);
   RequestHandlerResult result =
       CreateResult(FinalContentAnalysisResult::FAILURE);
-  HandleScanDecision(web_state_, result, TriggerType::kSavePrompt,
-                     future.GetCallback());
+  HandleScanDecision(web_state_, TriggerType::kSavePrompt, future.GetCallback(),
+                     result);
 
   EXPECT_FALSE(future.Get());
   [mock_snackbar_handler_ verify];
@@ -162,8 +162,8 @@ TEST_F(ScanDecisionHelperTest, ScanResultClosed) {
       showSnackbarMessageAfterDismissingKeyboard:[OCMArg any]]);
   RequestHandlerResult result =
       CreateResult(FinalContentAnalysisResult::FAIL_CLOSED);
-  HandleScanDecision(web_state_, result, TriggerType::kSavePrompt,
-                     future.GetCallback());
+  HandleScanDecision(web_state_, TriggerType::kSavePrompt, future.GetCallback(),
+                     result);
 
   EXPECT_FALSE(future.Get());
   [mock_snackbar_handler_ verify];

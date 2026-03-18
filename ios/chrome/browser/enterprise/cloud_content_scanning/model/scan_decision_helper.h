@@ -23,9 +23,9 @@ enum TriggerType { kSavePrompt, kShareSheet };
 // the user. A callback `download_proceed` will run at the end to indicate if
 // the download should proceed.
 void HandleScanDecision(web::WebState* web_state,
-                        RequestHandlerResult result,
                         TriggerType trigger_type,
-                        base::OnceCallback<void(bool)> download_proceed);
+                        base::OnceCallback<void(bool)> download_proceed,
+                        RequestHandlerResult result);
 
 }  // namespace enterprise_connectors
 

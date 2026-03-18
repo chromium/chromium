@@ -122,9 +122,9 @@ void DispatchSnackbarCommands(web::WebState* web_state,
 }  // namespace
 
 void HandleScanDecision(web::WebState* web_state,
-                        RequestHandlerResult result,
                         TriggerType trigger_type,
-                        base::OnceCallback<void(bool)> download_proceed) {
+                        base::OnceCallback<void(bool)> download_proceed,
+                        RequestHandlerResult result) {
   switch (result.final_result) {
     case FinalContentAnalysisResult::SUCCESS:
       std::move(download_proceed).Run(true);
