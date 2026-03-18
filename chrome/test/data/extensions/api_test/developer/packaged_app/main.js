@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-chrome.test.sendMessage("app_launched");
+chrome.test.sendMessage('app_launched');
 
 chrome.app.runtime.onLaunched.addListener(function() {
   chrome.app.window.create('main.html', {
-    'width': 600,
-    'height': 600
+    width: 600,
+    height: 600
   });
 });
