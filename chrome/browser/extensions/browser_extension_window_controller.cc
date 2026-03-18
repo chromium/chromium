@@ -76,6 +76,10 @@ api::tabs::WindowType GetTabsWindowType(const BrowserWindowInterface* browser) {
     case BrowserWindowInterface::TYPE_APP_POPUP:
     case BrowserWindowInterface::TYPE_POPUP:
       return api::tabs::WindowType::kPopup;
+#if BUILDFLAG(IS_ANDROID)
+    case BrowserWindowInterface::TYPE_CUSTOM_TAB:
+      return api::tabs::WindowType::kCustomTab;
+#endif
 #if !BUILDFLAG(IS_ANDROID)
     case BrowserWindowInterface::TYPE_DEVTOOLS:
       return api::tabs::WindowType::kDevtools;

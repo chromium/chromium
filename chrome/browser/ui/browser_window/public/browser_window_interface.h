@@ -153,6 +153,11 @@ class BrowserWindowInterface : public content::PageNavigator {
     // additional restrictions, like it cannot navigated, to prevent misuse.
     TYPE_PICTURE_IN_PICTURE,
 #endif
+#if BUILDFLAG(IS_ANDROID)
+    // TODO(https://crbug.com/493668475): Revisit if this type is needed.
+    // Android Custom Tab browser.
+    TYPE_CUSTOM_TAB,
+#endif
     // If you add a new type, consider updating the test
     // BrowserTest.StartMaximized.
   };

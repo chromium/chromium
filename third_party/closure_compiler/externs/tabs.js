@@ -127,6 +127,7 @@ chrome.tabs.WindowType = {
   PANEL: 'panel',
   APP: 'app',
   DEVTOOLS: 'devtools',
+  CUSTOM_TAB: 'custom-tab',
 };
 
 /**

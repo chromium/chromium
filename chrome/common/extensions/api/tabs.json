@@ -144,7 +144,7 @@
       {
         "id": "WindowType",
         "type": "string",
-        "enum": ["normal", "popup", "panel", "app", "devtools"],
+        "enum": ["normal", "popup", "panel", "app", "devtools", {"name": "custom-tab", "nodoc": true}],
         "description": "The type of window."
       }
     ],

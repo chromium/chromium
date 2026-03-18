@@ -29,6 +29,10 @@
         }, {
           "name": "devtools",
           "description": "A Developer Tools window."
+        }, {
+          "name": "custom-tab",
+          "nodoc": true,
+          "description": "An Android custom tab browser window."
         }]
       },
       {
