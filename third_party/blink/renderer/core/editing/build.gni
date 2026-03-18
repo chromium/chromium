@@ -7,6 +7,8 @@ blink_core_sources_editing = [
   "bidi_adjustment.h",
   "caret_display_item_client.cc",
   "caret_display_item_client.h",
+  "character_range_mapper.cc",
+  "character_range_mapper.h",
   "commands/append_node_command.cc",
   "commands/append_node_command.h",
   "commands/apply_block_element_command.cc",
@@ -378,6 +380,7 @@ if (is_mac) {
 
 blink_core_tests_editing = [
   "caret_display_item_client_test.cc",
+  "character_range_mapper_test.cc",
   "commands/apply_block_element_command_test.cc",
   "commands/apply_style_command_test.cc",
   "commands/composite_edit_command_test.cc",
