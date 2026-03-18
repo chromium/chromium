@@ -2950,6 +2950,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Storage.{DomStorageType}.CommitErrorCountAtReset"
+    units="errors" expires_after="2027-03-09">
+  <owner>fergal@chromium.org</owner>
+  <owner>leimy@chromium.org</owner>
+  <owner>rahsin@microsoft.com</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Records the number of consecutive commit errors that accumulated before the
+    error counter was reset in {DomStorageType}. Emitted whenever the counter is
+    reset from a non-zero value, whether due to a subsequent successful commit
+    or an attempt to recover the database. These errors represent commits whose
+    data was silently lost without retry.
+  </summary>
+</histogram>
+
 <histogram name="Storage.{DomStorageType}.Recovery.{DomStorageRecoveryReason}"
     enum="DomStorageDatabaseRecoveryOutcome" expires_after="2027-02-24">
   <owner>fergal@chromium.org</owner>

@@ -25,6 +25,7 @@
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "components/services/storage/dom_storage/db_status.h"
+#include "components/services/storage/dom_storage/dom_storage_constants.h"
 #include "components/services/storage/dom_storage/dom_storage_histogram_helper.h"
 #include "components/services/storage/dom_storage/features.h"
 #include "components/services/storage/dom_storage/test_support/dom_storage_database_testing.h"
@@ -1425,9 +1426,15 @@ TEST_P(LocalStorageImplTest, RecreateOnCommitFailure) {
   histograms.ExpectUniqueSample(
       "Storage.LocalStorage.Recovery.CommitErrorThresholdExceeded",
       DomStorageDatabaseRecoveryOutcome::kRecoveredToDiskDestroySucceeded, 1);
+
   // Verify DestroyDatabase histogram recorded success during recovery.
   histograms.ExpectUniqueSample("Storage.LocalStorage.DestroyDatabase.OnDisk",
                                 /*sample=*/0, 1);
+
+  // Verify the commit error count was recorded when the counter was reset
+  // during recovery.
+  histograms.ExpectUniqueSample("Storage.LocalStorage.CommitErrorCountAtReset",
+                                kCommitErrorThreshold + 1, 1);
 }
 
 TEST_P(LocalStorageImplTest, DontRecreateOnRepeatedCommitFailure) {
@@ -1539,6 +1546,10 @@ TEST_P(LocalStorageImplTest, DontRecreateOnRepeatedCommitFailure) {
                 DomStorageDatabaseRecoveryOutcome::
                     kOngoingErrorsAfterAttemptedRecovery),
             1);
+
+  // Verify the commit error count was recorded during the first recovery.
+  histograms.ExpectBucketCount("Storage.LocalStorage.CommitErrorCountAtReset",
+                               kCommitErrorThreshold + 1, 1);
 }
 
 // Both disk opens fail, destroy succeeds, in-memory open succeeds.

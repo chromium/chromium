@@ -6,12 +6,22 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "components/services/storage/dom_storage/dom_storage_constants.h"
 
 namespace storage {
 
 using Outcome = DomStorageDatabaseRecoveryOutcome;
 
 namespace {
+
+// Exclusive max for the CommitErrorCountAtReset histogram. This gives exact
+// buckets for [0, kCommitErrorThreshold + 1]. The `commit_error_count_` reaches
+// kCommitErrorThreshold + 1 before triggering database recovery. So setting
+// this max value gives us exact buckets for the expected range. Additionally,
+// after an attempted recovery if errors continue, the counter can keep
+// increasing past the expected range. Values above kCommitErrorThreshold + 1
+// are captured in the kCommitErrorThreshold + 2 overflow bucket.
+constexpr int kCommitErrorCountHistogramMax = kCommitErrorThreshold + 2;
 
 // Maps the destroy results from a recovery cycle that started on-disk to the
 // appropriate histogram outcome enum value based on the terminal state.
@@ -112,6 +122,16 @@ void LogDomStorageRecoveryOutcome(std::string_view storage_type_prefix,
   base::UmaHistogramEnumeration(
       histogram_name,
       GetOnDiskDBRecoveryOutcome(state, has_database, is_in_memory));
+}
+
+void RecordCommitErrorCountAtReset(std::string_view storage_type_prefix,
+                                   int commit_error_count) {
+  if (commit_error_count > 0) {
+    base::UmaHistogramExactLinear(base::StrCat({"Storage.", storage_type_prefix,
+                                                ".CommitErrorCountAtReset"}),
+                                  commit_error_count,
+                                  kCommitErrorCountHistogramMax);
+  }
 }
 
 }  // namespace storage

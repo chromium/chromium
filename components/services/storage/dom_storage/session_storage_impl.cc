@@ -588,6 +588,7 @@ void SessionStorageImpl::OnDataMapDestruction(int64_t map_id) {
 
 void SessionStorageImpl::OnCommitResult(DbStatus status) {
   if (status.ok()) {
+    RecordCommitErrorCountAtReset("SessionStorage", commit_error_count_);
     commit_error_count_ = 0;
     return;
   }
@@ -841,6 +842,7 @@ void SessionStorageImpl::DeleteAndRecreateDatabase(
   // StorageAreas to be queued until the connection is complete.
   connection_state_ = CONNECTION_IN_PROGRESS;
   receiver_.Pause();
+  RecordCommitErrorCountAtReset("SessionStorage", commit_error_count_);
   commit_error_count_ = 0;
   database_.reset();
 

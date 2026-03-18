@@ -26,6 +26,7 @@
 #include "base/test/with_feature_override.h"
 #include "base/token.h"
 #include "base/uuid.h"
+#include "components/services/storage/dom_storage/dom_storage_constants.h"
 #include "components/services/storage/dom_storage/dom_storage_histogram_helper.h"
 #include "components/services/storage/dom_storage/features.h"
 #include "components/services/storage/dom_storage/test_support/dom_storage_database_testing.h"
@@ -855,9 +856,16 @@ TEST_P(SessionStorageImplTest, RecreateOnCommitFailure) {
   histograms.ExpectUniqueSample(
       "Storage.SessionStorage.Recovery.CommitErrorThresholdExceeded",
       DomStorageDatabaseRecoveryOutcome::kRecoveredToDiskDestroySucceeded, 1);
+
   // Verify DestroyDatabase histogram recorded success during recovery.
   histograms.ExpectUniqueSample("Storage.SessionStorage.DestroyDatabase.OnDisk",
                                 /*sample=*/0, 1);
+
+  // Verify the commit error count was recorded when the counter was reset
+  // during recovery.
+  histograms.ExpectUniqueSample(
+      "Storage.SessionStorage.CommitErrorCountAtReset",
+      kCommitErrorThreshold + 1, 1);
 }
 
 TEST_P(SessionStorageImplTest, DontRecreateOnRepeatedCommitFailure) {
@@ -979,6 +987,10 @@ TEST_P(SessionStorageImplTest, DontRecreateOnRepeatedCommitFailure) {
                 DomStorageDatabaseRecoveryOutcome::
                     kOngoingErrorsAfterAttemptedRecovery),
             1);
+
+  // Verify the commit error count was recorded during the first recovery.
+  histograms.ExpectBucketCount("Storage.SessionStorage.CommitErrorCountAtReset",
+                               kCommitErrorThreshold + 1, 1);
 
   session_storage()->DeleteNamespace(namespace_id, false);
   ShutDownSessionStorage();

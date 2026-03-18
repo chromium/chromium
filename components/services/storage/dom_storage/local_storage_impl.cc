@@ -545,6 +545,7 @@ void LocalStorageImpl::DeleteAndRecreateDatabase(
   // Reset state to be in process of connecting. This will cause requests for
   // StorageAreas to be queued until the connection is complete.
   connection_state_ = CONNECTION_IN_PROGRESS;
+  RecordCommitErrorCountAtReset("LocalStorage", commit_error_count_);
   commit_error_count_ = 0;
   database_.reset();
 
@@ -671,6 +672,7 @@ void LocalStorageImpl::GetStatistics(size_t* total_cache_size,
 
 void LocalStorageImpl::OnCommitResult(DbStatus status) {
   if (status.ok()) {
+    RecordCommitErrorCountAtReset("LocalStorage", commit_error_count_);
     commit_error_count_ = 0;
     return;
   }
