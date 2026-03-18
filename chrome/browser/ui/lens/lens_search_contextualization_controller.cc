@@ -274,6 +274,7 @@ void LensSearchContextualizationController::ResetState() {
   // Reset the page context eligibility API state.
   page_context_eligibility_callback_.Reset();
   pending_context_eligibility_params_.reset();
+  weak_ptr_factory_.InvalidateWeakPtrs();
   state_ = State::kOff;
 }
 
