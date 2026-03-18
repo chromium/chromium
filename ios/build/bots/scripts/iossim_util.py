@@ -333,7 +333,9 @@ def boot_simulator_if_not_booted(sim_udid, path=SIMULATOR_DEFAULT_PATH):
       (sim_udid, simulator_list['devices']))
 
 
-def ensure_simulator_fully_booted(sim_udid: str, path=SIMULATOR_DEFAULT_PATH):
+def ensure_simulator_fully_booted(sim_udid: str,
+                                  path=SIMULATOR_DEFAULT_PATH,
+                                  num_attempts=1):
   """Ensures simulator of given udid is fully booted.
 
   `xcrun simctl boot` launches only background processes and does not ensure the
@@ -351,29 +353,36 @@ def ensure_simulator_fully_booted(sim_udid: str, path=SIMULATOR_DEFAULT_PATH):
   Returns:
     True if the simulator was successfully booted, false otherwise.
   """
-  if is_device_with_udid_simulator(sim_udid):
+  if not is_device_with_udid_simulator(sim_udid):
+    raise test_runner.SimulatorNotFoundError(
+        f"Not found simulator with UDID: {sim_udid}")
 
-    # Ensure data migrations are run
-    cmd = [
-        'xcrun',
-        'simctl',
-        '--set',
-        path,
-        'bootstatus',
-        sim_udid,
-        '-bd',
-    ]
+  # Ensure data migrations are run
+  cmd = [
+      'xcrun',
+      'simctl',
+      '--set',
+      path,
+      'bootstatus',
+      sim_udid,
+      '-bd',
+  ]
+
+  for boot_attempt in range(num_attempts):
     try:
       subprocess.check_call(cmd, timeout=120)
+      return True
     except subprocess.TimeoutExpired as e:
       msg = f"Manually booting simulator timed out after 120 seconds."
       LOGGER.info(msg)
-      return False
-    return True
+      msg_again = " again" if boot_attempt > 0 else ""
+      msg_action = "continuing" if boot_attempt == num_attempts - 1 else "retrying"
+      LOGGER.info(f"Failed to manually boot simulator{msg_again}. "
+                  f"Wiping simulator and {msg_action}.")
+      wipe_simulator_by_udid(sim_udid)
+      test_runner.SimulatorTestRunner.kill_simulators()
 
-  else:
-    raise test_runner.SimulatorNotFoundError(
-        f"Not found simulator with UDID: {sim_udid}")
+  return False
 
 
 

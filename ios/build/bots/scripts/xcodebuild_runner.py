@@ -201,12 +201,12 @@ class LaunchCommand(object):
       # Erase all simulators per each attempt
       if iossim_util.is_device_with_udid_simulator(self.udid):
         if self.erase_simulators:
-          # kill all running simulators to prevent possible memory leaks
-          test_runner.SimulatorTestRunner.kill_simulators()
           shutdown_all_simulators()
           shutdown_all_simulators(XTDEVICE_FOLDER)
           erase_all_simulators()
           erase_all_simulators(XTDEVICE_FOLDER)
+          # kill all running simulators to prevent possible memory leaks
+          test_runner.SimulatorTestRunner.kill_simulators()
         if self.cert_path:
           iossim_util.copy_trusted_certificate(self.cert_path, self.udid)
 
@@ -214,10 +214,7 @@ class LaunchCommand(object):
                                        'XcodeBuildRunner',
                                        'Pre launch For testing',
                                        f'Test attempt {attempt}'):
-          if not iossim_util.ensure_simulator_fully_booted(self.udid):
-            LOGGER.info("Failed to manually boot simulator. "
-                        "Wiping simulator and continuing.")
-            iossim_util.wipe_simulator_by_udid(self.udid)
+          iossim_util.ensure_simulator_fully_booted(self.udid, num_attempts=2)
 
 
         # ideally this should be the last step before running tests, because
@@ -384,10 +381,7 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
     if iossim_util.is_device_with_udid_simulator(self.udid):
       with measures.time_consumption('Simulator full boot', 'XcodeBuildRunner',
                                      'Pre launch for enumerate test cases'):
-        if not iossim_util.ensure_simulator_fully_booted(self.udid):
-          LOGGER.info("Failed to manually boot simulator. "
-                      "Wiping simulator and continuing.")
-          iossim_util.wipe_simulator_by_udid(self.udid)
+        iossim_util.ensure_simulator_fully_booted(self.udid, num_attempts=2)
 
     for attempt in range(num_attempts):
       # reset error_message with each attempt

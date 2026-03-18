@@ -636,10 +636,7 @@ class TestRunner(object):
     if iossim_util.is_device_with_udid_simulator(self.udid):
       with measures.time_consumption('Simulator full boot', 'TestRunner',
                                      'Pre launch for testing'):
-        if not iossim_util.ensure_simulator_fully_booted(self.udid):
-          LOGGER.info("Failed to manually boot simulator. "
-                      "Wiping simulator and continuing.")
-          iossim_util.wipe_simulator_by_udid(self.udid)
+        iossim_util.ensure_simulator_fully_booted(self.udid)
 
     try:
       result = self._run(cmd=cmd, clones=self.clones or 1)
@@ -830,10 +827,10 @@ class SimulatorTestRunner(TestRunner):
   def set_up(self):
     """Performs setup actions which must occur prior to every test launch."""
     self.remove_proxy_settings()
-    self.kill_simulators()
     self.wipe_simulator()
     self.wipe_derived_data()
     self.disable_hw_keyboard()
+    self.kill_simulators()
     self.homedir = self.get_home_directory()
     # Crash reports have a timestamp in their file name, formatted as
     # YYYY-MM-DD-HHMMSS. Save the current time in the same format so

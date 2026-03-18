@@ -799,9 +799,27 @@ class GetiOSSimUtil(test_runner_test.TestCase):
 
       # Ensure hitting timeout does not prohibit program flow.
       mock_is_sim.return_value = True
+
+      # Mock wipe and kill
+      mock_wipe = mock.Mock()
+      self.mock(iossim_util, 'wipe_simulator_by_udid', mock_wipe)
+      mock_kill = mock.Mock()
+      self.mock(test_runner.SimulatorTestRunner, 'kill_simulators', mock_kill)
+
       check_call_mock.side_effect = subprocess.TimeoutExpired(
           cmd=["cmd"], timeout=120)
+
       self.assertFalse(iossim_util.ensure_simulator_fully_booted(udid))
+      self.assertEqual(mock_wipe.call_count, 1)
+      self.assertEqual(mock_kill.call_count, 1)
+
+      mock_wipe.reset_mock()
+      mock_kill.reset_mock()
+
+      self.assertFalse(
+          iossim_util.ensure_simulator_fully_booted(udid, num_attempts=2))
+      self.assertEqual(mock_wipe.call_count, 2)
+      self.assertEqual(mock_kill.call_count, 2)
 
 
   def test_disable_simulator_keyboard_tutorial(self, _, _2):
