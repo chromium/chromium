@@ -34,6 +34,7 @@ class WebUIStubLocationBar : public LocationBar {
       override;
   ui::TrackedElement* GetAnchorOrNull() override;
   Browser* GetBrowser() override;
+  Profile* GetProfile() override;
   void OnChanged() override;
   void UpdateWithoutTabRestore() override;
   bool IsInitialized() const override;
@@ -43,6 +44,7 @@ class WebUIStubLocationBar : public LocationBar {
   bool IsEditingOrEmpty() const override;
   void InvalidateLayout() override;
   gfx::Rect Bounds() const override;
+  gfx::Rect BoundsInScreen() const override;
   gfx::Size MinimumSize() const override;
   gfx::Size PreferredSize() const override;
   void Update(content::WebContents* contents) override;

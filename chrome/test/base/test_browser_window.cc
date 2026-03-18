@@ -87,6 +87,10 @@ Browser* TestBrowserWindow::TestLocationBar::GetBrowser() {
   return nullptr;
 }
 
+Profile* TestBrowserWindow::TestLocationBar::GetProfile() {
+  return nullptr;
+}
+
 bool TestBrowserWindow::TestLocationBar::IsInitialized() const {
   return true;
 }
@@ -108,6 +112,10 @@ bool TestBrowserWindow::TestLocationBar::IsEditingOrEmpty() const {
 }
 
 gfx::Rect TestBrowserWindow::TestLocationBar::Bounds() const {
+  return gfx::Rect();
+}
+
+gfx::Rect TestBrowserWindow::TestLocationBar::BoundsInScreen() const {
   return gfx::Rect();
 }
 

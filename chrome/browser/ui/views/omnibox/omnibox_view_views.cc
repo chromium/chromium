@@ -274,7 +274,7 @@ OmniboxViewViews::OmniboxViewViews(bool popup_window_mode,
   // presentation_receiver_window_view. See crbug.com/379534750.
   if (location_bar_view_ && location_bar_view_->browser()) {
     pref_change_registrar_.Init(
-        location_bar_view_->browser()->profile()->GetPrefs());
+        location_bar_view_->browser()->GetProfile()->GetPrefs());
     pref_change_registrar_.Add(
         omnibox::kPreventUrlElisionsInOmnibox,
         base::BindRepeating(&OmniboxViewViews::Update, base::Unretained(this)));
@@ -329,7 +329,7 @@ void OmniboxViewViews::Init() {
 
   if (location_bar_view_) {
     // Set whether the text should be used to improve typing suggestions.
-    SetShouldDoLearning(!location_bar_view_->profile()->IsOffTheRecord());
+    SetShouldDoLearning(!location_bar_view_->GetProfile()->IsOffTheRecord());
   }
 
   // Override the default FocusableBorder from Textfield, since the
@@ -427,7 +427,7 @@ void OmniboxViewViews::InstallPlaceholderText() {
                                                 ->GetDefaultSearchProvider()) {
     const bool aim_popup_enabled =
         location_bar_view_ &&
-        omnibox::IsAimPopupEnabled(location_bar_view_->profile());
+        omnibox::IsAimPopupEnabled(location_bar_view_->GetProfile());
     if (aim_popup_enabled &&
         search::DefaultSearchProviderIsGoogle(
             controller()->client()->GetTemplateURLService())) {
@@ -2371,7 +2371,7 @@ void OmniboxViewViews::UpdateContextMenu(ui::SimpleMenuModel* menu_contents) {
                                      IDS_MANAGE_SEARCH_ENGINES_AND_SITE_SEARCH);
 
   const PrefService::Preference* show_full_urls_pref =
-      location_bar_view_->profile()->GetPrefs()->FindPreference(
+      location_bar_view_->GetProfile()->GetPrefs()->FindPreference(
           omnibox::kPreventUrlElisionsInOmnibox);
   if (!show_full_urls_pref->IsManaged()) {
     menu_contents->AddCheckItemWithStringId(IDC_SHOW_FULL_URLS,
@@ -2395,7 +2395,8 @@ void OmniboxViewViews::UpdateContextMenu(ui::SimpleMenuModel* menu_contents) {
         IDS_CONTEXT_MENU_SHOW_GOOGLE_LENS_SHORTCUT);
   }
 
-  if (omnibox::ShouldShowAimContextMenuOption(location_bar_view_->profile())) {
+  if (omnibox::ShouldShowAimContextMenuOption(
+          location_bar_view_->GetProfile())) {
     menu_contents->AddCheckItemWithStringId(
         IDC_SHOW_AI_MODE_OMNIBOX_BUTTON,
         IDS_CONTEXT_MENU_SHOW_AI_MODE_OMNIBOX_BUTTON);
@@ -2434,19 +2435,19 @@ void OmniboxViewViews::UpdateSelectionClipboard() {
 
 bool OmniboxViewViews::IsCommandIdChecked(int id) const {
   if (id == IDC_SHOW_FULL_URLS) {
-    return location_bar_view_->profile()->GetPrefs()->GetBoolean(
+    return location_bar_view_->GetProfile()->GetPrefs()->GetBoolean(
         omnibox::kPreventUrlElisionsInOmnibox);
   }
   if (id == IDC_SHOW_GOOGLE_LENS_SHORTCUT) {
-    return location_bar_view_->profile()->GetPrefs()->GetBoolean(
+    return location_bar_view_->GetProfile()->GetPrefs()->GetBoolean(
         omnibox::kShowGoogleLensShortcut);
   }
   if (id == IDC_SHOW_SEARCH_TOOLS) {
-    return location_bar_view_->profile()->GetPrefs()->GetBoolean(
+    return location_bar_view_->GetProfile()->GetPrefs()->GetBoolean(
         omnibox::kShowSearchTools);
   }
   if (id == IDC_SHOW_AI_MODE_OMNIBOX_BUTTON) {
-    return location_bar_view_->profile()->GetPrefs()->GetBoolean(
+    return location_bar_view_->GetProfile()->GetPrefs()->GetBoolean(
         omnibox::kShowAiModeOmniboxButton);
   }
   return false;
@@ -2628,7 +2629,7 @@ bool OmniboxViewViews::AreAimHintImpressionLimitsReached() const {
 
   const auto& config = omnibox_feature_configs::AiModeOmniboxEntryPoint::Get();
   if (config.enable_hint_impression_limits) {
-    PrefService* prefs = location_bar_view_->profile()->GetPrefs();
+    PrefService* prefs = location_bar_view_->GetProfile()->GetPrefs();
 
     // Check total impressions.
     const int total_impressions =
@@ -2656,7 +2657,7 @@ bool OmniboxViewViews::ShouldInstallAimPlaceholderText() const {
 
   const auto* aim_eligibility_service =
       AimEligibilityServiceFactory::GetForProfile(
-          location_bar_view_->profile());
+          location_bar_view_->GetProfile());
   const bool is_aim_entrypoint_enabled =
       OmniboxFieldTrial::IsAimOmniboxEntrypointEnabled(aim_eligibility_service);
 
@@ -2695,7 +2696,7 @@ void OmniboxViewViews::RecordAimHintImpression() {
     return;
   }
 
-  PrefService* prefs = location_bar_view_->profile()->GetPrefs();
+  PrefService* prefs = location_bar_view_->GetProfile()->GetPrefs();
 
   // Increment the total impressions count.
   const int total_impressions =

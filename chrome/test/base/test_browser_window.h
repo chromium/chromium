@@ -298,6 +298,7 @@ class TestBrowserWindow : public BrowserWindow,
     void UpdateWithoutTabRestore() override {}
     ui::TrackedElement* GetAnchorOrNull() override;
     Browser* GetBrowser() override;
+    Profile* GetProfile() override;
     bool IsInitialized() const override;
     bool IsVisible() const override;
     bool IsDrawn() const override;
@@ -305,6 +306,7 @@ class TestBrowserWindow : public BrowserWindow,
     bool IsEditingOrEmpty() const override;
     void InvalidateLayout() override {}
     gfx::Rect Bounds() const override;
+    gfx::Rect BoundsInScreen() const override;
     gfx::Size MinimumSize() const override;
     gfx::Size PreferredSize() const override;
     void Update(content::WebContents* contents) override {}

@@ -215,6 +215,7 @@ class LocationBarView
       override;
   ui::TrackedElement* GetAnchorOrNull() override;
   Browser* GetBrowser() override;
+  Profile* GetProfile() override;
 
   // True if this instance has been initialized by calling Init, which can only
   // be called when the receiving instance is attached to a view container.
@@ -224,6 +225,7 @@ class LocationBarView
   bool IsFullscreen() const override;
   void InvalidateLayout() override;
   gfx::Rect Bounds() const override;
+  gfx::Rect BoundsInScreen() const override;
   gfx::Size MinimumSize() const override;
   gfx::Size PreferredSize() const override;
   void Update(content::WebContents* contents) override;
@@ -286,7 +288,6 @@ class LocationBarView
   // 2. presentation_receiver_window_view is the other known case. However,
   // presentation_receiver_window_view is about to be sunsetted in a year or so.
   Browser* browser() { return browser_; }
-  Profile* profile() { return profile_; }
 
   // LocationIconView::Delegate:
   const LocationBarModel* GetLocationBarModel() const override;

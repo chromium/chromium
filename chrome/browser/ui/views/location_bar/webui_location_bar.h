@@ -10,11 +10,13 @@
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/views/location_bar/content_setting_image_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "ui/base/interaction/element_tracker.h"
 
 class Browser;
 class OmniboxController;
 class PermissionDashboardController;
 class PermissionDashboardView;
+class Profile;
 class WebUIReadOnlyOmnibox;
 class WebUIToolbarWebView;
 
@@ -45,6 +47,7 @@ class WebUILocationBar : public LocationBar,
       override;
   ui::TrackedElement* GetAnchorOrNull() override;
   Browser* GetBrowser() override;
+  Profile* GetProfile() override;
   void OnChanged() override;
   void UpdateWithoutTabRestore() override;
   bool IsInitialized() const override;
@@ -54,6 +57,7 @@ class WebUILocationBar : public LocationBar,
   bool IsEditingOrEmpty() const override;
   void InvalidateLayout() override;
   gfx::Rect Bounds() const override;
+  gfx::Rect BoundsInScreen() const override;
   gfx::Size MinimumSize() const override;
   gfx::Size PreferredSize() const override;
   void Update(content::WebContents* contents) override;
@@ -68,9 +72,13 @@ class WebUILocationBar : public LocationBar,
       override;
 
  private:
+  void OnMoved(ui::TrackedElement* element);
+
   raw_ptr<Browser> browser_ = nullptr;
   raw_ptr<LocationBarView::Delegate> delegate_ = nullptr;
   raw_ptr<WebUIToolbarWebView> toolbar_view_ = nullptr;
+
+  ui::ElementTracker::Subscription moved_subscription_;
 
   std::unique_ptr<PermissionDashboardController>
       permission_dashboard_controller_;

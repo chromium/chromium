@@ -5,7 +5,8 @@
 assert(!is_android)
 
 source_set("location_bar") {
-  sources = [ "location_bar.h" ]
+  public = [ "location_bar.h" ]
+  sources = [ "location_bar.cc" ]
 
   public_deps = [
     "//base",

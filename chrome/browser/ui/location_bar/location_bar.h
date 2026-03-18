@@ -10,6 +10,8 @@
 #include <string_view>
 
 #include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
+#include "base/scoped_observation_traits.h"
 #include "base/time/time.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
@@ -24,6 +26,7 @@ class LocationBarModel;
 class LocationBarTesting;
 class OmniboxController;
 class OmniboxView;
+class Profile;
 
 namespace bubble_anchor_util {
 struct AnchorConfiguration;
@@ -57,8 +60,14 @@ class LocationBar {
     std::string_view extra_headers;
   };
 
-  explicit LocationBar(CommandUpdater* command_updater)
-      : command_updater_(command_updater) {}
+  class Observer : public base::CheckedObserver {
+   public:
+    ~Observer() override;
+
+    virtual void OnLocationBarBoundsChanged();
+  };
+
+  explicit LocationBar(CommandUpdater* command_updater);
 
   const NavigationParams& navigation_params() { return navigation_params_; }
   void set_navigation_params(NavigationParams navigation_params) {
@@ -137,6 +146,9 @@ class LocationBar {
   // PresentationReceiverWindowView.
   virtual Browser* GetBrowser() = 0;
 
+  // Returns the profile this is for.
+  virtual Profile* GetProfile() = 0;
+
   // Returns true if the location bar finished initializing --- it's linked to
   // the UI and has the subobjects all created.
   virtual bool IsInitialized() const = 0;
@@ -157,8 +169,11 @@ class LocationBar {
   // Tells whatever UI system is used that it should recompute sizes of things.
   virtual void InvalidateLayout() = 0;
 
-  // Returns the the location bar's bounds; see views::View::bounds().
+  // Returns the the location bar's bounds relative to the toolbar.
   virtual gfx::Rect Bounds() const = 0;
+
+  // Returns the the location bar's bounds in screen coordinates.
+  virtual gfx::Rect BoundsInScreen() const = 0;
 
   // Returns the minimum size of the location bar.
   virtual gfx::Size MinimumSize() const = 0;
@@ -180,12 +195,18 @@ class LocationBar {
   // Returns a pointer to the testing interface.
   virtual LocationBarTesting* GetLocationBarForTesting() = 0;
 
+  void AddLocationBarObserver(Observer* observer);
+  void RemoveLocationBarObserver(Observer* observer);
+
  protected:
-  virtual ~LocationBar() = default;
+  virtual ~LocationBar();
+
+  void NotifyBoundsChanged();
 
  private:
   NavigationParams navigation_params_;
   const raw_ptr<CommandUpdater, DanglingUntriaged> command_updater_;
+  base::ObserverList<Observer> observers_;
 };
 
 class LocationBarTesting {
@@ -200,5 +221,21 @@ class LocationBarTesting {
  protected:
   virtual ~LocationBarTesting() = default;
 };
+
+namespace base {
+
+template <>
+struct ScopedObservationTraits<LocationBar, LocationBar::Observer> {
+  static void AddObserver(LocationBar* source,
+                          LocationBar::Observer* observer) {
+    source->AddLocationBarObserver(observer);
+  }
+  static void RemoveObserver(LocationBar* source,
+                             LocationBar::Observer* observer) {
+    source->RemoveLocationBarObserver(observer);
+  }
+};
+
+}  // namespace base
 
 #endif  // CHROME_BROWSER_UI_LOCATION_BAR_LOCATION_BAR_H_

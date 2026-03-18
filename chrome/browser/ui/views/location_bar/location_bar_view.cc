@@ -1256,6 +1256,10 @@ Browser* LocationBarView::GetBrowser() {
   return browser();
 }
 
+Profile* LocationBarView::GetProfile() {
+  return profile_;
+}
+
 bool LocationBarView::IsVisible() const {
   return GetVisible();
 }
@@ -1274,6 +1278,10 @@ void LocationBarView::InvalidateLayout() {
 
 gfx::Rect LocationBarView::Bounds() const {
   return bounds();
+}
+
+gfx::Rect LocationBarView::BoundsInScreen() const {
+  return GetBoundsInScreen();
 }
 
 gfx::Size LocationBarView::MinimumSize() const {
@@ -1758,6 +1766,7 @@ bool LocationBarView::IsContentSettingBubbleShowing(size_t index) {
 
 void LocationBarView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   RefreshBackground();
+  NotifyBoundsChanged();
 }
 
 bool LocationBarView::GetNeedsNotificationWhenVisibleBoundsChange() const {

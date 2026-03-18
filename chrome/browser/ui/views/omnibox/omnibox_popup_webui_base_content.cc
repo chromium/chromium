@@ -42,7 +42,7 @@ OmniboxPopupWebUIBaseContent::OmniboxPopupWebUIBaseContent(
     LocationBarView* location_bar_view,
     OmniboxController* controller,
     bool top_rounded_corners)
-    : views::WebView(location_bar_view->profile()),
+    : views::WebView(location_bar_view->GetProfile()),
       popup_presenter_(presenter),
       location_bar_view_(location_bar_view),
       controller_(controller),
@@ -185,7 +185,7 @@ void OmniboxPopupWebUIBaseContent::SetContentURL(std::string_view url) {
 void OmniboxPopupWebUIBaseContent::LoadContent() {
   DCHECK(!content_url_.is_empty());
   contents_wrapper_ = std::make_unique<WebUIContentsWrapperT<OmniboxPopupUI>>(
-      content_url_, location_bar_view_->profile(), IDS_TASK_MANAGER_OMNIBOX);
+      content_url_, location_bar_view_->GetProfile(), IDS_TASK_MANAGER_OMNIBOX);
   contents_wrapper_->SetHost(weak_factory_.GetWeakPtr());
   SetWebContents(contents_wrapper_->web_contents());
   // LocationBarView can be instantiated in windows that do not have a

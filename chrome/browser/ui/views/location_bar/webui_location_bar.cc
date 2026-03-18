@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_controller.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_view.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
+#include "ui/base/interaction/element_events.h"
 #include "ui/views/bubble/bubble_border.h"
 
 WebUILocationBar::WebUILocationBar(Browser* browser,
@@ -43,6 +44,14 @@ void WebUILocationBar::Init(WebUIToolbarWebView* toolbar_view) {
           /*location_bar=*/this, browser_, browser_->profile()));
   omnibox_view_ =
       std::make_unique<WebUIReadOnlyOmnibox>(omnibox_controller_.get(), this);
+
+  // Unretained is safe because `this` owns `moved_subscription_`.
+  moved_subscription_ =
+      ui::ElementTracker::GetElementTracker()->AddCustomEventCallback(
+          ui::kElementBoundsChangedEvent, kLocationBarElementId,
+          BrowserElements::From(browser_)->GetContext(),
+          base::BindRepeating(&WebUILocationBar::OnMoved,
+                              base::Unretained(this)));
 
   is_initialized_ = true;
 }
@@ -111,6 +120,10 @@ Browser* WebUILocationBar::GetBrowser() {
   return browser_.get();
 }
 
+Profile* WebUILocationBar::GetProfile() {
+  return browser_->profile();
+}
+
 void WebUILocationBar::OnChanged() {
   NOTIMPLEMENTED();
 }
@@ -146,8 +159,17 @@ void WebUILocationBar::InvalidateLayout() {
 }
 
 gfx::Rect WebUILocationBar::Bounds() const {
-  NOTIMPLEMENTED();
+  gfx::Rect screen_rect = BoundsInScreen();
+  if (!screen_rect.IsEmpty()) {
+    return views::View::ConvertRectFromScreen(toolbar_view_, screen_rect);
+  }
   return gfx::Rect();
+}
+
+gfx::Rect WebUILocationBar::BoundsInScreen() const {
+  ui::TrackedElement* anchor =
+      BrowserElements::From(browser_)->GetElement(kLocationBarElementId);
+  return anchor ? anchor->GetScreenBounds() : gfx::Rect();
 }
 
 gfx::Size WebUILocationBar::MinimumSize() const {
@@ -200,4 +222,8 @@ ContentSettingBubbleModelDelegate*
 WebUILocationBar::GetContentSettingBubbleModelDelegate() {
   NOTIMPLEMENTED();
   return nullptr;
+}
+
+void WebUILocationBar::OnMoved(ui::TrackedElement*) {
+  NotifyBoundsChanged();
 }

@@ -96,6 +96,11 @@ Browser* WebUIStubLocationBar::GetBrowser() {
   return nullptr;
 }
 
+Profile* WebUIStubLocationBar::GetProfile() {
+  NOTIMPLEMENTED();
+  return nullptr;
+}
+
 void WebUIStubLocationBar::OnChanged() {
   NOTIMPLEMENTED();
 }
@@ -134,6 +139,11 @@ void WebUIStubLocationBar::InvalidateLayout() {
 }
 
 gfx::Rect WebUIStubLocationBar::Bounds() const {
+  NOTIMPLEMENTED();
+  return gfx::Rect();
+}
+
+gfx::Rect WebUIStubLocationBar::BoundsInScreen() const {
   NOTIMPLEMENTED();
   return gfx::Rect();
 }
