@@ -828,6 +828,52 @@ TEST_F(BubbleDialogDelegateViewTest, AttachedWidgetShowsInkDropWhenVisible) {
   }
 }
 
+// Ensures that when anchor is a button it doesn't win out over explicit
+// highlight.
+TEST_F(BubbleDialogDelegateViewTest, HighlightPriority) {
+  for (bool use_element : {false, true}) {
+    SCOPED_TRACE(use_element);
+    std::unique_ptr<Widget> anchor_widget =
+        CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                         Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+    View* main_view = anchor_widget->SetContentsView(std::make_unique<View>());
+    LabelButton* button = main_view->AddChildView(std::make_unique<LabelButton>(
+        Button::PressedCallback(), std::u16string()));
+    LabelButton* anchor_button =
+        main_view->AddChildView(std::make_unique<LabelButton>(
+            Button::PressedCallback(), std::u16string()));
+
+    TestInkDrop* ink_drop = new TestInkDrop();
+    test::InkDropHostTestApi(InkDrop::Get(button))
+        .SetInkDrop(base::WrapUnique(ink_drop));
+    TestBubbleDialogDelegateView* bubble_delegate =
+        new TestBubbleDialogDelegateView(nullptr);
+    bubble_delegate->set_parent_window(anchor_widget->GetNativeView());
+    bubble_delegate->SetAnchorView(anchor_button);
+
+    Widget* bubble_widget =
+        BubbleDialogDelegateView::CreateBubble(bubble_delegate);
+    if (use_element) {
+      button->SetProperty(kElementIdentifierKey,
+                          ui::ElementTracker::kTemporaryIdentifier);
+      bubble_delegate->SetHighlightedElement(
+          ui::ElementTracker::kTemporaryIdentifier);
+    } else {
+      bubble_delegate->SetHighlightedButton(button);
+    }
+    bubble_widget->Show();
+    // Explicitly calling OnWidgetVisibilityChanging to test functionality for
+    // OS_WIN. Outside of the test environment this happens automatically by way
+    // of HWNDMessageHandler.
+    bubble_delegate->OnBubbleWidgetVisibilityChanged(true);
+    EXPECT_EQ(InkDropState::ACTIVATED, ink_drop->GetTargetInkDropState());
+
+    bubble_widget->Close();
+    bubble_delegate->OnBubbleWidgetVisibilityChanged(false);
+    EXPECT_EQ(InkDropState::DEACTIVATED, ink_drop->GetTargetInkDropState());
+  }
+}
+
 // Ensures that when associated button is set by element and is not visible
 // initially, it gets highlighted when finally shown, and that gets updated as
 // it gets shown/hidden.

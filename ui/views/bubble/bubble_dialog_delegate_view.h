@@ -614,6 +614,7 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
                            VisibleWidgetShowsInkDropOnAttaching);
   FRIEND_TEST_ALL_PREFIXES(BubbleDialogDelegateViewTest,
                            AttachedWidgetShowsInkDropWhenVisible);
+  FRIEND_TEST_ALL_PREFIXES(BubbleDialogDelegateViewTest, HighlightPriority);
   FRIEND_TEST_ALL_PREFIXES(BubbleDialogDelegateViewTest,
                            DelayedHighlightByElement);
   FRIEND_TEST_ALL_PREFIXES(BubbleDialogDelegateViewTest,
