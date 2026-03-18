@@ -66,6 +66,9 @@ OverviewButtonTray::OverviewButtonTray(Shelf* shelf)
     : ImagedTrayIcon(
           shelf,
           ui::ImageModel(),
+          /*tooltip=*/
+          l10n_util::GetStringUTF16(IDS_ASH_OVERVIEW_BUTTON_ACCESSIBLE_NAME),
+          /*accessibility_name=*/
           l10n_util::GetStringUTF16(IDS_ASH_OVERVIEW_BUTTON_ACCESSIBLE_NAME),
           TrayBackgroundViewCatalogName::kOverview),
       scoped_session_observer_(this) {

@@ -62,11 +62,15 @@ bool IsDictationActive() {
 DictationButtonTray::DictationButtonTray(
     Shelf* shelf,
     TrayBackgroundViewCatalogName catalog_name)
-    : ImagedTrayIcon(shelf,
-                     ui::ImageModel(),
-                     l10n_util::GetStringUTF16(
-                         IDS_ASH_STATUS_TRAY_ACCESSIBILITY_DICTATION),
-                     catalog_name),
+    : ImagedTrayIcon(
+          shelf,
+          ui::ImageModel(),
+          /*tooltip=*/
+          l10n_util::GetStringUTF16(
+              IDS_ASH_STATUS_TRAY_ACCESSIBILITY_DICTATION),
+          /*accessibility_name=*/
+          l10n_util::GetStringUTF16(IDS_ASH_DICTATION_BUTTON_ACCESSIBLE_NAME),
+          catalog_name),
       download_progress_(0) {
   SetCallback(base::BindRepeating(
       &DictationButtonTray::OnDictationButtonPressed, base::Unretained(this)));
@@ -89,9 +93,6 @@ DictationButtonTray::DictationButtonTray(
   shell->AddShellObserver(this);
   shell->accessibility_controller()->AddObserver(this);
   shell->session_controller()->AddObserver(this);
-
-  GetViewAccessibility().SetName(
-      l10n_util::GetStringUTF16(IDS_ASH_DICTATION_BUTTON_ACCESSIBLE_NAME));
 }
 
 DictationButtonTray::~DictationButtonTray() {

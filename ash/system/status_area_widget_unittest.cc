@@ -66,6 +66,7 @@
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_unittest_util.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 using session_manager::SessionState;
 using testing::NotNull;
@@ -838,6 +839,8 @@ TEST_F(StatusAreaWidgetTest, AddCustomTrayIcons) {
             kExpectedViewId));
     EXPECT_TRUE(icon);
     EXPECT_EQ(icon->image_view()->GetTooltipText(), configuration.tool_tip);
+    EXPECT_EQ(icon->GetViewAccessibility().GetCachedName(),
+              configuration.tool_tip);
 
     ui::ImageModel actual_model = icon->image_view()->GetImageModel();
     ASSERT_TRUE(actual_model.IsImage());
@@ -860,6 +863,8 @@ TEST_F(StatusAreaWidgetTest, AddCustomTrayIcons) {
             kExpectedViewId));
     EXPECT_TRUE(icon);
     EXPECT_EQ(icon->image_view()->GetTooltipText(), configuration.tool_tip);
+    EXPECT_EQ(icon->GetViewAccessibility().GetCachedName(),
+              configuration.tool_tip);
 
     ui::ImageModel actual_model = icon->image_view()->GetImageModel();
     ASSERT_TRUE(actual_model.IsEmpty());
@@ -880,6 +885,7 @@ TEST_F(StatusAreaWidgetTest, AddCustomTrayIcons) {
             kExpectedViewId));
     EXPECT_TRUE(icon);
     EXPECT_TRUE(icon->image_view()->GetTooltipText().empty());
+    EXPECT_TRUE(icon->GetViewAccessibility().GetCachedName().empty());
 
     ui::ImageModel actual_model = icon->image_view()->GetImageModel();
     ASSERT_TRUE(actual_model.IsImage());
@@ -919,6 +925,8 @@ TEST_F(StatusAreaWidgetTest, UpdateCustomTrayIcon) {
             kExpectedViewId));
     EXPECT_TRUE(icon);
     EXPECT_EQ(icon->image_view()->GetTooltipText(), configuration.tool_tip);
+    EXPECT_EQ(icon->GetViewAccessibility().GetCachedName(),
+              configuration.tool_tip);
 
     ui::ImageModel actual_model = icon->image_view()->GetImageModel();
     ASSERT_TRUE(actual_model.IsImage());

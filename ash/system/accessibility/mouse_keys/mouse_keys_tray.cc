@@ -37,6 +37,10 @@ MouseKeysTray::MouseKeysTray(Shelf* shelf,
                              TrayBackgroundViewCatalogName catalog_name)
     : ImagedTrayIcon(shelf,
                      GetMouseKeysIcon(),
+                     /*tooltip=*/
+                     l10n_util::GetStringUTF16(
+                         IDS_ASH_STATUS_TRAY_ACCESSIBILITY_MOUSE_KEYS_PAUSE),
+                     /*accessibility_name=*/
                      l10n_util::GetStringUTF16(
                          IDS_ASH_STATUS_TRAY_ACCESSIBILITY_MOUSE_KEYS_PAUSE),
                      catalog_name) {
@@ -46,9 +50,6 @@ MouseKeysTray::MouseKeysTray(Shelf* shelf,
   // Observe the accessibility controller state changes to know when mouse keys
   // state is updated or when it is disabled/enabled.
   Shell::Get()->accessibility_controller()->AddObserver(this);
-
-  GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
-      IDS_ASH_STATUS_TRAY_ACCESSIBILITY_MOUSE_KEYS_PAUSE));
 }
 
 MouseKeysTray::~MouseKeysTray() {

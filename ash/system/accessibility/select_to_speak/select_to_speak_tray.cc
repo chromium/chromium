@@ -66,8 +66,12 @@ SelectToSpeakTray::SelectToSpeakTray(Shelf* shelf,
           shelf,
           ui::ImageModel::FromVectorIcon(kSystemTraySelectToSpeakNewuiIcon,
                                          kColorAshIconColorPrimary),
+          /*tooltip=*/
           l10n_util::GetStringUTF16(
               IDS_ASH_STATUS_TRAY_ACCESSIBILITY_SELECT_TO_SPEAK),
+          /*accessibility_name=*/
+          l10n_util::GetStringUTF16(
+              IDS_ASH_SELECT_TO_SPEAK_TRAY_ACCESSIBLE_NAME),
           catalog_name) {
   SetCallback(base::BindRepeating([](const ui::Event& event) {
     Shell::Get()->accessibility_controller()->RequestSelectToSpeakStateChange();
@@ -76,9 +80,6 @@ SelectToSpeakTray::SelectToSpeakTray(Shelf* shelf,
   // Observe the accessibility controller state changes to know when Select to
   // Speak state is updated or when it is disabled/enabled.
   Shell::Get()->accessibility_controller()->AddObserver(this);
-
-  GetViewAccessibility().SetName(
-      l10n_util::GetStringUTF16(IDS_ASH_SELECT_TO_SPEAK_TRAY_ACCESSIBLE_NAME));
 }
 
 SelectToSpeakTray::~SelectToSpeakTray() {

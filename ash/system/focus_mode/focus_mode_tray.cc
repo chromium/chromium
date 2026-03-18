@@ -175,7 +175,8 @@ FocusModeTray::FocusModeTray(Shelf* shelf)
           shelf,
           ui::ImageModel::FromVectorIcon(kFocusModeLampIcon,
                                          cros_tokens::kCrosSysOnSurface),
-          std::u16string(),
+          /*tooltip=*/std::u16string(),
+          /*accessibility_name=*/std::u16string(),
           TrayBackgroundViewCatalogName::kFocusMode) {
   SetCallback(base::BindRepeating(&FocusModeTray::FocusModeIconActivated,
                                   weak_ptr_factory_.GetWeakPtr()));

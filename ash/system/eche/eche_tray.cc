@@ -211,12 +211,13 @@ void EcheTray::EventInterceptor::OnKeyEvent(ui::KeyEvent* event) {
 }
 
 EcheTray::EcheTray(Shelf* shelf)
-    : ImagedTrayIcon(shelf,
-                     ui::ImageModel::FromVectorIcon(
-                         kPhoneHubPhoneIcon,
-                         cros_tokens::kCrosSysOnSurface),
-                     GetAccessibleName(),
-                     TrayBackgroundViewCatalogName::kEche),
+    : ImagedTrayIcon(
+          shelf,
+          ui::ImageModel::FromVectorIcon(kPhoneHubPhoneIcon,
+                                         cros_tokens::kCrosSysOnSurface),
+          /*tooltip=*/GetAccessibleName(),
+          /*accessibility_name=*/GetAccessibleName(),
+          TrayBackgroundViewCatalogName::kEche),
       event_interceptor_(std::make_unique<EventInterceptor>(this)) {
   SetCallback(
       base::BindRepeating(&EcheTray::OnButtonPressed, base::Unretained(this)));
@@ -229,8 +230,6 @@ EcheTray::EcheTray(Shelf* shelf)
   shelf_observation_.Observe(shelf);
   shell_observer_.Observe(Shell::Get());
   keyboard_observation_.Observe(keyboard::KeyboardUIController::Get());
-
-  GetViewAccessibility().SetName(GetAccessibleName());
 }
 
 EcheTray::~EcheTray() {

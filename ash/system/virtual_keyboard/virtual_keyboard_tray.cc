@@ -39,13 +39,16 @@ class TrayBubbleView;
 VirtualKeyboardTray::VirtualKeyboardTray(
     Shelf* shelf,
     TrayBackgroundViewCatalogName catalog_name)
-    : ImagedTrayIcon(
-          shelf,
-          ui::ImageModel::FromVectorIcon(kShelfKeyboardNewuiIcon,
-                                         kColorAshIconColorPrimary),
-          l10n_util::GetStringUTF16(
-              IDS_ASH_STATUS_TRAY_ACCESSIBILITY_VIRTUAL_KEYBOARD),
-          catalog_name) {
+    : ImagedTrayIcon(shelf,
+                     ui::ImageModel::FromVectorIcon(kShelfKeyboardNewuiIcon,
+                                                    kColorAshIconColorPrimary),
+                     /*tooltip=*/
+                     l10n_util::GetStringUTF16(
+                         IDS_ASH_STATUS_TRAY_ACCESSIBILITY_VIRTUAL_KEYBOARD),
+                     /*accessibility_name=*/
+                     l10n_util::GetStringUTF16(
+                         IDS_ASH_VIRTUAL_KEYBOARD_TRAY_ACCESSIBLE_NAME),
+                     catalog_name) {
   SetCallback(base::BindRepeating(&VirtualKeyboardTray::OnButtonPressed,
                                   base::Unretained(this)));
 
@@ -60,9 +63,6 @@ VirtualKeyboardTray::VirtualKeyboardTray(
     Shell::Get()->AddShellObserver(this);
     keyboard::KeyboardUIController::Get()->AddObserver(this);
   }
-
-  GetViewAccessibility().SetName(
-      l10n_util::GetStringUTF16(IDS_ASH_VIRTUAL_KEYBOARD_TRAY_ACCESSIBLE_NAME));
 }
 
 VirtualKeyboardTray::~VirtualKeyboardTray() {

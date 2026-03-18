@@ -31,16 +31,16 @@ bool ShouldButtonBeVisible() {
 
 }  // namespace
 
+// TODO(crbug.com/252558235): Localize once approved.
 WmModeButtonTray::WmModeButtonTray(Shelf* shelf)
     : ImagedTrayIcon(shelf,
                      ui::ImageModel(),
-                     u"WM Mode",
+                     /*tooltip=*/u"WM Mode",
+                     /*accessibility_name=*/u"WM Mode",
                      TrayBackgroundViewCatalogName::kWmMode) {
   SetCallback(base::BindRepeating(
       [](const ui::Event& event) { WmModeController::Get()->Toggle(); }));
 
-  // TODO(crbug.com/252558235): Localize once approved.
-  GetViewAccessibility().SetName(u"WM Mode");
   Shell::Get()->session_controller()->AddObserver(this);
 }
 

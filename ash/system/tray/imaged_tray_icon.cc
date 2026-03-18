@@ -15,6 +15,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/events/event.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
 
 namespace ash {
@@ -22,6 +23,7 @@ namespace ash {
 ImagedTrayIcon::ImagedTrayIcon(Shelf* shelf,
                                const ui::ImageModel& image_model,
                                const std::u16string& tooltip,
+                               const std::u16string& accessibility_name,
                                const TrayBackgroundViewCatalogName catalog_name)
     : TrayBackgroundView(shelf,
                          catalog_name,
@@ -36,6 +38,7 @@ ImagedTrayIcon::ImagedTrayIcon(Shelf* shelf,
           .Build();
 
   image_view_ = tray_container()->AddChildView(std::move(image_view));
+  GetViewAccessibility().SetName(accessibility_name);
 }
 
 ImagedTrayIcon::~ImagedTrayIcon() = default;

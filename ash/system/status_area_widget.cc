@@ -696,11 +696,11 @@ bool StatusAreaWidget::AddTrayIcon(const TrayIconConfiguration& configuration,
                           : ui::ImageModel();
 
   auto icon = std::make_unique<ImagedTrayIcon>(
-      shelf_, std::move(image_model), tooltip_text,
+      shelf_, std::move(image_model), /*tooltip=*/tooltip_text,
+      /*accessibility_name=*/tooltip_text,
       TrayBackgroundViewCatalogName::kChromeCustom);
   icon->SetID(icon_id);
   icon->SetCallback(std::move(callback));
-  icon->GetViewAccessibility().SetName(std::move(tooltip_text));
   icon->SetVisiblePreferred(true);
 
   custom_tray_buttons_ids_.insert(icon_id);

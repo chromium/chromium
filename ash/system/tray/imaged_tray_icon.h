@@ -32,6 +32,7 @@ class ASH_EXPORT ImagedTrayIcon : public TrayBackgroundView {
   ImagedTrayIcon(Shelf* shelf,
                  const ui::ImageModel& image_model,
                  const std::u16string& tooltip,
+                 const std::u16string& accessibility_name,
                  const TrayBackgroundViewCatalogName catalog_name);
 
   ImagedTrayIcon(const ImagedTrayIcon&) = delete;

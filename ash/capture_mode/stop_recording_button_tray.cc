@@ -24,6 +24,10 @@ StopRecordingButtonTray::StopRecordingButtonTray(Shelf* shelf)
           shelf,
           ui::ImageModel::FromVectorIcon(kCaptureModeCircleStopIcon,
                                          kColorAshIconColorAlert),
+          /*tooltip=*/
+          l10n_util::GetStringUTF16(
+              IDS_ASH_STATUS_AREA_STOP_RECORDING_BUTTON_ACCESSIBLE_NAME),
+          /*accessibility_name=*/
           l10n_util::GetStringUTF16(
               IDS_ASH_STATUS_AREA_STOP_RECORDING_BUTTON_ACCESSIBLE_NAME),
           TrayBackgroundViewCatalogName::kScreenCaptureStopRecording) {
@@ -32,9 +36,6 @@ StopRecordingButtonTray::StopRecordingButtonTray(Shelf* shelf)
     CaptureModeController::Get()->EndVideoRecording(
         EndRecordingReason::kStopRecordingButton);
   }));
-
-  GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
-      IDS_ASH_STATUS_AREA_STOP_RECORDING_BUTTON_ACCESSIBLE_NAME));
 }
 
 StopRecordingButtonTray::~StopRecordingButtonTray() = default;
