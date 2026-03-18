@@ -29,8 +29,11 @@
 #include "chrome/browser/profiles/profile_destroyer.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/test/base/browser_closed_waiter.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
@@ -42,6 +45,7 @@
 #include "components/security_interstitials/content/settings_page_helper.h"
 #include "components/security_interstitials/core/metrics_helper.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -59,18 +63,15 @@
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
 #include "pdf/buildflags.h"
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/test/base/ui_test_utils.h"
-#endif
+#include "ui/base/base_window.h"
 
 #if BUILDFLAG(ENABLE_PDF)
 #include "base/test/scoped_feature_list.h"
 #include "base/test/with_feature_override.h"
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
 #include "chrome/browser/pdf/test_pdf_viewer_stream_manager.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "pdf/pdf_features.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
 
@@ -304,9 +305,6 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
   EXPECT_TRUE(RunAttachFunction(other_ext_url, std::string()));
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-// TODO(crbug.com/371432155): Port to desktop Android when the chrome.tabs API
-// is supported.
 IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
                        DebuggerAllowedOnFileUrlsWithFileAccess) {
   EXPECT_TRUE(RunExtensionTest("debugger_file_access",
@@ -315,8 +313,9 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
       << message_;
 }
 
-// TODO(crbug.com/371432155): Port to desktop Android when the chrome.tabs API
-// is supported.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+// TODO(crbug.com/441339825): Fails on desktop Android with an error about
+// access to localhost.
 IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
                        DebuggerNotAllowedOnFileUrlsWithoutAccess) {
   EXPECT_TRUE(RunExtensionTest("debugger_file_access")) << message_;
@@ -425,31 +424,35 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
   EXPECT_TRUE(RunAttachFunction(web_contents, "Cannot attach to this target."));
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-// TODO(crbug.com/405218860): Port this test to desktop Android when we have
-// better test control over windows and tabs.
 IN_PROC_BROWSER_TEST_F(DebuggerApiTest, InfoBar) {
   int tab_id =
       sessions::SessionTabHelper::IdForTab(GetActiveWebContents()).id();
   scoped_refptr<DebuggerAttachFunction> attach_function;
   scoped_refptr<DebuggerDetachFunction> detach_function;
 
-  Browser* another_browser =
-      Browser::Create(Browser::CreateParams(profile(), true));
-  AddBlankTabAndShow(another_browser);
-  AddBlankTabAndShow(another_browser);
+  // Create a second browser with two tabs.
+  BrowserWindowInterface* browser2 =
+      CreateBrowserWindowWithType(BrowserWindowInterface::TYPE_NORMAL);
+  TabListInterface* tab_list2 = TabListInterface::From(browser2);
+  // Platforms like Win/Mac/Linux create browsers with no tabs, whereas Android
+  // creates browsers with a single tab.
+  if (tab_list2->GetTabCount() == 0) {
+    tab_list2->OpenTab(GURL("about:blank"), /*index=*/-1);
+  }
+  tab_list2->OpenTab(GURL("about:blank"), /*index=*/-1);
+  ASSERT_EQ(2, tab_list2->GetTabCount());
   int tab_id2 = sessions::SessionTabHelper::IdForTab(
-                    another_browser->tab_strip_model()->GetActiveWebContents())
+                    tab_list2->GetActiveTab()->GetContents())
                     .id();
 
   infobars::ContentInfoBarManager* manager1 =
       infobars::ContentInfoBarManager::FromWebContents(GetActiveWebContents());
   infobars::ContentInfoBarManager* manager2 =
       infobars::ContentInfoBarManager::FromWebContents(
-          another_browser->tab_strip_model()->GetWebContentsAt(0));
+          tab_list2->GetTab(0)->GetContents());
   infobars::ContentInfoBarManager* manager3 =
       infobars::ContentInfoBarManager::FromWebContents(
-          another_browser->tab_strip_model()->GetWebContentsAt(1));
+          tab_list2->GetTab(1)->GetContents());
 
   // Attaching to one tab should create infobars in both browsers.
   attach_function = new DebuggerAttachFunction();
@@ -530,17 +533,20 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest, InfoBar) {
   EXPECT_EQ(1u, manager3->infobars().size());
 
   // Closing tab should not affect anything.
-  EXPECT_EQ(2, another_browser->tab_strip_model()->count());
-  another_browser->tab_strip_model()->CloseWebContentsAt(1, 0);
-  EXPECT_EQ(1, another_browser->tab_strip_model()->count());
+  EXPECT_EQ(2, tab_list2->GetTabCount());
+  tab_list2->CloseTab(tab_list2->GetTab(1)->GetHandle());
+  EXPECT_EQ(1, tab_list2->GetTabCount());
   manager3 = nullptr;
   EXPECT_EQ(1u, manager1->infobars().size());
   EXPECT_EQ(1u, manager2->infobars().size());
 
-  // Closing browser should not affect anything.
-  CloseBrowserSynchronously(another_browser);
+  // Closing browser should not affect anything. Use a waiter because browser
+  // close is async on some platforms (e.g. Android).
+  BrowserClosedWaiter waiter(browser2);
+  browser2->GetWindow()->Close();
+  waiter.Wait();
   manager2 = nullptr;
-  another_browser = nullptr;
+  browser2 = nullptr;
   EXPECT_EQ(1u, manager1->infobars().size());
 
   // Detach should not affect anything.
@@ -551,7 +557,6 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest, InfoBar) {
       profile()));
   EXPECT_EQ(1u, manager1->infobars().size());
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 IN_PROC_BROWSER_TEST_F(DebuggerApiTest, InfoBarIsRemovedAfterFiveSeconds) {
   int tab_id =
@@ -856,9 +861,8 @@ class DebuggerExtensionApiTest : public ExtensionApiTest {
   }
 };
 
-#if !BUILDFLAG(IS_ANDROID)
-// TODO(crbug.com/371432155): Port to desktop Android when the chrome.tabs API
-// is supported.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+// TODO(crbug.com/441339825): Fails on desktop Android.
 IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiTest, Debugger) {
   ASSERT_TRUE(RunExtensionTest("debugger")) << message_;
 }
@@ -954,8 +958,7 @@ IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiOopifPdfTest, GetTargets) {
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-// TODO(crbug.com/371432155): Port to desktop Android when the chrome.tabs API
-// is supported.
+// TODO(crbug.com/441339825): Fails on desktop Android.
 IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiTest, AttachToBlob) {
   ASSERT_TRUE(RunExtensionTest("debugger_attach_to_blob_urls")) << message_;
 }
@@ -983,8 +986,7 @@ IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiTest, NavigateToUntrustedWebUIUrl) {
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-// TODO(crbug.com/371432155): Port to desktop Android when the chrome.tabs API
-// is supported.
+// TODO(crbug.com/441339825): Fails on desktop Android.
 // Tests that Target.createTarget to WebUI origins are blocked.
 IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiTest, CreateTargetToUntrustedWebUI) {
   ASSERT_TRUE(RunExtensionTest("debugger_create_target_to_untrusted_webui"))
@@ -1001,8 +1003,7 @@ class SitePerProcessDebuggerExtensionApiTest : public DebuggerExtensionApiTest {
 };
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-// TODO(crbug.com/371432155): Port to desktop Android when the chrome.tabs API
-// is supported.
+// TODO(crbug.com/441339825): Fails on desktop Android.
 IN_PROC_BROWSER_TEST_F(SitePerProcessDebuggerExtensionApiTest, Debugger) {
   GURL url(embedded_test_server()->GetURL(
       "a.com", "/extensions/api_test/debugger/oopif.html"));
