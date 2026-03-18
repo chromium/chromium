@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -638,6 +639,13 @@ void ProjectsPanelView::AnimationEnded(const gfx::Animation* animation) {
   }
 }
 
+// We must also call AnimationEnded when an animation is canceled (which happens
+// when the view is destroyed or a new animation is started mid-flight) to
+// guarantee that the state is properly set to hidden.
+void ProjectsPanelView::AnimationCanceled(const gfx::Animation* animation) {
+  AnimationEnded(animation);
+}
+
 void ProjectsPanelView::OnTabGroupsInitialized(
     const std::vector<tab_groups::SavedTabGroup>& tab_groups) {
   // TODO(crbug.com/477602874): Handle incremental data updates.
@@ -742,12 +750,14 @@ void ProjectsPanelView::OnCreateNewTabGroupButtonPressed() {
           ? "ProjectsPanel.TabGroups.CreateNewGroup.WithExistingGroups"
           : "ProjectsPanel.TabGroups.CreateNewGroup.WithoutExistingGroups"));
   on_close_animation_ended_callback_ = base::BindOnce(
+      // We must wait for the panel to fully close before executing the command
+      // so we don't interfere with the panel's animation and UI state.
       [](base::WeakPtr<ProjectsPanelView> panel) {
         if (!panel) {
           return;
         }
-        panel->browser_->GetBrowserForMigrationOnly()
-            ->command_controller()
+        panel->browser_->GetFeatures()
+            .browser_command_controller()
             ->ExecuteCommand(IDC_CREATE_NEW_TAB_GROUP);
       },
       weak_ptr_factory_.GetWeakPtr());

@@ -15,6 +15,7 @@
 #include "components/saved_tab_groups/internal/saved_tab_group_model.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/types.h"
+#include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "content/public/browser/page.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/accessible_pane_view.h"
@@ -155,6 +156,12 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   // Removes all buttons currently in the bar.
   void RemoveAllButtons();
 
+  // Intercept ShowsEverythingMenu for potential promo overriding
+  bool MaybeShowResumptionRailPromo();
+
+  // Internal implementation of ShowEverythingMenu.
+  void ShowEverythingMenuInternal();
+
   // Finds the button that matches `guid`.
   views::View* GetButton(const base::Uuid& guid);
 
@@ -175,6 +182,10 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   // enough space to display all the buttons or if there are more buttons than
   // the maximum visible.
   bool ShouldShowOverflowButtonForWidth(int max_width) const;
+
+  // Returns whether the overflow button is explicitly hidden by logic (e.g. for
+  // promo or if there are no groups with projects panel).
+  bool IsOverflowButtonHidden() const;
 
   // Finds the index of the last button that can be displayed within the given
   // width. Guaranteed to not exceed `kMaxVisibleButtons`. Does not include the
@@ -209,6 +220,29 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   // Provides a callback that returns the page navigator
   base::RepeatingCallback<content::PageNavigator*()> GetPageNavigatorGetter();
 
+  // Handles the result of the promo.
+  void OnResumptionRailPromoResult(user_education::FeaturePromoResult result);
+
+  // Hides the overflow button to prevent focus loss issues with the promo.
+  void HideOverflowForResumptionRailPromo();
+
+  // Handles the closing of the promo.
+  void OnResumptionRailPromoClosed();
+
+  // Used to cache the result of CanShowFeaturePromo for the resumption rail
+  // IPH. If the promo was permanently dismissed or exceeded max show count, we
+  // keep the legacy button hidden.
+  std::optional<bool> resumption_iph_dismissed_ = std::nullopt;
+
+  // Whether the overflow button is hidden because the resumption rail promo was
+  // shown/triggered.
+  bool everything_menu_hidden_for_resumption_rail_promo_ = false;
+
+  // animations have been noted to cause issues with tests in the bookmarks bar.
+  // this boolean lets the SavedTabGroupButton choose whether they want to
+  // animate or not.
+  const bool animations_enabled_ = true;
+
   // The button that opens the "Everything" menu for saved tab groups.
   raw_ptr<views::MenuButton> everything_menu_button_;
 
@@ -232,10 +266,6 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   base::ScopedObservation<views::Widget, SavedTabGroupBar> widget_observation_{
       this};
 
-  // animations have been noted to cause issues with tests in the bookmarks bar.
-  // this boolean lets the SavedTabGroupButton choose whether they want to
-  // animate or not.
-  const bool animations_enabled_ = true;
 
   // Returns WeakPtrs used in GetPageNavigatorGetter(). Used to ensure
   // safety if BookmarkBarView is deleted after getting the callback.

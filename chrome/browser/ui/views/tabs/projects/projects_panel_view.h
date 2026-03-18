@@ -103,6 +103,7 @@ class ProjectsPanelView : public views::View,
   // gfx::AnimationDelegate:
   void AnimationProgressed(const gfx::Animation* animation) override;
   void AnimationEnded(const gfx::Animation* animation) override;
+  void AnimationCanceled(const gfx::Animation* animation) override;
 
   // ProjectsPanelController::Observer:
   void OnTabGroupsInitialized(
