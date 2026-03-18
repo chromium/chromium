@@ -236,15 +236,9 @@ TEST_F(WebNNTensorImplBackendTest, CreateTensorImplManyTest) {
 
 // Test creating a WebNNTensor larger than tensor byte length limit.
 TEST_F(WebNNTensorImplBackendTest, CreateTooLargeTensorTest) {
-#if defined(ARCH_CPU_64_BITS)
-  const std::array<uint32_t, 3> large_shape{std::numeric_limits<int32_t>::max(),
-                                            2, 2};
-#else
-  // Use a smaller shape for 32-bit architecture to avoid exceeding maximum
-  // element count which is based on a size_t.
   const std::array<uint32_t, 3> large_shape{
       std::numeric_limits<int32_t>::max() / 4, 2, 2};
-#endif
+  const OperandDataType data_type = OperandDataType::kInt32;
 
   BadMessageTestHelper bad_message_helper;
 
@@ -263,9 +257,9 @@ TEST_F(WebNNTensorImplBackendTest, CreateTooLargeTensorTest) {
   mojom::WebNNContext::CreateTensorCallback create_tensor_callback =
       base::BindOnce([](mojom::CreateTensorResultPtr create_tensor_result) {});
   webnn_context_remote->CreateTensor(
-      mojom::TensorInfo::New(OperandDescriptor::UnsafeCreateForTesting(
-                                 OperandDataType::kUint8, large_shape),
-                             MLTensorUsage{MLTensorUsageFlags::kWrite}),
+      mojom::TensorInfo::New(
+          OperandDescriptor::UnsafeCreateForTesting(data_type, large_shape),
+          MLTensorUsage{MLTensorUsageFlags::kWrite}),
       mojo_base::BigBuffer(0), std::move(create_tensor_callback));
 
   webnn_context_remote.FlushForTesting();
