@@ -1306,7 +1306,6 @@ targets.bundle(
     per_test_modifications = {
         "chrome_all_tast_tests": [
             targets.mixin(
-                ci_only = True,
                 args = [
                     "--tast-retries=1",
                 ],

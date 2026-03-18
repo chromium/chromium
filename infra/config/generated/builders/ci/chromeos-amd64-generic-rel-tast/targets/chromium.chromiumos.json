@@ -7,7 +7,6 @@
           "--magic-vm-cache=magic_cros_vm_cache",
           "--tast-shard-method=hash"
         ],
-        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
