@@ -253,11 +253,16 @@ bool ParseMetadataWithParameterPreservation(
                                             nullptr)) {
     // Fallback to the default as recommended in RFC2045 when the mediatype
     // value is invalid. For this case, we don't respect |charset| but force
-    // it set to "US-ASCII".
+    // it set to "US-ASCII". Note: base64_encoded is intentionally preserved
+    // here. Per the Fetch Standard data: URL processor [1], base64 detection
+    // (step 11) happens before MIME type validation (step 13-14), so an invalid
+    // MIME type should not prevent base64 body decoding. This matches the
+    // legacy behavior and preserves backward compatibility with data URLs
+    // like "data:image;base64,..." or "data:image/image/jpeg;base64,...".
+    // [1] https://fetch.spec.whatwg.org/#data-url-processor
     *mime_type_value = "text/plain";
     *charset_value = "US-ASCII";
     parameters.clear();
-    *base64_encoded = false;
   }
 
   AppendParametersToMimeType(parameters, quoted_charset_value, mime_type_value);
