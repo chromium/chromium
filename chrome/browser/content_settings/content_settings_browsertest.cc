@@ -1341,12 +1341,20 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsWorkerModulesBrowserTest, CookieStore) {
   }
 }
 
-class ContentSettingsWithPrerenderingBrowserTest : public ContentSettingsTest {
+class ContentSettingsWithPrerenderingBrowserTest
+    : public ContentSettingsTest,
+      public ::testing::WithParamInterface<bool> {
  public:
   ContentSettingsWithPrerenderingBrowserTest()
       : prerender_test_helper_(base::BindRepeating(
             &ContentSettingsWithPrerenderingBrowserTest::GetWebContents,
-            base::Unretained(this))) {}
+            base::Unretained(this))) {
+    if (GetParam()) {
+      // nop. Use the default environment.
+    } else {
+      prerender_test_helper_.DisablePrerender2FallbackPrefetchSpecRules();
+    }
+  }
 
   void SetUp() override {
     prerender_test_helper().RegisterServerRequestMonitor(
@@ -1370,6 +1378,11 @@ class ContentSettingsWithPrerenderingBrowserTest : public ContentSettingsTest {
  private:
   content::test::PrerenderTestHelper prerender_test_helper_;
 };
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    ContentSettingsWithPrerenderingBrowserTest,
+    ::testing::Bool());
 
 // Used to wait for non-primary pages to set a cookie (eg: prerendering pages or
 // fenced frames).
@@ -1414,8 +1427,17 @@ class NonPrimaryPageCookieAccessObserver : public content::WebContentsObserver {
   base::RunLoop run_loop_;
 };
 
-IN_PROC_BROWSER_TEST_F(ContentSettingsWithPrerenderingBrowserTest,
+IN_PROC_BROWSER_TEST_P(ContentSettingsWithPrerenderingBrowserTest,
                        PrerenderingPageSetsCookie) {
+  if (content::test::PrerenderTestHelper::
+          IsPrerender2FallbackPrefetchSpecRulesEnabled()) {
+    // `PageSpecificContentSettings` can't observe cookie events of navigation
+    // using prefetch. So, we need to disable prefetch ahead of prerender for
+    // SpeculationRules. For more details, see
+    // https://docs.google.com/document/d/1gYanzL8zrrulVdJds9IxoCwlNs0Xstc6bTuHVgrVGn4
+    GTEST_SKIP();
+  }
+
   const GURL main_url = embedded_test_server()->GetURL("/empty.html");
   const GURL prerender_url =
       embedded_test_server()->GetURL("/set_cookie_header.html");
@@ -1458,7 +1480,7 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsWithPrerenderingBrowserTest,
   EXPECT_EQ(GetModelCookieCount(main_pscs->allowed_browsing_data_model()), 1u);
 }
 
-IN_PROC_BROWSER_TEST_F(ContentSettingsWithPrerenderingBrowserTest,
+IN_PROC_BROWSER_TEST_P(ContentSettingsWithPrerenderingBrowserTest,
                        PrerenderingPageIframeSetsCookie) {
   const GURL main_url = embedded_test_server()->GetURL("/empty.html");
   const GURL prerender_url = embedded_test_server()->GetURL("/title1.html");

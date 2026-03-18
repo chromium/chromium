@@ -113,6 +113,15 @@ struct AccessDetails {
 //
 // Events tied to a main frame navigation will be associated with the newly
 // loaded page once the navigation commits or discarded if it does not.
+//
+// `PageSpecificContentSettings` can't observe cookie events of navigation using
+// prefetch. So, we need to disable prefetch ahead of prerender for
+// SpeculationRules. For more details, see
+// https://docs.google.com/document/d/1gYanzL8zrrulVdJds9IxoCwlNs0Xstc6bTuHVgrVGn4
+// See also the test
+// ContentSettingsWithPrerenderingBrowserTest.PrerenderingPageSetsCookie.
+//
+// TODO(crbug.com/493711325): Revisit and decide that we should fix or not.
 class PageSpecificContentSettings
     : public content_settings::Observer,
       public content::PageUserData<PageSpecificContentSettings> {
