@@ -9,6 +9,6 @@
 namespace origin_matcher {
 
 BASE_FEATURE(kOriginMatcherNewCopyAssignment,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace origin_matcher
