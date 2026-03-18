@@ -501,7 +501,10 @@ component("chrome_features") {
 }
 
 static_library("url_constants") {
-  visibility = [ "//chrome/common/*" ]
+  visibility = [
+    "//chrome/browser/contextual_tasks/*",
+    "//chrome/common/*",
+  ]
   sources = [
     "url_constants.h",
     "webui_url_constants.cc",

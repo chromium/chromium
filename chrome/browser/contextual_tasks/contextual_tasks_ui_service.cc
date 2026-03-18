@@ -1223,8 +1223,12 @@ void ContextualTasksUiService::MoveTaskUiToNewTab(
     Navigate(&params);
 
   } else {
-    std::unique_ptr<content::WebContents> web_contents =
-        controller->DetachWebContentsForTask(task_id);
+    std::unique_ptr<content::WebContents> web_contents = nullptr;
+#if !BUILDFLAG(IS_ANDROID)
+    // TODO(crbug.com/483442073): Remove TabStripModel once we add missing
+    // APIs to TabListInterface.
+    web_contents = controller->DetachWebContentsForTask(task_id);
+#endif
     if (!web_contents) {
       return;
     }

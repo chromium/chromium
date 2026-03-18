@@ -282,6 +282,7 @@ void ContextualTasksPageHandler::OpenHelpUi() {
       }
     }
   }
+#if !BUILDFLAG(IS_ANDROID)
   chrome::ShowFeedbackPage(page_url, web_ui_controller_->GetProfile(),
                            feedback::kFeedbackSourceAI,
                            /*description_template=*/std::string(),
@@ -289,6 +290,7 @@ void ContextualTasksPageHandler::OpenHelpUi() {
                            l10n_util::GetStringUTF8(IDS_LENS_SEND_FEEDBACK),
                            /*category_tag=*/"cobrowse",
                            /*extra_diagnostics=*/std::string());
+#endif
 }
 
 void ContextualTasksPageHandler::OpenOnboardingHelpUi() {

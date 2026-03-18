@@ -14,7 +14,7 @@
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "base/uuid.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_composebox_handler.h"
+#include "build/buildflag.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_cookie_synchronizer.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_internals.mojom.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_page_handler.h"
@@ -23,6 +23,7 @@
 #include "chrome/browser/contextual_tasks/task_info_delegate.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
+#include "components/contextual_search/input_state_model.h"
 #include "components/contextual_tasks/public/contextual_task_context.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/lens/lens_overlay_invocation_source.h"
@@ -38,7 +39,11 @@
 #include "third_party/lens_server_proto/aim_communication.pb.h"
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/webui/mojo_web_ui_controller.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/contextual_tasks/contextual_tasks_composebox_handler.h"
 #include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
+#endif
 
 class BrowserWindowInterface;
 
@@ -66,7 +71,9 @@ class ContextualTasksUI
     : public contextual_tasks::ContextualTasksUIInterface,
       public ui::MojoWebUIController,
       public contextual_tasks::mojom::PageHandlerFactory,
+#if !BUILDFLAG(IS_ANDROID)
       public composebox::mojom::PageHandlerFactory,
+#endif
       public contextual_tasks_internals::mojom::
           ContextualTasksInternalsPageHandlerFactory,
       public signin::IdentityManager::Observer,
@@ -103,6 +110,7 @@ class ContextualTasksUI
   ContextualTasksUI& operator=(const ContextualTasksUI&) = delete;
   ~ContextualTasksUI() override;
 
+#if !BUILDFLAG(IS_ANDROID)
   // composebox::mojom::PageHandlerFactory:
   void CreatePageHandler(
       mojo::PendingRemote<composebox::mojom::Page> pending_page,
@@ -111,6 +119,13 @@ class ContextualTasksUI
       mojo::PendingRemote<searchbox::mojom::Page> pending_searchbox_page,
       mojo::PendingReceiver<searchbox::mojom::PageHandler>
           pending_searchbox_handler) override;
+
+  // Instantiates the implementor of the
+  // composebox::mojom::PageHandlerFactory mojo interface passing the
+  // pending receiver that will be internally bound.
+  void BindInterface(
+      mojo::PendingReceiver<composebox::mojom::PageHandlerFactory> receiver);
+#endif
 
   // contextual_tasks::mojom::PageHandlerFactory:
   void CreatePageHandler(
@@ -187,12 +202,6 @@ class ContextualTasksUI
       mojo::PendingReceiver<contextual_tasks::mojom::PageHandlerFactory>
           pending_receiver);
 
-  // Instantiates the implementor of the
-  // composebox::mojom::PageHandlerFactory mojo interface passing the
-  // pending receiver that will be internally bound.
-  void BindInterface(
-      mojo::PendingReceiver<composebox::mojom::PageHandlerFactory> receiver);
-
   // Instantiates the implementor of the contextual_tasks::mojom::
   // ContextualTasksInternalsPageHandlerFactory mojo interface passing the
   // pending receiver that will be internally bound.
@@ -218,10 +227,12 @@ class ContextualTasksUI
   void OnRefreshTokenUpdatedForAccount(
       const CoreAccountInfo& account_info) override;
 
+#if !BUILDFLAG(IS_ANDROID)
   void SetComposeboxHandlerForTesting(
       std::unique_ptr<ContextualTasksComposeboxHandler> handler) {
     composebox_handler_ = std::move(handler);
   }
+#endif
 
   // Shows an OAuth error dialog.
   void ShowOauthErrorDialog();
@@ -281,21 +292,25 @@ class ContextualTasksUI
 
   contextual_tasks::ContextualTasksPanelController* GetPanelController();
 
-  std::unique_ptr<ContextualTasksComposeboxHandler> composebox_handler_;
   std::unique_ptr<contextual_tasks::ContextualTasksCookieSynchronizer>
       cookie_synchronizer_;
   raw_ptr<contextual_tasks::ContextualTasksUiService> ui_service_;
 
   raw_ptr<contextual_tasks::ContextualTasksService> contextual_tasks_service_;
 
-  mojo::Receiver<composebox::mojom::PageHandlerFactory>
-      composebox_page_handler_factory_receiver_{this};
-
   mojo::Receiver<contextual_tasks::mojom::PageHandlerFactory>
       contextual_tasks_page_handler_factory_receiver_{this};
 
   std::unique_ptr<ContextualTasksPageHandler> page_handler_;
+
+#if !BUILDFLAG(IS_ANDROID)
+  std::unique_ptr<ContextualTasksComposeboxHandler> composebox_handler_;
+
+  mojo::Receiver<composebox::mojom::PageHandlerFactory>
+      composebox_page_handler_factory_receiver_{this};
+
   mojo::Remote<composebox::mojom::Page> page_remote_;
+#endif
 
   std::unique_ptr<InnerFrameCreationObvserver>
       inner_web_contents_creation_observer_;

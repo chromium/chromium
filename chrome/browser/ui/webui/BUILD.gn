@@ -46,6 +46,7 @@ source_set("configs") {
   deps = [
     ":webui",
     "//chrome/browser/actor/ui:actor_overlay",
+    "//chrome/browser/contextual_tasks:ui",
     "//chrome/browser/glic",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/ui",
@@ -74,7 +75,6 @@ source_set("configs") {
     deps += [
       "//chrome/browser/actor/ui",
       "//chrome/browser/actor/ui:actor_overlay_web_view",
-      "//chrome/browser/contextual_tasks:ui",
       "//chrome/browser/glic/selection",
       "//chrome/browser/ui/webui/access_code_cast",
       "//chrome/browser/ui/webui/app_service_internals",
