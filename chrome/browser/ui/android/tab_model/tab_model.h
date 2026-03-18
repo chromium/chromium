@@ -306,9 +306,6 @@ class TabModel : public TabListInterface {
   virtual void CloseTabsNavigatedInTimeWindow(const base::Time& begin_time,
                                               const base::Time& end_time) = 0;
 
-  // Returns the tab strip collection for this tab model.
-  virtual tabs::TabCollection* GetTabStripCollection() const = 0;
-
   chrome::android::ActivityType activity_type() const { return activity_type_; }
   const std::optional<chrome::android::CustomTabProfileType>&
   custom_tab_profile_type() const {

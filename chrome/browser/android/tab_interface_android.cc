@@ -11,14 +11,7 @@
 TabInterfaceAndroid::TabInterfaceAndroid(TabAndroid* tab_android)
     : weak_tab_android_(tab_android->GetTabAndroidWeakPtr()) {}
 
-TabInterfaceAndroid::~TabInterfaceAndroid() {
-  // When `this` is destroyed we should reset the connection to the parent
-  // collection.
-  if (weak_tab_android_) {
-    weak_tab_android_->ResetParentCollection(
-        base::PassKey<TabInterfaceAndroid>());
-  }
-}
+TabInterfaceAndroid::~TabInterfaceAndroid() = default;
 
 base::WeakPtr<tabs::TabInterface> TabInterfaceAndroid::GetWeakPtr() {
   if (!weak_tab_android_) {

@@ -322,10 +322,6 @@ void TabAndroid::SetMediaState(int media_state) {
   Java_TabImpl_setMediaState(env, GetJavaObject(env), media_state);
 }
 
-void TabAndroid::ResetParentCollection(base::PassKey<TabInterfaceAndroid>) {
-  parent_collection_ = nullptr;
-}
-
 void TabAndroid::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }
@@ -624,25 +620,6 @@ bool TabAndroid::IsTrustedWebActivity() const {
     return false;
   }
   return Java_TabImpl_isTrustedWebActivity(env, obj);
-}
-
-tabs::TabCollection* TabAndroid::GetRootCollection() const {
-  tabs::TabCollection* root = parent_collection_;
-  if (!root) {
-    return nullptr;
-  }
-  // Split + Group + Unpinned + Strip
-  static constexpr int kMaxTabCollectionDepth = 4;
-  int depth = 0;
-  while (root->GetParentCollection() && depth < kMaxTabCollectionDepth) {
-    root = root->GetParentCollection();
-    depth++;
-  }
-  if (root->GetParentCollection()) {
-    LOG(ERROR) << "TabCollection depth exceeds limit";
-    return nullptr;
-  }
-  return root;
 }
 
 base::WeakPtr<TabAndroid> TabAndroid::GetTabAndroidWeakPtr() {
