@@ -262,8 +262,6 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
             StripLayoutTab[] stripTabs,
             @TabId int selectedTabId) {
         final int tabsCount = stripTabs != null ? stripTabs.length : 0;
-        final float widthToHideTabTitle =
-                StripLayoutUtils.shouldApplyMoreDensity() ? StripLayoutUtils.MIN_TAB_WIDTH_DP : 0.f;
 
         // TODO(crbug.com/40270147): Cleanup params, as some don't change and others are now
         //  unused.
@@ -289,6 +287,11 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
             @ColorInt
             int mediaIndicatorTint =
                     layoutHelper.getMediaIndicatorTintColor(mediaState, closeButtonTint);
+            boolean isPinned = st.getIsPinned();
+            float widthToHideTabTitle =
+                    (StripLayoutUtils.shouldApplyMoreDensity() || isPinned)
+                            ? StripLayoutUtils.MIN_TAB_WIDTH_DP
+                            : 0.f;
 
             TabStripSceneLayerJni.get()
                     .putStripTabLayer(
@@ -341,7 +344,8 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                             st.getKeyboardFocusRingOffset(),
                             st.getLineWidth(),
                             Math.round(FOLIO_FOOT_LENGTH_DP * mDpToPx),
-                            st.getIsPinned());
+                            isPinned,
+                            Math.round(st.getPinnedTabFaviconOffsetX() * mDpToPx));
         }
     }
 
@@ -536,7 +540,8 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                 int keyboardFocusRingOffset,
                 int strokeWidth,
                 float folioFootLength,
-                boolean isPinned);
+                boolean isPinned,
+                float pinnedIconOffsetX);
 
         void putGroupIndicatorLayer(
                 long nativeTabStripSceneLayer,

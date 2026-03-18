@@ -65,7 +65,8 @@ void TabHandleLayer::SetProperties(
     int keyboard_focus_ring_offset,
     int stroke_width,
     float folio_foot_length,
-    float width_to_hide_tab_title) {
+    float width_to_hide_tab_title,
+    float pinned_icon_offset_x) {
   if (foreground != foreground_ || opacity != opacity_ ||
       is_pinned != is_pinned_) {
     foreground_ = foreground;
@@ -119,6 +120,7 @@ void TabHandleLayer::SetProperties(
                          title_layer_);
     }
     title_layer->SetUIResourceIds();
+    title_layer->SetIconOffsetX(pinned_icon_offset_x);
   } else if (title_layer_.get()) {
     title_layer_->RemoveFromParent();
     title_layer_ = nullptr;

@@ -420,6 +420,19 @@ public class StripLayoutHelper
                                     /* animate= */ true, /* deferAnimations= */ true);
                     assumeNonNull(pinnedAnimations);
 
+                    // Center tab favicon if pinned.
+                    float targetFaviconOffsetX = calculateTabFaviconOffsetX(stripTab);
+                    if (stripTab.getPinnedTabFaviconOffsetX() != targetFaviconOffsetX) {
+                        pinnedAnimations.add(
+                                CompositorAnimator.ofFloatProperty(
+                                        mUpdateHost.getAnimationHandler(),
+                                        stripTab,
+                                        StripLayoutTab.PINNED_TAB_FAVICON_OFFSET,
+                                        stripTab.getPinnedTabFaviconOffsetX(),
+                                        targetFaviconOffsetX,
+                                        ANIM_TAB_RESIZE_MS));
+                    }
+
                     // Animate the moving tab to the pinned boundary. Normally we animate from drawX
                     // to idealX, but if the first unpinned slot is off-screen, a newly unpinned tab
                     // would “fly” toward the strip start. To make it appear to fly into the
@@ -1321,7 +1334,12 @@ public class StripLayoutHelper
                 assumeNonNull(mModel);
                 Tab tab = mModel.getTabById(stripTab.getTabId());
                 if (tab != null) {
-                    stripTab.setIsPinned(tab.getIsPinned());
+                    boolean isPinned = tab.getIsPinned();
+                    if (isPinned) {
+                        stripTab.setIsPinned(true);
+                        float targetFaviconOffsetX = calculateTabFaviconOffsetX(stripTab);
+                        stripTab.setPinnedTabFaviconOffsetX(targetFaviconOffsetX);
+                    }
                 }
             }
             mPinnedTabsBoundarySupplier.set(getPinnedTabsBoundary());
@@ -6082,6 +6100,14 @@ public class StripLayoutHelper
             if (view.isKeyboardFocused()) return (StripLayoutView) view;
         }
         return null;
+    }
+
+    private float calculateTabFaviconOffsetX(StripLayoutTab stripTab) {
+        if (!stripTab.getIsPinned()) {
+            return 0.f;
+        }
+        return ((getCachedTabWidth(true) - stripTab.getFaviconSize()) / 2.f
+                - stripTab.getFaviconPadding());
     }
 
     void startDragAndDropTabForTesting(StripLayoutTab clickedTab, PointF dragStartPointF) {

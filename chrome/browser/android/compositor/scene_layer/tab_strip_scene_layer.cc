@@ -634,7 +634,8 @@ void TabStripSceneLayer::PutStripTabLayer(
     int32_t keyboard_focus_ring_offset,
     int32_t stroke_width,
     float folio_foot_length,
-    bool is_pinned) {
+    bool is_pinned,
+    float pinned_icon_offset_x) {
   DCHECK(layer_title_cache_);
   scoped_refptr<TabHandleLayer> layer = GetNextTabLayer(layer_title_cache_);
 
@@ -697,7 +698,7 @@ void TabStripSceneLayer::PutStripTabLayer(
       is_end_divider_visible, is_loading, spinner_rotation, opacity,
       is_keyboard_focused, keyboard_focus_ring_drawable,
       keyboard_focus_ring_offset, stroke_width, folio_foot_length,
-      width_to_hide_tab_title);
+      width_to_hide_tab_title, pinned_icon_offset_x);
 }
 
 void TabStripSceneLayer::PutGroupIndicatorLayer(

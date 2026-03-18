@@ -102,6 +102,20 @@ public class StripLayoutTab extends StripLayoutView {
                 }
             };
 
+    /** A property for animations to use for shifting the pinned icon to the center. */
+    public static final FloatProperty<StripLayoutTab> PINNED_TAB_FAVICON_OFFSET =
+            new FloatProperty<>("pinnedTabFaviconOffset") {
+                @Override
+                public void setValue(StripLayoutTab object, float value) {
+                    object.setPinnedTabFaviconOffsetX(value);
+                }
+
+                @Override
+                public Float get(StripLayoutTab object) {
+                    return object.getPinnedTabFaviconOffsetX();
+                }
+            };
+
     // Animation/Timer Constants
     private static final int ANIM_TAB_CLOSE_BUTTON_FADE_MS = 150;
 
@@ -160,6 +174,7 @@ public class StripLayoutTab extends StripLayoutView {
     private boolean mIsClosed;
     private boolean mIsSelected;
     private boolean mIsPinned;
+    private float mPinnedTabFaviconOffsetX;
     private boolean mIsHovered;
     private boolean mIsMultiSelected;
     private boolean mCanShowCloseButton = true;
@@ -671,6 +686,20 @@ public class StripLayoutTab extends StripLayoutView {
     }
 
     /**
+     * @param offset How far to horizontally offset the favicon when the tab is pinned.
+     */
+    public void setPinnedTabFaviconOffsetX(float offset) {
+        mPinnedTabFaviconOffsetX = offset;
+    }
+
+    /**
+     * @return How far to horizontally offset the favicon when the tab is pinned.
+     */
+    public float getPinnedTabFaviconOffsetX() {
+        return mPinnedTabFaviconOffsetX;
+    }
+
+    /**
      * @return How far to vertically offset the tab content.
      */
     public float getContentOffsetY() {
@@ -982,7 +1011,7 @@ public class StripLayoutTab extends StripLayoutView {
         boolean shouldShow = mCanShowCloseButton && !mIsPlaceholder;
 
         if (shouldShow != mShowingCloseButton) {
-            float opacity = shouldShow ? 1.f : 0.f;
+            float opacity = shouldShow ? 1.0f : 0.0f;
             if (animate) {
                 if (mButtonOpacityAnimation != null) mButtonOpacityAnimation.end();
                 mButtonOpacityAnimation =

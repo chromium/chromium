@@ -22,6 +22,7 @@ import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.ArgumentMatchers.nullable;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -134,6 +135,7 @@ import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver.DidRemov
 import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tabmodel.TabModelActionListener;
 import org.chromium.chrome.browser.tabmodel.TabModelActionListener.DialogType;
+import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
 import org.chromium.chrome.browser.tabmodel.TabUngrouper;
 import org.chromium.chrome.browser.tasks.tab_management.TabDragHandlerBase;
@@ -234,6 +236,7 @@ public class StripLayoutHelperTest {
     @Captor private ArgumentCaptor<TabModelActionListener> mTabModelActionListenerCaptor;
     @Captor private ArgumentCaptor<Callback<TabClosureParams>> mTabRemoverCallbackCaptor;
     @Captor private ArgumentCaptor<List<Tab>> mTabListCaptor;
+    @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
 
     private Activity mActivity;
     private Context mContext;
@@ -7142,6 +7145,87 @@ public class StripLayoutHelperTest {
             assertEquals(
                     "The tab's drawX is incorrect", expectedDrawXNoPinnedTab, tab.getDrawX(), 0.1f);
         }
+    }
+
+    @Test
+    @Feature("Pinned Tabs")
+    public void testPinnedTabFaviconCentering_OnStartup() {
+        // 1. Initialize with one pinned tab.
+        int numTabs = 1;
+        initializeTest(false, false, 0, numTabs);
+        mStripLayoutHelper.onSizeChanged(
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+
+        // 2. Set the tab as pinned in the model.
+        Tab tab = mModel.getTabAt(0);
+        when(mModel.getTabById(anyInt())).thenReturn(tab);
+        when(tab.getIsPinned()).thenReturn(true);
+
+        // Reset TabModel to re-initialize tab state.
+        mStripLayoutHelper.setTabModel(new TestTabModel(), null, false);
+        mStripLayoutHelper.setTabModel(mModel, mTabCreator, false);
+
+        // 3. Trigger onTabStateInitialized to simulate startUp.
+        mStripLayoutHelper.setTabModelStartupInfo(1, 0, true);
+        mStripLayoutHelper.onTabStateInitialized();
+
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        StripLayoutTab pinnedTab = tabs[0];
+
+        // 4. Verify the favicon offset on the tab.
+        float expectedOffset =
+                (PINNED_TAB_WIDTH_DP - pinnedTab.getFaviconSize()) / 2.f
+                        - pinnedTab.getFaviconPadding();
+        assertEquals(
+                "Favicon offset should be centered on startup",
+                expectedOffset,
+                pinnedTab.getPinnedTabFaviconOffsetX(),
+                0.1f);
+    }
+
+    @Test
+    @Feature("Pinned Tabs")
+    public void testPinnedTabFaviconCenteringAndReset() {
+        // 1. Initialize with one tab.
+        initializeTest(false, false, 0, 1);
+        mStripLayoutHelper.onSizeChanged(
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+
+        // 2. Pin the tab in the model and trigger the observer.
+        Tab tab = mModel.getTabAt(0);
+        when(tab.getIsPinned()).thenReturn(true);
+        getTabModelObserver().didChangePinState(tab);
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+        mStripLayoutHelper.finishAnimations();
+
+        // 3. Verify favicon offset is set (centered).
+        StripLayoutTab stripTab = mStripLayoutHelper.getStripLayoutTabsForTesting()[0];
+        float expectedOffset =
+                (PINNED_TAB_WIDTH_DP - stripTab.getFaviconSize()) / 2.f
+                        - stripTab.getFaviconPadding();
+        assertEquals(
+                "Favicon offset should be centered when pinned",
+                expectedOffset,
+                stripTab.getPinnedTabFaviconOffsetX(),
+                0.1f);
+
+        // 4. Unpin the tab in the model and trigger the observer.
+        when(tab.getIsPinned()).thenReturn(false);
+        getTabModelObserver().didChangePinState(tab);
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+        mStripLayoutHelper.finishAnimations();
+
+        // 5. Verify favicon offset is reset to 0.
+        assertEquals(
+                "Favicon offset should be reset to 0 when unpinned",
+                0f,
+                stripTab.getPinnedTabFaviconOffsetX(),
+                0.1f);
+    }
+
+    private TabModelObserver getTabModelObserver() {
+        verify(mModel, atLeastOnce()).addObserver(mTabModelObserverCaptor.capture());
+        return mTabModelObserverCaptor.getValue();
     }
 
     private float getClickCoordinateForTabAtIndex(StripLayoutView[] stripViews, int i) {

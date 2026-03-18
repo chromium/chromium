@@ -321,7 +321,8 @@ public class TabStripSceneLayerTest {
                         eq(
                                 FOLIO_FOOT_LENGTH_DP
                                         * mContext.getResources().getDisplayMetrics().density),
-                        anyBoolean());
+                        anyBoolean(),
+                        anyFloat());
     }
 
     @Test
@@ -389,7 +390,8 @@ public class TabStripSceneLayerTest {
                         eq(
                                 FOLIO_FOOT_LENGTH_DP
                                         * mContext.getResources().getDisplayMetrics().density),
-                        anyBoolean());
+                        anyBoolean(),
+                        anyFloat());
     }
 
     @Test
@@ -459,7 +461,8 @@ public class TabStripSceneLayerTest {
                         eq(
                                 FOLIO_FOOT_LENGTH_DP
                                         * mContext.getResources().getDisplayMetrics().density),
-                        anyBoolean());
+                        anyBoolean(),
+                        anyFloat());
     }
 
     @Test
@@ -528,7 +531,8 @@ public class TabStripSceneLayerTest {
                         eq(
                                 FOLIO_FOOT_LENGTH_DP
                                         * mContext.getResources().getDisplayMetrics().density),
-                        anyBoolean());
+                        anyBoolean(),
+                        anyFloat());
     }
 
     @Test

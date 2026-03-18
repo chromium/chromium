@@ -179,7 +179,8 @@ class TabStripSceneLayer : public SceneLayer {
                         int32_t keyboard_focus_ring_offset,
                         int32_t stroke_width,
                         float folio_foot_length,
-                        bool is_pinned);
+                        bool is_pinned,
+                        float pinned_icon_offset_x);
 
   void PutGroupIndicatorLayer(
       JNIEnv* env,

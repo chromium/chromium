@@ -72,7 +72,8 @@ class TabHandleLayer : public Layer {
                      int keyboard_focus_ring_offset,
                      int stroke_width,
                      float folio_foot_length,
-                     float width_to_hide_tab_title);
+                     float width_to_hide_tab_title,
+                     float pinned_icon_offset_x);
   bool foreground();
   bool is_pinned();
   scoped_refptr<cc::slim::Layer> layer() override;
