@@ -469,6 +469,9 @@ gfx::Size TabStripComboButton::GetPreferredSizeForOrientation(
     }
 
     gfx::Size child_size = child->GetPreferredSize();
+    if (child_size.width() == 0) {
+      continue;
+    }
 
     if (orientation == views::LayoutOrientation::kHorizontal) {
       if (has_visible_child) {
