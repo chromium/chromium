@@ -478,7 +478,7 @@ group("gn_all") {
       }
 
       if (!is_castos) {
-        deps += [ "//chrome:xdg_mime" ]
+        deps += [ "//chrome:linux_cros_extra_data" ]
       }
 
       if (use_dbus) {
