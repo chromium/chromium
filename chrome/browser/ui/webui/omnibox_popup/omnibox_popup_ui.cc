@@ -78,9 +78,16 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       Profile::FromWebUI(web_ui), chrome::kChromeUIOmniboxPopupHost);
 
+  bool session_allows_drag_and_drop = false;
+  if (auto* session_handle = GetOrCreateContextualSessionHandle()) {
+    session_allows_drag_and_drop =
+        session_handle->CheckSearchContentSharingSettings(profile_->GetPrefs());
+  }
+
   SearchboxHandler::SetupWebUIDataSource(source, Profile::FromWebUI(web_ui),
-                                         /*enable_voice_search=*/false,
-                                         /*enable_lens_search=*/false);
+                                         /*enable_voice_search=*/true,
+                                         /*enable_lens_search=*/false,
+                                         session_allows_drag_and_drop);
 
   source->AddBoolean("isTopChromeSearchbox", true);
   source->AddBoolean("omniboxAimPopupEnabled",
@@ -119,19 +126,9 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
   source->AddBoolean(
       "caretAnimationEnabled",
       base::FeatureList::IsEnabled(omnibox::kOmniboxAnimatedCaret));
-  source->AddBoolean("composeboxCloseByClickOutside",
-                     omnibox::kCloseComposeboxByClickOutside.Get());
-  source->AddBoolean("composeboxCloseByEscape",
-                     omnibox::kCloseComposeboxByEscape.Get());
+  source->AddBoolean("composeboxCloseByEscape", true);
   source->AddBoolean("composeboxContextMenuEnableMultiTabSelection",
                      omnibox::kContextMenuEnableMultiTabSelection.Get());
-  auto* session_handle = GetOrCreateContextualSessionHandle();
-  bool allow_drag_and_drop =
-      session_handle &&
-      session_handle->CheckSearchContentSharingSettings(profile_->GetPrefs()) &&
-      omnibox::kEnableContextDragAndDrop.Get();
-  source->AddBoolean("composeboxContextDragAndDropEnabled",
-                     allow_drag_and_drop);
   source->AddBoolean("composeboxNoFlickerSuggestionsFix", false);
   source->AddBoolean("composeboxShowContextMenu",
                      omnibox::kShowContextMenu.Get());
@@ -155,22 +152,15 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
                      omnibox::kAddTabUploadDelayOnRecentTabChipClick.Get());
   source->AddBoolean("composeboxShowRecentTabChip",
                      omnibox::kShowRecentTabChip.Get());
-  source->AddBoolean("composeboxShowSubmit", omnibox::kShowSubmit.Get());
   source->AddBoolean("composeboxShowTypedSuggestWithContext", false);
   source->AddBoolean("composeboxShowTypedSuggest",
                      omnibox::kShowComposeboxTypedSuggest.Get());
   source->AddBoolean("composeboxShowZps", omnibox::kShowComposeboxZps.Get());
   source->AddBoolean("composeboxSmartComposeEnabled",
                      omnibox::kShowSmartCompose.Get());
-  source->AddBoolean("expandedComposeboxShowVoiceSearch",
-                     omnibox::kShowVoiceSearchInExpandedComposebox.Get());
-  source->AddBoolean("steadyComposeboxShowVoiceSearch",
-                     omnibox::kShowVoiceSearchInSteadyComposebox.Get());
   auto searchbox_layout_mode = AddContextButtonVariantToSearchboxLayoutMode(
       omnibox::kWebUIOmniboxAimPopupAddContextButtonVariantParam.Get());
   source->AddString("searchboxLayoutMode", searchbox_layout_mode);
-  source->AddBoolean("steadyComposeboxShowVoiceSearch",
-                     omnibox::kShowVoiceSearchInSteadyComposebox.Get());
   source->AddString(
       "composeboxSource",
       contextual_search::ContextualSearchMetricsRecorder::

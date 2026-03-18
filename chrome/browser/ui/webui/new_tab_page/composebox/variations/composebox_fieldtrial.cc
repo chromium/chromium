@@ -236,16 +236,6 @@ const base::FeatureParam<bool> kShowContextMenuHeaders(&kNtpComposebox,
                                                        "ShowContextMenuHeaders",
                                                        true);
 
-const base::FeatureParam<bool> kShowVoiceSearchInSteadyComposebox(
-    &kNtpComposebox,
-    "ShowVoiceSearchInSteadyComposebox",
-    true);
-
-const base::FeatureParam<bool> kShowVoiceSearchInExpandedComposebox(
-    &kNtpComposebox,
-    "ShowVoiceSearchInExpandedComposebox",
-    true);
-
 const base::FeatureParam<bool>
     kShowSmartCompose(&kNtpComposebox, "NtpComposeboxShowSmartCompose", true);
 
@@ -259,24 +249,6 @@ const base::FeatureParam<bool> kContextMenuEnableMultiTabSelection(
     "NtpComposeboxContextMenuEnableMultiTabSelection",
     false);
 
-const base::FeatureParam<int> kMaxNumFiles(&kNtpComposebox,
-                                           "NtpComposeboxMaxNumFiles",
-                                           10);
-
-const base::FeatureParam<bool> kEnableContextDragAndDrop(
-    &kNtpComposebox,
-    "EnableContextDragAndDrop",
-    true);
-
-const base::FeatureParam<bool> kCloseComposeboxByEscape(
-    &kNtpComposebox,
-    "NtpComposeboxCloseComposeboxByEscape",
-    false);
-
-const base::FeatureParam<bool> kCloseComposeboxByClickOutside(
-    &kNtpComposebox,
-    "NtpComposeboxCloseComposeboxByClickOutside",
-    false);
 const base::FeatureParam<bool> kAddTabUploadDelayOnRecentTabChipClick(
     &kNtpComposebox,
     "NtpComposeboxAddTabUploadDelayOnRecentTabChipClick",

@@ -191,7 +191,9 @@ bool HasCredentials(Profile* profile) {
            .empty();
 }
 
-content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
+content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(
+    Profile* profile,
+    bool session_allows_drag_and_drop) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUINewTabPageHost);
 
@@ -699,13 +701,11 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
   source->AddBoolean(
       "enableEphemeralContextMenuDescription",
       ntp_composebox::kEnableEphemeralContextMenuDescription.Get());
-  source->AddBoolean("composeboxContextDragAndDropEnabled",
-                     ntp_composebox::kEnableContextDragAndDrop.Get());
 
-  source->AddBoolean("composeboxCloseByEscape",
-                     ntp_composebox::kCloseComposeboxByEscape.Get());
-  source->AddBoolean("composeboxCloseByClickOutside",
-                     ntp_composebox::kCloseComposeboxByClickOutside.Get());
+  source->AddBoolean("composeboxCloseByEscape", false);
+  // TODO(b/477969358): Remove "close by click outside" boolean.
+  source->AddBoolean("composeboxCloseByClickOutside", true);
+
   source->AddBoolean("composeboxSmartComposeEnabled",
                      ntp_composebox::kShowSmartCompose.Get());
   const auto* aim_eligibility_service =
@@ -720,12 +720,6 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
                          composebox_config.is_pdf_upload_enabled();
   source->AddBoolean("composeboxShowPdfUpload", show_pdf_upload);
 
-  source->AddBoolean("steadyComposeboxShowVoiceSearch",
-                     ntp_composebox::kShowVoiceSearchInSteadyComposebox.Get());
-
-  source->AddBoolean(
-      "expandedComposeboxShowVoiceSearch",
-      ntp_composebox::kShowVoiceSearchInExpandedComposebox.Get());
   source->AddBoolean(
       "addTabUploadDelayOnRecentTabChipClick",
       ntp_composebox::kAddTabUploadDelayOnRecentTabChipClick.Get());
@@ -774,7 +768,8 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
       source, profile,
       /*enable_voice_search=*/true,
       /*enable_lens_search=*/
-      profile->GetPrefs()->GetBoolean(prefs::kLensDesktopNTPSearchEnabled));
+      profile->GetPrefs()->GetBoolean(prefs::kLensDesktopNTPSearchEnabled),
+      session_allows_drag_and_drop);
 
   webui::SetupWebUIDataSource(source, kNewTabPageResources,
                               IDR_NEW_TAB_PAGE_NEW_TAB_PAGE_HTML);
@@ -833,7 +828,14 @@ NewTabPageUI::NewTabPageUI(content::WebUI* web_ui)
                                    profile_)) {
   instance_count_++;
   base::UmaHistogramCounts100("NewTabPage.Count", instance_count_);
-  auto* source = CreateAndAddNewTabPageUiHtmlSource(profile_);
+  bool session_allows_drag_and_drop = false;
+  if (auto* session_handle = GetOrCreateContextualSessionHandle()) {
+    session_allows_drag_and_drop =
+        session_handle->CheckSearchContentSharingSettings(profile_->GetPrefs());
+  }
+
+  auto* source = CreateAndAddNewTabPageUiHtmlSource(
+      profile_, session_allows_drag_and_drop);
   bool wallpaper_search_button_enabled =
       base::FeatureList::IsEnabled(ntp_features::kNtpWallpaperSearchButton) &&
       customize_chrome::IsWallpaperSearchEnabledForProfile(profile_);
