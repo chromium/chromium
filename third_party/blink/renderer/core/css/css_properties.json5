@@ -4890,6 +4890,7 @@
       valid_for_permission_element: true,
       invalidate: ["layout", "paint", "scroll-anchor"],
       percentages_depend_on_used_value: true,
+      affected_by_zoom: true,
     },
     {
       name: "padding-left",
@@ -4912,6 +4913,7 @@
       valid_for_permission_element: true,
       invalidate: ["layout", "paint", "scroll-anchor"],
       percentages_depend_on_used_value: true,
+      affected_by_zoom: true,
     },
     {
       name: "padding-right",
@@ -4934,6 +4936,7 @@
       valid_for_permission_element: true,
       invalidate: ["layout", "paint", "scroll-anchor"],
       percentages_depend_on_used_value: true,
+      affected_by_zoom: true,
     },
     {
       name: "padding-top",
@@ -4956,6 +4959,7 @@
       valid_for_permission_element: true,
       invalidate: ["layout", "paint", "scroll-anchor"],
       percentages_depend_on_used_value: true,
+      affected_by_zoom: true,
     },
     {
       name: "page",
