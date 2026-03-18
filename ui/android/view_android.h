@@ -90,11 +90,7 @@ class UI_ANDROID_EXPORT ViewAndroid {
     const base::android::ScopedJavaLocalRef<jobject> view() const;
 
    private:
-    // TODO(jinsukkim): Following weak refs can be cast to strong refs which
-    //     cannot be garbage-collected and leak memory. Rewrite not to use them.
-    //     see comments in crrev.com/2103243002.
-    JavaObjectWeakGlobalRef view_;
-    JavaObjectWeakGlobalRef delegate_;
+    void TransferViewAndDelegateFrom(ScopedAnchorView& other);
 
     // Default copy/assign disabled by move constructor.
   };
@@ -331,13 +327,12 @@ class UI_ANDROID_EXPORT ViewAndroid {
   // Returns the Java delegate for this view. This is used to delegate work
   // up to the embedding view (or the embedder that can deal with the
   // implementation details).
-  const base::android::ScopedJavaLocalRef<jobject> GetViewAndroidDelegate()
-      const;
+  const base::android::ScopedJavaLocalRef<jobject> GetViewAndroidDelegate(
+      JNIEnv* env) const;
 
   std::list<raw_ptr<ViewAndroid, CtnExperimental>> children_;
   base::ObserverList<ViewAndroidObserver>::Unchecked observer_list_;
   scoped_refptr<cc::slim::Layer> layer_;
-  JavaObjectWeakGlobalRef delegate_;
 
   raw_ptr<EventHandlerAndroid> event_handler_ = nullptr;  // Not owned
 

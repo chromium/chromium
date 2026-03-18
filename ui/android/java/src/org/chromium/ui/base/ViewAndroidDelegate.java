@@ -40,11 +40,22 @@ import org.chromium.ui.dragdrop.DragStateTracker;
 import org.chromium.ui.dragdrop.DropDataAndroid;
 import org.chromium.ui.mojom.CursorType;
 
+import java.lang.ref.WeakReference;
+import java.util.HashMap;
+import java.util.Map;
+
 /** Class to acquire, position, and remove anchor views from the implementing View. */
 @JNINamespace("ui")
 @NullMarked
 public class ViewAndroidDelegate {
     private static @Nullable DragAndDropDelegate sDragAndDropDelegateForTesting;
+
+    // A map of native objects to their Java counterparts allows unlimited scaling in of tabs.
+    // Another object owns the ViewAndroidDelegate objects.
+    private static final Map<Long, WeakReference<ViewAndroidDelegate>> sNativeDelegateMap =
+            new HashMap<>();
+    private static final Map<Long, WeakReference<View>> sNativeViewMap = new HashMap<>();
+
     private final DragAndDropDelegateImpl mDragAndDropDelegateImpl;
 
     /** The current container view. This view can be updated with {@link #setContainerView()}. */
@@ -630,5 +641,33 @@ public class ViewAndroidDelegate {
     public static void setDragAndDropDelegateForTest(DragAndDropDelegate testDelegate) {
         sDragAndDropDelegateForTesting = testDelegate;
         ResettersForTesting.register(() -> sDragAndDropDelegateForTesting = null);
+    }
+
+    @CalledByNative
+    private static void onNativeSetDelegate(long nativeObjectPtr, ViewAndroidDelegate delegate) {
+        sNativeDelegateMap.put(nativeObjectPtr, new WeakReference<>(delegate));
+    }
+
+    @CalledByNative
+    private static @Nullable ViewAndroidDelegate getDelegate(long nativeObjectPtr) {
+        WeakReference<ViewAndroidDelegate> delegateRef = sNativeDelegateMap.get(nativeObjectPtr);
+        return delegateRef == null ? null : delegateRef.get();
+    }
+
+    @CalledByNative
+    private static void onNativeReset(long nativeObjectPtr) {
+        sNativeDelegateMap.remove(nativeObjectPtr);
+        sNativeViewMap.remove(nativeObjectPtr);
+    }
+
+    @CalledByNative
+    private static void onNativeSetView(long nativeScopedAnchorViewPtr, View view) {
+        sNativeViewMap.put(nativeScopedAnchorViewPtr, new WeakReference<>(view));
+    }
+
+    @CalledByNative
+    private static @Nullable View getView(long nativeScopedAnchorViewPtr) {
+        WeakReference<View> viewRef = sNativeViewMap.get(nativeScopedAnchorViewPtr);
+        return viewRef == null ? null : viewRef.get();
     }
 }
