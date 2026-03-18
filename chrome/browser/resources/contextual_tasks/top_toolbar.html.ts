@@ -11,6 +11,7 @@ import type {TopToolbarElement} from './top_toolbar.js';
 // clang-format off
 export function getHtml(this: TopToolbarElement) {
   return html`<!--_html_template_start_-->
+<div id="top-row">
 <if expr="_google_chrome">
     <img src="chrome://resources/cr_components/searchbox/icons/google_g_gradient.svg"
         class="top-toolbar-logo">
@@ -69,6 +70,7 @@ export function getHtml(this: TopToolbarElement) {
         rounded-corner="${this.isExpandButtonEnabled ? 'false' : 'true'}">
     </cr-icon-button>
   </div>
+</div>
   <cr-lazy-render-lit id="sourcesMenu" .template="${() => html`
     <contextual-tasks-sources-menu .contextInfos="${this.contextInfos}">
     </contextual-tasks-sources-menu>`}">
@@ -97,6 +99,11 @@ export function getHtml(this: TopToolbarElement) {
       </button>
     </cr-action-menu>`}">
   </cr-lazy-render-lit>
+  ${this.showReopenTabs_ ? html`
+    <reopen-tabs
+        @reopen-click="${this.onReopenTabsReopenClick_}"
+        @dismiss-click="${this.onReopenTabsDismissClick_}">
+    </reopen-tabs>` : ''}
   <!--_html_template_end_-->`;
 }
 // clang-format on

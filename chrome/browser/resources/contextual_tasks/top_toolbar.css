@@ -15,13 +15,21 @@
   --mwb-primary-text-font-size: 12px;
   --mwb-secondary-text-font-size: 11px;
 
-  align-items: center;
   background-color: var(--toolbar-background-color);
   color: var(--toolbar-text-color);
   display: flex;
-  height: 20px;
+  flex-direction: column;
+  height: auto;
   padding: 7px 12px;
   margin: 6px 4px 0 4px;
+}
+
+#top-row {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  height: 20px;
+  width: 100%;
 }
 
 .top-toolbar-title {
