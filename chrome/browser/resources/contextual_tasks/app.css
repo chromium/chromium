@@ -742,7 +742,7 @@ error-page {
   pointer-events: all;
 }
 
-.name-shimmer-dark {
+:host([dark-mode_]) .name-shimmer {
   --bg-gradient: linear-gradient(
     to bottom,
     rgba(49, 134, 255, 1) 10%,
