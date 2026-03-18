@@ -55,14 +55,17 @@ message FindsSuggestionResponse {
     // The "hook" title for the notification (e.g., "Best Mexican in NYC").
     string theme_title = 1 [features = { field_presence: EXPLICIT }];
 
+    // The description of the theme.
+    string description = 2 [features = { field_presence: EXPLICIT }];
+
     // Identifies the theme by a specific type, used for user opt-out.
-    ThemeType theme_type = 2 [features = { field_presence: EXPLICIT }];
+    ThemeType theme_type = 3 [features = { field_presence: EXPLICIT }];
 
     // The list of net-new URLs matching this theme.
-    repeated SuggestedContent suggestions = 3;
+    repeated SuggestedContent suggestions = 4;
 
     // Score used to prioritize client behavior.
-    int64 score = 4 [features = { field_presence: EXPLICIT }];
+    int64 score = 5 [features = { field_presence: EXPLICIT }];
 
     // A single entry for suggested content, there can be multiple of
     //  these per-theme.
@@ -70,9 +73,12 @@ message FindsSuggestionResponse {
       // The title to display in the notification.
       string title = 1 [features = { field_presence: EXPLICIT }];
 
+      // The description to display in the notification.
+      string description = 2 [features = { field_presence: EXPLICIT }];
+
       // The destination URL.
       // Must be validated as "live" (200 OK) before showing.
-      string target_url = 2 [features = { field_presence: EXPLICIT }];
+      string target_url = 3 [features = { field_presence: EXPLICIT }];
     }
 
     // Bucket themes to support "opting-out" of topics on the client.

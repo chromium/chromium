@@ -729,6 +729,11 @@ message SelectOption {
 
 message TableData {
   // The name of the table, coming from the caption.
+  // Note: this field has some quirks for backwards-compatibility reasons:
+  // 1. It is only populated if the table name is an immediate child of the
+  //    table element. Table names further down in the tree are skipped, leaving
+  //    this field empty.
+  // 2. The table name also will appear in a separate child text node.
   string table_name = 1 [features = { field_presence: EXPLICIT }];
 
   reserved 2, 3, 4;
