@@ -281,15 +281,13 @@ std::unique_ptr<ThrottlingURLLoader> ThrottlingURLLoader::CreateLoaderAndStart(
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     std::optional<std::vector<std::string>> cors_exempt_header_list,
-    ClientReceiverDelegate* client_receiver_delegate,
-    const std::vector<int>* initiator_origin_trial_features) {
+    ClientReceiverDelegate* client_receiver_delegate) {
   DCHECK(url_request);
   std::unique_ptr<ThrottlingURLLoader> loader =
       CreateLoader(std::move(throttles), client, traffic_annotation,
                    client_receiver_delegate);
   loader->Start(std::move(factory), request_id, options, url_request,
-                std::move(task_runner), std::move(cors_exempt_header_list),
-                initiator_origin_trial_features);
+                std::move(task_runner), std::move(cors_exempt_header_list));
   return loader;
 }
 
@@ -420,8 +418,7 @@ void ThrottlingURLLoader::Start(
     uint32_t options,
     network::ResourceRequest* url_request,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
-    std::optional<std::vector<std::string>> cors_exempt_header_list,
-    const std::vector<int>* initiator_origin_trial_features) {
+    std::optional<std::vector<std::string>> cors_exempt_header_list) {
   TRACE_EVENT("loading", "ThrottlingURLLoader::Start",
               perfetto::Flow::FromPointer(this), "request_id", request_id);
   DCHECK_EQ(DEFERRED_NONE, deferred_stage_);

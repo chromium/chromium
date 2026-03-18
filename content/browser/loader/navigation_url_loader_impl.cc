@@ -1369,8 +1369,7 @@ void NavigationURLLoaderImpl::CreateThrottlingLoaderAndStart(
       std::move(factory), global_request_id_.request_id, options,
       resource_request_.get(),
       GetUIThreadTaskRunner({BrowserTaskType::kNavigationNetworkResponse}),
-      /*cors_exempt_header_list=*/std::nullopt,
-      &request_info_->common_params->initiator_origin_trial_features);
+      /*cors_exempt_header_list=*/std::nullopt);
 }
 
 const network::ResourceRequest&
