@@ -101,6 +101,11 @@ template <class Source,
           RawPtrTraits source_ptr_trait = LeakedDanglingUntriaged>
 class ScopedObservation {
  public:
+  // Used to mark the observation as dangling untriaged.
+  // TODO(crbug.com/493572976): remove once no observation is dangling.
+  using LeakedDanglingUntriaged =
+      ScopedObservation<Source, Observer, LeakedDanglingUntriaged>;
+
   explicit ScopedObservation(Observer* observer) : observer_(observer) {}
   ScopedObservation(const ScopedObservation&) = delete;
   ScopedObservation& operator=(const ScopedObservation&) = delete;
