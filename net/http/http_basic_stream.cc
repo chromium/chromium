@@ -196,4 +196,7 @@ void HttpBasicStream::OnHandshakeConfirmed(CompletionOnceCallback callback,
   std::move(callback).Run(rv);
 }
 
+void HttpBasicStream::PopulateLoadTimingInternalInfo(
+    LoadTimingInternalInfo* load_timing_internal_info) const {}
+
 }  // namespace net

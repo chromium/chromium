@@ -16,6 +16,7 @@ namespace {
 
 TEST(LoadTimingInternalInfoMojomTraitsTest, SerializeAndDeserialize) {
   net::LoadTimingInternalInfo original;
+  original.max_stream_limit_pending_delay = base::Seconds(1);
   original.create_stream_delay = base::Seconds(1);
   original.connected_callback_delay = base::Seconds(1);
   original.initialize_stream_delay = base::Seconds(1);

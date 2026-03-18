@@ -22,6 +22,7 @@
 #include "net/base/completion_once_callback.h"
 #include "net/base/connection_migration_information.h"
 #include "net/base/idempotency.h"
+#include "net/base/load_timing_internal_info.h"
 #include "net/base/net_error_details.h"
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
@@ -157,6 +158,11 @@ class NET_EXPORT_PRIVATE HttpStream {
   // between when the full headers have been received and the stream has been
   // closed.
   virtual bool GetLoadTimingInfo(LoadTimingInfo* load_timing_info) const = 0;
+
+  // Populates the internal load timing information that this stream has
+  // accumulated.
+  virtual void PopulateLoadTimingInternalInfo(
+      LoadTimingInternalInfo* load_timing_internal_info) const = 0;
 
   // Get the SSLInfo associated with this stream's connection.  This should
   // only be called for streams over SSL sockets, otherwise the behavior is

@@ -418,4 +418,7 @@ void WebSocketHttp2HandshakeStream::OnFailure(
   stream_request_->OnFailure(message, net_error, response_code);
 }
 
+void WebSocketHttp2HandshakeStream::PopulateLoadTimingInternalInfo(
+    LoadTimingInternalInfo* load_timing_internal_info) const {}
+
 }  // namespace net

@@ -70,6 +70,14 @@ bool EnumTraits<network::mojom::AdvertisedAltSvcState,
 }
 
 // static
+std::optional<base::TimeDelta>
+StructTraits<network::mojom::LoadTimingInternalInfoDataView,
+             net::LoadTimingInternalInfo>::
+    max_stream_limit_pending_delay(const net::LoadTimingInternalInfo& info) {
+  return info.max_stream_limit_pending_delay;
+}
+
+// static
 const base::TimeDelta&
 StructTraits<network::mojom::LoadTimingInternalInfoDataView,
              net::LoadTimingInternalInfo>::
@@ -119,6 +127,10 @@ bool StructTraits<network::mojom::LoadTimingInternalInfoDataView,
                   net::LoadTimingInternalInfo>::
     Read(network::mojom::LoadTimingInternalInfoDataView data,
          net::LoadTimingInternalInfo* info) {
+  if (!data.ReadMaxStreamLimitPendingDelay(
+          &info->max_stream_limit_pending_delay)) {
+    return false;
+  }
   if (!data.ReadCreateStreamDelay(&info->create_stream_delay)) {
     return false;
   }

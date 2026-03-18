@@ -748,4 +748,7 @@ void QuicHttpStream::SetRequestIdempotency(Idempotency idempotency) {
   stream_->SetRequestIdempotency(idempotency);
 }
 
+void QuicHttpStream::PopulateLoadTimingInternalInfo(
+    LoadTimingInternalInfo* load_timing_internal_info) const {}
+
 }  // namespace net

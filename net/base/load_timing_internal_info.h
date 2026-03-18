@@ -37,6 +37,11 @@ struct NET_EXPORT LoadTimingInternalInfo {
   bool operator==(const LoadTimingInternalInfo& other) const;
   ~LoadTimingInternalInfo();
 
+  // The time taken for a SPDY session to create an active stream for this
+  // request. Measures pending time due to max stream limits. This is only set
+  // when SPDY is used.
+  std::optional<base::TimeDelta> max_stream_limit_pending_delay;
+
   // The time taken for HTTP stream creating to finish.
   base::TimeDelta create_stream_delay;
 

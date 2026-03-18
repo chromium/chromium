@@ -732,6 +732,10 @@ bool HttpNetworkTransaction::GetLoadTimingInfo(
 
 void HttpNetworkTransaction::PopulateLoadTimingInternalInfo(
     LoadTimingInternalInfo* load_timing_internal_info) const {
+  if (stream_) {
+    stream_->PopulateLoadTimingInternalInfo(load_timing_internal_info);
+  }
+
   if (!create_stream_start_time_.is_null() &&
       !create_stream_end_time_.is_null()) {
     CHECK_LE(create_stream_start_time_, create_stream_end_time_);

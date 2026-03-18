@@ -401,4 +401,7 @@ void WebSocketHttp3HandshakeStream::OnFailure(
   stream_request_->OnFailure(message, net_error, response_code);
 }
 
+void WebSocketHttp3HandshakeStream::PopulateLoadTimingInternalInfo(
+    LoadTimingInternalInfo* load_timing_internal_info) const {}
+
 }  // namespace net

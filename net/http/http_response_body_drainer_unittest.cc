@@ -148,6 +148,9 @@ class MockHttpStream : public HttpStream {
 
   void PopulateNetErrorDetails(NetErrorDetails* details) override { return; }
 
+  void PopulateLoadTimingInternalInfo(
+      LoadTimingInternalInfo* load_timing_internal_info) const override {}
+
   void SetPriority(RequestPriority priority) override {}
 
   const std::set<std::string>& GetDnsAliases() const override {

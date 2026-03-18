@@ -92,6 +92,9 @@ class NET_EXPORT_PRIVATE HttpBasicStream : public HttpStream {
 
   void PopulateNetErrorDetails(NetErrorDetails* details) override;
 
+  void PopulateLoadTimingInternalInfo(
+      LoadTimingInternalInfo* load_timing_internal_info) const override;
+
   void SetPriority(RequestPriority priority) override;
 
   void SetRequestHeadersCallback(RequestHeadersCallback callback) override;

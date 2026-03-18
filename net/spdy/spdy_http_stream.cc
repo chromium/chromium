@@ -206,6 +206,13 @@ bool SpdyHttpStream::GetLoadTimingInfo(LoadTimingInfo* load_timing_info) const {
   return true;
 }
 
+void SpdyHttpStream::PopulateLoadTimingInternalInfo(
+    LoadTimingInternalInfo* load_timing_internal_info) const {
+  CHECK(load_timing_internal_info);
+  load_timing_internal_info->max_stream_limit_pending_delay =
+      stream_request_.max_stream_limit_pending_delay();
+}
+
 int SpdyHttpStream::SendRequest(const HttpRequestHeaders& request_headers,
                                 HttpResponseInfo* response,
                                 CompletionOnceCallback callback) {
