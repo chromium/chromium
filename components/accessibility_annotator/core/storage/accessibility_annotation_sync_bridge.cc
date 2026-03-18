@@ -16,6 +16,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/types/optional_util.h"
+#include "components/accessibility_annotator/core/data_models/entity_converter.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/metadata_batch.h"
@@ -150,6 +151,19 @@ std::vector<sync_pb::AccessibilityAnnotationSpecifics>
 AccessibilityAnnotationSyncBridge::GetAllAnnotations() const {
   return base::ToVector(annotation_entries_,
                         [](const auto& p) { return p.second; });
+}
+
+std::vector<sync_pb::AccessibilityAnnotationSpecifics>
+AccessibilityAnnotationSyncBridge::GetAnnotationsByTypes(
+    EntityTypeEnumSet types) const {
+  std::vector<sync_pb::AccessibilityAnnotationSpecifics> annotations;
+  for (const auto& [unused_id, specifics] : annotation_entries_) {
+    std::optional<EntityType> type = GetEntityTypeFromSpecifics(specifics);
+    if (type.has_value() && types.Has(*type)) {
+      annotations.push_back(specifics);
+    }
+  }
+  return annotations;
 }
 
 void AccessibilityAnnotationSyncBridge::OnDataTypeStoreCreated(

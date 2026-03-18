@@ -208,6 +208,28 @@ Vehicle ConvertVehicle(
 
 }  // namespace
 
+std::optional<EntityType> GetEntityTypeFromSpecifics(
+    const sync_pb::AccessibilityAnnotationSpecifics& specifics) {
+#define SPECIFICS_TO_ENTITY_TYPE(specifics, entity_type)     \
+  case sync_pb::AccessibilityAnnotationSpecifics::specifics: \
+    return EntityType::entity_type;
+
+  switch (specifics.entity_case()) {
+    SPECIFICS_TO_ENTITY_TYPE(kOrder, kOrder);
+    SPECIFICS_TO_ENTITY_TYPE(kShipment, kShipment);
+    SPECIFICS_TO_ENTITY_TYPE(kDriversLicense, kDriversLicense);
+    SPECIFICS_TO_ENTITY_TYPE(kPassport, kPassport);
+    SPECIFICS_TO_ENTITY_TYPE(kNationalId, kNationalId);
+    SPECIFICS_TO_ENTITY_TYPE(kFlightReservation, kFlightReservation);
+    SPECIFICS_TO_ENTITY_TYPE(kVehicle, kVehicle);
+    case sync_pb::AccessibilityAnnotationSpecifics::ENTITY_NOT_SET:
+      return std::nullopt;
+  }
+  return std::nullopt;
+
+#undef SPECIFICS_TO_ENTITY_TYPE
+}
+
 std::optional<Entity> CreateEntityFromSpecifics(
     const sync_pb::AccessibilityAnnotationSpecifics& specifics) {
   if (!specifics.has_id()) {

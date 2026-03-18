@@ -45,9 +45,9 @@ void DirectServerEntityProvider::GetEntities(
   }
 
   std::vector<Entity> entities;
-  for (const auto& specifics : bridge->GetAllAnnotations()) {
+  for (const auto& specifics : bridge->GetAnnotationsByTypes(types)) {
     std::optional<Entity> entity = CreateEntityFromSpecifics(specifics);
-    if (entity.has_value() && types.Has(entity->GetType())) {
+    if (entity.has_value()) {
       entities.push_back(std::move(*entity));
     }
   }

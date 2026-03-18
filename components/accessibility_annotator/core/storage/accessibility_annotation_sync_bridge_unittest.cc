@@ -8,6 +8,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "components/accessibility_annotator/core/data_models/entity_types.h"
 #include "components/sync/model/data_batch.h"
 #include "components/sync/model/data_type_store.h"
 #include "components/sync/protocol/accessibility_annotation_specifics.pb.h"
@@ -34,19 +35,24 @@ class MockObserver : public AccessibilityAnnotationSyncBridge::Observer {
 
 class AccessibilityAnnotationSyncBridgeTest : public testing::Test {
  protected:
-  bool AddAccessibilityAnnotation(const std::string& id) {
+  bool AddAccessibilityAnnotationSpecifics(
+      const sync_pb::AccessibilityAnnotationSpecifics& specifics) {
     syncer::EntityChangeList add_changes;
-    sync_pb::AccessibilityAnnotationSpecifics specifics;
-    specifics.set_id(id);
     syncer::EntityData entity_data;
     *entity_data.specifics.mutable_accessibility_annotation() = specifics;
-    add_changes.push_back(
-        syncer::EntityChange::CreateAdd(id, std::move(entity_data)));
+    add_changes.push_back(syncer::EntityChange::CreateAdd(
+        specifics.id(), std::move(entity_data)));
 
     std::optional<syncer::ModelError> error =
         bridge_->ApplyIncrementalSyncChanges(
             bridge_->CreateMetadataChangeList(), std::move(add_changes));
     return !error.has_value();
+  }
+
+  bool AddAccessibilityAnnotation(const std::string& id) {
+    sync_pb::AccessibilityAnnotationSpecifics specifics;
+    specifics.set_id(id);
+    return AddAccessibilityAnnotationSpecifics(specifics);
   }
 
   bool DeleteAccessibilityAnnotation(const std::string& id) {
@@ -148,6 +154,51 @@ TEST_F(AccessibilityAnnotationSyncBridgeTest,
   ASSERT_TRUE(AddAccessibilityAnnotation("1"));
 
   bridge()->RemoveObserver(&observer);
+}
+
+TEST_F(AccessibilityAnnotationSyncBridgeTest, GetAnnotationsByTypes) {
+  sync_pb::AccessibilityAnnotationSpecifics specifics1;
+  specifics1.set_id("1");
+  specifics1.mutable_order()->set_order_id("order_123");
+
+  sync_pb::AccessibilityAnnotationSpecifics specifics2;
+  specifics2.set_id("2");
+  specifics2.mutable_shipment()->set_tracking_number("track_123");
+
+  sync_pb::AccessibilityAnnotationSpecifics specifics3;
+  specifics3.set_id("3");
+  specifics3.mutable_vehicle()->set_vehicle_make("make");
+
+  ASSERT_TRUE(AddAccessibilityAnnotationSpecifics(specifics1));
+  ASSERT_TRUE(AddAccessibilityAnnotationSpecifics(specifics2));
+  ASSERT_TRUE(AddAccessibilityAnnotationSpecifics(specifics3));
+
+  // Test single type.
+  std::vector<sync_pb::AccessibilityAnnotationSpecifics> orders =
+      bridge()->GetAnnotationsByTypes({EntityType::kOrder});
+  EXPECT_EQ(orders.size(), 1u);
+  EXPECT_EQ(orders[0].id(), "1");
+
+  // Test multiple types.
+  std::vector<sync_pb::AccessibilityAnnotationSpecifics> orders_and_vehicles =
+      bridge()->GetAnnotationsByTypes(
+          {EntityType::kOrder, EntityType::kVehicle});
+  EXPECT_EQ(orders_and_vehicles.size(), 2u);
+  EXPECT_THAT(
+      orders_and_vehicles,
+      UnorderedElementsAre(
+          Property(&sync_pb::AccessibilityAnnotationSpecifics::id, "1"),
+          Property(&sync_pb::AccessibilityAnnotationSpecifics::id, "3")));
+
+  // Test no match.
+  std::vector<sync_pb::AccessibilityAnnotationSpecifics> passports =
+      bridge()->GetAnnotationsByTypes({EntityType::kPassport});
+  EXPECT_TRUE(passports.empty());
+
+  // Test all types.
+  std::vector<sync_pb::AccessibilityAnnotationSpecifics> all_annotations =
+      bridge()->GetAnnotationsByTypes(EntityTypeEnumSet::All());
+  EXPECT_EQ(all_annotations.size(), 3u);
 }
 
 TEST_F(AccessibilityAnnotationSyncBridgeTest,

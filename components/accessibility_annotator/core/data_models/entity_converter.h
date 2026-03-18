@@ -12,6 +12,11 @@
 
 namespace accessibility_annotator {
 
+// Returns the EntityType corresponding to the specifics. Returns std::nullopt
+// if the specifics do not have a supported entity type.
+std::optional<EntityType> GetEntityTypeFromSpecifics(
+    const sync_pb::AccessibilityAnnotationSpecifics& specifics);
+
 // Converts a sync_pb::AccessibilityAnnotationSpecifics proto to an Entity.
 // Returns std::nullopt if the conversion fails or if the specific type is not
 // supported.
