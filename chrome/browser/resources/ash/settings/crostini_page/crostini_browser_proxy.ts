@@ -13,7 +13,8 @@ import {sendWithPromise} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 
-import {type GuestId, TERMINA_VM_TYPE} from '../guest_os/guest_os_browser_proxy.js';
+import {TERMINA_VM_TYPE} from '../guest_os/guest_os_browser_proxy.js';
+import type {GuestId} from '../guest_os/guest_os_browser_proxy.js';
 
 /**
  * Type of VM.

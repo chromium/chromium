@@ -7,11 +7,13 @@
  * element to back-end data from the store.
  */
 
-import {makeStoreClientMixin, type StoreClientInterface} from 'chrome://resources/ash/common/cr_elements/store_client/store_client.js';
+import {makeStoreClientMixin} from 'chrome://resources/ash/common/cr_elements/store_client/store_client.js';
+import type {StoreClientInterface} from 'chrome://resources/ash/common/cr_elements/store_client/store_client.js';
 
 import type {AppManagementActions} from './actions.js';
 import {initStoreAndListeners} from './api_listener.js';
-import {type AppManagementPageState, AppManagementStore} from './store.js';
+import {AppManagementStore} from './store.js';
+import type {AppManagementPageState} from './store.js';
 
 initStoreAndListeners();
 

@@ -5,7 +5,8 @@
 import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {createInitialState} from 'chrome://resources/cr_components/app_management/util.js';
 
-import {addApp, type AppManagementActions, changeApp, removeApp} from './actions.js';
+import {addApp, changeApp, removeApp} from './actions.js';
+import type {AppManagementActions} from './actions.js';
 import {AppManagementBrowserProxy} from './browser_proxy.js';
 import {AppManagementStore} from './store.js';
 

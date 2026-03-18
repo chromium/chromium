@@ -18,7 +18,8 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import type {PrefsState} from '../common/types.js';
 
-import {type DevicePageBrowserProxy, DevicePageBrowserProxyImpl, type ExternalStorage} from './device_page_browser_proxy.js';
+import {DevicePageBrowserProxyImpl} from './device_page_browser_proxy.js';
+import type {DevicePageBrowserProxy, ExternalStorage} from './device_page_browser_proxy.js';
 import {getTemplate} from './storage_external.html.js';
 
 const SettingsStorageExternalElementBase =

@@ -23,7 +23,8 @@ import {TERMINA_VM_TYPE} from '../guest_os/guest_os_browser_proxy.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 
-import {type CrostiniBrowserProxy, CrostiniBrowserProxyImpl, type SliderTick} from './crostini_browser_proxy.js';
+import {CrostiniBrowserProxyImpl} from './crostini_browser_proxy.js';
+import type {CrostiniBrowserProxy, SliderTick} from './crostini_browser_proxy.js';
 import {getTemplate} from './crostini_disk_resize_dialog.html.js';
 
 /**

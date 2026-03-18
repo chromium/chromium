@@ -22,7 +22,8 @@ import type {CrSearchFieldElement} from 'chrome://resources/ash/common/cr_elemen
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import type {App, Locale} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {getAppIcon} from 'chrome://resources/cr_components/app_management/util.js';
-import {type DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AppManagementBrowserProxy} from '../app_management/browser_proxy.js';
 

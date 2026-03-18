@@ -18,7 +18,8 @@ import type {GuestId} from '../guest_os/guest_os_browser_proxy.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 
-import {type CrostiniBrowserProxy, CrostiniBrowserProxyImpl, VmType} from './crostini_browser_proxy.js';
+import {CrostiniBrowserProxyImpl, VmType} from './crostini_browser_proxy.js';
+import type {CrostiniBrowserProxy} from './crostini_browser_proxy.js';
 import {getTemplate} from './crostini_import_confirmation_dialog.html.js';
 
 interface SettingsCrostiniImportConfirmationDialogElement {

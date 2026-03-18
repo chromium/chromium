@@ -15,7 +15,8 @@
 
 import {CrSettingsPrefs} from '/shared/settings/prefs/prefs_types.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {dedupingMixin, type PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {Constructor, UserActionSettingPrefChangeEvent} from '../../common/types.js';
 

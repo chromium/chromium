@@ -24,9 +24,11 @@ import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {isChild} from '../common/load_time_booleans.js';
 import {RouteOriginMixin} from '../common/route_origin_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {type Route, Router, routes} from '../router.js';
+import {Router, routes} from '../router.js';
+import type {Route} from '../router.js';
 
-import {DateTimeBrowserProxy, type DateTimePageCallbackRouter, type DateTimePageHandlerRemote} from './date_time_browser_proxy.js';
+import {DateTimeBrowserProxy} from './date_time_browser_proxy.js';
+import type {DateTimePageCallbackRouter, DateTimePageHandlerRemote} from './date_time_browser_proxy.js';
 import {getTemplate} from './date_time_settings_card.html.js';
 
 const DateTimeSettingsCardElementBase =

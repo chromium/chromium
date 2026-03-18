@@ -23,7 +23,8 @@ import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {Router, routes} from '../router.js';
 
 import {getTemplate} from './bruschetta_subpage.html.js';
-import {type CrostiniBrowserProxy, CrostiniBrowserProxyImpl} from './crostini_browser_proxy.js';
+import {CrostiniBrowserProxyImpl} from './crostini_browser_proxy.js';
+import type {CrostiniBrowserProxy} from './crostini_browser_proxy.js';
 
 const BruschettaSubpageElementBase =
     DeepLinkingMixin(RouteOriginMixin(PrefsMixin(PolymerElement)));

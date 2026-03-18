@@ -22,9 +22,11 @@ import type {PrefsState} from '../common/types.js';
 import type {ContainerInfo, GuestId} from '../guest_os/guest_os_browser_proxy.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {type Route, routes} from '../router.js';
+import {routes} from '../router.js';
+import type {Route} from '../router.js';
 
-import {type CrostiniBrowserProxy, CrostiniBrowserProxyImpl, DEFAULT_BAGUETTE_GUEST_ID, DEFAULT_CROSTINI_GUEST_ID, DEFAULT_CROSTINI_VM, VmType} from './crostini_browser_proxy.js';
+import {CrostiniBrowserProxyImpl, DEFAULT_BAGUETTE_GUEST_ID, DEFAULT_CROSTINI_GUEST_ID, DEFAULT_CROSTINI_VM, VmType} from './crostini_browser_proxy.js';
+import type {CrostiniBrowserProxy} from './crostini_browser_proxy.js';
 import {getTemplate} from './crostini_export_import.html.js';
 
 const SettingsCrostiniExportImportElementBase =

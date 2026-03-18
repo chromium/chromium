@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 import {assertNotReached} from 'chrome://resources/js/assert.js';
-import {dedupingMixin, type PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {type Route, Router} from '../router.js';
+import {Router} from '../router.js';
+import type {Route} from '../router.js';
 
 import type {Constructor} from './types.js';
 

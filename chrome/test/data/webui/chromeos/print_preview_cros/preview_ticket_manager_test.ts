@@ -6,7 +6,8 @@ import 'chrome://os-print/js/data/preview_ticket_manager.js';
 
 import {PREVIEW_REQUEST_FINISHED_EVENT, PREVIEW_REQUEST_STARTED_EVENT, PREVIEW_TICKET_MANAGER_SESSION_INITIALIZED, PreviewTicketManager} from 'chrome://os-print/js/data/preview_ticket_manager.js';
 import type {PrintPreviewPageHandlerComposite} from 'chrome://os-print/js/data/print_preview_page_handler_composite.js';
-import {FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL, type FakePrintPreviewPageHandler, OBSERVE_PREVIEW_READY_METHOD} from 'chrome://os-print/js/fakes/fake_print_preview_page_handler.js';
+import {FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL, OBSERVE_PREVIEW_READY_METHOD} from 'chrome://os-print/js/fakes/fake_print_preview_page_handler.js';
+import type {FakePrintPreviewPageHandler} from 'chrome://os-print/js/fakes/fake_print_preview_page_handler.js';
 import {getPrintPreviewPageHandler} from 'chrome://os-print/js/utils/mojo_data_providers.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {MockController} from 'chrome://webui-test/chromeos/mock_controller.m.js';

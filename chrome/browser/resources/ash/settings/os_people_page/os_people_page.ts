@@ -28,7 +28,8 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {isAccountManagerEnabled} from '../common/load_time_booleans.js';
 import type {PrefsState} from '../common/types.js';
-import {type GraduationHandlerInterface, GraduationObserverReceiver} from '../mojom-webui/graduation_handler.mojom-webui.js';
+import {GraduationObserverReceiver} from '../mojom-webui/graduation_handler.mojom-webui.js';
+import type {GraduationHandlerInterface} from '../mojom-webui/graduation_handler.mojom-webui.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
 
 import {AccountManagerBrowserProxyImpl} from './account_manager_browser_proxy.js';

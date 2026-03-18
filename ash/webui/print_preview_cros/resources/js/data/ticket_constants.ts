@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 import type {MediaSize} from '../utils/print_preview_cros_app_types.js';
-import {ColorModel, DuplexMode, MarginType, PrinterStatusReason, type PrintTicket, ScalingType} from '../utils/print_preview_cros_app_types.js';
+import {ColorModel, DuplexMode, MarginType, PrinterStatusReason, ScalingType} from '../utils/print_preview_cros_app_types.js';
+import type {PrintTicket} from '../utils/print_preview_cros_app_types.js';
 
 /**
  * @fileoverview

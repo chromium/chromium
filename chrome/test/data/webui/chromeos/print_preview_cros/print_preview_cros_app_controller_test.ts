@@ -13,7 +13,8 @@ import type {FakePrintPreviewPageHandler} from 'chrome://os-print/js/fakes/fake_
 import {DIALOG_ARG_PROPERTY_KEY, PrintPreviewCrosAppController} from 'chrome://os-print/js/print_preview_cros_app_controller.js';
 import {getPrintPreviewPageHandler} from 'chrome://os-print/js/utils/mojo_data_providers.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
-import {MockController, type MockMethod} from 'chrome://webui-test/chromeos/mock_controller.m.js';
+import {MockController} from 'chrome://webui-test/chromeos/mock_controller.m.js';
+import type {MockMethod} from 'chrome://webui-test/chromeos/mock_controller.m.js';
 import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
