@@ -31,7 +31,7 @@ bool IsBrowserValidForSharingInProfile(
 }
 
 bool IsTabValidForSharing(content::WebContents* web_contents) {
-  // We allow allow blank pages to avoid flicker during transitions.
+  // We allow blank pages to avoid flicker during transitions.
   static const base::NoDestructor<std::vector<GURL>> kUrlAllowList{
       {GURL(), GURL(url::kAboutBlankURL),
        GURL(chrome::kChromeUINewTabPageThirdPartyURL),
