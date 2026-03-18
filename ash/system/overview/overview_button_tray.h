@@ -10,6 +10,7 @@
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/shelf/shelf.h"
+#include "ash/system/tray/imaged_tray_icon.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/wm/overview/overview_observer.h"
 #include "base/memory/raw_ptr.h"
@@ -22,10 +23,6 @@ class Event;
 class GestureEvent;
 }  // namespace ui
 
-namespace views {
-class ImageView;
-}
-
 namespace ash {
 
 // Status area tray for showing a toggle for Overview Mode. Overview Mode
@@ -33,12 +30,12 @@ namespace ash {
 // This hosts a ShellObserver that listens for the activation of Maximize Mode
 // This tray will only be visible while in this state. This tray does not
 // provide any bubble view windows.
-class ASH_EXPORT OverviewButtonTray : public TrayBackgroundView,
+class ASH_EXPORT OverviewButtonTray : public ImagedTrayIcon,
                                       public SessionObserver,
                                       public OverviewObserver,
                                       public TabletModeObserver,
                                       public ShelfConfig::Observer {
-  METADATA_HEADER(OverviewButtonTray, TrayBackgroundView)
+  METADATA_HEADER(OverviewButtonTray, ImagedTrayIcon)
 
  public:
   // Second taps within this time will be counted as double taps. Use this
@@ -74,14 +71,10 @@ class ASH_EXPORT OverviewButtonTray : public TrayBackgroundView,
   // ShelfConfigObserver:
   void OnShelfConfigUpdated() override;
 
-  // TrayBackgroundView:
+  // ImagedTrayIcon:
   void UpdateAfterLoginStatusChange() override;
-  void ClickedOutsideBubble(const ui::LocatedEvent& event) override;
   void UpdateTrayItemColor(bool is_active) override;
-  void HandleLocaleChange() override;
-  void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
   void OnThemeChanged() override;
-  void HideBubble(const TrayBubbleView* bubble_view) override;
 
  private:
   friend class OverviewButtonTrayTest;
@@ -92,11 +85,7 @@ class ASH_EXPORT OverviewButtonTray : public TrayBackgroundView,
 
   void UpdateIconVisibility();
 
-  // Gets the icon image of `icon_`.
   gfx::ImageSkia GetIconImage();
-
-  // Weak pointer, will be parented by TrayContainer for its lifetime.
-  raw_ptr<views::ImageView> icon_;
 
   ScopedSessionObserver scoped_session_observer_;
 

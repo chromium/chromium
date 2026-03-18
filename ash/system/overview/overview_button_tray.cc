@@ -25,6 +25,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image.h"
@@ -62,18 +63,16 @@ bool ShouldButtonBeVisible() {
 constexpr base::TimeDelta OverviewButtonTray::kDoubleTapThresholdMs;
 
 OverviewButtonTray::OverviewButtonTray(Shelf* shelf)
-    : TrayBackgroundView(shelf, TrayBackgroundViewCatalogName::kOverview),
-      icon_(new views::ImageView()),
+    : ImagedTrayIcon(
+          shelf,
+          ui::ImageModel(),
+          l10n_util::GetStringUTF16(IDS_ASH_OVERVIEW_BUTTON_ACCESSIBLE_NAME),
+          TrayBackgroundViewCatalogName::kOverview),
       scoped_session_observer_(this) {
   SetCallback(base::BindRepeating(&OverviewButtonTray::OnButtonPressed,
                                   base::Unretained(this)));
 
-  const gfx::ImageSkia image = GetIconImage();
-  const int vertical_padding = (kTrayItemSize - image.height()) / 2;
-  const int horizontal_padding = (kTrayItemSize - image.width()) / 2;
-  icon_->SetBorder(views::CreateEmptyBorder(
-      gfx::Insets::VH(vertical_padding, horizontal_padding)));
-  tray_container()->AddChildViewRaw(icon_.get());
+  image_view()->SetImage(ui::ImageModel::FromImageSkia(GetIconImage()));
 
   // Since OverviewButtonTray is located on the rightmost position of a
   // horizontal shelf, no separator is required.
@@ -138,25 +137,13 @@ void OverviewButtonTray::OnOverviewModeEnded() {
   SetIsActive(false);
 }
 
-void OverviewButtonTray::ClickedOutsideBubble(const ui::LocatedEvent& event) {}
-
 void OverviewButtonTray::UpdateTrayItemColor(bool is_active) {
-  icon_->SetImage(ui::ImageModel::FromImageSkia(GetIconImage()));
-}
-
-void OverviewButtonTray::HandleLocaleChange() {}
-
-void OverviewButtonTray::HideBubbleWithView(const TrayBubbleView* bubble_view) {
-  // This class has no bubbles to hide.
+  image_view()->SetImage(ui::ImageModel::FromImageSkia(GetIconImage()));
 }
 
 void OverviewButtonTray::OnThemeChanged() {
   TrayBackgroundView::OnThemeChanged();
-  icon_->SetImage(ui::ImageModel::FromImageSkia(GetIconImage()));
-}
-
-void OverviewButtonTray::HideBubble(const TrayBubbleView* bubble_view) {
-  // This class has no bubbles to hide.
+  image_view()->SetImage(ui::ImageModel::FromImageSkia(GetIconImage()));
 }
 
 void OverviewButtonTray::OnButtonPressed(const ui::Event& event) {

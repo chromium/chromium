@@ -110,7 +110,7 @@ class OverviewButtonTrayTest : public AshTestBase {
 
  protected:
   views::ImageView* GetImageView(OverviewButtonTray* tray) {
-    return tray->icon_;
+    return tray->image_view();
   }
 
  private:
