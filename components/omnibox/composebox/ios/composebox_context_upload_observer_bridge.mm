@@ -2,22 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "components/omnibox/composebox/ios/composebox_file_upload_observer_bridge.h"
+#import "components/omnibox/composebox/ios/composebox_context_upload_observer_bridge.h"
 
 #import "base/check.h"
 
-ComposeboxFileUploadObserverBridge::ComposeboxFileUploadObserverBridge(
-    id<ComposeboxFileUploadObserver> observer,
+ComposeboxContextUploadObserverBridge::ComposeboxContextUploadObserverBridge(
+    id<ComposeboxContextUploadObserver> observer,
     contextual_search::ContextualSearchContextController* controller)
     : observer_(observer) {
   DCHECK(observer_);
   observation_.Observe(controller);
 }
 
-ComposeboxFileUploadObserverBridge::~ComposeboxFileUploadObserverBridge() =
-    default;
+ComposeboxContextUploadObserverBridge::
+    ~ComposeboxContextUploadObserverBridge() = default;
 
-void ComposeboxFileUploadObserverBridge::OnContextUploadStatusChanged(
+void ComposeboxContextUploadObserverBridge::OnContextUploadStatusChanged(
     const base::UnguessableToken& context_token,
     lens::MimeType mime_type,
     contextual_search::ContextUploadStatus context_upload_status,

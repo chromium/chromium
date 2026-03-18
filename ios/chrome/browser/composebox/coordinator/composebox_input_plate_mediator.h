@@ -9,7 +9,7 @@
 
 #include <memory>
 
-#import "components/omnibox/composebox/ios/composebox_file_upload_observer_bridge.h"
+#import "components/omnibox/composebox/ios/composebox_context_upload_observer_bridge.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_mode_holder.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_omnibox_client_delegate.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_tab_picker_coordinator.h"
@@ -48,7 +48,7 @@ class ContextualSearchSessionHandle;
 @interface ComposeboxInputPlateMediator
     : NSObject <ComposeboxOmniboxClientDelegate,
                 ComposeboxInputPlateMutator,
-                ComposeboxFileUploadObserver,
+                ComposeboxContextUploadObserver,
                 ComposeboxModeObserver,
                 ComposeboxTabPickerSelectionDelegate,
                 TextFieldViewContainingHeightDelegate,
