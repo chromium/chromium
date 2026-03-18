@@ -247,6 +247,27 @@ suite('<history-synced-device-manager>', function() {
     assertFalse(args.e.shiftKey, 'shiftKey is defined');
   });
 
+  test('middle-click synced tab', async () => {
+    setForeignSessions(
+        [createSession('Chromebook', [createWindow(['https://example.com'])])]);
+    await microtasksFinished();
+    const cards = getCards(element);
+    const anchor = cards[0]!.shadowRoot.querySelector('a')!;
+
+    // Dispatch auxclick with button 1 (middle click).
+    anchor.dispatchEvent(new MouseEvent('auxclick', {
+      button: 1,
+      cancelable: true,
+      bubbles: true,
+      composed: true,
+    }));
+
+    const args = await testService.whenCalled('openForeignSessionTab');
+    assertEquals('Chromebook', args.sessionTag, 'sessionTag is correct');
+    assertEquals(456, args.tabId, 'tabId is correct');
+    assertEquals(1, args.e.button, 'button is 1');
+  });
+
   test('show actions menu', async () => {
     setForeignSessions(
         [createSession('Chromebook', [createWindow(['https://example.com'])])]);

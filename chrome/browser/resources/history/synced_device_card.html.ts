@@ -36,6 +36,7 @@ export function getHtml(this: HistorySyncedDeviceCardElement) {
           <a href="${tab.url}" class="website-link" title="${tab.title}"
               data-session-id="${tab.sessionId}"
               @click="${this.onLinkClick_}"
+              @auxclick="${this.onLinkAuxclick_}"
               @contextmenu="${this.onLinkContextmenu_}">
             <div class="website-icon"></div>
             <history-searched-label class="website-title"

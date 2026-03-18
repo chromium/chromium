@@ -124,6 +124,12 @@ export class HistorySyncedDeviceCardElement extends CrLitElement {
     e.preventDefault();
   }
 
+  protected onLinkAuxclick_(e: MouseEvent) {
+    if (e.button === 1) {
+      this.onLinkClick_(e);
+    }
+  }
+
   protected onCardHeadingClick_() {
     this.toggleTabCard();
   }
