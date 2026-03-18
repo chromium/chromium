@@ -52,7 +52,12 @@ WebUIToolbarUI::WebUIToolbarUI(content::WebUI* web_ui)
     // MetricsReporter.
     : TopChromeWebUIController(web_ui,
                                /*enable_chrome_send=*/true,
-                               /*enable_chrome_histograms=*/true) {
+                               /*enable_chrome_histograms=*/true),
+      toolbar_channel_service_end_(
+          toolbar_channel_client_end_.InitWithNewPipeAndPassReceiver()),
+      browser_controls_channel_service_end_(
+          browser_controls_channel_client_end_
+              .InitWithNewPipeAndPassReceiver()) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(),
       chrome::kChromeUIWebUIToolbarHost);
@@ -107,59 +112,17 @@ bool WebUIToolbarConfig::IsWebUIEnabled(
 void WebUIToolbarUI::BindInterface(
     mojo::PendingReceiver<browser_controls_api::mojom::BrowserControlsService>
         receiver) {
-  if (!dependency_provider_) {
-    // This can happen if the WebContents is destroyed while it is still loading
-    // (e.g. when the user closes the browser window).
-    LOG(WARNING)
-        << "Attempting a connection before Init() is called. Aborting Bind.";
-    return;
-  }
-
-  auto* command_updater = GetCommandUpdater();
-  auto is_probably_shutting_down = command_updater == nullptr;
-  if (is_probably_shutting_down) {
-    LOG(WARNING) << "Attempting a connection when the browser is probably "
-                    "shutting down. Aborting Bind.";
-    return;
-  }
-
-  auto* web_contents = web_ui()->GetWebContents();
-  MetricsReporterService* metrics_service =
-      MetricsReporterService::GetFromWebContents(web_contents);
-  CHECK(metrics_service) << "Metrics service missing from web contents";
-
-  browser_controls_service_ =
-      std::make_unique<browser_controls_api::BrowserControlsService>(
-          std::move(receiver),
-          std::make_unique<browser_controls_api::BrowserControlsAdapterImpl>(
-              webui::GetBrowserWindowInterface(web_contents), command_updater),
-          metrics_service->metrics_reporter(),
-          dependency_provider_->GetBrowserControlsDelegate());
+  CHECK(browser_controls_channel_client_end_.is_valid())
+      << "browser client end already bound";
+  CHECK(FusePipes(std::move(receiver),
+                  std::move(browser_controls_channel_client_end_)));
 }
 
 void WebUIToolbarUI::BindInterface(
     mojo::PendingReceiver<toolbar_ui_api::mojom::ToolbarUIService> receiver) {
-  if (!dependency_provider_) {
-    // This can happen if the WebContents is destroyed while it is still loading
-    // (e.g. when the user closes the browser window).
-    LOG(WARNING)
-        << "Attempting a connection before Init() is called. Aborting Bind.";
-    return;
-  }
-
-  auto* web_contents = web_ui()->GetWebContents();
-  MetricsReporterService* metrics_service =
-      MetricsReporterService::GetFromWebContents(web_contents);
-
-  // If this CHECK() starts hitting, it could be due to races with browser
-  // shutdown, similar to issues seen in the past (e.g., b/478033216#comment4).
-  CHECK(metrics_service) << "Metrics service missing from web contents";
-
-  toolbar_ui_service_ = std::make_unique<toolbar_ui_api::ToolbarUIService>(
-      std::move(receiver),
-      dependency_provider_->GetNavigationControlsStateFetcher(),
-      metrics_service->metrics_reporter(),
-      dependency_provider_->GetToolbarUIServiceDelegate());
+  CHECK(toolbar_channel_client_end_.is_valid())
+      << "toolbar client end already bound";
+  CHECK(FusePipes(std::move(receiver), std::move(toolbar_channel_client_end_)));
 }
 
 void WebUIToolbarUI::BindInterface(
@@ -185,15 +148,54 @@ void WebUIToolbarUI::OnNavigationControlsStateChanged(
 }
 
 void WebUIToolbarUI::Init(DependencyProvider* dependency_provider) {
+  CHECK(dependency_provider);
+
+  InitBrowserControlsService(*dependency_provider);
+  InitToolbarUIService(*dependency_provider);
+}
+
+void WebUIToolbarUI::InitBrowserControlsService(
+    DependencyProvider& dependency_provider) {
   CHECK(!browser_controls_service_)
       << "Out of order initialization, the browser control service has already "
          "been instantiated.";
 
+  auto* command_updater = GetCommandUpdater();
+  CHECK(command_updater);
+
+  auto* web_contents = web_ui()->GetWebContents();
+  MetricsReporterService* metrics_service =
+      MetricsReporterService::GetFromWebContents(web_contents);
+  CHECK(metrics_service) << "Metrics service missing from web contents";
+
+  browser_controls_service_ =
+      std::make_unique<browser_controls_api::BrowserControlsService>(
+          std::move(browser_controls_channel_service_end_),
+          std::make_unique<browser_controls_api::BrowserControlsAdapterImpl>(
+              webui::GetBrowserWindowInterface(web_contents), command_updater),
+          metrics_service->metrics_reporter(),
+          dependency_provider.GetBrowserControlsDelegate());
+}
+
+void WebUIToolbarUI::InitToolbarUIService(
+    DependencyProvider& dependency_provider) {
   CHECK(!toolbar_ui_service_)
       << "Out of order initialization, the toolbar UI service has already "
          "been instantiated.";
 
-  dependency_provider_ = dependency_provider;
+  auto* web_contents = web_ui()->GetWebContents();
+  MetricsReporterService* metrics_service =
+      MetricsReporterService::GetFromWebContents(web_contents);
+
+  // If this CHECK() starts hitting, it could be due to races with browser
+  // shutdown, similar to issues seen in the past (e.g., b/478033216#comment4).
+  CHECK(metrics_service) << "Metrics service missing from web contents";
+
+  toolbar_ui_service_ = std::make_unique<toolbar_ui_api::ToolbarUIService>(
+      std::move(toolbar_channel_service_end_),
+      dependency_provider.GetNavigationControlsStateFetcher(),
+      metrics_service->metrics_reporter(),
+      dependency_provider.GetToolbarUIServiceDelegate());
 }
 
 CommandUpdater* WebUIToolbarUI::GetCommandUpdater() const {

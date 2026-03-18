@@ -21,6 +21,7 @@
 #include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 #include "ui/webui/resources/js/tracked_element/tracked_element.mojom.h"
@@ -69,7 +70,6 @@ class WebUIToolbarUI : public TopChromeWebUIController {
   // The |depdency_provider| is expected to outlive this class.
   void Init(DependencyProvider* dependency_provider);
 
-
   // TopChromeWebUIController:
   // The controller uses `requesting_origin` to:
   // 1. Decide which resources to expose, e.g. only expose "chrome://theme"
@@ -94,7 +94,10 @@ class WebUIToolbarUI : public TopChromeWebUIController {
                            CreateBrowserControlsService_NullCommandUpdater);
   FRIEND_TEST_ALL_PREFIXES(WebUIToolbarUITest,
                            CreateToolbarUIService_NullCommandUpdater);
+
   CommandUpdater* GetCommandUpdater() const;
+  void InitBrowserControlsService(DependencyProvider& dependency_provider);
+  void InitToolbarUIService(DependencyProvider& dependency_provider);
 
   // Returns the list of known element identifiers. These elements are HTML
   // elements tracked by ui/webui/tracked_element. Used for anchoring secondary
@@ -106,7 +109,31 @@ class WebUIToolbarUI : public TopChromeWebUIController {
   std::unique_ptr<toolbar_ui_api::ToolbarUIService> toolbar_ui_service_;
   std::unique_ptr<ui::TrackedElementHandler> tracked_element_handler_;
 
-  raw_ptr<DependencyProvider> dependency_provider_;
+  /////////////////////////////////////////////////////////////////////////////
+  // There's a subtle edge case for WebUI toolbar, because it's hosted at the
+  // top level. Ownership of the controller transfers from navigation to the
+  // view. Before that happens, it is possible for the browser window to get
+  // destroyed. At which point, it is possible for certain deps to become
+  // destroyed. This makes state management tricky.
+  //
+  // To simplify state management, we use mojo pipes to allow the browser
+  // and WebUI to connect. We allocate a complete mojo pipe at the
+  // construction of the object. Either end (browser and webui) may connect
+  // to their respective ends of the pipe at any time. This way, we do not
+  // need to make any sort of assumption about the state at either end.
+  //
+  // We will need to hold onto the both ends of the pipe at the start.
+  mojo::PendingRemote<toolbar_ui_api::mojom::ToolbarUIService>
+      toolbar_channel_client_end_;
+  mojo::PendingReceiver<toolbar_ui_api::mojom::ToolbarUIService>
+      toolbar_channel_service_end_;
+
+  mojo::PendingRemote<browser_controls_api::mojom::BrowserControlsService>
+      browser_controls_channel_client_end_;
+  mojo::PendingReceiver<browser_controls_api::mojom::BrowserControlsService>
+      browser_controls_channel_service_end_;
+
+  /////////////////////////////////////////////////////////////////////////////
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

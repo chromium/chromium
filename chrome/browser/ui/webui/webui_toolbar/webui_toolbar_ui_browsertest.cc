@@ -231,26 +231,34 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarUIBrowserTest, CreateToolbarUIService) {
   EXPECT_TRUE(connection.is_connected());
 }
 
-// Tests that Service creation handles a null CommandUpdater gracefully.
-IN_PROC_BROWSER_TEST_F(WebUIToolbarUIBrowserTest,
-                       CreateService_NullCommandUpdater) {
-  TestingProfile test_profile;
-  // Simulate a null browser window interface for a web content to simulate
-  // browser shutdown conditions. For this edge case, we expect the service to
-  // gracefully abort the bind attempt.
-  content::WebContents::CreateParams create_params(&test_profile);
-  auto dummy_content = content::WebContents::Create(create_params);
-  webui::SetBrowserWindowInterface(dummy_content.get(), nullptr);
+// Tests that out of order Init,Bind will not cause issues. This can happen
+// because navigation owns the WebUI toolbar before it hands it over to views.
+// A corner case could occur if the browser starts shutting down, at which
+// point the WebUI controller enters a bad state while JS is starting up. When
+// JS attempts to connect to WebUI toolbar services, this will cause a crash.
+//
+// Since this is difficult to synthesize in test, we simply test an out of
+// order init. That is, we attempt to establish a connection to the controller
+// before the controller has been initialized.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarUIBrowserTest, CreateService_DelayedInit) {
+  auto web_ui = std::make_unique<content::TestWebUI>();
+  web_ui->set_web_contents(chrome_test_utils::GetActiveWebContents(this));
+  auto ui = std::make_unique<WebUIToolbarUI>(web_ui.get());
 
-  web_ui()->set_web_contents(dummy_content.get());
+  BrowserControlsServiceConnectionManager connection(ui.get());
 
-  BrowserControlsServiceConnectionManager connection(ui());
-  // This line is necessary, because there is a defect in mojo's is_connected()
-  // which erroneously return true without this, even if the remote is not
-  // actually connected.
-  connection.FlushForTesting();
+  // When the controller is not connected, one end of the pipe is left open.
+  // Mojo has a bug where this is considered connected on the client side.
+  EXPECT_TRUE(connection.is_connected());
 
-  EXPECT_FALSE(connection.is_connected());
+  // Bonus check, we can actually support delayed Init. Note that our WebUI
+  // does not require this. Once we initialize, the connection should be
+  // complete the connection.
+  ui->Init(this);
+
+  // This only checks that the connection remains connected. A more meaningful
+  // test would ensure that the service actually responds to requests.
+  EXPECT_TRUE(connection.is_connected());
 }
 
 // Tests that PopulateLocalResourceLoaderConfig provides the theme source.
