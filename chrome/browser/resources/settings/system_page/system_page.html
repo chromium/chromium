@@ -27,6 +27,22 @@
         </cr-button>
       </template>
     </settings-toggle-button>
+    <!-- <if expr="is_win"> -->
+    <template is="dom-if" if="[[showProcessIsolationSetting_]]" restamp>
+      <settings-toggle-button id="isolationState"
+          pref="{{prefs.isolation_state.enabled}}"
+          label="$i18n{isolationStateLabel}"
+          sub-label="$i18n{isolationStateSubLabel}"
+          learn-more-url="$i18n{isolationStateLearnMoreUrl}">
+        <template is="dom-if" if="[[shouldShowIsolationRestart_(
+            prefs.isolation_state.enabled.value)]]">
+          <cr-button on-click="onRestartClick_" slot="more-actions">
+            $i18n{restart}
+          </cr-button>
+        </template>
+      </settings-toggle-button>
+    </template>
+    <!-- </if> -->
 <if expr="_google_chrome">
     <!-- On device AI settings -->
     <template is="dom-if" if="[[showOnDeviceAiSettings_]]" restamp>

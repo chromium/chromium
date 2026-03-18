@@ -1187,6 +1187,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   (*s_allowlist)[::prefs::kFeatureNotificationsEnabled] =
       settings_api::PrefType::kBoolean;
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  (*s_allowlist)[::prefs::kProcessIsolationEnabled] =
+      settings_api::PrefType::kBoolean;
 #endif  // BUILDFLAG(IS_WIN)
 
   // Import data

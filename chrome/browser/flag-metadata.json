@@ -3923,6 +3923,11 @@
     "expiry_milestone": 145
   },
   {
+    "name": "enable-process-isolation-ui",
+    "owners": [ "wfh@chromium.org", "chrome-platform-security@google.com" ],
+    "expiry_milestone": 152
+  },
+  {
     "name": "enable-process-per-site-up-to-main-frame-threshold",
     "owners": [ "dtapuska@chromium.org", "blink-network-stack@google.com" ],
     "expiry_milestone": 145

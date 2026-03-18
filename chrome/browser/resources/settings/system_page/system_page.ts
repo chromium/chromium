@@ -105,6 +105,15 @@ export class SettingsSystemPageElement extends SettingsSystemPageElementBase
         },
       },
       // </if>
+      // <if expr="is_win">
+      showProcessIsolationSetting_: {
+        readOnly: true,
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('showProcessIsolationSetting');
+        },
+      },
+      // </if>
     };
   }
 
@@ -127,6 +136,10 @@ export class SettingsSystemPageElement extends SettingsSystemPageElementBase
   // <if expr="_google_chrome and is_win">
   declare private showFeatureNotificationsSetting_: boolean;
   // </if>
+  // <if expr="is_win">
+  declare private showProcessIsolationSetting_: boolean;
+  private processIsolationEnabledAtStartup_: boolean = false;
+  // </if>
 
   // <if expr="_google_chrome">
   override ready() {
@@ -135,6 +148,14 @@ export class SettingsSystemPageElement extends SettingsSystemPageElementBase
         this.setOnDeviceAiPref_(onDeviceAiEnabled);
     this.addWebUiListener('on-device-ai-enabled-changed', setOnDeviceAiPref);
     this.onDeviceAiBrowserProxy_.getOnDeviceAiEnabled().then(setOnDeviceAiPref);
+  }
+  // </if>
+
+  // <if expr="is_win">
+  override connectedCallback() {
+    super.connectedCallback();
+    this.processIsolationEnabledAtStartup_ =
+        this.getPref('isolation_state.enabled').value;
   }
   // </if>
 
@@ -240,6 +261,13 @@ export class SettingsSystemPageElement extends SettingsSystemPageElementBase
     const proxy = SystemPageBrowserProxyImpl.getInstance();
     return enabled !== proxy.wasHardwareAccelerationEnabledAtStartup();
   }
+
+  // <if expr="is_win">
+  private shouldShowIsolationRestart_(): boolean {
+    return this.getPref('isolation_state.enabled').value !==
+        this.processIsolationEnabledAtStartup_;
+  }
+  // </if>
 
   // <if expr="_google_chrome and is_win">
   private onFeatureNotificationsChange_(e: Event) {

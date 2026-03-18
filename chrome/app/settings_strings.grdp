@@ -4136,6 +4136,14 @@
     <message name="IDS_SETTINGS_SYSTEM_HARDWARE_ACCELERATION_LABEL" desc="Label for the checkbox that forces Chrome to render via graphics acceleration (GPU) when available.">
       Use graphics acceleration when available
     </message>
+    <if expr="is_win">
+      <message name="IDS_SETTINGS_SYSTEM_ISOLATION_STATE_LABEL" desc="Label for the Enable process isolation toggle.">
+        Enable Process Isolation
+      </message>
+      <message name="IDS_SETTINGS_SYSTEM_ISOLATION_STATE_SUBLABEL" desc="Sublabel for the Enable process isolation toggle.">
+        Process Isolation prevents other applications from tampering with <ph name="IDS_SHORT_PRODUCT_NAME">$1<ex>Chrome</ex></ph>.
+      </message>
+    </if>
     <message name="IDS_SETTINGS_SYSTEM_FEATURE_NOTIFICATIONS_LABEL" desc="Label for the toggle that enables Chrome system notifications about features.">
       Show system notifications about Chrome features and tips
     </message>

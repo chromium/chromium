@@ -18,6 +18,11 @@ import {TestLifetimeBrowserProxy} from './test_lifetime_browser_proxy.js';
 import {MetricsBrowserProxyImpl} from 'chrome://settings/settings.js';
 
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
+
+// </if>
+// <if expr="is_win">
+import {loadTimeData} from 'chrome://settings/settings.js';
+import type {SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 // </if>
 
 // clang-format on
@@ -49,6 +54,12 @@ suite('settings system page', function() {
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    // <if expr="is_win">
+    loadTimeData.overrideValues({
+      showProcessIsolationSetting: true,
+    });
+    // </if>
+
     lifetimeBrowserProxy = new TestLifetimeBrowserProxy();
     LifetimeBrowserProxyImpl.setInstance(lifetimeBrowserProxy);
     // <if expr="_google_chrome and is_win">
@@ -74,6 +85,15 @@ suite('settings system page', function() {
           value: HARDWARE_ACCELERATION_AT_STARTUP,
         },
       },
+      // <if expr="is_win">
+      isolation_state: {
+        enabled: {
+          key: 'isolation_state.enabled',
+          type: chrome.settingsPrivate.PrefType.BOOLEAN,
+          value: false,
+        },
+      },
+      // </if>
       proxy: {
         key: 'proxy',
         type: chrome.settingsPrivate.PrefType.DICTIONARY,
@@ -122,6 +142,30 @@ suite('settings system page', function() {
     restart.click();
     return lifetimeBrowserProxy.whenCalled('restart');
   });
+
+  // <if expr="is_win">
+  test('process isolation restart button', function() {
+    // Toggle is behind a `dom-if`, so retrieve it via `querySelector`.
+    const control =
+        systemPage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#isolationState');
+    assertTrue(!!control);
+    assertFalse(control.checked);
+
+    // Restart button should be hidden by default.
+    assertFalse(!!control.querySelector('cr-button'));
+
+    systemPage.setPrefValue('isolation_state.enabled', true);
+    flush();
+    assertTrue(control.checked);
+
+    const restart = control.querySelector('cr-button');
+    assertTrue(!!restart);
+
+    restart.click();
+    return lifetimeBrowserProxy.whenCalled('restart');
+  });
+  // </if>
 
   test('proxy row', function() {
     systemPage.$.proxy.click();

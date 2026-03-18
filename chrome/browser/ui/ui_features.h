@@ -152,6 +152,10 @@ BASE_DECLARE_FEATURE(kPreloadTopChromeWebUILessNavigations);
 
 BASE_DECLARE_FEATURE(kPressAndHoldEscToExitBrowserFullscreen);
 
+#if BUILDFLAG(IS_WIN)
+BASE_DECLARE_FEATURE(kProcessIsolationSettings);
+#endif  // BUILDFLAG(IS_WIN)
+
 BASE_DECLARE_FEATURE(kScrimForBrowserWindowModal);
 
 BASE_DECLARE_FEATURE(kSplitViewTabDraggingUpdates);

@@ -262,7 +262,6 @@
 #include "ui/gl/gl_features.h"
 #include "ui/gl/gl_switches.h"
 #include "ui/native_theme/features/native_theme_features.h"
-#include "ui/ui_features.h"
 #include "url/url_features.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -5542,6 +5541,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableIsolatedWebAppDevModeName,
      flag_descriptions::kEnableIsolatedWebAppDevModeDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kIsolatedWebAppDevMode)},
+#if BUILDFLAG(IS_WIN)
+    {"enable-process-isolation-ui",
+     flag_descriptions::kEnableProcessIsolationUiName,
+     flag_descriptions::kEnableProcessIsolationUiDescription, kOsWin,
+     FEATURE_VALUE_TYPE(features::kProcessIsolationSettings)},
+#endif  // BUILDFLAG(IS_WIN)
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
     {"enable-iwa-key-distribution-component",
      flag_descriptions::kEnableIwaKeyDistributionComponentName,

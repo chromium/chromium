@@ -1645,6 +1645,11 @@ inline constexpr char kEnablePixPaymentsInLandscapeModeDescription[] =
     "offered to pay using their Pix accounts. Users using their devices in "
     "portrait mode are always offered to pay using their Pix accounts.";
 
+inline constexpr char kEnableProcessIsolationUiName[] =
+    "Enable Process Isolation UI";
+inline constexpr char kEnableProcessIsolationUiDescription[] =
+    "Shows the Enable Process Isolation toggle in chrome://settings/system.";
+
 inline constexpr char kEnableStaticQrCodeForPixName[] =
     "Enable Static Qr Code For Pix";
 inline constexpr char kEnableStaticQrCodeForPixDescription[] =

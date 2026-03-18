@@ -193,6 +193,10 @@
 #include "chrome/browser/ui/webui/settings/mac_system_settings_handler.h"
 #endif
 
+#if BUILDFLAG(IS_WIN)
+#include "chrome/install_static/install_util.h"
+#endif  // BUILDFLAG(IS_WIN)
+
 #if BUILDFLAG(ENABLE_VR)
 #include "device/vr/public/cpp/features.h"
 #endif
@@ -541,6 +545,13 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       "showFeatureNotificationsSetting",
       base::FeatureList::IsEnabled(features::kRegisterOsUpdateHandlerWin));
 #endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+#if BUILDFLAG(IS_WIN)
+  html_source->AddBoolean(
+      "showProcessIsolationSetting",
+      base::FeatureList::IsEnabled(features::kProcessIsolationSettings) &&
+          install_static::IsSystemInstall());
+#endif  // BUILDFLAG(IS_WIN)
 
   html_source->AddBoolean(
       "enableWebAppInstallation",

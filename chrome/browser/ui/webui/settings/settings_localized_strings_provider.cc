@@ -4037,6 +4037,9 @@ void AddSystemStrings(content::WebUIDataSource* html_source) {
 #endif
       {"hardwareAccelerationLabel",
        IDS_SETTINGS_SYSTEM_HARDWARE_ACCELERATION_LABEL},
+#if BUILDFLAG(IS_WIN)
+      {"isolationStateLabel", IDS_SETTINGS_SYSTEM_ISOLATION_STATE_LABEL},
+#endif  // BUILDFLAG(IS_WIN)
       {"proxySettingsLabel", IDS_SETTINGS_SYSTEM_PROXY_SETTINGS_LABEL},
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
       {"featureNotificationsLabel",
@@ -4048,6 +4051,11 @@ void AddSystemStrings(content::WebUIDataSource* html_source) {
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
+
+#if BUILDFLAG(IS_WIN)
+  html_source->AddString("isolationStateLearnMoreUrl",
+                         chrome::kProcessIsolationLearnMoreUrl);
+#endif  // BUILDFLAG(IS_WIN)
 
   html_source->AddString(
       "proxySettingsExtensionLabel",
@@ -4071,6 +4079,14 @@ void AddSystemStrings(content::WebUIDataSource* html_source) {
       "proxySettingsYourDevice",
       l10n_util::GetStringUTF16(
           IDS_SETTINGS_SYSTEM_PROXY_SETTINGS_YOUR_DEVICE_LABEL));
+
+#if BUILDFLAG(IS_WIN)
+  html_source->AddString(
+      "isolationStateSubLabel",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_SYSTEM_ISOLATION_STATE_SUBLABEL,
+          l10n_util::GetStringUTF16(IDS_SHORT_PRODUCT_NAME)));
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   html_source->AddString("onDeviceAiLearnMoreUrl",

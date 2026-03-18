@@ -11863,6 +11863,7 @@ from previous Chrome versions.
   <int value="-898005938" label="disable-pinch-virtual-viewport"/>
   <int value="-897994913"
       label="OmniboxUIExperimentRevealSteadyStateUrlPathQueryAndRefOnHover:enabled"/>
+  <int value="-897718456" label="ProcessIsolationSettings:disabled"/>
   <int value="-897660267" label="BluetoothDisconnectWarning:enabled"/>
   <int value="-897069393"
       label="kAutofillRationalizeRepeatedServerPredictions:disabled"/>
@@ -12513,6 +12514,7 @@ from previous Chrome versions.
       label="UserCloudSigninRestrictionPolicyFetcher:enabled"/>
   <int value="-681434111" label="WebFeed:disabled"/>
   <int value="-681160117" label="ChromeOSHWVBREncoding:disabled"/>
+  <int value="-680978374" label="ProcessIsolationSettings:enabled"/>
   <int value="-680787130" label="ExperimentalVRFeatures:disabled"/>
   <int value="-680589442" label="MacRTL:disabled"/>
   <int value="-679585025" label="CaptureModeSelfieCamera:disabled"/>
