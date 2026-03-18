@@ -105,6 +105,11 @@ Test resolveValues on custom property with cycle should ignore custom property
 {"input": [var(--prop)]}
 {"results":["13px"]}
 
+Running test: testCustomProperty
+Test resolveValues ray() with random()
+{"input": [ray(50deg closest-corner contain at 30px random(10px, 30px))]}
+{"results":["ray(50deg closest-corner contain at 30px random(10px, 30px))"]}
+
 Running test: testRegisterCustomProperty
 Test resolveValues on register custom property
 {"input": [invalid,1em,1rem,calc(3px + 3px),calc(1em + 1px),random(10px, 30px)]}

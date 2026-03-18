@@ -147,6 +147,10 @@
       testRunner.log('Test resolveValues on custom property with cycle should ignore custom property');
       await testResolveValues('div', ["var(--prop)"], "--prop");
     },
+    async function testCustomProperty() {
+      testRunner.log('Test resolveValues ray() with random()');
+      await testResolveValues('div', ["ray(50deg closest-corner contain at 30px random(10px, 30px))"], "offset-path");
+    },
     async function testRegisterCustomProperty() {
       testRunner.log('Test resolveValues on register custom property');
       await testResolveValues('div', testValues, "--reg-prop");

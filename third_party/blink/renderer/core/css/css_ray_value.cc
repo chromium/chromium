@@ -56,7 +56,7 @@ bool CSSRayValue::Equals(const CSSRayValue& other) const {
 bool CSSRayValue::HasRandomFunctions() const {
   return (angle_ && angle_->HasRandomFunctions()) ||
          (center_x_ && center_x_->HasRandomFunctions()) ||
-         (center_x_ && center_x_->HasRandomFunctions());
+         (center_y_ && center_y_->HasRandomFunctions());
 }
 
 void CSSRayValue::TraceAfterDispatch(blink::Visitor* visitor) const {
