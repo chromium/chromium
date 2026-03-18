@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_everything_menu.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_view.h"
@@ -31,6 +32,7 @@
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "components/user_education/views/help_bubble_view.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
 
@@ -42,9 +44,11 @@ class ResumptionRailPromoTest : public InteractiveFeaturePromoTest {
  public:
   ResumptionRailPromoTest()
       : InteractiveFeaturePromoTest(UseDefaultTrackerAllowingPromos(
-            {feature_engagement::kIPHResumptionRailFeature})) {
+            {feature_engagement::kIPHResumptionRailFeature,
+             feature_engagement::kIPHReadingListDiscoveryFeature})) {
     feature_list_.InitWithFeatures(
         {feature_engagement::kIPHResumptionRailFeature,
+         feature_engagement::kIPHReadingListDiscoveryFeature,
          tab_groups::kProjectsPanel, tabs::kHorizontalTabStripComboButton},
         {});
   }
@@ -99,13 +103,17 @@ IN_PROC_BROWSER_TEST_F(ResumptionRailPromoTest, TriggerPromo) {
                   AddTabGroupsToForceOverflow(),
                   WaitForShow(kSavedTabGroupBarElementId),
                   WaitForShow(kSavedTabGroupOverflowButtonElementId),
+                  // Click the legacy Everything button.
                   PressButton(kSavedTabGroupOverflowButtonElementId),
+                  // The IPH SHOULD trigger, and the menu should not open.
                   WaitForPromo(feature_engagement::kIPHResumptionRailFeature),
+                  // Click the new Projects button to dismiss the promo.
+                  PressButton(kVerticalTabStripProjectsButtonElementId),
                   WaitForHide(kSavedTabGroupOverflowButtonElementId));
 }
 
 IN_PROC_BROWSER_TEST_F(ResumptionRailPromoTest,
-                       TriggerPromoProjectsButtonThenEverythingMenu) {
+                       OpenProjectsPanelThenTriggerPromo) {
   RunTestSequence(WaitForShow(kBookmarkBarElementId),
                   Do([this]() { RunScheduledLayouts(); }),
                   WaitForShow(kVerticalTabStripProjectsButtonElementId),
@@ -124,5 +132,65 @@ IN_PROC_BROWSER_TEST_F(ResumptionRailPromoTest,
                   PressButton(kSavedTabGroupOverflowButtonElementId),
                   // The IPH SHOULD trigger, and the menu should not open.
                   WaitForPromo(feature_engagement::kIPHResumptionRailFeature),
+                  // Click the new Projects button to dismiss the promo.
+                  PressButton(kVerticalTabStripProjectsButtonElementId),
+                  // Should hide the Everything menu button.
                   WaitForHide(kSavedTabGroupOverflowButtonElementId));
+}
+
+IN_PROC_BROWSER_TEST_F(ResumptionRailPromoTest,
+                       ClosePromoWhenProjectsPanelOpens) {
+  RunTestSequence(
+      WaitForShow(kBookmarkBarElementId),
+      Do([this]() { RunScheduledLayouts(); }),
+      WaitForShow(kVerticalTabStripProjectsButtonElementId),
+      // Add enough groups to force the overflow button to appear.
+      AddTabGroupsToForceOverflow(), WaitForShow(kSavedTabGroupBarElementId),
+      WaitForShow(kSavedTabGroupOverflowButtonElementId),
+      // Click the legacy Everything button.
+      PressButton(kSavedTabGroupOverflowButtonElementId),
+      // The IPH SHOULD trigger, and the menu should not open.
+      WaitForPromo(feature_engagement::kIPHResumptionRailFeature),
+      // Click the new Projects button.
+      PressButton(kVerticalTabStripProjectsButtonElementId),
+      // The projects panel should show.
+      WaitForShow(kProjectsPanelViewElementId),
+      // The promo should be dismissed.
+      CheckPromoActive(feature_engagement::kIPHResumptionRailFeature, false),
+      // Should hide the Everything menu button.
+      WaitForHide(kSavedTabGroupOverflowButtonElementId));
+}
+
+IN_PROC_BROWSER_TEST_F(ResumptionRailPromoTest, QueuePromoIfAnotherActive) {
+  RunTestSequence(
+      WaitForShow(kBookmarkBarElementId),
+      Do([this]() { RunScheduledLayouts(); }),
+      WaitForShow(kVerticalTabStripProjectsButtonElementId),
+      // Add enough groups to force the overflow button to appear.
+      AddTabGroupsToForceOverflow(), WaitForShow(kSavedTabGroupBarElementId),
+      WaitForShow(kSavedTabGroupOverflowButtonElementId),
+      // Show another promo first to block the resumption rail promo.
+      Do([this]() {
+        if (auto* interface = BrowserUserEducationInterface::From(browser())) {
+          interface->MaybeShowFeaturePromo(
+              feature_engagement::kIPHReadingListDiscoveryFeature);
+        }
+      }),
+      WaitForPromo(feature_engagement::kIPHReadingListDiscoveryFeature),
+      // Click the legacy Everything button. The resumption rail promo should be
+      // queued.
+      PressButton(kSavedTabGroupOverflowButtonElementId),
+      // The other promo should still be active.
+      CheckPromoActive(feature_engagement::kIPHReadingListDiscoveryFeature,
+                       true),
+      // The resumption rail promo should not be active yet.
+      CheckPromoActive(feature_engagement::kIPHResumptionRailFeature, false),
+      // Close the first promo.
+      PressClosePromoButton(),
+      // The resumption rail promo should now show.
+      WaitForPromo(feature_engagement::kIPHResumptionRailFeature),
+      // Click the new Projects button to dismiss the promo.
+      PressButton(kVerticalTabStripProjectsButtonElementId),
+      // Should hide the Everything menu button.
+      WaitForHide(kSavedTabGroupOverflowButtonElementId));
 }

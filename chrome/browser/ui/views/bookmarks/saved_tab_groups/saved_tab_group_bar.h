@@ -140,6 +140,9 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   // `saved_tab_group_model_`.
   void SavedTabGroupReordered();
 
+  // Called when the resumption rail promo is closed.
+  void OnResumptionRailPromoClosed();
+
   // Adds the button to the child views for a new tab group at a specific index.
   // This function then verifies if the added button and overflow button should
   // be visible/hidden. Also adds a button ptr to the tab_group_buttons_ list.
@@ -155,9 +158,6 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
 
   // Removes all buttons currently in the bar.
   void RemoveAllButtons();
-
-  // Intercept ShowsEverythingMenu for potential promo overriding
-  bool MaybeShowResumptionRailPromo();
 
   // Internal implementation of ShowEverythingMenu.
   void ShowEverythingMenuInternal();
@@ -220,24 +220,6 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   // Provides a callback that returns the page navigator
   base::RepeatingCallback<content::PageNavigator*()> GetPageNavigatorGetter();
 
-  // Handles the result of the promo.
-  void OnResumptionRailPromoResult(user_education::FeaturePromoResult result);
-
-  // Hides the overflow button to prevent focus loss issues with the promo.
-  void HideOverflowForResumptionRailPromo();
-
-  // Handles the closing of the promo.
-  void OnResumptionRailPromoClosed();
-
-  // Used to cache the result of CanShowFeaturePromo for the resumption rail
-  // IPH. If the promo was permanently dismissed or exceeded max show count, we
-  // keep the legacy button hidden.
-  std::optional<bool> resumption_iph_dismissed_ = std::nullopt;
-
-  // Whether the overflow button is hidden because the resumption rail promo was
-  // shown/triggered.
-  bool everything_menu_hidden_for_resumption_rail_promo_ = false;
-
   // animations have been noted to cause issues with tests in the bookmarks bar.
   // this boolean lets the SavedTabGroupButton choose whether they want to
   // animate or not.
@@ -271,6 +253,9 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   // safety if BookmarkBarView is deleted after getting the callback.
   // Factory for creating WeakPtrs to this class. This is used to ensure that
   // callbacks to this class are not run after the class is destroyed.
+
+  bool resumption_iph_dismissed_ = false;
+
   base::WeakPtrFactory<SavedTabGroupBar> weak_ptr_factory_{this};
 };
 

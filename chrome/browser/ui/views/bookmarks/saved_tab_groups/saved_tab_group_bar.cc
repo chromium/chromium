@@ -281,15 +281,15 @@ void SavedTabGroupBar::OnInitialized() {
   RemoveAllChildViews();
   everything_menu_button_ = AddChildView(CreateOverflowButton());
 
+  // Determine if the legacy Everything menu button should be shown.
+  // It should be removed once the user has successfully interacted with the
+  // new Projects button and dismissed the attached IPH promo.
   if (tab_groups::IsProjectsPanelFeatureEnabled() &&
-      !resumption_iph_dismissed_.has_value()) {
-    auto* const interface = BrowserUserEducationInterface::From(browser_);
-    if (interface) {
-      auto result = interface->CanShowFeaturePromo(
+      base::FeatureList::IsEnabled(
+          feature_engagement::kIPHResumptionRailFeature)) {
+    if (auto* interface = BrowserUserEducationInterface::From(browser_)) {
+      resumption_iph_dismissed_ = interface->HasFeaturePromoBeenDismissed(
           feature_engagement::kIPHResumptionRailFeature);
-      resumption_iph_dismissed_ =
-          result == user_education::FeaturePromoResult::kPermanentlyDismissed ||
-          result == user_education::FeaturePromoResult::kExceededMaxShowCount;
     }
   }
 
@@ -424,95 +424,29 @@ void SavedTabGroupBar::AddTabGroupButton(const SavedTabGroup& group,
   }
 }
 
-bool SavedTabGroupBar::MaybeShowResumptionRailPromo() {
-  if (!base::FeatureList::IsEnabled(
-          feature_engagement::kIPHResumptionRailFeature)) {
-    return false;
-  }
-
-  if (!tab_groups::IsProjectsPanelFeatureEnabled()) {
-    return false;
-  }
-
-  auto* const interface = BrowserUserEducationInterface::From(browser_);
-  if (!interface) {
-    return false;
-  }
-
-  user_education::FeaturePromoResult can_show = interface->CanShowFeaturePromo(
-      feature_engagement::kIPHResumptionRailFeature);
-
-  // We proceed if the promo can be shown immediately, OR if it's currently
-  // blocked by another promo (e.g., the browser is just starting up and
-  // showing other messages). By evaluating to true in the blocked state,
-  // we allow the promo to enter the UserEducationService's queue, ensuring
-  // it will be displayed once the blocking promo is dismissed.
-  if (can_show ||
-      can_show == user_education::FeaturePromoResult::kBlockedByPromo) {
-    user_education::FeaturePromoParams params(
-        feature_engagement::kIPHResumptionRailFeature);
-    params.show_promo_result_callback =
-        base::BindOnce(&SavedTabGroupBar::OnResumptionRailPromoResult,
-                       weak_ptr_factory_.GetWeakPtr());
-    params.close_callback =
-        base::BindOnce(&SavedTabGroupBar::OnResumptionRailPromoClosed,
-                       weak_ptr_factory_.GetWeakPtr());
-    interface->MaybeShowFeaturePromo(std::move(params));
-    // DO NOT show the everything menu. Showing the menu would steal focus and
-    // dismiss the newly opened IPH bubble immediately. If the promo is queued,
-    // the menu will appear on top of the IPH when it eventually shows.
-    return true;
-  }
-
-  return false;
-}
-
 void SavedTabGroupBar::ShowEverythingMenu() {
-  if (everything_menu_hidden_for_resumption_rail_promo_) {
-    return;
-  }
-
   base::RecordAction(base::UserMetricsAction(
       "TabGroups_SavedTabGroups_EverythingButtonPressed"));
 
+  // Try to show the IPH promo (or queue it) unconditionally when the
+  // legacy everything button is clicked.
+  if (tab_groups::IsProjectsPanelFeatureEnabled()) {
+    if (auto* interface = BrowserUserEducationInterface::From(browser_)) {
+      user_education::FeaturePromoParams params(
+          feature_engagement::kIPHResumptionRailFeature);
+      params.close_callback =
+          base::BindOnce(&SavedTabGroupBar::OnResumptionRailPromoClosed,
+                         weak_ptr_factory_.GetWeakPtr());
+      interface->MaybeShowFeaturePromo(std::move(params));
+    }
+  }
+
   // if other feature overrides the everything menu do nothing.
-  if (MaybeShowResumptionRailPromo() ||
-      tab_groups::IsProjectsPanelFeatureEnabled()) {
+  if (tab_groups::IsProjectsPanelFeatureEnabled()) {
     return;
   }
 
   ShowEverythingMenuInternal();
-}
-
-void SavedTabGroupBar::OnResumptionRailPromoResult(
-    user_education::FeaturePromoResult result) {
-  if (result) {
-    // A PostTask is required here because hiding the overflow menu button
-    // synchronously would cause the Resumption Rail IPH to instantly close due
-    // to focus/visibility changes on its anchor view before the user has a
-    // chance to interact with it.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&SavedTabGroupBar::HideOverflowForResumptionRailPromo,
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
-}
-
-void SavedTabGroupBar::HideOverflowForResumptionRailPromo() {
-  // Workaround for IPH immediately closing: focus is advanced when the view is
-  // hidden, which might close the prompt. Try clearing focus first.
-  if (GetFocusManager() && everything_menu_button_->HasFocus()) {
-    GetFocusManager()->ClearFocus();
-  }
-  everything_menu_hidden_for_resumption_rail_promo_ = true;
-  everything_menu_button_->SetVisible(false);
-  InvalidateLayout();
-}
-
-void SavedTabGroupBar::OnResumptionRailPromoClosed() {
-  if (tab_groups::IsProjectsPanelFeatureEnabled()) {
-    resumption_iph_dismissed_ = true;
-  }
 }
 
 void SavedTabGroupBar::ShowEverythingMenuInternal() {
@@ -595,6 +529,18 @@ void SavedTabGroupBar::SavedTabGroupReordered() {
   }
 
   InvalidateLayout();
+}
+
+void SavedTabGroupBar::OnResumptionRailPromoClosed() {
+  if (auto* interface = BrowserUserEducationInterface::From(browser_)) {
+    if (interface->HasFeaturePromoBeenDismissed(
+            feature_engagement::kIPHResumptionRailFeature)) {
+      resumption_iph_dismissed_ = true;
+      if (everything_menu_button_) {
+        everything_menu_button_->SetVisible(!IsOverflowButtonHidden());
+      }
+    }
+  }
 }
 
 void SavedTabGroupBar::LoadAllButtonsFromModel() {
@@ -715,15 +661,15 @@ void SavedTabGroupBar::UpdateButtonVisibilities(bool show_overflow,
 }
 
 bool SavedTabGroupBar::IsOverflowButtonHidden() const {
-  if (everything_menu_hidden_for_resumption_rail_promo_ ||
-      (tab_groups::IsProjectsPanelFeatureEnabled() &&
-       tab_group_service_->GetAllGroups().empty())) {
-    return true;
-  }
-
-  if (tab_groups::IsProjectsPanelFeatureEnabled() &&
-      resumption_iph_dismissed_.value_or(false)) {
-    return true;
+  if (tab_groups::IsProjectsPanelFeatureEnabled()) {
+    if (tab_group_service_->GetAllGroups().empty()) {
+      return true;
+    }
+    if (base::FeatureList::IsEnabled(
+            feature_engagement::kIPHResumptionRailFeature) &&
+        resumption_iph_dismissed_) {
+      return true;
+    }
   }
 
   return false;
