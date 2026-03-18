@@ -7598,6 +7598,11 @@
     "expiry_milestone": 155
   },
   {
+    "name": "page-tools-feature-unavailability",
+    "owners": [ "fbeauchamp@google.com", "bling-alchemy-eng@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "paint-preview-demo",
     "owners": [ "ckitagawa@chromium.org", "fredmello@chromium.org", "chrome-fdt@google.com" ],
     "expiry_milestone": 160

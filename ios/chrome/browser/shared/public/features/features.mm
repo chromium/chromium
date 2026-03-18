@@ -1169,6 +1169,13 @@ bool IsFullscreenRefactoringEnabled() {
   return base::FeatureList::IsEnabled(kFullscreenRefactoring);
 }
 
+BASE_FEATURE(kPageToolsFeatureUnavailability,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsPageToolsFeatureUnavailabilityEnabled() {
+  return base::FeatureList::IsEnabled(kPageToolsFeatureUnavailability);
+}
+
 BASE_FEATURE(kAskAboutThisPage, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsAskAboutThisPageEnabled() {

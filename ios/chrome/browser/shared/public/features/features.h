@@ -983,4 +983,10 @@ BASE_DECLARE_FEATURE(kAskAboutThisPage);
 // Returns true if the AskAboutThisPage feature is enabled.
 bool IsAskAboutThisPageEnabled();
 
+// Enables the PageToolsFeatureUnavailability feature.
+BASE_DECLARE_FEATURE(kPageToolsFeatureUnavailability);
+
+// Returns true if the PageToolsFeatureUnavailability feature is enabled.
+bool IsPageToolsFeatureUnavailabilityEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

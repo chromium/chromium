@@ -793,6 +793,9 @@ extern const char kPageContentAnnotationsDescription[];
 extern const char kPageContentAnnotationsRemotePageMetadataName[];
 extern const char kPageContentAnnotationsRemotePageMetadataDescription[];
 
+extern const char kPageToolsFeatureUnavailabilityName[];
+extern const char kPageToolsFeatureUnavailabilityDescription[];
+
 extern const char kPasswordRemovalFromDeleteBrowsingDataName[];
 extern const char kPasswordRemovalFromDeleteBrowsingDataDescription[];
 

@@ -1287,6 +1287,11 @@ const char kPageContentAnnotationsRemotePageMetadataName[] =
 const char kPageContentAnnotationsRemotePageMetadataDescription[] =
     "Enables fetching of page load metadata to be persisted on-device.";
 
+const char kPageToolsFeatureUnavailabilityName[] =
+    "PageToolsFeatureUnavailability";
+const char kPageToolsFeatureUnavailabilityDescription[] =
+    "Enables the PageToolsFeatureUnavailability feature.";
+
 const char kPasswordRemovalFromDeleteBrowsingDataName[] =
     "Removal of Passwords from Quick Delete Browsing Data";
 const char kPasswordRemovalFromDeleteBrowsingDataDescription[] =

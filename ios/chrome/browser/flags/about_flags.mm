@@ -2692,6 +2692,10 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kReaderModeIgnoreBadgeThresholdName,
      flag_descriptions::kReaderModeIgnoreBadgeThresholdDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kReaderModeIgnoreBadgeThreshold)},
+    {"page-tools-feature-unavailability",
+     flag_descriptions::kPageToolsFeatureUnavailabilityName,
+     flag_descriptions::kPageToolsFeatureUnavailabilityDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kPageToolsFeatureUnavailability)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
