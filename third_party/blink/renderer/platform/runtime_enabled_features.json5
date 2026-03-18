@@ -1272,6 +1272,33 @@
       }
     },
     {
+      // When enabled, providing developers control over the resources loaded
+      // into their pages' contexts and the endpoints to which their pages can
+      // make requests.
+      // Note: To enable this feature, developers MUST include the origin trial
+      // token within the HTTP headers. Including the origin trial token via the
+      // <meta> tag in the head of any page does NOT enable the feature.
+      // See https://wicg.github.io/connection-allowlists/.
+      name: "ConnectionAllowlist",
+      origin_trial_feature_name: "ConnectionAllowlist",
+      // This feature flag is used for overriding origin trial requirements for
+      // testing purpose. See the comment below for `status` field for why this
+      // is required even though there already exists a
+      // `network::features::kConnectionAllowlists` for connection allowlist.
+      // Kill switch is `network::features::kConnectionAllowlists`.
+      base_feature: "OverrideConnectionAllowlistOriginTrial",
+      base_feature_status: "disabled",
+      // For the connection allowlist, its implementation is entirely within the
+      // browser processes. It does not involve any changes in the renderer
+      // process. The `status` field does not behave in the same manner for
+      // other web platform features. For example, setting it to "stable" does
+      // not enable the feature -- the renderer's internal state is updated, but
+      // does not get propagated to the browser process. So connection allowlist
+      // cannot know the status of the RuntimeEnabledFeature.
+      status: "experimental",
+      settable_from_internals: true,
+    },
+    {
       // Fix for https://crbug.com/40659076. When enabled, queryCommandState for
       // 'subscript' or 'superscript' with a caret selection will consider
       // ancestor <sub> or <sup> elements, matching the behavior for range

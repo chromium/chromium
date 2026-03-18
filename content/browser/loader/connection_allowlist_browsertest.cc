@@ -31,6 +31,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 #include "url/gurl.h"
 
@@ -52,8 +53,13 @@ struct ResponseEntry {
 // the link header response.
 class ConnectionAllowlistTest : public ContentBrowserTest {
  public:
-  ConnectionAllowlistTest()
-      : scoped_feature_list_(network::features::kConnectionAllowlists) {}
+  ConnectionAllowlistTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{network::features::kConnectionAllowlists,
+                              blink::features::
+                                  kOverrideConnectionAllowlistOriginTrial},
+        /*disabled_features=*/{});
+  }
   ~ConnectionAllowlistTest() override = default;
 
   void SetUpOnMainThread() override {

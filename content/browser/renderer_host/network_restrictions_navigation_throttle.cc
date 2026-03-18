@@ -54,6 +54,17 @@ NetworkRestrictionsNavigationThrottle::MaybeApplyNetworkRestrictions(
 
   const auto& policy_container_policies =
       navigation_request.GetPolicyContainerPolicies();
+
+  // The origin trial status is tied to the existence of allowlists in policy
+  // container. If there does not exist an enforced allowlist in policies, it
+  // means either:
+  // 1. the trial was not active for that context.
+  // 2. or the parsed allowlist is null. For example:
+  //   - A "Connection-Allowlist" header with empty field value.
+  //   - A response contains a "Connection-Allowlist-Report-Only" header, but
+  //   not "Connection-Allowlist".
+  //
+  // The network restriction id is not applied in either case.
   if (!policy_container_policies.connection_allowlists.enforced) {
     return NetworkRestrictionsResult::kProceed;
   }

@@ -4958,6 +4958,9 @@ TEST_F(NetworkContextResolveHostTest,
 
 TEST_F(NetworkContextResolveHostTest,
        ResolveHostWithNetworkRestrictionsIDAndFeatureFlagDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(network::features::kConnectionAllowlists);
+
   // Common setup. Note the lack of command line flag.
   const GURL url = GURL("https://sync.test");
   auto resolver = std::make_unique<net::MockHostResolver>();

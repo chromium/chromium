@@ -9443,8 +9443,11 @@ class RenderFrameHostImplConnectionAllowlistBrowserTest
     : public RenderFrameHostImplBrowserTest {
  public:
   RenderFrameHostImplConnectionAllowlistBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        network::features::kConnectionAllowlists);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{network::features::kConnectionAllowlists,
+                              blink::features::
+                                  kOverrideConnectionAllowlistOriginTrial},
+        /*disabled_features=*/{});
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {

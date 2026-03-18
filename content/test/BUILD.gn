@@ -2728,6 +2728,7 @@ test("content_unittests") {
     "../browser/interest_group/trusted_bidding_signals_kvv1_requester_unittest.cc",
     "../browser/interest_group/trusted_signals_cache_impl_unittest.cc",
     "../browser/interest_group/trusted_signals_fetcher_unittest.cc",
+    "../browser/loader/connection_allowlist_origin_trial_unittest.cc",
     "../browser/loader/cors_origin_pattern_setter_unittest.cc",
     "../browser/loader/file_url_loader_factory_unittest.cc",
     "../browser/loader/keep_alive_attribution_request_helper_unittest.cc",

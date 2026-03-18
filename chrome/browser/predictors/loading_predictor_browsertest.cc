@@ -3282,8 +3282,11 @@ class ConnectionAllowlistLoadingPredictorBrowserTest
     : public LoadingPredictorBrowserTest {
  public:
   ConnectionAllowlistLoadingPredictorBrowserTest() {
-    feature_list_.InitAndEnableFeature(
-        network::features::kConnectionAllowlists);
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{network::features::kConnectionAllowlists,
+                              blink::features::
+                                  kOverrideConnectionAllowlistOriginTrial},
+        /*disabled_features=*/{});
   }
 
   // Note: `LoadingPredictorBrowserTest::SetUpOnMainThread()` sets up the

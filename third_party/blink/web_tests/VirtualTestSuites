@@ -318,7 +318,7 @@
       "http/tests/inspector-protocol/issues/connection-allowlists"
     ],
     "exclusive_tests": "ALL",
-    "args": [ "--enable-features=ConnectionAllowlists" ],
+    "args": [ "--enable-features=ConnectionAllowlists,OverrideConnectionAllowlistOriginTrial" ],
     "expires": "Jul 1, 2026"
   },
   {

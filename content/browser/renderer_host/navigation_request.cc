@@ -1189,6 +1189,16 @@ net::StorageAccessApiStatus ShouldLoadWithStorageAccess(
   }
 }
 
+// Returns true if the parsed response headers contains a valid
+// "Connection-Allowlist" header.
+bool ResponseEnforcesConnectionAllowlist(
+    const network::mojom::URLResponseHead* response_head) {
+  return response_head && response_head->headers &&
+         response_head->parsed_headers &&
+         response_head->parsed_headers->connection_allowlists.enforced
+             .has_value();
+}
+
 // The sampling rate for UKM.
 constexpr double kUkmSamplingRate = 0.001;
 
@@ -7377,42 +7387,24 @@ void NavigationRequest::UpdateSiteInfo(
 }
 
 bool NavigationRequest::IsAllowedByConnectionAllowlist(bool is_redirect) {
+  // The connection allowlist base feature is the kill switch for the feature.
+  // It is checked first. Then connection allowlist also requires origin trial
+  // enabled. In order to check the origin trial status, the initiator policy
+  // container policies need to be retrieved.
   if (!base::FeatureList::IsEnabled(network::features::kConnectionAllowlists)) {
     return true;
   }
 
-  if (is_redirect && connection_allowlists_blocks_redirect_) {
-    // TODO(crbug.com/447954811): Implement reporting.
-    return false;
-  }
-
-  // If it is renderer-initiated, initiator_frame_token_ will be set and
-  // connection allowlist should be checked unless it is a same-document
-  // navigation or a local navigation. For local navigation, the connection
-  // allowlist will be inherited as part of the PolicyContainerHost and
-  // applied in the network service in
-  // NetworkRestrictionsNavigationThrottle::WillCommitWithoutUrlLoader().
-  if (!initiator_frame_token_ || IsSameDocument() ||
-      !IsURLHandledByNetworkStack(common_params_->url)) {
-    return true;
-  }
-
-  // If it is renderer-initiated and a history navigation, it should be
-  // checked against connection allowlist unless it is served from the BFcache.
-  // https://github.com/WICG/connection-allowlists/issues/4
-  if (IsServedFromBackForwardCache()) {
+  // `initiator_frame_token_` not being set implies this is not a
+  // renderer-initiated navigation, which is out of the scope of connection
+  // allowlist anyway, even though at this point the origin trial status has not
+  // been checked yet.
+  if (!initiator_frame_token_) {
     return true;
   }
 
   RenderFrameHostImpl* initiator_rfh = RenderFrameHostImpl::FromFrameToken(
       initiator_process_id_, *initiator_frame_token_);
-
-  // The feature currently does not impact fenced frames.
-  // TODO(crbug.com/447954811): Revisit this if the feature needs to be
-  // enabled and fenced frames need to be supported.
-  if (initiator_rfh && initiator_rfh->IsNestedWithinFencedFrame()) {
-    return true;
-  }
 
   PolicyContainerHost* initiator_policy_container_host = nullptr;
   if (initiator_rfh) {
@@ -7436,7 +7428,44 @@ bool NavigationRequest::IsAllowedByConnectionAllowlist(bool is_redirect) {
     policies = &initiator_policy_container_host->policies();
   }
 
+  // The origin trial status is tied to the existence of allowlists in policy
+  // container. If the initiator doesn't have an enforced allowlist in its
+  // policies, it means either:
+  // 1. the trial was not active for that context.
+  // 2. or the parsed allowlist is null. For example:
+  //   - A "Connection-Allowlist" header with empty field value.
+  //   - A response contains a "Connection-Allowlist-Report-Only" header, but
+  //   not "Connection-Allowlist".
   if (!policies || !policies->connection_allowlists.enforced) {
+    return true;
+  }
+
+  // Perform functional checks (redirects, same-document, local URLs) only after
+  // confirming the feature is active for this initiator.
+  if (is_redirect && connection_allowlists_blocks_redirect_) {
+    // TODO(crbug.com/447954811): Implement reporting.
+    return false;
+  }
+
+  // For same-document navigation, the connection allowlist is not checked. For
+  // local navigation, the connection allowlist will be inherited as part of the
+  // PolicyContainerHost and applied in the network service in
+  // NetworkRestrictionsNavigationThrottle::WillCommitWithoutUrlLoader().
+  if (IsSameDocument() || !IsURLHandledByNetworkStack(common_params_->url)) {
+    return true;
+  }
+
+  // If it is renderer-initiated and a history navigation, it should be
+  // checked against connection allowlist unless it is served from the BFcache.
+  // https://github.com/WICG/connection-allowlists/issues/4
+  if (IsServedFromBackForwardCache()) {
+    return true;
+  }
+
+  // The feature currently does not impact fenced frames.
+  // TODO(crbug.com/447954811): Revisit this if the feature needs to be
+  // enabled and fenced frames need to be supported.
+  if (initiator_rfh && initiator_rfh->IsNestedWithinFencedFrame()) {
     return true;
   }
 
@@ -10643,15 +10672,27 @@ void NavigationRequest::ComputePoliciesToCommit() {
         true);
   }
 
-  if (response_head_) {
-    CHECK(base::FeatureList::IsEnabled(
-              network::features::kConnectionAllowlists) ||
-          (!response_head_->parsed_headers->connection_allowlists.enforced
-                .has_value() &&
-           !response_head_->parsed_headers->connection_allowlists.report_only
-                .has_value()));
-    policy_container_builder_->SetConnectionAllowlists(
-        std::move(response_head_->parsed_headers->connection_allowlists));
+  if (ResponseEnforcesConnectionAllowlist(response_head_.get()) &&
+      base::FeatureList::IsEnabled(network::features::kConnectionAllowlists)) {
+    // Connection allowlist needs to be enforced once the allowlist response
+    // header is received. The origin trial token for this feature is received
+    // within the same response. The token is parsed here to query the trial
+    // status, instead of waiting for the response sent to renderer process,
+    // where the trial status is first available for most other web platform
+    // features. See https://wicg.github.io/connection-allowlists/.
+    bool connection_allowlist_origin_trial_enabled =
+        base::FeatureList::IsEnabled(
+            blink::features::kOverrideConnectionAllowlistOriginTrial) ||
+        blink::TrialTokenValidator().RequestEnablesFeature(
+            common_params_->url, response_head_->headers.get(),
+            "ConnectionAllowlist", base::Time::Now());
+
+    // The allowlist is stored in the policy container only if both origin trial
+    // and base::Feature are enabled.
+    if (connection_allowlist_origin_trial_enabled) {
+      policy_container_builder_->SetConnectionAllowlists(
+          std::move(response_head_->parsed_headers->connection_allowlists));
+    }
   }
 
   if (!devtools_instrumentation::ShouldBypassCSP(*this)) {
