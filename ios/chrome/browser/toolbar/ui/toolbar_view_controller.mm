@@ -31,6 +31,8 @@ constexpr CGFloat kStackViewSpacing = 9;
 
 constexpr CGFloat kButtonMinScale = 0.2;
 
+constexpr CGFloat kAnimationDuration = 0.2f;
+
 }  // namespace
 
 @implementation ToolbarViewController {
@@ -42,6 +44,9 @@ constexpr CGFloat kButtonMinScale = 0.2;
   ToolbarButton* _tabGridButton;
   ToolbarButton* _toolsMenuButton;
 
+  // Dynamic container for the `_backButton` and `_forwardButton` Toolbar
+  // navigation buttons in the `_leadingStackView`.
+  UIView* _navigationButtonsContainer;
   // The stack views that hold the buttons on the leading side.
   UIStackView* _leadingStackView;
   // The container for the location bar, which is transparent.
@@ -56,7 +61,13 @@ constexpr CGFloat kButtonMinScale = 0.2;
   // The constraint for the bottom padding of the toolbar.
   NSLayoutConstraint* _locationBarBottomPaddingConstraint;
 
+  // Constraints for portrait and landscape modes.
+  NSArray<NSLayoutConstraint*>* _portraitOrientationConstraints;
+  NSArray<NSLayoutConstraint*>* _landscapeOrientationConstraints;
+
   // Whether this toolbar is currently visible.
+  /// TODO(crbug.com/493268305): Clean up the animation dismissing the toolbar
+  /// when navigating to a page where it is not visible (e.g. the New Tab Page).
   BOOL _visible;
 
   // Whether this toolbar is in incognito mode.
@@ -74,23 +85,22 @@ constexpr CGFloat kButtonMinScale = 0.2;
   return self;
 }
 
-- (void)viewDidLoad {
-  [super viewDidLoad];
-  self.view.translatesAutoresizingMaskIntoConstraints = NO;
-  // TODO(crbug.com/472279443): Use real color.
-  self.view.backgroundColor = UIColor.greenColor;
-  self.view.accessibilityIdentifier = kToolbarViewIdentifier;
+#pragma mark - Public
 
-  [self createView];
-  [self setUpHierarchy];
-
-  [self updateToolbarVisibility];
-
-  [self
-      registerForTraitChanges:
-          @[ UITraitVerticalSizeClass.class, UITraitHorizontalSizeClass.class ]
-                   withAction:@selector(sizeClassDidChange)];
+- (void)setLocationBarHidden:(BOOL)hidden {
+  _locationBarContainer.hidden = hidden;
 }
+
+- (UIView*)locationBarContainerCopy {
+  UIView* locationBarContainerCopy = [self createLocationBarBackground];
+  locationBarContainerCopy.translatesAutoresizingMaskIntoConstraints = YES;
+  locationBarContainerCopy.frame =
+      [_locationBarBackground convertRect:_locationBarBackground.bounds
+                                   toView:nil];
+  return locationBarContainerCopy;
+}
+
+#pragma mark - Properties
 
 - (void)setLocationBarViewController:
     (UIViewController*)locationBarViewController {
@@ -119,6 +129,31 @@ constexpr CGFloat kButtonMinScale = 0.2;
   [_locationBarViewController didMoveToParentViewController:self];
 }
 
+#pragma mark - UIViewController
+
+- (void)viewDidLoad {
+  [super viewDidLoad];
+  self.view.translatesAutoresizingMaskIntoConstraints = NO;
+  /// TODO(crbug.com/472279443): Use real color.
+  self.view.backgroundColor = UIColor.greenColor;
+  self.view.accessibilityIdentifier = kToolbarViewIdentifier;
+
+  [self createView];
+  [self setUpHierarchy];
+
+  [self updateToolbarVisibility];
+
+  [self
+      registerForTraitChanges:
+          @[ UITraitVerticalSizeClass.class, UITraitHorizontalSizeClass.class ]
+                   withAction:@selector(sizeClassDidChange)];
+}
+
+- (void)viewWillLayoutSubviews {
+  [super viewWillLayoutSubviews];
+  [self updateLayoutConstraints];
+}
+
 #pragma mark - ToolbarConsumer
 
 - (void)setCanGoBack:(BOOL)canGoBack {
@@ -126,7 +161,28 @@ constexpr CGFloat kButtonMinScale = 0.2;
 }
 
 - (void)setCanGoForward:(BOOL)canGoForward {
-  _forwardButton.enabled = canGoForward;
+  if (_forwardButton.enabled == canGoForward) {
+    return;
+  }
+
+  if (canGoForward) {
+    _forwardButton.enabled = YES;
+  }
+
+  // `_navigationButtonsContainer` is resized by sliding over its right edge to
+  // reveal or hide the `_forwardButton`.
+  __weak __typeof(self) weakSelf = self;
+  ToolbarButton* forwardButton = _forwardButton;
+  [UIView animateWithDuration:kAnimationDuration
+      animations:^{
+        forwardButton.hidden = !canGoForward;
+        [weakSelf.view layoutIfNeeded];
+      }
+      completion:^(BOOL) {
+        if (!canGoForward) {
+          forwardButton.enabled = NO;
+        }
+      }];
 }
 
 - (void)setIsLoading:(BOOL)isLoading {
@@ -180,19 +236,6 @@ constexpr CGFloat kButtonMinScale = 0.2;
                                   isCollapsed:locationIndicatorVisible
                                      duration:duration
                                         curve:curve];
-}
-
-- (void)setLocationBarHidden:(BOOL)hidden {
-  _locationBarContainer.hidden = hidden || !_visible;
-}
-
-- (UIView*)locationBarContainerCopy {
-  UIView* locationBarContainerCopy = [self createLocationBarBackground];
-  locationBarContainerCopy.translatesAutoresizingMaskIntoConstraints = YES;
-  locationBarContainerCopy.frame =
-      [_locationBarBackground convertRect:_locationBarBackground.bounds
-                                   toView:nil];
-  return locationBarContainerCopy;
 }
 
 #pragma mark - FullscreenUIElement
@@ -314,7 +357,6 @@ constexpr CGFloat kButtonMinScale = 0.2;
   _locationBarBackground = [self createLocationBarBackground];
   _locationBarContainer =
       [self createLocationBarContainerWithBackground:_locationBarBackground];
-
   _backButton = [self.buttonFactory makeBackButton];
   [_backButton addTarget:self
                   action:@selector(backButtonTapped)
@@ -323,6 +365,9 @@ constexpr CGFloat kButtonMinScale = 0.2;
   [_forwardButton addTarget:self
                      action:@selector(forwardButtonTapped)
            forControlEvents:UIControlEventTouchUpInside];
+  _navigationButtonsContainer =
+      [self.buttonFactory makeConjoinedBackButton:_backButton
+                                    forwardButton:_forwardButton];
   _reloadButton = [self.buttonFactory makeReloadButton];
   [_reloadButton addTarget:self
                     action:@selector(reloadButtonTapped)
@@ -348,7 +393,7 @@ constexpr CGFloat kButtonMinScale = 0.2;
              forControlEvents:UIControlEventTouchUpInside];
 }
 
-- (UIStackView*)makeStackViewWithButtons:(NSArray<UIButton*>*)buttons {
+- (UIStackView*)makeStackViewWithButtons:(NSArray<UIView*>*)buttons {
   UIStackView* stackView =
       [[UIStackView alloc] initWithArrangedSubviews:buttons];
   stackView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -362,22 +407,16 @@ constexpr CGFloat kButtonMinScale = 0.2;
 // Sets up the hierarchy of the buttons.
 - (void)setUpHierarchy {
   _leadingStackView = [self makeStackViewWithButtons:@[
-    _backButton,
-    _forwardButton,
+    _navigationButtonsContainer,
     _reloadButton,
     _stopButton,
   ]];
-  [self.view addSubview:_leadingStackView];
-
-  [self.view addSubview:_locationBarContainer];
-  NSLayoutConstraint* widthConstraint = [_locationBarContainer.widthAnchor
-      constraintEqualToAnchor:self.view.widthAnchor];
-  widthConstraint.priority = UILayoutPriorityRequired - 1;
-  widthConstraint.active = YES;
-
   _trailingStackView = [self makeStackViewWithButtons:@[
     _shareButton, _tabGridButton, _toolsMenuButton
   ]];
+
+  [self.view addSubview:_leadingStackView];
+  [self.view addSubview:_locationBarContainer];
   [self.view addSubview:_trailingStackView];
 
   _locationBarHeightConstraint = [_locationBarContainer.heightAnchor
@@ -394,25 +433,61 @@ constexpr CGFloat kButtonMinScale = 0.2;
     [_leadingStackView.leadingAnchor
         constraintEqualToAnchor:safeAreaGuide.leadingAnchor
                        constant:kStackViewSpacing],
-    [_leadingStackView.trailingAnchor
-        constraintLessThanOrEqualToAnchor:_locationBarContainer.leadingAnchor
-                                 constant:-kStackViewSpacing],
     [_leadingStackView.centerYAnchor
         constraintEqualToAnchor:_locationBarContainer.centerYAnchor],
 
-    [_trailingStackView.leadingAnchor
-        constraintGreaterThanOrEqualToAnchor:_locationBarContainer
-                                                 .trailingAnchor
-                                    constant:kStackViewSpacing],
     [_trailingStackView.trailingAnchor
         constraintEqualToAnchor:safeAreaGuide.trailingAnchor
                        constant:-kStackViewSpacing],
     [_trailingStackView.centerYAnchor
         constraintEqualToAnchor:_locationBarContainer.centerYAnchor],
+  ]];
 
+  NSLayoutConstraint* widthConstraint = [_locationBarContainer.widthAnchor
+      constraintEqualToAnchor:self.view.widthAnchor];
+  widthConstraint.priority = UILayoutPriorityRequired - 1;
+
+  /// TODO(crbug.com/493603959): Set appropriate width constraints for portrait
+  /// orientation on iPad.
+  _portraitOrientationConstraints = @[
+    [_locationBarContainer.leadingAnchor
+        constraintEqualToAnchor:_leadingStackView.trailingAnchor
+                       constant:kStackViewSpacing],
+    [_locationBarContainer.trailingAnchor
+        constraintEqualToAnchor:_trailingStackView.leadingAnchor
+                       constant:-kStackViewSpacing],
+  ];
+
+  /// TODO(crbug.com/493603959): Set appropriate width constraints for landscape
+  /// orientation on iPhone and iPad.
+  _landscapeOrientationConstraints = @[
+    [_leadingStackView.trailingAnchor
+        constraintLessThanOrEqualToAnchor:_locationBarContainer.leadingAnchor
+                                 constant:-kStackViewSpacing],
+    [_trailingStackView.leadingAnchor
+        constraintGreaterThanOrEqualToAnchor:_locationBarContainer
+                                                 .trailingAnchor
+                                    constant:kStackViewSpacing],
     [_locationBarContainer.centerXAnchor
         constraintEqualToAnchor:safeAreaGuide.centerXAnchor],
-  ]];
+    widthConstraint,
+  ];
+
+  [self updateLayoutConstraints];
+}
+
+// Updates constraints for the toolbar layout depending on interface
+// orientation. In portrait orientation, the location bar fills the space
+// between the leading and trailing toolbar buttons. In landscape orientation,
+// the location bar has a fixed size in the center of the toolbar.
+- (void)updateLayoutConstraints {
+  if (IsLandscape(self.view.window)) {
+    [NSLayoutConstraint deactivateConstraints:_portraitOrientationConstraints];
+    [NSLayoutConstraint activateConstraints:_landscapeOrientationConstraints];
+  } else {
+    [NSLayoutConstraint deactivateConstraints:_landscapeOrientationConstraints];
+    [NSLayoutConstraint activateConstraints:_portraitOrientationConstraints];
+  }
 }
 
 // Handles back button tap.
@@ -471,6 +546,7 @@ constexpr CGFloat kButtonMinScale = 0.2;
 // Called when the size class is updated.
 - (void)sizeClassDidChange {
   [self updateForFullscreenProgress:_fullscreenProgress];
+  [self updateLayoutConstraints];
 }
 
 @end
