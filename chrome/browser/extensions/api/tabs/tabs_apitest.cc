@@ -98,14 +98,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiNewTabTest, MAYBE_Tabs) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/crud")) << message_;
 }
 
-// TODO(https://crbug.com/371432155): Enable these tests.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabAudible) {
   ASSERT_TRUE(
       RunExtensionTest("tabs/basics", {.extension_url = "audible.html"}))
       << message_;
 }
+
+// TODO(https://crbug.com/371432155): Enable these tests.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Tests removing a tab while it is part of a group and an extension has a
 // listener for both chrome.tabs.onUpdated and chrome.tabs.onRemoved.
@@ -146,12 +146,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, Size) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/tab_size")) << message_;
 }
 
-// TODO(https://crbug.com/371432155): Enable these tests.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, Update) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/update")) << message_;
 }
+
+// TODO(https://crbug.com/371432155): Enable these tests.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, Pinned) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/pinned")) << message_;
@@ -190,14 +190,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, Highlight) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/highlight")) << message_;
 }
 
-// TODO(https://crbug.com/371432155): Enable these tests.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, LastAccessed) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/last_accessed")) << message_;
 }
-
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, CrashBrowser) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/crash")) << message_;
