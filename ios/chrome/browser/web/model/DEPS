@@ -69,21 +69,6 @@ specific_include_rules = {
   "browsing_egtest\.mm": [
     "+ios/web/public/test/http_server",
   ],
-  # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
-  # TODO:(crbug.com/891834) Remove this exception.
-  "browsing_prevent_default_egtest\.mm": [
-    "+ios/web/public/test/http_server",
-  ],
-  # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
-  # TODO:(crbug.com/891834) Remove this exception.
-  "cache_egtest\.mm": [
-    "+ios/web/public/test/http_server",
-  ],
-  # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
-  # TODO:(crbug.com/891834) Remove this exception.
-  "child_window_open_by_dom_egtest\.mm": [
-    "+ios/web/public/test/http_server",
-  ],
   "chrome_main_parts\.(h|mm)": [
     "+components/memory_system",
     "+components/sampling_profiler",
@@ -111,22 +96,6 @@ specific_include_rules = {
   "push_and_replace_state_navigation_egtest\.mm": [
     "+ios/web/public/test/http_server",
   ],
-  # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
-  # TODO:(crbug.com/891834) Remove this exception.
-  "stop_loading_egtest\.mm": [
-    "+ios/web/public/test/http_server",
-  ],
-  # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
-  # TODO:(crbug.com/891834) Remove this exception.
-  "visible_url_egtest\.mm": [
-    "+ios/web/public/test/http_server",
-  ],
-  # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
-  # TODO:(crbug.com/891834) Remove this exception.
-  "window_open_by_dom_egtest\.mm": [
-    "+ios/web/public/test/http_server",
-  ],
-
   # TODO(crbug.com/40820398): Remove these dependencies.
   "^chrome_web_client.mm": [
     "+ios/chrome/browser/shared/ui/elements/windowed_container_view.h",
