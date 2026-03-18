@@ -1264,11 +1264,18 @@ export class ComposeboxElement extends I18nMixinLit
     e.stopPropagation();
     this.voiceSearchEndCleanup_();
     // For contextual tasks composebox voice metrics.
+    // TODO(crbug.com/466412331): Don't only fire this for composebox, this
+    // should be recorded for all.
     this.fire('composebox-voice-search-transcription-success');
     if (this.autoSubmitVoiceSearch) {
+      // TODO(crbug.com/466412331): Remove, only recorded for the NTP.
       this.fire(
           'voice-search-action', {value: VoiceSearchAction.QUERY_SUBMITTED});
       this.input_ = e.detail;
+      const metricName = `ContextualSearch.UserAction.SubmitVoiceQuery.${
+          this.composeboxSource_}`;
+      recordUserAction(metricName);
+      recordBoolean(metricName, true);
       this.searchboxHandler_.submitQuery(
           e.detail, /*mouse_button=*/ 0, /*alt_key=*/ false,
           /*ctrl_key=*/ false, /*meta_key=*/ false, /*shift_key=*/ false);
