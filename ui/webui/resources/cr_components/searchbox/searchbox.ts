@@ -500,6 +500,10 @@ export class SearchboxElement extends SearchboxElementBase implements
     this.$.input.focus();
   }
 
+  blurInput() {
+    this.$.input.blur();
+  }
+
   selectAll() {
     this.$.input.select();
   }

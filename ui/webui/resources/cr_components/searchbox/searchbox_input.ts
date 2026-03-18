@@ -111,6 +111,11 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
     this.$.input.focus();
   }
 
+  override blur() {
+    assert(this.$.input);
+    this.$.input.blur();
+  }
+
   select() {
     assert(this.$.input);
     this.$.input.select();
