@@ -65,8 +65,8 @@ static_assert(
 // http and SOCKS proxies.  See http://crbug.com/12066 and
 // http://crbug.com/44501 for details about proxy chain connection limits.
 auto g_max_sockets_per_proxy_chain = std::to_array<size_t>({
-    kDefaultMaxSocketsPerProxyChain,  // kNormal
-    kDefaultMaxSocketsPerProxyChain   // kWebSocket
+    32,  // kNormal
+    32   // kWebSocket
 });
 
 static_assert(

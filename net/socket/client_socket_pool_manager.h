@@ -29,8 +29,6 @@ class NetworkAnonymizationKey;
 class ProxyInfo;
 class ProxyChain;
 
-constexpr size_t kDefaultMaxSocketsPerProxyChain = 32;
-
 class NET_EXPORT_PRIVATE ClientSocketPoolManager {
  public:
   ClientSocketPoolManager();
