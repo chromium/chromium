@@ -1084,7 +1084,7 @@ AXObject* AXObjectCacheImpl::FocusedObject() const {
     // gets trimmed.
     // In these cases, treat the focus as on the root object itself, so that
     // AT users have some starting point.
-    DLOG(ERROR) << "The focus was not part of the a11y tree: " << FocusedNode();
+    DLOG(INFO) << "The focus was not part of the a11y tree: " << FocusedNode();
     return Get(document_);
   }
 
