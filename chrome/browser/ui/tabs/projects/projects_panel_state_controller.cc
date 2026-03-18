@@ -70,9 +70,6 @@ void ProjectsPanelStateController::NotifyStateChanged() {
 }
 
 void ProjectsPanelStateController::UpdateProjectsActionItem() {
-  const gfx::VectorIcon& icon = IsProjectsPanelVisible()
-                                    ? kCloseChromeRefreshIcon
-                                    : kSavedTabGroupBarEverythingIcon;
   const auto& text = IsProjectsPanelVisible() ? IDS_HIDE_PROJECTS_PANEL
                                               : IDS_VIEW_PROJECTS_PANEL;
 
@@ -80,8 +77,6 @@ void ProjectsPanelStateController::UpdateProjectsActionItem() {
       actions::ActionManager::Get().FindAction(kActionToggleProjectsPanel,
                                                root_action_item_);
   if (projects_action) {
-    projects_action->SetImage(
-        ui::ImageModel::FromVectorIcon(icon, ui::kColorIcon));
     projects_action->SetText(BrowserActions::GetCleanTitleAndTooltipText(
         l10n_util::GetStringUTF16(text)));
     projects_action->SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(

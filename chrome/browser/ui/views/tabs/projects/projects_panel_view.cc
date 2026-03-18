@@ -267,8 +267,7 @@ ProjectsPanelView::ProjectsPanelView(BrowserWindowInterface* browser,
   panel_controller_observer_.Observe(panel_controller_.get());
 
   controls_view_ = content_container_->AddChildView(
-      std::make_unique<ProjectsPanelControlsView>(
-          root_action_item_.get(), action_view_controller_.get()));
+      std::make_unique<ProjectsPanelControlsView>(root_action_item_.get()));
 
   auto* tab_groups_container = content_container_->AddChildView(
       std::make_unique<views::FlexLayoutView>());
@@ -449,6 +448,7 @@ bool ProjectsPanelView::IsPositionInWindowCaption(const gfx::Point& point) {
 void ProjectsPanelView::OnProjectsPanelStateChanged(
     ProjectsPanelStateController* state_controller) {
   TooltipTextChanged();
+  controls_view_->UpdateTooltipText();
 
   const bool visible = state_controller->IsProjectsPanelVisible();
 

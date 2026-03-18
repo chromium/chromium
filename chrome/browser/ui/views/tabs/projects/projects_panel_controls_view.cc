@@ -6,13 +6,18 @@
 
 #include <memory>
 
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/tabs/vertical/top_container_button.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
+#include "chrome/grit/generated_resources.h"
 #include "ui/actions/actions.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/actions/action_view_controller.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/layout/delegating_layout_manager.h"
@@ -20,23 +25,27 @@
 #include "ui/views/view_class_properties.h"
 
 ProjectsPanelControlsView::ProjectsPanelControlsView(
-    actions::ActionItem* root_action_item,
-    views::ActionViewController* action_view_controller) {
+    actions::ActionItem* root_action_item) {
   SetLayoutManager(std::make_unique<views::DelegatingLayoutManager>(this));
 
-  std::unique_ptr<TopContainerButton> container_button =
-      std::make_unique<TopContainerButton>();
-  actions::ActionItem* action_item = actions::ActionManager::Get().FindAction(
+  toggle_projects_panel_action_item_ = actions::ActionManager::Get().FindAction(
       kActionToggleProjectsPanel, root_action_item);
-  CHECK(action_item);
+  CHECK(toggle_projects_panel_action_item_);
 
-  action_view_controller->CreateActionViewRelationship(
-      container_button.get(), action_item->GetAsWeakPtr());
-
-  projects_button_ = AddChildView(std::move(container_button));
+  projects_button_ = AddChildView(std::make_unique<TopContainerButton>());
+  projects_button_->SetCallback(
+      base::BindOnce(&ProjectsPanelControlsView::OnCloseButtonPressed,
+                     base::Unretained(this)));
   projects_button_->SetHorizontalAlignment(gfx::ALIGN_RIGHT);
+  projects_button_->SetImageModel(
+      views::Button::ButtonState::STATE_NORMAL,
+      ui::ImageModel::FromVectorIcon(kCloseChromeRefreshIcon, ui::kColorIcon));
   projects_button_->SetProperty(views::kElementIdentifierKey,
                                 kProjectsPanelButtonElementId);
+  UpdateTooltipText();
+
+  ConfigureInkDropForToolbar(projects_button_);
+
   SetProperty(views::kElementIdentifierKey,
               kProjectsPanelControlsViewElementId);
 }
@@ -86,6 +95,17 @@ bool ProjectsPanelControlsView::IsPositionInWindowCaption(
   }
 
   return true;
+}
+
+void ProjectsPanelControlsView::UpdateTooltipText() {
+  auto projects_button_text =
+      std::u16string(toggle_projects_panel_action_item_->GetText());
+  projects_button_->GetViewAccessibility().SetName(projects_button_text);
+  projects_button_->SetTooltipText(projects_button_text);
+}
+
+void ProjectsPanelControlsView::OnCloseButtonPressed() {
+  toggle_projects_panel_action_item_->InvokeAction();
 }
 
 BEGIN_METADATA(ProjectsPanelControlsView)

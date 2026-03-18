@@ -686,6 +686,8 @@ void BrowserActions::InitializeBrowserActions() {
                 },
                 bwi))
             .SetActionId(kActionToggleProjectsPanel)
+            .SetImage(ui::ImageModel::FromVectorIcon(
+                kSavedTabGroupBarEverythingIcon, ui::kColorIcon))
             .Build());
   }
 
