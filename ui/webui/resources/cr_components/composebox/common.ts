@@ -7,6 +7,7 @@ import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/ung
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {ContextUploadErrorType, ContextUploadStatus, InputType} from './composebox_query.mojom-webui.js';
+import type {ModelMode, ToolMode} from './composebox_query.mojom-webui.js';
 
 export const FILE_VALIDATION_ERRORS_MAP =
     new Map<ContextUploadErrorType, string>([
@@ -93,6 +94,13 @@ export class ComposeboxFile {
           iconName,
         });
   }
+}
+
+export interface ComposeboxState {
+  text: string;
+  files: ContextualUpload[];
+  mode: ToolMode;
+  model: ModelMode;
 }
 
 export interface FileUpload {

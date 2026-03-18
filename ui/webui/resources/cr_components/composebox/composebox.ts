@@ -36,7 +36,7 @@ import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/ung
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {ComposeboxFile, FILE_VALIDATION_ERRORS_MAP, recordBoolean, recordContextAdditionMethod, recordEnumerationValue, recordUserAction, TabUploadOrigin} from './common.js';
-import type {ContextualUpload, TabUpload} from './common.js';
+import type {ComposeboxState, TabUpload} from './common.js';
 import {getCss} from './composebox.css.js';
 import {getHtml} from './composebox.html.js';
 import type {PageHandlerRemote} from './composebox.mojom-webui.js';
@@ -51,15 +51,6 @@ import type {ContextualEntrypointAndMenuElement} from './contextual_entrypoint_a
 import type {ErrorScrimElement} from './error_scrim.js';
 import type {ComposeboxFileCarouselElement} from './file_carousel.js';
 import {WindowProxy} from './window_proxy.js';
-
-// TODO(crbug.com/491126593): Explore combining with OpenComposeboxEventDetail
-// to have a single interface.
-export interface ComposeboxState {
-  text?: string;
-  files?: ContextualUpload[];
-  mode?: ComposeboxToolMode;
-  model?: ModelMode;
-}
 
 export enum VoiceSearchAction {
   ACTIVATE = 0,

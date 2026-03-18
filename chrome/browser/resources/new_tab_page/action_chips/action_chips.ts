@@ -240,8 +240,8 @@ export class ActionChipsElement extends CrLitElement {
       contextFiles.push(tabInfo);
     }
     this.fire('action-chip-click', {
-      searchboxText: chip.suggestion,
-      contextFiles,
+      text: chip.suggestion,
+      files: contextFiles,
       mode: chip.suggestTemplateInfo.preselectedTool,
     });
   }
