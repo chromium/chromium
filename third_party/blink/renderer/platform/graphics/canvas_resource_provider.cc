@@ -1333,21 +1333,6 @@ CanvasNon2DResourceProviderSharedImage::Create(
 }
 
 std::unique_ptr<CanvasNon2DResourceProviderSharedImage>
-CanvasNon2DResourceProviderSharedImage::CreateWithClear(
-    gfx::Size size,
-    viz::SharedImageFormat format,
-    SkAlphaType alpha_type,
-    const gfx::ColorSpace& color_space,
-    base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
-    gpu::SharedImageUsageSet shared_image_usage_flags,
-    Delegate* delegate) {
-  return CreateSharedImageProviderBase<CanvasNon2DResourceProviderSharedImage>(
-      size, format, alpha_type, color_space, ShouldInitialize::kCallClear,
-      context_provider_wrapper, RasterMode::kGPU, shared_image_usage_flags,
-      delegate);
-}
-
-std::unique_ptr<CanvasNon2DResourceProviderSharedImage>
 CanvasNon2DResourceProviderSharedImage::Create(
     gfx::Size size,
     const Canvas2DColorParams& color_params,
