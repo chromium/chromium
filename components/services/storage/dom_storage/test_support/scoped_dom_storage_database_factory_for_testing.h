@@ -16,7 +16,8 @@ class ScopedDomStorageDatabaseFactoryForTesting {
  public:
   using CreateCallback = DomStorageDatabaseFactory::CreateCallback;
   using DestroyCallback = DomStorageDatabaseFactory::DestroyCallback;
-
+  // TODO(crbug.com/377242771): To simplify tests add a c'tor overload that only
+  // takes a CreateCallback.
   ScopedDomStorageDatabaseFactoryForTesting(CreateCallback create_callback,
                                             DestroyCallback destroy_callback);
   ~ScopedDomStorageDatabaseFactoryForTesting();

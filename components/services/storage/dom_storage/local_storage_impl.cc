@@ -672,6 +672,12 @@ void LocalStorageImpl::GetStatistics(size_t* total_cache_size,
 
 void LocalStorageImpl::OnCommitResult(DbStatus status) {
   if (status.ok()) {
+    if (commit_error_count_ > 0 && tried_to_recover_from_commit_errors_) {
+      base::UmaHistogramEnumeration(
+          "Storage.LocalStorage.Recovery.CommitErrorThresholdExceeded",
+          DomStorageDatabaseRecoveryOutcome::
+              kTransientErrorsAfterAttemptedRecovery);
+    }
     RecordCommitErrorCountAtReset("LocalStorage", commit_error_count_);
     commit_error_count_ = 0;
     return;

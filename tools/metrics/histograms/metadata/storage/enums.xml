@@ -188,6 +188,7 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Gave up (second destroy failed)"/>
   <int value="9" label="Gave up (both destroys failed)"/>
   <int value="10" label="Ongoing errors after attempted recovery"/>
+  <int value="11" label="Transient errors after attempted recovery"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/services/storage/dom_storage/dom_storage_histogram_helper.h:DomStorageDatabaseRecoveryOutcome) -->

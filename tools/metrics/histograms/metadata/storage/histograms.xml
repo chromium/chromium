@@ -2974,9 +2974,11 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the outcome of a database recovery attempt for {DomStorageType}.
     Emitted once per recovery cycle when reaching a terminal state (successful
-    reconnection or gave up). Also emitted each time the commit-error threshold
-    is exceeded after a prior recovery attempt, to track ongoing instability.
-    The {DomStorageRecoveryReason} suffix indicates what initiated the recovery.
+    reconnection or gave up). To track ongoing instability, it is also emitted
+    each time the commit-error threshold is exceeded after a prior recovery
+    attempt, and when post-recovery errors occur but resolve via a successful
+    commit. The {DomStorageRecoveryReason} suffix indicates what initiated the
+    recovery.
   </summary>
 </histogram>
 

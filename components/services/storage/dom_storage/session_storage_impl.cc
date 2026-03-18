@@ -588,6 +588,12 @@ void SessionStorageImpl::OnDataMapDestruction(int64_t map_id) {
 
 void SessionStorageImpl::OnCommitResult(DbStatus status) {
   if (status.ok()) {
+    if (commit_error_count_ > 0 && tried_to_recover_from_commit_errors_) {
+      base::UmaHistogramEnumeration(
+          "Storage.SessionStorage.Recovery.CommitErrorThresholdExceeded",
+          DomStorageDatabaseRecoveryOutcome::
+              kTransientErrorsAfterAttemptedRecovery);
+    }
     RecordCommitErrorCountAtReset("SessionStorage", commit_error_count_);
     commit_error_count_ = 0;
     return;

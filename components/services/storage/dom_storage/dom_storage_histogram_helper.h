@@ -36,7 +36,11 @@ enum class DomStorageDatabaseRecoveryOutcome {
   // error threshold.
   kOngoingErrorsAfterAttemptedRecovery = 10,
 
-  kMaxValue = kOngoingErrorsAfterAttemptedRecovery,
+  // After a previous recovery, some commit errors occurred but then we had a
+  // successful commit.
+  kTransientErrorsAfterAttemptedRecovery = 11,
+
+  kMaxValue = kTransientErrorsAfterAttemptedRecovery,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/storage/enums.xml:DomStorageDatabaseRecoveryOutcome)
 

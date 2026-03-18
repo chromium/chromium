@@ -40,9 +40,13 @@ FakeDomStorageDatabase::ReadMapKeyValues(MapLocator map_locator) {
   return std::map<Key, Value>();
 }
 
+void FakeDomStorageDatabase::SetUpdateMapsStatus(DbStatus status) {
+  update_maps_status_ = std::move(status);
+}
+
 DbStatus FakeDomStorageDatabase::UpdateMaps(
     std::vector<MapBatchUpdate> map_updates) {
-  return DbStatus::OK();
+  return update_maps_status_;
 }
 
 DbStatus FakeDomStorageDatabase::CloneMap(MapLocator source_map,

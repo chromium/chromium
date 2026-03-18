@@ -30,6 +30,7 @@ class FakeDomStorageDatabase : public DomStorageDatabase {
 
   // Setters for configuring return values of interface methods.
   void SetReadAllMetadataResult(StatusOr<Metadata> result);
+  void SetUpdateMapsStatus(DbStatus status);
 
   // DomStorageDatabase:
   DbStatus Open(const base::FilePath& database_path,
@@ -60,6 +61,7 @@ class FakeDomStorageDatabase : public DomStorageDatabase {
  private:
   DbStatus open_status_;
   StatusOr<Metadata> read_all_metadata_result_;
+  DbStatus update_maps_status_ = DbStatus::OK();
 };
 
 }  // namespace storage

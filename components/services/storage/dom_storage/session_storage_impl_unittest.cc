@@ -23,6 +23,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/test/with_feature_override.h"
 #include "base/token.h"
 #include "base/uuid.h"
@@ -994,6 +995,132 @@ TEST_P(SessionStorageImplTest, DontRecreateOnRepeatedCommitFailure) {
 
   session_storage()->DeleteNamespace(namespace_id, false);
   ShutDownSessionStorage();
+}
+
+// After recovery, some commit errors occur but resolve via a successful commit.
+// Verifies the kTransientErrorsAfterAttemptedRecovery histogram is emitted.
+TEST_P(SessionStorageImplTest, TransientErrorsAfterRecovery) {
+  base::HistogramTester histograms;
+
+  // Each database starts with UpdateMaps returning IOError. The test switches
+  // the second database to OK mid-flight to simulate transient errors.
+  ScopedDomStorageDatabaseFactoryForTesting scoped_factory(
+      base::BindLambdaForTesting(
+          [](StorageType, bool, scoped_refptr<base::SequencedTaskRunner> runner)
+              -> base::SequenceBound<DomStorageDatabase> {
+            auto fake = base::SequenceBound<FakeDomStorageDatabase>(
+                std::move(runner), DbStatus::OK());
+            fake.AsyncCall(&FakeDomStorageDatabase::SetUpdateMapsStatus)
+                .WithArgs(DbStatus::IOError("test"));
+            return fake;
+          }),
+      base::BindRepeating(
+          [](const base::FilePath&,
+             DomStorageDatabaseFactory::StatusCallback callback) {
+            base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+                FROM_HERE, base::BindOnce(std::move(callback), DbStatus::OK()));
+          }));
+
+  std::optional<base::RunLoop> open_loop;
+  size_t num_database_open_requests = 0;
+  session_storage_impl()->SetDatabaseOpenCallbackForTesting(
+      base::BindLambdaForTesting([&] {
+        ++num_database_open_requests;
+        open_loop->Quit();
+      }));
+  open_loop.emplace();
+
+  std::string namespace_id = base::Uuid::GenerateRandomV4().AsLowercaseString();
+  blink::StorageKey storage_key1 =
+      blink::StorageKey::CreateFromStringForTesting("http://foobar.com");
+
+  // Wait for the first database to open, then bind a storage area.
+  session_storage()->CreateNamespace(namespace_id);
+  open_loop->Run();
+  ASSERT_EQ(1u, num_database_open_requests);
+  mojo::Remote<blink::mojom::StorageArea> area;
+  session_storage()->BindStorageArea(storage_key1, namespace_id,
+                                     area.BindNewPipeAndPassReceiver());
+
+  // Setup a new RunLoop to wait for the database to be recreated.
+  open_loop.emplace();
+  session_storage_impl()->SetDatabaseOpenCallbackForTesting(
+      base::BindLambdaForTesting([&] {
+        ++num_database_open_requests;
+        open_loop->Quit();
+      }));
+
+  // Repeatedly write data to trigger enough commit errors for recovery.
+  auto value = StringViewToUint8Vector("avalue");
+  std::optional<std::vector<uint8_t>> old_value = std::nullopt;
+  while (area.is_connected()) {
+    area->Put(StringViewToUint8Vector("key"), value, old_value,
+              test::MakeStorageAreaSource(),
+              base::BindOnce([](bool success) { EXPECT_TRUE(success); }));
+    area.FlushForTesting();
+    session_storage_impl()->FlushAreaForTesting(namespace_id, storage_key1);
+
+    old_value = value;
+    value[0]++;
+  }
+  area.reset();
+
+  // Wait for the database to be recreated. The second database's UpdateMaps
+  // also returns IOError (set at creation above).
+  open_loop->Run();
+  EXPECT_EQ(2u, num_database_open_requests);
+
+  // Reconnect and write a few times to accumulate some errors (fewer than the
+  // threshold).
+  session_storage()->BindStorageArea(storage_key1, namespace_id,
+                                     area.BindNewPipeAndPassReceiver());
+  old_value = std::nullopt;
+  for (int i = 0; i < 3; ++i) {
+    // Every write needs to be different to make sure there actually is a
+    // change to commit.
+    base::test::TestFuture<bool> success_future;
+    area->Put(StringViewToUint8Vector("key"), value, old_value,
+              test::MakeStorageAreaSource(), success_future.GetCallback());
+    EXPECT_TRUE(success_future.Take());
+    session_storage_impl()->FlushAreaForTesting(namespace_id, storage_key1);
+
+    old_value = value;
+    value[0]++;
+  }
+
+  // Stop failing commits and do one more write so the successful commit
+  // triggers the transient errors histogram.
+  session_storage_impl()
+      ->GetDatabaseForTesting()
+      ->database()
+      .PostTaskWithThisObject(
+          base::BindLambdaForTesting([](DomStorageDatabase* db) {
+            static_cast<FakeDomStorageDatabase*>(db)->SetUpdateMapsStatus(
+                DbStatus::OK());
+          }));
+  {
+    base::test::TestFuture<bool> success_future;
+    area->Put(StringViewToUint8Vector("key"), value, old_value,
+              test::MakeStorageAreaSource(), success_future.GetCallback());
+    EXPECT_TRUE(success_future.Take());
+  }
+  session_storage_impl()->FlushAreaForTesting(namespace_id, storage_key1);
+  WaitForDatabaseTasks();
+  EXPECT_TRUE(area.is_connected());
+
+  // Verify the transient errors histogram was emitted exactly once.
+  histograms.ExpectBucketCount(
+      "Storage.SessionStorage.Recovery.CommitErrorThresholdExceeded",
+      DomStorageDatabaseRecoveryOutcome::kTransientErrorsAfterAttemptedRecovery,
+      1);
+
+  // Verify the commit error count was recorded: once during the initial
+  // recovery (kCommitErrorThreshold + 1) and once when the successful commit
+  // reset the 3 transient errors.
+  histograms.ExpectBucketCount("Storage.SessionStorage.CommitErrorCountAtReset",
+                               kCommitErrorThreshold + 1, 1);
+  histograms.ExpectBucketCount("Storage.SessionStorage.CommitErrorCountAtReset",
+                               3, 1);
 }
 
 // Both disk opens fail, destroy succeeds, in-memory open succeeds.
