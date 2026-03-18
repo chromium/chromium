@@ -220,9 +220,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthEventsRecorder
   // List of auth event, newer events are at the end.
   base::circular_deque<std::string> events_;
 
+  // TODO(crbug.com/493575740): fix the instance where the AuthEventsRecorder
+  // is destroyed after the observed session_manager::SessionManager and mark
+  // this base::ScopedObservation<...> as not dangling.
   base::ScopedObservation<session_manager::SessionManager,
-                          session_manager::SessionManagerObserver>
-      session_observation_{this};
+                          session_manager::SessionManagerObserver>::
+      LeakedDanglingUntriaged session_observation_{this};
 
   // All values should be reset in `Reset()`;
   int knowledge_factor_auth_failure_count_ = 0;
