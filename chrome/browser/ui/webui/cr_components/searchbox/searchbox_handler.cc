@@ -1046,10 +1046,14 @@ void SearchboxHandler::OpenPopupSelection(
     uint32_t result_sequence_id,
     searchbox::mojom::OmniboxPopupSelectionPtr selection,
     WindowOpenDisposition disposition) {
-  const OmniboxPopupSelection native_selection =
+  const OmniboxPopupSelection popup_selection =
       ConvertSelection(std::move(selection));
+  // OmniboxEditModel does not properly select the AIM button in all cases,
+  // for example when there are no matches in the list. The webui popup
+  // selection control fixes this bug, so AIM button selection is excepted.
   const bool selection_matched =
-      native_selection == edit_model()->GetPopupSelection();
+      popup_selection == edit_model()->GetPopupSelection() ||
+      popup_selection.state == OmniboxPopupSelection::FOCUSED_BUTTON_AIM;
   const bool sequence_id_matched =
       result_sequence_id == autocomplete_controller()->result().sequence_id();
 
@@ -1063,7 +1067,7 @@ void SearchboxHandler::OpenPopupSelection(
     return;
   }
 
-  edit_model()->OpenSelection(native_selection);
+  edit_model()->OpenSelection(popup_selection);
 }
 
 void SearchboxHandler::OnNavigationLikely(
