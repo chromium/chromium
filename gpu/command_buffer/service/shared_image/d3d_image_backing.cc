@@ -1664,20 +1664,31 @@ void D3DImageBacking::EndAccessDawnBuffer(const wgpu::Device& device,
     DCHECK_EQ(export_info.type, wgpu::SharedFenceType::DXGISharedHandle);
 
     scoped_refptr<gfx::D3DSharedFence> signaled_fence;
-    if (backend_type == wgpu::BackendType::D3D12) {
-      Microsoft::WRL::ComPtr<ID3D12Device> dawn_d3d12_device =
-          dawn::native::d3d12::GetD3D12Device(device.Get());
-      signaled_fence =
-          gfx::D3DSharedFence::CreateFromUnownedHandleAndOpenD3D12Fence(
-              dawn_d3d12_device.Get(), shared_handle_info.handle);
-    } else {
-      signaled_fence = gfx::D3DSharedFence::CreateFromUnownedHandle(
-          shared_handle_info.handle);
+    if (cached_buffer_write_fence_ &&
+        cached_buffer_write_fence_->IsSameFenceAsHandle(
+            shared_handle_info.handle)) {
+      signaled_fence = cached_buffer_write_fence_;
+    }
+
+    if (!signaled_fence) {
+      if (backend_type == wgpu::BackendType::D3D12) {
+        Microsoft::WRL::ComPtr<ID3D12Device> dawn_d3d12_device =
+            dawn::native::d3d12::GetD3D12Device(device.Get());
+        signaled_fence =
+            gfx::D3DSharedFence::CreateFromUnownedHandleAndOpenD3D12Fence(
+                dawn_d3d12_device.Get(), shared_handle_info.handle);
+      } else {
+        signaled_fence = gfx::D3DSharedFence::CreateFromUnownedHandle(
+            shared_handle_info.handle);
+      }
     }
 
     if (signaled_fence) {
       signaled_fence->Update(signaled_value);
       signaled_fences.insert(signaled_fence);
+      // Update the cache so the next access cycle can reuse the fence and its
+      // already opened handle.
+      cached_buffer_write_fence_ = signaled_fence;
     } else {
       LOG(ERROR) << "Failed to import D3D fence from Dawn on EndAccess";
     }

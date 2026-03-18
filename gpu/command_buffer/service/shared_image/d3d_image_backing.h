@@ -485,6 +485,12 @@ class GPU_GLES2_EXPORT D3DImageBacking final
 
   class GraphiteTextureHolder;
 
+  // Caches the last signaled fence in EndAccessDawnBuffer. By keeping a
+  // persistent reference, we keep the underlying NT handle open, avoiding
+  // OpenSharedHandle calls.
+  scoped_refptr<gfx::D3DSharedFence> cached_buffer_write_fence_
+      GUARDED_BY(lock_);
+
   base::WeakPtrFactory<D3DImageBacking> weak_ptr_factory_{this};
 };
 
