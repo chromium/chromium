@@ -408,7 +408,7 @@ const DisplayScaleFactor k4KDisplay = {3840, 1.5f},
 
 bool OobeUIConfig::IsWebUIEnabled(content::BrowserContext* browser_context) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  bool is_running_test = command_line->HasSwitch(ash::switches::kTestName) ||
+  bool is_running_test = command_line->HasSwitch(::switches::kTestName) ||
                          command_line->HasSwitch(::switches::kTestType);
 
   return ash::ProfileHelper::IsSigninProfile(

@@ -7,7 +7,6 @@
 #include <string>
 #include <utility>
 
-#include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
@@ -16,6 +15,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
+#include "chrome/browser/nearby_sharing/common/nearby_share_switches.h"
 #include "chrome/browser/nearby_sharing/local_device_data/nearby_share_device_data_updater.h"
 #include "chrome/browser/nearby_sharing/local_device_data/nearby_share_device_data_updater_impl.h"
 #include "chrome/grit/generated_resources.h"
@@ -115,8 +115,8 @@ std::string NearbyShareLocalDeviceDataManagerImpl::GetId() {
     return id;
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(ash::switches::kNearbyShareDeviceID)) {
-    id = command_line->GetSwitchValueASCII(ash::switches::kNearbyShareDeviceID);
+  if (command_line->HasSwitch(switches::kNearbyShareDeviceID)) {
+    id = command_line->GetSwitchValueASCII(switches::kNearbyShareDeviceID);
   } else {
     for (size_t i = 0; i < kDeviceIdLength; ++i)
       id += kAlphaNumericChars[base::RandGenerator(kAlphaNumericChars.size())];

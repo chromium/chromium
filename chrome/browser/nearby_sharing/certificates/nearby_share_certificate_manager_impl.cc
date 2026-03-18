@@ -7,7 +7,6 @@
 #include <array>
 #include <string>
 
-#include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
@@ -24,6 +23,7 @@
 #include "chrome/browser/nearby_sharing/client/nearby_share_client.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
+#include "chrome/browser/nearby_sharing/common/nearby_share_switches.h"
 #include "chromeos/ash/components/nearby/common/client/nearby_http_result.h"
 #include "chromeos/ash/components/nearby/common/scheduling/nearby_scheduler_factory.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom.h"
@@ -65,13 +65,12 @@ enum GetDecryptedPublicCertificateResult {
 // return the default |kNearbyShareNumPrivateCertificates|.
 size_t NumPrivateCertificates() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (!command_line->HasSwitch(
-          ash::switches::kNearbyShareNumPrivateCertificates)) {
+  if (!command_line->HasSwitch(switches::kNearbyShareNumPrivateCertificates)) {
     return kNearbyShareNumPrivateCertificates;
   }
 
   std::string num_certificates_str = command_line->GetSwitchValueASCII(
-      ash::switches::kNearbyShareNumPrivateCertificates);
+      switches::kNearbyShareNumPrivateCertificates);
   int num_certificates = 0;
   if (!base::StringToInt(num_certificates_str, &num_certificates) ||
       num_certificates < 1) {

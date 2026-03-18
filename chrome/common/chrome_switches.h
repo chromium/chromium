@@ -194,6 +194,7 @@ extern const char kTabCaptureAudioDefaultUnchecked[];
 extern const char kThisTabCaptureAutoAccept[];
 extern const char kThisTabCaptureAutoReject[];
 extern const char kTestMemoryLogDelayInMinutes[];
+extern const char kTestName[];
 extern const char kTrustedDownloadSources[];
 extern const char kUnlimitedStorage[];
 extern const char kUnsafelyDisableDevToolsSelfXssWarnings[];
@@ -232,6 +233,7 @@ extern const char kCastMirroringTargetPlayoutDelay[];
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
+extern const char kCroshCommand[];
 extern const char kDisableLoggingRedirect[];
 extern const char kDisableLoginScreenApps[];
 extern const char kShortMergeSessionTimeoutForTest[];

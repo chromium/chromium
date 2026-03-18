@@ -79,7 +79,7 @@ const char kGuestModeLoggingLevel[] = "1";
 bool IsRunningTest() {
   const base::CommandLine* current_command_line =
       base::CommandLine::ForCurrentProcess();
-  return current_command_line->HasSwitch(ash::switches::kTestName) ||
+  return current_command_line->HasSwitch(::switches::kTestName) ||
          current_command_line->HasSwitch(::switches::kTestType);
 }
 

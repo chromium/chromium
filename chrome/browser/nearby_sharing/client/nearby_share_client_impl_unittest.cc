@@ -2,13 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/nearby_sharing/client/nearby_share_client_impl.h"
-
 #include <string>
 #include <utility>
 #include <vector>
 
-#include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
@@ -19,7 +16,9 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/nearby_sharing/client/nearby_share_client.h"
+#include "chrome/browser/nearby_sharing/client/nearby_share_client_impl.h"
 #include "chrome/browser/nearby_sharing/client/nearby_share_http_notifier.h"
+#include "chrome/browser/nearby_sharing/common/nearby_share_switches.h"
 #include "chromeos/ash/components/nearby/common/client/nearby_api_call_flow.h"
 #include "chromeos/ash/components/nearby/common/client/nearby_api_call_flow_impl.h"
 #include "chromeos/ash/components/nearby/common/client/nearby_http_result.h"
@@ -177,7 +176,7 @@ class NearbyShareClientImplTest : public testing::Test,
 
   void SetUp() override {
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        ash::switches::kNearbyShareHTTPHost, kTestGoogleApisUrl);
+        switches::kNearbyShareHTTPHost, kTestGoogleApisUrl);
 
     identity_test_environment_.MakePrimaryAccountAvailable(
         kEmail, signin::ConsentLevel::kSignin);

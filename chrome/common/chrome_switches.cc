@@ -648,6 +648,8 @@ const char kCaptureAutoReject[] = "auto-reject-capture";
 // Custom delay for memory log. This should be used only for testing purpose.
 const char kTestMemoryLogDelayInMinutes[] = "test-memory-log-delay-in-minutes";
 
+// Passes the name of the current running automated test to Chrome.
+const char kTestName[] = "test-name";
 
 // Identifies a list of download sources as trusted, but only if proper group
 // policy is set.
@@ -764,6 +766,8 @@ const char kCastMirroringTargetPlayoutDelay[] =
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
+// Custom crosh command.
+const char kCroshCommand[] = "crosh-command";
 
 // Disables logging redirect for testing.
 const char kDisableLoggingRedirect[] = "disable-logging-redirect";

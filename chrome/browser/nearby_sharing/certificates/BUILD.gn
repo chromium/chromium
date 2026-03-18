@@ -26,7 +26,6 @@ source_set("certificates") {
   ]
 
   public_deps = [
-    "//ash/constants",
     "//third_party/nearby:encrypted_metadata_proto",
     "//third_party/nearby:rpc_resources_proto",
   ]
