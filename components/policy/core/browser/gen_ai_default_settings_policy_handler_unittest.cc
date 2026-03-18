@@ -110,16 +110,6 @@ TEST_F(GenAiDefaultSettingsPolicyHandlerTest, FeatureDisabled) {
   EXPECT_TRUE(prefs_.empty());
 }
 
-#if !BUILDFLAG(IS_CHROMEOS)
-TEST_F(GenAiDefaultSettingsPolicyHandlerTest, NotCloud) {
-  policy::PolicyErrorMap errors;
-  SetGenAiDefaultPolicy(base::Value(kDefaultValue), POLICY_SOURCE_PLATFORM);
-  EXPECT_FALSE(handler_->CheckPolicySettings(policies_, &errors));
-  SetGenAiDefaultPolicy(base::Value(kDefaultValue));
-  EXPECT_TRUE(handler_->CheckPolicySettings(policies_, &errors));
-}
-#endif // !BUILDFLAG(IS_CHROMEOS)
-
 TEST_F(GenAiDefaultSettingsPolicyHandlerTest, DefaultControlMessage) {
   SetGenAiDefaultPolicy(base::Value(kDefaultValue));
   policy::PolicyErrorMap errors;

@@ -116,7 +116,18 @@
             "value": false
           }
         }
-      },
+      }
+    ]
+  },
+  {
+    "note": "Policy is cloud-only so shouldn't apply if from a platform source.",
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
       {
         "policies": {
           "CloudExtensionRequestEnabled": true,

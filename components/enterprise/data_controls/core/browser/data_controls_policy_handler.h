@@ -15,7 +15,7 @@ class PolicyErrorMap;
 
 namespace data_controls {
 
-class DataControlsPolicyHandler : public policy::CloudOnlyPolicyHandler {
+class DataControlsPolicyHandler : public policy::SchemaValidatingPolicyHandler {
  public:
   DataControlsPolicyHandler(const char* policy_name,
                             const char* pref_path,

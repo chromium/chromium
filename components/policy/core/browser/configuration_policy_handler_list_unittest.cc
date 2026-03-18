@@ -20,7 +20,9 @@
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_value_map.h"
+#include "components/strings/grit/components_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace policy {
 
@@ -58,9 +60,7 @@ class StubPolicyHandler : public ConfigurationPolicyHandler {
 
 class ConfigurationPolicyHandlerListTest : public ::testing::Test {
  public:
-  void SetUp() override {
-    CreateHandlerList();
-  }
+  void SetUp() override { CreateHandlerList(); }
 
   void AddSimplePolicy() {
     AddPolicy(kPolicyName, /*is_cloud=*/true, base::Value(kPolicyValue));
@@ -109,8 +109,9 @@ class ConfigurationPolicyHandlerListTest : public ::testing::Test {
     int pref_value;
 
     ASSERT_EQ(in_pref, prefs_.GetInteger(policy_name, &pref_value));
-    if (in_pref)
+    if (in_pref) {
       EXPECT_EQ(kPolicyValue, pref_value);
+    }
 
     // Pref filter never affects PolicyMap.
     const base::Value* policy_value =
@@ -124,13 +125,41 @@ class ConfigurationPolicyHandlerListTest : public ::testing::Test {
               future_policies_.find(policy_name) != future_policies_.end());
   }
 
+  void ClearErrors() { errors_.Clear(); }
+
+  void ClearPolicies() { policies_.Clear(); }
+
+  void ClearPrefs() { prefs_.Clear(); }
+
+  bool IsErrorsEmpty() const { return errors_.empty(); }
+
+  std::u16string GetErrorMessages(const std::string& policy_name) {
+    return errors_.GetErrorMessages(policy_name);
+  }
+
+  void SetPolicy(const std::string& policy,
+                 PolicyLevel level,
+                 PolicyScope scope,
+                 PolicySource source,
+                 base::Value value) {
+    policies_.Set(policy, level, scope, source, std::move(value), nullptr);
+  }
+
+  void SetPolicyEntry(const std::string& policy, PolicyMap::Entry entry) {
+    policies_.Set(policy, std::move(entry));
+  }
+
+  void RegisterHandler(const std::string& policy_name) {
+    handler_list_->AddHandler(std::make_unique<StubPolicyHandler>(policy_name));
+  }
+
  private:
   PrefValueMap prefs_;
   PolicyErrorMap errors_;
   PolicyMap policies_;
   PoliciesSet deprecated_policies_;
   PoliciesSet future_policies_;
-  PolicyDetails details_{false, false, kProfile, 0, 0, {}};
+  PolicyDetails details_{false, false, kProfile, kSourceRestrictionNone, 0, {}};
 
   std::unique_ptr<ConfigurationPolicyHandlerList> handler_list_;
 };
@@ -144,7 +173,6 @@ TEST_F(ConfigurationPolicyHandlerListTest, ApplySettingsWithNormalPolicy) {
 // Future policy will be filter out unless it's whitelisted by
 // kEnableExperimentalPolicies.
 TEST_F(ConfigurationPolicyHandlerListTest, ApplySettingsWithFuturePolicy) {
-
   AddSimplePolicy();
   details()->is_future = true;
 
@@ -235,6 +263,127 @@ TEST_F(ConfigurationPolicyHandlerListTest, ApplySettingsWithDeprecatedPolicy) {
   VerifyPolicyAndPref(kPolicyName, /*in_pref=*/true, /*in_deprecated=*/true);
 }
 
+#if !BUILDFLAG(IS_CHROMEOS)
+TEST_F(ConfigurationPolicyHandlerListTest, ApplySettingsWithCloudOnlyPolicy) {
+  details()->source_restriction = kSourceRestrictionCloudOnly;
+
+  // Cloud source: allowed.
+  AddPolicy(kPolicyName, /*is_cloud=*/true, base::Value(kPolicyValue));
+  ApplySettings();
+  VerifyPolicyAndPref(kPolicyName, /*in_pref=*/true);
+  EXPECT_TRUE(IsErrorsEmpty());
+
+  // Platform source: disallowed.
+  ClearPrefs();
+  AddPolicy(kPolicyName, /*is_cloud=*/false, base::Value(kPolicyValue));
+  ApplySettings();
+  VerifyPolicyAndPref(kPolicyName, /*in_pref=*/false);
+  EXPECT_EQ(GetErrorMessages(kPolicyName),
+            l10n_util::GetStringUTF16(IDS_POLICY_CLOUD_SOURCE_ONLY_ERROR));
+  ClearErrors();
+
+  // Cloud source from Ash: allowed.
+  ClearPrefs();
+  SetPolicy(kPolicyName, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+            POLICY_SOURCE_CLOUD_FROM_ASH, base::Value(kPolicyValue));
+  ApplySettings();
+  VerifyPolicyAndPref(kPolicyName, /*in_pref=*/true);
+  EXPECT_TRUE(IsErrorsEmpty());
+
+  // Command line source: allowed on Android, disallowed otherwise.
+  ClearPrefs();
+  SetPolicy(kPolicyName, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+            POLICY_SOURCE_COMMAND_LINE, base::Value(kPolicyValue));
+  ApplySettings();
+#if BUILDFLAG(IS_ANDROID)
+  VerifyPolicyAndPref(kPolicyName, /*in_pref=*/true);
+  EXPECT_TRUE(IsErrorsEmpty());
+#else
+  VerifyPolicyAndPref(kPolicyName, /*in_pref=*/false);
+  EXPECT_EQ(GetErrorMessages(kPolicyName),
+            l10n_util::GetStringUTF16(IDS_POLICY_CLOUD_SOURCE_ONLY_ERROR));
+  ClearErrors();
+#endif
+}
+
+// TODO(crbug.com/491119520): Remove this test once the CloudReportingEnabled
+// exemption is removed.
+TEST_F(ConfigurationPolicyHandlerListTest,
+       ApplySettingsWithCloudOnlyPolicyCloudReportingEnabled) {
+  details()->source_restriction = kSourceRestrictionCloudOnly;
+
+  // Cloud source: allowed.
+  AddPolicy(key::kCloudReportingEnabled, /*is_cloud=*/true,
+            base::Value(kPolicyValue));
+  ApplySettings();
+  VerifyPolicyAndPref(key::kCloudReportingEnabled, /*in_pref=*/true);
+  EXPECT_TRUE(IsErrorsEmpty());
+
+  // Platform source: allowed (for now, until we figure out if it's safe to
+  // remove the exception for this policy).
+  ClearPrefs();
+  AddPolicy(key::kCloudReportingEnabled, /*is_cloud=*/false,
+            base::Value(kPolicyValue));
+  ApplySettings();
+  VerifyPolicyAndPref(key::kCloudReportingEnabled, /*in_pref=*/true);
+  EXPECT_TRUE(IsErrorsEmpty());
+}
+
+TEST_F(ConfigurationPolicyHandlerListTest,
+       ApplySettingsWithCloudOnlyPolicyMerged) {
+  details()->source_restriction = kSourceRestrictionCloudOnly;
+
+  RegisterHandler(kPolicyName);
+
+  // Merged source with all cloud conflicts: allowed.
+  {
+    PolicyMap::Entry conflict1(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+                               POLICY_SOURCE_CLOUD, base::Value(kPolicyValue),
+                               nullptr);
+    PolicyMap::Entry conflict2(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                               POLICY_SOURCE_CLOUD, base::Value(kPolicyValue),
+                               nullptr);
+    PolicyMap::Entry entry(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                           POLICY_SOURCE_MERGED, base::Value(kPolicyValue),
+                           nullptr);
+    entry.conflicts.emplace_back(PolicyMap::ConflictType::None,
+                                 std::move(conflict1));
+    entry.conflicts.emplace_back(PolicyMap::ConflictType::None,
+                                 std::move(conflict2));
+    SetPolicyEntry(kPolicyName, std::move(entry));
+  }
+
+  ApplySettings();
+  VerifyPolicyAndPref(kPolicyName, /*in_pref=*/true);
+  EXPECT_TRUE(IsErrorsEmpty());
+
+  // Merged source with mixed conflicts: disallowed.
+  ClearPrefs();
+  {
+    PolicyMap::Entry conflict1(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+                               POLICY_SOURCE_CLOUD, base::Value(kPolicyValue),
+                               nullptr);
+    PolicyMap::Entry conflict2(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                               POLICY_SOURCE_PLATFORM,
+                               base::Value(kPolicyValue), nullptr);
+    PolicyMap::Entry entry(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                           POLICY_SOURCE_MERGED, base::Value(kPolicyValue),
+                           nullptr);
+    entry.conflicts.emplace_back(PolicyMap::ConflictType::None,
+                                 std::move(conflict1));
+    entry.conflicts.emplace_back(PolicyMap::ConflictType::None,
+                                 std::move(conflict2));
+    SetPolicyEntry(kPolicyName, std::move(entry));
+  }
+
+  ApplySettings();
+  VerifyPolicyAndPref(kPolicyName, /*in_pref=*/false);
+  EXPECT_EQ(GetErrorMessages(kPolicyName),
+            l10n_util::GetStringUTF16(IDS_POLICY_CLOUD_SOURCE_ONLY_ERROR));
+  ClearErrors();
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
 #if BUILDFLAG(IS_DESKTOP_ANDROID)
 TEST_F(ConfigurationPolicyHandlerListTest, DesktopAndroidBlocklist_Default) {
   base::test::ScopedFeatureList feature_list;
@@ -264,7 +413,7 @@ TEST_F(ConfigurationPolicyHandlerListTest,
   feature_list.InitAndEnableFeatureWithParameters(
       features::kDesktopAndroidPolicy,
       {{features::kDesktopAndroidPolicyBlocklist.name,
-       base::StrCat({kPolicyName2, ", ", kPolicyName3})}});
+        base::StrCat({kPolicyName2, ", ", kPolicyName3})}});
 
   AddSimplePolicy();
   AddPolicy(kPolicyName2, /*is_cloud=*/true, base::Value(kPolicyValue));

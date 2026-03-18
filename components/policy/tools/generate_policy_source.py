@@ -1133,8 +1133,8 @@ namespace {namespace} {{
   # TODO(crbug.com/40127969): kChromePolicyDetails shouldn't be declare if there
   # is no policy.
   f.write('''[[maybe_unused]] const PolicyDetails kChromePolicyDetails[] = {
-// is_deprecated is_future scope id max_external_data_size, risk tags,
-// uses_local_state_and_profile_prefs
+// is_deprecated is_future scope source_restriction id max_external_data_size,
+// risk tags, uses_local_state_and_profile_prefs
 ''')
   for policy in policies:
     if policy.is_supported:
@@ -1142,11 +1142,15 @@ namespace {namespace} {{
       assert (policy.max_size >= MIN_EXTERNAL_DATA_SIZE and
               policy.max_size <= MAX_EXTERNAL_DATA_SIZE)
       f.write('  // %s\n' % policy.name)
+      source_restriction = 'kSourceRestrictionNone'
+      if policy.cloud_only:
+        source_restriction = 'kSourceRestrictionCloudOnly'
       f.write(
-          '  { %-14s%-10s%-17s%4s,%22s, %s, %s },\n' %
+          '  { %-14s%-10s%-17s%-30s%4s,%22s, %s, %s },\n' %
           ('true,' if policy.is_deprecated else 'false,',
            'true,' if policy.is_future else 'false, ', policy.scope + ",",
-           policy.id, policy.max_size, risk_tags.ToInitString(policy.tags),
+           source_restriction + ",", policy.id, policy.max_size,
+           risk_tags.ToInitString(policy.tags),
            ('true' if policy.uses_local_state_and_profile_prefs else 'false')))
   f.write('};\n\n')
 

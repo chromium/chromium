@@ -49,6 +49,8 @@ class POLICY_EXPORT ConfigurationPolicyHandlerList {
 
   // Translates |policies| to their corresponding preferences in |prefs|. Any
   // errors found while processing the policies are stored in |errors|.
+  // Policies that are |cloud_only| but are not set from a cloud source will not
+  // be applied, and an error will be stored in |errors|.
   // All deprecated policies will be stored into |deprecated_policies|.
   // All non-applying unreleased policies will be stored in
   // |future_policies_blocked|. |prefs|, |deprecated_policies|,
@@ -64,16 +66,20 @@ class POLICY_EXPORT ConfigurationPolicyHandlerList {
   void PrepareForDisplaying(PolicyMap* policies) const;
 
  private:
-  // Returns true if the policy |entry| shouldn't be passed to the |handlers_|.
+  // Returns true if the policy |entry| should be passed to the |handlers_|,
+  // and false otherwise.
+  // On all channels, |cloud_only| policies are enforced to be set from a cloud
+  // source - if they are not, returns false and adds an error to |errors|.
   // On Stable and Beta channel, future policies that are not in the
   // |future_policies_allowed| will be filtered out and put into the
   // |future_policies_blocked|.
   bool IsPolicySupported(
       const base::flat_set<std::string>& future_policies_allowed,
       PoliciesSet* future_policies_blocked,
+      PolicyErrorMap* errors,
       PolicyMap::const_reference entry) const;
 
-  // Returns true if the policy `policy_name` is in the blocklist for
+  // Returns true if the policy |policy_name| is in the blocklist for
   // policies on Desktop Android.
   bool IsBlockedDesktopAndroidPolicy(const std::string& policy_name) const;
 
@@ -84,6 +90,8 @@ class POLICY_EXPORT ConfigurationPolicyHandlerList {
       const base::flat_set<std::string>& future_policies_allowed,
       const PolicyDetails& policy_details,
       PolicyMap::const_reference entry) const;
+
+  bool IsCloudOnlyPolicy(PolicyMap::const_reference entry) const;
 
   std::vector<std::unique_ptr<ConfigurationPolicyHandler>> handlers_;
   const PopulatePolicyHandlerParametersCallback parameters_callback_;

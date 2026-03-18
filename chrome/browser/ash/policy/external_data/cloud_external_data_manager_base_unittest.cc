@@ -56,11 +56,11 @@ const char k10ByteData[] = "10 bytes..";
 const char k20ByteData[] = "20 bytes............";
 
 const PolicyDetails kPolicyDetails[] = {
-    // deprecated  future, scope  id    max_external_data_size
-    {false, false, kProfile, 1, 0},
-    {false, false, kProfile, 2, 10},
-    {false, false, kProfile, 3, 20},
-    {false, false, kProfile, 4, 20},
+    // deprecated  future, scope, source_restriction, id, max_external_data_size
+    {false, false, kProfile, kSourceRestrictionNone, 1, 0},
+    {false, false, kProfile, kSourceRestrictionNone, 2, 10},
+    {false, false, kProfile, kSourceRestrictionNone, 3, 20},
+    {false, false, kProfile, kSourceRestrictionNone, 4, 20},
 };
 
 const char kCacheKey[] = "data";

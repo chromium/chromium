@@ -26,10 +26,12 @@ ExtensionRequestPolicyHandler::~ExtensionRequestPolicyHandler() = default;
 bool ExtensionRequestPolicyHandler::CheckPolicySettings(
     const policy::PolicyMap& policies,
     policy::PolicyErrorMap* errors) {
-  if (!policies.IsPolicySet(policy_name()))
+  if (!policies.IsPolicySet(policy_name())) {
     return true;
-  if (!TypeCheckingPolicyHandler::CheckPolicySettings(policies, errors))
+  }
+  if (!TypeCheckingPolicyHandler::CheckPolicySettings(policies, errors)) {
     return false;
+  }
   const base::Value* cloud_reporting_policy_value = policies.GetValue(
       policy::key::kCloudReportingEnabled, base::Value::Type::BOOLEAN);
   if (!cloud_reporting_policy_value ||
@@ -39,16 +41,11 @@ bool ExtensionRequestPolicyHandler::CheckPolicySettings(
     return false;
   }
 
-  const policy::PolicyMap::Entry* extension_request_policy =
-      policies.Get(policy::key::kCloudExtensionRequestEnabled);
-  if (extension_request_policy->source != policy::POLICY_SOURCE_CLOUD) {
-    errors->AddError(policy_name(), IDS_POLICY_CLOUD_SOURCE_ONLY_ERROR);
-    return false;
-  }
-
 #if !BUILDFLAG(IS_CHROMEOS)
   // Disable extension workflow when it's set by user cloud policy but machine
   // is not managed or managed by a different domain.
+  const policy::PolicyMap::Entry* extension_request_policy =
+      policies.Get(policy::key::kCloudExtensionRequestEnabled);
   if (extension_request_policy->scope == policy::POLICY_SCOPE_USER &&
       !policies.IsUserAffiliated()) {
     errors->AddError(policy_name(), IDS_POLICY_USER_IS_NOT_AFFILIATED_ERROR);

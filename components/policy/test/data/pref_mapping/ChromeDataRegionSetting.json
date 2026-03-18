@@ -157,8 +157,18 @@
             "default_value": 0
           }
         }
-      },
-      // Non-cloud policy tests
+      }
+    ]
+  },
+  {
+    "note": "Policy is cloud-only so shouldn't apply if from a platform source.",
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "android"
+    ],
+    "policy_pref_mapping_tests": [
       {
         "policies": {
           "ChromeDataRegionSetting": 1

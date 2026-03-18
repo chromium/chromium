@@ -12,7 +12,7 @@
 #include "components/strings/grit/components_strings.h"
 
 WatermarkStylePolicyHandler::WatermarkStylePolicyHandler(policy::Schema schema)
-    : CloudOnlyPolicyHandler(
+    : SchemaValidatingPolicyHandler(
           policy::key::kWatermarkStyle,
           schema.GetKnownProperty(policy::key::kWatermarkStyle),
           policy::SchemaOnErrorStrategy::SCHEMA_ALLOW_UNKNOWN) {}

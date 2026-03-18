@@ -11,14 +11,4 @@ DataRegionPolicyHandler::DataRegionPolicyHandler(const char* policy_name,
     : IntRangePolicyHandler(policy_name, pref_path, 0, 2, false) {}
 DataRegionPolicyHandler::~DataRegionPolicyHandler() = default;
 
-bool DataRegionPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
-                                                  PolicyErrorMap* errors) {
-  if (!CloudOnlyPolicyHandler::CheckCloudOnlyPolicySettings(policy_name(),
-                                                            policies, errors) ||
-      !IntRangePolicyHandler::CheckPolicySettings(policies, errors)) {
-    return false;
-  }
-  return true;
-}
-
 }  // namespace policy

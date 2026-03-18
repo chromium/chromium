@@ -37,8 +37,7 @@ ConfigurationPolicyHandlerList::ConfigurationPolicyHandlerList(
       are_future_policies_allowed_by_default_(
           are_future_policies_allowed_by_default) {}
 
-ConfigurationPolicyHandlerList::~ConfigurationPolicyHandlerList() {
-}
+ConfigurationPolicyHandlerList::~ConfigurationPolicyHandlerList() = default;
 
 void ConfigurationPolicyHandlerList::AddHandler(
     std::unique_ptr<ConfigurationPolicyHandler> handler) {
@@ -51,8 +50,9 @@ void ConfigurationPolicyHandlerList::ApplyPolicySettings(
     PolicyErrorMap* errors,
     PoliciesSet* deprecated_policies,
     PoliciesSet* future_policies_blocked) const {
-  if (deprecated_policies)
+  if (deprecated_policies) {
     deprecated_policies->clear();
+  }
   if (future_policies_blocked) {
     future_policies_blocked->clear();
   }
@@ -64,18 +64,21 @@ void ConfigurationPolicyHandlerList::ApplyPolicySettings(
           ? base::flat_set<std::string>()
           : ValueToStringSet(policies.GetValue(key::kEnableExperimentalPolicies,
                                                base::Value::Type::LIST));
+
+  PolicyErrorMap scoped_errors;
+  if (!errors) {
+    errors = &scoped_errors;
+  }
+
   PolicyMap filtered_policies = policies.CloneIf(
       base::BindRepeating(&ConfigurationPolicyHandlerList::IsPolicySupported,
                           base::Unretained(this), future_policies_allowed,
-                          future_policies_blocked));
-
-  PolicyErrorMap scoped_errors;
-  if (!errors)
-    errors = &scoped_errors;
+                          future_policies_blocked, errors));
 
   PolicyHandlerParameters parameters;
-  if (parameters_callback_)
+  if (parameters_callback_) {
     parameters_callback_.Run(&parameters);
+  }
 
   for (const auto& handler : handlers_) {
     if (handler->CheckPolicySettings(filtered_policies, errors) && prefs) {
@@ -87,16 +90,18 @@ void ConfigurationPolicyHandlerList::ApplyPolicySettings(
   if (details_callback_ && deprecated_policies) {
     for (const auto& key_value : filtered_policies) {
       const PolicyDetails* details = details_callback_.Run(key_value.first);
-      if (details && details->is_deprecated)
+      if (details && details->is_deprecated) {
         deprecated_policies->insert(key_value.first);
+      }
     }
   }
 }
 
 void ConfigurationPolicyHandlerList::PrepareForDisplaying(
     PolicyMap* policies) const {
-  for (const auto& handler : handlers_)
+  for (const auto& handler : handlers_) {
     handler->PrepareForDisplaying(policies);
+  }
 }
 
 bool ConfigurationPolicyHandlerList::IsBlockedDesktopAndroidPolicy(
@@ -105,12 +110,11 @@ bool ConfigurationPolicyHandlerList::IsBlockedDesktopAndroidPolicy(
 // flag needs to be removed as soon as we feel comfortable about all exist
 // Android
 #if BUILDFLAG(IS_DESKTOP_ANDROID)
-   if (!base::FeatureList::IsEnabled(features::kDesktopAndroidPolicy)) {
+  if (!base::FeatureList::IsEnabled(features::kDesktopAndroidPolicy)) {
     return false;
   }
 
-  auto blocklist_str =
-      features::kDesktopAndroidPolicyBlocklist.Get();
+  auto blocklist_str = features::kDesktopAndroidPolicyBlocklist.Get();
   for (const auto& blocked_policy :
        base::SplitStringPiece(blocklist_str, ",", base::TRIM_WHITESPACE,
                               base::SPLIT_WANT_NONEMPTY)) {
@@ -127,6 +131,7 @@ bool ConfigurationPolicyHandlerList::IsBlockedDesktopAndroidPolicy(
 bool ConfigurationPolicyHandlerList::IsPolicySupported(
     const base::flat_set<std::string>& future_policies_allowed,
     PoliciesSet* future_policies_blocked,
+    PolicyErrorMap* errors,
     PolicyMap::const_reference entry) const {
   // Callback might be missing in tests.
   if (!details_callback_) {
@@ -154,6 +159,17 @@ bool ConfigurationPolicyHandlerList::IsPolicySupported(
     return false;
   }
 
+// All policies on ChromeOS are from a cloud source so we can skip this check.
+#if !BUILDFLAG(IS_CHROMEOS)
+  if (policy_details->source_restriction == kSourceRestrictionCloudOnly &&
+      !IsCloudOnlyPolicy(entry)) {
+    if (errors) {
+      errors->AddError(entry.first, IDS_POLICY_CLOUD_SOURCE_ONLY_ERROR);
+    }
+    return false;
+  }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
   return !IsBlockedPlatformDevicePolicy(*policy_details, entry);
 }
 
@@ -168,6 +184,43 @@ bool ConfigurationPolicyHandlerList::IsBlockedPlatformDevicePolicy(
     return true;
   }
   return false;
+}
+
+namespace {
+
+bool IsCloudOnlyPolicySource(const policy::PolicyMap::Entry& policy) {
+  return policy.source == policy::POLICY_SOURCE_CLOUD ||
+         policy.source == policy::POLICY_SOURCE_CLOUD_FROM_ASH;
+}
+
+}  // namespace
+
+bool ConfigurationPolicyHandlerList::IsCloudOnlyPolicy(
+    PolicyMap::const_reference entry) const {
+  // CloudReportingEnabled was added before the cloud_only tag and historically
+  // never checked the policy source. Skip enforcement for it to avoid breaking
+  // existing setups.
+  // TODO(crbug.com/491119520): Consider removing this exemption in the future.
+  if (entry.first == key::kCloudReportingEnabled) {
+    return true;
+  }
+
+#if BUILDFLAG(IS_ANDROID)
+  // For development and testing without a policy server.
+  if (entry.second.source == POLICY_SOURCE_COMMAND_LINE) {
+    return true;
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
+  if (entry.second.source == POLICY_SOURCE_MERGED) {
+    for (const auto& conflict : entry.second.conflicts) {
+      if (!IsCloudOnlyPolicySource(conflict.entry())) {
+        return false;
+      }
+    }
+    return true;
+  }
+  return IsCloudOnlyPolicySource(entry.second);
 }
 
 bool ConfigurationPolicyHandlerList::IsBlockedFuturePolicy(

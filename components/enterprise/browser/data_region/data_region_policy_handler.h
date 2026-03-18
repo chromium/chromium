@@ -8,15 +8,11 @@
 #include "components/policy/core/browser/configuration_policy_handler.h"
 
 namespace policy {
-class PolicyErrorMap;
 
 class DataRegionPolicyHandler : public IntRangePolicyHandler {
  public:
   DataRegionPolicyHandler(const char* policy_name, const char* pref_path);
   ~DataRegionPolicyHandler() override;
-
-  bool CheckPolicySettings(const PolicyMap& policies,
-                           PolicyErrorMap* errors) override;
 };
 }  // namespace policy
 

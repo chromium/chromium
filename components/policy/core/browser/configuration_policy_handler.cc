@@ -899,7 +899,7 @@ void ConfigurationPolicyChecker::ApplyPolicySettings(
   NOTREACHED();
 }
 
-// CloudOnlyPolicyHandler implementation
+// CloudUserOnlyPolicyChecker implementation
 // ---------------------------------------
 
 namespace {
@@ -910,74 +910,6 @@ bool IsCloudOnlyPolicy(const policy::PolicyMap::Entry& policy) {
 }
 
 }  // namespace
-
-CloudOnlyPolicyHandler::CloudOnlyPolicyHandler(const char* policy_name,
-                                               Schema schema,
-                                               SchemaOnErrorStrategy strategy)
-    : SchemaValidatingPolicyHandler(policy_name, schema, strategy) {}
-
-CloudOnlyPolicyHandler::~CloudOnlyPolicyHandler() = default;
-
-// static
-bool CloudOnlyPolicyHandler::CheckCloudOnlyPolicySettings(
-    const char* policy_name,
-    const PolicyMap& policies,
-    PolicyErrorMap* errors) {
-  const PolicyMap::Entry* policy = policies.Get(policy_name);
-  if (!policy) {
-    return true;
-  }
-
-#if BUILDFLAG(IS_ANDROID)
-  // For development and testing without a policy server.
-  if (policy->source == policy::POLICY_SOURCE_COMMAND_LINE) {
-    return true;
-  }
-#endif
-
-  // If the policy source is POLICY_SOURCE_MERGED, it is still cloud-only if all
-  // policy values merged into it are cloud-only.
-  if (policy->source == policy::POLICY_SOURCE_MERGED) {
-    for (const auto& conflict : policy->conflicts) {
-      if (!IsCloudOnlyPolicy(conflict.entry())) {
-        if (errors) {
-          errors->AddError(policy_name, IDS_POLICY_CLOUD_SOURCE_ONLY_ERROR);
-        }
-        return false;
-      }
-    }
-  } else if (!IsCloudOnlyPolicy(*policy)) {
-    if (errors) {
-      errors->AddError(policy_name, IDS_POLICY_CLOUD_SOURCE_ONLY_ERROR);
-    }
-    return false;
-  }
-
-  return true;
-}
-
-bool CloudOnlyPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
-                                                 PolicyErrorMap* errors) {
-  return CheckCloudOnlyPolicySettings(policy_name(), policies, errors)
-             ? SchemaValidatingPolicyHandler::CheckPolicySettings(policies,
-                                                                  errors)
-             : false;
-}
-
-// CloudOnlyPolicyChecker implementation
-// ---------------------------------------
-CloudOnlyPolicyChecker::CloudOnlyPolicyChecker(
-    std::unique_ptr<NamedPolicyHandler> policy_handler)
-    : ConfigurationPolicyChecker(std::move(policy_handler)) {}
-
-CloudOnlyPolicyChecker::~CloudOnlyPolicyChecker() = default;
-
-bool CloudOnlyPolicyChecker::CheckPolicySettings(const PolicyMap& policies,
-                                                 PolicyErrorMap* errors) {
-  return CloudOnlyPolicyHandler::CheckCloudOnlyPolicySettings(
-             policy_handler_->policy_name(), policies, errors) &&
-         policy_handler_->CheckPolicySettings(policies, errors);
-}
 
 // CloudUserOnlyPolicyChecker implementation
 // ---------------------------------------

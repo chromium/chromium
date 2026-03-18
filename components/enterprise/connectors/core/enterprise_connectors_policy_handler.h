@@ -12,7 +12,7 @@ namespace enterprise_connectors {
 // A schema policy handler for Enterprise Connectors policies that only accept
 // cloud sources.
 class EnterpriseConnectorsPolicyHandler
-    : public policy::CloudOnlyPolicyHandler {
+    : public policy::SchemaValidatingPolicyHandler {
  public:
   EnterpriseConnectorsPolicyHandler(const char* policy_name,
                                     const char* pref_path,

@@ -47,26 +47,6 @@
     },
     "policy_pref_mapping_tests": [
       {
-        "policies_settings": {
-          "ProxyOverrideRules": {
-              "source": "platform"
-          }
-        },
-        "policies": {
-          "ProxyOverrideRules": [
-              {
-                  "DestinationMatchers": [ "https://app1.com", "https://app2.com" ],
-                  "ProxyList": [ "HTTPS proxy.app:443" ]
-              }
-          ]
-        },
-        "prefs": {
-          "proxy_override_rules": {
-            "default_value": []
-          }
-        }
-      },
-      {
         "policies": {
           "ProxyOverrideRules": 12
         },
@@ -89,6 +69,37 @@
       {
         "policies": {
           "ProxyOverrideRules": false
+        },
+        "prefs": {
+          "proxy_override_rules": {
+            "default_value": []
+          }
+        }
+      }
+    ]
+  },
+  {
+    "note": "Policy is cloud-only so shouldn't apply if from a platform source.",
+    "os": [
+      "linux",
+      "win",
+      "android",
+      "mac"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies_settings": {
+          "ProxyOverrideRules": {
+              "source": "platform"
+          }
+        },
+        "policies": {
+          "ProxyOverrideRules": [
+              {
+                  "DestinationMatchers": [ "https://app1.com", "https://app2.com" ],
+                  "ProxyList": [ "HTTPS proxy.app:443" ]
+              }
+          ]
         },
         "prefs": {
           "proxy_override_rules": {

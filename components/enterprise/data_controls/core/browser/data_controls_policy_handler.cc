@@ -14,7 +14,7 @@ namespace data_controls {
 DataControlsPolicyHandler::DataControlsPolicyHandler(const char* policy_name,
                                                      const char* pref_path,
                                                      policy::Schema schema)
-    : policy::CloudOnlyPolicyHandler(
+    : policy::SchemaValidatingPolicyHandler(
           policy_name,
           schema.GetKnownProperty(policy_name),
           policy::SchemaOnErrorStrategy::
@@ -53,7 +53,8 @@ void DataControlsPolicyHandler::ApplyPolicySettings(
 bool DataControlsPolicyHandler::CheckPolicySettings(
     const policy::PolicyMap& policies,
     policy::PolicyErrorMap* errors) {
-  if (!policy::CloudOnlyPolicyHandler::CheckPolicySettings(policies, errors)) {
+  if (!policy::SchemaValidatingPolicyHandler::CheckPolicySettings(policies,
+                                                                  errors)) {
     return false;
   }
 

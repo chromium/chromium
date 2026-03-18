@@ -43,13 +43,15 @@ const char kTestPolicyName8[] = "policy.test.8";
 // Dummy error message.
 const char16_t kTestError[] = u"Test error message";
 
-const PolicyDetails kExternalDetails_ = {false, false, kProfile, 0, 10, {}};
-const PolicyDetails kNonExternalDetails_ = {false, false, kProfile, 0, 0, {}};
+const PolicyDetails kExternalDetails_ = {
+    false, false, kProfile, kSourceRestrictionNone, 0, 10, {}};
+const PolicyDetails kNonExternalDetails_ = {
+    false, false, kProfile, kSourceRestrictionNone, 0, 0, {}};
 #if !BUILDFLAG(IS_CHROMEOS)
 const PolicyDetails kUsesLocalStateAndProfilePrefsDetails = {
-    false, false, kProfile, 0, 0, {}, true};
-const PolicyDetails kUserCloudDetails = {false, false, kSingleProfile,
-                                         0,     0,     {}};
+    false, false, kProfile, kSourceRestrictionNone, 0, 0, {}, true};
+const PolicyDetails kUserCloudDetails = {
+    false, false, kSingleProfile, kSourceRestrictionNone, 0, 0, {}};
 #endif
 
 void SetPolicy(PolicyMap* map, const char* name, base::Value value) {

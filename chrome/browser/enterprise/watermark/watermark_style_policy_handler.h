@@ -7,14 +7,15 @@
 
 #include "components/policy/core/browser/configuration_policy_handler.h"
 
-class WatermarkStylePolicyHandler : public policy::CloudOnlyPolicyHandler {
+class WatermarkStylePolicyHandler
+    : public policy::SchemaValidatingPolicyHandler {
  public:
   explicit WatermarkStylePolicyHandler(policy::Schema schema);
   WatermarkStylePolicyHandler(WatermarkStylePolicyHandler&) = delete;
   WatermarkStylePolicyHandler& operator=(WatermarkStylePolicyHandler&) = delete;
   ~WatermarkStylePolicyHandler() override;
 
-  // policy::CloudOnlyPolicyHandler:
+  // policy::SchemaValidatingPolicyHandler:
   void ApplyPolicySettings(const policy::PolicyMap& policies,
                            PrefValueMap* prefs) override;
 };

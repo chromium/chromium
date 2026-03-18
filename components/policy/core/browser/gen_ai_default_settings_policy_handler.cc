@@ -134,13 +134,6 @@ bool GenAiDefaultSettingsPolicyHandler::CheckPolicySettings(
     return false;
   }
 
-#if !BUILDFLAG(IS_CHROMEOS)
-  if (!CloudOnlyPolicyHandler::CheckCloudOnlyPolicySettings(policy_name(),
-                                                            policies, errors)) {
-    return false;
-  }
-#endif // !BUILDFLAG(IS_CHROMEOS)
-
   // If the map feature is enabled, check that any maps provided include all
   // expected policy values.
   if (IsGenAiPolicyDefaultsUsePrefMap()) {

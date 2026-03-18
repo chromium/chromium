@@ -28,6 +28,12 @@ enum Scope {
                    // profile label.
 };
 
+// The restriction on the policy source.
+enum PolicySourceRestriction {
+  kSourceRestrictionNone,
+  kSourceRestrictionCloudOnly,
+};
+
 // Contains read-only metadata about a Chrome policy.
 struct POLICY_EXPORT PolicyDetails {
   // True if this policy has been deprecated.
@@ -38,6 +44,9 @@ struct POLICY_EXPORT PolicyDetails {
 
   // The scope of the policy.
   Scope scope;
+
+  // The restriction on the policy source.
+  PolicySourceRestriction source_restriction;
 
   // The id of the protobuf field that contains this policy,
   // in the cloud policy protobuf.

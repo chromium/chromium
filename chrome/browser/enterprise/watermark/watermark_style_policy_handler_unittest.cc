@@ -168,22 +168,6 @@ TEST_F(WatermarkStylePolicyHandlerTest, TestValidPolicy) {
   ASSERT_EQ(pref_dict, *value_in_map);
 }
 
-TEST_F(WatermarkStylePolicyHandlerTest,
-       TestValidPolicyNotAppliedIfNotFromCloud) {
-  policy::PolicyMap policy_map;
-  policy_map.Set(
-      kPolicyName, policy::PolicyLevel::POLICY_LEVEL_MANDATORY,
-      policy::PolicyScope::POLICY_SCOPE_MACHINE,
-      policy::PolicySource::POLICY_SOURCE_PLATFORM,
-      base::JSONReader::Read(kValidPolicy, base::JSON_ALLOW_TRAILING_COMMAS),
-      nullptr);
-  auto handler = std::make_unique<WatermarkStylePolicyHandler>(schema());
-
-  policy::PolicyErrorMap errors;
-  ASSERT_FALSE(handler->CheckPolicySettings(policy_map, &errors));
-  ASSERT_FALSE(errors.empty());
-}
-
 class WatermarkStyleInvalidPolicyHandlerTest
     : public WatermarkStylePolicyHandlerTest,
       public testing::WithParamInterface<InvalidPolicyTestCase> {};

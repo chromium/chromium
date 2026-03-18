@@ -374,15 +374,6 @@ constexpr policy::PolicySource kCloudSources[] = {
     policy::PolicySource::POLICY_SOURCE_CLOUD,
     policy::PolicySource::POLICY_SOURCE_CLOUD_FROM_ASH};
 
-constexpr policy::PolicySource kNonCloudSources[] = {
-    policy::PolicySource::POLICY_SOURCE_ENTERPRISE_DEFAULT,
-    policy::PolicySource::POLICY_SOURCE_COMMAND_LINE,
-    policy::PolicySource::POLICY_SOURCE_ACTIVE_DIRECTORY,
-    policy::PolicySource::POLICY_SOURCE_PLATFORM,
-    policy::PolicySource::
-        POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE,
-};
-
 constexpr char kInvalidPolicy[] = "[1,2,3]";
 
 constexpr std::pair<const char*, const char16_t*> kInvalidTestCases[] = {
@@ -551,7 +542,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 }  // namespace
 
-TEST_F(DataControlsPolicyHandlerTest, AllowsCloudSources) {
+TEST_F(DataControlsPolicyHandlerTest, WithValidPolicy) {
   for (auto scope : kCloudSources) {
     policy::PolicyMap map = CreatePolicyMap(kValidPolicy, scope);
     auto handler = std::make_unique<DataControlsPolicyHandler>(
@@ -570,22 +561,6 @@ TEST_F(DataControlsPolicyHandlerTest, AllowsCloudSources) {
     auto* value_set_in_map = map.GetValueUnsafe(kPolicyName);
     ASSERT_TRUE(value_set_in_map);
     ASSERT_EQ(*value_set_in_map, *value_set_in_pref);
-  }
-}
-
-TEST_F(DataControlsPolicyHandlerTest, BlocksNonCloudSources) {
-  for (auto scope : kNonCloudSources) {
-    policy::PolicyMap map = CreatePolicyMap(kValidPolicy, scope);
-    auto handler = std::make_unique<DataControlsPolicyHandler>(
-        kPolicyName, kTestPref, schema());
-
-    policy::PolicyErrorMap errors;
-    ASSERT_FALSE(handler->CheckPolicySettings(map, &errors));
-    ASSERT_FALSE(errors.empty());
-    ASSERT_TRUE(errors.HasError(kPolicyName));
-    std::u16string messages = errors.GetErrorMessages(kPolicyName);
-    ASSERT_EQ(messages,
-              u"Ignored because the policy is not set by a cloud source.");
   }
 }
 

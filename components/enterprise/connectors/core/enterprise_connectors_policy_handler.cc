@@ -30,7 +30,7 @@ EnterpriseConnectorsPolicyHandler::EnterpriseConnectorsPolicyHandler(
     const char* pref_path,
     const char* pref_scope_path,
     policy::Schema schema)
-    : policy::CloudOnlyPolicyHandler(
+    : policy::SchemaValidatingPolicyHandler(
           policy_name,
           schema.GetKnownProperty(policy_name),
           policy::SchemaOnErrorStrategy::SCHEMA_ALLOW_UNKNOWN),

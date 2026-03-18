@@ -36,11 +36,6 @@ bool LegacyTechReportPolicyHandler::CheckPolicySettings(
     return false;
   }
 
-  if (!policy::CloudOnlyPolicyHandler::CheckCloudOnlyPolicySettings(
-          policy_name(), policies, errors)) {
-    return false;
-  }
-
 #if !BUILDFLAG(IS_CHROMEOS)
   const policy::PolicyMap::Entry* policy = policies.Get(policy_name());
   // If policy is set with the signed in account, it must be affiliated.
