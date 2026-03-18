@@ -2721,6 +2721,27 @@ TEST_F(DownloadTargetDeterminerTest, TestSanitizeEnvVariable) {
        FILE_PATH_LITERAL("foo.download"),
        DownloadItem::TARGET_DISPOSITION_PROMPT,
 
+       EXPECT_CRDOWNLOAD},
+      {// 7: Prevent hiding extensions (like .url) in the Windows Save As dialog
+       // by wrapping trailing spaces inside environment variables.
+       SAVE_AS, download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
+       DownloadFileType::NOT_DANGEROUS,
+       "http://example.com/photo.jpg%20%25%25.url", "text/plain",
+       FILE_PATH_LITERAL(""),
+
+       FILE_PATH_LITERAL("photo.jpg.url"),
+       DownloadItem::TARGET_DISPOSITION_PROMPT,
+
+       EXPECT_CRDOWNLOAD},
+
+      {// 8: Ensure completely empty filenames made of just dots and environment
+       // variables collapse safely without retaining any dangerous extensions.
+       SAVE_AS, download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
+       DownloadFileType::NOT_DANGEROUS, "http://example.com/.%25%25.%25%25",
+       "text/plain", FILE_PATH_LITERAL(""),
+
+       FILE_PATH_LITERAL("download"), DownloadItem::TARGET_DISPOSITION_PROMPT,
+
        EXPECT_CRDOWNLOAD}};
 
   RunTestCasesWithActiveItem(kSaveEnvPathTestCases);
