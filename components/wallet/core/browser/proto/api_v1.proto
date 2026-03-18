@@ -52,6 +52,20 @@ message UpsertPrivatePassRequest {
 
   // Information about the client making the request.
   optional ClientInfo client_info = 2;
+
+  // A copy of id.consent.audit.common.SessionId.
+  // Represents a 128-bit version 4 UUID that identifies a consent.
+  // Whenever a new private pass is saved from Chrome, the user's consent to
+  // share this data is logged through the USER_CONSENTS sync data type. The
+  // SessionId identifying this consent is then attached to the upsert call.
+  message SessionId {
+    message UUID {
+      optional uint64 most_significant_uuid_bits = 1;
+      optional uint64 least_significant_uuid_bits = 2;
+    }
+    optional UUID uuid = 1;
+  }
+  optional SessionId session_id = 3;
 }
 
 // Response for the UpsertPrivatePass RPC.
