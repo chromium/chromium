@@ -324,7 +324,7 @@ using namespace JNI_JavapClass;
 template<>
 class _CalledByNatives<JJavapClass> {
   public:
-  static jni_zero::ScopedJavaLocalRef<JJavapClass> Constructor(JNIEnv* env) {
+  static jni_zero::ScopedJavaLocalRef<JJavapClass> New(JNIEnv* env) {
     return Java_JavapClass_Constructor(env);
   }
 

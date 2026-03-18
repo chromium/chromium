@@ -305,6 +305,8 @@ def _sanitize_method_name(method_name_string):
   """
   if method_name_string in _CPP_RESERVED_KEYWORDS:
     return method_name_string + '1'
+  elif method_name_string == 'Constructor':
+    return 'New'
   else:
     return method_name_string
 

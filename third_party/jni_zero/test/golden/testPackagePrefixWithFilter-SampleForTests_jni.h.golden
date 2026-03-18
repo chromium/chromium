@@ -1175,7 +1175,7 @@ using namespace jni_zero::tests;
 template<>
 class _CalledByNatives<JSampleForTests> {
   public:
-  static jni_zero::ScopedJavaLocalRef<JSampleForTests> Constructor(
+  static jni_zero::ScopedJavaLocalRef<JSampleForTests> New(
       JNIEnv* env,
       JniIntWrapper foo,
       JniIntWrapper bar) {
