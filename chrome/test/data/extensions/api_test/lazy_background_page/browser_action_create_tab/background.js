@@ -3,5 +3,5 @@
 // found in the LICENSE file.
 
 chrome.browserAction.onClicked.addListener(function(tab) {
-  chrome.tabs.create({url: "chrome://extensions/", selected: true});
+  chrome.tabs.create({url: 'chrome://extensions/', selected: true});
 });

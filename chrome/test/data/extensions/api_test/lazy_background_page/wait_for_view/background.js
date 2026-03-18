@@ -3,5 +3,5 @@
 // found in the LICENSE file.
 
 chrome.runtime.onInstalled.addListener(function() {
-  chrome.tabs.create({url: "extension_page.html"}, chrome.test.callbackPass());
+  chrome.tabs.create({url: 'extension_page.html'}, chrome.test.callbackPass());
 });

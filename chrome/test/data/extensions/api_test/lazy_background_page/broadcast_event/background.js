@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
-  if (tab.url.search("test_file.html") > -1)
+  if (tab.url.search('test_file.html') > -1)
     chrome.pageAction.show(tabId);
   else
     chrome.pageAction.hide(tabId);

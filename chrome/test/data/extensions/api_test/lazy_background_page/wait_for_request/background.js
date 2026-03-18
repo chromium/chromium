@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var testServerHost = "www.a.com";
-var testServerPort;
+const testServerHost = 'www.a.com';
+let testServerPort;
 function getServerURL(path) {
-  var host = testServerHost;
-  return "http://" + host + ":" + testServerPort + "/" + path;
+  const host = testServerHost;
+  return `http://${host}:${testServerPort}/${path}`;
 }
 
-var hangingRequest;
+let hangingRequest;
 function abortRequest() {
   hangingRequest.abort();
   return true;
@@ -26,8 +26,8 @@ chrome.runtime.onInstalled.addListener(function() {
     hangingRequest.onreadystatechange = function() {
       // The request hangs, so this is only ever called once.
       chrome.test.notifyPass();
-    }
-    hangingRequest.open("GET", getServerURL("slow?60000"), true);
+    };
+    hangingRequest.open('GET', getServerURL('slow?60000'), true);
     hangingRequest.send(null);
   });
 });
