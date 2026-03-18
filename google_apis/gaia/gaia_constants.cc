@@ -23,6 +23,10 @@ const char kDeviceManagementServiceOAuth[] =
 // OAuth2 scope for access to all Google APIs.
 const char kAnyApiOAuth2Scope[] = "https://www.googleapis.com/auth/any-api";
 
+// OAuth2 scope for access to the agentic permission service.
+const char kAgenticPermissionOAuth2Scope[] =
+    "https://www.googleapis.com/auth/agenticpermission";
+
 // OAuth2 scope for access to Chrome sync APIs
 const char kChromeSyncOAuth2Scope[] =
     "https://www.googleapis.com/auth/chromesync";

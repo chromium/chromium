@@ -39,8 +39,10 @@ source_set("actor_login_permission_service_factory") {
   deps = [
     "//base",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
     "//components/password_manager/core/browser/actor_login:common",
     "//components/password_manager/core/browser/actor_login/internal:permission_service_impl",
+    "//components/signin/public/identity_manager",
   ]
 }
 

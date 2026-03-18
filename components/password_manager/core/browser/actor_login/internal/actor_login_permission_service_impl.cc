@@ -12,7 +12,15 @@
 #include "base/json/json_writer.h"
 #include "base/strings/strcat.h"
 #include "base/values.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/oauth_consumer_id.h"
+#include "components/signin/public/identity_manager/access_token_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
+#include "google_apis/gaia/gaia_urls.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/net_errors.h"
+#include "net/http/http_request_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -21,6 +29,8 @@
 namespace actor_login {
 
 namespace {
+// The maximum number of retries for the `SimpleURLLoader` requests.
+const size_t kMaxRetries = 1;
 
 // TODO(crbug.com/491035927): Update to prod URL when available.
 const char kActorLoginPermissionServiceUrlBase[] =
@@ -216,7 +226,8 @@ std::vector<FederatedPermission> ParseFederatedPermissionsList(
 
 class ActorLoginPermissionServiceImpl::Request {
  public:
-  Request(const GURL& url,
+  Request(signin::IdentityManager* identity_manager,
+          const GURL& url,
           const std::string& post_data,
           scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
           base::OnceCallback<void(Request*, std::optional<std::string>)>
@@ -228,23 +239,30 @@ class ActorLoginPermissionServiceImpl::Request {
   bool success() const;
 
  private:
+  void OnAccessTokenFetchComplete(GoogleServiceAuthError error,
+                                  signin::AccessTokenInfo access_token_info);
   void OnSimpleLoaderComplete(std::optional<std::string> response_body);
 
+  raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
   GURL url_;
   std::string post_data_;
   std::unique_ptr<network::SimpleURLLoader> loader_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   base::OnceCallback<void(Request*, std::optional<std::string>)>
       completion_callback_;
+  std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
+      access_token_fetcher_;
 };
 
 ActorLoginPermissionServiceImpl::Request::Request(
+    signin::IdentityManager* identity_manager,
     const GURL& url,
     const std::string& post_data,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     base::OnceCallback<void(Request*, std::optional<std::string>)>
         completion_callback)
-    : url_(url),
+    : identity_manager_(identity_manager),
+      url_(url),
       post_data_(post_data),
       url_loader_factory_(std::move(url_loader_factory)),
       completion_callback_(std::move(completion_callback)) {}
@@ -252,17 +270,51 @@ ActorLoginPermissionServiceImpl::Request::Request(
 ActorLoginPermissionServiceImpl::Request::~Request() = default;
 
 void ActorLoginPermissionServiceImpl::Request::Start() {
+  if (!identity_manager_) {
+    // If there is no `IdentityManager`, we cannot fetch an access token.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(completion_callback_), this, std::nullopt));
+    return;
+  }
+
+  access_token_fetcher_ = std::make_unique<
+      signin::PrimaryAccountAccessTokenFetcher>(
+      signin::OAuthConsumerId::kActorLoginPermissionService, identity_manager_,
+      base::BindOnce(
+          &ActorLoginPermissionServiceImpl::Request::OnAccessTokenFetchComplete,
+          base::Unretained(this)),
+      // Send the request immediately. Otherwise we can wait forever if the
+      // user is not signed in.
+      signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
+      signin::ConsentLevel::kSignin);
+}
+
+void ActorLoginPermissionServiceImpl::Request::OnAccessTokenFetchComplete(
+    GoogleServiceAuthError error,
+    signin::AccessTokenInfo access_token_info) {
+  access_token_fetcher_.reset();
+
+  if (error.state() != GoogleServiceAuthError::NONE) {
+    std::move(completion_callback_).Run(this, std::nullopt);
+    return;
+  }
+
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = url_;
   resource_request->method = "POST";
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
-
-  // TODO(crbug.com/491049268): Fetch and attach OAuth2 token using
-  // IdentityManager.
+  resource_request->headers.SetHeader(net::HttpRequestHeaders::kAuthorization,
+                                      "Bearer " + access_token_info.token);
+  resource_request->headers.SetHeader(
+      "X-Developer-Key", GaiaUrls::GetInstance()->oauth2_chrome_client_id());
+  resource_request->headers.SetHeader(net::HttpRequestHeaders::kAccept,
+                                      "application/json");
 
   loader_ = network::SimpleURLLoader::Create(
       std::move(resource_request), kActorLoginPermissionTrafficAnnotation);
   loader_->AttachStringForUpload(post_data_, "application/json");
+  loader_->SetRetryOptions(kMaxRetries, network::SimpleURLLoader::RETRY_ON_5XX);
   loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory_.get(),
       base::BindOnce(
@@ -281,8 +333,10 @@ bool ActorLoginPermissionServiceImpl::Request::success() const {
 }
 
 ActorLoginPermissionServiceImpl::ActorLoginPermissionServiceImpl(
+    signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : url_loader_factory_(std::move(url_loader_factory)) {}
+    : identity_manager_(identity_manager),
+      url_loader_factory_(std::move(url_loader_factory)) {}
 
 ActorLoginPermissionServiceImpl::~ActorLoginPermissionServiceImpl() = default;
 
@@ -293,7 +347,7 @@ void ActorLoginPermissionServiceImpl::ListPermissions(
   std::string post_data = CreateListRequestBody(origins);
 
   StartRequest(std::make_unique<Request>(
-      url, post_data, url_loader_factory_,
+      identity_manager_, url, post_data, url_loader_factory_,
       base::BindOnce(&ActorLoginPermissionServiceImpl::OnListRequestCompleted,
                      base::Unretained(this))
           .Then(std::move(callback))));
@@ -316,7 +370,7 @@ void ActorLoginPermissionServiceImpl::DeletePermission(
   std::string post_data = CreateDeleteRequestBody(embedder_origin);
 
   StartRequest(std::make_unique<Request>(
-      url, post_data, url_loader_factory_,
+      identity_manager_, url, post_data, url_loader_factory_,
       base::BindOnce(
           &ActorLoginPermissionServiceImpl::OnGenericRequestCompleted,
           base::Unretained(this))
@@ -334,7 +388,7 @@ void ActorLoginPermissionServiceImpl::GrantPermission(
   std::string post_data = CreateGrantRequestBody(permission);
 
   StartRequest(std::make_unique<Request>(
-      url, post_data, url_loader_factory_,
+      identity_manager_, url, post_data, url_loader_factory_,
       base::BindOnce(
           &ActorLoginPermissionServiceImpl::OnGenericRequestCompleted,
           base::Unretained(this))

@@ -8,6 +8,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -43,10 +44,24 @@ FederatedPermission CreateValidPermission() {
 }  // namespace
 
 class ActorLoginPermissionServiceImplTest : public testing::Test {
+ public:
+  void SetUp() override {
+    identity_test_environment_.MakePrimaryAccountAvailable(
+        "test@example.com", signin::ConsentLevel::kSignin);
+  }
+
+  void IssueAccessToken() {
+    identity_test_environment_
+        .WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+            "access_token", base::Time::Max());
+  }
+
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
+  signin::IdentityTestEnvironment identity_test_environment_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   ActorLoginPermissionServiceImpl service_{
+      identity_test_environment_.identity_manager(),
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &test_url_loader_factory_)};
 };
@@ -55,6 +70,7 @@ TEST_F(ActorLoginPermissionServiceImplTest,
        ListAllPermissionsSendsCorrectRequest) {
   base::test::TestFuture<std::vector<FederatedPermission>> future;
   service_.ListAllPermissions(future.GetCallback());
+  IssueAccessToken();
 
   ASSERT_EQ(1, test_url_loader_factory_.NumPending());
   const network::ResourceRequest& request =
@@ -63,12 +79,17 @@ TEST_F(ActorLoginPermissionServiceImplTest,
   EXPECT_EQ(kTestListUrl, request.url.spec());
   EXPECT_EQ("POST", request.method);
   EXPECT_EQ(network::mojom::CredentialsMode::kOmit, request.credentials_mode);
+  std::optional<std::string> auth_header =
+      request.headers.GetHeader(net::HttpRequestHeaders::kAuthorization);
+  ASSERT_TRUE(auth_header.has_value());
+  EXPECT_EQ("Bearer access_token", *auth_header);
   EXPECT_EQ("{\"filters\":[]}", network::GetUploadData(request));
 }
 
 TEST_F(ActorLoginPermissionServiceImplTest, ListAllPermissionsReturnsEmpty) {
   base::test::TestFuture<std::vector<FederatedPermission>> future;
   service_.ListAllPermissions(future.GetCallback());
+  IssueAccessToken();
 
   test_url_loader_factory_.SimulateResponseForPendingRequest(kTestListUrl,
                                                              "{}");
@@ -85,6 +106,7 @@ TEST_F(ActorLoginPermissionServiceImplTest,
       {url::Origin::Create(GURL("https://embedder2.com")),
        url::Origin::Create(GURL("https://requester2.com"))}};
   service_.ListPermissions(origins, future.GetCallback());
+  IssueAccessToken();
 
   ASSERT_EQ(1, test_url_loader_factory_.NumPending());
   const network::ResourceRequest& request =
@@ -118,6 +140,7 @@ TEST_F(ActorLoginPermissionServiceImplTest,
        ListAllPermissionsReturnsPermissions) {
   base::test::TestFuture<std::vector<FederatedPermission>> future;
   service_.ListAllPermissions(future.GetCallback());
+  IssueAccessToken();
 
   const char kValidResponse[] = R"({
     "permissions": [
@@ -171,9 +194,10 @@ TEST_F(ActorLoginPermissionServiceImplTest,
        ListAllPermissionsHandlesNetworkError) {
   base::test::TestFuture<std::vector<FederatedPermission>> future;
   service_.ListAllPermissions(future.GetCallback());
+  IssueAccessToken();
 
-  test_url_loader_factory_.SimulateResponseForPendingRequest(
-      kTestListUrl, "", net::HTTP_INTERNAL_SERVER_ERROR);
+  test_url_loader_factory_.AddResponse(kTestListUrl, "",
+                                       net::HTTP_INTERNAL_SERVER_ERROR);
 
   EXPECT_TRUE(future.Get().empty());
 }
@@ -182,6 +206,7 @@ TEST_F(ActorLoginPermissionServiceImplTest,
        ListAllPermissionsHandlesInvalidJson) {
   base::test::TestFuture<std::vector<FederatedPermission>> future;
   service_.ListAllPermissions(future.GetCallback());
+  IssueAccessToken();
 
   test_url_loader_factory_.SimulateResponseForPendingRequest(kTestListUrl,
                                                              "{ invalid json");
@@ -196,6 +221,8 @@ TEST_F(ActorLoginPermissionServiceImplTest,
 
   service_.ListAllPermissions(future1.GetCallback());
   service_.ListAllPermissions(future2.GetCallback());
+  IssueAccessToken();
+  IssueAccessToken();
 
   EXPECT_EQ(2, test_url_loader_factory_.NumPending());
 
@@ -248,6 +275,7 @@ TEST_F(ActorLoginPermissionServiceImplTest,
   base::test::TestFuture<bool> future;
   service_.DeletePermission(url::Origin::Create(GURL("https://embedder.com")),
                             future.GetCallback());
+  IssueAccessToken();
 
   ASSERT_EQ(1, test_url_loader_factory_.NumPending());
   const network::ResourceRequest& request =
@@ -274,6 +302,7 @@ TEST_F(ActorLoginPermissionServiceImplTest,
   base::test::TestFuture<bool> future;
   service_.DeletePermission(url::Origin::Create(GURL("https://embedder.com")),
                             future.GetCallback());
+  IssueAccessToken();
 
   test_url_loader_factory_.SimulateResponseForPendingRequest(kTestDeleteUrl,
                                                              "{}");
@@ -286,9 +315,10 @@ TEST_F(ActorLoginPermissionServiceImplTest,
   base::test::TestFuture<bool> future;
   service_.DeletePermission(url::Origin::Create(GURL("https://embedder.com")),
                             future.GetCallback());
+  IssueAccessToken();
 
-  test_url_loader_factory_.SimulateResponseForPendingRequest(
-      kTestDeleteUrl, "", net::HTTP_INTERNAL_SERVER_ERROR);
+  test_url_loader_factory_.AddResponse(kTestDeleteUrl, "",
+                                       net::HTTP_INTERNAL_SERVER_ERROR);
 
   EXPECT_FALSE(future.Get());
 }
@@ -297,6 +327,7 @@ TEST_F(ActorLoginPermissionServiceImplTest,
        GrantPermissionSendsCorrectRequest) {
   base::test::TestFuture<bool> future;
   service_.GrantPermission(CreateValidPermission(), future.GetCallback());
+  IssueAccessToken();
 
   ASSERT_EQ(1, test_url_loader_factory_.NumPending());
   const network::ResourceRequest& request =
@@ -321,6 +352,7 @@ TEST_F(ActorLoginPermissionServiceImplTest,
        GrantPermissionReturnsTrueOnSuccess) {
   base::test::TestFuture<bool> future;
   service_.GrantPermission(CreateValidPermission(), future.GetCallback());
+  IssueAccessToken();
 
   test_url_loader_factory_.SimulateResponseForPendingRequest(kTestUpdateUrl,
                                                              "{}");
@@ -332,9 +364,10 @@ TEST_F(ActorLoginPermissionServiceImplTest,
        GrantPermissionReturnsFalseOnError) {
   base::test::TestFuture<bool> future;
   service_.GrantPermission(CreateValidPermission(), future.GetCallback());
+  IssueAccessToken();
 
-  test_url_loader_factory_.SimulateResponseForPendingRequest(
-      kTestUpdateUrl, "", net::HTTP_INTERNAL_SERVER_ERROR);
+  test_url_loader_factory_.AddResponse(kTestUpdateUrl, "",
+                                       net::HTTP_INTERNAL_SERVER_ERROR);
 
   EXPECT_FALSE(future.Get());
 }

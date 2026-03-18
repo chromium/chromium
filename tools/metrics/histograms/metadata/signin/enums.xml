@@ -753,6 +753,7 @@ chromium-metrics-reviews@google.com.
   <int value="89" label="Aim Eligibility Service"/>
   <int value="90" label="DevTools AiCode Client"/>
   <int value="91" label="Accessibility Annotator"/>
+  <int value="92" label="Actor Login Permission Service"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/signin/public/base/oauth_consumer_id.h:OAuthConsumerId) -->

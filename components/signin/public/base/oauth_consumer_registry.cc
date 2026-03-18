@@ -123,6 +123,8 @@ constexpr char kPrivateAiServiceName[] = "private_ai_service";
 constexpr char kWalletPassesName[] = "wallet_passes";
 constexpr char kAimEligibilityServiceName[] = "aim_eligibility_service";
 constexpr char kAccessibilityAnnotatorName[] = "accessibility_annotator";
+constexpr char kActorLoginPermissionServiceName[] =
+    "actor_login_permission_service";
 
 }  // namespace
 
@@ -557,6 +559,10 @@ OAuthConsumer OAuthConsumerRegistry::GetOAuthConsumerFromId(
       return OAuthConsumer(
           /*name=*/kAccessibilityAnnotatorName,
           /*scopes=*/{GaiaConstants::kChromeSyncOAuth2Scope});
+    case OAuthConsumerId::kActorLoginPermissionService:
+      return OAuthConsumer(
+          /*name=*/kActorLoginPermissionServiceName,
+          /*scopes=*/{GaiaConstants::kAgenticPermissionOAuth2Scope});
   }
 }
 
