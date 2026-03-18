@@ -53,9 +53,15 @@ message TaskAttribute {
 
 // Response containing the tasks supported by a specific domain.
 message GetSupportedTasksResponse {
-  // The list of task types supported by the domain (e.g., ["SEARCH_FLIGHTS",
-  // "BOOK_HOTEL"]).
-  repeated string supported_tasks = 1;
+  // The list of task data supported by the domain.
+  repeated SupportedTask supported_tasks = 1;
+}
+
+// Defines a task that is supported by a domain.
+message SupportedTask {
+  // The universal task type derived from the source (e.g.,
+  // "SEARCH_FLIGHTS").
+  string task_type = 1;
 }
 
 // Request to retrieve supported tasks for a given domain.
