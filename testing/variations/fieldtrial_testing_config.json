@@ -3364,25 +3364,6 @@
             ]
         }
     ],
-    "AutomatedPasswordChangeStudyV4": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ReduceRequirementsForPasswordChange",
-                        "UseActionablesForImprovedPasswordChange"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutomaticUsbDetach": [
         {
             "platforms": [

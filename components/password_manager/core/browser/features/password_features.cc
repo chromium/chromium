@@ -153,7 +153,7 @@ BASE_FEATURE(kProactivelyDownloadModelForPasswordChange,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kReduceRequirementsForPasswordChange,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPasswordCheckup, base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -184,7 +184,7 @@ BASE_FEATURE(kTriggerPasswordResyncWhenUndecryptablePasswordsDetected,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kUseActionablesForImprovedPasswordChange,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kUseDetachedWidget, base::FEATURE_DISABLED_BY_DEFAULT);
 
