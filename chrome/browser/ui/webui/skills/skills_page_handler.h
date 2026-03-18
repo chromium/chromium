@@ -62,6 +62,9 @@ class SkillsPageHandler : public skills::mojom::PageHandler,
   void OnDiscoverySkillsUpdated(
       const SkillsService::SkillsMap* skills_map) override;
   void OnSkillsServiceShuttingDown() override;
+  void OnTemporarySkillDisplay(
+      std::string_view skill_id,
+      SkillsService::DisplayState display_state) override;
 
   bool Is1PDownloadTimerRunning() const {
     return first_party_download_timer_.IsRunning();

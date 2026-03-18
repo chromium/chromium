@@ -114,12 +114,34 @@ void SkillsPageHandler::GetInitialUserSkills(
 }
 
 void SkillsPageHandler::DeleteSkill(const std::string& skill_id) {
-  auto* service =
-      SkillsServiceFactory::GetForProfile(base::to_address(profile_));
-  if (!IsServiceReady(service)) {
-    return;
+  // Show a toast to the user that the skill was deleted.
+  auto* tabs = tabs::TabInterface::GetFromContents(&web_contents_.get());
+  if (auto* browser_window_interface = tabs->GetBrowserWindowInterface()) {
+    SkillsUiWindowController::From(browser_window_interface)
+        ->OnSkillDeleted(skill_id);
   }
-  service->DeleteSkill(skill_id, SkillsService::UpdateSource::kLocal);
+}
+
+void SkillsPageHandler::OnTemporarySkillDisplay(
+    std::string_view skill_id,
+    SkillsService::DisplayState display_state) {
+  switch (display_state) {
+    case SkillsService::DisplayState::kDeleted:
+      // Notify the UI that the skill was deleted but we don't notify the
+      // service since a user can undo the deletion.
+      page_->RemoveSkill(std::string(skill_id));
+      break;
+    case SkillsService::DisplayState::kReshown:
+      if (auto* service =
+              SkillsServiceFactory::GetForProfile(base::to_address(profile_))) {
+        const auto* skill = service->GetSkillById(skill_id);
+        CHECK(skill);
+        page_->UpdateSkill(*skill);
+      }
+      break;
+    default:
+      NOTREACHED();
+  }
 }
 
 void SkillsPageHandler::OnSkillUpdated(
@@ -135,16 +157,6 @@ void SkillsPageHandler::OnSkillUpdated(
     } else {
       // If the skill no longer exists, this means the skill was deleted.
       page_->RemoveSkill(std::string(skill_id));
-
-      // Show a toast to the user that the skill was deleted and if the deletion
-      // was triggered from the UI.
-      auto* tabs = tabs::TabInterface::GetFromContents(&web_contents_.get());
-      auto* browser_window_interface = tabs->GetBrowserWindowInterface();
-      if (browser_window_interface &&
-          update_source == SkillsService::UpdateSource::kLocal) {
-        SkillsUiWindowController::From(browser_window_interface)
-            ->OnSkillDeleted();
-      }
     }
   }
 }

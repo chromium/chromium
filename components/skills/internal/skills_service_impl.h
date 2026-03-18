@@ -86,6 +86,8 @@ class SkillsServiceImpl : public SkillsService {
       override;
   void SyncStatusChanged() override;
   void SetServiceStatusForTesting(ServiceStatus status) override;
+  void NotifyTemporarySkillDisplayChanged(std::string_view skill_id,
+                                          DisplayState display_state) override;
 
  private:
   void NotifySkillChanged(std::string_view skill_id,

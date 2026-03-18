@@ -39,7 +39,7 @@ class MockSkillsDialogDelegate : public SkillsDialogDelegate {
  public:
   MOCK_METHOD(void, CloseDialog, (), (override));
   MOCK_METHOD(void, OnSkillSaved, (const std::string&), (override));
-  MOCK_METHOD(void, OnSkillDeleted, (), (override));
+  MOCK_METHOD(void, OnSkillDeleted, (const std::string&), (override));
 
   base::WeakPtr<MockSkillsDialogDelegate> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
@@ -280,10 +280,7 @@ TEST_F(SkillsDialogHandlerTest, SubmitSkill_LogsUiContextLostWhenDialogClosed) {
 }
 
 TEST_F(SkillsDialogHandlerTest, DeleteSkill_LogsDeleted) {
-  auto* mock_service = static_cast<MockSkillsService*>(
-      SkillsServiceFactory::GetForProfile(&profile_));
-  EXPECT_CALL(*mock_service, DeleteSkill("test_id", _)).Times(1);
-  EXPECT_CALL(mock_delegate_, OnSkillDeleted()).Times(1);
+  EXPECT_CALL(mock_delegate_, OnSkillDeleted("test_id")).Times(1);
   EXPECT_CALL(mock_delegate_, CloseDialog()).Times(1);
 
   handler_->DeleteSkill("test_id");

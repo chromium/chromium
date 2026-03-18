@@ -148,6 +148,8 @@ void ToastController::OnWidgetActivationChanged(views::Widget* widget,
 #endif
 
 void ToastController::OnWidgetDestroyed(views::Widget* widget) {
+  currently_showing_toast_close_callback_.RunAndReset();
+
   // Inform subscribers that Widget was destroyed. Pass in toast_id_ before it
   // is set to null.
   on_widget_destroyed_callbacks_.Notify(currently_showing_toast_id_.value());
@@ -261,6 +263,8 @@ void ToastController::ShowToast(ToastParams params) {
         !params.body_string_cardinality_param.has_value());
 
   currently_showing_toast_id_ = params.toast_id;
+  currently_showing_toast_close_callback_ =
+      std::move(params.toast_close_callback);
   const bool is_actionable =
       current_toast_spec->action_button_string_id().has_value() ||
       current_toast_spec->has_menu();

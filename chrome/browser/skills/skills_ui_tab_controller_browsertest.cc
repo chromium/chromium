@@ -464,7 +464,7 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest,
   EXPECT_FALSE(toast_controller->IsShowingToast());
 
   // Trigger the deletion notification on the Tab Controller.
-  skills_ui_tab_controller()->OnSkillDeleted();
+  skills_ui_tab_controller()->OnSkillDeleted("id");
 
   // Verify that the toast is now showing and has the correct ID.
   EXPECT_TRUE(toast_controller->IsShowingToast());

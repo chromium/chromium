@@ -15,6 +15,10 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/skills/skills_service_factory.h"
 #include "chrome/browser/sync/data_type_store_service_factory.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/toasts/api/toast_id.h"
+#include "chrome/browser/ui/toasts/toast_controller.h"
+#include "chrome/browser/ui/toasts/toast_view.h"
 #include "chrome/browser/ui/webui/skills/skills_dialog_view.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/webui_url_constants.h"
@@ -42,25 +46,17 @@ namespace {
 constexpr char kScreenshotBaselineCL[] = "7573535";
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSkillsPageElementId);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSkillsDialogElementId);
-DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementExists);
+DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementEvent);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementEnabled);
+DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementOpen);
 }  // namespace
-
-class SkillsPageInteractiveUITest : public InteractiveBrowserTest,
-                                    public testing::WithParamInterface<bool> {
+class SkillsPageInteractiveUITest : public InteractiveBrowserTest {
  public:
   SkillsPageInteractiveUITest() = default;
   ~SkillsPageInteractiveUITest() override = default;
 
   void SetUp() override {
-    std::vector<base::test::FeatureRef> enabled_features;
-    if (IsDarkMode()) {
-      enabled_features = {features::kSkillsEnabled,
-                          blink::features::kForceWebContentsDarkMode};
-    } else {
-      enabled_features = {features::kSkillsEnabled};
-    }
-    scoped_feature_list_.InitWithFeatures(enabled_features, {});
+    scoped_feature_list_.InitWithFeatures({features::kSkillsEnabled}, {});
     InteractiveBrowserTest::SetUp();
   }
 
@@ -88,17 +84,15 @@ class SkillsPageInteractiveUITest : public InteractiveBrowserTest,
             &test_url_loader_factory_));
   }
 
-  bool IsDarkMode() const { return GetParam(); }
-
-  InteractiveTestApi::MultiStep WaitForElementExists(
+  InteractiveTestApi::MultiStep WaitForElementEvent(
       const ui::ElementIdentifier& contents_id,
-      const DeepQuery& element) {
-    StateChange element_exists;
-    element_exists.type =
-        WebContentsInteractionTestUtil::StateChange::Type::kExists;
-    element_exists.event = kElementExists;
-    element_exists.where = element;
-    return WaitForStateChange(contents_id, element_exists);
+      const DeepQuery& element,
+      WebContentsInteractionTestUtil::StateChange::Type type) {
+    StateChange state_change;
+    state_change.type = type;
+    state_change.event = kElementEvent;
+    state_change.where = element;
+    return WaitForStateChange(contents_id, state_change);
   }
 
   InteractiveTestApi::MultiStep WaitForElementEnabled(
@@ -111,6 +105,83 @@ class SkillsPageInteractiveUITest : public InteractiveBrowserTest,
     element_enabled.where = element;
     element_enabled.test_function = "(el) => !el.disabled";
     return WaitForStateChange(contents_id, element_enabled);
+  }
+
+  InteractiveTestApi::MultiStep WaitForElementOpen(
+      const ui::ElementIdentifier& contents_id,
+      const DeepQuery& element) {
+    StateChange element_visible;
+    element_visible.type = WebContentsInteractionTestUtil::StateChange::Type::
+        kExistsAndConditionTrue;
+    element_visible.event = kElementOpen;
+    element_visible.where = element;
+    element_visible.test_function = "(el) => el.open === true";
+    return WaitForStateChange(contents_id, element_visible);
+  }
+
+  InteractiveTestApi::MultiStep CheckToastIsShowing(ToastId toast_id) {
+    return PollUntil(
+        [this, toast_id]() {
+          auto* controller = browser()->GetFeatures().toast_controller();
+          return controller && controller->IsShowingToast() &&
+                 controller->GetCurrentToastId() == toast_id;
+        },
+        "polling until toast is showing");
+  }
+
+  InteractiveTestApi::MultiStep AddUserSkillCard() {
+    const InteractiveBrowserWindowTestApi::DeepQuery kAddButtonQuery{
+        "skills-app", "user-skills-page", "cr-button#addSkillButton"};
+    const InteractiveBrowserWindowTestApi::DeepQuery kNameInputQuery{
+        "skills-dialog-app", "cr-input#nameText"};
+    const InteractiveBrowserWindowTestApi::DeepQuery kInstructionsInputQuery{
+        "skills-dialog-app", "textarea#instructionsText"};
+    const InteractiveBrowserWindowTestApi::DeepQuery kSaveButtonQuery{
+        "skills-dialog-app", "cr-button#saveButton"};
+    const InteractiveBrowserWindowTestApi::DeepQuery kNewSkillCardQuery{
+        "skills-app", "user-skills-page", "skill-card"};
+    return Steps(
+        WaitForElementEvent(
+            kSkillsPageElementId, kAddButtonQuery,
+            WebContentsInteractionTestUtil::StateChange::Type::kExists),
+        ClickElement(kSkillsPageElementId, kAddButtonQuery),
+        InstrumentNonTabWebView(
+            kSkillsDialogElementId,
+            skills::SkillsDialogView::kSkillsDialogElementId),
+        Do([this]() {
+          histogram_tester_.ExpectUniqueSample(
+              "Skills.Dialog.Creation.ManagementPage.Blank.Action",
+              skills::SkillsDialogAction::kOpened, 1);
+        }),
+        // Create a new skill.
+        WaitForElementEvent(
+            kSkillsDialogElementId, kNameInputQuery,
+            WebContentsInteractionTestUtil::StateChange::Type::kExists),
+        ExecuteJsAt(kSkillsDialogElementId, kNameInputQuery,
+                    "el => {"
+                    "  el.value = 'My New Skill';"
+                    "  el.dispatchEvent(new Event('input', { bubbles: true }));"
+                    "}"),
+        WaitForElementEvent(
+            kSkillsDialogElementId, kInstructionsInputQuery,
+            WebContentsInteractionTestUtil::StateChange::Type::kExists),
+        ExecuteJsAt(kSkillsDialogElementId, kInstructionsInputQuery,
+                    "el => {"
+                    "  el.value = 'Instructions';"
+                    "  el.dispatchEvent(new Event('input', { bubbles: true }));"
+                    "}"),
+        WaitForElementEnabled(kSkillsDialogElementId, kSaveButtonQuery),
+        ClickElement(kSkillsDialogElementId, kSaveButtonQuery,
+                     ExecuteJsMode::kFireAndForget),
+        WaitForHide(skills::SkillsDialogView::kSkillsDialogElementId),
+        Do([this]() {
+          histogram_tester_.ExpectBucketCount(
+              "Skills.Dialog.Creation.ManagementPage.Blank.Action",
+              skills::SkillsDialogAction::kSaved, 1);
+        }),
+        WaitForElementEvent(
+            kSkillsPageElementId, kNewSkillCardQuery,
+            WebContentsInteractionTestUtil::StateChange::Type::kExists));
   }
 
   InteractiveTestApi::MultiStep OpenSkillsPage(const GURL& url) {
@@ -129,19 +200,66 @@ class SkillsPageInteractiveUITest : public InteractiveBrowserTest,
  protected:
   network::TestURLLoaderFactory test_url_loader_factory_;
   base::HistogramTester histogram_tester_;
-
- private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+IN_PROC_BROWSER_TEST_F(SkillsPageInteractiveUITest, UndoFromDeletionFlow) {
+  const InteractiveBrowserWindowTestApi::DeepQuery kMenuButtonQuery{
+      "skills-app", "user-skills-page", "skill-card",
+      "cr-icon-button#moreButton"};
+  const InteractiveBrowserWindowTestApi::DeepQuery kMenuDropdownQuery{
+      "skills-app", "user-skills-page", "skill-card", "cr-action-menu#menu"};
+  const InteractiveBrowserWindowTestApi::DeepQuery kDeleteButtonQuery{
+      "skills-app", "user-skills-page", "skill-card", "cr-button#deleteButton"};
+  const InteractiveBrowserWindowTestApi::DeepQuery kNewSkillCardQuery{
+      "skills-app", "user-skills-page", "skill-card"};
+
+  SignIn("testskills@gmail.com");
+  glic::GlicEnabling::SetBypassEnablementChecksForTesting(true);
+  RunTestSequence(
+      OpenSkillsPage(GURL(chrome::kChromeUISkillsURL)
+                         .Resolve(chrome::kChromeUISkillsYourSkillsPath)),
+      AddUserSkillCard(), ClickElement(kSkillsPageElementId, kMenuButtonQuery),
+      WaitForElementOpen(kSkillsPageElementId, kMenuDropdownQuery),
+      ClickElement(kSkillsPageElementId, kDeleteButtonQuery),
+      WaitForElementEvent(
+          kSkillsPageElementId, kNewSkillCardQuery,
+          WebContentsInteractionTestUtil::StateChange::Type::kDoesNotExist),
+      CheckToastIsShowing(ToastId::kSkillDeleted),
+      // Pressing the toast action button here is the undo.
+      PressButton(toasts::ToastView::kToastActionButton),
+      // The card should show again on the UI after the undo.
+      WaitForElementEvent(
+          kSkillsPageElementId, kNewSkillCardQuery,
+          WebContentsInteractionTestUtil::StateChange::Type::kExists));
+}
+
+class SkillsPageScreenshotInteractiveUITest
+    : public SkillsPageInteractiveUITest,
+      public testing::WithParamInterface<bool> {
+ public:
+  bool IsDarkMode() const { return GetParam(); }
+  void SetUp() override {
+    std::vector<base::test::FeatureRef> enabled_features;
+    if (IsDarkMode()) {
+      enabled_features = {features::kSkillsEnabled,
+                          blink::features::kForceWebContentsDarkMode};
+    } else {
+      enabled_features = {features::kSkillsEnabled};
+    }
+    scoped_feature_list_.InitWithFeatures(enabled_features, {});
+    InteractiveBrowserTest::SetUp();
+  }
+};
+
 INSTANTIATE_TEST_SUITE_P(All,
-                         SkillsPageInteractiveUITest,
+                         SkillsPageScreenshotInteractiveUITest,
                          testing::Bool(),
                          [](const testing::TestParamInfo<bool>& info) {
                            return info.param ? "DarkMode" : "LightMode";
                          });
 
-IN_PROC_BROWSER_TEST_P(SkillsPageInteractiveUITest, ErrorStatePage) {
+IN_PROC_BROWSER_TEST_P(SkillsPageScreenshotInteractiveUITest, ErrorStatePage) {
   std::string screenshot_name =
       IsDarkMode() ? "error_state_dark" : "error_state_light";
   RunTestSequence(SetOnIncompatibleAction(
@@ -151,18 +269,12 @@ IN_PROC_BROWSER_TEST_P(SkillsPageInteractiveUITest, ErrorStatePage) {
                   Screenshot(kSkillsPageElementId,
                              /*screenshot_name=*/screenshot_name,
                              /*baseline_cl=*/kScreenshotBaselineCL));
-}
-
-IN_PROC_BROWSER_TEST_P(SkillsPageInteractiveUITest, ErrorPageMetrics) {
-  // Opening the skills page without Glic should show the Error Page and log the
-  // metric.
-  RunTestSequence(OpenSkillsPage(GURL(chrome::kChromeUISkillsURL)));
   histogram_tester_.ExpectBucketCount(
       "Skills.Management.ErrorPage.Action",
       skills::mojom::SkillsManagementAction::kPageOpened, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(SkillsPageInteractiveUITest, ZeroStatePage) {
+IN_PROC_BROWSER_TEST_P(SkillsPageScreenshotInteractiveUITest, ZeroStatePage) {
   std::string screenshot_name =
       IsDarkMode() ? "zero_state_dark" : "zero_state_light";
   SignIn("testskills@gmail.com");
@@ -178,7 +290,7 @@ IN_PROC_BROWSER_TEST_P(SkillsPageInteractiveUITest, ZeroStatePage) {
                  /*baseline_cl=*/kScreenshotBaselineCL));
 }
 
-IN_PROC_BROWSER_TEST_P(SkillsPageInteractiveUITest, NarrowPage) {
+IN_PROC_BROWSER_TEST_P(SkillsPageScreenshotInteractiveUITest, NarrowPage) {
   const InteractiveBrowserWindowTestApi::DeepQuery kHamburgerMenuQuery{
       "skills-app", "cr-toolbar#toolbar", "#menuButton"};
 
@@ -197,27 +309,20 @@ IN_PROC_BROWSER_TEST_P(SkillsPageInteractiveUITest, NarrowPage) {
       }),
       OpenSkillsPage(GURL(chrome::kChromeUISkillsURL)
                          .Resolve(chrome::kChromeUISkillsYourSkillsPath)),
-      WaitForElementExists(kSkillsPageElementId, kHamburgerMenuQuery),
+      WaitForElementEvent(
+          kSkillsPageElementId, kHamburgerMenuQuery,
+          WebContentsInteractionTestUtil::StateChange::Type::kExists),
       ExecuteJsAt(kSkillsPageElementId, kHamburgerMenuQuery,
                   "(el) => el.click()"),
-      WaitForElementExists(kSkillsPageElementId, kDrawerQuery),
+      WaitForElementEvent(
+          kSkillsPageElementId, kDrawerQuery,
+          WebContentsInteractionTestUtil::StateChange::Type::kExists),
       Screenshot(kSkillsPageElementId,
                  /*screenshot_name=*/screenshot_name,
                  /*baseline_cl=*/kScreenshotBaselineCL));
 }
 
-IN_PROC_BROWSER_TEST_P(SkillsPageInteractiveUITest, YourSkillsPage) {
-  const InteractiveBrowserWindowTestApi::DeepQuery kAddButtonQuery{
-      "skills-app", "user-skills-page", "cr-button#addSkillButton"};
-  const InteractiveBrowserWindowTestApi::DeepQuery kNameInputQuery{
-      "skills-dialog-app", "cr-input#nameText"};
-  const InteractiveBrowserWindowTestApi::DeepQuery kInstructionsInputQuery{
-      "skills-dialog-app", "textarea#instructionsText"};
-  const InteractiveBrowserWindowTestApi::DeepQuery kSaveButtonQuery{
-      "skills-dialog-app", "cr-button#saveButton"};
-  const InteractiveBrowserWindowTestApi::DeepQuery kNewSkillCardQuery{
-      "skills-app", "user-skills-page", "skill-card"};
-
+IN_PROC_BROWSER_TEST_P(SkillsPageScreenshotInteractiveUITest, YourSkillsPage) {
   std::string screenshot_name =
       IsDarkMode() ? "your_skills_dark" : "your_skills_light";
   SignIn("testskills@gmail.com");
@@ -228,38 +333,7 @@ IN_PROC_BROWSER_TEST_P(SkillsPageInteractiveUITest, YourSkillsPage) {
           "Screenshots not supported in all testing environments."),
       OpenSkillsPage(GURL(chrome::kChromeUISkillsURL)
                          .Resolve(chrome::kChromeUISkillsYourSkillsPath)),
-      // Click the add button, this should trigger the dialog to open.
-      WaitForElementExists(kSkillsPageElementId, kAddButtonQuery),
-      ClickElement(kSkillsPageElementId, kAddButtonQuery),
-      InstrumentNonTabWebView(kSkillsDialogElementId,
-                              skills::SkillsDialogView::kSkillsDialogElementId),
-      Do([this]() {
-        histogram_tester_.ExpectUniqueSample(
-            "Skills.Dialog.Creation.ManagementPage.Blank.Action",
-            skills::SkillsDialogAction::kOpened, 1);
-      }),
-      // Create a new skill.
-      WaitForElementExists(kSkillsDialogElementId, kNameInputQuery),
-      ExecuteJsAt(kSkillsDialogElementId, kNameInputQuery,
-                  "el => {"
-                  "  el.value = 'My New Skill';"
-                  "  el.dispatchEvent(new Event('input', { bubbles: true }));"
-                  "}"),
-      WaitForElementExists(kSkillsDialogElementId, kInstructionsInputQuery),
-      ExecuteJsAt(kSkillsDialogElementId, kInstructionsInputQuery,
-                  "el => {"
-                  "  el.value = 'Instructions';"
-                  "  el.dispatchEvent(new Event('input', { bubbles: true }));"
-                  "}"),
-      WaitForElementEnabled(kSkillsDialogElementId, kSaveButtonQuery),
-      MoveMouseTo(kSkillsDialogElementId, kSaveButtonQuery), ClickMouse(),
-      WaitForHide(skills::SkillsDialogView::kSkillsDialogElementId),
-      Do([this]() {
-        histogram_tester_.ExpectBucketCount(
-            "Skills.Dialog.Creation.ManagementPage.Blank.Action",
-            skills::SkillsDialogAction::kSaved, 1);
-      }),
-      WaitForElementExists(kSkillsPageElementId, kNewSkillCardQuery),
+      AddUserSkillCard(),
       Screenshot(kSkillsPageElementId,
                  /*screenshot_name=*/screenshot_name,
                  /*baseline_cl=*/kScreenshotBaselineCL));
@@ -268,7 +342,8 @@ IN_PROC_BROWSER_TEST_P(SkillsPageInteractiveUITest, YourSkillsPage) {
       skills::mojom::SkillsManagementAction::kPageOpened, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(SkillsPageInteractiveUITest, BrowseSkillsPage) {
+IN_PROC_BROWSER_TEST_P(SkillsPageScreenshotInteractiveUITest,
+                       BrowseSkillsPage) {
   skills::proto::SkillsList skills_list;
   skills::proto::Skill* skill = skills_list.add_skills();
   skill->set_id("123");
@@ -306,7 +381,9 @@ IN_PROC_BROWSER_TEST_P(SkillsPageInteractiveUITest, BrowseSkillsPage) {
           "Screenshots not supported in all testing environments."),
       OpenSkillsPage(GURL(chrome::kChromeUISkillsURL)
                          .Resolve(chrome::kChromeUISkillsBrowsePath)),
-      WaitForElementExists(kSkillsPageElementId, kSkillCardQuery),
+      WaitForElementEvent(
+          kSkillsPageElementId, kSkillCardQuery,
+          WebContentsInteractionTestUtil::StateChange::Type::kExists),
       Screenshot(kSkillsPageElementId,
                  /*screenshot_name=*/screenshot_name,
                  /*baseline_cl=*/kScreenshotBaselineCL));

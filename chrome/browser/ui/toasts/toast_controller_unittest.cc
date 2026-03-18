@@ -152,6 +152,31 @@ TEST_F(ToastControllerUnitTest, ToastAutomaticallyCloses) {
   EXPECT_FALSE(controller->IsShowingToast());
 }
 
+TEST_F(ToastControllerUnitTest, ToastCloseCallbackTriggered) {
+  ToastRegistry* const registry = toast_registry();
+  registry->RegisterToast(
+      ToastId::kLinkCopied,
+      ToastSpecification::Builder(vector_icons::kEmailIcon, kTestStringResId)
+          .Build());
+  auto controller = std::make_unique<TestToastController>(registry);
+
+  EXPECT_CALL(*controller, CreateToast);
+  ToastParams params = ToastParams(ToastId::kLinkCopied);
+  bool callback_called = false;
+  params.toast_close_callback = base::ScopedClosureRunner(
+      base::BindOnce([](bool* callback_called) { *callback_called = true; },
+                     &callback_called));
+  EXPECT_TRUE(controller->MaybeShowToast(std::move(params)));
+  ::testing::Mock::VerifyAndClear(controller.get());
+  EXPECT_TRUE(controller->IsShowingToast());
+  EXPECT_FALSE(callback_called);
+
+  // The toast should stop showing after reaching toast timeout time.
+  task_environment().FastForwardBy(ToastController::kToastDefaultTimeout);
+  EXPECT_FALSE(controller->IsShowingToast());
+  EXPECT_TRUE(callback_called);
+}
+
 TEST_F(ToastControllerUnitTest, ToastWithActionButtonAutomaticallyCloses) {
   ToastRegistry* const registry = toast_registry();
   registry->RegisterToast(

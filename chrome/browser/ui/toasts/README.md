@@ -121,6 +121,19 @@ if (toast_controller) {
 }
 ```
 
+#### Triggering a Toast with a Callback on Close
+When the toast gets destroyed, the callback will be called.
+```
+ToastController* const toast_controller = browser_window_features->toast_controller();
+if (toast_controller) {
+  ToastParams params = ToastParams(ToastId);
+  params.toast_close_callback = base::ScopedClosureRunner(
+      base::BindOnce(&MyClass::OnToastClosed,
+                     weak_factory_.GetWeakPtr(), extra_variable_1));
+  toast_controller->MaybeShowToast(ToastParams(std::move(params)));
+}
+```
+
 Note: even though you have triggered your toast, there is a chance that users
 might not see the toast because another toast immediately triggered after your
 toast, thus preempting your toast from being seen by users.
