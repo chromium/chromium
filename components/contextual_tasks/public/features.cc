@@ -278,7 +278,7 @@ const base::FeatureParam<std::string> kContextualTasksDisplayUrlPath(
 const base::FeatureParam<bool> kContextualTasksShowExpandedSecurityChip(
     &kContextualTasks,
     "ContextualTasksShowExpandedSecurityChip",
-    true);
+    false);
 
 const base::FeatureParam<bool>
     kContextualTasksForceBasicModeIfOpeningThreadHistory(
