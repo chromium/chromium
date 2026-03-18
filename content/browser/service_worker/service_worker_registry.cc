@@ -1321,7 +1321,6 @@ void ServiceWorkerRegistry::DidFindRegistrationForClientUrl(
   if (database_status != storage::mojom::ServiceWorkerDatabaseStatus::kOk &&
       database_status !=
           storage::mojom::ServiceWorkerDatabaseStatus::kErrorNotFound) {
-    DCHECK(!scopes);
     // The following `ScheduleDeleteAndStartOver()` calls
     // `ClearAllInternalCache()`. Therefore, no need to call
     // `ClearInternalCacheForStorageKey()` here.
