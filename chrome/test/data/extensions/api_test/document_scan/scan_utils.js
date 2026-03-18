@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-OperationResult = chrome.documentScan.OperationResult;
-OptionType = chrome.documentScan.OptionType;
+const OperationResult = chrome.documentScan.OperationResult;
+const OptionType = chrome.documentScan.OptionType;
 
 async function getScannerList(filter) {
   return new Promise(resolve => {
@@ -60,7 +60,7 @@ async function startScan(scannerHandle, maxReadSize) {
       format: 'format',
     };
     if (maxReadSize != undefined) {
-      options['maxReadSize'] = maxReadSize;
+      options.maxReadSize = maxReadSize;
     }
     chrome.documentScan.startScan(scannerHandle, options, resolve);
   });

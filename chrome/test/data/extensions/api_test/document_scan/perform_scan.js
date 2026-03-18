@@ -10,7 +10,6 @@ chrome.test.runTests([
       local: true,
       secure: true,
     };
-    var savedId;
     chrome.documentScan.getScannerList(filter, response => {
       chrome.test.assertEq(OperationResult.SUCCESS, response.result);
       chrome.test.assertEq(1, response.scanners.length);
