@@ -39,7 +39,7 @@ AIProofreader::AIProofreader(
     blink::mojom::AIProofreaderCreateOptionsPtr options,
     mojo::PendingReceiver<blink::mojom::AIProofreader> receiver)
     : AIContextBoundObject(context_bound_object_set),
-      session_(std::move(session)),
+      session_wrapper_(std::move(session)),
       receiver_(this, std::move(receiver)),
       options_(std::move(options)) {
   receiver_.set_disconnect_handler(base::BindOnce(
@@ -86,8 +86,9 @@ void AIProofreader::GetCorrectionType(
 }
 
 void AIProofreader::SetPriority(on_device_model::mojom::Priority priority) {
-  if (session_) {
-    session_->SetPriority(priority);
+  auto* session = session_wrapper_.session();
+  if (session) {
+    session->SetPriority(priority);
   }
 }
 
@@ -97,7 +98,8 @@ void AIProofreader::StartExecution(
     const std::string& correction_instruction,
     mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
         pending_responder) {
-  if (!session_) {
+  auto* session = session_wrapper_.session();
+  if (!session) {
     mojo::Remote<blink::mojom::ModelStreamingResponder> responder(
         std::move(pending_responder));
     on_device_ai::SendStreamingStatus(
@@ -110,7 +112,7 @@ void AIProofreader::StartExecution(
       responder_set_.Add(std::move(pending_responder));
   auto request = BuildRequest(input, corrected_input, correction_instruction);
 
-  session_->GetExecutionInputSizeInTokens(
+  session->GetExecutionInputSizeInTokens(
       optimization_guide::MultimodalMessageReadView(request),
       base::BindOnce(&AIProofreader::DidGetExecutionInputSizeForProofread,
                      weak_ptr_factory_.GetWeakPtr(), responder_id, request));
@@ -128,7 +130,7 @@ void AIProofreader::DidGetExecutionInputSizeForProofread(
     return;
   }
 
-  if (!session_) {
+  if (!session_wrapper_.session()) {
     on_device_ai::SendStreamingStatus(
         responder,
         blink::mojom::ModelStreamingResponseStatus::kErrorSessionDestroyed);
@@ -151,8 +153,8 @@ void AIProofreader::DidGetExecutionInputSizeForProofread(
     return;
   }
 
-  session_->ExecuteModel(
-      request,
+  session_wrapper_.ExecuteModelOrQueue(
+      optimization_guide::MultimodalMessage(request),
       base::BindRepeating(&AIProofreader::ModelExecutionCallback,
                           weak_ptr_factory_.GetWeakPtr(), responder_id));
 }

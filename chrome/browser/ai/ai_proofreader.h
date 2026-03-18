@@ -11,6 +11,7 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ai/ai_context_bound_object.h"
+#include "chrome/browser/ai/ai_on_device_session.h"
 #include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/proto/features/proofreader_api.pb.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -86,8 +87,7 @@ class AIProofreader : public AIContextBoundObject,
       const std::string& correction_instruction);
 
   // The underlying session provided by optimization guide component.
-  std::unique_ptr<optimization_guide::OnDeviceSession> session_;
-  mojo::Remote<blink::mojom::AIProofreader> remote_;
+  AIOnDeviceSession session_wrapper_;
   // The `RemoteSet` storing all the responders, each of them corresponds to one
   // `Proofread()` call.
   mojo::RemoteSet<blink::mojom::ModelStreamingResponder> responder_set_;
