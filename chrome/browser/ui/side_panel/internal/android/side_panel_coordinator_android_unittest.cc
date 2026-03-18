@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/side_panel/android/side_panel_coordinator_android.h"
+#include "chrome/browser/ui/side_panel/internal/android/side_panel_coordinator_android.h"
 
 #include <jni.h>
 

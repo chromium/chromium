@@ -8192,7 +8192,7 @@ test("unit_tests") {
       "//chrome/browser/ui/plus_addresses:unit_tests",
       "//chrome/browser/ui/serial",
       "//chrome/browser/ui/serial:test_support",
-      "//chrome/browser/ui/side_panel/android:unit_tests",
+      "//chrome/browser/ui/side_panel/internal/android:unit_tests",
       "//chrome/browser/ui/side_panel/test/android:native_unit_test_support_java",
       "//chrome/browser/ui/tabs:tab_enums",
       "//chrome/browser/usb",

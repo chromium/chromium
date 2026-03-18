@@ -21,11 +21,11 @@ import org.chromium.build.annotations.NullMarked;
  */
 @NullMarked
 final class SidePanelCoordinatorAndroidNativeUnitTestSupport {
-    private final SidePanelCoordinatorAndroidBridge mBridge;
+    private final SidePanelCoordinatorAndroidBridgeImpl mBridge;
 
     @CalledByNativeForTesting
     private SidePanelCoordinatorAndroidNativeUnitTestSupport() {
-        mBridge = new SidePanelCoordinatorAndroidBridge();
+        mBridge = new SidePanelCoordinatorAndroidBridgeImpl();
     }
 
     @CalledByNativeForTesting
