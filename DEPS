@@ -3977,7 +3977,7 @@ deps = {
 
   'src/third_party/wix': {
       'url': Var('chrome_git') + '/chrome/deps/wix/v3_5_2519.git' + '@' +
-        '1cda03778b09bee24389da73daef3de862da37fc',
+        'd0745e3bc7a7a83b8848d9384ac0178036c1fd04',
       'condition': 'checkout_win and checkout_src_internal',
   },
 
