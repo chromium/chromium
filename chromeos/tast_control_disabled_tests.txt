@@ -138,4 +138,7 @@ tast.camera.EncodeAccelJPEG@volteer
 # b/488388275
 tast.health.RunCameraFrameAnalysisRoutine
 
+# b/493342485
+tast.peripherals.LaunchAppFromLauncher.feedback@amd64-generic
+
 # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
