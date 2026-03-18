@@ -193,6 +193,10 @@ public class IdentityDiscControllerTest {
 
     @Test
     @MediumTest
+    // Specifies the test to run only with the GMS Core version greater than or equal to 24w15 which
+    // is the min version that supports split stores UPM backend, to avoid
+    // UserActionableError.NEEDS_UPM_BACKEND_UPGRADE.
+    @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15)
     public void testIdentityDiscWithNavigation() {
         // User is signed in.
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
