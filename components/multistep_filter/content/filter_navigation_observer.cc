@@ -48,19 +48,19 @@ void FilterNavigationObserver::DidFinishNavigation(
     return;
   }
 
-  // If this navigation was triggered by the user accepting a suggestion,
-  // do not generate a new suggestion for the resulting page.
-  if (FilterInitiatedNavigationMarker::GetForNavigationHandle(
-          *navigation_handle)) {
-    return;
-  }
-
   const GURL& url = navigation_handle->GetURL();
   if (!url.SchemeIsHTTPOrHTTPS()) {
     return;
   }
 
   if (service_) {
+    service_->ExtractAnnotation(url);
+    // If this navigation was triggered by the user accepting a suggestion,
+    // do not generate a new suggestion for the resulting page.
+    if (FilterInitiatedNavigationMarker::GetForNavigationHandle(
+            *navigation_handle)) {
+      return;
+    }
     service_->GenerateFilterSuggestions(url,
                                         delegate_->GetSuggestionCallback());
   }

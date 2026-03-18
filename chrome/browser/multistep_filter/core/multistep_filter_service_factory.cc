@@ -4,12 +4,15 @@
 #include "chrome/browser/multistep_filter/core/multistep_filter_service_factory.h"
 
 #include "base/feature_list.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/multistep_filter/core/annotation_index/annotation_index_client.h"
+#include "components/multistep_filter/core/extraction/filter_extractor.h"
 #include "components/multistep_filter/core/features.h"
 #include "components/multistep_filter/core/multistep_filter_service.h"
+#include "components/multistep_filter/core/storage/filter_store.h"
 #include "components/multistep_filter/core/suggestion/filter_suggestion_generator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/browser_context.h"
@@ -48,13 +51,17 @@ MultistepFilterServiceFactory::BuildServiceInstanceForBrowserContext(
   std::unique_ptr<AnnotationIndexClient> annotation_index_client =
       AnnotationIndexClient::Create();
   std::unique_ptr<FilterStore> filter_store = std::make_unique<FilterStore>();
+  std::unique_ptr<FilterExtractor> filter_extractor =
+      std::make_unique<FilterExtractor>(*annotation_index_client,
+                                        *filter_store);
   std::unique_ptr<FilterSuggestionGenerator> filter_suggestion_generator =
       std::make_unique<FilterSuggestionGenerator>(*annotation_index_client,
                                                   *filter_store);
 
   return std::make_unique<MultistepFilterService>(
       std::move(annotation_index_client), std::move(filter_store),
-      std::move(filter_suggestion_generator), identity_manager);
+      std::move(filter_extractor), std::move(filter_suggestion_generator),
+      identity_manager);
 }
 
 }  // namespace multistep_filter

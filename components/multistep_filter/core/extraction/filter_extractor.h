@@ -25,12 +25,13 @@ class FilterExtractor {
   FilterExtractor(const FilterExtractor&) = delete;
   FilterExtractor& operator=(const FilterExtractor&) = delete;
 
-  ~FilterExtractor();
+  // Virtual for testing.
+  virtual ~FilterExtractor();
 
   // Parses the given url to extract a `FilterAnnotation` using the
   // `AnnotationIndexClient` and stores it to the `FilterAnnotationTable`
-  // using the `FilterStore`.
-  void ExtractAnnotationFromUrl(const GURL& url);
+  // using the `FilterStore`. Virtual for testing.
+  virtual void ExtractAnnotationFromUrl(const GURL& url);
 
  private:
   // Callback invoked when the `AnnotationIndexClient` task posted in

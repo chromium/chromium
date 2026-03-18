@@ -48,6 +48,7 @@ source_set("unit_tests") {
       "//chrome/test:test_support",
       "//components/multistep_filter/core",
       "//components/multistep_filter/core:features",
+      "//components/multistep_filter/core/annotation_index:test_support",
       "//components/tabs:test_support",
       "//content/test:test_support",
       "//testing/gmock",

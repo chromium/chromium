@@ -12,7 +12,6 @@
 
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
-#include "components/multistep_filter/core/annotation_index/proto/annotation_index.pb.h"
 #include "url/gurl.h"
 
 namespace multistep_filter {
