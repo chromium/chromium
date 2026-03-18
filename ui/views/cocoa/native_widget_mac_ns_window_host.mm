@@ -302,8 +302,9 @@ const char NativeWidgetMacNSWindowHost::kMovedContentNSView[] =
     "kMovedContentNSView";
 
 // static
-void NativeWidgetMacNSWindowHost::MoveWindowsToOriginalSpacesUponRestoration() {
-  g_move_windows_to_original_spaces_upon_restoration = true;
+void NativeWidgetMacNSWindowHost::SetMoveWindowsToOriginalSpacesUponRestoration(
+    bool move) {
+  g_move_windows_to_original_spaces_upon_restoration = move;
 }
 
 // static

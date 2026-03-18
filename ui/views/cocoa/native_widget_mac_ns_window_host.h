@@ -78,9 +78,9 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
   // widget; use a __bridge cast to convert to and from NSView*.
   static const char kMovedContentNSView[];
 
-  // Sets state to indicate that windows, upon being restored, should be moved
-  // to the space that originally contained them.
-  static void MoveWindowsToOriginalSpacesUponRestoration();
+  // Sets state as to whether windows, upon being restored, should be moved to
+  // the space that originally contained them.
+  static void SetMoveWindowsToOriginalSpacesUponRestoration(bool move);
 
   // Unique integer id handles are used to bridge between the
   // NativeWidgetMacNSWindowHost in one process and the NativeWidgetNSWindowHost
