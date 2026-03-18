@@ -258,6 +258,17 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="dual source"/>
 </enum>
 
+<enum name="AutoplayUserGestureStatus">
+  <int value="0" label="None"/>
+  <int value="1" label="On stack"/>
+  <int value="2" label="On page"/>
+  <int value="3" label="On stack + On page"/>
+  <int value="4" label="Propagated"/>
+  <int value="5" label="On stack + Propagated"/>
+  <int value="6" label="On page + Propagated"/>
+  <int value="7" label="On stack + On page + Propagated"/>
+</enum>
+
 <enum name="AVDAFrameInformation">
   <int value="0" label="Non Overlay Insecure"/>
   <int value="1" label="Non Overlay L3"/>

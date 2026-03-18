@@ -13860,34 +13860,74 @@ be describing additional metrics about the same event.
     Event recorded when there is an attempt to autoplay (ie. no user gesture).
     It will be recorded regardless of the result of this attempt.
   </summary>
-  <metric name="AudioTrack">
+  <metric name="AudioTrack" enum="Boolean">
     <summary>
       Whether the element had an audio track when autoplay was attempted.
     </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.form_factor"/>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
-  <metric name="HighMediaEngagement">
+  <metric name="HighMediaEngagement" enum="Boolean">
     <summary>
       Whether the document has a high media engagement.
     </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.form_factor"/>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
-  <metric name="Muted">
+  <metric name="Muted" enum="Boolean">
     <summary>
       Whether the element was muted when autoplay was attempted.
     </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.form_factor"/>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
-  <metric name="Source">
+  <metric name="Source" enum="AutoplaySource">
     <summary>
       Source of the autoplay attempt: 0 for attribute; 1 for play().
     </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.form_factor"/>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
-  <metric name="UserGestureRequired">
+  <metric name="UserGestureRequired" enum="Boolean">
     <summary>
       Whether a user gesture was required per autoplay rules at the time of
       attempt. By definition there is no user gesture on the stack when the
       attempt is registered.
     </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.form_factor"/>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
-  <metric name="UserGestureStatus">
+  <metric name="UserGestureStatus" enum="AutoplayUserGestureStatus">
     <summary>
       Reflects the current status of user gesture/activation. This is a bit
       field with the following values: - 0b0001 if there is a user gesture on
@@ -13895,11 +13935,27 @@ be describing additional metrics about the same event.
       activated); - 0b0100 if there was a user gesture propagated after a
       navigation.
     </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.form_factor"/>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
-  <metric name="VideoTrack">
+  <metric name="VideoTrack" enum="Boolean">
     <summary>
       Whether the element had a video track when autoplay was attempted.
     </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.form_factor"/>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
 </event>
 
