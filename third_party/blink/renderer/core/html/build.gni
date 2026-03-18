@@ -739,6 +739,7 @@ blink_core_tests_html = [
   "html_link_element_test.cc",
   "html_login_element_test.cc",
   "html_dialog_element_test.cc",
+  "html_marquee_element_test.cc",
   "html_meta_element_test.cc",
   "html_object_element_test.cc",
   "html_capability_element_base_test.cc",
