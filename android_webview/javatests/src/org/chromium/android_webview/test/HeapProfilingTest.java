@@ -9,7 +9,6 @@ import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.MULTI_PROC
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,9 +29,6 @@ public class HeapProfilingTest extends AwParameterizedTest {
     public HeapProfilingTest(AwSettingsMutation param) {
         this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
     }
-
-    @Before
-    public void setUp() {}
 
     @Test
     @MediumTest

@@ -10,7 +10,6 @@ import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.SINGLE_PRO
 import androidx.test.filters.SmallTest;
 
 import org.jni_zero.JNINamespace;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -70,9 +69,6 @@ public class MemoryMetricsLoggerTest extends AwParameterizedTest {
                 "about:blank");
         Assert.assertTrue(MemoryMetricsLoggerUtilsJni.get().forceRecordHistograms());
     }
-
-    @After
-    public void tearDown() {}
 
     @Test
     @Feature({"AndroidWebView"})
