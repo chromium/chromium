@@ -177,13 +177,8 @@ id<GREYMatcher> SignOutSnackbarLabelMatcher() {
   [ChromeEarlGrey waitForSyncTransportStateActiveWithTimeout:base::Seconds(10)];
 }
 
-+ (void)signOut {
-  [self signOutWithClearDataConfirmation:NO];
-}
-
-+ (void)signOutWithClearDataConfirmation:(BOOL)expectClearDataConfirmation {
-  [SigninEarlGreyUI openSyncSettings];
-  // Scroll to the signout button is at the very bottom.
++ (void)tapSignOutFromSyncSettings {
+  // Scroll to the bottom to view the signout button.
   id<GREYMatcher> scrollViewMatcher =
       grey_accessibilityID(kManageSyncTableViewAccessibilityIdentifier);
   [[EarlGrey selectElementWithMatcher:scrollViewMatcher]
@@ -191,26 +186,52 @@ id<GREYMatcher> SignOutSnackbarLabelMatcher() {
 
   // Tap the "Sign out" button.
   [[EarlGrey selectElementWithMatcher:
-                 grey_text(l10n_util::GetNSString(
-                     IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_ITEM))]
+                 grey_allOf(grey_accessibilityLabel(l10n_util::GetNSString(
+                                IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_ITEM)),
+                            grey_userInteractionEnabled(), nil)]
       performAction:grey_tap()];
+}
+
++ (void)signOut {
+  [self signOutWithClearDataConfirmation:NO
+                          expectSnackbar:YES
+                           closeSettings:YES];
+}
+
++ (void)signOutWithClearDataConfirmation:(BOOL)expectClearDataConfirmation
+                          expectSnackbar:(BOOL)expectSnackbar
+                           closeSettings:(BOOL)closeSettings {
+  [SigninEarlGreyUI openSyncSettings];
+  [SigninEarlGreyUI tapSignOutFromSyncSettings];
 
   if (expectClearDataConfirmation) {
     CloseManagedAccountSignOutAndDeleteDataDialog();
   }
 
-  // Close the snackbar, so that it can't obstruct other UI items.
-  [self dismissSignoutSnackbar];
+  if (expectSnackbar) {
+    // Close the snackbar, so that it can't obstruct other UI items.
+    [self dismissSignoutSnackbar];
+  } else {
+    // Check that the sign-out snackbar does not show.
+    [[EarlGrey
+        selectElementWithMatcher:
+            grey_accessibilityLabel(l10n_util::GetNSString(
+                IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_SNACKBAR_MESSAGE))]
+        assertWithMatcher:grey_notVisible()];
+  }
 
   // Wait until the user is signed out. Use a longer timeout for cases where
   // sign out also triggers a clear browsing data.
-  [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:SettingsDoneButton()
-                                  timeout:base::test::ios::
-                                              kWaitForClearBrowsingDataTimeout];
 
-  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
-      performAction:grey_tap()];
+  if (closeSettings) {
+    [ChromeEarlGrey
+        waitForUIElementToAppearWithMatcher:SettingsDoneButton()
+                                    timeout:
+                                        base::test::ios::
+                                            kWaitForClearBrowsingDataTimeout];
+    [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
+        performAction:grey_tap()];
+  }
   [SigninEarlGrey verifySignedOut];
 }
 

@@ -25,27 +25,6 @@
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
-namespace {
-
-void ClickSignOutInAccountSettings() {
-  [SigninEarlGreyUI openSyncSettings];
-
-  // We're now in the "manage sync" view, and the signout button is at the very
-  // bottom. Scroll there.
-  id<GREYMatcher> scrollViewMatcher =
-      grey_accessibilityID(kManageSyncTableViewAccessibilityIdentifier);
-  [[EarlGrey selectElementWithMatcher:scrollViewMatcher]
-      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
-
-  // Tap the "Sign out" button.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_text(l10n_util::GetNSString(
-                     IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_ITEM))]
-      performAction:grey_tap()];
-}
-
-}  // namespace
-
 @interface SignoutActionSheetTestCase : ChromeTestCase
 
 @end
@@ -77,8 +56,7 @@ void ClickSignOutInAccountSettings() {
       signinWithFakeManagedIdentityInPersonalProfile:fakeManagedIdentity];
 
   // The sign out button should directly sign out the user.
-  ClickSignOutInAccountSettings();
-  [SigninEarlGrey verifySignedOut];
+  [SigninEarlGreyUI signOut];
 }
 
 @end

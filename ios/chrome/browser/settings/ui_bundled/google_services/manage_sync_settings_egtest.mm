@@ -96,21 +96,6 @@ void SignInWithPromoFromAccountSettings(FakeSystemIdentity* fake_identity,
       assertWithMatcher:grey_notNil()];
 }
 
-void SignOutFromAccountSettings() {
-  // Scroll to the bottom to view the signout button.
-  id<GREYMatcher> scroll_view_matcher =
-      grey_accessibilityID(kManageSyncTableViewAccessibilityIdentifier);
-  [[EarlGrey selectElementWithMatcher:scroll_view_matcher]
-      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
-
-  // Tap the "Sign out" button.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_allOf(grey_accessibilityLabel(l10n_util::GetNSString(
-                                IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_ITEM)),
-                            grey_userInteractionEnabled(), nil)]
-      performAction:grey_tap()];
-}
-
 // Adds a bookmark. The storage type is determined based on if the user is
 // signed in or not.
 void SaveBookmark(NSString* title, NSString* url) {
@@ -224,7 +209,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   [SigninEarlGreyUI openSyncSettings];
 
-  SignOutFromAccountSettings();
+  [SigninEarlGreyUI tapSignOutFromSyncSettings];
   [SigninEarlGreyUI dismissSignoutSnackbar];
   [ChromeEarlGreyUI waitForAppToIdle];
 
@@ -264,7 +249,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
                                           /*enabled=*/YES)]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  SignOutFromAccountSettings();
+  [SigninEarlGreyUI tapSignOutFromSyncSettings];
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
                                    IDS_CANCEL)] performAction:grey_tap()];
@@ -303,7 +288,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
                                           /*enabled=*/YES)]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  SignOutFromAccountSettings();
+  [SigninEarlGreyUI tapSignOutFromSyncSettings];
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
                                    IDS_CANCEL)] performAction:grey_tap()];
@@ -335,7 +320,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
   SaveBookmark(@"foo", @"https://www.foo.com");
 
-  SignOutFromAccountSettings();
+  [SigninEarlGreyUI tapSignOutFromSyncSettings];
   [[EarlGrey selectElementWithMatcher:
                  chrome_test_util::AlertItemWithAccessibilityLabelId(
                      IDS_CANCEL)] performAction:grey_tap()];
@@ -367,7 +352,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
   SaveBookmark(@"foo", @"https://www.foo.com");
 
-  SignOutFromAccountSettings();
+  [SigninEarlGreyUI tapSignOutFromSyncSettings];
   [[EarlGrey selectElementWithMatcher:
                  chrome_test_util::AlertItemWithAccessibilityLabelId(
                      IDS_IOS_SIGNOUT_DIALOG_SIGN_OUT_AND_DELETE_BUTTON)]
@@ -393,7 +378,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
       selectElementWithMatcher:grey_accessibilityID(kSyncPasswordsIdentifier)]
       performAction:chrome_test_util::TurnTableViewSwitchOn(/*on=*/NO)];
 
-  SignOutFromAccountSettings();
+  [SigninEarlGreyUI tapSignOutFromSyncSettings];
   [SigninEarlGreyUI dismissSignoutSnackbar];
 
   [SigninEarlGrey verifySignedOut];
@@ -433,7 +418,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
       selectElementWithMatcher:grey_accessibilityID(kSyncPasswordsIdentifier)]
       performAction:chrome_test_util::TurnTableViewSwitchOn(/*on=*/NO)];
 
-  SignOutFromAccountSettings();
+  [SigninEarlGreyUI tapSignOutFromSyncSettings];
   [SigninEarlGreyUI dismissSignoutSnackbar];
 
   [SigninEarlGrey verifySignedOut];
@@ -1529,7 +1514,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
       assertWithMatcher:grey_notVisible()];
 
   // Sign out.
-  SignOutFromAccountSettings();
+  [SigninEarlGreyUI tapSignOutFromSyncSettings];
   [SigninEarlGreyUI dismissSignoutSnackbar];
   [ChromeEarlGreyUI waitForAppToIdle];
   [SigninEarlGrey verifySignedOut];

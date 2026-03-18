@@ -28,12 +28,21 @@
 + (void)signinWithFakeIdentity:(FakeSystemIdentity*)fakeIdentity
              enableHistorySync:(BOOL)enableHistorySync;
 
-// Signs the primary account out of Chrome through the accounts list screen.
-// Taps the "Sign Out" button and dismisses the confirmation snackbar.
+// Scrolls down in the sync settings and tap on sign-out button.
++ (void)tapSignOutFromSyncSettings;
+
+// Signs the primary account out of Chrome through the sync settings list
+// screen. Taps the "Sign Out" button, dismisses the confirmation snackbar and
+// close the settings. Verifies the user is signed-out.
 + (void)signOut;
-// Same as `signOut`, but if `expectClearDataConfirmation` is true, expects the
-// "Sign out and clear data?" confirmation dialog to show up, and accepts it.
-+ (void)signOutWithClearDataConfirmation:(BOOL)expectClearDataConfirmation;
+// Opens the settings > sync > signout. If `expectClearDataConfirmation` is
+// true, expects the "Sign out and clear data?" confirmation dialog to show up,
+// and accepts it. If `expectsSnackbar`, dismisses it, otherwise check it does
+// not appears. If `closeSettings`, tap on "Done".  Verifies the user is
+// signed-out.
++ (void)signOutWithClearDataConfirmation:(BOOL)expectClearDataConfirmation
+                          expectSnackbar:(BOOL)expectSnackbar
+                           closeSettings:(BOOL)closeSettings;
 
 // dismisses the confirmation snackbar on sign-out.
 + (void)dismissSignoutSnackbar;

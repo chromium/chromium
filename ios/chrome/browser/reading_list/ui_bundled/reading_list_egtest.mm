@@ -1626,19 +1626,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Scroll to the bottom to view the signout button.
-  id<GREYMatcher> scroll_view_matcher =
-      grey_accessibilityID(kManageSyncTableViewAccessibilityIdentifier);
-  [[EarlGrey selectElementWithMatcher:scroll_view_matcher]
-      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
-
-  // Tap the "Sign out" button.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_allOf(grey_accessibilityLabel(l10n_util::GetNSString(
-                                IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_ITEM)),
-                            grey_userInteractionEnabled(), nil)]
-      performAction:grey_tap()];
-  [ChromeEarlGreyUI waitForAppToIdle];
-  [SigninEarlGrey verifySignedOut];
+  [SigninEarlGreyUI tapSignOutFromSyncSettings];
 
   // Verify that Account Settings is closed.
   [[EarlGrey

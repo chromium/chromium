@@ -165,7 +165,9 @@
   }
 
   // After signout, the managed account should be moved into a separate profile.
-  [SigninEarlGreyUI signOutWithClearDataConfirmation:YES];
+  [SigninEarlGreyUI signOutWithClearDataConfirmation:YES
+                                      expectSnackbar:YES
+                                       closeSettings:YES];
   {
     const base::flat_set<GaiaId> accountsInProfile =
         [SigninEarlGrey accountsInProfileGaiaIDs];
