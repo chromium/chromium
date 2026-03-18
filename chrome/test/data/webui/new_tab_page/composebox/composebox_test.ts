@@ -818,7 +818,7 @@ suite('NewTabPageComposeboxTest', () => {
     } as InputState;
     testProxy.searchboxCallbackRouterRemote.onInputStateChanged(inputState);
     await microtasksFinished();
-    assertDeepEquals((testProxy.element as any).inputState_, inputState);
+    assertDeepEquals((testProxy.element as any).inputState, inputState);
   });
 
   test('setDefaultModel uses activeModel from backend', async () => {
@@ -862,7 +862,7 @@ suite('NewTabPageComposeboxTest', () => {
     await microtasksFinished();
 
     // Set active tool mode to DeepSearch.
-    testProxy.element['activeToolMode_'] = ComposeboxToolMode.kDeepSearch;
+    testProxy.element['activeToolMode'] = ComposeboxToolMode.kDeepSearch;
     await testProxy.element.updateComplete;
 
     // Click on the same tool mode to deselect/delete it.
@@ -871,7 +871,7 @@ suite('NewTabPageComposeboxTest', () => {
 
     // Assert tool mode is reset.
     assertEquals(
-        testProxy.element['activeToolMode_'], ComposeboxToolMode.kUnspecified);
+        testProxy.element['activeToolMode'], ComposeboxToolMode.kUnspecified);
 
     const metricName =
         'ContextualSearch.UserAction.InputStateDeletion.Tool.NewTabPage';

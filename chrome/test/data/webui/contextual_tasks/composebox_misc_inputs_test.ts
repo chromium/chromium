@@ -421,7 +421,7 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
             'Voice search transcript should be updated with voice result');
 
         assertEquals(
-            '', composebox.input_,
+            '', composebox.input,
             'Composebox input should be empty if not final result');
 
         assertEquals(
@@ -451,7 +451,7 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
 
 
         assertEquals(
-            'hellogoodbye', composebox.input_,
+            'hellogoodbye', composebox.input,
             'Composebox input should be updated with final result');
 
         assertEquals(
@@ -524,7 +524,7 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
         'Transcript should be updated immediately on result');
 
     assertEquals(
-        '', composebox.input_,
+        '', composebox.input,
         'Input should not be updated in composebox without final result');
 
     callback();
@@ -540,7 +540,7 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
     assertEquals(
         composebox.animationState, GlowAnimationState.SUBMITTING,
         'Query is submitted via submitQuery_()');
-    assertEquals(composebox.input_, '', 'Input should be cleared after submit');
+    assertEquals(composebox.input, '', 'Input should be cleared after submit');
 
     assertEquals(
         '', voiceSearchInput.value,
