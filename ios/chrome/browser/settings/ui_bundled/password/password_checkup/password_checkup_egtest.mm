@@ -781,7 +781,8 @@ NSString* LeakedPasswordDescription() {
 
 // Tests resolving the last compromised passwords issue by deleting a password
 // through Password Checkup.
-- (void)testChangeCompromisedPasswordToSafePassword {
+// TODO(crbug.com/493968696): Test is flaky.
+- (void)FLAKY_testChangeCompromisedPasswordToSafePassword {
   SaveCompromisedPasswordFormToProfileStore();
 
   OpenPasswordCheckupHomepage(
