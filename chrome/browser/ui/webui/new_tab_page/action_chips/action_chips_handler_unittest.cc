@@ -682,4 +682,18 @@ TEST_F(ActionChipsHandlerTest, SetActionChipsVisibility) {
   handler().SetActionChipsVisibility(true);
   EXPECT_TRUE(profile_->GetPrefs()->GetBoolean(prefs::kNtpToolChipsVisible));
 }
+
+TEST_F(ActionChipsHandlerTest, NullBrowserWindowInterface) {
+  // Replace the real browser_window_interface with a null one.
+  webui::SetBrowserWindowInterface(web_contents(), nullptr);
+
+  auto mock_action_chips_generator =
+      std::make_unique<MockActionChipsGenerator>();
+  // Re-create the handler this time with no browser_window_interface.
+  // This should not crash.
+  auto handler_without_bwi = std::make_unique<FakeActionChipsHandler>(
+      mojo::PendingReceiver<action_chips::mojom::ActionChipsHandler>(),
+      mojo::PendingRemote<Page>(), profile_.get(), web_ui_.get(),
+      std::move(mock_action_chips_generator));
+}
 }  // namespace
