@@ -21,6 +21,7 @@ class DummyUkmDataManager : public UkmDataManager {
 
   // UkmDataManager implementation:
   void Initialize(const base::FilePath& database_path, bool in_memory) override;
+  void BeginShutdown() override;
   void StartObservation(UkmObserver* ukm_observer) override;
   bool IsUkmEngineEnabled() override;
   void StartObservingUkm(const UkmConfig& config) override;

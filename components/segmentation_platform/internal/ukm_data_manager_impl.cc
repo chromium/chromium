@@ -56,6 +56,14 @@ void UkmDataManagerImpl::Initialize(const base::FilePath& database_path,
   InitiailizeImpl(std::make_unique<UkmDatabaseImpl>(database_path, in_memory));
 }
 
+void UkmDataManagerImpl::BeginShutdown() {
+  shutting_down_ = true;
+  if (ref_count_ == 0) {
+    url_signal_handler_.reset();
+    ukm_database_.reset();
+  }
+}
+
 void UkmDataManagerImpl::StartObservation(UkmObserver* ukm_observer) {
   ukm_observer_ = ukm_observer;
   ukm_observer_->set_ukm_data_manager(this);
@@ -147,7 +155,10 @@ void UkmDataManagerImpl::AddRef() {
 void UkmDataManagerImpl::RemoveRef() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_check_);
   DCHECK_GT(ref_count_, 0);
-  ref_count_--;
+  if (--ref_count_ == 0 && shutting_down_) {
+    url_signal_handler_.reset();
+    ukm_database_.reset();
+  }
 }
 
 void UkmDataManagerImpl::RunCleanupTask() {

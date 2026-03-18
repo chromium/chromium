@@ -87,6 +87,10 @@ void UkmDatabaseClient::PostMessageLoopRun() {
     ukm_observer_->StopObserving();
     ukm_observer_ = nullptr;
   }
+
+  // Tell the manager that shutdown has started so that it can close the UKM
+  // database once it's no longer referenced.
+  ukm_data_manager_->BeginShutdown();
 }
 
 // static

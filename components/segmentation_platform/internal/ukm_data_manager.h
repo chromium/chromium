@@ -37,6 +37,10 @@ class UkmDataManager {
   virtual void Initialize(const base::FilePath& database_path,
                           bool in_memory) = 0;
 
+  // Informs the manager that shutdown has begun and that cleanup should
+  // commence once the last reference to the manager is released.
+  virtual void BeginShutdown() = 0;
+
   virtual void StartObservation(UkmObserver* ukm_observer) = 0;
 
   // Returns true when UKM engine is usable. If false, then UKM based engine is

@@ -32,6 +32,7 @@ class UkmDataManagerImpl : public UkmDataManager {
 
   // UkmDataManager implementation:
   void Initialize(const base::FilePath& database_path, bool in_memory) override;
+  void BeginShutdown() override;
   void StartObservation(UkmObserver* ukm_observer) override;
   bool IsUkmEngineEnabled() override;
   void StartObservingUkm(const UkmConfig& config) override;
@@ -58,6 +59,8 @@ class UkmDataManagerImpl : public UkmDataManager {
   std::unique_ptr<UkmConfig> pending_ukm_config_;
 
   std::optional<bool> is_ukm_allowed_;
+
+  bool shutting_down_ = false;
 
   SEQUENCE_CHECKER(sequence_check_);
 
