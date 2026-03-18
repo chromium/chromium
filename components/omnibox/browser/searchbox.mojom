@@ -391,11 +391,18 @@ interface PageHandler {
 
   // Called when a user enables a tool.
   SetActiveToolMode(composebox_query.mojom.ToolMode tool);
+
   // Called when a user enables a model.
   SetActiveModelMode(composebox_query.mojom.ModelMode model);
 
   // Activates a metrics funnel for the session.
   ActivateMetricsFunnel(string funnel_name);
+
+  // Called when a user interacts with a tool selection button explicitly.
+  RecordToolSelectionAction(composebox_query.mojom.ToolMode tool);
+
+  // Called when a user interacts with a model selection button explicitly.
+  RecordModelSelectionAction(composebox_query.mojom.ModelMode model);
 };
 
 // WebUI-side handler for requests from the browser.

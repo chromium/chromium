@@ -1166,6 +1166,7 @@ TEST_P(ContextualTasksComposeboxHandlerToolModeTest, SetsToolModeFlags) {
   const auto& param = GetParam();
 
   handler_->SetActiveToolMode(param.tool_mode);
+  handler_->RecordToolSelectionAction(param.tool_mode);
 
   EXPECT_CALL(*mock_controller_, CreateClientToAimRequest(testing::_))
       .WillOnce([&](std::unique_ptr<
