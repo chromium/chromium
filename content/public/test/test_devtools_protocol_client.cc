@@ -47,8 +47,7 @@ const base::DictValue* TestDevToolsProtocolClient::SendSessionCommand(
   if (!session_id.empty())
     command.Set(kSessionIdParam, std::move(session_id));
 
-  std::string json_command =
-      base::WriteJson(base::Value(std::move(command))).value_or("");
+  std::string json_command = base::WriteJson(command).value_or("");
   agent_host_->DispatchProtocolMessage(this, base::as_byte_span(json_command));
   // Some messages are dispatched synchronously.
   // Only run loop if we are not finished yet.

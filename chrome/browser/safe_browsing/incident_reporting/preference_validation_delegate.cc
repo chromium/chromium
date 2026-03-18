@@ -80,7 +80,7 @@ void PreferenceValidationDelegate::OnAtomicPreferenceValidation(
       incident->clear_atomic_value();
     } else if (value->is_string()) {
       *incident->mutable_atomic_value() = value->GetString();
-    } else if (!base::JSONWriter::Write(std::move(*value),
+    } else if (!base::JSONWriter::Write(*value,
                                         incident->mutable_atomic_value())) {
       incident->clear_atomic_value();
     }

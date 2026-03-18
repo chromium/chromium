@@ -248,8 +248,7 @@ LaunchContext::BackgroundLaunchResult LaunchContext::LaunchInBackground(
 #endif
     }
     std::string encoded_reconnect_command;
-    bool success =
-        base::JSONWriter::Write(std::move(args), &encoded_reconnect_command);
+    bool success = base::JSONWriter::Write(args, &encoded_reconnect_command);
     DCHECK(success);
     command_line.AppendArg(
         base::StrCat({"--reconnect-command=",

@@ -318,8 +318,7 @@ const std::string GetUnsafeArticleContentJs(
 
 const std::string GetAddToPageJs(const std::string& unsafe_content) {
   std::string output =
-      base::WriteJson(base::Value(EnsureNonEmptyContent(unsafe_content)))
-          .value_or("");
+      base::WriteJson(EnsureNonEmptyContent(unsafe_content)).value_or("");
   return "addToPage(" + output + ");";
 }
 

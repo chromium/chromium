@@ -182,8 +182,7 @@ void SimpleDevToolsProtocolClient::SendProtocolMessage(
 
   VLOG(kVLogLevel) << "\n[CDP SEND] " << message.DebugString();
 
-  std::string json_message =
-      base::WriteJson(base::Value(std::move(message))).value_or("");
+  std::string json_message = base::WriteJson(message).value_or("");
   agent_host_->DispatchProtocolMessage(this, base::as_byte_span(json_message));
 }
 
