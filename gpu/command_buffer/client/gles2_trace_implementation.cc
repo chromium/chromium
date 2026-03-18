@@ -66,6 +66,26 @@ GLES2TraceImplementation::CopySharedImageToGLTextureViaTextureCopy(
       dst_origin);
 }
 
+std::unique_ptr<gpu::RasterScopedAccess>
+GLES2TraceImplementation::CopySharedImageDirectlyToGLTexture(
+    const gfx::Rect& src_rect,
+    ClientSharedImage* source_shared_image,
+    const gpu::SyncToken& source_sync_token,
+    bool is_opaque,
+    uint32_t dst_target,
+    uint32_t dst_texture,
+    uint32_t dst_internal_format,
+    uint32_t dst_format,
+    uint32_t dst_type,
+    int32_t dst_level,
+    SkAlphaType dst_alpha_type,
+    GrSurfaceOrigin dst_origin) {
+  return gl_->CopySharedImageDirectlyToGLTexture(
+      src_rect, source_shared_image, source_sync_token, is_opaque, dst_target,
+      dst_texture, dst_internal_format, dst_format, dst_type, dst_level,
+      dst_alpha_type, dst_origin);
+}
+
 // InterfaceBase implementation.
 void GLES2TraceImplementation::GenSyncTokenCHROMIUM(GLbyte* sync_token) {
   gl_->GenSyncTokenCHROMIUM(sync_token);

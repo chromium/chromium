@@ -255,19 +255,6 @@ gpu::SyncToken ConvertYuvVideoFrameToRgbSharedImage(
 // We delete the temporary resource if it is not used for 3 seconds.
 const int kTemporaryResourceDeletionDelay = 3;  // Seconds;
 
-void BindAndTexImage2D(gpu::gles2::GLES2Interface* gl,
-                       unsigned int target,
-                       unsigned int texture,
-                       unsigned int internal_format,
-                       unsigned int format,
-                       unsigned int type,
-                       int level,
-                       const gfx::Size& size) {
-  gl->BindTexture(target, texture);
-  gl->TexImage2D(target, level, internal_format, size.width(), size.height(), 0,
-                 format, type, nullptr);
-}
-
 template <typename T>
 base::span<T> CastSpan(base::span<uint8_t> span) {
   CHECK_EQ(span.size() % sizeof(T), 0u);
@@ -702,58 +689,6 @@ VideoPixelFormatAsSkYUVAInfoValues(VideoPixelFormat format) {
   }
 }
 
-std::unique_ptr<gpu::RasterScopedAccess> CopySharedImageDirectlyToGLTexture(
-    gpu::gles2::GLES2Interface* destination_gl,
-    gpu::ClientSharedImage* source_shared_image,
-    gfx::Rect src_rect,
-    const gpu::SyncToken& source_sync_token,
-    bool is_opaque,
-    unsigned int dst_target,
-    unsigned int dst_texture,
-    unsigned int dst_internal_format,
-    unsigned int dst_format,
-    unsigned int dst_type,
-    int dst_level,
-    SkAlphaType dst_alpha_type,
-    GrSurfaceOrigin dst_origin) {
-  std::unique_ptr<gpu::RasterScopedAccess> destination_access;
-  if (destination_gl->CanCopySharedImageToGLTextureViaTextureCopy(
-          source_shared_image)) {
-    destination_gl->CopySharedImageToGLTextureViaTextureCopy(
-        src_rect, source_shared_image, source_sync_token, dst_target,
-        dst_texture, dst_internal_format, dst_format, dst_type, dst_level,
-        dst_alpha_type, dst_origin);
-    destination_gl->ShallowFlushCHROMIUM();
-  } else {
-    CHECK(destination_gl->CanCopySharedImageToGLTextureViaSkia(
-        is_opaque, source_shared_image->GetTextureTarget(), dst_target,
-        dst_internal_format, dst_type, dst_level, dst_alpha_type));
-    // Do a service-side copy from the SharedImage to the destination texture
-    // via Skia wrapping the destination texture in an SkSurface. Note that
-    // this relies on the service-side GL implementation using a Ganesh/GL
-    // context. Currently this assumption is satisfied as the passthrough
-    // decoder always uses a Ganesh/GL context.
-    // TODO(crbug.com/40064510): Eliminate this reliance to enable one-copy
-    // upload to work for Graphite *without* depending on being able to create a
-    // Ganesh/GL context.
-
-    // Trigger resource allocation for dst texture to back SkSurface.
-    BindAndTexImage2D(destination_gl, dst_target, dst_texture,
-                      dst_internal_format, dst_format, dst_type,
-                      /*level=*/0, src_rect.size());
-
-    destination_access = source_shared_image->BeginGLAccessForCopySharedImage(
-        destination_gl, source_sync_token, /*readonly=*/true);
-
-    const bool is_dst_origin_top_left = dst_origin == kTopLeft_GrSurfaceOrigin;
-    destination_gl->CopySharedImageToTextureINTERNAL(
-        dst_texture, dst_target, dst_internal_format, dst_type, src_rect.x(),
-        src_rect.y(), src_rect.width(), src_rect.height(),
-        is_dst_origin_top_left, source_shared_image->mailbox().name);
-  }
-  return destination_access;
-}
-
 void CopyVideoFrameDirectlyToGLTexture(
     viz::RasterContextProvider* raster_context_provider,
     gpu::gles2::GLES2Interface* destination_gl,
@@ -772,9 +707,9 @@ void CopyVideoFrameDirectlyToGLTexture(
   CHECK(raster_context_provider);
 
   std::unique_ptr<gpu::RasterScopedAccess> destination_access =
-      CopySharedImageDirectlyToGLTexture(
-          destination_gl, video_frame->shared_image().get(),
-          video_frame->visible_rect(), video_frame->acquire_sync_token(),
+      destination_gl->CopySharedImageDirectlyToGLTexture(
+          video_frame->visible_rect(), video_frame->shared_image().get(),
+          video_frame->acquire_sync_token(),
           media::IsOpaque(video_frame->format()), target, texture,
           internal_format, format, type, level, dst_alpha_type, dst_origin);
 

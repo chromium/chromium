@@ -37,6 +37,7 @@ extern "C" typedef const struct _GLcolorSpace* GLcolorSpace;
 
 namespace gpu {
 class ClientSharedImage;
+class RasterScopedAccess;
 
 namespace gles2 {
 
@@ -87,6 +88,22 @@ class GLES2Interface : public InterfaceBase {
       int32_t dst_level,
       SkAlphaType dst_alpha_type,
       GrSurfaceOrigin dst_origin);
+
+  // Copies the contents of |source_shared_image| to |texture| of the current
+  // context.
+  virtual std::unique_ptr<RasterScopedAccess>
+  CopySharedImageDirectlyToGLTexture(const gfx::Rect& src_rect,
+                                     ClientSharedImage* source_shared_image,
+                                     const gpu::SyncToken& source_sync_token,
+                                     bool is_opaque,
+                                     uint32_t dst_target,
+                                     uint32_t dst_texture,
+                                     uint32_t dst_internal_format,
+                                     uint32_t dst_format,
+                                     uint32_t dst_type,
+                                     int32_t dst_level,
+                                     SkAlphaType dst_alpha_type,
+                                     GrSurfaceOrigin dst_origin);
 
   virtual void FreeSharedMemory(void*) {}
 

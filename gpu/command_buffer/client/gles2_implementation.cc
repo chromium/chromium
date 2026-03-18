@@ -536,6 +536,57 @@ gpu::SyncToken GLES2Implementation::CopySharedImageToGLTextureViaTextureCopy(
       std::move(scoped_si_access));
 }
 
+std::unique_ptr<gpu::RasterScopedAccess>
+GLES2Implementation::CopySharedImageDirectlyToGLTexture(
+    const gfx::Rect& src_rect,
+    ClientSharedImage* source_shared_image,
+    const gpu::SyncToken& source_sync_token,
+    bool is_opaque,
+    uint32_t dst_target,
+    uint32_t dst_texture,
+    uint32_t dst_internal_format,
+    uint32_t dst_format,
+    uint32_t dst_type,
+    int32_t dst_level,
+    SkAlphaType dst_alpha_type,
+    GrSurfaceOrigin dst_origin) {
+  std::unique_ptr<gpu::RasterScopedAccess> destination_access;
+  if (CanCopySharedImageToGLTextureViaTextureCopy(source_shared_image)) {
+    CopySharedImageToGLTextureViaTextureCopy(
+        src_rect, source_shared_image, source_sync_token, dst_target,
+        dst_texture, dst_internal_format, dst_format, dst_type, dst_level,
+        dst_alpha_type, dst_origin);
+    ShallowFlushCHROMIUM();
+  } else {
+    CHECK(CanCopySharedImageToGLTextureViaSkia(
+        is_opaque, source_shared_image->GetTextureTarget(), dst_target,
+        dst_internal_format, dst_type, dst_level, dst_alpha_type));
+    // Do a service-side copy from the SharedImage to the destination texture
+    // via Skia wrapping the destination texture in an SkSurface. Note that
+    // this relies on the service-side GL implementation using a Ganesh/GL
+    // context. Currently this assumption is satisfied as the passthrough
+    // decoder always uses a Ganesh/GL context.
+    // TODO(crbug.com/40064510): Eliminate this reliance to enable one-copy
+    // upload to work for Graphite *without* depending on being able to create a
+    // Ganesh/GL context.
+
+    // Trigger resource allocation for dst texture to back SkSurface.
+    BindAndTexImage2D(this, dst_target, dst_texture, dst_internal_format,
+                      dst_format, dst_type,
+                      /*level=*/0, src_rect.size());
+
+    destination_access = source_shared_image->BeginGLAccessForCopySharedImage(
+        this, source_sync_token, /*readonly=*/true);
+
+    const bool is_dst_origin_top_left = dst_origin == kTopLeft_GrSurfaceOrigin;
+    CopySharedImageToTextureINTERNAL(
+        dst_texture, dst_target, dst_internal_format, dst_type, src_rect.x(),
+        src_rect.y(), src_rect.width(), src_rect.height(),
+        is_dst_origin_top_left, source_shared_image->mailbox().name);
+  }
+  return destination_access;
+}
+
 void GLES2Implementation::SendErrorMessage(std::string message, int32_t id) {
   if (error_message_callback_.is_null())
     return;

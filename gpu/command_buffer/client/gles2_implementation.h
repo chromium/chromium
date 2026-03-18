@@ -152,6 +152,19 @@ class GLES2_IMPL_EXPORT GLES2Implementation : public GLES2Interface,
       int32_t dst_level,
       SkAlphaType dst_alpha_type,
       GrSurfaceOrigin dst_origin) override;
+  std::unique_ptr<RasterScopedAccess> CopySharedImageDirectlyToGLTexture(
+      const gfx::Rect& src_rect,
+      ClientSharedImage* source_shared_image,
+      const gpu::SyncToken& source_sync_token,
+      bool is_opaque,
+      uint32_t dst_target,
+      uint32_t dst_texture,
+      uint32_t dst_internal_format,
+      uint32_t dst_format,
+      uint32_t dst_type,
+      int32_t dst_level,
+      SkAlphaType dst_alpha_type,
+      GrSurfaceOrigin dst_origin) override;
 
   // Include the auto-generated part of this class. We split this because
   // it means we can easily edit the non-auto generated parts right here in
