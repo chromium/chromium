@@ -646,8 +646,10 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   ContextMenuHelper::CreateForWebContents(web_contents);
 
   if (base::FeatureList::IsEnabled(chrome::android::kChromeFinds)) {
-    finds::FindsTabHelper::CreateForWebContents(
-        web_contents, finds::FindsServiceFactory::GetForProfile(profile));
+    if (auto* finds_service =
+            finds::FindsServiceFactory::GetForProfile(profile)) {
+      finds::FindsTabHelper::CreateForWebContents(web_contents, finds_service);
+    }
   }
 
   if (base::FeatureList::IsEnabled(
