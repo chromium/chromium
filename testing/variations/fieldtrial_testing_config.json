@@ -12297,6 +12297,21 @@
             ]
         }
     ],
+    "IOSGeminiRichAPCExtraction": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GeminiRichAPCExtraction"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSHelios": [
         {
             "platforms": [
