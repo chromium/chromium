@@ -2899,8 +2899,6 @@ static_library("browser") {
       "lens/android/lens_prefs.h",
       "lifetime/application_lifetime_android.cc",
       "lifetime/application_lifetime_android.h",
-      "long_screenshots/long_screenshots_tab_service_factory.cc",
-      "long_screenshots/long_screenshots_tab_service_factory.h",
       "media/android/cdm/media_drm_origin_id_manager.cc",
       "media/android/cdm/media_drm_origin_id_manager.h",
       "media/android/cdm/media_drm_origin_id_manager_factory.cc",
@@ -3155,7 +3153,7 @@ static_library("browser") {
       "//chrome/browser/keyboard_accessory/android",
       "//chrome/browser/language/android:jni_headers",
       "//chrome/browser/lifetime/android:jni_headers",
-      "//chrome/browser/long_screenshots:services",
+      "//chrome/browser/long_screenshots:impl",
       "//chrome/browser/mandatory_reauth/android:mandatory_reauth",
       "//chrome/browser/notifications:jni_headers",
       "//chrome/browser/notifications/chime/android",
@@ -3443,6 +3441,10 @@ static_library("browser") {
       # headers get componentized:
       # - c/b/android/service_tab_launcher.h
       "//chrome/browser/content_index:impl",
+
+      # TODO(crbug.com/353332589): Remove this circular dependency when
+      # c/b/profiles/profile_manager.h gets modularized.
+      "//chrome/browser/long_screenshots:impl",
 
       # TODO(crbug.com/353332589): Remove this circular dependency when the following
       # headers get componentized:

@@ -7,19 +7,55 @@ import("//third_party/protobuf/proto_library.gni")
 
 source_set("services") {
   sources = [
-    "long_screenshots_tab_service.cc",
     "long_screenshots_tab_service.h",
+    "long_screenshots_tab_service_factory.h",
   ]
 
   deps = [
-    "//chrome/android:chrome_jni_headers",
-    "//components/google/core/common",
+    "//base",
     "//components/keyed_service/core",
     "//components/paint_preview/browser",
     "//components/paint_preview/common",
     "//content/public/browser",
     "//third_party/re2",
     "//url",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "long_screenshots_tab_service.cc",
+    "long_screenshots_tab_service_factory.cc",
+  ]
+
+  deps = [
+    ":services",
+    "//base",
+    "//chrome/android:chrome_jni_headers",
+    "//chrome/browser/profiles",
+    "//components/google/core/common",
+    "//components/paint_preview/browser",
+    "//components/paint_preview/common",
+    "//content/public/browser",
+    "//third_party/re2",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "long_screenshots_tab_service_unittest.cc" ]
+  deps = [
+    ":services",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/test:test_support",
+    "//components/paint_preview/common",
+    "//components/paint_preview/common:test_utils",
+    "//content/test:test_support",
+    "//mojo/public/cpp/bindings",
+    "//testing/gtest",
+    "//third_party/blink/public:blink",
   ]
 }
 
