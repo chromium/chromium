@@ -50,6 +50,21 @@ public class SendTabToSelfAndroidBridgeTest {
 
     @Test
     @SmallTest
+    public void testSendTabToDevice() {
+        PageContext context = new PageContext(new byte[0]);
+        SendTabToSelfAndroidBridge.sendTabToDevice(
+                mWebContents, TARGET_DEVICE_SYNC_CACHE_GUID, URL, TITLE, context);
+        verify(mNativeMock)
+                .sendTabToDevice(
+                        eq(mWebContents),
+                        eq(TARGET_DEVICE_SYNC_CACHE_GUID),
+                        eq(URL),
+                        eq(TITLE),
+                        eq(context));
+    }
+
+    @Test
+    @SmallTest
     public void testAddEntry() {
         SendTabToSelfAndroidBridge.addEntry(
                 mProfile, URL, TITLE, TARGET_DEVICE_SYNC_CACHE_GUID, /* pageContext= */ null);

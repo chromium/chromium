@@ -7,6 +7,7 @@ source_set("send_tab_to_self") {
     "receiving_ui_handler.h",
     "send_tab_to_self_client_service.h",
     "send_tab_to_self_client_service_factory.h",
+    "send_tab_to_self_page_handler.h",
     "send_tab_to_self_scroll_observer.h",
     "send_tab_to_self_util.h",
   ]
@@ -31,6 +32,7 @@ source_set("impl") {
   sources = [
     "send_tab_to_self_client_service.cc",
     "send_tab_to_self_client_service_factory.cc",
+    "send_tab_to_self_page_handler.cc",
     "send_tab_to_self_scroll_observer.cc",
     "send_tab_to_self_util.cc",
   ]
@@ -65,18 +67,21 @@ source_set("impl") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = []
-  deps = []
+  sources = [ "send_tab_to_self_page_handler_unittest.cc" ]
+  deps = [
+    ":send_tab_to_self",
+    "//base",
+    "//chrome/browser/sync",
+    "//chrome/test:test_support",
+    "//components/send_tab_to_self:test_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url",
+  ]
 
   if (!is_android) {
     sources += [ "send_tab_to_self_client_service_unittest.cc" ]
-    deps += [
-      ":send_tab_to_self",
-      "//base",
-      "//components/send_tab_to_self:test_support",
-      "//testing/gtest",
-      "//url",
-    ]
   }
 }
 

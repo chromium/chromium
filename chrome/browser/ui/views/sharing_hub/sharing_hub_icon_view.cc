@@ -132,8 +132,8 @@ void SharingHubIconView::MaybeAnimateSendingToast() {
   send_tab_to_self::SendTabToSelfBubbleController* controller =
       GetSendTabToSelfController(web_contents);
 
-  if (controller && controller->show_message()) {
-    controller->set_show_message(false);
+  if (controller && controller->show_confirmation_message()) {
+    controller->SetShowConfirmationMessage(false);
     AnimateIn(std::nullopt);
   }
 }

@@ -9,19 +9,10 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/flat_map.h"
-#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/time/time.h"
-#include "base/token.h"
 #include "components/send_tab_to_self/entry_point_display_reason.h"
 #include "components/send_tab_to_self/metrics_util.h"
-#include "components/send_tab_to_self/page_context.h"
-#include "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
-#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/blink/public/mojom/link_to_text/link_to_text.mojom.h"
 #include "url/gurl.h"
 
 class Profile;
@@ -94,8 +85,8 @@ class SendTabToSelfBubbleController
   void SetInitialSendAnimationShown(bool shown);
 
   bool show_back_button() const { return show_back_button_; }
-  bool show_message() const { return show_message_; }
-  void set_show_message(bool show_message) { show_message_ = show_message; }
+  bool show_confirmation_message() const { return show_confirmation_message_; }
+  void SetShowConfirmationMessage(bool show_confirmation_message);
 
   base::WeakPtr<SendTabToSelfBubbleController> AsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -121,56 +112,14 @@ class SendTabToSelfBubbleController
   Profile* GetProfile();
   virtual std::optional<EntryPointDisplayReason> GetEntryPointDisplayReason();
 
-  void SelectorGeneratedForRequest(
-      base::Token request_token,
-      bool is_browser_timeout,
-      const std::string& selector,
-      shared_highlighting::LinkGenerationError error,
-      shared_highlighting::LinkGenerationReadyStatus ready_status);
-
-  struct PendingRequest {
-    PendingRequest();
-    PendingRequest(PendingRequest&&);
-    PendingRequest& operator=(PendingRequest&&);
-    ~PendingRequest();
-
-    std::string target_device_guid;
-    GURL url;
-    std::string title;
-    base::TimeTicks start_time;
-    PageContext page_context;
-    content::GlobalRenderFrameHostId main_frame_id;
-  };
-
-  void SendFinalizedRequest(
-      PendingRequest request,
-      std::optional<ScrollPositionGenerationOutcome> outcome);
-
-  base::TimeDelta GetSelectorGenerationTimeout() const;
-
   // Weak reference. Will be nullptr if no bubble is currently shown.
   raw_ptr<SendTabToSelfBubbleView> send_tab_to_self_bubble_view_ = nullptr;
   // True if the back button is currently shown.
   bool show_back_button_ = false;
   // True if a confirmation message should be shown in the omnibox.
-  bool show_message_ = false;
+  bool show_confirmation_message_ = false;
   // True if the bubble is currently shown.
   bool bubble_shown_ = false;
-
-  mojo::Remote<blink::mojom::TextFragmentReceiver> text_fragment_receiver_;
-
-  // The ID of the main frame that the text_fragment_receiver_ is currently
-  // bound to.
-  content::GlobalRenderFrameHostId last_main_frame_id_;
-
-  // A map of pending requests for text fragment generation. These are stored
-  // to be able to associate the response from the renderer with the correct
-  // device selection.
-  base::flat_map<base::Token, PendingRequest> pending_requests_;
-
-  // Timeout for the renderer to generate a text fragment selector for the
-  // viewport center.
-  base::TimeDelta selector_generation_timeout_for_testing_;
 
   raw_ptr<actions::ActionItem> send_tab_to_self_action_item_ = nullptr;
 

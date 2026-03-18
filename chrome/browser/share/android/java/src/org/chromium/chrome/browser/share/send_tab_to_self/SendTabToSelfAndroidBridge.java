@@ -49,6 +49,25 @@ public class SendTabToSelfAndroidBridge {
     }
 
     /**
+     * Handles the action when the user selects a device.
+     *
+     * @param webContents The web contents that the user is sharing.
+     * @param targetDeviceSyncCacheGuid The GUID of the target device.
+     * @param url The URL being shared.
+     * @param title The title of the page being shared.
+     * @param pageContext The page context being shared.
+     */
+    public static void sendTabToDevice(
+            @Nullable WebContents webContents,
+            String targetDeviceSyncCacheGuid,
+            String url,
+            String title,
+            @Nullable PageContext pageContext) {
+        SendTabToSelfAndroidBridgeJni.get()
+                .sendTabToDevice(webContents, targetDeviceSyncCacheGuid, url, title, pageContext);
+    }
+
+    /**
      * Updates the given PageContext with the scroll position.
      *
      * @param pageContext The PageContext to update.
@@ -117,6 +136,13 @@ public class SendTabToSelfAndroidBridge {
 
     @NativeMethods
     public interface Natives {
+        void sendTabToDevice(
+                @Nullable WebContents webContents,
+                String targetDeviceSyncCacheGuid,
+                String url,
+                String title,
+                @JniType("PageContext") @Nullable PageContext pageContext);
+
         boolean addEntry(
                 @JniType("Profile*") Profile profile,
                 String url,

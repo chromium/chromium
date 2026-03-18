@@ -12,6 +12,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service_factory.h"
+#include "chrome/browser/send_tab_to_self/send_tab_to_self_page_handler.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "components/send_tab_to_self/entry_point_display_reason.h"
@@ -101,8 +102,30 @@ JNI_SendTabToSelfAndroidBridge_GetAllTargetDeviceInfos(JNIEnv* env,
           info.last_updated_timestamp.InMillisecondsSinceUnixEpoch()));
     }
   }
-
   return infos;
+}
+
+static void JNI_SendTabToSelfAndroidBridge_SendTabToDevice(
+    JNIEnv* env,
+    const JavaRef<jobject>& j_web_contents,
+    const JavaRef<jstring>& j_target_device_sync_cache_guid,
+    const JavaRef<jstring>& j_url,
+    const JavaRef<jstring>& j_title,
+    PageContext page_context) {
+  content::WebContents* web_contents =
+      content::WebContents::FromJavaWebContents(j_web_contents);
+  if (!web_contents) {
+    return;
+  }
+
+  const std::string target_device_sync_cache_guid =
+      ConvertJavaStringToUTF8(env, j_target_device_sync_cache_guid);
+  const std::string url = ConvertJavaStringToUTF8(env, j_url);
+  const std::string title = ConvertJavaStringToUTF8(env, j_title);
+
+  SendTabToSelfPageHandler::GetOrCreateForWebContents(web_contents)
+      ->SendTabToDevice(target_device_sync_cache_guid, GURL(url), title,
+                        std::move(page_context));
 }
 
 // Adds a new entry with the specified parameters. Returns whether the

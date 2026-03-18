@@ -1,0 +1,394 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/send_tab_to_self/send_tab_to_self_page_handler.h"
+
+#include <memory>
+#include <string>
+#include <utility>
+
+#include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
+#include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
+#include "base/time/time.h"
+#include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
+#include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "chrome/test/base/testing_profile.h"
+#include "components/send_tab_to_self/features.h"
+#include "components/send_tab_to_self/send_tab_to_self_model.h"
+#include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
+#include "components/send_tab_to_self/test_send_tab_to_self_model.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/test/navigation_simulator.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "services/service_manager/public/cpp/interface_provider.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/link_to_text/link_to_text.mojom.h"
+#include "url/gurl.h"
+
+namespace send_tab_to_self {
+
+namespace {
+
+using base::test::ScopedFeatureList;
+using base::test::TestFuture;
+using testing::_;
+using testing::Eq;
+using testing::Invoke;
+
+class MockTextFragmentReceiver : public blink::mojom::TextFragmentReceiver {
+ public:
+  MockTextFragmentReceiver() = default;
+  ~MockTextFragmentReceiver() override = default;
+
+  void Bind(mojo::ScopedMessagePipeHandle handle) {
+    receiver_.reset();
+    receiver_.Bind(mojo::PendingReceiver<blink::mojom::TextFragmentReceiver>(
+        std::move(handle)));
+  }
+
+  MOCK_METHOD(void, Cancel, (), (override));
+  MOCK_METHOD(void, RequestSelector, (RequestSelectorCallback), (override));
+  MOCK_METHOD(void, RemoveFragments, (), (override));
+  MOCK_METHOD(void,
+              ExtractTextFragmentsMatches,
+              (ExtractTextFragmentsMatchesCallback),
+              (override));
+  MOCK_METHOD(void,
+              GetExistingSelectors,
+              (GetExistingSelectorsCallback),
+              (override));
+  void RequestSelectorForViewportCenter(
+      RequestSelectorForViewportCenterCallback callback) override {
+    selector_callback_ = std::move(callback);
+    if (on_request_selector_called_) {
+      std::move(on_request_selector_called_).Run();
+    }
+  }
+  MOCK_METHOD(void,
+              ExtractFirstFragmentRect,
+              (ExtractFirstFragmentRectCallback),
+              (override));
+
+  void WaitForRequestSelector() {
+    if (selector_callback_) {
+      return;
+    }
+    base::test::TestFuture<void> future;
+    on_request_selector_called_ = future.GetCallback();
+    EXPECT_TRUE(future.Wait());
+  }
+
+  void RespondToSelectorRequest(const std::string& selector) {
+    if (selector_callback_) {
+      std::move(selector_callback_)
+          .Run(selector, shared_highlighting::LinkGenerationError::kNone,
+               shared_highlighting::LinkGenerationReadyStatus::
+                   kRequestedAfterReady);
+    }
+  }
+
+  void RespondToSelectorRequestWithError(
+      shared_highlighting::LinkGenerationError error) {
+    if (selector_callback_) {
+      std::move(selector_callback_)
+          .Run("", error,
+               shared_highlighting::LinkGenerationReadyStatus::
+                   kRequestedAfterReady);
+    }
+  }
+
+ private:
+  mojo::Receiver<blink::mojom::TextFragmentReceiver> receiver_{this};
+  RequestSelectorForViewportCenterCallback selector_callback_;
+  base::OnceClosure on_request_selector_called_;
+};
+
+class MockSendTabToSelfModel : public TestSendTabToSelfModel {
+ public:
+  MockSendTabToSelfModel() = default;
+  ~MockSendTabToSelfModel() override = default;
+
+  MOCK_METHOD(
+      const SendTabToSelfEntry*,
+      AddEntry,
+      (const GURL&, const std::string&, const std::string&, const PageContext&),
+      (override));
+  bool IsReady() override { return is_ready_; }
+  void set_is_ready(bool is_ready) { is_ready_ = is_ready; }
+
+ private:
+  bool is_ready_ = true;
+};
+
+class TestSendTabToSelfSyncService : public SendTabToSelfSyncService {
+ public:
+  explicit TestSendTabToSelfSyncService(SendTabToSelfModel* model)
+      : model_(model) {}
+  ~TestSendTabToSelfSyncService() override = default;
+
+  SendTabToSelfModel* GetSendTabToSelfModel() override { return model_; }
+
+ private:
+  raw_ptr<SendTabToSelfModel> model_;
+};
+
+class SendTabToSelfPageHandlerTest : public ChromeRenderViewHostTestHarness {
+ public:
+  SendTabToSelfPageHandlerTest()
+      : ChromeRenderViewHostTestHarness(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+  ~SendTabToSelfPageHandlerTest() override = default;
+
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        kSendTabToSelfPropagateScrollPosition);
+    ChromeRenderViewHostTestHarness::SetUp();
+
+    SendTabToSelfSyncServiceFactory::GetInstance()->SetTestingFactory(
+        profile(),
+        base::BindLambdaForTesting([this](content::BrowserContext* context) {
+          return std::unique_ptr<KeyedService>(
+              std::make_unique<TestSendTabToSelfSyncService>(&model_));
+        }));
+
+    NavigateAndCommit(GURL("https://www.example.com"));
+
+    // Override the interface provider to return our mock.
+    content::RenderFrameHost* main_frame =
+        web_contents()->GetPrimaryMainFrame();
+    service_manager::InterfaceProvider::TestApi(
+        main_frame->GetRemoteInterfaces())
+        .SetBinderForName(
+            blink::mojom::TextFragmentReceiver::Name_,
+            base::BindRepeating(
+                [](base::WeakPtr<SendTabToSelfPageHandlerTest> self,
+                   mojo::ScopedMessagePipeHandle handle) {
+                  if (self) {
+                    self->mock_receiver_.Bind(std::move(handle));
+                  }
+                },
+                weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  void TearDown() override {
+    SendTabToSelfSyncServiceFactory::GetInstance()->SetTestingFactory(
+        profile(), base::NullCallback());
+    ChromeRenderViewHostTestHarness::TearDown();
+  }
+
+ protected:
+  ScopedFeatureList scoped_feature_list_;
+  MockSendTabToSelfModel model_;
+  MockTextFragmentReceiver mock_receiver_;
+
+ private:
+  base::WeakPtrFactory<SendTabToSelfPageHandlerTest> weak_ptr_factory_{this};
+};
+
+TEST_F(SendTabToSelfPageHandlerTest,
+       ShouldAddEntryWithScrollPositionWhenGenerationSucceeds) {
+  auto* handler =
+      SendTabToSelfPageHandler::GetOrCreateForWebContents(web_contents());
+  handler->SetSelectorGenerationTimeoutForTesting(base::Milliseconds(200));
+
+  const GURL url("https://www.example.com");
+  const std::string title = "Title";
+  const std::string device_id = "device_id";
+
+  // Prepare the model to capture the finalized entry once the generation
+  // process completes.
+  TestFuture<PageContext> future;
+  EXPECT_CALL(model_, AddEntry(Eq(url), Eq(title), Eq(device_id), _))
+      .WillOnce([&future](const GURL&, const std::string&, const std::string&,
+                          const PageContext& context) {
+        future.SetValue(context);
+        return nullptr;
+      });
+
+  // Initiate the send to device action. This will trigger an asynchronous
+  // Mojo call to the renderer to generate the scroll position context.
+  handler->SendTabToDevice(device_id, url, title, PageContext());
+
+  // Wait for the asynchronous Mojo request to reach our mock renderer.
+  mock_receiver_.WaitForRequestSelector();
+
+  // Simulate the renderer responding successfully with a text fragment.
+  mock_receiver_.RespondToSelectorRequest("text");
+
+  // Verify the model received the entry with the generated text fragment.
+  EXPECT_EQ("text", future.Get().scroll_position.text_fragment.text_start);
+}
+
+TEST_F(SendTabToSelfPageHandlerTest,
+       ShouldAddEntryWithoutScrollPositionWhenBrowserTimesOut) {
+  const GURL url("https://www.example.com");
+  const std::string title = "Title";
+  const std::string device_id = "device_id";
+
+  auto* handler =
+      SendTabToSelfPageHandler::GetOrCreateForWebContents(web_contents());
+  handler->SetSelectorGenerationTimeoutForTesting(base::Milliseconds(200));
+
+  // Prepare the model to capture the entry when the handler falls back.
+  TestFuture<PageContext> future;
+  EXPECT_CALL(model_, AddEntry(Eq(url), Eq(title), Eq(device_id), _))
+      .WillOnce([&future](const GURL&, const std::string&, const std::string&,
+                          const PageContext& context) {
+        future.SetValue(context);
+        return nullptr;
+      });
+
+  // Initiate the send to device action.
+  handler->SendTabToDevice(device_id, url, title, PageContext());
+
+  // Wait for the asynchronous Mojo request to reach our mock renderer.
+  mock_receiver_.WaitForRequestSelector();
+
+  // Do NOT immediately respond from the mock renderer. Instead, trigger the
+  // browser-side fallback by fast-forwarding time past the generation timeout.
+  task_environment()->FastForwardBy(base::Milliseconds(200));
+
+  // Verify the handler didn't wait indefinitely and proceeded to send the
+  // tab without the scroll position context.
+  EXPECT_TRUE(future.Get().scroll_position.text_fragment.text_start.empty());
+
+  // Clean up the pending callback to avoid DCHECKs on destruction.
+  mock_receiver_.RespondToSelectorRequest("");
+}
+
+TEST_F(SendTabToSelfPageHandlerTest,
+       ShouldAddEntryWithoutScrollPositionWhenRendererTimesOut) {
+  const GURL url("https://www.example.com");
+  const std::string title = "Title";
+  const std::string device_id = "device_id";
+
+  auto* handler =
+      SendTabToSelfPageHandler::GetOrCreateForWebContents(web_contents());
+  handler->SetSelectorGenerationTimeoutForTesting(base::Milliseconds(200));
+
+  // Prepare the model to capture the finalized entry.
+  TestFuture<PageContext> future;
+  EXPECT_CALL(model_, AddEntry(Eq(url), Eq(title), Eq(device_id), _))
+      .WillOnce([&future](const GURL&, const std::string&, const std::string&,
+                          const PageContext& context) {
+        future.SetValue(context);
+        return nullptr;
+      });
+
+  // Initiate the send to device action.
+  handler->SendTabToDevice(device_id, url, title, PageContext());
+
+  // Wait for the asynchronous Mojo request to reach our mock renderer.
+  mock_receiver_.WaitForRequestSelector();
+
+  // Simulate a timeout explicitly returned by the renderer.
+  mock_receiver_.RespondToSelectorRequestWithError(
+      shared_highlighting::LinkGenerationError::kTimeout);
+
+  // Verify the model received the entry but without the scroll position
+  // context since generation failed.
+  EXPECT_TRUE(future.Get().scroll_position.text_fragment.text_start.empty());
+}
+
+TEST_F(SendTabToSelfPageHandlerTest,
+       ShouldAddEntryWithoutScrollPositionWhenPageNavigatesDuringGeneration) {
+  const GURL url("https://www.example.com");
+  const std::string title = "Title";
+  const std::string device_id = "device_id";
+
+  auto* handler =
+      SendTabToSelfPageHandler::GetOrCreateForWebContents(web_contents());
+  handler->SetSelectorGenerationTimeoutForTesting(base::Milliseconds(200));
+
+  // Prepare the model to capture the entry when the fallback is triggered.
+  TestFuture<PageContext> future;
+  EXPECT_CALL(model_, AddEntry(Eq(url), Eq(title), Eq(device_id), _))
+      .WillOnce([&future](const GURL&, const std::string&, const std::string&,
+                          const PageContext& context) {
+        future.SetValue(context);
+        return nullptr;
+      });
+
+  // Initiate the send to device action.
+  handler->SendTabToDevice(device_id, url, title, PageContext());
+
+  // Wait for the asynchronous Mojo request to reach our mock renderer.
+  mock_receiver_.WaitForRequestSelector();
+
+  // Simulate the user navigating to another page while the capture is still
+  // pending. This should instantly trigger a fallback.
+  NavigateAndCommit(GURL("https://www.other.com"));
+
+  // Verify the model received the entry but without the scroll position
+  // context since generation was safely aborted by the navigation.
+  EXPECT_TRUE(future.Get().scroll_position.text_fragment.text_start.empty());
+
+  // Clean up the captured callback.
+  mock_receiver_.RespondToSelectorRequest("");
+}
+
+TEST_F(SendTabToSelfPageHandlerTest,
+       ShouldNotAddEntryWhenWebContentsIsDestroyedDuringGeneration) {
+  const GURL url("https://www.example.com");
+  const std::string title = "Title";
+  const std::string device_id = "device_id";
+
+  auto* handler =
+      SendTabToSelfPageHandler::GetOrCreateForWebContents(web_contents());
+  handler->SetSelectorGenerationTimeoutForTesting(base::Milliseconds(200));
+
+  // We don't expect AddEntry to be called at all if the WebContents is
+  // destroyed, because the pending requests map is cleared by the observer.
+  EXPECT_CALL(model_, AddEntry(_, _, _, _)).Times(0);
+
+  // Initiate the send to device action.
+  handler->SendTabToDevice(device_id, url, title, PageContext());
+
+  // Wait for the asynchronous Mojo request to reach our mock renderer.
+  mock_receiver_.WaitForRequestSelector();
+
+  // Destroy the WebContents while the capture request is still pending.
+  DeleteContents();
+
+  // Fast forward time to ensure that no delayed fallback tasks accidentally
+  // trigger an `AddEntry` call later on.
+  task_environment()->FastForwardBy(base::Milliseconds(500));
+
+  // Clean up the captured callback.
+  mock_receiver_.RespondToSelectorRequest("");
+}
+
+TEST_F(SendTabToSelfPageHandlerTest,
+       ShouldInvokeErrorCallbackWhenModelIsNotReady) {
+  const GURL url("https://www.example.com");
+  const std::string title = "Title";
+  const std::string device_id = "device_id";
+
+  auto* handler =
+      SendTabToSelfPageHandler::GetOrCreateForWebContents(web_contents());
+  handler->SetSelectorGenerationTimeoutForTesting(base::Milliseconds(200));
+
+  // Simulate the model not being ready (e.g. Sync paused or disabled).
+  model_.set_is_ready(false);
+
+  // Initiate the send to device action, providing an error callback.
+  TestFuture<const GURL&> future;
+  handler->SendTabToDevice(device_id, url, title, PageContext(),
+                           base::NullCallback(), future.GetCallback());
+
+  // Verify the error callback is invoked immediately with the target URL,
+  // bypassing the entire generation flow.
+  EXPECT_EQ(url, future.Get());
+}
+
+}  // namespace
+
+}  // namespace send_tab_to_self
