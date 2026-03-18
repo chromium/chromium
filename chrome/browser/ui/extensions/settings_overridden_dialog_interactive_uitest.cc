@@ -205,7 +205,7 @@ class SettingsOverriddenExplicitChoiceDialogInteractiveUiTest
               ScreenshotSurface(
                   kSettingsOverriddenDialogId,
                   /*screenshot_name=*/"ExtensionSettingsOverridenDialog",
-                  /*baseline_cl=*/"7568622"));
+                  /*baseline_cl=*/"7645077"));
     return steps;
   }
 

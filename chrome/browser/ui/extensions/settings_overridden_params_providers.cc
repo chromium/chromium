@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <optional>
+#include <string>
 
 #include "base/barrier_closure.h"
 #include "base/functional/callback_forward.h"
@@ -81,6 +82,50 @@ bool GoogleIsDefaultSearchProvider(Profile* profile) {
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+// Helper to determine if a search provider is known (prepopulated).
+bool IsPrepopulatedOrStarterPack(const TemplateURL* template_url,
+                                 TemplateURLService* template_url_service) {
+  auto has_prepopulated_ids = [](const TemplateURL* turl) {
+    return turl->prepopulate_id() > 0 ||
+           turl->starter_pack_id() !=
+               template_url_starter_pack_data::StarterPackId::kNone;
+  };
+
+  if (has_prepopulated_ids(template_url)) {
+    return true;
+  }
+
+  // Extensions may override prepopulated engines, but their prepopulate_id
+  // might be zeroed out. If the extension provided a search engine that
+  // matches a prepopulated one, treat it as prepopulated.
+  if (template_url->type() == TemplateURL::NORMAL_CONTROLLED_BY_EXTENSION) {
+    const auto& all_urls = template_url_service->GetTemplateURLs();
+    return std::any_of(all_urls.begin(), all_urls.end(), [&](const auto& turl) {
+      return turl.get() != template_url &&
+             turl->keyword() == template_url->keyword() &&
+             turl->url() == template_url->url() &&
+             has_prepopulated_ids(turl.get());
+    });
+  }
+
+  return false;
+}
+
+// Returns the display name for a search engine based on whether it is
+// prepopulated. This is used when the kSearchEngineExplicitChoiceDialog
+// feature is enabled.
+std::u16string GetDialogDisplayName(const TemplateURL* search_engine,
+                                    bool is_prepopulated,
+                                    const GURL& search_url) {
+  if (is_prepopulated ||
+      !base::FeatureList::IsEnabled(
+          extensions_features::kSearchEngineExplicitChoiceDialog)) {
+    return search_engine->short_name();
+  }
+
+  return url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+      search_url);
+}
 
 // Returns the number of extensions that are currently enabled that override the
 // default search setting.
@@ -116,6 +161,9 @@ struct SecondarySearchInfo {
 
   // The favicon URL, if available.
   GURL favicon_url;
+
+  // True if the search engine is prepopulated or from the starter pack.
+  bool is_prepopulated = false;
 };
 
 // Returns details about the search that would take over, if the currently-
@@ -155,7 +203,7 @@ SecondarySearchInfo GetSecondarySearchInfo(Profile* profile) {
     }
   }
 
-  const TemplateURLService* const template_url_service =
+  TemplateURLService* const template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile);
   const TemplateURL* const secondary_search =
       secondary_extension_search
@@ -175,7 +223,11 @@ SecondarySearchInfo GetSecondarySearchInfo(Profile* profile) {
   const GURL origin = search_url.DeprecatedGetOriginAsURL();
   SecondarySearchInfo search_info;
   search_info.origin = origin;
-  search_info.name = secondary_search->short_name();
+  search_info.is_prepopulated =
+      IsPrepopulatedOrStarterPack(secondary_search, template_url_service);
+  search_info.name = GetDialogDisplayName(
+      secondary_search, search_info.is_prepopulated, search_url);
+
   if (base::FeatureList::IsEnabled(
           extensions_features::kSearchEngineExplicitChoiceDialog)) {
     search_info.favicon_url = secondary_search->favicon_url();
@@ -459,11 +511,6 @@ void GetSearchOverriddenParamsThenRun(
     return;
   }
 
-  // Format the URL for display.
-  std::u16string formatted_search_url =
-      url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
-          search_url);
-
   constexpr char kGenericDialogHistogramName[] =
       "Extensions.SettingsOverridden.GenericSearchOverriddenDialogResult";
   constexpr char kBackToOtherHistogramName[] =
@@ -488,6 +535,11 @@ void GetSearchOverriddenParamsThenRun(
   // The parameters fetched will depend on the style of dialog being shown.
   if (base::FeatureList::IsEnabled(
           extensions_features::kSearchEngineExplicitChoiceDialog)) {
+    const bool is_prepopulated =
+        IsPrepopulatedOrStarterPack(default_search, template_url_service);
+    std::u16string search_name =
+        GetDialogDisplayName(default_search, is_prepopulated, search_url);
+
     // Build an explicit-choice dialog.
     std::u16string dialog_title = l10n_util::GetStringUTF16(
         IDS_EXTENSION_SEARCH_OVERRIDDEN_DIALOG_TITLE_EXPLICIT_CHOICE);
@@ -496,7 +548,7 @@ void GetSearchOverriddenParamsThenRun(
             extension->name());
     std::u16string dialog_message = l10n_util::GetStringFUTF16(
         IDS_EXTENSION_SEARCH_OVERRIDDEN_DIALOG_BODY_EXPLICIT_CHOICE,
-        extension_name_for_ui, default_search->short_name());
+        extension_name_for_ui, search_name);
 
     // On the 'explicit choice' dialog, there is no icon at the title level.
     SettingsOverriddenDialogController::ShowParams show_params(
@@ -513,18 +565,31 @@ void GetSearchOverriddenParamsThenRun(
     previous_setting.text = secondary_search.name;
     previous_setting.description = l10n_util::GetStringUTF16(
         IDS_EXTENSION_SEARCH_OVERRIDDEN_DIALOG_PREVIOUS_CHOICE);
-    icon_lookups.emplace_back(secondary_search.favicon_url,
-                              /*extension_name=*/std::string(),
-                              &previous_setting.image);
+
+    if (secondary_search.is_prepopulated) {
+      icon_lookups.emplace_back(secondary_search.favicon_url,
+                                /*extension_name=*/std::string(),
+                                &previous_setting.image);
+    } else {
+      previous_setting.image =
+          CreateFallbackSearchIcon(/*extension_name=*/std::string());
+    }
+
     // New search engine from the overriding extension:
     SettingsOverriddenDialogController::SettingOption& new_setting =
         params->content.new_setting.emplace();
-    new_setting.text = default_search->short_name();
+    new_setting.text = search_name;
     new_setting.description = l10n_util::GetStringFUTF16(
         IDS_EXTENSION_SEARCH_OVERRIDDEN_DIALOG_RECENT_CHANGE,
         extension_name_for_ui);
-    icon_lookups.emplace_back(default_search->favicon_url(), extension->name(),
-                              &new_setting.image);
+
+    if (is_prepopulated) {
+      icon_lookups.emplace_back(default_search->favicon_url(),
+                                extension->name(), &new_setting.image);
+    } else {
+      new_setting.image =
+          CreateFallbackSearchIcon(/*extension_name=*/std::string());
+    }
 
     // Asynchronously look up icons (if needed) then continue.
     FetchIconsThenRun(
@@ -555,7 +620,9 @@ void GetSearchOverriddenParamsThenRun(
       break;
   }
   std::u16string dialog_message = l10n_util::GetStringFUTF16(
-      IDS_EXTENSION_SEARCH_OVERRIDDEN_DIALOG_BODY_GENERIC, formatted_search_url,
+      IDS_EXTENSION_SEARCH_OVERRIDDEN_DIALOG_BODY_GENERIC,
+      url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+          search_url),
       extensions::ui_util::GetFixupExtensionNameForUIDisplay(
           extension->name()));
 

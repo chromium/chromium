@@ -34,7 +34,6 @@ namespace {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 constexpr char16_t kSearchOverrideExtensionName[] =
     u"Search Override Extension";
-constexpr char16_t kSearchOverrideExtensionSearchName[] = u"Example";
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 }  // namespace
 
@@ -179,7 +178,7 @@ IN_PROC_BROWSER_TEST_P(SearchOverriddenParamsProvidersBrowserTest,
               params->content.previous_setting->description);
 
     ASSERT_TRUE(params->content.new_setting);
-    EXPECT_EQ(u"Example", params->content.new_setting->text);
+    EXPECT_EQ(u"example.com", params->content.new_setting->text);
     EXPECT_EQ(u"Recently changed to by Search Override Extension",
               params->content.new_setting->description);
   } else {
@@ -313,9 +312,10 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_TRUE(params);
   if (IsExplicitChoiceDialog()) {
     ASSERT_TRUE(params->content.previous_setting);
-    EXPECT_EQ(u"Example", params->content.previous_setting->text);
+    EXPECT_EQ(u"example.com", params->content.previous_setting->text);
+    EXPECT_TRUE(params->content.previous_setting->image.IsVectorIcon());
     ASSERT_TRUE(params->content.new_setting);
-    EXPECT_EQ(u"New Search", params->content.new_setting->text);
+    EXPECT_EQ(u"example.com", params->content.new_setting->text);
   } else {
     EXPECT_EQ(u"Did you mean to change your search provider?",
               params->content.dialog_title);
@@ -661,16 +661,112 @@ IN_PROC_BROWSER_TEST_F(
   auto previous_setting = params->content.previous_setting;
   ASSERT_TRUE(previous_setting.has_value());
   EXPECT_FALSE(previous_setting.value().image.IsEmpty());
-  EXPECT_EQ(previous_setting.value().text, u"Google");
-  EXPECT_EQ(previous_setting.value().description, u"Your previous choice");
+  EXPECT_EQ(u"Google", previous_setting.value().text);
+  EXPECT_EQ(u"Your previous choice", previous_setting.value().description);
 
   auto new_setting = params->content.new_setting;
   ASSERT_TRUE(new_setting.has_value());
-  EXPECT_TRUE(new_setting.value().image.IsImage());
-  EXPECT_EQ(new_setting.value().text, kSearchOverrideExtensionSearchName);
+  EXPECT_TRUE(new_setting.value().image.IsVectorIcon());
+  EXPECT_EQ(u"example.com", new_setting.value().text);
   EXPECT_EQ(
       new_setting.value().description,
       base::StrCat({u"Recently changed to by ", kSearchOverrideExtensionName}));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ExtensionControllingSearchExplicitChoiceParamsBrowserTest,
+    NewExtensionOrPreviousNonPrepopulatedSearch) {
+  // Create and set a custom (non-prepopulated) search provider.
+  TemplateURLService* const template_url_service = GetTemplateURLService();
+  std::unique_ptr<TemplateURLData> data =
+      GenerateDummyTemplateURLData("custom");
+  data->SetURL("https://customsearch.com/search?q={searchTerms}");
+  TemplateURL* custom_turl =
+      template_url_service->Add(std::make_unique<TemplateURL>(*data));
+  template_url_service->SetUserSelectedDefaultSearchProvider(custom_turl);
+  const extensions::Extension* extension = AddExtensionControllingSearch();
+  ASSERT_TRUE(extension);
+
+  std::optional<ExtensionSettingsOverriddenDialog::Params> params =
+      GetSearchOverriddenParamsSync(web_contents());
+  ASSERT_TRUE(params);
+
+  auto previous_setting = params->content.previous_setting;
+  ASSERT_TRUE(previous_setting.has_value());
+  // For a non-prepopulated search engine, the vector icon should be used,
+  // and the text should be the formatted URL rather than the short name.
+  EXPECT_TRUE(previous_setting.value().image.IsVectorIcon());
+  EXPECT_EQ(u"customsearch.com", previous_setting.value().text);
+
+  auto new_setting = params->content.new_setting;
+  ASSERT_TRUE(new_setting.has_value());
+  // The new setting (from the extension) is also non-prepopulated.
+  EXPECT_TRUE(new_setting.value().image.IsVectorIcon());
+  EXPECT_EQ(u"example.com", new_setting.value().text);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ExtensionControllingSearchExplicitChoiceParamsBrowserTest,
+    PrepopulatedSearches) {
+  // The default search engine initially is Google (prepopulated).
+  // Find another prepopulated search engine for the extension to use.
+  TemplateURLService* const template_url_service = GetTemplateURLService();
+  TemplateURLService::TemplateURLVector template_urls =
+      template_url_service->GetTemplateURLs();
+  auto iter = std::ranges::find_if(
+      template_urls, [template_url_service](const TemplateURL* turl) {
+        return !turl->HasGoogleBaseURLs(
+                   template_url_service->search_terms_data()) &&
+               template_url_service->ShowInDefaultList(turl) &&
+               turl->prepopulate_id() > 0;
+      });
+  ASSERT_NE(template_urls.end(), iter);
+  const TemplateURL* extension_turl = *iter;
+
+  constexpr char kManifestTemplate[] =
+      R"({
+           "name": "Search Override Extension",
+           "version": "0.1",
+           "manifest_version": 2,
+           "chrome_settings_overrides": {
+             "search_provider": {
+               "name": "%s",
+               "keyword": "%s",
+               "search_url": "%s",
+               "prepopulated_id": %d,
+               "is_default": true
+             }
+           },
+           "permissions": ["storage"]
+         })";
+
+  extensions::TestExtensionDir test_dir;
+  test_dir.WriteManifest(base::StringPrintf(
+      kManifestTemplate,
+      base::UTF16ToUTF8(extension_turl->short_name()).c_str(),
+      base::UTF16ToUTF8(extension_turl->keyword()).c_str(),
+      extension_turl->url().c_str(), extension_turl->prepopulate_id()));
+
+  const extensions::Extension* extension =
+      InstallExtensionWithPermissionsGranted(test_dir.UnpackedPath(), 1);
+  ASSERT_TRUE(extension);
+
+  std::optional<ExtensionSettingsOverriddenDialog::Params> params =
+      GetSearchOverriddenParamsSync(web_contents());
+  ASSERT_TRUE(params);
+
+  auto previous_setting = params->content.previous_setting;
+  ASSERT_TRUE(previous_setting.has_value());
+  // Prepopulated -> Should have an icon (either a fetched favicon or a
+  // prepopulated vector icon like the Google logo). We assert it is not empty.
+  EXPECT_FALSE(previous_setting.value().image.IsEmpty());
+  EXPECT_EQ(u"Google", previous_setting.value().text);
+
+  auto new_setting = params->content.new_setting;
+  ASSERT_TRUE(new_setting.has_value());
+  // Prepopulated -> Should have an icon.
+  EXPECT_FALSE(new_setting.value().image.IsEmpty());
+  EXPECT_EQ(extension_turl->short_name(), new_setting.value().text);
 }
 
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
