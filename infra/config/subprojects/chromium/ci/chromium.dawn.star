@@ -1198,7 +1198,6 @@ ci.thin_tester(
             "dawn_chromium_isolated_scripts",
             "gpu_common_gtests_passthrough",
             "gpu_dawn_compat_telemetry_tests",
-            "gpu_dawn_webgpu_cts_default_features",
         ],
         mixins = [
             "linux_intel_uhd_630_stable",
@@ -1212,9 +1211,6 @@ ci.thin_tester(
             ),
             "webgpu_cts_compat_min_es31_tests": targets.remove(
                 reason = "Limited capacity, and already many suppressions in default compat, so remove.",
-            ),
-            "webgpu_cts_default_features_tests": targets.mixin(
-                ci_only = True,
             ),
             "webgpu_cts_dedicated_worker_tests": targets.remove(
                 reason = "We only need coverage on one GPU per OS, so remove from lower capacity configs.",
@@ -1534,16 +1530,10 @@ ci.thin_tester(
             "dawn_chromium_isolated_scripts",
             "gpu_common_gtests_passthrough",
             "gpu_dawn_telemetry_tests",
-            "gpu_dawn_webgpu_cts_default_features",
         ],
         mixins = [
             "mac_arm64_apple_m2_retina_gpu_stable",
         ],
-        per_test_modifications = {
-            "webgpu_cts_default_features_tests": targets.mixin(
-                ci_only = True,
-            ),
-        },
     ),
     targets_settings = targets.settings(
         browser_config = targets.browser_config.RELEASE,
@@ -2867,16 +2857,10 @@ ci.thin_tester(
             "dawn_chromium_isolated_scripts",
             "gpu_common_gtests_passthrough",
             "gpu_dawn_telemetry_win_x64_tests",
-            "gpu_dawn_webgpu_cts_default_features",
         ],
         mixins = [
             "win10_nvidia_gtx_1660_stable",
         ],
-        per_test_modifications = {
-            "webgpu_cts_default_features_tests": targets.mixin(
-                ci_only = True,
-            ),
-        },
     ),
     targets_settings = targets.settings(
         browser_config = targets.browser_config.RELEASE_X64,

@@ -4195,25 +4195,6 @@ targets.bundle(
 )
 
 targets.bundle(
-    name = "gpu_dawn_webgpu_cts_default_features",
-    targets = [
-        "webgpu_cts_default_features_tests",
-    ],
-    per_test_modifications = {
-        "webgpu_cts_default_features_tests": [
-            targets.mixin(
-                swarming = targets.swarming(
-                    shards = 14,
-                ),
-            ),
-            "gpu_integration_test_common_args",
-            "webgpu_telemetry_cts",
-            "linux_vulkan",
-        ],
-    },
-)
-
-targets.bundle(
     name = "gpu_dawn_webgpu_cts_fxc",
     # We intentionally do not have fxc + worker tests since dxc + worker
     # should provide sufficient coverage.
