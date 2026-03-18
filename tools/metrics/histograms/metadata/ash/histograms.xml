@@ -6410,7 +6410,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Peripheral.ConnectivityResults"
-    enum="PeripheralConnectivityResult" expires_after="2026-04-27">
+    enum="PeripheralConnectivityResult" expires_after="2026-10-27">
   <owner>jimmyxgong@chromium.org</owner>
   <owner>jthies@chromium.org</owner>
   <owner>cros-device-enablement@google.com</owner>
