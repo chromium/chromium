@@ -412,7 +412,7 @@ public class LocationBarCoordinator
         mInstallButton = mLocationBarLayout.findViewById(R.id.install_button);
         mInstallButton.setOnClickListener(mLocationBarMediator::installButtonClicked);
 
-        mUrlCoordinator.setTextChangeListener(mAutocompleteCoordinator::onTextChanged);
+        mUrlCoordinator.setTextChangeListener(mLocationBarMediator::onUrlTextChanged);
         mUrlCoordinator.setKeyDownListener(mLocationBarMediator);
 
         // The LocationBar's direction is tied to the UrlBar's text direction. Icons inside the
@@ -678,11 +678,6 @@ public class LocationBarCoordinator
     }
 
     // AutocompleteDelegate implementation.
-    @Override
-    public void onUrlTextChanged() {
-        mLocationBarMediator.onUrlTextChanged();
-    }
-
     @Override
     public void onSuggestionsChanged(
             @Nullable AutocompleteMatch defaultMatch, boolean hasSuggestions) {

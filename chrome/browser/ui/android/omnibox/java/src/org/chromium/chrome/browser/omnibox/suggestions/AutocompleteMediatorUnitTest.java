@@ -547,13 +547,14 @@ public class AutocompleteMediatorUnitTest {
 
         GURL url = JUnitTestGURLs.BLUE_1;
         int pageClassification = PageClassification.BLANK_VALUE;
-        mMediator.beginInput(createSession(url, url.getSpec(), pageClassification));
+        var session = createSession(url, url.getSpec(), pageClassification);
+        mMediator.beginInput(session);
 
         when(mTextStateProvider.shouldAutocomplete()).thenReturn(true);
         when(mTextStateProvider.getSelectionStart()).thenReturn(4);
         when(mTextStateProvider.getSelectionEnd()).thenReturn(4);
 
-        mMediator.onTextChanged("test", /* isOnFocusContext= */ false);
+        session.getAutocompleteInput().setUserText("test");
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verifyAutocompleteStart(url, pageClassification, "test", 4, false);
     }
@@ -564,14 +565,15 @@ public class AutocompleteMediatorUnitTest {
 
         GURL url = JUnitTestGURLs.BLUE_1;
         int pageClassification = PageClassification.BLANK_VALUE;
-        mMediator.beginInput(createSession(url, url.getSpec(), pageClassification));
+        var session = createSession(url, url.getSpec(), pageClassification);
+        mMediator.beginInput(session);
 
         when(mTextStateProvider.shouldAutocomplete()).thenReturn(true);
         when(mTextStateProvider.getSelectionStart()).thenReturn(4);
         when(mTextStateProvider.getSelectionEnd()).thenReturn(4);
 
-        mMediator.onTextChanged("test", /* isOnFocusContext= */ false);
-        mMediator.onTextChanged("nottest", /* isOnFocusContext= */ false);
+        session.getAutocompleteInput().setUserText("test");
+        session.getAutocompleteInput().setUserText("nottest");
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verifyAutocompleteStart(url, pageClassification, "nottest", 4, false);
     }
@@ -950,7 +952,7 @@ public class AutocompleteMediatorUnitTest {
 
         // No change on key press. No unexpected recordings.
         // Need to run looper here to flush the pending operation.
-        mMediator.onTextChanged("a", /* isOnFocusContext= */ false);
+        session.getAutocompleteInput().setUserText("a");
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verifySuggestionRequestToUiModelHistograms(1, 150, 0, null);
 
@@ -1133,7 +1135,7 @@ public class AutocompleteMediatorUnitTest {
         when(mTextStateProvider.getSelectionStart()).thenReturn(4);
         when(mTextStateProvider.getSelectionEnd()).thenReturn(4);
 
-        mMediator.onTextChanged("test", /* isOnFocusContext= */ false);
+        session.getAutocompleteInput().setUserText("test");
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verifyAutocompleteStart(url, pageClassification, "test", 4, false);
 
@@ -1199,7 +1201,7 @@ public class AutocompleteMediatorUnitTest {
         for (var pageClass : PageClassification.values()) {
             session.getAutocompleteInput().setPageClassification(pageClass.getNumber());
 
-            mMediator.onTextChanged("text", /* isOnFocusContext= */ false);
+            session.getAutocompleteInput().setUserText("text");
 
             // Should only be invoked if page class is eligible.
             verify(mMockCachedZeroSuggestionsManager, never()).readFromCache(anyInt());
@@ -1237,8 +1239,9 @@ public class AutocompleteMediatorUnitTest {
     public void onTextChanged_dontCacheTypedSuggestions() {
 
         for (var pageClass : PageClassification.values()) {
-            setUpLocationBarDataProvider(PAGE_URL, PAGE_TITLE, pageClass.getNumber());
-            mMediator.onTextChanged("x", /* isOnFocusContext= */ false);
+            var session = createSession(PAGE_URL, PAGE_TITLE, pageClass.getNumber());
+            mMediator.beginInput(session);
+            session.getAutocompleteInput().setUserText("x");
             verify(mMockCachedZeroSuggestionsManager, never()).saveToCache(anyInt(), any());
             clearInvocations(mMockCachedZeroSuggestionsManager);
         }
@@ -1248,8 +1251,10 @@ public class AutocompleteMediatorUnitTest {
     public void onTextChanged_dontCacheCachedSuggestions() {
 
         for (var pageClass : PageClassification.values()) {
-            setUpLocationBarDataProvider(PAGE_URL, PAGE_TITLE, pageClass.getNumber());
-            mMediator.onTextChanged("", /* isOnFocusContext= */ false);
+            var session = createSession(PAGE_URL, PAGE_TITLE, pageClass.getNumber());
+            mMediator.beginInput(session);
+            // Force an update as "" -> "" is not an observable change.
+            mMediator.onTextChanged("", /* isOnFocusContext= */ true);
             verify(mMockCachedZeroSuggestionsManager, never()).saveToCache(anyInt(), any());
             clearInvocations(mMockCachedZeroSuggestionsManager);
         }
@@ -1495,6 +1500,7 @@ public class AutocompleteMediatorUnitTest {
 
         // When not on an Incognito NTP, cached suggestions should be shown.
         doReturn(false).when(ntpDelegate).isIncognitoNewTabPageCurrentlyVisible();
+        // Force an update as "" -> "" is not an observable change.
         mMediator.onTextChanged("", /* isOnFocusContext= */ true);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verify(mMockCachedZeroSuggestionsManager, times(1)).readFromCache(anyInt());
