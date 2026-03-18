@@ -29,10 +29,14 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "url/url_util.h"
 
-#define REQUIRE_CODEC_SUPPORT()            \
-  if (ShouldSkipProprietaryCodecsTest()) { \
-    GTEST_SKIP();                          \
-  }
+// Proprietary codecs require acceleration on Android.
+#if BUILDFLAG(IS_ANDROID) && !BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
+#define REQUIRE_ACCELERATION_ON_ANDROID() \
+  if (!is_accelerated())                  \
+  return
+#else
+#define REQUIRE_ACCELERATION_ON_ANDROID()
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace content {
 
@@ -54,18 +58,14 @@ void MediaBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
   };
 
   std::vector<base::test::FeatureRef> disabled_features = {
-      // Disable fallback after decode error to avoid unexpected test pass on
-      // the fallback path.
-      media::kFallbackAfterDecodeError,
-
-      // Disable hardware decoder deprioritization to retain control over
-      // hardware/software decoder selection.
-      media::kResolutionBasedDecoderPriority,
+    // Disable fallback after decode error to avoid unexpected test pass on
+    // the fallback path.
+    media::kFallbackAfterDecodeError,
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-      // Disable out of process audio on Linux due to process spawn
-      // failures. http://crbug.com/986021
-      features::kAudioServiceOutOfProcess,
+    // Disable out of process audio on Linux due to process spawn
+    // failures. http://crbug.com/986021
+    features::kAudioServiceOutOfProcess,
 #endif
   };
 
@@ -136,43 +136,21 @@ void MediaBrowserTest::PreRunTestOnMainThread() {
   media::AddSupplementalCodecsForTesting(GetGpuPreferencesFromCommandLine());
 }
 
-// static
-bool MaybeAcceleratedVideoDecodingTest::ShouldSkipProprietaryCodecsTest() {
-#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_X86)
-  // For the hardware path, skip the test on Android x86 because the trybot
-  // emulators falsely claim to support hardware H.264 decoding.
-  if (is_accelerated()) {
-    LOG(INFO) << "Unreliable codec support detection";
-    return true;
-  }
-#endif  // BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_X86)
-
-#if !BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
-  // FFmpeg video decoders are required for proprietary codecs in the software
-  // path.
-  if (!is_accelerated()) {
-    LOG(INFO) << "FFmpeg video decoders missing";
-    return true;
-  }
-#endif  // !BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
-
-  return false;
-}
-
-void MaybeAcceleratedVideoDecodingTest::SetUpCommandLine(
-    base::CommandLine* command_line) {
-  if (!is_accelerated()) {
-    command_line->AppendSwitch(switches::kDisableAcceleratedVideoDecode);
-  }
-  MediaBrowserTest::SetUpCommandLine(command_line);
-}
-
 // Tests playback and seeking of an audio or video file. Test starts with
 // playback then, after X seconds or the ended event fires, seeks near end of
 // file; see player.html for details. The test completes when either the last
 // 'ended' or an 'error' event fires.
-class MediaTest : public MaybeAcceleratedVideoDecodingTest {
+class MediaTest : public testing::WithParamInterface<bool>,
+                  public MediaBrowserTest {
  public:
+  bool is_accelerated() { return GetParam(); }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    if (!is_accelerated())
+      command_line->AppendSwitch(switches::kDisableAcceleratedVideoDecode);
+    MediaBrowserTest::SetUpCommandLine(command_line);
+  }
+
   void MaybePlayVideo(std::string_view codec_string,
                       const std::string& file_name) {
     constexpr char kTestVideoPlaybackScript[] = R"({
@@ -312,54 +290,54 @@ IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearMovPcmS24be) {
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
 
 IN_PROC_BROWSER_TEST_P(MediaTest, HLSSingleFileBear) {
-  REQUIRE_CODEC_SUPPORT();
+  REQUIRE_ACCELERATION_ON_ANDROID();
   PlayVideo("bear-1280x720-hls-clear-mpl.m3u8");
 }
 
 IN_PROC_BROWSER_TEST_P(MediaTest, HLSSingleWithoutExtension) {
-  REQUIRE_CODEC_SUPPORT();
+  REQUIRE_ACCELERATION_ON_ANDROID();
   PlayVideo("hls/mp_ts_avc1.hls");
 }
 
 IN_PROC_BROWSER_TEST_P(MediaTest, HLSMultivariantBitrateBear) {
-  REQUIRE_CODEC_SUPPORT();
+  REQUIRE_ACCELERATION_ON_ANDROID();
   PlayVideo("hls/multi-bitrate-multivariant-bear/playlist.m3u8");
 }
 
 #endif  // BUILDFLAG(ENABLE_HLS_DEMUXER)
 
 IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearMp4) {
-  REQUIRE_CODEC_SUPPORT();
+  REQUIRE_ACCELERATION_ON_ANDROID();
   PlayVideo("bear.mp4");
 }
 
 IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearSilentMp4) {
-  REQUIRE_CODEC_SUPPORT();
+  REQUIRE_ACCELERATION_ON_ANDROID();
   PlayVideo("bear_silent.mp4");
 }
 
 IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearRotated0) {
-  REQUIRE_CODEC_SUPPORT();
+  REQUIRE_ACCELERATION_ON_ANDROID();
   RunVideoSizeTest("bear_rotate_0.mp4", 1280, 720);
 }
 
 IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearRotated90) {
-  REQUIRE_CODEC_SUPPORT();
+  REQUIRE_ACCELERATION_ON_ANDROID();
   RunVideoSizeTest("bear_rotate_90.mp4", 720, 1280);
 }
 
 IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearRotated180) {
-  REQUIRE_CODEC_SUPPORT();
+  REQUIRE_ACCELERATION_ON_ANDROID();
   RunVideoSizeTest("bear_rotate_180.mp4", 1280, 720);
 }
 
 IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearRotated270) {
-  REQUIRE_CODEC_SUPPORT();
+  REQUIRE_ACCELERATION_ON_ANDROID();
   RunVideoSizeTest("bear_rotate_270.mp4", 720, 1280);
 }
 
 IN_PROC_BROWSER_TEST_P(MediaTest, VideoBear3gpAacH264) {
-  REQUIRE_CODEC_SUPPORT();
+  REQUIRE_ACCELERATION_ON_ANDROID();
   PlayVideo("bear_h264_aac.3gp");
 }
 
@@ -392,8 +370,8 @@ IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearMp4Hevc10bit444) {
 IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearMp4Hevc8bit) {
   // TODO(crbug.com/40269930) : For Android, the `canPlayType()` test in
   // `MaybePlayVideo` should be reporting the correct status for HEVC. The below
-  // `REQUIRE_CODEC_SUPPORT` flag is a temporary fix.
-  REQUIRE_CODEC_SUPPORT();
+  // `REQUIRE_ACCELERATION_ON_ANDROID` flag is a temporary fix.
+  REQUIRE_ACCELERATION_ON_ANDROID();
   MaybePlayVideo("hev1.1.6.L93.90", "bear-1280x720-hevc-no-audio.mp4");
 }
 
@@ -401,8 +379,8 @@ IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearMp4Hevc8bit) {
 IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearMp4Hevc10bit) {
   // TODO(crbug.com/40269930) : For Android, the `canPlayType()` test in
   // `MaybePlayVideo` should be reporting the correct status for HEVC. The below
-  // `REQUIRE_CODEC_SUPPORT` flag is a temporary fix.
-  REQUIRE_CODEC_SUPPORT();
+  // `REQUIRE_ACCELERATION_ON_ANDROID` flag is a temporary fix.
+  REQUIRE_ACCELERATION_ON_ANDROID();
   MaybePlayVideo("hev1.2.4.L93.90", "bear-1280x720-hevc-10bit-no-audio.mp4");
 }
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)

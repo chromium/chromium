@@ -54,19 +54,6 @@ class MediaBrowserTest : public ContentBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Extends MediaBrowserTest to allow parametrization by whether video decoding
-// should be accelerated or not.
-class MaybeAcceleratedVideoDecodingTest
-    : public MediaBrowserTest,
-      public testing::WithParamInterface<bool> {
- public:
-  static bool is_accelerated() { return GetParam(); }
-
-  static bool ShouldSkipProprietaryCodecsTest();
-
-  void SetUpCommandLine(base::CommandLine* command_line) override;
-};
-
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_MEDIA_MEDIA_BROWSERTEST_H_
