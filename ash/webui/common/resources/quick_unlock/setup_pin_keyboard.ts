@@ -170,13 +170,6 @@ export class SetupPinKeyboardElement extends SetupPinKeyboardElementBase {
     };
   }
 
-  private pinKeyboardValue_: string;
-  private initialPin_: string;
-  private problemMessageId_: string;
-  private problemMessageParameters_: string;
-  private problemClass_: string|undefined;
-  private pinHasPassedMinimumLength_: boolean;
-  private isSetPinCallPending_: boolean;
   authToken: string|undefined;
   enableSubmit: boolean;
   isConfirmStep: boolean;
@@ -184,6 +177,14 @@ export class SetupPinKeyboardElement extends SetupPinKeyboardElementBase {
   quickUnlockPrivate: typeof chrome.quickUnlockPrivate;
   enablePlaceholder: boolean;
   enableVisibilityIcon: boolean;
+
+  private pinKeyboardValue_: string;
+  private initialPin_: string;
+  private problemMessageId_: string;
+  private problemMessageParameters_: string;
+  private problemClass_: string|undefined;
+  private pinHasPassedMinimumLength_: boolean;
+  private isSetPinCallPending_: boolean;
 
   override focus(): void {
     this.$.pinKeyboard.focusInput();
