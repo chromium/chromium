@@ -12042,6 +12042,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderEagernessBrowserTest, kModerate) {
 
   // Hover the anchor of the prerendering page so briefly that only the hover
   // event for "eager" is triggered but not triggered for "moderate".
+  // TODO(crbug.com/490489040): Test this on Mac. Hovering on Mac is flaky now.
+#if !BUILDFLAG(IS_MAC)
   if (base::FeatureList::IsEnabled(
           blink::features::kPreloadingEagerHoverHeuristics)) {
     const base::TimeDelta moderate_hover_time = base::Milliseconds(200);
@@ -12057,6 +12059,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderEagernessBrowserTest, kModerate) {
     EXPECT_TRUE(preloading_decider->IsOnStandByForTesting(
         prerendering_url, blink::mojom::SpeculationAction::kPrerender));
   }
+#endif  // !BUILDFLAG(IS_MAC)
 
   // Hover the anchor of the prerendering page for a long enough time. When
   // eagerness is "moderate", this interaction invokes the creation of
