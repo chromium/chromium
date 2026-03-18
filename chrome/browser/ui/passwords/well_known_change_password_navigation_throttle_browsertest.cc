@@ -549,14 +549,23 @@ IN_PROC_BROWSER_TEST_P(PrerenderingChangePasswordNavigationThrottleBrowserTest,
 
   URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
       [&](URLLoaderInterceptor::RequestParams* params) {
-        // We should cancel the prerender in WillStartRequest so we should
-        // never receive this request.
-        EXPECT_NE(params->url_request.url, kWellKnownUrl);
+        // If prerender triggers prefetch ahead of prerender, the prefetch sends
+        // a request and the prerender is throttled.
+        //
+        // We only check request counts if prefetch ahead of prerender is not
+        // triggered.
+        if (!content::test::PrerenderTestHelper::
+                IsPrerender2FallbackPrefetchSpecRulesEnabled()) {
+          // We should cancel the prerender in WillStartRequest so we should
+          // never receive this request.
+          EXPECT_NE(params->url_request.url, kWellKnownUrl);
 
-        // If the non-existing-resource path is requested it means the throttle
-        // is running so fail the test.
-        EXPECT_NE(params->url_request.url.GetPath(),
-                  kWellKnownNotExistingResourcePath);
+          // If the non-existing-resource path is requested it means the
+          // throttle is running so fail the test.
+          EXPECT_NE(params->url_request.url.GetPath(),
+                    kWellKnownNotExistingResourcePath);
+        }
+
         std::string speculation_script = base::ReplaceStringPlaceholders(
             R"(
                 <script type="speculationrules">

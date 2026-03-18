@@ -316,6 +316,9 @@ class PrerenderTestHelper {
                    std::string_view predictor,
                    bool holdback);
 
+  // For non-//content tests.
+  static bool IsPrerender2FallbackPrefetchSpecRulesEnabled();
+
  private:
   void MonitorResourceRequest(const net::test_server::HttpRequest& request);
 
