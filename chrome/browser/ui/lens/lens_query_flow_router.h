@@ -134,8 +134,8 @@ class LensQueryFlowRouter
   // Removes the contextual search context if no region selection was made.
   void RemoveContextualSearchContextIfNecessary(bool has_region_selection);
 
-  void reset_file_upload_status_observation() {
-    file_upload_status_observation_.Reset();
+  void reset_context_upload_status_observation() {
+    context_upload_status_observation_.Reset();
   }
 
  protected:
@@ -285,7 +285,7 @@ class LensQueryFlowRouter
   base::ScopedObservation<contextual_search::ContextualSearchContextController,
                           contextual_search::ContextualSearchContextController::
                               ContextUploadStatusObserver>
-      file_upload_status_observation_{this};
+      context_upload_status_observation_{this};
 
   base::WeakPtrFactory<LensQueryFlowRouter> weak_factory_{this};
 };

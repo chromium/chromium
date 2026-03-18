@@ -89,7 +89,7 @@ void LensQueryFlowRouter::StartQueryFlow(
 
     // If a session handle is already being observed (e.g. from the side panel),
     // remove the observer before creating a new session handle.
-    file_upload_status_observation_.Reset();
+    context_upload_status_observation_.Reset();
 
     // The page content should only be uploaded if the overlay was not opened by
     // the contextual tasks composebox.
@@ -100,10 +100,10 @@ void LensQueryFlowRouter::StartQueryFlow(
     if (!GetContextualSearchSessionHandle()) {
       pending_session_handle_ = CreateContextualSearchSessionHandle();
       pending_session_handle_->NotifySessionStarted();
-      // Add observer to listen for file upload status changes. This is only
+      // Add observer to listen for context upload status changes. This is only
       // needed when a new session handle is created as part of this flow as
       // the response is not used by the overlay otherwise.
-      file_upload_status_observation_.Observe(
+      context_upload_status_observation_.Observe(
           GetContextualSearchSessionHandle()->GetController());
     }
 
@@ -232,8 +232,8 @@ void LensQueryFlowRouter::SetSuggestInputsReadyCallback(
     // If the session handle doesn't exist yet, the observer will be added
     // once it is created.
     if (pending_session_handle_ && pending_session_handle_->GetController() &&
-        !file_upload_status_observation_.IsObserving()) {
-      file_upload_status_observation_.Observe(
+        !context_upload_status_observation_.IsObserving()) {
+      context_upload_status_observation_.Observe(
           pending_session_handle_->GetController());
     }
     return;

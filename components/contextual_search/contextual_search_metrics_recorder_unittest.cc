@@ -601,7 +601,7 @@ class MetricsRecorderFileTest
   std::string mime_type_string_;
 };
 
-TEST_P(MetricsRecorderFileTest, FileUploadStatusChanged) {
+TEST_P(MetricsRecorderFileTest, ContextUploadStatusChanged) {
   metrics().OnContextUploadStatusChanged(mime_type_param(), status_param(),
                                          std::nullopt);
   DestructMetricsRecorder();

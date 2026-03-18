@@ -302,14 +302,15 @@ class ContextualTasksComposeboxHandlerTest
                                                     testing::_, testing::_))
         .WillByDefault(
             [handler = handler_.get()](
-                const base::UnguessableToken& file_token,
+                const base::UnguessableToken& context_token,
                 lens::MimeType mime_type,
-                contextual_search::ContextUploadStatus file_upload_status,
+                contextual_search::ContextUploadStatus context_upload_status,
                 const std::optional<contextual_search::ContextUploadErrorType>&
                     error_type) {
               handler->ContextualTasksComposeboxHandler::
-                  OnContextUploadStatusChanged(file_token, mime_type,
-                                               file_upload_status, error_type);
+                  OnContextUploadStatusChanged(context_token, mime_type,
+                                               context_upload_status,
+                                               error_type);
             });
 
     auto searchbox_page_remote =
@@ -2868,23 +2869,23 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
 
   EXPECT_CALL(*handler_, OnContextUploadStatusChanged(testing::_, testing::_,
                                                       testing::_, testing::_))
-      .WillRepeatedly([&](const base::UnguessableToken& file_token,
+      .WillRepeatedly([&](const base::UnguessableToken& context_token,
                           lens::MimeType mime_type,
                           contextual_search::ContextUploadStatus
-                              file_upload_status,
+                              context_upload_status,
                           const std::optional<
                               contextual_search::ContextUploadErrorType>&
                               error_type) {
-        if (file_upload_status ==
+        if (context_upload_status ==
             contextual_search::ContextUploadStatus::kUploadSuccessful) {
-          successful_uploads.push_back(file_token);
-        } else if (file_upload_status ==
+          successful_uploads.push_back(context_token);
+        } else if (context_upload_status ==
                    contextual_search::ContextUploadStatus::kUploadReplaced) {
-          replaced_uploads.push_back(file_token);
+          replaced_uploads.push_back(context_token);
         }
         handler_
             ->ContextualTasksComposeboxHandler::OnContextUploadStatusChanged(
-                file_token, mime_type, file_upload_status, error_type);
+                context_token, mime_type, context_upload_status, error_type);
       });
 
   // 1. First selection.
