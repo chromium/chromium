@@ -120,6 +120,15 @@ class LHSIndicatorsInteractiveUITest : public UiBrowserTest {
     UiBrowserTest::SetUpOnMainThread();
   }
 
+  void TearDownOnMainThread() override {
+    // Restore the original LocationBarModel if it was overridden.
+    if (original_location_bar_model_) {
+      browser()->GetFeatures().swap_location_bar_models(
+          &original_location_bar_model_);
+    }
+    UiBrowserTest::TearDownOnMainThread();
+  }
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // Set a window's size to avoid pixel tests flakiness due to different
     // widths of the omnibox.
@@ -129,17 +138,19 @@ class LHSIndicatorsInteractiveUITest : public UiBrowserTest {
 
   void OverrideVisibleUrlInLocationBar(const std::u16string& text) {
     OmniboxView* omnibox_view = GetLocationBarView(browser())->GetOmniboxView();
-    raw_ptr<TestLocationBarModel> test_location_bar_model_ =
-        new TestLocationBarModel;
-    std::unique_ptr<LocationBarModel> location_bar_model(
-        test_location_bar_model_);
-    browser()->GetFeatures().swap_location_bar_models(&location_bar_model);
 
-    test_location_bar_model_->set_formatted_full_url(text);
+    // The pixel tests are sensitive to the URL displayed in the omnibox, as the
+    // port number of the test server varies. To prevent flakiness, we override
+    // the LocationBarModel with a TestLocationBarModel that returns a static
+    // URL. We preserve the original model to restore it during teardown.
+    auto test_location_bar_model = std::make_unique<TestLocationBarModel>();
+    test_location_bar_model->set_formatted_full_url(text);
+    test_location_bar_model->set_url_for_display(text);
 
-    // Normally the URL for display has portions elided. We aren't doing that in
-    // this case, because that is irrevelant for these tests.
-    test_location_bar_model_->set_url_for_display(text);
+    std::unique_ptr<LocationBarModel> new_model_for_swap =
+        std::move(test_location_bar_model);
+    browser()->GetFeatures().swap_location_bar_models(&new_model_for_swap);
+    original_location_bar_model_ = std::move(new_model_for_swap);
 
     omnibox_view->Update();
   }
@@ -290,6 +301,7 @@ class LHSIndicatorsInteractiveUITest : public UiBrowserTest {
   base::test::ScopedFeatureList scoped_features_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
   std::unique_ptr<test::PermissionRequestManagerTestApi> test_api_;
+  std::unique_ptr<LocationBarModel> original_location_bar_model_;
 };
 
 IN_PROC_BROWSER_TEST_F(LHSIndicatorsInteractiveUITest, InvokeUi_camera) {
@@ -352,9 +364,8 @@ IN_PROC_BROWSER_TEST_F(LHSIndicatorsInteractiveUITest,
   ShowAndVerifyUi();
 }
 
-// TODO(crbug.com/491435561): Investigate why this test is flaky.
 IN_PROC_BROWSER_TEST_F(LHSIndicatorsInteractiveUITest,
-                       DISABLED_InvokeUi_cameraandmicrophone_blocked) {
+                       InvokeUi_cameraandmicrophone_blocked) {
   SetPermission(ContentSettingsType::MEDIASTREAM_CAMERA,
                 ContentSetting::CONTENT_SETTING_BLOCK);
   SetPermission(ContentSettingsType::MEDIASTREAM_MIC,

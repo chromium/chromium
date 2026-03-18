@@ -418,6 +418,8 @@ class PageSpecificContentSettings
   // Block all content. Used for testing content setting bubbles.
   void BlockAllContentForTesting();
 
+  static void SetIgnoreBlockedMediaIndicatorTimerForTesting(bool ignore);
+
   // Stores content settings changed by the user via PageInfo.
   void ContentSettingChangedViaPageInfo(ContentSettingsType type);
 

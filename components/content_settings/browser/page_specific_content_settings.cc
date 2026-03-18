@@ -82,6 +82,8 @@ constexpr auto kBlockedMediaIndicatorDismissDelayPhase2 = base::Seconds(4);
 constexpr auto kDeviceInUseIndicatorHideDelay = base::Seconds(15);
 #endif
 
+bool ignore_blocked_media_indicator_timer_for_testing_ = false;
+
 // Determines which taxonomy is used to generate sample topics for the Topics
 // API.
 constexpr int kTopicsAPISampleDataTaxonomy = 1;
@@ -1495,6 +1497,12 @@ void PageSpecificContentSettings::BlockAllContentForTesting() {
                              media_blocked);
 }
 
+// static
+void PageSpecificContentSettings::SetIgnoreBlockedMediaIndicatorTimerForTesting(
+    bool ignore) {
+  ignore_blocked_media_indicator_timer_for_testing_ = ignore;
+}
+
 void PageSpecificContentSettings::ContentSettingChangedViaPageInfo(
     ContentSettingsType type) {
   content_settings_changed_via_page_info_.insert(type);
@@ -1769,6 +1777,9 @@ void PageSpecificContentSettings::OnPermissionIndicatorHidden(
 
 void PageSpecificContentSettings::StartBlockedIndicatorTimer(
     ContentSettingsType type) {
+  if (ignore_blocked_media_indicator_timer_for_testing_) {
+    return;
+  }
   base::TimeDelta blocked_indicator_delay;
   if (base::FeatureList::IsEnabled(
           content_settings::features::kLeftHandSideActivityIndicators)) {

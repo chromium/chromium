@@ -69,7 +69,9 @@ class PermissionDashboardController : public PermissionChipView::Observer {
   }
   void ShowPageInfoDialogForTesting() { ShowPageInfoDialog(); }
 
-  void DoNotCollapseForTesting() { do_no_collapse_for_testing_ = true; }
+  void DoNotCollapseForTesting();
+
+  void HideIndicatorsForTesting() { HideIndicators(); }
 
  private:
   void StartCollapseTimer();

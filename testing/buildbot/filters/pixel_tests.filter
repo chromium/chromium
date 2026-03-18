@@ -40,6 +40,7 @@ CookieControlsBubbleViewPixelTest.*
 *CreatePopupRowViewWithNoUserEducationRateLimitTest.*
 CryptoModulePasswordDialogTest.*
 *DataControlsDialogUiTest.*
+DashboardKombuchaInteractiveUITest.*
 DeepScanningFailureModalDialogTest.*
 DiscountBubbleViewBrowserTest.*
 DiceMigrationServicePixelBrowserTest.*

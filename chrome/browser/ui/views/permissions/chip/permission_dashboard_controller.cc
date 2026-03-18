@@ -290,6 +290,12 @@ bool PermissionDashboardController::Update(
   return true;
 }
 
+void PermissionDashboardController::DoNotCollapseForTesting() {
+  do_no_collapse_for_testing_ = true;
+  content_settings::PageSpecificContentSettings::
+      SetIgnoreBlockedMediaIndicatorTimerForTesting(true);
+}
+
 void PermissionDashboardController::OnChipVisibilityChanged(bool is_visible) {}
 
 void PermissionDashboardController::OnExpandAnimationEnded() {
@@ -360,7 +366,7 @@ void PermissionDashboardController::StartCollapseTimer() {
 }
 
 void PermissionDashboardController::Collapse(bool hide) {
-  if (do_no_collapse_for_testing_) {
+  if (do_no_collapse_for_testing_ && !hide) {
     return;
   }
   if (hide) {
