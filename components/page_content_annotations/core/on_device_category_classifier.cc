@@ -42,14 +42,15 @@ OnDeviceCategoryClassifier::~OnDeviceCategoryClassifier() = default;
 
 void OnDeviceCategoryClassifier::OnPageEmbeddingAvailable(
     const GURL& url,
-    const passage_embeddings::Embedding& embedding) {
+    const passage_embeddings::Embedding& embedding,
+    base::OnceCallback<void(const std::vector<Category>&)> callback) {
   // Run each of the category classifiers on the returned embedding.
   auto barrier_callback =
       base::BarrierCallback<std::pair<CategoryType, std::optional<float>>>(
           category_classifier_model_handlers_.size(),
           base::BindOnce(
               &OnDeviceCategoryClassifier::OnCategoryClassifiersCompleted,
-              weak_ptr_factory_.GetWeakPtr(), url));
+              weak_ptr_factory_.GetWeakPtr(), std::move(callback), url));
   for (const auto& [category_type, model_handler] :
        category_classifier_model_handlers_) {
     model_handler->ExecuteModelWithInput(
@@ -60,6 +61,7 @@ void OnDeviceCategoryClassifier::OnPageEmbeddingAvailable(
 }
 
 void OnDeviceCategoryClassifier::OnCategoryClassifiersCompleted(
+    base::OnceCallback<void(const std::vector<Category>&)> callback,
     const GURL& url,
     const std::vector<std::pair<CategoryType, std::optional<float>>>&
         classifier_outputs) {
@@ -69,6 +71,9 @@ void OnDeviceCategoryClassifier::OnCategoryClassifiersCompleted(
       outputs.push_back(
           {.category_type = category_type, .score = *maybe_score});
     }
+  }
+  if (!callback.is_null()) {
+    std::move(callback).Run(outputs);
   }
 }
 

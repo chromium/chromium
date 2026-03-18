@@ -5,10 +5,14 @@
 #ifndef COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CONTENT_PAGE_CATEGORY_CLASSIFIER_BRIDGE_IMPL_H_
 #define COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CONTENT_PAGE_CATEGORY_CLASSIFIER_BRIDGE_IMPL_H_
 
+#include <vector>
+
 #include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/page_content_annotations/content/page_embeddings_service.h"
 #include "components/page_content_annotations/core/page_category_classifier_bridge.h"
+#include "components/page_content_annotations/core/page_content_annotation_type.h"
 
 namespace page_content_annotations {
 
@@ -34,12 +38,17 @@ class PageCategoryClassifierBridgeImpl
   void OnPageEmbeddingsAvailable(content::Page& page) override;
 
  private:
+  void OnCategoryClassifiersCompleted(const std::vector<Category>& outputs);
+
   const raw_ref<PageEmbeddingsService> page_embeddings_service_;
   const raw_ref<OnDeviceCategoryClassifier> category_classifier_;
 
   base::ScopedObservation<PageEmbeddingsService,
                           PageEmbeddingsService::Observer>
       scoped_observation_{this};
+
+  base::WeakPtrFactory<PageCategoryClassifierBridgeImpl> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace page_content_annotations

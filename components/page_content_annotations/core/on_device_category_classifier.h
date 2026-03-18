@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/optimization_guide/core/inference/model_handler.h"
+#include "components/page_content_annotations/core/page_content_annotation_type.h"
 #include "components/passage_embeddings/core/passage_embeddings_types.h"
 
 namespace optimization_guide {
@@ -39,12 +40,15 @@ class OnDeviceCategoryClassifier {
       delete;
 
   // Invoked when an embedding has been successfully computed for the page.
-  void OnPageEmbeddingAvailable(const GURL& url,
-                                const passage_embeddings::Embedding& embedding);
+  void OnPageEmbeddingAvailable(
+      const GURL& url,
+      const passage_embeddings::Embedding& embedding,
+      base::OnceCallback<void(const std::vector<Category>&)> callback);
 
  private:
   // Callback invoked when all category classifiers have completed execution.
   void OnCategoryClassifiersCompleted(
+      base::OnceCallback<void(const std::vector<Category>&)> callback,
       const GURL& url,
       const std::vector<std::pair<CategoryType, std::optional<float>>>&
           classifier_outputs);
