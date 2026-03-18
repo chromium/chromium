@@ -1,0 +1,19 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
+ * #import=./certificate_shared_lit.css.js
+ * #include=certificate-shared-lit
+ * #css_wrapper_metadata_end */
+
+.cert-box {
+  align-items: center;
+  border-top: var(--cr-separator-line);
+  display: flex;
+  min-height: 48px;
+  padding: 0 20px;
+}

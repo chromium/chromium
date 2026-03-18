@@ -78,7 +78,7 @@ suite('CertificateProvisioningEntryTests', function() {
   // Test case where 'Details' option is tapped.
   test('MenuOptions_Details', function() {
     const detailsButton =
-        entry.shadowRoot!.querySelector<HTMLElement>('#details');
+        entry.shadowRoot.querySelector<HTMLElement>('#details');
     assertTrue(!!detailsButton);
     const waitForActionEvent = actionEventToPromise();
     detailsButton.click();
