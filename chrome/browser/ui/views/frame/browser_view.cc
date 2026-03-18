@@ -4797,6 +4797,22 @@ int BrowserView::NonClientHitTest(const gfx::Point& point) {
                    screen_point)) {
       return HTCLIENT;
     }
+
+    // The vertical tabstrip is not part of the overlay in immersive mode and
+    // must be tested separately.
+    if (vertical_tab_strip_region_view_ &&
+        vertical_tab_strip_region_view_->GetVisible()) {
+      gfx::Point test_point(point);
+      if (ConvertedHitTest(parent(), vertical_tab_strip_region_view_,
+                           &test_point)) {
+        if (vertical_tab_strip_region_view_->IsPositionInWindowCaption(
+                test_point)) {
+          return HTCAPTION;
+        }
+        return HTCLIENT;
+      }
+    }
+
     return views::ClientView::NonClientHitTest(point);
   }
 #endif  // BUILDFLAG(IS_MAC)
