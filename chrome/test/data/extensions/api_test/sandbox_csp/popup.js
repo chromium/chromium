@@ -7,9 +7,9 @@ chrome.test.runTests([
     chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
       chrome.tabs.executeScript(
         tabs[0].id,
-        { code: 'var x = 1;' },
+        { code: 'const x = 1;' },
         () => {
-          let lastError = chrome.runtime.lastError;
+          const lastError = chrome.runtime.lastError;
           if (lastError) {
             chrome.test.fail();
           } else {

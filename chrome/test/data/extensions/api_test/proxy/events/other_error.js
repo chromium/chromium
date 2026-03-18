@@ -7,15 +7,15 @@
 
 function test() {
   // Esure the the proxy configuration is direct.
-  var config = { mode: 'direct' };
-  chrome.proxy.settings.set({'value': config}, addListener);
+  const config = { mode: 'direct' };
+  chrome.proxy.settings.set({value: config}, addListener);
 }
 
 function addListener() {
   // Add a listener for proxy errors. This should not be called, as we are not
   // using a proxy.
   chrome.proxy.onProxyError.addListener(function (error) {
-    chrome.test.notifyFail('onProxyError unexpectedly called with: ' + error);
+    chrome.test.notifyFail(`onProxyError unexpectedly called with: ${error}`);
   });
 
   // Sequentially fetch two URLs. Both should generate
@@ -39,9 +39,9 @@ function addListener() {
 
 function fetchBadUrl(onError) {
   // Use a unique URL so the fetch can't be served from cache.
-  var url = 'http://foo.invalid/' + Math.random();
+  const url = `http://foo.invalid/${Math.random()}`;
 
-  var req = new XMLHttpRequest();
+  const req = new XMLHttpRequest();
   req.open('GET', url, true);
   req.onload = function () {
     chrome.test.notifyFail('XHR is expected to fail');

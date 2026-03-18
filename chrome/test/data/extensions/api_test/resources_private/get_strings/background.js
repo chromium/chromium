@@ -5,7 +5,7 @@
 chrome.test.runTests([
   function testGetStrings() {
     chrome.resourcesPrivate.getStrings(
-        "identity", chrome.test.callbackPass(function(data) {
+        'identity', chrome.test.callbackPass(function(data) {
           // String from the identity component.
           chrome.test.assertTrue('window-title' in data);
           // String from the loadTimeData defaults.

@@ -4,12 +4,12 @@
 
 // browser_tests --gtest_filter=ExtensionApiTest.OpenOptionsPage
 
-var assertEq = chrome.test.assertEq;
-var assertTrue = chrome.test.assertTrue;
-var listenOnce = chrome.test.listenOnce;
-var callbackPass = chrome.test.callbackPass;
+const assertEq = chrome.test.assertEq;
+const assertTrue = chrome.test.assertTrue;
+const listenOnce = chrome.test.listenOnce;
+const callbackPass = chrome.test.callbackPass;
 
-var optionsTabUrl = 'chrome://extensions/?options=' + chrome.runtime.id;
+const optionsTabUrl = `chrome://extensions/?options=${chrome.runtime.id}`;
 
 // Finds the Tab for an options page, or null if no options page is open.
 // Asserts that there is at most 1 options page open.
@@ -45,7 +45,7 @@ function getActiveTab(callback) {
 
 // Tests refocusing an existing page.
 function testRefocusExistingOptionsPage() {
-  var testUrl = 'about:blank';
+  const testUrl = 'about:blank';
 
   // There will already be an options page open from the last test. Find it,
   // focus away from it, then make sure openOptionsPage() refocuses it.

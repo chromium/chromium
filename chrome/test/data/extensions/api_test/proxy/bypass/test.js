@@ -11,26 +11,26 @@ function expect(expected, message) {
   });
 }
 
-var httpProxy = {
-  host: "1.1.1.1"
+const HTTP_PROXY = {
+  host: '1.1.1.1'
 };
-var httpProxyExpected = {
-  scheme: "http",
-  host: "1.1.1.1",
+const HTTP_PROXY_EXPECTED = {
+  scheme: 'http',
+  host: '1.1.1.1',
   port: 80
 };
 
-var rules = {
-  proxyForHttp: httpProxy,
-  bypassList: ["localhost", "::1", "foo.bar", "<local>"]
+const RULES = {
+  proxyForHttp: HTTP_PROXY,
+  bypassList: ['localhost', '::1', 'foo.bar', '<local>']
 };
-var rulesExpected = {
-  proxyForHttp: httpProxyExpected,
-  bypassList: ["localhost", "::1", "foo.bar", "<local>"]
+const RULES_EXPECTED = {
+  proxyForHttp: HTTP_PROXY_EXPECTED,
+  bypassList: ['localhost', '::1', 'foo.bar', '<local>']
 };
 
-var config = { rules: rules, mode: "fixed_servers" };
-var configExpected = { rules: rulesExpected, mode: "fixed_servers" };
+const CONFIG = { rules: RULES, mode: 'fixed_servers' };
+const CONFIG_EXPECTED = { rules: RULES_EXPECTED, mode: 'fixed_servers' };
 
 chrome.test.runTests([
   // Verify that execution has started to make sure flaky timeouts are not
@@ -40,22 +40,22 @@ chrome.test.runTests([
   },
   function setIndividualProxies() {
     chrome.proxy.settings.set(
-        {'value': config},
+        {value: CONFIG},
         chrome.test.callbackPass());
   },
   function verifyRegular() {
     chrome.proxy.settings.get(
-        {'incognito': false},
-        expect({ 'value': configExpected,
-                 'levelOfControl': "controlled_by_this_extension" },
-               "invalid proxy settings"));
+        {incognito: false},
+        expect({ value: CONFIG_EXPECTED,
+                 levelOfControl: 'controlled_by_this_extension' },
+               'invalid proxy settings'));
   },
   function verifyIncognito() {
     chrome.proxy.settings.get(
-        {'incognito': true},
-        expect({ 'value': configExpected,
-                 'incognitoSpecific': false,
-                 'levelOfControl': "controlled_by_this_extension" },
-               "invalid proxy settings"));
+        {incognito: true},
+        expect({ value: CONFIG_EXPECTED,
+                 incognitoSpecific: false,
+                 levelOfControl: 'controlled_by_this_extension' },
+               'invalid proxy settings'));
   }
 ]);

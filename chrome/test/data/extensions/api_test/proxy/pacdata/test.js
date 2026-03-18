@@ -11,17 +11,17 @@ function expect(expected, message) {
   });
 }
 
-var pacScriptObject = {
-  data: "function FindProxyForURL(url, host) {\n" +
-        "  if (host == 'foobar.com')\n" +
-        "    return 'PROXY blackhole:80';\n" +
-        "  return 'DIRECT';\n" +
-        "}",
+const PAC_SCRIPT_OBJECT = {
+  data: `function FindProxyForURL(url, host) {
+  if (host == 'foobar.com')
+    return 'PROXY blackhole:80';
+  return 'DIRECT';
+}`,
   mandatory: false
 };
-var config = {
-  mode: "pac_script",
-  pacScript: pacScriptObject
+const CONFIG = {
+  mode: 'pac_script',
+  pacScript: PAC_SCRIPT_OBJECT
 };
 
 chrome.test.runTests([
@@ -32,14 +32,14 @@ chrome.test.runTests([
   },
   function setAutoSettings() {
     chrome.proxy.settings.set(
-        {'value': config},
+        {value: CONFIG},
         chrome.test.callbackPass());
   },
   function verifySettings() {
     chrome.proxy.settings.get(
-        {'incognito': false},
-        expect({ 'value': config,
-                 'levelOfControl': "controlled_by_this_extension" },
-               "invalid proxy settings"));
+        {incognito: false},
+        expect({ value: CONFIG,
+                 levelOfControl: 'controlled_by_this_extension' },
+               'invalid proxy settings'));
   }
 ]);

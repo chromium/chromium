@@ -12,28 +12,28 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
   function setAutoSettings() {
-    var kExpectedPacScript =
-        "function FindProxyForURL(url, host) {\n" +
-        "  if (host == 'foobar.com')\n" +
-        "    return 'PROXY blackhole:80';\n" +
-        "  return 'DIRECT';\n" +
-        "}";
-    var pacScriptObject = {
-      url: "data:;base64,ZnVuY3Rpb24gRmluZFByb3h5Rm9yVVJMKHVybCwgaG9zdCkgewo" +
-           "gIGlmIChob3N0ID09ICdmb29iYXIuY29tJykKICAgIHJldHVybiAnUFJPWFkgYmx" +
-           "hY2tob2xlOjgwJzsKICByZXR1cm4gJ0RJUkVDVCc7Cn0="
+    const expectedPacScript =
+        `function FindProxyForURL(url, host) {
+  if (host == 'foobar.com')
+    return 'PROXY blackhole:80';
+  return 'DIRECT';
+}`;
+    const pacScriptObject = {
+      url: 'data:;base64,ZnVuY3Rpb24gRmluZFByb3h5Rm9yVVJMKHVybCwgaG9zdCkgewo' +
+           'gIGlmIChob3N0ID09ICdmb29iYXIuY29tJykKICAgIHJldHVybiAnUFJPWFkgYmx' +
+           'hY2tob2xlOjgwJzsKICByZXR1cm4gJ0RJUkVDVCc7Cn0='
     };
-    var config = {
-      mode: "pac_script",
+    const config = {
+      mode: 'pac_script',
       pacScript: pacScriptObject
     };
     chrome.proxy.settings.set(
-        {'value': config},
+        {value: config},
         function() {
           chrome.proxy.settings.get(
               {},
               function(config) {
-                chrome.test.assertEq(kExpectedPacScript,
+                chrome.test.assertEq(expectedPacScript,
                                      config.value.pacScript.data);
                 chrome.test.succeed();
               });

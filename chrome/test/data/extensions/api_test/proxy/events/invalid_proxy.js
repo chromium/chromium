@@ -5,7 +5,7 @@
 // proxy api test
 // browser_tests.exe --gtest_filter=ProxySettingsApiTest.ProxyEventsInvalidProxy
 
-var expected_error = {
+const EXPECTED_ERROR = {
     error: 'net::ERR_PROXY_CONNECTION_FAILED',
     details: '',
     fatal: true
@@ -14,26 +14,26 @@ var expected_error = {
 function test() {
   // Install error handler and get the test server config.
   chrome.proxy.onProxyError.addListener(function (error) {
-    chrome.test.assertEq(expected_error, error);
+    chrome.test.assertEq(EXPECTED_ERROR, error);
     chrome.test.notifyPass();
   });
 
   // Set an invalid proxy and fire off an XHR. This should trigger proxy errors.
   // There may be any number of proxy errors, as systems like safe browsing
   // might start network traffic as well.
-  var rules = {
+  const rules = {
     singleProxy: { host: 'does.not.exist' }
   };
-  var config = { rules: rules, mode: 'fixed_servers' };
-  chrome.proxy.settings.set({'value': config}, sendFailingXHR);
+  const config = { rules: rules, mode: 'fixed_servers' };
+  chrome.proxy.settings.set({value: config}, sendFailingXHR);
 }
 
 function sendFailingXHR() {
   // The URL for the XHR doesn't matter, since it will be sent through an HTTP
   // proxy server (and the proxy server is unreachable).
-  var url = 'http://example.test/';
+  const url = 'http://example.test/';
 
-  var req = new XMLHttpRequest();
+  const req = new XMLHttpRequest();
   req.open('GET', url, true);
   req.onload = function () {
     chrome.test.notifyFail('proxy settings should not work');

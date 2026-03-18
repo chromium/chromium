@@ -12,18 +12,18 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
   function setSingleProxy() {
-    var oneProxy = {
-      host: "127.0.0.1",
+    const oneProxy = {
+      host: '127.0.0.1',
       port: 100
     };
 
-    var rules = {
+    const rules = {
       singleProxy: oneProxy
     };
 
-    var config = { rules: rules, mode: "fixed_servers" };
+    const config = { rules: rules, mode: 'fixed_servers' };
     chrome.proxy.settings.set(
-        {'value': config},
+        {value: config},
         chrome.test.callbackPass());
   }
 ]);

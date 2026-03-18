@@ -12,9 +12,9 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
   function setSystemProxy() {
-    var config = { mode: "system" };
+    const config = { mode: 'system' };
     chrome.proxy.settings.set(
-        {'value': config},
+        {value: config},
         chrome.test.callbackPass());
   }
 ]);

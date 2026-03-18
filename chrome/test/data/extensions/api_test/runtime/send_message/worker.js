@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var asyncResponseCallback;
+let asyncResponseCallback;
 
 // A simple onMessage listener we can send a "ping" message to and get a "pong"
 // message back.
@@ -25,6 +25,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       asyncResponseCallback('async_reply');
       break;
     default:
-      sendResponse('Unexpected message: ${request}');
+      sendResponse(`Unexpected message: ${request}`);
   }
 });

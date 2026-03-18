@@ -6,31 +6,31 @@
 // browser_tests.exe
 //     --gtest_filter=ProxySettingsApiTest.ProxyFixedIndividualRemove
 
-var httpProxy = {
-  host: "1.1.1.1"
+const HTTP_PROXY = {
+  host: '1.1.1.1'
 };
-var httpsProxy = {
-  scheme: "socks5",
-  host: "2.2.2.2"
+const HTTPS_PROXY = {
+  scheme: 'socks5',
+  host: '2.2.2.2'
 };
-var ftpProxy = {
-  host: "3.3.3.3",
+const FTP_PROXY = {
+  host: '3.3.3.3',
   port: 9000
 };
-var fallbackProxy = {
-  scheme: "socks4",
-  host: "4.4.4.4",
+const FALLBACK_PROXY = {
+  scheme: 'socks4',
+  host: '4.4.4.4',
   port: 9090
 };
 
-var rules = {
-  proxyForHttp: httpProxy,
-  proxyForHttps: httpsProxy,
-  proxyForFtp: ftpProxy,
-  fallbackProxy: fallbackProxy,
+const RULES = {
+  proxyForHttp: HTTP_PROXY,
+  proxyForHttps: HTTPS_PROXY,
+  proxyForFtp: FTP_PROXY,
+  fallbackProxy: FALLBACK_PROXY,
 };
 
-var config = { rules: rules, mode: "fixed_servers" };
+const CONFIG = { rules: RULES, mode: 'fixed_servers' };
 
 chrome.test.runTests([
   // Verify that execution has started to make sure flaky timeouts are not
@@ -40,12 +40,12 @@ chrome.test.runTests([
   },
   function setIndividualProxies() {
     chrome.proxy.settings.set(
-        {'value': config, 'scope': 'regular'},
+        {value: CONFIG, scope: 'regular'},
         chrome.test.callbackPass());
   },
   function clearProxies() {
     chrome.proxy.settings.clear(
-        {'scope': 'regular'},
+        {scope: 'regular'},
         chrome.test.callbackPass());
   }
 ]);

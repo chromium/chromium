@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-let readingList = chrome.readingList;
+const readingList = chrome.readingList;
 chrome.test.runTests([
 
   async function testAddEntryFunction() {
@@ -68,7 +68,7 @@ chrome.test.runTests([
   },
 
   async function testUpdateEntryFunction() {
-    let entry = {
+    const entry = {
       url: 'https://www.example.com',
       title: 'Title',
       hasBeenRead: true
@@ -104,7 +104,7 @@ chrome.test.runTests([
   },
 
   async function testQueryFunction() {
-    let entry = {
+    const entry = {
       url: 'https://www.example2.com',
       title: 'Example',
       hasBeenRead: false
@@ -113,7 +113,7 @@ chrome.test.runTests([
     entry.url = 'https://www.example3.com';
     readingList.addEntry(entry);
 
-    let query = {title: 'Example'};
+    const query = {title: 'Example'};
     let entries = await readingList.query(query);
     chrome.test.assertEq(entries.length, 2);
 
@@ -122,18 +122,18 @@ chrome.test.runTests([
     // the entries themselves.
     const expectedResult = [
       {
-        'url': 'https://www.example2.com/',
-        'title': 'Example',
-        'hasBeenRead': false,
-        'creationTime': entries[0].creationTime,
-        'lastUpdateTime': entries[0].lastUpdateTime,
+        url: 'https://www.example2.com/',
+        title: 'Example',
+        hasBeenRead: false,
+        creationTime: entries[0].creationTime,
+        lastUpdateTime: entries[0].lastUpdateTime,
       },
       {
-        'url': 'https://www.example3.com/',
-        'title': 'Example',
-        'hasBeenRead': false,
-        'creationTime': entries[1].creationTime,
-        'lastUpdateTime': entries[1].lastUpdateTime,
+        url: 'https://www.example3.com/',
+        title: 'Example',
+        hasBeenRead: false,
+        creationTime: entries[1].creationTime,
+        lastUpdateTime: entries[1].lastUpdateTime,
       }
     ];
     chrome.test.assertEq(entries, expectedResult);

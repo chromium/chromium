@@ -3,14 +3,14 @@
 // found in the LICENSE file.
 
 function checkTree(root, expectedEntries) {
-  var directoryReader = root.createReader();
-  var contents = [];
+  const directoryReader = root.createReader();
+  const contents = [];
   directoryReader.readEntries(chrome.test.callbackPass(
       function readEntriesCallback(entries) {
     if (entries.length == 0) {
       chrome.test.assertEq(Object.keys(expectedEntries).length, 0);
     } else {
-      for (var i = 0; i < entries.length; i++) {
+      for (let i = 0; i < entries.length; i++) {
         // Ignore files or directories like .svn.
         if (entries[i].name[0] == '.')
           continue;
@@ -31,10 +31,10 @@ function checkTree(root, expectedEntries) {
 }
 
 chrome.test.getConfig(async (config) => {
-  let testCases = [function getPackageDirectoryEntryCallback() {
-    let expectedDirectoryEntries = {
+  const testCases = [function getPackageDirectoryEntryCallback() {
+    const expectedDirectoryEntries = {
       'manifest.json': true,
-      'test': {'test.html': true, 'test.js': true}
+      test: {'test.html': true, 'test.js': true}
     };
     chrome.runtime.getPackageDirectoryEntry(
         chrome.test.callbackPass(function(directoryEntry) {
@@ -46,11 +46,11 @@ chrome.test.getConfig(async (config) => {
     testCases.push(async function getPackageDirectoryEntryPromise() {
       // We have to redefine this for both tests as checkTree deletes the
       // elements as it verifies them.
-      let expectedDirectoryEntries = {
+      const expectedDirectoryEntries = {
         'manifest.json': true,
-        'test': {'test.html': true, 'test.js': true}
+        test: {'test.html': true, 'test.js': true}
       };
-      let directoryEntry = await chrome.runtime.getPackageDirectoryEntry();
+      const directoryEntry = await chrome.runtime.getPackageDirectoryEntry();
       checkTree(directoryEntry, expectedDirectoryEntries);
     });
   }

@@ -11,53 +11,53 @@ function expect(expected, message) {
   });
 }
 
-var httpProxy = {
-  host: "1.1.1.1"
+const HTTP_PROXY = {
+  host: '1.1.1.1'
 };
-var httpProxyExpected = {
-  scheme: "http",
-  host: "1.1.1.1",
+const HTTP_PROXY_EXPECTED = {
+  scheme: 'http',
+  host: '1.1.1.1',
   port: 80
 };
-var httpsProxy = {
-  host: "2.2.2.2"
+const HTTPS_PROXY = {
+  host: '2.2.2.2'
 };
-var httpsProxyExpected = {
-  scheme: "http",
-  host: "2.2.2.2",
+const HTTPS_PROXY_EXPECTED = {
+  scheme: 'http',
+  host: '2.2.2.2',
   port: 80
 };
-var ftpProxy = {
-  host: "3.3.3.3",
+const FTP_PROXY = {
+  host: '3.3.3.3',
   port: 9000
 };
-var ftpProxyExpected = {
-  scheme: "http",  // this is added.
-  host: "3.3.3.3",
+const FTP_PROXY_EXPECTED = {
+  scheme: 'http',  // this is added.
+  host: '3.3.3.3',
   port: 9000
 };
-var fallbackProxy = {
-  scheme: "socks4",
-  host: "4.4.4.4",
+const FALLBACK_PROXY = {
+  scheme: 'socks4',
+  host: '4.4.4.4',
   port: 9090
 };
-var fallbackProxyExpected = fallbackProxy;
+const FALLBACK_PROXY_EXPECTED = FALLBACK_PROXY;
 
-var rules = {
-  proxyForHttp: httpProxy,
-  proxyForHttps: httpsProxy,
-  proxyForFtp: ftpProxy,
-  fallbackProxy: fallbackProxy,
+const RULES = {
+  proxyForHttp: HTTP_PROXY,
+  proxyForHttps: HTTPS_PROXY,
+  proxyForFtp: FTP_PROXY,
+  fallbackProxy: FALLBACK_PROXY,
 };
-var rulesExpected = {
-  proxyForHttp: httpProxyExpected,
-  proxyForHttps: httpsProxyExpected,
-  proxyForFtp: ftpProxyExpected,
-  fallbackProxy: fallbackProxyExpected,
+const RULES_EXPECTED = {
+  proxyForHttp: HTTP_PROXY_EXPECTED,
+  proxyForHttps: HTTPS_PROXY_EXPECTED,
+  proxyForFtp: FTP_PROXY_EXPECTED,
+  fallbackProxy: FALLBACK_PROXY_EXPECTED,
 };
 
-var config = { rules: rules, mode: "fixed_servers" };
-var configExpected = { rules: rulesExpected, mode: "fixed_servers" };
+const CONFIG = { rules : RULES, mode: 'fixed_servers' };
+const CONFIG_EXPECTED = { rules : RULES_EXPECTED, mode: 'fixed_servers' };
 
 chrome.test.runTests([
   // Verify that execution has started to make sure flaky timeouts are not
@@ -67,22 +67,22 @@ chrome.test.runTests([
   },
   function setIndividualProxies() {
     chrome.proxy.settings.set(
-        {'value': config},
+        {value: CONFIG},
         chrome.test.callbackPass());
   },
   function verifyRegular() {
     chrome.proxy.settings.get(
-        {'incognito': false},
-        expect({ 'value': configExpected,
-                 'levelOfControl': "controlled_by_this_extension" },
-               "invalid proxy settings"));
+        {incognito: false},
+        expect({ value: CONFIG_EXPECTED,
+                 levelOfControl: 'controlled_by_this_extension' },
+               'invalid proxy settings'));
   },
   function verifyIncognito() {
     chrome.proxy.settings.get(
-        {'incognito': true},
-        expect({ 'value': configExpected,
-                 'incognitoSpecific': false,
-                 'levelOfControl': "controlled_by_this_extension" },
-               "invalid proxy settings"));
+        {incognito: true},
+        expect({ value: CONFIG_EXPECTED,
+                 incognitoSpecific: false,
+                 levelOfControl: 'controlled_by_this_extension' },
+               'invalid proxy settings'));
    }
 ]);

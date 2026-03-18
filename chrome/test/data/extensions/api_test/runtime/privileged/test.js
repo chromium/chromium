@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var assertEq = chrome.test.assertEq;
-var assertTrue = chrome.test.assertTrue;
-var fail = chrome.test.fail;
-var succeed = chrome.test.succeed;
+const assertEq = chrome.test.assertEq;
+const assertTrue = chrome.test.assertTrue;
+const fail = chrome.test.fail;
+const succeed = chrome.test.succeed;
 
 const isServiceWorker = ('ServiceWorkerGlobalScope' in self);
-const extensionId = 'iegclhlplifhodhkoafiokenjoapiobj';
-const serviceWorkerScriptName = 'test.js';
+
+const EXTENSION_ID = 'iegclhlplifhodhkoafiokenjoapiobj';
+const SERVICE_WORKER_SCRIPT_NAME = 'test.js';
 
 function checkIsDefined(prop) {
   if (!chrome.runtime) {
@@ -17,7 +18,7 @@ function checkIsDefined(prop) {
     return false;
   }
   if (!chrome.runtime[prop]) {
-    fail('chrome.runtime.' + prop + ' is not undefined');
+    fail(`chrome.runtime.${prop} is not undefined`);
     return false;
   }
   return true;
@@ -28,7 +29,7 @@ function getLocation() {
 };
 
 function getPath() {
-  return isServiceWorker ? '/' + serviceWorkerScriptName
+  return isServiceWorker ? `/${SERVICE_WORKER_SCRIPT_NAME}`
       : '/_generated_background_page.html';
 };
 
@@ -37,14 +38,14 @@ chrome.test.runTests([
   function testID() {
     if (!checkIsDefined('id'))
       return;
-    assertEq(extensionId, chrome.runtime.id);
+    assertEq(EXTENSION_ID, chrome.runtime.id);
     succeed();
   },
 
   function testGetURL() {
     if (!checkIsDefined('getURL'))
       return;
-    assertEq('chrome-extension://' + chrome.runtime.id + getPath(),
+    assertEq(`chrome-extension://${chrome.runtime.id}${getPath()}`,
              getLocation());
     succeed();
   },
@@ -52,7 +53,7 @@ chrome.test.runTests([
   function testGetManifest() {
     if (!checkIsDefined('getManifest'))
       return;
-    var manifest = chrome.runtime.getManifest();
+    const manifest = chrome.runtime.getManifest();
     if (!manifest || !manifest.background ||
         !(manifest.background.scripts || manifest.background.service_worker)) {
       fail('Extension has no background or worker script.');
@@ -68,7 +69,7 @@ chrome.test.runTests([
     if (manifest.background.scripts) {
       assertEq(['test.js'], manifest.background.scripts);
     } else {
-      assertEq(serviceWorkerScriptName, manifest.background.service_worker);
+      assertEq(SERVICE_WORKER_SCRIPT_NAME, manifest.background.service_worker);
     }
     succeed();
   },
@@ -76,7 +77,7 @@ chrome.test.runTests([
   function testGetVersion() {
     if (!checkIsDefined('getVersion'))
       return;
-    var version = chrome.runtime.getVersion();
+    const version = chrome.runtime.getVersion();
     assertEq('1', version);
     succeed();
   },

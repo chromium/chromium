@@ -13,63 +13,63 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
   function setIndividualProxiesRegular() {
-    var httpProxy = {
-      host: "1.1.1.1"
+    const httpProxy = {
+      host: '1.1.1.1'
     };
-    var httpsProxy = {
-      scheme: "socks5",
-      host: "2.2.2.2"
+    const httpsProxy = {
+      scheme: 'socks5',
+      host: '2.2.2.2'
     };
-    var ftpProxy = {
-      host: "3.3.3.3",
+    const ftpProxy = {
+      host: '3.3.3.3',
       port: 9000
     };
-    var fallbackProxy = {
-      scheme: "socks4",
-      host: "4.4.4.4",
+    const fallbackProxy = {
+      scheme: 'socks4',
+      host: '4.4.4.4',
       port: 9090
     };
 
-    var rules = {
+    const rules = {
       proxyForHttp: httpProxy,
       proxyForHttps: httpsProxy,
       proxyForFtp: ftpProxy,
       fallbackProxy: fallbackProxy,
     };
 
-    var config = { rules: rules, mode: "fixed_servers" };
+    const config = { rules: rules, mode: 'fixed_servers' };
     chrome.proxy.settings.set(
-        {'value': config, 'scope': 'regular'},
+        {value: config, scope: 'regular'},
         chrome.test.callbackPass());
   },
   function setIndividualProxiesIncognito() {
-    var httpProxy = {
-      host: "5.5.5.5"
+    const httpProxy = {
+      host: '5.5.5.5'
     };
-    var httpsProxy = {
-      scheme: "socks5",
-      host: "6.6.6.6"
+    const httpsProxy = {
+      scheme: 'socks5',
+      host: '6.6.6.6'
     };
-    var ftpProxy = {
-      host: "7.7.7.7",
+    const ftpProxy = {
+      host: '7.7.7.7',
       port: 9000
     };
-    var fallbackProxy = {
-      scheme: "socks4",
-      host: "8.8.8.8",
+    const fallbackProxy = {
+      scheme: 'socks4',
+      host: '8.8.8.8',
       port: 9090
     };
 
-    var rules = {
+    const rules = {
       proxyForHttp: httpProxy,
       proxyForHttps: httpsProxy,
       proxyForFtp: ftpProxy,
       fallbackProxy: fallbackProxy,
     };
 
-    var config = { rules: rules, mode: "fixed_servers" };
+    const config = { rules: rules, mode: 'fixed_servers' };
     chrome.proxy.settings.set(
-        {'value': config, 'scope': 'incognito_persistent'},
+        {value: config, scope: 'incognito_persistent'},
         chrome.test.callbackPass());
   }
 ]);

@@ -5,21 +5,21 @@
 expectedDirectoryEntries = {
   'background.js': true,
   'manifest.json': true,
-  'window': {
+  window: {
     'test.html': true,
     'test.js': true
   }
 };
 
 function checkTree(root, expectedEntries) {
-  var directoryReader = root.createReader();
-  var contents = [];
+  const directoryReader = root.createReader();
+  const contents = [];
   directoryReader.readEntries(chrome.test.callbackPass(
       function readEntriesCallback(entries) {
     if (entries.length == 0) {
       chrome.test.assertEq(Object.keys(expectedEntries).length, 0);
     } else {
-      for (var i = 0; i < entries.length; i++) {
+      for (let i = 0; i < entries.length; i++) {
         // Ignore files or directories like .svn.
         if (entries[i].name[0] == '.')
           continue;
