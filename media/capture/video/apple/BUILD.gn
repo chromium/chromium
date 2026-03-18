@@ -1,0 +1,122 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/apple/mobile_config.gni")
+
+assert(is_apple)
+
+source_set("apple") {
+  visibility = [
+    ":unit_tests",
+    "//media/capture:capture_lib",
+    "//media/capture/video/apple/test:test_support",
+  ]
+  defines = [ "CAPTURE_IMPLEMENTATION" ]
+
+  sources = [
+    "gpu_memory_buffer_tracker_apple.cc",
+    "gpu_memory_buffer_tracker_apple.h",
+    "pixel_buffer_pool.h",
+    "pixel_buffer_pool.mm",
+    "pixel_buffer_transferer.cc",
+    "pixel_buffer_transferer.h",
+    "sample_buffer_transformer.cc",
+    "sample_buffer_transformer.h",
+  ]
+
+  if (target_platform != "tvos") {
+    sources += [
+      "video_capture_device_apple.h",
+      "video_capture_device_apple.mm",
+      "video_capture_device_avfoundation.h",
+      "video_capture_device_avfoundation.mm",
+      "video_capture_device_avfoundation_utils.h",
+      "video_capture_device_avfoundation_utils.mm",
+      "video_capture_device_factory_apple.h",
+      "video_capture_device_factory_apple.mm",
+      "video_capture_device_frame_receiver.h",
+    ]
+  }
+
+  deps = [
+    "//base",
+    "//media",
+    "//media/capture:capture_base",
+    "//media/capture:capture_device_specific",
+    "//media/capture:capture_switches",
+    "//media/capture/mojom:image_capture",
+    "//media/capture/mojom:image_capture_types",
+    "//media/capture/mojom:video_capture",
+    "//third_party/libyuv",
+    "//ui/gfx",
+    "//ui/gfx:color_space",
+    "//ui/gfx/geometry",
+  ]
+
+  if (target_platform != "tvos") {
+    deps += [ "//components/crash/core/common:crash_key" ]
+  }
+
+  if (is_mac) {
+    deps += [ "//media/capture/video/mac" ]
+  }
+
+  if (is_ios) {
+    deps += [ "//media/capture/video/ios" ]
+  }
+
+  frameworks = [
+    "AVFoundation.framework",
+    "CoreFoundation.framework",
+    "CoreGraphics.framework",
+    "CoreMedia.framework",
+    "CoreVideo.framework",
+    "Foundation.framework",
+    "IOSurface.framework",
+    "VideoToolbox.framework",
+  ]
+
+  if (is_ios) {
+    frameworks += [ "UIKit.framework" ]
+  }
+}
+
+source_set("unit_tests") {
+  visibility = [ "//media/capture:capture_unittests" ]
+  testonly = true
+
+  sources = [
+    "pixel_buffer_pool_unittest.mm",
+    "pixel_buffer_transferer_unittest.mm",
+    "sample_buffer_transformer_unittest.mm",
+    "video_capture_device_apple_unittest.mm",
+    "video_capture_device_avfoundation_unittest.mm",
+    "video_capture_device_factory_unittest.mm",
+  ]
+
+  deps = [
+    ":apple",
+    "test:test_support",
+    "//base/test:test_support",
+    "//media",
+    "//media/capture:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/libyuv",
+    "//ui/gfx:color_space",
+  ]
+
+  frameworks = [
+    "AVFoundation.framework",
+    "CoreMedia.framework",
+    "CoreVideo.framework",
+    "Foundation.framework",
+    "IOSurface.framework",
+    "VideoToolbox.framework",
+  ]
+
+  if (is_ios) {
+    frameworks += [ "UIKit.framework" ]
+  }
+}

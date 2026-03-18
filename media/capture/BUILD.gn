@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/apple/mobile_config.gni")
 import("//build/config/ui.gni")
 import("//media/media_options.gni")
 import("//testing/test.gni")
@@ -57,9 +56,12 @@ source_set("capture_device_specific") {
   visibility = [
     ":capture_lib",
     "//media/capture/video/android",
+    "//media/capture/video/apple",
     "//media/capture/video/chromeos",
     "//media/capture/video/fuchsia",
+    "//media/capture/video/ios",
     "//media/capture/video/linux",
+    "//media/capture/video/mac",
     "//media/capture/video/win",
   ]
   defines = [ "CAPTURE_IMPLEMENTATION" ]
@@ -179,66 +181,7 @@ component("capture_lib") {
   }
 
   if (is_apple) {
-    sources += [
-      "video/apple/gpu_memory_buffer_tracker_apple.cc",
-      "video/apple/gpu_memory_buffer_tracker_apple.h",
-      "video/apple/pixel_buffer_pool.h",
-      "video/apple/pixel_buffer_pool.mm",
-      "video/apple/pixel_buffer_transferer.cc",
-      "video/apple/pixel_buffer_transferer.h",
-      "video/apple/sample_buffer_transformer.cc",
-      "video/apple/sample_buffer_transformer.h",
-    ]
-    if (target_platform != "tvos") {
-      sources += [
-        "video/apple/video_capture_device_apple.h",
-        "video/apple/video_capture_device_apple.mm",
-        "video/apple/video_capture_device_avfoundation.h",
-        "video/apple/video_capture_device_avfoundation.mm",
-        "video/apple/video_capture_device_avfoundation_utils.h",
-        "video/apple/video_capture_device_avfoundation_utils.mm",
-        "video/apple/video_capture_device_factory_apple.h",
-        "video/apple/video_capture_device_factory_apple.mm",
-        "video/apple/video_capture_device_frame_receiver.h",
-      ]
-      deps += [ "//components/crash/core/common:crash_key" ]
-    }
-    frameworks = [
-      "AVFoundation.framework",
-      "CoreFoundation.framework",
-      "CoreGraphics.framework",
-      "CoreMedia.framework",
-      "CoreVideo.framework",
-      "Foundation.framework",
-      "IOSurface.framework",
-      "VideoToolbox.framework",
-    ]
-  }
-
-  if (is_mac) {
-    sources += [
-      "video/mac/uvc_control_mac.h",
-      "video/mac/uvc_control_mac.mm",
-      "video/mac/video_capture_device_decklink_mac.h",
-      "video/mac/video_capture_device_decklink_mac.mm",
-      "video/mac/video_capture_metrics_mac.h",
-      "video/mac/video_capture_metrics_mac.mm",
-    ]
-    deps += [ "//third_party/decklink" ]
-    frameworks += [
-      # Needed for the logging of camera information for
-      # https://crbug.com/461717105; remove when that logging is removed.
-      "CoreMediaIO.framework",
-      "IOKit.framework",
-    ]
-  }
-
-  if (is_ios) {
-    sources += [
-      "video/ios/pixel_buffer_rotator.cc",
-      "video/ios/pixel_buffer_rotator.h",
-    ]
-    frameworks += [ "UIKit.framework" ]
+    public_deps += [ "video/apple" ]
   }
 
   if (is_win) {
@@ -257,10 +200,6 @@ component("capture_lib") {
   if (is_fuchsia) {
     deps += [ "video/fuchsia" ]
   }
-
-  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-  # enable the diagnostic by removing this line.
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("capture_gpu_channel") {
@@ -309,20 +248,12 @@ source_set("test_support") {
     "//ui/gfx:test_support",
   ]
 
-  if (is_linux) {
-    public_deps = [ "video/linux:test_support" ]
-  }
-
-  if (is_mac) {
-    sources += [
-      "video/mac/test/screen_capture_kit_test_helper.h",
-      "video/mac/test/screen_capture_kit_test_helper.mm",
-    ]
-    weak_frameworks = [ "ScreenCaptureKit.framework" ]
-  }
-
   if (is_chromeos) {
     public_deps = [ "video/chromeos:test_support" ]
+  } else if (is_linux) {
+    public_deps = [ "video/linux:test_support" ]
+  } else if (is_mac) {
+    public_deps = [ "video/mac/test:test_support" ]
   }
 
   testonly = true
@@ -385,39 +316,15 @@ test("capture_unittests") {
   }
 
   if (is_apple) {
-    sources += [
-      "video/apple/pixel_buffer_pool_unittest.mm",
-      "video/apple/pixel_buffer_transferer_unittest.mm",
-      "video/apple/sample_buffer_transformer_unittest.mm",
-      "video/apple/test/fake_av_capture_device_format.h",
-      "video/apple/test/fake_av_capture_device_format.mm",
-      "video/apple/test/mock_video_capture_device_avfoundation_frame_receiver.h",
-      "video/apple/test/mock_video_capture_device_avfoundation_frame_receiver.mm",
-      "video/apple/test/pixel_buffer_test_utils.cc",
-      "video/apple/test/pixel_buffer_test_utils.h",
-      "video/apple/test/video_capture_test_utils.h",
-      "video/apple/test/video_capture_test_utils.mm",
-      "video/apple/video_capture_device_apple_unittest.mm",
-      "video/apple/video_capture_device_avfoundation_unittest.mm",
-      "video/apple/video_capture_device_factory_unittest.mm",
-    ]
-    frameworks = [
-      "IOSurface.framework",
-      "AVFoundation.framework",
-      "CoreMedia.framework",
-      "CoreVideo.framework",
-      "Foundation.framework",
-    ]
+    deps += [ "video/apple:unit_tests" ]
   }
 
   if (is_mac) {
-    sources += [ "video/mac/video_capture_metrics_mac_unittest.mm" ]
-    deps += [ "//third_party/ocmock" ]
+    deps += [ "video/mac:unit_tests" ]
   }
 
   if (is_ios) {
     deps += [ "//media:unit_tests_bundle_data" ]
-    frameworks += [ "UIKit.framework" ]
   }
 
   if (is_win) {

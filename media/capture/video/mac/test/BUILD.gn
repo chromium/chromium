@@ -1,0 +1,17 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_mac)
+
+source_set("test_support") {
+  visibility = [ "//media/capture:test_support" ]
+  testonly = true
+
+  sources = [
+    "screen_capture_kit_test_helper.h",
+    "screen_capture_kit_test_helper.mm",
+  ]
+
+  weak_frameworks = [ "ScreenCaptureKit.framework" ]
+}

@@ -1,0 +1,19 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_ios)
+
+source_set("ios") {
+  visibility = [ "//media/capture/video/apple:*" ]
+  defines = [ "CAPTURE_IMPLEMENTATION" ]
+
+  sources = [
+    "pixel_buffer_rotator.cc",
+    "pixel_buffer_rotator.h",
+  ]
+
+  deps = [ "//base" ]
+
+  frameworks = [ "VideoToolbox.framework" ]
+}

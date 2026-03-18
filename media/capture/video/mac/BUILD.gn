@@ -1,0 +1,59 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_mac)
+
+source_set("mac") {
+  visibility = [
+    ":unit_tests",
+    "//media/capture:test_support",
+    "//media/capture/video/apple:*",
+  ]
+  defines = [ "CAPTURE_IMPLEMENTATION" ]
+
+  sources = [
+    "uvc_control_mac.h",
+    "uvc_control_mac.mm",
+    "video_capture_device_decklink_mac.h",
+    "video_capture_device_decklink_mac.mm",
+    "video_capture_metrics_mac.h",
+    "video_capture_metrics_mac.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//media",
+    "//media/capture:capture_base",
+    "//media/capture:capture_device_specific",
+    "//media/capture:capture_switches",
+    "//media/capture/mojom:image_capture",
+    "//media/capture/mojom:image_capture_types",
+    "//media/capture/mojom:video_capture",
+    "//third_party/decklink",
+    "//ui/gfx",
+  ]
+
+  frameworks = [
+    "CoreMediaIO.framework",
+    "IOKit.framework",
+  ]
+}
+
+source_set("unit_tests") {
+  visibility = [ "//media/capture:capture_unittests" ]
+  testonly = true
+
+  sources = [ "video_capture_metrics_mac_unittest.mm" ]
+
+  deps = [
+    ":mac",
+    "//base/test:test_support",
+    "//media",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+
+  frameworks = [ "Foundation.framework" ]
+}
