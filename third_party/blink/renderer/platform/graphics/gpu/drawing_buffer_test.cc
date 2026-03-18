@@ -713,6 +713,17 @@ TEST_F(DrawingBufferTest,
   drawing_buffer_->BeginDestruction();
 }
 
+TEST_F(DrawingBufferTest, VerifyLowLatencyRenderingIsNotSetByDefault) {
+  viz::TransferableResource resource;
+  viz::ReleaseCallback release_callback;
+
+  EXPECT_TRUE(drawing_buffer_->PrepareTransferableResource(&resource,
+                                                           &release_callback));
+  EXPECT_FALSE(resource.is_low_latency_rendering);
+
+  drawing_buffer_->BeginDestruction();
+}
+
 TEST_F(
     DrawingBufferTest,
     VerifyLowLatencyRenderingIsSetWhenDesynchronizedIsTrueAndLowLatencyUsageIsSupportedForWebGL) {
