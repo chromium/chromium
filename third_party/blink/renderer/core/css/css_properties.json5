@@ -4182,6 +4182,7 @@
       invalidate: ["margin", "out-of-flow", "scroll-anchor"],
       anchor_mode: "height",
       percentages_depend_on_used_value: true,
+      affected_by_zoom: true,
     },
     {
       name: "margin-left",
@@ -4208,6 +4209,7 @@
       invalidate: ["margin", "out-of-flow", "scroll-anchor"],
       anchor_mode: "width",
       percentages_depend_on_used_value: true,
+      affected_by_zoom: true,
     },
     {
       name: "margin-right",
@@ -4234,6 +4236,7 @@
       invalidate: ["margin", "out-of-flow", "scroll-anchor"],
       anchor_mode: "width",
       percentages_depend_on_used_value: true,
+      affected_by_zoom: true,
     },
     {
       name: "margin-top",
@@ -4259,6 +4262,7 @@
       invalidate: ["margin", "out-of-flow", "scroll-anchor"],
       anchor_mode: "height",
       percentages_depend_on_used_value: true,
+      affected_by_zoom: true,
     },
     {
       name: "margin-trim",
