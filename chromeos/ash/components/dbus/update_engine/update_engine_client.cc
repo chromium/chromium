@@ -582,7 +582,7 @@ class UpdateEngineClientImpl : public UpdateEngineClient {
   }
 
   raw_ptr<dbus::ObjectProxy> update_engine_proxy_;
-  base::ObserverList<Observer>::Unchecked observers_;
+  base::ObserverList<Observer> observers_;
   update_engine::StatusResult last_status_;
 
   // True after update_engine's D-Bus service has become available.
@@ -766,7 +766,7 @@ class UpdateEngineClientDesktopFake : public UpdateEngineClient {
     }
   }
 
-  base::ObserverList<Observer>::UncheckedAndDanglingUntriaged observers_;
+  base::ObserverList<Observer> observers_;
 
   std::string current_channel_;
   std::string target_channel_;

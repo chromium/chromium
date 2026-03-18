@@ -144,7 +144,7 @@ class COMPONENT_EXPORT(ASH_DBUS_UPDATE_ENGINE) FakeUpdateEngineClient
                         std::optional<bool> opt_enabled);
 
  private:
-  base::ObserverList<Observer>::Unchecked observers_;
+  base::ObserverList<Observer> observers_;
   base::queue<update_engine::StatusResult> status_queue_;
   update_engine::StatusResult default_status_;
   UpdateCheckResult update_check_result_ = UPDATE_RESULT_SUCCESS;

@@ -14,6 +14,7 @@
 #include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/notimplemented.h"
+#include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine.pb.h"
 #include "chromeos/dbus/common/dbus_client.h"
@@ -55,10 +56,8 @@ class COMPONENT_EXPORT(ASH_DBUS_UPDATE_ENGINE) UpdateEngineClient
   };
 
   // Interface for observing changes from the update engine.
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
-    virtual ~Observer() {}
-
     // Called when the status is updated.
     virtual void UpdateStatusChanged(
         const update_engine::StatusResult& status) {}
