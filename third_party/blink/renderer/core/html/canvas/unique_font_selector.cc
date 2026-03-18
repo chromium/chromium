@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/html/canvas/unique_font_selector.h"
 
+#include "base/feature_list.h"
+#include "base/memory_coordinator/memory_coordinator_features.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/font_selector.h"
@@ -67,13 +69,25 @@ void UniqueFontSelector::RegisterForInvalidationCallbacks(
 
 void UniqueFontSelector::OnMemoryPressure(
     base::MemoryPressureLevel memory_pressure_level) {
-  // Memory pressure has changed, so the max number of fonts may have been
-  // updated. Evict excess entries to match the new limit.
-  EvictExcessEntries();
+  if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+    // Memory pressure has changed, so the max number of fonts may have been
+    // updated. Evict excess entries to match the new limit.
+    EvictExcessEntries();
+    return;
+  }
+
+  if (memory_pressure_level == base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
+    font_cache_.clear();
+    lru_list_.clear();
+  }
 }
 
 unsigned UniqueFontSelector::GetCurrentMaxFonts() const {
-  return CanvasFontCache::MaxFonts() * GetMemoryLimitRatio();
+  if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+    return CanvasFontCache::MaxFonts() * GetMemoryLimitRatio();
+  }
+
+  return CanvasFontCache::MaxFonts();
 }
 
 void UniqueFontSelector::EvictExcessEntries() {
