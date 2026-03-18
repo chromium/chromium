@@ -95,6 +95,7 @@ browser_exposed_mojom_targets = [
   "//chrome/services/media_gallery_util/public/mojom:mojom",
   "//chrome/services/printing/public/mojom:mojom",
   "//chrome/services/removable_storage_writer/public/mojom:mojom",
+  "//components/accessibility_annotator/core/logging:mojo_bindings",
   "//components/attribution_reporting:mojom",
   "//components/attribution_reporting:registration_header_error_mojom",
   "//components/attribution_reporting:registration_mojom",

@@ -319,7 +319,9 @@ void RegisterChromeWebUIConfigs() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   map.AddWebUIConfig(std::make_unique<media_router::CastFeedbackUIConfig>());
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  map.AddWebUIConfig(std::make_unique<ContentAnnotatorInternalsUIConfig>());
+  map.AddWebUIConfig(
+      std::make_unique<
+          content_annotator_internals::ContentAnnotatorInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<actor::ui::ActorOverlayUIConfig>());
   map.AddWebUIConfig(std::make_unique<AppServiceInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<AutofillMlInternalsUIConfig>());

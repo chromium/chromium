@@ -5,18 +5,45 @@
 assert(!is_android)
 source_set("content_annotator_internals") {
   sources = [
+    "content_annotator_internals_page_handler.cc",
+    "content_annotator_internals_page_handler.h",
     "content_annotator_internals_ui.cc",
     "content_annotator_internals_ui.h",
   ]
 
   public_deps = [
+    "//base",
+    "//components/accessibility_annotator/core/logging:mojo_bindings",
     "//content/public/browser",
+    "//mojo/public/cpp/bindings",
     "//ui/webui",
   ]
 
   deps = [
+    "//chrome/browser/accessibility_annotator",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/content_annotator_internals:resources",
     "//chrome/common",
+    "//components/accessibility_annotator/core/storage",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "content_annotator_internals_page_handler_unittest.cc" ]
+  deps = [
+    ":content_annotator_internals",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/accessibility_annotator",
+    "//chrome/test:test_support",
+    "//components/accessibility_annotator/core/logging:mojo_bindings",
+    "//components/accessibility_annotator/core/storage",
+    "//components/sync:test_support",
+    "//components/version_info",
+    "//content/test:test_support",
+    "//mojo/public/cpp/bindings",
+    "//testing/gmock",
+    "//testing/gtest",
   ]
 }

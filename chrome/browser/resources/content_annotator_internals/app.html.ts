@@ -8,6 +8,9 @@ import type {ContentAnnotatorInternalsAppElement} from './app.js';
 
 export function getHtml(this: ContentAnnotatorInternalsAppElement) {
   return html`
-<h1>Content Annotator Internals</h1>
-<div id="example-div">${this.message_}</div>`;
+    <h1>Content Annotator Internals</h1>
+    <div id="example-div">${this.message_}</div>
+    <h2>Log File Content:</h2>
+    <pre>${this.logContent_}</pre>
+  `;
 }

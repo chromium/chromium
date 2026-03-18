@@ -8652,6 +8652,7 @@ test("unit_tests") {
       "//chrome/browser/ui/webui:webui_util",
       "//chrome/browser/ui/webui/access_code_cast:unit_tests",
       "//chrome/browser/ui/webui/app_management:unit_tests",
+      "//chrome/browser/ui/webui/content_annotator_internals:unit_tests",
       "//chrome/browser/ui/webui/cr_components/composebox",
       "//chrome/browser/ui/webui/data_sharing",
       "//chrome/browser/ui/webui/metrics_reporter:test_support",

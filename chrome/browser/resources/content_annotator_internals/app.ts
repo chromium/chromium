@@ -9,6 +9,8 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
+import {BrowserProxyImpl} from './browser_proxy.js';
+import type {BrowserProxy} from './browser_proxy.js';
 
 export class ContentAnnotatorInternalsAppElement extends CrLitElement {
   static get is() {
@@ -26,10 +28,28 @@ export class ContentAnnotatorInternalsAppElement extends CrLitElement {
   static override get properties() {
     return {
       message_: {type: String},
+      logContent_: {type: String},
     };
   }
 
   protected accessor message_: string = loadTimeData.getString('message');
+  protected accessor logContent_: string = 'Loading log content...';
+  private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
+
+  override connectedCallback() {
+    super.connectedCallback();
+    this.loadLogContent_();
+  }
+
+  private async loadLogContent_() {
+    try {
+      const result = await this.browserProxy_.handler.getAnnotatedContent();
+      this.logContent_ =
+          result.content ?? 'Error retrieving annotated content.';
+    } catch (e) {
+      this.logContent_ = `Error loading log: ${e}`;
+    }
+  }
 }
 
 declare global {

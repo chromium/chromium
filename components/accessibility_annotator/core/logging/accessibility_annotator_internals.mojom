@@ -1,0 +1,24 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module accessibility_annotator_internals.mojom;
+
+// TODO(crbug.com/488355081): Maybe add a stream here to get updates
+// directly from the service.
+// For now, get the annotations once when the page is loaded.
+interface PageHandlerFactory {
+  // Create a page handler and link it to the UI.
+  CreatePageHandler(
+      pending_remote<Page> page, pending_receiver<PageHandler> handler);
+};
+
+// Called from TS side of chrome://content-annotator-internals
+interface PageHandler {
+  // Requests annotations and returns the annotated content as a string, if
+  // available.
+  GetAnnotatedContent() => (string? content);
+};
+
+// Called from C++ side of chrome://content-annotator-internals
+interface Page {};
