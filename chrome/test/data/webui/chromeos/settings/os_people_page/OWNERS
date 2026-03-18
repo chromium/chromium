@@ -1,0 +1,2 @@
+per-file *_api.test-mojom=file://ash/login/LOGIN_LOCK_OWNERS
+per-file *_api.ts=file://ash/login/LOGIN_LOCK_OWNERS
