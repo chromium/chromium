@@ -6091,6 +6091,14 @@ inline constexpr char kCastMirroringTargetPlayoutDelay300ms[] = "300ms.";
 inline constexpr char kCastMirroringTargetPlayoutDelay350ms[] = "350ms.";
 inline constexpr char kCastMirroringTargetPlayoutDelay400ms[] = "400ms.";
 
+inline constexpr char kEnableClickjackingProtectionName[] =
+    "Clickjacking protection";
+inline constexpr char kEnableClickjackingProtectionDescription[] =
+    "Enables clickjacking protection by blocking interaction with views that "
+    "are currently or were recently obscured by always-on-top windows, and "
+    "prevents unintended events on security-sensitive UI that appears and "
+    "activates unexpectedly.";
+
 inline constexpr char kEnableHeadlessLiveCaptionName[] =
     "Headless Live Captions";
 inline constexpr char kEnableHeadlessLiveCaptionDescription[] =

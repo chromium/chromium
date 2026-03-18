@@ -15,6 +15,18 @@ namespace views::features {
 BASE_FEATURE(kAnnounceTextAdditionalAttributes,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Used to apply the initial URL to the WebContents in WebView. This is a kill
+// switch for this new logic, see crbug.com/456058558.
+// TODO(https://crbug.com/456058558): Remove this flag once the feature becomes
+// stable.
+BASE_FEATURE(kApplyInitialUrlToWebContents, base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables clickjacking protection by blocking interaction with views that are
+// currently or were recently obscured by always-on-top windows, and prevents
+// unintended events on security-sensitive UI that appears and activates
+// unexpectedly."
+BASE_FEATURE(kEnableClickjackingProtection, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If mouse cursor is over different window Windows will not start a Drag
 // and drop. This feature moves the cursor to the location of a touch on
 // press-down so that by the time a Drag and drop is started, the cursor will
@@ -26,11 +38,5 @@ BASE_FEATURE(kEnableTouchDragCursorSync, base::FEATURE_ENABLED_BY_DEFAULT);
 // to kKeyboardAccessibleTooltip in //ui/base/ui_base_features.cc.
 BASE_FEATURE(kKeyboardAccessibleTooltipInViews,
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Used to apply the initial URL to the WebContents in WebView. This is a kill
-// switch for this new logic, see crbug.com/456058558.
-// TODO(https://crbug.com/456058558): Remove this flag once the feature becomes
-// stable.
-BASE_FEATURE(kApplyInitialUrlToWebContents, base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace views::features
