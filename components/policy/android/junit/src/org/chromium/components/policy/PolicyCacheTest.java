@@ -17,10 +17,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
@@ -36,6 +38,7 @@ import java.util.Map;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public final class PolicyCacheTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     private static final String POLICY_NAME = "policy-name";
     private static final String POLICY_NAME_2 = "policy-name-2";
     private static final String POLICY_NAME_3 = "policy-name-3";
@@ -50,7 +53,6 @@ public final class PolicyCacheTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mPolicyCache = PolicyCache.get();
         mSharedPreferences =
                 ContextUtils.getApplicationContext()

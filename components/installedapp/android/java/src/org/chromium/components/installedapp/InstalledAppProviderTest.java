@@ -17,11 +17,13 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
@@ -47,6 +49,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class InstalledAppProviderTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     private static final String ASSET_STATEMENTS_KEY =
             InstalledAppProviderImpl.ASSET_STATEMENTS_KEY;
     private static final String RELATION_HANDLE_ALL_URLS =
@@ -341,7 +344,6 @@ public class InstalledAppProviderTest {
 
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
         NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
 
         mTestInstalledAppProviderImplJni = new TestInstalledAppProviderImplJni();

@@ -5,23 +5,25 @@
 package org.chromium.components.segmentation_platform;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Tests for PredictionOptions. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class PredictionOptionsTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock PredictionOptions.Natives mNativeMock;
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         PredictionOptionsJni.setInstanceForTesting(mNativeMock);
     }
 

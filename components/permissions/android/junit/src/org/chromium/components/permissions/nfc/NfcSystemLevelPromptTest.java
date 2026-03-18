@@ -15,11 +15,13 @@ import android.provider.Settings;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -35,6 +37,7 @@ import java.lang.ref.WeakReference;
 /** Tests for the {@link NfcSystemLevelPrompt} class. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class NfcSystemLevelPromptTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     private NfcSystemLevelPrompt mNfcSystemLevelPrompt;
     private Activity mActivity;
     @Mock private WindowAndroid mWindowAndroid;
@@ -66,7 +69,6 @@ public class NfcSystemLevelPromptTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
 
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
@@ -111,7 +113,9 @@ public class NfcSystemLevelPromptTest {
         Assert.assertEquals(0, mIntentCallback.getCallCount());
     }
 
-    /** Tests whether intent and callback for clicking on the 'Turn on' button functions correctly. */
+    /**
+     * Tests whether intent and callback for clicking on the 'Turn on' button functions correctly.
+     */
     @Test
     public void testTurnOnCallback() {
         PropertyModel shownDialogModel = mModalDialogManager.getShownDialogModel();

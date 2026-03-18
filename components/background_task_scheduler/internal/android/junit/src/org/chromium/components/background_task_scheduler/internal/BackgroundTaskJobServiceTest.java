@@ -19,10 +19,12 @@ import android.os.Build;
 import android.os.PersistableBundle;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
@@ -39,6 +41,7 @@ import java.util.concurrent.TimeUnit;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, sdk = Build.VERSION_CODES.S)
 public class BackgroundTaskJobServiceTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     private static final BackgroundTaskSchedulerJobService.Clock sClock = () -> 1415926535000L;
     private static final BackgroundTaskSchedulerJobService.Clock sZeroClock = () -> 0L;
     @Mock private BackgroundTaskSchedulerDelegate mDelegate;
@@ -47,7 +50,6 @@ public class BackgroundTaskJobServiceTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         BackgroundTaskSchedulerFactoryInternal.setSchedulerForTesting(
                 new BackgroundTaskSchedulerImpl(mDelegate));
         BackgroundTaskSchedulerUma.setInstanceForTesting(mBackgroundTaskSchedulerUma);

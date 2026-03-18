@@ -11,11 +11,12 @@ import static org.mockito.Mockito.verifyNoInteractions;
 
 import android.content.Context;
 
-import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
@@ -25,6 +26,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class PolicyCacheProviderTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     private static final String POLICY_NAME_1 = "policy-name-1";
     private static final String POLICY_NAME_2 = "policy-name-2";
     private static final String POLICY_NAME_3 = "policy-name-3";
@@ -38,11 +40,6 @@ public class PolicyCacheProviderTest {
     private static final int SOURCE = 0;
 
     @Mock private CombinedPolicyProvider mCombinedPolicyProvider;
-
-    @Before
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
-    }
 
     @Test
     public void testPolicyRefresh() {

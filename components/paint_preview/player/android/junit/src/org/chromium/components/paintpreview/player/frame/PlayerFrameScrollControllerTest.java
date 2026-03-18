@@ -16,11 +16,13 @@ import android.widget.OverScroller;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
@@ -32,6 +34,7 @@ import org.chromium.components.paintpreview.player.OverscrollHandler;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {PaintPreviewCustomFlingingShadowScroller.class})
 public class PlayerFrameScrollControllerTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     private static final int CONTENT_WIDTH = 500;
     private static final int CONTENT_HEIGHT = 1000;
     private static final float TOLERANCE = 0.001f;
@@ -46,7 +49,6 @@ public class PlayerFrameScrollControllerTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mScroller = new OverScroller(ContextUtils.getApplicationContext());
         mDidScroll = false;
         Runnable onScrollListener = () -> mDidScroll = true;

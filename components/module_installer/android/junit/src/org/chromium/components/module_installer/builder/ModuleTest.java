@@ -10,11 +10,13 @@ import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.module_installer.engine.InstallEngine;
@@ -23,6 +25,7 @@ import org.chromium.components.module_installer.engine.InstallListener;
 /** Test suite for the Module class. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class ModuleTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private InstallEngine mInstallEngineMock;
 
     private static final String MODULE_NAME = "module_stub";
@@ -41,7 +44,6 @@ public class ModuleTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
 
         mModule = new Module<>(MODULE_NAME, INTERFACE, mImplName);
         mModule.setInstallEngine(mInstallEngineMock);

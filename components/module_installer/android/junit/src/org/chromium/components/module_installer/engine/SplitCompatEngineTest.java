@@ -26,12 +26,14 @@ import com.google.android.play.core.splitinstall.model.SplitInstallErrorCode;
 import com.google.android.play.core.splitinstall.model.SplitInstallSessionStatus;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
@@ -44,6 +46,7 @@ import java.util.Set;
 /** Test suite for the SplitCompatEngine class. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class SplitCompatEngineTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private SplitInstallManager mManager;
     @Mock private SplitInstallRequest mInstallRequest;
     @Mock private Task<Integer> mTask;
@@ -53,7 +56,6 @@ public class SplitCompatEngineTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
 
         mInstallerFacade = mock(SplitCompatEngineFacade.class);
 

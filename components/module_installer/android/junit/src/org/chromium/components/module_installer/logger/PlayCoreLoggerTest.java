@@ -11,17 +11,20 @@ import static org.mockito.Mockito.verify;
 import com.google.android.play.core.splitinstall.model.SplitInstallSessionStatus;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Test suite for the PlayCoreLogger class. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class PlayCoreLoggerTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private SplitInstallFailureLogger mFailureLogger;
 
     @Mock private SplitInstallStatusLogger mStatusLogger;
@@ -32,7 +35,6 @@ public class PlayCoreLoggerTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
 
         mPlayCoreLogger = new PlayCoreLogger(mFailureLogger, mStatusLogger, mAvailabilityLogger);
     }

@@ -12,7 +12,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.FeatureMap;
 import org.chromium.base.cached_flags.ValuesReturned;
@@ -26,6 +27,7 @@ import java.util.Map;
 /** Unit Tests for {@link CachedFeatureParam} and its subclasses. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class CachedFeatureParamUnitTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public final BaseFlagTestRule mBaseFlagTestRule = new BaseFlagTestRule();
 
     private static final String FEATURE_A = "FeatureA";
@@ -73,7 +75,6 @@ public class CachedFeatureParamUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
 
         when(mFeatureMap.getFieldTrialParamByFeature(FEATURE_A, STRING_PARAM_NAME))
                 .thenReturn(STRING_PARAM_NATIVE);

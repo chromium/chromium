@@ -14,12 +14,14 @@ import android.util.Size;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatcher;
 import org.mockito.InOrder;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -27,6 +29,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 /** Tests for the {@link PlayerFrameScaleController} class. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class PlayerFrameScaleControllerTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     private static final int CONTENT_WIDTH = 500;
     private static final int CONTENT_HEIGHT = 1000;
     private static final float TOLERANCE = 0.001f;
@@ -52,7 +55,6 @@ public class PlayerFrameScaleControllerTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mDidScale = false;
         Callback<Boolean> scaleListener = (Boolean didFinish) -> mDidScale = true;
         mViewport = new PlayerFrameViewport();

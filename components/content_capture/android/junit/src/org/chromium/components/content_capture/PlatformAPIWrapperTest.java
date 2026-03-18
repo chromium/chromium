@@ -14,12 +14,14 @@ import android.view.contentcapture.ContentCaptureSession;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -38,6 +40,8 @@ import java.util.Arrays;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class PlatformAPIWrapperTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     /**
      * This class implements the methods we care, mockito will mock other method for us. By
      * declaring the method be final, it won't be mocked by mockito.
@@ -266,7 +270,6 @@ public class PlatformAPIWrapperTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mMockedRootContentCaptureSession = Mockito.mock(ContentCaptureSession.class);
         mMockedRootAutofillId = Mockito.mock(AutofillId.class);
         mRootPlatformSession =
@@ -346,31 +349,32 @@ public class PlatformAPIWrapperTest {
     }
 
     private ContentCaptureFrame createContentCaptureFrame() {
-        ContentCaptureFrame data = ContentCaptureFrame.createContentCaptureFrame(
-            CHILD_FRAME_ID,
-            CHILD_URL,
-            CHILD_FRAME_RECT.left,
-            CHILD_FRAME_RECT.top,
-            CHILD_FRAME_RECT.width(),
-            CHILD_FRAME_RECT.height(),
-            CHILD_TITLE,
-            null);
+        ContentCaptureFrame data =
+                ContentCaptureFrame.createContentCaptureFrame(
+                        CHILD_FRAME_ID,
+                        CHILD_URL,
+                        CHILD_FRAME_RECT.left,
+                        CHILD_FRAME_RECT.top,
+                        CHILD_FRAME_RECT.width(),
+                        CHILD_FRAME_RECT.height(),
+                        CHILD_TITLE,
+                        null);
         ContentCaptureData.createContentCaptureData(
-            data,
-            CHILD1_ID,
-            CHILD1_TEXT,
-            CHILD1_RECT.left,
-            CHILD1_RECT.top,
-            CHILD1_RECT.width(),
-            CHILD1_RECT.height());
+                data,
+                CHILD1_ID,
+                CHILD1_TEXT,
+                CHILD1_RECT.left,
+                CHILD1_RECT.top,
+                CHILD1_RECT.width(),
+                CHILD1_RECT.height());
         ContentCaptureData.createContentCaptureData(
-            data,
-            CHILD2_ID,
-            CHILD2_TEXT,
-            CHILD2_RECT.left,
-            CHILD2_RECT.top,
-            CHILD2_RECT.width(),
-            CHILD2_RECT.height());
+                data,
+                CHILD2_ID,
+                CHILD2_TEXT,
+                CHILD2_RECT.left,
+                CHILD2_RECT.top,
+                CHILD2_RECT.width(),
+                CHILD2_RECT.height());
         return data;
     }
 
@@ -467,8 +471,7 @@ public class PlatformAPIWrapperTest {
 
     private void runContentCaptureFlushTask() throws Exception {
         runTaskAndVerifyCallback(
-            createContentCaptureFlushTask(),
-            toIntArray(PlatformAPIWrapperTestHelper.FLUSH));
+                createContentCaptureFlushTask(), toIntArray(PlatformAPIWrapperTestHelper.FLUSH));
     }
 
     private NullPointerException createMainContentCaptureSessionException() {

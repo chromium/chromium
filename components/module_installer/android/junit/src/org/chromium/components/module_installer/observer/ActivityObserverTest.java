@@ -14,10 +14,12 @@ import static org.mockito.Mockito.verify;
 import android.app.Activity;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -29,6 +31,7 @@ import java.util.List;
 /** Test suite for the ActivityObserver class. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class ActivityObserverTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private InstallEngine mInstallEngineMock;
 
     @Mock private Activity mActivityMock;
@@ -38,7 +41,6 @@ public class ActivityObserverTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
 
         mFacade = mock(ActivityObserverFacade.class);
 

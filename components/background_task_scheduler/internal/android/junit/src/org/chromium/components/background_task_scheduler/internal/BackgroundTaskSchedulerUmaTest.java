@@ -17,11 +17,13 @@ import static org.mockito.Mockito.verify;
 import android.content.SharedPreferences;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
-import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
@@ -37,13 +39,13 @@ import java.util.Set;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class BackgroundTaskSchedulerUmaTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Spy private BackgroundTaskSchedulerUma mUmaSpy;
 
     private BackgroundTaskSchedulerExternalUma mExternalUma;
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         BackgroundTaskSchedulerUma.setInstanceForTesting(mUmaSpy);
         mExternalUma = mUmaSpy;
         doNothing().when(mUmaSpy).assertNativeIsLoaded();
