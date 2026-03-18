@@ -299,7 +299,6 @@ bool VariationsFieldTrialCreator::SetUpFieldTrials(
   }
 
   bool used_testing_config = false;
-  // TODO(crbug.com/40230862): Remove this code path.
 #if BUILDFLAG(FIELDTRIAL_TESTING_ENABLED)
   if (ShouldUseFieldTrialTestingConfig(command_line)) {
     ApplyFieldTrialTestingConfig(feature_list.get());
