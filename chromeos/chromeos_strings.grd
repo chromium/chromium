@@ -303,9 +303,6 @@
       <message name="IDS_QUICK_ANSWERS_VIEW_A11Y_INFO_ALERT_TEXT" desc="A11y alert text for the Quick Answers view.">
         Info related to your selection available. Use Up arrow key to access.
       </message>
-      <message name="IDS_QUICK_ANSWERS_VIEW_A11Y_INFO_DESC_TEMPLATE_V2" desc="A11y description template for the Quick Answers view (V2 version).">
-        <ph name="QUERY_TEXT">$1<ex>interested</ex></ph>; <ph name="RESULT_TEXT">$2<ex>showing curiosity or concern about something or someone; having a feeling of interest.</ex></ph>; Press Search plus Space to see result in Google Search.
-      </message>
       <message name="IDS_QUICK_ANSWERS_VIEW_A11Y_INFO_DESCRIPTION_WITH_INTENT_TEMPLATE" desc="A11y description template for the refreshed Quick Answers view. Note that this text is not rendered in UI but passed to a11y service.">
         <ph name="INTENT">$1<ex>Unit Conversion</ex></ph>; <ph name="QUERY_TEXT">$2<ex>10 kg</ex></ph>; <ph name="RESULT_TEXT">$3<ex>22.04 pounds</ex></ph>
       </message>
@@ -327,15 +324,6 @@
       </message>
       <message name="IDS_QUICK_ANSWERS_VIEW_A11Y_RETRY_LABEL_NAME_TEMPLATE" desc="A11y retry label name template for the Quick Answers view.">
         <ph name="DESC_TEXT">$1<ex>Cannot connect to the internet. Click to try again.</ex></ph>: Retry
-      </message>
-      <message name="IDS_QUICK_ANSWERS_VIEW_EXPANSION_INDICATOR_LABEL" desc="Description text of the expansion affordance indicator for the Quick Answers view.">
-        more
-      </message>
-      <message name="IDS_QUICK_ANSWERS_VIEW_REPORT_QUERY_INTERNAL_LABEL" desc="Description text of the report query button for the Quick Answers view.">
-        Internal only
-      </message>
-      <message name="IDS_QUICK_ANSWERS_VIEW_REPORT_QUERY_REPORT_LABEL" desc="Description text of the report query button for the Quick Answers view.">
-        Report this query
       </message>
       <message name="IDS_QUICK_ANSWERS_RESULT_HEADER_INTENT_DEFINITION" desc="Header text shown in a definition result card">
         Define
