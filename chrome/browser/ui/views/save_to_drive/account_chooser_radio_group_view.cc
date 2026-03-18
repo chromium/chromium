@@ -60,6 +60,11 @@ AccountChooserRadioButtonRow::AccountChooserRadioButtonRow(
   auto radio_button = std::make_unique<views::RadioButton>();
   radio_button->GetViewAccessibility().SetPosInSet(pos_in_set);
   radio_button->GetViewAccessibility().SetSetSize(set_size);
+  if (pos_in_set == 1) {
+    radio_button->SetProperty(
+        views::kElementIdentifierKey,
+        AccountChooserRadioGroupView::kFirstAccountRadioButtonId);
+  }
   radio_button->GetViewAccessibility().SetName(
       base::UTF8ToUTF16(account.GetEmail()));
   account_selected_subscription_ = radio_button->AddCheckedChangedCallback(
@@ -157,5 +162,8 @@ void AccountChooserRadioGroupView::SelectAccount(const AccountInfo& account) {
 
 BEGIN_METADATA(AccountChooserRadioGroupView)
 END_METADATA
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AccountChooserRadioGroupView,
+                                      kFirstAccountRadioButtonId);
 
 }  // namespace save_to_drive
