@@ -4,6 +4,10 @@
   min-height: 96px;
 }
 
+.card-icon {
+  width: 48px;
+  height: 48px;
+}
 </style>
 <oobe-adaptive-dialog id="fjordImageSelectionDialog"
     role="dialog">
@@ -15,6 +19,7 @@
     <cr-radio-group selected="{{selectedImageType}}">
       <cr-card-radio-button id="meetButton" class="flex" name="meet">
         <div class="card-container">
+          <iron-icon class="card-icon" icon="oobe-48:beam-meet"></iron-icon>
           <div class="card-content card-label">
             [[i18nDynamic(locale, 'fjordImageSelectionMeetLabel')]]
           </div>
@@ -22,11 +27,20 @@
       </cr-card-radio-button>
       <cr-card-radio-button id="zoomButton" class="flex" name="zoom">
         <div class="card-container">
+          <iron-icon class="card-icon" icon="oobe-48:beam-zoom"></iron-icon>
           <div class="card-content card-label">
             [[i18nDynamic(locale, 'fjordImageSelectionZoomLabel')]]
           </div>
         </div>
       </cr-card-radio-button>
     </cr-radio-group>
+  </div>
+  <div slot="bottom-buttons">
+    <oobe-text-button on-click="onNextButtonClicked"
+        text-key="fjordImageSelectionNextButton"
+        inverse
+        disabled="[[!selectedImageType]]"
+        id="nextButton">
+    </oobe-text-button>
   </div>
 </oobe-adaptive-dialog>

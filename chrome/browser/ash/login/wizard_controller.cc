@@ -3085,9 +3085,20 @@ void WizardController::OnFjordFwUpdateScreenExit() {
   ShowFjordStationSetupScreen();
 }
 
-void WizardController::OnFjordImageSelectionScreenExit() {
-  OnScreenExit(FjordImageSelectionScreenView::kScreenId, kDefaultExitReason);
-  ShowFjordImageDownloadScreen();
+void WizardController::OnFjordImageSelectionScreenExit(
+    FjordImageSelectionScreen::Result result) {
+  OnScreenExit(FjordImageSelectionScreenView::kScreenId,
+               FjordImageSelectionScreen::GetResultString(result));
+  // Continue to enrollment if the chosen image type matches the current image
+  // type.
+  if ((result == FjordImageSelectionScreen::Result::kCuttlefish &&
+       policy::EnrollmentRequisitionManager::IsCuttlefishDevice()) ||
+      (result == FjordImageSelectionScreen::Result::kSquid &&
+       policy::EnrollmentRequisitionManager::IsSquidDevice())) {
+    ShowAutoEnrollmentCheckScreen();
+  } else {
+    ShowFjordImageDownloadScreen();
+  }
 }
 
 void WizardController::OnFjordImageDownloadScreenExit() {

@@ -1241,6 +1241,9 @@
   <message name="IDS_FJORD_IMAGE_SELECTION_ZOOM_LABEL" desc="Label for the radio button option to enroll the device as Google Beam with Zoom.">
     Google Beam with Zoom
   </message>
+  <message name="IDS_FJORD_IMAGE_SELECTION_NEXT_BUTTON_TEXT" desc="Button shown to the user to go to the next step.">
+    Next
+  </message>
   <message name="IDS_FJORD_IMAGE_DOWNLOAD_TITLE" desc="Title of the OOBE screen shown while the device image download is in progress.">
     Installing software
   </message>

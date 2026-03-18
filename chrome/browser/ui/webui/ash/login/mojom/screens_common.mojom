@@ -68,6 +68,20 @@ interface FjordTouchControllerPageHandler {
   OnSetupComplete();
 };
 
+// Interface for the FjordImageSelectionScreen. Lives in the browser process.
+// A renderer uses this to invoke methods that are implemented in
+// the browser process.
+interface FjordImageSelectionPageHandler {
+  // Describes the selected image type.
+  enum FjordImageType {
+    kCuttlefish = 0,
+    kSquid = 1,
+  };
+
+  // Emits an image selected event with the selected image type.
+  OnImageSelected(FjordImageType image_type);
+};
+
 
 // Interface for the gaia info screen. Lives in the browser process.
 // A renderer uses this to invoke methods that are implemented in

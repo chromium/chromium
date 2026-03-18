@@ -11,6 +11,7 @@
 #include "chrome/browser/ash/login/screens/arc_vm_data_migration_screen.h"
 #include "chrome/browser/ash/login/screens/consumer_update_screen.h"
 #include "chrome/browser/ash/login/screens/encryption_migration_screen.h"
+#include "chrome/browser/ash/login/screens/fjord_image_selection_screen.h"
 #include "chrome/browser/ash/login/screens/fjord_station_setup_screen.h"
 #include "chrome/browser/ash/login/screens/fjord_touch_controller_screen.h"
 #include "chrome/browser/ash/login/screens/gaia_info_screen.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/ui/webui/ash/login/consumer_update_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/drive_pinning_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/encryption_migration_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/fjord_image_selection_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/fjord_station_setup_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/fjord_touch_controller_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_info_screen_handler.h"
@@ -108,6 +110,15 @@ void OobeScreensHandlerFactory::EstablishFjordTouchControllerScreenPipe(
       CHECK_DEREF(WizardController::default_controller())
           .GetScreen<FjordTouchControllerScreen>();
   touch_controller->BindPageHandlerReceiver(std::move(receiver));
+}
+
+void OobeScreensHandlerFactory::EstablishFjordImageSelectionScreenPipe(
+    mojo::PendingReceiver<screens_common::mojom::FjordImageSelectionPageHandler>
+        receiver) {
+  FjordImageSelectionScreen* image_selection =
+      CHECK_DEREF(WizardController::default_controller())
+          .GetScreen<FjordImageSelectionScreen>();
+  image_selection->BindPageHandlerReceiver(std::move(receiver));
 }
 
 void OobeScreensHandlerFactory::EstablishGaiaInfoScreenPipe(

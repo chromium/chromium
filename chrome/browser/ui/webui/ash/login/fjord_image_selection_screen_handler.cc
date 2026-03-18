@@ -20,6 +20,8 @@ void FjordImageSelectionScreenHandler::DeclareLocalizedValues(
                IDS_FJORD_IMAGE_SELECTION_MEET_LABEL);
   builder->Add("fjordImageSelectionZoomLabel",
                IDS_FJORD_IMAGE_SELECTION_ZOOM_LABEL);
+  builder->Add("fjordImageSelectionNextButton",
+               IDS_FJORD_IMAGE_SELECTION_NEXT_BUTTON_TEXT);
 }
 
 void FjordImageSelectionScreenHandler::Show() {

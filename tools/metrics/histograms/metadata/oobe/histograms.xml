@@ -328,6 +328,8 @@ chromium-metrics-reviews@google.com.
   <variant name="Family-link-notice.Done"/>
   <variant name="Fingerprint-setup.Done"/>
   <variant name="Fingerprint-setup.Skipped"/>
+  <variant name="Fjord-image-selection.Cuttlefish"/>
+  <variant name="Fjord-image-selection.Squid"/>
   <variant name="Gaia-info.Back"/>
   <variant name="Gaia-info.EnterQuickStart"/>
   <variant name="Gaia-info.Manual"/>
