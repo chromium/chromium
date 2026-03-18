@@ -17,6 +17,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/commands/isolated_web_app_apply_update_command.h"
 #include "chrome/browser/web_applications/model/migration_behavior.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_sub_manager.h"
+#include "chrome/browser/web_applications/scheduler/add_validated_origin_associations_result.h"
 #include "chrome/browser/web_applications/scheduler/apply_manifest_migration_result.h"
 #include "chrome/browser/web_applications/scheduler/apply_pending_manifest_update_result.h"
 #include "chrome/browser/web_applications/scheduler/fetch_install_info_from_install_url_result.h"
@@ -746,6 +747,11 @@ class WebAppCommandScheduler {
   // migration info for all apps.
   virtual void ScheduleResolveWebAppPendingMigrationInfo(
       base::OnceClosure callback,
+      const base::Location& location = FROM_HERE);
+
+  void ScheduleAddValidatedOriginAssociations(
+      const webapps::AppId& app_id,
+      base::OnceCallback<void(AddValidatedOriginAssociationsResult)> callback,
       const base::Location& location = FROM_HERE);
 
   // Schedules a command to install a web app from a "migrate_from" field in

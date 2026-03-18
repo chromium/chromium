@@ -668,6 +668,11 @@ void WebApp::SetValidatedScopeExtensions(
   validated_scope_extensions_ = std::move(validated_scope_extensions);
 }
 
+void WebApp::SetOriginAssociationLastValidationCheckTime(
+    const std::optional<base::Time>& time) {
+  origin_association_last_validation_check_time_ = time;
+}
+
 void WebApp::SetLockScreenStartUrl(const GURL& lock_screen_start_url) {
   DCHECK(lock_screen_start_url.is_empty() || lock_screen_start_url.is_valid());
   lock_screen_start_url_ = lock_screen_start_url;
@@ -1163,6 +1168,7 @@ bool WebApp::operator==(const WebApp& other) const {
         app.disallowed_launch_protocols_,
         app.scope_extensions_,
         app.validated_scope_extensions_,
+        app.origin_association_last_validation_check_time_,
         app.lock_screen_start_url_,
         app.note_taking_new_note_url_,
         app.last_badging_time_,
@@ -1361,6 +1367,13 @@ base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
 
   root.Set("scope_extensions_validated",
            ConvertDebugValueList(validated_scope_extensions_));
+
+  if (origin_association_last_validation_check_time_.has_value()) {
+    root.Set("origin_association_last_validation_check_time",
+             base::ToString(*origin_association_last_validation_check_time_));
+  } else {
+    root.Set("origin_association_last_validation_check_time", base::Value());
+  }
 
   root.Set("window_controls_overlay_enabled", window_controls_overlay_enabled_);
 

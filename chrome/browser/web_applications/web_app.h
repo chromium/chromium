@@ -263,6 +263,11 @@ class WebApp {
     return validated_scope_extensions_;
   }
 
+  const std::optional<base::Time>&
+  origin_association_last_validation_check_time() const {
+    return origin_association_last_validation_check_time_;
+  }
+
   WebAppScope GetScope() const;
 
   RunOnOsLoginMode run_on_os_login_mode() const {
@@ -512,6 +517,8 @@ class WebApp {
   void SetScopeExtensions(base::flat_set<ScopeExtensionInfo> scope_extensions);
   void SetValidatedScopeExtensions(
       base::flat_set<ScopeExtensionInfo> validated_scope_extensions);
+  void SetOriginAssociationLastValidationCheckTime(
+      const std::optional<base::Time>& time);
   void SetLockScreenStartUrl(const GURL& lock_screen_start_url);
   void SetNoteTakingNewNoteUrl(const GURL& note_taking_new_note_url);
   void SetLastBadgingTime(const base::Time& time);
@@ -757,6 +764,8 @@ class WebApp {
   std::vector<MigrationSource> unvalidated_migration_sources_;
   std::vector<MigrationSource> validated_migration_sources_;
   std::optional<PendingMigrationInfo> pending_migration_info_;
+
+  std::optional<base::Time> origin_association_last_validation_check_time_;
   // LINT.ThenChange(//chrome/browser/web_applications/proto/web_app.proto)
 
   // New fields must be added to:

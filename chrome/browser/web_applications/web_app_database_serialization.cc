@@ -1082,6 +1082,14 @@ std::unique_ptr<WebApp> ParseWebAppProto(
   }
   web_app->SetValidatedScopeExtensions(std::move(valid_scope_extensions));
 
+  if (proto.has_origin_association_last_validation_check_time()) {
+    base::Time time = syncer::ProtoTimeToTime(
+        proto.origin_association_last_validation_check_time());
+    if (!time.is_null()) {
+      web_app->SetOriginAssociationLastValidationCheckTime(std::move(time));
+    }
+  }
+
   if (proto.has_lock_screen_start_url()) {
     web_app->SetLockScreenStartUrl(GURL(proto.lock_screen_start_url()));
   }
@@ -1821,6 +1829,12 @@ std::unique_ptr<proto::WebApp> WebAppToProto(const WebApp& web_app) {
     scope_extension_proto->set_scope(valid_extension.scope.spec());
     scope_extension_proto->set_has_origin_wildcard(
         valid_extension.has_origin_wildcard);
+  }
+
+  if (web_app.origin_association_last_validation_check_time().has_value()) {
+    local_data->set_origin_association_last_validation_check_time(
+        syncer::TimeToProtoTime(
+            *web_app.origin_association_last_validation_check_time()));
   }
 
   if (web_app.lock_screen_start_url().is_valid()) {

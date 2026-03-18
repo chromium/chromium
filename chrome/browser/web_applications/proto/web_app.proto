@@ -569,5 +569,9 @@ message WebApp {
 
   // A list of display mode overrides specified in app manifest.
   repeated DisplayOverrideItem display_overrides = 82;
+
+  // The last time origin association was checked for validity.
+  // ms since the Unix epoch. See sync/base/time.h.
+  optional int64 origin_association_last_validation_check_time = 83;
   // LINT.ThenChange(//chrome/browser/web_applications/web_app.h)
 }

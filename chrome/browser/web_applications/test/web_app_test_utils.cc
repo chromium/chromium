@@ -983,7 +983,9 @@ std::unique_ptr<WebApp> CreateRandomWebApp(
                          return random.next_bool();
                        });
   app->SetValidatedScopeExtensions(validated_scope_extensions);
-
+  if (random.next_bool()) {
+    app->SetOriginAssociationLastValidationCheckTime(random.next_time());
+  }
   app->SetIsDiyApp(random.next_bool());
   app->SetWasShortcutApp(random.next_bool());
 

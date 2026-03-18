@@ -276,6 +276,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebApp.AddValidatedOriginAssociations"
+    units="AddValidatedOriginAssociations" expires_after="2026-11-12">
+  <owner>vkrot@google.com</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records the outcome of validating a web app's scope extensions and migration
+    sources. Logged results indicate if the validation succeeded, left
+    unvalidated items, was skipped because it was unneeded, or was throttled by
+    the daily network check limit. The command is triggered on Isolated Web App
+    launch.
+  </summary>
+</histogram>
+
 <histogram name="Webapp.AmbientBadge.Terminate"
     enum="InstallableAmbientBadgeState" expires_after="2026-10-13">
   <owner>hartmanng@chromium.org</owner>

@@ -371,6 +371,7 @@ void FinalizeInstallJob::OnOriginAssociationValidated(
       web_app->SetUserDisplayMode(*web_app_info_.user_display_mode);
     }
   }
+  web_app->SetOriginAssociationLastValidationCheckTime(now_time);
 
   // The UI may initiate a full install to overwrite the existing
   // non-locally-installed app. Therefore, `install_state` can be

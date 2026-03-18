@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/clock.h"
 #include "chrome/browser/web_applications/jobs/finalize_install_job.h"
 #include "chrome/browser/web_applications/locks/lock.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
@@ -28,6 +29,7 @@
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_translation_manager.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
+#include "components/sync/base/time.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/common/web_app_id.h"
 #include "components/webapps/isolated_web_apps/types/iwa_version.h"
@@ -136,6 +138,13 @@ void FinalizeUpdateJob::OnOriginAssociationValidatedForUpdate(
   web_app->SetValidatedScopeExtensions(validated_scope_extensions);
   web_app->SetValidatedMigrationSources(
       validated_origin_associations.migration_sources);
+
+  // When testing, the database state is compared with the in-memory registry,
+  // and because proto time has less granularity, this comparison fails unless
+  // we pre-downgrade to proto time and back before saving in our database.
+  const base::Time now_time = syncer::ProtoTimeToTime(
+      syncer::TimeToProtoTime(provider_->clock().Now()));
+  web_app->SetOriginAssociationLastValidationCheckTime(now_time);
 
   // Prepare copy-on-write to update existing app.
   // This is not reached unless the data obtained from the manifest

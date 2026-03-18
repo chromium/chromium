@@ -16,6 +16,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -26,6 +27,7 @@
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/commands/add_validated_origin_associations_command.h"
 #include "chrome/browser/web_applications/commands/app_migration_data_read_command.h"
 #include "chrome/browser/web_applications/commands/app_update_data_read_command.h"
 #include "chrome/browser/web_applications/commands/apply_manifest_migration_command.h"
@@ -80,6 +82,7 @@
 #include "chrome/browser/web_applications/os_integration/os_integration_sub_manager.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
+#include "chrome/browser/web_applications/scheduler/add_validated_origin_associations_result.h"
 #include "chrome/browser/web_applications/scheduler/apply_pending_manifest_update_result.h"
 #include "chrome/browser/web_applications/scheduler/fetch_install_info_from_install_url_result.h"
 #include "chrome/browser/web_applications/scheduler/manifest_silent_update_result.h"
@@ -904,6 +907,16 @@ void WebAppCommandScheduler::ScheduleResolveWebAppPendingMigrationInfo(
   provider_->command_manager().ScheduleCommand(
       std::make_unique<ResolveWebAppPendingMigrationInfoCommand>(
           std::move(callback)),
+      location);
+}
+
+void WebAppCommandScheduler::ScheduleAddValidatedOriginAssociations(
+    const webapps::AppId& app_id,
+    base::OnceCallback<void(AddValidatedOriginAssociationsResult)> callback,
+    const base::Location& location) {
+  provider_->command_manager().ScheduleCommand(
+      std::make_unique<AddValidatedOriginAssociationsCommand>(
+          app_id, std::move(callback)),
       location);
 }
 

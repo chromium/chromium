@@ -34,6 +34,9 @@ class MigrationSource {
 
   bool operator==(const MigrationSource&) const = default;
 
+  friend auto operator<=>(const MigrationSource&,
+                          const MigrationSource&) = default;
+
   // Provides a single point of validation when loading migration data from the
   // database. This ensures that the in-memory model only ever contains
   // well-formed migration sources.
