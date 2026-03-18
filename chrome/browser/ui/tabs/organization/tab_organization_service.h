@@ -12,14 +12,12 @@
 #include "chrome/browser/ui/tabs/organization/metrics.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_observer.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
-#include "chrome/browser/ui/tabs/organization/trigger_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/webui/flags/pref_service_flags_storage.h"
 
 class Browser;
 class TabOrganizationSession;
-class TabSensitivityCache;
 
 namespace content {
 class BrowserContext;
@@ -42,16 +40,8 @@ class TabOrganizationService : public KeyedService,
       delete;
   ~TabOrganizationService() override;
 
-  // Called when an organization triggering moment occurs. Creates a session for
-  // the browser, if a session does not already exist.
-  void OnTriggerOccured(const Browser* browser);
-
   const BrowserSessionMap& browser_session_map() const {
     return browser_session_map_;
-  }
-
-  const TabSensitivityCache* tab_sensitivity_cache() const {
-    return tab_sensitivity_cache_.get();
   }
 
   const TabOrganizationSession* GetSessionForBrowser(
@@ -82,12 +72,6 @@ class TabOrganizationService : public KeyedService,
   void AcceptTabOrganization(Browser* browser,
                              TabOrganization::ID session_id,
                              TabOrganization::ID organization_id);
-
-  // Called when the proactive nudge button is clicked.
-  void OnActionUIAccepted(const Browser* browser);
-
-  // Called when the close button on the proactive nudge UI is clicked.
-  void OnActionUIDismissed(const Browser* browser);
 
   // Checks if the user is in the first run experience, and starts a request if
   // not.
@@ -138,10 +122,6 @@ class TabOrganizationService : public KeyedService,
 
   // A list of the observers of a tab organization Service.
   base::ObserverList<TabOrganizationObserver>::Unchecked observers_;
-
-  std::unique_ptr<TabSensitivityCache> tab_sensitivity_cache_;
-  std::unique_ptr<BackoffLevelProvider> trigger_backoff_;
-  std::unique_ptr<TabOrganizationTriggerObserver> trigger_observer_;
 
   raw_ptr<Profile> profile_;
 };

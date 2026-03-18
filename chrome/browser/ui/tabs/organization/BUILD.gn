@@ -8,7 +8,6 @@ source_set("organization") {
   sources = [
     "logging_util.h",
     "metrics.h",
-    "prefs.h",
     "request_factory.h",
     "tab_data.h",
     "tab_organization.h",
@@ -18,10 +17,6 @@ source_set("organization") {
     "tab_organization_service_factory.h",
     "tab_organization_session.h",
     "tab_organization_utils.h",
-    "tab_sensitivity_cache.h",
-    "trigger.h",
-    "trigger_observer.h",
-    "trigger_policies.h",
   ]
   public_deps = [
     "//base",
@@ -34,7 +29,6 @@ source_set("organization") {
     "//chrome/browser/ui/webui/tab_search:mojo_bindings",
     "//components/keyed_service/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
-    "//components/page_content_annotations/core",
     "//components/pref_registry",
     "//components/tab_groups",
     "//components/tabs:public",
@@ -48,7 +42,6 @@ source_set("impl") {
   sources = [
     "logging_util.cc",
     "metrics.cc",
-    "prefs.cc",
     "request_factory.cc",
     "tab_data.cc",
     "tab_organization.cc",
@@ -57,10 +50,6 @@ source_set("impl") {
     "tab_organization_service_factory.cc",
     "tab_organization_session.cc",
     "tab_organization_utils.cc",
-    "tab_sensitivity_cache.cc",
-    "trigger.cc",
-    "trigger_observer.cc",
-    "trigger_policies.cc",
   ]
   deps = [
     ":organization",
@@ -69,7 +58,6 @@ source_set("impl") {
     "//chrome/browser:flags",
     "//chrome/browser/metrics/desktop_session_duration",
     "//chrome/browser/optimization_guide",
-    "//chrome/browser/page_content_annotations",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resource_coordinator",
     "//chrome/browser/signin",
@@ -86,7 +74,6 @@ source_set("impl") {
     "//components/optimization_guide/core:features",
     "//components/optimization_guide/core:model_execution",
     "//components/optimization_guide/proto:optimization_guide_proto",
-    "//components/page_content_annotations/core",
     "//components/prefs",
     "//components/signin/public/identity_manager",
     "//components/tab_groups",
@@ -112,8 +99,6 @@ source_set("unit_tests") {
   sources = [
     "tab_organization_service_unittest.cc",
     "tab_organization_unittest.cc",
-    "trigger_policies_unittest.cc",
-    "trigger_unittest.cc",
   ]
   deps = [
     ":organization",
@@ -141,21 +126,5 @@ source_set("unit_tests") {
     "//ui/base:features",
     "//ui/base/mojom:ui_base_types",
     "//ui/base/unowned_user_data",
-  ]
-}
-
-source_set("browser_tests") {
-  testonly = true
-  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-  sources = [
-    "tab_sensitivity_cache_browsertest.cc",
-    "trigger_observer_browsertest.cc",
-  ]
-  deps = [
-    ":organization",
-    "//base/test:test_support",
-    "//chrome/browser/ui",
-    "//chrome/test:test_support_ui",
-    "//content/test:test_support",
   ]
 }

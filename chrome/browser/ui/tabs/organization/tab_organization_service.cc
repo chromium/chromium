@@ -17,9 +17,8 @@
 #include "chrome/browser/ui/tabs/organization/tab_organization_request.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
-#include "chrome/browser/ui/tabs/organization/tab_sensitivity_cache.h"
-#include "chrome/browser/ui/tabs/organization/trigger_policies.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_prefs.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -31,37 +30,9 @@
 
 TabOrganizationService::TabOrganizationService(
     content::BrowserContext* browser_context)
-    : profile_(Profile::FromBrowserContext(browser_context)) {
-  tab_sensitivity_cache_ = std::make_unique<TabSensitivityCache>(
-      Profile::FromBrowserContext(browser_context));
-  trigger_backoff_ =
-      std::make_unique<ProfilePrefBackoffLevelProvider>(browser_context);
-  trigger_observer_ = std::make_unique<TabOrganizationTriggerObserver>(
-      base::BindRepeating(&TabOrganizationService::OnTriggerOccured,
-                          base::Unretained(this)),
-      browser_context,
-      MakeTrigger(trigger_backoff_.get(),
-                  Profile::FromBrowserContext(browser_context)));
-}
+    : profile_(Profile::FromBrowserContext(browser_context)) {}
 
 TabOrganizationService::~TabOrganizationService() = default;
-
-void TabOrganizationService::OnTriggerOccured(const Browser* browser) {
-  TabOrganizationSession* session = GetSessionForBrowser(browser);
-  if (session != nullptr) {
-    // If the organizations havent been fully accepted or rejected, then it does
-    // not need to be reset.
-    if (!session->IsComplete()) {
-      return;
-    } else {
-      RemoveBrowserFromSessionMap(browser);
-    }
-  }
-
-  for (TabOrganizationObserver& observer : observers_) {
-    observer.OnToggleActionUIState(browser, true);
-  }
-}
 
 const TabOrganizationSession* TabOrganizationService::GetSessionForBrowser(
     const Browser* browser) const {
@@ -282,16 +253,6 @@ void TabOrganizationService::AcceptTabOrganization(
   for (TabOrganizationObserver& observer : observers_) {
     observer.OnOrganizationAccepted(browser);
   }
-}
-
-void TabOrganizationService::OnActionUIAccepted(const Browser* browser) {
-  StartRequestIfNotFRE(browser);
-  OnUserInvokedFeature(browser);
-  trigger_backoff_->Decrement();
-}
-
-void TabOrganizationService::OnActionUIDismissed(const Browser* browser) {
-  trigger_backoff_->Increment();
 }
 
 void TabOrganizationService::RemoveBrowserFromSessionMap(

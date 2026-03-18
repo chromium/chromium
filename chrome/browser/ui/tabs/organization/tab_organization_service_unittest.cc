@@ -125,11 +125,6 @@ class TabOrganizationServiceTest : public BrowserWithTestWindowTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-class MockTabOrganizationObserver : public TabOrganizationObserver {
- public:
-  MOCK_METHOD(void, OnToggleActionUIState, (const Browser*, bool), (override));
-};
-
 // Service Factory tests.
 
 TEST_F(TabOrganizationServiceTest, DifferentSessionPerProfile) {
@@ -158,21 +153,6 @@ TEST_F(TabOrganizationServiceTest, NoIncognito) {
 
 // Service tests.
 
-TEST_F(TabOrganizationServiceTest, DoesntAddSessionOnTriggerIfExists) {
-  Browser* browser = AddBrowser();
-  AddValidTabToBrowser(browser, 0);
-  service()->OnTriggerOccured(browser);
-  service()->CreateSessionForBrowser(browser);
-  EXPECT_TRUE(service()->browser_session_map().contains(browser));
-  const TabOrganizationSession* session =
-      service()->GetSessionForBrowser(browser);
-  EXPECT_NE(session, nullptr);
-
-  service()->OnTriggerOccured(browser);
-  EXPECT_TRUE(service()->browser_session_map().contains(browser));
-  EXPECT_EQ(session, service()->GetSessionForBrowser(browser));
-}
-
 TEST_F(TabOrganizationServiceTest, EachBrowserHasADistinctSession) {
   Browser* browser1 = AddBrowser();
   Browser* browser2 = AddBrowser();
@@ -182,20 +162,8 @@ TEST_F(TabOrganizationServiceTest, EachBrowserHasADistinctSession) {
             service()->GetSessionForBrowser(browser2));
 }
 
-TEST_F(TabOrganizationServiceTest, ObserverShowTriggerUICalled) {
-  Browser* browser = AddBrowser();
-
-  MockTabOrganizationObserver mock_observer;
-  EXPECT_CALL(mock_observer, OnToggleActionUIState(browser, true)).Times(1);
-
-  service()->AddObserver(&mock_observer);
-  service()->OnTriggerOccured(browser);
-  service()->RemoveObserver(&mock_observer);
-}
-
 TEST_F(TabOrganizationServiceTest, SessionFromBrowserPopulatesRequest) {
   Browser* browser1 = AddBrowser();
-  service()->OnTriggerOccured(browser1);
   for (int i = 0; i < 4; i++) {
     AddValidTabToBrowser(browser1, 0);
   }

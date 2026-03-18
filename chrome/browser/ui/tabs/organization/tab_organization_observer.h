@@ -10,11 +10,6 @@ class TabOrganizationSession;
 
 class TabOrganizationObserver {
  public:
-  // Called when all checks pass to be able to show the organization call to
-  // action UI.
-  virtual void OnToggleActionUIState(const Browser* browser, bool should_show) {
-  }
-
   // Called when a session is created.
   virtual void OnSessionCreated(const Browser* browser,
                                 TabOrganizationSession* session) {}

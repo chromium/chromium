@@ -293,7 +293,6 @@
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble.h"
 #include "chrome/browser/ui/side_panel/side_panel_prefs.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
-#include "chrome/browser/ui/tabs/organization/prefs.h"
 #include "chrome/browser/ui/tabs/pinned_tab_codec.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_pref_names.h"
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
@@ -1021,6 +1020,10 @@ constexpr char kPrivacySandboxActivityTypeRecord2[] =
     "privacy_sandbox.activity_type.record2";
 #endif  // BUILDFLAG(IS_ANDROID)
 
+// Deprecated 03/2026.
+constexpr char kTabOrganizationNudgeBackoffCount[] =
+    "tab_organization.nudge_backoff_count";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1433,6 +1436,9 @@ void RegisterProfilePrefsForMigration(
   // Deprecated 03/2026.
   registry->RegisterListPref(kPrivacySandboxActivityTypeRecord2);
 #endif  // BUILDFLAG(IS_ANDROID)
+
+  // Deprecated 03/2026.
+  registry->RegisterIntegerPref(kTabOrganizationNudgeBackoffCount, 0);
 }
 
 }  // namespace
@@ -1984,7 +1990,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   MostRelevantTabResumptionPageHandler::RegisterProfilePrefs(registry);
   TabGroupsPageHandler::RegisterProfilePrefs(registry);
   tab_groups::saved_tab_groups::prefs::RegisterProfilePrefs(registry);
-  tab_organization_prefs::RegisterProfilePrefs(registry);
   tab_search_prefs::RegisterProfilePrefs(registry);
   ThemeColorPickerHandler::RegisterProfilePrefs(registry);
   ThemeService::RegisterProfilePrefs(registry);
@@ -2753,6 +2758,9 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   // Added 03/2026.
   profile_prefs->ClearPref(kPrivacySandboxActivityTypeRecord2);
 #endif  // BUILDFLAG(IS_ANDROID)
+
+  // Added 03/2026.
+  profile_prefs->ClearPref(kTabOrganizationNudgeBackoffCount);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS
