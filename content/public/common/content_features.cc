@@ -1284,6 +1284,14 @@ BASE_FEATURE(kAccessibilityRequestScopedContentChangedEvents,
 const base::FeatureParam<int> kMaxContentChangedEventsToFireParam{
     &kAccessibilityRequestScopedContentChangedEvents, "max_events", 30};
 
+// When this feature is enabled, this param will allow to only fire events which
+// target nodes we assume are known by the Android framework.
+const base::FeatureParam<bool>
+    kPreventWindowContentChangesForNodesNotLikelyInAndroid{
+        &kAccessibilityRequestScopedContentChangedEvents,
+        "prevent_window_content_changes_for_nodes_not_likely_in_android",
+        false};
+
 // When enabled, supports atomic announcements, meaning that when
 // aria-atomic=true, the entire live region will be announced not just the node
 // that changed.
