@@ -3307,7 +3307,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.ElementCapture.RestrictTo.Result"
-    enum="ApplySubCaptureTargetResult" expires_after="2026-03-25">
+    enum="ApplySubCaptureTargetResult" expires_after="2027-03-25">
   <owner>eladalon@chromium.org</owner>
   <owner>jophba@chromium.org</owner>
   <owner>mfoltz@chromium.org</owner>
@@ -6508,7 +6508,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.RegionCapture.CropTo.Latency" units="ms"
-    expires_after="2026-03-25">
+    expires_after="2027-03-25">
   <owner>eladalon@chromium.org</owner>
   <owner>jophba@chromium.org</owner>
   <owner>mfoltz@chromium.org</owner>
@@ -6524,7 +6524,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.RegionCapture.CropTo.Result2"
-    enum="ApplySubCaptureTargetResult" expires_after="2026-03-25">
+    enum="ApplySubCaptureTargetResult" expires_after="2027-03-25">
   <owner>eladalon@chromium.org</owner>
   <owner>jophba@chromium.org</owner>
   <owner>mfoltz@chromium.org</owner>
@@ -6538,7 +6538,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.RegionCapture.ProduceCropTarget.Function.Result"
-    enum="ProduceTargetFunctionResult" expires_after="2026-03-25">
+    enum="ProduceTargetFunctionResult" expires_after="2027-03-25">
   <owner>eladalon@chromium.org</owner>
   <owner>jophba@chromium.org</owner>
   <owner>mfoltz@chromium.org</owner>
@@ -6554,7 +6554,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.RegionCapture.ProduceCropTarget.Promise.Result"
-    enum="ProduceTargetPromiseResult" expires_after="2026-03-25">
+    enum="ProduceTargetPromiseResult" expires_after="2027-03-25">
   <owner>eladalon@chromium.org</owner>
   <owner>jophba@chromium.org</owner>
   <owner>mfoltz@chromium.org</owner>
@@ -8112,7 +8112,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoCapture.Win.Device.IsSharedTexture" enum="Boolean"
-    expires_after="2026-04-28">
+    expires_after="2027-04-28">
   <owner>ilnik@google.com</owner>
   <owner>video-cmi-mpp@google.com</owner>
   <summary>
