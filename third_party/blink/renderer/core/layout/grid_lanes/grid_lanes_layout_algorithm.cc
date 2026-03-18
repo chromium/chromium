@@ -1611,7 +1611,8 @@ ConstraintSpace GridLanesLayoutAlgorithm::CreateConstraintSpace(
     const GridItemData& grid_lanes_item,
     const LogicalSize& containing_size,
     const LogicalSize& fixed_available_size,
-    LayoutResultCacheSlot result_cache_slot) const {
+    LayoutResultCacheSlot result_cache_slot,
+    const GridLayoutSubtree* opt_layout_subtree) const {
   ConstraintSpaceBuilder builder(
       GetConstraintSpace(), grid_lanes_item.node.Style().GetWritingDirection(),
       /*is_new_fc=*/true, /*adjust_inline_size_if_needed=*/false);
@@ -1633,6 +1634,12 @@ ConstraintSpace GridLanesLayoutAlgorithm::CreateConstraintSpace(
     builder.SetAvailableSize(available_size);
   }
 
+  if (opt_layout_subtree) {
+    DCHECK(grid_lanes_item.IsSubgrid());
+    DCHECK(!opt_layout_subtree->HasUnresolvedGeometry());
+    builder.SetGridLayoutSubtree(opt_layout_subtree);
+  }
+
   builder.SetPercentageResolutionSize(containing_size);
   builder.SetInlineAutoBehavior(grid_lanes_item.column_auto_behavior);
   builder.SetBlockAutoBehavior(grid_lanes_item.row_auto_behavior);
@@ -1642,8 +1649,6 @@ ConstraintSpace GridLanesLayoutAlgorithm::CreateConstraintSpace(
 // TODO(celestepan): If item-direction is row, we should not be returning an
 // indefinite inline size. Discussions are still ongoing on if we want to always
 // return min/max-content or inherit from the parent.
-//
-// TODO(almaher): Actually do something with `opt_layout_subtree`.
 //
 // TODO(almaher): `opt_child_block_offset` and `unavailable_block_size` aren't
 // used yet, but they will likely be needed for fragmentatation support.
@@ -1711,7 +1716,8 @@ ConstraintSpace GridLanesLayoutAlgorithm::CreateConstraintSpaceForLayout(
   // subgrid.
   return CreateConstraintSpace(*subgridded_item, containing_size,
                                fixed_available_size,
-                               LayoutResultCacheSlot::kLayout);
+                               LayoutResultCacheSlot::kLayout,
+                               opt_layout_subtree);
 }
 
 ConstraintSpace GridLanesLayoutAlgorithm::CreateConstraintSpaceForMeasure(

@@ -236,7 +236,8 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
       const GridItemData& grid_lanes_item,
       const LogicalSize& containing_size,
       const LogicalSize& fixed_available_size,
-      LayoutResultCacheSlot result_cache_slot) const;
+      LayoutResultCacheSlot result_cache_slot,
+      const GridLayoutSubtree* opt_layout_subtree = nullptr) const;
 
   // Return the inline contribution of `grid_lanes_item` calculated to either
   // the min-width or the max-width based on `sizing_constraint`.
