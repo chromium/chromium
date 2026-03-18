@@ -44,7 +44,6 @@
 namespace glic {
 
 namespace {
-constexpr base::TimeDelta kSidePanelMaxRecency = base::Minutes(20);
 constexpr base::TimeDelta kFloatyMaxRecency = base::Hours(3);
 
 BASE_FEATURE(kGlicMaxRecency, base::FEATURE_ENABLED_BY_DEFAULT);
@@ -569,7 +568,8 @@ GlicInstanceCoordinatorImpl::GetOrCreateGlicInstanceImplForTab(
   if (base::FeatureList::IsEnabled(
           features::kGlicDefaultToLastActiveConversation) &&
       last_active_instance_ &&
-      last_active_instance_->GetTimeSinceLastActive() < kSidePanelMaxRecency) {
+      last_active_instance_->GetTimeSinceLastActive() <
+          features::kGlicDefaultToLastActiveConversationMaxRecency.Get()) {
     return last_active_instance_;
   }
 

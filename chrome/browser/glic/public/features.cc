@@ -4,6 +4,7 @@
 
 #include "chrome/browser/glic/public/features.h"
 
+#include "build/android_buildflags.h"
 #include "build/build_config.h"
 
 namespace features {
@@ -32,5 +33,18 @@ const base::FeatureParam<bool> kAutoOpenGlicForPdfWithOnboarding({
 BASE_FEATURE(kGlicInvoke, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicCreateTabAdjacent, base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kGlicDefaultToLastActiveConversation,
+#if BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_DESKTOP_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
+
+const base::FeatureParam<base::TimeDelta>
+    kGlicDefaultToLastActiveConversationMaxRecency{
+        &kGlicDefaultToLastActiveConversation, "max_recency",
+        base::Minutes(20)};
 
 }  // namespace features

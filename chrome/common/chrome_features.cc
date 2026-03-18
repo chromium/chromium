@@ -505,9 +505,6 @@ const base::FeatureParam<int> kGlicMultiInstanceFloatyHeight{
 BASE_FEATURE(kGlicEnableMultiInstanceBasedOnTier,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kGlicDefaultToLastActiveConversation,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls whether the Glic feature's z order changes based on the webclient
 // mode.
 BASE_FEATURE(kGlicZOrderChanges, base::FEATURE_DISABLED_BY_DEFAULT);

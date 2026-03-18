@@ -218,6 +218,15 @@ class GlicInstanceCoordinatorBrowserTest
 #endif
   }
 
+  [[nodiscard]] bool CloseGlicForTabAndWait(tabs::TabInterface* tab) {
+    auto* instance = coordinator().GetInstanceImplForTab(tab);
+    if (!instance) {
+      return true;
+    }
+    instance->Close(EmbedderKey(tab), CloseOptions());
+    return WaitForSidePanelState(tab, GlicSidePanelCoordinator::State::kClosed);
+  }
+
  protected:
   static InvokeWithAutoSubmitPasskey GetPassKey() {
     return InvokeWithAutoSubmitPasskeyProvider::GetPassKey();
@@ -1313,6 +1322,89 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
       [&]() { return coordinator().GetActiveInstance() == nullptr; }));
 }
 #endif
+
+class GlicInstanceCoordinatorDefaultToLastActiveBrowserTest
+    : public GlicInstanceCoordinatorBrowserTest {
+ public:
+  GlicInstanceCoordinatorDefaultToLastActiveBrowserTest() {
+    feature_list_.InitAndEnableFeature(
+        features::kGlicDefaultToLastActiveConversation);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorDefaultToLastActiveBrowserTest,
+                       NewTabDefaultsToLastActiveIfEnabled) {
+  // Setup: Tab 1 opens Glic.
+  tabs::TabInterface* tab1 = GetTabListInterface()->GetActiveTab();
+  auto* instance1 = OpenGlicForActiveTab();
+  ASSERT_TRUE(instance1);
+
+  // Register a conversation to prevent the instance from being deleted when
+  // closed
+  auto info1 = mojom::ConversationInfo::New();
+  info1->conversation_id = "test_conversation_1";
+  instance1->RegisterConversation(std::move(info1), base::DoNothing());
+
+  // Close Glic on Tab 1
+  ASSERT_TRUE(CloseGlicForTabAndWait(tab1));
+
+  // Switch to Tab 2
+  CreateAndActivateTab(GURL("about:blank"));
+
+  // Open Glic for Tab 2
+  auto* instance2 = OpenGlicForActiveTab();
+  ASSERT_TRUE(instance2);
+
+  // With the feature enabled, the same instance should be reused since it was
+  // the last active and the recency limit was less than 20 minutes (default).
+  EXPECT_EQ(instance1, instance2);
+}
+
+class GlicInstanceCoordinatorDefaultToLastActiveExpiredBrowserTest
+    : public GlicInstanceCoordinatorBrowserTest {
+ public:
+  GlicInstanceCoordinatorDefaultToLastActiveExpiredBrowserTest() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        features::kGlicDefaultToLastActiveConversation,
+        {{features::kGlicDefaultToLastActiveConversationMaxRecency.name,
+          "0m"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    GlicInstanceCoordinatorDefaultToLastActiveExpiredBrowserTest,
+    NewTabDoesNotDefaultToLastActiveIfExpired) {
+  // Setup: Tab 1 opens Glic.
+  tabs::TabInterface* tab1 = GetTabListInterface()->GetActiveTab();
+  auto* instance1 = OpenGlicForActiveTab();
+  ASSERT_TRUE(instance1);
+
+  // Register a conversation to prevent the instance from being deleted when
+  // closed
+  auto info1 = mojom::ConversationInfo::New();
+  info1->conversation_id = "test_conversation_2";
+  instance1->RegisterConversation(std::move(info1), base::DoNothing());
+
+  // Close Glic on Tab 1
+  ASSERT_TRUE(CloseGlicForTabAndWait(tab1));
+
+  // Switch to Tab 2
+  CreateAndActivateTab(GURL("about:blank"));
+
+  // Open Glic for Tab 2
+  auto* instance2 = OpenGlicForActiveTab();
+  ASSERT_TRUE(instance2);
+
+  // With the parameter set to 0m, the recency limit should be hit immediately,
+  // causing a new instance to be created instead of reusing the old one.
+  EXPECT_NE(instance1, instance2);
+}
 
 class GlicInstanceCoordinatorNoWarmingTest
     : public GlicInstanceCoordinatorBrowserTest {

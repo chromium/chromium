@@ -7,5 +7,8 @@ source_set("features") {
     "features.cc",
     "features.h",
   ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//build:android_buildflags",
+  ]
 }
