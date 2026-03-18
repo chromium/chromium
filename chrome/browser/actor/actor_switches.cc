@@ -17,4 +17,8 @@ const char kDisableActorSafetyChecks[] = "disable-actor-safety-checks";
 const char kAttemptFormFillingToolSkipsUI[] =
     "attempt-form-filling-tool-skips-ui";
 
+// Forces logging of the actor aggregated journal events in VLOG(1). Useful on
+// Android as VLOGs are removed on official builds.
+const char kEnableActorJournalVLog[] = "enable-actor-journal-vlog";
+
 }  // namespace actor::switches

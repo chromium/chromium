@@ -4,9 +4,11 @@
 
 #include "chrome/browser/actor/aggregated_journal.h"
 
+#include "base/command_line.h"
 #include "base/memory/safe_ref.h"
 #include "base/rand_util.h"
 #include "base/types/pass_key.h"
+#include "chrome/browser/actor/actor_switches.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/actor/actor_logging.h"
 #include "chrome/common/actor/journal_details_builder.h"
@@ -23,6 +25,12 @@
 namespace actor {
 
 namespace {
+
+bool ShouldLogJournal() {
+  static bool enabled = base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kEnableActorJournalVLog);
+  return enabled || VLOG_IS_ON(1);
+}
 
 class NonTerminatedJournalEntries
     : public content::DocumentUserData<NonTerminatedJournalEntries> {
@@ -123,6 +131,14 @@ class JournalObserver : public mojom::JournalClient,
 WEB_CONTENTS_USER_DATA_KEY_IMPL(JournalObserver);
 
 }  // namespace
+
+// Redefine ACTOR_LOG here to enable gathering logs from this file with the
+// --enable-actor-journal-vlog flag, this is done because the default
+// implementation on official Android builds removes all VLOGs. Limited to this
+// file to minimize binary size impact.
+#undef ACTOR_LOG
+#define ACTOR_LOG() \
+  LAZY_STREAM(VLOG_STREAM(1), ShouldLogJournal()) << "[ActorTool]: "
 
 AggregatedJournal::Entry::Entry(const std::string& location,
                                 mojom::JournalEntryPtr data_arg)
