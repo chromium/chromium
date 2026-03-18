@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/task/single_thread_task_runner.h"
+#include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
@@ -627,6 +628,15 @@ views::View* ProjectsPanelView::GetFocusTraversableParentView() {
 }
 
 void ProjectsPanelView::AnimationProgressed(const gfx::Animation* animation) {
+#if BUILDFLAG(IS_MAC)
+  // On Mac, start fading in the close button when the panel has completed half
+  // of its opening animation. Similarly when closing, fade out the button until
+  // the panel has completed half of its closing animation.
+  if (controls_view_) {
+    const double value = animation->GetCurrentValue();
+    controls_view_->SetButtonOpacity(std::max(0.0, (value - 0.5) * 2.0));
+  }
+#endif
   InvalidateLayout();
 }
 

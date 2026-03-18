@@ -54,7 +54,7 @@ class ProjectsPanelView : public views::View,
                           public ui::SimpleMenuModel::Delegate,
                           public views::FocusChangeListener,
                           public views::FocusTraversable,
-                          gfx::AnimationDelegate,
+                          public gfx::AnimationDelegate,
                           ProjectsPanelController::Observer {
   METADATA_HEADER(ProjectsPanelView, views::View)
 
@@ -127,6 +127,9 @@ class ProjectsPanelView : public views::View,
   views::Separator* separator_for_testing() { return separator_; }
   views::Button* create_new_tab_group_button_for_testing() {
     return create_new_tab_group_button_;
+  }
+  ProjectsPanelControlsView* controls_view_for_testing() {
+    return controls_view_;
   }
 
   void set_on_close_animation_ended_callback_for_testing(
