@@ -201,6 +201,20 @@ suite('ContentController', () => {
     assertTrue(contentController.isEmpty());
   });
 
+  test('onNodeWillBeDeleted shows empty if only whitespace nodes', () => {
+    const id = 10;
+    const node = document.createTextNode('   ');
+    chrome.readingMode.rootId = id;
+    nodeStore.setDomNode(node, id);
+    contentController.setState(ContentType.HAS_CONTENT);
+
+    contentController.onNodeWillBeDeleted(id);
+
+    assertFalse(!!nodeStore.getDomNode(id));
+    assertFalse(contentController.hasContent());
+    assertTrue(contentController.isEmpty());
+  });
+
   test('onNodeWillBeDeleted notifies of new content', () => {
     const id = 12;
     chrome.readingMode.rootId = id;
@@ -253,6 +267,44 @@ suite('ContentController', () => {
     });
 
     test('sets empty if no content', () => {
+      contentController.setState(ContentType.LOADING);
+
+      const root = contentController.updateContent();
+
+      assertFalse(!!root);
+      assertFalse(contentController.hasContent());
+      assertTrue(contentController.isEmpty());
+    });
+
+    test('sets empty if only whitespace content', () => {
+      readingMode.getHtmlTag = () => '';
+      readingMode.getTextContent = () => '   ';
+      contentController.setState(ContentType.LOADING);
+
+      const root = contentController.updateContent();
+
+      assertFalse(!!root);
+      assertFalse(contentController.hasContent());
+      assertTrue(contentController.isEmpty());
+    });
+
+    test('sets empty if only whitespace content with readability', () => {
+      chrome.readingMode.activeDistillationMethod =
+          chrome.readingMode.distillationTypeReadability;
+      readingMode.htmlContent = '   ';
+      contentController.setState(ContentType.LOADING);
+
+      const root = contentController.updateContent();
+
+      assertFalse(!!root);
+      assertFalse(contentController.hasContent());
+      assertTrue(contentController.isEmpty());
+    });
+
+    test('sets empty if whitespace content with tags in readability', () => {
+      chrome.readingMode.activeDistillationMethod =
+          chrome.readingMode.distillationTypeReadability;
+      readingMode.htmlContent = '<div>   </div>';
       contentController.setState(ContentType.LOADING);
 
       const root = contentController.updateContent();
