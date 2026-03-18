@@ -22,6 +22,7 @@ static_library("about") {
 
   deps = [
     "//ash/constants",
+    "//ash/strings",
     "//base:i18n",
     "//chrome/app:branded_strings",
     "//chrome/app:generated_resources",

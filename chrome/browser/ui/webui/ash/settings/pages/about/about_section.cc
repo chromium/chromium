@@ -10,6 +10,7 @@
 #include "ash/constants/chrome_webui_url_constants.h"
 #include "ash/constants/url_constants.h"
 #include "ash/constants/webui_url_constants.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/command_line.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"

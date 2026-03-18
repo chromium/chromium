@@ -43,6 +43,7 @@ source_set("unit_tests") {
     ":optin",
     "//ash",
     "//ash/constants",
+    "//ash/strings",
     "//base",
     "//chrome/browser",
     "//chrome/browser/ash/arc",

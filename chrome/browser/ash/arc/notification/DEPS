@@ -25,7 +25,20 @@ include_rules = [
   "+chrome/browser/ui/ash/arc",
   "+chrome/browser/ui/ash/login",
   "+chrome/browser/ui/ash/multi_user",
-  "+chrome/grit",
   "+chrome/test/base",
   "+ui/message_center/message_center.h",
 ]
+
+specific_include_rules = {
+  "arc_boot_error_notification\\.cc": [
+    "+chrome/grit",
+  ],
+
+  "arc_management_transition_notification\\.cc": [
+    "+chrome/grit",
+  ],
+
+  "arc_provision_notification_service\\.cc": [
+    "+chrome/grit",
+  ],
+}

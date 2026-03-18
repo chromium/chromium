@@ -68,7 +68,6 @@ include_rules = [
   "+chrome/common/net",
   "+chrome/common/pref_names.h",
   "+chrome/common/url_constants.h",
-  "+chrome/grit",
   "+chrome/services/printing/public/mojom",
   "+chrome/test/base",
   "+chrome/test/views",
@@ -93,7 +92,12 @@ specific_include_rules = {
   ],
 
   "arc_support_host\\.cc": [
+    "+chrome/grit",
     "+chrome/browser/ui/extensions/app_launch_params.h",
     "+chrome/browser/ui/extensions/application_launch.h",
-  ]
+  ],
+
+  "icon_decode_request\\.cc": [
+    "+chrome/grit",
+  ],
 }

@@ -2,10 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+assert(is_chromeos)
+
 source_set("android_lib") {
   public_deps = [
     "//ash/public/cpp",
-    "//chrome/app:generated_resources_grit",
     "//extensions/browser/api/automation_internal",
     "//services/accessibility/android/public/mojom",
   ]
@@ -28,6 +29,8 @@ source_set("android_lib") {
     "pane_title_handler.cc",
     "pane_title_handler.h",
   ]
+
+  deps = [ "//ash/strings" ]
 }
 
 static_library("test_support") {

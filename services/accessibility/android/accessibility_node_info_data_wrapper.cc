@@ -6,10 +6,10 @@
 
 #include <algorithm>
 
+#include "ash/strings/grit/ash_strings.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "chrome/grit/generated_resources.h"
 #include "services/accessibility/android/android_accessibility_util.h"
 #include "services/accessibility/android/ax_tree_source_android.h"
 #include "ui/accessibility/ax_enums.mojom.h"

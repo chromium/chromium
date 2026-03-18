@@ -10,6 +10,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
@@ -27,7 +28,6 @@
 #include "chrome/browser/consent_auditor/consent_auditor_test_utils.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -292,7 +292,7 @@ ArcGoogleLocationServiceConsent CreateBaseGoogleLocationServiceConsent() {
       IDS_ARC_OPT_IN_DIALOG_BUTTON_AGREE);
   google_location_service_consent.add_description_grd_ids(
       ash::features::IsCrosPrivacyHubLocationEnabled()
-          ? IDS_CROS_OPT_IN_LOCATION_SETTING
+          ? IDS_ARC_CROS_OPT_IN_LOCATION_SETTING
           : IDS_ARC_OPT_IN_LOCATION_SETTING);
   return google_location_service_consent;
 }

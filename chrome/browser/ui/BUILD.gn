@@ -2138,7 +2138,7 @@ static_library("ui") {
       "//ash/quick_pair/proto:fastpair_proto",
       "//ash/quick_pair/repository",
       "//ash/quick_pair/ui",
-      "//ash/strings:strings_grit",
+      "//ash/strings",
       "//ash/style",
       "//ash/webui/annotator",
       "//ash/webui/annotator/public/mojom:annotator_mojo_bindings",

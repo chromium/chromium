@@ -600,13 +600,6 @@
       <message name="IDS_TABLET_MULTITASK_MENU_NUDGE_TEXT" desc="Text that is shown when the tablet multitask menu nudge is displayed.">
         Swipe down for more layout options
       </message>
-      <!-- ARC SDK Version Labels-->
-      <message name="IDS_ARC_SDK_VERSION_LABEL" desc="Label for Android SDK Version bundled with ARC">
-        SDK Version:
-      </message>
-      <message name="IDS_ARC_SDK_VERSION_UNKNOWN" desc="Message displayed when the Android SDK Version can not be found">
-        Unknown
-      </message>
       <if expr="is_chromeos">
         <part file="recorder_strings.grdp" />
 

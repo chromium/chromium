@@ -16,5 +16,10 @@ include_rules = [
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/ash/notifications",
   "+chrome/browser/media/webrtc",
-  "+chrome/grit",
 ]
+
+specific_include_rules = {
+  "arc_screen_capture_session\\.cc": [
+    "+chrome/grit",
+  ],
+}

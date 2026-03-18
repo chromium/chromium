@@ -116,6 +116,7 @@ static_library("session") {
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
+    "//ash/strings",
     "//chrome/browser:browser_process",
     "//chrome/browser:global_features",
     "//chrome/browser/ash/app_list/arc",

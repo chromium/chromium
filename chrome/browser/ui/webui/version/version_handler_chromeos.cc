@@ -4,13 +4,13 @@
 
 #include "chrome/browser/ui/webui/version/version_handler_chromeos.h"
 
+#include "ash/strings/grit/ash_strings.h"
 #include "base/functional/bind.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chromeos/strings/grit/chromeos_strings.h"
 #include "chromeos/version/version_loader.h"
 #include "components/version_info/channel.h"
 #include "content/public/browser/web_ui.h"

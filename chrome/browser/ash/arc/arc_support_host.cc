@@ -10,6 +10,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/url_constants.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
@@ -594,8 +595,8 @@ bool ArcSupportHost::Initialize() {
   if (ash::features::IsCrosPrivacyHubLocationEnabled()) {
     loadtime_data.Set("textLocationService",
                       l10n_util::GetStringUTF16(
-                          is_child ? IDS_CROS_OPT_IN_LOCATION_SETTING_CHILD
-                                   : IDS_CROS_OPT_IN_LOCATION_SETTING));
+                          is_child ? IDS_ARC_CROS_OPT_IN_LOCATION_SETTING_CHILD
+                                   : IDS_ARC_CROS_OPT_IN_LOCATION_SETTING));
   } else {
     loadtime_data.Set("textLocationService",
                       l10n_util::GetStringUTF16(
@@ -628,8 +629,8 @@ bool ArcSupportHost::Initialize() {
     loadtime_data.Set(
         "learnMoreLocationServices",
         l10n_util::GetStringFUTF16(
-            is_child ? IDS_CROS_OPT_IN_LEARN_MORE_LOCATION_SERVICES_CHILD
-                     : IDS_CROS_OPT_IN_LEARN_MORE_LOCATION_SERVICES,
+            is_child ? IDS_ARC_CROS_OPT_IN_LEARN_MORE_LOCATION_SERVICES_CHILD
+                     : IDS_ARC_CROS_OPT_IN_LEARN_MORE_LOCATION_SERVICES,
             ash::external_urls::kPrivacyHubGeolocationAccuracyLearnMoreURL));
   } else {
     loadtime_data.Set(
@@ -792,8 +793,8 @@ void ArcSupportHost::OnMessage(const base::DictValue& message) {
 
       if (ash::features::IsCrosPrivacyHubLocationEnabled()) {
         location_service_consent.add_description_grd_ids(
-            is_child ? IDS_CROS_OPT_IN_LOCATION_SETTING_CHILD
-                     : IDS_CROS_OPT_IN_LOCATION_SETTING);
+            is_child ? IDS_ARC_CROS_OPT_IN_LOCATION_SETTING_CHILD
+                     : IDS_ARC_CROS_OPT_IN_LOCATION_SETTING);
       } else {
         location_service_consent.add_description_grd_ids(
             is_child ? IDS_ARC_OPT_IN_LOCATION_SETTING_CHILD
