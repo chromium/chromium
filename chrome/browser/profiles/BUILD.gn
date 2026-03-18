@@ -323,6 +323,7 @@ source_set("profiles_extra_parts_impl") {
     "//chrome/browser/k_anonymity_service",
     "//chrome/browser/language_detection",
     "//chrome/browser/loader",
+    "//chrome/browser/login_detection",
     "//chrome/browser/lookalikes",
     "//chrome/browser/manta",
     "//chrome/browser/manta:impl",

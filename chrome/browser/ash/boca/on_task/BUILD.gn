@@ -45,6 +45,7 @@ static_library("on_task") {
     "//chrome/app:command_ids",
     "//chrome/browser:primitives",
     "//chrome/browser/ash/browser_delegate",
+    "//chrome/browser/login_detection",
     "//chrome/browser/profiles",
     "//chrome/browser/ui/ash/system_web_apps",
     "//chrome/browser/ui/browser_window",

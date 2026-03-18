@@ -1,0 +1,81 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("login_detection") {
+  public = [
+    "login_detection_keyed_service.h",
+    "login_detection_keyed_service_factory.h",
+    "login_detection_prefs.h",
+    "login_detection_tab_helper.h",
+    "login_detection_type.h",
+    "login_detection_util.h",
+    "oauth_login_detector.h",
+  ]
+  sources = [
+    "login_detection_keyed_service.cc",
+    "login_detection_keyed_service_factory.cc",
+    "login_detection_prefs.cc",
+    "login_detection_tab_helper.cc",
+    "login_detection_util.cc",
+    "oauth_login_detector.cc",
+  ]
+  deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//components/keyed_service/core",
+    "//components/password_manager/core/browser",
+    "//components/prefs",
+    "//components/site_isolation",
+    "//content/public/browser",
+    "//net",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//services/metrics/public/cpp:ukm_builders",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "login_detection_prefs_unittest.cc",
+    "login_detection_tab_helper_unittest.cc",
+    "oauth_login_detector_unittest.cc",
+  ]
+  deps = [
+    ":login_detection",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/test:test_support",
+    "//components/password_manager/core/browser",
+    "//components/prefs:test_support",
+    "//components/ukm:test_support",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//services/metrics/public/cpp:ukm_builders",
+    "//testing/gtest",
+    "//url",
+  ]
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "login_detection_browsertest.cc" ]
+    deps = [
+      ":login_detection",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//components/site_isolation",
+      "//content/test:test_support",
+      "//net:test_support",
+      "//testing/gtest",
+    ]
+  }
+}
