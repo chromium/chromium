@@ -815,18 +815,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Security.SafetyTips.SafetyTipIgnoredPageLoad"
-    enum="SafetyTipStatus" expires_after="2024-03-17">
-  <owner>jdeblasio@chromium.org</owner>
-  <owner>src/chrome/browser/lookalikes/OWNERS</owner>
-  <summary>
-    Records the Safety Tip status of a page after navigation commit for a page
-    where the Safety Tip has previously been ignored.
-
-    Note: This histogram was expired from 2021-12-26 until 2023-01-19.
-  </summary>
-</histogram>
-
 <histogram name="Security.SafetyTips.SafetyTipShown" enum="SafetyTipStatus"
     expires_after="2024-05-26">
   <owner>jdeblasio@chromium.org</owner>

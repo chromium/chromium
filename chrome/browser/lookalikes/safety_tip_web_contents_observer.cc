@@ -87,58 +87,6 @@ void OnSafetyTipClosed(SafetyTipCheckResult result,
   }
 }
 
-// Safety Tips does not use starts_active (since flagged sites are so rare to
-// begin with), so this function records the same metric as "SafetyTipShown",
-// but does so after the flag check, which may impact flag recording.
-void RecordPostFlagCheckHistogram(security_state::SafetyTipStatus status) {
-  UMA_HISTOGRAM_ENUMERATION("Security.SafetyTips.SafetyTipShown_AfterFlag",
-                            status);
-}
-
-// Records a histogram that embeds the safety tip status along with whether the
-// navigation was initiated cross- or same-origin.
-void RecordSafetyTipStatusWithInitiatorOriginInfo(
-    const std::optional<url::Origin>& committed_initiator_origin,
-    const GURL& committed_url,
-    const GURL& current_url,
-    security_state::SafetyTipStatus status) {
-  std::string suffix;
-  if (committed_url != current_url) {
-    // So long as we only record this metric following DidFinishNavigation, not
-    // OnVisibilityChanged, this should rarely happen. It would mean that a new
-    // navigation committed in this web contents before the safety tip check
-    // completed. This is possible only when engaged_sites is out of date
-    // (forcing an async update). In that scenario, there may be a race
-    // condition between the async safety tip check completing and the next call
-    // to DidFinishNavigation.
-    suffix = "UnexpectedUrl";
-  } else if (!committed_initiator_origin.has_value()) {
-    // The initiator origin has no value in cases like omnibox-initiated, or
-    // outside-of-Chrome-initiated, navigations.
-    suffix = "Unknown";
-  } else if (committed_initiator_origin.value().CanBeDerivedFrom(current_url)) {
-    // This is assumed to mean that the user has clicked on a same-origin link
-    // on a lookalike page, resulting in another lookalike navigation.
-    suffix = "SameOrigin";
-  } else if (lookalikes::GetETLDPlusOne(
-                 committed_initiator_origin.value().host()) ==
-             lookalikes::GetETLDPlusOne(current_url.GetHost())) {
-    // The user has clicked on a link on a page, and it's bumped to another
-    // page on the same eTLD+1. If that happens and this is a non-none and
-    // non-ignored status, that implies that the first eTLD+1 load didn't
-    // trigger the warning, this subsequent page load did, implying that it was
-    // triggered by a different subdomain.
-    suffix = "SameRegDomain";
-  } else {
-    // This is assumed to mean that the user has clicked on a link from a
-    // non-lookalike page, newly triggering the safety tip.
-    suffix = "CrossOrigin";
-  }
-
-  base::UmaHistogramEnumeration(
-      "Security.SafetyTips.StatusWithInitiator." + suffix, status);
-}
-
 }  // namespace
 
 SafetyTipWebContentsObserver::~SafetyTipWebContentsObserver() = default;
@@ -252,16 +200,6 @@ void SafetyTipWebContentsObserver::HandleSafetyTipCheckResult(
     SafetyTipCheckResult result) {
   UMA_HISTOGRAM_ENUMERATION("Security.SafetyTips.SafetyTipShown",
                             result.safety_tip_status);
-  base::UmaHistogramEnumeration(
-      called_from_visibility_check
-          ? "Security.SafetyTips.ReputationCheckComplete.VisibilityChanged"
-          : "Security.SafetyTips.ReputationCheckComplete.DidFinishNavigation",
-      result.safety_tip_status);
-  if (!called_from_visibility_check) {
-    RecordSafetyTipStatusWithInitiatorOriginInfo(
-        last_committed_initiator_origin_, last_committed_url_, result.url,
-        result.safety_tip_status);
-  }
 
   // Set this field independent of whether the feature to show the UI is
   // enabled/disabled. Metrics code uses this field and we want to record
@@ -288,8 +226,6 @@ void SafetyTipWebContentsObserver::HandleSafetyTipCheckResult(
 
   if (result.safety_tip_status ==
       security_state::SafetyTipStatus::kLookalikeIgnored) {
-    UMA_HISTOGRAM_ENUMERATION("Security.SafetyTips.SafetyTipIgnoredPageLoad",
-                              result.safety_tip_status);
     FinalizeSafetyTipCheckWhenTipNotShown(record_ukm_if_tip_not_shown, result,
                                           navigation_source_id);
     return;
@@ -303,8 +239,6 @@ void SafetyTipWebContentsObserver::HandleSafetyTipCheckResult(
         lookalikes::GetConsoleMessage(result.url,
                                       /*is_new_heuristic=*/false));
   }
-
-  RecordPostFlagCheckHistogram(result.safety_tip_status);
 
   base::OnceCallback<void(SafetyTipInteraction)> close_callback =
       base::BindOnce(OnSafetyTipClosed, result, navigation_source_id, profile_,

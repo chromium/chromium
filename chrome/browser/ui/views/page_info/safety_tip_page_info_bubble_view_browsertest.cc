@@ -1043,24 +1043,6 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   test_helper()->CheckInterstitialUkmCount(0);
 }
 
-// Tests that the SafetyTipIgnoredPageLoad histogram triggers correctly.
-IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
-                       SafetyTipIgnoredPageLoadHistogram) {
-  base::HistogramTester histograms;
-  auto kNavigatedUrl = GetURL("accounts-google.com");
-  SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
-  NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
-
-  CloseWarningIgnore(views::Widget::ClosedReason::kCloseButtonClicked);
-  NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
-  histograms.ExpectBucketCount(
-      "Security.SafetyTips.SafetyTipIgnoredPageLoad",
-      security_state::SafetyTipStatus::kLookalikeIgnored, 1);
-  // UKM recorded twice because we revisited the same page.
-  test_helper()->CheckSafetyTipUkmCount(2);
-  test_helper()->CheckInterstitialUkmCount(0);
-}
-
 // Tests that Safety Tip interactions are recorded in a histogram when the user
 // leaves the site using the safety tip.
 IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
