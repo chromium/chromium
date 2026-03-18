@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/containers/flat_set.h"
+#include "base/memory_coordinator/memory_coordinator_features.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
@@ -215,15 +216,29 @@ void SSLClientSessionCache::FlushExpiredSessions() {
 
 void SSLClientSessionCache::OnMemoryPressure(
     base::MemoryPressureLevel memory_pressure_level) {
+  if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+    switch (memory_pressure_level) {
+      case base::MEMORY_PRESSURE_LEVEL_NONE:
+        cache_.UpdateMaxSize(config_.max_entries);
+        break;
+      case base::MEMORY_PRESSURE_LEVEL_MODERATE:
+        cache_.UpdateMaxSize(config_.max_entries / 2);
+        break;
+      case base::MEMORY_PRESSURE_LEVEL_CRITICAL:
+        cache_.UpdateMaxSize(0);
+        break;
+    }
+    return;
+  }
+
   switch (memory_pressure_level) {
     case base::MEMORY_PRESSURE_LEVEL_NONE:
-      cache_.UpdateMaxSize(config_.max_entries);
       break;
     case base::MEMORY_PRESSURE_LEVEL_MODERATE:
-      cache_.UpdateMaxSize(config_.max_entries / 2);
+      FlushExpiredSessions();
       break;
     case base::MEMORY_PRESSURE_LEVEL_CRITICAL:
-      cache_.UpdateMaxSize(0);
+      Flush();
       break;
   }
 }
