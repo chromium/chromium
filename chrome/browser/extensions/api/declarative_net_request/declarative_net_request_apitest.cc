@@ -135,26 +135,24 @@ IN_PROC_BROWSER_TEST_F(DeclarativeNetRequestSafeRulesLazyApiTest,
   EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 }
 
-#if !BUILDFLAG(IS_ANDROID)
-// TODO(crbug.com/371432155): Port to desktop Android when chrome.tabs API is
-// available.
 IN_PROC_BROWSER_TEST_F(DeclarativeNetRequestApiTest, OnRulesMatchedDebug) {
   ASSERT_TRUE(RunExtensionTest("on_rules_matched_debug")) << message_;
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 // TODO(https://crbug.com/491516661): This test uses an MV2 extension because it
 // explicitly exercises capabilities linked to MV2 (webRequestBlocking). This
-// can be updated in the future with e.g.  a policy-installed extension.
+// can be updated in the future with e.g.  a policy-installed extension. Also,
+// Android does not support MV2 extensions, so until this test is updated to
+// MV3, skip it on Android.
 IN_PROC_BROWSER_TEST_F(DeclarativeNetRequestApiTest, ModifyHeaders) {
   ASSERT_TRUE(RunExtensionTest("modify_headers")) << message_;
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
-// TODO(crbug.com/371432155): Port to desktop Android when chrome.tabs API is
-// available.
 IN_PROC_BROWSER_TEST_F(DeclarativeNetRequestApiTest, GetMatchedRules) {
   ASSERT_TRUE(RunExtensionTest("get_matched_rules")) << message_;
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(DeclarativeNetRequestApiTest, IsRegexSupported) {
   ASSERT_TRUE(RunExtensionTest("is_regex_supported")) << message_;
@@ -193,7 +191,6 @@ IN_PROC_BROWSER_TEST_F(DeclarativeNetRequestApiFencedFrameTest, DISABLED_Load) {
   ASSERT_TRUE(RunExtensionTest("fenced_frames")) << message_;
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 class DeclarativeNetRequestApiPrerenderingTest
     : public DeclarativeNetRequestApiTest {
  public:
@@ -204,13 +201,10 @@ class DeclarativeNetRequestApiPrerenderingTest
   content::test::ScopedPrerenderFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/371432155): Port to desktop Android when chrome.tabs API is
-// available.
 IN_PROC_BROWSER_TEST_F(DeclarativeNetRequestApiPrerenderingTest,
                        PrerenderedPageInterception) {
   ASSERT_TRUE(RunExtensionTest("prerendering")) << message_;
 }
-#endif
 
 class DeclarativeNetRequestLazyApiResponseHeadersTest
     : public DeclarativeNetRequestApiTest {
