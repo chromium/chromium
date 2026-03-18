@@ -260,4 +260,15 @@ public class SetupListModuleUtils {
                             .getString(R.string.educational_tip_accessibility_item_completed));
         }
     }
+
+    /**
+     * Clears the accessibility state description for a Setup List task view.
+     *
+     * @param view The view to clear the state description on.
+     */
+    public static void clearAccessibilityStateDescription(View view) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            view.setStateDescription(null);
+        }
+    }
 }
