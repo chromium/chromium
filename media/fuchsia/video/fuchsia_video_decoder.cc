@@ -39,8 +39,6 @@
 #include "media/fuchsia/common/stream_processor_helper.h"
 #include "media/mojo/mojom/fuchsia_media.mojom.h"
 #include "ui/gfx/buffer_types.h"
-#include "ui/gfx/client_native_pixmap_factory.h"
-#include "ui/ozone/public/client_native_pixmap_factory_ozone.h"
 
 namespace media {
 
@@ -236,9 +234,7 @@ FuchsiaVideoDecoder::FuchsiaVideoDecoder(
     : raster_context_provider_(raster_context_provider),
       media_codec_provider_(media_codec_provider),
       use_overlays_for_video_(allow_overlays),
-      sysmem_allocator_("CrFuchsiaVideoDecoder"),
-      client_native_pixmap_factory_(
-          ui::CreateClientNativePixmapFactoryOzone()) {
+      sysmem_allocator_("CrFuchsiaVideoDecoder") {
   DETACH_FROM_SEQUENCE(sequence_checker_);
   DCHECK(raster_context_provider_);
 }
@@ -382,11 +378,6 @@ bool FuchsiaVideoDecoder::CanReadWithoutStalling() const {
 int FuchsiaVideoDecoder::GetMaxDecodeRequests() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return max_decoder_requests_;
-}
-
-void FuchsiaVideoDecoder::SetClientNativePixmapFactoryForTests(
-    std::unique_ptr<gfx::ClientNativePixmapFactory> factory) {
-  client_native_pixmap_factory_ = std::move(factory);
 }
 
 DecoderStatus FuchsiaVideoDecoder::InitializeSysmemBufferStream(

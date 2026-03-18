@@ -39,7 +39,6 @@
 #include "media/mojo/mojom/fuchsia_media.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gfx/client_native_pixmap_factory.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/native_pixmap_handle.h"
 
@@ -168,44 +167,6 @@ class TestFuchsiaMediaCodecProvider
   mojo::Receiver<media::mojom::FuchsiaMediaCodecProvider> receiver_{this};
 };
 
-class FakeClientNativePixmap : public gfx::ClientNativePixmap {
- public:
-  FakeClientNativePixmap(gfx::NativePixmapHandle handle)
-      : handle_(std::move(handle)) {
-    CHECK(handle_.buffer_collection_handle);
-  }
-
-  ~FakeClientNativePixmap() override = default;
-
-  // gfx::ClientNativePixmap implementation.
-  bool Map() override { NOTREACHED(); }
-  void Unmap() override { NOTREACHED(); }
-  size_t GetNumberOfPlanes() const override { NOTREACHED(); }
-  void* GetMemoryAddress(size_t plane) const override { NOTREACHED(); }
-  int GetStride(size_t plane) const override { NOTREACHED(); }
-  gfx::NativePixmapHandle CloneHandleForIPC() const override {
-    return gfx::CloneHandleForIPC(handle_);
-  }
-  uint64_t GetPlaneSize(size_t plane) const override { NOTREACHED(); }
-
- private:
-  gfx::NativePixmapHandle handle_;
-};
-
-class FakeClientNativePixmapFactory : public gfx::ClientNativePixmapFactory {
- public:
-  FakeClientNativePixmapFactory() = default;
-  ~FakeClientNativePixmapFactory() override = default;
-
-  std::unique_ptr<gfx::ClientNativePixmap> ImportFromHandle(
-      gfx::NativePixmapHandle handle,
-      const gfx::Size& size,
-      viz::SharedImageFormat format,
-      gfx::BufferUsage usage) override {
-    return std::make_unique<FakeClientNativePixmap>(std::move(handle));
-  }
-};
-
 }  // namespace
 
 class FuchsiaVideoDecoderTest : public testing::Test {
@@ -218,8 +179,6 @@ class FuchsiaVideoDecoderTest : public testing::Test {
         mojo::SharedRemote<media::mojom::FuchsiaMediaCodecProvider>(
             test_media_codec_provider_.receiver_.BindNewPipeAndPassRemote()),
         /*allow_overlays=*/false);
-    decoder->SetClientNativePixmapFactoryForTests(
-        std::make_unique<FakeClientNativePixmapFactory>());
     decoder_ = std::move(decoder);
   }
 

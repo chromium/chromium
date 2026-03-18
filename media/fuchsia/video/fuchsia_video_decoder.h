@@ -22,10 +22,6 @@
 #include "media/mojo/mojom/fuchsia_media.mojom.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 
-namespace gfx {
-class ClientNativePixmapFactory;
-}  // namespace gfx
-
 namespace viz {
 class RasterContextProvider;
 }  // namespace viz
@@ -67,9 +63,6 @@ class MEDIA_EXPORT FuchsiaVideoDecoder : public VideoDecoder,
   bool NeedsBitstreamConversion() const override;
   bool CanReadWithoutStalling() const override;
   int GetMaxDecodeRequests() const override;
-
-  void SetClientNativePixmapFactoryForTests(
-      std::unique_ptr<gfx::ClientNativePixmapFactory> factory);
 
  private:
   class OutputMailbox;
@@ -139,7 +132,6 @@ class MEDIA_EXPORT FuchsiaVideoDecoder : public VideoDecoder,
   std::unique_ptr<StreamProcessorHelper> decoder_;
 
   SysmemAllocatorClient sysmem_allocator_;
-  std::unique_ptr<gfx::ClientNativePixmapFactory> client_native_pixmap_factory_;
 
   // Callbacks for pending Decode() request.
   std::deque<DecodeCB> decode_callbacks_;
