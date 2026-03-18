@@ -1061,8 +1061,7 @@ void GeminiBrowserAgent::PresentFloatyWithState(
     }
     ios::provider::UpdatePageContext(pageContext);
     if (prepopulated_prompt) {
-      // TODO(crbug.com/483004001): Update the prompt once the api is updated
-      // ios::provider::UpdatePromptAction(entry_point, prepopulated_prompt);
+      ios::provider::UpdatePromptAction(entry_point, prepopulated_prompt);
     }
     ForceShowFloatyIfInvoked();
     ios::provider::UpdateGeminiViewState(
