@@ -108,7 +108,7 @@ class TestCrosDisplayConfig final : public ash::CrosDisplayConfig {
   }
   crosapi::mojom::DisplayConfigResult SetDisplayProperties(
       const std::string& id,
-      crosapi::mojom::DisplayConfigPropertiesPtr properties,
+      const ash::DisplayConfigProperties& properties,
       crosapi::mojom::DisplayConfigSource source) override {
     NOTREACHED();
   }

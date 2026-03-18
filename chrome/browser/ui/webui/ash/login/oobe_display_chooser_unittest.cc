@@ -49,9 +49,9 @@ class TestCrosDisplayConfig final : public ash::CrosDisplayConfig {
   }
   crosapi::mojom::DisplayConfigResult SetDisplayProperties(
       const std::string& id,
-      crosapi::mojom::DisplayConfigPropertiesPtr properties,
+      const DisplayConfigProperties& properties,
       crosapi::mojom::DisplayConfigSource source) override {
-    if (properties->set_primary) {
+    if (properties.set_primary) {
       int64_t display_id;
       base::StringToInt64(id, &display_id);
       Shell::Get()->window_tree_host_manager()->SetPrimaryDisplayId(display_id);

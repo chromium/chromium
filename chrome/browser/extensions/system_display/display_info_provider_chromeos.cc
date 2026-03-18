@@ -168,15 +168,15 @@ void DisplayInfoProviderChromeOS::SetDisplayProperties(
   }
 
   // Global config properties.
-  auto config_properties = crosapi::mojom::DisplayConfigProperties::New();
-  config_properties->set_primary =
+  ash::DisplayConfigProperties config_properties;
+  config_properties.set_primary =
       properties.is_primary ? *properties.is_primary : false;
-  if (properties.overscan) {
-    config_properties->overscan = GetInsets(*properties.overscan);
+  if (properties.overscan.has_value()) {
+    config_properties.overscan = GetInsets(*properties.overscan);
   }
-  if (properties.rotation) {
-    config_properties->rotation = crosapi::mojom::DisplayRotation::New(
-        GetMojomDisplayRotationOptions(*properties.rotation));
+  if (properties.rotation.has_value()) {
+    config_properties.rotation =
+        GetMojomDisplayRotationOptions(*properties.rotation);
   }
   if (properties.bounds_origin_x || properties.bounds_origin_y) {
     gfx::Point bounds_origin;
@@ -193,10 +193,12 @@ void DisplayInfoProviderChromeOS::SetDisplayProperties(
       bounds_origin.set_y(*properties.bounds_origin_y);
     }
     LOG(ERROR) << "Bounds origin: " << bounds_origin.ToString();
-    config_properties->bounds_origin = std::move(bounds_origin);
+    config_properties.bounds_origin = std::move(bounds_origin);
   }
-  config_properties->display_zoom_factor =
-      properties.display_zoom_factor ? *properties.display_zoom_factor : 0;
+  config_properties.display_zoom_factor =
+      properties.display_zoom_factor.has_value()
+          ? *properties.display_zoom_factor
+          : 0;
 
   // Display mode.
   if (properties.display_mode) {
@@ -214,7 +216,7 @@ void DisplayInfoProviderChromeOS::SetDisplayProperties(
     mojo_display_mode->is_native = api_display_mode.is_native;
     mojo_display_mode->is_interlaced =
         api_display_mode.is_interlaced && *(api_display_mode.is_interlaced);
-    config_properties->display_mode = std::move(mojo_display_mode);
+    config_properties.display_mode = std::move(mojo_display_mode);
   }
 
   if (cros_display_config_) {

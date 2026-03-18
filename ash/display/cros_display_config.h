@@ -7,7 +7,9 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
+#include <vector>
 
 #include "ash/ash_export.h"
 #include "base/observer_list_types.h"
@@ -15,6 +17,8 @@
 #include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
 #include "ui/display/display_layout.h"
 #include "ui/display/manager/touch_device_manager.h"
+#include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/point.h"
 
 namespace ash {
 
@@ -65,6 +69,48 @@ struct ASH_EXPORT DisplayLayoutInfo {
   std::optional<std::vector<display::DisplayPlacement>> layouts;
 };
 
+// Properties for configuring an individual display, used in
+// SetDisplayProperties.
+struct ASH_EXPORT DisplayConfigProperties {
+  DisplayConfigProperties();
+  DisplayConfigProperties(const DisplayConfigProperties& other) = delete;
+  DisplayConfigProperties(DisplayConfigProperties&& other) noexcept;
+  DisplayConfigProperties& operator=(const DisplayConfigProperties& other) =
+      delete;
+  DisplayConfigProperties& operator=(DisplayConfigProperties&& other) noexcept;
+  ~DisplayConfigProperties();
+
+  // If true, makes the display primary. No-op if set to false.
+  bool set_primary = false;
+
+  // If provided, sets the display's overscan insets to the provided value.
+  // Note: overscan values may not be negative or larger than a half of the
+  // screen's size. Overscan cannot be changed on the internal monitor.
+  std::optional<gfx::Insets> overscan;
+
+  // If provided, updates the display's rotation, or if the auto-rotation is
+  // allowed in the device, it can be used to set or clear the user rotation
+  // lock, enabling or disabling auto-rotation.
+  std::optional<crosapi::mojom::DisplayRotationOptions> rotation;
+
+  // If provided, updates the display's logical bounds origin. Note: when
+  // updating the display origin, some constraints will be applied. so the final
+  // bounds origin may be different than the one set. The actual bounds will be
+  // reflected in DisplayUnitInfo. Cannot be changed on the primary display (or
+  // if set_primary is true).
+  std::optional<gfx::Point> bounds_origin;
+
+  // If non-zero, updates the zoom associated with the display. This zoom
+  // performs relayout and repaint thus resulting in a better quality zoom than
+  // just performing a pixel by pixel stretch enlargement.
+  double display_zoom_factor = 0.0;
+
+  // Optional DisplayMode properties to set. This should match one of the
+  // modes listed in DisplayUnitInfo.available_display_modes. Other custom
+  // modes may or may not be valid.
+  crosapi::mojom::DisplayModePtr display_mode;
+};
+
 // Interface for configuring displays in Chrome OS.
 class CrosDisplayConfig {
  public:
@@ -98,7 +144,7 @@ class CrosDisplayConfig {
   // are valid or an error value otherwise.
   virtual crosapi::mojom::DisplayConfigResult SetDisplayProperties(
       const std::string& id,
-      crosapi::mojom::DisplayConfigPropertiesPtr properties,
+      const DisplayConfigProperties& properties,
       crosapi::mojom::DisplayConfigSource source) = 0;
 
   // Enables or disables unified desktop mode. If the current display mode is
@@ -159,7 +205,7 @@ class ASH_EXPORT CrosDisplayConfigImpl final : public CrosDisplayConfig {
       bool single_unified) override;
   crosapi::mojom::DisplayConfigResult SetDisplayProperties(
       const std::string& id,
-      crosapi::mojom::DisplayConfigPropertiesPtr properties,
+      const DisplayConfigProperties& properties,
       crosapi::mojom::DisplayConfigSource source) override;
   void SetUnifiedDesktopEnabled(bool enabled) override;
   crosapi::mojom::DisplayConfigResult OverscanCalibration(

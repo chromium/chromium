@@ -116,11 +116,6 @@ struct Edid {
   int32 year_of_manufacture@2;
 };
 
-// Struct wrapper so that the property can be optional.
-struct DisplayRotation {
-  DisplayRotationOptions rotation@0;
-};
-
 // Defines the properties for a display mode, i.e. a valid size and scale.
 struct DisplayMode {
   // The display mode size in device independent (user visible) pixels.
@@ -185,31 +180,3 @@ struct DisplayUnitInfo {
   [MinVersion=1] bool is_detected@19;
 };
 
-// Properties for configuring an individual display, used in
-// SetDisplayProperties.
-struct DisplayConfigProperties {
-  // If true, makes the display primary. No-op if set to false.
-  bool set_primary@0;
-  // If provided, sets the display's overscan insets to the provided value.
-  // Note: overscan values may not be negative or larger than a half of the
-  // screen's size. Overscan cannot be changed on the internal monitor.
-  gfx.mojom.Insets? overscan@1;
-  // If provided updates the display's rotation, or if the auto-rotation is
-  // allowed in the device, it can be used to set or clear the user rotation
-  // lock, enabling or disabling auto-rotation.
-  DisplayRotation? rotation@2;
-  // If provided, updates the display's logical bounds origin. Note: when
-  // updating the display origin, some constraints will be applied. so the final
-  // bounds origin may be different than the one set. The actual bounds will be
-  // reflected in DisplayUnitInfo. Cannot be changed on the primary display (or
-  // if set_primary is true).
-  gfx.mojom.Point? bounds_origin@3;
-  // If non zero, updates the zoom associated with the display. This zoom
-  // performs relayout and repaint thus resulting in a better quality zoom than
-  // just performing a pixel by pixel stretch enlargement.
-  double display_zoom_factor@4;
-  // Optional DisplayMode properties to set. This should match one of the
-  // modes listed in DisplayUnitInfo.available_display_modes. Other custom
-  // modes may or may not be valid.
-  DisplayMode? display_mode@5;
-};

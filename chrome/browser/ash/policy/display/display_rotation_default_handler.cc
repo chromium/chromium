@@ -111,11 +111,11 @@ void DisplayRotationDefaultHandler::ApplyChanges(
 
     // The following sets only the |rotation| property of the display
     // configuration; no other properties will be affected.
-    auto config_properties = crosapi::mojom::DisplayConfigProperties::New();
-    config_properties->rotation = crosapi::mojom::DisplayRotation::New(
-        RotationOptionsFromDisplayRotation(display_rotation_default_));
+    ash::DisplayConfigProperties config_properties;
+    config_properties.rotation =
+        RotationOptionsFromDisplayRotation(display_rotation_default_);
     cros_display_config.SetDisplayProperties(
-        display_unit_info->id, std::move(config_properties),
+        display_unit_info->id, config_properties,
         crosapi::mojom::DisplayConfigSource::kPolicy);
   }
 }

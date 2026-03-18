@@ -956,12 +956,11 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest, DisplayRotation) {
     const std::string display_id = display_unit_info->id;
     for (const auto& rotation : rotations_to_try) {
       BrowserViewLayoutWaiter browser_view_layout_waiter(browser_view());
-      auto config_properties = crosapi::mojom::DisplayConfigProperties::New();
-      config_properties->rotation =
-          crosapi::mojom::DisplayRotation::New(rotation);
+      ash::DisplayConfigProperties config_properties;
+      config_properties.rotation = rotation;
       crosapi::mojom::DisplayConfigResult result =
           cros_display_config->SetDisplayProperties(
-              display_id, std::move(config_properties),
+              display_id, config_properties,
               crosapi::mojom::DisplayConfigSource::kUser);
       EXPECT_EQ(result, crosapi::mojom::DisplayConfigResult::kSuccess);
 

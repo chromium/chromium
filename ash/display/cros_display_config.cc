@@ -338,22 +338,21 @@ crosapi::mojom::DisplayUnitInfoPtr GetDisplayUnitInfo(
 // Validates that DisplayProperties are valid with the current DisplayManager
 // configuration. Returns an error on failure.
 crosapi::mojom::DisplayConfigResult ValidateDisplayProperties(
-    const crosapi::mojom::DisplayConfigProperties& properties,
+    const DisplayConfigProperties& properties,
     const display::Display& display) {
   display::DisplayManager* display_manager = GetDisplayManager();
 
-  const crosapi::mojom::DisplayConfigProperties* prop_ptr = &properties;
-  auto dump_state = [display, prop_ptr]() -> std::string {
+  auto dump_state = [&display, &properties]() -> std::string {
     std::stringstream ss;
     ss << "display={" << display.ToString() << "}";
     ss << ", config properties={";
-    if (prop_ptr->overscan) {
-      ss << "overscan=" << prop_ptr->overscan->ToString() << ", ";
+    if (properties.overscan.has_value()) {
+      ss << "overscan=" << properties.overscan->ToString() << ", ";
     }
-    if (prop_ptr->bounds_origin) {
-      ss << "bounds_origin=" << prop_ptr->bounds_origin->ToString() << ", ";
+    if (properties.bounds_origin.has_value()) {
+      ss << "bounds_origin=" << properties.bounds_origin->ToString() << ", ";
     }
-    ss << "zoom_factor=" << prop_ptr->display_zoom_factor;
+    ss << "zoom_factor=" << properties.display_zoom_factor;
     return ss.str() + "}";
   };
 
@@ -511,6 +510,13 @@ DisplayLayoutInfo& DisplayLayoutInfo::operator=(
 DisplayLayoutInfo& DisplayLayoutInfo::operator=(
     DisplayLayoutInfo&& other) noexcept = default;
 DisplayLayoutInfo::~DisplayLayoutInfo() = default;
+
+DisplayConfigProperties::DisplayConfigProperties() = default;
+DisplayConfigProperties::DisplayConfigProperties(
+    DisplayConfigProperties&& other) noexcept = default;
+DisplayConfigProperties& DisplayConfigProperties::operator=(
+    DisplayConfigProperties&& other) noexcept = default;
+DisplayConfigProperties::~DisplayConfigProperties() = default;
 
 // -----------------------------------------------------------------------------
 // CrosDisplayConfigImpl::ObserverImpl:
@@ -731,11 +737,11 @@ CrosDisplayConfigImpl::GetDisplayUnitInfoList(bool single_unified) {
 
 crosapi::mojom::DisplayConfigResult CrosDisplayConfigImpl::SetDisplayProperties(
     const std::string& id,
-    crosapi::mojom::DisplayConfigPropertiesPtr properties,
+    const DisplayConfigProperties& properties,
     crosapi::mojom::DisplayConfigSource source) {
   const display::Display display = GetDisplay(id);
   crosapi::mojom::DisplayConfigResult result =
-      ValidateDisplayProperties(*properties, display);
+      ValidateDisplayProperties(properties, display);
   if (result != crosapi::mojom::DisplayConfigResult::kSuccess) {
     return result;
   }
@@ -745,27 +751,27 @@ crosapi::mojom::DisplayConfigResult CrosDisplayConfigImpl::SetDisplayProperties(
       Shell::Get()->display_configuration_controller();
   const display::Display& primary = display::Screen::Get()->GetPrimaryDisplay();
 
-  if (properties->set_primary && display.id() != primary.id()) {
+  if (properties.set_primary && display.id() != primary.id()) {
     display_configuration_controller->SetPrimaryDisplayId(
         display.id(), false /* don't throttle */);
   }
 
-  if (properties->overscan) {
-    display_manager->SetOverscanInsets(display.id(), *properties->overscan);
+  if (properties.overscan.has_value()) {
+    display_manager->SetOverscanInsets(display.id(), *properties.overscan);
   }
 
-  if (properties->rotation) {
+  if (properties.rotation.has_value()) {
     const crosapi::mojom::DisplayRotationOptions rotation_options =
-        properties->rotation->rotation;
+        *properties.rotation;
     auto* screen_orientation_controller =
         Shell::Get()->screen_orientation_controller();
     const bool is_auto_rotation_allowed =
         screen_orientation_controller->IsAutoRotationAllowed();
     const bool auto_rotate_requested =
         rotation_options == crosapi::mojom::DisplayRotationOptions::kAutoRotate;
-
     display::Display::Rotation rotation =
-        DisplayRotationFromRotationOptions(properties->rotation->rotation);
+        DisplayRotationFromRotationOptions(rotation_options);
+
     if (is_auto_rotation_allowed && display.IsInternal()) {
       if (auto_rotate_requested) {
         if (screen_orientation_controller->user_rotation_locked()) {
@@ -780,26 +786,25 @@ crosapi::mojom::DisplayConfigResult CrosDisplayConfigImpl::SetDisplayProperties(
     }
   }
 
-  if (properties->bounds_origin &&
-      *properties->bounds_origin != display.bounds().origin()) {
+  if (properties.bounds_origin.has_value() &&
+      *properties.bounds_origin != display.bounds().origin()) {
     gfx::Rect display_bounds = display.bounds();
-    display_bounds.Offset(
-        properties->bounds_origin->x() - display.bounds().x(),
-        properties->bounds_origin->y() - display.bounds().y());
+    display_bounds.Offset(properties.bounds_origin->x() - display.bounds().x(),
+                          properties.bounds_origin->y() - display.bounds().y());
     SetDisplayLayoutFromBounds(primary.bounds(), primary.id(), display_bounds,
                                display.id());
   }
 
-  if (properties->display_zoom_factor > 0) {
+  if (properties.display_zoom_factor > 0) {
     display_manager->UpdateZoomFactor(display.id(),
-                                      properties->display_zoom_factor);
+                                      properties.display_zoom_factor);
   }
 
   // Set the display mode. Note: if this returns an error, other properties
   // will have already been applied. TODO(stevenjb): Validate the display mode
   // before applying any properties.
-  if (properties->display_mode) {
-    result = SetDisplayMode(display.id(), *properties->display_mode, source);
+  if (properties.display_mode) {
+    result = SetDisplayMode(display.id(), *properties.display_mode, source);
     if (result != crosapi::mojom::DisplayConfigResult::kSuccess) {
       return result;
     }

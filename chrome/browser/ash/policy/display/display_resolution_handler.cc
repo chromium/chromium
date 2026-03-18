@@ -33,10 +33,10 @@ struct DisplayResolutionHandler::InternalDisplaySettings {
 
   // Create display config for the internal display using policy settings from
   // |internal_display_settings_|.
-  crosapi::mojom::DisplayConfigPropertiesPtr ToDisplayConfigProperties() {
-    auto new_config = crosapi::mojom::DisplayConfigProperties::New();
+  std::optional<ash::DisplayConfigProperties> ToDisplayConfigProperties() {
+    ash::DisplayConfigProperties new_config;
     // Converting percentage to factor.
-    new_config->display_zoom_factor = scale_percentage / 100.0;
+    new_config.display_zoom_factor = scale_percentage / 100.0;
     return new_config;
   }
 
@@ -76,29 +76,29 @@ struct DisplayResolutionHandler::ExternalDisplaySettings {
 
   // Create display config for the external display using policy settings from
   // |external_display_settings_|.
-  crosapi::mojom::DisplayConfigPropertiesPtr ToDisplayConfigProperties(
+  std::optional<ash::DisplayConfigProperties> ToDisplayConfigProperties(
       const std::vector<crosapi::mojom::DisplayModePtr>& display_modes) {
     bool found_suitable_mode = false;
-    auto new_config = crosapi::mojom::DisplayConfigProperties::New();
+    ash::DisplayConfigProperties new_config;
     for (const crosapi::mojom::DisplayModePtr& mode : display_modes) {
       // Check if the current display mode has required resolution and its
       // refresh rate is higher than refresh rate of the already found mode.
       if (IsSuitableDisplayMode(mode) &&
           (!found_suitable_mode ||
-           mode->refresh_rate > new_config->display_mode->refresh_rate)) {
-        new_config->display_mode = mode->Clone();
+           mode->refresh_rate > new_config.display_mode->refresh_rate)) {
+        new_config.display_mode = mode->Clone();
         found_suitable_mode = true;
       }
     }
     // If we couldn't find the required mode and and scale percentage doesn't
     // need to be changed, we have nothing to do.
     if (!found_suitable_mode && !scale_percentage) {
-      return crosapi::mojom::DisplayConfigPropertiesPtr();
+      return std::nullopt;
     }
 
     if (scale_percentage) {
       // Converting percentage to the factor.
-      new_config->display_zoom_factor = *scale_percentage / 100.0;
+      new_config.display_zoom_factor = *scale_percentage / 100.0;
     }
 
     return new_config;
@@ -207,21 +207,21 @@ void DisplayResolutionHandler::ApplyChanges(
       continue;
     }
 
-    crosapi::mojom::DisplayConfigPropertiesPtr new_config;
+    std::optional<ash::DisplayConfigProperties> new_config;
     if (display_unit_info->is_internal && internal_display_settings_) {
       new_config = internal_display_settings_->ToDisplayConfigProperties();
     } else if (!display_unit_info->is_internal && external_display_settings_) {
       new_config = external_display_settings_->ToDisplayConfigProperties(
           DisplayUnitTraits::available_display_modes(display_unit_info));
     }
-
-    if (!new_config)
+    if (!new_config.has_value()) {
       continue;
+    }
 
     resized_display_ids_.insert(display_id);
     crosapi::mojom::DisplayConfigResult result =
         cros_display_config.SetDisplayProperties(
-            display_unit_info->id, std::move(new_config),
+            display_unit_info->id, *new_config,
             crosapi::mojom::DisplayConfigSource::kPolicy);
     if (result == crosapi::mojom::DisplayConfigResult::kSuccess) {
       VLOG(1) << "Successfully changed display mode.";
