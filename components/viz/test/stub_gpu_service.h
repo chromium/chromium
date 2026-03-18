@@ -66,6 +66,9 @@ class StubGpuService : public mojom::GpuService {
       int32_t client_id,
       uint64_t client_tracing_id,
       bool is_incognito) override;
+  void BindWebNNServiceIntrospection(
+      mojo::PendingReceiver<webnn::mojom::WebNNServiceIntrospection> receiver)
+      override;
   void GetVideoMemoryUsageStats(
       GetVideoMemoryUsageStatsCallback callback) override;
 #if BUILDFLAG(IS_WIN)

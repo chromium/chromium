@@ -632,4 +632,8 @@ ContextImplOrt::CreateTensorFromSharedImageImpl(
       std::move(representation), buffer_size, std::move(tensor));
 }
 
+std::string_view ContextImplOrt::GetBackendName() const {
+  return "ONNX Runtime";
+}
+
 }  // namespace webnn::ort

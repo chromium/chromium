@@ -530,6 +530,8 @@ source_set("browser_sources") {
     "webid/identity_request_account.h",
     "webid/identity_request_dialog_controller.cc",
     "webid/identity_request_dialog_controller.h",
+    "webnn_introspection_manager.cc",
+    "webnn_introspection_manager.h",
     "webrtc_event_logger.cc",
     "webrtc_event_logger.h",
     "webrtc_log.cc",
@@ -591,6 +593,7 @@ source_set("browser_sources") {
     "//services/tracing/public/mojom",
     "//services/video_capture/public/mojom",
     "//services/viz/public/mojom",
+    "//services/webnn/public/cpp",
 
     # We expose skia headers in the public API.
     "//skia",

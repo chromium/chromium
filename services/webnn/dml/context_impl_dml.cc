@@ -974,4 +974,8 @@ CommandQueue* ContextImplDml::GetCommandQueue() const {
   return adapter_->command_queue();
 }
 
+std::string_view ContextImplDml::GetBackendName() const {
+  return "DirectML";
+}
+
 }  // namespace webnn::dml

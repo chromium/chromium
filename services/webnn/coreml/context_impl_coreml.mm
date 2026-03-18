@@ -112,4 +112,8 @@ ContextImplCoreml::CreateTensorFromSharedImageImpl(
                                   std::move(representation));
 }
 
+std::string_view ContextImplCoreml::GetBackendName() const {
+  return "CoreML";
+}
+
 }  // namespace webnn::coreml

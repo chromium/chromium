@@ -151,4 +151,8 @@ ContextImplTflite::CreateTensorFromSharedImageImpl(
                         "WebGPU Interop is not supported."));
 }
 
+std::string_view ContextImplTflite::GetBackendName() const {
+  return "TensorFlow Lite";
+}
+
 }  // namespace webnn::tflite

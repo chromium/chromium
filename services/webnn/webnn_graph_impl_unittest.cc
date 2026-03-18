@@ -172,6 +172,8 @@ class FakeWebNNContextImpl final : public WebNNContextImpl {
         mojom::Error::Code::kNotSupportedError, "Not implemented"));
   }
 
+  std::string_view GetBackendName() const override { return "Fake Backend"; }
+
   base::WeakPtrFactory<FakeWebNNContextImpl> weak_factory_{this};
 };
 

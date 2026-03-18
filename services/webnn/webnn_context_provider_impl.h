@@ -24,6 +24,7 @@
 #include "services/webnn/public/cpp/webnn_trace.h"
 #include "services/webnn/public/mojom/webnn_context.mojom.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
+#include "services/webnn/public/mojom/webnn_service_introspection.mojom.h"
 #include "services/webnn/webnn_context_impl.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -47,7 +48,8 @@ class Environment;
 // Maintain a set of WebNNContextImpl instances that are created by the context
 // provider.
 class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
-    : public mojom::WebNNContextProvider {
+    : public mojom::WebNNContextProvider,
+      public mojom::WebNNServiceIntrospection {
  public:
   WebNNContextProviderImpl(const WebNNContextProviderImpl&) = delete;
   WebNNContextProviderImpl& operator=(const WebNNContextProviderImpl&) = delete;
@@ -82,6 +84,9 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
   void BindWebNNContextProvider(
       mojo::PendingReceiver<mojom::WebNNContextProvider> receiver,
       const WebNNReceiversParams& params);
+
+  void BindWebNNServiceIntrospection(
+      mojo::PendingReceiver<mojom::WebNNServiceIntrospection> receiver);
 
   enum class WebNNStatus {
     kWebNNGpuDisabled = 0,
@@ -139,6 +144,18 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
   // mojom::WebNNContextProvider
   void CreateWebNNContext(mojom::CreateContextOptionsPtr options,
                           CreateWebNNContextCallback callback) override;
+
+  // mojom::WebNNServiceIntrospection
+  void SetClient(mojo::PendingRemote<mojom::WebNNServiceIntrospectionClient>
+                     client) override;
+
+  void GetExistingContextsDetails(
+      GetExistingContextsDetailsCallback callback) override;
+
+  std::vector<mojom::WebNNContextIntrospectionDetailsPtr>
+  PopulateContextsDetailsForIntrospection();
+
+  void UpdateWebNNServiceIntrospection();
 
   base::WeakPtr<WebNNContextProviderImpl> AsWeakPtr() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
@@ -244,6 +261,13 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
   // The context value indicates the parameters needed by the webnn context.
   mojo::ReceiverSet<mojom::WebNNContextProvider, WebNNReceiversParams>
       provider_receivers_ GUARDED_BY_CONTEXT(main_sequence_checker_);
+
+  mojo::Receiver<mojom::WebNNServiceIntrospection>
+      service_introspection_receiver_
+          GUARDED_BY_CONTEXT(main_sequence_checker_){this};
+
+  mojo::Remote<mojom::WebNNServiceIntrospectionClient>
+      service_introspection_client_ GUARDED_BY_CONTEXT(main_sequence_checker_);
 
   // Lifetime of the scheduler is managed by the GPU service. The GPU service
   // destroys the WebNNContextProviderImpl and all its contexts when it

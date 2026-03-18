@@ -72,6 +72,8 @@ class API_AVAILABLE(macos(14.4)) ContextImplCoreml final
       mojom::TensorInfoPtr tensor_info,
       WebNNTensorImpl::RepresentationPtr representation) override;
 
+  std::string_view GetBackendName() const override;
+
   base::WeakPtrFactory<ContextImplCoreml> weak_factory_{this};
 };
 

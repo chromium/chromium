@@ -103,6 +103,8 @@ class ContextImplOrt final : public WebNNContextImpl {
       mojom::TensorInfoPtr tensor_info,
       WebNNTensorImpl::RepresentationPtr representation) override;
 
+  std::string_view GetBackendName() const override;
+
   scoped_refptr<Environment> env_;
 
   // The session options are shared among all the sessions created by this

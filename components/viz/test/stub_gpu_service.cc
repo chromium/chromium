@@ -67,6 +67,9 @@ void StubGpuService::BindWebNNContextProvider(
     uint64_t client_tracing_id,
     bool is_incognito) {}
 
+void StubGpuService::BindWebNNServiceIntrospection(
+    mojo::PendingReceiver<webnn::mojom::WebNNServiceIntrospection> receiver) {}
+
 void StubGpuService::GetVideoMemoryUsageStats(
     GetVideoMemoryUsageStatsCallback callback) {}
 

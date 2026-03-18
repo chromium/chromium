@@ -642,24 +642,45 @@ void GpuServiceImpl::BindWebNNContextProvider(
     return;
   }
 
-  if (!webnn_context_provider_) {
-    scoped_refptr<gpu::SharedContextState> shared_context_state =
-        GetContextState();
-    // `shared_context_state` may be nullptr if there is no GPU acceleration.
-    // For such case, WebNN CPU backend, e.g. TFLite XNNPACK, is still useful.
-
-    // TODO(crbug.com/345352987): manage `WebNNContextProviderImpl` instance per
-    // `client_id` in order to support memory metrics.
-    webnn_context_provider_ = webnn::WebNNContextProviderImpl::Create(
-        std::move(shared_context_state), gpu_feature_info_, gpu_info_,
-        shared_image_manager(), gpu_channel_manager_->peak_memory_monitor(),
-        base::BindOnce(&GpuServiceImpl::LoseAllContexts, weak_ptr_),
-        main_runner(), GetGpuScheduler(), gpu_host_);
-  }
+  CreateWebNNContextProviderIfNeeded();
 
   webnn_context_provider_->BindWebNNContextProvider(
       std::move(pending_receiver),
       {is_incognito, client_id, client_tracing_id});
+}
+
+void GpuServiceImpl::CreateWebNNContextProviderIfNeeded() {
+  if (webnn_context_provider_) {
+    return;
+  }
+
+  scoped_refptr<gpu::SharedContextState> shared_context_state =
+      GetContextState();
+  // `shared_context_state` may be nullptr if there is no GPU acceleration.
+  // For such case, WebNN CPU backend, e.g. TFLite XNNPACK, is still useful.
+
+  webnn_context_provider_ = webnn::WebNNContextProviderImpl::Create(
+      std::move(shared_context_state), gpu_feature_info_, gpu_info_,
+      shared_image_manager(), gpu_channel_manager_->peak_memory_monitor(),
+      base::BindOnce(&GpuServiceImpl::LoseAllContexts, weak_ptr_),
+      main_runner(), GetGpuScheduler(), gpu_host_);
+}
+
+void GpuServiceImpl::BindWebNNServiceIntrospection(
+    mojo::PendingReceiver<webnn::mojom::WebNNServiceIntrospection>
+        pending_receiver) {
+  if (!main_runner_->BelongsToCurrentThread()) {
+    main_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&GpuServiceImpl::BindWebNNServiceIntrospection,
+                       weak_ptr_, std::move(pending_receiver)));
+    return;
+  }
+
+  CreateWebNNContextProviderIfNeeded();
+
+  webnn_context_provider_->BindWebNNServiceIntrospection(
+      std::move(pending_receiver));
 }
 
 void GpuServiceImpl::GetVideoMemoryUsageStats(

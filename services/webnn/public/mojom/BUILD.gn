@@ -27,6 +27,7 @@ mojom_component("mojom") {
     "webnn_error.mojom",
     "webnn_graph.mojom",
     "webnn_graph_builder.mojom",
+    "webnn_service_introspection.mojom",
     "webnn_tensor.mojom",
   ]
 

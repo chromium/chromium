@@ -5,18 +5,8 @@
 import("//services/webnn/features.gni")
 
 source_set("webnn") {
-  sources = [
-    "webnn_introspection_manager.cc",
-    "webnn_introspection_manager.h",
-  ]
-  deps = [
-    "//base",
-    "//chrome/browser/profiles",
-    "//content/public/browser",
-    "//services/webnn/public/cpp",
-    "//services/webnn/public/mojom",
-    "//third_party/blink/public/mojom/webnn",
-  ]
+  sources = []
+  deps = []
 
   if (is_win) {
     sources += [
@@ -27,6 +17,7 @@ source_set("webnn") {
     ]
 
     deps += [
+      "//base",
       "//chrome/browser:browser_process",
       "//chrome/common:constants",
       "//components/prefs",

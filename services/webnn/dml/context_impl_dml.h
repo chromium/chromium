@@ -112,6 +112,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) ContextImplDml final
   // release the staging buffer used for the GPU upload.
   void OnUploadComplete(HRESULT hr);
 
+  std::string_view GetBackendName() const override;
+
   // The `Adapter` instance shared by all `GraphImplDml` created by this
   // context.
   scoped_refptr<Adapter> adapter_;

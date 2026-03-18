@@ -90,6 +90,8 @@ class ContextImplLiteRt final : public WebNNContextImpl {
       mojom::TensorInfoPtr tensor_info,
       WebNNTensorImpl::RepresentationPtr representation) override;
 
+  std::string_view GetBackendName() const override;
+
   const bool is_incognito_;
   base::WeakPtrFactory<ContextImplLiteRt> weak_factory_{this};
 };

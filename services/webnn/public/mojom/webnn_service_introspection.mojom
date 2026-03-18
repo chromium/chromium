@@ -1,0 +1,27 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module webnn.mojom;
+
+struct WebNNContextIntrospectionDetails {
+  int32 context_id;
+  // The backend used by the context, e.g. "CoreML", "LiteRT", etc.
+  string context_backend;
+};
+
+// Interface for the client to receive WebNN introspection data.
+interface WebNNServiceIntrospectionClient {
+  // Called when the webnn contexts list from the provider is updated.
+  OnUpdateExistingContextDetails(
+      array<WebNNContextIntrospectionDetails> contexts_details);
+};
+
+// Interface for controlling WebNN introspection.
+interface WebNNServiceIntrospection {
+  // Sets the client to receive contexts details.
+  SetClient(pending_remote<WebNNServiceIntrospectionClient> client);
+  // Query the list of existing contexts from the provider.
+  GetExistingContextsDetails()
+      => (array<WebNNContextIntrospectionDetails> contexts_details);
+};

@@ -7,14 +7,14 @@
 
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/webui/webnn_internals/webnn_internals.mojom.h"
-#include "chrome/browser/webnn/webnn_introspection_manager.h"
+#include "content/public/browser/webnn_introspection_manager.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/webnn/public/cpp/webnn_buildflags.h"
 
 class WebNNInternalsHandler
     : public webnn_internals::mojom::WebNNInternalsHandler,
-      public webnn::WebNNIntrospectionManager::Observer {
+      public content::WebNNIntrospectionManager::Observer {
  public:
   WebNNInternalsHandler(
       mojo::PendingReceiver<webnn_internals::mojom::WebNNInternalsHandler>
@@ -27,21 +27,25 @@ class WebNNInternalsHandler
   ~WebNNInternalsHandler() override;
 
 #if BUILDFLAG(WEBNN_ENABLE_GRAPH_DUMP)
+  // webnn_internals::mojom::WebNNInternalsHandler
   void SetGraphRecordEnabled(bool enabled) override;
 
+  // webnn_internals::mojom::WebNNInternalsHandler
   void IsGraphRecording(IsGraphRecordingCallback callback) override;
 
   // webnn::WebNNIntrospectionManager::Observer:
   void OnGraphRecorded(const mojo_base::BigBuffer& json_data) override;
   void OnGraphRecordEnabledChanged(bool is_enabled) override;
 #endif
+  void OnUpdateExistingContextDetails(
+      const std::string& contexts_info_json) override;
 
  private:
   mojo::Receiver<webnn_internals::mojom::WebNNInternalsHandler> receiver_;
   mojo::Remote<webnn_internals::mojom::WebNNInternalsPage> page_;
 
-  base::ScopedObservation<webnn::WebNNIntrospectionManager,
-                          webnn::WebNNIntrospectionManager::Observer>
+  base::ScopedObservation<content::WebNNIntrospectionManager,
+                          content::WebNNIntrospectionManager::Observer>
       observation_{this};
 };
 

@@ -28,6 +28,8 @@ include_rules = [
   "+services/tracing/public",
   "+services/video_capture/public/mojom",
   "+services/viz/public/mojom",
+  "+services/webnn/public/cpp",
+  "+services/webnn/public/mojom",
   "+third_party/jni_zero",
   "+third_party/perfetto/protos/perfetto/config/chrome/scenario_config.gen.h",
 ]
