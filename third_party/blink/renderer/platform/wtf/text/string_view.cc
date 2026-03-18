@@ -36,8 +36,6 @@ class StackStringViewAllocator {
     return StringView(buffer);
   }
 
-  StringView CoerceOriginal(StringView string) { return string; }
-
  private:
   StringView::StackBackingStore& backing_store_;
 };
@@ -373,6 +371,9 @@ bool EqualIgnoringAsciiCase(const StringView& a, const StringView& b) {
 
 StringView StringView::LowerASCIIMaybeUsingBuffer(
     StackBackingStore& buffer) const {
+  if (ContainsNoAsciiUpper()) {
+    return *this;
+  }
   return ConvertAsciiCase(*this, LowerConverter(),
                           StackStringViewAllocator(buffer));
 }

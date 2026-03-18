@@ -426,17 +426,20 @@ class StringImplAllocator {
                                   base::span<CharType>& buffer) {
     return StringImpl::CreateUninitialized(length, buffer);
   }
-
-  scoped_refptr<StringImpl> CoerceOriginal(const StringImpl& string) {
-    return const_cast<StringImpl*>(&string);
-  }
 };
 
 scoped_refptr<StringImpl> StringImpl::ToAsciiLower() {
+  if (ContainsNoAsciiUpper()) {
+    return this;
+  }
   return ConvertAsciiCase(*this, LowerConverter(), StringImplAllocator());
 }
 
 scoped_refptr<StringImpl> StringImpl::ToAsciiUpper() {
+  if (VisitCharacters(*this,
+                      [](auto chars) { return ContainsNoAsciiLower(chars); })) {
+    return this;
+  }
   return ConvertAsciiCase(*this, UpperConverter(), StringImplAllocator());
 }
 

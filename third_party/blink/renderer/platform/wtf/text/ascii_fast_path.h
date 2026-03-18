@@ -167,10 +167,8 @@ ALWAYS_INLINE typename Allocator::ResultStringType ConvertAsciiCase(
     Allocator&& allocator) {
   CHECK_LE(string.length(), std::numeric_limits<wtf_size_t>::max());
   return VisitCharacters(string, [&](auto chars) {
-    // First scan the string for the desired case.
-    if (converter.IsCorrectCase(chars)) {
-      return allocator.CoerceOriginal(string);
-    }
+    // Callers must ensure that the string needs conversion.
+    DCHECK(!converter.IsCorrectCase(chars));
 
     base::span<typename decltype(chars)::value_type> data;
     auto new_impl = allocator.Alloc(string.length(), data);
