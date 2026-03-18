@@ -69,7 +69,7 @@
 }
 
 .context-menu-container {
-  margin-top: 2px;
+  margin-top: var(--omnibox-context-menu-container-margin-top);
 }
 
 :host([searchbox-layout-mode_='TallBottomContext']) .context-menu-container:has(*),
