@@ -79,6 +79,7 @@ if (is_android) {
       "//chrome/android/webapk/libs/common:common_java",
       "//chrome/android/webapk/libs/common:splash_java",
       "//chrome/android/webapk/test:junit_test_support",
+      "//chrome/browser/actor/android:java",
       "//chrome/browser/android/browserservices/intents:java",
       "//chrome/browser/android/browserservices/metrics:java",
       "//chrome/browser/android/browserservices/verification:java",
@@ -508,7 +509,10 @@ if (is_android) {
       "src/org/chromium/chrome/browser/autofill/vcn/AutofillVcnEnrollBottomSheetMediatorTest.java",
     ]
 
-    deps = [ ":chrome_junit_tests_helper" ]
+    deps = [
+      ":chrome_junit_tests_helper",
+      "//chrome/browser/actor/android:java",
+    ]
   }
 
   robolectric_library(
@@ -1394,6 +1398,7 @@ if (is_android) {
 
     deps = [
       ":chrome_junit_tests_helper",
+      "//chrome/browser/actor/android:java",
       "//third_party/androidx:androidx_preference_preference_java",
       "//third_party/androidx:androidx_slidingpanelayout_slidingpanelayout_java",
     ]

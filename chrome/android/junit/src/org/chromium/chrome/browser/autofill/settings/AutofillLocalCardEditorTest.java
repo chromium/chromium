@@ -57,6 +57,8 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.build.NullUtil;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.actor.ActorKeyedService;
+import org.chromium.chrome.browser.actor.ActorKeyedServiceFactory;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.CreditCardScanner;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
@@ -180,6 +182,7 @@ public class AutofillLocalCardEditorTest {
     @Mock private CreditCardScanner mMockScanner;
     @Mock private CreditCardScannerManager mMockScannerManager;
     @Mock private ProfileManagerUtilsJni mMockProfileManagerUtilsJni;
+    @Mock private ActorKeyedService mMockActorKeyedService;
 
     private UserActionTester mActionTester;
 
@@ -231,6 +234,7 @@ public class AutofillLocalCardEditorTest {
         ProfileManagerUtilsJni.setInstanceForTesting(mMockProfileManagerUtilsJni);
         ChromeBrowserInitializer.setForTesting(mMockInitializer);
         ProfileManager.setLastUsedProfileForTesting(mMockProfile);
+        ActorKeyedServiceFactory.setForTesting(mMockActorKeyedService);
         mActionTester = new UserActionTester();
 
         CreditCardScanner.setFactory(delegate -> mMockScanner);

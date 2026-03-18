@@ -48,6 +48,8 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.actor.ActorKeyedService;
+import org.chromium.chrome.browser.actor.ActorKeyedServiceFactory;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.Iban;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
@@ -76,6 +78,7 @@ public class AutofillLocalIbanEditorTest {
     @Mock private ChromeBrowserInitializer mMockInitializer;
     @Mock private PersonalDataManager mMockPersonalDataManager;
     @Mock private ProfileManagerUtilsJni mMockProfileManagerUtilsJni;
+    @Mock private ActorKeyedService mMockActorKeyedService;
 
     private ActivityScenario<SettingsActivity> mActivityScenario;
     private SettingsActivity mSettingsActivity;
@@ -99,6 +102,7 @@ public class AutofillLocalIbanEditorTest {
         ChromeBrowserInitializer.setForTesting(mMockInitializer);
         ProfileManagerUtilsJni.setInstanceForTesting(mMockProfileManagerUtilsJni);
         ProfileManager.setLastUsedProfileForTesting(mMockProfile);
+        ActorKeyedServiceFactory.setForTesting(mMockActorKeyedService);
 
         // Mock successful IBAN creation.
         when(mMockPersonalDataManager.addOrUpdateLocalIban(any())).thenReturn("123");

@@ -12,6 +12,7 @@ import androidx.annotation.CallSuper;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.glic.GlicHelper;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarManageable;
 
@@ -35,6 +36,16 @@ public abstract class SnackbarActivity extends SynchronousInitializationActivity
         // TODO(crbug.com/399495650): Add render tests for snackbar padding in edge-to-edge mode.
         mSnackbarManager =
                 new SnackbarManager(this, getContentView(), null, null, getModalDialogManager());
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        getProfileSupplier()
+                .runSyncOrOnAvailable(
+                        (profile) -> {
+                            GlicHelper.maybeShowGlicTaskInProgressSnackbar(this, profile, this);
+                        });
     }
 
     @Override

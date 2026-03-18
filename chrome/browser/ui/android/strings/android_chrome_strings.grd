@@ -7761,6 +7761,10 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_CHROME_FINDS_OPT_IN_SNACKBAR_ACTION_TEXT" desc="Action button of the Chrome Finds snackbar on user opt-in. [CHAR_LIMIT=10]">
         Manage
       </message>
+    <!-- Glic strings -->
+      <message name="IDS_GLIC_ACTOR_TASK_IN_PROGRESS" desc="Snackbar message shown when a Glic actor task is still in progress.">
+        Your task is still in progress
+      </message>
     </messages>
   </release>
 </grit>

@@ -56,6 +56,7 @@ import org.chromium.chrome.browser.back_press.BackPressHelper.OnKeyDownHandler;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.glic.GlicHelper;
 import org.chromium.chrome.browser.init.ActivityLifecycleDispatcherImpl;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -771,6 +772,12 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     public void onAttachedToWindow() {
         super.onAttachedToWindow();
         initBackPressHandler();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        GlicHelper.maybeShowGlicTaskInProgressSnackbar(this, mProfile, this);
     }
 
     @Override

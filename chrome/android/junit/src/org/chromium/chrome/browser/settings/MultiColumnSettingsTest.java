@@ -27,6 +27,8 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.actor.ActorKeyedService;
+import org.chromium.chrome.browser.actor.ActorKeyedServiceFactory;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactoryJni;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
@@ -67,6 +69,7 @@ public class MultiColumnSettingsTest {
 
     @Mock public ChromeBrowserInitializer mInitializer;
     @Mock public Profile mProfile;
+    @Mock public ActorKeyedService mActorKeyedService;
     @Mock private UserPrefsJni mUserPrefsJni;
     @Mock private PrefService mPrefs;
     @Mock private IdentityServicesProvider mIdentityServicesProvider;
@@ -86,6 +89,7 @@ public class MultiColumnSettingsTest {
         ProfileManagerUtils.setFlushPersistentDataCallbackForTesting(() -> {});
         ChromeBrowserInitializer.setForTesting(mInitializer);
         ProfileManager.setLastUsedProfileForTesting(mProfile);
+        ActorKeyedServiceFactory.setForTesting(mActorKeyedService);
 
         doReturn(mIdentityManager).when(mIdentityServicesProvider).getIdentityManager(any());
         doReturn(mSigninManager).when(mIdentityServicesProvider).getSigninManager(any());

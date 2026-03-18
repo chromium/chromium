@@ -41,6 +41,8 @@ import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.actor.ActorKeyedService;
+import org.chromium.chrome.browser.actor.ActorKeyedServiceFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -64,12 +66,14 @@ public class SettingsActivityUnitTest {
 
     @Mock public ChromeBrowserInitializer mInitializer;
     @Mock public Profile mProfile;
+    @Mock public ActorKeyedService mActorKeyedService;
 
     @Before
     public void setup() {
         ProfileManagerUtils.setFlushPersistentDataCallbackForTesting(() -> {});
         ChromeBrowserInitializer.setForTesting(mInitializer);
         ProfileManager.setLastUsedProfileForTesting(mProfile);
+        ActorKeyedServiceFactory.setForTesting(mActorKeyedService);
     }
 
     @After
