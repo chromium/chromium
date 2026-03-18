@@ -413,11 +413,6 @@ id<GREYMatcher> identityDiscMatcher() {
 }
 
 - (void)testSwitchFromManagedAccountToManagedAccount {
-  // TODO(crbug.com/433726717): Test disabled on iPhones.
-  if (![ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Fails on iPhones.");
-  }
-
   [SigninEarlGrey
       signinWithFakeManagedIdentityInPersonalProfile:kManagedIdentity1];
   [ChromeEarlGreyUI waitForAppToIdle];
