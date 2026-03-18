@@ -47,6 +47,7 @@
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
+#import "ios/chrome/browser/shared/public/commands/cobalt_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
@@ -251,6 +252,7 @@ using base::UserMetricsAction;
   mediator.settingsHandler = HandlerForProtocol(dispatcher, SettingsCommands);
   mediator.tabGroupsHandler = HandlerForProtocol(dispatcher, TabGroupsCommands);
   mediator.bookmarksHandler = HandlerForProtocol(dispatcher, BookmarksCommands);
+  mediator.cobaltHandler = HandlerForProtocol(dispatcher, CobaltCommands);
   if (IsLensOverlayAllowedByPolicy(profile->GetPrefs())) {
     mediator.lensOverlayHandler =
         HandlerForProtocol(dispatcher, LensOverlayCommands);

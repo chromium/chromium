@@ -238,6 +238,7 @@
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
+#import "ios/chrome/browser/shared/public/commands/cobalt_commands.h"
 #import "ios/chrome/browser/shared/public/commands/collaboration_group_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_commands.h"
@@ -365,6 +366,7 @@
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/public/provider/chrome/browser/cobalt/cobalt_api.h"
 #import "ios/public/provider/chrome/browser/fullscreen/fullscreen_api.h"
 #import "ios/public/provider/chrome/browser/signin/choice_api.h"
 #import "ios/public/provider/chrome/browser/text_zoom/text_zoom_api.h"
@@ -397,6 +399,7 @@ const char kChromeAppStoreUrl[] =
     AutofillCommands,
     BrowserCoordinatorCommands,
     BubblePresenterDelegate,
+    CobaltCommands,
     CollaborationGroupCommands,
     ContextualPanelEntrypointIPHCommands,
     ContextualSheetCommands,
@@ -811,6 +814,9 @@ const char kChromeAppStoreUrl[] =
 
   // The coordinator for the passkey incognito interstitial.
   PasskeyIncognitoInterstitialCoordinator* _passkeyIncognitoCoordinator;
+
+  // The coordinator for Cobalt.
+  ChromeCoordinator* _cobaltCoordinator;
 }
 
 #pragma mark - ReaderModeBrowserAgentDelegate
@@ -1215,6 +1221,7 @@ const char kChromeAppStoreUrl[] =
     @protocol(FindInPageCommands),
     @protocol(IOSPasskeyClientCommands),
     @protocol(BWGCommands),
+    @protocol(CobaltCommands),
     @protocol(ReaderModeCommands),
     @protocol(NewTabPageCommands),
     @protocol(NonModalSignInPromoCommands),
@@ -1804,6 +1811,7 @@ const char kChromeAppStoreUrl[] =
   }
 
   [self hideDriveFilePicker];
+  [self hideCobalt];
   if (@available(iOS 18.4, *)) {
     if (base::FeatureList::IsEnabled(kIOSCustomFileUploadMenu)) {
       [self hideFileUploadPanel];
@@ -2886,6 +2894,7 @@ const char kChromeAppStoreUrl[] =
   [self stopSaveToPhotos];
   [self hideSaveToDrive];
   [self hideDriveFilePicker];
+  [self hideCobalt];
   if (@available(iOS 18.4, *)) {
     if (base::FeatureList::IsEnabled(kIOSCustomFileUploadMenu)) {
       [self hideFileUploadPanel];
@@ -3013,6 +3022,23 @@ const char kChromeAppStoreUrl[] =
       clearPresentedStateWithCompletion:completion
                          dismissOmnibox:dismissOmnibox
          dismissPresentedViewController:dismissPresentedViewController];
+}
+
+#pragma mark - CobaltCommands
+
+- (void)showCobalt {
+  if (_cobaltCoordinator) {
+    return;
+  }
+  _cobaltCoordinator =
+      ios::provider::CreateCobaltCoordinator(self.viewController, self.browser);
+  CHECK(_cobaltCoordinator);
+  [_cobaltCoordinator start];
+}
+
+- (void)hideCobalt {
+  [_cobaltCoordinator stop];
+  _cobaltCoordinator = nil;
 }
 
 #pragma mark - ContextualPanelEntrypointIPHCommands

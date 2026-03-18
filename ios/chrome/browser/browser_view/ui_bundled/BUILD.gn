@@ -339,6 +339,7 @@ source_set("ui_bundled") {
     "//ios/components/security_interstitials",
     "//ios/components/webui:url_constants",
     "//ios/public/provider/chrome/browser/bwg:bwg_api",
+    "//ios/public/provider/chrome/browser/cobalt:cobalt_api",
     "//ios/public/provider/chrome/browser/fullscreen:fullscreen_api",
     "//ios/public/provider/chrome/browser/lens:lens_api",
     "//ios/public/provider/chrome/browser/signin:choice_api",

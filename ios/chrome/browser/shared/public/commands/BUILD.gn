@@ -16,6 +16,7 @@ source_set("commands") {
     "browser_commands.h",
     "browser_coordinator_commands.h",
     "bwg_commands.h",
+    "cobalt_commands.h",
     "collaboration_group_commands.h",
     "command_dispatcher.h",
     "command_dispatcher.mm",

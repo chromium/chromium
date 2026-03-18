@@ -78,6 +78,7 @@
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
+#import "ios/chrome/browser/shared/public/commands/cobalt_commands.h"
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
@@ -2702,7 +2703,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 // Dismisses the menu and opens Cobalt.
 - (void)openCobalt {
   [self dismissMenu];
-  // TODO(crbug.com/475807780): Open Cobalt UI.
+  [self.cobaltHandler showCobalt];
 }
 
 // Dismisses the menu and opens price notifications list.
