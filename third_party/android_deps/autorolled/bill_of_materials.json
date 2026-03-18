@@ -2,17 +2,17 @@
     {
         "name": "activity",
         "group": "androidx.activity",
-        "version": "1.13.0"
+        "version": "1.14.0-SNAPSHOT"
     },
     {
         "name": "activity-compose",
         "group": "androidx.activity",
-        "version": "1.13.0"
+        "version": "1.14.0-SNAPSHOT"
     },
     {
         "name": "activity-ktx",
         "group": "androidx.activity",
-        "version": "1.13.0"
+        "version": "1.14.0-SNAPSHOT"
     },
     {
         "name": "annotation",
@@ -1642,7 +1642,17 @@
     {
         "name": "dalvik-dx",
         "group": "com.jakewharton.android.repackaged",
-        "version": "11.0.0_r3"
+        "version": "9.0.0_r3"
+    },
+    {
+        "name": "dexmaker",
+        "group": "com.linkedin.dexmaker",
+        "version": "2.28.6"
+    },
+    {
+        "name": "dexmaker-mockito-inline",
+        "group": "com.linkedin.dexmaker",
+        "version": "2.28.6"
     },
     {
         "name": "curtains",
@@ -1782,52 +1792,52 @@
     {
         "name": "grpc-android",
         "group": "io.grpc",
-        "version": "1.79.0"
+        "version": "1.80.0"
     },
     {
         "name": "grpc-api",
         "group": "io.grpc",
-        "version": "1.79.0"
+        "version": "1.80.0"
     },
     {
         "name": "grpc-binder",
         "group": "io.grpc",
-        "version": "1.79.0"
+        "version": "1.80.0"
     },
     {
         "name": "grpc-context",
         "group": "io.grpc",
-        "version": "1.79.0"
+        "version": "1.80.0"
     },
     {
         "name": "grpc-core",
         "group": "io.grpc",
-        "version": "1.79.0"
+        "version": "1.80.0"
     },
     {
         "name": "grpc-inprocess",
         "group": "io.grpc",
-        "version": "1.79.0"
+        "version": "1.80.0"
     },
     {
         "name": "grpc-protobuf-lite",
         "group": "io.grpc",
-        "version": "1.79.0"
+        "version": "1.80.0"
     },
     {
         "name": "grpc-stub",
         "group": "io.grpc",
-        "version": "1.79.0"
+        "version": "1.80.0"
     },
     {
         "name": "grpc-testing",
         "group": "io.grpc",
-        "version": "1.79.0"
+        "version": "1.80.0"
     },
     {
         "name": "grpc-util",
         "group": "io.grpc",
-        "version": "1.79.0"
+        "version": "1.80.0"
     },
     {
         "name": "perfmark-api",
@@ -1862,17 +1872,12 @@
     {
         "name": "byte-buddy",
         "group": "net.bytebuddy",
-        "version": "1.17.6"
+        "version": "1.17.7"
     },
     {
         "name": "byte-buddy-agent",
         "group": "net.bytebuddy",
-        "version": "1.17.6"
-    },
-    {
-        "name": "byte-buddy-android",
-        "group": "net.bytebuddy",
-        "version": "1.17.6"
+        "version": "1.17.7"
     },
     {
         "name": "bcprov-jdk18on",
@@ -2062,17 +2067,17 @@
     {
         "name": "mockito-android",
         "group": "org.mockito",
-        "version": "5.19.0"
+        "version": "5.23.0"
     },
     {
         "name": "mockito-core",
         "group": "org.mockito",
-        "version": "5.19.0"
+        "version": "5.23.0"
     },
     {
         "name": "mockito-subclass",
         "group": "org.mockito",
-        "version": "5.19.0"
+        "version": "5.23.0"
     },
     {
         "name": "objenesis",
