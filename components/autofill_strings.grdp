@@ -1400,4 +1400,14 @@
       Chromium can autofill difficult fields that standard autofill might miss
     </message>
   </if>
+
+  <message name="IDS_AUTOFILL_WALLET_DATA_SHARING_PROMO_TITLE" desc="Title of the promo that encourages users to allow Wallet to share data with Chrome." formatter_data="android_java">
+    Allow Wallet to share data
+  </message>
+  <message name="IDS_AUTOFILL_WALLET_DATA_SHARING_PROMO_SUBTITLE" desc="Subtitle of the promo that encourages users to allow Wallet to share data with Chrome." formatter_data="android_java">
+    To autofill your info, turn on &quot;Use passes across Google&quot; in Wallet settings
+  </message>
+  <message name="IDS_AUTOFILL_WALLET_DATA_SHARING_PROMO_BUTTON_LABEL" desc="Label of the button that opens the Google Wallet app." formatter_data="android_java">
+    Open Google Wallet
+  </message>
 </grit-part>

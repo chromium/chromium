@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.autofill.AutofillAddress;
 import org.chromium.chrome.browser.autofill.AutofillClientProviderUtils;
 import org.chromium.chrome.browser.autofill.AutofillEditorBase;
 import org.chromium.chrome.browser.autofill.AutofillFallbackSurfaceLauncher;
+import org.chromium.chrome.browser.autofill.GoogleWalletLauncher;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.autofill.SaveUpdateAddressProfilePromptMode;
@@ -174,6 +175,7 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
     static final String MANAGE_PLUS_ADDRESSES = "manage_plus_addresses";
     static final String SAVE_AND_FILL_ADDRESSES = "save_and_fill_addresses";
     static final String DISABLED_SETTINGS_INFO = "disabled_settings_info";
+    static final String DISABLED_WALLET_DATA_SHARING = "disabled_wallet_data_sharing";
 
     public static final String GOOGLE_ACCOUNT_HOME_ADDRESS_EDIT_URL =
             "https://myaccount.google.com/address/home?utm_source=chrome&utm_campaign=manage_addresses";
@@ -256,6 +258,13 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
         if (disabledSettingsInThirdPartyMode(getProfile())) {
             addDisabledSettingsInfoCard(screen);
         }
+        EntityDataManager entityDataManager = EntityDataManagerFactory.getForProfile(getProfile());
+        if (!disabledSettingsInThirdPartyMode(getProfile())
+                && entityDataManager != null
+                && !entityDataManager.isWalletPublicPassStorageEnabled()) {
+            addDisabledWalletDataSharingDataCard(screen);
+        }
+
         addAutofillSwitch(screen);
         addProfilePreferences(screen);
         if (!disabledSettingsInThirdPartyMode(getProfile())) {
@@ -294,6 +303,30 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
                 });
 
         screen.addPreference(disabledSettingsInfoPref);
+    }
+
+    /** Adds an information card if sharing data from Wallet is disabled. */
+    private void addDisabledWalletDataSharingDataCard(PreferenceScreen screen) {
+        // LINT.IfChange(AddDisabledWalletDataSharingDataCard)
+        CardWithButtonPreference disabledSharingWalletDataPref =
+                new CardWithButtonPreference(getStyledContext(), null);
+        disabledSharingWalletDataPref.setKey(DISABLED_WALLET_DATA_SHARING);
+        disabledSharingWalletDataPref.setTitle(R.string.autofill_wallet_data_sharing_promo_title);
+        disabledSharingWalletDataPref.setSummary(
+                R.string.autofill_wallet_data_sharing_promo_subtitle);
+        // LINT.ThenChange(:DynamicDisabledWalletDataSharingDataCard)
+        disabledSharingWalletDataPref.setButtonText(
+                getResources().getString(R.string.autofill_wallet_data_sharing_promo_button_label));
+        disabledSharingWalletDataPref.setOnButtonClick(
+                () -> {
+                    Context context = getContext();
+                    if (context != null) {
+                        GoogleWalletLauncher.openGoogleWalletPassesSettings(
+                                context, context.getPackageManager());
+                    }
+                });
+
+        screen.addPreference(disabledSharingWalletDataPref);
     }
 
     /** Adds the "Save and fill addresses" toggle. */
@@ -679,7 +712,13 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
                     } else {
                         addAddAddressButton(indexData, profile, getPrefFragmentName());
                     }
-
+                    EntityDataManager entityDataManager =
+                            EntityDataManagerFactory.getForProfile(profile);
+                    if (!disabledSettingsInThirdPartyMode
+                            && entityDataManager != null
+                            && !entityDataManager.isWalletPublicPassStorageEnabled()) {
+                        addDisabledWalletDataSharingDataCard(indexData, getPrefFragmentName());
+                    }
                     addAutofillSwitch(indexData);
 
                     if (ChromeFeatureList.isEnabled(ChromeFeatureList.PLUS_ADDRESSES_ENABLED)) {
@@ -729,6 +768,16 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
             indexData.removeEntryForKey(prefFragmentName, DISABLED_SETTINGS_INFO);
         }
 
+        EntityDataManager entityDataManager = EntityDataManagerFactory.getForProfile(profile);
+        if (!disabledSettingsInThirdPartyMode
+                && entityDataManager != null
+                && !entityDataManager.isWalletPublicPassStorageEnabled()) {
+            if (indexData.getEntryForKey(prefFragmentName, DISABLED_WALLET_DATA_SHARING) == null) {
+                addDisabledWalletDataSharingDataCard(indexData, prefFragmentName);
+            }
+        } else {
+            indexData.removeEntryForKey(prefFragmentName, DISABLED_WALLET_DATA_SHARING);
+        }
         indexData.resolveIndex();
     }
 
@@ -741,6 +790,17 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
                 R.string.autofill_disable_settings_explanation_title,
                 R.string.autofill_disable_settings_explanation);
         // LINT.ThenChange(:AddDisabledSettingsInfoCard)
+    }
+
+    private static void addDisabledWalletDataSharingDataCard(
+            SettingsIndexData indexData, String prefFragmentName) {
+        // LINT.IfChange(DynamicDisabledWalletDataSharingDataCard)
+        indexData.addEntryForKey(
+                prefFragmentName,
+                DISABLED_WALLET_DATA_SHARING,
+                R.string.autofill_wallet_data_sharing_promo_title,
+                R.string.autofill_wallet_data_sharing_promo_subtitle);
+        // LINT.ThenChange(:addDisabledWalletDataSharingDataCard)
     }
 
     private static void addAddAddressButton(

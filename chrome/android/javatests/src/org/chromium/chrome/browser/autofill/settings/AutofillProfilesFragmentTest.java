@@ -233,6 +233,7 @@ public class AutofillProfilesFragmentTest {
     public void setUp() throws TimeoutException {
         ReauthenticatorBridge.setInstanceForTesting(mMockReauthenticatorBridge);
         Intents.init();
+        when(sEntityDataManager.isWalletPublicPassStorageEnabled()).thenReturn(true);
         mHelper.setProfile(sLocalOrSyncProfile);
         mHelper.setProfile(
                 AutofillProfile.builder()
@@ -1040,6 +1041,67 @@ public class AutofillProfilesFragmentTest {
                 () -> {
                     sSettingsActivityTestRule.getActivity().onBackPressed();
                 });
+    }
+
+    @Test
+    @MediumTest
+    public void testDisabledWalletDataSharingDataCard_shownWhenDisabled() throws Exception {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AutofillClientProviderUtils.setAutofillAvailabilityToUseForTesting(
+                            AndroidAutofillAvailabilityStatus.SETTING_TURNED_OFF);
+                });
+        when(sEntityDataManager.isWalletPublicPassStorageEnabled()).thenReturn(false);
+
+        AutofillProfilesFragment autofillProfileFragment = sSettingsActivityTestRule.getFragment();
+
+        // Trigger address profile list rebuild.
+        ThreadUtils.runOnUiThreadBlocking(autofillProfileFragment::onPersonalDataChanged);
+
+        assertNotNull(
+                autofillProfileFragment.findPreference(
+                        AutofillProfilesFragment.DISABLED_WALLET_DATA_SHARING));
+    }
+
+    @Test
+    @MediumTest
+    public void testDisabledWalletDataSharingDataCard_notShownWhenWalletPublicPassEnabled()
+            throws Exception {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AutofillClientProviderUtils.setAutofillAvailabilityToUseForTesting(
+                            AndroidAutofillAvailabilityStatus.SETTING_TURNED_OFF);
+                });
+        when(sEntityDataManager.isWalletPublicPassStorageEnabled()).thenReturn(true);
+
+        AutofillProfilesFragment autofillProfileFragment = sSettingsActivityTestRule.getFragment();
+
+        // Trigger address profile list rebuild.
+        ThreadUtils.runOnUiThreadBlocking(autofillProfileFragment::onPersonalDataChanged);
+
+        assertNull(
+                autofillProfileFragment.findPreference(
+                        AutofillProfilesFragment.DISABLED_WALLET_DATA_SHARING));
+    }
+
+    @Test
+    @MediumTest
+    public void testDisabledWalletDataSharingDataCard_notShownInThirdPartyMode() throws Exception {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AutofillClientProviderUtils.setAutofillAvailabilityToUseForTesting(
+                            AndroidAutofillAvailabilityStatus.AVAILABLE);
+                });
+        when(sEntityDataManager.isWalletPublicPassStorageEnabled()).thenReturn(false);
+
+        AutofillProfilesFragment autofillProfileFragment = sSettingsActivityTestRule.getFragment();
+
+        // Trigger address profile list rebuild.
+        ThreadUtils.runOnUiThreadBlocking(autofillProfileFragment::onPersonalDataChanged);
+
+        assertNull(
+                autofillProfileFragment.findPreference(
+                        AutofillProfilesFragment.DISABLED_WALLET_DATA_SHARING));
     }
 
     @Test
