@@ -12,6 +12,7 @@ namespace blink {
 
 LazySourceLocation* LazySourceLocation::FromCurrentStack(v8::Isolate* isolate) {
   DCHECK(isolate);
+  v8::HandleScope handle_scope(isolate);
 
   if (!isolate->InContext()) {
     return MakeGarbageCollected<LazySourceLocation>();
@@ -71,8 +72,6 @@ const String& LazySourceLocation::Url(v8::Isolate* isolate) {
 
   if (!v8_url_.IsEmpty()) {
     url_ = ToCoreStringWithNullCheck(isolate, v8_url_.Get(isolate));
-    // The V8 handle can now be cleared, allowing the V8 GC to collect it.
-    v8_url_.Clear();
   } else {
     url_ = String();
   }
