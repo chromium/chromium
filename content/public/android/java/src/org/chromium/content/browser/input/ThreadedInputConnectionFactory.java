@@ -8,6 +8,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.os.Process;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 
@@ -66,7 +67,8 @@ public class ThreadedInputConnectionFactory implements ChromiumBaseInputConnecti
 
         static {
             HandlerThread handlerThread =
-                    new HandlerThread("InputConnectionHandlerThread", HandlerThread.NORM_PRIORITY);
+                    new HandlerThread(
+                            "InputConnectionHandlerThread", Process.THREAD_PRIORITY_URGENT_DISPLAY);
             handlerThread.start();
             sHandler = new Handler(handlerThread.getLooper());
         }
