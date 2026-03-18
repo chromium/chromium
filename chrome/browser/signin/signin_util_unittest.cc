@@ -536,8 +536,6 @@ TEST_F(SigninUtilHistorySyncOptinTest,
       syncer::UserSelectableType::kHistory, true);
   test_sync_service()->GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kTabs, true);
-  test_sync_service()->GetUserSettings()->SetSelectedType(
-      syncer::UserSelectableType::kSavedTabGroups, true);
 
   EXPECT_EQ(
       signin_util::ShouldShowHistorySyncOptinScreen(*profile()),
@@ -558,8 +556,6 @@ TEST_F(SigninUtilHistorySyncOptinTest,
       syncer::UserSelectableType::kHistory, false);
   test_sync_service()->GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kTabs, true);
-  test_sync_service()->GetUserSettings()->SetSelectedType(
-      syncer::UserSelectableType::kSavedTabGroups, true);
   EXPECT_EQ(signin_util::ShouldShowHistorySyncOptinScreen(*profile()),
             signin_util::ShouldShowHistorySyncOptinResult::kShow);
 }
@@ -577,14 +573,12 @@ TEST_F(SigninUtilHistorySyncOptinTest,
       syncer::UserSelectableType::kHistory, true);
   test_sync_service()->GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kTabs, false);
-  test_sync_service()->GetUserSettings()->SetSelectedType(
-      syncer::UserSelectableType::kSavedTabGroups, true);
   EXPECT_EQ(signin_util::ShouldShowHistorySyncOptinScreen(*profile()),
             signin_util::ShouldShowHistorySyncOptinResult::kShow);
 }
 
 TEST_F(SigninUtilHistorySyncOptinTest,
-       ShowHistorySyncOptinScreenIfUserNotOptedInTabGroups) {
+       ShouldNotShowHistorySyncOptinScreenIfUserNotOptedInTabGroups) {
   SignInAndSetUpSyncService();
 
   ASSERT_EQ(
@@ -599,8 +593,9 @@ TEST_F(SigninUtilHistorySyncOptinTest,
   test_sync_service()->GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kSavedTabGroups, false);
 
-  EXPECT_EQ(signin_util::ShouldShowHistorySyncOptinScreen(*profile()),
-            signin_util::ShouldShowHistorySyncOptinResult::kShow);
+  EXPECT_EQ(
+      signin_util::ShouldShowHistorySyncOptinScreen(*profile()),
+      signin_util::ShouldShowHistorySyncOptinResult::kSkipUserAlreadyOptedIn);
 }
 
 TEST_F(SigninUtilHistorySyncOptinTest, EnableHistorySync) {
@@ -706,13 +701,13 @@ TEST_P(SigninUtilHistorySyncOptinForManagedSettingsTest,
             signin_util::ShouldShowHistorySyncOptinResult::kSkipSyncForbidden);
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    SigninUtilHistorySyncOptinForManagedSettingsTest,
-    testing::Values(syncer::UserSelectableType::kHistory,
-                    syncer::UserSelectableType::kTabs,
-                    syncer::UserSelectableType::kSavedTabGroups),
-    [](const auto& info) { return GetUserSelectableTypeName(info.param); });
+INSTANTIATE_TEST_SUITE_P(All,
+                         SigninUtilHistorySyncOptinForManagedSettingsTest,
+                         testing::Values(syncer::UserSelectableType::kHistory,
+                                         syncer::UserSelectableType::kTabs),
+                         [](const auto& info) {
+                           return GetUserSelectableTypeName(info.param);
+                         });
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
