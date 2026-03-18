@@ -12,8 +12,13 @@
 
 class Browser;
 @class ChromeCoordinator;
+class ProfileIOS;
 class TabHelperAttacher;
 @class UIViewController;
+
+namespace web {
+class JavaScriptFeature;
+}  // namespace web
 
 namespace ios::provider {
 
@@ -42,6 +47,10 @@ OverflowMenuDestinationParameters GetCobaltOverflowMenuDestinationParameters();
 ChromeCoordinator* CreateCobaltCoordinator(
     UIViewController* base_view_controller,
     Browser* browser);
+
+// Returns the Cobalt JavaScript feature for `profile`.
+web::JavaScriptFeature* GetCobaltJavascriptFeatureForProfile(
+    ProfileIOS* profile);
 
 }  // namespace ios::provider
 

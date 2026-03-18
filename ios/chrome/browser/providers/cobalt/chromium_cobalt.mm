@@ -30,4 +30,9 @@ ChromeCoordinator* CreateCobaltCoordinator(
   return nil;
 }
 
+web::JavaScriptFeature* GetCobaltJavascriptFeatureForProfile(
+    ProfileIOS* profile) {
+  return nullptr;
+}
+
 }  // namespace ios::provider
