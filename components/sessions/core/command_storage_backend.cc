@@ -405,13 +405,16 @@ CommandStorageBackend::CommandStorageBackend(
     scoped_refptr<base::SequencedTaskRunner> owning_task_runner,
     const base::FilePath& path,
     SessionType type,
+    std::optional<os_crypt_async::Encryptor> encryptor,
     base::Clock* clock)
     : RefCountedDeleteOnSequence(owning_task_runner),
       type_(type),
       supplied_path_(path),
       callback_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
-      clock_(clock ? clock : base::DefaultClock::GetInstance()) {
+      clock_(clock ? clock : base::DefaultClock::GetInstance()),
+      encryptor_(std::move(encryptor)) {
   // This is invoked on the main thread, don't do file access here.
+  // TODO(crbug.com/479420496): Use encryptor_ to encrypt the session file.
 }
 
 // static

@@ -27,6 +27,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_file_util.h"
 #include "base/time/time.h"
+#include "components/os_crypt/async/browser/test_utils.h"
 #include "components/sessions/core/command_storage_manager.h"
 #include "components/sessions/core/session_constants.h"
 #include "components/sessions/core/session_service_commands.h"
@@ -60,6 +61,7 @@ std::unique_ptr<SessionCommand> CreateCommandFromData(const TestData& data) {
 
 struct TestParams {
   SessionType session_type;
+  bool encrypted;
 };
 
 }  // namespace
@@ -71,6 +73,7 @@ class CommandStorageBackendTest : public testing::Test {
     init_path_ = temp_dir_.GetPath();
     sessions_dir_ = init_path_.Append(kSessionsDirectory);
     base::CreateDirectory(sessions_dir_);
+    os_crypt_ = os_crypt_async::GetTestOSCryptAsyncForTesting(true);
   }
 
   void AssertCommandEqualsData(const TestData& data,
@@ -92,10 +95,18 @@ class CommandStorageBackendTest : public testing::Test {
 
   scoped_refptr<CommandStorageBackend> CreateBackend(
       const SessionType session_type,
+      bool encrypted,
       base::Clock* clock = nullptr) {
+    std::optional<os_crypt_async::Encryptor> encryptor;
+    if (encrypted) {
+      os_crypt_->GetInstance(
+          base::BindLambdaForTesting([&encryptor](os_crypt_async::Encryptor e) {
+            encryptor = std::move(e);
+          }));
+    }
     return MakeRefCounted<CommandStorageBackend>(
         task_environment_.GetMainThreadTaskRunner(), init_path_, session_type,
-        clock);
+        std::move(encryptor), clock);
   }
 
   // Functions that call into private members of CommandStorageBackend.
@@ -162,6 +173,7 @@ class CommandStorageBackendTest : public testing::Test {
   base::FilePath init_path_;     // Passed to CommandStorageBackend constructor.
   base::FilePath sessions_dir_;  // The directory containing the session files.
   base::ScopedTempDir temp_dir_;
+  std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_;
 };
 
 // Most tests are parameterized to run for each session type (see
@@ -225,7 +237,7 @@ TEST_F(CommandStorageBackendTest, DeterminePreviousSessionInvalid) {
   ASSERT_TRUE(base::WriteFile(prev_path, ""));
 
   scoped_refptr<CommandStorageBackend> backend =
-      CreateBackend(SessionType::kSessionRestore);
+      CreateBackend(SessionType::kSessionRestore, /*encrypted=*/false);
   auto last_session_info = GetLastSessionInfo(backend.get());
   ASSERT_FALSE(last_session_info);
 }
@@ -237,7 +249,7 @@ TEST_F(CommandStorageBackendTest, ReadSessionFileV1) {
 
   // V1 files are no longer supported.
   scoped_refptr<CommandStorageBackend> backend =
-      CreateBackend(SessionType::kSessionRestore);
+      CreateBackend(SessionType::kSessionRestore, /*encrypted=*/false);
   ASSERT_FALSE(
       backend->IsValidFileForTest(sessions_dir().AppendASCII("Session_1234")));
   SessionCommands commands = backend->ReadLastSessionCommands().commands;
@@ -253,7 +265,7 @@ TEST_F(CommandStorageBackendTest, ReadSessionFileV2) {
 
   // V2 files are no longer supported.
   scoped_refptr<CommandStorageBackend> backend =
-      CreateBackend(SessionType::kSessionRestore);
+      CreateBackend(SessionType::kSessionRestore, /*encrypted=*/false);
   ASSERT_FALSE(
       backend->IsValidFileForTest(sessions_dir().AppendASCII("Session_1234")));
   SessionCommands commands = backend->ReadLastSessionCommands().commands;
@@ -268,7 +280,7 @@ TEST_F(CommandStorageBackendTest, ReadSessionFileV3) {
       copyTestDataToSessionFile("Session-v3WithMarker", "Session_1234"));
 
   scoped_refptr<CommandStorageBackend> backend =
-      CreateBackend(SessionType::kSessionRestore);
+      CreateBackend(SessionType::kSessionRestore, /*encrypted=*/false);
   SessionCommands commands = backend->ReadLastSessionCommands().commands;
 
   ASSERT_EQ(1u, commands.size());
@@ -280,7 +292,7 @@ TEST_F(CommandStorageBackendTest, WriteSessionFileV3) {
   // If you intend to change the output file format, then you should create a
   // new test data file, and update this test to read that new file.
   scoped_refptr<CommandStorageBackend> backend =
-      CreateBackend(SessionType::kSessionRestore);
+      CreateBackend(SessionType::kSessionRestore, /*encrypted=*/false);
   struct TestData data = {1, "a"};
   SessionCommands commands;
   commands.push_back(CreateCommandFromData(data));
@@ -315,7 +327,7 @@ TEST_F(CommandStorageBackendTest, ReadSessionFileV3With2Appends) {
       copyTestDataToSessionFile("Session-v3With2Appends", "Session_1234"));
 
   scoped_refptr<CommandStorageBackend> backend =
-      CreateBackend(SessionType::kSessionRestore);
+      CreateBackend(SessionType::kSessionRestore, /*encrypted=*/false);
   SessionCommands commands = backend->ReadLastSessionCommands().commands;
 
   ASSERT_EQ(4u, commands.size());
@@ -330,7 +342,7 @@ TEST_F(CommandStorageBackendTest, WriteSessionFileV3With2Appends) {
   // If you intend to change the output file format, then you should create a
   // new test data file, and update this test to read that new file.
   scoped_refptr<CommandStorageBackend> backend =
-      CreateBackend(SessionType::kSessionRestore);
+      CreateBackend(SessionType::kSessionRestore, /*encrypted=*/false);
   SessionCommands first_commands;
   first_commands.push_back(CreateCommandFromData(TestData({1, "apple"})));
   first_commands.push_back(CreateCommandFromData(TestData({2, "banana"})));
@@ -368,7 +380,7 @@ TEST_F(CommandStorageBackendTest, ReadSessionFileV4) {
 
   // V4 files are no longer supported.
   scoped_refptr<CommandStorageBackend> backend =
-      CreateBackend(SessionType::kSessionRestore);
+      CreateBackend(SessionType::kSessionRestore, /*encrypted=*/false);
   ASSERT_FALSE(
       backend->IsValidFileForTest(sessions_dir().AppendASCII("Session_1234")));
   SessionCommands commands = backend->ReadLastSessionCommands().commands;
@@ -381,11 +393,12 @@ class CommandStorageBackendParamTest
       public testing::WithParamInterface<TestParams> {
  protected:
   scoped_refptr<CommandStorageBackend> CreateBackend() {
-    return CommandStorageBackendTest::CreateBackend(GetParam().session_type);
+    return CommandStorageBackendTest::CreateBackend(GetParam().session_type,
+                                                    GetParam().encrypted);
   }
   scoped_refptr<CommandStorageBackend> CreateBackend(base::Clock* clock) {
-    return CommandStorageBackendTest::CreateBackend(GetParam().session_type,
-                                                    clock);
+    return CommandStorageBackendTest::CreateBackend(
+        GetParam().session_type, GetParam().encrypted, clock);
   }
 };
 
@@ -914,22 +927,32 @@ TEST_P(CommandStorageBackendParamTest, PathTimeIncreases) {
 
 std::string TestParamNameGenerator(
     const testing::TestParamInfo<TestParams>& param_info) {
+  std::string session_type_name;
   switch (param_info.param.session_type) {
     case SessionType::kAppRestore:
-      return "AppRestore";
+      session_type_name = "AppRestore";
+      break;
     case SessionType::kSessionRestore:
-      return "SessionRestore";
+      session_type_name = "SessionRestore";
+      break;
     case SessionType::kTabRestore:
-      return "TabRestore";
+      session_type_name = "TabRestore";
+      break;
   }
+  std::string encryption_name =
+      param_info.param.encrypted ? "Encrypted" : "Cleartext";
+  return base::JoinString({session_type_name, encryption_name}, "_");
 }
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     CommandStorageBackendParamTest,
-    ::testing::Values(TestParams(SessionType::kAppRestore),
-                      TestParams(SessionType::kSessionRestore),
-                      TestParams(SessionType::kTabRestore)),
+    ::testing::Values(TestParams(SessionType::kAppRestore, false),
+                      TestParams(SessionType::kAppRestore, true),
+                      TestParams(SessionType::kSessionRestore, false),
+                      TestParams(SessionType::kSessionRestore, true),
+                      TestParams(SessionType::kTabRestore, false),
+                      TestParams(SessionType::kTabRestore, true)),
     TestParamNameGenerator);
 
 }  // namespace sessions
