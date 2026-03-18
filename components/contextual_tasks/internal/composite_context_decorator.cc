@@ -14,15 +14,19 @@
 #include "components/contextual_tasks/internal/fallback_title_context_decorator.h"
 #include "components/contextual_tasks/internal/favicon_context_decorator.h"
 #include "components/contextual_tasks/internal/history_context_decorator.h"
-#include "components/contextual_tasks/internal/pending_context_decorator.h"
+#include "components/contextual_tasks/internal/submitted_context_decorator.h"
+#include "components/contextual_tasks/internal/uploaded_context_decorator.h"
 #include "components/contextual_tasks/public/context_decoration_params.h"
 #include "components/contextual_tasks/public/context_decorator.h"
 #include "components/contextual_tasks/public/contextual_task_context.h"
 #include "components/history/core/browser/history_service.h"
 
 namespace {
+// These decorators are capable of changing the number of context attachments
+// and must run before other decorators.
 constexpr contextual_tasks::ContextualTaskContextSource kEarlyDecorators[] = {
-    contextual_tasks::ContextualTaskContextSource::kPendingContextDecorator,
+    contextual_tasks::ContextualTaskContextSource::kUploadedContextDecorator,
+    contextual_tasks::ContextualTaskContextSource::kSubmittedContextDecorator,
 };
 
 bool IsEarlyDecorator(contextual_tasks::ContextualTaskContextSource source) {
@@ -39,8 +43,10 @@ std::unique_ptr<CompositeContextDecorator> CreateCompositeContextDecorator(
         additional_decorators) {
   std::map<ContextualTaskContextSource, std::unique_ptr<ContextDecorator>>
       decorators;
-  decorators.emplace(ContextualTaskContextSource::kPendingContextDecorator,
-                     std::make_unique<PendingContextDecorator>());
+  decorators.emplace(ContextualTaskContextSource::kUploadedContextDecorator,
+                     std::make_unique<UploadedContextDecorator>());
+  decorators.emplace(ContextualTaskContextSource::kSubmittedContextDecorator,
+                     std::make_unique<SubmittedContextDecorator>());
   decorators.emplace(ContextualTaskContextSource::kFallbackTitle,
                      std::make_unique<FallbackTitleContextDecorator>());
   decorators.emplace(
