@@ -11,7 +11,7 @@
 
 permission, geolocation, install, usermedia {
   background-color: ButtonFace;
-  border: solid 1px #767676;
+  border: solid 1px ButtonBorder;
   box-sizing: content-box !important;
   border-radius: 3px;
   color: ButtonText;
