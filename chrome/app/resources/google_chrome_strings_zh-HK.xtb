@@ -299,6 +299,7 @@
 <translation id="4053720452172726777">自訂及控制 Google Chrome</translation>
 <translation id="408393047846373801">如要在你的所有裝置上存取密碼和其他資料，請登入 Chrome。登入後，此密碼會儲存至你的 Google 帳戶。</translation>
 <translation id="409936259433005390">即將升級至 Windows 11？請將 Chrome 安裝程式下載至 OneDrive，預先準備即可隨時開始。</translation>
+<translation id="4102173024714616627">擴充程式是可讓你自訂 Chrome 的外掛程式，從保持條理以至簡化日常工作，營造屬於你的 Chrome 體驗。</translation>
 <translation id="4110895483821904099">設定新的 Chrome 設定檔</translation>
 <translation id="4111566860456076004">Chrome 無法驗證此擴充程式的來源，因此可能不安全。請從 Chrome 中移除此擴充程式，令其無法再查看及變更你瀏覽的網站相關資料，包括個人資料。</translation>
 <translation id="4147555960264124640">您已登入受管理的帳戶，並將管理控制權授予您的 Chrome 設定檔。您的 Chrome 數據 (例如應用程式、書籤、記錄、密碼和其他設定) 均將永久與 <ph name="USER_NAME" /> 建立關聯。您可以透過 Google 帳戶資訊主頁刪除這些數據，但您無法將這些數據與其他帳戶建立關聯。<ph name="LEARN_MORE" /></translation>
@@ -358,6 +359,7 @@
 <translation id="4756182432527369254">使用 Chrome 的 V8 引擎加快網站速度，但 Chrome 防攻擊的能力會略為下降</translation>
 <translation id="479167709087336770">這會使用與「Google 搜尋」相同的的拼字檢查工具。您在瀏覽器輸入的文字將會傳送給 Google。您可以在設定中變更此行為。</translation>
 <translation id="4793679854893018356">瞭解 Chrome 如何保護使用者的網上安全</translation>
+<translation id="4799870290441980300">開啟額外功能，讓 Chrome 提供最強大的防護</translation>
 <translation id="4828579605166583682">Google Chrome 正嘗試更換現有密碼。如果允許，請輸入 Windows 密碼。</translation>
 <translation id="4842397268809523050">您的網域無法使用同步功能，因此 ChromeOS Flex 無法同步處理您的資料。</translation>
 <translation id="4851866215237571846"><ph name="EXISTING_USER" />已登入。如要分開保存你的瀏覽資料，請在 Chrome 中登入你的個人檔案 (<ph name="USER_EMAIL_ADDRESS" />)。</translation>

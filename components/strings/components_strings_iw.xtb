@@ -754,6 +754,7 @@
 <translation id="2184405333245229118">{COUNT,plural, =1{כתובת אחת}one{# כתובות}two{שתי כתובות}other{# כתובות}}</translation>
 <translation id="2188375229972301266">ניקובים מרובים בחלק התחתון</translation>
 <translation id="218940509700321686">‏ערכים מופרדים בפסיקים (CSV)</translation>
+<translation id="2190094353033916816">המדיניות הזו מוגדרת עם ערכים שונים ברמת המחשב וברמת המשתמש. המדיניות פועלת כצפוי.</translation>
 <translation id="2191980191135734720">בשלב הבא, צריך לבטל את נעילת המסך, בדרך כלל באמצעות טביעת האצבע. אפשר גם <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">מה כדאי לקחת בחשבון</translation>
 <translation id="2198183835992354675">‏Known Traveler Number (מספר KTN)</translation>
@@ -3198,6 +3199,7 @@ Del</translation>
 <translation id="6042308850641462728">עוד</translation>
 <translation id="6043357981274314628">סיימת!</translation>
 <translation id="6045164183059402045">תבנית הצבה</translation>
+<translation id="6046026831939367176">האתר <ph name="URL" /> מבקש להשתמש במיקום המשוער שלך</translation>
 <translation id="6046892054959167494">כדי לחפש או לשאול ב-<ph name="SEARCH_AGGREGATOR_SHORT_NAME" /> אפשר להזין <ph name="SEARCH_AGGREGATOR_KEYWORD" /></translation>
 <translation id="6047927260846328439">ייתכן שבתוכן הזה יש מידע מטעה שנועד לגרום לך להתקין תוכנות או לחשוף מידע אישי. <ph name="BEGIN_LINK" />אני רוצה להציג בכל זאת<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">‏מעטפה – B4</translation>
@@ -4996,6 +4998,7 @@ Del</translation>
 <translation id="8870700989640064057">להדפיס קובץ סודי?</translation>
 <translation id="8871485335898060555">עתיקות ואספנות</translation>
 <translation id="8871553383647848643">התאמה אישית של מראה הדפדפן</translation>
+<translation id="887350038812854047">המדיניות הזו מוגדרת עם אותו ערך ברמת המחשב וברמת המשתמש. המדיניות פועלת כצפוי.</translation>
 <translation id="8874790741333031443">‏אפשר להפעיל קובצי cookie של צד שלישי באופן זמני. במצב כזה יש פחות הגנה במהלך הגלישה, אבל סביר יותר שהתכונות באתר יפעלו כצפוי.</translation>
 <translation id="8874824191258364635">עליך להזין מספר כרטיס חוקי</translation>
 <translation id="8877780815363510165">דיג</translation>

@@ -25,6 +25,7 @@
 <translation id="3115238746683532089"><ph name="VENDOR_ID" /> (କ୍ରମିକ ସଂଖ୍ୟା <ph name="SERIAL_NUMBER" />) ବିକ୍ରେତାଙ୍କ ତରଫରୁ <ph name="PRODUCT_ID" /> ଅଜଣା ପ୍ରଡକ୍ଟ</translation>
 <translation id="3144135466825225871">crx ଫାଇଲ୍‍କୁ ପ୍ରତିସ୍ଥାପିତ କରିହେଲା ନାହିଁ। ଫାଇଲ୍‍ଟି ବ୍ୟବହାର କରାଯାଉଛି କି ନାହିଁ ତାହା ଯାଞ୍ଚ କରନ୍ତୁ।</translation>
 <translation id="3163201441334626963">ଭେଣ୍ଡର <ph name="VENDOR_ID" />ରୁ ଅଜଣା ପ୍ରଡକ୍ଟ <ph name="PRODUCT_ID" /></translation>
+<translation id="3174723475300476613">ଆପଣଙ୍କ ସଂସ୍ଥା ଦ୍ୱାରା ଏହି ଏକ୍ସଟେନସନକୁ ଆକ୍ସେସ ବ୍ଲକ କରାଯାଇଛି।</translation>
 <translation id="3242289508736283383">'kiosk_only' ମାନିଫେଷ୍ଟ ଆଟ୍ରିବ୍ୟୁଟ ଥିବା ଆପ ChromeOS କିଓସ୍କ ମୋଡରେ ଇନଷ୍ଟଲ କରାଯିବା ଉଚିତ</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (କ୍ରମିକ ସଂଖ୍ୟା <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397">ବିକ୍ରେତା <ph name="VENDOR_ID" />ଙ୍କ ତରଫରୁ <ph name="PRODUCT_NAME" /> (କ୍ରମିକ ସଂଖ୍ୟା <ph name="SERIAL_NUMBER" />)</translation>
@@ -32,6 +33,7 @@
 <translation id="3834775135533257713">"<ph name="TO_INSTALL_APP_NAME" />" ଆପ୍ଲିକେସନ୍ ଯୋଗ କରାଯାଇପାରିଲା ନାହିଁ କାରଣ ଏହାର "<ph name="INSTALLED_APP_NAME" />" ସହିତ କିଛି ବିବାଦ ଅଛି।</translation>
 <translation id="388442998277590542"><ph name="OPTIONS_PAGE" />' ବିକଳ୍ପ ଥିବା ପୃଷ୍ଠା ଲୋଡ୍‌ କରିହେଲା ନାହିଁ।</translation>
 <translation id="3984413272403535372">ଏକ୍ସଟେନ୍‌ସନ୍ ସାଇନ୍‌ କରିବା ସମୟରେ ତ୍ରୁଟି।</translation>
+<translation id="4094452115117798451">ଆପଣଙ୍କ ସଂସ୍ଥା ଦ୍ୱାରା ଏହି ଏକ୍ସଟେନସନ ବର୍ଗକୁ ଆକ୍ସେସ ବ୍ଲକ କରାଯାଇଛି।</translation>
 <translation id="4233778200880751280">'<ph name="ABOUT_PAGE" />' ପୃଷ୍ଠା ବିଷୟରେ ଲୋଡ୍‌ କରିହେଲା ନାହିଁ।</translation>
 <translation id="424963718355121712">ଆପ୍‌ଗୁଡ଼ିକୁ ସେମାନଙ୍କ ଦ୍ଵାରା ପ୍ରଭାବିତ ହେଉଥିବା ହୋଷ୍ଟରୁ ସେବା ଦେବା ଆବଶ୍ୟକ</translation>
 <translation id="4306119971288449206">"<ph name="CONTENT_TYPE" />" ବିଷୟବସ୍ତୁ-ପ୍ରକାର ସହିତ ହିଁ ଆପ୍‌ଗୁଡ଼ିକୁ ସେବା ଦିଆଯିବା ଦରକାର</translation>

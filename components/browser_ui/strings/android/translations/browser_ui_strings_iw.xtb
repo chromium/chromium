@@ -165,11 +165,6 @@
 <translation id="2588271083332682494">קבוצות של כרטיסיות עוזרות לשמור על סדר</translation>
 <translation id="2597457036804169544">אין להחיל עיצוב כהה על אתרים</translation>
 <translation id="2606760465469169465">אימות אוטומטי</translation>
-<translation id="2610903128639500624">‏ניהול ב<ph name="BEGIN_LINK1" />הגדרות Android<ph name="END_LINK1" />
-
-ההגנה המתקדמת שולטת בהגדרות האלה של Chrome:
-‫• האפשרות "להשתמש תמיד בחיבורים מאובטחים" מופעלת.
-‫• כלי האופטימיזציה של JavaScript מושבת. <ph name="BEGIN_LINK2" />לניהול רשימת האתרים החריגים<ph name="END_LINK2" /></translation>
 <translation id="2621115761605608342">‏אישור JavaScript לאתר ספציפי.</translation>
 <translation id="2626708220538466178">הגיליון התחתון של דפדפן ברירת המחדל נסגר</translation>
 <translation id="2653659639078652383">שליחה</translation>
@@ -488,6 +483,7 @@
 <translation id="5922853908706496913">מתבצע שיתוף מסך</translation>
 <translation id="5922967540311291836">‏חסימת קובצי cookie של צד שלישי:</translation>
 <translation id="5923512600150154850">‏הפעולה הזו תגרום למחיקת <ph name="DATASIZE" /> של נתונים וקובצי Cookie שנשמרו על ידי אתרים.</translation>
+<translation id="5930707844513754220">לרשימת ההגדרות הנוספות</translation>
 <translation id="5939518447894949180">איפוס</translation>
 <translation id="5948139900367969951">רוצה לקבל מידע במהירות על הנושאים שחשובים לך?</translation>
 <translation id="5964247741333118902">תוכן מוטמע</translation>
@@ -496,6 +492,7 @@
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
 <translation id="5998071268779572583">‏הפעלת הפיד של Discover</translation>
 <translation id="6012967556075291653">מקש קיצור מוצמד</translation>
+<translation id="6013003831291591200">המשימה הושלמה</translation>
 <translation id="6015775454662021376">שליטה על הגישה של האתר הזה למכשיר שלך</translation>
 <translation id="6022659036123304283">‏אפשר להתאים אישית את Chrome בדרך שנוחה לך</translation>
 <translation id="6040143037577758943">סגירה</translation>

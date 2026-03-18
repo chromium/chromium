@@ -637,6 +637,7 @@
 <translation id="3324193307694657476">2-дарек</translation>
 <translation id="3328801116991980348">Сайт жөнүндө маалымат</translation>
 <translation id="333229797575847124">Бул функцияны кантип иштетүү керек</translation>
+<translation id="334004756946755423">Муну түшүндүрүп бер:</translation>
 <translation id="3344233834747405775">Карточканын ээсинин аты жараксыз</translation>
 <translation id="3344485292736684439">{count,plural, =1{Кыстарма {email} аккаунтуңуздагы "{title}" папкасына сакталды}other{Кыстармалар {email} аккаунтуңуздагы "{title}" папкасына сакталды}}</translation>
 <translation id="334690320928261823">Соңку өтмөктөр</translation>
@@ -1723,6 +1724,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="7149893636342594995">Акыркы 24 саат</translation>
 <translation id="7154417656353909837">Даректерди өчүрүү</translation>
 <translation id="7161230316646448869">Бардык түзмөктөрдөгү кыстармаларды, таржымалды жана башкаларды шайкештириңиз</translation>
+<translation id="7165323152084385463">VIN код</translation>
 <translation id="7173114856073700355">Параметрлерди ачуу</translation>
 <translation id="7173721738069475737">{count,plural, =1{Кыстарма сакталды}other{{count} кыстарма сакталды}}</translation>
 <translation id="7176183551031110427">Алыстатуу</translation>

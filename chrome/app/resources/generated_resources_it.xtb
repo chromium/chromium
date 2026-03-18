@@ -245,7 +245,6 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1159879754517035595">Gestisci le impostazioni delle estensioni</translation>
 <translation id="1160800016654917722">Finestra spostata verso il basso e a sinistra</translation>
 <translation id="1161190590171867633">Le tabelle di confronto vengono salvate nel tuo Account Google</translation>
-<translation id="1161575384898972166">Accedi a <ph name="TOKEN_NAME" /> per esportare il certificato client.</translation>
 <translation id="116173250649946226">Il tuo amministratore ha impostato un tema predefinito che non può essere modificato.</translation>
 <translation id="1162213688509394031">Nascondi la barra del titolo</translation>
 <translation id="1162479191445552288">Apri all'avvio</translation>
@@ -488,7 +487,6 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1316136264406804862">Ricerca in corso...</translation>
 <translation id="1316248800168909509">Non è riuscito a connettersi a <ph name="DEVICE" />. Riprova.</translation>
 <translation id="1316495628809031177">Sincronizzazione in pausa</translation>
-<translation id="1317637799698924700">La dock station funzionerà alla modalità compatibile con USB Type-C.</translation>
 <translation id="1319983966058170660">Pulsante Indietro pagina secondaria <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="1322046419516468189">Visualizza e gestisci le password salvate in <ph name="SAVED_PASSWORDS_STORE" /></translation>
 <translation id="1323433172918577554">Espandi</translation>
@@ -991,7 +989,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1657406563541664238">Aiutaci a migliorare <ph name="PRODUCT_NAME" /> inviando automaticamente a Google le statistiche sull'utilizzo e segnalazioni sugli arresti anomali</translation>
 <translation id="1657937299377480641">Per eseguire di nuovo l'accesso per accedere a risorse didattiche, chiedi l'autorizzazione a uno dei tuoi genitori</translation>
 <translation id="1658424621194652532">Questa pagina sta accedendo al microfono.</translation>
-<translation id="1660763353352708040">Problema con l'alimentatore</translation>
 <translation id="1661996889489595105">{NUM_TABS,plural, =1{Risolvi il problema della scheda che rallenta il browser}other{Risolvi il problema delle schede che rallentano il browser}}</translation>
 <translation id="16620462294541761">Spiacenti, impossibile verificare la password. Riprova.</translation>
 <translation id="1662572015199460525">Interagisci usando la voce o il testo per ricevere risposte, informazioni chiave e altro mentre navighi</translation>
@@ -1119,7 +1116,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1751335846119670066">Aiutami a leggere</translation>
 <translation id="17513872634828108">Schede aperte</translation>
 <translation id="175196451752279553">R&amp;iapri scheda chiusa</translation>
-<translation id="1753067873202720523">Il Chromebook potrebbe non ricaricarsi mentre è acceso.</translation>
 <translation id="1753557900380512635">Interni</translation>
 <translation id="1753905327828125965">Più visitati</translation>
 <translation id="1755601632425835748">Dimensioni testo</translation>
@@ -1445,7 +1441,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1974060860693918893">Avanzate</translation>
 <translation id="1974159333077206889">Stesso audio con tutti gli altoparlanti</translation>
 <translation id="1975841812214822307">Rimuovi...</translation>
-<translation id="1976150099241323601">Accedi a dispositivo di sicurezza</translation>
 <translation id="1976823515278601587">Grandi risparmi</translation>
 <translation id="1978249384651349182"><ph name="BEGIN_DESCRIPTION" />La registrazione dei dispositivi nella tua organizzazione li configura per la gestione dei dispositivi centralizzata. La tua organizzazione potrebbe richiedere la registrazione per diversi motivi:<ph name="END_DESCRIPTION" />
     <ph name="BEGIN_SUBTITLE1" /><ph name="BEGIN_BOLD" />Migliorare la sicurezza<ph name="END_BOLD" /><ph name="END_SUBTITLE1" />
@@ -1479,6 +1474,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1989288015781834552">Riavvia per completare l'aggiornamento. Le tue schede verranno riaperte.</translation>
 <translation id="1989903373608997757">Usa sempre</translation>
 <translation id="1990046457226896323">File di contenuti vocali scaricati</translation>
+<translation id="1991829061375381344">Non disponi di licenze sufficienti per registrare questo dispositivo hardware Google Meet. Contatta il tuo rivenditore per acquistarne altre. Se ritieni di aver ricevuto questo messaggio per errore, contatta il tuo rivenditore.</translation>
 <translation id="199191324030140441">Disattiva Non disturbare</translation>
 <translation id="1992397118740194946">Non impostata</translation>
 <translation id="1994173015038366702">URL sito</translation>
@@ -1718,7 +1714,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2156294658807918600">Service worker: <ph name="SCRIPT_URL" /></translation>
 <translation id="2156707722163479690">Scorrimento e zoom delle schede condivise consentito</translation>
 <translation id="2157457598652721267">Usa i caratteri "/" e "-" per selezionare il tasto sinistro del mouse o quello destro. Usa il carattere "*" per selezionare entrambi.</translation>
-<translation id="2157474325782140681">Per avere a disposizione funzionalità aggiuntive, usa una dock station Dell progettata per supportare questo Chromebook.</translation>
 <translation id="215753907730220065">Esci da schermo intero</translation>
 <translation id="2157632422749995237">In seguito, Wallet può inviarti notifiche sui tuoi eventi</translation>
 <translation id="2157779167749714207"><ph name="DEVICE_TYPE" /> insieme a Gemini</translation>
@@ -1878,7 +1873,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2271986192355138465">Scopri come installare app web</translation>
 <translation id="2272430695183451567">0 sensori assegnati</translation>
 <translation id="2272570998639520080">Bicchiere da cocktail</translation>
-<translation id="2273119997271134996">Problema con la porta video del dock</translation>
 <translation id="2274840746523584236">Ricarica il Chromebook</translation>
 <translation id="2275193525496879616">Autorizzazione consentita. Collega una videocamera al dispositivo.</translation>
 <translation id="2275352532065325930">Posizione ricerca di schede</translation>
@@ -2110,7 +2104,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> 1 account, password salvata solo su questo dispositivo. Altri dettagli}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} account, password salvata solo su questo dispositivo. Altri dettagli}}</translation>
 <translation id="2428510569851653187">Descrivi cosa stavi facendo quando la scheda si è arrestata in modo anomalo</translation>
 <translation id="2428939361789119025">Disattiva Wi-Fi</translation>
-<translation id="2431027948063157455">Impossibile caricare l'Assistente Google, controlla la connessione di rete e riprova.</translation>
 <translation id="243179355394256322">La tua organizzazione ha limitato la registrazione dei dispositivi ai soli utenti autorizzati. Questo utente non è autorizzato a registrare i dispositivi. Assicurati che l'utente disponga del privilegio di amministratore per Registrazione dell'hardware Google Meet nella sezione Utenti della Console di amministrazione.</translation>
 <translation id="243275146591958220">Annulla download</translation>
 <translation id="2432882794929808179">App registrate: <ph name="APP_COUNT" /></translation>
@@ -2695,7 +2688,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2808985063107661499">"<ph name="MAIN_GESTURE" />" potrebbe coincidere con "<ph name="CONFLICTING_GESTURE_ONE" />" e "<ph name="CONFLICTING_GESTURE_TWO" />". Se possibile, prova a scegliere un gesto diverso.</translation>
 <translation id="2809346626032021864">Lettura</translation>
 <translation id="2811205483104563968">Account</translation>
-<translation id="2812049959647166806">Thunderbolt non è supportato</translation>
 <translation id="2813094189969465044">Controllo genitori</translation>
 <translation id="2813765525536183456">&amp;Aggiungi nuovo profilo</translation>
 <translation id="281390819046738856">Impossibile firmare la richiesta.</translation>
@@ -3132,7 +3124,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3115147772012638511">In attesa di elaborazione cache...</translation>
 <translation id="3115580024857770654">Comprimi tutto</translation>
 <translation id="3115743155098198207">Gestisci la lingua dell'Account Google</translation>
-<translation id="3117362587799608430">Il dock non è del tutto compatibile</translation>
 <translation id="3117791853215125017">{COUNT,plural, =1{Impossibile inviare <ph name="ATTACHMENTS" /> al dispositivo <ph name="DEVICE_NAME" />}other{Impossibile inviare <ph name="ATTACHMENTS" /> al dispositivo <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3118319026408854581">Guida di <ph name="PRODUCT_NAME" /></translation>
 <translation id="3118748462829336648">Apri riquadro laterale</translation>
@@ -3148,7 +3139,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3125361247594231799">Fissalo per la prossima volta</translation>
 <translation id="3125816458150005808">Puoi staccarla e aprirla dal menu</translation>
 <translation id="3126026824346185272">Ctrl</translation>
-<translation id="3127860049873093642">Per evitare problemi di ricarica e prestazioni, usa un alimentatore Dell o USB Type-C compatibile.</translation>
 <translation id="3127862849166875294">Ridimensionamento del disco Linux</translation>
 <translation id="3129150892373332590">Questa azione disattiverà la condivisione permanente dei dispositivi USB con gli ospiti e reimposterà l'intera persistenza. Continuare?</translation>
 <translation id="3129173833825111527">Margine sinistro</translation>
@@ -3393,7 +3383,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
         Puoi gestire le impostazioni dal menu della scheda o visualizzare altre opzioni in Personalizza Chrome.</translation>
 <translation id="3308134619352333507">Nascondi pulsante</translation>
 <translation id="3308604065765626613">{GROUP_COUNT,plural, =1{Le schede rimarranno aperte su questo dispositivo, ma il gruppo verrà eliminato definitivamente.}other{Le schede rimarranno aperte su questo dispositivo, ma i gruppi verranno eliminati definitivamente.}}</translation>
-<translation id="3308852433423051161">Caricamento dell'Assistente Google...</translation>
 <translation id="3309124184713871355">Strutture</translation>
 <translation id="3309330461362844500">ID profilo di certificato</translation>
 <translation id="3310379801837527592">Partecipa al gruppo di schede con <ph name="OWNER_FIRST_NAME" /> e <ph name="NUM_OTHER_MEMBERS" /> altra persona</translation>
@@ -3622,7 +3611,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3468999815377931311">Telefono Android</translation>
 <translation id="3469583217479686109">Strumento Selezione</translation>
 <translation id="3471687177769494956">Modifica scorciatoia di navigazione</translation>
-<translation id="3471876058939596279">Non è possibile usare contemporaneamente le porte HDMI e USB Type-C per i video. Usa una porta video diversa.</translation>
 <translation id="3472469028191701821">Si apre in una nuova scheda</translation>
 <translation id="3473241910002674503">Torna alla schermata Home, vai indietro e cambia app usando i pulsanti in modalità tablet.</translation>
 <translation id="3473479545200714844">Ingrandimento dello schermo</translation>
@@ -3824,7 +3812,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3608730769702025110">Passaggio 3 di 4: esamina le informazioni che consentono l'identificazione personale</translation>
 <translation id="3609277884604412258">Ricerca rapida</translation>
 <translation id="3610241585790874201">Non autorizzati a salvare dati sul dispositivo</translation>
-<translation id="3610369246614755442">Assistenza necessaria per la ventola del dock</translation>
 <translation id="3610961622607302617">Modifica password per <ph name="WEBSITE" /></translation>
 <translation id="3611634011145829814">Vai alla pagina dell'abbonamento</translation>
 <translation id="3611658447322220736">I siti chiusi di recente possono terminare l'invio e la ricezione di dati</translation>
@@ -3852,7 +3839,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3624567683873126087">Sblocca il dispositivo e accedi all'Account Google</translation>
 <translation id="3624583033347146597">Scegli le preferenze relative ai cookie di terze parti</translation>
 <translation id="3625481642044239431">File non valido selezionato. Riprova.</translation>
-<translation id="3626296069957678981">Per ricaricare questo Chromebook devi usare una batteria Dell compatibile.</translation>
 <translation id="3627320433825461852">Meno di un minuto rimanente</translation>
 <translation id="3627588569887975815">Apri link in finestra di navigazione in inco&amp;gnito</translation>
 <translation id="3627671146180677314">Data di rinnovo certificato Netscape</translation>
@@ -3946,7 +3932,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3688794912214798596">Cambia lingue…</translation>
 <translation id="3690369331356918524">Ricevi un avviso se le password sono esposte a violazione dei dati</translation>
 <translation id="3691231116639905343">App per tastiera</translation>
-<translation id="3693415264595406141">Password:</translation>
 <translation id="3694027410380121301">Seleziona scheda precedente</translation>
 <translation id="3694122362646626770">Siti web</translation>
 <translation id="3694590407685276748">Evidenzia il cursore di testo</translation>
@@ -5156,7 +5141,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4513072860957814107">Elimina dati di navigazione…</translation>
 <translation id="4513872120116766993">Scrittura predittiva</translation>
 <translation id="4513946894732546136">Feedback</translation>
-<translation id="4515872537870654449">Per assistenza, contatta Dell. Il dock si spegne se la ventola non funziona.</translation>
 <translation id="4515942088136451195">La tua organizzazione limita ciò che puoi salvare</translation>
 <translation id="4516395361210407049">I pulsanti della barra degli strumenti sono stati reimpostati</translation>
 <translation id="4519331665958994620">I siti possono richiedere l'autorizzazione per utilizzare la videocamera</translation>
@@ -7178,7 +7162,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5939723110967488589">Scegli i pulsanti da mostrare nella barra degli strumenti</translation>
 <translation id="594048410531370124">Tasto non riconosciuto. Premi un tasto qualsiasi per <ph name="RESPONSE" />.</translation>
 <translation id="5941153596444580863">Aggiungi persona...</translation>
-<translation id="5941343993301164315">Accedi a <ph name="TOKEN_NAME" />.</translation>
 <translation id="5941711191222866238">Riduci a icona</translation>
 <translation id="5941854976565320351">{PASSWORD_COUNT,plural, =1{1 password è salvata solo su questo dispositivo. Per usarla sugli altri dispositivi, salvala nel tuo Account Google.}other{{PASSWORD_COUNT} password sono salvate solo su questo dispositivo. Per usarle sugli altri dispositivi, salvale nel tuo Account Google.}}</translation>
 <translation id="594221546068848596">Pagina di ricerca con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
@@ -8407,7 +8390,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="680488281839478944">Deve esistere la VM "<ph name="DEFAULT_VM_NAME" />"</translation>
 <translation id="6805236548654699520">Rimuovi i popup indesiderati, risolvi i problemi di rete e altro ancora ripristinando le impostazioni predefinite sicure.</translation>
 <translation id="6805478749741295868">Si tratta di una funzionalità di AI che non funzionerà sempre in modo corretto.</translation>
-<translation id="6805647936811177813">Accedi a <ph name="TOKEN_NAME" /> per importare il certificato client da <ph name="HOST_NAME" />.</translation>
 <translation id="6805817411033102703">Feedback sui gruppi di schede condivisi</translation>
 <translation id="6806089545527108739">Non consentire, ma chiedi in seguito</translation>
 <translation id="6806781719264274042">Solo i tuoi contatti con un Account Google. <ph name="LINK_BEGIN" />Visualizza contatti<ph name="LINK_END" /></translation>
@@ -8611,7 +8593,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6938606182859551396">Per ricevere notifiche del telefono sul tuo <ph name="DEVICE_TYPE" />, segui le istruzioni sul telefono per garantire l'accesso delle notifiche a Google Play Services.</translation>
 <translation id="6941514251635934269">Chiedi informazioni su questo documento</translation>
 <translation id="694168622559714949">L'amministratore ha impostato una lingua predefinita che non può essere modificata.</translation>
-<translation id="6941937518557314510">Accedi a <ph name="TOKEN_NAME" /> per autenticarti su <ph name="HOST_NAME" /> con il tuo certificato.</translation>
 <translation id="6943060957016121200">Abilita tethering istantaneo</translation>
 <translation id="6943939122536910181">Disconnesso da <ph name="DEVICE" /></translation>
 <translation id="6944750221184785444">Impossibile installare questo profilo. Per assistenza tecnica, contatta il tuo operatore.</translation>
@@ -9028,7 +9009,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7239108166256782787"><ph name="DEVICE_NAME" /> ha annullato il trasferimento</translation>
 <translation id="7239401402533584029">Ti aiuta a scrivere qualsiasi cosa sul web con un tocco di eleganza in più o con ispirazione creativa</translation>
 <translation id="7240339475467890413">Eseguire la connessione al nuovo hotspot?</translation>
-<translation id="7241389281993241388">Accedi a <ph name="TOKEN_NAME" /> per importare il certificato client.</translation>
 <translation id="7241763419756062043">Scegli la qualità di navigazione e ricerca</translation>
 <translation id="7243092385765551741">Vuoi eliminare la passkey?</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (opzione migliore)</translation>
@@ -9836,6 +9816,7 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7784067724422331729">Le impostazioni di sicurezza del computer hanno bloccato questo file.</translation>
 <translation id="7784796923038949829">Impossibile leggere i dati del sito o modificarli</translation>
 <translation id="778480864305029524">Per usare il tethering istantaneo devi attivare le notifiche di Google Play Services.</translation>
+<translation id="7784875615510899699">Non disponi di licenze sufficienti per registrare questo dispositivo Google Beam. Contatta il tuo rivenditore per acquistarne altre. Se ritieni di aver ricevuto questo messaggio per errore, contatta il tuo rivenditore.</translation>
 <translation id="77855763949601045">&amp;Apri profilo ospite</translation>
 <translation id="7786663536153819505">Segui le istruzioni sullo smartphone per scansionare il codice QR. Assicurati che il Bluetooth dello smartphone sia attivo.
     <ph name="BR" />
@@ -10675,7 +10656,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8350789879725387295">Strumenti stilo nel dock</translation>
 <translation id="8351316842353540018">Mostrare sempre le impostazioni di accessibilità</translation>
 <translation id="8351419472474436977">Questa estensione ha assunto il controllo delle tue impostazioni proxy, il che significa che può cambiare, interrompere o spiare tutto ciò che fai online. Se non sei sicuro del motivo per cui si sia verificato questo cambiamento, è probabile che sia indesiderato.</translation>
-<translation id="8351630282875799764">La batteria non si ricarica</translation>
 <translation id="8352287103893778223">Titolo del gruppo di schede</translation>
 <translation id="835238322900896202">Si è verificato un errore durante la disinstallazione. Esegui la disinstallazione tramite il terminale.</translation>
 <translation id="8353420862507374944">Trasmetti, salva e condividi</translation>
@@ -11138,7 +11118,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8676313779986170923">Grazie per avere inviato il feedback.</translation>
 <translation id="8676374126336081632">Cancella testo inserito</translation>
 <translation id="8676730726685223115">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> (1 scheda)}other{<ph name="GROUP_TITLE" /> (# schede)}}</translation>
-<translation id="8676770494376880701">Caricabatterie a basso consumo collegato</translation>
 <translation id="8676985325915861058">Ignora e configura un nuovo profilo</translation>
 <translation id="8677212948402625567">Comprimi tutto...</translation>
 <translation id="8678192320753081984">Offre la più efficace misura di sicurezza di Google per gli account alle persone a rischio di attacchi mirati</translation>

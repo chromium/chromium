@@ -165,11 +165,6 @@
 <translation id="2588271083332682494">Usporiadajte si karty pomocou skupín</translation>
 <translation id="2597457036804169544">Nepoužívať tmavý motív na weboch</translation>
 <translation id="2606760465469169465">Automatické overenie</translation>
-<translation id="2610903128639500624">Spravujte v <ph name="BEGIN_LINK1" />nastaveniach Androidu<ph name="END_LINK1" />
-
-Rozšírená ochrana ovláda tieto nastavenia Chromu:
-• Nastavenie Vždy používať zabezpečené pripojenia je zapnuté.
-• Optimalizátor JavaScriptu je vypnutý. <ph name="BEGIN_LINK2" />Spravovať výnimky webov<ph name="END_LINK2" /></translation>
 <translation id="2621115761605608342">Povoliť JavaScript na konkrétnom webe.</translation>
 <translation id="2626708220538466178">Dolný hárok predvoleného prehliadača je zavretý</translation>
 <translation id="2653659639078652383">Odoslať</translation>
@@ -487,6 +482,7 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="5922853908706496913">Zdieľate obrazovku</translation>
 <translation id="5922967540311291836">Blokovať súbory cookie tretích strán:</translation>
 <translation id="5923512600150154850">Týmto odstránite <ph name="DATASIZE" /> dát a súborov cookie uložených webmi.</translation>
+<translation id="5930707844513754220">Zobraziť viac v zozname nastavení</translation>
 <translation id="5939518447894949180">Resetovať</translation>
 <translation id="5948139900367969951">Rýchlo prejdite na obsah, na ktorom vám záleží</translation>
 <translation id="5964247741333118902">Vložený obsah</translation>
@@ -495,6 +491,7 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
 <translation id="5998071268779572583">Zapnúť feed Objaviť</translation>
 <translation id="6012967556075291653">Pripnutý odkaz</translation>
+<translation id="6013003831291591200">Úloha je dokončená</translation>
 <translation id="6015775454662021376">Ovládajte prístup tohto webu do vášho zariadenia</translation>
 <translation id="6022659036123304283">Upravte si Chrome podľa seba</translation>
 <translation id="6040143037577758943">Zavrieť</translation>

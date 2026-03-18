@@ -225,7 +225,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1340482604681802745">Adresa vyzvednutí</translation>
 <translation id="1343356790768851700">Tento web určuje, co se vám líbí, a pak navrhuje reklamy jiným webům</translation>
 <translation id="1343830902827845050">Přihlášení do Chromu</translation>
-<translation id="1346748346194534595">Doprava</translation>
+<translation id="1346748346194534595">Vpravo</translation>
 <translation id="1348779747280417563">Potvrdit jméno</translation>
 <translation id="1355158069018170842">Zobrazovat na kartách poklesy cen</translation>
 <translation id="1355301061807280185">Práce</translation>
@@ -309,7 +309,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1462951478840426066">Použít písma nainstalovaná v počítači, abyste mohli vytvářet obsah ve vysoké kvalitě</translation>
 <translation id="1463793142714244641">Nemovitosti pro trávení dovolené</translation>
 <translation id="1465457928007067810">Číslo IBAN bylo uloženo do vašeho účtu Google</translation>
-<translation id="1467432559032391204">Doleva</translation>
+<translation id="1467432559032391204">Vlevo</translation>
 <translation id="1468653229182955856">Váš kód pro <ph name="EMBEDDED_ORIGIN" /> k pokračování na <ph name="TOP_ORIGIN" /> je <ph name="ONE_TIME_CODE" /></translation>
 <translation id="1472675084647422956">Zobrazit více</translation>
 <translation id="1473183651233018052">JIS B10</translation>
@@ -754,6 +754,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2184405333245229118">{COUNT,plural, =1{1 adresa}few{# adresy}many{# adresy}other{# adres}}</translation>
 <translation id="2188375229972301266">Několik děr dole</translation>
 <translation id="218940509700321686">Hodnoty oddělené čárkami</translation>
+<translation id="2190094353033916816">Toto nastavení zásad má na úrovni počítače a na úrovni uživatele různou hodnotu. Toto nastavení zásad funguje správně.</translation>
 <translation id="2191980191135734720">V dalším kroku odemkněte obrazovku, obvykle otiskem prstu. Nebo můžete <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Co je třeba zvážit</translation>
 <translation id="2198183835992354675">Číslo prověřeného cestujícího (Known Traveler Number)</translation>
@@ -3189,6 +3190,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6042308850641462728">Více</translation>
 <translation id="6043357981274314628">Hotovo.</translation>
 <translation id="6045164183059402045">Šablona zavedení</translation>
+<translation id="6046026831939367176">Web <ph name="URL" /> chce používat vaši přibližnou polohu</translation>
 <translation id="6046892054959167494">K vyhledávání zadejte <ph name="SEARCH_AGGREGATOR_KEYWORD" /> nebo se zeptejte <ph name="SEARCH_AGGREGATOR_SHORT_NAME" /></translation>
 <translation id="6047927260846328439">Tento obsah by se vás podvodem mohl pokusit přimět k instalaci softwaru nebo odhalení osobních údajů. <ph name="BEGIN_LINK" />Přesto zobrazit<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">Obálka B4</translation>
@@ -4986,6 +4988,7 @@ Další podrobnosti:
 <translation id="8870700989640064057">Vytisknout důvěrný soubor?</translation>
 <translation id="8871485335898060555">Starožitnosti a sběratelské předměty</translation>
 <translation id="8871553383647848643">Přizpůsobte si vzhled prohlížeče</translation>
+<translation id="887350038812854047">Toto nastavení zásad má na úrovni počítače i na úrovni uživatele stejnou hodnotu. Toto nastavení zásad funguje správně.</translation>
 <translation id="8874790741333031443">Zkuste dočasně povolit soubory cookie třetích stran – budete při procházení méně chráněni, ale funkce webu budou s větší pravděpodobností fungovat správně.</translation>
 <translation id="8874824191258364635">Zadejte platné číslo karty</translation>
 <translation id="8877780815363510165">Rybaření</translation>

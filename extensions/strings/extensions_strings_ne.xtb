@@ -25,6 +25,7 @@
 <translation id="3115238746683532089">बिक्रेता <ph name="VENDOR_ID" /> (क्रम नम्बर <ph name="SERIAL_NUMBER" /> ) बाट अज्ञात उत्पादन <ph name="PRODUCT_ID" /></translation>
 <translation id="3144135466825225871">crx फाइललाई प्रतिस्थापन गर्न असफल भयो। फाइल प्रयोगमा भए नभएको हेर्न जाँच गर्नुहोस्।</translation>
 <translation id="3163201441334626963">बिक्रेता <ph name="VENDOR_ID" /> बाट अज्ञात उत्पादन <ph name="PRODUCT_ID" /></translation>
+<translation id="3174723475300476613">तपाईंको सङ्गठनले यो एक्स्टेन्सन एक्सेस गर्न रोक लगाएको छ।</translation>
 <translation id="3242289508736283383">'kiosk_only' म्यानिफेस्ट विशेषता भएको एप अनिवार्य रूपमा ChromeOS को किअस्क मोडमा इन्स्टल गर्नु पर्छ</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (क्रम नम्बर <ph name="SERIAL_NUMBER" /> )</translation>
 <translation id="3466070586188012397">बिक्रेता <ph name="VENDOR_ID" /> (क्रम नम्बर <ph name="SERIAL_NUMBER" /> ) बाट <ph name="PRODUCT_NAME" /></translation>
@@ -32,6 +33,7 @@
 <translation id="3834775135533257713">"<ph name="INSTALLED_APP_NAME" />" सँग नमिल्दो भएको हुनाले एप "<ph name="TO_INSTALL_APP_NAME" />" लाई थप्न सकिएन।</translation>
 <translation id="388442998277590542">विकल्पहरूको पृष्ठ '<ph name="OPTIONS_PAGE" />' लोड गर्न सकिएन।</translation>
 <translation id="3984413272403535372">विस्तार साइनइन गर्दा त्रुटि भयो।</translation>
+<translation id="4094452115117798451">तपाईंको सङ्गठनले एक्स्टेन्सनको यो कोटी एक्सेस गर्न रोक लगाएको छ।</translation>
 <translation id="4233778200880751280">पृष्ठ बारे '<ph name="ABOUT_PAGE" />'लाई लोड गर्न सकिएन।</translation>
 <translation id="424963718355121712">एपहरू अनिवार्य रूपमा तिनले प्रभाव पार्ने होस्टबाट सञ्चालित हुनु पर्छ</translation>
 <translation id="4306119971288449206">एपहरू अनिवार्य रूपमा "<ph name="CONTENT_TYPE" />" नामक सामग्रीको प्रकारबाट सञ्चालित हुनु पर्छ</translation>

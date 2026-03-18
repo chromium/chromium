@@ -25,6 +25,7 @@
 <translation id="3115238746683532089"><ph name="VENDOR_ID" /> വെൻഡറിൽ നിന്നുള്ള അജ്ഞാത ഉൽപ്പന്നം <ph name="PRODUCT_ID" /> (സീരിയൽ നമ്പർ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">crx ഫയലിന് പകരം ചേർക്കുന്നത് പരാജയപ്പെട്ടു. ഈ ഫയൽ ഉപയോഗത്തിലാണോ എന്ന് പരിശോധിക്കുക.</translation>
 <translation id="3163201441334626963"><ph name="VENDOR_ID" /> വെൻഡറിൽ നിന്നുള്ള അജ്ഞാത ഉൽപ്പന്നം <ph name="PRODUCT_ID" /></translation>
+<translation id="3174723475300476613">ഈ വിപുലീകരണത്തിലേക്കുള്ള ആക്സസ് നിങ്ങളുടെ സ്ഥാപനം ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു.</translation>
 <translation id="3242289508736283383">ChromeOS കിയോസ്‌ക് മോഡിൽ, 'kiosk_only' മാനിഫെസ്റ്റ് ആട്രിബ്യൂട്ട് ഉള്ള ആപ്പ് ഇൻസ്റ്റാൾ ചെയ്യണം</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (സീരിയൽ നമ്പർ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="VENDOR_ID" /> വെൻഡറിൽ നിന്നുള്ള <ph name="PRODUCT_NAME" /> (സീരിയൽ നമ്പർ <ph name="SERIAL_NUMBER" />)</translation>
@@ -32,6 +33,7 @@
 <translation id="3834775135533257713">"<ph name="INSTALLED_APP_NAME" />" ആപ്പുമായി യോജിക്കാത്തതിനാൽ "<ph name="TO_INSTALL_APP_NAME" />" ആപ്പ് ചേർക്കാനായില്ല.</translation>
 <translation id="388442998277590542">ഓപ്ഷനുകളുടെ പേജ് '<ph name="OPTIONS_PAGE" />' ലോഡ് ചെയ്യാനായില്ല.</translation>
 <translation id="3984413272403535372">വിപുലീകരണം സൈന്‍‌ ചെയ്യുന്നസമയത്ത് പിശക്.</translation>
+<translation id="4094452115117798451">ഈ വിപുലീകരണ വിഭാഗത്തിലേക്കുള്ള ആക്‌സസ് നിങ്ങളുടെ സ്ഥാപനം ബ്ലോക്ക് ചെയ്‌തിരിക്കുന്നു.</translation>
 <translation id="4233778200880751280">'<ph name="ABOUT_PAGE" />' എന്ന ആമുഖം പേജ് ലോഡ് ചെയ്യാൻ കഴിഞ്ഞില്ല.</translation>
 <translation id="424963718355121712">ആപ്പുകൾ, അവ ബാധിക്കുന്ന ഹോസ്റ്റിൽ നിന്നും നൽകേണ്ടതുണ്ട്</translation>
 <translation id="4306119971288449206">"<ph name="CONTENT_TYPE" />" എന്ന ഉള്ളടക്ക തരത്തിനൊപ്പം ആപ്പുകൾ നൽകേണ്ടതുണ്ട്</translation>

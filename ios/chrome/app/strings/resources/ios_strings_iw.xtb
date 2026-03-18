@@ -394,6 +394,7 @@
 <translation id="2360196772093551345">בקשת אתר לנייד</translation>
 <translation id="2362083820973145409">נכנסת לחשבון בתור <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. ההגדרות ייפתחו.</translation>
 <translation id="2371084566192454134">כרטיסיות וקבוצות של כרטיסיות</translation>
+<translation id="2371303771137626249">חדש</translation>
 <translation id="2381405137052800939">הגדרות בסיסיות</translation>
 <translation id="2384692388811649784">הסתרת הכרטיסיות הפרטיות</translation>
 <translation id="2386793615875593361">נבחרה תמונה אחת</translation>
@@ -636,6 +637,7 @@
 <translation id="3324193307694657476">כתובת, שורה 2</translation>
 <translation id="3328801116991980348">פרטי אתר</translation>
 <translation id="333229797575847124">איך מפעילים את התכונה הזו</translation>
+<translation id="334004756946755423">תסביר לי את זה:</translation>
 <translation id="3344233834747405775">השם של בעל הכרטיס לא תקין</translation>
 <translation id="3344485292736684439">{count,plural, =1{הסימנייה נשמרה בתיקייה ’{title}‘ בחשבון שלך, {email}}one{הסימניות נשמרו בתיקייה ’{title}‘ בחשבון שלך, {email}}two{הסימניות נשמרו בתיקייה ’{title}‘ בחשבון שלך, {email}}other{הסימניות נשמרו בתיקייה ’{title}‘ בחשבון שלך, {email}}}</translation>
 <translation id="334690320928261823">כרטיסיות אחרונות</translation>
@@ -689,6 +691,7 @@
 <translation id="3530206579861815432">איתור מהיר של כרטיסיות פתוחות וכאלה שנסגרו לאחרונה בכל המכשירים המסונכרנים.</translation>
 <translation id="3530767473765895035">ניהול החשבונות במכשיר הזה…</translation>
 <translation id="3533436815740441613">כרטיסייה חדשה</translation>
+<translation id="3534738261102690620">‏יש לך שאלה ל-Gemini?</translation>
 <translation id="3540141921715814660">הוספה לסימניות</translation>
 <translation id="3546122170015471515">‏הפצה מקדימה של "מפות" ב-Google.com</translation>
 <translation id="3547356470684043247">כדאי לקרוא הערכות של לקוחות לגבי מוצרים, שירותים או חוויית השימוש. על סמך ביקורות כאלה ניתן לקבל החלטות מושכלות יותר</translation>
@@ -1088,6 +1091,7 @@
 <translation id="4944543191714094452">חיפוש בדף…</translation>
 <translation id="4945756290001680296">גישה להגדרות הסיסמה</translation>
 <translation id="4949302115427722371">ניהול ההגדרות…</translation>
+<translation id="4952050521954075618">תמונות מזיכרון המצלמה לא יסונכרנו בין המכשירים</translation>
 <translation id="4958444002117714549">הרחבת רשימה</translation>
 <translation id="496392417432935267">ההגדרה פתוחה במקום אחר</translation>
 <translation id="4970724460420203313">‏שימוש ב-Chrome באמצעות החשבון המנוהל עוזרת לך להפריד בין נתוני הגלישה הקשורים לארגון שלך (כולל כרטיסיות, היסטוריה וסיסמאות) לבין שאר נתוני הגלישה.</translation>
@@ -1287,6 +1291,7 @@
 <translation id="5647702255748985085">רוצה לצאת מהקבוצה?</translation>
 <translation id="5648166631817621825">מהשבוע האחרון</translation>
 <translation id="5652623411397330904">המוצרים שבמעקב יופיעו כאן.</translation>
+<translation id="5653100054596780862">כל הכרטיסיות</translation>
 <translation id="5656431592348714536">יומן משודרג</translation>
 <translation id="5659593005791499971">אימייל</translation>
 <translation id="5665739277590037307">‏בכפוף ל<ph name="GOOGLE_TERMS" /> ול<ph name="GEMINI_APPS_PRIVACY" />. ‫Gemini עלול לטעות, אז כדאי לבדוק היטב את התשובות שלו.</translation>
@@ -1719,6 +1724,7 @@
 <translation id="7149893636342594995">מהיום האחרון</translation>
 <translation id="7154417656353909837">הסרת הכתובות</translation>
 <translation id="7161230316646448869">סנכרון הסימניות, ההיסטוריה ונתונים נוספים בכל המכשירים</translation>
+<translation id="7165323152084385463">מספר זיהוי הרכב</translation>
 <translation id="7173114856073700355">פתיחת ההגדרות</translation>
 <translation id="7173721738069475737">{count,plural, =1{הסימנייה נשמרה}one{‫{count} סימניות נשמרו}two{‫{count} סימניות נשמרו}other{‫{count} סימניות נשמרו}}</translation>
 <translation id="7176183551031110427">התרחקות</translation>
@@ -1752,6 +1758,7 @@
 <translation id="7300448350764260141">מוסיפים שכבה נוספת של הגנה מפני איומים באינטרנט.</translation>
 <translation id="7311244614769792472">לא נמצאו תוצאות</translation>
 <translation id="7313347584264171202">הכרטיסיות במצב אנונימי זמינות כאן</translation>
+<translation id="7322186060879266048">{count,plural, =1{אפשרות אחת ({count}) למילוי אוטומטי זמינה מעל המקלדת.}one{‫{count} אפשרויות למילוי אוטומטי זמינות מעל המקלדת.}two{‫{count} אפשרויות למילוי אוטומטי זמינות מעל המקלדת.}other{‫{count} אפשרויות למילוי אוטומטי זמינות מעל המקלדת.}}</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241">הושלמה הורדה של <ph name="PERCENT" /> אחוז</translation>
 <translation id="7345061034321640811">הייבוא אסור</translation>

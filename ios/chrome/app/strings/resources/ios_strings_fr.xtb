@@ -394,6 +394,7 @@
 <translation id="2360196772093551345">Voir le site mobile</translation>
 <translation id="2362083820973145409">Connecté en tant que <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Ouvre les paramètres.</translation>
 <translation id="2371084566192454134">Onglets et groupes d'onglets</translation>
+<translation id="2371303771137626249">Nouveau</translation>
 <translation id="2381405137052800939">Paramètres de base</translation>
 <translation id="2384692388811649784">Masquer les onglets de navigation privée</translation>
 <translation id="2386793615875593361">1 photo sélectionnée</translation>
@@ -690,6 +691,7 @@
 <translation id="3530206579861815432">Retrouvez rapidement les onglets ouverts et fermés récemment sur vos appareils synchronisés.</translation>
 <translation id="3530767473765895035">Gérer les comptes sur cet appareil…</translation>
 <translation id="3533436815740441613">Nouvel onglet</translation>
+<translation id="3534738261102690620">Demander à Gemini</translation>
 <translation id="3540141921715814660">Ajouter aux favoris</translation>
 <translation id="3546122170015471515">Maps Preview sur Google.com</translation>
 <translation id="3547356470684043247">Lire les évaluations des clients sur les produits, services ou expériences pour prendre des décisions éclairées</translation>
@@ -1089,6 +1091,7 @@
 <translation id="4944543191714094452">Rechercher sur la page…</translation>
 <translation id="4945756290001680296">Accéder aux paramètres des mots de passe</translation>
 <translation id="4949302115427722371">Gérer les réglages…</translation>
+<translation id="4952050521954075618">Les photos de la pellicule ne seront pas synchronisées sur vos appareils</translation>
 <translation id="4958444002117714549">Développer la liste</translation>
 <translation id="496392417432935267">Ouvert ailleurs</translation>
 <translation id="4970724460420203313">En utilisant Chrome avec votre compte géré, vous pouvez séparer la navigation liée à votre organisation (onglets, historique et mots de passe, par exemple) de votre autre navigation</translation>
@@ -1288,6 +1291,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="5647702255748985085">Quitter le groupe ?</translation>
 <translation id="5648166631817621825">7 derniers jours</translation>
 <translation id="5652623411397330904">Les produits que vous suivez s'afficheront ici.</translation>
+<translation id="5653100054596780862">Tous les onglets</translation>
 <translation id="5656431592348714536">Agenda amélioré</translation>
 <translation id="5659593005791499971">E-mail</translation>
 <translation id="5665739277590037307">Les <ph name="GOOGLE_TERMS" /> et l‘<ph name="GEMINI_APPS_PRIVACY" /> s'appliquent. Vérifiez les réponses de Gemini, car il peut se tromper.</translation>
@@ -1720,6 +1724,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="7149893636342594995">Dernières 24 heures</translation>
 <translation id="7154417656353909837">Supprimer les adresses</translation>
 <translation id="7161230316646448869">Synchronisez vos favoris, votre historique et plus encore sur tous les appareils</translation>
+<translation id="7165323152084385463">VIN</translation>
 <translation id="7173114856073700355">Paramètres</translation>
 <translation id="7173721738069475737">{count,plural, =1{Favori enregistré}one{{count} favori enregistré}other{{count} favoris enregistrés}}</translation>
 <translation id="7176183551031110427">Faire un zoom arrière</translation>
@@ -1753,6 +1758,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="7300448350764260141">Ajoutez un niveau de sécurité supplémentaire contre les menaces en ligne.</translation>
 <translation id="7311244614769792472">Aucun résultat trouvé</translation>
 <translation id="7313347584264171202">Les onglets de navigation privée s'afficheront ici</translation>
+<translation id="7322186060879266048">{count,plural, =1{{count} option de saisie automatique disponible au-dessus de votre clavier.}one{{count} option de saisie automatique disponible au-dessus de votre clavier.}other{{count} options de saisie automatique disponibles au-dessus de votre clavier.}}</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> % téléchargés</translation>
 <translation id="7345061034321640811">Importation non autorisée</translation>

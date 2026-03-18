@@ -394,6 +394,7 @@
 <translation id="2360196772093551345">Solicitar sitio para dispositivos móviles</translation>
 <translation id="2362083820973145409">Accediste como <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Abre la configuración.</translation>
 <translation id="2371084566192454134">Pestañas y grupos de pestañas</translation>
+<translation id="2371303771137626249">Nuevo</translation>
 <translation id="2381405137052800939">Opciones básicas</translation>
 <translation id="2384692388811649784">Ocultar pestañas de incógnito</translation>
 <translation id="2386793615875593361">1 foto seleccionada</translation>
@@ -690,6 +691,7 @@
 <translation id="3530206579861815432">Encuentra rápidamente las pestañas que abriste y cerraste recientemente en tus dispositivos sincronizados.</translation>
 <translation id="3530767473765895035">Administrar cuentas en este dispositivo…</translation>
 <translation id="3533436815740441613">Nueva pestaña</translation>
+<translation id="3534738261102690620">Preguntarle a Gemini</translation>
 <translation id="3540141921715814660">Agregar a Favoritos</translation>
 <translation id="3546122170015471515">Versiones preliminares de Maps en Google.com</translation>
 <translation id="3547356470684043247">Leer evaluaciones de los clientes sobre productos, servicios o experiencias para tomar decisiones fundamentadas</translation>
@@ -1089,6 +1091,7 @@
 <translation id="4944543191714094452">Buscar en la página…</translation>
 <translation id="4945756290001680296">Accede a la configuración de contraseñas</translation>
 <translation id="4949302115427722371">Administrar configuración…</translation>
+<translation id="4952050521954075618">Las fotos de la galería no se sincronizarán en tus dispositivos</translation>
 <translation id="4958444002117714549">Mostrar lista</translation>
 <translation id="496392417432935267">Se abrió en otra ventana</translation>
 <translation id="4970724460420203313">Usar Chrome con tu cuenta administrada te ayuda a mantener la navegación relacionada con tu organización (incluidas las pestañas, el historial y las contraseñas) separada de la que realizas en otras plataformas</translation>
@@ -1288,6 +1291,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="5647702255748985085">¿Quieres abandonar el grupo?</translation>
 <translation id="5648166631817621825">Últimos 7 días</translation>
 <translation id="5652623411397330904">Aquí se muestran los productos que sigues.</translation>
+<translation id="5653100054596780862">Todas las pestañas</translation>
 <translation id="5656431592348714536">Calendario mejorado</translation>
 <translation id="5659593005791499971">Correo</translation>
 <translation id="5665739277590037307">Se aplican las <ph name="GOOGLE_TERMS" /> y el <ph name="GEMINI_APPS_PRIVACY" />. Gemini puede cometer errores, así que verifica las respuestas.</translation>
@@ -1753,6 +1757,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="7300448350764260141">Agrega una capa adicional de protección contra las amenazas en línea.</translation>
 <translation id="7311244614769792472">No se encontraron resultados</translation>
 <translation id="7313347584264171202">Aquí encontrarás tus pestañas de incógnito</translation>
+<translation id="7322186060879266048">{count,plural, =1{Hay {count} opción de autocompletar disponible arriba del teclado.}other{Hay {count} opciones de autocompletar disponibles arriba del teclado.}}</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> % descargado</translation>
 <translation id="7345061034321640811">No se permite la importación</translation>

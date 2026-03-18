@@ -196,6 +196,7 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 <translation id="3045032126857188731">Bahasa terjemahan: <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">Tutup dialog maklum balas</translation>
 <translation id="3068187312562070417">Profil Chromium lain</translation>
+<translation id="3068290154869370196">Sambungan ialah alat tambah yang membolehkan anda menyesuaikan Chromium. Daripada kekal teratur kepada memudahkan tugasan harian, sambungan memberi Chromium anda sentuhan tersendiri.</translation>
 <translation id="3068515742935458733">Bantu jadikan Chromium lebih baik dengan menghantar laporan ranap dan <ph name="UMA_LINK" /> kepada Google.</translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{1 peranti USB telah diakses oleh satu atau beberapa sambungan Chromium}=1{1 peranti USB sedang diakses oleh satu atau beberapa sambungan Chromium}other{# peranti USB sedang diakses oleh satu atau beberapa sambungan Chromium}}</translation>
 <translation id="3095811995836568724">Sejarah Chromium</translation>

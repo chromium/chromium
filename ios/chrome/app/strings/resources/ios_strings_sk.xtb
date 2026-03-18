@@ -637,6 +637,7 @@
 <translation id="3324193307694657476">Adresa 2</translation>
 <translation id="3328801116991980348">Informácie o stránkach</translation>
 <translation id="333229797575847124">Ako aktivovať túto funkciu</translation>
+<translation id="334004756946755423">Vysvetli mi:</translation>
 <translation id="3344233834747405775">Neplatné meno majiteľa karty</translation>
 <translation id="3344485292736684439">{count,plural, =1{Záložka bola uložená do priečinka {title} vo vašom účte {email}}few{Záložky boli uložené do priečinka {title} vo vašom účte {email}}many{Bookmarks saved to "{title}" in your account, {email}}other{Záložky boli uložené do priečinka {title} vo vašom účte {email}}}</translation>
 <translation id="334690320928261823">Nedávne karty</translation>
@@ -1723,6 +1724,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="7149893636342594995">Posledných 24 hodín</translation>
 <translation id="7154417656353909837">Odstrániť adresy</translation>
 <translation id="7161230316646448869">Synchronizujte svoje záložky, históriu a ďalšie údaje vo všetkých zariadeniach</translation>
+<translation id="7165323152084385463">VIN</translation>
 <translation id="7173114856073700355">Otvoriť Nastavenia</translation>
 <translation id="7173721738069475737">{count,plural, =1{Záložka bola uložená}few{{count} záložky boli uložené}many{{count} bookmarks saved}other{{count} záložiek bolo uložených}}</translation>
 <translation id="7176183551031110427">Oddialiť</translation>

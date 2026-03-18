@@ -245,7 +245,6 @@
 <translation id="1159879754517035595">ایکسٹینش کی ترتیبات کا نظم کریں</translation>
 <translation id="1160800016654917722">ونڈو نیچے اور بائیں طرف منتقل ہو گئی</translation>
 <translation id="1161190590171867633">‏موازنہ ٹیبلز آپ کے Google اکاؤنٹ میں محفوظ ہیں</translation>
-<translation id="1161575384898972166">براہ کرم کلائنٹ سرٹیفکیٹ برآمد کرنے کیلئے <ph name="TOKEN_NAME" /> میں سائن ان کریں۔</translation>
 <translation id="116173250649946226">آپ کے منتظم نے ایک ایسی ڈیفالٹ تھیم سیٹ کی ہے جسے تبدیل نہیں کیا جا سکتا۔</translation>
 <translation id="1162213688509394031">ٹائٹل بار چھپائیں</translation>
 <translation id="1162479191445552288">شروعات میں لانچ کریں</translation>
@@ -488,7 +487,6 @@
 <translation id="1316136264406804862">تلاش ہو رہی ہے…</translation>
 <translation id="1316248800168909509"><ph name="DEVICE" /> سے منسلک نہیں کیا جا سکا۔ دوبارہ کوشش کریں۔</translation>
 <translation id="1316495628809031177">مطابقت پذیری موقوف ہے</translation>
-<translation id="1317637799698924700">‏آپ کا ڈاکنگ اسٹیشن USB ٹائپ سی موافق موڈ میں آپریٹ کرے گا۔</translation>
 <translation id="1319983966058170660"><ph name="SUBPAGE_TITLE" /> ذیلی صفحے کا پیچھے جانے کا بٹن</translation>
 <translation id="1322046419516468189">اپنے <ph name="SAVED_PASSWORDS_STORE" /> میں محفوظ کردہ پاسورڈز دیکھیں اور ان کا نظم کریں</translation>
 <translation id="1323433172918577554">مزید دکھائیں</translation>
@@ -991,7 +989,6 @@
 <translation id="1657406563541664238">‏Google کو استعمال کے اعداد و شمار اور کریش رپورٹس خودکار طور پر بھیج کر <ph name="PRODUCT_NAME" /> کو بہتر بنانے میں مدد کریں</translation>
 <translation id="1657937299377480641">تعلیمی وسائل تک رسائی کے لئے دوبارہ سائن ان کرنے کے لئے، والدین سے کہیں کہ آپ کو اجازت دیں</translation>
 <translation id="1658424621194652532">یہ صفحہ آپ کے مائیکروفون تک رسائی حاصل کر رہا ہے۔</translation>
-<translation id="1660763353352708040">پاور ایڈاپٹر کا مسئلہ</translation>
 <translation id="1661996889489595105">{NUM_TABS,plural, =1{آپ کے براؤزر کی رفتار کو کم کرنے والے ٹیب کو ٹھیک کریں}other{آپ کے براؤزر کی رفتار کو کم کرنے والے ٹیبز کو ٹھیک کریں}}</translation>
 <translation id="16620462294541761">معذرت، آپ کے پاس ورڈ کی توثیق نہیں کی جا سکی۔ براہ کرم دوبارہ کوشش کریں۔</translation>
 <translation id="1662572015199460525">براؤز کرتے وقت جوابات، اہم نکات اور مزید حاصل کرنے کے لیے آواز یا ٹیکسٹ کے ساتھ چیٹ کریں</translation>
@@ -1119,10 +1116,9 @@
 <translation id="1751335846119670066">پڑھنے میں میری مدد کریں</translation>
 <translation id="17513872634828108">کھلے ٹیبز</translation>
 <translation id="175196451752279553">بند ٹیب کو &amp;دوبارہ کھولیں</translation>
-<translation id="1753067873202720523">‏آن ہونے پر ممکن ہے آپ کی Chromebook چارج نہ ہو۔</translation>
 <translation id="1753557900380512635">اندرونی</translation>
 <translation id="1753905327828125965">سب سے زیادہ ملاحظہ کردہ</translation>
-<translation id="1755601632425835748">متن کا سائز</translation>
+<translation id="1755601632425835748">ٹیکسٹ کا سائز</translation>
 <translation id="1756963401828337401">کیپچر کرنے کے لیے ایک اسکرین منتخب کریں</translation>
 <translation id="1757132445735080748">‏Linux کا سیٹ اپ مکمل کرنے کیلئے، ChromeOS Flex کو اپ ڈیٹ کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="1757301747492736405">اَن انسٹال کا عمل زیر التواء ہے</translation>
@@ -1446,7 +1442,6 @@
 <translation id="1974060860693918893">جدید ترین</translation>
 <translation id="1974159333077206889">سبھی اسپیکرز کے ساتھ ایک ہی آڈیو</translation>
 <translation id="1975841812214822307">ہٹائیں…</translation>
-<translation id="1976150099241323601">سیکیورٹی آلہ میں سائن ان کریں</translation>
 <translation id="1976823515278601587">بڑی بچتیں</translation>
 <translation id="1978249384651349182"><ph name="BEGIN_DESCRIPTION" />اپنی تنظیم میں آلات کا اندراج کرنے سے ایک ہی جگہ سے آلہ کا نظم کرنے کی سہولت سیٹ اپ ہو جاتی ہے۔ آپ کی تنظیم کو متعدد وجوہات کی بنا پر اندراج کی ضرورت پڑ سکتی ہے:<ph name="END_DESCRIPTION" />
     <ph name="BEGIN_SUBTITLE1" /><ph name="BEGIN_BOLD" />سیکیورٹی کو بہتر بنانے کے لیے<ph name="END_BOLD" /><ph name="END_SUBTITLE1" />
@@ -1480,6 +1475,7 @@
 <translation id="1989288015781834552">اپ ڈیٹ مکمل کرنے کیلئے بند کر کے دوبارہ چلائیں۔ آپ کے ٹیبز دوبارہ کھل جائیں گے۔</translation>
 <translation id="1989903373608997757">ہمیشہ استعمال کریں</translation>
 <translation id="1990046457226896323">اسپیچ فائلز ڈاؤن لوڈ ہو گئیں</translation>
+<translation id="1991829061375381344">‏اس Google Meet ہارڈویئر آلہ کا اندراج کرنے کیلئے آپ کے پاس خاطر خواہ لائسنسز دستیاب نہیں ہیں۔ براہ کرم مزید خریداری کے لیے اپنے ری سیلر سے رابطہ کریں۔ اگر آپ کو لگتا ہے کہ آپ کو یہ پیغام غلطی سے نظر آرہا ہے تو براہ کرم اپنے ریسیلر سے رابطہ کریں۔</translation>
 <translation id="199191324030140441">'ڈسٹرب نہ کریں' کو آف کریں</translation>
 <translation id="1992397118740194946">سیٹ نہیں ہے</translation>
 <translation id="1994173015038366702">‏سائٹ کا URL</translation>
@@ -1720,7 +1716,6 @@
 <translation id="2156294658807918600">سروس ورکر: <ph name="SCRIPT_URL" /></translation>
 <translation id="2156707722163479690">مشترکہ ٹیبز کو اسکرول اور زوم کرنے کی اجازت ہے</translation>
 <translation id="2157457598652721267">ماؤس کے دائیں یا بائیں بٹنز کا انتخاب کرنے کیلئے "/" اور "-" کا استعمال کریں۔ دونوں کا انتخاب کرنے کیلئے "*" کا استعمال کریں۔</translation>
-<translation id="2157474325782140681">‏اضافی خصوصیات حاصل کرنے کیلئے، اس Chromebook کے ساتھ کام کرنے کیلئے ڈیزائن کردہ ایک Dell ڈاکنگ اسٹیشن استعمال کریں۔</translation>
 <translation id="215753907730220065">پوری اسکرین سے خارج ہوں</translation>
 <translation id="2157632422749995237">بعد میں، والٹ آپ کو آپ کے ایونٹس کے بارے میں اطلاعات بھیج سکتا ہے</translation>
 <translation id="2157779167749714207">‏آپ کا <ph name="DEVICE_TYPE" /> Gemini کے ساتھ آتا ہے</translation>
@@ -1880,7 +1875,6 @@
 <translation id="2271986192355138465">ویب ایپس کو انسٹال کرنے کا طریقہ جانیں</translation>
 <translation id="2272430695183451567">0 سوئچز تفویض کیے گئے</translation>
 <translation id="2272570998639520080">مارٹنی گلاس</translation>
-<translation id="2273119997271134996">ڈاک ویڈیو پورٹ کا مسئلہ</translation>
 <translation id="2274840746523584236">‏اپنے Chromebook کو چارج کریں</translation>
 <translation id="2275193525496879616">اجازت دی گئی۔ اپنے آلہ سے کیمرا منسلک کریں۔</translation>
 <translation id="2275352532065325930">ٹیب تلاش کی پوزیشن</translation>
@@ -2113,7 +2107,6 @@
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> 1 اکاؤنٹ کا پاس ورڈ صرف اس آلے میں محفوظ کیا گیا ہے۔ مزید تفصیلات}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} اکاؤنٹس کا پاس ورڈ صرف اس آلے میں محفوظ کیا گیا ہے۔ مزید تفصیلات}}</translation>
 <translation id="2428510569851653187">بتائیں کہ ٹیب کے ناکام ہونے پر آپ کیا کر رہے تھے</translation>
 <translation id="2428939361789119025">‏WiFi آف کریں</translation>
-<translation id="2431027948063157455">‏Google اسسٹنٹ لوڈ نہیں ہو سکا، براہ کرم اپنا نیٹ ورک کنکشن چیک کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="243179355394256322">‏آپ کی تنظیم آلہ کے اندراج کو صرف مجاز صارفین تک محدود کرتی ہے۔ یہ صارف آلات کے اندراج کیلئے مجاز نہیں ہے۔ براہ کرم یقینی بنائیں کہ صارف کے پاس منتظم کونسول کے صارفین سیکشن میں "Google Meet ہارڈویئر کا اندراج کریں" کا حق ہے جو کہ صرف منتظم کو حاصل ہوتا ہے۔</translation>
 <translation id="243275146591958220">ڈاؤن لوڈ منسوخ کریں</translation>
 <translation id="2432882794929808179">‫<ph name="APP_COUNT" /> ایپس رجسٹرڈ ہیں</translation>
@@ -2698,7 +2691,6 @@
 <translation id="2808985063107661499">"<ph name="MAIN_GESTURE" />" "<ph name="CONFLICTING_GESTURE_ONE" />" اور "<ph name="CONFLICTING_GESTURE_TWO" />" کے ساتھ اوورلیپ ہوسکتا ہے۔ ممکن ہونے پر، ایک مختلف اشارہ منتخب کرنے کی کوشش کریں۔</translation>
 <translation id="2809346626032021864">پڑھنا</translation>
 <translation id="2811205483104563968">اکاؤنٹس</translation>
-<translation id="2812049959647166806">‏Thunderbolt تعاون یافتہ نہیں ہے</translation>
 <translation id="2813094189969465044">پیرنٹل کنٹرولز</translation>
 <translation id="2813765525536183456">نیا پروفائل &amp;شامل کریں</translation>
 <translation id="281390819046738856">درخواست پر دستخط نہیں کیا جا سکا۔</translation>
@@ -3135,7 +3127,6 @@
 <translation id="3115147772012638511">کیش کا انتظار ہے…</translation>
 <translation id="3115580024857770654">سبھی کو سکیڑیں</translation>
 <translation id="3115743155098198207">‏Google اکاؤنٹ کی زبان کا نظم کریں</translation>
-<translation id="3117362587799608430">ڈاک مکمل طور پر موافق نہیں ہے</translation>
 <translation id="3117791853215125017">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> کو <ph name="ATTACHMENTS" /> بھیجنے میں ناکام}other{<ph name="DEVICE_NAME" /> کو <ph name="ATTACHMENTS" /> بھیجنے میں ناکام}}</translation>
 <translation id="3118319026408854581"><ph name="PRODUCT_NAME" /> مدد</translation>
 <translation id="3118748462829336648">سائیڈ پینل کھولیں</translation>
@@ -3151,7 +3142,6 @@
 <translation id="3125361247594231799">اسے اگلی بار کیلئے پن کریں</translation>
 <translation id="3125816458150005808">آپ اس کا پن ہٹا سکتے ہیں اور اسے مینو سے کھول سکتے ہیں</translation>
 <translation id="3126026824346185272">Ctrl</translation>
-<translation id="3127860049873093642">‏چارجنگ اور کارکردگی کے مسائل سے بچنے کیلئے، موافق Dell یا USB ٹائپ سی پاور ایڈاپٹر کا استعمال کریں۔</translation>
 <translation id="3127862849166875294">‏Linux کی ڈسک کا سائز تبدیل کریں</translation>
 <translation id="3129150892373332590">‏یہ مہمانوں کے ساتھ USB آلات کے مسلسل اشتراک کو فعال کر دے گا جس سے تمام استحکام بھی ری سیٹ ہو جائے گا۔ کیا آپ پر یقین ہیں؟</translation>
 <translation id="3129173833825111527">بایاں مارجن</translation>
@@ -3394,7 +3384,6 @@
         آپ کارڈ مینو سے ترتیبات کا نظم کر سکتے یا Chrome کو حسب ضرورت بنائیں میں مزید اختیارات دیکھ سکتے ہیں۔</translation>
 <translation id="3308134619352333507">چھپائیں بٹن</translation>
 <translation id="3308604065765626613">{GROUP_COUNT,plural, =1{اس آلے پر ٹیبز کھلے رہیں گے، لیکن گروپ مستقل طور پر حذف ہو جائے گا۔}other{اس آلے پر ٹیبز کھلے رہیں گے، لیکن گروپس مستقل طور پر حذف ہو جائیں گے۔}}</translation>
-<translation id="3308852433423051161">‏Google اسسٹنٹ لوڈ ہو رہا ہے...</translation>
 <translation id="3309124184713871355">ساختیں</translation>
 <translation id="3309330461362844500">‏سرٹیفیکیٹ پروفائل کی ID</translation>
 <translation id="3310379801837527592">‫<ph name="OWNER_FIRST_NAME" /> اور <ph name="NUM_OTHER_MEMBERS" /> دیگر کے ساتھ ٹیب گروپ میں شامل ہوں</translation>
@@ -3623,7 +3612,6 @@
 <translation id="3468999815377931311">‏Android فون</translation>
 <translation id="3469583217479686109">انتخاب کرنے کا ٹول</translation>
 <translation id="3471687177769494956">نیویگیشن شارٹ کٹ میں ترمیم کریں</translation>
-<translation id="3471876058939596279">‏ویڈیو کیلئے HDMI اور USB ٹائپ سی پورٹس کا ایک ہی وقت پر استعمال نہیں کیا جا سکتا۔ کوئی مختلف ویڈیو پورٹ استعمال کریں۔</translation>
 <translation id="3472469028191701821">نئے ٹیب میں کھلتا ہے</translation>
 <translation id="3473241910002674503">ٹیبلیٹ موڈ میں بٹنز کے ساتھ ہوم پر جائیں، واپس جائیں اور ایپس سوئچ کریں۔</translation>
 <translation id="3473479545200714844">اسکرین میگنیفائر</translation>
@@ -3825,7 +3813,6 @@
 <translation id="3608730769702025110">4 میں سے مرحلہ 3: ذاتی طور پر قابل شناخت معلومات کا جائزہ لیں</translation>
 <translation id="3609277884604412258">فوری تلاش کریں</translation>
 <translation id="3610241585790874201">آپ کے آلے پر ڈیٹا محفوظ کرنے کی اجازت نہیں ہے</translation>
-<translation id="3610369246614755442">ڈاک کے پنکھے کو سروس کی ضرورت ہے</translation>
 <translation id="3610961622607302617"><ph name="WEBSITE" /> کے لیے پاس ورڈ تبدیل کریں</translation>
 <translation id="3611634011145829814">سبسکرپشن کے صفحے پر جائیں</translation>
 <translation id="3611658447322220736">حال ہی میں بند کی گئی سائٹس ڈیٹا بھیجنا اور موصول کرنا مکمل کر سکتی ہیں</translation>
@@ -3853,7 +3840,6 @@
 <translation id="3624567683873126087">‏آلہ کو غیر مقفل کریں اور Google اکاؤنٹ میں سائن ان کریں</translation>
 <translation id="3624583033347146597">اپنی فریق ثالث کوکی کی ترجیحات کا انتخاب کریں</translation>
 <translation id="3625481642044239431">غلط فائل منتخب ہو گئی۔ دوبارہ کوشش کریں۔</translation>
-<translation id="3626296069957678981">‏اس Chromebook کو چارج کرنے کیلئے، موافق Dell بیٹری کا استعمال کریں۔</translation>
 <translation id="3627320433825461852">1 منٹ سے کم باقی ہے</translation>
 <translation id="3627588569887975815">لنک پوشید&amp;گی ونڈو میں کھولیں</translation>
 <translation id="3627671146180677314">‏Netscape سرٹیفکیٹ کی تجدید کا وقت</translation>
@@ -3947,7 +3933,6 @@
 <translation id="3688794912214798596">زبانیں تبدیل کریں...</translation>
 <translation id="3690369331356918524">اگر پاس ورڈز ڈیٹا کی خلاف ورزی میں افشاء ہوتے ہیں تو آپ کو متنبہ کرتی ہے</translation>
 <translation id="3691231116639905343">کی بورڈ ایپس</translation>
-<translation id="3693415264595406141">پاس ورڈ:</translation>
 <translation id="3694027410380121301">پچھلا ٹیب منتخب کریں</translation>
 <translation id="3694122362646626770">ویب سائٹس</translation>
 <translation id="3694590407685276748">ٹیکسٹ کرسر کو نمایاں کریں</translation>
@@ -5157,7 +5142,6 @@
 <translation id="4513072860957814107">براؤزنگ ڈیٹا &amp;حذف کریں...</translation>
 <translation id="4513872120116766993">لکھنے میں لفظ کی پیشین گوئی</translation>
 <translation id="4513946894732546136">تاثرات</translation>
-<translation id="4515872537870654449">‏سروس کیلئے Dell سے رابطہ کریں۔ پنکھے کے کام نہ کرنے کی صورت میں ڈاک بند ہو جائے گا۔</translation>
 <translation id="4515942088136451195">آپ جو محفوظ کر سکتے ہیں آپ کی تنظیم اسے محدود کرتی ہے</translation>
 <translation id="4516395361210407049">ٹول بار بٹنز کو ری سیٹ کیا گیا</translation>
 <translation id="4519331665958994620">سائٹس آپ کا کیمرا استعمال کرنے کیلئے پوچھ سکتی ہیں</translation>
@@ -7179,7 +7163,6 @@
 <translation id="5939723110967488589">منتخب کریں کہ ٹول بار میں کون سے بٹنز دکھائی دے</translation>
 <translation id="594048410531370124">غیر شناخت کردہ کلید۔ <ph name="RESPONSE" /> کے لیے کوئی بھی کلید دبائیں۔</translation>
 <translation id="5941153596444580863">شخص کو شامل کریں…</translation>
-<translation id="5941343993301164315">براہ کرم <ph name="TOKEN_NAME" /> میں سائن ان کریں۔</translation>
 <translation id="5941711191222866238">چھوٹا کریں</translation>
 <translation id="5941854976565320351">{PASSWORD_COUNT,plural, =1{‏‫1 پاس ورڈ صرف اس آلے پر محفوظ ہے۔ اپنے دیگر آلات پر اس کا استعمال کرنے کیلئے، اسے اپنے Google اکاؤنٹ میں محفوظ کریں۔}other{‏‫{PASSWORD_COUNT} پاس ورڈز صرف اس آلے پر محفوظ ہیں۔ اپنے دیگر آلات پر ان کا استعمال کرنے کیلئے، انہیں اپنے Google اکاؤنٹ میں محفوظ کریں۔}}</translation>
 <translation id="594221546068848596"><ph name="VISUAL_SEARCH_PROVIDER" /> کی مدد سے صفحہ تلاش کریں</translation>
@@ -8409,7 +8392,6 @@
 <translation id="680488281839478944">‏VM "<ph name="DEFAULT_VM_NAME" />" موجود ہے</translation>
 <translation id="6805236548654699520">اپنی ترتیبات کو محفوظ ڈیفالٹس پر بحال کر کے ناپسندیدہ پاپ اپس کو ہٹائیں، نیٹ ورک کے مسائل کو ٹھیک کریں اور مزید بہت کچھ کریں۔</translation>
 <translation id="6805478749741295868">‏یہ ایک تجرباتی AI خصوصیت ہے اور یہ ہمیشہ درست نہیں ہوگی۔</translation>
-<translation id="6805647936811177813"><ph name="HOST_NAME" /> سے کلائنٹ سرٹیفیکیٹ درآمد کرنے کیلئے براہ کرم <ph name="TOKEN_NAME" /> میں سائن ان کریں۔</translation>
 <translation id="6805817411033102703">مشترکہ ٹیب گروپس سے متعلق تاثرات</translation>
 <translation id="6806089545527108739">اجازت نہ دیں لیکن بعد میں پوچھیں</translation>
 <translation id="6806781719264274042">‏صرف وہ رابطے جن کے پاس Google اکاؤنٹ ہے۔ <ph name="LINK_BEGIN" />رابطے دیکھیں<ph name="LINK_END" /></translation>
@@ -8613,7 +8595,6 @@
 <translation id="6938606182859551396">‏اپنے <ph name="DEVICE_TYPE" /> پر اپنے فون کی اطلاعات وصول کرنے کی خاطر، Google Play سروسز کو اطلاعات تک رسائی فراہم کرنے کیلئے اپنے فون پر ہدایات کی پیروی کریں۔</translation>
 <translation id="6941514251635934269">اس دستاویز کے بارے میں پوچھیں</translation>
 <translation id="694168622559714949">آپ کے منتظم نے ایک ایسی ڈیفالٹ زبان سیٹ کی ہے جس میں ترمیم نہیں کی جا سکتی۔</translation>
-<translation id="6941937518557314510">براہ کرم اپنے سرٹیفکیٹ کے ساتھ <ph name="HOST_NAME" /> کی توثیق کرنے کیلئے <ph name="TOKEN_NAME" /> میں سائن ان کریں۔</translation>
 <translation id="6943060957016121200">فوری ٹیدرنگ فعال کریں</translation>
 <translation id="6943939122536910181"><ph name="DEVICE" /> سے غیر منسلک ہو گيا</translation>
 <translation id="6944750221184785444">یہ پروفائل انسٹال کرنے سے قاصر ہے۔ تکنیکی سپورٹ کیلئے، براہ کرم اپنے کیریئر سے رابطہ کریں۔</translation>
@@ -9029,7 +9010,6 @@
 <translation id="7239108166256782787"><ph name="DEVICE_NAME" /> نے منتقلی منسوخ کر دی</translation>
 <translation id="7239401402533584029">تھوڑی اضافی پالش یا تخلیقی تحریک کے ساتھ ویب پر کچھ بھی لکھنے میں آپ کی مدد کرتا ہے</translation>
 <translation id="7240339475467890413">نئے ہاٹ اسپاٹ سے منسلک کریں؟</translation>
-<translation id="7241389281993241388">براہ کرم کلائنٹ سرٹیفکیٹ درآمد کرنے کیلئے <ph name="TOKEN_NAME" /> میں سائن ان کریں۔</translation>
 <translation id="7241763419756062043">اپنی تلاش اور براؤنگ کا معیار منتخب کریں</translation>
 <translation id="7243092385765551741">پاس کی حذف کریں؟</translation>
 <translation id="7245628041916450754">‏<ph name="WIDTH" /> x <ph name="HEIGHT" /> (بہترین)</translation>
@@ -9837,6 +9817,7 @@
 <translation id="7784067724422331729">آپ کے کمپیوٹر پر موجود سیکیورٹی ترتیبات نے اس فائل کو مسدود کر دیا ہے۔</translation>
 <translation id="7784796923038949829">سائٹ کا ڈیٹا پڑھا یا تبدیل نہیں کیا جا سکتا</translation>
 <translation id="778480864305029524">‏فوری ٹیدرنگ استعمال کرنے کے لیے، اطلاعات برائے Google Play سروسز کو آن کریں۔</translation>
+<translation id="7784875615510899699">‏اس Google Beam آلہ کا اندراج کرنے کیلئے آپ کے پاس خاطر خواہ لائسنسز دستیاب نہیں ہیں۔ براہ کرم مزید خریداری کے لیے اپنے ری سیلر سے رابطہ کریں۔ اگر آپ کو لگتا ہے کہ آپ کو یہ پیغام غلطی سے نظر آرہا ہے تو براہ کرم اپنے ریسیلر سے رابطہ کریں۔</translation>
 <translation id="77855763949601045">مہمان پروفائل &amp;کھولیں</translation>
 <translation id="7786663536153819505">‏QR کوڈ اسکین کرنے کیلئے، اپنے فون پر ہدایات کی پیروی کریں۔ یہ یقینی بنائیں کہ آپ کے فون کا بلوٹوتھ آن ہے۔
     <ph name="BR" />
@@ -10676,7 +10657,6 @@
 <translation id="8350789879725387295">ڈاک میں اسٹائلس ٹولز</translation>
 <translation id="8351316842353540018">‏a11y کے اختیارات ہمیشہ دکھائیں</translation>
 <translation id="8351419472474436977">اس ایکسٹینشن نے آپ کی پراکسی ترتیبات کو کنٹرول میں لے لیا ہے، جس کا مطلب ہے کہ آپ آن لائن جو بھی کرتے ہیں وہ اسے تبدیل کر سکتی، بریک کر سکتی یا اس کی جاسوسی کر سکتی ہے۔ اگر آپ کو اس تبدیلی کی وجہ ٹھیک سے معلوم نہیں تو غالباً آپ کو اس کی ضرورت نہیں ہے۔</translation>
-<translation id="8351630282875799764">بیٹری چارج نہیں ہو رہی ہے</translation>
 <translation id="8352287103893778223">ٹیب گروپ کا عنوان</translation>
 <translation id="835238322900896202">اَن انسٹالیشن کے دوران ایک خرابی پیش آ گئی۔ براہ کرم ٹرمینل کے ذریعے اَن انسٹال کریں۔</translation>
 <translation id="8353420862507374944">کاسٹ کریں، محفوظ کریں اور اشتراک کریں</translation>
@@ -11139,7 +11119,6 @@
 <translation id="8676313779986170923">تاثرات بھیجنے کا شکریہ۔</translation>
 <translation id="8676374126336081632">ان پٹ صاف کریں</translation>
 <translation id="8676730726685223115">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> (1 ٹیب)}other{<ph name="GROUP_TITLE" /> (# ٹیبز)}}</translation>
-<translation id="8676770494376880701">کم پاور چارجر منسلک ہوگیا</translation>
 <translation id="8676985325915861058">نظر انداز کریں اور نئی پروفائل سیٹ اپ کریں</translation>
 <translation id="8677212948402625567">سبھی کو سکیڑیں…</translation>
 <translation id="8678192320753081984">‏ہدف بنا کر کیے گیے حملوں کے خطرے سے دوچار لوگوں کے لیے Google کی مضبوط ترین اکاؤنٹ سیکیورٹی فراہم کرتا ہے</translation>

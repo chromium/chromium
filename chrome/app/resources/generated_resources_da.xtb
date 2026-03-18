@@ -245,7 +245,6 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1159879754517035595">Administrer indstillinger for udvidelser</translation>
 <translation id="1160800016654917722">Vinduet blev flyttet nedad og til venstre</translation>
 <translation id="1161190590171867633">Sammenligningstabeller gemmes på din Google-konto</translation>
-<translation id="1161575384898972166">Log ind på <ph name="TOKEN_NAME" /> for at eksportere klientcertifikatet.</translation>
 <translation id="116173250649946226">Din administrator har indstillet et standardtema, der ikke kan ændres.</translation>
 <translation id="1162213688509394031">Skjul titellinjen</translation>
 <translation id="1162479191445552288">Åbn ved opstart</translation>
@@ -489,7 +488,6 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1316136264406804862">Søger...</translation>
 <translation id="1316248800168909509">Der kunne ikke oprettes forbindelse til <ph name="DEVICE" />. Prøv igen.</translation>
 <translation id="1316495628809031177">Synkroniseringen er sat på pause</translation>
-<translation id="1317637799698924700">Din dockingstation køres i USB-C-kompatibel tilstand.</translation>
 <translation id="1319983966058170660">Knap til undersiden <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="1322046419516468189">Se og administrer gemte adgangskoder på din <ph name="SAVED_PASSWORDS_STORE" /></translation>
 <translation id="1323433172918577554">Se flere</translation>
@@ -993,7 +991,6 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1657406563541664238">Vær med til at gøre <ph name="PRODUCT_NAME" /> bedre ved automatisk at sende forbrugsstatistikker og rapportere om nedbrud til Google</translation>
 <translation id="1657937299377480641">Hvis du vil logge ind igen, så du kan få adgang til uddannelsesressourcer, skal du bede en forælder om tilladelse</translation>
 <translation id="1658424621194652532">Denne side har adgang til din mikrofon.</translation>
-<translation id="1660763353352708040">Der er et problem med strømadapteren</translation>
 <translation id="1661996889489595105">{NUM_TABS,plural, =1{Løs problemet med den fane, der gør din browser langsom}one{Løs problemet med den fane, der gør din browser langsom}other{Løs problemet med de faner, der gør din browser langsom}}</translation>
 <translation id="16620462294541761">Din adgangskode blev ikke bekræftet. Prøv igen.</translation>
 <translation id="1662572015199460525">Chat med stemmen eller via tekst for at få svar, de vigtigste pointer og meget mere, mens du browser</translation>
@@ -1129,7 +1126,6 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1751335846119670066">Hjælp mig med at læse</translation>
 <translation id="17513872634828108">Åbne faner</translation>
 <translation id="175196451752279553">G&amp;enåbn lukket fane</translation>
-<translation id="1753067873202720523">Din Chromebook oplades muligvis ikke, når den er tændt.</translation>
 <translation id="1753557900380512635">Indretning</translation>
 <translation id="1753905327828125965">Mest besøgte</translation>
 <translation id="1755601632425835748">Tekststørrelse</translation>
@@ -1458,7 +1454,6 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1974060860693918893">Avanceret</translation>
 <translation id="1974159333077206889">Samme lyd på alle højttalere</translation>
 <translation id="1975841812214822307">Fjern...</translation>
-<translation id="1976150099241323601">Log ind på sikkerhedsenhed</translation>
 <translation id="1976823515278601587">Store hukommelsesbesparelser</translation>
 <translation id="1978249384651349182"><ph name="BEGIN_DESCRIPTION" />Hvis du tilmelder dine enheder i din organisation, konfigureres de til centraliseret enhedsadministration. Din organisation kan kræve tilmelding af flere årsager:<ph name="END_DESCRIPTION" />
     <ph name="BEGIN_SUBTITLE1" /><ph name="BEGIN_BOLD" />Øget sikkerhed<ph name="END_BOLD" /><ph name="END_SUBTITLE1" />
@@ -1492,6 +1487,7 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1989288015781834552">Genstart for at opdatere. Dine faner åbnes igen.</translation>
 <translation id="1989903373608997757">Brug altid</translation>
 <translation id="1990046457226896323">Talefilerne blev downloadet</translation>
+<translation id="1991829061375381344">Du har ikke nok tilgængelige licenser til at tilmelde denne Google Meet-hardwareenhed. Kontakt din forhandler for at købe flere. Hvis du mener, at det er en fejl, at du har modtaget denne meddelelse, skal du kontakte din forhandler.</translation>
 <translation id="199191324030140441">Deaktiver Forstyr ikke</translation>
 <translation id="1992397118740194946">Ikke angivet</translation>
 <translation id="1994173015038366702">Webadresse</translation>
@@ -1731,7 +1727,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2156294658807918600">Scripttjeneste: <ph name="SCRIPT_URL" /></translation>
 <translation id="2156707722163479690">Websites, der har tilladelse til at rulle i og zoome ind på delte faner</translation>
 <translation id="2157457598652721267">Brug "/" og "-" til at vælge venstre eller højre museknap. Brug "*" for at vælge dem begge.</translation>
-<translation id="2157474325782140681">Hvis du vil have yderligere funktioner, skal du bruge en Dell-dockingstation, som er udviklet til at fungere sammen med denne Chromebook.</translation>
 <translation id="215753907730220065">Afslut fuld skærm</translation>
 <translation id="2157632422749995237">Senere kan Wallet sende dig notifikationer om dine begivenheder</translation>
 <translation id="2157779167749714207">Din <ph name="DEVICE_TYPE" /> leveres med Gemini</translation>
@@ -1894,7 +1889,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2271986192355138465">Se, hvordan du installerer webapps</translation>
 <translation id="2272430695183451567">0 kontakter er tildelt</translation>
 <translation id="2272570998639520080">Martiniglas</translation>
-<translation id="2273119997271134996">Problem med dockingstationens videoport</translation>
 <translation id="2274840746523584236">Oplad din Chromebook</translation>
 <translation id="2275193525496879616">Tilladt. Forbind et kamera til din enhed.</translation>
 <translation id="2275352532065325930">Fanesøgningsposition</translation>
@@ -2126,7 +2120,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> 1 konto. Adgangskoden er kun gemt på denne enhed. Flere oplysninger}one{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} konto. Adgangskoden er kun gemt på denne enhed. Flere oplysninger}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} konti. Adgangskoden er kun gemt på denne enhed. Flere oplysninger}}</translation>
 <translation id="2428510569851653187">Beskriv, hvad du foretog dig, da fanen gik ned</translation>
 <translation id="2428939361789119025">Deaktiver Wi-Fi</translation>
-<translation id="2431027948063157455">Google Assistent kunne ikke indlæses. Tjek din netværksforbindelse, og prøv igen.</translation>
 <translation id="243179355394256322">Din organisation har sat begrænsninger, så det kun er autoriserede brugere, der kan foretage tilmelding af enheder. Denne bruger er ikke autoriseret til at tilmelde enheder. Sørg for, at brugeren har administratorrettigheden til tilmelding af Google Meet-hardware under sektionen Brugere i Administrationskonsol.</translation>
 <translation id="243275146591958220">Annuller download</translation>
 <translation id="2432882794929808179"><ph name="APP_COUNT" /> apps er registreret</translation>
@@ -2711,7 +2704,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2808985063107661499">"<ph name="MAIN_GESTURE" />" overlapper muligvis med "<ph name="CONFLICTING_GESTURE_ONE" />" og "<ph name="CONFLICTING_GESTURE_TWO" />". Hvis det er muligt, kan du prøve at vælge en anden bevægelse.</translation>
 <translation id="2809346626032021864">Læsning</translation>
 <translation id="2811205483104563968">Konti</translation>
-<translation id="2812049959647166806">Thunderbolt understøttes ikke</translation>
 <translation id="2813094189969465044">Børnesikring</translation>
 <translation id="2813765525536183456">&amp;Tilføj ny profil</translation>
 <translation id="281390819046738856">Anmodningen kunne ikke signeres.</translation>
@@ -3148,7 +3140,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3115147772012638511">Venter på cache...</translation>
 <translation id="3115580024857770654">Skjul alle</translation>
 <translation id="3115743155098198207">Administrer sprog på din Google-konto</translation>
-<translation id="3117362587799608430">Dockingstationen er ikke helt kompatibel</translation>
 <translation id="3117791853215125017">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> kunne ikke sendes til <ph name="DEVICE_NAME" />}one{Failed to send <ph name="ATTACHMENTS" /> to <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> kunne ikke sendes til <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3118319026408854581"><ph name="PRODUCT_NAME" /> Hjælp</translation>
 <translation id="3118748462829336648">Åbn sidepanel</translation>
@@ -3164,7 +3155,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3125361247594231799">Fastgør til næste gang</translation>
 <translation id="3125816458150005808">Du kan frigøre den og åbne den via menuen</translation>
 <translation id="3126026824346185272">Ctrl</translation>
-<translation id="3127860049873093642">Brug en kompatibel Dell- eller USB-C-strømadapter for at undgå problemer med opladning og effektivitet.</translation>
 <translation id="3127862849166875294">Vælg en anden størrelse på disken i Linux</translation>
 <translation id="3129150892373332590">Dette deaktiverer vedvarende deling af USB-enheder med gæster, hvilket også nulstiller al vedholdenhed. Er du sikker?</translation>
 <translation id="3129173833825111527">Venstre margen</translation>
@@ -3409,7 +3399,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
         Du kan administrere indstillingerne i kortmenuen eller se flere valgmuligheder under Tilpas Chrome.</translation>
 <translation id="3308134619352333507">Skjul knap</translation>
 <translation id="3308604065765626613">{GROUP_COUNT,plural, =1{Fanerne forbliver åbne på denne enhed, men gruppen slettes permanent.}one{Fanerne forbliver åbne på denne enhed, men gruppen slettes permanent.}other{Fanerne forbliver åbne på denne enhed, men grupperne slettes permanent.}}</translation>
-<translation id="3308852433423051161">Indlæser Google Assistent...</translation>
 <translation id="3309124184713871355">Bygningsværker</translation>
 <translation id="3309330461362844500">Certifikatprofilens id</translation>
 <translation id="3310379801837527592">Deltag i fanegruppen med <ph name="OWNER_FIRST_NAME" /> og <ph name="NUM_OTHER_MEMBERS" /> anden</translation>
@@ -3638,7 +3627,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3468999815377931311">Android-telefon</translation>
 <translation id="3469583217479686109">Opmærkningsværktøj</translation>
 <translation id="3471687177769494956">Rediger navigationsgenvej</translation>
-<translation id="3471876058939596279">Portene til HDMI og USB-C kan ikke bruges til video på samme tid. Brug en anden videoport.</translation>
 <translation id="3472469028191701821">Åbner på en ny fane</translation>
 <translation id="3473241910002674503">Gå til startsiden, gå tilbage, og skift mellem apps ved hjælp af knapperne i tablettilstand.</translation>
 <translation id="3473479545200714844">Skærmforstørrer</translation>
@@ -3840,7 +3828,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3608730769702025110">Trin 3 af 4: Gennemgå personhenførbare oplysninger</translation>
 <translation id="3609277884604412258">Hurtig søgning</translation>
 <translation id="3610241585790874201">Har ikke tilladelse til at gemme data på din enhed</translation>
-<translation id="3610369246614755442">Dockingstationens blæser trænger til service</translation>
 <translation id="3610961622607302617">Skift adgangskoden til <ph name="WEBSITE" /></translation>
 <translation id="3611634011145829814">Gå til abonnementssiden</translation>
 <translation id="3611658447322220736">Nyligt lukkede websites kan gennemføre afsendelse og modtagelse af data</translation>
@@ -3868,7 +3855,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3624567683873126087">Lås enheden op, og log ind på Google-kontoen</translation>
 <translation id="3624583033347146597">Vælg dine præferencer for tredjepartscookies</translation>
 <translation id="3625481642044239431">Der er valgt en ugyldig fil. Prøv igen.</translation>
-<translation id="3626296069957678981">Brug et kompatibelt Dell-batteri til at oplade denne Chromebook.</translation>
 <translation id="3627320433825461852">Mindre end ét minut tilbage</translation>
 <translation id="3627588569887975815">Åbn link i inkognitovindue</translation>
 <translation id="3627671146180677314">Tidspunkt for fornyelse af Netscape-certifikat</translation>
@@ -3962,7 +3948,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3688794912214798596">Skift sprog...</translation>
 <translation id="3690369331356918524">Advarer dig, hvis adgangskoder offentliggøres i et brud på datasikkerheden</translation>
 <translation id="3691231116639905343">Tastaturapps</translation>
-<translation id="3693415264595406141">Adgangskode:</translation>
 <translation id="3694027410380121301">Vælg forrige fane</translation>
 <translation id="3694122362646626770">Websites</translation>
 <translation id="3694590407685276748">Markør til fremhævning af tekst</translation>
@@ -5172,7 +5157,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4513072860957814107">&amp;Slet browserdata...</translation>
 <translation id="4513872120116766993">Skriveforslag</translation>
 <translation id="4513946894732546136">Feedback</translation>
-<translation id="4515872537870654449">Kontakt Dell for at få service. Dockingstationen slukker, hvis blæseren ikke fungerer.</translation>
 <translation id="4515942088136451195">Din organisation begrænser, hvad du kan gemme</translation>
 <translation id="4516395361210407049">Værktøjslinjeknapperne er blevet nulstillet</translation>
 <translation id="4519331665958994620">Websites kan anmode om tilladelse til at bruge dit kamera</translation>
@@ -7197,7 +7181,6 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5939723110967488589">Vælg, hvilke knapper der skal vises på værktøjslinjen</translation>
 <translation id="594048410531370124">Tasten kunne ikke genkendes. Tryk på en vilkårlig tast for at <ph name="RESPONSE" />.</translation>
 <translation id="5941153596444580863">Tilføj person...</translation>
-<translation id="5941343993301164315">Log ind på <ph name="TOKEN_NAME" />.</translation>
 <translation id="5941711191222866238">Minimer</translation>
 <translation id="5941854976565320351">{PASSWORD_COUNT,plural, =1{1 adgangskode gemmes kun på denne enhed. Hvis du vil bruge den på dine andre enheder, skal du gemme den på din Google-konto.}one{{PASSWORD_COUNT} adgangskode gemmes kun på denne enhed. Hvis du vil bruge den på dine andre enheder, skal du gemme den på din Google-konto.}other{{PASSWORD_COUNT} adgangskoder gemmes kun på denne enhed. Hvis du vil bruge dem på dine andre enheder, skal du gemme dem på din Google-konto.}}</translation>
 <translation id="594221546068848596">Søg på siden med <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
@@ -8429,7 +8412,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="680488281839478944">VM'en "<ph name="DEFAULT_VM_NAME" />" findes</translation>
 <translation id="6805236548654699520">Fjern uønskede pop op-vinduer, løs netværksproblemer og meget mere ved at gendanne dine indstillinger til sikre standardindstillinger.</translation>
 <translation id="6805478749741295868">Dette er en eksperimentel AI-funktion, som ikke altid rammer plet.</translation>
-<translation id="6805647936811177813">Log ind på <ph name="TOKEN_NAME" /> for at importere klientcertifikatet fra <ph name="HOST_NAME" />.</translation>
 <translation id="6805817411033102703">Feedback om delte fanegrupper</translation>
 <translation id="6806089545527108739">Tillad ikke, men spørg senere</translation>
 <translation id="6806781719264274042">Kun kontakter med en Google-konto. <ph name="LINK_BEGIN" />Se kontakter<ph name="LINK_END" /></translation>
@@ -8633,7 +8615,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="6938606182859551396">Hvis du vil modtage notifikationer fra din telefon på din <ph name="DEVICE_TYPE" />, skal du følge vejledningen på din telefon for at give Google Play-tjenester adgang til notifikationer.</translation>
 <translation id="6941514251635934269">Stil spørgsmål om dette dokument</translation>
 <translation id="694168622559714949">Din administrator har angivet et standardsprog, der ikke kan ændres.</translation>
-<translation id="6941937518557314510">Log ind på <ph name="TOKEN_NAME" /> for at give <ph name="HOST_NAME" /> autorisation med dit certifikat.</translation>
 <translation id="6943060957016121200">Aktivér Automatisk netdeling</translation>
 <translation id="6943939122536910181">Forbindelsen til <ph name="DEVICE" /> er afbrudt</translation>
 <translation id="6944750221184785444">Denne profil kunne ikke installeres. Kontakt dit mobilselskab for at få teknisk support.</translation>
@@ -9050,7 +9031,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7239108166256782787"><ph name="DEVICE_NAME" /> annullerede overførslen</translation>
 <translation id="7239401402533584029">Hjælper dig med at skrive tekst på nettet med lidt ekstra finpudsning eller kreativ inspiration</translation>
 <translation id="7240339475467890413">Vil du oprette forbindelse til et nyt hotspot?</translation>
-<translation id="7241389281993241388">Log ind på <ph name="TOKEN_NAME" /> for at importere klientcertifikatet.</translation>
 <translation id="7241763419756062043">Vælg din søge- og browsingkvalitet</translation>
 <translation id="7243092385765551741">Vil du slette adgangsnøglen?</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (Bedste)</translation>
@@ -9858,6 +9838,7 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="7784067724422331729">Sikkerhedsindstillingerne på din computer blokerede denne fil.</translation>
 <translation id="7784796923038949829">Kan hverken læse eller ændre websitedata</translation>
 <translation id="778480864305029524">Hvis du vil bruge Øjeblikkelig netdeling, skal du aktivere notifikationer om Google Play-tjenester.</translation>
+<translation id="7784875615510899699">Du har ikke nok tilgængelige licenser til at tilmelde denne Google Beam-enhed. Kontakt din forhandler for at købe flere. Hvis du mener, at det er en fejl, at du har modtaget denne meddelelse, skal du kontakte din forhandler.</translation>
 <translation id="77855763949601045">&amp;Åbn gæsteprofil</translation>
 <translation id="7786663536153819505">Følg vejledningen på din telefon for at scanne QR-koden. Sørg for, at Bluetooth er aktiveret på telefonen.
     <ph name="BR" />
@@ -10697,7 +10678,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8350789879725387295">Fastgjorte styluspenværktøjer</translation>
 <translation id="8351316842353540018">Vis altid a11y-muligheder</translation>
 <translation id="8351419472474436977">En udvidelse har taget kontrol over dine proxyindstillinger, hvilket betyder, at den kan ændre, ødelægge eller aflytte alt, hvad du foretager dig på nettet. Hvis du ikke er sikker på, hvorfor denne ændring er sket, er den sandsynligvis uønsket.</translation>
-<translation id="8351630282875799764">Batteriet oplader ikke</translation>
 <translation id="8352287103893778223">Titel på fanegruppe</translation>
 <translation id="835238322900896202">Der opstod en fejl under afinstallationen. Afinstaller via Terminal.</translation>
 <translation id="8353420862507374944">Cast, gem og del</translation>
@@ -11160,7 +11140,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8676313779986170923">Tak for din feedback.</translation>
 <translation id="8676374126336081632">Ryd indtastning</translation>
 <translation id="8676730726685223115">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> (1 fane)}one{<ph name="GROUP_TITLE" /> (# fane)}other{<ph name="GROUP_TITLE" /> (# faner)}}</translation>
-<translation id="8676770494376880701">Oplader med lav kraft er tilsluttet</translation>
 <translation id="8676985325915861058">Spring over, og opret ny profil</translation>
 <translation id="8677212948402625567">Skjul alle...</translation>
 <translation id="8678192320753081984">Giver Googles stærkeste kontobeskyttelse til personer, der er sårbare over for målrettede angreb</translation>

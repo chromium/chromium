@@ -196,6 +196,7 @@
 <translation id="3045032126857188731">Oversatt språk: <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">Lukk dialogboksen for tilbakemeldinger</translation>
 <translation id="3068187312562070417">Andre Chromium-profiler</translation>
+<translation id="3068290154869370196">Utvidelser er tillegg som lar deg tilpasse Chromium. Med utvidelser kan du gjøre Chromium til ditt eget – fra å holde orden til å forenkle hverdagsoppgaver.</translation>
 <translation id="3068515742935458733">Bidra til å gjøre Chromium bedre ved å sende programstopprapporter og <ph name="UMA_LINK" /> til Google</translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{1 USB-enhet ble brukt av en eller flere Chromium-utvidelser}=1{1 USB-enhet brukes av en eller flere Chromium-utvidelser}other{# USB-enheter brukes av en eller flere Chromium-utvidelser}}</translation>
 <translation id="3095811995836568724">Chromium-logg</translation>

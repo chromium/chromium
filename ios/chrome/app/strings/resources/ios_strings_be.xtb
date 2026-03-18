@@ -394,6 +394,7 @@
 <translation id="2360196772093551345">Запытаць мабільную версію сайта</translation>
 <translation id="2362083820973145409">Вы ўвайшлі як <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Кнопка адкрывае налады.</translation>
 <translation id="2371084566192454134">Укладкі і групы ўкладак</translation>
+<translation id="2371303771137626249">Новая</translation>
 <translation id="2381405137052800939">Асновы</translation>
 <translation id="2384692388811649784">Хаваць укладкі ў рэжыме інкогніта</translation>
 <translation id="2386793615875593361">1 выбрана</translation>
@@ -690,6 +691,7 @@
 <translation id="3530206579861815432">Хутка знаходзьце адкрытыя і нядаўна закрытыя ўкладкі на сінхранізаваных прыладах.</translation>
 <translation id="3530767473765895035">Кіраваць уліковымі запісамі на гэтай прыладзе…</translation>
 <translation id="3533436815740441613">Новая ўкладка</translation>
+<translation id="3534738261102690620">Спытаць Gemini</translation>
 <translation id="3540141921715814660">Дадаць у закладкі</translation>
 <translation id="3546122170015471515">Перадпрагляд карт на Google.com</translation>
 <translation id="3547356470684043247">Чытайце, як кліенты ацэньваюць прадукты, паслугі і якія ў іх уражанні, каб больш абгрунтавана складаць свае водгукі.</translation>
@@ -1089,6 +1091,7 @@
 <translation id="4944543191714094452">Пошук на старонцы…</translation>
 <translation id="4945756290001680296">Доступ да налад пароля</translation>
 <translation id="4949302115427722371">Кіраваць наладамі…</translation>
+<translation id="4952050521954075618">Фота з галерэі камеры не будуць сінхранізавацца на вашых прыладах</translation>
 <translation id="4958444002117714549">Разгарнуць спіс</translation>
 <translation id="496392417432935267">Налада адкрыта ў іншым акне</translation>
 <translation id="4970724460420203313">Выкарыстанне Chrome з уліковым запісам пад кіраваннем дазваляе аддзяляць даныя пра работу ў браўзеры, звязаныя з арганізацыяй (у прыватнасці, укладкі, запісы гісторыі і паролі), ад падобных даных, звязаных з іншым уліковым запісам</translation>
@@ -1288,6 +1291,7 @@
 <translation id="5647702255748985085">Пакінуць групу?</translation>
 <translation id="5648166631817621825">За апошнія 7 дзён</translation>
 <translation id="5652623411397330904">Тавары, якія вы адсочваеце, будуць паказвацца тут.</translation>
+<translation id="5653100054596780862">Усе ўкладкі</translation>
 <translation id="5656431592348714536">Палепшаны Каляндар</translation>
 <translation id="5659593005791499971">Адрас электроннай пошты</translation>
 <translation id="5665739277590037307">Прымяняюцца <ph name="GOOGLE_TERMS" /> і <ph name="GEMINI_APPS_PRIVACY" />. Gemini можа рабіць памылкі, таму пераправярайце атрыманыя звесткі.</translation>
@@ -1720,6 +1724,7 @@
 <translation id="7149893636342594995">За апошнія 24 гадзіны</translation>
 <translation id="7154417656353909837">Выдаліць адрасы</translation>
 <translation id="7161230316646448869">Сінхранізуйце закладкі, гісторыю і іншыя даныя на ўсіх прыладах</translation>
+<translation id="7165323152084385463">Нумар VIN</translation>
 <translation id="7173114856073700355">Адкрыць Налады</translation>
 <translation id="7173721738069475737">{count,plural, =1{Закладка захавана}one{{count} закладка захавана}few{{count} закладкі захавана}many{{count} закладак захавана}other{{count} закладкі захавана}}</translation>
 <translation id="7176183551031110427">Паменшыць маштаб</translation>
@@ -1753,6 +1758,7 @@
 <translation id="7300448350764260141">Задайце дадатковы ўзровень абароны ад пагроз у інтэрнэце.</translation>
 <translation id="7311244614769792472">Вынікі не знойдзены</translation>
 <translation id="7313347584264171202">Вашы ўкладкі ў рэжыме інкогніта знаходзяцца тут</translation>
+<translation id="7322186060879266048">{count,plural, =1{Над клавіятурай паказаны {count} варыянт для аўтазапаўнення.}one{Над клавіятурай паказаны {count} варыянт для аўтазапаўнення.}few{Над клавіятурай паказаны {count} варыянты для аўтазапаўнення.}many{Над клавіятурай паказана {count} варыянтаў для аўтазапаўнення.}other{Над клавіятурай паказаны {count} варыянта для аўтазапаўнення.}}</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241">Спампавана: <ph name="PERCENT" /> %</translation>
 <translation id="7345061034321640811">Імпарт не дазволены</translation>

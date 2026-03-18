@@ -165,11 +165,6 @@
 <translation id="2588271083332682494">使用标签页分组整理标签页</translation>
 <translation id="2597457036804169544">不对网站应用深色主题</translation>
 <translation id="2606760465469169465">自动验证</translation>
-<translation id="2610903128639500624">在 <ph name="BEGIN_LINK1" />Android 设置<ph name="END_LINK1" />中管理
-
-高级保护功能会控制以下 Chrome 设置：
-•“一律使用安全连接”已开启。
-•“JavaScript 优化工具”已关闭。<ph name="BEGIN_LINK2" />管理网站例外情况<ph name="END_LINK2" /></translation>
 <translation id="2621115761605608342">允许特定网站运行 JavaScript。</translation>
 <translation id="2626708220538466178">默认浏览器底部动作条已关闭</translation>
 <translation id="2653659639078652383">提交</translation>
@@ -370,7 +365,7 @@
 <translation id="4672315773691449562">点按“浏览器应用”，然后点按“Chrome”</translation>
 <translation id="4676059169848868271">若要允许 <ph name="APP_NAME" /> 使用手部跟踪功能，您还需在<ph name="BEGIN_LINK" />系统设置<ph name="END_LINK" />中开启手部跟踪功能。</translation>
 <translation id="4688045258817337666">管理您的卡</translation>
-<translation id="4722332387043141878">网站通常会使用您设备的移动和光线传感器来实现虚拟现实或健身跟踪等功能</translation>
+<translation id="4722332387043141878">网站通常会使用您设备的移动传感器和光传感器来实现虚拟现实或健身跟踪等功能</translation>
 <translation id="4755971844837804407">开启此设置后，网站可以向您展示任何广告。关闭此设置后，网站无法展示侵扰性或误导性广告。</translation>
 <translation id="4779083564647765204">缩放</translation>
 <translation id="4807122856660838973">开启安全浏览</translation>

@@ -165,11 +165,6 @@
 <translation id="2588271083332682494">Uredite kartice pomoću grupa kartica</translation>
 <translation id="2597457036804169544">Tamna tema se ne primenjuje za sajtove</translation>
 <translation id="2606760465469169465">Automatska verifikacija</translation>
-<translation id="2610903128639500624">Upravljajte u <ph name="BEGIN_LINK1" />podešavanjima Android-a<ph name="END_LINK1" />
-
-Napredna zaštita kontroliše ova Chrome podešavanja:
-• Uključeno je „Uvek koristi bezbedne veze“.
-• „JavaScript optimizator“ je isključen. <ph name="BEGIN_LINK2" />Upravljajte izuzecima za sajtove<ph name="END_LINK2" /></translation>
 <translation id="2621115761605608342">Dozvolite JavaScript za određeni sajt.</translation>
 <translation id="2626708220538466178">Donja tabela podrazumevanog pregledača je zatvorena</translation>
 <translation id="2653659639078652383">Pošalji</translation>
@@ -487,6 +482,7 @@ Napredna zaštita kontroliše ova Chrome podešavanja:
 <translation id="5922853908706496913">Deli se ekran</translation>
 <translation id="5922967540311291836">Blokirajte kolačiće trećih strana:</translation>
 <translation id="5923512600150154850">Ovim brišete <ph name="DATASIZE" /> podataka i kolačića koje čuvaju sajtovi.</translation>
+<translation id="5930707844513754220">Prikaži još na listi za podešavanje</translation>
 <translation id="5939518447894949180">Resetuj</translation>
 <translation id="5948139900367969951">Brzo pristupajte onome što vam je važno</translation>
 <translation id="5964247741333118902">Ugrađen sadržaj</translation>
@@ -495,6 +491,7 @@ Napredna zaštita kontroliše ova Chrome podešavanja:
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
 <translation id="5998071268779572583">Uključite Discover fid</translation>
 <translation id="6012967556075291653">Zakačena prečica</translation>
+<translation id="6013003831291591200">Zadatak je završen</translation>
 <translation id="6015775454662021376">Kontrolišite pristup ovog sajta uređaju</translation>
 <translation id="6022659036123304283">Prilagodite Chrome sebi</translation>
 <translation id="6040143037577758943">Zatvori</translation>

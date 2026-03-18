@@ -213,6 +213,7 @@
 <translation id="1900260903084164610">Pokračovaním vyjadrujete súhlas so <ph name="BEGIN_TOS_LINK" />zmluvnými podmienkami<ph name="END_TOS_LINK" />.</translation>
 <translation id="1904580727789512086">Webové adresy, ktoré navštívite, sa uložia do vášho účtu Google</translation>
 <translation id="1910950723001426294">Zoznam možností zdieľania je zatvorený.</translation>
+<translation id="1912367671208932516">Otvoriť ponuku rozšírení</translation>
 <translation id="191726024256261717">Kontrola povolení</translation>
 <translation id="1917766536967060661">Okamžite stratíte prístup ku skupine kariet <ph name="GROUP_NAME" /> a <ph name="BLOCKED_MEMBER_FULL_NAME" /> (<ph name="BLOCKED_MEMBER_EMAIL" />) s vami už nebude môcť komunikovať v službách Googlu.</translation>
 <translation id="1919130412786645364">Povoliť prihlásenie do Chromu</translation>
@@ -857,6 +858,7 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 prelomené heslo}few{# prelomené heslá}many{# compromised passwords}other{# prelomených hesiel}}</translation>
 <translation id="4641919525231168205">Prechod na ďalšiu stránku</translation>
 <translation id="4642472735733036929">Sledovanie ceny bolo zastavené</translation>
+<translation id="4643661539340338954">Upozornenia funkcie Chrome Finds sú zapnuté</translation>
 <translation id="4649493483932335039">Zobraziť nedávne karty</translation>
 <translation id="465657074423018424">Bezpečné prehliadanie vás chráni pred podvodnými webmi. Keď ho vypnete, pri prehliadaní postupujte opatrne (obzvlášť pri zadávaní hesiel).</translation>
 <translation id="4662373422909645029">Prezývka nemôže mať čísla</translation>
@@ -1490,7 +1492,6 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="7057969023583258980">Otvoriť celú históriu Chromu</translation>
 <translation id="7063006564040364415">Nepodarilo sa pripojiť k synchronizačnému serveru.</translation>
 <translation id="7063106218165698546">Prispôsobte si skupinu kariet a vyberte Hotovo</translation>
-<translation id="7071521146534760487">Spravovať účet</translation>
 <translation id="707155805709242880">Nižšie vyberte, čo sa má synchronizovať</translation>
 <translation id="7072949719501323344"><ph name="TAB_TITLE" />, viackrát vybraná pripnutá karta inkognito s obrazom v obraze</translation>
 <translation id="7077143737582773186">SD karta</translation>
@@ -1655,6 +1656,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="7686086654630106285">Ďalšie informácie o reklamách navrhovaných webmi</translation>
 <translation id="7690596512217303514">Chrome sa nepodarilo vo vašom zariadení otvoriť. Ak chcete tento problém vyriešiť, stiahnite si z obchodu s aplikáciami jeho najnovšiu aktualizáciu.</translation>
 <translation id="7692761875510935111">Rýchlo otvorte v prehliadači. Ak chcete túto skratku upraviť, pridržte ju.</translation>
+<translation id="7695270712963178084">Chrome Finds</translation>
 <translation id="7697383401610880082">Presúvadlo</translation>
 <translation id="7698359219371678927">Vytvorte správu v aplikácii <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">Dolný hárok nedávnej aktivity je otvorený na celú výšku</translation>

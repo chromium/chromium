@@ -7280,6 +7280,7 @@ Vous pouvez ajouter une autre restriction de compte avec la règle <ph name="MIC
 <translation id="5815990343032461023">Ancien comportement : les applis Chrome Kiosk sont mises à jour par le système d'extension en utilisant l'URL de mise à jour issue du fichier manifeste d'extension, et en mettant en cache le gestionnaire au moyen de l'URL de mise à jour provenant de la règle</translation>
 <translation id="5816688024515869030">Désactiver le fournisseur <ph name="UIA_NAME" />.</translation>
 <translation id="581737504822041364">Autoriser ServiceWorker à distribuer des requêtes de navigation sans attendre son démarrage</translation>
+<translation id="5827464697821627670">Peut être définie pour la machine et l'utilisateur</translation>
 <translation id="5828008775808363753">Ne pas lancer le navigateur au démarrage</translation>
 <translation id="582857022372205358">Activer l'impression recto verso bord court</translation>
 <translation id="5830196507442186669">Autoriser les appareils à utiliser <ph name="BOREALIS_NAME" /> sur <ph name="PRODUCT_OS_NAME" /></translation>
@@ -10556,6 +10557,21 @@ Si la règle <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> est désactivée, ell
 <translation id="7933141401888114454">Autoriser la création de comptes utilisateurs supervisés</translation>
 <translation id="793473937901685727">Définir la disponibilité des certificats pour les applications ARC</translation>
 <translation id="7936302526928951356">La chaîne user-agent ne figera pas la version majeure.</translation>
+<translation id="7936632434238618620">Permet de définir une liste de formats d'URL indiquant les sites pour lesquels Chrome peut sélectionner automatiquement un certificat client. Cette valeur doit être un ensemble de dictionnaires convertis en chaînes JSON, chacun d'entre eux se présentant sous la forme <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_EXAMPLE" />, où <ph name="URL_PATTERN_PLACEHOLDER" /> correspond à un schéma de paramètre de contenu. Le filtre <ph name="FILTER_PLACEHOLDER" /> limite les certificats client parmi lesquels le navigateur effectue une sélection automatique. Indépendamment du filtre, seuls les certificats correspondant à la demande de certificat du serveur sont sélectionnés. Sur Android et iOS, Chrome ne peut sélectionner que les certificats client qu'il a lui-même provisionnés. Il ne peut pas accéder aux certificats installés au niveau du système d'exploitation.
+
+      Exemples pour l'utilisation de la section <ph name="FILTER_PLACEHOLDER" /> :
+
+      * Lorsque le filtre <ph name="FILTER_PLACEHOLDER" /> est défini sur <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_FILTER_EXAMPLE" />, seuls les certificats client émis par un certificat dont la valeur CommonName est <ph name="ISSUER_CN_PLACEHOLDER" /> sont sélectionnés.
+
+      * Lorsque le filtre <ph name="FILTER_PLACEHOLDER" /> contient à la fois une section <ph name="ISSUER_STRING_VALUE" /> et une section <ph name="SUBJECT_STRING_VALUE" />, le certificat client doit satisfaire les deux conditions pour être sélectionné.
+
+      * Lorsque le filtre <ph name="FILTER_PLACEHOLDER" /> contient une section <ph name="SUBJECT_STRING_VALUE" /> avec la valeur <ph name="FILTER_STRING_ORGANIZATION" />, le certificat doit contenir au moins une organisation correspondant à la valeur spécifiée pour être sélectionné.
+
+      * Lorsque le filtre <ph name="FILTER_PLACEHOLDER" /> contient une section <ph name="SUBJECT_STRING_VALUE" /> avec la valeur <ph name="FILTER_STRING_ORGANIZATIONAL_UNIT" />, le certificat doit contenir au moins une unité organisationnelle correspondant à la valeur spécifiée pour être sélectionné.
+
+      * Lorsque le filtre <ph name="FILTER_PLACEHOLDER" /> est défini sur <ph name="EMPTY_DICTIONARY" />, la sélection de certificats client ne fait pas l'objet de restrictions supplémentaires. Notez que les filtres fournis par le serveur Web restent appliqués.
+
+      Si cette règle n'est pas configurée, aucune sélection automatique n'est effectuée pour aucun site.</translation>
 <translation id="7937766917976512374">Autoriser ou interdire la capture vidéo</translation>
 <translation id="7937825205289116563">Si cette règle est activée ou qu'elle n'est pas configurée, les signatures ponctuelles sont autorisées pour l'appli native créée lors de l'installation d'une progressive web app (PWA). Cela garantit que chaque appli installée a une identité unique pour les composants système <ph name="MAC_OS_NAME" />.
 

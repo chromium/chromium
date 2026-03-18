@@ -165,11 +165,6 @@
 <translation id="2588271083332682494">Уредите картице помоћу група картица</translation>
 <translation id="2597457036804169544">Тамна тема се не примењује за сајтове</translation>
 <translation id="2606760465469169465">Аутоматска верификација</translation>
-<translation id="2610903128639500624">Управљајте у <ph name="BEGIN_LINK1" />подешавањима Android-а<ph name="END_LINK1" />
-
-Напредна заштита контролише ова Chrome подешавања:
-• Укључено је „Увек користи безбедне везе“.
-• „JavaScript оптимизатор“ је искључен. <ph name="BEGIN_LINK2" />Управљајте изузецима за сајтове<ph name="END_LINK2" /></translation>
 <translation id="2621115761605608342">Дозволите JavaScript за одређени сајт.</translation>
 <translation id="2626708220538466178">Доња табела подразумеваног прегледача је затворена</translation>
 <translation id="2653659639078652383">Пошаљи</translation>
@@ -487,6 +482,7 @@
 <translation id="5922853908706496913">Дели се екран</translation>
 <translation id="5922967540311291836">Блокирајте колачиће трећих страна:</translation>
 <translation id="5923512600150154850">Овим бришете <ph name="DATASIZE" /> података и колачића које чувају сајтови.</translation>
+<translation id="5930707844513754220">Прикажи још на листи за подешавање</translation>
 <translation id="5939518447894949180">Ресетуј</translation>
 <translation id="5948139900367969951">Брзо приступајте ономе што вам је важно</translation>
 <translation id="5964247741333118902">Уграђен садржај</translation>
@@ -495,6 +491,7 @@
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
 <translation id="5998071268779572583">Укључите Discover фид</translation>
 <translation id="6012967556075291653">Закачена пречица</translation>
+<translation id="6013003831291591200">Задатак је завршен</translation>
 <translation id="6015775454662021376">Контролишите приступ овог сајта уређају</translation>
 <translation id="6022659036123304283">Прилагодите Chrome себи</translation>
 <translation id="6040143037577758943">Затвори</translation>

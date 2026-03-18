@@ -394,6 +394,7 @@
 <translation id="2360196772093551345">Żądaj strony mobilnej</translation>
 <translation id="2362083820973145409">Zalogowano jako <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Otwiera ustawienia.</translation>
 <translation id="2371084566192454134">Karty i grupy kart</translation>
+<translation id="2371303771137626249">Nowa</translation>
 <translation id="2381405137052800939">Podstawowe</translation>
 <translation id="2384692388811649784">Ukrywaj karty incognito</translation>
 <translation id="2386793615875593361">Wybrano: 1</translation>
@@ -690,6 +691,7 @@
 <translation id="3530206579861815432">Szybko znajduj otwarte i ostatnio zamknięte karty na zsynchronizowanych urządzeniach.</translation>
 <translation id="3530767473765895035">Zarządzaj kontami na tym urządzeniu…</translation>
 <translation id="3533436815740441613">Nowa karta</translation>
+<translation id="3534738261102690620">Zapytaj Gemini</translation>
 <translation id="3540141921715814660">Dodaj do zakładek</translation>
 <translation id="3546122170015471515">Podgląd Map na Google.com</translation>
 <translation id="3547356470684043247">Zapoznaj się z ocenami i recenzjami produktów i usług, aby podejmować lepsze decyzje na podstawie opinii klientów</translation>
@@ -1089,6 +1091,7 @@
 <translation id="4944543191714094452">Znajdź na stronie…</translation>
 <translation id="4945756290001680296">Otwórz ustawienia haseł</translation>
 <translation id="4949302115427722371">Zarządzaj ustawieniami…</translation>
+<translation id="4952050521954075618">Zdjęcia z rolki z aparatu nie będą synchronizowane między urządzeniami</translation>
 <translation id="4958444002117714549">Rozwiń listę</translation>
 <translation id="496392417432935267">Otwarto w innym oknie</translation>
 <translation id="4970724460420203313">Korzystanie z konta zarządzanego w Chrome pozwala oddzielić dane przeglądania związane z organizacją (w tym karty, historię i hasła) od pozostałych danych przeglądania.</translation>
@@ -1288,6 +1291,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="5647702255748985085">Opuścić grupę?</translation>
 <translation id="5648166631817621825">Ostatnie 7 dni</translation>
 <translation id="5652623411397330904">Produkty, których ceny monitorujesz, pojawią się tutaj.</translation>
+<translation id="5653100054596780862">Wszystkie karty</translation>
 <translation id="5656431592348714536">Ulepszony kalendarz</translation>
 <translation id="5659593005791499971">E-mail</translation>
 <translation id="5665739277590037307">Obowiązują <ph name="GOOGLE_TERMS" /> i <ph name="GEMINI_APPS_PRIVACY" />. Gemini może popełniać błędy, dlatego sprawdzaj odpowiedzi.</translation>
@@ -1720,6 +1724,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="7149893636342594995">Ostatnie 24 godziny</translation>
 <translation id="7154417656353909837">Usuń adresy</translation>
 <translation id="7161230316646448869">Synchronizuj zakładki, historię i inne dane na wszystkich swoich urządzeniach</translation>
+<translation id="7165323152084385463">Numer VIN</translation>
 <translation id="7173114856073700355">Otwórz Ustawienia</translation>
 <translation id="7173721738069475737">{count,plural, =1{Zakładka została zapisana}few{{count} zakładki zostały zapisane}many{{count} zakładek zostało zapisanych}other{{count} zakładki zostało zapisane}}</translation>
 <translation id="7176183551031110427">Pomniejsz</translation>
@@ -1753,6 +1758,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="7300448350764260141">Wprowadź dodatkową warstwę ochrony przed zagrożeniami online.</translation>
 <translation id="7311244614769792472">Brak wyników</translation>
 <translation id="7313347584264171202">Tu znajdziesz swoje karty incognito</translation>
+<translation id="7322186060879266048">{count,plural, =1{Nad klawiaturą dostępna jest {count} opcja autouzupełniania.}few{Nad klawiaturą dostępne są {count} opcje autouzupełniania.}many{Nad klawiaturą dostępnych jest {count} opcji autouzupełniania.}other{Nad klawiaturą dostępne jest {count} opcji autouzupełniania.}}</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241">Pobrano <ph name="PERCENT" /> procent</translation>
 <translation id="7345061034321640811">Import niedozwolony</translation>

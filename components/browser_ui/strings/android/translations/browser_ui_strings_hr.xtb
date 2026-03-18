@@ -165,11 +165,6 @@
 <translation id="2588271083332682494">Organizirajte se pomoću grupa kartica</translation>
 <translation id="2597457036804169544">Ne primjenjuj tamnu temu na web-lokacije</translation>
 <translation id="2606760465469169465">Automatska potvrda</translation>
-<translation id="2610903128639500624">Upravljajte u <ph name="BEGIN_LINK1" />postavkama Androida<ph name="END_LINK1" />
-
-Napredna zaštita kontrolira sljedeće postavke Chromea:
-• uključena je postavka Uvijek upotrebljavaj sigurne veze.
-• Alat za optimizaciju JavaScripta je isključen. <ph name="BEGIN_LINK2" />Upravljanje iznimkama za web-lokaciju<ph name="END_LINK2" /></translation>
 <translation id="2621115761605608342">Dopuštanje JavaScripta za određenu web-lokaciju.</translation>
 <translation id="2626708220538466178">Donja tablica zadanog preglednika je zatvorena</translation>
 <translation id="2653659639078652383">Pošalji</translation>

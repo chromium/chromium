@@ -754,6 +754,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2184405333245229118">{COUNT,plural, =1{1 adres}few{# adresy}many{# adresów}other{# adresu}}</translation>
 <translation id="2188375229972301266">Wiele otworów na dole</translation>
 <translation id="218940509700321686">Wartości rozdzielane przecinkami</translation>
+<translation id="2190094353033916816">Ta zasada ma różne wartości stosowane na poziomie komputera i użytkownika. Zasada działa zgodnie z oczekiwaniami.</translation>
 <translation id="2191980191135734720">W następnym kroku odblokuj ekran, np. odciskiem palca. Możesz też <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Istotne kwestie</translation>
 <translation id="2198183835992354675">Numer KTN</translation>
@@ -3193,6 +3194,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6042308850641462728">Więcej</translation>
 <translation id="6043357981274314628">Gotowe.</translation>
 <translation id="6045164183059402045">Szablon impozycji</translation>
+<translation id="6046026831939367176"><ph name="URL" /> chce używać Twojej przybliżonej lokalizacji</translation>
 <translation id="6046892054959167494">Wpisz <ph name="SEARCH_AGGREGATOR_KEYWORD" />, aby wyszukać lub zapytać: <ph name="SEARCH_AGGREGATOR_SHORT_NAME" /></translation>
 <translation id="6047927260846328439">Te treści mogą próbować podstępem nakłonić Cię do zainstalowania oprogramowania lub ujawnienia danych osobowych. <ph name="BEGIN_LINK" />Wyświetl mimo to<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">Koperta B4</translation>
@@ -4991,6 +4993,7 @@ Dodatkowe informacje:
 <translation id="8870700989640064057">Wydrukować poufny plik?</translation>
 <translation id="8871485335898060555">Antyki i artykuły kolekcjonerskie</translation>
 <translation id="8871553383647848643">Dostosuj wygląd przeglądarki</translation>
+<translation id="887350038812854047">Ta zasada ma tę samą wartość zastosowaną na poziomie komputera i użytkownika. Zasada działa zgodnie z oczekiwaniami.</translation>
 <translation id="8874790741333031443">Spróbuj tymczasowo zezwolić na pliki cookie innych firm – oznacza to słabszą ochronę podczas przeglądania, ale jest większa szansa na to, że funkcje witryny będą działać zgodnie z oczekiwaniami.</translation>
 <translation id="8874824191258364635">Wpisz prawidłowy numer karty</translation>
 <translation id="8877780815363510165">Wędkarstwo</translation>

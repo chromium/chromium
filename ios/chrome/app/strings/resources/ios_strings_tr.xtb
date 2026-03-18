@@ -394,6 +394,7 @@
 <translation id="2360196772093551345">Mobil Site İste</translation>
 <translation id="2362083820973145409"><ph name="USER_NAME" /> olarak oturum açtınız. <ph name="USER_EMAIL" />. Ayarları açar.</translation>
 <translation id="2371084566192454134">Sekmeler ve sekme grupları</translation>
+<translation id="2371303771137626249">Yeni</translation>
 <translation id="2381405137052800939">Temel ayarlar</translation>
 <translation id="2384692388811649784">Gizli sekmeleri gizle</translation>
 <translation id="2386793615875593361">1 fotoğraf seçildi</translation>
@@ -690,6 +691,7 @@
 <translation id="3530206579861815432">Senkronize edilmiş cihazlarınızdaki açık ve yakın zamanda kapatılan sekmeleri hızlıca bulun.</translation>
 <translation id="3530767473765895035">Bu cihazdaki hesapları yönet…</translation>
 <translation id="3533436815740441613">Yeni Sekme</translation>
+<translation id="3534738261102690620">Gemini'a sorun</translation>
 <translation id="3540141921715814660">Yer İşaretlerine Ekle</translation>
 <translation id="3546122170015471515">Google.com'da Haritalar Önizlemeleri</translation>
 <translation id="3547356470684043247">Kararlarınızı şekillendirmenize yardımcı olacak yorumlar için ürün, hizmet veya deneyimle ilgili müşteri değerlendirmelerini okuyun.</translation>
@@ -1089,6 +1091,7 @@
 <translation id="4944543191714094452">Sayfada Bul…</translation>
 <translation id="4945756290001680296">Şifre ayarlarına erişin</translation>
 <translation id="4949302115427722371">Ayarları yönet…</translation>
+<translation id="4952050521954075618">Film rulosundaki fotoğraflar cihazlarınız arasında senkronize edilmeyecek</translation>
 <translation id="4958444002117714549">Listeyi genişlet</translation>
 <translation id="496392417432935267">Başka yerde açılmış</translation>
 <translation id="4970724460420203313">Yönetilen hesabınızla Chrome'u kullandığınızda kuruluşunuzla ilgili göz atma geçmişinizi (sekmeler, geçmiş ve şifreler dahil) diğer göz atma etkinliklerinizden ayrı tutabilirsiniz.</translation>
@@ -1288,6 +1291,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="5647702255748985085">Gruptan ayrılmak istiyor musunuz?</translation>
 <translation id="5648166631817621825">Son 7 gün</translation>
 <translation id="5652623411397330904">Takip ettiğiniz ürünler burada gösterilir.</translation>
+<translation id="5653100054596780862">Tüm sekmeler</translation>
 <translation id="5656431592348714536">Gelişmiş Takvim</translation>
 <translation id="5659593005791499971">E-posta</translation>
 <translation id="5665739277590037307"><ph name="GOOGLE_TERMS" /> ve <ph name="GEMINI_APPS_PRIVACY" /> geçerlidir. Gemini hata yapabildiğinden verdiği yanıtları doğrulayın.</translation>
@@ -1753,6 +1757,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="7300448350764260141">İnternet ortamındaki tehditlere karşı ek koruma katmanı sağlayın.</translation>
 <translation id="7311244614769792472">Sonuç bulunamadı</translation>
 <translation id="7313347584264171202">Gizli sekmelerinizi burada bulabilirsiniz</translation>
+<translation id="7322186060879266048">{count,plural, =1{Klavyenizin üzerinde {count} tane otomatik doldurma seçeneği var.}other{Klavyenizin üzerinde {count} tane otomatik doldurma seçeneği var.}}</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241">Yüzde <ph name="PERCENT" /> indirildi</translation>
 <translation id="7345061034321640811">İçe aktarmaya izin verilmiyor</translation>

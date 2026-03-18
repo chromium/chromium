@@ -245,7 +245,6 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1159879754517035595">Extensie-instellingen beheren</translation>
 <translation id="1160800016654917722">Venster omlaag en naar links verplaatst</translation>
 <translation id="1161190590171867633">Vergelijkingstabellen worden opgeslagen in je Google-account</translation>
-<translation id="1161575384898972166">Log in bij <ph name="TOKEN_NAME" /> om het klantcertificaat te exporteren.</translation>
 <translation id="116173250649946226">Je beheerder heeft een standaardthema ingesteld dat niet kan worden gewijzigd.</translation>
 <translation id="1162213688509394031">Titelbalk verbergen</translation>
 <translation id="1162479191445552288">Openen bij opstarten</translation>
@@ -488,7 +487,6 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1316136264406804862">Zoeken...</translation>
 <translation id="1316248800168909509">Kan geen verbinding maken met <ph name="DEVICE" />. Probeer het opnieuw.</translation>
 <translation id="1316495628809031177">Synchronisatie is onderbroken</translation>
-<translation id="1317637799698924700">Je dockingstation werkt in de voor USB Type-C-geschikte modus.</translation>
 <translation id="1319983966058170660">Terugknop van subpagina <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="1322046419516468189">Bekijk en beheer opgeslagen wachtwoorden in je <ph name="SAVED_PASSWORDS_STORE" /></translation>
 <translation id="1323433172918577554">Meer bekijken</translation>
@@ -775,6 +773,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1521774566618522728">Vandaag actief</translation>
 <translation id="1521933835545997395">Verbonden met Android-telefoon</translation>
 <translation id="1523279371236772909">Bekeken in de afgelopen maand</translation>
+<translation id="1523486680453956384">Taak bekijken</translation>
 <translation id="1523978563989812243">Machines voor tekst-naar-spraak</translation>
 <translation id="1524563461097350801">Nee, bedankt</translation>
 <translation id="1525740877599838384">Alleen wifi gebruiken om de locatie te bepalen</translation>
@@ -991,7 +990,6 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1657406563541664238">Help <ph name="PRODUCT_NAME" /> beter te maken door automatisch gebruiksstatistieken en crashmeldingen naar Google te verzenden</translation>
 <translation id="1657937299377480641">Als je opnieuw wilt inloggen voor toegang tot educatieve bronnen, vraag je een ouder om je toestemming te geven</translation>
 <translation id="1658424621194652532">Deze pagina heeft toegang tot je microfoon.</translation>
-<translation id="1660763353352708040">Probleem met voedingsadapter</translation>
 <translation id="1661996889489595105">{NUM_TABS,plural, =1{Het tabblad corrigeren dat je browser vertraagt}other{De tabbladen corrigeren die je browser vertragen}}</translation>
 <translation id="16620462294541761">Je wachtwoord kan niet worden geverifieerd. Probeer het opnieuw.</translation>
 <translation id="1662572015199460525">Chat met je stem of via tekst om onder meer antwoorden en belangrijke conclusies te krijgen terwijl je browst</translation>
@@ -1100,8 +1098,10 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1732380773380808394">Je kunt ook onder andere je wachtwoorden uit je Google-account gebruiken.</translation>
 <translation id="1734212868489994726">Lichtblauw</translation>
 <translation id="1734824808160898225"><ph name="PRODUCT_NAME" /> kan zichzelf mogelijk niet updaten</translation>
+<translation id="1735636854292329504"><ph name="TASK_TITLE" />\nIk werk aan je taak en laat het je weten als er meer actie nodig is</translation>
 <translation id="1735983780784385591">Geïmporteerd vanuit Linux</translation>
 <translation id="173628468822554835">OK. Standaard sturen nieuwe sites die je bezoekt, je geen meldingen.</translation>
+<translation id="1737228213718001685">Je taak is in behandeling</translation>
 <translation id="1737968601308870607">Bug indienen</translation>
 <translation id="1740414789702358061"><ph name="SITE_ACCESS" />. Selecteer dit om siterechten te wijzigen</translation>
 <translation id="1741190788710022490">Aangepast opladen</translation>
@@ -1119,7 +1119,6 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1751335846119670066">Help me met lezen</translation>
 <translation id="17513872634828108">Geopende tabbladen</translation>
 <translation id="175196451752279553">Gesloten tabblad opni&amp;euw openen</translation>
-<translation id="1753067873202720523">Je Chromebook wordt mogelijk niet opgeladen als deze aanstaat.</translation>
 <translation id="1753557900380512635">Interieurs</translation>
 <translation id="1753905327828125965">Meest bezocht</translation>
 <translation id="1755601632425835748">Tekstgrootte</translation>
@@ -1446,7 +1445,6 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1974060860693918893">Geavanceerd</translation>
 <translation id="1974159333077206889">Dezelfde audio voor alle speakers</translation>
 <translation id="1975841812214822307">Verwijderen...</translation>
-<translation id="1976150099241323601">Inloggen bij beveiligingsapparaat</translation>
 <translation id="1976823515278601587">Grote besparingen</translation>
 <translation id="1978249384651349182"><ph name="BEGIN_DESCRIPTION" />Als je de apparaten bij je organisatie inschrijft, worden deze ingesteld voor gecentraliseerd apparaatbeheer. Je organisatie kan om verschillende redenen inschrijving vereisen:<ph name="END_DESCRIPTION" />
 <ph name="BEGIN_SUBTITLE1" /><ph name="BEGIN_BOLD" />De beveiliging verbeteren<ph name="END_BOLD" /><ph name="END_SUBTITLE1" />
@@ -1457,7 +1455,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <ph name="BEGIN_DESCRIPTION3" />De organisatie kan op afstand toegang krijgen tot een apparaatsessie om problemen op te lossen.<ph name="END_DESCRIPTION3" />
     <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />Toegang aanzetten<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
 <ph name="BEGIN_DESCRIPTION4" />Apps, services en netwerken van de organisatie zijn misschien alleen beschikbaar op ingeschreven apparaten.<ph name="END_DESCRIPTION4" /></translation>
-<translation id="1979208610845113582">Je kunt gesprekken in de AI-modus hier nu rechtstreeks hervatten. Je kunt dit op elk moment losmaken.</translation>
+<translation id="1979208610845113582">Je kunt gesprekken in de AI-modus hier nu rechtstreeks hervatten. Je kunt dit altijd weer losmaken.</translation>
 <translation id="1979280758666859181">Je wijzigt naar een kanaal met een oudere versie van <ph name="PRODUCT_NAME" />. De wijziging van kanaal wordt toegepast wanneer de versie van het kanaal overeenkomt met de versie die momenteel op het apparaat is geïnstalleerd.</translation>
 <translation id="1979582938184524893">Handmatig de persoonlijke informatie selecteren die je wilt opnemen</translation>
 <translation id="197989455406964291">KDC ondersteunt versleutelingstype niet</translation>
@@ -1720,7 +1718,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2156294658807918600">Service worker: <ph name="SCRIPT_URL" /></translation>
 <translation id="2156707722163479690">Scrollen en zoomen op gedeelde tabbladen toegestaan</translation>
 <translation id="2157457598652721267">Gebruik / en - om de linker- of rechtermuisknop te selecteren. Gebruik * om beide te selecteren.</translation>
-<translation id="2157474325782140681">Gebruik voor aanvullende functies een Dell-dockingstation dat is bedoeld voor gebruik met deze Chromebook.</translation>
 <translation id="215753907730220065">Volledig scherm sluiten</translation>
 <translation id="2157632422749995237">Later kan Wallet je meldingen sturen over je evenementen</translation>
 <translation id="2157779167749714207">Je <ph name="DEVICE_TYPE" /> wordt geleverd met Gemini</translation>
@@ -1880,7 +1877,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2271986192355138465">Meer informatie over hoe je web-apps installeert</translation>
 <translation id="2272430695183451567">0 schakelaars toegewezen</translation>
 <translation id="2272570998639520080">Martiniglas</translation>
-<translation id="2273119997271134996">Probleem met videopoort van dock</translation>
 <translation id="2274840746523584236">Laad je Chromebook op</translation>
 <translation id="2275193525496879616">Toegestaan. Sluit een camera aan op je apparaat.</translation>
 <translation id="2275352532065325930">Positie van Tabbladen doorzoeken</translation>
@@ -1918,7 +1914,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2297705863329999812">Printers zoeken</translation>
 <translation id="2297822946037605517">Deze pagina delen</translation>
 <translation id="229871422646860597">Losmaken van werkbalk</translation>
-<translation id="2298749511072894576">Je kunt Gemini-chats hier nu rechtstreeks hervatten. Je kunt dit op elk moment losmaken.</translation>
+<translation id="2298749511072894576">Je kunt Gemini-chats hier nu rechtstreeks hervatten. Je kunt dit altijd weer losmaken.</translation>
 <translation id="2299685119225839832">Je kunt een samenvatting krijgen van wat mensen zeggen in hun reviews</translation>
 <translation id="2299734369537008228">Schuifregelaar: <ph name="MIN_LABEL" /> - <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">Alle logbestanden die door debugd zijn verzameld, opnemen als afzonderlijk archief.</translation>
@@ -2112,7 +2108,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{1 account voor <ph name="DOMAIN_LINK" />, wachtwoord alleen opgeslagen op dit apparaat. Meer informatie}other{{NUM_PASSWORDS} accounts voor <ph name="DOMAIN_LINK" />, wachtwoord alleen opgeslagen op dit apparaat. Meer informatie}}</translation>
 <translation id="2428510569851653187">Beschrijf wat je aan het doen was toen het tabblad crashte</translation>
 <translation id="2428939361789119025">Wifi uitzetten</translation>
-<translation id="2431027948063157455">De Google Assistent kan niet worden geladen. Controleer de netwerkverbinding en probeer het opnieuw.</translation>
 <translation id="243179355394256322">Je organisatie beperkt apparaatinschrijving tot alleen geautoriseerde gebruikers. Deze gebruiker is niet geautoriseerd om apparaten in te schrijven. Zorg ervoor dat de gebruiker het beheerdersrecht Google Meet-hardware inschrijven heeft in het gedeelte Gebruikers van de Beheerdersconsole.</translation>
 <translation id="243275146591958220">Download annuleren</translation>
 <translation id="2432882794929808179"><ph name="APP_COUNT" /> apps geregistreerd</translation>
@@ -2151,6 +2146,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2450849356604136918">Geen actieve weergaven</translation>
 <translation id="2451298179137331965">2x</translation>
 <translation id="2453045048779611513">Je organisatie beperkt wat je kunt opslaan</translation>
+<translation id="245307875355990880">Taak hervatten</translation>
 <translation id="245322989586167203">Sites maken meestal verbinding met seriële poorten voor functies voor gegevensoverdracht zoals je netwerk instellen</translation>
 <translation id="2453860139492968684">Voltooien</translation>
 <translation id="2454206500483040640">Gepartitioneerd</translation>
@@ -2215,6 +2211,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2485681265915754872">Servicevoorwaarden van Google Play</translation>
 <translation id="248676429071089168">Swipe omhoog om de pagina omlaag te verplaatsen</translation>
 <translation id="2487067538648443797">Nieuwe bookmark toevoegen</translation>
+<translation id="2487602042876349837"><ph name="VIEW_ONE_ORIENTATION" /> Nu bekijken is <ph name="VIEW_ONE_PERCENT" /> breed, <ph name="VIEW_TWO_ORIENTATION" /> Nu bekijken is <ph name="VIEW_TWO_PERCENT" /> breed.</translation>
 <translation id="2489686758589235262">Nog 2 schakelaars toewijzen</translation>
 <translation id="2489829450872380594">De volgende keer wordt deze <ph name="DEVICE_TYPE" /> ontgrendeld met een nieuwe telefoon. Je kunt Smart Lock uitzetten in Instellingen.</translation>
 <translation id="2489918096470125693">&amp;Map toevoegen...</translation>
@@ -2697,7 +2694,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2808985063107661499"><ph name="MAIN_GESTURE" /> kan overlappen met <ph name="CONFLICTING_GESTURE_ONE" /> en <ph name="CONFLICTING_GESTURE_TWO" />. Kies zo mogelijk een ander gebaar.</translation>
 <translation id="2809346626032021864">Lezen</translation>
 <translation id="2811205483104563968">Accounts</translation>
-<translation id="2812049959647166806">Thunderbolt wordt niet ondersteund</translation>
 <translation id="2813094189969465044">Ouderlijk toezicht</translation>
 <translation id="2813765525536183456">&amp;Nieuw profiel toevoegen</translation>
 <translation id="281390819046738856">Verzoek kan niet worden ondertekend.</translation>
@@ -3134,7 +3130,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3115147772012638511">Wachten op cache...</translation>
 <translation id="3115580024857770654">Alles samenvouwen</translation>
 <translation id="3115743155098198207">Taal van Google-account beheren</translation>
-<translation id="3117362587799608430">Dock is niet volledig geschikt</translation>
 <translation id="3117791853215125017">{COUNT,plural, =1{Kan <ph name="ATTACHMENTS" /> niet sturen naar <ph name="DEVICE_NAME" />}other{Kan <ph name="ATTACHMENTS" /> niet sturen naar <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3118319026408854581"><ph name="PRODUCT_NAME" /> Help</translation>
 <translation id="3118748462829336648">Zijvenster openen</translation>
@@ -3150,7 +3145,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3125361247594231799">Zest het vast voor de volgende keer</translation>
 <translation id="3125816458150005808">Je kunt de functie losmaken en openen via het menu</translation>
 <translation id="3126026824346185272">Ctrl</translation>
-<translation id="3127860049873093642">Gebruik een geschikte Dell- of USB Type-C-voedingsadapter om problemen met het opladen en de werking te voorkomen.</translation>
 <translation id="3127862849166875294">Schijfgrootte aanpassen voor Linux</translation>
 <translation id="3129150892373332590">Hiermee zet je het persistent delen van USB-apparaten met gasten uit. Hierdoor wordt ook alle persistentie gereset. Weet je het zeker?</translation>
 <translation id="3129173833825111527">Marge links</translation>
@@ -3393,7 +3387,6 @@ Je kunt instellingen op deze kaart altijd beheren of meer opties bekijken in het
 Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het gedeelte Chrome aanpassen.</translation>
 <translation id="3308134619352333507">Knop verbergen</translation>
 <translation id="3308604065765626613">{GROUP_COUNT,plural, =1{De tabbladen blijven geopend op dit apparaat, maar de groep wordt definitief verwijderd.}other{De tabbladen blijven geopend op dit apparaat, maar de groepen worden definitief verwijderd.}}</translation>
-<translation id="3308852433423051161">Google Assistent laden...</translation>
 <translation id="3309124184713871355">Bouwwerken</translation>
 <translation id="3309330461362844500">ID van certificaatprofiel</translation>
 <translation id="3310379801837527592">Lid worden van tabbladgroep met <ph name="OWNER_FIRST_NAME" /> en <ph name="NUM_OTHER_MEMBERS" /> andere persoon</translation>
@@ -3622,7 +3615,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3468999815377931311">Android-telefoon</translation>
 <translation id="3469583217479686109">Tool Selectie</translation>
 <translation id="3471687177769494956">Navigatiesnelkoppeling bewerken</translation>
-<translation id="3471876058939596279">HDMI- en USB Type-C-poorten kunnen niet tegelijkertijd worden gebruikt voor video. Gebruik een andere videopoort.</translation>
 <translation id="3472469028191701821">Opent in nieuw tabblad</translation>
 <translation id="3473241910002674503">Ga terug of naar de homepage en schakel tussen apps met knoppen in de tabletmodus.</translation>
 <translation id="3473479545200714844">Vergrootglas</translation>
@@ -3824,7 +3816,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3608730769702025110">Stap 3 van 4: Check persoonlijk identificeerbare informatie</translation>
 <translation id="3609277884604412258">Snel zoeken</translation>
 <translation id="3610241585790874201">Geen toestemming om gegevens op je apparaat op te slaan</translation>
-<translation id="3610369246614755442">De ventilator van het dock heeft onderhoud nodig</translation>
 <translation id="3610961622607302617">Wachtwoord wijzigen voor <ph name="WEBSITE" /></translation>
 <translation id="3611634011145829814">Naar de abonnementspagina</translation>
 <translation id="3611658447322220736">Onlangs gesloten sites kunnen het sturen en ontvangen van gegevens afronden</translation>
@@ -3852,7 +3843,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3624567683873126087">Apparaat ontgrendelen en inloggen op Google-account</translation>
 <translation id="3624583033347146597">Je voorkeuren voor cookies van derden kiezen</translation>
 <translation id="3625481642044239431">Ongeldig bestand geselecteerd. Probeer het opnieuw.</translation>
-<translation id="3626296069957678981">Gebruik een geschikte Dell-batterij voor het opladen van deze Chromebook.</translation>
 <translation id="3627320433825461852">Minder dan 1 minuut resterend</translation>
 <translation id="3627588569887975815">Link openen in inco&amp;gnitovenster</translation>
 <translation id="3627671146180677314">Vernieuwingsmoment voor Netscape-certificaat</translation>
@@ -3946,7 +3936,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3688794912214798596">Talen wijzigen…</translation>
 <translation id="3690369331356918524">Waarschuwt als je wachtwoorden zijn gelekt bij een gegevenslek</translation>
 <translation id="3691231116639905343">Toetsenbord-apps</translation>
-<translation id="3693415264595406141">Wachtwoord:</translation>
 <translation id="3694027410380121301">Vorig tabblad selecteren</translation>
 <translation id="3694122362646626770">Websites</translation>
 <translation id="3694590407685276748">Tekstcursor markeren</translation>
@@ -4404,6 +4393,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">Berekenen...</translation>
+<translation id="3971154761614127188">Sommige functies kunnen onbekende sites vertragen</translation>
 <translation id="3971355433478412726">Instructies voor Gemini</translation>
 <translation id="3971764089670057203">Vingerafdrukken op deze beveiligingssleutel</translation>
 <translation id="3973005893595042880">Gebruiker is niet toegestaan</translation>
@@ -4656,6 +4646,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4152011295694446843">Hier vind je je bookmarks</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 tabblad}other{# tabbladen}}</translation>
 <translation id="4153858337812834972">Meest recente tabbladen</translation>
+<translation id="4154323711269699738">Taak onderbroken</translation>
 <translation id="4154658846204884961">Komeet</translation>
 <translation id="4154664944169082762">Vingerafdrukken</translation>
 <translation id="4156297721709710037"><ph name="WINDOW_TITLE" />: weergave links</translation>
@@ -4880,6 +4871,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4314497418046265427">Wees productiever door je telefoon te verbinden met je <ph name="DEVICE_TYPE" /></translation>
 <translation id="4314561087119792062">Nieuwe toegangspuntnaam toevoegen</translation>
 <translation id="4314815835985389558">Synchronisatie beheren</translation>
+<translation id="4314821834464582073">Taak onderbreken</translation>
 <translation id="4316850752623536204">Website van ontwikkelaar</translation>
 <translation id="43176328751044557">{NUM_SITES,plural, =1{Rechten verwijderd voor 1 site}other{Rechten verwijderd voor {NUM_SITES} sites}}</translation>
 <translation id="4317733381297736564">In-app aankopen</translation>
@@ -5155,7 +5147,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4513072860957814107">&amp;Browsegegevens verwijderen…</translation>
 <translation id="4513872120116766993">Voorspellend schrijven</translation>
 <translation id="4513946894732546136">Feedback</translation>
-<translation id="4515872537870654449">Neem contact op met Dell voor service. Het dock wordt uitgezet als de ventilator niet werkt.</translation>
 <translation id="4515942088136451195">Je organisatie beperkt wat je kunt opslaan</translation>
 <translation id="4516395361210407049">De knoppen op werkbalk zijn gereset</translation>
 <translation id="4519331665958994620">Sites kunnen toegang tot je camera vragen</translation>
@@ -6658,7 +6649,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="557506220935336383">Extensierechten voor andere sites bekijken</translation>
 <translation id="5575473780076478375">Incognito-extensie: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">Er is een probleem opgetreden met een demoregistratieverzoek.</translation>
-<translation id="5576472948015790634">Je kunt je tabbladgroepen en Gemini-chats nu op één plek beheren. Je kunt dit op elk moment losmaken.</translation>
+<translation id="5576472948015790634">Je kunt je tabbladgroepen en Gemini-chats nu op één plek beheren. Je kunt dit altijd weer losmaken.</translation>
 <translation id="557722062034137776">Als je je apparaat opnieuw instelt, heeft dit geen effect op je Google-accounts of gegevens die zijn gesynchroniseerd met deze accounts. Alle bestanden die lokaal op je apparaat zijn opgeslagen, worden wel verwijderd.</translation>
 <translation id="5578059481725149024">Automatisch inloggen</translation>
 <translation id="5578387000057347457">Voer een aangepaste prompt in of markeer tekst om een afbeelding te maken</translation>
@@ -7176,7 +7167,6 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5939723110967488589">Kies welke knoppen worden getoond op de werkbalk</translation>
 <translation id="594048410531370124">Toets niet herkend. Druk op een willekeurige toets om <ph name="RESPONSE" />.</translation>
 <translation id="5941153596444580863">Persoon toevoegen...</translation>
-<translation id="5941343993301164315">Log in bij <ph name="TOKEN_NAME" />.</translation>
 <translation id="5941711191222866238">Minimaliseren</translation>
 <translation id="5941854976565320351">{PASSWORD_COUNT,plural, =1{1 wachtwoord wordt alleen op dit apparaat opgeslagen. Als je het wilt gebruiken op je andere apparaten, sla je het op in je Google-account.}other{{PASSWORD_COUNT} wachtwoorden worden alleen op dit apparaat opgeslagen. Als je ze wilt gebruiken op je andere apparaten, sla je ze op in je Google-account.}}</translation>
 <translation id="594221546068848596">Pagina zoeken met <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
@@ -7781,6 +7771,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="6367097275976877956">Wil je ChromeVox aanzetten, de ingebouwde schermlezer voor Chrome OS? Druk dan op de spatiebalk.</translation>
 <translation id="6367196786591004737">Item verwijderen</translation>
 <translation id="6367396429435748845">Druk op <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" /> om muistoetsen te onderbreken en te hervatten</translation>
+<translation id="6367428649223439405"><ph name="TASK_TITLE" />\nIk heb je taak onderbroken</translation>
 <translation id="6367853307713830174">Gemini toont de genomen stappen en probeert de belangrijkste stappen te bevestigen voordat ze worden uitgevoerd. Je kunt op elk moment stoppen of zelf de controle overnemen.</translation>
 <translation id="6367985768157257101">Ontvangen met Dichtbij delen?</translation>
 <translation id="6368157733310917710">&amp;Adressen en meer</translation>
@@ -8405,7 +8396,6 @@ Je hebt nog # gehackte wachtwoorden. Google Wachtwoordmanager raadt je aan deze 
 <translation id="680488281839478944">VM <ph name="DEFAULT_VM_NAME" /> bestaat</translation>
 <translation id="6805236548654699520">Verwijder ongewenste pop-ups en los onder andere netwerkproblemen op door je instellingen terug te zetten naar veilige standaardwaarden.</translation>
 <translation id="6805478749741295868">Dit is een experimentele AI-functie en zit er weleens naast.</translation>
-<translation id="6805647936811177813">Log in bij <ph name="TOKEN_NAME" /> om het klantcertificaat van <ph name="HOST_NAME" /> te importeren.</translation>
 <translation id="6805817411033102703">Feedback over gedeelde tabbladgroepen</translation>
 <translation id="6806089545527108739">Niet toestaan, maar later vragen</translation>
 <translation id="6806781719264274042">Alleen je contacten met een Google-account. <ph name="LINK_BEGIN" />Contacten bekijken<ph name="LINK_END" /></translation>
@@ -8519,6 +8509,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6870953451576517204">Zelfcontrole geslaagd</translation>
 <translation id="6871644448911473373">OCSP-beantwoorder: <ph name="LOCATION" /></translation>
 <translation id="6871860225073478239">Talen...</translation>
+<translation id="6872859537300194762"><ph name="TASK_TITLE" />\nIk heb je taak gepauzeerd vanwege andere activiteit. Je kunt teruggaan naar Chrome om deze te bekijken als deze klaar is.</translation>
 <translation id="6873571253135628430">Siterechten wijzigen</translation>
 <translation id="6876155724392614295">Fiets</translation>
 <translation id="6876469544038980967">Niet nuttig</translation>
@@ -8609,7 +8600,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6938606182859551396">Als je meldingen van je telefoon op je <ph name="DEVICE_TYPE" /> wilt krijgen, volg je de instructies op je telefoon om Google Play-services toegang te geven tot meldingen.</translation>
 <translation id="6941514251635934269">Vragen stellen over dit document</translation>
 <translation id="694168622559714949">Je beheerder heeft een standaardtaal ingesteld die je niet kunt aanpassen.</translation>
-<translation id="6941937518557314510">Log in bij <ph name="TOKEN_NAME" /> om uzelf bij <ph name="HOST_NAME" /> te verifiëren met je certificaat.</translation>
 <translation id="6943060957016121200">Instant tethering aanzetten</translation>
 <translation id="6943939122536910181">Verbinding met <ph name="DEVICE" /> verbroken</translation>
 <translation id="6944750221184785444">Kan dit profiel niet installeren. Neem contact op met je provider voor technische support.</translation>
@@ -9026,7 +9016,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7239108166256782787"><ph name="DEVICE_NAME" /> heeft de overdracht geannuleerd</translation>
 <translation id="7239401402533584029">Helpt je om iets op internet te schrijven door je tekst wat te verbeteren of je creatieve inspiratie te geven.</translation>
 <translation id="7240339475467890413">Verbinding maken met nieuwe hotspot?</translation>
-<translation id="7241389281993241388">Log in bij <ph name="TOKEN_NAME" /> om het klantcertificaat te importeren.</translation>
 <translation id="7241763419756062043">Kies je zoek- en browsekwaliteit</translation>
 <translation id="7243092385765551741">Toegangssleutel verwijderen?</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (beste)</translation>
@@ -9333,6 +9322,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7444176988908839653">{COUNT,plural, =0{Cookies worden vandaag weer geblokkeerd}=1{Cookies worden morgen weer geblokkeerd}other{# dagen tot cookies weer worden geblokkeerd}}</translation>
 <translation id="7446716846072322308">Hiermee verwijder je <ph name="TOTAL_USAGE" /> aan gegevens die zijn opgeslagen door <ph name="SITE_NAME" /> en gerelateerde sites</translation>
 <translation id="7448430327655618736">apps automatisch te installeren</translation>
+<translation id="7448639287059644731"><ph name="TASK_TITLE" />\nIk heb je hulp nodig om door te gaan met je taak</translation>
 <translation id="7448664748118305024">Gegevens die sites op je apparaat hebben opgeslagen verwijderen als je alle vensters sluit</translation>
 <translation id="7450761244949417357">Wordt nu geopend in <ph name="ALTERNATIVE_BROWSER_NAME" /></translation>
 <translation id="7450926666485653189">Stuurt een geobfusceerd gedeelte van de URL naar Google via een privacyserver die je IP-adres verbergt</translation>
@@ -9786,7 +9776,7 @@ Druk op een toegewezen schakelaar of toets om de toewijzing te verwijderen.</tra
 <translation id="7758884017823246335">Zoekopdracht op site toevoegen</translation>
 <translation id="7759443981285558794">Geïmporteerde certificaten van ChromeOS bekijken</translation>
 <translation id="7759606211476816416">Je snelkoppelingen voor sites</translation>
-<translation id="7759748248923439385">Je kunt je tabbladgroepen en gesprekken in de AI-modus nu op één plek beheren. Je kunt dit op elk moment losmaken.</translation>
+<translation id="7759748248923439385">Je kunt je tabbladgroepen en gesprekken in de AI-modus nu op één plek beheren. Je kunt dit altijd weer losmaken.</translation>
 <translation id="7759809451544302770">Optioneel</translation>
 <translation id="7760176388948986635">Sta toe dat ChromeOS- en Android-apps, websites en services met locatierechten de locatie van dit apparaat gebruiken. Locatienauwkeurigheid biedt een nauwkeurigere locatie voor Android-apps en -services. Hiervoor verwerkt Google periodiek gegevens over apparaatsensoren en draadloze signalen van dit apparaat om bij te dragen aan draadloze signaallocaties op basis van crowdsourcing. Deze worden zonder een bepaalde persoon te identificeren gebruikt om de locatienauwkeurigheid en services op een fysieke locatie te verbeteren. Ze worden ook gebruikt om de services van Google te verbeteren, aan te bieden en te onderhouden op basis van de gerechtvaardigde belangen van Google en derden om aan de behoeften van gebruikers te voldoen.</translation>
 <translation id="7762024824096060040">Kan dit account niet gebruiken</translation>
@@ -9860,6 +9850,7 @@ Zichtbaar voor apparaten in de buurt als <ph name="QUICK_START_DEVICE_DISPLAY_NA
 <translation id="7800518121066352902">Links&amp;om draaien</translation>
 <translation id="780301667611848630">Nee, bedankt</translation>
 <translation id="7803657407897251194">Verbind je <ph name="DEVICE_TYPE" /> met een netwerk om door te gaan met instellen op je Android-apparaat</translation>
+<translation id="7803714812705886512">Google gebruikt minder gegevens (bijvoorbeeld delen van URL's, downloadinformatie) om bedreigingen te detecteren</translation>
 <translation id="7804072833593604762">Tabblad gesloten</translation>
 <translation id="7805371082115476536">Licht</translation>
 <translation id="7805768142964895445">Status</translation>
@@ -9884,6 +9875,7 @@ Zichtbaar voor apparaten in de buurt als <ph name="QUICK_START_DEVICE_DISPLAY_NA
 <translation id="7820400255539998692">Verwijder <ph name="FILENAME" />, zodat je wachtwoorden niet zichtbaar zijn voor anderen die dit apparaat gebruiken</translation>
 <translation id="7820561748632634942">Extra schakelaars toewijzen?</translation>
 <translation id="782057141565633384">Adres van video k&amp;opiëren</translation>
+<translation id="7823975162954158194">Biedt sterke bescherming</translation>
 <translation id="7824665136384946951">Je organisatie heeft Safe Browsing uitgezet</translation>
 <translation id="7824864914877854148">Back-up kan niet worden voltooid vanwege een fout</translation>
 <translation id="7825289983414309119">Berg</translation>
@@ -10673,7 +10665,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8350789879725387295">Stylustools in dock</translation>
 <translation id="8351316842353540018">Altijd A11y-opties bekijken</translation>
 <translation id="8351419472474436977">Deze extensie heeft het beheer van je proxyinstellingen overgenomen. Dit betekent dat de extensie alles wat je online doet, kan wijzigen, beschadigen of bekijken. Als je niet zeker weet waarom deze wijziging heeft plaatsgevonden, is het waarschijnlijk een ongewenste wijziging.</translation>
-<translation id="8351630282875799764">Batterij wordt niet opgeladen</translation>
 <translation id="8352287103893778223">Titel van tabbladgroep</translation>
 <translation id="835238322900896202">Er is een fout opgetreden tijdens de verwijdering. Verwijder het programma via de Terminal.</translation>
 <translation id="8353420862507374944">Casten, opslaan en delen</translation>
@@ -11019,6 +11010,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8601206103050338563">TLS WWW-clientverificatie</translation>
 <translation id="8602674530529411098">Apps (bèta)</translation>
 <translation id="8602851771975208551">Een ander programma op je computer heeft een app toegevoegd die de manier waarop Chrome werkt kan wijzigen.</translation>
+<translation id="8602867356511778172">Google gebruikt meer gegevens (bijvoorbeeld URL's, voorbeelden van paginacontent, systeeminformatie) om bedreigingen sneller en nauwkeuriger op te sporen</translation>
 <translation id="860399903490378651">Deze weergave sluiten</translation>
 <translation id="8605428685123651449">SQLite-geheugen</translation>
 <translation id="8607171490667464784">Terwijl inactief en op batterijvoeding</translation>
@@ -11136,7 +11128,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="8676313779986170923">Bedankt voor je feedback.</translation>
 <translation id="8676374126336081632">Invoer wissen</translation>
 <translation id="8676730726685223115">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> (1 tabblad)}other{<ph name="GROUP_TITLE" /> (# tabbladen)}}</translation>
-<translation id="8676770494376880701">Laag-vermogen-lader aangesloten</translation>
 <translation id="8676985325915861058">Overslaan en nieuw profiel instellen</translation>
 <translation id="8677212948402625567">Alles samenvouwen...</translation>
 <translation id="8678192320753081984">Biedt de krachtigste accountbeveiliging van Google voor mensen die risico lopen op gerichte aanvallen</translation>
@@ -11242,6 +11233,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="8732844209475700754">Meer instellingen die verband houden met privacy, beveiliging en gegevensverzameling</translation>
 <translation id="8733779588180110397">⌥ + klikken</translation>
 <translation id="8734755021067981851">Er zijn geen USB-apparaten aangesloten.</translation>
+<translation id="8735290640701782320">Je taak checken</translation>
 <translation id="8736288397686080465">Deze site is geüpdatet op de achtergrond.</translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">Kies de taal waarnaar je de pagina wilt vertalen</translation>
@@ -11638,6 +11630,7 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser,
 <translation id="8999560016882908256">Syntaxisfout in sectie: <ph name="ERROR_LINE" /></translation>
 <translation id="8999651235576960439">Minder beweging op het scherm</translation>
 <translation id="9000185763019430629">Raak de vingerafdruksensor aan de rechterkant van je <ph name="DEVICE_TYPE" /> aan. Je vingerafdrukgegevens worden beveiligd opgeslagen en blijven uitsluitend op je <ph name="DEVICE_TYPE" /> staan.</translation>
+<translation id="9000341229894259710"><ph name="TASK_TITLE" />\nIk heb je verzoek uitgevoerd. Je kunt het bekijken in Chrome.</translation>
 <translation id="9000529821022336229">Er zijn geen updaterinstallaties gevonden.</translation>
 <translation id="900267527532832868">Deze toegangssleutel werkt niet meer. De toegangssleutel wordt binnenkort verwijderd uit <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="9003031149571024583">Voer pincodecijfer <ph name="NUM_DIGIT" /> van 6 in. Gebruik Backspace of Delete om het laatste cijfer te verwijderen.</translation>

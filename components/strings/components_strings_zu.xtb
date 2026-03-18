@@ -754,6 +754,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="2184405333245229118">{COUNT,plural, =1{1 ikheli}one{# amakheli}other{# amakheli}}</translation>
 <translation id="2188375229972301266">Ukushaya kaningi phansi</translation>
 <translation id="218940509700321686">Okuhlukaniswe Ngamakhoma</translation>
+<translation id="2190094353033916816">Le nqubomgomo inamanani ahlukene asetshenziswa ezingeni lomshini nelomsebenzisi. Inqubomgomo isebenza njengoba kuhlosiwe.</translation>
 <translation id="2191980191135734720">Vula isikrini sakho esinyathelweni esilandelayo, ngokuvamile usebenzisa isigxivizo somunwe. Ungase futhi <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Izinto okufanele uzicabangele</translation>
 <translation id="2198183835992354675">Inombolo Yesihambi Esaziwayo</translation>
@@ -3190,6 +3191,7 @@ Ukuze ufihle okungakhethwa kukho kokukhokha kamuva, iya <ph name="BEGIN_LINK" />
 <translation id="6042308850641462728">Okuningi</translation>
 <translation id="6043357981274314628">KUPHELILE!</translation>
 <translation id="6045164183059402045">Isifanekiso sokuqondisa</translation>
+<translation id="6046026831939367176">I-<ph name="URL" /> ifuna ukusebenzisa indawo yakho elinganiselwe</translation>
 <translation id="6046892054959167494">Thayipha <ph name="SEARCH_AGGREGATOR_KEYWORD" /> ukuze useshe noma ubuze <ph name="SEARCH_AGGREGATOR_SHORT_NAME" /></translation>
 <translation id="6047927260846328439">Lokhu okuqukethwe kungazama ukukukhohlisa ukuthi ufake amasofthiwe noma ekuvezeni ulwazi lomuntu siqu. <ph name="BEGIN_LINK" />Bonisa noma kunjalo<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">Imvilophu ye-B4</translation>
@@ -4987,6 +4989,7 @@ Imininingwane engeziwe:
 <translation id="8870700989640064057">Phrinta ifayela eliyimfihlo?</translation>
 <translation id="8871485335898060555">Izinto Zasendulo Neziqoqwayo</translation>
 <translation id="8871553383647848643">Yenza ngendlela oyifisayo ukubukeka kwe-browser yakho</translation>
+<translation id="887350038812854047">Le nqubomgomo inenani elifanayo elisetshenziswe ezingeni lomshini nelomsebenzisi. Inqubomgomo isebenza njengoba kuhlosiwe.</translation>
 <translation id="8874790741333031443">Zama ukuvumela okwesikhashana amakhukhi ongahlangene ngqo, okusho ukuvikeleka okuncane ekubhrawuzeni kodwa izakhi zesayithi cishe zizosebenza njengoba kulindelekile.</translation>
 <translation id="8874824191258364635">Faka inombolo yekhadi evumelekile</translation>
 <translation id="8877780815363510165">Ukudoba</translation>

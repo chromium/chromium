@@ -245,7 +245,6 @@
 <translation id="1159879754517035595">จัดการการตั้งค่าส่วนขยาย</translation>
 <translation id="1160800016654917722">หน้าต่างเลื่อนลงและไปทางซ้าย</translation>
 <translation id="1161190590171867633">ระบบจะบันทึกตารางเปรียบเทียบไว้ในบัญชี Google ของคุณ</translation>
-<translation id="1161575384898972166">โปรดลงชื่อเข้าใช้ <ph name="TOKEN_NAME" /> เพื่อส่งออกใบรับรองไคลเอ็นต์</translation>
 <translation id="116173250649946226">ผู้ดูแลระบบได้ตั้งค่าธีมเริ่มต้นไว้ซึ่งเปลี่ยนไม่ได้</translation>
 <translation id="1162213688509394031">ซ่อนแถบชื่อ</translation>
 <translation id="1162479191445552288">เปิดใช้เมื่อเริ่มต้นระบบ</translation>
@@ -488,7 +487,6 @@
 <translation id="1316136264406804862">กำลังค้นหา...</translation>
 <translation id="1316248800168909509">เชื่อมต่อกับ <ph name="DEVICE" /> ไม่ได้ ลองอีกครั้ง</translation>
 <translation id="1316495628809031177">หยุดซิงค์ชั่วคราว</translation>
-<translation id="1317637799698924700">แท่นชาร์จจะทำงานในโหมดที่เข้ากันได้กับ USB Type-C</translation>
 <translation id="1319983966058170660">ปุ่มย้อนกลับของหน้าย่อย<ph name="SUBPAGE_TITLE" /></translation>
 <translation id="1322046419516468189">ดูและจัดการรหัสผ่านที่บันทึกไว้ได้ใน<ph name="SAVED_PASSWORDS_STORE" /></translation>
 <translation id="1323433172918577554">แสดงเพิ่มเติม</translation>
@@ -991,7 +989,6 @@
 <translation id="1657406563541664238">ช่วยปรับปรุง <ph name="PRODUCT_NAME" /> ให้ดีขึ้นโดยการส่งสถิติการใช้งานและรายงานปัญหาไปยัง Google โดยอัตโนมัติ</translation>
 <translation id="1657937299377480641">หากต้องการลงชื่อเข้าใช้อีกครั้งเพื่อเข้าถึงทรัพยากรทางการศึกษา ให้ขออนุญาตจากผู้ปกครอง</translation>
 <translation id="1658424621194652532">หน้านี้กำลังเข้าถึงไมโครโฟนของคุณ</translation>
-<translation id="1660763353352708040">ปัญหาเกี่ยวกับอะแดปเตอร์</translation>
 <translation id="1661996889489595105">{NUM_TABS,plural, =1{แก้ไขแท็บที่ทำให้เบราว์เซอร์ทำงานช้าลง}other{แก้ไขแท็บที่ทำให้เบราว์เซอร์ทำงานช้าลง}}</translation>
 <translation id="16620462294541761">ขออภัย ไม่สามารถยืนยันรหัสผ่านของคุณได้ โปรดลองอีกครั้ง</translation>
 <translation id="1662572015199460525">แชทด้วยเสียงหรือข้อความเพื่อรับคำตอบ ประเด็นสำคัญ และอื่นๆ ขณะท่องเว็บ</translation>
@@ -1119,7 +1116,6 @@
 <translation id="1751335846119670066">ช่วยฉันอ่าน</translation>
 <translation id="17513872634828108">แท็บที่เปิดอยู่</translation>
 <translation id="175196451752279553">เ&amp;ปิดแท็บที่ถูกปิดขึ้นใหม่</translation>
-<translation id="1753067873202720523">Chromebook อาจไม่ชาร์จขณะที่เปิดอยู่</translation>
 <translation id="1753557900380512635">การตกแต่งภายใน</translation>
 <translation id="1753905327828125965">เข้าชมบ่อยสุด</translation>
 <translation id="1755601632425835748">ขนาดข้อความ</translation>
@@ -1446,7 +1442,6 @@
 <translation id="1974060860693918893">ขั้นสูง</translation>
 <translation id="1974159333077206889">ฟังเสียงเดียวกันที่ลำโพงทุกตัว</translation>
 <translation id="1975841812214822307">นำออก...</translation>
-<translation id="1976150099241323601">ลงชื่อเข้าใช้อุปกรณ์รักษาความปลอดภัย</translation>
 <translation id="1976823515278601587">ประหยัดหน่วยความจำได้มาก</translation>
 <translation id="1978249384651349182"><ph name="BEGIN_DESCRIPTION" />การลงทะเบียนอุปกรณ์ในองค์กรเป็นการตั้งค่าการจัดการอุปกรณ์ส่วนกลาง องค์กรของคุณอาจกำหนดให้ต้องลงทะเบียนด้วยเหตุผลหลายประการดังต่อไปนี้<ph name="END_DESCRIPTION" />
     <ph name="BEGIN_SUBTITLE1" /><ph name="BEGIN_BOLD" />เพิ่มความปลอดภัย<ph name="END_BOLD" /><ph name="END_SUBTITLE1" />
@@ -1480,6 +1475,7 @@
 <translation id="1989288015781834552">เปิดอีกครั้งเพื่ออัปเดตให้เสร็จสิ้น แท็บจะเปิดขึ้นอีกครั้ง</translation>
 <translation id="1989903373608997757">ใช้เสมอ</translation>
 <translation id="1990046457226896323">ดาวน์โหลดไฟล์คำพูดแล้ว</translation>
+<translation id="1991829061375381344">คุณมีใบอนุญาตที่ใช้ได้ไม่เพียงพอสำหรับการลงทะเบียนอุปกรณ์ฮาร์ดแวร์ของ Google Meet เครื่องนี้ โปรดติดต่อตัวแทนจำหน่ายเพื่อซื้อใบอนุญาตเพิ่มเติม หากคุณเชื่อว่าเห็นข้อความนี้เนื่องจากข้อผิดพลาด โปรดติดต่อตัวแทนจำหน่าย</translation>
 <translation id="199191324030140441">ปิดโหมดห้ามรบกวน</translation>
 <translation id="1992397118740194946">ไม่ได้ตั้งค่า</translation>
 <translation id="1994173015038366702">URL ของเว็บไซต์</translation>
@@ -1719,7 +1715,6 @@
 <translation id="2156294658807918600">Service Worker: <ph name="SCRIPT_URL" /></translation>
 <translation id="2156707722163479690">ได้รับอนุญาตให้เลื่อนและซูมแท็บที่แชร์</translation>
 <translation id="2157457598652721267">ใช้ปุ่ม "/" และ "-" เพื่อเลือกปุ่มเมาส์ซ้ายหรือขวา ใช้ปุ่ม "*" เพื่อเลือกทั้งสองปุ่ม</translation>
-<translation id="2157474325782140681">โปรดใช้แท่นชาร์จ Dell ที่ออกแบบมาให้ใช้งานกับ Chromebook นี้เพื่อใช้ฟีเจอร์เพิ่มเติม</translation>
 <translation id="215753907730220065">ออกจากการแสดงเต็มหน้าจอ</translation>
 <translation id="2157632422749995237">Wallet สามารถส่งการแจ้งเตือนเกี่ยวกับกิจกรรมให้คุณในภายหลัง</translation>
 <translation id="2157779167749714207"><ph name="DEVICE_TYPE" /> ของคุณมาพร้อมกับ Gemini</translation>
@@ -1879,7 +1874,6 @@
 <translation id="2271986192355138465">ดูวิธีติดตั้งเว็บแอป</translation>
 <translation id="2272430695183451567">กำหนดสวิตช์แล้ว 0 รายการ</translation>
 <translation id="2272570998639520080">แก้วมาร์ตินี่</translation>
-<translation id="2273119997271134996">พอร์ตวิดีโอบนแท่นชาร์จมีปัญหา</translation>
 <translation id="2274840746523584236">ชาร์จ Chromebook ของคุณ</translation>
 <translation id="2275193525496879616">อนุญาต เชื่อมต่อกล้องกับอุปกรณ์</translation>
 <translation id="2275352532065325930">ตำแหน่งการค้นหาแท็บ</translation>
@@ -2111,7 +2105,6 @@
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> 1 บัญชี บันทึกรหัสผ่านลงในอุปกรณ์นี้เท่านั้นแล้ว รายละเอียดเพิ่มเติม}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} บัญชี บันทึกรหัสผ่านลงในอุปกรณ์นี้เท่านั้นแล้ว รายละเอียดเพิ่มเติม}}</translation>
 <translation id="2428510569851653187">อธิบายว่าคุณกำลังทำอะไรเมื่อแท็บขัดข้อง</translation>
 <translation id="2428939361789119025">ปิด Wi-Fi</translation>
-<translation id="2431027948063157455">โหลด Google Assistant ไม่ได้ โปรดตรวจสอบการเชื่อมต่อเครือข่ายและลองอีกครั้ง</translation>
 <translation id="243179355394256322">องค์กรของคุณจำกัดการลงทะเบียนอุปกรณ์ไว้สำหรับผู้ใช้ที่ได้รับอนุญาตเท่านั้น ผู้ใช้รายนี้ไม่ได้รับอนุญาตให้ลงทะเบียนอุปกรณ์ โปรดตรวจสอบว่าผู้ใช้มีสิทธิ์ของผู้ดูแลระบบในการ "ลงทะเบียนฮาร์ดแวร์ของ Google Meet" ในส่วน "ผู้ใช้" ของคอนโซลผู้ดูแลระบบ</translation>
 <translation id="243275146591958220">ยกเลิกการดาวน์โหลด</translation>
 <translation id="2432882794929808179">ลงทะเบียนแล้ว <ph name="APP_COUNT" /> แอป</translation>
@@ -2696,7 +2689,6 @@
 <translation id="2808985063107661499">"<ph name="MAIN_GESTURE" />" อาจทับซ้อนกับ "<ph name="CONFLICTING_GESTURE_ONE" />" และ "<ph name="CONFLICTING_GESTURE_TWO" />" หากเป็นไปได้ ให้ลองเลือกท่าทางสัมผัสอื่น</translation>
 <translation id="2809346626032021864">การอ่าน</translation>
 <translation id="2811205483104563968">บัญชี</translation>
-<translation id="2812049959647166806">ไม่รองรับ Thunderbolt</translation>
 <translation id="2813094189969465044">การควบคุมโดยผู้ปกครอง</translation>
 <translation id="2813765525536183456">&amp;เพิ่มโปรไฟล์ใหม่</translation>
 <translation id="281390819046738856">ลงนามคำขอไม่ได้</translation>
@@ -3133,7 +3125,6 @@
 <translation id="3115147772012638511">กำลังรอแคช...</translation>
 <translation id="3115580024857770654">ยุบทั้งหมด</translation>
 <translation id="3115743155098198207">จัดการภาษาของบัญชี Google</translation>
-<translation id="3117362587799608430">แท่นชาร์จไม่ค่อยเข้ากัน</translation>
 <translation id="3117791853215125017">{COUNT,plural, =1{ส่ง <ph name="ATTACHMENTS" />ไปยัง <ph name="DEVICE_NAME" /> ไม่สำเร็จ}other{ส่ง <ph name="ATTACHMENTS" />ไปยัง <ph name="DEVICE_NAME" /> ไม่สำเร็จ}}</translation>
 <translation id="3118319026408854581">ความช่วยเหลือของ <ph name="PRODUCT_NAME" /></translation>
 <translation id="3118748462829336648">เปิดแผงด้านข้าง</translation>
@@ -3149,7 +3140,6 @@
 <translation id="3125361247594231799">ปักหมุดไว้สำหรับครั้งถัดไป</translation>
 <translation id="3125816458150005808">คุณเลิกปักหมุดและเปิดจากเมนูได้</translation>
 <translation id="3126026824346185272">Ctrl</translation>
-<translation id="3127860049873093642">โปรดใช้อะแดปเตอร์ Dell หรือ USB Type-C เพื่อหลีกเลี่ยงปัญหาด้านการชาร์จและประสิทธิภาพ</translation>
 <translation id="3127862849166875294">ปรับขนาดดิสก์ใน Linux</translation>
 <translation id="3129150892373332590">การดำเนินการนี้จะปิดการแชร์อุปกรณ์ USB กับผู้มาเยือนอย่างต่อเนื่อง รวมถึงจะรีเซ็ตการแชร์ทั้งหมด คุณแน่ใจไหม</translation>
 <translation id="3129173833825111527">ขอบซ้าย</translation>
@@ -3392,7 +3382,6 @@
         คุณสามารถจัดการการตั้งค่าจากเมนูการ์ดหรือดูตัวเลือกเพิ่มเติมได้ใน "ปรับแต่ง Chrome"</translation>
 <translation id="3308134619352333507">ซ่อนปุ่ม</translation>
 <translation id="3308604065765626613">{GROUP_COUNT,plural, =1{แท็บจะยังคงเปิดอยู่ในอุปกรณ์นี้ แต่ระบบจะลบกลุ่มอย่างถาวร}other{แท็บจะยังคงเปิดอยู่ในอุปกรณ์นี้ แต่ระบบจะลบกลุ่มอย่างถาวร}}</translation>
-<translation id="3308852433423051161">กำลังโหลด Google Assistant...</translation>
 <translation id="3309124184713871355">สิ่งปลูกสร้าง</translation>
 <translation id="3309330461362844500">รหัสโปรไฟล์ใบรับรอง</translation>
 <translation id="3310379801837527592">เข้าร่วมกลุ่มแท็บกับ <ph name="OWNER_FIRST_NAME" /> และอีก <ph name="NUM_OTHER_MEMBERS" /> คน</translation>
@@ -3621,7 +3610,6 @@
 <translation id="3468999815377931311">โทรศัพท์ Android</translation>
 <translation id="3469583217479686109">เครื่องมือการเลือก</translation>
 <translation id="3471687177769494956">แก้ไขทางลัดการนำทาง</translation>
-<translation id="3471876058939596279">ใช้พอร์ต HDMI และ USB Type-C สำหรับวิดีโอพร้อมกันไม่ได้ โปรดใช้พอร์ตวิดีโออื่น</translation>
 <translation id="3472469028191701821">เปิดในแท็บใหม่</translation>
 <translation id="3473241910002674503">ไปยังหน้าแรก ย้อนกลับ และสลับแอปด้วยปุ่มในโหมดแท็บเล็ต</translation>
 <translation id="3473479545200714844">แว่นขยายหน้าจอ</translation>
@@ -3823,7 +3811,6 @@
 <translation id="3608730769702025110">ขั้นตอนที่ 3 จาก 4: ตรวจสอบข้อมูลส่วนบุคคลที่ระบุตัวบุคคลนั้นได้</translation>
 <translation id="3609277884604412258">ค้นหาด่วน</translation>
 <translation id="3610241585790874201">ไม่ได้รับอนุญาตให้บันทึกข้อมูลลงในอุปกรณ์</translation>
-<translation id="3610369246614755442">ต้องซ่อมพัดลมของแท่นชาร์จ</translation>
 <translation id="3610961622607302617">เปลี่ยนรหัสผ่านสำหรับ <ph name="WEBSITE" /></translation>
 <translation id="3611634011145829814">ไปที่หน้าการสมัครใช้บริการ</translation>
 <translation id="3611658447322220736">เว็บไซต์ที่เพิ่งปิดไปจะส่งและรับข้อมูลจนเสร็จสิ้นได้</translation>
@@ -3851,7 +3838,6 @@
 <translation id="3624567683873126087">ปลดล็อกอุปกรณ์และลงชื่อเข้าใช้บัญชี Google</translation>
 <translation id="3624583033347146597">เลือกค่ากำหนดคุกกี้ของบุคคลที่สาม</translation>
 <translation id="3625481642044239431">เลือกไฟล์ไม่ถูกต้อง โปรดลองอีกครั้ง</translation>
-<translation id="3626296069957678981">ใช้แบตเตอรี่ Dell ที่เข้ากันได้เพื่อชาร์จ Chromebook เครื่องนี้</translation>
 <translation id="3627320433825461852">เหลือเวลาน้อยกว่า 1 นาที</translation>
 <translation id="3627588569887975815">เปิดลิงก์ในหน้าต่างที่ไม่ระบุตัวตน (&amp;G)</translation>
 <translation id="3627671146180677314">เวลาการต่ออายุใบรับรองของ Netscape</translation>
@@ -3945,7 +3931,6 @@
 <translation id="3688794912214798596">เปลี่ยนภาษา...</translation>
 <translation id="3690369331356918524">เตือนคุณในกรณีที่รหัสผ่านรั่วไหลจากการละเมิดข้อมูล</translation>
 <translation id="3691231116639905343">แอปแป้นพิมพ์</translation>
-<translation id="3693415264595406141">รหัสผ่าน:</translation>
 <translation id="3694027410380121301">เลือกแท็บก่อนหน้า</translation>
 <translation id="3694122362646626770">เว็บไซต์</translation>
 <translation id="3694590407685276748">ไฮไลต์เคอร์เซอร์ข้อความ</translation>
@@ -5155,7 +5140,6 @@
 <translation id="4513072860957814107">&amp;ลบข้อมูลการท่องเว็บ...</translation>
 <translation id="4513872120116766993">การเขียนแบบช่วยคาดเดา</translation>
 <translation id="4513946894732546136">ข้อเสนอแนะ</translation>
-<translation id="4515872537870654449">ติดต่อ Dell เพื่อส่งซ่อม แท่นชาร์จจะปิดหากพัดลมไม่ทำงาน</translation>
 <translation id="4515942088136451195">องค์กรของคุณจำกัดสิ่งที่คุณสามารถบันทึก</translation>
 <translation id="4516395361210407049">รีเซ็ตปุ่มแถบเครื่องมือแล้ว</translation>
 <translation id="4519331665958994620">เว็บไซต์ขอใช้กล้องของคุณได้</translation>
@@ -7176,7 +7160,6 @@
 <translation id="5939723110967488589">เลือกปุ่มที่จะแสดงในแถบเครื่องมือ</translation>
 <translation id="594048410531370124">ไม่รู้จักแป้นดังกล่าว กดแป้นใดก็ได้เพื่อ<ph name="RESPONSE" /></translation>
 <translation id="5941153596444580863">เพิ่มบุคคล...</translation>
-<translation id="5941343993301164315">โปรดลงชื่อเข้าใช้ <ph name="TOKEN_NAME" /></translation>
 <translation id="5941711191222866238">ย่อเล็กสุด</translation>
 <translation id="5941854976565320351">{PASSWORD_COUNT,plural, =1{ระบบบันทึกรหัสผ่าน 1 รายการไว้ในอุปกรณ์นี้เท่านั้น หากต้องการใช้งานในอุปกรณ์อื่น ให้บันทึกไว้ในบัญชี Google}other{ระบบบันทึกรหัสผ่าน {PASSWORD_COUNT} รายการไว้ในอุปกรณ์นี้เท่านั้น หากต้องการใช้งานในอุปกรณ์อื่น ให้บันทึกไว้ในบัญชี Google}}</translation>
 <translation id="594221546068848596">ค้นหาหน้าด้วย <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
@@ -8405,7 +8388,6 @@
 <translation id="680488281839478944">มี VM "<ph name="DEFAULT_VM_NAME" />" อยู่</translation>
 <translation id="6805236548654699520">นำป๊อปอัปที่ไม่ต้องการออก แก้ไขปัญหาเครือข่าย และอื่นๆ อีกมากมายด้วยการกู้คืนการตั้งค่าเป็นค่าเริ่มต้นที่ปลอดภัย</translation>
 <translation id="6805478749741295868">นี่เป็นฟีเจอร์ AI เวอร์ชันทดลองและอาจไม่ถูกต้องเสมอไป</translation>
-<translation id="6805647936811177813">โปรดลงชื่อเข้าใช้ <ph name="TOKEN_NAME" /> เพื่อนำเข้าใบรับรองไคลเอ็นต์จาก <ph name="HOST_NAME" /></translation>
 <translation id="6805817411033102703">ความคิดเห็นเกี่ยวกับกลุ่มแท็บที่แชร์</translation>
 <translation id="6806089545527108739">ไม่อนุญาตแต่ถามทีหลัง</translation>
 <translation id="6806781719264274042">เฉพาะรายชื่อติดต่อที่มีบัญชี Google <ph name="LINK_BEGIN" />ดูรายชื่อติดต่อ<ph name="LINK_END" /></translation>
@@ -8609,7 +8591,6 @@
 <translation id="6938606182859551396">หากต้องการรับการแจ้งเตือนจากโทรศัพท์ใน <ph name="DEVICE_TYPE" /> โปรดทำตามวิธีการในโทรศัพท์เพื่อให้สิทธิ์เข้าถึงการแจ้งเตือนแก่บริการ Google Play</translation>
 <translation id="6941514251635934269">ถามเกี่ยวกับเอกสารนี้</translation>
 <translation id="694168622559714949">ผู้ดูแลระบบได้ตั้งค่าภาษาเริ่มต้นซึ่งแก้ไขไม่ได้</translation>
-<translation id="6941937518557314510">โปรดลงชื่อเข้าใช้ <ph name="TOKEN_NAME" /> เพื่อตรวจสอบสิทธิ์กับ <ph name="HOST_NAME" /> ด้วยใบรับรองของคุณ</translation>
 <translation id="6943060957016121200">เปิดใช้การเชื่อมต่อ Wi-Fi ฮอตสปอตจากมือถือโดยอัตโนมัติ</translation>
 <translation id="6943939122536910181">ยกเลิกการเชื่อมต่อกับ <ph name="DEVICE" /> แล้ว</translation>
 <translation id="6944750221184785444">ติดตั้งโปรไฟล์นี้ไม่ได้ โปรดติดต่อผู้ให้บริการเพื่อรับการสนับสนุนด้านเทคนิค</translation>
@@ -9026,7 +9007,6 @@
 <translation id="7239108166256782787"><ph name="DEVICE_NAME" /> ยกเลิกการโอน</translation>
 <translation id="7239401402533584029">ช่วยคุณเขียนอะไรก็ได้บนเว็บด้วยแรงบันดาลใจเชิงสร้างสรรค์หรือการปรับแต่งเพิ่มเติมเล็กน้อย</translation>
 <translation id="7240339475467890413">เชื่อมต่อกับฮอตสปอตใหม่ใช่ไหม</translation>
-<translation id="7241389281993241388">โปรดลงชื่อเข้าใช้ <ph name="TOKEN_NAME" /> เพื่อนำเข้าใบรับรองไคลเอ็นต์</translation>
 <translation id="7241763419756062043">เลือกคุณภาพในการค้นหาและการท่องเว็บ</translation>
 <translation id="7243092385765551741">ลบพาสคีย์ไหม</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (ดีที่สุด)</translation>
@@ -9833,6 +9813,7 @@
 <translation id="7784067724422331729">การตั้งค่าความปลอดภัยในคอมพิวเตอร์ของคุณบล็อกไฟล์นี้</translation>
 <translation id="7784796923038949829">อ่านหรือเปลี่ยนแปลงข้อมูลของเว็บไซต์ไม่ได้</translation>
 <translation id="778480864305029524">เปิดการแจ้งเตือนสำหรับบริการ Google Play เพื่อใช้การเชื่อมต่ออินเทอร์เน็ตผ่านมือถือแบบด่วน</translation>
+<translation id="7784875615510899699">คุณมีใบอนุญาตที่ใช้ได้ไม่เพียงพอสำหรับการลงทะเบียนอุปกรณ์ของ Google Beam เครื่องนี้ โปรดติดต่อตัวแทนจำหน่ายเพื่อซื้อใบอนุญาตเพิ่มเติม หากคุณเชื่อว่าเห็นข้อความนี้เนื่องจากข้อผิดพลาด โปรดติดต่อตัวแทนจำหน่าย</translation>
 <translation id="77855763949601045">&amp;เปิดโปรไฟล์ผู้ใช้ชั่วคราว</translation>
 <translation id="7786663536153819505">ทำตามวิธีการในโทรศัพท์เพื่อสแกนคิวอาร์โค้ด ตรวจสอบว่าบลูทูธของโทรศัพท์เปิดอยู่
     <ph name="BR" />
@@ -10672,7 +10653,6 @@
 <translation id="8350789879725387295">เครื่องมือสไตลัสในแถบเครื่องมือ</translation>
 <translation id="8351316842353540018">แสดงตัวเลือกการช่วยเหลือพิเศษทุกครั้ง</translation>
 <translation id="8351419472474436977">ส่วนขยายนี้ได้เข้าควบคุมการตั้งค่าพร็อกซีของคุณ ซึ่งหมายความว่าส่วนขยายดังกล่าวสามารถเปลี่ยนแปลง ทำลาย หรือดักฟังทุกอย่างที่คุณทำในระบบออนไลน์ได้ หากคุณไม่ทราบที่มาของการเปลี่ยนแปลงนี้ คุณอาจไม่ต้องการให้มีการเปลี่ยนแปลงดังกล่าวเกิดขึ้น</translation>
-<translation id="8351630282875799764">ไม่ได้ชาร์จแบตเตอรี่</translation>
 <translation id="8352287103893778223">ชื่อกลุ่มแท็บ</translation>
 <translation id="835238322900896202">เกิดข้อผิดพลาดระหว่างถอนการติดตั้ง โปรดถอนการติดตั้งผ่านเทอร์มินัล</translation>
 <translation id="8353420862507374944">แคสต์ บันทึก และแชร์</translation>
@@ -11135,7 +11115,6 @@
 <translation id="8676313779986170923">ขอขอบคุณที่ส่งความคิดเห็น</translation>
 <translation id="8676374126336081632">ล้างข้อมูลที่ป้อน</translation>
 <translation id="8676730726685223115">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> (1 แท็บ)}other{<ph name="GROUP_TITLE" /> (# แท็บ)}}</translation>
-<translation id="8676770494376880701">เชื่อมต่อกับที่ชาร์จพลังงานต่ำ</translation>
 <translation id="8676985325915861058">ข้ามและสร้างโปรไฟล์ใหม่</translation>
 <translation id="8677212948402625567">ยุบทั้งหมด...</translation>
 <translation id="8678192320753081984">ให้การรักษาความปลอดภัยของบัญชีที่เข้มงวดที่สุดจาก Google สำหรับผู้ที่มีความเสี่ยงต่อการโจมตีแบบกำหนดเป้าหมาย</translation>

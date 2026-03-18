@@ -213,6 +213,7 @@
 <translation id="1900260903084164610">לחיצה על המשך תתפרש כהסכמה ל<ph name="BEGIN_TOS_LINK" />תנאים ולהגבלות<ph name="END_TOS_LINK" /></translation>
 <translation id="1904580727789512086">‏כתובות ה-URL שנכנסת אליהן נשמרות בחשבון Google</translation>
 <translation id="1910950723001426294">רשימת אפשרויות השיתוף סגורה.</translation>
+<translation id="1912367671208932516">פתיחת תפריט התוספים</translation>
 <translation id="191726024256261717">בדיקת ההרשאות</translation>
 <translation id="1917766536967060661">‏הגישה שלך לקבוצת הכרטיסיות '<ph name="GROUP_NAME" />', וגם האפשרות של <ph name="BLOCKED_MEMBER_FULL_NAME" /> ‏(<ph name="BLOCKED_MEMBER_EMAIL" />) ליצור איתך אינטראקציה בשירותי Google, יאבדו באופן מיידי.</translation>
 <translation id="1919130412786645364">‏התרת כניסה אל Chrome</translation>
@@ -414,6 +415,7 @@
 <translation id="2789486458103222910">אישור</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{‏‫Chrome זיהה סיסמה בשימוש חוזר שאפשר לשפר}one{‏‫Chrome זיהה # סיסמאות בשימוש חוזר שאפשר לשפר}two{‏‫Chrome זיהה # סיסמאות בשימוש חוזר שאפשר לשפר}other{‏‫Chrome זיהה # סיסמאות בשימוש חוזר שאפשר לשפר}}</translation>
 <translation id="2794551654724114396">‏כדאי להפעיל את ההתראות כדי לקבל טיפים שימושיים שיעזרו לך ליהנות מכל מה שיש ל-Chrome להציע</translation>
+<translation id="2798977804328097977">המשך שימוש בצורה חלקה בכל מכשיר</translation>
 <translation id="2805210243313393104">איך מקבלים גישה לסימניות ולנתונים נוספים בכל המכשירים</translation>
 <translation id="2805756323405976993">אפליקציות</translation>
 <translation id="2819849308549746319">ביטול ההרשמה לכולם</translation>
@@ -469,6 +471,7 @@
 <translation id="2977350910003566746">בתהליך מיון לפי מועד הפתיחה האחרונה</translation>
 <translation id="297771753501244313">מיון לפי נפתחו לאחרונה</translation>
 <translation id="2979639724566107830">פתיחה בחלון חדש</translation>
+<translation id="2980545254049127870">פתיחת קישורים בקלות מתוך הודעות, מסמכים ואפליקציות אחרות</translation>
 <translation id="2983102365694924129">על סמך הפעילות שלך באתר מסוים. ההגדרה הזו מושבתת.</translation>
 <translation id="2983398917942897288">במצב לא פעיל (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2983835398644161987">יציאה ממצב 'תמונה בתוך תמונה'</translation>
@@ -730,6 +733,7 @@
 <translation id="4137746084635924146">שפת המכשיר הנוכחית</translation>
 <translation id="414128724510021958">כברירת מחדל, מתבקשים אתרים שמותאמים למחשב</translation>
 <translation id="4162867837470729563">רשימת אפשרויות השיתוף נפתחה בגובה מלא.</translation>
+<translation id="4164642020717536140">גלישה מהירה ומאובטחת באינטרנט</translation>
 <translation id="4165077084524712774">כלים נוספים</translation>
 <translation id="4170011742729630528">השירות אינו זמין. יש לנסות שוב מאוחר יותר.</translation>
 <translation id="4170577491341606575">הנתונים שלך בדרך…</translation>
@@ -854,6 +858,7 @@
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{סיסמה אחת שנחשפה}one{# סיסמאות שנחשפו}two{# סיסמאות שנחשפו}other{# סיסמאות שנחשפו}}</translation>
 <translation id="4641919525231168205">מעבר לדף הבא</translation>
 <translation id="4642472735733036929">המעקב אחר מחירים הופסק</translation>
+<translation id="4643661539340338954">‏ההתראות של Chrome Finds מופעלות</translation>
 <translation id="4649493483932335039">לכרטיסיות אחרונות</translation>
 <translation id="465657074423018424">גלישה בטוחה מגינה עליך מפני אתרי מרמה. אם משביתים את הגלישה הבטוחה, חשוב להיזהר מאוד כשגולשים באתרים לא מוכרים, במיוחד לפני שמזינים סיסמאות.</translation>
 <translation id="4662373422909645029">אין לכלול מספרים בכינוי</translation>
@@ -1487,7 +1492,6 @@
 <translation id="7057969023583258980">‏פתיחת ההיסטוריה המלאה ב-Chrome</translation>
 <translation id="7063006564040364415">לא ניתן היה להתחבר אל שרת הסנכרון.</translation>
 <translation id="7063106218165698546">מתאימים אישית את קבוצת הכרטיסיות ולוחצים על "סיום"</translation>
-<translation id="7071521146534760487">ניהול חשבון</translation>
 <translation id="707155805709242880">יש לבחור למטה מה לסנכרן</translation>
 <translation id="7072949719501323344">‫<ph name="TAB_TITLE" />, כרטיסייה פרטית מוצמדת מתוך סדרת כרטיסיות שנבחרו, במצב "תמונה בתוך תמונה"</translation>
 <translation id="7077143737582773186">‏כרטיס SD</translation>
@@ -1652,6 +1656,7 @@
 <translation id="7686086654630106285">מידע נוסף על הצעות למודעות באתרים</translation>
 <translation id="7690596512217303514">‏לא ניתן לפתוח את Chrome במכשיר. כדי לפתור את הבעיה, עליך להוריד את העדכון האחרון של Chrome מחנות האפליקציות.</translation>
 <translation id="7692761875510935111">פתיחה מהירה בדפדפן. כדי לערוך את קיצור הדרך הזה, לוחצים לחיצה ארוכה.</translation>
+<translation id="7695270712963178084">Chrome Finds</translation>
 <translation id="7697383401610880082">נקודת אחיזה לגרירה</translation>
 <translation id="7698359219371678927">יצירת הודעת אימייל ב-<ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">הגיליון התחתון של הפעילות האחרונה נפתח בגובה מלא</translation>

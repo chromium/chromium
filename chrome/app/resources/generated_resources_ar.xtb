@@ -245,7 +245,6 @@
 <translation id="1159879754517035595">إدارة إعدادات الإضافات</translation>
 <translation id="1160800016654917722">تم نقل النافذة إلى الأسفل وإلى اليسار</translation>
 <translation id="1161190590171867633">‏يتم حفظ جداول المقارنة في حسابك على Google</translation>
-<translation id="1161575384898972166">يُرجى تسجيل الدخول إلى <ph name="TOKEN_NAME" /> لتصدير شهادة العميل.</translation>
 <translation id="116173250649946226">حدَّد مشرف مؤسستك مظهرًا تلقائيًا لا يمكن تغييره.</translation>
 <translation id="1162213688509394031">إخفاء شريط العناوين</translation>
 <translation id="1162479191445552288">فتح التطبيق عند بدء التشغيل</translation>
@@ -492,7 +491,6 @@
 <translation id="1316136264406804862">جارِ البحث...</translation>
 <translation id="1316248800168909509">تعذّر الربط بجهاز <ph name="DEVICE" />. يُرجى إعادة المحاولة.</translation>
 <translation id="1316495628809031177">تم إيقاف المزامنة مؤقتًا</translation>
-<translation id="1317637799698924700">‏سيتم تشغيل محطة الإرساء في وضع USB من نوع C المتوافق.</translation>
 <translation id="1319983966058170660">زر الرجوع إلى الصفحة الفرعية <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="1322046419516468189">عرض كلمات المرور المحفوظة وإدارتها في <ph name="SAVED_PASSWORDS_STORE" /></translation>
 <translation id="1323433172918577554">إظهار مزيد من الأقسام</translation>
@@ -994,7 +992,6 @@
 <translation id="1657406563541664238">‏المساعدة في تحسين <ph name="PRODUCT_NAME" /> بإرسال إحصاءات الاستخدام وتقارير الأعطال إلى Google تلقائيًا</translation>
 <translation id="1657937299377480641">لإعادة تسجيل الدخول من أجل الوصول إلى موارد تعليمية، عليك طلب الإذن من أحد الوالدَين.</translation>
 <translation id="1658424621194652532">هذه الصفحة تحاول الدخول إلى الميكروفون.</translation>
-<translation id="1660763353352708040">مشكلة في محوّل الطاقة</translation>
 <translation id="1661996889489595105">{NUM_TABS,plural, =1{حلّ مشكلة علامة التبويب التي تبطئ المتصفّح}zero{حلّ مشكلة علامات التبويب التي تبطئ المتصفّح}two{حلّ مشكلة علامتَي التبويب اللتين تبطئان المتصفّح}few{حلّ مشكلة علامات التبويب التي تبطئ المتصفّح}many{حلّ مشكلة علامات التبويب التي تبطئ المتصفّح}other{حلّ مشكلة علامات التبويب التي تبطئ المتصفّح}}</translation>
 <translation id="16620462294541761">عذرًا، ولكن تعذر التحقق من كلمة المرور. يُرجى المحاولة مرة أخرى.</translation>
 <translation id="1662572015199460525">‏يمكنك إجراء محادثات صوتية أو نصية مع Gemini للحصول على ردود وأفكار رئيسية والمزيد أثناء التصفّح</translation>
@@ -1122,7 +1119,6 @@
 <translation id="1751335846119670066">ساعدني في القراءة</translation>
 <translation id="17513872634828108">علامات التبويب المفتوحة</translation>
 <translation id="175196451752279553">إ&amp;عادة فتح علامة التبويب المغلقة</translation>
-<translation id="1753067873202720523">‏قد يتعذر شحن جهاز Chromebook أثناء تشغيله.</translation>
 <translation id="1753557900380512635">تصميمات داخلية</translation>
 <translation id="1753905327828125965">الأكثر زيارة</translation>
 <translation id="1755601632425835748">حجم النص</translation>
@@ -1451,7 +1447,6 @@
 <translation id="1974060860693918893">الإعدادات المتقدّمة</translation>
 <translation id="1974159333077206889">الصوت نفسه لمختلف مكبرات الصوت</translation>
 <translation id="1975841812214822307">إزالة...</translation>
-<translation id="1976150099241323601">تسجيل الدخول إلى جهاز الأمان</translation>
 <translation id="1976823515278601587">تم إخلاء جزء كبير من مساحة التخزين</translation>
 <translation id="1978249384651349182"><ph name="BEGIN_DESCRIPTION" />يؤدي تسجيل أجهزتك في المؤسسة إلى إعدادها في إدارة الأجهزة المركزية. وقد تطلب منك مؤسستك التسجيل لعدة أسباب منها:<ph name="END_DESCRIPTION" />
     <ph name="BEGIN_SUBTITLE1" /><ph name="BEGIN_BOLD" />تحسين مستوى الأمان<ph name="END_BOLD" /><ph name="END_SUBTITLE1" />
@@ -1485,6 +1480,7 @@
 <translation id="1989288015781834552">يُرجى إعادة التشغيل لإنهاء التحديث. سيُعاد فتح علامات التبويب.</translation>
 <translation id="1989903373608997757">الاستخدام دائمًا</translation>
 <translation id="1990046457226896323">تم تنزيل ملفات ميزة "النسخ النصي التلقائي".</translation>
+<translation id="1991829061375381344">‏لا تتوفّر لديك تراخيص كافية لتسجيل جهاز Google Meet هذا. لذا يُرجى التواصل مع المورِّد لشراء المزيد. وفي حال اعتقادك أنّ هذه الرسالة ظهرت عن طريق الخطأ، يُرجى التواصل مع المورّد.</translation>
 <translation id="199191324030140441">إيقاف وضع "عدم الإزعاج"</translation>
 <translation id="1992397118740194946">لم يتم تعيينه</translation>
 <translation id="1994173015038366702">‏عنوان URL للموقع</translation>
@@ -1724,7 +1720,6 @@
 <translation id="2156294658807918600">مشغّل الخدمات: <ph name="SCRIPT_URL" /></translation>
 <translation id="2156707722163479690">المواقع الإلكترونية المسموح لها بالانتقال للأعلى أو للأسفل في محتوى علامات التبويب التي تمّت مشاركتها وتكبيره أو تصغيره</translation>
 <translation id="2157457598652721267">لاختيار زر الماوس الأيسر أو الأيمن، يجب استخدام مفتاحَي "/" و"-"، أو استخدام مفتاح "*" لاختيار كليهما.</translation>
-<translation id="2157474325782140681">‏للحصول على ميزات إضافية، يُرجى استخدام محطة إرساء Dell المصمّمة للعمل مع جهاز Chromebook هذا.</translation>
 <translation id="215753907730220065">إنهاء وضع ملء الشاشة</translation>
 <translation id="2157632422749995237">‏يمكن أن ترسل إليك "محفظة Google" إشعارات حول أحداثك لاحقًا</translation>
 <translation id="2157779167749714207">‏‫Gemini ضمن <ph name="DEVICE_TYPE" /></translation>
@@ -1884,7 +1879,6 @@
 <translation id="2271986192355138465">تعرَّف على كيفية تثبيت تطبيقات الويب</translation>
 <translation id="2272430695183451567">لم يتم تخصيص أيّ مفاتيح تبديل</translation>
 <translation id="2272570998639520080">كوب عصير</translation>
-<translation id="2273119997271134996">مشكلة متعلقة بمنفذ الفيديو في محطة الإرساء</translation>
 <translation id="2274840746523584236">‏شحن جهاز Chromebook</translation>
 <translation id="2275193525496879616">تم منح إذن الوصول إلى الكاميرا. عليك توصيل كاميرا بجهازك.</translation>
 <translation id="2275352532065325930">موضع قائمة "البحث في علامة التبويب"</translation>
@@ -2116,7 +2110,6 @@
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{‫<ph name="DOMAIN_LINK" /> يتوفّر حساب واحد. تم حفظ كلمة المرور على هذا الجهاز فقط. مزيد من التفاصيل}zero{‫<ph name="DOMAIN_LINK" /> يتوفّر {NUM_PASSWORDS} حساب. تم حفظ كلمة المرور على هذا الجهاز فقط. مزيد من التفاصيل}two{‫<ph name="DOMAIN_LINK" /> يتوفّر حسابان ({NUM_PASSWORDS}). تم حفظ كلمة المرور على هذا الجهاز فقط. مزيد من التفاصيل}few{‫<ph name="DOMAIN_LINK" /> تتوفّر {NUM_PASSWORDS} حسابات. تم حفظ كلمة المرور على هذا الجهاز فقط. مزيد من التفاصيل}many{‫<ph name="DOMAIN_LINK" /> يتوفّر {NUM_PASSWORDS} حسابًا. تم حفظ كلمة المرور على هذا الجهاز فقط. مزيد من التفاصيل}other{‫<ph name="DOMAIN_LINK" /> يتوفّر {NUM_PASSWORDS} حساب. تم حفظ كلمة المرور على هذا الجهاز فقط. مزيد من التفاصيل}}</translation>
 <translation id="2428510569851653187">وصف ما كنت تفعله عندما تعطّلت علامة التبويب</translation>
 <translation id="2428939361789119025">‏إيقاف شبكة Wi-Fi</translation>
-<translation id="2431027948063157455">‏تعذّر تحميل مساعد Google، يُرجى التحقُّق من اتصال الشبكة وإعادة المحاولة.</translation>
 <translation id="243179355394256322">‏لا تسمح مؤسستك بتسجيل الأجهزة إلا للمستخدمين المصرّح لهم. هذا المستخدم غير مصرح له بتسجيل الأجهزة. يُرجى التأكّد من أنّ المستخدم لديه امتياز المشرف "تسجيل جهاز Google Meet" في قسم المستخدمين ضِمن وحدة تحكُّم المشرف.</translation>
 <translation id="243275146591958220">إلغاء التنزيل</translation>
 <translation id="2432882794929808179">تم تسجيل تطبيقات عددها <ph name="APP_COUNT" /></translation>
@@ -2701,7 +2694,6 @@
 <translation id="2808985063107661499">قد تتعارض إيماءة "<ph name="MAIN_GESTURE" />" مع الإيماءتين "<ph name="CONFLICTING_GESTURE_ONE" />" و"<ph name="CONFLICTING_GESTURE_TWO" />". يُرجى اختيار إيماءة أخرى، إن أمكن ذلك.</translation>
 <translation id="2809346626032021864">القراءة</translation>
 <translation id="2811205483104563968">الحسابات</translation>
-<translation id="2812049959647166806">‏Thunderbolt غير متوافق.</translation>
 <translation id="2813094189969465044">أدوات رقابة الأهل</translation>
 <translation id="2813765525536183456">&amp;إضافة ملف شخصي جديد</translation>
 <translation id="281390819046738856">تعذَّر توقيع الطلب.</translation>
@@ -3138,7 +3130,6 @@
 <translation id="3115147772012638511">في انتظار ذاكرة التخزين المؤقت ...</translation>
 <translation id="3115580024857770654">تصغير الكل</translation>
 <translation id="3115743155098198207">‏إدارة لغة حساب Google</translation>
-<translation id="3117362587799608430">لا تتوافق محطة الإرساء بالكامل.</translation>
 <translation id="3117791853215125017">{COUNT,plural, =1{تعذّر إرسال <ph name="ATTACHMENTS" /> إلى جهاز <ph name="DEVICE_NAME" />}zero{تعذّر إرسال <ph name="ATTACHMENTS" /> إلى جهاز <ph name="DEVICE_NAME" />}two{تعذّر إرسال <ph name="ATTACHMENTS" /> إلى جهاز <ph name="DEVICE_NAME" />}few{تعذّر إرسال <ph name="ATTACHMENTS" /> إلى جهاز <ph name="DEVICE_NAME" />}many{تعذّر إرسال <ph name="ATTACHMENTS" /> إلى جهاز <ph name="DEVICE_NAME" />}other{تعذّر إرسال <ph name="ATTACHMENTS" /> إلى جهاز <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3118319026408854581">مساعدة <ph name="PRODUCT_NAME" /></translation>
 <translation id="3118748462829336648">فتح اللوحة الجانبية</translation>
@@ -3154,7 +3145,6 @@
 <translation id="3125361247594231799">تثبيت هذا العرض المقسَّم لاستخدامه في المرة القادمة</translation>
 <translation id="3125816458150005808">يمكنك إلغاء تثبيتها وفتحها من القائمة</translation>
 <translation id="3126026824346185272">Ctrl</translation>
-<translation id="3127860049873093642">‏لتجنّب مشاكل الشحن والأداء، يمكنك استخدام محوِّل طاقة USB من نوع C أو محوِّل Dell متوافق.</translation>
 <translation id="3127862849166875294">‏تغيير حجم قرص نظام التشغيل Linux</translation>
 <translation id="3129150892373332590">‏سيؤدي هذا الإجراء إلى إيقاف ميزة المشاركة الدائمة لأجهزة USB مع الضيوف، ما سيؤدي أيضًا إلى إعادة ضبط كل البيانات التي تم الاحتفاظ بها. هل أنت متأكّد؟</translation>
 <translation id="3129173833825111527">الهامش الأيسر</translation>
@@ -3399,7 +3389,6 @@
         يمكنك إدارة الإعدادات من قائمة البطاقات أو الاطّلاع على المزيد من الخيارات عند النقر على الزر "تخصيص Chrome".</translation>
 <translation id="3308134619352333507">الزر "إخفاء"</translation>
 <translation id="3308604065765626613">{GROUP_COUNT,plural, =1{ستظل علامات التبويب مفتوحة على هذا الجهاز، ولكن سيتم حذف المجموعة نهائيًا.}zero{ستظل علامات التبويب مفتوحة على هذا الجهاز، ولكن سيتم حذف المجموعات نهائيًا.}two{ستظل علامات التبويب مفتوحة على هذا الجهاز، ولكن سيتم حذف المجموعتَين نهائيًا.}few{ستظل علامات التبويب مفتوحة على هذا الجهاز، ولكن سيتم حذف المجموعات نهائيًا.}many{ستظل علامات التبويب مفتوحة على هذا الجهاز، ولكن سيتم حذف المجموعات نهائيًا.}other{ستظل علامات التبويب مفتوحة على هذا الجهاز، ولكن سيتم حذف المجموعات نهائيًا.}}</translation>
-<translation id="3308852433423051161">‏جارٍ تحميل مساعد Google...</translation>
 <translation id="3309124184713871355">منشآت</translation>
 <translation id="3309330461362844500">رقم تعريف نموذج الشهادة</translation>
 <translation id="3310379801837527592">الانضمام إلى مجموعة علامات التبويب التي تضمّ "<ph name="OWNER_FIRST_NAME" />" ومستخدمًا واحدًا آخر (<ph name="NUM_OTHER_MEMBERS" />)</translation>
@@ -3628,7 +3617,6 @@
 <translation id="3468999815377931311">‏هاتف Android</translation>
 <translation id="3469583217479686109">أداة التحديد</translation>
 <translation id="3471687177769494956">تعديل اختصار التنقّل</translation>
-<translation id="3471876058939596279">‏لا يمكن استخدام منافذ USB من نوع C وHDMI لهذا الفيديو في الوقت نفسه. عليك استخدام منفذ فيديو مختلف.</translation>
 <translation id="3472469028191701821">يتم فتح الرابط في علامة تبويب جديدة.</translation>
 <translation id="3473241910002674503">يمكنك الانتقال إلى الصفحة الرئيسية والصفحة السابقة والتبديل بين التطبيقات باستخدام أزرار التنقل في وضع الجهاز اللوحي.</translation>
 <translation id="3473479545200714844">مكبّر الشاشة</translation>
@@ -3830,7 +3818,6 @@
 <translation id="3608730769702025110">الخطوة 3 من 4: مراجعة معلومات تحديد الهوية الشخصية</translation>
 <translation id="3609277884604412258">بحث سريع</translation>
 <translation id="3610241585790874201">المواقع الإلكترونية غير المسموح لها بحفظ البيانات على جهازك</translation>
-<translation id="3610369246614755442">تحتاج مروحة تبريد محطة الإرساء إلى الصيانة.</translation>
 <translation id="3610961622607302617">تغيير كلمة مرور <ph name="WEBSITE" /></translation>
 <translation id="3611634011145829814">الانتقال إلى صفحة الاشتراك</translation>
 <translation id="3611658447322220736">السماح للمواقع الإلكترونية التي تم إغلاقها مؤخرًا بإنهاء إرسال البيانات واستلامها</translation>
@@ -3858,7 +3845,6 @@
 <translation id="3624567683873126087">‏فتح قفل الجهاز وتسجيل الدخول إلى حساب Google</translation>
 <translation id="3624583033347146597">اختيار الإعدادات المفضَّلة لملفات تعريف الارتباط التابعة لجهات خارجية</translation>
 <translation id="3625481642044239431">تم اختيار ملف غير صالح. يرجى إعادة المحاولة.</translation>
-<translation id="3626296069957678981">‏لشحن جهاز Chromebook هذا، عليك استخدام بطارية Dell متوافقة.</translation>
 <translation id="3627320433825461852">تتبقى أقل من دقيقة واحدة</translation>
 <translation id="3627588569887975815">فتح الرّابط في نافذة للتصفّح المتخ&amp;فّي</translation>
 <translation id="3627671146180677314">‏وقت تجديد شهادة Netscape</translation>
@@ -3952,7 +3938,6 @@
 <translation id="3688794912214798596">تغيير اللغات...</translation>
 <translation id="3690369331356918524">التحذير إذا تم الكشف عن كلمات المرور في عملية اختراق بيانات</translation>
 <translation id="3691231116639905343">تطبيقات لوحة المفاتيح</translation>
-<translation id="3693415264595406141">كلمة المرور:</translation>
 <translation id="3694027410380121301">اختيار علامة التبويب السابقة</translation>
 <translation id="3694122362646626770">المواقع الإلكترونية</translation>
 <translation id="3694590407685276748">تمييز مؤشر النص</translation>
@@ -5160,7 +5145,6 @@
 <translation id="4513072860957814107">&amp;حذف بيانات التصفّح…</translation>
 <translation id="4513872120116766993">اقتراحات نصية توقّعية</translation>
 <translation id="4513946894732546136">ملاحظات</translation>
-<translation id="4515872537870654449">‏يُرجي التواصل مع فريق دعم Dell للحصول على الخدمة. ستتوقف محطة الإرساء عن العمل في حال توقفت مروحة التبريد عن العمل.</translation>
 <translation id="4515942088136451195">تفرض مؤسستك قيودًا على أنواع البيانات التي يمكنك حفظها</translation>
 <translation id="4516395361210407049">تمّت إعادة ضبط أزرار شريط الأدوات</translation>
 <translation id="4519331665958994620">السماح للمواقع الإلكترونية بطلب استخدام الكاميرا</translation>
@@ -7185,7 +7169,6 @@
 <translation id="5939723110967488589">اختيار الأزرار التي تظهر في شريط الأدوات</translation>
 <translation id="594048410531370124">لم يتم التعرُّف على المفتاح. يمكنك الضغط على أي مفتاح لاختيار <ph name="RESPONSE" />.</translation>
 <translation id="5941153596444580863">إضافة شخص...</translation>
-<translation id="5941343993301164315">يُرجى تسجيل الدخول إلى <ph name="TOKEN_NAME" />.</translation>
 <translation id="5941711191222866238">تصغير</translation>
 <translation id="5941854976565320351">{PASSWORD_COUNT,plural, =1{‏تم حفظ كلمة مرور واحدة على هذا الجهاز فقط. ولاستخدامها على أجهزتك الأخرى، يجب حفظها في حسابك على Google.}zero{‏تم حفظ {PASSWORD_COUNT} كلمة مرور على هذا الجهاز فقط. ولاستخدامها على أجهزتك الأخرى، يجب حفظها في حسابك على Google.}two{‏تم حفظ كلمتَي مرور ({PASSWORD_COUNT}) على هذا الجهاز فقط. ولاستخدامهما على أجهزتك الأخرى، يجب حفظهما في حسابك على Google.}few{‏تم حفظ {PASSWORD_COUNT} كلمات مرور على هذا الجهاز فقط. ولاستخدامها على أجهزتك الأخرى، يجب حفظها في حسابك على Google.}many{‏تم حفظ {PASSWORD_COUNT} كلمة مرور على هذا الجهاز فقط. ولاستخدامها على أجهزتك الأخرى، يجب حفظها في حسابك على Google.}other{‏تم حفظ {PASSWORD_COUNT} كلمة مرور على هذا الجهاز فقط. ولاستخدامها على أجهزتك الأخرى، يجب حفظها في حسابك على Google.}}</translation>
 <translation id="594221546068848596">البحث في صفحة باستخدام "<ph name="VISUAL_SEARCH_PROVIDER" />"</translation>
@@ -8423,7 +8406,6 @@
 <translation id="680488281839478944">توفّر الجهاز الافتراضي "<ph name="DEFAULT_VM_NAME" />"</translation>
 <translation id="6805236548654699520">يمكنك إزالة النوافذ المنبثقة غير المرغوب فيها وإصلاح مشاكل الشبكة وغير ذلك من خلال إعادة ضبط الإعدادات على الإعدادات التلقائية الآمنة.</translation>
 <translation id="6805478749741295868">‏هذه ميزة تجريبية تستخدم الذكاء الاصطناعي (AI) وقد ينشأ عنها نتائج غير دقيقة أحيانًا.</translation>
-<translation id="6805647936811177813">يُرجى تسجيل الدخول إلى <ph name="TOKEN_NAME" /> لاستيراد شهادة العميل من <ph name="HOST_NAME" />.</translation>
 <translation id="6805817411033102703">ملاحظات حول مجموعات علامات التبويب المشترَكة</translation>
 <translation id="6806089545527108739">عدم السماح بإرسال الإشعارات والسؤال لاحقًا</translation>
 <translation id="6806781719264274042">‏جهات الاتصال التي لديها حساب على Google فقط. <ph name="LINK_BEGIN" />عرض جهات الاتصال<ph name="LINK_END" /></translation>
@@ -8627,7 +8609,6 @@
 <translation id="6938606182859551396">‏لتلقّي الإشعارات من هاتفك على جهاز <ph name="DEVICE_TYPE" /> الخاص بك، يُرجى اتّباع التعليمات على الهاتف لمنح "خدمات Google Play" إمكانية الوصول إلى الإشعارات.</translation>
 <translation id="6941514251635934269">يمكنك طرح سؤال حول هذا المستند</translation>
 <translation id="694168622559714949">حدّد مشرف مؤسستك لغة تلقائية لا يمكن تغييرها.</translation>
-<translation id="6941937518557314510">يُرجى تسجيل الدخول إلى <ph name="TOKEN_NAME" /> للمصادقة على <ph name="HOST_NAME" /> باستخدام شهادتك.</translation>
 <translation id="6943060957016121200">تفعيل ميزة "التوصيل الفوري"</translation>
 <translation id="6943939122536910181">تم قطع الاتصال بجهاز <ph name="DEVICE" />.</translation>
 <translation id="6944750221184785444">يتعذّر تثبيت هذا الملف الشخصي. للحصول على الدعم الفني، يُرجى التواصل مع مشغّل شبكة الجوّال.</translation>
@@ -9045,7 +9026,6 @@
 <translation id="7239108166256782787">ألغى <ph name="DEVICE_NAME" /> عملية النقل.</translation>
 <translation id="7239401402533584029">تساعدك الميزة في كتابة أي محتوى على الويب مع تحسين المحتوى أو إضفاء لمسة إبداعية عليه</translation>
 <translation id="7240339475467890413">هل تريد الاتصال بنقطة اتصال جديدة؟</translation>
-<translation id="7241389281993241388">يُرجى تسجيل الدخول إلى <ph name="TOKEN_NAME" /> لاستيراد شهادة العميل.</translation>
 <translation id="7241763419756062043">اختيار جودة البحث والتصفّح</translation>
 <translation id="7243092385765551741">هل تريد حذف مفتاح المرور؟</translation>
 <translation id="7245628041916450754">‏<ph name="WIDTH" /> x <ph name="HEIGHT" /> (الأفضل)</translation>
@@ -9852,6 +9832,7 @@
 <translation id="7784067724422331729">حظرت إعدادات الأمان بجهاز الكمبيوتر هذا الملف.</translation>
 <translation id="7784796923038949829">يتعذَّر الاطِّلاع على بيانات الموقع الإلكتروني أو تغييرها</translation>
 <translation id="778480864305029524">‏فعّل الإشعارات لخدمات Google Play لاستخدام التوصيل الفوري</translation>
+<translation id="7784875615510899699">‏لا تتوفّر لديك تراخيص كافية لتسجيل جهاز Google Beam هذا. لذا يُرجى التواصل مع المورِّد لشراء المزيد. وفي حال اعتقادك أنّ هذه الرسالة ظهرت عن طريق الخطأ، يُرجى التواصل مع المورّد.</translation>
 <translation id="77855763949601045">&amp;فتح الملف الشخصي للضيف</translation>
 <translation id="7786663536153819505">اتّبِع التعليمات التي تظهر على هاتفك لمسح رمز الاستجابة السريعة ضوئيًا. تأكَّد من تفعيل البلوتوث على هاتفك.
     <ph name="BR" />
@@ -10692,7 +10673,6 @@
 <translation id="8350789879725387295">أدوات قلم الشاشة في لوحة الأدوات</translation>
 <translation id="8351316842353540018">عرض خيارات إمكانية الوصول دائمًا</translation>
 <translation id="8351419472474436977">أصبح بإمكان هذه الإضافة التحكم في إعدادات الخادم الوكيل التابعة لك، مما يعني أن بإمكانها تغيير أي إجراء لك على الإنترنت أو قطعه أو التجسس عليه. إذا كنت غير متيقن من سبب حدوث هذا التغيير، فأنت لا ترغب فيه على الأرجح.</translation>
-<translation id="8351630282875799764">البطارية لا تشحن</translation>
 <translation id="8352287103893778223">عنوان مجموعة علامات التبويب</translation>
 <translation id="835238322900896202">حدث خطأ أثناء إلغاء التثبيت. يُرجى إلغاء التثبيت من خلال الوحدة الطرفية.</translation>
 <translation id="8353420862507374944">البثّ والحفظ والمشاركة</translation>
@@ -11155,7 +11135,6 @@
 <translation id="8676313779986170923">شكرًا لك على إرسال الملاحظات.</translation>
 <translation id="8676374126336081632">محو الإرسال</translation>
 <translation id="8676730726685223115">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> (علامة تبويب واحدة)}zero{<ph name="GROUP_TITLE" /> (# علامة تبويب)}two{<ph name="GROUP_TITLE" /> (علامتا تبويب)}few{<ph name="GROUP_TITLE" /> (# علامات تبويب)}many{<ph name="GROUP_TITLE" /> (# علامة تبويب)}other{<ph name="GROUP_TITLE" /> (# علامة تبويب)}}</translation>
-<translation id="8676770494376880701">تمّ توصيل شاحن منخفض الطاقة</translation>
 <translation id="8676985325915861058">التخطّي وإعداد ملف شخصي جديد</translation>
 <translation id="8677212948402625567">تصغير الكل...</translation>
 <translation id="8678192320753081984">‏يوفِّر أعلى مستويات الحماية من Google لحسابات المستخدمين المعرضين لخطر الهجمات الموجّهة.</translation>

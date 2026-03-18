@@ -245,7 +245,6 @@
 <translation id="1159879754517035595">مدیریت تنظیمات افزونه</translation>
 <translation id="1160800016654917722">پنجره به پایین سمت چپ منتقل شد</translation>
 <translation id="1161190590171867633">‏جدول‌های مقایسه در «حساب Google» شما ذخیره می‌شود</translation>
-<translation id="1161575384898972166">لطفاً برای صدور مجوز سرویس گیرنده، به <ph name="TOKEN_NAME" /> وارد شوید.</translation>
 <translation id="116173250649946226">سرپرستتان طرح زمینه‌ای پیش‌فرض تنظیم کرده است که نمی‌توان تغییر داد.</translation>
 <translation id="1162213688509394031">پنهان کردن نوار عنوان</translation>
 <translation id="1162479191445552288">راه‌اندازی هنگام شروع به کار</translation>
@@ -489,7 +488,6 @@
 <translation id="1316136264406804862">در حال جستجو...</translation>
 <translation id="1316248800168909509">اتصال به <ph name="DEVICE" /> ناموفق بود. دوباره امتحان کنید.</translation>
 <translation id="1316495628809031177">همگام‌سازی موقتاً متوقف شده است</translation>
-<translation id="1317637799698924700">‏ایستگاه پایه اتصال در حالت سازگار با «USB نوع C» کار می‌کند.</translation>
 <translation id="1319983966058170660">دکمه برگشت صفحه فرعی <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="1322046419516468189">در <ph name="SAVED_PASSWORDS_STORE" /> گذرواژه‌های ذخیره‌شده‌تان را مشاهده و مدیریت کنید</translation>
 <translation id="1323433172918577554">بیشتر نشان دادن</translation>
@@ -990,7 +988,6 @@
 <translation id="1657406563541664238">‏با ارسال خودکار آمار استفاده و گزارش‌های خرابی به Google، به بهتر شدن <ph name="PRODUCT_NAME" /> کمک کنید.</translation>
 <translation id="1657937299377480641">برای ورود دوباره به سیستم برای دسترسی به منابع آموزشی، از ولی‌تان بخواهید به شما اجازه بدهد</translation>
 <translation id="1658424621194652532">این صفحه به میکروفون شما دسترسی دارد.</translation>
-<translation id="1660763353352708040">مشکل آداپتور برق</translation>
 <translation id="1661996889489595105">{NUM_TABS,plural, =1{مشکل زبانه‌ای که مرورگرتان را کند کرده است برطرف کنید}one{مشکل زبانه‌ای که مرورگرتان را کند کرده است برطرف کنید}other{مشکل زبانه‌هایی که مرورگرتان را کند کرده است برطرف کنید}}</translation>
 <translation id="16620462294541761">متأسفانه، گذرواژه شما تأیید نشد. لطفاً دوباره امتحان کنید.</translation>
 <translation id="1662572015199460525">با گپ صوتی یا نوشتاری، پاسخ‌ها، نکات کلیدی، و موارد دیگر را درحین مرور دریافت کنید</translation>
@@ -1126,7 +1123,6 @@
 <translation id="1751335846119670066">کمک گرفتن در خواندن</translation>
 <translation id="17513872634828108">زبانه‌های باز</translation>
 <translation id="175196451752279553">با&amp;ز کردن مجدد برگه بسته</translation>
-<translation id="1753067873202720523">‏ممکن است Chromebook شما هنگام روشن بودن شارژ نشود.</translation>
 <translation id="1753557900380512635">فضاهای داخلی</translation>
 <translation id="1753905327828125965">بیشترین موارد بازدید شده</translation>
 <translation id="1755601632425835748">اندازه نوشتار</translation>
@@ -1453,7 +1449,6 @@
 <translation id="1974060860693918893">پیشرفته</translation>
 <translation id="1974159333077206889">صدای یکسان با همه بلندگوها</translation>
 <translation id="1975841812214822307">برداشتن…</translation>
-<translation id="1976150099241323601">ورود به سیستم دستگاه امنیتی</translation>
 <translation id="1976823515278601587">صرفه‌جویی‌های زیاد</translation>
 <translation id="1978249384651349182"><ph name="BEGIN_DESCRIPTION" />با ثبت‌نام دستگاه‌ها در سازمان، آن را برای مدیریت متمرکز دستگاه تنظیم می‌کنید. ممکن است سازمانتان ثبت‌نام را به چند دلیل الزامی کند:<ph name="END_DESCRIPTION" />
     <ph name="BEGIN_SUBTITLE1" /><ph name="BEGIN_BOLD" />بهبود امنیت<ph name="END_BOLD" /><ph name="END_SUBTITLE1" />
@@ -1487,6 +1482,7 @@
 <translation id="1989288015781834552">برای به‌روزرسانی، برنامه را راه‌اندازی مجدد کنید. زبانه‌ها دوباره باز می‌شوند.</translation>
 <translation id="1989903373608997757">همیشه استفاده شود</translation>
 <translation id="1990046457226896323">فایل‌های گفتاری بارگیری شد</translation>
+<translation id="1991829061375381344">‏پروانه‌های موجود شما برای ثبت‌نام کردن این دستگاه سخت‌افزاری Google Meet کافی نیست. برای خرید پروانه‌های بیشتر، لطفاً با شرکت واسطه تماس بگیرید. اگر فکر می‌کنید این پیام به‌اشتباه به شما نشان داده شده است، لطفاً با شرکت واسطه تماس بگیرید.</translation>
 <translation id="199191324030140441">خاموش کردن «مزاحم نشوید»</translation>
 <translation id="1992397118740194946">تنظیم نشده</translation>
 <translation id="1994173015038366702">نشانی وب سایت</translation>
@@ -1726,7 +1722,6 @@
 <translation id="2156294658807918600">عامل خدماتی: <ph name="SCRIPT_URL" /></translation>
 <translation id="2156707722163479690">پیمایش و بزرگ‌نمایی برگه‌های هم‌رسانی‌شده مجاز است</translation>
 <translation id="2157457598652721267">از «/» و «-» برای انتخاب دکمه‌های چپ یا راست موشواره استفاده کنید. از «*» برای انتخاب هر دو استفاده کنید.</translation>
-<translation id="2157474325782140681">‏برای دریافت ویژگی‌های اضافی، از ایستگاه پایه اتصال Dell که برای کار با این Chromebook طراحی شده است، استفاده کنید.</translation>
 <translation id="215753907730220065">خروج از حالت تمام صفحه</translation>
 <translation id="2157632422749995237">بعداً «کیف پول» می‌تواند اعلان‌هایی درباره رویدادهایتان برایتان ارسال کند</translation>
 <translation id="2157779167749714207">‏‫<ph name="DEVICE_TYPE" /> شما با Gemini ارائه می‌شود</translation>
@@ -1889,7 +1884,6 @@
 <translation id="2271986192355138465">آشنایی با نحوه نصب برنامه‌های وب</translation>
 <translation id="2272430695183451567">۰ کلید اختصاص داده شده است</translation>
 <translation id="2272570998639520080">جام مارتینی</translation>
-<translation id="2273119997271134996">مشکل در اتصال درگاه ویدیو</translation>
 <translation id="2274840746523584236">‏Chromebook خود را شارژ کنید</translation>
 <translation id="2275193525496879616">مجاز است. دوربینی را به دستگاهتان وصل کنید.</translation>
 <translation id="2275352532065325930">جایگاه «جستجوی زبانه»</translation>
@@ -2121,7 +2115,6 @@
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> ۱ حساب، گذرواژه فقط در این دستگاه ذخیره شد. جزئیات بیشتر}one{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} حساب، گذرواژه فقط در این دستگاه ذخیره شد. جزئیات بیشتر}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} حساب، گذرواژه فقط در این دستگاه ذخیره شد. جزئیات بیشتر}}</translation>
 <translation id="2428510569851653187">توضیح دهید وقتی برگه خراب شد مشغول انجام چه کاری بودید</translation>
 <translation id="2428939361789119025">‏خاموش کردن Wi-Fi</translation>
-<translation id="2431027948063157455">‏«دستیار Google» بارگیری نشد. لطفاً اتصال شبکه را بررسی کرده و دوباره امتحان کنید.</translation>
 <translation id="243179355394256322">‏سازمانتان ثبت‌نام دستگاه را به «فقط کاربران مجاز» محدود می‌کند. این کاربر مجاز نیست دستگاه‌ها را ثبت‌نام کند. لطفاً مطمئن شوید کاربر امتیاز سرپرستی «ثبت‌نام کردن Google Meet hardware» را در بخش «کاربران» از «کنسول سرپرست» داشته باشد.</translation>
 <translation id="243275146591958220">لغو بارگیری</translation>
 <translation id="2432882794929808179">‫<ph name="APP_COUNT" /> برنامه ثبت شد</translation>
@@ -2706,7 +2699,6 @@
 <translation id="2808985063107661499">«<ph name="MAIN_GESTURE" />» ممکن است با «<ph name="CONFLICTING_GESTURE_ONE" />» و «<ph name="CONFLICTING_GESTURE_TWO" />» هم‌پوشانی داشته باشد. درصورت امکان، اشاره دیگری انتخاب کنید.</translation>
 <translation id="2809346626032021864">خواندن</translation>
 <translation id="2811205483104563968">حساب‌ها</translation>
-<translation id="2812049959647166806">‏از Thunderbolt پشتیبانی نمی‌شود</translation>
 <translation id="2813094189969465044">کنترل‌های والدین</translation>
 <translation id="2813765525536183456">افزودن نمایه جدید</translation>
 <translation id="281390819046738856">درخواست امضا نشد.</translation>
@@ -3143,7 +3135,6 @@
 <translation id="3115147772012638511">منتظر حافظه نهان...</translation>
 <translation id="3115580024857770654">کوچک کردن همه موارد</translation>
 <translation id="3115743155098198207">‏مدیریت زبان «حساب Google»</translation>
-<translation id="3117362587799608430">پایه اتصال کاملاً سازگار نیست</translation>
 <translation id="3117791853215125017">{COUNT,plural, =1{ارسال <ph name="ATTACHMENTS" /> به <ph name="DEVICE_NAME" /> ناموفق بود}one{ارسال <ph name="ATTACHMENTS" /> به <ph name="DEVICE_NAME" /> ناموفق بود}other{ارسال <ph name="ATTACHMENTS" /> به <ph name="DEVICE_NAME" /> ناموفق بود}}</translation>
 <translation id="3118319026408854581">راهنمای <ph name="PRODUCT_NAME" /></translation>
 <translation id="3118748462829336648">باز کردن پانل کناری</translation>
@@ -3159,7 +3150,6 @@
 <translation id="3125361247594231799">آن را برای دفعه بعد سنجاق کنید</translation>
 <translation id="3125816458150005808">می‌توانید سنجاق آن را بردارید و آن را از منو باز کنید</translation>
 <translation id="3126026824346185272">Ctrl</translation>
-<translation id="3127860049873093642">‏برای اجتناب از مشکلات شارژ و عملکرد، از آداپتور برق Dell یا USB Type-C سازگاری استفاده کنید.</translation>
 <translation id="3127862849166875294">‏تغییر اندازه دیسک Linux</translation>
 <translation id="3129150892373332590">‏این تنظیم اشتراک‌گذاری دستگاه‌های USB با مهمانان را غیرفعال می‌کند که در نتیجه تداوم به‌طور کامل بازنشانی خواهد شد. آیا مطمئنید؟</translation>
 <translation id="3129173833825111527">حاشیه چپ</translation>
@@ -3404,7 +3394,6 @@
         از منوِ کارت می‌توانید تنظیمات را مدیریت کنید یا در «سفارشی‌سازی Chrome» گزینه‌های بیشتری را ببینید.</translation>
 <translation id="3308134619352333507">دکمه پنهان کردن</translation>
 <translation id="3308604065765626613">{GROUP_COUNT,plural, =1{زبانه‌ها در این دستگاه باز می‌ماند اما گروه برای همیشه حذف خواهد شد.}one{زبانه‌ها در این دستگاه باز می‌ماند اما گروه برای همیشه حذف خواهد شد.}other{زبانه‌ها در این دستگاه باز می‌ماند اما گروه‌ها برای همیشه حذف خواهد شد.}}</translation>
-<translation id="3308852433423051161">‏درحال بارگیری «دستیار Google»…</translation>
 <translation id="3309124184713871355">سازه</translation>
 <translation id="3309330461362844500">شناسه نمایه گواهینامه</translation>
 <translation id="3310379801837527592">به گروه زبانه با <ph name="OWNER_FIRST_NAME" /> و <ph name="NUM_OTHER_MEMBERS" /> نفر دیگر بپیوندید</translation>
@@ -3633,7 +3622,6 @@
 <translation id="3468999815377931311">‏تلفن Android</translation>
 <translation id="3469583217479686109">ابزار انتخاب</translation>
 <translation id="3471687177769494956">ویرایش میان‌بر پیمایش</translation>
-<translation id="3471876058939596279">‏نمی‌توان به‌طور هم‌زمان از درگاه‌های HDMI و USB نوع C برای ویدیو استفاده کرد. از درگاه ویدیو  دیگری استفاده کنید.</translation>
 <translation id="3472469028191701821">در زبانه جدید باز می‌شود</translation>
 <translation id="3473241910002674503">با دکمه‌های «حالت رایانه لوحی» به صفحه اصلی پیمایش کنید، به صفحه قبل برگردید، و بین برنامه‌ها جابه‌جا شوید.</translation>
 <translation id="3473479545200714844">ذره‌بین صفحه</translation>
@@ -3835,7 +3823,6 @@
 <translation id="3608730769702025110">مرحله ۳ از ۴: مرور اطلاعات شناساننده شخصی</translation>
 <translation id="3609277884604412258">جستجوی سریع</translation>
 <translation id="3610241585790874201">مجاز نیست در دستگاه داده ذخیره کند</translation>
-<translation id="3610369246614755442">پنکه پایه اتصال نیاز به سرویس دارد</translation>
 <translation id="3610961622607302617">تغییر گذرواژه <ph name="WEBSITE" /></translation>
 <translation id="3611634011145829814">رفتن به صفحه اشتراک</translation>
 <translation id="3611658447322220736">سایت‌هایی که اخیراً بسته شده‌اند می‌توانند ارسال و دریافت داده را تکمیل کنند</translation>
@@ -3863,7 +3850,6 @@
 <translation id="3624567683873126087">‏باز کردن قفل دستگاه و ورود به سیستم حساب Google</translation>
 <translation id="3624583033347146597">انتخاب اولویت‌های کوکی شخص ثالث</translation>
 <translation id="3625481642044239431">فایل انتخاب‌شده معتبر نیست. دوباره امتحان کنید.</translation>
-<translation id="3626296069957678981">‏برای شارژ کردن این Chromebook، از باتری سازگار Dell استفاده کنید.</translation>
 <translation id="3627320433825461852">کمتر از ۱ دقیقه باقی مانده است</translation>
 <translation id="3627588569887975815">باز کردن پیوند در پنجره حالت &amp;ناشناس</translation>
 <translation id="3627671146180677314">‏زمان تجدید گواهی Netscape</translation>
@@ -3957,7 +3943,6 @@
 <translation id="3688794912214798596">تغییر زبان‌ها…</translation>
 <translation id="3690369331356918524">اگر گذرواژه‌ها به‌دلیل نقض داده درمعرض خطر باشد، به شما هشدار می‌دهد</translation>
 <translation id="3691231116639905343">برنامه‌های صفحه‌کلید</translation>
-<translation id="3693415264595406141">گذرواژه:</translation>
 <translation id="3694027410380121301">انتخاب برگه قبلی</translation>
 <translation id="3694122362646626770">وب‌سایت‌ها</translation>
 <translation id="3694590407685276748">برجسته کردن مکان‌نمای نوشتار</translation>
@@ -5167,7 +5152,6 @@
 <translation id="4513072860957814107">&amp;حذف کردن داده‌های مرور…</translation>
 <translation id="4513872120116766993">پیشنهادهای نگارشی</translation>
 <translation id="4513946894732546136">بازخورد</translation>
-<translation id="4515872537870654449">‏برای سرویس با Dell تماس بگیرید. اگر پنکه کار نکند، پایه اتصال خاموش می‌شود.</translation>
 <translation id="4515942088136451195">سازمانتان مواردی را که می‌توانید ذخیره کنید محدود می‌کند</translation>
 <translation id="4516395361210407049">دکمه‌های نوارابزار بازنشانی شد</translation>
 <translation id="4519331665958994620">سایت‌ها می‌توانند درخواست کنند از دوربین شما استفاده کنند</translation>
@@ -7192,7 +7176,6 @@
 <translation id="5939723110967488589">انتخاب کنید چه دکمه‌هایی در نوارابزار نشان داده شود</translation>
 <translation id="594048410531370124">کلید تشخیص داده نشد. برای <ph name="RESPONSE" />، یکی از کلیدها را فشار دهید.</translation>
 <translation id="5941153596444580863">افزودن شخص...</translation>
-<translation id="5941343993301164315">لطفاً به <ph name="TOKEN_NAME" /> وارد شوید.</translation>
 <translation id="5941711191222866238">کوچک کردن</translation>
 <translation id="5941854976565320351">{PASSWORD_COUNT,plural, =1{‏‫۱ گذرواژه فقط در این دستگاه ذخیره شده است. برای استفاده از آن در سایر دستگاه‌هایتان، آن را در «حساب Google» خود ذخیره کنید.}one{‏‫{PASSWORD_COUNT} گذرواژه فقط در این دستگاه ذخیره شده است. برای استفاده از آن‌ها در سایر دستگاه‌هایتان، آن‌ها را در «حساب Google» خود ذخیره کنید.}other{‏‫{PASSWORD_COUNT} گذرواژه فقط در این دستگاه ذخیره شده است. برای استفاده از آن‌ها در سایر دستگاه‌هایتان، آن‌ها را در «حساب Google» خود ذخیره کنید.}}</translation>
 <translation id="594221546068848596">جستجوی صفحه با <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
@@ -8424,7 +8407,6 @@
 <translation id="680488281839478944">ماشین مجازی «<ph name="DEFAULT_VM_NAME" />» موجود است</translation>
 <translation id="6805236548654699520">با بازگرداندن تنظیمات به پیش‌فرض‌های ایمن، بالاپرهای ناخواسته را حذف کنید، مشکلات شبکه را برطرف کنید، و کارهای دیگر انجام دهید.</translation>
 <translation id="6805478749741295868">این یک قابلیت آزمایشی هوش مصنوعی است و ممکن است اشتباه بکند.</translation>
-<translation id="6805647936811177813">لطفاً به سیستم <ph name="TOKEN_NAME" /> وارد شوید تا بتوانید مجوز سرویس گیرنده را از <ph name="HOST_NAME" /> وارد کنید.</translation>
 <translation id="6805817411033102703">بازخورد درباره گروه‌های زبانه هم‌رسانی‌شده</translation>
 <translation id="6806089545527108739">اجازه داده نشود اما بعداً سؤال شود</translation>
 <translation id="6806781719264274042">‏فقط مخاطبینی که «حساب Google» دارند. <ph name="LINK_BEGIN" />مشاهده مخاطبین<ph name="LINK_END" /></translation>
@@ -8628,7 +8610,6 @@
 <translation id="6938606182859551396">‏برای دریافت اعلان‌های تلفنتان در <ph name="DEVICE_TYPE" />، دستورالعمل‌های مجاز کردن «خدمات Google Play» برای دسترسی به اعلان‌ها را در تلفنتان دنبال کنید.</translation>
 <translation id="6941514251635934269">درباره این سند بپرسید</translation>
 <translation id="694168622559714949">سرپرست شما زبان پیش‌فرضی را تنظیم کرده است که قابل تغییر نیست.</translation>
-<translation id="6941937518557314510">لطفاً به سیستم <ph name="TOKEN_NAME" /> وارد شوید تا بتوانید <ph name="HOST_NAME" /> را با گواهی خود راستی‌آزمایی کنید.</translation>
 <translation id="6943060957016121200">فعال کردن «اشتراک‌گذاری اینترنت فوری»</translation>
 <translation id="6943939122536910181">اتصال <ph name="DEVICE" /> قطع شد</translation>
 <translation id="6944750221184785444">این نمایه نصب نشد. برای پشتیبانی فنی، لطفاً با شرکت مخابراتی‌تان تماس بگیرید.</translation>
@@ -9045,7 +9026,6 @@
 <translation id="7239108166256782787"><ph name="DEVICE_NAME" /> انتقال را لغو کرد</translation>
 <translation id="7239401402533584029">به شما کمک می‌کند تا با کمی اصلاح بیشتر یا با ایده‌های خلاقانه، هر چیزی را در وب بنویسید</translation>
 <translation id="7240339475467890413">به نقطه اتصال جدید متصل شود؟</translation>
-<translation id="7241389281993241388">لطفاً جهت ورود به مجوز سرویس گیرنده، به <ph name="TOKEN_NAME" /> وارد شوید.</translation>
 <translation id="7241763419756062043">کیفیت مرور و جستجو را انتخاب کنید</translation>
 <translation id="7243092385765551741">گذرکلید حذف شود؟</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> × <ph name="HEIGHT" /> (بهترین)</translation>
@@ -9853,6 +9833,7 @@
 <translation id="7784067724422331729">تنظیمات ایمنی رایانه شما این فایل را مسدود کرد.</translation>
 <translation id="7784796923038949829">خواندن یا تغییر داده‌های سایت امکان‌پذیر نیست</translation>
 <translation id="778480864305029524">‏برای استفاده از «اشتراک‌گذاری اینترنت فوری»، اعلان‌ها را برای «خدمات Google Play» روشن کنید.</translation>
+<translation id="7784875615510899699">‏پروانه‌های موجود شما برای ثبت‌نام این دستگاه Google Beam کافی نیست. برای خرید پروانه‌های بیشتر، لطفاً با شرکت واسطه تماس بگیرید. اگر فکر می‌کنید این پیام به‌اشتباه به شما نشان داده شده است، لطفاً با شرکت واسطه تماس بگیرید.</translation>
 <translation id="77855763949601045">باز کردن «نمایه مهمان»</translation>
 <translation id="7786663536153819505">برای اسکن رمزینه پاسخ‌سریع، دستورالعمل‌های روی تلفن را دنبال کنید. بلوتوث تلفن باید روشن باشد.
     <ph name="BR" />
@@ -10692,7 +10673,6 @@
 <translation id="8350789879725387295">ابزارهای قلم در قفسه</translation>
 <translation id="8351316842353540018">‏نمایش همیشگی گزینه‌های a11y</translation>
 <translation id="8351419472474436977">این برنامه افزودنی کنترل تنظیمات پروکسی شما را در اختیار گرفته است یعنی می‌تواند هر چیزی را در که حالت آنلاین انجام می‌دهید تغییر دهد، خراب کند یا استراق سمع کند. اگر مطمئن نیستید چرا این تغییر اتفاق افتاده، احتمالاً این برنامه را نمی‌خواهید.</translation>
-<translation id="8351630282875799764">باتری درحال شارژ شدن نیست</translation>
 <translation id="8352287103893778223">عنوان گروه زبانه</translation>
 <translation id="835238322900896202">خطایی درحین حذف نصب روی داد. لطفاً ازطریق «پایانه» حذف نصب کنید.</translation>
 <translation id="8353420862507374944">پخش محتوا، ذخیره، و هم‌رسانی</translation>
@@ -11155,7 +11135,6 @@
 <translation id="8676313779986170923">از ارسال بازخورد سپاس‌گزاریم.</translation>
 <translation id="8676374126336081632">پاک کردن ورودی</translation>
 <translation id="8676730726685223115">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> (۱ زبانه)}one{<ph name="GROUP_TITLE" /> (# زبانه)}other{<ph name="GROUP_TITLE" /> (# زبانه)}}</translation>
-<translation id="8676770494376880701">شارژر برق متصل شده ضعیف است</translation>
 <translation id="8676985325915861058">رد کردن و راه‌اندازی نمایه جدید</translation>
 <translation id="8677212948402625567">کوچک کردن همه...</translation>
 <translation id="8678192320753081984">‏برای افرادی که درمعرض خطر حمله‌های هدفمند هستند، قدرتمندترین امنیت حساب Google را ارائه می‌دهد</translation>

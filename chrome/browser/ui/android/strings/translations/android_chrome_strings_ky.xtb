@@ -213,6 +213,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="1900260903084164610">Улантуу менен, <ph name="BEGIN_TOS_LINK" />Тейлөө шарттарына<ph name="END_TOS_LINK" /> макул болосуз.</translation>
 <translation id="1904580727789512086">Сиз кирген URL даректери Google аккаунтуңузга сакталат</translation>
 <translation id="1910950723001426294">Бөлүшүү параметрлеринин тизмеси жабылды.</translation>
+<translation id="1912367671208932516">Кеңейтүүлөр менюсун ачуу</translation>
 <translation id="191726024256261717">Уруксаттарды карап чыгуу</translation>
 <translation id="1917766536967060661">Сиз дароо "<ph name="GROUP_NAME" />" өтмөктөр тобуна кире албай каласыз жана <ph name="BLOCKED_MEMBER_FULL_NAME" /> (<ph name="BLOCKED_MEMBER_EMAIL" />) мындан ары Google кызматтарында сиз менен баарлаша албай калат.</translation>
 <translation id="1919130412786645364">Chrome'го кирүүгө уруксат берүү</translation>
@@ -857,6 +858,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 уурдалган сырсөз бар}other{# уурдалган сырсөз бар}}</translation>
 <translation id="4641919525231168205">Кийинки бетке өтүү</translation>
 <translation id="4642472735733036929">Бааларга көз салуу токтотулду</translation>
+<translation id="4643661539340338954">Chrome Finds билдирмелери күйгүзүлдү</translation>
 <translation id="4649493483932335039">Акыркы өтмөктөрдү көрүү</translation>
 <translation id="465657074423018424">Коопсуз серептөө сизди кооптуу вебсайттардан коргойт. Эгер аны өчүрсөңүз, серептегенде, өзгөчө сырсөздөрдү киргизгенде этият болуңуз.</translation>
 <translation id="4662373422909645029">Ылакап атта сан болбошу керек</translation>
@@ -1490,7 +1492,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="7057969023583258980">Chrome´до көрүлгөн вебсайттардын толук тизмесин ачуу</translation>
 <translation id="7063006564040364415">Шайкештештирүү серверине туташкан жок.</translation>
 <translation id="7063106218165698546">Өтмөктөр тобун тууралап, "Бүттү" баскычын басыңыз</translation>
-<translation id="7071521146534760487">Аккаунтту башкаруу</translation>
 <translation id="707155805709242880">Төмөндө шайкештириле турган нерселерди тандаңыз</translation>
 <translation id="7072949719501323344"><ph name="TAB_TITLE" />, Көп жолу тандалган кадалган жашыруун өтмөктө сүрөттөгү сүрөт режими иштетилди</translation>
 <translation id="7077143737582773186">SD-карта</translation>
@@ -1655,6 +1656,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="7686086654630106285">Сайтта сунушталган жарнамалар жөнүндө кеңири маалымат</translation>
 <translation id="7690596512217303514">Түзмөгүңүздө Chrome ачылбай койду. Көйгөйдү оңдоо үчүн колдонмолор дүкөнүңүздөн Chrome'дун акыркы версиясын жүктөп алыңыз.</translation>
 <translation id="7692761875510935111">Серепчиде тез ачыңыз. Бул ыкчам баскычты түзөтүү үчүн коё бербей басып туруңуз.</translation>
+<translation id="7695270712963178084">Chrome Finds</translation>
 <translation id="7697383401610880082">Сүйрөө маркери</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" /> колдонмосунан электрондук почта түзүңүз</translation>
 <translation id="7702420606070050505">Акыркы аракеттердин ылдыйкы экраны толук ачылды</translation>

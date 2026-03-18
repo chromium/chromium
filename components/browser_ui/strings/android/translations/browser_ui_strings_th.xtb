@@ -165,11 +165,6 @@
 <translation id="2588271083332682494">จัดระเบียบด้วยกลุ่มแท็บ</translation>
 <translation id="2597457036804169544">ไม่ใช้ธีมมืดกับเว็บไซต์ต่างๆ</translation>
 <translation id="2606760465469169465">การยืนยันอัตโนมัติ</translation>
-<translation id="2610903128639500624">จัดการใน<ph name="BEGIN_LINK1" />การตั้งค่า Android<ph name="END_LINK1" />
-
-การปกป้องขั้นสูงจะควบคุมการตั้งค่า Chrome ต่อไปนี้
-• "ใช้การเชื่อมต่อที่ปลอดภัยทุกครั้ง" เปิดอยู่
-• "เครื่องมือเพิ่มประสิทธิภาพ JavaScript" ปิดอยู่ <ph name="BEGIN_LINK2" />จัดการข้อยกเว้นของเว็บไซต์<ph name="END_LINK2" /></translation>
 <translation id="2621115761605608342">อนุญาต JavaScript สำหรับเว็บไซต์ใดเว็บไซต์หนึ่ง</translation>
 <translation id="2626708220538466178">ปิด Bottom Sheet ของเบราว์เซอร์เริ่มต้นแล้ว</translation>
 <translation id="2653659639078652383">ส่ง</translation>

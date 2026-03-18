@@ -598,7 +598,7 @@
 <translation id="315778507796115851">ইতিহাস</translation>
 <translation id="31652791196570636">অগ্ৰাহ্য কৰক</translation>
 <translation id="3167868116600277716">ডিস্ক’ভাৰৰ ফীড</translation>
-<translation id="3169472444629675720">Discover</translation>
+<translation id="3169472444629675720">ডিস্ক’ভাৰ</translation>
 <translation id="3174662312949010067">আপুনি নিজৰ অন্য ডিভাইচসমূহতো ছেভ কৰি ৰখা পাছৱৰ্ড ব্যৱহাৰ কৰিব পাৰে।</translation>
 <translation id="3177338796769255211">আপোনাৰ আটাইবোৰ ডিভাইচত নিজৰ বুকমাৰ্ক আৰু আন বহুতো লাভ কৰিবলৈ ছাইন ইন কৰক</translation>
 <translation id="3181954750937456830">সুৰক্ষিত ব্ৰাউজিং (আপোনাৰ ডিভাইচটোক বিপজ্জনক ছাইটৰ পৰা সুৰক্ষা প্ৰদান কৰে)</translation>
@@ -1724,6 +1724,7 @@
 <translation id="7149893636342594995">যোৱা ২৪ ঘণ্টাত</translation>
 <translation id="7154417656353909837">ঠিকনা আঁতৰাওক</translation>
 <translation id="7161230316646448869">আটাইবোৰ ডিভাইচত আপোনাৰ বুকমাৰ্ক, ইতিহাস আৰু অধিক ছিংক কৰক</translation>
+<translation id="7165323152084385463">VIN</translation>
 <translation id="7173114856073700355">ছেটিংসমূহ খোলক</translation>
 <translation id="7173721738069475737">{count,plural, =1{বুকমাৰ্ক ছেভ কৰা হৈছে}one{{count} টা বুকমাৰ্ক ছেভ কৰা হৈছে}other{{count} টা বুকমাৰ্ক ছেভ কৰা হৈছে}}</translation>
 <translation id="7176183551031110427">জুম আউট কৰক</translation>

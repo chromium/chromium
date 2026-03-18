@@ -198,6 +198,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="3045032126857188731">Idioma traducido: <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">Cerrar cuadro de diálogo Comentarios</translation>
 <translation id="3068187312562070417">Otros perfiles de Chromium</translation>
+<translation id="3068290154869370196">Las extensiones son complementos que te permiten personalizar Chromium. Las extensiones te ayudan a mantener el orden y simplificar las tareas cotidianas, entre otras cosas, para que puedas personalizar Chromium a tu gusto.</translation>
 <translation id="3068515742935458733">Ayudar a mejorar Chromium enviando informes sobre fallos y <ph name="UMA_LINK" /> a Google</translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{Una o varias extensiones de Chromium estaban accediendo a 1 dispositivo USB}=1{Una o varias extensiones de Chromium están accediendo a 1 dispositivo USB}other{Una o varias extensiones de Chromium están accediendo a # dispositivos USB}}</translation>
 <translation id="3095811995836568724">Historial de Chromium</translation>
@@ -432,6 +433,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="5821520528363214608">Para usar y guardar datos de Chromium en tu cuenta de Google, actualiza Chromium</translation>
 <translation id="5824893331272123205">No se ha podido cargar este panel. Inténtalo de nuevo.</translation>
 <translation id="5862307444128926510">Te damos la bienvenida a Chromium</translation>
+<translation id="5867606647614813312">Activa funciones adicionales para ofrecer las protecciones más potentes de Chromium</translation>
 <translation id="5871205389137001634">Haz clic para salir de la búsqueda por imágenes</translation>
 <translation id="5883558403894052917">Chromium ha detectado que estos elementos contienen malware:</translation>
 <translation id="5889361821821684993">Chromium comprueba de forma periódica si tu navegador tiene la configuración más segura. Te avisaremos si tienes que revisar algo.</translation>

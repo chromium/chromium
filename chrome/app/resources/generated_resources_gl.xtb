@@ -245,7 +245,6 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1159879754517035595">Xestionar a configuración de extensións</translation>
 <translation id="1160800016654917722">A ventá moveuse cara abaixo e cara á esquerda</translation>
 <translation id="1161190590171867633">As táboas de comparación gardaranse na túa Conta de Google</translation>
-<translation id="1161575384898972166">Inicia sesión en <ph name="TOKEN_NAME" /> para exportar o certificado de cliente.</translation>
 <translation id="116173250649946226">O teu administrador definiu un tema predeterminado que non se pode cambiar.</translation>
 <translation id="1162213688509394031">Ocultar a barra de título</translation>
 <translation id="1162479191445552288">Abrir ao iniciar</translation>
@@ -488,7 +487,6 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1316136264406804862">Buscando...</translation>
 <translation id="1316248800168909509">Non se puido establecer conexión co dispositivo (<ph name="DEVICE" />). Téntao de novo.</translation>
 <translation id="1316495628809031177">A sincronización púxose en pausa</translation>
-<translation id="1317637799698924700">A túa base funcionará no modo de compatibilidade con USB tipo C.</translation>
 <translation id="1319983966058170660">Botón Atrás da subpáxina <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="1322046419516468189">Para consultar e xestionar os contrasinais gardados, accede á túa <ph name="SAVED_PASSWORDS_STORE" /></translation>
 <translation id="1323433172918577554">Mostrar máis</translation>
@@ -990,7 +988,6 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1657406563541664238">Axúdanos a mellorar <ph name="PRODUCT_NAME" /> enviando automaticamente estatísticas de uso e informes de erros a Google</translation>
 <translation id="1657937299377480641">Se queres iniciar sesión de novo para acceder a recursos educativos, pídelle a teu pai ou a túa nai que che dea permiso</translation>
 <translation id="1658424621194652532">Esta páxina está accedendo ao teu micrófono.</translation>
-<translation id="1660763353352708040">Produciuse un problema co adaptador de corrente</translation>
 <translation id="1661996889489595105">{NUM_TABS,plural, =1{Corrixe a pestana que fai que o navegador vaia máis lento}other{Corrixe as pestanas que fan que o navegador vaia máis lento}}</translation>
 <translation id="16620462294541761">Non se puido verificar o teu contrasinal. Téntao de novo.</translation>
 <translation id="1662572015199460525">Chatea coa voz ou con texto para obter respostas, extraer puntos clave e moito máis mentres navegas</translation>
@@ -1118,7 +1115,6 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1751335846119670066">Axúdame a ler</translation>
 <translation id="17513872634828108">Pestanas abertas</translation>
 <translation id="175196451752279553">Volv&amp;er abrir pestana pechada</translation>
-<translation id="1753067873202720523">É posible que o teu Chromebook non se cargue mentres está acendido.</translation>
 <translation id="1753557900380512635">Interiores</translation>
 <translation id="1753905327828125965">Máis visitados</translation>
 <translation id="1755601632425835748">Tamaño do texto</translation>
@@ -1445,7 +1441,6 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1974060860693918893">Configuración avanzada</translation>
 <translation id="1974159333077206889">O mesmo audio en todos os altofalantes</translation>
 <translation id="1975841812214822307">Eliminar...</translation>
-<translation id="1976150099241323601">Iniciar sesión no dispositivo de seguranza</translation>
 <translation id="1976823515278601587">Aforro elevado</translation>
 <translation id="1978249384651349182"><ph name="BEGIN_DESCRIPTION" />Ao rexistrar os teus dispositivos na túa organización, configúranse para a xestor de dispositivos centralizado. Pode que a túa organización requira o rexistro por diversos motivos:<ph name="END_DESCRIPTION" />
     <ph name="BEGIN_SUBTITLE1" /><ph name="BEGIN_BOLD" />Mellorar a seguranza<ph name="END_BOLD" /><ph name="END_SUBTITLE1" />
@@ -1479,6 +1474,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1989288015781834552">Reinicia o navegador para completar a actualización. Volveranse abrir as pestanas.</translation>
 <translation id="1989903373608997757">Utilizar sempre</translation>
 <translation id="1990046457226896323">Descargáronse os ficheiros de voz</translation>
+<translation id="1991829061375381344">Non tes suficientes licenzas dispoñibles para inscribir este dispositivo de hardware de Google Meet. Se queres comprar máis, ponte en contacto co distribuidor. Tamén podes acudir a el se consideras que esta mensaxe se che mostrou por erro.</translation>
 <translation id="199191324030140441">Desactivar modo Non molestar</translation>
 <translation id="1992397118740194946">Sen configurar</translation>
 <translation id="1994173015038366702">URL do sitio</translation>
@@ -1718,7 +1714,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2156294658807918600">Service worker: <ph name="SCRIPT_URL" /></translation>
 <translation id="2156707722163479690">Permiso concedido para desprazarse e facer zoom polas pestanas compartidas</translation>
 <translation id="2157457598652721267">Usa as teclas / e - para seleccionar os botóns esquerdo e dereito do rato. Usa a tecla * para seleccionar ambos.</translation>
-<translation id="2157474325782140681">Para gozar de funcións adicionais, utiliza unha base de Dell deseñada para funcionar con este Chromebook.</translation>
 <translation id="215753907730220065">Saír do modo de pantalla completa</translation>
 <translation id="2157632422749995237">Máis adiante, Wallet pode enviarche notificacións sobre os teus eventos</translation>
 <translation id="2157779167749714207">O teu dispositivo <ph name="DEVICE_TYPE" /> inclúe Gemini</translation>
@@ -1878,7 +1873,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2271986192355138465">Máis información sobre como instalar aplicacións web</translation>
 <translation id="2272430695183451567">0 interruptores asignados</translation>
 <translation id="2272570998639520080">Copa de Martini</translation>
-<translation id="2273119997271134996">Produciuse un problema relacionado co porto de vídeo da base de conexión</translation>
 <translation id="2274840746523584236">Carga o Chromebook</translation>
 <translation id="2275193525496879616">Permiso concedido. Conecta unha cámara ao teu dispositivo.</translation>
 <translation id="2275352532065325930">Posición de Busca de pestanas</translation>
@@ -2110,7 +2104,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" />, 1 conta, contrasinal gardado só neste dispositivo. Máis detalles}other{<ph name="DOMAIN_LINK" />, {NUM_PASSWORDS} contas, contrasinal gardado só neste dispositivo. Máis detalles}}</translation>
 <translation id="2428510569851653187">Describe que estabas facendo cando se bloqueou a pestana</translation>
 <translation id="2428939361789119025">Desactivar wifi</translation>
-<translation id="2431027948063157455">Non se puido cargar o Asistente de Google. Comproba a conexión de rede e volve tentalo.</translation>
 <translation id="243179355394256322">A túa organización só lles permite inscribir dispositivos aos usuarios autorizados. Este usuario non está autorizado para inscribir dispositivos. Comproba que o usuario teña o privilexio de administrador Inscribir hardware de Google Meet, na sección da consola de administración Usuarios.</translation>
 <translation id="243275146591958220">Cancelar descarga</translation>
 <translation id="2432882794929808179"><ph name="APP_COUNT" /> aplicacións rexistradas</translation>
@@ -2695,7 +2688,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2808985063107661499"><ph name="MAIN_GESTURE" /> pode confundirse con <ph name="CONFLICTING_GESTURE_ONE" /> e <ph name="CONFLICTING_GESTURE_TWO" />. Se é posible, escolle outro aceno.</translation>
 <translation id="2809346626032021864">Lectura</translation>
 <translation id="2811205483104563968">Contas</translation>
-<translation id="2812049959647166806">A tecnoloxía Thunderbolt non é compatible</translation>
 <translation id="2813094189969465044">Controis parentais</translation>
 <translation id="2813765525536183456">&amp;Engadir novo perfil</translation>
 <translation id="281390819046738856">Non se puido asinar a solicitude.</translation>
@@ -3132,7 +3124,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3115147772012638511">Agardando pola caché...</translation>
 <translation id="3115580024857770654">Contraer todo</translation>
 <translation id="3115743155098198207">Xestionar idioma da Conta de Google</translation>
-<translation id="3117362587799608430">A base non é totalmente compatible</translation>
 <translation id="3117791853215125017">{COUNT,plural, =1{Produciuse un erro ao enviar <ph name="ATTACHMENTS" /> a este dispositivo: <ph name="DEVICE_NAME" />}other{Produciuse un erro ao enviar <ph name="ATTACHMENTS" /> a este dispositivo: <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3118319026408854581">Axuda de <ph name="PRODUCT_NAME" /></translation>
 <translation id="3118748462829336648">Abrir o panel lateral</translation>
@@ -3148,7 +3139,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3125361247594231799">Fíxaa para a próxima vez</translation>
 <translation id="3125816458150005808">Podes deixar de fixala e abrila desde o menú</translation>
 <translation id="3126026824346185272">Ctrl</translation>
-<translation id="3127860049873093642">Para evitar problemas de carga e rendemento, utiliza un adaptador de corrente compatible de Dell ou que teña conexión USB tipo C.</translation>
 <translation id="3127862849166875294">Cambio de tamaño de disco de Linux</translation>
 <translation id="3129150892373332590">Esta opción desactivará o uso compartido permanente dos dispositivos USB con convidados. En consecuencia, restablecerase a devandita permanencia. Seguro que queres continuar?</translation>
 <translation id="3129173833825111527">Marxe esquerda</translation>
@@ -3393,7 +3383,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
         Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións en Personalizar Chrome.</translation>
 <translation id="3308134619352333507">Ocultar botón</translation>
 <translation id="3308604065765626613">{GROUP_COUNT,plural, =1{As pestanas permanecerán abertas neste dispositivo, pero o grupo eliminarase para sempre.}other{As pestanas permanecerán abertas neste dispositivo, pero os grupos eliminaranse para sempre.}}</translation>
-<translation id="3308852433423051161">Estase cargando o Asistente de Google...</translation>
 <translation id="3309124184713871355">Estruturas</translation>
 <translation id="3309330461362844500">Identificador do perfil do certificado</translation>
 <translation id="3310379801837527592">Unirte ao grupo de pestanas con <ph name="OWNER_FIRST_NAME" /> e <ph name="NUM_OTHER_MEMBERS" /> persoa máis</translation>
@@ -3622,7 +3611,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3468999815377931311">Teléfono Android</translation>
 <translation id="3469583217479686109">Ferramenta de selección</translation>
 <translation id="3471687177769494956">Editar atallo de navegación</translation>
-<translation id="3471876058939596279">Os portos HDMI e USB tipo C non se poden utilizar ao mesmo tempo para o contido de vídeo. Utiliza un porto de vídeo distinto.</translation>
 <translation id="3472469028191701821">Ábrese nunha pestana nova</translation>
 <translation id="3473241910002674503">Vai ao inicio, volve atrás e cambia de aplicación usando os botóns no modo de tableta.</translation>
 <translation id="3473479545200714844">Lupa</translation>
@@ -3824,7 +3812,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3608730769702025110">Paso 3 de 4: Revisa a información que permita a identificación persoal</translation>
 <translation id="3609277884604412258">Busca rápida</translation>
 <translation id="3610241585790874201">Permiso denegado para gardar datos no teu dispositivo</translation>
-<translation id="3610369246614755442">O ventilador da base necesita unha reparación</translation>
 <translation id="3610961622607302617">Cambiar contrasinal de <ph name="WEBSITE" />.</translation>
 <translation id="3611634011145829814">Ir á páxina de subscrición</translation>
 <translation id="3611658447322220736">Os sitios pechados recentemente poden rematar de enviar e recibir datos</translation>
@@ -3852,7 +3839,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3624567683873126087">Desbloquea o dispositivo e inicia sesión na Conta de Google</translation>
 <translation id="3624583033347146597">Escolle as preferencias das cookies de terceiros</translation>
 <translation id="3625481642044239431">Seleccionouse un ficheiro que non é válido. Téntao de novo.</translation>
-<translation id="3626296069957678981">Para cargar este Chromebook, utiliza unha batería compatible de Dell.</translation>
 <translation id="3627320433825461852">Queda menos de 1 minuto</translation>
 <translation id="3627588569887975815">Abrir ligazón na ventá do modo de incó&amp;gnito</translation>
 <translation id="3627671146180677314">Hora de renovación do certificado de Netscape</translation>
@@ -3949,7 +3935,6 @@ https://allthings.how/content/images/wordpress/2023/02/allthings.how-how-to-make
 <translation id="3688794912214798596">Cambiar idiomas…</translation>
 <translation id="3690369331356918524">Avísate se os teus contrasinais están en risco debido a unha violación da seguranza dos datos</translation>
 <translation id="3691231116639905343">Aplicacións do teclado</translation>
-<translation id="3693415264595406141">Contrasinal:</translation>
 <translation id="3694027410380121301">Seleccionar pestana anterior</translation>
 <translation id="3694122362646626770">Sitios web</translation>
 <translation id="3694590407685276748">Destacar cursor de texto</translation>
@@ -5159,7 +5144,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4513072860957814107">&amp;Eliminar datos de navegación…</translation>
 <translation id="4513872120116766993">Escritura preditiva</translation>
 <translation id="4513946894732546136">Dános a túa opinión</translation>
-<translation id="4515872537870654449">Ponte en contacto con Dell para recibir asistencia técnica. A base apagarase se o ventilador non funciona.</translation>
 <translation id="4515942088136451195">A túa organización limita o que podes gardar</translation>
 <translation id="4516395361210407049">Botóns da barra de ferramentas restablecidos</translation>
 <translation id="4519331665958994620">Os sitios poden pedirche permiso para usar a cámara</translation>
@@ -7182,7 +7166,6 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5939723110967488589">Escolle que botóns se mostran na barra de ferramentas</translation>
 <translation id="594048410531370124">Non se recoñeceu a tecla. Preme calquera tecla para <ph name="RESPONSE" />.</translation>
 <translation id="5941153596444580863">Engadir persoa...</translation>
-<translation id="5941343993301164315">Inicia sesión en <ph name="TOKEN_NAME" />.</translation>
 <translation id="5941711191222866238">Minimizar</translation>
 <translation id="5941854976565320351">{PASSWORD_COUNT,plural, =1{Hai 1 contrasinal gardado só neste dispositivo. Para usalo noutros, gárdao na túa Conta de Google.}other{Hai {PASSWORD_COUNT} contrasinais gardados só neste dispositivo. Para usalos noutros dispositivos, gárdaos na túa Conta de Google.}}</translation>
 <translation id="594221546068848596">Buscar na páxina con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
@@ -8411,7 +8394,6 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="680488281839478944">Xa existe unha máquina virtual chamada "<ph name="DEFAULT_VM_NAME" />"</translation>
 <translation id="6805236548654699520">Para quitar as ventás emerxentes non desexadas, solucionar problemas de rede e moito máis, restaura a configuración aos valores predeterminados seguros.</translation>
 <translation id="6805478749741295868">Esta función de IA é experimental e non sempre acerta.</translation>
-<translation id="6805647936811177813">Inicia sesión en <ph name="TOKEN_NAME" /> para importar o certificado do cliente de <ph name="HOST_NAME" />.</translation>
 <translation id="6805817411033102703">Comentarios sobre os grupos de pestanas compartidos</translation>
 <translation id="6806089545527108739">Non permitir, pero preguntar máis tarde</translation>
 <translation id="6806781719264274042">Só os contactos que teñan unha Conta de Google. <ph name="LINK_BEGIN" />Ver contactos<ph name="LINK_END" /></translation>
@@ -8615,7 +8597,6 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="6938606182859551396">Se queres recibir as notificacións do teléfono no teu dispositivo (<ph name="DEVICE_TYPE" />), sigue as instrucións que se che mostran no móbil para darlles acceso ás notificacións aos servizos de Google Play.</translation>
 <translation id="6941514251635934269">Fai preguntas acerca deste documento</translation>
 <translation id="694168622559714949">O administrador estableceu un idioma predeterminado que non se pode modificar.</translation>
-<translation id="6941937518557314510">Inicia sesión en <ph name="TOKEN_NAME" /> para autenticarte en <ph name="HOST_NAME" /> co teu certificado.</translation>
 <translation id="6943060957016121200">Activar Conexión compartida instantánea</translation>
 <translation id="6943939122536910181">Desconectado de: <ph name="DEVICE" /></translation>
 <translation id="6944750221184785444">Non se puido instalar este perfil. Para obter asistencia técnica, ponte en contacto co teu operador.</translation>
@@ -9031,7 +9012,6 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="7239108166256782787"><ph name="DEVICE_NAME" /> cancelou a transferencia</translation>
 <translation id="7239401402533584029">Axudarache a escribir calquera cousa na Web cun pouco máis de creatividade ou esmero</translation>
 <translation id="7240339475467890413">Queres conectarte á nova zona wifi?</translation>
-<translation id="7241389281993241388">Inicia sesión en <ph name="TOKEN_NAME" /> para importar o certificado de cliente.</translation>
 <translation id="7241763419756062043">Escolle a calidade de navegación e de busca</translation>
 <translation id="7243092385765551741">Queres eliminar a clave de acceso?</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (a mellor)</translation>
@@ -9839,6 +9819,7 @@ Para quitar unha asignación, preme un interruptor ou unha tecla que teñan unha
 <translation id="7784067724422331729">A configuración de seguranza do teu ordenador bloqueou este ficheiro.</translation>
 <translation id="7784796923038949829">Non se puideron ler ou cambiar os datos do sitio</translation>
 <translation id="778480864305029524">Para usar a Conexión compartida instantánea, activa as notificacións para os servizos de Google Play.</translation>
+<translation id="7784875615510899699">Non tes suficientes licenzas dispoñibles para inscribir este dispositivo de Google Beam. Se queres comprar máis, ponte en contacto co distribuidor. Tamén podes acudir a el se consideras que esta mensaxe se che mostrou por erro.</translation>
 <translation id="77855763949601045">&amp;Abrir perfil de convidado</translation>
 <translation id="7786663536153819505">Sigue as instrucións que se mostran no teléfono para escanear o código QR. Comproba que o Bluetooth do teléfono está activado.
     <ph name="BR" />
@@ -10678,7 +10659,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8350789879725387295">Ferramentas do lapis óptico na base</translation>
 <translation id="8351316842353540018">Mostrar sempre as opcións de accesibilidade</translation>
 <translation id="8351419472474436977">Esta extensión asumiu o control da túa configuración de proxy, o que significa que pode cambiar, anular ou espiar todo o que fagas en liña. Se non estás seguro de por que se produciu este cambio, é probable que non che interese conservalo.</translation>
-<translation id="8351630282875799764">A batería non está cargando</translation>
 <translation id="8352287103893778223">Título do grupo de pestanas</translation>
 <translation id="835238322900896202">Produciuse un erro durante a desinstalación. Realiza a desinstalación a través do terminal.</translation>
 <translation id="8353420862507374944">Emitir, gardar e compartir</translation>
@@ -11141,7 +11121,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8676313779986170923">Grazas polo teu comentario.</translation>
 <translation id="8676374126336081632">Borrar texto</translation>
 <translation id="8676730726685223115">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> (1 pestana)}other{<ph name="GROUP_TITLE" /> (# pestanas)}}</translation>
-<translation id="8676770494376880701">Cargador de baixa potencia conectado</translation>
 <translation id="8676985325915861058">Omitir e configurar perfil novo</translation>
 <translation id="8677212948402625567">Contraer todo...</translation>
 <translation id="8678192320753081984">Fornece a máxima seguranza para a conta de calquera usuario que corra o risco de sufrir ataques dirixidos</translation>

@@ -1724,6 +1724,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="7149893636342594995">Últimas 24 horas</translation>
 <translation id="7154417656353909837">Quitar direcciones</translation>
 <translation id="7161230316646448869">Sincroniza tus marcadores, tu historial y otras opciones en todos tus dispositivos</translation>
+<translation id="7165323152084385463">VIN</translation>
 <translation id="7173114856073700355">Abrir Configuración</translation>
 <translation id="7173721738069475737">{count,plural, =1{Marcador guardado}other{{count} marcadores guardados}}</translation>
 <translation id="7176183551031110427">Reducir</translation>

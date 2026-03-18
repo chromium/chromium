@@ -213,6 +213,7 @@
 <translation id="1900260903084164610">選擇繼續即表示您同意《<ph name="BEGIN_TOS_LINK" />服務條款<ph name="END_TOS_LINK" />》。</translation>
 <translation id="1904580727789512086">系統會將你造訪的網址儲存到 Google 帳戶</translation>
 <translation id="1910950723001426294">分享選項清單已關閉。</translation>
+<translation id="1912367671208932516">開啟擴充功能選單</translation>
 <translation id="191726024256261717">檢查權限</translation>
 <translation id="1917766536967060661">你將立即無法存取「<ph name="GROUP_NAME" />」分頁群組，<ph name="BLOCKED_MEMBER_FULL_NAME" /> (<ph name="BLOCKED_MEMBER_EMAIL" />) 也無法再透過各項 Google 服務與你互動。</translation>
 <translation id="1919130412786645364">允許登入 Chrome</translation>
@@ -857,6 +858,7 @@
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 組密碼外洩}other{# 組密碼外洩}}</translation>
 <translation id="4641919525231168205">前往下一頁</translation>
 <translation id="4642472735733036929">已停止追蹤價格</translation>
+<translation id="4643661539340338954">已開啟「Chrome 推薦」通知</translation>
 <translation id="4649493483932335039">查看最近關閉的分頁</translation>
 <translation id="465657074423018424">「安全瀏覽」功能可協助你防範詐騙網站。如果停用這項功能，在瀏覽網站時請提高警覺，尤其在輸入密碼前請特別留意。</translation>
 <translation id="4662373422909645029">暱稱不可包含數字</translation>
@@ -1490,7 +1492,6 @@
 <translation id="7057969023583258980">開啟完整的 Chrome 歷史記錄</translation>
 <translation id="7063006564040364415">無法連線至同步處理伺服器。</translation>
 <translation id="7063106218165698546">自訂分頁群組，然後輕觸「完成」</translation>
-<translation id="7071521146534760487">管理帳戶</translation>
 <translation id="707155805709242880">請在下方選擇要同步處理的項目</translation>
 <translation id="7072949719501323344"><ph name="TAB_TITLE" />，多選且已固定的子母畫面無痕分頁</translation>
 <translation id="7077143737582773186">SD 卡</translation>
@@ -1655,6 +1656,7 @@
 <translation id="7686086654630106285">進一步瞭解網站建議廣告</translation>
 <translation id="7690596512217303514">你的裝置無法開啟 Chrome。如要修正問題，請前往應用程式商店下載 Chrome 更新。</translation>
 <translation id="7692761875510935111">在瀏覽器中快速開啟。按住這裡即可編輯這個捷徑。</translation>
+<translation id="7695270712963178084">Chrome 推薦</translation>
 <translation id="7697383401610880082">拖曳控點</translation>
 <translation id="7698359219371678927">在「<ph name="APP_NAME" />」中建立電子郵件</translation>
 <translation id="7702420606070050505">近期活動底部功能表已完整開啟</translation>

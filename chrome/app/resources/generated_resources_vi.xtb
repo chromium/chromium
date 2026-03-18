@@ -245,7 +245,6 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1159879754517035595">Quản lý cài đặt tiện ích</translation>
 <translation id="1160800016654917722">Đã di chuyển cửa sổ xuống dưới và sang bên trái</translation>
 <translation id="1161190590171867633">Các bảng so sánh được lưu trong Tài khoản Google của bạn</translation>
-<translation id="1161575384898972166">Vui lòng đăng nhập vào <ph name="TOKEN_NAME" /> để xuất chứng chỉ ứng dụng khách.</translation>
 <translation id="116173250649946226">Bạn không thể thay đổi giao diện vì đây là giao diện mặc định do quản trị viên đặt.</translation>
 <translation id="1162213688509394031">Ẩn thanh tiêu đề</translation>
 <translation id="1162479191445552288">Chạy lúc khởi động</translation>
@@ -488,7 +487,6 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1316136264406804862">Đang tìm kiếm...</translation>
 <translation id="1316248800168909509">Không thể kết nối với <ph name="DEVICE" />. Hãy thử lại.</translation>
 <translation id="1316495628809031177">Quá trình đồng bộ hoá hiện tạm dừng</translation>
-<translation id="1317637799698924700">Đế sạc sẽ hoạt động ở chế độ tương thích với USB Type-C.</translation>
 <translation id="1319983966058170660">Nút quay lại trang trước <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="1322046419516468189">Xem và quản lý mật khẩu đã lưu trong <ph name="SAVED_PASSWORDS_STORE" /> của bạn</translation>
 <translation id="1323433172918577554">Xem thêm</translation>
@@ -992,7 +990,6 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1657406563541664238">Giúp cải thiện <ph name="PRODUCT_NAME" /> bằng việc tự động gửi cho Google dữ liệu thống kê về hoạt động sử dụng và báo cáo sự cố</translation>
 <translation id="1657937299377480641">Nếu bạn muốn đăng nhập lại để truy cập vào các tài nguyên giáo dục, hãy xin phép cha mẹ của bạn</translation>
 <translation id="1658424621194652532">Trang này đang truy cập micrô của bạn.</translation>
-<translation id="1660763353352708040">Vấn đề với bộ chuyển đổi điện</translation>
 <translation id="1661996889489595105">{NUM_TABS,plural, =1{Khắc phục thẻ làm chậm trình duyệt của bạn}other{Khắc phục các thẻ làm chậm trình duyệt của bạn}}</translation>
 <translation id="16620462294541761">Rất tiếc, không thể xác minh được mật khẩu của bạn. Vui lòng thử lại.</translation>
 <translation id="1662572015199460525">Trò chuyện bằng giọng nói hoặc văn bản để nhận câu trả lời, thông tin quan trọng và nhiều nội dung khác khi bạn duyệt web</translation>
@@ -1128,7 +1125,6 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1751335846119670066">Giúp tôi đọc</translation>
 <translation id="17513872634828108">Thẻ đang mở</translation>
 <translation id="175196451752279553">&amp;Mở lại thẻ đã đóng</translation>
-<translation id="1753067873202720523">Chromebook có thể không sạc khi đang bật.</translation>
 <translation id="1753557900380512635">Nội thất</translation>
 <translation id="1753905327828125965">Truy cập nhiều nhất</translation>
 <translation id="1755601632425835748">Cỡ chữ</translation>
@@ -1456,7 +1452,6 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1974060860693918893">Nâng cao</translation>
 <translation id="1974159333077206889">Cùng một âm thanh ở tất cả các loa</translation>
 <translation id="1975841812214822307">Xóa...</translation>
-<translation id="1976150099241323601">Đăng nhập vào thiết bị bảo mật</translation>
 <translation id="1976823515278601587">Mức tiết kiệm lớn</translation>
 <translation id="1978249384651349182"><ph name="BEGIN_DESCRIPTION" />Nếu bạn đăng ký thiết bị với tổ chức của mình, thiết bị đó sẽ được thiết lập cho mục đích quản lý thiết bị tập trung. Tổ chức có thể yêu cầu bạn đăng ký vì nhiều lý do:<ph name="END_DESCRIPTION" />
     <ph name="BEGIN_SUBTITLE1" /><ph name="BEGIN_BOLD" />Tăng cường bảo mật<ph name="END_BOLD" /><ph name="END_SUBTITLE1" />
@@ -1730,7 +1725,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2156294658807918600">Trình chạy dịch vụ: <ph name="SCRIPT_URL" /></translation>
 <translation id="2156707722163479690">Được phép cuộn và thu phóng các thẻ được chia sẻ</translation>
 <translation id="2157457598652721267">Dùng dấu "/" và "-" để chọn nút chuột trái hoặc phải. Hãy dùng dấu "*" để chọn cả hai.</translation>
-<translation id="2157474325782140681">Để có thêm tính năng, hãy sử dụng đế sạc Dell tương thích với Chromebook này.</translation>
 <translation id="215753907730220065">Thoát khỏi Chế độ Toàn màn hình</translation>
 <translation id="2157632422749995237">Sau đó, Wallet có thể gửi cho bạn thông báo về các sự kiện của bạn</translation>
 <translation id="2157779167749714207"><ph name="DEVICE_TYPE" /> của bạn tích hợp Gemini</translation>
@@ -1893,7 +1887,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2271986192355138465">Tìm hiểu cách cài đặt ứng dụng web</translation>
 <translation id="2272430695183451567">Đã gán 0 công tắc</translation>
 <translation id="2272570998639520080">Ly rượu Martini</translation>
-<translation id="2273119997271134996">Vấn đề với cổng video khi gắn đế sạc</translation>
 <translation id="2274840746523584236">Sạc pin cho Chromebook</translation>
 <translation id="2275193525496879616">Được phép. Hãy kết nối camera với thiết bị của bạn.</translation>
 <translation id="2275352532065325930">Vị trí của tính năng Tìm thẻ</translation>
@@ -2125,7 +2118,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> 1 tài khoản, mật khẩu chỉ được lưu trên thiết bị này. Thông tin chi tiết khác}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} tài khoản, mật khẩu chỉ được lưu trên thiết bị này. Thông tin chi tiết khác}}</translation>
 <translation id="2428510569851653187">Mô tả những việc bạn đang làm khi thẻ gặp lỗi</translation>
 <translation id="2428939361789119025">Tắt Wi-Fi</translation>
-<translation id="2431027948063157455">Không thể tải Trợ lý Google, vui lòng kiểm tra kết nối mạng của bạn rồi thử lại.</translation>
 <translation id="243179355394256322">Tổ chức của bạn chỉ cho phép những người dùng được ủy quyền đăng ký thiết bị. Người dùng này không được phép đăng ký thiết bị. Hãy kiểm tra trong phần Người dùng của Bảng điều khiển dành cho quản trị viên để đảm bảo rằng người dùng này có đặc quyền của quản trị viên "Đăng ký thiết bị Google Meet".</translation>
 <translation id="243275146591958220">Hủy quá trình tải xuống</translation>
 <translation id="2432882794929808179">Đã đăng ký <ph name="APP_COUNT" /> ứng dụng</translation>
@@ -2710,7 +2702,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2808985063107661499">"<ph name="MAIN_GESTURE" />" có thể trùng lặp với "<ph name="CONFLICTING_GESTURE_ONE" />" và "<ph name="CONFLICTING_GESTURE_TWO" />". Hãy thử chọn một cử chỉ khác nếu được.</translation>
 <translation id="2809346626032021864">Đọc</translation>
 <translation id="2811205483104563968">Tài khoản</translation>
-<translation id="2812049959647166806">Không hỗ trợ Thunderbolt</translation>
 <translation id="2813094189969465044">Chế độ kiểm soát của cha mẹ</translation>
 <translation id="2813765525536183456">&amp;Thêm hồ sơ mới</translation>
 <translation id="281390819046738856">Không thể ký yêu cầu.</translation>
@@ -3147,7 +3138,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3115147772012638511">Đang chờ bộ nhớ đệm…</translation>
 <translation id="3115580024857770654">Thu gọn tất cả</translation>
 <translation id="3115743155098198207">Quản lý ngôn ngữ trong Tài khoản Google</translation>
-<translation id="3117362587799608430">Đế sạc không hoàn toàn tương thích</translation>
 <translation id="3117791853215125017">{COUNT,plural, =1{Không gửi được <ph name="ATTACHMENTS" /> tới thiết bị <ph name="DEVICE_NAME" />}other{Không gửi được <ph name="ATTACHMENTS" /> tới thiết bị <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3118319026408854581">Trợ giúp <ph name="PRODUCT_NAME" /></translation>
 <translation id="3118748462829336648">Mở Bảng điều khiển bên</translation>
@@ -3163,7 +3153,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3125361247594231799">Ghim để dùng lần sau</translation>
 <translation id="3125816458150005808">Bạn có thể bỏ ghim và mở tính năng này từ trình đơn</translation>
 <translation id="3126026824346185272">Ctrl</translation>
-<translation id="3127860049873093642">Để tránh gặp phải các vấn đề về hiệu suất và sạc pin, hãy dùng bộ chuyển đổi điện USB Type-C hoặc bộ chuyển đổi điện Dell tương thích.</translation>
 <translation id="3127862849166875294">Đổi kích thước ổ đĩa Linux</translation>
 <translation id="3129150892373332590">Chế độ này sẽ không cho phép chia sẻ liên tục thiết bị USB với khách, đồng thời sẽ đặt lại tất cả hoạt động chia sẻ liên tục. Bạn có chắc chắn không?</translation>
 <translation id="3129173833825111527">Lề trái</translation>
@@ -3408,7 +3397,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
         Bạn có thể quản lý chế độ cài đặt qua trình đơn thẻ hoặc xem lựa chọn khác trong phần Tuỳ chỉnh Chrome.</translation>
 <translation id="3308134619352333507">Nút ẩn</translation>
 <translation id="3308604065765626613">{GROUP_COUNT,plural, =1{Các thẻ sẽ vẫn mở trên thiết bị này nhưng nhóm sẽ bị xoá vĩnh viễn.}other{Các thẻ sẽ vẫn mở trên thiết bị này nhưng các nhóm sẽ bị xoá vĩnh viễn.}}</translation>
-<translation id="3308852433423051161">Đang tải Trợ lý Google...</translation>
 <translation id="3309124184713871355">Kiến trúc</translation>
 <translation id="3309330461362844500">Mã hồ sơ chứng chỉ</translation>
 <translation id="3310379801837527592">Tham gia nhóm thẻ cùng với <ph name="OWNER_FIRST_NAME" /> và <ph name="NUM_OTHER_MEMBERS" /> người khác</translation>
@@ -3637,7 +3625,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3468999815377931311">Điện thoại Android</translation>
 <translation id="3469583217479686109">Công cụ lựa chọn</translation>
 <translation id="3471687177769494956">Chỉnh sửa phím tắt điều hướng</translation>
-<translation id="3471876058939596279">Không thể sử dụng đồng thời cổng USB Type-C và HDMI cho video. Hãy sử dụng một cổng video khác.</translation>
 <translation id="3472469028191701821">Mở trong thẻ mới</translation>
 <translation id="3473241910002674503">Chuyển về trang chủ, quay lại và chuyển đổi ứng dụng bằng các nút ở chế độ máy tính bảng.</translation>
 <translation id="3473479545200714844">Phóng to màn hình</translation>
@@ -3839,7 +3826,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3608730769702025110">Bước 3/4: Kiểm tra thông tin nhận dạng cá nhân</translation>
 <translation id="3609277884604412258">Tìm kiếm nhanh</translation>
 <translation id="3610241585790874201">Không được phép lưu dữ liệu trên thiết bị của bạn</translation>
-<translation id="3610369246614755442">Quạt của đế sạc cần được bảo dưỡng</translation>
 <translation id="3610961622607302617">Thay đổi mật khẩu cho <ph name="WEBSITE" /></translation>
 <translation id="3611634011145829814">Chuyển đến trang đăng ký</translation>
 <translation id="3611658447322220736">Các trang web đã đóng gần đây có thể hoàn tất thao tác gửi và nhận dữ liệu</translation>
@@ -3867,7 +3853,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3624567683873126087">Mở khóa thiết bị và đăng nhập vào Tài khoản Google</translation>
 <translation id="3624583033347146597">Chọn chế độ ưu tiên về cookie bên thứ ba</translation>
 <translation id="3625481642044239431">Bạn đã chọn tệp không hợp lệ. Hãy thử lại.</translation>
-<translation id="3626296069957678981">Để sạc pin cho Chromebook này, hãy dùng một pin Dell tương thích.</translation>
 <translation id="3627320433825461852">Còn chưa đến 1 phút</translation>
 <translation id="3627588569887975815">Mở đường liên kết tron&amp;g cửa số ẩn danh</translation>
 <translation id="3627671146180677314">Thời gian Gia hạn Chứng chỉ Netscape</translation>
@@ -3961,7 +3946,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3688794912214798596">Thay đổi ngôn ngữ...</translation>
 <translation id="3690369331356918524">Cảnh báo bạn nếu mật khẩu bị lộ trong một sự cố rò rỉ dữ liệu</translation>
 <translation id="3691231116639905343">Ứng dụng bàn phím</translation>
-<translation id="3693415264595406141">Mật khẩu:</translation>
 <translation id="3694027410380121301">Chọn Thẻ Trước</translation>
 <translation id="3694122362646626770">Trang web</translation>
 <translation id="3694590407685276748">Đánh dấu con trỏ văn bản</translation>
@@ -5172,7 +5156,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4513072860957814107">&amp;Xoá dữ liệu duyệt web...</translation>
 <translation id="4513872120116766993">Gợi ý khi viết</translation>
 <translation id="4513946894732546136">Phản hồi</translation>
-<translation id="4515872537870654449">Hãy liên hệ với Dell để được bảo dưỡng. Đế sạc sẽ tắt nếu quạt không hoạt động.</translation>
 <translation id="4515942088136451195">Tổ chức của bạn giới hạn những nội dung bạn được lưu</translation>
 <translation id="4516395361210407049">Các nút trên thanh công cụ đã được đặt lại</translation>
 <translation id="4519331665958994620">Các trang web có thể yêu cầu sử dụng camera của bạn</translation>
@@ -7197,7 +7180,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5939723110967488589">Chọn những nút sẽ xuất hiện trên thanh công cụ</translation>
 <translation id="594048410531370124">Không nhận dạng được phím. Hãy nhấn phím bất kỳ để <ph name="RESPONSE" />.</translation>
 <translation id="5941153596444580863">Thêm người...</translation>
-<translation id="5941343993301164315">Vui lòng đăng nhập vào <ph name="TOKEN_NAME" />.</translation>
 <translation id="5941711191222866238">Thu nhỏ</translation>
 <translation id="5941854976565320351">{PASSWORD_COUNT,plural, =1{Có 1 mật khẩu chỉ được lưu trên thiết bị này. Để sử dụng mật khẩu này trên các thiết bị khác, hãy lưu mật khẩu vào Tài khoản Google của bạn.}other{Có {PASSWORD_COUNT} mật khẩu chỉ được lưu trên thiết bị này. Để sử dụng những mật khẩu này trên các thiết bị khác, hãy lưu mật khẩu vào Tài khoản Google của bạn.}}</translation>
 <translation id="594221546068848596">Tìm trên trang bằng <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
@@ -8427,7 +8409,6 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="680488281839478944">Máy ảo "<ph name="DEFAULT_VM_NAME" />" đã tồn tại</translation>
 <translation id="6805236548654699520">Xoá cửa sổ bật lên không mong muốn, khắc phục sự cố về mạng và nhiều vấn đề khác bằng cách khôi phục chế độ cài đặt của bạn về chế độ mặc định, tức là chế độ an toàn.</translation>
 <translation id="6805478749741295868">Đây là tính năng AI thử nghiệm và không phải lúc nào cũng chính xác.</translation>
-<translation id="6805647936811177813">Vui lòng đăng nhập vào <ph name="TOKEN_NAME" /> để nhập chứng chỉ ứng dụng khách từ <ph name="HOST_NAME" />.</translation>
 <translation id="6805817411033102703">Ý kiến phản hồi về nhóm thẻ được chia sẻ</translation>
 <translation id="6806089545527108739">Không cho phép nhưng có thể hỏi sau</translation>
 <translation id="6806781719264274042">Chỉ những người liên hệ có Tài khoản Google. <ph name="LINK_BEGIN" />Xem người liên hệ<ph name="LINK_END" /></translation>
@@ -8633,7 +8614,6 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="6938606182859551396">Để nhận thông báo của điện thoại trên chiếc <ph name="DEVICE_TYPE" /> của bạn, hãy làm theo hướng dẫn trên điện thoại để cấp cho Dịch vụ Google Play quyền truy cập vào thông báo.</translation>
 <translation id="6941514251635934269">Hỏi về tài liệu này</translation>
 <translation id="694168622559714949">Bạn không thể sửa đổi ngôn ngữ vì quản trị viên đã đặt đây là ngôn ngữ mặc định.</translation>
-<translation id="6941937518557314510">Vui lòng đăng nhập vào <ph name="TOKEN_NAME" /> để xác thực đến <ph name="HOST_NAME" /> bằng chứng chỉ của bạn.</translation>
 <translation id="6943060957016121200">Bật tính năng Chia sẻ Internet tức thì</translation>
 <translation id="6943939122536910181">Đã ngắt kết nối khỏi <ph name="DEVICE" /></translation>
 <translation id="6944750221184785444">Không thể cài đặt hồ sơ này. Nếu cần hỗ trợ kỹ thuật, hãy liên hệ với nhà mạng.</translation>
@@ -9050,7 +9030,6 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7239108166256782787"><ph name="DEVICE_NAME" /> đã hủy quá trình truyền</translation>
 <translation id="7239401402533584029">Giúp bạn viết mọi nội dung trên web trau chuốt hơn hoặc thêm cảm hứng sáng tạo</translation>
 <translation id="7240339475467890413">Kết nối với điểm phát sóng mới?</translation>
-<translation id="7241389281993241388">Vui lòng đăng nhập vào <ph name="TOKEN_NAME" /> để nhập chứng chỉ ứng dụng khách.</translation>
 <translation id="7241763419756062043">Chọn chất lượng tìm kiếm và duyệt web</translation>
 <translation id="7243092385765551741">Xoá khoá truy cập?</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (Tốt nhất)</translation>
@@ -10700,7 +10679,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8350789879725387295">Công cụ bút cảm ứng trong thanh gắn</translation>
 <translation id="8351316842353540018">Luôn hiển thị các tùy chọn a11y</translation>
 <translation id="8351419472474436977">Tiện ích này đã chiếm quyền kiểm soát cài đặt proxy của bạn, điều đó có nghĩa là tiện ích này có thể thay đổi, làm gián đoạn hoặc nghe trộm bất kỳ điều gì bạn thực hiện trực tuyến. Nếu bạn không chắc chắn về lý do thay đổi này diễn ra, bạn có thể không cần tiện ích này.</translation>
-<translation id="8351630282875799764">Pin hiện không sạc</translation>
 <translation id="8352287103893778223">Tiêu đề nhóm thẻ</translation>
 <translation id="835238322900896202">Đã xảy ra lỗi trong khi gỡ cài đặt. Vui lòng gỡ cài đặt thông qua Thiết bị đầu cuối.</translation>
 <translation id="8353420862507374944">Truyền, lưu và chia sẻ</translation>
@@ -11164,7 +11142,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8676313779986170923">Cảm ơn bạn đã gửi ý kiến phản hồi.</translation>
 <translation id="8676374126336081632">Xóa văn bản nhập</translation>
 <translation id="8676730726685223115">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> (1 thẻ)}other{<ph name="GROUP_TITLE" /> (# thẻ)}}</translation>
-<translation id="8676770494376880701">Đã kết nối bộ sạc công suất thấp</translation>
 <translation id="8676985325915861058">Bỏ qua và thiết lập hồ sơ mới</translation>
 <translation id="8677212948402625567">Thu gọn tất cả...</translation>
 <translation id="8678192320753081984">Cung cấp cơ chế bảo mật tài khoản mạnh nhất của Google cho những người có nguy cơ bị tấn công có chủ đích</translation>

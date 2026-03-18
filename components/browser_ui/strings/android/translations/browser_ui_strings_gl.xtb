@@ -165,11 +165,6 @@
 <translation id="2588271083332682494">Ten todo ordenado cos grupos de pestanas</translation>
 <translation id="2597457036804169544">Non se lles aplica o tema escuro aos sitios</translation>
 <translation id="2606760465469169465">Verificación automática</translation>
-<translation id="2610903128639500624">Xestionar en <ph name="BEGIN_LINK1" />configuración de Android<ph name="END_LINK1" />
-
-Protección avanzada controla estas opcións de configuración de Chrome:
-• A opción Usar sempre conexións seguras está activada.
-• O Especialista en optimización de JavaScript está desactivado. <ph name="BEGIN_LINK2" />Xestionar excepcións do sitio<ph name="END_LINK2" /></translation>
 <translation id="2621115761605608342">Permite a execución de JavaScript para un sitio específico.</translation>
 <translation id="2626708220538466178">Panel inferior do navegador predeterminado pechado</translation>
 <translation id="2653659639078652383">Enviar</translation>

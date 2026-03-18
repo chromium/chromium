@@ -165,11 +165,6 @@
 <translation id="2588271083332682494">탭 그룹으로 깔끔하게 정리하기</translation>
 <translation id="2597457036804169544">사이트에 어두운 테마를 적용하지 마세요.</translation>
 <translation id="2606760465469169465">자동 인증</translation>
-<translation id="2610903128639500624"><ph name="BEGIN_LINK1" />Android 설정<ph name="END_LINK1" />에서 관리
-
-고급 보호 기능은 다음 Chrome 설정을 제어합니다.
-• '항상 보안 연결 사용'을 사용 설정합니다.
-• 'JavaScript 옵티마이저'를 사용 중지합니다. <ph name="BEGIN_LINK2" />사이트 예외 관리<ph name="END_LINK2" /></translation>
 <translation id="2621115761605608342">특정 사이트에서 자바스크립트를 허용합니다.</translation>
 <translation id="2626708220538466178">기본 브라우저 하단 시트가 닫힘</translation>
 <translation id="2653659639078652383">제출</translation>

@@ -165,11 +165,6 @@
 <translation id="2588271083332682494">タブグループで整理整頓</translation>
 <translation id="2597457036804169544">ダークモードをサイトに適用しません</translation>
 <translation id="2606760465469169465">自動確認</translation>
-<translation id="2610903128639500624"><ph name="BEGIN_LINK1" />Android の設定<ph name="END_LINK1" />で管理
-
-高度な保護機能では、次の Chrome の設定を制御します。
-• [常に安全な接続を使用する] がオンになります。
-• [JavaScript オプティマイザー] がオフになります。<ph name="BEGIN_LINK2" />サイトの例外を管理する<ph name="END_LINK2" /></translation>
 <translation id="2621115761605608342">特定のサイトに対して JavaScript を許可します。</translation>
 <translation id="2626708220538466178">デフォルトのブラウザのボトムシートが閉じられました</translation>
 <translation id="2653659639078652383">送信</translation>

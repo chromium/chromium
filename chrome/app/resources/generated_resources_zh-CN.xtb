@@ -245,7 +245,6 @@
 <translation id="1159879754517035595">管理扩展程序设置</translation>
 <translation id="1160800016654917722">窗口已向下左移</translation>
 <translation id="1161190590171867633">比较表格会保存到您的 Google 账号中</translation>
-<translation id="1161575384898972166">请登录“<ph name="TOKEN_NAME" />”，导出客户端证书。</translation>
 <translation id="116173250649946226">您的管理员已设置默认主题，您无法更改。</translation>
 <translation id="1162213688509394031">隐藏标题栏</translation>
 <translation id="1162479191445552288">在开机时启动</translation>
@@ -488,7 +487,6 @@
 <translation id="1316136264406804862">正在搜索...</translation>
 <translation id="1316248800168909509">无法连接到<ph name="DEVICE" />。请重试。</translation>
 <translation id="1316495628809031177">同步已暂停</translation>
-<translation id="1317637799698924700">您的基座将以与 USB C 型兼容的模式运行。</translation>
 <translation id="1319983966058170660">“<ph name="SUBPAGE_TITLE" />”子页面上的返回按钮</translation>
 <translation id="1322046419516468189">您可以查看和管理 <ph name="SAVED_PASSWORDS_STORE" />中保存的密码</translation>
 <translation id="1323433172918577554">展开</translation>
@@ -986,7 +984,6 @@
 <translation id="1657406563541664238">将使用情况统计信息和崩溃报告自动发送给 Google，帮助我们完善 <ph name="PRODUCT_NAME" /></translation>
 <translation id="1657937299377480641">要重新登录并访问教育资源，请让您的家长向您授予权限</translation>
 <translation id="1658424621194652532">此网页正在使用您的麦克风。</translation>
-<translation id="1660763353352708040">电源适配器问题</translation>
 <translation id="1661996889489595105">{NUM_TABS,plural, =1{修复导致浏览器运行缓慢的标签页}other{修复导致浏览器运行缓慢的标签页}}</translation>
 <translation id="16620462294541761">抱歉，无法验证您的密码，请重试。</translation>
 <translation id="1662572015199460525">边浏览边用语音或文字对话，轻松获取答案、要点总结等</translation>
@@ -1114,7 +1111,6 @@
 <translation id="1751335846119670066">帮我读</translation>
 <translation id="17513872634828108">打开的标签页</translation>
 <translation id="175196451752279553">重新打开关闭的标签页(&amp;E)</translation>
-<translation id="1753067873202720523">您的 Chromebook 在处于打开状态时可能无法充电。</translation>
 <translation id="1753557900380512635">室内</translation>
 <translation id="1753905327828125965">常去网站</translation>
 <translation id="1755601632425835748">文字大小</translation>
@@ -1439,7 +1435,6 @@
 <translation id="1974060860693918893">高级</translation>
 <translation id="1974159333077206889">所有音响设备播放相同的音频</translation>
 <translation id="1975841812214822307">移除…</translation>
-<translation id="1976150099241323601">登录安全设备</translation>
 <translation id="1976823515278601587">节省大量内存</translation>
 <translation id="1978249384651349182"><ph name="BEGIN_DESCRIPTION" />您在组织中注册设备后，就可以对设备进行集中管理了。您的组织可能出于多种原因而要求进行注册：<ph name="END_DESCRIPTION" />
     <ph name="BEGIN_SUBTITLE1" /><ph name="BEGIN_BOLD" />增强安全性<ph name="END_BOLD" /><ph name="END_SUBTITLE1" />
@@ -1473,6 +1468,7 @@
 <translation id="1989288015781834552">重新启动即可完成更新。您的标签页将会自动重新打开。</translation>
 <translation id="1989903373608997757">始终使用</translation>
 <translation id="1990046457226896323">实时字幕文件已下载完毕</translation>
+<translation id="1991829061375381344">您的可用许可数量不足，无法注册此 Google Meet 设备。请与您的转销商联系，购买更多许可。如果您认为此消息有误，请与您的转销商联系。</translation>
 <translation id="199191324030140441">关闭“勿扰”模式</translation>
 <translation id="1992397118740194946">未设置</translation>
 <translation id="1994173015038366702">网站网址</translation>
@@ -1712,7 +1708,6 @@
 <translation id="2156294658807918600">Service Worker：<ph name="SCRIPT_URL" /></translation>
 <translation id="2156707722163479690">允许滚动和缩放分享的标签页</translation>
 <translation id="2157457598652721267">按下“/”和“-”键表示选择鼠标左键和右键。按下“*”键表示同时选择左右键。</translation>
-<translation id="2157474325782140681">要获得更多功能，请使用由戴尔专为这款 Chromebook 设计的基座。</translation>
 <translation id="215753907730220065">退出全屏模式</translation>
 <translation id="2157632422749995237">之后，Google 钱包会向您发送有关活动的通知</translation>
 <translation id="2157779167749714207">您的 <ph name="DEVICE_TYPE" /> 内置了 Gemini</translation>
@@ -1872,7 +1867,6 @@
 <translation id="2271986192355138465">了解如何安装 Web 应用</translation>
 <translation id="2272430695183451567">已分配 0 个开关键</translation>
 <translation id="2272570998639520080">马天尼酒杯</translation>
-<translation id="2273119997271134996">基座视频端口出问题了</translation>
 <translation id="2274840746523584236">您的 Chromebook 需要充电</translation>
 <translation id="2275193525496879616">已允许。请将相机连接到您的设备。</translation>
 <translation id="2275352532065325930">标签页搜索位置</translation>
@@ -2104,7 +2098,6 @@
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> 1 个账号，密码仅保存在此设备上。更多详情}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} 个账号，密码仅保存在此设备上。更多详情}}</translation>
 <translation id="2428510569851653187">请说明此标签页崩溃时您在做什么</translation>
 <translation id="2428939361789119025">关闭 Wi-Fi</translation>
-<translation id="2431027948063157455">无法加载 Google 助理。请检查您的网络连接，然后重试。</translation>
 <translation id="243179355394256322">贵单位仅允许已获授权的用户注册设备。此用户无权注册设备。请确保此用户在管理控制台的“用户”部分中拥有“注册 Google Meet 设备”管理员权限。</translation>
 <translation id="243275146591958220">取消下载</translation>
 <translation id="2432882794929808179">注册了 <ph name="APP_COUNT" /> 个应用</translation>
@@ -2688,7 +2681,6 @@
 <translation id="2808985063107661499">“<ph name="MAIN_GESTURE" />”可能与“<ph name="CONFLICTING_GESTURE_ONE" />”和“<ph name="CONFLICTING_GESTURE_TWO" />”有相似之处。如果可能，请尝试选择其他手势。</translation>
 <translation id="2809346626032021864">读取</translation>
 <translation id="2811205483104563968">账号</translation>
-<translation id="2812049959647166806">Thunderbolt 不受支持</translation>
 <translation id="2813094189969465044">家长控制</translation>
 <translation id="2813765525536183456">添加新个人资料(&amp;A)</translation>
 <translation id="281390819046738856">无法签署该请求。</translation>
@@ -3125,7 +3117,6 @@
 <translation id="3115147772012638511">正在等待存入缓存...</translation>
 <translation id="3115580024857770654">全部收起</translation>
 <translation id="3115743155098198207">管理 Google 账号语言</translation>
-<translation id="3117362587799608430">基座不完全兼容</translation>
 <translation id="3117791853215125017">{COUNT,plural, =1{未能将 <ph name="ATTACHMENTS" />发送到“<ph name="DEVICE_NAME" />”}other{未能将 <ph name="ATTACHMENTS" />发送到“<ph name="DEVICE_NAME" />”}}</translation>
 <translation id="3118319026408854581"><ph name="PRODUCT_NAME" />帮助</translation>
 <translation id="3118748462829336648">打开侧边栏</translation>
@@ -3141,7 +3132,6 @@
 <translation id="3125361247594231799">固定以便下次使用</translation>
 <translation id="3125816458150005808">您可以取消固定并从菜单中打开该功能</translation>
 <translation id="3126026824346185272">Ctrl</translation>
-<translation id="3127860049873093642">为避免遇到充电/性能方面的问题，请使用兼容的戴尔或 USB C 型电源适配器。</translation>
 <translation id="3127862849166875294">调整为 Linux 分配的磁盘空间大小</translation>
 <translation id="3129150892373332590">这将停用与访客持久共享 USB 设备的功能，并且还会重置所有持久性设置。确定吗？</translation>
 <translation id="3129173833825111527">左侧页边距</translation>
@@ -3384,7 +3374,6 @@
         您可从卡片菜单中管理设置，或者在“自定义 Chrome”部分中查看更多选项。</translation>
 <translation id="3308134619352333507">隐藏按钮</translation>
 <translation id="3308604065765626613">{GROUP_COUNT,plural, =1{相应标签页将在此设备上保持打开状态，但该分组将被永久删除。}other{相应标签页将在此设备上保持打开状态，但这些分组将被永久删除。}}</translation>
-<translation id="3308852433423051161">正在加载 Google 助理…</translation>
 <translation id="3309124184713871355">建筑</translation>
 <translation id="3309330461362844500">证书 ID</translation>
 <translation id="3310379801837527592">加入<ph name="OWNER_FIRST_NAME" />和另外 <ph name="NUM_OTHER_MEMBERS" /> 人所在的标签页分组</translation>
@@ -3613,7 +3602,6 @@
 <translation id="3468999815377931311">Android 手机</translation>
 <translation id="3469583217479686109">选择工具</translation>
 <translation id="3471687177769494956">修改导航快捷键</translation>
-<translation id="3471876058939596279">HDMI 端口和 USB C 型端口无法同时用于视频。请另选一个视频端口。</translation>
 <translation id="3472469028191701821">在新标签页中打开</translation>
 <translation id="3473241910002674503">在平板电脑模式下，使用相应按钮转到主屏幕、返回以及切换应用。</translation>
 <translation id="3473479545200714844">屏幕放大镜</translation>
@@ -3815,7 +3803,6 @@
 <translation id="3608730769702025110">步骤 3/4：检查个人身份信息</translation>
 <translation id="3609277884604412258">快速搜索</translation>
 <translation id="3610241585790874201">不得将数据保存在设备上</translation>
-<translation id="3610369246614755442">基座风扇需要维修</translation>
 <translation id="3610961622607302617">更改 <ph name="WEBSITE" /> 的密码</translation>
 <translation id="3611634011145829814">前往订阅页面</translation>
 <translation id="3611658447322220736">最近关闭的网站可以完成数据收发操作</translation>
@@ -3843,7 +3830,6 @@
 <translation id="3624567683873126087">解锁设备并登录 Google 账号</translation>
 <translation id="3624583033347146597">请选择您的第三方 Cookie 偏好设置</translation>
 <translation id="3625481642044239431">所选的文件无效。请重试。</translation>
-<translation id="3626296069957678981">要为此 Chromebook 充电，请使用兼容的戴尔电池。</translation>
 <translation id="3627320433825461852">还剩不到 1 分钟</translation>
 <translation id="3627588569887975815">在隐身窗口中打开链接(&amp;G)</translation>
 <translation id="3627671146180677314">Netscape 证书续订时间</translation>
@@ -3937,7 +3923,6 @@
 <translation id="3688794912214798596">更改语言…</translation>
 <translation id="3690369331356918524">密码遭遇数据泄露时向您发出警告</translation>
 <translation id="3691231116639905343">键盘应用</translation>
-<translation id="3693415264595406141">密码：</translation>
 <translation id="3694027410380121301">选择上一个标签</translation>
 <translation id="3694122362646626770">网站</translation>
 <translation id="3694590407685276748">突出显示文本光标</translation>
@@ -5146,7 +5131,6 @@
 <translation id="4513072860957814107">删除浏览数据(&amp;D)…</translation>
 <translation id="4513872120116766993">预测性撰写</translation>
 <translation id="4513946894732546136">反馈</translation>
-<translation id="4515872537870654449">请联系戴尔以获取帮助。如果风扇停止工作，基座将会关闭。</translation>
 <translation id="4515942088136451195">您所在的组织限制了您可保存的内容</translation>
 <translation id="4516395361210407049">工具栏按钮已重置</translation>
 <translation id="4519331665958994620">网站可以请求使用您的摄像头</translation>
@@ -5439,7 +5423,7 @@
 <translation id="4716715661140829720">存储空间不足</translation>
 <translation id="471759229191973607">更改主题</translation>
 <translation id="4719276504493791870">不允许应用使用您的位置信息</translation>
-<translation id="4722332387043141878">网站通常会使用您设备的移动和光线传感器来实现虚拟现实或健身跟踪等功能</translation>
+<translation id="4722332387043141878">网站通常会使用您设备的移动传感器和光传感器来实现虚拟现实或健身跟踪等功能</translation>
 <translation id="4722676601353983425">{GROUP_COUNT,plural, =1{删除分组}other{删除分组}}</translation>
 <translation id="4722735765955348426"><ph name="USERNAME" /> 的密码</translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" />正在共享您的屏幕。</translation>
@@ -7167,7 +7151,6 @@
 <translation id="5939723110967488589">选择要显示在工具栏中的按钮</translation>
 <translation id="594048410531370124">无法识别此键。按任意键即可<ph name="RESPONSE" />。</translation>
 <translation id="5941153596444580863">添加用户…</translation>
-<translation id="5941343993301164315">请登录 <ph name="TOKEN_NAME" />。</translation>
 <translation id="5941711191222866238">最小化</translation>
 <translation id="5941854976565320351">{PASSWORD_COUNT,plural, =1{有 1 个密码只保存到此设备上。若要在其他设备上使用它，请将它保存到您的 Google 账号中。}other{有 {PASSWORD_COUNT} 个密码只保存到此设备上。若要在其他设备上使用它们，请将它们保存到您的 Google 账号中。}}</translation>
 <translation id="594221546068848596">使用<ph name="VISUAL_SEARCH_PROVIDER" />搜索网页</translation>
@@ -8396,7 +8379,6 @@
 <translation id="680488281839478944">虚拟机“<ph name="DEFAULT_VM_NAME" />”必须存在</translation>
 <translation id="6805236548654699520">将设置恢复为安全的默认设置，以移除恶意弹出式窗口、修复网络问题等等。</translation>
 <translation id="6805478749741295868">这是一项实验性 AI 功能，有时可能会出错。</translation>
-<translation id="6805647936811177813">请登录“<ph name="TOKEN_NAME" />”，从 <ph name="HOST_NAME" /> 导入客户端证书。</translation>
 <translation id="6805817411033102703">共享标签页分组反馈</translation>
 <translation id="6806089545527108739">不允许但可过段时间再询问</translation>
 <translation id="6806781719264274042">仅限您的通讯录中有 Google 账号的联系人。<ph name="LINK_BEGIN" />查看联系人<ph name="LINK_END" /></translation>
@@ -8600,7 +8582,6 @@
 <translation id="6938606182859551396">如需在 <ph name="DEVICE_TYPE" /> 上接收手机中的通知，请按照手机上的说明向 Google Play 服务授予通知权限。</translation>
 <translation id="6941514251635934269">询问关于此文档的问题</translation>
 <translation id="694168622559714949">您的管理员已设置默认语言，您无法修改。</translation>
-<translation id="6941937518557314510">请登录“<ph name="TOKEN_NAME" />”，使用证书向 <ph name="HOST_NAME" /> 验证身份。</translation>
 <translation id="6943060957016121200">启用“即时网络共享”</translation>
 <translation id="6943939122536910181">已断开与“<ph name="DEVICE" />”的连接</translation>
 <translation id="6944750221184785444">无法安装此配置文件。如需技术支持，请与您的运营商联系。</translation>
@@ -9017,7 +8998,6 @@
 <translation id="7239108166256782787">“<ph name="DEVICE_NAME" />”已取消此次传输</translation>
 <translation id="7239401402533584029">帮助您在网络上撰写任何内容，并提供一些额外的润色或创意灵感</translation>
 <translation id="7240339475467890413">要连接到新的热点吗？</translation>
-<translation id="7241389281993241388">请登录“<ph name="TOKEN_NAME" />”，导入客户端证书。</translation>
 <translation id="7241763419756062043">选择您所需的搜索和浏览质量</translation>
 <translation id="7243092385765551741">要删除通行密钥吗？</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" />（最佳）</translation>
@@ -9825,6 +9805,7 @@
 <translation id="7784067724422331729">您计算机的安全设置阻止了此文件。</translation>
 <translation id="7784796923038949829">无法读取或更改网站的数据</translation>
 <translation id="778480864305029524">要使用即时网络共享功能，请开启 Google Play 服务通知功能。</translation>
+<translation id="7784875615510899699">您的可用许可数量不足，无法注册此 Google Beam 设备。请与您的转销商联系，购买更多许可。如果您认为此消息有误，请与您的转销商联系。</translation>
 <translation id="77855763949601045">打开访客资料(&amp;O)</translation>
 <translation id="7786663536153819505">按照手机上的说明扫描二维码。确保手机已开启蓝牙。
     <ph name="BR" />
@@ -10664,7 +10645,6 @@
 <translation id="8350789879725387295">在 Dock 中显示触控笔工具</translation>
 <translation id="8351316842353540018">始终显示无障碍设置选项</translation>
 <translation id="8351419472474436977">此扩展程序控制了您的代理设置，也就是说，它可以更改、破坏或窃听您在网上执行的任何操作。如果您不确定出现这种变化的原因，那么这种变化可能并不是您所希望的。</translation>
-<translation id="8351630282875799764">电池无法充电</translation>
 <translation id="8352287103893778223">标签页分组标题</translation>
 <translation id="835238322900896202">卸载时出错。请通过终端进行卸载。</translation>
 <translation id="8353420862507374944">投放、保存和分享</translation>
@@ -11127,7 +11107,6 @@
 <translation id="8676313779986170923">感谢您发送反馈。</translation>
 <translation id="8676374126336081632">清除输入的内容</translation>
 <translation id="8676730726685223115">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" />（1 个标签页）}other{<ph name="GROUP_TITLE" />（# 个标签页）}}</translation>
-<translation id="8676770494376880701">已连接低功率充电器</translation>
 <translation id="8676985325915861058">跳过此步骤并设置新的个人资料</translation>
 <translation id="8677212948402625567">全部收起...</translation>
 <translation id="8678192320753081984">为面临定向攻击风险的用户提供 Google 最强大的账号安保服务</translation>

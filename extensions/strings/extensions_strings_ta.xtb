@@ -26,6 +26,7 @@
 <translation id="3115238746683532089"><ph name="VENDOR_ID" /> விற்பனையாளர் அனுப்பிய <ph name="PRODUCT_ID" /> (சீரியல் எண் <ph name="SERIAL_NUMBER" />) தயாரிப்பை அறிய முடியவில்லை</translation>
 <translation id="3144135466825225871">crx ஃபைலை இடமாற்றுவதில் தோல்வி. ஃபைல் பயன்பாட்டில் உள்ளதா என்று பார்க்கவும்.</translation>
 <translation id="3163201441334626963"><ph name="VENDOR_ID" /> அனுப்பிய <ph name="PRODUCT_ID" /> தயாரிப்பை அறிய முடியவில்லை.</translation>
+<translation id="3174723475300476613">இந்த நீட்டிப்புக்கான அணுகலை உங்கள் நிறுவனம் தடுத்துள்ளது.</translation>
 <translation id="3242289508736283383">'kiosk_only' மெனிஃபெஸ்ட் பண்புக்கூறைக் கொண்ட ஆப்ஸை ChromeOS கியோஸ்க் பயன்முறையில் நிறுவ வேண்டும்</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (சீரியல் எண் <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397">விற்பனையாளர் <ph name="VENDOR_ID" /> அனுப்பிய <ph name="PRODUCT_NAME" /> (சீரியல் எண் <ph name="SERIAL_NUMBER" />)</translation>
@@ -33,6 +34,7 @@
 <translation id="3834775135533257713">"<ph name="TO_INSTALL_APP_NAME" />" ஆப்ஸ் "<ph name="INSTALLED_APP_NAME" />" உடன் முரண்படுவதால், அதைச் சேர்க்க முடியவில்லை.</translation>
 <translation id="388442998277590542">'<ph name="OPTIONS_PAGE" />' என்ற விருப்பங்கள் பக்கத்தை ஏற்ற முடியவில்லை.</translation>
 <translation id="3984413272403535372">நீட்டிப்பிற்கு உள்நுழைவதில் பிழை.</translation>
+<translation id="4094452115117798451">இந்த நீட்டிப்பு வகையை அணுகுவதை உங்கள் நிறுவனம் தடுத்துள்ளது.</translation>
 <translation id="4233778200880751280">'<ph name="ABOUT_PAGE" />' பக்கத்தை ஏற்ற முடியவில்லை.</translation>
 <translation id="424963718355121712">ஆப்ஸ் எந்த ஹோஸ்ட்டை பாதிக்கின்றனவோ, அதிலிருந்தே வழங்கப்பட வேண்டும்</translation>
 <translation id="4306119971288449206">ஆப்ஸ் "<ph name="CONTENT_TYPE" />" எனும் உள்ளடக்க வகையுடனேயே வழங்கப்பட வேண்டும்</translation>

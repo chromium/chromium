@@ -165,11 +165,6 @@
 <translation id="2588271083332682494">Ciļņu kārtošana, izmantojot ciļņu grupas</translation>
 <translation id="2597457036804169544">Varat vietnēs nelietot tumšo motīvu</translation>
 <translation id="2606760465469169465">Automātiska verifikācija</translation>
-<translation id="2610903128639500624">Pārvaldība <ph name="BEGIN_LINK1" />Android iestatījumos<ph name="END_LINK1" />
-
-Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus
-• Tiek ieslēgts iestatījums “Vienmēr izmantot drošus savienojumus”.
-• Tiek izslēgts iestatījums “JavaScript optimizētājs”. <ph name="BEGIN_LINK2" />Pārvaldīt vietņu izņēmumus<ph name="END_LINK2" /></translation>
 <translation id="2621115761605608342">Atļaut JavaScript konkrētai vietnei</translation>
 <translation id="2626708220538466178">Noklusējuma pārlūka ekrāna apakšdaļas lapa ir aizvērta</translation>
 <translation id="2653659639078652383">Iesniegt</translation>
@@ -487,6 +482,7 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus
 <translation id="5922853908706496913">Notiek jūsu ekrāna kopīgošana</translation>
 <translation id="5922967540311291836">Bloķēt trešo pušu sīkfailus:</translation>
 <translation id="5923512600150154850">Tiks izdzēsti dati un sīkfaili <ph name="DATASIZE" /> apjomā, ko glabā vietnes.</translation>
+<translation id="5930707844513754220">Skatīt citus iestatīšanas sarakstus</translation>
 <translation id="5939518447894949180">Atiestatīt</translation>
 <translation id="5948139900367969951">Ātri piekļūstiet svarīgajam saturam.</translation>
 <translation id="5964247741333118902">Iegultais saturs</translation>
@@ -495,6 +491,7 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus
 <translation id="5976059395673079613"><ph name="PERMISSION" /> — <ph name="WARNING_MESSAGE" /></translation>
 <translation id="5998071268779572583">Ieslēgt Discover plūsmu</translation>
 <translation id="6012967556075291653">Piesprausta saīsne</translation>
+<translation id="6013003831291591200">Uzdevums ir pabeigts</translation>
 <translation id="6015775454662021376">Pārvaldiet šīs vietnes piekļuvi jūsu ierīcei</translation>
 <translation id="6022659036123304283">Pielāgojiet Chrome savām prasībām</translation>
 <translation id="6040143037577758943">Aizvērt</translation>

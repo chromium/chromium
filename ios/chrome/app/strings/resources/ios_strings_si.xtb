@@ -394,6 +394,7 @@
 <translation id="2360196772093551345">ජංගම අඩවිය ඉල්ලන්න</translation>
 <translation id="2362083820973145409"><ph name="USER_NAME" /> ලෙස පුරනය වී ඇත. <ph name="USER_EMAIL" />. සැකසීම් විවෘත කරයි.</translation>
 <translation id="2371084566192454134">පටිති සහ පටිති සමූහ</translation>
+<translation id="2371303771137626249">නව</translation>
 <translation id="2381405137052800939">මූලික</translation>
 <translation id="2384692388811649784">අප්‍රකට පටිති සඟවන්න</translation>
 <translation id="2386793615875593361">0 ක් තෝරා ගන්නා ලදි</translation>
@@ -636,6 +637,7 @@
 <translation id="3324193307694657476">ලිපිනය 2</translation>
 <translation id="3328801116991980348">අඩවි තොරතුරු</translation>
 <translation id="333229797575847124">මෙම විශේෂාංගය සබල කරන ආකාරය</translation>
+<translation id="334004756946755423">මට මෙය පැහැදිලි කරන්න:</translation>
 <translation id="3344233834747405775">වලංගු නොවන කාඩ්පත් හිමියාගේ නම</translation>
 <translation id="3344485292736684439">{count,plural, =1{පිටුසන ඔබේ ගිණුමේ, {email} "{title}" වෙත සුරකින ලදි}one{පිටුසන් ඔබේ ගිණුමේ, {email} "{title}" වෙත සුරකින ලදි}other{පිටුසන් ඔබේ ගිණුමේ, {email} "{title}" වෙත සුරකින ලදි}}</translation>
 <translation id="334690320928261823">මෑත පටිති</translation>
@@ -689,6 +691,7 @@
 <translation id="3530206579861815432">ඔබේ සමමුහුර්ත උපාංග හරහා විවෘත සහ මෑතක දී වසා දැමූ පටිති ඉක්මනින් සොයා ගන්න.</translation>
 <translation id="3530767473765895035">මෙම උපාංගය මත ගිණුම් කළමනා කරන්න…</translation>
 <translation id="3533436815740441613">නව පටිත්ත</translation>
+<translation id="3534738261102690620">Gemini වෙතින් අසන්න</translation>
 <translation id="3540141921715814660">පිටුසන් වෙත එක් කරන්න</translation>
 <translation id="3546122170015471515">Google.com හි සිතියම් පෙරදසුන්</translation>
 <translation id="3547356470684043247">සමාලෝචන සමග ඔබේ තීරණ දැනුම් දීම සඳහා නිෂ්පාදන, සේවා, හෝ අත්දැකීම පිළිබඳ පාරිභෝගික ඇගයීම් කියවන්න</translation>
@@ -1088,6 +1091,7 @@
 <translation id="4944543191714094452">පිටුව තුළ සොයන්න…</translation>
 <translation id="4945756290001680296">මුරපද සැකසීම් වෙත ප්‍රවේශ වන්න</translation>
 <translation id="4949302115427722371">සැකසීම් කළමනාකරණය කරන්න…</translation>
+<translation id="4952050521954075618">කැමරා රෝලයේ ඡායාරූප ඔබේ උපාංග හරහා සමමුහුර්ත නොවනු ඇත</translation>
 <translation id="4958444002117714549">විදහන ලැයිස්තුව</translation>
 <translation id="496392417432935267">වෙනත් තැනක විවෘතයි</translation>
 <translation id="4970724460420203313">ඔබේ කළමනාකරණය කළ ගිණුම සමග Chrome භාවිතා කිරීම ඔබේ සංවිධානයට අදාළ බ්‍රවුස් කිරීම (පටිති, ඉතිහාසය, සහ මුරපද ඇතුළුව) ඔබේ අනෙකුත් බ්‍රවුස් කිරීම් වලින් වෙන්ව තබා ගැනීමට උදවු වේ.</translation>
@@ -1287,6 +1291,7 @@
 <translation id="5647702255748985085">සමූහය හැර යන්නද?</translation>
 <translation id="5648166631817621825">පසුගිය දින 7</translation>
 <translation id="5652623411397330904">ඔබ නිරීක්ෂණය කරන නිෂ්පාදන මෙහි පෙන්වනු ඇත.</translation>
+<translation id="5653100054596780862">සියලු පටිති</translation>
 <translation id="5656431592348714536">ඉහළ නැංවූ දින දර්ශනය</translation>
 <translation id="5659593005791499971">ඊතැපෑල</translation>
 <translation id="5665739277590037307"><ph name="GOOGLE_TERMS" /> සහ <ph name="GEMINI_APPS_PRIVACY" /> අදාළ වේ. Gemini අතින් වැරදි සිදු විය හැක, එබැවින් එය දෙවරක් පරීක්ෂා කරන්න.</translation>
@@ -1752,6 +1757,7 @@
 <translation id="7300448350764260141">සබැඳි තර්ජනවලට එරෙහිව ආරක්‍ෂාවේ අමතර ස්තරයක් එක් කරන්න.</translation>
 <translation id="7311244614769792472">ප්‍රතිඵල කිසිවක් හමු නොවුණි</translation>
 <translation id="7313347584264171202">ඔබට ඔබේ අප්‍රකට ටැබ මෙහි හමුවනු ඇත</translation>
+<translation id="7322186060879266048">{count,plural, =1{ඔබේ යතුරු පුවරුවට ඉහළින් {count} ස්වයං පිරවුම් විකල්පයක් ඇත.}one{ඔබේ යතුරු පුවරුවට ඉහළින් ස්වයං පිරවුම් විකල්ප {count}ක් තිබේ.}other{ඔබේ යතුරු පුවරුවට ඉහළින් ස්වයං පිරවුම් විකල්ප {count}ක් තිබේ.}}</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> ක් බාගන්නා ලදි</translation>
 <translation id="7345061034321640811">ආයාත කිරීමට ඉඩ නැත</translation>

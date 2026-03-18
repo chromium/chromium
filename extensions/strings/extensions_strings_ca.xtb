@@ -25,6 +25,7 @@
 <translation id="3115238746683532089">Producte desconegut <ph name="PRODUCT_ID" /> del proveïdor <ph name="VENDOR_ID" /> (número de sèrie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">No s'ha pogut substituir el fitxer crx. Comproveu si el fitxer s'està utilitzant.</translation>
 <translation id="3163201441334626963">Producte desconegut <ph name="PRODUCT_ID" /> del proveïdor <ph name="VENDOR_ID" /></translation>
+<translation id="3174723475300476613">La teva organització ha bloquejat l'accés a aquesta extensió.</translation>
 <translation id="3242289508736283383">L'aplicació amb l'atribut del fitxer de manifest "kiosk_only" s'ha d'instal·lar en mode quiosc a Chrome OS</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (número de sèrie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> del proveïdor <ph name="VENDOR_ID" /> (número de sèrie <ph name="SERIAL_NUMBER" />)</translation>
@@ -32,6 +33,7 @@
 <translation id="3834775135533257713">No s'ha pogut afegir l'aplicació <ph name="TO_INSTALL_APP_NAME" /> perquè entra en conflicte amb <ph name="INSTALLED_APP_NAME" />.</translation>
 <translation id="388442998277590542">No s'ha pogut carregar la pàgina d'opcions "<ph name="OPTIONS_PAGE" />".</translation>
 <translation id="3984413272403535372">Hi ha hagut un error en signar l'extensió.</translation>
+<translation id="4094452115117798451">La teva organització ha bloquejat l'accés a aquesta categoria d'extensions.</translation>
 <translation id="4233778200880751280">No s'ha pogut carregar la pàgina d'informació "<ph name="ABOUT_PAGE" />".</translation>
 <translation id="424963718355121712">Les aplicacions s'han de distribuir des de l'amfitrió que afecten</translation>
 <translation id="4306119971288449206">Les aplicacions s'han de distribuir amb el tipus de contingut "<ph name="CONTENT_TYPE" />"</translation>

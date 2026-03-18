@@ -196,6 +196,7 @@
 <translation id="3045032126857188731">Idioma de traducció: <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">Tanca el quadre de diàleg de suggeriments</translation>
 <translation id="3068187312562070417">Altres perfils de Chromium</translation>
+<translation id="3068290154869370196">Les extensions són complements que et permeten personalitzar Chromium. Des de mantenir l'ordre fins a simplificar les tasques quotidianes, les extensions t'ajuden a fer-te teu Chromium.</translation>
 <translation id="3068515742935458733">Ajudeu a millorar Chromium; envieu informes d'error i <ph name="UMA_LINK" /> a Google.</translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{Una o més extensions de Chromium estaven accedint a 1 dispositiu USB}=1{Una o més extensions de Chromium estan accedint a 1 dispositiu USB}other{Una o més extensions de Chromium estan accedint a # dispositius USB}}</translation>
 <translation id="3095811995836568724">Historial de Chromium</translation>

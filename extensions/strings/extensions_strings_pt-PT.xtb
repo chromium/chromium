@@ -25,6 +25,7 @@
 <translation id="3115238746683532089">Produto desconhecido <ph name="PRODUCT_ID" /> do fornecedor <ph name="VENDOR_ID" /> (número de série <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Falha ao substituir o ficheiro crx. Verifique se o ficheiro está a ser utilizado.</translation>
 <translation id="3163201441334626963">Produto desconhecido <ph name="PRODUCT_ID" /> do fornecedor <ph name="VENDOR_ID" /></translation>
+<translation id="3174723475300476613">O acesso a esta extensão está bloqueado pela sua organização.</translation>
 <translation id="3242289508736283383">A app com o atributo de manifesto "kiosk_only" tem de ser instalada no modo quiosque do ChromeOS</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (número de série <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> do fornecedor <ph name="VENDOR_ID" /> (número de série <ph name="SERIAL_NUMBER" />)</translation>
@@ -32,6 +33,7 @@
 <translation id="3834775135533257713">Não foi possível adicionar a aplicação "<ph name="TO_INSTALL_APP_NAME" />" porque entra em conflito com "<ph name="INSTALLED_APP_NAME" />".</translation>
 <translation id="388442998277590542">Não foi possível carregar a página de opções "<ph name="OPTIONS_PAGE" />".</translation>
 <translation id="3984413272403535372">Erro durante a assinatura da extensão.</translation>
+<translation id="4094452115117798451">O acesso a esta categoria de extensões está bloqueado pela sua organização.</translation>
 <translation id="4233778200880751280">Não foi possível carregar a página acerca de "<ph name="ABOUT_PAGE" />".</translation>
 <translation id="424963718355121712">As aplicações têm de ser publicadas a partir do anfitrião que afetam.</translation>
 <translation id="4306119971288449206">As aplicações têm de ser publicadas com o tipo de conteúdo "<ph name="CONTENT_TYPE" />".</translation>
