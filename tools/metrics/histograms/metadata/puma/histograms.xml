@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="PUMA.RegionalCapabilities.FunnelStage.Eligibility"
-    enum="SearchEngineChoiceScreenConditions" expires_after="2026-08-19">
+    enum="SearchEngineChoiceScreenConditions" expires_after="2027-03-17">
   <owner>dgn@chromium.org</owner>
   <owner>ljjlee@chromium.org</owner>
   <owner>chrome-regionalcapabilities@google.com</owner>
@@ -34,7 +34,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PUMA.RegionalCapabilities.FunnelStage.Reported"
-    enum="RegionalCapabilitiesFunnelStage" expires_after="2026-03-22">
+    enum="RegionalCapabilitiesFunnelStage" expires_after="2027-03-17">
   <owner>dgn@chromium.org</owner>
   <owner>chrome-regionalcapabilities@google.com</owner>
   <summary>
@@ -44,7 +44,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PUMA.RegionalCapabilities.FunnelStage.Triggering"
-    enum="SearchEngineChoiceScreenConditions" expires_after="2026-08-19">
+    enum="SearchEngineChoiceScreenConditions" expires_after="2027-03-17">
   <owner>dgn@chromium.org</owner>
   <owner>ljjlee@chromium.org</owner>
   <owner>chrome-regionalcapabilities@google.com</owner>
@@ -56,7 +56,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PUMA.RegionalCapabilities.Search.ChoiceScreenDefaultSearchEngineType"
-    enum="OmniboxSearchEngineType" expires_after="2026-08-19">
+    enum="OmniboxSearchEngineType" expires_after="2027-03-17">
   <owner>dgn@chromium.org</owner>
   <owner>chrome-regionalcapabilities@google.com</owner>
   <summary>
@@ -68,7 +68,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PUMA.RegionalCapabilities.Search.ChoiceScreenDefaultSearchEngineType2"
-    enum="OmniboxSearchEngineType" expires_after="2026-08-19">
+    enum="OmniboxSearchEngineType" expires_after="2027-03-17">
   <owner>dgn@chromium.org</owner>
   <owner>chrome-regionalcapabilities@google.com</owner>
   <summary>
@@ -79,7 +79,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PUMA.RegionalCapabilities.Search.ChoiceScreenEvents"
-    enum="SearchEngineChoiceScreenEvents" expires_after="2026-08-19">
+    enum="SearchEngineChoiceScreenEvents" expires_after="2027-03-17">
   <owner>dgn@chromium.org</owner>
   <owner>samarchehade@chromium.org</owner>
   <owner>chrome-regionalcapabilities@google.com</owner>
@@ -91,7 +91,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PUMA.RegionalCapabilities.Search.ChoiceScreenNavigationConditions"
-    enum="SearchEngineChoiceScreenConditions" expires_after="2026-08-19">
+    enum="SearchEngineChoiceScreenConditions" expires_after="2027-03-17">
   <owner>dgn@chromium.org</owner>
   <owner>ljjlee@chromium.org</owner>
   <owner>chrome-regionalcapabilities@google.com</owner>
@@ -104,7 +104,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PUMA.RegionalCapabilities.Search.ChoiceScreenProfileInitConditions"
-    enum="SearchEngineChoiceScreenConditions" expires_after="2026-08-19">
+    enum="SearchEngineChoiceScreenConditions" expires_after="2027-03-17">
   <owner>dgn@chromium.org</owner>
   <owner>ljjlee@chromium.org</owner>
   <owner>chrome-regionalcapabilities@google.com</owner>
@@ -117,7 +117,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PUMA.RegionalCapabilities.Search.ChoiceScreenSelectedEngineIndex"
-    units="index" expires_after="2026-08-19">
+    units="index" expires_after="2027-03-17">
   <owner>dgn@chromium.org</owner>
   <owner>chrome-regionalcapabilities@google.com</owner>
   <summary>
@@ -128,7 +128,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PUMA.RegionalCapabilities.Session.TotalDuration.Recorded"
-    enum="Boolean" expires_after="2026-11-21">
+    enum="Boolean" expires_after="2027-03-17">
   <owner>asvitkine@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
   <owner>chrome-regionalcapabilities@google.com</owner>
