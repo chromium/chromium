@@ -1350,6 +1350,14 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   // 1) Before IRM is open, main webpage is accessible to accessibility
   // technology and keyboard focus.
   ASSERT_FALSE(contents_view->GetViewAccessibility().GetIsIgnored());
+
+  // WebView's virtual IsLeaf() combines explicit leafiness (is_leaf_) with
+  // structural leafiness (e.g. having a ChildTreeID makes it a leaf in the
+  // Views tree). To check the explicitly set leafiness, we must call
+  // ViewAccessibility::IsLeaf() directly.
+  ASSERT_FALSE(
+      contents_view->GetViewAccessibility().ViewAccessibility::IsLeaf());
+
   ASSERT_TRUE(contents_view->GetViewAccessibility().IsAccessibilityFocusable());
   EXPECT_TRUE(contents_view->IsFocusable());
 
@@ -1362,6 +1370,8 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   // focus while IRM is open.
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return contents_view->GetViewAccessibility().GetIsIgnored(); }));
+  ASSERT_TRUE(
+      contents_view->GetViewAccessibility().ViewAccessibility::IsLeaf());
   ASSERT_FALSE(
       contents_view->GetViewAccessibility().IsAccessibilityFocusable());
   ASSERT_FALSE(contents_view->IsFocusable());
@@ -1373,6 +1383,8 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   // Main webpage is accessible again
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return !contents_view->GetViewAccessibility().GetIsIgnored(); }));
+  ASSERT_FALSE(
+      contents_view->GetViewAccessibility().ViewAccessibility::IsLeaf());
   ASSERT_TRUE(contents_view->GetViewAccessibility().IsAccessibilityFocusable());
   ASSERT_TRUE(contents_view->IsFocusable());
 }

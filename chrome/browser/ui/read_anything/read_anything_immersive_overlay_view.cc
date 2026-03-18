@@ -125,12 +125,13 @@ void ReadAnythingImmersiveOverlayView::ShowUI(
 void ReadAnythingImmersiveOverlayView::OnShowUI() {
   SetVisible(true);
 
-  // When IRM is being shown, we tell the renderer that the main webpage needs
-  // to be treated as visible even though it's occluded, so it can generate
-  // accessibility events we need for RM to function. We also set the underlying
-  // web contents to be not accessible while IRM is open, so that it won't
-  // receive screen reader focus or be navigable by keyboard.
+  // We set the underlying web contents to be not accessible while IRM is open,
+  // so that it won't receive screen reader focus or be navigable by keyboard.
+  // We achieve this by marking it as ignored, and also as a leaf, because the
+  // children of an ignored view still may be accessible if the parent is not
+  // marked as a leaf.
   contents_web_view_->GetViewAccessibility().SetIsIgnored(true);
+  contents_web_view_->GetViewAccessibility().SetIsLeaf(true);
   contents_web_view_->SetFocusBehavior(views::View::FocusBehavior::NEVER);
 }
 
@@ -142,6 +143,7 @@ ReadAnythingImmersiveOverlayView::CloseUI() {
   // We want the main web contents to be accessible again if IRM is closed and
   // the main webpage is now visible.
   contents_web_view_->GetViewAccessibility().SetIsIgnored(false);
+  contents_web_view_->GetViewAccessibility().SetIsLeaf(false);
   contents_web_view_->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
 
   CHECK(immersive_web_view_);
