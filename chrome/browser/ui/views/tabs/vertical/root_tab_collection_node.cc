@@ -210,6 +210,15 @@ void RootTabCollectionNode::OnTabStripModelChanged(
   UpdateTabsData(changed_tabs);
 }
 
+void RootTabCollectionNode::OnTabWillBeAdded() {
+  GetController()->GetDragHandler().OnTabWillBeAdded();
+}
+
+void RootTabCollectionNode::OnTabWillBeRemoved(tabs::TabInterface* tab,
+                                               int index) {
+  GetController()->GetDragHandler().OnTabWillBeRemoved(tab->GetContents());
+}
+
 void RootTabCollectionNode::OnTabGroupChanged(const TabGroupChange& change) {
   if (tab_strip_model_->closing_all()) {
     return;

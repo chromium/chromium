@@ -97,6 +97,14 @@ class VerticalTabDragHandler {
   virtual std::optional<BrowserRootView::DropIndex> GetLinkDropIndexForNode(
       const TabCollectionNode& node,
       std::optional<DragPositionHint> position_hint) const = 0;
+
+  // Called before a tab is added to the tabstrip. Cancels the current drag if
+  // there is one.
+  virtual void OnTabWillBeAdded() = 0;
+
+  // Called before a tab is removed from the tabstrip. Cancels the current drag
+  // if the tab is one of the dragged tabs.
+  virtual void OnTabWillBeRemoved(content::WebContents* contents) = 0;
 };
 
 // Implements a minimal drag context to interact with the central
@@ -137,6 +145,8 @@ class VerticalTabDragHandlerImpl : public VerticalTabDragHandler,
   std::optional<BrowserRootView::DropIndex> GetLinkDropIndexForNode(
       const TabCollectionNode& node,
       std::optional<DragPositionHint> position_hint) const override;
+  void OnTabWillBeAdded() override;
+  void OnTabWillBeRemoved(content::WebContents* contents) override;
 
   // TabDragContext
   bool CanAcceptEvent(const ui::Event& event) override;

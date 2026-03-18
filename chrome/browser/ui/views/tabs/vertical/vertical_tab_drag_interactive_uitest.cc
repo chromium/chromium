@@ -983,3 +983,5 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragDetachTest, MAYBE_DetachPinnedTab) {
         EXPECT_EQ(2, browser()->GetTabStripModel()->count());
       }));
 }
+
+// TODO(crbug.com/490650365): Add regression test once detach tests are working.

@@ -585,6 +585,19 @@ VerticalTabDragHandlerImpl::GetLinkDropIndexForNode(
   return link_drop_handler_->GetDropIndexForNode(node, position_hint);
 }
 
+void VerticalTabDragHandlerImpl::OnTabWillBeAdded() {
+  if (drag_controller_) {
+    drag_controller_->EndDrag(EndDragReason::kModelAddedTab);
+  }
+}
+
+void VerticalTabDragHandlerImpl::OnTabWillBeRemoved(
+    content::WebContents* contents) {
+  if (drag_controller_) {
+    drag_controller_->OnTabWillBeRemoved(contents);
+  }
+}
+
 bool VerticalTabDragHandlerImpl::CanAcceptEvent(const ui::Event& event) {
   // The drag context has to be able to process mouse events during the drag.
   // By default, this is predicated on visibility, but the handler should not
