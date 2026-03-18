@@ -232,6 +232,14 @@
     "expiry_milestone": 150
   },
   {
+    "name": "android-block-misspelling-suggestion-span-in-composition-mode",
+    "owners": [
+      "hdchuong@google.com",
+      "essential-inputs-team@google.com"
+    ],
+    "expiry_milestone": 155
+  },
+  {
     "name": "android-bookmark-bar",
     "owners": [ "dmblack@google.com", "clank-large-form-factors@google.com" ],
     "expiry_milestone": 150
@@ -2866,14 +2874,6 @@
       "essential-inputs-team@google.com"
     ],
     "expiry_milestone": 150
-  },
-  {
-    "name": "enable-android-spelling-underline-in-composition-mode",
-    "owners": [
-      "hdchuong@google.com",
-      "essential-inputs-team@google.com"
-    ],
-    "expiry_milestone": 155
   },
   {
     "name": "enable-android-window-controls-overlay",

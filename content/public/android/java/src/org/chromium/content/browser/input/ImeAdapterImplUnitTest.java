@@ -19,6 +19,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.os.SystemClock;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.SuggestionSpan;
 import android.view.KeyEvent;
 import android.view.ViewGroup;
 import android.view.inputmethod.CorrectionInfo;
@@ -57,7 +60,10 @@ import org.chromium.ui.test.util.TestViewAndroidDelegate;
 /** Unit tests for {@link ImeAdapterImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {ShadowToast.class})
-@DisableFeatures(ContentFeatures.ANDROID_PK_AUTOCORRECT_UNDERLINE)
+@DisableFeatures({
+    ContentFeatures.ANDROID_PK_AUTOCORRECT_UNDERLINE,
+    ContentFeatureList.ANDROID_BLOCK_MISSPELLING_SUGGESTION_SPAN_IN_COMPOSITION_MODE
+})
 public class ImeAdapterImplUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -360,5 +366,60 @@ public class ImeAdapterImplUnitTest {
         adapter.clearAllAutocorrectUnderlineSpans();
 
         verify(mImeAdapterImplJni).clearAllAutocorrectUnderlineSpans(anyLong());
+    }
+
+    @Test
+    public void testPopulateImeTextSpansFromJava_MisspellingSpanNotBlocked() {
+        ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);
+        SpannableString text = new SpannableString("hello");
+        String[] suggestions = new String[] {"suggestion"};
+        SuggestionSpan span =
+                new SuggestionSpan(
+                        ApplicationProvider.getApplicationContext(),
+                        suggestions,
+                        SuggestionSpan.FLAG_MISSPELLED);
+        text.setSpan(span, 0, 5, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        adapter.populateImeTextSpansFromJava(text, 123L);
+
+        verify(mImeAdapterImplJni)
+                .appendSuggestionSpan(
+                        /* spanPtr= */ eq(123L),
+                        /* start= */ eq(0),
+                        /* end= */ eq(5),
+                        /* isMisspelling= */ eq(true),
+                        /* removeOnFinishComposing= */ eq(false),
+                        /* underlineColor= */ anyInt(),
+                        /* suggestionHighlightColor= */ anyInt(),
+                        /* suggestions= */ eq(suggestions),
+                        /* shouldHideSuggestionMenu= */ eq(true));
+    }
+
+    @Test
+    @EnableFeatures(
+            ContentFeatureList.ANDROID_BLOCK_MISSPELLING_SUGGESTION_SPAN_IN_COMPOSITION_MODE)
+    public void testPopulateImeTextSpansFromJava_MisspellingSpanBlocked() {
+        ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);
+        SpannableString text = new SpannableString("hello");
+        SuggestionSpan span =
+                new SuggestionSpan(
+                        ApplicationProvider.getApplicationContext(),
+                        new String[] {"suggestion"},
+                        SuggestionSpan.FLAG_MISSPELLED);
+        text.setSpan(span, 0, 5, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        adapter.populateImeTextSpansFromJava(text, 123L);
+
+        verify(mImeAdapterImplJni, never())
+                .appendSuggestionSpan(
+                        /* spanPtr= */ anyLong(),
+                        /* start= */ anyInt(),
+                        /* end= */ anyInt(),
+                        /* isMisspelling= */ anyBoolean(),
+                        /* removeOnFinishComposing= */ anyBoolean(),
+                        /* underlineColor= */ anyInt(),
+                        /* suggestionHighlightColor= */ anyInt(),
+                        /* suggestions= */ any(),
+                        /* shouldHideSuggestionMenu= */ anyBoolean());
     }
 }

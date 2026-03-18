@@ -1864,7 +1864,8 @@ public class ImeAdapterImpl
     }
 
     @CalledByNative
-    private void populateImeTextSpansFromJava(CharSequence text, long imeTextSpans) {
+    @VisibleForTesting
+    void populateImeTextSpansFromJava(CharSequence text, long imeTextSpans) {
         if (DEBUG_LOGS) {
             Log.i(
                     TAG,
@@ -1874,8 +1875,14 @@ public class ImeAdapterImpl
         }
         if (!(text instanceof SpannableString)) return;
 
+        final boolean blockMisspellingInComposition =
+                ContentFeatureMap.isEnabled(
+                        ContentFeatureList
+                                .ANDROID_BLOCK_MISSPELLING_SUGGESTION_SPAN_IN_COMPOSITION_MODE);
+
         SpannableString spannableString = ((SpannableString) text);
         CharacterStyle[] spans = spannableString.getSpans(0, text.length(), CharacterStyle.class);
+
         for (CharacterStyle span : spans) {
             final int spanFlags = spannableString.getSpanFlags(span);
             if (span instanceof BackgroundColorSpan) {
@@ -1923,6 +1930,13 @@ public class ImeAdapterImpl
                         (suggestionSpan.getFlags() & SuggestionSpan.FLAG_AUTO_CORRECTION) != 0;
 
                 if (!isEasyCorrectSpan && !isMisspellingSpan && !isAutoCorrectionSpan) continue;
+
+                // Some IMEs (Gboard) require the additional suggestion spans with FLAG_MISSPELLED
+                // present in the surrounding text to guide their custom spell check bar. We should
+                // not report these "artificial" suggestion spans to Blink.
+                if (!isEasyCorrectSpan && isMisspellingSpan && blockMisspellingInComposition) {
+                    continue;
+                }
 
                 // Copied from Android's Editor.java so we use the same colors
                 // as the native Android text widget.

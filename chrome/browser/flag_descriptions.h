@@ -5084,11 +5084,13 @@ inline constexpr char kAndroidSpellcheckNativeUiName[] =
 inline constexpr char kAndroidSpellcheckNativeUiDescription[] =
     "Makes the spellcheck underline style the same as native applications";
 
-inline constexpr char kAndroidSpellingUnderlineInCompositionModeName[] =
-    "Enable Android spelling underline in composition mode";
-inline constexpr char kAndroidSpellingUnderlineInCompositionModeDescription[] =
-    "When enabled, misspelling / grammar underline could be shown when "
-    "entering composition mode";
+inline constexpr char
+    kAndroidBlockMisspellingSuggestionSpanInCompositionModeName[] =
+        "Block Android misspelling suggestion span in composition mode";
+inline constexpr char
+    kAndroidBlockMisspellingSuggestionSpanInCompositionModeDescription[] =
+        "When enabled, misspelling suggestion spans will be blocked when "
+        "entering composition mode";
 
 inline constexpr char kAndroidSurfaceColorUpdateName[] =
     "Android surface color update.";

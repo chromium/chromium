@@ -11941,7 +11941,15 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidAudioDeviceListenerName,
      flag_descriptions::kAndroidAudioDeviceListenerDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(features::kAndroidAudioDeviceListener)},
-#endif  // BUILDFLAG(IS_ANDROID)
+    {"android-block-misspelling-suggestion-span-in-composition-mode",
+     flag_descriptions::
+         kAndroidBlockMisspellingSuggestionSpanInCompositionModeName,
+     flag_descriptions::
+         kAndroidBlockMisspellingSuggestionSpanInCompositionModeDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         features::kAndroidBlockMisspellingSuggestionSpanInCompositionMode)},
+#endif
 
 #if !BUILDFLAG(IS_ANDROID)
     {"browsing-history-actor-integration-M2",
@@ -12656,14 +12664,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidPkAutocorrectUnderlineName,
      flag_descriptions::kAndroidPkAutocorrectUnderlineDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(features::kAndroidPkAutocorrectUnderline)},
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
-    {"enable-android-spelling-underline-in-composition-mode",
-     flag_descriptions::kAndroidSpellingUnderlineInCompositionModeName,
-     flag_descriptions::kAndroidSpellingUnderlineInCompositionModeDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(features::kAndroidSpellingUnderlineInCompositionMode)},
 #endif
 
 #if BUILDFLAG(IS_MAC)

@@ -1234,9 +1234,9 @@ public final class ProductionSupportedFlagList {
                 ContentFeatures.ANDROID_PK_AUTOCORRECT_UNDERLINE,
                 "When enabled, physical keyboard autocorrect underline will display"),
         Flag.baseFeature(
-                ContentFeatures.ANDROID_SPELLING_UNDERLINE_IN_COMPOSITION_MODE,
-                "When enabled, misspelling / grammar underline could be shown when entering"
-                        + " composition mode"),
+                ContentFeatures.ANDROID_BLOCK_MISSPELLING_SUGGESTION_SPAN_IN_COMPOSITION_MODE,
+                "When enabled, misspelling suggestion span will be blocked from showing in"
+                        + " composition mode."),
         Flag.baseFeature(
                 BaseFeatures.PARTITION_ALLOC_FREE_WITH_SIZE,
                 "Enables PartitionAlloc with the optimization of sized deallocation"),

@@ -67,8 +67,8 @@ public class ContentFeatureList {
 
     public static final String ANDROID_SPELLCHECK_FULL_API_BLINK = "AndroidSpellcheckFullApiBlink";
 
-    public static final String ANDROID_SPELLING_UNDERLINE_IN_COMPOSITION_MODE =
-            "AndroidSpellingUnderlineInCompositionMode";
+    public static final String ANDROID_BLOCK_MISSPELLING_SUGGESTION_SPAN_IN_COMPOSITION_MODE =
+            "AndroidBlockMisspellingSuggestionSpanInCompositionMode";
 
     public static final String HIDE_PASTE_POPUP_ON_GSB = "HidePastePopupOnGSB";
 

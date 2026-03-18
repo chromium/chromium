@@ -43,7 +43,8 @@ CONTENT_EXPORT extern const base::FeatureParam<int>
 CONTENT_EXPORT extern const base::FeatureParam<double>
     kAndroidNavigationAnimationBlurSigma;
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kAndroidPkAutocorrectUnderline);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kAndroidSpellingUnderlineInCompositionMode);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(
+    kAndroidBlockMisspellingSuggestionSpanInCompositionMode);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kAndroidWarmUpSpareRendererWithTimeout);
 CONTENT_EXPORT extern const base::FeatureParam<std::string>
     kAndroidSpareRendererCreationTiming;
