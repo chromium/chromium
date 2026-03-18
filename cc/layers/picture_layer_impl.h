@@ -58,7 +58,6 @@ class CC_EXPORT PictureLayerImpl
       LayerTreeImpl* tree_impl) const override;
   void PushPropertiesTo(LayerImpl* layer) override;
   void NotifyTileStateChanged(const Tile* tile, bool update_damage) override;
-  gfx::Rect GetDamageRect() const override;
   void ResetChangeTracking() override;
   void ResetRasterScale();
   void DidBeginTracing() override;
@@ -393,10 +392,6 @@ class CC_EXPORT PictureLayerImpl
   PaintWorkletRecordMap paint_worklet_records_;
 
   TileSizeCalculator tile_size_calculator_{this};
-
-  // Denotes an area that is damaged and needs redraw. This is in the layer's
-  // space.
-  gfx::Rect damage_rect_;
 
  private:
   class AppendQuadsCustomSharedDataImpl : public AppendQuadsCustomSharedData {

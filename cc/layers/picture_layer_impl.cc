@@ -754,7 +754,7 @@ void PictureLayerImpl::NotifyTileStateChanged(const Tile* tile,
                                               bool update_damage) {
   if (update_damage) {
     if (layer_tree_impl()->IsActiveTree()) {
-      damage_rect_.Union(tile->enclosing_layer_rect());
+      UnionWithExistingDamage(tile->enclosing_layer_rect());
     }
     if (tile->draw_info().NeedsRaster()) {
       PictureLayerTiling* tiling =
@@ -790,10 +790,6 @@ void PictureLayerImpl::NotifyTileStateChanged(const Tile* tile,
   }
 }
 
-gfx::Rect PictureLayerImpl::GetDamageRect() const {
-  return damage_rect_;
-}
-
 void PictureLayerImpl::DidDraw(viz::ClientResourceProvider* resource_provider) {
   LayerImpl::DidDraw(resource_provider);
 
@@ -806,8 +802,7 @@ void PictureLayerImpl::DidDraw(viz::ClientResourceProvider* resource_provider) {
 }
 
 void PictureLayerImpl::ResetChangeTracking() {
-  LayerImpl::ResetChangeTracking();
-  damage_rect_.SetRect(0, 0, 0, 0);
+  TileBasedLayerImpl<PictureLayerTiling>::ResetChangeTracking();
   has_animated_image_update_rect_ = false;
   has_non_animated_image_update_rect_ = false;
 }
@@ -2142,7 +2137,7 @@ DamageReasonSet PictureLayerImpl::GetDamageReasons() const {
   if (has_animated_image_update_rect_) {
     reasons.Put(DamageReason::kAnimatedImage);
   }
-  if (has_non_animated_image_update_rect_ || !damage_rect_.IsEmpty()) {
+  if (has_non_animated_image_update_rect_ || !GetDamageRect().IsEmpty()) {
     reasons.Put(DamageReason::kUntracked);
   }
   return reasons;

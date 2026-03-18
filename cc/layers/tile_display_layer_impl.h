@@ -200,8 +200,6 @@ class CC_EXPORT TileDisplayLayerImpl
   void GetContentsResourceId(viz::ResourceId* resource_id,
                              gfx::Size* resource_size,
                              gfx::SizeF* resource_uv_size) const override;
-  gfx::Rect GetDamageRect() const override;
-  void ResetChangeTracking() override;
   gfx::ContentColorUsage GetContentColorUsage() const override;
 
   void SetContentColorUsage(gfx::ContentColorUsage content_color_usage) {
@@ -246,9 +244,6 @@ class CC_EXPORT TileDisplayLayerImpl
   gfx::ContentColorUsage content_color_usage_ = gfx::ContentColorUsage::kSRGB;
   gfx::Rect recorded_bounds_;
 
-  // Denotes an area that is damaged and needs redraw. This is in the layer's
-  // space.
-  gfx::Rect damage_rect_;
   std::vector<std::unique_ptr<TileDisplayLayerTiling>> tilings_;
 
   // A list of tiling scale keys that the client has nominated for deletion.

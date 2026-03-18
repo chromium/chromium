@@ -243,21 +243,12 @@ void TileDisplayLayerImpl::GetContentsResourceId(
                  requested_tile_size.height() / resource_size->height());
 }
 
-gfx::Rect TileDisplayLayerImpl::GetDamageRect() const {
-  return damage_rect_;
-}
-
-void TileDisplayLayerImpl::ResetChangeTracking() {
-  LayerImpl::ResetChangeTracking();
-  damage_rect_.SetRect(0, 0, 0, 0);
-}
-
 gfx::ContentColorUsage TileDisplayLayerImpl::GetContentColorUsage() const {
   return content_color_usage_;
 }
 
 void TileDisplayLayerImpl::RecordDamage(const gfx::Rect& damage_rect) {
-  damage_rect_.Union(damage_rect);
+  UnionWithExistingDamage(damage_rect);
 }
 
 void TileDisplayLayerImpl::DiscardResource(viz::ResourceId resource) {

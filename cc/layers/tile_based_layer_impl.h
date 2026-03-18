@@ -63,6 +63,11 @@ class CC_EXPORT TileBasedLayerImpl : public LayerImpl {
   void AppendQuads(const AppendQuadsContext& context,
                    viz::CompositorRenderPass* render_pass,
                    AppendQuadsData* append_quads_data) override;
+  gfx::Rect GetDamageRect() const override { return damage_rect_; }
+  void ResetChangeTracking() override {
+    LayerImpl::ResetChangeTracking();
+    damage_rect_.SetRect(0, 0, 0, 0);
+  }
   gfx::Rect GetEnclosingVisibleRectInTargetSpace() const override {
     return GetScaledEnclosingVisibleRectInTargetSpace(
         GetMaximumContentsScaleForUseInAppendQuads());
@@ -99,6 +104,10 @@ class CC_EXPORT TileBasedLayerImpl : public LayerImpl {
         last_append_quads_scales_.back() != scale) {
       last_append_quads_scales_.push_back(scale);
     }
+  }
+
+  void UnionWithExistingDamage(const gfx::Rect& rect) {
+    damage_rect_.Union(rect);
   }
 
   bool LastAppendQuadsScalesContains(float scale) const {
@@ -204,6 +213,10 @@ class CC_EXPORT TileBasedLayerImpl : public LayerImpl {
   // used as an optimization not to remove tilings if they are still being
   // drawn.
   std::vector<float> last_append_quads_scales_;
+
+  // Denotes an area that is damaged and needs redraw. This is in the layer's
+  // space.
+  gfx::Rect damage_rect_;
 
   bool produced_tile_last_append_quads_ : 1 = true;
 };
