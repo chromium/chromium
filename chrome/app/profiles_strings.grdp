@@ -854,6 +854,14 @@
       You currently have <ph name="NUMBERED_ITEM">$1<ex>10 bookmarks</ex></ph>, and more. Your organization, <ph name="ACCOUNT_MANAGER">$2<ex>example.com</ex></ph>, will be able to see and manage this data.
     </message>
 
+    <!--Accessible strings-->
+    <message name="IDS_ACCNAME_YOUR_AVATAR" desc="The accessible name for the user's avatar">
+      Your avatar
+    </message>
+    <message name="IDS_ACCNAME_ENTERPRISE_ORGANIZATION_ICON" desc="The accessible name for the icon which indicates that the profile is managed by an organization">
+      An icon indicating that this profile is managed by your organization
+    </message>
+
     <!-- Supervised user profile signin IPH -->
     <message name="IDS_SUPERVISED_USER_PROFILE_SIGNIN_IPH_TITLE" desc="Title of a reminder message, which is intended to help supervised users understand that they have been signed in to Chrome.">
       Welcome, <ph name="CHILD_NAME">$1<ex>Charlie</ex></ph>

@@ -7,12 +7,14 @@
 #include <memory>
 #include <optional>
 
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_util.h"
 #include "base/strings/to_string.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/regional_capabilities/regional_capabilities_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -29,6 +31,7 @@
 #include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/regional_capabilities/regional_capabilities_service.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -243,8 +246,19 @@ void ProfilePickerPostSignInAdapter::SwitchToManagedUserProfileNotice(
   if (!step_switch_callback_->is_null()) {
     std::move(step_switch_callback_.value()).Run(true);
   }
+
+  const bool is_in_search_engine_choice_region =
+      CHECK_DEREF(regional_capabilities::RegionalCapabilitiesServiceFactory::
+                      GetForProfile(profile_))
+          .IsInSearchEngineChoiceScreenRegion();
+  const bool use_refreshed_ui =
+      switches::IsFirstRunDesktopRefreshEnabled(
+          is_in_search_engine_choice_region);
+
   host_->ShowScreen(contents(),
-                    GURL(chrome::kChromeUIManagedUserProfileNoticeUrl),
+                    use_refreshed_ui
+                        ? GURL(chrome::kChromeUIManagedUserProfileNoticeRefreshURL)
+                        : GURL(chrome::kChromeUIManagedUserProfileNoticeUrl),
                     /*navigation_finished_closure=*/
                     base::BindOnce(&ProfilePickerPostSignInAdapter::
                                        SwitchToManagedUserProfileNoticeFinished,

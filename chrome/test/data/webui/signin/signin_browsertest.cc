@@ -4,11 +4,12 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/first_run/first_run_features.h"
 #include "chrome/browser/ui/webui/signin/signin_url_utils.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/features.h"
 #include "content/public/test/browser_test.h"
 
@@ -58,6 +59,26 @@ IN_PROC_BROWSER_TEST_F(SigninTest, SigninManagedUserProfileNotice) {
   RunTest("signin/managed_user_profile_notice_test.js", "mocha.run()");
 }
 
+class SigninManagedUserProfileNoticeRefreshTest : public SigninTest {
+ protected:
+  SigninManagedUserProfileNoticeRefreshTest() {
+    feature_list_.InitWithFeatures(
+        {switches::kFirstRunDesktopRefresh,
+         switches::kFirstRunDesktopChoiceScreenRefresh},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SigninManagedUserProfileNoticeRefreshTest,
+                       SigninManagedUserProfileNoticeRefresh) {
+  set_test_loader_host(chrome::kChromeUIManagedUserProfileNoticeHost);
+  RunTest("signin/managed_user_profile_notice_app_refresh_test.js",
+          "mocha.run()");
+}
+
 class SigninTestWithHistorySync : public SigninTest {
  protected:
   SigninTestWithHistorySync() {
@@ -77,7 +98,10 @@ IN_PROC_BROWSER_TEST_F(SigninTestWithHistorySync, HistorySyncOptIn) {
 class SigninTestWithHistorySyncRefresh : public SigninTestWithHistorySync {
  protected:
   SigninTestWithHistorySyncRefresh() {
-    feature_list_.InitAndEnableFeature(switches::kFirstRunDesktopRefresh);
+    feature_list_.InitWithFeatures(
+        {switches::kFirstRunDesktopRefresh,
+         switches::kFirstRunDesktopChoiceScreenRefresh},
+        {});
   }
 
  private:

@@ -12,6 +12,7 @@ export class TestManagedUserProfileNoticeBrowserProxy extends TestBrowserProxy
   constructor(info: ManagedUserProfileInfo) {
     super([
       'initialized',
+      'initializedWithSize',
       'proceed',
       'cancel',
     ]);

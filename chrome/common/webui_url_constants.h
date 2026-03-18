@@ -469,6 +469,9 @@ inline constexpr char kChromeUIManagedUserProfileNoticeHost[] =
     "managed-user-profile-notice";
 inline constexpr char kChromeUIManagedUserProfileNoticeUrl[] =
     "chrome://managed-user-profile-notice/";
+inline constexpr char kChromeUIManagedUserProfileNoticeRefreshURL[] =
+    "chrome://managed-user-profile-notice/"
+    "managed_user_profile_notice_refresh.html";
 inline constexpr char kChromeUIProfileCustomizationHost[] =
     "profile-customization";
 inline constexpr char kChromeUIProfileCustomizationURL[] =

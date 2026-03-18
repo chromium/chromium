@@ -1,0 +1,177 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=/signin_shared.css.js
+ * #import=/signin_vars.css.js
+ * #scheme=relative
+ * #include=signin-shared
+ * #css_wrapper_metadata_end */
+
+:host {
+  color: var(--cr-primary-text-color);
+  --cr-secondary-text-color: var(--google-grey-700);
+  --disclaimer-cards-gap: 24px;
+  --disclaimer-card-width: 300px;
+}
+
+:host([is-oidc-dialog]) .title {
+  font-size: 24px;
+}
+
+main {
+  display: flex;
+  flex-direction: column;
+  margin-inline: auto;
+}
+
+#headerContainer {
+  padding-bottom: 24px;
+  position: relative;
+  width: 100%;
+}
+
+#avatarContainer {
+  height: 92px;
+  margin-inline: auto;
+  position: relative;
+  width: 92px;
+  z-index: 1;
+}
+
+#avatar {
+  border-radius: 50%;
+  display: block;
+  height: 100%;
+  width: 100%;
+}
+
+.work-badge {
+  align-items: center;
+  background-color: var(--signin-work-badge-background-color);
+  border: 1px solid var(--google-grey-300);
+  border-radius: 50%;
+  box-sizing: border-box;
+  display: flex;
+  height: 36px;
+  width: 36px;
+  justify-content: center;
+  position: absolute;
+  right: -4px;
+  bottom: -4px;
+}
+
+.work-badge > cr-icon {
+  border-radius: 50%;
+  box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.25);
+  height: 24px;
+  width: 24px;
+  padding: 6px;
+}
+
+#textContainer {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-block-end: 24px;
+}
+
+.title {
+  box-sizing: border-box;
+  font-size: 60px;
+  margin: 0;
+  padding-inline: 48px;
+  width: 100%;
+}
+
+.subtitle {
+  align-self: center;
+  font-size: 16px;
+  font-weight: 500;
+  max-width: calc(var(--disclaimer-card-width) * 2 + var(--disclaimer-cards-gap));
+  margin: 0;
+}
+
+.title:focus {
+  outline: none;
+}
+
+.disclaimer-container {
+  align-items: stretch;
+  display: flex;
+  flex-direction: row;
+  gap: var(--disclaimer-cards-gap);
+  justify-content: center;
+}
+
+.disclaimer {
+  width: var(--disclaimer-card-width);
+  align-items: center;
+  background-color: var(--google-white);
+  border: 1px solid var(--google-grey-200);
+  border-radius: 24px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 24px;
+}
+
+.disclaimer .icon {
+  flex-shrink: 0;
+  height: 36px;
+  width: 36px;
+}
+
+.disclaimer h2 {
+  color: var(--cr-primary-text-color);
+  font-size: 16px;
+  font-weight: 500;
+  text-align: center;
+  margin: 0;
+}
+
+.disclaimer p {
+  color: var(--cr-secondary-text-color);
+  line-height: 20px;
+  text-align: center;
+  margin: 0;
+}
+
+@media screen and ((max-width: 780px) or (max-height: 600px)) {
+  #avatarContainer {
+    height: 64px;
+    width: 64px;
+  }
+
+  .title {
+    font-size: 32px;
+  }
+
+  .subtitle {
+    font-size: 15px;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :host {
+    --cr-secondary-text-color: var(--google-grey-500);
+  }
+
+  .work-badge {
+    border-color: var(--md-background-color);
+  }
+
+  .work-badge > cr-icon {
+    box-shadow: 0 0 2px rgba(var(--google-grey-800-rgb), 0.12),
+       0 0 6px rgba(var(--google-grey-800-rgb), 0.15);
+  }
+
+  .disclaimer {
+    background-color: var(--cr-fallback-color-surface);
+    border: none;
+  }
+}
