@@ -215,6 +215,11 @@ class V4Store {
                            TestMergeUpdatesFailsForRepeatedHashPrefix);
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest,
                            TestMergeUpdatesFailsWhenRemovalsIndexTooLarge);
+  FRIEND_TEST_ALL_PREFIXES(V4StoreTest, TestMergeUpdateFastPathWithRemovals);
+  FRIEND_TEST_ALL_PREFIXES(V4StoreTest, TestMergeUpdateFastPathEmptyLists);
+  FRIEND_TEST_ALL_PREFIXES(V4StoreTest,
+                           TestMergeUpdateFastPathMultipleRemovalsInARow);
+  FRIEND_TEST_ALL_PREFIXES(V4StoreTest, TestVerifyChecksumFastPath);
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest, TestMergeUpdatesRemovesOnlyElement);
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest, TestMergeUpdatesRemovesFirstElement);
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest, TestMergeUpdatesRemovesMiddleElement);
@@ -270,6 +275,8 @@ class V4Store {
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest, FileSizeIncludesHashFiles);
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest, MergeUpdatesWithHashPrefixMap);
   FRIEND_TEST_ALL_PREFIXES(V4StorePerftest, StressTest);
+  FRIEND_TEST_ALL_PREFIXES(V4StorePerftest, VerifyChecksumFast);
+  FRIEND_TEST_ALL_PREFIXES(V4StorePerftest, MergeUpdateFast);
 
   friend class V4StoreTest;
   friend class V4StoreFuzzer;
@@ -331,6 +338,16 @@ class V4Store {
       const HashPrefixMapView& additions_map,
       const ::google::protobuf::RepeatedField<int32_t>* raw_removals,
       const std::string& expected_checksum);
+
+  // Fast path for MergeUpdate when both maps have exactly one prefix size.
+  ApplyUpdateResult MergeUpdateFast(
+      const HashPrefixMapView& old_hash_prefix_map,
+      const HashPrefixMapView& additions_map,
+      const ::google::protobuf::RepeatedField<int32_t>* raw_removals,
+      const std::string& expected_checksum);
+
+  // Fast path for VerifyChecksum when the map has exactly one prefix size.
+  bool VerifyChecksumFast(const HashPrefixMapView& hash_prefix_map);
 
   // Processes the FULL_UPDATE |response| from the server, and writes the
   // merged V4Store to disk. If processing the |response| succeeds, it returns

@@ -7,10 +7,13 @@
 #include <algorithm>
 #include <array>
 #include <optional>
+#include <ranges>
 #include <string_view>
 #include <utility>
 
 #include "base/base64.h"
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
@@ -20,6 +23,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/timer/elapsed_timer.h"
@@ -676,6 +680,146 @@ void V4Store::InitializeIteratorMap(const HashPrefixMapView& hash_prefix_map,
   }
 }
 
+ApplyUpdateResult V4Store::MergeUpdateFast(
+    const HashPrefixMapView& old_prefixes_map,
+    const HashPrefixMapView& additions_map,
+    const RepeatedField<int32_t>* raw_removals,
+    const std::string& expected_checksum) {
+  const PrefixSize prefix_size = old_prefixes_map.begin()->first;
+  base::span<const uint8_t> old_prefixes =
+      base::as_byte_span(old_prefixes_map.begin()->second);
+  base::span<const uint8_t> new_prefixes =
+      base::as_byte_span(additions_map.begin()->second);
+
+  auto removals_iter =
+      raw_removals ? std::make_optional(raw_removals->begin()) : std::nullopt;
+
+  // Keep track of the number of elements picked from the old map. This is used
+  // to determine which elements to drop based on the raw_removals. Note that
+  // picked is not the same as merged. A picked element isn't merged if its
+  // index is on the raw_removals list.
+  int total_picked_from_old = 0;
+
+  crypto::hash::Hasher checksum_ctx(crypto::hash::HashKind::kSha256);
+  const bool calculate_checksum = !expected_checksum.empty();
+
+  // Look ahead in `prefixes` to see how many sequential prefixes are lower than
+  // `limit_prefix`, the next prefix from the other list. This uses a binary
+  // search.
+  auto get_skip_count = [&](base::span<const uint8_t> prefixes,
+                            base::span<const uint8_t> limit_prefix) {
+    size_t num_prefixes = prefixes.size() / prefix_size;
+    if (num_prefixes < 2 ||
+        prefixes.subspan(prefix_size, prefix_size) >= limit_prefix) {
+      return size_t{1};
+    }
+
+    size_t left = 2;
+    size_t right = num_prefixes;
+    size_t run_length = 1;
+    while (left <= right) {
+      size_t mid = left + (right - left) / 2;
+      if (prefixes.subspan((mid - 1) * prefix_size, prefix_size) <
+          limit_prefix) {
+        run_length = mid;
+        left = mid + 1;
+      } else {
+        right = mid - 1;
+      }
+    }
+    return run_length;
+  };
+
+  while (!old_prefixes.empty() || !new_prefixes.empty()) {
+    bool pick_from_old = !old_prefixes.empty();
+    if (pick_from_old && !new_prefixes.empty()) {
+      base::span<const uint8_t> old_prefix = old_prefixes.first(prefix_size);
+      base::span<const uint8_t> add_prefix = new_prefixes.first(prefix_size);
+      if (old_prefix == add_prefix) {
+        return ADDITIONS_HAS_EXISTING_PREFIX_FAILURE;
+      }
+      pick_from_old = old_prefix < add_prefix;
+    }
+
+    if (pick_from_old) {
+      // Should this index be removed?
+      if (removals_iter && *removals_iter != raw_removals->end() &&
+          **removals_iter == total_picked_from_old) {
+        old_prefixes.take_first(prefix_size);
+        total_picked_from_old++;
+        (*removals_iter)++;
+        continue;
+      }
+
+      // We can only scan ahead up to the next removal index.
+      size_t count = old_prefixes.size() / prefix_size;
+      if (removals_iter && *removals_iter != raw_removals->end()) {
+        count = std::min(count, static_cast<size_t>(**removals_iter -
+                                                    total_picked_from_old));
+      }
+
+      // Determine how many prefixes we can take in a row from this list by
+      // scanning ahead.
+      if (!new_prefixes.empty()) {
+        base::span<const uint8_t> add_prefix = new_prefixes.first(prefix_size);
+        count = std::min(count,
+                         get_skip_count(old_prefixes.first(count * prefix_size),
+                                        add_prefix));
+      }
+      CHECK_GE(count, 1u);
+
+      // Append the selected prefixes.
+      base::span<const uint8_t> to_append =
+          old_prefixes.take_first(count * prefix_size);
+      hash_prefix_map_->Append(prefix_size, base::as_string_view(to_append));
+      if (calculate_checksum) {
+        checksum_ctx.Update(to_append);
+      }
+      total_picked_from_old += count;
+      continue;
+    }
+
+    // Picking from `new_prefixes`.
+    size_t count = new_prefixes.size() / prefix_size;
+
+    // Scan ahead.
+    if (!old_prefixes.empty()) {
+      base::span<const uint8_t> old_prefix = old_prefixes.first(prefix_size);
+      count = std::min(count, get_skip_count(new_prefixes, old_prefix));
+    }
+    CHECK_GE(count, 1u);
+
+    // Append the selected prefixes.
+    base::span<const uint8_t> to_append =
+        new_prefixes.take_first(count * prefix_size);
+    hash_prefix_map_->Append(prefix_size, base::as_string_view(to_append));
+    if (calculate_checksum) {
+      checksum_ctx.Update(to_append);
+    }
+  }
+
+  if (removals_iter && *removals_iter != raw_removals->end()) {
+    return REMOVALS_INDEX_TOO_LARGE_FAILURE;
+  }
+
+  if (calculate_checksum) {
+    std::array<uint8_t, crypto::hash::kSha256Size> checksum;
+    checksum_ctx.Finish(checksum);
+    auto expected = base::as_byte_span(expected_checksum);
+    if (expected != checksum) {
+#if DCHECK_IS_ON()
+      std::string checksum_b64 = base::Base64Encode(checksum);
+      std::string expected_b64 = base::Base64Encode(expected);
+      DVLOG(1) << "Failure: Checksum mismatch: calculated: " << checksum_b64
+               << "; expected: " << expected_b64 << "; store: " << *this;
+#endif
+      return CHECKSUM_MISMATCH_FAILURE;
+    }
+  }
+
+  return APPLY_UPDATE_SUCCESS;
+}
+
 ApplyUpdateResult V4Store::MergeUpdate(
     const HashPrefixMapView& old_prefixes_map,
     const HashPrefixMapView& additions_map,
@@ -691,6 +835,12 @@ ApplyUpdateResult V4Store::MergeUpdate(
   }
 
   hash_prefix_map_->Clear();
+
+  if (old_prefixes_map.size() == 1 && additions_map.size() == 1 &&
+      old_prefixes_map.begin()->first == additions_map.begin()->first) {
+    return MergeUpdateFast(old_prefixes_map, additions_map, raw_removals,
+                           expected_checksum);
+  }
 
   IteratorMap old_iterator_map;
   HashPrefixStr next_smallest_prefix_old;
@@ -952,6 +1102,27 @@ HashPrefixStr V4Store::GetMatchingHashPrefix(std::string_view full_hash) {
   return hash_prefix_map_->GetMatchingHashPrefix(full_hash);
 }
 
+bool V4Store::VerifyChecksumFast(const HashPrefixMapView& map_view) {
+  crypto::hash::Hasher checksum_ctx(crypto::hash::HashKind::kSha256);
+  auto map_pair = *map_view.begin();
+  checksum_ctx.Update(base::as_byte_span(map_pair.second));
+
+  std::array<uint8_t, crypto::hash::kSha256Size> checksum;
+  checksum_ctx.Finish(checksum);
+  if (base::as_byte_span(expected_checksum_) != checksum) {
+    RecordApplyUpdateResult(kReadFromDisk, CHECKSUM_MISMATCH_FAILURE,
+                            store_path_);
+#if DCHECK_IS_ON()
+    std::string checksum_b64 = base::Base64Encode(checksum);
+    std::string expected_checksum_b64 = base::Base64Encode(expected_checksum_);
+    DVLOG(1) << "Failure: Checksum mismatch: calculated: " << checksum_b64
+             << "; expected: " << expected_checksum_b64 << "; store: " << *this;
+#endif
+    return false;
+  }
+  return true;
+}
+
 bool V4Store::VerifyChecksum() {
   base::ElapsedThreadTimer thread_timer;
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
@@ -962,9 +1133,16 @@ bool V4Store::VerifyChecksum() {
     return true;
   }
 
+  // Fast path when there is only 1 prefix size.
+  const HashPrefixMapView map_view = hash_prefix_map_->view();
+  if (map_view.size() == 1) {
+    bool result = VerifyChecksumFast(map_view);
+    RecordVerifyChecksumDuration(kReadFromDisk, thread_timer.Elapsed());
+    return result;
+  }
+
   IteratorMap iterator_map;
   HashPrefixStr next_smallest_prefix;
-  const HashPrefixMapView map_view = hash_prefix_map_->view();
   InitializeIteratorMap(map_view, &iterator_map);
   CHECK_EQ(map_view.size(), iterator_map.size());
   bool has_unmerged = GetNextSmallestUnmergedPrefix(map_view, iterator_map,

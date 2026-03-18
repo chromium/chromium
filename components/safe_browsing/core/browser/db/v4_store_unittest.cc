@@ -19,6 +19,7 @@
 #include "components/safe_browsing/core/browser/db/safebrowsing.pb.h"
 #include "components/safe_browsing/core/browser/db/v4_store.pb.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "crypto/hash.h"
 #include "crypto/sha2.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/platform_test.h"
@@ -434,6 +435,109 @@ TEST_F(V4StoreTest, TestMergeUpdatesFailsWhenRemovalsIndexTooLarge) {
             store.MergeUpdate(PrefixMapToView(prefix_map_old),
                               PrefixMapToView(prefix_map_additions),
                               &raw_removals, expected_checksum));
+}
+
+TEST_F(V4StoreTest, TestMergeUpdateFastPathWithRemovals) {
+  std::unordered_map<PrefixSize, HashPrefixes> prefix_map_old;
+  EXPECT_EQ(APPLY_UPDATE_SUCCESS,
+            V4Store::AddUnlumpedHashes(4, "0000111122223333444455556666",
+                                       &prefix_map_old));
+  std::unordered_map<PrefixSize, HashPrefixes> prefix_map_additions;
+  EXPECT_EQ(
+      APPLY_UPDATE_SUCCESS,
+      V4Store::AddUnlumpedHashes(4, "1515252550507777", &prefix_map_additions));
+
+  V4Store store(task_runner(), store_path_);
+  RepeatedField<int32_t> raw_removals;
+  // Remove "1111" (index 1), "4444" (index 4)
+  raw_removals.Add(1);
+  raw_removals.Add(4);
+
+  // Remaining: 0000, 2222, 3333, 5555, 6666
+  // Additions: 1515, 2525, 5050, 7777
+  // Resulting sorted: 0000, 1515, 2222, 2525, 3333, 5050, 5555, 6666, 7777
+
+  crypto::hash::Hasher checksum_ctx(crypto::hash::HashKind::kSha256);
+  checksum_ctx.Update("000015152222252533335050555566667777");
+  std::array<uint8_t, crypto::hash::kSha256Size> checksum;
+  checksum_ctx.Finish(checksum);
+  std::string expected_checksum(checksum.begin(), checksum.end());
+
+  EXPECT_EQ(APPLY_UPDATE_SUCCESS,
+            store.MergeUpdate(PrefixMapToView(prefix_map_old),
+                              PrefixMapToView(prefix_map_additions),
+                              &raw_removals, expected_checksum));
+
+  V4StoreFileFormat file_format;
+  EXPECT_TRUE(store.hash_prefix_map_->WriteToDisk(&file_format));
+
+  EXPECT_THAT(
+      store.hash_prefix_map_->view(),
+      UnorderedElementsAre(Pair(4, "000015152222252533335050555566667777")));
+}
+
+TEST_F(V4StoreTest, TestMergeUpdateFastPathEmptyLists) {
+  std::unordered_map<PrefixSize, HashPrefixes> prefix_map_old;
+  V4Store::AddUnlumpedHashes(4, "11112222", &prefix_map_old);
+  std::unordered_map<PrefixSize, HashPrefixes> prefix_map_empty;
+  prefix_map_empty[4] = "";
+
+  V4Store store(task_runner(), store_path_);
+  EXPECT_EQ(APPLY_UPDATE_SUCCESS,
+            store.MergeUpdate(PrefixMapToView(prefix_map_old),
+                              PrefixMapToView(prefix_map_empty), nullptr, ""));
+  V4StoreFileFormat file_format;
+  EXPECT_TRUE(store.hash_prefix_map_->WriteToDisk(&file_format));
+  EXPECT_THAT(store.hash_prefix_map_->view(),
+              UnorderedElementsAre(Pair(4, "11112222")));
+
+  store.hash_prefix_map_->Clear();
+  EXPECT_EQ(APPLY_UPDATE_SUCCESS,
+            store.MergeUpdate(PrefixMapToView(prefix_map_empty),
+                              PrefixMapToView(prefix_map_old), nullptr, ""));
+  EXPECT_TRUE(store.hash_prefix_map_->WriteToDisk(&file_format));
+  EXPECT_THAT(store.hash_prefix_map_->view(),
+              UnorderedElementsAre(Pair(4, "11112222")));
+}
+
+TEST_F(V4StoreTest, TestMergeUpdateFastPathMultipleRemovalsInARow) {
+  std::unordered_map<PrefixSize, HashPrefixes> prefix_map_old;
+  V4Store::AddUnlumpedHashes(4, "0000111122223333", &prefix_map_old);
+  std::unordered_map<PrefixSize, HashPrefixes> prefix_map_additions;
+  V4Store::AddUnlumpedHashes(4, "1515", &prefix_map_additions);
+
+  V4Store store(task_runner(), store_path_);
+  RepeatedField<int32_t> raw_removals;
+  raw_removals.Add(1);
+  raw_removals.Add(2);
+
+  EXPECT_EQ(APPLY_UPDATE_SUCCESS,
+            store.MergeUpdate(PrefixMapToView(prefix_map_old),
+                              PrefixMapToView(prefix_map_additions),
+                              &raw_removals, ""));
+  V4StoreFileFormat file_format;
+  EXPECT_TRUE(store.hash_prefix_map_->WriteToDisk(&file_format));
+  EXPECT_THAT(store.hash_prefix_map_->view(),
+              UnorderedElementsAre(Pair(4, "000015153333")));
+}
+
+TEST_F(V4StoreTest, TestVerifyChecksumFastPath) {
+  V4Store store(task_runner(), store_path_);
+  store.hash_prefix_map_->Append(4, "000011112222");
+
+  crypto::hash::Hasher checksum_ctx(crypto::hash::HashKind::kSha256);
+  checksum_ctx.Update("000011112222");
+  std::array<uint8_t, crypto::hash::kSha256Size> checksum;
+  checksum_ctx.Finish(checksum);
+  store.expected_checksum_ = std::string(checksum.begin(), checksum.end());
+
+  V4StoreFileFormat file_format;
+  EXPECT_TRUE(store.hash_prefix_map_->WriteToDisk(&file_format));
+
+  EXPECT_TRUE(store.VerifyChecksum());
+
+  store.expected_checksum_ = std::string(32, '0');
+  EXPECT_FALSE(store.VerifyChecksum());
 }
 
 TEST_F(V4StoreTest, TestMergeUpdatesRemovesOnlyElement) {
