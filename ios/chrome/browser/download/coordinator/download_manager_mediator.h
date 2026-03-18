@@ -148,7 +148,6 @@ class DownloadManagerMediator : public web::DownloadTaskObserver,
   // Observers for NSNotificationCenter notifications.
   __strong id<NSObject> application_foregrounding_observer_;
   bool is_google_drive_app_installed_ = false;
-  bool should_show_origin_ = false;
 
   base::WeakPtrFactory<DownloadManagerMediator> weak_ptr_factory_;
 };

@@ -351,21 +351,18 @@ TEST_F(DownloadManagerMediatorTest, DisplayOrigin) {
   mediator->UpdateConsumer();
   EXPECT_NSEQ(consumer_.originatingHost,
               base::SysUTF8ToNSString(GURL(kSameDomainURL).GetHost()));
-  EXPECT_FALSE(consumer_.originatingHostDisplayed);
 
   // WebState and task have different domains.
   web_state_->SetCurrentURL(GURL(kCrossDomainURL));
   mediator->UpdateConsumer();
   EXPECT_NSEQ(consumer_.originatingHost,
               base::SysUTF8ToNSString(GURL(kSameDomainURL).GetHost()));
-  EXPECT_TRUE(consumer_.originatingHostDisplayed);
 
   // Navigate back, origin should still be visible.
   web_state_->SetCurrentURL(GURL(kSameDomainURL));
   mediator->UpdateConsumer();
   EXPECT_NSEQ(consumer_.originatingHost,
               base::SysUTF8ToNSString(GURL(kSameDomainURL).GetHost()));
-  EXPECT_TRUE(consumer_.originatingHostDisplayed);
 
   // Reset Mediator.
   web_state_->SetCurrentURL(GURL(kSameDomainURL));
@@ -380,19 +377,4 @@ TEST_F(DownloadManagerMediatorTest, DisplayOrigin) {
   mediator->UpdateConsumer();
   EXPECT_NSEQ(consumer_.originatingHost,
               base::SysUTF8ToNSString(GURL(kCrossDomainURL).GetHost()));
-  EXPECT_TRUE(consumer_.originatingHostDisplayed);
-
-  // Reset Mediator.
-  web_state_->SetCurrentURL(GURL(kSameDomainURL));
-  mediator = std::make_unique<DownloadManagerMediator>();
-  mediator->SetDownloadTask(task());
-  mediator->SetConsumer(consumer_);
-
-  // Check that if no URL is available, the placeholder is displayed.
-  task()->SetRedirectedURL(GURL("data:"));
-  task()->SetOriginatingHost(@"");
-  web_state_->SetCurrentURL(GURL("data:"));
-  mediator->UpdateConsumer();
-  EXPECT_NSEQ(consumer_.originatingHost, nil);
-  EXPECT_TRUE(consumer_.originatingHostDisplayed);
 }

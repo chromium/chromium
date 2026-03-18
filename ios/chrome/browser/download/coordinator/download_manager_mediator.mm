@@ -246,7 +246,6 @@ void DownloadManagerMediator::UpdateConsumer() {
   [consumer_ setFileName:base::apple::FilePathToNSString(filename)];
 
   NSString* originating_host = nil;
-  bool display_originating_host = false;
   if (@available(iOS 18.2, *)) {
     // The originating host is only populated when compiled with iOS18.2 SDK
     // and running on iOS18.2.
@@ -259,19 +258,9 @@ void DownloadManagerMediator::UpdateConsumer() {
       originating_host =
           base::SysUTF8ToNSString(download_task_->GetRedirectedUrl().GetHost());
     }
-    // Only show the compute the originating host if it is not what is displayed
-    // in the omnibox.
-    display_originating_host =
-        download_task_->GetWebState()->GetLastCommittedURL().GetHost() !=
-        base::SysNSStringToUTF8(originating_host);
-
-    // If the host was already displayed, keep it displayed
-    display_originating_host = display_originating_host || should_show_origin_;
-    should_show_origin_ = display_originating_host;
   }
 
-  [consumer_ setOriginatingHost:originating_host
-                        display:display_originating_host];
+  [consumer_ setOriginatingHost:originating_host];
 
   int a11y_announcement = GetDownloadManagerA11yAnnouncement();
   if (a11y_announcement != -1) {
