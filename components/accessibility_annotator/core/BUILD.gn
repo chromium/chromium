@@ -18,7 +18,6 @@ source_set("core") {
     "//components/accessibility_annotator/core/annotation_reducer",
     "//components/accessibility_annotator/core/data_models",
     "//components/accessibility_annotator/core/storage",
-    "//components/history/core/browser",
     "//components/keyed_service/core",
     "//url",
   ]

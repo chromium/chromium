@@ -30,7 +30,6 @@ source_set("impl") {
   deps = [
     ":accessibility_annotator",
     "//chrome/browser/autofill",
-    "//chrome/browser/history",
     "//chrome/browser/sync",
     "//chrome/common:channel_info",
     "//components/accessibility_annotator/core",
