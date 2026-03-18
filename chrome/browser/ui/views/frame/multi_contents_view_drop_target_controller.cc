@@ -47,20 +47,6 @@ static constexpr double kDropTargetHideForOSPercentage =
     0;
 #endif
 
-// Returns a value between `min_value` and `max_value`, scaled linearly
-// according to `current_width`.
-int GetValueScaledToWidth(int current_width, int min_value, int max_value) {
-  static constexpr float kMinWidth =
-      MultiContentsDropTargetView::kDropTargetMinWidth;
-  static constexpr float kMaxWidth =
-      MultiContentsDropTargetView::kDropTargetMaxWidth;
-
-  // Scale linearly between min and max delay based on the width.
-  const float width_ratio = std::clamp(
-      (current_width - kMinWidth) / (kMaxWidth - kMinWidth), 0.0f, 1.0f);
-  return min_value + (width_ratio * (max_value - min_value));
-}
-
 }  // namespace
 
 MultiContentsViewDropTargetController::MultiContentsViewDropTargetController(
@@ -312,14 +298,12 @@ void MultiContentsViewDropTargetController::HandleDragUpdate(
   if (point_in_view.x() >=
       drop_target_parent_view_->width() - drop_entry_point_width) {
     StartOrUpdateDropTargetTimer(
-        point_in_view, drop_entry_point_width,
         is_rtl ? MultiContentsDropTargetView::DropSide::START
                : MultiContentsDropTargetView::DropSide::END,
         drag_type);
     return;
   } else if (point_in_view.x() <= drop_entry_point_width) {
     StartOrUpdateDropTargetTimer(
-        point_in_view, drop_entry_point_width,
         is_rtl ? MultiContentsDropTargetView::DropSide::END
                : MultiContentsDropTargetView::DropSide::START,
         drag_type);
@@ -368,8 +352,6 @@ void MultiContentsViewDropTargetController::HandleDragUpdateForNudge(
 }
 
 void MultiContentsViewDropTargetController::StartOrUpdateDropTargetTimer(
-    const gfx::Point& point_in_view,
-    int drop_entry_point_width,
     MultiContentsDropTargetView::DropSide drop_side,
     MultiContentsDropTargetView::DragType drag_type) {
   if (drop_target_view_->GetVisible()) {
@@ -380,39 +362,13 @@ void MultiContentsViewDropTargetController::StartOrUpdateDropTargetTimer(
     CHECK(show_drop_target_timer_->timer.IsRunning());
     show_drop_target_timer_->drop_side = drop_side;
     show_drop_target_timer_->drag_type = drag_type;
-
-    if (base::FeatureList::IsEnabled(features::kSplitViewDragAndDropVelocity)) {
-      // Restart the timer if the latest point in the view exceeded the
-      // movement threshold.
-      const int min_distance =
-          features::kSplitViewDragAndDropMinDistanceThreshold.Get();
-      const int max_distance =
-          features::kSplitViewDragAndDropMaxDistanceThreshold.Get();
-      const int distance_threshold = GetValueScaledToWidth(
-          drop_entry_point_width, min_distance, max_distance);
-      const float distance =
-          (point_in_view - drag_point_at_timer_start_).Length();
-      if (distance > distance_threshold) {
-        show_drop_target_timer_->timer.Reset();
-        drag_point_at_timer_start_ = point_in_view;
-      }
-    }
     return;
   }
 
   show_drop_target_timer_.emplace(drop_side, drag_type);
-  drag_point_at_timer_start_ = point_in_view;
 
   base::TimeDelta show_delay;
-  if (base::FeatureList::IsEnabled(features::kSplitViewDragAndDropVelocity)) {
-    const base::TimeDelta min_delay =
-        features::kSplitViewDragAndDropMinDelay.Get();
-    const base::TimeDelta max_delay =
-        features::kSplitViewDragAndDropMaxDelay.Get();
-    show_delay = base::Milliseconds(GetValueScaledToWidth(
-        drop_entry_point_width, min_delay.InMilliseconds(),
-        max_delay.InMilliseconds()));
-  } else if (drag_type == MultiContentsDropTargetView::DragType::kTab) {
+  if (drag_type == MultiContentsDropTargetView::DragType::kTab) {
     show_delay = features::kShowDropTargetForTabDelay.Get();
   } else if (base::Time::Now() - drop_target_last_hidden_ <
              kShowDropTargetForLinkAfterHideLookbackWindow) {

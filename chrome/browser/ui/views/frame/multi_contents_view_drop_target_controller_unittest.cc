@@ -41,7 +41,6 @@ constexpr gfx::Size kMultiContentsViewSize(500, 500);
 constexpr gfx::Point kDragPointForStartDropTargetShow(1, 250);
 constexpr gfx::Point kDragPointForEndDropTargetShow(499, 250);
 constexpr gfx::Point kDragPointForHiddenTargets(250, 250);
-
 // Increase to cover the increased delay for subsequent drags.
 constexpr base::TimeDelta kHideDropTargetDelay = base::Milliseconds(100);
 constexpr base::TimeDelta kHideDropTargetAnimation = base::Milliseconds(450);
@@ -133,7 +132,9 @@ class MultiContentsViewDropTargetControllerTest : public ChromeViewsTestBase {
     ChromeViewsTestBase::TearDown();
   }
 
-  void ResetController() { controller_.reset(); }
+  void ResetController() {
+    controller_.reset();
+  }
 
   MultiContentsViewDropTargetController& controller() { return *controller_; }
   MultiContentsDropTargetView& drop_target_view() { return *drop_target_view_; }
@@ -757,138 +758,6 @@ TEST_F(MultiContentsViewDropTargetControllerTest,
   ASSERT_TRUE(drop_target_view().drag_type().has_value());
   EXPECT_EQ(drop_target_view().drag_type().value(),
             MultiContentsDropTargetView::DragType::kTab);
-}
-
-TEST_F(MultiContentsViewDropTargetControllerTest,
-       SplitViewDragAndDropVelocityMinDelayScaling) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kSplitViewDragAndDropVelocity,
-      {{"min_delay", "500ms"},
-       {"max_delay", "1500ms"},
-       {"min_distance_threshold", "1000"},
-       {"max_distance_threshold", "1000"}});
-
-  constexpr int kWidthForForMinDropTargetSize =
-      (MultiContentsDropTargetView::kDropTargetMinWidth * 100.0f) /
-      MultiContentsDropTargetView::kDropTargetTargetWidthPercentage;
-  views::View* parent = drop_target_view().parent();
-  parent->SetSize(gfx::Size(kWidthForForMinDropTargetSize, 500));
-
-  DragTabTo(gfx::Point(1, 250));
-  FastForward(base::Milliseconds(499));
-  EXPECT_FALSE(drop_target_view().GetVisible());
-  FastForward(base::Milliseconds(1));
-  EXPECT_TRUE(drop_target_view().GetVisible());
-}
-
-TEST_F(MultiContentsViewDropTargetControllerTest,
-       SplitViewDragAndDropVelocityMaxDelayScaling) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kSplitViewDragAndDropVelocity,
-      {{"min_delay", "500ms"},
-       {"max_delay", "1500ms"},
-       {"min_distance_threshold", "1000"},
-       {"max_distance_threshold", "1000"}});
-
-  constexpr int kWidthForForMaxDropTargetSize =
-      (MultiContentsDropTargetView::kDropTargetMaxWidth * 100.0f) /
-      MultiContentsDropTargetView::kDropTargetTargetWidthPercentage;
-
-  views::View* parent = drop_target_view().parent();
-  parent->SetSize(gfx::Size(kWidthForForMaxDropTargetSize, 500));
-
-  DragTabTo(gfx::Point(1, 250));
-  FastForward(base::Milliseconds(1499));
-  EXPECT_FALSE(drop_target_view().GetVisible());
-  FastForward(base::Milliseconds(1));
-  EXPECT_TRUE(drop_target_view().GetVisible());
-}
-
-TEST_F(MultiContentsViewDropTargetControllerTest,
-       SplitViewDragAndDropVelocityMovementResetTimer) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kSplitViewDragAndDropVelocity,
-      {{"min_delay", "1000ms"},
-       {"max_delay", "1000ms"},
-       {"min_distance_threshold", "10"},
-       {"max_distance_threshold", "10"}});
-
-  // Set size to ensure we know the width and thus the delay.
-  // With min=max=1000, delay will be 1000 regardless of width.
-  views::View* parent = drop_target_view().parent();
-  parent->SetSize(gfx::Size(400, 500));
-
-  DragTabTo(gfx::Point(1, 250));
-  FastForward(base::Milliseconds(500));
-  EXPECT_FALSE(drop_target_view().GetVisible());
-
-  // Move mouse more than 10 pixels.
-  DragTabTo(gfx::Point(1, 261));
-
-  // Should have restarted the 1000ms timer.
-  FastForward(base::Milliseconds(999));
-  EXPECT_FALSE(drop_target_view().GetVisible());
-  FastForward(base::Milliseconds(1));
-  EXPECT_TRUE(drop_target_view().GetVisible());
-}
-
-TEST_F(MultiContentsViewDropTargetControllerTest,
-       SplitViewDragAndDropVelocityDistanceMinThresholdScaling) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kSplitViewDragAndDropVelocity,
-      {{"min_delay", "1000ms"},
-       {"max_delay", "1000ms"},
-       {"min_distance_threshold", "10"},
-       {"max_distance_threshold", "30"}});
-
-  views::View* parent = drop_target_view().parent();
-
-  constexpr int kWidthForForMinDropTargetSize =
-      (MultiContentsDropTargetView::kDropTargetMinWidth * 100.0f) /
-      MultiContentsDropTargetView::kDropTargetTargetWidthPercentage;
-
-  parent->SetSize(gfx::Size(kWidthForForMinDropTargetSize, 500));
-  DragTabTo(gfx::Point(1, 250));
-  FastForward(base::Milliseconds(500));
-
-  // Move 11 pixels (more than 10). Should restart timer.
-  DragTabTo(gfx::Point(1, 261));
-  FastForward(base::Milliseconds(999));
-  EXPECT_FALSE(drop_target_view().GetVisible());
-  FastForward(base::Milliseconds(1));
-  EXPECT_TRUE(drop_target_view().GetVisible());
-}
-
-TEST_F(MultiContentsViewDropTargetControllerTest,
-       SplitViewDragAndDropVelocityDistanceMaxThresholdScaling) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kSplitViewDragAndDropVelocity,
-      {{"min_delay", "1000ms"},
-       {"max_delay", "1000ms"},
-       {"min_distance_threshold", "10"},
-       {"max_distance_threshold", "30"}});
-
-  views::View* parent = drop_target_view().parent();
-
-  constexpr int kWidthForForMaxDropTargetSize =
-      (MultiContentsDropTargetView::kDropTargetMaxWidth * 100.0f) /
-      MultiContentsDropTargetView::kDropTargetTargetWidthPercentage;
-
-  parent->SetSize(gfx::Size(kWidthForForMaxDropTargetSize, 500));
-  DragTabTo(gfx::Point(1, 250));
-  FastForward(base::Milliseconds(500));
-
-  // Move 25 pixels (less than 30). Should NOT restart timer.
-  DragTabTo(gfx::Point(1, 275));
-  FastForward(base::Milliseconds(499));
-  EXPECT_FALSE(drop_target_view().GetVisible());
-  FastForward(base::Milliseconds(1));
-  EXPECT_TRUE(drop_target_view().GetVisible());
 }
 
 }  // namespace

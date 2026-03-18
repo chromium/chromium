@@ -133,28 +133,6 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    "show_drop_target_for_tab_delay",
                    base::Milliseconds(1000));
 
-BASE_FEATURE(kSplitViewDragAndDropVelocity, base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE_PARAM(base::TimeDelta,
-                   kSplitViewDragAndDropMinDelay,
-                   &kSplitViewDragAndDropVelocity,
-                   "min_delay",
-                   base::Milliseconds(1000));
-BASE_FEATURE_PARAM(base::TimeDelta,
-                   kSplitViewDragAndDropMaxDelay,
-                   &kSplitViewDragAndDropVelocity,
-                   "max_delay",
-                   base::Milliseconds(1000));
-BASE_FEATURE_PARAM(int,
-                   kSplitViewDragAndDropMinDistanceThreshold,
-                   &kSplitViewDragAndDropVelocity,
-                   "min_distance_threshold",
-                   15);
-BASE_FEATURE_PARAM(int,
-                   kSplitViewDragAndDropMaxDistanceThreshold,
-                   &kSplitViewDragAndDropVelocity,
-                   "max_distance_threshold",
-                   15);
-
 BASE_FEATURE(kTabDuplicateMetrics, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables tabs to be frozen when collapsed.
