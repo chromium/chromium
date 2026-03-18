@@ -360,15 +360,9 @@ id<GREYMatcher> identityDiscMatcher() {
                                           kAccountMenuSecondaryAccountButtonId)]
       performAction:grey_tap()];
 
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    // The snackbar shows in test executed locally and during actual usage, but
-    // is not always detected on CQ causing flakyness.
-    // TODO(crbug.com/433726717): Remove the `if` around the assertion when
-    // snack-bar stop being flaky on egtest on iphone.
-    [SigninEarlGreyUI
-        dismissSigninConfirmationSnackbarForIdentity:kPrimaryIdentity
-                                       assertVisible:YES];
-  }
+  [SigninEarlGreyUI
+      dismissSigninConfirmationSnackbarForIdentity:kPrimaryIdentity
+                                     assertVisible:YES];
   [SigninEarlGrey verifySignedInWithFakeIdentity:kPrimaryIdentity];
   [self assertAccountMenuIsNotShown];
 }
