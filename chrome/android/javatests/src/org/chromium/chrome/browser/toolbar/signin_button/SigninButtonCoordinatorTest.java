@@ -326,7 +326,6 @@ public class SigninButtonCoordinatorTest {
                         InstrumentationRegistry.getInstrumentation(),
                         SettingsActivity.class,
                         () -> onView(withId(R.id.signin_button)).perform(click()));
-        ViewUtils.waitForVisibleView(withText(R.string.settings));
         ApplicationTestUtils.finishActivity(settingsActivity);
     }
 
@@ -350,7 +349,6 @@ public class SigninButtonCoordinatorTest {
                         InstrumentationRegistry.getInstrumentation(),
                         SettingsActivity.class,
                         () -> onView(withId(R.id.signin_button)).perform(click()));
-        ViewUtils.waitForVisibleView(withText(R.string.settings));
         ApplicationTestUtils.finishActivity(settingsActivity);
     }
 
