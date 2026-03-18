@@ -20,7 +20,7 @@ const LIT_MIGRATION_STYLES_METHOD_REGEX =
     /  static override get styles\(\) \{\n    return getCss\(\);\n  \}/;
 
 // Header to place on top of the newly created CSS file.
-const CSS_FILE_HEADER = `/* Copyright 2024 The Chromium Authors
+const CSS_FILE_HEADER = `/* Copyright 2026 The Chromium Authors
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
@@ -48,7 +48,8 @@ export function getHtml(this: ELEMENT_TYPE_PLACEHOLDER) {
 const HTML_TS_FILE_FOOTER = `
 <!--_html_template_end_-->\`;
   // clang-format on
-}`;
+}
+`;
 
 const LISTENER_BINDING_REGEX =
     /on-(?<eventName>[a-zA-Z-]+)="(?<listenerName>[a-zA-Z0-9_]+)"/g;
