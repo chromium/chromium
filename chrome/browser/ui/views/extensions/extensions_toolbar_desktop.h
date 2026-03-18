@@ -241,7 +241,8 @@ class ExtensionsToolbarDesktop : public ToolbarIconContainerView,
   void OnActionRemoved(const ToolbarActionsModel::ActionId& action_id) override;
   void OnActionUpdated(const ToolbarActionsModel::ActionId& action_id) override;
   void OnPinnedActionsChanged() override;
-  void OnActiveWebContentsChanged(bool is_same_document) override;
+  void OnActiveWebContentsChanged(bool is_same_document,
+                                  content::WebContents* web_contents) override;
   void OnRequestAccessButtonParamsChanged(
       content::WebContents* web_contents) override;
   void OnToolbarControlStateUpdated() override;

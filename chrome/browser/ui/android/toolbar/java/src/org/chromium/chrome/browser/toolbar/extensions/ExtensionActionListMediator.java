@@ -316,12 +316,15 @@ class ExtensionActionListMediator implements Destroyable {
         return icon;
     }
 
-    // Updates model properties while keeping it in place.
     @VisibleForTesting
     void updateActionProperties(String actionId) {
         Tab currentTab = mCurrentTabSupplier.get();
         WebContents webContents = currentTab != null ? currentTab.getWebContents() : null;
+        updateActionPropertiesWithWebContents(actionId, webContents);
+    }
 
+    // Updates model properties while keeping it in place.
+    void updateActionPropertiesWithWebContents(String actionId, @Nullable WebContents webContents) {
         int index = findIndexForId(actionId);
         if (index == -1) {
             return;
@@ -346,10 +349,7 @@ class ExtensionActionListMediator implements Destroyable {
         mModels.get(index).model.set(ExtensionActionButtonProperties.TOOLTIP, action.getTooltip());
     }
 
-    private void updateActionPropertiesForAll() {
-        Tab currentTab = mCurrentTabSupplier.get();
-        WebContents webContents = currentTab != null ? currentTab.getWebContents() : null;
-
+    private void updateActionPropertiesForAll(WebContents webContents) {
         for (int i = 0; i < mModels.size(); i++) {
             updateActionPropertiesForIndex(i, getActionIdForIndex(i), webContents);
         }
@@ -592,8 +592,8 @@ class ExtensionActionListMediator implements Destroyable {
         }
 
         @Override
-        public void onActiveWebContentsChanged() {
-            updateActionPropertiesForAll();
+        public void onActiveWebContentsChanged(WebContents webContents) {
+            updateActionPropertiesForAll(webContents);
         }
     }
 

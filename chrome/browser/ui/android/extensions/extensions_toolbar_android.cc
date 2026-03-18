@@ -149,9 +149,10 @@ void ExtensionsToolbarAndroid::OnPinnedActionsChanged() {
 }
 
 void ExtensionsToolbarAndroid::OnActiveWebContentsChanged(
-    bool /*is_same_document*/) {
-  Java_ExtensionsToolbarBridge_onActiveWebContentsChanged(AttachCurrentThread(),
-                                                          java_object_);
+    bool /*is_same_document*/,
+    content::WebContents* web_contents) {
+  Java_ExtensionsToolbarBridge_onActiveWebContentsChanged(
+      AttachCurrentThread(), java_object_, web_contents->GetJavaWebContents());
 }
 
 void ExtensionsToolbarAndroid::OnToolbarControlStateUpdated() {

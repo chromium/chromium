@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.ui.extensions.R;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.listmenu.ListMenu;
 import org.chromium.ui.listmenu.ListMenuButton;
@@ -299,7 +300,7 @@ public class ExtensionsMenuCoordinator implements Destroyable, ExtensionsToolbar
     }
 
     @Override
-    public void onActiveWebContentsChanged() {
+    public void onActiveWebContentsChanged(WebContents webContents) {
         updateButtonState();
     }
 

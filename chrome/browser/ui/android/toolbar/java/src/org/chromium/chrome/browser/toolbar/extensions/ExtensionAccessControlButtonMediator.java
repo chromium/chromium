@@ -52,6 +52,10 @@ class ExtensionAccessControlButtonMediator implements Destroyable {
             return;
         }
 
+        refreshRequestAccessButtonWithWebContents(webContents);
+    }
+
+    private void refreshRequestAccessButtonWithWebContents(WebContents webContents) {
         RequestAccessButtonParams params =
                 mExtensionsToolbarBridge.getRequestAccessButtonParams(webContents);
         if (params.getExtensionIds().length > 0) {
@@ -70,8 +74,8 @@ class ExtensionAccessControlButtonMediator implements Destroyable {
 
     private class ToolbarObserver implements ExtensionsToolbarBridge.Observer {
         @Override
-        public void onActiveWebContentsChanged() {
-            refreshRequestAccessButton();
+        public void onActiveWebContentsChanged(WebContents webContents) {
+            refreshRequestAccessButtonWithWebContents(webContents);
         }
 
         @Override

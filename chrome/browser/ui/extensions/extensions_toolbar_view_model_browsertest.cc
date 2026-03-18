@@ -99,7 +99,10 @@ class MockExtensionsToolbarObserver
               (const ToolbarActionsModel::ActionId&),
               (override));
   MOCK_METHOD(void, OnPinnedActionsChanged, (), (override));
-  MOCK_METHOD(void, OnActiveWebContentsChanged, (bool), (override));
+  MOCK_METHOD(void,
+              OnActiveWebContentsChanged,
+              (bool, content::WebContents*),
+              (override));
 };
 
 }  // namespace
@@ -311,7 +314,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarViewModelBrowserTest,
 // Tests that the observer is notified when navigation happens.
 IN_PROC_BROWSER_TEST_F(ExtensionsToolbarViewModelBrowserTest,
                        ObserverCalledOnNavigation) {
-  EXPECT_CALL(mock_observer(), OnActiveWebContentsChanged(_))
+  EXPECT_CALL(mock_observer(), OnActiveWebContentsChanged(_, _))
       .Times(testing::AtLeast(1));
 
   NavigateTo("example.com");
@@ -320,7 +323,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarViewModelBrowserTest,
 // Tests that the observer is notified when the active tab changes.
 IN_PROC_BROWSER_TEST_F(ExtensionsToolbarViewModelBrowserTest,
                        ObserverCalledOnActiveTabChanged) {
-  EXPECT_CALL(mock_observer(), OnActiveWebContentsChanged(_))
+  EXPECT_CALL(mock_observer(), OnActiveWebContentsChanged(_, _))
       .Times(testing::AtLeast(1));
 
   TabListInterface* tab_list =

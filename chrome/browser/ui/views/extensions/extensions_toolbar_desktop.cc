@@ -744,8 +744,8 @@ void ExtensionsToolbarDesktop::OnPinnedActionsChanged() {
 }
 
 void ExtensionsToolbarDesktop::OnActiveWebContentsChanged(
-    bool is_same_document) {
-  content::WebContents* current_web_contents = GetCurrentWebContents();
+    bool is_same_document,
+    content::WebContents* current_web_contents) {
   if (active_web_contents_.get() != current_web_contents) {
     // Tab switched
     BrowserUserEducationInterface::From(browser_)

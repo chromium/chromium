@@ -303,7 +303,8 @@ void ExtensionsToolbarViewModel::DidFinishNavigation(
     return;
   }
   for (Observer& obs : observers_) {
-    obs.OnActiveWebContentsChanged(handle->IsSameDocument());
+    obs.OnActiveWebContentsChanged(handle->IsSameDocument(),
+                                   handle->GetWebContents());
   }
 }
 
@@ -312,7 +313,7 @@ void ExtensionsToolbarViewModel::OnActiveTabChanged(TabListInterface& tab_list,
   content::WebContents* contents = tab->GetContents();
   WebContentsObserver::Observe(contents);
   for (Observer& obs : observers_) {
-    obs.OnActiveWebContentsChanged(/*is_same_document=*/false);
+    obs.OnActiveWebContentsChanged(/*is_same_document=*/false, contents);
   }
 }
 

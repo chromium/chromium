@@ -254,9 +254,9 @@ public class ExtensionsToolbarBridge implements Destroyable {
     }
 
     @CalledByNative
-    public void onActiveWebContentsChanged() {
+    public void onActiveWebContentsChanged(WebContents webContents) {
         for (Observer observer : mObservers) {
-            observer.onActiveWebContentsChanged();
+            observer.onActiveWebContentsChanged(webContents);
         }
     }
 
@@ -277,7 +277,7 @@ public class ExtensionsToolbarBridge implements Destroyable {
         default void onPinnedActionsChanged() {}
 
         // Called when the active web contents changes due to e.g. navigation or tab change.
-        default void onActiveWebContentsChanged() {}
+        default void onActiveWebContentsChanged(WebContents webContents) {}
 
         // Called when the request access button parameters have changed.
         default void onRequestAccessButtonParamsChanged() {}
