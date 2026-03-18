@@ -527,6 +527,11 @@ void StorageHandler::SetCookies(
           std::move(callback)));
 }
 
+bool StorageHandler::CanAccessCookie(const net::CanonicalCookie& cookie) const {
+  return NetworkHandler::CanAccessCookie(
+      CHECK_DEREF(client_.get()), frame_host_ && frame_host_->web_ui(), cookie);
+}
+
 void StorageHandler::ClearCookies(
     std::optional<std::string> browser_context_id,
     std::unique_ptr<ClearCookiesCallback> callback) {
@@ -540,7 +545,12 @@ void StorageHandler::ClearCookies(
 
   NetworkHandler::ClearCookies(
       storage_partition, CHECK_DEREF(client_.get()),
-      frame_host_ && frame_host_->web_ui(),
+      base::BindRepeating(
+          [](base::WeakPtr<StorageHandler> handler,
+             const net::CanonicalCookie& cookie) {
+            return handler && handler->CanAccessCookie(cookie);
+          },
+          weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&ClearCookiesCallback::sendSuccess, std::move(callback)));
 }
 
