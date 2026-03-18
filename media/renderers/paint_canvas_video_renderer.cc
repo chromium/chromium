@@ -704,29 +704,30 @@ VideoPixelFormatAsSkYUVAInfoValues(VideoPixelFormat format) {
 
 std::unique_ptr<gpu::RasterScopedAccess> CopySharedImageDirectlyToGLTexture(
     gpu::gles2::GLES2Interface* destination_gl,
-    scoped_refptr<gpu::ClientSharedImage> shared_image,
+    scoped_refptr<gpu::ClientSharedImage> source_shared_image,
     gfx::Rect src_rect,
-    const gpu::SyncToken& acquire_sync_token,
+    const gpu::SyncToken& source_sync_token,
     bool is_opaque,
-    unsigned int target,
-    unsigned int texture,
-    unsigned int internal_format,
-    unsigned int format,
-    unsigned int type,
-    int level,
+    unsigned int dst_target,
+    unsigned int dst_texture,
+    unsigned int dst_internal_format,
+    unsigned int dst_format,
+    unsigned int dst_type,
+    int dst_level,
     SkAlphaType dst_alpha_type,
     GrSurfaceOrigin dst_origin) {
   std::unique_ptr<gpu::RasterScopedAccess> destination_access;
   if (destination_gl->CanCopySharedImageToGLTextureViaTextureCopy(
-          shared_image.get())) {
+          source_shared_image.get())) {
     destination_gl->CopySharedImageToGLTextureViaTextureCopy(
-        src_rect, shared_image.get(), acquire_sync_token, target, texture,
-        internal_format, format, type, level, dst_alpha_type, dst_origin);
+        src_rect, source_shared_image.get(), source_sync_token, dst_target,
+        dst_texture, dst_internal_format, dst_format, dst_type, dst_level,
+        dst_alpha_type, dst_origin);
     destination_gl->ShallowFlushCHROMIUM();
   } else {
     CHECK(destination_gl->CanCopySharedImageToGLTextureViaSkia(
-        is_opaque, shared_image->GetTextureTarget(), target, internal_format,
-        type, level, dst_alpha_type));
+        is_opaque, source_shared_image->GetTextureTarget(), dst_target,
+        dst_internal_format, dst_type, dst_level, dst_alpha_type));
     // Do a service-side copy from the SharedImage to the destination texture
     // via Skia wrapping the destination texture in an SkSurface. Note that
     // this relies on the service-side GL implementation using a Ganesh/GL
@@ -737,17 +738,18 @@ std::unique_ptr<gpu::RasterScopedAccess> CopySharedImageDirectlyToGLTexture(
     // Ganesh/GL context.
 
     // Trigger resource allocation for dst texture to back SkSurface.
-    BindAndTexImage2D(destination_gl, target, texture, internal_format, format,
-                      type, /*level=*/0, src_rect.size());
+    BindAndTexImage2D(destination_gl, dst_target, dst_texture,
+                      dst_internal_format, dst_format, dst_type,
+                      /*level=*/0, src_rect.size());
 
-    destination_access = shared_image->BeginGLAccessForCopySharedImage(
-        destination_gl, acquire_sync_token, /*readonly=*/true);
+    destination_access = source_shared_image->BeginGLAccessForCopySharedImage(
+        destination_gl, source_sync_token, /*readonly=*/true);
 
     const bool is_dst_origin_top_left = dst_origin == kTopLeft_GrSurfaceOrigin;
     destination_gl->CopySharedImageToTextureINTERNAL(
-        texture, target, internal_format, type, src_rect.x(), src_rect.y(),
-        src_rect.width(), src_rect.height(), is_dst_origin_top_left,
-        shared_image->mailbox().name);
+        dst_texture, dst_target, dst_internal_format, dst_type, src_rect.x(),
+        src_rect.y(), src_rect.width(), src_rect.height(),
+        is_dst_origin_top_left, source_shared_image->mailbox().name);
   }
   return destination_access;
 }
