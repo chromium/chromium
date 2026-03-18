@@ -29,6 +29,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
+#include "content/public/common/url_utils.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "third_party/blink/public/common/features.h"
 
@@ -523,6 +524,13 @@ bool SiteInfo::IsSandboxed() const {
 
 bool SiteInfo::IsGuest() const {
   return is_guest_;
+}
+
+bool SiteInfo::IsWebUI() const {
+  // TODO(vbryhider): Use URLDataManagerBackend::GetWebUISchemes() instead of
+  // HasWebUIScheme() to stay consistent with site isolation checks. It will
+  // also cover the `chrome-search` scheme.
+  return HasWebUIScheme(site_url_);
 }
 
 GURL SiteInfo::GetProcessLockURL() const {

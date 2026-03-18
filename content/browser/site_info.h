@@ -211,6 +211,7 @@ class CONTENT_EXPORT SiteInfo : public SecurityPrincipal {
   ~SiteInfo() override;
   bool IsSandboxed() const override;
   bool IsGuest() const override;
+  bool IsWebUI() const override;
   const StoragePartitionConfig& GetStoragePartitionConfig() const override;
   bool SchemeIs(std::string_view scheme) const override;
 

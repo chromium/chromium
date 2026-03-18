@@ -43,6 +43,10 @@ class CONTENT_EXPORT SecurityPrincipal {
   // Returns true if this SecurityPrincipal is used for a <webview> guest.
   virtual bool IsGuest() const = 0;
 
+  // Returns true if the scheme of this SecurityPrincipal is for a WebUI page
+  // (chrome://, chrome-untrusted://, or devtools://).
+  virtual bool IsWebUI() const = 0;
+
   // Get the StoragePartitionConfig, which describes the StoragePartition this
   // SecurityPrincipal is associated with.  For example, this will correspond to
   // a non-default StoragePartition for <webview> guests.

@@ -338,6 +338,7 @@
 #include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/security_principal.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/site_isolation_mode.h"
 #include "content/public/browser/site_isolation_policy.h"
@@ -4110,7 +4111,7 @@ blink::mojom::PreferredColorScheme ToBlinkPreferredColorScheme(
 std::tuple<blink::mojom::PreferredColorScheme,
            blink::mojom::PreferredColorScheme>
 GetPreferredColorScheme(const WebPreferences& web_prefs,
-                        const GURL& url,
+                        const content::SecurityPrincipal& security_principal,
                         WebContents* web_contents) {
   blink::mojom::PreferredColorScheme preferred_color_scheme;
   blink::mojom::PreferredColorScheme preferred_root_scrollbar_color_scheme;
@@ -4131,7 +4132,7 @@ GetPreferredColorScheme(const WebPreferences& web_prefs,
 #else  // !BUILDFLAG(IS_ANDROID)
   if (Profile::FromBrowserContext(web_contents->GetBrowserContext())
           ->IsIncognitoProfile() &&
-      !content::HasWebUIScheme(url)) {
+      !security_principal.IsWebUI()) {
     // Incognito contents follow the device color mode.
     preferred_color_scheme = ToBlinkPreferredColorScheme(
         ui::NativeTheme::GetInstanceForWeb()->preferred_color_scheme());
@@ -4844,8 +4845,8 @@ void ChromeContentBrowserClient::OverrideWebPreferences(
 
   std::tie(web_prefs->preferred_color_scheme,
            web_prefs->preferred_root_scrollbar_color_scheme) =
-      GetPreferredColorScheme(*web_prefs, main_frame_site.GetSiteURL(),
-                              web_contents);
+      GetPreferredColorScheme(
+          *web_prefs, main_frame_site.GetSecurityPrincipal(), web_contents);
 
   web_prefs->root_scrollbar_theme_color =
       GetRootScrollbarThemeColor(web_contents);
@@ -4953,8 +4954,8 @@ bool ChromeContentBrowserClient::OverrideWebPreferencesAfterNavigation(
       web_prefs->preferred_root_scrollbar_color_scheme;
   std::tie(web_prefs->preferred_color_scheme,
            web_prefs->preferred_root_scrollbar_color_scheme) =
-      GetPreferredColorScheme(*web_prefs, main_frame_site.GetSiteURL(),
-                              web_contents);
+      GetPreferredColorScheme(
+          *web_prefs, main_frame_site.GetSecurityPrincipal(), web_contents);
   prefs_changed |=
       web_prefs->preferred_color_scheme != old_preferred_color_scheme ||
       web_prefs->preferred_root_scrollbar_color_scheme !=
@@ -5004,7 +5005,7 @@ bool ChromeContentBrowserClient::
          GetForcedColorsForWebContent(&web_contents) !=
              std::tie(prefs.in_forced_colors,
                       prefs.is_forced_colors_disabled) ||
-         GetPreferredColorScheme(prefs, main_frame_site.GetSiteURL(),
+         GetPreferredColorScheme(prefs, main_frame_site.GetSecurityPrincipal(),
                                  &web_contents) !=
              std::tie(prefs.preferred_color_scheme,
                       prefs.preferred_root_scrollbar_color_scheme) ||
