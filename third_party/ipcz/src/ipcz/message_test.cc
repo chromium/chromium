@@ -383,6 +383,64 @@ TEST_F(MessageTest, UnclaimedDriverObjects) {
   EXPECT_EQ(kObjectHandle3, out.driver_objects()[2].release());
 }
 
+TEST_F(MessageTest, OverlappingDriverHandles) {
+  Message in(0, 0);
+
+  // Driver objects are serialized as an array of raw bytes and an array of
+  // driver handles. MockDriver uses 32-bit handle values and packs the high 16
+  // bits into the raw bytes and the low 16 bits into the handle value; each
+  // DriverObject is expected to be represented with exactly 2 raw bytes and 1
+  // handle value.
+  uint32_t first_object_bytes = in.AllocateArray<uint16_t>(1);
+  in.GetArrayView<uint16_t>(first_object_bytes)[0] = 0x90ab;
+
+  uint32_t second_object_bytes = in.AllocateArray<uint16_t>(1);
+  in.GetArrayView<uint16_t>(second_object_bytes)[0] = 0x90ab;
+
+  uint32_t object_data_offset = in.AllocateArray<internal::DriverObjectData>(2);
+  in.header().driver_object_data_array = object_data_offset;
+
+  std::vector<IpczDriverHandle> handles = {0x12345678, 0xcdef};
+
+  auto object_data =
+      in.GetArrayView<internal::DriverObjectData>(object_data_offset);
+  // The first driver object data entry references `handles[1]`.
+  object_data[0].driver_data_array = first_object_bytes;
+  object_data[0].first_driver_handle = 1;
+  object_data[0].num_driver_handles = 1;
+
+  // The second driver object data entry references `handles[0]` and
+  // `handles[1]`. This tests that:
+  // - rejection of this entry still frees the resources associated with
+  //   `handles[0]`.
+  // - a second claim on `handles[1]` is rejected.
+  //
+  // This violates MockDriver's expectations of how serialized driver objects
+  // are represented on the wire, but that should not be a problem as the
+  // message should be rejected before trying to call the mock driver's
+  // deserialization method.
+  object_data[1].driver_data_array = second_object_bytes;
+  object_data[1].first_driver_handle = 0;
+  object_data[1].num_driver_handles = 2;
+
+  // This is normally all handled by `DriverTransport::Transmit()`, but this
+  // test manually executes the steps normally taken by `Message::Serialize()`
+  // to build an invalid message.
+  transport().driver_object().driver()->Transmit(
+      transport().driver_object().handle(), in.data_view().data(),
+      in.data_view().size(), handles.data(), handles.size(), IPCZ_NO_FLAGS,
+      nullptr);
+
+  ReceivedMessage serialized = TakeNextReceivedMessage();
+
+  Message out;
+  EXPECT_CALL(driver(), Close(0x12345678, _, _));
+  EXPECT_FALSE(
+      out.DeserializeUnknownType(serialized.AsTransportMessage(), transport()));
+
+  EXPECT_CALL(driver(), Close(0x90abcdef, _, _));
+}
+
 TEST_F(MessageTest, BadEnums) {
   // Out of range enum values should be rejected.
   test::msg::MessageWithEnums m1;
