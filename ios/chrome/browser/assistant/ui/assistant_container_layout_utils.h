@@ -22,8 +22,8 @@ struct ContainerMorphingConstraints {
   CGFloat actual_height;
   CGFloat side_margin;
   CGFloat bottom_margin;
-  CGFloat corner_radius;
-  CACornerMask masked_corners;
+  CGFloat top_corner_radius;
+  CGFloat bottom_corner_radius;
   CGFloat background_dimming_alpha;
 };
 

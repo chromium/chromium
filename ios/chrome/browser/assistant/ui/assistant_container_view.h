@@ -24,8 +24,8 @@
 
 // Allows the controller to dynamically morph the container radius.
 // Used to animate the container between the minimized and expanded states.
-- (void)updateCornerRadius:(CGFloat)cornerRadius
-             maskedCorners:(CACornerMask)maskedCorners;
+- (void)updateTopCornerRadius:(CGFloat)topCornerRadius
+           bottomCornerRadius:(CGFloat)bottomCornerRadius;
 
 @end
 

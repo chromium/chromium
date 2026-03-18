@@ -424,11 +424,9 @@ NSInteger GetMediumDetentHeight(NSInteger absoluteMax) {
 
   if (IsiPadLayout(self.traitCollection)) {
     // iPad floating sheet always has 4 rounded corners and a bottom margin.
-    constraints.corner_radius = kMorphingBaseCornerRadius;
+    constraints.top_corner_radius = kMorphingBaseCornerRadius;
+    constraints.bottom_corner_radius = kMorphingBaseCornerRadius;
     constraints.bottom_margin = kMorphingBaseMargin;
-    constraints.masked_corners =
-        kCALayerMinXMinYCorner | kCALayerMaxXMinYCorner |
-        kCALayerMinXMaxYCorner | kCALayerMaxXMaxYCorner;
   }
 
   CGFloat extraSidePadding = 0.0;
@@ -440,8 +438,9 @@ NSInteger GetMediumDetentHeight(NSInteger absoluteMax) {
   _leadingConstraint.constant = constraints.side_margin + extraSidePadding;
   _trailingConstraint.constant = -(constraints.side_margin + extraSidePadding);
   _bottomConstraint.constant = -constraints.bottom_margin;
-  [_assistantContainerView updateCornerRadius:constraints.corner_radius
-                                maskedCorners:constraints.masked_corners];
+  [_assistantContainerView
+      updateTopCornerRadius:constraints.top_corner_radius
+         bottomCornerRadius:constraints.bottom_corner_radius];
   _dimmingView.alpha = constraints.background_dimming_alpha;
 }
 
