@@ -1,0 +1,8 @@
+include_rules = [
+# keep-sorted start
+  "+ios/chrome/browser/browsing_data/model/tabs_closure_util.h",
+  "+ios/chrome/browser/intents/model/intents_donation_helper.h",
+  "+ios/chrome/browser/keyboard/ui_bundled/key_command_actions.h",
+  "+ios/chrome/browser/net/model/crurl.h"
+# keep-sorted end
+]
