@@ -98,5 +98,8 @@ This includes but is not limited to:
     refactoring code changes in ways that are easy for others to code review.
   - When writing new code, I prefer MVC and to have well componentized files
     as well as classes
+  - This is a large codebase with long compile times. Always favor reusing code
+    and existing APIs when possible, and avoid generating new code if the same
+    result can be accomplished by using existing code.
   - When writing tests, I prefer for you to provide me a list of suggestions
     to test and ask me for jobs to be done before generating new test code.
