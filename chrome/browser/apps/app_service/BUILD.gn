@@ -154,6 +154,7 @@ source_set("app_service") {
       "//chrome/browser/prefs",
       "//chrome/browser/resources:app_icon_resources_grit",
       "//chrome/browser/sync",
+      "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/tabs:tab_strip_model_observer",
       "//chromeos/ash/components/browser_context_helper",
       "//chromeos/ash/components/demo_mode",
