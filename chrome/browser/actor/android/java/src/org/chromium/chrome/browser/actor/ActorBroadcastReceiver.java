@@ -10,6 +10,7 @@ import android.content.Intent;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileIntentUtils;
 
@@ -27,7 +28,8 @@ public class ActorBroadcastReceiver extends BroadcastReceiver {
                 intent,
                 (profile) -> {
                     try {
-                        int taskId = intent.getIntExtra(ActorIntentConstants.EXTRA_TASK_ID, -1);
+                        int taskId =
+                                intent.getIntExtra(NotificationConstants.EXTRA_ACTOR_TASK_ID, -1);
                         updateActorTaskForProfile(profile, action, taskId);
                     } finally {
                         pendingResult.finish();
@@ -44,9 +46,9 @@ public class ActorBroadcastReceiver extends BroadcastReceiver {
         ActorTask task = service.getTask(taskId);
         if (task == null) return;
 
-        if (ActorIntentConstants.ACTION_PAUSE.equals(action)) {
+        if (NotificationConstants.ACTION_ACTOR_PAUSE.equals(action)) {
             task.pause();
-        } else if (ActorIntentConstants.ACTION_RESUME.equals(action)) {
+        } else if (NotificationConstants.ACTION_ACTOR_RESUME.equals(action)) {
             task.resume();
         }
     }

@@ -35,6 +35,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.actor.ui.ActorPictureInPictureOverlayCoordinator;
 import org.chromium.chrome.browser.actor.ui.R;
+import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileResolver;
 import org.chromium.chrome.browser.profiles.ProfileResolverJni;
@@ -201,7 +202,7 @@ public class ActorPictureInPictureControllerTest {
 
         assertEquals(action, intent.getAction());
         assertEquals(mActivity.getPackageName(), intent.getPackage());
-        assertEquals(taskId, intent.getIntExtra(ActorIntentConstants.EXTRA_TASK_ID, -1));
+        assertEquals(taskId, intent.getIntExtra(NotificationConstants.EXTRA_ACTOR_TASK_ID, -1));
     }
 
     @Test

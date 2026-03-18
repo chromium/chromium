@@ -26,6 +26,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.actor.ui.ActorPictureInPictureOverlayCoordinator;
 import org.chromium.chrome.browser.actor.ui.R;
+import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileIntentUtils;
 
@@ -43,6 +44,8 @@ public class ActorPictureInPictureController
                 PictureInPictureDelegate.OnPictureInPictureEventListener {
 
     private static final String TAG = "ActorPiPController";
+    private static final int REQUEST_CODE_PAUSE_RESUME = 101;
+
     private final ComponentActivity mActivity;
     private final Supplier<Profile> mProfileSupplier;
     private final Supplier<ViewGroup> mRootViewSupplier;
@@ -184,7 +187,9 @@ public class ActorPictureInPictureController
         if (!isWorking && !isPaused) return null;
 
         String actionName =
-                isPaused ? ActorIntentConstants.ACTION_RESUME : ActorIntentConstants.ACTION_PAUSE;
+                isPaused
+                        ? NotificationConstants.ACTION_ACTOR_RESUME
+                        : NotificationConstants.ACTION_ACTOR_PAUSE;
 
         int iconRes =
                 isPaused ? R.drawable.ic_play_arrow_white_24dp : R.drawable.ic_pause_white_24dp;
@@ -200,7 +205,7 @@ public class ActorPictureInPictureController
         PendingIntent pendingIntent =
                 PendingIntent.getBroadcast(
                         mActivity,
-                        ActorIntentConstants.REQUEST_CODE_PAUSE_RESUME,
+                        REQUEST_CODE_PAUSE_RESUME,
                         intent,
                         PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
 
@@ -253,7 +258,7 @@ public class ActorPictureInPictureController
             ProfileIntentUtils.addProfileToIntent(profile, intent);
         }
 
-        intent.putExtra(ActorIntentConstants.EXTRA_TASK_ID, taskId);
+        intent.putExtra(NotificationConstants.EXTRA_ACTOR_TASK_ID, taskId);
         return intent;
     }
 
