@@ -236,7 +236,7 @@ size_t g_live_node_count_ = 0;
 // tool holding references).
 size_t g_ghost_node_count_ = 0;
 
-typedef absl::flat_hash_set<AXPlatformNodeWin*> AXPlatformNodeWinSet;
+using AXPlatformNodeWinSet = absl::flat_hash_set<AXPlatformNodeWin*>;
 // Set of all AXPlatformNodeWin objects that were the target of an
 // alert event.
 AXPlatformNodeWinSet& GetAlertTargets() {
@@ -8368,7 +8368,7 @@ HRESULT AXPlatformNodeWin::AllocateComArrayFromVector(
   DCHECK(selected);
   DCHECK(n_selected);
 
-  auto count = std::min((LONG)results.size(), max);
+  auto count = std::min(static_cast<LONG>(results.size()), max);
   *n_selected = count;
   *selected = static_cast<LONG*>(::CoTaskMemAlloc(sizeof(LONG) * count));
 
