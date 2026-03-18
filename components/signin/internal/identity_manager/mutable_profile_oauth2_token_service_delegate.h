@@ -265,7 +265,7 @@ class MutableProfileOAuth2TokenServiceDelegate
   // revoked tokens. If `should_reencrypt` is true then any tokens successfully
   // loaded will be written back to the database to rotate the encryption key.
   void LoadAllCredentialsIntoMemory(
-      const std::map<std::string, TokenServiceTable::TokenWithBindingKey>&
+      const std::map<std::string, TokenServiceTable::TokenWithBindingInfo>&
           db_tokens,
       bool should_reencrypt = false);
 

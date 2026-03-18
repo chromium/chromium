@@ -39,7 +39,7 @@ struct TokenResult {
 
   TokenServiceTable::Result db_result =
       TokenServiceTable::TOKEN_DB_RESULT_SQL_INVALID_STATEMENT;
-  std::map<std::string, TokenServiceTable::TokenWithBindingKey> tokens;
+  std::map<std::string, TokenServiceTable::TokenWithBindingInfo> tokens;
   bool should_reencrypt = false;
 };
 

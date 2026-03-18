@@ -627,14 +627,14 @@ void MutableProfileOAuth2TokenServiceDelegate::OnWebDataServiceRequestDone(
 }
 
 void MutableProfileOAuth2TokenServiceDelegate::LoadAllCredentialsIntoMemory(
-    const std::map<std::string, TokenServiceTable::TokenWithBindingKey>&
+    const std::map<std::string, TokenServiceTable::TokenWithBindingInfo>&
         db_tokens,
     bool should_reencrypt) {
   VLOG(1) << "MutablePO2TS::LoadAllCredentialsIntoMemory; " << db_tokens.size()
           << " credential(s).";
   bool did_reencrypt = false;
   ScopedBatchChange batch(this);
-  for (const auto& [prefixed_account_id, token_with_key] : db_tokens) {
+  for (const auto& [prefixed_account_id, token_with_binding_info] : db_tokens) {
     LoadTokenFromDBStatus load_token_status =
         LoadTokenFromDBStatus::kTokenLoaded;
     absl::Cleanup record_histogram = [&load_token_status] {
@@ -642,9 +642,9 @@ void MutableProfileOAuth2TokenServiceDelegate::LoadAllCredentialsIntoMemory(
                                     load_token_status);
     };
 
-    std::string refresh_token = token_with_key.token;
+    std::string refresh_token = token_with_binding_info.token;
     std::vector<uint8_t> wrapped_binding_key =
-        token_with_key.wrapped_binding_key;
+        token_with_binding_info.wrapped_binding_key;
 
     CoreAccountId account_id = RemoveAccountIdPrefix(prefixed_account_id);
     if (account_id.empty()) {

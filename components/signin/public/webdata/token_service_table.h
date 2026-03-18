@@ -24,21 +24,23 @@ class TokenServiceTable : public WebDatabaseTable {
     TOKEN_DB_RESULT_SUCCESS
   };
 
-  struct TokenWithBindingKey {
+  struct TokenWithBindingInfo {
     std::string token;
     std::vector<uint8_t> wrapped_binding_key;
+    bool mtls_token_binding = false;
 
-    TokenWithBindingKey();
-    explicit TokenWithBindingKey(std::string token,
-                                 std::vector<uint8_t> wrapped_binding_key = {});
+    TokenWithBindingInfo();
+    explicit TokenWithBindingInfo(std::string token,
+                                  std::vector<uint8_t> wrapped_binding_key = {},
+                                  bool mtls_token_binding = false);
 
-    TokenWithBindingKey(const TokenWithBindingKey&);
-    TokenWithBindingKey& operator=(const TokenWithBindingKey&);
+    TokenWithBindingInfo(const TokenWithBindingInfo&);
+    TokenWithBindingInfo& operator=(const TokenWithBindingInfo&);
 
-    ~TokenWithBindingKey();
+    ~TokenWithBindingInfo();
 
-    friend bool operator==(const TokenWithBindingKey&,
-                           const TokenWithBindingKey&) = default;
+    friend bool operator==(const TokenWithBindingInfo&,
+                           const TokenWithBindingInfo&) = default;
   };
 
   TokenServiceTable();
@@ -70,7 +72,7 @@ class TokenServiceTable : public WebDatabaseTable {
   // false if there was a failure somehow. If `should_reencrypt` is set to true,
   // then `SetTokenForService` should be called to write newly encrypted values
   // to storage.
-  Result GetAllTokens(std::map<std::string, TokenWithBindingKey>* tokens,
+  Result GetAllTokens(std::map<std::string, TokenWithBindingInfo>* tokens,
                       bool& should_reencrypt);
 
   // Retrieves all wrapped binding keys previously set with

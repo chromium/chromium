@@ -68,20 +68,22 @@ void RecordRemoveOtherTokensHistogram(size_t remove_count) {
 
 }  // namespace
 
-TokenServiceTable::TokenWithBindingKey::TokenWithBindingKey() = default;
-TokenServiceTable::TokenWithBindingKey::TokenWithBindingKey(
+TokenServiceTable::TokenWithBindingInfo::TokenWithBindingInfo() = default;
+TokenServiceTable::TokenWithBindingInfo::TokenWithBindingInfo(
     std::string token,
-    std::vector<uint8_t> wrapped_binding_key)
+    std::vector<uint8_t> wrapped_binding_key,
+    bool mtls_token_binding)
     : token(std::move(token)),
-      wrapped_binding_key(std::move(wrapped_binding_key)) {}
+      wrapped_binding_key(std::move(wrapped_binding_key)),
+      mtls_token_binding(mtls_token_binding) {}
 
-TokenServiceTable::TokenWithBindingKey::TokenWithBindingKey(
-    const TokenWithBindingKey& other) = default;
-TokenServiceTable::TokenWithBindingKey&
-TokenServiceTable::TokenWithBindingKey::operator=(
-    const TokenWithBindingKey& other) = default;
+TokenServiceTable::TokenWithBindingInfo::TokenWithBindingInfo(
+    const TokenWithBindingInfo& other) = default;
+TokenServiceTable::TokenWithBindingInfo&
+TokenServiceTable::TokenWithBindingInfo::operator=(
+    const TokenWithBindingInfo& other) = default;
 
-TokenServiceTable::TokenWithBindingKey::~TokenWithBindingKey() = default;
+TokenServiceTable::TokenWithBindingInfo::~TokenWithBindingInfo() = default;
 
 TokenServiceTable::TokenServiceTable() = default;
 TokenServiceTable::~TokenServiceTable() = default;
@@ -171,6 +173,9 @@ bool TokenServiceTable::SetTokenForService(
     const std::string& service,
     const std::string& token,
     const std::vector<uint8_t>& wrapped_binding_key) {
+  // TODO(crbug.com/481624833): propagate `mtls_token_binding` to the database
+  // once it's populated.
+  const bool mtls_token_binding = false;
   std::string encrypted_token;
   SetTokenResult result = SetTokenResult::kSuccess;
   bool encrypted = encryptor()->EncryptString(token, &encrypted_token);
@@ -180,12 +185,14 @@ bool TokenServiceTable::SetTokenForService(
   } else {
     // Don't bother with a cached statement since this will be a relatively
     // infrequent operation.
-    sql::Statement s(db()->GetUniqueStatement(
-        "INSERT OR REPLACE INTO token_service "
-        "(service, encrypted_token, binding_key) VALUES (?, ?, ?)"));
+    sql::Statement s(
+        db()->GetUniqueStatement("INSERT OR REPLACE INTO token_service "
+                                 "(service, encrypted_token, binding_key, "
+                                 "mtls_token_binding) VALUES (?, ?, ?, ?)"));
     s.BindString(0, service);
     s.BindBlob(1, std::move(encrypted_token));
     s.BindBlob(2, wrapped_binding_key);
+    s.BindInt(3, mtls_token_binding);
 
     if (!s.Run()) {
       LOG(ERROR) << "Failed to insert or replace token for " << service;
@@ -197,11 +204,12 @@ bool TokenServiceTable::SetTokenForService(
 }
 
 TokenServiceTable::Result TokenServiceTable::GetAllTokens(
-    std::map<std::string, TokenWithBindingKey>* tokens,
+    std::map<std::string, TokenWithBindingInfo>* tokens,
     bool& should_reencrypt) {
   should_reencrypt = false;
-  sql::Statement s(db()->GetUniqueStatement(
-      "SELECT service, encrypted_token, binding_key FROM token_service"));
+  sql::Statement s(
+      db()->GetUniqueStatement("SELECT service, encrypted_token, binding_key, "
+                               "mtls_token_binding FROM token_service"));
 
   UMA_HISTOGRAM_BOOLEAN("Signin.TokenTable.GetAllTokensSqlStatementValidity",
                         s.is_valid());
@@ -222,14 +230,16 @@ TokenServiceTable::Result TokenServiceTable::GetAllTokens(
     if (!service.empty()) {
       std::string encrypted_token = s.ColumnBlobAsString(1);
       std::vector<uint8_t> wrapped_binding_key = s.ColumnBlobAsVector(2);
+      bool mtls_token_binding = s.ColumnBool(3);
       os_crypt_async::Encryptor::DecryptFlags flags;
       if (encryptor()->DecryptString(encrypted_token, &decrypted_token,
                                      &flags)) {
         if (flags.should_reencrypt) {
           should_reencrypt = true;
         }
-        (*tokens)[service] = TokenServiceTable::TokenWithBindingKey(
-            std::move(decrypted_token), std::move(wrapped_binding_key));
+        (*tokens)[service] = TokenServiceTable::TokenWithBindingInfo(
+            std::move(decrypted_token), std::move(wrapped_binding_key),
+            mtls_token_binding);
         read_token_result = READ_ONE_TOKEN_SUCCESS;
         number_of_tokens_loaded++;
       } else {

@@ -20,6 +20,7 @@
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/os_crypt/async/common/encryptor.h"
 #include "components/webdata/common/web_database.h"
+#include "sql/statement.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -31,7 +32,7 @@ using ::testing::Optional;
 using ::testing::SizeIs;
 using ::testing::UnorderedElementsAre;
 using ::testing::UnorderedElementsAreArray;
-using TokenWithBindingKey = TokenServiceTable::TokenWithBindingKey;
+using TokenWithBindingInfo = TokenServiceTable::TokenWithBindingInfo;
 
 class TokenServiceTableTest : public testing::Test {
  public:
@@ -62,7 +63,7 @@ class TokenServiceTableTest : public testing::Test {
 };
 
 TEST_F(TokenServiceTableTest, TokenServiceGetAllRemoveAll) {
-  std::map<std::string, TokenWithBindingKey> out_map;
+  std::map<std::string, TokenWithBindingInfo> out_map;
   std::string service;
   std::string service2;
   service = "testservice";
@@ -78,8 +79,8 @@ TEST_F(TokenServiceTableTest, TokenServiceGetAllRemoveAll) {
   EXPECT_TRUE(table_->SetTokenForService(service2, "steak", {}));
   EXPECT_EQ(TokenServiceTable::Result::TOKEN_DB_RESULT_SUCCESS,
             table_->GetAllTokens(&out_map, should_reencrypt));
-  EXPECT_EQ(TokenWithBindingKey("pepperoni"), out_map.find(service)->second);
-  EXPECT_EQ(TokenWithBindingKey("steak"), out_map.find(service2)->second);
+  EXPECT_EQ(TokenWithBindingInfo("pepperoni"), out_map.find(service)->second);
+  EXPECT_EQ(TokenWithBindingInfo("steak"), out_map.find(service2)->second);
   out_map.clear();
 
   // Purge
@@ -92,7 +93,7 @@ TEST_F(TokenServiceTableTest, TokenServiceGetAllRemoveAll) {
   EXPECT_TRUE(table_->SetTokenForService(service, "cheese", {}));
   EXPECT_EQ(TokenServiceTable::Result::TOKEN_DB_RESULT_SUCCESS,
             table_->GetAllTokens(&out_map, should_reencrypt));
-  EXPECT_EQ(TokenWithBindingKey("cheese"), out_map.find(service)->second);
+  EXPECT_EQ(TokenWithBindingInfo("cheese"), out_map.find(service)->second);
 }
 
 TEST_F(TokenServiceTableTest, TokenServiceGetAllWrappedBindingKeys) {
@@ -113,7 +114,7 @@ TEST_F(TokenServiceTableTest, TokenServiceGetAllWrappedBindingKeys) {
 }
 
 TEST_F(TokenServiceTableTest, TokenServiceGetSet) {
-  std::map<std::string, TokenWithBindingKey> out_map;
+  std::map<std::string, TokenWithBindingInfo> out_map;
   std::string service;
   service = "testservice";
   bool should_reencrypt = false;
@@ -125,25 +126,25 @@ TEST_F(TokenServiceTableTest, TokenServiceGetSet) {
   EXPECT_TRUE(table_->SetTokenForService(service, "pepperoni", {}));
   EXPECT_EQ(TokenServiceTable::Result::TOKEN_DB_RESULT_SUCCESS,
             table_->GetAllTokens(&out_map, should_reencrypt));
-  EXPECT_EQ(TokenWithBindingKey("pepperoni"), out_map.find(service)->second);
+  EXPECT_EQ(TokenWithBindingInfo("pepperoni"), out_map.find(service)->second);
   out_map.clear();
 
   // try blanking it - won't remove it from the db though!
   EXPECT_TRUE(table_->SetTokenForService(service, std::string(), {}));
   EXPECT_EQ(TokenServiceTable::Result::TOKEN_DB_RESULT_SUCCESS,
             table_->GetAllTokens(&out_map, should_reencrypt));
-  EXPECT_EQ(TokenWithBindingKey(""), out_map.find(service)->second);
+  EXPECT_EQ(TokenWithBindingInfo(""), out_map.find(service)->second);
   out_map.clear();
 
   // try mutating it
   EXPECT_TRUE(table_->SetTokenForService(service, "ham", {}));
   EXPECT_EQ(TokenServiceTable::Result::TOKEN_DB_RESULT_SUCCESS,
             table_->GetAllTokens(&out_map, should_reencrypt));
-  EXPECT_EQ(TokenWithBindingKey("ham"), out_map.find(service)->second);
+  EXPECT_EQ(TokenWithBindingInfo("ham"), out_map.find(service)->second);
 }
 
 TEST_F(TokenServiceTableTest, TokenServiceRemove) {
-  std::map<std::string, TokenWithBindingKey> out_map;
+  std::map<std::string, TokenWithBindingInfo> out_map;
   std::string service;
   std::string service2;
   service = "testservice";
@@ -156,7 +157,7 @@ TEST_F(TokenServiceTableTest, TokenServiceRemove) {
   EXPECT_EQ(TokenServiceTable::Result::TOKEN_DB_RESULT_SUCCESS,
             table_->GetAllTokens(&out_map, should_reencrypt));
   EXPECT_EQ(0u, out_map.count(service));
-  EXPECT_EQ(TokenWithBindingKey("steak"), out_map.find(service2)->second);
+  EXPECT_EQ(TokenWithBindingInfo("steak"), out_map.find(service2)->second);
 }
 
 TEST_F(TokenServiceTableTest, TokenServiceRemoveOther) {
@@ -167,13 +168,13 @@ TEST_F(TokenServiceTableTest, TokenServiceRemoveOther) {
   base::HistogramTester histogram_tester;
   EXPECT_TRUE(table_->RemoveOtherTokens({"a", "c", "zzz"}));
 
-  std::map<std::string, TokenWithBindingKey> out_map;
+  std::map<std::string, TokenWithBindingInfo> out_map;
   bool should_reencrypt = false;
   EXPECT_EQ(TokenServiceTable::Result::TOKEN_DB_RESULT_SUCCESS,
             table_->GetAllTokens(&out_map, should_reencrypt));
   EXPECT_THAT(out_map, UnorderedElementsAre(
-                           std::make_pair("a", TokenWithBindingKey("1")),
-                           std::make_pair("c", TokenWithBindingKey("3"))));
+                           std::make_pair("a", TokenWithBindingInfo("1")),
+                           std::make_pair("c", TokenWithBindingInfo("3"))));
   histogram_tester.ExpectUniqueSample(
       "Signin.TokenTable.RemoveOtherTokensCount",
       /*sample=*/1, /*expected_bucket_count=*/1);
@@ -187,7 +188,7 @@ TEST_F(TokenServiceTableTest, TokenServiceRemoveOtherKeepNone) {
   base::HistogramTester histogram_tester;
   EXPECT_TRUE(table_->RemoveOtherTokens({}));
 
-  std::map<std::string, TokenWithBindingKey> out_map;
+  std::map<std::string, TokenWithBindingInfo> out_map;
   bool should_reencrypt = false;
   EXPECT_EQ(TokenServiceTable::Result::TOKEN_DB_RESULT_SUCCESS,
             table_->GetAllTokens(&out_map, should_reencrypt));
@@ -217,14 +218,14 @@ TEST_P(TokenServiceTableRemoveOtherStressTest, TokenServiceRemoveOtherStress) {
   base::HistogramTester histogram_tester;
   EXPECT_TRUE(table_->RemoveOtherTokens(services_to_keep));
 
-  std::map<std::string, TokenWithBindingKey> out_map;
+  std::map<std::string, TokenWithBindingInfo> out_map;
   bool should_reencrypt = false;
   EXPECT_EQ(TokenServiceTable::Result::TOKEN_DB_RESULT_SUCCESS,
             table_->GetAllTokens(&out_map, should_reencrypt));
 
-  std::vector<std::pair<std::string, TokenWithBindingKey>> expected_pairs =
+  std::vector<std::pair<std::string, TokenWithBindingInfo>> expected_pairs =
       base::ToVector(services_to_keep, [](const std::string& service) {
-        return std::make_pair(service, TokenWithBindingKey("keep_token"));
+        return std::make_pair(service, TokenWithBindingInfo("keep_token"));
       });
   EXPECT_THAT(out_map, UnorderedElementsAreArray(expected_pairs));
   histogram_tester.ExpectUniqueSample(
@@ -239,14 +240,14 @@ INSTANTIATE_TEST_SUITE_P(,
 
 TEST_F(TokenServiceTableTest, GetSetWithBidningKey) {
   bool should_reencrypt = false;
-  std::map<std::string, TokenWithBindingKey> out_map;
+  std::map<std::string, TokenWithBindingInfo> out_map;
   const std::string kService = "testservice";
   const std::vector<uint8_t> kBindingKey = {1, 4, 2};
 
   EXPECT_TRUE(table_->SetTokenForService(kService, "pepperoni", kBindingKey));
   EXPECT_EQ(TokenServiceTable::Result::TOKEN_DB_RESULT_SUCCESS,
             table_->GetAllTokens(&out_map, should_reencrypt));
-  EXPECT_EQ(TokenWithBindingKey("pepperoni", kBindingKey),
+  EXPECT_EQ(TokenWithBindingInfo("pepperoni", kBindingKey),
             out_map.find(kService)->second);
   out_map.clear();
 
@@ -255,7 +256,7 @@ TEST_F(TokenServiceTableTest, GetSetWithBidningKey) {
   EXPECT_TRUE(table_->SetTokenForService(kService, "ham", kNewBindingKey));
   EXPECT_EQ(TokenServiceTable::Result::TOKEN_DB_RESULT_SUCCESS,
             table_->GetAllTokens(&out_map, should_reencrypt));
-  EXPECT_EQ(TokenWithBindingKey("ham", kNewBindingKey),
+  EXPECT_EQ(TokenWithBindingInfo("ham", kNewBindingKey),
             out_map.find(kService)->second);
   out_map.clear();
 
@@ -263,7 +264,48 @@ TEST_F(TokenServiceTableTest, GetSetWithBidningKey) {
   EXPECT_TRUE(table_->SetTokenForService(kService, "steak", {}));
   EXPECT_EQ(TokenServiceTable::Result::TOKEN_DB_RESULT_SUCCESS,
             table_->GetAllTokens(&out_map, should_reencrypt));
-  EXPECT_EQ(TokenWithBindingKey("steak"), out_map.find(kService)->second);
+  EXPECT_EQ(TokenWithBindingInfo("steak"), out_map.find(kService)->second);
+  out_map.clear();
+}
+
+TEST_F(TokenServiceTableTest, GetMtlsTokenBinding) {
+  bool should_reencrypt = false;
+  std::map<std::string, TokenWithBindingInfo> out_map;
+  const std::string kService = "testservice";
+
+  EXPECT_EQ(TokenServiceTable::Result::TOKEN_DB_RESULT_SUCCESS,
+            table_->GetAllTokens(&out_map, should_reencrypt));
+  EXPECT_TRUE(out_map.find(kService) == out_map.end());
+
+  std::string encrypted_token;
+  ASSERT_TRUE(encryptor_.EncryptString("pepperoni", &encrypted_token));
+
+  // Manually insert an entry without setting `mtls_token_binding` to verify
+  // that having a null value is read back as `false`.
+  sql::Statement s(db_->GetSQLConnection()->GetUniqueStatement(
+      "INSERT OR REPLACE INTO token_service "
+      "(service, encrypted_token, binding_key) VALUES (?, ?, ?)"));
+  s.BindString(0, kService);
+  s.BindBlob(1, encrypted_token);
+  s.BindBlob(2, std::vector<uint8_t>{});
+  ASSERT_TRUE(s.Run());
+
+  EXPECT_EQ(TokenServiceTable::Result::TOKEN_DB_RESULT_SUCCESS,
+            table_->GetAllTokens(&out_map, should_reencrypt));
+  EXPECT_EQ(TokenWithBindingInfo("pepperoni", /*wrapped_binding_key=*/{},
+                                 /*mtls_token_binding=*/false),
+            out_map.find(kService)->second);
+  out_map.clear();
+
+  ASSERT_TRUE(table_->RemoveAllTokens());
+
+  // Set a token using SetTokenForService.
+  EXPECT_TRUE(table_->SetTokenForService(kService, "steak", {}));
+  EXPECT_EQ(TokenServiceTable::Result::TOKEN_DB_RESULT_SUCCESS,
+            table_->GetAllTokens(&out_map, should_reencrypt));
+  EXPECT_EQ(TokenWithBindingInfo("steak", /*wrapped_binding_key=*/{},
+                                 /*mtls_token_binding=*/false),
+            out_map.find(kService)->second);
   out_map.clear();
 }
 
@@ -277,7 +319,7 @@ TEST_F(TokenServiceTableTest, TokenMetrics) {
   }
   {
     base::HistogramTester histograms;
-    std::map<std::string, TokenWithBindingKey> out_map;
+    std::map<std::string, TokenWithBindingInfo> out_map;
     bool should_reencrypt;
     EXPECT_EQ(TokenServiceTable::Result::TOKEN_DB_RESULT_SUCCESS,
               table_->GetAllTokens(&out_map, should_reencrypt));
@@ -334,7 +376,7 @@ TEST_F(TokenServiceTableEncryptionOptionsTest, TokenReencrypt) {
         GetInstanceSync(os_crypt_async::Encryptor::Option::kEncryptSyncCompat);
     ASSERT_EQ(sql::INIT_OK, db.Init(filename, &encryptor));
 
-    std::map<std::string, TokenWithBindingKey> out_map;
+    std::map<std::string, TokenWithBindingInfo> out_map;
     bool should_reencrypt = false;
 
     EXPECT_EQ(TokenServiceTable::Result::TOKEN_DB_RESULT_SUCCESS,
@@ -352,7 +394,7 @@ TEST_F(TokenServiceTableEncryptionOptionsTest, TokenReencrypt) {
         GetInstanceSync(os_crypt_async::Encryptor::Option::kNone);
     ASSERT_EQ(sql::INIT_OK, db.Init(filename, &encryptor));
 
-    std::map<std::string, TokenWithBindingKey> out_map;
+    std::map<std::string, TokenWithBindingInfo> out_map;
     bool should_reencrypt = false;
 
     EXPECT_EQ(TokenServiceTable::Result::TOKEN_DB_RESULT_SUCCESS,
@@ -360,7 +402,7 @@ TEST_F(TokenServiceTableEncryptionOptionsTest, TokenReencrypt) {
     // Moving from OSCrypt Sync compatible to new encryption should result in a
     // re-encrypt being requested.
     EXPECT_TRUE(should_reencrypt);
-    EXPECT_EQ(TokenWithBindingKey("steak", kBindingKey),
+    EXPECT_EQ(TokenWithBindingInfo("steak", kBindingKey),
               out_map.find(kService)->second);
     // Write the new value back, re-encrypting it.
     table.SetTokenForService(kService, "steak", kBindingKey);
@@ -373,13 +415,13 @@ TEST_F(TokenServiceTableEncryptionOptionsTest, TokenReencrypt) {
         GetInstanceSync(os_crypt_async::Encryptor::Option::kNone);
     ASSERT_EQ(sql::INIT_OK, db.Init(filename, &encryptor));
 
-    std::map<std::string, TokenWithBindingKey> out_map;
+    std::map<std::string, TokenWithBindingInfo> out_map;
     bool should_reencrypt = false;
 
     EXPECT_EQ(TokenServiceTable::Result::TOKEN_DB_RESULT_SUCCESS,
               table.GetAllTokens(&out_map, should_reencrypt));
     EXPECT_FALSE(should_reencrypt);
-    EXPECT_EQ(TokenWithBindingKey("steak", kBindingKey),
+    EXPECT_EQ(TokenWithBindingInfo("steak", kBindingKey),
               out_map.find(kService)->second);
     // Add a second item.
     table.SetTokenForService(kService2, "pepperoni", kBindingKey);
@@ -392,7 +434,7 @@ TEST_F(TokenServiceTableEncryptionOptionsTest, TokenReencrypt) {
         GetInstanceSync(os_crypt_async::Encryptor::Option::kNone);
     ASSERT_EQ(sql::INIT_OK, db.Init(filename, &encryptor));
 
-    std::map<std::string, TokenWithBindingKey> out_map;
+    std::map<std::string, TokenWithBindingInfo> out_map;
     bool should_reencrypt = false;
 
     EXPECT_EQ(TokenServiceTable::Result::TOKEN_DB_RESULT_SUCCESS,
@@ -400,9 +442,9 @@ TEST_F(TokenServiceTableEncryptionOptionsTest, TokenReencrypt) {
     // Note: pepperoni was already encrypted with the new key, so did not need
     // to be re-encrypted.
     EXPECT_FALSE(should_reencrypt);
-    EXPECT_EQ(TokenWithBindingKey("steak", kBindingKey),
+    EXPECT_EQ(TokenWithBindingInfo("steak", kBindingKey),
               out_map.find(kService)->second);
-    EXPECT_EQ(TokenWithBindingKey("pepperoni", kBindingKey),
+    EXPECT_EQ(TokenWithBindingInfo("pepperoni", kBindingKey),
               out_map.find(kService2)->second);
   }
   {
@@ -413,7 +455,7 @@ TEST_F(TokenServiceTableEncryptionOptionsTest, TokenReencrypt) {
         GetInstanceSync(os_crypt_async::Encryptor::Option::kEncryptSyncCompat);
     ASSERT_EQ(sql::INIT_OK, db.Init(filename, &encryptor));
 
-    std::map<std::string, TokenWithBindingKey> out_map;
+    std::map<std::string, TokenWithBindingInfo> out_map;
     bool should_reencrypt = false;
 
     EXPECT_EQ(TokenServiceTable::Result::TOKEN_DB_RESULT_SUCCESS,
@@ -421,9 +463,9 @@ TEST_F(TokenServiceTableEncryptionOptionsTest, TokenReencrypt) {
     // Reverting back to OSCrypt Sync compatible should request all data be
     // re-encrypted again.
     EXPECT_TRUE(should_reencrypt);
-    EXPECT_EQ(TokenWithBindingKey("steak", kBindingKey),
+    EXPECT_EQ(TokenWithBindingInfo("steak", kBindingKey),
               out_map.find(kService)->second);
-    EXPECT_EQ(TokenWithBindingKey("pepperoni", kBindingKey),
+    EXPECT_EQ(TokenWithBindingInfo("pepperoni", kBindingKey),
               out_map.find(kService2)->second);
   }
 }

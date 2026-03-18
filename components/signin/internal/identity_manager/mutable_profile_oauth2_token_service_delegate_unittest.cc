@@ -73,7 +73,7 @@
 
 namespace {
 
-using TokenWithBindingKey = TokenServiceTable::TokenWithBindingKey;
+using TokenWithBindingInfo = TokenServiceTable::TokenWithBindingInfo;
 using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::Eq;
@@ -973,9 +973,9 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
 TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
        LoadTokenWithInvalidAccountId) {
   InitializeOAuth2ServiceDelegate();
-  std::map<std::string, TokenWithBindingKey> tokens;
+  std::map<std::string, TokenWithBindingInfo> tokens;
   // Account ID without the "AccountId-" prefix.
-  tokens["invalid_account_id"] = TokenWithBindingKey("refresh_token");
+  tokens["invalid_account_id"] = TokenWithBindingInfo("refresh_token");
 
   base::HistogramTester histogram_tester;
   oauth2_service_delegate_->LoadAllCredentialsIntoMemory(tokens);
@@ -990,11 +990,11 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
 TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
        LoadTokenWithInvalidCharacters) {
   InitializeOAuth2ServiceDelegate();
-  std::map<std::string, TokenWithBindingKey> tokens;
+  std::map<std::string, TokenWithBindingInfo> tokens;
   const CoreAccountId account_id =
       CoreAccountId::FromGaiaId(GaiaId("account_id"));
   // Token with a non-printable character.
-  tokens["AccountId-account_id"] = TokenWithBindingKey("invalid\ntoken");
+  tokens["AccountId-account_id"] = TokenWithBindingInfo("invalid\ntoken");
 
   base::HistogramTester histogram_tester;
   oauth2_service_delegate_->LoadAllCredentialsIntoMemory(tokens);
@@ -1014,11 +1014,11 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
 TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
        LoadPrimaryTokenWithInvalidCharacters) {
   InitializeOAuth2ServiceDelegate();
-  std::map<std::string, TokenWithBindingKey> tokens;
+  std::map<std::string, TokenWithBindingInfo> tokens;
   const CoreAccountId account_id =
       CoreAccountId::FromGaiaId(GaiaId("account_id"));
   // Token with a non-printable character.
-  tokens["AccountId-account_id"] = TokenWithBindingKey("invalid\ntoken");
+  tokens["AccountId-account_id"] = TokenWithBindingInfo("invalid\ntoken");
 
   oauth2_service_delegate_->loading_primary_account_id_ = account_id;
 
@@ -1040,17 +1040,17 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
   EXPECT_THAT(
       token_web_data_result_.Get()->GetValue().tokens,
       ElementsAre(Pair("AccountId-account_id",
-                       Field(&TokenWithBindingKey::token,
+                       Field(&TokenWithBindingInfo::token,
                              Eq(GaiaConstants::kInvalidRefreshToken)))));
 }
 
 TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, LoadInvalidToken) {
   InitializeOAuth2ServiceDelegate();
-  std::map<std::string, TokenWithBindingKey> tokens;
+  std::map<std::string, TokenWithBindingInfo> tokens;
   const CoreAccountId account_id =
       CoreAccountId::FromGaiaId(GaiaId("account_id"));
   tokens["AccountId-account_id"] =
-      TokenWithBindingKey(GaiaConstants::kInvalidRefreshToken);
+      TokenWithBindingInfo(GaiaConstants::kInvalidRefreshToken);
 
   oauth2_service_delegate_->LoadAllCredentialsIntoMemory(tokens);
 
@@ -1070,10 +1070,10 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, LoadInvalidToken) {
 TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
        LoadAllCredentialsIntoMemoryAccountAvailabilityPrimaryAvailable) {
   InitializeOAuth2ServiceDelegate();
-  std::map<std::string, TokenWithBindingKey> tokens;
+  std::map<std::string, TokenWithBindingInfo> tokens;
   const GaiaId gaia_id("gaia_id");
   const CoreAccountId account_id = CoreAccountId::FromGaiaId(gaia_id);
-  tokens["AccountId-gaia_id"] = TokenWithBindingKey("refresh_token");
+  tokens["AccountId-gaia_id"] = TokenWithBindingInfo("refresh_token");
 
   // Primary account is available in account tracker service.
   account_tracker_service_.SeedAccountInfo(gaia_id, "test@google.com");
@@ -1089,11 +1089,11 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
 TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
        LoadAllCredentialsIntoMemoryAccountAvailabilityPrimaryNotAvailable) {
   InitializeOAuth2ServiceDelegate();
-  std::map<std::string, TokenWithBindingKey> tokens;
+  std::map<std::string, TokenWithBindingInfo> tokens;
   const GaiaId gaia_id("gaia_id");
   const CoreAccountId account_id = CoreAccountId::FromGaiaId(gaia_id);
   tokens["AccountId-gaia_id"] =
-      TokenWithBindingKey(GaiaConstants::kInvalidRefreshToken);
+      TokenWithBindingInfo(GaiaConstants::kInvalidRefreshToken);
 
   // Primary account is not seeded in the account tracker service.
   oauth2_service_delegate_->loading_primary_account_id_ = account_id;
@@ -1108,11 +1108,11 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
 TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
        LoadAllCredentialsIntoMemoryAccountAvailabilitySecondaryAvailable) {
   InitializeOAuth2ServiceDelegate();
-  std::map<std::string, TokenWithBindingKey> tokens;
+  std::map<std::string, TokenWithBindingInfo> tokens;
   const GaiaId gaia_id("gaia_id");
   const CoreAccountId account_id = CoreAccountId::FromGaiaId(gaia_id);
   tokens["AccountId-gaia_id"] =
-      TokenWithBindingKey(GaiaConstants::kInvalidRefreshToken);
+      TokenWithBindingInfo(GaiaConstants::kInvalidRefreshToken);
 
   // Secondary account is available in account tracker service.
   account_tracker_service_.SeedAccountInfo(gaia_id, "test@google.com");
@@ -1127,10 +1127,10 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
 TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
        LoadAllCredentialsIntoMemoryAccountAvailabilitySecondaryNotAvailable) {
   InitializeOAuth2ServiceDelegate();
-  std::map<std::string, TokenWithBindingKey> tokens;
+  std::map<std::string, TokenWithBindingInfo> tokens;
   const GaiaId gaia_id("gaia_id");
   const CoreAccountId account_id = CoreAccountId::FromGaiaId(gaia_id);
-  tokens["AccountId-gaia_id"] = TokenWithBindingKey("refresh_token");
+  tokens["AccountId-gaia_id"] = TokenWithBindingInfo("refresh_token");
 
   // Secondary account is not seeded in the account tracker service.
   base::HistogramTester histogram_tester;
