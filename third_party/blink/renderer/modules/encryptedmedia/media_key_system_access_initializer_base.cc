@@ -168,9 +168,34 @@ void MediaKeySystemAccessInitializerBase::GenerateWarningAndReportMetrics()
   const char kWidevineKeySystem[] = "com.widevine.alpha";
   const char kWidevineHwSecureAllRobustness[] = "HW_SECURE_ALL";
 
-  // Only check for widevine key system for now.
-  if (KeySystem() != kWidevineKeySystem)
+#if BUILDFLAG(IS_WIN)
+  const char kPlayReadyKeySystem[] = "com.microsoft.playready.recommendation";
+  const char kPlayReadyHwSecureKeySystem[] =
+      "com.microsoft.playready.recommendation.3000";
+  if (KeySystem() == kPlayReadyKeySystem ||
+      KeySystem() == kPlayReadyHwSecureKeySystem) {
+    // TODO(crbug.com/457832865): Add a public best practice doc for PlayReady
+    // on Windows and link it in this message once it's available.
+    GetExecutionContext()->AddConsoleMessage(MakeGarbageCollected<
+                                             ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kJavaScript,
+        mojom::blink::ConsoleMessageLevel::kWarning,
+        std::string(
+            KeySystem().Ascii() +
+            ": Internal testing is highly recommended prior to enabling "
+            "PlayReady playback on Windows. Failure to do so may cause "
+            "application instability or playback errors.\n\nBefore generating "
+            "a request, setServerCertificate() must be called with a valid "
+            "server certificate. Otherwise, generateRequest() could fail.")
+            .c_str()));
     return;
+  }
+#endif  // BUILDFLAG(IS_WIN)
+
+  // Only check for widevine key system for now.
+  if (KeySystem() != kWidevineKeySystem) {
+    return;
+  }
 
   bool has_video_capabilities = false;
   bool has_empty_robustness = false;
