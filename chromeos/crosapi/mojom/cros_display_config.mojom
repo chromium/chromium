@@ -13,46 +13,6 @@ import "ui/display/mojom/display.mojom";
 // All points, bounds, and insets are in display pixels unless otherwise
 // sepcified.
 
-// SetDisplayLayoutInfo or SetDisplayProperties result.
-[Extensible]
-enum DisplayConfigResult {
-  // CrosDisplayConfigController method call was successful.
-  [Default] kSuccess = 0,
-  // Operation is not supported.
-  kInvalidOperationError,
-  // Input display ID represents an invalid display.
-  kInvalidDisplayIdError,
-  // Unified desktop mode is disabled.
-  kUnifiedNotEnabledError,
-  // Input property for operation is out of range. E.g. display zoom factor,
-  // bounds origin or overscan.
-  kPropertyValueOutOfRangeError,
-  // Operation is not supported for internal displays.
-  kNotSupportedOnInternalDisplayError,
-  // Negative values are not supportet for the operation.
-  kNegativeValueError,
-  // Setting the display mode failed.
-  kSetDisplayModeError,
-  // Invalid display layout error.
-  kInvalidDisplayLayoutError,
-  // Mode requires multiple displays.
-  kSingleDisplayError,
-  // Mirror mode source ID is invalid.
-  kMirrorModeSourceIdError,
-  // Mirror mode destination ID is invalid.
-  kMirrorModeDestIdError,
-  // Calibration is not available (e.g. no external touch screen device).
-  kCalibrationNotAvailableError,
-  // Calibration was not started.
-  kCalibrationNotStartedError,
-  // Touch calibration is already active.
-  kCalibrationInProgressError,
-  // Invalid input data for calibration.
-  kCalibrationInvalidDataError,
-  // Calibration procedure failed.
-  kCalibrationFailedError,
-};
-
 // Describes an overscan or touch calibration operation.
 [Extensible]
 enum DisplayConfigOperation {

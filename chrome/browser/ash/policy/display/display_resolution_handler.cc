@@ -219,14 +219,14 @@ void DisplayResolutionHandler::ApplyChanges(
     }
 
     resized_display_ids_.insert(display_id);
-    crosapi::mojom::DisplayConfigResult result =
-        cros_display_config.SetDisplayProperties(
-            display_unit_info->id, *new_config,
-            crosapi::mojom::DisplayConfigSource::kPolicy);
-    if (result == crosapi::mojom::DisplayConfigResult::kSuccess) {
+    ash::DisplayConfigResult result = cros_display_config.SetDisplayProperties(
+        display_unit_info->id, *new_config,
+        crosapi::mojom::DisplayConfigSource::kPolicy);
+    if (result == ash::DisplayConfigResult::kSuccess) {
       VLOG(1) << "Successfully changed display mode.";
     } else {
-      LOG(ERROR) << "Couldn't change display mode. Error code: " << result;
+      LOG(ERROR) << "Couldn't change display mode. Error code: "
+                 << static_cast<int>(result);
     }
   }
 }

@@ -38,49 +38,47 @@ void RunResultCallback(DisplayInfoProvider::ErrorCallback callback,
       FROM_HERE, base::BindOnce(std::move(callback), std::move(error)));
 }
 
-std::optional<std::string> GetStringResult(
-    crosapi::mojom::DisplayConfigResult result) {
+std::optional<std::string> GetStringResult(ash::DisplayConfigResult result) {
   switch (result) {
-    case crosapi::mojom::DisplayConfigResult::kSuccess:
+    case ash::DisplayConfigResult::kSuccess:
       return std::nullopt;
-    case crosapi::mojom::DisplayConfigResult::kInvalidOperationError:
+    case ash::DisplayConfigResult::kInvalidOperationError:
       return "Invalid operation";
-    case crosapi::mojom::DisplayConfigResult::kInvalidDisplayIdError:
+    case ash::DisplayConfigResult::kInvalidDisplayIdError:
       return "Invalid display id";
-    case crosapi::mojom::DisplayConfigResult::kUnifiedNotEnabledError:
+    case ash::DisplayConfigResult::kUnifiedNotEnabledError:
       return "enableUnifiedDesktop must be called before setting is_unified";
-    case crosapi::mojom::DisplayConfigResult::kPropertyValueOutOfRangeError:
+    case ash::DisplayConfigResult::kPropertyValueOutOfRangeError:
       return "Property value out of range";
-    case crosapi::mojom::DisplayConfigResult::
-        kNotSupportedOnInternalDisplayError:
+    case ash::DisplayConfigResult::kNotSupportedOnInternalDisplayError:
       return "Not supported for internal displays";
-    case crosapi::mojom::DisplayConfigResult::kNegativeValueError:
+    case ash::DisplayConfigResult::kNegativeValueError:
       return "Negative values not supported";
-    case crosapi::mojom::DisplayConfigResult::kSetDisplayModeError:
+    case ash::DisplayConfigResult::kSetDisplayModeError:
       return "Setting the display mode failed";
-    case crosapi::mojom::DisplayConfigResult::kInvalidDisplayLayoutError:
+    case ash::DisplayConfigResult::kInvalidDisplayLayoutError:
       return "Invalid display layout";
-    case crosapi::mojom::DisplayConfigResult::kSingleDisplayError:
+    case ash::DisplayConfigResult::kSingleDisplayError:
       return "This mode requires multiple displays";
-    case crosapi::mojom::DisplayConfigResult::kMirrorModeSourceIdError:
+    case ash::DisplayConfigResult::kMirrorModeSourceIdError:
       return "Mirror mode source id invalid";
-    case crosapi::mojom::DisplayConfigResult::kMirrorModeDestIdError:
+    case ash::DisplayConfigResult::kMirrorModeDestIdError:
       return "Mirror mode destination id invalid";
-    case crosapi::mojom::DisplayConfigResult::kCalibrationNotAvailableError:
+    case ash::DisplayConfigResult::kCalibrationNotAvailableError:
       return "Calibration not available";
-    case crosapi::mojom::DisplayConfigResult::kCalibrationNotStartedError:
+    case ash::DisplayConfigResult::kCalibrationNotStartedError:
       return "Calibration not started";
-    case crosapi::mojom::DisplayConfigResult::kCalibrationInProgressError:
+    case ash::DisplayConfigResult::kCalibrationInProgressError:
       return "Calibration in progress";
-    case crosapi::mojom::DisplayConfigResult::kCalibrationInvalidDataError:
+    case ash::DisplayConfigResult::kCalibrationInvalidDataError:
       return "Calibration data invalid";
-    case crosapi::mojom::DisplayConfigResult::kCalibrationFailedError:
+    case ash::DisplayConfigResult::kCalibrationFailedError:
       return "Calibration failed";
   }
   return "Unknown error";
 }
 
-void LogErrorResult(crosapi::mojom::DisplayConfigResult result) {
+void LogErrorResult(ash::DisplayConfigResult result) {
   std::optional<std::string> str_result = GetStringResult(result);
   if (str_result) {
     LOG(ERROR) << *str_result;
@@ -135,7 +133,7 @@ void DisplayInfoProviderChromeOS::SetDisplayProperties(
     layout_info.layout_mode = *properties.is_unified
                                   ? ash::DisplayLayoutMode::kUnified
                                   : ash::DisplayLayoutMode::kNormal;
-    crosapi::mojom::DisplayConfigResult result =
+    ash::DisplayConfigResult result =
         cros_display_config_->SetDisplayLayoutInfo(std::move(layout_info));
     std::move(callback).Run(GetStringResult(result));
     // Note: If other properties are set they will be ignored.
@@ -220,7 +218,7 @@ void DisplayInfoProviderChromeOS::SetDisplayProperties(
   }
 
   if (cros_display_config_) {
-    crosapi::mojom::DisplayConfigResult result =
+    ash::DisplayConfigResult result =
         cros_display_config_->SetDisplayProperties(
             display_id_str, std::move(config_properties),
             crosapi::mojom::DisplayConfigSource::kUser);
@@ -252,7 +250,7 @@ base::expected<void, std::string> DisplayInfoProviderChromeOS::SetDisplayLayout(
 
   // Copy the existing layout_mode.
   layout_info.layout_mode = cur_info.layout_mode;
-  crosapi::mojom::DisplayConfigResult result =
+  ash::DisplayConfigResult result =
       cros_display_config_->SetDisplayLayoutInfo(std::move(layout_info));
   if (auto r = GetStringResult(result); r.has_value()) {
     return base::unexpected(*r);
@@ -308,9 +306,8 @@ DisplayInfoProviderChromeOS::GetDisplayLayout() {
 bool DisplayInfoProviderChromeOS::OverscanCalibrationStart(
     const std::string& id) {
   if (cros_display_config_) {
-    crosapi::mojom::DisplayConfigResult result =
-        cros_display_config_->OverscanCalibration(
-            id, crosapi::mojom::DisplayConfigOperation::kStart, std::nullopt);
+    ash::DisplayConfigResult result = cros_display_config_->OverscanCalibration(
+        id, crosapi::mojom::DisplayConfigOperation::kStart, std::nullopt);
     LogErrorResult(result);
   }
   return true;
@@ -320,10 +317,8 @@ bool DisplayInfoProviderChromeOS::OverscanCalibrationAdjust(
     const std::string& id,
     const system_display::Insets& delta) {
   if (cros_display_config_) {
-    crosapi::mojom::DisplayConfigResult result =
-        cros_display_config_->OverscanCalibration(
-            id, crosapi::mojom::DisplayConfigOperation::kAdjust,
-            GetInsets(delta));
+    ash::DisplayConfigResult result = cros_display_config_->OverscanCalibration(
+        id, crosapi::mojom::DisplayConfigOperation::kAdjust, GetInsets(delta));
     LogErrorResult(result);
   }
   return true;
@@ -332,9 +327,8 @@ bool DisplayInfoProviderChromeOS::OverscanCalibrationAdjust(
 bool DisplayInfoProviderChromeOS::OverscanCalibrationReset(
     const std::string& id) {
   if (cros_display_config_) {
-    crosapi::mojom::DisplayConfigResult result =
-        cros_display_config_->OverscanCalibration(
-            id, crosapi::mojom::DisplayConfigOperation::kReset, std::nullopt);
+    ash::DisplayConfigResult result = cros_display_config_->OverscanCalibration(
+        id, crosapi::mojom::DisplayConfigOperation::kReset, std::nullopt);
     LogErrorResult(result);
   }
   return true;
@@ -343,10 +337,8 @@ bool DisplayInfoProviderChromeOS::OverscanCalibrationReset(
 bool DisplayInfoProviderChromeOS::OverscanCalibrationComplete(
     const std::string& id) {
   if (cros_display_config_) {
-    crosapi::mojom::DisplayConfigResult result =
-        cros_display_config_->OverscanCalibration(
-            id, crosapi::mojom::DisplayConfigOperation::kComplete,
-            std::nullopt);
+    ash::DisplayConfigResult result = cros_display_config_->OverscanCalibration(
+        id, crosapi::mojom::DisplayConfigOperation::kComplete, std::nullopt);
     LogErrorResult(result);
   }
   return true;
@@ -397,15 +389,14 @@ void DisplayInfoProviderChromeOS::CallTouchCalibration(
     cros_display_config_->TouchCalibration(
         id, op, calibration,
         base::BindOnce(
-            [](ErrorCallback callback,
-               crosapi::mojom::DisplayConfigResult result) {
+            [](ErrorCallback callback, ash::DisplayConfigResult result) {
               if (!callback) {
                 return;
               }
-              std::move(callback).Run(
-                  result == crosapi::mojom::DisplayConfigResult::kSuccess
-                      ? std::nullopt
-                      : GetStringResult(result));
+              std::move(callback).Run(result ==
+                                              ash::DisplayConfigResult::kSuccess
+                                          ? std::nullopt
+                                          : GetStringResult(result));
             },
             std::move(callback)));
   }
@@ -439,7 +430,7 @@ void DisplayInfoProviderChromeOS::SetMirrorMode(
     }
   }
   if (cros_display_config_) {
-    crosapi::mojom::DisplayConfigResult result =
+    ash::DisplayConfigResult result =
         cros_display_config_->SetDisplayLayoutInfo(
             std::move(display_layout_info));
     std::move(callback).Run(GetStringResult(result));

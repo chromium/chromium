@@ -111,11 +111,50 @@ struct ASH_EXPORT DisplayConfigProperties {
   crosapi::mojom::DisplayModePtr display_mode;
 };
 
+// SetDisplayLayoutInfo or SetDisplayProperties result.
+enum class DisplayConfigResult {
+  // Operation was successful.
+  kSuccess,
+  // Operation is not supported.
+  kInvalidOperationError,
+  // Input display ID represents an invalid display.
+  kInvalidDisplayIdError,
+  // Unified desktop mode is disabled.
+  kUnifiedNotEnabledError,
+  // Input property for operation is out of range. E.g. display zoom factor,
+  // bounds origin or overscan.
+  kPropertyValueOutOfRangeError,
+  // Operation is not supported for internal displays.
+  kNotSupportedOnInternalDisplayError,
+  // Negative values are not supported for the operation.
+  kNegativeValueError,
+  // Setting the display mode failed.
+  kSetDisplayModeError,
+  // Invalid display layout error.
+  kInvalidDisplayLayoutError,
+  // Mode requires multiple displays.
+  kSingleDisplayError,
+  // Mirror mode source ID is invalid.
+  kMirrorModeSourceIdError,
+  // Mirror mode destination ID is invalid.
+  kMirrorModeDestIdError,
+  // Calibration is not available (e.g. no external touch screen device).
+  kCalibrationNotAvailableError,
+  // Calibration was not started.
+  kCalibrationNotStartedError,
+  // Touch calibration is already active.
+  kCalibrationInProgressError,
+  // Invalid input data for calibration.
+  kCalibrationInvalidDataError,
+  // Calibration procedure failed.
+  kCalibrationFailedError,
+};
+
 // Interface for configuring displays in Chrome OS.
 class CrosDisplayConfig {
  public:
   using TouchCalibrationCallback =
-      base::OnceCallback<void(crosapi::mojom::DisplayConfigResult)>;
+      base::OnceCallback<void(DisplayConfigResult)>;
 
   class Observer : public base::CheckedObserver {
    public:
@@ -131,7 +170,7 @@ class CrosDisplayConfig {
 
   // Sets the layout mode, mirroring, and layouts. Returns kSuccess if the
   // layout is valid or an error value otherwise.
-  virtual crosapi::mojom::DisplayConfigResult SetDisplayLayoutInfo(
+  virtual DisplayConfigResult SetDisplayLayoutInfo(
       const DisplayLayoutInfo& info) = 0;
 
   // Returns the properties for all displays. If |single_unified| is true, a
@@ -142,7 +181,7 @@ class CrosDisplayConfig {
   // Sets |properties| for individual display with identifier |id|. |source|
   // should describe who initiated the change. Returns Success if the properties
   // are valid or an error value otherwise.
-  virtual crosapi::mojom::DisplayConfigResult SetDisplayProperties(
+  virtual DisplayConfigResult SetDisplayProperties(
       const std::string& id,
       const DisplayConfigProperties& properties,
       crosapi::mojom::DisplayConfigSource source) = 0;
@@ -155,7 +194,7 @@ class CrosDisplayConfig {
   // Starts, updates, completes, or resets overscan calibration for the display
   // with identifier |display_id|. If |op| is kAdjust, |delta| describes the
   // amount to change the overscan value.
-  virtual crosapi::mojom::DisplayConfigResult OverscanCalibration(
+  virtual DisplayConfigResult OverscanCalibration(
       const std::string& display_id,
       crosapi::mojom::DisplayConfigOperation op,
       const std::optional<gfx::Insets>& delta) = 0;
@@ -199,16 +238,16 @@ class ASH_EXPORT CrosDisplayConfigImpl final : public CrosDisplayConfig {
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
   DisplayLayoutInfo GetDisplayLayoutInfo() override;
-  crosapi::mojom::DisplayConfigResult SetDisplayLayoutInfo(
+  DisplayConfigResult SetDisplayLayoutInfo(
       const DisplayLayoutInfo& info) override;
   std::vector<crosapi::mojom::DisplayUnitInfoPtr> GetDisplayUnitInfoList(
       bool single_unified) override;
-  crosapi::mojom::DisplayConfigResult SetDisplayProperties(
+  DisplayConfigResult SetDisplayProperties(
       const std::string& id,
       const DisplayConfigProperties& properties,
       crosapi::mojom::DisplayConfigSource source) override;
   void SetUnifiedDesktopEnabled(bool enabled) override;
-  crosapi::mojom::DisplayConfigResult OverscanCalibration(
+  DisplayConfigResult OverscanCalibration(
       const std::string& display_id,
       crosapi::mojom::DisplayConfigOperation op,
       const std::optional<gfx::Insets>& delta) override;

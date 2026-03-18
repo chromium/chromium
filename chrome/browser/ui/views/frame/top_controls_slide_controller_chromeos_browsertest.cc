@@ -958,11 +958,11 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest, DisplayRotation) {
       BrowserViewLayoutWaiter browser_view_layout_waiter(browser_view());
       ash::DisplayConfigProperties config_properties;
       config_properties.rotation = rotation;
-      crosapi::mojom::DisplayConfigResult result =
+      ash::DisplayConfigResult result =
           cros_display_config->SetDisplayProperties(
               display_id, config_properties,
               crosapi::mojom::DisplayConfigSource::kUser);
-      EXPECT_EQ(result, crosapi::mojom::DisplayConfigResult::kSuccess);
+      EXPECT_EQ(result, ash::DisplayConfigResult::kSuccess);
 
       // Wait for the browser view to change its bounds as a result of display
       // rotation.

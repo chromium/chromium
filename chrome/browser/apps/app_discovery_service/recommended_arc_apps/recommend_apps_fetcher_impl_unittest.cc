@@ -96,7 +96,7 @@ class TestCrosDisplayConfig final : public ash::CrosDisplayConfig {
   void AddObserver(Observer* observer) override {}
   void RemoveObserver(Observer* observer) override {}
   ash::DisplayLayoutInfo GetDisplayLayoutInfo() override { NOTREACHED(); }
-  crosapi::mojom::DisplayConfigResult SetDisplayLayoutInfo(
+  ash::DisplayConfigResult SetDisplayLayoutInfo(
       const ash::DisplayLayoutInfo& info) override {
     NOTREACHED();
   }
@@ -106,14 +106,14 @@ class TestCrosDisplayConfig final : public ash::CrosDisplayConfig {
     next_display_unit_info_list_.clear();
     return result;
   }
-  crosapi::mojom::DisplayConfigResult SetDisplayProperties(
+  ash::DisplayConfigResult SetDisplayProperties(
       const std::string& id,
       const ash::DisplayConfigProperties& properties,
       crosapi::mojom::DisplayConfigSource source) override {
     NOTREACHED();
   }
   void SetUnifiedDesktopEnabled(bool enabled) override {}
-  crosapi::mojom::DisplayConfigResult OverscanCalibration(
+  ash::DisplayConfigResult OverscanCalibration(
       const std::string& display_id,
       crosapi::mojom::DisplayConfigOperation op,
       const std::optional<gfx::Insets>& delta) override {
