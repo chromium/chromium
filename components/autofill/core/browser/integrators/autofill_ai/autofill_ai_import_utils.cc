@@ -221,8 +221,8 @@ std::vector<EntityInstance> GetPossibleEntitiesFromSubmittedForm(
 
 std::optional<std::u16string> MaybeGetLocalizedDate(
     const AttributeInstance& attribute) {
-  FieldType field_type = attribute.type().field_type();
-  if (!IsDateFieldType(field_type)) {
+  std::optional<FieldType> field_type = attribute.type().field_type();
+  if (!field_type || !IsDateFieldType(*field_type)) {
     return std::nullopt;
   }
   auto get_part = [&](std::u16string format) {

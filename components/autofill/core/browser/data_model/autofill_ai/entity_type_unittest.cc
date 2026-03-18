@@ -21,7 +21,9 @@ using ::testing::Contains;
 using ::testing::Each;
 using ::testing::ElementsAre;
 using ::testing::Eq;
+using ::testing::IsEmpty;
 using ::testing::IsSubsetOf;
+using ::testing::Optional;
 using ::testing::ResultOf;
 using ::testing::UnorderedElementsAre;
 using ::testing::ValuesIn;
@@ -36,9 +38,10 @@ INSTANTIATE_TEST_SUITE_P(,
 // Tests the co-domain of AttributeType::field_type().
 TEST_P(AutofillAttributeTypeTest_FieldTypeRelations, FieldType) {
   AttributeType at = GetParam();
-  EXPECT_THAT(at.field_type(), AnyOf(ResultOf(&GroupTypeOfFieldType,
-                                              FieldTypeGroup::kAutofillAi),
-                                     Eq(NAME_FULL)));
+  EXPECT_THAT(at.field_type(),
+              AnyOf(Optional(ResultOf(&GroupTypeOfFieldType,
+                                      FieldTypeGroup::kAutofillAi)),
+                    Optional(NAME_FULL), std::nullopt));
 }
 
 // Tests the co-domain of AttributeType::field_subtypes().
@@ -48,15 +51,24 @@ TEST_P(AutofillAttributeTypeTest_FieldTypeRelations, FieldSubtypes) {
       at.field_subtypes(),
       AnyOf(Each(ResultOf(&GroupTypeOfFieldType, FieldTypeGroup::kAutofillAi)),
             Each(ResultOf(&GroupTypeOfFieldType, FieldTypeGroup::kName))));
-  EXPECT_THAT(at.field_subtypes(), Contains(at.field_type()));
+  if (at.field_type()) {
+    EXPECT_THAT(at.field_subtypes(), Contains(at.field_type()));
+  } else {
+    EXPECT_THAT(at.field_subtypes(), IsEmpty());
+  }
 }
 
 // Tests the co-domain of AttributeType::storable_field_types().
 TEST_P(AutofillAttributeTypeTest_FieldTypeRelations, StorableFieldTypes) {
   AttributeType at = GetParam();
+  if (at.field_type()) {
+    EXPECT_THAT(test_api(at).storable_field_types(),
+                IsSubsetOf(at.field_subtypes()));
+  } else {
+    EXPECT_THAT(test_api(at).storable_field_types(), ElementsAre(UNKNOWN_TYPE));
+  }
   EXPECT_THAT(test_api(at).storable_field_types(),
-              IsSubsetOf(at.field_subtypes()));
-  EXPECT_THAT(test_api(at).storable_field_types(), Contains(at.field_type()));
+              Contains(at.field_type().value_or(UNKNOWN_TYPE)));
 }
 
 TEST(AutofillAttributeTypeTest, Relationships_PassportName) {

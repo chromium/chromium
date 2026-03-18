@@ -102,7 +102,7 @@ std::optional<EntityInstance> FakeWalletPassAccessManager::RunUpsertCallback(
     }
 
     AttributeInstance masked_attr = attr;
-    const FieldType field_type = masked_attr.type().field_type();
+    const std::optional<FieldType> field_type = masked_attr.type().field_type();
     const std::u16string full_value = masked_attr.GetInfo(
         field_type, "en-US", /*format_string=*/std::nullopt);
     const size_t masked_length = std::min<size_t>(full_value.size(), 4);

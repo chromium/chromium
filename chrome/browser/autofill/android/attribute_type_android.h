@@ -43,7 +43,7 @@ struct AttributeTypeAndroid {
   AttributeTypeName type_name;
   std::u16string type_name_as_string;
   AttributeType::DataType data_type;
-  FieldType field_type;
+  std::optional<FieldType> field_type;
 };
 
 }  // namespace autofill

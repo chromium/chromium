@@ -432,7 +432,7 @@ EntityInstance MaskEntityInstance(const EntityInstance& entity_instance) {
     if (!attribute.type().is_obfuscated()) {
       continue;
     }
-    const FieldType field_type = attribute.type().field_type();
+    const std::optional<FieldType> field_type = attribute.type().field_type();
     const std::u16string full_value =
         attribute.GetInfo(field_type, "en-US", /*format_string=*/std::nullopt);
     // Do some simple masking to simulate what the server might do.

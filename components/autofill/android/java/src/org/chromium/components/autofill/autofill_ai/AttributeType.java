@@ -25,6 +25,7 @@ public class AttributeType {
     // selector, a date picker or a simple text field.
     private final @DataType int mDataType;
     // The field type this attribute type describes.
+    // If the AttributeType has no corresponding FieldType, this is UNKNOWN_TYPE.
     private final @FieldType int mFieldType;
 
     @CalledByNative

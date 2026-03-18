@@ -26,7 +26,7 @@ namespace autofill {
 // "name", "country", "issue date", "expiry date", etc.
 //
 // A specific passport is an entity instance, which has attribute instances with
-// values such "John Doe", "USA", "05/2019", "04/2029", etc.
+// values such as "John Doe", "USA", "05/2019", "04/2029", etc.
 //
 // Entity types are generated at compile time from the schema definition in
 // entity_schema.json.
@@ -83,17 +83,38 @@ class AttributeType final {
 
   constexpr DataType data_type() const;
 
+  // An AttributeType that is supposed to be filled in fields on the web must
+  // have an associated FieldType. Some attributes are metadata and only used,
+  // for example, during suggestion generation; they do not need a FieldType.
+  //
   // There are three kinds of AttributeType / FieldType associations:
-  // - `field_type()` is the one that best describes the full attribute.
-  //   Except for name types, the `field_type()` uniquely identifies the
-  //   AttributeType.
-  // - `field_subtypes()` additionally include more fine-granular ones.
-  //   Except for name types, `field_subtypes() == {field_type}`.
-  //   For name types, `field_subtypes()` includes `NAME_FIRST` etc.
-  // - `storable_field_types()` are the ones that may be physically stored in
-  //   the database. It is a subset of `field_subtypes()`.
-  //   Except for name types, `storable_field_types() == {field_type}`.
-  constexpr FieldType field_type() const;
+  // - field_type() is the FieldType, if any, that best describes the full
+  //   attribute:
+  //   - For most AttributeTypes, there is a 1:1 relationship with a
+  //     FieldType (e.g., kPassportNumber and PASSPORT_NUMBER).
+  //   - For name AttributeTypes, the relationship is n:1 (e.g., kPassportName
+  //     and kDriversLicenseName both map to NAME_FULL). That is because
+  //     name FieldType predictions are dynamically assigned to entities; see
+  //     DetermineAttributeTypes() for details.
+  //   - For metadata AttributeTypes, there is no corresponding FieldType
+  //     (e.g., kFlightReservationDepartureAirport).
+  // - field_subtypes() may contain, in addition to field_type(), more
+  //   fine-grained FieldTypes (for example, NAME_FIRST).
+  // - storable_field_types() contains the FieldTypes that may be physically
+  //   stored in the database.
+  //
+  // The contract for the three functions is as follows:
+  // - field_type() uniquely identifies the AttributeType except if it is
+  //   NAME_FULL or std::nullopt.
+  // - If field_type() is not std::nullopt:
+  //   - field_subtypes() contains field_type().
+  //   - storable_field_types() contains field_type().
+  //   - storable_field_types() is a subset of field_subtypes().
+  // - If field_type() is std::nullopt:
+  //   - field_subtypes() is empty.
+  //   - storable_field_types() is {UNKNOWN_TYPE} so that data can be persisted
+  //     in the database under this type.
+  constexpr std::optional<FieldType> field_type() const;
   constexpr FieldTypeSet field_subtypes() const;
   FieldTypeSet storable_field_types(EntityTablePassKey pass_key) const;
 
@@ -185,7 +206,7 @@ constexpr AttributeType::DataType AttributeType::data_type() const {
   NOTREACHED();
 }
 
-constexpr FieldType AttributeType::field_type() const {
+constexpr std::optional<FieldType> AttributeType::field_type() const {
   switch (name_) {
     case AttributeTypeName::kDriversLicenseName:
       return NAME_FULL;
@@ -284,7 +305,10 @@ constexpr FieldTypeSet AttributeType::field_subtypes() const {
   if (data_type() == DataType::kName) {
     return FieldTypesOfGroup(FieldTypeGroup::kName);
   }
-  return {field_type()};
+  if (field_type()) {
+    return {*field_type()};
+  }
+  return {};
 }
 
 template <>

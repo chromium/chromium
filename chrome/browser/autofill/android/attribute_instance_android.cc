@@ -57,7 +57,8 @@ AttributeInstanceAndroid::AttributeInstanceAndroid(
     : attribute_type(attribute_instance.type()) {
   if (attribute_type.data_type == AttributeType::DataType::kDate) {
     const std::string& app_locale = g_browser_process->GetApplicationLocale();
-    autofill::FieldType field_type = attribute_instance.type().field_type();
+    std::optional<autofill::FieldType> field_type =
+        attribute_instance.type().field_type();
     const std::u16string day = attribute_instance.GetInfo(
         field_type, app_locale,
         AutofillFormatString(u"D", autofill::FormatString_Type_DATE));
@@ -84,7 +85,7 @@ AttributeInstance AttributeInstanceAndroid::ToAttributeInstance() const {
   AttributeInstance instance(attribute_type.ToAttributeType());
   if (std::holds_alternative<AttributeInstanceAndroidDateType>(value)) {
     const std::string& app_locale = g_browser_process->GetApplicationLocale();
-    autofill::FieldType field_type =
+    std::optional<autofill::FieldType> field_type =
         attribute_type.ToAttributeType().field_type();
     const AttributeInstanceAndroidDateType& date_value =
         std::get<AttributeInstanceAndroidDateType>(value);

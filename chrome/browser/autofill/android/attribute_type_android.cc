@@ -20,7 +20,7 @@ base::android::ScopedJavaLocalRef<jobject> AttributeTypeAndroid::Create(
       env, static_cast<int>(attribute_type.type_name),
       attribute_type.type_name_as_string,
       static_cast<int>(attribute_type.data_type),
-      static_cast<int>(attribute_type.field_type));
+      static_cast<int>(attribute_type.field_type.value_or(UNKNOWN_TYPE)));
 }
 
 AttributeTypeAndroid AttributeTypeAndroid::FromJavaAttributeType(

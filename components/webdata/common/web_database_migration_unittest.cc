@@ -1954,4 +1954,24 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion149ToCurrent) {
   }
 }
 
+TEST_F(WebDatabaseMigrationTest, MigrateVersion150ToCurrent) {
+  ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_150.sql")));
+  {
+    sql::Database connection(sql::test::kTestTag);
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    EXPECT_EQ(150, VersionFromConnection(&connection));
+  }
+  DoMigration();
+  {
+    sql::Database connection(sql::test::kTestTag);
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    EXPECT_EQ(151, VersionFromConnection(&connection));
+    sql::Statement s(connection.GetUniqueStatement(
+        "SELECT value FROM meta WHERE key='last_compatible_version'"));
+    ASSERT_TRUE(s.Step());
+    const int last_compatible_version = s.ColumnInt(0);
+    EXPECT_EQ(last_compatible_version, 151);
+  }
+}
+
 }  // anonymous namespace

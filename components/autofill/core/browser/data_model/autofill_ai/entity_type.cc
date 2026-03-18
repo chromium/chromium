@@ -21,7 +21,7 @@ FieldTypeSet AttributeType::storable_field_types(
   if (data_type() == DataType::kName) {
     return NameInfo::kDatabaseStoredTypes;
   }
-  return {field_type()};
+  return {field_type().value_or(UNKNOWN_TYPE)};
 }
 
 std::u16string AttributeType::GetNameForI18n() const {

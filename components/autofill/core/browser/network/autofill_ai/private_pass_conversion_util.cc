@@ -73,7 +73,7 @@ class AttributeSetter {
       return std::nullopt;
     }
     // Note that for retrieving date components the app locale doesn't matter.
-    FieldType date_type = attribute->type().field_type();
+    std::optional<FieldType> date_type = attribute->type().field_type();
     std::u16string day = attribute->GetInfo(
         date_type, "", AutofillFormatString(u"D", FormatString_Type_DATE));
     std::u16string month = attribute->GetInfo(

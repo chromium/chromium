@@ -178,10 +178,10 @@ AttributeInstance& AttributeInstance::operator=(AttributeInstance&&) = default;
 AttributeInstance::~AttributeInstance() = default;
 
 std::u16string AttributeInstance::GetInfo(
-    FieldType field_type,
+    std::optional<FieldType> unnormalized_field_type,
     std::string_view app_locale,
     base::optional_ref<const AutofillFormatString> format_string) const {
-  field_type = GetNormalizedFieldType(field_type);
+  FieldType field_type = GetNormalizedFieldType(unnormalized_field_type);
   return std::visit(
       absl::Overload{[&](const CountryInfo& country) {
                        return country.GetCountryName(app_locale);
@@ -192,7 +192,6 @@ std::u16string AttributeInstance::GetInfo(
                          return date.GetIcuDate(format_string->value,
                                                 app_locale);
                        }
-
                        return date.GetDate(format_string ? format_string->value
                                                          : u"YYYY-MM-DD");
                      },
@@ -204,8 +203,9 @@ std::u16string AttributeInstance::GetInfo(
       info_);
 }
 
-std::u16string AttributeInstance::GetRawInfo(FieldType field_type) const {
-  field_type = GetNormalizedFieldType(field_type);
+std::u16string AttributeInstance::GetRawInfo(
+    std::optional<FieldType> unnormalized_field_type) const {
+  FieldType field_type = GetNormalizedFieldType(unnormalized_field_type);
   return std::visit(
       absl::Overload{
           [&](const CountryInfo& country) {
@@ -224,8 +224,8 @@ std::u16string AttributeInstance::GetRawInfo(FieldType field_type) const {
 }
 
 VerificationStatus AttributeInstance::GetVerificationStatus(
-    FieldType field_type) const {
-  field_type = GetNormalizedFieldType(field_type);
+    std::optional<FieldType> unnormalized_field_type) const {
+  FieldType field_type = GetNormalizedFieldType(unnormalized_field_type);
   return std::visit(
       absl::Overload{
           [&](const CountryInfo&) { return VerificationStatus::kNoStatus; },
@@ -242,12 +242,12 @@ VerificationStatus AttributeInstance::GetVerificationStatus(
 }
 
 void AttributeInstance::SetInfo(
-    FieldType field_type,
+    std::optional<FieldType> unnormalized_field_type,
     const std::u16string& value,
     std::string_view app_locale,
     base::optional_ref<const AutofillFormatString> format_string,
     VerificationStatus status) {
-  field_type = GetNormalizedFieldType(field_type);
+  FieldType field_type = GetNormalizedFieldType(unnormalized_field_type);
   std::visit(
       absl::Overload{
           [&](CountryInfo& country) {
@@ -281,10 +281,11 @@ void AttributeInstance::SetInfo(
       info_);
 }
 
-void AttributeInstance::SetRawInfo(FieldType field_type,
-                                   const std::u16string& value,
-                                   VerificationStatus status) {
-  field_type = GetNormalizedFieldType(field_type);
+void AttributeInstance::SetRawInfo(
+    std::optional<FieldType> unnormalized_field_type,
+    const std::u16string& value,
+    VerificationStatus status) {
+  FieldType field_type = GetNormalizedFieldType(unnormalized_field_type);
   std::visit(absl::Overload{
                  [&](CountryInfo& country) {
                    if (!country.SetCountryFromCountryCode(value)) {
@@ -307,9 +308,10 @@ void AttributeInstance::SetRawInfo(FieldType field_type,
 }
 
 FieldType AttributeInstance::GetNormalizedFieldType(
-    FieldType field_type) const {
-  return type_.field_subtypes().contains(field_type) ? field_type
-                                                     : type_.field_type();
+    std::optional<FieldType> field_type) const {
+  return field_type && type_.field_subtypes().contains(*field_type)
+             ? *field_type
+             : type_.field_type().value_or(UNKNOWN_TYPE);
 }
 
 void AttributeInstance::FinalizeInfo() {

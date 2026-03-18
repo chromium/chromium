@@ -53,9 +53,11 @@ consteval bool IsMostlyInjective() {
   FieldTypeSet field_types;
 
   for (AttributeType at : DenseSet<AttributeType>::all()) {
-    auto [_, inserted] = field_types.insert(at.field_type());
-    if (!inserted && !kNonInjectiveFieldTypes.contains(at.field_type())) {
-      return false;
+    if (std::optional<FieldType> field_type = at.field_type()) {
+      auto [_, inserted] = field_types.insert(*field_type);
+      if (!inserted && !kNonInjectiveFieldTypes.contains(*field_type)) {
+        return false;
+      }
     }
   }
 
@@ -79,8 +81,10 @@ std::optional<AttributeType> GetStaticAttributeType(FieldType ft) {
   static auto kTable = []() {
     std::array<std::optional<AttributeType>, MAX_VALID_FIELD_TYPE> arr{};
     for (AttributeType at : DenseSet<AttributeType>::all()) {
-      if (!kNonInjectiveFieldTypes.contains(at.field_type())) {
-        arr[at.field_type()] = at;
+      if (std::optional<FieldType> field_type = at.field_type()) {
+        if (!kNonInjectiveFieldTypes.contains(*field_type)) {
+          arr[*field_type] = at;
+        }
       }
     }
     return arr;

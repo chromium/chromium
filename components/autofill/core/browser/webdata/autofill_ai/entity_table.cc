@@ -105,11 +105,11 @@ void HandleTestSwitchesIfNeeded(sql::Database* db, EntityTable& table) {
     auto create_attribute = [](AttributeTypeName type_name,
                                std::u16string value) -> AttributeInstance {
       auto type = AttributeType(type_name);
-      auto instance = AttributeInstance(AttributeType(type));
+      auto instance = AttributeInstance(type);
       instance.SetInfo(
-          instance.type().field_type(), value, /*app_locale=*/"",
+          type.field_type(), value, /*app_locale=*/"",
           /*format_string=*/
-          IsDateFieldType(type.field_type())
+          type.field_type() && IsDateFieldType(*type.field_type())
               ? AutofillFormatString(u"YYYY-MM-DD", FormatString_Type_DATE)
               : base::optional_ref<const AutofillFormatString>(),
           VerificationStatus::kNoStatus);
@@ -302,6 +302,13 @@ bool EntityTable::MigrateToVersion(int version,
     case 147: {
       *update_compatible_version = true;
       return MigrateToVersion147AddEntitiesMetadataTable();
+    }
+    case 151: {
+      // Since this version, the serialized FieldType may be UNKNOWN_TYPE.
+      // In older versions, ValidateInstance() ignored records with
+      // UNKNOWN_TYPE.
+      *update_compatible_version = true;
+      return true;
     }
   }
   return true;
@@ -710,11 +717,12 @@ std::optional<EntityInstance> EntityTable::ValidateInstance(
     std::map<std::string, std::vector<AttributeRecord>> attribute_records,
     EntityInstance::AreAttributesReadOnly are_attributes_read_only,
     std::string frecency_override) const {
-  // An attribute's field type must never be UNKNOWN_TYPE - otherwise we will
+  // An attribute's field type must never be NO_SERVER_DATA - otherwise we will
   // discard its value here.
   static_assert(
-      !FieldTypeSet(DenseSet<AttributeType>::all(), &AttributeType::field_type)
-           .contains(UNKNOWN_TYPE));
+      !FieldTypeSet(DenseSet<AttributeType>::all(), [](AttributeType at) {
+         return at.field_type().value_or(UNKNOWN_TYPE);
+       }).contains(NO_SERVER_DATA));
 
   std::optional<EntityType> entity_type = StringToEntityType(type_name);
   std::optional<EntityInstance::RecordType> record_type =
@@ -732,10 +740,10 @@ std::optional<EntityInstance> EntityTable::ValidateInstance(
       for (const auto& [underlying_field_type, value,
                         underlying_verification_status] : records) {
         FieldType field_type =
-            ToSafeFieldType(underlying_field_type, UNKNOWN_TYPE);
+            ToSafeFieldType(underlying_field_type, NO_SERVER_DATA);
         std::optional<VerificationStatus> verification_status =
             ToSafeVerificationStatus(underlying_verification_status);
-        if (field_type != UNKNOWN_TYPE && verification_status) {
+        if (field_type != NO_SERVER_DATA && verification_status) {
           attribute.SetRawInfo(field_type, value, *verification_status);
         }
       }

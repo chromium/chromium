@@ -246,7 +246,8 @@ autofill_private::EntityInstance EntityInstanceToPrivateApiEntityInstance(
         AttributeTypeDataTypeToPrivateApiAttributeTypeDataType(data_type);
 
     if (data_type == AttributeType::DataType::kDate) {
-      autofill::FieldType field_type = attribute_instance.type().field_type();
+      std::optional<autofill::FieldType> field_type =
+          attribute_instance.type().field_type();
       base::DictValue date_value;
       date_value.SetByDottedPath(
           "month",
