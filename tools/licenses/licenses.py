@@ -79,7 +79,6 @@ PRUNE_PATHS = set([
     os.path.join('third_party', 'gnu_binutils'),
     os.path.join('third_party', 'gold'),
     os.path.join('third_party', 'gperf'),
-    os.path.join('third_party', 'lighttpd'),
     os.path.join('third_party', 'llvm'),
     os.path.join('third_party', 'llvm-bootstrap'),
     os.path.join('third_party', 'llvm-bootstrap-install'),

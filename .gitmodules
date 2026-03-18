@@ -408,10 +408,6 @@
 [submodule "third_party/libyuv"]
 	path = third_party/libyuv
 	url = https://chromium.googlesource.com/libyuv/libyuv
-[submodule "third_party/lighttpd"]
-	path = third_party/lighttpd
-	url = https://chromium.googlesource.com/chromium/deps/lighttpd
-	gclient-condition = checkout_mac or checkout_win
 [submodule "third_party/lss"]
 	path = third_party/lss
 	url = https://chromium.googlesource.com/linux-syscall-support
