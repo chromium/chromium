@@ -21,11 +21,14 @@ source_set("ai_overlay_dialog") {
   ]
 
   deps = [
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/media/webrtc",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui/views/interaction",
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/common",
+    "//components/content_settings/core/browser",
     "//ui/gfx/geometry",
     "//ui/views/controls/webview",
     "//url",

@@ -46,6 +46,13 @@ AiOverlayDialogUntrustedUI::AiOverlayDialogUntrustedUI(content::WebUI* web_ui)
   webui::SetupWebUIDataSource(
       html_source, kAiOverlayDialogUntrustedResources,
       IDR_AI_OVERLAY_DIALOG_UNTRUSTED_AI_OVERLAY_DIALOG_HTML);
+
+  html_source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::MediaSrc,
+      "media-src 'self' chrome-untrusted://resources data: blob:;");
+  html_source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::ConnectSrc,
+      "connect-src 'self' wss://generativelanguage.googleapis.com;");
 }
 
 AiOverlayDialogUntrustedUI::~AiOverlayDialogUntrustedUI() = default;

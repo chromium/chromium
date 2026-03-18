@@ -14,6 +14,8 @@ namespace views {
 class WebView;
 }  // namespace views
 
+class HostContentSettingsMap;
+
 class AiOverlayDialogController : public content::WebContentsDelegate {
  public:
   DECLARE_USER_DATA(AiOverlayDialogController);
@@ -37,6 +39,15 @@ class AiOverlayDialogController : public content::WebContentsDelegate {
 
   bool IsOverlayShowing() const;
 
+  // content::WebContentsDelegate:
+  void RequestMediaAccessPermission(
+      content::WebContents* web_contents,
+      const content::MediaStreamRequest& request,
+      content::MediaResponseCallback callback) override;
+  bool CheckMediaAccessPermission(content::RenderFrameHost* render_frame_host,
+                                  const url::Origin& security_origin,
+                                  blink::mojom::MediaStreamType type) override;
+
  private:
   views::WebView* GetActiveOverlayWebView() const;
 
@@ -44,6 +55,8 @@ class AiOverlayDialogController : public content::WebContentsDelegate {
 
   ui::ScopedUnownedUserData<AiOverlayDialogController>
       scoped_unowned_user_data_;
+
+  const raw_ptr<HostContentSettingsMap> host_content_settings_map_;
 };
 
 #endif  // CHROME_BROWSER_UI_AI_OVERLAY_DIALOG_AI_OVERLAY_DIALOG_CONTROLLER_H_

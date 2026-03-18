@@ -9,11 +9,22 @@ assert(is_win || is_mac || is_linux || is_chromeos)
 build_webui("build") {
   grd_prefix = "ai_overlay_dialog_untrusted"
 
-  static_files = [ "ai_overlay_dialog.html" ]
+  static_files = [
+    "ai_overlay_dialog.html",
+    "api_config.json",
+  ]
 
   css_files = [ "app.css" ]
 
   web_component_files = [ "app.ts" ]
+
+  ts_files = [
+    "audio_capturer.ts",
+    "audio_player.ts",
+    "audio_processor.ts",
+    "audio_utils.ts",
+    "api_session.ts",
+  ]
 
   ts_deps = [
     "//third_party/lit/v3_0:build_ts",
