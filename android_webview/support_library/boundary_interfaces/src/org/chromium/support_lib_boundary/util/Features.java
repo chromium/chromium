@@ -336,23 +336,60 @@ public class Features {
     // WebViewCompat.saveState
     public static final String SAVE_STATE = "SAVE_STATE";
 
-    // TODO: crbug.com/492948743 Deprecate these features
+    // Navigation & navigation client set/getter and callbacks:
+    //
+    // WebView.getWebViewNavigation
+    // WebView.getWebViewNavigationClient
+    // WebView.setWebViewNavigationClient
+    //
+    // WebViewNavigationClient.onNavigationStarted()
+    // WebViewNavigationClient.onNavigationRedirected()
+    // WebViewNavigationClient.onNavigationCompleted()
+    // WebViewNavigationClient.onPageDeleted()
+    // WebViewNavigationClient.onPageLoadEventFired()
+    // WebViewNavigationClient.onPageDOMContentLoadedEventFired()
+    // WebViewNavigationClient.onFirstContentfulPaint()
+    //
+    // WebViewNavigation.getUrl()
+    // WebViewNavigation.isPageInitiated()
+    // WebViewNavigation.isSameDocument()
+    // WebViewNavigation.isReload()
+    // WebViewNavigation.isHistory()
+    // WebViewNavigation.isRestore()
+    // WebViewNavigation.isBack()
+    // WebViewNavigation.isForward()
+    // WebViewNavigation.hasCommitted()
+    // WebViewNavigation.didCommitErrorPage()
+    // WebViewNavigation.getStatusCode()
     public static final String WEB_VIEW_NAVIGATION_CLIENT_BASIC_USAGE =
             "WEB_VIEW_NAVIGATION_CLIENT_BASIC_USAGE";
+
+    // WebView.addWebViewNavigationListener
+    // WebView.removeWebViewNavigationListener
+    //
+    // WebViewNavigationListener.onNavigationStarted()
+    // WebViewNavigationListener.onNavigationRedirected()
+    // WebViewNavigationListener.onNavigationCompleted()
+    // WebViewNavigationListener.onPageDeleted()
+    // WebViewNavigationListener.onPageLoadEventFired()
+    // WebViewNavigationListener.onPageDOMContentLoadedEventFired()
+    // WebViewNavigationListener.onFirstContentfulPaint()
     public static final String WEB_VIEW_NAVIGATION_LISTENER_V1 = "WEB_VIEW_NAVIGATION_LISTENER_V1";
+
+    // WebViewNavigationListener.onFirstContentfulPaintMillis
+    // WebViewNavigationListener.onLargestContentfulPaintMillis
+    // WebViewNavigationListener.onPerformanceMarkMillis
     public static final String WEB_VIEW_NAVIGATION_LISTENER_V2 = "WEB_VIEW_NAVIGATION_LISTENER_V2";
+
+    // WebViewNavigationListener.onNavigationCompleted() firing on non-committed
+    // navigations
     public static final String ON_NAVIGATION_COMPLETED_NON_COMMITTED =
             "ON_NAVIGATION_COMPLETED_NON_COMMITTED";
+
+    // Navigation.getPage() will return a non-null Page for all committed
+    // navigations, including same-document-navigations.
     public static final String COMMITTED_NAVIGATION_GET_PAGE_NON_NULL =
             "COMMITTED_NAVIGATION_GET_PAGE_NON_NULL";
-    public static final String PAGE_GET_URL = "PAGE_GET_URL";
-    public static final String NAVIGATION_GET_WEB_RESOURCE_ERROR =
-            "NAVIGATION_GET_WEB_RESOURCE_ERROR";
-
-    // WebViewNavigationListener
-    // WebViewNavigation
-    // WebViewPage
-    public static final String WEB_VIEW_NAVIGATION_LISTENER = "WEB_VIEW_NAVIGATION_LISTENER";
 
     // SupportLibWebViewChromium weakly reference WebView
     public static final String PROVIDER_WEAKLY_REF_WEBVIEW = "PROVIDER_WEAKLY_REF_WEBVIEW";
@@ -431,4 +468,11 @@ public class Features {
 
     // WebViewBuilder.applyTo
     public static final String WEBVIEW_BUILDER_V2 = "WEBVIEW_BUILDER_V2";
+
+    // Page.getUrl
+    public static final String PAGE_GET_URL = "PAGE_GET_URL";
+
+    // Navigation.getWebResourceError
+    public static final String NAVIGATION_GET_WEB_RESOURCE_ERROR =
+            "NAVIGATION_GET_WEB_RESOURCE_ERROR";
 }

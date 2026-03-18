@@ -535,10 +535,47 @@ class SupportLibWebViewChromium implements WebViewProviderBoundaryInterface {
 
     @Override
     public /* WebViewNavigationClient */ InvocationHandler getWebViewNavigationClient() {
-        return null;
+        assert ThreadUtils.runningOnUiThread();
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.AndroidX.GET_WEBVIEW_NAVIGATION_CLIENT")) {
+            recordApiCall(ApiCall.GET_WEBVIEW_NAVIGATION_CLIENT);
+            SharedWebViewChromium sharedWebViewChromium = mSharedWebViewChromium.get();
+            if (sharedWebViewChromium == null) {
+                throw new IllegalStateException(
+                        "Support lib method called on WebView that no longer exists.");
+            }
+
+            if (sharedWebViewChromium.getAwContents().getNavigationClient().getFirstListener()
+                    instanceof SupportLibWebViewNavigationClientAdapter navigationClient) {
+                return navigationClient.getSupportLibInvocationHandler();
+            }
+
+            return null;
+        }
     }
 
     @Override
     public void setWebViewNavigationClient(
-            /* WebViewNavigationClient */ InvocationHandler webViewNavigationClient) {}
+            /* WebViewNavigationClient */ InvocationHandler webViewNavigationClient) {
+        assert ThreadUtils.runningOnUiThread();
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.AndroidX.SET_WEBVIEW_NAVIGATION_CLIENT")) {
+            recordApiCall(ApiCall.SET_WEBVIEW_NAVIGATION_CLIENT);
+            SharedWebViewChromium sharedWebViewChromium = mSharedWebViewChromium.get();
+            if (sharedWebViewChromium == null) {
+                throw new IllegalStateException(
+                        "Support lib method called on WebView that no longer exists.");
+            }
+
+            if (webViewNavigationClient == null) {
+                throw new NullPointerException("WebViewNavigationClient shouldn't be null");
+            }
+
+            sharedWebViewChromium
+                    .getAwContents()
+                    .getNavigationClient()
+                    .clearAndSetListener(
+                            new SupportLibWebViewNavigationClientAdapter(webViewNavigationClient));
+        }
+    }
 }
