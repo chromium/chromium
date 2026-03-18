@@ -173,7 +173,8 @@ double OscillatorHandler::ProcessARateVectorKernel(
   // Arm NEON doesn't have float64x2_t so we have to do this.  (Aarch64 has
   // float64x2_t.)
   double virt_index[4];
-  virt_index[0] = virtual_read_index;
+  virt_index[0] = WrapVirtualIndex(virtual_read_index, periodic_wave_size,
+                                   inv_periodic_wave_size);
   virt_index[1] = WrapVirtualIndex(virtual_read_index + incr_sum[0],
                                    periodic_wave_size, inv_periodic_wave_size);
   virt_index[2] = WrapVirtualIndex(virtual_read_index + incr_sum[1],
@@ -181,10 +182,18 @@ double OscillatorHandler::ProcessARateVectorKernel(
   virt_index[3] = WrapVirtualIndex(virtual_read_index + incr_sum[2],
                                    periodic_wave_size, inv_periodic_wave_size);
 
+  const float32x4_t v_wave_size = vdupq_n_f32(periodic_wave_size);
+  const float32x4_t v_inv_wave_size = vdupq_n_f32(inv_periodic_wave_size);
+
   // The virtual indices we're working with now.
-  const float32x4_t v_virt_index = {
+  float32x4_t v_virt_index = {
       static_cast<float>(virt_index[0]), static_cast<float>(virt_index[1]),
       static_cast<float>(virt_index[2]), static_cast<float>(virt_index[3])};
+
+  // It's possible that casting from double to float caused the index to
+  // be equal to periodic_wave_size, so wrap them if needed.
+  v_virt_index =
+      WrapVirtualIndexVector(v_virt_index, v_wave_size, v_inv_wave_size);
 
   // Convert virtual index to actual index into wave data, wrap the index
   // around if needed.
