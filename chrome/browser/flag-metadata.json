@@ -4160,6 +4160,14 @@
     "expiry_milestone": 150
   },
   {
+    "name": "enable-three-dot-menu-back-button",
+    "owners": [
+      "jtanaristy@google.com",
+      "lazzzis@google.com"
+    ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "enable-tls13-early-data",
     "owners": [ "davidben@chromium.org", "svaldez@chromium.org", "bashi@chromium.org" ],
     "expiry_milestone": 160

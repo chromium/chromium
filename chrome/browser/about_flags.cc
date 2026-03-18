@@ -13094,6 +13094,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kApb144Patch3Description, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kApb144Patch3)},
 #endif
+
+#if BUILDFLAG(IS_ANDROID)
+    {"enable-three-dot-menu-back-button",
+     flag_descriptions::kThreeDotMenuBackButtonName,
+     flag_descriptions::kThreeDotMenuBackButtonDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kThreeDotMenuBackButton)},
+#endif
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
