@@ -264,10 +264,26 @@ class SupervisedUserNavigationThrottleWithPrerenderingTest
  protected:
   SupervisedUserNavigationThrottleWithPrerenderingTest()
       : SupervisedUserNavigationThrottleTestBase(
-            supervised_user::SupervisionMixin::SignInMode::kSupervised) {}
+            supervised_user::SupervisionMixin::SignInMode::kSupervised),
+        prerender_test_helper_(base::BindRepeating(
+            &SupervisedUserNavigationThrottleWithPrerenderingTest::web_contents,
+            base::Unretained(this))) {
+    // Disable prefetch ahead of prerender, as it's slightly hard to wait
+    // prefetch load completion outside //content and avoid flakiness. The
+    // behavior difference is that the prefetch ahead of prerender makes
+    // `GetRequestCount()` 1. See a similar case
+    // `PrerenderBrowserTestFallbackEnabledDisabled.CrossSiteRedirection`.
+    //
+    // TODO(crbug.com/491911980): Improve a waiter to wait SpeculationRules
+    // prefetch outside //content.
+    prerender_test_helper_.DisablePrerender2FallbackPrefetchSpecRules();
+  }
   ~SupervisedUserNavigationThrottleWithPrerenderingTest() override = default;
 
   static std::string GetTargetHint() { return GetParam(); }
+
+ private:
+  content::test::PrerenderTestHelper prerender_test_helper_;
 };
 
 INSTANTIATE_TEST_SUITE_P(,
