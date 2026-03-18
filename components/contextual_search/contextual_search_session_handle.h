@@ -184,8 +184,8 @@ class ContextualSearchSessionHandle {
 
   // Notifies the metrics recorder that a query has been submitted, providing
   // information about the presence of tab and non-tab context.
-  void NotifyQuerySubmittedSessionState(
-      const std::vector<FileInfo>& file_infos);
+  void NotifyQuerySubmittedSessionState(const std::vector<FileInfo>& file_infos,
+                                        int query_text_length);
 
   // The list of uploaded but not yet committed context tokens for this
   // particular instance of the session. This list is unique to this instance of

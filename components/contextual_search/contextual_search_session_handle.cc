@@ -319,12 +319,10 @@ void ContextualSearchSessionHandle::CreateSearchUrl(
   }
 
   auto uploaded_file_infos = GetUploadedContextFileInfos();
-  NotifyQuerySubmittedSessionState(uploaded_file_infos);
-  std::string query_text = search_url_request_info->query_text;
+  NotifyQuerySubmittedSessionState(uploaded_file_infos,
+                                   search_url_request_info->query_text.size());
   metrics_recorder->NotifySessionStateChanged(
       contextual_search::SessionState::kNavigationOccurred);
-  metrics_recorder->RecordQueryMetrics(query_text.size(),
-                                       uploaded_context_tokens_.size());
 
   // If the request info has no file tokens, move the uploaded tokens to the
   // request. Otherwise, keep the file tokens as is and remove them from the
@@ -378,13 +376,11 @@ ContextualSearchSessionHandle::CreateClientToAimRequest(
       create_client_to_aim_request_info->file_tokens.begin(),
       create_client_to_aim_request_info->file_tokens.end());
 
-  if (auto* metrics_recorder = GetMetricsRecorder()) {
-    auto uploaded_file_infos = GetSubmittedContextFileInfos();
-    NotifyQuerySubmittedSessionState(uploaded_file_infos);
-    std::string query_text = create_client_to_aim_request_info->query_text;
-    metrics_recorder->RecordQueryMetrics(
-        query_text.size(),
-        create_client_to_aim_request_info->file_tokens.size());
+  if (GetMetricsRecorder()) {
+    NotifyQuerySubmittedSessionState(
+        TokensToFileInfos(GetController(),
+                          create_client_to_aim_request_info->file_tokens),
+        create_client_to_aim_request_info->query_text.size());
   }
 
   return context_controller->CreateClientToAimRequest(
@@ -443,7 +439,8 @@ ContextualSearchSessionHandle::AsWeakPtr() {
 }
 
 void ContextualSearchSessionHandle::NotifyQuerySubmittedSessionState(
-    const std::vector<FileInfo>& file_infos) {
+    const std::vector<FileInfo>& file_infos,
+    int query_text_length) {
   if (auto* metrics_recorder = GetMetricsRecorder()) {
     bool has_tab_context = false;
     bool has_non_tab_context = false;
@@ -454,8 +451,9 @@ void ContextualSearchSessionHandle::NotifyQuerySubmittedSessionState(
         has_non_tab_context = true;
       }
     }
-    metrics_recorder->NotifyQuerySubmitted(has_tab_context,
-                                           has_non_tab_context);
+    metrics_recorder->NotifyQuerySubmitted(has_tab_context, has_non_tab_context,
+                                           query_text_length,
+                                           file_infos.size());
   }
 }
 

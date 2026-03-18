@@ -102,7 +102,9 @@ class ContextualSearchMetricsRecorder {
 
   // Notifies the metrics recorder that a query was submitted.
   virtual void NotifyQuerySubmitted(bool has_tab_context,
-                                    bool has_non_tab_context);
+                                    bool has_non_tab_context,
+                                    int query_text_length,
+                                    int file_count);
 
   // Activates a funnel for metrics logging.
   virtual void ActivateMetricsFunnel(const std::string& funnel_name);
@@ -123,7 +125,10 @@ class ContextualSearchMetricsRecorder {
 
   // Records several metrics about the query, such the number of characters
   // found in the query.
-  void RecordQueryMetrics(int text_length, int file_count);
+  void RecordQueryMetrics(bool has_tab_context,
+                          bool has_non_tab_context,
+                          int text_length,
+                          int file_count);
 
   void RecordFileSizeMetric(lens::MimeType mime_type, uint64_t file_size_bytes);
 

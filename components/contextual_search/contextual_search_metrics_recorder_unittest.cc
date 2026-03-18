@@ -130,7 +130,9 @@ class ContextualSearchMetricsRecorderTest : public testing::Test {
 TEST_F(ContextualSearchMetricsRecorderTest, SubmitQueryWithoutContext) {
   metrics().NotifySessionStateChanged(SessionState::kSessionStarted);
   metrics().NotifyQuerySubmitted(/*has_tab_context=*/false,
-                                 /*has_non_tab_context=*/false);
+                                 /*has_non_tab_context=*/false,
+                                 /*query_text_length=*/0,
+                                 /*file_count=*/0);
 
   EXPECT_EQ(
       user_action_tester().GetActionCount(
@@ -144,7 +146,9 @@ TEST_F(ContextualSearchMetricsRecorderTest, SubmitQueryWithoutContext) {
 TEST_F(ContextualSearchMetricsRecorderTest, SubmitQueryWithTabContext) {
   metrics().NotifySessionStateChanged(SessionState::kSessionStarted);
   metrics().NotifyQuerySubmitted(/*has_tab_context=*/true,
-                                 /*has_non_tab_context=*/false);
+                                 /*has_non_tab_context=*/false,
+                                 /*query_text_length=*/0,
+                                 /*file_count=*/1);
 
   EXPECT_EQ(
       user_action_tester().GetActionCount(
@@ -158,7 +162,9 @@ TEST_F(ContextualSearchMetricsRecorderTest, SubmitQueryWithTabContext) {
 TEST_F(ContextualSearchMetricsRecorderTest, SubmitQueryWithNonTabContext) {
   metrics().NotifySessionStateChanged(SessionState::kSessionStarted);
   metrics().NotifyQuerySubmitted(/*has_tab_context=*/false,
-                                 /*has_non_tab_context=*/true);
+                                 /*has_non_tab_context=*/true,
+                                 /*query_text_length=*/0,
+                                 /*file_count=*/1);
 
   EXPECT_EQ(user_action_tester().GetActionCount(
                 "ContextualSearch.UserAction.SubmitQuery.WithNonTabContext."
@@ -172,7 +178,9 @@ TEST_F(ContextualSearchMetricsRecorderTest, SubmitQueryWithNonTabContext) {
 TEST_F(ContextualSearchMetricsRecorderTest, SubmitQueryWithBothContext) {
   metrics().NotifySessionStateChanged(SessionState::kSessionStarted);
   metrics().NotifyQuerySubmitted(/*has_tab_context=*/true,
-                                 /*has_non_tab_context=*/true);
+                                 /*has_non_tab_context=*/true,
+                                 /*query_text_length=*/0,
+                                 /*file_count=*/2);
 
   // Tab context should take precedence.
   EXPECT_EQ(
@@ -209,7 +217,9 @@ TEST_F(ContextualSearchMetricsRecorderTest, SessionCompleted) {
   metrics().NotifySessionStateChanged(SessionState::kSessionStarted);
   task_environment().FastForwardBy(base::Seconds(10));
   metrics().NotifyQuerySubmitted(/*has_tab_context=*/false,
-                                 /*has_non_tab_context=*/false);
+                                 /*has_non_tab_context=*/false,
+                                 /*query_text_length=*/0,
+                                 /*file_count=*/0);
   metrics().NotifySessionStateChanged(SessionState::kNavigationOccurred);
 
   DestructMetricsRecorder();
@@ -232,15 +242,18 @@ TEST_F(ContextualSearchMetricsRecorderTest, MultiQuerySubmissionSession) {
   metrics().NotifySessionStateChanged(SessionState::kSessionStarted);
   task_environment().FastForwardBy(base::Seconds(30));
   metrics().NotifyQuerySubmitted(/*has_tab_context=*/false,
-                                 /*has_non_tab_context=*/false);
-  metrics().RecordQueryMetrics(/*text_length=*/100, /*file_count=*/1);
+                                 /*has_non_tab_context=*/true,
+                                 /*query_text_length=*/100,
+                                 /*file_count=*/1);
   metrics().NotifySessionStateChanged(SessionState::kNavigationOccurred);
 
   // Mimic the session remaining open when the AIM page is opened in another
   // tab/window. In this case more queries can be submitted.
   task_environment().FastForwardBy(base::Seconds(60));
   metrics().NotifyQuerySubmitted(/*has_tab_context=*/false,
-                                 /*has_non_tab_context=*/false);
+                                 /*has_non_tab_context=*/false,
+                                 /*query_text_length=*/0,
+                                 /*file_count=*/0);
   metrics().NotifySessionStateChanged(SessionState::kNavigationOccurred);
 
   metrics().NotifySessionStateChanged(SessionState::kSessionAbandoned);
@@ -267,7 +280,10 @@ TEST_F(ContextualSearchMetricsRecorderTest, TextOnlyQuerySubmissionSession) {
   metrics().NotifySessionStateChanged(SessionState::kSessionStarted);
   int text_length = 1000;
   int file_count = 0;
-  metrics().RecordQueryMetrics(text_length, file_count);
+  metrics().NotifyQuerySubmitted(/*has_tab_context=*/false,
+                                 /*has_non_tab_context=*/false,
+                                 /*query_text_length=*/text_length,
+                                 /*file_count=*/file_count);
 
   histogram_tester().ExpectBucketCount(kContextualSearchQueryTextLength,
                                        text_length, 1);
@@ -283,7 +299,10 @@ TEST_F(ContextualSearchMetricsRecorderTest, FileOnlyQuerySubmissionSession) {
   metrics().NotifySessionStateChanged(SessionState::kSessionStarted);
   int text_length = 0;
   int file_count = 2;
-  metrics().RecordQueryMetrics(text_length, file_count);
+  metrics().NotifyQuerySubmitted(/*has_tab_context=*/true,
+                                 /*has_non_tab_context=*/true,
+                                 /*query_text_length=*/text_length,
+                                 /*file_count=*/file_count);
 
   histogram_tester().ExpectBucketCount(kContextualSearchQueryTextLength,
                                        text_length, 1);
@@ -299,7 +318,10 @@ TEST_F(ContextualSearchMetricsRecorderTest, MultimodalQuerySubmissionSession) {
   metrics().NotifySessionStateChanged(SessionState::kSessionStarted);
   int text_length = 1000;
   int file_count = 1;
-  metrics().RecordQueryMetrics(text_length, file_count);
+  metrics().NotifyQuerySubmitted(/*has_tab_context=*/true,
+                                 /*has_non_tab_context=*/false,
+                                 /*query_text_length=*/text_length,
+                                 /*file_count=*/file_count);
 
   histogram_tester().ExpectBucketCount(kContextualSearchQueryTextLength,
                                        text_length, 1);
@@ -730,9 +752,10 @@ TEST_F(ContextualSearchMetricsRecorderTest, FunnelMetrics) {
                                          ContextUploadErrorType::kServerError);
 
   // Simulate query submission.
-  metrics().NotifyQuerySubmitted(/*has_tab_context=*/false,
-                                 /*has_non_tab_context=*/false);
-  metrics().RecordQueryMetrics(/*text_length=*/100, /*file_count=*/2);
+  metrics().NotifyQuerySubmitted(/*has_tab_context=*/true,
+                                 /*has_non_tab_context=*/true,
+                                 /*query_text_length=*/100,
+                                 /*file_count=*/2);
   metrics().NotifySessionStateChanged(SessionState::kNavigationOccurred);
 
   DestructMetricsRecorder();

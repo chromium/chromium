@@ -543,8 +543,9 @@ TEST_F(ContextualSearchboxHandlerTest, SubmitQuery) {
       .WillRepeatedly([&](SessionState session_state) {
         session_states.push_back(session_state);
       });
-  EXPECT_CALL(*metrics_recorder_ptr,
-              NotifyQuerySubmitted(testing::_, testing::_))
+  EXPECT_CALL(
+      *metrics_recorder_ptr,
+      NotifyQuerySubmitted(testing::_, testing::_, testing::_, testing::_))
       .Times(1)
       .WillOnce(testing::Invoke(
           metrics_recorder_ptr,
@@ -612,8 +613,9 @@ TEST_F(ContextualSearchboxHandlerTest, SubmitQuery_DelayUpload) {
       .WillRepeatedly([&](SessionState session_state) {
         session_states.push_back(session_state);
       });
-  EXPECT_CALL(*metrics_recorder_ptr,
-              NotifyQuerySubmitted(testing::_, testing::_))
+  EXPECT_CALL(
+      *metrics_recorder_ptr,
+      NotifyQuerySubmitted(testing::_, testing::_, testing::_, testing::_))
       .Times(1)
       .WillOnce(testing::Invoke(
           metrics_recorder_ptr,
