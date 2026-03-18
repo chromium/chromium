@@ -1289,20 +1289,13 @@ const LayoutResult* BlockLayoutAlgorithm::FinishLayout(
     // Additionally this fragment produces no end margin strut.
 
     // If the current layout is a new formatting context, we need to encapsulate
-    // all of our floats, except for those that were hidden because of
-    // line-clamp.
-    if (constraint_space.IsNewFormattingContext()) {
-      LayoutUnit clearance =
-          GetExclusionSpace().NonHiddenClearanceOffsetIncludingInitialLetter();
-#ifdef DCHECK_ALWAYS_ON
-      if (!RuntimeEnabledFeatures::CSSLineClampEnabled() ||
-          !line_clamp_data_.previous_inflow_position_when_clamped) {
-        DCHECK_EQ(clearance,
-                  GetExclusionSpace().ClearanceOffsetIncludingInitialLetter(
-                      EClear::kBoth));
-      }
-#endif
-      intrinsic_block_size_ = std::max(intrinsic_block_size_, clearance);
+    // all of our floats. We only do this if we haven't line-clamped, though.
+    if (constraint_space.IsNewFormattingContext() &&
+        !line_clamp_data_.previous_inflow_position_when_clamped) {
+      intrinsic_block_size_ =
+          std::max(intrinsic_block_size_,
+                   GetExclusionSpace().ClearanceOffsetIncludingInitialLetter(
+                       EClear::kBoth));
     }
 
     if (!container_builder_.BfcBlockOffset()) {

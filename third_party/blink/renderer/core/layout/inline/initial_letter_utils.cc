@@ -133,8 +133,7 @@ const ExclusionArea* CreateExclusionSpaceForInitialLetterBox(
     BfcOffset origin,
     const BfcOffset& border_box_offset,
     const LogicalSize& border_box_size,
-    const BoxStrut& margins,
-    bool is_hidden_for_paint) {
+    const BoxStrut& margins) {
   // Note: In case of `margins.inline_start` or `margins.line_over` are
   // negative, left top of `ExclusionSpace` are out of `ConstraintSpace`.
   const BfcOffset local_start_offset(
@@ -176,7 +175,7 @@ const ExclusionArea* CreateExclusionSpaceForInitialLetterBox(
           margin_box_size.block_size);
 
   return ExclusionArea::CreateForInitialLetterBox(
-      BfcRect(start_offset, end_offset), float_type, is_hidden_for_paint);
+      BfcRect(start_offset, end_offset), float_type);
 }
 
 }  // namespace
@@ -316,8 +315,7 @@ const ExclusionArea* PostPlaceInitialLetterBox(
       BfcOffset(initial_letter_border_box_inline_offset,
                 initial_letter_border_box_block_offset +
                     line_info->ComputeInitialLetterBoxBlockStartAdjustment()),
-      initial_letter_box_size, initial_letter_box_margins,
-      initial_letter_box_fragment.IsHiddenForPaint());
+      initial_letter_box_size, initial_letter_box_margins);
 
   line_info->SetInitialLetterBoxBlockSize(exclusion->rect.BlockSize());
   return exclusion;

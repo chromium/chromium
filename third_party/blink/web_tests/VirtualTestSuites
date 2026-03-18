@@ -530,6 +530,7 @@
       "fast/deprecated-flexbox/line-clamp-removed-dynamically.html",
       "fast/overflow/line-clamp-and-columns.html",
       "fast/overflow/line-clamp-ellipsis-in-free-space.html",
+      "fast/overflow/line-clamp-floats-dont-grow-container.html",
       "fast/overflow/line-clamp-hides-trailing-anchor.html",
       "fast/overflow/line-clamp.html",
       "paint/invalidation/text-line-clamp-truncation.html"
@@ -6232,6 +6233,7 @@
       "fast/deprecated-flexbox/line-clamp-removed-dynamically.html",
       "fast/overflow/line-clamp-and-columns.html",
       "fast/overflow/line-clamp-ellipsis-in-free-space.html",
+      "fast/overflow/line-clamp-floats-dont-grow-container.html",
       "fast/overflow/line-clamp-hides-trailing-anchor.html",
       "fast/overflow/line-clamp.html",
       "paint/invalidation/text-line-clamp-truncation.html"

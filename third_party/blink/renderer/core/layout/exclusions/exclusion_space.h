@@ -132,10 +132,6 @@ class CORE_EXPORT ExclusionSpaceInternal final
     return initial_letter_right_clear_offset_;
   }
 
-  LayoutUnit NonHiddenClearanceOffsetIncludingInitialLetter() const {
-    return non_hidden_clear_offset_;
-  }
-
   void SetHasBreakBeforeFloat(EFloat type) {
     switch (type) {
       default:
@@ -436,11 +432,6 @@ class CORE_EXPORT ExclusionSpaceInternal final
   LayoutUnit initial_letter_left_clear_offset_ = LayoutUnit::Min();
   LayoutUnit initial_letter_right_clear_offset_ = LayoutUnit::Min();
 
-  // The clear offset for both left and right, including both floats and initial
-  // letters, for only content that isn't hidden for paint. Relevant for
-  // line-clamp.
-  LayoutUnit non_hidden_clear_offset_ = LayoutUnit::Min();
-
   // In order to reduce the amount of copies related to bookkeeping shape data,
   // we initially ignore exclusions with shape data. When we first see an
   // exclusion with shape data, we set this flag, and rebuild the
@@ -656,13 +647,6 @@ class CORE_EXPORT ExclusionSpace {
     if (!exclusion_space_)
       return LayoutUnit::Min();
     return exclusion_space_->ClearanceOffsetIncludingInitialLetter(clear_type);
-  }
-
-  LayoutUnit NonHiddenClearanceOffsetIncludingInitialLetter() const {
-    if (!exclusion_space_) {
-      return LayoutUnit::Min();
-    }
-    return exclusion_space_->NonHiddenClearanceOffsetIncludingInitialLetter();
   }
 
   LayoutUnit InitialLetterClearanceOffset(EClear clear_type) const {

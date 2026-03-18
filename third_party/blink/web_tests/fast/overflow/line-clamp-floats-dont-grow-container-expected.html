@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<title>Floats inside a line-clamp container don't grow the container's height</title>
+<style>
+.clamp {
+  background-color: yellow;
+}
+.float {
+  float: right;
+  background-color: skyblue;
+}
+</style>
+
+<div class="clamp">
+  <div class="float">
+    Line A <br>
+    Line B <br>
+    Line C <br>
+    Line D <br>
+    Line E
+  </div>
+  Line 1 <br>
+  Line 2 <br>
+  Line 3…
+</div>
