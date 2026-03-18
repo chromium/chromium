@@ -252,6 +252,8 @@ class OmniboxEditModel {
                       AutocompleteMatch* match,
                       GURL* alternate_nav_url) const;
 
+  void RecordAiModeButtonClick();
+
   // Navigates to AI Mode, with the contents of the currently selected match, if
   // any.
   // `via_keyboard` is set to `true` if AI Mode was invoked via keyboard event

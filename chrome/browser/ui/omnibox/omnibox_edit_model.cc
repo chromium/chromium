@@ -760,15 +760,9 @@ void OmniboxEditModel::EnterKeywordModeForDefaultSearchProvider(
                    u"");
 }
 
-void OmniboxEditModel::OpenAiMode(bool via_keyboard, bool via_context_menu) {
-  std::u16string query_text =
-      AutocompleteMatch::IsSearchType(current_match_.type)
-          ? current_match_.contents
-          : u"";
-  RecordAiModeMetrics(query_text, /*activated=*/true, via_keyboard);
-
-  using OEP = metrics::OmniboxEventProto;
-  OEP::PageClassification classification = GetPageClassification();
+void OmniboxEditModel::RecordAiModeButtonClick() {
+  OmniboxEventProto::PageClassification classification =
+      GetPageClassification();
   const char* surface = "WebOmnibox";
   if (omnibox::IsNtpOmnibox(classification)) {
     surface = "NtpOmnibox";
@@ -779,6 +773,18 @@ void OmniboxEditModel::OpenAiMode(bool via_keyboard, bool via_context_menu) {
       base::StrCat({"ContextualSearch.AiModeButtonClick.", surface});
   base::RecordAction(base::UserMetricsAction(action.c_str()));
   base::UmaHistogramBoolean(action, true);
+}
+
+void OmniboxEditModel::OpenAiMode(bool via_keyboard, bool via_context_menu) {
+  std::u16string query_text =
+      AutocompleteMatch::IsSearchType(current_match_.type)
+          ? current_match_.contents
+          : u"";
+  RecordAiModeMetrics(query_text, /*activated=*/true, via_keyboard);
+
+  if (!via_context_menu) {
+    RecordAiModeButtonClick();
+  }
 
   bool force_navigation_to_aim =
       !via_context_menu &&
