@@ -58,14 +58,6 @@ class MockManagerWithRequests : public MockPermissionManager {
        const base::OnceCallback<void(const std::vector<PermissionResult>&)>
            callback),
       (override));
-  MOCK_METHOD(
-      void,
-      RequestPermissions,
-      (RenderFrameHost * render_frame_host,
-       const PermissionRequestDescription& request_description,
-       const base::OnceCallback<void(const std::vector<PermissionResult>&)>
-           callback),
-      (override));
   MOCK_METHOD(bool,
               IsPermissionOverridable,
               (PermissionType,
@@ -219,13 +211,6 @@ class PermissionControllerImplTest : public ::testing::Test {
         render_frame_host, std::move(request_description), std::move(callback));
   }
 
-  void PermissionControllerRequestPermissions(
-      RenderFrameHost* render_frame_host,
-      PermissionRequestDescription request_description,
-      base::OnceCallback<void(const std::vector<PermissionResult>&)> callback) {
-    permission_controller()->RequestPermissions(
-        render_frame_host, std::move(request_description), std::move(callback));
-  }
 
   PermissionStatus GetPermissionStatusForWorker(
       PermissionType permission,
@@ -385,103 +370,6 @@ TEST_F(PermissionControllerImplTest,
   }
 }
 
-TEST_F(PermissionControllerImplTest,
-       RequestPermissionsDelegatesIffMissingOverrides) {
-  url::Origin kTestOrigin = url::Origin::Create(GURL(kTestUrl));
-  RenderViewHostTestEnabler enabler;
-
-  const std::vector<PermissionType> kTypesToQuery = {
-      PermissionType::GEOLOCATION, PermissionType::BACKGROUND_SYNC,
-      PermissionType::MIDI_SYSEX};
-
-  std::unique_ptr<WebContents> web_contents(
-      WebContentsTester::CreateTestWebContents(
-          WebContents::CreateParams(browser_context())));
-
-  WebContentsTester* web_contents_tester =
-      WebContentsTester::For(web_contents.get());
-  url::Origin testing_origin = url::Origin::Create(GURL(kTestUrl));
-  web_contents_tester->NavigateAndCommit(testing_origin.GetURL());
-
-  RenderFrameHost* rfh = web_contents->GetPrimaryMainFrame();
-  for (const auto& test_case : kTestPermissionRequestCases) {
-    // Need to reset overrides for each case to ensure delegation is as
-    // expected.
-    ResetPermissionOverridesAndWait();
-    for (const auto& permission_status_pair : test_case.overrides) {
-      SetPermissionOverrideAndWait(kTestOrigin, kTestOrigin,
-                                   permission_status_pair.first,
-                                   permission_status_pair.second);
-    }
-
-    // Expect request permission call if override are missing.
-    if (!test_case.delegated_permissions.empty()) {
-      auto forward_callbacks = testing::WithArg<2>(
-          [&test_case](
-              base::OnceCallback<void(const std::vector<PermissionResult>&)>
-                  callback) {
-            std::move(callback).Run(test_case.delegated_results);
-            return 0;
-          });
-      // Regular tests can set expectations.
-      if (test_case.expect_death) {
-        // Death tests cannot track these expectations but arguments should be
-        // forwarded to ensure death occurs.
-        ON_CALL(*mock_manager(),
-                RequestPermissions(
-                    rfh,
-                    PermissionRequestDescription(
-                        content::PermissionDescriptorUtil::
-                            CreatePermissionDescriptorForPermissionTypes(
-                                test_case.delegated_permissions),
-                        /*user_gesture*/ true, GURL(kTestUrl)),
-                    testing::_))
-            .WillByDefault(forward_callbacks);
-      } else {
-        EXPECT_CALL(*mock_manager(),
-                    RequestPermissions(
-                        rfh,
-                        PermissionRequestDescription(
-                            content::PermissionDescriptorUtil::
-                                CreatePermissionDescriptorForPermissionTypes(
-                                    test_case.delegated_permissions),
-                            /*user_gesture*/ true, GURL(kTestUrl)),
-                        testing::_))
-            .WillOnce(forward_callbacks);
-      }
-    } else {
-      // There should be no call to delegate if all overrides are defined.
-      EXPECT_CALL(*mock_manager(), RequestPermissionsFromCurrentDocument)
-          .Times(0);
-    }
-
-    if (test_case.expect_death) {
-      GTEST_FLAG_SET(death_test_style, "threadsafe");
-      base::MockCallback<RequestsCallback> callback;
-      EXPECT_DEATH_IF_SUPPORTED(
-          PermissionControllerRequestPermissions(
-              rfh,
-              PermissionRequestDescription(
-                  content::PermissionDescriptorUtil::
-                      CreatePermissionDescriptorForPermissionTypes(
-                          kTypesToQuery),
-                  /*user_gesture*/ true, GURL(kTestUrl)),
-              callback.Get()),
-          "");
-    } else {
-      base::MockCallback<RequestsCallback> callback;
-      EXPECT_CALL(callback,
-                  Run(testing::ElementsAreArray(test_case.expected_results)));
-      PermissionControllerRequestPermissions(
-          rfh,
-          PermissionRequestDescription(
-              content::PermissionDescriptorUtil::
-                  CreatePermissionDescriptorForPermissionTypes(kTypesToQuery),
-              /*user_gesture*/ true, GURL(kTestUrl)),
-          callback.Get());
-    }
-  }
-}
 
 TEST_F(PermissionControllerImplTest,
        NotifyChangedSubscriptionsCallsOnChangeOnly) {

@@ -503,50 +503,6 @@ void PermissionControllerImpl::ResetPermissionOverrides(
                                      std::move(callback));
 }
 
-void PermissionControllerImpl::RequestPermissions(
-    RenderFrameHost* render_frame_host,
-    PermissionRequestDescription request_description,
-    base::OnceCallback<void(const std::vector<PermissionResult>&)> callback) {
-  if (!IsRequestAllowed(request_description.permissions, render_frame_host,
-                        callback)) {
-    return;
-  }
-
-  for (const blink::mojom::PermissionDescriptorPtr& permission :
-       request_description.permissions) {
-    NotifySchedulerAboutPermissionRequest(
-        render_frame_host,
-        blink::PermissionDescriptorToPermissionType(permission));
-  }
-
-  std::vector<OverrideResult> override_results = OverridePermissions(
-      request_description, render_frame_host, permission_overrides_);
-
-  UpdateRenderFrameHostPostPermissionRequest(render_frame_host,
-                                             override_results);
-
-  auto wrapper = base::BindOnce(&MergeOverriddenAndDelegatedResults,
-                                std::move(callback), override_results);
-  if (request_description.permissions.empty()) {
-    std::move(wrapper).Run({});
-    return;
-  }
-
-  // Use delegate to find statuses of other permissions that have been requested
-  // but do not have overrides.
-  PermissionControllerDelegate* delegate =
-      browser_context_->GetPermissionControllerDelegate();
-  if (!delegate) {
-    std::move(wrapper).Run(std::vector<PermissionResult>(
-        request_description.permissions.size(),
-        PermissionResult(PermissionStatus::DENIED)));
-    return;
-  }
-
-  delegate->RequestPermissions(render_frame_host, request_description,
-                               std::move(wrapper));
-}
-
 void PermissionControllerImpl::RequestPermissionFromCurrentDocument(
     RenderFrameHost* render_frame_host,
     PermissionRequestDescription request_description,
@@ -571,8 +527,17 @@ void PermissionControllerImpl::RequestPermissionsFromCurrentDocument(
         blink::PermissionDescriptorToPermissionType(permission));
   }
 
-  request_description.requesting_origin =
-      render_frame_host->GetLastCommittedOrigin().GetURL();
+  // For most permission requests, the requesting origin is empty and should be
+  // set to the last committed origin of the render frame host. The only
+  // exception is for ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS permission
+  // that allows to request permission from an arbitrary origin. In this case,
+  // the requesting origin is set to the origin will be overridden by the
+  // caller. It happens in PermissionServiceImpl::RequestPermissionsInternal().
+  // https://source.chromium.org/chromium/chromium/src/+/main:content/browser/permissions/permission_service_impl.cc;l=372;drc=505712460e7450306d9bec1c7306bf97140d45c8
+  if (request_description.requesting_origin.is_empty()) {
+    request_description.requesting_origin =
+        render_frame_host->GetLastCommittedOrigin().GetURL();
+  }
   std::vector<OverrideResult> override_results = OverridePermissions(
       request_description, render_frame_host, permission_overrides_);
 

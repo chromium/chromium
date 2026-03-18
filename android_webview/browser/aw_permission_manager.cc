@@ -253,7 +253,7 @@ AwPermissionManager::~AwPermissionManager() {
   CancelPermissionRequests();
 }
 
-void AwPermissionManager::RequestPermissions(
+void AwPermissionManager::RequestPermissionsFromCurrentDocument(
     content::RenderFrameHost* render_frame_host,
     const content::PermissionRequestDescription& request_description,
     base::OnceCallback<void(const std::vector<content::PermissionResult>&)>
@@ -487,14 +487,6 @@ void AwPermissionManager::ResetPermission(PermissionType permission,
   result_cache_->ClearResult(permission, requesting_origin, embedding_origin);
 }
 
-void AwPermissionManager::RequestPermissionsFromCurrentDocument(
-    content::RenderFrameHost* render_frame_host,
-    const content::PermissionRequestDescription& request_description,
-    base::OnceCallback<void(const std::vector<content::PermissionResult>&)>
-        callback) {
-  RequestPermissions(render_frame_host, request_description,
-                     std::move(callback));
-}
 
 PermissionStatus AwPermissionManager::GetPermissionStatus(
     const blink::mojom::PermissionDescriptorPtr& permission_descriptor,

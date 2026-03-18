@@ -37,25 +37,9 @@ class CONTENT_EXPORT PermissionControllerDelegate {
  public:
   virtual ~PermissionControllerDelegate();
 
-  // Requests multiple permissions on behalf of a frame identified by
-  // |render_frame_host|. When the permission request is handled, whether it
-  // failed, timed out or succeeded, the |callback| will be run. The order of
-  // statuses in the returned vector will correspond to the order of requested
-  // permission types.
-  // TODO(crbug.com/40275129): `RequestPermissions` and
-  // `RequestPermissionsFromCurrentDocument` do exactly the same things. Merge
-  // them together.
-  virtual void RequestPermissions(
-      RenderFrameHost* render_frame_host,
-      const PermissionRequestDescription& request_description,
-      base::OnceCallback<void(const std::vector<PermissionResult>&)>
-          callback) = 0;
-
-  // Requests permissions from the current document in the given
-  // RenderFrameHost. Use this over `RequestPermission` whenever possible as
-  // this API takes into account the lifecycle state of a given document (i.e.
-  // whether it's in back-forward cache or being prerendered) in addition to its
-  // origin.
+  // Requests permissions from the given RenderFrameHost. This API takes into
+  // account the lifecycle state of a given document (i.e. whether it's in
+  // back-forward cache or being prerendered) in addition to its origin.
   virtual void RequestPermissionsFromCurrentDocument(
       RenderFrameHost* render_frame_host,
       const PermissionRequestDescription& request_description,

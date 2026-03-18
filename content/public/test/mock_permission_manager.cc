@@ -13,10 +13,6 @@ MockPermissionManager::MockPermissionManager() = default;
 
 MockPermissionManager::~MockPermissionManager() = default;
 
-void MockPermissionManager::RequestPermissions(
-    RenderFrameHost* render_frame_host,
-    const PermissionRequestDescription& request_description,
-    base::OnceCallback<void(const std::vector<PermissionResult>&)> callback) {}
 
 void MockPermissionManager::ResetPermission(blink::PermissionType permission,
                                             const GURL& requesting_origin,

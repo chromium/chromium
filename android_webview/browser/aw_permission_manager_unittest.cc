@@ -231,7 +231,7 @@ class AwPermissionManagerTest : public testing::Test {
       base::OnceCallback<void(
           const std::vector<content::PermissionResult>& status)> callback) {
     CHECK(manager);
-    manager->RequestPermissions(
+    manager->RequestPermissionsFromCurrentDocument(
         rfh,
         content::PermissionRequestDescription(
             content::PermissionDescriptorUtil::

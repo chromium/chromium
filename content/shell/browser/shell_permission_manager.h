@@ -25,11 +25,6 @@ class ShellPermissionManager : public PermissionControllerDelegate {
   ~ShellPermissionManager() override;
 
   // PermissionManager implementation.
-  void RequestPermissions(
-      RenderFrameHost* render_frame_host,
-      const PermissionRequestDescription& request_description,
-      base::OnceCallback<void(const std::vector<PermissionResult>&)> callback)
-      override;
   void ResetPermission(blink::PermissionType permission,
                        const GURL& requesting_origin,
                        const GURL& embedding_origin) override;

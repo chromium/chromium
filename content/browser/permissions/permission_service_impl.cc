@@ -373,7 +373,7 @@ void PermissionServiceImpl::RequestPermissionsInternal(
     int pending_request_id =
         CreatePendingRequest(permissions, std::move(callback));
     PermissionControllerImpl::FromBrowserContext(browser_context)
-        ->RequestPermissions(
+        ->RequestPermissionsFromCurrentDocument(
             context_->render_frame_host(), std::move(request_description),
             base::BindOnce(&PermissionServiceImpl::OnRequestPermissionsResponse,
                            weak_factory_.GetWeakPtr(), pending_request_id));

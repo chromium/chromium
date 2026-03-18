@@ -156,13 +156,6 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
       const url::Origin& embedding_origin) override;
   // WARNING: Permission requests order is not guaranteed.
   // TODO(crbug.com/40864728): Migrate to `std::set`.
-  // TODO(crbug.com/40275129): `RequestPermissions` and
-  // `RequestPermissionsFromCurrentDocument` do exactly the same things.
-  // Merge them together.
-  void RequestPermissions(
-      RenderFrameHost* render_frame_host,
-      PermissionRequestDescription request_description,
-      base::OnceCallback<void(const std::vector<PermissionResult>&)> callback);
   void RequestPermissionFromCurrentDocument(
       RenderFrameHost* render_frame_host,
       PermissionRequestDescription request_description,

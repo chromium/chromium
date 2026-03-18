@@ -97,11 +97,6 @@ class PermissionManager : public KeyedService,
   PermissionContextBase* GetPermissionContext(ContentSettingsType type);
 
   // content::PermissionControllerDelegate implementation.
-  void RequestPermissions(
-      content::RenderFrameHost* render_frame_host,
-      const content::PermissionRequestDescription& request_description,
-      base::OnceCallback<void(const std::vector<content::PermissionResult>&)>
-          callback) override;
   void RequestPermissionsInternal(
       content::RenderFrameHost* render_frame_host,
       const content::PermissionRequestDescription& request_description,

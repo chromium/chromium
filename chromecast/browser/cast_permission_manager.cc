@@ -137,18 +137,6 @@ CastPermissionManager::CastPermissionManager() {}
 
 CastPermissionManager::~CastPermissionManager() {}
 
-void CastPermissionManager::RequestPermissions(
-    content::RenderFrameHost* render_frame_host,
-    const content::PermissionRequestDescription& request_description,
-    base::OnceCallback<void(const std::vector<content::PermissionResult>&)>
-        callback) {
-  std::vector<content::PermissionResult> permission_results;
-  for (const auto& permission : request_description.permissions) {
-    permission_results.emplace_back(GetPermissionStatusInternal(
-        permission, render_frame_host, request_description.requesting_origin));
-  }
-  std::move(callback).Run(permission_results);
-}
 
 void CastPermissionManager::ResetPermission(blink::PermissionType permission,
                                             const GURL& requesting_origin,
@@ -162,8 +150,7 @@ void CastPermissionManager::RequestPermissionsFromCurrentDocument(
   std::vector<content::PermissionResult> permission_results;
   for (const auto& permission : request_description.permissions) {
     permission_results.emplace_back(GetPermissionStatusInternal(
-        permission, render_frame_host,
-        render_frame_host->GetLastCommittedOrigin().GetURL()));
+        permission, render_frame_host, request_description.requesting_origin));
   }
   std::move(callback).Run(permission_results);
 }

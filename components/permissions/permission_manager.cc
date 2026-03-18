@@ -209,15 +209,6 @@ PermissionContextBase* PermissionManager::GetPermissionContext(
   return it == permission_contexts_.end() ? nullptr : it->second.get();
 }
 
-void PermissionManager::RequestPermissions(
-    content::RenderFrameHost* render_frame_host,
-    const content::PermissionRequestDescription& request_description,
-    base::OnceCallback<void(const std::vector<content::PermissionResult>&)>
-        permission_status_callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  RequestPermissionsInternal(render_frame_host, request_description,
-                             std::move(permission_status_callback));
-}
 
 void PermissionManager::RequestPermissionsInternal(
     content::RenderFrameHost* render_frame_host,

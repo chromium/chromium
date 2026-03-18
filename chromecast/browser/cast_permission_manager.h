@@ -28,11 +28,6 @@ class CastPermissionManager : public content::PermissionControllerDelegate {
   ~CastPermissionManager() override;
 
   // content::PermissionControllerDelegate implementation:
-  void RequestPermissions(
-      content::RenderFrameHost* render_frame_host,
-      const content::PermissionRequestDescription& request_description,
-      base::OnceCallback<void(const std::vector<content::PermissionResult>&)>
-          callback) override;
   void ResetPermission(blink::PermissionType permission,
                        const GURL& requesting_origin,
                        const GURL& embedding_origin) override;
