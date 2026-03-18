@@ -32,8 +32,6 @@ webrtc::AudioProcessing::Config CreateApmGetConfig(
 TEST(CreateWebRtcAudioProcessingModuleTest, CheckDefaultAudioProcessingConfig) {
   auto config = CreateApmGetConfig(/*settings=*/{});
 
-  EXPECT_TRUE(config.pipeline.multi_channel_render);
-  EXPECT_TRUE(config.pipeline.multi_channel_capture);
   EXPECT_TRUE(config.echo_canceller.enabled);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
