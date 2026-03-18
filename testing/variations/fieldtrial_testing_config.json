@@ -9563,6 +9563,24 @@
             ]
         }
     ],
+    "ExtensionServiceWorkerVoter": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ExtensionServiceWorkerVoter"
+                    ]
+                }
+            ]
+        }
+    ],
     "ExtensionsToolbarAndMenuRedesign": [
         {
             "platforms": [
