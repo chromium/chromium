@@ -2927,7 +2927,10 @@ MinMaxSizesResult FlexLayoutAlgorithm::ComputeMinMaxSizes(
     return ComputeMinMaxSizeOfMultilineColumnContainer();
   }
 
-  // Calculate for non-wrappable column items.
+  // Calculate for non-wrappable column items. Although the
+  // ComputeMinMaxSizeOfMultilineColumnContainer() machinery would be fully
+  // capable of handling this scenario as well, we have a fast-path for
+  // performance reasons. See crrev.com/c/7661041
   MinMaxSizes sizes;
   bool depends_on_block_constraints = false;
 
