@@ -21,6 +21,7 @@
 #include "remoting/base/logging.h"
 #include "remoting/base/rsa_key_pair.h"
 #include "remoting/signaling/corp_messaging_client.h"
+#include "remoting/signaling/jingle_message_struct_converter.h"
 #include "remoting/signaling/signaling_address.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -185,7 +186,13 @@ bool CorpSignalStrategy::Core::Send(T&& message, const char* message_type) {
       message_type);
 
   internal::IqStanzaStruct iq_stanza;
-  iq_stanza.xml = message.ToSerializedXml();
+  if constexpr (std::is_same_v<std::decay_t<T>, JingleMessage>) {
+    iq_stanza = JingleMessageToStruct(message);
+  } else {
+    iq_stanza = JingleMessageReplyToStruct(message);
+  }
+  // Ensure we use the latest local address for the sender.
+  iq_stanza.sender = SignalingAddressToJabberIdStruct(local_address_);
 
   internal::PeerMessageStruct peer_message;
   peer_message.payload = std::move(iq_stanza);
@@ -219,11 +226,6 @@ void CorpSignalStrategy::Core::OnIncomingMessage(
     return;
   }
 
-  auto parsed_message = SignalStrategy::ParseStanzaXml(iq_stanza_struct->xml);
-  if (!parsed_message.has_value()) {
-    return;
-  }
-
   // TODO: joedow - Associate `messaging_authz_token_` with the sender JID. One
   // way to do this is to update SignalingAddress to include a token field so
   // it is associated with the sender JID.
@@ -237,18 +239,28 @@ void CorpSignalStrategy::Core::OnIncomingMessage(
     messaging_authz_token_ = authz_token;
   }
 
-  for (auto& listener : listeners_) {
-    if (const auto* jm = std::get_if<JingleMessage>(&*parsed_message)) {
-      if (listener.OnSignalingMessage(sender_address, *jm)) {
-        return;
-      }
-    } else {
-      if (listener.OnSignalingReply(
-              sender_address, std::get<JingleMessageReply>(*parsed_message))) {
+  JingleMessage jingle_message;
+  std::string error;
+  if (JingleMessageFromStruct(*iq_stanza_struct, &jingle_message, &error)) {
+    for (auto& listener : listeners_) {
+      if (listener.OnSignalingMessage(sender_address, jingle_message)) {
         return;
       }
     }
+    return;
   }
+
+  JingleMessageReply jingle_reply;
+  if (JingleMessageReplyFromStruct(*iq_stanza_struct, &jingle_reply)) {
+    for (auto& listener : listeners_) {
+      if (listener.OnSignalingReply(sender_address, jingle_reply)) {
+        return;
+      }
+    }
+    return;
+  }
+
+  LOG(WARNING) << "Failed to parse incoming Jingle message or reply: " << error;
 }
 
 void CorpSignalStrategy::Core::OnChannelReady() {
