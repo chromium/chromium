@@ -442,9 +442,16 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   gpu::raster::RasterInterface* RasterInterface() const;
   void EnsureWriteAccess();
   void EndWriteAccess();
-  std::unique_ptr<gpu::RasterScopedAccess> WillDrawInternal();
 
   CanvasImageProvider* GetOrCreateCanvasImageProvider();
+
+  scoped_refptr<CanvasResourceSharedImage> NewOrRecycledResource();
+  bool IsResourceUsable(CanvasResourceSharedImage* resource);
+  bool ShouldReplaceTargetBuffer(
+      PaintImage::ContentId content_id = PaintImage::kInvalidContentId);
+
+  cc::PaintImage::ContentId cached_content_id_ =
+      cc::PaintImage::kInvalidContentId;
 
   scoped_refptr<StaticBitmapImage> cached_snapshot_;
 
@@ -486,13 +493,9 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
 
   void RegisterUnusedResource(
       scoped_refptr<CanvasResourceSharedImage>&& resource);
-  scoped_refptr<CanvasResourceSharedImage> NewOrRecycledResource();
-  bool IsResourceUsable(CanvasResourceSharedImage* resource);
   const CanvasResourceSharedImage* resource() const {
     return static_cast<const CanvasResourceSharedImage*>(resource_.get());
   }
-  bool ShouldReplaceTargetBuffer(
-      PaintImage::ContentId content_id = PaintImage::kInvalidContentId);
 
   void RecycleResource(scoped_refptr<CanvasResourceSharedImage>&& resource);
   void MaybePostUnusedResourcesReclaimTask();
@@ -520,9 +523,6 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   scoped_refptr<viz::RasterContextProvider> raster_context_provider_;
   base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>
       shared_image_interface_provider_;
-
-  cc::PaintImage::ContentId cached_content_id_ =
-      cc::PaintImage::kInvalidContentId;
 
   bool notified_context_lost_ = false;
   base::WeakPtrFactory<CanvasResourceProviderSharedImage> weak_ptr_factory_{
@@ -609,6 +609,9 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
   // of this resource (whether via raster or the compositor) waits on this
   // token.
   void TransferBackFromWebGPU(const gpu::SyncToken& webgpu_write_sync_token);
+
+ private:
+  std::unique_ptr<gpu::RasterScopedAccess> WillDrawInternal();
 };
 
 // * Subclass of CanvasResourceProviderSharedImage that is specialized for usage
@@ -738,6 +741,9 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
   // write have completed. Ensures that the next read of this resource (whether
   // via raster or the compositor) waits on this token.
   void EndExternalWrite(const gpu::SyncToken& external_write_sync_token);
+
+ private:
+  std::unique_ptr<gpu::RasterScopedAccess> WillDrawInternal();
 };
 
 }  // namespace blink
