@@ -71,6 +71,7 @@ ar = "$LLVM_BIN/llvm-ar"
 cc = "$LLVM_BIN/clang"
 cxx = "$LLVM_BIN/clang++"
 linker = "$LLVM_BIN/clang"
+jemalloc = true
 
 [target.x86_64-apple-darwin]
 llvm-config = "$LLVM_BIN/llvm-config"
@@ -80,6 +81,7 @@ ar = "$LLVM_BIN/llvm-ar"
 cc = "$LLVM_BIN/clang"
 cxx = "$LLVM_BIN/clang++"
 linker = "$LLVM_BIN/clang"
+jemalloc = true
 
 [target.x86_64-unknown-linux-gnu]
 llvm-config = "$LLVM_BIN/llvm-config"
@@ -89,4 +91,5 @@ ar = "$LLVM_BIN/llvm-ar"
 cc = "$LLVM_BIN/clang"
 cxx = "$LLVM_BIN/clang++"
 linker = "$LLVM_BIN/clang"
+jemalloc = true
 
