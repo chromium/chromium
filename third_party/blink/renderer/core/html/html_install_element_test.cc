@@ -430,4 +430,30 @@ TEST_F(HTMLInstallElementTestBase, InvalidUrlMakesElementInvalid) {
   // web_install_service_ should NOT have been called since the URL is invalid.
 }
 
+TEST_F(HTMLInstallElementTestBase, InvalidManifestIdMakesElementInvalid) {
+  // Create the element with a valid installurl but an invalid manifestid.
+  HTMLInstallElement* element =
+      MakeGarbageCollected<HTMLInstallElement>(GetDocument());
+  element->setAttribute(html_names::kInstallurlAttr,
+                        AtomicString(kExampleSite));
+  element->setAttribute(html_names::kManifestidAttr,
+                        AtomicString("not a valid url"));
+  WaitForElementRegistration(element);
+
+  // Fast forward to ensure the element is not disabled by any temporary
+  // disabled reasons.
+  task_environment().FastForwardBy(base::Milliseconds(500));
+
+  // Disable bypass feature before event to evaluate element state.
+  ScopedBypassPepcSecurityForTestingForTest scoped_feature(false);
+  element->DispatchEvent(*Event::Create(event_type_names::kDOMActivate));
+
+  EXPECT_FALSE(element->IsClickingEnabled());
+  EXPECT_FALSE(element->isValid());
+  EXPECT_EQ(element->invalidReason(), String(kInstallDataInvalidReason));
+
+  // web_install_service_ should NOT have been called since the manifestid is
+  // invalid.
+}
+
 }  // namespace blink

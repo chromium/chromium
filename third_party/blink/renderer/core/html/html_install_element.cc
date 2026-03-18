@@ -215,7 +215,10 @@ mojom::blink::InstallOptionsPtr HTMLInstallElement::GetCheckedInstallOptions() {
   // for data validation on the installurl. manifestid match check is handled
   // by WebInstallUrlCommand.
   KURL manifest_id_url = KURL(ManifestId());
-  if (manifest_id_url.IsValid()) {
+  if (!ManifestId().empty()) {
+    if (!manifest_id_url.IsValid()) {
+      return nullptr;
+    }
     options->manifest_id = manifest_id_url;
   }
   return options;
