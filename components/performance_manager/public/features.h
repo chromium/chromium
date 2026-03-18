@@ -197,6 +197,14 @@ BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
 // enabled.
 BASE_DECLARE_FEATURE_PARAM(int, kInfiniteTabsFreezingOnMemoryPressurePercent);
 
+// If enabled, tabs may be discarded on Windows when the system approaches the
+// commit limit.
+BASE_DECLARE_FEATURE(kDiscardOnCommitLimit);
+
+// The available commit memory percentage below which to trigger discarding when
+// enabled.
+BASE_DECLARE_FEATURE_PARAM(int, kDiscardOnCommitLimit_MinAvailablePercent);
+
 // When enabled, Resource Attribution measurements will include contexts for
 // individual origins.
 BASE_DECLARE_FEATURE(kResourceAttributionIncludeOrigins);

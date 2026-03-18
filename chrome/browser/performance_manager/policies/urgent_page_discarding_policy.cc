@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
 #include "chrome/browser/performance_manager/policies/policy_features.h"
+#include "components/performance_manager/public/features.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -44,6 +45,13 @@ UrgentPageDiscardingPolicy::UrgentPageDiscardingPolicy()
           base::BindRepeating(
               &UrgentPageDiscardingPolicy::HandleMemoryPressureEvent,
               base::Unretained(this))) {
+#if BUILDFLAG(IS_WIN)
+  if (base::FeatureList::IsEnabled(
+          performance_manager::features::kDiscardOnCommitLimit)) {
+    monitor_ = base::AvailableMemoryMonitor::Get();
+  }
+#endif
+
   if (base::FeatureList::IsEnabled(features::kSustainedPMUrgentDiscarding)) {
     sustained_memory_pressure_evaluator_.emplace(base::BindRepeating(
         &UrgentPageDiscardingPolicy::OnSustainedMemoryPressure,
@@ -53,8 +61,16 @@ UrgentPageDiscardingPolicy::UrgentPageDiscardingPolicy()
         FROM_HERE, base::MemoryPressureListenerTag::kUrgentPageDiscardingPolicy,
         this);
   }
+
+  if (monitor_) {
+    monitor_->AddObserver(this);
+  }
 }
-UrgentPageDiscardingPolicy::~UrgentPageDiscardingPolicy() = default;
+UrgentPageDiscardingPolicy::~UrgentPageDiscardingPolicy() {
+  if (monitor_) {
+    monitor_->RemoveObserver(this);
+  }
+}
 
 void UrgentPageDiscardingPolicy::OnPassedToGraph(Graph* graph) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -108,7 +124,34 @@ void UrgentPageDiscardingPolicy::OnMemoryPressure(
     return;
   }
 
+  if (monitor_) {
+    // When kDiscardOnCommitLimit is enabled on Windows, this policy discards
+    // pages based on the available commit space instead of memory pressure
+    // signals.
+    return;
+  }
+
   HandleMemoryPressureEvent();
+}
+
+void UrgentPageDiscardingPolicy::OnAvailableMemoryUpdated(
+    const base::AvailableMemoryMonitor::MemorySample& sample) {
+#if BUILDFLAG(IS_WIN)
+  if (sample.total_commit_bytes.is_zero()) {
+    return;
+  }
+
+  double available_percent = (sample.available_commit_bytes.InBytesF() /
+                              sample.total_commit_bytes.InBytesF()) *
+                             100.0;
+  double threshold =
+      performance_manager::features::kDiscardOnCommitLimit_MinAvailablePercent
+          .Get();
+
+  if (available_percent < threshold) {
+    HandleMemoryPressureEvent();
+  }
+#endif
 }
 
 void UrgentPageDiscardingPolicy::OnSustainedMemoryPressure(

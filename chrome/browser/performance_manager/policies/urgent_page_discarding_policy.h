@@ -7,7 +7,9 @@
 
 #include <optional>
 
+#include "base/memory/available_memory_monitor.h"
 #include "base/memory/memory_pressure_listener.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
@@ -21,8 +23,10 @@ namespace performance_manager {
 namespace policies {
 
 // Urgently discard a tab when receiving a memory pressure signal.
-class UrgentPageDiscardingPolicy : public GraphOwned,
-                                   public base::MemoryPressureListener {
+class UrgentPageDiscardingPolicy
+    : public GraphOwned,
+      public base::MemoryPressureListener,
+      public base::AvailableMemoryMonitor::Observer {
  public:
   UrgentPageDiscardingPolicy();
   ~UrgentPageDiscardingPolicy() override;
@@ -40,6 +44,10 @@ class UrgentPageDiscardingPolicy : public GraphOwned,
  private:
   // base::MemoryPressureListener:
   void OnMemoryPressure(base::MemoryPressureLevel new_level) override;
+
+  // base::AvailableMemoryMonitor::Observer:
+  void OnAvailableMemoryUpdated(
+      const base::AvailableMemoryMonitor::MemorySample& sample) override;
 
   // Callback for `sustained_memory_pressure_evaluator_`.
   void OnSustainedMemoryPressure(bool is_sustained_memory_pressure);
@@ -63,6 +71,8 @@ class UrgentPageDiscardingPolicy : public GraphOwned,
   // Determines if the system is in a sustained memory pressure state.
   std::optional<SustainedMemoryPressureEvaluator>
       sustained_memory_pressure_evaluator_;
+
+  raw_ptr<base::AvailableMemoryMonitor> monitor_ = nullptr;
 
   // While in a sustained memory pressure state, continue discarding a tab every
   // time the timer fires.
