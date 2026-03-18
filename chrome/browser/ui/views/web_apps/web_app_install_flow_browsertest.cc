@@ -126,15 +126,9 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallFlowBrowserTest, DetailedInstallFlow) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppInstallFlowBrowserTest, DiyInstallFlow) {
-  GURL app_url =
-      https_server()->GetURL("/banners/manifest_no_service_worker.html");
-  // Navigate to a non-promotable page (has manifest but no service worker).
-  ASSERT_TRUE(NavigateAndAwaitInstallabilityCheck(browser(), app_url));
-
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    auto* icon = GetPwaInstallIconView();
-    return icon && icon->GetVisible();
-  }));
+  // Navigate to a page that is not installable.
+  GURL app_url = https_server()->GetURL("/banners/no_manifest_test_page.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), app_url));
 
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                        "WebAppInstallFlowDialog");
