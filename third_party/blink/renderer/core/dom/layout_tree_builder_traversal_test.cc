@@ -98,13 +98,9 @@ TEST_F(LayoutTreeBuilderTraversalTest, displayContentsChildren) {
 
   EXPECT_EQ(inner->GetLayoutObject(),
             LayoutTreeBuilderTraversal::NextSiblingLayoutObject(*first));
-  EXPECT_EQ(first->GetLayoutObject(),
-            LayoutTreeBuilderTraversal::PreviousSiblingLayoutObject(*inner));
 
   EXPECT_EQ(last->GetLayoutObject(),
             LayoutTreeBuilderTraversal::NextSiblingLayoutObject(*inner));
-  EXPECT_EQ(inner->GetLayoutObject(),
-            LayoutTreeBuilderTraversal::PreviousSiblingLayoutObject(*last));
 }
 
 TEST_F(LayoutTreeBuilderTraversalTest, displayContentsChildrenNested) {
@@ -132,18 +128,12 @@ TEST_F(LayoutTreeBuilderTraversalTest, displayContentsChildrenNested) {
 
   EXPECT_EQ(inner->GetLayoutObject(),
             LayoutTreeBuilderTraversal::NextSiblingLayoutObject(*first));
-  EXPECT_EQ(first->GetLayoutObject(),
-            LayoutTreeBuilderTraversal::PreviousSiblingLayoutObject(*inner));
 
   EXPECT_EQ(sibling->GetLayoutObject(),
             LayoutTreeBuilderTraversal::NextSiblingLayoutObject(*inner));
-  EXPECT_EQ(inner->GetLayoutObject(),
-            LayoutTreeBuilderTraversal::PreviousSiblingLayoutObject(*sibling));
 
   EXPECT_EQ(last->GetLayoutObject(),
             LayoutTreeBuilderTraversal::NextSiblingLayoutObject(*sibling));
-  EXPECT_EQ(sibling->GetLayoutObject(),
-            LayoutTreeBuilderTraversal::PreviousSiblingLayoutObject(*last));
 }
 
 TEST_F(LayoutTreeBuilderTraversalTest, limits) {

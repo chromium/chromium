@@ -861,20 +861,6 @@ LayoutObject* LayoutTreeBuilderTraversal::NextSiblingLayoutObject(
   return nullptr;
 }
 
-LayoutObject* LayoutTreeBuilderTraversal::PreviousSiblingLayoutObject(
-    const Node& node,
-    int32_t limit) {
-  DCHECK(limit == kTraverseAllSiblings || limit >= 0) << limit;
-  for (Node* sibling = PreviousLayoutSibling(node, limit);
-       sibling && limit != -1;
-       sibling = PreviousLayoutSibling(*sibling, limit)) {
-    LayoutObject* layout_object = sibling->GetLayoutObject();
-    if (layout_object && !IsLayoutObjectReparented(layout_object))
-      return layout_object;
-  }
-  return nullptr;
-}
-
 LayoutObject* LayoutTreeBuilderTraversal::NextInTopLayer(
     const Element& element) {
   CHECK(element.ComputedStyleRef().IsRenderedInTopLayer(element))

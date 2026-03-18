@@ -65,9 +65,6 @@ class CORE_EXPORT LayoutTreeBuilderTraversal {
   static LayoutObject* NextSiblingLayoutObject(
       const Node&,
       int32_t limit = kTraverseAllSiblings);
-  static LayoutObject* PreviousSiblingLayoutObject(
-      const Node&,
-      int32_t limit = kTraverseAllSiblings);
   static LayoutObject* NextInTopLayer(const Element&);
 
   static inline Element* ParentElement(const Node& node) {
