@@ -15,6 +15,7 @@
 #include "components/variations/active_field_trials.h"
 #include "components/variations/net/variations_command_line.h"
 #include "components/variations/service/safe_seed_manager.h"
+#include "components/variations/service/variations_service.h"
 #include "components/variations/synthetic_trials_active_group_id_provider.h"
 
 namespace version_ui {
@@ -46,6 +47,33 @@ std::string SeedTypeToUiString(variations::SeedType seed_type) {
     case variations::SeedType::kNullSeed:
       return "Null";
   }
+}
+
+std::string VariationsSourceToUiString(
+    variations::VariationsSource variations_source) {
+  std::string result = "unknown";
+  switch (variations_source.type) {
+    case variations::VariationsSourceType::kUnknown:
+      return result;
+    case variations::VariationsSourceType::kCommandLineOrAboutFlags:
+      return "command line or about flags";
+    case variations::VariationsSourceType::kDefaultSeed:
+      result = "default seed";
+      break;
+    case variations::VariationsSourceType::kFieldTrialConfig:
+      result = "field-trial-config";
+      break;
+    case variations::VariationsSourceType::kVariationsServer:
+      result = "variations server";
+      break;
+    case variations::VariationsSourceType::kManualConfigFile:
+      result = "manual config file";
+      break;
+  }
+  if (variations_source.forced_via_command_line_or_about_flags) {
+    result += " (command line or about flags)";
+  }
+  return result;
 }
 
 base::ListValue GetVariationsList() {

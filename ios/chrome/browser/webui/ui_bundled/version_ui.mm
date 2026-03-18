@@ -110,13 +110,18 @@ web::WebUIIOSDataSource* CreateVersionUIDataSource() {
                                   IDS_VERSION_UI_COPY_VARIATIONS_LABEL);
   html_source->AddLocalizedString(version_ui::kCopyVariationsNotice,
                                   IDS_VERSION_UI_COPY_VARIATIONS_NOTICE);
+  html_source->AddLocalizedString(version_ui::kVariationsSourceName,
+                                  IDS_VERSION_UI_VARIATIONS_SOURCE_NAME);
   html_source->AddLocalizedString(version_ui::kVariationsSeedName,
                                   IDS_VERSION_UI_VARIATIONS_SEED_NAME);
 
+  auto* variations_service = GetApplicationContext()->GetVariationsService();
+  html_source->AddString(version_ui::kVariationsSource,
+                         version_ui::VariationsSourceToUiString(
+                             variations_service->GetVariationsSource()));
   html_source->AddString(
       version_ui::kVariationsSeed,
-      version_ui::SeedTypeToUiString(
-          GetApplicationContext()->GetVariationsService()->GetSeedType()));
+      version_ui::SeedTypeToUiString(variations_service->GetSeedType()));
 
   html_source->AddString(version_ui::kSanitizer,
                          std::string(version_info::GetSanitizerList()));

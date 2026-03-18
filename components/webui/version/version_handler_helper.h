@@ -9,6 +9,7 @@
 
 namespace variations {
 enum class SeedType;
+struct VariationsSource;
 }
 
 namespace version_ui {
@@ -16,6 +17,10 @@ namespace version_ui {
 // Returns the variation seed type to be displayed on the chrome://version page.
 // Returns empty for Regular seed which should not be shown.
 std::string SeedTypeToUiString(variations::SeedType seed_type);
+
+// Returns the variations source to be displayed on the chrome://version page.
+std::string VariationsSourceToUiString(
+    variations::VariationsSource variations_source);
 
 // Returns the list of variations to be displayed on the chrome:://version page.
 base::ListValue GetVariationsList();

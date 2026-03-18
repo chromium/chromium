@@ -239,6 +239,8 @@ class VariationsService
   // The seed type used.
   SeedType GetSeedType() const;
 
+  VariationsSource GetVariationsSource() const;
+
   int request_count() const { return request_count_; }
 
   // Cancels the currently pending fetch request.

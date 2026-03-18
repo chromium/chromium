@@ -82,6 +82,9 @@
   <message name="IDS_VERSION_UI_VARIATIONS" desc="label for the variations list on the about:version page">
     Active Variations
   </message>
+  <message name="IDS_VERSION_UI_VARIATIONS_SOURCE_NAME" desc="label for the variations source on the about:version page">
+    Variations Source
+  </message>
   <message name="IDS_VERSION_UI_VARIATIONS_SEED_NAME" desc="label for the variations seed type on the about:version page">
     Variations Seed Type
   </message>

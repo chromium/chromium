@@ -39,6 +39,33 @@ namespace variations {
 
 class EntropyProviders;
 
+// The source from which variations were applied.
+enum class VariationsSourceType {
+  kUnknown,
+  // No variations applied, Chrome is using client-side defaults.
+  // TODO(crbug.com/418007751): think about exposing the seed type as a separate
+  // VariationsSource enum type as well.
+  kDefaultSeed,
+  // Variations were applied from the field trial testing config (usually
+  // enabled via --enable-field-trial-config).
+  kFieldTrialConfig,
+  // A regular or safe variations seed was successfully applied.
+  kVariationsServer,
+  // Variations were applied from a manual configuration file
+  // enabled via --variations-test-seed-json-path.
+  kManualConfigFile,
+  // Variations were forced via command line flags (e.g. --force-fieldtrials).
+  kCommandLineOrAboutFlags,
+};
+
+// Information about the source of variations applied in this session.
+struct VariationsSource {
+  VariationsSourceType type = VariationsSourceType::kUnknown;
+  // Whether variations were forced or overridden via command line flags
+  // additionally to the general variations source.
+  bool forced_via_command_line_or_about_flags = false;
+};
+
 // A testing feature that forces a crash during field trial creation
 // on developer and test builds.
 BASE_DECLARE_FEATURE(kForceFieldTrialSetupCrashForTesting);
@@ -217,6 +244,9 @@ class VariationsFieldTrialCreator {
 
   SeedType seed_type() const { return seed_type_; }
 
+  // Returns the source of variations applied in this session.
+  VariationsSource variations_source() const { return variations_source_; }
+
  protected:
   // Get the platform we're running on, respecting OverrideVariationsPlatform().
   // Protected for testing.
@@ -290,6 +320,9 @@ class VariationsFieldTrialCreator {
 
   // Seed type used for variations.
   SeedType seed_type_ = SeedType::kNullSeed;
+
+  // The source of variations applied in this session.
+  VariationsSource variations_source_;
 
   // Tracks whether |CreateTrialsFromSeed| has been called, to ensure that it is
   // called at most once.

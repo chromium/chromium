@@ -264,6 +264,7 @@ bool VariationsFieldTrialCreator::SetUpFieldTrials(
       break;
   }
 
+  variations_source_.type = VariationsSourceType::kDefaultSeed;
   const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();
   bool success = http_header_provider->ForceDisableVariationIds(
@@ -284,12 +285,26 @@ bool VariationsFieldTrialCreator::SetUpFieldTrials(
   // instance is set.
   feature_list->RegisterExtraFeatureOverrides(extra_overrides);
 
+  if (!variation_ids.empty() || !command_line_variation_ids.empty() ||
+      command_line->HasSwitch(switches::kForceVariationIds) ||
+      command_line->HasSwitch(switches::kForceDisableVariationIds) ||
+      command_line->HasSwitch(variations::switches::kForceFieldTrialParams) ||
+      command_line->HasSwitch(::switches::kForceFieldTrials) ||
+      command_line->HasSwitch(::switches::kEnableFeatures) ||
+      command_line->HasSwitch(::switches::kDisableFeatures)) {
+    // Set the default source to kCommandLineOrAboutFlags,
+    // might be overridden later.
+    variations_source_.type = VariationsSourceType::kCommandLineOrAboutFlags;
+    variations_source_.forced_via_command_line_or_about_flags = true;
+  }
+
   bool used_testing_config = false;
   // TODO(crbug.com/40230862): Remove this code path.
 #if BUILDFLAG(FIELDTRIAL_TESTING_ENABLED)
   if (ShouldUseFieldTrialTestingConfig(command_line)) {
     ApplyFieldTrialTestingConfig(feature_list.get());
     used_testing_config = true;
+    variations_source_.type = VariationsSourceType::kFieldTrialConfig;
   }
 #else
   if (command_line->HasSwitch(switches::kEnableFieldTrialTestingConfig)) {
@@ -302,6 +317,7 @@ bool VariationsFieldTrialCreator::SetUpFieldTrials(
   if (command_line->HasSwitch(switches::kVariationsTestSeedJsonPath)) {
     LoadSeedFromJsonFile(command_line->GetSwitchValuePath(
         switches::kVariationsTestSeedJsonPath));
+    variations_source_.type = VariationsSourceType::kManualConfigFile;
   }
 
   // Get client filterable state to be used by CreateTrialsFromSeed()
@@ -322,6 +338,7 @@ bool VariationsFieldTrialCreator::SetUpFieldTrials(
   if (create_trials_result.applied_seed) {
     FieldTrialsProvider::UpdateAppliedSeedHasActiveLimitedLayer(
         create_trials_result.seed_has_active_limited_layer.value_or(false));
+    variations_source_.type = VariationsSourceType::kVariationsServer;
   }
 
   if (add_entropy_source_to_variations_ids &&

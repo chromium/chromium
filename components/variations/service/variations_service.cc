@@ -1031,6 +1031,10 @@ SeedType VariationsService::GetSeedType() const {
   return field_trial_creator_.seed_type();
 }
 
+VariationsSource VariationsService::GetVariationsSource() const {
+  return field_trial_creator_.variations_source();
+}
+
 void VariationsService::CancelCurrentRequestForTesting() {
   pending_seed_request_.reset();
 }

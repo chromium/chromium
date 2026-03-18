@@ -94,6 +94,8 @@ void CreateAndAddVersionUIDataSource(Profile* profile) {
       {version_ui::kCopyVariationsLabel, IDS_VERSION_UI_COPY_VARIATIONS_LABEL},
       {version_ui::kCopyVariationsNotice,
        IDS_VERSION_UI_COPY_VARIATIONS_NOTICE},
+      {version_ui::kVariationsSourceName,
+       IDS_VERSION_UI_VARIATIONS_SOURCE_NAME},
       {version_ui::kVariationsSeedName, IDS_VERSION_UI_VARIATIONS_SEED_NAME},
 #if BUILDFLAG(IS_CHROMEOS)
       {version_ui::kARC, IDS_ARC_LABEL},
@@ -304,11 +306,17 @@ void VersionUI::AddVersionDetailStrings(content::WebUIDataSource* html_source) {
                          version_utils::win::GetCohortVersionInfo());
 #endif  // BUILDFLAG(IS_WIN)
 
+  auto* variations_service = g_browser_process->variations_service();
+  html_source->AddString(version_ui::kVariationsSource,
+                         variations_service
+                             ? version_ui::VariationsSourceToUiString(
+                                   variations_service->GetVariationsSource())
+                             : std::string());
+
   html_source->AddString(
       version_ui::kVariationsSeed,
-      g_browser_process->variations_service()
-          ? version_ui::SeedTypeToUiString(
-                g_browser_process->variations_service()->GetSeedType())
+      variations_service
+          ? version_ui::SeedTypeToUiString(variations_service->GetSeedType())
           : std::string());
 
   html_source->AddString(version_ui::kSanitizer,

@@ -185,6 +185,10 @@ function initialize() {
       .then(handleVariationInfo);
   sendWithPromise('requestPathInfo').then(handlePathInfo);
 
+  if (getRequiredElement('variations-source').textContent !== '') {
+    getRequiredElement('variations-source-section').hidden = false;
+  }
+
   if (getRequiredElement('variations-seed').textContent !== '') {
     getRequiredElement('variations-seed-section').hidden = false;
   }
