@@ -71,6 +71,14 @@ class ActorLoginPermissionService : public KeyedService {
   virtual void DeletePermission(const url::Origin& embedder_origin,
                                 DeletePermissionResult callback) = 0;
 
+  // Deletes permission for the given embedder origin and display name. If the
+  // origin is opaque, the callback will be called with false.
+  // `display_name` is a human-readable name of a federated account, e.g.
+  // "example@gmail.com".
+  virtual void DeletePermission(const url::Origin& embedder_origin,
+                                const std::string& display_name,
+                                DeletePermissionResult callback) = 0;
+
   // Stores `permission` in the permission database for the primary profile.
   // All fields in `permission` are required to be meaningful except for
   // `affiliated_requester_origins`.

@@ -95,7 +95,8 @@ constexpr net::NetworkTrafficAnnotationTag
       })");
 
 base::DictValue CreateFederatedPermissionFilter(
-    const FederatedOrigins& origins) {
+    const FederatedOrigins& origins,
+    const std::string& display_name) {
   base::DictValue federated_filter;
   if (!origins.embedder_origin.opaque()) {
     federated_filter.Set("rpEmbedderOrigin",
@@ -105,16 +106,25 @@ base::DictValue CreateFederatedPermissionFilter(
     federated_filter.Set("rpRequesterOrigin",
                          origins.requester_origin.Serialize());
   }
+  if (!display_name.empty()) {
+    federated_filter.Set("chosenAccountEmail", display_name);
+  }
   federated_filter.Set("matchAffiliatedRequesterOrigins", true);
 
   return base::DictValue().Set("federatedCredentialPermissionFilter",
                                std::move(federated_filter));
 }
 
-std::string CreateDeleteRequestBody(const url::Origin& embedder_origin) {
+base::DictValue CreateFederatedPermissionFilter(
+    const FederatedOrigins& origins) {
+  return CreateFederatedPermissionFilter(origins, /*display_name=*/"");
+}
+
+std::string CreateDeleteRequestBody(const url::Origin& embedder_origin,
+                                    const std::string& display_name) {
   base::ListValue filters;
-  filters.Append(
-      CreateFederatedPermissionFilter({.embedder_origin = embedder_origin}));
+  filters.Append(CreateFederatedPermissionFilter(
+      {.embedder_origin = embedder_origin}, display_name));
   auto request_dict = base::DictValue().Set("filter", std::move(filters));
 
   std::string post_data;
@@ -361,13 +371,21 @@ void ActorLoginPermissionServiceImpl::ListAllPermissions(
 void ActorLoginPermissionServiceImpl::DeletePermission(
     const url::Origin& embedder_origin,
     DeletePermissionResult callback) {
+  DeletePermission(embedder_origin, "", std::move(callback));
+}
+
+void ActorLoginPermissionServiceImpl::DeletePermission(
+    const url::Origin& embedder_origin,
+    const std::string& display_name,
+    DeletePermissionResult callback) {
   if (embedder_origin.opaque()) {
     std::move(callback).Run(false);
     return;
   }
 
   GURL url(base::StrCat({kActorLoginPermissionServiceUrlBase, "delete"}));
-  std::string post_data = CreateDeleteRequestBody(embedder_origin);
+  std::string post_data =
+      CreateDeleteRequestBody(embedder_origin, display_name);
 
   StartRequest(std::make_unique<Request>(
       identity_manager_, url, post_data, url_loader_factory_,
