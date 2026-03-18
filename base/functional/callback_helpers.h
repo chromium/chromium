@@ -29,21 +29,18 @@ namespace internal {
 template <typename... Args>
 class OnceCallbackHolder final {
  public:
-  OnceCallbackHolder(OnceCallback<void(Args...)> callback,
-                     bool ignore_extra_runs)
-      : callback_(std::move(callback)), ignore_extra_runs_(ignore_extra_runs) {
+  explicit OnceCallbackHolder(OnceCallback<void(Args...)> callback)
+      : callback_(std::move(callback)) {
     DCHECK(callback_);
   }
   OnceCallbackHolder(const OnceCallbackHolder&) = delete;
   OnceCallbackHolder& operator=(const OnceCallbackHolder&) = delete;
 
   void Run(Args... args) {
-    if (has_run_.exchange(true, std::memory_order_relaxed)) {
-      CHECK(ignore_extra_runs_) << "Both OnceCallbacks returned by "
-                                   "base::SplitOnceCallback() were run. "
-                                   "At most one of the pair should be run.";
-      return;
-    }
+    CHECK(!has_run_.exchange(true, std::memory_order_relaxed))
+        << "Both OnceCallbacks returned by "
+           "base::SplitOnceCallback() were run. "
+           "At most one of the pair should be run.";
     DCHECK(callback_);
     std::move(callback_).Run(std::forward<Args>(args)...);
   }
@@ -51,7 +48,6 @@ class OnceCallbackHolder final {
  private:
   std::atomic<bool> has_run_{false};
   base::OnceCallback<void(Args...)> callback_;
-  const bool ignore_extra_runs_;
 };
 
 template <typename... Args>
@@ -94,8 +90,7 @@ SplitOnceCallback(OnceCallback<void(Args...)> callback) {
   }
   using Helper = internal::OnceCallbackHolder<Args...>;
   auto wrapped_once = base::BindRepeating(
-      &Helper::Run, std::make_unique<Helper>(std::move(callback),
-                                             /*ignore_extra_runs=*/false));
+      &Helper::Run, std::make_unique<Helper>(std::move(callback)));
   return std::make_pair(wrapped_once, wrapped_once);
 }
 

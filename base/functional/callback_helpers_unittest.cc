@@ -234,9 +234,7 @@ TEST(CallbackHelpersTest, SplitOnceCallback_FirstCallback) {
   std::move(split.first).Run(&count);
   EXPECT_EQ(1, count);
 
-#if GTEST_HAS_DEATH_TEST
   EXPECT_CHECK_DEATH(std::move(split.second).Run(&count));
-#endif  // GTEST_HAS_DEATH_TEST
 }
 
 TEST(CallbackHelpersTest, SplitOnceCallback_SecondCallback) {
