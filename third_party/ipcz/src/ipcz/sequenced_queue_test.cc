@@ -12,6 +12,15 @@
 #include "util/unsafe_buffers.h"
 
 namespace ipcz {
+
+template <typename T, typename ElementTraits>
+struct SequencedQueueTestAccessor {
+  using Queue = SequencedQueue<T, ElementTraits>;
+
+  static auto& entries(Queue& queue) { return queue.entries_; }
+  static size_t front_index(const Queue& queue) { return queue.front_index_; }
+};
+
 namespace {
 
 struct TestQueueTraits {
@@ -298,6 +307,143 @@ TEST(SequencedQueueTest, Accounting) {
   EXPECT_EQ(kEntries[4], s);
   EXPECT_EQ(0u, q.GetNumAvailableElements());
   EXPECT_EQ(0u, q.GetTotalAvailableElementSize());
+}
+
+TEST(SequencedQueueTest, GrowWithCompactionWithoutCompaction) {
+  TestQueue q;
+  using Accessor =
+      SequencedQueueTestAccessor<std::string,
+                                 DefaultSequencedQueueTraits<std::string>>;
+
+  // `front_index_ == 0`, so growth cannot reclaim any front slack. Pushing an
+  // entry just beyond the current logical extent must grow storage without
+  // entering either compaction path.
+  Accessor::entries(q).reserve(4);
+  EXPECT_TRUE(q.Push(SequenceNumber(3), "3"));
+
+  const size_t initial_capacity = Accessor::entries(q).capacity();
+  const size_t initial_size = Accessor::entries(q).size();
+  EXPECT_EQ(0u, Accessor::front_index(q));
+  EXPECT_EQ(4u, Accessor::entries(q).size());
+
+  const auto old_data = Accessor::entries(q).data();
+  EXPECT_TRUE(q.Push(SequenceNumber(4), "4"));
+
+  EXPECT_EQ(0u, Accessor::front_index(q));
+  EXPECT_EQ(initial_size + 1, Accessor::entries(q).size());
+  EXPECT_NE(old_data, Accessor::entries(q).data());
+  EXPECT_GT(Accessor::entries(q).capacity(), initial_capacity);
+
+  std::string popped;
+  EXPECT_FALSE(q.Pop(popped));
+  EXPECT_TRUE(q.Push(SequenceNumber(0), "0"));
+  EXPECT_TRUE(q.Pop(popped));
+  EXPECT_EQ("0", popped);
+}
+
+TEST(SequencedQueueTest, GrowWithCompactionInPlace) {
+  TestQueue q;
+  using Accessor =
+      SequencedQueueTestAccessor<std::string,
+                                 DefaultSequencedQueueTraits<std::string>>;
+
+  // Pop once to create front slack, then push far enough to require growth.
+  // After compaction the required size still fits in the existing capacity, so
+  // `GrowWithCompaction()` should compact in place.
+  Accessor::entries(q).reserve(8);
+  ASSERT_TRUE(q.Push(SequenceNumber(0), "0"));
+  ASSERT_TRUE(q.Push(SequenceNumber(5), "5"));
+
+  std::string popped;
+  ASSERT_TRUE(q.Pop(popped));
+  EXPECT_EQ("0", popped);
+  EXPECT_EQ(1u, Accessor::front_index(q));
+  const size_t old_capacity = Accessor::entries(q).capacity();
+  const auto old_data = Accessor::entries(q).data();
+
+  ASSERT_TRUE(q.Push(SequenceNumber(7), "7"));
+
+  EXPECT_EQ(old_data, Accessor::entries(q).data());
+  EXPECT_EQ(old_capacity, Accessor::entries(q).capacity());
+  EXPECT_GT(Accessor::entries(q).size(), 6u);
+
+  EXPECT_FALSE(q.Push(SequenceNumber(0), "again"));
+  EXPECT_TRUE(q.Push(SequenceNumber(1), "1"));
+  EXPECT_TRUE(q.Pop(popped));
+  EXPECT_EQ("1", popped);
+}
+
+TEST(SequencedQueueTest, GrowWithCompactionWithoutCompactionWithFrontSlack) {
+  TestQueue q;
+  using Accessor =
+      SequencedQueueTestAccessor<std::string,
+                                 DefaultSequencedQueueTraits<std::string>>;
+
+  // Pop once to create front slack, but keep enough spare capacity that the
+  // next push only needs `resize(required)`. This should bypass compaction even
+  // though `front_index_ > 0`.
+  Accessor::entries(q).reserve(8);
+  ASSERT_TRUE(q.Push(SequenceNumber(0), "0"));
+  ASSERT_TRUE(q.Push(SequenceNumber(5), "5"));
+
+  std::string popped;
+  ASSERT_TRUE(q.Pop(popped));
+  EXPECT_EQ("0", popped);
+  EXPECT_EQ(1u, Accessor::front_index(q));
+
+  const auto old_data = Accessor::entries(q).data();
+  const size_t old_capacity = Accessor::entries(q).capacity();
+  const size_t old_size = Accessor::entries(q).size();
+
+  ASSERT_TRUE(q.Push(SequenceNumber(6), "6"));
+
+  EXPECT_EQ(1u, Accessor::front_index(q));
+  EXPECT_EQ(old_data, Accessor::entries(q).data());
+  EXPECT_EQ(old_capacity, Accessor::entries(q).capacity());
+  EXPECT_EQ(old_size + 1, Accessor::entries(q).size());
+
+  EXPECT_TRUE(q.Push(SequenceNumber(1), "1"));
+  EXPECT_TRUE(q.Pop(popped));
+  EXPECT_EQ("1", popped);
+}
+
+TEST(SequencedQueueTest, GrowWithCompactionToNewBuffer) {
+  TestQueue q;
+  using Accessor =
+      SequencedQueueTestAccessor<std::string,
+                                 DefaultSequencedQueueTraits<std::string>>;
+
+  // Pop once to create front slack, then push far enough that compaction alone
+  // still cannot satisfy the required size. This must take the new-buffer
+  // compaction path.
+  Accessor::entries(q).reserve(4);
+  ASSERT_TRUE(q.Push(SequenceNumber(0), "0"));
+  ASSERT_TRUE(q.Push(SequenceNumber(3), "3"));
+
+  std::string popped;
+  ASSERT_TRUE(q.Pop(popped));
+  EXPECT_EQ("0", popped);
+  EXPECT_EQ(1u, Accessor::front_index(q));
+
+  const size_t full_capacity = Accessor::entries(q).capacity();
+
+  const auto old_data = Accessor::entries(q).data();
+  ASSERT_TRUE(q.Push(SequenceNumber(5), "5"));
+
+  EXPECT_EQ(0u, Accessor::front_index(q));
+  EXPECT_NE(old_data, Accessor::entries(q).data());
+  EXPECT_EQ(5u, Accessor::entries(q).size());
+  EXPECT_GT(Accessor::entries(q).capacity(), full_capacity);
+
+  EXPECT_FALSE(q.Push(SequenceNumber(0), "again"));
+  EXPECT_TRUE(q.Push(SequenceNumber(1), "1"));
+  EXPECT_TRUE(q.Push(SequenceNumber(2), "2"));
+  EXPECT_TRUE(q.Pop(popped));
+  EXPECT_EQ("1", popped);
+  EXPECT_TRUE(q.Pop(popped));
+  EXPECT_EQ("2", popped);
+  EXPECT_TRUE(q.Pop(popped));
+  EXPECT_EQ("3", popped);
 }
 
 }  // namespace

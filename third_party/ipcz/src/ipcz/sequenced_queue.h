@@ -5,6 +5,7 @@
 #ifndef IPCZ_SRC_IPCZ_SEQUENCED_QUEUE_H_
 #define IPCZ_SRC_IPCZ_SEQUENCED_QUEUE_H_
 
+#include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <optional>
@@ -19,6 +20,9 @@ template <typename T>
 struct DefaultSequencedQueueTraits {
   static size_t GetElementSize(const T& element) { return 0; }
 };
+
+template <typename T, typename ElementTraits = DefaultSequencedQueueTraits<T>>
+struct SequencedQueueTestAccessor;
 
 // SequencedQueue retains a queue of objects strictly ordered by SequenceNumber.
 // This class is not thread-safe.
@@ -269,9 +273,10 @@ class SequencedQueue {
       return false;
     }
 
-    const size_t index = front_index_ + gap;
+    size_t index = front_index_ + gap;
     if (index >= entries_.size()) {
-      entries_.resize(index + 1);
+      GrowWithCompaction(gap);
+      index = front_index_ + gap;
     } else if (entries_[index]) {
       return false;
     }
@@ -334,6 +339,8 @@ class SequencedQueue {
   }
 
  private:
+  friend struct SequencedQueueTestAccessor<T, ElementTraits>;
+
   // See detailed comments on Entry below for an explanation of this logic.
   void PlaceNewEntry(size_t index, SequenceNumber n, T& element) {
     ABSL_ASSERT(index < entries_.size());
@@ -384,6 +391,43 @@ class SequencedQueue {
     end->span_start = entry.span_start;
     end->num_entries_in_span = entry.num_entries_in_span;
     end->total_span_size = entry.total_span_size;
+  }
+
+  // Grows `entries_` to fit a new element at offset `gap` from `front_index_`.
+  // If growth would exceed capacity and there are consumed prefix slots, we
+  // compact first (in-place if possible, otherwise into a new buffer).
+  // Callers must recompute indices derived from `front_index_` afterward.
+  void GrowWithCompaction(size_t gap) {
+    size_t required = front_index_ + gap + 1;
+
+    // If growth would exceed capacity, compact first to reclaim front slack.
+    if (required > entries_.capacity() && front_index_ > 0) {
+      const size_t old_front_index = front_index_;
+      const size_t active_size = entries_.size() - old_front_index;
+      front_index_ = 0;
+      required = gap + 1;
+      ABSL_ASSERT(required > active_size);
+
+      // Capacity is sufficient after compaction; move active entries to front.
+      if (required <= entries_.capacity()) {
+        std::ranges::move(entries_.begin() + old_front_index, entries_.end(),
+                          entries_.begin());
+        // Shrink to clear trailing moved-from optionals.
+        entries_.resize(active_size);
+      } else {
+        // Compaction alone is insufficient; allocate a new buffer. Reserve at
+        // least doubled effective capacity to avoid frequent reallocations.
+        const size_t doubled = (entries_.capacity() - old_front_index) * 2;
+        std::vector<std::optional<Entry>> new_entries;
+        new_entries.reserve(std::max(required, doubled));
+        new_entries.resize(active_size);
+        std::ranges::move(entries_.begin() + old_front_index, entries_.end(),
+                          new_entries.begin());
+        entries_ = std::move(new_entries);
+      }
+    }
+
+    entries_.resize(required);
   }
 
   // Wipes out any logical storage and resets `front_index_`. This does NOT
