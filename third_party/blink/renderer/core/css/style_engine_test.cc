@@ -4784,8 +4784,8 @@ TEST_F(StyleEngineContainerQueryTest, MarkStyleDirtyFromContainerRecalc) {
   auto* container = GetDocument().getElementById(AtomicString("container"));
   auto* input = GetDocument().getElementById(AtomicString("input"));
   ASSERT_TRUE(container);
-  ASSERT_TRUE(input);
-  auto* inner_editor = DynamicTo<HTMLInputElement>(input)->InnerEditorElement();
+  ASSERT_TRUE(IsA<HTMLInputElement>(input));
+  auto* inner_editor = To<HTMLInputElement>(*input).InnerEditorElement();
   ASSERT_TRUE(inner_editor);
 
   const ComputedStyle* old_inner_style = inner_editor->GetComputedStyle();

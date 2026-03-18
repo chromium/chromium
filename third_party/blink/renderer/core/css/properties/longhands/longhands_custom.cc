@@ -2789,9 +2789,8 @@ void ColorScheme::ApplyValue(StyleResolverState& state,
                              const CSSValue& value,
                              ValueMode) const {
   const CSSValueList* scheme_list = DynamicTo<CSSValueList>(value);
-  DCHECK(scheme_list || (value.IsIdentifierValue() &&
-                         DynamicTo<CSSIdentifierValue>(value)->GetValueID() ==
-                             CSSValueID::kNormal));
+  DCHECK(scheme_list ||
+         To<CSSIdentifierValue>(value).GetValueID() == CSSValueID::kNormal);
   ApplyColorSchemeValue(state, scheme_list);
 }
 

@@ -1605,10 +1605,10 @@ String StylePropertySerializer::OffsetValue() const {
   const CSSValue* anchor =
       property_set_.GetPropertyCSSValue(GetCSSPropertyOffsetAnchor());
 
-  auto is_initial_identifier_value = [](const CSSValue* value,
+  auto is_initial_identifier_value = [](const CSSValue& value,
                                         CSSValueID id) -> bool {
-    return value->IsIdentifierValue() &&
-           DynamicTo<CSSIdentifierValue>(value)->GetValueID() == id;
+    auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
+    return identifier_value && identifier_value->GetValueID() == id;
   };
 
   bool use_distance =
@@ -1616,7 +1616,7 @@ String StylePropertySerializer::OffsetValue() const {
                     To<CSSNumericLiteralValue>(*distance).DoubleValue() == 0.0);
   const auto* rotate_list_value = DynamicTo<CSSValueList>(rotate);
   bool is_rotate_auto = rotate_list_value && rotate_list_value->length() == 1 &&
-                        is_initial_identifier_value(&rotate_list_value->First(),
+                        is_initial_identifier_value(rotate_list_value->First(),
                                                     CSSValueID::kAuto);
   bool is_rotate_zero =
       rotate_list_value && rotate_list_value->length() == 1 &&
@@ -1628,20 +1628,20 @@ String StylePropertySerializer::OffsetValue() const {
       rotate_list_value->Item(1).IsNumericLiteralValue() &&
       (To<CSSNumericLiteralValue>(rotate_list_value->Item(1)).DoubleValue() ==
        0.0) &&
-      is_initial_identifier_value(&rotate_list_value->Item(0),
+      is_initial_identifier_value(rotate_list_value->Item(0),
                                   CSSValueID::kAuto);
   bool use_rotate =
       rotate && ((use_distance && is_rotate_zero) ||
-                 (!is_initial_identifier_value(rotate, CSSValueID::kAuto) &&
+                 (!is_initial_identifier_value(*rotate, CSSValueID::kAuto) &&
                   !is_rotate_auto && !is_rotate_auto_zero));
   bool use_path =
       path && (use_rotate || use_distance ||
-               !is_initial_identifier_value(path, CSSValueID::kNone));
+               !is_initial_identifier_value(*path, CSSValueID::kNone));
   bool use_position =
-      position && (!use_path ||
-                   !is_initial_identifier_value(position, CSSValueID::kNormal));
+      position && (!use_path || !is_initial_identifier_value(
+                                    *position, CSSValueID::kNormal));
   bool use_anchor =
-      anchor && (!is_initial_identifier_value(anchor, CSSValueID::kAuto));
+      anchor && (!is_initial_identifier_value(*anchor, CSSValueID::kAuto));
 
   StringBuilder result;
   if (use_position) {

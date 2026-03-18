@@ -573,14 +573,17 @@ TEST_F(ElementRuleCollectorTest, FindStyleRuleWithNesting) {
   RuleIndexList* foo_css_rules = GetMatchedCSSRuleList(foo, rule_set);
   ASSERT_EQ(2u, foo_css_rules->size());
   CSSRule* foo_css_rule_1 = foo_css_rules->at(0).rule.Get();
-  EXPECT_EQ("#foo", DynamicTo<CSSStyleRule>(foo_css_rule_1)->selectorText());
+  ASSERT_TRUE(IsA<CSSStyleRule>(foo_css_rule_1));
+  EXPECT_EQ("#foo", To<CSSStyleRule>(*foo_css_rule_1).selectorText());
   CSSRule* foo_css_rule_2 = foo_css_rules->at(1).rule.Get();
-  EXPECT_EQ("&.a", DynamicTo<CSSStyleRule>(foo_css_rule_2)->selectorText());
+  ASSERT_TRUE(IsA<CSSStyleRule>(foo_css_rule_2));
+  EXPECT_EQ("&.a", To<CSSStyleRule>(*foo_css_rule_2).selectorText());
 
   RuleIndexList* bar_css_rules = GetMatchedCSSRuleList(bar, rule_set);
   ASSERT_EQ(1u, bar_css_rules->size());
   CSSRule* bar_css_rule_1 = bar_css_rules->at(0).rule.Get();
-  EXPECT_EQ("& > .b", DynamicTo<CSSStyleRule>(bar_css_rule_1)->selectorText());
+  ASSERT_TRUE(IsA<CSSStyleRule>(bar_css_rule_1));
+  EXPECT_EQ("& > .b", To<CSSStyleRule>(*bar_css_rule_1).selectorText());
 }
 
 TEST_F(ElementRuleCollectorTest, EmptyStyleNotUseCounted) {
@@ -860,7 +863,7 @@ TEST_F(ElementRuleCollectorTest, TraceRuleIndexList) {
     ASSERT_EQ(1u, rule_index_list->size());
     CSSRule* css_rule = rule_index_list->at(0).rule.Get();
     ASSERT_TRUE(IsA<CSSStyleRule>(css_rule));
-    EXPECT_EQ("#e", DynamicTo<CSSStyleRule>(css_rule)->selectorText());
+    EXPECT_EQ("#e", To<CSSStyleRule>(*css_rule).selectorText());
   }
 
   ThreadState::Current()->CollectAllGarbageForTesting();
@@ -872,7 +875,7 @@ TEST_F(ElementRuleCollectorTest, TraceRuleIndexList) {
     ASSERT_EQ(1u, rule_index_list->size());
     CSSRule* css_rule = rule_index_list->at(0).rule.Get();
     ASSERT_TRUE(IsA<CSSStyleRule>(css_rule));
-    EXPECT_EQ("#e", DynamicTo<CSSStyleRule>(css_rule)->selectorText());
+    EXPECT_EQ("#e", To<CSSStyleRule>(*css_rule).selectorText());
   }
 }
 

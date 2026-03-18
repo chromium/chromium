@@ -47,13 +47,11 @@ TEST_F(StylePropertyMapTest, SetRevertWithFeatureEnabled) {
       map->get(GetDocument().GetExecutionContext(), "left", exception_state)
           ->GetAsCSSStyleValue();
 
-  ASSERT_TRUE(DynamicTo<CSSKeywordValue>(top));
-  EXPECT_EQ(CSSValueID::kRevert,
-            DynamicTo<CSSKeywordValue>(top)->KeywordValueID());
+  ASSERT_TRUE(IsA<CSSKeywordValue>(top));
+  EXPECT_EQ(CSSValueID::kRevert, To<CSSKeywordValue>(*top).KeywordValueID());
 
-  ASSERT_TRUE(DynamicTo<CSSKeywordValue>(left));
-  EXPECT_EQ(CSSValueID::kRevert,
-            DynamicTo<CSSKeywordValue>(top)->KeywordValueID());
+  ASSERT_TRUE(IsA<CSSKeywordValue>(left));
+  EXPECT_EQ(CSSValueID::kRevert, To<CSSKeywordValue>(*left).KeywordValueID());
 
   EXPECT_FALSE(exception_state.HadException());
 }
@@ -74,9 +72,8 @@ TEST_F(StylePropertyMapTest, SetOverflowClipString) {
   CSSStyleValue* overflow = map->get(GetDocument().GetExecutionContext(),
                                      "overflow-x", exception_state)
                                 ->GetAsCSSStyleValue();
-  ASSERT_TRUE(DynamicTo<CSSKeywordValue>(overflow));
-  EXPECT_EQ(CSSValueID::kClip,
-            DynamicTo<CSSKeywordValue>(overflow)->KeywordValueID());
+  ASSERT_TRUE(IsA<CSSKeywordValue>(overflow));
+  EXPECT_EQ(CSSValueID::kClip, To<CSSKeywordValue>(*overflow).KeywordValueID());
 
   EXPECT_FALSE(exception_state.HadException());
 }
@@ -97,9 +94,8 @@ TEST_F(StylePropertyMapTest, SetOverflowClipStyleValue) {
   CSSStyleValue* overflow = map->get(GetDocument().GetExecutionContext(),
                                      "overflow-x", exception_state)
                                 ->GetAsCSSStyleValue();
-  ASSERT_TRUE(DynamicTo<CSSKeywordValue>(overflow));
-  EXPECT_EQ(CSSValueID::kClip,
-            DynamicTo<CSSKeywordValue>(overflow)->KeywordValueID());
+  ASSERT_TRUE(IsA<CSSKeywordValue>(overflow));
+  EXPECT_EQ(CSSValueID::kClip, To<CSSKeywordValue>(*overflow).KeywordValueID());
 
   EXPECT_FALSE(exception_state.HadException());
 }

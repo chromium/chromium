@@ -104,15 +104,17 @@ TEST_F(StyleRuleTest, StyleRuleMarginCopy) {
     }
     )CSS");
 
-  auto base_rule = DynamicTo<StyleRulePage>(page_rule)->ChildRules()[0];
+  ASSERT_TRUE(IsA<StyleRulePage>(page_rule));
+  auto base_rule = To<StyleRulePage>(*page_rule).ChildRules()[0];
 
   ASSERT_TRUE(base_rule);
-  auto* rule = DynamicTo<StyleRulePageMargin>(&*base_rule);
+  auto* rule = DynamicTo<StyleRulePageMargin>(*base_rule);
   ASSERT_TRUE(rule);
 
   auto* base_copy = base_rule->Clone(nullptr, nullptr);
   EXPECT_NE(base_rule, base_copy);
   auto* copy = DynamicTo<StyleRulePageMargin>(base_copy);
+  ASSERT_TRUE(copy);
   EXPECT_EQ(rule->ID(), copy->ID());
 }
 
@@ -486,7 +488,7 @@ TEST_F(StyleRuleTest, NavigationRule) {
       KleeneValue EvaluateNavigationExpNode(
           const NavigationExpNode& node) override {
         auto* exp =
-            DynamicTo<NavigationLocationTestExpression>(&node.NavigationTest());
+            DynamicTo<NavigationLocationTestExpression>(node.NavigationTest());
         if (exp) {
           callback_(*exp);
         }

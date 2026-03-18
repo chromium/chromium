@@ -2600,7 +2600,7 @@ GapDataList<T> ConvertGapDecorationDataList(const StyleResolverState& state,
   // 2. When the fast parse path is taken (see
   // CSSParserFastPaths::MaybeParseValue). In these cases, construct a
   // GapDataList with a single Value.
-  if (!DynamicTo<CSSValueList>(value)) {
+  if (!IsA<CSSValueList>(value)) {
     return GapDataList<T>(
         ConvertGapDecorationPropertyValue<T>(state, value, for_visited_link));
   }
@@ -3714,9 +3714,8 @@ AtomicString StyleBuilderConverter::ConvertPage(StyleResolverState& state,
   if (auto* custom_ident_value = DynamicTo<CSSCustomIdentValue>(value)) {
     return AtomicString(custom_ident_value->Value());
   }
-  DCHECK(DynamicTo<CSSIdentifierValue>(value));
-  DCHECK_EQ(DynamicTo<CSSIdentifierValue>(value)->GetValueID(),
-            CSSValueID::kAuto);
+  DCHECK(IsA<CSSIdentifierValue>(value));
+  DCHECK_EQ(To<CSSIdentifierValue>(value).GetValueID(), CSSValueID::kAuto);
   return AtomicString();
 }
 

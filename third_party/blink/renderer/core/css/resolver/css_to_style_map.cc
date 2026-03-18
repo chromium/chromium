@@ -609,8 +609,7 @@ static Length ConvertBorderImageSliceSide(
     const CSSPrimitiveValue& value) {
   if (value.IsPercentage()) {
     if (value.HasUnresolvablePercentages()) {
-      return DynamicTo<CSSMathFunctionValue>(value)->ConvertToLength(
-          length_resolver);
+      return To<CSSMathFunctionValue>(value).ConvertToLength(length_resolver);
     }
     return Length::Percent(value.ComputePercentage(length_resolver));
   }

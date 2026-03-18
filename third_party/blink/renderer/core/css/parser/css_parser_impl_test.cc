@@ -1085,11 +1085,12 @@ TEST(CSSParserImplTest, FontPaletteValuesBasicRuleParsing) {
   ASSERT_TRUE(parsed);
   ASSERT_EQ("--myTestPalette", parsed->GetName());
   ASSERT_EQ("testFamily", parsed->GetFontFamily()->CssText());
+  ASSERT_TRUE(IsA<CSSPrimitiveValue>(parsed->GetBasePalette()));
   ASSERT_EQ(
-      0, DynamicTo<CSSPrimitiveValue>(parsed->GetBasePalette())
-             ->ComputeInteger(CSSToLengthConversionData(/*element=*/nullptr)));
+      0, To<CSSPrimitiveValue>(*parsed->GetBasePalette())
+             .ComputeInteger(CSSToLengthConversionData(/*element=*/nullptr)));
   ASSERT_TRUE(parsed->GetOverrideColors()->IsValueList());
-  ASSERT_EQ(2u, DynamicTo<CSSValueList>(parsed->GetOverrideColors())->length());
+  ASSERT_EQ(2u, To<CSSValueList>(*parsed->GetOverrideColors()).length());
 }
 
 TEST(CSSParserImplTest, FontPaletteValuesMultipleFamiliesParsing) {
@@ -1107,9 +1108,10 @@ TEST(CSSParserImplTest, FontPaletteValuesMultipleFamiliesParsing) {
   ASSERT_TRUE(parsed);
   ASSERT_EQ("--myTestPalette", parsed->GetName());
   ASSERT_EQ("testFamily1, testFamily2", parsed->GetFontFamily()->CssText());
+  ASSERT_TRUE(IsA<CSSPrimitiveValue>(parsed->GetBasePalette()));
   ASSERT_EQ(
-      0, DynamicTo<CSSPrimitiveValue>(parsed->GetBasePalette())
-             ->ComputeInteger(CSSToLengthConversionData(/*element=*/nullptr)));
+      0, To<CSSPrimitiveValue>(*parsed->GetBasePalette())
+             .ComputeInteger(CSSToLengthConversionData(/*element=*/nullptr)));
 }
 
 // Font-family descriptor inside @font-palette-values should not contain generic
@@ -1130,9 +1132,10 @@ TEST(CSSParserImplTest, FontPaletteValuesGenericFamiliesNotParsing) {
   ASSERT_TRUE(parsed);
   ASSERT_EQ("--myTestPalette", parsed->GetName());
   ASSERT_FALSE(parsed->GetFontFamily());
+  ASSERT_TRUE(IsA<CSSPrimitiveValue>(parsed->GetBasePalette()));
   ASSERT_EQ(
-      0, DynamicTo<CSSPrimitiveValue>(parsed->GetBasePalette())
-             ->ComputeInteger(CSSToLengthConversionData(/*element=*/nullptr)));
+      0, To<CSSPrimitiveValue>(*parsed->GetBasePalette())
+             .ComputeInteger(CSSToLengthConversionData(/*element=*/nullptr)));
 }
 
 TEST(CSSParserImplTest, FontFeatureValuesRuleParsing) {
@@ -1328,7 +1331,7 @@ TEST(CSSParserImplTest, ParseSupportsBlinkFeature) {
 
   StyleRuleBase* rule = sheet->ChildRules()[0].Get();
   ASSERT_EQ(rule->GetType(), StyleRuleBase::RuleType::kSupports);
-  StyleRuleSupports* supports_rule = DynamicTo<StyleRuleSupports>(rule);
+  auto* supports_rule = To<StyleRuleSupports>(rule);
   ASSERT_TRUE(supports_rule->ConditionIsSupported());
 
   const HeapVector<Member<StyleRuleBase>>& child_rules =
@@ -1356,7 +1359,7 @@ TEST(CSSParserImplTest, ParseSupportsBlinkFeatureAuthorStylesheet) {
 
   StyleRuleBase* rule = sheet->ChildRules()[0].Get();
   ASSERT_EQ(rule->GetType(), StyleRuleBase::RuleType::kSupports);
-  StyleRuleSupports* supports_rule = DynamicTo<StyleRuleSupports>(rule);
+  auto* supports_rule = To<StyleRuleSupports>(rule);
   EXPECT_FALSE(supports_rule->ConditionIsSupported());
 }
 
@@ -1376,7 +1379,7 @@ TEST(CSSParserImplTest, ParseSupportsBlinkFeatureDisabledFeature) {
 
   StyleRuleBase* rule = sheet->ChildRules()[0].Get();
   ASSERT_EQ(rule->GetType(), StyleRuleBase::RuleType::kSupports);
-  StyleRuleSupports* supports_rule = DynamicTo<StyleRuleSupports>(rule);
+  auto* supports_rule = To<StyleRuleSupports>(rule);
   ASSERT_FALSE(supports_rule->ConditionIsSupported());
 
   const HeapVector<Member<StyleRuleBase>>& child_rules =
