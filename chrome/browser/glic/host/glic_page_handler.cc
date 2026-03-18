@@ -1656,6 +1656,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 
     // TODO(crbug.com/462769104): move this to a non-metrics API.
     sharing_manager().OnConversationTurnSubmitted();
+    host().instance_delegate().OnUserInputSubmitted(mode);
   }
 
   void OnContextUploadStarted() override {
