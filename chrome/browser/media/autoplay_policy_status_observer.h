@@ -24,9 +24,7 @@ class AutoplayPolicyStatusObserver
     kAllowedByTWA = 4,
     kAllowedByMicCameraPermission = 5,
     kDefaultPolicyApplied = 6,
-    kAllowedByMediaEngagement = 7,
-    kWouldBeAllowedByMediaEngagement = 8,
-    kMaxValue = kWouldBeAllowedByMediaEngagement,
+    kMaxValue = kDefaultPolicyApplied,
   };
 
   ~AutoplayPolicyStatusObserver() override;

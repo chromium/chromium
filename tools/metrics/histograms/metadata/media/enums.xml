@@ -250,8 +250,6 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="AllowedByTWA"/>
   <int value="5" label="AllowedByMicCameraPermission"/>
   <int value="6" label="DefaultPolicyApplied"/>
-  <int value="7" label="AllowedByMediaEngagement"/>
-  <int value="8" label="WouldBeAllowedByMediaEngagement"/>
 </enum>
 
 <enum name="AutoplaySource">
