@@ -800,8 +800,10 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
               Each(Field(&PossibleTypes::types, Not(Contains(ONE_TIME_CODE)))));
 }
 
-// Tests if the Autofill AI field types are crowdsourced.
-TEST_F(DeterminePossibleFieldTypesForUploadTest, CrowdsourceAutofillAiTypes) {
+// Tests if the Autofill AI field types for unmasked attributes are
+// crowdsourced.
+TEST_F(DeterminePossibleFieldTypesForUploadTest,
+       CrowdsourceUnmaskedAutofillAiTypes) {
   FormData form;
   form.set_fields({
       CreateTestFormField("first-name", "first-name", "Pippi",
@@ -849,9 +851,45 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest, CrowdsourceAutofillAiTypes) {
                   HasTypes(UNKNOWN_TYPE)));
 }
 
-// Tests if format strings are crowdsourced for certain Autofill AI FieldTypes.
+// Tests if the Autofill AI field types for masked attributes are crowdsourced.
 TEST_F(DeterminePossibleFieldTypesForUploadTest,
-       CrowdsourceAutofillAiFormatStrings) {
+       CrowdsourceMaskedAutofillAiTypes) {
+  FormData form;
+  form.set_fields({
+      // Expected to receive a PASSPORT_NUMBER vote.
+      CreateTestFormField("number", "number", "1234567",
+                          FormControlType::kInputText),
+      // Expected not to receive a PASSPORT_NUMBER vote.
+      CreateTestFormField("number", "number", "7654321",
+                          FormControlType::kInputText),
+  });
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromFormData(form);
+
+  // Create a masked passport. The entity's number will only be a suffix of the
+  // unmasked number "1234567".
+  EntityInstance entity =
+      test::MaskEntityInstance(test::GetPassportEntityInstance(
+          {.number = u"1234567",
+           .record_type = EntityInstance::RecordType::kServerWallet}));
+  ASSERT_NE(entity.attribute(AttributeType(AttributeTypeName::kPassportNumber))
+                ->GetCompleteRawInfo(),
+            u"1234567");
+
+  EXPECT_THAT(
+      DeterminePossibleFieldTypesForUpload(
+          std::vector<AutofillProfile>(), std::vector<CreditCard>(),
+          base::span_from_ref(entity), std::vector<LoyaltyCard>(),
+          /*fields_that_match_state=*/{},
+          /*last_unlocked_credit_card_cvc=*/u"", std::vector<OneTimeToken>(),
+          "en-US", form_structure->fields()),
+      ElementsAre(HasTypes(PASSPORT_NUMBER), HasTypes(UNKNOWN_TYPE)));
+}
+
+// Tests if format strings are crowdsourced for certain unmasked Autofill AI
+// FieldTypes.
+TEST_F(DeterminePossibleFieldTypesForUploadTest,
+       CrowdsourceUnmaskedAutofillAiFormatStrings) {
   FormData form;
   form.set_fields({
       // Complete first/last name.
@@ -936,6 +974,58 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
           AllOf(HasTypes(FLIGHT_RESERVATION_FLIGHT_NUMBER),
                 HasFlightNumberFormats("F")),
           AllOf(HasTypes(UNKNOWN_TYPE), HasNoFormats())));
+}
+
+// Tests if format strings are crowdsourced for certain masked Autofill AI
+// FieldTypes.
+TEST_F(DeterminePossibleFieldTypesForUploadTest,
+       CrowdsourceMaskedAutofillAiFormatStrings) {
+  FormData form;
+  form.set_fields({
+      // Complete passport number. Expect that a vote for PASSPORT_NUMBER
+      // without a format string. Without the unmasked value, we cannot
+      // confidently classify it as a full match.
+      CreateTestFormField("number", "number", "0123456789",
+                          FormControlType::kInputText),
+      // Affixes of the passport number.
+      // Prefix: Expect no match, since only the suffix is available on file.
+      CreateTestFormField("number", "number", "0123",
+                          FormControlType::kInputText),
+      // Short Suffix: Expect a PASSPORT_NUMBER vote and a suffix format string,
+      // because the value on file ends with the field's value.
+      CreateTestFormField("number", "number", "789",
+                          FormControlType::kInputText),
+      // Long Suffix: Expect a vote for PASSPORT_NUMBER, since the value on
+      // file is a suffix of the field's value. Like in the complete passport
+      // number case, don't expect a format string, since we cannot distinguish
+      // between a full match and a suffix match.
+      CreateTestFormField("number", "number", "23456789",
+                          FormControlType::kInputText),
+  });
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromFormData(form);
+
+  // Create a masked passport. The entity's number will only be a suffix of the
+  // unmasked number "0123456789".
+  EntityInstance entity =
+      test::MaskEntityInstance(test::GetPassportEntityInstance(
+          {.number = u"0123456789",
+           .record_type = EntityInstance::RecordType::kServerWallet}));
+  ASSERT_NE(entity.attribute(AttributeType(AttributeTypeName::kPassportNumber))
+                ->GetCompleteRawInfo(),
+            u"0123456789");
+
+  EXPECT_THAT(
+      DeterminePossibleFieldTypesForUpload(
+          std::vector<AutofillProfile>(), std::vector<CreditCard>(),
+          base::span_from_ref(entity), std::vector<LoyaltyCard>(),
+          /*fields_that_match_state=*/{},
+          /*last_unlocked_credit_card_cvc=*/u"", std::vector<OneTimeToken>(),
+          "en-US", form_structure->fields()),
+      ElementsAre(AllOf(HasTypes(PASSPORT_NUMBER), HasNoFormats()),
+                  AllOf(HasTypes(UNKNOWN_TYPE), HasNoFormats()),
+                  AllOf(HasTypes(PASSPORT_NUMBER), HasAffixFormats("-3")),
+                  AllOf(HasTypes(PASSPORT_NUMBER), HasNoFormats())));
 }
 
 // Test fixture for PreProcessStateMatchingTypes().

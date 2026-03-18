@@ -299,6 +299,92 @@ FieldTypeSet GetAvailableAutofillAiFieldTypes(
   return types;
 }
 
+bool QualifiesForAffixFormatStringVote(FieldType field_type,
+                                       std::u16string_view value_in_field) {
+  return IsAffixFormatStringEnabledForType(field_type) &&
+         value_in_field.size() >= data_util::kMinAffixLengthForFormatString &&
+         value_in_field.size() <= data_util::kMaxAffixLengthForFormatString;
+}
+
+// Adds all applicable votes for `field_type` to `pt` for an unmasked
+// `value_on_file`, given that `value_in_field` was submitted.
+void AddPossibleAutofillAiTypesForUnmaskedValue(
+    std::u16string_view value_in_field,
+    std::u16string_view value_on_file,
+    FieldType field_type,
+    PossibleTypes& pt) {
+  // Test if `value_in_field` and `value_on_file` match.
+  bool full_match =
+      AutofillProfileComparator::Compare(value_in_field, value_on_file);
+  if (full_match) {
+    pt.types.insert(field_type);
+    if (IsAffixFormatStringEnabledForType(field_type)) {
+      pt.formats.emplace(FormatString_Type_AFFIX, u"0");
+    }
+    if (field_type == FLIGHT_RESERVATION_FLIGHT_NUMBER &&
+        base::FeatureList::IsEnabled(
+            features::kAutofillAiVoteForFormatStringsForFlightNumbers)) {
+      pt.formats.emplace(FormatString_Type_FLIGHT_NUMBER, u"F");
+    }
+  }
+
+  // Test if `value_in_field` is an affix of `value_on_file`.
+  if (QualifiesForAffixFormatStringVote(field_type, value_in_field) &&
+      value_in_field.size() < value_on_file.size()) {
+    if (value_on_file.starts_with(value_in_field)) {
+      pt.types.insert(field_type);
+      pt.formats.emplace(FormatString_Type_AFFIX,
+                         base::NumberToString16(value_in_field.size()));
+    }
+    if (value_on_file.ends_with(value_in_field)) {
+      pt.types.insert(field_type);
+      pt.formats.emplace(
+          FormatString_Type_AFFIX,
+          base::NumberToString16(-1 * static_cast<int>(value_in_field.size())));
+    }
+  }
+
+  if (field_type == FLIGHT_RESERVATION_FLIGHT_NUMBER &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillAiVoteForFormatStringsForFlightNumbers)) {
+    if (value_in_field.size() == 2 &&
+        value_on_file.starts_with(value_in_field)) {
+      pt.types.insert(field_type);
+      pt.formats.emplace(FormatString_Type_FLIGHT_NUMBER, u"A");
+    } else if (value_on_file.size() > 3 &&
+               value_on_file.substr(2) == value_in_field) {
+      pt.types.insert(field_type);
+      pt.formats.emplace(FormatString_Type_FLIGHT_NUMBER, u"N");
+    }
+  }
+}
+
+// Adds all applicable votes for `field_type` to `pt` for a
+// `masked_value_on_file`, given that `value_in_field` was submitted.
+void AddPossibleAutofillAiTypesForMaskedValue(
+    std::u16string_view value_in_field,
+    std::u16string_view masked_value_on_file,
+    FieldType field_type,
+    PossibleTypes& pt) {
+  // Since the full value is not available on file, look for a suffix match.
+  if (value_in_field.ends_with(masked_value_on_file)) {
+    pt.types.insert(field_type);
+    // No "full match" FormatString_Type_AFFIX vote is created. With a masked
+    // value on file, the logic cannot distinguish between full and suffix
+    // matches.
+  }
+  // For FormatString_Type_AFFIX votes, only suffixes matches are possible for
+  // masked values. If the `masked_value_on_file` is shorter than the suffix
+  // filled into `value_in_field`, the vote will be missed.
+  if (QualifiesForAffixFormatStringVote(field_type, value_in_field) &&
+      masked_value_on_file.ends_with(value_in_field)) {
+    pt.types.insert(field_type);
+    pt.formats.emplace(
+        FormatString_Type_AFFIX,
+        base::NumberToString16(-1 * static_cast<int>(value_in_field.size())));
+  }
+}
+
 // Scans the given `entities` for values that match `value_u16`. It adds the
 // matching `FieldType` to `PossibleTypes::types` and, if applicable, a format
 // string to `PossibleTypes::format`.
@@ -320,55 +406,12 @@ void AddPossibleAutofillAiTypes(base::span<const EntityInstance> entities,
         const std::u16string& value_on_file =
             normalization::NormalizeForComparison(
                 attribute.GetInfo(field_type, app_locale, std::nullopt));
-
-        // Test if `value_in_field` and `value_on_file` match.
-        bool full_match =
-            AutofillProfileComparator::Compare(value_in_field, value_on_file);
-        if (full_match) {
-          pt.types.insert(field_type);
-          if (IsAffixFormatStringEnabledForType(field_type)) {
-            pt.formats.emplace(FormatString_Type_AFFIX, u"0");
-          }
-          if (field_type == FLIGHT_RESERVATION_FLIGHT_NUMBER &&
-              base::FeatureList::IsEnabled(
-                  features::kAutofillAiVoteForFormatStringsForFlightNumbers)) {
-            pt.formats.emplace(FormatString_Type_FLIGHT_NUMBER, u"F");
-          }
-        }
-
-        // Test if `value_in_field` is an affix of `value_on_file`.
-        if (IsAffixFormatStringEnabledForType(field_type) &&
-            value_in_field.size() < value_on_file.size() &&
-            value_in_field.size() >=
-                data_util::kMinAffixLengthForFormatString &&
-            value_in_field.size() <=
-                data_util::kMaxAffixLengthForFormatString) {
-          if (value_on_file.starts_with(value_in_field)) {
-            pt.types.insert(field_type);
-            pt.formats.emplace(FormatString_Type_AFFIX,
-                               base::NumberToString16(value_in_field.size()));
-          }
-          if (value_on_file.ends_with(value_in_field)) {
-            pt.types.insert(field_type);
-            pt.formats.emplace(
-                FormatString_Type_AFFIX,
-                base::NumberToString16(
-                    -1 * static_cast<int>(value_in_field.size())));
-          }
-        }
-
-        if (field_type == FLIGHT_RESERVATION_FLIGHT_NUMBER &&
-            base::FeatureList::IsEnabled(
-                features::kAutofillAiVoteForFormatStringsForFlightNumbers)) {
-          if (value_in_field.size() == 2 &&
-              value_on_file.starts_with(value_in_field)) {
-            pt.types.insert(field_type);
-            pt.formats.emplace(FormatString_Type_FLIGHT_NUMBER, u"A");
-          } else if (value_on_file.size() > 3 &&
-                     value_on_file.substr(2) == value_in_field) {
-            pt.types.insert(field_type);
-            pt.formats.emplace(FormatString_Type_FLIGHT_NUMBER, u"N");
-          }
+        if (attribute.masked()) {
+          AddPossibleAutofillAiTypesForMaskedValue(
+              value_in_field, value_on_file, field_type, pt);
+        } else {
+          AddPossibleAutofillAiTypesForUnmaskedValue(
+              value_in_field, value_on_file, field_type, pt);
         }
       }
     }
