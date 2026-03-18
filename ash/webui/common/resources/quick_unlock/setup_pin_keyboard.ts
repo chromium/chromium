@@ -23,6 +23,11 @@ import type {PinKeyboardElement} from './pin_keyboard.js';
 import {getTemplate} from './setup_pin_keyboard.html.js';
 import {fireAuthTokenInvalidEvent} from './utils.js';
 
+import CredentialCheck = chrome.quickUnlockPrivate.CredentialCheck;
+import CredentialProblem = chrome.quickUnlockPrivate.CredentialProblem;
+import CredentialRequirements = chrome.quickUnlockPrivate.CredentialRequirements;
+import QuickUnlockMode = chrome.quickUnlockPrivate.QuickUnlockMode;
+
 /**
  * Keep in sync with the string keys provided by settings.
  */
@@ -190,7 +195,7 @@ export class SetupPinKeyboardElement extends SetupPinKeyboardElementBase {
     // Show the pin is too short error when first displaying the PIN dialog.
     this.problemClass_ = ProblemType.WARNING;
     chrome.quickUnlockPrivate.getCredentialRequirements(
-        chrome.quickUnlockPrivate.QuickUnlockMode.PIN,
+        QuickUnlockMode.PIN,
         this.processPinRequirements_.bind(this, MessageType.TOO_SHORT));
   }
 
@@ -224,8 +229,7 @@ export class SetupPinKeyboardElement extends SetupPinKeyboardElementBase {
    *     The requirements received from getCredentialRequirements.
    */
   private processPinRequirements_(
-      messageId: MessageType,
-      requirements: chrome.quickUnlockPrivate.CredentialRequirements): void {
+      messageId: MessageType, requirements: CredentialRequirements): void {
     let additionalInformation = '';
     switch (messageId) {
       case MessageType.TOO_SHORT:
@@ -252,7 +256,7 @@ export class SetupPinKeyboardElement extends SetupPinKeyboardElementBase {
   private showProblem_(messageId: MessageType, problemClass: ProblemType):
       void {
     this.quickUnlockPrivate.getCredentialRequirements(
-        chrome.quickUnlockPrivate.QuickUnlockMode.PIN,
+        QuickUnlockMode.PIN,
         this.processPinRequirements_.bind(this, messageId));
     this.problemClass_ = problemClass;
     this.enableSubmit = problemClass !== ProblemType.ERROR &&
@@ -268,8 +272,7 @@ export class SetupPinKeyboardElement extends SetupPinKeyboardElementBase {
    * Processes the message received from the quick unlock api and hides/shows
    * the problem based on the message.
    */
-  private processPinProblems_(message:
-                                  chrome.quickUnlockPrivate.CredentialCheck) {
+  private processPinProblems_(message: CredentialCheck) {
     if (!message.errors.length && !message.warnings.length) {
       this.hideProblem_();
       this.enableSubmit = true;
@@ -278,33 +281,30 @@ export class SetupPinKeyboardElement extends SetupPinKeyboardElementBase {
     }
 
     if (!message.errors.length ||
-        message.errors[0] !==
-            chrome.quickUnlockPrivate.CredentialProblem.TOO_SHORT) {
+        message.errors[0] !== CredentialProblem.TOO_SHORT) {
       this.pinHasPassedMinimumLength_ = true;
     }
 
     if (message.warnings.length) {
-      assert(
-          message.warnings[0] ===
-          chrome.quickUnlockPrivate.CredentialProblem.TOO_WEAK);
+      assert(message.warnings[0] === CredentialProblem.TOO_WEAK);
       this.showProblem_(MessageType.TOO_WEAK, ProblemType.WARNING);
     }
 
     if (message.errors.length) {
       switch (message.errors[0]) {
-        case chrome.quickUnlockPrivate.CredentialProblem.TOO_SHORT:
+        case CredentialProblem.TOO_SHORT:
           this.showProblem_(
               MessageType.TOO_SHORT,
               this.pinHasPassedMinimumLength_ ? ProblemType.ERROR :
                                                 ProblemType.WARNING);
           break;
-        case chrome.quickUnlockPrivate.CredentialProblem.TOO_LONG:
+        case CredentialProblem.TOO_LONG:
           this.showProblem_(MessageType.TOO_LONG, ProblemType.ERROR);
           break;
-        case chrome.quickUnlockPrivate.CredentialProblem.TOO_WEAK:
+        case CredentialProblem.TOO_WEAK:
           this.showProblem_(MessageType.TOO_WEAK, ProblemType.ERROR);
           break;
-        case chrome.quickUnlockPrivate.CredentialProblem.CONTAINS_NONDIGIT:
+        case CredentialProblem.CONTAINS_NONDIGIT:
           this.showProblem_(MessageType.CONTAINS_NONDIGIT, ProblemType.ERROR);
           break;
         default:
@@ -321,8 +321,7 @@ export class SetupPinKeyboardElement extends SetupPinKeyboardElementBase {
     if (!this.isConfirmStep) {
       if (newPin) {
         this.quickUnlockPrivate.checkCredential(
-            chrome.quickUnlockPrivate.QuickUnlockMode.PIN, newPin,
-            this.processPinProblems_.bind(this));
+            QuickUnlockMode.PIN, newPin, this.processPinProblems_.bind(this));
       } else {
         this.enableSubmit = false;
         this.showProblem_(
