@@ -72,6 +72,22 @@ constexpr char kDelayedQueriesCountHistogram[] =
 constexpr char kMostDelayedQueryDeltaHistogram[] =
     "Cookie.FirstPartySets.Browser.MostDelayedQueryDelta";
 
+base::flat_map<net::SchemefulSite, net::FirstPartySetEntry> FindEntries(
+    const net::GlobalFirstPartySets& sets,
+    const base::flat_set<net::SchemefulSite>& sites,
+    const net::FirstPartySetsContextConfig& config) {
+  std::vector<std::pair<net::SchemefulSite, net::FirstPartySetEntry>> got;
+  got.reserve(sites.size());
+  for (const auto& site : sites) {
+    std::optional<net::FirstPartySetEntry> maybe_entry =
+        sets.FindEntry(site, config);
+    if (maybe_entry) {
+      got.emplace_back(site, std::move(maybe_entry).value());
+    }
+  }
+  return got;
+}
+
 }  // namespace
 
 TEST(FirstPartySetsHandlerImplInstance, ValidateEnterprisePolicy_ValidPolicy) {
@@ -298,14 +314,15 @@ TEST_F(FirstPartySetsHandlerImplDisabledTest, InitImmediately) {
           R"({"primary": "https://example.test", )"
           R"("associatedSites": ["https://associatedsite2.test"]})"));
 
-  EXPECT_THAT(GetSetsAndWait().FindEntries(
+  EXPECT_THAT(
+      FindEntries(GetSetsAndWait(),
                   {
                       net::SchemefulSite(GURL("https://example.test")),
                       net::SchemefulSite(GURL("https://associatedsite1.test")),
                       net::SchemefulSite(GURL("https://associatedsite2.test")),
                   },
                   net::FirstPartySetsContextConfig()),
-              IsEmpty());
+      IsEmpty());
 }
 
 class FirstPartySetsHandlerImplEnabledTest
@@ -330,8 +347,8 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest, EmptyDBPath) {
           R"({"primary": "https://example.test",)"
           R"("associatedSites": ["https://associatedsite1.test"]})"));
 
-  EXPECT_THAT(GetSetsAndWait().FindEntries({example, associated},
-                                           net::FirstPartySetsContextConfig()),
+  EXPECT_THAT(FindEntries(GetSetsAndWait(), {example, associated},
+                          net::FirstPartySetsContextConfig()),
               UnorderedElementsAre(
                   Pair(example, net::FirstPartySetEntry(
                                     example, net::SiteType::kPrimary)),
@@ -370,7 +387,7 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
       persisted = GetPersistedSetsAndWait(handler, browser_context_id);
   ASSERT_TRUE(persisted.has_value());
   EXPECT_THAT(
-      persisted->first.FindEntries({foo, associated}, persisted->second),
+      FindEntries(persisted->first, {foo, associated}, persisted->second),
       UnorderedElementsAre(
           Pair(foo, net::FirstPartySetEntry(foo, net::SiteType::kPrimary)),
           Pair(associated,
@@ -417,7 +434,7 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
         persisted = GetPersistedSetsAndWait(handler, browser_context_id);
     ASSERT_TRUE(persisted.has_value());
     EXPECT_THAT(
-        persisted->first.FindEntries({foo, associated}, persisted->second),
+        FindEntries(persisted->first, {foo, associated}, persisted->second),
         UnorderedElementsAre(
             Pair(foo, net::FirstPartySetEntry(foo, net::SiteType::kPrimary)),
             Pair(associated,
@@ -460,7 +477,7 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
         persisted = GetPersistedSetsAndWait(handler, browser_context_id);
     ASSERT_TRUE(persisted.has_value());
     EXPECT_THAT(
-        persisted->first.FindEntries({foo, associated2}, persisted->second),
+        FindEntries(persisted->first, {foo, associated2}, persisted->second),
         UnorderedElementsAre(
             Pair(foo, net::FirstPartySetEntry(foo, net::SiteType::kPrimary)),
             Pair(associated2,
@@ -492,8 +509,8 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
   handler().Init(
       /*user_data_dir=*/{}, net::LocalSetDeclaration());
   ASSERT_THAT(
-      GetSetsAndWait().FindEntries({foo, associated},
-                                   net::FirstPartySetsContextConfig()),
+      FindEntries(GetSetsAndWait(), {foo, associated},
+                  net::FirstPartySetsContextConfig()),
       UnorderedElementsAre(
           Pair(foo, net::FirstPartySetEntry(foo, net::SiteType::kPrimary)),
           Pair(associated,
@@ -540,7 +557,7 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
       persisted = GetPersistedSetsAndWait(browser_context_id);
   ASSERT_TRUE(persisted.has_value());
   EXPECT_THAT(
-      persisted->first.FindEntries({foo, associated}, persisted->second),
+      FindEntries(persisted->first, {foo, associated}, persisted->second),
       UnorderedElementsAre(
           Pair(foo, net::FirstPartySetEntry(foo, net::SiteType::kPrimary)),
           Pair(associated,
@@ -569,16 +586,14 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
   // Wait until initialization is complete.
   GetSetsAndWait();
 
-  EXPECT_THAT(handler()
-                  .GetSets(base::NullCallback())
-                  .value()
-                  .FindEntries({example, associated},
-                               net::FirstPartySetsContextConfig()),
-              UnorderedElementsAre(
-                  Pair(example, net::FirstPartySetEntry(
-                                    example, net::SiteType::kPrimary)),
-                  Pair(associated, net::FirstPartySetEntry(
-                                       example, net::SiteType::kAssociated))));
+  EXPECT_THAT(
+      FindEntries(handler().GetSets(base::NullCallback()).value(),
+                  {example, associated}, net::FirstPartySetsContextConfig()),
+      UnorderedElementsAre(
+          Pair(example,
+               net::FirstPartySetEntry(example, net::SiteType::kPrimary)),
+          Pair(associated,
+               net::FirstPartySetEntry(example, net::SiteType::kAssociated))));
 }
 
 TEST_F(FirstPartySetsHandlerImplEnabledTest,
@@ -600,24 +615,22 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
   handler().SetPublicFirstPartySets(base::Version("1.2.3"),
                                     WritePublicSetsFile(input));
 
-  EXPECT_THAT(future.Get().FindEntries({example, associated},
-                                       net::FirstPartySetsContextConfig()),
+  EXPECT_THAT(FindEntries(future.Get(), {example, associated},
+                          net::FirstPartySetsContextConfig()),
               UnorderedElementsAre(
                   Pair(example, net::FirstPartySetEntry(
                                     example, net::SiteType::kPrimary)),
                   Pair(associated, net::FirstPartySetEntry(
                                        example, net::SiteType::kAssociated))));
 
-  EXPECT_THAT(handler()
-                  .GetSets(base::NullCallback())
-                  .value()
-                  .FindEntries({example, associated},
-                               net::FirstPartySetsContextConfig()),
-              UnorderedElementsAre(
-                  Pair(example, net::FirstPartySetEntry(
-                                    example, net::SiteType::kPrimary)),
-                  Pair(associated, net::FirstPartySetEntry(
-                                       example, net::SiteType::kAssociated))));
+  EXPECT_THAT(
+      FindEntries(handler().GetSets(base::NullCallback()).value(),
+                  {example, associated}, net::FirstPartySetsContextConfig()),
+      UnorderedElementsAre(
+          Pair(example,
+               net::FirstPartySetEntry(example, net::SiteType::kPrimary)),
+          Pair(associated,
+               net::FirstPartySetEntry(example, net::SiteType::kAssociated))));
 }
 
 TEST_F(FirstPartySetsHandlerImplEnabledTest,
@@ -784,8 +797,8 @@ class FirstPartySetsHandlerGetContextConfigForPolicyTest
                                       WritePublicSetsFile(input));
 
     ASSERT_THAT(
-        GetSetsAndWait().FindEntries({primary1, associated1, associated2},
-                                     net::FirstPartySetsContextConfig()),
+        FindEntries(GetSetsAndWait(), {primary1, associated1, associated2},
+                    net::FirstPartySetsContextConfig()),
         SizeIs(3));
   }
 };

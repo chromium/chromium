@@ -788,13 +788,6 @@ class NET_EXPORT CookieMonster : public CookieStore {
   // cookies. Returns whether stats were recorded.
   bool DoRecordPeriodicStats();
 
-  // Records periodic stats related to First-Party Sets usage. Note that since
-  // First-Party Sets presents a potentially asynchronous interface, these stats
-  // may be collected asynchronously w.r.t. the rest of the stats collected by
-  // `RecordPeriodicStats`.
-  void RecordPeriodicFirstPartySetsStats(
-      base::flat_map<SchemefulSite, FirstPartySetEntry> sets) const;
-
   // Defers the callback until the full coookie database has been loaded. If
   // it's already been loaded, runs the callback synchronously.
   void DoCookieCallback(base::OnceClosure callback);

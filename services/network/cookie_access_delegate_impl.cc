@@ -84,15 +84,4 @@ CookieAccessDelegateImpl::ComputeFirstPartySetMetadataMaybeAsync(
       site, top_frame_site, std::move(callback));
 }
 
-std::optional<FirstPartySetsAccessDelegate::EntriesResult>
-CookieAccessDelegateImpl::FindFirstPartySetEntries(
-    const base::flat_set<net::SchemefulSite>& sites,
-    base::OnceCallback<void(FirstPartySetsAccessDelegate::EntriesResult)>
-        callback) const {
-  if (!first_party_sets_access_delegate_)
-    return FirstPartySetsAccessDelegate::EntriesResult();
-  return first_party_sets_access_delegate_->FindEntries(sites,
-                                                        std::move(callback));
-}
-
 }  // namespace network

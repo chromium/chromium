@@ -141,20 +141,6 @@ std::optional<FirstPartySetEntry> GlobalFirstPartySets::FindEntry(
   return std::nullopt;
 }
 
-base::flat_map<SchemefulSite, FirstPartySetEntry>
-GlobalFirstPartySets::FindEntries(
-    const base::flat_set<SchemefulSite>& sites,
-    const FirstPartySetsContextConfig& config) const {
-  std::vector<std::pair<SchemefulSite, FirstPartySetEntry>> sites_to_entries;
-  for (const SchemefulSite& site : sites) {
-    const std::optional<FirstPartySetEntry> entry = FindEntry(site, config);
-    if (entry.has_value()) {
-      sites_to_entries.emplace_back(site, entry.value());
-    }
-  }
-  return sites_to_entries;
-}
-
 FirstPartySetMetadata GlobalFirstPartySets::ComputeMetadata(
     const SchemefulSite& site,
     base::optional_ref<const SchemefulSite> top_frame_site,

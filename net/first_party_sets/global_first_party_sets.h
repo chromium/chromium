@@ -71,12 +71,6 @@ class NET_EXPORT GlobalFirstPartySets {
       const SchemefulSite& site,
       const FirstPartySetsContextConfig& config) const;
 
-  // Batched version of `FindEntry`. Where `FindEntry` would have returned
-  // nullopt, this just omits from the result map.
-  base::flat_map<SchemefulSite, FirstPartySetEntry> FindEntries(
-      const base::flat_set<SchemefulSite>& sites,
-      const FirstPartySetsContextConfig& config) const;
-
   // Computes the First-Party Set metadata related to the given request context.
   FirstPartySetMetadata ComputeMetadata(
       const SchemefulSite& site,

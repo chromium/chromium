@@ -73,22 +73,6 @@ class NET_EXPORT CookieAccessDelegate {
       base::OnceCallback<void(FirstPartySetMetadata,
                               FirstPartySetsCacheFilter::MatchInfo)> callback)
       const = 0;
-
-  // Returns the entries of a set of sites if the sites are in non-trivial sets.
-  // If a given site is not in a non-trivial set, the output does not contain a
-  // corresponding entry.
-  //
-  // This may return a result synchronously, or asynchronously invoke `callback`
-  // with the result. The callback will be invoked iff the return value is
-  // nullopt; i.e. a result will be provided via return value or callback, but
-  // not both, and not neither.
-  [[nodiscard]] virtual std::optional<
-      base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>>
-  FindFirstPartySetEntries(
-      const base::flat_set<net::SchemefulSite>& sites,
-      base::OnceCallback<
-          void(base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>)>
-          callback) const = 0;
 };
 
 }  // namespace net

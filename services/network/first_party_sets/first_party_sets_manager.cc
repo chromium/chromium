@@ -81,47 +81,6 @@ net::FirstPartySetMetadata FirstPartySetsManager::ComputeMetadataInternal(
   return sets_->ComputeMetadata(site, top_frame_site, fps_context_config);
 }
 
-std::optional<FirstPartySetsManager::EntriesResult>
-FirstPartySetsManager::FindEntries(
-    const base::flat_set<net::SchemefulSite>& sites,
-    const net::FirstPartySetsContextConfig& fps_context_config,
-    base::OnceCallback<void(FirstPartySetsManager::EntriesResult)> callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!sets_.has_value()) {
-    if (!wait_for_init_) {
-      return FirstPartySetsManager::EntriesResult();
-    }
-    EnqueuePendingQuery(
-        base::BindOnce(&FirstPartySetsManager::FindEntriesAndInvoke,
-                       weak_factory_.GetWeakPtr(), sites,
-                       fps_context_config.Clone(), std::move(callback)));
-    return std::nullopt;
-  }
-
-  return FindEntriesInternal(sites, fps_context_config);
-}
-
-void FirstPartySetsManager::FindEntriesAndInvoke(
-    const base::flat_set<net::SchemefulSite>& sites,
-    const net::FirstPartySetsContextConfig& fps_context_config,
-    base::OnceCallback<void(FirstPartySetsManager::EntriesResult)> callback)
-    const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(sets_.has_value());
-
-  std::move(callback).Run(FindEntriesInternal(sites, fps_context_config));
-}
-
-FirstPartySetsManager::EntriesResult FirstPartySetsManager::FindEntriesInternal(
-    const base::flat_set<net::SchemefulSite>& sites,
-    const net::FirstPartySetsContextConfig& fps_context_config) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(sets_.has_value());
-
-  return sets_->FindEntries(sites, fps_context_config);
-}
-
 void FirstPartySetsManager::InvokePendingQueries() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(sets_.has_value());

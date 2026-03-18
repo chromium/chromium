@@ -63,6 +63,22 @@ int CompatibleVersionFromMetaTable(sql::Database& db) {
   return s.ColumnInt(0);
 }
 
+base::flat_map<net::SchemefulSite, net::FirstPartySetEntry> FindEntries(
+    const net::GlobalFirstPartySets& sets,
+    const base::flat_set<net::SchemefulSite>& sites,
+    const net::FirstPartySetsContextConfig& config) {
+  std::vector<std::pair<net::SchemefulSite, net::FirstPartySetEntry>> got;
+  got.reserve(sites.size());
+  for (const auto& site : sites) {
+    std::optional<net::FirstPartySetEntry> maybe_entry =
+        sets.FindEntry(site, config);
+    if (maybe_entry) {
+      got.emplace_back(site, std::move(maybe_entry).value());
+    }
+  }
+  return got;
+}
+
 }  // namespace
 
 class FirstPartySetsDatabaseTest : public testing::Test {
@@ -1020,8 +1036,8 @@ TEST_F(FirstPartySetsDatabaseTest, GetSets_NoPublicSets) {
 
   EXPECT_TRUE(res.has_value());
   EXPECT_THAT(
-      res->first.FindEntries({manual_site, manual_primary},
-                             net::FirstPartySetsContextConfig()),
+      FindEntries(res->first, {manual_site, manual_primary},
+                  net::FirstPartySetsContextConfig()),
       UnorderedElementsAre(
           Pair(manual_site, net::FirstPartySetEntry(
                                 manual_primary, net::SiteType::kAssociated)),
@@ -1054,8 +1070,8 @@ TEST_F(FirstPartySetsDatabaseTest, GetSets_PublicSetsHaveSingleton) {
   EXPECT_TRUE(res.has_value());
   // The singleton set should be deleted.
   EXPECT_THAT(
-      res->first.FindEntries({aaa, bbb, ccc, ddd},
-                             net::FirstPartySetsContextConfig()),
+      FindEntries(res->first, {aaa, bbb, ccc, ddd},
+                  net::FirstPartySetsContextConfig()),
       UnorderedElementsAre(
           Pair(ccc, net::FirstPartySetEntry(ddd, net::SiteType::kAssociated)),
           Pair(ddd, net::FirstPartySetEntry(ddd, net::SiteType::kPrimary))));
@@ -1086,8 +1102,8 @@ TEST_F(FirstPartySetsDatabaseTest, GetSets_PublicSetsHaveOrphan) {
   EXPECT_TRUE(res.has_value());
   // The singleton set should be deleted.
   EXPECT_THAT(
-      res->first.FindEntries({aaa, bbb, ccc, ddd},
-                             net::FirstPartySetsContextConfig()),
+      FindEntries(res->first, {aaa, bbb, ccc, ddd},
+                  net::FirstPartySetsContextConfig()),
       UnorderedElementsAre(
           Pair(ccc, net::FirstPartySetEntry(ddd, net::SiteType::kAssociated)),
           Pair(ddd, net::FirstPartySetEntry(ddd, net::SiteType::kPrimary))));
@@ -1117,8 +1133,8 @@ TEST_F(FirstPartySetsDatabaseTest, GetSets) {
       res = db()->GetGlobalSetsAndConfig("b0");
   EXPECT_TRUE(res.has_value());
   EXPECT_THAT(
-      res->first.FindEntries({aaa, bbb, ccc, ddd},
-                             net::FirstPartySetsContextConfig()),
+      FindEntries(res->first, {aaa, bbb, ccc, ddd},
+                  net::FirstPartySetsContextConfig()),
       UnorderedElementsAre(
           Pair(aaa, net::FirstPartySetEntry(bbb, net::SiteType::kAssociated)),
           Pair(bbb, net::FirstPartySetEntry(bbb, net::SiteType::kPrimary)),

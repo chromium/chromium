@@ -114,32 +114,6 @@ FirstPartySetsAccessDelegate::ComputeMetadata(
                               : std::nullopt;
 }
 
-std::optional<FirstPartySetsAccessDelegate::EntriesResult>
-FirstPartySetsAccessDelegate::FindEntries(
-    const base::flat_set<net::SchemefulSite>& sites,
-    base::OnceCallback<void(FirstPartySetsAccessDelegate::EntriesResult)>
-        callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!enabled_)
-    return FirstPartySetsAccessDelegate::EntriesResult();
-
-  if (!ready_event_.has_value()) {
-    if (!wait_for_init_) {
-      return FirstPartySetsAccessDelegate::EntriesResult();
-    }
-    // base::Unretained() is safe because `this` owns `pending_queries_` and
-    // `pending_queries_` will not run the enqueued callbacks after `this` is
-    // destroyed.
-    EnqueuePendingQuery(
-        base::BindOnce(&FirstPartySetsAccessDelegate::FindEntriesAndInvoke,
-                       base::Unretained(this), sites, std::move(callback)));
-    return std::nullopt;
-  }
-
-  return manager_->FindEntries(sites, *context_config(), std::move(callback));
-}
-
 void FirstPartySetsAccessDelegate::ComputeMetadataAndInvoke(
     const net::SchemefulSite& site,
     base::optional_ref<const net::SchemefulSite> top_frame_site,
@@ -174,30 +148,6 @@ void FirstPartySetsAccessDelegate::ComputeMetadataAndInvoke(
   if (sync_result.has_value()) {
     std::move(callbacks.second).Run(std::move(sync_result.value()), match_info);
   }
-}
-
-void FirstPartySetsAccessDelegate::FindEntriesAndInvoke(
-    const base::flat_set<net::SchemefulSite>& sites,
-    base::OnceCallback<void(FirstPartySetsAccessDelegate::EntriesResult)>
-        callback) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(context_config());
-  // NB: since `FindEntries` returns early if the delegate is disabled,
-  // we're guaranteed that for any queued query, the delegate must have been
-  // enabled when the query was received. However, the delegate may have been
-  // disabled between then and now, so we have no guarantees re: `enabled_` now.
-
-  std::pair<
-      base::OnceCallback<void(FirstPartySetsAccessDelegate::EntriesResult)>,
-      base::OnceCallback<void(FirstPartySetsAccessDelegate::EntriesResult)>>
-      callbacks = base::SplitOnceCallback(std::move(callback));
-
-  std::optional<FirstPartySetsAccessDelegate::EntriesResult> sync_result =
-      manager_->FindEntries(sites, *context_config(),
-                            std::move(callbacks.first));
-
-  if (sync_result.has_value())
-    std::move(callbacks.second).Run(sync_result.value());
 }
 
 void FirstPartySetsAccessDelegate::InvokePendingQueries() {

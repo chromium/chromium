@@ -65,11 +65,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieAccessDelegateImpl
       base::OnceCallback<void(net::FirstPartySetMetadata,
                               net::FirstPartySetsCacheFilter::MatchInfo)>
           callback) const override;
-  [[nodiscard]] std::optional<FirstPartySetsAccessDelegate::EntriesResult>
-  FindFirstPartySetEntries(
-      const base::flat_set<net::SchemefulSite>& sites,
-      base::OnceCallback<void(FirstPartySetsAccessDelegate::EntriesResult)>
-          callback) const override;
 
  private:
   const mojom::CookieAccessDelegateType type_;

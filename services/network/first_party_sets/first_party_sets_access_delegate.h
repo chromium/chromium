@@ -32,8 +32,6 @@ namespace network {
 class FirstPartySetsAccessDelegate
     : public mojom::FirstPartySetsAccessDelegate {
  public:
-  using EntriesResult = FirstPartySetsManager::EntriesResult;
-
   // Construct a FirstPartySetsAccessDelegate that provides customizations
   // and serves mojo requests for the underlying First-Party Sets info.
   // `*manager` outlives this object.
@@ -69,17 +67,6 @@ class FirstPartySetsAccessDelegate
                               net::FirstPartySetsCacheFilter::MatchInfo)>
           callback);
 
-  // Calls FirstPartySetsManager::FindEntries either asynchronously or
-  // synchronously, once initialization is complete.
-  //
-  // This may return a result synchronously, or asynchronously invoke `callback`
-  // with the result. The callback will be invoked iff the return value is
-  // nullopt; i.e. a result will be provided via return value or callback, but
-  // not both, and not neither.
-  [[nodiscard]] std::optional<EntriesResult> FindEntries(
-      const base::flat_set<net::SchemefulSite>& sites,
-      base::OnceCallback<void(EntriesResult)> callback);
-
  private:
   // Same as `ComputeMetadata`, but plumbs the result into the callback. Must
   // only be called once the instance is fully initialized.
@@ -89,12 +76,6 @@ class FirstPartySetsAccessDelegate
       base::OnceCallback<void(net::FirstPartySetMetadata,
                               net::FirstPartySetsCacheFilter::MatchInfo)>
           callback) const;
-
-  // Same as `FindEntries`, but plumbs the result into the callback. Must only
-  // be called once the instance is fully initialized.
-  void FindEntriesAndInvoke(
-      const base::flat_set<net::SchemefulSite>& sites,
-      base::OnceCallback<void(EntriesResult)> callback) const;
 
   // Runs all pending queries. Must not be called until the instance is fully
   // initialized.

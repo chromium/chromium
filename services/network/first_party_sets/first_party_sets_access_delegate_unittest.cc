@@ -141,18 +141,6 @@ TEST_F(NoopFirstPartySetsAccessDelegateTest, ComputeMetadata) {
           net::FirstPartySetsCacheFilter::MatchInfo())));
 }
 
-TEST_F(NoopFirstPartySetsAccessDelegateTest, FindEntries) {
-  EXPECT_THAT(
-      delegate().FindEntries({kSet1AssociatedSite1, kSet2AssociatedSite1},
-                             base::NullCallback()),
-      FirstPartySetsAccessDelegate::EntriesResult({
-          {kSet1AssociatedSite1,
-           net::FirstPartySetEntry(kSet1Primary, net::SiteType::kAssociated)},
-          {kSet2AssociatedSite1,
-           net::FirstPartySetEntry(kSet2Primary, net::SiteType::kAssociated)},
-      }));
-}
-
 class FirstPartySetsAccessDelegateTest : public ::testing::Test,
                                          public WaitingFeatureInitializer {
  public:
@@ -198,14 +186,6 @@ class FirstPartySetsAccessDelegateTest : public ::testing::Test,
     return result.has_value() ? std::move(result).value() : future.Take();
   }
 
-  FirstPartySetsAccessDelegate::EntriesResult FindEntriesAndWait(
-      const base::flat_set<net::SchemefulSite>& site) {
-    base::test::TestFuture<FirstPartySetsAccessDelegate::EntriesResult> future;
-    std::optional<FirstPartySetsAccessDelegate::EntriesResult> result =
-        delegate_.FindEntries(site, future.GetCallback());
-    return result.has_value() ? result.value() : future.Get();
-  }
-
   FirstPartySetsAccessDelegate& delegate() { return delegate_; }
 
   mojom::FirstPartySetsAccessDelegate* delegate_remote() {
@@ -233,11 +213,6 @@ TEST_F(FirstPartySetsAccessDelegateDisabledTest, ComputeMetadata) {
   EXPECT_EQ(ComputeMetadataAndWait(kSet1AssociatedSite1, &kSet1AssociatedSite1),
             std::make_tuple(net::FirstPartySetMetadata(),
                             net::FirstPartySetsCacheFilter::MatchInfo()));
-}
-
-TEST_F(FirstPartySetsAccessDelegateDisabledTest, FindEntries) {
-  EXPECT_THAT(FindEntriesAndWait({kSet1AssociatedSite1, kSet2AssociatedSite1}),
-              IsEmpty());
 }
 
 // Test fixture that allows precise control over when the instance gets FPS
@@ -270,23 +245,6 @@ TEST_F(AsyncFirstPartySetsAccessDelegateTest,
                             net::FirstPartySetsCacheFilter::MatchInfo()));
 }
 
-TEST_F(AsyncFirstPartySetsAccessDelegateTest, QueryBeforeReady_FindEntries) {
-  base::test::TestFuture<FirstPartySetsAccessDelegate::EntriesResult> future;
-  EXPECT_FALSE(delegate().FindEntries(
-      {kSet1AssociatedSite1, kSet2AssociatedSite1}, future.GetCallback()));
-
-  delegate_remote()->NotifyReady(mojom::FirstPartySetsReadyEvent::New());
-
-  EXPECT_THAT(
-      future.Get(),
-      FirstPartySetsAccessDelegate::EntriesResult({
-          {kSet1AssociatedSite1,
-           net::FirstPartySetEntry(kSet1Primary, net::SiteType::kAssociated)},
-          {kSet2AssociatedSite1,
-           net::FirstPartySetEntry(kSet2Primary, net::SiteType::kAssociated)},
-      }));
-}
-
 TEST_F(AsyncFirstPartySetsAccessDelegateTest, OverrideSets_ComputeMetadata) {
   delegate_remote()->NotifyReady(CreateFirstPartySetsReadyEvent(
       net::FirstPartySetsContextConfig::Create(
@@ -308,21 +266,6 @@ TEST_F(AsyncFirstPartySetsAccessDelegateTest, OverrideSets_ComputeMetadata) {
                                 net::FirstPartySetEntry(
                                     kSet3Primary, net::SiteType::kAssociated)),
                             net::FirstPartySetsCacheFilter::MatchInfo()));
-}
-
-TEST_F(AsyncFirstPartySetsAccessDelegateTest, OverrideSets_FindEntries) {
-  delegate_remote()->NotifyReady(CreateFirstPartySetsReadyEvent(
-      net::FirstPartySetsContextConfig::Create(
-          {
-              {kSet3Primary,
-               net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
-                   kSet3Primary, net::SiteType::kPrimary))},
-          })
-          .value(),
-      /*cache_filter=*/std::nullopt));
-
-  EXPECT_THAT(FindEntriesAndWait({kSet3Primary}),
-              UnorderedElementsAre(Pair(kSet3Primary, _)));
 }
 
 class SyncFirstPartySetsAccessDelegateTest
@@ -357,20 +300,6 @@ TEST_F(SyncFirstPartySetsAccessDelegateTest, ComputeMetadata) {
                                 net::FirstPartySetEntry(
                                     kSet1Primary, net::SiteType::kAssociated)),
                             match_info));
-}
-
-TEST_F(SyncFirstPartySetsAccessDelegateTest, FindEntries) {
-  EXPECT_THAT(
-      FindEntriesAndWait(
-          {kSet1AssociatedSite1, kSet2AssociatedSite1, kSet3AssociatedSite1}),
-      FirstPartySetsAccessDelegate::EntriesResult({
-          {kSet1AssociatedSite1,
-           net::FirstPartySetEntry(kSet1Primary, net::SiteType::kAssociated)},
-          {kSet2AssociatedSite1,
-           net::FirstPartySetEntry(kSet2Primary, net::SiteType::kAssociated)},
-          {kSet3AssociatedSite1,
-           net::FirstPartySetEntry(kSet3Primary, net::SiteType::kAssociated)},
-      }));
 }
 
 // Verifies the behaviors of the delegate when First-Party Sets are initially
@@ -415,28 +344,6 @@ TEST_F(FirstPartySetsAccessDelegateSetToDisabledTest,
 }
 
 TEST_F(FirstPartySetsAccessDelegateSetToDisabledTest,
-       DisabledThenReady_FindEntries) {
-  base::test::TestFuture<
-      base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>>
-      future;
-  EXPECT_FALSE(
-      delegate().FindEntries({kSet1AssociatedSite1}, future.GetCallback()));
-
-  delegate().SetEnabled(false);
-
-  // All queries received when the delegate is disabled receive empty responses.
-  EXPECT_THAT(FindEntriesAndWait({kSet1AssociatedSite1}), IsEmpty());
-
-  delegate().NotifyReady(mojom::FirstPartySetsReadyEvent::New());
-
-  // Queries received when the delegate is enabled receive non-empty responses
-  // once the config is ready.
-  EXPECT_THAT(future.Take(), Not(IsEmpty()));
-
-  EXPECT_THAT(FindEntriesAndWait({kSet1AssociatedSite1}), IsEmpty());
-}
-
-TEST_F(FirstPartySetsAccessDelegateSetToDisabledTest,
        ReadyThenDisabled_ComputeMetadata) {
   base::test::TestFuture<net::FirstPartySetMetadata,
                          net::FirstPartySetsCacheFilter::MatchInfo>
@@ -460,24 +367,6 @@ TEST_F(FirstPartySetsAccessDelegateSetToDisabledTest,
                net::FirstPartySetsCacheFilter::MatchInfo());
   EXPECT_EQ(ComputeMetadataAndWait(kSet1AssociatedSite1, &kSet1AssociatedSite1),
             expected);
-}
-
-TEST_F(FirstPartySetsAccessDelegateSetToDisabledTest,
-       ReadyThenDisabled_FindEntries) {
-  base::test::TestFuture<FirstPartySetsAccessDelegate::EntriesResult> future;
-
-  EXPECT_FALSE(
-      delegate().FindEntries({kSet1AssociatedSite1}, future.GetCallback()));
-  delegate_remote()->NotifyReady(mojom::FirstPartySetsReadyEvent::New());
-  EXPECT_THAT(future.Get(),
-              FirstPartySetsAccessDelegate::EntriesResult(
-                  {{kSet1AssociatedSite1,
-                    net::FirstPartySetEntry(kSet1Primary,
-                                            net::SiteType::kAssociated)}}));
-  FindEntriesAndWait({kSet1AssociatedSite1});
-
-  delegate().SetEnabled(false);
-  EXPECT_THAT(FindEntriesAndWait({kSet1AssociatedSite1}), IsEmpty());
 }
 
 // Verifies the behaviors of the delegate when First-Party Sets are initially
@@ -529,31 +418,6 @@ TEST_F(FirstPartySetsAccessDelegateSetToEnabledTest,
 }
 
 TEST_F(FirstPartySetsAccessDelegateSetToEnabledTest,
-       EnabledThenReady_FindEntries) {
-  EXPECT_EQ(FindEntriesAndWait({kSet1AssociatedSite1}),
-            FirstPartySetsAccessDelegate::EntriesResult());
-
-  delegate().SetEnabled(true);
-
-  base::test::TestFuture<FirstPartySetsAccessDelegate::EntriesResult> future;
-  EXPECT_FALSE(
-      delegate().FindEntries({kSet1AssociatedSite1}, future.GetCallback()));
-  delegate_remote()->NotifyReady(CreateFirstPartySetsReadyEvent(
-      net::FirstPartySetsContextConfig::Create(
-          {{kSet1AssociatedSite1,
-            net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
-                kSet2Primary, net::SiteType::kAssociated))}})
-          .value(),
-      /*cache_filter=*/std::nullopt));
-  EXPECT_EQ(future.Get(),
-            FirstPartySetsAccessDelegate::EntriesResult(
-                {{kSet1AssociatedSite1,
-                  net::FirstPartySetEntry(kSet2Primary,
-                                          net::SiteType::kAssociated)}}));
-  FindEntriesAndWait({kSet1AssociatedSite1});
-}
-
-TEST_F(FirstPartySetsAccessDelegateSetToEnabledTest,
        ReadyThenEnabled_ComputeMetadata) {
   std::tuple<net::FirstPartySetMetadata,
              net::FirstPartySetsCacheFilter::MatchInfo>
@@ -566,17 +430,6 @@ TEST_F(FirstPartySetsAccessDelegateSetToEnabledTest,
 
   EXPECT_NE(ComputeMetadataAndWait(kSet1AssociatedSite1, &kSet1AssociatedSite1),
             expected);
-}
-
-TEST_F(FirstPartySetsAccessDelegateSetToEnabledTest,
-       ReadyThenEnabled_FindEntries) {
-  EXPECT_EQ(FindEntriesAndWait({kSet1AssociatedSite1}),
-            FirstPartySetsAccessDelegate::EntriesResult());
-  delegate().NotifyReady(mojom::FirstPartySetsReadyEvent::New());
-  delegate().SetEnabled(true);
-
-  EXPECT_THAT(FindEntriesAndWait({kSet1AssociatedSite1}),
-              UnorderedElementsAre(Pair(kSet1AssociatedSite1, _)));
 }
 
 class AsyncNonwaitingFirstPartySetsAccessDelegateTest
@@ -609,27 +462,6 @@ TEST_F(AsyncNonwaitingFirstPartySetsAccessDelegateTest,
 }
 
 TEST_F(AsyncNonwaitingFirstPartySetsAccessDelegateTest,
-       QueryBeforeReady_FindEntries) {
-  EXPECT_THAT(
-      delegate().FindEntries({kSet1AssociatedSite1, kSet2AssociatedSite1},
-                             base::NullCallback()),
-      Optional(IsEmpty()));
-
-  delegate_remote()->NotifyReady(mojom::FirstPartySetsReadyEvent::New());
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_THAT(
-      delegate().FindEntries({kSet1AssociatedSite1, kSet2AssociatedSite1},
-                             base::NullCallback()),
-      FirstPartySetsAccessDelegate::EntriesResult({
-          {kSet1AssociatedSite1,
-           net::FirstPartySetEntry(kSet1Primary, net::SiteType::kAssociated)},
-          {kSet2AssociatedSite1,
-           net::FirstPartySetEntry(kSet2Primary, net::SiteType::kAssociated)},
-      }));
-}
-
-TEST_F(AsyncNonwaitingFirstPartySetsAccessDelegateTest,
        OverrideSets_ComputeMetadata) {
   delegate_remote()->NotifyReady(CreateFirstPartySetsReadyEvent(
       net::FirstPartySetsContextConfig::Create(
@@ -652,23 +484,6 @@ TEST_F(AsyncNonwaitingFirstPartySetsAccessDelegateTest,
                                 net::FirstPartySetEntry(
                                     kSet3Primary, net::SiteType::kAssociated)),
                             net::FirstPartySetsCacheFilter::MatchInfo()));
-}
-
-TEST_F(AsyncNonwaitingFirstPartySetsAccessDelegateTest,
-       OverrideSets_FindEntries) {
-  delegate_remote()->NotifyReady(CreateFirstPartySetsReadyEvent(
-      net::FirstPartySetsContextConfig::Create(
-          {
-              {kSet3Primary,
-               net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
-                   kSet3Primary, net::SiteType::kPrimary))},
-          })
-          .value(),
-      /*cache_filter=*/std::nullopt));
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_THAT(FindEntriesAndWait({kSet3Primary}),
-              UnorderedElementsAre(Pair(kSet3Primary, _)));
 }
 
 }  // namespace network

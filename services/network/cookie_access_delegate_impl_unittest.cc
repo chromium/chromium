@@ -57,12 +57,6 @@ TEST_F(CookieAccessDelegateImplTest, NullFirstPartySetsManager) {
                  net::FirstPartySetsCacheFilter::MatchInfo) { FAIL(); })),
       Optional(std::make_pair(std::cref(expected_metadata),
                               net::FirstPartySetsCacheFilter::MatchInfo())));
-
-  EXPECT_THAT(
-      delegate().FindFirstPartySetEntries(
-          {site},
-          base::BindOnce([](FirstPartySetsManager::EntriesResult) { FAIL(); })),
-      Optional(IsEmpty()));
 }
 
 }  // namespace

@@ -27,9 +27,6 @@ namespace network {
 // answers queries about First-Party Sets after they've been loaded.
 class FirstPartySetsManager {
  public:
-  using EntriesResult =
-      base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>;
-
   explicit FirstPartySetsManager(bool enabled);
   ~FirstPartySetsManager();
 
@@ -59,23 +56,6 @@ class FirstPartySetsManager {
   // invocations are ignored.
   void SetCompleteSets(net::GlobalFirstPartySets sets);
 
-  // Returns the mapping of sites to entries for the given input sites (if an
-  // entry exists).
-  //
-  // When FPS is disabled, returns an empty map.
-  // When FPS is enabled, this maps each input site to its entry (if one
-  // exists), and returns the resulting mapping. If a site isn't in a
-  // non-trivial First-Party Set, it is not added to the output map.
-  //
-  // This may return a result synchronously, or asynchronously invoke `callback`
-  // with the result. The callback will be invoked iff the return value is
-  // nullopt; i.e. a result will be provided via return value or callback, but
-  // not both, and not neither.
-  [[nodiscard]] std::optional<EntriesResult> FindEntries(
-      const base::flat_set<net::SchemefulSite>& sites,
-      const net::FirstPartySetsContextConfig& fps_context_config,
-      base::OnceCallback<void(EntriesResult)> callback);
-
  private:
   // Same as `ComputeMetadata`, but plumbs the result into the callback. Must
   // only be called once the instance is fully initialized.
@@ -90,19 +70,6 @@ class FirstPartySetsManager {
   net::FirstPartySetMetadata ComputeMetadataInternal(
       const net::SchemefulSite& site,
       base::optional_ref<const net::SchemefulSite> top_frame_site,
-      const net::FirstPartySetsContextConfig& fps_context_config) const;
-
-  // Same as `FindEntries`, but plumbs the result into the callback. Must only
-  // be called once the instance is fully initialized.
-  void FindEntriesAndInvoke(
-      const base::flat_set<net::SchemefulSite>& sites,
-      const net::FirstPartySetsContextConfig& fps_context_config,
-      base::OnceCallback<void(EntriesResult)> callback) const;
-
-  // Synchronous version of `FindEntries`, to be run only once the instance is
-  // initialized.
-  EntriesResult FindEntriesInternal(
-      const base::flat_set<net::SchemefulSite>& sites,
       const net::FirstPartySetsContextConfig& fps_context_config) const;
 
   // Enqueues a query to be answered once the instance is fully initialized.

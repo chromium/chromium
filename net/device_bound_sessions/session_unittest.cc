@@ -714,15 +714,6 @@ class InsecureDelegate : public CookieAccessDelegate {
       const override {
     return std::nullopt;
   }
-  [[nodiscard]] std::optional<
-      base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>>
-  FindFirstPartySetEntries(
-      const base::flat_set<net::SchemefulSite>& sites,
-      base::OnceCallback<
-          void(base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>)>
-          callback) const override {
-    return std::nullopt;
-  }
 };
 
 TEST_F(SessionTest, NotDeferredNotSameSiteForCookies) {

@@ -98,22 +98,6 @@ TestCookieAccessDelegate::FindFirstPartySetEntry(
                                           : std::nullopt;
 }
 
-std::optional<base::flat_map<SchemefulSite, FirstPartySetEntry>>
-TestCookieAccessDelegate::FindFirstPartySetEntries(
-    const base::flat_set<SchemefulSite>& sites,
-    base::OnceCallback<void(base::flat_map<SchemefulSite, FirstPartySetEntry>)>
-        callback) const {
-  std::vector<std::pair<SchemefulSite, FirstPartySetEntry>> mapping;
-  for (const SchemefulSite& site : sites) {
-    std::optional<FirstPartySetEntry> entry = FindFirstPartySetEntry(site);
-    if (entry)
-      mapping.emplace_back(site, *entry);
-  }
-
-  return RunMaybeAsync<base::flat_map<SchemefulSite, FirstPartySetEntry>>(
-      mapping, std::move(callback));
-}
-
 template <class T>
 std::optional<T> TestCookieAccessDelegate::RunMaybeAsync(
     T result,

@@ -7498,68 +7498,6 @@ TEST_F(CookieMonsterTest, CookieSourceSchemeNameHistogram) {
   histograms.ExpectTotalCount(kHistogramName, count);
 }
 
-class FirstPartySetEnabledCookieMonsterTest : public CookieMonsterTest {
- public:
-  FirstPartySetEnabledCookieMonsterTest()
-      : cm_(nullptr /* store */, nullptr /* netlog */
-        ) {
-    std::unique_ptr<TestCookieAccessDelegate> access_delegate =
-        std::make_unique<TestCookieAccessDelegate>();
-    access_delegate_ = access_delegate.get();
-    cm_.SetCookieAccessDelegate(std::move(access_delegate));
-  }
-
-  ~FirstPartySetEnabledCookieMonsterTest() override = default;
-
-  CookieMonster* cm() { return &cm_; }
-
- protected:
-  CookieMonster cm_;
-  raw_ptr<TestCookieAccessDelegate> access_delegate_;
-};
-
-TEST_F(FirstPartySetEnabledCookieMonsterTest, RecordsPeriodicFPSSizes) {
-  net::SchemefulSite owner1(GURL("https://owner1.test"));
-  net::SchemefulSite owner2(GURL("https://owner2.test"));
-  net::SchemefulSite member1(GURL("https://member1.test"));
-  net::SchemefulSite member2(GURL("https://member2.test"));
-  net::SchemefulSite member3(GURL("https://member3.test"));
-  net::SchemefulSite member4(GURL("https://member4.test"));
-
-  access_delegate_->SetFirstPartySets({
-      {owner1, net::FirstPartySetEntry(owner1, net::SiteType::kPrimary)},
-      {member1, net::FirstPartySetEntry(owner1, net::SiteType::kAssociated)},
-      {member2, net::FirstPartySetEntry(owner1, net::SiteType::kAssociated)},
-      {owner2, net::FirstPartySetEntry(owner2, net::SiteType::kPrimary)},
-      {member3, net::FirstPartySetEntry(owner2, net::SiteType::kAssociated)},
-      {member4, net::FirstPartySetEntry(owner2, net::SiteType::kAssociated)},
-  });
-
-  ASSERT_TRUE(SetCookie(cm(), GURL("https://owner1.test"), kValidCookieLine));
-  ASSERT_TRUE(SetCookie(cm(), GURL("https://subdomain.member1.test"),
-                        kValidCookieLine));
-  ASSERT_TRUE(SetCookie(cm(), GURL("https://member2.test"), kValidCookieLine));
-  ASSERT_TRUE(
-      SetCookie(cm(), GURL("https://subdomain.owner2.test"), kValidCookieLine));
-  ASSERT_TRUE(SetCookie(cm(), GURL("https://member3.test"), kValidCookieLine));
-  // No cookie set for member4.test.
-  ASSERT_TRUE(
-      SetCookie(cm(), GURL("https://unrelated1.test"), kValidCookieLine));
-  ASSERT_TRUE(
-      SetCookie(cm(), GURL("https://unrelated2.test"), kValidCookieLine));
-  ASSERT_TRUE(
-      SetCookie(cm(), GURL("https://unrelated3.test"), kValidCookieLine));
-
-  base::HistogramTester histogram_tester;
-  EXPECT_TRUE(cm()->DoRecordPeriodicStatsForTesting());
-  EXPECT_THAT(histogram_tester.GetAllSamples("Cookie.PerFirstPartySetCount"),
-              testing::ElementsAre(  //
-                                     // owner2.test & member3.test
-                  base::Bucket(2 /* min */, 1 /* samples */),
-                  // owner1.test, member1.test, & member2.test
-                  base::Bucket(3 /* min */, 1 /* samples */)));
-}
-
 TEST_F(CookieMonsterTest, GetAllCookiesForURLNonce) {
   auto store = base::MakeRefCounted<MockPersistentCookieStore>();
   auto cm = std::make_unique<CookieMonster>(store.get(), net::NetLog::Get());
