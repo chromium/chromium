@@ -8813,6 +8813,7 @@ from previous Chrome versions.
   <int value="-1909356390"
       label="OverlayScrollbarFlashAfterAnyScrollUpdate:enabled"/>
   <int value="-1908551313" label="MahiDebugging:enabled"/>
+  <int value="-1908071792" label="PopularSitesRefreshUs:enabled"/>
   <int value="-1907565048" label="HtmlBaseUsernameDetector:disabled"/>
   <int value="-1907342706" label="ReadItLaterInMenu:disabled"/>
   <int value="-1907159779" label="NotebookLmAppShelfPinReset:enabled"/>
@@ -19435,6 +19436,7 @@ from previous Chrome versions.
   <int value="1671985641" label="WebViewVulkan:enabled"/>
   <int value="1672062546" label="PasswordStrengthIndicator:disabled"/>
   <int value="1672637465" label="OsIntegrationSubManagers:disabled"/>
+  <int value="1672855774" label="PopularSitesRefreshUs:disabled"/>
   <int value="1673185316" label="EarlyCodeCache:enabled"/>
   <int value="1673427566" label="ChromeHomeExpandButton:disabled"/>
   <int value="1673750445" label="NotebookLmAppShelfPinReset:disabled"/>

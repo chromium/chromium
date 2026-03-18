@@ -2010,6 +2010,15 @@ inline constexpr char kEnableNtpBrowserPromosDescription[] =
     "Shows suggestions to explore browser capabilities (eg. signing in) on the "
     "new tab page.";
 
+inline constexpr char kPopularSitesRefreshUsName[] = "Popular Sites US Refresh";
+inline constexpr char kPopularSitesRefreshUsDescription[] =
+    "When enabled, hard-codes Popular Sites for the US or DEFAULT region, "
+    "ignoring server-provided data. The 'arm' parameter selects the specific "
+    "set of hard-coded sites.";
+inline constexpr char kPopularSitesRefreshUsChoiceArm1[] = "Arm 1";
+inline constexpr char kPopularSitesRefreshUsChoiceArm2[] = "Arm 2";
+inline constexpr char kPopularSitesRefreshUsChoiceArm3[] = "Arm 3";
+
 inline constexpr char kSoftNavigationHeuristicsName[] =
     "Soft Navigation Heuristics";
 inline constexpr char kSoftNavigationHeuristicsDescription[] =
