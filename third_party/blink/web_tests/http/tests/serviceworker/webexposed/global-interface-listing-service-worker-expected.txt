@@ -3517,6 +3517,7 @@ interface WebTransport
     method close
     method constructor
     method createBidirectionalStream
+    method createSendGroup
     method createUnidirectionalStream
     method getStats
 interface WebTransportBidirectionalStream
@@ -3543,6 +3544,10 @@ interface WebTransportError : DOMException
     getter source
     getter streamErrorCode
     method constructor
+interface WebTransportSendGroup
+    attribute @@toStringTag
+    method constructor
+    method getStats
 interface WindowClient : Client
     attribute @@toStringTag
     getter focused

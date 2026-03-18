@@ -6,9 +6,11 @@
 
 #include <stdint.h>
 
+#include <limits>
 #include <optional>
 #include <utility>
 
+#include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -49,6 +51,7 @@
 #include "third_party/blink/renderer/modules/webtransport/receive_stream.h"
 #include "third_party/blink/renderer/modules/webtransport/send_stream.h"
 #include "third_party/blink/renderer/modules/webtransport/web_transport_error.h"
+#include "third_party/blink/renderer/modules/webtransport/web_transport_send_group.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -1292,6 +1295,7 @@ void WebTransport::Trace(Visitor* visitor) const {
   visitor->Trace(received_streams_underlying_source_);
   visitor->Trace(received_bidirectional_streams_);
   visitor->Trace(received_bidirectional_streams_underlying_source_);
+  visitor->Trace(send_groups_);
   ScriptWrappable::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
@@ -1507,6 +1511,7 @@ void WebTransport::Dispose() {
   // let the garbage collector free the memory.
   // Clear pending close notifications.
   closed_potentially_pending_streams_.clear();
+  send_groups_.clear();
   connector_.reset();
   transport_remote_.reset();
   handshake_client_receiver_.reset();
@@ -1730,6 +1735,20 @@ WebTransportConnectionStats* WebTransport::ConvertStatsFromMojom(
 
 const String& WebTransport::protocol() {
   return selected_application_protocol_;
+}
+
+WebTransportSendGroup* WebTransport::createSendGroup(
+    ExceptionState& exception_state) {
+  if (next_send_group_id_ == std::numeric_limits<uint32_t>::max()) {
+    exception_state.ThrowRangeError(
+        "Cannot create more send groups: group ID limit reached.");
+    return nullptr;
+  }
+  uint32_t group_id = next_send_group_id_;
+  next_send_group_id_ = base::CheckAdd(next_send_group_id_, 1).ValueOrDie();
+  auto* group = MakeGarbageCollected<WebTransportSendGroup>(this, group_id);
+  send_groups_.insert(group);
+  return group;
 }
 
 }  // namespace blink

@@ -47,6 +47,7 @@ class ReadableByteStreamController;
 class ScriptState;
 class WebTransportCloseInfo;
 class WebTransportOptions;
+class WebTransportSendGroup;
 class WritableStream;
 
 // https://wicg.github.io/web-transport/#web-transport
@@ -87,6 +88,9 @@ class MODULES_EXPORT WebTransport final
   void setDatagramWritableQueueExpirationDuration(double ms);
   ScriptPromise<WebTransportConnectionStats> getStats(ScriptState*);
   const String& protocol();
+  WebTransportSendGroup* createSendGroup(ExceptionState&);
+
+  void SetNextSendGroupIdForTesting(uint32_t id) { next_send_group_id_ = id; }
 
   // WebTransportHandshakeClient implementation
   void OnBeforeConnect(const net::IPEndPoint& server_address) override;
@@ -280,6 +284,13 @@ class MODULES_EXPORT WebTransport final
       received_bidirectional_streams_underlying_source_;
 
   const uint64_t inspector_transport_id_;
+
+  // Tracks send groups created via createSendGroup().
+  // Uses WeakMember to allow garbage collection when the caller discards the
+  // group reference.
+  HeapHashSet<WeakMember<WebTransportSendGroup>> send_groups_;
+  // Counter for assigning unique group IDs.
+  uint32_t next_send_group_id_ = 0;
 
   FrameScheduler::SchedulingAffectingFeatureHandle
       feature_handle_for_scheduler_;

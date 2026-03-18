@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/webtransport/web_transport.h"
 
 #include <array>
+#include <limits>
 #include <memory>
 #include <optional>
 #include <utility>
@@ -37,6 +38,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_error.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_hash.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_send_stream_stats.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_byob_reader.h"
@@ -51,6 +53,7 @@
 #include "third_party/blink/renderer/modules/webtransport/send_stream.h"
 #include "third_party/blink/renderer/modules/webtransport/test_utils.h"
 #include "third_party/blink/renderer/modules/webtransport/web_transport_error.h"
+#include "third_party/blink/renderer/modules/webtransport/web_transport_send_group.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -2203,6 +2206,111 @@ TEST_F(WebTransportTest, ReceivedStopSending) {
   EXPECT_EQ(error->source(), V8WebTransportErrorSource::Enum::kStream);
 
   EXPECT_TRUE(bidirectional_stream->readable()->IsReadable());
+}
+
+TEST_F(WebTransportTest, CreateSendGroup) {
+  V8TestingScope scope;
+  auto* web_transport =
+      CreateAndConnectSuccessfully(scope, "https://example.com");
+
+  auto* group1 = web_transport->createSendGroup(ASSERT_NO_EXCEPTION);
+  ASSERT_TRUE(group1);
+  EXPECT_EQ(group1->group_id(), 0u);
+
+  auto* group2 = web_transport->createSendGroup(ASSERT_NO_EXCEPTION);
+  ASSERT_TRUE(group2);
+  EXPECT_EQ(group2->group_id(), 1u);
+
+  // Each call should return a distinct object with a unique ID.
+  EXPECT_NE(group1, group2);
+  EXPECT_NE(group1->group_id(), group2->group_id());
+}
+
+TEST_F(WebTransportTest, CreateSendGroupBeforeConnection) {
+  V8TestingScope scope;
+  AddBinder(scope);
+  auto* web_transport = WebTransport::Create(
+      scope.GetScriptState(), String("https://example.com/"), EmptyOptions(),
+      ASSERT_NO_EXCEPTION);
+
+  // createSendGroup() should work even before the connection is established,
+  // since group creation is purely client-side bookkeeping.
+  auto* group = web_transport->createSendGroup(ASSERT_NO_EXCEPTION);
+  ASSERT_TRUE(group);
+  EXPECT_EQ(group->group_id(), 0u);
+}
+
+TEST_F(WebTransportTest, SendGroupGetStatsReturnsZeroedStats) {
+  V8TestingScope scope;
+  auto* web_transport =
+      CreateAndConnectSuccessfully(scope, "https://example.com");
+
+  auto* group = web_transport->createSendGroup(ASSERT_NO_EXCEPTION);
+  ASSERT_TRUE(group);
+
+  auto* script_state = scope.GetScriptState();
+  auto stats_promise = group->getStats(script_state);
+  ScriptPromiseTester tester(script_state, stats_promise);
+
+  tester.WaitUntilSettled();
+  EXPECT_TRUE(tester.IsFulfilled());
+
+  // Verify the resolved value is a WebTransportSendStreamStats dictionary
+  // with all stats zeroed (stub implementation).
+  v8::Local<v8::Value> result = tester.Value().V8Value();
+  ASSERT_TRUE(result->IsObject());
+
+  v8::Local<v8::Object> stats_obj = result.As<v8::Object>();
+  auto context = script_state->GetContext();
+  auto* isolate = script_state->GetIsolate();
+
+  v8::Local<v8::Value> bytes_written;
+  ASSERT_TRUE(stats_obj->Get(context, V8AtomicString(isolate, "bytesWritten"))
+                  .ToLocal(&bytes_written));
+  EXPECT_EQ(bytes_written->IntegerValue(context).ToChecked(), 0);
+
+  v8::Local<v8::Value> bytes_sent;
+  ASSERT_TRUE(stats_obj->Get(context, V8AtomicString(isolate, "bytesSent"))
+                  .ToLocal(&bytes_sent));
+  EXPECT_EQ(bytes_sent->IntegerValue(context).ToChecked(), 0);
+
+  v8::Local<v8::Value> bytes_acknowledged;
+  ASSERT_TRUE(
+      stats_obj->Get(context, V8AtomicString(isolate, "bytesAcknowledged"))
+          .ToLocal(&bytes_acknowledged));
+  EXPECT_EQ(bytes_acknowledged->IntegerValue(context).ToChecked(), 0);
+}
+
+TEST_F(WebTransportTest, CreateSendGroupAfterClose) {
+  V8TestingScope scope;
+  auto* web_transport =
+      CreateAndConnectSuccessfully(scope, "https://example.com");
+  EXPECT_CALL(*mock_web_transport_, Close());
+
+  web_transport->close(nullptr);
+  test::RunPendingTasks();
+
+  // createSendGroup() should still succeed after close, since group creation
+  // is purely client-side bookkeeping with no network interaction.
+  auto* group = web_transport->createSendGroup(ASSERT_NO_EXCEPTION);
+  ASSERT_TRUE(group);
+  EXPECT_EQ(group->group_id(), 0u);
+}
+
+TEST_F(WebTransportTest, CreateSendGroupOverflow) {
+  V8TestingScope scope;
+  auto* web_transport =
+      CreateAndConnectSuccessfully(scope, "https://example.com");
+
+  // Simulate being at the limit by setting next_send_group_id_ to max.
+  web_transport->SetNextSendGroupIdForTesting(
+      std::numeric_limits<uint32_t>::max());
+
+  DummyExceptionStateForTesting exception_state;
+  auto* group = web_transport->createSendGroup(exception_state);
+  EXPECT_FALSE(group);
+  EXPECT_TRUE(exception_state.HadException());
+  EXPECT_EQ(exception_state.CodeAs<ESErrorType>(), ESErrorType::kRangeError);
 }
 
 }  // namespace

@@ -22,6 +22,8 @@ blink_modules_sources("webtransport") {
     "web_transport.h",
     "web_transport_error.cc",
     "web_transport_error.h",
+    "web_transport_send_group.cc",
+    "web_transport_send_group.h",
   ]
 }
 

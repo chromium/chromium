@@ -26,6 +26,9 @@
   [CallWith=ScriptState, RuntimeEnabled=WebTransportStats]
   Promise<WebTransportConnectionStats> getStats();
 
+  [RaisesException, RuntimeEnabled=WebTransportSendGroup]
+  WebTransportSendGroup createSendGroup();
+
    [RuntimeEnabled=WebTransportApplicationProtocol]
   readonly attribute DOMString protocol;
 };
