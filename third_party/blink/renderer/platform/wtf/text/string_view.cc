@@ -49,7 +49,7 @@ int CodeUnitCompareIgnoringAsciiCase(base::span<const CharType1> c1,
 }  // namespace
 
 StringView::StringView(const UChar* chars)
-    // SAFETY: length of `chars` determined by walking NUL-terminated string.
+    // SAFETY: It's safe if `chars` points to a NUL-terminated string.
     : StringView(UNSAFE_BUFFERS(
           base::span(chars, chars ? LengthOfNullTerminatedString(chars) : 0))) {
 }
@@ -388,6 +388,7 @@ int CodeUnitCompareIgnoringAsciiCase(const StringView& a, const StringView& b) {
 }
 
 UChar32 StringView::CodePointAt(size_type i) const {
+  SECURITY_DCHECK(i < length());
   if (Is8Bit())
     return (*this)[i];
   return blink::CodePointAt(Span16(), i);

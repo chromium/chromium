@@ -412,8 +412,8 @@ class WTF_EXPORT StringImpl {
                                       wtf_size_t len = UINT_MAX) const;
 
   UChar operator[](wtf_size_t i) const {
-    CHECK(i < length_);
-    // SAFETY: Checked that i < length above.
+    SECURITY_DCHECK(i < length_);
+    // SAFETY: It's safe when i < length.
     UNSAFE_BUFFERS({
       if (Is8Bit()) {
         return Characters8()[i];
