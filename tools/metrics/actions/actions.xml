@@ -51842,12 +51842,6 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="TextSelectionChanged">
-  <owner>mvanouwerkerk@chromium.org</owner>
-  <owner>wbjacksonjr@chromium.org</owner>
-  <description>The text selection changed.</description>
-</action>
-
 <action name="TextToSpeech.Pause">
   <owner>dtseng@chromium.org</owner>
   <description>Synthesized speech is paused.</description>

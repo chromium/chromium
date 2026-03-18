@@ -9326,7 +9326,6 @@ void RenderFrameHostImpl::FocusedElementChanged(
 void RenderFrameHostImpl::TextSelectionChanged(const std::u16string& text,
                                                uint32_t offset,
                                                const gfx::Range& range) {
-  RecordAction(base::UserMetricsAction("TextSelectionChanged"));
   has_selection_ = !text.empty();
   GetRenderWidgetHost()->SelectionChanged(text, offset, range);
 
