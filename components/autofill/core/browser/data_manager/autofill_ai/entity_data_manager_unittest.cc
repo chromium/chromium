@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/scoped_observation.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -15,8 +16,13 @@
 #include "base/time/time.h"
 #include "base/types/optional_ref.h"
 #include "base/uuid.h"
+#include "components/accessibility_annotator/core/accessibility_annotation_service.h"
+#include "components/accessibility_annotator/core/data_models/entity.h"
+#include "components/accessibility_annotator/core/data_models/entity_types.h"
+#include "components/accessibility_annotator/core/entity_data_provider.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/from_accessibility_annotator.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h"
 #include "components/autofill/core/browser/test_utils/entity_data_test_utils.h"
@@ -32,6 +38,7 @@
 #include "components/webdata/common/web_database_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace autofill {
 namespace {
@@ -44,6 +51,8 @@ using ::testing::Optional;
 using ::testing::UnorderedElementsAre;
 using ::testing::UnorderedElementsAreArray;
 
+namespace aa = accessibility_annotator;
+
 class MockEntityDataManagerObserver : public EntityDataManager::Observer {
  public:
   MockEntityDataManagerObserver() = default;
@@ -53,6 +62,37 @@ class MockEntityDataManagerObserver : public EntityDataManager::Observer {
   ~MockEntityDataManagerObserver() override = default;
 
   MOCK_METHOD(void, OnEntityInstancesChanged, (), (override));
+};
+
+class MockEntityDataProvider
+    : public accessibility_annotator::EntityDataProvider {
+ public:
+  MockEntityDataProvider() = default;
+  ~MockEntityDataProvider() override = default;
+
+  MOCK_METHOD(
+      void,
+      GetEntities,
+      (accessibility_annotator::EntityTypeEnumSet,
+       base::OnceCallback<void(std::vector<accessibility_annotator::Entity>)>),
+      (override));
+
+  void AddObserver(Observer* observer) override {
+    observers_.AddObserver(observer);
+  }
+
+  void RemoveObserver(Observer* observer) override {
+    observers_.RemoveObserver(observer);
+  }
+
+  void NotifyObservers(accessibility_annotator::EntityTypeEnumSet entities) {
+    for (Observer& observer : observers_) {
+      observer.OnEntityDataChanged(*this, entities);
+    }
+  }
+
+ private:
+  base::ObserverList<Observer> observers_;
 };
 
 // Test fixture for the asynchronous database operations in EntityDataManager.
@@ -83,6 +123,11 @@ class EntityDataManagerTestBase : public testing::Test {
   TestAutofillClient& client() { return *client_; }
 
   syncer::TestSyncService& sync_service() { return sync_service_; }
+
+  virtual accessibility_annotator::AccessibilityAnnotationService*
+  GetAccessibilityAnnotationService() {
+    return nullptr;
+  }
 
   EntityDataManager& entity_data_manager() {
     return *client().GetEntityDataManager();
@@ -116,8 +161,7 @@ class EntityDataManagerTestBase : public testing::Test {
         client_->GetPrefs(), client_->GetIdentityManager(), &sync_service_,
         helper_.autofill_webdata_service(),
         /*history_service=*/nullptr,
-        /*strike_database=*/nullptr,
-        /*accessibility_annotator_service=*/nullptr,
+        /*strike_database=*/nullptr, GetAccessibilityAnnotationService(),
         /*variation_country_code=*/GeoIpCountryCode("US"));
   }
 
@@ -503,6 +547,149 @@ TEST_F(
     EntityDataManagerTest_InitiallyEmpty,
     SyncablePrefIsOffAndAccountKeyPrefIsOn_FeatureOff_DoNotMigratePrefValue) {
   histogram_tester().ExpectTotalCount("Autofill.Ai.OptIn.PrefMigration", 0);
+}
+
+// Fixture for testing entities from Accessibility Annotator in
+// EntityDataManager.
+class EntityDataManagerTest_AccessibilityAnnotator
+    : public EntityDataManagerTestBase {
+ public:
+  EntityDataManagerTest_AccessibilityAnnotator() {
+    ON_CALL(entity_data_provider(), GetEntities)
+        .WillByDefault(
+            base::test::RunOnceCallback<1>(std::vector{kRawPassport}));
+  }
+
+  void PopulateDatabase(AutofillWebDataService& db) override {
+    db.AddOrUpdateEntityInstance(kPassportFromDatabase, base::DoNothing());
+  }
+
+  MockEntityDataProvider& entity_data_provider() {
+    return static_cast<MockEntityDataProvider&>(
+        service_.GetEntityDataProvider());
+  }
+
+  // Test entity from Accessibility Annotator.
+  const accessibility_annotator::Entity kRawDriversLicense = [] {
+    aa::Entity entity;
+    entity.entity_id = "dl-456";
+    entity.specifics.emplace<aa::DriversLicense>().number = "67890";
+    return entity;
+  }();
+
+  // Test entity from Accessibility Annotator.
+  const accessibility_annotator::Entity kRawPassport = [] {
+    aa::Entity entity;
+    entity.entity_id = "pp-123";
+    entity.specifics.emplace<aa::Passport>().number = "12345";
+    return entity;
+  }();
+
+  // Test entity from the database.
+  const EntityInstance kDriversLicense =
+      *FromAccessibilityAnnotator(kRawDriversLicense);
+  const EntityInstance kPassport = *FromAccessibilityAnnotator(kRawPassport);
+  const EntityInstance kPassportFromDatabase = test::GetPassportEntityInstance(
+      {.record_type = EntityInstance::RecordType::kLocal});
+
+ private:
+  accessibility_annotator::AccessibilityAnnotationService*
+  GetAccessibilityAnnotationService() override {
+    return &service_;
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kAutofillUseAccessibilityAnnotator};
+
+  accessibility_annotator::AccessibilityAnnotationService service_{
+      std::make_unique<testing::NiceMock<MockEntityDataProvider>>()};
+};
+
+// Tests that entities provided by the Accessibility Annotator are present
+// alongside entities from the database.
+TEST_F(EntityDataManagerTest_AccessibilityAnnotator, InitialEntities) {
+  EXPECT_THAT(GetEntityInstances(),
+              UnorderedElementsAre(kPassport, kPassportFromDatabase));
+}
+
+// Tests that when accessibility_annotator::EntityDataProvider sees a new entity
+// and updates another entity, then both are reflected in the EntityDataManager.
+TEST_F(EntityDataManagerTest_AccessibilityAnnotator, NewAndUpdatedEntity) {
+  EXPECT_THAT(GetEntityInstances(),
+              UnorderedElementsAre(kPassport, kPassportFromDatabase));
+
+  const aa::Entity kRawPassportUpdated = [this] {
+    aa::Entity p = kRawPassport;
+    p.specifics.emplace<aa::Passport>().number = "123984712345987";
+    return p;
+  }();
+  const EntityInstance kPassportUpdated =
+      *FromAccessibilityAnnotator(kRawPassportUpdated);
+
+  // Adds a new entity `kRawDriversLicense`.
+  // Updates `kRawPassport` to `kRawPassportUpdated`.
+  EXPECT_CALL(entity_data_provider(), GetEntities)
+      .WillOnce(base::test::RunOnceCallback<1>(
+          std::vector{kRawDriversLicense, kRawPassportUpdated}));
+  entity_data_provider().NotifyObservers(aa::EntityTypeEnumSet::All());
+
+  EXPECT_THAT(GetEntityInstances(),
+              UnorderedElementsAre(kDriversLicense, kPassportUpdated,
+                                   kPassportFromDatabase));
+}
+
+// Tests that when accessibility_annotator::EntityDataProvider sees a new entity
+// and updates one entity, then both is reflected in the EntityDataManager.
+TEST_F(EntityDataManagerTest_AccessibilityAnnotator, NewAndDeletedEntity) {
+  EXPECT_THAT(GetEntityInstances(),
+              UnorderedElementsAre(kPassport, kPassportFromDatabase));
+
+  // Adds a new entity `kRawDriversLicense`.
+  // Deletes `kRawPassport`.
+  EXPECT_CALL(entity_data_provider(), GetEntities)
+      .WillOnce(
+          base::test::RunOnceCallback<1>(std::vector{kRawDriversLicense}));
+  entity_data_provider().NotifyObservers(aa::EntityTypeEnumSet::All());
+
+  EXPECT_THAT(GetEntityInstances(),
+              UnorderedElementsAre(kDriversLicense, kPassportFromDatabase));
+}
+
+// Tests that when accessibility_annotator::EntityDataProvider reports an event
+// for a subset of EntityTypes, then unaffected EntityTypes remain in the
+// EntityDataManager.
+TEST_F(EntityDataManagerTest_AccessibilityAnnotator,
+       PreserveEntitiesUnaffectedByUpdate) {
+  EXPECT_THAT(GetEntityInstances(),
+              UnorderedElementsAre(kPassport, kPassportFromDatabase));
+
+  // Adds a new entity `kRawDriversLicense`.
+  // Leaves the `kPassport` unchanged.
+  EXPECT_CALL(entity_data_provider(), GetEntities)
+      .WillOnce(
+          base::test::RunOnceCallback<1>(std::vector{kRawDriversLicense}));
+  entity_data_provider().NotifyObservers({aa::EntityType::kDriversLicense});
+
+  EXPECT_THAT(
+      GetEntityInstances(),
+      UnorderedElementsAre(kDriversLicense, kPassport, kPassportFromDatabase));
+}
+
+// Tests that when a new entity is added to the database, the entities from the
+// Accessibility Annotator remain in EntityDataManager.
+TEST_F(EntityDataManagerTest_AccessibilityAnnotator,
+       PreserveEntitiesAfterDatabaseUpdate) {
+  EXPECT_THAT(GetEntityInstances(),
+              UnorderedElementsAre(kPassport, kPassportFromDatabase));
+
+  const EntityInstance kFlightReservationFromDatabase =
+      test::GetFlightReservationEntityInstance();
+  entity_data_manager().AddOrUpdateEntityInstance(
+      kFlightReservationFromDatabase);
+
+  EXPECT_THAT(GetEntityInstances(),
+              UnorderedElementsAre(kPassport, kPassportFromDatabase,
+                                   kFlightReservationFromDatabase));
 }
 
 }  // namespace

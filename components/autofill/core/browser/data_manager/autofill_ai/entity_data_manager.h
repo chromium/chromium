@@ -81,6 +81,9 @@ class EntityDataManager
 
   class Observer : public base::CheckedObserver {
    public:
+    // Fired by any operation that changes GetEntityInstances().
+    // This includes database operations as well as updates from Accessibility
+    // Annotator.
     virtual void OnEntityInstancesChanged() {}
   };
 
@@ -103,13 +106,23 @@ class EntityDataManager
 
   // Adds an entity if it doesn't exist in the database yet; otherwise updates
   // it.
+  //
+  // Each call fires Observer::OnEntityInstancesChanged() asynchronously.
+  // So beware of calling this in a loop.
   void AddOrUpdateEntityInstance(EntityInstance entity);
 
   // Removes an entity if it exists in the database; otherwise it's a no-op.
+  //
+  // Each call fires Observer::OnEntityInstancesChanged() asynchronously.
+  // So beware of calling this in a loop.
   void RemoveEntityInstance(EntityInstance::EntityId guid);
 
   // Removes all entities in the database whose EntityInstance::date_modified()
   // is in the range.
+  //
+  // Each call fires Observer::OnEntityInstancesChanged() asynchronously.
+  // So beware of calling this in a loop.
+  //
   // Prefer this function over iterating over GetEntityInstances() and calling
   // RemoveEntityInstance() because this function also removes invalid entities.
   void RemoveEntityInstancesModifiedBetween(base::Time delete_begin,
@@ -166,23 +179,23 @@ class EntityDataManager
   }
 
  private:
-  void LoadEntities();
+  void LoadEntitiesFromDatabase();
 
   base::optional_ref<EntityInstance> GetMutableEntityInstance(
       const EntityInstance::EntityId& guid);
 
-  // Boolean that allows the EntityDataManager to differentiate between initial
-  // data loads and data updates.
-  bool entity_data_loaded_ = false;
+  // Becomes true after the response of the initial LoadEntitiesFromDatabase()
+  // and remains true from then on.
+  bool database_loaded_ = false;
 
   // Non-null except perhaps in TestEntityDataManager, which overrides all
   // functions that access it.
   const scoped_refptr<AutofillWebDataService> webdata_service_;
 
-  // The ongoing LoadEntities() query.
+  // The ongoing LoadEntitiesFromDatabase() query.
   WebDataServiceBase::Handle pending_query_{};
 
-  // The result of the last successful LoadEntities() query.
+  // Contains the entities from the database and Accessibility Annotator.
   // All entries are identifiable by their EntityInstance::guid().
   base::flat_set<EntityInstance, EntityInstance::CompareByGuid> entities_;
 
@@ -193,7 +206,8 @@ class EntityDataManager
   base::ScopedObservation<history::HistoryService, HistoryServiceObserver>
       history_service_observation_{this};
 
-  // AccessibilityAnnotatorService outlives the EntityDataManager.
+  // AccessibilityAnnotationService and therefore its EntityDataProvider
+  // outlives the EntityDataManager.
   base::ScopedObservation<accessibility_annotator::EntityDataProvider,
                           accessibility_annotator::EntityDataProvider::Observer>
       accessibility_annotator_observation_{this};
