@@ -52,6 +52,7 @@ public class BookmarkFolderPickerActivity extends SynchronousInitializationActiv
     public static final String INTENT_BOOKMARK_IDS = "BookmarkFolderPickerActivity.BookmarkIds";
 
     private @Nullable BookmarkFolderPickerCoordinator mCoordinator;
+    private @Nullable BookmarkUiPrefs mBookmarkUiPrefs;
 
     @Override
     @Initializer
@@ -86,8 +87,7 @@ public class BookmarkFolderPickerActivity extends SynchronousInitializationActiv
                         this,
                         new ModalDialogManager(new AppModalPresenter(this), ModalDialogType.APP),
                         bookmarkModel);
-        BookmarkUiPrefs bookmarkUiPrefs =
-                new BookmarkUiPrefs(ChromeSharedPreferences.getInstance());
+        mBookmarkUiPrefs = new BookmarkUiPrefs(ChromeSharedPreferences.getInstance());
         ShoppingService shoppingService = ShoppingServiceFactory.getForProfile(profile);
         // TODO(crbug.com/40278746): Consider initializing this in #onCreateOptionsMenu to avoid the
         // possibility that the menu is null when the first parent is set.
@@ -98,12 +98,12 @@ public class BookmarkFolderPickerActivity extends SynchronousInitializationActiv
                         bookmarkIds,
                         this::finish,
                         addNewFolderCoordinator,
-                        bookmarkUiPrefs,
+                        mBookmarkUiPrefs,
                         new ImprovedBookmarkRowCoordinator(
                                 this,
                                 bookmarkImageFetcher,
                                 bookmarkModel,
-                                bookmarkUiPrefs,
+                                mBookmarkUiPrefs,
                                 shoppingService),
                         shoppingService);
 
@@ -135,6 +135,12 @@ public class BookmarkFolderPickerActivity extends SynchronousInitializationActiv
         if (mCoordinator != null) {
             mCoordinator.destroy();
         }
+
+        if (mBookmarkUiPrefs != null) {
+            mBookmarkUiPrefs.destroy();
+            mBookmarkUiPrefs = null;
+        }
+
         super.onDestroy();
     }
 }

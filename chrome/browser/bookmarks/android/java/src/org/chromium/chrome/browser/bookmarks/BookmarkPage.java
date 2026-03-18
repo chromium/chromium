@@ -30,6 +30,9 @@ public class BookmarkPage extends BasicNativePage {
     private final BookmarkOpener mBookmarkOpener;
     private final String mTitle;
 
+    // Nullable after destruction of BookmarkPage.
+    private @Nullable BookmarkUiPrefs mBookmarkUiPrefs;
+
     /**
      * Create a new instance of the bookmarks page.
      *
@@ -63,6 +66,7 @@ public class BookmarkPage extends BasicNativePage {
                         /* context= */ host.getContext(),
                         componentName);
 
+        mBookmarkUiPrefs = new BookmarkUiPrefs(ChromeSharedPreferences.getInstance());
         // Provide the BackPressManager to the coordinator so it can manage itself.
         // The logic in the coordinator ensures that there is only one NATIVE_PAGE handler set
         // at a time.
@@ -75,7 +79,7 @@ public class BookmarkPage extends BasicNativePage {
                         bottomSheetControllerSupplier,
                         activityResultTracker,
                         profile,
-                        new BookmarkUiPrefs(ChromeSharedPreferences.getInstance()),
+                        mBookmarkUiPrefs,
                         mBookmarkOpener,
                         new BookmarkManagerOpenerImpl(),
                         PriceDropNotificationManagerFactory.create(profile),
@@ -113,6 +117,11 @@ public class BookmarkPage extends BasicNativePage {
     public void destroy() {
         super.destroy();
         mBookmarkManagerCoordinator.onDestroyed();
+
+        if (mBookmarkUiPrefs != null) {
+            mBookmarkUiPrefs.destroy();
+            mBookmarkUiPrefs = null;
+        }
     }
 
     public BookmarkManagerCoordinator getManagerForTesting() {

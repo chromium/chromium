@@ -66,6 +66,8 @@ public class BookmarkActivity extends SnackbarActivity {
     private @Nullable BookmarkOpener mBookmarkOpener;
     private @Nullable OnKeyDownHandler mOnKeyDownHandler;
     private @Nullable ActivityWindowAndroid mWindowAndroid;
+    // Nullable after activity destruction.
+    private @Nullable BookmarkUiPrefs mBookmarkUiPrefs;
 
     @Override
     protected void onProfileAvailable(Profile profile) {
@@ -105,6 +107,7 @@ public class BookmarkActivity extends SnackbarActivity {
                         () -> getEdgeToEdgeInset(),
                         /* desktopWindowStateManager= */ null);
 
+        mBookmarkUiPrefs = new BookmarkUiPrefs(ChromeSharedPreferences.getInstance());
         mBookmarkManagerCoordinator =
                 new BookmarkManagerCoordinator(
                         mWindowAndroid,
@@ -114,7 +117,7 @@ public class BookmarkActivity extends SnackbarActivity {
                         () -> bottomSheetController,
                         getActivityResultTracker(),
                         profile,
-                        new BookmarkUiPrefs(ChromeSharedPreferences.getInstance()),
+                        mBookmarkUiPrefs,
                         mBookmarkOpener,
                         new BookmarkManagerOpenerImpl(),
                         PriceDropNotificationManagerFactory.create(profile),
@@ -159,6 +162,11 @@ public class BookmarkActivity extends SnackbarActivity {
         if (mWindowAndroid != null) {
             mWindowAndroid.destroy();
             mWindowAndroid = null;
+        }
+
+        if (mBookmarkUiPrefs != null) {
+            mBookmarkUiPrefs.destroy();
+            mBookmarkUiPrefs = null;
         }
     }
 

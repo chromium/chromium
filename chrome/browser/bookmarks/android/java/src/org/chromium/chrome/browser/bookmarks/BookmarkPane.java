@@ -45,6 +45,7 @@ public class BookmarkPane extends PaneBase {
 
     private @Nullable BookmarkManagerCoordinator mBookmarkManager;
     private @Nullable BookmarkOpener mBookmarkOpener;
+    private @Nullable BookmarkUiPrefs mBookmarkUiPrefs;
 
     /**
      * Create a new instance of the bookmarks pane.
@@ -95,6 +96,7 @@ public class BookmarkPane extends PaneBase {
                             () -> BookmarkModel.getForProfile(originalProfile),
                             mContext,
                             componentName);
+            mBookmarkUiPrefs = new BookmarkUiPrefs(ChromeSharedPreferences.getInstance());
             mBookmarkManager =
                     new BookmarkManagerCoordinator(
                             mWindowAndroid,
@@ -104,7 +106,7 @@ public class BookmarkPane extends PaneBase {
                             mBottomSheetControllerSupplier,
                             mActivityResultTracker,
                             originalProfile,
-                            new BookmarkUiPrefs(ChromeSharedPreferences.getInstance()),
+                            mBookmarkUiPrefs,
                             mBookmarkOpener,
                             new BookmarkManagerOpenerImpl(),
                             PriceDropNotificationManagerFactory.create(originalProfile),
@@ -122,9 +124,17 @@ public class BookmarkPane extends PaneBase {
 
     private void destroyManagerAndRemoveView() {
         if (mBookmarkManager != null) {
-            mBookmarkOpener = null;
             mBookmarkManager.onDestroyed();
             mBookmarkManager = null;
+        }
+
+        if (mBookmarkOpener != null) {
+            mBookmarkOpener = null;
+        }
+
+        if (mBookmarkUiPrefs != null) {
+            mBookmarkUiPrefs.destroy();
+            mBookmarkUiPrefs = null;
         }
         mRootView.removeAllViews();
     }

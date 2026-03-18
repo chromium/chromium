@@ -105,6 +105,11 @@ public class BookmarkUiPrefs {
                 .registerOnSharedPreferenceChangeListener(mPrefsListener);
     }
 
+    public void destroy() {
+        ContextUtils.getAppSharedPreferences()
+                .unregisterOnSharedPreferenceChangeListener(mPrefsListener);
+    }
+
     /** Add the given observer to the list. */
     public void addObserver(Observer observer) {
         mObservers.addObserver(observer);

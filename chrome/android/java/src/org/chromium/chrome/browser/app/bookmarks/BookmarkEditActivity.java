@@ -63,7 +63,6 @@ public class BookmarkEditActivity extends SnackbarActivity {
 
     private BookmarkModel mModel;
     private Profile mProfile;
-    private BookmarkUiPrefs mBookmarkUiPrefs;
     private BookmarkManagerOpener mBookmarkManagerOpener;
     private BookmarkId mBookmarkId;
     private PropertyModel mFolderSelectRowModel;
@@ -76,6 +75,7 @@ public class BookmarkEditActivity extends SnackbarActivity {
     private FrameLayout mFolderPickerRowContainer;
 
     private @Nullable EdgeToEdgePadAdjuster mEdgeToEdgePadAdjuster;
+    private @Nullable BookmarkUiPrefs mBookmarkUiPrefs;
 
     private final BookmarkUiPrefs.Observer mBookmarkUiPrefsObserver =
             new BookmarkUiPrefs.Observer() {
@@ -176,7 +176,7 @@ public class BookmarkEditActivity extends SnackbarActivity {
         }
         mTitleEditText.setEnabled(bookmarkItem.isEditable());
         mUrlEditText.setEnabled(bookmarkItem.isUrlEditable());
-        updateFolderPickerRow(mBookmarkUiPrefs.getBookmarkRowDisplayPref());
+        updateFolderPickerRow(assumeNonNull(mBookmarkUiPrefs).getBookmarkRowDisplayPref());
     }
 
     @Override
@@ -237,6 +237,8 @@ public class BookmarkEditActivity extends SnackbarActivity {
         mModel.removeObserver(mBookmarkModelObserver);
         if (mBookmarkUiPrefs != null) {
             mBookmarkUiPrefs.removeObserver(mBookmarkUiPrefsObserver);
+            mBookmarkUiPrefs.destroy();
+            mBookmarkUiPrefs = null;
         }
         if (mEdgeToEdgePadAdjuster != null) {
             mEdgeToEdgePadAdjuster.destroy();

@@ -158,6 +158,8 @@ public class BookmarkWidgetServiceImpl extends SplitCompatRemoteViewsService.Imp
         private int mDisplayedIconSize;
         private int mRemainingTaskCount;
 
+        private @Nullable BookmarkUiPrefs mBookmarkUiPrefs;
+
         @UiThread
         @Initializer
         public void initialize(
@@ -173,10 +175,11 @@ public class BookmarkWidgetServiceImpl extends SplitCompatRemoteViewsService.Imp
             mRemainingTaskCount = 1;
             mBookmarkModel =
                     BookmarkModel.getForProfile(ProfileManager.getLastUsedRegularProfile());
+            mBookmarkUiPrefs = new BookmarkUiPrefs(ChromeSharedPreferences.getInstance());
             mQueryHandler =
                     new ImprovedBookmarkQueryHandler(
                             mBookmarkModel,
-                            new BookmarkUiPrefs(ChromeSharedPreferences.getInstance()),
+                            mBookmarkUiPrefs,
                             /* shoppingService= */ null,
                             BookmarkNodeMaskBit.NONE);
             mBookmarkModel.finishLoadingBookmarkModel(
@@ -255,6 +258,11 @@ public class BookmarkWidgetServiceImpl extends SplitCompatRemoteViewsService.Imp
         @UiThread
         private void destroy() {
             mLargeIconBridge.destroy();
+
+            if (mBookmarkUiPrefs != null) {
+                mBookmarkUiPrefs.destroy();
+                mBookmarkUiPrefs = null;
+            }
         }
     }
 

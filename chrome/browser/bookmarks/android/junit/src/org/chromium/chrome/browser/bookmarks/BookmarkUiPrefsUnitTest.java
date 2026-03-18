@@ -165,4 +165,21 @@ public class BookmarkUiPrefsUnitTest {
                 mBookmarkUiPrefs.getViewOptionsAccessibilityAnnouncementText(
                         context, BookmarkRowDisplayPref.COMPACT));
     }
+
+    @Test
+    public void testGarbageCollectionDoesNotClearListener() {
+        Assert.assertEquals(
+                BookmarkRowSortOrder.MANUAL, mBookmarkUiPrefs.getBookmarkRowSortOrder());
+
+        mBookmarkUiPrefs.addObserver(mObserver);
+
+        // Force a garbage collection. Prior to the fix, the listener was stored in a WeakHashMap
+        // by SharedPreferences and the reference was stripped by R8, allowing it to be
+        // garbage-collected during active usage. This ensures we don't regress.
+        Runtime.getRuntime().gc();
+
+        mSharedPreferencesManager.writeInt(
+                ChromePreferenceKeys.BOOKMARKS_SORT_ORDER, BookmarkRowSortOrder.CHRONOLOGICAL);
+        verify(mObserver).onBookmarkRowSortOrderChanged(BookmarkRowSortOrder.CHRONOLOGICAL);
+    }
 }
