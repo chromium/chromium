@@ -7,7 +7,7 @@ async function deleteIDWithoutCallback() {
     await chrome.instanceID.deleteID();
     chrome.test.succeed();
   } catch (e) {
-    chrome.test.fail("deleteID Promise rejected with error: " + e);
+    chrome.test.fail(`deleteID Promise rejected with error: ${e}`);
   };
 }
 
@@ -15,7 +15,7 @@ function deleteIDWithCallback() {
   chrome.instanceID.deleteID(function() {
     if (chrome.runtime.lastError) {
       chrome.test.fail(
-          "chrome.runtime.lastError: " + chrome.runtime.lastError.message);
+          `chrome.runtime.lastError: ${chrome.runtime.lastError.message}`);
       return;
     }
 
@@ -23,23 +23,23 @@ function deleteIDWithCallback() {
   });
 }
 
-var oldID;
+let oldID;
 function deleteAfterGetID() {
   chrome.instanceID.getID(function(id) {
     if (chrome.runtime.lastError || !id) {
-      chrome.test.fail("chrome.runtime.lastError was set or ID was empty.");
+      chrome.test.fail('chrome.runtime.lastError was set or ID was empty.');
       return;
     }
     oldID = id;
     chrome.instanceID.deleteID(function(creationTime) {
       if (chrome.runtime.lastError) {
         chrome.test.fail(
-            "chrome.runtime.lastError: " + chrome.runtime.lastError.message);
+            `chrome.runtime.lastError: ${chrome.runtime.lastError.message}`);
         return;
       }
       chrome.instanceID.getID(function(id) {
         if (!id || id == oldID) {
-          chrome.test.fail("Different ID should be returned after deleteID.");
+          chrome.test.fail('Different ID should be returned after deleteID.');
           return;
         }
         chrome.test.succeed();
