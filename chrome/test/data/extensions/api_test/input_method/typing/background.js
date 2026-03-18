@@ -90,8 +90,8 @@ chrome.test.runTests([
       selectionBefore: 5,
       selectionAfter: 0,
       segments: [
-        { start: 0, end: 2, style: "underline" },
-        { start: 2, end: 5, style: "underline" }
+        { start: 0, end: 2, style: 'underline' },
+        { start: 2, end: 5, style: 'underline' }
       ]
     });
 
@@ -100,7 +100,7 @@ chrome.test.runTests([
 
     await asyncInputIme.setComposition({
       contextID: testEnv.getContextID(),
-      text: "foo",
+      text: 'foo',
       cursor: 0
     });
 

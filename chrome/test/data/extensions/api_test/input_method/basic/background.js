@@ -55,7 +55,7 @@ chrome.test.runTests([
 
   async function setTest() {
     console.log(
-        'setTest: Changing input method to: ' + testParams.newInputMethod);
+        `setTest: Changing input method to: ${testParams.newInputMethod}`);
     await asyncInputMethodPrivate.setCurrentInputMethod(
         testParams.newInputMethod);
     chrome.test.succeed();
@@ -78,17 +78,17 @@ chrome.test.runTests([
           chrome.test.succeed();
         });
 
-    console.log('observeTest: Changing input method to: ' +
-                    testParams.initialInputMethod);
+    console.log(`observeTest: Changing input method to: ${
+                    testParams.initialInputMethod}`);
     await asyncInputMethodPrivate.setCurrentInputMethod(
         testParams.initialInputMethod);
   },
 
   async function setInvalidTest() {
-    const kInvalidInputMethod = 'xx::xxx';
+    const INVALID_INPUT_METHOD = 'xx::xxx';
     console.log(
-          'setInvalidTest: Changing input method to: ' + kInvalidInputMethod);
-    asyncInputMethodPrivate.setCurrentInputMethod(kInvalidInputMethod)
+          `setInvalidTest: Changing input method to: ${INVALID_INPUT_METHOD}`);
+    asyncInputMethodPrivate.setCurrentInputMethod(INVALID_INPUT_METHOD)
         .catch(chrome.test.succeed);
   },
 
@@ -109,7 +109,7 @@ chrome.test.runTests([
     console.log('loadDictionaryAsyncTest: ');
 
     testParams.dictionaryLoaded = new Promise((resolve, reject) => {
-      var message = 'before';
+      let message = 'before';
       chrome.inputMethodPrivate.onDictionaryLoaded.addListener(
         function listener () {
           chrome.inputMethodPrivate.onDictionaryLoaded.removeListener(listener);

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 chrome.inputMethodPrivate.getInputMethodConfig(function(config) {
-  chrome.test.assertTrue(config["isImeMenuActivated"]);
+  chrome.test.assertTrue(config['isImeMenuActivated']);
   chrome.test.sendMessage('config_ready');
 });
 
