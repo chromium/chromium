@@ -150,6 +150,7 @@ source_set("common") {
   ]
   deps = [
     ":libva_stubs",
+    "//gpu/config",
     "//media/gpu/chromeos:video_frame_resource",
     "//third_party/libyuv",
     "//ui/base:features",

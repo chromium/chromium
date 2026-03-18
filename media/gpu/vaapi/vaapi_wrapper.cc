@@ -61,6 +61,7 @@
 // Auto-generated for dlopen libva libraries
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
+#include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "media/gpu/vaapi/va_stubs.h"
 #include "media/media_buildflags.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
@@ -243,7 +244,8 @@ class VADisplayStateSingleton {
 
   // This method must be called exactly once before trying to acquire a
   // VADisplayStateHandle.
-  static void PreSandboxInitialization();
+  static void PreSandboxInitialization(
+      const gpu::GpuDriverBugWorkarounds* workarounds);
 
   // If an initialized VADisplayStateSingleton exists, this method returns a
   // VADisplayStateHandle to it. Otherwise, it attempts to initialize a
@@ -318,6 +320,9 @@ class VADisplayStateSingleton {
 
   // String representing a driver acquired by vaQueryVendorString().
   std::string va_vendor_string_;
+
+  // Was the driver disabled entirely due to a GPU driver bug.
+  bool disabled_ = false;
 };
 
 }  // namespace media
@@ -1532,9 +1537,15 @@ VADisplayStateSingleton& VADisplayStateSingleton::GetInstance() {
 }
 
 // static
-void VADisplayStateSingleton::PreSandboxInitialization() {
+void VADisplayStateSingleton::PreSandboxInitialization(
+    const gpu::GpuDriverBugWorkarounds* workarounds) {
   VADisplayStateSingleton& va_display_state = GetInstance();
   base::AutoLock lock(va_display_state.lock_);
+
+  if (workarounds && workarounds->disable_vaapi) {
+    va_display_state.disabled_ = true;
+    return;
+  }
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kHardwareVideoDevicePath)) {
@@ -1588,6 +1599,13 @@ VADisplayStateHandle VADisplayStateSingleton::GetHandle() {
              std::numeric_limits<decltype(va_display_state.refcount_)>::max());
     va_display_state.refcount_++;
     return VADisplayStateHandle(&va_display_state);
+  }
+
+  if (va_display_state.disabled_) {
+    // The gpu driver bug should prevent the display state from ever being
+    // initialized.
+    VLOGF(1) << "VAAPI has been disabled due to a detected driver bug.";
+    return VADisplayStateHandle();
   }
 
   if (!va_display_state.drm_fd_.is_valid()) {
@@ -3193,10 +3211,12 @@ bool VaapiWrapper::BlitSurface(VASurfaceID va_surface_src_id,
 bool VaapiWrapper::allow_disabling_global_lock_ = false;
 
 // static
-void VaapiWrapper::PreSandboxInitialization(bool allow_disabling_global_lock) {
+void VaapiWrapper::PreSandboxInitialization(
+    bool allow_disabling_global_lock,
+    const gpu::GpuDriverBugWorkarounds* workarounds) {
   allow_disabling_global_lock_ = allow_disabling_global_lock;
 
-  VADisplayStateSingleton::PreSandboxInitialization();
+  VADisplayStateSingleton::PreSandboxInitialization(workarounds);
 
   const std::string va_suffix(base::NumberToString(VA_MAJOR_VERSION + 1));
   StubPathMap paths;

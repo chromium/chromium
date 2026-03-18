@@ -406,6 +406,8 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
 #endif  // IS_WIN || IS_MAC
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CASTOS)
 
+  GpuDriverBugWorkarounds workarounds(
+      gpu_feature_info_.enabled_gpu_driver_bug_workarounds);
   gpu_info_.in_process_gpu = false;
 
   DCHECK_EQ(gl::GetGLImplementation(), gl::kGLImplementationNone);
@@ -442,7 +444,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
   if (gpu_sandbox_start_early) {
     // The sandbox will be started earlier than usual (i.e. before GL) so
     // execute the pre-sandbox steps now.
-    sandbox_helper_->PreSandboxStartup(gpu_preferences);
+    sandbox_helper_->PreSandboxStartup(gpu_preferences, workarounds);
   }
 
   // watchdog_init will call watchdog OnInitComplete() at the end of this
@@ -567,7 +569,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
   // restarting the GPU process will not help.
   if (!attempted_startsandbox) {
     // The sandbox is not started yet.
-    sandbox_helper_->PreSandboxStartup(gpu_preferences);
+    sandbox_helper_->PreSandboxStartup(gpu_preferences, workarounds);
   }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 

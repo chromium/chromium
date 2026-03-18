@@ -60,6 +60,10 @@ class SharedImageFormat;
   CHECK(sequence_checker.CalledOnValidSequence())
 #endif
 
+namespace gpu {
+class GpuDriverBugWorkarounds;
+}
+
 namespace media {
 constexpr unsigned int kInvalidVaRtFormat = 0u;
 
@@ -593,7 +597,8 @@ class MEDIA_GPU_EXPORT VaapiWrapper
 
   // Initialize static data before sandbox is enabled.
   static void PreSandboxInitialization(
-      bool allow_disabling_global_lock = false);
+      bool allow_disabling_global_lock = false,
+      const gpu::GpuDriverBugWorkarounds* workarounds = nullptr);
 
   // vaDestroySurfaces() a vector or a single VASurfaceID.
   virtual void DestroySurfaces(std::vector<VASurfaceID> va_surfaces);

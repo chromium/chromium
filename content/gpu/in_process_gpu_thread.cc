@@ -13,7 +13,8 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/gpu/content_gpu_client.h"
-#include "gpu/config/gpu_preferences.h"
+#include "gpu/config/gpu_driver_bug_workarounds.h"
+#include "gpu/config/gpu_feature_info.h"
 #include "gpu/ipc/service/gpu_init.h"
 #include "media/gpu/buildflags.h"
 
@@ -102,7 +103,10 @@ void InProcessGpuThread::Init() {
                                 gpu_preferences_);
 
 #if BUILDFLAG(USE_VAAPI)
-  media::VaapiWrapper::PreSandboxInitialization();
+  gpu::GpuDriverBugWorkarounds workarounds(
+      gpu_init->gpu_feature_info().enabled_gpu_driver_bug_workarounds);
+  media::VaapiWrapper::PreSandboxInitialization(
+      /*allow_disabling_global_lock=*/false, &workarounds);
 #endif
 
   GetContentClient()->SetGpuInfo(gpu_init->gpu_info());

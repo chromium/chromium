@@ -3748,6 +3748,19 @@
       "features": [
         "validate_max_per_stage_uniform_blocks_at_compile_time"
       ]
+    },
+    {
+      "id": 473,
+      "cr_bugs": [330694403],
+      "description": "The AMD Radeon 610M Integrated Graphics chip seems to reliably crash when attempting to initialize VAAPI",
+      "os": {
+        "type": "linux"
+      },
+      "vendor_id": "0x1002",
+      "device_id": ["0x1506"],
+      "features": [
+        "disable_vaapi"
+      ]
     }
   ]
 }
