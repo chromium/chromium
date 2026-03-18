@@ -434,7 +434,7 @@ TEST_F(SaveUpdateAddressProfilePromptControllerTest,
   // Subtitle should contain the full name only.
   EXPECT_EQ(u"John H. Doe", controller_->GetSubtitle());
   // Differences should contain envelope style address.
-  EXPECT_EQ(u"Underworld\n666 Erebus St.\nApt 8\nElysium, CA \nUnited States",
+  EXPECT_EQ(u"Underworld\n666 Erebus St.\nApt 8\nElysium, CA\nUnited States",
             controller_->GetOldDiff());
   // There should be an extra newline between address and contacts data.
   EXPECT_EQ(

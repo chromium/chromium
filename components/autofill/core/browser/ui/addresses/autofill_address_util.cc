@@ -15,6 +15,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -51,6 +52,10 @@ AutofillAddressUIComponent::LengthHint ConvertLengthHint(
       return AutofillAddressUIComponent::LengthHint::HINT_SHORT;
   }
   NOTREACHED();
+}
+
+bool IsLiteral(const AutofillAddressUIComponent& component) {
+  return !component.literal.empty();
 }
 }  // namespace
 
@@ -215,37 +220,61 @@ std::u16string GetEnvelopeStyleAddress(const AutofillProfile& profile,
                            /*include_literals=*/true, not_used);
 
   DCHECK(!components.empty());
-  std::string address;
-  for (const AutofillAddressUIComponent& component : components) {
-    // Add string literals directly.
-    if (!component.literal.empty()) {
-      address += component.literal;
-      continue;
+  // Remove components that evaluate to an empty string.
+  std::erase_if(components, [&](const AutofillAddressUIComponent& component) {
+    if (IsLiteral(component)) {
+      return false;
     }
     if (!include_recipient && (component.field == NAME_FULL ||
                                component.field == ALTERNATIVE_FULL_NAME)) {
+      return true;
+    }
+    return profile.GetInfo(component.field, ui_language_code).empty();
+  });
+
+  // Remove delimiters from the beginning and the end.
+  while (!components.empty() && IsLiteral(components.front())) {
+    components.erase(components.begin());
+  }
+  while (!components.empty() && IsLiteral(components.back())) {
+    components.pop_back();
+  }
+
+  std::vector<std::u16string> pieces;
+  // Indicates if the previous field component was non-empty.
+  // Literals are only added if they are preceded by a non-empty field.
+  bool last_field_was_non_empty = false;
+  for (const AutofillAddressUIComponent& component : components) {
+    if (IsLiteral(component)) {
+      if (last_field_was_non_empty) {
+        pieces.push_back(base::UTF8ToUTF16(component.literal));
+        last_field_was_non_empty = false;
+      }
       continue;
     }
-    FieldType type = component.field;
-    address += base::UTF16ToUTF8(profile.GetInfo(type, ui_language_code));
+    std::u16string info = profile.GetInfo(component.field, ui_language_code);
+    pieces.push_back(info);
+    last_field_was_non_empty = true;
   }
+
   if (include_country) {
-    address += "\n";
-    address += base::UTF16ToUTF8(
-        profile.GetInfo(ADDRESS_HOME_COUNTRY, ui_language_code));
+    pieces.push_back(u"\n");
+    pieces.push_back(profile.GetInfo(ADDRESS_HOME_COUNTRY, ui_language_code));
   }
+
+  std::string address_utf8 = base::UTF16ToUTF8(base::StrCat(pieces));
 
   // Remove all white spaces and new lines from the beginning and the end of the
   // address.
-  base::TrimString(address, base::kWhitespaceASCII, &address);
+  base::TrimString(address_utf8, base::kWhitespaceASCII, &address_utf8);
 
   // Collapse new lines to remove empty lines.
-  re2::RE2::GlobalReplace(&address, re2::RE2("\\n+"), "\n");
+  re2::RE2::GlobalReplace(&address_utf8, re2::RE2("\\n+"), "\n");
 
   // Collapse white spaces.
-  re2::RE2::GlobalReplace(&address, re2::RE2("[ ]+"), " ");
+  re2::RE2::GlobalReplace(&address_utf8, re2::RE2("[ ]+"), " ");
 
-  return base::UTF8ToUTF16(address);
+  return base::UTF8ToUTF16(address_utf8);
 }
 
 std::u16string GetProfileDescription(const AutofillProfile& profile,

@@ -294,4 +294,44 @@ TEST(GetProfileDescription, ProfileDescriptionForMigration) {
             u"John H. Doe\n666 Erebus St.\njohndoe@hades.com\n16502111111");
 }
 
+// Tests that GetEnvelopeStyleAddress correctly formats address profiles with
+// just a name, email and country
+TEST_F(AddressFormattingTest, GetEnvelopeStyleAddressWithSparseProfile) {
+  AutofillProfile profile(AddressCountryCode("US"));
+  profile.SetInfo(NAME_FULL, u"John Doe", "en-US");
+  profile.SetInfo(EMAIL_ADDRESS, u"john@doe.com", "en-US");
+  profile.SetInfo(ADDRESS_HOME_COUNTRY, u"US", "en-US");
+
+  EXPECT_EQ(
+      GetEnvelopeStyleAddress(profile, "en-US", /*include_recipient=*/false,
+                              /*include_country=*/true),
+      u"United States");
+
+  EXPECT_EQ(
+      GetEnvelopeStyleAddress(profile, "en-US", /*include_recipient=*/true,
+                              /*include_country=*/true),
+      u"John Doe\nUnited States");
+
+  EXPECT_EQ(
+      GetEnvelopeStyleAddress(profile, "en-US", /*include_recipient=*/false,
+                              /*include_country=*/false),
+      u"");
+}
+
+// Tests that GetEnvelopeStyleAddress cleanly formats partial address without
+// redundant separators
+TEST_F(AddressFormattingTest, GetEnvelopeStyleAddressWithPartialAddress) {
+  AutofillProfile profile(AddressCountryCode("US"));
+  profile.SetInfo(ADDRESS_HOME_STREET_ADDRESS, u"742 Evergreen Terrace",
+                  "en-US");
+  profile.SetInfo(ADDRESS_HOME_CITY, u"Springfield", "en-US");
+  profile.SetInfo(ADDRESS_HOME_COUNTRY, u"US", "en-US");
+
+  std::u16string address =
+      GetEnvelopeStyleAddress(profile, "en-US", /*include_recipient=*/false,
+                              /*include_country=*/true);
+
+  EXPECT_EQ(address, u"742 Evergreen Terrace\nSpringfield\nUnited States");
+}
+
 }  // namespace autofill

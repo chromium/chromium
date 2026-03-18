@@ -196,6 +196,42 @@ TEST_F(AutofillDataProviderImplTest, RetrieveAll_AutofillAiEntityData) {
                                                 u"Vehicle - License plate")));
 }
 
+// Tests that RetrieveAll omits address suggestions for profiles that only have
+// a name but no address data.
+TEST_F(AutofillDataProviderImplTest, RetrieveAll_AddressFull_EmptyProfile) {
+  AutofillProfile profile(AddressCountryCode("US"));
+  profile.SetRawInfo(NAME_FULL, u"Homer Simpson");
+  client().GetPersonalDataManager().address_data_manager().AddProfile(profile);
+
+  EXPECT_THAT(retriever().RetrieveAll(
+                  accessibility_annotator::QueryIntentType::kAddressFull),
+              IsEmpty());
+}
+
+// Tests that RetrieveAll correctly formats address suggestions for
+// partial addresses.
+TEST_F(AutofillDataProviderImplTest, RetrieveAll_AddressFull_PartialAddress) {
+  AutofillProfile profile(AddressCountryCode("US"));
+  profile.SetRawInfo(NAME_FULL, u"Homer Simpson");
+  profile.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"742 Evergreen Terrace");
+  profile.SetRawInfo(ADDRESS_HOME_CITY, u"Springfield");
+  // Missing State, Zip
+  client().GetPersonalDataManager().address_data_manager().AddProfile(profile);
+
+  std::vector<MemorySearchResult> results = retriever().RetrieveAll(
+      accessibility_annotator::QueryIntentType::kAddressFull);
+
+  EXPECT_THAT(results,
+              UnorderedElementsAre(
+                  IsMemorySearchResult(u"742 Evergreen Terrace",
+                                       u"742 Evergreen Terrace",
+                                       u"Address: Homer Simpson"),
+                  IsMemorySearchResult(
+                      u"742 Evergreen Terrace, Springfield, United States",
+                      u"742 Evergreen Terrace, Springfield, United States",
+                      u"Address: Homer Simpson")));
+}
+
 }  // namespace
 
 }  // namespace autofill

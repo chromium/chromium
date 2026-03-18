@@ -26,7 +26,9 @@
 #include "components/autofill/core/browser/data_model/usage_history_information.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/ui/addresses/autofill_address_util.h"
+#include "components/strings/grit/components_strings.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
 
@@ -93,13 +95,24 @@ std::vector<MemorySearchResult> FetchFullAddressData(
       personal_data_manager.address_data_manager().app_locale();
   for (const AutofillProfile* profile :
        personal_data_manager.address_data_manager().GetProfiles()) {
+    // Profiles that don't have at least a street address are not useful for
+    // full address suggestions (e.g. profiles with only name, email, and
+    // country).
+    if (!profile->HasRawInfo(ADDRESS_HOME_STREET_ADDRESS)) {
+      continue;
+    }
+
     std::u16string full_address = GetEnvelopeStyleAddress(
         *profile, app_locale, /*include_recipient=*/false,
         /*include_country=*/true);
     if (full_address.empty()) {
       continue;
     }
-    base::ReplaceChars(full_address, u"\n", u", ", &full_address);
+
+    std::u16string separator =
+        l10n_util::GetStringUTF16(IDS_AUTOFILL_ADDRESS_SUMMARY_SEPARATOR);
+    base::ReplaceChars(full_address, u"\n", separator, &full_address);
+
     std::u16string description = profile->GetRawInfo(NAME_FULL);
     if (description.empty()) {
       description = profile->GetRawInfo(ADDRESS_HOME_STREET_ADDRESS);
