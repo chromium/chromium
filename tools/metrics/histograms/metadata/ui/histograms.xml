@@ -419,6 +419,33 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="InitialWebUI.NewWindow{CreationSource}.BrowserWindow.ShowRequestedToFirstPaint"
+    units="ms" expires_after="2026-09-17">
+  <owner>mych@chromium.org</owner>
+  <owner>chrome-webium-product-eng@google.com</owner>
+  <summary>
+    Records the duration from the initial show/activation request of a new
+    browser window to its first paint. {CreationSource}
+
+    This metric is used to measure the impact of window show deferral. It is
+    recorded only once per window lifecycle. If multiple windows are shown
+    during startup, e.g. due to session restore, the first window is measured in
+    &quot;InitialWebUI.Startup&quot; and not in this histogram.
+
+    This is only recorded for desktop platforms when the InitialWebUIMetrics is
+    enabled.
+  </summary>
+  <token key="CreationSource">
+    <variant name=".AllSources" summary="Aggregated across all sources"/>
+    <variant name=".BrowserInitiated"
+        summary="Triggered by browser action, e.g. shortcut or menu"/>
+    <variant name=".DragToNewWindow"
+        summary="Triggered by dragging a tab to a new window"/>
+    <variant name=".SessionRestore" summary="Triggered by session restore"/>
+  </token>
+</histogram>
+
+<histogram
     name="InitialWebUI.NewWindow{CreationSource}.BrowserWindowToReloadButton.FirstPaintGap"
     units="ms" expires_after="2026-09-13">
   <owner>mych@chromium.org</owner>
@@ -597,6 +624,44 @@ chromium-metrics-reviews@google.com.
     presentation of the browser window onto the screen{StartupTemperature}.
 
     This metric is mutually exclusive by scenarios.
+
+    This is only recorded for desktop platforms when the InitialWebUIMetrics
+    feature is enabled.
+  </summary>
+  <token key="Scenario">
+    <variant name="" summary="standard"/>
+    <variant name=".FirstRun" summary="first run"/>
+    <variant name=".SessionRestore"
+        summary="session restored (without showing the Profile Picker)"/>
+  </token>
+  <token key="StartupTemperature">
+    <variant name="" summary=""/>
+    <variant name=".Temperature.ColdStartup"
+        summary=", where startup was cold (mostly hard faults). Only
+                 available on Windows."/>
+    <variant name=".Temperature.Other"
+        summary=", where startup temperature was undetermined"/>
+    <variant name=".Temperature.WarmStartup"
+        summary=", where startup was warm (almost no hard faults). Only
+                 available on Windows."/>
+  </token>
+</histogram>
+
+<histogram
+    name="InitialWebUI.Startup{Scenario}.BrowserWindow.ShowRequestedToFirstPaint{StartupTemperature}"
+    units="ms" expires_after="2026-09-06">
+  <owner>mych@chromium.org</owner>
+  <owner>chrome-webium-product-eng@google.com</owner>
+  <summary>
+    Records the duration from the initial show/activation request of the first
+    browser window during {Scenario} startup to its first
+    paint{StartupTemperature}.
+
+    This metric is used to measure the impact of window show deferral. It is
+    recorded only once per browser process. If multiple windows are shown during
+    startup, e.g. due to session restore, only the first window is measured, and
+    all the others are measured in the &quot;InitialWebUI.NewWindow&quot;
+    histogram.
 
     This is only recorded for desktop platforms when the InitialWebUIMetrics
     feature is enabled.

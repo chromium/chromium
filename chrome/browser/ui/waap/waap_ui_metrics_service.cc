@@ -327,6 +327,22 @@ void WaapUIMetricsService::OnNewWindowBrowserWindowToReloadButtonFirstPaintGap(
       browser_window_paint_time, reload_button_paint_time);
 }
 
+void WaapUIMetricsService::OnStartupBrowserWindowShowRequestedToFirstPaint(
+    base::TimeTicks request_time,
+    base::TimeTicks paint_time) {
+  RecordStartupPaintMetric("BrowserWindow.ShowRequestedToFirstPaint",
+                           request_time, paint_time);
+}
+
+void WaapUIMetricsService::OnNewWindowBrowserWindowShowRequestedToFirstPaint(
+    waap::NewWindowCreationSource source,
+    base::TimeTicks request_time,
+    base::TimeTicks paint_time) {
+  RecordNewWindowPaintMetric(
+      "BrowserWindow.ShowRequestedToFirstPaint.FromConstructor", source,
+      request_time, paint_time);
+}
+
 void WaapUIMetricsService::OnReloadButtonMousePressToNextPaint(
     base::TimeTicks start_ticks,
     base::TimeTicks end_ticks) {

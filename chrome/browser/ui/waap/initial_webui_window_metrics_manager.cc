@@ -34,12 +34,32 @@ void InitialWebUIWindowMetricsManager::SetWindowCreationInfo(
   new_window_start_time_ = creation_time;
 }
 
+void InitialWebUIWindowMetricsManager::OnBrowserWindowShowRequested(
+    base::TimeTicks time) {
+  if (!window_show_first_requested_time_.has_value()) {
+    window_show_first_requested_time_ = time;
+  }
+}
+
 void InitialWebUIWindowMetricsManager::OnBrowserWindowFirstPresentation(
     base::TimeTicks timestamp) {
   // Ensures only one startup window is recorded per browser process.
   static bool is_startup_first_paint_recorded = false;
   if (!waap_service_) {
     return;
+  }
+
+  if (window_show_first_requested_time_.has_value()) {
+    // Record ShowRequestedToFirstPaint metric.
+    if (!is_startup_first_paint_recorded &&
+        !skip_startup_metrics_for_testing_) {
+      waap_service_->OnStartupBrowserWindowShowRequestedToFirstPaint(
+          *window_show_first_requested_time_, timestamp);
+    } else if (!is_new_window_first_paint_recorded_ &&
+               new_window_start_time_.has_value()) {
+      waap_service_->OnNewWindowBrowserWindowShowRequestedToFirstPaint(
+          creation_source_, *window_show_first_requested_time_, timestamp);
+    }
   }
 
   if (!browser_window_first_paint_time_.has_value()) {
