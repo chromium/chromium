@@ -1,6 +1,23 @@
-file://components/omnibox/OWNERS
-file://components/search/OWNERS
-niharm@google.com
+# Owners of searchbox must ensure no embedder specific references and
+# branching logic are added to the shareable searchbox logic.
+# See: go/chrome-search-componentization
+hannahrogers@google.com
+mahmadi@chromium.org
+pauladedeji@google.com
+romanarora@chromium.org
+rtatum@google.com
+tiborg@chromium.org
+
+# TODO(crbug.com/493909140): Remove these per-file entries and the
+# EXTENDED_OWNERS file.
+per-file *.css=file:EXTENDED_OWNERS
+per-file icons/*=file:EXTENDED_OWNERS
+per-file searchbox_action*=file:EXTENDED_OWNERS
+per-file searchbox_compose*=file:EXTENDED_OWNERS
+per-file searchbox_dropdown*=file:EXTENDED_OWNERS
+per-file searchbox_icon*=file:EXTENDED_OWNERS
+per-file searchbox_match*=file:EXTENDED_OWNERS
+per-file searchbox_thumbnail*=file:EXTENDED_OWNERS
 
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS
