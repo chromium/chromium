@@ -4997,14 +4997,6 @@
     "expiry_milestone": 151
   },
   {
-    "name": "fre-signin-alternative-secondary-button-text",
-    "owners": [
-      "lbarczynski@google.com",
-      "chrome-signin-team@google.com"
-    ],
-    "expiry_milestone": 147
-  },
-  {
     "name": "fs-no-broadcast-experiment",
     "owners": [ "alionadangla@chromium.org", "bling-flags@google.com" ],
     "expiry_milestone": 150

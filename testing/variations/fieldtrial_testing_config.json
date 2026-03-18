@@ -9752,21 +9752,6 @@
             ]
         }
     ],
-    "FRESignInSecondaryActionLabelUpdate": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_StaySignedOut",
-                    "enable_features": [
-                        "FRESignInAlternativeSecondaryButtonText"
-                    ]
-                }
-            ]
-        }
-    ],
     "FastPairHandshakeLongTermRefactor": [
         {
             "platforms": [

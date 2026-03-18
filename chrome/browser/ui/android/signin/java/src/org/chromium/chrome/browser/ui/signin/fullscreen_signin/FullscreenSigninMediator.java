@@ -287,7 +287,6 @@ public class FullscreenSigninMediator
         } else if (!mIsSigninSupported) {
             mModel.set(FullscreenSigninProperties.SUBTITLE_STRING, null);
         } else {
-            updateDismissText();
             mModel.set(FullscreenSigninProperties.TITLE_STRING, mConfig.title);
             maybeUpdateSubtitle(profile, hasPolicies);
         }
@@ -342,21 +341,6 @@ public class FullscreenSigninMediator
         return ExternalAuthUtils.getInstance().canUseGooglePlayServices()
                 && UserPrefs.get(profile).getBoolean(Pref.SIGNIN_ALLOWED)
                 && !mConfig.shouldDisableSignin;
-    }
-
-    private void updateDismissText() {
-        // TODO(crbug.com/464416507): Remove this method once the
-        // FRE_SIGN_IN_ALTERNATIVE_SECONDARY_BUTTON_TEXT flag is cleaned up.
-        if (FullscreenSigninConfig.DISMISS_TEXT_NOT_INITIALIZED.equals(mConfig.dismissText)) {
-            final int secondaryButtonTextId =
-                    SigninFeatureMap.isEnabled(
-                                    SigninFeatures.FRE_SIGN_IN_ALTERNATIVE_SECONDARY_BUTTON_TEXT)
-                            ? R.string.signin_fre_stay_signed_out_button
-                            : R.string.signin_fre_dismiss_button;
-            mModel.set(
-                    FullscreenSigninProperties.DISMISS_BUTTON_STRING,
-                    mContext.getString(secondaryButtonTextId));
-        }
     }
 
     private void maybeUpdateSubtitle(Profile profile, boolean hasPolicies) {

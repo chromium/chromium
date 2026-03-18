@@ -442,11 +442,6 @@ BASE_FEATURE(kForceHistoryOptInScreen, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kForceStartupSigninPromo, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kFRESignInAlternativeSecondaryButtonText,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_ANDROID)
-
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 BASE_FEATURE(kFullscreenSignInPromoUseDate, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif

@@ -24,8 +24,6 @@ public final class FullscreenSigninConfig {
     public final boolean shouldDisableSignin;
     public final @Nullable @SigninSurveyController.SigninSurveyType Integer signinSurveyType;
 
-    public static final String DISMISS_TEXT_NOT_INITIALIZED = "";
-
     /**
      * Constructor of FullscreenSigninConfig.
      *
@@ -47,8 +45,7 @@ public final class FullscreenSigninConfig {
             @Nullable @SigninSurveyController.SigninSurveyType Integer surveyType) {
         assert !TextUtils.isEmpty(title);
         assert !TextUtils.isEmpty(subtitle);
-        // TODO(crbug.com/464416507): Restore the assert that dismissText is not empty once
-        // the FRE_SIGN_IN_ALTERNATIVE_SECONDARY_BUTTON_TEXT flag is cleaned up.
+        assert !TextUtils.isEmpty(dismissText);
         this.title = title;
         this.subtitle = subtitle;
         this.dismissText = dismissText;
