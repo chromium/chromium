@@ -216,7 +216,7 @@ void BrowserPolicyConnectorAsh::Init(
     // initialized from here instead of BrowserPolicyConnector::Init().
 
     device_cloud_policy_manager_->Initialize(local_state);
-    EnrollmentRequisitionManager::Initialize();
+    EnrollmentRequisitionManager::Initialize(CHECK_DEREF(local_state));
     device_cloud_policy_manager_->AddDeviceCloudPolicyManagerObserver(this);
     RestartDeviceCloudPolicyInitializer();
   }

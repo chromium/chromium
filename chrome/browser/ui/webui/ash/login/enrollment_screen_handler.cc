@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
@@ -315,7 +316,9 @@ void EnrollmentScreenHandler::ShowEnrollmentStatus(
       // Some special cases for generating a nicer message that's more helpful.
       switch (status.client_status()) {
         case policy::DM_STATUS_SERVICE_MANAGEMENT_NOT_SUPPORTED:
-          if (policy::EnrollmentRequisitionManager::IsMeetDevice()) {
+          // TODO(crbug.com/489929275): Remove g_browser_process use.
+          if (policy::EnrollmentRequisitionManager::IsMeetDevice(
+                  CHECK_DEREF(g_browser_process->local_state()))) {
             ShowError(IDS_ENTERPRISE_ENROLLMENT_ACCOUNT_ERROR_MEETS,
                       /*retry=*/true);
           } else {
@@ -330,7 +333,10 @@ void EnrollmentScreenHandler::ShowEnrollmentStatus(
                          IsCuttlefishDevice()) {
             message_id =
                 IDS_ENTERPRISE_ENROLLMENT_MISSING_LICENSES_ERROR_BEAM_MEET;
-          } else if (policy::EnrollmentRequisitionManager::IsMeetDevice()) {
+          } else if (
+              // TODO(crbug.com/489929275): Remove g_browser_process use.
+              policy::EnrollmentRequisitionManager::IsMeetDevice(
+                  CHECK_DEREF(g_browser_process->local_state()))) {
             message_id = IDS_ENTERPRISE_ENROLLMENT_MISSING_LICENSES_ERROR_MEETS;
           }
           ShowError(message_id, /*retry=*/true);
@@ -364,7 +370,9 @@ void EnrollmentScreenHandler::ShowEnrollmentStatus(
               /*retry=*/true);
           break;
         case policy::DM_STATUS_SERVICE_ENTERPRISE_TOS_HAS_NOT_BEEN_ACCEPTED:
-          if (policy::EnrollmentRequisitionManager::IsMeetDevice()) {
+          // TODO(crbug.com/489929275): Remove g_browser_process use.
+          if (policy::EnrollmentRequisitionManager::IsMeetDevice(
+                  CHECK_DEREF(g_browser_process->local_state()))) {
             ShowError(
                 IDS_ENTERPRISE_ENROLLMENT_ENTERPRISE_TOS_HAS_NOT_BEEN_ACCEPTED_MEETS,
                 /*retry=*/true);
@@ -507,7 +515,9 @@ void EnrollmentScreenHandler::DeclareLocalizedValues(
                IDS_EDUCATION_ENROLLMENT_SCREEN_TITLE);
   builder->Add("oauthEnrollNextBtn", IDS_OFFLINE_LOGIN_NEXT_BUTTON_TEXT);
   builder->Add("oauthEnrollSkip", IDS_ENTERPRISE_ENROLLMENT_SKIP);
-  if (policy::EnrollmentRequisitionManager::IsMeetDevice()) {
+  // TODO(crbug.com/489929275): Remove g_browser_process use.
+  if (policy::EnrollmentRequisitionManager::IsMeetDevice(
+          CHECK_DEREF(g_browser_process->local_state()))) {
     // Use Next text since the setup is not finished.
     builder->Add("oauthEnrollDone", IDS_EULA_NEXT_BUTTON);
   } else {

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/constants/ash_switches.h"
+#include "base/check_deref.h"
 #include "base/test/scoped_chromeos_version_info.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/login/test/enrollment_helper_mixin.h"
@@ -187,7 +188,8 @@ IN_PROC_BROWSER_TEST_F(OobeConfigurationTest, TestDeviceRequisition) {
   LoadConfiguration();
   OobeScreenWaiter(UpdateView::kScreenId).Wait();
 
-  EXPECT_EQ(policy::EnrollmentRequisitionManager::GetDeviceRequisition(),
+  EXPECT_EQ(policy::EnrollmentRequisitionManager::GetDeviceRequisition(
+                CHECK_DEREF(g_browser_process->local_state())),
             "some_requisition");
 }
 

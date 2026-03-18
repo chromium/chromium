@@ -394,14 +394,16 @@ std::string DemoSetupController::DemoSetupError::GetDebugDescription() const {
 }
 
 // static
-void DemoSetupController::ClearDemoRequisition() {
-  if (policy::EnrollmentRequisitionManager::GetDeviceRequisition() ==
+void DemoSetupController::ClearDemoRequisition(PrefService& local_state) {
+  if (policy::EnrollmentRequisitionManager::GetDeviceRequisition(local_state) ==
       policy::EnrollmentRequisitionManager::kDemoRequisition) {
-    policy::EnrollmentRequisitionManager::SetDeviceRequisition(std::string());
+    policy::EnrollmentRequisitionManager::SetDeviceRequisition(local_state,
+                                                               std::string());
     // If device requisition is `kDemoRequisition`, it means the sub
     // organization was also set by the demo setup controller, so remove it as
     // well.
-    policy::EnrollmentRequisitionManager::SetSubOrganization(std::string());
+    policy::EnrollmentRequisitionManager::SetSubOrganization(local_state,
+                                                             std::string());
   }
 }
 
@@ -624,11 +626,14 @@ void DemoSetupController::OnDemoComponentsLoaded() {
 
   enroll_start_time_ = base::TimeTicks::Now();
 
-  DCHECK(policy::EnrollmentRequisitionManager::GetDeviceRequisition().empty());
+  DCHECK(policy::EnrollmentRequisitionManager::GetDeviceRequisition(
+             local_state_.get())
+             .empty());
   policy::EnrollmentRequisitionManager::SetDeviceRequisition(
+      local_state_.get(),
       policy::EnrollmentRequisitionManager::kDemoRequisition);
   policy::EnrollmentRequisitionManager::SetSubOrganization(
-      GetSubOrganizationEmail(local_state_.get()));
+      local_state_.get(), GetSubOrganizationEmail(local_state_.get()));
   policy::EnrollmentConfig config =
       policy::EnrollmentConfig::GetDemoModeEnrollmentConfig();
 
@@ -729,7 +734,7 @@ void DemoSetupController::Reset() {
 
   // `demo_config_` is not reset here, because it is needed for retrying setup.
   enrollment_launcher_.reset();
-  ClearDemoRequisition();
+  ClearDemoRequisition(local_state_.get());
 }
 
 }  //  namespace ash

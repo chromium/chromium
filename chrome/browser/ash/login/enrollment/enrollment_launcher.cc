@@ -11,6 +11,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -302,6 +303,7 @@ void EnrollmentLauncherImpl::DoEnroll(policy::DMAuth auth_data) {
 
   attestation_flow_ = CreateAttestationFlow();
 
+  const auto& local_state = CHECK_DEREF(g_browser_process->local_state());
   enrollment_handler_ = std::make_unique<policy::EnrollmentHandler>(
       policy_manager->device_store(), InstallAttributes::Get(),
       connector->GetStateKeysBroker(), attestation_flow_.get(),
@@ -309,8 +311,8 @@ void EnrollmentLauncherImpl::DoEnroll(policy::DMAuth auth_data) {
       policy::BrowserPolicyConnectorAsh::CreateBackgroundTaskRunner(),
       enrollment_config_, auth_data_.Clone(),
       InstallAttributes::Get()->GetDeviceId(),
-      policy::EnrollmentRequisitionManager::GetDeviceRequisition(),
-      policy::EnrollmentRequisitionManager::GetSubOrganization(),
+      policy::EnrollmentRequisitionManager::GetDeviceRequisition(local_state),
+      policy::EnrollmentRequisitionManager::GetSubOrganization(local_state),
       base::BindOnce(&EnrollmentLauncherImpl::OnEnrollmentFinished,
                      weak_ptr_factory_.GetWeakPtr()));
 

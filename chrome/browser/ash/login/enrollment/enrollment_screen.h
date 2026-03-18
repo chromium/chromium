@@ -33,9 +33,11 @@
 #include "components/policy/core/common/cloud/enterprise_metrics.h"
 #include "net/base/backoff_entry.h"
 
+class PrefService;
+
 namespace base {
 class ElapsedTimer;
-}
+}  // namespace base
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -52,7 +54,7 @@ class ScreenManager;
 
 namespace test {
 class EnrollmentHelperMixin;
-}
+}  // namespace test
 
 // The screen implementation that links the enterprise enrollment UI into the
 // OOBE wizard.
@@ -76,9 +78,11 @@ class EnrollmentScreen
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
   using TpmStatusCallback = chromeos::TpmManagerClient::TakeOwnershipCallback;
 
+  // `local_state` must be non-null and must outlive `this`.
   // `shared_url_loader_factory` must be non-null.
   // `browser_policy_connector_ash` must be non-null and must outlive `this`.
   EnrollmentScreen(
+      PrefService* local_state,
       scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
       const policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
       base::WeakPtr<EnrollmentScreenView> view,
@@ -273,6 +277,7 @@ class EnrollmentScreen
   // if the appropriate conditions are met.
   void MaybeStoreUserContextInWizardContext();
 
+  const raw_ref<PrefService> local_state_;
   const scoped_refptr<network::SharedURLLoaderFactory>
       shared_url_loader_factory_;
   const raw_ref<const policy::BrowserPolicyConnectorAsh>

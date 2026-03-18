@@ -160,8 +160,8 @@ void RecordA11yUserAction(const std::string& action_id) {
 // Returns true if is a Meet Device or the remora requisition bit has been set
 // for testing. Note: Can be overridden with the command line switch
 // --enable-requisition-edits.
-bool IsMeetDeviceConfigurable() {
-  return policy::EnrollmentRequisitionManager::IsMeetDevice() ||
+bool IsMeetDeviceConfigurable(const PrefService& local_state) {
+  return policy::EnrollmentRequisitionManager::IsMeetDevice(local_state) ||
          switches::IsDeviceRequisitionConfigurable();
 }
 
@@ -320,18 +320,21 @@ std::string WelcomeScreen::GetTimezone() const {
 
 void WelcomeScreen::SetDeviceRequisition(const std::string& requisition) {
   if (requisition == kRemoraRequisitionIdentifier) {
-    if (!IsMeetDeviceConfigurable())
+    if (!IsMeetDeviceConfigurable(local_state_.get())) {
       return;
+    }
   } else {
     if (!switches::IsDeviceRequisitionConfigurable())
       return;
   }
 
   std::string initial_requisition =
-      policy::EnrollmentRequisitionManager::GetDeviceRequisition();
-  policy::EnrollmentRequisitionManager::SetDeviceRequisition(requisition);
+      policy::EnrollmentRequisitionManager::GetDeviceRequisition(
+          local_state_.get());
+  policy::EnrollmentRequisitionManager::SetDeviceRequisition(local_state_.get(),
+                                                             requisition);
 
-  if (policy::EnrollmentRequisitionManager::IsMeetDevice()) {
+  if (policy::EnrollmentRequisitionManager::IsMeetDevice(local_state_.get())) {
     // CfM devices default to static timezone.
     local_state_->SetInteger(
         ash::prefs::kResolveDeviceTimezoneByGeolocationMethod,
@@ -341,7 +344,8 @@ void WelcomeScreen::SetDeviceRequisition(const std::string& requisition) {
 
   // Exit Chrome to force the restart as soon as a new requisition is set.
   if (initial_requisition !=
-      policy::EnrollmentRequisitionManager::GetDeviceRequisition()) {
+      policy::EnrollmentRequisitionManager::GetDeviceRequisition(
+          local_state_.get())) {
     session_manager::SessionManager::Get()->RequestRestart();
   }
 }
@@ -542,10 +546,11 @@ bool WelcomeScreen::HandleAccelerator(LoginAcceleratorAction action) {
              switches::IsDeviceRequisitionConfigurable()) {
     if (view_)
       view_->ShowEditRequisitionDialog(
-          policy::EnrollmentRequisitionManager::GetDeviceRequisition());
+          policy::EnrollmentRequisitionManager::GetDeviceRequisition(
+              local_state_.get()));
     return true;
   } else if (action == LoginAcceleratorAction::kDeviceRequisitionRemora &&
-             IsMeetDeviceConfigurable()) {
+             IsMeetDeviceConfigurable(local_state_.get())) {
     if (view_)
       view_->ShowRemoraRequisitionDialog();
     return true;

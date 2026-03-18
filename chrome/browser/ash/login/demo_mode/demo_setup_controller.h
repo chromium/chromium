@@ -208,7 +208,7 @@ class DemoSetupController
       base::RepeatingCallback<void(const DemoSetupStep)>;
 
   // Clears demo device enrollment requisition if it is set.
-  static void ClearDemoRequisition();
+  static void ClearDemoRequisition(PrefService& local_state);
 
   // Utility method that returns whether demo mode is allowed on the device.
   static bool IsDemoModeAllowed();

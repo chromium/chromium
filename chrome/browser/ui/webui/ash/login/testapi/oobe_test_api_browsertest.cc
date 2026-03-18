@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 #include "ash/constants/ash_switches.h"
+#include "base/check_deref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_chromeos_version_info.h"
 #include "chrome/browser/ash/login/screens/hid_detection_screen.h"
 #include "chrome/browser/ash/login/test/cryptohome_mixin.h"
-#include "chrome/browser/ash/login/test/local_state_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
@@ -121,20 +121,16 @@ IN_PROC_BROWSER_TEST_F(NoOobeTestApiTest, NoOobeAPI) {
   test::OobeJS().ExpectFalse("window.OobeAPI");
 }
 
-class OobeTestApiRemoraRequisitionTest : public OobeTestApiTest,
-                                         public LocalStateMixin::Delegate {
+class OobeTestApiRemoraRequisitionTest : public OobeTestApiTest {
  public:
   OobeTestApiRemoraRequisitionTest() = default;
   ~OobeTestApiRemoraRequisitionTest() override = default;
 
-  // LocalStateMixin::Delegate:
-  void SetUpLocalState() override {
+  void SetUpLocalStatePrefService(PrefService* local_state) override {
+    OobeTestApiTest::SetUpLocalStatePrefService(local_state);
     policy::EnrollmentRequisitionManager::SetDeviceRequisition(
-        policy::EnrollmentRequisitionManager::kRemoraRequisition);
+        *local_state, policy::EnrollmentRequisitionManager::kRemoraRequisition);
   }
-
- private:
-  LocalStateMixin local_state_mixin_{&mixin_host_, this};
 };
 
 class OobeTestApiLoginPinTest : public OobeTestApiTest {

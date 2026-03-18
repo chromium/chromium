@@ -886,7 +886,7 @@ bool AccessibilityManager::PlayEarcon(Sound sound_key, PlaySoundOption option) {
 }
 
 bool AccessibilityManager::ShouldToggleSpokenFeedbackViaTouch() {
-  return policy::EnrollmentRequisitionManager::IsMeetDevice();
+  return policy::EnrollmentRequisitionManager::IsMeetDevice(local_state_.get());
 }
 
 bool AccessibilityManager::PlaySpokenFeedbackToggleCountdown(int tick_count) {
@@ -2154,7 +2154,7 @@ void AccessibilityManager::PostLoadChromeVox() {
 
   // Force volume slide gesture to be on for Chromebox for Meetings provisioned
   // devices.
-  if (policy::EnrollmentRequisitionManager::IsMeetDevice()) {
+  if (policy::EnrollmentRequisitionManager::IsMeetDevice(local_state_.get())) {
     AccessibilityController::Get()->EnableChromeVoxVolumeSlideGesture();
   }
 

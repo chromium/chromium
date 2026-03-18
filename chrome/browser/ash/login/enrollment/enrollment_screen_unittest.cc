@@ -92,7 +92,8 @@ class EnrollmentScreenBaseTest : public testing::Test {
  protected:
   EnrollmentScreenBaseTest()
       : mock_error_screen_(mock_error_view_.AsWeakPtr()) {
-    policy::EnrollmentRequisitionManager::Initialize();
+    policy::EnrollmentRequisitionManager::Initialize(
+        CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()));
     TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(
         test_url_loader_factory_.GetSafeWeakWrapper());
   }
@@ -105,6 +106,7 @@ class EnrollmentScreenBaseTest : public testing::Test {
   // Creates the EnrollmentScreen and sets required parameters.
   void SetUpEnrollmentScreen(const policy::EnrollmentConfig& config) {
     enrollment_screen_ = std::make_unique<EnrollmentScreen>(
+        TestingBrowserProcess::GetGlobal()->local_state(),
         TestingBrowserProcess::GetGlobal()->shared_url_loader_factory(),
         TestingBrowserProcess::GetGlobal()
             ->platform_part()

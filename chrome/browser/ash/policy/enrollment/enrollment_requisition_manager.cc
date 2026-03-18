@@ -13,7 +13,6 @@
 #include "build/config/squid/buildflags.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/ash/login/startup_utils.h"
-#include "chrome/browser/browser_process.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -32,49 +31,48 @@ const char EnrollmentRequisitionManager::kCuttlefishRequisition[] =
 const char EnrollmentRequisitionManager::kSquidRequisition[] = "squid";
 
 // static
-void EnrollmentRequisitionManager::Initialize() {
+void EnrollmentRequisitionManager::Initialize(PrefService& local_state) {
   // OEM statistics are only loaded when OOBE is not completed.
   if (ash::StartupUtils::IsOobeCompleted())
     return;
 
   // Demo requisition may have been set in a prior enrollment attempt that was
   // interrupted.
-  ash::DemoSetupController::ClearDemoRequisition();
-  auto* local_state = g_browser_process->local_state();
+  ash::DemoSetupController::ClearDemoRequisition(local_state);
   auto* provider = StatisticsProvider::GetInstance();
   const PrefService::Preference* pref =
-      local_state->FindPreference(ash::prefs::kDeviceEnrollmentRequisition);
+      local_state.FindPreference(ash::prefs::kDeviceEnrollmentRequisition);
   if (pref->IsDefaultValue()) {
     const std::optional<std::string_view> requisition =
         provider->GetMachineStatistic(ash::system::kOemDeviceRequisitionKey);
 
     if (requisition && !requisition->empty()) {
-      local_state->SetString(ash::prefs::kDeviceEnrollmentRequisition,
-                             requisition.value());
+      local_state.SetString(ash::prefs::kDeviceEnrollmentRequisition,
+                            requisition.value());
       if (requisition == kRemoraRequisition ||
           requisition == kSharkRequisition) {
-        SetDeviceEnrollmentAutoStart();
+        SetDeviceEnrollmentAutoStart(local_state);
       } else {
         const bool auto_start = StatisticsProvider::FlagValueToBool(
             provider->GetMachineFlag(ash::system::kOemIsEnterpriseManagedKey),
             /*default_value=*/false);
-        local_state->SetBoolean(ash::prefs::kDeviceEnrollmentAutoStart,
-                                auto_start);
+        local_state.SetBoolean(ash::prefs::kDeviceEnrollmentAutoStart,
+                               auto_start);
         const bool can_exit = StatisticsProvider::FlagValueToBool(
             provider->GetMachineFlag(
                 ash::system::kOemCanExitEnterpriseEnrollmentKey),
             /*default_value=*/false);
-        local_state->SetBoolean(ash::prefs::kDeviceEnrollmentCanExit, can_exit);
+        local_state.SetBoolean(ash::prefs::kDeviceEnrollmentCanExit, can_exit);
       }
     }
   }
 }
 
 // static
-std::string EnrollmentRequisitionManager::GetDeviceRequisition() {
+std::string EnrollmentRequisitionManager::GetDeviceRequisition(
+    const PrefService& local_state) {
   const PrefService::Preference* pref =
-      g_browser_process->local_state()->FindPreference(
-          ash::prefs::kDeviceEnrollmentRequisition);
+      local_state.FindPreference(ash::prefs::kDeviceEnrollmentRequisition);
   std::string requisition;
   if (!pref->IsDefaultValue() && pref->GetValue()->is_string())
     requisition = pref->GetValue()->GetString();
@@ -87,43 +85,46 @@ std::string EnrollmentRequisitionManager::GetDeviceRequisition() {
 
 // static
 void EnrollmentRequisitionManager::SetDeviceRequisition(
+    PrefService& local_state,
     const std::string& requisition) {
   // TODO(crbug.com/40805389): Logging as "WARNING" to make sure it's preserved
   // in the logs.
   LOG(WARNING) << "SetDeviceRequisition " << requisition;
 
-  auto* local_state = g_browser_process->local_state();
   if (requisition.empty()) {
-    local_state->ClearPref(ash::prefs::kDeviceEnrollmentRequisition);
-    local_state->ClearPref(ash::prefs::kDeviceEnrollmentAutoStart);
-    local_state->ClearPref(ash::prefs::kDeviceEnrollmentCanExit);
+    local_state.ClearPref(ash::prefs::kDeviceEnrollmentRequisition);
+    local_state.ClearPref(ash::prefs::kDeviceEnrollmentAutoStart);
+    local_state.ClearPref(ash::prefs::kDeviceEnrollmentCanExit);
   } else {
-    local_state->SetString(ash::prefs::kDeviceEnrollmentRequisition,
-                           requisition);
+    local_state.SetString(ash::prefs::kDeviceEnrollmentRequisition,
+                          requisition);
     if (requisition == kNoRequisition) {
-      local_state->ClearPref(ash::prefs::kDeviceEnrollmentAutoStart);
-      local_state->ClearPref(ash::prefs::kDeviceEnrollmentCanExit);
+      local_state.ClearPref(ash::prefs::kDeviceEnrollmentAutoStart);
+      local_state.ClearPref(ash::prefs::kDeviceEnrollmentCanExit);
     } else {
-      SetDeviceEnrollmentAutoStart();
+      SetDeviceEnrollmentAutoStart(local_state);
     }
   }
 }
 
 // static
-bool EnrollmentRequisitionManager::IsRemoraRequisition() {
-  return GetDeviceRequisition() == kRemoraRequisition;
+bool EnrollmentRequisitionManager::IsRemoraRequisition(
+    const PrefService& local_state) {
+  return GetDeviceRequisition(local_state) == kRemoraRequisition;
 }
 
 // static
-bool EnrollmentRequisitionManager::IsSharkRequisition() {
-  return GetDeviceRequisition() == kSharkRequisition;
+bool EnrollmentRequisitionManager::IsSharkRequisition(
+    const PrefService& local_state) {
+  return GetDeviceRequisition(local_state) == kSharkRequisition;
 }
 
-bool EnrollmentRequisitionManager::IsMeetDevice() {
+bool EnrollmentRequisitionManager::IsMeetDevice(
+    const PrefService& local_state) {
 #if BUILDFLAG(PLATFORM_CFM)
   return true;
 #else
-  return IsRemoraRequisition();
+  return IsRemoraRequisition(local_state);
 #endif  // BUILDFLAG(PLATFORM_CFM)
 }
 
@@ -144,10 +145,10 @@ bool EnrollmentRequisitionManager::IsSquidDevice() {
 }
 
 // static
-std::string EnrollmentRequisitionManager::GetSubOrganization() {
+std::string EnrollmentRequisitionManager::GetSubOrganization(
+    const PrefService& local_state) {
   const PrefService::Preference* pref =
-      g_browser_process->local_state()->FindPreference(
-          ash::prefs::kDeviceEnrollmentSubOrganization);
+      local_state.FindPreference(ash::prefs::kDeviceEnrollmentSubOrganization);
   if (!pref->IsDefaultValue() && pref->GetValue()->is_string())
     return pref->GetValue()->GetString();
   return std::string();
@@ -155,21 +156,21 @@ std::string EnrollmentRequisitionManager::GetSubOrganization() {
 
 // static
 void EnrollmentRequisitionManager::SetSubOrganization(
+    PrefService& local_state,
     const std::string& sub_organization) {
-  if (sub_organization.empty())
-    g_browser_process->local_state()->ClearPref(
-        ash::prefs::kDeviceEnrollmentSubOrganization);
-  else
-    g_browser_process->local_state()->SetString(
-        ash::prefs::kDeviceEnrollmentSubOrganization, sub_organization);
+  if (sub_organization.empty()) {
+    local_state.ClearPref(ash::prefs::kDeviceEnrollmentSubOrganization);
+  } else {
+    local_state.SetString(ash::prefs::kDeviceEnrollmentSubOrganization,
+                          sub_organization);
+  }
 }
 
 // static
-void EnrollmentRequisitionManager::SetDeviceEnrollmentAutoStart() {
-  g_browser_process->local_state()->SetBoolean(
-      ash::prefs::kDeviceEnrollmentAutoStart, true);
-  g_browser_process->local_state()->SetBoolean(
-      ash::prefs::kDeviceEnrollmentCanExit, false);
+void EnrollmentRequisitionManager::SetDeviceEnrollmentAutoStart(
+    PrefService& local_state) {
+  local_state.SetBoolean(ash::prefs::kDeviceEnrollmentAutoStart, true);
+  local_state.SetBoolean(ash::prefs::kDeviceEnrollmentCanExit, false);
 }
 
 // static

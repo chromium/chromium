@@ -25,9 +25,11 @@ namespace ash {
 
 class MockEnrollmentScreen : public EnrollmentScreen {
  public:
+  // `local_state` must be non-null and must outlive `this`.
   // `shared_url_loader_factory` must be non-null.
   // `browser_policy_connector_ash` must be non-null and must outlive `this`.
   MockEnrollmentScreen(
+      PrefService* local_state,
       scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
       const policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
       base::WeakPtr<EnrollmentScreenView> view,

@@ -703,7 +703,8 @@ WizardController::CreateScreens() {
       base::BindRepeating(&WizardController::OnUpdateScreenExit,
                           weak_factory_.GetWeakPtr())));
   append(std::make_unique<EnrollmentScreen>(
-      shared_url_loader_factory_, browser_policy_connector_ash,
+      &local_state_.get(), shared_url_loader_factory_,
+      browser_policy_connector_ash,
       oobe_ui->GetView<EnrollmentScreenHandler>()->AsWeakPtr(),
       oobe_ui->GetErrorScreen(),
       base::BindRepeating(&WizardController::OnEnrollmentScreenExit,
@@ -3406,24 +3407,28 @@ void WizardController::UpdateOobeConfiguration() {
     VLOG(1) << "Using Device Requisition from configuration"
             << *requisition_value;
     policy::EnrollmentRequisitionManager::SetDeviceRequisition(
-        *requisition_value);
+        local_state_.get(), *requisition_value);
   } else if (policy::EnrollmentRequisitionManager::IsCuttlefishDevice()) {
     VLOG(1) << "Using default Device Requisition value for Cuttlefish build "
                "configuration"
             << policy::EnrollmentRequisitionManager::kCuttlefishRequisition;
     policy::EnrollmentRequisitionManager::SetDeviceRequisition(
+        local_state_.get(),
         policy::EnrollmentRequisitionManager::kCuttlefishRequisition);
   } else if (policy::EnrollmentRequisitionManager::IsSquidDevice()) {
     VLOG(1) << "Using default Device Requisition value for Squid build "
                "configuration"
             << policy::EnrollmentRequisitionManager::kSquidRequisition;
     policy::EnrollmentRequisitionManager::SetDeviceRequisition(
+        local_state_.get(),
         policy::EnrollmentRequisitionManager::kSquidRequisition);
-  } else if (policy::EnrollmentRequisitionManager::IsMeetDevice()) {
+  } else if (policy::EnrollmentRequisitionManager::IsMeetDevice(
+                 local_state_.get())) {
     VLOG(1) << "Using default Device Requisition value for CFM build "
                "configuration"
             << policy::EnrollmentRequisitionManager::kRemoraRequisition;
     policy::EnrollmentRequisitionManager::SetDeviceRequisition(
+        local_state_.get(),
         policy::EnrollmentRequisitionManager::kRemoraRequisition);
   }
 

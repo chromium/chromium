@@ -110,7 +110,10 @@ void WelcomeScreenHandler::DeclareLocalizedValues(
   if (fjord_util::ShouldShowFjordOobe()) {
     builder->Add("welcomeScreenGreeting", IDS_FJORD_WELCOME_MESSAGE);
     builder->Add("welcomeScreenGreetingSubtitle", IDS_EMPTY_STRING);
-  } else if (policy::EnrollmentRequisitionManager::IsMeetDevice()) {
+  } else if (
+      // TODO(crbug.com/489929275): Avoid using g_browser_process.
+      policy::EnrollmentRequisitionManager::IsMeetDevice(
+          CHECK_DEREF(g_browser_process->local_state()))) {
     builder->Add("welcomeScreenGreeting", IDS_REMORA_CONFIRM_MESSAGE);
     builder->Add("welcomeScreenGreetingSubtitle", IDS_EMPTY_STRING);
   } else if (switches::IsRevenBranding()) {

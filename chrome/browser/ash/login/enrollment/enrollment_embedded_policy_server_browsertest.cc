@@ -457,7 +457,7 @@ IN_PROC_BROWSER_TEST_F(EnrollmentEmbeddedPolicyServerBase,
 IN_PROC_BROWSER_TEST_F(EnrollmentEmbeddedPolicyServerBase,
                        EnrollmentErrorNoLicensesMeets) {
   policy::EnrollmentRequisitionManager::SetDeviceRequisition(
-      kRemoraRequisition);
+      CHECK_DEREF(g_browser_process->local_state()), kRemoraRequisition);
   policy_server_.SetDeviceEnrollmentError(
       policy::DeviceManagementService::kMissingLicenses);
 
@@ -491,7 +491,7 @@ IN_PROC_BROWSER_TEST_F(EnrollmentEmbeddedPolicyServerBase,
 IN_PROC_BROWSER_TEST_F(EnrollmentEmbeddedPolicyServerBase,
                        EnrollmentErrorManagementNotAllowedMeets) {
   policy::EnrollmentRequisitionManager::SetDeviceRequisition(
-      kRemoraRequisition);
+      CHECK_DEREF(g_browser_process->local_state()), kRemoraRequisition);
   policy_server_.SetDeviceEnrollmentError(
       policy::DeviceManagementService::kDeviceManagementNotAllowed);
 
@@ -641,7 +641,7 @@ IN_PROC_BROWSER_TEST_F(EnrollmentEmbeddedPolicyServerBase,
 IN_PROC_BROWSER_TEST_F(EnrollmentEmbeddedPolicyServerBase,
                        EnrollmentErrorEnterpriseTosHasNotBeenAcceptedMeets) {
   policy::EnrollmentRequisitionManager::SetDeviceRequisition(
-      kRemoraRequisition);
+      CHECK_DEREF(g_browser_process->local_state()), kRemoraRequisition);
   policy_server_.SetDeviceEnrollmentError(
       policy::DeviceManagementService::kTosHasNotBeenAccepted);
 

@@ -36,6 +36,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -129,7 +130,8 @@ class DemoSetupControllerTest : public testing::Test {
     DBusThreadManager::Initialize();
     SessionManagerClient::InitializeFake();
     DeviceSettingsService::Initialize();
-    policy::EnrollmentRequisitionManager::Initialize();
+    policy::EnrollmentRequisitionManager::Initialize(
+        CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()));
 
     TestingBrowserProcess::GetGlobal()
         ->platform_part()
@@ -154,7 +156,8 @@ class DemoSetupControllerTest : public testing::Test {
   }
 
   static std::string GetDeviceRequisition() {
-    return policy::EnrollmentRequisitionManager::GetDeviceRequisition();
+    return policy::EnrollmentRequisitionManager::GetDeviceRequisition(
+        CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()));
   }
 
   // Must be created first.

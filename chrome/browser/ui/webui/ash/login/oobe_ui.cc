@@ -21,6 +21,7 @@
 #include "ash/webui/common/backend/webui_syslog_emitter.h"
 #include "ash/webui/common/mojom/webui_syslog_emitter.mojom.h"
 #include "ash/webui/common/trusted_types_util.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/functional/bind.h"
@@ -619,7 +620,9 @@ void OobeUI::ConfigureOobeDisplay() {
     UpScaleOobe();
   }
 
-  if (policy::EnrollmentRequisitionManager::IsMeetDevice()) {
+  // TODO(crbug.com/489929275): Avoid using g_browser_process.
+  if (policy::EnrollmentRequisitionManager::IsMeetDevice(
+          CHECK_DEREF(g_browser_process->local_state()))) {
     oobe_display_chooser_ = std::make_unique<OobeDisplayChooser>(
         ash::Shell::Get()->cros_display_config());
   }
@@ -627,8 +630,10 @@ void OobeUI::ConfigureOobeDisplay() {
 
 bool OobeUI::ShouldUpScaleOobe() {
   const int64_t display_id = display::Screen::Get()->GetPrimaryDisplay().id();
+  // TODO(crbug.com/489929275): Avoid using g_browser_process.
   return upscaled_display_id_ != display_id && switches::ShouldScaleOobe() &&
-         policy::EnrollmentRequisitionManager::IsMeetDevice();
+         policy::EnrollmentRequisitionManager::IsMeetDevice(
+             CHECK_DEREF(g_browser_process->local_state()));
 }
 
 void OobeUI::UpScaleOobe() {
@@ -783,7 +788,9 @@ void OobeUI::AddOobeComponents(content::WebUIDataSource* source) {
   // Add Gaia Authenticator resources
   source->AddResourcePaths(kGaiaAuthHostResources);
 
-  if (policy::EnrollmentRequisitionManager::IsMeetDevice() &&
+  // TODO(crbug.com/489929275): Avoid using g_browser_process.
+  if (policy::EnrollmentRequisitionManager::IsMeetDevice(
+          CHECK_DEREF(g_browser_process->local_state())) &&
       !fjord_util::ShouldShowFjordOobe()) {
     source->AddResourcePath(
         kOobeCustomVarsCssJs,

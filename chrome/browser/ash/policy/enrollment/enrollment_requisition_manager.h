@@ -8,6 +8,7 @@
 #include <string>
 
 class PrefRegistrySimple;
+class PrefService;
 
 namespace policy {
 
@@ -30,16 +31,17 @@ class EnrollmentRequisitionManager {
   static const char kSquidRequisition[];
 
   // Initializes requisition settings at OOBE with values from VPD.
-  static void Initialize();
+  static void Initialize(PrefService& local_state);
 
   // Gets/Sets the device requisition.
-  static std::string GetDeviceRequisition();
-  static void SetDeviceRequisition(const std::string& requisition);
-  static bool IsRemoraRequisition();
-  static bool IsSharkRequisition();
+  static std::string GetDeviceRequisition(const PrefService& local_state);
+  static void SetDeviceRequisition(PrefService& local_state,
+                                   const std::string& requisition);
+  static bool IsRemoraRequisition(const PrefService& local_state);
+  static bool IsSharkRequisition(const PrefService& local_State);
 
   // If the current device extends the CFM Overlay or has Remora bit set
-  static bool IsMeetDevice();
+  static bool IsMeetDevice(const PrefService& local_state);
 
   // If the current device is a Cuttlefish device.
   static bool IsCuttlefishDevice();
@@ -48,11 +50,12 @@ class EnrollmentRequisitionManager {
   static bool IsSquidDevice();
 
   // Gets/Sets the sub organization.
-  static std::string GetSubOrganization();
-  static void SetSubOrganization(const std::string& sub_organization);
+  static std::string GetSubOrganization(const PrefService& local_state);
+  static void SetSubOrganization(PrefService& local_state,
+                                 const std::string& sub_organization);
 
   // If set, the device will start the enterprise enrollment OOBE.
-  static void SetDeviceEnrollmentAutoStart();
+  static void SetDeviceEnrollmentAutoStart(PrefService& local_state);
 
   // Pref registration helper.
   static void RegisterPrefs(PrefRegistrySimple* registry);

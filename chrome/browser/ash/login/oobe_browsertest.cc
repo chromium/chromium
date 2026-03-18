@@ -7,6 +7,7 @@
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shell.h"
 #include "base/auto_reset.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -177,7 +178,6 @@ IN_PROC_BROWSER_TEST_F(InvalidPendingScreenTest, WelcomeScreenShown) {
 
 class MeetDeviceDisplayOobeTest
     : public OobeBaseTest,
-      public LocalStateMixin::Delegate,
       public ::testing::WithParamInterface<std::tuple<const char*, gfx::Size>> {
  public:
   MeetDeviceDisplayOobeTest() = default;
@@ -197,9 +197,10 @@ class MeetDeviceDisplayOobeTest
     OobeBaseTest::SetUpCommandLine(command_line);
   }
 
-  // LocalStateMixin::Delegate:
-  void SetUpLocalState() override {
+  void SetUpLocalStatePrefService(PrefService* local_state) override {
+    OobeBaseTest::SetUpLocalStatePrefService(local_state);
     policy::EnrollmentRequisitionManager::SetDeviceRequisition(
+        CHECK_DEREF(local_state),
         policy::EnrollmentRequisitionManager::kRemoraRequisition);
   }
 
@@ -208,7 +209,6 @@ class MeetDeviceDisplayOobeTest
   gfx::Size ExpectedNativeDisplaySize() { return native_display_size_; }
 
  private:
-  LocalStateMixin local_state_mixin_{&mixin_host_, this};
   gfx::Size native_display_size_;
   gfx::Size scaled_display_size_;
 };

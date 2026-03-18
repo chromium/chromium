@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ash/system/input_device_settings.h"
 
+#include "base/check_deref.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
+#include "chrome/browser/browser_process.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/prefs/pref_service.h"
 
@@ -465,8 +467,10 @@ void PointingStickSettings::Apply(
 
 // static
 bool InputDeviceSettings::ForceKeyboardDrivenUINavigation() {
-  if (policy::EnrollmentRequisitionManager::IsMeetDevice() ||
-      policy::EnrollmentRequisitionManager::IsSharkRequisition() ||
+  // TODO(crbug.com/404133899): Remove g_browser_process use.
+  const auto& local_state = CHECK_DEREF(g_browser_process->local_state());
+  if (policy::EnrollmentRequisitionManager::IsMeetDevice(local_state) ||
+      policy::EnrollmentRequisitionManager::IsSharkRequisition(local_state) ||
       policy::EnrollmentRequisitionManager::IsSquidDevice()) {
     return true;
   }
