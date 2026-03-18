@@ -187,8 +187,7 @@ class ProjectsPanelControllerTest : public testing::Test {
   std::unique_ptr<ProjectsPanelController> GetInitializedController() {
     auto controller = std::make_unique<ProjectsPanelController>(
         &mock_browser_window_interface_, mock_state_controller_.get(),
-        &mock_tab_group_sync_service_, &mock_contextual_tasks_service_,
-        &mock_contextual_tasks_ui_service_);
+        &mock_tab_group_sync_service_, &mock_contextual_tasks_service_);
     controller->OnInitialized();
     return controller;
   }
@@ -202,8 +201,6 @@ class ProjectsPanelControllerTest : public testing::Test {
       mock_tab_group_sync_service_;
   testing::NiceMock<contextual_tasks::MockContextualTasksService>
       mock_contextual_tasks_service_;
-  testing::NiceMock<contextual_tasks::MockContextualTasksUiService>
-      mock_contextual_tasks_ui_service_;
 };
 
 TEST_F(ProjectsPanelControllerTest, PreservesOrderOnConstruction) {
@@ -363,9 +360,9 @@ TEST_F(ProjectsPanelControllerTest, OpenThreadCallsService) {
       GetAimTask(),
       contextual_tasks::ContextualTasksService::TriggerSource::kLocal);
 
-  EXPECT_CALL(
-      mock_contextual_tasks_ui_service_,
-      GetThreadUrlFromTaskId(testing::Eq(GetAimTask().GetTaskId()), testing::_))
+  EXPECT_CALL(mock_contextual_tasks_service_,
+              GetThreadUrlFromTaskId(testing::Eq(GetAimTask().GetTaskId()),
+                                     testing::_, testing::_, testing ::_))
       .Times(1);
 
   controller->OpenThread(GetAimTask().GetThread()->server_id);
@@ -520,8 +517,7 @@ class ProjectsPanelControllerObserverTest : public ProjectsPanelControllerTest {
   void SetUp() override {
     controller_ = std::make_unique<ProjectsPanelController>(
         &mock_browser_window_interface_, mock_state_controller_.get(),
-        &mock_tab_group_sync_service_, &mock_contextual_tasks_service_,
-        &mock_contextual_tasks_ui_service_);
+        &mock_tab_group_sync_service_, &mock_contextual_tasks_service_);
     controller_->AddObserver(&observer_);
   }
 

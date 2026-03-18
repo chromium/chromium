@@ -15,7 +15,6 @@
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
@@ -266,9 +265,7 @@ ProjectsPanelView::ProjectsPanelView(
       threads_enabled
           ? contextual_tasks::ContextualTasksServiceFactory::GetForProfile(
                 browser->GetProfile())
-          : nullptr,
-      contextual_tasks::ContextualTasksUiServiceFactory::
-          GetForBrowserContextIfExists(browser->GetProfile()));
+          : nullptr);
   panel_controller_observer_.Observe(panel_controller_.get());
 
   controls_view_ = content_container_->AddChildView(
