@@ -1308,7 +1308,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         mActivity,
                         mWindowAndroid,
                         mAppMenuCoordinator,
-                        mActivityLifecycleDispatcher,
                         profile,
                         mActivityTabProvider.asObservable(),
                         mIsInOverviewModeSupplier,

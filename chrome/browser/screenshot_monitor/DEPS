@@ -1,9 +1,0 @@
-include_rules = [
-  "+content/public/android/java",
-]
-
-specific_include_rules = {
-  ".*test.*": [
-    "+chrome/browser/ui/views",
-  ],
-}

@@ -97,8 +97,7 @@ by a child template that "extends" this file.
     <uses-permission-sdk-23 android:name="android.permission.READ_MEDIA_AUDIO"/>
 
     <!-- Needed for handling media-viewing Intents from other apps for images and video on low end
-         or managed devices (eg. crbug.com/40546519) and monitoring of screenshots if permission has
-         been previously granted (doesn't request independently) (crbug.com/40520892) -->
+         or managed devices (eg. crbug.com/40546519) -->
     <uses-permission-sdk-23 android:name="android.permission.READ_MEDIA_IMAGES"/>
     <uses-permission-sdk-23 android:name="android.permission.READ_MEDIA_VIDEO"/>
 

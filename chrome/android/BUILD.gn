@@ -472,7 +472,6 @@ if (_is_default_toolchain) {
       "//chrome/browser/safe_browsing/android:java",
       "//chrome/browser/safety_check/android:java",
       "//chrome/browser/safety_hub/android:java",
-      "//chrome/browser/screenshot_monitor:java",
       "//chrome/browser/search_engines/android:java",
       "//chrome/browser/segmentation_platform:client_util_java",
       "//chrome/browser/segmentation_platform:factory_java",

@@ -8,29 +8,19 @@ import android.app.Activity;
 import android.os.Handler;
 import android.view.View;
 
-import org.chromium.base.DeviceInfo;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.NullableObservableSupplier;
-import org.chromium.base.task.PostTask;
-import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.PowerBookmarkUtils;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
-import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.pdf.PdfPage;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.screenshot_monitor.ScreenshotMonitor;
-import org.chromium.chrome.browser.screenshot_monitor.ScreenshotMonitorDelegate;
-import org.chromium.chrome.browser.screenshot_monitor.ScreenshotMonitorImpl;
-import org.chromium.chrome.browser.screenshot_monitor.ScreenshotTabObserver;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -57,18 +47,13 @@ import java.util.function.Supplier;
  * IPH from here.
  */
 @NullMarked
-public class ToolbarButtonInProductHelpController
-        implements ScreenshotMonitorDelegate, PauseResumeWithNativeObserver {
+public class ToolbarButtonInProductHelpController {
     private final CurrentTabObserver mPageLoadObserver;
     private final Activity mActivity;
     private final WindowAndroid mWindowAndroid;
-    private final ActivityLifecycleDispatcher mLifecycleDispatcher;
-    private @Nullable ScreenshotMonitor mScreenshotMonitor;
     private final View mMenuButtonAnchorView;
     private final AppMenuHandler mAppMenuHandler;
     private final UserEducationHelper mUserEducationHelper;
-    private final Profile mProfile;
-    private final NullableObservableSupplier<Tab> mCurrentTabSupplier;
     private final Supplier<Boolean> mIsInOverviewModeSupplier;
 
     /**
@@ -76,7 +61,6 @@ public class ToolbarButtonInProductHelpController
      * @param windowAndroid {@link WindowAndroid} for the current Activity.
      * @param appMenuCoordinator {@link AppMenuCoordinator} whose visual state is to be updated
      *     accordingly.
-     * @param lifecycleDispatcher {@link LifecycleDispatcher} that helps observe activity lifecycle.
      * @param profile The current Profile.
      * @param tabSupplier An observable supplier of the current {@link Tab}.
      * @param isInOverviewModeSupplier Supplies whether the app is in overview mode.
@@ -86,7 +70,6 @@ public class ToolbarButtonInProductHelpController
             Activity activity,
             WindowAndroid windowAndroid,
             AppMenuCoordinator appMenuCoordinator,
-            ActivityLifecycleDispatcher lifecycleDispatcher,
             Profile profile,
             NullableObservableSupplier<Tab> tabSupplier,
             Supplier<Boolean> isInOverviewModeSupplier,
@@ -97,13 +80,6 @@ public class ToolbarButtonInProductHelpController
         mMenuButtonAnchorView = menuButtonAnchorView;
         mIsInOverviewModeSupplier = isInOverviewModeSupplier;
         mUserEducationHelper = new UserEducationHelper(mActivity, profile, new Handler());
-        if (!DeviceInfo.isAutomotive()) {
-            mScreenshotMonitor = new ScreenshotMonitorImpl(this, mActivity);
-        }
-        mLifecycleDispatcher = lifecycleDispatcher;
-        mLifecycleDispatcher.register(this);
-        mProfile = profile;
-        mCurrentTabSupplier = tabSupplier;
         mPageLoadObserver =
                 new CurrentTabObserver(
                         tabSupplier,
@@ -157,7 +133,6 @@ public class ToolbarButtonInProductHelpController
 
     public void destroy() {
         mPageLoadObserver.destroy();
-        mLifecycleDispatcher.unregister(this);
     }
 
     /**
@@ -279,43 +254,6 @@ public class ToolbarButtonInProductHelpController
         }
     }
 
-    // Overridden public methods.
-    @Override
-    public void onResumeWithNative() {
-        // Part of the (more runtime-related) check to determine whether to trigger help UI is
-        // left until onScreenshotTaken() since it is less expensive to keep monitoring on and
-        // check when the help UI is accessed than it is to start/stop monitoring per tab change
-        // (e.g. tab switch or in overview mode).
-        if (DeviceFormFactor.isWindowOnTablet(mWindowAndroid)) return;
-        if (mScreenshotMonitor != null) mScreenshotMonitor.startMonitoring();
-    }
-
-    @Override
-    public void onPauseWithNative() {
-        if (mScreenshotMonitor != null) mScreenshotMonitor.stopMonitoring();
-    }
-
-    @Override
-    public void onScreenshotTaken() {
-        Tab currentTab = mCurrentTabSupplier.get();
-        Profile currentProfile = currentTab != null ? currentTab.getProfile() : mProfile;
-
-        Tracker tracker = TrackerFactory.getTrackerForProfile(currentProfile);
-        tracker.notifyEvent(EventConstants.SCREENSHOT_TAKEN_CHROME_IN_FOREGROUND);
-
-        if (currentTab == null) return;
-
-        PostTask.postTask(
-                TaskTraits.UI_DEFAULT,
-                () -> {
-                    if (currentTab != mCurrentTabSupplier.get()) return;
-                    showDownloadPageTextBubble(
-                            currentTab, FeatureConstants.DOWNLOAD_PAGE_SCREENSHOT_FEATURE);
-                    ScreenshotTabObserver tabObserver = ScreenshotTabObserver.from(currentTab);
-                    if (tabObserver != null) tabObserver.onScreenshotTaken();
-                });
-    }
-
     private void showDownloadHomeIph() {
         mUserEducationHelper.requestShowIph(
                 new IphCommandBuilder(
@@ -379,12 +317,6 @@ public class ToolbarButtonInProductHelpController
                         .setOnDismissCallback(this::turnOffHighlightForMenuItem)
                         .setAnchorView(mMenuButtonAnchorView)
                         .build());
-        // Record metrics if we show Download IPH after a screenshot of the page.
-        ScreenshotTabObserver tabObserver = ScreenshotTabObserver.from(tab);
-        if (tabObserver != null) {
-            tabObserver.onActionPerformedAfterScreenshot(
-                    ScreenshotTabObserver.SCREENSHOT_ACTION_DOWNLOAD_IPH);
-        }
     }
 
     /**
