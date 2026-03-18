@@ -48,6 +48,7 @@
 #include "components/autofill/core/browser/foundations/autofill_driver.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_manager.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
 #include "components/autofill/core/browser/integrators/compose/autofill_compose_delegate.h"
 #include "components/autofill/core/browser/integrators/identity_credential/identity_credential_delegate.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_suggestion.h"
@@ -1461,11 +1462,13 @@ void AutofillExternalDelegate::FillAutofillAiFormAndHidePopup(
         // BUILDFLAG(IS_IOS)
   base::OnceCallback<std::optional<EntityInstance>(bool)>
       convert_auth_response = base::BindOnce(
-          [](EntityInstance masked_entity, bool auth_succeeded) {
+          [](const FieldTypeSet& ai_field_types, EntityInstance masked_entity,
+             bool auth_succeeded) {
+            LogReauthToFillResultPerFieldType(ai_field_types, auth_succeeded);
             return auth_succeeded ? std::move(masked_entity)
                                   : std::optional<EntityInstance>();
           },
-          *entity);
+          autofill_field->Type().GetAutofillAiTypes(), *entity);
   MaybeAuthenticateBeforeFilling(
       message, "Autofill.Ai.ReauthToFill",
       std::move(convert_auth_response).Then(std::move(fill_and_hide)));
