@@ -1267,47 +1267,52 @@
     {
         "name": "arcore",
         "group": "androidx.xr.arcore",
-        "version": "1.0.0-alpha07"
+        "version": "1.0.0-alpha10"
     },
     {
         "name": "arcore-openxr",
         "group": "androidx.xr.arcore",
-        "version": "1.0.0-alpha07"
+        "version": "1.0.0-alpha10"
+    },
+    {
+        "name": "arcore-projected",
+        "group": "androidx.xr.arcore",
+        "version": "1.0.0-alpha10"
     },
     {
         "name": "arcore-runtime",
         "group": "androidx.xr.arcore",
-        "version": "1.0.0-alpha07"
+        "version": "1.0.0-alpha10"
     },
     {
         "name": "runtime",
         "group": "androidx.xr.runtime",
-        "version": "1.0.0-alpha07"
+        "version": "1.0.0-alpha10"
     },
     {
         "name": "runtime-manifest",
         "group": "androidx.xr.runtime",
-        "version": "1.0.0-alpha07"
+        "version": "1.0.0-alpha10"
     },
     {
         "name": "scenecore",
         "group": "androidx.xr.scenecore",
-        "version": "1.0.0-alpha08"
+        "version": "1.0.0-alpha11"
     },
     {
         "name": "scenecore-runtime",
         "group": "androidx.xr.scenecore",
-        "version": "1.0.0-alpha08"
+        "version": "1.0.0-alpha11"
     },
     {
         "name": "scenecore-spatial-core",
         "group": "androidx.xr.scenecore",
-        "version": "1.0.0-alpha08"
+        "version": "1.0.0-alpha11"
     },
     {
         "name": "scenecore-spatial-rendering",
         "group": "androidx.xr.scenecore",
-        "version": "1.0.0-alpha08"
+        "version": "1.0.0-alpha11"
     },
     {
         "name": "accessibility-test-framework",
@@ -1372,7 +1377,7 @@
     {
         "name": "impress",
         "group": "com.google.ar",
-        "version": "0.0.7"
+        "version": "0.0.10"
     },
     {
         "name": "auto-service-annotations",

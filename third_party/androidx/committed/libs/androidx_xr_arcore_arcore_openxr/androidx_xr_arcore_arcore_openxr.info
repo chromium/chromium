@@ -10,9 +10,13 @@ has_r_text_file = false
 is_manifest_empty = false
 manifest_package = "androidx.xr.arcore.openxr"
 native_libraries = [
+  "jni/arm64-v8a/libandroidx.xr.arcore.openxr.so",
   "jni/arm64-v8a/libandroidx.xr.runtime.openxr.so",
+  "jni/armeabi-v7a/libandroidx.xr.arcore.openxr.so",
   "jni/armeabi-v7a/libandroidx.xr.runtime.openxr.so",
+  "jni/x86/libandroidx.xr.arcore.openxr.so",
   "jni/x86/libandroidx.xr.runtime.openxr.so",
+  "jni/x86_64/libandroidx.xr.arcore.openxr.so",
   "jni/x86_64/libandroidx.xr.runtime.openxr.so"
 ]
 resources = [

@@ -1,7 +1,7 @@
 Name: XR SceneCore Spatial Rendering
 Short Name: scenecore-spatial-rendering
-URL: https://dl.google.com/dl/android/maven2/androidx/xr/scenecore/scenecore-spatial-rendering/1.0.0-alpha08/scenecore-spatial-rendering-1.0.0-alpha08.aar
-Version: 1.0.0-alpha08
+URL: https://dl.google.com/dl/android/maven2/androidx/xr/scenecore/scenecore-spatial-rendering/1.0.0-alpha11/scenecore-spatial-rendering-1.0.0-alpha11.aar
+Version: 1.0.0-alpha11
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
@@ -13,7 +13,7 @@ License Android Compatible: yes
 Description:
 SceneCore's rendering implementation for devices with full spatial capabilities, enabling a comprehensive experience.
 
-See also: https://developer.android.com/jetpack/androidx/releases/xr-scenecore#1.0.0-alpha08
+See also: https://developer.android.com/jetpack/androidx/releases/xr-scenecore#1.0.0-alpha11
 
 
 Local Modifications:

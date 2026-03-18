@@ -1748,6 +1748,7 @@ if (!limit_android_deps) {
     deps = [
       ":androidx_annotation_annotation_java",
       ":androidx_xr_arcore_arcore_openxr_java",
+      ":androidx_xr_arcore_arcore_projected_java",
       ":androidx_xr_arcore_arcore_runtime_java",
       ":androidx_xr_runtime_runtime_java",
       "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
@@ -4166,6 +4167,27 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  androidx_android_aar_prebuilt("androidx_xr_arcore_arcore_projected_java") {
+    aar_path =
+        "cipd/libs/androidx_xr_arcore_arcore_projected/arcore-projected.aar"
+    info_path = "committed/libs/androidx_xr_arcore_arcore_projected/androidx_xr_arcore_arcore_projected.info"
+    enable_bytecode_checks = false
+
+    # To remove visibility constraint, add this dependency to
+    # //third_party/androidx/build.gradle.template
+    visibility = [
+      ":*",
+      "//third_party/android_deps:*",
+    ]
+    deps = [
+      ":androidx_annotation_annotation_java",
+      ":androidx_xr_arcore_arcore_runtime_java",
+      "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+    ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_xr_arcore_arcore_runtime_java") {
     aar_path = "cipd/libs/androidx_xr_arcore_arcore_runtime/arcore-runtime.aar"
     info_path = "committed/libs/androidx_xr_arcore_arcore_runtime/androidx_xr_arcore_arcore_runtime.info"
@@ -4199,7 +4221,10 @@ if (!limit_android_deps) {
       ":*",
       "//third_party/android_deps:*",
     ]
-    deps = [ ":androidx_annotation_annotation_java" ]
+    deps = [
+      ":androidx_annotation_annotation_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+    ]
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
