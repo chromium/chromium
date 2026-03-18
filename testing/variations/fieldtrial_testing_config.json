@@ -10457,6 +10457,38 @@
             ]
         }
     ],
+    "GlicAutoOpenPdf": [
+        {
+            "platforms": [
+                "mac",
+                "windows",
+                "linux",
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_AutoOpenGlicForPdf_ConsentedUsers",
+                    "params": {
+                        "AutoOpenGlicForPdfWithOnboarding": "false"
+                    },
+                    "enable_features": [
+                        "AutoOpenGlicForPdf",
+                        "EnableAutoOpenGlicSidePanel"
+                    ]
+                },
+                {
+                    "name": "Enabled_AutoOpenGlicForPdf_UnconsentedUsers",
+                    "params": {
+                        "AutoOpenGlicForPdfWithOnboarding": "true"
+                    },
+                    "enable_features": [
+                        "AutoOpenGlicForPdf",
+                        "EnableAutoOpenGlicSidePanel"
+                    ]
+                }
+            ]
+        }
+    ],
     "GlicButtonPressedState": [
         {
             "platforms": [
