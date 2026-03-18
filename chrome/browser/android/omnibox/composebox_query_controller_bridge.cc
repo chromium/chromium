@@ -473,11 +473,11 @@ void ComposeboxQueryControllerBridge::OnInputStateChanged(
     const contextual_search::InputState& state) {
   JNIEnv* env = base::android::AttachCurrentThread();
 
-  std::vector<omnibox::InputType> max_instances_keys;
-  std::vector<int> max_instances_values;
-  for (const auto& [key, value] : state.max_instances) {
-    max_instances_keys.emplace_back(key);
-    max_instances_values.emplace_back(value);
+  std::vector<omnibox::InputType> max_inputs_by_types_keys;
+  std::vector<int> max_inputs_by_types_values;
+  for (const auto& [key, value] : state.max_inputs_by_type) {
+    max_inputs_by_types_keys.emplace_back(key);
+    max_inputs_by_types_values.emplace_back(value);
   }
 
   std::vector<std::vector<uint8_t>> tool_configs;
@@ -522,7 +522,7 @@ void ComposeboxQueryControllerBridge::OnInputStateChanged(
       contextual_search::Java_InputState_Constructor(
           env, state.hint_text, state.allowed_input_types,
           state.disabled_input_types, state.max_total_inputs,
-          max_instances_keys, max_instances_values,
+          max_inputs_by_types_keys, max_inputs_by_types_values,
           base::android::ToJavaArrayOfByteArray(env, input_type_configs),
           state.active_tool, state.allowed_tools, state.disabled_tools,
           state.image_gen_upload_active,

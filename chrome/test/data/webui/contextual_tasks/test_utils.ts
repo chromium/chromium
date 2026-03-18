@@ -92,7 +92,7 @@ export const mockInputState: InputState = {
   inputTypeConfigs: [],
   toolsSectionConfig: null,
   modelSectionConfig: null,
-  maxInstances: {},
+  maxInputsByType: {},
   maxTotalInputs: 0,
 };
 

@@ -466,7 +466,7 @@ CreateInputDataFromAnnotatedPageContent(
     if (!_inputStateModel) {
       return 0;
     }
-    auto limits = _inputState.max_instances;
+    auto limits = _inputState.max_inputs_by_type;
     auto type = omnibox::InputType::INPUT_TYPE_LENS_IMAGE;
     if (limits.count(type)) {
       int serverLimit = limits[type];
@@ -859,7 +859,7 @@ CreateInputDataFromAnnotatedPageContent(
 
   if (EnableComposeboxServerSideState()) {
     CHECK(_inputStateModel);
-    auto limits = _inputState.max_instances;
+    auto limits = _inputState.max_inputs_by_type;
     auto type = omnibox::InputType::INPUT_TYPE_BROWSER_TAB;
     if (limits.count(type)) {
       int serverLimit = limits[type];

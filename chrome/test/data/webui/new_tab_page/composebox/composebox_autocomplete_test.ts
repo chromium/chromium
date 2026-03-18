@@ -988,7 +988,7 @@ suite('NewTabPageComposeboxAutocompleteContextTest', () => {
       async () => {
         const testInputState = {
           ...mockInputState,
-          maxInstances: {
+          maxInputsByType: {
             [InputType.kBrowserTab]: 1,
             [InputType.kLensImage]: 3,
             [InputType.kLensFile]: 1,

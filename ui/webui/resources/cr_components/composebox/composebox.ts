@@ -2432,8 +2432,8 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
 
       let maxType = maxTotal;
       if (this.inputState &&
-          this.inputState.maxInstances[inputType] !== undefined) {
-        maxType = this.inputState.maxInstances[inputType];
+          this.inputState.maxInputsByType[inputType] !== undefined) {
+        maxType = this.inputState.maxInputsByType[inputType];
       }
 
       const currentTypeCount = counts.get(inputType) || 0;

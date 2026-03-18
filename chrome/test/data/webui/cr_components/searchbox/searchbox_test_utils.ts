@@ -65,7 +65,7 @@ export function createInputState(overrides?: Partial<InputState>): InputState {
         allowedInputTypes: [],
         disabledInputTypes: [],
         inputTypeConfigs: [],
-        maxInstances: {},
+        maxInputsByType: {},
         maxTotalInputs: 0,
       },
       overrides);
