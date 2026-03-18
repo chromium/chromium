@@ -1,3 +1,4 @@
 include_rules = [
   "+ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_factory.h",
+  "+ios/chrome/browser/autofill/autofill_ai/public/autofill_ai_ui_util.h",
 ]

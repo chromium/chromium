@@ -16,8 +16,14 @@ class EntityInstance;
 // The consumer of the Autofill AI entity view and edit mediator.
 @protocol AutofillAIEntityEditConsumer <NSObject>
 
-// Sets the entity instance to be viewed and edited.
-- (void)setEntityInstance:(const autofill::EntityInstance&)entityInstance;
+// Sets the title of the view.
+- (void)setTitle:(NSString*)title;
+
+// Sets the items to be displayed.
+- (void)setEditItems:(NSArray<TableViewItem*>*)items;
+
+// Sets whether editing is allowed.
+- (void)setEditingAllowed:(BOOL)editingAllowed;
 
 @end
 

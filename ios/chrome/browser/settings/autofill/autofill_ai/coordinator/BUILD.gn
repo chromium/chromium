@@ -11,12 +11,18 @@ source_set("coordinator") {
     "autofill_ai_entity_edit_mediator.mm",
   ]
   deps = [
+    "//base",
+    "//components/application_locale_storage",
     "//components/autofill/core/browser",
+    "//ios/chrome/browser/autofill/autofill_ai/public",
     "//ios/chrome/browser/autofill/model",
     "//ios/chrome/browser/settings/autofill/autofill_ai/ui",
+    "//ios/chrome/browser/settings/autofill/autofill_ai/utils",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/ui/list_model",
     "//ios/chrome/browser/shared/ui/table_view:utils",
   ]
 }
@@ -26,6 +32,9 @@ source_set("unit_tests") {
   sources = [
     "autofill_ai_entity_edit_coordinator+testing.h",
     "autofill_ai_entity_edit_coordinator_unittest.mm",
+    "autofill_ai_entity_edit_mediator_unittest.mm",
+    "fake_autofill_ai_entity_edit_consumer.h",
+    "fake_autofill_ai_entity_edit_consumer.mm",
   ]
   deps = [
     ":coordinator",

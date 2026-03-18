@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_factory.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/coordinator/autofill_ai_entity_edit_coordinator+testing.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/coordinator/autofill_ai_entity_edit_mediator.h"
+#import "ios/chrome/browser/settings/autofill/autofill_ai/coordinator/fake_autofill_ai_entity_edit_consumer.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_edit_consumer.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -22,18 +23,6 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
-
-@interface FakeAutofillAIEntityEditConsumer
-    : NSObject <AutofillAIEntityEditConsumer>
-@property(nonatomic, assign) std::optional<autofill::EntityInstance>
-    savedEntityInstance;
-@end
-
-@implementation FakeAutofillAIEntityEditConsumer
-- (void)setEntityInstance:(const autofill::EntityInstance&)entityInstance {
-  _savedEntityInstance = entityInstance;
-}
-@end
 
 class AutofillAIEntityEditCoordinatorTest : public PlatformTest {
  protected:
@@ -129,6 +118,6 @@ TEST_F(AutofillAIEntityEditCoordinatorTest, MediatorSetsConsumer) {
       [[FakeAutofillAIEntityEditConsumer alloc] init];
   mediator.consumer = consumer;
 
-  ASSERT_TRUE(consumer.savedEntityInstance.has_value());
-  EXPECT_EQ(consumer.savedEntityInstance->guid(), instance.guid());
+  EXPECT_GT(consumer.title.length, 0u);
+  EXPECT_GT(consumer.editItems.count, 0u);
 }

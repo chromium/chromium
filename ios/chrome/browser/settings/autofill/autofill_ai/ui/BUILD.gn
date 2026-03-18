@@ -6,7 +6,11 @@ source_set("ui") {
   sources = [
     "autofill_ai_add_entities_menu_builder.h",
     "autofill_ai_add_entities_menu_builder.mm",
+    "autofill_ai_entity_country_item.h",
+    "autofill_ai_entity_country_item.mm",
     "autofill_ai_entity_edit_consumer.h",
+    "autofill_ai_entity_edit_item.h",
+    "autofill_ai_entity_edit_item.mm",
     "autofill_ai_entity_edit_table_view_controller.h",
     "autofill_ai_entity_edit_table_view_controller.mm",
     "autofill_ai_entity_item.h",
@@ -16,9 +20,11 @@ source_set("ui") {
     "//components/autofill/core/browser",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/autofill/autofill_ai/public",
+    "//ios/chrome/browser/settings/autofill/autofill_ai/utils",
     "//ios/chrome/browser/settings/autofill/ui",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/shared/ui/table_view/content_configuration",
     "//ios/chrome/common/ui/colors",
   ]
