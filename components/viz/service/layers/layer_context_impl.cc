@@ -1617,7 +1617,9 @@ void LayerContextImpl::SetNeedsPrepareTilesOnImplThread() {
   NOTREACHED();
 }
 
-void LayerContextImpl::SetNeedsCommitOnImplThread(bool urgent) {}
+void LayerContextImpl::SetNeedsCommitOnImplThread(bool urgent) {
+  NOTREACHED();
+}
 
 void LayerContextImpl::SetVideoNeedsBeginFrames(bool needs_begin_frames) {}
 void LayerContextImpl::DidChangeBeginFrameSourcePaused(bool paused) {}

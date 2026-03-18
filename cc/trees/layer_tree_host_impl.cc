@@ -4079,7 +4079,9 @@ bool LayerTreeHostImpl::HaveRootScrollNode() const {
 }
 
 void LayerTreeHostImpl::SetNeedsCommit() {
-  client_->SetNeedsCommitOnImplThread();
+  if (!settings_.trees_in_viz_in_viz_process) {
+    client_->SetNeedsCommitOnImplThread();
+  }
 }
 
 base::TimeDelta LayerTreeHostImpl::CurrentFrameInterval() const {
