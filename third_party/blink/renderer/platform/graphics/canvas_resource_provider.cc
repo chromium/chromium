@@ -666,7 +666,7 @@ void CanvasNon2DResourceProviderSharedImage::PrepareForWebGPUDummyMailbox() {
   }
 }
 
-bool CanvasResourceProviderSharedImage::WritePixels(
+bool Canvas2DResourceProviderSharedImage::WritePixels(
     const SkImageInfo& orig_info,
     const void* pixels,
     size_t row_bytes,
@@ -677,7 +677,50 @@ bool CanvasResourceProviderSharedImage::WritePixels(
     return UnacceleratedWritePixels(orig_info, pixels, row_bytes, x, y);
   }
 
-  TRACE_EVENT0("blink", "CanvasResourceProviderSharedImage::WritePixels");
+  TRACE_EVENT0("blink", "Canvas2DResourceProviderSharedImage::WritePixels");
+  if (IsGpuContextLost()) {
+    return false;
+  }
+
+  auto access = WillDrawInternal();
+
+  // The below  write to the resource's SharedImage will need to be preserved in
+  // the case of a subsequent CopyOnWrite.
+  // TODO(crbug.com/352263194): Logically this bool must already be true
+  // (see discussion here:
+  // https://chromium-review.googlesource.com/c/chromium/src/+/7557841/comment/bb38e497_ef1efdbc/).
+  // Verify that this is the case and update the code here.
+  must_preserve_content_on_copy_on_write_ = true;
+
+  auto client_si = resource()->GetClientSharedImage();
+  RasterInterface()->WritePixels(client_si->mailbox(), x, y,
+                                 client_si->GetTextureTarget(),
+                                 SkPixmap(orig_info, pixels, row_bytes));
+  resource()->EndAccess(std::move(access));
+
+  // If the overdraw optimization kicked in, we need to indicate that the
+  // pixels do not need to be cleared, otherwise the subsequent
+  // rasterizations will clobber canvas contents.
+  if (x <= 0 && y <= 0 && orig_info.width() >= Size().width() &&
+      orig_info.height() >= Size().height()) {
+    is_cleared_ = true;
+  }
+
+  return true;
+}
+
+bool CanvasNon2DResourceProviderSharedImage::WritePixels(
+    const SkImageInfo& orig_info,
+    const void* pixels,
+    size_t row_bytes,
+    int x,
+    int y) {
+  if (!is_accelerated_) {
+    WillDrawUnaccelerated();
+    return UnacceleratedWritePixels(orig_info, pixels, row_bytes, x, y);
+  }
+
+  TRACE_EVENT0("blink", "CanvasNon2DResourceProviderSharedImage::WritePixels");
   if (IsGpuContextLost()) {
     return false;
   }

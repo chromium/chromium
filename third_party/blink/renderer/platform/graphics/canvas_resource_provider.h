@@ -424,11 +424,6 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   // rate.
   bool IsSingleBuffered() const;
 
-  bool WritePixels(const SkImageInfo& orig_info,
-                   const void* pixels,
-                   size_t row_bytes,
-                   int x,
-                   int y) override;
   // Notifies before any unaccelerated drawing will be done on the resource used
   // by this provider.
   void WillDrawUnaccelerated();
@@ -588,6 +583,11 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
   Canvas2DResourceProviderSharedImage* As2DSharedImageProvider() final {
     return this;
   }
+  bool WritePixels(const SkImageInfo& orig_info,
+                   const void* pixels,
+                   size_t row_bytes,
+                   int x,
+                   int y) override;
 
   // Returns the ClientSharedImage backing this CanvasResourceProvider, if one
   // exists, after flushing the resource and signaling that an external write
@@ -692,6 +692,11 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
 
   // CanvasResourceProvider:
   void RasterRecord(cc::PaintRecord last_recording) override;
+  bool WritePixels(const SkImageInfo& orig_info,
+                   const void* pixels,
+                   size_t row_bytes,
+                   int x,
+                   int y) override;
 
   // Drops the cached snapshot (if any) and invokes `draw_callback` on this
   // instance's canvas.
