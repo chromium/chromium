@@ -737,11 +737,8 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
   // Action Chips LoadTimeData
   bool action_chips_eligible =
       aim_eligibility_service && aim_eligibility_service->IsAimEligible() &&
-      (ntp_features::kNtpNextShowSimplificationUIParam.Get()
-           ? (aim_eligibility_service->IsDeepSearchEligible() ||
-              aim_eligibility_service->IsCreateImagesEligible())
-           : (aim_eligibility_service->IsDeepSearchEligible() &&
-              aim_eligibility_service->IsCreateImagesEligible()));
+      (aim_eligibility_service->IsDeepSearchEligible() ||
+       aim_eligibility_service->IsCreateImagesEligible());
   bool show_action_chips =
       action_chips_eligible &&
       profile->GetPrefs()->GetBoolean(prefs::kNtpToolChipsVisible);
