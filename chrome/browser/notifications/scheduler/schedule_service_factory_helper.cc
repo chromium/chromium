@@ -11,6 +11,7 @@
 #include "base/task/thread_pool.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/notifications/scheduler/internal/background_task_coordinator.h"
+#include "chrome/browser/notifications/scheduler/internal/clients/finds_client.h"
 #include "chrome/browser/notifications/scheduler/internal/display_decider.h"
 #include "chrome/browser/notifications/scheduler/internal/impression_history_tracker.h"
 #include "chrome/browser/notifications/scheduler/internal/init_aware_scheduler.h"
@@ -62,6 +63,8 @@ std::unique_ptr<KeyedService> CreateNotificationScheduleService(
   client_registrar->RegisterClient(
       SchedulerClientType::kTips,
       std::make_unique<TipsClient>(std::move(tips_agent), pref_service));
+  client_registrar->RegisterClient(SchedulerClientType::kChromeFinds,
+                                   std::make_unique<FindsClient>());
 
   // Build icon store.
   base::FilePath icon_store_dir = storage_dir.Append(kIconDBName);

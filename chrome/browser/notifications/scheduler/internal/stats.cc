@@ -38,6 +38,8 @@ std::string ToHistogramSuffix(SchedulerClientType client_type) {
       return "ReadingList";
     case SchedulerClientType::kTips:
       return "Tips";
+    case SchedulerClientType::kChromeFinds:
+      return "ChromeFinds";
   }
 }
 

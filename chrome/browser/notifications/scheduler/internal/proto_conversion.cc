@@ -62,6 +62,8 @@ proto::SchedulerClientType ToSchedulerClientType(SchedulerClientType type) {
       return proto::SchedulerClientType::READING_LIST;
     case SchedulerClientType::kTips:
       return proto::SchedulerClientType::TIPS;
+    case SchedulerClientType::kChromeFinds:
+      return proto::SchedulerClientType::CHROME_FINDS;
   }
   NOTREACHED();
 }
@@ -88,6 +90,8 @@ SchedulerClientType FromSchedulerClientType(
       return SchedulerClientType::kReadingList;
     case proto::SchedulerClientType::TIPS:
       return SchedulerClientType::kTips;
+    case proto::SchedulerClientType::CHROME_FINDS:
+      return SchedulerClientType::kChromeFinds;
   }
   NOTREACHED();
 }

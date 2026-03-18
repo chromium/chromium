@@ -1060,6 +1060,7 @@ chromium-metrics-reviews@google.com.
   <token key="NotificationSchedulerClientType">
     <variant name=""/>
     <variant name=".__Test__" summary=""/>
+    <variant name=".ChromeFinds" summary=""/>
     <variant name=".ChromeUpdate" summary=""/>
     <variant name=".FeatureGuide" summary="Deprecated"/>
     <variant name=".Prefetch" summary=""/>

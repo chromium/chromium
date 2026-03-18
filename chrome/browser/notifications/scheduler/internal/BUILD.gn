@@ -14,6 +14,8 @@ source_set("lib") {
   sources = [
     "background_task_coordinator.cc",
     "background_task_coordinator.h",
+    "clients/finds_client.cc",
+    "clients/finds_client.h",
     "collection_store.h",
     "display_decider.cc",
     "display_decider.h",

@@ -57,6 +57,8 @@ std::string ToDatabaseKey(SchedulerClientType type) {
       return "ReadingList";
     case SchedulerClientType::kTips:
       return "Tips";
+    case SchedulerClientType::kChromeFinds:
+      return "ChromeFinds";
   }
 }
 

@@ -40,7 +40,9 @@ enum class SchedulerClientType {
   kDeprecatedFeatureGuide = 5,
   // Clank tips notifications feature.
   kTips = 6,
-  kMaxValue = kTips
+  // Clank finds notifications feature.
+  kChromeFinds = 7,
+  kMaxValue = kChromeFinds
 };
 
 // The Chrome feature correlating to each tip notification.
