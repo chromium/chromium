@@ -91,9 +91,11 @@ namespace {
 BASE_FEATURE(kUseNonEmptySyncTokenForLowLatencyCanvas,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+#if !BUILDFLAG(IS_WIN)
 // Controls whether offscreen canvases are allowed to be placed into overlays.
 BASE_FEATURE(kAllowOverlaysForOffscreenCanvas,
              base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
 
 const float kResourceAdjustedRatio = 0.5;
 
@@ -1979,7 +1981,10 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
                                ? kTopLeft_GrSurfaceOrigin
                                : kBottomLeft_GrSurfaceOrigin;
 
+#if !BUILDFLAG(IS_WIN)
   const gpu::Capabilities& caps = ContextProvider()->GetCapabilities();
+#endif
+
 #if BUILDFLAG(IS_MAC)
   // For Mac, explicitly specify BGRA/X instead of RGBA/X so that IOSurface
   // format matches shared image format. This is necessary for Graphite where
@@ -1996,79 +2001,78 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
 #endif  // BUILDFLAG(IS_MAC)
 
   SkAlphaType back_buffer_alpha_type = kPremul_SkAlphaType;
+
+  // First see if creating a SharedImage that can be used as an overlay is
+  // feasible.
 #if BUILDFLAG(IS_WIN)
   if (using_swap_chain_) {
     usage = usage | gpu::SHARED_IMAGE_USAGE_SCANOUT;
     usage = usage | gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
-  } else {
-#endif
-    // First see if creating a SharedImage that can be used as an overlay is
-    // feasible.
-    bool use_as_overlay = false;
-    bool low_latency_usage_supported = false;
+  }
+#else
+  bool use_as_overlay = false;
+  bool low_latency_usage_supported = false;
 
-    // On Mac OS, DrawingBuffer is using an IOSurface as its backing storage,
-    // this allows WebGL-rendered canvases to be composited by the OS rather
-    // than Chrome.  IOSurfaces are only compatible with the
-    // GL_TEXTURE_RECTANGLE_ARB binding target. So to avoid the knowledge of
-    // GL_TEXTURE_RECTANGLE_ARB type textures being introduced into more areas
-    // of the code, we use the code path of non-WebGLImageChromium for
-    // OffscreenCanvas. See detailed discussion in crbug.com/649668.
-    // TODO(crbug.com/488937356): Eliminate this workaround post-rollout of the
-    // killswitch; the workaround should no longer be necessary
-    // post-SharedImage.
-    if (SharedGpuContext::IsGpuCompositingEnabled() &&
-        (!is_offscreen_canvas_ ||
-         base::FeatureList::IsEnabled(kAllowOverlaysForOffscreenCanvas))) {
-      use_as_overlay = SharedGpuContext::UseOverlaysForWebGL();
-      low_latency_usage_supported =
-          low_latency_enabled() &&
-          SharedGpuContext::LowLatencyUsageSupportedForWebGL();
-    }
-    if (use_as_overlay || low_latency_usage_supported) {
+  // On Mac OS, DrawingBuffer is using an IOSurface as its backing storage,
+  // this allows WebGL-rendered canvases to be composited by the OS rather
+  // than Chrome.  IOSurfaces are only compatible with the
+  // GL_TEXTURE_RECTANGLE_ARB binding target. So to avoid the knowledge of
+  // GL_TEXTURE_RECTANGLE_ARB type textures being introduced into more areas
+  // of the code, we use the code path of non-WebGLImageChromium for
+  // OffscreenCanvas. See detailed discussion in crbug.com/649668.
+  // TODO(crbug.com/488937356): Eliminate this workaround post-rollout of the
+  // killswitch; the workaround should no longer be necessary
+  // post-SharedImage.
+  if (SharedGpuContext::IsGpuCompositingEnabled() &&
+      (!is_offscreen_canvas_ ||
+       base::FeatureList::IsEnabled(kAllowOverlaysForOffscreenCanvas))) {
+    use_as_overlay = SharedGpuContext::UseOverlaysForWebGL();
+    low_latency_usage_supported =
+        low_latency_enabled() &&
+        SharedGpuContext::LowLatencyUsageSupportedForWebGL();
+  }
+  if (use_as_overlay || low_latency_usage_supported) {
 #if !BUILDFLAG(IS_ANDROID)
-      // Android's SharedImage backing for ChromiumImage does not support BGRX.
+    // Android's SharedImage backing for ChromiumImage does not support BGRX.
 
-      // TODO(b/286417069): BGRX has issues when Vulkan is used for raster and
-      // composite. Using BGRX is technically possible but will require a lot
-      // of work given the current state of the codebase. There are projects in
-      // flight that will make using BGRX a lot easier, but until then, simply
-      // use RGBX when Vulkan is enabled.
-      const auto& gpu_feature_info = ContextProvider()->GetGpuFeatureInfo();
-      const bool allow_bgrx =
-          gpu_feature_info.status_values[gpu::GPU_FEATURE_TYPE_VULKAN] !=
-          gpu::kGpuFeatureStatusEnabled;
+    // TODO(b/286417069): BGRX has issues when Vulkan is used for raster and
+    // composite. Using BGRX is technically possible but will require a lot
+    // of work given the current state of the codebase. There are projects in
+    // flight that will make using BGRX a lot easier, but until then, simply
+    // use RGBX when Vulkan is enabled.
+    const auto& gpu_feature_info = ContextProvider()->GetGpuFeatureInfo();
+    const bool allow_bgrx =
+        gpu_feature_info.status_values[gpu::GPU_FEATURE_TYPE_VULKAN] !=
+        gpu::kGpuFeatureStatusEnabled;
 
-      // For ChromeOS explicitly specify BGRX instead of RGBX since some older
-      // Intel GPUs (i8xx) don't support RGBX overlays.
-      if (color_buffer_format_ == viz::SinglePlaneFormat::kRGBX_8888 &&
-          allow_bgrx &&
-          GraphicsContext3DUtils::IsScanoutSupportedForCanvasWithFormat(
-              viz::SinglePlaneFormat::kBGRX_8888, caps)) {
-        color_buffer_format_ = viz::SinglePlaneFormat::kBGRX_8888;
-      }
+    // For ChromeOS explicitly specify BGRX instead of RGBX since some older
+    // Intel GPUs (i8xx) don't support RGBX overlays.
+    if (color_buffer_format_ == viz::SinglePlaneFormat::kRGBX_8888 &&
+        allow_bgrx &&
+        GraphicsContext3DUtils::IsScanoutSupportedForCanvasWithFormat(
+            viz::SinglePlaneFormat::kBGRX_8888, caps)) {
+      color_buffer_format_ = viz::SinglePlaneFormat::kBGRX_8888;
+    }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-      if (GraphicsContext3DUtils::IsScanoutSupportedForCanvasWithFormat(
-              color_buffer_format_, caps)) {
-        usage = usage | gpu::SHARED_IMAGE_USAGE_SCANOUT;
-        if (low_latency_usage_supported) {
-          usage = usage | gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
-        }
+    if (GraphicsContext3DUtils::IsScanoutSupportedForCanvasWithFormat(
+            color_buffer_format_, caps)) {
+      usage = usage | gpu::SHARED_IMAGE_USAGE_SCANOUT;
+      if (low_latency_usage_supported) {
+        usage = usage | gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
       }
     }
-
-    // Set the correct SkAlphaType on the new shared image if not using as an
-    // overlay (note that in the case of creating a SharedImage that can be
-    // used as an overlay we instead keep this buffer premultiplied, draw to
-    // |premultiplied_alpha_false_mailbox_|, and convert during copy).
-    if (requested_alpha_type_ == kUnpremul_SkAlphaType &&
-        !usage.Has(gpu::SHARED_IMAGE_USAGE_SCANOUT)) {
-      back_buffer_alpha_type = kUnpremul_SkAlphaType;
-    }
-#if BUILDFLAG(IS_WIN)
   }
 #endif
+
+  // Set the correct SkAlphaType on the new shared image if not using as an
+  // overlay (note that in the case of creating a SharedImage that can be
+  // used as an overlay we instead keep this buffer premultiplied, draw to
+  // |premultiplied_alpha_false_mailbox_|, and convert during copy).
+  if (requested_alpha_type_ == kUnpremul_SkAlphaType &&
+      !usage.Has(gpu::SHARED_IMAGE_USAGE_SCANOUT)) {
+    back_buffer_alpha_type = kUnpremul_SkAlphaType;
+  }
 
   back_buffer_shared_image = sii->CreateSharedImage(
       {color_buffer_format_, size, color_space_, origin, back_buffer_alpha_type,
