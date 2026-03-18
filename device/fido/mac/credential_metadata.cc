@@ -14,6 +14,7 @@
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
+#include "crypto/aead.h"
 #include "crypto/hash.h"
 #include "crypto/kdf.h"
 #include "crypto/random.h"
@@ -66,7 +67,8 @@ class Cryptor {
 
   // Derives an Algorithm-specific key from |secret_| to avoid using the same
   // key for different algorithms.
-  std::string DeriveKey(Algorithm alg) const;
+  static constexpr size_t kDerivedKeySize = 32;
+  std::array<uint8_t, kDerivedKeySize> DeriveKey(Algorithm alg) const;
 
   Cryptor(const Cryptor&) = delete;
   Cryptor& operator=(const Cryptor&) = delete;
@@ -82,10 +84,8 @@ std::vector<uint8_t> Cryptor::Seal(
     base::span<const uint8_t> nonce,
     base::span<const uint8_t> plaintext,
     base::span<const uint8_t> authenticated_data) const {
-  const std::string key = DeriveKey(algorithm);
-  crypto::Aead aead(*ToAeadAlgorithm(algorithm));
-  aead.Init(&key);
-  return aead.Seal(plaintext, nonce, authenticated_data);
+  return crypto::aead::Seal(*ToAeadAlgorithm(algorithm), DeriveKey(algorithm),
+                            plaintext, nonce, authenticated_data);
 }
 
 std::optional<std::vector<uint8_t>> Cryptor::Unseal(
@@ -93,10 +93,8 @@ std::optional<std::vector<uint8_t>> Cryptor::Unseal(
     base::span<const uint8_t> nonce,
     base::span<const uint8_t> ciphertext,
     base::span<const uint8_t> authenticated_data) const {
-  const std::string key = DeriveKey(algorithm);
-  crypto::Aead aead(*ToAeadAlgorithm(algorithm));
-  aead.Init(&key);
-  return aead.Open(ciphertext, nonce, authenticated_data);
+  return crypto::aead::Open(*ToAeadAlgorithm(algorithm), DeriveKey(algorithm),
+                            ciphertext, nonce, authenticated_data);
 }
 
 // static
@@ -104,19 +102,18 @@ std::optional<crypto::Aead::AeadAlgorithm> Cryptor::ToAeadAlgorithm(
     Algorithm alg) {
   switch (alg) {
     case Algorithm::kAes256Gcm:
-      return crypto::Aead::AES_256_GCM;
+      return crypto::aead::AES_256_GCM;
     case Algorithm::kAes256GcmSiv:
-      return crypto::Aead::AES_256_GCM_SIV;
+      return crypto::aead::AES_256_GCM_SIV;
   }
 }
 
-std::string Cryptor::DeriveKey(Algorithm alg) const {
-  std::string key(32u, 0);
+std::array<uint8_t, Cryptor::kDerivedKeySize> Cryptor::DeriveKey(
+    Algorithm alg) const {
   const std::array<uint8_t, 1> info = {static_cast<uint8_t>(alg)};
   const base::span<const uint8_t> no_salt;
-  crypto::kdf::Hkdf(crypto::hash::kSha256, base::as_byte_span(secret_), no_salt,
-                    info, base::as_writable_byte_span(key));
-  return key;
+  return crypto::kdf::Hkdf<Cryptor::kDerivedKeySize>(
+      crypto::hash::kSha256, base::as_byte_span(secret_), no_salt, info);
 }
 
 }  // namespace
