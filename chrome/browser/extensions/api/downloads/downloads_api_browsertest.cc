@@ -105,7 +105,9 @@
 #endif
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 #include "components/safe_browsing/content/common/file_type_policies_test_util.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 #endif
 #endif
 
@@ -4633,54 +4635,141 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
 // TODO(benjhayden) Test that the shelf is shown for download() both with and
 // without a WebContents.
 
-void OnDangerPromptCreated(DownloadDangerPrompt* prompt) {
-  prompt->InvokeActionForTesting(DownloadDangerPrompt::ACCEPT);
-}
-
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+class DownloadsSafeBrowsingTest : public DownloadExtensionTest {
+ public:
+  DownloadsSafeBrowsingTest()
+      : test_safe_browsing_factory_(
+            std::make_unique<safe_browsing::TestSafeBrowsingServiceFactory>()) {
+  }
+  DownloadsSafeBrowsingTest(const DownloadsSafeBrowsingTest&) = delete;
+  DownloadsSafeBrowsingTest& operator=(const DownloadsSafeBrowsingTest&) =
+      delete;
+  ~DownloadsSafeBrowsingTest() override = default;
+
+  void SetUp() override {
+    safe_browsing::SafeBrowsingService::RegisterFactory(
+        test_safe_browsing_factory_.get());
+    DownloadExtensionTest::SetUp();
+  }
+
+  void TearDown() override {
+    DownloadExtensionTest::TearDown();
+    safe_browsing::SafeBrowsingService::RegisterFactory(nullptr);
+  }
+
+  // Downloads a file that will be marked dangerous.
+  DownloadItem* DownloadDangerousFile(int* out_result_id) {
+    std::optional<base::Value> result = RunFunctionAndReturnResult(
+        base::MakeRefCounted<DownloadsDownloadFunction>(),
+        "[{\"url\": \"data:application/x-shockwave-flash,\", \"filename\": "
+        "\"dangerous.swf\"}]");
+    if (!result || !result->is_int()) {
+      return nullptr;
+    }
+    *out_result_id = result->GetInt();
+    DownloadItem* item = GetCurrentManager()->GetDownload(*out_result_id);
+    if (!item) {
+      return nullptr;
+    }
+    if (!WaitFor(downloads::OnChanged::kEventName,
+                 base::StringPrintf("[{\"id\": %d, "
+                                    "  \"danger\": {"
+                                    "    \"previous\": \"safe\","
+                                    "    \"current\": \"file\"}}]",
+                                    *out_result_id))) {
+      return nullptr;
+    }
+    EXPECT_TRUE(item->IsDangerous());
+    return item;
+  }
+
+  // Verifies Safe Browsing report.
+  void VerifySafeBrowsingReport(bool expect_proceed) {
+    std::string report_str =
+        test_safe_browsing_factory_->test_safe_browsing_service()
+            ->serialized_download_report();
+    if (expect_proceed) {
+      EXPECT_FALSE(report_str.empty());
+      safe_browsing::ClientSafeBrowsingReportRequest report;
+      ASSERT_TRUE(report.ParseFromString(report_str));
+      EXPECT_EQ(safe_browsing::ClientSafeBrowsingReportRequest::
+                    DANGEROUS_DOWNLOAD_BY_API,
+                report.type());
+      EXPECT_TRUE(report.did_proceed());
+    } else {
+      EXPECT_TRUE(report_str.empty());
+    }
+  }
+
+ protected:
+  std::unique_ptr<safe_browsing::TestSafeBrowsingServiceFactory>
+      test_safe_browsing_factory_;
+};
+
 // TODO(crbug.com/450662444): Enable this test on desktop Android when the
-// DownloadDangerPrompt is implemented.
-IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
-                       DownloadExtensionTest_AcceptDanger) {
+// download danger dialog is enabled on it.
+IN_PROC_BROWSER_TEST_F(DownloadsSafeBrowsingTest, AcceptDanger) {
   safe_browsing::FileTypePoliciesTestOverlay scoped_dangerous =
       safe_browsing::ScopedMarkAllFilesDangerousForTesting();
 
-  // Download a file that will be marked dangerous; click the browser action
-  // button; the browser action popup will call acceptDanger(); when the
-  // DownloadDangerPrompt is created, pretend that the user clicks the Accept
-  // button; wait until the download completes.
   LoadExtension("downloads_split");
-  std::optional<base::Value> result = RunFunctionAndReturnResult(
-      base::MakeRefCounted<DownloadsDownloadFunction>(),
-      "[{\"url\": \"data:application/x-shockwave-flash,\", \"filename\": "
-      "\"dangerous.swf\"}]");
-  ASSERT_TRUE(result);
-  ASSERT_TRUE(result->is_int());
-  int result_id = result->GetInt();
-  DownloadItem* item = GetCurrentManager()->GetDownload(result_id);
+
+  // When dialog is triggered, this will call the callback with Action::ACCEPT
+  // without showing the dialog.
+  auto downloads_danger_dialog_reset =
+      DownloadsAcceptDangerFunction::TriggerDangerPromptActionForTesting(
+          DownloadDangerPrompt::Action::ACCEPT);
+
+  int result_id;
+  DownloadItem* item = DownloadDangerousFile(&result_id);
   ASSERT_TRUE(item);
-  ASSERT_TRUE(WaitFor(downloads::OnChanged::kEventName,
-                      base::StringPrintf(
-                          "[{\"id\": %d, "
-                          "  \"danger\": {"
-                          "    \"previous\": \"safe\","
-                          "    \"current\": \"file\"}}]",
-                          result_id)));
-  ASSERT_TRUE(item->IsDangerous());
-  ScopedCancellingItem canceller(item);
+
   std::unique_ptr<content::DownloadTestObserver> observer(
       new content::DownloadTestObserverTerminal(
           GetCurrentManager(), 1,
           content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_IGNORE));
-  DownloadsAcceptDangerFunction::OnPromptCreatedCallback callback =
-      base::BindOnce(&OnDangerPromptCreated);
-  DownloadsAcceptDangerFunction::OnPromptCreatedForTesting(
-      &callback);
 
+  // Trigger the download, which will show the danger dialog whose callback is
+  // automatically triggered with the accept action.
   const GURL url = extension()->GetResourceURL("accept_danger.html");
   ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), url));
 
+  // Wait until the download completes.
   observer->WaitForFinished();
+  EXPECT_EQ(DownloadItem::COMPLETE, item->GetState());
+
+  VerifySafeBrowsingReport(/*expect_proceed=*/true);
+}
+
+// TODO(crbug.com/450662444): Enable this test on desktop Android when the
+// download danger dialog is enabled on it.
+IN_PROC_BROWSER_TEST_F(DownloadsSafeBrowsingTest, CancelDanger) {
+  safe_browsing::FileTypePoliciesTestOverlay scoped_dangerous =
+      safe_browsing::ScopedMarkAllFilesDangerousForTesting();
+
+  LoadExtension("downloads_split");
+
+  // When dialog is triggered, this will call the callback with Action::CANCEL
+  // without showing the dialog.
+  auto downloads_danger_dialog_reset =
+      DownloadsAcceptDangerFunction::TriggerDangerPromptActionForTesting(
+          DownloadDangerPrompt::Action::CANCEL);
+
+  int result_id;
+  DownloadItem* item = DownloadDangerousFile(&result_id);
+  ASSERT_TRUE(item);
+
+  // Trigger the download, which will show the danger dialog whose callback is
+  // automatically triggered with the cancel action.
+  const GURL url = extension()->GetResourceURL("accept_danger.html");
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), url));
+
+  // Wait until the download is removed.
+  ASSERT_TRUE(WaitFor(downloads::OnErased::kEventName,
+                      base::StringPrintf("[%d]", result_id)));
+
+  VerifySafeBrowsingReport(/*expect_proceed=*/false);
 }
 #endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 

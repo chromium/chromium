@@ -43,6 +43,7 @@
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/download/download_query.h"
 #include "chrome/browser/download/download_stats.h"
+#include "chrome/browser/download/download_ui_safe_browsing_util.h"
 #include "chrome/browser/extensions/api/downloads/download_extension_errors.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/extensions/window_controller.h"
@@ -52,11 +53,14 @@
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/extensions/extensions_dialogs.h"
+#include "chrome/browser/ui/hats/trust_safety_sentiment_service.h"
+#include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
 #include "chrome/common/extensions/api/downloads.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_url_parameters.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
@@ -88,8 +92,10 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/download/download_danger_prompt.h"
+#include "chrome/browser/download/download_item_warning_data.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "components/safe_browsing/core/common/features.h"
 #endif
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
@@ -138,8 +144,11 @@ const char kUrlRegexKey[] = "urlRegex";
 const char kFinalUrlKey[] = "finalUrl";
 const char kFinalUrlRegexKey[] = "finalUrlRegex";
 
-// Whether the dialog should be accepted without showing it on tests.
+// Whether the "open" dialog should be accepted without showing it on tests.
 bool g_accept_open_dialog_for_testing = false;
+
+// Action to trigger for the "danger" dialog without showing it on tests.
+std::optional<DownloadDangerPrompt::Action> g_danger_prompt_action_for_testing;
 
 extensions::api::downloads::DangerType ConvertDangerType(
     download::DownloadDangerType danger) {
@@ -1393,15 +1402,21 @@ DownloadsAcceptDangerFunction::DownloadsAcceptDangerFunction() = default;
 
 DownloadsAcceptDangerFunction::~DownloadsAcceptDangerFunction() = default;
 
-DownloadsAcceptDangerFunction::OnPromptCreatedCallback*
-    DownloadsAcceptDangerFunction::on_prompt_created_ = nullptr;
-
 ExtensionFunction::ResponseAction DownloadsAcceptDangerFunction::Run() {
   std::optional<downloads::AcceptDanger::Params> params =
       downloads::AcceptDanger::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   PromptOrWait(params->download_id, 10);
   return RespondLater();
+}
+
+// static
+base::AutoReset<std::optional<DownloadDangerPrompt::Action>>
+DownloadsAcceptDangerFunction::TriggerDangerPromptActionForTesting(
+    DownloadDangerPrompt::Action action) {
+  CHECK_IS_TEST();
+  return base::AutoReset<std::optional<DownloadDangerPrompt::Action>>(
+      &g_danger_prompt_action_for_testing, action);
 }
 
 void DownloadsAcceptDangerFunction::PromptOrWait(int download_id, int retries) {
@@ -1442,18 +1457,20 @@ void DownloadsAcceptDangerFunction::PromptOrWait(int download_id, int retries) {
     return;
   }
   RecordApiFunctions(DownloadsFunctionName::kDownloadsFunctionAcceptDanger);
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  // DownloadDangerPrompt displays a modal dialog using native widgets that the
-  // user must either accept or cancel. It cannot be scripted.
-  DownloadDangerPrompt* prompt = DownloadDangerPrompt::Create(
+  // For testing, callers can use TriggerDangerPromptActionForTesting() to
+  // pre-determine the dialog's result. This bypasses showing the dialog.
+  if (g_danger_prompt_action_for_testing.has_value()) {
+    CHECK_IS_TEST();
+    DangerPromptCallback(download_id, *g_danger_prompt_action_for_testing);
+    return;
+  }
+
+  ShowDownloadDangerDialog(
       download_item, web_contents,
       base::BindOnce(&DownloadsAcceptDangerFunction::DangerPromptCallback, this,
                      download_id));
-  // DownloadDangerPrompt deletes itself
-  if (on_prompt_created_ && !on_prompt_created_->is_null()) {
-    std::move(*on_prompt_created_).Run(prompt);
-    on_prompt_created_ = nullptr;
-  }
   // Function finishes in DangerPromptCallback().
 #else
   NOTIMPLEMENTED();
@@ -1474,6 +1491,44 @@ void DownloadsAcceptDangerFunction::DangerPromptCallback(
     Respond(Error(std::move(error)));
     return;
   }
+
+  const bool accept = action == DownloadDangerPrompt::ACCEPT;
+  Profile* profile = Profile::FromBrowserContext(browser_context());
+  // If this download is no longer dangerous, is already canceled or
+  // completed, don't send any report.
+  if (download_item->IsDangerous() && !download_item->IsDone()) {
+    // Survey triggered on ACCEPT action, since this is where the user
+    // confirms their choice to keep a dangerous download, rather than
+    // triggering a survey after selecting to KEEP in the downloads page UI.
+    if (safe_browsing::IsSafeBrowsingSurveysEnabled(*profile->GetPrefs()) &&
+        accept) {
+      TrustSafetySentimentService* trust_safety_sentiment_service =
+          TrustSafetySentimentServiceFactory::GetForProfile(profile);
+      if (trust_safety_sentiment_service) {
+        trust_safety_sentiment_service->InteractedWithDownloadWarningUI(
+            DownloadItemWarningData::WarningSurface::DOWNLOAD_PROMPT,
+            DownloadItemWarningData::WarningAction::PROCEED);
+      }
+    }
+    // Log here for "Shown" unconditionally, and for "Proceed" iff the dialog
+    // was accepted. This assumes the dialog cannot be dismissed once it is
+    // shown without taking some action on it.
+    RecordDownloadDangerPromptHistogram("Shown", *download_item);
+    if (accept) {
+      RecordDownloadDangerPromptHistogram("Proceed", *download_item);
+    }
+    DownloadDangerPrompt::RecordDownloadWarningEvent(action, download_item);
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+    // Do not send cancel report since it's not a terminal action.
+    if (accept) {
+      SendSafeBrowsingDownloadReport(
+          safe_browsing::ClientSafeBrowsingReportRequest::
+              DANGEROUS_DOWNLOAD_BY_API,
+          accept, download_item);
+    }
+#endif
+  }
+
   switch (action) {
     case DownloadDangerPrompt::ACCEPT:
       download_item->ValidateDangerousDownload();

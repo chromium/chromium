@@ -47,6 +47,7 @@ source_set("extensions") {
     public_deps += [
       ":extension_popup_types",
       "//base",
+      "//chrome/browser/download",
       "//chrome/browser/tab_list",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/toolbar",
@@ -131,6 +132,7 @@ source_set("impl") {
     sources += [
       "controlled_home_dialog.cc",
       "controlled_home_dialog_controller.cc",
+      "download_danger_dialog.cc",
       "download_open_dialog.cc",
       "extension_action_view_model.cc",
       "extension_install_ask_parent_dialog.cc",
@@ -154,6 +156,7 @@ source_set("impl") {
       "//chrome/browser/image_fetcher",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/profiles:profile_util",
+      "//chrome/browser/safe_browsing:advanced_protection",
       "//chrome/browser/signin",
       "//chrome/browser/tab_list",
       "//chrome/browser/ui/browser_window",

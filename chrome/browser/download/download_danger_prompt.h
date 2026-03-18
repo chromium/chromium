@@ -7,10 +7,6 @@
 
 #include "base/functional/callback_forward.h"
 
-namespace content {
-class WebContents;
-}
-
 namespace download {
 class DownloadItem;
 }
@@ -34,23 +30,6 @@ class DownloadDangerPrompt {
   };
   typedef base::OnceCallback<void(Action)> OnDone;
 
-  // Return a new self-deleting DownloadDangerPrompt. The returned
-  // DownloadDangerPrompt* is only used for testing. The caller does not own the
-  // object and receives no guarantees about lifetime. The prompt message will
-  // contain some information about the download and its danger. |done| is a
-  // callback called when the ACCEPT, CANCEL or DISMISS action is invoked.
-  // |done| may be called with the CANCEL action even when |item| is either no
-  // longer dangerous or no longer in progress, or if the tab corresponding to
-  // |web_contents| is closing.
-  static DownloadDangerPrompt* Create(download::DownloadItem* item,
-                                      content::WebContents* web_contents,
-                                      OnDone done);
-
-  // Only to be used by tests. Subclasses must override to manually call the
-  // respective button click handler.
-  virtual void InvokeActionForTesting(Action action) = 0;
-
- protected:
   // Records warning action event consumed by Safe Browsing reports.
   static void RecordDownloadWarningEvent(Action action,
                                          download::DownloadItem* download);

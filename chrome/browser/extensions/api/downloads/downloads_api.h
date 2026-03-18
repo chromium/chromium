@@ -169,13 +169,6 @@ class DownloadsRemoveFileFunction : public ExtensionFunction {
 
 class DownloadsAcceptDangerFunction : public ExtensionFunction {
  public:
-  using OnPromptCreatedCallback =
-      base::OnceCallback<void(DownloadDangerPrompt*)>;
-  static void OnPromptCreatedForTesting(
-      OnPromptCreatedCallback* callback) {
-    on_prompt_created_ = callback;
-  }
-
   DECLARE_EXTENSION_FUNCTION("downloads.acceptDanger", DOWNLOADS_ACCEPTDANGER)
   DownloadsAcceptDangerFunction();
 
@@ -185,6 +178,13 @@ class DownloadsAcceptDangerFunction : public ExtensionFunction {
 
   ResponseAction Run() override;
 
+  // Sets the action to take when a danger prompt is shown in tests. The
+  // returned AutoReset restores the previous value, which is an empty
+  // optional if it hasn't been set.
+  [[nodiscard]] static base::AutoReset<
+      std::optional<DownloadDangerPrompt::Action>>
+  TriggerDangerPromptActionForTesting(DownloadDangerPrompt::Action action);
+
  protected:
   ~DownloadsAcceptDangerFunction() override;
   void DangerPromptCallback(int download_id,
@@ -192,8 +192,6 @@ class DownloadsAcceptDangerFunction : public ExtensionFunction {
 
  private:
   void PromptOrWait(int download_id, int retries);
-
-  static OnPromptCreatedCallback* on_prompt_created_;
 };
 
 class DownloadsShowFunction : public ExtensionFunction {
