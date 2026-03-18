@@ -27,10 +27,6 @@ class ContextSharingBorderViewController {
   // Returns the ContentWebView around which the border is to be created.
   virtual ContentsWebView* contents_web_view() = 0;
 
-  // Returns whether the currently shown UI is in side panel mode.
-  // For contextual tasks, it will be always true. For glic, it will return
-  // GlicEnabling::IsMultiInstanceEnabled.
-  virtual bool IsSidePanelOpen() const = 0;
 };
 
 }  // namespace glic
