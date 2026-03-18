@@ -14,6 +14,7 @@
 #include <string>
 #include <vector>
 
+#include "base/files/file_path.h"
 #include "base/location.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -206,6 +207,9 @@ class FakeServer : public syncer::LoopbackServer::ObserverForTests {
   // Undoes previous calls to SetHttpError().
   void ClearHttpError();
 
+  // Returns the current HTTP error status code, or std::nullopt if none.
+  std::optional<net::HttpStatusCode> GetHttpError() const;
+
   // Sets the provided `client_command` in all subsequent successful requests.
   void SetClientCommand(const sync_pb::ClientCommand& client_command);
 
@@ -332,6 +336,13 @@ class FakeServer : public syncer::LoopbackServer::ObserverForTests {
 
   // Notifies observers about an ongoing commit.
   void OnWillCommit();
+
+  // Writes some of the member variables to disk, for state to carry over after
+  // PRE_ states.
+  void LoadFakeStateFromDisk();
+  void WriteFakeStateToDisk() const;
+
+  const base::FilePath fake_state_file_path_;
 
   // List used to implement LogForTestFailure().
   std::vector<std::unique_ptr<testing::ScopedTrace>> gtest_scoped_traces_;

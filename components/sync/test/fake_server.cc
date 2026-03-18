@@ -11,7 +11,9 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/files/file_util.h"
 #include "base/hash/hash.h"
+#include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
@@ -31,6 +33,7 @@
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync_device_info/device_info_util.h"
 #include "net/http/http_status_code.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 using syncer::DataType;
 using syncer::DataTypeSet;
@@ -40,19 +43,60 @@ using syncer::LoopbackServerEntity;
 
 namespace fake_server {
 
-FakeServer::FakeServer(const base::FilePath& loopback_server_dir) {
+FakeServer::FakeServer(const base::FilePath& loopback_server_dir)
+    : fake_state_file_path_(
+          loopback_server_dir.AppendASCII("fake_state.json")) {
   CHECK(!loopback_server_dir.empty());
   // Needed by syncer::LoopbackServer.
   base::ScopedAllowBlockingForTesting allow_blocking;
   loopback_server_ = std::make_unique<syncer::LoopbackServer>(
       loopback_server_dir.AppendASCII("profile.pb"));
   loopback_server_->set_observer_for_tests(this);
+
+  LoadFakeStateFromDisk();
 }
 
 FakeServer::FakeServer()
     : FakeServer(base::CreateUniqueTempDirectoryScopedToTest()) {}
 
 FakeServer::~FakeServer() = default;
+
+void FakeServer::LoadFakeStateFromDisk() {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  std::string json_string;
+  if (!base::ReadFileToString(fake_state_file_path_, &json_string)) {
+    return;
+  }
+
+  std::optional<base::Value> json =
+      base::JSONReader::Read(json_string, base::JSON_PARSE_RFC);
+  if (!json || !json->is_dict()) {
+    ADD_FAILURE() << "Failed decode FakeServer state";
+    return;
+  }
+
+  const base::DictValue& dict = json->GetDict();
+  std::optional<int> http_error_status_code =
+      dict.FindInt("http_error_status_code");
+  if (http_error_status_code) {
+    http_error_status_code_ =
+        static_cast<net::HttpStatusCode>(*http_error_status_code);
+  }
+}
+
+void FakeServer::WriteFakeStateToDisk() const {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::DictValue dict;
+  if (http_error_status_code_) {
+    dict.Set("http_error_status_code",
+             static_cast<int>(*http_error_status_code_));
+  }
+
+  std::string json_string;
+  if (base::JSONWriter::Write(dict, &json_string)) {
+    base::WriteFile(fake_state_file_path_, json_string);
+  }
+}
 
 namespace {
 
@@ -667,11 +711,18 @@ void FakeServer::SetHttpError(net::HttpStatusCode http_status_code) {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK_GT(http_status_code, 0);
   http_error_status_code_ = http_status_code;
+  WriteFakeStateToDisk();
 }
 
 void FakeServer::ClearHttpError() {
   DCHECK(thread_checker_.CalledOnValidThread());
   http_error_status_code_ = std::nullopt;
+  WriteFakeStateToDisk();
+}
+
+std::optional<net::HttpStatusCode> FakeServer::GetHttpError() const {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  return http_error_status_code_;
 }
 
 void FakeServer::SetClientCommand(

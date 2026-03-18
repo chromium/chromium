@@ -587,6 +587,9 @@ IN_PROC_BROWSER_TEST_P(SingleClientSyncInvalidationsTest,
 
 IN_PROC_BROWSER_TEST_P(SingleClientSyncInvalidationsTest,
                        PersistBookmarkInvalidation) {
+  // The fake server carried over HTTP errors across PRE_ tests.
+  GetFakeServer()->ClearHttpError();
+
   ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
 
@@ -625,6 +628,9 @@ IN_PROC_BROWSER_TEST_P(SingleClientSyncInvalidationsTest,
 
 IN_PROC_BROWSER_TEST_P(SingleClientSyncInvalidationsTest,
                        PersistDeviceInfoInvalidation) {
+  // The fake server carried over HTTP errors across PRE_ tests.
+  GetFakeServer()->ClearHttpError();
+
   ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
 

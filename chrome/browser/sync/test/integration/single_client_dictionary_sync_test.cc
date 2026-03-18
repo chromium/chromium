@@ -312,12 +312,16 @@ IN_PROC_BROWSER_TEST_P(SingleClientDictionaryWithAccountStorageSyncTest,
 
   ASSERT_THAT(dictionary_helper::GetDictionaryWords(0),
               UnorderedElementsAre(kLocalWord, kAccountWord));
+
+  // Set HTTP error to be persisted to disk, which ensures it is active on
+  // startup in the next test.
+  GetFakeServer()->SetHttpError(net::HTTP_REQUEST_TIMEOUT);
 }
 
 IN_PROC_BROWSER_TEST_P(SingleClientDictionaryWithAccountStorageSyncTest,
                        ShouldPersistAccountWordsOverRestarts) {
-  // Mimics network issues on restart.
-  GetFakeServer()->SetHttpError(net::HTTP_REQUEST_TIMEOUT);
+  // Verify that the HTTP error was persisted and is active on startup.
+  ASSERT_EQ(GetFakeServer()->GetHttpError(), net::HTTP_REQUEST_TIMEOUT);
 
   ASSERT_TRUE(SetupClients());
   dictionary_helper::LoadDictionaries();

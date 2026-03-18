@@ -445,6 +445,10 @@ IN_PROC_BROWSER_TEST_F(
 
   ASSERT_TRUE(IsAnonymizedDataCollectionEnabled());
 
+  // The fake server carried over HTTP errors across PRE_ tests, so resolve it
+  // now.
+  GetFakeServer()->ClearHttpError();
+
   // The previous server/connection error has been resolved, so the engine can
   // initialize now.
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
