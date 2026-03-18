@@ -538,10 +538,12 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
 
   EXPECT_CALL(*mock_controller_, CreateClientToAimRequest(testing::_))
       .WillOnce(testing::Return(lens::ClientToAimMessage()));
-  EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_));
+  base::RunLoop run_loop;
+  EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_))
+      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
 
   handler_->CreateAndSendQueryMessage(kQuery);
-  base::RunLoop().RunUntilIdle();
+  run_loop.Run();
 }
 
 TEST_F(ContextualTasksComposeboxHandlerTest,
@@ -635,10 +637,12 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
 
   EXPECT_CALL(*mock_controller_, CreateClientToAimRequest(testing::_))
       .WillOnce(testing::Return(lens::ClientToAimMessage()));
-  EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_));
+  base::RunLoop run_loop;
+  EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_))
+      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
 
   handler_->CreateAndSendQueryMessage(kQuery);
-  base::RunLoop().RunUntilIdle();
+  run_loop.Run();
 }
 
 TEST_F(ContextualTasksComposeboxHandlerTest,
@@ -733,10 +737,12 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
 
   EXPECT_CALL(*mock_controller_, CreateClientToAimRequest(testing::_))
       .WillOnce(testing::Return(lens::ClientToAimMessage()));
-  EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_));
+  base::RunLoop run_loop;
+  EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_))
+      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
 
   handler_->CreateAndSendQueryMessage(kQuery);
-  base::RunLoop().RunUntilIdle();
+  run_loop.Run();
 }
 
 TEST_F(ContextualTasksComposeboxHandlerTest,
@@ -785,10 +791,12 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   // Expect CreateClientToAimRequest IS called (query submission continues).
   EXPECT_CALL(*mock_controller_, CreateClientToAimRequest(testing::_))
       .WillOnce(testing::Return(lens::ClientToAimMessage()));
-  EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_));
+  base::RunLoop run_loop;
+  EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_))
+      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
 
   handler_->CreateAndSendQueryMessage(kQuery);
-  base::RunLoop().RunUntilIdle();
+  run_loop.Run();
 }
 
 TEST_F(ContextualTasksComposeboxHandlerTest,
@@ -842,10 +850,12 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   // Expect CreateClientToAimRequest IS called.
   EXPECT_CALL(*mock_controller_, CreateClientToAimRequest(testing::_))
       .WillOnce(testing::Return(lens::ClientToAimMessage()));
-  EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_));
+  base::RunLoop run_loop;
+  EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_))
+      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
 
   handler_->CreateAndSendQueryMessage(kQuery);
-  base::RunLoop().RunUntilIdle();
+  run_loop.Run();
 }
 
 // crbug.com/488112121: This test covers the temporary behavior of disabling
@@ -982,10 +992,12 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
 
   EXPECT_CALL(*mock_controller_, CreateClientToAimRequest(testing::_))
       .WillOnce(testing::Return(lens::ClientToAimMessage()));
-  EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_));
+  base::RunLoop run_loop;
+  EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_))
+      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
 
   handler_->CreateAndSendQueryMessage(kQuery);
-  base::RunLoop().RunUntilIdle();
+  run_loop.Run();
 }
 
 TEST_F(
@@ -1074,10 +1086,12 @@ TEST_F(
 
   EXPECT_CALL(*mock_controller_, CreateClientToAimRequest(testing::_))
       .WillOnce(testing::Return(lens::ClientToAimMessage()));
-  EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_));
+  base::RunLoop run_loop;
+  EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_))
+      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
 
   handler_->CreateAndSendQueryMessage(kQuery);
-  base::RunLoop().RunUntilIdle();
+  run_loop.Run();
 }
 
 TEST_F(ContextualTasksComposeboxHandlerTest, OnAutocompleteAccept) {
@@ -1270,10 +1284,12 @@ TEST_F(ContextualTasksComposeboxHandlerTest, AddTabContext_Delayed) {
 
   EXPECT_CALL(*mock_controller_, CreateClientToAimRequest(testing::_))
       .WillOnce(testing::Return(lens::ClientToAimMessage()));
-  EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_));
+  base::RunLoop run_loop;
+  EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_))
+      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
 
   handler_->CreateAndSendQueryMessage(kQuery);
-  base::RunLoop().RunUntilIdle();
+  run_loop.Run();
 
   ASSERT_FALSE(handler_->IsAnyContextUploading());
   ASSERT_FALSE(handler_->HasPendingQueryForTesting());
@@ -1351,9 +1367,11 @@ TEST_F(ContextualTasksComposeboxHandlerTest, DeleteContext_Delayed) {
 
   EXPECT_CALL(*mock_controller_, CreateClientToAimRequest(testing::_))
       .WillOnce(testing::Return(lens::ClientToAimMessage()));
-  EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_));
+  base::RunLoop run_loop;
+  EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_))
+      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
   handler_->CreateAndSendQueryMessage(kQuery);
-  base::RunLoop().RunUntilIdle();
+  run_loop.Run();
 }
 
 TEST_F(ContextualTasksComposeboxHandlerTest, SubmitQuery_WaitsForUpload) {
@@ -2583,10 +2601,12 @@ TEST_F(ContextualTasksComposeboxHandlerTest, ClearFiles_Delayed) {
 
   EXPECT_CALL(*mock_controller_, CreateClientToAimRequest(testing::_))
       .WillOnce(testing::Return(lens::ClientToAimMessage()));
-  EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_));
+  base::RunLoop run_loop;
+  EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_))
+      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
 
   handler_->CreateAndSendQueryMessage(kQuery);
-  base::RunLoop().RunUntilIdle();
+  run_loop.Run();
 }
 
 TEST_F(ContextualTasksComposeboxHandlerTest,
