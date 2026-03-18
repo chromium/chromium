@@ -7,6 +7,7 @@
 #include "components/multistep_filter/core/annotation_index/annotation_index_client.h"
 #include "components/multistep_filter/core/data_models/url_filter_suggestion.h"
 #include "components/multistep_filter/core/extraction/filter_extractor.h"
+#include "components/multistep_filter/core/multistep_filter_util.h"
 #include "components/multistep_filter/core/storage/filter_store.h"
 #include "components/multistep_filter/core/suggestion/filter_suggestion_generator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -35,7 +36,7 @@ MultistepFilterService::~MultistepFilterService() = default;
 
 void MultistepFilterService::ExtractAnnotation(const GURL& url) {
   // Extract filter annotations for signed-in users only.
-  if (IsUserSignedIn()) {
+  if (IsUserSignedIn() && IsUrlAllowed(url)) {
     filter_extractor_->ExtractAnnotationFromUrl(url);
   }
 }
@@ -48,7 +49,7 @@ void MultistepFilterService::GenerateFilterSuggestions(
   }
 
   // Generate filter suggestions for signed-in users only.
-  if (IsUserSignedIn()) {
+  if (IsUserSignedIn() && IsUrlAllowed(url)) {
     filter_suggestion_generator_->GenerateSuggestion(url, std::move(callback));
   } else {
     std::move(callback).Run(std::nullopt);

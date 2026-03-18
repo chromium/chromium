@@ -14,11 +14,15 @@ source_set("core") {
   sources = [
     "multistep_filter_service.cc",
     "multistep_filter_service.h",
+    "multistep_filter_util.cc",
+    "multistep_filter_util.h",
   ]
   deps = [
+    ":features",
     "//base",
     "//components/keyed_service/core",
     "//components/signin/public/identity_manager",
+    "//net",
     "//url",
   ]
   public_deps = [
@@ -32,9 +36,13 @@ source_set("core") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "multistep_filter_service_unittest.cc" ]
+  sources = [
+    "multistep_filter_service_unittest.cc",
+    "multistep_filter_util_unittest.cc",
+  ]
   deps = [
     ":core",
+    ":features",
     "//base",
     "//base/test:test_support",
     "//components/multistep_filter/core/annotation_index:test_support",

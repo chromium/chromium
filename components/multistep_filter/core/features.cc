@@ -23,4 +23,12 @@ BASE_FEATURE_PARAM(size_t,
                    "suggestion_max_candidates",
                    10u);
 
+// A comma-separated list of domains that are allowed to trigger the Multistep
+// Filter feature. If the value is "*", all domains are allowed.
+BASE_FEATURE_PARAM(std::string,
+                   kMultistepFilterAllowedDomains,
+                   &kMultistepFilter,
+                   "allowed_domains",
+                   "*");
+
 }  // namespace multistep_filter

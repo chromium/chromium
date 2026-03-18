@@ -11,7 +11,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/multistep_filter/core/annotation_index/annotation_index_client.h"
 #include "components/multistep_filter/core/data_models/url_filter_suggestion.h"
 
 class GURL;
@@ -55,10 +54,6 @@ class MultistepFilterService : public KeyedService {
   virtual void GenerateFilterSuggestions(
       const GURL& url,
       base::OnceCallback<void(std::optional<UrlFilterSuggestion>)> callback);
-
-  FilterSuggestionGenerator* filter_suggestion_generator() {
-    return filter_suggestion_generator_.get();
-  }
 
  private:
   // Returns true if the user is currently signed in. The Multistep Filter

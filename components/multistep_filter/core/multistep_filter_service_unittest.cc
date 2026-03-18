@@ -8,11 +8,13 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/multistep_filter/core/annotation_index/annotation_index_client.h"
 #include "components/multistep_filter/core/annotation_index/mock_annotation_index_client.h"
 #include "components/multistep_filter/core/data_models/url_filter_suggestion.h"
 #include "components/multistep_filter/core/extraction/filter_extractor.h"
+#include "components/multistep_filter/core/features.h"
 #include "components/multistep_filter/core/storage/filter_store.h"
 #include "components/multistep_filter/core/suggestion/filter_suggestion_generator.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -55,7 +57,9 @@ class MockFilterSuggestionGenerator : public FilterSuggestionGenerator {
 
 class MultistepFilterServiceTest : public testing::Test {
  public:
-  MultistepFilterServiceTest() = default;
+  MultistepFilterServiceTest() {
+    scoped_feature_list_.InitAndEnableFeature(kMultistepFilter);
+  }
 
   void CreateService() {
     auto annotation_index_client =
@@ -77,6 +81,7 @@ class MultistepFilterServiceTest : public testing::Test {
         identity_test_env_.identity_manager());
   }
 
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;
   signin::IdentityTestEnvironment identity_test_env_;
 
@@ -113,6 +118,21 @@ TEST_F(MultistepFilterServiceTest, ExtractAnnotation_NotSignedIn) {
   service_->ExtractAnnotation(kUrl);
 }
 
+TEST_F(MultistepFilterServiceTest, ExtractAnnotation_NotAllowedDomain) {
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndEnableFeatureWithParameters(
+      kMultistepFilter, {{"allowed_domains", "example.com"}});
+
+  identity_test_env_.MakePrimaryAccountAvailable("test@gmail.com",
+                                                 signin::ConsentLevel::kSignin);
+
+  CreateService();
+  const GURL kUrl("http://notexample.com");
+
+  EXPECT_CALL(*mock_extractor_, ExtractAnnotationFromUrl).Times(0);
+  service_->ExtractAnnotation(kUrl);
+}
+
 TEST_F(MultistepFilterServiceTest, GenerateFilterSuggestions) {
   identity_test_env_.MakePrimaryAccountAvailable("test@gmail.com",
                                                  signin::ConsentLevel::kSignin);
@@ -135,6 +155,27 @@ TEST_F(MultistepFilterServiceTest, GenerateFilterSuggestions_NotSignedIn) {
   const GURL kUrl("http://example.com");
 
   EXPECT_CALL(*mock_generator_, GenerateSuggestion(_, _)).Times(0);
+
+  base::MockCallback<
+      base::OnceCallback<void(std::optional<UrlFilterSuggestion>)>>
+      callback;
+  EXPECT_CALL(callback, Run(testing::Eq(std::nullopt)));
+
+  service_->GenerateFilterSuggestions(kUrl, callback.Get());
+}
+
+TEST_F(MultistepFilterServiceTest, GenerateFilterSuggestions_NotAllowedDomain) {
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndEnableFeatureWithParameters(
+      kMultistepFilter, {{"allowed_domains", "example.com"}});
+
+  identity_test_env_.MakePrimaryAccountAvailable("test@gmail.com",
+                                                 signin::ConsentLevel::kSignin);
+
+  CreateService();
+  const GURL kUrl("http://notexample.com");
+
+  EXPECT_CALL(*mock_generator_, GenerateSuggestion).Times(0);
 
   base::MockCallback<
       base::OnceCallback<void(std::optional<UrlFilterSuggestion>)>>
