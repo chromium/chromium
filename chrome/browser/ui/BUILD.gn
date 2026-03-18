@@ -4159,6 +4159,8 @@ static_library("ui") {
       "views/omnibox/remove_suggestion_bubble.h",
       "views/omnibox/rounded_omnibox_results_frame.cc",
       "views/omnibox/rounded_omnibox_results_frame.h",
+      "views/omnibox/webui_readonly_omnibox.cc",
+      "views/omnibox/webui_readonly_omnibox.h",
       "views/optimization_guide/optimization_guide_icon_view.cc",
       "views/optimization_guide/optimization_guide_icon_view.h",
       "views/overlay/back_to_tab_button.cc",

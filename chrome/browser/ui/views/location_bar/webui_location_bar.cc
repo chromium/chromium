@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/omnibox/chrome_omnibox_client.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/views/bubble_anchor_util_views.h"
+#include "chrome/browser/ui/views/omnibox/webui_readonly_omnibox.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_controller.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_view.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
@@ -40,6 +41,8 @@ void WebUILocationBar::Init(WebUIToolbarWebView* toolbar_view) {
   omnibox_controller_ =
       std::make_unique<OmniboxController>(std::make_unique<ChromeOmniboxClient>(
           /*location_bar=*/this, browser_, browser_->profile()));
+  omnibox_view_ =
+      std::make_unique<WebUIReadOnlyOmnibox>(omnibox_controller_.get(), this);
 
   is_initialized_ = true;
 }
@@ -62,16 +65,15 @@ void WebUILocationBar::UpdateContentSettingsIcons() {
 }
 
 void WebUILocationBar::SaveStateToContents(content::WebContents* contents) {
-  NOTIMPLEMENTED();
+  omnibox_view_->SaveStateToTab(contents);
 }
 
 void WebUILocationBar::Revert() {
-  NOTIMPLEMENTED();
+  omnibox_view_->RevertAll();
 }
 
 OmniboxView* WebUILocationBar::GetOmniboxView() {
-  NOTIMPLEMENTED();
-  return nullptr;
+  return omnibox_view_.get();
 }
 
 OmniboxController* WebUILocationBar::GetOmniboxController() {
@@ -114,7 +116,7 @@ void WebUILocationBar::OnChanged() {
 }
 
 void WebUILocationBar::UpdateWithoutTabRestore() {
-  NOTIMPLEMENTED();
+  Update(nullptr);
 }
 
 bool WebUILocationBar::IsInitialized() const {
@@ -134,12 +136,13 @@ bool WebUILocationBar::IsFullscreen() const {
 }
 
 bool WebUILocationBar::IsEditingOrEmpty() const {
-  NOTIMPLEMENTED();
-  return false;
+  return omnibox_view_->IsEditingOrEmpty();
 }
 
 void WebUILocationBar::InvalidateLayout() {
-  NOTIMPLEMENTED();
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&WebUILocationBar::OnChanged,
+                                weak_ptr_factory_.GetWeakPtr()));
 }
 
 gfx::Rect WebUILocationBar::Bounds() const {
@@ -158,11 +161,19 @@ gfx::Size WebUILocationBar::PreferredSize() const {
 }
 
 void WebUILocationBar::Update(content::WebContents* contents) {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED();  // Or rather needs a bunch more
+
+  if (contents) {
+    omnibox_view_->OnTabChanged(contents);
+  } else {
+    omnibox_view_->Update();
+  }
+
+  OnChanged();
 }
 
 void WebUILocationBar::ResetTabState(content::WebContents* contents) {
-  NOTIMPLEMENTED();
+  omnibox_view_->ResetTabState(contents);
 }
 
 bool WebUILocationBar::HasSecurityStateChanged() {

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_WEBUI_LOCATION_BAR_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/views/location_bar/content_setting_image_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
@@ -14,6 +15,7 @@ class Browser;
 class OmniboxController;
 class PermissionDashboardController;
 class PermissionDashboardView;
+class WebUIReadOnlyOmnibox;
 class WebUIToolbarWebView;
 
 // A LocationBar implementation using WebUI.
@@ -75,8 +77,9 @@ class WebUILocationBar : public LocationBar,
   raw_ptr<PermissionDashboardView> permission_dashboard_view_ = nullptr;
 
   std::unique_ptr<OmniboxController> omnibox_controller_;
-
+  std::unique_ptr<WebUIReadOnlyOmnibox> omnibox_view_;
   bool is_initialized_ = false;
+  base::WeakPtrFactory<WebUILocationBar> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_WEBUI_LOCATION_BAR_H_
