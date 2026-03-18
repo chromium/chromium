@@ -19,6 +19,7 @@ import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -181,6 +182,10 @@ public class WebContentsAccessibilityE2ETest {
     @MinAndroidSdkLevel(Build.VERSION_CODES.BAKLAVA)
     public void testAccessibilityServiceReceivesInitialEvent_SdkBalklavaAndAbove()
             throws Throwable {
+        Assume.assumeTrue(
+                "Requires Android 16 QPR2 (36.1) or higher",
+                Build.VERSION.SDK_INT_FULL >= Build.VERSION_CODES_FULL.BAKLAVA_1);
+
         // Load a page.
         String url = UrlUtils.encodeHtmlDataUri("<p>hello</p>");
         mActivityTestRule.launchContentShellWithUrl(url);
