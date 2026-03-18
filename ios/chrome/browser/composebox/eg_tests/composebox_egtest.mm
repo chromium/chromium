@@ -243,7 +243,7 @@ void RemoveAttachmentWithTitle(NSString* title) {
 
 // Tests that the Composebox is hidden when not eligible.
 - (void)testComposeboxHiddenWhenNotEligible {
-  [ComposeboxAppInterface setAimEligible:NO];
+  [ComposeboxAppInterface setFuseboxEligible:NO];
 
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
   [ChromeEarlGreyUI focusOmnibox];
@@ -338,7 +338,7 @@ void RemoveAttachmentWithTitle(NSString* title) {
 
 // Tests that the AI mode action works as expected.
 - (void)testComposeboxAIModeAction {
-  [ComposeboxAppInterface setAimEligible:YES];
+  [ComposeboxAppInterface setFuseboxEligible:YES];
 
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
   [ChromeEarlGreyUI focusOmnibox];
