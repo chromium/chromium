@@ -40,7 +40,6 @@ class FullscreenNotificationBubbleTest : public AshTestBase {
     window_ = CreateTestWindow();
     window_->SetProperty(aura::client::kShowStateKey,
                          ui::mojom::WindowShowState::kFullscreen);
-    window_state_ = WindowState::Get(window_.get());
 
     bubble_ = std::make_unique<FullscreenNotificationBubble>();
   }
@@ -51,18 +50,18 @@ class FullscreenNotificationBubbleTest : public AshTestBase {
     AshTestBase::TearDown();
   }
 
+  WindowState* window_state() { return WindowState::Get(window_.get()); }
+
  protected:
   std::unique_ptr<aura::Window> window_;
   std::unique_ptr<FullscreenNotificationBubble> bubble_;
-
-  raw_ptr<WindowState, DanglingUntriaged> window_state_ = nullptr;
 };
 
 TEST_F(FullscreenNotificationBubbleTest, AutoHideBubbleAfterDelay) {
   views::Widget* widget = bubble_->widget_for_test();
   EXPECT_FALSE(widget->IsVisible());
 
-  bubble_->ShowForWindowState(window_state_);
+  bubble_->ShowForWindowState(window_state());
   EXPECT_TRUE(widget->IsVisible());
 
   // The bubble is still visible if the timer has not yet elapsed.
@@ -79,7 +78,7 @@ TEST_F(FullscreenNotificationBubbleTest, HideBubbleOnExitFullscreen) {
   views::Widget* widget = bubble_->widget_for_test();
   EXPECT_FALSE(widget->IsVisible());
 
-  bubble_->ShowForWindowState(window_state_);
+  bubble_->ShowForWindowState(window_state());
   EXPECT_TRUE(widget->IsVisible());
 
   // The bubble is hidden early if the user exits full screen mode via full
@@ -92,7 +91,7 @@ TEST_F(FullscreenNotificationBubbleTest, HandleWindowDestruction) {
   views::Widget* widget = bubble_->widget_for_test();
   EXPECT_FALSE(widget->IsVisible());
 
-  bubble_->ShowForWindowState(window_state_);
+  bubble_->ShowForWindowState(window_state());
   EXPECT_TRUE(widget->IsVisible());
 
   // Destroy the window before the timer is elapsed.
