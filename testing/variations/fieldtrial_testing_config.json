@@ -19099,6 +19099,21 @@
             ]
         }
     ],
+    "RetryCreateFileMappingOnCommitLimit": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "RetryCreateFileMappingOnCommitLimit"
+                    ]
+                }
+            ]
+        }
+    ],
     "RetryGetVideoCaptureDeviceInfos": [
         {
             "platforms": [
