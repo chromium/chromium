@@ -1727,7 +1727,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
       [FakeSystemIdentity fakeManagedIdentity];
   [SigninEarlGrey
       signinWithFakeManagedIdentityInPersonalProfile:managedIdentity];
-  [SigninEarlGreyUI openAccountsListFromSettings];
+  [SigninEarlGreyUI openManageAccountsFromSettings];
 
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kSettingsEditAccountListTableViewId)]

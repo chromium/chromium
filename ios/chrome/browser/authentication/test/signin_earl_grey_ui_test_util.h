@@ -92,7 +92,6 @@
 + (void)openSyncSettings;
 
 // Opens settings > identity > Manage accounts on this device.
-+ (void)openAccountsListFromSettings;
 + (void)openManageAccountsFromSettings;
 
 @end

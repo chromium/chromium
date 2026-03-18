@@ -414,10 +414,6 @@ id<GREYMatcher> SignOutSnackbarLabelMatcher() {
   [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
 }
 
-+ (void)openAccountsListFromSettings {
-  [SigninEarlGreyUI openManageAccountsFromSettings];
-}
-
 + (void)openManageAccountsFromSettings {
   [SigninEarlGreyUI openSyncSettings];
   // Tap "Manage accounts on this device" to get to the accounts view.
