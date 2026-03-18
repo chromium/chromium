@@ -86,7 +86,7 @@ class PageEmbeddingsService::WebContentsEventsObserver
   }
 
   void WebContentsDestroyed() override {
-    page_embeddings_service_->web_contents_state_.erase(web_contents());
+    page_embeddings_service_->web_contents_states_.erase(web_contents());
   }
 
   bool IsWebContentsHidden() const {
@@ -189,7 +189,7 @@ void PageEmbeddingsService::AddObserver(Observer* observer) {
       // Compute embeddings eagerly for all foreground tabs, to ensure that they
       // are available.
       for (const auto& [web_contents, web_contents_state] :
-           web_contents_state_) {
+           web_contents_states_) {
         if (web_contents_state.page &&
             !web_contents_state.observer->IsWebContentsHidden() &&
             std::holds_alternative<Pending>(
@@ -229,7 +229,7 @@ void PageEmbeddingsService::ProcessEmbeddingsOnDemand() {
 
   // Force the computation of embeddings for all visible tabs, which are
   // otherwise only lazily computed on being hidden.
-  for (const auto& [web_contents, web_contents_state] : web_contents_state_) {
+  for (const auto& [web_contents, web_contents_state] : web_contents_states_) {
     if (web_contents_state.page &&
         !web_contents_state.observer->IsWebContentsHidden() &&
         std::holds_alternative<Pending>(web_contents_state.embeddings_state)) {
@@ -242,8 +242,8 @@ std::vector<PassageEmbedding> PageEmbeddingsService::GetEmbeddings(
     content::Page& page) const {
   auto* const web_contents =
       content::WebContents::FromRenderFrameHost(&page.GetMainDocument());
-  const auto loc = web_contents_state_.find(web_contents);
-  if (loc == web_contents_state_.end() || loc->second.page.get() != &page) {
+  const auto loc = web_contents_states_.find(web_contents);
+  if (loc == web_contents_states_.end() || loc->second.page.get() != &page) {
     return {};
   }
   if (auto* available = std::get_if<Available>(&loc->second.embeddings_state)) {
@@ -259,9 +259,9 @@ void PageEmbeddingsService::OnPageContentExtracted(
   auto* const web_contents =
       content::WebContents::FromRenderFrameHost(&page.GetMainDocument());
 
-  auto loc = web_contents_state_.find(web_contents);
-  if (loc == web_contents_state_.end()) {
-    loc = web_contents_state_.try_emplace(web_contents).first;
+  auto loc = web_contents_states_.find(web_contents);
+  if (loc == web_contents_states_.end()) {
+    loc = web_contents_states_.try_emplace(web_contents).first;
     loc->second.observer =
         std::make_unique<WebContentsEventsObserver>(web_contents, this);
   }
@@ -294,8 +294,8 @@ void PageEmbeddingsService::OnPageContentExtracted(
 void PageEmbeddingsService::ComputeEmbeddings(content::Page& page) {
   auto* const web_contents =
       content::WebContents::FromRenderFrameHost(&page.GetMainDocument());
-  auto loc = web_contents_state_.find(web_contents);
-  if (loc == web_contents_state_.end() || loc->second.page.get() != &page) {
+  auto loc = web_contents_states_.find(web_contents);
+  if (loc == web_contents_states_.end() || loc->second.page.get() != &page) {
     return;
   }
 
@@ -331,8 +331,8 @@ void PageEmbeddingsService::ComputeEmbeddingsOnHide(content::Page& page) {
 
   auto* const web_contents =
       content::WebContents::FromRenderFrameHost(&page.GetMainDocument());
-  const auto loc = web_contents_state_.find(web_contents);
-  if (loc != web_contents_state_.end() && loc->second.page.get() == &page &&
+  const auto loc = web_contents_states_.find(web_contents);
+  if (loc != web_contents_states_.end() && loc->second.page.get() == &page &&
       std::holds_alternative<Pending>(loc->second.embeddings_state)) {
     ComputeEmbeddings(page);
   }
@@ -353,15 +353,15 @@ void PageEmbeddingsService::OnEmbeddingsComputed(
 
   if (!page) {
     // The page was destroyed while computing the embeddings.
-    const auto loc = web_contents_state_.find(web_contents.get());
-    if (loc != web_contents_state_.end() && !loc->second.page) {
+    const auto loc = web_contents_states_.find(web_contents.get());
+    if (loc != web_contents_states_.end() && !loc->second.page) {
       loc->second.embeddings_state = Unavailable{};
     }
     return;
   }
 
-  const auto loc = web_contents_state_.find(web_contents.get());
-  DCHECK(loc != web_contents_state_.end());
+  const auto loc = web_contents_states_.find(web_contents.get());
+  DCHECK(loc != web_contents_states_.end());
 
   // Ignore stale embeddings from previously cancelled tasks or old pages.
   if (loc->second.page.get() != page.get()) {
@@ -422,7 +422,7 @@ void PageEmbeddingsService::UpdateTaskPriorities(Priority priority) {
   current_priority_ = priority;
 
   std::set<passage_embeddings::Embedder::TaskId> tasks;
-  for (const auto& [web_contents, web_contents_state] : web_contents_state_) {
+  for (const auto& [web_contents, web_contents_state] : web_contents_states_) {
     if (auto* computing =
             std::get_if<Computing>(&web_contents_state.embeddings_state)) {
       tasks.insert(computing->task_id);
