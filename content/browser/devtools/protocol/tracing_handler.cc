@@ -77,8 +77,8 @@ const char kTrackEventDataSourceName[] = "track_event";
 // Frames need to be at least 1x1, otherwise nothing would be captured.
 constexpr gfx::Size kMinFrameSize = gfx::Size(1, 1);
 
-// Frames do not need to be greater than 500x500 for tracing.
-constexpr gfx::Size kMaxFrameSize = gfx::Size(500, 500);
+// Frames do not need to be greater than 250x250 for tracing.
+constexpr gfx::Size kMaxFrameSize = gfx::Size(250, 250);
 
 // Convert from camel case to separator + lowercase.
 std::string ConvertFromCamelCase(const std::string& in_str, char separator) {

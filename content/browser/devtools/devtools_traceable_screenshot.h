@@ -14,7 +14,7 @@ namespace content {
 class DevToolsTraceableScreenshot
     : public base::trace_event::ConvertableToTraceFormat {
  public:
-  static constexpr int kMaximumNumberOfScreenshots = 450;
+  static constexpr int kMaximumNumberOfScreenshots = 1800;
 
   static base::subtle::Atomic32 GetNumberOfInstances();
 
