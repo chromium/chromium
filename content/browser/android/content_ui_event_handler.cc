@@ -33,10 +33,7 @@ namespace content {
 ContentUiEventHandler::ContentUiEventHandler(WebContentsImpl* web_contents)
     : web_contents_(web_contents) {}
 
-ContentUiEventHandler::~ContentUiEventHandler() {
-  JNIEnv* env = AttachCurrentThread();
-  Java_ContentUiEventHandler_destroyForWebContents(env, web_contents_);
-}
+ContentUiEventHandler::~ContentUiEventHandler() = default;
 
 ScopedJavaLocalRef<jobject> ContentUiEventHandler::GetJavaObject() {
   JNIEnv* env = AttachCurrentThread();

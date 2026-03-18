@@ -67,13 +67,6 @@ public class ContentUiEventHandler implements UserData {
         mNativeContentUiEventHandler = ContentUiEventHandlerJni.get().init(webContents);
     }
 
-    @CalledByNative
-    public static void destroyForWebContents(@JniType("WebContents*") WebContents webContents) {
-        if (webContents != null && !webContents.isDestroyed()) {
-            webContents.removeUserData(ContentUiEventHandler.class);
-        }
-    }
-
     static ContentUiEventHandler createForTesting(
             WebContents webContents, long nativeContentUiEventHandler) {
         ContentUiEventHandler contentUiEventHandler = new ContentUiEventHandler(webContents);
