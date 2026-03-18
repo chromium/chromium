@@ -889,6 +889,7 @@ test("android_webview_unittests") {
 
 android_assets("android_webview_unittests_assets") {
   sources = [ "unittest/assets/asset_file.ogg" ]
+  deps = [ "//third_party/icu:icu_assets" ]
 }
 
 android_library("android_webview_unittests_java") {
