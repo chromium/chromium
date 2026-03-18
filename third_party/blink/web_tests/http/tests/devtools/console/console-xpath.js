@@ -36,14 +36,14 @@ import * as Console from 'devtools/panels/console/console.js';
     }
   }
 
-  var waitForParameteres = 2;
+  var waitForParameters = 2;
   function formattedParameter() {
-    waitForParameteres--;
+    waitForParameters--;
     maybeCompleteTest();
   }
 
   async function maybeCompleteTest() {
-    if (!waitForParameteres && completeMessageReceived) {
+    if (waitForParameters <= 0 && completeMessageReceived) {
       await ConsoleTestRunner.dumpConsoleMessages();
       TestRunner.completeTest();
     }
