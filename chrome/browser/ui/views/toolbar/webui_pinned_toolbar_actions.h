@@ -32,6 +32,14 @@ class WebUIPinnedToolbarActions : public PinnedToolbarActions {
   bool IsActionPinned(actions::ActionId id) override;
   bool IsActionPoppedOut(actions::ActionId id) override;
   bool IsActionPinnedOrPoppedOut(actions::ActionId id) override;
+  void PostOrQueueActionAfterAnimation(base::OnceClosure action) override;
+  ToolbarButton* GetDownloadButton() override;
+  ToolbarButton* GetCastButton() override;
+  views::BubbleAnchor GetBubbleAnchor(actions::ActionId action_id) override;
+  void SetActionElementIdentifier(actions::ActionId action_id,
+                                  ui::ElementIdentifier element_id) override;
+  PinnedActionToolbarButton* GetChromeLabsButton() override;
+  void UpdatePinnedStateAndAnnounce(actions::ActionId id, bool pin) override;
 
  private:
   // Parent toolbar.

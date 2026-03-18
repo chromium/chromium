@@ -20,7 +20,7 @@ class SendTabToSelfToolbarBubbleController {
   explicit SendTabToSelfToolbarBubbleController(BrowserWindowInterface* bwi);
   ~SendTabToSelfToolbarBubbleController();
 
-  void ShowBubble(const SendTabToSelfEntry& entry, views::View* anchor_view);
+  void ShowBubble(const SendTabToSelfEntry& entry, views::BubbleAnchor anchor);
   void HideBubble();
 
   bool IsBubbleShowing() const;

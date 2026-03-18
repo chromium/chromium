@@ -13,7 +13,7 @@
 
 class AppMenuButton;
 class AvatarToolbarButton;
-class PinnedToolbarActionsContainer;
+class PinnedToolbarActions;
 class ExtensionsToolbarDesktop;
 class IconLabelBubbleView;
 class IntentChipButton;
@@ -40,8 +40,8 @@ class ToolbarButtonProvider {
   // Gets the ExtensionsToolbarDesktop.
   virtual ExtensionsToolbarDesktop* GetExtensionsToolbarDesktop() = 0;
 
-  // Gets the PinnedToolbarActionsContainer.
-  virtual PinnedToolbarActionsContainer* GetPinnedToolbarActionsContainer() = 0;
+  // Gets the PinnedToolbarActions.
+  virtual PinnedToolbarActions* GetPinnedToolbarActions() = 0;
 
   // Get the default size for toolbar buttons.
   virtual gfx::Size GetToolbarButtonSize() const = 0;

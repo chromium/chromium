@@ -67,3 +67,42 @@ bool WebUIPinnedToolbarActions::IsActionPinnedOrPoppedOut(
     actions::ActionId id) {
   return IsActionPinned(id) || IsActionPoppedOut(id);
 }
+
+void WebUIPinnedToolbarActions::PostOrQueueActionAfterAnimation(
+    base::OnceClosure action) {
+  NOTIMPLEMENTED();
+}
+
+ToolbarButton* WebUIPinnedToolbarActions::GetDownloadButton() {
+  // TODO(https://crbug.com/474063115): Implement this.
+  NOTIMPLEMENTED();
+  return nullptr;
+}
+
+ToolbarButton* WebUIPinnedToolbarActions::GetCastButton() {
+  // TODO(https://crbug.com/474062755): Implement this.
+  NOTIMPLEMENTED();
+  return nullptr;
+}
+
+views::BubbleAnchor WebUIPinnedToolbarActions::GetBubbleAnchor(
+    actions::ActionId action_id) {
+  NOTIMPLEMENTED();
+  return nullptr;
+}
+
+void WebUIPinnedToolbarActions::SetActionElementIdentifier(
+    actions::ActionId action_id,
+    ui::ElementIdentifier element_id) {
+  NOTIMPLEMENTED();
+}
+
+PinnedActionToolbarButton* WebUIPinnedToolbarActions::GetChromeLabsButton() {
+  return nullptr;
+}
+
+void WebUIPinnedToolbarActions::UpdatePinnedStateAndAnnounce(
+    actions::ActionId id,
+    bool pin) {
+  NOTIMPLEMENTED();
+}

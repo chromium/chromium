@@ -29,7 +29,6 @@ class View;
 class BrowserView;
 class ContentSettingImageView;
 class PageActionIconController;
-class PinnedToolbarActionsContainer;
 class WebAppNavigationButtonContainer;
 class WebAppToolbarButtonContainer;
 class WebAppFrameToolbarView;
@@ -77,7 +76,7 @@ class WebAppFrameToolbarView : public views::AccessiblePaneView,
 
   // ToolbarButtonProvider:
   ExtensionsToolbarDesktop* GetExtensionsToolbarDesktop() override;
-  PinnedToolbarActionsContainer* GetPinnedToolbarActionsContainer() override;
+  PinnedToolbarActions* GetPinnedToolbarActions() override;
   gfx::Size GetToolbarButtonSize() const override;
   views::View* GetDefaultExtensionDialogAnchorView() override;
   PageActionIconView* GetPageActionIconView(PageActionIconType type) override;

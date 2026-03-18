@@ -539,14 +539,13 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
 
     if (browser_view) {
       // The controller should only be created if the
-      // PinnedToolbarActionsContainer exists for the browser, this might not be
+      // PinnedToolbarActions exists for the browser, this might not be
       // the case for browsers with a custom tab toolbar.
-      if (auto* pinned_toolbar_actions_container =
-              browser_view->toolbar_button_provider()
-                  ->GetPinnedToolbarActionsContainer()) {
+      if (auto* pinned_toolbar_actions = browser_view->toolbar_button_provider()
+                                             ->GetPinnedToolbarActions()) {
         pinned_toolbar_actions_controller_ =
             std::make_unique<PinnedToolbarActionsController>(
-                pinned_toolbar_actions_container);
+                pinned_toolbar_actions);
       }
     }
 

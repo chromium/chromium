@@ -288,10 +288,8 @@ IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerBrowserTest,
   // Open a web app and verify none of the buttons previously pinned exist.
   const GURL app_url("https://test.org");
   toolbar_helper().InstallAndLaunchWebApp(browser(), app_url);
-  PinnedToolbarActionsContainer* web_app_container =
-      toolbar_helper()
-          .web_app_frame_toolbar()
-          ->GetPinnedToolbarActionsContainer();
+  PinnedToolbarActions* web_app_container =
+      toolbar_helper().web_app_frame_toolbar()->GetPinnedToolbarActions();
   EXPECT_EQ(web_app_container->IsActionPinned(kActionShowTranslate), false);
   EXPECT_EQ(web_app_container->IsActionPinned(kActionSidePanelShowBookmarks),
             false);

@@ -1290,7 +1290,7 @@ void BrowserActions::InitializeBrowserActions() {
                         ->GetBrowserView()
                         .toolbar_button_provider();
                 if (toolbar_button_provider) {
-                  toolbar_button_provider->GetPinnedToolbarActionsContainer()
+                  toolbar_button_provider->GetPinnedToolbarActions()
                       ->UpdatePinnedStateAndAnnounce(
                           context.GetProperty(kActionIdKey), true);
                 }
@@ -1313,7 +1313,7 @@ void BrowserActions::InitializeBrowserActions() {
                         ->GetBrowserView()
                         .toolbar_button_provider();
                 if (toolbar_button_provider) {
-                  toolbar_button_provider->GetPinnedToolbarActionsContainer()
+                  toolbar_button_provider->GetPinnedToolbarActions()
                       ->UpdatePinnedStateAndAnnounce(
                           context.GetProperty(kActionIdKey), false);
                 }

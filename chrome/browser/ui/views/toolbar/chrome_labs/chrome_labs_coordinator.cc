@@ -167,8 +167,7 @@ PinnedActionToolbarButton* ChromeLabsCoordinator::GetChromeLabsButton() {
   PinnedToolbarActionsController* pinned_toolbar_actions_controller =
       browser_->GetFeatures().pinned_toolbar_actions_controller();
   return pinned_toolbar_actions_controller
-             ? pinned_toolbar_actions_controller->GetButtonFor(
-                   kActionShowChromeLabs)
+             ? pinned_toolbar_actions_controller->GetChromeLabsButton()
              : nullptr;
 }
 

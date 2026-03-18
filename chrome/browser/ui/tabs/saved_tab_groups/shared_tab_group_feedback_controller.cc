@@ -71,13 +71,9 @@ void SharedTabGroupFeedbackController::UpdateFeedbackButtonVisibility(
                                              should_show_button);
 
   if (should_show_button) {
-    PinnedActionToolbarButton* button =
-        controller->GetButtonFor(kActionSendSharedTabGroupFeedback);
-    CHECK(button);
-
     // Add the ElementIdentifier so the IPH system can find the button.
-    button->SetProperty(views::kElementIdentifierKey,
-                        kSharedTabGroupFeedbackElementId);
+    controller->SetActionElementIdentifier(kActionSendSharedTabGroupFeedback,
+                                           kSharedTabGroupFeedbackElementId);
   }
 }
 

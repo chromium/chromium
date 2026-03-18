@@ -471,11 +471,13 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest,
   const GURL app_url("https://test.org");
   helper()->InstallAndLaunchWebApp(browser(), app_url);
 
+  CHECK(!features::IsWebUIPinnedToolbarActionsEnabled())
+      << "Test needs modification to support WebUIPinnedToolbarActions";
   int button_count = 0;
-  for (views::View* child : helper()
-                                ->web_app_frame_toolbar()
-                                ->GetPinnedToolbarActionsContainer()
-                                ->children()) {
+  for (views::View* child :
+       static_cast<PinnedToolbarActionsContainer*>(
+           helper()->web_app_frame_toolbar()->GetPinnedToolbarActions())
+           ->children()) {
     if (views::Button::AsButton(child)) {
       button_count++;
     }
@@ -2026,10 +2028,13 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
       chrome_test_utils::GetTestUrl(
           base::FilePath().AppendASCII("downloads"),
           base::FilePath().AppendASCII("a_zip_file.zip")));
+  CHECK(!features::IsWebUIPinnedToolbarActionsEnabled())
+      << "Test needs modification to support WebUIPinnedToolbarActions";
   views::test::WaitForAnimatingLayoutManager(
-      BrowserView::GetBrowserViewForBrowser(helper()->app_browser())
-          ->toolbar_button_provider()
-          ->GetPinnedToolbarActionsContainer());
+      static_cast<PinnedToolbarActionsContainer*>(
+          BrowserView::GetBrowserViewForBrowser(helper()->app_browser())
+              ->toolbar_button_provider()
+              ->GetPinnedToolbarActions()));
 
   // The download button is visible in the app browser.
   EXPECT_TRUE(toolbar_button_container->GetDownloadButton()->GetVisible());

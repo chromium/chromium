@@ -19,6 +19,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -856,6 +857,37 @@ PinnedToolbarActionsContainer::CreateOrGetButtonForAction(
   button->SetPaintToLayer();
   button->layer()->SetFillsBoundsOpaquely(false);
   return button;
+}
+
+void PinnedToolbarActionsContainer::PostOrQueueActionAfterAnimation(
+    base::OnceClosure action) {
+  GetAnimatingLayoutManager()->PostOrQueueAction(std::move(action));
+}
+
+ToolbarButton* PinnedToolbarActionsContainer::GetDownloadButton() {
+  return GetButtonFor(kActionShowDownloads);
+}
+
+ToolbarButton* PinnedToolbarActionsContainer::GetCastButton() {
+  return GetButtonFor(kActionRouteMedia);
+}
+
+views::BubbleAnchor PinnedToolbarActionsContainer::GetBubbleAnchor(
+    actions::ActionId action_id) {
+  return GetButtonFor(action_id);
+}
+
+void PinnedToolbarActionsContainer::SetActionElementIdentifier(
+    actions::ActionId action_id,
+    ui::ElementIdentifier element_id) {
+  auto* button = GetButtonFor(action_id);
+  CHECK(button);
+  button->SetProperty(views::kElementIdentifierKey, element_id);
+}
+
+PinnedActionToolbarButton*
+PinnedToolbarActionsContainer::GetChromeLabsButton() {
+  return GetButtonFor(kActionShowChromeLabs);
 }
 
 BEGIN_METADATA(PinnedToolbarActionsContainer)

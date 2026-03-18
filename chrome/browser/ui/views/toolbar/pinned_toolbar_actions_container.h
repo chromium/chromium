@@ -53,8 +53,6 @@ class PinnedToolbarActionsContainer
       const PinnedToolbarActionsContainer&) = delete;
   ~PinnedToolbarActionsContainer() override;
 
-  void UpdatePinnedStateAndAnnounce(actions::ActionId id, bool pin);
-
   void MovePinnedActionBy(actions::ActionId action_id, int delta);
 
   // ToolbarIconContainerView:
@@ -98,6 +96,14 @@ class PinnedToolbarActionsContainer
   bool IsActionPinned(actions::ActionId id) override;
   bool IsActionPoppedOut(actions::ActionId id) override;
   bool IsActionPinnedOrPoppedOut(actions::ActionId id) override;
+  void PostOrQueueActionAfterAnimation(base::OnceClosure action) override;
+  ToolbarButton* GetDownloadButton() override;
+  ToolbarButton* GetCastButton() override;
+  views::BubbleAnchor GetBubbleAnchor(actions::ActionId action_id) override;
+  void SetActionElementIdentifier(actions::ActionId action_id,
+                                  ui::ElementIdentifier element_id) override;
+  PinnedActionToolbarButton* GetChromeLabsButton() override;
+  void UpdatePinnedStateAndAnnounce(actions::ActionId id, bool pin) override;
 
   // Returns the button associated with `id`. This does not return permanent
   // buttons which are currently invisible, an accessor for these can be

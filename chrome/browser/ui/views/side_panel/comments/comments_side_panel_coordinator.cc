@@ -142,12 +142,8 @@ void CommentsSidePanelCoordinator::UpdateCommentsActionVisibility(
                                              should_show_comments_action);
 
   if (should_show_comments_action) {
-    PinnedActionToolbarButton* button =
-        controller->GetButtonFor(kActionSidePanelShowComments);
-    CHECK(button);
-
-    button->SetProperty(views::kElementIdentifierKey,
-                        kSharedTabGroupCommentsActionElementId);
+    controller->SetActionElementIdentifier(
+        kActionSidePanelShowComments, kSharedTabGroupCommentsActionElementId);
   }
 }
 

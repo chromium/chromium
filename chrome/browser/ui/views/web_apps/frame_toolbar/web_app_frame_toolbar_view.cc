@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_properties_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/browser/ui/views/toolbar/back_forward_button.h"
+#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/reload_button.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_content_settings_container.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_menu_button.h"
@@ -267,8 +268,7 @@ WebAppFrameToolbarView::GetExtensionsToolbarDesktop() {
   return right_container_->extensions_container();
 }
 
-PinnedToolbarActionsContainer*
-WebAppFrameToolbarView::GetPinnedToolbarActionsContainer() {
+PinnedToolbarActions* WebAppFrameToolbarView::GetPinnedToolbarActions() {
   return right_container_->pinned_toolbar_actions_container();
 }
 

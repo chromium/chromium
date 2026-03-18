@@ -1305,13 +1305,8 @@ ExtensionsToolbarButton* ToolbarView::GetExtensionsButton() const {
 }
 
 ToolbarButton* ToolbarView::GetCastButton() const {
-  if (features::IsWebUIPinnedToolbarActionsEnabled()) {
-    NOTIMPLEMENTED();
-  }
-  return pinned_toolbar_actions_container_
-             ? pinned_toolbar_actions_container_->GetButtonFor(
-                   kActionRouteMedia)
-             : nullptr;
+  return pinned_toolbar_actions_ ? pinned_toolbar_actions_->GetCastButton()
+                                 : nullptr;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1673,8 +1668,8 @@ ExtensionsToolbarDesktop* ToolbarView::GetExtensionsToolbarDesktop() {
   return extensions_container_;
 }
 
-PinnedToolbarActionsContainer* ToolbarView::GetPinnedToolbarActionsContainer() {
-  return pinned_toolbar_actions_container_;
+PinnedToolbarActions* ToolbarView::GetPinnedToolbarActions() {
+  return pinned_toolbar_actions_;
 }
 
 gfx::Size ToolbarView::GetToolbarButtonSize() const {

@@ -88,17 +88,16 @@ constexpr float kProgressRingStrokeWidth = 2.0f;
 // it.
 constexpr base::TimeDelta kAutoClosePartialViewDelay = base::Seconds(5);
 
-PinnedToolbarActionsContainer* GetPinnedToolbarActionsContainer(
-    BrowserView* browser_view) {
+PinnedToolbarActions* GetPinnedToolbarActions(BrowserView* browser_view) {
   auto* toolbar_button_provider = browser_view->toolbar_button_provider();
   return toolbar_button_provider
-             ? toolbar_button_provider->GetPinnedToolbarActionsContainer()
+             ? toolbar_button_provider->GetPinnedToolbarActions()
              : nullptr;
 }
 
 ToolbarButton* GetDownloadsButton(BrowserView* browser_view) {
-  auto* container = GetPinnedToolbarActionsContainer(browser_view);
-  return container ? container->GetButtonFor(kActionShowDownloads) : nullptr;
+  auto* container = GetPinnedToolbarActions(browser_view);
+  return container ? container->GetDownloadButton() : nullptr;
 }
 
 class DownloadProgressRing : public views::View, gfx::AnimationDelegate {
@@ -471,7 +470,7 @@ void DownloadToolbarUIController::TearDownPreBrowserWindowDestruction() {
 }
 
 void DownloadToolbarUIController::Show() {
-  auto* container = GetPinnedToolbarActionsContainer(browser_view_);
+  auto* container = GetPinnedToolbarActions(browser_view_);
   if (!container) {
     return;
   }
@@ -480,7 +479,7 @@ void DownloadToolbarUIController::Show() {
 
 void DownloadToolbarUIController::Hide() {
   HideDetails();
-  auto* container = GetPinnedToolbarActionsContainer(browser_view_);
+  auto* container = GetPinnedToolbarActions(browser_view_);
   if (!container) {
     return;
   }
@@ -507,8 +506,8 @@ void DownloadToolbarUIController::UpdateDownloadIcon(
 
   if (updates.show_animation && show_download_started_animation_) {
     has_pending_download_started_animation_ = true;
-    if (auto* container = GetPinnedToolbarActionsContainer(browser_view_)) {
-      container->GetAnimatingLayoutManager()->PostOrQueueAction(base::BindOnce(
+    if (auto* container = GetPinnedToolbarActions(browser_view_)) {
+      container->PostOrQueueActionAfterAnimation(base::BindOnce(
           &DownloadToolbarUIController::ShowPendingDownloadStartedAnimation,
           weak_factory_.GetWeakPtr()));
     }
