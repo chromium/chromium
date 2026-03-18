@@ -144,6 +144,7 @@ public class FeedSurfaceCoordinator
     // Feed RecyclerView/xSurface fields.
     private FeedListContentManager mContentManager;
     private final RecyclerView mRecyclerView;
+    private final FeedStreamViewResizer mFeedStreamViewResizer;
     private @Nullable ImageView mRecyclerViewSnapshotOverlay;
     private @Nullable FeedSurfaceScope mSurfaceScope;
     private @Nullable FeedSurfaceScopeDependencyProviderImpl mDependencyProvider;
@@ -457,7 +458,8 @@ public class FeedSurfaceCoordinator
 
         mUiConfig = new UiConfig(mRootView);
         mRecyclerView = setUpView();
-        FeedStreamViewResizer.createAndAttach(mActivity, mRecyclerView, mUiConfig);
+        mFeedStreamViewResizer =
+                FeedStreamViewResizer.createAndAttach(mActivity, mRecyclerView, mUiConfig);
 
         mIsNtpCustomizationV2Enabled = NtpCustomizationUtils.isNtpThemeCustomizationEnabled();
         if (mIsNewTabPageCustomizationV2Enabled) {
@@ -748,6 +750,8 @@ public class FeedSurfaceCoordinator
         if (mNtpBackgroundImageCoordinator != null) {
             mNtpBackgroundImageCoordinator.destroy();
         }
+
+        mFeedStreamViewResizer.destroy();
 
         mActionDelegate.destroy();
     }

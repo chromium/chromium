@@ -10,14 +10,15 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 /**
- * Implementation of {@link DisplayStyleObserver} designed to play nicely with
- * {@link androidx.recyclerview.widget.RecyclerView}. It will not notify of changes when the
- * associated view is not attached to the window.
+ * Implementation of {@link DisplayStyleObserver} designed to play nicely with {@link
+ * androidx.recyclerview.widget.RecyclerView}. It will not notify of changes when the associated
+ * view is not attached to the window.
  */
 @NullMarked
 public class DisplayStyleObserverAdapter
         implements DisplayStyleObserver, View.OnAttachStateChangeListener {
     private final DisplayStyleObserver mObserver;
+    private final View mView;
 
     /** Current display style, gets updated as the UiConfig detects changes and notifies us. */
     private UiConfig.@Nullable DisplayStyle mCurrentDisplayStyle;
@@ -27,19 +28,18 @@ public class DisplayStyleObserverAdapter
     private final UiConfig mUiConfig;
 
     /**
-     * @param view the view whose lifecycle is tracked to determine when to not fire the
-     *             observer.
+     * @param view the view whose lifecycle is tracked to determine when to not fire the observer.
      * @param config the {@link UiConfig} object to subscribe to.
-     * @param observer the observer to adapt. It's {#onDisplayStyleChanged} will be called when
-     *                 the configuration changes, provided that {@code view} is attached to the
-     *                 window.
+     * @param observer the observer to adapt. It's {#onDisplayStyleChanged} will be called when the
+     *     configuration changes, provided that {@code view} is attached to the window.
      */
     public DisplayStyleObserverAdapter(View view, UiConfig config, DisplayStyleObserver observer) {
+        mView = view;
         mUiConfig = config;
         mObserver = observer;
         mIsViewAttached = view.isAttachedToWindow();
 
-        view.addOnAttachStateChangeListener(this);
+        mView.addOnAttachStateChangeListener(this);
     }
 
     /** Attaches to the {@link #mUiConfig}. */
@@ -48,9 +48,10 @@ public class DisplayStyleObserverAdapter
         mUiConfig.addObserver(this);
     }
 
-    /** Detaches from the {@link #mUiConfig}. */
-    public void detach() {
+    /** Detaches from the {@link #mUiConfig} and cleans up. */
+    public void destroy() {
         mUiConfig.removeObserver(this);
+        mView.removeOnAttachStateChangeListener(this);
     }
 
     @Override

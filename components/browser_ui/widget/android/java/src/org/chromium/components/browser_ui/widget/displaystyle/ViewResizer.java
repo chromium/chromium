@@ -41,7 +41,7 @@ public class ViewResizer implements DisplayStyleObserver, View.OnLayoutChangeLis
         mMinWidePaddingPixels = minWidePaddingPixels;
         mUiConfig = config;
         mDisplayStyleObserver = new DisplayStyleObserverAdapter(view, config, this);
-        view.addOnLayoutChangeListener(this);
+        mView.addOnLayoutChangeListener(this);
     }
 
     /**
@@ -68,9 +68,10 @@ public class ViewResizer implements DisplayStyleObserver, View.OnLayoutChangeLis
         mDisplayStyleObserver.attach();
     }
 
-    /** Detaches from the {@link UiConfig}. */
-    public void detach() {
-        mDisplayStyleObserver.detach();
+    /** Detaches from the {@link #mUiConfig} and cleans up. */
+    public void destroy() {
+        mDisplayStyleObserver.destroy();
+        mView.removeOnLayoutChangeListener(this);
     }
 
     @Override
