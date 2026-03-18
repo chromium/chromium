@@ -9,7 +9,6 @@ import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
@@ -24,7 +23,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
@@ -44,12 +42,12 @@ public class SideUiCoordinatorImplTest {
 
     @Mock private ViewStub mStartAnchorContainerStub;
     @Mock private ViewStub mEndAnchorContainerStub;
-    @Mock private SideUiContainer mSideUiContainer;
     @Mock private SideUiObserver mSideUiObserver;
 
     private ViewGroup mStartAnchorContainer;
     private ViewGroup mEndAnchorContainer;
     private View mSideUiContainerView;
+    private TestSideUiContainer mSideUiContainer;
 
     private SideUiCoordinatorImpl mCoordinator;
 
@@ -60,10 +58,10 @@ public class SideUiCoordinatorImplTest {
         mStartAnchorContainer = new FrameLayout(context);
         mEndAnchorContainer = new FrameLayout(context);
         mSideUiContainerView = new View(context);
+        mSideUiContainer = new TestSideUiContainer(mSideUiContainerView);
 
         doReturn(mStartAnchorContainer).when(mStartAnchorContainerStub).inflate();
         doReturn(mEndAnchorContainer).when(mEndAnchorContainerStub).inflate();
-        doReturn(mSideUiContainerView).when(mSideUiContainer).getView();
 
         mCoordinator =
                 new SideUiCoordinatorImpl(mStartAnchorContainerStub, mEndAnchorContainerStub);
@@ -85,25 +83,10 @@ public class SideUiCoordinatorImplTest {
 
     @Test
     public void testAddObserver_NotifyCurrentSpecs() {
-        // When an observer is added, it's immediately notified of the current specs. This is
-        // inferred from the anchor containers' measured width. Re-build with mocks, so we can
-        // fake the measure pass and return the expected values.
-        ViewStub startAnchorContainerSpyStub = Mockito.mock(ViewStub.class);
-        ViewStub endAnchorContainerSpyStub = Mockito.mock(ViewStub.class);
-
-        ViewGroup startAnchorContainerSpy = spy(mStartAnchorContainer);
-        ViewGroup endAnchorContainerSpy = spy(mEndAnchorContainer);
-
-        doReturn(startAnchorContainerSpy).when(startAnchorContainerSpyStub).inflate();
-        doReturn(endAnchorContainerSpy).when(endAnchorContainerSpyStub).inflate();
-
         int startContainerWidth = 25;
         int endContainerWidth = 75;
-        doReturn(startContainerWidth).when(startAnchorContainerSpy).getMeasuredWidth();
-        doReturn(endContainerWidth).when(endAnchorContainerSpy).getMeasuredWidth();
-
-        mCoordinator =
-                new SideUiCoordinatorImpl(startAnchorContainerSpyStub, endAnchorContainerSpyStub);
+        mStartAnchorContainer.setMinimumWidth(startContainerWidth);
+        mEndAnchorContainer.setMinimumWidth(endContainerWidth);
 
         // Add the observer after requesting an update.
         mCoordinator.addObserver(mSideUiObserver);
@@ -138,7 +121,7 @@ public class SideUiCoordinatorImplTest {
 
         // Verify view attached to start container.
         assertEquals(mStartAnchorContainer, mSideUiContainerView.getParent());
-        verify(mSideUiContainer).setWidth(width);
+        assertEquals(width, getSideUiContainerViewWidth());
     }
 
     @Test
@@ -156,7 +139,7 @@ public class SideUiCoordinatorImplTest {
 
         // Verify view attached to end container.
         assertEquals(mEndAnchorContainer, mSideUiContainerView.getParent());
-        verify(mSideUiContainer).setWidth(width);
+        assertEquals(width, getSideUiContainerViewWidth());
     }
 
     @Test
@@ -167,13 +150,12 @@ public class SideUiCoordinatorImplTest {
         mCoordinator.requestUpdateContainer(
                 new SideUiContainerProperties(AnchorSide.START, /* width= */ 100));
         assertEquals(mStartAnchorContainer, mSideUiContainerView.getParent());
-        clearInvocations(mSideUiContainer);
 
         // Then update to width 0.
         mCoordinator.requestUpdateContainer(
                 new SideUiContainerProperties(AnchorSide.START, /* width= */ 0));
         assertNull(mSideUiContainerView.getParent());
-        verify(mSideUiContainer).setWidth(0);
+        assertEquals(0, getSideUiContainerViewWidth());
     }
 
     @Test
@@ -189,5 +171,9 @@ public class SideUiCoordinatorImplTest {
         mCoordinator.requestUpdateContainer(
                 new SideUiContainerProperties(AnchorSide.END, /* width= */ 200));
         assertEquals(mEndAnchorContainer, mSideUiContainerView.getParent());
+    }
+
+    private int getSideUiContainerViewWidth() {
+        return mSideUiContainerView.getLayoutParams().width;
     }
 }
