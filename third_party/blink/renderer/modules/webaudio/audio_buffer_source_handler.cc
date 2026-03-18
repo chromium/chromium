@@ -6,7 +6,7 @@
 
 #include <algorithm>
 
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_buffer_source_options.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_graph_tracer.h"
@@ -109,8 +109,7 @@ void AudioBufferSourceHandler::Process(uint32_t frames_to_process) {
     }
 
     for (unsigned i = 0; i < output_bus->NumberOfChannels(); ++i) {
-      UNSAFE_TODO(destination_channels_[i]) =
-          output_bus->Channel(i)->MutableData();
+      destination_channels_[i] = output_bus->Channel(i)->MutableSpan();
     }
 
     // Render by reading directly from the buffer.
@@ -141,8 +140,8 @@ bool AudioBufferSourceHandler::RenderSilenceAndFinishIfNotLooping(
       // still need to provide more output, so generate silence for the
       // remaining.
       for (unsigned i = 0; i < NumberOfChannels(); ++i) {
-        UNSAFE_TODO(memset(destination_channels_[i] + index, 0,
-                           sizeof(float) * frames_to_process));
+        std::ranges::fill(
+            destination_channels_[i].subspan(index, frames_to_process), 0.0f);
       }
     }
 
@@ -182,8 +181,8 @@ bool AudioBufferSourceHandler::RenderFromBuffer(
   // Potentially zero out initial frames leading up to the offset.
   if (destination_frame_offset) {
     for (unsigned i = 0; i < number_of_channels; ++i) {
-      UNSAFE_TODO(memset(destination_channels_[i], 0,
-                         sizeof(float) * destination_frame_offset));
+      std::ranges::fill(
+          destination_channels_[i].first(destination_frame_offset), 0.0f);
     }
   }
 
@@ -257,8 +256,8 @@ bool AudioBufferSourceHandler::RenderFromBuffer(
   // linear interpolation.
   int frames_to_process = number_of_frames;
 
-  const float** source_channels = source_channels_.get();
-  float** destination_channels = destination_channels_.get();
+  auto source_channels = source_channels_.as_span();
+  auto destination_channels = destination_channels_.as_span();
 
   DCHECK_GE(virtual_read_index, 0);
   DCHECK_GE(virtual_delta_frames, 0);
@@ -278,27 +277,22 @@ bool AudioBufferSourceHandler::RenderFromBuffer(
       int frames_to_end = end_frame - read_index;
       int frames_this_time = std::min(frames_to_process, frames_to_end);
       frames_this_time = std::max(0, frames_this_time);
+      size_t frames_this_time_size =
+          base::checked_cast<size_t>(frames_this_time);
 
       DCHECK_LE(write_index + frames_this_time, destination_length);
       DCHECK_LE(read_index + frames_this_time, buffer_length);
 
       for (unsigned i = 0; i < number_of_channels; ++i) {
-        DCHECK(UNSAFE_TODO(destination_channels[i]));
+        auto dest =
+            destination_channels[i].subspan(write_index, frames_this_time_size);
 
-        // Note: the buffer corresponding to source_channels[i] could have been
-        // transferred so need to check for that.  If it was transferred,
-        // source_channels[i] is null.
-        UNSAFE_TODO({
-          if (source_channels[i]) {
-            memcpy(destination_channels[i] + write_index,
-                   source_channels[i] + read_index,
-                   sizeof(float) * frames_this_time);
-          } else {
-            // Recall that a floating-point zero is represented by 4 bytes of 0.
-            memset(destination_channels[i] + write_index, 0,
-                   sizeof(float) * frames_this_time);
-          }
-        });
+        if (!source_channels[i].empty()) {
+          dest.copy_from(
+              source_channels[i].subspan(read_index, frames_this_time_size));
+        } else {
+          std::ranges::fill(dest, 0.0f);
+        }
       }
 
       write_index += frames_this_time;
@@ -345,33 +339,31 @@ bool AudioBufferSourceHandler::RenderFromBuffer(
       }
 
       // Linear interpolation.
-      UNSAFE_TODO({
-        for (unsigned i = 0; i < number_of_channels; ++i) {
-          float* destination = destination_channels[i];
-          const float* source = source_channels[i];
+      for (unsigned i = 0; i < number_of_channels; ++i) {
+        auto destination = destination_channels[i];
+        auto source = source_channels[i];
 
-          // The source channel may have been transferred so don't try to read
-          // from it if it was.  Just set the destination to 0.
-          if (source) {
-            double sample;
-            if (read_index == read_index2 && read_index >= 1) {
-              // We're at the end of the buffer, so just linearly extrapolate
-              // from the last two samples.
-              double sample1 = source[read_index - 1];
-              double sample2 = source[read_index];
-              sample = sample2 + (sample2 - sample1) * interpolation_factor;
-            } else {
-              double sample1 = source[read_index];
-              double sample2 = source[read_index2];
-              sample = (1.0 - interpolation_factor) * sample1 +
-                       interpolation_factor * sample2;
-            }
-            destination[write_index] = ClampTo<float>(sample);
+        // The source channel may have been transferred already, so don't try
+        // to read from it if it was. Just set the destination to 0.
+        if (!source.empty()) {
+          double sample;
+          if (read_index == read_index2 && read_index >= 1) {
+            // We're at the end of the buffer, so just linearly extrapolate
+            // from the last two samples.
+            double sample1 = source[read_index - 1];
+            double sample2 = source[read_index];
+            sample = sample2 + (sample2 - sample1) * interpolation_factor;
           } else {
-            destination[write_index] = 0;
+            double sample1 = source[read_index];
+            double sample2 = source[read_index2];
+            sample = (1.0 - interpolation_factor) * sample1 +
+                     interpolation_factor * sample2;
           }
+          destination[write_index] = ClampTo<float>(sample);
+        } else {
+          destination[write_index] = 0;
         }
-      });
+      }
       ++write_index;
 
       virtual_read_index += computed_playback_rate;
@@ -440,12 +432,23 @@ void AudioBufferSourceHandler::SetBuffer(AudioBuffer* buffer,
 
     Output(0).SetNumberOfChannels(number_of_channels);
 
-    source_channels_ = std::make_unique<const float*[]>(number_of_channels);
-    destination_channels_ = std::make_unique<float*[]>(number_of_channels);
+    source_channels_ = base::HeapArray<base::raw_span<const float>>::WithSize(
+        number_of_channels);
+    destination_channels_ =
+        base::HeapArray<base::raw_span<float>>::WithSize(number_of_channels);
 
     for (unsigned i = 0; i < number_of_channels; ++i) {
-      UNSAFE_TODO(source_channels_[i]) =
-          static_cast<float*>(shared_buffer_->channels()[i].Data());
+      const auto& channel = shared_buffer_->channels()[i];
+      if (!channel.IsValid()) {
+        source_channels_[i] = {};
+        continue;
+      }
+
+      DCHECK_EQ(channel.DataLength(),
+                static_cast<size_t>(shared_buffer_->length()) * sizeof(float));
+      source_channels_[i] = base::raw_span<const float>(
+          base::subtle::reinterpret_span<const float>(
+              channel.ByteSpanMaybeShared()));
     }
 
     // If this is a grain (as set by a previous call to start()), validate the

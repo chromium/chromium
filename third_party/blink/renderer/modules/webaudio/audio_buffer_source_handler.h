@@ -8,6 +8,8 @@
 #include <atomic>
 #include <memory>
 
+#include "base/containers/heap_array.h"
+#include "base/memory/raw_span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_buffer.h"
@@ -125,9 +127,9 @@ class AudioBufferSourceHandler final : public AudioScheduledSourceHandler {
   // accessed from the audio thread.
   std::unique_ptr<SharedAudioBuffer> shared_buffer_;
 
-  // Pointers for the buffer and destination.
-  std::unique_ptr<const float*[]> source_channels_;
-  std::unique_ptr<float*[]> destination_channels_;
+  // Channel views for the source buffer and render destination.
+  base::HeapArray<base::raw_span<const float>> source_channels_;
+  base::HeapArray<base::raw_span<float>> destination_channels_;
 
   scoped_refptr<AudioParamHandler> playback_rate_;
   scoped_refptr<AudioParamHandler> detune_;

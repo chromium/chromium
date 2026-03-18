@@ -163,6 +163,7 @@ _CONFIG = [
             'base::span',
             'base::span(_with_nul)?_from_cstring',
             'base::Span(OrSize|Reader|Writer)',
+            'base::subtle::reinterpret_span',
             'base::StringPiece',
             'base::StrongAlias',
             'base::SubstringSetMatcher',
