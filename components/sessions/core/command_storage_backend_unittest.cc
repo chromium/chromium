@@ -28,6 +28,8 @@
 #include "base/test/test_file_util.h"
 #include "base/time/time.h"
 #include "components/os_crypt/async/browser/test_utils.h"
+#include "components/os_crypt/async/common/algorithm.mojom.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/sessions/core/command_storage_manager.h"
 #include "components/sessions/core/session_constants.h"
 #include "components/sessions/core/session_service_commands.h"
@@ -67,13 +69,15 @@ struct TestParams {
 }  // namespace
 
 class CommandStorageBackendTest : public testing::Test {
+ public:
+  CommandStorageBackendTest() : os_crypt_(CreateOSCryptAsync()) {}
+
  protected:
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     init_path_ = temp_dir_.GetPath();
     sessions_dir_ = init_path_.Append(kSessionsDirectory);
     base::CreateDirectory(sessions_dir_);
-    os_crypt_ = os_crypt_async::GetTestOSCryptAsyncForTesting(true);
   }
 
   void AssertCommandEqualsData(const TestData& data,
@@ -99,10 +103,13 @@ class CommandStorageBackendTest : public testing::Test {
       base::Clock* clock = nullptr) {
     std::optional<os_crypt_async::Encryptor> encryptor;
     if (encrypted) {
+      base::RunLoop run_loop;
       os_crypt_->GetInstance(
-          base::BindLambdaForTesting([&encryptor](os_crypt_async::Encryptor e) {
+          base::BindLambdaForTesting([&](os_crypt_async::Encryptor e) {
             encryptor = std::move(e);
+            run_loop.Quit();
           }));
+      run_loop.Run();
     }
     return MakeRefCounted<CommandStorageBackend>(
         task_environment_.GetMainThreadTaskRunner(), init_path_, session_type,
@@ -169,11 +176,44 @@ class CommandStorageBackendTest : public testing::Test {
   const base::FilePath& sessions_dir() const { return sessions_dir_; }
 
  private:
+  // Creates an OSCryptAsync that uses a predefined key.
+  std::unique_ptr<os_crypt_async::OSCryptAsync> CreateOSCryptAsync() {
+    std::vector<uint8_t> key_data(
+        os_crypt_async::Encryptor::Key::kAES256GCMKeySize, 'k');
+    std::vector<std::pair<size_t, std::unique_ptr<os_crypt_async::KeyProvider>>>
+        providers;
+    providers.emplace_back(/*precedence=*/10u,
+                           std::make_unique<TestKeyProvider>("k1", key_data));
+    return std::make_unique<os_crypt_async::OSCryptAsync>(std::move(providers));
+  }
+
+  // A test key provider that takes a fixed key.
+  // TODO(crbug.com/492549013): Refactor to share code with other tests.
+  class TestKeyProvider : public os_crypt_async::KeyProvider {
+   public:
+    explicit TestKeyProvider(const std::string& tag,
+                             base::span<const uint8_t> key)
+        : tag_(tag), key_(key.begin(), key.end()) {}
+
+   private:
+    void GetKey(KeyCallback callback) final {
+      std::move(callback).Run(
+          tag_, os_crypt_async::Encryptor::Key(
+                    key_, os_crypt_async::mojom::Algorithm::kAES256GCM));
+    }
+
+    bool UseForEncryption() final { return true; }
+    bool IsCompatibleWithOsCryptSync() final { return false; }
+
+    const std::string tag_;
+    const std::vector<uint8_t> key_;
+  };
+
   base::test::TaskEnvironment task_environment_;
   base::FilePath init_path_;     // Passed to CommandStorageBackend constructor.
   base::FilePath sessions_dir_;  // The directory containing the session files.
   base::ScopedTempDir temp_dir_;
-  std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_;
+  const std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_;
 };
 
 // Most tests are parameterized to run for each session type (see
