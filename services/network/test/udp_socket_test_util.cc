@@ -86,15 +86,19 @@ int UDPSocketTestHelper::SetReceiveBufferSizeSync(int receive_buffer_size) {
   return future.Take();
 }
 
-int UDPSocketTestHelper::JoinGroupSync(const net::IPAddress& group_address) {
+int UDPSocketTestHelper::JoinGroupSync(
+    const net::IPAddress& group_address,
+    const std::optional<net::IPAddress>& source_address) {
   NetErrorFuture future;
-  socket_->JoinGroup(group_address, future.GetCallback());
+  socket_->JoinGroup(group_address, source_address, future.GetCallback());
   return future.Take();
 }
 
-int UDPSocketTestHelper::LeaveGroupSync(const net::IPAddress& group_address) {
+int UDPSocketTestHelper::LeaveGroupSync(
+    const net::IPAddress& group_address,
+    const std::optional<net::IPAddress>& source_address) {
   NetErrorFuture future;
-  socket_->LeaveGroup(group_address, future.GetCallback());
+  socket_->LeaveGroup(group_address, source_address, future.GetCallback());
   return future.Take();
 }
 

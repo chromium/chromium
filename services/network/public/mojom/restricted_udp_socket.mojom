@@ -42,16 +42,21 @@ struct RestrictedUDPSocketParams {
 //
 // Caller can close the socket by destroying the interface pointer.
 interface RestrictedUDPSocket {
-  // Joins a multicast group. `group_address` is the group address to join,
-  // could be either an IPv4 or IPv6 address. Returns a net error code.
-  // See RFC 1112 for details on multicast.
-  JoinGroup(IPAddress group_address) => (int32 result);
+  // Joins a multicast group. If `source_address` is absent, this is an
+  // any-source multicast (ASM) join and traffic from any sender is received.
+  // If `source_address` is provided, this is a source-specific multicast
+  // (SSM) join; only traffic from that source is received. Calling JoinGroup
+  // multiple times with different source addresses for the same group address
+  // registers additional allowed sources. Returns a net error code.
+  JoinGroup(IPAddress group_address, IPAddress? source_address)
+      => (int32 result);
 
-  // Leaves the multicast group. `group_address` is the group address to leave,
-  // could be either an IPv4 or IPv6 address. If the socket hasn't joined the
-  // group, this call will be ignored. It's optional to leave the multicast
-  // group before destroying the socket. Returns a net error code.
-  LeaveGroup(IPAddress group_address) => (int32 result);
+  // Leaves a multicast group. `group_address` and `source_address` must
+  // exactly match a previous JoinGroup call. It is optional to call
+  // LeaveGroup before destroying the socket; the OS will release memberships
+  // on close. Returns a net error code.
+  LeaveGroup(IPAddress group_address, IPAddress? source_address)
+      => (int32 result);
 
   // Notifies that the listener is ready to accept datagrams. OnReceived() of
   // the UDPSocketListener interface will be called |num_additional_datagrams|

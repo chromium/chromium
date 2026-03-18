@@ -32,11 +32,13 @@ class FakeRestrictedUDPSocket final
   explicit FakeRestrictedUDPSocket() = default;
 
   void JoinGroup(const net::IPAddress& address,
+                 const std::optional<net::IPAddress>& source_address,
                  JoinGroupCallback callback) override {
     join_group_callback_ = std::move(callback);
   }
 
   void LeaveGroup(const net::IPAddress& address,
+                  const std::optional<net::IPAddress>& source_address,
                   LeaveGroupCallback callback) override {
     leave_group_callback_ = std::move(callback);
   }

@@ -84,7 +84,7 @@ ScriptPromise<IDLUndefined> MulticastController::joinGroup(
   join_group_promises_.insert(normalized_ip, resolver);
 
   udp_socket_->get()->JoinGroup(
-      *parsed_ip_opt,
+      *parsed_ip_opt, std::nullopt,
       BindOnce(&MulticastController::OnJoinedGroup, WrapPersistent(this),
                WrapPersistent(resolver), normalized_ip));
 
@@ -127,7 +127,7 @@ ScriptPromise<IDLUndefined> MulticastController::leaveGroup(
   leave_group_promises_.insert(normalized_ip, resolver);
 
   udp_socket_->get()->LeaveGroup(
-      *parsed_ip_opt,
+      *parsed_ip_opt, std::nullopt,
       BindOnce(&MulticastController::OnLeftGroup, WrapPersistent(this),
                WrapPersistent(resolver), normalized_ip));
 

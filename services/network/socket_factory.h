@@ -67,6 +67,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SocketFactory
       mojo::PendingRemote<mojom::UDPSocketListener> listener,
       std::unique_ptr<SimpleHostResolver> resolver,
       bool allow_multicast,
+      bool allow_source_specific_multicast,
       mojom::NetworkContext::CreateRestrictedUDPSocketCallback callback);
   void CreateTCPServerSocket(
       const net::IPEndPoint& local_addr,

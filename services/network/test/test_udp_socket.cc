@@ -39,13 +39,17 @@ void TestUDPSocket::SetReceiveBufferSize(int32_t receive_buffer_size,
   NOTIMPLEMENTED();
 }
 
-void TestUDPSocket::JoinGroup(const net::IPAddress& group_address,
-                              JoinGroupCallback callback) {
+void TestUDPSocket::JoinGroup(
+    const net::IPAddress& group_address,
+    const std::optional<net::IPAddress>& source_address,
+    JoinGroupCallback callback) {
   NOTIMPLEMENTED();
 }
 
-void TestUDPSocket::LeaveGroup(const net::IPAddress& group_address,
-                               LeaveGroupCallback callback) {
+void TestUDPSocket::LeaveGroup(
+    const net::IPAddress& group_address,
+    const std::optional<net::IPAddress>& source_address,
+    LeaveGroupCallback callback) {
   NOTIMPLEMENTED();
 }
 
