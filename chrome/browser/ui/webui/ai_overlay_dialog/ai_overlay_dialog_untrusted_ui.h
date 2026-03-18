@@ -5,11 +5,17 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_AI_OVERLAY_DIALOG_AI_OVERLAY_DIALOG_UNTRUSTED_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_AI_OVERLAY_DIALOG_AI_OVERLAY_DIALOG_UNTRUSTED_UI_H_
 
+#include <memory>
+
 #include "chrome/browser/ui/webui/ai_overlay_dialog/ai_overlay_dialog.mojom.h"
 #include "chrome/browser/ui/webui/top_chrome/untrusted_top_chrome_web_ui_controller.h"
 #include "content/public/browser/webui_config.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 
 class AiOverlayDialogUntrustedUI;
+class AiOverlayDialogPageHandler;
 
 class AiOverlayDialogUntrustedUIConfig
     : public content::DefaultWebUIConfig<AiOverlayDialogUntrustedUI> {
@@ -19,7 +25,9 @@ class AiOverlayDialogUntrustedUIConfig
   bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
 };
 
-class AiOverlayDialogUntrustedUI : public UntrustedTopChromeWebUIController {
+class AiOverlayDialogUntrustedUI
+    : public UntrustedTopChromeWebUIController,
+      ai_overlay_dialog::mojom::PageHandlerFactory {
  public:
   explicit AiOverlayDialogUntrustedUI(content::WebUI* web_ui);
   AiOverlayDialogUntrustedUI(const AiOverlayDialogUntrustedUI&) = delete;
@@ -27,8 +35,22 @@ class AiOverlayDialogUntrustedUI : public UntrustedTopChromeWebUIController {
       delete;
   ~AiOverlayDialogUntrustedUI() override;
 
+  void BindInterface(
+      mojo::PendingReceiver<ai_overlay_dialog::mojom::PageHandlerFactory>
+          receiver);
+
+  // ai_overlay_dialog::mojom::PageHandlerFactor interface
+  void CreatePageHandler(
+      mojo::PendingReceiver<ai_overlay_dialog::mojom::PageHandler> receiver)
+      override;
+
  private:
   WEB_UI_CONTROLLER_TYPE_DECL();
+
+  std::unique_ptr<AiOverlayDialogPageHandler> page_handler_;
+
+  mojo::Receiver<ai_overlay_dialog::mojom::PageHandlerFactory>
+      page_handler_factory_receiver_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_AI_OVERLAY_DIALOG_AI_OVERLAY_DIALOG_UNTRUSTED_UI_H_

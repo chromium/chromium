@@ -4,11 +4,14 @@
 
 #include "chrome/browser/ui/webui/ai_overlay_dialog/ai_overlay_dialog_untrusted_ui.h"
 
+#include <memory>
+
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/webui/ai_overlay_dialog/ai_overlay_dialog_page_handler.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -47,4 +50,17 @@ AiOverlayDialogUntrustedUI::AiOverlayDialogUntrustedUI(content::WebUI* web_ui)
 
 AiOverlayDialogUntrustedUI::~AiOverlayDialogUntrustedUI() = default;
 
+void AiOverlayDialogUntrustedUI::BindInterface(
+    mojo::PendingReceiver<ai_overlay_dialog::mojom::PageHandlerFactory>
+        receiver) {
+  page_handler_factory_receiver_.reset();
+  page_handler_factory_receiver_.Bind(std::move(receiver));
+}
+
 WEB_UI_CONTROLLER_TYPE_IMPL(AiOverlayDialogUntrustedUI)
+
+void AiOverlayDialogUntrustedUI::CreatePageHandler(
+    mojo::PendingReceiver<ai_overlay_dialog::mojom::PageHandler> receiver) {
+  page_handler_ =
+      std::make_unique<AiOverlayDialogPageHandler>(std::move(receiver));
+}

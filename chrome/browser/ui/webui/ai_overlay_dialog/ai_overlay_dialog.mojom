@@ -5,4 +5,15 @@
 module ai_overlay_dialog.mojom;
 
 // Factory for creating a PageHandler.
-interface PageHandlerFactory {};
+interface PageHandlerFactory {
+  // The WebUI calls this method when the page is first initialized.
+  CreatePageHandler(pending_receiver<PageHandler> handler);
+};
+
+// Implemented by browser C++ code. Called by WebUI.
+interface PageHandler {
+  // Returns the API key for the AI backend. Used only for development/testing,
+  // without the key being specified on the command line this returns an empty
+  // string.
+  GetApiKey() => (string api_key);
+};
