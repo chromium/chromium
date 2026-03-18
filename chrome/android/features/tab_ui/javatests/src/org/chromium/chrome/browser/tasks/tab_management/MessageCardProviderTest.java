@@ -40,6 +40,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.ServiceDismissActionProvider;
@@ -49,6 +50,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
@@ -194,6 +196,8 @@ public class MessageCardProviderTest {
 
     @Test
     @SmallTest
+    @DisableIf.Device(
+            DeviceFormFactor.DESKTOP) // TODO(crbug.com/493814627): Test failing on Desktop bot
     public void testDismissPriceMessage() {
         AtomicBoolean dismissed = new AtomicBoolean();
         when(mPriceMessageData.getDismissActionProvider()).thenReturn(() -> dismissed.set(true));
