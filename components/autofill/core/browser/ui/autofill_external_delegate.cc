@@ -1399,7 +1399,8 @@ void AutofillExternalDelegate::FillAutofillAiFormAndHidePopup(
             if (entity) {
               manager->FillOrPreviewForm(mojom::ActionPersistence::kFill, form,
                                          field_id, &*entity, trigger_source);
-            } else {
+            } else if (base::FeatureList::IsEnabled(
+                           features::kAutofillAiWalletPrivatePasses)) {
               manager->client().ShowAutofillAiFailureNotification(
                   l10n_util::GetStringUTF16(
                       IDS_AUTOFILL_AI_WALLET_FETCH_FAILURE_NOTIFICATION));
