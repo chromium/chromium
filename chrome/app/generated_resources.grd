@@ -19043,10 +19043,10 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_FILTERED_ACCOUNT_MESSAGE" desc="Message shown to the user when the account they are trying to sign in with has been filtered out by one of the filters passed by the RP.">
       You can't sign in using this account
     </message>
-    <message name="IDS_FEDERATION_SIGN_IN_TITLE" desc="Title of the UI shown in the omnibox to remind users that they can sign in with an identity provider." translateable="false">
+    <message name="IDS_FEDERATION_SIGN_IN_TITLE" desc="Title of the UI shown in the omnibox to remind users that they can sign in with an identity provider.">
       Sign in with <ph name="IDP_NAME">$1<ex>google.com</ex></ph>
     </message>
-    <message name="IDS_FEDERATION_SIGN_UP_TITLE" desc="Title of the UI shown in the omnibox to remind users that they can sign up with an identity provider." translateable="false">
+    <message name="IDS_FEDERATION_SIGN_UP_TITLE" desc="Title of the UI shown in the omnibox to remind users that they can sign up with an identity provider.">
       Sign up with <ph name="IDP_NAME">$1<ex>google.com</ex></ph>
     </message>
 
