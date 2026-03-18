@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_model.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_bubble_view.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_coordinator.h"
@@ -68,10 +69,13 @@ class ChromeLabsTestHelper {
     PinnedToolbarActionsModel* const actions_model =
         PinnedToolbarActionsModel::Get(browser->profile());
     actions_model->UpdatePinnedState(kActionShowChromeLabs, true);
+    CHECK(!features::IsWebUIPinnedToolbarActionsEnabled())
+        << "Test needs modification to support WebUIPinnedToolbarActions";
     views::test::WaitForAnimatingLayoutManager(
-        BrowserView::GetBrowserViewForBrowser(browser)
-            ->toolbar()
-            ->pinned_toolbar_actions_container());
+        static_cast<PinnedToolbarActionsContainer*>(
+            BrowserView::GetBrowserViewForBrowser(browser)
+                ->toolbar()
+                ->pinned_toolbar_actions()));
   }
 
   // Clicks the Chrome Labs button to show the bubble.

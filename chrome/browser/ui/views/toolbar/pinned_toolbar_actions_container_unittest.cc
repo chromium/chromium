@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model_factory.h"
 #include "chrome/browser/ui/toolbar/toolbar_pref_names.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button.h"
@@ -104,38 +105,34 @@ class PinnedToolbarActionsContainerTest : public TestWithBrowserView {
   }
 
   void CheckIsPoppedOut(actions::ActionId id, bool should_be_popped_out) {
-    auto* container =
-        browser_view()->toolbar()->pinned_toolbar_actions_container();
     if (should_be_popped_out) {
-      ASSERT_NE(std::ranges::find(container->popped_out_buttons_, id,
+      ASSERT_NE(std::ranges::find(container()->popped_out_buttons_, id,
                                   [](PinnedActionToolbarButton* button) {
                                     return button->GetActionId();
                                   }),
-                container->popped_out_buttons_.end());
+                container()->popped_out_buttons_.end());
     } else {
-      ASSERT_EQ(std::ranges::find(container->popped_out_buttons_, id,
+      ASSERT_EQ(std::ranges::find(container()->popped_out_buttons_, id,
                                   [](PinnedActionToolbarButton* button) {
                                     return button->GetActionId();
                                   }),
-                container->popped_out_buttons_.end());
+                container()->popped_out_buttons_.end());
     }
   }
 
   void CheckIsPinned(actions::ActionId id, bool should_be_pinned) {
-    auto* container =
-        browser_view()->toolbar()->pinned_toolbar_actions_container();
     if (should_be_pinned) {
-      ASSERT_NE(std::ranges::find(container->pinned_buttons_, id,
+      ASSERT_NE(std::ranges::find(container()->pinned_buttons_, id,
                                   [](PinnedActionToolbarButton* button) {
                                     return button->GetActionId();
                                   }),
-                container->pinned_buttons_.end());
+                container()->pinned_buttons_.end());
     } else {
-      ASSERT_EQ(std::ranges::find(container->pinned_buttons_, id,
+      ASSERT_EQ(std::ranges::find(container()->pinned_buttons_, id,
                                   [](PinnedActionToolbarButton* button) {
                                     return button->GetActionId();
                                   }),
-                container->pinned_buttons_.end());
+                container()->pinned_buttons_.end());
     }
   }
 
@@ -177,7 +174,10 @@ class PinnedToolbarActionsContainerTest : public TestWithBrowserView {
   }
 
   PinnedToolbarActionsContainer* container() {
-    return browser_view()->toolbar()->pinned_toolbar_actions_container();
+    CHECK(!features::IsWebUIPinnedToolbarActionsEnabled())
+        << "Test needs modification to support WebUIPinnedToolbarActions";
+    return static_cast<PinnedToolbarActionsContainer*>(
+        browser_view()->toolbar()->pinned_toolbar_actions());
   }
 
   PinnedToolbarActionsModel* model() { return model_.get(); }

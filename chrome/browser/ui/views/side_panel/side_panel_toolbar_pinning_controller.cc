@@ -109,7 +109,7 @@ void SidePanelToolbarPinningController::UpdateActiveState(
     SidePanelEntryKey key,
     bool show_active_in_toolbar) {
   auto* const toolbar_container =
-      browser_view_->toolbar()->pinned_toolbar_actions_container();
+      browser_view_->toolbar()->pinned_toolbar_actions();
   CHECK(toolbar_container);
 
   // Active extension side-panels have different UI in the toolbar than active

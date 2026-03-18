@@ -13,7 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button.h"
-#include "chrome/browser/ui/views/toolbar/toolbar_controller.h"
+#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_icon_container_view.h"
 #include "ui/actions/action_id.h"
 #include "ui/actions/actions.h"
@@ -41,7 +41,7 @@ class PinnedToolbarActionsContainer
     : public ToolbarIconContainerView,
       public PinnedToolbarActionsModel::Observer,
       public views::DragController,
-      public ToolbarController::PinnedActionsDelegate {
+      public PinnedToolbarActions {
   METADATA_HEADER(PinnedToolbarActionsContainer, ToolbarIconContainerView)
 
  public:
@@ -53,13 +53,6 @@ class PinnedToolbarActionsContainer
       const PinnedToolbarActionsContainer&) = delete;
   ~PinnedToolbarActionsContainer() override;
 
-  // TODO(https://crbug.com/363743077): This method is almost but not quite
-  // identical to ShowActionEphemerallyInToolbar(). This doesn't make sense and
-  // one should be removed.
-  void UpdateActionState(actions::ActionId id, bool is_active);
-  // Updates whether the button is shown ephemerally in the toolbar (in the
-  // popped out region unless also pinned) regardless of whether it is active.
-  void ShowActionEphemerallyInToolbar(actions::ActionId id, bool show);
   void UpdatePinnedStateAndAnnounce(actions::ActionId id, bool pin);
 
   void MovePinnedActionBy(actions::ActionId action_id, int delta);
@@ -99,9 +92,12 @@ class PinnedToolbarActionsContainer
   views::View* GetContainerView() override;
   bool ShouldAnyButtonsOverflow(gfx::Size available_size) const override;
 
-  bool IsActionPinned(actions::ActionId id);
-  bool IsActionPoppedOut(actions::ActionId id);
-  bool IsActionPinnedOrPoppedOut(actions::ActionId id);
+  // PinnedToolbarActions:
+  void UpdateActionState(actions::ActionId id, bool is_active) override;
+  void ShowActionEphemerallyInToolbar(actions::ActionId id, bool show) override;
+  bool IsActionPinned(actions::ActionId id) override;
+  bool IsActionPoppedOut(actions::ActionId id) override;
+  bool IsActionPinnedOrPoppedOut(actions::ActionId id) override;
 
   // Returns the button associated with `id`. This does not return permanent
   // buttons which are currently invisible, an accessor for these can be

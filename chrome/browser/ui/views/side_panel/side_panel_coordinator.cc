@@ -243,7 +243,7 @@ void SidePanelCoordinator::Close(SidePanelEntry::PanelType panel_type,
   // hidden.
   side_panel->ResetSidePanelAnimationContent();
 
-  if (browser_view_->toolbar()->pinned_toolbar_actions_container()) {
+  if (browser_view_->toolbar()->pinned_toolbar_actions()) {
     side_panel_toolbar_pinning_controller_->UpdateActiveState(
         current_key(panel_type)->key, false);
   }
@@ -335,7 +335,7 @@ void SidePanelCoordinator::PopulateSidePanel(
   }
   side_panel->Open(/*animated=*/!suppress_animations);
   SetCurrentKey(entry->type(), unique_key);
-  if (browser_view_->toolbar()->pinned_toolbar_actions_container()) {
+  if (browser_view_->toolbar()->pinned_toolbar_actions()) {
     side_panel_toolbar_pinning_controller_->UpdateActiveState(
         entry->key(), entry->should_show_ephemerally_in_toolbar());
     // Notify active state change only if the entry ids for the side panel are

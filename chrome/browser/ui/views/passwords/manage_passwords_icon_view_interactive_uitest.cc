@@ -122,9 +122,13 @@ IN_PROC_BROWSER_TEST_P(ManagePasswordsIconViewTestToolbarPinningOnly,
   PinnedToolbarActionsModel::Get(browser()->profile())
       ->UpdatePinnedState(kActionShowPasswordsBubbleOrPage, true);
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  CHECK(!features::IsWebUIPinnedToolbarActionsEnabled())
+      << "Test needs modification to support WebUIPinnedToolbarActions";
+  PinnedToolbarActionsContainer* container =
+      static_cast<PinnedToolbarActionsContainer*>(
+          browser_view->toolbar()->pinned_toolbar_actions());
   PinnedActionToolbarButton* button =
-      browser_view->toolbar()->pinned_toolbar_actions_container()->GetButtonFor(
-          kActionShowPasswordsBubbleOrPage);
+      container->GetButtonFor(kActionShowPasswordsBubbleOrPage);
   ASSERT_NE(button, nullptr);
 
   // Underline should not be visible here.

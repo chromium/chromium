@@ -18,6 +18,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/notimplemented.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -551,13 +552,22 @@ void ToolbarView::Init() {
     toolbar_divider_ = AddChildView(std::move(toolbar_divider));
   }
 
-  pinned_toolbar_actions_container_ = AddChildView(
-      std::make_unique<PinnedToolbarActionsContainer>(browser_view_, this));
+  if (!features::IsWebUIPinnedToolbarActionsEnabled()) {
+    pinned_toolbar_actions_container_ = AddChildView(
+        std::make_unique<PinnedToolbarActionsContainer>(browser_view_, this));
+    pinned_toolbar_actions_ = pinned_toolbar_actions_container_;
+  } else {
+    pinned_toolbar_actions_ = toolbar_webview_->GetPinnedToolbarActions();
+  }
 
   if (!base::FeatureList::IsEnabled(tabs::kHorizontalTabStripComboButton) &&
       features::HasTabSearchToolbarButton()) {
+    CHECK(!features::IsWebUIPinnedToolbarActionsEnabled())
+        << "WebUIPinnedToolbarActions does not support "
+           "CreatePermanentButtonFor, consider enabling "
+           "HorizontalTabStripComboButton";
     tab_search_button_ =
-        pinned_toolbar_actions_container()->CreatePermanentButtonFor(
+        pinned_toolbar_actions_container_->CreatePermanentButtonFor(
             kActionTabSearch);
     tab_search_button_->SetProperty(views::kElementIdentifierKey,
                                     kTabSearchButtonElementId);
@@ -573,6 +583,8 @@ void ToolbarView::Init() {
           chrome_labs_prefs::kBrowserLabsEnabledEnterprisePolicy, prefs,
           base::BindRepeating(&ToolbarView::OnChromeLabsPrefChanged,
                               base::Unretained(this)));
+      CHECK(!features::IsWebUIPinnedToolbarActionsEnabled())
+          << "WebUIPinnedToolbarActions does not support ChromeLabs.";
       // Set the visibility for the button based on initial enterprise policy
       // value. Only call OnChromeLabsPrefChanged if there is a change from
       // the initial value.
@@ -1293,8 +1305,11 @@ ExtensionsToolbarButton* ToolbarView::GetExtensionsButton() const {
 }
 
 ToolbarButton* ToolbarView::GetCastButton() const {
-  return pinned_toolbar_actions_container()
-             ? pinned_toolbar_actions_container()->GetButtonFor(
+  if (features::IsWebUIPinnedToolbarActionsEnabled()) {
+    NOTIMPLEMENTED();
+  }
+  return pinned_toolbar_actions_container_
+             ? pinned_toolbar_actions_container_->GetButtonFor(
                    kActionRouteMedia)
              : nullptr;
 }
@@ -1571,7 +1586,7 @@ void ToolbarView::InitLayout() {
   toolbar_controller_ = std::make_unique<ToolbarController>(
       ToolbarController::GetDefaultResponsiveElements(browser_),
       ToolbarController::GetDefaultOverflowOrder(), kToolbarFlexOrderStart,
-      this, overflow_button_, pinned_toolbar_actions_container_,
+      this, overflow_button_, pinned_toolbar_actions_,
       PinnedToolbarActionsModel::Get(browser_view_->GetProfile()));
   overflow_button_->set_toolbar_controller(toolbar_controller_.get());
 

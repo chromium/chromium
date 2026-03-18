@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -94,10 +95,13 @@ class FindInPageControllerTest : public InProcessBrowserTest {
   FindInPageControllerTest() = default;
  protected:
   void SetUpOnMainThread() override {
+    CHECK(!features::IsWebUIPinnedToolbarActionsEnabled())
+        << "Test needs modification to support WebUIPinnedToolbarActions";
     views::test::WaitForAnimatingLayoutManager(
-        BrowserView::GetBrowserViewForBrowser(browser())
-            ->toolbar()
-            ->pinned_toolbar_actions_container());
+        static_cast<PinnedToolbarActionsContainer*>(
+            BrowserView::GetBrowserViewForBrowser(browser())
+                ->toolbar()
+                ->pinned_toolbar_actions()));
   }
 
   bool GetFindBarWindowInfoForBrowser(Browser* browser,

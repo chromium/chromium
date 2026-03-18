@@ -9,7 +9,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/browser_command_controller.h"
+#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions.h"
 #include "chrome/browser/ui/views/toolbar/webui_back_forward_control.h"
+#include "chrome/browser/ui/views/toolbar/webui_pinned_toolbar_actions.h"
 #include "chrome/browser/ui/views/toolbar/webui_reload_control.h"
 #include "chrome/browser/ui/views/toolbar/webui_split_tabs_control.h"
 #include "chrome/browser/ui/webui/webui_toolbar/adapters/navigation_controls_state_fetcher.h"
@@ -53,6 +55,9 @@ class WebUIToolbarWebView
   ~WebUIToolbarWebView() override;
 
   ReloadControl* GetReloadControl();
+  PinnedToolbarActions* GetPinnedToolbarActions() {
+    return &pinned_toolbar_actions_;
+  }
 
   void SetBackButtonLeadingMargin(int margin);
   void SetBackForwardEnabled(int command_id, bool enabled);
@@ -109,6 +114,7 @@ class WebUIToolbarWebView
   friend WebUIReloadControl;
   friend WebUISplitTabsControl;
   friend WebUIBackForwardControl;
+  friend WebUIPinnedToolbarActions;
 
   toolbar_ui_api::mojom::NavigationControlsStatePtr
   GetNavigationControlsState();
@@ -158,6 +164,7 @@ class WebUIToolbarWebView
   std::unique_ptr<WebUILocationBar> location_bar_;
   WebUIBackForwardControl back_control_;
   WebUIBackForwardControl forward_control_;
+  WebUIPinnedToolbarActions pinned_toolbar_actions_;
   raw_ptr<const base::TickClock> clock_;
   base::OnceClosure did_first_non_empty_paint_callback_;
   bool has_finished_first_non_empty_paint_ = false;

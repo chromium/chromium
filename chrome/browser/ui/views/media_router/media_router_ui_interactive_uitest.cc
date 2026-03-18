@@ -67,10 +67,13 @@ class MediaRouterUIInteractiveUITest : public InProcessBrowserTest {
   }
 
   void WaitForAnimations() {
-    auto* container = BrowserView::GetBrowserViewForBrowser(browser())
-                          ->toolbar()
-                          ->pinned_toolbar_actions_container();
-    views::test::WaitForAnimatingLayoutManager(container);
+    CHECK(!features::IsWebUIPinnedToolbarActionsEnabled())
+        << "Test needs modification to support WebUIPinnedToolbarActions";
+    views::test::WaitForAnimatingLayoutManager(
+        static_cast<PinnedToolbarActionsContainer*>(
+            BrowserView::GetBrowserViewForBrowser(browser())
+                ->toolbar()
+                ->pinned_toolbar_actions()));
   }
 
   void PressToolbarIcon() {

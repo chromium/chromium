@@ -11,6 +11,7 @@
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -52,10 +53,13 @@ class CastToolbarButtonControllerBrowserTest : public InProcessBrowserTest {
   }
 
   bool IsIconShown() const {
+    CHECK(!features::IsWebUIPinnedToolbarActionsEnabled())
+        << "Test needs modification to support WebUIPinnedToolbarActions";
     views::test::WaitForAnimatingLayoutManager(
-        BrowserView::GetBrowserViewForBrowser(browser())
-            ->toolbar()
-            ->pinned_toolbar_actions_container());
+        static_cast<PinnedToolbarActionsContainer*>(
+            BrowserView::GetBrowserViewForBrowser(browser())
+                ->toolbar()
+                ->pinned_toolbar_actions()));
     auto* cast_button = BrowserView::GetBrowserViewForBrowser(browser())
                             ->toolbar()
                             ->GetCastButton();

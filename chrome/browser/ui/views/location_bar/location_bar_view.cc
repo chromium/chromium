@@ -1369,10 +1369,10 @@ bool LocationBarView::ShouldHidePageActionIcon(
     return false;
   }
 
-  PinnedToolbarActionsContainer* pinned_toolbar_actions_container =
-      browser_view->toolbar()->pinned_toolbar_actions_container();
-  return pinned_toolbar_actions_container &&
-         pinned_toolbar_actions_container->IsActionPinnedOrPoppedOut(
+  PinnedToolbarActions* pinned_toolbar_actions =
+      browser_view->toolbar()->pinned_toolbar_actions();
+  return pinned_toolbar_actions &&
+         pinned_toolbar_actions->IsActionPinnedOrPoppedOut(
              icon_view->action_id().value_or(-1));
 }
 

@@ -149,6 +149,7 @@ WebUIToolbarWebView::WebUIToolbarWebView(
       location_bar_(std::move(location_bar)),
       back_control_(this, BackForwardButton::Direction::kBack),
       forward_control_(this, BackForwardButton::Direction::kForward),
+      pinned_toolbar_actions_(this),
       clock_(base::DefaultTickClock::GetInstance()),
       touch_ui_subscription_(ui::TouchUiController::Get()->RegisterCallback(
           base::BindRepeating(&WebUIToolbarWebView::OnTouchUiChanged,

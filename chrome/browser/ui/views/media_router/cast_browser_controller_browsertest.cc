@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/media_router/media_router_ui_service.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
@@ -64,9 +65,12 @@ class CastBrowserControllerTest : public InProcessBrowserTest {
 
     PinnedToolbarActionsModel::Get(browser()->profile())
         ->UpdatePinnedState(kActionRouteMedia, true);
-    button_ = BrowserView::GetBrowserViewForBrowser(browser())
-                  ->toolbar()
-                  ->pinned_toolbar_actions_container()
+    CHECK(!features::IsWebUIPinnedToolbarActionsEnabled())
+        << "Test needs modification to support WebUIPinnedToolbarActions";
+    button_ = static_cast<PinnedToolbarActionsContainer*>(
+                  BrowserView::GetBrowserViewForBrowser(browser())
+                      ->toolbar()
+                      ->pinned_toolbar_actions())
                   ->GetButtonFor(kActionRouteMedia);
     controller_ =
         browser()->browser_window_features()->cast_browser_controller();

@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/media_router/media_router_ui_service.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/cast/cast_toolbar_button_controller.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/media_router/app_menu_test_api.h"
 #include "chrome/browser/ui/views/media_router/cast_dialog_view.h"
@@ -57,10 +58,13 @@ class MediaRouterUIBrowserTest : public InProcessBrowserTest {
                           MediaSource("urn:x-org.chromium.media:source:tab:*"),
                           "sinkId1", "description", true)};
 
+    CHECK(!features::IsWebUIPinnedToolbarActionsEnabled())
+        << "Test needs modification to support WebUIPinnedToolbarActions";
     auto* pinned_toolbar_actions_container =
-        BrowserView::GetBrowserViewForBrowser(browser())
-            ->toolbar()
-            ->pinned_toolbar_actions_container();
+        static_cast<PinnedToolbarActionsContainer*>(
+            BrowserView::GetBrowserViewForBrowser(browser())
+                ->toolbar()
+                ->pinned_toolbar_actions());
     views::test::ReduceAnimationDuration(pinned_toolbar_actions_container);
   }
 
