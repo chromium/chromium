@@ -43,9 +43,12 @@ FileOpeningJob::FileOpeningTask::~FileOpeningTask() = default;
 
 FileOpeningJob::FileOpeningJob(std::vector<FileOpeningTask> tasks)
     : tasks_(std::move(tasks)), max_threads_(GetMaxFileOpeningThreads()) {
+  for (const auto& task : tasks_) {
+    task.request->set_file_opening_job(base::WrapRefCounted(this));
+  }
   num_unopened_files_ = tasks_.size();
 
-  // The base::Unratained calls are safe because `file_opening_job_handle_` is
+  // The base::Unretained calls are safe because `file_opening_job_handle_` is
   // destroyed when `this` is.
   file_opening_job_handle_ =
       base::PostJob(FROM_HERE,

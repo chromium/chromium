@@ -182,8 +182,9 @@ bool FilesRequestHandler::UploadDataImpl() {
 
     std::vector<safe_browsing::FileOpeningJob::FileOpeningTask> tasks(
         paths_.size());
-    for (size_t i = 0; i < paths_.size(); ++i)
+    for (size_t i = 0; i < paths_.size(); ++i) {
       tasks[i].request = PrepareFileRequest(i);
+    }
 
     file_access::RequestFilesAccessForSystem(
         paths_,
@@ -388,8 +389,10 @@ void FilesRequestHandler::CreateFileOpeningJob(
     file_access::ScopedFileAccess file_access) {
   scoped_file_access_ =
       std::make_unique<file_access::ScopedFileAccess>(std::move(file_access));
+  // Keep a reference to `file_opening_job` in each task to ensure
+  // its lifetime will be longer than the request.
   file_opening_job_ =
-      std::make_unique<safe_browsing::FileOpeningJob>(std::move(tasks));
+      base::MakeRefCounted<safe_browsing::FileOpeningJob>(std::move(tasks));
 }
 
 }  // namespace enterprise_connectors

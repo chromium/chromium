@@ -11,6 +11,10 @@
 #include "components/enterprise/connectors/core/service_provider_config.h"
 #include "components/file_access/scoped_file_access.h"
 
+namespace safe_browsing {
+class FileOpeningJob;
+}  // namespace safe_browsing
+
 namespace enterprise_connectors {
 
 // A BinaryUploadRequest implementation that gets the data to scan from the
@@ -34,6 +38,9 @@ class FileAnalysisRequestBase : public BinaryUploadRequest {
   FileAnalysisRequestBase(const FileAnalysisRequestBase&) = delete;
   FileAnalysisRequestBase& operator=(const FileAnalysisRequestBase&) = delete;
   ~FileAnalysisRequestBase() override;
+
+  void set_file_opening_job(
+      scoped_refptr<safe_browsing::FileOpeningJob> file_opening_job);
 
   // BinaryUploadRequest implementation. If |delay_opening_file_| is false,
   // OnGotFileData is called by posting after GetFileDataBlocking runs a
@@ -111,6 +118,7 @@ class FileAnalysisRequestBase : public BinaryUploadRequest {
  private:
   SEQUENCE_CHECKER(sequence_checker_);
 
+  scoped_refptr<safe_browsing::FileOpeningJob> file_opening_job_;
   scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
 
   base::WeakPtrFactory<FileAnalysisRequestBase> weakptr_factory_{this};

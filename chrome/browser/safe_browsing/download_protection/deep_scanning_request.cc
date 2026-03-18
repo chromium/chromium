@@ -557,7 +557,9 @@ void DeepScanningRequest::StartSavePackageScan() {
   }
   DCHECK_EQ(i, tasks.size());
 
-  file_opening_job_ = std::make_unique<FileOpeningJob>(std::move(tasks));
+  // Keep a reference to `file_opening_job` in each task to ensure
+  // its lifetime will be longer than the request.
+  file_opening_job_ = base::MakeRefCounted<FileOpeningJob>(std::move(tasks));
 }
 
 void DeepScanningRequest::PopulateRequest(FileAnalysisRequest* request,

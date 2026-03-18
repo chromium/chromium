@@ -11,6 +11,7 @@
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "base/types/optional_ref.h"
@@ -269,7 +270,7 @@ class DeepScanningRequest : public download::DownloadItem::Observer,
 
   // Owner of the FileOpeningJob used to safely open multiple files in parallel
   // for save package scans. Always nullptr for non-save package scans.
-  std::unique_ptr<FileOpeningJob> file_opening_job_;
+  scoped_refptr<FileOpeningJob> file_opening_job_;
 
   // The total number of files beings scanned for which OnScanComplete hasn't
   // been called. Once this is 0, FinishRequest should be called and `this`

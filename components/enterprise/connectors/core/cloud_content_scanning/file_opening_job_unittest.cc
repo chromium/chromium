@@ -104,7 +104,7 @@ TEST_F(FileOpeningJobTest, SingleFile) {
   quit_file_count_ = 1;
 
   auto tasks = CreateFilesAndTasks(1);
-  FileOpeningJob job(std::move(tasks));
+  auto job = base::MakeRefCounted<FileOpeningJob>(std::move(tasks));
 
   run_loop.Run();
   EXPECT_EQ(1, on_got_file_data_count_);
@@ -116,7 +116,7 @@ TEST_F(FileOpeningJobTest, MultiFiles) {
   quit_file_count_ = 100;
 
   auto tasks = CreateFilesAndTasks(100);
-  FileOpeningJob job(std::move(tasks));
+  auto job = base::MakeRefCounted<FileOpeningJob>(std::move(tasks));
 
   run_loop.Run();
   EXPECT_EQ(100, on_got_file_data_count_);

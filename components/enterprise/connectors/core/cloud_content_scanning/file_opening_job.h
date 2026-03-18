@@ -10,6 +10,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
 #include "base/task/post_job.h"
 
 namespace enterprise_connectors {
@@ -21,7 +22,7 @@ namespace safe_browsing {
 // This class encapsulates a base::PostJob call made to open multiple files to
 // set up multiple FileAnalysisRequestBases to avoid using too many system
 // resources.
-class FileOpeningJob {
+class FileOpeningJob : public base::RefCounted<FileOpeningJob> {
  public:
   // Struct to store data necessary for a synchronized file opening task.
   struct FileOpeningTask {
@@ -44,10 +45,11 @@ class FileOpeningJob {
   // no longer useful (if a folder upload is cancelled for instance), `this`
   // should be deleted so that resources aren't spent opening files.
   explicit FileOpeningJob(std::vector<FileOpeningTask> tasks);
-  ~FileOpeningJob();
 
  private:
   FRIEND_TEST_ALL_PREFIXES(FileOpeningJobTest, MaxThreadsFlag);
+  friend class base::RefCounted<FileOpeningJob>;
+  ~FileOpeningJob();
 
   // Processes the next file opening task that hasn't been taken so far. This is
   // the main callback passed to base::PostJob and it will run concurrently on

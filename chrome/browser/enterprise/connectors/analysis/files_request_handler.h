@@ -135,9 +135,9 @@ class FilesRequestHandler : public RequestHandlerBase {
       std::vector<safe_browsing::FileOpeningJob::FileOpeningTask> tasks,
       file_access::ScopedFileAccess file_access);
 
-  // Owner of the FileOpeningJob responsible for opening files on parallel
-  // threads. Always nullptr for non-file content scanning.
-  std::unique_ptr<safe_browsing::FileOpeningJob> file_opening_job_;
+  // Constructs and owns a refcount to FileOpeningJob responsible for opening
+  // files on parallel threads. Always nullptr for non-file content scanning.
+  scoped_refptr<safe_browsing::FileOpeningJob> file_opening_job_;
 
   std::vector<base::FilePath> paths_;
   std::vector<FileInfo> file_info_;
