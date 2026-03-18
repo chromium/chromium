@@ -90,9 +90,9 @@ class ExtensionActionListMediator implements Destroyable {
     private final ChromeAndroidTask mTask;
     private final Profile mProfile;
     private final NullableObservableSupplier<Tab> mCurrentTabSupplier;
-    private final ExtensionActionListCoordinator.ActionAnchorViewProvider mActionAnchorViewProvider;
     private final @Nullable ContextMenuPopulatorFactory mContextMenuPopulatorFactory;
     private final @Nullable SelectionDropdownMenuDelegate mSelectionDropdownMenuDelegate;
+    private final ExtensionActionListCoordinator.RecyclerViewDelegate mRecyclerViewDelegate;
 
     private final ExtensionsToolbarBridge mExtensionsToolbarBridge;
     private final ToolbarDelegate mToolbarDelegate = new ToolbarDelegate();
@@ -102,9 +102,18 @@ class ExtensionActionListMediator implements Destroyable {
 
     @Nullable private final LifetimeAssert mLifetimeAssert = LifetimeAssert.create(this);
 
-    // The maximum width that the icons can take up. It is set when the toolbar requests us to be a
-    // certain size. Until then, we assume we have infinite space.
-    private @Nullable Integer mAvailableWidth;
+    // The ID of the action that should be "popped out", since it needs to be visible to show a
+    // popup anchored to the action view (e.g extension popup or context menu). During animation, it
+    // should reflect the end state.
+    @Nullable private String mPoppedOutActionId;
+
+    // Whether the toolbar has allocated us with enough width to show the popped out action. Until
+    // then, we assume we have infinite space.
+    private boolean mCanShowPoppedOutAction = true;
+
+    // The maximum width that the icons (other than popped out action) can take up. It is set when
+    // the toolbar requests us to be a certain size. Until then, we assume we have infinite space.
+    private @Nullable Integer mAvailableWidthForPinnedActions;
 
     public ExtensionActionListMediator(
             Context context,
@@ -113,7 +122,7 @@ class ExtensionActionListMediator implements Destroyable {
             ChromeAndroidTask task,
             Profile profile,
             NullableObservableSupplier<Tab> currentTabSupplier,
-            ExtensionActionListCoordinator.ActionAnchorViewProvider actionAnchorViewProvider,
+            ExtensionActionListCoordinator.RecyclerViewDelegate recyclerViewDelegate,
             ExtensionsToolbarBridge extensionsToolbarBridge,
             @Nullable ContextMenuPopulatorFactory contextMenuPopulatorFactory,
             @Nullable SelectionDropdownMenuDelegate selectionDropdownMenuDelegate) {
@@ -123,7 +132,7 @@ class ExtensionActionListMediator implements Destroyable {
         mTask = task;
         mProfile = profile;
         mCurrentTabSupplier = currentTabSupplier;
-        mActionAnchorViewProvider = actionAnchorViewProvider;
+        mRecyclerViewDelegate = recyclerViewDelegate;
         mExtensionsToolbarBridge = extensionsToolbarBridge;
         mContextMenuPopulatorFactory = contextMenuPopulatorFactory;
         mSelectionDropdownMenuDelegate = selectionDropdownMenuDelegate;
@@ -145,13 +154,38 @@ class ExtensionActionListMediator implements Destroyable {
         LifetimeAssert.setSafeToGc(mLifetimeAssert, true);
     }
 
+    /** Returns whether there is an action that is popped out. */
+    public boolean hasPoppedOutAction() {
+        return mPoppedOutActionId != null;
+    }
+
+    /**
+     * Remembers whether we can show the popped out action, but does not update the UI just yet, to
+     * avoid refreshing the UI twice. We actually update the UI via {@link fitActionsWithinWidth()},
+     * which will be called due to the rest of the action list having a lower priority for the
+     * toolbar to display, as determined in {@code ToolbarUtils}.
+     *
+     * @param availableWidth The maximum width that toolbar allows us to use up.
+     * @return The actual width that we will use up for the popped out action.
+     */
+    public int setCanShowPoppedOutAction(int availableWidth) {
+        int itemWidth = mContext.getResources().getDimensionPixelSize(R.dimen.toolbar_button_width);
+        if (hasPoppedOutAction() && itemWidth <= availableWidth) {
+            mCanShowPoppedOutAction = true;
+            return itemWidth;
+        } else {
+            mCanShowPoppedOutAction = false;
+            return 0;
+        }
+    }
+
     /**
      * Reconciles the current list of models with the list of IDs from the bridge. This handles
      * additions, removals, and reordering without rebuilding the whole list.
      */
     @VisibleForTesting
     void reconcileActionItems() {
-        String[] actionIds = mExtensionsToolbarBridge.getPinnedActionIds();
+        String[] pinnedActionIds = mExtensionsToolbarBridge.getPinnedActionIds();
 
         Tab currentTab = mCurrentTabSupplier.get();
         WebContents webContents = currentTab != null ? currentTab.getWebContents() : null;
@@ -163,60 +197,88 @@ class ExtensionActionListMediator implements Destroyable {
 
         // Optimization: Remove items that are no longer present in the new list.
         // This prevents unnecessary moves if the first item is removed.
-        Set<String> actionIdsSet = new HashSet<>(Arrays.asList(actionIds));
+        Set<String> pinnedActionIdsSet = new HashSet<>(Arrays.asList(pinnedActionIds));
         for (int i = mModels.size() - 1; i >= 0; i--) {
             String id = getActionIdForIndex(i);
-            if (!actionIdsSet.contains(id)) {
-                if (id.equals(currentPopupActionId)) {
-                    closePopup();
-                }
-                mModels.removeAt(i);
+
+            boolean isPoppedOutAction = mPoppedOutActionId != null && mPoppedOutActionId.equals(id);
+            if (pinnedActionIdsSet.contains(id) || isPoppedOutAction) {
+                // We shouldn't remove the model if the icon is pinned or popped out.
+                continue;
             }
+
+            if (id.equals(currentPopupActionId)) {
+                closePopup();
+            }
+            mModels.removeAt(i);
         }
 
+        int itemWidth = mContext.getResources().getDimensionPixelSize(R.dimen.toolbar_button_width);
+
         int maxNumberOfItems = Integer.MAX_VALUE;
-        if (mAvailableWidth != null) {
-            int itemWidth =
-                    mContext.getResources().getDimensionPixelSize(R.dimen.toolbar_button_width);
+        if (mAvailableWidthForPinnedActions != null) {
             assert itemWidth > 0;
-            maxNumberOfItems = mAvailableWidth / itemWidth;
+            maxNumberOfItems = mAvailableWidthForPinnedActions / itemWidth;
         }
 
         // O(N) for removals/no-ops; O(N^2) for reordering/insertions.
         int currentModelIndex = 0;
-        for (String actionId : actionIds) {
+
+        // Go through non-popped-out actions.
+        for (String actionId : pinnedActionIds) {
+            if (mPoppedOutActionId != null && mPoppedOutActionId.equals(actionId)) {
+                continue;
+            }
+
             if (currentModelIndex >= maxNumberOfItems) {
+                // We ran out of space.
                 break;
             }
 
-            ExtensionAction action = mExtensionsToolbarBridge.getAction(actionId, webContents);
-            if (action == null) {
-                continue;
-            }
-
-            if (currentModelIndex < mModels.size()
-                    && getActionIdForIndex(currentModelIndex).equals(actionId)) {
-                currentModelIndex++;
-                continue;
-            }
-
-            int indexInModels = findIndexForId(actionId, currentModelIndex + 1);
-
-            if (indexInModels != -1) {
-                mModels.move(indexInModels, currentModelIndex);
-            } else {
-                mModels.add(currentModelIndex, createListItem(action, webContents));
-            }
-
-            currentModelIndex++;
+            currentModelIndex = reconcileItem(actionId, currentModelIndex, webContents);
         }
 
+        // Deal with the popped out action last, as it should appear on the [right|left] end of the
+        // list for [LTR|RTL].
+        if (mPoppedOutActionId != null && mCanShowPoppedOutAction) {
+            currentModelIndex = reconcileItem(mPoppedOutActionId, currentModelIndex, webContents);
+        }
+
+        // Remove rest of the items.
         while (mModels.size() > currentModelIndex) {
             if (getActionIdForIndex(currentModelIndex).equals(currentPopupActionId)) {
                 closePopup();
             }
             mModels.removeAt(currentModelIndex);
         }
+    }
+
+    /**
+     * Helper to calculate whether we should show an action item, and if so to reorder {@link
+     * mModels} so that {@code actionId} comes at {@code currentIndex}.
+     *
+     * @return The next index of {@link mModels} that needs to be evaluated.
+     */
+    private int reconcileItem(
+            String actionId, int currentIndex, @Nullable WebContents webContents) {
+        ExtensionAction action = mExtensionsToolbarBridge.getAction(actionId, webContents);
+        if (action == null) {
+            return currentIndex;
+        }
+
+        if (currentIndex < mModels.size() && getActionIdForIndex(currentIndex).equals(actionId)) {
+            // We already have {@link actionId} in the correct place. We can just move onto the next
+            // one.
+            return currentIndex + 1;
+        }
+
+        int indexInModels = findIndexForId(actionId, currentIndex + 1);
+        if (indexInModels == -1) {
+            mModels.add(currentIndex, createListItem(action, webContents));
+        } else {
+            mModels.move(indexInModels, currentIndex);
+        }
+        return currentIndex + 1;
     }
 
     private ListItem createListItem(ExtensionAction action, @Nullable WebContents webContents) {
@@ -331,25 +393,58 @@ class ExtensionActionListMediator implements Destroyable {
         mExtensionsToolbarBridge.executeUserAction(actionId, InvocationSource.TOOLBAR_BUTTON);
     }
 
+    /**
+     * Run {@code onVisible} after making sure that the action exists by popping out.
+     *
+     * @param actionId The ID of the action that needs visibility.
+     * @param runnable The runnable to run after all animations end and the {@link RecyclerView}
+     *     reaches a stable state. This does not guarantee that when this runnable is called the
+     *     action is visible - for example, another animation might have taken over and unpopped the
+     *     action.
+     */
+    public void requestActionVisibility(String actionId, Runnable runnable) {
+        if (mPoppedOutActionId != null && !actionId.equals(mPoppedOutActionId)) {
+            // Undo pop out for any other action.
+            undoPopout();
+        }
+
+        mRecyclerViewDelegate.addOnAnimationsFinishedRunnable(runnable);
+
+        if (findIndexForId(actionId) == -1) {
+            mPoppedOutActionId = actionId;
+        }
+
+        // Force the toolbar to recalculate the toolbar ranking and provide us with a new {@code
+        // availableWidth}, given that the amount we'll use has changed.
+        // Also, when no animation is necessary (e.g. the action is already pinned), this will
+        // trigger {@link ExtensionActionListRecyclerView}'s {@code onLayoutChangedListener} to
+        // fire, calling the runnable that we just added.
+        mRecyclerViewDelegate.requestLayoutWithViewUtils();
+    }
+
+    @VisibleForTesting
+    void undoPopout() {
+        if (mPoppedOutActionId != null) {
+            mPoppedOutActionId = null;
+
+            // Request layout to update available width and trigger updates.
+            mRecyclerViewDelegate.requestLayoutWithViewUtils();
+        }
+    }
+
     private void requestShowPopup(String actionId, long nativeHostPtr) {
         closePopup();
         closeContextMenu();
 
         ExtensionActionPopupContents contents = ExtensionActionPopupContents.create(nativeHostPtr);
-
-        if (findIndexForId(actionId) == -1) {
-            // TODO(crbug.com/483194547): Implement popping out actions.
-            contents.destroy();
-            return;
-        } else {
-            showPopupOnReadyAnchor(actionId, contents);
-        }
+        requestActionVisibility(actionId, () -> showPopupOnAnchor(actionId, contents));
     }
 
-    private void showPopupOnReadyAnchor(String actionId, ExtensionActionPopupContents contents) {
-        View buttonView = mActionAnchorViewProvider.getButtonViewForId(actionId);
+    private void showPopupOnAnchor(String actionId, ExtensionActionPopupContents contents) {
+        View buttonView = mRecyclerViewDelegate.getButtonViewForId(actionId);
         if (buttonView == null) {
             contents.destroy();
+            undoPopout();
             return;
         }
 
@@ -385,6 +480,7 @@ class ExtensionActionListMediator implements Destroyable {
         mActionState = new ActionState.Idle();
 
         popup.destroy();
+        undoPopout();
     }
 
     @VisibleForTesting
@@ -392,28 +488,26 @@ class ExtensionActionListMediator implements Destroyable {
         closePopup();
         closeContextMenu();
 
-        if (findIndexForId(actionId) == -1) {
-            // TODO(crbug.com/483194547): Implement popping out actions.
-            return;
-        } else {
-            showContextMenuOnReadyAnchor(actionId);
-        }
+        requestActionVisibility(actionId, () -> showContextMenuOnAnchor(actionId));
     }
 
-    private void showContextMenuOnReadyAnchor(String actionId) {
+    private void showContextMenuOnAnchor(String actionId) {
         ListMenuButton buttonView =
-                (ListMenuButton) mActionAnchorViewProvider.getButtonViewForId(actionId);
+                (ListMenuButton) mRecyclerViewDelegate.getButtonViewForId(actionId);
         if (buttonView == null) {
+            undoPopout();
             return;
         }
 
         Tab currentTab = mCurrentTabSupplier.get();
         if (currentTab == null) {
+            undoPopout();
             return;
         }
 
         WebContents webContents = currentTab.getWebContents();
         if (webContents == null) {
+            undoPopout();
             return;
         }
 
@@ -437,7 +531,7 @@ class ExtensionActionListMediator implements Destroyable {
 
         ListMenuButton buttonView =
                 (ListMenuButton)
-                        mActionAnchorViewProvider.getButtonViewForId(
+                        mRecyclerViewDelegate.getButtonViewForId(
                                 ((ActionState.ContextMenuActive) mActionState).getActionId());
         if (buttonView != null) {
             // We expect the View to exist if {@code mCurrentContextMenuActionId} is non-null, but
@@ -448,11 +542,12 @@ class ExtensionActionListMediator implements Destroyable {
         }
 
         mActionState = new ActionState.Idle();
+        undoPopout();
     }
 
     /** Updates the list of displayed actions to fit within the provided width constraint. */
     public void fitActionsWithinWidth(int availableWidth) {
-        mAvailableWidth = availableWidth;
+        mAvailableWidthForPinnedActions = availableWidth;
 
         // If this is called during an animation (e.g. the user resizes window during pinning /
         // unpinning animation), we abandon the animation and update to the new state instantly.

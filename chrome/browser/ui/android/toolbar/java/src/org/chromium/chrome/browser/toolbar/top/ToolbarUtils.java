@@ -36,6 +36,7 @@ public class ToolbarUtils {
                 ToolbarComponentId.MENU,
                 ToolbarComponentId.TAB_SWITCHER,
                 ToolbarComponentId.LOCATION_BAR_MINIMUM,
+                ToolbarComponentId.POPPED_EXTENSION_ACTION,
                 ToolbarComponentId.BACK,
                 ToolbarComponentId.INCOGNITO_INDICATOR,
                 ToolbarComponentId.ADAPTIVE_BUTTON,
@@ -78,6 +79,7 @@ public class ToolbarUtils {
         ToolbarComponentId.OMNIBOX_LENS,
         ToolbarComponentId.ADAPTIVE_BUTTON,
         ToolbarComponentId.INCOGNITO_INDICATOR,
+        ToolbarComponentId.POPPED_EXTENSION_ACTION,
         ToolbarComponentId.EXTENSIONS_MENU_BUTTON,
         ToolbarComponentId.EXTENSION_ACTION_LIST,
         ToolbarComponentId.TAB_SWITCHER,
@@ -102,13 +104,14 @@ public class ToolbarUtils {
         int OMNIBOX_LENS = 11;
         int ADAPTIVE_BUTTON = 12;
         int INCOGNITO_INDICATOR = 13;
-        int EXTENSIONS_MENU_BUTTON = 14;
-        int EXTENSION_ACTION_LIST = 15;
-        int TAB_SWITCHER = 16;
-        int MENU = 17;
-        int PADDING = 18;
-        int SIGNIN_BUTTON = 19;
-        int COUNT = 20;
+        int POPPED_EXTENSION_ACTION = 14;
+        int EXTENSIONS_MENU_BUTTON = 15;
+        int EXTENSION_ACTION_LIST = 16;
+        int TAB_SWITCHER = 17;
+        int MENU = 18;
+        int PADDING = 19;
+        int SIGNIN_BUTTON = 20;
+        int COUNT = 21;
     }
 
     // LINT.ThenChange(//chrome/browser/ui/android/toolbar/java/res/layout/toolbar_tablet.xml:toolbar_tablet_components|//chrome/browser/ui/android/omnibox/java/res/layout/url_action_container.xml:toolbar_tablet_components)

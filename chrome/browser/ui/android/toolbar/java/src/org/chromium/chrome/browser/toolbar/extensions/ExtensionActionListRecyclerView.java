@@ -21,6 +21,9 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.toolbar.R;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * A {@link RecyclerView} for extension action buttons. This container will automatically hide any
  * buttons that don't fit into the allowed width.
@@ -34,6 +37,11 @@ public class ExtensionActionListRecyclerView extends RecyclerView {
 
     /** Custom animator that triggers our layout loop when it accepts an animation task. */
     private final DefaultItemAnimator mItemAnimator = new ActionListItemAnimator();
+
+    /** Runnables to run after all animations end. */
+    private final List<Runnable> mOnAnimationsFinishedRunnables = new ArrayList<>();
+
+    private @Nullable Transition mLastTransition;
 
     private View.@Nullable OnLayoutChangeListener mLayoutChangeListener;
     private final AccelerateDecelerateInterpolator mAccelerateDecelerateInterpolator =
@@ -83,9 +91,12 @@ public class ExtensionActionListRecyclerView extends RecyclerView {
                 (v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
                     post(
                             () -> {
-                                if (!mItemAnimator.isRunning()) {
-                                    updateRecyclerViewWidth();
+                                if (mItemAnimator.isRunning()) {
+                                    return;
                                 }
+
+                                updateRecyclerViewWidth();
+                                runAllOnAnimationsFinishedRunnables();
                             });
                 };
         addOnLayoutChangeListener(mLayoutChangeListener);
@@ -93,6 +104,36 @@ public class ExtensionActionListRecyclerView extends RecyclerView {
 
     public void setTransitionRoot(ViewGroup transitionRoot) {
         mTransitionRoot = transitionRoot;
+    }
+
+    /**
+     * Adds a callback to run after the UI becomes stable. Specifically, either after the animation
+     * ends, or during the next layout if there is no pending animation.
+     */
+    public void addOnAnimationsFinishedRunnable(Runnable runnable) {
+        mOnAnimationsFinishedRunnables.add(runnable);
+    }
+
+    private void runAllOnAnimationsFinishedRunnables() {
+        if (mOnAnimationsFinishedRunnables.isEmpty()) {
+            return;
+        }
+
+        List<Runnable> runnables = new ArrayList<>(mOnAnimationsFinishedRunnables);
+        mOnAnimationsFinishedRunnables.clear();
+
+        for (Runnable runnable : runnables) {
+            runnable.run();
+        }
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        if (mLayoutChangeListener != null) {
+            removeOnLayoutChangeListener(mLayoutChangeListener);
+            addOnLayoutChangeListener(mLayoutChangeListener);
+        }
     }
 
     @Override
@@ -150,6 +191,34 @@ public class ExtensionActionListRecyclerView extends RecyclerView {
                 matchRecyclerView.setDuration(duration);
                 matchRecyclerView.setStartDelay(startDelay);
                 matchRecyclerView.setInterpolator(mAccelerateDecelerateInterpolator);
+
+                matchRecyclerView.addListener(
+                        new Transition.TransitionListener() {
+                            @Override
+                            public void onTransitionEnd(Transition transition) {
+                                transition.removeListener(this);
+                                if (transition == mLastTransition) {
+                                    runAllOnAnimationsFinishedRunnables();
+                                    mLastTransition = null;
+                                }
+                            }
+
+                            @Override
+                            public void onTransitionCancel(Transition transition) {}
+
+                            @Override
+                            public void onTransitionStart(Transition transition) {
+                                // Track the last transition, because we only want to run {@code
+                                // mOnAllAnimationEnded} after all transitions end.
+                                mLastTransition = transition;
+                            }
+
+                            @Override
+                            public void onTransitionPause(Transition transition) {}
+
+                            @Override
+                            public void onTransitionResume(Transition transition) {}
+                        });
 
                 TransitionManager.beginDelayedTransition(mTransitionRoot, matchRecyclerView);
                 updateRecyclerViewWidth();

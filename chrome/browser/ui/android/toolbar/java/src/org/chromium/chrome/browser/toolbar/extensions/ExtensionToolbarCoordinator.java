@@ -117,6 +117,9 @@ public interface ExtensionToolbarCoordinator extends Destroyable {
     /** Shows the extensions menu programmatically. */
     void showExtensionsMenu();
 
+    /** Returns the {@link ToolbarWidthConsumer} for the popped out action. */
+    ToolbarWidthConsumer getPoppedOutActionWidthConsumer();
+
     /** Returns the {@link ToolbarWidthConsumer} for the extensions menu icon. */
     ToolbarWidthConsumer getMenuButtonWidthConsumer();
 
