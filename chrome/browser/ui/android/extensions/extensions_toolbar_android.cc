@@ -61,6 +61,12 @@ void ExtensionsToolbarAndroid::TriggerPopup(
       reinterpret_cast<int64_t>(host.release()));
 }
 
+void ExtensionsToolbarAndroid::ShowContextMenu(
+    const ToolbarActionsModel::ActionId& action_id) {
+  Java_ExtensionsToolbarBridge_showContextMenu(AttachCurrentThread(),
+                                               java_object_, action_id);
+}
+
 std::unique_ptr<ExtensionActionViewModel>
 ExtensionsToolbarAndroid::CreateActionViewModel(
     const ToolbarActionsModel::ActionId& action_id,

@@ -181,6 +181,14 @@ public class ExtensionsToolbarBridge implements Destroyable {
     }
 
     @CalledByNative
+    void showContextMenu(@JniType("std::string") String actionId) {
+        // {@link mDelegate} should be set in {@code ExtensionActionListMediator}'s constructor.
+        assert mDelegate != null;
+
+        mDelegate.showContextMenu(actionId);
+    }
+
+    @CalledByNative
     public void onRequestAccessButtonParamsChanged() {
         for (Observer observer : mObservers) {
             observer.onRequestAccessButtonParamsChanged();
@@ -281,6 +289,9 @@ public class ExtensionsToolbarBridge implements Destroyable {
     public interface Delegate {
         // Called when the popup should be shown.
         void triggerPopup(String actionId, long nativeHostPtr);
+
+        // Called when the context menu should be shown.
+        void showContextMenu(String actionId);
 
         // Returns whether there is a popped out action.
         boolean hasPoppedOutAction();

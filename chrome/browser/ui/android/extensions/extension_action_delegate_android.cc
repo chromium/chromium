@@ -79,7 +79,14 @@ void ExtensionActionDelegateAndroid::TriggerPopup(
 }
 
 void ExtensionActionDelegateAndroid::ShowContextMenuAsFallback() {
-  // TODO(crbug.com/461981075)
+  if (!toolbar_android_) {
+    // TODO(crbug.com/461981075): Remove this check once
+    // `ExtensionsMenuDelegateAndroid` passes a correct `toolbar_android_`
+    // instead of `nullptr`.
+    return;
+  }
+
+  toolbar_android_->ShowContextMenu(action_id_);
 }
 
 bool ExtensionActionDelegateAndroid::CloseOverflowMenuIfOpen() {

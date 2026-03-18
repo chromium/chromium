@@ -31,6 +31,9 @@ class ExtensionsToolbarAndroid : public ExtensionsToolbarViewModel::Delegate,
   void TriggerPopup(const ToolbarActionsModel::ActionId& action_id,
                     std::unique_ptr<ExtensionViewHost> host);
 
+  // Shows the context menu for the given action ID.
+  void ShowContextMenu(const ToolbarActionsModel::ActionId& action_id);
+
   // ExtensionsToolbarViewModel::Delegate:
   std::unique_ptr<ExtensionActionViewModel> CreateActionViewModel(
       const ToolbarActionsModel::ActionId& action_id,

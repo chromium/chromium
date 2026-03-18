@@ -600,7 +600,12 @@ class ExtensionActionListMediator implements Destroyable {
     private class ToolbarDelegate implements ExtensionsToolbarBridge.Delegate {
         @Override
         public void triggerPopup(String actionId, long nativeHostPtr) {
-            ExtensionActionListMediator.this.requestShowPopup(actionId, nativeHostPtr);
+            requestShowPopup(actionId, nativeHostPtr);
+        }
+
+        @Override
+        public void showContextMenu(String actionId) {
+            requestShowContextMenu(actionId);
         }
 
         @Override
