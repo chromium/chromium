@@ -96,13 +96,12 @@ class CaptionBubbleControllerViewsTest
       params["live_caption_scrollable_max_lines"] =
           "9";  // Same size as non-scrollable.
       scoped_feature_list_.InitWithFeaturesAndParameters(
-          {{media::kLiveTranslate, {}},
-           {media::kFeatureManagementLiveTranslateCrOS, {}},
+          {{media::kFeatureManagementLiveTranslateCrOS, {}},
            {kLiveCaptionScrollable, params}},
           {});
     } else {
       scoped_feature_list_.InitWithFeatures(
-          {media::kLiveTranslate, media::kFeatureManagementLiveTranslateCrOS},
+          {media::kFeatureManagementLiveTranslateCrOS},
           {captions::kLiveCaptionScrollable});
     }
   }
