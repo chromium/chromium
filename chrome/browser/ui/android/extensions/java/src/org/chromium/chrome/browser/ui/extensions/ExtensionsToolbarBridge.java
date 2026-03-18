@@ -195,6 +195,14 @@ public class ExtensionsToolbarBridge implements Destroyable {
     }
 
     @CalledByNative
+    public boolean hasPoppedOutAction() {
+        // {@link mDelegate} should be set in {@code ExtensionActionListMediator}'s constructor.
+        assert mDelegate != null;
+
+        return mDelegate.hasPoppedOutAction();
+    }
+
+    @CalledByNative
     public void onActionsInitialized() {
         for (Observer observer : mObservers) {
             observer.onActionsInitialized();
@@ -265,6 +273,9 @@ public class ExtensionsToolbarBridge implements Destroyable {
     public interface Delegate {
         // Called when the popup should be shown.
         void triggerPopup(String actionId, long nativeHostPtr);
+
+        // Returns whether there is a popped out action.
+        boolean hasPoppedOutAction();
     }
 
     @NativeMethods

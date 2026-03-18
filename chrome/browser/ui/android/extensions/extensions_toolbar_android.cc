@@ -100,9 +100,8 @@ bool ExtensionsToolbarAndroid::CloseOverflowMenuIfOpen() {
 
 bool ExtensionsToolbarAndroid::CanShowToolbarActionPopupForAPICall(
     const std::string& action_id) {
-  // TODO(crbug.com/461981075)
-  NOTIMPLEMENTED();
-  return false;
+  return Java_ExtensionsToolbarBridge_hasPoppedOutAction(AttachCurrentThread(),
+                                                         java_object_);
 }
 
 void ExtensionsToolbarAndroid::ToggleExtensionsMenu() {

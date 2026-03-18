@@ -602,5 +602,10 @@ class ExtensionActionListMediator implements Destroyable {
         public void triggerPopup(String actionId, long nativeHostPtr) {
             ExtensionActionListMediator.this.requestShowPopup(actionId, nativeHostPtr);
         }
+
+        @Override
+        public boolean hasPoppedOutAction() {
+            return ExtensionActionListMediator.this.hasPoppedOutAction();
+        }
     }
 }
