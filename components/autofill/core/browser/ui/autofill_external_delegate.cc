@@ -874,7 +874,15 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     case SuggestionType::kBnplFootnote:
       NOTREACHED();  // Should be handled elsewhere.
   }
-  // Note that some suggestion types return early.
+
+  if (suggestion.type == SuggestionType::kBnplEntry &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillEnablePayNowPayLaterTabs)) {
+    // Return early to prevent the popup from hiding. Popup will instead be
+    // closed by `BnplManager`.
+    return;
+  }
+
   manager_->client().HideAutofillSuggestions(
       SuggestionHidingReason::kAcceptSuggestion);
 }
@@ -1336,12 +1344,18 @@ void AutofillExternalDelegate::DidAcceptPaymentsSuggestion(
       payments::BnplManager* bnpl_manager = manager_->GetPaymentsBnplManager();
       CHECK(bnpl_manager);
 
-      bnpl_manager->OnUserDecisionToUseBnpl(
-          /*final_checkout_amount=*/suggestion
-              .GetPayload<Suggestion::PaymentsPayload>()
-              .extracted_amount_in_micros,
-          base::BindOnce(&AutofillExternalDelegate::FillFetchedCreditCard,
-                         GetWeakPtr(), AutofillTriggerSource::kPopup));
+      if (base::FeatureList::IsEnabled(
+              features::kAutofillEnablePayNowPayLaterTabs)) {
+        bnpl_manager->OnIssuerAccepted(
+            /*issuer=*/suggestion.GetPayload<Suggestion::BnplIssuer>().value());
+      } else {
+        bnpl_manager->OnUserDecisionToUseBnpl(
+            /*final_checkout_amount=*/suggestion
+                .GetPayload<Suggestion::PaymentsPayload>()
+                .extracted_amount_in_micros,
+            base::BindOnce(&AutofillExternalDelegate::FillFetchedCreditCard,
+                           GetWeakPtr(), AutofillTriggerSource::kPopup));
+      }
       break;
     }
     default:

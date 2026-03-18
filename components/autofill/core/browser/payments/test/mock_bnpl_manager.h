@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_TEST_MOCK_BNPL_MANAGER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_TEST_MOCK_BNPL_MANAGER_H_
 
+#include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/payments/bnpl_manager.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -45,6 +46,8 @@ class MockBnplManager : public payments::BnplManager {
               (std::optional<int64_t> final_checkout_amount,
                OnBnplVcnFetchedCallback on_bnpl_vcn_fetched_callback),
               (override));
+
+  MOCK_METHOD(void, OnIssuerAccepted, (BnplIssuer), (override));
 };
 
 }  // namespace autofill

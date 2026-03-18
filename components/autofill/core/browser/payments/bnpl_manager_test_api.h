@@ -56,8 +56,8 @@ class BnplManagerTestApi {
 
   void Reset() { bnpl_manager_->Reset(); }
 
-  void OnIssuerSelected(BnplIssuer selected_issuer) {
-    bnpl_manager_->OnIssuerSelected(selected_issuer);
+  void OnIssuerAccepted(BnplIssuer selected_issuer) {
+    bnpl_manager_->OnIssuerAccepted(selected_issuer);
   }
 
   BnplManager::OngoingFlowState* GetOngoingFlowState() {
@@ -73,6 +73,14 @@ class BnplManagerTestApi {
   void OnRedirectUrlFetched(PaymentsAutofillClient::PaymentsRpcResult result,
                             const BnplFetchUrlResponseDetails& response) {
     bnpl_manager_->OnRedirectUrlFetched(result, response);
+  }
+
+  void OnDidGetLegalMessageFromServer(
+      PaymentsAutofillClient::PaymentsRpcResult result,
+      std::string context_token,
+      LegalMessageLines legal_message) {
+    bnpl_manager_->OnDidGetLegalMessageFromServer(
+        result, std::move(context_token), std::move(legal_message));
   }
 
   void GetDetailsForUpdateBnplPaymentInstrument() {

@@ -62,6 +62,12 @@ class BnplManager {
       std::optional<int64_t> final_checkout_amount,
       OnBnplVcnFetchedCallback on_bnpl_vcn_fetched_callback);
 
+  // Runs after the user accepts a BNPL issuer. It will initiate AI amount
+  // extraction if checkout amount is missing, or redirect to plan selection or
+  // terms of services depending on the issuer if checkout amount has already
+  // been extracted.
+  virtual void OnIssuerAccepted(BnplIssuer issuer);
+
   // Notifies the BNPL manager that suggestion generation has been requested
   // with the given `trigger_source`. This must be called before
   // `OnSuggestionsShown()` and `OnAmountExtractionReturned()`, so that the
@@ -165,19 +171,14 @@ class BnplManager {
   // factory.
   void Reset();
 
-  // Runs after the user selects a BNPL issuer, and will redirect to plan
-  // selection or terms of services depending on the issuer.
-  void OnIssuerSelected(BnplIssuer selected_issuer);
+  // Checks if a BNPL issuer was accepted and if the checkout amount is within
+  // the issuer's range.
+  bool IssuerAcceptedAndCheckoutAmountWithinRange();
 
-  // Runs after the user selects a BNPL issuer and the checkout amount is
-  // within the issuer's range, and will redirect to plan selection or terms of
-  // services depending on the issuer linkage.
-  bool IssuerSelectedAndCheckoutAmountWithinRange();
-
-  // Runs after users select a BNPL issuer and the checkout amount is already
-  // received, and will redirect to plan selection or terms of services
+  // Runs after the user accepts a BNPL issuer and the checkout amount is
+  // already received, and will redirect to plan selection or terms of services
   // depending on the issuer.
-  void OnIssuerSelectedAndCheckoutAmountAvailable();
+  void OnIssuerAcceptedAndCheckoutAmountAvailable();
 
   // This function makes the appropriate server call to retrieve the ToS legal
   // message for the issuer.
@@ -282,6 +283,10 @@ class BnplManager {
   // response.
   void UpdateSuggestionsOnAiAmountExtractionResponse(
       const std::vector<payments::BnplIssuerContext>& issuer_contexts);
+
+  // Hides the autofill suggestions or removes the select BNPL issuer or
+  // progress UI.
+  void HideSuggestionsOrRemoveSelectBnplIssuerOrProgressUi();
 
 #if BUILDFLAG(IS_ANDROID)
   // Callback triggered when Issuer selection is cancelled during Touch To Fill

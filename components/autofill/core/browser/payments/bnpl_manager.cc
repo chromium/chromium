@@ -22,6 +22,7 @@
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/integrators/optimization_guide/autofill_optimization_guide_decider.h"
@@ -38,6 +39,7 @@
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/suggestions/payments/credit_card_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator_util.h"
+#include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/ui/payments/autofill_progress_ui_type.h"
 #include "components/autofill/core/browser/ui/payments/bnpl_tos_controller.h"
 #include "components/autofill/core/browser/ui/payments/bnpl_ui_delegate.h"
@@ -133,7 +135,7 @@ void BnplManager::OnUserDecisionToUseBnpl(
                   browser_autofill_manager_->client(),
                   ongoing_flow_state_->final_checkout_amount),
               ongoing_flow_state_->app_locale,
-              base::BindRepeating(&BnplManager::OnIssuerSelected,
+              base::BindRepeating(&BnplManager::OnIssuerAccepted,
                                   weak_factory_.GetWeakPtr()),
               base::BindOnce(&BnplManager::Reset, weak_factory_.GetWeakPtr()),
               HasSeenAmountExtractionAiTerms());
@@ -154,7 +156,7 @@ void BnplManager::OnUserDecisionToUseBnpl(
                     browser_autofill_manager_->client(),
                     ongoing_flow_state_->final_checkout_amount),
                 ongoing_flow_state_->app_locale,
-                base::BindRepeating(&BnplManager::OnIssuerSelected,
+                base::BindRepeating(&BnplManager::OnIssuerAccepted,
                                     weak_factory_.GetWeakPtr()),
                 base::BindOnce(&BnplManager::Reset, weak_factory_.GetWeakPtr()),
                 HasSeenAmountExtractionAiTerms());
@@ -194,6 +196,24 @@ void BnplManager::OnUserDecisionToUseBnpl(
 
   browser_autofill_manager_->GetCreditCardFormEventLogger()
       .OnUserDecisionToUseBnpl();
+}
+
+void BnplManager::OnIssuerAccepted(BnplIssuer issuer) {
+  ongoing_flow_state_->issuer = std::move(issuer);
+
+  // When an issuer is accepted but no checkout amount is present, call
+  // server-side AI to extract the amount.
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableAiBasedAmountExtraction) &&
+      !ongoing_flow_state_->final_checkout_amount) {
+    browser_autofill_manager_->GetAmountExtractionManager()
+        .TriggerCheckoutAmountExtractionWithAi();
+    // TODO(crbug.com/477689220): If Pay Now Pay Later tabs UI is enabled, show
+    // autofill popup progress screen.
+    return;
+  }
+
+  OnIssuerAcceptedAndCheckoutAmountAvailable();
 }
 
 void BnplManager::NotifyOfSuggestionGeneration(
@@ -284,7 +304,7 @@ void BnplManager::OnAmountExtractionReturned(
                 : std::vector<BnplIssuerContext>(),
             extracted_amount, is_amount_supported_by_any_issuer,
             ongoing_flow_state_->app_locale,
-            base::BindOnce(&BnplManager::OnIssuerSelected,
+            base::BindOnce(&BnplManager::OnIssuerAccepted,
                            weak_factory_.GetWeakPtr()),
             base::BindOnce(&BnplManager::Reset, weak_factory_.GetWeakPtr()));
 
@@ -339,9 +359,8 @@ void BnplManager::OnAmountExtractionReturnedFromAi(
       case kDoNothing:
         break;
       case kCloseCurrentUi:
-        payments_autofill_client()
-            .GetBnplUiDelegate()
-            ->RemoveSelectBnplIssuerOrProgressUi();
+        HideSuggestionsOrRemoveSelectBnplIssuerOrProgressUi();
+        break;
     }
 
     // TODO(crbug.com/477689220): Ensure error handling is done in a way
@@ -371,10 +390,10 @@ void BnplManager::OnAmountExtractionReturnedFromAi(
   const std::pair<int64_t, std::string>& amount_and_currency = result.value();
   ongoing_flow_state_->final_checkout_amount = amount_and_currency.first;
 
-  if (IssuerSelectedAndCheckoutAmountWithinRange()) {
-    // If the selected issuer is eligible, continue the BNPL flow with this
+  if (IssuerAcceptedAndCheckoutAmountWithinRange()) {
+    // If the accepted issuer is eligible, continue the BNPL flow with this
     // issuer.
-    OnIssuerSelectedAndCheckoutAmountAvailable();
+    OnIssuerAcceptedAndCheckoutAmountAvailable();
   } else {
     std::vector<BnplIssuerContext> issuer_contexts =
         GetSortedBnplIssuerContext(browser_autofill_manager_->client(),
@@ -389,13 +408,13 @@ void BnplManager::OnAmountExtractionReturnedFromAi(
                   .GetPaymentsDataManager()
                   .GetBnplIssuers(),
               ongoing_flow_state_->final_checkout_amount);
-      // If the selected issuer is not eligible, update UI.
+      // If the accepted issuer is not eligible, update UI.
       CHECK_DEREF(payments_autofill_client().GetBnplUiDelegate())
           .UpdateBnplIssuerUi(
               issuer_contexts, ongoing_flow_state_->final_checkout_amount,
               is_amount_supported_by_any_issuer,
               ongoing_flow_state_->app_locale,
-              base::BindOnce(&BnplManager::OnIssuerSelected,
+              base::BindOnce(&BnplManager::OnIssuerAccepted,
                              weak_factory_.GetWeakPtr()),
               base::BindOnce(&BnplManager::Reset, weak_factory_.GetWeakPtr()));
     }
@@ -502,24 +521,8 @@ void BnplManager::OnVcnDetailsFetched(
   Reset();
 }
 
-void BnplManager::OnIssuerSelected(BnplIssuer selected_issuer) {
-  ongoing_flow_state_->issuer = std::move(selected_issuer);
-
-  // When an issuer is selected but amount is not received, call server-side AI
-  // to extract the amount.
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableAiBasedAmountExtraction) &&
-      !ongoing_flow_state_->final_checkout_amount) {
-    browser_autofill_manager_->GetAmountExtractionManager()
-        .TriggerCheckoutAmountExtractionWithAi();
-    return;
-  }
-
-  OnIssuerSelectedAndCheckoutAmountAvailable();
-}
-
-bool BnplManager::IssuerSelectedAndCheckoutAmountWithinRange() {
-  // Check eligibility if an issuer was selected.
+bool BnplManager::IssuerAcceptedAndCheckoutAmountWithinRange() {
+  // Check eligibility if an issuer was accepted.
   if (!ongoing_flow_state_->issuer) {
     return false;
   }
@@ -551,7 +554,7 @@ bool BnplManager::IssuerSelectedAndCheckoutAmountWithinRange() {
   return true;
 }
 
-void BnplManager::OnIssuerSelectedAndCheckoutAmountAvailable() {
+void BnplManager::OnIssuerAcceptedAndCheckoutAmountAvailable() {
   bool is_linked_issuer =
       ongoing_flow_state_->issuer->payment_instrument().has_value();
   if (is_linked_issuer && !AcceptTosActionRequired()) {
@@ -631,9 +634,8 @@ void BnplManager::OnDidGetLegalMessageFromServer(
       // ToS or error UI within the same view, so removing it is not necessary.
       break;
     case kCloseCurrentUi:
-      payments_autofill_client()
-          .GetBnplUiDelegate()
-          ->RemoveSelectBnplIssuerOrProgressUi();
+      HideSuggestionsOrRemoveSelectBnplIssuerOrProgressUi();
+      break;
   }
 
   if (result == payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess) {
@@ -742,11 +744,10 @@ void BnplManager::OnRedirectUrlFetched(
           .GetBnplUiDelegate()
           ->RemoveBnplTosOrProgressUi();
     } else {
-      // If the ToS UI wasn't shown during this flow, then the issuer
-      // selection UI or progress UI must be showing, so remove it.
-      payments_autofill_client()
-          .GetBnplUiDelegate()
-          ->RemoveSelectBnplIssuerOrProgressUi();
+      // If the ToS UI wasn't shown during this flow, then the autofill
+      // suggestions UI, issuer selection UI, or progress UI must be showing, so
+      // remove it.
+      HideSuggestionsOrRemoveSelectBnplIssuerOrProgressUi();
     }
   }
 
@@ -990,6 +991,18 @@ void BnplManager::UpdateSuggestionsOnAiAmountExtractionResponse(
   CHECK(autofill_suggestion_trigger_source_.has_value());
   update_suggestions_callback_.Run(std::move(suggestions),
                                    autofill_suggestion_trigger_source_.value());
+}
+
+void BnplManager::HideSuggestionsOrRemoveSelectBnplIssuerOrProgressUi() {
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnablePayNowPayLaterTabs)) {
+    browser_autofill_manager_->client().HideAutofillSuggestions(
+        SuggestionHidingReason::kAcceptSuggestion);
+  } else {
+    payments_autofill_client()
+        .GetBnplUiDelegate()
+        ->RemoveSelectBnplIssuerOrProgressUi();
+  }
 }
 
 }  // namespace autofill::payments
