@@ -92,7 +92,13 @@ namespace base {
 // see `base/scoped_observation_traits.h` for details.
 //
 
-template <class Source, class Observer>
+// TODO(crbug.com/493572976): the source_ptr_trait default will be changed to
+// RawPtrTraits::kEmpty when all known dangling instances have been identified
+// and marked individually. It will be removed once all instances have been
+// fixed.
+template <class Source,
+          class Observer,
+          RawPtrTraits source_ptr_trait = LeakedDanglingUntriaged>
 class ScopedObservation {
  public:
   explicit ScopedObservation(Observer* observer) : observer_(observer) {}
@@ -140,7 +146,7 @@ class ScopedObservation {
   const raw_ptr<Observer> observer_;
 
   // The observed source, if any.
-  raw_ptr<Source, LeakedDanglingUntriaged> source_ = nullptr;
+  raw_ptr<Source, source_ptr_trait> source_ = nullptr;
 };
 
 }  // namespace base
