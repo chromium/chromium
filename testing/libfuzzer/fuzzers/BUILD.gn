@@ -456,6 +456,7 @@ source_set("libyuv_scale_fuzzer_common") {
     "libyuv_scale_fuzzer.h",
   ]
 
+  deps = [ "//base" ]
   public_deps = [ "//third_party/libyuv" ]
 }
 
