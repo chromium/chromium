@@ -982,6 +982,14 @@ message PolicyData {
 
   // Indicates whether the domains has CEC enabled.
   optional bool cec_enabled = 40;
+
+  // The Torus Unified Device ID (TUID) for the device. Torus creates this
+  // globally unique identifier when the device first enrolls, and DMServer
+  // includes it here on every subsequent policy fetch so on-device services
+  // can discover the device's TUID without making additional API calls.
+  // Populated from `ChromeOsDeviceInfo.unified_device_id` and should only be
+  // set for device policy.
+  optional string unified_device_id = 41;
 }
 
 message ClientActionRequired {
