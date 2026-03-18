@@ -20,7 +20,7 @@ struct FillingValueAndType {
   FillingValueAndType();
   FillingValueAndType(std::u16string value, FieldType filling_type);
   FillingValueAndType(std::u16string value,
-                      std::u16string select_text,
+                      std::optional<std::u16string> select_text,
                       FieldType filling_type);
   FillingValueAndType(const FillingValueAndType&);
   FillingValueAndType(FillingValueAndType&&);
