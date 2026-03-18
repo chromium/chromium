@@ -8,13 +8,13 @@ import {getInjectedElementIds, openTab} from '/_test_resources/test_util/tabs_ut
 async function navigateToRequestedUrl() {
   const config = await chrome.test.getConfig();
   const url = `http://hostperms.com:${config.testServer.port}/simple.html`;
-  let tab = await openTab(url);
+  const tab = await openTab(url);
   return tab;
 }
 
 chrome.test.runTests([
   async function updateScripts() {
-    var scripts = [{
+    let scripts = [{
       id: 'inject_element_1',
       matches: ['*://*/*'],
       excludeMatches: ['*://abc.com/*'],
@@ -24,7 +24,7 @@ chrome.test.runTests([
       allFrames: true
     }];
 
-    var updatedScripts = [{
+    const updatedScripts = [{
       id: 'inject_element_1',
       matches: ['*://hostperms.com/*'],
       excludeMatches: ['*://def.com/*'],
@@ -72,7 +72,7 @@ chrome.test.runTests([
   // the current set of registered scripts.
   async function updateScriptsNonexistentId() {
     await chrome.scripting.unregisterContentScripts();
-    var scripts = [{
+    let scripts = [{
       id: 'inject_element_1',
       matches: ['*://*/*'],
       js: ['inject_element.js'],
@@ -82,7 +82,7 @@ chrome.test.runTests([
     await chrome.scripting.registerContentScripts(scripts);
 
     const nonexistentScriptId = 'NONEXISTENT';
-    var updatedScripts = [{
+    const updatedScripts = [{
       id: nonexistentScriptId,
       matches: ['*://hostperms.com/*'],
       js: ['inject_element_2.js'],
@@ -117,7 +117,7 @@ chrome.test.runTests([
   async function updateScriptsDuplicateIdInAPICall() {
     await chrome.scripting.unregisterContentScripts();
     const scriptId = 'inject_element_1';
-    var scripts = [{
+    let scripts = [{
       id: 'inject_element_1',
       matches: ['*://*/*'],
       js: ['inject_element.js'],
@@ -126,7 +126,7 @@ chrome.test.runTests([
 
     await chrome.scripting.registerContentScripts(scripts);
 
-    var updatedScripts = [
+    const updatedScripts = [
       {
         id: scriptId,
         matches: ['*://hostperms.com/*'],
@@ -166,7 +166,7 @@ chrome.test.runTests([
   // that cannot be read.
   async function updateScriptsFileError() {
     await chrome.scripting.unregisterContentScripts();
-    var scripts = [{
+    let scripts = [{
       id: 'inject_element_1',
       matches: ['*://*/*'],
       js: ['inject_element.js'],
@@ -176,7 +176,7 @@ chrome.test.runTests([
     await chrome.scripting.registerContentScripts(scripts);
 
     const scriptFile = 'NONEXISTENT.js';
-    var updatedScripts = [{
+    const updatedScripts = [{
       id: 'inject_element_1',
       matches: ['*://hostperms.com/*'],
       js: [scriptFile],
@@ -209,7 +209,7 @@ chrome.test.runTests([
   // Regression for crbug.com/1454710.
   async function parallelUpdateContentScriptsCalls() {
     await chrome.scripting.unregisterContentScripts();
-    var scripts = [
+    const scripts = [
       {
         id: 'script_1',
         matches: ['*://*/*'],

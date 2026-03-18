@@ -8,13 +8,13 @@ import {openTab} from '/_test_resources/test_util/tabs_util.js';
 async function navigateToRequestedUrl() {
   const config = await chrome.test.getConfig();
   const url = `http://hostperms.com:${config.testServer.port}/simple.html`;
-  let tab = await openTab(url);
+  const tab = await openTab(url);
   return tab;
 }
 
 chrome.test.runTests([
   async function scriptInjected() {
-    var scripts = [{
+    const scripts = [{
       id: 'script1',
       matches: ['*://a.com/*'],
       js: ['dynamic_1.js'],
@@ -45,7 +45,7 @@ chrome.test.runTests([
     await chrome.scripting.unregisterContentScripts();
     const scriptId = 'script2';
 
-    var scripts = [
+    const scripts = [
       {id: scriptId, matches: ['*://notused.com/*'], js: ['dynamic_1.js']},
       {id: scriptId, matches: ['*://notused.com/*'], js: ['inject_element.js']}
     ];
@@ -63,7 +63,7 @@ chrome.test.runTests([
   async function duplicateScriptId_DuplicateInPendingRegistration() {
     await chrome.scripting.unregisterContentScripts();
     const scriptId = 'script3';
-    var scripts =
+    const scripts =
         [{id: scriptId, matches: ['*://notused.com/*'], js: ['dynamic_1.js']}];
 
     const results = await Promise.allSettled([
@@ -115,7 +115,7 @@ chrome.test.runTests([
     await chrome.scripting.unregisterContentScripts();
 
     await chrome.scripting.registerContentScripts([]);
-    let scripts = await chrome.scripting.getRegisteredContentScripts();
+    const scripts = await chrome.scripting.getRegisteredContentScripts();
     chrome.test.assertEq(0, scripts.length);
 
     chrome.test.succeed();
@@ -256,7 +256,7 @@ chrome.test.runTests([
   // script must be wildcarded, otherwise an error is returned.
   async function matchOriginAsFallbackWithPath() {
     await chrome.scripting.unregisterContentScripts();
-    let scripts = [{
+    const scripts = [{
       id: 'matchOriginAsFallbackWithPath',
       matches: ['https://example/path'],
       matchOriginAsFallback: true,
@@ -287,7 +287,7 @@ chrome.test.runTests([
   // where the extension does not have the host permissions for.
   async function noHostPermissions() {
     await chrome.scripting.unregisterContentScripts();
-    var scripts = [{
+    const scripts = [{
       id: 'noHostPerms',
       matches: ['*://nohostperms.com/*'],
       js: ['change_title.js'],
@@ -314,7 +314,7 @@ chrome.test.runTests([
   // where the extension has host permissions for.
   async function hostPermissions() {
     await chrome.scripting.unregisterContentScripts();
-    var scripts = [{
+    const scripts = [{
       id: 'hostPerms',
       matches: ['*://hostperms.com/*'],
       js: ['change_title.js'],
@@ -332,7 +332,7 @@ chrome.test.runTests([
   // injected once on a matching frame.
   async function staticAndDynamicScriptInjectedOnce() {
     await chrome.scripting.unregisterContentScripts();
-    var scripts = [{
+    const scripts = [{
       id: 'inject_element',
       matches: ['*://*/*'],
       js: ['inject_element.js'],

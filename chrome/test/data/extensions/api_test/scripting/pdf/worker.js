@@ -11,14 +11,14 @@ function injectedFunction() {
 chrome.test.runTests([
   async function injectingInPdfContentFramesIsDisallowed() {
     const query = {url: 'http://a.com/*'};
-    let tab = await getSingleTab(query);
+    const tab = await getSingleTab(query);
     // There should be exactly two frames, which are the main frame and the PDF
     // embed frame.
-    let frames = await chrome.webNavigation.getAllFrames({tabId: tab.id});
+    const frames = await chrome.webNavigation.getAllFrames({tabId: tab.id});
     chrome.test.assertEq(2, frames.length);
 
     // There should be exactly two results from executeScript.
-    let results = await chrome.scripting.executeScript({
+    const results = await chrome.scripting.executeScript({
       target: {
         tabId: tab.id,
         allFrames: true,

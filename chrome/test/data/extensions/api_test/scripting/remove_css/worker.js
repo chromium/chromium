@@ -30,12 +30,12 @@ const removeCSS = chrome.scripting.removeCSS;
 // Returns the frame IDs from the tab with the given `tabId`.
 async function getFrameIds(tabId) {
   // TODO(devlin: Promise-ify webNavigation.
-  let frames = await new Promise(resolve => {
+  const frames = await new Promise(resolve => {
       chrome.webNavigation.getAllFrames({tabId}, resolve);
   });
 
   // Sort frames by frameId.
-  let sortedFrames = frames.sort(
+  const sortedFrames = frames.sort(
       (a, b) => a.frameId < b.frameId ? -1 : a.frameId > b.frameId ? 1 : 0);
 
   // Validate the frames - there should be 5 total, and the main frame should
@@ -76,7 +76,7 @@ let frameIds = [];
 //
 // Each frame is a child of the frame preceding it. Frames 0 through 3 are
 // <iframe src="..."> while frame 4 is <iframe srcdoc="..."> (about:srcdoc).
-let expectedColorsForFrames = [
+const expectedColorsForFrames = [
   ORIGINAL_COLOR, ORIGINAL_COLOR, ORIGINAL_COLOR, ORIGINAL_COLOR,
   ORIGINAL_COLOR
 ];
@@ -91,7 +91,7 @@ function updateExpectedState(delta) {
 async function checkColors() {
   for (let i = 0; i < frameIds.length; ++i) {
     const frameId = frameIds[i];
-    let color = await getCurrentColor(tabId, frameId);
+    const color = await getCurrentColor(tabId, frameId);
     chrome.test.assertEq(
         expectedColorsForFrames[i], color,
         `Improper color value for frame: ${frameId}`);

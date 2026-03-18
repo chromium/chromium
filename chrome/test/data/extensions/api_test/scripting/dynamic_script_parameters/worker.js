@@ -10,7 +10,7 @@ chrome.test.runTests([
     chrome.test.assertEq(undefined, chrome.scripting.globalParams);
 
     await chrome.scripting.unregisterContentScripts();
-    var scripts = [{
+    const scripts = [{
       id: 'script1',
       matches: ['*://a.com/*'],
       js: ['check_params.js'],
@@ -39,7 +39,7 @@ chrome.test.runTests([
   // parameters' value, which should be seen by the second script.
   async function paramsModifiedByScripts() {
     await chrome.scripting.unregisterContentScripts();
-    var scripts = [
+    const scripts = [
       {
         id: 'script1',
         matches: ['*://a.com/*'],

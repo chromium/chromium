@@ -8,7 +8,7 @@ import {openTab} from '/_test_resources/test_util/tabs_util.js';
 // it's running on, then call executeScript which checks the title.
 async function runTest(world, expectedTitle) {
   await chrome.scripting.unregisterContentScripts();
-  var scripts = [{
+  const scripts = [{
     id: 'script1',
     matches: ['*://hostperms.com/*'],
     js: ['change_title.js'],
@@ -23,8 +23,8 @@ async function runTest(world, expectedTitle) {
   // injected.
   const url = `http://hostperms.com:${
       config.testServer.port}/extensions/main_world_script_flag.html`;
-  let tab = await openTab(url);
-  let results = await chrome.scripting.executeScript({
+  const tab = await openTab(url);
+  const results = await chrome.scripting.executeScript({
     target: {tabId: tab.id},
     func: () => document.title,
   });

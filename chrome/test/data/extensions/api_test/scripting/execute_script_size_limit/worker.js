@@ -12,7 +12,7 @@ chrome.test.runTests([
   async function singleScriptExceedsLimit() {
     const config = await chrome.test.getConfig();
     const url = `http://example.com:${config.testServer.port}/simple.html`;
-    let tab = await openTab(url);
+    const tab = await openTab(url);
 
     await chrome.scripting.executeScript(
         {target: {tabId: tab.id}, files: ['small.js']});
@@ -30,7 +30,7 @@ chrome.test.runTests([
   async function totalScriptSizeExceedsLimit() {
     const config = await chrome.test.getConfig();
     const url = `http://example.com:${config.testServer.port}/simple.html`;
-    let tab = await openTab(url);
+    const tab = await openTab(url);
 
     await chrome.scripting.executeScript(
         {target: {tabId: tab.id}, files: ['medium.js']});

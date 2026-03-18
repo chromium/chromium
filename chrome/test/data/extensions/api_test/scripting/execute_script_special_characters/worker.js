@@ -11,7 +11,7 @@ chrome.test.runTests([
   async function scriptWithSpecialCharacters() {
     const config = await chrome.test.getConfig();
     const url = `http://example.com:${config.testServer.port}/simple.html`;
-    let tab = await openTab(url);
+    const tab = await openTab(url);
 
     await chrome.scripting.executeScript(
         {target: {tabId: tab.id}, files: ['#script.js']});
@@ -27,7 +27,7 @@ chrome.test.runTests([
   async function scriptWithEscapedSpecialCharacters() {
     const config = await chrome.test.getConfig();
     const url = `http://example.com:${config.testServer.port}/simple.html`;
-    let tab = await openTab(url);
+    const tab = await openTab(url);
 
     await chrome.scripting.executeScript(
         {target: {tabId: tab.id}, files: ['%23script.js']});
@@ -44,7 +44,7 @@ chrome.test.runTests([
   async function nonExistentScriptWithEscapedSpecialCharacters() {
     const config = await chrome.test.getConfig();
     const url = `http://example.com:${config.testServer.port}/simple.html`;
-    let tab = await openTab(url);
+    const tab = await openTab(url);
 
     await chrome.test.assertPromiseRejects(
         chrome.scripting.executeScript(

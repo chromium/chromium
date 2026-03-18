@@ -6,7 +6,7 @@ import {getInjectedElementIds, openTab} from '/_test_resources/test_util/tabs_ut
 
 // For the first session, register one persistent script and one session script.
 async function runFirstSession() {
-  let scripts = [
+  const scripts = [
     {
       // A set of the minimal required properties, verifying defaults are
       // properly set and retrieved.
@@ -43,7 +43,7 @@ async function runFirstSession() {
   const config = await chrome.test.getConfig();
   const url = `http://hostperms.com:${config.testServer.port}/simple.html`;
 
-  let tab = await openTab(url);
+  const tab = await openTab(url);
   chrome.test.assertEq(
       ['injected', 'injected_2', 'injected_3'],
       await getInjectedElementIds(tab.id));
@@ -87,7 +87,7 @@ async function runSecondSession() {
   const config = await chrome.test.getConfig();
   const url = `http://hostperms.com:${config.testServer.port}/simple.html`;
 
-  let tab = await openTab(url);
+  const tab = await openTab(url);
   chrome.test.assertEq(
       ['injected', 'injected_2'], await getInjectedElementIds(tab.id));
 
@@ -125,7 +125,7 @@ async function runSecondSession() {
 // session is applied into this session, and that updating a script's
 // persistAcrossSessions flag to false will not persist it into this session.
 async function runThirdSession() {
-  let scripts = await chrome.scripting.getRegisteredContentScripts();
+  const scripts = await chrome.scripting.getRegisteredContentScripts();
 
   const expectedScripts = [
     {
@@ -144,7 +144,7 @@ async function runThirdSession() {
 
   const config = await chrome.test.getConfig();
   const url = `http://hostperms.com:${config.testServer.port}/simple.html`;
-  let tab = await openTab(url);
+  const tab = await openTab(url);
   chrome.test.assertEq(['injected_3'], await getInjectedElementIds(tab.id));
 
   chrome.test.succeed();

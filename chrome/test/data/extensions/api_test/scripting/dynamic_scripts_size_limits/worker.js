@@ -89,7 +89,7 @@ chrome.test.runTests([
     // will not affect the tab's contents.
     const config = await chrome.test.getConfig();
     const url = `http://example.com:${config.testServer.port}/simple.html`;
-    let tab = await openTab(url);
+    const tab = await openTab(url);
 
     chrome.test.assertEq(
         ['dynamic-1', 'dynamic-2', 'manifest'],

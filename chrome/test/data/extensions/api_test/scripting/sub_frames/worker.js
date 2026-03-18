@@ -19,7 +19,7 @@ function getAccessError(url) {
 chrome.test.runTests([
   async function allowedTopFrameAccess() {
     const query = {url: 'http://a.com/*'};
-    let tab = await getSingleTab(query);
+    const tab = await getSingleTab(query);
     const results = await chrome.scripting.executeScript({
       target: {
         tabId: tab.id,
@@ -45,7 +45,7 @@ chrome.test.runTests([
 
   async function disallowedTopFrameAccess() {
     const query = {url: 'http://d.com/*'};
-    let tab = await getSingleTab(query);
+    const tab = await getSingleTab(query);
     await chrome.test.assertPromiseRejects(
         chrome.scripting.executeScript({
           target: {

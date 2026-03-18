@@ -8,7 +8,7 @@ import {getInjectedElementIds, openTab} from '/_test_resources/test_util/tabs_ut
 async function navigateToRequestedUrl() {
   const config = await chrome.test.getConfig();
   const url = `http://hostperms.com:${config.testServer.port}/simple.html`;
-  let tab = await openTab(url);
+  const tab = await openTab(url);
   return tab;
 }
 
@@ -16,7 +16,7 @@ chrome.test.runTests([
   // Test that scripts that are unregistered are not injected into a (former)
   // matching frame.
   async function unregisterScripts() {
-    var scripts = [
+    let scripts = [
       {
         id: 'inject_element_1',
         matches: ['*://*/*'],
@@ -86,7 +86,7 @@ chrome.test.runTests([
     await chrome.scripting.unregisterContentScripts();
 
     // Verify all content scripts are removed.
-    let registeredContentScripts =
+    const registeredContentScripts =
         await chrome.scripting.getRegisteredContentScripts();
     chrome.test.assertEq(0, registeredContentScripts.length);
 
@@ -130,7 +130,7 @@ chrome.test.runTests([
     await chrome.scripting.unregisterContentScripts({ids: []});
 
     // Verify all content scripts are removed.
-    let registeredContentScripts =
+    const registeredContentScripts =
         await chrome.scripting.getRegisteredContentScripts();
     chrome.test.assertEq(0, registeredContentScripts.length);
 
@@ -159,7 +159,7 @@ chrome.test.runTests([
     await chrome.scripting.unregisterContentScripts();
 
     const validId = 'inject_element_1';
-    var scripts = [{
+    let scripts = [{
       id: validId,
       matches: ['*://*/*'],
       js: ['inject_element.js'],

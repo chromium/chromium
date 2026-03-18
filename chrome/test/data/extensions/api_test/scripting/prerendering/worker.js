@@ -66,7 +66,7 @@ async function testEventRouter() {
               resolve('ok');
             });
 
-            chrome.storage.local.set({'test': 1}).then(() => {});
+            chrome.storage.local.set({test: 1}).then(() => {});
           });
         }
       },
