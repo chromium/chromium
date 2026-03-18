@@ -265,15 +265,6 @@ void SubAppsServiceImpl::Add(
     return;
   }
 
-  // Check if origin is embargoed because of too many dismissals.
-  if (PermissionDecisionAutoBlockerFactory::GetForProfile(
-          Profile::FromBrowserContext(render_frame_host().GetBrowserContext()))
-          ->IsEmbargoed(render_frame_host().GetLastCommittedOrigin().GetURL(),
-                        ContentSettingsType::SUB_APP_INSTALLATION_PROMPTS)) {
-    ReturnAllAddsAsFailed(sub_apps_to_add, std::move(result_callback));
-    return;
-  }
-
   ASSIGN_OR_RETURN(
       (std::vector<SubAppInstallParams> add_options),
       AddOptionsFromMojo(render_frame_host().GetLastCommittedOrigin(),
@@ -402,23 +393,9 @@ void SubAppsServiceImpl::FinishAddCallOrShowInstallDialog(int add_call_id) {
 void SubAppsServiceImpl::ProcessDialogResponse(int add_call_id,
                                                bool dialog_accepted) {
   if (dialog_accepted) {
-    PermissionDecisionAutoBlockerFactory::GetForProfile(
-        Profile::FromBrowserContext(render_frame_host().GetBrowserContext()))
-        ->RemoveEmbargoAndResetCounts(
-            render_frame_host().GetLastCommittedOrigin().GetURL(),
-            ContentSettingsType::SUB_APP_INSTALLATION_PROMPTS);
-
     ScheduleSubAppInstalls(add_call_id);
     return;
   }
-
-  // Dialog was declined.
-  PermissionDecisionAutoBlockerFactory::GetForProfile(
-      Profile::FromBrowserContext(render_frame_host().GetBrowserContext()))
-      ->RecordDismissAndEmbargo(
-          render_frame_host().GetLastCommittedOrigin().GetURL(),
-          ContentSettingsType::SUB_APP_INSTALLATION_PROMPTS,
-          /*dismissed_prompt_was_quiet=*/false);
 
   AddCallInfo& add_call_info =
       CHECK_DEREF(base::FindOrNull(add_call_info_, add_call_id));

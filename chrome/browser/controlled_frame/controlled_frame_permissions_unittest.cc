@@ -180,7 +180,7 @@ TEST_F(ControlledFramePermissionsTest, Verify) {
       case ContentSettingsType::AUTO_PICTURE_IN_PICTURE:
       case ContentSettingsType::FILE_SYSTEM_ACCESS_EXTENDED_PERMISSION:
       case ContentSettingsType::FILE_SYSTEM_ACCESS_RESTORE_PERMISSION:
-      case ContentSettingsType::SUB_APP_INSTALLATION_PROMPTS:
+      case ContentSettingsType::DEPRECATED_SUB_APP_INSTALLATION_PROMPTS:
       case ContentSettingsType::DIRECT_SOCKETS:
       case ContentSettingsType::REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS:
       case ContentSettingsType::DISPLAY_MEDIA_SYSTEM_AUDIO:

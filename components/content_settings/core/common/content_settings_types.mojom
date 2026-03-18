@@ -381,9 +381,9 @@ enum ContentSettingsType {
   // automatically (i.e. without transient activation) should be enabled.
   AUTOMATIC_FULLSCREEN,
 
-  // Content settings used to indicate that a web app is allowed to prompt the
-  // user for the installation of sub apps.
-  SUB_APP_INSTALLATION_PROMPTS,
+  // Obsolete March 2026. Sub apps are IWA-only now, there is no need for
+  // limiting the opening of the installation prompts.
+  DEPRECATED_SUB_APP_INSTALLATION_PROMPTS,
 
   // Whether an application can enumerate audio output device.
   SPEAKER_SELECTION,

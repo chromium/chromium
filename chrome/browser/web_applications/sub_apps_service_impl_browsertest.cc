@@ -737,7 +737,7 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
-                       DialogEmbargoedIfDeclinedThreeTimes) {
+                       DialogSucceedsAfterPreviousDeclines) {
   content::RenderFrameHost* iwa_frame = InstallAndOpenParentIwaApp();
   BindRemote(iwa_frame);
 
@@ -751,100 +751,39 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
       {kSubAppPath3, kSubAppPath3},
   };
   base::flat_set<std::pair<webapps::ManifestId, SubAppsServiceResultCode>>
-      expected_result = {{webapps::ManifestId(GetURLFromPath(kSubAppPath)),
-                          SubAppsServiceResultCode::kFailure},
-                         {webapps::ManifestId(GetURLFromPath(kSubAppPath2)),
-                          SubAppsServiceResultCode::kFailure},
-                         {webapps::ManifestId(GetURLFromPath(kSubAppPath3)),
-                          SubAppsServiceResultCode::kFailure}};
+      expected_result_fail = {
+          {webapps::ManifestId(GetURLFromPath(kSubAppPath)),
+           SubAppsServiceResultCode::kFailure},
+          {webapps::ManifestId(GetURLFromPath(kSubAppPath2)),
+           SubAppsServiceResultCode::kFailure},
+          {webapps::ManifestId(GetURLFromPath(kSubAppPath3)),
+           SubAppsServiceResultCode::kFailure}};
 
   // Dismiss dialog three times.
   for (int i = 0; i < 3; i++) {
-    ExpectCallAdd(expected_result, subapps);
+    ExpectCallAdd(expected_result_fail, subapps);
     EXPECT_EQ(0ul, GetAllSubAppIds(parent_app_id_).size());
   }
-
-  EXPECT_TRUE(
-      PermissionDecisionAutoBlockerFactory::GetForProfile(profile())
-          ->IsEmbargoed(iwa_frame->GetLastCommittedOrigin().GetURL(),
-                        ContentSettingsType::SUB_APP_INSTALLATION_PROMPTS));
 
   dialog_override =
       SubAppsInstallDialogController::SetAutomaticActionForTesting(
           SubAppsInstallDialogController::DialogActionForTesting::kAccept);
 
-  // Add call fails now even though we would accept because the dialog was
-  // embargoed.
-  ExpectCallAdd(expected_result, subapps);
-
-  EXPECT_EQ(0ul, GetAllSubAppIds(parent_app_id_).size());
-}
-
-IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, DialogEmbargoTiming) {
-  content::RenderFrameHost* iwa_frame = InstallAndOpenParentIwaApp();
-  BindRemote(iwa_frame);
-
-  // Always hit "Cancel" in the dialog.
-  auto dialog_override =
-      SubAppsInstallDialogController::SetAutomaticActionForTesting(
-          SubAppsInstallDialogController::DialogActionForTesting::kCancel);
-
-  auto* auto_blocker =
-      PermissionDecisionAutoBlockerFactory::GetForProfile(profile());
-  auto_blocker->SetClockForTesting(clock());
-
-  std::vector<std::pair<std::string, std::string>> subapps = {
-      {kSubAppPath, kSubAppPath},
-      {kSubAppPath2, kSubAppPath2},
-      {kSubAppPath3, kSubAppPath3}};
   base::flat_set<std::pair<webapps::ManifestId, SubAppsServiceResultCode>>
-      expected_result = {{webapps::ManifestId(GetURLFromPath(kSubAppPath)),
-                          SubAppsServiceResultCode::kFailure},
-                         {webapps::ManifestId(GetURLFromPath(kSubAppPath2)),
-                          SubAppsServiceResultCode::kFailure},
-                         {webapps::ManifestId(GetURLFromPath(kSubAppPath3)),
-                          SubAppsServiceResultCode::kFailure}};
+      expected_result_success = {
+          {webapps::ManifestId(GetURLFromPath(kSubAppPath)),
+           SubAppsServiceResultCode::kSuccess}};
 
-  // Dismiss dialog three times.
-  for (int i = 0; i < 3; i++) {
-    ExpectCallAdd(expected_result, subapps);
-    EXPECT_EQ(0ul, GetAllSubAppIds(parent_app_id_).size());
-  }
+  std::vector<std::pair<std::string, std::string>> single_subapp = {
+      {kSubAppPath, kSubAppPath},
+  };
 
-  // Check that embargo lasts for 10 minutes.
-  EXPECT_TRUE(auto_blocker->IsEmbargoed(
-      iwa_frame->GetLastCommittedOrigin().GetURL(),
-      ContentSettingsType::SUB_APP_INSTALLATION_PROMPTS));
+  // Add call succeeds now because there is no embargo.
+  ExpectCallAdd(expected_result_success, single_subapp);
 
-  clock()->Advance(base::Minutes(9));
-  EXPECT_TRUE(auto_blocker->IsEmbargoed(
-      iwa_frame->GetLastCommittedOrigin().GetURL(),
-      ContentSettingsType::SUB_APP_INSTALLATION_PROMPTS));
-
-  clock()->Advance(base::Minutes(1));
-  EXPECT_FALSE(auto_blocker->IsEmbargoed(
-      iwa_frame->GetLastCommittedOrigin().GetURL(),
-      ContentSettingsType::SUB_APP_INSTALLATION_PROMPTS));
-
-  // Dismiss forth time.
-  ExpectCallAdd(expected_result, subapps);
-  EXPECT_EQ(0ul, GetAllSubAppIds(parent_app_id_).size());
-
-  // Check that embargo now lasts for 7 days.
-  EXPECT_TRUE(auto_blocker->IsEmbargoed(
-      iwa_frame->GetLastCommittedOrigin().GetURL(),
-      ContentSettingsType::SUB_APP_INSTALLATION_PROMPTS));
-
-  clock()->Advance(base::Days(6));
-  EXPECT_TRUE(auto_blocker->IsEmbargoed(
-      iwa_frame->GetLastCommittedOrigin().GetURL(),
-      ContentSettingsType::SUB_APP_INSTALLATION_PROMPTS));
-
-  clock()->Advance(base::Days(7));
-  EXPECT_FALSE(auto_blocker->IsEmbargoed(
-      iwa_frame->GetLastCommittedOrigin().GetURL(),
-      ContentSettingsType::SUB_APP_INSTALLATION_PROMPTS));
+  EXPECT_EQ(1ul, GetAllSubAppIds(parent_app_id_).size());
 }
+
 /********** Tests for uninstallation behaviour. **********/
 
 // Verify that uninstalling an app with sub-apps causes sub-apps to be

@@ -166,7 +166,6 @@ export const contentSettingGroups:
           ContentSettingsType.INTENT_PICKER_DISPLAY,
           ContentSettingsType.ON_DEVICE_SPEECH_RECOGNITION_LANGUAGES_DOWNLOADED,
           ContentSettingsType.PAYMENT_HANDLER,
-          ContentSettingsType.SUB_APP_INSTALLATION_PROMPTS,
           ContentSettingsType.WEB_APP_INSTALLATION,
           ContentSettingsType.WEB_PRINTING,
         ],

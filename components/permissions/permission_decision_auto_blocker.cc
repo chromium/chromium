@@ -72,13 +72,6 @@ constexpr auto kFederatedIdentityApiEmbargoDurationDismiss =
 constexpr base::TimeDelta kFederatedIdentityAutoReauthnEmbargoDuration =
     base::Minutes(10);
 
-// The duration that an origin will stay under embargo for the
-// SUB_APP_INSTALLATION_PROMPTS permission when the embargo is applied
-// for the first time. After another dismissal, the default kDefaultEmbargoDays
-// is applied.
-constexpr base::TimeDelta kSubAppInstallationPromptsFirstTimeEmbargoDuration =
-    base::Minutes(10);
-
 std::string GetStringForContentType(ContentSettingsType content_type) {
   switch (content_type) {
     case ContentSettingsType::AUTO_PICTURE_IN_PICTURE:
@@ -91,8 +84,6 @@ std::string GetStringForContentType(ContentSettingsType content_type) {
       return "FileSystemAccessRestorePermission";
     case ContentSettingsType::FILE_SYSTEM_WRITE_GUARD:
       return "FileSystemWriteGuard";
-    case ContentSettingsType::SUB_APP_INSTALLATION_PROMPTS:
-      return "SubAppInstallationPrompts";
 #if BUILDFLAG(IS_CHROMEOS)
     case ContentSettingsType::SMART_CARD_GUARD:
       return "SmartCard";
@@ -180,13 +171,6 @@ base::TimeDelta GetEmbargoDurationForContentSettingsType(
     return kFederatedIdentityAutoReauthnEmbargoDuration;
   }
 
-  if (permission == ContentSettingsType::SUB_APP_INSTALLATION_PROMPTS) {
-    // If this is the first time this embargo is applied, be more forgiving.
-    if (dismiss_count == kDefaultDismissalsBeforeBlock) {
-      return kSubAppInstallationPromptsFirstTimeEmbargoDuration;
-    }
-  }
-
   return base::Days(kDefaultEmbargoDays);
 }
 
@@ -250,8 +234,7 @@ bool PermissionDecisionAutoBlocker::IsEnabledForContentSetting(
              ContentSettingsType::FEDERATED_IDENTITY_AUTO_REAUTHN_PERMISSION ||
          content_setting ==
              ContentSettingsType::FILE_SYSTEM_ACCESS_RESTORE_PERMISSION ||
-         content_setting == ContentSettingsType::FILE_SYSTEM_WRITE_GUARD ||
-         content_setting == ContentSettingsType::SUB_APP_INSTALLATION_PROMPTS
+         content_setting == ContentSettingsType::FILE_SYSTEM_WRITE_GUARD
 #if BUILDFLAG(IS_CHROMEOS)
          || content_setting == ContentSettingsType::SMART_CARD_GUARD
 #endif  // BUILDFLAG(IS_CHROMEOS)
