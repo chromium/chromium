@@ -278,6 +278,12 @@ int64_t RandInt64() {
   return number;
 }
 
+bool ModalityChipHasVsrid(const lens::ModalityChipProps& modality_chip_props) {
+  return modality_chip_props.has_added_input() &&
+         modality_chip_props.added_input().has_lens_file() &&
+         modality_chip_props.added_input().lens_file().has_vsrid();
+}
+
 }  // namespace
 
 ComposeboxQueryController::ComposeboxQueryController(
@@ -706,8 +712,12 @@ lens::ClientToAimMessage ComposeboxQueryController::CreateClientToAimRequest(
               ? lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE
               : file_info->request_id->media_type();
       lens_image_query_data->mutable_request_id()->set_media_type(media_type);
-      lens_image_query_data->set_visual_input_type(
-          RequestIdToVisualInputType(lens_image_query_data->request_id()));
+      auto visual_input_type =
+          RequestIdToVisualInputType(lens_image_query_data->request_id());
+      if (visual_input_type !=
+          lens::LensOverlayVisualInputType::VISUAL_INPUT_TYPE_UNKNOWN) {
+        lens_image_query_data->set_visual_input_type(visual_input_type);
+      }
     }
 
     // Add added inputs.
@@ -803,6 +813,20 @@ void ComposeboxQueryController::StartFileUploadFlow(
     // because the chip is was received from the server.
     current_file_info.input_data->modality_chip_props =
         std::move(contextual_input_data->modality_chip_props.value());
+    // If the modality chip contains a pre-computed vsrid, parse it and set it
+    // as the request_id. This ensures that the query and any interactions on
+    // this chip use the correct request ID and visual input type.
+    if (ModalityChipHasVsrid(
+            *current_file_info.input_data->modality_chip_props)) {
+      auto parsed_request_id =
+          lens::LensOverlayRequestIdGenerator::ParseRequestId(
+              current_file_info.input_data->modality_chip_props->added_input()
+                  .lens_file()
+                  .vsrid());
+      if (parsed_request_id) {
+        current_file_info.request_id = *std::move(parsed_request_id);
+      }
+    }
     UpdateFileUploadStatus(
         file_token, contextual_search::ContextUploadStatus::kUploadSuccessful,
         std::nullopt);

@@ -4,6 +4,7 @@
 
 #include "components/lens/lens_overlay_request_id_generator.h"
 
+#include "base/base64url.h"
 #include "base/check.h"
 #include "base/containers/span.h"
 #include "base/rand_util.h"
@@ -33,6 +34,22 @@ LensOverlayRequestIdGenerator::LensOverlayRequestIdGenerator() {
 }
 
 LensOverlayRequestIdGenerator::~LensOverlayRequestIdGenerator() = default;
+
+std::unique_ptr<lens::LensOverlayRequestId>
+LensOverlayRequestIdGenerator::ParseRequestId(
+    const std::string& encoded_request_id) {
+  std::string decoded_request_id;
+  if (!base::Base64UrlDecode(encoded_request_id,
+                             base::Base64UrlDecodePolicy::IGNORE_PADDING,
+                             &decoded_request_id)) {
+    return nullptr;
+  }
+  auto request_id = std::make_unique<lens::LensOverlayRequestId>();
+  if (!request_id->ParseFromString(decoded_request_id)) {
+    return nullptr;
+  }
+  return request_id;
+}
 
 void LensOverlayRequestIdGenerator::ResetRequestId() {
   uuid_ = base::RandUint64();
