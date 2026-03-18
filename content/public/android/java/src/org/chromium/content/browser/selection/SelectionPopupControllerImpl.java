@@ -38,7 +38,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
-import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ApiCompatibilityUtils;
@@ -267,8 +266,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
      *     #create()} is not called yet.
      */
     @CalledByNative
-    public static @Nullable SelectionPopupControllerImpl fromWebContents(
-            @JniType("content::WebContents*") WebContents webContents) {
+    public static @Nullable SelectionPopupControllerImpl fromWebContents(WebContents webContents) {
         return webContents.getOrSetUserData(
                 SelectionPopupControllerImpl.class, UserDataFactoryLazyHolder.INSTANCE);
     }
@@ -280,9 +278,8 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
      * @param webContents {@link WebContents} object.
      * @return {@link SelectionPopupController} object. {@code null} if not available.
      */
-    @CalledByNative
     public static @Nullable SelectionPopupControllerImpl fromWebContentsNoCreate(
-            @JniType("content::WebContents*") WebContents webContents) {
+            WebContents webContents) {
         return webContents.getOrSetUserData(SelectionPopupControllerImpl.class, null);
     }
 
@@ -361,7 +358,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         }
         if (initializeNative) {
             mNativeSelectionPopupController =
-                    SelectionPopupControllerImplJni.get().init(mWebContents);
+                    SelectionPopupControllerImplJni.get().init(this, mWebContents);
             ImeAdapterImpl imeAdapter = ImeAdapterImpl.fromWebContents(mWebContents);
             if (imeAdapter != null) imeAdapter.addEventObserver(this);
         }
@@ -1979,7 +1976,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     interface Natives {
         boolean isMagnifierWithSurfaceControlSupported();
 
-        long init(@JniType("content::WebContents*") WebContents webContents);
+        long init(SelectionPopupControllerImpl self, WebContents webContents);
 
         void setTextHandlesTemporarilyHidden(long nativeSelectionPopupController, boolean hidden);
 
