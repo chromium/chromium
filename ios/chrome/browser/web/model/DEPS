@@ -82,10 +82,6 @@ specific_include_rules = {
     "+components/sampling_profiler",
   ],
   # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
-  # TODO:(crbug.com/891834) Remove this exception.
-  "js_print_egtest\.mm": [
-    "+ios/web/public/test/http_server",
-  ],
   # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
   # TODO:(crbug.com/891834) Remove this exception.
   "progress_indicator_egtest\.mm": [
