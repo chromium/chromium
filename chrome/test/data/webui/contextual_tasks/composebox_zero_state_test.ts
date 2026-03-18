@@ -461,7 +461,7 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
   test('TooltipImpressionTimerResetsOnHide', () => {
     mockTimer.install();
     const composeboxElement = contextualTasksApp.$.composebox;
-    const tooltip = composeboxElement.$.onboardingTooltip;
+    const tooltip = contextualTasksApp.$.onboardingTooltip;
 
     loadTimeData.overrideValues({
       showOnboardingTooltip: true,
@@ -469,8 +469,8 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
       composeboxShowOnboardingTooltipSessionImpressionCap: 10,
       composeboxShowOnboardingTooltipImpressionDelay: 3000,
     });
-    composeboxElement.numberOfTimesTooltipShownForTesting = 0;
-    composeboxElement.userDismissedTooltipForTesting = false;
+    contextualTasksApp.numberOfTimesTooltipShownForTesting = 0;
+    contextualTasksApp.userDismissedTooltipForTesting = false;
 
     const innerComposebox = composeboxElement.$.composebox;
     // Mock existence of chip.
@@ -479,22 +479,22 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
         document.createElement('div');
 
     // Show tooltip.
-    composeboxElement.updateTooltipVisibilityForTesting();
-    assertTrue(tooltip.shouldShow);
+    contextualTasksApp.updateTooltipVisibilityForTesting();
+    assertTrue(tooltip!.shouldShow);
 
     // Advance time partially.
     mockTimer.tick(1000);
-    assertEquals(0, composeboxElement.numberOfTimesTooltipShownForTesting);
+    assertEquals(0, contextualTasksApp.numberOfTimesTooltipShownForTesting);
 
     // Hide tooltip (e.g. chip disappears).
     innerComposebox.getHasAutomaticActiveTabChipToken = () => false;
-    composeboxElement.updateTooltipVisibilityForTesting();
-    assertFalse(tooltip.shouldShow);
+    contextualTasksApp.updateTooltipVisibilityForTesting();
+    assertFalse(tooltip!.shouldShow);
 
     // Advance past original deadline.
     mockTimer.tick(5000);
     // Should NOT have incremented because timer was cleared.
-    assertEquals(0, composeboxElement.numberOfTimesTooltipShownForTesting);
+    assertEquals(0, contextualTasksApp.numberOfTimesTooltipShownForTesting);
   });
 
   test(

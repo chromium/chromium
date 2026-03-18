@@ -4,8 +4,10 @@
 
 // <if expr="not is_android">
 import './composebox.js';
+import './onboarding_tooltip.js';
 
 import type {ContextualTasksComposeboxElement} from './composebox.js';
+import type {ContextualTasksOnboardingTooltipElement} from './onboarding_tooltip.js';
 // </if>
 
 // <if expr="is_android">
@@ -63,13 +65,14 @@ const OCCLUDER_EXTRA_PADDING_PX = 15;
 export interface ContextualTasksAppElement {
   $: {
     threadFrame: chrome.webviewTag.WebView,
-    // <if expr="not is_android">
-    composebox: ContextualTasksComposeboxElement,
-    // </if>
     composeboxHeaderWrapper: HTMLElement,
     composeboxHeader: HTMLElement,
     flexCenterContainer: HTMLElement,
     nameShimmer: HTMLElement,
+    // <if expr="not is_android">
+    composebox: ContextualTasksComposeboxElement,
+    onboardingTooltip?: ContextualTasksOnboardingTooltipElement,
+    // </if>
   };
 }
 
@@ -212,8 +215,15 @@ export class ContextualTasksAppElement extends CrLitElement {
       friendlyZeroStateTitleBeforeName_: {type: String},
       friendlyZeroStateTitleAfterName_: {type: String},
       occluders_: {type: Array},
+      showOnboardingTooltip_: {
+        type: Boolean,
+        value: loadTimeData.getBoolean('showOnboardingTooltip'),
+      },
     };
   }
+
+  protected accessor showOnboardingTooltip_: boolean =
+      loadTimeData.getBoolean('showOnboardingTooltip');
 
   protected accessor friendlyZeroStateGaiaName_: string =
       loadTimeData.getString('friendlyZeroStateGaiaName');
@@ -424,6 +434,11 @@ export class ContextualTasksAppElement extends CrLitElement {
       }),
     ];
 
+    // Track the tooltip visibility events fired from the composebox.
+    this.eventTracker_.add(
+        window, 'update-tooltip-visibility',
+        () => this.updateTooltipVisibility_());
+
     this.eventTracker_.add(window, 'popstate', async () => {
       // The back button may pop state that was pushed by a task change. If that
       // is the case, fetch the URL for the task ID and load that in the frame.
@@ -535,6 +550,8 @@ export class ContextualTasksAppElement extends CrLitElement {
     this.postMessageHandler_ =
         new PostMessageHandler(this.$.threadFrame, this.browserProxy_);
 
+    this.updateTooltipVisibility_();
+
     const composebox = this.composebox_;
     if (!composebox) {
       return;
@@ -542,6 +559,10 @@ export class ContextualTasksAppElement extends CrLitElement {
 
     this.postMessageHandler_.setInputPlateBoundsUpdateCallback(
         this.onInputPlateBoundsUpdate_.bind(this));
+
+    this.postMessageHandler_.setInputPlateBoundsUpdateCallback(
+        this.onInputPlateBoundsUpdate_.bind(this));
+
     this.eventTracker_.add(
         composebox, 'composebox-height-update',
         (e: CustomEvent<{height: number}>) => {
@@ -576,6 +597,22 @@ export class ContextualTasksAppElement extends CrLitElement {
     if (changedPrivateProperties.has('isShownInTab_')) {
       this.updateCommonSearchParams();
     }
+  }
+
+  private updateTooltipVisibility_() {
+    // Tooltip not supported on Android. Therefore, make calls to this method
+    // a no-op.
+    // <if expr="not is_android">
+    const tooltip = this.$.onboardingTooltip;
+    const composeboxContainer = this.composebox_;
+    if (!composeboxContainer) {
+      return;
+    }
+    const crComposebox = this.composebox_.getComposebox();
+    if (tooltip && crComposebox) {
+      tooltip.updateTooltipVisibility(composeboxContainer, crComposebox);
+    }
+    // </if>
   }
 
   private async playZeroStateAnimations_() {
@@ -1000,6 +1037,33 @@ export class ContextualTasksAppElement extends CrLitElement {
   protected onErrorDialogClose_() {
     this.isErrorDialogVisible_ = false;
   }
+
+  updateTooltipVisibilityForTesting() {
+    this.updateTooltipVisibility_();
+  }
+
+  // Onboarding tooltip is not supported on Android.
+  // <if expr="not is_android">
+  get numberOfTimesTooltipShownForTesting() {
+    return this.$.onboardingTooltip?.numberOfTimesTooltipShownForTesting ?? 0;
+  }
+
+  set numberOfTimesTooltipShownForTesting(n: number) {
+    if (this.$.onboardingTooltip) {
+      this.$.onboardingTooltip.numberOfTimesTooltipShownForTesting = n;
+    }
+  }
+
+  set userDismissedTooltipForTesting(dismissed: boolean) {
+    if (this.$.onboardingTooltip) {
+      this.$.onboardingTooltip.userDismissedTooltipForTesting = dismissed;
+    }
+  }
+
+  get tooltipResizeObserverForTesting() {
+    return this.$.onboardingTooltip?.tooltipResizeObserverForTesting ?? null;
+  }
+  // </if>
 
   private updateBasicModeAfterNavigation() {
     if (!this.enableBasicMode_ || !this.isNavigatingFromAiPage_) {
