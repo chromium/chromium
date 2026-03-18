@@ -564,6 +564,7 @@ void BwgTabHelper::PopulatePageContextFields() {
           .SetUseRefactoredExtractor(IsPageContextExtractorRefactoredEnabled())
           .SetGraftCrossOriginFrameContent(IsGeminiRichAPCExtractionEnabled())
           .SetUseRichExtraction(IsGeminiRichAPCExtractionEnabled())
+          .SetExtractPaidContent(IsGeminiRichAPCExtractionEnabled())
           .Build();
 
   // Create a new wrapper.
