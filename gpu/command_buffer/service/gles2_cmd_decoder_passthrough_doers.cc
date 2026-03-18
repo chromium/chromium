@@ -742,12 +742,10 @@ error::Error GLES2DecoderPassthroughImpl::DoCompressedTexImage2D(
     GLsizei height,
     GLint border,
     GLsizei image_size,
-    GLsizei data_size,
     const void* data) {
   CheckErrorCallbackState();
-  api()->glCompressedTexImage2DRobustANGLEFn(target, level, internalformat,
-                                             width, height, border, image_size,
-                                             data_size, data);
+  api()->glCompressedTexImage2DFn(target, level, internalformat, width, height,
+                                  border, image_size, data);
   if (CheckErrorCallbackState()) {
     return error::kNoError;
   }
@@ -770,11 +768,9 @@ error::Error GLES2DecoderPassthroughImpl::DoCompressedTexSubImage2D(
     GLsizei height,
     GLenum format,
     GLsizei image_size,
-    GLsizei data_size,
     const void* data) {
-  api()->glCompressedTexSubImage2DRobustANGLEFn(target, level, xoffset, yoffset,
-                                                width, height, format,
-                                                image_size, data_size, data);
+  api()->glCompressedTexSubImage2DFn(target, level, xoffset, yoffset, width,
+                                     height, format, image_size, data);
 
   // Texture data upload can be slow.  Exit command processing to allow for
   // context preemption and GPU watchdog checks.
@@ -792,12 +788,10 @@ error::Error GLES2DecoderPassthroughImpl::DoCompressedTexImage3D(
     GLsizei depth,
     GLint border,
     GLsizei image_size,
-    GLsizei data_size,
     const void* data) {
   CheckErrorCallbackState();
-  api()->glCompressedTexImage3DRobustANGLEFn(target, level, internalformat,
-                                             width, height, depth, border,
-                                             image_size, data_size, data);
+  api()->glCompressedTexImage3DFn(target, level, internalformat, width, height,
+                                  depth, border, image_size, data);
   if (CheckErrorCallbackState()) {
     return error::kNoError;
   }
@@ -822,11 +816,10 @@ error::Error GLES2DecoderPassthroughImpl::DoCompressedTexSubImage3D(
     GLsizei depth,
     GLenum format,
     GLsizei image_size,
-    GLsizei data_size,
     const void* data) {
-  api()->glCompressedTexSubImage3DRobustANGLEFn(
-      target, level, xoffset, yoffset, zoffset, width, height, depth, format,
-      image_size, data_size, data);
+  api()->glCompressedTexSubImage3DFn(target, level, xoffset, yoffset, zoffset,
+                                     width, height, depth, format, image_size,
+                                     data);
 
   // Texture data upload can be slow.  Exit command processing to allow for
   // context preemption and GPU watchdog checks.

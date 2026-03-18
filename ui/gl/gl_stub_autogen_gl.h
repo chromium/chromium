@@ -154,15 +154,6 @@ void glCompressedTexImage2DFn(GLenum target,
                               GLint border,
                               GLsizei imageSize,
                               const void* data) override {}
-void glCompressedTexImage2DRobustANGLEFn(GLenum target,
-                                         GLint level,
-                                         GLenum internalformat,
-                                         GLsizei width,
-                                         GLsizei height,
-                                         GLint border,
-                                         GLsizei imageSize,
-                                         GLsizei dataSize,
-                                         const void* data) override {}
 void glCompressedTexImage3DFn(GLenum target,
                               GLint level,
                               GLenum internalformat,
@@ -172,16 +163,6 @@ void glCompressedTexImage3DFn(GLenum target,
                               GLint border,
                               GLsizei imageSize,
                               const void* data) override {}
-void glCompressedTexImage3DRobustANGLEFn(GLenum target,
-                                         GLint level,
-                                         GLenum internalformat,
-                                         GLsizei width,
-                                         GLsizei height,
-                                         GLsizei depth,
-                                         GLint border,
-                                         GLsizei imageSize,
-                                         GLsizei dataSize,
-                                         const void* data) override {}
 void glCompressedTexSubImage2DFn(GLenum target,
                                  GLint level,
                                  GLint xoffset,
@@ -191,16 +172,6 @@ void glCompressedTexSubImage2DFn(GLenum target,
                                  GLenum format,
                                  GLsizei imageSize,
                                  const void* data) override {}
-void glCompressedTexSubImage2DRobustANGLEFn(GLenum target,
-                                            GLint level,
-                                            GLint xoffset,
-                                            GLint yoffset,
-                                            GLsizei width,
-                                            GLsizei height,
-                                            GLenum format,
-                                            GLsizei imageSize,
-                                            GLsizei dataSize,
-                                            const void* data) override {}
 void glCompressedTexSubImage3DFn(GLenum target,
                                  GLint level,
                                  GLint xoffset,
@@ -212,18 +183,6 @@ void glCompressedTexSubImage3DFn(GLenum target,
                                  GLenum format,
                                  GLsizei imageSize,
                                  const void* data) override {}
-void glCompressedTexSubImage3DRobustANGLEFn(GLenum target,
-                                            GLint level,
-                                            GLint xoffset,
-                                            GLint yoffset,
-                                            GLint zoffset,
-                                            GLsizei width,
-                                            GLsizei height,
-                                            GLsizei depth,
-                                            GLenum format,
-                                            GLsizei imageSize,
-                                            GLsizei dataSize,
-                                            const void* data) override {}
 void glCopyBufferSubDataFn(GLenum readTarget,
                            GLenum writeTarget,
                            GLintptr readOffset,
@@ -319,7 +278,6 @@ void glDepthRangeFn(GLclampd zNear, GLclampd zFar) override {}
 void glDepthRangefFn(GLclampf zNear, GLclampf zFar) override {}
 void glDetachShaderFn(GLuint program, GLuint shader) override {}
 void glDisableFn(GLenum cap) override {}
-void glDisableExtensionANGLEFn(const char* name) override {}
 void glDisableiOESFn(GLenum target, GLuint index) override {}
 void glDisableVertexAttribArrayFn(GLuint index) override {}
 void glDiscardFramebufferEXTFn(GLenum target,

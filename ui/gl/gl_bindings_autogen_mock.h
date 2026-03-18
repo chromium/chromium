@@ -200,16 +200,6 @@ static void GL_BINDING_CALL Mock_glCompressedTexImage2D(GLenum target,
                                                         GLint border,
                                                         GLsizei imageSize,
                                                         const void* data);
-static void GL_BINDING_CALL
-Mock_glCompressedTexImage2DRobustANGLE(GLenum target,
-                                       GLint level,
-                                       GLenum internalformat,
-                                       GLsizei width,
-                                       GLsizei height,
-                                       GLint border,
-                                       GLsizei imageSize,
-                                       GLsizei dataSize,
-                                       const void* data);
 static void GL_BINDING_CALL Mock_glCompressedTexImage3D(GLenum target,
                                                         GLint level,
                                                         GLenum internalformat,
@@ -219,17 +209,6 @@ static void GL_BINDING_CALL Mock_glCompressedTexImage3D(GLenum target,
                                                         GLint border,
                                                         GLsizei imageSize,
                                                         const void* data);
-static void GL_BINDING_CALL
-Mock_glCompressedTexImage3DRobustANGLE(GLenum target,
-                                       GLint level,
-                                       GLenum internalformat,
-                                       GLsizei width,
-                                       GLsizei height,
-                                       GLsizei depth,
-                                       GLint border,
-                                       GLsizei imageSize,
-                                       GLsizei dataSize,
-                                       const void* data);
 static void GL_BINDING_CALL Mock_glCompressedTexSubImage2D(GLenum target,
                                                            GLint level,
                                                            GLint xoffset,
@@ -239,17 +218,6 @@ static void GL_BINDING_CALL Mock_glCompressedTexSubImage2D(GLenum target,
                                                            GLenum format,
                                                            GLsizei imageSize,
                                                            const void* data);
-static void GL_BINDING_CALL
-Mock_glCompressedTexSubImage2DRobustANGLE(GLenum target,
-                                          GLint level,
-                                          GLint xoffset,
-                                          GLint yoffset,
-                                          GLsizei width,
-                                          GLsizei height,
-                                          GLenum format,
-                                          GLsizei imageSize,
-                                          GLsizei dataSize,
-                                          const void* data);
 static void GL_BINDING_CALL Mock_glCompressedTexSubImage3D(GLenum target,
                                                            GLint level,
                                                            GLint xoffset,
@@ -261,19 +229,6 @@ static void GL_BINDING_CALL Mock_glCompressedTexSubImage3D(GLenum target,
                                                            GLenum format,
                                                            GLsizei imageSize,
                                                            const void* data);
-static void GL_BINDING_CALL
-Mock_glCompressedTexSubImage3DRobustANGLE(GLenum target,
-                                          GLint level,
-                                          GLint xoffset,
-                                          GLint yoffset,
-                                          GLint zoffset,
-                                          GLsizei width,
-                                          GLsizei height,
-                                          GLsizei depth,
-                                          GLenum format,
-                                          GLsizei imageSize,
-                                          GLsizei dataSize,
-                                          const void* data);
 static void GL_BINDING_CALL Mock_glCopyBufferSubData(GLenum readTarget,
                                                      GLenum writeTarget,
                                                      GLintptr readOffset,
@@ -383,7 +338,6 @@ static void GL_BINDING_CALL Mock_glDepthRange(GLclampd zNear, GLclampd zFar);
 static void GL_BINDING_CALL Mock_glDepthRangef(GLclampf zNear, GLclampf zFar);
 static void GL_BINDING_CALL Mock_glDetachShader(GLuint program, GLuint shader);
 static void GL_BINDING_CALL Mock_glDisable(GLenum cap);
-static void GL_BINDING_CALL Mock_glDisableExtensionANGLE(const char* name);
 static void GL_BINDING_CALL Mock_glDisableVertexAttribArray(GLuint index);
 static void GL_BINDING_CALL Mock_glDisableiOES(GLenum target, GLuint index);
 static void GL_BINDING_CALL

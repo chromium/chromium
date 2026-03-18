@@ -136,16 +136,6 @@ MOCK_METHOD8(CompressedTexImage2D,
                   GLint border,
                   GLsizei imageSize,
                   const void* data));
-MOCK_METHOD9(CompressedTexImage2DRobustANGLE,
-             void(GLenum target,
-                  GLint level,
-                  GLenum internalformat,
-                  GLsizei width,
-                  GLsizei height,
-                  GLint border,
-                  GLsizei imageSize,
-                  GLsizei dataSize,
-                  const void* data));
 MOCK_METHOD9(CompressedTexImage3D,
              void(GLenum target,
                   GLint level,
@@ -156,17 +146,6 @@ MOCK_METHOD9(CompressedTexImage3D,
                   GLint border,
                   GLsizei imageSize,
                   const void* data));
-MOCK_METHOD10(CompressedTexImage3DRobustANGLE,
-              void(GLenum target,
-                   GLint level,
-                   GLenum internalformat,
-                   GLsizei width,
-                   GLsizei height,
-                   GLsizei depth,
-                   GLint border,
-                   GLsizei imageSize,
-                   GLsizei dataSize,
-                   const void* data));
 MOCK_METHOD9(CompressedTexSubImage2D,
              void(GLenum target,
                   GLint level,
@@ -177,21 +156,8 @@ MOCK_METHOD9(CompressedTexSubImage2D,
                   GLenum format,
                   GLsizei imageSize,
                   const void* data));
-MOCK_METHOD10(CompressedTexSubImage2DRobustANGLE,
-              void(GLenum target,
-                   GLint level,
-                   GLint xoffset,
-                   GLint yoffset,
-                   GLsizei width,
-                   GLsizei height,
-                   GLenum format,
-                   GLsizei imageSize,
-                   GLsizei dataSize,
-                   const void* data));
 // TODO(zmo): crbug.com/456340
 // glCompressedTexSubImage3D cannot be mocked because it has 11 args.
-// TODO(zmo): crbug.com/456340
-// glCompressedTexSubImage3DRobustANGLE cannot be mocked because it has 12 args.
 MOCK_METHOD5(CopyBufferSubData,
              void(GLenum readTarget,
                   GLenum writeTarget,
@@ -282,7 +248,6 @@ MOCK_METHOD2(DepthRange, void(GLclampd zNear, GLclampd zFar));
 MOCK_METHOD2(DepthRangef, void(GLclampf zNear, GLclampf zFar));
 MOCK_METHOD2(DetachShader, void(GLuint program, GLuint shader));
 MOCK_METHOD1(Disable, void(GLenum cap));
-MOCK_METHOD1(DisableExtensionANGLE, void(const char* name));
 MOCK_METHOD2(DisableiOES, void(GLenum target, GLuint index));
 MOCK_METHOD1(DisableVertexAttribArray, void(GLuint index));
 MOCK_METHOD3(DiscardFramebufferEXT,
