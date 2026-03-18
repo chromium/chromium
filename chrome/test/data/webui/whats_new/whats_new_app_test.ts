@@ -231,6 +231,25 @@ suite('WhatsNewAppTest', function() {
     assertFalse(isHeartbeat);
   });
 
+  test('with time_on_page_heartbeat metrics from embedded page', async () => {
+    const proxy = new TestWhatsNewBrowserProxy(
+        getUrlForFixture('test_with_metrics_time_on_page_heartbeat'));
+    WhatsNewProxyImpl.setInstance(proxy);
+    window.history.replaceState({}, '', '/');
+    const whatsNewApp = document.createElement('whats-new-app');
+    document.body.appendChild(whatsNewApp);
+
+    await proxy.handler.whenCalled('recordCtaClick');
+
+    window.dispatchEvent(new Event('beforeunload'));
+
+    const [timeOnPage, isHeartbeat] =
+        await proxy.handler.whenCalled('recordTimeOnPage');
+    // 3 million microseconds = 3 thousand milliseconds
+    assertEquals(3n * 1000n * 1000n, timeOnPage.microseconds);
+    assertTrue(isHeartbeat);
+  });
+
   test('with module_click metrics from embedded page', async () => {
     const proxy = new TestWhatsNewBrowserProxy(
         getUrlForFixture('test_with_metrics_module_click'));
