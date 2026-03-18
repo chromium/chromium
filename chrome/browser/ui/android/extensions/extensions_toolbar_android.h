@@ -76,6 +76,8 @@ class ExtensionsToolbarAndroid : public ExtensionsToolbarViewModel::Delegate,
   std::vector<ToolbarActionsModel::ActionId> GetPinnedActionIds(JNIEnv* env);
   int GetExtensionsMenuButtonState(JNIEnv* env,
                                    content::WebContents* web_contents);
+  bool IsActionDraggable(JNIEnv* env,
+                         const ToolbarActionsModel::ActionId& action_id);
   void ExecuteUserAction(const ToolbarActionsModel::ActionId& action_id,
                          ToolbarActionViewModel::InvocationSource source);
   void MovePinnedAction(const ToolbarActionsModel::ActionId& action_id,

@@ -20,6 +20,7 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/permissions_manager.h"
+#include "extensions/browser/pref_names.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_builder.h"
 #include "net/dns/mock_host_resolver.h"
@@ -401,4 +402,65 @@ IN_PROC_BROWSER_TEST_F(
       toolbar_model()->GetRequestAccessButtonParams(GetActiveWebContents());
   EXPECT_TRUE(params.extension_ids.empty());
   EXPECT_TRUE(params.tooltip_text.empty());
+}
+
+// Tests that a pinned action is draggable.
+IN_PROC_BROWSER_TEST_F(ExtensionsToolbarViewModelBrowserTest,
+                       IsDraggable_Basic) {
+  auto extension = AddExtension("Alpha");
+  const std::string& id = extension->id();
+
+  // By default, the extension is not pinned, so it should not be draggable.
+  EXPECT_FALSE(toolbar_model()->IsActionDraggable(id));
+
+  // Pin the extension.
+  ToolbarActionsModel::Get(profile())->SetActionVisibility(id, true);
+  EXPECT_TRUE(toolbar_model()->IsActionDraggable(id));
+
+  // Unpin the extension.
+  ToolbarActionsModel::Get(profile())->SetActionVisibility(id, false);
+  EXPECT_FALSE(toolbar_model()->IsActionDraggable(id));
+}
+
+// Tests that actions are never draggable in an Incognito window, even if
+// pinned.
+IN_PROC_BROWSER_TEST_F(ExtensionsToolbarViewModelBrowserTest,
+                       IsDraggable_Incognito) {
+  auto extension = AddExtension("Alpha");
+  const std::string& id = extension->id();
+
+  // Pin the extension in the main profile.
+  ToolbarActionsModel::Get(profile())->SetActionVisibility(id, true);
+  // Verify it is draggable in the regular profile.
+  EXPECT_TRUE(toolbar_model()->IsActionDraggable(id));
+
+  // Create an Incognito browser.
+  BrowserWindowInterface* incognito_window = CreateIncognitoBrowserWindow();
+
+  // Create a view model specific to the Incognito browser.
+  auto incognito_delegate =
+      std::make_unique<TestExtensionsToolbarDelegate>(incognito_window);
+  auto incognito_model = std::make_unique<ExtensionsToolbarViewModel>(
+      incognito_delegate.get(), incognito_window,
+      ToolbarActionsModel::Get(incognito_window->GetProfile()));
+
+  // Verify the extension is NOT draggable in the Incognito model.
+  EXPECT_FALSE(incognito_model->IsActionDraggable(id));
+}
+
+// Tests that force-pinned extensions (e.g. by enterprise policy) are NOT
+// draggable.
+IN_PROC_BROWSER_TEST_F(ExtensionsToolbarViewModelBrowserTest,
+                       IsDraggable_ForcePinned) {
+  auto extension = AddExtension("Alpha");
+  const std::string& id = extension->id();
+
+  // Force-pin the extension via the ExtensionManagement preference.
+  base::DictValue management;
+  management.Set(id, base::DictValue().Set("toolbar_pin", "force_pinned"));
+  profile()->GetPrefs()->SetDict(extensions::pref_names::kExtensionManagement,
+                                 std::move(management));
+
+  // Verify the action is not draggable.
+  EXPECT_FALSE(toolbar_model()->IsActionDraggable(id));
 }

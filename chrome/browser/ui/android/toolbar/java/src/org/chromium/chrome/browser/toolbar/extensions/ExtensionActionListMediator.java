@@ -235,13 +235,20 @@ class ExtensionActionListMediator implements Destroyable {
                 break;
             }
 
-            currentModelIndex = reconcileItem(actionId, currentModelIndex, webContents);
+            currentModelIndex =
+                    reconcileItem(
+                            actionId, currentModelIndex, webContents, /* isPoppedOut= */ false);
         }
 
         // Deal with the popped out action last, as it should appear on the [right|left] end of the
         // list for [LTR|RTL].
         if (mPoppedOutActionId != null && mCanShowPoppedOutAction) {
-            currentModelIndex = reconcileItem(mPoppedOutActionId, currentModelIndex, webContents);
+            currentModelIndex =
+                    reconcileItem(
+                            mPoppedOutActionId,
+                            currentModelIndex,
+                            webContents,
+                            /* isPoppedOut= */ true);
         }
 
         // Remove rest of the items.
@@ -260,7 +267,10 @@ class ExtensionActionListMediator implements Destroyable {
      * @return The next index of {@link mModels} that needs to be evaluated.
      */
     private int reconcileItem(
-            String actionId, int currentIndex, @Nullable WebContents webContents) {
+            String actionId,
+            int currentIndex,
+            @Nullable WebContents webContents,
+            boolean isPoppedOut) {
         ExtensionAction action = mExtensionsToolbarBridge.getAction(actionId, webContents);
         if (action == null) {
             return currentIndex;
@@ -274,17 +284,23 @@ class ExtensionActionListMediator implements Destroyable {
 
         int indexInModels = findIndexForId(actionId, currentIndex + 1);
         if (indexInModels == -1) {
-            mModels.add(currentIndex, createListItem(action, webContents));
+            mModels.add(currentIndex, createListItem(action, webContents, isPoppedOut));
         } else {
             mModels.move(indexInModels, currentIndex);
         }
         return currentIndex + 1;
     }
 
-    private ListItem createListItem(ExtensionAction action, @Nullable WebContents webContents) {
+    /**
+     * Returns a {@link ListItem} for a specific action.
+     *
+     * @param action The {@link ExtensionAction} of the action.
+     * @param webContents The current {@link WebContents}.
+     * @param isPoppedOut True if this action is displayed because it's popped out.
+     */
+    private ListItem createListItem(
+            ExtensionAction action, @Nullable WebContents webContents, boolean isPoppedOut) {
         String actionId = action.getId();
-
-        Bitmap icon = getIconForAction(actionId, webContents);
 
         return new ListItem(
                 ListItemType.EXTENSION_ACTION,
@@ -292,8 +308,14 @@ class ExtensionActionListMediator implements Destroyable {
                         .with(
                                 ExtensionActionButtonProperties.ACCESSIBLE_NAME,
                                 action.getAccessibleName())
-                        .with(ExtensionActionButtonProperties.ICON, icon)
+                        .with(
+                                ExtensionActionButtonProperties.ICON,
+                                getIconForAction(actionId, webContents))
                         .with(ExtensionActionButtonProperties.ID, actionId)
+                        .with(
+                                ExtensionActionButtonProperties.IS_DRAGGABLE,
+                                mExtensionsToolbarBridge.isActionDraggable(actionId)
+                                        && !isPoppedOut)
                         .with(
                                 ExtensionActionButtonProperties.ON_CLICK_LISTENER,
                                 (view) -> onPrimaryClick(actionId))
@@ -341,12 +363,14 @@ class ExtensionActionListMediator implements Destroyable {
         }
 
         Bitmap icon = getIconForAction(actionId, webContents);
-        mModels.get(index).model.set(ExtensionActionButtonProperties.ICON, icon);
 
-        mModels.get(index)
-                .model
-                .set(ExtensionActionButtonProperties.ACCESSIBLE_NAME, action.getAccessibleName());
-        mModels.get(index).model.set(ExtensionActionButtonProperties.TOOLTIP, action.getTooltip());
+        PropertyModel model = mModels.get(index).model;
+        model.set(ExtensionActionButtonProperties.ICON, icon);
+        model.set(
+                ExtensionActionButtonProperties.IS_DRAGGABLE,
+                mExtensionsToolbarBridge.isActionDraggable(actionId));
+        model.set(ExtensionActionButtonProperties.ACCESSIBLE_NAME, action.getAccessibleName());
+        model.set(ExtensionActionButtonProperties.TOOLTIP, action.getTooltip());
     }
 
     private void updateActionPropertiesForAll(WebContents webContents) {

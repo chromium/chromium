@@ -130,6 +130,9 @@ class ExtensionsToolbarViewModel
   ToolbarActionViewModel* GetActionModelForId(
       const ToolbarActionsModel::ActionId& action_id) const;
 
+  // Returns whether a drag can be started on an action.
+  bool IsActionDraggable(const ToolbarActionsModel::ActionId& action_id) const;
+
   // Move the pinned action `action_id` to `target_index`.
   void MovePinnedAction(const ToolbarActionsModel::ActionId& action_id,
                         size_t target_index);

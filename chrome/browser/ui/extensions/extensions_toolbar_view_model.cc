@@ -73,6 +73,28 @@ ToolbarActionViewModel* ExtensionsToolbarViewModel::GetActionModelForId(
   return it->second.get();
 }
 
+bool ExtensionsToolbarViewModel::IsActionDraggable(
+    const ToolbarActionsModel::ActionId& action_id) const {
+  Profile* profile = browser_->GetProfile();
+
+  // We don't allow dragging if the container isn't in the toolbar, or if
+  // the profile is incognito (to avoid changing state from an incognito
+  // window).
+  if (!ToolbarActionsModel::CanShowActionsInToolbar(*browser_) ||
+      profile->IsOffTheRecord()) {
+    return false;
+  }
+
+  // Only pinned extensions should be draggable.
+  auto it = std::ranges::find(GetPinnedActionIds(), action_id);
+  if (it == GetPinnedActionIds().cend()) {
+    return false;
+  }
+
+  // TODO(crbug.com/40808374): Force-pinned extensions are not draggable.
+  return !actions_model_->IsActionForcePinned(*it);
+}
+
 void ExtensionsToolbarViewModel::MovePinnedAction(
     const ToolbarActionsModel::ActionId& action_id,
     size_t target_index) {

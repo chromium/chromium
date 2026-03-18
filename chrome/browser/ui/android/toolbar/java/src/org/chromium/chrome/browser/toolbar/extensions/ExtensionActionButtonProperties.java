@@ -11,6 +11,7 @@ import androidx.annotation.IntDef;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 import java.lang.annotation.Retention;
@@ -45,6 +46,9 @@ public class ExtensionActionButtonProperties {
     /** The action ID (i.e. extension ID). */
     public static final WritableObjectPropertyKey<String> ID = new WritableObjectPropertyKey<>();
 
+    /** Whether the action can be dragged. */
+    public static final WritableBooleanPropertyKey IS_DRAGGABLE = new WritableBooleanPropertyKey();
+
     /** The primary-click listener. */
     public static final WritableObjectPropertyKey<View.OnClickListener> ON_CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
@@ -68,6 +72,7 @@ public class ExtensionActionButtonProperties {
                 DRAG_HELPER,
                 ICON,
                 ID,
+                IS_DRAGGABLE,
                 ON_CLICK_LISTENER,
                 ON_LONG_CLICK_LISTENER,
                 TOOLTIP,

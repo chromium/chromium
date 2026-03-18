@@ -135,6 +135,17 @@ public class ExtensionsToolbarBridge implements Destroyable {
         return ExtensionsToolbarBridgeJni.get().getPinnedActionIds(mNativeExtensionsToolbarAndroid);
     }
 
+    public boolean isActionDraggable(String actionId) {
+        if (mProfile.shutdownStarted()) {
+            // TODO(crbug.com/459079170): This is to prevent tests from breaking. {@code
+            // ExtensionToolbarCoordinatorImpl} should ideally be destroyed following {@code
+            // ChromeAndroidTask}'s destruction, and it is currently being worked on.
+            return false;
+        }
+        return ExtensionsToolbarBridgeJni.get()
+                .isActionDraggable(mNativeExtensionsToolbarAndroid, actionId);
+    }
+
     public void executeUserAction(String actionId, @InvocationSource int source) {
         if (mProfile.shutdownStarted()) {
             // TODO(crbug.com/459079170): This is to prevent tests from breaking. {@code
@@ -324,6 +335,9 @@ public class ExtensionsToolbarBridge implements Destroyable {
 
         @JniType("std::vector<std::string>")
         String[] getPinnedActionIds(long nativeExtensionsToolbarAndroid);
+
+        boolean isActionDraggable(
+                long nativeExtensionsToolbarAndroid, @JniType("std::string") String actionId);
 
         void executeUserAction(
                 long nativeExtensionsToolbarAndroid,

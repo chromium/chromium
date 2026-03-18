@@ -641,24 +641,14 @@ int ExtensionsToolbarDesktop::GetDragOperationsForView(View* sender,
 bool ExtensionsToolbarDesktop::CanStartDragForView(View* sender,
                                                    const gfx::Point& press_pt,
                                                    const gfx::Point& p) {
-  // We don't allow dragging if the container isn't in the toolbar, or if
-  // the profile is incognito (to avoid changing state from an incognito
-  // window).
-  if (!ToolbarActionsModel::CanShowActionsInToolbar(*browser_) ||
-      browser_->profile()->IsOffTheRecord()) {
+  // Find the action ID from the View.
+  auto it = std::ranges::find(icons_, sender,
+                              [](const auto& pair) { return pair.second; });
+  if (it == icons_.end()) {
     return false;
   }
 
-  // Only pinned extensions should be draggable.
-  auto it = std::ranges::find(
-      toolbar_view_model_->GetPinnedActionIds(), sender,
-      [this](const std::string& action_id) { return GetViewForId(action_id); });
-  if (it == toolbar_view_model_->GetPinnedActionIds().cend()) {
-    return false;
-  }
-
-  // TODO(crbug.com/40808374): Force-pinned extensions are not draggable.
-  return !model_->IsActionForcePinned(*it);
+  return toolbar_view_model_->IsActionDraggable(it->first);
 }
 
 std::unique_ptr<ExtensionActionViewModel>

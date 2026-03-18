@@ -223,6 +223,12 @@ int ExtensionsToolbarAndroid::GetExtensionsMenuButtonState(
   return static_cast<int>(toolbar_view_model_->GetButtonState(*web_contents));
 }
 
+bool ExtensionsToolbarAndroid::IsActionDraggable(
+    JNIEnv* env,
+    const ToolbarActionsModel::ActionId& action_id) {
+  return toolbar_view_model_->IsActionDraggable(action_id);
+}
+
 void ExtensionsToolbarAndroid::ExecuteUserAction(
     const ToolbarActionsModel::ActionId& action_id,
     ToolbarActionViewModel::InvocationSource source) {

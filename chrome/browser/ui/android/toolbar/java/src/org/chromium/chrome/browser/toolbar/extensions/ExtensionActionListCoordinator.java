@@ -98,13 +98,13 @@ public class ExtensionActionListCoordinator implements Destroyable {
                 this::bindDragProperties,
                 new DraggabilityProvider() {
                     @Override
-                    public boolean isActivelyDraggable(PropertyModel propertyModel) {
-                        return true;
+                    public boolean isActivelyDraggable(PropertyModel model) {
+                        return model.get(ExtensionActionButtonProperties.IS_DRAGGABLE);
                     }
 
                     @Override
-                    public boolean isPassivelyDraggable(PropertyModel propertyModel) {
-                        return true;
+                    public boolean isPassivelyDraggable(PropertyModel model) {
+                        return model.get(ExtensionActionButtonProperties.IS_DRAGGABLE);
                     }
                 });
         dragTouchHandler.addDragListener(
