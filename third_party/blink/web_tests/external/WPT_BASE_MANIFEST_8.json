@@ -2097,6 +2097,13 @@
          {}
         ]
        ],
+       "chrome-bug-491994185-crash.html": [
+        "cf27c57818d234e079ab485513636961a054080f",
+        [
+         null,
+         {}
+        ]
+       ],
        "chrome-custom-highlight-crash.html": [
         "61e5075ed4e1b485019d96b402bbf17926bd1098",
         [
@@ -82585,6 +82592,19 @@
         }
        ]
       ],
+      "clip-text-inline-block-child.html": [
+       "4af572cef66ef56167fa900eb7c7248aca29a0c9",
+       [
+        null,
+        [
+         [
+          "/css/css-backgrounds/background-clip/clip-text-inline-block-child-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "clip-text-multi-line.html": [
        "88ad111eb8400ee8c213f6f6f411c25ef61af42c",
        [
@@ -82660,6 +82680,45 @@
         [
          [
           "/css/css-backgrounds/background-clip/clip-text-out-of-flow-child-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "clip-text-relative-child.html": [
+       "87e67beba5c955f0ef02df23204150071e1006b5",
+       [
+        null,
+        [
+         [
+          "/css/css-backgrounds/background-clip/clip-text-relative-child-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "clip-text-stacking-context-child.html": [
+       "06395c952ddb88e543f3fa582514c9ec6764e2cd",
+       [
+        null,
+        [
+         [
+          "/css/css-backgrounds/background-clip/clip-text-stacking-context-child-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "clip-text-text-align.html": [
+       "722b016cb0e0a940aa716a613386dda871177a82",
+       [
+        null,
+        [
+         [
+          "/css/css-backgrounds/background-clip/clip-text-text-align-ref.html",
           "=="
          ]
         ],
@@ -342180,6 +342239,32 @@
        {}
       ]
      ],
+     "invalid-attribute-type-does-not-block-other-animations.html": [
+      "a8d920604d5b655d808c7a6478bb76766a79f5d9",
+      [
+       null,
+       [
+        [
+         "/svg/struct/reftests/reference/green-100x100.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "invalid-attribute-type-does-not-block-same-group-animation.html": [
+      "65abd4297e798af8ceeda8f050e4bd03b5b84a24",
+      [
+       null,
+       [
+        [
+         "/svg/struct/reftests/reference/green-100x100.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "media-fragment-override-animation.html": [
       "9dd9a6d59fe06aa20b4b1607e969e29f6529159a",
       [
@@ -368250,6 +368335,10 @@
        "0bcbc0bc13f6bb8a13adc256a728a7860f3e2d69",
        []
       ],
+      "clip-text-inline-block-child-ref.html": [
+       "141501472325d0c7b16dfa4ad14b62d7323e6ef7",
+       []
+      ],
       "clip-text-multi-line-ref.html": [
        "455daa7aeabc3fba876eda3d1807b4ddca98c4f9",
        []
@@ -368260,6 +368349,18 @@
       ],
       "clip-text-out-of-flow-child-ref.html": [
        "89cbfba5ceea25136003e264bd0b7ed6438c3989",
+       []
+      ],
+      "clip-text-relative-child-ref.html": [
+       "f949d817611787f459f415e7cc333e88e5548e1a",
+       []
+      ],
+      "clip-text-stacking-context-child-ref.html": [
+       "18a1693d90cd5763854e972ec711ee01638ba51c",
+       []
+      ],
+      "clip-text-text-align-ref.html": [
+       "f49454163b5a1299485dc218d26cef398fe7024c",
        []
       ],
       "clip-text-text-decorations-ref.html": [
@@ -513964,6 +514065,37 @@
        }
       ]
      ],
+     "language-model-prompt-empty-input.tentative.https.window.js": [
+      "7cd8246d260336c6b1cd98b16f5e8a7fa9e934a6",
+      [
+       "ai/language-model/language-model-prompt-empty-input.tentative.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Language Model Prompt Empty Input"
+         ],
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
+          "../resources/util.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
      "language-model-prompt-gc.tentative.https.window.js": [
       "db4823a454ad8cb8c94b14155528b7e462774344",
       [
@@ -514213,7 +514345,7 @@
       ]
      ],
      "language-model-prompt.tentative.https.window.js": [
-      "c102d3fd985d26b8018e3756b73696182df0ebb7",
+      "86b0302d5a6d27056dad102334984785c3ab4b22",
       [
        "ai/language-model/language-model-prompt.tentative.https.window.html",
        {
@@ -691366,6 +691498,15 @@
        ]
       },
       "events": {
+       "dragenter-dragleave-related-target.html": [
+        "fdb719ad93bf75e1c906890b01accb12eac21bd4",
+        [
+         null,
+         {
+          "testdriver": true
+         }
+        ]
+       ],
        "pointer-suppression.html": [
         "6f0cfafd5097aaf0671ccc4987eeb6d7078cac0d",
         [
@@ -788284,6 +788425,13 @@
        {}
       ]
      ],
+     "invalid-attribute-type-does-not-block-begin-event.html": [
+      "658069e0b789c7a4611f49c87b448eca33631b43",
+      [
+       null,
+       {}
+      ]
+     ],
      "keysplines-x-limits.html": [
       "376f04e659eb74cdff621583888e0e15fda73385",
       [
@@ -794040,6 +794188,15 @@
       [
        null,
        {}
+      ]
+     ],
+     "keypress-not-fired-for-modifier-shortcuts.html": [
+      "924d1d3b6d37fde72c479ed1d71fb05c40f71e8a",
+      [
+       null,
+       {
+        "testdriver": true
+       }
       ]
      ],
      "modifier-keys-combinations.html": [
