@@ -668,9 +668,6 @@ crbug.com/40550039 external/wpt/svg/styling/use-element-transitions-dom-mutation
 crbug.com/386610909 external/wpt/svg/styling/use-element-non-rendered-has-selector.html [ Failure ]
 crbug.com/386610909 external/wpt/svg/styling/use-element-non-rendered-sibling-selector.html [ Failure ]
 
-# This test is invalid, due to alignment safety anchor1 *always* overflows.
-crbug.com/438515315 external/wpt/css/css-anchor-position/position-visibility-no-overflow-scroll-002.html [ Failure ]
-
 ### ====== Paint team owned tests to here ======
 
 ### ====== Payments related tests begin =======
