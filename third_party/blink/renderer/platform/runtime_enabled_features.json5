@@ -5438,10 +5438,6 @@
       status: "stable",
     },
     {
-      name: "SvgNonScalingStrokePrecisionFix",
-      status: "stable",
-    },
-    {
       name: "SvgNumberListClearOnParsingFailure",
       status: "stable",
     },

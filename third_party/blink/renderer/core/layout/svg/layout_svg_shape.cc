@@ -478,12 +478,8 @@ void LayoutSVGShape::UpdateNonScalingStrokeData() {
   NOT_DESTROYED();
   DCHECK(HasNonScalingStroke());
 
-  const NonScalingStrokeTransformMode mode =
-      RuntimeEnabledFeatures::SvgNonScalingStrokePrecisionFixEnabled()
-          ? NonScalingStrokeTransformMode::kPreserveTranslation
-          : NonScalingStrokeTransformMode::kClearTranslation;
-
-  const AffineTransform transform = ComputeNonScalingStrokeTransform(mode);
+  const AffineTransform transform = ComputeNonScalingStrokeTransform(
+      NonScalingStrokeTransformMode::kPreserveTranslation);
   auto& rare_data = EnsureRareData();
   if (rare_data.non_scaling_stroke_transform_ != transform) {
     SetShouldDoFullPaintInvalidation();
