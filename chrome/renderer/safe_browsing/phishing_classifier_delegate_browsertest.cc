@@ -153,6 +153,14 @@ class PhishingClassifierDelegateTest
     classifier_not_ready_ = false;
   }
 
+  void TearDown() override {
+    // `delegate_` owns `classifier_` and the RenderFrame owns `delegate_`;
+    // clear these pointers now to avoid dangling references.
+    classifier_ = nullptr;
+    delegate_ = nullptr;
+    ChromeRenderViewTest::TearDown();
+  }
+
   // Runs the ClassificationDone callback, then verify if message sent
   // by FakeRenderThread is correct.
   void RunAndVerifyClassificationDone(const ClientPhishingRequest& verdict) {
@@ -207,10 +215,9 @@ class PhishingClassifierDelegateTest
         Scorer::Create(mapped_region.region.Duplicate(), base::File()));
   }
 
-  raw_ptr<StrictMock<MockPhishingClassifier>, DanglingUntriaged>
-      classifier_;  // Owned by |delegate_|.
-  raw_ptr<PhishingClassifierDelegate, DanglingUntriaged>
-      delegate_;  // Owned by the RenderFrame.
+  // Owned by |delegate_|.
+  raw_ptr<StrictMock<MockPhishingClassifier>> classifier_;
+  raw_ptr<PhishingClassifierDelegate> delegate_;  // Owned by the RenderFrame.
   bool classifier_not_ready_;
   base::test::ScopedFeatureList feature_list_;
 };
