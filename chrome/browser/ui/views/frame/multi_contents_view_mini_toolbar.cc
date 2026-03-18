@@ -19,7 +19,6 @@
 #include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert_icon.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
-#include "chrome/browser/ui/tabs/split_tab_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_container_outline.h"
@@ -36,8 +35,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
-#include "ui/base/models/menu_model.h"
-#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
@@ -46,11 +43,9 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
-#include "ui/views/controls/button/menu_button_controller.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
@@ -92,7 +87,7 @@ MultiContentsViewMiniToolbar::MultiContentsViewMiniToolbar(
   layer()->SetFillsBoundsOpaquely(false);
   SetVisible(false);
 
-  // Add favicon, domain label, alert state indicator, and menu button.
+  // Add favicon, domain label, alert state indicator, and close button.
   favicon_ = AddChildView(std::make_unique<views::ImageView>());
   const views::FlexSpecification icon_flex_spec =
       views::FlexSpecification(views::MinimumFlexSizeRule::kPreferredSnapToZero,
@@ -116,24 +111,18 @@ MultiContentsViewMiniToolbar::MultiContentsViewMiniToolbar(
   alert_state_indicator_->SetProperty(views::kFlexBehaviorKey,
                                       icon_flex_spec.WithOrder(2));
 
-  image_button_ = AddChildView(views::CreateVectorImageButtonWithNativeTheme(
-      base::RepeatingClosure(), kBrowserToolsChromeRefreshIcon, 16,
+  close_button_ = AddChildView(views::CreateVectorImageButtonWithNativeTheme(
+      base::BindRepeating(&MultiContentsViewMiniToolbar::CloseCurrentView,
+                          base::Unretained(this)),
+      kCloseTabChromeRefreshIcon, 16,
       kColorMultiContentsViewMiniToolbarForeground));
-  SetAccessibleNameAndTooltip(image_button_,
-                              IDS_ACCNAME_SPLIT_VIEW_MINI_TOOLBAR_MENU_BUTTON);
-  image_button_->SetButtonController(
-      std::make_unique<views::MenuButtonController>(
-          image_button_,
-          base::BindRepeating(&MultiContentsViewMiniToolbar::OpenSplitViewMenu,
-                              base::Unretained(this)),
-          std::make_unique<views::Button::DefaultButtonControllerDelegate>(
-              image_button_)));
-  image_button_->SetProperty(
+  SetAccessibleNameAndTooltip(close_button_, IDS_SPLIT_TAB_CLOSE);
+  close_button_->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
                                views::MaximumFlexSizeRule::kPreferred)
           .WithOrder(1));
-  views::InstallCircleHighlightPathGenerator(image_button_);
+  views::InstallCircleHighlightPathGenerator(close_button_);
 
   web_contents_attached_subscription_ =
       web_view->AddWebContentsAttachedCallback(
@@ -160,7 +149,7 @@ void MultiContentsViewMiniToolbar::UpdateState(bool is_active,
       contents_container_outline_thickness,
       contents_container_outline_thickness);
 
-  // Reduce the margins in the case of showing only the close or menu button.
+  // Reduce the margins in the case of showing only the close button.
   gfx::Insets kActiveInteriorMargins = gfx::Insets::TLBR(
       ContentsContainerOutline::kCornerRadius + kMiniToolbarContentPadding,
       ContentsContainerOutline::kCornerRadius + kMiniToolbarContentPadding,
@@ -303,25 +292,6 @@ void MultiContentsViewMiniToolbar::UpdateFavicon(TabUIHelper* tab_ui_helper) {
     }
   }
   favicon_->SetImage(favicon);
-}
-
-void MultiContentsViewMiniToolbar::OpenSplitViewMenu() {
-  base::RecordAction(
-      base::UserMetricsAction("DesktopSplitView_OpenMiniToolbarMenu"));
-
-  TabStripModel* const model = browser_view_->browser()->tab_strip_model();
-  const int index = model->GetIndexOfWebContents(web_contents_);
-  menu_model_ = std::make_unique<SplitTabMenuModel>(
-      browser_view_->browser()->tab_strip_model(),
-      SplitTabMenuModel::MenuSource::kMiniToolbar, index);
-  menu_runner_ = std::make_unique<views::MenuRunner>(
-      menu_model_.get(), views::MenuRunner::HAS_MNEMONICS);
-  menu_runner_->RunMenuAt(image_button_->GetWidget(),
-                          static_cast<views::MenuButtonController*>(
-                              image_button_->button_controller()),
-                          image_button_->GetAnchorBoundsInScreen(),
-                          views::MenuAnchorPosition::kBubbleTopLeft,
-                          ui::mojom::MenuSourceType::kNone);
 }
 
 void MultiContentsViewMiniToolbar::CloseCurrentView() {

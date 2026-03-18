@@ -103,7 +103,7 @@ IN_PROC_BROWSER_TEST_F(SplitNewTabPageUiTest, MAYBE_Focus) {
                [&](const MultiContentsView* multi_contents_view) -> bool {
                  return multi_contents_view->GetActiveContentsContainerView()
                      ->mini_toolbar()
-                     ->image_button_for_testing()
+                     ->close_button_for_testing()
                      ->HasFocus();
                }));
 }

@@ -23,20 +23,15 @@ namespace tabs {
 enum class TabAlert;
 }
 
-namespace ui {
-class MenuModel;
-}
-
 namespace views {
 class ImageButton;
 class ImageView;
 class Label;
-class MenuRunner;
 class WebView;
 }  // namespace views
 
 // MultiContentsViewMiniToolbar is shown for the inactive side of a split and
-// displays the favicon, domain, tab alert state, and a menu button.
+// displays the favicon, domain, tab alert state, and a close button.
 class MultiContentsViewMiniToolbar : public views::View {
   METADATA_HEADER(MultiContentsViewMiniToolbar, views::View)
 
@@ -51,7 +46,7 @@ class MultiContentsViewMiniToolbar : public views::View {
   void UpdateContents();
 
   views::Label* domain_label_for_testing() { return domain_label_; }
-  views::ImageButton* image_button_for_testing() { return image_button_; }
+  views::ImageButton* close_button_for_testing() { return close_button_; }
 
  private:
   // View:
@@ -66,17 +61,12 @@ class MultiContentsViewMiniToolbar : public views::View {
 
   void UpdateFavicon(TabUIHelper* tab_ui_helper);
 
-  void OpenSplitViewMenu();
   void CloseCurrentView();
 
   raw_ptr<views::ImageView> favicon_;
   raw_ptr<views::Label> domain_label_;
   raw_ptr<views::ImageView> alert_state_indicator_;
-  raw_ptr<views::ImageButton> image_button_;
-  // Model for the split view menu.
-  std::unique_ptr<ui::MenuModel> menu_model_;
-  // Runner for the split view menu.
-  std::unique_ptr<views::MenuRunner> menu_runner_;
+  raw_ptr<views::ImageButton> close_button_;
 
   raw_ptr<BrowserView> browser_view_;
   raw_ptr<content::WebContents> web_contents_;
