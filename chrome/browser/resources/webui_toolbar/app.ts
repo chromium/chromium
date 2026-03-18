@@ -68,6 +68,9 @@ export class ToolbarAppElement extends CrLitElement {
       backButtonLeadingMargin: 0,
     },
     layoutConstantsVersion: 0,
+    contentSettingState: {
+      imageStates: [],
+    },
   };
 
   private browserProxy_: BrowserProxy;

@@ -54,6 +54,8 @@ class ToolbarUIService : public toolbar_ui_api::mojom::ToolbarUIService {
                        const gfx::Point& viewport_coordinate_css_pixels,
                        ui::mojom::MenuSourceType source) override;
   void OnPageInitialized() override;
+  void ShowContentSettingsBubble(::content_settings::mojom::ContentSettingsType
+                                     content_settings_type) override;
 
  private:
   mojo::Receiver<toolbar_ui_api::mojom::ToolbarUIService> service_;

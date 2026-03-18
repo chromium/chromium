@@ -159,6 +159,8 @@ WebUIToolbarWebView::WebUIToolbarWebView(
       toolbar_ui_api::mojom::SplitTabsControlState::New();
   last_queued_state_.reload_control_state =
       toolbar_ui_api::mojom::ReloadControlState::New();
+  last_queued_state_.content_setting_state =
+      toolbar_ui_api::mojom::ContentSettingState::New();
   last_queued_state_.layout_constants_version = 0;
   last_queued_state_.back_forward_control_state = GetBackForwardState();
 

@@ -5,6 +5,7 @@
 module toolbar_ui_api.mojom;
 
 import "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom";
+import "components/content_settings/core/common/content_settings_types.mojom";
 import "ui/base/mojom/menu_source_type.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "mojo/public/mojom/base/error.mojom";
@@ -40,4 +41,8 @@ interface ToolbarUIService {
 
   // Called when the page finishes initialization.
   OnPageInitialized();
+
+  // Displays the bubble, anchored to the URL bar, that corresponds to `type`.
+  ShowContentSettingsBubble(
+    content_settings.mojom.ContentSettingsType type);
 };

@@ -4,6 +4,9 @@
 
 module toolbar_ui_api.mojom;
 
+import "components/content_settings/core/common/content_settings_types.mojom";
+import "mojo/public/mojom/base/string16.mojom";
+
 // The context menu types that can be opened with ToolbarUIService's
 // ShowContextMenu.
 enum ContextMenuType {
@@ -50,10 +53,66 @@ struct BackForwardControlState {
   int32 back_button_leading_margin;
 };
 
+// The set of information about URL bar RHS content setting icons sent from
+// browser to UI.
+struct ContentSettingState {
+  // The set of content setting icon state for each visible icon.
+  array<ContentSettingImageState> image_states;
+};
+
+// These fields correspond to the accessors of ContentSettingImageModel.
+struct ContentSettingImageState {
+  // This should be one of the enum values that has a corresponding LHS
+  // URL bar icon.
+  content_settings.mojom.ContentSettingsType type;
+
+  // NOTE: this isn't actually announced unless `should_notify_accessibility` is
+  // true -- it's merely the accessible name.
+  mojo_base.mojom.String16 accessibility_announcement_string;
+
+  // Mouseover popup text to display over icon.
+  mojo_base.mojom.String16 tooltip;
+
+  // Indicates that the content setting has been blocked (that is, disabled) by
+  // the user (i.e. turn off JavaScript) -- the icon should change to indicate
+  // the blocked status.
+  bool is_blocked;
+
+  // If true, `accessibility_announcement_string` is announced to users of
+  // accessibility technologies.
+  bool should_notify_accessibility;
+
+  // If true, the bubble should open on its own, without requiring a click from
+  // the user. This round-trips through WebUI so that the bubble never opens
+  // before the icon is ready.
+  //
+  // If set, `is_bubble_visible` should also be set. Technically, the bubble
+  // only displays after requested by the WebUI, but this prevents a flicker
+  // where the icon appears non-highlighted initially before immediately
+  // transitioning to highlighted.
+  bool should_auto_open_bubble;
+
+  // If true, the bubble is visible, so the icon should be highlighted. Should
+  // always be set to true if `should_auto_open_bubble` is true.
+  bool is_bubble_visible;
+
+  // If true, when `explanitory_string` is displayed, it should appear via an
+  // animation.
+  bool should_run_animation;
+
+  // Explanatory text that either appears instantly, or animates in, depending
+  // on the value of `should_run_animation`.
+  mojo_base.mojom.String16 explanatory_string;
+
+  // NOTE: The visual icon to display is determined by `type`
+  // and `is_blocked`.
+};
+
 struct NavigationControlsState {
   ReloadControlState reload_control_state;
   SplitTabsControlState split_tabs_control_state;
   BackForwardControlState back_forward_control_state;
+  ContentSettingState content_setting_state;
   // This is incremented every time a settings change may change the layout
   // constants.
   int32 layout_constants_version = 0;

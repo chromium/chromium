@@ -8,6 +8,12 @@ import("//mojo/public/tools/bindings/mojom.gni")
 mojom("mojom_data_model") {
   sources = [ "toolbar_ui_api_data_model.mojom" ]
 
+  # Dependencies on other mojom targets.
+  public_deps = [
+    "//components/content_settings/core/common:content_settings_types",
+    "//mojo/public/mojom/base",
+  ]
+
   # Generate TypeScript bindings for WebUI.
   webui_module_path = "/"
 }
