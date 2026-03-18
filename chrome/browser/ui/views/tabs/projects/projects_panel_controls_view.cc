@@ -37,8 +37,8 @@ ProjectsPanelControlsView::ProjectsPanelControlsView(
   projects_button_->SetPaintToLayer();
   projects_button_->layer()->SetFillsBoundsOpaquely(false);
   projects_button_->SetCallback(
-      base::BindOnce(&ProjectsPanelControlsView::OnCloseButtonPressed,
-                     base::Unretained(this)));
+      base::BindRepeating(&ProjectsPanelControlsView::OnCloseButtonPressed,
+                          base::Unretained(this)));
   projects_button_->SetHorizontalAlignment(gfx::ALIGN_RIGHT);
   projects_button_->SetImageModel(
       views::Button::ButtonState::STATE_NORMAL,
@@ -112,6 +112,7 @@ void ProjectsPanelControlsView::SetButtonOpacity(float opacity) {
 }
 
 void ProjectsPanelControlsView::OnCloseButtonPressed() {
+  LOG(ERROR) << "Pressed close";
   toggle_projects_panel_action_item_->InvokeAction();
 }
 
