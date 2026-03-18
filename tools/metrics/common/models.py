@@ -359,7 +359,7 @@ class ObjectNodeType(NodeType):
 
   def __init__(self,
                tag: str,
-               attributes: Optional[List[str]] = None,
+               attributes: Optional[List[Tuple[str, type, Optional[str]]]] = None,
                required_attributes: Optional[List[str]] = None,
                children: Optional[List[ChildType]] = None,
                text_attribute: Optional[bool] = None,
