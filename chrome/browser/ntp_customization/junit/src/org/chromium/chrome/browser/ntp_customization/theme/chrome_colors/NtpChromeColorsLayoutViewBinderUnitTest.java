@@ -195,10 +195,10 @@ public class NtpChromeColorsLayoutViewBinderUnitTest {
 
         int index = 0;
         mModel.set(NtpChromeColorsProperties.HIGHLIGHTED_ITEM_INDEX, index);
-        verify(mAdapter).setSelectedPosition(eq(index));
+        verify(mAdapter).setSelectedPosition(eq(index), eq(false));
 
         // Verifies the setSelectedPosition() will be called again for the same index value.
         mModel.set(NtpChromeColorsProperties.HIGHLIGHTED_ITEM_INDEX, index);
-        verify(mAdapter, times(2)).setSelectedPosition(eq(index));
+        verify(mAdapter, times(2)).setSelectedPosition(eq(index), eq(false));
     }
 }

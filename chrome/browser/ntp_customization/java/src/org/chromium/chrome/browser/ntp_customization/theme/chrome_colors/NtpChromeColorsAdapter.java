@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.ntp_customization.theme.chrome_colors;
 
+import static org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpChromeColorsCoordinator.DAILY_REFRESH_DEFAULT_COLOR_POSITION;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -58,7 +60,8 @@ public class NtpChromeColorsAdapter
         NtpThemeColorInfo colorInfo = mColorInfoList.get(position);
         View.OnClickListener clickListener =
                 v -> {
-                    setSelectedPositionImpl(holder.getBindingAdapterPosition(), colorInfo);
+                    setSelectedPositionImpl(
+                            holder.getBindingAdapterPosition(), colorInfo, /* isFromClick= */ true);
                 };
 
         holder.bind(colorInfo, clickListener, mSelectedPosition);
@@ -78,8 +81,11 @@ public class NtpChromeColorsAdapter
      * Selects the given position.
      *
      * @param position The position of the newly selected item
+     * @param isFromClick Whether this selection was triggered by a user click. If true, external
+     *     listeners are notified via the selection callback. If false, only the visual highlight is
+     *     updated.
      */
-    void setSelectedPosition(int position) {
+    void setSelectedPosition(int position, boolean isFromClick) {
         NtpThemeColorInfo colorInfo = null;
 
         if (position > RecyclerView.NO_POSITION && position < mColorInfoList.size()) {
@@ -89,7 +95,7 @@ public class NtpChromeColorsAdapter
             position = RecyclerView.NO_POSITION;
         }
 
-        setSelectedPositionImpl(position, colorInfo);
+        setSelectedPositionImpl(position, colorInfo, isFromClick);
     }
 
     /**
@@ -98,14 +104,19 @@ public class NtpChromeColorsAdapter
      *
      * @param newPosition The newly selected position
      * @param colorInfo The corresponding colorInfo of the newly selected position
+     * @param isFromClick Whether this selection was explicitly triggered by a user click. The
+     *     {@code mOnClickCallback} is invoked if this is true, or if the new position is the daily
+     *     refresh default color position.
      */
-    private void setSelectedPositionImpl(int newPosition, @Nullable NtpThemeColorInfo colorInfo) {
-        if (colorInfo != null) {
-            mOnClickCallback.onResult(colorInfo);
-        }
-
+    private void setSelectedPositionImpl(
+            int newPosition, @Nullable NtpThemeColorInfo colorInfo, boolean isFromClick) {
         if (mSelectedPosition == newPosition) {
             return;
+        }
+
+        if (colorInfo != null
+                && (isFromClick || newPosition == DAILY_REFRESH_DEFAULT_COLOR_POSITION)) {
+            mOnClickCallback.onResult(colorInfo);
         }
 
         // Notify the adapter to un-draw its selection.
