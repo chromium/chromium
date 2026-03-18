@@ -917,14 +917,14 @@ std::optional<ModelError> NigoriSyncBridgeImpl::TryDecryptPendingKeysWith(
 std::unique_ptr<EntityData> NigoriSyncBridgeImpl::GetDataForCommit() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  std::unique_ptr<EntityData> entity_data = GetDataImpl();
+  std::unique_ptr<EntityData> entity_data = GetDataImpl(/*is_for_commit=*/true);
   CHECK(IsValidNigoriSpecifics(entity_data->specifics.nigori()));
   return entity_data;
 }
 
 std::unique_ptr<EntityData> NigoriSyncBridgeImpl::GetDataForDebugging() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return GetDataImpl();
+  return GetDataImpl(/*is_for_commit=*/false);
 }
 
 void NigoriSyncBridgeImpl::ApplyDisableSyncChanges() {
@@ -1094,24 +1094,21 @@ void NigoriSyncBridgeImpl::MaybePopulateKeystoreKeysIntoCryptographer() {
   }
 }
 
-std::unique_ptr<EntityData> NigoriSyncBridgeImpl::GetDataImpl() {
-  NigoriSpecifics specifics;
+std::unique_ptr<EntityData> NigoriSyncBridgeImpl::GetDataImpl(
+    bool is_for_commit) {
+  NigoriState state_to_report = state_.Clone();
   if (!pending_local_commit_queue_.empty()) {
-    NigoriState changed_state = state_.Clone();
     bool success =
-        pending_local_commit_queue_.front()->TryApply(&changed_state);
-    // TODO(crbug.com/349558370): this DCHECK() doesn't seem to be legit when
-    // called by GetDataForDebugging() - this is a caller responsibility to
-    // ensure that for commit codepath, but GetDataForDebugging() could be
-    // called at any time. Decide how to deal with it.
-    DCHECK(success);
-    specifics = changed_state.ToSpecificsProto();
-  } else {
-    specifics = state_.ToSpecificsProto();
+        pending_local_commit_queue_.front()->TryApply(&state_to_report);
+    if (is_for_commit) {
+      CHECK(success, base::NotFatalUntil::M149);
+    } else if (!success) {
+      DLOG(ERROR) << "Failed to apply pending local commit for debugging.";
+    }
   }
 
   auto entity_data = std::make_unique<EntityData>();
-  *entity_data->specifics.mutable_nigori() = std::move(specifics);
+  *entity_data->specifics.mutable_nigori() = state_to_report.ToSpecificsProto();
   entity_data->name = kNigoriNonUniqueName;
   return entity_data;
 }
