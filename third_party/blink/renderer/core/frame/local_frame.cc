@@ -127,6 +127,7 @@
 #include "third_party/blink/renderer/core/editing/serializers/create_markup_options.h"
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_check_requester.h"
+#include "third_party/blink/renderer/core/editing/spellcheck/spell_check_requester_helper.h"
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_checker.h"
 #include "third_party/blink/renderer/core/editing/suggestion/text_suggestion_controller.h"
 #include "third_party/blink/renderer/core/editing/surrounding_text.h"
@@ -4270,8 +4271,13 @@ void LocalFrame::PerformFullContentSpellCheck() {
   const EphemeralRange range(Position(container_node, 0),
                              Position::LastPositionInNode(*container_node));
 
+  // Some IMEs' functionalities (e.g. Gboard's Add to Personal Dictionary) rely
+  // on PerformFullContentSpellCheck to perform a full-content spell check. In
+  // such case, the spell check request cache could have become stale by the
+  // time this method is called. Therefore, we want to force a fresh request to
+  // spell check service.
   GetSpellChecker().GetSpellCheckRequester().RequestCheckingFor(
-      range, /*request_num=*/0, /*should_force_refresh=*/false);
+      range, /*request_num=*/0, /*should_force_refresh=*/true);
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
