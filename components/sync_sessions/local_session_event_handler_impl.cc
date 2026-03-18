@@ -19,6 +19,7 @@
 #include "components/sync/base/time.h"
 #include "components/sync/protocol/session_specifics.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
+#include "components/sync_sessions/features.h"
 #include "components/sync_sessions/session_store.h"
 #include "components/sync_sessions/sync_sessions_client.h"
 #include "components/sync_sessions/synced_session_tracker.h"
@@ -435,14 +436,23 @@ sync_pb::SessionTab LocalSessionEventHandlerImpl::GetTabSpecificsFromDelegate(
   bool has_child_account = tab_delegate.ProfileHasChildAccount();
 
   for (int i = min_index; i < max_index; ++i) {
-    if (!tab_delegate.GetVirtualURLAtIndex(i).is_valid()) {
-      continue;
+    const GURL url = tab_delegate.GetVirtualURLAtIndex(i);
+    if (base::FeatureList::IsEnabled(kFilterNavigationsBySyncSessionsClient)) {
+      if (!sessions_client_->ShouldSyncURL(url)) {
+        continue;
+      }
+    } else {
+      if (!url.is_valid()) {
+        continue;
+      }
     }
     sessions::SerializedNavigationEntry serialized_entry;
     tab_delegate.GetSerializedNavigationAtIndex(i, &serialized_entry);
 
     // Set current_navigation_index to the index in navigations.
-    if (i == current_index) {
+    // If the current navigation is filtered out, we'll try to set the index to
+    // the next valid navigation.
+    if (i >= current_index && specifics.current_navigation_index() < 0) {
       specifics.set_current_navigation_index(specifics.navigation_size());
     }
 

@@ -247,24 +247,52 @@ TEST_F(LocalSessionEventHandlerImplTest,
   EXPECT_EQ(GURL("http://foo4"), session_tab.navigation(2).virtual_url());
 }
 
-// Ensure the current_navigation_index gets set to the end of the navigation
-// stack if the current navigation is invalid.
+// Ensure that fields `navigation` and `current_navigation_index` account for
+// filtered navigations.
 TEST_F(LocalSessionEventHandlerImplTest,
-       SetSessionTabFromDelegateCurrentInvalid) {
+       SetSessionTabFromDelegatePreviousInvalid) {
   AddWindow(kWindowId1);
   TestSyncedTabDelegate* tab = AddTabWithTime(kWindowId1, kFoo1, kTime0);
-  tab->Navigate(std::string(""), kTime1);
-  tab->Navigate(kBar1, kTime2);
-  tab->Navigate(kBar2, kTime3);
-  tab->set_current_entry_index(1);
+  tab->Navigate(kBar1, kTime1);
+  tab->Navigate(kBar2, kTime2);
+  tab->Navigate(kBaz1, kTime3);
+  tab->set_current_entry_index(2);
+
+  // `kBar1` isn't syncable and should be filtered out.
+  ON_CALL(mock_sync_sessions_client_, ShouldSyncURL(GURL(kBar1)))
+      .WillByDefault(Return(false));
 
   InitHandler();
 
   const sync_pb::SessionTab session_tab =
       handler_->GetTabSpecificsFromDelegateForTest(*tab);
 
-  EXPECT_EQ(2, session_tab.current_navigation_index());
-  ASSERT_EQ(3, session_tab.navigation_size());
+  EXPECT_EQ(3, session_tab.navigation_size());
+  EXPECT_EQ(1, session_tab.current_navigation_index());
+}
+
+// Ensure that fields `navigation` and `current_navigation_index` account for
+// the specific case where the current navigation is filtered out.
+TEST_F(LocalSessionEventHandlerImplTest,
+       SetSessionTabFromDelegateCurrentInvalid) {
+  AddWindow(kWindowId1);
+  TestSyncedTabDelegate* tab = AddTabWithTime(kWindowId1, kFoo1, kTime0);
+  tab->Navigate(kBar1, kTime1);
+  tab->Navigate(kBar2, kTime2);
+  tab->Navigate(kBaz1, kTime3);
+  tab->set_current_entry_index(1);
+
+  // `kBar1` isn't syncable and should be filtered out.
+  ON_CALL(mock_sync_sessions_client_, ShouldSyncURL(GURL(kBar1)))
+      .WillByDefault(Return(false));
+
+  InitHandler();
+
+  const sync_pb::SessionTab session_tab =
+      handler_->GetTabSpecificsFromDelegateForTest(*tab);
+
+  EXPECT_EQ(3, session_tab.navigation_size());
+  EXPECT_EQ(1, session_tab.current_navigation_index());
 }
 
 // Tests that for child account users blocked navigations are recorded.
