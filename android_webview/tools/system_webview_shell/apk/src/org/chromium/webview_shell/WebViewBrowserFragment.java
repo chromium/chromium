@@ -47,7 +47,6 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.ActivityResultRegistry;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.OptIn;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.webkit.WebSettingsCompat;
@@ -369,7 +368,6 @@ public class WebViewBrowserFragment extends Fragment {
     }
 
     @Override
-    @OptIn(markerClass = WebViewCompat.ExperimentalSaveState.class)
     public void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
 
