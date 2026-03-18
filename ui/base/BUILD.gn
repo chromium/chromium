@@ -810,8 +810,6 @@ static_library("test_support") {
     sources += [
       "accelerators/test_accelerator_target.cc",
       "accelerators/test_accelerator_target.h",
-      "test/mock_base_window.cc",
-      "test/mock_base_window.h",
       "test/test_dialog_model_host.cc",
       "test/test_dialog_model_host.h",
       "test/ui_controls.cc",
