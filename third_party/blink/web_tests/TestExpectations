@@ -1428,6 +1428,9 @@ crbug.com/567837 virtual/scalefactor200/fast/hidpi/static/popup-menu-with-scroll
 crbug.com/567837 [ Linux ] virtual/scalefactor150/fast/hidpi/static/popup-menu-with-scrollbar-appearance.html [ Failure Timeout ]
 crbug.com/567837 [ Win ] virtual/scalefactor150/fast/hidpi/static/popup-menu-with-scrollbar-appearance.html [ Failure Timeout ]
 
+# New test fails due to revert of fix code.
+crbug.com/408002786 external/wpt/css/css-ui/appearance-auto-details-list-item.html [ Failure ]
+
 # Popover flaky timeouts:
 crbug.com/40268721 [ Mac ] external/wpt/html/semantics/popovers/light-dismiss-event-ordering.html [ Pass Timeout ]
 crbug.com/40268721 [ Mac ] external/wpt/html/semantics/popovers/light-dismiss-event-ordering.tentative.html [ Pass Timeout ]
