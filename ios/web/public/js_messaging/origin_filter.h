@@ -16,6 +16,7 @@ enum class OriginFilter {
   // added, remove the temporary origin and use the new origins in tests.
   // TODO(crbug.com/481255908): Remove the placeholder filter.
   kValidTestOriginForTesting,
+  kCobalt,
 };
 
 // Converts `filter` in the actual list of allowed origins.

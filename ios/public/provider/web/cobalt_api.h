@@ -5,6 +5,8 @@
 #ifndef IOS_PUBLIC_PROVIDER_WEB_COBALT_API_H_
 #define IOS_PUBLIC_PROVIDER_WEB_COBALT_API_H_
 
+#import <Foundation/Foundation.h>
+
 namespace web {
 class BrowserState;
 }
@@ -16,6 +18,9 @@ namespace web::provider {
 void InitializeCobaltInWKWebViewConfiguration(
     WKWebViewConfiguration* configuration,
     BrowserState* browser_state);
+
+// Returns the list of origins that are allowed to use Cobalt.
+NSArray<NSString*>* GetCobaltOriginList();
 
 }  // namespace web::provider
 

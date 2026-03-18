@@ -12,4 +12,8 @@ void InitializeCobaltInWKWebViewConfiguration(
   // Nothing to do.
 }
 
+NSArray<NSString*>* GetCobaltOriginList() {
+  return nil;
+}
+
 }  // namespace web::provider

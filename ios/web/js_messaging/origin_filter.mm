@@ -4,6 +4,8 @@
 
 #import "ios/web/public/js_messaging/origin_filter.h"
 
+#import "ios/public/provider/web/cobalt_api.h"
+
 namespace web {
 
 NSArray<NSString*>* GetOriginList(web::OriginFilter filter) {
@@ -12,6 +14,8 @@ NSArray<NSString*>* GetOriginList(web::OriginFilter filter) {
       return nil;
     case web::OriginFilter::kValidTestOriginForTesting:
       return @[ @"https://test.test" ];
+    case web::OriginFilter::kCobalt:
+      return web::provider::GetCobaltOriginList();
   }
 }
 
