@@ -650,11 +650,25 @@ suite('NewTabPageActionChipsTest', () => {
           const disableButton =
               actionMenu.querySelector<HTMLButtonElement>('.dropdown-item');
           assertTrue(!!disableButton);
+
+          const whenActionChipsDisabled =
+              eventToPromise('action-chips-disabled', chips);
+
           disableButton.click();
           await microtasksFinished();
 
+          const event = await whenActionChipsDisabled;
+          assertEquals(
+              event.detail.message,
+              loadTimeData.getString('actionChipsUndoDisablementToastMessage'));
+          assertTrue(!!event.detail.undo);
+
           assertEquals(1, handler.getCallCount('setActionChipsVisibility'));
-          assertEquals(false, handler.getArgs('setActionChipsVisibility')[0]);
+          assertFalse(handler.getArgs('setActionChipsVisibility')[0]);
+
+          event.detail.undo();
+          assertEquals(2, handler.getCallCount('setActionChipsVisibility'));
+          assertTrue(handler.getArgs('setActionChipsVisibility')[1]);
         });
   });
 

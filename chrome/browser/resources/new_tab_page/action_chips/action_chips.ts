@@ -207,6 +207,10 @@ export class ActionChipsElement extends CrLitElement {
   protected onDisableSuggestionClick_() {
     this.$.actionMenu.close();
     this.handler.setActionChipsVisibility(false);
+    this.fire('action-chips-disabled', {
+      message: loadTimeData.getString('actionChipsUndoDisablementToastMessage'),
+      undo: () => this.handler.setActionChipsVisibility(true),
+    });
   }
 
 
