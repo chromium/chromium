@@ -16,7 +16,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_data.h"
@@ -480,8 +480,10 @@ void TabIcon::SetDiscarded(bool discarded) {
       favicon_size_animation_.Hide();
 
       // Potentially show an IPH if a tab was discarded.
-      Browser* browser = chrome::FindBrowserWithUiElementContext(
-          views::ElementTrackerViews::GetInstance()->GetContextForView(this));
+      BrowserWindowInterface* const browser =
+          chrome::FindBrowserWithUiElementContext(
+              views::ElementTrackerViews::GetInstance()->GetContextForView(
+                  this));
       BrowserUserEducationInterface::From(browser)->MaybeShowFeaturePromo(
           feature_engagement::kIPHDiscardRingFeature);
     } else {

@@ -60,7 +60,7 @@ IN_PROC_BROWSER_TEST_F(BrowserListBrowserTest,
 
   BrowserWindowInterface* const last_active_browser =
       GetLastActiveBrowserWindowInterfaceWithAnyProfile();
-  Browser* result = chrome::FindBrowserWithUiElementContext(
+  BrowserWindowInterface* result = chrome::FindBrowserWithUiElementContext(
       BrowserElements::From(last_active_browser)->GetContext());
   EXPECT_EQ(last_active_browser, result);
 
