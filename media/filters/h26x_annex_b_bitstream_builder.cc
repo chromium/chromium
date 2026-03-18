@@ -128,9 +128,9 @@ void H26xAnnexBBitstreamBuilder::AppendBool(bool val) {
 
 void H26xAnnexBBitstreamBuilder::AppendSE(int val) {
   if (val > 0)
-    AppendUE(val * 2 - 1);
+    AppendUE(static_cast<unsigned int>(val) * 2 - 1);
   else
-    AppendUE(-val * 2);
+    AppendUE(-static_cast<unsigned int>(val) * 2);
 }
 
 void H26xAnnexBBitstreamBuilder::AppendUE(unsigned int val) {
