@@ -216,13 +216,6 @@ export class SetupPinKeyboardElement extends SetupPinKeyboardElementBase {
   }
 
   /**
-   * Returns true if the PIN is ready to be changed to a new value.
-   */
-  private canSubmit_(): boolean {
-    return this.initialPin_ === this.pinKeyboardValue_;
-  }
-
-  /**
    * Handles writing the appropriate message to |problemMessageId_| &&
    * |problemMessageParameters_|.
    * @param messageId
@@ -358,9 +351,7 @@ export class SetupPinKeyboardElement extends SetupPinKeyboardElementBase {
       recordLockScreenProgress(LockScreenProgress.ENTER_PIN);
       return;
     }
-    // onPinSubmit gets called if the user hits enter on the PIN keyboard.
-    // The PIN is not guaranteed to be valid in that case.
-    if (!this.canSubmit_()) {
+    if (this.pinKeyboardValue_ !== this.initialPin_) {
       this.showProblem_(MessageType.MISMATCH, ProblemType.ERROR);
       this.enableSubmit = false;
       // Focus the PIN keyboard and highlight the entire PIN.
