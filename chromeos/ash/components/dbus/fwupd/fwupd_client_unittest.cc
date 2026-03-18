@@ -923,17 +923,8 @@ TEST_F(FwupdClientTest, NoDescription) {
   run_loop_.Run();
 }
 
-TEST_F(FwupdClientTest, SetFeatureFlagsWithV2FlagDisabled) {
-  // Fwupd feature flags should not be set if the v2 flag is disabled.
-  // To test this, verify that no D-Bus method calls are made.
-  EXPECT_CALL(*proxy_, CallMethodWithErrorResponse(_, _, _)).Times(0);
-  DisableFeatureFlag(ash::features::kFirmwareUpdateUIV2);
-  CallSetFwupdFeatureFlags();
-}
-
-TEST_F(FwupdClientTest, SetFeatureFlagsWithV2FlagEnabled) {
-  // Expect that the D-Bus method "SetFeatureFlags" is called when the Firmware
-  // Updates v2 flag is enabled.
+TEST_F(FwupdClientTest, SetFeatureFlags) {
+  // Expect that the D-Bus method "SetFeatureFlags" is called.
 
   // Helper function to get the uint64 args passed to the given method_call.
   auto GetUint64ArgumentOfMethod =
@@ -962,7 +953,6 @@ TEST_F(FwupdClientTest, SetFeatureFlagsWithV2FlagEnabled) {
           _, _))
       .Times(1);
 
-  EnableFeatureFlag(ash::features::kFirmwareUpdateUIV2);
   CallSetFwupdFeatureFlags();
 }
 

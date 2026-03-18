@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -194,18 +193,16 @@ class FwupdClientImpl : public FwupdClient {
 
   void SetFwupdFeatureFlags() override {
     // Enable interactive updates in fwupd by setting the "requests"
-    // FwupdFeatureFlag when the Firmware Updates v2 feature flag is enabled.
-    if (base::FeatureList::IsEnabled(features::kFirmwareUpdateUIV2)) {
-      dbus::MethodCall method_call(kFwupdServiceInterface,
-                                   kFwupdSetFeatureFlagsMethodName);
-      dbus::MessageWriter writer(&method_call);
-      writer.AppendUint64(kRequestsFeatureFlag);
+    // FwupdFeatureFlag.
+    dbus::MethodCall method_call(kFwupdServiceInterface,
+                                 kFwupdSetFeatureFlagsMethodName);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendUint64(kRequestsFeatureFlag);
 
-      proxy_->CallMethodWithErrorResponse(
-          &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-          base::BindOnce(&FwupdClientImpl::SetFeatureFlagsCallback,
-                         weak_ptr_factory_.GetWeakPtr()));
-    }
+    proxy_->CallMethodWithErrorResponse(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&FwupdClientImpl::SetFeatureFlagsCallback,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 
   void RequestUpdates(const std::string& device_id) override {

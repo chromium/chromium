@@ -39,11 +39,6 @@ IN_PROC_BROWSER_TEST_F(FirmwareUpdateAppBrowserTest, FirmwareUpdateApp) {
   RunTest("chromeos/firmware_update/firmware_update_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(FirmwareUpdateAppBrowserTest, FirmwareUpdateUtils) {
-  RunTest("chromeos/firmware_update/firmware_update_utils_test.js",
-          "mocha.run()");
-}
-
 IN_PROC_BROWSER_TEST_F(FirmwareUpdateAppBrowserTest, PeripheralUpdatesList) {
   RunTest("chromeos/firmware_update/peripheral_updates_list_test.js",
           "mocha.run()");

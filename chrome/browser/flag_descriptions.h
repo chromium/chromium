@@ -7337,11 +7337,6 @@ inline constexpr char kFileSystemProviderContentCacheDescription[] =
     "Enable the ability for individual FileSystemProvider extensions being "
     "serviced by CloudFileSystem to leverage a content cache.";
 
-inline constexpr char kFirmwareUpdateUIV2Name[] =
-    "Enables the v2 version of the Firmware Updates app";
-inline constexpr char kFirmwareUpdateUIV2Description[] =
-    "Enable the v2 version of the Firmware Updates App.";
-
 inline constexpr char kFixStaticIpForTwoManagedEthPortsName[] =
     "Fix static ip on managed device with two ethernet ports.";
 inline constexpr char kFixStaticIpForTwoManagedEthPortsDescription[] =

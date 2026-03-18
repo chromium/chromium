@@ -20,8 +20,6 @@ class FirmwareUpdateInteractiveUiTest : public InteractiveAshTest {
   FirmwareUpdateInteractiveUiTest() {
     DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirmwareUpdatesAppWebContentsId);
     webcontents_id_ = kFirmwareUpdatesAppWebContentsId;
-
-    feature_list_.InitAndEnableFeature(features::kFirmwareUpdateUIV2);
   }
 
   auto LaunchFirmwareUpdatesApp() {
@@ -79,7 +77,7 @@ DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
                                     kFwupdClientUpdateState);
 
 IN_PROC_BROWSER_TEST_F(FirmwareUpdateInteractiveUiTest,
-                       TestFirmwareUpdateV2FullUpdate) {
+                       TestFirmwareUpdateFullUpdate) {
   const DeepQuery kUpdateCardQuery{
       "firmware-update-app",
       "peripheral-updates-list",
@@ -169,9 +167,7 @@ class FirmwareUpdateInteractiveUiTestWithReboot
 
     base::CommandLine& command_line = *base::CommandLine::ForCurrentProcess();
     command_line.AppendSwitch(switches::kRevenBranding);
-    feature_list_.Reset();
-    feature_list_.InitWithFeatures(
-        {features::kFirmwareUpdateUIV2, features::kFlexFirmwareUpdate}, {});
+    feature_list_.InitAndEnableFeature(features::kFlexFirmwareUpdate);
   }
 
   auto SetUpdateToRequireReboot() {

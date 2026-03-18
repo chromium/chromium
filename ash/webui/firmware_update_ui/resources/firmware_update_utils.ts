@@ -4,11 +4,6 @@
 
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 
-// Return whether v2 of the Firmware Updates app is enabled.
-export const isAppV2Enabled = (): boolean => {
-  return loadTimeData.getBoolean('isFirmwareUpdateUIV2Enabled');
-};
-
 // Return whether Flex firmware updates are enabled.
 export const IsFlexFirmwareUpdateEnabled = (): boolean => {
   return loadTimeData.getBoolean('IsFlexFirmwareUpdateEnabled');

@@ -762,9 +762,6 @@ BASE_FEATURE(kFilesTrashAutoCleanup, base::FEATURE_DISABLED_BY_DEFAULT);
 // Enable files app trash for Drive.
 BASE_FEATURE(kFilesTrashDrive, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the v2 version of the Firmware Updates app.
-BASE_FEATURE(kFirmwareUpdateUIV2, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Fix manual ip address persistence on managed device with 2 ethernet ports.
 BASE_FEATURE(kFixStaticIpForTwoManagedEthPorts,
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -2675,10 +2672,6 @@ bool IsFilesLocalImageSearchEnabled() {
 
 bool IsFingerprintAuthFactorEnabled() {
   return base::FeatureList::IsEnabled(kFingerprintAuthFactor);
-}
-
-bool IsFirmwareUpdateUIV2Enabled() {
-  return base::FeatureList::IsEnabled(kFirmwareUpdateUIV2);
 }
 
 bool IsFixStaticIpForTwoManagedEthPortsEnabled() {
