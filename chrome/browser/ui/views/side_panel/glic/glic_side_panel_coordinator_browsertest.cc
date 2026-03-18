@@ -4,6 +4,7 @@
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
@@ -22,12 +23,18 @@
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/glic/glic_side_panel_coordinator_impl.h"
+#include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/compositor/layer.h"
+#include "ui/views/controls/webview/webview.h"
+#include "ui/views/view_utils.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/constants/chromeos_features.h"
@@ -355,6 +362,75 @@ IN_PROC_BROWSER_TEST_F(GlicSidePanelCoordinatorStateTest,
   EXPECT_EQ(future_.Take(), GlicSidePanelCoordinator::State::kClosed);
   EXPECT_EQ(initial_tab_coordinator.state(),
             GlicSidePanelCoordinator::State::kClosed);
+}
+
+class GlicSidePanelCoordinatorRoundedCornersTest
+    : public GlicSidePanelCoordinatorStateTest {
+ public:
+  GlicSidePanelCoordinatorRoundedCornersTest() {
+    feature_list_.InitAndEnableFeature(
+        features::kGlicUseToolbarHeightSidePanel);
+  }
+
+ protected:
+  views::WebView* FindWebView(views::View* start_view) {
+    if (views::IsViewClass<views::WebView>(start_view)) {
+      return views::AsViewClass<views::WebView>(start_view);
+    }
+    for (views::View* child : start_view->children()) {
+      if (views::WebView* result = FindWebView(child)) {
+        return result;
+      }
+    }
+    return nullptr;
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicSidePanelCoordinatorRoundedCornersTest,
+                       RoundedCornersOnTabSwitch) {
+  // 1. Set dummy contents so CreateView can set up containing view.
+  coordinator().SetContentsView(
+      std::make_unique<views::WebView>(browser()->profile()));
+  coordinator().Show();
+  EXPECT_EQ(future_.Take(), GlicSidePanelCoordinator::State::kShown);
+
+  views::View* content_parent = browser()
+                                    ->GetBrowserView()
+                                    .toolbar_height_side_panel()
+                                    ->GetContentParentView();
+  ASSERT_TRUE(content_parent);
+
+  // 2. Perform in-place view swap. This tests that the corners are applied
+  // to a view added deep in the hierarchy without OnChildViewAdded.
+  std::unique_ptr<content::WebContents> test_web_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(browser()->profile()));
+  auto web_view_owner = std::make_unique<views::WebView>(browser()->profile());
+  web_view_owner->SetWebContents(test_web_contents.get());
+
+  coordinator().SetContentsView(std::move(web_view_owner));
+
+  views::WebView* web_view = FindWebView(content_parent);
+  ASSERT_TRUE(web_view);
+  ui::Layer* layer = web_view->holder()->GetUILayer();
+  ASSERT_TRUE(layer);
+  EXPECT_FALSE(layer->rounded_corner_radii().IsEmpty());
+
+  // 3. Add a new tab and switch to it.
+  chrome::AddTabAt(browser(), GURL("about:blank"), -1, true);
+  EXPECT_EQ(future_.Take(), GlicSidePanelCoordinator::State::kBackgrounded);
+
+  // Switch back to the first tab.
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  EXPECT_EQ(future_.Take(), GlicSidePanelCoordinator::State::kShown);
+
+  // Verify rounded corners are still there
+  ui::Layer* layer_after = web_view->holder()->GetUILayer();
+  ASSERT_TRUE(layer_after);
+  EXPECT_FALSE(layer_after->rounded_corner_radii().IsEmpty());
 }
 
 }  // namespace

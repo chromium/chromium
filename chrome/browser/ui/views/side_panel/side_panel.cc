@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/callback_list.h"
 #include "base/functional/bind.h"
 #include "base/i18n/number_formatting.h"
 #include "base/i18n/rtl.h"
@@ -288,11 +289,12 @@ class ContentParentView : public views::View, public views::ViewObserver {
 
   void OnChildViewAdded(views::View* observed_view,
                         views::View* child) override {
-    // We must use ViewObserver::OnChildViewAdded instead of
-    // View::ViewHierarchyChanged here because setting rounded corners on a
-    // WebView's holder requires the NativeViewHost's native_wrapper_ to be set
-    // and this gets set in View::ViewHierarchyChanged which OnChildViewAdded
-    // will be called after View::ViewHierarchyChanged.
+    // Setting rounded corners on a WebView's holder requires the
+    // NativeViewHost's native_wrapper_ to be set. For a WebView, this is set in
+    // View::ViewHierarchyChanged, specifically after
+    // WebView::AttachWebContentsNativeView is called. Therefore, to round the
+    // corners initially, set them in OnChildViewAdded, which is called after
+    // View::ViewHierarchyChanged.
     // If the child is a WebView or paints to a layer, round its corners.
     if (views::IsViewClass<views::WebView>(child)) {
       views::AsViewClass<views::WebView>(child)->holder()->SetCornerRadii(
@@ -310,6 +312,35 @@ class ContentParentView : public views::View, public views::ViewObserver {
       child->layer()->SetIsFastRoundedCorner(true);
       child->layer()->SetRoundedCornerRadius(GetRoundedCorners());
     }
+  }
+
+  void OnWebContentsAttached(views::WebView* web_view) {
+    CHECK(web_view);
+    CHECK(web_view->holder());
+
+    // Native View Host doesn't always get reused, so ensure a nested Native
+    // View's corners are always rounded.
+    web_view->holder()->SetCornerRadii(GetRoundedCorners());
+    // Temporary subscription. We only need to round the corners once.
+    web_contents_attached_callback_ = {};
+  }
+
+  void OnViewHierarchyChanged(
+      views::View* observed_view,
+      const views::ViewHierarchyChangedDetails& details) override {
+    // TODO(b/490050482): Certain features that provide a wrapping parent View
+    // can swap the child View in-place without triggering OnChildViewAdded or
+    // OnChildViewRemoved, causing non-rounded corners on the child after
+    // the swap occurs (reference b/344626785).
+    if (!views::IsViewClass<views::WebView>(details.child) ||
+        details.parent == this) {
+      return;
+    }
+    web_contents_attached_callback_ =
+        views::AsViewClass<views::WebView>(details.child)
+            ->AddWebContentsAttachedCallback(
+                base::BindRepeating(&ContentParentView::OnWebContentsAttached,
+                                    base::Unretained(this)));
   }
 
   gfx::RoundedCornersF GetRoundedCorners() {
@@ -330,6 +361,7 @@ class ContentParentView : public views::View, public views::ViewObserver {
   SidePanelEntry::PanelType type_;
   base::ScopedObservation<views::View, views::ViewObserver> view_observation_{
       this};
+  base::CallbackListSubscription web_contents_attached_callback_;
 };
 
 BEGIN_METADATA(ContentParentView)
