@@ -43,6 +43,16 @@ import java.util.Queue;
  */
 @NullMarked
 public abstract class ChildConnectionAllocator {
+    /**
+     * Max number of connections allocated for variable allocator. Android allocates 100 UIDs for a
+     * zygote, but unbinding and killing a service is not synchronous. So leave 2 to leave some time
+     * for ActivityManager to respond.
+     */
+    public static final int MAX_VARIABLE_ALLOCATED = 98;
+
+    /** Higher max number of allocations allowed, for when Native Zygote is used. */
+    public static final int MAX_PROCESSES_WITH_NATIVE_ZYGOTE = 150;
+
     private static final String TAG = "ChildConnAllocator";
     private static final String ZYGOTE_SUFFIX = "0";
     private static final String NON_ZYGOTE_SUFFIX = "1";
@@ -90,11 +100,6 @@ public abstract class ChildConnectionAllocator {
 
     // Delay between the call to freeConnection and the connection actually beeing freed.
     private static final long FREE_CONNECTION_DELAY_MILLIS = 1;
-
-    // Max number of connections allocated for variable allocator.
-    // Android allocates 100 UIDs for a zygote, but unbinding and killing a service is not
-    // synchronous. So leave 2 to leave some time for ActivityManager to respond.
-    private static final int MAX_VARIABLE_ALLOCATED = 98;
 
     // Runnable which will be called when allocator wants to allocate a new connection, but does
     // not have any more free slots. May be null.
@@ -188,7 +193,8 @@ public abstract class ChildConnectionAllocator {
             @Nullable String fallbackServiceClassName,
             boolean bindToCaller,
             boolean bindAsExternalService,
-            boolean isSandboxedForHistograms) {
+            boolean isSandboxedForHistograms,
+            int maxProcessLimit) {
         checkServiceExists(context, packageName, serviceClassName);
 
         // OnePlus devices are having trouble with app zygote in combination with dynamic
@@ -210,7 +216,7 @@ public abstract class ChildConnectionAllocator {
                         serviceClassName,
                         bindToCaller,
                         bindAsExternalService,
-                        MAX_VARIABLE_ALLOCATED,
+                        maxProcessLimit,
                         isSandboxedForHistograms);
             }
         }
@@ -232,7 +238,7 @@ public abstract class ChildConnectionAllocator {
                 fallbackServiceClassName,
                 bindToCaller,
                 bindAsExternalService,
-                MAX_VARIABLE_ALLOCATED,
+                maxProcessLimit,
                 isSandboxedForHistograms);
     }
 

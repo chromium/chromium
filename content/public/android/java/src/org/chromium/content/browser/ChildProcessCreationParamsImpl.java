@@ -98,18 +98,21 @@ public class ChildProcessCreationParamsImpl {
         return PRIVILEGED_SERVICES_NAME;
     }
 
-    public static String getSandboxedServicesName() {
+    public static boolean isNativeSandboxedServiceEnabled() {
         AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
-        if (delegate != null && delegate.areNativeOnlyServicesEnabled()) {
-            if (BuildConfig.JAVALESS_RENDERERS_AVAILABLE
-                    // Incremental install disables isolated processes, which are required for
-                    // javaless renderers.
-                    && !BuildConfig.IS_INCREMENTAL_INSTALL
-                    && JavalessRenderersFeatureList.isEnabled()) {
-                return NATIVE_SANDBOXED_SERVICES_NAME;
-            }
-        }
-        return SANDBOXED_SERVICES_NAME;
+        return delegate != null
+                && delegate.areNativeOnlyServicesEnabled()
+                && BuildConfig.JAVALESS_RENDERERS_AVAILABLE
+                // Incremental install disables isolated processes, which are required for
+                // javaless renderers.
+                && !BuildConfig.IS_INCREMENTAL_INSTALL
+                && JavalessRenderersFeatureList.isEnabled();
+    }
+
+    public static String getSandboxedServicesName() {
+        return isNativeSandboxedServiceEnabled()
+                ? NATIVE_SANDBOXED_SERVICES_NAME
+                : SANDBOXED_SERVICES_NAME;
     }
 
     public static @Nullable String getBackupSandboxedServicesName() {
