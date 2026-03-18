@@ -364,9 +364,11 @@ DropData ProtocolDragDataToDropData(std::unique_ptr<Input::DragData> data) {
     items.push_back(blink::mojom::DragItem::NewString(std::move(mojo_item)));
   }
 
-  blink::mojom::DragDataPtr mojo_data = blink::mojom::DragData::New(
-      std::move(items), std::nullopt,
-      /*force_default_action=*/false, network::mojom::ReferrerPolicy::kDefault);
+  blink::mojom::DragDataPtr mojo_data =
+      blink::mojom::DragData::New(std::move(items), std::nullopt,
+                                  /*force_default_action=*/false,
+                                  /*source_effect_allowed=*/std::nullopt,
+                                  network::mojom::ReferrerPolicy::kDefault);
   DropData drop_data = DragDataToDropData(*mojo_data);
 
   protocol::Array<protocol::String> default_value;

@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/data_transfer_util.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -23,6 +24,7 @@
 #include "storage/browser/blob/blob_storage_context.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_context.h"
+#include "third_party/blink/public/common/page/source_effect_allowed_mojom_util.h"
 #include "third_party/blink/public/mojom/blob/serialized_blob.mojom.h"
 #include "third_party/blink/public/mojom/drag/drag.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_data_transfer_token.mojom.h"
@@ -217,6 +219,13 @@ blink::mojom::DragDataPtr DropDataToDragData(
     items.push_back(blink::mojom::DragItem::NewString(std::move(item)));
   }
 
+  std::optional<blink::mojom::SourceEffectAllowed> source_effect_allowed;
+  if (drop_data.source_effect_allowed &&
+      !drop_data.source_effect_allowed->empty()) {
+    source_effect_allowed = blink::SourceEffectAllowedFromString(
+        base::UTF16ToUTF8(*drop_data.source_effect_allowed));
+  }
+
   return blink::mojom::DragData::New(
       std::move(items),
       // While this shouldn't be a problem in production code, as the
@@ -229,7 +238,7 @@ blink::mojom::DragDataPtr DropDataToDragData(
           : std::optional<std::string>(
                 base::UTF16ToUTF8(drop_data.filesystem_id)),
       /*force_default_action=*/!drop_data.document_is_handling_drag,
-      drop_data.referrer_policy);
+      source_effect_allowed, drop_data.referrer_policy);
 }
 
 blink::mojom::DragDataPtr DropMetaDataToDragData(
@@ -285,6 +294,7 @@ blink::mojom::DragDataPtr DropMetaDataToDragData(
   }
   return blink::mojom::DragData::New(std::move(items), std::nullopt,
                                      /*force_default_action=*/false,
+                                     /*source_effect_allowed=*/std::nullopt,
                                      network::mojom::ReferrerPolicy::kDefault);
 }
 
@@ -293,6 +303,10 @@ DropData DragDataToDropData(const blink::mojom::DragData& drag_data) {
   DCHECK(!drag_data.file_system_id);
 
   DropData result;
+  if (drag_data.source_effect_allowed.has_value()) {
+    result.source_effect_allowed = base::UTF8ToUTF16(
+        blink::SourceEffectAllowedToString(*drag_data.source_effect_allowed));
+  }
   for (const blink::mojom::DragItemPtr& item : drag_data.items) {
     switch (item->which()) {
       case blink::mojom::DragItemDataView::Tag::kString: {

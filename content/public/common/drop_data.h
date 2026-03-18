@@ -135,6 +135,9 @@ struct CONTENT_EXPORT DropData {
   // a discussion of `operation` and `document_is_handling_drag`.
   ui::mojom::DragOperation operation = ui::mojom::DragOperation::kNone;
   bool document_is_handling_drag = false;
+
+  // Raw source effectAllowed value, if available.
+  std::optional<std::u16string> source_effect_allowed;
 };
 
 }  // namespace content

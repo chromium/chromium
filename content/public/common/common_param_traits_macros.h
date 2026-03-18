@@ -55,6 +55,7 @@ IPC_STRUCT_TRAITS_BEGIN(content::DropData)
   IPC_STRUCT_TRAITS_MEMBER(file_contents_filename_extension)
   IPC_STRUCT_TRAITS_MEMBER(file_contents_content_disposition)
   IPC_STRUCT_TRAITS_MEMBER(custom_data)
+  IPC_STRUCT_TRAITS_MEMBER(source_effect_allowed)
 IPC_STRUCT_TRAITS_END()
 
 IPC_STRUCT_TRAITS_BEGIN(content::DropData::FileSystemFileInfo)

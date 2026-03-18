@@ -174,8 +174,9 @@ std::optional<DragOperationsMask> ConvertEffectAllowedToDragOperationsMask(
     const AtomicString& op) {
   // Values specified in
   // https://html.spec.whatwg.org/multipage/dnd.html#dom-datatransfer-effectallowed
-  if (op == "uninitialized")
+  if (op == keywords::kUninitialized) {
     return kDragOperationEvery;
+  }
   if (op == "none")
     return kDragOperationNone;
   if (op == "copy")
@@ -328,8 +329,10 @@ void DataTransfer::setEffectAllowed(const AtomicString& effect) {
     return;
   }
 
-  if (CanWriteData())
+  if (CanWriteData()) {
     effect_allowed_ = effect;
+    data_object_->SetSourceEffectAllowed(effect);
+  }
 }
 
 void DataTransfer::clearData(const String& type) {
@@ -633,6 +636,14 @@ ui::mojom::blink::DragOperation DataTransfer::DestinationOperation() const {
   return static_cast<ui::mojom::blink::DragOperation>(*op);
 }
 
+void DataTransfer::SetSourceEffectAllowed(const AtomicString& effect) {
+  if (!ConvertEffectAllowedToDragOperationsMask(effect)) {
+    return;
+  }
+  effect_allowed_ = effect;
+  data_object_->SetSourceEffectAllowed(effect);
+}
+
 void DataTransfer::SetSourceOperation(DragOperationsMask op) {
   effect_allowed_ = ConvertDragOperationsMaskToEffectAllowed(op);
 }
@@ -662,7 +673,9 @@ DataTransfer::DataTransfer(DataTransferType type,
                            DataTransferAccessPolicy policy,
                            DataObject* data_object)
     : policy_(policy),
-      effect_allowed_("uninitialized"),
+      // A new drag data store starts with effectAllowed "uninitialized".
+      // https://html.spec.whatwg.org/multipage/dnd.html#the-drag-data-store
+      effect_allowed_(keywords::kUninitialized),
       transfer_type_(type),
       data_object_(data_object),
       data_store_item_list_changed_(true),

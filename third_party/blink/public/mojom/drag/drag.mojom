@@ -70,6 +70,20 @@ union DragItem {
   DragItemFileSystemFile file_system_file;
 };
 
+// Source DataTransfer.effectAllowed value.
+// https://html.spec.whatwg.org/multipage/dnd.html#dom-datatransfer-effectallowed
+enum SourceEffectAllowed {
+  kNone,
+  kCopy,
+  kCopyLink,
+  kCopyMove,
+  kLink,
+  kLinkMove,
+  kMove,
+  kAll,
+  kUninitialized,
+};
+
 // Holds data that may be exchanged through a drag-n-drop operation.
 struct DragData {
   array<DragItem> items;
@@ -89,6 +103,9 @@ struct DragData {
   // the drop data to the renderer, but the renderer will take a default action
   // instead of passing the drop to the document.
   bool force_default_action;
+
+  // Source DataTransfer.effectAllowed value, if available.
+  SourceEffectAllowed? source_effect_allowed;
 
   // Used for DragItemString when string_type == "downloadurl".
   network.mojom.ReferrerPolicy referrer_policy =

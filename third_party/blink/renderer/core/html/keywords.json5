@@ -189,6 +189,10 @@
     // https://html.spec.whatwg.org/C/#dom-datatransfer-dropeffect
     "none",
 
+    // effectAllowed IDL attribute
+    // https://html.spec.whatwg.org/C/#dom-datatransfer-effectallowed
+    "uninitialized",
+
     // Various Aria attribute values
     // https://www.w3.org/TR/wai-aria-1.1/#valuetype_true-false
     "false",

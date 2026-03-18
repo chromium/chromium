@@ -426,6 +426,7 @@ DataObject* DataObject::Create(ExecutionContext* context,
   }
 
   data_object->SetFilesystemId(data.FilesystemId());
+  data_object->SetSourceEffectAllowed(data.SourceEffectAllowed());
 
   if (has_file_system)
     DraggedIsolatedFileSystem::PrepareForDataObject(data_object);
@@ -492,6 +493,7 @@ WebDragData DataObject::ToWebDragData() {
     }
   }
   data.SetItems(std::move(item_list));
+  data.SetSourceEffectAllowed(SourceEffectAllowed());
   return data;
 }
 

@@ -145,6 +145,19 @@ static DataTransfer* CreateDraggingDataTransfer(DataTransferAccessPolicy policy,
                               drag_data->PlatformData());
 }
 
+static void SetSourceEffectAllowedForDragData(DataTransfer* data_transfer,
+                                              DragData* drag_data) {
+  const String& source_effect_allowed =
+      drag_data->PlatformData()->SourceEffectAllowed();
+  const DragOperationsMask source_operation_mask =
+      drag_data->DraggingSourceOperationMask();
+  if (source_effect_allowed.empty()) {
+    data_transfer->SetSourceOperation(source_operation_mask);
+  } else {
+    data_transfer->SetSourceEffectAllowed(AtomicString(source_effect_allowed));
+  }
+}
+
 DragController::DragController(Page* page)
     : ExecutionContextLifecycleObserver(
           static_cast<ExecutionContext*>(nullptr)),
@@ -238,7 +251,7 @@ void DragController::DragExited(DragData* drag_data, LocalFrame& local_root) {
   if (frame_view) {
     DataTransferAccessPolicy policy = DataTransferAccessPolicy::kTypesReadable;
     DataTransfer* data_transfer = CreateDraggingDataTransfer(policy, drag_data);
-    data_transfer->SetSourceOperation(drag_data->DraggingSourceOperationMask());
+    SetSourceEffectAllowedForDragData(data_transfer, drag_data);
     local_root.GetEventHandler().CancelDragAndDrop(CreateMouseEvent(drag_data),
                                                    data_transfer);
     data_transfer->SetAccessPolicy(
@@ -274,8 +287,7 @@ void DragController::PerformDrop(DragData* drag_data,
         data_transfer->SetDestinationOperation(
             browser_drag_operation.operation);
       }
-      data_transfer->SetSourceOperation(
-          drag_data->DraggingSourceOperationMask());
+      SetSourceEffectAllowedForDragData(data_transfer, drag_data);
       EventHandler& event_handler = local_root.GetEventHandler();
       prevented_default = event_handler.PerformDragAndDrop(
                               CreateMouseEvent(drag_data), data_transfer) !=
@@ -838,7 +850,7 @@ bool DragController::TryDHTMLDrag(DragData* drag_data,
   DataTransferAccessPolicy policy = DataTransferAccessPolicy::kTypesReadable;
   DataTransfer* data_transfer = CreateDraggingDataTransfer(policy, drag_data);
   DragOperationsMask src_op_mask = drag_data->DraggingSourceOperationMask();
-  data_transfer->SetSourceOperation(src_op_mask);
+  SetSourceEffectAllowedForDragData(data_transfer, drag_data);
 
   WebMouseEvent event = CreateMouseEvent(drag_data);
   if (local_root.GetEventHandler().UpdateDragAndDrop(event, data_transfer) ==
@@ -1409,6 +1421,9 @@ void DragController::DoSystemDrag(DragImage* image,
       frame->View()->FrameToViewport(drag_initiation_location);
   gfx::Vector2d cursor_offset = adjusted_event_pos - adjusted_drag_obj_location;
   WebDragData drag_data = data_transfer->GetDataObject()->ToWebDragData();
+  if (drag_data.SourceEffectAllowed().IsNull()) {
+    drag_data.SetSourceEffectAllowed(data_transfer->effectAllowed());
+  }
   drag_data.SetReferrerPolicy(drag_initiator_->GetReferrerPolicy());
   DragOperationsMask drag_operation_mask = data_transfer->SourceOperation();
 

@@ -123,6 +123,12 @@ class BLINK_PLATFORM_EXPORT WebDragData {
     force_default_action_ = force_default_action;
   }
 
+  WebString SourceEffectAllowed() const { return source_effect_allowed_; }
+
+  void SetSourceEffectAllowed(const WebString& source_effect_allowed) {
+    source_effect_allowed_ = source_effect_allowed;
+  }
+
   network::mojom::ReferrerPolicy ReferrerPolicy() const {
     return referrer_policy_;
   }
@@ -138,6 +144,9 @@ class BLINK_PLATFORM_EXPORT WebDragData {
   // If true, the renderer always performs the default action for the drop.
   // See DragData::force_default_action for complete details.
   bool force_default_action_ = false;
+
+  // Raw source DataTransfer.effectAllowed value.
+  WebString source_effect_allowed_;
 
   // Used for items where string_type == "downloadurl". Stores the referrer
   // policy for usage when dragging a link out of the webview results in a

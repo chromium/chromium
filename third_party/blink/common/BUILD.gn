@@ -242,6 +242,7 @@ source_set("common") {
     "page/drag_mojom_traits.cc",
     "page/drag_operation.cc",
     "page/page_zoom.cc",
+    "page/source_effect_allowed_mojom_util.cc",
     "page_state/page_state.cc",
     "page_state/page_state_serialization.cc",
     "peerconnection/webrtc_ip_handling_policy.cc",

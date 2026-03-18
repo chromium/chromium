@@ -17,6 +17,7 @@
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "mojo/public/cpp/bindings/union_traits.h"
 #include "services/network/public/mojom/referrer_policy.mojom-forward.h"
+#include "third_party/blink/public/common/page/source_effect_allowed_mojom_util.h"
 #include "third_party/blink/public/mojom/data_transfer/data_transfer.mojom-shared.h"
 #include "third_party/blink/public/mojom/drag/drag.mojom-shared.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_data_transfer_token.mojom-blink.h"
@@ -117,6 +118,15 @@ struct PLATFORM_EXPORT
       const blink::WebDragData& drag_data);
   static blink::String file_system_id(const blink::WebDragData& drag_data);
   static bool force_default_action(const blink::WebDragData& drag_data);
+  static std::optional<blink::mojom::SourceEffectAllowed> source_effect_allowed(
+      const blink::WebDragData& drag_data) {
+    const blink::WebString source_effect_allowed =
+        drag_data.SourceEffectAllowed();
+    if (source_effect_allowed.IsNull()) {
+      return std::optional<blink::mojom::SourceEffectAllowed>();
+    }
+    return blink::SourceEffectAllowedFromString(source_effect_allowed.Utf8());
+  }
   static network::mojom::ReferrerPolicy referrer_policy(
       const blink::WebDragData& drag_data);
   static bool Read(blink::mojom::DragDataDataView data,

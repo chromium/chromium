@@ -316,15 +316,22 @@ bool StructTraits<blink::mojom::DragDataDataView, blink::WebDragData>::Read(
     blink::WebDragData* out) {
   std::vector<blink::WebDragData::Item> items;
   blink::String file_system_id;
+  std::optional<blink::mojom::SourceEffectAllowed> source_effect_allowed;
   network::mojom::ReferrerPolicy referrer_policy;
   if (!data.ReadItems(&items) || !data.ReadFileSystemId(&file_system_id) ||
-      !data.ReadReferrerPolicy(&referrer_policy))
+      !data.ReadSourceEffectAllowed(&source_effect_allowed) ||
+      !data.ReadReferrerPolicy(&referrer_policy)) {
     return false;
+  }
 
   blink::WebDragData drag_data;
   drag_data.SetItems(std::move(items));
   drag_data.SetFilesystemId(file_system_id);
   drag_data.SetForceDefaultAction(data.force_default_action());
+  if (source_effect_allowed.has_value()) {
+    drag_data.SetSourceEffectAllowed(blink::WebString::FromUTF8(
+        blink::SourceEffectAllowedToString(*source_effect_allowed)));
+  }
   drag_data.SetReferrerPolicy(referrer_policy);
   *out = std::move(drag_data);
   return true;
