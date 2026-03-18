@@ -298,7 +298,9 @@ public class TopToolbarOverlayMediator {
 
                     @Override
                     public void onCompositedLayersVisibilityChanged() {
-                        updateProgress();
+                        if (ChromeFeatureList.sAndroidAnimatedProgressBarInBrowser.isEnabled()) {
+                            updateProgress();
+                        }
                     }
                 };
         if (progressBar != null) {
