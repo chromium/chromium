@@ -923,8 +923,8 @@ void AdsPageLoadMetricsObserver::RecordPageResourceTotalHistograms(
 
   page_ad_density_tracker_.Finalize();
 
-  UnivariateStats::DistributionMoments moments =
-      page_ad_density_tracker_.GetAdDensityByAreaStats();
+  TimeWeightedUnivariateStats::DistributionMoments moments =
+      page_ad_density_tracker_.GetViewportAdDensityByAreaStats();
 
   custom_sampling_builder.SetAverageViewportAdDensity(
       std::llround(moments.mean));

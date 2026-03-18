@@ -154,6 +154,8 @@ TEST(PageAdDensityTrackerTest, RectAtSpecialPosition) {
 
 // Add a viewport rect whose area overflow an int.
 TEST(PageAdDensityTrackerTest, ViewportAdDensity_OverflowViewportArea) {
+  base::test::SingleThreadTaskEnvironment task_environment(
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME);
   PageAdDensityTracker tracker(/*is_in_foreground=*/true);
 
   tracker.UpdateMainFrameAdRects(
@@ -163,47 +165,68 @@ TEST(PageAdDensityTrackerTest, ViewportAdDensity_OverflowViewportArea) {
   tracker.UpdateMainFrameViewportRect(gfx::Rect(
       0, 0, std::numeric_limits<int>::max(), std::numeric_limits<int>::max()));
 
-  // Density should not be updated as the sum of ara overflows.
-  EXPECT_EQ(tracker.ViewportAdDensityByArea(), 0);
+  task_environment.FastForwardBy(base::Seconds(1));
+  tracker.Finalize();
+
+  // Density should not be updated as the sum of area overflows.
+  EXPECT_DOUBLE_EQ(tracker.GetViewportAdDensityByAreaStats().mean, 0);
 }
 
 TEST(PageAdDensityTrackerTest, ViewportAdDensity_RectSameSize) {
+  base::test::SingleThreadTaskEnvironment task_environment(
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME);
   PageAdDensityTracker tracker(/*is_in_foreground=*/true);
 
   tracker.UpdateMainFrameViewportRect(gfx::Rect(0, 0, 100, 100));
   tracker.UpdateMainFrameAdRects({{kRectId1, gfx::Rect(0, 0, 100, 100)}});
 
-  EXPECT_EQ(tracker.ViewportAdDensityByArea(), 100);
+  task_environment.FastForwardBy(base::Seconds(1));
+  tracker.Finalize();
+  EXPECT_DOUBLE_EQ(tracker.GetViewportAdDensityByAreaStats().mean, 100);
 }
 
 TEST(PageAdDensityTrackerTest, ViewportAdDensity_RectHalfSize) {
+  base::test::SingleThreadTaskEnvironment task_environment(
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME);
   PageAdDensityTracker tracker(/*is_in_foreground=*/true);
 
   tracker.UpdateMainFrameViewportRect(gfx::Rect(0, 0, 100, 100));
   tracker.UpdateMainFrameAdRects({{kRectId1, gfx::Rect(0, 0, 50, 100)}});
 
-  EXPECT_EQ(tracker.ViewportAdDensityByArea(), 50);
+  task_environment.FastForwardBy(base::Seconds(1));
+  tracker.Finalize();
+  EXPECT_DOUBLE_EQ(tracker.GetViewportAdDensityByAreaStats().mean, 50);
 }
 
 TEST(PageAdDensityTrackerTest, ViewportAdDensity_RectOutOfViewport) {
+  base::test::SingleThreadTaskEnvironment task_environment(
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME);
   PageAdDensityTracker tracker(/*is_in_foreground=*/true);
 
   tracker.UpdateMainFrameViewportRect(gfx::Rect(0, 0, 100, 100));
   tracker.UpdateMainFrameAdRects({{kRectId1, gfx::Rect(100, 0, 100, 100)}});
 
-  EXPECT_EQ(tracker.ViewportAdDensityByArea(), 0);
+  task_environment.FastForwardBy(base::Seconds(1));
+  tracker.Finalize();
+  EXPECT_DOUBLE_EQ(tracker.GetViewportAdDensityByAreaStats().mean, 0);
 }
 
 TEST(PageAdDensityTrackerTest, ViewportAdDensity_RectClipsViewport) {
+  base::test::SingleThreadTaskEnvironment task_environment(
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME);
   PageAdDensityTracker tracker(/*is_in_foreground=*/true);
 
   tracker.UpdateMainFrameViewportRect(gfx::Rect(0, 0, 100, 100));
   tracker.UpdateMainFrameAdRects({{kRectId1, gfx::Rect(50, 50, 100, 100)}});
 
-  EXPECT_EQ(tracker.ViewportAdDensityByArea(), 25);
+  task_environment.FastForwardBy(base::Seconds(1));
+  tracker.Finalize();
+  EXPECT_DOUBLE_EQ(tracker.GetViewportAdDensityByAreaStats().mean, 25);
 }
 
 TEST(PageAdDensityTrackerTest, ViewportAdDensity_TwoRectsClipViewport) {
+  base::test::SingleThreadTaskEnvironment task_environment(
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME);
   PageAdDensityTracker tracker(/*is_in_foreground=*/true);
 
   tracker.UpdateMainFrameViewportRect(gfx::Rect(0, 0, 100, 100));
@@ -212,8 +235,9 @@ TEST(PageAdDensityTrackerTest, ViewportAdDensity_TwoRectsClipViewport) {
       {kRectId2, gfx::Rect(70, 30, 100, 100)},
   });
 
-  EXPECT_EQ(tracker.ViewportAdDensityByArea(),
-            33);  // ((30 * 70 * 2) - 30 * 30) / 10000 * 100
+  task_environment.FastForwardBy(base::Seconds(1));
+  tracker.Finalize();
+  EXPECT_DOUBLE_EQ(tracker.GetViewportAdDensityByAreaStats().mean, 33);
 }
 
 TEST(PageAdDensityTrackerTest,
@@ -226,7 +250,7 @@ TEST(PageAdDensityTrackerTest,
   tracker.UpdateMainFrameAdRects({{kRectId1, gfx::Rect(0, 0, 50, 50)}});
 
   tracker.Finalize();
-  EXPECT_DOUBLE_EQ(tracker.GetAdDensityByAreaStats().mean, 0);
+  EXPECT_DOUBLE_EQ(tracker.GetViewportAdDensityByAreaStats().mean, 0);
 }
 
 TEST(PageAdDensityTrackerTest, AverageViewportAdDensity_NoViewportRectUpdate) {
@@ -238,7 +262,7 @@ TEST(PageAdDensityTrackerTest, AverageViewportAdDensity_NoViewportRectUpdate) {
   task_environment.FastForwardBy(base::Seconds(1));
 
   tracker.Finalize();
-  EXPECT_DOUBLE_EQ(tracker.GetAdDensityByAreaStats().mean, 0);
+  EXPECT_DOUBLE_EQ(tracker.GetViewportAdDensityByAreaStats().mean, 0);
 }
 
 TEST(PageAdDensityTrackerTest, AverageViewportAdDensity_NoAdRectUpdate) {
@@ -250,7 +274,7 @@ TEST(PageAdDensityTrackerTest, AverageViewportAdDensity_NoAdRectUpdate) {
   task_environment.FastForwardBy(base::Seconds(1));
 
   tracker.Finalize();
-  EXPECT_DOUBLE_EQ(tracker.GetAdDensityByAreaStats().mean, 0);
+  EXPECT_DOUBLE_EQ(tracker.GetViewportAdDensityByAreaStats().mean, 0);
 }
 
 TEST(PageAdDensityTrackerTest,
@@ -264,10 +288,8 @@ TEST(PageAdDensityTrackerTest,
   tracker.UpdateMainFrameViewportRect(gfx::Rect(0, 0, 50, 50));
   tracker.UpdateMainFrameAdRects({{kRectId1, gfx::Rect(0, 0, 50, 50)}});
 
-  EXPECT_EQ(tracker.ViewportAdDensityByArea(), 100);
-
   tracker.Finalize();
-  EXPECT_DOUBLE_EQ(tracker.GetAdDensityByAreaStats().mean, 0);
+  EXPECT_DOUBLE_EQ(tracker.GetViewportAdDensityByAreaStats().mean, 0);
 }
 
 TEST(PageAdDensityTrackerTest,
@@ -283,10 +305,8 @@ TEST(PageAdDensityTrackerTest,
 
   task_environment.FastForwardBy(base::Seconds(1));
 
-  EXPECT_EQ(tracker.ViewportAdDensityByArea(), 100);
-
   tracker.Finalize();
-  EXPECT_DOUBLE_EQ(tracker.GetAdDensityByAreaStats().mean, 50);
+  EXPECT_DOUBLE_EQ(tracker.GetViewportAdDensityByAreaStats().mean, 50);
 }
 
 TEST(PageAdDensityTrackerTest,
@@ -304,7 +324,7 @@ TEST(PageAdDensityTrackerTest,
 
   task_environment.FastForwardBy(base::Seconds(1));
   tracker.Finalize();
-  EXPECT_DOUBLE_EQ(tracker.GetAdDensityByAreaStats().mean, 75);
+  EXPECT_DOUBLE_EQ(tracker.GetViewportAdDensityByAreaStats().mean, 75);
 }
 
 TEST(PageAdDensityTrackerTest,
@@ -322,7 +342,7 @@ TEST(PageAdDensityTrackerTest,
 
   task_environment.FastForwardBy(base::Seconds(1));
   tracker.Finalize();
-  EXPECT_DOUBLE_EQ(tracker.GetAdDensityByAreaStats().mean, 50);
+  EXPECT_DOUBLE_EQ(tracker.GetViewportAdDensityByAreaStats().mean, 50);
 }
 
 TEST(PageAdDensityTrackerTest, AverageViewportAdDensity_AdRectUpdate) {
@@ -339,7 +359,7 @@ TEST(PageAdDensityTrackerTest, AverageViewportAdDensity_AdRectUpdate) {
 
   task_environment.FastForwardBy(base::Seconds(1));
   tracker.Finalize();
-  EXPECT_DOUBLE_EQ(tracker.GetAdDensityByAreaStats().mean, 75);
+  EXPECT_DOUBLE_EQ(tracker.GetViewportAdDensityByAreaStats().mean, 75);
 }
 
 TEST(PageAdDensityTrackerTest,
@@ -358,7 +378,7 @@ TEST(PageAdDensityTrackerTest,
   task_environment.FastForwardBy(base::Seconds(1));
   tracker.Finalize();
 
-  EXPECT_DOUBLE_EQ(tracker.GetAdDensityByAreaStats().mean, 25);
+  EXPECT_DOUBLE_EQ(tracker.GetViewportAdDensityByAreaStats().mean, 25);
 }
 
 TEST(PageAdDensityTrackerTest,
@@ -380,7 +400,7 @@ TEST(PageAdDensityTrackerTest,
 
   task_environment.FastForwardBy(base::Seconds(3));
   tracker.Finalize();
-  EXPECT_DOUBLE_EQ(tracker.GetAdDensityByAreaStats().mean,
+  EXPECT_DOUBLE_EQ(tracker.GetViewportAdDensityByAreaStats().mean,
                    (50 * 1 + 25 * 2) / 6.0);
 }
 
@@ -404,7 +424,8 @@ TEST(PageAdDensityTrackerTest,
 
   task_environment.FastForwardBy(base::Seconds(1));
   tracker.Finalize();
-  EXPECT_DOUBLE_EQ(tracker.GetAdDensityByAreaStats().mean, int(3 * 100 / 8));
+  EXPECT_DOUBLE_EQ(tracker.GetViewportAdDensityByAreaStats().mean,
+                   int(3 * 100 / 8));
 }
 
 TEST(PageAdDensityTrackerTest, RectEvent_CheckTopAndBottomIterator) {
@@ -427,21 +448,16 @@ TEST(PageAdDensityTrackerTest, AverageViewportAdDensity_OnHiddenAndShown) {
   tracker.UpdateMainFrameViewportRect(gfx::Rect(0, 0, 100, 100));
   tracker.UpdateMainFrameAdRects({{kRectId1, gfx::Rect(0, 0, 50, 100)}});
 
-  // Initial density is 50%
-  EXPECT_EQ(tracker.ViewportAdDensityByArea(), 50);
   task_environment.FastForwardBy(base::Seconds(1));
 
-  // Go hidden. Density should drop to 0, and stats for the first second should
-  // be accumulated.
+  // Go hidden. Stats for the first second should be accumulated.
   tracker.OnHidden();
-  EXPECT_EQ(tracker.ViewportAdDensityByArea(), 0);
 
   // Stay hidden for 2s
   task_environment.FastForwardBy(base::Seconds(2));
 
-  // Go visible again. Density should be recalculated to 50%.
+  // Go visible again. Density should be recalculated.
   tracker.OnShown();
-  EXPECT_EQ(tracker.ViewportAdDensityByArea(), 50);
   task_environment.FastForwardBy(base::Seconds(1));
 
   tracker.Finalize();
@@ -449,7 +465,7 @@ TEST(PageAdDensityTrackerTest, AverageViewportAdDensity_OnHiddenAndShown) {
   // Total visible time = 2s
   // (50% * 1s) + (50% * 1s) = 100
   // Average = 100 / 2.0 = 50.0
-  EXPECT_DOUBLE_EQ(tracker.GetAdDensityByAreaStats().mean, 50.0);
+  EXPECT_DOUBLE_EQ(tracker.GetViewportAdDensityByAreaStats().mean, 50.0);
 }
 
 TEST(PageAdDensityTrackerTest,
@@ -461,25 +477,19 @@ TEST(PageAdDensityTrackerTest,
   tracker.UpdateMainFrameViewportRect(gfx::Rect(0, 0, 100, 100));
   tracker.UpdateMainFrameAdRects({{kRectId1, gfx::Rect(0, 0, 80, 100)}});
 
-  // Initial density is 80%
-  EXPECT_EQ(tracker.ViewportAdDensityByArea(), 80);
   task_environment.FastForwardBy(base::Seconds(1));
 
-  // Go hidden. Density drops to 0.
+  // Go hidden.
   tracker.OnHidden();
-  EXPECT_EQ(tracker.ViewportAdDensityByArea(), 0);
 
-  // Update ad rect while hidden. Density should remain 0 as no recalculation
-  // happens.
+  // Update ad rect while hidden.
   tracker.UpdateMainFrameAdRects({{kRectId1, gfx::Rect(0, 0, 20, 100)}});
-  EXPECT_EQ(tracker.ViewportAdDensityByArea(), 0);
 
   // Stay hidden for 1s
   task_environment.FastForwardBy(base::Seconds(1));
 
-  // Go visible. Density should be recalculated to the new value of 20%.
+  // Go visible. Density should be recalculated.
   tracker.OnShown();
-  EXPECT_EQ(tracker.ViewportAdDensityByArea(), 20);
   task_environment.FastForwardBy(base::Seconds(2));
 
   tracker.Finalize();
@@ -487,7 +497,7 @@ TEST(PageAdDensityTrackerTest,
   // Total visible time = 3s
   // (80% * 1s) + (20% * 2s) = 80 + 40 = 120
   // Average = 120 / 3.0 = 40.0
-  EXPECT_DOUBLE_EQ(tracker.GetAdDensityByAreaStats().mean, 40.0);
+  EXPECT_DOUBLE_EQ(tracker.GetViewportAdDensityByAreaStats().mean, 40.0);
 }
 
 TEST(PageAdDensityTrackerTest, MaxPageAdDensity_OnHiddenAndShown) {
@@ -528,7 +538,6 @@ TEST(PageAdDensityTrackerTest,
 
   EXPECT_EQ(tracker.MaxPageAdDensityByArea(), -1);
   EXPECT_EQ(tracker.MaxPageAdDensityByHeight(), -1);
-  EXPECT_EQ(tracker.ViewportAdDensityByArea(), 0);
 
   // Stay hidden for 1s
   task_environment.FastForwardBy(base::Seconds(1));
@@ -539,7 +548,6 @@ TEST(PageAdDensityTrackerTest,
   // Check densities again. They should be calculated now.
   EXPECT_EQ(tracker.MaxPageAdDensityByArea(), 50);
   EXPECT_EQ(tracker.MaxPageAdDensityByHeight(), 100);
-  EXPECT_EQ(tracker.ViewportAdDensityByArea(), 50);
 
   // Stay visible for 1s
   task_environment.FastForwardBy(base::Seconds(1));
@@ -548,7 +556,7 @@ TEST(PageAdDensityTrackerTest,
   // Total visible time = 1s
   // 50% * 1s = 50
   // Average = 50 / 1.0 = 50.0
-  EXPECT_DOUBLE_EQ(tracker.GetAdDensityByAreaStats().mean, 50.0);
+  EXPECT_DOUBLE_EQ(tracker.GetViewportAdDensityByAreaStats().mean, 50.0);
 }
 
 }  // namespace page_load_metrics
