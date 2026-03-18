@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var assertEq = chrome.test.assertEq;
-var assertNoLastError = chrome.test.assertNoLastError;
-var assertTrue = chrome.test.assertTrue;
-var succeed = chrome.test.succeed;
+const assertEq = chrome.test.assertEq;
+const assertNoLastError = chrome.test.assertNoLastError;
+const assertTrue = chrome.test.assertTrue;
+const succeed = chrome.test.succeed;
 
 const SEARCH_WORDS = 'search words';
 
@@ -27,7 +27,7 @@ chrome.test.runTests([
   },
 ]);
 
-var testHelper = (tabs, queryInfo) => {
+const testHelper = (tabs, queryInfo) => {
   assertEq(1, tabs.length);
   const tab = tabs[0];
   // The browser test should have spun up an incognito browser, which
@@ -40,7 +40,7 @@ var testHelper = (tabs, queryInfo) => {
   });
 };
 
-let addTabListener = (tabIdExpected) => {
+const addTabListener = (tabIdExpected) => {
   chrome.tabs.onUpdated.addListener(function listener(tabId, changeInfo, tab) {
     if (tabId != tabIdExpected || changeInfo.status !== 'complete') {
       return;  // Not our tab.

@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var assertEq = chrome.test.assertEq;
-var assertFalse = chrome.test.assertFalse;
-var assertLastError = chrome.test.assertLastError;
-var assertNoLastError = chrome.test.assertNoLastError;
-var assertTrue = chrome.test.assertTrue;
-var succeed = chrome.test.succeed;
+const assertEq = chrome.test.assertEq;
+const assertFalse = chrome.test.assertFalse;
+const assertLastError = chrome.test.assertLastError;
+const assertNoLastError = chrome.test.assertNoLastError;
+const assertTrue = chrome.test.assertTrue;
+const succeed = chrome.test.succeed;
 
 const SEARCH_WORDS = 'search words';
 
@@ -25,7 +25,7 @@ chrome.test.runTests([
   function QueryPopulatedDispositionEmpty() {
     chrome.tabs.create({}, async (tab) => {
       await waitForNewTab(tab.id);
-      let navigated = waitForNavigationToGoogle(tab.id);
+      const navigated = waitForNavigationToGoogle(tab.id);
       chrome.search.query({text: SEARCH_WORDS}, () => {});
       await navigated;
       chrome.test.succeed();
@@ -36,7 +36,7 @@ chrome.test.runTests([
   function QueryPopulatedDispositionCurrentTab() {
     chrome.tabs.create({}, async (tab) => {
       await waitForNewTab(tab.id);
-      let navigated = waitForNavigationToGoogle(tab.id);
+      const navigated = waitForNavigationToGoogle(tab.id);
       chrome.search.query({text: SEARCH_WORDS, disposition: 'CURRENT_TAB'});
       await navigated;
       chrome.test.succeed();
@@ -46,7 +46,7 @@ chrome.test.runTests([
   // Display results in new tab if said disposition is provided.
   function QueryPopulatedDispositionNewTab() {
     chrome.tabs.query({}, (initialTabs) => {
-      let initialTabIds = initialTabs.map(tab => tab.id);
+      const initialTabIds = initialTabs.map(tab => tab.id);
       Promise
           .all([
             waitForGoogleInAnyTab(),
@@ -72,7 +72,7 @@ chrome.test.runTests([
   // Display results in new window if said disposition is provided.
   function QueryPopulatedDispositionNewWindow() {
     chrome.windows.getAll({}, (initialWindows) => {
-      let initialWindowIds = initialWindows.map(window => window.id);
+      const initialWindowIds = initialWindows.map(window => window.id);
       Promise
           .all([
             waitForGoogleInAnyTab(),
@@ -80,7 +80,7 @@ chrome.test.runTests([
               chrome.search.query(
                   {text: SEARCH_WORDS, disposition: 'NEW_WINDOW'}, () => {
                     chrome.windows.getAll({}, (windows) => {
-                      let window = windows.find(
+                      const window = windows.find(
                           window => !initialWindowIds.includes(window.id));
                       assertEq(windows.length, initialWindowIds.length + 1);
                       assertTrue(!!window);
@@ -99,7 +99,7 @@ chrome.test.runTests([
   function QueryPopulatedTabIDValid() {
     chrome.tabs.create({}, async (tab) => {
       await waitForNewTab(tab.id);
-      let navigated = waitForNavigationToGoogle(tab.id);
+      const navigated = waitForNavigationToGoogle(tab.id);
       chrome.search.query({text: SEARCH_WORDS, tabId: tab.id});
       await navigated;
       chrome.test.succeed();

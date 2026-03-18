@@ -9,31 +9,31 @@ function shouldSkipPort(portName) {
   return portName.match(/[Bb]luetooth/);
 }
 
-var createTestArrayBuffer = function(dataLength) {
-  var buffer = new ArrayBuffer(dataLength);
+const createTestArrayBuffer = function(dataLength) {
+  const buffer = new ArrayBuffer(dataLength);
 
-  var uint8View = new Uint8Array(buffer);
-  for (var i = 0; i < dataLength; i++) {
+  const uint8View = new Uint8Array(buffer);
+  for (let i = 0; i < dataLength; i++) {
     uint8View[i] = (42 + i * 2) & 0xFF;  // An arbitrary pattern.
   }
   return buffer;
 }
 
-var testSerial = function() {
-  var serialPort = null;
-  var connectionId = -1;
-  var receiveTries = 20;
-  var sendBuffer = createTestArrayBuffer(8);
-  var sendBufferUint8View = new Uint8Array(sendBuffer);
-  var bufferLength = sendBufferUint8View.length;
-  var receiveBuffer = new ArrayBuffer(bufferLength);
-  var receiveBufferUint8View = new Uint8Array(receiveBuffer);
-  var bytesToReceive = bufferLength;
-  var has_read_error = false;
-  var expectDisconnect = false;
+const testSerial = function() {
+  let serialPort = null;
+  let connectionId = -1;
+  let receiveTries = 20;
+  let sendBuffer = createTestArrayBuffer(8);
+  let sendBufferUint8View = new Uint8Array(sendBuffer);
+  let bufferLength = sendBufferUint8View.length;
+  let receiveBuffer = new ArrayBuffer(bufferLength);
+  let receiveBufferUint8View = new Uint8Array(receiveBuffer);
+  let bytesToReceive = bufferLength;
+  let hasReadError = false;
+  let expectDisconnect = false;
 
-  var operation = 0;
-  var doNextOperation = function() {
+  let operation = 0;
+  const doNextOperation = function() {
     switch (operation++) {
       case 0:
         serial.getDevices(onGetDevices);
@@ -41,12 +41,13 @@ var testSerial = function() {
       case 1:
         serial.getConnections(onGetConnectionsEmpty);
         break;
-      case 2:
-        var bitrate = 57600;
+      case 2: {
+        const bitrate = 57600;
         console.log(
             `Connecting to serial device ${serialPort} at ${bitrate} bps.`);
         serial.connect(serialPort, {bitrate: bitrate}, onConnect);
         break;
+      }
       case 3:
         serial.getConnections(onGetConnectionsOne);
         break;
@@ -81,12 +82,13 @@ var testSerial = function() {
       case 10:
         serial.getConnections(onGetConnectionsEmpty);
         break;
-      case 11:
-        var bitrate = 115200;
+      case 11: {
+        const bitrate = 115200;
         console.log(
             `Reconnecting to serial device ${serialPort} at ${bitrate} bps.`);
         serial.connect(serialPort, {bitrate: bitrate}, onConnect);
         break;
+      }
       case 12:
         expectDisconnect = true;
         serial.disconnect(connectionId, onDisconnect);
@@ -105,42 +107,42 @@ var testSerial = function() {
     }
   };
 
-  var skipToTearDown = function() {
+  const skipToTearDown = function() {
     operation = 50;
     doNextOperation();
   };
 
-  var repeatOperation = function() {
+  const repeatOperation = function() {
     operation--;
     doNextOperation();
   };
 
-  var onGetConnectionsEmpty = function(connectionInfos) {
+  const onGetConnectionsEmpty = function(connectionInfos) {
     chrome.test.assertEq(0, connectionInfos.length);
     doNextOperation();
   };
 
-  var onGetConnectionsOne = function(connectionInfos) {
+  const onGetConnectionsOne = function(connectionInfos) {
     chrome.test.assertEq(1, connectionInfos.length);
     chrome.test.assertEq(connectionId, connectionInfos[0].connectionId);
     doNextOperation();
   };
 
-  var onDisconnect = function(result) {
+  const onDisconnect = function(result) {
     chrome.test.assertTrue(result);
     doNextOperation();
   };
 
-  var onReceive = function(receiveInfo) {
-    var data = new Uint8Array(receiveInfo.data);
+  const onReceive = function(receiveInfo) {
+    const data = new Uint8Array(receiveInfo.data);
     bytesToReceive -= data.length;
-    var receiveBufferIndex = bufferLength - bytesToReceive - data.length;
-    for (var i = 0; i < data.length; i++)
+    const receiveBufferIndex = bufferLength - bytesToReceive - data.length;
+    for (let i = 0; i < data.length; i++)
       receiveBufferUint8View[i + receiveBufferIndex] = data[i];
     if (bytesToReceive == 0) {
       chrome.test.assertEq(sendBufferUint8View, receiveBufferUint8View,
                            'Buffer received was not equal to buffer sent.');
-      if (!has_read_error) {
+      if (!hasReadError) {
         doNextOperation();
       }
     } else if (--receiveTries <= 0) {
@@ -148,23 +150,23 @@ var testSerial = function() {
     }
   };
 
-  var onReceiveError = function(errorInfo) {
+  const onReceiveError = function(errorInfo) {
     chrome.test.assertEq(connectionId, errorInfo.connectionId,
-                         "Unmatch connectionId for ReceiveError");
-    if (expectDisconnect && errorInfo.error === "disconnected") {
+                         'Unmatch connectionId for ReceiveError');
+    if (expectDisconnect && errorInfo.error === 'disconnected') {
       expectDisconnect = false;
       doNextOperation();
       return;
     }
-    has_read_error = true;
-    if (errorInfo.error == "parity_error") {
+    hasReadError = true;
+    if (errorInfo.error == 'parity_error') {
       serial.getInfo(connectionId, onGetInfoToReconnect);
     } else {
-      chrome.test.fail('Failed to receive serial data: ' + errorInfo.error);
+      chrome.test.fail(`Failed to receive serial data: ${errorInfo.error}`);
     }
   };
 
-  var onGetInfoToReconnect = function(connectionInfo) {
+  const onGetInfoToReconnect = function(connectionInfo) {
     chrome.test.assertEq(true, connectionInfo.paused,
                          'Failed to pause connection on read error.');
     // Try to reconnect the read data pipe.
@@ -173,42 +175,42 @@ var testSerial = function() {
     });
   };
 
-  var onGetInfoAfterReconnect = function(connectionInfo) {
+  const onGetInfoAfterReconnect = function(connectionInfo) {
     if (connectionInfo.paused != false) {
       chrome.test.fail('Failed to reconnect on read error.');
     }
-    has_read_error = false;
+    hasReadError = false;
     doNextOperation();
   };
 
-  var onSend = function(sendInfo) {
+  const onSend = function(sendInfo) {
     chrome.test.assertEq(bufferLength, sendInfo.bytesSent,
                          'Failed to send byte.');
   };
 
-  var onGetControlSignals = function(options) {
-    chrome.test.assertNe('undefined', typeof options.dcd, "No DCD set");
-    chrome.test.assertNe('undefined', typeof options.cts, "No CTS set");
-    chrome.test.assertNe('undefined', typeof options.ri, "No RI set");
-    chrome.test.assertNe('undefined', typeof options.dsr, "No DSR set");
+  const onGetControlSignals = function(options) {
+    chrome.test.assertNe('undefined', typeof options.dcd, 'No DCD set');
+    chrome.test.assertNe('undefined', typeof options.cts, 'No CTS set');
+    chrome.test.assertNe('undefined', typeof options.ri, 'No RI set');
+    chrome.test.assertNe('undefined', typeof options.dsr, 'No DSR set');
     doNextOperation();
   };
 
-  var onSetControlSignals = function(result) {
+  const onSetControlSignals = function(result) {
     chrome.test.assertTrue(result);
     doNextOperation();
   };
 
-  var onConnect = function(connectionInfo) {
+  const onConnect = function(connectionInfo) {
     chrome.test.assertTrue(!!connectionInfo,
                            'Failed to connect to serial port.');
     connectionId = connectionInfo.connectionId;
     doNextOperation();
   };
 
-  var onGetDevices = function(devices) {
+  const onGetDevices = function(devices) {
     if (devices.length > 0) {
-      var portNumber = 0;
+      let portNumber = 0;
       while (portNumber < devices.length) {
         if (shouldSkipPort(devices[portNumber].path)) {
           portNumber++;
