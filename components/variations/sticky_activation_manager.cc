@@ -13,6 +13,7 @@
 #include "base/metrics/field_trial_list_including_low_anonymity.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
@@ -52,6 +53,9 @@ StickyActivationManager::TrialNameToGroupNameMap ParsePref(
     return result;
   }
   for (const auto& entry : entries) {
+    UMA_HISTOGRAM_SPARSE(
+        "Variations.StickyAfterQuery.PrefParse",
+        static_cast<int>(base::HashFieldTrialName(entry.trial_name)));
     result[std::string(entry.trial_name)] = std::string(entry.group_name);
   }
   return result;

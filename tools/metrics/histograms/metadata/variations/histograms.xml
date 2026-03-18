@@ -757,6 +757,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Variations.StickyAfterQuery.PrefParse"
+    enum="FieldTrialNameHash" expires_after="2026-11-01">
+  <owner>asvitkine@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    The hash of the study name of a sticky activation study when it is parsed
+    from the pref value. Logged for verification purposes to verify that studies
+    stay sticky.
+  </summary>
+</histogram>
+
 <histogram name="Variations.StoreSeed.DataSize" units="KiB"
     expires_after="2026-09-13">
   <owner>asvitkine@chromium.org</owner>
