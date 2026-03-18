@@ -28,7 +28,8 @@ per-file ..._fuchsia*=file://build/fuchsia/OWNERS
 # For Windows-specific changes:
 per-file ..._win*=file://base/win/OWNERS
 
-per-file feature_list*=asvitkine@chromium.org
+# For base::Feature and base::FeatureList changes:
+per-file feature*=asvitkine@chromium.org
 
 # Logging-related changes:
 per-file check*=olivierli@chromium.org
