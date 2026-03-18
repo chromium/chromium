@@ -142,9 +142,10 @@ TEST_F(PotentialPasswordTheftSignalProcessorTest,
   processor_.ProcessSignal(pw_reuse_signal);
 
   EXPECT_FALSE(processor_.IsPasswordQueueEmptyForTest());
-  // Remote host queue should be empty even though remote host signals are
-  // received because the processor clean up unqualified data.
-  EXPECT_FALSE(processor_.IsRemoteHostURLQueueEmptyForTest());
+  // Remote host queue should be empty because the signals are older than
+  // kPasswordTheftLatency and are now proactively cleaned up to prevent
+  // memory leaks.
+  EXPECT_TRUE(processor_.IsRemoteHostURLQueueEmptyForTest());
   EXPECT_FALSE(processor_.HasDataToReportForTest());
 }
 
@@ -260,6 +261,83 @@ TEST_F(PotentialPasswordTheftSignalProcessorTest, VerifyProtoData) {
     // The count is 2 because there are 2 password reuse event.
     ASSERT_EQ(remote_host_info_3.count(), static_cast<uint32_t>(3));
   }
+}
+
+// Tests that the queues do not grow beyond kMaxQueueSize when only one type
+// of signal is received.
+TEST_F(PotentialPasswordTheftSignalProcessorTest, PreventsUnboundedQueueGrowth) {
+  // Send many remote host signals but no password reuse signals.
+  for (size_t i = 0;
+       i < PotentialPasswordTheftSignalProcessor::kMaxQueueSize + 10; ++i) {
+    auto remote_host_signal = RemoteHostContactedSignal(
+        kExtensionId[0], GURL(host_urls[0]), kProtocolType);
+    processor_.ProcessSignal(remote_host_signal);
+  }
+
+  EXPECT_EQ(processor_.GetRemoteHostURLQueueSizeForTest(kExtensionId[0]),
+            PotentialPasswordTheftSignalProcessor::kMaxQueueSize);
+
+  // Send many password reuse signals but no remote host signals.
+  for (size_t i = 0;
+       i < PotentialPasswordTheftSignalProcessor::kMaxQueueSize + 10; ++i) {
+    auto pw_reuse_signal =
+        PasswordReuseSignal(kExtensionId[0], pw_reuse_event_0);
+    processor_.ProcessSignal(pw_reuse_signal);
+  }
+
+  EXPECT_EQ(processor_.GetPasswordQueueSizeForTest(kExtensionId[0]),
+            PotentialPasswordTheftSignalProcessor::kMaxQueueSize);
+}
+
+// Tests that queues are cleared after a report is generated.
+TEST_F(PotentialPasswordTheftSignalProcessorTest,
+       QueuesClearedAfterReportTest) {
+  auto pw_reuse_signal = PasswordReuseSignal(kExtensionId[0], pw_reuse_event_0);
+  auto remote_host_signal = RemoteHostContactedSignal(
+      kExtensionId[0], GURL(host_urls[0]), kProtocolType);
+
+  processor_.ProcessSignal(pw_reuse_signal);
+  processor_.ProcessSignal(remote_host_signal);
+
+  EXPECT_EQ(processor_.GetPasswordQueueSizeForTest(kExtensionId[0]), 1u);
+  EXPECT_EQ(processor_.GetRemoteHostURLQueueSizeForTest(kExtensionId[0]), 1u);
+
+  // Forward time and trigger processing to stage data.
+  task_environment_.FastForwardBy(base::Seconds(2));
+  processor_.ProcessSignal(remote_host_signal);
+
+  EXPECT_TRUE(processor_.HasDataToReportForTest());
+
+  // Generating report should clear the queues for that extension.
+  processor_.GetSignalInfoForReport(kExtensionId[0]);
+
+  EXPECT_EQ(processor_.GetPasswordQueueSizeForTest(kExtensionId[0]), 0u);
+  EXPECT_EQ(processor_.GetRemoteHostURLQueueSizeForTest(kExtensionId[0]), 0u);
+}
+
+// Tests that multiple passwords in the queue are processed even if some
+// do not result in a potential password theft signal (e.g. no matching
+// domains).
+TEST_F(PotentialPasswordTheftSignalProcessorTest,
+       MultiplePasswordsProcessedWithoutMatchingDomainsTest) {
+  auto pw_reuse_signal_no_match =
+      PasswordReuseSignal(kExtensionId[0], pw_reuse_event_0);
+  auto pw_reuse_signal_with_match =
+      PasswordReuseSignal(kExtensionId[0], pw_reuse_event_1);
+  auto remote_host_signal = RemoteHostContactedSignal(
+      kExtensionId[0], GURL(host_urls[0]), kProtocolType);
+
+  // Send two password signals, then a remote host signal.
+  processor_.ProcessSignal(pw_reuse_signal_no_match);
+  processor_.ProcessSignal(pw_reuse_signal_with_match);
+  processor_.ProcessSignal(remote_host_signal);
+
+  // Forward time and trigger processing.
+  task_environment_.FastForwardBy(base::Seconds(2));
+  processor_.ProcessSignal(remote_host_signal);
+
+  // Both passwords should have been popped from the queue.
+  EXPECT_EQ(processor_.GetPasswordQueueSizeForTest(kExtensionId[0]), 0u);
 }
 
 }  // namespace

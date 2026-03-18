@@ -39,8 +39,14 @@ void PotentialPasswordTheftSignalProcessor::ProcessSignal(
     // Extract only the host portion of the remote host URLs.
     std::string host_url = rhc_signal.remote_host_url().GetHost();
     extension_id = rhc_signal.extension_id();
-    (remote_host_url_queue_[extension_id])
-        .emplace_back(std::make_pair(host_url, signal_creation_time));
+    auto& remote_host_queue = remote_host_url_queue_[extension_id];
+    remote_host_queue.emplace_back(
+        std::make_pair(host_url, signal_creation_time));
+    if (remote_host_queue.size() > kMaxQueueSize) {
+      // Maintain the latest data and remove the oldest entries, as they are
+      // more likely to be stale.
+      remote_host_queue.pop_front();
+    }
   } else {
     // Process password reuse signal.
     const auto& pw_reuse_signal =
@@ -48,8 +54,14 @@ void PotentialPasswordTheftSignalProcessor::ProcessSignal(
     extension_id = pw_reuse_signal.extension_id();
     PasswordReuseInfo password_reuse_info =
         pw_reuse_signal.password_reuse_info();
-    (password_queue_[extension_id])
-        .emplace(std::make_pair(password_reuse_info, signal_creation_time));
+    auto& password_queue = password_queue_[extension_id];
+    password_queue.emplace(
+        std::make_pair(password_reuse_info, signal_creation_time));
+    if (password_queue.size() > kMaxQueueSize) {
+      // Maintain the latest data and remove the oldest entries, as they are
+      // more likely to be stale.
+      password_queue.pop();
+    }
   }
   UpdateDataStores(extension_id, signal_creation_time);
 }
@@ -65,18 +77,21 @@ void PotentialPasswordTheftSignalProcessor::ProcessSignal(
 void PotentialPasswordTheftSignalProcessor::UpdateDataStores(
     extensions::ExtensionId extension_id,
     base::Time current_time) {
-  auto remote_host_url_queue_it = remote_host_url_queue_.find(extension_id);
-  auto password_queue_it = password_queue_.find(extension_id);
-  // We are interested only in password re-use and remote host contact events
-  // that occur in close proximity in time. Do not proceed unless we have events
-  // in both queues.
-  if (password_queue_it == password_queue_.end() ||
-      remote_host_url_queue_it == remote_host_url_queue_.end()) {
-    return;
+  auto& password_queue = password_queue_[extension_id];
+  auto& remote_host_url_queue = remote_host_url_queue_[extension_id];
+
+  // Remove all entries that are older than kPasswordTheftLatency AND older
+  // than the oldest password reuse event.
+  base::Time oldest_password_time = password_queue.empty()
+                                         ? base::Time::Max()
+                                         : password_queue.front().second;
+  while (!remote_host_url_queue.empty() &&
+         remote_host_url_queue.front().second + kPasswordTheftLatency <
+             current_time &&
+         remote_host_url_queue.front().second < oldest_password_time) {
+    remote_host_url_queue.pop_front();
   }
 
-  auto& password_queue = password_queue_it->second;
-  auto& remote_host_url_queue = remote_host_url_queue_it->second;
   while (!password_queue.empty()) {
     // Exit if the password at the front is not old enough to report;
     // Recorded less than kPasswordTheftLatency ago.
@@ -118,8 +133,10 @@ void PotentialPasswordTheftSignalProcessor::UpdateDataStores(
     }
 
     if (temp_remote_host_url_queue.empty()) {
+      // Continue to ensure subsequent password reuse events can still find
+      // matches even if this one failed to correlate.
       password_queue.pop();
-      return;
+      continue;
     }
     // Push the remote host urls/domains into store that were recorded within
     // the valid time window calculated above.
@@ -216,6 +233,10 @@ PotentialPasswordTheftSignalProcessor::GetSignalInfoForReport(
   remote_host_url_store_.erase(remote_host_url_store_it);
   password_store_.erase(password_store_it);
 
+  // Clear the queues as well.
+  remote_host_url_queue_.erase(extension_id);
+  password_queue_.erase(extension_id);
+
   // Return signal info for report.
   return signal_info;
 }
@@ -260,11 +281,33 @@ PotentialPasswordTheftSignalProcessor::
 }
 
 bool PotentialPasswordTheftSignalProcessor::IsPasswordQueueEmptyForTest() {
-  return password_queue_.empty();
+  for (auto& [extension_id, password_queue] : password_queue_) {
+    if (!password_queue.empty()) {
+      return false;
+    }
+  }
+  return true;
 }
 
 bool PotentialPasswordTheftSignalProcessor::IsRemoteHostURLQueueEmptyForTest() {
-  return remote_host_url_queue_.empty();
+  for (auto& [extension_id, remote_host_url_queue] : remote_host_url_queue_) {
+    if (!remote_host_url_queue.empty()) {
+      return false;
+    }
+  }
+  return true;
+}
+
+size_t PotentialPasswordTheftSignalProcessor::GetPasswordQueueSizeForTest(
+    const extensions::ExtensionId& extension_id) {
+  auto it = password_queue_.find(extension_id);
+  return (it == password_queue_.end()) ? 0 : it->second.size();
+}
+
+size_t PotentialPasswordTheftSignalProcessor::GetRemoteHostURLQueueSizeForTest(
+    const extensions::ExtensionId& extension_id) {
+  auto it = remote_host_url_queue_.find(extension_id);
+  return (it == remote_host_url_queue_.end()) ? 0 : it->second.size();
 }
 
 bool PotentialPasswordTheftSignalProcessor::HasDataToReportForTest() const {

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_SAFE_BROWSING_EXTENSION_TELEMETRY_POTENTIAL_PASSWORD_THEFT_SIGNAL_PROCESSOR_H_
 
 #include <algorithm>
+#include <deque>
 #include <memory>
 #include <string>
 
@@ -43,6 +44,8 @@ class PotentialPasswordTheftSignalProcessor : public ExtensionSignalProcessor {
  public:
   PotentialPasswordTheftSignalProcessor();
   ~PotentialPasswordTheftSignalProcessor() override;
+  // Maximum number of signals that can be stored in the queues per extension.
+  static constexpr size_t kMaxQueueSize = 1000;
 
   PotentialPasswordTheftSignalProcessor(
       PotentialPasswordTheftSignalProcessor&) = delete;
@@ -55,6 +58,10 @@ class PotentialPasswordTheftSignalProcessor : public ExtensionSignalProcessor {
   GetSignalInfoForReport(const extensions::ExtensionId& extension_id) override;
   bool IsPasswordQueueEmptyForTest();
   bool IsRemoteHostURLQueueEmptyForTest();
+  size_t GetPasswordQueueSizeForTest(
+      const extensions::ExtensionId& extension_id);
+  size_t GetRemoteHostURLQueueSizeForTest(
+      const extensions::ExtensionId& extension_id);
   bool HasDataToReportForTest() const override;
 
   // Convert the ReusedPasswordAccountType of LoginReputationClient type passed
