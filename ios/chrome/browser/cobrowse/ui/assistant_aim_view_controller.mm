@@ -105,11 +105,22 @@ constexpr CGFloat kThresholdForCompleteVisibility = 0.3;
   // used here. When the keyboard is hidden, `keyboardLayoutGuide.topAnchor`
   // currently pushes the container downwards below its intended position. We
   // manually observe keyboard frames and update constraints as a workaround.
-  [[NSNotificationCenter defaultCenter]
-      addObserver:self
-         selector:@selector(keyboardWillChangeFrame:)
-             name:UIKeyboardWillChangeFrameNotification
-           object:nil];
+  NSNotificationCenter* defaultCenter = [NSNotificationCenter defaultCenter];
+
+  [defaultCenter addObserver:self
+                    selector:@selector(keyboardWillChangeFrame:)
+                        name:UIKeyboardWillChangeFrameNotification
+                      object:nil];
+
+  [defaultCenter addObserver:self
+                    selector:@selector(keyboardWillShow:)
+                        name:UIKeyboardWillShowNotification
+                      object:nil];
+
+  [defaultCenter addObserver:self
+                    selector:@selector(keyboardDidHide:)
+                        name:UIKeyboardDidHideNotification
+                      object:nil];
 }
 
 #pragma mark - AssistantAIMConsumer
@@ -124,6 +135,23 @@ constexpr CGFloat kThresholdForCompleteVisibility = 0.3;
 }
 
 #pragma mark - Private
+
+// Called right before the keybord is shown.
+- (void)keyboardWillShow:(NSNotification*)notification {
+  NSDictionary* userInfo = notification.userInfo;
+  NSTimeInterval duration =
+      [userInfo[UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+  UIViewAnimationCurve curve = static_cast<UIViewAnimationCurve>(
+      [userInfo[UIKeyboardAnimationCurveUserInfoKey] integerValue]);
+  [self.delegate assistantAIMViewController:self
+                didShowKeyboardWithDuration:duration
+                                      curve:curve];
+}
+
+// Called when the keyboard is hidden.
+- (void)keyboardDidHide:(NSNotification*)notification {
+  [self.delegate assistantAIMViewControllerDidHideKeyboard:self];
+}
 
 // Adjusts the input plate's bottom margin to account for the keyboard's frame.
 - (void)keyboardWillChangeFrame:(NSNotification*)notification {
