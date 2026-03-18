@@ -176,7 +176,8 @@ void DidCreateScriptLoader(
     if (final_response_url.SchemeIsLocal() && creator_policies) {
       policies.connection_allowlists =
           std::move(creator_policies->connection_allowlists);
-    } else {
+    } else if (main_script_load_params->response_head &&
+               main_script_load_params->response_head->parsed_headers) {
       policies.connection_allowlists =
           main_script_load_params->response_head->parsed_headers
               ->connection_allowlists;
@@ -192,20 +193,25 @@ void DidCreateScriptLoader(
 }
 
 bool ShouldCreateWebUILoader(RenderFrameHostImpl* creator_render_frame_host) {
-  if (!creator_render_frame_host)
+  if (!creator_render_frame_host) {
     return false;
+  }
 
-  if (creator_render_frame_host->GetWebUI() == nullptr)
+  if (creator_render_frame_host->GetWebUI() == nullptr) {
     return false;
+  }
 
   auto requesting_scheme =
       creator_render_frame_host->GetLastCommittedOrigin().scheme();
-  if (requesting_scheme == kChromeUIScheme)
+  if (requesting_scheme == kChromeUIScheme) {
     return true;
-  if (requesting_scheme == kChromeUIUntrustedScheme)
+  }
+  if (requesting_scheme == kChromeUIUntrustedScheme) {
     return true;
-  if (requesting_scheme == kChromeDevToolsScheme)
+  }
+  if (requesting_scheme == kChromeDevToolsScheme) {
     return true;
+  }
   return false;
 }
 
@@ -665,8 +671,9 @@ GURL WorkerScriptFetcher::DetermineFinalResponseUrl(
   }
 
   // Then check the list of redirects.
-  if (!main_script_load_params->redirect_infos.empty())
+  if (!main_script_load_params->redirect_infos.empty()) {
     return main_script_load_params->redirect_infos.back().new_url;
+  }
 
   // No redirection happened. The initial request URL was used for the response.
   return initial_request_url;
@@ -713,8 +720,9 @@ void WorkerScriptFetcher::OnReceiveResponse(
     std::optional<mojo_base::BigBuffer> cached_metadata) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!cached_metadata);
-  if (!body)
+  if (!body) {
     return;
+  }
 
   CHECK(!main_script_load_params_);
   CHECK(url_loader_);
