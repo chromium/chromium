@@ -656,6 +656,11 @@ BnplUiDelegate* IOSChromePaymentsAutofillClient::GetBnplUiDelegate() {
   return nullptr;
 }
 
+OmniboxAutofillDelegate*
+IOSChromePaymentsAutofillClient::GetOmniboxAutofillDelegate() {
+  return nullptr;
+}
+
 void IOSChromePaymentsAutofillClient::ShowSaveCreditCard(
     AutofillSaveCardUiInfo ui_info,
     std::unique_ptr<AutofillSaveCardDelegate> save_card_delegate) {

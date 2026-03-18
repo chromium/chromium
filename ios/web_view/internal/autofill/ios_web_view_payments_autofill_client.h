@@ -26,16 +26,17 @@ namespace autofill {
 class AutofillProgressDialogController;
 enum class AutofillProgressUiType;
 class BnplIssuer;
+struct CardUnmaskChallengeOption;
 class CardUnmaskOtpInputDialogController;
 class CardUnmaskPromptController;
 class CreditCardCvcAuthenticator;
 class CreditCardOtpAuthenticator;
 class CreditCardRiskBasedAuthenticator;
-class WebViewAutofillClientIOS;
+class OmniboxAutofillDelegate;
 class PaymentsDataManager;
-struct CardUnmaskChallengeOption;
 struct VirtualCardEnrollmentFields;
 class VirtualCardEnrollmentManager;
+class WebViewAutofillClientIOS;
 
 namespace payments {
 
@@ -202,6 +203,7 @@ class IOSWebViewPaymentsAutofillClient : public PaymentsAutofillClient {
   bool IsTabModalPopupDeprecated() const override;
   BnplStrategy* GetBnplStrategy() override;
   BnplUiDelegate* GetBnplUiDelegate() override;
+  OmniboxAutofillDelegate* GetOmniboxAutofillDelegate() override;
 
   // Begin IOSWebViewPaymentsAutofillClient-specific section.
 

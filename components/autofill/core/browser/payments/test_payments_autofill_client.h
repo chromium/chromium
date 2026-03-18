@@ -50,6 +50,7 @@ class BnplIssuer;
 class CardUnmaskOtpInputDialogController;
 class CardUnmaskPromptController;
 class CreditCardCvcAuthenticator;
+class OmniboxAutofillDelegate;
 class TouchToFillDelegate;
 
 namespace payments {
@@ -236,6 +237,7 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
   bool IsTabModalPopupDeprecated() const override;
   BnplStrategy* GetBnplStrategy() override;
   BnplUiDelegate* GetBnplUiDelegate() override;
+  OmniboxAutofillDelegate* GetOmniboxAutofillDelegate() override;
 
   // Begin TestPaymentsAutofillClient-specific section.
 
@@ -442,6 +444,10 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
   // platform.
   // Lazily initialized: access only through `GetBnplUiDelegate()`.
   std::unique_ptr<BnplUiDelegate> bnpl_ui_delegate_;
+
+  // The OmniboxAutofillDelegate used to handle the logic flow and user
+  // interactions when the user triggers Autofill from the Omnibox.
+  std::unique_ptr<OmniboxAutofillDelegate> omnibox_autofill_delegate_;
 };
 
 }  // namespace payments

@@ -32,13 +32,13 @@ class AutofillDriver;
 struct AutofillErrorDialogContext;
 class AutofillOfferData;
 class AutofillOfferManager;
+class AutofillProgressDialogController;
 enum class AutofillProgressUiType;
 class AutofillSaveCardBottomSheetBridge;
 class AutofillSaveIbanBottomSheetBridge;
 class BnplIssuer;
 struct CardUnmaskChallengeOption;
 class CardUnmaskDelegate;
-class AutofillProgressDialogController;
 class CardUnmaskOtpInputDialogController;
 class CardUnmaskPromptController;
 struct CardUnmaskPromptOptions;
@@ -46,19 +46,20 @@ class CreditCard;
 class CreditCardCvcAuthenticator;
 class CreditCardOtpAuthenticator;
 class CreditCardRiskBasedAuthenticator;
+struct FilledCardInformationBubbleOptions;
 class Iban;
 class IbanAccessManager;
 class IbanManager;
 class LoyaltyCard;
 class MerchantPromoCodeManager;
 struct OfferNotificationOptions;
+class OmniboxAutofillDelegate;
 class OtpUnmaskDelegate;
-class PaymentsDataManager;
 enum class OtpUnmaskResult;
+class PaymentsDataManager;
 class TouchToFillDelegate;
 struct VirtualCardEnrollmentFields;
 class VirtualCardEnrollmentManager;
-struct FilledCardInformationBubbleOptions;
 enum class WebauthnDialogCallbackType;
 
 namespace payments {
@@ -795,6 +796,11 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // Gets the `BnplUiDelegate` instance associated with the client. Handles the
   // UI in the BNPL flow depending on the platform.
   virtual BnplUiDelegate* GetBnplUiDelegate() = 0;
+
+  // Gets the `OmniboxAutofillDelegate` instance associated with the client, or
+  // nullptr on unsupported platforms. Handles the Autofill flow where the
+  // Omnibox is the trigger point.
+  virtual OmniboxAutofillDelegate* GetOmniboxAutofillDelegate() = 0;
 };
 
 }  // namespace payments

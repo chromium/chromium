@@ -219,6 +219,7 @@ class IOSChromePaymentsAutofillClient : public PaymentsAutofillClient {
   bool IsTabModalPopupDeprecated() const override;
   BnplStrategy* GetBnplStrategy() override;
   BnplUiDelegate* GetBnplUiDelegate() override;
+  OmniboxAutofillDelegate* GetOmniboxAutofillDelegate() override;
 
   // Begin IOSChromePaymentsAutofillClient-specific section.
 

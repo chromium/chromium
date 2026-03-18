@@ -62,6 +62,7 @@
 #include "components/autofill/core/browser/ui/payments/card_unmask_otp_input_dialog_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
+#include "components/autofill/core/browser/ui/payments/omnibox_autofill_delegate.h"
 #include "components/autofill/core/browser/ui/payments/save_and_fill_dialog_controller_impl.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
@@ -130,7 +131,14 @@ ChromePaymentsAutofillClient::ChromePaymentsAutofillClient(
     : content::WebContentsObserver(&client->GetWebContents()),
       client_(CHECK_DEREF(client)),
       save_and_fill_manager_(
-          std::make_unique<payments::SaveAndFillManagerImpl>(&client_.get())) {}
+          std::make_unique<payments::SaveAndFillManagerImpl>(&client_.get()))
+#if !BUILDFLAG(IS_ANDROID)
+      ,
+      omnibox_autofill_delegate_(
+          std::make_unique<OmniboxAutofillDelegate>(&client_.get()))
+#endif  // !BUILDFLAG(IS_ANDROID)
+{
+}
 
 ChromePaymentsAutofillClient::~ChromePaymentsAutofillClient() = default;
 
@@ -1224,6 +1232,11 @@ BnplUiDelegate* ChromePaymentsAutofillClient::GetBnplUiDelegate() {
 #endif  // BUILDFLAG(IS_ANDROID)
   }
   return bnpl_ui_delegate_.get();
+}
+
+OmniboxAutofillDelegate*
+ChromePaymentsAutofillClient::GetOmniboxAutofillDelegate() {
+  return omnibox_autofill_delegate_.get();
 }
 
 #if BUILDFLAG(IS_ANDROID)

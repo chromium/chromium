@@ -30,6 +30,7 @@
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/ui/payments/autofill_progress_ui_type.h"
 #include "components/autofill/core/browser/ui/payments/bnpl_ui_delegate.h"
+#include "components/autofill/core/browser/ui/payments/omnibox_autofill_delegate.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -57,7 +58,9 @@ TestPaymentsAutofillClient::TestPaymentsAutofillClient(AutofillClient* client)
       mock_save_and_fill_manager_(
           std::make_unique<NiceMock<MockSaveAndFillManager>>()),
       mock_merchant_promo_code_manager_(
-          &client_->GetPersonalDataManager().payments_data_manager()) {}
+          &client_->GetPersonalDataManager().payments_data_manager()),
+      omnibox_autofill_delegate_(
+          std::make_unique<OmniboxAutofillDelegate>(client)) {}
 
 TestPaymentsAutofillClient::~TestPaymentsAutofillClient() = default;
 
@@ -481,6 +484,11 @@ BnplStrategy* TestPaymentsAutofillClient::GetBnplStrategy() {
 
 BnplUiDelegate* TestPaymentsAutofillClient::GetBnplUiDelegate() {
   return bnpl_ui_delegate_.get();
+}
+
+OmniboxAutofillDelegate*
+TestPaymentsAutofillClient::GetOmniboxAutofillDelegate() {
+  return omnibox_autofill_delegate_.get();
 }
 
 bool TestPaymentsAutofillClient::GetMandatoryReauthOptInPromptWasShown() {
