@@ -44,6 +44,7 @@
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/omnibox/browser/base_search_provider.h"
+#include "components/performance_manager/public/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
@@ -1036,7 +1037,14 @@ class PrewarmOmniboxUIBrowserTest
       public ::testing::WithParamInterface<
           test::ScopedPrewarmFeatureList::PrewarmState> {
  public:
-  PrewarmOmniboxUIBrowserTest() : scoped_prewarm_feature_list_(GetParam()) {}
+  PrewarmOmniboxUIBrowserTest() : scoped_prewarm_feature_list_(GetParam()) {
+    // Disable kTransientKeepAlivePolicy so that closing the WebContents
+    // immediately terminates the renderer process, which is necessary for
+    // the test to correctly assert the kPrimaryMainFrameRendererProcessKilled
+    // final status metric for the prewarmed page.
+    scoped_feature_list_.InitAndDisableFeature(
+        performance_manager::features::kTransientKeepAlivePolicy);
+  }
 
   void StopPrewarm() {
     auto* manager = PrerenderManager::FromWebContents(GetActiveWebContents());
@@ -1067,6 +1075,7 @@ class PrewarmOmniboxUIBrowserTest
 
  private:
   test::ScopedPrewarmFeatureList scoped_prewarm_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Basic scenario for the interactive_ui_tests to trigger the prewarm feature
