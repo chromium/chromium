@@ -5,10 +5,12 @@
 #ifndef CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_CHANGE_PASSWORD_CHANGE_FROM_CHECKUP_DELEGATE_H_
 #define CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_CHANGE_PASSWORD_CHANGE_FROM_CHECKUP_DELEGATE_H_
 
+#include <memory>
 #include <string>
 
 #include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/password_manager/password_change/change_password_form_filling_submission_helper.h"
 #include "url/gurl.h"
@@ -44,14 +46,9 @@ class PasswordChangeFromCheckupDelegate {
   bool HasActorTaskSubscriptionForTesting() const {
     return !!actor_task_state_subscription_;
   }
-  // TODO(crbug.com/485620841): Check a different state when the form is
-  // submitted.
-  bool IsCleanedUpAfterTaskFinishedForTesting() const {
-    return !submission_helper_;
-  }
 
-  std::optional<actor::ActorTask::State> GetActorTaskState() const {
-    return actor_state_;
+  std::optional<actor::ActorTask::State> GetFindFormTaskState() const {
+    return find_form_task_state_;
   }
 
 #endif
@@ -61,27 +58,37 @@ class PasswordChangeFromCheckupDelegate {
 
   glic::GlicKeyedService* GetGlicService();
 
-  void OnActorTaskStateChanged(actor::TaskId task_id,
-                               actor::ActorTask::State state);
+  void OnFindFormTaskStateChanged(actor::TaskId task_id,
+                                  actor::ActorTask::State state);
 
   void OnChangePasswordFormManagerFound(
       password_manager::PasswordFormManager* form_manager);
   void OnChangePasswordFormSubmitted(
       ChangePasswordFormFillingSubmissionHelper::SubmissionResult result);
 
+  void OnVerificationTaskStateChanged(actor::TaskId task_id,
+                                      actor::ActorTask::State state);
+  void OnVerificationTimeout();
+  void HandleMaybeSuccessfulPasswordChange();
+
   base::WeakPtr<content::WebContents> originator_;
   base::WeakPtr<content::WebContents> actuation_web_contents_;
 
   std::u16string username_;
   std::u16string current_password_;
-  std::optional<actor::TaskId> actor_task_id_;
 
   base::CallbackListSubscription actor_task_state_subscription_;
 
   std::unique_ptr<ChangePasswordFormFillingSubmissionHelper> submission_helper_;
   std::unique_ptr<ChangePasswordFormWaiter> form_waiter_;
 
-  std::optional<actor::ActorTask::State> actor_state_ = std::nullopt;
+  std::optional<actor::TaskId> find_form_task_id_;
+  std::optional<actor::ActorTask::State> find_form_task_state_ = std::nullopt;
+
+  std::optional<actor::TaskId> verification_task_id_;
+  std::unique_ptr<password_manager::PasswordFormManager> saved_form_manager_;
+  bool verification_task_created_ = false;
+  base::OneShotTimer verification_timer_;
 
   base::WeakPtrFactory<PasswordChangeFromCheckupDelegate> weak_ptr_factory_{
       this};

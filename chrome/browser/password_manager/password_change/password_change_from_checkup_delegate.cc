@@ -189,8 +189,7 @@ void PasswordChangeFromCheckupDelegate::OnPromptReady(GURL credential_url,
     return;
   }
 
-  glic::GlicKeyedService* glic_service = glic::GlicKeyedService::Get(
-      Profile::FromBrowserContext(originator_->GetBrowserContext()));
+  glic::GlicKeyedService* glic_service = GetGlicService();
   if (!glic_service) {
     return;
   }
@@ -238,13 +237,8 @@ void PasswordChangeFromCheckupDelegate::OnPromptReady(GURL credential_url,
     actuation_web_contents_ = new_contents->GetWeakPtr();
     actor_task_state_subscription_ =
         actor_service->AddTaskStateChangedCallback(base::BindRepeating(
-            &PasswordChangeFromCheckupDelegate::OnActorTaskStateChanged,
+            &PasswordChangeFromCheckupDelegate::OnFindFormTaskStateChanged,
             base::Unretained(this)));
-
-    // TODO(crbug.com/485620841): Return focus to the settings tab right after
-    // invoking in the newly opened tab. Do this when the Invoke API fully wires
-    // up `additional_context`. Currently, if Invoke is called on a background
-    // tab, it will not start the flow unless the user goes to the tab.
   }
 }
 
@@ -256,10 +250,10 @@ glic::GlicKeyedService* PasswordChangeFromCheckupDelegate::GetGlicService() {
       Profile::FromBrowserContext(originator_->GetBrowserContext()));
 }
 
-void PasswordChangeFromCheckupDelegate::OnActorTaskStateChanged(
+void PasswordChangeFromCheckupDelegate::OnFindFormTaskStateChanged(
     actor::TaskId task_id,
     actor::ActorTask::State new_state) {
-  if (!actor_task_id_ && new_state == actor::ActorTask::State::kCreated) {
+  if (!find_form_task_id_ && new_state == actor::ActorTask::State::kCreated) {
     actor::ActorKeyedService* actor_service =
         actor::ActorKeyedService::Get(Profile::FromBrowserContext(
             actuation_web_contents_->GetBrowserContext()));
@@ -271,27 +265,22 @@ void PasswordChangeFromCheckupDelegate::OnActorTaskStateChanged(
     if (!actor_task_for_actuation) {
       return;
     }
-    actor_task_id_ = actor_task_for_actuation->id();
+
+    find_form_task_id_ = actor_task_for_actuation->id();
     return;
   }
 
-  if (actor_task_id_ && *actor_task_id_ != task_id) {
-    // Ignore tasks unrelated to the password change flow.
-    return;
+  if (find_form_task_id_ && *find_form_task_id_ != task_id) {
+    return;  // Ignore unrelated tasks
   }
 
   if (IsTaskInterrupted(new_state)) {
-    // Focus the actuation tab when there is an interruption so the user can
-    // complete the flow.
     ActivateTabForWebContents(actuation_web_contents_.get());
-  } else if (actor_state_.has_value() &&
-             IsTaskResumed(actor_state_.value(), new_state)) {
-    // Return focus to the original tab.
+  } else if (find_form_task_state_.has_value() &&
+             IsTaskResumed(find_form_task_state_.value(), new_state)) {
     ActivateTabForWebContents(originator_.get());
   }
 
-  // When the task reaches `kFinished` it is assumed that the change password
-  // form was found.
   if (new_state == actor::ActorTask::State::kFinished) {
     actor_task_state_subscription_ = {};
     auto* client = ChromePasswordManagerClient::FromWebContents(
@@ -308,8 +297,7 @@ void PasswordChangeFromCheckupDelegate::OnActorTaskStateChanged(
                        .Build();
   }
 
-  // Set the new state.
-  actor_state_ = new_state;
+  find_form_task_state_ = new_state;
 }
 
 void PasswordChangeFromCheckupDelegate::OnChangePasswordFormManagerFound(
@@ -341,4 +329,116 @@ void PasswordChangeFromCheckupDelegate::OnChangePasswordFormManagerFound(
 void PasswordChangeFromCheckupDelegate::OnChangePasswordFormSubmitted(
     ChangePasswordFormFillingSubmissionHelper::SubmissionResult result) {
   submission_helper_.reset();
+
+  // If the form submission failed, do not trigger a verification task.
+  if (!result.has_value()) {
+    return;
+  }
+
+  saved_form_manager_ = std::move(result).value();
+  if (!actuation_web_contents_) {
+    return;
+  }
+
+  glic::GlicKeyedService* glic_service = GetGlicService();
+  if (!glic_service) {
+    return;
+  }
+
+  tabs::TabInterface* tab_interface =
+      tabs::TabInterface::MaybeGetFromContents(actuation_web_contents_.get());
+  if (!tab_interface) {
+    return;
+  }
+
+  verification_task_id_ = std::nullopt;
+  verification_task_created_ = false;
+
+  glic::GlicInvokeOptions options(glic::mojom::InvocationSource::kSharedTab);
+  // TODO(crbug.com/485620841): Read this from internal.
+  options.prompts.push_back(
+      "I just filled and submitted a change password form in order to change "
+      "my password. Tell me if this was successful or not, if it was not "
+      "successful and there are extra steps needed, complete the extra steps "
+      "in my behalf.");
+
+  options.additional_context = glic::mojom::AdditionalContext::New();
+  sessions::SessionTabHelper* session_tab_helper =
+      sessions::SessionTabHelper::FromWebContents(
+          actuation_web_contents_.get());
+  if (session_tab_helper) {
+    options.additional_context->tab_id = session_tab_helper->session_id().id();
+  }
+
+  glic_service->InvokeWithAutoSubmit(
+      glic::InvokeWithAutoSubmitPasskeyProvider::GetPassKey(), tab_interface,
+      std::move(options));
+
+  actor::ActorKeyedService* actor_service =
+      actor::ActorKeyedService::Get(Profile::FromBrowserContext(
+          actuation_web_contents_->GetBrowserContext()));
+  if (actor_service) {
+    actor_task_state_subscription_ =
+        actor_service->AddTaskStateChangedCallback(base::BindRepeating(
+            &PasswordChangeFromCheckupDelegate::OnVerificationTaskStateChanged,
+            base::Unretained(this)));
+  }
+
+  // If no task is created after 5 seconds, we assume that it was a successful
+  // change since and no extra steps are needed.
+  verification_timer_.Start(
+      FROM_HERE, base::Seconds(5),
+      base::BindOnce(&PasswordChangeFromCheckupDelegate::OnVerificationTimeout,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void PasswordChangeFromCheckupDelegate::OnVerificationTaskStateChanged(
+    actor::TaskId task_id,
+    actor::ActorTask::State new_state) {
+  if (!verification_task_id_) {
+    actor::ActorKeyedService* actor_service =
+        actor::ActorKeyedService::Get(Profile::FromBrowserContext(
+            actuation_web_contents_->GetBrowserContext()));
+    CHECK(actor_service);
+
+    actor::ActorTask* actor_task =
+        actor_service->GetTaskFromTab(*tabs::TabInterface::MaybeGetFromContents(
+            actuation_web_contents_.get()));
+
+    if (!actor_task) {
+      return;
+    }
+
+    verification_task_id_ = actor_task->id();
+    verification_task_created_ = true;
+    // A task was created, so stopping the timer to not trigger
+    // the password being saved.
+    verification_timer_.Stop();
+    return;
+  }
+
+  // Ignore unrelated tasks.
+  if (verification_task_id_ && *verification_task_id_ != task_id) {
+    return;
+  }
+
+  // If the task for verifification finishes, we assume success.
+  if (new_state == actor::ActorTask::State::kFinished) {
+    actor_task_state_subscription_ = {};
+    HandleMaybeSuccessfulPasswordChange();
+  }
+}
+
+void PasswordChangeFromCheckupDelegate::OnVerificationTimeout() {
+  if (!verification_task_created_) {
+    actor_task_state_subscription_ = {};
+    HandleMaybeSuccessfulPasswordChange();
+  }
+}
+
+void PasswordChangeFromCheckupDelegate::HandleMaybeSuccessfulPasswordChange() {
+  if (saved_form_manager_) {
+    saved_form_manager_->Save();
+    saved_form_manager_.reset();
+  }
 }
