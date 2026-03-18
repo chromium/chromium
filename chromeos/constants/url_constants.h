@@ -16,6 +16,10 @@ inline constexpr std::string_view kAppInstallUriScheme = "cros-apps";
 inline constexpr std::string_view kAppMallBaseUrl =
     "https://discover.apps.chrome/";
 
+// The URL for Frozen Update notification
+inline constexpr std::string_view kFrozenUpdateNotificationURL =
+    "https://support.google.com/chromeosflex/answer/12024394";
+
 }  // namespace chromeos
 
 #endif  // CHROMEOS_CONSTANTS_URL_CONSTANTS_H_

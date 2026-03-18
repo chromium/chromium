@@ -2774,6 +2774,11 @@ inline constexpr char kFactoryResetTPMFirmwareUpdateMode[] =
 // and cannot cancel the dialog otherwise.
 inline constexpr char kForceFactoryReset[] = "ForceFactoryReset";
 
+// A boolean pref that tracks whether the user has dismissed the notification
+// warning them that their Flex device will no longer receive OS updates.
+inline constexpr char kFrozenUpdateNotificationDismissed[] =
+    "ash.frozen_update.notification_dismissed";
+
 //-----------------------------------------------------------------------------
 // Kiosk related Prefs
 //-----------------------------------------------------------------------------

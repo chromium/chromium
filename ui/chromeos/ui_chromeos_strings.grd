@@ -1862,7 +1862,7 @@
         An incorrect PIN was entered too many times.
       </message>
       <message name="IDS_SETTINGS_INTERNET_NETWORK_MANAGED_SIM_LOCKED_PUK_WARNING_NO_FAILURES" desc="Settings > Internet > Network details > Lock/unlock SIM card: Warning shown to the user indicating that the network cannot be used until a new PIN is set up.">
-        To use this network, you need to enter the 8-digit Personal Unblocking Key (PUK) provided by the carrier. 
+        To use this network, you need to enter the 8-digit Personal Unblocking Key (PUK) provided by the carrier.
       </message>
       <message name="IDS_SETTINGS_INTERNET_NETWORK_SIM_LOCKED_PUK_WARNING_NO_FAILURES" desc="Settings > Internet > Network details > Lock/unlock SIM card: Warning shown to the user indicating that the network cannot be used until a new PIN is set up.">
         You won't be able to use this network until you set up a new PIN
@@ -1957,6 +1957,17 @@
       </message>
       <message name="IDS_SETTINGS_INTERNET_NETWORK_AUTO_CONNECT" desc="Settings > Internet > Network details: Label for the checkbox determining whether to automatically connect to the network.">
         Automatically connect to this network
+      </message>
+
+      <!-- Frozen Update  Notification Strings -->
+      <message name="IDS_FROZEN_UPDATE_NOTIFICATION_TITLE" desc="Notification title shown to inform the user that this device is no longer getting updates.">
+        Final update
+      </message>
+      <message name="IDS_FROZEN_UPDATE_NOTIFICATION_FROZEN_UPDATE" desc="Notification message shown to inform the user that this device will no longer receive latest software updates.">
+        Your ChromeOS Flex device will stop receiving updates soon. Consider upgrading to a ChromeOS device.
+      </message>
+      <message name="IDS_FROZEN_UPDATE_DISMISS_BUTTON" desc="A button label shown in the notification for frozen update status change to dismiss the notification.">
+        Don't remind me again
       </message>
     </messages>
   </release>

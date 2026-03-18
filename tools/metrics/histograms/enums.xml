@@ -15207,6 +15207,7 @@ from previous Chrome versions.
       label="HappinessTrackingSurveysForDesktopDemo:disabled"/>
   <int value="259021228" label="OffMainThreadFetch:disabled"/>
   <int value="259633436" label="AutofillDropdownLayout:disabled"/>
+  <int value="259704832" label="show-frozen-update-notifications:disabled"/>
   <int value="259812169" label="OmniboxSuggestionsWrapAround:disabled"/>
   <int value="260045929" label="OptimizationGuideModelExecution:disabled"/>
   <int value="260330068" label="MaliciousApkDownloadCheck:enabled"/>
@@ -20191,6 +20192,7 @@ from previous Chrome versions.
   <int value="1919786756" label="FedCmDisconnect:disabled"/>
   <int value="1919917329" label="ImplicitRootScroller:disabled"/>
   <int value="1919955548" label="GlanceablesTimeManagementTasksView:disabled"/>
+  <int value="1920703039" label="show-frozen-update-notifications:enabled"/>
   <int value="1920780354" label="CCTPageInsightsHubPeek:enabled"/>
   <int value="1920894670"
       label="OmniboxPreserveDefaultMatchAgainstAsyncUpdate:enabled"/>
@@ -22100,6 +22102,7 @@ Called by update_net_error_codes.py.-->
   <int value="197" label="Face Gaze Active"/>
   <int value="201" label="Incompatible Charger"/>
   <int value="202" label="Camera Upload"/>
+  <int value="203" label="Frozen Update Notification"/>
 </enum>
 
 <enum name="NQEObservationSource">

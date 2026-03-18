@@ -8846,6 +8846,11 @@
     "expiry_milestone": 136
   },
   {
+    "name": "show-frozen-update-notification",
+    "owners": ["ballway@chromium.org"],
+    "expiry_milestone": 150
+  },
+  {
     "name": "show-overdraw-feedback",
     "owners": [ "andrescj@chromium.org", "chromeos-gfx@google.com" ],
     // This is a debug flag to visualize compositing and rendering issues in

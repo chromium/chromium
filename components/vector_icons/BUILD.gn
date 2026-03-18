@@ -295,6 +295,7 @@ if (current_toolchain == default_toolchain) {
     if (is_chromeos) {
       sources += [
         "notification_download.icon",
+        "notification_end_of_support.icon",
         "videogame_asset_outline.icon",
       ]
     }

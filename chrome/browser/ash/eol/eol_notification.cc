@@ -151,7 +151,7 @@ void EolNotification::CreateNotification(base::Time eol_date, base::Time now) {
     notification_builder.SetTitleId(IDS_EOL_NOTIFICATION_TITLE)
         .SetMessageWithArgs(IDS_EOL_NOTIFICATION_EOL,
                             {ui::GetChromeOSDeviceName()})
-        .SetSmallImage(kNotificationEndOfSupportIcon);
+        .SetSmallImage(vector_icons::kNotificationEndOfSupportIcon);
     catalog_name = NotificationCatalogName::kEOL;
   }
 
