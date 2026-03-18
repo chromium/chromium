@@ -1261,7 +1261,8 @@ TEST_F(AddressDataManagerTest,
       /*picture_url=*/"");
   identity_test_env_.UpdatePersistentErrorOfRefreshTokenForAccount(
       account_info.account_id,
-      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
   sync_service_.SetPersistentAuthError();
 
   // User is still signed in.
