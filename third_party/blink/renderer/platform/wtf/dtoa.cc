@@ -49,7 +49,7 @@ double ParseDoubleFromLongString(base::span<const UChar> string,
   size_t conversion_length = string.size();
   auto conversion_buffer = base::HeapArray<LChar>::Uninit(conversion_length);
   for (size_t i = 0; i < conversion_length; ++i) {
-    conversion_buffer[i] = IsASCII(string[i]) ? string[i] : 0;
+    conversion_buffer[i] = IsAscii(string[i]) ? string[i] : 0;
   }
   return ParseDouble(base::span(conversion_buffer), parsed_length);
 }
@@ -186,7 +186,7 @@ double ParseDouble(base::span<const UChar> string, size_t& parsed_length) {
   std::array<LChar, kConversionBufferSize> conversion_buffer;
   for (size_t i = 0; i < length; ++i) {
     conversion_buffer[i] =
-        IsASCII(string[i]) ? static_cast<LChar>(string[i]) : 0;
+        IsAscii(string[i]) ? static_cast<LChar>(string[i]) : 0;
   }
   return ParseDouble(base::span(conversion_buffer).first(length),
                      parsed_length);

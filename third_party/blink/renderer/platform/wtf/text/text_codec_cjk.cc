@@ -95,7 +95,7 @@ Vector<uint8_t> EncodeEucJp(StringView string, UnencodableHandling handling) {
   result.ReserveInitialCapacity(string.length());
 
   for (UChar32 code_point : string) {
-    if (IsASCII(code_point)) {
+    if (IsAscii(code_point)) {
       result.push_back(code_point);
       continue;
     }
@@ -186,12 +186,12 @@ class Iso2022JpEncoder {
       StatefulUnencodableHandler(uchar::kReplacementCharacter);
       return;
     }
-    if (state_ == State::kAscii && IsASCII(code_point)) {
+    if (state_ == State::kAscii && IsAscii(code_point)) {
       result_.push_back(code_point);
       return;
     }
     if (state_ == State::kRoman) {
-      if (IsASCII(code_point) && code_point != 0x005C && code_point != 0x007E) {
+      if (IsAscii(code_point) && code_point != 0x005C && code_point != 0x007E) {
         result_.push_back(code_point);
         return;
       }
@@ -204,7 +204,7 @@ class Iso2022JpEncoder {
         return;
       }
     }
-    if (IsASCII(code_point) && state_ != State::kAscii) {
+    if (IsAscii(code_point) && state_ != State::kAscii) {
       ChangeStateToAscii();
       ParseCodePoint(code_point);
       return;
@@ -268,7 +268,7 @@ Vector<uint8_t> EncodeShiftJis(StringView string,
   result.ReserveInitialCapacity(string.length());
 
   for (UChar32 code_point : string) {
-    if (IsASCII(code_point) || code_point == 0x0080) {
+    if (IsAscii(code_point) || code_point == 0x0080) {
       result.push_back(code_point);
       continue;
     }
@@ -318,7 +318,7 @@ Vector<uint8_t> EncodeEucKr(StringView string, UnencodableHandling handling) {
   result.ReserveInitialCapacity(string.length());
 
   for (UChar32 code_point : string) {
-    if (IsASCII(code_point)) {
+    if (IsAscii(code_point)) {
       result.push_back(code_point);
       continue;
     }
@@ -478,7 +478,7 @@ Vector<uint8_t> EncodeGbShared(StringView string,
   result.ReserveInitialCapacity(string.length());
 
   for (UChar32 code_point : string) {
-    if (IsASCII(code_point)) {
+    if (IsAscii(code_point)) {
       result.push_back(code_point);
       continue;
     }
@@ -559,11 +559,12 @@ class EucJpDecoder : public TextCodecCjk::Decoder {
           return SawError::kNo;
         }
       }
-      if (IsASCII(byte))
+      if (IsAscii(byte)) {
         prepended_byte_ = byte;
+      }
       return SawError::kYes;
     }
-    if (IsASCII(byte)) {
+    if (IsAscii(byte)) {
       result.Append(static_cast<char>(byte));
       return SawError::kNo;
     }
@@ -661,7 +662,7 @@ class Iso2022JpDecoder : public TextCodecCjk::Decoder {
           saw_error = true;
           result.Append(uchar::kReplacementCharacter);
           if (lead_) {
-            DCHECK(IsASCII(lead_));
+            DCHECK(IsAscii(lead_));
             result.Append(std::exchange(lead_, 0x00));
           }
           break;
@@ -826,11 +827,12 @@ class ShiftJisDecoder : public TextCodecCjk::Decoder {
           return SawError::kNo;
         }
       }
-      if (IsASCII(byte))
+      if (IsAscii(byte)) {
         prepended_byte_ = byte;
+      }
       return SawError::kYes;
     }
-    if (IsASCII(byte) || byte == 0x80) {
+    if (IsAscii(byte) || byte == 0x80) {
       result.Append(byte);
       return SawError::kNo;
     }
@@ -862,11 +864,12 @@ class EucKrDecoder : public TextCodecCjk::Decoder {
           return SawError::kNo;
         }
       }
-      if (IsASCII(byte))
+      if (IsAscii(byte)) {
         prepended_byte_ = byte;
+      }
       return SawError::kYes;
     }
-    if (IsASCII(byte)) {
+    if (IsAscii(byte)) {
       result.Append(byte);
       return SawError::kNo;
     }
@@ -955,11 +958,12 @@ class Gb18030Decoder : public TextCodecCjk::Decoder {
           return SawError::kNo;
         }
       }
-      if (IsASCII(byte))
+      if (IsAscii(byte)) {
         prepended_byte_ = byte;
+      }
       return SawError::kYes;
     }
-    if (IsASCII(byte)) {
+    if (IsAscii(byte)) {
       result.Append(byte);
       return SawError::kNo;
     }

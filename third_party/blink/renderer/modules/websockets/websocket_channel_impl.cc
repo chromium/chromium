@@ -1096,7 +1096,7 @@ void WebSocketChannelImpl::ConsumeDataFrame(bool fin,
   // instead.
   if (receiving_message_type_is_text_ && received_text_is_all_ascii_) {
     for (auto& i : data) {
-      if (!IsASCII(i)) {
+      if (!IsAscii(i)) {
         received_text_is_all_ascii_ = false;
         break;
       }

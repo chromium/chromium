@@ -485,7 +485,7 @@ class ReplaceNonASCII {
     unsigned len = source_string.length();
     for (unsigned i = 0; i < len; ++i) {
       UChar current = source_string[i];
-      if (IsASCII(current)) {
+      if (IsAscii(current)) {
         builder_.Append(current);
       } else {
         builder_.Append('?');

@@ -118,7 +118,7 @@ static inline UChar ToLowerCase(UChar cc) {
 }
 
 static inline bool CheckScanFlag(UChar cc, ScanFlags flag) {
-  return IsASCII(cc) &&
+  return IsAscii(cc) &&
          (character_scan_flags_[cc] & static_cast<uint16_t>(flag));
 }
 

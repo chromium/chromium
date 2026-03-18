@@ -1647,7 +1647,7 @@ const AtomicString& HTMLInputElement::DefaultValue() const {
 }
 
 static inline bool IsRFC2616TokenCharacter(UChar ch) {
-  return IsASCII(ch) && ch > ' ' && ch != '"' && ch != '(' && ch != ')' &&
+  return IsAscii(ch) && ch > ' ' && ch != '"' && ch != '(' && ch != ')' &&
          ch != ',' && ch != '/' && (ch < ':' || ch > '@') &&
          (ch < '[' || ch > ']') && ch != '{' && ch != '}' && ch != 0x7f;
 }

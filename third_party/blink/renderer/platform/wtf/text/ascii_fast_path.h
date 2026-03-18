@@ -105,7 +105,7 @@ CharacterAttributes(base::span<const CharacterType> chars) {
     contains_upper_case |= IsASCIIUpper(ch);
   }
 
-  return AsciiStringAttributes(IsASCII(all_char_bits), !contains_upper_case);
+  return AsciiStringAttributes(IsAscii(all_char_bits), !contains_upper_case);
 }
 
 // Fast-path specialization for LChar as it's called very frequently by

@@ -54,7 +54,7 @@ inline size_t InlineUtf8SequenceLengthNonAscii(uint8_t b0) {
 }
 
 inline size_t InlineUtf8SequenceLength(uint8_t b0) {
-  return IsASCII(b0) ? 1 : InlineUtf8SequenceLengthNonAscii(b0);
+  return IsAscii(b0) ? 1 : InlineUtf8SequenceLengthNonAscii(b0);
 }
 
 // Once the bits are split out into bytes of UTF-8, this is a mask OR-ed
@@ -456,7 +456,7 @@ unsigned CalculateStringLengthFromUtf8(base::span<const uint8_t> data,
   size_t data_end = data.size();
 
   while (data_cursor < data_end) {
-    if (IsASCII(data[data_cursor])) {
+    if (IsAscii(data[data_cursor])) {
       data_cursor++;
       utf16_length++;
       continue;
@@ -476,7 +476,7 @@ unsigned CalculateStringLengthFromUtf8(base::span<const uint8_t> data,
 
     UChar32 character =
         ReadUtf8Sequence(data.subspan(data_cursor), utf8_sequence_length);
-    DCHECK(!IsASCII(character));
+    DCHECK(!IsAscii(character));
     data_cursor += utf8_sequence_length;
 
     if (character > 0xff) {

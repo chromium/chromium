@@ -261,7 +261,7 @@ static const auto maybe_emoji_presentation_ascii =
 }  // namespace
 
 bool Character::MaybeEmojiPresentation(UChar32 c) {
-  if (IsASCII(c)) [[likely]] {
+  if (IsAscii(c)) [[likely]] {
     return maybe_emoji_presentation_ascii[c];
   }
   // Non-ascii characters.

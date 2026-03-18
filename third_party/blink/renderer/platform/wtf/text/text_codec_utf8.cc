@@ -72,7 +72,7 @@ constexpr std::array<uint8_t, 256> kNonASCIISequenceLength = {
     4, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 inline int DecodeNonASCIISequence(base::span<const uint8_t> sequence) {
-  DCHECK(!IsASCII(sequence[0]));
+  DCHECK(!IsAscii(sequence[0]));
 
   const size_t length = sequence.size();
   if (length == 2) {
@@ -275,7 +275,7 @@ bool TextCodecUtf8::HandlePartialSequence(base::span<LChar>& destination,
                                           bool flush) {
   DCHECK(partial_sequence_size_);
   do {
-    if (IsASCII(partial_sequence_[0])) {
+    if (IsAscii(partial_sequence_[0])) {
       destination.take_first<1u>()[0] = partial_sequence_[0];
       ConsumePartialSequenceBytes(1);
       continue;
@@ -320,7 +320,7 @@ bool TextCodecUtf8::HandlePartialSequence(base::span<UChar>& destination,
                                           bool& saw_error) {
   DCHECK(partial_sequence_size_);
   do {
-    if (IsASCII(partial_sequence_[0])) {
+    if (IsAscii(partial_sequence_[0])) {
       destination.take_first<1u>()[0] = partial_sequence_[0];
       ConsumePartialSequenceBytes(1);
       continue;
@@ -390,7 +390,7 @@ String TextCodecUtf8::Decode(base::span<const uint8_t> bytes,
     }
 
     while (!source.empty()) {
-      if (IsASCII(source[0])) {
+      if (IsAscii(source[0])) {
         // Fast path for ASCII. Most UTF-8 text will be ASCII.
         if (IsAlignedToMachineWord(source.data())) {
           while (source.data() < aligned_end) {
@@ -406,7 +406,7 @@ String TextCodecUtf8::Decode(base::span<const uint8_t> bytes,
           if (source.empty()) {
             break;
           }
-          if (!IsASCII(source[0])) {
+          if (!IsAscii(source[0])) {
             continue;
           }
         }
@@ -473,7 +473,7 @@ upConvertTo16Bit:
     }
 
     while (!source.empty()) {
-      if (IsASCII(source[0])) {
+      if (IsAscii(source[0])) {
         // Fast path for ASCII. Most UTF-8 text will be ASCII.
         if (IsAlignedToMachineWord(source.data())) {
           while (source.data() < aligned_end) {
@@ -491,7 +491,7 @@ upConvertTo16Bit:
           if (source.empty()) {
             break;
           }
-          if (!IsASCII(source[0])) {
+          if (!IsAscii(source[0])) {
             continue;
           }
         }

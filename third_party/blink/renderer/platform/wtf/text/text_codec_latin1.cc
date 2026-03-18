@@ -128,7 +128,7 @@ String TextCodecLatin1::Decode(base::span<const uint8_t> bytes,
   base::span<LChar> destination = characters;
 
   while (!source.empty()) {
-    if (IsASCII(source[0])) {
+    if (IsAscii(source[0])) {
       // Fast path for ASCII. Most Latin-1 text will be ASCII.
       if (IsAlignedToMachineWord(source.data())) {
         while (source.data() < aligned_end) {
@@ -148,7 +148,7 @@ String TextCodecLatin1::Decode(base::span<const uint8_t> bytes,
         if (source.empty()) {
           break;
         }
-        if (!IsASCII(source[0])) {
+        if (!IsAscii(source[0])) {
           goto useLookupTable;
         }
       }
@@ -186,7 +186,7 @@ upConvertTo16Bit:
   destination16.take_first<1u>()[0] = kTable[source.take_first_elem()];
 
   while (!source.empty()) {
-    if (IsASCII(source[0])) {
+    if (IsAscii(source[0])) {
       // Fast path for ASCII. Most Latin-1 text will be ASCII.
       if (IsAlignedToMachineWord(source.data())) {
         while (source.data() < aligned_end) {
@@ -207,7 +207,7 @@ upConvertTo16Bit:
         if (source.empty()) {
           break;
         }
-        if (!IsASCII(source[0])) {
+        if (!IsAscii(source[0])) {
           goto useLookupTable16;
         }
       }

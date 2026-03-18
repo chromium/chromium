@@ -602,14 +602,14 @@ StringView CSSTokenizer::ConsumeName() {
       int8_t b __attribute__((vector_size(16)));
       UNSAFE_BUFFERS(memcpy(&b, ptr + size, sizeof(b)));
 
-      // Exactly the same as IsNameCodePoint(), except the IsASCII() part,
+      // Exactly the same as IsNameCodePoint(), except the IsAscii() part,
       // which we deal with below. Note that we compute the inverted condition,
       // since __builtin_ctz wants to find the first 1-bit, not the first 0-bit.
       auto non_name_mask = ((b | 0x20) < 'a' || (b | 0x20) > 'z') && b != '_' &&
                            b != '-' && (b < '0' || b > '9');
 #ifdef __SSE2__
       // pmovmskb extracts only the top bit and ignores the rest,
-      // so to implement the IsASCII() test, which for LChar only
+      // so to implement the IsAscii() test, which for LChar only
       // tests whether the top bit is set, we don't need a compare;
       // we can just rely on the top bit directly (using a PANDN).
       uint16_t bits =

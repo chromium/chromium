@@ -50,7 +50,7 @@
 namespace blink {
 
 template <typename CharType>
-constexpr inline bool IsASCII(CharType c) {
+constexpr inline bool IsAscii(CharType c) {
   return !(c & ~0x7F);
 }
 
