@@ -32,6 +32,8 @@ class InvokeWithAutoSubmitPasskeyProvider {
   friend class extensions::PdfViewerPrivateGlicSummarizeFunction;
   friend class ::PasswordChangeFromCheckupDelegate;
   friend class GlicInternalsPageHandler;
+  friend class GlicInstanceCoordinatorBrowserTest;
+  friend class GlicInstanceCoordinatorTrustFirstOnboardingArm1BrowserTest;
 };
 
 using InvokeWithAutoSubmitPasskey =

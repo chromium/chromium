@@ -56,6 +56,8 @@ class GlicInvokeHandler : public Host::Observer {
  private:
   void SendToClient();
   mojom::InvokeOptionsPtr CreateMojoOptions();
+  bool RequiresAutoSubmitIncompatibleFre() const;
+
   // May delete this.
   void OnSuccess();
   void OnTabClosed(tabs::TabInterface* tab);
