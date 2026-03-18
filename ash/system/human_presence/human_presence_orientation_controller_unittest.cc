@@ -72,6 +72,14 @@ class HumanPresenceOrientationControllerTest : public AshTestBase {
         .SetFirstDisplayAsInternalDisplay();
   }
 
+  void TearDown() override {
+    power_manager_client_ = nullptr;
+    display_manager_ = nullptr;
+    tablet_mode_controller_ = nullptr;
+    orientation_controller_ = nullptr;
+    AshTestBase::TearDown();
+  }
+
  protected:
   void RotateDisplay(int display_index, int degrees) {
     const int64_t id = display_manager_->GetDisplayAt(display_index).id();
@@ -80,14 +88,10 @@ class HumanPresenceOrientationControllerTest : public AshTestBase {
         display::Display::RotationSource::ACTIVE);
   }
 
-  raw_ptr<HumanPresenceOrientationController, DanglingUntriaged>
-      orientation_controller_ = nullptr;
-  raw_ptr<TabletModeController, DanglingUntriaged> tablet_mode_controller_ =
-      nullptr;
-  raw_ptr<display::DisplayManager, DanglingUntriaged> display_manager_ =
-      nullptr;
-  raw_ptr<chromeos::FakePowerManagerClient, DanglingUntriaged>
-      power_manager_client_ = nullptr;
+  raw_ptr<HumanPresenceOrientationController> orientation_controller_ = nullptr;
+  raw_ptr<TabletModeController> tablet_mode_controller_ = nullptr;
+  raw_ptr<display::DisplayManager> display_manager_ = nullptr;
+  raw_ptr<chromeos::FakePowerManagerClient> power_manager_client_ = nullptr;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
