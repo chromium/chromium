@@ -537,7 +537,10 @@ metrics::OmniboxInputType AutocompleteInput::Parse(
   // https://tools.ietf.org/html/rfc6761. Unlike localhost, these are not valid
   // host names, so they must have at least one subdomain to be a URL.
   // .local is used for Multicast DNS in https://www.rfc-editor.org/rfc/rfc6762.
-  for (const std::string_view domain : {"example", "test", "local"}) {
+  // .internal is reserved from delegation for private-use applications; see
+  // https://www.icann.org/en/board-activities-and-meetings/materials/approved-resolutions-special-meeting-of-the-icann-board-29-07-2024-en
+  for (const std::string_view domain :
+       {"example", "test", "local", "internal"}) {
     // The +1 accounts for a possible trailing period.
     if (canonicalized_url->DomainIs(domain) &&
         (canonicalized_url->GetHost().length() > (domain.length() + 1))) {

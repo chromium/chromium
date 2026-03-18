@@ -220,6 +220,10 @@ TEST(AutocompleteInputTest, InputType) {
       {u"foo local", metrics::OmniboxInputType::QUERY},
       {u"local", metrics::OmniboxInputType::UNKNOWN},
       {u".local", metrics::OmniboxInputType::UNKNOWN},
+      {u"foo.internal", metrics::OmniboxInputType::URL},
+      {u"foo internal", metrics::OmniboxInputType::QUERY},
+      {u"internal", metrics::OmniboxInputType::UNKNOWN},
+      {u".internal", metrics::OmniboxInputType::UNKNOWN},
   });
 
   for (size_t i = 0; i < std::size(input_cases); ++i) {
