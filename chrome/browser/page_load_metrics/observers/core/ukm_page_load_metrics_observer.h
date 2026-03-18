@@ -56,6 +56,8 @@ class UkmPageLoadMetricsObserver
   ~UkmPageLoadMetricsObserver() override;
 
   // page_load_metrics::PageLoadMetricsObserver implementation:
+  const char* GetObserverName() const override;
+  ObservePolicy ShouldObserveScheme(const GURL& url) const override;
   ObservePolicy OnStart(content::NavigationHandle* navigation_handle,
                         const GURL& currently_committed_url,
                         bool started_in_foreground) override;
