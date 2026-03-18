@@ -3361,10 +3361,6 @@
       public: true,
     },
     {
-      name: "LayoutFlexCacheFix",
-      status: "stable",
-    },
-    {
       name: "LayoutIgnoreMarginsForSticky",
     },
     {

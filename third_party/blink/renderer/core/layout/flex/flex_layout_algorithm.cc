@@ -1074,8 +1074,7 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
         // being greater than the specified-size.
         //
         // We'll never shrink a flex-item under the conditions specified below.
-        if (RuntimeEnabledFeatures::LayoutFlexCacheFixEnabled() &&
-            min_length_in_main_axis.IsAuto() &&
+        if (min_length_in_main_axis.IsAuto() &&
             specified_size_suggestion <= base_border_size) {
           // If flex-shrink is zero we can't shrink.
           if (flex_shrink == 0.f) {

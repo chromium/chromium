@@ -301,10 +301,7 @@ LayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
   // etc.
   if (is_old_initial_block_size_indefinite !=
       is_initial_block_size_indefinite) {
-    const bool is_flexbox =
-        RuntimeEnabledFeatures::LayoutFlexCacheFixEnabled() &&
-        node.IsFlexibleBox();
-    if (is_flexbox || node.IsGrid() || node.IsGridLanes() ||
+    if (node.IsFlexibleBox() || node.IsGrid() || node.IsGridLanes() ||
         has_descendant_that_depends_on_percentage_block_size) {
       return LayoutCacheStatus::kNeedsLayout;
     }
