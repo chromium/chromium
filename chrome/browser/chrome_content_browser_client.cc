@@ -934,10 +934,12 @@ blink::mojom::AutoplayPolicy DetermineWebContentsAutoplayPolicy(
 
   // Allow Autoplay if the user provided mic/cam access. This is for cases such
   // as received-video-call rings occurring before the user interacted with the
-  // page.
-  if (base::FeatureList::IsEnabled(media::kAutoplayBypassForMicCamera)) {
-    const HostContentSettingsMap* const content_settings =
-        HostContentSettingsMapFactory::GetForProfile(profile);
+  // page. If there is no content_settings, we cannot provide autoplay (e.g.
+  // System profile).
+  const HostContentSettingsMap* const content_settings =
+      HostContentSettingsMapFactory::GetForProfile(profile);
+  if (content_settings &&
+      base::FeatureList::IsEnabled(media::kAutoplayBypassForMicCamera)) {
     const GURL& url = web_contents->GetLastCommittedURL();
 
     if (content_settings->GetContentSetting(
