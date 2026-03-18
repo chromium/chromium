@@ -113,6 +113,7 @@ chromium-metrics-reviews@google.com.
   <int value="1505293227" label="PrivacySettings"/>
   <int value="1603955025" label="SafetyHubPermissionsFragment"/>
   <int value="1624624514" label="FinancialAccountsManagementFragment"/>
+  <int value="1667127067" label="HomeOfTransactionsFragment"/>
   <int value="1676521220" label="SelectLanguageFragment"/>
   <int value="1764379105" label="TabsSettings"/>
   <int value="1837742646" label="AutofillBuyNowPayLaterFragment"/>

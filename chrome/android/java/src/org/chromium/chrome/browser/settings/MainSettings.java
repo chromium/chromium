@@ -710,8 +710,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
         Preference autofillAndPasswordsEntry = addPreferenceIfAbsent(PREF_AUTOFILL_AND_PASSWORDS);
         autofillAndPasswordsEntry.setOnPreferenceClickListener(
                 preference -> {
-                    // TODO(crbug.com/482994356): Start the new Autofill and passwords fragment.
-                    return true;
+                    return SettingsNavigationHelper.showAutofillAndPasswordsSettings(getContext());
                 });
     }
 

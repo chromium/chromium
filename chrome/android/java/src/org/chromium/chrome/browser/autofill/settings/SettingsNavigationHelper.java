@@ -11,6 +11,7 @@ import org.jni_zero.CalledByNative;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
@@ -18,6 +19,23 @@ import org.chromium.ui.base.WindowAndroid;
 /** Launches autofill settings subpages. */
 @NullMarked
 public class SettingsNavigationHelper {
+    /**
+      * Tries showing the Autofill and passwords settings page.
+      *
+      * @param context The {@link Context} required to start the settings page. Noop without it.
+      * @return True if the context is valid, feature enabled and `startSettings` was called.
+      */
+    public static boolean showAutofillAndPasswordsSettings(@Nullable Context context) {
+        if (context == null || !ChromeFeatureList.isEnabled(
+            ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)) {
+            return false;
+        }
+
+        SettingsNavigationFactory.createSettingsNavigation()
+                .startSettings(context, HomeOfTransactionsFragment.class);
+        return true;
+    }
+
     /**
      * Tries showing the settings page for Addresses.
      *

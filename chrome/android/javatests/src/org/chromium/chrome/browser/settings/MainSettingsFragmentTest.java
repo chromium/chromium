@@ -15,6 +15,7 @@ import static androidx.test.espresso.matcher.PreferenceMatchers.withKey;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
@@ -1031,6 +1032,26 @@ public class MainSettingsFragmentTest {
                 .removeEntry(
                         MainSettings.SEARCH_INDEX_DATA_PROVIDER.getUniqueId(
                                 MainSettings.PREF_PLUS_ADDRESSES));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
+    public void testClickAutofillAndPasswordsLaunchesNewScreen() {
+        startSettings();
+
+        onView(withId(R.id.recycler_view))
+                .perform(
+                        scrollTo(
+                                hasDescendant(
+                                        withText(R.string.autofill_and_passwords_settings_title))));
+        onView(withText(R.string.autofill_and_passwords_settings_title)).perform(click());
+
+        onView(
+                        allOf(
+                                withText(R.string.autofill_and_passwords_settings_title),
+                                withParent(withId(R.id.action_bar))))
+                .check(matches(isDisplayed()));
     }
 
     private void startSettings() {
