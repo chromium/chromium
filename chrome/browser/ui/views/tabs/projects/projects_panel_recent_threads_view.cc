@@ -73,9 +73,13 @@ void ProjectsPanelRecentThreadsView::UpdateDisplayedThreads() {
          count >= projects_panel::kNumThreadsVisibleWhenCollapsed)) {
       break;
     }
-    item_views_.push_back(
+    auto* item_view =
         AddChildView(std::make_unique<ProjectsPanelThreadItemView>(
-            thread, thread_button_callback_)));
+            thread, thread_button_callback_));
+    if (disable_animations_for_testing_) {
+      item_view->disable_animations_for_testing();  // IN-TEST
+    }
+    item_views_.push_back(item_view);
     count++;
   }
 }

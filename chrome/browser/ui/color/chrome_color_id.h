@@ -541,8 +541,9 @@
   E_CPONLY(kColorProfilesReauthDialogBorder) \
   /* Projects Panel colors. */ \
   E_CPONLY(kColorProjectsPanelBackground) \
-  E_CPONLY(kColorProjectsPanelButtonIcon) \
+  E_CPONLY(kColorProjectsPanelButtonDisabledIcon) \
   E_CPONLY(kColorProjectsPanelButtonHoverBackground) \
+  E_CPONLY(kColorProjectsPanelButtonIcon) \
   E_CPONLY(kColorProjectsPanelListsSeparator) \
   E_CPONLY(kColorProjectsPanelNoTabGroupsText) \
   E_CPONLY(kColorProjectsPanelTabGroupsDragPlaceholder) \
