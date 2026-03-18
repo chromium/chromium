@@ -49,16 +49,16 @@ void FreeCodecCtx(aom_codec_ctx_t* codec_ctx) {
 // pixel format. If no conversion is needed returns nullopt.
 std::optional<VideoPixelFormat> GetConversionFormat(VideoCodecProfile profile,
                                                     VideoPixelFormat format,
-                                                    bool needs_resize) {
+                                                    bool needs_copy) {
   switch (profile) {
     case AV1PROFILE_PROFILE_MAIN:
       if ((format != PIXEL_FORMAT_NV12 && format != PIXEL_FORMAT_I420) ||
-          needs_resize) {
+          needs_copy) {
         return PIXEL_FORMAT_I420;
       }
       break;
     case AV1PROFILE_PROFILE_HIGH:
-      if (format != PIXEL_FORMAT_I444 || needs_resize) {
+      if (format != PIXEL_FORMAT_I444 || needs_copy) {
         return PIXEL_FORMAT_I444;
       }
       break;
@@ -465,12 +465,22 @@ void Av1VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
     return;
   }
 
+  bool requires_copy = frame->visible_rect().size() != options_.frame_size ||
+                       (IsYuvPlanar(frame->format()) &&
+                        VideoFrame::NumPlanes(frame->format()) >= 3 &&
+                        frame->stride(VideoFrame::Plane::kU) !=
+                            frame->stride(VideoFrame::Plane::kV));
+
   // Format conversion or resizing may be necessary to get the frame into the
   // form needed by libaom for encoding.
   if (auto conversion_format =
-          GetConversionFormat(profile_, frame->format(),
-                              /*needs_resize=*/frame->visible_rect().size() !=
-                                  options_.frame_size)) {
+          GetConversionFormat(profile_, frame->format(), requires_copy)) {
+    // In cases where we need to
+    // - enlarge the frame
+    // - change the pixel format
+    // - change the aspect ratio or
+    // - use matching U and V strides
+    // we are forced to convert and rescale manually.
     auto temp_frame = frame_pool_.CreateFrame(
         *conversion_format, options_.frame_size, gfx::Rect(options_.frame_size),
         options_.frame_size, frame->timestamp());
