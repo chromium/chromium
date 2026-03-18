@@ -54,6 +54,7 @@ class ContentAnnotatorInternalsPageHandlerTest : public testing::Test {
                   return std::make_unique<
                       accessibility_annotator::AccessibilityAnnotatorBackend>(
                       version_info::Channel::UNKNOWN,
+                      /*history_service=*/nullptr,
                       syncer::DataTypeStoreTestUtil::
                           FactoryForInMemoryStoreForTest(),
                       path.Append(

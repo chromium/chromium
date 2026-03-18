@@ -65,6 +65,7 @@ class DirectServerEntityProviderTest : public testing::Test {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     backend_ = std::make_unique<AccessibilityAnnotatorBackend>(
         version_info::Channel::UNKNOWN,
+        /*history_service=*/nullptr,
         syncer::TestDataTypeStoreService().GetStoreFactory(),
         temp_dir_.GetPath().AppendASCII("TestAccessibilityAnnotatorDatabase"));
     provider_ = std::make_unique<DirectServerEntityProvider>(*backend_);

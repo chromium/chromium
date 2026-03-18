@@ -98,6 +98,7 @@ class ContentAnnotatorServiceFactoryTest : public testing::Test {
                     -> std::unique_ptr<KeyedService> {
                   return std::make_unique<AccessibilityAnnotatorBackend>(
                       version_info::Channel::UNKNOWN,
+                      /*history_service=*/nullptr,
                       syncer::DataTypeStoreTestUtil::
                           FactoryForInMemoryStoreForTest(),
                       path.Append(

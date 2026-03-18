@@ -8,10 +8,13 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros_local.h"
+#include "base/notimplemented.h"
 #include "base/task/thread_pool.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
 #include "components/accessibility_annotator/core/storage/accessibility_annotation_sync_bridge.h"
 #include "components/accessibility_annotator/core/storage/accessibility_annotator_database.h"
+#include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/report_unrecoverable_error.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
@@ -20,6 +23,7 @@ namespace accessibility_annotator {
 
 AccessibilityAnnotatorBackend::AccessibilityAnnotatorBackend(
     version_info::Channel channel,
+    history::HistoryService* history_service,
     syncer::RepeatingDataTypeStoreFactory data_type_store_factory,
     const base::FilePath& db_path)
     : db_path_(db_path),
@@ -35,6 +39,9 @@ AccessibilityAnnotatorBackend::AccessibilityAnnotatorBackend(
       std::make_unique<AccessibilityAnnotationSyncBridge>(
           std::move(processor), data_type_store_factory);
   sync_bridge_observation_.Observe(accessibility_annotation_sync_bridge_.get());
+  if (history_service) {
+    history_service_observation_.Observe(history_service);
+  }
 }
 
 AccessibilityAnnotatorBackend::~AccessibilityAnnotatorBackend() = default;
@@ -65,6 +72,24 @@ void AccessibilityAnnotatorBackend::OnAccessibilityAnnotationChanged() {
 void AccessibilityAnnotatorBackend::
     OnAccessibilityAnnotationSyncBridgeLoaded() {
   // TODO(crbug.com/486856790): Implement logic to handle sync bridge loaded.
+}
+
+void AccessibilityAnnotatorBackend::OnURLVisited(
+    history::HistoryService* history_service,
+    const history::VisitedURLInfo& visited_url_info) {
+  // TODO(crbug.com/489690454): Ingest new visit for intent clustering.
+}
+
+void AccessibilityAnnotatorBackend::OnHistoryDeletions(
+    history::HistoryService* history_service,
+    const history::DeletionInfo& deletion_info) {
+  // TODO(crbug.com/489690454): Purge associated intents/clusters from the
+  // persistent SQLite database.
+}
+
+void AccessibilityAnnotatorBackend::OnHistoryServiceLoaded(
+    history::HistoryService* history_service) {
+  // TODO(crbug.com/489690454): Query the history service for historical data.
 }
 
 std::optional<std::string>
