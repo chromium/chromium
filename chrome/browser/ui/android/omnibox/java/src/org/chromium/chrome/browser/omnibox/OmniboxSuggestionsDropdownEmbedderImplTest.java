@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -27,6 +28,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
@@ -81,6 +83,7 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
     private @Mock InsetObserver mInsetObserver;
     private @Mock LocationBarDataProvider mLocationBarDataProvider;
     private @Mock TopInsetProvider mTopInsetProvider;
+    private @Mock Callback<OmniboxAlignment> mAlignmentChanged;
 
     private OmniboxSuggestionsDropdownEmbedderImpl mImpl;
     private WeakReference<Context> mContextWeakRef;
@@ -146,6 +149,53 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
         verify(mAnchorView).removeOnLayoutChangeListener(mImpl);
         verify(mHorizontalAlignmentView).removeOnLayoutChangeListener(mImpl);
         verify(mViewTreeObserver).removeOnGlobalLayoutListener(mImpl);
+    }
+
+    @Test
+    public void testPositionInWindow() {
+        mImpl.onAttachedToWindow();
+        mImpl.addAlignmentObserver(mAlignmentChanged);
+        doAnswer(
+                        invocationOnMock -> {
+                            int[] posArray = invocationOnMock.getArgument(0);
+                            posArray[0] = 0;
+                            posArray[1] = 0;
+                            return null;
+                        })
+                .when(mHorizontalAlignmentView)
+                .getLocationInWindow(any());
+
+        doReturn(mAnchorView).when(mHorizontalAlignmentView).getParent();
+        doReturn(60).when(mHorizontalAlignmentView).getTop();
+        mImpl.recalculateOmniboxAlignment();
+        OmniboxAlignment alignment = mImpl.getCurrentAlignment();
+        assertEquals(
+                new OmniboxAlignment(
+                        0,
+                        ANCHOR_HEIGHT + ANCHOR_TOP,
+                        ANCHOR_WIDTH,
+                        getExpectedHeight(ANCHOR_HEIGHT + ANCHOR_TOP),
+                        0,
+                        0,
+                        0,
+                        0),
+                alignment);
+
+        doReturn(ANCHOR_WIDTH - 1).when(mAnchorView).getMeasuredWidth();
+        mImpl.onGlobalLayout();
+
+        doAnswer(
+                        invocationOnMock -> {
+                            int[] posArray = invocationOnMock.getArgument(0);
+                            posArray[0] = 1;
+                            posArray[1] = 0;
+                            return null;
+                        })
+                .when(mHorizontalAlignmentView)
+                .getLocationInWindow(any());
+
+        mImpl.onGlobalLayout();
+        verify(mAlignmentChanged).onResult(any(OmniboxAlignment.class));
     }
 
     @Test

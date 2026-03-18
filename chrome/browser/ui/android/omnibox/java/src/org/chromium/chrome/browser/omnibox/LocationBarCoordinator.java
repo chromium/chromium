@@ -115,6 +115,7 @@ public class LocationBarCoordinator
             mDeferredIMEWindowInsetApplicationCallback;
 
     private OmniboxSuggestionsDropdownEmbedderImpl mOmniboxDropdownEmbedderImpl;
+    private int mPreviousFuseboxState = FuseboxState.DISABLED;
 
     /** Identifies coordinators with methods specific to a device type. */
     public interface SubCoordinator {
@@ -852,6 +853,14 @@ public class LocationBarCoordinator
         View addButton = mLocationBarLayout.findViewById(R.id.location_bar_attachments_add);
         if (addButton == null) return;
 
+        // The Fade and and ChangeBounds anims below are only intended for animating between compact
+        // <--> expanded; they don't look good otherwise.
+        if (mPreviousFuseboxState == FuseboxState.DISABLED || state == FuseboxState.DISABLED) {
+            mPreviousFuseboxState = state;
+            return;
+        }
+
+        mPreviousFuseboxState = state;
         ChangeBounds changeBounds = new ChangeBounds();
         changeBounds
                 .setDuration(COMPACT_MODE_ANIMATION_DURATION_MS)

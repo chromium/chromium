@@ -63,6 +63,7 @@ class OmniboxSuggestionsDropdownEmbedderImpl
     // Keeping it as a member lets us avoid allocating a temp array every time.
     private final int[] mPositionArray = new int[2];
     private int mVerticalOffsetInWindow;
+    private int mHorizontalOffsetInWindow;
     private int mWindowWidthDp;
     private int mWindowHeightDp;
     private int mTopPaddingForEdgeToEdge;
@@ -192,7 +193,9 @@ class OmniboxSuggestionsDropdownEmbedderImpl
     // OnGlobalLayoutListener
     @Override
     public void onGlobalLayout() {
-        if (offsetInWindowChanged(mAnchorView) || insetsHaveChanged(mAnchorView)) {
+        if (verticalOffsetInWindowChanged(mAnchorView)
+                || insetsHaveChanged(mAnchorView)
+                || horizontalOffsetInWindowChanged(mAlignmentView)) {
             recalculateOmniboxAlignment();
         }
     }
@@ -397,13 +400,24 @@ class OmniboxSuggestionsDropdownEmbedderImpl
     }
 
     /**
-     * Returns whether the given view's position in the window has changed since the last call to
-     * offsetInWindowChanged().
+     * Returns whether the given view's vertical position in the window has changed since the last
+     * call to offsetInWindowChanged().
      */
-    private boolean offsetInWindowChanged(View view) {
+    private boolean verticalOffsetInWindowChanged(View view) {
         view.getLocationInWindow(mPositionArray);
         boolean result = mVerticalOffsetInWindow != mPositionArray[1];
         mVerticalOffsetInWindow = mPositionArray[1];
+        return result;
+    }
+
+    /**
+     * Returns whether the given view's position in the window has changed since the last call to
+     * offsetInWindowChanged().
+     */
+    private boolean horizontalOffsetInWindowChanged(View view) {
+        view.getLocationInWindow(mPositionArray);
+        boolean result = mHorizontalOffsetInWindow != mPositionArray[0];
+        mHorizontalOffsetInWindow = mPositionArray[0];
         return result;
     }
 
