@@ -8,6 +8,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/media/webrtc/media_stream_device_permission_context.h"
@@ -20,6 +21,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/base/web_feature_histogram_tester.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/permissions/permission_manager.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/test/mock_permission_request.h"
@@ -755,4 +757,26 @@ IN_PROC_BROWSER_TEST_F(MiscellaneousElementBrowserTest, CountMetrics) {
   // incremented.
   histogram_tester.ExpectCounts(
       {{blink::mojom::WebFeature::kHTMLPermissionElement, 0}});
+}
+
+IN_PROC_BROWSER_TEST_F(MiscellaneousElementBrowserTest, InvalidStyleMetrics) {
+  base::HistogramTester histogram_tester;
+  NavigateToURL("/permissions/permission_element_invalid_style.html");
+
+  content::FetchHistogramsFromChildProcesses();
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+
+  // Verify the histogram for the invalid style reasons.
+  // 5: kInvalidDisplayProperty (e.g. display: inline)
+  EXPECT_GE(histogram_tester.GetBucketCount(
+                "Blink.CapabilityElement.Geolocation.InvalidStyle.Reason", 5),
+            1);
+  // 3: kTooSmallFontSize (e.g. font-size: 0px)
+  EXPECT_GE(histogram_tester.GetBucketCount(
+                "Blink.CapabilityElement.Install.InvalidStyle.Reason", 3),
+            1);
+  // 1: kNonOpaqueColorOrBackgroundColor (e.g. color: rgba(0, 0, 0, 0.5))
+  EXPECT_GE(histogram_tester.GetBucketCount(
+                "Blink.CapabilityElement.UserMedia.InvalidStyle.Reason", 1),
+            1);
 }

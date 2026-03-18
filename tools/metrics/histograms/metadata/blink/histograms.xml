@@ -701,13 +701,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.CapabilityElement.{CapabilityType}.InvalidStyleReason"
+<histogram name="Blink.CapabilityElement.{CapabilityType}.InvalidStyle.Reason"
     enum="PermissionElementInvalidStyleReason" expires_after="2026-08-11">
   <owner>ravjit@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
     Records the reason why the {CapabilityType} element's style is invalid. This
-    metric is emitted when the element's style is caculated/recaculated.
+    metric is emitted when the element's style is calculated/recalculated. Note:
+    This metric was previously recorded as
+    Blink.CapabilityElement.{CapabilityType}.InvalidStyleReason in M147
   </summary>
 </histogram>
 

@@ -75,7 +75,7 @@ void RecordPermissionElementInvalidStyleReason(const QualifiedName& tag_name,
   base::UmaHistogramEnumeration(
       base::StringPrintf(kCapabilityElementBaseHistogramPattern,
                          GetCapabilityNameForHistogram(tag_name)) +
-          ".InvalidStyleReason",
+          ".InvalidStyle.Reason",
       reason);
 }
 
