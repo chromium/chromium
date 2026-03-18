@@ -477,8 +477,12 @@ found in the LICENSE file.
 
     <!-- Document PiP dimensions -->
     <dimen name="document_picture_in_picture_header_component_size">48dp</dimen>
-    <dimen name="document_picture_in_picture_url_bar_padding">6dp</dimen>
+    <dimen name="document_picture_in_picture_url_bar_margin">6dp</dimen>
     <dimen name="document_picture_in_picture_header_min_height">48dp</dimen>
+    <!-- The minimum width of the unoccluded rect of the header to fit the
+         header content. Calculated as: 48dp (page info button) + 6dp (margin)
+         + 48dp (url bar) + 6dp (margin) + 48dp (back to tab button) = 156dp -->
+    <dimen name="document_picture_in_picture_header_min_unoccluded_width">156dp</dimen>
 
     <!-- Chrome Finds dimensions -->
     <dimen name="chrome_finds_opt_in_bottom_sheet_horizontal_margin">24dp</dimen>

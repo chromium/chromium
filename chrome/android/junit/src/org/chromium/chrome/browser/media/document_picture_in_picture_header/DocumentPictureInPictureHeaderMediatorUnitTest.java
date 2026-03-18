@@ -49,6 +49,7 @@ import org.chromium.components.security_state.SecurityStateModel;
 import org.chromium.components.security_state.SecurityStateModelJni;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
+import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -65,6 +66,7 @@ public class DocumentPictureInPictureHeaderMediatorUnitTest {
     @Mock private ThemeColorProvider mThemeColorProvider;
     @Mock private DocumentPictureInPictureHeaderDelegate mDelegate;
     @Mock private SecurityStateModel.Natives mSecurityStateModelNatives;
+    @Mock private DisplayAndroid mDisplayAndroid;
 
     private WebContents mOpenerWebContents;
     private WebContents mWebContents;
@@ -241,6 +243,69 @@ public class DocumentPictureInPictureHeaderMediatorUnitTest {
         mMediator.onAppHeaderStateChanged(mAppHeaderState);
 
         assertFalse(mModel.get(DocumentPictureInPictureHeaderProperties.IS_SHOWN));
+    }
+
+    @Test
+    @SmallTest
+    public void testStateChanged_WindowResizedWhenPinnedAndTooSmall() {
+        createMediator();
+        when(mAppHeaderState.isInDesktopWindow()).thenReturn(true);
+        when(mDelegate.isWindowPinned()).thenReturn(true);
+        when(mDelegate.getDisplayAndroid()).thenReturn(mDisplayAndroid);
+        when(mDisplayAndroid.getDipScale()).thenReturn(2.0f);
+
+        int minWidthPx =
+                mContext.getResources()
+                        .getDimensionPixelSize(
+                                R.dimen.document_picture_in_picture_header_min_unoccluded_width);
+
+        int unoccludedWidthPx = minWidthPx - 20;
+        when(mAppHeaderState.getUnoccludedRectWidth()).thenReturn(unoccludedWidthPx);
+
+        mMediator.onAppHeaderStateChanged(mAppHeaderState);
+
+        int expectedDiffDp = Math.round(20 / 2.0f);
+        verify(mDelegate).resizeWindow(expectedDiffDp, 0);
+    }
+
+    @Test
+    @SmallTest
+    public void testStateChanged_WindowNotResizedWhenPinnedAndLargeEnough() {
+        createMediator();
+        when(mAppHeaderState.isInDesktopWindow()).thenReturn(true);
+        when(mDelegate.isWindowPinned()).thenReturn(true);
+
+        int minWidthPx =
+                mContext.getResources()
+                        .getDimensionPixelSize(
+                                R.dimen.document_picture_in_picture_header_min_unoccluded_width);
+
+        int unoccludedWidthPx = minWidthPx + 20;
+        when(mAppHeaderState.getUnoccludedRectWidth()).thenReturn(unoccludedWidthPx);
+
+        mMediator.onAppHeaderStateChanged(mAppHeaderState);
+
+        verify(mDelegate, never()).resizeWindow(anyInt(), anyInt());
+    }
+
+    @Test
+    @SmallTest
+    public void testStateChanged_WindowNotResizedWhenNotPinned() {
+        createMediator();
+        when(mAppHeaderState.isInDesktopWindow()).thenReturn(true);
+        when(mDelegate.isWindowPinned()).thenReturn(false);
+
+        int minWidthPx =
+                mContext.getResources()
+                        .getDimensionPixelSize(
+                                R.dimen.document_picture_in_picture_header_min_unoccluded_width);
+
+        int unoccludedWidthPx = minWidthPx - 20;
+        when(mAppHeaderState.getUnoccludedRectWidth()).thenReturn(unoccludedWidthPx);
+
+        mMediator.onAppHeaderStateChanged(mAppHeaderState);
+
+        verify(mDelegate, never()).resizeWindow(anyInt(), anyInt());
     }
 
     @Test

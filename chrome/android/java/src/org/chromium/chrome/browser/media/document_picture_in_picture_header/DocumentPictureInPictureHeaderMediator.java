@@ -29,6 +29,8 @@ import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.components.security_state.SecurityStateModel;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
+import org.chromium.ui.display.DisplayAndroid;
+import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
@@ -58,6 +60,7 @@ public class DocumentPictureInPictureHeaderMediator
     private final List<Rect> mNonDraggableAreas = new ArrayList<>();
     private final int mMinHeaderHeight;
     private final int mComponentSize;
+    private final int mMinUnoccludedWidthPx;
     private final WebContents mOpenerWebContents;
     private final WebContents mWebContents;
     private final WebContentsObserver mOpenerWebContentsObserver;
@@ -86,6 +89,10 @@ public class DocumentPictureInPictureHeaderMediator
                 mContext.getResources()
                         .getDimensionPixelSize(
                                 R.dimen.document_picture_in_picture_header_component_size);
+        mMinUnoccludedWidthPx =
+                mContext.getResources()
+                        .getDimensionPixelSize(
+                                R.dimen.document_picture_in_picture_header_min_unoccluded_width);
         mModel.set(DocumentPictureInPictureHeaderProperties.IS_BACK_TO_TAB_SHOWN, isBackToTabShown);
 
         mModel.set(
@@ -139,6 +146,19 @@ public class DocumentPictureInPictureHeaderMediator
         if (newState.equals(mCurrentHeaderState)) return;
 
         mCurrentHeaderState = newState;
+
+        // Window resize is done programmatically instead of setting minWidth in the manifest file
+        // because the different OEMs can have different window insets, making the available
+        // unoccluded width different.
+        if (mDelegate.isWindowPinned()) {
+            int unoccludedRectWidthPx = mCurrentHeaderState.getUnoccludedRectWidth();
+            if (unoccludedRectWidthPx < mMinUnoccludedWidthPx) {
+                DisplayAndroid display = mDelegate.getDisplayAndroid();
+                int widthDiffDp =
+                        DisplayUtil.pxToDp(display, mMinUnoccludedWidthPx - unoccludedRectWidthPx);
+                mDelegate.resizeWindow(widthDiffDp, 0);
+            }
+        }
 
         // TODO(crbug.com/475181474): The header should always be shown, we need to handle the case
         // where the caption bars are not available to draw into.

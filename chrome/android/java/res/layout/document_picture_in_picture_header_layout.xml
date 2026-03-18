@@ -36,9 +36,10 @@ by DocumentPictureInPictureHeaderViewBinder.
         android:layout_width="0dp"
         android:layout_height=
             "@dimen/document_picture_in_picture_header_component_size"
-        android:paddingStart=
-            "@dimen/document_picture_in_picture_url_bar_padding"
-        android:paddingEnd="@dimen/document_picture_in_picture_url_bar_padding"
+        android:layout_marginStart=
+            "@dimen/document_picture_in_picture_url_bar_margin"
+        android:layout_marginEnd=
+            "@dimen/document_picture_in_picture_url_bar_margin"
         android:layout_weight="1"
         android:enabled="false"
         style="@style/TextAppearance.TextSmall.Primary" />

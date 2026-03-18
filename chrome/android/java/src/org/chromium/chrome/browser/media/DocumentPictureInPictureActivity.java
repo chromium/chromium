@@ -25,7 +25,6 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.AconfigFlaggedApiDelegate;
-import org.chromium.base.CallbackUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -97,6 +96,7 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
     private boolean mIsRecreating;
     private boolean mIsFromActivityRecreation;
     private @MonotonicNonNull Configuration mConfig;
+    private boolean mIsPinned;
 
     private static @Nullable WebContents sWebContentsForTesting;
     private static @Nullable WebContents sParentWebContentsForTesting;
@@ -267,7 +267,7 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
         aconfigFlaggedApiDelegate
                 .requestPinnedWindowingLayer(appTask, getMainExecutor())
                 .then(
-                        CallbackUtils.emptyCallback(),
+                        (unused) -> mIsPinned = true,
                         (e) -> {
                             Log.e(
                                     TAG,
@@ -357,23 +357,33 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
      */
     @VisibleForTesting
     void resizeContents(int widthDp, int heightDp) {
+        FrameLayout contentLayout = findViewById(R.id.document_picture_in_picture_content);
+        DisplayAndroid display = getDisplayAndroid();
+        int curContentsWidth = DisplayUtil.pxToDp(display, contentLayout.getWidth());
+        int curContentsHeight = DisplayUtil.pxToDp(display, contentLayout.getHeight());
+
+        int widthDiff = widthDp - curContentsWidth;
+        int heightDiff = heightDp - curContentsHeight;
+
+        resizeWindow(widthDiff, heightDiff);
+    }
+
+    @Override
+    public DisplayAndroid getDisplayAndroid() {
+        return assumeNonNull(getWindowAndroid()).getDisplay();
+    }
+
+    @Override
+    public void resizeWindow(int widthDiffDp, int heightDiffDp) {
+        if (widthDiffDp == 0 && heightDiffDp == 0) {
+            return;
+        }
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
             // This method is not supported on API versions below 30.
             return;
         }
 
-        FrameLayout contentLayout = findViewById(R.id.document_picture_in_picture_content);
-        DisplayAndroid display = assumeNonNull(getWindowAndroid()).getDisplay();
-        int curContentsWidth = DisplayUtil.pxToDp(display, contentLayout.getWidth());
-        int curContentsHeight = DisplayUtil.pxToDp(display, contentLayout.getHeight());
-
-        if (curContentsWidth == widthDp && curContentsHeight == heightDp) {
-            return;
-        }
-
-        int widthDiff = widthDp - curContentsWidth;
-        int heightDiff = heightDp - curContentsHeight;
-
+        DisplayAndroid display = getDisplayAndroid();
         Rect currentWindowBounds =
                 DisplayUtil.convertLocalPxToGlobalDipCoordinates(
                         display,
@@ -382,8 +392,8 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
         MultiWindowUtils.moveActivityToBounds(
                 this,
                 new Rect(
-                        currentWindowBounds.left - widthDiff,
-                        currentWindowBounds.top - heightDiff,
+                        currentWindowBounds.left - widthDiffDp,
+                        currentWindowBounds.top - heightDiffDp,
                         currentWindowBounds.right,
                         currentWindowBounds.bottom));
     }
@@ -516,6 +526,11 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
                         /* packageName= */ null),
                 ChromePageInfoHighlight.noHighlight(),
                 Gravity.TOP);
+    }
+
+    @Override
+    public boolean isWindowPinned() {
+        return mIsPinned;
     }
 
     @Override
