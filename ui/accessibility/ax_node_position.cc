@@ -55,7 +55,7 @@ AXNodePosition::AXPositionInstance AXNodePosition::CreatePosition(
     return CreateNullPosition();
 
   if (IsTextPositionAnchor(node)) {
-    // TODO(accessibility) It is a mistake for the to caller try to create a
+    // TODO(accessibility) It is a mistake for the caller to try to create a
     // text position with BEFORE_TEXT as the text offset. Correct the callers
     // that are doing this.
     // DCHECK_NE(child_index_or_text_offset, BEFORE_TEXT)
