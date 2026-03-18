@@ -9,6 +9,8 @@ source_set("model") {
     "gemini_settings_action.h",
     "gemini_settings_action.mm",
     "gemini_settings_action_type.h",
+    "gemini_settings_constants.h",
+    "gemini_settings_constants.mm",
     "gemini_settings_context.h",
     "gemini_settings_metadata.h",
     "gemini_settings_metadata.mm",

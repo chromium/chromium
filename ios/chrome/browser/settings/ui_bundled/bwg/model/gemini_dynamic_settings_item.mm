@@ -6,6 +6,8 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/bwg/model/gemini_settings_action.h"
 #import "ios/chrome/browser/settings/ui_bundled/bwg/model/gemini_settings_action_type.h"
+#import "ios/chrome/browser/settings/ui_bundled/bwg/model/gemini_settings_constants.h"
+#import "ios/chrome/browser/settings/ui_bundled/bwg/model/gemini_settings_context.h"
 #import "ios/chrome/browser/settings/ui_bundled/bwg/model/gemini_settings_metadata.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
 
@@ -37,8 +39,24 @@
         break;
       }
     }
+
+    self.accessibilityIdentifier =
+        [self accessibilityIdentifierForContext:metadata.context];
   }
   return self;
+}
+
+- (NSString*)accessibilityIdentifierForContext:(GeminiSettingsContext)context {
+  switch (context) {
+    case GeminiSettingsContextGeminiAppsActivity:
+      return kGeminiSettingsGeminiAppsActivityIdentifier;
+    case GeminiSettingsContextPersonalization:
+      return kGeminiSettingsPersonalizationIdentifier;
+    case GeminiSettingsContextExtensions:
+      return kGeminiSettingsExtensionsIdentifier;
+    case GeminiSettingsContextUnknown:
+      return kGeminiSettingsUnknownIdentifier;
+  }
 }
 
 @end

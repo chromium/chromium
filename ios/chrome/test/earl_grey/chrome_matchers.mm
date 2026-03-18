@@ -885,6 +885,10 @@ id<GREYMatcher> SettingsAddressBarButton() {
   return [ChromeMatchersAppInterface settingsAddressBarButton];
 }
 
+id<GREYMatcher> SettingsGeminiInChromeButton() {
+  return [ChromeMatchersAppInterface settingsGeminiInChromeButton];
+}
+
 id<GREYMatcher> AutofillSuggestionViewMatcher() {
   return [ChromeMatchersAppInterface autofillSuggestionViewMatcher];
 }

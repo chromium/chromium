@@ -716,6 +716,10 @@ id<GREYMatcher> SettingsSearchEngineButton();
 // Returns a matcher for the address bar button in the main settings view.
 id<GREYMatcher> SettingsAddressBarButton();
 
+// Returns a matcher for the 'Gemini in Chrome' button in the main settings
+// view.
+id<GREYMatcher> SettingsGeminiInChromeButton();
+
 // Returns a matcher for an autofill suggestion view.
 id<GREYMatcher> AutofillSuggestionViewMatcher();
 

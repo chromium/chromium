@@ -10,6 +10,8 @@
 @class GeminiSettingsAction;
 @class GeminiSettingsMetadata;
 
+typedef NS_ENUM(NSInteger, GeminiSettingsContext);
+
 // An item representing a Gemini dynamic setting.
 @interface GeminiDynamicSettingsItem : TableViewDetailTextItem
 

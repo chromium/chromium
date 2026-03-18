@@ -1537,6 +1537,10 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
   return grey_accessibilityID(kSettingsAddressBarCellId);
 }
 
++ (id<GREYMatcher>)settingsGeminiInChromeButton {
+  return grey_accessibilityID(kSettingsBWGSettingsCellId);
+}
+
 + (id<GREYMatcher>)contentViewSmallerThanScrollView {
   GREYMatchesBlock matches = ^BOOL(UIView* view) {
     UIScrollView* scrollView = base::apple::ObjCCast<UIScrollView>(view);
