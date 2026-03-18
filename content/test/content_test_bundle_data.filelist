@@ -2504,6 +2504,10 @@ data/accessibility/event/aria-live-changed.html
 data/accessibility/event/aria-menuitem-focus-expected-android.txt
 data/accessibility/event/aria-menuitem-focus-expected-auralinux.txt
 data/accessibility/event/aria-menuitem-focus.html
+data/accessibility/event/aria-meter-value-change-expected-android.txt
+data/accessibility/event/aria-meter-value-change-expected-auralinux.txt
+data/accessibility/event/aria-meter-value-change-expected-mac.txt
+data/accessibility/event/aria-meter-value-change.html
 data/accessibility/event/aria-multiline-changed-expected-android.txt
 data/accessibility/event/aria-multiline-changed-expected-uia-win.txt
 data/accessibility/event/aria-multiline-changed.html

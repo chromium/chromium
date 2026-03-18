@@ -469,6 +469,15 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("aria-multiline-changed.html"));
 }
 
+// TODO(crbug.com/468203351): flakes due to COM interface leaks on Windows
+// platforms. Only run on Android, Linux, and Mac.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+                       AccessibilityEventsAriaMeterValueChange) {
+  RunEventTest(FILE_PATH_LITERAL("aria-meter-value-change.html"));
+}
+#endif
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
                        AccessibilityEventsAriaPosinsetChanged) {
   RunEventTest(FILE_PATH_LITERAL("aria-posinset-changed.html"));

@@ -480,6 +480,13 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
       DCHECK(android_node->GetData().IsRangeValueSupported());
       if (android_node->IsSlider()) {
         wcax->HandleSliderChanged(android_node->GetUniqueId());
+      } else if (base::FeatureList::IsEnabled(
+                     features::kAccessibilityMeterEventsOnAndroid) &&
+                 android_node->GetRole() == ax::mojom::Role::kMeter) {
+        // TalkBack expects Meter value to be changed via state description.
+        wcax->HandleWindowContentChange(
+            android_node->GetUniqueId(),
+            ANDROID_ACCESSIBILITY_EVENT_CONTENT_CHANGE_TYPE_STATE_DESCRIPTION);
       }
       break;
     case ui::AXEventGenerator::Event::SCROLL_HORIZONTAL_POSITION_CHANGED:

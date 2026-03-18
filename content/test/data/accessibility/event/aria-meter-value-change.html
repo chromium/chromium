@@ -1,0 +1,28 @@
+<!--
+@WIN-DENY:*
+@WIN-ALLOW:EVENT_OBJECT_VALUECHANGE*
+@UIA-WIN-DENY:*
+@UIA-WIN-ALLOW:RangeValue.ValueProperty*
+-->
+<!DOCTYPE html>
+<html>
+<body>
+<div role="meter"
+     id="meter"
+     aria-valuemin="0"
+     aria-valuemax="100"
+     aria-valuenow="20"
+     aria-valuetext="20%"
+     aria-label="Storage Space">
+  20%
+</div>
+<script>
+  function go() {
+    var meter = document.getElementById('meter');
+    meter.setAttribute('aria-valuenow', '50');
+    meter.setAttribute('aria-valuetext', '50%');
+    meter.innerText = '50%';
+  }
+</script>
+</body>
+</html>

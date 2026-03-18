@@ -484,6 +484,12 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
+    public void test_ariaMeterValueChange() {
+        performTest("aria-meter-value-change.html", "aria-meter-value-change-expected-android.txt");
+    }
+
+    @Test
+    @SmallTest
     public void test_ariaMultiselectableChanged() {
         performTest(
                 "aria-multiselectable-changed.html",
