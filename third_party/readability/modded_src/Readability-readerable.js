@@ -22,8 +22,14 @@
 var REGEXPS = {
   // NOTE: These two regular expressions are duplicated in
   // Readability.js. Please keep both copies in sync.
-  unlikelyCandidates:
-    /-ad-|ai2html|banner|breadcrumbs|combx|comment|community|cover-wrap|disqus|extra|footer|gdpr|header|legends|menu|related|remark|replies|rss|shoutbox|sidebar|skyscraper|social|sponsor|supplemental|ad-break|agegate|pagination|pager|popup|yom-remote/i,
+  unlikelyCandidates: new RegExp(
+    "-ad-|ai2html|banner|breadcrumbs|combx|comment|community|" +
+      "cover-wrap|disqus|extra|footer|gdpr|header|legends|menu|related|" +
+      "remark|replies|rss|shoutbox|sidebar|skyscraper|social|sponsor|" +
+      "shopping|shopper|retailer|supplemental|ad-break|agegate|" +
+      "pagination|pager|popup|yom-remote",
+    "i"
+  ),
   okMaybeItsACandidate: new RegExp(
     "and|article|body|column|content|main|mathjax|" +
       "shadow|recipe|ingredients|instructions|" +
