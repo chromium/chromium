@@ -12,20 +12,12 @@
 #import "components/password_manager/core/browser/ui/affiliated_group.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 
-@protocol ReauthenticationProtocol;
-@protocol SuccessfulReauthTimeAccessor;
-
 namespace password_manager {
 
 // Returns the title and the message for the password alert from an array of
 // `origins`. `first`: title and `second`: message.
 std::pair<NSString*, NSString*> GetPasswordAlertTitleAndMessageForOrigins(
     NSArray<NSString*>* origins);
-
-// Creates the module containing the reauthentication mechanism for interactions
-// with passwords.
-id<ReauthenticationProtocol> BuildReauthenticationModule(
-    id<SuccessfulReauthTimeAccessor> successfulReauthTimeAccessor = nullptr);
 
 // Returns whether any of the affiliated domains of the given credential
 // contains the given search term. Expects search term to be in lowercase.

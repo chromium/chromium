@@ -22,8 +22,6 @@
 #import "components/prefs/pref_service.h"
 #import "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #import "components/webauthn/core/browser/passkey_model.h"
-#import "ios/chrome/browser/device_reauth/model/reauthentication_service.h"
-#import "ios/chrome/browser/device_reauth/model/reauthentication_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_bulk_leak_check_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
@@ -33,15 +31,11 @@
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/webauthn/model/ios_passkey_model_factory.h"
-#import "ios/chrome/common/ui/reauthentication/mock_reauthentication_module.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
-#import "ios/chrome/test/app/password_test_util.h"
 #import "ios/public/provider/chrome/browser/passcode_settings/passcode_settings_api.h"
 #import "url/gurl.h"
 #import "url/origin.h"
 
-using chrome_test_util::
-    SetUpAndReturnMockReauthenticationModuleForPasswordManager;
 using password_manager::FakeBulkLeakCheckService;
 using password_manager::PasswordForm;
 
@@ -242,59 +236,7 @@ bool ClearPasswordStores() {
 
 }  // namespace
 
-@implementation PasswordSettingsAppInterface {
-  std::unique_ptr<ScopedPasswordSettingsReauthModuleOverride>
-      _scopedReauthOverride;
-}
-
-+ (instancetype)sharedInstance {
-  static PasswordSettingsAppInterface* sharedInstance = nil;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    sharedInstance = [[PasswordSettingsAppInterface alloc] init];
-  });
-  return sharedInstance;
-}
-
-// Helper for accessing the scoped override's module.
-+ (MockReauthenticationModule*)mockModule {
-  return base::apple::ObjCCastStrict<MockReauthenticationModule>(
-      ReauthenticationServiceFactory::GetForProfile(
-          chrome_test_util::GetOriginalProfile())
-          ->GetReauthModule());
-}
-
-// TODO(crbug.com/40144947): Clean up all reauth mocking methods after
-// transition to reauth service.
-+ (void)setUpMockReauthenticationModule {
-  PasswordSettingsAppInterface* shared =
-      [PasswordSettingsAppInterface sharedInstance];
-  shared->_scopedReauthOverride =
-      SetUpAndReturnMockReauthenticationModuleForPasswordManager();
-}
-
-+ (void)removeMockReauthenticationModule {
-  PasswordSettingsAppInterface* shared =
-      [PasswordSettingsAppInterface sharedInstance];
-  shared->_scopedReauthOverride = nullptr;
-}
-
-+ (void)mockReauthenticationModuleExpectedResult:
-    (ReauthenticationResult)expectedResult {
-  [self mockModule].expectedResult = expectedResult;
-}
-
-+ (void)mockReauthenticationModuleCanAttempt:(BOOL)canAttempt {
-  [self mockModule].canAttempt = canAttempt;
-}
-
-+ (void)mockReauthenticationModuleShouldSkipReAuth:(BOOL)returnSync {
-  [self mockModule].shouldSkipReAuth = returnSync;
-}
-
-+ (void)mockReauthenticationModuleReturnMockedResult {
-  [[self mockModule] returnMockedReauthenticationResult];
-}
+@implementation PasswordSettingsAppInterface
 
 + (void)dismissSnackBar {
   id<SnackbarCommands> handler = HandlerForProtocol(

@@ -7,9 +7,6 @@
 #import "base/check.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/settings/ui_bundled/password/password_settings/scoped_password_settings_reauth_module_override.h"
-#import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
-#import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -90,22 +87,6 @@ std::pair<NSString*, NSString*> GetPasswordAlertTitleAndMessageForOrigins(
   pair.first = title;
   pair.second = message;
   return pair;
-}
-
-id<ReauthenticationProtocol> BuildReauthenticationModule(
-    id<SuccessfulReauthTimeAccessor> successfulReauthTimeAccessor) {
-  // Return override for tests if one is set or use the real implementation.
-  id<ReauthenticationProtocol> overrideModule =
-      ScopedPasswordSettingsReauthModuleOverride::Get();
-  if (overrideModule) {
-    return overrideModule;
-  }
-
-  return successfulReauthTimeAccessor
-             ? [[ReauthenticationModule alloc]
-                   initWithSuccessfulReauthTimeAccessor:
-                       successfulReauthTimeAccessor]
-             : [[ReauthenticationModule alloc] init];
 }
 
 bool MatchCredentialForTerm(const CredentialUIEntry& credential,

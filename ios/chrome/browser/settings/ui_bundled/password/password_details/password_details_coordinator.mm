@@ -68,12 +68,6 @@ const CGFloat kShareSpinnerMinTimeInSeconds = 0.5;
 // Main mediator for this coordinator.
 @property(nonatomic, strong) PasswordDetailsMediator* mediator;
 
-// Module containing the reauthentication mechanism for viewing and copying
-// passwords.
-// Has to be strong for credential bottom sheet feature or else it becomes nil.
-@property(nonatomic, strong) id<ReauthenticationProtocol>
-    reauthenticationModule;
-
 // Modal alert for interactions with password.
 @property(nonatomic, strong) AlertCoordinator* alertCoordinator;
 

@@ -20,7 +20,6 @@ source_set("coordinator") {
     "//components/password_manager/core/common",
     "//components/strings",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/settings/ui_bundled/password/password_settings:common",
     "//ios/chrome/common/ui/reauthentication",
     "//ui/base",
   ]

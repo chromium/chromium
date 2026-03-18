@@ -8,33 +8,11 @@
 #import <UIKit/UIKit.h>
 
 #import "components/password_manager/core/browser/leak_detection/bulk_leak_check_service_interface.h"
-#import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
 
 // EarlGreyScopedBlockSwizzlerAppInterface contains the app-side
 // implementation for helpers. These helpers are compiled into
 // the app binary and can be called from either app or test code.
 @interface PasswordSettingsAppInterface : NSObject
-
-// Sets a re-authentication mock (i.e. what asks user for fingerprint to
-// view password) and its options for next test. Applies to all password manager
-// surfaces (i/c/b/u/s/password/*).
-+ (void)setUpMockReauthenticationModule;
-+ (void)removeMockReauthenticationModule;
-
-+ (void)mockReauthenticationModuleExpectedResult:
-    (ReauthenticationResult)expectedResult;
-+ (void)mockReauthenticationModuleCanAttempt:(BOOL)canAttempt;
-
-// Whether the mock module should return the mocked result when the
-// reauthentication request is made or wait for
-// `mockReauthenticationModuleReturnMockedResult` to be invoked. Defaults to
-// sync. Use it for testing state before the result is returned (e.g. View X
-// shouldn't be visible until successful reauth).
-+ (void)mockReauthenticationModuleShouldSkipReAuth:(BOOL)returnSync;
-
-// Makes the mock reauthentication module return its mocked result by invoking
-// the handler of the last reauthentication request.
-+ (void)mockReauthenticationModuleReturnMockedResult;
 
 // Dismisses snack bar.  Used before next test.
 + (void)dismissSnackBar;
