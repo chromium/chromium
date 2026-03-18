@@ -77,7 +77,7 @@
           let crashHandlers = {};
           let notCrashHandlers = {};
           for (let l of lines) {
-            if (l.location.indexOf("updater.cc") >= 0 && l.text.indexOf("command line:") > 0) {
+            if (l.location.indexOf("updater.cc") >= 0 && l.text.indexOf("Version: ") == 0 && l.text.indexOf("command line:") > 0) {
               if (l.text.indexOf("--crash-handler") >= 0) {
                 crashHandlers[l.fpid] = true;
               } else {
