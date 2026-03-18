@@ -17876,6 +17876,21 @@
             ]
         }
     ],
+    "Prerender2WarmUpCompositorForWebView": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "Prerender2WarmUpCompositorForWebView"
+                    ]
+                }
+            ]
+        }
+    ],
     "PreserveDiscardableImageMapQuality": [
         {
             "platforms": [

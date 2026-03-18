@@ -1361,6 +1361,9 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 "ConsolidateMetricsServiceLocales",
                 "Consolidate the source of locale used by MetricsService."),
+        Flag.baseFeature(
+                AwFeatures.PRERENDER2_WARM_UP_COMPOSITOR_FOR_WEBVIEW,
+                "Requests the compositor warm-up for the WebView prerender triggers."),
 
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
