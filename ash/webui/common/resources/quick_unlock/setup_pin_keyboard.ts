@@ -413,9 +413,6 @@ export class SetupPinKeyboardElement extends SetupPinKeyboardElementBase {
     return !!problemMessageId && problemClass === ProblemType.ERROR;
   }
 
-  /**
-   * Format problem message
-   */
   private formatProblemMessage_(
       locale: string, messageId: string|undefined,
       messageParameters: string): string {
