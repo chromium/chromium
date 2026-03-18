@@ -8881,6 +8881,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_ACTION_CHIP_DISABLE_TEXT" desc="Text for menu option to disable action chip feature.">
         Disable suggestions
       </message>
+      <message name="IDS_NTP_ACTION_CHIPS_UNDO_DISABLEMENT_TOAST_MESSAGE" desc="Text for the toast that appears when the user disables action chips from the NTP. Clicking on it re-enables the action chips.">
+        You won't see suggestions on this page again
+      </message>
       <message name="IDS_COMPOSE_REMOVE_TOOL_CHIP_A11Y_LABEL" desc="A11y text for removing a tool in the composebox.">
         Remove <ph name="TOOL_NAME">$1<ex>Deep Search</ex></ph>
       </message>
