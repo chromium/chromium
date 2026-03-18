@@ -60,6 +60,7 @@ ProjectsPanelThreadItemView::ProjectsPanelThreadItemView(
       *chat_type_icon_, kColorProjectsPanelButtonIcon, kChatTypeIconSize);
   auto* chat_type_image_ =
       AddChildView(std::make_unique<views::ImageView>(chat_type_image_model_));
+  chat_type_image_->SetCanProcessEventsWithinSubtree(false);
   chat_type_image_->SetProperty(views::kMarginsKey, kChatTypeIconMargins);
 
   title_ = AddChildView(std::make_unique<views::Label>());

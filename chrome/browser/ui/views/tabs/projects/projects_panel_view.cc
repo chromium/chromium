@@ -135,6 +135,7 @@ class ProjectsPanelNewTabGroupButton : public views::Button {
         .SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
 
     auto* icon = AddChildView(std::make_unique<views::ImageView>());
+    icon->SetCanProcessEventsWithinSubtree(false);
     icon->SetProperty(views::kMarginsKey, kCreateNewTabGroupIconMargins);
     icon->SetImage(ui::ImageModel::FromVectorIcon(kCreateNewTabGroupIcon,
                                                   kColorProjectsPanelButtonIcon,
