@@ -689,35 +689,6 @@ VideoPixelFormatAsSkYUVAInfoValues(VideoPixelFormat format) {
   }
 }
 
-void CopyVideoFrameDirectlyToGLTexture(
-    viz::RasterContextProvider* raster_context_provider,
-    gpu::gles2::GLES2Interface* destination_gl,
-    scoped_refptr<VideoFrame> video_frame,
-    unsigned int target,
-    unsigned int texture,
-    unsigned int internal_format,
-    unsigned int format,
-    unsigned int type,
-    int level,
-    SkAlphaType dst_alpha_type,
-    GrSurfaceOrigin dst_origin) {
-  DCHECK(video_frame);
-  CHECK(video_frame->HasSharedImage());
-  CHECK(destination_gl);
-  CHECK(raster_context_provider);
-
-  std::unique_ptr<gpu::RasterScopedAccess> destination_access =
-      destination_gl->CopySharedImageDirectlyToGLTexture(
-          video_frame->visible_rect(), video_frame->shared_image().get(),
-          video_frame->acquire_sync_token(),
-          media::IsOpaque(video_frame->format()), target, texture,
-          internal_format, format, type, level, dst_alpha_type, dst_origin);
-
-  SynchronizeVideoFrameRead(std::move(video_frame), destination_gl,
-                            raster_context_provider->ContextSupport(),
-                            std::move(destination_access));
-}
-
 SkImageInfo GetVideoImageGeneratorSkImageInfo(
     const scoped_refptr<VideoFrame>& frame) {
   const auto frame_color_space = frame->CompatRGBColorSpace();
@@ -1454,9 +1425,16 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
   if (destination_gl->CanCopySharedImageDirectlyToGLTexture(
           media::IsOpaque(video_frame->format()), shared_image.get(), target,
           internal_format, type, level, dst_alpha_type)) {
-    CopyVideoFrameDirectlyToGLTexture(
-        raster_context_provider, destination_gl, video_frame, target, texture,
-        internal_format, format, type, level, dst_alpha_type, dst_origin);
+    std::unique_ptr<gpu::RasterScopedAccess> destination_access =
+        destination_gl->CopySharedImageDirectlyToGLTexture(
+            video_frame->visible_rect(), shared_image.get(),
+            video_frame->acquire_sync_token(),
+            media::IsOpaque(video_frame->format()), target, texture,
+            internal_format, format, type, level, dst_alpha_type, dst_origin);
+
+    SynchronizeVideoFrameRead(std::move(video_frame), destination_gl,
+                              raster_context_provider->ContextSupport(),
+                              std::move(destination_access));
     return true;
   } else {
     // Take the two-copy path:
