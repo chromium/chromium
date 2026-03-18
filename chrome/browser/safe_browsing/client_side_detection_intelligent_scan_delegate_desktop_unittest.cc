@@ -307,6 +307,10 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
 
   histogram_tester_.ExpectUniqueSample(
       "SBClientPhishing.OnDeviceModelDownloadSuccess", false, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.OnDeviceModelEligibilityReasonAtDownloadFailure",
+      optimization_guide::OnDeviceModelEligibilityReason::kTooManyRecentCrashes,
+      1);
 
   EXPECT_EQ(delegate_->GetIntelligentScanModelType(
                 /*log_failed_eligibility_reason=*/true),

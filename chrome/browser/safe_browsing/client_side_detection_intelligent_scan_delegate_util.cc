@@ -31,9 +31,16 @@ void LogOnDeviceModelFetchTime(base::TimeTicks on_device_fetch_time) {
                               base::TimeTicks::Now() - on_device_fetch_time);
 }
 
-void LogOnDeviceModelDownloadSuccess(bool success) {
+void LogOnDeviceModelDownloadSuccess(
+    bool success,
+    optimization_guide::OnDeviceModelEligibilityReason reason) {
   base::UmaHistogramBoolean("SBClientPhishing.OnDeviceModelDownloadSuccess",
                             success);
+  if (!success) {
+    base::UmaHistogramEnumeration(
+        "SBClientPhishing.OnDeviceModelEligibilityReasonAtDownloadFailure",
+        reason);
+  }
 }
 
 void LogOnDeviceModelSessionAliveOnDelegateShutdown(bool session_alive) {

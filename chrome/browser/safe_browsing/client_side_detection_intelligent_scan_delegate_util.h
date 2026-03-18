@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_CLIENT_SIDE_DETECTION_INTELLIGENT_SCAN_DELEGATE_UTIL_H_
 #define CHROME_BROWSER_SAFE_BROWSING_CLIENT_SIDE_DETECTION_INTELLIGENT_SCAN_DELEGATE_UTIL_H_
 
+#include "components/optimization_guide/core/model_execution/on_device_capability.h"
 namespace base {
 class TimeTicks;
 }
@@ -24,7 +25,10 @@ void LogOnDeviceModelSessionCreationTime(
 void LogOnDeviceModelFetchTime(base::TimeTicks on_device_fetch_time);
 
 // Logs whether the on-device model was successfully downloaded.
-void LogOnDeviceModelDownloadSuccess(bool success);
+void LogOnDeviceModelDownloadSuccess(
+    bool success,
+    optimization_guide::OnDeviceModelEligibilityReason reason =
+        optimization_guide::OnDeviceModelEligibilityReason::kUnknown);
 
 // Logs whether the on-device model session was alive on delegate shutdown.
 void LogOnDeviceModelSessionAliveOnDelegateShutdown(bool session_alive);

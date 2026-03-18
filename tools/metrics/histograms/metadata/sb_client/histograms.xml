@@ -1082,6 +1082,20 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram
+    name="SBClientPhishing.OnDeviceModelEligibilityReasonAtDownloadFailure"
+    enum="OptimizationGuideOnDeviceModelEligibilityReason"
+    expires_after="2027-03-18">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the OptimizationGuideOnDeviceModelEligibilityReason when the model
+    is not available at the time of download failure. This happens in the
+    intelligent scan delegate class when the model eligibility reason does not
+    match what we're looking for, thus the download fails.
+  </summary>
+</histogram>
+
+<histogram
     name="SBClientPhishing.OnDeviceModelEligibilityReasonAtInquiryFailure"
     enum="OptimizationGuideOnDeviceModelEligibilityReason"
     expires_after="2026-07-26">
