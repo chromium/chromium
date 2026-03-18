@@ -164,12 +164,10 @@ class ShadowOverlayView::ShadowBox : public views::View {
     if (visible) {
       const int rounded_corner_radius =
           GetLayoutProvider()->GetCornerRadiusMetric(views::Emphasis::kHigh);
-      const int elevation =
-          GetLayoutProvider()->GetShadowElevationMetric(views::Emphasis::kHigh);
 
-      view_shadow_ = std::make_unique<views::ViewShadow>(this, elevation);
+      view_shadow_ =
+          std::make_unique<views::ViewShadow>(this, kShadowElevation);
       view_shadow_->SetRoundedCornerRadius(rounded_corner_radius);
-      view_shadow_->shadow()->SetElevation(kShadowElevation);
       UpdateShadowColors();
     } else {
       view_shadow_.reset();
