@@ -5367,6 +5367,8 @@ data/accessibility/html/pre-expected-mac.txt
 data/accessibility/html/pre-expected-uia-win.txt
 data/accessibility/html/pre-expected-win.txt
 data/accessibility/html/pre.html
+data/accessibility/html/progress-bar-expected-android-external.txt
+data/accessibility/html/progress-bar.html
 data/accessibility/html/progress-expected-android-assist-data.txt
 data/accessibility/html/progress-expected-android-external.txt
 data/accessibility/html/progress-expected-android.txt

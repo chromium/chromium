@@ -976,6 +976,12 @@ void BrowserAccessibilityAndroid::AppendSubtreeTextRecursive(
 
   AndroidNameTo name_to = ComputeAndroidNameTo();
   if (name_to == AndroidNameTo::kText && !is_non_atomic_text_field) {
+    // Skip this mapping for a range control with value (text). The value is not
+    // visually rendered, and should be mapped to state description instead.
+    if (GetData().IsRangeValueSupported() &&
+        HasStringAttribute(ax::mojom::StringAttribute::kValue)) {
+      return;
+    }
     text = GetNameAsString16();
   }
 
@@ -1156,6 +1162,8 @@ std::u16string BrowserAccessibilityAndroid::GetAndroidStateDescription() const {
     std::u16string value =
         GetString16Attribute(ax::mojom::StringAttribute::kValue);
     if (!value.empty()) {
+      // TODO(crbug.com/493645196): Restore indeterminate tag for empty progress
+      // indicator.
       state_descs.push_back(value);
     }
   }

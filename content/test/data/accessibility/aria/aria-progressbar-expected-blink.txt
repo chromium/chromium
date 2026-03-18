@@ -7,3 +7,4 @@ rootWebArea
 ++++++progressIndicator value='5 chickens' minValueForRange=0.00 maxValueForRange=10.00
 ++++++progressIndicator minValueForRange=0.00 maxValueForRange=100.00
 ++++++progressIndicator name='Test label' minValueForRange=0.00 maxValueForRange=100.00
+++++++progressIndicator value='Test value' minValueForRange=0.00 maxValueForRange=100.00

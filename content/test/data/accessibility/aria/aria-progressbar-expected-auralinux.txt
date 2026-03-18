@@ -5,3 +5,4 @@
 ++[progress bar] indeterminate valuetext:5 chickens current=0.000000 minimum=0.000000 maximum=10.000000
 ++[progress bar] indeterminate current=0.000000 minimum=0.000000 maximum=100.000000
 ++[progress bar] name='Test label' indeterminate current=0.000000 minimum=0.000000 maximum=100.000000
+++[progress bar] indeterminate valuetext:Test value current=0.000000 minimum=0.000000 maximum=100.000000
