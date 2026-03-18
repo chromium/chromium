@@ -801,6 +801,95 @@ TEST_F(ContextualSearchboxHandlerTest, OpenAutocompleteMatch_ZeroSuggestClick) {
   }
 }
 
+TEST_F(ContextualSearchboxHandlerTest,
+       OpenAutocompleteMatch_TypedSuggestNavigation) {
+  base::UserActionTester user_action_tester;
+
+  // Set up a typed input (non-zero suggest).
+  AutocompleteInput input(u"test",
+                          metrics::OmniboxEventProto::NTP_OMNIBOX_COMPOSEBOX,
+                          ChromeAutocompleteSchemeClassifier(profile()));
+
+  // Set the page classification on the client's location bar model.
+  static_cast<TestOmniboxClient*>(handler().omnibox_controller()->client())
+      ->location_bar_model()
+      ->set_page_classification(
+          metrics::OmniboxEventProto::NTP_OMNIBOX_COMPOSEBOX);
+
+  // 1. Test verbatim typed click (line == 0).
+  {
+    auto fake_controller =
+        std::make_unique<FakeAutocompleteController>(nullptr);
+    fake_controller->input_ = input;
+
+    AutocompleteMatch match;
+    match.provider = &fake_controller->GetFakeProvider();
+    match.destination_url = GURL("https://www.google.com");
+    match.type = AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED;
+
+    fake_controller->published_result_.AppendMatches({match});
+
+    handler().omnibox_controller()->SetAutocompleteControllerForTesting(
+        std::move(fake_controller));
+
+    EXPECT_CALL(*GetMetricsRecorderPtr(), RecordTypedSuggestNavigation(true))
+        .WillOnce(testing::Invoke(GetMetricsRecorderPtr(),
+                                  &MockContextualSearchMetricsRecorder::
+                                      RecordTypedSuggestNavigationBase));
+
+    handler().OpenAutocompleteMatch(0, GURL("https://www.google.com"),
+                                    /*are_matches_showing=*/true, 0, false,
+                                    false, false, false);
+
+    histogram_tester().ExpectBucketCount(
+        "ContextualSearch.TypedSuggestNavigation.IsVerbatim.NewTabPage", true,
+        1);
+    EXPECT_EQ(
+        user_action_tester.GetActionCount(
+            "ContextualSearch.TypedSuggestNavigation.Verbatim.NewTabPage"),
+        1);
+  }
+
+  // 2. Test non-verbatim typed click (line != 0).
+  {
+    auto fake_controller =
+        std::make_unique<FakeAutocompleteController>(nullptr);
+    fake_controller->input_ = input;
+
+    AutocompleteMatch match0;
+    match0.provider = &fake_controller->GetFakeProvider();
+    match0.destination_url = GURL("https://www.google.com");
+    match0.type = AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED;
+
+    AutocompleteMatch match1;
+    match1.provider = &fake_controller->GetFakeProvider();
+    match1.destination_url = GURL("https://www.google.com/search?q=suggestion");
+    match1.type = AutocompleteMatchType::SEARCH_SUGGEST;
+
+    fake_controller->published_result_.AppendMatches({match0, match1});
+
+    handler().omnibox_controller()->SetAutocompleteControllerForTesting(
+        std::move(fake_controller));
+
+    EXPECT_CALL(*GetMetricsRecorderPtr(), RecordTypedSuggestNavigation(false))
+        .WillOnce(testing::Invoke(GetMetricsRecorderPtr(),
+                                  &MockContextualSearchMetricsRecorder::
+                                      RecordTypedSuggestNavigationBase));
+
+    handler().OpenAutocompleteMatch(
+        1, GURL("https://www.google.com/search?q=suggestion"),
+        /*are_matches_showing=*/true, 0, false, false, false, false);
+
+    histogram_tester().ExpectBucketCount(
+        "ContextualSearch.TypedSuggestNavigation.IsVerbatim.NewTabPage", false,
+        1);
+    EXPECT_EQ(
+        user_action_tester.GetActionCount(
+            "ContextualSearch.TypedSuggestNavigation.SearchSuggest.NewTabPage"),
+        1);
+  }
+}
+
 TEST_F(ContextualSearchboxHandlerTest, SubmitQueryWithAdditionalParams) {
   // Ensure udm param is always set as an additional param.
   SubmitQueryAndWaitForNavigation();

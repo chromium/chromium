@@ -600,4 +600,17 @@ void ContextualSearchMetricsRecorder::RecordZeroSuggestClick(
       is_contextual);
 }
 
+void ContextualSearchMetricsRecorder::RecordTypedSuggestNavigation(
+    bool is_verbatim) {
+  std::string suffix = is_verbatim ? "Verbatim" : "SearchSuggest";
+  base::RecordAction(base::UserMetricsAction(
+      base::StrCat({"ContextualSearch.TypedSuggestNavigation.", suffix, ".",
+                    metrics_suffix_})
+          .c_str()));
+  base::UmaHistogramBoolean(
+      base::StrCat({"ContextualSearch.TypedSuggestNavigation.IsVerbatim.",
+                    metrics_suffix_}),
+      is_verbatim);
+}
+
 }  // namespace contextual_search

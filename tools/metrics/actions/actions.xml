@@ -10956,6 +10956,24 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action
+    name="ContextualSearch.TypedSuggestNavigation.{TypedSuggestType}.{ContextualSearchSource}">
+  <owner>niharm@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <description>
+    Recorded when a user navigates to a {TypedSuggestType} suggestion in the
+    typed mode from {ContextualSearchSource}.
+  </description>
+  <token key="TypedSuggestType">
+    <variant name="SearchSuggest"
+        summary="The user selected a suggestion from the dropdown."/>
+    <variant name="Verbatim"
+        summary="The user submitted the query verbatim (e.g. typed out the
+                 entire query and then pressed enter)."/>
+  </token>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</action>
+
 <action name="ContextualSearch.UncommonClose">
   <owner>donnd@chromium.org</owner>
   <description>

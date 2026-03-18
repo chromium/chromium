@@ -702,17 +702,20 @@ void ContextualSearchboxHandler::OpenAutocompleteMatch(uint8_t line,
                                                        bool shift_key) {
   const AutocompleteMatch* match = GetMatchWithUrl(line, url);
 
-  // Record zero suggest clicks for composebox matches.
-  bool record_zero_suggest =
-      autocomplete_controller()->input().IsZeroSuggest() &&
+  // Record match navigations for composebox matches.
+  bool is_zero_suggest = autocomplete_controller()->input().IsZeroSuggest();
+  auto* recorder = GetMetricsRecorder();
+  bool record_composebox_metric =
       omnibox::IsComposebox(
           omnibox_controller()->client()->GetPageClassification(
               /*is_prefetch=*/false)) &&
-      match;
+      match && recorder;
 
-  if (record_zero_suggest) {
-    if (auto* recorder = GetMetricsRecorder()) {
+  if (record_composebox_metric) {
+    if (is_zero_suggest) {
       recorder->RecordZeroSuggestClick(match->IsContextualSearchSuggestion());
+    } else {
+      recorder->RecordTypedSuggestNavigation(match->IsVerbatimType());
     }
   }
 
