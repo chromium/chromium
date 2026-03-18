@@ -812,6 +812,10 @@ class GlicButton : public GlicBaseShim<T>,
   }
 
   void SetCloseButtonVisible(bool visible) {
+    if (close_button() == nullptr) {
+      return;
+    }
+
     close_button()->SetVisible(visible);
 
     gfx::Insets highlight_margins(kHighlightMargin);
