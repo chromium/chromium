@@ -7,11 +7,6 @@
 
 #include "net/base/network_interfaces_getifaddrs_android.h"
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <errno.h>
 #include <linux/netlink.h>
 #include <linux/rtnetlink.h>
@@ -25,6 +20,7 @@
 #include <sys/utsname.h>
 #include <unistd.h>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/scoped_generic.h"
@@ -59,7 +55,7 @@ int set_ifname(struct ifaddrs* ifaddr, int interface) {
     return -1;
   }
   ifaddr->ifa_name = new char[strlen(name) + 1];
-  strncpy(ifaddr->ifa_name, name, strlen(name) + 1);
+  UNSAFE_TODO(strncpy(ifaddr->ifa_name, name, strlen(name) + 1));
   return 0;
 }
 
@@ -69,8 +65,8 @@ int set_flags(struct ifaddrs* ifaddr) {
     return -1;
   }
   ifreq ifr;
-  memset(&ifr, 0, sizeof(ifr));
-  strncpy(ifr.ifr_name, ifaddr->ifa_name, IFNAMSIZ - 1);
+  UNSAFE_TODO(memset(&ifr, 0, sizeof(ifr)));
+  UNSAFE_TODO(strncpy(ifr.ifr_name, ifaddr->ifa_name, IFNAMSIZ - 1));
   int rc = ioctl(fd, SIOCGIFFLAGS, &ifr);
   close(fd);
   if (rc == -1) {
@@ -91,7 +87,7 @@ int set_addresses(struct ifaddrs* ifaddr,
     }
     sockaddr_in* sa = new sockaddr_in;
     sa->sin_family = AF_INET;
-    memcpy(&sa->sin_addr, data, len);
+    UNSAFE_TODO(memcpy(&sa->sin_addr, data, len));
     ifaddr->ifa_addr = reinterpret_cast<sockaddr*>(sa);
   } else if (msg->ifa_family == AF_INET6) {
     if (len != sizeof(struct in6_addr)) {
@@ -101,7 +97,7 @@ int set_addresses(struct ifaddrs* ifaddr,
     sockaddr_in6* sa = new sockaddr_in6;
     sa->sin6_family = AF_INET6;
     sa->sin6_scope_id = msg->ifa_index;
-    memcpy(&sa->sin6_addr, data, len);
+    UNSAFE_TODO(memcpy(&sa->sin6_addr, data, len));
     ifaddr->ifa_addr = reinterpret_cast<sockaddr*>(sa);
   } else {
     return -1;
@@ -114,7 +110,7 @@ int make_prefixes(struct ifaddrs* ifaddr, int family, int prefixlen) {
   if (family == AF_INET) {
     sockaddr_in* mask = new sockaddr_in;
     mask->sin_family = AF_INET;
-    memset(&mask->sin_addr, 0, sizeof(in_addr));
+    UNSAFE_TODO(memset(&mask->sin_addr, 0, sizeof(in_addr)));
     ifaddr->ifa_netmask = reinterpret_cast<sockaddr*>(mask);
     if (prefixlen > 32) {
       prefixlen = 32;
@@ -123,7 +119,7 @@ int make_prefixes(struct ifaddrs* ifaddr, int family, int prefixlen) {
   } else if (family == AF_INET6) {
     sockaddr_in6* mask = new sockaddr_in6;
     mask->sin6_family = AF_INET6;
-    memset(&mask->sin6_addr, 0, sizeof(in6_addr));
+    UNSAFE_TODO(memset(&mask->sin6_addr, 0, sizeof(in6_addr)));
     ifaddr->ifa_netmask = reinterpret_cast<sockaddr*>(mask);
     if (prefixlen > 128) {
       prefixlen = 128;
@@ -133,7 +129,7 @@ int make_prefixes(struct ifaddrs* ifaddr, int family, int prefixlen) {
     return -1;
   }
   for (int i = 0; i < (prefixlen / 8); i++) {
-    *prefix++ = 0xFF;
+    UNSAFE_TODO(*prefix++) = 0xFF;
   }
   char remainder = 0xff;
   remainder <<= (8 - prefixlen % 8);
@@ -192,7 +188,7 @@ int Getifaddrs(struct ifaddrs** result) {
   base::ScopedGeneric<struct ifaddrs*, IfaddrsTraits> scoped_ifaddrs;
 
   netlinkrequest ifaddr_request;
-  memset(&ifaddr_request, 0, sizeof(ifaddr_request));
+  UNSAFE_TODO(memset(&ifaddr_request, 0, sizeof(ifaddr_request)));
   ifaddr_request.header.nlmsg_flags = NLM_F_ROOT | NLM_F_REQUEST;
   ifaddr_request.header.nlmsg_type = RTM_GETADDR;
   ifaddr_request.header.nlmsg_len = NLMSG_LENGTH(sizeof(ifaddrmsg));
@@ -209,7 +205,7 @@ int Getifaddrs(struct ifaddrs** result) {
     nlmsghdr* header = reinterpret_cast<nlmsghdr*>(&buf[0]);
     size_t header_size = static_cast<size_t>(amount_read);
     for (; NLMSG_OK(header, header_size);
-         header = NLMSG_NEXT(header, header_size)) {
+         header = UNSAFE_TODO(NLMSG_NEXT(header, header_size))) {
       switch (header->nlmsg_type) {
         case NLMSG_DONE:
           // Success. Return.
@@ -220,29 +216,30 @@ int Getifaddrs(struct ifaddrs** result) {
           return -1;
         case RTM_NEWADDR: {
           ifaddrmsg* address_msg =
-              reinterpret_cast<ifaddrmsg*>(NLMSG_DATA(header));
-          rtattr* rta = IFA_RTA(address_msg);
+              UNSAFE_TODO(reinterpret_cast<ifaddrmsg*>(NLMSG_DATA(header)));
+          rtattr* rta = UNSAFE_TODO(IFA_RTA(address_msg));
           ssize_t payload_len = IFA_PAYLOAD(header);
-          while (RTA_OK(rta, payload_len)) {
+          while (UNSAFE_TODO(RTA_OK(rta, payload_len))) {
             if ((address_msg->ifa_family == AF_INET &&
                  rta->rta_type == IFA_LOCAL) ||
                 (address_msg->ifa_family == AF_INET6 &&
                  rta->rta_type == IFA_ADDRESS)) {
               ifaddrs* newest = new ifaddrs;
-              memset(newest, 0, sizeof(ifaddrs));
+              UNSAFE_TODO(memset(newest, 0, sizeof(ifaddrs)));
               if (current) {
                 current->ifa_next = newest;
               } else {
                 scoped_ifaddrs.reset(newest);
               }
-              if (populate_ifaddrs(newest, address_msg, RTA_DATA(rta),
+              if (populate_ifaddrs(newest, address_msg,
+                                   UNSAFE_TODO(RTA_DATA(rta)),
                                    RTA_PAYLOAD(rta)) != 0) {
                 *result = nullptr;
                 return -1;
               }
               current = newest;
             }
-            rta = RTA_NEXT(rta, payload_len);
+            rta = UNSAFE_TODO(RTA_NEXT(rta, payload_len));
           }
           break;
         }

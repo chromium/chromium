@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/ssl/ssl_platform_key_win.h"
 
 #include <algorithm>
@@ -15,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "crypto/openssl_util.h"
@@ -358,8 +354,10 @@ class SSLPlatformKeyCNG : public ThreadedSSLPrivateKey::Delegate {
 
       // Convert the RAW ECDSA signature to a DER-encoded ECDSA-Sig-Value.
       bssl::UniquePtr<ECDSA_SIG> sig(ECDSA_SIG_new());
-      if (!sig || !BN_bin2bn(signature->data(), order_len, sig->r) ||
-          !BN_bin2bn(signature->data() + order_len, order_len, sig->s)) {
+      if (!sig ||
+          !UNSAFE_TODO(BN_bin2bn(signature->data(), order_len, sig->r)) ||
+          !UNSAFE_TODO(
+              BN_bin2bn(signature->data() + order_len, order_len, sig->s))) {
         return ERR_SSL_CLIENT_AUTH_SIGNATURE_FAILED;
       }
 
