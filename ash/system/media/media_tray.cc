@@ -39,7 +39,6 @@
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/image_view.h"
@@ -246,11 +245,6 @@ void MediaTray::HideBubble(const TrayBubbleView* bubble_view) {
 void MediaTray::UpdateAfterLoginStatusChange() {
   UpdateDisplayState();
   PreferredSizeChanged();
-}
-
-void MediaTray::HandleLocaleChange() {
-  image_view()->SetTooltipText(l10n_util::GetStringUTF16(
-      IDS_ASH_GLOBAL_MEDIA_CONTROLS_BUTTON_TOOLTIP_TEXT));
 }
 
 views::Widget* MediaTray::GetBubbleWidget() const {

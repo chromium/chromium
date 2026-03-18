@@ -18,13 +18,8 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_container.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
-#include "ui/display/display.h"
-#include "ui/display/screen.h"
-#include "ui/events/event.h"
-#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 
@@ -104,11 +99,6 @@ void VirtualKeyboardTray::Initialize() {
   TrayBackgroundView::Initialize();
   SetVisiblePreferred(
       Shell::Get()->accessibility_controller()->virtual_keyboard().enabled());
-}
-
-void VirtualKeyboardTray::HandleLocaleChange() {
-  image_view()->SetTooltipText(l10n_util::GetStringUTF16(
-      IDS_ASH_STATUS_TRAY_ACCESSIBILITY_VIRTUAL_KEYBOARD));
 }
 
 void VirtualKeyboardTray::HideBubbleWithView(

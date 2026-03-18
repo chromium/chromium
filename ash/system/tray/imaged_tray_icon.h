@@ -43,17 +43,22 @@ class ASH_EXPORT ImagedTrayIcon : public TrayBackgroundView {
 
   ~ImagedTrayIcon() override;
 
+  void SetTooltip(const StringVariant& tooltip);
+  void SetAccessibilityName(const StringVariant& name);
+
   // TrayBackgroundView:
   void ClickedOutsideBubble(const ui::LocatedEvent& event) override;
   void UpdateTrayItemColor(bool is_active) override;
-  void HandleLocaleChange() override;
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
   void HideBubble(const TrayBubbleView* bubble_view) override;
+  void HandleLocaleChange() override;
 
   views::ImageView* image_view() { return image_view_; }
 
  private:
   raw_ptr<views::ImageView> image_view_;
+  StringVariant tooltip_;
+  StringVariant accessibility_name_;
 };
 
 }  // namespace ash

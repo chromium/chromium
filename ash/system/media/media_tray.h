@@ -69,7 +69,6 @@ class ASH_EXPORT MediaTray : public MediaNotificationProviderObserver,
 
   // ImagedTrayIcon:
   void UpdateAfterLoginStatusChange() override;
-  void HandleLocaleChange() override;
   views::Widget* GetBubbleWidget() const override;
   TrayBubbleView* GetBubbleView() override;
   void ShowBubble() override;

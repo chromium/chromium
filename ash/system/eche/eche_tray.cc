@@ -69,7 +69,6 @@
 #include "ui/gfx/text_constants.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/strings/grit/ui_strings.h"
-#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
@@ -254,10 +253,6 @@ void EcheTray::UpdateTrayItemColor(bool is_active) {
       kPhoneHubPhoneIcon, is_active
                               ? cros_tokens::kCrosSysSystemOnPrimaryContainer
                               : cros_tokens::kCrosSysOnSurface));
-}
-
-void EcheTray::HandleLocaleChange() {
-  image_view()->SetTooltipText(GetAccessibleName());
 }
 
 void EcheTray::HideBubbleWithView(const TrayBubbleView* bubble_view) {

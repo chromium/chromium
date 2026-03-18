@@ -31,7 +31,6 @@ class ASH_EXPORT MouseKeysTray : public ImagedTrayIcon,
   void Initialize() override;
 
   // ImagedTrayIcon:
-  void HandleLocaleChange() override;
   void UpdateTrayItemColor(bool is_active) override;
 
   // AccessibilityObserver:

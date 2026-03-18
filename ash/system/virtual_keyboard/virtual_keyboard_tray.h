@@ -32,9 +32,8 @@ class VirtualKeyboardTray : public ImagedTrayIcon,
   // Callback called when this is pressed.
   void OnButtonPressed(const ui::Event& event);
 
-  // ImagedTrayIcon:
+  // TrayBackgroundView:
   void Initialize() override;
-  void HandleLocaleChange() override;
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
   void ClickedOutsideBubble(const ui::LocatedEvent& event) override;
   void UpdateTrayItemColor(bool is_active) override;

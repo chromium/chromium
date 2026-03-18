@@ -39,7 +39,9 @@ ImagedTrayIcon::ImagedTrayIcon(Shelf* shelf,
                                const TrayBackgroundViewCatalogName catalog_name)
     : TrayBackgroundView(shelf,
                          catalog_name,
-                         RoundedCornerBehavior::kAllRounded) {
+                         RoundedCornerBehavior::kAllRounded),
+      tooltip_(tooltip),
+      accessibility_name_(accessibility_name) {
   auto image_view =
       views::Builder<views::ImageView>()
           .SetHorizontalAlignment(views::ImageView::Alignment::kCenter)
@@ -55,11 +57,33 @@ ImagedTrayIcon::ImagedTrayIcon(Shelf* shelf,
 
 ImagedTrayIcon::~ImagedTrayIcon() = default;
 
+void ImagedTrayIcon::SetTooltip(const StringVariant& tooltip) {
+  if (tooltip_ == tooltip) {
+    return;
+  }
+
+  tooltip_ = tooltip;
+  image_view_->SetTooltipText(GetLocalizedString(tooltip_));
+}
+
+void ImagedTrayIcon::SetAccessibilityName(const StringVariant& name) {
+  if (accessibility_name_ == name) {
+    return;
+  }
+
+  accessibility_name_ = name;
+  GetViewAccessibility().SetName(GetLocalizedString(accessibility_name_));
+}
+
 void ImagedTrayIcon::ClickedOutsideBubble(const ui::LocatedEvent& event) {}
 void ImagedTrayIcon::UpdateTrayItemColor(bool is_active) {}
-void ImagedTrayIcon::HandleLocaleChange() {}
 void ImagedTrayIcon::HideBubbleWithView(const TrayBubbleView* bubble_view) {}
 void ImagedTrayIcon::HideBubble(const TrayBubbleView* bubble_view) {}
+
+void ImagedTrayIcon::HandleLocaleChange() {
+  image_view_->SetTooltipText(GetLocalizedString(tooltip_));
+  GetViewAccessibility().SetName(GetLocalizedString(accessibility_name_));
+}
 
 BEGIN_METADATA(ImagedTrayIcon)
 END_METADATA

@@ -41,7 +41,6 @@ class ASH_EXPORT FocusModeTray : public ImagedTrayIcon,
   // ImagedTrayIcon:
   void ClickedOutsideBubble(const ui::LocatedEvent& event) override;
   std::u16string GetAccessibleNameForBubble() override;
-  void HandleLocaleChange() override {}
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
   void HideBubble(const TrayBubbleView* bubble_view) override;
   TrayBubbleView* GetBubbleView() override;

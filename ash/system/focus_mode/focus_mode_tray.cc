@@ -701,7 +701,7 @@ void FocusModeTray::CloseBubbleAndMaybeReset(bool should_reset) {
 void FocusModeTray::UpdateAccessibleName() {
   if (!session_snapshot_) {
     GetViewAccessibility().RemoveName();
-    image_view()->SetTooltipText(std::u16string());
+    SetTooltip(std::u16string());
     return;
   }
 
@@ -723,10 +723,8 @@ void FocusModeTray::UpdateAccessibleName() {
         duration_string);
   }
 
-  GetViewAccessibility().SetName(name);
-  if (image_view()) {
-    image_view()->SetTooltipText(name);
-  }
+  SetAccessibilityName(name);
+  SetTooltip(name);
 }
 
 BEGIN_METADATA(FocusModeTray)

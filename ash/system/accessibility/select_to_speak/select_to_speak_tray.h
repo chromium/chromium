@@ -32,7 +32,6 @@ class ASH_EXPORT SelectToSpeakTray : public ImagedTrayIcon,
   void Initialize() override;
 
   // ImagedTrayIcon:
-  void HandleLocaleChange() override;
   // No need to override since the icon and tray activation state will change
   // and get updated simultaneously in `UpdateUXOnCurrentStatus()`.
   void UpdateTrayItemColor(bool is_active) override {}

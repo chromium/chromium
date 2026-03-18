@@ -16,10 +16,8 @@
 #include "ash/system/tray/imaged_tray_icon.h"
 #include "ash/system/tray/tray_container.h"
 #include "ui/accessibility/accessibility_features.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
-#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
 
 namespace ash {
@@ -70,11 +68,6 @@ void MouseKeysTray::OnMouseKeyIconPressed(const ui::Event& event) {
 void MouseKeysTray::Initialize() {
   TrayBackgroundView::Initialize();
   OnAccessibilityStatusChanged();
-  HandleLocaleChange();
-}
-
-void MouseKeysTray::HandleLocaleChange() {
-  UpdateStatus();
 }
 
 void MouseKeysTray::UpdateTrayItemColor(bool is_active) {
@@ -105,14 +98,12 @@ void MouseKeysTray::UpdateStatus() {
 }
 
 void MouseKeysTray::SetMouseKeysStatusText(bool is_active) {
-  auto tooltip_string =
-      is_active ? l10n_util::GetStringUTF16(
-                      IDS_ASH_STATUS_TRAY_ACCESSIBILITY_MOUSE_KEYS_PAUSE)
-                : l10n_util::GetStringUTF16(
-                      IDS_ASH_STATUS_TRAY_ACCESSIBILITY_MOUSE_KEYS_RESUME);
+  auto message_id = is_active
+                        ? IDS_ASH_STATUS_TRAY_ACCESSIBILITY_MOUSE_KEYS_PAUSE
+                        : IDS_ASH_STATUS_TRAY_ACCESSIBILITY_MOUSE_KEYS_RESUME;
 
-  GetViewAccessibility().SetName(tooltip_string);
-  image_view()->SetTooltipText(tooltip_string);
+  SetAccessibilityName(message_id);
+  SetTooltip(message_id);
 }
 
 void MouseKeysTray::OnSessionStateChanged(session_manager::SessionState state) {

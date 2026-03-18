@@ -59,7 +59,6 @@ class ASH_EXPORT DictationButtonTray : public ImagedTrayIcon,
   void Initialize() override;
   void ClickedOutsideBubble(const ui::LocatedEvent& event) override;
   void UpdateTrayItemColor(bool is_active) override;
-  void HandleLocaleChange() override;
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
   void OnThemeChanged() override;
   void Layout(PassKey) override;

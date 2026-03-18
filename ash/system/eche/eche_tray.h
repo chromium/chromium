@@ -137,7 +137,6 @@ class ASH_EXPORT EcheTray
   // ImagedTrayIcon:
   void ClickedOutsideBubble(const ui::LocatedEvent& event) override;
   void UpdateTrayItemColor(bool is_active) override;
-  void HandleLocaleChange() override;
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
   void AnchorUpdated() override;
   void Initialize() override;

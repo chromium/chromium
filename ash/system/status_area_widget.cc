@@ -731,8 +731,8 @@ bool StatusAreaWidget::UpdateTrayIcon(
   if (configuration.tool_tip) {
     const std::u16string& new_tooltip = *configuration.tool_tip;
     if (new_tooltip != image_view->GetTooltipText()) {
-      image_view->SetTooltipText(new_tooltip);
-      icon->GetViewAccessibility().SetName(new_tooltip);
+      icon->SetTooltip(new_tooltip);
+      icon->SetAccessibilityName(new_tooltip);
     }
   }
 
