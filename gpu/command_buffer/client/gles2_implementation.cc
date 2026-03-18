@@ -486,12 +486,12 @@ gpu::SyncToken GLES2Implementation::CopySharedImageToGLTextureViaTextureCopy(
     const gfx::Rect& src_rect,
     ClientSharedImage* source_shared_image,
     const gpu::SyncToken& source_sync_token,
-    uint32_t target,
-    uint32_t texture,
-    uint32_t internal_format,
-    uint32_t format,
-    uint32_t type,
-    int32_t level,
+    uint32_t dst_target,
+    uint32_t dst_texture,
+    uint32_t dst_internal_format,
+    uint32_t dst_format,
+    uint32_t dst_type,
+    int32_t dst_level,
     SkAlphaType dst_alpha_type,
     GrSurfaceOrigin dst_origin) {
   auto si_texture = source_shared_image->CreateGLTexture(this);
@@ -515,21 +515,22 @@ gpu::SyncToken GLES2Implementation::CopySharedImageToGLTextureViaTextureCopy(
     GPU_CLIENT_DCHECK(src_rect.height() <=
                       source_shared_image->size().height());
 
-    BindAndTexImage2D(this, target, texture, internal_format, format, type,
-                      level, src_rect.size());
+    BindAndTexImage2D(this, dst_target, dst_texture, dst_internal_format,
+                      dst_format, dst_type, dst_level, src_rect.size());
     // TODO(crbug.com/378688985): `src_rect` is always in top-left
     // coordinate space, but CopySubTextureCHROMIUM requires it to be in texture
     // space, so this is incorrect if `source_shared_image` origin is bottom
     // left.
-    CopySubTextureCHROMIUM(scoped_si_access->texture_id(), 0, target, texture,
-                           level, 0, 0, src_rect.x(), src_rect.y(),
-                           src_rect.width(), src_rect.height(), do_flip_y,
-                           do_premultiply_alpha, do_unpremultiply_alpha);
+    CopySubTextureCHROMIUM(
+        scoped_si_access->texture_id(), 0, dst_target, dst_texture, dst_level,
+        0, 0, src_rect.x(), src_rect.y(), src_rect.width(), src_rect.height(),
+        do_flip_y, do_premultiply_alpha, do_unpremultiply_alpha);
 
   } else {
-    CopyTextureCHROMIUM(scoped_si_access->texture_id(), 0, target, texture,
-                        level, internal_format, type, do_flip_y,
-                        do_premultiply_alpha, do_unpremultiply_alpha);
+    CopyTextureCHROMIUM(scoped_si_access->texture_id(), 0, dst_target,
+                        dst_texture, dst_level, dst_internal_format, dst_type,
+                        do_flip_y, do_premultiply_alpha,
+                        do_unpremultiply_alpha);
   }
   return gpu::SharedImageTexture::ScopedAccess::EndAccess(
       std::move(scoped_si_access));
