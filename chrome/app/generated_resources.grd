@@ -8845,38 +8845,41 @@ Keep your key file in a safe place. You will need it to create new versions of y
         desc="Placeholder text for the composebox when there is exactly one document (PDF) in the carousel.">
         Ask about this doc
       </message>
-      <message name="IDS_NTP_ACTION_CHIP_TAB_HEADING_1" translateable="true" desc="Heading of the tab action chip on the NTP." >
+      <message name="IDS_NTP_ACTION_CHIP_TAB_HEADING_1" desc="Heading of the tab action chip on the NTP." >
         Ask about previous tab
       </message>
-      <message name="IDS_NTP_ACTION_CHIP_TAB_HEADING_2" translateable="true" desc="Heading of the tab action chip on the NTP." >
+      <message name="IDS_NTP_ACTION_CHIP_TAB_HEADING_2" desc="Heading of the tab action chip on the NTP." >
         Ask about a tab
       </message>
-      <message name="IDS_NTP_ACTION_CHIP_TAB_BODY_1" translateable="true" desc="Body text in the tab action chip describing the use of the chip." >
+      <message name="IDS_NTP_ACTION_CHIP_TAB_BODY_1" desc="Body text in the tab action chip describing the use of the chip." >
         Ask about this tab
       </message>
-      <message name="IDS_NTP_ACTION_CHIP_TAB_BODY_2" translateable="true" desc="Body text in the tab action chip describing the use of the chip." >
+      <message name="IDS_NTP_ACTION_CHIP_TAB_BODY_2" desc="Body text in the tab action chip describing the use of the chip." >
         Search deeply on a tab
       </message>
-      <message name="IDS_NTP_ACTION_CHIP_CREATE_IMAGE_HEADING" translateable="true" desc="Heading of the create image action chip on the NTP." >
+      <message name="IDS_NTP_ACTION_CHIP_CREATE_IMAGE_HEADING" desc="Heading of the create image action chip on the NTP." >
         Create image
       </message>
-      <message name="IDS_NTP_ACTION_CHIP_CREATE_IMAGE_BODY_1" translateable="true" desc="Body text in the create image action chip describing the use of the chip.">
+      <message name="IDS_NTP_ACTION_CHIP_CREATE_IMAGE_BODY_1" desc="Body text in the create image action chip describing the use of the chip.">
         Add an image and reimagine it
       </message>
-      <message name="IDS_NTP_ACTION_CHIP_CREATE_IMAGE_BODY_2" translateable="true" desc="Body text in the create image action chip describing the use of the chip.">
+      <message name="IDS_NTP_ACTION_CHIP_CREATE_IMAGE_BODY_2" desc="Body text in the create image action chip describing the use of the chip.">
         Reimagine a photo
       </message>
-      <message name="IDS_NTP_ACTION_CHIP_DEEP_SEARCH_HEADING" translateable="true" desc="Heading of the deep search action chip on the NTP.">
+      <message name="IDS_NTP_ACTION_CHIP_DEEP_SEARCH_HEADING" desc="Heading of the deep search action chip on the NTP.">
         Research a topic
       </message>
-      <message name="IDS_NTP_ACTION_CHIP_DEEP_SEARCH_BODY" translateable="true" desc="Body text in the deep search action chip describing the use of the chip.">
+      <message name="IDS_NTP_ACTION_CHIP_DEEP_SEARCH_BODY" desc="Body text in the deep search action chip describing the use of the chip.">
         Dive deep into something new
       </message>
-      <message name="IDS_NTP_ACTION_CHIP_CANVAS_HEADING" translateable="true" desc="Heading of the canvas action chip on the NTP.">
+      <message name="IDS_NTP_ACTION_CHIP_CANVAS_HEADING" desc="Heading of the canvas action chip on the NTP.">
         Canvas
       </message>
-      <message name="IDS_NTP_ACTION_CHIP_CANVAS_BODY" translateable="true" desc="Body text in the canvas action chip describing the use of the chip.">
+      <message name="IDS_NTP_ACTION_CHIP_CANVAS_BODY" desc="Body text in the canvas action chip describing the use of the chip.">
         Write, plan, code, and more
+      </message>
+      <message name="IDS_NTP_ACTION_CHIP_DISABLE_TEXT" desc="Text for menu option to disable action chip feature.">
+        Disable suggestions
       </message>
       <message name="IDS_COMPOSE_REMOVE_TOOL_CHIP_A11Y_LABEL" desc="A11y text for removing a tool in the composebox.">
         Remove <ph name="TOOL_NAME">$1<ex>Deep Search</ex></ph>
