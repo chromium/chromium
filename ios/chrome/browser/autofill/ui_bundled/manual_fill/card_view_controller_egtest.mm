@@ -1004,10 +1004,9 @@ void DismissPaymentBottomSheet() {
 // Tests that tapping the "Autofill Form" button fills the payment form with
 // the right data.
 - (void)testAutofillFormButtonFillsForm {
-  [AutofillAppInterface setUpMockReauthenticationModule];
-  [AutofillAppInterface mockReauthenticationModuleCanAttempt:YES];
-  [AutofillAppInterface mockReauthenticationModuleExpectedResult:
-                            ReauthenticationResult::kSuccess];
+  [ReauthenticationAppInterface mockReauthenticationModuleCanAttempt:YES];
+  [ReauthenticationAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kSuccess];
 
   // Save a card.
   [AutofillAppInterface saveLocalCreditCard];
@@ -1030,8 +1029,6 @@ void DismissPaymentBottomSheet() {
   // Verify that the acceptance of the card suggestion at index 0 was correctly
   // recorded.
   CheckAutofillSuggestionAcceptedIndexMetricsCount(/*suggestion_index=*/0);
-
-  [AutofillAppInterface clearMockReauthenticationModule];
 }
 
 // Tests that the GPay icon is only visible when the card is a server card.

@@ -43,7 +43,6 @@
 #import "components/password_manager/core/browser/password_store/password_store_interface.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/autofill/ui_bundled/chrome_autofill_client_ios.h"
-#import "ios/chrome/browser/autofill/ui_bundled/scoped_autofill_payment_reauth_module_override.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -394,15 +393,7 @@ class FakeCreditCardServer : public CreditCardSaveManager::ObserverForTest {
 };
 }  // namespace autofill
 
-@implementation AutofillAppInterface {
-  std::unique_ptr<ScopedAutofillPaymentReauthModuleOverride>
-      _scopedReauthModuleOverride;
-}
-
-+ (instancetype)sharedInstance {
-  static AutofillAppInterface* instance = [[AutofillAppInterface alloc] init];
-  return instance;
-}
+@implementation AutofillAppInterface
 
 + (void)clearProfilePasswordStore {
   ClearProfilePasswordStore();
@@ -669,39 +660,6 @@ class FakeCreditCardServer : public CreditCardSaveManager::ObserverForTest {
 
 + (NSString*)paymentsRiskData {
   return ios::provider::GetRiskData();
-}
-
-+ (void)setUpMockReauthenticationModule {
-  AutofillAppInterface* shared = [AutofillAppInterface sharedInstance];
-  MockReauthenticationModule* mock_reauthentication_module =
-      [[MockReauthenticationModule alloc] init];
-  shared->_scopedReauthModuleOverride =
-      ScopedAutofillPaymentReauthModuleOverride::MakeAndArmForTesting(
-          mock_reauthentication_module);
-}
-
-+ (void)clearMockReauthenticationModule {
-  AutofillAppInterface* shared = [AutofillAppInterface sharedInstance];
-  shared->_scopedReauthModuleOverride = nullptr;
-}
-
-+ (void)mockReauthenticationModuleCanAttempt:(BOOL)canAttempt {
-  AutofillAppInterface* shared = [AutofillAppInterface sharedInstance];
-  CHECK(shared->_scopedReauthModuleOverride);
-  MockReauthenticationModule* mockModule =
-      base::apple::ObjCCastStrict<MockReauthenticationModule>(
-          shared->_scopedReauthModuleOverride->module);
-  mockModule.canAttempt = canAttempt;
-}
-
-+ (void)mockReauthenticationModuleExpectedResult:
-    (ReauthenticationResult)expectedResult {
-  AutofillAppInterface* shared = [AutofillAppInterface sharedInstance];
-  CHECK(shared->_scopedReauthModuleOverride);
-  MockReauthenticationModule* mockModule =
-      base::apple::ObjCCastStrict<MockReauthenticationModule>(
-          shared->_scopedReauthModuleOverride->module);
-  mockModule.expectedResult = expectedResult;
 }
 
 + (void)setMandatoryReauthEnabled:(BOOL)enabled {

@@ -41,7 +41,8 @@
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_edit_profile_coordinator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/settings_autofill_edit_profile_bottom_sheet_handler.h"
-#import "ios/chrome/browser/autofill/ui_bundled/scoped_autofill_payment_reauth_module_override.h"
+#import "ios/chrome/browser/device_reauth/model/reauthentication_service.h"
+#import "ios/chrome/browser/device_reauth/model/reauthentication_service_factory.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_item.h"
 #import "ios/chrome/browser/settings/autofill/utils/autofill_settings_ui_util.h"
@@ -259,6 +260,10 @@ bool CanDeleteItemType(NSInteger itemType) {
           autofill::IOSAutofillEntityDataManagerObserverBridge>(
           _entityDataManager, self);
     }
+
+    _reauthenticationModule =
+        ReauthenticationServiceFactory::GetForProfile(_browser->GetProfile())
+            ->GetReauthModule();
 
     _prefChangeRegistrar.Init(_browser->GetProfile()->GetPrefs());
     _prefObserverBridge.emplace(self);
@@ -664,7 +669,7 @@ bool CanDeleteItemType(NSInteger itemType) {
       l10n_util::GetNSString(IDS_IOS_AUTOFILL_VERIFICATION_INFO_LABEL);
   switchItem.on = autofill::prefs::IsAutofillAiReauthBeforeFillingEnabled(
       _browser->GetProfile()->GetPrefs());
-  switchItem.enabled = [self.reauthenticationModule canAttemptReauth];
+  switchItem.enabled = [_reauthenticationModule canAttemptReauth];
   switchItem.target = self;
   switchItem.selector = @selector(verificationSwitchChanged:);
   switchItem.accessibilityIdentifier = kAutofillVerificationSwitchTableViewId;
@@ -701,19 +706,6 @@ bool CanDeleteItemType(NSInteger itemType) {
   item.accessibilityTraits |= UIAccessibilityTraitButton;
   item.titleNumberOfLines = 0;
   return item;
-}
-
-- (ReauthenticationModule*)reauthenticationModule {
-  id<ReauthenticationProtocol> overrideModule =
-      ScopedAutofillPaymentReauthModuleOverride::Get();
-  if (overrideModule) {
-    return overrideModule;
-  }
-
-  if (!_reauthenticationModule) {
-    _reauthenticationModule = [[ReauthenticationModule alloc] init];
-  }
-  return _reauthenticationModule;
 }
 
 #pragma mark - SettingsControllerProtocol
@@ -1061,7 +1053,7 @@ bool CanDeleteItemType(NSInteger itemType) {
 }
 
 - (void)verificationSwitchChanged:(UISwitch*)switchView {
-  if (![self.reauthenticationModule canAttemptReauth]) {
+  if (![_reauthenticationModule canAttemptReauth]) {
     // This should normally not happen: the switch should not even be enabled.
     // Early return to fallback gracefully just in case.
     return;
@@ -1079,10 +1071,9 @@ bool CanDeleteItemType(NSInteger itemType) {
     [weakSelf onReauthCompletedForVerificationSwitch:switchView result:result];
   };
 
-  [self.reauthenticationModule
-      attemptReauthWithLocalizedReason:reauthReason
-                  canReusePreviousAuth:YES
-                               handler:completionHandler];
+  [_reauthenticationModule attemptReauthWithLocalizedReason:reauthReason
+                                       canReusePreviousAuth:YES
+                                                    handler:completionHandler];
 }
 
 // Called when the reauthentication process is completed for the Enhanced

@@ -591,10 +591,9 @@ id<GREYMatcher> PaymentsBottomSheetUseKeyboardButton() {
 // accessory with the proper suggestions visible and that tapping on a
 // suggestion properly fills the related fields on the form.
 - (void)testFillCreditCardFieldsOnForm {
-  [AutofillAppInterface setUpMockReauthenticationModule];
-  [AutofillAppInterface mockReauthenticationModuleCanAttempt:YES];
-  [AutofillAppInterface mockReauthenticationModuleExpectedResult:
-                            ReauthenticationResult::kSuccess];
+  [ReauthenticationAppInterface mockReauthenticationModuleCanAttempt:YES];
+  [ReauthenticationAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kSuccess];
 
   [AutofillAppInterface saveMaskedCreditCard];
 
@@ -630,8 +629,6 @@ id<GREYMatcher> PaymentsBottomSheetUseKeyboardButton() {
   // Verify that the acceptance of the card suggestion at index 1 was correctly
   // recorded.
   CheckCardAutofillSuggestionAcceptedIndexMetricsCount(/*suggestion_index=*/1);
-
-  [AutofillAppInterface clearMockReauthenticationModule];
 }
 
 // Tests that the fix on the is_user_edited_deprecated bit in the parsed form
@@ -701,10 +698,9 @@ id<GREYMatcher> PaymentsBottomSheetUseKeyboardButton() {
 - (void)testFillXframeCreditCardForm {
   // Mock reauth so it allows filling sensitive information without the need for
   // real authentication.
-  [AutofillAppInterface setUpMockReauthenticationModule];
-  [AutofillAppInterface mockReauthenticationModuleCanAttempt:YES];
-  [AutofillAppInterface mockReauthenticationModuleExpectedResult:
-                            ReauthenticationResult::kSuccess];
+  [ReauthenticationAppInterface mockReauthenticationModuleCanAttempt:YES];
+  [ReauthenticationAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kSuccess];
 
   // Load the xframe payment page.
   [self loadXframePaymentPage];
@@ -746,9 +742,6 @@ id<GREYMatcher> PaymentsBottomSheetUseKeyboardButton() {
                                 iframeId:frame_id_attr
                                    value:value];
   }
-
-  // Cleanup.
-  [AutofillAppInterface clearMockReauthenticationModule];
 }
 
 // Tests that child frame throttling can be enforced for xframe credit card
@@ -756,10 +749,9 @@ id<GREYMatcher> PaymentsBottomSheetUseKeyboardButton() {
 - (void)testFillXframeCreditCardFormThrottled {
   // Mock reauth so it allows filling sensitive information without the need for
   // real authentication.
-  [AutofillAppInterface setUpMockReauthenticationModule];
-  [AutofillAppInterface mockReauthenticationModuleCanAttempt:YES];
-  [AutofillAppInterface mockReauthenticationModuleExpectedResult:
-                            ReauthenticationResult::kSuccess];
+  [ReauthenticationAppInterface mockReauthenticationModuleCanAttempt:YES];
+  [ReauthenticationAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kSuccess];
 
   // Load the xframe payment page.
   [self loadThrottledXframePaymentPage];
@@ -807,9 +799,6 @@ id<GREYMatcher> PaymentsBottomSheetUseKeyboardButton() {
                                 iframeId:frame_id_attr
                                    value:@""];
   }
-
-  // Cleanup.
-  [AutofillAppInterface clearMockReauthenticationModule];
 }
 
 // Tests that the bottom sheet cohabitates well with other non-credit card forms
@@ -818,10 +807,9 @@ id<GREYMatcher> PaymentsBottomSheetUseKeyboardButton() {
 - (void)testFillXframeCreditCardForm_WithPaymentSheetFix {
   // Mock reauth so it allows filling sensitive information without the need for
   // real authentication.
-  [AutofillAppInterface setUpMockReauthenticationModule];
-  [AutofillAppInterface mockReauthenticationModuleCanAttempt:YES];
-  [AutofillAppInterface mockReauthenticationModuleExpectedResult:
-                            ReauthenticationResult::kSuccess];
+  [ReauthenticationAppInterface mockReauthenticationModuleCanAttempt:YES];
+  [ReauthenticationAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kSuccess];
 
   // Load the xframe payment page.
   [self loadXframePaymentPage];
@@ -888,9 +876,6 @@ id<GREYMatcher> PaymentsBottomSheetUseKeyboardButton() {
                                 iframeId:frame_id_attr
                                    value:value];
   }
-
-  // Cleanup.
-  [AutofillAppInterface clearMockReauthenticationModule];
 }
 
 // Tests that tapping on an address related field opens the keyboard

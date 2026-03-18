@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_ui_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_matchers.h"
+#import "ios/chrome/browser/device_reauth/test/reauthentication_app_interface.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_root_table_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -84,10 +85,9 @@ id<GREYMatcher> KeyboardAccessoryCreditCardSuggestionChip() {
   net::test_server::RegisterDefaultHandlers(self.testServer);
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
 
-  [AutofillAppInterface setUpMockReauthenticationModule];
-  [AutofillAppInterface mockReauthenticationModuleCanAttempt:YES];
-  [AutofillAppInterface mockReauthenticationModuleExpectedResult:
-                            ReauthenticationResult::kSuccess];
+  [ReauthenticationAppInterface mockReauthenticationModuleCanAttempt:YES];
+  [ReauthenticationAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kSuccess];
 
   [AutofillAppInterface clearCreditCardStore];
   _lastDigits = [AutofillAppInterface saveLocalCreditCard];
@@ -100,7 +100,6 @@ id<GREYMatcher> KeyboardAccessoryCreditCardSuggestionChip() {
 
 - (void)tearDownHelper {
   [AutofillAppInterface clearCreditCardStore];
-  [AutofillAppInterface clearMockReauthenticationModule];
 
   [MetricsAppInterface stopOverridingMetricsAndCrashReportingForTesting];
   chrome_test_util::GREYAssertErrorNil(

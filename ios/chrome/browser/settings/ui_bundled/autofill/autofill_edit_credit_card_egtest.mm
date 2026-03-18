@@ -6,6 +6,7 @@
 #import "base/test/metrics/user_action_tester.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
+#import "ios/chrome/browser/device_reauth/test/reauthentication_app_interface.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -67,8 +68,7 @@ id<GREYMatcher> CvcTextField() {
 - (void)setUp {
   [super setUp];
 
-  [AutofillAppInterface setUpMockReauthenticationModule];
-  [AutofillAppInterface mockReauthenticationModuleCanAttempt:YES];
+  [ReauthenticationAppInterface mockReauthenticationModuleCanAttempt:YES];
   [AutofillAppInterface setMandatoryReauthEnabled:YES];
 
   [AutofillAppInterface clearCreditCardStore];
@@ -85,7 +85,6 @@ id<GREYMatcher> CvcTextField() {
 
 - (void)tearDownHelper {
   [AutofillAppInterface clearCreditCardStore];
-  [AutofillAppInterface clearMockReauthenticationModule];
   [super tearDownHelper];
 }
 
@@ -197,15 +196,13 @@ id<GREYMatcher> CvcTextField() {
 
 - (void)setUp {
   [super setUp];
-  [AutofillAppInterface setUpMockReauthenticationModule];
-  [AutofillAppInterface mockReauthenticationModuleCanAttempt:YES];
+  [ReauthenticationAppInterface mockReauthenticationModuleCanAttempt:YES];
   [AutofillAppInterface setMandatoryReauthEnabled:YES];
   [AutofillAppInterface clearCreditCardStore];
 }
 
 - (void)tearDownHelper {
   [AutofillAppInterface clearCreditCardStore];
-  [AutofillAppInterface clearMockReauthenticationModule];
   [super tearDownHelper];
 }
 

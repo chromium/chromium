@@ -63,9 +63,10 @@
 #import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_factory.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/autofill/model/strike_database_factory.h"
-#import "ios/chrome/browser/autofill/ui_bundled/scoped_autofill_payment_reauth_module_override.h"
 #import "ios/chrome/browser/device_reauth/model/ios_device_authenticator.h"
 #import "ios/chrome/browser/device_reauth/model/ios_device_authenticator_factory.h"
+#import "ios/chrome/browser/device_reauth/model/reauthentication_service.h"
+#import "ios/chrome/browser/device_reauth/model/reauthentication_service_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_utils.h"
@@ -503,10 +504,8 @@ ChromeAutofillClientIOS::GetDeviceAuthenticator(std::string histogram) {
   device_reauth::DeviceAuthParams params(
       base::Seconds(60), device_reauth::DeviceAuthSource::kAutofill, std::move(histogram));
   id<ReauthenticationProtocol> reauthModule =
-      ScopedAutofillPaymentReauthModuleOverride::Get();
-  if (!reauthModule) {
-    reauthModule = [[ReauthenticationModule alloc] init];
-  }
+      ReauthenticationServiceFactory::GetForProfile(profile_)
+          ->GetReauthModule();
   return CreateIOSDeviceAuthenticator(reauthModule, profile_, params);
 }
 

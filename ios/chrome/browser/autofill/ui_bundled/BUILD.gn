@@ -11,7 +11,6 @@ source_set("coordinator") {
   ]
   deps = [
     ":bridges",
-    ":common",
     ":ui",
     "//base",
     "//components/application_locale_storage",
@@ -154,17 +153,6 @@ source_set("ui_type") {
   ]
 }
 
-source_set("common") {
-  sources = [
-    "scoped_autofill_payment_reauth_module_override.h",
-    "scoped_autofill_payment_reauth_module_override.mm",
-  ]
-  deps = [
-    "//base",
-    "//ios/chrome/common/ui/reauthentication",
-  ]
-}
-
 source_set("eg2_tests") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
@@ -173,7 +161,6 @@ source_set("eg2_tests") {
     "save_profile_egtest.mm",
   ]
   deps = [
-    ":common",
     ":eg_test_support+eg2",
     "//base",
     "//base/test:test_support",
@@ -218,7 +205,6 @@ source_set("eg_app_support+eg2") {
     "autofill_app_interface.mm",
   ]
   deps = [
-    ":common",
     ":coordinator",
     "//base",
     "//base/test:test_support",
