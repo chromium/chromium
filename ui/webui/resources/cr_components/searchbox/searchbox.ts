@@ -23,13 +23,9 @@ import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
-import {isMac} from '//resources/js/platform.js';
-import {hasKeyModifiers} from '//resources/js/util.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
-import {NavigationPredictor} from '//resources/mojo/components/omnibox/browser/omnibox.mojom-webui.js';
-import type {AutocompleteMatch, AutocompleteResult, PageCallbackRouter, PageHandlerInterface, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import {SideType} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {AutocompleteMatch, PageCallbackRouter, PageHandlerInterface, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {InputState} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {InputType, ModelMode, ToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
@@ -39,6 +35,8 @@ import {getHtml} from './searchbox.html.js';
 import {SearchboxBrowserProxy} from './searchbox_browser_proxy.js';
 import type {SearchboxDropdownElement} from './searchbox_dropdown.js';
 import type {SearchboxInputElement} from './searchbox_input.js';
+import type {SearchboxMixinInterface} from './searchbox_mixin.js';
+import {SearchboxMixin} from './searchbox_mixin.js';
 import {waitForLazyRender} from './utils.js';
 
 // LINT.IfChange(GhostLoaderTagName)
@@ -80,11 +78,12 @@ export interface SearchboxElement {
   };
 }
 
-const SearchboxElementBase = I18nMixinLit(WebUiListenerMixinLit(CrLitElement));
+const SearchboxElementBase =
+    SearchboxMixin(I18nMixinLit(WebUiListenerMixinLit(CrLitElement)));
 
 /** A real search box that behaves just like the Omnibox. */
 export class SearchboxElement extends SearchboxElementBase implements
-    DragAndDropHost {
+    DragAndDropHost, SearchboxMixinInterface {
   static get is() {
     return 'cr-searchbox';
   }
@@ -146,11 +145,6 @@ export class SearchboxElement extends SearchboxElementBase implements
         reflect: true,
       },
 
-      multiLineEnabled: {
-        type: Boolean,
-        reflect: true,
-      },
-
       /** The aria description to include on the input element. */
       searchboxAriaDescription: {type: String},
 
@@ -203,11 +197,6 @@ export class SearchboxElement extends SearchboxElementBase implements
       // Private properties
       //========================================================================
 
-      inputFocused_: {
-        type: Boolean,
-        reflect: true,
-      },
-
       isLensSearchbox_: {
         type: Boolean,
         reflect: true,
@@ -223,12 +212,6 @@ export class SearchboxElement extends SearchboxElementBase implements
        * match from offering inline autocompletion.
        */
       isDeletingInput_: {type: Boolean},
-
-      /**
-       * The 'Enter' keydown event that was ignored due to matches being stale.
-       * Used to navigate to the default match once up-to-date matches arrive.
-       */
-      lastIgnoredEnterEvent_: {type: Object},
 
       /**
        * Last state of the input (text and inline autocompletion). Updated
@@ -259,18 +242,6 @@ export class SearchboxElement extends SearchboxElementBase implements
         type: Boolean,
         reflect: true,
       },
-
-      result_: {type: Object},
-
-      /** The currently selected match, if any. */
-      selectedMatch_: {type: Object},
-
-      /**
-       * Index of the currently selected match, if any.
-       * Do not modify this. Use <cr-searchbox-dropdown> API to change
-       * selection.
-       */
-      selectedMatchIndex_: {type: Number},
 
       showThumbnail: {
         type: Boolean,
@@ -306,11 +277,9 @@ export class SearchboxElement extends SearchboxElementBase implements
 
   accessor canShowSecondarySide: boolean = false;
   accessor colorSourceIsBaseline: boolean = false;
-  accessor dropdownIsVisible: boolean = false;
   accessor hadSecondarySide: boolean = false;
   accessor hasSecondarySide: boolean = false;
   accessor isDark: boolean = false;
-  accessor multiLineEnabled: boolean = false;
   accessor searchboxAriaDescription: string = '';
   accessor searchboxLensSearchEnabled: boolean =
       loadTimeData.getBoolean('searchboxLensSearch');
@@ -330,12 +299,10 @@ export class SearchboxElement extends SearchboxElementBase implements
   accessor isDraggingFile: boolean = false;
   accessor animationState: GlowAnimationState = GlowAnimationState.NONE;
   protected accessor inputAriaLive_: string = '';
-  protected accessor inputFocused_: boolean = false;
   protected accessor isLensSearchbox_: boolean =
       loadTimeData.getBoolean('isLensSearchbox');
   protected accessor enableThumbnailSizingTweaks_: boolean =
       loadTimeData.getBoolean('enableThumbnailSizingTweaks');
-  private accessor lastIgnoredEnterEvent_: KeyboardEvent|null = null;
   private accessor lastQueriedInput_: string|null = null;
   protected accessor searchboxIcon_: string =
       loadTimeData.getString('searchboxDefaultIcon');
@@ -347,9 +314,6 @@ export class SearchboxElement extends SearchboxElementBase implements
       loadTimeData.valueExists('contextualMenuUsePecApi') ?
       loadTimeData.getBoolean('contextualMenuUsePecApi') :
       false;
-  protected accessor result_: AutocompleteResult|null = null;
-  protected accessor selectedMatch_: AutocompleteMatch|null = null;
-  protected accessor selectedMatchIndex_: number = -1;
   protected accessor thumbnailUrl_: string = '';
   protected accessor isThumbnailDeletable_: boolean = false;
   private accessor useWebkitSearchIcons_: boolean = false;
@@ -367,7 +331,6 @@ export class SearchboxElement extends SearchboxElementBase implements
   private onTabStripChangedListenerId_: number|null = null;
   private placeholderCycler_: PlaceholderTextCycler|null = null;
   private contextMenuOpened_: boolean = false;
-  private initialInputScrollHeight_: number = 0;
 
   constructor() {
     performance.mark('realbox-creation-start');
@@ -381,7 +344,7 @@ export class SearchboxElement extends SearchboxElementBase implements
     super.connectedCallback();
     this.autocompleteResultChangedListenerId_ =
         this.callbackRouter_.autocompleteResultChanged.addListener(
-            this.onAutocompleteResultChanged_.bind(this));
+            this.onAutocompleteResultChanged.bind(this));
     this.thumbnailChangedListenerId_ =
         this.callbackRouter_.setThumbnail.addListener(
             this.onSetThumbnail_.bind(this));
@@ -426,12 +389,12 @@ export class SearchboxElement extends SearchboxElementBase implements
     const changedPrivateProperties =
         changedProperties as Map<PropertyKey, unknown>;
 
-    if (changedPrivateProperties.has('result_') ||
-        changedPrivateProperties.has('selectedMatchIndex_')) {
-      this.selectedMatch_ = this.computeSelectedMatch_();
+    if (changedPrivateProperties.has('result') ||
+        changedPrivateProperties.has('selectedMatchIndex')) {
+      this.selectedMatch = this.computeSelectedMatch_();
     }
 
-    if (changedPrivateProperties.has('selectedMatch_')) {
+    if (changedPrivateProperties.has('selectedMatch')) {
       this.inputAriaLive_ = this.computeInputAriaLive_();
     }
 
@@ -451,9 +414,7 @@ export class SearchboxElement extends SearchboxElementBase implements
 
   override firstUpdated() {
     performance.measure('realbox-creation', 'realbox-creation-start');
-    if (this.multiLineEnabled) {
-      this.initialInputScrollHeight_ = this.$.input.scrollHeight;
-    }
+    this.initialInputScrollHeight = this.$.input.scrollHeight;
 
     if (this.cyclingPlaceholders) {
       waitForLazyRender().then(async () => {
@@ -470,15 +431,28 @@ export class SearchboxElement extends SearchboxElementBase implements
     }
   }
 
-  private computeInputAriaLive_(): string {
-    return this.selectedMatch_ ? 'off' : 'polite';
+  override getInputElement(): SearchboxInputElement {
+    return this.$.input;
   }
 
-  getSuggestionsElement(): SearchboxDropdownElement {
+  override getDropdownElement(): SearchboxDropdownElement {
     const matches =
         this.shadowRoot.querySelector<SearchboxDropdownElement>('#matches');
     assert(matches);
     return matches;
+  }
+
+  // Deprecated. Use `getDropDownElement`.
+  getSuggestionsElement(): SearchboxDropdownElement {
+    return this.getDropdownElement();
+  }
+
+  override pageHandler(): PageHandlerInterface {
+    return this.pageHandler_;
+  }
+
+  private computeInputAriaLive_(): string {
+    return this.selectedMatch ? 'off' : 'polite';
   }
 
   getDropTarget() {
@@ -516,12 +490,8 @@ export class SearchboxElement extends SearchboxElementBase implements
     return true;
   }
 
-  queryAutocomplete() {
-    // Query autocomplete if dropdown is not visible
-    if (this.dropdownIsVisible) {
-      return;
-    }
-    this.queryAutocomplete_(this.$.input.inputElement.value);
+  queryInputAutocomplete() {
+    this.queryAutocomplete(this.$.input.inputElement.value, false);
   }
 
   setInputText(text: string) {
@@ -540,70 +510,6 @@ export class SearchboxElement extends SearchboxElementBase implements
   // Callbacks
   //============================================================================
 
-  private async onAutocompleteResultChanged_(result: AutocompleteResult) {
-    if (this.lastQueriedInput_ === null ||
-        this.lastQueriedInput_.trimStart() !== result.input) {
-      return;  // Stale result; ignore.
-    }
-
-    this.result_ = result;
-    const hasMatches = result.matches?.length > 0;
-    const hasPrimaryMatches = result.matches?.some(match => {
-      const sideType =
-          result.suggestionGroupsMap[match.suggestionGroupId]?.sideType ||
-          SideType.kDefaultPrimary;
-      return sideType === SideType.kDefaultPrimary;
-    });
-
-    this.dropdownIsVisible = hasPrimaryMatches;
-
-    // In multi-line mode, suppress the dropdown when text wraps
-    // or when the only match is the mirror query.
-    if (this.multiLineEnabled && this.dropdownIsVisible) {
-      const isUserTyping = result.input.trim().length > 0;
-      if (isUserTyping &&
-          this.shouldSuppressDropdownForMultiline_(result.matches?.length || 0)) {
-        this.dropdownIsVisible = false;
-      }
-    }
-
-    const firstMatch = hasMatches ? this.result_.matches[0] : null;
-    if (firstMatch && firstMatch.allowedToBeDefaultMatch) {
-      // Select the default match and update the input.
-      this.getSuggestionsElement().selectFirst();
-      this.$.input.setInput({
-        text: this.lastQueriedInput_,
-        inline: firstMatch.inlineAutocompletion,
-      });
-
-      // Navigate to the default up-to-date match if the user typed and pressed
-      // 'Enter' too fast.
-      if (this.lastIgnoredEnterEvent_) {
-        this.navigateToMatch_(0, this.lastIgnoredEnterEvent_);
-        this.lastIgnoredEnterEvent_ = null;
-      }
-    } else if (
-        this.$.input.inputElement.value.trim() && hasMatches &&
-        this.selectedMatchIndex_ >= 0 &&
-        this.selectedMatchIndex_ < this.result_.matches.length) {
-      // Restore the selection and update the input. Don't restore when the
-      // user deletes all their input and autocomplete is queried or else the
-      // empty input will change to the value of the first result.
-      await this.getSuggestionsElement().selectIndex(this.selectedMatchIndex_);
-      this.$.input.setInput({
-        text: this.selectedMatch_!.fillIntoEdit,
-        inline: '',
-        moveCursorToEnd: true,
-      });
-    } else {
-      // Remove the selection and update the input.
-      this.getSuggestionsElement().unselect();
-      this.$.input.setInput({
-        inline: '',
-      });
-    }
-  }
-
   private onSetThumbnail_(thumbnailUrl: string, isDeletable: boolean) {
     this.thumbnailUrl_ = thumbnailUrl;
     this.isThumbnailDeletable_ = isDeletable;
@@ -614,7 +520,6 @@ export class SearchboxElement extends SearchboxElementBase implements
   //============================================================================
 
   protected onInputFocus_() {
-    this.inputFocused_ = true;
     this.pageHandler_.onFocusChanged(true);
     this.placeholderCycler_?.stop();
     if (this.ntpRealboxNextEnabled) {
@@ -623,31 +528,9 @@ export class SearchboxElement extends SearchboxElementBase implements
     }
   }
 
-  protected onInputFocusout_() {
-    this.inputFocused_ = false;
-  }
-
-  protected onSearchboxInputTextUpdated_(
+  protected onInputTextUpdated_(
       e: CustomEvent<{value: string, isComposing: boolean}>) {
-    // For lens searchboxes, requery autcomplete for all updates to the input
-    // (even if the input is empty).
-    if (e.detail.value.trim() || this.isLensSearchbox_) {
-      // TODO(crbug.com/40732045): Rather than disabling inline autocompletion
-      // when the input event is fired within a composition session, change the
-      // mechanism via which inline autocompletion is shown in the searchbox.
-      this.queryAutocomplete_(e.detail.value, e.detail.isComposing);
-    } else {
-      this.clearAutocompleteMatches_();
-    }
-  }
-
-  protected onSearchboxInputTabOrMouseClicked_(
-      e: CustomEvent<{value: string}>) {
-    this.inputFocused_ = true;
-    if (this.dropdownIsVisible) {
-      return;
-    }
-    this.queryAutocomplete_(e.detail.value);
+    this.onInputTextUpdated(e, this.isLensSearchbox_);
   }
 
   protected onSearchboxInputFilesPasted_(e: CustomEvent<{files: FileList}>) {
@@ -677,7 +560,7 @@ export class SearchboxElement extends SearchboxElementBase implements
       // Clear the input as well as the matches if the input was empty when
       // the matches arrived.
       this.$.input.setInput({text: '', inline: ''});
-      this.clearAutocompleteMatches_();
+      this.clearAutocompleteMatches();
     } else {
       this.dropdownIsVisible = false;
 
@@ -692,33 +575,7 @@ export class SearchboxElement extends SearchboxElementBase implements
     this.placeholderCycler_?.start();
   }
 
-  protected async onInputWrapperKeydown_(e: KeyboardEvent) {
-    const modifier = isMac ? e.metaKey && !e.ctrlKey : e.ctrlKey && !e.metaKey;
-    if (modifier && e.key === 'z') {
-      e.stopPropagation();
-      return;
-    }
-
-    const KEYDOWN_HANDLED_KEYS = [
-      'ArrowDown',
-      'ArrowUp',
-      'Backspace',
-      'Delete',
-      'Enter',
-      'Escape',
-      'PageDown',
-      'PageUp',
-      'Tab',
-    ];
-    if (!KEYDOWN_HANDLED_KEYS.includes(e.key)) {
-      return;
-    }
-
-    if (e.defaultPrevented) {
-      // Ignore previously handled events.
-      return;
-    }
-
+  override handleKeyNavigation(e: KeyboardEvent) {
     if (this.showThumbnail) {
       const thumbnail =
           this.shadowRoot.querySelector<HTMLElement>('cr-searchbox-thumbnail');
@@ -727,14 +584,14 @@ export class SearchboxElement extends SearchboxElementBase implements
           // Remove thumbnail, focus input, and notify browser.
           this.thumbnailUrl_ = '';
           this.$.input.focus();
-          this.clearAutocompleteMatches_();
+          this.clearAutocompleteMatches();
           this.pageHandler_.onThumbnailRemoved();
           const inputValue = this.$.input.inputElement.value;
           // Clearing the autocomplete matches above doesn't allow for
           // navigation directly after removing the thumbnail. Must manually
           // query autocomplete after removing the thumbnail since the
           // thumbnail isn't part of the text input.
-          this.queryAutocomplete_(inputValue);
+          this.queryAutocomplete(inputValue, false);
           e.preventDefault();
         } else if (e.key === 'Tab' && !e.shiftKey) {
           this.$.input.focus();
@@ -775,136 +632,12 @@ export class SearchboxElement extends SearchboxElementBase implements
         inline: '',
         moveCursorToEnd: true,
       });
-      this.queryAutocomplete_(newText);
+      this.queryAutocomplete(newText, false);
       e.preventDefault();
       return;
     }
 
-    if (e.key === 'Backspace' || e.key === 'Tab') {
-      return;
-    }
-
-
-    // ArrowUp/ArrowDown query autocomplete when matches are not visible.
-    if (!this.dropdownIsVisible) {
-      if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
-        if (this.multiLineEnabled &&
-            this.shouldSuppressDropdownForMultiline_(this.result_?.matches?.length || 0)) {
-          return;
-        }
-        const inputValue = this.$.input.inputElement.value;
-        if (inputValue.trim() || !inputValue) {
-          this.queryAutocomplete_(inputValue);
-        }
-        e.preventDefault();
-        return;
-      }
-    }
-
-    if (e.key === 'Escape') {
-      this.fire('escape-searchbox', {
-        event: e,
-        emptyInput: !this.$.input.inputElement.value,
-      });
-    }
-
-    // Do not handle the following keys if there are no matches available.
-    if (!this.result_ || this.result_.matches.length === 0) {
-      return;
-    }
-
-    if (e.key === 'Delete') {
-      if (e.shiftKey && !e.altKey && !e.ctrlKey && !e.metaKey) {
-        if (this.selectedMatch_ && this.selectedMatch_.supportsDeletion) {
-          this.pageHandler_.deleteAutocompleteMatch(
-              this.selectedMatchIndex_, this.selectedMatch_.destinationUrl);
-          e.preventDefault();
-        }
-      }
-      return;
-    }
-
-    // Do not handle the following keys if inside an IME composition session.
-    if (e.isComposing) {
-      return;
-    }
-
-    if (e.key === 'Enter') {
-      if (this.multiLineEnabled && e.shiftKey) {
-        return;
-      }
-      e.preventDefault();
-      const array: HTMLElement[] = [this.getSuggestionsElement(), this.$.input];
-      if (!array.includes(e.target as HTMLElement)) {
-        return;
-      }
-      const currentInput = this.result_?.input;
-      const lastQueriedInput = this.lastQueriedInput_?.trimStart();
-      if (currentInput !== undefined && lastQueriedInput !== undefined &&
-          lastQueriedInput === currentInput) {
-        if (this.selectedMatch_) {
-          this.navigateToMatch_(this.selectedMatchIndex_, e);
-        }
-      } else {
-        // User typed and pressed 'Enter' too quickly. Ignore this for now
-        // because the matches are stale. Navigate to the default match (if
-        // one exists) once the up-to-date matches arrive.
-        this.lastIgnoredEnterEvent_ = e;
-      }
-      return;
-    }
-
-    // Do not handle the following keys if there are key modifiers.
-    if (hasKeyModifiers(e)) {
-      return;
-    }
-
-    // Clear the input as well as the matches when 'Escape' is pressed if the
-    // the first match is selected or there are no selected matches.
-    if (e.key === 'Escape' && this.selectedMatchIndex_ <= 0) {
-      this.$.input.setInput({text: '', inline: ''});
-      this.clearAutocompleteMatches_();
-      e.preventDefault();
-      return;
-    }
-
-    e.preventDefault();
-
-    if (e.key === 'ArrowDown') {
-      await this.getSuggestionsElement().selectNext();
-      this.pageHandler_.onNavigationLikely(
-          this.selectedMatchIndex_, this.selectedMatch_!.destinationUrl,
-          NavigationPredictor.kUpOrDownArrowButton);
-    } else if (e.key === 'ArrowUp') {
-      await this.getSuggestionsElement().selectPrevious();
-      this.pageHandler_.onNavigationLikely(
-          this.selectedMatchIndex_, this.selectedMatch_!.destinationUrl,
-          NavigationPredictor.kUpOrDownArrowButton);
-    } else if (e.key === 'Escape' || e.key === 'PageUp') {
-      await this.getSuggestionsElement().selectFirst();
-    } else if (e.key === 'PageDown') {
-      await this.getSuggestionsElement().selectLast();
-    }
-
-    // Focus the selected match if focus is currently in the matches.
-    if (this.shadowRoot.activeElement === this.getSuggestionsElement()) {
-      this.getSuggestionsElement().focusSelected();
-    }
-
-    // Update the input.
-    const newFill = this.selectedMatch_!.fillIntoEdit;
-    const newInline = this.selectedMatchIndex_ === 0 &&
-            this.selectedMatch_!.allowedToBeDefaultMatch ?
-        this.selectedMatch_!.inlineAutocompletion :
-        '';
-    const newFillEnd = newFill.length - newInline.length;
-    const text = newFill.substr(0, newFillEnd);
-    assert(text);
-    this.$.input.setInput({
-      text: text,
-      inline: newInline,
-      moveCursorToEnd: newInline.length === 0,
-    });
+    super.handleKeyNavigation(e);
   }
 
   /**
@@ -912,18 +645,18 @@ export class SearchboxElement extends SearchboxElementBase implements
    */
   protected async onMatchFocusin_(e: CustomEvent<number>) {
     // Select the match that received focus.
-    await this.getSuggestionsElement().selectIndex(e.detail);
+    await this.getDropdownElement().selectIndex(e.detail);
     // Input selection (if any) likely drops due to focus change. Simply fill
     // the input with the match and move the cursor to the end.
     this.$.input.setInput({
-      text: this.selectedMatch_!.fillIntoEdit,
+      text: this.selectedMatch!.fillIntoEdit,
       inline: '',
       moveCursorToEnd: true,
     });
   }
 
   protected onMatchClick_() {
-    this.clearAutocompleteMatches_();
+    this.clearAutocompleteMatches();
   }
 
   protected onVoiceSearchClick_() {
@@ -976,33 +709,6 @@ export class SearchboxElement extends SearchboxElementBase implements
     const {previewDataUrl} =
         await this.pageHandler_.getTabPreview(e.detail.tabId);
     e.detail.onPreviewFetched(previewDataUrl || '');
-  }
-
-  protected onContextMenuContainerClick_(e: MouseEvent) {
-    e.preventDefault();
-    e.stopPropagation();
-
-    if (e.button !== 0 || this.inputFocused_ ||
-        this.searchboxLayoutMode === 'Compact') {
-      return;
-    }
-
-    this.focusInput();
-    this.inputFocused_ = true;
-    if (!this.dropdownIsVisible) {
-      this.queryAutocomplete_(this.$.input.inputElement.value);
-    }
-  }
-
-  protected onContextMenuContainerMousedown_(e: FocusEvent) {
-    // Special treatment for the "Tall" layout variants where not clicking on an
-    // inner element should be treated as clicking on a non-focusable area.
-    if (this.searchboxLayoutMode !== 'Compact' &&
-        (e.target instanceof HTMLElement &&
-         e.target.id === 'contextMenuContainer')) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
   }
 
   protected onContextMenuClosed_() {
@@ -1111,14 +817,13 @@ export class SearchboxElement extends SearchboxElementBase implements
     /* Remove thumbnail, focus input, and notify browser. */
     this.thumbnailUrl_ = '';
     this.$.input.focus();
-    this.clearAutocompleteMatches_();
+    this.clearAutocompleteMatches();
     this.pageHandler_.onThumbnailRemoved();
     // Clearing the autocomplete matches above doesn't allow for
     // navigation directly after removing the thumbnail. Must manually
     // query autocomplete after removing the thumbnail since the
     // thumbnail isn't part of the text input.
-    const inputValue = this.$.input.inputElement.value;
-    this.queryAutocomplete_(inputValue);
+    this.queryInputAutocomplete();
   }
 
   //============================================================================
@@ -1126,21 +831,15 @@ export class SearchboxElement extends SearchboxElementBase implements
   //============================================================================
 
   private computeSelectedMatch_(): AutocompleteMatch|null {
-    if (!this.result_ || !this.result_.matches) {
+    if (!this.result || !this.result.matches) {
       return null;
     }
-    return this.result_.matches[this.selectedMatchIndex_] || null;
-  }
-
-  private shouldSuppressDropdownForMultiline_(numMatches: number): boolean {
-    const inputHasWrapped = this.initialInputScrollHeight_ > 0 &&
-        this.$.input.scrollHeight > this.initialInputScrollHeight_;
-    return inputHasWrapped || numMatches === 1;
+    return this.result.matches[this.selectedMatchIndex] || null;
   }
 
   protected inputHasMatches_(): boolean {
-    return !!this.result_ && !!this.result_.matches &&
-        this.result_.matches.length > 0;
+    return !!this.result && !!this.result.matches &&
+        this.result.matches.length > 0;
   }
 
   protected computeShowRecentTabChip_(): boolean {
@@ -1163,47 +862,6 @@ export class SearchboxElement extends SearchboxElementBase implements
                                 this.i18n('searchBoxHint');
   }
 
-  /**
-   * Clears the autocomplete result on the page and on the autocomplete backend.
-   */
-  private clearAutocompleteMatches_() {
-    this.dropdownIsVisible = false;
-    this.result_ = null;
-    this.getSuggestionsElement().unselect();
-    this.pageHandler_.stopAutocomplete(/*clearResult=*/ true);
-    // Autocomplete sends updates once it is stopped. Invalidate those results
-    // by setting the |this.lastQueriedInput_| to its default value.
-    this.lastQueriedInput_ = null;
-  }
-
-  private navigateToMatch_(matchIndex: number, e: KeyboardEvent|MouseEvent) {
-    assert(matchIndex >= 0);
-    const match = this.result_!.matches[matchIndex];
-    assert(match);
-    this.pageHandler_.openAutocompleteMatch(
-        matchIndex, match.destinationUrl, this.dropdownIsVisible,
-        (e as MouseEvent).button || 0, e.altKey, e.ctrlKey, e.metaKey,
-        e.shiftKey);
-    this.$.input.setInput({
-      text: match.fillIntoEdit,
-      inline: '',
-      moveCursorToEnd: true,
-    });
-    this.clearAutocompleteMatches_();
-    e.preventDefault();
-  }
-
-  private queryAutocomplete_(
-      input: string, preventInlineAutocomplete: boolean = false) {
-    this.lastQueriedInput_ = input;
-
-    preventInlineAutocomplete = preventInlineAutocomplete ||
-        (this.$.input ? this.$.input.preventInlineAutocomplete(input) : false);
-    this.pageHandler_.queryAutocomplete(input, preventInlineAutocomplete);
-
-    this.fire('query-autocomplete', {inputValue: input});
-  }
-
   private recentTabChipVisible_() {
     if (!this.ntpRealboxNextEnabled) {
       return false;
@@ -1220,7 +878,7 @@ export class SearchboxElement extends SearchboxElementBase implements
   }
 
   protected onSelectedMatchIndexChanged_(e: CustomEvent<{value: number}>) {
-    this.selectedMatchIndex_ = e.detail.value;
+    this.selectedMatchIndex = e.detail.value;
   }
 
   protected onHadSecondarySideChanged_(e: CustomEvent<{value: boolean}>) {
