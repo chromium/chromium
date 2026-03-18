@@ -127,6 +127,7 @@
 #import "ios/chrome/browser/file_upload_panel/coordinator/file_upload_panel_coordinator.h"
 #import "ios/chrome/browser/find_in_page/model/find_tab_helper.h"
 #import "ios/chrome/browser/first_run/omnibox_position/coordinator/omnibox_position_choice_coordinator.h"
+#import "ios/chrome/browser/fullscreen/coordinator/fullscreen_coordinator.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_metrics.h"
 #import "ios/chrome/browser/google_one/coordinator/google_one_coordinator.h"
@@ -704,6 +705,8 @@ const char kChromeAppStoreUrl[] =
 @end
 
 @implementation BrowserCoordinator {
+  // Coordinator for Fullscreen.
+  FullscreenCoordinator* _fullscreenCoordinator;
   SigninCoordinator* _signinCoordinator;
   BrowserViewControllerDependencies _viewControllerDependencies;
   KeyCommandsProvider* _keyCommandsProvider;
@@ -1521,6 +1524,13 @@ const char kChromeAppStoreUrl[] =
   // coordinators.
   DCHECK(self.dispatcher);
 
+  if (IsFullscreenRefactoringEnabled()) {
+    _fullscreenCoordinator = [[FullscreenCoordinator alloc]
+        initWithBaseViewController:self.viewController
+                           browser:self.browser];
+    [_fullscreenCoordinator start];
+  }
+
   self.ARQuickLookCoordinator = [[ARQuickLookCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser];
@@ -1832,6 +1842,8 @@ const char kChromeAppStoreUrl[] =
   [self dismissDockingPromo];
   [self hideWelcomeBackPromo];
   [self hideComposeboxImmediately:YES completion:nil];
+  [_fullscreenCoordinator stop];
+  _fullscreenCoordinator = nil;
 }
 
 // Starts independent mediators owned by this coordinator.

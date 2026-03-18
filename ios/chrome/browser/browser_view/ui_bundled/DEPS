@@ -45,6 +45,7 @@ include_rules = [
   "+ios/chrome/browser/first_run/coordinator",
   "+ios/chrome/browser/first_run/omnibox_position",
   "+ios/chrome/browser/first_run/public",
+  "+ios/chrome/browser/fullscreen/coordinator",
   "+ios/chrome/browser/fullscreen/ui_bundled",
   "+ios/chrome/browser/google_one/coordinator",
   "+ios/chrome/browser/incognito_reauth/ui_bundled",

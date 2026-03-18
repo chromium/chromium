@@ -1,0 +1,31 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "fullscreen_coordinator.h",
+    "fullscreen_coordinator.mm",
+    "fullscreen_mediator.h",
+    "fullscreen_mediator.mm",
+  ]
+  deps = [
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "fullscreen_coordinator_unittest.mm",
+    "fullscreen_mediator_unittest.mm",
+  ]
+  deps = [
+    ":coordinator",
+    "//base/test:test_support",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//testing/gtest",
+  ]
+}

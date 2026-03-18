@@ -146,6 +146,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/first_run/coordinator",
     "//ios/chrome/browser/first_run/omnibox_position/coordinator",
     "//ios/chrome/browser/first_run/public:utils",
+    "//ios/chrome/browser/fullscreen/coordinator",
     "//ios/chrome/browser/fullscreen/ui_bundled",
     "//ios/chrome/browser/fullscreen/ui_bundled:metrics",
     "//ios/chrome/browser/fullscreen/ui_bundled:ui",

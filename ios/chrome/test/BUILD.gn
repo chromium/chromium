@@ -333,6 +333,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/first_run/coordinator:unit_tests",
     "//ios/chrome/browser/first_run/tos/coordinator:unit_tests",
     "//ios/chrome/browser/flags:unit_tests",
+    "//ios/chrome/browser/fullscreen/coordinator:unit_tests",
     "//ios/chrome/browser/fullscreen/ui_bundled:unit_tests",
     "//ios/chrome/browser/geolocation/model:unit_tests",
     "//ios/chrome/browser/history/model:unit_tests",
