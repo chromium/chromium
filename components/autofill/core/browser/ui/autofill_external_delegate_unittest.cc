@@ -503,6 +503,25 @@ class AutofillExternalDelegateTest : public testing::Test,
     external_delegate().OnSuggestionsReturned(field_id, input_suggestions);
   }
 
+  FormData CreateTestFormWithBounds(
+      const gfx::RectF& bounds = gfx::RectF(0, 0, 100, 20)) {
+    test::FieldDescription field_desc = {
+        .role = NAME_FIRST,
+        .autocomplete_attribute = "given-name",
+    };
+
+    test::FormDescription form_desc;
+    form_desc.fields.push_back(field_desc);
+
+    FormData form = test::GetFormData(form_desc);
+    std::vector<FormFieldData> fields = form.ExtractFields();
+    if (!fields.empty()) {
+      fields[0].set_bounds(bounds);
+      form.set_fields(std::move(fields));
+    }
+    return form;
+  }
+
   AutofillWebDataServiceTestHelper& webdata_helper() { return webdata_helper_; }
 
  private:
@@ -634,6 +653,81 @@ TEST_F(AutofillExternalDelegateTest, AtMemoryDoesNotHideOnEmptySuggestions) {
 
   // Return empty suggestions.
   OnSuggestionsReturned(queried_field().global_id(), {});
+}
+
+// Tests that accessibility annotator trigger source uses the caret anchor
+// type when valid caret bounds are available.
+TEST_F(AutofillExternalDelegateTest, AtMemoryUsesCaretAnchorWithValidCaret) {
+  gfx::RectF field_bounds(0, 0, 100, 20);
+  gfx::Rect caret_bounds(10, 10, 1, 1);
+  FormData form = CreateTestFormWithBounds(field_bounds);
+
+  IssueOnQuery(form, caret_bounds, AutofillSuggestionTriggerSource::kAtMemory);
+
+  EXPECT_CALL(autofill_client(),
+              ShowAutofillSuggestions(
+                  AllOf(Field(&AutofillClient::PopupOpenArgs::element_bounds,
+                              gfx::RectF(caret_bounds)),
+                        Field(&AutofillClient::PopupOpenArgs::anchor_type,
+                              PopupAnchorType::kCaret)),
+                  _));
+
+  OnSuggestionsReturned(
+      queried_field().global_id(),
+      {CreateAutofillSuggestion(SuggestionType::kAddressEntry, u"suggestion")});
+}
+
+// Tests that @memory trigger source uses the default field anchor
+// type when caret bounds are empty.
+TEST_F(AutofillExternalDelegateTest, AtMemoryUsesFieldAnchorWithEmptyCaret) {
+  gfx::RectF field_bounds(0, 0, 100, 20);
+  gfx::Rect empty_caret_bounds;
+  FormData form = CreateTestFormWithBounds(field_bounds);
+
+  IssueOnQuery(form, empty_caret_bounds,
+               AutofillSuggestionTriggerSource::kAtMemory);
+
+  const PopupAnchorType expected_anchor_type =
+#if BUILDFLAG(IS_ANDROID)
+      PopupAnchorType::kKeyboardAccessory;
+#else
+      PopupAnchorType::kField;
+#endif
+
+  EXPECT_CALL(autofill_client(),
+              ShowAutofillSuggestions(
+                  AllOf(Field(&AutofillClient::PopupOpenArgs::element_bounds,
+                              field_bounds),
+                        Field(&AutofillClient::PopupOpenArgs::anchor_type,
+                              expected_anchor_type)),
+                  _));
+
+  OnSuggestionsReturned(
+      queried_field().global_id(),
+      {CreateAutofillSuggestion(SuggestionType::kAddressEntry, u"suggestion")});
+}
+
+// Tests that accessibility annotator context menu trigger source uses the
+// caret anchor type.
+TEST_F(AutofillExternalDelegateTest, AtMemoryContextMenuUsesCaretAnchor) {
+  gfx::RectF field_bounds(0, 0, 100, 20);
+  gfx::Rect caret_bounds(10, 10, 1, 1);
+  FormData form = CreateTestFormWithBounds(field_bounds);
+
+  IssueOnQuery(form, caret_bounds,
+               AutofillSuggestionTriggerSource::kAtMemoryContextMenu);
+
+  EXPECT_CALL(autofill_client(),
+              ShowAutofillSuggestions(
+                  AllOf(Field(&AutofillClient::PopupOpenArgs::element_bounds,
+                              gfx::RectF(caret_bounds)),
+                        Field(&AutofillClient::PopupOpenArgs::anchor_type,
+                              PopupAnchorType::kCaret)),
+                  _));
+
+  OnSuggestionsReturned(
+      queried_field().global_id(),
+      {CreateAutofillSuggestion(SuggestionType::kAddressEntry, u"suggestion")});
 }
 
 // Test that our external delegate called the virtual methods at the right time.

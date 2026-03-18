@@ -408,8 +408,9 @@ void AutofillExternalDelegate::AttemptToDisplayAutofillSuggestions(
   const bool are_caret_bounds_valid =
       caret_bounds_ != gfx::Rect() &&
       query_field_.bounds().Contains(gfx::RectF(caret_bounds_));
+  const bool is_at_memory = IsAtMemoryTriggerSource(trigger_source_);
   const bool should_use_caret_bounds =
-      show_proactive_nudge_at_caret && are_caret_bounds_valid;
+      (show_proactive_nudge_at_caret || is_at_memory) && are_caret_bounds_valid;
 
   const PopupAnchorType default_anchor_type =
 #if BUILDFLAG(IS_ANDROID)
