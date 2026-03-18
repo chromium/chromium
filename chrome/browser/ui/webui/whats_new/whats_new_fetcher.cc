@@ -114,7 +114,7 @@ class WhatsNewFetcher {
         base::BindRepeating(&WhatsNewFetcher::OnBrowserDidBecomeActive,
                             base::Unretained(this)));
     browser_did_become_inactive_subscription_ =
-        browser_->RegisterDidBecomeActive(
+        browser_->RegisterDidBecomeInactive(
             base::BindRepeating(&WhatsNewFetcher::OnBrowserDidBecomeInactive,
                                 base::Unretained(this)));
 
