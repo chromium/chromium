@@ -351,15 +351,6 @@
   <message name="IDS_OFFERS_CONSENT_INFOBAR_DISABLE_BUTTON" desc="Disable button label.">
     Deny
   </message>
-  <message name="IDS_NETWORK_CONFIG_ERROR_INCORRECT_PASSWORD" desc="Error for network configuration: Incorrect password.">
-    Incorrect password
-  </message>
-  <message name="IDS_NETWORK_CONFIG_ERROR_NETWORK_TYPE_MISSING" desc="Error for network configuration: Network type missing.">
-    Network type missing
-  </message>
-  <message name="IDS_NETWORK_CONFIG_ERROR_NETWORK_PROP_DICT_MALFORMED" desc="Error for network configuration: Network property dictionary malformed.">
-    Network property dictionary malformed
-  </message>
   <message name="IDS_NETWORK_ENROLLMENT_HANDLER_TITLE" desc="Title of the window for generating a new network certificate.">
     Obtain network certificate
   </message>
