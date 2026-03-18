@@ -536,7 +536,11 @@ template("tast_test") {
     "//third_party/breakpad:minidump_dump",
     "//third_party/breakpad:minidump_stackwalk",
   ]
-  _data = [ "//components/crash/content/tools/generate_breakpad_symbols.py" ]
+  _data = [
+    "//components/crash/content/tools/generate_breakpad_symbols.py",
+    "//chromeos/tast_control_disabled_tests_public_builders.txt",
+    "//chromeos/tast_control_disabled_tests.txt",
+  ]
 
   if (is_skylab) {
     generate_skylab_tast_filter(target_name) {
