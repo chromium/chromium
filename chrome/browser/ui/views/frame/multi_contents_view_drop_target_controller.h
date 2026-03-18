@@ -31,8 +31,6 @@ class MultiContentsViewDropTargetController final
     : public TabDragTarget,
       public MultiContentsDropTargetView::DragDelegate {
  public:
-  static constexpr base::TimeDelta kShowDropTargetForTabDelay =
-      base::Milliseconds(1000);
   static constexpr base::TimeDelta kShowDropTargetForLinkDelay =
       base::Milliseconds(500);
   static constexpr base::TimeDelta kShowDropTargetForLinkAfterHideDelay =

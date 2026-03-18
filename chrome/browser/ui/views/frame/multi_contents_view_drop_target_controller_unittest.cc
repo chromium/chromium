@@ -266,8 +266,7 @@ TEST_F(MultiContentsViewDropTargetControllerTest,
 
   // Simulate showing the drop target first.
   DragTabTo(kDragPointForStartDropTargetShow);
-  FastForward(
-      MultiContentsViewDropTargetController::kShowDropTargetForTabDelay);
+  FastForward(features::kShowDropTargetForTabDelay.Get());
   EXPECT_TRUE(drop_target_view().GetVisible());
 
   // Dragging multiple tabs should immediately hide it.
@@ -296,8 +295,7 @@ TEST_F(MultiContentsViewDropTargetControllerTest,
 
   // Simulate showing the drop target first.
   DragTabTo(kDragPointForStartDropTargetShow);
-  FastForward(
-      MultiContentsViewDropTargetController::kShowDropTargetForTabDelay);
+  FastForward(features::kShowDropTargetForTabDelay.Get());
   EXPECT_TRUE(drop_target_view().GetVisible());
 
   // Dragging the group tabs should immediately hide it.
@@ -327,8 +325,7 @@ TEST_F(MultiContentsViewDropTargetControllerTest,
 
   controller().OnTabDragUpdated(mock_tab_drag_controller,
                                 kDragPointForStartDropTargetShow);
-  FastForward(
-      MultiContentsViewDropTargetController::kShowDropTargetForTabDelay);
+  FastForward(features::kShowDropTargetForTabDelay.Get());
   EXPECT_TRUE(drop_target_view().GetVisible());
   EXPECT_EQ(drop_target_view().side().value(),
             MultiContentsDropTargetView::DropSide::START);
@@ -344,8 +341,7 @@ TEST_F(MultiContentsViewDropTargetControllerTest,
 TEST_F(MultiContentsViewDropTargetControllerTest, OnTabDragExited) {
   // First, show the drop target.
   DragTabTo(kDragPointForStartDropTargetShow);
-  FastForward(
-      MultiContentsViewDropTargetController::kShowDropTargetForTabDelay);
+  FastForward(features::kShowDropTargetForTabDelay.Get());
   EXPECT_TRUE(drop_target_view().GetVisible());
 
   // Exiting the drag should hide it.
@@ -358,8 +354,7 @@ TEST_F(MultiContentsViewDropTargetControllerTest, OnTabDragExited) {
 TEST_F(MultiContentsViewDropTargetControllerTest, OnTabDragEnded) {
   // First, show the drop target.
   DragTabTo(kDragPointForStartDropTargetShow);
-  FastForward(
-      MultiContentsViewDropTargetController::kShowDropTargetForTabDelay);
+  FastForward(features::kShowDropTargetForTabDelay.Get());
   EXPECT_TRUE(drop_target_view().GetVisible());
 
   // Ending the drag should hide it.
@@ -387,8 +382,7 @@ TEST_F(MultiContentsViewDropTargetControllerTest,
 
   controller().OnTabDragUpdated(mock_tab_drag_controller,
                                 kDragPointForStartDropTargetShow);
-  FastForward(
-      MultiContentsViewDropTargetController::kShowDropTargetForTabDelay);
+  FastForward(features::kShowDropTargetForTabDelay.Get());
   EXPECT_TRUE(drop_target_view().GetVisible());
 
   controller().OnTabDragUpdated(mock_tab_drag_controller,
@@ -621,8 +615,7 @@ TEST_F(MultiContentsViewDropTargetControllerTest, HandleTabDrop) {
 
   controller().OnTabDragUpdated(mock_tab_drag_controller,
                                 kDragPointForEndDropTargetShow);
-  FastForward(
-      MultiContentsViewDropTargetController::kShowDropTargetForTabDelay);
+  FastForward(features::kShowDropTargetForTabDelay.Get());
   EXPECT_TRUE(drop_target_view().GetVisible());
   ASSERT_EQ(drop_target_view().side().value(),
             MultiContentsDropTargetView::DropSide::END);

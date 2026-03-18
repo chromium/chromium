@@ -369,7 +369,7 @@ void MultiContentsViewDropTargetController::StartOrUpdateDropTargetTimer(
 
   base::TimeDelta show_delay;
   if (drag_type == MultiContentsDropTargetView::DragType::kTab) {
-    show_delay = kShowDropTargetForTabDelay;
+    show_delay = features::kShowDropTargetForTabDelay.Get();
   } else if (base::Time::Now() - drop_target_last_hidden_ <
              kShowDropTargetForLinkAfterHideLookbackWindow) {
     // If a drop target was recently closed for a link drag, use a longer delay
