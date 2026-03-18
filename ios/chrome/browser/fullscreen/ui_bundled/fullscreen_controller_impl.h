@@ -49,8 +49,11 @@ class FullscreenControllerImpl : public FullscreenController {
       FullscreenModeTransitionTrigger fullscreen_exit_trigger) override;
   void ExitFullscreenWithoutAnimation() override;
   bool IsForceFullscreenMode() const override;
-  void EnterForceFullscreenMode(bool insets_update_enabled) override;
-  void ExitForceFullscreenMode() override;
+  void EnterForceFullscreenMode(
+      bool insets_update_enabled,
+      FullscreenModeTransitionTrigger trigger) override;
+  void ExitForceFullscreenMode(
+      FullscreenModeTransitionTrigger trigger) override;
   void ResizeHorizontalViewport() override;
   void SetToolbarsSize(ToolbarsSize* toolbars_size) override;
   ToolbarsSize* GetToolbarsSize() const override;

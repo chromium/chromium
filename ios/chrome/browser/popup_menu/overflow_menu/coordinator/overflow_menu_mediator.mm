@@ -2634,7 +2634,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 
 - (void)startCollapseToolbars {
   [self dismissMenu];
-  [self.browserCoordinatorHandler forceFullscreenMode];
+  [self.browserCoordinatorHandler
+      forceFullscreenMode:FullscreenModeTransitionTrigger::kForcedByUser];
 }
 
 // Opens the "Set a reminder" screen for the user's current tab.

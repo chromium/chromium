@@ -15,6 +15,7 @@ source_set("coordinator") {
     "//components/prefs",
     "//ios/chrome/browser/composebox/public:animation",
     "//ios/chrome/browser/fullscreen/ui_bundled",
+    "//ios/chrome/browser/fullscreen/ui_bundled:metrics",
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/location_bar/ui_bundled",
     "//ios/chrome/browser/ntp/model:util",

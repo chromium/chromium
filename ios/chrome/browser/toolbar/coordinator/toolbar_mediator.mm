@@ -6,6 +6,7 @@
 
 #import "components/omnibox/browser/omnibox_pref_names.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_metrics.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/model/web_state_list/active_web_state_observation_forwarder.h"
@@ -205,11 +206,13 @@
   if (showLocationIndicator) {
     if (_fullscreenController) {
       _fullscreenController->EnterForceFullscreenMode(
-          /* insets_update_enabled */ false);
+          /* insets_update_enabled */ false,
+          FullscreenModeTransitionTrigger::kForcedByCode);
     }
   } else {
     if (_fullscreenController) {
-      _fullscreenController->ExitForceFullscreenMode();
+      _fullscreenController->ExitForceFullscreenMode(
+          FullscreenModeTransitionTrigger::kForcedByCode);
     }
   }
 

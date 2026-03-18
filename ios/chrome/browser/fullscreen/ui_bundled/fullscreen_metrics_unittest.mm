@@ -312,9 +312,9 @@ TEST_F(FullscreenMetricsTest, RecordsExitBottomReached) {
       FullscreenModeTransitionTrigger::kBottomReached, 1);
 }
 
-// Tests that LegacyFullscreenMediator records kUserTapped when exiting
+// Tests that LegacyFullscreenMediator records kForcedByUser when exiting
 // fullscreen.
-TEST_F(FullscreenMetricsTest, RecordsExitUserTapped) {
+TEST_F(FullscreenMetricsTest, RecordsExitForcedByUser) {
   model()->ResetForNavigation();
   model()->SetScrollViewHeight(200.0);
   model()->SetContentHeight(1000.0);
@@ -325,12 +325,12 @@ TEST_F(FullscreenMetricsTest, RecordsExitUserTapped) {
 
   base::HistogramTester histogram_tester;
   // Simulate user tap on status bar.
-  mediator_->ExitFullscreen(FullscreenModeTransitionTrigger::kUserTapped);
+  mediator_->ExitFullscreen(FullscreenModeTransitionTrigger::kForcedByUser);
 
   FinishAnimator(observer().animator());
   ASSERT_EQ(model()->progress(), 1.0);
 
   histogram_tester.ExpectUniqueSample(
       kExitFullscreenModeTransitionTriggerHistogram,
-      FullscreenModeTransitionTrigger::kUserTapped, 1);
+      FullscreenModeTransitionTrigger::kForcedByUser, 1);
 }

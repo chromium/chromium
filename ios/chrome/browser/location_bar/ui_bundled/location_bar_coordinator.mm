@@ -708,7 +708,8 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   FullscreenController* fullscreenController =
       FullscreenController::FromBrowser(self.browser);
   fullscreenController->EnterForceFullscreenMode(
-      /* insets_update_enabled */ true);
+      /* insets_update_enabled */ true,
+      FullscreenModeTransitionTrigger::kForcedByUser);
 }
 
 #pragma mark - LocationBarBadgeCommands

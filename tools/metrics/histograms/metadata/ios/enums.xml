@@ -117,7 +117,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="UserControlled"/>
   <int value="1" label="ForcedByCode"/>
   <int value="2" label="UserInitiatedFinishedByCode"/>
-  <int value="3" label="UserTapped"/>
+  <int value="3" label="ForcedByUser"/>
   <int value="4" label="BottomReached"/>
   <int value="5" label="NoChange"/>
 </enum>

@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/find_in_page/model/find_in_page_model.h"
 #import "ios/chrome/browser/find_in_page/model/find_in_page_response_delegate.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_metrics.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -94,7 +95,8 @@ NSString* gSearchTerm;
   // When pulling to refresh the webpage during FIP,
   // `userDismissedFindNavigatorForManager` will not be called. We need to
   // handle the fullscreen exit here in this case.
-  self.fullscreenController->ExitForceFullscreenMode();
+  self.fullscreenController->ExitForceFullscreenMode(
+      FullscreenModeTransitionTrigger::kForcedByCode);
 }
 
 - (BOOL)canFindInPage {
@@ -153,7 +155,8 @@ NSString* gSearchTerm;
   CHECK(self.fullscreenController);
   // User dismissed the Find panel so mark the Find UI as inactive.
   self.findInPageModel.enabled = NO;
-  self.fullscreenController->ExitForceFullscreenMode();
+  self.fullscreenController->ExitForceFullscreenMode(
+      FullscreenModeTransitionTrigger::kForcedByCode);
 }
 
 - (void)detachFromWebState {

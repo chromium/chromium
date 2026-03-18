@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 
 #import "base/ios/block_types.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_metrics.h"
 
 enum class ComposeboxEntrypoint;
 namespace base {
@@ -173,7 +174,7 @@ enum class TrustedVaultUserActionTriggerForUMA;
                        prefilledEmail:(NSString*)email;
 
 // Forces fullscreen mode which means that toolbars are collapsed.
-- (void)forceFullscreenMode;
+- (void)forceFullscreenMode:(FullscreenModeTransitionTrigger)trigger;
 
 // Clears any presented state on BVC.
 - (void)clearPresentedStateWithCompletion:(ProceduralBlock)completion

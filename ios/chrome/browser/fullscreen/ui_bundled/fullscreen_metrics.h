@@ -25,7 +25,7 @@ enum class FullscreenModeTransitionTrigger {
   // the user lifts their finger during the animation.
   kUserInitiatedFinishedByCode = 2,
   // Reported when exiting fullscreen mode by tapping on the toolbar.
-  kUserTapped = 3,
+  kForcedByUser = 3,
   // Reported when exiting fullscreen mode by reaching the bottom of the page.
   kBottomReached = 4,
   // Reported when the animation is called but the state is still the same, so

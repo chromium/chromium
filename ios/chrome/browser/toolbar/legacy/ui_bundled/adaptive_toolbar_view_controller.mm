@@ -593,7 +593,7 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
 // Exits fullscreen.
 - (void)exitFullscreen {
   [self.adaptiveDelegate
-      exitFullscreen:FullscreenModeTransitionTrigger::kUserTapped];
+      exitFullscreen:FullscreenModeTransitionTrigger::kForcedByUser];
 }
 
 // Modifies the UI based on the UITraits that changed on the device.

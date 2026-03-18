@@ -2801,9 +2801,9 @@ const char kChromeAppStoreUrl[] =
   _notificationsOptInCoordinator = nil;
 }
 
-- (void)forceFullscreenMode {
+- (void)forceFullscreenMode:(FullscreenModeTransitionTrigger)trigger {
   _fullscreenController->EnterForceFullscreenMode(
-      /* insets_update_enabled */ true);
+      /*insets_update_enabled=*/true, trigger);
 }
 
 - (void)showAddAccountWithAccessPoint:(signin_metrics::AccessPoint)accessPoint
@@ -3420,7 +3420,8 @@ const char kChromeAppStoreUrl[] =
     // currently focused. The mode is force to avoid the bottom Omnibox
     // appearing above the find in page collapsed toolbar when scrolling.
     _fullscreenController->EnterForceFullscreenMode(
-        /* insets_update_enabled */ true);
+        /* insets_update_enabled */ true,
+        FullscreenModeTransitionTrigger::kForcedByCode);
     helper->SetFindUIActive(true);
   }
 

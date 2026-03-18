@@ -60,11 +60,14 @@ class LegacyFullscreenMediator : public FullscreenModelObserver {
 
   // Enters or exits fullscreen, animating the changes.
   void EnterFullscreen();
-  void ExitFullscreen(FullscreenModeTransitionTrigger fullscreen_exit_trigger);
+  void ExitFullscreen(FullscreenModeTransitionTrigger trigger);
 
   // Force enters fullscreen without animation. This enters fullscreen even when
   // the model is disabled.
-  void ForceEnterFullscreen();
+  void ForceEnterFullscreen(bool insets_update_enabled,
+                            FullscreenModeTransitionTrigger trigger);
+  void ForceExitFullscreen(FullscreenModeTransitionTrigger trigger);
+
   // Exits fullscreen without animation.
   void ExitFullscreenWithoutAnimation();
 
@@ -121,6 +124,8 @@ class LegacyFullscreenMediator : public FullscreenModelObserver {
   base::ObserverList<FullscreenControllerObserver, true> observers_;
   // Type of entrypoint that triggers the exit of fullscreen mode.
   std::optional<FullscreenModeTransitionTrigger> fullscreen_exit_trigger_;
+  // Type of entrypoint that triggers the enter of fullscreen mode.
+  std::optional<FullscreenModeTransitionTrigger> fullscreen_enter_trigger_;
 
   // Whether the user has scrolled to the bottom of the page for the first time
   // on the current page. This is reset to false as soon as the user scrolls up.

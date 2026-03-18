@@ -6,6 +6,7 @@
 
 #import "base/check.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_metrics.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/scoped_fullscreen_disabler.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
@@ -76,14 +77,16 @@
   if (locationIndicatorActive) {
     if (_fullscreenController) {
       _fullscreenController->EnterForceFullscreenMode(
-          /* insets_update_enabled */ false);
+          /* insets_update_enabled */ false,
+          FullscreenModeTransitionTrigger::kForcedByCode);
     }
     self.view.locationBarTopConstraint.constant = 0;
     self.view.bottomSeparator.alpha = 1.0;
     [self.toolbarHeightDelegate secondaryToolbarMovedAboveKeyboard];
   } else {
     if (_fullscreenController) {
-      _fullscreenController->ExitForceFullscreenMode();
+      _fullscreenController->ExitForceFullscreenMode(
+          FullscreenModeTransitionTrigger::kForcedByCode);
     }
     self.view.bottomSeparator.alpha = 0.0;
     [self.toolbarHeightDelegate secondaryToolbarRemovedFromKeyboard];

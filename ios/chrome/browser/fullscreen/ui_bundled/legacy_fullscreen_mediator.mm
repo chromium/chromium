@@ -73,7 +73,7 @@ void LegacyFullscreenMediator::EnterFullscreen() {
 }
 
 void LegacyFullscreenMediator::ExitFullscreen(
-    FullscreenModeTransitionTrigger fullscreen_exit_trigger) {
+    FullscreenModeTransitionTrigger trigger) {
   if (model_->IsForceFullscreenMode()) {
     return;
   }
@@ -82,12 +82,31 @@ void LegacyFullscreenMediator::ExitFullscreen(
   // hidden if AnimateModelReset() is called while a scroll view is
   // decelerating.
   model_->IgnoreRemainderOfCurrentScroll();
-  fullscreen_exit_trigger_ = fullscreen_exit_trigger;
+  fullscreen_exit_trigger_ = trigger;
   AnimateWithStyle(FullscreenAnimatorStyle::EXIT_FULLSCREEN);
 }
 
-void LegacyFullscreenMediator::ForceEnterFullscreen() {
+void LegacyFullscreenMediator::ForceEnterFullscreen(
+    bool insets_update_enabled,
+    FullscreenModeTransitionTrigger trigger) {
+  fullscreen_enter_trigger_ = trigger;
+  model_->SetForceFullscreenMode(true);
+  model_->SetInsetsUpdateEnabled(insets_update_enabled);
+  // Disable fullscreen because:
+  // - It interfers with the animation when moving the secondary toolbar above
+  // the keyboard.
+  // - Fullscreen should not resize the toolbar it's above the keyboard.
+  model_->IncrementDisabledCounter();
   model_->ForceEnterFullscreen();
+}
+
+void LegacyFullscreenMediator::ForceExitFullscreen(
+    FullscreenModeTransitionTrigger trigger) {
+  fullscreen_exit_trigger_ = trigger;
+  model_->SetForceFullscreenMode(false);
+  model_->SetInsetsUpdateEnabled(true);
+  model_->DecrementDisabledCounter();
+  ExitFullscreenWithoutAnimation();
 }
 
 void LegacyFullscreenMediator::ExitFullscreenWithoutAnimation() {
@@ -105,6 +124,7 @@ void LegacyFullscreenMediator::Disconnect() {
   model_->RemoveObserver(this);
   model_ = nullptr;
   controller_ = nullptr;
+  fullscreen_enter_trigger_ = std::nullopt;
 }
 
 void LegacyFullscreenMediator::FullscreenModelToolbarHeightsUpdated(
@@ -207,6 +227,7 @@ void LegacyFullscreenMediator::FullscreenModelScrollEventEnded(
 }
 
 void LegacyFullscreenMediator::FullscreenModelWasReset(FullscreenModel* model) {
+  fullscreen_enter_trigger_ = std::nullopt;
   has_reached_bottom_once_ = false;
   // Stop any in-progress animations.  Don't update the model because this
   // callback occurs after the model's state is reset, and updating the model

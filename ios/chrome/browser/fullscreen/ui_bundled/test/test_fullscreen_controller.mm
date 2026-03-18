@@ -136,7 +136,8 @@ bool TestFullscreenController::IsForceFullscreenMode() const {
 }
 
 void TestFullscreenController::EnterForceFullscreenMode(
-    bool insets_update_enabled) {
+    bool insets_update_enabled,
+    FullscreenModeTransitionTrigger trigger) {
   if (model_ && !model_->IsForceFullscreenMode()) {
     model_->SetForceFullscreenMode(true);
     model_->SetInsetsUpdateEnabled(insets_update_enabled);
@@ -145,7 +146,8 @@ void TestFullscreenController::EnterForceFullscreenMode(
   }
 }
 
-void TestFullscreenController::ExitForceFullscreenMode() {
+void TestFullscreenController::ExitForceFullscreenMode(
+    FullscreenModeTransitionTrigger trigger) {
   if (model_ && model_->IsForceFullscreenMode()) {
     model_->DecrementDisabledCounter();
     model_->SetForceFullscreenMode(false);
