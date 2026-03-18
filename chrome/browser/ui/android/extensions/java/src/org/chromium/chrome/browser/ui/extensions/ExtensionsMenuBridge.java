@@ -104,6 +104,12 @@ public class ExtensionsMenuBridge implements Destroyable {
                 .onDismissExtensionClicked(mNativeExtensionsMenuDelegateAndroid, extensionId);
     }
 
+    /** Called when the reload page button is clicked. */
+    public void onReloadPageButtonClicked() {
+        ExtensionsMenuBridgeJni.get()
+                .onReloadPageButtonClicked(mNativeExtensionsMenuDelegateAndroid);
+    }
+
     /** Returns whether the native menu model is ready. */
     public boolean isReady() {
         return ExtensionsMenuBridgeJni.get().isReady(mNativeExtensionsMenuDelegateAndroid);

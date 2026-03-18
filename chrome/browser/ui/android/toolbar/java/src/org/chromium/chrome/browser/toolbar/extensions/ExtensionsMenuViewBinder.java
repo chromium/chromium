@@ -4,11 +4,14 @@
 
 package org.chromium.chrome.browser.toolbar.extensions;
 
+import android.transition.TransitionManager;
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.core.view.ViewCompat;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuTypes.OptionalSectionType;
 import org.chromium.chrome.browser.ui.extensions.R;
 import org.chromium.components.browser_ui.widget.MaterialSwitchWithText;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -17,6 +20,14 @@ import org.chromium.ui.modelutil.PropertyModel;
 @NullMarked
 public class ExtensionsMenuViewBinder {
     public static void bind(PropertyModel model, View view, PropertyKey key) {
+        // We use beginDelayedTransition to smoothly animate the resulting layout
+        // resizing, preventing the menu from abruptly "jumping" to its new height.
+        if (key == ExtensionsMenuProperties.IS_ZERO_STATE
+                || key == ExtensionsMenuProperties.SITE_SETTINGS_TOGGLE_VISIBLE
+                || key == ExtensionsMenuProperties.OPTIONAL_SECTION_TYPE) {
+            TransitionManager.beginDelayedTransition((ViewGroup) view);
+        }
+
         if (key == ExtensionsMenuProperties.CLOSE_CLICK_LISTENER) {
             View closeButton = view.findViewById(R.id.extensions_menu_close_button);
             closeButton.setOnClickListener(
@@ -62,6 +73,21 @@ public class ExtensionsMenuViewBinder {
                     view.findViewById(R.id.extensions_menu_site_settings_toggle);
             toggle.setOnCheckedChangeListener(
                     model.get(ExtensionsMenuProperties.SITE_SETTINGS_TOGGLE_CLICK_LISTENER));
+        } else if (key == ExtensionsMenuProperties.OPTIONAL_SECTION_TYPE) {
+            int optionalSectionType = model.get(ExtensionsMenuProperties.OPTIONAL_SECTION_TYPE);
+
+            View reloadSection = view.findViewById(R.id.extensions_menu_reload_section);
+            int expectedVisibility =
+                    (optionalSectionType == OptionalSectionType.RELOAD_PAGE)
+                            ? View.VISIBLE
+                            : View.GONE;
+            if (reloadSection.getVisibility() != expectedVisibility) {
+                reloadSection.setVisibility(expectedVisibility);
+            }
+        } else if (key == ExtensionsMenuProperties.RELOAD_CLICK_LISTENER) {
+            View reloadButton = view.findViewById(R.id.extensions_menu_reload_button);
+            reloadButton.setOnClickListener(
+                    model.get(ExtensionsMenuProperties.RELOAD_CLICK_LISTENER));
         } else if (key == ExtensionsMenuProperties.SITE_SETTINGS_LABEL) {
             MaterialSwitchWithText toggle =
                     view.findViewById(R.id.extensions_menu_site_settings_toggle);

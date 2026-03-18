@@ -6689,13 +6689,13 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_EXTENSIONS_MENU_MESSAGE_SECTION_ENTERPRISE_TOOLTIP_ICON_TEXT" desc="Text of the info tooltip icon in the message section when the user blocked access to this site to all extensions but extensions installed by admin still have access.">
         Extensions installed by your administrator can still read and change this site
       </message>
-      <message name="IDS_EXTENSIONS_MENU_MESSAGE_SECTION_RELOAD_CONTAINER_DESCRIPTION_TEXT" desc="Text of the message section when the user has to reload the page to apply the updated user site settings.">
+      <message name="IDS_EXTENSIONS_MENU_MESSAGE_SECTION_RELOAD_CONTAINER_DESCRIPTION_TEXT" desc="Text of the message section when the user has to reload the page to apply the updated user site settings." formatter_data="android_java">
         To apply your updated settings to this site, reload this page
       </message>
-      <message name="IDS_EXTENSIONS_MENU_MESSAGE_SECTION_RELOAD_CONTAINER_BUTTON_TEXT" desc="Text of the button in the message section to reload the page when the user has to reload the page to apply the updated user site settings.">
+      <message name="IDS_EXTENSIONS_MENU_MESSAGE_SECTION_RELOAD_CONTAINER_BUTTON_TEXT" desc="Text of the button in the message section to reload the page when the user has to reload the page to apply the updated user site settings." formatter_data="android_java">
         Reload
       </message>
-      <message name="IDS_EXTENSIONS_MENU_MESSAGE_SECTION_RELOAD_CONTAINER_BUTTON_TOOLTIP" desc="Tooltip text of the button in the message section to reload the page when the user has to reload the page to apply the updated user site settings.">
+      <message name="IDS_EXTENSIONS_MENU_MESSAGE_SECTION_RELOAD_CONTAINER_BUTTON_TOOLTIP" desc="Tooltip text of the button in the message section to reload the page when the user has to reload the page to apply the updated user site settings." formatter_data="android_java">
         Reload page
       </message>
       <message name="IDS_EXTENSIONS_MENU_REQUESTS_ACCESS_SECTION_TITLE" desc="Title of the requests access section that lists the extensions requesting site access">

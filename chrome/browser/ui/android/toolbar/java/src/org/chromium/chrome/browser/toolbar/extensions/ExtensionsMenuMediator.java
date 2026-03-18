@@ -106,6 +106,11 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
                 /* dismissRunnable= */ null);
     }
 
+    /** Called when the reload page button is clicked. */
+    public void onReloadPageButtonClicked() {
+        mMenuBridge.onReloadPageButtonClicked();
+    }
+
     /** Destroys the mediator. */
     @Override
     public void destroy() {

@@ -143,6 +143,9 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
   <issue id="UnusedQuantity" severity="ignore"/>
   <issue id="UnusedResources">
     <!-- Do not add new suppressions without rationale. -->
+    <!-- Strings used by Desktop Android extensions, which are not built in all configurations. -->
+    <ignore regexp="The resource `R.string.extensions_menu_.*` appears to be unused"/>
+
     <!-- 1: resource used by android webview glue layer, could be refactored -->
     <ignore regexp="R.string.private_browsing_warning"/>
     <!-- 4: The WAM server currently has 2 codes paths for minting a WebAPK, and

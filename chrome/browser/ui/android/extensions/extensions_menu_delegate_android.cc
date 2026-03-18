@@ -291,7 +291,11 @@ void ExtensionsMenuDelegateAndroid::OnSiteSettingsToggleButtonPressed(
 }
 
 void ExtensionsMenuDelegateAndroid::OnReloadPageButtonClicked() {
-  // TODO(crbug.com/473213115)
+  menu_model_->ReloadWebContents();
+}
+
+void ExtensionsMenuDelegateAndroid::OnReloadPageButtonClicked(JNIEnv* env) {
+  OnReloadPageButtonClicked();
 }
 
 void ExtensionsMenuDelegateAndroid::OpenMainPage() {

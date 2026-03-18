@@ -606,6 +606,13 @@ public class ExtensionsMenuMediatorTest {
         verify(mMenuPropertyModel).set(ExtensionsMenuProperties.HOST_ACCESS_REQUESTS, requests);
     }
 
+    @Test
+    public void testOnReloadPageButtonClicked() {
+        mMenuMediator.onReloadPageButtonClicked();
+        verify(mExtensionsMenuBridgeJniMock)
+                .onReloadPageButtonClicked(EXTENSIONS_MENU_BRIDGE_POINTER);
+    }
+
     /** Helper to assert that the item at the given index has the correct information. */
     private void assertItemAt(int index, String title, @Nullable Bitmap icon, int contextMenuIcon) {
         ListItem item = mActionModels.get(index);
