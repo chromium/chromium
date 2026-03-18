@@ -52,8 +52,8 @@ import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.IncognitoWindowNightModeStateProvider;
-import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
 import org.chromium.chrome.browser.tab.Tab;
@@ -1168,19 +1168,17 @@ public class ChromeTabbedActivityTest {
                                             null);
                         });
 
-        // 3. Get MultiInstanceManager for activity1 and InstanceInfo for activity2.
-        MultiInstanceManager mim1 = mActivity.getMultiInstanceMangerForTesting();
-
-        // 4. Move tab1 to activity2.
+        // 3. Move tab1 to activity2.
+        var multiInstanceOrchestrator = MultiInstanceOrchestratorFactory.getInstance();
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
-                        mim1.moveTabsToWindowByIdChecked(
-                                activity2.getWindowIdForTesting(),
+                        multiInstanceOrchestrator.moveTabsToWindowByIdChecked(
+                                activity2.getWindowId(),
                                 List.of(tab1),
                                 /* destTabIndex= */ TabList.INVALID_TAB_INDEX,
                                 /* destGroupTabId= */ TabList.INVALID_TAB_INDEX));
 
-        // 5. Verify tab1 is in activity2.
+        // 4. Verify tab1 is in activity2.
         CriteriaHelper.pollUiThread(
                 () -> {
                     TabModel tabModel2 = activity2.getCurrentTabModel();
@@ -1188,16 +1186,16 @@ public class ChromeTabbedActivityTest {
                     Criteria.checkThat(tabModel2.getTabById(tab1.getId()), Matchers.notNullValue());
                 });
 
-        // 6. Move tab2 to activity2 and merge with tab1.
+        // 5. Move tab2 to activity2 and merge with tab1.
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
-                        mim1.moveTabsToWindowByIdChecked(
-                                activity2.getWindowIdForTesting(),
+                        multiInstanceOrchestrator.moveTabsToWindowByIdChecked(
+                                activity2.getWindowId(),
                                 List.of(tab2),
                                 /* destTabIndex= */ TabList.INVALID_TAB_INDEX,
                                 /* destGroupTabId= */ tab1.getId()));
 
-        // 7. Verify tab2 is in activity2 and merged with tab1.
+        // 6. Verify tab2 is in activity2 and merged with tab1.
         CriteriaHelper.pollUiThread(
                 () -> {
                     TabModel tabModel2 = activity2.getCurrentTabModel();

@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
@@ -182,11 +183,12 @@ public class ChromeTabbedOnDragListener implements OnDragListener {
                         mContext, draggedTabIncognito, mTabModelSelector);
 
         // Reparent the dragged tab to the destination window.
-        mMultiInstanceManager.moveTabsToWindowByIdChecked(
-                mMultiInstanceManager.getCurrentInstanceId(),
-                Collections.singletonList(draggedTab),
-                destIndex,
-                /* destGroupTabId= */ TabList.INVALID_TAB_INDEX);
+        MultiInstanceOrchestratorFactory.getInstance()
+                .moveTabsToWindowByIdChecked(
+                        mMultiInstanceManager.getCurrentInstanceId(),
+                        Collections.singletonList(draggedTab),
+                        destIndex,
+                        /* destGroupTabId= */ TabList.INVALID_TAB_INDEX);
         DragDropMetricUtils.recordDragDropType(
                 DragDropType.TAB_STRIP_TO_CONTENT,
                 isInDesktopWindow,
@@ -223,11 +225,12 @@ public class ChromeTabbedOnDragListener implements OnDragListener {
                         mContext, draggedTabsIncognito, mTabModelSelector);
 
         // Reparent the dragged tabs to the destination window.
-        mMultiInstanceManager.moveTabsToWindowByIdChecked(
-                mMultiInstanceManager.getCurrentInstanceId(),
-                draggedTabs,
-                destIndex,
-                /* destGroupTabId= */ TabList.INVALID_TAB_INDEX);
+        MultiInstanceOrchestratorFactory.getInstance()
+                .moveTabsToWindowByIdChecked(
+                        mMultiInstanceManager.getCurrentInstanceId(),
+                        draggedTabs,
+                        destIndex,
+                        /* destGroupTabId= */ TabList.INVALID_TAB_INDEX);
         DragDropMetricUtils.recordDragDropType(
                 DragDropType.TAB_STRIP_TO_CONTENT,
                 isInDesktopWindow,

@@ -39,6 +39,8 @@ import org.chromium.chrome.browser.multiwindow.InstanceInfo;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestrator;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
@@ -137,6 +139,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
     private final TabGroupCreationCallback mTabGroupCreationCallback;
     private final WindowAndroid mWindowAndroid;
     private final Activity mActivity;
+    private final MultiInstanceOrchestrator mMultiInstanceOrchestrator;
 
     private TabContextMenuCoordinator(
             Supplier<TabModel> tabModelSupplier,
@@ -171,6 +174,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
         mTabGroupCreationCallback = tabGroupCreationCallback;
         mWindowAndroid = windowAndroid;
         mActivity = activity;
+        mMultiInstanceOrchestrator = MultiInstanceOrchestratorFactory.getInstance();
     }
 
     /**
@@ -694,7 +698,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                                     mTabGroupModelFilter,
                                     /* tabMovedCallback= */ null);
                         } else {
-                            mMultiInstanceManager.moveTabsToWindowByIdChecked(
+                            mMultiInstanceOrchestrator.moveTabsToWindowByIdChecked(
                                     windowId,
                                     tabs,
                                     /* destTabIndex= */ TabList.INVALID_TAB_INDEX,
@@ -807,7 +811,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
         moveAndCleanupSource(
                 mMultiInstanceManager,
                 () ->
-                        mMultiInstanceManager.moveTabsToWindowByIdChecked(
+                        mMultiInstanceOrchestrator.moveTabsToWindowByIdChecked(
                                 instanceInfo.instanceId,
                                 tabs,
                                 /* destTabIndex= */ TabList.INVALID_TAB_INDEX,

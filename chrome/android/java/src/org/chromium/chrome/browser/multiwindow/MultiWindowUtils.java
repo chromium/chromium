@@ -423,20 +423,21 @@ public class MultiWindowUtils implements ActivityStateListener {
     }
 
     /**
-     * Sets extras on the intent used when handling "open in other window" or
-     * "move to other window". Specifically, sets the class, adds the launch adjacent flag, and
-     * adds extras so that Chrome behaves correctly when the back button is pressed.
+     * Sets extras on the intent used when handling "open in other window" or "move to other
+     * window". Specifically, sets the class, adds the launch adjacent flag, and adds extras so that
+     * Chrome behaves correctly when the back button is pressed.
+     *
      * @param intent The intent to set details on.
-     * @param activity The activity firing the intent.
+     * @param context The context of the activity firing the intent.
      * @param targetActivity The class of the activity receiving the intent.
      */
     public static void setOpenInOtherWindowIntentExtras(
-            Intent intent, Activity activity, Class<? extends Activity> targetActivity) {
-        intent.setClass(activity, targetActivity);
+            Intent intent, Context context, Class<? extends Activity> targetActivity) {
+        intent.setClass(context, targetActivity);
         intent.addFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT);
 
         // Remove LAUNCH_ADJACENT flag if we want to start CTA, but it's already running.
-        // If arleady running CTA was started via .Main activity alias, starting it again with
+        // If already running CTA was started via .Main activity alias, starting it again with
         // LAUNCH_ADJACENT will create another CTA instance with just a single tab. There doesn't
         // seem to be a reliable way to check if an activity was started via an alias, so we're
         // removing the flag if any CTA instance is running. See crbug.com/771516 for details.
@@ -448,7 +449,7 @@ public class MultiWindowUtils implements ActivityStateListener {
 
         // Let Chrome know that this intent is from Chrome, so that it does not close the app when
         // the user presses 'back' button.
-        intent.putExtra(Browser.EXTRA_APPLICATION_ID, activity.getPackageName());
+        intent.putExtra(Browser.EXTRA_APPLICATION_ID, context.getPackageName());
         intent.putExtra(Browser.EXTRA_CREATE_NEW_TAB, true);
     }
 

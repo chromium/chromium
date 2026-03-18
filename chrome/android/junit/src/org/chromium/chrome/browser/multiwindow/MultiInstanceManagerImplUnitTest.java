@@ -77,6 +77,7 @@ public class MultiInstanceManagerImplUnitTest {
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
         TabGroupSyncFeaturesJni.setInstanceForTesting(mTabGroupSyncFeaturesJniMock);
         when(mTabGroupSyncFeaturesJniMock.isTabGroupSyncEnabled(any())).thenReturn(true);
+        MultiInstanceOrchestratorFactory.setInstance(MultiInstanceOrchestratorImpl.getInstance());
     }
 
     @Test

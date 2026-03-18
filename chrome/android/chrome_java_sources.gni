@@ -804,6 +804,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/multiwindow/MultiInstanceManagerApi31.java",
   "java/src/org/chromium/chrome/browser/multiwindow/MultiInstanceManagerFactory.java",
   "java/src/org/chromium/chrome/browser/multiwindow/MultiInstanceManagerImpl.java",
+  "java/src/org/chromium/chrome/browser/multiwindow/MultiInstanceOrchestratorImpl.java",
   "java/src/org/chromium/chrome/browser/multiwindow/MultiWindowModeStateDispatcher.java",
   "java/src/org/chromium/chrome/browser/multiwindow/MultiWindowModeStateDispatcherImpl.java",
   "java/src/org/chromium/chrome/browser/multiwindow/MultiWindowUtils.java",

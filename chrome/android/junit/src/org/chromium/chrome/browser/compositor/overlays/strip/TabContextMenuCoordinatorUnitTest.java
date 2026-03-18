@@ -71,6 +71,8 @@ import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.InstanceInfo;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestrator;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
@@ -217,6 +219,7 @@ public class TabContextMenuCoordinatorUnitTest {
     @Mock private TabGroupListBottomSheetCoordinator mBottomSheetCoordinator;
     @Mock private TabGroupCreationCallback mTabGroupCreationCallback;
     @Mock private MultiInstanceManager mMultiInstanceManager;
+    @Mock private MultiInstanceOrchestrator mMultiInstanceOrchestrator;
     @Mock private ShareDelegate mShareDelegate;
     @Mock private TabCreator mTabCreator;
     @Mock private WindowAndroid mWindowAndroid;
@@ -238,6 +241,7 @@ public class TabContextMenuCoordinatorUnitTest {
     public void setUp() {
         TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
         TabWindowManagerSingleton.setTabWindowManagerForTesting(mTabWindowManager);
+        MultiInstanceOrchestratorFactory.setInstanceForTesting(mMultiInstanceOrchestrator);
         when(mCollaborationService.getServiceStatus()).thenReturn(mServiceStatus);
         when(mServiceStatus.isAllowedToCreate()).thenReturn(true);
         CollaborationServiceFactory.setForTesting(mCollaborationService);
@@ -1417,7 +1421,7 @@ public class TabContextMenuCoordinatorUnitTest {
         StripLayoutContextMenuCoordinatorTestUtils.clickMoveToWindowRow(
                 modelList, 1, WINDOW_TITLE_2, mView);
 
-        verify(mMultiInstanceManager)
+        verify(mMultiInstanceOrchestrator)
                 .moveTabsToWindowByIdChecked(
                         INSTANCE_ID_2,
                         Collections.singletonList(mTabOutsideOfGroup),

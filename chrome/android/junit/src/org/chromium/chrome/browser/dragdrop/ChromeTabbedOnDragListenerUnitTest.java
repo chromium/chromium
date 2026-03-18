@@ -38,6 +38,8 @@ import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestrator;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -69,6 +71,8 @@ public class ChromeTabbedOnDragListenerUnitTest {
     @Mock private DragDropGlobalState mDragDropGlobalState;
     @Mock private TabGroupMetadata mTabGroupMetadata;
     @Mock private DesktopWindowStateManager mDesktopWindowStateManager;
+    @Mock private MultiInstanceOrchestrator mMultiInstanceOrchestrator;
+
     private OneshotSupplierImpl<LayoutStateProvider> mLayoutStateProviderSupplierImpl;
     private final ClipDescription mTabClipDescription =
             new ClipDescription(null, new String[] {"chrome/tab"});
@@ -86,6 +90,7 @@ public class ChromeTabbedOnDragListenerUnitTest {
         mContext = Robolectric.setupActivity(Activity.class);
         mLayoutStateProviderSupplierImpl = new OneshotSupplierImpl<>();
         mLayoutStateProviderSupplierImpl.set(mLayoutStateProvider);
+        MultiInstanceOrchestratorFactory.setInstanceForTesting(mMultiInstanceOrchestrator);
         mChromeTabbedOnDragListener =
                 new ChromeTabbedOnDragListener(
                         mMultiInstanceManager,

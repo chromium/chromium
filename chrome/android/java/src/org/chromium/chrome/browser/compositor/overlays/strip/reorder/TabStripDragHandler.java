@@ -474,7 +474,7 @@ public class TabStripDragHandler extends TabDragHandlerBase {
             // Reject cross-model drops if incognito is opened as a new window.
             if (IncognitoUtils.shouldOpenIncognitoAsWindow()) return false;
 
-            mMultiInstanceManager.moveTabsToWindowByIdChecked(
+            mMultiInstanceOrchestrator.moveTabsToWindowByIdChecked(
                     destWindowId,
                     Collections.singletonList(tabBeingDragged),
                     getTabModelSelector().getModel(tabBeingDragged.isIncognito()).getCount(),
@@ -485,7 +485,7 @@ public class TabStripDragHandler extends TabDragHandlerBase {
             int tabIndex =
                     helper.getTabIndexForTabDrop(
                             dropEvent.getX() * mPxToDp, tabBeingDragged.getIsPinned());
-            mMultiInstanceManager.moveTabsToWindowByIdChecked(
+            mMultiInstanceOrchestrator.moveTabsToWindowByIdChecked(
                     destWindowId,
                     Collections.singletonList(tabBeingDragged),
                     tabIndex,
@@ -518,7 +518,7 @@ public class TabStripDragHandler extends TabDragHandlerBase {
             // Reject cross-model drops if incognito is opened as a new window.
             if (IncognitoUtils.shouldOpenIncognitoAsWindow()) return false;
 
-            mMultiInstanceManager.moveTabsToWindowByIdChecked(
+            mMultiInstanceOrchestrator.moveTabsToWindowByIdChecked(
                     destWindowId,
                     tabsBeingDragged,
                     getTabModelSelector()
@@ -531,7 +531,7 @@ public class TabStripDragHandler extends TabDragHandlerBase {
             int tabIndex =
                     helper.getTabIndexForTabDrop(
                             dropEvent.getX() * mPxToDp, isDraggingPinnedItem());
-            mMultiInstanceManager.moveTabsToWindowByIdChecked(
+            mMultiInstanceOrchestrator.moveTabsToWindowByIdChecked(
                     destWindowId,
                     tabsBeingDragged,
                     tabIndex,

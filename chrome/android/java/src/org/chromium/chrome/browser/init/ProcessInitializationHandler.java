@@ -154,7 +154,7 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * Handles the initialization dependences of the browser process. This is meant to handle the
+ * Handles the initialization dependencies of the browser process. This is meant to handle the
  * initialization that is not tied to any particular Activity, and the logic that should only be
  * triggered a single time for the lifetime of the browser process.
  */

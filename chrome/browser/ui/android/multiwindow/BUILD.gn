@@ -16,6 +16,8 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/multiwindow/InstanceSwitcherItemViewBinder.java",
     "java/src/org/chromium/chrome/browser/multiwindow/MultiInstanceIphController.java",
     "java/src/org/chromium/chrome/browser/multiwindow/MultiInstanceManager.java",
+    "java/src/org/chromium/chrome/browser/multiwindow/MultiInstanceOrchestrator.java",
+    "java/src/org/chromium/chrome/browser/multiwindow/MultiInstanceOrchestratorFactory.java",
     "java/src/org/chromium/chrome/browser/multiwindow/MultiInstancePersistentStore.java",
     "java/src/org/chromium/chrome/browser/multiwindow/MultiInstanceState.java",
     "java/src/org/chromium/chrome/browser/multiwindow/MultiWindowMetricsUtils.java",
@@ -99,6 +101,7 @@ robolectric_library("junit") {
   resources_package = "org.chromium.chrome.browser.multiwindow"
   sources = [
     "java/src/org/chromium/chrome/browser/multiwindow/InstanceSwitcherCoordinatorUnitTest.java",
+    "java/src/org/chromium/chrome/browser/multiwindow/MultiInstanceOrchestratorFactoryUnitTest.java",
     "java/src/org/chromium/chrome/browser/multiwindow/MultiInstanceStateUnitTest.java",
     "java/src/org/chromium/chrome/browser/multiwindow/MultiWindowMetricsUtilsUnitTest.java",
     "java/src/org/chromium/chrome/browser/multiwindow/UiUtilsUnitTest.java",

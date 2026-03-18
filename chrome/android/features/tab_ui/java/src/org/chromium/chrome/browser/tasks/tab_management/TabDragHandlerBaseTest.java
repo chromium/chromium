@@ -28,6 +28,8 @@ import org.chromium.chrome.browser.dragdrop.ChromeMultiTabDropDataAndroid;
 import org.chromium.chrome.browser.dragdrop.ChromeTabDropDataAndroid;
 import org.chromium.chrome.browser.dragdrop.ChromeTabGroupDropDataAndroid;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestrator;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabDragStateData;
@@ -45,6 +47,7 @@ public class TabDragHandlerBaseTest {
     @Mock private Activity mActivity;
     @Mock private Profile mProfile;
     @Mock private MultiInstanceManager mMultiInstanceManager;
+    @Mock private MultiInstanceOrchestrator mMultiInstanceOrchestrator;
     @Mock private DragAndDropDelegate mDragAndDropDelegate;
     @Mock private View.DragShadowBuilder mDragShadowBuilder;
 
@@ -52,6 +55,7 @@ public class TabDragHandlerBaseTest {
 
     @Before
     public void setUp() {
+        MultiInstanceOrchestratorFactory.setInstanceForTesting(mMultiInstanceOrchestrator);
         mTabDragHandler =
                 new TabDragHandlerBase(
                         () -> mActivity, mMultiInstanceManager, mDragAndDropDelegate, () -> false) {

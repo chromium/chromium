@@ -25,12 +25,12 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
-import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -42,7 +42,6 @@ import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
-import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.CloseWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceState.MultiInstanceStateObserver;
 import org.chromium.chrome.browser.multiwindow.UiUtils.NameWindowDialogSource;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -97,6 +96,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
     private static final String EMPTY_DATA = "";
     private static @Nullable MultiInstanceState sState;
     private static final Object sAllocIdLock = new Object();
+    private static @Nullable TabReparentingDelegate sTabReparentingDelegateForTesting;
 
     @VisibleForTesting protected final int mMaxInstances;
 
@@ -136,8 +136,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             MonotonicObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
             MenuOrKeyboardActionController menuOrKeyboardActionController,
-            Supplier<DesktopWindowStateManager> desktopWindowStateManagerSupplier,
-            TabReparentingDelegate tabReparentingDelegate) {
+            Supplier<DesktopWindowStateManager> desktopWindowStateManagerSupplier) {
         super(
                 activity,
                 tabModelOrchestratorSupplier,
@@ -149,7 +148,10 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         mDesktopWindowStateManagerSupplier = desktopWindowStateManagerSupplier;
         mOnMultiInstanceStateChanged = this::onMultiInstanceStateChanged;
 
-        mTabReparentingDelegate = tabReparentingDelegate;
+        mTabReparentingDelegate =
+                sTabReparentingDelegateForTesting != null
+                        ? sTabReparentingDelegateForTesting
+                        : new TabReparentingDelegate();
 
         // Check if instance limit has changed and update SharedPrefs.
         int maxInstances = getMaxInstances();
@@ -244,48 +246,6 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
     }
 
     @Override
-    public void moveTabsToWindowByIdChecked(
-            int destWindowId, List<Tab> tabs, int destTabIndex, int destGroupTabId) {
-        if (tabs.isEmpty()) return;
-        assert destTabIndex == TabList.INVALID_TAB_INDEX
-                        || destGroupTabId == TabList.INVALID_TAB_INDEX
-                : "Only one of destTabIndex or destGroupTabId should be specified.";
-        assert ChromeMultiInstancePersistentStore.hasInstance(destWindowId)
-                : "Invalid destination window id.";
-
-        // Validate tabs that are being moved to a tab group in the destination window.
-        if (BuildConfig.ENABLE_ASSERTS && destGroupTabId != TabList.INVALID_TAB_INDEX) {
-            for (Tab tab : tabs) {
-                assert tab.getTabGroupId() == null : "Tab should not be part of a group.";
-            }
-        }
-
-        Activity destActivity = MultiWindowUtils.getActivityById(destWindowId);
-        // Reparent tabs to the activity associated with the specified instance if it is alive. If
-        // the instance does not have a live activity, restore it in a new activity to reparent the
-        // tabs into.
-        if (destActivity != null) {
-            mTabReparentingDelegate.reparentTabsToExistingWindow(
-                    (ChromeTabbedActivity) destActivity, tabs, destTabIndex, destGroupTabId);
-        } else {
-            // If the source Chrome instance still has tabs (including incognito), allow
-            // launching the new window adjacently. Otherwise, skip
-            // FLAG_ACTIVITY_LAUNCH_ADJACENT to avoid a black screen caused by the source
-            // window closing before the new one launches.
-            TabModelSelector selector =
-                    TabWindowManagerSingleton.getInstance()
-                            .getTabModelSelectorById(getCurrentInstanceId());
-            boolean openAdjacently = assumeNonNull(selector).getTotalTabCount() > 1;
-            mTabReparentingDelegate.reparentTabsToNewWindow(
-                    tabs,
-                    destWindowId,
-                    openAdjacently,
-                    /* finalizeCallback= */ null,
-                    NewWindowAppSource.TAB_REPARENTING_TO_INSTANCE_WITH_NO_ACTIVITY);
-        }
-    }
-
-    @Override
     public void moveTabsToOtherWindow(List<Tab> tabs, @NewWindowAppSource int source) {
         if (tabs.isEmpty()) return;
         // Check the number of instances that the tab/s is able to move into.
@@ -315,7 +275,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
 
         showTargetSelectorDialog(
                 (instanceInfo) -> {
-                    moveTabsToWindowByIdChecked(
+                    mMultiInstanceOrchestrator.moveTabsToWindowByIdChecked(
                             instanceInfo.instanceId,
                             tabs,
                             /* destTabIndex= */ TabList.INVALID_TAB_INDEX,
@@ -1360,7 +1320,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
             mTabReparentingDelegate.reparentTabGroupToNewWindow(
                     tabGroupMetadata,
                     destWindowId,
-                    /* openAdjacently= */ true,
+                    MultiWindowUtils.shouldOpenInAdjacentWindow(mActivity),
                     NewWindowAppSource.TAB_REPARENTING_TO_INSTANCE_WITH_NO_ACTIVITY);
         }
     }
@@ -1494,5 +1454,10 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
                 assumeNonNull(currentTitle),
                 newTitle -> renameInstance(mInstanceId, newTitle),
                 source);
+    }
+
+    /* package */ static void setTabReparentingDelegateForTesting(TabReparentingDelegate delegate) {
+        sTabReparentingDelegateForTesting = delegate;
+        ResettersForTesting.register(() -> sTabReparentingDelegateForTesting = null);
     }
 }

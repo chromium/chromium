@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.CustomTabProfileType;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.ntp.RecentlyClosedBridge;
 import org.chromium.chrome.browser.ntp.RecentlyClosedEntry;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
@@ -354,13 +355,13 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
     public void moveTabToWindow(Tab tab, Activity activity, int newIndex) {
         if (getModel(tab.isIncognito()).getTabById(tab.getId()) != tab) return;
 
-        assert mMultiInstanceManager != null;
         int destWindowId = TabWindowManagerSingleton.getInstance().getIdForWindow(activity);
-        mMultiInstanceManager.moveTabsToWindowByIdChecked(
-                destWindowId,
-                Collections.singletonList(tab),
-                newIndex,
-                /* destGroupTabId= */ TabList.INVALID_TAB_INDEX);
+        MultiInstanceOrchestratorFactory.getInstance()
+                .moveTabsToWindowByIdChecked(
+                        destWindowId,
+                        Collections.singletonList(tab),
+                        newIndex,
+                        /* destGroupTabId= */ TabList.INVALID_TAB_INDEX);
     }
 
     @Override

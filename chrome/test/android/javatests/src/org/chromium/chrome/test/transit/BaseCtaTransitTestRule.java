@@ -232,7 +232,7 @@ public class BaseCtaTransitTestRule {
                     () -> {
                         MultiInstanceManager mim = cta.getMultiInstanceMangerForTesting();
                         mim.closeWindows(
-                                Collections.singletonList(cta.getWindowIdForTesting()),
+                                Collections.singletonList(cta.getWindowId()),
                                 MultiInstanceManager.CloseWindowAppSource.OTHER);
                     });
             // closeWindow() already called finishAndRemoveTask().

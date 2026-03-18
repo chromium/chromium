@@ -78,6 +78,12 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
                 MenuOrKeyboardActionController.MenuOrKeyboardActionHandler,
                 TopResumedActivityChangedObserver,
                 StartStopWithNativeObserver {
+    protected final Activity mActivity;
+    protected final MonotonicObservableSupplier<TabModelOrchestrator> mTabModelOrchestratorSupplier;
+    protected final MultiWindowModeStateDispatcher mMultiWindowModeStateDispatcher;
+    protected @Nullable TabModelSelectorTabModelObserver mTabModelObserver;
+    protected MultiInstanceOrchestrator mMultiInstanceOrchestrator;
+
     private @Nullable Boolean mMergeTabsOnResume;
 
     /**
@@ -86,13 +92,8 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
      */
     private @Nullable ActivityStateListener mOtherCTAStateObserver;
 
-    protected final Activity mActivity;
-    protected final MonotonicObservableSupplier<TabModelOrchestrator> mTabModelOrchestratorSupplier;
-    protected final MultiWindowModeStateDispatcher mMultiWindowModeStateDispatcher;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private final MenuOrKeyboardActionController mMenuOrKeyboardActionController;
-
-    protected @Nullable TabModelSelectorTabModelObserver mTabModelObserver;
 
     private int mActivityTaskId;
     private boolean mNativeInitialized;
@@ -119,6 +120,8 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
 
         mMenuOrKeyboardActionController = menuOrKeyboardActionController;
         mMenuOrKeyboardActionController.registerMenuOrKeyboardActionHandler(this);
+
+        mMultiInstanceOrchestrator = MultiInstanceOrchestratorFactory.getInstance();
     }
 
     @Override

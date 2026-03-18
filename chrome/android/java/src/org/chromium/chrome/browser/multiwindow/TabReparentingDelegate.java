@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.multiwindow;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.multiwindow.MultiInstanceManager.INVALID_WINDOW_ID;
 
 import android.app.Activity;
@@ -14,15 +13,14 @@ import android.os.SystemClock;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTabGroupTask;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTabsTask;
-import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -41,21 +39,7 @@ import java.util.List;
 /** Class that holds logic to reparent tabs and tab groups to windows. */
 @NullMarked
 /* package */ class TabReparentingDelegate {
-
-    private final Activity mActivity;
-    private final MonotonicObservableSupplier<TabModelOrchestrator> mTabModelOrchestratorSupplier;
-
-    /**
-     * @param activity The current activity.
-     * @param tabModelOrchestratorSupplier Supplier for the {@link TabModelOrchestrator} used for
-     *     tab group reparenting.
-     */
-    public TabReparentingDelegate(
-            Activity activity,
-            MonotonicObservableSupplier<TabModelOrchestrator> tabModelOrchestratorSupplier) {
-        mActivity = activity;
-        mTabModelOrchestratorSupplier = tabModelOrchestratorSupplier;
-    }
+    private static @Nullable TabPersistentStore sPersistentStoreForTesting;
 
     /* package */ void reparentTabsToNewWindow(
             List<Tab> tabs,
@@ -63,15 +47,17 @@ import java.util.List;
             boolean openAdjacently,
             @Nullable Runnable finalizeCallback,
             @NewWindowAppSource int source) {
+        if (tabs.isEmpty()) return;
+        Context context = tabs.get(0).getContext();
         Intent intent =
                 MultiWindowUtils.createNewWindowIntent(
-                        mActivity,
+                        context,
                         windowId,
                         /* preferNew= */ windowId == INVALID_WINDOW_ID,
                         openAdjacently,
                         source);
         ReparentingTabsTask.from(tabs)
-                .begin(mActivity, intent, /* startActivityOptions= */ null, finalizeCallback);
+                .begin(context, intent, /* startActivityOptions= */ null, finalizeCallback);
     }
 
     /* package */ void reparentTabsToExistingWindow(
@@ -79,13 +65,15 @@ import java.util.List;
             List<Tab> tabs,
             int destTabIndex,
             int destGroupTabId) {
+        if (tabs.isEmpty()) return;
+        Context context = tabs.get(0).getContext();
         Intent intent =
                 createIntentToReparentToExistingWindow(
-                        targetActivity, destTabIndex, destGroupTabId);
+                        context, targetActivity, destTabIndex, destGroupTabId);
         ReparentingTabsTask.from(tabs).setupIntent(intent, /* finalizeCallback= */ null);
 
         targetActivity.onNewIntent(intent);
-        ApiCompatibilityUtils.moveTaskToFront(mActivity, targetActivity.getTaskId(), 0);
+        ApiCompatibilityUtils.moveTaskToFront(targetActivity, targetActivity.getTaskId(), 0);
     }
 
     /* package */ void reparentTabGroupToNewWindow(
@@ -94,9 +82,18 @@ import java.util.List;
             boolean openAdjacently,
             @NewWindowAppSource int source) {
         long startTime = SystemClock.elapsedRealtime();
+        Activity sourceActivity = MultiWindowUtils.getActivityById(tabGroupMetadata.sourceWindowId);
+        Context context =
+                sourceActivity == null ? ContextUtils.getApplicationContext() : sourceActivity;
+        TabPersistentStore tabPersistentStore = null;
+        if (sourceActivity instanceof ChromeTabbedActivity tabbedActivity) {
+            // The tab persistent store is required to pause / resume the tab group sync service
+            // during tab group reparenting. This is relevant only for a ChromeTabbedActivity.
+            tabPersistentStore = getTabPersistentStore(tabbedActivity);
+        }
         Intent intent =
                 MultiWindowUtils.createNewWindowIntent(
-                        mActivity,
+                        context,
                         windowId,
                         /* preferNew= */ windowId == INVALID_WINDOW_ID,
                         openAdjacently,
@@ -104,20 +101,22 @@ import java.util.List;
         intent.putExtra(IntentHandler.EXTRA_REPARENT_START_TIME, startTime);
 
         // Pause observers before detaching tabs.
-        pauseObserversForGroupReparenting(tabGroupMetadata);
+        pauseObserversForGroupReparenting(tabPersistentStore, tabGroupMetadata);
 
         // Create the task, detaching the grouped tabs from the current activity.
         ReparentingTabGroupTask reparentingTask = ReparentingTabGroupTask.from(tabGroupMetadata);
         reparentingTask.setupIntent(intent, /* finalizeCallback= */ null);
 
         // Create the new window and reparent once the TabPersistentStore has resumed.
-        TabPersistentStore tabPersistentStore =
-                assumeNonNull(mTabModelOrchestratorSupplier.get()).getTabPersistentStore();
-        tabPersistentStore.resumeSaveTabList(
-                () -> {
-                    reparentingTask.begin(mActivity, intent);
-                    resumeSyncService(tabGroupMetadata);
-                });
+        if (tabPersistentStore != null) {
+            tabPersistentStore.resumeSaveTabList(
+                    () -> {
+                        reparentingTask.begin(context, intent);
+                        resumeSyncService(tabGroupMetadata);
+                    });
+        } else {
+            reparentingTask.begin(context, intent);
+        }
     }
 
     /* package */ void reparentTabGroupToExistingWindow(
@@ -125,12 +124,24 @@ import java.util.List;
             TabGroupMetadata tabGroupMetadata,
             int destTabIndex) {
         long startTime = SystemClock.elapsedRealtime();
+
+        Activity sourceActivity = MultiWindowUtils.getActivityById(tabGroupMetadata.sourceWindowId);
+        Context context =
+                sourceActivity == null ? ContextUtils.getApplicationContext() : sourceActivity;
+        TabPersistentStore tabPersistentStore = null;
+        if (sourceActivity instanceof ChromeTabbedActivity tabbedActivity) {
+            // The tab persistent store is required to pause / resume the tab group sync service
+            // during tab group reparenting. This is relevant only for a ChromeTabbedActivity.
+            tabPersistentStore = getTabPersistentStore(tabbedActivity);
+        }
+
         // 1. Pause the relevant observers prior to detaching the grouped tabs.
-        pauseObserversForGroupReparenting(tabGroupMetadata);
+        pauseObserversForGroupReparenting(tabPersistentStore, tabGroupMetadata);
 
         // 2. Setup the re-parenting intent, detaching the grouped tabs from the current activity.
         Intent intent =
                 createIntentToReparentToExistingWindow(
+                        context,
                         targetActivity,
                         destTabIndex,
                         /* destGroupTabId= */ TabList.INVALID_TAB_INDEX);
@@ -141,26 +152,33 @@ import java.util.List;
         // 3. Resume writes to TabPersistentStore after detaching the grouped Tabs. Don't begin
         // re-attaching the Tabs to the target activity until they have been cleared from this
         // activity's TabPersistentStore.
-        TabPersistentStore tabPersistentStore =
-                assumeNonNull(mTabModelOrchestratorSupplier.get()).getTabPersistentStore();
-        tabPersistentStore.resumeSaveTabList(
-                () -> {
-                    targetActivity.onNewIntent(intent);
-                    ApiCompatibilityUtils.moveTaskToFront(mActivity, targetActivity.getTaskId(), 0);
-                    // Re-enable sync service observation after re-parenting is completed to resume
-                    // normal sync behavior.
-                    resumeSyncService(tabGroupMetadata);
-                });
+        if (tabPersistentStore != null) {
+            tabPersistentStore.resumeSaveTabList(
+                    () -> {
+                        targetActivity.onNewIntent(intent);
+                        ApiCompatibilityUtils.moveTaskToFront(
+                                targetActivity, targetActivity.getTaskId(), 0);
+                        // Re-enable sync service observation after re-parenting is completed to
+                        // resume normal sync behavior.
+                        resumeSyncService(tabGroupMetadata);
+                    });
+        } else {
+            targetActivity.onNewIntent(intent);
+            ApiCompatibilityUtils.moveTaskToFront(targetActivity, targetActivity.getTaskId(), 0);
+        }
     }
 
-    private Intent createIntentToReparentToExistingWindow(
-            ChromeTabbedActivity targetActivity, int destTabIndex, int destGroupTabId) {
+    private static Intent createIntentToReparentToExistingWindow(
+            Context context,
+            ChromeTabbedActivity targetActivity,
+            int destTabIndex,
+            int destGroupTabId) {
         assert targetActivity != null;
         Intent intent = new Intent();
         Context appContext = ContextUtils.getApplicationContext();
         intent.setClassName(appContext, ChromeTabbedActivity.class.getName());
         MultiWindowUtils.setOpenInOtherWindowIntentExtras(
-                intent, mActivity, targetActivity.getClass());
+                intent, context, targetActivity.getClass());
         RecordUserAction.record("MobileMenuMoveToOtherWindow");
 
         assert !(destGroupTabId != TabList.INVALID_TAB_INDEX
@@ -175,7 +193,9 @@ import java.util.List;
         return intent;
     }
 
-    private void pauseObserversForGroupReparenting(TabGroupMetadata tabGroupMetadata) {
+    private static void pauseObserversForGroupReparenting(
+            @Nullable TabPersistentStore tabPersistentStore, TabGroupMetadata tabGroupMetadata) {
+        if (tabPersistentStore == null) return;
         // Temporarily disable sync service from observing local changes to prevent unintended
         // updates during tab group re-parenting.
         TabGroupSyncService syncService =
@@ -184,8 +204,6 @@ import java.util.List;
         setSyncServiceLocalObservationMode(syncService, /* shouldObserve= */ false);
 
         // Pause writes to TabPersistentStore while detaching the grouped Tabs.
-        TabPersistentStore tabPersistentStore =
-                assumeNonNull(mTabModelOrchestratorSupplier.get()).getTabPersistentStore();
         tabPersistentStore.pauseSaveTabList();
     }
 
@@ -223,5 +241,23 @@ import java.util.List;
         if (syncService != null) {
             syncService.setLocalObservationMode(shouldObserve);
         }
+    }
+
+    private static @Nullable TabPersistentStore getTabPersistentStore(
+            ChromeTabbedActivity activity) {
+        if (sPersistentStoreForTesting != null) return sPersistentStoreForTesting;
+        TabPersistentStore tabPersistentStore = null;
+
+        var tabModelOrchestrator = activity.getTabModelOrchestratorSupplier().get();
+        if (tabModelOrchestrator != null) {
+            tabPersistentStore = tabModelOrchestrator.getTabPersistentStore();
+        }
+
+        return tabPersistentStore;
+    }
+
+    /* package */ static void setPersistentStoreForTesting(TabPersistentStore tabPersistentStore) {
+        sPersistentStoreForTesting = tabPersistentStore;
+        ResettersForTesting.register(() -> sPersistentStoreForTesting = null);
     }
 }

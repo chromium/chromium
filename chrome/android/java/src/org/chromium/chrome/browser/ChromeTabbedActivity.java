@@ -187,6 +187,7 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.AllocatedIdI
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.InstanceAllocationType;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManagerFactory;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.native_page.NativePageAssassin;
 import org.chromium.chrome.browser.navigation_predictor.NavigationPredictorBridge;
@@ -2971,11 +2972,12 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         }
         boolean isTabInGroup = tab.getTabGroupId() != null;
 
-        mMultiInstanceManager.moveTabsToWindowByIdChecked(
-                mWindowId,
-                Collections.singletonList(tab),
-                /* destTabIndex= */ 0,
-                /* destGroupTabId= */ TabList.INVALID_TAB_INDEX);
+        MultiInstanceOrchestratorFactory.getInstance()
+                .moveTabsToWindowByIdChecked(
+                        mWindowId,
+                        Collections.singletonList(tab),
+                        /* destTabIndex= */ 0,
+                        /* destGroupTabId= */ TabList.INVALID_TAB_INDEX);
 
         if (isTabInGroup) RecordUserAction.record("MobileToolbarReorderTab.TabRemovedFromGroup");
         RecordHistogram.recordBooleanHistogram(HISTOGRAM_DRAGGED_TAB_OPENED_NEW_WINDOW, true);
@@ -3007,11 +3009,12 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             tabs.add(tab);
         }
 
-        mMultiInstanceManager.moveTabsToWindowByIdChecked(
-                mWindowId,
-                tabs,
-                /* destTabIndex= */ 0,
-                /* destGroupTabId= */ TabList.INVALID_TAB_INDEX);
+        MultiInstanceOrchestratorFactory.getInstance()
+                .moveTabsToWindowByIdChecked(
+                        mWindowId,
+                        tabs,
+                        /* destTabIndex= */ 0,
+                        /* destGroupTabId= */ TabList.INVALID_TAB_INDEX);
 
         DragDropMetricUtils.recordDragDropType(
                 ChromeDragDropUtils.getDragDropTypeFromIntent(intent),
@@ -3925,10 +3928,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         return super.isStartedUpCorrectly(intent);
     }
 
-    /**
-     * @return The allocated windowId of the activity for testing purposes.
-     */
-    public int getWindowIdForTesting() {
+    /** Returns the allocated windowId of the activity. */
+    public int getWindowId() {
         return mWindowId;
     }
 

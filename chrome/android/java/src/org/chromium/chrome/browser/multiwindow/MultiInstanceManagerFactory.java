@@ -22,12 +22,12 @@ import java.util.function.Supplier;
 
 /** Creates {@link MultiInstanceManager}. */
 @NullMarked
-public class MultiInstanceManagerFactory {
+public class MultiInstanceManagerFactory extends MultiInstanceOrchestratorFactory {
 
     private static final UnownedUserDataKey<MultiInstanceManager> KEY = new UnownedUserDataKey<>();
 
     /**
-     * Create a new {@link MultiInstanceManager}.
+     * Creates a new {@link MultiInstanceManager}.
      *
      * @param activity The activity.
      * @param tabModelOrchestratorSupplier A supplier for the {@link TabModelOrchestrator} for the
@@ -59,8 +59,7 @@ public class MultiInstanceManagerFactory {
                     activityLifecycleDispatcher,
                     modalDialogManagerSupplier,
                     menuOrKeyboardActionController,
-                    desktopWindowStateManagerSupplier,
-                    new TabReparentingDelegate(activity, tabModelOrchestratorSupplier));
+                    desktopWindowStateManagerSupplier);
         } else {
             return new MultiInstanceManagerImpl(
                     activity,
@@ -71,10 +70,15 @@ public class MultiInstanceManagerFactory {
         }
     }
 
-    /** Return {@link MultiInstanceManager} associated with the given {@link WindowAndroid}. */
+    /** Returns the {@link MultiInstanceManager} associated with the given {@link WindowAndroid}. */
     public static @Nullable MultiInstanceManager from(@Nullable WindowAndroid windowAndroid) {
         if (windowAndroid == null) return null;
         return KEY.retrieveDataFromHost(windowAndroid.getUnownedUserDataHost());
+    }
+
+    /** Instantiates the {@link MultiInstanceOrchestrator} singleton. */
+    public static void initializeMultiInstanceOrchestrator() {
+        setInstance(MultiInstanceOrchestratorImpl.getInstance());
     }
 
     /* package */ static void attachToHost(

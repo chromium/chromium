@@ -9,7 +9,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -109,7 +108,6 @@ import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadataExtractor;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
-import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -238,6 +236,7 @@ public class MultiInstanceManagerApi31UnitTest {
     private TabGroupMetadata mTabGroupMetadata;
 
     private TestMultiInstanceManagerApi31 createTestMultiInstanceManager(Activity activity) {
+        MultiInstanceManagerApi31.setTabReparentingDelegateForTesting(mTabReparentingDelegate);
         return new TestMultiInstanceManagerApi31(
                 activity,
                 mTabModelOrchestratorSupplier,
@@ -245,8 +244,7 @@ public class MultiInstanceManagerApi31UnitTest {
                 mActivityLifecycleDispatcher,
                 mModalDialogManagerSupplier,
                 mMenuOrKeyboardActionController,
-                mDesktopWindowStateManagerSupplier,
-                mTabReparentingDelegate);
+                mDesktopWindowStateManagerSupplier);
     }
 
     private static class TestMultiInstanceManagerApi31 extends MultiInstanceManagerApi31 {
@@ -266,8 +264,7 @@ public class MultiInstanceManagerApi31UnitTest {
                 ActivityLifecycleDispatcher activityLifecycleDispatcher,
                 NonNullObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
                 MenuOrKeyboardActionController menuOrKeyboardActionController,
-                Supplier<DesktopWindowStateManager> desktopWindowStateManagerSupplier,
-                TabReparentingDelegate tabReparentingDelegate) {
+                Supplier<DesktopWindowStateManager> desktopWindowStateManagerSupplier) {
             super(
                     activity,
                     tabModelOrchestratorSupplier,
@@ -275,8 +272,7 @@ public class MultiInstanceManagerApi31UnitTest {
                     activityLifecycleDispatcher,
                     modalDialogManagerSupplier,
                     menuOrKeyboardActionController,
-                    desktopWindowStateManagerSupplier,
-                    tabReparentingDelegate);
+                    desktopWindowStateManagerSupplier);
             MultiWindowUtils.setAppTaskIdsForTesting(mAppTaskIds);
         }
 
@@ -350,6 +346,9 @@ public class MultiInstanceManagerApi31UnitTest {
         mModalDialogManagerSupplier = ObservableSuppliers.createNonNull(mModalDialogManager);
         mTabModelOrchestratorSupplier.set(mTabModelOrchestrator);
         mUnownedUserDataHost = new UnownedUserDataHost();
+        MultiInstanceManagerApi31.setTabReparentingDelegateForTesting(mTabReparentingDelegate);
+        MultiInstanceOrchestratorImpl.setTabReparentingDelegateForTesting(mTabReparentingDelegate);
+        MultiInstanceOrchestratorFactory.setInstance(MultiInstanceOrchestratorImpl.getInstance());
 
         TabGroupSyncFeaturesJni.setInstanceForTesting(mTabGroupSyncFeaturesJniMock);
         when(mTabGroupSyncFeaturesJniMock.isTabGroupSyncEnabled(any())).thenReturn(true);
@@ -1069,8 +1068,7 @@ public class MultiInstanceManagerApi31UnitTest {
                         mActivityLifecycleDispatcher,
                         mModalDialogManagerSupplier,
                         mMenuOrKeyboardActionController,
-                        mDesktopWindowStateManagerSupplier,
-                        mTabReparentingDelegate);
+                        mDesktopWindowStateManagerSupplier);
         multiInstanceManager.initialize(
                 INSTANCE_ID_1,
                 TASK_ID_57,
@@ -1178,8 +1176,7 @@ public class MultiInstanceManagerApi31UnitTest {
                         mActivityLifecycleDispatcher,
                         mModalDialogManagerSupplier,
                         mMenuOrKeyboardActionController,
-                        mDesktopWindowStateManagerSupplier,
-                        mTabReparentingDelegate);
+                        mDesktopWindowStateManagerSupplier);
         multiInstanceManager.initialize(
                 INSTANCE_ID_1,
                 TASK_ID_57,
@@ -1286,8 +1283,7 @@ public class MultiInstanceManagerApi31UnitTest {
                         mActivityLifecycleDispatcher,
                         mModalDialogManagerSupplier,
                         mMenuOrKeyboardActionController,
-                        mDesktopWindowStateManagerSupplier,
-                        mTabReparentingDelegate);
+                        mDesktopWindowStateManagerSupplier);
         multiInstanceManager.initialize(
                 INSTANCE_ID_1,
                 TASK_ID_57,
@@ -1603,72 +1599,6 @@ public class MultiInstanceManagerApi31UnitTest {
                         INVALID_WINDOW_ID,
                         /* openAdjacently= */ true,
                         NewWindowAppSource.KEYBOARD_SHORTCUT);
-    }
-
-    @Test
-    public void testMoveTabsToWindowByIdChecked_InvalidParams() {
-        List<Tab> tabs = List.of(mTab1, mTab2);
-
-        // destWindowId should have persisted instance state.
-        assertThrows(
-                AssertionError.class,
-                () ->
-                        mMultiInstanceManager.moveTabsToWindowByIdChecked(
-                                /* destWindowId= */ NONEXISTENT_INSTANCE_ID,
-                                tabs,
-                                /* destTabIndex= */ 2,
-                                /* destGroupTabId= */ TabList.INVALID_TAB_INDEX));
-
-        // destTabIndex and destGroupTabId should not both be specified when moving tabs to an
-        // existing window.
-        assertThrows(
-                AssertionError.class,
-                () ->
-                        mMultiInstanceManager.moveTabsToWindowByIdChecked(
-                                /* destWindowId= */ 1,
-                                tabs,
-                                /* destTabIndex= */ 1,
-                                /* destGroupTabId= */ 2));
-    }
-
-    @Test
-    public void testMoveTabsToWindowByIdChecked_toDestTabIndex() {
-        // Setup.
-        setupTwoInstances();
-
-        // Act.
-        List<Tab> tabs = List.of(mTab1, mTab2);
-        int destTabIndex = 0;
-        mMultiInstanceManager.moveTabsToWindowByIdChecked(
-                /* destWindowId= */ 1,
-                tabs,
-                destTabIndex,
-                /* destGroupTabId= */ TabList.INVALID_TAB_INDEX);
-
-        // Verify.
-        verify(mTabReparentingDelegate)
-                .reparentTabsToExistingWindow(
-                        eq(mTabbedActivityTask63), eq(tabs), eq(destTabIndex), eq(-1));
-    }
-
-    @Test
-    public void testMoveTabsToWindowByIdChecked_toDestTabGroup() {
-        // Setup.
-        setupTwoInstances();
-        List<Tab> tabs = List.of(mTab1, mTab2);
-        when(mTab1.getTabGroupId()).thenReturn(null);
-        when(mTab2.getTabGroupId()).thenReturn(null);
-
-        // Act.
-        mMultiInstanceManager.moveTabsToWindowByIdChecked(
-                /* destWindowId= */ 1,
-                tabs,
-                /* destTabIndex= */ TabList.INVALID_TAB_INDEX,
-                /* destGroupTabId= */ 3);
-
-        // Verify.
-        verify(mTabReparentingDelegate)
-                .reparentTabsToExistingWindow(eq(mTabbedActivityTask63), eq(tabs), eq(-1), eq(3));
     }
 
     @Test
