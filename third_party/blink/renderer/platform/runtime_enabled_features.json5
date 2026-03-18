@@ -1733,7 +1733,7 @@
     },
     {
       name: "CSSRevertRule",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "CSSRubyOverhang",
