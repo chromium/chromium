@@ -34,7 +34,7 @@ function createRegexRuleWithID(id) {
 }
 
 function createLargeRegexRuleWithID(id) {
-  let rule = createRegexRuleWithID(id);
+  const rule = createRegexRuleWithID(id);
   rule.condition.regexFilter = '.{512}x';
   return rule;
 }
@@ -49,7 +49,7 @@ function dynamicRulesEqual(expectedRules, ruleFilter) {
       chrome.test.assertNoLastError();
 
       // Sort by ID first since assertEq respects order of arrays.
-      let comparator = (rule1, rule2) => rule1.id - rule2.id;
+      const comparator = (rule1, rule2) => rule1.id - rule2.id;
       actualRules.sort(comparator);
       expectedRules.sort(comparator);
 

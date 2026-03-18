@@ -39,28 +39,28 @@ async function setup() {
         {
           addRules: [
             {
-              'id': 1,
-              'priority': 1,
-              'condition': {
-                'urlFilter': 'block_main',
-                'resourceTypes': ['main_frame']
+              id: 1,
+              priority: 1,
+              condition: {
+                urlFilter: 'block_main',
+                resourceTypes: ['main_frame']
 
               },
-              'action': {'type': 'block'}
+              action: {type: 'block'}
             },
             {
-              'id': 2,
-              'priority': 1,
-              'condition':
-                  {'urlFilter': 'block_sub', 'resourceTypes': ['sub_frame']},
-              'action': {'type': 'block'}
+              id: 2,
+              priority: 1,
+              condition:
+                  {urlFilter: 'block_sub', resourceTypes: ['sub_frame']},
+              action: {type: 'block'}
             },
             {
-              'id': 3,
-              'priority': 1,
-              'condition':
-                  {'urlFilter': 'block_image', 'resourceTypes': ['image']},
-              'action': {'type': 'block'}
+              id: 3,
+              priority: 1,
+              condition:
+                  {urlFilter: 'block_image', resourceTypes: ['image']},
+              action: {type: 'block'}
             }
           ]
         },

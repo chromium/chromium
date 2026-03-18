@@ -14,12 +14,12 @@ function navigateTab(url, expectedTabUrl, callback) {
   chrome.tabs.update({url: url});
 }
 
-var matchedRules = [];
-var onRuleMatchedDebugCallback = (rule) => {
+let matchedRules = [];
+const onRuleMatchedDebugCallback = (rule) => {
   matchedRules.push(rule);
 };
 
-var testServerPort;
+let testServerPort;
 function getServerURL(host) {
   if (!testServerPort)
     throw new Error('Called getServerURL outside of runTests.');
@@ -55,7 +55,7 @@ function verifyExpectedRuleInfo(expectedRuleInfo) {
   chrome.test.assertEq(expectedRuleInfo, matchedRule);
 }
 
-var tests = [
+const tests = [
   function setup() {
     chrome.declarativeNetRequest.onRuleMatchedDebug.addListener(
         onRuleMatchedDebugCallback);
@@ -74,7 +74,7 @@ var tests = [
     const rule = {
       id: 1,
       priority: 1,
-      condition: {urlFilter: 'def', 'resourceTypes': ['main_frame']},
+      condition: {urlFilter: 'def', resourceTypes: ['main_frame']},
       action: {type: 'block'},
     };
 

@@ -14,14 +14,14 @@ function navigateTab(url, callback) {
   chrome.tabs.update({url: url});
 }
 
-var testServerPort;
+let testServerPort;
 function getServerURL(host) {
   if (!testServerPort)
     throw new Error('Called getServerURL outside of runTests.');
   return `http://${host}:${testServerPort}/`;
 }
 
-var testData = [
+const testData = [
   {host: 'ab.com', rule: {ruleId: 1, rulesetId: 'rules1'}},
   {host: 'abc.com', rule: {ruleId: 2, rulesetId: 'rules1'}},
   {host: 'abcd.com', rule: {ruleId: 1, rulesetId: 'rules2'}},
@@ -113,19 +113,19 @@ function createTest(index) {
 
 chrome.test.getConfig(function(config) {
   testServerPort = config.testServer.port;
-  var tests = [];
+  const tests = [];
 
   // First add the dynamic and session rule, since it's required by one of the
   // latter tests.
   tests.push(addDynamicRule);
   tests.push(addSessionRule);
 
-  for (var i = 0; i < testData.length; ++i) {
-    var test = createTest(i);
+  for (let i = 0; i < testData.length; ++i) {
+    const test = createTest(i);
 
     // Assign a name to the function so that the extension test framework prints
     // the sub-test name.
-    Object.defineProperty(test, 'name', {value: 'test' + i})
+    Object.defineProperty(test, 'name', {value: `test${i}`})
 
     tests.push(test);
   }

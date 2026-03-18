@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var updateDynamicRules = chrome.declarativeNetRequest.updateDynamicRules;
-var getDynamicRules = chrome.declarativeNetRequest.getDynamicRules;
+const updateDynamicRules = chrome.declarativeNetRequest.updateDynamicRules;
+const getDynamicRules = chrome.declarativeNetRequest.getDynamicRules;
 
 // Rule limits are actually set after the browser replies to the extension's
 // "ready" message.
-var ruleLimit = -1;
-var unsafeRuleLimit = -1;
-var regexRuleLimit = -1;
+let ruleLimit = -1;
+let unsafeRuleLimit = -1;
+let regexRuleLimit = -1;
 
-var nextId = 1;
+let nextId = 1;
 
-var createRuleWithID = function(id) {
+const createRuleWithID = function(id) {
   return {
     id: id,
     priority: 1,
@@ -22,7 +22,7 @@ var createRuleWithID = function(id) {
   };
 };
 
-var createRedirectRuleWithID = function(id) {
+const createRedirectRuleWithID = function(id) {
   return {
     id: id,
     priority: 1,
@@ -31,7 +31,7 @@ var createRedirectRuleWithID = function(id) {
   };
 };
 
-var createRegexRuleWithID = function(id) {
+const createRegexRuleWithID = function(id) {
   return {
     id: id,
     priority: 1,
@@ -42,13 +42,13 @@ var createRegexRuleWithID = function(id) {
 
 // Verifies the current set of rules. Ensures no error is signalled and proceeds
 // to the next test.
-var verifyCurrentRulesCallback = function() {
+const verifyCurrentRulesCallback = function() {
   chrome.test.assertNoLastError();
 
   getDynamicRules(function(rules) {
     chrome.test.assertNoLastError();
 
-    var comparator = function(rule1, rule2) {
+    const comparator = function(rule1, rule2) {
       return rule1.id - rule2.id;
     };
 
@@ -60,7 +60,7 @@ var verifyCurrentRulesCallback = function() {
     chrome.test.succeed();
   });
 };
-var currentRules = [];
+let currentRules = [];
 
 const testCases = [
   // Sanity check that rule limits received from the browser have been set.
@@ -74,7 +74,7 @@ const testCases = [
   // Ensure that an extension can add up to `regexRuleLimit` number of regex
   // rules.
   function regexRuleLimitReached() {
-    var newRules = [];
+    let newRules = [];
     while (newRules.length < regexRuleLimit) {
       newRules.push(createRegexRuleWithID(nextId++));
     }
@@ -95,7 +95,7 @@ const testCases = [
   // Ensure that an extension can add up to `unsafeRuleLimit` number of "unsafe"
   // rules.
   function unsafeRuleLimitReached() {
-    var newRules = [];
+    let newRules = [];
     while (newRules.length < unsafeRuleLimit) {
       newRules.push(createRedirectRuleWithID(nextId++));
     }
@@ -115,8 +115,8 @@ const testCases = [
 
   // Ensure we can add up to `ruleLimit` no. of rules.
   function ruleLimitReached() {
-    var numRulesToAdd = ruleLimit - currentRules.length;
-    var newRules = [];
+    const numRulesToAdd = ruleLimit - currentRules.length;
+    let newRules = [];
     while (newRules.length < numRulesToAdd)
       newRules.push(createRuleWithID(nextId++));
 

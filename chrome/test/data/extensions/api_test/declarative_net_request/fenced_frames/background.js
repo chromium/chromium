@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var expectedCallback;
-var tab;
+let expectedCallback;
+let tab;
 
 // Navigates to |url| and invokes |callback| when a rule has been queued.
 function navigateTab(url, callback) {
@@ -11,16 +11,16 @@ function navigateTab(url, callback) {
   chrome.tabs.update(tab.id, {url: url});
 }
 
-var matchedRules = [];
-var documentIds = [];
-var nextDocumentId = 1;
+let matchedRules = [];
+const documentIds = [];
+let nextDocumentId = 1;
 
-var onRuleMatchedDebugCallback = (rule) => {
+const onRuleMatchedDebugCallback = (rule) => {
   matchedRules.push(rule);
   expectedCallback(tab);
 };
 
-var testServerPort;
+let testServerPort;
 function getServerURL(host) {
   if (!testServerPort)
     throw new Error('Called getServerURL outside of runTests.');
@@ -59,10 +59,10 @@ function verifyExpectedRuleInfo(expectedRuleInfo) {
   chrome.test.assertEq(expectedRuleInfo, matchedRule);
 }
 
-// Opaque initiators serialize to "null".
-const kOpaqueInitiator = "null";
+// Opaque initiators serialize to 'null'.
+const kOpaqueInitiator = 'null';
 
-var tests = [
+const tests = [
   function setup() {
     chrome.declarativeNetRequest.onRuleMatchedDebug.addListener(
         onRuleMatchedDebugCallback);
@@ -217,7 +217,7 @@ var tests = [
 chrome.test.getConfig(async (config) => {
   testServerPort = config.testServer.port;
   tab = await new Promise(function(resolve, reject) {
-    chrome.tabs.create({"url": "about:blank"}, (value) => {
+    chrome.tabs.create({url: 'about:blank'}, (value) => {
       resolve(value);
     });
   });
