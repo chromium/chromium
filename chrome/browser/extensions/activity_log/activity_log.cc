@@ -75,6 +75,7 @@ enum class Transformation {
   kNone,
   kDictLookup,
   kLookupTabId,
+  kDictLookupTabId,
 };
 
 // Information about specific Chrome and DOM APIs, such as which contain
@@ -102,6 +103,10 @@ struct ApiInfo {
   // If Transformation::kDictLookup, the data is expected to be a dictionary,
   // and arg_url_dict_path is a path (list of keys delimited by ".") where a URL
   // string is to be found.
+  //
+  // If Transformation::kDictLookupTabId, the data is expected to be a
+  // dictionary, and arg_url_dict_path is a path where a tab ID is to be found
+  // and translated.
   Transformation arg_url_transform;
   const char* arg_url_dict_path;
 };
@@ -142,6 +147,10 @@ static const ApiInfo kApiInfoTable[] = {
      Transformation::kLookupTabId, nullptr},
     {Action::ACTION_API_EVENT, "tabs.onReplaced", 0,
      Transformation::kLookupTabId, nullptr},
+
+    // Scripting APIs that require tab ID translation
+    {Action::ACTION_API_CALL, "scripting.executeScript", 0,
+     Transformation::kDictLookupTabId, "target.tabId"},
 
     // Other APIs that accept URLs as strings
     {Action::ACTION_API_CALL, "bookmarks.create", 0,
@@ -390,6 +399,22 @@ void ExtractUrls(scoped_refptr<Action> action, Profile* profile) {
         }
         if (extracted_index >= 0)
           tab_list[extracted_index] = base::Value(kArgUrlPlaceholder);
+      }
+      break;
+    }
+
+    case Transformation::kDictLookupTabId: {
+      CHECK(api_info->arg_url_dict_path);
+      // Look up a tab ID from a dictionary at the specified location.
+      if (args_list[url_index].is_dict()) {
+        std::optional<int> tab_id =
+            args_list[url_index].GetDict().FindIntByDottedPath(
+                api_info->arg_url_dict_path);
+        if (tab_id &&
+            GetUrlForTabId(*tab_id, profile, &arg_url, &arg_incognito)) {
+          args_list[url_index].GetDict().SetByDottedPath(
+              api_info->arg_url_dict_path, kArgUrlPlaceholder);
+        }
       }
       break;
     }

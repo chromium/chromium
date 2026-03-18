@@ -19,7 +19,10 @@
 #include "build/build_config.h"
 #include "chrome/browser/extensions/activity_log/activity_action_constants.h"
 #include "chrome/browser/extensions/activity_log/activity_log_task_runner.h"
+#include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/test_extension_system.h"
+#include "chrome/browser/extensions/window_controller.h"
+#include "chrome/browser/extensions/window_controller_list.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_switches.h"
@@ -27,6 +30,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_handle.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
@@ -415,6 +419,90 @@ TEST_F(ActivityLogTest, ArgUrlExtraction) {
   activity_log->GetFilteredActions(
       kExtensionId, Action::ACTION_ANY, "", "", "", -1,
       base::BindOnce(ActivityLogTest::RetrieveActions_ArgUrlExtraction));
+}
+
+class MockWindowController : public WindowController {
+ public:
+  MockWindowController(Profile* profile, content::WebContents* contents)
+      : WindowController(nullptr, profile), contents_(contents) {
+    WindowControllerList::GetInstance()->AddExtensionWindow(this);
+  }
+  ~MockWindowController() override {
+    WindowControllerList::GetInstance()->RemoveExtensionWindow(this);
+  }
+  int GetWindowId() const override { return 1; }
+  std::string GetWindowTypeText() const override { return "normal"; }
+  void SetFullscreenMode(bool is_fullscreen,
+                         const GURL& extension_url) const override {}
+  content::WebContents* GetActiveTab() const override { return contents_; }
+  int GetTabCount() const override { return 1; }
+  content::WebContents* GetWebContentsAt(int i) const override {
+    return contents_;
+  }
+  bool IsVisibleToTabsAPIForExtension(
+      const Extension* extension,
+      bool include_dev_tools_windows) const override {
+    return true;
+  }
+  base::DictValue CreateWindowValueForExtension(
+      const Extension* extension,
+      PopulateTabBehavior populate_tab_behavior,
+      mojom::ContextType context) const override {
+    return base::DictValue();
+  }
+  base::ListValue CreateTabList(const Extension* extension,
+                                mojom::ContextType context) const override {
+    return base::ListValue();
+  }
+  bool OpenOptionsPage(const Extension* extension,
+                       const GURL& url,
+                       bool open_in_tab) override {
+    return false;
+  }
+
+ private:
+  raw_ptr<content::WebContents> contents_;
+};
+
+TEST_F(ActivityLogTest, ExtractUrls_ScriptingExecuteScript) {
+  ActivityLog* activity_log = ActivityLog::GetInstance(profile());
+  base::Time now = base::Time::Now();
+
+  // Set up a tab with a URL and a SessionTabHelper.
+  GURL url("http://www.google.com");
+  NavigateAndCommit(url);
+  sessions::SessionTabHelper::CreateForWebContents(
+      web_contents(), sessions::SessionTabHelper::DelegateLookup());
+  int tab_id = ExtensionTabUtil::GetTabId(web_contents());
+  ASSERT_NE(-1, tab_id);
+
+  // Set up a WindowController so GetTabById can find the tab.
+  MockWindowController window_controller(profile(), web_contents());
+
+  // Submit a scripting.executeScript call with a nested tab ID.
+  scoped_refptr<Action> action = new Action(
+      kExtensionId, now, Action::ACTION_API_CALL, "scripting.executeScript");
+  base::DictValue target;
+  target.Set("tabId", tab_id);
+  base::DictValue arg;
+  arg.Set("target", std::move(target));
+  base::ListValue args;
+  args.Append(std::move(arg));
+  action->set_args(std::move(args));
+  activity_log->LogAction(action);
+
+  activity_log->GetFilteredActions(
+      kExtensionId, Action::ACTION_ANY, "", "", "", -1,
+      base::BindOnce([](std::unique_ptr<std::vector<scoped_refptr<Action>>> i) {
+        ASSERT_EQ(1U, i->size());
+        scoped_refptr<Action> action = i->at(0);
+        ASSERT_EQ("scripting.executeScript", action->api_name());
+        // Verify tab ID was replaced.
+        ASSERT_EQ("[{\"target\":{\"tabId\":\"\\u003Carg_url>\"}}]",
+                  ActivityLogPolicy::Util::Serialize(action->args()));
+        // Verify URL was extracted.
+        ASSERT_EQ("http://www.google.com/", action->arg_url().spec());
+      }));
 }
 
 TEST_F(ActivityLogTest, UninstalledExtension) {

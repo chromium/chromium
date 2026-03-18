@@ -195,4 +195,55 @@ TEST(ActivityLogPolicyUtilNamespaceTest,
   EXPECT_EQ(result[1], "arg2");
 }
 
+TEST(ActivityLogPolicyUtilNamespaceTest,
+     GetArgumentsList_ScriptingExecuteScript) {
+  // 1. Test "files" extraction.
+  {
+    base::ListValue args;
+    base::DictValue dict;
+    base::ListValue files;
+    files.Append("script1.js");
+    files.Append("script2.js");
+    dict.Set("files", std::move(files));
+    args.Append(std::move(dict));
+
+    std::vector<std::string> result =
+        GetArgumentsList("scripting.executeScript", args);
+
+    ASSERT_EQ(result.size(), 2u);
+    EXPECT_EQ(result[0], "script1.js");
+    EXPECT_EQ(result[1], "script2.js");
+  }
+
+  // 2. Test "func" extraction.
+  {
+    base::ListValue args;
+    base::DictValue dict;
+    dict.Set("func", "function() { console.log('hello'); }");
+    args.Append(std::move(dict));
+
+    std::vector<std::string> result =
+        GetArgumentsList("scripting.executeScript", args);
+
+    ASSERT_EQ(result.size(), 1u);
+    EXPECT_EQ(result[0], "function() { console.log('hello'); }");
+  }
+
+  // 3. Test "func" string capping at 1024 characters.
+  {
+    base::ListValue args;
+    base::DictValue dict;
+    std::string long_func(2000, 'A');
+    dict.Set("func", long_func);
+    args.Append(std::move(dict));
+
+    std::vector<std::string> result =
+        GetArgumentsList("scripting.executeScript", args);
+
+    ASSERT_EQ(result.size(), 1u);
+    EXPECT_EQ(result[0].length(), 1024u);
+    EXPECT_EQ(result[0], std::string(1024, 'A'));
+  }
+}
+
 }  // namespace extensions::activity_log_policy_util
