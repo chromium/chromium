@@ -24,10 +24,14 @@
 
 namespace glic {
 
-class GlicProfileManagerUiTest : public test::InteractiveGlicTest,
-                                 public testing::WithParamInterface<bool> {
+// TODO(b/445924847): This test does not work with multi-instance, which is now
+// launched. It needs updated if we want to pursue launching the GlicWarming
+// feature.
+class DISABLED_GlicProfileManagerUiTest
+    : public test::InteractiveGlicTest,
+      public testing::WithParamInterface<bool> {
  public:
-  GlicProfileManagerUiTest() {
+  DISABLED_GlicProfileManagerUiTest() {
     std::vector<base::test::FeatureRefAndParams> enabled = {
         {features::kGlicWarming,
          {{features::kGlicWarmingDelayMs.name, "0"},
@@ -180,7 +184,7 @@ class GlicProfileManagerUiTest : public test::InteractiveGlicTest,
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(GlicProfileManagerUiTest, ConsistentPreload) {
+IN_PROC_BROWSER_TEST_P(DISABLED_GlicProfileManagerUiTest, ConsistentPreload) {
   RunTestSequence(
       WaitForShow(kGlicButtonElementId),
       // Since we've disabled preloading, nothing should be preloaded yet.
@@ -204,7 +208,7 @@ IN_PROC_BROWSER_TEST_P(GlicProfileManagerUiTest, ConsistentPreload) {
       CheckCachedClientContents(/*primary_profile=*/true));
 }
 
-IN_PROC_BROWSER_TEST_P(GlicProfileManagerUiTest, PreloadMutex) {
+IN_PROC_BROWSER_TEST_P(DISABLED_GlicProfileManagerUiTest, PreloadMutex) {
   RunTestSequence(
       WaitForShow(kGlicButtonElementId),
       // Since we've disabled preloading, nothing should be preloaded yet.
@@ -227,7 +231,7 @@ IN_PROC_BROWSER_TEST_P(GlicProfileManagerUiTest, PreloadMutex) {
       CheckWarmedAndSized(ShouldWarmMultiple(), true));
 }
 
-IN_PROC_BROWSER_TEST_P(GlicProfileManagerUiTest, ShowMutex) {
+IN_PROC_BROWSER_TEST_P(DISABLED_GlicProfileManagerUiTest, ShowMutex) {
   RunTestSequence(
       WaitForShow(kGlicButtonElementId),
       // Since we've disabled preloading, nothing should be preloaded yet.
@@ -250,7 +254,7 @@ IN_PROC_BROWSER_TEST_P(GlicProfileManagerUiTest, ShowMutex) {
       CheckWarmedAndSized(true, ShouldWarmMultiple()));
 }
 
-IN_PROC_BROWSER_TEST_P(GlicProfileManagerUiTest, FreMutex) {
+IN_PROC_BROWSER_TEST_P(DISABLED_GlicProfileManagerUiTest, FreMutex) {
   RunTestSequence(
       WaitForShow(kGlicButtonElementId),
       // Since we've disabled preloading, nothing should be preloaded yet.
@@ -273,7 +277,8 @@ IN_PROC_BROWSER_TEST_P(GlicProfileManagerUiTest, FreMutex) {
       CheckWarmedAndSized(true, ShouldWarmMultiple()));
 }
 
-IN_PROC_BROWSER_TEST_P(GlicProfileManagerUiTest, DoNotWarmWhenShowing) {
+IN_PROC_BROWSER_TEST_P(DISABLED_GlicProfileManagerUiTest,
+                       DoNotWarmWhenShowing) {
   RunTestSequence(
       WaitForShow(kGlicButtonElementId),
       // Since we've disabled preloading, nothing should be preloaded yet.
@@ -293,7 +298,8 @@ IN_PROC_BROWSER_TEST_P(GlicProfileManagerUiTest, DoNotWarmWhenShowing) {
       CheckWarmedAndSized(true, ShouldWarmMultiple()));
 }
 
-IN_PROC_BROWSER_TEST_P(GlicProfileManagerUiTest, MemPressureClearsCache) {
+IN_PROC_BROWSER_TEST_P(DISABLED_GlicProfileManagerUiTest,
+                       MemPressureClearsCache) {
   RunTestSequence(
       WaitForShow(kGlicButtonElementId),
       // Since we've disabled preloading, nothing should be preloaded yet.
@@ -311,7 +317,8 @@ IN_PROC_BROWSER_TEST_P(GlicProfileManagerUiTest, MemPressureClearsCache) {
       CheckWarmedAndSized(false, false));
 }
 
-IN_PROC_BROWSER_TEST_P(GlicProfileManagerUiTest, MemPressureDoesNotClearShown) {
+IN_PROC_BROWSER_TEST_P(DISABLED_GlicProfileManagerUiTest,
+                       MemPressureDoesNotClearShown) {
   RunTestSequence(
       WaitForShow(kGlicButtonElementId),
       // Since we've disabled preloading, nothing should be preloaded yet.
@@ -332,7 +339,7 @@ IN_PROC_BROWSER_TEST_P(GlicProfileManagerUiTest, MemPressureDoesNotClearShown) {
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
-                         GlicProfileManagerUiTest,
+                         DISABLED_GlicProfileManagerUiTest,
                          testing::Bool(),
                          [](const testing::TestParamInfo<bool>& info) {
                            return info.param ? "WarmMultiple"
