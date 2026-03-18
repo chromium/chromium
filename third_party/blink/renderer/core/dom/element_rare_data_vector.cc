@@ -174,6 +174,10 @@ PseudoElement* ElementRareDataVector::GetPseudoElement(
   return data->GetPseudoElement(pseudo_id, document_transition_tag);
 }
 
+bool ElementRareDataVector::HasAnyPseudos() const {
+  return GetField(FieldId::kPseudoElementData);
+}
+
 bool ElementRareDataVector::HasScrollButtonOrMarkerGroupPseudos() const {
   PseudoElementData* data =
       static_cast<PseudoElementData*>(GetField(FieldId::kPseudoElementData));

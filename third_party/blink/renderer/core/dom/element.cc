@@ -5159,31 +5159,50 @@ void Element::RecalcStyle(const StyleRecalcChange change,
     layout_sibling_recalc_context.size_container =
         local_style_recalc_context.size_container;
   }
+
+  // As an optimization, we can skip most UpdatePseudoElement() calls
+  // (and similar) if the ComputedStyle doesn't have any pseudo-element styles
+  // and there are no existing pseudo-elements to be updated.
+  const bool need_to_check_pseudos =
+      child_change.TraversePseudoElements(*this) &&
+      ((RareData() && RareData()->HasAnyPseudos()) ||
+       (GetComputedStyle() && GetComputedStyle()->HasAnyPseudoElementStyles()));
+
   if (child_change.TraversePseudoElements(*this)) {
+    // Backdrop handling depends on feature flags.
+    // TODO: When the OverlayProperty feature flag is removed,
+    // this can probably be moved inside the if.
     UpdateBackdropPseudoElement(child_change, child_recalc_context);
+
+    // ::marker ignores the ComputedStyle bits and checks IsDisplayListItem().
     UpdatePseudoElement(kPseudoIdMarker, child_change, child_recalc_context);
+
+    // Scroll markers have special rules for the document element.
     UpdatePseudoElement(kPseudoIdScrollMarkerGroupBefore, child_change,
                         layout_sibling_recalc_context);
-    UpdatePseudoElement(kPseudoIdScrollButtonBlockStart, child_change,
-                        layout_sibling_recalc_context);
-    UpdatePseudoElement(kPseudoIdScrollButtonInlineStart, child_change,
-                        layout_sibling_recalc_context);
-    UpdatePseudoElement(kPseudoIdScrollButtonInlineEnd, child_change,
-                        layout_sibling_recalc_context);
-    UpdatePseudoElement(kPseudoIdScrollButtonBlockEnd, child_change,
-                        layout_sibling_recalc_context);
-    UpdatePseudoElement(kPseudoIdScrollMarker, child_change,
-                        child_recalc_context);
-    UpdateColumnPseudoElements(child_change, child_recalc_context);
 
-    if (IsA<HTMLMenuItemElement>(this) || IsA<HTMLOptionElement>(this) ||
-        (IsA<HTMLInputElement>(this) &&
-         RuntimeEnabledFeatures::AppearanceBaseEnabled())) {
-      UpdatePseudoElement(kPseudoIdCheckMark, child_change,
+    if (need_to_check_pseudos) {
+      UpdatePseudoElement(kPseudoIdScrollButtonBlockStart, child_change,
+                          layout_sibling_recalc_context);
+      UpdatePseudoElement(kPseudoIdScrollButtonInlineStart, child_change,
+                          layout_sibling_recalc_context);
+      UpdatePseudoElement(kPseudoIdScrollButtonInlineEnd, child_change,
+                          layout_sibling_recalc_context);
+      UpdatePseudoElement(kPseudoIdScrollButtonBlockEnd, child_change,
+                          layout_sibling_recalc_context);
+      UpdatePseudoElement(kPseudoIdScrollMarker, child_change,
                           child_recalc_context);
-    }
+      UpdateColumnPseudoElements(child_change, child_recalc_context);
 
-    UpdatePseudoElement(kPseudoIdBefore, child_change, child_recalc_context);
+      if (IsA<HTMLMenuItemElement>(this) || IsA<HTMLOptionElement>(this) ||
+          (IsA<HTMLInputElement>(this) &&
+           RuntimeEnabledFeatures::AppearanceBaseEnabled())) {
+        UpdatePseudoElement(kPseudoIdCheckMark, child_change,
+                            child_recalc_context);
+      }
+
+      UpdatePseudoElement(kPseudoIdBefore, child_change, child_recalc_context);
+    }
   }
 
   if (child_change.TraverseChildren(*this)) {
@@ -5202,50 +5221,58 @@ void Element::RecalcStyle(const StyleRecalcChange change,
   }
 
   if (child_change.TraversePseudoElements(*this)) {
-    UpdatePseudoElement(kPseudoIdAfter, child_change, child_recalc_context);
-
-    if (IsA<HTMLSelectElement>(this)) {
-      UpdatePseudoElement(kPseudoIdPickerIcon, child_change,
-                          child_recalc_context);
-    }
-
-    if (RuntimeEnabledFeatures::HTMLInterestForInterestHintPseudoEnabled(
-            GetExecutionContext())) {
-      UpdatePseudoElement(kPseudoIdInterestHint, child_change,
-                          child_recalc_context);
-    }
-
+    // Scroll markers have special rules for the document element.
     UpdatePseudoElement(kPseudoIdScrollMarkerGroupAfter, child_change,
                         layout_sibling_recalc_context);
 
-    // If we are re-attaching us or any of our descendants, we need to attach
-    // the descendants before we know if this element generates a ::first-letter
-    // and which element the ::first-letter inherits style from.
-    //
-    // If style recalc was suppressed for this element, it means it's a size
-    // query container, and child_change.ReattachLayoutTree() comes from the
-    // skipped style recalc. In that case we haven't updated the style, and we
-    // will not update the ::first-letter style in the originating element's
-    // AttachLayoutTree().
-    if (child_change.ReattachLayoutTree() && !change.IsSuppressed()) {
-      // Make sure we reach this element during reattachment. There are cases
-      // where we compute and store the styles for a subtree but stop attaching
-      // layout objects at an element that does not allow child boxes. Marking
-      // dirty for re-attachment means we AttachLayoutTree() will still traverse
-      // down to all elements with a ComputedStyle which clears the
-      // NeedsStyleRecalc() flag.
-      if (PseudoElement* first_letter =
-              GetPseudoElement(kPseudoIdFirstLetter)) {
-        first_letter->SetNeedsReattachLayoutTree();
-      }
-    } else if (!ChildNeedsReattachLayoutTree()) {
-      UpdateFirstLetterPseudoElement(StyleUpdatePhase::kRecalc,
-                                     child_recalc_context);
-    }
-
+    // ::overscroll-area-parent ignores the ComputedStyle bits and checks
+    // GetOverscrollContainer().
     UpdatePseudoElement(kPseudoIdOverscrollAreaParent, child_change,
                         child_recalc_context);
+
+    // View transitions ignore the ComputedStyle bits and check
+    // ViewTransitionUtils::GetTransition(*this).
     UpdateTransitionPseudoElements(child_change, child_recalc_context);
+
+    if (need_to_check_pseudos) {
+      UpdatePseudoElement(kPseudoIdAfter, child_change, child_recalc_context);
+      if (IsA<HTMLSelectElement>(this)) {
+        UpdatePseudoElement(kPseudoIdPickerIcon, child_change,
+                            child_recalc_context);
+      }
+
+      if (RuntimeEnabledFeatures::HTMLInterestForInterestHintPseudoEnabled(
+              GetExecutionContext())) {
+        UpdatePseudoElement(kPseudoIdInterestHint, child_change,
+                            child_recalc_context);
+      }
+
+      // If we are re-attaching us or any of our descendants, we need to attach
+      // the descendants before we know if this element generates a
+      // ::first-letter and which element the ::first-letter inherits style
+      // from.
+      //
+      // If style recalc was suppressed for this element, it means it's a size
+      // query container, and child_change.ReattachLayoutTree() comes from the
+      // skipped style recalc. In that case we haven't updated the style, and we
+      // will not update the ::first-letter style in the originating element's
+      // AttachLayoutTree().
+      if (child_change.ReattachLayoutTree() && !change.IsSuppressed()) {
+        // Make sure we reach this element during reattachment. There are cases
+        // where we compute and store the styles for a subtree but stop
+        // attaching layout objects at an element that does not allow child
+        // boxes. Marking dirty for re-attachment means we AttachLayoutTree()
+        // will still traverse down to all elements with a ComputedStyle which
+        // clears the NeedsStyleRecalc() flag.
+        if (PseudoElement* first_letter =
+                GetPseudoElement(kPseudoIdFirstLetter)) {
+          first_letter->SetNeedsReattachLayoutTree();
+        }
+      } else if (!ChildNeedsReattachLayoutTree()) {
+        UpdateFirstLetterPseudoElement(StyleUpdatePhase::kRecalc,
+                                       child_recalc_context);
+      }
+    }
   }
 
   ClearChildNeedsStyleRecalc();

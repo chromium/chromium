@@ -202,6 +202,7 @@ class CORE_EXPORT ElementRareDataVector final
   PseudoElement* GetPseudoElement(
       PseudoId,
       const AtomicString& document_transition_tag = g_null_atom) const;
+  bool HasAnyPseudos() const;
   bool HasScrollButtonOrMarkerGroupPseudos() const;
   PseudoElementData::PseudoElementVector GetPseudoElements() const;
 
