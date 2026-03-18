@@ -389,6 +389,7 @@ template("msvc_toolchain") {
             "{{output_dir}}/lib{{target_output_name}}{{output_extension}}"
         rspfile = rustc_rsp_path
         depfile = "$rlibname.d"
+        rmetaname = "{{output_dir}}/lib{{target_output_name}}.rmeta"
 
         default_output_extension = ".rlib"
 
@@ -402,13 +403,14 @@ template("msvc_toolchain") {
         description = "RUST {{output}}"
         outputs = [
           rlibname,
+          rmetaname,
           rustc_env_and_flags_path,
           "${rspfile}.rust",
         ]
 
         rspfile_content =
             "$rustc_windows_args {{rustdeps}} {{externs}} SOURCES {{sources}}"
-        command = "$rustc_wrapper --depfile=$depfile --emit=dep-info=$depfile,link -o $rlibname -- {{source}} LDFLAGS RUSTENV {{rustenv}}"
+        command = "$rustc_wrapper --depfile=$depfile --emit=dep-info=$depfile,link,metadata=$rmetaname -o $rlibname -- {{source}} LDFLAGS RUSTENV {{rustenv}}"
         rust_sysroot = rust_sysroot_relative
       }
 
