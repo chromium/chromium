@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <array>
 
+#include "base/files/scoped_temp_dir.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
@@ -15,7 +16,11 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/history/core/browser/history_database_params.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/history_types.h"
+#include "components/history/core/test/history_service_test_util.h"
+#include "components/history/core/test/test_history_database.h"
 #include "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/hints/test_optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -167,10 +172,13 @@ class PageContentAnnotationsServiceTest : public testing::Test {
   ~PageContentAnnotationsServiceTest() override = default;
 
   void SetUp() override {
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     optimization_guide_model_provider_ = std::make_unique<
         optimization_guide::TestOptimizationGuideModelProvider>();
     history_service_ =
         std::make_unique<testing::StrictMock<MockHistoryService>>();
+    history_service_->Init(
+        history::TestHistoryDatabaseParamsForPath(temp_dir_.GetPath()));
 
     optimization_guide_decider_ =
         std::make_unique<FakeOptimizationGuideDecider>();
@@ -194,6 +202,11 @@ class PageContentAnnotationsServiceTest : public testing::Test {
                                          {{"test", 0.5}});
     service_->OverridePageContentAnnotatorForTesting(test_annotator_.get());
 #endif
+  }
+
+  void TearDown() override {
+    history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
+    testing::Test::TearDown();
   }
 
   // Simulates a visit to URL.
@@ -221,6 +234,7 @@ class PageContentAnnotationsServiceTest : public testing::Test {
     return optimization_guide_decider_.get();
   }
 
+  base::ScopedTempDir temp_dir_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 

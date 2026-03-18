@@ -137,6 +137,7 @@ source_set("unit_tests") {
     ":features",
     ":test_support",
     "//base/test:test_support",
+    "//components/history/core/test",
     "//components/optimization_guide/core:test_support",
     "//components/passage_embeddings/core:passage_embeddings_types",
     "//components/search_engines:test_support",
