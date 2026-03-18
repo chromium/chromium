@@ -7,7 +7,6 @@ source_set("eg2_tests") {
   testonly = true
   sources = [ "form_input_accessory_egtest.mm" ]
   deps = [
-    ":eg_test_support+eg2",
     "//components/autofill/core/browser:test_support",
     "//components/autofill/ios/common",
     "//components/feature_engagement/public",
@@ -20,6 +19,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/autofill/ui_bundled:eg_test_support+eg2",
     "//ios/chrome/browser/autofill/ui_bundled/manual_fill:eg_test_support+eg2",
     "//ios/chrome/browser/autofill/ui_bundled/manual_fill:manual_fill_constants",
+    "//ios/chrome/browser/device_reauth/test:eg_test_support+eg2",
     "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
     "//ios/chrome/browser/passwords/bottom_sheet/test:eg_test_support+eg2",
     "//ios/chrome/browser/passwords/model:eg_test_support+eg2",
@@ -34,37 +34,4 @@ source_set("eg2_tests") {
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
-}
-
-source_set("eg_app_support+eg2") {
-  configs += [ "//build/config/ios:xctest_config" ]
-  testonly = true
-  sources = [
-    "form_input_accessory_app_interface.h",
-    "form_input_accessory_app_interface.mm",
-  ]
-  deps = [
-    "//base",
-    "//ios/chrome/browser/autofill/form_input_accessory/coordinator",
-    "//ios/chrome/browser/autofill/form_input_accessory/public",
-    "//ios/chrome/browser/autofill/form_input_accessory/ui",
-    "//ios/chrome/browser/device_reauth/model",
-    "//ios/chrome/common/ui/reauthentication",
-    "//ios/chrome/common/ui/reauthentication:mock_reauthentication_module",
-    "//ios/chrome/test/app:test_support",
-  ]
-}
-
-source_set("eg_test_support+eg2") {
-  configs += [ "//build/config/ios:xctest_config" ]
-  testonly = true
-
-  sources = [
-    "form_input_accessory_app_interface.h",
-    "form_input_accessory_app_interface_stub.mm",
-  ]
-  deps = [
-    "//ios/chrome/common/ui/reauthentication",
-    "//ios/testing/earl_grey:eg_test_support+eg2",
-  ]
 }

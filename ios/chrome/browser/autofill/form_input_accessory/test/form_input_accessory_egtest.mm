@@ -20,10 +20,10 @@
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/service/sync_prefs.h"
-#import "ios/chrome/browser/autofill/form_input_accessory/test/form_input_accessory_app_interface.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_matchers.h"
+#import "ios/chrome/browser/device_reauth/test/reauthentication_app_interface.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/test/credential_suggestion_bottom_sheet_app_interface.h"
 #import "ios/chrome/browser/passwords/model/password_manager_app_interface.h"
@@ -500,8 +500,8 @@ id<GREYMatcher> PaymentsBottomSheetUseKeyboardButton() {
   // Disable the credential bottom sheet.
   [CredentialSuggestionBottomSheetAppInterface disableBottomSheet];
 
-  [FormInputAccessoryAppInterface mockReauthenticationModuleExpectedResult:
-                                      ReauthenticationResult::kSuccess];
+  [ReauthenticationAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kSuccess];
 
   NSString* username = kExampleUsername;
   NSString* password = kExamplePassword;
@@ -533,8 +533,8 @@ id<GREYMatcher> PaymentsBottomSheetUseKeyboardButton() {
   // Disable the credential bottom sheet.
   [CredentialSuggestionBottomSheetAppInterface disableBottomSheet];
 
-  [FormInputAccessoryAppInterface mockReauthenticationModuleExpectedResult:
-                                      ReauthenticationResult::kSuccess];
+  [ReauthenticationAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kSuccess];
 
   NSString* username = kExampleUsername;
   NSString* password = kExamplePassword;
@@ -563,8 +563,8 @@ id<GREYMatcher> PaymentsBottomSheetUseKeyboardButton() {
   // Disable the credential bottom sheet.
   [CredentialSuggestionBottomSheetAppInterface disableBottomSheet];
 
-  [FormInputAccessoryAppInterface mockReauthenticationModuleExpectedResult:
-                                      ReauthenticationResult::kSuccess];
+  [ReauthenticationAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kSuccess];
 
   NSString* username = kExampleUsername;
   NSString* password = kExamplePassword;
@@ -1067,8 +1067,8 @@ id<GREYMatcher> PaymentsBottomSheetUseKeyboardButton() {
   [CredentialSuggestionBottomSheetAppInterface disableBottomSheet];
 
   // Set up the reauthentication module.
-  [FormInputAccessoryAppInterface mockReauthenticationModuleExpectedResult:
-                                      ReauthenticationResult::kSuccess];
+  [ReauthenticationAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kSuccess];
 
   // Save a credential with a backup password.
   NSString* username = kExampleUsername;

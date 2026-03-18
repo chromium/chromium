@@ -12,7 +12,6 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
-#import "ios/chrome/browser/autofill/form_input_accessory/test/form_input_accessory_app_interface.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_matchers.h"
@@ -1119,8 +1118,8 @@ void CheckKeyboardIsUpAndNotCovered() {
 // Tests that tapping the "Autofill form" button fills the password form with
 // the right data.
 - (void)testAutofillFormButtonFillsForm {
-  [FormInputAccessoryAppInterface mockReauthenticationModuleExpectedResult:
-                                      ReauthenticationResult::kSuccess];
+  [ReauthenticationAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kSuccess];
 
   // Disable the credential bottom sheet.
   [CredentialSuggestionBottomSheetAppInterface disableBottomSheet];
@@ -1159,8 +1158,8 @@ void CheckKeyboardIsUpAndNotCovered() {
 // Tests that tapping the "Autofill form" button doesn't fill the password form
 // if reauth failed.
 - (void)testAutofillFormButtonWithFailedAuth {
-  [FormInputAccessoryAppInterface mockReauthenticationModuleExpectedResult:
-                                      ReauthenticationResult::kFailure];
+  [ReauthenticationAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kFailure];
 
   // Disable the credential bottom sheet.
   [CredentialSuggestionBottomSheetAppInterface disableBottomSheet];
@@ -1230,8 +1229,8 @@ void CheckKeyboardIsUpAndNotCovered() {
 // Tests that tapping the "Autofill form" button for a backup credential fills
 // the password form with the right data.
 - (void)testAutofillFormButtonForBackupCredentialFillsForm {
-  [FormInputAccessoryAppInterface mockReauthenticationModuleExpectedResult:
-                                      ReauthenticationResult::kSuccess];
+  [ReauthenticationAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kSuccess];
 
   // Disable the credential bottom sheet.
   [CredentialSuggestionBottomSheetAppInterface disableBottomSheet];

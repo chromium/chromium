@@ -354,7 +354,6 @@ source_set("eg2_tests") {
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/authentication/test:eg_test_support+eg2",
-    "//ios/chrome/browser/autofill/form_input_accessory/test:eg_test_support+eg2",
     "//ios/chrome/browser/autofill/ui_bundled:eg_test_support+eg2",
     "//ios/chrome/browser/autofill/ui_bundled/manual_fill:eg_test_support+eg2",
     "//ios/chrome/browser/device_reauth/test:eg_test_support+eg2",
