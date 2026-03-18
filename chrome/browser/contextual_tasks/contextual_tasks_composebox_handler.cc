@@ -1223,6 +1223,9 @@ void ContextualTasksComposeboxHandler::UpdateSuggestedTabContext(
     searchbox::mojom::TabInfoPtr candidate_tab_info) {
   current_suggestion_ = std::nullopt;
 
+  // Allowed to be called/update frontend multiple times for the same tab
+  // since title updates can occur.
+
   // Filter the suggested tab info based on blocklisted URLs and update the UI.
   searchbox::mojom::TabInfoPtr filtered_suggestion;
   if (contextual_tasks::GetIsTabAutoSuggestionChipEnabled() &&
