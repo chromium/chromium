@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/cobrowse/model/cobrowse_tab_helper.h"
 
 #import "ios/chrome/browser/cobrowse/model/cobrowse_context.h"
+#import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/web/public/navigation/navigation_context.h"
@@ -33,6 +34,12 @@ void CobrowseTabHelper::DidStartNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
   if (!delegate_ || !scene_commands_handler_) {
+    return;
+  }
+
+  // Dismiss the cobrowse AIM assistant sheet if navigating to the NTP.
+  if (IsUrlNtp(navigation_context->GetUrl())) {
+    [scene_commands_handler_ hideAssistant];
     return;
   }
 
