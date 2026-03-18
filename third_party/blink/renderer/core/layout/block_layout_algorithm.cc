@@ -806,7 +806,7 @@ inline const LayoutResult* BlockLayoutAlgorithm::Layout(
     abort_when_bfc_block_offset_updated_ = true;
   }
 
-  if (Style().HasLineClamp()) {
+  if (Style().HasLineClamp() && !Node().IsMulticolContainer()) {
     if (!line_clamp_data_.data.IsLineClampContext()) {
       LayoutUnit clamp_bfc_offset = kIndefiniteSize;
       if (!Style().LineClamp() ||

@@ -133,6 +133,8 @@ class CORE_EXPORT BlockNode : public LayoutInputNode {
   bool IsInlineLevel() const;
   bool IsInTopOrViewTransitionLayer() const;
 
+  bool IsMulticolContainer() const { return box_->IsMulticolContainer(); }
+
   // Returns the aspect ratio of a replaced element.
   LogicalSize GetReplacedAspectRatio() const;
 
