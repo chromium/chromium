@@ -80,15 +80,6 @@ class UserSessionManagerDelegate {
   virtual ~UserSessionManagerDelegate() = default;
 };
 
-class UserSessionStateObserver : public base::CheckedObserver {
- public:
-  // Called when UserManager finishes restoring user sessions after crash.
-  virtual void PendingUserSessionsRestoreFinished() {}
-
- protected:
-  ~UserSessionStateObserver() override = default;
-};
-
 class UserAuthenticatorObserver : public base::CheckedObserver {
  public:
   // Called when authentication is started.
@@ -259,9 +250,6 @@ class UserSessionManager
   bool RestartToApplyPerSessionFlagsIfNeed(Profile* profile,
                                            bool early_restart);
 
-  void AddSessionStateObserver(ash::UserSessionStateObserver* observer);
-  void RemoveSessionStateObserver(ash::UserSessionStateObserver* observer);
-
   void AddUserAuthenticatorObserver(UserAuthenticatorObserver* observer);
   void RemoveUserAuthenticatorObserver(UserAuthenticatorObserver* observer);
 
@@ -332,6 +320,11 @@ class UserSessionManager
           Profile* profile)>;
   void SetEolNotificationHandlerFactoryForTesting(
       const EolNotificationHandlerFactoryCallback& eol_notification_factory);
+
+  // Sets a testing callback which invoked when session restore is finished.
+  // The caller should check `UserSessionsRestored()` is false beforehand.
+  void SetOnPendingUserSessionRestoreFinishedForTesting(
+      base::OnceClosure callback);
 
   base::WeakPtr<UserSessionManager> GetUserSessionManagerAsWeakPtr();
 
@@ -556,8 +549,7 @@ class UserSessionManager
 
   PendingUserSessions pending_user_sessions_;
 
-  base::ObserverList<ash::UserSessionStateObserver>
-      session_state_observer_list_;
+  base::OnceClosure on_pending_user_session_restore_finished_for_testsing_;
 
   base::ObserverList<UserAuthenticatorObserver> authenticator_observer_list_;
 

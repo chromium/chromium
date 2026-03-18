@@ -110,48 +110,33 @@ IN_PROC_BROWSER_TEST_F(CrashRestoreSimpleTest, RestoreSessionForOneUser) {
 }
 
 // Observer that keeps track of user sessions restore event.
-class UserSessionRestoreObserver : public UserSessionStateObserver {
+class UserSessionRestoreObserver {
  public:
-  UserSessionRestoreObserver()
-      : running_loop_(false),
-        user_sessions_restored_(
-            UserSessionManager::GetInstance()->UserSessionsRestored()) {
-    if (!user_sessions_restored_)
-      UserSessionManager::GetInstance()->AddSessionStateObserver(this);
+  UserSessionRestoreObserver() {
+    if (!UserSessionManager::GetInstance()->UserSessionsRestored()) {
+      run_loop_.emplace();
+      UserSessionManager::GetInstance()
+          ->SetOnPendingUserSessionRestoreFinishedForTesting(
+              run_loop_->QuitClosure());
+    }
   }
 
   UserSessionRestoreObserver(const UserSessionRestoreObserver&) = delete;
   UserSessionRestoreObserver& operator=(const UserSessionRestoreObserver&) =
       delete;
-
-  ~UserSessionRestoreObserver() override = default;
-
-  void PendingUserSessionsRestoreFinished() override {
-    user_sessions_restored_ = true;
-    UserSessionManager::GetInstance()->RemoveSessionStateObserver(this);
-    if (!running_loop_)
-      return;
-
-    message_loop_runner_->Quit();
-    running_loop_ = false;
-  }
+  ~UserSessionRestoreObserver() = default;
 
   // Wait until the user sessions are restored. If that happened between the
   // construction of this object and this call or even before it was created
   // then it returns immediately.
   void Wait() {
-    if (user_sessions_restored_)
-      return;
-
-    running_loop_ = true;
-    message_loop_runner_ = new content::MessageLoopRunner();
-    message_loop_runner_->Run();
+    if (run_loop_) {
+      run_loop_->Run();
+    }
   }
 
  private:
-  bool running_loop_;
-  bool user_sessions_restored_;
-  scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
+  std::optional<base::RunLoop> run_loop_;
 };
 
 class CrashRestoreComplexTest : public CrashRestoreSimpleTest {
