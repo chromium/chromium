@@ -43,11 +43,9 @@ VirtualKeyboardTray::VirtualKeyboardTray(
                      ui::ImageModel::FromVectorIcon(kShelfKeyboardNewuiIcon,
                                                     kColorAshIconColorPrimary),
                      /*tooltip=*/
-                     l10n_util::GetStringUTF16(
-                         IDS_ASH_STATUS_TRAY_ACCESSIBILITY_VIRTUAL_KEYBOARD),
+                     IDS_ASH_STATUS_TRAY_ACCESSIBILITY_VIRTUAL_KEYBOARD,
                      /*accessibility_name=*/
-                     l10n_util::GetStringUTF16(
-                         IDS_ASH_VIRTUAL_KEYBOARD_TRAY_ACCESSIBLE_NAME),
+                     IDS_ASH_VIRTUAL_KEYBOARD_TRAY_ACCESSIBLE_NAME,
                      catalog_name) {
   SetCallback(base::BindRepeating(&VirtualKeyboardTray::OnButtonPressed,
                                   base::Unretained(this)));

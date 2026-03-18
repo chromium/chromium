@@ -12,6 +12,7 @@
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/tray/tray_bubble_view.h"
 #include "ash/system/tray/tray_container.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/events/event.h"
@@ -20,10 +21,21 @@
 
 namespace ash {
 
+namespace {
+
+std::u16string GetLocalizedString(const ImagedTrayIcon::StringVariant& value) {
+  if (std::holds_alternative<int>(value)) {
+    return l10n_util::GetStringUTF16(std::get<int>(value));
+  }
+  return std::get<std::u16string>(value);
+}
+
+}  // namespace
+
 ImagedTrayIcon::ImagedTrayIcon(Shelf* shelf,
                                const ui::ImageModel& image_model,
-                               const std::u16string& tooltip,
-                               const std::u16string& accessibility_name,
+                               const StringVariant& tooltip,
+                               const StringVariant& accessibility_name,
                                const TrayBackgroundViewCatalogName catalog_name)
     : TrayBackgroundView(shelf,
                          catalog_name,
@@ -34,11 +46,11 @@ ImagedTrayIcon::ImagedTrayIcon(Shelf* shelf,
           .SetVerticalAlignment(views::ImageView::Alignment::kCenter)
           .SetPreferredSize(gfx::Size(kTrayItemSize, kTrayItemSize))
           .SetImage(image_model)
-          .SetTooltipText(tooltip)
+          .SetTooltipText(GetLocalizedString(tooltip))
           .Build();
 
   image_view_ = tray_container()->AddChildView(std::move(image_view));
-  GetViewAccessibility().SetName(accessibility_name);
+  GetViewAccessibility().SetName(GetLocalizedString(accessibility_name));
 }
 
 ImagedTrayIcon::~ImagedTrayIcon() = default;

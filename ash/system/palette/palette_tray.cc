@@ -193,9 +193,9 @@ PaletteTray::PaletteTray(Shelf* shelf)
           ui::ImageModel::FromVectorIcon(kPaletteTrayIconDefaultNewuiIcon,
                                          cros_tokens::kCrosSysOnSurface,
                                          kTrayIconSize),
-          /*tooltip=*/l10n_util::GetStringUTF16(IDS_ASH_STYLUS_TOOLS_TITLE),
+          /*tooltip=*/IDS_ASH_STYLUS_TOOLS_TITLE,
           /*accessibility_name=*/
-          l10n_util::GetStringUTF16(IDS_ASH_STYLUS_TOOLS_TITLE),
+          IDS_ASH_STYLUS_TOOLS_TITLE,
           TrayBackgroundViewCatalogName::kPalette),
       palette_tool_manager_(std::make_unique<PaletteToolManager>(this)),
       welcome_bubble_(std::make_unique<PaletteWelcomeBubble>(this)),

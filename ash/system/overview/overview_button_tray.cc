@@ -63,14 +63,12 @@ bool ShouldButtonBeVisible() {
 constexpr base::TimeDelta OverviewButtonTray::kDoubleTapThresholdMs;
 
 OverviewButtonTray::OverviewButtonTray(Shelf* shelf)
-    : ImagedTrayIcon(
-          shelf,
-          ui::ImageModel(),
-          /*tooltip=*/
-          l10n_util::GetStringUTF16(IDS_ASH_OVERVIEW_BUTTON_ACCESSIBLE_NAME),
-          /*accessibility_name=*/
-          l10n_util::GetStringUTF16(IDS_ASH_OVERVIEW_BUTTON_ACCESSIBLE_NAME),
-          TrayBackgroundViewCatalogName::kOverview),
+    : ImagedTrayIcon(shelf,
+                     ui::ImageModel(),
+                     /*tooltip=*/IDS_ASH_OVERVIEW_BUTTON_ACCESSIBLE_NAME,
+                     /*accessibility_name=*/
+                     IDS_ASH_OVERVIEW_BUTTON_ACCESSIBLE_NAME,
+                     TrayBackgroundViewCatalogName::kOverview),
       scoped_session_observer_(this) {
   SetCallback(base::BindRepeating(&OverviewButtonTray::OnButtonPressed,
                                   base::Unretained(this)));
@@ -86,9 +84,6 @@ OverviewButtonTray::OverviewButtonTray(Shelf* shelf)
   Shell::Get()->overview_controller()->AddObserver(this);
   Shell::Get()->tablet_mode_controller()->AddObserver(this);
   Shell::Get()->shelf_config()->AddObserver(this);
-
-  GetViewAccessibility().SetName(
-      l10n_util::GetStringUTF16(IDS_ASH_OVERVIEW_BUTTON_ACCESSIBLE_NAME));
 }
 
 OverviewButtonTray::~OverviewButtonTray() {

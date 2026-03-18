@@ -38,11 +38,9 @@ MouseKeysTray::MouseKeysTray(Shelf* shelf,
     : ImagedTrayIcon(shelf,
                      GetMouseKeysIcon(),
                      /*tooltip=*/
-                     l10n_util::GetStringUTF16(
-                         IDS_ASH_STATUS_TRAY_ACCESSIBILITY_MOUSE_KEYS_PAUSE),
+                     IDS_ASH_STATUS_TRAY_ACCESSIBILITY_MOUSE_KEYS_PAUSE,
                      /*accessibility_name=*/
-                     l10n_util::GetStringUTF16(
-                         IDS_ASH_STATUS_TRAY_ACCESSIBILITY_MOUSE_KEYS_PAUSE),
+                     IDS_ASH_STATUS_TRAY_ACCESSIBILITY_MOUSE_KEYS_PAUSE,
                      catalog_name) {
   SetCallback(
       base::BindRepeating(&MouseKeysTray::OnMouseKeyIconPressed, GetWeakPtr()));

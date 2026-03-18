@@ -200,11 +200,9 @@ MediaTray::MediaTray(Shelf* shelf)
     : ImagedTrayIcon(shelf,
                      ui::ImageModel(),
                      /*tooltip=*/
-                     l10n_util::GetStringUTF16(
-                         IDS_ASH_GLOBAL_MEDIA_CONTROLS_BUTTON_TOOLTIP_TEXT),
+                     IDS_ASH_GLOBAL_MEDIA_CONTROLS_BUTTON_TOOLTIP_TEXT,
                      /*accessibility_name=*/
-                     l10n_util::GetStringUTF16(
-                         IDS_ASH_GLOBAL_MEDIA_CONTROLS_BUTTON_TOOLTIP_TEXT),
+                     IDS_ASH_GLOBAL_MEDIA_CONTROLS_BUTTON_TOOLTIP_TEXT,
                      TrayBackgroundViewCatalogName::kMediaPlayer) {
   SetCallback(base::BindRepeating(&MediaTray::OnTrayButtonPressed,
                                   base::Unretained(this)));

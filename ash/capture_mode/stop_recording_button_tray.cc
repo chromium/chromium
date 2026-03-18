@@ -25,11 +25,9 @@ StopRecordingButtonTray::StopRecordingButtonTray(Shelf* shelf)
           ui::ImageModel::FromVectorIcon(kCaptureModeCircleStopIcon,
                                          kColorAshIconColorAlert),
           /*tooltip=*/
-          l10n_util::GetStringUTF16(
-              IDS_ASH_STATUS_AREA_STOP_RECORDING_BUTTON_ACCESSIBLE_NAME),
+          IDS_ASH_STATUS_AREA_STOP_RECORDING_BUTTON_ACCESSIBLE_NAME,
           /*accessibility_name=*/
-          l10n_util::GetStringUTF16(
-              IDS_ASH_STATUS_AREA_STOP_RECORDING_BUTTON_ACCESSIBLE_NAME),
+          IDS_ASH_STATUS_AREA_STOP_RECORDING_BUTTON_ACCESSIBLE_NAME,
           TrayBackgroundViewCatalogName::kScreenCaptureStopRecording) {
   SetCallback(base::BindRepeating([](const ui::Event& event) {
     base::RecordAction(base::UserMetricsAction("Tray_StopRecording"));
