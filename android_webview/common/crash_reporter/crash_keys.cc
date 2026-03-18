@@ -221,6 +221,7 @@ const char* const kWebViewCrashKeyAllowList[] = {
 
     // crbug.com/456871291
     "BadHistogramArgs-name",
+    "BadHistogramArgs-validity",
 
     // crbug.com/40260662
     "PersistentSampleMap-corrupted",
