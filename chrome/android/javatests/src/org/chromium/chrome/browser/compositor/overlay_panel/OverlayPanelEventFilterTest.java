@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.ui.base.ActivityWindowAndroid;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.insets.InsetObserver;
@@ -469,6 +470,8 @@ public class OverlayPanelEventFilterTest {
     @Feature({"OverlayPanel"})
     @UiThreadTest
     @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/1415559")
+    @DisableIf.Device(
+            DeviceFormFactor.DESKTOP) // TODO(crbug.com/493853052): Test failing on Desktop bot
     public void testDragPanelThenContinuouslyScrollContentView() {
         positionPanelInAlmostMaximizedState();
 
