@@ -4669,6 +4669,7 @@
       valid_for_permission_element: true,
       valid_for_page_context: true,
       invalidate: ["outline"],
+      affected_by_zoom: true,
     },
     {
       name: "outline-style",
@@ -4705,6 +4706,7 @@
       valid_for_permission_element: true,
       valid_for_page_context: true,
       invalidate: ["outline"],
+      affected_by_zoom: true,
     },
     {
       name: "overflow-anchor",
