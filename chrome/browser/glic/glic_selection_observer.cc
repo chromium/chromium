@@ -122,6 +122,7 @@ void GlicSelectionObserver::UpdateSelectionState(
   if (selected_text.empty()) {
     if (auto* controller = bwi->GetFeatures().glic_nudge_controller()) {
       controller->UpdateNudgeLabel(web_contents(), "", std::nullopt,
+                                   /*anchored_message_text=*/std::string(),
                                    GlicNudgeActivity::kNudgeDismissed,
                                    base::DoNothing());
     }
@@ -182,6 +183,7 @@ void GlicSelectionObserver::UpdateSelectionState(
           IDS_GLIC_SELECTION_TELL_ME_ABOUT, selected_text);
       controller->UpdateNudgeLabel(web_contents(), base::UTF16ToUTF8(label),
                                    std::make_optional(base::UTF16ToUTF8(title)),
+                                   /*anchored_message_text=*/std::string(),
                                    std::nullopt, base::DoNothing());
     }
   }

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
 
+#include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
 #include "chrome/browser/glic/browser_ui/glic_nudge_delegate.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
@@ -31,6 +32,7 @@ void GlicNudgeController::UpdateNudgeLabel(
     content::WebContents* web_contents,
     const std::string& nudge_label,
     std::optional<std::string> prompt_suggestion,
+    const std::string& anchored_message_text,
     std::optional<GlicNudgeActivity> activity,
     GlicNudgeActivityCallback callback) {
   auto* const tab_interface =
@@ -67,12 +69,22 @@ void GlicNudgeController::UpdateNudgeLabel(
   }
 
   nudge_activity_callback_ = callback;
+  prompt_suggestion_ = prompt_suggestion;
+
   PrefService* const pref_service =
       browser_window_interface_->GetProfile()->GetPrefs();
   if (pref_service->GetBoolean(glic::prefs::kGlicPinnedToTabstrip)) {
+    // TODO: The delegate is currently TabStripActionContainer, which is a view
+    // and shouldn't contain browser business logic. Refactor to use a proper
+    // BrowserDelegate instead.
     if (delegate) {
       if (nudge_label.empty() && delegate->GetIsShowingGlicNudge()) {
         delegate->OnHideGlicNudgeUI();
+      } else if (base::FeatureList::IsEnabled(
+                     contextual_cueing::kUseAnchoredMessage) &&
+                 !anchored_message_text.empty()) {
+        delegate->OnTriggerAnchoredMessage(nudge_label, anchored_message_text,
+                                           prompt_suggestion);
       } else {
         delegate->OnTriggerGlicNudgeUI(nudge_label);
       }
@@ -85,8 +97,6 @@ void GlicNudgeController::UpdateNudgeLabel(
   } else {
     OnNudgeActivity(glic::GlicNudgeActivity::kNudgeShown);
   }
-
-  prompt_suggestion_ = prompt_suggestion;
 }
 
 void GlicNudgeController::OnNudgeActivity(GlicNudgeActivity activity) {

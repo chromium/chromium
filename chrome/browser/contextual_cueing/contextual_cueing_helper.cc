@@ -179,6 +179,7 @@ void ContextualCueingHelper::DidFinishNavigation(
   if (glic_nudge_controller) {
     glic_nudge_controller->UpdateNudgeLabel(
         web_contents(), std::string(), /*prompt_suggestion=*/std::nullopt,
+        /*anchored_message_text=*/std::string(),
         glic::GlicNudgeActivity::kNudgeIgnoredNavigation, base::DoNothing());
   }
 
@@ -388,8 +389,6 @@ void ContextualCueingHelper::OnCueingDecision(
     return;
   }
 
-  std::string cue_label = decision_result.value().cue_label;
-  std::string prompt_suggestion = decision_result.value().prompt_suggestion;
   if (IsBrowserBlockingNudges(decision_recorder.get())) {
     return;
   }
@@ -433,20 +432,23 @@ void ContextualCueingHelper::OnCueingDecision(
         invocation_source = glic::mojom::InvocationSource::kAutoOpenedForPdf;
       }
 
-      glic_service->ToggleUI(browser_window_interface,
-                             /*prevent_close=*/true, invocation_source,
-                             prompt_suggestion.empty()
-                                 ? std::nullopt
-                                 : std::make_optional(prompt_suggestion));
+      glic_service->ToggleUI(
+          browser_window_interface,
+          /*prevent_close=*/true, invocation_source,
+          decision_result->prompt_suggestion.empty()
+              ? std::nullopt
+              : std::make_optional(decision_result->prompt_suggestion));
       return;
     }
     // Fall through to nudge if side panel open fails.
   }
 
   GetGlicNudgeController()->UpdateNudgeLabel(
-      web_contents(), cue_label,
-      prompt_suggestion.empty() ? std::nullopt
-                                : std::make_optional(prompt_suggestion),
+      web_contents(), decision_result->cue_label,
+      decision_result->prompt_suggestion.empty()
+          ? std::nullopt
+          : std::make_optional(decision_result->prompt_suggestion),
+      decision_result->anchored_message_text,
       /*activity=*/std::nullopt,
       base::BindRepeating(&ContextualCueingService::OnNudgeActivity,
                           contextual_cueing_service_->GetWeakPtr(),

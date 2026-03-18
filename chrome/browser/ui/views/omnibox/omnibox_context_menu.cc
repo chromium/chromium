@@ -90,7 +90,7 @@ void OmniboxContextMenu::RunMenuAt(const gfx::Point& point,
 
   glic_nudge_controller->UpdateNudgeLabel(
       browser_window_interface->GetActiveTabInterface()->GetContents(), "",
-      std::nullopt,
+      std::nullopt, /*anchored_message_text=*/std::string(),
       glic::GlicNudgeActivity::kNudgeIgnoredOmniboxContextMenuInteraction,
       base::DoNothing());
 }

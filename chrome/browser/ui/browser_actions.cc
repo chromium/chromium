@@ -1524,6 +1524,30 @@ void BrowserActions::InitializeBrowserActions() {
             .Build());
   }
 
+  // Registration of Gemini in Chrome Anchored Cues, but requires call-time
+  // configuration to update the label, button text, and suggested prompt. As
+  // such, this action is disabled upon registration, and enabled at call time
+  // by OnTriggerAnchoredMessage().
+  if (glic_service) {
+    root_action_item_->AddChild(
+        actions::ActionItem::Builder(
+            base::BindRepeating([](actions::ActionItem* item,
+                                   actions::ActionInvocationContext context) {
+              DUMP_WILL_BE_NOTREACHED()
+                  << "Contextual cueing action invoked without being "
+                     "configured by OnTriggerAnchoredMessage";
+            }))
+            .SetActionId(kActionGlicContextualCueing)
+            .SetEnabled(false)
+            .SetVisible(false)
+            .SetText(l10n_util::GetStringUTF16(IDS_SETTINGS_GLIC_PAGE_TITLE))
+            .SetImage(ui::ImageModel::FromVectorIcon(
+                glic::GlicVectorIconManager::GetVectorIcon(
+                    IDR_GLIC_BUTTON_VECTOR_ICON),
+                ui::kColorIcon))
+            .Build());
+  }
+
   root_action_item_->AddChild(
       actions::ActionItem::Builder(
           base::BindRepeating(

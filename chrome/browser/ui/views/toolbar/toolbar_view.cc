@@ -895,6 +895,15 @@ void ToolbarView::OnTriggerGlicNudgeUI(std::string label) {
   }
 }
 
+void ToolbarView::OnTriggerAnchoredMessage(
+    std::string label,
+    std::string anchored_message_text,
+    std::optional<std::string> prompt_suggestion) {
+  // ToolbarView does not support the page action framework path used by
+  // TabStripActionContainer. Fall back to the chip nudge.
+  OnTriggerGlicNudgeUI(std::move(label));
+}
+
 void ToolbarView::OnHideGlicNudgeUI() {
   if (glic_button_) {
     HideToolbarNudge(glic_button_);

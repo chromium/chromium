@@ -300,6 +300,7 @@ TEST_F(TabStripActionContainerTest, MAYBE(GlicButtonUpdateLabel)) {
   BuildGlicContainer(/*use_otr_profile=*/false);
   glic_nudge_controller_->UpdateNudgeLabel(
       web_contents(), "TEST", /*prompt_suggestion=*/std::nullopt,
+      /*anchored_message_text=*/std::string(),
       /*activity=*/std::nullopt, base::NullCallback());
   ASSERT_EQ(tab_strip_action_container_->GetGlicButton()->GetText(), u"TEST");
 }
@@ -313,6 +314,7 @@ TEST_F(TabStripActionContainerTest, MAYBE(GlicButtonHideNudgeOnTabChange)) {
 
   glic_nudge_controller_->UpdateNudgeLabel(
       web_contents(), "TEST", /*prompt_suggestion=*/std::nullopt,
+      /*anchored_message_text=*/std::string(),
       /*activity=*/std::nullopt, base::NullCallback());
   ASSERT_TRUE(tab_strip_action_container_->GetIsShowingGlicNudge());
   ASSERT_EQ(tab_strip_action_container_->GetGlicButton()->GetText(), u"TEST");

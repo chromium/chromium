@@ -56,6 +56,16 @@ class FakeGlicNudgeDelegate : public glic::GlicNudgeDelegate {
       future_.SetValue();
     }
   }
+  void OnTriggerAnchoredMessage(
+      std::string label,
+      std::string anchored_message_text,
+      std::optional<std::string> prompt_suggestion) override {
+    last_nudge_label_ = label;
+    if (!last_nudge_label_.empty()) {
+      is_showing_nudge_ = true;
+      future_.SetValue();
+    }
+  }
   void OnHideGlicNudgeUI() override { is_showing_nudge_ = false; }
   bool GetIsShowingGlicNudge() override { return is_showing_nudge_; }
   void WaitUntilValidNudge() { future_.Get(); }

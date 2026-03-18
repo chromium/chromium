@@ -299,6 +299,7 @@ void ContextualTasksSidePanelCoordinator::Show(
           browser_window_->GetFeatures().glic_nudge_controller()) {
     glic_nudge_controller->UpdateNudgeLabel(
         active_tab_interface->GetContents(), "", std::nullopt,
+        /*anchored_message_text=*/std::string(),
         glic::GlicNudgeActivity::kNudgeIgnoredOpenedContextualTasksSidePanel,
         base::DoNothing());
   }
