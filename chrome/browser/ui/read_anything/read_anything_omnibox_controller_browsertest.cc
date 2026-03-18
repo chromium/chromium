@@ -324,8 +324,15 @@ IN_PROC_BROWSER_TEST_P(
       "Accessibility.ReadAnything.OpenedAfterOmniboxIPH", 0);
 }
 
+// TODO(https://crbug.com/491392993): Re-enable this test
+#if BUILDFLAG(IS_CHROMEOS) && \
+    (defined(LEAK_SANITIZER) || defined(ADDRESS_SANITIZER))
+#define MAYBE_DidStopLoadingIsDebounced DISABLED_DidStopLoadingIsDebounced
+#else
+#define MAYBE_DidStopLoadingIsDebounced DidStopLoadingIsDebounced
+#endif
 IN_PROC_BROWSER_TEST_P(ReadAnythingOmniboxControllerBrowserTest,
-                       DidStopLoadingIsDebounced) {
+                       MAYBE_DidStopLoadingIsDebounced) {
   RegisterPageActionObserver();
   NavigateToDistillablePage();
   WaitForPageActionShowing(true);
