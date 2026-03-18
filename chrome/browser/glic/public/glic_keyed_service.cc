@@ -931,8 +931,14 @@ GlicInstance* GlicKeyedService::GetInstanceForTab(tabs::TabInterface* tab) {
 
 GlicInstance* GlicKeyedService::GetInstanceForActiveTab(
     BrowserWindowInterface* bwi) {
-  return window_controller().GetInstanceForTab(
-      bwi ? TabListInterface::From(bwi)->GetActiveTab() : nullptr);
+  if (!bwi) {
+    return window_controller().GetInstanceForTab(nullptr);
+  }
+  auto* tab_list = TabListInterface::From(bwi);
+  if (!tab_list) {
+    return nullptr;
+  }
+  return window_controller().GetInstanceForTab(tab_list->GetActiveTab());
 }
 
 void GlicKeyedService::SendAdditionalContext(

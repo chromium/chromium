@@ -9,6 +9,7 @@
 
 #include "base/command_line.h"
 #include "base/run_loop.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -750,10 +751,6 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestGlic,
 
 IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestGlic,
                        ExecuteGlicThreeDotMenuItem) {
-  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
-    // TODO(b/453696965): Broken in multi-instance.
-    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
-  }
   // Bypass glic eligibility check.
   PrefService* profile_prefs = browser()->profile()->GetPrefs();
   profile_prefs->SetInteger(
@@ -768,6 +765,9 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestGlic,
   ASSERT_TRUE(
       glic::GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile())
           ->IsWindowShowing());
+  // Open command is disabled because Glic is now open.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !chrome::IsCommandEnabled(browser(), IDC_OPEN_GLIC); }));
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

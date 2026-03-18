@@ -349,11 +349,14 @@ BrowserCommandController::BrowserCommandController(BrowserWindowInterface* bwi)
     auto* service =
         glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile());
     if (service) {
-      glic_window_activation_subscription_ =
-          service->window_controller().AddWindowActivationChangedCallback(
-              base::BindRepeating(
-                  &BrowserCommandController::GlicWindowActivationChanged,
-                  base::Unretained(this)));
+      if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+        glic_active_instance_changed_subscription_ =
+            service->window_controller()
+                .AddActiveInstanceChangedCallbackAndNotifyImmediately(
+                    base::BindRepeating(
+                        &BrowserCommandController::GlicActiveInstanceChanged,
+                        base::Unretained(this)));
+      }
       glic_fre_state_change_subscription_ =
           service->fre_controller().AddWebUiStateChangedCallback(
               base::BindRepeating(
@@ -487,7 +490,8 @@ void BrowserCommandController::LoadingStateChanged(bool is_loading,
   UpdateReloadStopState(is_loading, force);
 }
 
-void BrowserCommandController::GlicWindowActivationChanged(bool active) {
+void BrowserCommandController::GlicActiveInstanceChanged(
+    glic::GlicInstance* instance) {
   UpdateGlicState();
 }
 
@@ -2253,9 +2257,14 @@ void BrowserCommandController::UpdateGlicState() {
     auto* service =
         glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile());
     if (service) {
+      bool glic_active = false;
+      auto* instance = service->GetInstanceForActiveTab(browser_);
+      if (instance) {
+        glic_active = instance->IsActive();
+      }
       command_updater_.UpdateCommandEnabled(
-          IDC_OPEN_GLIC, glic::GlicEnabling::IsEnabledForProfile(profile()) &&
-                             !service->IsWindowOrFreShowing());
+          IDC_OPEN_GLIC,
+          glic::GlicEnabling::IsEnabledForProfile(profile()) && !glic_active);
     }
   }
 }

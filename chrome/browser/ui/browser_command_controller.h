@@ -31,6 +31,10 @@ namespace input {
 struct NativeWebKeyboardEvent;
 }
 
+namespace glic {
+class GlicInstance;
+}
+
 namespace glic::mojom {
 enum class FreWebUiState;
 }
@@ -72,7 +76,7 @@ class BrowserCommandController : public CommandUpdater,
   void LockedFullscreenStateChanged();
 #endif
   void PrintingStateChanged();
-  void GlicWindowActivationChanged(bool active);
+  void GlicActiveInstanceChanged(glic::GlicInstance* instance);
   void GlicFreStateChanged(glic::mojom::FreWebUiState new_state);
   void LoadingStateChanged(bool is_loading, bool force);
   void FindBarVisibilityChanged();
@@ -258,7 +262,7 @@ class BrowserCommandController : public CommandUpdater,
 
   // Callback subscription for listening to changes to the Glic window
   // activation changes.
-  base::CallbackListSubscription glic_window_activation_subscription_;
+  base::CallbackListSubscription glic_active_instance_changed_subscription_;
   // Callback subscription for listening to changes to the Glic FRE
   base::CallbackListSubscription glic_fre_state_change_subscription_;
 
