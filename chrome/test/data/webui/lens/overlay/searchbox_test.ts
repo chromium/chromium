@@ -25,6 +25,7 @@ suite('Searchbox', () => {
 
     loadTimeData.overrideValues({
       'enableOverlayContextualSearchbox': true,
+      'enableGhostLoader': true,
     });
 
     testBrowserProxy = new TestLensOverlayBrowserProxy();
@@ -47,12 +48,11 @@ suite('Searchbox', () => {
     assertFalse(isVisible(lensOverlayElement.$.searchbox));
   });
 
-  test('Escape hides ghost loader', async () => {
+  test('Escape on non-empty input suppresses ghost loader', async () => {
     assertTrue(isVisible(lensOverlayElement.$.searchbox));
-    lensOverlayElement.$.searchbox.$.input.inputElement.value = 'hello';
 
-    // Simulate searchbox being focused and the autocomplete request being
-    // started.
+    // Simulate searchbox being focused and an autocomplete request being
+    // started with non-empty input.
     lensOverlayElement.setSearchboxFocusForTesting(true);
     document.dispatchEvent(new CustomEvent('query-autocomplete', {
       bubbles: true,
@@ -63,18 +63,83 @@ suite('Searchbox', () => {
     // Ghost loader should not be visible if the input is not empty.
     assertFalse(isVisible(lensOverlayElement.$.searchboxGhostLoader));
 
-    // Simulate escape being pressed from the searchbox with empty input.
+    // Simulate escape being pressed from the searchbox with non-empty input.
     const escapeEvent = new CustomEvent('escape-searchbox', {
       bubbles: true,
       composed: true,
       detail: {
-        event: {type: 'keydown', key: 'Escape'},
+        event: {type: 'keydown', key: 'Escape', preventDefault: () => {}},
         emptyInput: false,
       },
     });
     lensOverlayElement.handleEscapeSearchboxForTesting(escapeEvent);
     await waitAfterNextRender(lensOverlayElement);
-    // Ghost loader should stay hidden when escape is pressed.
+
+    // Simulate the searchbox clearing the input (which would normally trigger
+    // zero suggest and show the ghost loader, but it should be suppressed).
+    document.dispatchEvent(new CustomEvent('query-autocomplete', {
+      bubbles: true,
+      cancelable: true,
+      detail: {inputValue: ''},
+    }));
+    await waitAfterNextRender(lensOverlayElement);
+
+    // Ghost loader should stay hidden when escape is pressed because it was
+    // suppressed.
     assertFalse(isVisible(lensOverlayElement.$.searchboxGhostLoader));
+  });
+
+  test('Escape on empty input blurs searchbox', async () => {
+    assertTrue(isVisible(lensOverlayElement.$.searchbox));
+
+    lensOverlayElement.setSearchboxFocusForTesting(true);
+    await waitAfterNextRender(lensOverlayElement);
+    assertTrue(lensOverlayElement.isSearchboxFocused);
+
+    let preventDefaultCalled = false;
+    let blurCalled = false;
+    lensOverlayElement.$.searchbox.blur = () => {
+      blurCalled = true;
+    };
+
+    // Simulate escape being pressed from the searchbox with empty input.
+    const escapeEvent = new CustomEvent('escape-searchbox', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        event: {
+          type: 'keydown',
+          key: 'Escape',
+          preventDefault: () => {
+            preventDefaultCalled = true;
+          },
+        },
+        emptyInput: true,
+      },
+    });
+    lensOverlayElement.handleEscapeSearchboxForTesting(escapeEvent);
+    await waitAfterNextRender(lensOverlayElement);
+
+    // Focus should have been removed from the searchbox.
+    assertTrue(blurCalled);
+    assertTrue(preventDefaultCalled);
+  });
+
+  test('Ghost loader is shown when input is empty', async () => {
+    assertTrue(isVisible(lensOverlayElement.$.searchbox));
+
+    // Simulate searchbox being focused and the autocomplete request being
+    // started with empty input.
+    lensOverlayElement.setSearchboxFocusForTesting(true);
+    document.dispatchEvent(new CustomEvent('query-autocomplete', {
+      bubbles: true,
+      cancelable: true,
+      detail: {inputValue: ''},
+    }));
+    await waitAfterNextRender(lensOverlayElement);
+
+    // Ghost loader should be visible since autocomplete started with empty
+    // input.
+    assertTrue(isVisible(lensOverlayElement.$.searchboxGhostLoader));
   });
 });
