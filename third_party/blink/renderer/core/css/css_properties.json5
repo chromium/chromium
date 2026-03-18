@@ -2358,6 +2358,7 @@
       valid_for_page_context: true,
       invalidate: ["border-radius", "paint"],
       percentages_depend_on_used_value: true,
+      affected_by_zoom: true,
     },
     {
       name: "border-bottom-right-radius",
@@ -2381,6 +2382,7 @@
       valid_for_page_context: true,
       invalidate: ["border-radius", "paint"],
       percentages_depend_on_used_value: true,
+      affected_by_zoom: true,
     },
     {
       name: "border-bottom-style",
@@ -2714,6 +2716,7 @@
       valid_for_page_context: true,
       invalidate: ["border-radius", "paint"],
       percentages_depend_on_used_value: true,
+      affected_by_zoom: true,
     },
     {
       name: "border-top-right-radius",
@@ -2737,6 +2740,7 @@
       valid_for_page_context: true,
       invalidate: ["border-radius", "paint"],
       percentages_depend_on_used_value: true,
+      affected_by_zoom: true,
     },
     {
       name: "border-top-style",

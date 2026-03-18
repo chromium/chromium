@@ -1301,9 +1301,6 @@ crbug.com/435625756 external/wpt/css/css-values/urls/referrer-policy/strict-orig
 crbug.com/435625756 external/wpt/css/css-values/urls/referrer-policy/unsafe-url/url-image-referrer-policy-cross-origin.sub.html [ Failure ]
 crbug.com/435625756 external/wpt/css/css-values/urls/referrer-policy/unsafe-url/url-image-referrer-policy-same-origin.sub.html [ Failure ]
 
-# border-radius with zoom
-crbug.com/490355657 external/wpt/css/css-viewport/zoom/border-radius.html [ Failure ]
-
 # Media queries
 crbug.com/1001078 external/wpt/css/mediaqueries/mq-non-matching-lazy-load.tentative.html [ Failure ]
 crbug.com/40781325 external/wpt/css/mediaqueries/at-custom-media-basic.html [ Failure ]
