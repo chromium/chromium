@@ -382,6 +382,9 @@ declare namespace chrome {
     // Called by the Read Anything app to close the Read Anything UI.
     function close(): void;
 
+    // Called when the speech engine stalls.
+    function onSpeechEngineStalled(): void;
+
     // Called by the ReadAnything app to toggle the pin state.
     function togglePinState(): void;
 

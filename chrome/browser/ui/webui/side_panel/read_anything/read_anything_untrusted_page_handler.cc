@@ -60,6 +60,7 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "net/http/http_status_code.h"
 #include "pdf/buildflags.h"
@@ -1014,6 +1015,18 @@ void ReadAnythingUntrustedPageHandler::AckReadingModeHidden() {
     ack_timed_out_for_testing_ = false;
     reading_mode_hidden_ack_timer_.Stop();
   }
+}
+
+void ReadAnythingUntrustedPageHandler::OnSpeechEngineStalled() {
+#if !BUILDFLAG(IS_CHROMEOS)
+  extensions::ExtensionRegistrar* extension_registrar =
+      extensions::ExtensionRegistrar::Get(profile_);
+
+  if (extension_registrar) {
+    extension_registrar->ReloadExtension(
+        extension_misc::kComponentUpdaterTTSEngineExtensionId);
+  }
+#endif
 }
 
 void ReadAnythingUntrustedPageHandler::PerformActionInTargetTree(

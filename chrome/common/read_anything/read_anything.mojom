@@ -336,6 +336,9 @@ interface UntrustedPageHandler {
   // to determine whether the browser and renderer are still connected when RM
   // is closed before the actual connection timeout.
   AckReadingModeHidden();
+
+  // Informs the browser that the TTS engine has stalled.
+  OnSpeechEngineStalled();
 };
 
 // Untrusted WebUI-side handler for requests from the browser.

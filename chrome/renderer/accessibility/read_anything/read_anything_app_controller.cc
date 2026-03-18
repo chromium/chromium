@@ -1450,7 +1450,9 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetMethod("close", &ReadAnythingAppController::CloseUI)
       .SetMethod("togglePinState", &ReadAnythingAppController::TogglePinState)
       .SetMethod("sendPinStateRequest",
-                 &ReadAnythingAppController::SendPinStateRequest);
+                 &ReadAnythingAppController::SendPinStateRequest)
+      .SetMethod("onSpeechEngineStalled",
+                 &ReadAnythingAppController::OnSpeechEngineStalled);
 }
 
 ui::AXNodeID ReadAnythingAppController::RootId() const {
@@ -2471,6 +2473,10 @@ void ReadAnythingAppController::OnReadingModeHidden(bool tab_active) {
   LogLineFocusSession();
   RecordEstimatedWordsSeen();
   RecordEstimatedWordsHeard();
+}
+
+void ReadAnythingAppController::OnSpeechEngineStalled() {
+  page_handler_->OnSpeechEngineStalled();
 }
 
 void ReadAnythingAppController::OnTabWillDetach() {

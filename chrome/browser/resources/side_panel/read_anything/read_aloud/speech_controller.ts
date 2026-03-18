@@ -1024,9 +1024,12 @@ export class SpeechController {
     // <if expr="not is_chromeos">
     this.engineTimeoutId_ = setTimeout(() => {
       if (this.model_.getEngineState() === SpeechEngineState.LOADING) {
-        // TODO: crbug.com/490113040- When the engine stalls, uninstall and
-        // reinstall the engine.
         this.logger_.logSpeechError('timeout-engine-stalled');
+        // TODO: crbug.com/465479425- Stop speech to make it a little bit
+        // easier to resume speech when the new engine is hopefully
+        // successfully reinstalled.
+        chrome.readingMode.onSpeechEngineStalled();
+        this.voiceLanguageController_.onVoicesChanged();
       }
     }, ENGINE_TIMEOUT_THRESHOLD_MS);
     // </if>
