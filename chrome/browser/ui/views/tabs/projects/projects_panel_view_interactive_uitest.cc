@@ -3,11 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
-#include "chrome/browser/glic/public/glic_enabling.h"
-#include "chrome/browser/glic/public/glic_keyed_service.h"
-#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -220,6 +216,36 @@ IN_PROC_BROWSER_TEST_F(ProjectsPanelInteractiveUiTest, ClosesOnFocusLost) {
             return projects_panel_state_controller()->IsProjectsPanelVisible();
           },
           false));
+}
+
+// This test checks that focus is restored to the last focused element when the
+// panel is closed.
+IN_PROC_BROWSER_TEST_F(ProjectsPanelInteractiveUiTest, RestoresFocusOnClose) {
+  RunTestSequence(
+      // Focus the omnibox.
+      FocusElement(kOmniboxElementId),
+      CheckViewProperty(kOmniboxElementId, &views::View::HasFocus, true),
+      // Open the projects panel directly to avoid moving focus to the toggle
+      // button.
+      Do([this]() {
+        actions::ActionManager::Get()
+            .FindAction(kActionToggleProjectsPanel,
+                        browser()->GetActions()->root_action_item())
+            ->InvokeAction();
+      }),
+      WaitForShow(kProjectsPanelViewElementId),
+      CheckViewProperty(kProjectsPanelViewElementId, &views::View::HasFocus,
+                        true),
+      // Close the projects panel via the toggle action.
+      Do([this]() {
+        actions::ActionManager::Get()
+            .FindAction(kActionToggleProjectsPanel,
+                        browser()->GetActions()->root_action_item())
+            ->InvokeAction();
+      }),
+      // Verify focus is restored to the omnibox.
+      WaitForHide(kProjectsPanelViewElementId),
+      CheckViewProperty(kOmniboxElementId, &views::View::HasFocus, true));
 }
 
 // This is a regression test that checks that the panel stays open when clicking

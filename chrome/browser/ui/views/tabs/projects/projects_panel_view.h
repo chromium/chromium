@@ -22,6 +22,7 @@
 #include "ui/views/controls/separator.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/view.h"
+#include "ui/views/view_tracker.h"
 
 namespace gfx {
 class Point;
@@ -157,7 +158,7 @@ class ProjectsPanelView : public views::View,
     raw_ptr<ProjectsPanelView> owning_view_ = nullptr;
   };
 
-  void ClosePanel();
+  void ClosePanel(bool caused_by_focus_lost = false);
 
   void OnTabGroupButtonPressed(const base::Uuid& group_guid);
   void OnTabGroupMoreButtonPressed(const base::Uuid& group_guid,
@@ -229,6 +230,10 @@ class ProjectsPanelView : public views::View,
   // Records the last time the panel was opened. Used for recording how long the
   // panel was open.
   base::TimeTicks last_opened_time_;
+
+  // Tracks the last focused view before opening the panel, so focus can be
+  // restored when the panel is closed.
+  views::ViewTracker last_focused_view_before_opening_;
 
   base::ScopedObservation<ProjectsPanelController,
                           ProjectsPanelController::Observer>

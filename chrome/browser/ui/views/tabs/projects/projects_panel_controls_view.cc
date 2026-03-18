@@ -112,7 +112,6 @@ void ProjectsPanelControlsView::SetButtonOpacity(float opacity) {
 }
 
 void ProjectsPanelControlsView::OnCloseButtonPressed() {
-  LOG(ERROR) << "Pressed close";
   toggle_projects_panel_action_item_->InvokeAction();
 }
 
