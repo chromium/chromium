@@ -89,6 +89,8 @@ vs-chromium-project.txt
 # Github Copilot
 .github/copilot-instructions.md
 .github/**/user*.md
+# .mypy_cache created by Python tools (e.g. in tools/metrics)
+.mypy_cache
 
 /_chrome
 /_out
