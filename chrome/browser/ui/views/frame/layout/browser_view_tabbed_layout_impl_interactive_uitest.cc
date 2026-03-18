@@ -371,12 +371,11 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTabbedLayoutImplUiTest,
       ->SetVerticalTabsEnabled(true);
   RunScheduledLayouts();
   RunTestSequence(
-      WaitForShow(kVerticalTabStripRegionElementId),
-      WaitForHide(kBookmarkBarElementId),
+      WaitForShow(kTabStripRegionElementId), WaitForHide(kBookmarkBarElementId),
       SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
                               "Test is screenshot-only."),
-      ScreenshotTop(kVerticalTabStripRegionElementId, "tabstrip_top", 3),
-      ScreenshotBottom(kVerticalTabStripRegionElementId, "tabstrip_bottom", 3),
+      ScreenshotTop(kTabStripRegionElementId, "tabstrip_top", 3),
+      ScreenshotBottom(kTabStripRegionElementId, "tabstrip_bottom", 3),
       ScreenshotAround(
           BrowserViewLayoutViews::kVerticalTabStripTopCornerElementId,
           "top_corner", 5),
@@ -395,12 +394,11 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTabbedLayoutImplUiTest,
       ->SetVerticalTabsEnabled(true);
   RunScheduledLayouts();
   RunTestSequence(
-      WaitForShow(kVerticalTabStripRegionElementId),
-      WaitForShow(kBookmarkBarElementId),
+      WaitForShow(kTabStripRegionElementId), WaitForShow(kBookmarkBarElementId),
       SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
                               "Test is screenshot-only."),
-      ScreenshotTop(kVerticalTabStripRegionElementId, "tabstrip_top", 3),
-      ScreenshotBottom(kVerticalTabStripRegionElementId, "tabstrip_bottom", 3),
+      ScreenshotTop(kTabStripRegionElementId, "tabstrip_top", 3),
+      ScreenshotBottom(kTabStripRegionElementId, "tabstrip_bottom", 3),
       ScreenshotAround(
           BrowserViewLayoutViews::kVerticalTabStripTopCornerElementId,
           "top_corner", 5),
@@ -422,8 +420,8 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTabbedLayoutImplUiTest,
       PressButton(kVerticalTabStripCollapseButtonElementId),
       SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
                               "Test is screenshot-only."),
-      ScreenshotTop(kVerticalTabStripRegionElementId, "tabstrip_top", 3),
-      ScreenshotBottom(kVerticalTabStripRegionElementId, "tabstrip_bottom", 3),
+      ScreenshotTop(kTabStripRegionElementId, "tabstrip_top", 3),
+      ScreenshotBottom(kTabStripRegionElementId, "tabstrip_bottom", 3),
       ScreenshotAround(
           BrowserViewLayoutViews::kVerticalTabStripTopCornerElementId,
           "top_corner", 5),
@@ -475,13 +473,13 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTabbedLayoutImplUiTest,
       ->SetVerticalTabsEnabled(true);
   RunScheduledLayouts();
   RunTestSequence(
-      WaitForShow(kVerticalTabStripRegionElementId),
+      WaitForShow(kTabStripRegionElementId),
       SelectTab(kBrowserViewElementId, 0),
       ReplaceAndShowSidePanel(SidePanelEntry::PanelType::kToolbar),
       SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
                               "Test is screenshot-only."),
-      ScreenshotTop(kVerticalTabStripRegionElementId, "tabstrip_top", 3),
-      ScreenshotBottom(kVerticalTabStripRegionElementId, "tabstrip_bottom", 3),
+      ScreenshotTop(kTabStripRegionElementId, "tabstrip_top", 3),
+      ScreenshotBottom(kTabStripRegionElementId, "tabstrip_bottom", 3),
       ScreenshotLeft(ToolbarView::kToolbarElementId, "toolbar_leading", 3),
       ScreenshotRight(ToolbarView::kToolbarElementId, "toolbar_trailing", 3),
       ScreenshotUpperLeft(BrowserViewLayoutViews::kShadowOverlayElementId,
@@ -653,11 +651,11 @@ class BrowserViewTabbedLayoutImplContentLayoutUiTest
   auto ToggleVerticalTabStripCollapsed(bool should_be_collapsed) {
     auto steps = Steps(
         PressButton(kVerticalTabStripCollapseButtonElementId),
-        WaitForEvent(kVerticalTabStripRegionElementId,
+        WaitForEvent(kTabStripRegionElementId,
                      VerticalTabStripRegionView::kAnimationCompletedEvent),
         Do([this]() { RunScheduledLayouts(); }),
         CheckView(
-            kVerticalTabStripRegionElementId,
+            kTabStripRegionElementId,
             [](VerticalTabStripRegionView* region) {
               return region->GetVerticalTabStripController()->IsCollapsed();
             },

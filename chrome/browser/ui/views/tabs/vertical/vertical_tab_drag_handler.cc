@@ -39,6 +39,7 @@
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view_utils.h"
 
 DEFINE_UI_CLASS_PROPERTY_TYPE(gfx::Vector2d*)
@@ -848,6 +849,13 @@ VerticalTabDragHandlerImpl::GetPositioningDelegate() {
   // Positioning is implemented through `TabDragDelegate` on individual
   // containers.
   return nullptr;
+}
+
+bool VerticalTabDragHandlerImpl::NotifyCustomEvent(
+    ui::CustomElementEventType event_type,
+    TabSlotView* tab_slot_view) {
+  return views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
+      event_type, ViewFromTabSlot(tab_slot_view));
 }
 
 TabCollectionNode* VerticalTabDragHandlerImpl::GetNodeForContents(

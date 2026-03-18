@@ -173,12 +173,71 @@ class IfView : public user_education::TutorialDescription::If {
                std::move(if_condition))) {}
 };
 
+// Helper class to simplify writing
+// ```
+//   IfView(element, if_condition)
+//       .Then(ThenSteps)
+//       .Else(ElseSteps)
+// ```
+//
+// If ThenSteps and ElseSteps are very similar and only differ slightly, it may
+// be simpler to supply a single function that builds ThenSteps if passed true
+// and ElseSteps if passed false:
+// ```
+//   ConditionalStep(element, if_condition, build_step)
+// ```
+using Step = user_education::TutorialDescription::Step;
+class ConditionalStep : public IfView {
+ public:
+  template <typename V>
+  ConditionalStep(user_education::TutorialDescription::ElementSpecifier element,
+                  base::RepeatingCallback<bool(const V*)> if_condition,
+                  base::RepeatingCallback<Step(bool)> build_step)
+      : IfView(element, std::move(if_condition)) {
+    Then(build_step.Run(true));
+    Else(build_step.Run(false));
+  }
+
+  // Allows one to chain multiple ConditionalSteps together:
+  // ```
+  // ConditionalStep(
+  //     kElement1Id, base::BindRepeating(&Predicate1),
+  //     ConditionalStep::AddCondition<Element2View, bool>(
+  //         kElement2Id, base::BindRepeating(&Predicate2),
+  //         ConditionalStep::AddCondition<Element3View, bool, bool>(
+  //             kElement3Id,
+  //             base::BindRepeating(&Predicate3),
+  //             base::BindRepeating([](bool if_result_1,
+  //                                    bool if_result_2,
+  //                                    bool if_result_3) -> Step {
+  //               return Step(...);
+  //             })))),
+  // ```
+  template <typename V, typename... Args>
+  static auto AddCondition(auto element, auto if_condition, auto build_step) {
+    return base::BindRepeating(
+        [](user_education::TutorialDescription::ElementSpecifier element,
+           base::RepeatingCallback<bool(const V*)> if_condition,
+           base::RepeatingCallback<Step(Args..., bool)> build_step,
+           Args... prev_if_results) -> Step {
+          return ConditionalStep(
+              element, if_condition,
+              base::BindRepeating(build_step, prev_if_results...));
+        },
+        element, if_condition, build_step);
+  }
+};
+
 bool HasTabGroups(const BrowserView* browser_view) {
   return !browser_view->browser()
               ->tab_strip_model()
               ->group_model()
               ->ListTabGroups()
               .empty();
+}
+
+bool IsInVerticalTabsMode(const BrowserView* browser_view) {
+  return browser_view->ShouldDrawVerticalTabStrip();
 }
 
 using ContextPtr = const user_education::UserEducationContextPtr&;
@@ -1772,14 +1831,22 @@ void MaybeRegisterChromeTutorials(
         kTabGroupTutorialMetricPrefix>(
         // The initial step. This is the only step that differs depending on
         // whether there is an existing group.
-        IfView(kBrowserViewElementId, base::BindRepeating(&HasTabGroups))
-            .Then(
-                BubbleStep(kTabStripRegionElementId)
-                    .SetBubbleBodyText(
-                        IDS_TUTORIAL_ADD_TAB_TO_GROUP_WITH_EXISTING_GROUP_IN_TAB_STRIP))
-            .Else(BubbleStep(kTabStripRegionElementId)
+        ConditionalStep(
+            kBrowserViewElementId, base::BindRepeating(&HasTabGroups),
+            ConditionalStep::AddCondition<BrowserView, bool>(
+                kBrowserViewElementId,
+                base::BindRepeating(&IsInVerticalTabsMode),
+                base::BindRepeating([](bool has_tab_groups,
+                                       bool vertical_tabstrip) -> Step {
+                  return BubbleStep(kTabStripRegionElementId)
                       .SetBubbleBodyText(
-                          IDS_TUTORIAL_TAB_GROUP_ADD_TAB_TO_GROUP)),
+                          has_tab_groups
+                              ? IDS_TUTORIAL_ADD_TAB_TO_GROUP_WITH_EXISTING_GROUP_IN_TAB_STRIP
+                              : IDS_TUTORIAL_TAB_GROUP_ADD_TAB_TO_GROUP)
+                      .SetBubbleArrow(vertical_tabstrip
+                                          ? HelpBubbleArrow::kLeftCenter
+                                          : HelpBubbleArrow::kNone);
+                }))),
 
         // Getting the new tab group (hidden step).
         HiddenStep::WaitForShowEvent(kTabGroupHeaderElementId)
@@ -1794,22 +1861,42 @@ void MaybeRegisterChromeTutorials(
         HiddenStep::WaitForHidden(kTabGroupEditorBubbleId),
 
         // Drag tab into the group.
-        BubbleStep(kTabStripRegionElementId)
-            .SetBubbleBodyText(IDS_TUTORIAL_TAB_GROUP_DRAG_TAB),
+        ConditionalStep(
+            kBrowserViewElementId, base::BindRepeating(&IsInVerticalTabsMode),
+            base::BindRepeating([](bool vertical_tabstrip) -> Step {
+              return BubbleStep(kTabStripRegionElementId)
+                  .SetBubbleBodyText(IDS_TUTORIAL_TAB_GROUP_DRAG_TAB)
+                  .SetBubbleArrow(vertical_tabstrip
+                                      ? HelpBubbleArrow::kLeftCenter
+                                      : HelpBubbleArrow::kNone);
+            })),
 
         EventStep(kTabGroupedCustomEventId).AbortIfVisibilityLost(true),
 
         // Click to collapse the tab group.
-        BubbleStep(kTabGroupHeaderElementName)
-            .SetBubbleBodyText(IDS_TUTORIAL_TAB_GROUP_COLLAPSE)
-            .SetBubbleArrow(HelpBubbleArrow::kTopCenter),
+        ConditionalStep(
+            kBrowserViewElementId, base::BindRepeating(&IsInVerticalTabsMode),
+            base::BindRepeating([](bool vertical_tabstrip) -> Step {
+              return BubbleStep(kTabGroupHeaderElementName)
+                  .SetBubbleBodyText(IDS_TUTORIAL_TAB_GROUP_COLLAPSE)
+                  .SetBubbleArrow(vertical_tabstrip
+                                      ? HelpBubbleArrow::kLeftTop
+                                      : HelpBubbleArrow::kTopCenter);
+            })),
 
-        HiddenStep::WaitForActivated(kTabGroupHeaderElementId),
+        HiddenStep::WaitForActivated(kTabGroupHeaderElementName),
 
         // Completion of the tutorial.
-        BubbleStep(kTabStripRegionElementId)
-            .SetBubbleTitleText(IDS_TUTORIAL_GENERIC_SUCCESS_TITLE)
-            .SetBubbleBodyText(IDS_TUTORIAL_TAB_GROUP_SUCCESS_DESCRIPTION));
+        ConditionalStep(
+            kBrowserViewElementId, base::BindRepeating(&IsInVerticalTabsMode),
+            base::BindRepeating([](bool vertical_tabstrip) -> Step {
+              return BubbleStep(vertical_tabstrip
+                                    ? kBrowserDialogAnchorElementId
+                                    : kTabStripRegionElementId)
+                  .SetBubbleTitleText(IDS_TUTORIAL_GENERIC_SUCCESS_TITLE)
+                  .SetBubbleBodyText(
+                      IDS_TUTORIAL_TAB_GROUP_SUCCESS_DESCRIPTION);
+            })));
 
     tab_group_tutorial.metadata.additional_description =
         "Tutorial for creating new tab groups.";

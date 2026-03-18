@@ -35,6 +35,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
@@ -198,6 +199,8 @@ bool VerticalTabGroupHeaderView::OnKeyPressed(const ui::KeyEvent& event) {
       event.key_code() == ui::VKEY_RETURN) {
     delegate_->ToggleCollapsedState(
         ToggleTabGroupCollapsedStateOrigin::kKeyboard);
+    views::ElementTrackerViews::GetInstance()->NotifyViewActivated(
+        kTabGroupHeaderElementId, this);
     return true;
   }
 
@@ -257,6 +260,8 @@ void VerticalTabGroupHeaderView::OnMouseReleased(const ui::MouseEvent& event) {
     ShowEditorBubble();
   } else if (toggle_collapse) {
     delegate_->ToggleCollapsedState(ToggleTabGroupCollapsedStateOrigin::kMouse);
+    views::ElementTrackerViews::GetInstance()->NotifyViewActivated(
+        kTabGroupHeaderElementId, this);
   }
 }
 
@@ -271,6 +276,8 @@ void VerticalTabGroupHeaderView::OnGestureEvent(ui::GestureEvent* event) {
     case ui::EventType::kGestureTap:
       delegate_->ToggleCollapsedState(
           ToggleTabGroupCollapsedStateOrigin::kGesture);
+      views::ElementTrackerViews::GetInstance()->NotifyViewActivated(
+          kTabGroupHeaderElementId, this);
       event->SetHandled();
       break;
 

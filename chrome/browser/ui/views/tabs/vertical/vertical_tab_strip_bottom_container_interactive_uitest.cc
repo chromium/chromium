@@ -109,7 +109,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripBottomContainerInteractiveUiTest,
       ClickMouse(),
       // Check that the points are NO LONGER considered hit test caption
       CheckView(
-          kVerticalTabStripRegionElementId,
+          kTabStripRegionElementId,
           [&new_tab_button_center,
            &point_above_new_tab_button](views::View* region_view) {
             auto* vt_region_view =

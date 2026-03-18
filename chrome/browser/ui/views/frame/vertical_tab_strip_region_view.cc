@@ -154,7 +154,7 @@ VerticalTabStripRegionView::VerticalTabStripRegionView(
           &VerticalTabStripRegionView::OnCollapsedStateChanged,
           base::Unretained(this)));
 
-  SetProperty(views::kElementIdentifierKey, kVerticalTabStripRegionElementId);
+  SetProperty(views::kElementIdentifierKey, kTabStripRegionElementId);
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kTabList);
 

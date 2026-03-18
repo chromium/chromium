@@ -176,6 +176,8 @@ class VerticalTabDragHandlerImpl : public VerticalTabDragHandler,
   void SetDragControllerCallbackForTesting(
       base::OnceCallback<void(TabDragController*)> callback) override;
   TabDragPositioningDelegate* GetPositioningDelegate() override;
+  bool NotifyCustomEvent(ui::CustomElementEventType event_type,
+                         TabSlotView* tab_slot_view) override;
 
   // The following overrides are necessary to support SystemDnD.
   bool CanDrop(const OSExchangeData& data) override;

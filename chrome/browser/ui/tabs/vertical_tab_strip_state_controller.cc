@@ -151,8 +151,7 @@ void VerticalTabStripStateController::SetCollapsed(bool collapsed) {
             BrowserElementsViews::From(browser_window_);
         collapsed && browser_element_views) {
       browser_element_views->NotifyEvent(
-          kVerticalTabStripRegionElementId,
-          kVerticalTabStripCollapsedCustomEventId);
+          kTabStripRegionElementId, kVerticalTabStripCollapsedCustomEventId);
     }
   }
 }

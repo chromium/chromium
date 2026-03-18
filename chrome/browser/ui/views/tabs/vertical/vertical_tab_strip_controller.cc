@@ -12,6 +12,7 @@
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/split_tab_util.h"
@@ -38,6 +39,7 @@
 #include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view_utils.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -543,10 +545,14 @@ void VerticalTabStripController::ShiftTabRelative(
           target_index = offset < 0 ? 0 : model_->count() - 1;
         }
       } else {
+        views::View* tab_view =
+            browser_view_->tab_strip_view()->GetTabAnchorViewAt(start_index);
         // Read before adding the tab to the group so that the group description
         // isn't the tab we just added.
         AnnounceTabAddedToGroup(target_group.value());
         model_->AddToExistingGroup({start_index}, target_group.value());
+        views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
+            kTabGroupedCustomEventId, tab_view);
         return;
       }
     }

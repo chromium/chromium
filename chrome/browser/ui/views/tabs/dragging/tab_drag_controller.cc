@@ -2786,8 +2786,8 @@ void TabDragController::NotifyEventIfTabAddedToGroup() {
       continue;
     }
 
-    if (views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
-            kTabGroupedCustomEventId, tab_drag_datum.attached_view)) {
+    if (source_context_->NotifyCustomEvent(kTabGroupedCustomEventId,
+                                           tab_drag_datum.attached_view)) {
       break;
     }
   }
