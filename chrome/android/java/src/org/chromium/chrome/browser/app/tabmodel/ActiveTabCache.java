@@ -133,7 +133,7 @@ public class ActiveTabCache {
 
         TabState tabState = TabStateExtractor.from(tab);
         String fileName = isOffTheRecord ? mIncognitoTabFileName : mRegularTabFileName;
-        if (tabState == null) {
+        if (tabState == null || tabState.contentsState == null) {
             deleteFileAndPref(fileName);
             return;
         }
