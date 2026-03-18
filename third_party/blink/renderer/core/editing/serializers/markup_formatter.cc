@@ -48,6 +48,8 @@
 
 namespace blink {
 
+namespace {
+
 struct EntityDescription {
   UChar entity;
   const std::string& reference;
@@ -55,7 +57,7 @@ struct EntityDescription {
 };
 
 template <typename CharType>
-static inline void AppendCharactersReplacingEntitiesInternal(
+inline void AppendCharactersReplacingEntitiesInternal(
     StringBuilder& result,
     const StringView& source,
     base::span<const CharType> text,
@@ -89,6 +91,41 @@ static inline void AppendCharactersReplacingEntitiesInternal(
   }
   result.Append(text.subspan(position_after_last_entity));
 }
+
+// https://html.spec.whatwg.org/C/#attribute's-serialised-name
+const AtomicString& ResolveAttributePrefixForHtml(
+    const QualifiedName& attr_name) {
+  if (attr_name.NamespaceURI() == xmlns_names::kNamespaceURI) {
+    if (!attr_name.Prefix() && attr_name.LocalName() != g_xmlns_atom) {
+      return g_xmlns_atom;
+    }
+  } else if (attr_name.NamespaceURI() == xml_names::kNamespaceURI) {
+    return g_xml_atom;
+  } else if (attr_name.NamespaceURI() == xlink_names::kNamespaceURI) {
+    return g_xlink_atom;
+  }
+  return attr_name.Prefix();
+}
+
+const AtomicString& ResolveAttributePrefixForXml(
+    const QualifiedName& attr_name) {
+  if (attr_name.Prefix()) {
+    return attr_name.Prefix();
+  }
+  const AtomicString& attribute_namespace = attr_name.NamespaceURI();
+  if (attribute_namespace == xmlns_names::kNamespaceURI) {
+    if (attr_name.LocalName() != g_xmlns_atom) {
+      return g_xmlns_atom;
+    }
+  } else if (attribute_namespace == xml_names::kNamespaceURI) {
+    return g_xml_atom;
+  } else if (attribute_namespace == xlink_names::kNamespaceURI) {
+    return g_xlink_atom;
+  }
+  return g_null_atom;
+}
+
+}  // namespace
 
 void MarkupFormatter::AppendCharactersReplacingEntities(
     StringBuilder& result,
@@ -331,38 +368,18 @@ void MarkupFormatter::AppendStartTagClose(StringBuilder& result,
 void MarkupFormatter::AppendAttributeAsHTML(StringBuilder& result,
                                             const Attribute& attribute,
                                             const String& value) {
-  // https://html.spec.whatwg.org/C/#attribute's-serialised-name
-  QualifiedName prefixed_name = attribute.GetName();
-  if (attribute.NamespaceURI() == xmlns_names::kNamespaceURI) {
-    if (!attribute.Prefix() && attribute.LocalName() != g_xmlns_atom)
-      prefixed_name.SetPrefix(g_xmlns_atom);
-  } else if (attribute.NamespaceURI() == xml_names::kNamespaceURI) {
-    prefixed_name.SetPrefix(g_xml_atom);
-  } else if (attribute.NamespaceURI() == xlink_names::kNamespaceURI) {
-    prefixed_name.SetPrefix(g_xlink_atom);
-  }
-  AppendAttribute(result, prefixed_name.Prefix(), prefixed_name.LocalName(),
-                  value, true);
+  const AtomicString& resolved_prefix =
+      ResolveAttributePrefixForHtml(attribute.GetName());
+  AppendAttribute(result, resolved_prefix, attribute.LocalName(), value, true);
 }
 
 void MarkupFormatter::AppendAttributeAsXMLWithoutNamespace(
     StringBuilder& result,
     const Attribute& attribute,
     const String& value) {
-  const AtomicString& attribute_namespace = attribute.NamespaceURI();
-  AtomicString candidate_prefix = attribute.Prefix();
-  if (attribute_namespace == xmlns_names::kNamespaceURI) {
-    if (!attribute.Prefix() && attribute.LocalName() != g_xmlns_atom)
-      candidate_prefix = g_xmlns_atom;
-  } else if (attribute_namespace == xml_names::kNamespaceURI) {
-    if (!candidate_prefix)
-      candidate_prefix = g_xml_atom;
-  } else if (attribute_namespace == xlink_names::kNamespaceURI) {
-    if (!candidate_prefix)
-      candidate_prefix = g_xlink_atom;
-  }
-  AppendAttribute(result, candidate_prefix, attribute.LocalName(), value,
-                  false);
+  const AtomicString& resolved_prefix =
+      ResolveAttributePrefixForXml(attribute.GetName());
+  AppendAttribute(result, resolved_prefix, attribute.LocalName(), value, false);
 }
 
 void MarkupFormatter::AppendCDATASection(StringBuilder& result,
