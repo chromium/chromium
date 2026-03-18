@@ -158,6 +158,10 @@ void GlicSidePanelCoordinatorAndroid::OnTabWillDeactivate(
 }
 
 void GlicSidePanelCoordinatorAndroid::OnClose(JNIEnv* env) {
+  if (co_browse_views_) {
+    Java_CoBrowseViews_destroy(AttachCurrentThread(), co_browse_views_);
+    co_browse_views_.Reset();
+  }
   SetState(State::kClosed);
 }
 

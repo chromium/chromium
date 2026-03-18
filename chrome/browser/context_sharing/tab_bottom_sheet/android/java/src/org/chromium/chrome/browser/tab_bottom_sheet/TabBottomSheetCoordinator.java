@@ -111,9 +111,6 @@ public class TabBottomSheetCoordinator {
     }
 
     private void cleanupSheetResources() {
-        if (mCoBrowseViews != null) {
-            mCoBrowseViews.destroy();
-        }
         if (mSheetObserver != null && mBottomSheetController != null) {
             mBottomSheetController.removeObserver(mSheetObserver);
             mSheetObserver = null;
