@@ -40,7 +40,9 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustSignalsCoordinator;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
@@ -769,6 +771,47 @@ public final class StatusMediatorUnitTest {
 
         mMediator.setShowStatusIconForSecureOrigins(true);
         Assert.assertTrue(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.ANDROID_PAGE_INFO_AS_APP_MENU_ITEM})
+    public void testUpdateStatusViewVisibility() {
+        // Focused URL should always show the status view.
+        mMediator.setUrlHasFocus(true);
+        Assert.assertTrue(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
+
+        mMediator.setUrlHasFocus(false);
+        Assert.assertTrue(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
+
+        // Non-secure pages should show the status view.
+        mMediator.updateVerboseStatus(ConnectionSecurityLevel.DANGEROUS, false, false);
+        Assert.assertTrue(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
+
+        // Secure pages should not show the status view if the flag is off.
+        mMediator.setShowStatusIconForSecureOrigins(false);
+        mMediator.updateVerboseStatus(ConnectionSecurityLevel.SECURE, false, false);
+        Assert.assertFalse(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
+
+        // Store icon should always show the status view.
+        setupStoreIconForTesting(false);
+        mMediator.showStoreIcon(
+                mWindowAndroid, JUnitTestGURLs.BLUE_1.getSpec(), mStoreIconDrawable, 0, false);
+        Assert.assertTrue(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.ANDROID_PAGE_INFO_AS_APP_MENU_ITEM})
+    public void setShowStatusIconForSecureOrigins_whenPageInfoMoved() {
+        // Set security level to SECURE, the status view should be hidden.
+        mMediator.updateVerboseStatus(ConnectionSecurityLevel.SECURE, false, false);
+        Assert.assertFalse(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
+
+        // Try to show the status icon, it should not work because the page info is moved to app
+        // menu.
+        mMediator.setShowStatusIconForSecureOrigins(true);
+        Assert.assertFalse(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
     }
 
     private String getIconIdentifierForTesting() {

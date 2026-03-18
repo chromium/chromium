@@ -27,6 +27,9 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.widget.TooltipCompat;
 
 import org.chromium.base.TimeUtils;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -91,6 +94,8 @@ public class StatusView extends LinearLayout {
     private int mShowBrowserControlsToken = TokenHolder.INVALID_TOKEN;
     private int mStatusIconSize;
     private @Nullable Integer mIconAnimationDurationForTests;
+    private final SettableMonotonicObservableSupplier<Boolean> mIsVisibleSupplier =
+            ObservableSuppliers.createMonotonic(null);
 
     public StatusView(Context context, AttributeSet attributes) {
         super(context, attributes);
@@ -147,6 +152,19 @@ public class StatusView extends LinearLayout {
         mIconView.setClipToOutline(true);
 
         configureAccessibilityDescriptions();
+    }
+
+    @Override
+    protected void onVisibilityChanged(View changedView, int visibility) {
+        super.onVisibilityChanged(changedView, visibility);
+        if (changedView == this) {
+            mIsVisibleSupplier.set(visibility == VISIBLE);
+        }
+    }
+
+    /** Returns a supplier that is updated whenever the visibility of this view changes. */
+    public MonotonicObservableSupplier<Boolean> getIsVisibleSupplier() {
+        return mIsVisibleSupplier;
     }
 
     /**

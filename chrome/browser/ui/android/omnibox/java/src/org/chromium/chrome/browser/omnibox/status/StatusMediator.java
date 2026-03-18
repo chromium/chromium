@@ -21,6 +21,7 @@ import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustSignalsCoordinator;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.R;
@@ -147,7 +148,7 @@ public class StatusMediator
         mModel = model;
         mLocationBarDataProvider = locationBarDataProvider;
         mTemplateUrlServiceSupplier = templateUrlServiceSupplier;
-        mShowStatusIconForSecureOrigins = true;
+        mShowStatusIconForSecureOrigins = !isPageInfoMovedToAppMenu();
         mTemplateUrlServiceSupplier.onAvailable(
                 (templateUrlService) -> {
                     templateUrlService.addObserver(this);
@@ -260,13 +261,17 @@ public class StatusMediator
             updateVerboseStatusTextVisibility();
             updateLocationBarIcon(IconTransitionType.CROSSFADE);
             updateColorTheme();
-            updateVisibilityForOriginSecurity();
+            updateStatusViewVisibility();
         }
     }
 
     void setShowStatusIconForSecureOrigins(boolean showStatusIconForSecureOrigins) {
+        // Don't allow the update if the page is moved to the app menu as we don't show secure
+        // origins then.
+        if (isPageInfoMovedToAppMenu()) return;
+
         mShowStatusIconForSecureOrigins = showStatusIconForSecureOrigins;
-        updateVisibilityForOriginSecurity();
+        updateStatusViewVisibility();
     }
 
     /** Specify minimum width of the separator field. */
@@ -318,6 +323,7 @@ public class StatusMediator
         updateVerboseStatusTextVisibility();
         updateStatusVisibility();
         updateLocationBarIcon(IconTransitionType.CROSSFADE);
+        updateStatusViewVisibility();
 
         // Set the default match to be a search on an unfocus event to avoid the globe sticking
         // around for subsequent focus events.
@@ -516,6 +522,7 @@ public class StatusMediator
         if (mLocationBarDataProvider.getPageClassification(/* prefetch= */ false)
                 == PageClassification.ANDROID_HUB_VALUE) {
             mPermissionStatusHandler.reset(/* shouldDismissNativePrompt= */ false);
+            updateStatusViewVisibility();
             // Show the status icon primarily for incognito since it is defaulted off there.
             setStatusIconShown(/* show= */ true);
             icon = R.drawable.ic_arrow_back_24dp;
@@ -536,10 +543,16 @@ public class StatusMediator
         } else if (mPermissionStatusHandler.isClapperQuietIconShowing()) {
             return;
         } else if (mSecurityIconRes != 0) {
-            mIsSecurityViewShown = true;
-            icon = mSecurityIconRes;
-            tint = mSecurityIconTintRes;
-            toast = R.string.menu_page_info;
+            if (isPageInfoMovedToAppMenu()
+                    && mPageSecurityLevel == ConnectionSecurityLevel.SECURE
+                    && !mShowStatusIconForSecureOrigins) {
+                mIsSecurityViewShown = false;
+            } else {
+                mIsSecurityViewShown = true;
+                icon = mSecurityIconRes;
+                tint = mSecurityIconTintRes;
+                toast = R.string.menu_page_info;
+            }
         }
 
         // If the icon is missing, fallback to the info icon.
@@ -572,6 +585,7 @@ public class StatusMediator
 
         mModel.set(
                 StatusProperties.STATUS_ICON_RESOURCE, getStatusIconResourceForSearchEngineIcon());
+        updateStatusViewVisibility();
         return true;
     }
 
@@ -745,6 +759,7 @@ public class StatusMediator
                 },
                 PermissionStatusHandler.PERMISSION_ICON_DEFAULT_DISPLAY_TIMEOUT_MS);
         mIsStoreIconShowing = true;
+        updateStatusViewVisibility();
     }
 
     // Reset all customized icons' status to avoid different icons' conflicts.
@@ -902,9 +917,19 @@ public class StatusMediator
                 DrawableUtils.getIconBackground(context, /* isIncognito= */ true, size, size);
     }
 
-    private void updateVisibilityForOriginSecurity() {
+    private void updateStatusViewVisibility() {
+        boolean isHubSearch =
+                mLocationBarDataProvider.getPageClassification(/* prefetch= */ false)
+                        == PageClassification.ANDROID_HUB_VALUE;
         setShowStatusView(
-                mShowStatusIconForSecureOrigins
-                        || mPageSecurityLevel != ConnectionSecurityLevel.SECURE);
+                mUrlHasFocus
+                        || isHubSearch
+                        || mShowStatusIconForSecureOrigins
+                        || mPageSecurityLevel != ConnectionSecurityLevel.SECURE
+                        || mIsStoreIconShowing);
+    }
+
+    private static boolean isPageInfoMovedToAppMenu() {
+        return ChromeFeatureList.sAndroidPageInfoAsAppMenuItem.isEnabled();
     }
 }
