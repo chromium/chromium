@@ -53,18 +53,19 @@ class Clipboard {
 
   virtual ~Clipboard() = default;
 
-  // Synchronously retrieves the mime types list currently available to be read.
+  // Retrieves the mime types list currently available to be read.
   virtual std::vector<std::string> ReadMimeTypes() = 0;
 
-  // Synchronously reads and returns clipboard content with |mime_type| format.
-  // TODO(crbug.com/40398800): Drop once Clipboard API becomes async.
-  virtual ui::PlatformClipboard::Data Read(const std::string& mime_type) = 0;
+  // Asynchronously reads and returns clipboard content with |mime_type| format.
+  virtual void Read(const std::string& mime_type,
+                    ui::PlatformClipboard::RequestDataClosure callback) = 0;
 
-  // Synchronously reads and returns file transfer portal content.
-  // Returns nullptr if no portal content is available.
-  virtual ui::PlatformClipboard::Data ReadFileTransfer() = 0;
+  // Asynchronously reads and returns file transfer portal content.
+  virtual void ReadFileTransfer(
+      ui::PlatformClipboard::RequestDataClosure callback) = 0;
 
   // Synchronously stores and announces |data| as available from this clipboard.
+  // Portals are registered asynchronously internally.
   virtual void Write(const ui::PlatformClipboard::DataMap* data) = 0;
 
   // Tells if this clipboard instance is the current selection owner.
@@ -97,32 +98,46 @@ class ClipboardImpl final : public Clipboard, public DataSource::Delegate {
   ClipboardImpl(const ClipboardImpl&) = delete;
   ClipboardImpl& operator=(const ClipboardImpl&) = delete;
 
-  ui::PlatformClipboard::Data Read(const std::string& mime_type) final {
-    return GetDevice()->ReadSelectionData(GetMimeTypeForRequest(mime_type));
+  void Read(const std::string& mime_type,
+            ui::PlatformClipboard::RequestDataClosure callback) final {
+    GetDevice()->RequestSelectionData(GetMimeTypeForRequest(mime_type),
+                                      std::move(callback));
   }
 
-  ui::PlatformClipboard::Data ReadFileTransfer() final {
+  void ReadFileTransfer(
+      ui::PlatformClipboard::RequestDataClosure callback) final {
 #if BUILDFLAG(IS_LINUX)
     // Prefer portal types
-    ui::PlatformClipboard::Data data =
-        GetDevice()->ReadSelectionData(ui::kMimeTypePortalFileTransfer);
-    if (!data) {
-      data = GetDevice()->ReadSelectionData(ui::kMimeTypePortalFiles);
-    }
-    if (data) {
-      std::vector<std::string> paths =
-          ui::clipboard_util::ExtractPathsFromPortalKey(
-              base::as_byte_span(*data));
-      if (paths.empty()) {
-        return nullptr;
+    std::string mime_type;
+    auto available_types = GetDevice()->GetAvailableMimeTypes();
+    for (const auto& type : available_types) {
+      if (type == ui::kMimeTypePortalFileTransfer) {
+        mime_type = ui::kMimeTypePortalFileTransfer;
+        break;
       }
-      // Convert to uri-list for internal clipboard consumption
-      std::string uri_list = ui::clipboard_util::GetUriListFromPaths(paths);
-      return base::MakeRefCounted<base::RefCountedBytes>(
-          base::as_byte_span(uri_list));
+      if (type == ui::kMimeTypePortalFiles) {
+        mime_type = ui::kMimeTypePortalFiles;
+        // Keep looking in case kMimeTypePortalFileTransfer is also there
+      }
+    }
+
+    if (!mime_type.empty()) {
+      GetDevice()->RequestSelectionData(
+          mime_type, base::BindOnce(
+                         [](base::WeakPtr<ClipboardImpl> self,
+                            ui::PlatformClipboard::RequestDataClosure callback,
+                            const ui::PlatformClipboard::Data& data) {
+                           if (self) {
+                             self->OnPortalKeyRead(std::move(callback), data);
+                           } else {
+                             std::move(callback).Run(nullptr);
+                           }
+                         },
+                         weak_factory_.GetWeakPtr(), std::move(callback)));
+      return;
     }
 #endif
-    return nullptr;
+    std::move(callback).Run(nullptr);
   }
 
   std::vector<std::string> ReadMimeTypes() final {
@@ -145,47 +160,10 @@ class ClipboardImpl final : public Clipboard, public DataSource::Delegate {
       source_.reset();
     } else {
       offered_data_ = *data;
-
-#if BUILDFLAG(IS_LINUX)
-      // Check if we need to register files for transfer
-      auto it = offered_data_.find(ui::kMimeTypeUriList);
-      if (it != offered_data_.end()) {
-        std::string unparsed(base::as_string_view(*it->second));
-        std::vector<std::string> paths =
-            ui::clipboard_util::GetPathsFromUriList(unparsed);
-
-        std::string key = ui::clipboard_util::RegisterPathsWithPortal(paths);
-        if (!key.empty()) {
-          auto data_bytes = base::MakeRefCounted<base::RefCountedBytes>(
-              base::as_byte_span(key));
-          offered_data_[ui::kMimeTypePortalFileTransfer] = data_bytes;
-          offered_data_[ui::kMimeTypePortalFiles] = data_bytes;
-        }
-      }
-#endif
-
-      source_ = manager_->CreateSource(this);
-      source_->Offer(GetOfferedMimeTypes());
-
-      // TODO(nickdiego): This function should just no-op if no serial is found
-      // (ie: no recent input event has been processed yet), though several unit
-      // and browser tests do not satisfy this precondition so would fail [1].
-      // Revisit this once those tests are fixed.
-      //
-      // [1] https://chromium-review.googlesource.com/c/chromium/src/+/3527605/2
-      auto& serial_tracker = connection_->serial_tracker();
-      auto serial = serial_tracker.GetSerial({wl::SerialType::kTouchPress,
-                                              wl::SerialType::kMousePress,
-                                              wl::SerialType::kKeyPress});
-      if (serial.has_value()) {
-        GetDevice()->SetSelectionSource(source_.get(), serial->value);
-      } else {
-        LOG(WARNING) << "No serial found for selection.";
-      }
+      FinishWrite(GetSerial());
     }
 
-    if (!clipboard_changed_callback_.is_null())
-      clipboard_changed_callback_.Run(buffer_);
+    NotifyClipboardChanged();
   }
 
   bool IsSelectionOwner() const final { return !!source_; }
@@ -206,6 +184,18 @@ class ClipboardImpl final : public Clipboard, public DataSource::Delegate {
         mime_types.push_back(ui::kMimeTypeUtf8PlainText);
       }
     }
+
+#if BUILDFLAG(IS_LINUX)
+    if (offered_data_.contains(ui::kMimeTypeUriList)) {
+      if (!offered_data_.contains(ui::kMimeTypePortalFileTransfer)) {
+        mime_types.push_back(ui::kMimeTypePortalFileTransfer);
+      }
+      if (!offered_data_.contains(ui::kMimeTypePortalFiles)) {
+        mime_types.push_back(ui::kMimeTypePortalFiles);
+      }
+    }
+#endif
+
     return mime_types;
   }
 
@@ -227,29 +217,95 @@ class ClipboardImpl final : public Clipboard, public DataSource::Delegate {
     if (IsSelectionOwner())
       return;
 
-    if (!clipboard_changed_callback_.is_null())
+    NotifyClipboardChanged();
+  }
+
+#if BUILDFLAG(IS_LINUX)
+  void OnPortalKeyRead(ui::PlatformClipboard::RequestDataClosure callback,
+                       const ui::PlatformClipboard::Data& data) {
+    if (!data) {
+      std::move(callback).Run(nullptr);
+      return;
+    }
+    ui::clipboard_util::ExtractPathsFromPortalKey(
+        base::as_byte_span(*data),
+        base::BindOnce(&ClipboardImpl::OnPathsExtracted,
+                       weak_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
+  void OnPathsExtracted(ui::PlatformClipboard::RequestDataClosure callback,
+                        std::vector<std::string> paths) {
+    if (paths.empty()) {
+      std::move(callback).Run(nullptr);
+      return;
+    }
+    // Convert to uri-list for internal clipboard consumption
+    std::string uri_list = ui::clipboard_util::GetUriListFromPaths(paths);
+    std::move(callback).Run(base::MakeRefCounted<base::RefCountedBytes>(
+        base::as_byte_span(uri_list)));
+  }
+#endif
+
+  void FinishWrite(std::optional<wl::Serial> serial) {
+    source_ = manager_->CreateSource(this);
+    source_->Offer(GetOfferedMimeTypes());
+
+    if (serial.has_value()) {
+      GetDevice()->SetSelectionSource(source_.get(), serial->value);
+    } else {
+      LOG(WARNING) << "No serial found for selection.";
+    }
+  }
+
+  void NotifyClipboardChanged() const {
+    if (!clipboard_changed_callback_.is_null()) {
       clipboard_changed_callback_.Run(buffer_);
+    }
+  }
+
+  std::optional<wl::Serial> GetSerial() {
+    return connection_->serial_tracker().GetSerial({wl::SerialType::kTouchPress,
+                                                    wl::SerialType::kMousePress,
+                                                    wl::SerialType::kKeyPress});
   }
 
   // WaylandDataSource::Delegate:
   void OnDataSourceFinish(DataSource* source,
                           base::TimeTicks timestamp,
                           bool completed) override {
-    if (!completed)
+    if (source == source_.get() && !completed) {
       Write(nullptr);
+    }
   }
 
-  void OnDataSourceSend(DataSource* source,
-                        const std::string& mime_type,
-                        std::string* contents) override {
-    DCHECK(contents);
+  void OnDataSourceSend(
+      DataSource* source,
+      const std::string& mime_type,
+      typename DataSource::Delegate::ContentCallback callback) override {
+#if BUILDFLAG(IS_LINUX)
+    if (mime_type == ui::kMimeTypePortalFileTransfer ||
+        mime_type == ui::kMimeTypePortalFiles) {
+      auto it = offered_data_.find(ui::kMimeTypeUriList);
+      if (it != offered_data_.end()) {
+        std::vector<std::string> paths =
+            ui::clipboard_util::GetPathsFromUriList(
+                base::as_string_view(*it->second));
+
+        ui::clipboard_util::RegisterPathsWithPortal(paths, std::move(callback));
+        return;
+      }
+    }
+#endif
+
+    std::string contents;
     auto it = offered_data_.find(mime_type);
     if (it == offered_data_.end() && mime_type == ui::kMimeTypeUtf8PlainText) {
       it = offered_data_.find(ui::kMimeTypePlainText);
     }
     if (it != offered_data_.end()) {
-      *contents = base::as_string_view(*it->second);
+      contents = std::string(base::as_string_view(*it->second));
     }
+    std::move(callback).Run(std::move(contents));
   }
 
   // The device manager used to access data device and create data sources.
@@ -302,17 +358,35 @@ void WaylandClipboard::RequestClipboardData(
     ClipboardBuffer buffer,
     const std::string& mime_type,
     PlatformClipboard::RequestDataClosure callback) {
-  PlatformClipboard::Data data;
-  if (auto* clipboard = GetClipboard(buffer)) {
-    if (mime_type == kMimeTypeUriList) {
-      // Try portal first for file lists
-      data = clipboard->ReadFileTransfer();
-    }
-    if (!data) {
-      data = clipboard->Read(mime_type);
-    }
+  auto* clipboard = GetClipboard(buffer);
+  if (!clipboard) {
+    std::move(callback).Run(nullptr);
+    return;
   }
-  std::move(callback).Run(data);
+
+  if (mime_type == kMimeTypeUriList) {
+    auto portal_callback = base::BindOnce(
+        [](base::WeakPtr<WaylandClipboard> self, ClipboardBuffer buffer,
+           const std::string& mime_type,
+           PlatformClipboard::RequestDataClosure callback,
+           const PlatformClipboard::Data& portal_data) {
+          if (portal_data) {
+            std::move(callback).Run(portal_data);
+            return;
+          }
+          if (self) {
+            auto* cb = self->GetClipboard(buffer);
+            cb->Read(mime_type, std::move(callback));
+          } else {
+            std::move(callback).Run(nullptr);
+          }
+        },
+        weak_factory_.GetWeakPtr(), buffer, mime_type, std::move(callback));
+    clipboard->ReadFileTransfer(std::move(portal_callback));
+    return;
+  }
+
+  clipboard->Read(mime_type, std::move(callback));
 }
 
 void WaylandClipboard::GetAvailableMimeTypes(

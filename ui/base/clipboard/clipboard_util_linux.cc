@@ -41,32 +41,60 @@ std::vector<std::string> GetPathsFromUriList(std::string_view uri_list) {
   return paths;
 }
 
-std::string RegisterFilesWithPortal(const std::vector<FileInfo>& filenames) {
+void RegisterFilesWithPortal(const std::vector<FileInfo>& filenames,
+                             base::OnceCallback<void(std::string)> callback) {
   if (filenames.empty()) {
-    return "";
+    std::move(callback).Run("");
+    return;
   }
   std::vector<std::string> paths;
   paths.reserve(filenames.size());
   for (const auto& filename : filenames) {
     paths.push_back(filename.path.value());
   }
-  return RegisterPathsWithPortal(paths);
+  RegisterPathsWithPortal(std::move(paths), std::move(callback));
 }
 
-std::string RegisterPathsWithPortal(const std::vector<std::string>& paths) {
-  if (paths.empty() || !dbus_xdg::FileTransferPortal::IsAvailableSync()) {
-    return "";
+void RegisterPathsWithPortal(const std::vector<std::string>& paths,
+                             base::OnceCallback<void(std::string)> callback) {
+  if (paths.empty()) {
+    std::move(callback).Run("");
+    return;
   }
-  return dbus_xdg::FileTransferPortal::RegisterFilesSync(paths);
+
+  dbus_xdg::FileTransferPortal::IsAvailable(base::BindOnce(
+      [](std::vector<std::string> paths,
+         base::OnceCallback<void(std::string)> callback, bool available) {
+        if (!available) {
+          std::move(callback).Run("");
+          return;
+        }
+        dbus_xdg::FileTransferPortal::RegisterFiles(std::move(paths),
+                                                    std::move(callback));
+      },
+      std::move(paths), std::move(callback)));
 }
 
-std::vector<std::string> ExtractPathsFromPortalKey(
-    base::span<const uint8_t> key_data) {
-  if (key_data.empty() || !dbus_xdg::FileTransferPortal::IsAvailableSync()) {
-    return {};
+void ExtractPathsFromPortalKey(
+    base::span<const uint8_t> key_data,
+    base::OnceCallback<void(std::vector<std::string>)> callback) {
+  if (key_data.empty()) {
+    std::move(callback).Run({});
+    return;
   }
+
   std::string key(key_data.begin(), key_data.end());
-  return dbus_xdg::FileTransferPortal::RetrieveFilesSync(key);
+  dbus_xdg::FileTransferPortal::IsAvailable(base::BindOnce(
+      [](std::string key,
+         base::OnceCallback<void(std::vector<std::string>)> callback,
+         bool available) {
+        if (!available) {
+          std::move(callback).Run({});
+          return;
+        }
+        dbus_xdg::FileTransferPortal::RetrieveFiles(key, std::move(callback));
+      },
+      std::move(key), std::move(callback)));
 }
 
 }  // namespace ui::clipboard_util

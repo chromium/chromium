@@ -7,15 +7,21 @@
 
 #include <stddef.h>
 
+#include <string>
 #include <vector>
 
 #include "base/component_export.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "build/build_config.h"
 #include "ui/base/x/selection_utils.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/event.h"
+
+#if BUILDFLAG(IS_LINUX)
+#include "base/memory/weak_ptr.h"
+#endif
 
 namespace x11 {
 class ScopedEventSelector;
@@ -130,6 +136,11 @@ class COMPONENT_EXPORT(UI_BASE_X) SelectionOwner {
   std::vector<IncrementalTransfer>::iterator FindIncrementalTransferForEvent(
       const x11::PropertyNotifyEvent& event);
 
+#if BUILDFLAG(IS_LINUX)
+  void OnPortalPathsRegistered(x11::SelectionRequestEvent request,
+                               std::string key);
+#endif
+
   raw_ref<x11::Connection> connection_;
 
   // Our X11 state.
@@ -148,6 +159,10 @@ class COMPONENT_EXPORT(UI_BASE_X) SelectionOwner {
 
   // Used to abort stale incremental data transfers.
   base::RepeatingTimer incremental_transfer_abort_timer_;
+
+#if BUILDFLAG(IS_LINUX)
+  base::WeakPtrFactory<SelectionOwner> weak_factory_{this};
+#endif
 };
 
 }  // namespace ui

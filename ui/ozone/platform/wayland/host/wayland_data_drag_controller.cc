@@ -185,29 +185,30 @@ bool WaylandDataDragController::StartSession(const OSExchangeData& data,
           << (source == DragEventSource::kMouse ? "mouse" : "touch")
           << ", serial tracker=" << connection_->serial_tracker().ToString();
 
+  state_ = State::kStarting;
+  drag_source_ = source;
+  origin_window_ = origin_window;
+
   // Create new data source and offers |data|.
   offered_exchange_data_provider_ = data.provider().Clone();
-  auto mime_types = GetOfferedExchangeDataProvider()->BuildMimeTypesList();
 
+  StartSessionInternal(operations, source, serial->value);
+  return true;
+}
+
+void WaylandDataDragController::StartSessionInternal(
+    int operations,
+    mojom::DragEventSource source,
+    uint32_t serial) {
+  if (state_ != State::kStarting) {
+    return;
+  }
+
+  auto mime_types = GetOfferedExchangeDataProvider()->BuildMimeTypesList();
 #if BUILDFLAG(IS_LINUX)
-  // If we are dragging files, register them with the portal.
-  if (data.HasFile()) {
-    std::optional<std::vector<FileInfo>> filenames = data.GetFilenames();
-    if (filenames.has_value() && !filenames->empty()) {
-      // Synchronously register files to get the key. This blocks the UI thread
-      // briefly but ensures the key is ready for the data offer.
-      std::string key = ui::clipboard_util::RegisterFilesWithPortal(*filenames);
-      if (!key.empty()) {
-        auto data_bytes = base::MakeRefCounted<base::RefCountedBytes>(
-            base::as_byte_span(key));
-        GetOfferedExchangeDataProvider()->AddData(data_bytes,
-                                                  kMimeTypePortalFileTransfer);
-        GetOfferedExchangeDataProvider()->AddData(data_bytes,
-                                                  kMimeTypePortalFiles);
-        mime_types.push_back(kMimeTypePortalFileTransfer);
-        mime_types.push_back(kMimeTypePortalFiles);
-      }
-    }
+  if (GetOfferedExchangeDataProvider()->HasFile()) {
+    mime_types.push_back(kMimeTypePortalFileTransfer);
+    mime_types.push_back(kMimeTypePortalFiles);
   }
 #endif
 
@@ -225,13 +226,13 @@ bool WaylandDataDragController::StartSession(const OSExchangeData& data,
   // Create drag icon surface. Even if `data` contains no drag image, one might
   // get set later on via UpdateDragImage(), so we always create a drag icon
   // surface and just attach a null buffer if we currently have nothing to draw.
-  icon_image_ = data.provider().GetDragImage();
+  icon_image_ = GetOfferedExchangeDataProvider()->GetDragImage();
   icon_surface_ = std::make_unique<WaylandSurface>(connection_, nullptr);
   if (icon_surface_->Initialize()) {
     // TODO(crbug.com/369219145): Revisit and double-check if latched state
     // can be used here (as well as in UpdateDragImage) instead. Original
     // reasoning: latched state is what is currently displayed to the user.
-    icon_surface_buffer_scale_ = origin_window->applied_state().window_scale;
+    icon_surface_buffer_scale_ = origin_window_->applied_state().window_scale;
     icon_surface_->set_surface_buffer_scale(icon_surface_buffer_scale_);
     // Icon surface do not need input.
     const std::vector<gfx::Rect> kEmptyRegionPx{{}};
@@ -239,7 +240,8 @@ bool WaylandDataDragController::StartSession(const OSExchangeData& data,
     icon_surface_->ApplyPendingState();
 
     if (!icon_image_.isNull()) {
-      auto icon_offset = -data.provider().GetDragImageOffset();
+      auto icon_offset =
+          -GetOfferedExchangeDataProvider()->GetDragImageOffset();
       pending_icon_offset_ = {icon_offset.x(), icon_offset.y()};
       current_icon_offset_ = {0, 0};
     }
@@ -252,18 +254,21 @@ bool WaylandDataDragController::StartSession(const OSExchangeData& data,
   // Starts the wayland drag session setting |this| object as delegate.
   state_ = State::kStarted;
   has_received_enter_ = false;
-  drag_source_ = source;
-  origin_window_ = origin_window;
-  data_device_->StartDrag(*data_source_, *origin_window, serial->value,
+
+  data_device_->StartDrag(*data_source_, *origin_window_, serial,
                           icon_surface_ ? icon_surface_->surface() : nullptr,
                           this);
 
-  SetUpWindowDraggingSessionIfNeeded(data);
+  // We need to pass the data provider here.
+  auto custom_format =
+      ui::ClipboardFormatType::CustomPlatformType(ui::kMimeTypeWindowDrag);
+  if (GetOfferedExchangeDataProvider()->HasCustomFormat(custom_format)) {
+    pointer_grabber_for_window_drag_ = origin_window_;
+  }
 
   // Monitor mouse events so that the session can be aborted if needed.
   nested_dispatcher_ =
       PlatformEventSource::GetInstance()->OverrideDispatcher(this);
-  return true;
 }
 
 void WaylandDataDragController::CancelSession() {
@@ -611,25 +616,41 @@ void WaylandDataDragController::OnDataSourceDropPerformed(
                 timestamp);
 }
 
-void WaylandDataDragController::OnDataSourceSend(WaylandDataSource* source,
-                                                 const std::string& mime_type,
-                                                 std::string* buffer) {
+void WaylandDataDragController::OnDataSourceSend(
+    WaylandDataSource* source,
+    const std::string& mime_type,
+    WaylandDataSource::Delegate::ContentCallback callback) {
   CHECK_EQ(data_source_.get(), source);
-  CHECK(buffer);
   VLOG(1) << __FUNCTION__ << " mime=" << mime_type;
+
+#if BUILDFLAG(IS_LINUX)
+  if (mime_type == kMimeTypePortalFileTransfer ||
+      mime_type == kMimeTypePortalFiles) {
+    std::optional<std::vector<FileInfo>> filenames =
+        GetOfferedExchangeDataProvider()->GetFilenames();
+    if (filenames.has_value()) {
+      ui::clipboard_util::RegisterFilesWithPortal(*filenames,
+                                                  std::move(callback));
+      return;
+    }
+  }
+#endif
 
   // We don't actually have any data to send. Nothing except Chrome itself
   // should accept this MIME type, and Chrome won't request the non-existent
   // data; but the KDE desktop seems to accept and request the data. To prevent
   // hitting a CHECK in ExtractData() due to the MIME type, we exit early here.
   if (mime_type == ui::kMimeTypeWindowDrag) {
+    std::move(callback).Run("");
     return;
   }
 
-  if (!GetOfferedExchangeDataProvider()->ExtractData(mime_type, buffer)) {
+  std::string buffer;
+  if (!GetOfferedExchangeDataProvider()->ExtractData(mime_type, &buffer)) {
     LOG(WARNING) << "Cannot deliver data of type " << mime_type
                  << " and no text representation is available.";
   }
+  std::move(callback).Run(std::move(buffer));
 }
 
 void WaylandDataDragController::OnWindowRemoved(WaylandWindow* window) {
@@ -683,64 +704,28 @@ void WaylandDataDragController::PostDataFetchingTask(
 
   auto fetch_data_closure = [](FetchingInfo offered_data,
                                const scoped_refptr<CancelFlag>& cancel_flag)
-      -> std::unique_ptr<OSExchangeData> {
+      -> std::map<std::string, std::vector<uint8_t>> {
     base::ScopedBlockingCall blocking_call(FROM_HERE,
                                            base::BlockingType::MAY_BLOCK);
-    auto fetched_data = std::make_unique<WaylandExchangeDataProvider>();
 
     VLOG(1) << "Starting data fetching for " << offered_data.size()
             << " mime types.";
 
+    std::map<std::string, std::vector<uint8_t>> result;
     for (const auto& [mime_type, fd_handle] : offered_data) {
-      DCHECK(IsMimeTypeSupported(mime_type) || IsPortalMimeType(mime_type));
-
       if (cancel_flag->data.IsSet()) {
         VLOG(1) << "cancelled data fetching.";
         return {};
       }
 
-#if BUILDFLAG(IS_LINUX)
-      // Handle file transfer via portal
-      if (IsPortalMimeType(mime_type)) {
-        std::vector<uint8_t> key_vec;
-        wl::ReadDataFromFD(base::ScopedFD(fd_handle), &key_vec);
-        std::vector<std::string> paths =
-            ui::clipboard_util::ExtractPathsFromPortalKey(key_vec);
-
-        if (paths.empty()) {
-          // If paths is empty, fallback to other mime types (e.g.,
-          // text/uri-list).
-          continue;
-        }
-
-        // Create a new exchange provider with the retrieved files
-        auto provider = std::make_unique<WaylandExchangeDataProvider>();
-        std::vector<FileInfo> file_infos;
-        file_infos.reserve(paths.size());
-        for (const auto& path : paths) {
-          file_infos.emplace_back(base::FilePath(path), base::FilePath());
-        }
-        provider->SetFilenames(file_infos);
-        // Merge with any existing data or just return this.
-        // Prioritize portal files over direct text/uri-list.
-        return std::make_unique<OSExchangeData>(std::move(provider));
-      }
-#endif
-
       VLOG(1) << "will fetch data for " << mime_type;
       std::vector<uint8_t> contents;
       wl::ReadDataFromFD(base::ScopedFD(fd_handle), &contents);
-      if (contents.empty()) {
-        continue;
-      }
-
-      VLOG(1) << "did fetch " << contents.size() << " bytes.";
-      fetched_data->AddData(
-          base::MakeRefCounted<base::RefCountedBytes>(std::move(contents)),
-          mime_type);
+      result[mime_type] = std::move(contents);
+      VLOG(1) << "did fetch " << result[mime_type].size() << " bytes.";
     }
 
-    return std::make_unique<OSExchangeData>(std::move(fetched_data));
+    return result;
   };
 
   last_drag_location_ = location;
@@ -749,8 +734,67 @@ void WaylandDataDragController::PostDataFetchingTask(
   GetDataFetchTaskRunner().PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(fetch_data_closure, std::move(offered_data), cancel_flag),
-      base::BindOnce(&WaylandDataDragController::OnDataFetchingFinished,
+      base::BindOnce(&WaylandDataDragController::OnDataFetched,
                      weak_factory_.GetWeakPtr(), start_time));
+}
+
+void WaylandDataDragController::OnDataFetched(
+    base::TimeTicks start_time,
+    std::map<std::string, std::vector<uint8_t>> fetched_data) {
+  if (state_ != State::kFetching) {
+    return;
+  }
+
+#if BUILDFLAG(IS_LINUX)
+  // Check for portal data. We read the raw portal key from the FD on the
+  // background thread, and now we resolve it to actual paths on the UI thread.
+  for (const char* mime : {kMimeTypePortalFileTransfer, kMimeTypePortalFiles}) {
+    auto it = fetched_data.find(mime);
+    if (it != fetched_data.end() && !it->second.empty()) {
+      base::span<const uint8_t> key_data = it->second;
+      ui::clipboard_util::ExtractPathsFromPortalKey(
+          key_data,
+          base::BindOnce(&WaylandDataDragController::OnPortalPathsExtracted,
+                         weak_factory_.GetWeakPtr(), start_time,
+                         std::move(fetched_data)));
+      return;
+    }
+  }
+#endif
+
+  OnPortalPathsExtracted(start_time, std::move(fetched_data), {});
+}
+
+void WaylandDataDragController::OnPortalPathsExtracted(
+    base::TimeTicks start_time,
+    std::map<std::string, std::vector<uint8_t>> fetched_data,
+    std::vector<std::string> paths) {
+  if (state_ != State::kFetching) {
+    return;
+  }
+
+  auto provider = std::make_unique<WaylandExchangeDataProvider>();
+  if (!paths.empty()) {
+    std::vector<FileInfo> file_infos;
+    file_infos.reserve(paths.size());
+    for (const auto& path : paths) {
+      file_infos.emplace_back(base::FilePath(path), base::FilePath());
+    }
+    provider->SetFilenames(file_infos);
+  }
+
+  for (auto& [mime_type, contents] : fetched_data) {
+    if (contents.empty() || IsPortalMimeType(mime_type) ||
+        (!paths.empty() && mime_type == ui::kMimeTypeUriList)) {
+      continue;
+    }
+    provider->AddData(
+        base::MakeRefCounted<base::RefCountedBytes>(std::move(contents)),
+        mime_type);
+  }
+
+  OnDataFetchingFinished(start_time,
+                         std::make_unique<OSExchangeData>(std::move(provider)));
 }
 
 void WaylandDataDragController::OnDataFetchingFinished(
@@ -781,9 +825,6 @@ void WaylandDataDragController::OnDataFetchingFinished(
 }
 
 void WaylandDataDragController::CancelDataFetchingIfNeeded() {
-  if (state_ == State::kFetching) {
-    return;
-  }
   if (data_fetch_cancel_flag_) {
     VLOG_IF(1, data_fetch_cancel_flag_->data.IsSet())
         << "Cancelling data fetching.";

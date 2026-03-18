@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
@@ -59,12 +60,14 @@ class DataSource {
  public:
   class Delegate {
    public:
+    using ContentCallback = base::OnceCallback<void(std::string)>;
+
     virtual void OnDataSourceFinish(DataSource<T>* source,
                                     base::TimeTicks timestamp,
                                     bool completed) = 0;
     virtual void OnDataSourceSend(DataSource<T>* source,
                                   const std::string& mime_type,
-                                  std::string* contents) = 0;
+                                  ContentCallback callback) = 0;
     // Optional callback intended to be implemented only by dnd-capable delegate
     // implementations.
     virtual void OnDataSourceDropPerformed(DataSource<T>* source,

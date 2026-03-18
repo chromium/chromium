@@ -6,10 +6,12 @@
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_DATA_DRAG_CONTROLLER_H_
 
 #include <list>
+#include <map>
 #include <memory>
 #include <optional>
 #include <ostream>
 #include <string>
+#include <vector>
 
 #include "base/files/scoped_file.h"
 #include "base/gtest_prod_util.h"
@@ -19,7 +21,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/task/task_runner.h"
-#include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/dragdrop/os_exchange_data_provider.h"
 #include "ui/events/platform/platform_event_dispatcher.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -81,6 +83,7 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
  public:
   enum class State {
     kIdle,      // Doing nothing special
+    kStarting,  // The outgoing drag is being initialized (async portal)
     kStarted,   // The outgoing drag is in progress.
     kFetching,  // The incoming data is fetched from the source.
   };
@@ -188,9 +191,10 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
                           bool completed) override;
   void OnDataSourceDropPerformed(WaylandDataSource* source,
                                  base::TimeTicks timestamp) override;
-  void OnDataSourceSend(WaylandDataSource* source,
-                        const std::string& mime_type,
-                        std::string* contents) override;
+  void OnDataSourceSend(
+      WaylandDataSource* source,
+      const std::string& mime_type,
+      WaylandDataSource::Delegate::ContentCallback callback) override;
 
   // WaylandWindowObserver:
   void OnWindowRemoved(WaylandWindow* window) override;
@@ -206,6 +210,19 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   void OnDataFetchingFinished(
       base::TimeTicks start_time,
       std::unique_ptr<ui::OSExchangeData> received_data);
+
+  void StartSessionInternal(int operations,
+                            mojom::DragEventSource source,
+                            uint32_t serial);
+
+  void OnDataFetched(base::TimeTicks start_time,
+                     std::map<std::string, std::vector<uint8_t>> fetched_data);
+
+  void OnPortalPathsExtracted(
+      base::TimeTicks start_time,
+      std::map<std::string, std::vector<uint8_t>> fetched_data,
+      std::vector<std::string> paths);
+
   void CancelDataFetchingIfNeeded();
 
   // Resets everything to idle state. Does nothing if the current state is

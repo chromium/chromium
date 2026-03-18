@@ -154,15 +154,20 @@ void XDragContext::OnSelectionNotify(const x11::SelectionNotifyEvent& event) {
       // If the source provided a portal key, retrieve the files now.
       if (target == x11::GetAtom(kMimeTypePortalFileTransfer) ||
           target == x11::GetAtom(kMimeTypePortalFiles)) {
-        std::vector<std::string> paths =
-            ui::clipboard_util::ExtractPathsFromPortalKey(
-                base::as_byte_span(*data));
-        if (!paths.empty()) {
-          data = base::MakeRefCounted<base::RefCountedString>(
-              ui::clipboard_util::GetUriListFromPaths(paths));
-          // Store as text/uri-list so the rest of Chrome understands it.
-          target = x11::GetAtom(kMimeTypeUriList);
+        if (fetched_targets_.contains(x11::GetAtom(kMimeTypeUriList))) {
+          RequestNextTargetOrComplete();
+          return;
         }
+        ui::clipboard_util::ExtractPathsFromPortalKey(
+            base::as_byte_span(*data),
+            base::BindOnce(&XDragContext::OnPortalPathsExtracted,
+                           weak_factory_.GetWeakPtr()));
+        return;
+      }
+      if (target == x11::GetAtom(kMimeTypeUriList) &&
+          fetched_targets_.contains(target)) {
+        RequestNextTargetOrComplete();
+        return;
       }
 #endif  // BUILDFLAG(IS_LINUX)
       fetched_targets_.Insert(target, data);
@@ -175,6 +180,10 @@ void XDragContext::OnSelectionNotify(const x11::SelectionNotifyEvent& event) {
                << static_cast<uint32_t>(event.target);
   }
 
+  RequestNextTargetOrComplete();
+}
+
+void XDragContext::RequestNextTargetOrComplete() {
   if (!unfetched_targets_.empty()) {
     RequestNextTarget();
   } else {
@@ -183,6 +192,18 @@ void XDragContext::OnSelectionNotify(const x11::SelectionNotifyEvent& event) {
     drag_drop_client_ = nullptr;
   }
 }
+
+#if BUILDFLAG(IS_LINUX)
+void XDragContext::OnPortalPathsExtracted(std::vector<std::string> paths) {
+  if (!paths.empty()) {
+    auto data = base::MakeRefCounted<base::RefCountedString>(
+        ui::clipboard_util::GetUriListFromPaths(paths));
+    // Store as text/uri-list so the rest of Chrome understands it.
+    fetched_targets_.Insert(x11::GetAtom(kMimeTypeUriList), data);
+  }
+  RequestNextTargetOrComplete();
+}
+#endif
 
 void XDragContext::ReadActions() {
   XDragDropClient* source_client =

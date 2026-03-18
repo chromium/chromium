@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/functional/callback_forward.h"
 #include "ui/base/clipboard/file_info.h"
 
 namespace ui::clipboard_util {
@@ -22,16 +23,19 @@ std::string GetUriListFromPaths(const std::vector<std::string>& paths);
 // Ignores comments and non-file URIs.
 std::vector<std::string> GetPathsFromUriList(std::string_view uri_list);
 
-// Registers files with the XDG File Transfer Portal and returns a transfer key.
-// Blocks the calling thread to communicate with the DBus portal.
+// Registers files with the XDG File Transfer Portal and returns a transfer key
+// via `callback`.
 // Returns an empty string on failure.
-std::string RegisterFilesWithPortal(const std::vector<FileInfo>& filenames);
-std::string RegisterPathsWithPortal(const std::vector<std::string>& paths);
+void RegisterFilesWithPortal(const std::vector<FileInfo>& filenames,
+                             base::OnceCallback<void(std::string)> callback);
+void RegisterPathsWithPortal(const std::vector<std::string>& paths,
+                             base::OnceCallback<void(std::string)> callback);
 
-// Extracts a list of absolute file paths from an XDG file transfer portal key.
-// Blocks the calling thread to communicate with the DBus portal.
-std::vector<std::string> ExtractPathsFromPortalKey(
-    base::span<const uint8_t> key_data);
+// Extracts a list of absolute file paths from an XDG file transfer portal key
+// via `callback`.
+void ExtractPathsFromPortalKey(
+    base::span<const uint8_t> key_data,
+    base::OnceCallback<void(std::vector<std::string>)> callback);
 
 }  // namespace ui::clipboard_util
 

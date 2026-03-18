@@ -6,14 +6,20 @@
 #define UI_BASE_X_X11_DRAG_CONTEXT_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 #include "ui/base/x/selection_utils.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/x/event.h"
 #include "ui/gfx/x/xproto.h"
+
+#if BUILDFLAG(IS_LINUX)
+#include "base/memory/weak_ptr.h"
+#endif
 
 namespace ui {
 
@@ -61,6 +67,14 @@ class COMPONENT_EXPORT(UI_BASE_X) XDragContext {
   // the source window.
   void RequestNextTarget();
 
+  // Requests the next target from `unfetched_targets_` or completes the
+  // position handling if all targets have been fetched.
+  void RequestNextTargetOrComplete();
+
+#if BUILDFLAG(IS_LINUX)
+  void OnPortalPathsExtracted(std::vector<std::string> paths);
+#endif
+
   // Masks the X11 atom |xdnd_operation|'s views representation onto
   // |drag_operation|.
   void MaskOperation(x11::Atom xdnd_operation, int* drag_operation) const;
@@ -99,6 +113,10 @@ class COMPONENT_EXPORT(UI_BASE_X) XDragContext {
 
   // Possible actions.
   std::vector<x11::Atom> actions_;
+
+#if BUILDFLAG(IS_LINUX)
+  base::WeakPtrFactory<XDragContext> weak_factory_{this};
+#endif
 };
 
 }  // namespace ui

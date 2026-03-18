@@ -18,6 +18,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/threading/thread.h"
 #include "components/dbus/utils/read_message.h"
 #include "components/dbus/utils/types.h"
@@ -101,7 +102,9 @@ TEST_F(FileTransferPortalTest, IsAvailableFeatureDisabled) {
   feature_list.InitAndDisableFeature(kXdgFileTransferPortal);
 
   // Should return false immediately without checking the bus.
-  EXPECT_FALSE(FileTransferPortal::IsAvailableSync(mock_bus_.get()));
+  base::test::TestFuture<bool> future;
+  FileTransferPortal::IsAvailable(future.GetCallback(), mock_bus_.get());
+  EXPECT_FALSE(future.Get());
 }
 
 TEST_F(FileTransferPortalTest, IsAvailable) {
@@ -114,23 +117,26 @@ TEST_F(FileTransferPortalTest, IsAvailable) {
                              dbus::ObjectPath("/org/freedesktop/DBus")))
       .WillRepeatedly(Return(mock_bus_proxy.get()));
 
-  EXPECT_CALL(*mock_bus_proxy, CallMethodAndBlock(_, _))
-      .WillOnce(
-          [](dbus::MethodCall* method_call, int timeout_ms)
-              -> base::expected<std::unique_ptr<dbus::Response>, dbus::Error> {
-            EXPECT_EQ(method_call->GetInterface(), "org.freedesktop.DBus");
-            EXPECT_EQ(method_call->GetMember(), "GetNameOwner");
+  EXPECT_CALL(*mock_bus_proxy, CallMethodWithErrorResponse(_, _, _))
+      .WillOnce([&](dbus::MethodCall* method_call, int timeout_ms,
+                    dbus::ObjectProxy::ResponseOrErrorCallback callback) {
+        EXPECT_EQ(method_call->GetInterface(), "org.freedesktop.DBus");
+        EXPECT_EQ(method_call->GetMember(), "GetNameOwner");
 
-            auto response = dbus::Response::CreateEmpty();
-            dbus::MessageWriter writer(response.get());
-            writer.AppendString("unique-name");
-            return base::ok(std::move(response));
-          });
+        auto response = dbus::Response::CreateEmpty();
+        dbus::MessageWriter writer(response.get());
+        writer.AppendString("unique-name");
+        std::move(callback).Run(response.get(), nullptr);
+      });
 
-  EXPECT_TRUE(FileTransferPortal::IsAvailableSync(mock_bus_.get()));
+  base::test::TestFuture<bool> future;
+  FileTransferPortal::IsAvailable(future.GetCallback(), mock_bus_.get());
+  EXPECT_TRUE(future.Get());
 
-  // Second call should use cached value and not call CallMethodAndBlock.
-  EXPECT_TRUE(FileTransferPortal::IsAvailableSync(mock_bus_.get()));
+  // Second call should use cached value and not call CallMethod.
+  base::test::TestFuture<bool> future2;
+  FileTransferPortal::IsAvailable(future2.GetCallback(), mock_bus_.get());
+  EXPECT_TRUE(future2.Get());
 }
 
 TEST_F(FileTransferPortalTest, RetrieveFilesSuccess) {
@@ -138,10 +144,9 @@ TEST_F(FileTransferPortalTest, RetrieveFilesSuccess) {
   const std::string kExpectedPath1 = "/fake/path/1";
   const std::string kExpectedPath2 = "/fake/path/2";
 
-  EXPECT_CALL(*mock_portal_proxy_, CallMethodAndBlock(_, _))
-      .WillOnce([&](dbus::MethodCall* method_call, int timeout_ms)
-                    -> base::expected<std::unique_ptr<dbus::Response>,
-                                      dbus::Error> {
+  EXPECT_CALL(*mock_portal_proxy_, CallMethodWithErrorResponse(_, _, _))
+      .WillOnce([&](dbus::MethodCall* method_call, int timeout_ms,
+                    dbus::ObjectProxy::ResponseOrErrorCallback callback) {
         EXPECT_EQ(method_call->GetInterface(), kFileTransferInterfaceName);
         EXPECT_EQ(method_call->GetMember(), kMethodRetrieveFiles);
 
@@ -156,25 +161,31 @@ TEST_F(FileTransferPortalTest, RetrieveFilesSuccess) {
         std::vector<std::string> paths = {kExpectedPath1, kExpectedPath2};
         dbus_utils::WriteValue(writer, paths);
 
-        return base::ok(std::move(response));
+        std::move(callback).Run(response.get(), nullptr);
       });
 
-  std::vector<std::string> paths =
-      FileTransferPortal::RetrieveFilesSync(kFakeKey, mock_bus_.get());
+  base::test::TestFuture<std::vector<std::string>> future;
+  FileTransferPortal::RetrieveFiles(kFakeKey, future.GetCallback(),
+                                    mock_bus_.get());
 
+  std::vector<std::string> paths = future.Take();
   ASSERT_EQ(paths.size(), 2u);
   EXPECT_EQ(paths[0], kExpectedPath1);
   EXPECT_EQ(paths[1], kExpectedPath2);
 }
 
 TEST_F(FileTransferPortalTest, RetrieveFilesFailure) {
-  EXPECT_CALL(*mock_portal_proxy_, CallMethodAndBlock(_, _))
-      .WillOnce(Return(base::unexpected(dbus::Error())));
+  EXPECT_CALL(*mock_portal_proxy_, CallMethodWithErrorResponse(_, _, _))
+      .WillOnce([](dbus::MethodCall* method_call, int timeout_ms,
+                   dbus::ObjectProxy::ResponseOrErrorCallback callback) {
+        std::move(callback).Run(nullptr, nullptr);
+      });
 
-  std::vector<std::string> paths = FileTransferPortal::RetrieveFilesSync(
-      "fake-transfer-key", mock_bus_.get());
+  base::test::TestFuture<std::vector<std::string>> future;
+  FileTransferPortal::RetrieveFiles("fake-transfer-key", future.GetCallback(),
+                                    mock_bus_.get());
 
-  EXPECT_TRUE(paths.empty());
+  EXPECT_TRUE(future.Get().empty());
 }
 
 TEST_F(FileTransferPortalTest, RegisterFilesSuccess) {
@@ -182,64 +193,32 @@ TEST_F(FileTransferPortalTest, RegisterFilesSuccess) {
   std::vector<std::string> files = {CreateTempFile("file1.txt"),
                                     CreateTempFile("file2.txt")};
 
-  EXPECT_CALL(*mock_portal_proxy_, CallMethodAndBlock(_, _))
-      .WillOnce(
-          [&](dbus::MethodCall* method_call, int timeout_ms)
-              -> base::expected<std::unique_ptr<dbus::Response>, dbus::Error> {
-            EXPECT_EQ(method_call->GetInterface(), kFileTransferInterfaceName);
-            EXPECT_EQ(method_call->GetMember(), kMethodStartTransfer);
+  EXPECT_CALL(*mock_portal_proxy_, CallMethodWithErrorResponse(_, _, _))
+      .WillOnce([&](dbus::MethodCall* method_call, int timeout_ms,
+                    dbus::ObjectProxy::ResponseOrErrorCallback callback) {
+        EXPECT_EQ(method_call->GetInterface(), kFileTransferInterfaceName);
+        EXPECT_EQ(method_call->GetMember(), kMethodStartTransfer);
 
-            auto args = dbus_utils::internal::ReadMessage<
-                std::tuple<std::map<std::string, dbus_utils::Variant>>>(
-                *method_call);
-            EXPECT_TRUE(args.has_value());
-            auto options = std::move(std::get<0>(*args));
+        auto response = dbus::Response::CreateEmpty();
+        dbus::MessageWriter writer(response.get());
+        dbus_utils::WriteValue(writer, kFakeKey);
 
-            auto it_writable = options.find("writable");
-            EXPECT_TRUE(it_writable != options.end());
-            EXPECT_EQ(std::move(it_writable->second).Take<bool>(), false);
+        std::move(callback).Run(response.get(), nullptr);
+      })
+      .WillOnce([&](dbus::MethodCall* method_call, int timeout_ms,
+                    dbus::ObjectProxy::ResponseOrErrorCallback callback) {
+        EXPECT_EQ(method_call->GetInterface(), kFileTransferInterfaceName);
+        EXPECT_EQ(method_call->GetMember(), kMethodAddFiles);
 
-            auto it_autostop = options.find("autostop");
-            EXPECT_TRUE(it_autostop != options.end());
-            EXPECT_EQ(std::move(it_autostop->second).Take<bool>(), true);
+        auto response = dbus::Response::CreateEmpty();
+        std::move(callback).Run(response.get(), nullptr);
+      });
 
-            auto response = dbus::Response::CreateEmpty();
-            dbus::MessageWriter writer(response.get());
-            dbus_utils::WriteValue(writer, kFakeKey);
+  base::test::TestFuture<std::string> future;
+  FileTransferPortal::RegisterFiles(files, future.GetCallback(),
+                                    mock_bus_.get());
 
-            return base::ok(std::move(response));
-          })
-      .WillOnce(
-          [&](dbus::MethodCall* method_call, int timeout_ms)
-              -> base::expected<std::unique_ptr<dbus::Response>, dbus::Error> {
-            EXPECT_EQ(method_call->GetInterface(), kFileTransferInterfaceName);
-            EXPECT_EQ(method_call->GetMember(), kMethodAddFiles);
-
-            using ArgsTuple =
-                std::tuple<std::string, std::vector<base::ScopedFD>,
-                           std::map<std::string, dbus_utils::Variant>>;
-            auto args =
-                dbus_utils::internal::ReadMessage<ArgsTuple>(*method_call);
-            EXPECT_TRUE(args.has_value());
-
-            const auto& [key, fds, options] = *args;
-            EXPECT_EQ(key, kFakeKey);
-            EXPECT_EQ(fds.size(), 2u);
-            if (fds.size() != 2u) {
-              return base::unexpected(dbus::Error());
-            }
-            EXPECT_TRUE(fds[0].is_valid());
-            EXPECT_TRUE(fds[1].is_valid());
-            EXPECT_TRUE(options.empty());
-
-            auto response = dbus::Response::CreateEmpty();
-            return base::ok(std::move(response));
-          });
-
-  std::string key =
-      FileTransferPortal::RegisterFilesSync(files, mock_bus_.get());
-
-  EXPECT_EQ(key, kFakeKey);
+  EXPECT_EQ(future.Get(), kFakeKey);
 }
 
 TEST_F(FileTransferPortalTest, RegisterFilesBatching) {
@@ -252,78 +231,60 @@ TEST_F(FileTransferPortalTest, RegisterFilesBatching) {
   }
 
   // StartTransfer call
-  EXPECT_CALL(*mock_portal_proxy_, CallMethodAndBlock(_, _))
-      .WillOnce(
-          [&](dbus::MethodCall* method_call, int timeout_ms)
-              -> base::expected<std::unique_ptr<dbus::Response>, dbus::Error> {
-            EXPECT_EQ(method_call->GetMember(), kMethodStartTransfer);
-            auto response = dbus::Response::CreateEmpty();
-            dbus::MessageWriter writer(response.get());
-            dbus_utils::WriteValue(writer, kFakeKey);
-            return base::ok(std::move(response));
-          })
+  EXPECT_CALL(*mock_portal_proxy_, CallMethodWithErrorResponse(_, _, _))
+      .WillOnce([&](dbus::MethodCall* method_call, int timeout_ms,
+                    dbus::ObjectProxy::ResponseOrErrorCallback callback) {
+        EXPECT_EQ(method_call->GetMember(), kMethodStartTransfer);
+        auto response = dbus::Response::CreateEmpty();
+        dbus::MessageWriter writer(response.get());
+        dbus_utils::WriteValue(writer, kFakeKey);
+        std::move(callback).Run(response.get(), nullptr);
+      })
       // First batch (16 files)
-      .WillOnce(
-          [&](dbus::MethodCall* method_call, int timeout_ms)
-              -> base::expected<std::unique_ptr<dbus::Response>, dbus::Error> {
-            EXPECT_EQ(method_call->GetMember(), kMethodAddFiles);
-
-            using ArgsTuple =
-                std::tuple<std::string, std::vector<base::ScopedFD>,
-                           std::map<std::string, dbus_utils::Variant>>;
-            auto args =
-                dbus_utils::internal::ReadMessage<ArgsTuple>(*method_call);
-            EXPECT_TRUE(args.has_value());
-
-            EXPECT_EQ(std::get<0>(*args), kFakeKey);
-            EXPECT_EQ(std::get<1>(*args).size(), 16u);
-
-            auto response = dbus::Response::CreateEmpty();
-            return base::ok(std::move(response));
-          })
+      .WillOnce([&](dbus::MethodCall* method_call, int timeout_ms,
+                    dbus::ObjectProxy::ResponseOrErrorCallback callback) {
+        EXPECT_EQ(method_call->GetMember(), kMethodAddFiles);
+        auto response = dbus::Response::CreateEmpty();
+        std::move(callback).Run(response.get(), nullptr);
+      })
       // Second batch (2 files)
-      .WillOnce(
-          [&](dbus::MethodCall* method_call, int timeout_ms)
-              -> base::expected<std::unique_ptr<dbus::Response>, dbus::Error> {
-            EXPECT_EQ(method_call->GetMember(), kMethodAddFiles);
+      .WillOnce([&](dbus::MethodCall* method_call, int timeout_ms,
+                    dbus::ObjectProxy::ResponseOrErrorCallback callback) {
+        EXPECT_EQ(method_call->GetMember(), kMethodAddFiles);
+        auto response = dbus::Response::CreateEmpty();
+        std::move(callback).Run(response.get(), nullptr);
+      });
 
-            using ArgsTuple =
-                std::tuple<std::string, std::vector<base::ScopedFD>,
-                           std::map<std::string, dbus_utils::Variant>>;
-            auto args =
-                dbus_utils::internal::ReadMessage<ArgsTuple>(*method_call);
-            EXPECT_TRUE(args.has_value());
+  base::test::TestFuture<std::string> future;
+  FileTransferPortal::RegisterFiles(files, future.GetCallback(),
+                                    mock_bus_.get());
 
-            EXPECT_EQ(std::get<0>(*args), kFakeKey);
-            EXPECT_EQ(std::get<1>(*args).size(), 2u);
-
-            auto response = dbus::Response::CreateEmpty();
-            return base::ok(std::move(response));
-          });
-
-  std::string key =
-      FileTransferPortal::RegisterFilesSync(files, mock_bus_.get());
-
-  EXPECT_EQ(key, kFakeKey);
+  EXPECT_EQ(future.Get(), kFakeKey);
 }
 
 TEST_F(FileTransferPortalTest, RegisterFilesAddFilesFailure) {
+  testing::InSequence s;
   const std::string kFakeKey = "fake-transfer-key";
   std::vector<std::string> files = {CreateTempFile("file1.txt")};
 
   // 1. StartTransfer - Success
+  EXPECT_CALL(*mock_portal_proxy_, CallMethodWithErrorResponse(_, _, _))
+      .WillOnce([&](dbus::MethodCall* method_call, int timeout_ms,
+                    dbus::ObjectProxy::ResponseOrErrorCallback callback) {
+        EXPECT_EQ(method_call->GetMember(), kMethodStartTransfer);
+        auto response = dbus::Response::CreateEmpty();
+        dbus::MessageWriter writer(response.get());
+        dbus_utils::WriteValue(writer, kFakeKey);
+        std::move(callback).Run(response.get(), nullptr);
+      });
+
   // 2. AddFiles - Failure
-  EXPECT_CALL(*mock_portal_proxy_, CallMethodAndBlock(_, _))
-      .WillOnce(
-          [&](dbus::MethodCall* method_call, int timeout_ms)
-              -> base::expected<std::unique_ptr<dbus::Response>, dbus::Error> {
-            EXPECT_EQ(method_call->GetMember(), kMethodStartTransfer);
-            auto response = dbus::Response::CreateEmpty();
-            dbus::MessageWriter writer(response.get());
-            dbus_utils::WriteValue(writer, kFakeKey);
-            return base::ok(std::move(response));
-          })
-      .WillOnce(Return(base::unexpected(dbus::Error())));
+  EXPECT_CALL(*mock_portal_proxy_, CallMethodWithErrorResponse(_, _, _))
+      .WillOnce([](dbus::MethodCall* method_call, int timeout_ms,
+                   dbus::ObjectProxy::ResponseOrErrorCallback callback) {
+        EXPECT_EQ(method_call->GetMember(), kMethodAddFiles);
+        std::move(callback).Run(nullptr, nullptr);
+      });
 
   // 3. StopTransfer - Success (async)
   EXPECT_CALL(*mock_portal_proxy_, CallMethodWithErrorResponse(_, _, _))
@@ -341,27 +302,28 @@ TEST_F(FileTransferPortalTest, RegisterFilesAddFilesFailure) {
         std::move(callback).Run(response.get(), nullptr);
       });
 
-  std::string key =
-      FileTransferPortal::RegisterFilesSync(files, mock_bus_.get());
+  base::test::TestFuture<std::string> future;
+  FileTransferPortal::RegisterFiles(files, future.GetCallback(),
+                                    mock_bus_.get());
 
-  EXPECT_TRUE(key.empty());
+  EXPECT_TRUE(future.Get().empty());
 }
 
 TEST_F(FileTransferPortalTest, RegisterFilesAllFilesOpenFailure) {
+  testing::InSequence s;
   const std::string kFakeKey = "fake-transfer-key";
   std::vector<std::string> files = {"/non/existent/file.txt"};
 
   // 1. StartTransfer - Success
-  EXPECT_CALL(*mock_portal_proxy_, CallMethodAndBlock(_, _))
-      .WillOnce(
-          [&](dbus::MethodCall* method_call, int timeout_ms)
-              -> base::expected<std::unique_ptr<dbus::Response>, dbus::Error> {
-            EXPECT_EQ(method_call->GetMember(), kMethodStartTransfer);
-            auto response = dbus::Response::CreateEmpty();
-            dbus::MessageWriter writer(response.get());
-            dbus_utils::WriteValue(writer, kFakeKey);
-            return base::ok(std::move(response));
-          });
+  EXPECT_CALL(*mock_portal_proxy_, CallMethodWithErrorResponse(_, _, _))
+      .WillOnce([&](dbus::MethodCall* method_call, int timeout_ms,
+                    dbus::ObjectProxy::ResponseOrErrorCallback callback) {
+        EXPECT_EQ(method_call->GetMember(), kMethodStartTransfer);
+        auto response = dbus::Response::CreateEmpty();
+        dbus::MessageWriter writer(response.get());
+        dbus_utils::WriteValue(writer, kFakeKey);
+        std::move(callback).Run(response.get(), nullptr);
+      });
 
   // 2. StopTransfer - Success (async) because no files could be opened
   EXPECT_CALL(*mock_portal_proxy_, CallMethodWithErrorResponse(_, _, _))
@@ -372,10 +334,11 @@ TEST_F(FileTransferPortalTest, RegisterFilesAllFilesOpenFailure) {
         std::move(callback).Run(response.get(), nullptr);
       });
 
-  std::string key =
-      FileTransferPortal::RegisterFilesSync(files, mock_bus_.get());
+  base::test::TestFuture<std::string> future;
+  FileTransferPortal::RegisterFiles(files, future.GetCallback(),
+                                    mock_bus_.get());
 
-  EXPECT_TRUE(key.empty());
+  EXPECT_TRUE(future.Get().empty());
 }
 
 }  // namespace dbus_xdg

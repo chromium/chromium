@@ -490,6 +490,9 @@ void WaylandWindowDragController::OnDataSourceDropPerformed(
 void WaylandWindowDragController::OnDataSourceFinish(WaylandDataSource* source,
                                                      base::TimeTicks timestamp,
                                                      bool completed) {
+  if (source != data_source_.get()) {
+    return;
+  }
   VLOG(1) << __func__ << " completed=" << completed << " state=" << state_;
   HandleDragEnd(completed, timestamp);
   data_source_.reset();
@@ -530,11 +533,13 @@ void WaylandWindowDragController::HandleDragEnd(bool completed,
   window_manager_->RemoveObserver(this);
 }
 
-void WaylandWindowDragController::OnDataSourceSend(WaylandDataSource* source,
-                                                   const std::string& mime_type,
-                                                   std::string* contents) {
+void WaylandWindowDragController::OnDataSourceSend(
+    WaylandDataSource* source,
+    const std::string& mime_type,
+    WaylandDataSource::Delegate::ContentCallback callback) {
   // There is no actual data exchange in DnD window dragging sessions. Window
   // snapping, for example, is supposed to be handled at higher level UI layers.
+  std::move(callback).Run("");
 }
 
 bool WaylandWindowDragController::CanDispatchEvent(const PlatformEvent& event) {

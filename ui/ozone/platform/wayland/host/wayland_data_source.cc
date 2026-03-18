@@ -5,19 +5,41 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_data_source.h"
 
+#include <fcntl.h>
 #include <gtk-primary-selection-client-protocol.h>
 #include <primary-selection-unstable-v1-client-protocol.h>
 
 #include <cstdint>
 #include <vector>
 
+#include "base/files/file_util.h"
+#include "base/files/scoped_file.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/notimplemented.h"
+#include "base/task/thread_pool.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 
 namespace wl {
+
+namespace {
+
+// Writes `data` to file descriptor `fd`. This is performed on a background
+// thread to avoid blocking the UI thread.
+void WriteData(base::ScopedFD fd, std::string data) {
+  int flags = fcntl(fd.get(), F_GETFL);
+  if (flags != -1 && (flags & O_NONBLOCK)) {
+    fcntl(fd.get(), F_SETFL, flags & ~O_NONBLOCK);
+  }
+
+  bool done = base::WriteFileDescriptor(fd.get(), data);
+  VPLOG_IF(1, !done) << "Failed to write";
+}
+
+}  // namespace
 
 template <typename T>
 DataSource<T>::DataSource(T* data_source,
@@ -51,33 +73,16 @@ void DataSource<T>::HandleFinishEvent(bool completed) {
   delegate_->OnDataSourceFinish(this, ui::EventTimeForNow(), completed);
 }
 
-// Writes |data_str| to file descriptor |fd| assuming it is flagged as
-// O_NONBLOCK, which implies in handling EAGAIN, besides EINTR. Returns true
-// iff data is fully written to the given file descriptor. See the link below
-// for more details about non-blocking behavior for 'write' syscall.
-// https://pubs.opengroup.org/onlinepubs/007904975/functions/write.html
-bool WriteDataNonBlocking(int fd, const std::string& data_str) {
-  const auto data_span = base::as_byte_span(data_str);
-  for (size_t written = 0; written < data_span.size();) {
-    const auto remaining_span = data_span.subspan(written);
-    const ssize_t result =
-        write(fd, remaining_span.data(), remaining_span.size());
-    if (result >= 0) {
-      written += static_cast<size_t>(result);
-    } else if (errno != EINTR && errno != EAGAIN) {
-      return false;
-    }
-  }
-  return true;
-}
-
 template <typename T>
 void DataSource<T>::HandleSendEvent(const std::string& mime_type, int32_t fd) {
-  std::string contents;
-  delegate_->OnDataSourceSend(this, mime_type, &contents);
-  bool done = WriteDataNonBlocking(fd, contents);
-  VPLOG_IF(1, !done) << "Failed to write";
-  close(fd);
+  auto callback = base::BindOnce(
+      [](base::ScopedFD fd, std::string contents) {
+        base::ThreadPool::PostTask(
+            FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+            base::BindOnce(&WriteData, std::move(fd), std::move(contents)));
+      },
+      base::ScopedFD(fd));
+  delegate_->OnDataSourceSend(this, mime_type, std::move(callback));
 }
 
 // static

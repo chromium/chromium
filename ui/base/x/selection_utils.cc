@@ -25,10 +25,6 @@
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/gfx/x/atom_cache.h"
 
-#if BUILDFLAG(IS_LINUX)
-#include "components/dbus/xdg/file_transfer_portal.h"
-#endif
-
 namespace ui {
 
 std::vector<x11::Atom> GetTextAtomsFrom() {
@@ -43,12 +39,6 @@ std::vector<x11::Atom> GetURLAtomsFrom() {
 }
 
 std::vector<x11::Atom> GetURIListAtomsFrom() {
-#if BUILDFLAG(IS_LINUX)
-  if (dbus_xdg::FileTransferPortal::IsAvailableSync()) {
-    return {x11::GetAtom(kMimeTypePortalFileTransfer),
-            x11::GetAtom(kMimeTypePortalFiles), x11::GetAtom(kMimeTypeUriList)};
-  }
-#endif
   return {x11::GetAtom(kMimeTypeUriList)};
 }
 

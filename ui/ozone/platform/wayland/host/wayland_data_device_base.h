@@ -44,6 +44,11 @@ class WaylandDataDeviceBase {
   // TODO(crbug.com/40398800): Drop once Clipboard API becomes async.
   PlatformClipboard::Data ReadSelectionData(const std::string& mime_type);
 
+  // Asynchronously reads and returns selection data with `mime_type` format
+  // via `callback`.
+  void RequestSelectionData(const std::string& mime_type,
+                            PlatformClipboard::RequestDataClosure callback);
+
  protected:
   WaylandConnection* connection() const { return connection_; }
   WaylandDataOfferBase* data_offer() { return data_offer_.get(); }

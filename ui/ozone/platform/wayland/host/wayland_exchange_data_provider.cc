@@ -219,16 +219,6 @@ std::unique_ptr<OSExchangeDataProvider> WaylandExchangeDataProvider::Clone()
 void WaylandExchangeDataProvider::SetFilenames(
     const std::vector<FileInfo>& filenames) {
   OSExchangeDataProviderNonBacked::SetFilenames(filenames);
-
-#if BUILDFLAG(IS_LINUX)
-  // Synchronously register files to get the key. This blocks the UI thread
-  // briefly but ensures the key is ready for the data offer.
-  std::string key = ui::clipboard_util::RegisterFilesWithPortal(filenames);
-  if (!key.empty()) {
-    additional_data_[kMimeTypePortalFileTransfer] = key;
-    additional_data_[kMimeTypePortalFiles] = key;
-  }
-#endif
 }
 
 std::vector<std::string> WaylandExchangeDataProvider::BuildMimeTypesList()

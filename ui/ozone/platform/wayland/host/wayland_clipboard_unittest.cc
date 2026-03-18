@@ -371,6 +371,7 @@ TEST_P(WaylandClipboardTest, ReadFromClipboard) {
 
   clipboard_->RequestClipboardData(WhichBufferToUse(), kMimeTypeUtf8PlainText,
                                    callback.Get());
+  WaitForClipboardTasks();
   EXPECT_EQ(kSampleClipboardText, text);
 }
 
@@ -395,6 +396,7 @@ TEST_P(WaylandClipboardTest, ReadFromClipboardPrioritizeUtf) {
 
   clipboard_->RequestClipboardData(WhichBufferToUse(), kMimeTypeUtf8PlainText,
                                    callback.Get());
+  WaitForClipboardTasks();
   EXPECT_EQ("utf8_text", text);
 }
 
@@ -406,6 +408,7 @@ TEST_P(WaylandClipboardTest, ReadFromClipboardWithoutOffer) {
   EXPECT_CALL(callback, Run(Eq(nullptr))).Times(1);
   clipboard_->RequestClipboardData(WhichBufferToUse(), kMimeTypeUtf8PlainText,
                                    callback.Get());
+  WaitForClipboardTasks();
 }
 
 TEST_P(WaylandClipboardTest, IsSelectionOwner) {
@@ -497,16 +500,20 @@ TEST_P(WaylandClipboardTest, ClipboardChangeNotifications) {
                             ToClipboardData(kSampleClipboardText));
         GetSelectionDevice(server, buffer)->OnSelection(data_offer);
       });
+  WaitForClipboardTasks();
+
   bool is_owner = true;
   clipboard_->IsSelectionOwner(
       buffer, base::BindLambdaForTesting(
                   [&is_owner](bool result) { is_owner = result; }));
+  WaitForClipboardTasks();
   EXPECT_FALSE(is_owner);
 
   // 2. For selection offered by Chromium.
   connection_->serial_tracker().UpdateSerial(wl::SerialType::kMousePress, 1);
   EXPECT_CALL(clipboard_changed_callback, Run(buffer)).Times(1);
-  OfferData(buffer, kSampleClipboardText, {kMimeTypeUtf8PlainText});
+  OfferData(buffer, kSampleClipboardText, kMimeTypeUtf8PlainText);
+  WaitForClipboardTasks();
   PostToServerAndWait(
       [buffer = WhichBufferToUse()](wl::TestWaylandServerThread* server) {
         ASSERT_TRUE(GetSelectionSource(server, buffer));
@@ -514,6 +521,7 @@ TEST_P(WaylandClipboardTest, ClipboardChangeNotifications) {
   clipboard_->IsSelectionOwner(
       buffer, base::BindLambdaForTesting(
                   [&is_owner](bool result) { is_owner = result; }));
+  WaitForClipboardTasks();
   EXPECT_TRUE(is_owner);
   connection_->serial_tracker().ResetSerial(wl::SerialType::kMousePress);
 }
@@ -534,6 +542,7 @@ TEST_P(CopyPasteOnlyClipboardTest, PrimarySelectionRequestsNoop) {
   EXPECT_CALL(got_data, Run(IsNull())).Times(1);
   clipboard_->RequestClipboardData(buffer, kMimeTypeUtf8PlainText,
                                    got_data.Get());
+  WaitForClipboardTasks();
 
   base::MockCallback<PlatformClipboard::GetMimeTypesClosure> got_mime_types;
   EXPECT_CALL(got_mime_types, Run(IsEmpty())).Times(1);
@@ -574,7 +583,8 @@ TEST_P(CopyPasteOnlyClipboardTest, DISABLED_OverlappingReadRequests) {
     text = std::string(base::as_string_view(*data));
   });
   clipboard_->RequestClipboardData(ClipboardBuffer::kCopyPaste,
-                                   kMimeTypePlainText, got_text.Get());
+                                   kMimeTypeUtf8PlainText, got_text.Get());
+  WaitForClipboardTasks();
 
   // Wait for clipboard tasks to complete and ensure both requests were
   // processed correctly.

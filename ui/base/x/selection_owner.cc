@@ -18,6 +18,12 @@
 #include "ui/gfx/x/window_event_manager.h"
 #include "ui/gfx/x/xproto.h"
 
+#if BUILDFLAG(IS_LINUX)
+#include "base/strings/string_view_util.h"
+#include "ui/base/clipboard/clipboard_constants.h"
+#include "ui/base/clipboard/clipboard_util_linux.h"
+#endif
+
 namespace ui {
 
 const char kIncr[] = "INCR";
@@ -110,6 +116,20 @@ void SelectionOwner::RetrieveTargets(std::vector<x11::Atom>* targets) {
   };
 
   add_if_present(GetURIListAtomsFrom());
+
+#if BUILDFLAG(IS_LINUX)
+  // Lazily advertise portal atoms if we have a URI list.
+  if (format_map_.contains(x11::GetAtom(kMimeTypeUriList))) {
+    for (const char* mime :
+         {kMimeTypePortalFileTransfer, kMimeTypePortalFiles}) {
+      x11::Atom portal_atom = x11::GetAtom(mime);
+      if (seen.insert(portal_atom).second) {
+        targets->push_back(portal_atom);
+      }
+    }
+  }
+#endif
+
   add_if_present(GetURLAtomsFrom());
   add_if_present(GetTextAtomsFrom());
 
@@ -140,6 +160,25 @@ void SelectionOwner::OnSelectionRequest(
   auto requestor = request.requestor;
   x11::Atom requested_target = request.target;
   x11::Atom requested_property = request.property;
+
+#if BUILDFLAG(IS_LINUX)
+  // Handle portal requests asynchronously.
+  // NOTE: MULTIPLE requests are intentionally unsupported for portal paths
+  // because we handle them by early-returning here before the MULTIPLE logic.
+  if (requested_target == x11::GetAtom(kMimeTypePortalFileTransfer) ||
+      requested_target == x11::GetAtom(kMimeTypePortalFiles)) {
+    auto it = format_map_.find(x11::GetAtom(kMimeTypeUriList));
+    if (it != format_map_.end()) {
+      std::vector<std::string> paths = ui::clipboard_util::GetPathsFromUriList(
+          base::as_string_view(*it->second));
+
+      ui::clipboard_util::RegisterPathsWithPortal(
+          paths, base::BindOnce(&SelectionOwner::OnPortalPathsRegistered,
+                                weak_factory_.GetWeakPtr(), request));
+      return;
+    }
+  }
+#endif
 
   // Incrementally build our selection. By default this is a refusal, and we'll
   // override the parts indicating success in the different cases.
@@ -184,6 +223,28 @@ void SelectionOwner::OnSelectionRequest(
   // Send off the reply.
   connection_->SendEvent(reply, requestor, x11::EventMask::NoEvent);
 }
+
+#if BUILDFLAG(IS_LINUX)
+void SelectionOwner::OnPortalPathsRegistered(x11::SelectionRequestEvent request,
+                                             std::string key) {
+  x11::SelectionNotifyEvent reply{
+      .time = request.time,
+      .requestor = request.requestor,
+      .selection = request.selection,
+      .target = request.target,
+      .property = x11::Atom::None,
+  };
+
+  if (!key.empty()) {
+    std::vector<uint8_t> data(key.begin(), key.end());
+    connection_->SetArrayProperty(request.requestor, request.property,
+                                  request.target, data);
+    reply.property = request.property;
+  }
+
+  connection_->SendEvent(reply, request.requestor, x11::EventMask::NoEvent);
+}
+#endif
 
 void SelectionOwner::OnSelectionClear(const x11::SelectionClearEvent& event) {
   DVLOG(1) << "SelectionClear";

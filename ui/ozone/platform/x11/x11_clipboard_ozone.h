@@ -7,10 +7,16 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/functional/callback.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
+#include "ui/base/x/selection_utils.h"
 #include "ui/ozone/public/platform_clipboard.h"
+
+#if BUILDFLAG(IS_LINUX)
+#include "base/memory/weak_ptr.h"
+#endif
 
 namespace ui {
 
@@ -50,9 +56,26 @@ class X11ClipboardOzone : public PlatformClipboard {
  private:
   void OnSelectionChanged(ClipboardBuffer buffer);
 
+#if BUILDFLAG(IS_LINUX)
+  void OnPortalKeyRead(PlatformClipboard::RequestDataClosure callback,
+                       SelectionData selection_data);
+  void OnPathsExtracted(PlatformClipboard::RequestDataClosure callback,
+                        std::vector<std::string> paths);
+  void OnGetAvailableMimeTypesForPortal(
+      ClipboardBuffer buffer,
+      std::vector<x11::Atom> uri_list_atoms,
+      std::vector<x11::Atom> portal_atoms,
+      PlatformClipboard::RequestDataClosure callback,
+      const std::vector<std::string>& mime_types);
+#endif
+
   const std::unique_ptr<XClipboardHelper> helper_;
 
   ClipboardDataChangedCallback clipboard_changed_callback_;
+
+#if BUILDFLAG(IS_LINUX)
+  base::WeakPtrFactory<X11ClipboardOzone> weak_factory_{this};
+#endif
 };
 
 }  // namespace ui

@@ -15,7 +15,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "build/build_config.h"
 #include "net/base/filename_util.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
@@ -27,10 +26,6 @@
 #include "ui/base/x/x11_util.h"
 #include "ui/gfx/x/atom_cache.h"
 #include "ui/gfx/x/connection.h"
-
-#if BUILDFLAG(IS_LINUX)
-#include "ui/base/clipboard/clipboard_util_linux.h"
-#endif
 
 // Note: the GetBlah() methods are used immediately by the
 // web_contents_view_aura.cc:PrepareDropData(), while the omnibox is a
@@ -216,17 +211,6 @@ void XOSExchangeDataProvider::SetFilenames(
       base::MakeRefCounted<base::RefCountedString>(
           base::JoinString(paths, "\n")));
   format_map_.Insert(x11::GetAtom(kMimeTypeUriList), mem);
-
-#if BUILDFLAG(IS_LINUX)
-  // Synchronously register files to get the key. This blocks the UI thread
-  // briefly but ensures the key is ready for the data offer.
-  std::string key = ui::clipboard_util::RegisterFilesWithPortal(filenames);
-  if (!key.empty()) {
-    auto mem_key = base::MakeRefCounted<base::RefCountedString>(key);
-    format_map_.Insert(x11::GetAtom(kMimeTypePortalFileTransfer), mem_key);
-    format_map_.Insert(x11::GetAtom(kMimeTypePortalFiles), mem_key);
-  }
-#endif
 }
 
 void XOSExchangeDataProvider::SetPickledData(const ClipboardFormatType& format,
