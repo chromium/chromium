@@ -1633,6 +1633,7 @@ test("content_browsertests") {
     "../browser/media/session/media_session_service_impl_browsertest.cc",
     "../browser/media/webaudio/audio_context_manager_browsertest.cc",
     "../browser/memory/scheduler_loop_quarantine_web_contents_observer_browsertest.cc",
+    "../browser/memory_coordinator/memory_coordinator_browsertest.cc",
     "../browser/message_port_close_event_browsertest.cc",
     "../browser/message_port_provider_browsertest.cc",
     "../browser/mojo_sandbox_browsertest.cc",

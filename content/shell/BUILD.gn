@@ -228,6 +228,8 @@ static_library("content_shell_lib") {
     "common/shell_switches.h",
     "gpu/shell_content_gpu_client.cc",
     "gpu/shell_content_gpu_client.h",
+    "renderer/memory_coordinator/memory_coordinator_test_impl.cc",
+    "renderer/memory_coordinator/memory_coordinator_test_impl.h",
     "renderer/render_frame_test_helper.cc",
     "renderer/render_frame_test_helper.h",
     "renderer/shell_content_renderer_client.cc",
@@ -1071,12 +1073,15 @@ if (is_mac) {
 }
 
 mojom("content_browsertests_mojom") {
+  cpp_only = true
   sources = [
     "common/main_frame_counter_test.mojom",
+    "common/memory_coordinator/memory_coordinator_test.mojom",
     "common/power_monitor_test.mojom",
     "common/render_frame_test_helper.mojom",
   ]
   public_deps = [
+    "//content/common/memory_coordinator/mojom",
     "//mojo/public/mojom/base",
     "//sandbox/policy/mojom",
     "//third_party/blink/public/mojom/fingerprinting_protection",

@@ -1,0 +1,25 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module content.mojom;
+
+import "content/common/memory_coordinator/mojom/memory_coordinator.mojom";
+
+// An interface for driving memory coordinator tests in the renderer process.
+interface MemoryCoordinatorTest {
+  // Registers a memory consumer in the renderer process with the given name
+  // and traits. Signals received by the consumer will be echoed to |client|.
+  RegisterConsumer(string name,
+                   MemoryConsumerTraits traits,
+                   pending_remote<MemoryCoordinatorTestClient> client);
+};
+
+// Receives echoes of memory coordinator signals from the renderer process.
+interface MemoryCoordinatorTestClient {
+  // Called when the renderer's MemoryConsumer receives OnUpdateMemoryLimit.
+  OnUpdateMemoryLimit(int32 percentage);
+
+  // Called when the renderer's MemoryConsumer receives OnReleaseMemory.
+  OnReleaseMemory();
+};

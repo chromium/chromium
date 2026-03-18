@@ -39,6 +39,10 @@ class CONTENT_EXPORT BrowserMemoryCoordinator {
 
   MemoryConsumerRegistry& registry() { return registry_.Get(); }
 
+  MemoryCoordinatorPolicyManager& policy_manager_for_testing() {
+    return policy_manager_;
+  }
+
 #if BUILDFLAG(ENABLE_MEMORY_COORDINATOR_INTERNALS)
   // Adds/removes a diagnostic observer. When the first observer is added,
   // diagnostic reporting is enabled in all child processes.

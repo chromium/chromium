@@ -31,6 +31,7 @@
 #include "content/shell/common/main_frame_counter_test_impl.h"
 #include "content/shell/common/power_monitor_test_impl.h"
 #include "content/shell/common/shell_switches.h"
+#include "content/shell/renderer/memory_coordinator/memory_coordinator_test_impl.h"
 #include "content/shell/renderer/shell_render_frame_observer.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -305,6 +306,9 @@ void ShellContentRendererClient::ExposeInterfacesToBrowser(
     mojo::BinderMap* binders) {
   binders->Add<mojom::TestService>(
       &CreateRendererTestService,
+      base::SingleThreadTaskRunner::GetCurrentDefault());
+  binders->Add<mojom::MemoryCoordinatorTest>(
+      base::BindRepeating(&MemoryCoordinatorTestImpl::Bind),
       base::SingleThreadTaskRunner::GetCurrentDefault());
   binders->Add<mojom::PowerMonitorTest>(
       &PowerMonitorTestImpl::MakeSelfOwnedReceiver,

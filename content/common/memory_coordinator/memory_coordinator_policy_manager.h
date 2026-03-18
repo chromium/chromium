@@ -43,7 +43,7 @@ class CONTENT_EXPORT MemoryCoordinatorPolicyManager
     : public MemoryConsumerGroupController {
  public:
   // An interface for observing the lifecycle of memory consumers.
-  class Observer : public base::CheckedObserver {
+  class CONTENT_EXPORT Observer : public base::CheckedObserver {
    public:
     ~Observer() override = default;
 
@@ -62,7 +62,7 @@ class CONTENT_EXPORT MemoryCoordinatorPolicyManager
   // An interface for observing diagnostic-only events. This is separate from
   // `Observer` because producing memory limit changed events has an associated
   // runtime cost. This way that cost is paid only when needed.
-  class DiagnosticObserver : public base::CheckedObserver {
+  class CONTENT_EXPORT DiagnosticObserver : public base::CheckedObserver {
    public:
     ~DiagnosticObserver() override = default;
 
