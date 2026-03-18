@@ -1025,6 +1025,11 @@ bool PrerenderTestHelper::IsPrerender2FallbackPrefetchSpecRulesEnabled() {
       features::kPrerender2FallbackPrefetchSpecRules);
 }
 
+void PrerenderTestHelper::DisablePrerender2FallbackPrefetchSpecRules() {
+  scoped_feature_list_prerender2_fallback_.InitAndDisableFeature(
+      features::kPrerender2FallbackPrefetchSpecRules);
+}
+
 ScopedPrerenderWebContentsDelegate::ScopedPrerenderWebContentsDelegate(
     WebContents& web_contents)
     : web_contents_(web_contents.GetWeakPtr()) {
