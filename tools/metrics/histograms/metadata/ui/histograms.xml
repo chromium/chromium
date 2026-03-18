@@ -673,6 +673,46 @@ chromium-metrics-reviews@google.com.
     This metric specifically measures the renderer process creation cost (Cost
     A), which is an overhead incurred by the Initial WebUI architecture that
     does not exist in the native C++ Views implementation.
+
+    This is only recorded for desktop platforms when the InitialWebUIMetrics
+    feature is enabled.
+  </summary>
+  <token key="Scenario">
+    <variant name="" summary="standard"/>
+    <variant name=".FirstRun" summary="first run"/>
+    <variant name=".SessionRestore"
+        summary="session restored (without showing the Profile Picker)"/>
+  </token>
+  <token key="StartupTemperature">
+    <variant name="" summary=""/>
+    <variant name=".Temperature.ColdStartup"
+        summary=", where startup was cold (mostly hard faults). Only
+                 available on Windows."/>
+    <variant name=".Temperature.Other"
+        summary=", where startup temperature was undetermined"/>
+    <variant name=".Temperature.WarmStartup"
+        summary=", where startup was warm (almost no hard faults). Only
+                 available on Windows."/>
+  </token>
+</histogram>
+
+<histogram
+    name="InitialWebUI.Startup{Scenario}.ReloadButton.RendererProcessLaunched{StartupTemperature}"
+    units="ms" expires_after="2026-07-05">
+  <owner>elkurin@chromium.org</owner>
+  <owner>chrome-webium-product-eng@google.com</owner>
+  <summary>
+    Records the duration from the start of {Scenario} browser application
+    startup to the point where the dedicated renderer process for the Reload
+    button WebUI is launched {StartupTemperature}.
+
+    This metrics captures the completion of the process launch sequence.
+    Comparing this with the `.RendererProcessCreated` metric reveals the time
+    spent in the process launch phase, specifically isolating the OS and Sandbox
+    overhead incurred before the renderer becomes available.
+
+    This is only recorded for desktop platforms when the InitialWebUIMetrics
+    feature is enabled.
   </summary>
   <token key="Scenario">
     <variant name="" summary="standard"/>

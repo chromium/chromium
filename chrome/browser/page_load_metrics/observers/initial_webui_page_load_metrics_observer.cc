@@ -101,9 +101,12 @@ InitialWebUIPageLoadMetricsObserver::OnCommit(
     content::NavigationHandle* navigation_handle) {
   if (auto* rfh = navigation_handle->GetRenderFrameHost()) {
     base::TimeTicks init_time = rfh->GetProcess()->GetLastInitTime();
+    base::TimeTicks launched_time = rfh->GetProcess()->GetProcessLaunchedTime();
+
     if (auto* manager = GetMetricsManager()) {
       // Record the renderer process creation timing.
-      manager->OnReloadButtonRendererProcessCreated(init_time);
+      manager->OnReloadButtonRendererProcessCreatedAndLaunched(init_time,
+                                                               launched_time);
     }
   }
   return CONTINUE_OBSERVING;

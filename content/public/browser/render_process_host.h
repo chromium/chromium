@@ -511,6 +511,9 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Listener,
   // Returns the priority of this process.
   virtual base::Process::Priority GetPriority() const = 0;
 
+  // Returns the time when this process was launched.
+  virtual base::TimeTicks GetProcessLaunchedTime() const = 0;
+
   // Returns a list of durations for active KeepAlive requests.
   // For debugging only. TODO(wjmaclean): Remove once the causes behind
   // https://crbug.com/1148542 are known.

@@ -2885,6 +2885,10 @@ int RenderProcessHostImpl::GetPendingReuseRefCountForTesting() const {
   return pending_reuse_ref_count_;
 }
 
+base::TimeTicks RenderProcessHostImpl::GetProcessLaunchedTime() const {
+  return process_launched_time_;
+}
+
 std::string RenderProcessHostImpl::GetKeepAliveDurations() const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   std::stringstream result;
@@ -5811,6 +5815,8 @@ void RenderProcessHostImpl::OnProcessLaunched() {
   // to properly cleanup.
   if (deleting_soon_)
     return;
+
+  process_launched_time_ = base::TimeTicks::Now();
 
   if (child_process_launcher_) {
     DCHECK(child_process_launcher_->GetProcess().IsValid());

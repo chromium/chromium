@@ -315,6 +315,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
       override;
   const base::TimeTicks& GetLastInitTime() override;
   base::Process::Priority GetPriority() const override;
+  base::TimeTicks GetProcessLaunchedTime() const override;
   std::string GetKeepAliveDurations() const override;
   size_t GetShutdownDelayRefCount() const override;
   int GetRenderFrameHostCount() const override;
@@ -1463,6 +1464,9 @@ class CONTENT_EXPORT RenderProcessHostImpl
 
   // Records the last time we regarded the child process active.
   base::TimeTicks child_process_activity_time_;
+
+  // The time that this process was launched.
+  base::TimeTicks process_launched_time_;
 
   // The time that a shutdown of the renderer process was requested.
   base::TimeTicks shutdown_start_time_;

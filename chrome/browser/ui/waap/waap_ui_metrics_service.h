@@ -40,8 +40,10 @@ class WaapUIMetricsService : public KeyedService {
   // Called when the ReloadButton is created.
   void OnReloadButtonCreated();
 
-  // Called when the renderer process is created.
-  void OnReloadButtonRendererProcessCreated(base::TimeTicks timestamp);
+  // Called when the renderer process is created and launched.
+  void OnReloadButtonRendererProcessCreatedAndLaunched(
+      base::TimeTicks created_timestamp,
+      base::TimeTicks launched_timestamp);
 
   // Called when the browser window is presented onto the screen for the first
   // time.

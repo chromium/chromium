@@ -163,6 +163,7 @@ class MockRenderProcessHost : public RenderProcessHost {
   std::unique_ptr<base::PersistentMemoryAllocator> TakeMetricsAllocator()
       override;
   const base::TimeTicks& GetLastInitTime() override;
+  base::TimeTicks GetProcessLaunchedTime() const override;
   base::Process::Priority GetPriority() const override;
   size_t GetWorkerRefCount() const;
   std::string GetKeepAliveDurations() const override;
@@ -305,6 +306,10 @@ class MockRenderProcessHost : public RenderProcessHost {
     process = std::move(new_process);
   }
 
+  void SetProcessLaunchedTime(base::TimeTicks time) {
+    process_launched_time_ = time;
+  }
+
   void OverrideBinderForTesting(const std::string& interface_name,
                                 const InterfaceBinder& binder);
 
@@ -348,6 +353,7 @@ class MockRenderProcessHost : public RenderProcessHost {
   bool is_unused_;
   bool is_for_top_chrome_web_ui_ = false;
   bool is_ready_ = false;
+  base::TimeTicks process_launched_time_;
   base::Process process;
   int pending_view_count_;
   int worker_ref_count_;
