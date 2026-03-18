@@ -81,6 +81,7 @@ function rule: {
         text : --f
     }
     origin : regular
+    originTreeScopeNodeId : <number 2>
     parameters : [
         [0] : {
             name : --x
@@ -109,6 +110,7 @@ function rule: {
         text : --f2
     }
     origin : regular
+    originTreeScopeNodeId : <number 2>
     parameters : [
         [0] : {
             name : --ignored
@@ -119,7 +121,7 @@ function rule: {
             type : *
         }
     ]
-    styleSheetId : <string 2>
+    styleSheetId : <string 3>
 }
 Functions for #test3
 function rule: {
@@ -141,6 +143,7 @@ function rule: {
         text : --inner
     }
     origin : regular
+    originTreeScopeNodeId : <number 2>
     parameters : [
         [0] : {
             name : --x
@@ -192,6 +195,7 @@ function rule: {
         text : --outer
     }
     origin : regular
+    originTreeScopeNodeId : <number 2>
     parameters : [
         [0] : {
             name : --x

@@ -238,6 +238,7 @@ function rule: {
         text : --get-color
     }
     origin : regular
+    originTreeScopeNodeId : <number 1>
     parameters : [
     ]
     styleSheetId : <string 0>

@@ -66,7 +66,8 @@
         (a, b) => JSON.stringify(a).localeCompare(JSON.stringify(b)));
     for (const functionRule of functionRules) {
       testRunner.log(
-          functionRule, 'function rule: ', [], ['styleSheetId', 'sourceURL']);
+          functionRule, 'function rule: ', [],
+          ['styleSheetId', 'sourceURL', 'originTreeScopeNodeId']);
     }
   }
   testRunner.completeTest();

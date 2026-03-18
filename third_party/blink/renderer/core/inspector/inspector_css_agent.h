@@ -534,7 +534,8 @@ class CORE_EXPORT InspectorCSSAgent final
 
   // Function at-rule implementation
   std::unique_ptr<protocol::CSS::CSSFunctionRule> BuildObjectForFunctionRule(
-      CSSFunctionRule*);
+      CSSFunctionRule*,
+      const TreeScope*);
   std::unique_ptr<protocol::CSS::CSSFunctionConditionNode>
   BuildObjectForFunctionConditionNode(CSSConditionRule*);
   std::unique_ptr<protocol::Array<protocol::CSS::CSSFunctionNode>>

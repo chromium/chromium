@@ -30,7 +30,8 @@
   const functionRules = matchedStyles.result.cssFunctionRules;
   for (const functionRule of functionRules) {
     testRunner.log(
-        functionRule, 'function rule: ', [], ['styleSheetId', 'sourceURL']);
+        functionRule, 'function rule: ', [],
+        ['styleSheetId', 'sourceURL', 'originTreeScopeNodeId']);
   }
   testRunner.completeTest();
 });

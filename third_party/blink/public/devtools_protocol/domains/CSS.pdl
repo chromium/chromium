@@ -602,6 +602,8 @@ experimental domain CSS
       array of CSSFunctionParameter parameters
       # Function body.
       array of CSSFunctionNode children
+      # The BackendNodeId of the DOM node that constitutes the origin tree scope of this rule.
+      experimental optional DOM.BackendNodeId originTreeScopeNodeId
 
   # CSS keyframe rule representation.
   type CSSKeyframeRule extends object
