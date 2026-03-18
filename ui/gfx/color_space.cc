@@ -10,7 +10,11 @@
 #include <sstream>
 
 #include "base/atomic_sequence_num.h"
+#include "base/bit_cast.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
+#include "base/containers/span_reader.h"
+#include "base/containers/span_writer.h"
 #include "base/debug/crash_logging.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
@@ -32,16 +36,58 @@ namespace gfx {
 
 namespace {
 
-static bool FloatsEqualWithinTolerance(const float* a,
-                                       const float* b,
-                                       int n,
-                                       float tol) {
-  for (int i = 0; i < n; ++i) {
-    if (std::abs(UNSAFE_TODO(a[i]) - UNSAFE_TODO(b[i])) > tol) {
-      return false;
+constexpr size_t kPrimaryMatrixElementCount =
+    sizeof(skcms_Matrix3x3) / sizeof(float);
+
+// These span conversions assume skcms_TransferFunction and skcms_Matrix3x3 are
+// stored as tightly packed floats.
+static_assert(sizeof(skcms_Matrix3x3) ==
+              kPrimaryMatrixElementCount * sizeof(float));
+
+bool MatricesEqualWithinTolerance(const skcms_Matrix3x3& lhs,
+                                  const skcms_Matrix3x3& rhs,
+                                  float tol) {
+  constexpr size_t kPrimaryMatrixRowCount = std::size(skcms_Matrix3x3{}.vals);
+  constexpr size_t kPrimaryMatrixColumnCount =
+      std::size(skcms_Matrix3x3{}.vals[0]);
+  // SAFETY: `skcms_Matrix3x3::vals` is a fixed-size `float[3][3]` array.
+  // `row` and `column` are both bounded by these compile-time dimensions, so
+  // each indexed access stays within the matrix storage.
+  for (size_t row = 0; row < kPrimaryMatrixRowCount; ++row) {
+    for (size_t column = 0; column < kPrimaryMatrixColumnCount; ++column) {
+      if (std::abs(UNSAFE_TODO(lhs.vals[row][column]) -
+                   UNSAFE_TODO(rhs.vals[row][column])) > tol) {
+        return false;
+      }
     }
   }
   return true;
+}
+
+void CopyMatrixToArray(const skcms_Matrix3x3& matrix,
+                       base::span<float, kPrimaryMatrixElementCount> out) {
+  base::SpanWriter writer(out);
+  for (const base::span<const float, 3> row : matrix.vals) {
+    CHECK(writer.Write(row));
+  }
+}
+
+void CopyArrayToMatrix(
+    base::span<const float, kPrimaryMatrixElementCount> values,
+    skcms_Matrix3x3& matrix) {
+  base::SpanReader reader(values);
+  for (base::span<float, 3> row : matrix.vals) {
+    CHECK(reader.ReadCopy(row));
+  }
+}
+
+bool TransferFunctionsEqualWithinTolerance(const skcms_TransferFunction& lhs,
+                                           const skcms_TransferFunction& rhs,
+                                           float tol) {
+  return std::abs(lhs.a - rhs.a) <= tol && std::abs(lhs.b - rhs.b) <= tol &&
+         std::abs(lhs.c - rhs.c) <= tol && std::abs(lhs.d - rhs.d) <= tol &&
+         std::abs(lhs.e - rhs.e) <= tol && std::abs(lhs.f - rhs.f) <= tol &&
+         std::abs(lhs.g - rhs.g) <= tol;
 }
 
 bool PrimaryIdContainsSRGB(ColorSpace::PrimaryID id) {
@@ -192,14 +238,13 @@ void ColorSpace::SetCustomPrimaries(const skcms_Matrix3x3& to_XYZD50) {
   for (PrimaryID id : kIDsToCheck) {
     skcms_Matrix3x3 matrix;
     GetPrimaryMatrix(id, &matrix);
-    if (FloatsEqualWithinTolerance(&to_XYZD50.vals[0][0], &matrix.vals[0][0], 9,
-                                   0.001f)) {
+    if (MatricesEqualWithinTolerance(to_XYZD50, matrix, 0.001f)) {
       primaries_ = id;
       return;
     }
   }
 
-  UNSAFE_TODO(memcpy(custom_primary_matrix_, &to_XYZD50, 9 * sizeof(float)));
+  CopyMatrixToArray(to_XYZD50, custom_primary_matrix_);
   primaries_ = PrimaryID::CUSTOM;
 }
 
@@ -208,7 +253,7 @@ void ColorSpace::SetCustomTransferFunction(const skcms_TransferFunction& fn,
   auto check_transfer_fn = [this, &fn](TransferID id) {
     skcms_TransferFunction id_fn;
     GetTransferFunction(id, &id_fn);
-    if (!FloatsEqualWithinTolerance(&fn.g, &id_fn.g, 7, 0.001f)) {
+    if (!TransferFunctionsEqualWithinTolerance(fn, id_fn, 0.001f)) {
       return false;
     }
     transfer_ = id;
@@ -278,14 +323,28 @@ bool ColorSpace::operator==(const ColorSpace& other) const {
     return false;
   }
   if (primaries_ == PrimaryID::CUSTOM) {
-    if (UNSAFE_TODO(memcmp(custom_primary_matrix_, other.custom_primary_matrix_,
-                           sizeof(custom_primary_matrix_)))) {
+    // Preserve the memcmp()-style bitwise comparison semantics for
+    // floats, including NaNs and signed zero.
+    // base::allow_nonunique_obj is safe here since floats are trivially
+    // copyable and we want a memcmp()-style bitwise comparison between floats,
+    // including NaNs and signed zero.
+    // See
+    // https://chromium.googlesource.com/chromium/src/+/HEAD/base/containers/span.h#164
+    auto lhs =
+        base::as_byte_span(base::allow_nonunique_obj, custom_primary_matrix_);
+    auto rhs = base::as_byte_span(base::allow_nonunique_obj,
+                                  other.custom_primary_matrix_);
+    if (lhs != rhs) {
       return false;
     }
   }
   if (size_t param_count = TransferParamCount(transfer_)) {
-    if (UNSAFE_TODO(memcmp(transfer_params_, other.transfer_params_,
-                           param_count * sizeof(float)))) {
+    auto lhs = base::as_byte_span(base::allow_nonunique_obj, transfer_params_)
+                   .first(param_count * sizeof(float));
+    auto rhs =
+        base::as_byte_span(base::allow_nonunique_obj, other.transfer_params_)
+            .first(param_count * sizeof(float));
+    if (lhs != rhs) {
       return false;
     }
   }
@@ -367,21 +426,24 @@ bool ColorSpace::operator<(const ColorSpace& other) const {
   if (range_ > other.range_)
     return false;
   if (primaries_ == PrimaryID::CUSTOM) {
-    int primary_result =
-        UNSAFE_TODO(memcmp(custom_primary_matrix_, other.custom_primary_matrix_,
-                           sizeof(custom_primary_matrix_)));
-    if (primary_result < 0)
+    auto lhs =
+        base::as_byte_span(base::allow_nonunique_obj, custom_primary_matrix_);
+    auto rhs = base::as_byte_span(base::allow_nonunique_obj,
+                                  other.custom_primary_matrix_);
+    if (lhs < rhs) {
       return true;
-    if (primary_result > 0)
+    }
+    if (lhs > rhs) {
       return false;
+    }
   }
   if (size_t param_count = TransferParamCount(transfer_)) {
-    int transfer_result = UNSAFE_TODO(memcmp(
-        transfer_params_, other.transfer_params_, param_count * sizeof(float)));
-    if (transfer_result < 0)
-      return true;
-    if (transfer_result > 0)
-      return false;
+    auto lhs = base::as_byte_span(base::allow_nonunique_obj, transfer_params_)
+                   .first(param_count * sizeof(float));
+    auto rhs =
+        base::as_byte_span(base::allow_nonunique_obj, other.transfer_params_)
+            .first(param_count * sizeof(float));
+    return lhs < rhs;
   }
   return false;
 }
@@ -392,18 +454,14 @@ size_t ColorSpace::GetHash() const {
                   (static_cast<size_t>(matrix_) << 16) |
                   (static_cast<size_t>(range_) << 24);
   if (primaries_ == PrimaryID::CUSTOM) {
-    const uint32_t* params =
-        reinterpret_cast<const uint32_t*>(custom_primary_matrix_);
-    result ^= params[0];
-    result ^= UNSAFE_TODO(params[4]);
-    result ^= UNSAFE_TODO(params[8]);
+    result ^= base::bit_cast<uint32_t>(custom_primary_matrix_[0]);
+    result ^= base::bit_cast<uint32_t>(custom_primary_matrix_[4]);
+    result ^= base::bit_cast<uint32_t>(custom_primary_matrix_[8]);
   }
   {
     // Note that |transfer_params_| must be zero when they are unused.
-    const uint32_t* params =
-        reinterpret_cast<const uint32_t*>(transfer_params_);
-    result ^= UNSAFE_TODO(params[3]);
-    result ^= UNSAFE_TODO(params[6]);
+    result ^= base::bit_cast<uint32_t>(transfer_params_[3]);
+    result ^= base::bit_cast<uint32_t>(transfer_params_[6]);
   }
   return result;
 }
@@ -555,9 +613,9 @@ ColorSpace ColorSpace::GetScaledColorSpace(float factor) const {
   ColorSpace result(*this);
   skcms_Matrix3x3 to_XYZD50;
   GetPrimaryMatrix(&to_XYZD50);
-  for (int row = 0; row < 3; ++row) {
-    for (int col = 0; col < 3; ++col) {
-      UNSAFE_TODO(to_XYZD50.vals[row][col]) *= factor;
+  for (base::span<float, 3> row : to_XYZD50.vals) {
+    for (float& val : row) {
+      val *= factor;
     }
   }
   result.SetCustomPrimaries(to_XYZD50);
@@ -778,10 +836,9 @@ bool ColorSpace::Contains(const ColorSpace& other) const {
   // |matrix|. So the multiplication can be skipped, and we can just check if
   // each value in the matrix is in the range [0, 1].
   constexpr float epsilon = 0.001f;
-  for (int r = 0; r < 3; r++) {
-    for (int c = 0; c < 3; c++) {
-      if (UNSAFE_TODO(matrix.vals[r][c]) < -epsilon ||
-          UNSAFE_TODO(matrix.vals[r][c]) > 1 + epsilon) {
+  for (base::span<float, 3> row : matrix.vals) {
+    for (float& value : row) {
+      if (value < -epsilon || value > 1 + epsilon) {
         return false;
       }
     }
@@ -857,7 +914,7 @@ SkColorSpacePrimaries ColorSpace::GetColorSpacePrimaries(
 
 SkColorSpacePrimaries ColorSpace::GetPrimaries() const {
   skcms_Matrix3x3 matrix;
-  UNSAFE_TODO(memcpy(&matrix, custom_primary_matrix_, 9 * sizeof(float)));
+  CopyArrayToMatrix(custom_primary_matrix_, matrix);
   return GetColorSpacePrimaries(primaries_, &matrix);
 }
 
@@ -874,8 +931,9 @@ void ColorSpace::GetPrimaryMatrix(PrimaryID primary_id,
 }
 
 void ColorSpace::GetPrimaryMatrix(skcms_Matrix3x3* to_XYZD50) const {
+  CHECK(to_XYZD50);
   if (primaries_ == PrimaryID::CUSTOM) {
-    UNSAFE_TODO(memcpy(to_XYZD50, custom_primary_matrix_, 9 * sizeof(float)));
+    CopyArrayToMatrix(custom_primary_matrix_, *to_XYZD50);
   } else {
     GetPrimaryMatrix(primaries_, to_XYZD50);
   }

@@ -209,6 +209,28 @@ inline T& ToPointer(T& value) {
     return UNSAFE_TODO(base::span<uint8_t>(row, size));          \
   }(::base::spanification_internal::ToPointer(arg_self)))
 
+// https://source.chromium.org/chromium/chromium/src/+/main:third_party/skia/include/core/SkPixmap.h;l=537;drc=f72bd467feb15edd9323e46eab1b74ab6025bc5b;bpv=1;bpt=1
+#define UNSAFE_SKPIXMAP_GET_WRITABLE_ADDR32(arg_self, arg_x, arg_y)      \
+  ([](auto&& self, int x, int y) {                                       \
+    uint32_t* row = static_cast<uint32_t*>(self->writable_addr32(x, y)); \
+    ::base::CheckedNumeric<size_t> width = self->width();                \
+    size_t size = (width - x).ValueOrDie();                              \
+    CHECK(row || size == 0);                                             \
+    CHECK_NE(size, SIZE_MAX);                                            \
+    return UNSAFE_TODO(base::span<uint32_t>(row, size));                 \
+  }(::base::spanification_internal::ToPointer(arg_self), arg_x, arg_y))
+
+// https://source.chromium.org/chromium/chromium/src/+/main:third_party/skia/include/core/SkPixmap.h;l=434;drc=f72bd467feb15edd9323e46eab1b74ab6025bc5b;bpv=1;bpt=1
+#define UNSAFE_SKPIXMAP_GET_ADDR32(arg_self, arg_x, arg_y)                  \
+  ([](auto&& self, int x, int y) {                                          \
+    const uint32_t* row = static_cast<const uint32_t*>(self->addr32(x, y)); \
+    ::base::CheckedNumeric<size_t> width = self->width();                   \
+    size_t size = (width - x).ValueOrDie();                                 \
+    CHECK(row || size == 0);                                                \
+    CHECK_NE(size, SIZE_MAX);                                               \
+    return UNSAFE_TODO(base::span<const uint32_t>(row, size));              \
+  }(::base::spanification_internal::ToPointer(arg_self), arg_x, arg_y))
+
 // https://source.chromium.org/chromium/chromium/src/+/main:cc/paint/paint_canvas.h;l=66;drc=c76e4f83a8c5786b463c3e55c070a21ac751b96b
 // https://source.chromium.org/chromium/chromium/src/+/main:third_party/skia/src/core/SkCanvas.cpp;l=1264;drc=6c24069ae3996c883ea5d5886d0c013cb78f8394;bpv=1;bpt=1
 #define UNSAFE_PAINTCANVAS_TOP_LAYER_TO_BYTES_SPAN(arg_self, arg_info,        \

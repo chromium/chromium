@@ -11,6 +11,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/containers/span_writer.h"
 #include "ui/gfx/geometry/decomposed_transform.h"
 
 namespace gfx {
@@ -104,17 +105,20 @@ ALWAYS_INLINE bool InverseWithDouble4Cols(Double4& c0,
 }  // anonymous namespace
 
 void Matrix44::GetColMajor(base::span<double, 16> dst) const {
-  base::span UNSAFE_TODO(src{&matrix_[0][0], base::fixed_extent<16>()});
-  dst.copy_from(src);
+  base::SpanWriter writer(dst);
+  for (const base::span<const double, 4> col : matrix_) {
+    CHECK(writer.Write(col));
+  }
 }
 
 void Matrix44::GetColMajorF(base::span<float, 16> dst) const {
-  base::span UNSAFE_TODO(src{&matrix_[0][0], base::fixed_extent<16>()});
-
-  // TODO: It's surprising that this isn't flagged as unsafe.
-  //       It'd be nice if copy_from() supported differing element types,
-  //       then this would be statically safe.
-  std::ranges::copy(src, dst.begin());
+  size_t offset = 0;
+  for (const base::span<const double, 4> col : matrix_) {
+    std::ranges::transform(
+        col, dst.subspan(offset, std::size(col)).begin(),
+        [](double value) { return static_cast<float>(value); });
+    offset += std::size(col);
+  }
 }
 
 void Matrix44::PreTranslate(double dx, double dy) {
@@ -156,8 +160,9 @@ void Matrix44::PostTranslate3d(double dx, double dy, double dz) {
   if (!HasPerspective()) [[likely]] {
     SetCol(3, Col(3) + t);
   } else {
-    for (int i = 0; i < 4; ++i)
-      SetCol(i, Col(i) + t * UNSAFE_TODO(matrix_[i])[3]);
+    for (size_t i = 0; i < matrix_.size(); ++i) {
+      SetCol(i, Col(i) + t * matrix_[i][3]);
+    }
   }
 }
 

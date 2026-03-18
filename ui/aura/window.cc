@@ -1567,14 +1567,22 @@ void Window::OnLayerBoundsChanged(const gfx::Rect& old_bounds,
     observer.OnWindowBoundsChanged(this, old_bounds, bounds_, reason);
 
   // Trigger the changed notification for each of the bounds "properties".
-  if (old_bounds.x() != bounds_.x())
-    TriggerChangedCallback(UNSAFE_TODO(&bounds_ + kBoundsX));
-  if (old_bounds.y() != bounds_.y())
-    TriggerChangedCallback(UNSAFE_TODO(&bounds_ + kBoundsY));
-  if (old_bounds.width() != bounds_.width())
-    TriggerChangedCallback(UNSAFE_TODO(&bounds_ + kBoundsWidth));
-  if (old_bounds.height() != bounds_.height())
-    TriggerChangedCallback(UNSAFE_TODO(&bounds_ + kBoundsHeight));
+  if (old_bounds.x() != bounds_.x()) {
+    TriggerChangedCallback(
+        ui::metadata::MakeUniquePropertyKey(&bounds_, kBoundsX));
+  }
+  if (old_bounds.y() != bounds_.y()) {
+    TriggerChangedCallback(
+        ui::metadata::MakeUniquePropertyKey(&bounds_, kBoundsY));
+  }
+  if (old_bounds.width() != bounds_.width()) {
+    TriggerChangedCallback(
+        ui::metadata::MakeUniquePropertyKey(&bounds_, kBoundsWidth));
+  }
+  if (old_bounds.height() != bounds_.height()) {
+    TriggerChangedCallback(
+        ui::metadata::MakeUniquePropertyKey(&bounds_, kBoundsHeight));
+  }
 }
 
 void Window::OnLayerOpacityChanged(ui::PropertyChangeReason reason) {

@@ -8,6 +8,8 @@
 
 #include <setupapi.h>
 
+#include <array>
+
 // LogSeverity is both a macro in setupapi.h and an enum in absl, which is used
 // indirectly via //base.
 #undef LogSeverity
@@ -47,11 +49,10 @@ bool GetSizeFromRegistry(HDEVINFO device_info_list,
   if (!reg_key.Valid())
     return false;
 
-  BYTE data[128];  // EDID block is exactly 128 bytes long.
-  UNSAFE_TODO(ZeroMemory(&data[0], sizeof(data)));
-  DWORD data_length = sizeof(data);
+  std::array<BYTE, 128> data = {};  // EDID block is exactly 128 bytes long.
+  DWORD data_length = data.size();
   LONG return_value =
-      reg_key.ReadValue(L"EDID", &data[0], &data_length, nullptr);
+      reg_key.ReadValue(L"EDID", data.data(), &data_length, nullptr);
   if (return_value != ERROR_SUCCESS)
     return false;
 
@@ -146,9 +147,14 @@ std::vector<PhysicalDisplaySize> GetPhysicalSizeForDisplays() {
       while (EnumDisplayDevices(display_device.DeviceName, attached_index++,
                                 &attached_device,
                                 EDD_GET_DEVICE_INTERFACE_NAME)) {
-        wchar_t* attached_device_id = attached_device.DeviceID;
-        wchar_t* setup_device_path = interface_detail->DevicePath;
-        if (UNSAFE_TODO(wcsicmp(attached_device_id, setup_device_path)) == 0) {
+        // -1 means the string is NUL-terminated for CompareStringOrdinal.
+        // See
+        // https://learn.microsoft.com/en-us/windows/win32/api/stringapiset/nf-stringapiset-comparestringordinal
+        constexpr int kNullTerminatedString = -1;
+        if (CompareStringOrdinal(attached_device.DeviceID,
+                                 kNullTerminatedString,
+                                 interface_detail->DevicePath,
+                                 kNullTerminatedString, TRUE) == CSTR_EQUAL) {
           int width_mm;
           int height_mm;
           bool found = GetSizeFromRegistry(device_info_list.get(), &device_info,

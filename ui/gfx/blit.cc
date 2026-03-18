@@ -7,8 +7,9 @@
 #include <stddef.h>
 
 #include "base/check.h"
-#include "base/compiler_specific.h"
-#include "build/build_config.h"
+#include "base/check_op.h"
+#include "base/containers/auto_spanification_helper.h"
+#include "base/containers/span.h"
 #include "skia/ext/platform_canvas.h"
 #include "third_party/skia/include/core/SkPixmap.h"
 #include "ui/gfx/geometry/point.h"
@@ -70,29 +71,32 @@ void ScrollCanvas(SkCanvas* canvas,
   // Compute the source pixels that will map to the dest_rect
   gfx::Rect src_rect = dest_rect - offset;
 
-  size_t row_bytes = dest_rect.width() * 4;
+  const size_t pixels_per_row = static_cast<size_t>(dest_rect.width());
+  auto copy_row = [pixels_per_row](SkPixmap& pixmap, const gfx::Rect& src_rect,
+                                   const gfx::Rect& dest_rect, int y) {
+    base::span<uint32_t> dest = UNSAFE_SKPIXMAP_GET_WRITABLE_ADDR32(
+                                    pixmap, dest_rect.x(), dest_rect.y() + y)
+                                    .first(pixels_per_row);
+    base::span<const uint32_t> src =
+        UNSAFE_SKPIXMAP_GET_ADDR32(pixmap, src_rect.x(), src_rect.y() + y)
+            .first(pixels_per_row);
+    dest.copy_from(src);
+  };
   if (offset.y() > 0) {
     // Data is moving down, copy from the bottom up.
     for (int y = dest_rect.height() - 1; y >= 0; y--) {
-      UNSAFE_TODO(
-          memcpy(pixmap.writable_addr32(dest_rect.x(), dest_rect.y() + y),
-                 pixmap.addr32(src_rect.x(), src_rect.y() + y), row_bytes));
+      copy_row(pixmap, src_rect, dest_rect, y);
     }
   } else if (offset.y() < 0) {
     // Data is moving up, copy from the top down.
     for (int y = 0; y < dest_rect.height(); y++) {
-      UNSAFE_TODO(
-          memcpy(pixmap.writable_addr32(dest_rect.x(), dest_rect.y() + y),
-                 pixmap.addr32(src_rect.x(), src_rect.y() + y), row_bytes));
+      copy_row(pixmap, src_rect, dest_rect, y);
     }
   } else if (offset.x() != 0) {
     // Horizontal-only scroll. We can do it in either top-to-bottom or bottom-
-    // to-top, but have to be careful about the order for copying each row.
-    // Fortunately, memmove already handles this for us.
+    // to-top, but `copy_from()` already handles overlapping spans.
     for (int y = 0; y < dest_rect.height(); y++) {
-      UNSAFE_TODO(
-          memmove(pixmap.writable_addr32(dest_rect.x(), dest_rect.y() + y),
-                  pixmap.addr32(src_rect.x(), src_rect.y() + y), row_bytes));
+      copy_row(pixmap, src_rect, dest_rect, y);
     }
   }
 }

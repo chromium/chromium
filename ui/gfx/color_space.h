@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <array>
 #include <iosfwd>
 #include <optional>
 #include <string>
@@ -413,7 +414,7 @@ class COLOR_SPACE_EXPORT ColorSpace {
   RangeID range_ = RangeID::INVALID;
 
   // Only used if primaries_ is PrimaryID::CUSTOM.
-  float custom_primary_matrix_[9] = {};
+  std::array<float, 9> custom_primary_matrix_ = {};
 
   // Parameters for the transfer function. The interpretation depends on
   // |transfer_|. Only TransferParamCount() of these parameters are used, all
@@ -423,7 +424,7 @@ class COLOR_SPACE_EXPORT ColorSpace {
   // - PQ: SDR white point (entry A of the skcms_TransferFunction structure).
   // - HLG: SDR white point, peak luminance, and system gamma (entries A, B, and
   //        C of the skcms_TransferFunction).
-  float transfer_params_[7] = {};
+  std::array<float, 7> transfer_params_ = {};
 
   friend struct IPC::ParamTraits<gfx::ColorSpace>;
   friend struct mojo::StructTraits<gfx::mojom::ColorSpaceDataView,
