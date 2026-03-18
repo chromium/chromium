@@ -1287,11 +1287,8 @@ void HTMLSelectElement::DefaultEventHandler(Event& event) {
     return;
   }
 
-  auto* keyboard_event = DynamicTo<KeyboardEvent>(event);
-  if (event.type() == event_type_names::kKeypress && keyboard_event) {
-    if (!keyboard_event->ctrlKey() && !keyboard_event->altKey() &&
-        !keyboard_event->metaKey() &&
-        unicode::IsPrintableChar(keyboard_event->charCode())) {
+  if (auto* keyboard_event = DynamicTo<KeyboardEvent>(event)) {
+    if (TypeAhead::ShouldHandleKeyboardEvent(*keyboard_event)) {
       TypeAheadFind(*keyboard_event);
       event.SetDefaultHandled();
       return;

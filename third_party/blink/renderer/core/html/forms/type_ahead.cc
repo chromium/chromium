@@ -56,6 +56,14 @@ static String StripLeadingWhiteSpace(const String& string) {
   return string.substr(i, length - i);
 }
 
+// static
+bool TypeAhead::ShouldHandleKeyboardEvent(const KeyboardEvent& keyboard_event) {
+  return keyboard_event.type() == event_type_names::kKeypress &&
+         !keyboard_event.ctrlKey() && !keyboard_event.altKey() &&
+         !keyboard_event.metaKey() &&
+         unicode::IsPrintableChar(keyboard_event.charCode());
+}
+
 int TypeAhead::HandleEvent(const KeyboardEvent& event,
                            UChar charCode,
                            MatchModeFlags match_mode) {

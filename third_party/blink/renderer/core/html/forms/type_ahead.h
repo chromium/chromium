@@ -60,6 +60,10 @@ class CORE_EXPORT TypeAhead {
   };
   using MatchModeFlags = unsigned;
 
+  // Returns true if the provided event has the correct type, modifier keys, and
+  // character to be used for typeahead.
+  static bool ShouldHandleKeyboardEvent(const KeyboardEvent&);
+
   // Returns the index for the matching option.
   int HandleEvent(const KeyboardEvent&, UChar charCode, MatchModeFlags);
   bool HasActiveSession(const KeyboardEvent&);

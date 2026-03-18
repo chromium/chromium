@@ -135,6 +135,14 @@ bool MenuItemList::Empty() {
   return !Iterator(owner_menu_, Iterator::StartingPoint::kStart);
 }
 
+HTMLMenuItemElement& MenuItemList::at(unsigned index) {
+  MenuItemListIterator it = begin();
+  for (unsigned i = 0; i < index; i++) {
+    ++it;
+  }
+  return *it;
+}
+
 HTMLMenuItemElement* MenuItemList::NextFocusableMenuItem(
     HTMLMenuItemElement& menuitem,
     bool inclusive) {

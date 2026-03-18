@@ -54,7 +54,7 @@ class MenuItemList final {
   STACK_ALLOCATED();
 
  public:
-  explicit MenuItemList(HTMLMenuOwnerElement& owner_menu)
+  explicit MenuItemList(const HTMLMenuOwnerElement& owner_menu)
       : owner_menu_(owner_menu) {}
 
   using Iterator = MenuItemListIterator;
@@ -63,6 +63,7 @@ class MenuItemList final {
   Iterator last();
   bool Empty();
   unsigned size() const;
+  HTMLMenuItemElement& at(unsigned index);
   HTMLMenuItemElement* NextFocusableMenuItem(HTMLMenuItemElement& menuitem,
                                              bool inclusive = false);
   HTMLMenuItemElement* PreviousFocusableMenuItem(HTMLMenuItemElement& menuitem,
