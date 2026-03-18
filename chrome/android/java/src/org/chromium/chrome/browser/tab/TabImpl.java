@@ -1222,6 +1222,11 @@ class TabImpl implements Tab {
 
     @Override
     public void destroy() {
+        destroyInternal(/* deleteNativeWebContents= */ true);
+    }
+
+    @CalledByNative
+    private void destroyInternal(boolean deleteNativeWebContents) {
         ThreadUtils.assertOnUiThread();
         // Set at the start since destroying the WebContents can lead to calling back into
         // this class.
@@ -1243,14 +1248,14 @@ class TabImpl implements Tab {
                 ChromeFeatureList.isEnabled(ChromeFeatureList.ABORT_NAVIGATIONS_FROM_TAB_CLOSURES);
         if (abortNavigationsFromTabClosures) {
             mUserDataHost.destroy();
-            destroyWebContents(true);
+            destroyWebContents(deleteNativeWebContents);
         }
 
         mObservers.clear();
         if (!abortNavigationsFromTabClosures) mUserDataHost.destroy();
         mTabViewManager.destroy();
         hideNativePage(false, null);
-        if (!abortNavigationsFromTabClosures) destroyWebContents(true);
+        if (!abortNavigationsFromTabClosures) destroyWebContents(deleteNativeWebContents);
         if (mWebContentsState != null) {
             mWebContentsState.destroy();
             mWebContentsState = null;

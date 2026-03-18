@@ -72,6 +72,10 @@ class MockTabListInterface : public TabListInterface {
               (override));
   MOCK_METHOD(void, MoveTab, (tabs::TabHandle, int), (override));
   MOCK_METHOD(void, CloseTab, (tabs::TabHandle), (override));
+  MOCK_METHOD(std::unique_ptr<content::WebContents>,
+              DetachWebContents,
+              (tabs::TabHandle),
+              (override));
   MOCK_METHOD(std::vector<tabs::TabInterface*>, GetAllTabs, (), (override));
   MOCK_METHOD(void, PinTab, (tabs::TabHandle), (override));
   MOCK_METHOD(void, UnpinTab, (tabs::TabHandle), (override));

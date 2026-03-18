@@ -266,6 +266,8 @@ class TabModel : public TabListInterface {
   virtual void SetActiveIndex(int index) = 0;
   virtual void ForceCloseAllTabs() = 0;
   virtual void CloseTabAt(int index) = 0;
+  std::unique_ptr<content::WebContents> DetachWebContents(
+      tabs::TabHandle tab) override = 0;
 
   virtual tabs::TabInterface* CreateTab(
       TabAndroid* parent,

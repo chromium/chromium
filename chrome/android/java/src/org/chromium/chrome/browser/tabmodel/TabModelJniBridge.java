@@ -278,6 +278,13 @@ public abstract class TabModelJniBridge implements TabModelInternal {
     protected abstract TabCreator getTabCreator(boolean isIncognito);
 
     /**
+     * Removes the given Tab from the TabModel without destroying it. This is used in scenarios
+     * where the WebContents needs to be retained for future use.
+     */
+    @CalledByNative
+    protected abstract void removeTabWithoutDestroy(@JniType("TabAndroid*") Tab tab);
+
+    /**
      * Creates a Tab with the given WebContents.
      *
      * @param parent The parent tab that creates the new tab.

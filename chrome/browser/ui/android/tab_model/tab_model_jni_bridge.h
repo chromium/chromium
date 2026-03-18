@@ -79,6 +79,8 @@ class TabModelJniBridge : public TabModel {
   void SetActiveIndex(int index) override;
   void ForceCloseAllTabs() override;
   void CloseTabAt(int index) override;
+  std::unique_ptr<content::WebContents> DetachWebContents(
+      tabs::TabHandle tab) override;
 
   tabs::TabInterface* CreateTab(
       TabAndroid* parent,

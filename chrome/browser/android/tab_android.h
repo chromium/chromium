@@ -32,6 +32,7 @@
 class GURL;
 class TabAndroidDataProvider;
 class TabInterfaceAndroid;
+class TabModelJniBridge;
 class Profile;
 
 namespace cc::slim {
@@ -214,6 +215,12 @@ class TabAndroid : public tabs::TabInterface,
   void SendDidInsertUpdate(JNIEnv* env);
   void DestroyWebContents();
   void ReleaseWebContents();
+
+  // Properly releases the WebContents from both native and Java sides. Should
+  // be called only when the tab has been removed from the tab model.
+  std::unique_ptr<content::WebContents> TakeWebContentsAndDestroyTab(
+      base::PassKey<TabModelJniBridge>);
+
   bool IsPhysicalBackingSizeEmpty(
       const base::android::JavaRef<jobject>& jweb_contents);
   void OnPhysicalBackingSizeChanged(

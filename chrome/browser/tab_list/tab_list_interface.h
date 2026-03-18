@@ -125,6 +125,12 @@ class TabListInterface {
   // Closes the `tab`.
   virtual void CloseTab(tabs::TabHandle tab) = 0;
 
+  // Detaches the `tab` from the tab list and returns its WebContents.
+  // Ownership of the WebContents is transferred to the caller.
+  // This will NOT destroy the tab or its WebContents.
+  virtual std::unique_ptr<content::WebContents> DetachWebContents(
+      tabs::TabHandle tab) = 0;
+
   // Returns an in-order list of all tabs in the tab strip.
   virtual std::vector<tabs::TabInterface*> GetAllTabs() = 0;
 

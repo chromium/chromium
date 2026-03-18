@@ -533,6 +533,19 @@ void TabAndroid::ReleaseWebContents() {
   synced_tab_delegate_->ResetWebContents();
 }
 
+std::unique_ptr<content::WebContents> TabAndroid::TakeWebContentsAndDestroyTab(
+    base::PassKey<TabModelJniBridge>) {
+  content::WebContents* raw_contents = web_contents();
+  JNIEnv* env = base::android::AttachCurrentThread();
+  // Destroy the Tab object from both native and Java sides and release the
+  // WebContents.
+  Java_TabImpl_destroyInternal(env, GetJavaObject(),
+                               /*deleteNativeWebContents=*/false);
+
+  // Wrap and return the WebContents as a unique_ptr.
+  return base::WrapUnique(raw_contents);
+}
+
 bool TabAndroid::IsPhysicalBackingSizeEmpty(
     const JavaRef<jobject>& jweb_contents) {
   content::WebContents* web_contents =

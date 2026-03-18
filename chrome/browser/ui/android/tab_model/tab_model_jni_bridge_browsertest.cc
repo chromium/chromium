@@ -71,4 +71,32 @@ IN_PROC_BROWSER_TEST_F(TabModelJniBridgeTest, InsertWebContentsAt) {
   EXPECT_EQ(web_contents_ptr, new_tab->GetContents());
 }
 
+IN_PROC_BROWSER_TEST_F(TabModelJniBridgeTest, DetachWebContents) {
+  TabListInterface* tab_list = GetTabListInterface();
+  ASSERT_TRUE(tab_list);
+
+  // Open a new tab to detach.
+  tabs::TabInterface* tab_to_detach =
+      tab_list->OpenTab(GURL("about:blank"), /*index=*/-1);
+  ASSERT_TRUE(tab_to_detach);
+  content::WebContents* expected_contents = tab_to_detach->GetContents();
+  tabs::TabHandle handle = tab_to_detach->GetHandle();
+
+  int count_before = tab_list->GetTabCount();
+
+  // Detach the WebContents.
+  std::unique_ptr<content::WebContents> detached_contents =
+      tab_list->DetachWebContents(handle);
+
+  // Verify detachment.
+  EXPECT_TRUE(detached_contents);
+  EXPECT_EQ(expected_contents, detached_contents.get());
+  EXPECT_EQ(count_before - 1, tab_list->GetTabCount());
+
+  // Verify the tab is gone from the list.
+  for (int i = 0; i < tab_list->GetTabCount(); ++i) {
+    EXPECT_NE(tab_to_detach, tab_list->GetTab(i));
+  }
+}
+
 }  // namespace

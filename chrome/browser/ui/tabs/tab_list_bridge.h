@@ -64,6 +64,8 @@ class TabListBridge : public TabListInterface, public TabStripModelObserver {
                      const std::set<tabs::TabHandle>& tabs) override;
   void MoveTab(tabs::TabHandle tab, int index) override;
   void CloseTab(tabs::TabHandle tab) override;
+  std::unique_ptr<content::WebContents> DetachWebContents(
+      tabs::TabHandle tab) override;
   std::vector<tabs::TabInterface*> GetAllTabs() override;
   void PinTab(tabs::TabHandle tab) override;
   void UnpinTab(tabs::TabHandle tab) override;

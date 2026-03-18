@@ -271,6 +271,15 @@ void TabListBridge::CloseTab(tabs::TabHandle tab) {
   tab_strip_->CloseWebContentsAt(index, TabCloseTypes::CLOSE_NONE);
 }
 
+std::unique_ptr<content::WebContents> TabListBridge::DetachWebContents(
+    tabs::TabHandle tab) {
+  const int index = GetIndexOfTab(tab);
+  CHECK_NE(index, TabStripModel::kNoTab)
+      << "Trying to detach a tab that doesn't exist in this tab list.";
+  return tab_strip_->DetachWebContentsAtForInsertion(
+      index, TabRemovedReason::kInsertedIntoSidePanel);
+}
+
 std::vector<tabs::TabInterface*> TabListBridge::GetAllTabs() {
   std::vector<tabs::TabInterface*> all_tabs;
   size_t tab_count = tab_strip_->count();

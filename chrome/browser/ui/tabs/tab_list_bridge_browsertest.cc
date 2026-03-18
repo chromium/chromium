@@ -427,6 +427,30 @@ IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, CloseTab) {
   EXPECT_EQ(1, tab_list_interface->GetTabCount());
 }
 
+IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, DetachWebContents) {
+  TabListInterface* tab_list_interface = TabListBridge::From(browser());
+  ASSERT_TRUE(tab_list_interface);
+
+  EXPECT_EQ(1, tab_list_interface->GetTabCount());
+
+  const GURL url("http://one.example");
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  EXPECT_EQ(2, tab_list_interface->GetTabCount());
+
+  tabs::TabInterface* tab_to_detach = tab_list_interface->GetActiveTab();
+  ASSERT_TRUE(tab_to_detach);
+  content::WebContents* expected_contents = tab_to_detach->GetContents();
+
+  std::unique_ptr<content::WebContents> detached_contents =
+      tab_list_interface->DetachWebContents(tab_to_detach->GetHandle());
+
+  EXPECT_EQ(1, tab_list_interface->GetTabCount());
+  EXPECT_TRUE(detached_contents);
+  EXPECT_EQ(expected_contents, detached_contents.get());
+}
+
 IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, MoveTab) {
   const GURL url1("http://one.example");
   const GURL url2("http://two.example");

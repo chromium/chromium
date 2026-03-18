@@ -121,6 +121,12 @@ void TestTabModel::ForceCloseAllTabs() {}
 
 void TestTabModel::CloseTabAt(int index) {}
 
+std::unique_ptr<content::WebContents> TestTabModel::DetachWebContents(
+    tabs::TabHandle tab) {
+  NOTIMPLEMENTED();
+  return nullptr;
+}
+
 void TestTabModel::AddObserver(TabModelObserver* observer) {
   observer_ = observer;
 }
@@ -402,6 +408,12 @@ void OwningTestTabModel::CloseTabAt(int index) {
   owned_tabs_.erase(tab_it);
 
   observer_list_.Notify(&TabModelObserver::TabRemoved, tab.get());
+}
+
+std::unique_ptr<content::WebContents> OwningTestTabModel::DetachWebContents(
+    tabs::TabHandle tab) {
+  NOTIMPLEMENTED();
+  return nullptr;
 }
 
 tabs::TabInterface* OwningTestTabModel::CreateTab(

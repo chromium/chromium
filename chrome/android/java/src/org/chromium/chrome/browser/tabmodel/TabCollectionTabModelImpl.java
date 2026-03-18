@@ -699,6 +699,14 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     }
 
     @Override
+    protected void removeTabWithoutDestroy(Tab tab) {
+        // Set as closing so the tab gets removed from the tab persistent store.
+        tab.setClosing(true);
+        removeTab(tab);
+        mTabContentManager.removeTabThumbnail(tab.getId());
+    }
+
+    @Override
     public void moveTabToWindow(Tab tab, Activity activity, int newIndex) {
         try (ScopedStorageBatch ignored = mBatchFactory.get()) {
             mModelDelegate.moveTabToWindow(tab, activity, newIndex);

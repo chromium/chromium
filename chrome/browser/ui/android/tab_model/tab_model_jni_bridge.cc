@@ -20,6 +20,7 @@
 #include "base/notimplemented.h"
 #include "base/time/time.h"
 #include "base/token.h"
+#include "base/types/pass_key.h"
 #include "build/android_buildflags.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/browser_process.h"
@@ -621,6 +622,23 @@ void TabModelJniBridge::CloseTab(tabs::TabHandle tab) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> jobj = java_object_.get(env);
   Java_TabModelJniBridge_closeTab(env, jobj, tab_android);
+}
+
+std::unique_ptr<content::WebContents> TabModelJniBridge::DetachWebContents(
+    tabs::TabHandle tab) {
+  TabAndroid* tab_android = TabAndroid::FromTabHandle(tab);
+  if (!tab_android) {
+    return nullptr;
+  }
+
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> jobj = java_object_.get(env);
+  // Remove the tab from the Java model first without destroying it.
+  Java_TabModelJniBridge_removeTabWithoutDestroy(env, jobj, tab_android);
+
+  // Now properly release the WebContents and destroy the remaining tab object.
+  return tab_android->TakeWebContentsAndDestroyTab(
+      base::PassKey<TabModelJniBridge>());
 }
 
 std::vector<tabs::TabInterface*> TabModelJniBridge::GetAllTabs() {

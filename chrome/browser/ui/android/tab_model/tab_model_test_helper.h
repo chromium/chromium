@@ -68,6 +68,8 @@ class TestTabModel : public TabModel {
   void SetActiveIndex(int index) override;
   void ForceCloseAllTabs() override;
   void CloseTabAt(int index) override;
+  std::unique_ptr<content::WebContents> DetachWebContents(
+      tabs::TabHandle tab) override;
   void AddObserver(TabModelObserver* observer) override;
   void RemoveObserver(TabModelObserver* observer) override;
 
@@ -173,6 +175,8 @@ class OwningTestTabModel : public TabModel {
   void SetActiveIndex(int index) override;
   void ForceCloseAllTabs() override;
   void CloseTabAt(int index) override;
+  std::unique_ptr<content::WebContents> DetachWebContents(
+      tabs::TabHandle tab) override;
   tabs::TabInterface* CreateTab(
       TabAndroid* parent,
       std::unique_ptr<content::WebContents> web_contents,
