@@ -46,6 +46,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="GoogleUpdate.MacOS.SetUpSystemUpdaterCalled" enum="Boolean"
+    expires_after="2027-03-17">
+  <owner>sorin@chromium.org</owner>
+  <owner>omaha-support@google.com</owner>
+  <summary>
+    Records when the SetUpSystemUpdater function is called on macOS. This
+    function is called when the user clicks the Promote button in the Help page
+    or the Keystone promotion infobar.
+  </summary>
+</histogram>
+
 <histogram name="GoogleUpdate.UpdateErrorCode" enum="GoogleUpdateErrorCode"
     expires_after="never">
 <!-- expires-never: Core metric for monitoring on-demand updates. -->

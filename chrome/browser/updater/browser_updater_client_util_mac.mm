@@ -26,6 +26,7 @@
 #include "base/mac/authorization_util.h"
 #include "base/mac/scoped_authorizationref.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/strings/strcat.h"
@@ -309,6 +310,8 @@ void EnsureUpdater(base::TaskPriority priority,
 }
 
 void SetUpSystemUpdater() {
+  base::UmaHistogramBoolean("GoogleUpdate.MacOS.SetUpSystemUpdaterCalled",
+                            true);
   NSString* prompt = l10n_util::GetNSStringFWithFixup(
       IDS_PROMOTE_AUTHENTICATION_PROMPT,
       l10n_util::GetStringUTF16(IDS_PRODUCT_NAME));
