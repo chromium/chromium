@@ -711,6 +711,9 @@ TEST_P(SessionStorageImplTest, CorruptionOnDisk) {
   histograms.ExpectUniqueSample(
       "Storage.SessionStorage.Recovery.OpenFailure",
       DomStorageDatabaseRecoveryOutcome::kRecoveredToDiskDestroySucceeded, 1);
+  // Verify DestroyDatabase histogram recorded success during recovery.
+  histograms.ExpectUniqueSample("Storage.SessionStorage.DestroyDatabase.OnDisk",
+                                /*sample=*/0, 1);
 }
 
 TEST_P(SessionStorageImplTest, RecreateOnCommitFailure) {
@@ -852,6 +855,9 @@ TEST_P(SessionStorageImplTest, RecreateOnCommitFailure) {
   histograms.ExpectUniqueSample(
       "Storage.SessionStorage.Recovery.CommitErrorThresholdExceeded",
       DomStorageDatabaseRecoveryOutcome::kRecoveredToDiskDestroySucceeded, 1);
+  // Verify DestroyDatabase histogram recorded success during recovery.
+  histograms.ExpectUniqueSample("Storage.SessionStorage.DestroyDatabase.OnDisk",
+                                /*sample=*/0, 1);
 }
 
 TEST_P(SessionStorageImplTest, DontRecreateOnRepeatedCommitFailure) {
@@ -990,6 +996,9 @@ TEST_P(SessionStorageImplTest, FallbackToInMemory_DestroySucceeded) {
                                 DomStorageDatabaseRecoveryOutcome::
                                     kRecoveredToInMemoryBothDestroysSucceeded,
                                 1);
+  // Two successful destroys during recovery (one per failed open attempt).
+  histograms.ExpectUniqueSample("Storage.SessionStorage.DestroyDatabase.OnDisk",
+                                /*sample=*/0, 2);
 }
 
 // Both disk opens fail, destroy also fails, in-memory open succeeds.
@@ -1004,6 +1013,9 @@ TEST_P(SessionStorageImplTest, FallbackToInMemory_DestroyFailed) {
       "Storage.SessionStorage.Recovery.OpenFailure",
       DomStorageDatabaseRecoveryOutcome::kRecoveredToInMemoryBothDestroysFailed,
       1);
+  // Sample 5 = DbStatus::Type::kIoError.
+  histograms.ExpectUniqueSample("Storage.SessionStorage.DestroyDatabase.OnDisk",
+                                /*sample=*/5, 2);
 }
 
 // All three opens fail (disk, disk retry, in-memory), destroys succeed.
@@ -1017,6 +1029,9 @@ TEST_P(SessionStorageImplTest, GaveUp_DestroySucceeded) {
   histograms.ExpectUniqueSample(
       "Storage.SessionStorage.Recovery.OpenFailure",
       DomStorageDatabaseRecoveryOutcome::kGaveUpBothDestroysSucceeded, 1);
+  // Two successful destroys during recovery (one per failed open attempt).
+  histograms.ExpectUniqueSample("Storage.SessionStorage.DestroyDatabase.OnDisk",
+                                /*sample=*/0, 2);
 }
 
 // All three opens fail, destroy also fails.
@@ -1044,6 +1059,8 @@ TEST_P(SessionStorageImplTest, RecoveredToDisk_DestroyFailed) {
   histograms.ExpectUniqueSample(
       "Storage.SessionStorage.Recovery.OpenFailure",
       DomStorageDatabaseRecoveryOutcome::kRecoveredToDiskDestroyFailed, 1);
+  histograms.ExpectBucketCount("Storage.SessionStorage.DestroyDatabase.OnDisk",
+                               /*sample=*/5, 1);
 }
 
 // Both disk opens fail, first destroy fails, second succeeds, in-memory open
@@ -1059,6 +1076,10 @@ TEST_P(SessionStorageImplTest, FallbackToInMemory_FirstDestroyFailed) {
       "Storage.SessionStorage.Recovery.OpenFailure",
       DomStorageDatabaseRecoveryOutcome::kRecoveredToInMemoryFirstDestroyFailed,
       1);
+  histograms.ExpectBucketCount("Storage.SessionStorage.DestroyDatabase.OnDisk",
+                               /*sample=*/0, 1);
+  histograms.ExpectBucketCount("Storage.SessionStorage.DestroyDatabase.OnDisk",
+                               /*sample=*/5, 1);
 }
 
 // Both disk opens fail, first destroy succeeds, second fails, in-memory open
@@ -1085,6 +1106,10 @@ TEST_P(SessionStorageImplTest, FallbackToInMemory_SecondDestroyFailed) {
                                 DomStorageDatabaseRecoveryOutcome::
                                     kRecoveredToInMemorySecondDestroyFailed,
                                 1);
+  histograms.ExpectBucketCount("Storage.SessionStorage.DestroyDatabase.OnDisk",
+                               /*sample=*/0, 1);
+  histograms.ExpectBucketCount("Storage.SessionStorage.DestroyDatabase.OnDisk",
+                               /*sample=*/5, 1);
 }
 
 // All three opens fail, first destroy succeeds, second fails.
@@ -1109,6 +1134,10 @@ TEST_P(SessionStorageImplTest, GaveUp_SecondDestroyFailed) {
   histograms.ExpectUniqueSample(
       "Storage.SessionStorage.Recovery.OpenFailure",
       DomStorageDatabaseRecoveryOutcome::kGaveUpSecondDestroyFailed, 1);
+  histograms.ExpectBucketCount("Storage.SessionStorage.DestroyDatabase.OnDisk",
+                               /*sample=*/0, 1);
+  histograms.ExpectBucketCount("Storage.SessionStorage.DestroyDatabase.OnDisk",
+                               /*sample=*/5, 1);
 }
 
 // All three opens fail, both destroys fail.
@@ -1123,6 +1152,8 @@ TEST_P(SessionStorageImplTest, GaveUp_BothDestroysFailed) {
   histograms.ExpectUniqueSample(
       "Storage.SessionStorage.Recovery.OpenFailure",
       DomStorageDatabaseRecoveryOutcome::kGaveUpBothDestroysFailed, 1);
+  histograms.ExpectUniqueSample("Storage.SessionStorage.DestroyDatabase.OnDisk",
+                                /*sample=*/5, 2);
 }
 
 // In-memory open fails, retry succeeds. No Destroy() because there is nothing
@@ -1190,6 +1221,8 @@ TEST_P(SessionStorageImplTest, MetadataReadFailure) {
   histograms.ExpectUniqueSample(
       "Storage.SessionStorage.Recovery.MetadataReadFailure",
       DomStorageDatabaseRecoveryOutcome::kRecoveredToDiskDestroySucceeded, 1);
+  histograms.ExpectUniqueSample("Storage.SessionStorage.DestroyDatabase.OnDisk",
+                                /*sample=*/0, 1);
 }
 
 TEST_P(SessionStorageImplTest, GetUsage) {

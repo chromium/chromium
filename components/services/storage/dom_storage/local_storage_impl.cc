@@ -577,6 +577,9 @@ void LocalStorageImpl::DeleteAndRecreateDatabase(
 }
 
 void LocalStorageImpl::OnDBDestroyed(bool recreate_in_memory, DbStatus status) {
+  // Destroy is only called when the database is on disk (see !in_memory_ guard
+  // in DeleteAndRecreateDatabase), so in_memory is always false here.
+  status.Log("Storage.LocalStorage.DestroyDatabase", /*in_memory=*/false);
   recovery_state_.value().AddDestroyResult(status.ok());
   InitiateConnection(recreate_in_memory);
 }

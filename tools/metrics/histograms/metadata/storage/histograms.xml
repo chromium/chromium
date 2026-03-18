@@ -3001,6 +3001,7 @@ chromium-metrics-reviews@google.com.
     <variant name="CloneMap"/>
     <variant name="DeleteSessions"/>
     <variant name="DeleteStorageKeysFromSession"/>
+    <variant name="DestroyDatabase"/>
     <variant name="OpenDatabase"/>
     <variant name="PurgeOrigins"/>
     <variant name="PutMetadata"/>

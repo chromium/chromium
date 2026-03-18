@@ -1276,6 +1276,10 @@ TEST_P(LocalStorageImplTest, CorruptionOnDisk) {
   histograms.ExpectUniqueSample(
       "Storage.LocalStorage.Recovery.OpenFailure",
       DomStorageDatabaseRecoveryOutcome::kRecoveredToDiskDestroySucceeded, 1);
+  // Verify DestroyDatabase histogram recorded success during recovery.
+  // Sample 0 = DbStatus::Type::kOk.
+  histograms.ExpectUniqueSample("Storage.LocalStorage.DestroyDatabase.OnDisk",
+                                /*sample=*/0, 1);
 }
 
 TEST_P(LocalStorageImplTest, RecreateOnCommitFailure) {
@@ -1421,6 +1425,9 @@ TEST_P(LocalStorageImplTest, RecreateOnCommitFailure) {
   histograms.ExpectUniqueSample(
       "Storage.LocalStorage.Recovery.CommitErrorThresholdExceeded",
       DomStorageDatabaseRecoveryOutcome::kRecoveredToDiskDestroySucceeded, 1);
+  // Verify DestroyDatabase histogram recorded success during recovery.
+  histograms.ExpectUniqueSample("Storage.LocalStorage.DestroyDatabase.OnDisk",
+                                /*sample=*/0, 1);
 }
 
 TEST_P(LocalStorageImplTest, DontRecreateOnRepeatedCommitFailure) {
@@ -1549,6 +1556,9 @@ TEST_P(LocalStorageImplTest, FallbackToInMemory_DestroySucceeded) {
                                 DomStorageDatabaseRecoveryOutcome::
                                     kRecoveredToInMemoryBothDestroysSucceeded,
                                 1);
+  // Two successful destroys during recovery (one per failed open attempt).
+  histograms.ExpectUniqueSample("Storage.LocalStorage.DestroyDatabase.OnDisk",
+                                /*sample=*/0, 2);
 }
 
 // Both disk opens fail, destroy also fails, in-memory open succeeds.
@@ -1566,6 +1576,9 @@ TEST_P(LocalStorageImplTest, FallbackToInMemory_DestroyFailed) {
       "Storage.LocalStorage.Recovery.OpenFailure",
       DomStorageDatabaseRecoveryOutcome::kRecoveredToInMemoryBothDestroysFailed,
       1);
+  // Sample 5 = DbStatus::Type::kIoError.
+  histograms.ExpectUniqueSample("Storage.LocalStorage.DestroyDatabase.OnDisk",
+                                /*sample=*/5, 2);
 }
 
 // All three opens fail (disk, disk retry, in-memory), destroys succeed.
@@ -1582,6 +1595,9 @@ TEST_P(LocalStorageImplTest, GaveUp_DestroySucceeded) {
   histograms.ExpectUniqueSample(
       "Storage.LocalStorage.Recovery.OpenFailure",
       DomStorageDatabaseRecoveryOutcome::kGaveUpBothDestroysSucceeded, 1);
+  // Two successful destroys during recovery (one per failed open attempt).
+  histograms.ExpectUniqueSample("Storage.LocalStorage.DestroyDatabase.OnDisk",
+                                /*sample=*/0, 2);
 }
 
 // All three opens fail, destroy also fails.
@@ -1615,6 +1631,8 @@ TEST_P(LocalStorageImplTest, RecoveredToDisk_DestroyFailed) {
   histograms.ExpectUniqueSample(
       "Storage.LocalStorage.Recovery.OpenFailure",
       DomStorageDatabaseRecoveryOutcome::kRecoveredToDiskDestroyFailed, 1);
+  histograms.ExpectBucketCount("Storage.LocalStorage.DestroyDatabase.OnDisk",
+                               /*sample=*/5, 1);
 }
 
 // Both disk opens fail, first destroy fails, second succeeds, in-memory open
@@ -1633,6 +1651,10 @@ TEST_P(LocalStorageImplTest, FallbackToInMemory_FirstDestroyFailed) {
       "Storage.LocalStorage.Recovery.OpenFailure",
       DomStorageDatabaseRecoveryOutcome::kRecoveredToInMemoryFirstDestroyFailed,
       1);
+  histograms.ExpectBucketCount("Storage.LocalStorage.DestroyDatabase.OnDisk",
+                               /*sample=*/0, 1);
+  histograms.ExpectBucketCount("Storage.LocalStorage.DestroyDatabase.OnDisk",
+                               /*sample=*/5, 1);
 }
 
 // Both disk opens fail, first destroy succeeds, second fails, in-memory open
@@ -1662,6 +1684,10 @@ TEST_P(LocalStorageImplTest, FallbackToInMemory_SecondDestroyFailed) {
                                 DomStorageDatabaseRecoveryOutcome::
                                     kRecoveredToInMemorySecondDestroyFailed,
                                 1);
+  histograms.ExpectBucketCount("Storage.LocalStorage.DestroyDatabase.OnDisk",
+                               /*sample=*/0, 1);
+  histograms.ExpectBucketCount("Storage.LocalStorage.DestroyDatabase.OnDisk",
+                               /*sample=*/5, 1);
 }
 
 // All three opens fail, first destroy succeeds, second fails.
@@ -1689,6 +1715,10 @@ TEST_P(LocalStorageImplTest, GaveUp_SecondDestroyFailed) {
   histograms.ExpectUniqueSample(
       "Storage.LocalStorage.Recovery.OpenFailure",
       DomStorageDatabaseRecoveryOutcome::kGaveUpSecondDestroyFailed, 1);
+  histograms.ExpectBucketCount("Storage.LocalStorage.DestroyDatabase.OnDisk",
+                               /*sample=*/0, 1);
+  histograms.ExpectBucketCount("Storage.LocalStorage.DestroyDatabase.OnDisk",
+                               /*sample=*/5, 1);
 }
 
 // All three opens fail, both destroys fail.
@@ -1706,6 +1736,8 @@ TEST_P(LocalStorageImplTest, GaveUp_BothDestroysFailed) {
   histograms.ExpectUniqueSample(
       "Storage.LocalStorage.Recovery.OpenFailure",
       DomStorageDatabaseRecoveryOutcome::kGaveUpBothDestroysFailed, 1);
+  histograms.ExpectUniqueSample("Storage.LocalStorage.DestroyDatabase.OnDisk",
+                                /*sample=*/5, 2);
 }
 
 // In-memory open fails, retry succeeds. No Destroy() because there is nothing
