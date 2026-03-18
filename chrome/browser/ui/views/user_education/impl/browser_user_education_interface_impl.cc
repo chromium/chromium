@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/user_education/impl/browser_user_education_interface_impl.h"
 
+#include <optional>
+
 #include "base/check_is_test.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
@@ -17,6 +19,7 @@
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
+#include "components/user_education/common/user_education_data.h"
 #include "components/user_education/common/user_education_storage_service.h"
 
 namespace {
@@ -138,6 +141,18 @@ BrowserUserEducationInterfaceImpl::CanShowFeaturePromo(
     return controller->CanShowPromo(iph_feature, user_education_context_);
   }
   return user_education::FeaturePromoResult::kBlockedByContext;
+}
+
+bool BrowserUserEducationInterfaceImpl::HasFeaturePromoBeenDismissed(
+    const base::Feature& iph_feature) const {
+  auto* const service = GetUserEducationService();
+  CHECK(service);
+  const std::optional<user_education::FeaturePromoData> result =
+      service->user_education_storage_service().ReadPromoData(iph_feature);
+
+  // If there is no data on the promo yet, it has not been dismissed (because
+  // it has not been shown).
+  return result && result->is_dismissed;
 }
 
 void BrowserUserEducationInterfaceImpl::MaybeShowFeaturePromo(

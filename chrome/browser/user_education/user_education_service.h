@@ -65,6 +65,10 @@ class UserEducationService : public KeyedService {
   user_education_storage_service() {
     return *user_education_storage_service_;
   }
+  const user_education::UserEducationStorageService&
+  user_education_storage_service() const {
+    return *user_education_storage_service_;
+  }
   user_education::UserEducationSessionManager&
   user_education_session_manager() {
     return user_education_session_manager_;

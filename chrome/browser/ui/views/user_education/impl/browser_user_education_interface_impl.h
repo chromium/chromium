@@ -33,6 +33,8 @@ class BrowserUserEducationInterfaceImpl : public BrowserUserEducationInterface {
   bool IsFeaturePromoActive(const base::Feature& iph_feature) const override;
   user_education::FeaturePromoResult CanShowFeaturePromo(
       const base::Feature& iph_feature) const override;
+  bool HasFeaturePromoBeenDismissed(
+      const base::Feature& iph_feature) const override;
   void MaybeShowFeaturePromo(
       user_education::FeaturePromoParams params) override;
   void MaybeShowStartupFeaturePromo(
