@@ -586,8 +586,17 @@ void HTMLFormElement::PrepareForSubmission(
 
     UseCounter::Count(GetDocument(), WebFeature::kFormSubmissionStarted);
     // Interactive validation must be done before dispatching the submit event.
+    const bool declarative_webmcp_call =
+        IsValidWebMCPForm() && active_webmcp_tool_->CurrentlyRunning();
     if (!skip_validation && !ValidateInteractively()) {
       should_submit = false;
+      if (declarative_webmcp_call) {
+        // TODO(crbug.com/493951236) This error message should describe more
+        // of the details of what failed validation.
+        active_webmcp_tool_->CallDoneCallback(base::unexpected(
+            ScriptToolError(ScriptToolErrorCode::kToolInvocationFailed,
+                            "Form validation failed")));
+      }
     } else {
       frame->Client()->DispatchWillSendSubmitEvent(this);
       SubmitEventInit* submit_event_init = SubmitEventInit::Create();
@@ -595,8 +604,6 @@ void HTMLFormElement::PrepareForSubmission(
       submit_event_init->setCancelable(true);
       submit_event_init->setSubmitter(
           submit_button ? &submit_button->ToHTMLElement() : nullptr);
-      bool declarative_webmcp_call =
-          IsValidWebMCPForm() && active_webmcp_tool_->CurrentlyRunning();
       if (declarative_webmcp_call) {
         CHECK(RuntimeEnabledFeatures::WebMCPEnabled());
         submit_event_init->setAgentInvoked(true);
@@ -622,6 +629,14 @@ void HTMLFormElement::PrepareForSubmission(
                        WrapWeakPersistent(this),
                        WrapPersistent(active_webmcp_tool_.Get()),
                        /*resolved=*/false));
+        } else if (!should_submit) {
+          active_webmcp_tool_->CallDoneCallback(
+              base::unexpected(ScriptToolError(
+                  ScriptToolErrorCode::kToolInvocationFailed,
+                  "The site has a programming error: it called "
+                  "preventDefault() "
+                  "on the 'submit' event, without also calling respondWith() "
+                  "with the tool result")));
         }
       }
     }

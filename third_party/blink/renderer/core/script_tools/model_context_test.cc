@@ -353,6 +353,81 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_SPA_Reject) {
   EXPECT_TRUE(EvalJsBoolean("window.submit_event_fired"));
 }
 
+TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_SPA_NoRespondWith) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  v8::HandleScope handle_scope(Window().GetIsolate());
+  ScriptState::Scope script_scope(
+      ToScriptStateForMainWorld(Window().GetFrame()));
+  main_resource.Complete(R"(
+    <form toolautosubmit toolname="search_tool" tooldescription="Search the web" action="/search">
+      <input type=text name=query>
+      <button type=submit>Submit</button>
+    </form>
+    <script>
+      document.querySelector("form").addEventListener("submit", e => {
+        window.submit_event_fired = true;
+        e.preventDefault();
+      });
+    </script>
+  )");
+
+  auto* model_context =
+      ModelContextSupplement::modelContext(*Window().navigator());
+  ASSERT_TRUE(model_context);
+
+  base::RunLoop run_loop;
+  bool got_result = false;
+  model_context->ExecuteTool(
+      "search_tool", "{\"query\": \"testing\"}", /* signal= */ nullptr,
+      base::BindLambdaForTesting(
+          [&](base::expected<String, ScriptToolError> res) {
+            got_result = true;
+            ASSERT_FALSE(res.has_value());
+            EXPECT_EQ(res.error(), ScriptToolErrorCode::kToolInvocationFailed);
+            EXPECT_EQ(res.error().message,
+                      "The site has a programming error: it called "
+                      "preventDefault() on the 'submit' event, without also "
+                      "calling respondWith() with the tool result");
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+
+  EXPECT_TRUE(got_result);
+  EXPECT_TRUE(EvalJsBoolean("window.submit_event_fired"));
+}
+
+TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_ValidationFailure) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  v8::HandleScope handle_scope(Window().GetIsolate());
+  ScriptState::Scope script_scope(
+      ToScriptStateForMainWorld(Window().GetFrame()));
+  main_resource.Complete(R"(
+    <form toolautosubmit toolname="search_tool" tooldescription="Search the web" action="/search">
+      <input type=text name=query pattern="[a-z]+">
+      <button type=submit>Submit</button>
+    </form>
+  )");
+
+  auto* model_context =
+      ModelContextSupplement::modelContext(*Window().navigator());
+  ASSERT_TRUE(model_context);
+
+  base::RunLoop run_loop;
+  bool got_result = false;
+  model_context->ExecuteTool(
+      "search_tool", "{\"query\": \"123\"}", /* signal= */ nullptr,
+      base::BindLambdaForTesting(
+          [&](base::expected<String, ScriptToolError> res) {
+            got_result = true;
+            EXPECT_FALSE(res.has_value());
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+  EXPECT_TRUE(got_result);
+}
+
 TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_SPA_NoPreventDefault) {
   SimRequest main_resource("https://example.com/", "text/html");
   SimRequest search_resource("https://example.com/search?query=testing",
