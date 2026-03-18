@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] ToASCII("ᡯ⚉姶🄉．۷‍🎪‍") C2; P1; V6
-  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
-Harness: the test ran to completion.
-

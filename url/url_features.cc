@@ -20,7 +20,7 @@ bool IsDisallowingSpaceCharacterInURLHostParsing() {
   return base::FeatureList::IsEnabled(kDisallowSpaceCharacterInURLHostParsing);
 }
 
-BASE_FEATURE(kUseIDNAContextJRules, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kUseIDNAContextJRules, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsUsingIDNAContextJRules() {
   // If the FeatureList isn't available yet, fall back to the feature's default
