@@ -748,14 +748,34 @@ TEST_F(SimpleFeatureTest, CommandLineSwitch) {
               feature.IsAvailableToEnvironment(kUnspecifiedContextId).result());
   }
   {
+    // --laser-beams=1 should enable the feature.
     base::test::ScopedCommandLine scoped_command_line;
-    scoped_command_line.GetProcessCommandLine()->AppendSwitch("laser-beams=1");
+    scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+        "laser-beams", "1");
     EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
               feature.IsAvailableToEnvironment(kUnspecifiedContextId).result());
   }
   {
+    // --laser-beams=0 should not enable the feature.
     base::test::ScopedCommandLine scoped_command_line;
-    scoped_command_line.GetProcessCommandLine()->AppendSwitch("laser-beams=0");
+    scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+        "laser-beams", "0");
+    EXPECT_EQ(Feature::AvailabilityResult::kMissingCommandLineSwitch,
+              feature.IsAvailableToEnvironment(kUnspecifiedContextId).result());
+  }
+  {
+    // --laser-beams=2 (non-"1" value) should not enable the feature.
+    base::test::ScopedCommandLine scoped_command_line;
+    scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+        "laser-beams", "2");
+    EXPECT_EQ(Feature::AvailabilityResult::kMissingCommandLineSwitch,
+              feature.IsAvailableToEnvironment(kUnspecifiedContextId).result());
+  }
+  {
+    // --laser-beams (no value) should not enable the feature.
+    base::test::ScopedCommandLine scoped_command_line;
+    scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+        "laser-beams", "");
     EXPECT_EQ(Feature::AvailabilityResult::kMissingCommandLineSwitch,
               feature.IsAvailableToEnvironment(kUnspecifiedContextId).result());
   }

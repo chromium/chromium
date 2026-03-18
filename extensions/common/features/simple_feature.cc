@@ -175,10 +175,12 @@ std::string ListDisplayNames(const std::vector<EnumType>& enum_types) {
 
 bool IsCommandLineSwitchEnabled(base::CommandLine* command_line,
                                 const std::string& switch_name) {
-  if (command_line->HasSwitch(switch_name + "=1"))
+  if (command_line->GetSwitchValueASCII(switch_name) == "1") {
     return true;
-  if (command_line->HasSwitch(std::string("enable-") + switch_name))
+  }
+  if (command_line->HasSwitch(std::string("enable-") + switch_name)) {
     return true;
+  }
   return false;
 }
 
