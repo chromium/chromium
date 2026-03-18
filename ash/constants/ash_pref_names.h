@@ -3016,6 +3016,37 @@ inline constexpr char kOfficeMoveConfirmationShownForOneDriveSyncable[] =
     "filebrowser.office.move_confirmation_shown_for_onedrive_syncable";
 
 //-----------------------------------------------------------------------------
+// End of Life related Prefs
+//-----------------------------------------------------------------------------
+
+// Deprecated (crbug.com/998983) in favor of kEndOfLifeDate.
+// An integer pref. Holds one of several values:
+// 0: Supported. Device is in supported state.
+// 1: Security Only. Device is in Security-Only update (after initial 5 years).
+// 2: EOL. Device is End of Life(No more updates expected).
+// This value needs to be consistent with EndOfLifeStatus enum.
+inline constexpr char kEolStatus[] = "eol_status";
+
+// A Time pref.  Holds the last used Eol Date and is compared to the latest Eol
+// Date received to make changes to Eol notifications accordingly.
+inline constexpr char kEndOfLifeDate[] = "eol_date";
+
+// Boolean pref indicating that the first warning End Of Life month and year
+// notification was dismissed by the user.
+inline constexpr char kFirstEolWarningDismissed[] =
+    "first_eol_warning_dismissed";
+
+// Boolean pref indicating that the second warning End Of Life month and year
+// notification was dismissed by the user.
+inline constexpr char kSecondEolWarningDismissed[] =
+    "second_eol_warning_dismissed";
+
+// Boolean pref indicating that the End Of Life final update notification was
+// dismissed by the user.
+inline constexpr char kEolNotificationDismissed[] =
+    "eol_notification_dismissed";
+
+//-----------------------------------------------------------------------------
 // HATS related Prefs
 //-----------------------------------------------------------------------------
 

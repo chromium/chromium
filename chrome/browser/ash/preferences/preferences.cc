@@ -552,10 +552,10 @@ void Preferences::RegisterProfilePrefs(
       ::prefs::kFingerprintUnlockFeatureNotificationShown, false);
 
   // We don't sync EOL related prefs because they are device specific.
-  registry->RegisterBooleanPref(::prefs::kEolNotificationDismissed, false);
-  registry->RegisterTimePref(::prefs::kEndOfLifeDate, base::Time());
-  registry->RegisterBooleanPref(::prefs::kFirstEolWarningDismissed, false);
-  registry->RegisterBooleanPref(::prefs::kSecondEolWarningDismissed, false);
+  registry->RegisterBooleanPref(ash::prefs::kEolNotificationDismissed, false);
+  registry->RegisterTimePref(ash::prefs::kEndOfLifeDate, base::Time());
+  registry->RegisterBooleanPref(ash::prefs::kFirstEolWarningDismissed, false);
+  registry->RegisterBooleanPref(ash::prefs::kSecondEolWarningDismissed, false);
 
   // Extended Updates prefs.
   registry->RegisterBooleanPref(prefs::kExtendedUpdatesNotificationDismissed,
