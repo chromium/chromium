@@ -756,14 +756,6 @@ void GlicInstanceCoordinatorImpl::ToggleSidePanel(
   ShowOptions options = ShowOptions::ForSidePanel(
       *tab, GlicPinTrigger::kInstanceCreation, source);
 
-  // If the user has not consented, don't pin the tab.
-  if (GlicEnabling::ShouldBypassFreUi(profile_, tab->GetContents())) {
-    if (auto* side_panel_options =
-            std::get_if<SidePanelShowOptions>(&options.embedder_options)) {
-      side_panel_options->pin_on_bind = false;
-    }
-  }
-
   instance->Toggle(std::move(options), prevent_close, source, prompt_suggestion,
                    auto_send);
 }

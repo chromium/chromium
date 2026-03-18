@@ -161,11 +161,6 @@ class GlicEnabling : public signin::IdentityManager::Observer {
   // Whether the Trust-First Onboarding flow should be shown.
   static bool IsTrustFirstOnboardingEnabledForProfile(Profile* profile);
 
-  // Returns true if the FRE UI (standard FRE or Trust-First Onboarding) should
-  // be bypassed for certain invocation sources for unconsented users.
-  static bool ShouldBypassFreUi(Profile* profile,
-                                content::WebContents* web_contents);
-
   // Whether the auto open for pdf flow is enabled.
   static bool IsAutoOpenForPdfEnabled(Profile* profile);
 

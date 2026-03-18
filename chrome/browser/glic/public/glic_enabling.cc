@@ -626,12 +626,6 @@ bool GlicEnabling::IsTrustFirstOnboardingEnabledForProfile(Profile* profile) {
          base::FeatureList::IsEnabled(features::kGlicTrustFirstOnboarding);
 }
 
-bool GlicEnabling::ShouldBypassFreUi(Profile* profile,
-                                     content::WebContents* web_contents) {
-  return web_contents->GetContentsMimeType() == pdf::kPDFMimeType &&
-         IsAutoOpenForPdfEnabled(profile) && !HasConsentedForProfile(profile);
-}
-
 bool GlicEnabling::IsAutoOpenForPdfEnabled(Profile* profile) {
   if (!IsMultiInstanceEnabled() ||
       !base::FeatureList::IsEnabled(features::kAutoOpenGlicForPdf)) {
