@@ -5,6 +5,7 @@
 #import "ios/chrome/app/application_delegate/fake_tab_opener.h"
 
 #import "base/ios/block_types.h"
+#import "base/notimplemented.h"
 #import "ios/chrome/app/application_mode.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "net/base/apple/url_conversions.h"
@@ -59,6 +60,12 @@
     (TabOpeningPostOpeningAction)action {
   _action = action;
   return nil;
+}
+
+- (void)openOrReuseTabInMode:(ApplicationMode)targetMode
+           withUrlLoadParams:(const UrlLoadParams&)urlLoadParams
+         tabOpenedCompletion:(ProceduralBlock)tabOpenedCompletion {
+  NOTIMPLEMENTED();
 }
 
 @end

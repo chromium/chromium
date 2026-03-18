@@ -61,6 +61,12 @@ struct UrlLoadParams;
 - (ProceduralBlock)completionBlockForTriggeringAction:
     (TabOpeningPostOpeningAction)action;
 
+// Opens a new tab or reuses an existing one in `targetMode` with
+// `urlLoadParams`. `tabOpenedCompletion` is called when the tab is opened.
+- (void)openOrReuseTabInMode:(ApplicationMode)targetMode
+           withUrlLoadParams:(const UrlLoadParams&)urlLoadParams
+         tabOpenedCompletion:(ProceduralBlock)tabOpenedCompletion;
+
 @end
 
 #endif  // IOS_CHROME_APP_APPLICATION_DELEGATE_TAB_OPENING_H_

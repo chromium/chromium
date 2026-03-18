@@ -88,6 +88,7 @@ source_set("scene") {
   deps = [
     ":scene_state_header_for_otr_profile_deletion",
     ":scene_util",
+    ":tab_activity_utils",
     ":task_updater_scene_agent",
     "//base",
     "//components/autofill/core/browser",
@@ -240,6 +241,23 @@ source_set("scene_util") {
     "scene_util.mm",
   ]
   deps = [ "//base" ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("tab_activity_utils") {
+  sources = [
+    "tab_activity_utils.h",
+    "tab_activity_utils.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/model/web_state_list:utils",
+    "//ios/chrome/browser/window_activities/model",
+    "//ios/web/public",
+  ]
   frameworks = [ "UIKit.framework" ]
 }
 
