@@ -17,11 +17,11 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/visibility_timer_tab_helper.h"
 #include "chrome/browser/webshare/prepare_directory_task.h"
 #include "chrome/browser/webshare/prepare_subdirectory_task.h"
 #include "chrome/browser/webshare/share_service_impl.h"
 #include "chrome/browser/webshare/store_files_task.h"
+#include "components/visibility_timer/visibility_timer_tab_helper.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/storage_partition.h"
@@ -77,8 +77,10 @@ void SharingServiceOperation::Share(
   if (profile->IsIncognitoProfile() && !shared_files_.empty()) {
     // Random number of seconds in the range [1.0, 2.0).
     double delay_seconds = 1.0 + 1.0 * base::RandDouble();
-    VisibilityTimerTabHelper::CreateForWebContents(web_contents_.get());
-    VisibilityTimerTabHelper::FromWebContents(web_contents_.get())
+    visibility_timer::VisibilityTimerTabHelper::CreateForWebContents(
+        web_contents_.get());
+    visibility_timer::VisibilityTimerTabHelper::FromWebContents(
+        web_contents_.get())
         ->PostTaskAfterVisibleDelay(
             FROM_HERE,
             base::BindOnce(std::move(callback_),

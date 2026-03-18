@@ -472,8 +472,6 @@ static_library("browser") {
     "icon_loader.h",
     "icon_manager.cc",
     "icon_manager.h",
-    "idle/idle_detection_permission_context.cc",
-    "idle/idle_detection_permission_context.h",
     "language/accept_languages_service_factory.cc",
     "language/accept_languages_service_factory.h",
     "language/language_model_manager_factory.cc",
@@ -1227,8 +1225,6 @@ static_library("browser") {
     "unexpire_flags.h",
     "universal_web_contents_observers.cc",
     "universal_web_contents_observers.h",
-    "visibility_timer_tab_helper.cc",
-    "visibility_timer_tab_helper.h",
     "webauthn/credential_sorter.h",
     "webauthn/password_credential_fetcher.cc",
     "webauthn/password_credential_fetcher.h",
@@ -1634,6 +1630,7 @@ static_library("browser") {
     "//chrome/browser/history_clusters",
     "//chrome/browser/history_clusters:impl",
     "//chrome/browser/history_embeddings:impl",
+    "//chrome/browser/idle",
     "//chrome/browser/image_decoder",
     "//chrome/browser/image_fetcher",
     "//chrome/browser/interstitials:impl",
@@ -1857,6 +1854,7 @@ static_library("browser") {
     "//components/page_content_annotations/core",
     "//components/supervised_user/core/browser:device_parental_controls",
     "//components/supervised_user/core/browser:synthetic_field_trial_delegate",
+    "//components/visibility_timer",
 
     # TODO(crbug.com/369436587): Remove this dependency when
     # c/b/policy/configuration_policy_handler_list_factory.cc gets modularized.

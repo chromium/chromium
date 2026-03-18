@@ -2,17 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/visibility_timer_tab_helper.h"
+#include "components/visibility_timer/visibility_timer_tab_helper.h"
 
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/test_renderer_host.h"
 
-class VisibilityTimerTabHelperTest : public ChromeRenderViewHostTestHarness {
+namespace visibility_timer {
+
+class VisibilityTimerTabHelperTest : public content::RenderViewHostTestHarness {
  public:
   VisibilityTimerTabHelperTest()
-      : ChromeRenderViewHostTestHarness(
+      : content::RenderViewHostTestHarness(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 };
 
@@ -57,8 +59,9 @@ TEST_F(VisibilityTimerTabHelperTest, Delay) {
   EXPECT_FALSE(task_executed);
 
   // But 5*500ms > 1 second, so it should now be blocked.
-  for (int n = 0; n < 4; n++)
+  for (int n = 0; n < 4; n++) {
     task_environment()->FastForwardBy(base::Milliseconds(500));
+  }
 
   EXPECT_TRUE(task_executed);
 }
@@ -95,3 +98,5 @@ TEST_F(VisibilityTimerTabHelperTest, TasksAreQueuedInDormantState) {
 
   EXPECT_EQ("12", tasks_executed);
 }
+
+}  // namespace visibility_timer

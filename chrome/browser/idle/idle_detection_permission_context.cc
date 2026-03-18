@@ -7,11 +7,11 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/rand_util.h"
-#include "chrome/browser/visibility_timer_tab_helper.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/permissions/permission_decision.h"
 #include "components/permissions/permission_prompt_decision.h"
 #include "components/permissions/permission_request_id.h"
+#include "components/visibility_timer/visibility_timer_tab_helper.h"
 #include "content/public/browser/browser_context.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "url/gurl.h"
@@ -59,8 +59,9 @@ void IdleDetectionPermissionContext::DecidePermission(
 
     // Random number of seconds in the range [1.0, 2.0).
     double delay_seconds = 1.0 + 1.0 * base::RandDouble();
-    VisibilityTimerTabHelper::CreateForWebContents(web_contents);
-    VisibilityTimerTabHelper::FromWebContents(web_contents)
+    visibility_timer::VisibilityTimerTabHelper::CreateForWebContents(
+        web_contents);
+    visibility_timer::VisibilityTimerTabHelper::FromWebContents(web_contents)
         ->PostTaskAfterVisibleDelay(
             FROM_HERE,
             base::BindOnce(

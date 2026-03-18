@@ -22,7 +22,6 @@
 #include "chrome/browser/sharesheet/sharesheet_metrics.h"
 #include "chrome/browser/sharesheet/sharesheet_service.h"
 #include "chrome/browser/sharesheet/sharesheet_service_factory.h"
-#include "chrome/browser/visibility_timer_tab_helper.h"
 #include "chrome/browser/webshare/prepare_directory_task.h"
 #include "chrome/browser/webshare/prepare_subdirectory_task.h"
 #include "chrome/browser/webshare/share_service_impl.h"
@@ -31,6 +30,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
+#include "components/visibility_timer/visibility_timer_tab_helper.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
@@ -135,8 +135,9 @@ void SharesheetClient::Share(
   if (profile->IsIncognitoProfile() && !files.empty()) {
     // Random number of seconds in the range [1.0, 2.0).
     double delay_seconds = 1.0 + 1.0 * base::RandDouble();
-    VisibilityTimerTabHelper::CreateForWebContents(web_contents());
-    VisibilityTimerTabHelper::FromWebContents(web_contents())
+    visibility_timer::VisibilityTimerTabHelper::CreateForWebContents(
+        web_contents());
+    visibility_timer::VisibilityTimerTabHelper::FromWebContents(web_contents())
         ->PostTaskAfterVisibleDelay(
             FROM_HERE,
             base::BindOnce(std::move(callback),

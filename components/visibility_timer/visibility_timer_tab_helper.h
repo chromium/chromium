@@ -2,14 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_VISIBILITY_TIMER_TAB_HELPER_H_
-#define CHROME_BROWSER_VISIBILITY_TIMER_TAB_HELPER_H_
+#ifndef COMPONENTS_VISIBILITY_TIMER_VISIBILITY_TIMER_TAB_HELPER_H_
+#define COMPONENTS_VISIBILITY_TIMER_VISIBILITY_TIMER_TAB_HELPER_H_
 
 #include "base/containers/circular_deque.h"
 #include "base/functional/callback_forward.h"
 #include "base/timer/timer.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+
+namespace visibility_timer {
 
 // At most one of these is attached to each WebContents. It allows posting
 // delayed tasks whose timer only counts down whilst the WebContents is visible
@@ -49,4 +51,6 @@ class VisibilityTimerTabHelper
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
-#endif  // CHROME_BROWSER_VISIBILITY_TIMER_TAB_HELPER_H_
+}  // namespace visibility_timer
+
+#endif  // COMPONENTS_VISIBILITY_TIMER_VISIBILITY_TIMER_TAB_HELPER_H_

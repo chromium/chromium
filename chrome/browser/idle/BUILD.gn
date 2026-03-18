@@ -1,0 +1,26 @@
+import("//build/config/chromeos/ui_mode.gni")
+
+source_set("idle") {
+  visibility = [
+    "//chrome/browser/*",
+    "//chrome/test/*",
+  ]
+
+  public = [ "idle_detection_permission_context.h" ]
+
+  sources = [ "idle_detection_permission_context.cc" ]
+
+  public_deps = [
+    "//base",
+    "//components/permissions",
+    "//components/visibility_timer",
+  ]
+
+  deps = [
+    "//chrome/browser/profiles:profile",
+    "//components/content_settings/browser",
+    "//content/public/browser",
+    "//services/network/public/mojom",
+    "//url",
+  ]
+}

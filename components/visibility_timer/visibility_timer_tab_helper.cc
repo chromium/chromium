@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/visibility_timer_tab_helper.h"
+#include "components/visibility_timer/visibility_timer_tab_helper.h"
 
 #include <utility>
 
@@ -12,6 +12,8 @@
 #include "base/timer/timer.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
+
+namespace visibility_timer {
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(VisibilityTimerTabHelper);
 
@@ -27,8 +29,9 @@ void VisibilityTimerTabHelper::PostTaskAfterVisibleDelay(
     const base::Location& from_here,
     base::OnceClosure task,
     base::TimeDelta visible_delay) {
-  if (web_contents()->IsBeingDestroyed())
+  if (web_contents()->IsBeingDestroyed()) {
     return;
+  }
 
   task_queue_.push_back({visible_delay, from_here, std::move(task)});
 
@@ -41,10 +44,11 @@ void VisibilityTimerTabHelper::PostTaskAfterVisibleDelay(
 void VisibilityTimerTabHelper::OnVisibilityChanged(
     content::Visibility visibility) {
   if (!task_queue_.empty()) {
-    if (visibility == content::Visibility::VISIBLE)
+    if (visibility == content::Visibility::VISIBLE) {
       StartNextTaskTimer();
-    else
+    } else {
       timer_.Stop();
+    }
   }
 }
 
@@ -57,8 +61,9 @@ void VisibilityTimerTabHelper::RunTask(base::OnceClosure task) {
   DCHECK_EQ(web_contents()->GetVisibility(), content::Visibility::VISIBLE);
 
   task_queue_.pop_front();
-  if (!task_queue_.empty())
+  if (!task_queue_.empty()) {
     StartNextTaskTimer();
+  }
 
   std::move(task).Run();
 }
@@ -79,3 +84,5 @@ void VisibilityTimerTabHelper::StartNextTaskTimer() {
       base::BindOnce(&VisibilityTimerTabHelper::RunTask, base::Unretained(this),
                      std::move(callback_pair.second)));
 }
+
+}  // namespace visibility_timer
