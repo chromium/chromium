@@ -22,15 +22,14 @@ untrusted sources, such as the web.
 ## Getting started
 
 In Chromium, you can create and submit fuzz targets that run continuously at
-scale on [ClusterFuzz].
-
-To get started, choose the fuzzing framework that fits your use case.
+scale on [ClusterFuzz]. Prefer FuzzTest for all new fuzz targets. Use libFuzzer
+only to maintain existing targets.
 
 ### FuzzTest (recommended)
 
-We recommend FuzzTest for new fuzzers in Chromium. FuzzTest integrates with the
-gtest framework. It tests code that accepts structured, typed inputs, such as
-`int`, `std::string`, `std::vector`, or custom classes.
+FuzzTest integrates with the gtest framework and tests code that accepts
+structured, typed inputs, such as `int`, `std::string`, `std::vector`, or custom
+classes.
 
 *   To write your first FuzzTest, see [Getting Started with FuzzTest].
 *   To visualize the impact of your fuzzer, see
@@ -39,8 +38,7 @@ gtest framework. It tests code that accepts structured, typed inputs, such as
 ### libFuzzer (deprecated)
 
 [libFuzzer] tests APIs that consume raw byte buffers, such as image decoders and
-JSON or XML parsers. Use libFuzzer if you are modifying an existing libFuzzer
-target or building a grammar-aware fuzzer.
+JSON or XML parsers.
 
 *   To write, build, and run a basic libFuzzer target, see
     [Getting Started with libFuzzer].
@@ -66,6 +64,9 @@ target or building a grammar-aware fuzzer.
 *   [libfuzzer Technical References] - A detailed reference for build arguments
     (GN), sanitizer configurations, platform support, and ClusterFuzz options.
 
+*   [Blackbox fuzzing] - Fuzz large, slow, or non-deterministic targets without
+    coverage guidance.
+
 ## Getting help
 
 If you have questions or encounter issues,
@@ -73,12 +74,13 @@ If you have questions or encounter issues,
 *   email `chrome-fuzzing-core@google.com` or
 *   file a bug using the **Chrome > Security > Fuzzing** component.
 
-## Dashboard and stats
+## View dashboard and stats
 
 *   [go/chrome-fuzzing-dashboard] - View the code coverage achieved by fuzzers
     in Chromium.
 *   [ClusterFuzz Stats] - Performance statistics for fuzzers.
 
+[Blackbox fuzzing]: https://google.github.io/clusterfuzz/reference/coverage-guided-vs-blackbox/#blackbox-fuzzing
 [ClusterFuzz]: https://clusterfuzz.com/
 [ClusterFuzz Stats]: https://clusterfuzz.com/fuzzer-stats/
 [Fuzzing]: https://en.wikipedia.org/wiki/Fuzzing
