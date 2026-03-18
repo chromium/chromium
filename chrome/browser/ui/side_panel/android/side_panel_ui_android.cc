@@ -9,7 +9,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/check.h"
-#include "chrome/browser/ui/side_panel/jni_headers/SidePanelUIAndroidBridge_jni.h"
+#include "chrome/browser/ui/side_panel/android/jni_headers/SidePanelUIAndroidBridge_jni.h"
 
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;

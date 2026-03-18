@@ -4,13 +4,6 @@
 
 import("//extensions/buildflags/buildflags.gni")
 
-if (is_android) {
-  import("//build/config/android/rules.gni")
-  import("//third_party/jni_zero/jni_zero.gni")
-}
-
-# Contains side panel infrastructure code for all platforms.
-# Platform-specific code is conditionally compiled in.
 source_set("side_panel") {
   sources = [
     "side_panel_content_proxy.cc",
@@ -51,39 +44,10 @@ source_set("side_panel") {
     deps += [ "//extensions/common:common_constants" ]
   }
 
-  if (!is_android) {
-    deps += [ "//chrome/browser/ui/tabs:tab_model" ]
+  if (is_android) {
+    deps += [ "//chrome/browser/ui/side_panel/android" ]
   } else {
-    sources += [
-      "android/side_panel_native_view_android.cc",
-      "android/side_panel_native_view_android.h",
-      "android/side_panel_ui_android.cc",
-      "android/side_panel_ui_android.h",
-    ]
-
-    deps += [
-      ":jni_headers",
-      "//base",
-      "//third_party/jni_zero",
-      "//ui/base",
-    ]
-  }
-}
-
-# Platform-specific targets that don't fit in the "side_panel" target above.
-if (is_android) {
-  android_library("java") {
-    srcjar_deps = [ ":jni_headers" ]
-    sources = [ "android/java/src/org/chromium/chrome/browser/ui/side_panel/SidePanelUIAndroidBridge.java" ]
-
-    deps = [
-      "//build/android:build_java",
-      "//third_party/jni_zero:jni_zero_java",
-    ]
-  }
-
-  generate_jni("jni_headers") {
-    sources = [ "android/java/src/org/chromium/chrome/browser/ui/side_panel/SidePanelUIAndroidBridge.java" ]
+    deps += [ "//chrome/browser/ui/tabs:tab_model" ]
   }
 }
 
@@ -113,6 +77,7 @@ source_set("side_panel_views_dependent") {
     "//ui/base/unowned_user_data",
   ]
 
+  # No views dependency is allowed on Android.
   if (!is_android) {
     deps += [
       "//chrome/browser/ui/tabs:tab_strip",
@@ -125,13 +90,10 @@ source_set("side_panel_views_dependent") {
   }
 }
 
-# Contains C++ unit tests for side panel infrastructure on all platforms.
-# Platform-specific tests are conditionally compiled in.
 source_set("unit_tests") {
   testonly = true
-
-  # Cross-platform unit tests
   sources = [ "side_panel_entry_key_unittest.cc" ]
+
   deps = [
     ":side_panel",
     "//chrome/browser/ui/actions:actions_headers",
@@ -139,15 +101,7 @@ source_set("unit_tests") {
     "//ui/actions:actions_headers",
   ]
 
-  if (is_android) {
-    # Android unit tests
-    sources += [ "android/side_panel_ui_android_unittest.cc" ]
-    deps += [
-      "//base",
-      "//chrome/browser/ui/side_panel/test:native_unit_test_support_jni",
-    ]
-  } else {
-    # Unit tests for Windows/Max/Linux
+  if (!is_android) {
     sources += [ "side_panel_metrics_unittest.cc" ]
     deps += [
       ":side_panel_views_dependent",

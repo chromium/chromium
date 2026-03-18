@@ -8,7 +8,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
-#include "chrome/browser/ui/side_panel/test/native_unit_test_support_jni/SidePanelUIAndroidNativeUnitTestSupport_jni.h"
+#include "chrome/browser/ui/side_panel/test/android/native_unit_test_support_jni/SidePanelUIAndroidNativeUnitTestSupport_jni.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
