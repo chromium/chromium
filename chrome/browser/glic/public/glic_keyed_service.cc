@@ -414,7 +414,7 @@ void GlicKeyedService::OpenFreDialogInNewTab(BrowserWindowInterface* bwi,
   if (glic_profile_manager) {
     glic_profile_manager->SetActiveGlic(this);
   }
-  fre_controller().OpenFreDialogInNewTab(bwi, source);
+  fre_controller().OpenFreDialogInNewTab(bwi->GetWeakPtr(), source);
 #else
   NOTIMPLEMENTED() << "OpenFreDialogInNewTab";
 #endif

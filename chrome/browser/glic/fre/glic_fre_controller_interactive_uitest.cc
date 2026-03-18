@@ -331,6 +331,20 @@ IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTest,
                   WaitForState(kFreWebUiState, mojom::FreWebUiState::kReady),
                   StopObservingState(kFreWebUiState));
 }
+
+// A regression test for crbug.com/485532065.
+// Deletes the browser while a call to ShowFreDialog is pending.
+IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTest, DanglingPointerDuringAuthSync) {
+  auto server_running = fre_server().StartAcceptingConnectionsAndReturnHandle();
+
+  Browser* second_browser = CreateBrowser(browser()->profile());
+
+  RunTestSequence(ForceInvalidateAccount());
+  GetFreController().ShowFreDialog(second_browser,
+                                   mojom::InvocationSource::kTopChromeButton);
+  CloseBrowserSynchronously(second_browser);
+  RunTestSequence(ForceReauthAccount());
+}
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTest,

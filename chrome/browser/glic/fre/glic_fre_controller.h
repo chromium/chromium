@@ -121,7 +121,7 @@ class GlicFreController {
 
   // Open the new tab page in the browser and show the FRE in that tab if
   // possible.
-  void OpenFreDialogInNewTab(BrowserWindowInterface* bwi,
+  void OpenFreDialogInNewTab(base::WeakPtr<BrowserWindowInterface> bwi,
                              mojom::InvocationSource source);
 
   // Shows the FRE dialog. This should only be called if `ShouldShowFreDialog`

@@ -120,19 +120,23 @@ bool GlicFreController::CanShowFreDialog(BrowserWindowInterface* bwi) {
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
-void GlicFreController::OpenFreDialogInNewTab(BrowserWindowInterface* bwi,
-                                              mojom::InvocationSource source) {
+void GlicFreController::OpenFreDialogInNewTab(
+    base::WeakPtr<BrowserWindowInterface> bwi,
+    mojom::InvocationSource source) {
+  if (!bwi) {
+    return;
+  }
   Browser* browser = bwi->GetBrowserForMigrationOnly();
   if (!ShouldShowFreDialog()) {
     return;
   }
   chrome::AddAndReturnTabAt(browser, GURL(), /*index=*/-1, /*foreground=*/true);
-  if (CanShowFreDialog(bwi)) {
+  if (CanShowFreDialog(bwi.get())) {
     if (GlicEnabling::IsUnifiedFreEnabled(profile_)) {
       GlicKeyedServiceFactory::GetGlicKeyedService(profile_)->ToggleUI(
-          bwi, /*prevent_close=*/true, source);
+          bwi.get(), /*prevent_close=*/true, source);
     } else {
-      ShowFreDialog(bwi, source);
+      ShowFreDialog(bwi.get(), source);
     }
   }
 }
@@ -148,7 +152,7 @@ void GlicFreController::ShowFreDialog(BrowserWindowInterface* bwi,
 
   if (auth_controller_.CheckAuthBeforeShowSync(
           base::BindOnce(&GlicFreController::OpenFreDialogInNewTab,
-                         GetWeakPtr(), bwi, source))) {
+                         GetWeakPtr(), bwi->GetWeakPtr(), source))) {
     ShowFreDialogAfterAuthCheck(bwi, source);
   } else {
     // Sign-in required and handled by AuthController. In this case, do not
