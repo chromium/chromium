@@ -16,9 +16,6 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
-#import "net/base/apple/url_conversions.h"
-#import "net/base/url_util.h"
-#import "url/gurl.h"
 
 @implementation TaskRequestForURLContext {
   UIOpenURLContext* _URLContext;
@@ -100,10 +97,18 @@
     return;
   }
 
-  std::string gaiaID;
-  if (net::GetValueForKeyInQuery(net::GURLWithNSURL(URL),
-                                 app_group::kGaiaIDQueryItemName, &gaiaID)) {
-    self.gaiaID = base::SysUTF8ToNSString(gaiaID);
+  // TODO(crbug.com/493826640): Investigate possible ways to check the gaia_id
+  // when the task is executed (to be able to use GURL).
+  NSURLComponents* URLComponents = [NSURLComponents componentsWithURL:URL
+                                              resolvingAgainstBaseURL:NO];
+  NSArray<NSURLQueryItem*>* queryItems = URLComponents.queryItems;
+  NSString* gaiaIDKey =
+      base::SysUTF8ToNSString(app_group::kGaiaIDQueryItemName);
+  for (NSURLQueryItem* item in queryItems) {
+    if ([item.name isEqualToString:gaiaIDKey]) {
+      self.gaiaID = item.value;
+      break;
+    }
   }
 }
 
