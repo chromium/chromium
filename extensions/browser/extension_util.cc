@@ -348,15 +348,16 @@ bool IsExtensionVisibleToContext(const Extension& extension,
 }
 
 void InitializeFileSchemeAccessForExtension(
-    int render_process_id,
+    content::ChildProcessId render_process_id,
     const ExtensionId& extension_id,
     content::BrowserContext* browser_context) {
   ExtensionPrefs* prefs = ExtensionPrefs::Get(browser_context);
   // TODO(karandeepb): This should probably use
   // extensions::util::AllowFileAccess.
   if (prefs->AllowFileAccess(extension_id)) {
+    // TODO(crbug.com/379869738) Remove GetUnsafeValue.
     content::ChildProcessSecurityPolicy::GetInstance()->GrantRequestScheme(
-        render_process_id, url::kFileScheme);
+        render_process_id.GetUnsafeValue(), url::kFileScheme);
   }
 }
 

@@ -150,8 +150,8 @@ void ServiceWorkerTaskQueue::RendererDidInitializeServiceWorkerContext(
     return;
   }
 
-  util::InitializeFileSchemeAccessForExtension(
-      render_process_id.GetUnsafeValue(), extension_id, browser_context_);
+  util::InitializeFileSchemeAccessForExtension(render_process_id, extension_id,
+                                               browser_context_);
   ProcessManager::Get(browser_context_)
       ->StartTrackingServiceWorkerRunningInstance(
           {extension_id, render_process_id, service_worker_version_id,

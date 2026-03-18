@@ -181,7 +181,7 @@ void ExtensionWebContentsObserver::SetUpRenderFrameHost(
   if (type == Manifest::TYPE_EXTENSION ||
       type == Manifest::Type::kLegacyPackagedApp) {
     util::InitializeFileSchemeAccessForExtension(
-        render_frame_host->GetProcess()->GetDeprecatedID(), extension->id(),
+        render_frame_host->GetProcess()->GetID(), extension->id(),
         browser_context_);
   }
 

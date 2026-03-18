@@ -10,6 +10,7 @@
 
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/common/child_process_id.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest.h"
@@ -120,7 +121,7 @@ bool IsExtensionVisibleToContext(const Extension& extension,
 
 // Initializes file scheme access if the extension has such permission.
 void InitializeFileSchemeAccessForExtension(
-    int render_process_id,
+    content::ChildProcessId render_process_id,
     const ExtensionId& extension_id,
     content::BrowserContext* browser_context);
 
