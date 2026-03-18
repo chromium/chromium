@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/mac/mac_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/strings/sys_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -21,8 +22,8 @@
 #include "chrome/browser/ui/bookmarks/bookmark_tab_helper_observer.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #import "chrome/browser/ui/cocoa/touchbar/browser_window_touch_bar_controller.h"
 #include "chrome/browser/ui/fullscreen_util_mac.h"
 #include "chrome/common/pref_names.h"
@@ -117,7 +118,7 @@ NSButton* CreateTouchBarButton(const gfx::VectorIcon& icon,
 // A class registered for C++ notifications. This is used to detect changes in
 // the profile preferences and the back/forward commands.
 class TouchBarNotificationBridge : public CommandObserver,
-                                   public BrowserListObserver,
+                                   public BrowserCollectionObserver,
                                    public BookmarkTabHelperObserver,
                                    public TabStripModelObserver,
                                    public content::WebContentsObserver {
@@ -125,7 +126,7 @@ class TouchBarNotificationBridge : public CommandObserver,
   TouchBarNotificationBridge(BrowserWindowDefaultTouchBar* owner,
                              Browser* browser)
       : owner_(owner), browser_(browser), contents_(nullptr) {
-    TabStripModel* model = browser_->tab_strip_model();
+    TabStripModel* const model = browser_->GetTabStripModel();
     DCHECK(model);
     model->AddObserver(this);
     UpdateWebContents(model->GetActiveWebContents());
@@ -149,7 +150,8 @@ class TouchBarNotificationBridge : public CommandObserver,
         base::BindRepeating(&TouchBarNotificationBridge::UpdateTouchBar,
                             base::Unretained(this)));
 
-    BrowserList::AddObserver(this);
+    browser_collection_observation_.Observe(
+        GlobalBrowserCollection::GetInstance());
   }
 
   bool show_home_button() { return show_home_button_.GetValue(); }
@@ -159,8 +161,6 @@ class TouchBarNotificationBridge : public CommandObserver,
       delete;
 
   ~TouchBarNotificationBridge() override {
-    BrowserList::RemoveObserver(this);
-    browser_->tab_strip_model()->RemoveObserver(this);
     UpdateWebContents(nullptr);
   }
 
@@ -191,6 +191,16 @@ class TouchBarNotificationBridge : public CommandObserver,
     UpdateTouchBar();
   }
 
+  // BrowserCollectionObserver:
+  void OnBrowserClosed(BrowserWindowInterface* browser) override {
+    if (browser == owner_.browser) {
+      owner_.browser = nullptr;
+    }
+    if (browser == browser_) {
+      browser_ = nullptr;
+    }
+  }
+
   // BookmarkTabHelperObserver:
   void URLStarredChanged(content::WebContents* web_contents,
                          bool starred) override {
@@ -215,12 +225,6 @@ class TouchBarNotificationBridge : public CommandObserver,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override {
     UpdateWebContents(selection.new_contents);
-  }
-
-  void OnBrowserRemoved(Browser* browser) override {
-    if (browser == owner_.browser) {
-      owner_.browser = nullptr;
-    }
   }
 
   // WebContentsObserver:
@@ -250,6 +254,9 @@ class TouchBarNotificationBridge : public CommandObserver,
   BooleanPrefMember show_home_button_;
 
   PrefChangeRegistrar profile_pref_registrar_;
+
+  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_{this};
 };
 
 }  // namespace
