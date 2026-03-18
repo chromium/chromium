@@ -11131,6 +11131,16 @@ should be able to be added at any place in this file.
   </token>
 </action>
 
+<action
+    name="ContextualTasks.ToolbarCloseTabButton.UserAction.CloseTabAndExpandSidePanel">
+  <owner>yuhengh@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <description>
+    The user interacted with the contextual tasks toolbar close tab button. The
+    current tab will be closed and side panel will expand to a new tab.
+  </description>
+</action>
+
 <action name="ContextualTasks.WebUI.UserAction{ActionType}">
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-contextual-tasks-eng@google.com</owner>

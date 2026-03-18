@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_close_tab_button.h"
 
 #include "base/functional/bind.h"
+#include "base/metrics/user_metrics.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_close_button_controller.h"
 #include "chrome/grit/generated_resources.h"
@@ -60,6 +61,9 @@ void ContextualTasksCloseTabButton::OnButtonPress() {
       ContextualTasksCloseButtonController::From(browser_window_interface_);
   CHECK(controller);
   controller->MaybeCloseTabExpandSidePanel();
+  base::RecordAction(
+      base::UserMetricsAction("ContextualTasks.ToolbarCloseTabButton."
+                              "UserAction.CloseTabAndExpandSidePanel"));
 }
 
 void ContextualTasksCloseTabButton::OnShouldUpdateVisibility(bool should_show) {
