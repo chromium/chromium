@@ -2229,6 +2229,7 @@
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
           "--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%2m.profraw"
         ],
+        "ci_only": true,
         "isolate_profile_data": true,
         "merge": {
           "args": [

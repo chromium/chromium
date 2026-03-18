@@ -586,6 +586,7 @@ ci.thin_tester(
                 args = [
                     "--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%2m.profraw",
                 ],
+                ci_only = True,
             ),
             "telemetry_perf_unittests": targets.mixin(
                 args = [

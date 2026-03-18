@@ -1278,9 +1278,6 @@
 ### net_unittests iPhone 16 26.0
 * [ios-simulator](https://ci.chromium.org/ui/p/chromium/builders/try/ios-simulator) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22ios-simulator%5C%22%22))
 
-### not_site_per_process_blink_web_tests
-* [linux-rel](https://ci.chromium.org/ui/p/chromium/builders/try/linux-rel) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22linux-rel%5C%22%22))
-
 ### not_site_per_process_blink_wpt_tests
 * [linux-rel](https://ci.chromium.org/ui/p/chromium/builders/try/linux-rel) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22linux-rel%5C%22%22))
 * [linux_chromium_compile_dbg_ng](https://ci.chromium.org/ui/p/chromium/builders/try/linux_chromium_compile_dbg_ng) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22linux_chromium_compile_dbg_ng%5C%22%22))
