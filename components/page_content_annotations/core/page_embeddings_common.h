@@ -16,6 +16,7 @@ namespace page_content_annotations {
 enum EmbeddingPassageType {
   kPageContent,
   kTitle,
+  kTitleAndUrl,
 };
 
 // A passage from a page along with its computed embedding.
