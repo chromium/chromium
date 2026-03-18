@@ -1448,7 +1448,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         // before. The notifications toggle cannot enabled, or a testing param is enabled. The time
         // limit ensures that the promo only shows on a cold startup, defined as the app being
         // backgrounded by 4 hours or more and opening on an NTP to avoid clashes with other promos.
-        if (ChromeFeatureList.sAndroidTipsNotifications.isEnabled()) {
+        if (ChromeFeatureList.sAndroidTipsNotifications.isEnabled()
+                && TipsUtils.isSupportedDeviceType()) {
             TipsUtils.areTipsNotificationsEnabled(
                     (enabled) -> {
                         if ((!enabled
