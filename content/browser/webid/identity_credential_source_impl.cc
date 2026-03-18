@@ -55,6 +55,13 @@ void IdentityCredentialSourceImpl::GetIdentityCredentialSuggestions(
         request_service->GetAccounts();
     std::vector<IdentityRequestAccountPtr> signin_accounts;
     for (const auto& account : request_accounts) {
+      const GURL& idp_config_url =
+          account->identity_provider->idp_metadata.config_url;
+      auto it = request_service->idp_infos_.find(idp_config_url);
+      if (it != request_service->idp_infos_.end() &&
+          it->second->client_is_third_party_to_top_frame_origin) {
+        continue;
+      }
       if (!account->is_filtered_out &&
           account->idp_claimed_login_state.value_or(
               account->browser_trusted_login_state) ==
@@ -198,6 +205,8 @@ void IdentityCredentialSourceImpl::OnAccountsFetchCompleted(
   std::string site =
       FormatUrlToSite(render_frame_host().GetLastCommittedOrigin().GetURL());
   for (const auto& result : results) {
+    // We did not pass client_id, so we cannot check
+    // client_is_third_party_to_top_frame_origin here.
     if (result.accounts.has_value()) {
       auto potentially_sign_in_accounts =
           result.accounts->PotentialAccountsForSite(site);

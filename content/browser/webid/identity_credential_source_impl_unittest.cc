@@ -519,4 +519,154 @@ TEST_F(IdentityCredentialSourceImplTest,
       ->SetPendingWebIdentityRequest(nullptr);
 }
 
+// Tests that GetIdentityCredentialSuggestions() filters out accounts from an
+// existing pending request if the iframe is third-party to the top-frame
+// origin.
+TEST_F(IdentityCredentialSourceImplTest,
+       GetIdentityCredentialSuggestionsFilterCrossSiteThirdParty) {
+  GURL config_url(kConfigUrl);
+
+  RenderFrameHost* subframe =
+      RenderFrameHostTester::For(main_rfh())->AppendChild("subframe");
+  subframe = NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("https://other.com"), subframe);
+
+  IdentityCredentialSourceImpl* subframe_source =
+      IdentityCredentialSourceImpl::GetOrCreateForCurrentDocument(subframe);
+
+  auto subframe_network_manager =
+      std::make_unique<NiceMock<MockIdpNetworkRequestManager>>();
+  MockIdpNetworkRequestManager* subframe_network_manager_ptr =
+      subframe_network_manager.get();
+  subframe_source->SetNetworkManagerForTests(
+      std::move(subframe_network_manager));
+
+  MockApiPermissionDelegate api_permission_delegate;
+  EXPECT_CALL(api_permission_delegate, GetApiPermissionStatus)
+      .WillRepeatedly(Return(FederatedIdentityApiPermissionContextDelegate::
+                                 PermissionStatus::GRANTED));
+
+  MockAutoReauthnPermissionDelegate auto_reauthn_permission_delegate;
+  EXPECT_CALL(auto_reauthn_permission_delegate, IsAutoReauthnSettingEnabled)
+      .WillRepeatedly(Return(false));
+
+  MockIdentityRegistry identity_registry(web_contents(), nullptr, config_url);
+  mojo::Remote<blink::mojom::FederatedAuthRequest> remote;
+
+  RequestService& request_service = RequestService::CreateForTesting(
+      *subframe, &api_permission_delegate, &auto_reauthn_permission_delegate,
+      permission_delegate_.get(), &identity_registry,
+      remote.BindNewPipeAndPassReceiver());
+
+  TestIdentityCredentialSourceImpl::InitializeRequestService(
+      &request_service,
+      std::make_unique<NiceMock<MockIdpNetworkRequestManager>>());
+  request_service.SetDialogControllerForTests(
+      std::make_unique<NiceMock<MockIdentityRequestDialogController>>());
+
+  RequestPageData::GetOrCreateForPage(subframe->GetPage())
+      ->SetPendingWebIdentityRequest(&request_service);
+
+  blink::mojom::IdentityProviderRequestOptionsPtr options =
+      blink::mojom::IdentityProviderRequestOptions::New();
+  options->config = blink::mojom::IdentityProviderConfig::New();
+  options->config->config_url = config_url;
+
+  auto idp_info = std::make_unique<IdentityProviderInfo>(
+      options, IdpNetworkRequestManager::Endpoints(),
+      IdentityProviderMetadata(), blink::mojom::RpContext::kSignIn,
+      blink::mojom::RpMode::kPassive, std::nullopt);
+  idp_info->client_is_third_party_to_top_frame_origin = true;
+  IdentityProviderMetadata idp_metadata;
+  idp_metadata.config_url = config_url;
+  idp_info->data = base::MakeRefCounted<IdentityProviderData>(
+      "idp", idp_metadata, ClientMetadata(GURL(), GURL(), GURL(), gfx::Image()),
+      blink::mojom::RpContext::kSignIn, std::nullopt,
+      std::vector<IdentityRequestDialogDisclosureField>(),
+      /*has_login_status_mismatch=*/false);
+
+  IdentityRequestAccountPtr account =
+      base::MakeRefCounted<IdentityRequestAccount>(
+          kAccountId, "test@example.com", "Test User", "test@example.com",
+          "Test User", "Test", GURL(), "", "", std::vector<std::string>(),
+          std::vector<std::string>(), std::vector<std::string>(),
+          std::vector<std::string>(),
+          content::IdentityRequestAccount::LoginState::kSignIn);
+  account->identity_provider = idp_info->data;
+
+  IdpNetworkRequestManager::AccountsResponse accounts_response;
+  accounts_response.site_salt = "fc432178f9155c4e24762de5b9505f2e";
+  accounts_response.accounts.push_back(account);
+
+  IdpNetworkRequestManager::AccountsResponse accounts_response_copy;
+  accounts_response_copy.site_salt = accounts_response.site_salt;
+  accounts_response_copy.accounts.push_back(account);
+
+  TestIdentityCredentialSourceImpl::SetAccounts(
+      &request_service, std::move(accounts_response.accounts));
+  TestIdentityCredentialSourceImpl::SetIdpInfo(&request_service, config_url,
+                                               std::move(idp_info));
+
+  // If the accounts are filtered out from the pending request, it will
+  // proceed to fetch. We mock the fetch here.
+  EXPECT_CALL(*permission_delegate_,
+              GetIdpSigninStatus(url::Origin::Create(config_url)))
+      .WillRepeatedly(Return(true));
+
+  IdpNetworkRequestManager::WellKnown well_known;
+  well_known.provider_urls = std::set<GURL>{config_url};
+  EXPECT_CALL(*subframe_network_manager_ptr, FetchWellKnown(config_url, _))
+      .WillOnce(base::test::RunOnceCallback<1>(
+          FetchStatus{ParseStatus::kSuccess, 200}, well_known));
+
+  IdpNetworkRequestManager::Endpoints endpoints;
+  endpoints.token = GURL(kTokenUrl);
+  endpoints.accounts = GURL(kAccountsUrl);
+  endpoints.client_metadata = GURL("https://idp.example/client_metadata");
+  IdentityProviderMetadata idp_metadata_fetch;
+  idp_metadata_fetch.idp_login_url = GURL("https://idp.example/login");
+  EXPECT_CALL(*subframe_network_manager_ptr, FetchConfig(config_url, _, _, _))
+      .WillOnce(base::test::RunOnceCallback<3>(
+          FetchStatus{ParseStatus::kSuccess, 200}, endpoints,
+          idp_metadata_fetch));
+
+  // Mock SendAccountsRequest returning an account that will be filtered out
+  // in OnAccountsFetchCompleted.
+  EXPECT_CALL(*subframe_network_manager_ptr,
+              SendAccountsRequest(_, GURL(kAccountsUrl), _, _))
+      .WillOnce(
+          [&](const url::Origin&, const GURL&, const std::string&,
+              IdpNetworkRequestManager::AccountsRequestCallback callback) {
+            base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+                FROM_HERE,
+                base::BindOnce(std::move(callback),
+                               FetchStatus{ParseStatus::kSuccess, 200},
+                               std::move(accounts_response_copy)));
+            return true;
+          });
+
+  // Mock FetchClientMetadata
+  IdpNetworkRequestManager::ClientMetadata client_metadata;
+  client_metadata.client_is_third_party_to_top_frame_origin = true;
+  EXPECT_CALL(*subframe_network_manager_ptr, FetchClientMetadata)
+      .WillOnce(base::test::RunOnceCallback<4>(
+          FetchStatus{ParseStatus::kSuccess, 200}, client_metadata));
+
+  base::RunLoop run_loop;
+  subframe_source->GetIdentityCredentialSuggestions(
+      {config_url},
+      base::BindLambdaForTesting(
+          [&](const std::optional<std::vector<IdentityRequestAccountPtr>>&
+                  accounts) {
+            ASSERT_TRUE(accounts.has_value());
+            // Should be empty because it was filtered out.
+            EXPECT_TRUE(accounts->empty());
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+
+  RequestPageData::GetOrCreateForPage(subframe->GetPage())
+      ->SetPendingWebIdentityRequest(nullptr);
+}
+
 }  // namespace content::webid
