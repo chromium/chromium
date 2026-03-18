@@ -9,7 +9,7 @@
 #include "base/containers/span_reader.h"
 #include "base/containers/span_writer.h"
 #include "base/numerics/byte_conversions.h"
-#include "crypto/hkdf.h"
+#include "crypto/kdf.h"
 #include "crypto/random.h"
 
 namespace network::enterprise_encryption {
@@ -47,7 +47,8 @@ CreateHeader(base::span<const uint8_t> key_value) {
   CHECK(writer.Write(nonce_prefix));
 
   // Derive per-file key using key_value and salt.
-  auto derived_key = crypto::HkdfSha256<kKeySize>(key_value, salt, {});
+  auto derived_key = crypto::kdf::Hkdf<kKeySize>(
+      crypto::hash::HashKind::kSha256, key_value, salt, {});
 
   // Create EncryptionContext. Used for encryption/decryption.
   EncryptionContext encryption_context(derived_key, nonce_prefix);
@@ -79,7 +80,8 @@ base::expected<EncryptionContext, EncryptionError> ParseHeader(
   }
 
   // Create derived key for file-specific encryption/decryption.
-  auto derived_key = crypto::HkdfSha256<kKeySize>(key_value, *salt, {});
+  auto derived_key = crypto::kdf::Hkdf<kKeySize>(
+      crypto::hash::HashKind::kSha256, key_value, *salt, {});
 
   return EncryptionContext(derived_key, *nonce_prefix);
 }
