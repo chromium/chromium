@@ -142,7 +142,7 @@ void WebFormControlElement::SetValue(const WebString& value, bool send_events) {
                    ? TextFieldEventBehavior::kDispatchInputAndChangeEvent
                    : TextFieldEventBehavior::kDispatchNoEvent);
   } else if (auto* select = ::blink::DynamicTo<HTMLSelectElement>(*private_)) {
-    select->SetValue(value, send_events);
+    select->SelectOptionByValue(value, send_events);
   }
 }
 

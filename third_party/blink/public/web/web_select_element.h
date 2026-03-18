@@ -34,6 +34,7 @@
 #include <vector>
 
 #include "third_party/blink/public/platform/web_common.h"
+#include "third_party/blink/public/web/web_autofill_state.h"
 #include "third_party/blink/public/web/web_form_control_element.h"
 #include "third_party/blink/public/web/web_option_element.h"
 
@@ -56,6 +57,18 @@ class BLINK_EXPORT WebSelectElement final : public WebFormControlElement {
   void Assign(const WebSelectElement& element) {
     WebFormControlElement::Assign(element);
   }
+
+  // Auto-selects `option` in `this`. This is preferred in `WebSelectElement`
+  // over `WebFormControlElement::SetAutofillValue()` because the former
+  // specifies the exact option to select, whereas the latter triggers a
+  // search-by-value that could be inaccurate for select elements having options
+  // with duplicate values.
+  void SetAutofillOption(WebOptionElement* option,
+                         WebAutofillState autofill_state);
+
+  // Similar to `SetAutofillOption()` but for previews instead of filling
+  // operations.
+  void SetSuggestedOption(WebOptionElement* option);
 
   std::vector<WebElement> GetListItems() const;
 
