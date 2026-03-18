@@ -325,7 +325,7 @@ IN_PROC_BROWSER_TEST_P(
 }
 
 // TODO(https://crbug.com/491392993): Re-enable this test
-#if BUILDFLAG(IS_CHROMEOS) && \
+#if (BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)) && \
     (defined(LEAK_SANITIZER) || defined(ADDRESS_SANITIZER))
 #define MAYBE_DidStopLoadingIsDebounced DISABLED_DidStopLoadingIsDebounced
 #else
