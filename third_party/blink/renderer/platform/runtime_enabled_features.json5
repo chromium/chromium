@@ -3808,6 +3808,11 @@
       status: "stable",
     },
     {
+      // Fix for https://crbug.com/482862753
+      name: "NoExtendSelectionToUserSelectNoneOutOfFlow",
+      status: "stable"
+    },
+    {
       // This turns off all font antialiasing for tests unless it is
       // explicitly required and enabled using the
       // "--enable-font-antialiasing" flag like in the case of

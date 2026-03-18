@@ -89,6 +89,7 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
+#include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/svg/svg_image_element.h"
@@ -1336,6 +1337,29 @@ static Element* UserSelectContainBoundaryOf(const Position& position) {
   return nullptr;
 }
 
+// Check if anchorNode and targetNode share the same neareast out-of-flow
+// ancestor.
+static bool HaveSameOutOfFlowAncestor(const Node& anchor_node,
+                                      const Node& target_node) {
+  LayoutObject* anchor_object = anchor_node.GetLayoutObject();
+  LayoutObject* target_object = target_node.GetLayoutObject();
+  if (!anchor_object || !target_object || anchor_object == target_object) {
+    return true;
+  }
+  auto nearest_out_of_flow_object = [](LayoutObject* ancestor) {
+    while (ancestor) {
+      if (ancestor->IsOutOfFlowPositioned()) {
+        return ancestor;
+      }
+      ancestor = ancestor->ContainingBlock();
+    }
+    return static_cast<LayoutObject*>(nullptr);
+  };
+
+  return nearest_out_of_flow_object(anchor_object) ==
+         nearest_out_of_flow_object(target_object);
+}
+
 PositionWithAffinity PositionRespectingEditingBoundary(
     const Position& position,
     const HitTestResult& hit_test_result) {
@@ -1344,6 +1368,13 @@ PositionWithAffinity PositionRespectingEditingBoundary(
   const LayoutObject* target_object = target_node->GetLayoutObject();
   if (!target_object)
     return PositionWithAffinity();
+
+  if (RuntimeEnabledFeatures::
+          NoExtendSelectionToUserSelectNoneOutOfFlowEnabled() &&
+      !position.IsNull() && !target_object->IsSelectable() &&
+      !HaveSameOutOfFlowAncestor(*position.AnchorNode(), *target_node)) {
+    return PositionWithAffinity();
+  }
 
   Element* editable_element = UserSelectContainBoundaryOf(position);
   if (!editable_element || editable_element->contains(target_node))

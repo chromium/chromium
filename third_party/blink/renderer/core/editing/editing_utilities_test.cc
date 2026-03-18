@@ -319,6 +319,79 @@ TEST_F(EditingUtilitiesTest,
       PositionRespectingEditingBoundary(Position(text_abc, 2), hit_result));
 }
 
+// Ensures that when the hit target is not selectable and lives in an
+// out-of-flow subtree that is different from the anchor's, we return a
+// null PositionWithAffinity.
+TEST_F(EditingUtilitiesTest,
+       PositionRespectingEditingBoundaryWithNonSelectableOutOfFlow) {
+  LoadAhem();
+  InsertStyleElement("body { font: 10px/15px Ahem; margin: 0px; }");
+  SetBodyContent(
+      "<div id=sample>012<span id=anchor></span>345</div>"
+      "<div id=abs style='position:absolute;left:0;top:20;'>"
+      "<span id=target style='user-select:none;'>abc</span></div>");
+  UpdateAllLifecyclePhasesForTest();
+
+  const auto& sample = *GetElementById("sample");
+  const auto& text_012 = *To<Text>(sample.firstChild());
+  Element* target_el = GetElementById("target");
+  ASSERT_NE(nullptr, target_el);
+  Text* target_text = To<Text>(target_el->firstChild());
+  ASSERT_NE(nullptr, target_text);
+
+  const HitTestRequest hit_request(HitTestRequest::kActive);
+  const HitTestLocation hit_location(PhysicalOffset(5, 25));
+  HitTestResult hit_result(hit_request, hit_location);
+  ASSERT_TRUE(
+      GetDocument().View()->GetLayoutView()->HitTest(hit_location, hit_result));
+  ASSERT_EQ(target_text, hit_result.GetPosition().GetPosition().AnchorNode());
+
+  // The position we pass is inside the sample text (normal-flow). The
+  // hit target is inert (non-selectable) and lives inside an absolutely
+  // positioned container (out-of-flow). Since their nearest out-of-flow
+  // ancestors differ, PositionRespectingEditingBoundary should return a
+  // null PositionWithAffinity.
+  EXPECT_EQ(PositionWithAffinity(), PositionRespectingEditingBoundary(
+                                        Position(text_012, 1), hit_result));
+}
+
+// Ensures that when the hit target is not selectable but in the
+// same flow as the anchor's, we return the target position.
+TEST_F(EditingUtilitiesTest,
+       PositionRespectingEditingBoundaryWithNonSelectableInSameFlow) {
+  LoadAhem();
+  InsertStyleElement("body { font: 10px/15px Ahem; margin: 0px; }");
+  SetBodyContent(
+      "<div id=abs style='position:absolute;'>"
+      "<div><span id=target style='user-select:none;'>abc</span></div>"
+      "<div id=sample style='width:100px;height:20px;'>012<span "
+      "id=anchor></span>345</div>"
+      "</div>");
+  UpdateAllLifecyclePhasesForTest();
+
+  const auto& sample = *GetElementById("sample");
+  const auto& text_345 = *To<Text>(sample.lastChild());
+  Element* target_el = GetElementById("target");
+  ASSERT_NE(nullptr, target_el);
+  Text* target_text = To<Text>(target_el->firstChild());
+  ASSERT_NE(nullptr, target_text);
+
+  const HitTestRequest hit_request(HitTestRequest::kActive);
+  const HitTestLocation hit_location(PhysicalOffset(0, 5));
+  HitTestResult hit_result(hit_request, hit_location);
+  ASSERT_TRUE(
+      GetDocument().View()->GetLayoutView()->HitTest(hit_location, hit_result));
+  ASSERT_EQ(target_text, hit_result.GetPosition().GetPosition().AnchorNode());
+
+  // The position we pass is inside the sample text (normal-flow). The
+  // hit target is inert (non-selectable) and is not out-of-flow of anchor.
+  // Since their nearest out-of-flow ancestor is same,
+  // PositionRespectingEditingBoundary should return the target position.
+  EXPECT_EQ(
+      PositionWithAffinity(Position(target_text, 0)),
+      PositionRespectingEditingBoundary(Position(text_345, 1), hit_result));
+}
+
 TEST_F(EditingUtilitiesTest, RepeatString) {
   EXPECT_EQ("", RepeatString("xyz", 0));
   EXPECT_EQ("xyz", RepeatString("xyz", 1));
