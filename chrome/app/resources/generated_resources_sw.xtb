@@ -504,6 +504,7 @@ Kagua manenosiri yako wakati wowote katika <ph name="GOOGLE_PASSWORD_MANAGER" />
 <translation id="1327495825214193325">Ili uwashe utatuzi wa ADB, unahitaji kuzima kisha uwashe <ph name="DEVICE_TYPE" />. Unatakiwa kurejesha mipangilio ya kiwandani kwenye kifaa chako ili uzime.</translation>
 <translation id="1327527584824210101">Tumia ufunguo wako wa siri</translation>
 <translation id="1327794256477341646">Vipengele vinavyohitaji maelezo ya mahali ulipo havitafanya kazi</translation>
+<translation id="1328041566565643371">Ncha ya Kubadilisha Ukubwa wa Ukanda wa Vichupo Wima (Inayoburutwa)</translation>
 <translation id="1328364753167940710">Baada ya saa <ph name="NUM_HR" /></translation>
 <translation id="1328928545650070438">Shusha nyusi</translation>
 <translation id="1329466763986822896">Boresha faragha kwa mtandaopepe huu</translation>
@@ -1477,6 +1478,7 @@ Huenda ruhusa ambazo tayari umezipa programu zikatumika kwenye akaunti hii. Unaw
     <ph name="BEGIN_DESCRIPTION3" />Shirika linaweza kufikia vipindi vya kifaa kutokea mbali ili kufanya utatuzi.<ph name="END_DESCRIPTION3" />
     <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />Kuruhusu ufikiaji<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
     <ph name="BEGIN_DESCRIPTION4" />Programu, huduma na mitandao ya shirika vinaweza tu kupatikana kwenye vifaa vilivyoandikishwa.<ph name="END_DESCRIPTION4" /></translation>
+<translation id="1979208610845113582">Sasa unaweza kuendelea na mazungumzo ya Matumizi ya AI moja kwa moja hapa. Bandua wakati wowote.</translation>
 <translation id="1979280758666859181">Unabadilisha hadi kituo chenye toleo zee la <ph name="PRODUCT_NAME" />. Mabadiliko ya kituo yatatumika wakati toleo la kituo linalingana na toleo lililosanidiwa kwenye kifaa chako.</translation>
 <translation id="1979582938184524893">Chagua mwenyewe taarifa binafsi ambayo ungependa kujumuisha</translation>
 <translation id="197989455406964291">KDC haitumii aina ya usimbaji fiche</translation>
@@ -1944,6 +1946,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2297705863329999812">Tafuta printa</translation>
 <translation id="2297822946037605517">Shiriki ukurasa huu</translation>
 <translation id="229871422646860597">Bandua kwenye upau wa vidhibiti</translation>
+<translation id="2298749511072894576">Sasa unaweza kuendeleza magumzo ya Gemini moja kwa moja hapa. Bandua wakati wowote.</translation>
 <translation id="2299685119225839832">Unaweza kupata muhtasari wa yale ambayo watu wanasema katika maoni yao</translation>
 <translation id="2299734369537008228">Kitelezi: <ph name="MIN_LABEL" /> hadi <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">Jumuisha faili zote za kumbukumbu zilizokusanywa na debugd kama kumbukumbu tofauti.</translation>
@@ -2309,6 +2312,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="252418934079508528">Sakinisha <ph name="DEVICE_OS" /></translation>
 <translation id="252513908494776481">Uliza kuhusu kichupo hiki</translation>
 <translation id="2525746158911982776">Imeshindwa kusasisha kwa sababu nafasi ya kuhifadhi kwenye mfumo haitoshi.</translation>
+<translation id="2525842906387880861">Hutaona mapendekezo kwenye ukurasa huu tena</translation>
 <translation id="2526590354069164005">Eneo-kazi</translation>
 <translation id="2526619973349913024">Kagua Usasishaji</translation>
 <translation id="2527167509808613699">Aina yoyote ya muunganisho.</translation>
@@ -2802,6 +2806,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2855243985454069333">Hufuta historia kwenye vifaa vyote vilivyosawazishwa</translation>
 <translation id="2855812646048059450">Ingia katika akaunti ukitumia <ph name="CREDENTIAL_PROVIDER" /></translation>
 <translation id="2857047802954430547">Ingia katika akaunti ili upate manenosiri yako, alamisho na zaidi kwenye vifaa vyako vyote</translation>
+<translation id="2857195263461649321">Endelea ulipoachia kwenye Gemini</translation>
 <translation id="2859741939921354763">Pakia manenosiri kwenye <ph name="BRAND" /></translation>
 <translation id="2860284453253554297">Sera za Enterprise</translation>
 <translation id="2860710618359053450">Elekeza taya kulia</translation>
@@ -5957,6 +5962,7 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="5006778209728626987">Mwale wa radi</translation>
 <translation id="5007392906805964215">Maoni</translation>
 <translation id="50080882645628821">Ondoa Wasifu</translation>
+<translation id="5008587162781422067">Upana wa Ukanda wa Vichupo sasa ni <ph name="TAB_STRIP_PERCENT" />, Upana wa Sehemu ya Maudhui sasa ni <ph name="CONTENT_AREA_PERCENT" />.</translation>
 <translation id="5008936837313706385">Jina la Shughuli</translation>
 <translation id="5009463889040999939">Inabadilisha jina la wasifu. Hatua hii inaweza kuchukua dakika kadhaa.</translation>
 <translation id="5010886807652684893">Mwonekano wa picha</translation>
@@ -6603,6 +6609,7 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="5460861858595506978">Mifano</translation>
 <translation id="5461050611724244538">Muunganisho wa simu yako umekatika</translation>
 <translation id="5463275305984126951">Fahirisi ya <ph name="LOCATION" /></translation>
+<translation id="5463348003600590648">Zima mapendekezo</translation>
 <translation id="5463450804024056231">Jisajili kwa ajili ya barua pepe za <ph name="DEVICE_TYPE" /></translation>
 <translation id="5463625433003343978">Inatafuta vifaa...</translation>
 <translation id="5463856536939868464">Menyu iliyo na alamisho zilizofichwa</translation>
@@ -6766,6 +6773,7 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="557506220935336383">Angalia ruhusa za viendelezi vya tovuti nyingine</translation>
 <translation id="5575473780076478375">Kiendelezi kilicho katika hali fiche: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">Hitilafu imetokea kwenye onyesho la ombi la usajili.</translation>
+<translation id="5576472948015790634">Sasa unaweza kudhibiti vikundi vya vichupo na magumzo kati yako na Gemini katika sehemu moja. Bandua wakati wowote.</translation>
 <translation id="557722062034137776">Kuweka upya kifaa chako hakutaathiri akaunti zako za Google au data yoyote iliyosawazishwa kwenye akaunti hizi. Hata hivyo, faili zote zilizohifadhiwa ndani ya kifaa chako zitafutwa.</translation>
 <translation id="5578059481725149024">Ingia katika akaunti kiotomatiki</translation>
 <translation id="5578387000057347457">Weka kidokezo maalum au uangazie maandishi ili ubuni picha</translation>
@@ -9945,6 +9953,7 @@ Bonyeza swichi au kitufe ulichokabidhi ili uondoe kitendo ulichokabidhi.</transl
 <translation id="7758884017823246335">Weka utafutaji wa tovuti</translation>
 <translation id="7759443981285558794">Angalia vyeti ulivyopakia kutoka ChromeOS</translation>
 <translation id="7759606211476816416">Njia zako za mkato za tovuti</translation>
+<translation id="7759748248923439385">Sasa unaweza kudhibiti vikundi vya vichupo na mazungumzo yako ya Matumizi ya AI katika sehemu moja. Bandua wakati wowote.</translation>
 <translation id="7759809451544302770">Ya hiari</translation>
 <translation id="7760176388948986635">Ruhusu tovuti, huduma za ChromeOS na programu za Android zenye ruhusa ya mahali zitumie data ya mahali kifaa hiki kilipo. Mipangilio ya Usahihi wa Mahali hutoa data sahihi zaidi ya mahali inayotumiwa na programu pamoja na huduma za Android. Ili kufanya hivyo, Google huchakata mara kwa mara maelezo kuhusu vitambuzi vya vifaa na mawimbi ya simu za mkononi kutoka kwenye kifaa hiki ili kukusanya data ya mahali ambako mawimbi ya simu za mkononi yako. Data hii hutumika bila kumtambulisha mtu yeyote binafsi ili kuboresha usahihi wa mahali na huduma zinazotegemea mahali na pia kuboresha, kutoa na kudumisha huduma za Google kulingana na sababu halali za Google na washirika wengine ili kutimiza mahitaji ya watumiaji.</translation>
 <translation id="7762024824096060040">Imeshindwa kutumia akaunti hii</translation>
@@ -12196,6 +12205,7 @@ Hii inaweza kujumuisha maelezo kuhusu programu ulizoweka kwenye kifaa, faili, ki
 <translation id="950079950995628542">Kwenye "<ph name="PHONE_NAME" />"</translation>
 <translation id="950307215746360464">Mwongozo wa mipangilio</translation>
 <translation id="951273949038779544"><ph name="SITE_ACCESS" />. Iliwekwa kwenye kifaa na msimamizi wako</translation>
+<translation id="95160010745047025">Endelea ulipoachia kwenye Matumizi ya AI</translation>
 <translation id="951991426597076286">Kataa</translation>
 <translation id="952137968828772361">Pata maelezo zaidi kuhusu bidhaa, sehemu au maandishi unayoona kwenye skrini yako</translation>
 <translation id="952471655966876828">Kifaa kitaunganishwa kiotomatiki kinapokuwa kimewashwa na wakati kinatumiwa</translation>

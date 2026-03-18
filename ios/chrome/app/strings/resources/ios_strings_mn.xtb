@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">Эргээд тавтай морилно уу!</translation>
 <translation id="2015722694326466240">Нууц үгийг харахын тулд та эхлээд төхөөрөмждөө нууц код тохируулах шаардлагатай.</translation>
 <translation id="201759455285471444">Табын бүлгийг дэлгэнэ үү.</translation>
-<translation id="202070562065520783">Үүнийг надад тайлбарлана уу</translation>
 <translation id="2044394949148788042">Табын хүснэгтийг нээх</translation>
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> бүртгэлд <ph name="HOSTED_DOMAIN" />-с тохиргоо хийсэн бөгөөд зарим мэдээллийг үзэх боломжтой байж болзошгүй. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">шинэ зүйл</translation>
@@ -637,6 +636,7 @@
 <translation id="3324193307694657476">Хаяг 2</translation>
 <translation id="3328801116991980348">Сайтын мэдээлэл</translation>
 <translation id="333229797575847124">Энэ онцлогийг хэрхэн идэвхжүүлэх вэ?</translation>
+<translation id="334004756946755423">Үүнийг надад тайлбарлаач:</translation>
 <translation id="3344233834747405775">Карт эзэмшигчийн нэр буруу байна</translation>
 <translation id="3344485292736684439">{count,plural, =1{Хавчуургыг таны {email} бүртгэлийн "{title}"-д хадгалсан}other{Хавчуургуудыг таны {email} бүртгэлийн "{title}"-д хадгалсан}}</translation>
 <translation id="334690320928261823">Саяхны табууд</translation>

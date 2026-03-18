@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">വീണ്ടും സ്വാഗതം!</translation>
 <translation id="2015722694326466240">പാസ്‍വേഡുകൾ കാണാൻ, ആദ്യം നിങ്ങളുടെ ഉപകരണത്തിൽ പാസ്‌കോഡ് സജ്ജീകരിക്കുക.</translation>
 <translation id="201759455285471444">ടാബ് ഗ്രൂപ്പ് വികസിപ്പിക്കുക.</translation>
-<translation id="202070562065520783">ഇത് എന്നോട് വിശദീകരിക്കുക</translation>
 <translation id="2044394949148788042">ടാബ് ഗ്രിഡ് തുറക്കുക</translation>
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> എന്ന അക്കൗണ്ട് മാനേജ് ചെയ്യുന്നത് <ph name="HOSTED_DOMAIN" /> ആണ്, അതിന് ചില വിവരങ്ങൾ കാണാനായേക്കാം. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">പുതിയ ഇനം</translation>
@@ -637,6 +636,7 @@
 <translation id="3324193307694657476">വിലാസം 2</translation>
 <translation id="3328801116991980348">സൈറ്റ് വിവരങ്ങള്‍</translation>
 <translation id="333229797575847124">ഈ ഫീച്ചർ എങ്ങനെ പ്രവർത്തനക്ഷമമാക്കാം</translation>
+<translation id="334004756946755423">ഇത് എന്നോട് വിശദീകരിക്കുക:</translation>
 <translation id="3344233834747405775">കാർഡുടമയുടെ പേര് അസാധുവാണ്</translation>
 <translation id="3344485292736684439">{count,plural, =1{{email} എന്ന നിങ്ങളുടെ അക്കൗണ്ടിലെ "{title}" എന്നതിലേക്ക് ബുക്ക്‌മാർക്ക് സംരക്ഷിച്ചു}other{{email} എന്ന നിങ്ങളുടെ അക്കൗണ്ടിലെ "{title}" എന്നതിലേക്ക് ബുക്ക്‌മാർക്കുകൾ സംരക്ഷിച്ചു}}</translation>
 <translation id="334690320928261823">അടുത്തിടെ ഉപയോഗിച്ച ടാബുകൾ</translation>

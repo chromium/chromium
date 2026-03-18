@@ -504,6 +504,7 @@
 <translation id="1327495825214193325">‏ADB ڈیبگنگ کو فعال کرنے کے لیے، اس <ph name="DEVICE_TYPE" /> کو ری سٹارٹ کرنے کی ضرورت ہے۔ اسے غیر فعال کرنے کے لیے فیکٹری کی ترتیبات کو ری سیٹ کرنا ہوگا۔</translation>
 <translation id="1327527584824210101">اپنی پاس کی استعمال کریں</translation>
 <translation id="1327794256477341646">وہ خصوصیات کام نہیں کریں گی جن کے لیے آپ کے مقام کی ضرورت ہوتی ہے</translation>
+<translation id="1328041566565643371">عمودی ٹیب اسٹرپ کا سائز تبدیل کرنے کا ہینڈل (گھسیٹنے کے قابل)</translation>
 <translation id="1328364753167940710"><ph name="NUM_HR" /> گھنٹے میں</translation>
 <translation id="1328928545650070438">ابرو جھکائیں</translation>
 <translation id="1329466763986822896">اس ہاٹ اسپاٹ کے لیے رازداری کو بہتر بنائیں</translation>
@@ -1134,7 +1135,7 @@
 <translation id="1753067873202720523">‏آن ہونے پر ممکن ہے آپ کی Chromebook چارج نہ ہو۔</translation>
 <translation id="1753557900380512635">اندرونی</translation>
 <translation id="1753905327828125965">سب سے زیادہ ملاحظہ کردہ</translation>
-<translation id="1755601632425835748">متن کا سائز</translation>
+<translation id="1755601632425835748">ٹیکسٹ کا سائز</translation>
 <translation id="1756963401828337401">کیپچر کرنے کے لیے ایک اسکرین منتخب کریں</translation>
 <translation id="1757132445735080748">‏Linux کا سیٹ اپ مکمل کرنے کیلئے، ChromeOS Flex کو اپ ڈیٹ کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="1757301747492736405">اَن انسٹال کا عمل زیر التواء ہے</translation>
@@ -1471,6 +1472,7 @@
     <ph name="BEGIN_DESCRIPTION3" />تنظیم ٹربل شوٹنگ فراہم کرنے کے لیے ایک آلہ سیشن تک دور سے رسائی حاصل کر سکتی ہے۔<ph name="END_DESCRIPTION3" />
     <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />رسائی فعال کرنے کے لیے<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
     <ph name="BEGIN_DESCRIPTION4" />تنظیمی ایپس، سروسز اور نیٹ ورکس صرف اندراج شدہ آلات پر دستیاب ہو سکتے ہیں۔<ph name="END_DESCRIPTION4" /></translation>
+<translation id="1979208610845113582">‏اب آپ یہاں براہ راست AI وضع کے سلسلے دوبارہ شروع کر سکتے ہیں۔ کسی بھی وقت اس کا پن ہٹائيں۔</translation>
 <translation id="1979280758666859181">آپ <ph name="PRODUCT_NAME" /> کے ایک پرانے ورژن کے ساتھ ایک چینل میں تبدیل ہو رہے ہیں۔ آپ کے آلہ پر فی الحال انسٹال کردہ ورژن سے اس چینل ورژن کے مماثل ہونے پر چینل کی تبدیلی لاگو ہوگی۔</translation>
 <translation id="1979582938184524893">دستی طور پر ذاتی معلومات کو منتخب کریں جسے آپ شامل کرنا چاہتے ہیں</translation>
 <translation id="197989455406964291">‏KDC مرموز کاری کی قسم کو سپورٹ نہیں کرتا ہے</translation>
@@ -1936,6 +1938,7 @@
 <translation id="2297705863329999812">پرنٹرز تلاش کریں</translation>
 <translation id="2297822946037605517">اس صفحہ کا اشتراک کریں</translation>
 <translation id="229871422646860597">ٹول بار سے پن ہٹائیں</translation>
+<translation id="2298749511072894576">‏اب آپ یہاں براہ راست Gemini چیٹس دوبارہ شروع کر سکتے ہیں۔ کسی بھی وقت اس کا پن ہٹائيں۔</translation>
 <translation id="2299685119225839832">آپ اپنے جائزوں میں لوگ کیا کہہ رہے ہیں اس کا خلاصہ حاصل کر سکتے ہیں</translation>
 <translation id="2299734369537008228">سلائیڈر: <ph name="MIN_LABEL" /> تا <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">الگ آرکائیو کے بطور ڈیبگ کے ذریعے جمع کی گئی تمام لاگ فائلز شامل کریں۔</translation>
@@ -2301,6 +2304,7 @@
 <translation id="252418934079508528"><ph name="DEVICE_OS" /> انسٹال کریں</translation>
 <translation id="252513908494776481">اس ٹیب کے بارے میں پوچھیں</translation>
 <translation id="2525746158911982776">اپ ڈیٹ ناکام ہو گئی کیونکہ سسٹم میں اسٹوریج کی جگہ کافی نہیں ہے۔</translation>
+<translation id="2525842906387880861">آپ کو دوبارہ اس صفحے پر تجاویز دکھائی نہیں دیں گی</translation>
 <translation id="2526590354069164005">ڈیسک ٹاپ</translation>
 <translation id="2526619973349913024">اپ ڈیٹ چیک کریں</translation>
 <translation id="2527167509808613699">کسی بھی قسم کا کنکشن</translation>
@@ -2794,6 +2798,7 @@
 <translation id="2855243985454069333">مطابقت پذیر کردہ تمام آلات سے سرگزشت حذف ہو جاتی ہے</translation>
 <translation id="2855812646048059450"><ph name="CREDENTIAL_PROVIDER" /> کے ساتھ سائن ان کریں</translation>
 <translation id="2857047802954430547">اپنے تمام آلات پر اپنے پاس ورڈز، بُک مارکس وغیرہ حاصل کرنے کیلئے سائن ان کریں</translation>
+<translation id="2857195263461649321">‏‫Gemini پر وہیں سے شروع کریں جہاں آپ نے چھوڑا تھا</translation>
 <translation id="2859741939921354763"><ph name="BRAND" /> میں پاس ورڈز درآمد کریں</translation>
 <translation id="2860284453253554297">‏‫Enterprise کی پالیسیاں</translation>
 <translation id="2860710618359053450">جبڑا دائیں جانب لے جائیں</translation>
@@ -5948,6 +5953,7 @@
 <translation id="5006778209728626987">روشنی</translation>
 <translation id="5007392906805964215">جائزہ لیں</translation>
 <translation id="50080882645628821">پروفائل ہٹائیں</translation>
+<translation id="5008587162781422067">ٹیب سٹرپ اب <ph name="TAB_STRIP_PERCENT" /> چوڑا ہے، مواد کا علاقہ اب <ph name="CONTENT_AREA_PERCENT" /> چوڑا ہے۔</translation>
 <translation id="5008936837313706385">سرگرمی کا نام</translation>
 <translation id="5009463889040999939">پروفائل کا نام تبدیل ہو رہا ہے۔ اس میں چند منٹ لگ سکتے ہیں۔</translation>
 <translation id="5010886807652684893">ویژوئل منظر</translation>
@@ -6592,6 +6598,7 @@
 <translation id="5460861858595506978">ترغیب</translation>
 <translation id="5461050611724244538">آپ کے فون کا کنکشن منقطع ہو گیا</translation>
 <translation id="5463275305984126951"><ph name="LOCATION" /> کا انڈیکس</translation>
+<translation id="5463348003600590648">تجاویز کو غیر فعال کریں</translation>
 <translation id="5463450804024056231"><ph name="DEVICE_TYPE" /> ای میلز کے لیے سائن اپ کریں</translation>
 <translation id="5463625433003343978">آلات تلاش کئے جا رہے ہیں...</translation>
 <translation id="5463856536939868464">مخفی بُک مارکس پر مشتمل مینیو</translation>
@@ -6755,6 +6762,7 @@
 <translation id="557506220935336383">دیگر سائٹس کے لیے ایکسٹینشن کی اجازتیں دیکھیں</translation>
 <translation id="5575473780076478375">پوشیدگی ایکسٹینشن: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">ڈیمو کی رجسٹریشن کی درخواست کے ساتھ ایک مسئلہ پیش آگیا۔</translation>
+<translation id="5576472948015790634">‏اب آپ اپنے ٹیب گروپس اور Gemini چیٹس کا ایک ہی جگہ پر نظم کر سکتے ہیں۔ کسی بھی وقت اس کا پن ہٹائيں۔</translation>
 <translation id="557722062034137776">‏آپ کے آلہ کو دوبارہ ترتیب دینے سے آپ کے Google اکاؤنٹس یا ان اکاؤنٹس کے کسی بھی مطابقت پذیر ڈیٹا پر اثر نہیں پڑے گا۔ تاہم، آپ کے آلہ پر مقامی طور پر محفوظ کردہ سبھی فائلیں حذف کر دی جائیں گی۔</translation>
 <translation id="5578059481725149024">خودکار سائن ان</translation>
 <translation id="5578387000057347457">تصویر بنانے کے لیے حسب ضرورت پرامپٹ درج کریں یا ٹیکسٹ کو ہائی لائٹ کریں</translation>
@@ -9933,6 +9941,7 @@
 <translation id="7758884017823246335">سائٹ کی تلاش شامل کریں</translation>
 <translation id="7759443981285558794">‏‫ChromeOS سے درآمد شدہ سرٹیفکیٹس دیکھیں</translation>
 <translation id="7759606211476816416">آپ کی سائٹ کے شارٹ کٹس</translation>
+<translation id="7759748248923439385">‏اب آپ اپنے ٹیب گروپس اور AI وضع کے تھریڈز کا ایک جگہ پر نظم کر سکتے ہیں۔ کسی بھی وقت اس کا پن ہٹائيں۔</translation>
 <translation id="7759809451544302770">اختیاری</translation>
 <translation id="7760176388948986635">‏مقام کی اجازت والے ChromeOS اور Android ایپس، ویب سائٹس اور سروسز کو اس آلے کا مقام استعمال کرنے کی اجازت دیں۔ مقام کی درستگی Android ایپس اور سروسز کے لیے مزید درست مقام فراہم کرتی ہے۔ ایسا کرنے کے لیے، Google وقتاً فوقتاً اس آلے سے وائرلیس سگنل کے مقامات کو کراؤڈ سورس کرنے کے لیے آلے کے سینسرز اور وائرلیس سگنلز سے متعلق معلومات پر کارروائی کرتا ہے۔ ان کا استعمال کسی فرد کی شناخت کیے بغیر مقام کی درستگی اور مقام پر مبنی سروسز کو بہتر بنانے، ساتھ ہی Google اور فریقین ثالث کی جائز دلچسپیوں پر مبنی Google کی سروسز کو بھی بہتر بنانے، انہیں فراہم کرنے اور ان کو برقرار رکھنے کے لیے کیا جاتا ہے تاکہ صارفین کی ضروریات کو پورا کیا جا سکے۔</translation>
 <translation id="7762024824096060040">یہ اکاؤنٹ استعمال نہیں کیا جا سکتا</translation>
@@ -12183,6 +12192,7 @@
 <translation id="950079950995628542">منجانب "<ph name="PHONE_NAME" />"</translation>
 <translation id="950307215746360464">سیٹ اپ کی گائیڈ</translation>
 <translation id="951273949038779544"><ph name="SITE_ACCESS" />۔ آپ کے منتظم نے انسٹال کیا ہے</translation>
+<translation id="95160010745047025">‏‫AI وضع پر وہیں سے شروع کریں جہاں سے آپ نے چھوڑا تھا</translation>
 <translation id="951991426597076286">مسترد کریں</translation>
 <translation id="952137968828772361">پروڈکٹس، مقامات یا ٹیکسٹ جو آپ اپنی اسکرین پر دیکھ رہے ہیں اس کے بارے میں مزید جانیں</translation>
 <translation id="952471655966876828">آلہ کے آن ہونے اور استعمال ہونے پر یہ خودکار طور پر منسلک ہو جائے گا</translation>

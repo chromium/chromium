@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">Добро нам дошли поново.</translation>
 <translation id="2015722694326466240">Да бисте видели лозинке, прво морате да подесите шифру на уређају.</translation>
 <translation id="201759455285471444">Проширите групу картица.</translation>
-<translation id="202070562065520783">Објасни ми ово</translation>
 <translation id="2044394949148788042">Отворите мрежу за картице</translation>
 <translation id="2044681667265133332">Налогом <ph name="USER_EMAIL" /> управља <ph name="HOSTED_DOMAIN" />, који може да прегледа одређене информације. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">нова ставка</translation>
@@ -637,6 +636,7 @@
 <translation id="3324193307694657476">2. ред за адресу</translation>
 <translation id="3328801116991980348">Информације о сајту</translation>
 <translation id="333229797575847124">Како да омогућите ову функцију</translation>
+<translation id="334004756946755423">Објасни ми ово:</translation>
 <translation id="3344233834747405775">Неважеће име власника картице</translation>
 <translation id="3344485292736684439">{count,plural, =1{Обележивач је сачуван у фолдеру {title} на налогу, {email}}one{Обележивачи су сачувани у фолдеру {title} на налогу, {email}}few{Обележивачи су сачувани у фолдеру {title} на налогу, {email}}other{Обележивачи су сачувани у фолдеру {title} на налогу, {email}}}</translation>
 <translation id="334690320928261823">Недавне картице</translation>

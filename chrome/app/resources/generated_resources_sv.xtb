@@ -504,6 +504,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1327495825214193325">Du måste starta om <ph name="DEVICE_TYPE" /> om du vill aktivera felsökning med ADB. Om du vill inaktivera funktionen måste du återställa enheten till standardinställningarna.</translation>
 <translation id="1327527584824210101">Använd nyckeln</translation>
 <translation id="1327794256477341646">Funktioner där din plats behövs slutar fungera</translation>
+<translation id="1328041566565643371">Storlekshandtag för vertikalt flikhuvud (dragbart)</translation>
 <translation id="1328364753167940710">Om <ph name="NUM_HR" /> tim</translation>
 <translation id="1328928545650070438">Sänk ögonbrynen</translation>
 <translation id="1329466763986822896">Förbättra integriteten för den här surfzonen</translation>
@@ -1481,6 +1482,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
     <ph name="BEGIN_DESCRIPTION3" />Organisationen kan få fjärråtkomst till en enhetssession för att göra felsökning.<ph name="END_DESCRIPTION3" />
     <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />Aktivera åtkomst<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
     <ph name="BEGIN_DESCRIPTION4" />Organisationens appar, tjänster och nätverk är kanske bara tillgängliga på registrerade enheter.<ph name="END_DESCRIPTION4" /></translation>
+<translation id="1979208610845113582">Nu kan du återuppta diskussioner i AI-läget direkt här. Du kan lossa detta när som helst.</translation>
 <translation id="1979280758666859181">Du byter till en kanal med en äldre version av <ph name="PRODUCT_NAME" />. Kanalen byts när kanalversionen matchar den version som är installerad på din enhet.</translation>
 <translation id="1979582938184524893">Välj vilka personliga uppgifter som ska ingå manuellt</translation>
 <translation id="197989455406964291">KDC har inte stöd för krypteringstypen</translation>
@@ -1948,6 +1950,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2297705863329999812">Sök skrivare</translation>
 <translation id="2297822946037605517">Dela den här sidan</translation>
 <translation id="229871422646860597">Lossa från verktygsfältet</translation>
+<translation id="2298749511072894576">Nu kan du återuppta Gemini-chattar direkt här. Du kan lossa detta när som helst.</translation>
 <translation id="2299685119225839832">Du kan få en sammanfattning av vad människor säger i sina recensioner</translation>
 <translation id="2299734369537008228">Skjutreglage <ph name="MIN_LABEL" /> till <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">Ta med alla loggfiler som har samlats in av debugd i ett eget arkiv.</translation>
@@ -2312,6 +2315,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="252418934079508528">Installera <ph name="DEVICE_OS" /></translation>
 <translation id="252513908494776481">Fråga om den här fliken</translation>
 <translation id="2525746158911982776">Uppdateringen misslyckades eftersom systemet inte har tillräckligt med lagringsutrymme.</translation>
+<translation id="2525842906387880861">Inga fler förslag visas på den här sidan</translation>
 <translation id="2526590354069164005">Skrivbord</translation>
 <translation id="2526619973349913024">Sök efter uppdatering</translation>
 <translation id="2527167509808613699">Ospecificerad anslutning</translation>
@@ -2805,6 +2809,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2855243985454069333">Raderar historiken från alla synkroniserade enheter.</translation>
 <translation id="2855812646048059450">Logga in med <ph name="CREDENTIAL_PROVIDER" /></translation>
 <translation id="2857047802954430547">Logga in om du vill få tillgång till dina lösenord, bokmärken med mera på alla dina enheter</translation>
+<translation id="2857195263461649321">Fortsätt där du slutade i Gemini</translation>
 <translation id="2859741939921354763">Importera lösenord till <ph name="BRAND" /></translation>
 <translation id="2860284453253554297">Enterprise-policyer</translation>
 <translation id="2860710618359053450">Flytta käken åt höger</translation>
@@ -5962,6 +5967,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5006778209728626987">Blixtar</translation>
 <translation id="5007392906805964215">Granska</translation>
 <translation id="50080882645628821">Ta bort profilen</translation>
+<translation id="5008587162781422067">Flikhuvudets bredd är nu <ph name="TAB_STRIP_PERCENT" />, och innehållsområdets bredd är nu <ph name="CONTENT_AREA_PERCENT" />.</translation>
 <translation id="5008936837313706385">Aktivitetsnamn</translation>
 <translation id="5009463889040999939">Byter namn på profilen. Det kan ta några minuter.</translation>
 <translation id="5010886807652684893">Visuell vy</translation>
@@ -6608,6 +6614,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5460861858595506978">Inspiration</translation>
 <translation id="5461050611724244538">Anslutningen till telefonen bröts</translation>
 <translation id="5463275305984126951">Index till <ph name="LOCATION" /></translation>
+<translation id="5463348003600590648">Inaktivera förslag</translation>
 <translation id="5463450804024056231">Registrera dig för e-postmeddelanden gällande <ph name="DEVICE_TYPE" /></translation>
 <translation id="5463625433003343978">Letar efter enheter …</translation>
 <translation id="5463856536939868464">Menyn innehåller dolda bokmärken</translation>
@@ -6771,6 +6778,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="557506220935336383">Se vilka behörigheter som tillägg har på andra webbplatser</translation>
 <translation id="5575473780076478375">Inkognitotilläggsprogram: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">Ett problem uppstod med registreringsbegäran.</translation>
+<translation id="5576472948015790634">Nu kan du hantera dina flikgrupper och Gemini-chattar på ett och samma ställe. Du kan lossa detta när som helst.</translation>
 <translation id="557722062034137776">Dina Google-konton eller data som synkroniserats med dessa konton påverkas inte när du återställer enheten. Alla filer som sparas lokalt på enheten kommer dock att tas bort.</translation>
 <translation id="5578059481725149024">Autoinloggning</translation>
 <translation id="5578387000057347457">Ange en anpassad prompt eller markera text för att skapa en bild</translation>
@@ -9950,6 +9958,7 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="7758884017823246335">Lägg till webbplatssökning</translation>
 <translation id="7759443981285558794">Visa importerade certifikat från ChromeOS</translation>
 <translation id="7759606211476816416">Dina kortkommandon för webbplatser</translation>
+<translation id="7759748248923439385">Nu kan du hantera dina flikgrupper och diskussioner i AI-läget på ett och samma ställe. Du kan lossa detta när som helst.</translation>
 <translation id="7759809451544302770">Valfritt</translation>
 <translation id="7760176388948986635">Tillåt att de appar, webbplatser och tjänster för ChromeOS och Android som har platsbehörighet använder enhetens plats. Platsangivelsens exakthet tillhandahåller en mer exakt plats för Android-appar och Android-tjänster. För att göra detta hanterar Google med jämna mellanrum information om enhetssensorer och trådlösa signaler från den här enheten i samband med massinsamling av platser för trådlösa signaler. Dessa används utan att identifiera någon person för att förbättra platsangivelsens exakthet och platsbaserade tjänster och för att förbättra, tillhandahålla och underhålla Googles tjänster baserat på Googles och tredje parters berättigade intressen för att tillgodose användarnas behov.</translation>
 <translation id="7762024824096060040">Det här kontot kan inte användas</translation>
@@ -12201,6 +12210,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren, enhe
 <translation id="950079950995628542">Från <ph name="PHONE_NAME" /></translation>
 <translation id="950307215746360464">Konfigureringsguide</translation>
 <translation id="951273949038779544"><ph name="SITE_ACCESS" />. Har installerats av administratören</translation>
+<translation id="95160010745047025">Fortsätt där du slutade i AI-läget</translation>
 <translation id="951991426597076286">Godkänn inte</translation>
 <translation id="952137968828772361">Läs mer om produkter, platser eller text som du ser på skärmen</translation>
 <translation id="952471655966876828">Enheten ansluts automatiskt när den är aktiverad eller används</translation>

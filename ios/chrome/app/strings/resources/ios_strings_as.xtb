@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">পুনৰ স্বাগতম!</translation>
 <translation id="2015722694326466240">পাছৱৰ্ড চাবলৈ আপুনি প্ৰথমে এই ডিভাইচটোত এটা পাছক‘ড ছেট কৰিব লাগিব।</translation>
 <translation id="201759455285471444">টেবৰ গোট বিস্তাৰ কৰক।</translation>
-<translation id="202070562065520783">এইটো মোৰ বাবে বর্ণনা কৰক</translation>
 <translation id="2044394949148788042">টেব গ্ৰীডটো খোলক</translation>
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> একাউণ্টটো <ph name="HOSTED_DOMAIN" />এ পৰিচালনা কৰে, যি হয়তো কিছুমান তথ্য চাব পাৰিব। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">নতুন বস্তু</translation>
@@ -598,7 +597,7 @@
 <translation id="315778507796115851">ইতিহাস</translation>
 <translation id="31652791196570636">অগ্ৰাহ্য কৰক</translation>
 <translation id="3167868116600277716">ডিস্ক’ভাৰৰ ফীড</translation>
-<translation id="3169472444629675720">Discover</translation>
+<translation id="3169472444629675720">ডিস্ক’ভাৰ</translation>
 <translation id="3174662312949010067">আপুনি নিজৰ অন্য ডিভাইচসমূহতো ছেভ কৰি ৰখা পাছৱৰ্ড ব্যৱহাৰ কৰিব পাৰে।</translation>
 <translation id="3177338796769255211">আপোনাৰ আটাইবোৰ ডিভাইচত নিজৰ বুকমাৰ্ক আৰু আন বহুতো লাভ কৰিবলৈ ছাইন ইন কৰক</translation>
 <translation id="3181954750937456830">সুৰক্ষিত ব্ৰাউজিং (আপোনাৰ ডিভাইচটোক বিপজ্জনক ছাইটৰ পৰা সুৰক্ষা প্ৰদান কৰে)</translation>
@@ -637,6 +636,7 @@
 <translation id="3324193307694657476">ঠিকনা ২</translation>
 <translation id="3328801116991980348">ছাইটৰ তথ্য</translation>
 <translation id="333229797575847124">এই সুবিধাটো কেনেকৈ সক্ষম কৰিব লাগে</translation>
+<translation id="334004756946755423">মোক এইটো বুজাই দিয়ক:</translation>
 <translation id="3344233834747405775">কাৰ্ডৰ গৰাকীৰ নাম অমান্য</translation>
 <translation id="3344485292736684439">{count,plural, =1{আপোনাৰ একাউণ্টত "{title}"ত বুকমাৰ্ক ছেভ কৰা হৈছে, {email}}one{আপোনাৰ একাউণ্টত "{title}"ত বুকমাৰ্কসমূহ ছেভ কৰা হৈছে, {email}}other{আপোনাৰ একাউণ্টত "{title}"ত বুকমাৰ্কসমূহ ছেভ কৰা হৈছে, {email}}}</translation>
 <translation id="334690320928261823">শেহতীয়া টেব</translation>

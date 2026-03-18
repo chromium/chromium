@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">Xush kelibsiz!</translation>
 <translation id="2015722694326466240">Parollarni ko‘rish uchun qurilmangizni maxfiy kod bilan qulflang.</translation>
 <translation id="201759455285471444">Varaqlar guruhini yoyish.</translation>
-<translation id="202070562065520783">Bu haqida izoh berilsin</translation>
 <translation id="2044394949148788042">Varaqlar jadvalida ochish</translation>
 <translation id="2044681667265133332">Bu hisobni (<ph name="USER_EMAIL" />) <ph name="HOSTED_DOMAIN" /> boshqaradi va ayrim maʼlumotlarga ruxsat olishi mumkin. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">yangi element</translation>
@@ -637,6 +636,7 @@
 <translation id="3324193307694657476">Manzil, 2-qator</translation>
 <translation id="3328801116991980348">Sayt haqida ma’lumot</translation>
 <translation id="333229797575847124">Bu funksiyani yoqish tartibi</translation>
+<translation id="334004756946755423">Bu haqida izoh berilsin:</translation>
 <translation id="3344233834747405775">Karta egasi ismi yaroqsiz</translation>
 <translation id="3344485292736684439">{count,plural, =1{Bukmark {email} hisobingizdagi “{title}” jildiga saqlandi}other{Bukmark {email} hisobingizdagi “{title}” jildiga saqlandi}}</translation>
 <translation id="334690320928261823">Oxirgi varaqlar</translation>

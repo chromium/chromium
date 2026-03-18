@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">다시 방문해 주셔서 감사합니다</translation>
 <translation id="2015722694326466240">비밀번호를 보려면 먼저 기기에 비밀번호를 설정해야 합니다.</translation>
 <translation id="201759455285471444">탭 그룹을 펼칩니다.</translation>
-<translation id="202070562065520783">설명해 줘</translation>
 <translation id="2044394949148788042">탭 그리드 열기</translation>
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> 계정은 일부 정보를 볼 수 있는 <ph name="HOSTED_DOMAIN" />에서 관리합니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">새 항목</translation>
@@ -637,6 +636,7 @@
 <translation id="3324193307694657476">주소 2</translation>
 <translation id="3328801116991980348">사이트 정보</translation>
 <translation id="333229797575847124">이 기능을 사용 설정하는 방법</translation>
+<translation id="334004756946755423">다음을 설명해 줘.</translation>
 <translation id="3344233834747405775">카드 소지자 이름이 잘못되었습니다</translation>
 <translation id="3344485292736684439">{count,plural, =1{{email} 계정의 "{title}"에 북마크가 저장됨}other{{email} 계정의 "{title}"에 북마크가 저장됨}}</translation>
 <translation id="334690320928261823">최근 탭</translation>

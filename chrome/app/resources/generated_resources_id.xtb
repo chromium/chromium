@@ -504,6 +504,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1327495825214193325">Untuk mengaktifkan proses debug ADB, Anda perlu memulai ulang <ph name="DEVICE_TYPE" /> ini. Perlu melakukan reset ke setelan pabrik untuk menonaktifkannya.</translation>
 <translation id="1327527584824210101">Gunakan kunci sandi</translation>
 <translation id="1327794256477341646">Fitur yang memerlukan lokasi Anda tidak akan berfungsi</translation>
+<translation id="1328041566565643371">Handel Pengubah Ukuran Kolom Tab Vertikal (Dapat Ditarik)</translation>
 <translation id="1328364753167940710">Dalam <ph name="NUM_HR" /> jam</translation>
 <translation id="1328928545650070438">Menurunkan alis</translation>
 <translation id="1329466763986822896">Tingkatkan privasi untuk hotspot ini</translation>
@@ -1480,6 +1481,7 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
     <ph name="BEGIN_DESCRIPTION3" />Organisasi dapat mengakses sesi perangkat dari jarak jauh untuk membantu memecahkan masalah.<ph name="END_DESCRIPTION3" />
     <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />Mengaktifkan akses<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
     <ph name="BEGIN_DESCRIPTION4" />Aplikasi, layanan, dan jaringan organisasi mungkin hanya tersedia di perangkat yang terdaftar.<ph name="END_DESCRIPTION4" /></translation>
+<translation id="1979208610845113582">Kini Anda dapat langsung melanjutkan rangkaian pesan Mode AI di sini. Lepas sematan ini kapan saja.</translation>
 <translation id="1979280758666859181">Anda mengubah ke saluran dengan versi <ph name="PRODUCT_NAME" /> yang lebih lama. Perubahan saluran ini akan berlaku jika versi saluran cocok dengan versi yang saat ini terpasang pada perangkat Anda.</translation>
 <translation id="1979582938184524893">Pilih informasi pribadi yang ingin Anda sertakan secara manual</translation>
 <translation id="197989455406964291">KDC tidak mendukung jenis enkripsi</translation>
@@ -1947,6 +1949,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2297705863329999812">Telusuri printer</translation>
 <translation id="2297822946037605517">Bagikan halaman ini</translation>
 <translation id="229871422646860597">Lepaskan sematan dari toolbar</translation>
+<translation id="2298749511072894576">Kini Anda dapat langsung melanjutkan percakapan Gemini di sini. Lepas sematan ini kapan saja.</translation>
 <translation id="2299685119225839832">Anda bisa mendapatkan ringkasan pendapat orang-orang di ulasan mereka</translation>
 <translation id="2299734369537008228">Penggeser: <ph name="MIN_LABEL" /> hingga <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">Sertakan semua file log yang dikumpulkan oleh debugd sebagai arsip terpisah.</translation>
@@ -2311,6 +2314,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="252418934079508528">Instal <ph name="DEVICE_OS" /></translation>
 <translation id="252513908494776481">Tanyakan tentang tab ini</translation>
 <translation id="2525746158911982776">Update gagal karena sistem tidak memiliki ruang penyimpanan yang cukup.</translation>
+<translation id="2525842906387880861">Anda tidak akan melihat saran di halaman ini lagi</translation>
 <translation id="2526590354069164005">Desktop</translation>
 <translation id="2526619973349913024">Periksa update</translation>
 <translation id="2527167509808613699">Jenis sambungan apa pun</translation>
@@ -2804,6 +2808,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2855243985454069333">Menghapus histori dari semua perangkat yang disinkronkan</translation>
 <translation id="2855812646048059450">Login dengan <ph name="CREDENTIAL_PROVIDER" /></translation>
 <translation id="2857047802954430547">Login untuk mendapatkan sandi, bookmark, dan info Anda yang lain di semua perangkat Anda</translation>
+<translation id="2857195263461649321">Lanjutkan percakapan terakhir Anda di Gemini</translation>
 <translation id="2859741939921354763">Impor sandi ke <ph name="BRAND" /></translation>
 <translation id="2860284453253554297">Kebijakan Perusahaan</translation>
 <translation id="2860710618359053450">Menggerakkan rahang ke kanan</translation>
@@ -5962,6 +5967,7 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5006778209728626987">Halilintar</translation>
 <translation id="5007392906805964215">Tinjau</translation>
 <translation id="50080882645628821">Hapus Profil</translation>
+<translation id="5008587162781422067">Kolom Tab kini selebar <ph name="TAB_STRIP_PERCENT" />, Area Konten kini selebar <ph name="CONTENT_AREA_PERCENT" />.</translation>
 <translation id="5008936837313706385">Nama Aktivitas</translation>
 <translation id="5009463889040999939">Mengganti nama profil. Proses ini mungkin perlu waktu beberapa menit.</translation>
 <translation id="5010886807652684893">Tampilan visual</translation>
@@ -6608,6 +6614,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="5460861858595506978">Inspirasi</translation>
 <translation id="5461050611724244538">Koneksi dengan ponsel Anda terputus</translation>
 <translation id="5463275305984126951">Pengindeksan <ph name="LOCATION" /></translation>
+<translation id="5463348003600590648">Nonaktifkan saran</translation>
 <translation id="5463450804024056231">Daftar untuk menerima email <ph name="DEVICE_TYPE" /></translation>
 <translation id="5463625433003343978">Mencari perangkat ...</translation>
 <translation id="5463856536939868464">Menu yang berisi bookmark tersembunyi</translation>
@@ -6771,6 +6778,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="557506220935336383">Lihat izin ekstensi untuk situs lainnya</translation>
 <translation id="5575473780076478375">Ekstensi Samaran: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">Terjadi masalah dengan permintaan pendaftaran demo.</translation>
+<translation id="5576472948015790634">Kini Anda dapat mengelola grup tab dan percakapan Gemini di satu tempat. Lepas sematan ini kapan saja.</translation>
 <translation id="557722062034137776">Peresetan perangkat Anda tidak akan memengaruhi akun Google Anda atau data yang disinkronkan ke akun ini. Namun, semua file yang disimpan secara lokal pada perangkat Anda akan terhapus.</translation>
 <translation id="5578059481725149024">Login otomatis</translation>
 <translation id="5578387000057347457">Masukkan perintah kustom atau tandai teks untuk membuat gambar</translation>
@@ -9949,6 +9957,7 @@ Tekan tombol akses atau tombol keyboard yang telah ditetapkan untuk menghapus pe
 <translation id="7758884017823246335">Tambahkan penelusuran situs</translation>
 <translation id="7759443981285558794">Lihat sertifikat yang diimpor dari ChromeOS</translation>
 <translation id="7759606211476816416">Pintasan situs Anda</translation>
+<translation id="7759748248923439385">Kini Anda dapat mengelola grup tab dan rangkaian pesan Mode AI di satu tempat. Lepas sematan ini kapan saja.</translation>
 <translation id="7759809451544302770">Opsional</translation>
 <translation id="7760176388948986635">Izinkan aplikasi, situs, dan layanan ChromeOS serta Android yang memiliki izin akses lokasi untuk menggunakan lokasi perangkat ini. Akurasi Lokasi memberikan lokasi yang lebih akurat untuk aplikasi dan layanan Android. Agar dapat melakukannya, Google secara berkala memproses informasi tentang sensor perangkat dan sinyal nirkabel dari perangkat ini untuk melakukan crowdsource lokasi sinyal nirkabel. Hal ini digunakan tanpa mengidentifikasi individu mana pun untuk meningkatkan akurasi lokasi serta layanan yang berbasis lokasi, serta untuk meningkatkan, menyediakan, dan mengelola layanan Google berdasarkan kepentingan sah Google dan pihak ketiga untuk melayani kebutuhan pengguna.</translation>
 <translation id="7762024824096060040">Tidak dapat menggunakan akun ini</translation>
@@ -12203,6 +12212,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="950079950995628542">Dari "<ph name="PHONE_NAME" />"</translation>
 <translation id="950307215746360464">Panduan penyiapan</translation>
 <translation id="951273949038779544"><ph name="SITE_ACCESS" />. Diinstal oleh administrator Anda</translation>
+<translation id="95160010745047025">Lanjutkan rangkaian pesan terakhir Anda di Mode AI</translation>
 <translation id="951991426597076286">Tolak</translation>
 <translation id="952137968828772361">Pelajari lebih lanjut produk, tempat, atau teks yang Anda lihat di layar</translation>
 <translation id="952471655966876828">Perangkat akan otomatis terhubung saat diaktifkan dan sedang digunakan</translation>

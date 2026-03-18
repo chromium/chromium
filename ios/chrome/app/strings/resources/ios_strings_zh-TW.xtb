@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">歡迎回來！</translation>
 <translation id="2015722694326466240">你必須先在裝置上設定螢幕解鎖密碼才能查看密碼。</translation>
 <translation id="201759455285471444">展開分頁群組。</translation>
-<translation id="202070562065520783">說明一下</translation>
 <translation id="2044394949148788042">開啟分頁方格</translation>
 <translation id="2044681667265133332">這個帳戶 (<ph name="USER_EMAIL" />) 是由 <ph name="HOSTED_DOMAIN" /> 管理，管理者或許可以查看部分資訊。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">新項目</translation>
@@ -637,6 +636,7 @@
 <translation id="3324193307694657476">地址 2</translation>
 <translation id="3328801116991980348">網站資訊</translation>
 <translation id="333229797575847124">如何啟用這項功能</translation>
+<translation id="334004756946755423">說明一下：</translation>
 <translation id="3344233834747405775">持卡人姓名錯誤</translation>
 <translation id="3344485292736684439">{count,plural, =1{書籤已儲存到帳戶 ({email}) 中的「{title}」}other{書籤已儲存到帳戶 ({email}) 中的「{title}」}}</translation>
 <translation id="334690320928261823">最近關閉的分頁</translation>

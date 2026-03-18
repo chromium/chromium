@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">Ongi etorri berriro!</translation>
 <translation id="2015722694326466240">Pasahitzak ikusteko, lehenik, pasakode bat ezarri behar duzu gailuan.</translation>
 <translation id="201759455285471444">Zabaldu fitxa taldea.</translation>
-<translation id="202070562065520783">Azal iezadazu hau</translation>
 <translation id="2044394949148788042">Ireki fitxen sareta</translation>
 <translation id="2044681667265133332"><ph name="HOSTED_DOMAIN" /> domeinuak kudeatzen du <ph name="USER_EMAIL" /> kontua, eta agian zenbait datu ikus ditzake. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">elementu berria</translation>
@@ -637,6 +636,7 @@
 <translation id="3324193307694657476">Helbidea (2)</translation>
 <translation id="3328801116991980348">Webgunearen informazioa</translation>
 <translation id="333229797575847124">Eginbidea gaitzeko argibideak</translation>
+<translation id="334004756946755423">Azal iezadazu hau:</translation>
 <translation id="3344233834747405775">Txartelaren titularraren izenak ez du balio</translation>
 <translation id="3344485292736684439">{count,plural, =1{Gorde da laster-marka zure kontuko ({email}) "{title}" karpetan}other{Gorde dira laster-markak zure kontuko ({email}) "{title}" karpetan}}</translation>
 <translation id="334690320928261823">Azkenaldiko fitxak</translation>

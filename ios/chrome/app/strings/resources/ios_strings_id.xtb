@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">Selamat datang kembali!</translation>
 <translation id="2015722694326466240">Untuk melihat sandi, Anda harus menyetel kode sandi di perangkat terlebih dahulu.</translation>
 <translation id="201759455285471444">Luaskan grup tab.</translation>
-<translation id="202070562065520783">Jelaskan ini kepada saya</translation>
 <translation id="2044394949148788042">Buka petak tab</translation>
 <translation id="2044681667265133332">Akun <ph name="USER_EMAIL" /> dikelola oleh <ph name="HOSTED_DOMAIN" />, yang mungkin dapat melihat beberapa informasi. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">item baru</translation>
@@ -637,6 +636,7 @@
 <translation id="3324193307694657476">Alamat 2</translation>
 <translation id="3328801116991980348">Informasi situs</translation>
 <translation id="333229797575847124">Cara mengaktifkan fitur ini</translation>
+<translation id="334004756946755423">Jelaskan hal ini:</translation>
 <translation id="3344233834747405775">Nama pemegang kartu tidak valid</translation>
 <translation id="3344485292736684439">{count,plural, =1{Bookmark disimpan ke "{title}" di akun Anda, {email}}other{Bookmark disimpan ke "{title}" di akun Anda, {email}}}</translation>
 <translation id="334690320928261823">Tab Terbaru</translation>

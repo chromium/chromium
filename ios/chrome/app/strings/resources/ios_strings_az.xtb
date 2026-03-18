@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">Xoş gəlmisiniz!</translation>
 <translation id="2015722694326466240">Parollara baxmaq üçün əvvəlcə cihazınızda parol kod ayarlamalısınız.</translation>
 <translation id="201759455285471444">Tab qrupunu genişləndirin.</translation>
-<translation id="202070562065520783">Bunu mənə izah et</translation>
 <translation id="2044394949148788042">Tab torunu açın</translation>
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> hesabı <ph name="HOSTED_DOMAIN" /> tərəfindən idarə olunur və o, müəyyən məlumatlara baxa bilər. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">yeni element</translation>
@@ -637,6 +636,7 @@
 <translation id="3324193307694657476">Ünvan 2</translation>
 <translation id="3328801116991980348">Sayt haqqında</translation>
 <translation id="333229797575847124">Bu funksiyanı aktivləşdirmə qaydası</translation>
+<translation id="334004756946755423">Bunu mənə izah et:</translation>
 <translation id="3344233834747405775">Keçərsiz kart sahibi adı</translation>
 <translation id="3344485292736684439">{count,plural, =1{Əlfəcin hesabda ({email}) "{title}" bölməsində saxlandı}other{Əlfəcinlər hesabda ({email}) "{title}" bölməsində saxlandı}}</translation>
 <translation id="334690320928261823">Son tablar</translation>

@@ -504,6 +504,7 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="1327495825214193325">ADB tuzatish vositalarini yoqish uchun <ph name="DEVICE_TYPE" /> qurilmasini oʻchirib yoqish zarur. ADB vositasini oʻchirish uchun qurilmani zavod sozlamalariga qaytarish kerak.</translation>
 <translation id="1327527584824210101">Kalit ishlatish</translation>
 <translation id="1327794256477341646">Joylashuvga ruxsat talab qiladigan funksiyalar ishlamaydi</translation>
+<translation id="1328041566565643371">Vertikal varaqlar tasmasi oʻlcham dastagi (tortiladigan)</translation>
 <translation id="1328364753167940710"><ph name="NUM_HR" /> soat ichida</translation>
 <translation id="1328928545650070438">Qoshlarni pasaytiring</translation>
 <translation id="1329466763986822896">Bu hotspotning maxfiylik darajasini oshiring</translation>
@@ -1470,6 +1471,7 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
     <ph name="BEGIN_DESCRIPTION3" />Tashkilot nosozliklarni bartaraf etish uchun qurilma seansiga masofadan kira oladi.<ph name="END_DESCRIPTION3" />
     <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />Ruxsatni yoqish<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
     <ph name="BEGIN_DESCRIPTION4" />Tashkilot ilovalari, xizmatlari va tarmoqlari faqat roʻyxatdan oʻtgan qurilmalarda ishlaydi.<ph name="END_DESCRIPTION4" /></translation>
+<translation id="1979208610845113582">Endi AI rejimi mavzularini bevosita shu yerda davom ettirishingiz mumkin. Buni istalgan payt yechib olish mumkin.</translation>
 <translation id="1979280758666859181">Siz <ph name="PRODUCT_NAME" />‘ning ancha eski versiyasidan yangilanish kanaliga o‘tyapsiz. O‘zgartirishlar kuchga kirishi uchun kanal versiyasi qurilmangizdagi joriy versiya bilan bir xil bo‘lishi kerak.</translation>
 <translation id="1979582938184524893">Qoʻshiladigan shaxsiy maʼlumotlarni qoʻlda tanlang</translation>
 <translation id="197989455406964291">KDC bunday shifrlash turi bilan mos emas</translation>
@@ -1937,6 +1939,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2297705863329999812">Printerlarni qidirish</translation>
 <translation id="2297822946037605517">Bu sahifani ulashish</translation>
 <translation id="229871422646860597">Asboblar panelidan yechish</translation>
+<translation id="2298749511072894576">Endi bevosita shu yerda Gemini chatlarini davom ettirishingiz mumkin. Buni istalgan payt yechib olish mumkin.</translation>
 <translation id="2299685119225839832">Sharhlar asosida tuzilgan xulosa olish mumkin</translation>
 <translation id="2299734369537008228">Slayder: <ph name="MIN_LABEL" /> – <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">debugd orqali yigʻilgan barcha jurnal fayllarini alohida arxivlash.</translation>
@@ -2301,6 +2304,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="252418934079508528"><ph name="DEVICE_OS" /> ilovasini oʻrnating</translation>
 <translation id="252513908494776481">Bu varaq haqida savol bering</translation>
 <translation id="2525746158911982776">Tizimda xotira yetarli emasligi sababli yangilanish amalga oshmadi.</translation>
+<translation id="2525842906387880861">Bu sahifada takliflar boshqa chiqmaydi</translation>
 <translation id="2526590354069164005">Ish soli</translation>
 <translation id="2526619973349913024">Yangilanishlarni tekshirish</translation>
 <translation id="2527167509808613699">Har qanday ulanishlar</translation>
@@ -2794,6 +2798,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2855243985454069333">Sinxronlangan barcha qurilmalardagi brauzer tarixini oʻchirib tashlaydi</translation>
 <translation id="2855812646048059450"><ph name="CREDENTIAL_PROVIDER" /> bilan kirish</translation>
 <translation id="2857047802954430547">Barcha qurilmalarda parollar, bukmarklar va boshqalarni olish uchun hisobingizga kiring</translation>
+<translation id="2857195263461649321">Geminida qolgan joyingizdan davom eting</translation>
 <translation id="2859741939921354763">Parollarni <ph name="BRAND" /> ga import qilish</translation>
 <translation id="2860284453253554297">Korporativ siyosatlar</translation>
 <translation id="2860710618359053450">Lablarni oʻngga torting</translation>
@@ -5949,6 +5954,7 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5006778209728626987">Chaqmoq</translation>
 <translation id="5007392906805964215">Tekshirish</translation>
 <translation id="50080882645628821">Profilni olib tashlash</translation>
+<translation id="5008587162781422067">Varaqlar tasmasi kengligi endi <ph name="TAB_STRIP_PERCENT" />, Kontent maydoni kengligi endi <ph name="CONTENT_AREA_PERCENT" />.</translation>
 <translation id="5008936837313706385">Harakat nomi</translation>
 <translation id="5009463889040999939">Profil qayta nomlanmoqda. Bu bir necha daqiqa vaqt olishi mumkin.</translation>
 <translation id="5010886807652684893">Vizual shaklda</translation>
@@ -6595,6 +6601,7 @@ Bu amal uchun bir nechta kalit tugma belgilash mumkin.</translation>
 <translation id="5460861858595506978">Ilhom</translation>
 <translation id="5461050611724244538">Telefon bilan ulanish uzilib qoldi</translation>
 <translation id="5463275305984126951"><ph name="LOCATION" /> tarkibi</translation>
+<translation id="5463348003600590648">Tavsiyalarni faolsizlantirish</translation>
 <translation id="5463450804024056231"><ph name="DEVICE_TYPE" /> xatlariga yozilish</translation>
 <translation id="5463625433003343978">Qurilmalar qidirilmoqda...</translation>
 <translation id="5463856536939868464">Yashirin xatcho‘plari mavjud menyu</translation>
@@ -6758,6 +6765,7 @@ Bu amal uchun bir nechta kalit tugma belgilash mumkin.</translation>
 <translation id="557506220935336383">Boshqa saytlar uchun kengaytma ruxsatlarini koʻrish</translation>
 <translation id="5575473780076478375">Inkognito rejimidagi kengaytma: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">Demo rejimni qayd qilish vaqtida xatolik yuz berdi.</translation>
+<translation id="5576472948015790634">Endi varaqlar guruhlari va Gemini chatlarini bir joyda boshqarish mumkin. Buni istalgan payt yechib olish mumkin.</translation>
 <translation id="557722062034137776">Qurilmani asl holatiga qaytarsangiz, bu Google hisoblari yoki ularga sinxronlangan ma’lumotlarga ta’sir qilmaydi. Ammo, qurilmada saqlangan barcha fayllar o‘chirib tashlanadi.</translation>
 <translation id="5578059481725149024">Avtomatik kirish</translation>
 <translation id="5578387000057347457">Rasm yaratish uchun maxsus soʻrov kiriting yoki matnni ajratib belgilang</translation>
@@ -9936,6 +9944,7 @@ Tayinlovni bekor qilish uchun belgilangan kalit yoki tugmani bosing.</translatio
 <translation id="7758884017823246335">Sayt qidiruv tizimini kiritish</translation>
 <translation id="7759443981285558794">ChromeOSdan import qilingan sertifikatlarni koʻrish</translation>
 <translation id="7759606211476816416">Sayt tezkor tugmalari</translation>
+<translation id="7759748248923439385">Endi varaqlar guruhi va AI rejimi yozishmalarini bir joyda boshqarish mumkin. Buni istalgan payt yechib olish mumkin.</translation>
 <translation id="7759809451544302770">Ixtiyoriy</translation>
 <translation id="7760176388948986635">Joylashuv axborotiga ruxsati bor ChromeOS, Android ilovalari, veb-saytlar va xizmatlarga bu qurilma joylashuvi haqidagi axborotdan foydalanishiga ruxsat bering. Joylashuvni aniqlash xizmati Android ilova va xizmatlarga yanada aniq joylashuv axborotini taqdim etadi. Buning uchun Google vaqti-vaqti bilan simsiz signallar joylashuvlarining umumiy omborini jamlash orqali qurilma sensorlari hamda simsiz aloqa haqidagi maʼlumotlardan foydalanadi. Anonim maʼlumotlar foydalanuvchining joylashuv axboroti bilan ishlaydigan xizmatlarda joylashuv aniqligini oshirish maqsadida jamlanadi. Bunday maʼlumotlar foydalanuvchilar ehtiyojini qondirish maqsadida Google va tashqi tomonlarga xizmatlarni qonun doirasida yaxshilash, taqdim etish hamda dastaklashga yordam beradi.</translation>
 <translation id="7762024824096060040">Bu hisobdan foydalanish imkonsiz</translation>
@@ -12189,6 +12198,7 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer, qurilmadagi operatsion ti
 <translation id="950079950995628542">“<ph name="PHONE_NAME" />” telefonidan</translation>
 <translation id="950307215746360464">Sozlash qoʻllanmasi</translation>
 <translation id="951273949038779544"><ph name="SITE_ACCESS" />. Administrator oʻrnatgan</translation>
+<translation id="95160010745047025">AI rejimida qolgan joyidan davom eting</translation>
 <translation id="951991426597076286">Rad etish</translation>
 <translation id="952137968828772361">Ekrandagi mahsulotlar, joylar yoki matnlar haqida batafsil</translation>
 <translation id="952471655966876828">Qurilma yoqilganda yoki ishlatilayotganda avtomatik ravishda ulanadi</translation>

@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">Добре дошли отново!</translation>
 <translation id="2015722694326466240">За да видите паролите, трябва първо да зададете код за достъп на устройството си.</translation>
 <translation id="201759455285471444">Разгъване на групата раздели.</translation>
-<translation id="202070562065520783">Обясни ми това</translation>
 <translation id="2044394949148788042">Отворете мрежата с раздели.</translation>
 <translation id="2044681667265133332">Профилът <ph name="USER_EMAIL" /> се управлява от организацията <ph name="HOSTED_DOMAIN" />, която може да преглежда определена информация. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">нов елемент</translation>
@@ -637,6 +636,7 @@
 <translation id="3324193307694657476">Адрес 2</translation>
 <translation id="3328801116991980348">Информация за сайта</translation>
 <translation id="333229797575847124">Как да активирате тази функция</translation>
+<translation id="334004756946755423">Обясни ми това:</translation>
 <translation id="3344233834747405775">Невалидно име на картодържателя</translation>
 <translation id="3344485292736684439">{count,plural, =1{Отметката бе запазена в(ъв) „{title}“ в профила ви {email}}other{Отметките бяха запазени в(ъв) „{title}“ в профила ви {email}}}</translation>
 <translation id="334690320928261823">Скорошни раздели</translation>

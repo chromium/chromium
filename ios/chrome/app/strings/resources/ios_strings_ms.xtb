@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">Selamat kembali!</translation>
 <translation id="2015722694326466240">Untuk melihat kata laluan, mula-mula anda mesti menetapkan kod laluan pada peranti anda.</translation>
 <translation id="201759455285471444">Kembangkan kumpulan tab.</translation>
-<translation id="202070562065520783">Jelaskan kepada saya</translation>
 <translation id="2044394949148788042">Buka grid tab</translation>
 <translation id="2044681667265133332">Akaun <ph name="USER_EMAIL" /> diurus oleh <ph name="HOSTED_DOMAIN" />, yang boleh melihat sesetengah maklumat. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">item baharu</translation>
@@ -637,6 +636,7 @@
 <translation id="3324193307694657476">Alamat 2</translation>
 <translation id="3328801116991980348">Maklumat tapak</translation>
 <translation id="333229797575847124">Cara mendayakan ciri ini</translation>
+<translation id="334004756946755423">Jelaskan kepada saya:</translation>
 <translation id="3344233834747405775">Nama pemegang kad tidak sah</translation>
 <translation id="3344485292736684439">{count,plural, =1{Penanda halaman disimpan pada "{title}" dalam akaun anda, {email}}other{Penanda halaman disimpan pada "{title}" dalam akaun anda, {email}}}</translation>
 <translation id="334690320928261823">Tab Terbaharu</translation>

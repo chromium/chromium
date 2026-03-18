@@ -505,6 +505,7 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1327495825214193325">Ca să activezi remedierea erorilor prin ADB, trebuie să repornești acest <ph name="DEVICE_TYPE" />. Dezactivarea necesită revenirea la setările din fabrică.</translation>
 <translation id="1327527584824210101">Folosește cheia de acces</translation>
 <translation id="1327794256477341646">Funcțiile care au nevoie de locația ta nu vor funcționa</translation>
+<translation id="1328041566565643371">Ghidaj de redimensionare a barei de file verticale (poate fi tras)</translation>
 <translation id="1328364753167940710">În <ph name="NUM_HR" /> h</translation>
 <translation id="1328928545650070438">Coboară sprâncenele</translation>
 <translation id="1329466763986822896">Îmbunătățește confidențialitatea pentru acest hotspot</translation>
@@ -1472,6 +1473,7 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
     <ph name="BEGIN_DESCRIPTION3" />Organizația poate accesa de la distanță o sesiune pe dispozitiv pentru a asigura remedierea erorilor.<ph name="END_DESCRIPTION3" />
     <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />Permiterea accesului<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
     <ph name="BEGIN_DESCRIPTION4" />Aplicațiile, serviciile și rețelele organizației pot fi disponibile doar pe dispozitivele înregistrate.<ph name="END_DESCRIPTION4" /></translation>
+<translation id="1979208610845113582">Acum poți să reiei direct firele din Modul AI aici. Anulează oricând fixarea.</translation>
 <translation id="1979280758666859181">Treceți la un canal cu o versiune <ph name="PRODUCT_NAME" /> mai veche. Schimbarea canalului se va aplica atunci când versiunea canalului va corespunde cu versiunea instalată în prezent pe dispozitiv.</translation>
 <translation id="1979582938184524893">Selectează manual informațiile cu caracter personal pe care vrei să le incluzi</translation>
 <translation id="197989455406964291">KDC nu acceptă tipul de criptare</translation>
@@ -1936,6 +1938,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2297705863329999812">Caută imprimante</translation>
 <translation id="2297822946037605517">Distribuiți această pagină</translation>
 <translation id="229871422646860597">Anulează fixarea în bara de instrumente</translation>
+<translation id="2298749511072894576">Acum poți să reiei direct chaturile Gemini aici. Anulează oricând fixarea.</translation>
 <translation id="2299685119225839832">Poți să vezi un rezumat al recenziilor utilizatorilor</translation>
 <translation id="2299734369537008228">Glisor: de la <ph name="MIN_LABEL" /> la <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">Include toate fișierele jurnal colectate de debugd ca arhivă separată.</translation>
@@ -2300,6 +2303,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="252418934079508528">Instalează <ph name="DEVICE_OS" /></translation>
 <translation id="252513908494776481">Întreabă despre această filă</translation>
 <translation id="2525746158911982776">Actualizarea nu a reușit deoarece sistemul nu are suficient spațiu de stocare.</translation>
+<translation id="2525842906387880861">Nu vei mai vedea sugestii în această pagină.</translation>
 <translation id="2526590354069164005">Desktop</translation>
 <translation id="2526619973349913024">Verifică dacă există actualizări</translation>
 <translation id="2527167509808613699">Orice fel de conexiune</translation>
@@ -2793,6 +2797,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2855243985454069333">Șterge istoricul de pe toate dispozitivele sincronizate</translation>
 <translation id="2855812646048059450">Conectează-te cu <ph name="CREDENTIAL_PROVIDER" /></translation>
 <translation id="2857047802954430547">Conectează-te pentru a-ți accesa parolele, marcajele și alte date pe toate dispozitivele</translation>
+<translation id="2857195263461649321">Reia de unde ai rămas în Gemini</translation>
 <translation id="2859741939921354763">Importă parole în <ph name="BRAND" /></translation>
 <translation id="2860284453253554297">Politicile companiei</translation>
 <translation id="2860710618359053450">Mișcă maxilarul spre dreapta</translation>
@@ -5948,6 +5953,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5006778209728626987">Fulger</translation>
 <translation id="5007392906805964215">Examinează</translation>
 <translation id="50080882645628821">Elimină profilul</translation>
+<translation id="5008587162781422067">Bara de file are acum lățimea de <ph name="TAB_STRIP_PERCENT" />, iar zona de conținut are lățimea de <ph name="CONTENT_AREA_PERCENT" />.</translation>
 <translation id="5008936837313706385">Numele activității</translation>
 <translation id="5009463889040999939">Se redenumește profilul. Poate dura câteva minute.</translation>
 <translation id="5010886807652684893">Afișare vizuală</translation>
@@ -6593,6 +6599,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5460861858595506978">Inspirație</translation>
 <translation id="5461050611724244538">Conexiunea cu telefonul a fost întreruptă</translation>
 <translation id="5463275305984126951">Index pentru <ph name="LOCATION" /></translation>
+<translation id="5463348003600590648">Dezactivează sugestiile</translation>
 <translation id="5463450804024056231">Înscrie-te pentru e-mailuri de pe <ph name="DEVICE_TYPE" /></translation>
 <translation id="5463625433003343978">Se caută dispozitive...</translation>
 <translation id="5463856536939868464">Meniu conținând marcajele ascunse</translation>
@@ -6756,6 +6763,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="557506220935336383">Vezi permisiunile pentru extensii acordate altor site-uri</translation>
 <translation id="5575473780076478375">Extensie incognito: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">A apărut o problemă cu solicitarea de înregistrare demo.</translation>
+<translation id="5576472948015790634">Acum poți gestiona grupurile de file și chaturile Gemini într-un singur loc. Anulează oricând fixarea.</translation>
 <translation id="557722062034137776">Resetarea dispozitivului nu va afecta conturile Google sau datele sincronizate cu aceste conturi. Cu toate acestea, toate fișierele salvate local pe dispozitiv vor fi șterse.</translation>
 <translation id="5578059481725149024">Conectare automată</translation>
 <translation id="5578387000057347457">Introdu o solicitare personalizată sau evidențiază text pentru a crea o imagine</translation>
@@ -9937,6 +9945,7 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="7758884017823246335">Adaugă o căutare pe site</translation>
 <translation id="7759443981285558794">Vezi certificatele importate din ChromeOS</translation>
 <translation id="7759606211476816416">Comenzi rapide pentru site-uri</translation>
+<translation id="7759748248923439385">Acum poți gestiona grupurile de file și firele din Modul AI într-un singur loc. Anulează oricând fixarea.</translation>
 <translation id="7759809451544302770">Opțional</translation>
 <translation id="7760176388948986635">Permite aplicațiilor, site-urilor și serviciilor ChromeOS și Android cu permisiune pentru locație să folosească locația acestui dispozitiv. Precizia locației afișează locația mai precisă pentru aplicațiile și serviciile Android. În acest scop, Google prelucrează periodic informații despre senzorii dispozitivului și semnalele wireless de la acesta, pentru a externaliza spre public locațiile semnalelor wireless. Acestea se folosesc fără a identifica persoane, pentru a îmbunătăți precizia locației și serviciile bazate pe locație și pentru a îmbunătăți, a oferi și a întreține serviciile Google în scopul intereselor legitime ale companiei Google și ale terților de a deservi nevoile utilizatorilor.</translation>
 <translation id="7762024824096060040">Contul nu poate fi folosit</translation>
@@ -12189,6 +12198,7 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser, 
 <translation id="950079950995628542">De pe <ph name="PHONE_NAME" /></translation>
 <translation id="950307215746360464">Ghid de configurare</translation>
 <translation id="951273949038779544"><ph name="SITE_ACCESS" />. Instalat de administrator</translation>
+<translation id="95160010745047025">Reia de unde ai rămas în Modul AI</translation>
 <translation id="951991426597076286">Refuză</translation>
 <translation id="952137968828772361">Află mai multe despre produse, locații sau textul pe care îl vezi pe ecran</translation>
 <translation id="952471655966876828">Dispozitivul se va conecta automat când este deschis și este folosit</translation>

@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">欢迎回来！</translation>
 <translation id="2015722694326466240">要想查看密码，您必须先在设备上设置密码。</translation>
 <translation id="201759455285471444">展开标签页分组。</translation>
-<translation id="202070562065520783">向我解释</translation>
 <translation id="2044394949148788042">打开标签页网格</translation>
 <translation id="2044681667265133332">账号 <ph name="USER_EMAIL" /> 由 <ph name="HOSTED_DOMAIN" /> 管理，后者或许可以查看某些信息。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">新项</translation>
@@ -637,6 +636,7 @@
 <translation id="3324193307694657476">地址第2行</translation>
 <translation id="3328801116991980348">网站信息</translation>
 <translation id="333229797575847124">如何启用此功能</translation>
+<translation id="334004756946755423">给我解释一下：</translation>
 <translation id="3344233834747405775">无效持卡人姓名</translation>
 <translation id="3344485292736684439">{count,plural, =1{已将书签保存到账号 {email} 中的“{title}”}other{已将书签保存到账号 {email} 中的“{title}”}}</translation>
 <translation id="334690320928261823">最近打开的标签页</translation>

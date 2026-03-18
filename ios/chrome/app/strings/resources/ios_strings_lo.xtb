@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">ຍິນດີຕ້ອນຮັບກັບມາ!</translation>
 <translation id="2015722694326466240">ເພື່ອເບິ່ງລະຫັດຜ່ານ, ກ່ອນອື່ນທາງຕ້ອງຕັ້ງລະຫັດຜ່ານໃນອຸປະກອນຂອງທ່ານ.</translation>
 <translation id="201759455285471444">ຂະຫຍາຍກຸ່ມແຖບ.</translation>
-<translation id="202070562065520783">ອະທິບາຍສິ່ງນີ້ໃຫ້ຂ້ອຍຟັງ</translation>
 <translation id="2044394949148788042">ເປີດຕາຕະລາງຂອງແຖບ</translation>
 <translation id="2044681667265133332">ບັນຊີ <ph name="USER_EMAIL" /> ໄດ້ຮັບການຈັດການໂດຍ <ph name="HOSTED_DOMAIN" />, ເຊິ່ງອາດຈະສາມາດເບິ່ງຂໍ້ມູນບາງສ່ວນໄດ້. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">ລາຍການໃໝ່</translation>
@@ -637,6 +636,7 @@
 <translation id="3324193307694657476">ທີ່ຢູ່ 2</translation>
 <translation id="3328801116991980348">ຂໍ້​ມູນ​ເວັບ​ໄຊທ໌</translation>
 <translation id="333229797575847124">ວິທີເປີດການນຳໃຊ້ຄຸນສົມບັດນີ້</translation>
+<translation id="334004756946755423">ອະທິບາຍສິ່ງນີ້ໃຫ້ຂ້ອຍຟັງ:</translation>
 <translation id="3344233834747405775">ຊື່ຜູ້ຖືບັດບໍ່ຖືກຕ້ອງ</translation>
 <translation id="3344485292736684439">{count,plural, =1{ບັນທຶກບຸກມາກໃສ່ "{title}" ໃນບັນຊີຂອງທ່ານ, {email}}other{ບັນທຶກບຸກມາກໃສ່ "{title}" ໃນບັນຊີຂອງທ່ານ, {email}}}</translation>
 <translation id="334690320928261823">ແຖບຫຼ້າສຸດ</translation>

@@ -504,6 +504,7 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1327495825214193325">Për të aktivizuar korrigjimin e ADB-së, kërkohet një rinisje e kësaj pajisjeje <ph name="DEVICE_TYPE" />. Çaktivizimi i saj kërkon një rivendosje në cilësimet e fabrikës.</translation>
 <translation id="1327527584824210101">Përdor çelësin tënd të kalimit</translation>
 <translation id="1327794256477341646">Veçoritë që kanë nevojë për vendndodhjen tënde nuk do të funksionojnë</translation>
+<translation id="1328041566565643371">Doreza e ndryshimit të përmasave të shiritit vertikal të skedave (e zvarritshme)</translation>
 <translation id="1328364753167940710">Për <ph name="NUM_HR" /> orë</translation>
 <translation id="1328928545650070438">Ul vetullat</translation>
 <translation id="1329466763986822896">Përmirëso privatësinë për këtë zonë qasjeje për internet</translation>
@@ -1467,6 +1468,7 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
     <ph name="BEGIN_DESCRIPTION3" />Organizata mund të qaset në distancë në një sesion të pajisjes për të ofruar zgjidhje të problemeve.<ph name="END_DESCRIPTION3" />
     <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />Aktivizimi i qasjes<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
     <ph name="BEGIN_DESCRIPTION4" />Aplikacionet, shërbimet dhe rrjetet e organizatës mund të ofrohen vetëm në pajisjet e regjistruara.<ph name="END_DESCRIPTION4" /></translation>
+<translation id="1979208610845113582">Tani mund t'i vazhdosh direkt bashkëbisedimet e "Modalitetit të IA-së" këtu. Zhgozhdoje këtë në çdo kohë.</translation>
 <translation id="1979280758666859181">Po kalon në një kanal me version më të vjetër të <ph name="PRODUCT_NAME" />. Ndryshimi i kanalit do të zbatohet kur versioni i tij të përputhet me versionin e instaluar aktualisht në pajisjen tënde.</translation>
 <translation id="1979582938184524893">Zgjidh manualisht informacionet personale që dëshiron të përfshish</translation>
 <translation id="197989455406964291">KDC nuk mbështet llojin e enkriptimit</translation>
@@ -1932,6 +1934,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2297705863329999812">Kërko printerët</translation>
 <translation id="2297822946037605517">Ndaje këtë faqe</translation>
 <translation id="229871422646860597">Zhgozhdo nga shiriti i veglave</translation>
+<translation id="2298749511072894576">Tani mund t'i vazhdosh direkt bisedat me Gemini këtu. Zhgozhdoje këtë në çdo kohë.</translation>
 <translation id="2299685119225839832">Mund të marrësh një përmbledhje të atyre që thonë njerëzit në komentet e tyre</translation>
 <translation id="2299734369537008228">Rrëshqitësi: <ph name="MIN_LABEL" /> në <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">Përfshi të gjithë skedarët e evidencave të mbledhur nga debugd si një arkiv të veçantë.</translation>
@@ -2296,6 +2299,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="252418934079508528">Instalo <ph name="DEVICE_OS" /></translation>
 <translation id="252513908494776481">Pyet për këtë skedë</translation>
 <translation id="2525746158911982776">Përditësimi dështoi sepse sistemi nuk ka hapësirë ruajtëse të mjaftueshme.</translation>
+<translation id="2525842906387880861">Nuk do të shikosh më sugjerime në këtë faqe</translation>
 <translation id="2526590354069164005">Desktopi</translation>
 <translation id="2526619973349913024">Kontrollo përditësime</translation>
 <translation id="2527167509808613699">Çdo lloj lidhjeje</translation>
@@ -2789,6 +2793,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2855243985454069333">Fshin historikun nga të gjitha pajisjet e sinkronizuara</translation>
 <translation id="2855812646048059450">Identifikohu me <ph name="CREDENTIAL_PROVIDER" /></translation>
 <translation id="2857047802954430547">Identifikohu për të marrë fjalëkalimet, faqeshënuesit etj. në të gjitha pajisjet e tua</translation>
+<translation id="2857195263461649321">Vazhdo aty ku e ke lënë në Gemini</translation>
 <translation id="2859741939921354763">Importo fjalëkalimet te "<ph name="BRAND" />"</translation>
 <translation id="2860284453253554297">Politikat e ndërmarrjes</translation>
 <translation id="2860710618359053450">Zhvendose nofullën në të djathtë</translation>
@@ -5946,6 +5951,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5006778209728626987">Vetëtimë</translation>
 <translation id="5007392906805964215">Rishiko</translation>
 <translation id="50080882645628821">Hiq profilin</translation>
+<translation id="5008587162781422067">Shiriti i skedave tani është <ph name="TAB_STRIP_PERCENT" /> i gjerë, zona e përmbajtjes tani është <ph name="CONTENT_AREA_PERCENT" /> e gjerë.</translation>
 <translation id="5008936837313706385">Emri i aktivitetit</translation>
 <translation id="5009463889040999939">Profili po riemërtohet. Kjo mund të zgjasë disa minuta.</translation>
 <translation id="5010886807652684893">Pamja vizuale</translation>
@@ -6591,6 +6597,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5460861858595506978">Frymëzim</translation>
 <translation id="5461050611724244538">Humbi lidhja me telefonin tënd</translation>
 <translation id="5463275305984126951">Indeksi i <ph name="LOCATION" /></translation>
+<translation id="5463348003600590648">Çaktivizo sugjerimet</translation>
 <translation id="5463450804024056231">Regjistrohu për email-et në <ph name="DEVICE_TYPE" /></translation>
 <translation id="5463625433003343978">Po gjen pajisje...</translation>
 <translation id="5463856536939868464">Menyja përmban faqeshënues të fshehur</translation>
@@ -6754,6 +6761,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="557506220935336383">Shiko lejet e shtesave për sajtet e tjera</translation>
 <translation id="5575473780076478375">Shtesë e fshehtë: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">Kishte një problem me kërkesën për regjistrimin e demonstrimit.</translation>
+<translation id="5576472948015790634">Tani mund t'i menaxhosh grupet e skedave dhe bisedat me Gemini në një vend të vetëm. Zhgozhdoje këtë në çdo kohë.</translation>
 <translation id="557722062034137776">Rivendosja e pajisjes nuk do të ndikojë në llogaritë e tua të Google dhe të dhënat e sinkronizuara te këto llogari. Sidoqoftë, të gjithë skedarët e ruajtur lokalisht në pajisjen tënde do të fshihen.</translation>
 <translation id="5578059481725149024">Identifikimi automatik</translation>
 <translation id="5578387000057347457">Fut një kërkesë të personalizuar ose thekso tekstin për të krijuar një imazh</translation>
@@ -9932,6 +9940,7 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="7758884017823246335">Shto kërkimin për sajtin</translation>
 <translation id="7759443981285558794">Shiko certifikatat e importuara nga ChromeOS</translation>
 <translation id="7759606211476816416">Shkurtoret e sajteve</translation>
+<translation id="7759748248923439385">Tani mund t'i menaxhosh grupet e skedave dhe bashkëbisedimet e "Modalitetit të IA-së" në një vend të vetëm. Zhgozhdoje këtë në çdo kohë.</translation>
 <translation id="7759809451544302770">Opsionale</translation>
 <translation id="7760176388948986635">Lejo që aplikacionet, uebsajtet dhe shërbimet e ChromeOS dhe Android që kanë lejen për vendndodhjen të përdorin vendndodhjen e kësaj pajisjeje. "Saktësia e vendndodhjes" ofron vendndodhje më të saktë për shërbimet dhe aplikacionet për Android. Për ta bërë këtë, Google përpunon në mënyrë periodike informacionet për sensorët e pajisjes dhe sinjalet wireless nga kjo pajisje për të mbledhur vendndodhjet e sinjaleve wireless. Këto përdoren pa identifikuar asnjë individ për të përmirësuar saktësinë e vendndodhjes dhe shërbimet bazuar te vendndodhja, si dhe për të përmirësuar, ofruar dhe mirëmbajtur shërbimet e Google bazuar në interesat legjitimë të Google dhe të palëve të treta për t'u shërbyer nevojave të përdoruesve.</translation>
 <translation id="7762024824096060040">Kjo llogari nuk mund të përdoret</translation>
@@ -12185,6 +12194,7 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="950079950995628542">Nga "<ph name="PHONE_NAME" />"</translation>
 <translation id="950307215746360464">Udhëzuesi i konfigurimit</translation>
 <translation id="951273949038779544"><ph name="SITE_ACCESS" />. Instaluar nga administratori yt</translation>
+<translation id="95160010745047025">Vazhdo aty ku e ke lënë në "Modalitetin e IA-së"</translation>
 <translation id="951991426597076286">Refuzo</translation>
 <translation id="952137968828772361">Mëso më shumë rreth produkteve, vendeve ose teksteve që shikon në ekran</translation>
 <translation id="952471655966876828">Pajisja lidhet automatikisht kur ndizet dhe përdoret</translation>

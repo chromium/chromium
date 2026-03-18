@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">Vítejte zpět!</translation>
 <translation id="2015722694326466240">Chcete-li zobrazit hesla, musíte nejdříve na zařízení nastavit heslo.</translation>
 <translation id="201759455285471444">Rozbalit skupinu karet.</translation>
-<translation id="202070562065520783">Vysvětli mi tohle</translation>
 <translation id="2044394949148788042">Otevřít mřížku karet</translation>
 <translation id="2044681667265133332">Účet <ph name="USER_EMAIL" /> spravuje doména <ph name="HOSTED_DOMAIN" />, která může mít přístup k některým informacím. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nová položka</translation>
@@ -637,6 +636,7 @@
 <translation id="3324193307694657476">Druhý řádek adresy</translation>
 <translation id="3328801116991980348">Informace o stránkách</translation>
 <translation id="333229797575847124">Jak tuto funkci povolit</translation>
+<translation id="334004756946755423">Vysvětli mi tohle:</translation>
 <translation id="3344233834747405775">Neplatné jméno držitele karty</translation>
 <translation id="3344485292736684439">{count,plural, =1{Záložka byla uložena do složky „{title}“ ve vašem účtu {email}}few{Záložky byly uloženy do složky „{title}“ ve vašem účtu {email}}many{Záložky byly uloženy do složky „{title}“ ve vašem účtu {email}}other{Záložky byly uloženy do složky „{title}“ ve vašem účtu {email}}}</translation>
 <translation id="334690320928261823">Nedávno použité karty</translation>

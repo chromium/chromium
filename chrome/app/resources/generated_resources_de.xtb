@@ -504,6 +504,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1327495825214193325">Das Aktivieren der ADB-Fehlerbehebung erfordert einen Neustart von <ph name="DEVICE_TYPE" />. Zum Deaktivieren der ADB-Fehlerbehebung ist das Zurücksetzen auf die Werkseinstellungen erforderlich.</translation>
 <translation id="1327527584824210101">Passkey verwenden</translation>
 <translation id="1327794256477341646">Funktionen, die deinen Standort benötigen, funktionieren dann nicht</translation>
+<translation id="1328041566565643371">Ziehpunkt zur Größenanpassung der vertikalen Tableiste (ziehbar)</translation>
 <translation id="1328364753167940710">In <ph name="NUM_HR" /> Std.</translation>
 <translation id="1328928545650070438">Augenbrauen senken</translation>
 <translation id="1329466763986822896">Datenschutz für diesen Hotspot verbessern</translation>
@@ -1468,6 +1469,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
     <ph name="BEGIN_DESCRIPTION3" />Die Organisation kann per Fernzugriff auf eine Gerätesitzung zugreifen, um Fehler zu beheben.<ph name="END_DESCRIPTION3" />
     <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />Zugriff<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
     <ph name="BEGIN_DESCRIPTION4" />Apps, Dienste und Netzwerke der Organisation sind möglicherweise nur auf registrierten Geräten verfügbar.<ph name="END_DESCRIPTION4" /></translation>
+<translation id="1979208610845113582">Du kannst jetzt Unterhaltungen im KI-Modus direkt hier fortsetzen. Diese Option lässt sich jederzeit loslösen.</translation>
 <translation id="1979280758666859181">Du möchtest zu einem Kanal mit einer älteren Version von <ph name="PRODUCT_NAME" /> wechseln. Die Änderung erfolgt, sobald die Kanalversion der aktuell auf deinem Gerät installierten Version entspricht.</translation>
 <translation id="1979582938184524893">Manuell die personenbezogenen Daten auswählen, die einbezogen werden sollen</translation>
 <translation id="197989455406964291">KDC unterstützt den Verschlüsselungstyp nicht</translation>
@@ -1932,6 +1934,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2297705863329999812">Drucker suchen</translation>
 <translation id="2297822946037605517">Seite teilen</translation>
 <translation id="229871422646860597">Von Symbolleiste loslösen</translation>
+<translation id="2298749511072894576">Du kannst Gemini-Chats jetzt direkt hier fortsetzen. Diese Option lässt sich jederzeit loslösen.</translation>
 <translation id="2299685119225839832">Du kannst eine Zusammenfassung der Rezensionen von Nutzern abrufen</translation>
 <translation id="2299734369537008228">Schieberegler: <ph name="MIN_LABEL" /> bis <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">Alle Protokolldateien einbeziehen, die von debugd als separates Archiv erfasst wurden.</translation>
@@ -2296,6 +2299,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="252418934079508528"><ph name="DEVICE_OS" /> installieren</translation>
 <translation id="252513908494776481">Frage zu diesem Tab stellen</translation>
 <translation id="2525746158911982776">Das Update ist fehlgeschlagen, weil im System nicht genügend Speicherplatz vorhanden ist.</translation>
+<translation id="2525842906387880861">Auf dieser Seite werden keine Vorschläge mehr angezeigt</translation>
 <translation id="2526590354069164005">Desktop</translation>
 <translation id="2526619973349913024">Nach Updates suchen</translation>
 <translation id="2527167509808613699">Jede Verbindungsart</translation>
@@ -2789,6 +2793,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2855243985454069333">Löscht den Verlauf auf allen synchronisierten Geräten</translation>
 <translation id="2855812646048059450">Mit <ph name="CREDENTIAL_PROVIDER" /> anmelden</translation>
 <translation id="2857047802954430547">Melde dich an, damit du auf allen deinen Geräten auf deine Passwörter, Lesezeichen und andere Daten zugreifen kannst</translation>
+<translation id="2857195263461649321">In Gemini dort weitermachen, wo du aufgehört hast</translation>
 <translation id="2859741939921354763">Passwörter in <ph name="BRAND" /> importieren</translation>
 <translation id="2860284453253554297">Unternehmensrichtlinien</translation>
 <translation id="2860710618359053450">Kiefer nach rechts verschieben</translation>
@@ -5943,6 +5948,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5006778209728626987">Gewitter</translation>
 <translation id="5007392906805964215">Ansehen</translation>
 <translation id="50080882645628821">Profil entfernen</translation>
+<translation id="5008587162781422067">Aktuelle Breite der Tab-Leiste: <ph name="TAB_STRIP_PERCENT" />, aktuelle Breite des Inhaltsbereichs: <ph name="CONTENT_AREA_PERCENT" />.</translation>
 <translation id="5008936837313706385">Aktivitätsname</translation>
 <translation id="5009463889040999939">Profil wird umbenannt. Das kann einige Minuten dauern.</translation>
 <translation id="5010886807652684893">Visuelle Ansicht</translation>
@@ -6588,6 +6594,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5460861858595506978">Zur Inspiration</translation>
 <translation id="5461050611724244538">Die Verbindung zu deinem Smartphone wurde unterbrochen</translation>
 <translation id="5463275305984126951">Index von <ph name="LOCATION" /></translation>
+<translation id="5463348003600590648">Vorschläge deaktivieren</translation>
 <translation id="5463450804024056231">Für <ph name="DEVICE_TYPE" />-E-Mails anmelden</translation>
 <translation id="5463625433003343978">Geräte werden gesucht…</translation>
 <translation id="5463856536939868464">Menü enthält ausgeblendete Lesezeichen</translation>
@@ -6751,6 +6758,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="557506220935336383">Erweiterungsberechtigungen für andere Websites ansehen</translation>
 <translation id="5575473780076478375">Anonyme Erweiterung: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">Ein Problem mit der Demoregistrierungsanforderung ist aufgetreten.</translation>
+<translation id="5576472948015790634">Du kannst jetzt deine Tabgruppen und Gemini-Chats an einem Ort verwalten. Diese Option lässt sich jederzeit loslösen.</translation>
 <translation id="557722062034137776">Beim Zurücksetzen deines Geräts bleiben deine Google-Konten sowie alle mit diesen Konten synchronisierten Daten unberührt. Es werden jedoch alle Dateien gelöscht, die du lokal auf dem Gerät gespeichert hast.</translation>
 <translation id="5578059481725149024">Automatisch anmelden</translation>
 <translation id="5578387000057347457">Gib einen benutzerdefinierten Prompt ein oder markiere Text, um ein Bild zu erstellen</translation>
@@ -9927,6 +9935,7 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="7758884017823246335">Website-Suchmaschine hinzufügen</translation>
 <translation id="7759443981285558794">Aus ChromeOS importierte Zertifikate ansehen</translation>
 <translation id="7759606211476816416">Deine Kürzel für die Websitesuche</translation>
+<translation id="7759748248923439385">Du kannst jetzt deine Tabgruppen und Unterhaltungen im KI-Modus an einem Ort verwalten. Diese Option lässt sich jederzeit loslösen.</translation>
 <translation id="7759809451544302770">Optional</translation>
 <translation id="7760176388948986635">ChromeOS- und Android-Apps, ‑Websites und ‑Dienste mit Berechtigung zur Standortermittlung dürfen den Standort dieses Geräts nutzen. Die Standortgenauigkeit ermöglicht eine genauere Standortermittlung für Android-Apps und ‑Dienste. Dafür verarbeitet Google in regelmäßigen Abständen Informationen über Gerätesensoren und Funksignale von diesem Gerät und den Geräten anderer Nutzer und kombiniert diese Informationen zur Standortbestimmung. Die so gewonnenen Daten bleiben anonym und werden verwendet, um die Standortgenauigkeit und die standortbezogenen Dienste zu verbessern und um Google-Dienste auf Grundlage der berechtigten Interessen von Google und Dritten mit Blick auf die Anforderungen der Nutzer zu optimieren, bereitzustellen und zu verwalten.</translation>
 <translation id="7762024824096060040">Dieses Konto kann nicht verwendet werden</translation>
@@ -12178,6 +12187,7 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="950079950995628542">Von „<ph name="PHONE_NAME" />“</translation>
 <translation id="950307215746360464">Einrichtungsassistent</translation>
 <translation id="951273949038779544"><ph name="SITE_ACCESS" />. Von deinem Administrator installiert</translation>
+<translation id="95160010745047025">Im KI-Modus dort weitermachen, wo du aufgehört hast</translation>
 <translation id="951991426597076286">Ablehnen</translation>
 <translation id="952137968828772361">Weitere Informationen zu Produkten, Orten oder Texten, die du auf dem Bildschirm siehst</translation>
 <translation id="952471655966876828">Gerät wird automatisch verbunden, wenn es eingeschaltet oder verwendet wird</translation>

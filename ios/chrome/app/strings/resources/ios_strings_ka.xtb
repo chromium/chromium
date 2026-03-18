@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">კეთილი იყოს თქვენი დაბრუნება!</translation>
 <translation id="2015722694326466240">პაროლების სანახავად, პირველ რიგში, საჭიროა თქვენს მოწყობილობაზე საიდუმლო კოდის დაყენება.</translation>
 <translation id="201759455285471444">ჩანართების ჯგუფის გაფართოება.</translation>
-<translation id="202070562065520783">ამიხსენი</translation>
 <translation id="2044394949148788042">გახსენით ჩანართების ბადე</translation>
 <translation id="2044681667265133332">ანგარიშს <ph name="USER_EMAIL" /> მართავს <ph name="HOSTED_DOMAIN" /> და მან შეიძლება ნახოს გარკვეული ინფორმაცია. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">ახალი ერთეული</translation>
@@ -637,6 +636,7 @@
 <translation id="3324193307694657476">მისამართი 2</translation>
 <translation id="3328801116991980348">საიტის ინფორმაცია</translation>
 <translation id="333229797575847124">აღნიშნული ფუნქციის გააქტიურების წესი</translation>
+<translation id="334004756946755423">ამიხსენი:</translation>
 <translation id="3344233834747405775">ბარათის მფლობელის სახელი არასწორია</translation>
 <translation id="3344485292736684439">{count,plural, =1{სანიშნე შეინახა „{title}“-ში თქვენს ანგარიშში ({email})}other{სანიშნეები შეინახა „{title}“-ში თქვენს ანგარიშში ({email})}}</translation>
 <translation id="334690320928261823">ბოლოდროინდელი ჩანართები</translation>

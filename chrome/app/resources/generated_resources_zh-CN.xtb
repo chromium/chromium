@@ -504,6 +504,7 @@
 <translation id="1327495825214193325">要启用 ADB 调试，您必须重启此<ph name="DEVICE_TYPE" />。要停用它，则必须将此设备恢复出厂设置。</translation>
 <translation id="1327527584824210101">使用通行密钥</translation>
 <translation id="1327794256477341646">所有需要使用您的位置信息的功能都将无法正常运行</translation>
+<translation id="1328041566565643371">垂直标签栏大小调整手柄（可拖动）</translation>
 <translation id="1328364753167940710"><ph name="NUM_HR" /> 小时后</translation>
 <translation id="1328928545650070438">向下压眉</translation>
 <translation id="1329466763986822896">加强对此热点的隐私保护</translation>
@@ -1464,6 +1465,7 @@
     <ph name="BEGIN_DESCRIPTION3" />组织可以远程访问设备会话以进行问题排查。<ph name="END_DESCRIPTION3" />
     <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />启用访问权限<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
     <ph name="BEGIN_DESCRIPTION4" />组织应用、服务和网络可能仅在已注册的设备上提供。<ph name="END_DESCRIPTION4" /></translation>
+<translation id="1979208610845113582">现在，您可以在此处直接恢复 AI 模式消息串。您可以随时取消固定此功能。</translation>
 <translation id="1979280758666859181">您正将版本更改为较旧版的 <ph name="PRODUCT_NAME" />。该版本的版本号必须与您设备上目前所安装版本的版本号相符，版本变更才会生效。</translation>
 <translation id="1979582938184524893">手动选择要包含的个人信息</translation>
 <translation id="197989455406964291">KDC 不支持加密类型</translation>
@@ -1928,6 +1930,7 @@
 <translation id="2297705863329999812">搜索打印机</translation>
 <translation id="2297822946037605517">分享此页</translation>
 <translation id="229871422646860597">取消固定到工具栏</translation>
+<translation id="2298749511072894576">现在，您可以在此处直接继续 Gemini 对话。您可以随时取消固定此功能。</translation>
 <translation id="2299685119225839832">您可以获得用户在评价中所说内容的摘要</translation>
 <translation id="2299734369537008228">滑块：值范围是从“<ph name="MIN_LABEL" />”至“<ph name="MAX_LABEL" />”</translation>
 <translation id="2299941608784654630">将 debugd 收集的所有日志文件添加为单独的归档。</translation>
@@ -2292,6 +2295,7 @@
 <translation id="252418934079508528">安装 <ph name="DEVICE_OS" /></translation>
 <translation id="252513908494776481">询问关于此标签页的问题</translation>
 <translation id="2525746158911982776">系统存储空间不足导致更新失败。</translation>
+<translation id="2525842906387880861">此页面不会再显示建议</translation>
 <translation id="2526590354069164005">桌面</translation>
 <translation id="2526619973349913024">检查是否有更新</translation>
 <translation id="2527167509808613699">各种连接</translation>
@@ -2784,6 +2788,7 @@
 <translation id="2855243985454069333">从所有已同步的设备中删除历史记录</translation>
 <translation id="2855812646048059450">通过 <ph name="CREDENTIAL_PROVIDER" /> 登录</translation>
 <translation id="2857047802954430547">登录即可在所有设备上获取密码、书签等信息</translation>
+<translation id="2857195263461649321">继续上次的 Gemini 对话</translation>
 <translation id="2859741939921354763">将密码导入 <ph name="BRAND" /></translation>
 <translation id="2860284453253554297">企业政策</translation>
 <translation id="2860710618359053450">将下巴向右移动</translation>
@@ -5523,7 +5528,7 @@
 <translation id="4716715661140829720">存储空间不足</translation>
 <translation id="471759229191973607">更改主题</translation>
 <translation id="4719276504493791870">不允许应用使用您的位置信息</translation>
-<translation id="4722332387043141878">网站通常会使用您设备的移动和光线传感器来实现虚拟现实或健身跟踪等功能</translation>
+<translation id="4722332387043141878">网站通常会使用您设备的移动传感器和光传感器来实现虚拟现实或健身跟踪等功能</translation>
 <translation id="4722676601353983425">{GROUP_COUNT,plural, =1{删除分组}other{删除分组}}</translation>
 <translation id="4722735765955348426"><ph name="USERNAME" /> 的密码</translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" />正在共享您的屏幕。</translation>
@@ -5937,6 +5942,7 @@
 <translation id="5006778209728626987">闪电</translation>
 <translation id="5007392906805964215">查看</translation>
 <translation id="50080882645628821">移除个人资料</translation>
+<translation id="5008587162781422067">现在，标签栏占 <ph name="TAB_STRIP_PERCENT" /> 宽度，内容区域占 <ph name="CONTENT_AREA_PERCENT" /> 宽度。</translation>
 <translation id="5008936837313706385">活动名称</translation>
 <translation id="5009463889040999939">正在重命名配置文件。这可能需要几分钟的时间。</translation>
 <translation id="5010886807652684893">直观视图</translation>
@@ -6582,6 +6588,7 @@
 <translation id="5460861858595506978">灵感示例</translation>
 <translation id="5461050611724244538">与您手机的连接中断了</translation>
 <translation id="5463275305984126951"><ph name="LOCATION" /> 的索引</translation>
+<translation id="5463348003600590648">停用建议功能</translation>
 <translation id="5463450804024056231">注册接收 <ph name="DEVICE_TYPE" /> 电子邮件</translation>
 <translation id="5463625433003343978">正在查找设备…</translation>
 <translation id="5463856536939868464">包含隐藏书签的菜单</translation>
@@ -6745,6 +6752,7 @@
 <translation id="557506220935336383">查看扩展程序对其他网站的权限</translation>
 <translation id="5575473780076478375">隐身模式下使用的应用...<ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">请求注册演示模式时出问题了。</translation>
+<translation id="5576472948015790634">现在，您可以在一个位置集中管理标签页分组和 Gemini 对话。您可以随时取消固定此功能。</translation>
 <translation id="557722062034137776">重置您的设备不会影响您的 Google 账号或已同步到这些账号的任何数据，但您的设备中本地保存的所有文件都将被删除。</translation>
 <translation id="5578059481725149024">自动登录</translation>
 <translation id="5578387000057347457">输入自定义提示或突出显示文本，以创建图片</translation>
@@ -9921,6 +9929,7 @@
 <translation id="7758884017823246335">添加网站搜索引擎</translation>
 <translation id="7759443981285558794">查看从 ChromeOS 导入的证书</translation>
 <translation id="7759606211476816416">您的网站快捷字词</translation>
+<translation id="7759748248923439385">现在，您可以在一个位置集中管理标签页分组和 AI 模式消息串。您可以随时取消固定此功能。</translation>
 <translation id="7759809451544302770">选填</translation>
 <translation id="7760176388948986635">允许具有位置信息权限的 ChromeOS 及 Android 应用、网站和服务使用此设备的位置信息。开启“位置信息精确度”设置可为 Android 应用和服务提供更精确的位置信息。为此，Google 会定期处理来自此设备的传感器信息和无线信号信息，然后汇总根据无线信号识别的位置信息。Google 会在不识别任何个人身份的情况下，使用这些信息来提高位置信息精确度和改善基于地理位置的服务，并根据 Google 和第三方的合法权益来改进、提供和维护 Google 服务，以满足用户的需求。</translation>
 <translation id="7762024824096060040">无法使用此账号</translation>
@@ -12172,6 +12181,7 @@
 <translation id="950079950995628542">来自“<ph name="PHONE_NAME" />”</translation>
 <translation id="950307215746360464">设置指南</translation>
 <translation id="951273949038779544"><ph name="SITE_ACCESS" />。已由管理员安装</translation>
+<translation id="95160010745047025">恢复上次的 AI 模式消息串</translation>
 <translation id="951991426597076286">拒绝</translation>
 <translation id="952137968828772361">详细了解屏幕上显示的商品、地点或文字</translation>
 <translation id="952471655966876828">已开启且正被使用时，设备会自动连接</translation>

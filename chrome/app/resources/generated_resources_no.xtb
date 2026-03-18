@@ -504,6 +504,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1327495825214193325">For å slå på ADB-feilsøking må denne <ph name="DEVICE_TYPE" />-enheten startes på nytt. Den må tilbakestilles til fabrikkstandard hvis du vil slå ADB-feilsøking av igjen.</translation>
 <translation id="1327527584824210101">Bruk passnøkkelen din</translation>
 <translation id="1327794256477341646">Funksjoner som krever posisjonen din, kommer ikke til å virke</translation>
+<translation id="1328041566565643371">Håndtak for endring av størrelsen på den vertikale faneraden (dra-aktivert)</translation>
 <translation id="1328364753167940710">Om <ph name="NUM_HR" /> t</translation>
 <translation id="1328928545650070438">Senk øyenbrynene</translation>
 <translation id="1329466763986822896">Styrk personvernet for denne wifi-sonen</translation>
@@ -1475,6 +1476,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
     <ph name="BEGIN_DESCRIPTION3" />Organisasjonen kan få ekstern tilgang til enhetsøkter for feilsøkingsformål.<ph name="END_DESCRIPTION3" />
     <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />Aktivering av tilgang<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
     <ph name="BEGIN_DESCRIPTION4" />Organisasjonens apper, tjenester og nettverk er kanskje bare tilgjengelige på registrerte enheter.<ph name="END_DESCRIPTION4" /></translation>
+<translation id="1979208610845113582">Nå kan du gjenoppta tråder i AI-modus direkte her. Du kan løsne den når som helst.</translation>
 <translation id="1979280758666859181">Du endrer til en kanal med en eldre versjon av <ph name="PRODUCT_NAME" />. Kanalendringen trer i kraft når kanalversjonen samsvarer med versjonen som allerede er installert på enheten din.</translation>
 <translation id="1979582938184524893">Velg personopplysningene du vil inkludere, manuelt</translation>
 <translation id="197989455406964291">KDC støtter ikke krypteringstypen</translation>
@@ -1942,6 +1944,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2297705863329999812">Søk i skrivere</translation>
 <translation id="2297822946037605517">Del denne siden</translation>
 <translation id="229871422646860597">Løsne fra verktøyraden</translation>
+<translation id="2298749511072894576">Nå kan du gjenoppta Gemini-chatter direkte her. Du kan løsne den når som helst.</translation>
 <translation id="2299685119225839832">Du kan få et sammendrag av det andre sier i anmeldelsene sine</translation>
 <translation id="2299734369537008228">Glidebryter: <ph name="MIN_LABEL" /> til <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">Inkluder alle loggfilene som er samlet inn av debugd, som et eget arkiv.</translation>
@@ -2306,6 +2309,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="252418934079508528">Installer <ph name="DEVICE_OS" /></translation>
 <translation id="252513908494776481">Spør om denne fanen</translation>
 <translation id="2525746158911982776">Oppdateringen mislyktes fordi systemet ikke har nok lagringsplass.</translation>
+<translation id="2525842906387880861">Du vil ikke se forslag på denne siden igjen</translation>
 <translation id="2526590354069164005">Skrivebordet</translation>
 <translation id="2526619973349913024">Se etter oppdateringer</translation>
 <translation id="2527167509808613699">Alle typer tilkobling</translation>
@@ -2355,7 +2359,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2555855727505718984">Autofyll kommer ikke til å ha denne informasjonen på denne enheten og kan ikke fylle den ut i skjemaer</translation>
 <translation id="25568951186001797">Avgjerdet ramme: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="2561211427862644160">Se alle bokmerkene dine her</translation>
-<translation id="2563924218974330506">Nå kan du administrere fanegruppene dine her. Du kan når som helst løsne denne.</translation>
+<translation id="2563924218974330506">Nå kan du administrere fanegruppene dine her. Du kan løsne denne når som helst.</translation>
 <translation id="2564520396658920462">Kjøring av JavaScript gjennom AppleScript er slått av. For å slå det på, gå til menylinjen og velg Vis &gt; Utvikler &gt; Tillat JavaScript fra Apple Events. For mer informasjon, se: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Bedre stavekontroll</translation>
 <translation id="256481480019204378">Google-konto-ID</translation>
@@ -2799,6 +2803,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2855243985454069333">Sletter loggen fra alle synkroniserte enheter</translation>
 <translation id="2855812646048059450">Logg på med <ph name="CREDENTIAL_PROVIDER" /></translation>
 <translation id="2857047802954430547">Logg på for å få passordene og bokmerkene dine på alle enhetene dine</translation>
+<translation id="2857195263461649321">Fortsett der du slapp i Gemini</translation>
 <translation id="2859741939921354763">Importer passord til <ph name="BRAND" /></translation>
 <translation id="2860284453253554297">Bedriftsregler</translation>
 <translation id="2860710618359053450">Flytt kjeven til høyre</translation>
@@ -5953,6 +5958,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5006778209728626987">Lyn</translation>
 <translation id="5007392906805964215">Se gjennom</translation>
 <translation id="50080882645628821">Fjern profilen</translation>
+<translation id="5008587162781422067">Nå er faneraden <ph name="TAB_STRIP_PERCENT" /> bred, og innholdsområdet er <ph name="CONTENT_AREA_PERCENT" /> bredt.</translation>
 <translation id="5008936837313706385">Aktivitetsnavn</translation>
 <translation id="5009463889040999939">Gir profilen nytt navn. Dette kan ta noen minutter.</translation>
 <translation id="5010886807652684893">Visuell visning</translation>
@@ -6597,6 +6603,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5460861858595506978">Inspirasjon</translation>
 <translation id="5461050611724244538">Mistet tilkoblingen til telefonen</translation>
 <translation id="5463275305984126951">Indeks for <ph name="LOCATION" /></translation>
+<translation id="5463348003600590648">Deaktiver forslag</translation>
 <translation id="5463450804024056231">Meld deg på e-poster om <ph name="DEVICE_TYPE" /></translation>
 <translation id="5463625433003343978">Finner enheter …</translation>
 <translation id="5463856536939868464">Meny med skjulte bokmerker</translation>
@@ -6760,6 +6767,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="557506220935336383">Se utvidelsestillatelser for andre nettsteder</translation>
 <translation id="5575473780076478375">Inkognitoutvidelse: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">Det oppsto et problem med en forespørsel om demoregistrering.</translation>
+<translation id="5576472948015790634">Nå kan du administrere fanegruppene dine og Gemini-chattene dine på ett sted. Du kan løsne den når som helst.</translation>
 <translation id="557722062034137776">Tilbakestilling av enheten påvirker ikke Google-kontoene dine eller andre data som er synkronisert til disse kontoene. Derimot slettes alle filer som er lagret lokalt på enheten.</translation>
 <translation id="5578059481725149024">Automatisk pålogging</translation>
 <translation id="5578387000057347457">Skriv inn en egendefinert forespørsel eller marker tekst for å lage et bilde</translation>
@@ -6935,7 +6943,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5698878456427040674">Sjekk om den valgte kontoen støttes.</translation>
 <translation id="5698900765010620315">Lav kontrast, mørk</translation>
 <translation id="5699227710146832453">Fra</translation>
-<translation id="5700024700429259844">Nå kan du gjenoppta Gemini-chatter og AI-modus-tråder direkte her. Du kan når som helst løsne denne.</translation>
+<translation id="5700024700429259844">Nå kan du gjenoppta Gemini-chatter og AI-modus-tråder direkte her. Du kan løsne denne når som helst.</translation>
 <translation id="570043786759263127">Google Play-apper og -tjenester</translation>
 <translation id="5700761515355162635">Informasjonskapsler fra tredjeparter tillates</translation>
 <translation id="5700836101007545240">Administratoren din har slått av Legg til tilkobling</translation>
@@ -9690,7 +9698,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="760197030861754408">Gå til <ph name="LANDING_PAGE" /> for å koble til.</translation>
 <translation id="7602079150116086782">Ingen faner fra andre enheter</translation>
 <translation id="7602173054665172958">Utskriftsbehandling</translation>
-<translation id="7602805861133750578">Nå kan du administrere fanegruppene dine, Gemini-chatter og tråder i AI-modus på ett sted. Du kan når som helst løsne denne.</translation>
+<translation id="7602805861133750578">Nå kan du administrere fanegruppene dine, Gemini-chatter og tråder i AI-modus på ett sted. Du kan løsne denne når som helst.</translation>
 <translation id="7602868996817972616">Spør Google om denne siden</translation>
 <translation id="7603785829538808504">Nettstedene som vises nedenfor, følger en egendefinert innstilling</translation>
 <translation id="7604543761927773395">{NUM_PASSWORDS,plural, =1{1 passord er ikke importert}other{{NUM_PASSWORDS} passord er ikke importert}}</translation>
@@ -9939,6 +9947,7 @@ Trykk på en tilordnet bryter eller tast for å fjerne tilordningen.</translatio
 <translation id="7758884017823246335">Legg til nettstedsøk</translation>
 <translation id="7759443981285558794">Se importerte sertifikater fra ChromeOS</translation>
 <translation id="7759606211476816416">Dine nettstedssnarveier</translation>
+<translation id="7759748248923439385">Nå kan du administrere fanegruppene dine og trådene i AI-modus på ett sted. Du kan løsne den når som helst.</translation>
 <translation id="7759809451544302770">Valgfritt</translation>
 <translation id="7760176388948986635">Tillat at ChromeOS- og Android-apper, -nettsteder og -tjenester med posisjonstillatelse bruker posisjonen til denne enheten. Med Posisjonsnøyaktighet får Android-apper og tjenester mer nøyaktige posisjoner. For å få til dette behandler Google med jevne mellomrom informasjon om enhetssensorer og trådløse signaler fra denne enheten for å bidra til crowdsourcing av posisjonene til trådløse signaler. Disse brukes uten å identifisere enkeltpersoner for å forbedre posisjonsnøyaktigheten og posisjonsbaserte tjenester og for å forbedre, levere og vedlikeholde Googles tjenester basert på Googles og tredjeparters berettigede interesser i å oppfylle brukernes behov.</translation>
 <translation id="7762024824096060040">Kan ikke bruke denne kontoen</translation>
@@ -12190,6 +12199,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enh
 <translation id="950079950995628542">Fra «<ph name="PHONE_NAME" />»</translation>
 <translation id="950307215746360464">Konfigureringsveiledning</translation>
 <translation id="951273949038779544"><ph name="SITE_ACCESS" />. Installert av administratoren din</translation>
+<translation id="95160010745047025">Fortsett der du slapp i AI-modus</translation>
 <translation id="951991426597076286">Avvis</translation>
 <translation id="952137968828772361">Finn ut mer om produkter, steder eller tekst du ser på skjermen</translation>
 <translation id="952471655966876828">Enheten kobles til automatisk når den slås på og er i bruk</translation>

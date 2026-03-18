@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">Te damos la bienvenida nuevamente</translation>
 <translation id="2015722694326466240">Para ver las contraseñas, primero debes establecer una en tu dispositivo.</translation>
 <translation id="201759455285471444">Expandir grupo de pestañas.</translation>
-<translation id="202070562065520783">Explícame esto</translation>
 <translation id="2044394949148788042">Abre la cuadrícula de pestañas</translation>
 <translation id="2044681667265133332"><ph name="HOSTED_DOMAIN" /> administra la cuenta <ph name="USER_EMAIL" />, por lo que es posible que pueda ver cierta información. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nuevo elemento</translation>
@@ -637,6 +636,7 @@
 <translation id="3324193307694657476">Dirección 2</translation>
 <translation id="3328801116991980348">Información del sitio</translation>
 <translation id="333229797575847124">Cómo habilitar esta función</translation>
+<translation id="334004756946755423">Explícame esto:</translation>
 <translation id="3344233834747405775">El nombre del titular de la tarjeta no es válido</translation>
 <translation id="3344485292736684439">{count,plural, =1{El favorito se guardó en "{title}" en tu cuenta ({email}).}other{Los favoritos se guardaron en "{title}" en tu cuenta ({email}).}}</translation>
 <translation id="334690320928261823">Pestañas recientes</translation>

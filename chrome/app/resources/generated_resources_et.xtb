@@ -504,6 +504,7 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1327495825214193325">ADB silumise lubamiseks, tuleb seade <ph name="DEVICE_TYPE" /> taaskäivitada. Selle keelamiseks on seade vaja lähtestada tehaseseadetele.</translation>
 <translation id="1327527584824210101">Kasutage oma pääsuvõtit</translation>
 <translation id="1327794256477341646">Teie asukohateavet vajavad funktsioonid ei tööta</translation>
+<translation id="1328041566565643371">Vertikaalse vahelehtede riba suuruse muutja (lohistatav)</translation>
 <translation id="1328364753167940710"><ph name="NUM_HR" /> h pärast</translation>
 <translation id="1328928545650070438">Kulmude langetamine</translation>
 <translation id="1329466763986822896">Täiustage selle kuumkoha privaatsust</translation>
@@ -1472,6 +1473,7 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
     <ph name="BEGIN_DESCRIPTION3" />Organisatsioon saab seadme seansile kaugjuurdepääsu, et aidata veaotsingu tegemisel.<ph name="END_DESCRIPTION3" />
     <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />Juurdepääsu lubamine<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
     <ph name="BEGIN_DESCRIPTION4" />Organisatsiooni rakendused, teenused ja võrgud võivad ainult registreeritud seadmetes saadaval olla.<ph name="END_DESCRIPTION4" /></translation>
+<translation id="1979208610845113582">Nüüd saate AI-režiimi lõimesid siin jätkata. Saate selle igal ajal vabastada.</translation>
 <translation id="1979280758666859181">Lülitute teenuse <ph name="PRODUCT_NAME" /> vanema versiooniga kanalile. Kanalivahetus rakendub, kui kanali versioon kattub teie seadmesse parajasti installitud versiooniga.</translation>
 <translation id="1979582938184524893">Kaasatavate isiklike andmete käsitsi valimine</translation>
 <translation id="197989455406964291">KDC ei toeta krüpteerimistüüpi</translation>
@@ -1939,6 +1941,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2297705863329999812">Printerite otsimine</translation>
 <translation id="2297822946037605517">Jaga seda lehte</translation>
 <translation id="229871422646860597">Vabasta tööriistaribalt</translation>
+<translation id="2298749511072894576">Nüüd saate Gemini vestlusi siin jätkata. Saate selle igal ajal vabastada.</translation>
 <translation id="2299685119225839832">Saate kokkuvõtte sellest, mida inimesed oma arvustustes ütlevad</translation>
 <translation id="2299734369537008228">Liugur: <ph name="MIN_LABEL" /> kuni <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">Kõik logifailid, mille debugd kogus, kaasatakse eraldi arhiivina.</translation>
@@ -2303,6 +2306,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="252418934079508528">Installi <ph name="DEVICE_OS" /></translation>
 <translation id="252513908494776481">Küsige selle vahekaardi kohta</translation>
 <translation id="2525746158911982776">Värskendus ebaõnnestus, kuna süsteemis pole piisavalt salvestusruumi.</translation>
+<translation id="2525842906387880861">Te ei näe sellel lehel enam soovitusi.</translation>
 <translation id="2526590354069164005">Töölaud</translation>
 <translation id="2526619973349913024">Otsi värskendusi</translation>
 <translation id="2527167509808613699">Igat laadi ühendus</translation>
@@ -2796,6 +2800,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2855243985454069333">Kustutab ajaloo kõigist sünkroonitud seadmetest</translation>
 <translation id="2855812646048059450">Logige sisse pakkujaga <ph name="CREDENTIAL_PROVIDER" /></translation>
 <translation id="2857047802954430547">Logige sisse, et saada kõigis oma seadmetes juurdepääs oma paroolidele, järjehoidjatele ja muule sisule.</translation>
+<translation id="2857195263461649321">Jätkake Geminis sealt, kus pooleli jäite</translation>
 <translation id="2859741939921354763">Importige paroolid teenusesse <ph name="BRAND" /></translation>
 <translation id="2860284453253554297">Ettevõtte eeskirjad</translation>
 <translation id="2860710618359053450">Lõualuu paremale liigutamine</translation>
@@ -5953,6 +5958,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5006778209728626987">Välk</translation>
 <translation id="5007392906805964215">Vaata üle</translation>
 <translation id="50080882645628821">Eemalda profiil</translation>
+<translation id="5008587162781422067">Vahelehtede riba laius on nüüd <ph name="TAB_STRIP_PERCENT" />, sisuala laius on nüüd <ph name="CONTENT_AREA_PERCENT" />.</translation>
 <translation id="5008936837313706385">Tegevuse nimi</translation>
 <translation id="5009463889040999939">Profiili nime muudetakse. See võib võtta mõne minuti.</translation>
 <translation id="5010886807652684893">Visuaalne vaade</translation>
@@ -6599,6 +6605,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="5460861858595506978">Inspiratsioon</translation>
 <translation id="5461050611724244538">Ühendus teie telefoniga katkes</translation>
 <translation id="5463275305984126951"><ph name="LOCATION" /> indeks</translation>
+<translation id="5463348003600590648">Keela soovitused</translation>
 <translation id="5463450804024056231">Registreeru seadme <ph name="DEVICE_TYPE" /> meilide jaoks</translation>
 <translation id="5463625433003343978">Seadmete otsimine …</translation>
 <translation id="5463856536939868464">Menüü sisaldab peidetud järjehoidjaid</translation>
@@ -6762,6 +6769,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="557506220935336383">Kuva muude saitide laienduste load</translation>
 <translation id="5575473780076478375">Inkognito laiendus: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">Ilmnes demo registreerimistaotlusega seotud probleem.</translation>
+<translation id="5576472948015790634">Nüüd saate oma vahelehegruppe ja Gemini vestlusi hallata ühes kohas. Saate selle igal ajal vabastada.</translation>
 <translation id="557722062034137776">Seadme lähtestamine ei mõjuta teie Google'i kontosid ega nende kontodega sünkroonitud andmeid. Kõik seadmesse lokaalselt salvestatud failid siiski kustutatakse.</translation>
 <translation id="5578059481725149024">Automaatne sisselogimine</translation>
 <translation id="5578387000057347457">Piltide loomine vabas vormis päringu või esiletõstetud teksti põhjal</translation>
@@ -9941,6 +9949,7 @@ Määrangu eemaldamiseks vajutage määratud lülitit või klahvi.</translation>
 <translation id="7758884017823246335">Saidiotsingu lisamine</translation>
 <translation id="7759443981285558794">ChromeOS-ist imporditud sertifikaatide vaatamine</translation>
 <translation id="7759606211476816416">Teie saitide otseteed</translation>
+<translation id="7759748248923439385">Nüüd saate oma vahelehegruppe ja AI-režiimi lõimesid hallata ühes kohas. Saate selle igal ajal vabastada.</translation>
 <translation id="7759809451544302770">Valikuline</translation>
 <translation id="7760176388948986635">Lubage asukohale juurdepääsu loaga ChromeOS-i ja Androidi rakendustel, veebisaitidel ning teenustel selle seadme asukohta kasutada. Asukohatäpsus pakub Androidi rakenduste ja teenuste jaoks täpsemat asukohta. Selleks töötleb Google regulaarselt teavet seadme andurite ja selle seadme juhtmeta signaalide kohta, et juhtmeta signaalide asukohti ühiselt tuvastada. Neid kasutatakse ühtki isikut tuvastamata asukohatäpsuse ja asukohapõhiste teenuste parandamiseks ning Google’i teenuste täiustamiseks, pakkumiseks ja haldamiseks, lähtudes Google’i ning kolmandate osapoolte õigustatud huvidest, et kasutajate vajadusi rahuldada.</translation>
 <translation id="7762024824096060040">Ei saa seda kontot kasutada</translation>
@@ -12192,6 +12201,7 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri, seadme o
 <translation id="950079950995628542">Seadmest <ph name="PHONE_NAME" /></translation>
 <translation id="950307215746360464">Seadistusjuhend</translation>
 <translation id="951273949038779544"><ph name="SITE_ACCESS" />. Installis teie administraator</translation>
+<translation id="95160010745047025">Jätkake AI-režiimis sealt, kus pooleli jäite</translation>
 <translation id="951991426597076286">Keeldu</translation>
 <translation id="952137968828772361">Lisateave toodete, kohtade või teksti kohta, mida oma ekraanil näete</translation>
 <translation id="952471655966876828">Kui seade on sisse lülitatud ja seda kasutatakse, ühendatakse seade automaatselt</translation>

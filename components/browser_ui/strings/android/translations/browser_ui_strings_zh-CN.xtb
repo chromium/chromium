@@ -373,7 +373,7 @@
 <translation id="4672315773691449562">点按“浏览器应用”，然后点按“Chrome”</translation>
 <translation id="4676059169848868271">若要允许 <ph name="APP_NAME" /> 使用手部跟踪功能，您还需在<ph name="BEGIN_LINK" />系统设置<ph name="END_LINK" />中开启手部跟踪功能。</translation>
 <translation id="4688045258817337666">管理您的卡</translation>
-<translation id="4722332387043141878">网站通常会使用您设备的移动和光线传感器来实现虚拟现实或健身跟踪等功能</translation>
+<translation id="4722332387043141878">网站通常会使用您设备的移动传感器和光传感器来实现虚拟现实或健身跟踪等功能</translation>
 <translation id="4755971844837804407">开启此设置后，网站可以向您展示任何广告。关闭此设置后，网站无法展示侵扰性或误导性广告。</translation>
 <translation id="4779083564647765204">缩放</translation>
 <translation id="4807122856660838973">开启安全浏览</translation>
@@ -491,6 +491,7 @@
 <translation id="5922853908706496913">正在共享您的屏幕</translation>
 <translation id="5922967540311291836">阻止第三方 Cookie：</translation>
 <translation id="5923512600150154850">此操作会删除网站存储的 <ph name="DATASIZE" /> 数据和 Cookie。</translation>
+<translation id="5930707844513754220">查看更多设置列表</translation>
 <translation id="5939518447894949180">重置</translation>
 <translation id="5948139900367969951">快速获取重要信息</translation>
 <translation id="5964247741333118902">嵌入式内容</translation>
@@ -499,6 +500,7 @@
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
 <translation id="5998071268779572583">开启探索信息流</translation>
 <translation id="6012967556075291653">固定的快捷方式</translation>
+<translation id="6013003831291591200">任务已完成</translation>
 <translation id="6015775454662021376">控制此网站对您的设备的访问权限</translation>
 <translation id="6022659036123304283">定制您的专属 Chrome</translation>
 <translation id="6040143037577758943">关闭</translation>

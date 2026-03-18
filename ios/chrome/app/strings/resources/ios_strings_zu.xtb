@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">Siyakwamukela futhi!</translation>
 <translation id="2015722694326466240">Ukuze ubone amaphasiwedi, kufanele uqale ngokusetha ikhodi yokudlula kudivayisi yakho.</translation>
 <translation id="201759455285471444">Nweba iqembu lethebhu.</translation>
-<translation id="202070562065520783">Ngichazele lokhu</translation>
 <translation id="2044394949148788042">Vula igridi yethebhu</translation>
 <translation id="2044681667265133332">I-akhawunti ethi <ph name="USER_EMAIL" /> iphethwe yi-<ph name="HOSTED_DOMAIN" />, engase ikwazi ukubona olunye ulwazi. <ph name="BEGIN_LINK" />Funda kabanzi<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">into entsha</translation>
@@ -637,6 +636,7 @@
 <translation id="3324193307694657476">Ikheli 2</translation>
 <translation id="3328801116991980348">Ulwazi lwesayithi</translation>
 <translation id="333229797575847124">Ungasivumela kanjani lesi sakhi</translation>
+<translation id="334004756946755423">Ngichazele lokhu:</translation>
 <translation id="3344233834747405775">Igama lomnikazi wekhadi elingavumelekile</translation>
 <translation id="3344485292736684439">{count,plural, =1{Ibhukhimakhi lilondolozwe ku-"{title}" ku-akhawunti yakho, {email}}one{Amabhukhimakhi alondolozwe ku-"{title}" ku-akhawunti yakho, {email}}other{Amabhukhimakhi alondolozwe ku-"{title}" ku-akhawunti yakho, {email}}}</translation>
 <translation id="334690320928261823">Amathebhu Akamuva</translation>

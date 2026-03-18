@@ -506,6 +506,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="1327495825214193325">Da omogućite otklanjanje grešaka putem ADB-a, potrebno je ponovo pokrenuti ovaj uređaj <ph name="DEVICE_TYPE" />. Onemogućavanje zahtijeva vraćanje na fabričke postavke.</translation>
 <translation id="1327527584824210101">Koristite pristupni ključ</translation>
 <translation id="1327794256477341646">Funkcije za koje je potrebna vaša lokacija neće funkcionirati</translation>
+<translation id="1328041566565643371">Regulator za promjenu veličine vertikalne trake kartice (može se prevući)</translation>
 <translation id="1328364753167940710">Za <ph name="NUM_HR" /> h</translation>
 <translation id="1328928545650070438">Spuštanje obrva</translation>
 <translation id="1329466763986822896">Poboljšajte privatnost za ovu pristupnu tačku</translation>
@@ -1480,6 +1481,7 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
     <ph name="BEGIN_DESCRIPTION3" />Organizacija može daljinski pristupiti sesiji uređaja da omogući rješavanje problema.<ph name="END_DESCRIPTION3" />
     <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />Omogućavanje pristupa<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
     <ph name="BEGIN_DESCRIPTION4" />Aplikacije, usluge i mreže organizacije mogu biti dostupne samo na registriranim uređajima.<ph name="END_DESCRIPTION4" /></translation>
+<translation id="1979208610845113582">Sada ovdje možete direktno nastaviti nizove u AI načinu rada. Otkačite ovo bilo kada.</translation>
 <translation id="1979280758666859181">Prelazite na kanal sa starijom verzijom proizvoda <ph name="PRODUCT_NAME" />. Promjena kanala će se primijeniti kada verzija kanala bude odgovarala verziji koja je trenutno instalirana na vašem uređaju.</translation>
 <translation id="1979582938184524893">Ručno odaberite lične informacije koje želite uključiti</translation>
 <translation id="197989455406964291">KDC ne podržava vrstu šifriranja</translation>
@@ -1947,6 +1949,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2297705863329999812">Pretražite štampače</translation>
 <translation id="2297822946037605517">Dijeli ovu stranicu</translation>
 <translation id="229871422646860597">Otkačite s alatne trake</translation>
+<translation id="2298749511072894576">Sada ovdje možete direktno nastaviti chatove s Geminijem. Otkačite ovo bilo kada.</translation>
 <translation id="2299685119225839832">Možete dobiti sažetak onoga šta su drugi rekli u recenzijama</translation>
 <translation id="2299734369537008228">Klizač: od <ph name="MIN_LABEL" /> do <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">Uključi sve fajlove zapisnika koje je prikupio debugd kao odvojenu arhivu.</translation>
@@ -2311,6 +2314,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="252418934079508528">Instaliraj <ph name="DEVICE_OS" /></translation>
 <translation id="252513908494776481">Postavite pitanje o ovoj kartici</translation>
 <translation id="2525746158911982776">Ažuriranje nije uspjelo jer sistem nema dovoljno prostora za pohranu.</translation>
+<translation id="2525842906387880861">Neće vam se više prikazivati prijedlozi na ovoj stranici</translation>
 <translation id="2526590354069164005">Radna površina</translation>
 <translation id="2526619973349913024">Provjeri je li dostupno ažuriranje</translation>
 <translation id="2527167509808613699">Bilo koja vrsta veze</translation>
@@ -2804,6 +2808,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2855243985454069333">Briše historiju sa svih sinhroniziranih uređaja</translation>
 <translation id="2855812646048059450">Prijava putem usluge <ph name="CREDENTIAL_PROVIDER" /></translation>
 <translation id="2857047802954430547">Prijavite se da dobijate lozinke, oznake i druge stavke na svim svojim uređajima</translation>
+<translation id="2857195263461649321">Nastavite tamo gdje ste stali u Geminiju</translation>
 <translation id="2859741939921354763">Uvezite lozinke na uslugu <ph name="BRAND" /></translation>
 <translation id="2860284453253554297">Pravila preduzeća</translation>
 <translation id="2860710618359053450">Pomicanje čeljusti udesno</translation>
@@ -5961,6 +5966,7 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="5006778209728626987">Munja</translation>
 <translation id="5007392906805964215">Pregled</translation>
 <translation id="50080882645628821">Ukloni profil</translation>
+<translation id="5008587162781422067">Traka kartice je sada široka <ph name="TAB_STRIP_PERCENT" />, a područje sadržaja <ph name="CONTENT_AREA_PERCENT" />.</translation>
 <translation id="5008936837313706385">Naziv aktivnosti</translation>
 <translation id="5009463889040999939">Promjena naziva profila. To može potrajati nekoliko minuta.</translation>
 <translation id="5010886807652684893">Vizuelni prikaz</translation>
@@ -6607,6 +6613,7 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5460861858595506978">Inspiracija</translation>
 <translation id="5461050611724244538">Veza s vašim telefonom je prekinuta</translation>
 <translation id="5463275305984126951">Indeks lokacije <ph name="LOCATION" /></translation>
+<translation id="5463348003600590648">Onemogući prijedloge</translation>
 <translation id="5463450804024056231">Registrirajte se za <ph name="DEVICE_TYPE" /> e-poštu</translation>
 <translation id="5463625433003343978">Pronalaženje uređaja…</translation>
 <translation id="5463856536939868464">Meni koji sadrži sakrivene oznake</translation>
@@ -6770,6 +6777,7 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="557506220935336383">Pogledajte odobrenja za ekstenzije za druge web lokacije</translation>
 <translation id="5575473780076478375">Anonimna ekstenzija: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">Došlo je do problema sa zahtjevom za registraciju u načinu rada za demonstraciju.</translation>
+<translation id="5576472948015790634">Grupama kartica i chatovima s Geminijem sada možete upravljati na jednom mjestu. Otkačite ovo bilo kada.</translation>
 <translation id="557722062034137776">Vraćanje fabričkih postavki uređaja neće uticati na vaše Google račune ili bilo koje podatke koji su sinhronizirani na ovim računima. Međutim, izbrisat će se svi fajlovi koji su pohranjeni lokalno na vašem uređaju.</translation>
 <translation id="5578059481725149024">Automatsko prijavljivanje</translation>
 <translation id="5578387000057347457">Unesite prilagođen upit ili istaknite tekst da kreirate sliku</translation>
@@ -9953,6 +9961,7 @@ Pritisnite dodijeljeni prekidač ili tipku da uklonite dodjeljivanje.</translati
 <translation id="7758884017823246335">Dodajte pretraživanje web lokacije</translation>
 <translation id="7759443981285558794">Pregledajte uvezene certifikate iz ChromeOS-a</translation>
 <translation id="7759606211476816416">Vaše prečice web lokacija</translation>
+<translation id="7759748248923439385">Grupama kartica i nizovima u AI načinu rada sada možete upravljati na jednom mjestu. Otkačite ovo bilo kada.</translation>
 <translation id="7759809451544302770">Nije obavezno</translation>
 <translation id="7760176388948986635">Dozvolite ChromeOS i Android aplikacijama, web lokacijama i uslugama s odobrenjem za lokaciju da koriste lokaciju uređaja. Preciznost lokacije pruža precizniju lokaciju za Android aplikacije i usluge. Google u tu svrhu periodično obrađuje informacije o senzorima uređaja i bežičnim signalima koje uređaj šalje da prikupi lokacije bežičnih signala u vidu podrške internet javnosti. Ove informacije se koriste bez identifikacije osoba radi poboljšanja preciznosti lokacije i usluga zasnovanih na lokaciji te poboljšanja, pružanja i održavanja Googleovih usluga na osnovu legitimnih interesa Googlea i trećih strana da ispunjavaju potrebe korisnika.</translation>
 <translation id="7762024824096060040">Nije moguće koristiti ovaj račun</translation>
@@ -12206,6 +12215,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="950079950995628542">S telefona "<ph name="PHONE_NAME" />"</translation>
 <translation id="950307215746360464">Vodič za postavljanje</translation>
 <translation id="951273949038779544"><ph name="SITE_ACCESS" />. Instalirao je administrator</translation>
+<translation id="95160010745047025">Nastavite tamo gdje ste stali u AI načinu rada</translation>
 <translation id="951991426597076286">Odbij</translation>
 <translation id="952137968828772361">Saznajte više o proizvodima, mjestima ili tekstu koje vidite na ekranu</translation>
 <translation id="952471655966876828">Uređaj će se automatski povezati kada se uključi i koristi</translation>

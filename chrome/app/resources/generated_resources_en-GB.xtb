@@ -504,6 +504,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1327495825214193325">To enable ADB debugging, a restart of this <ph name="DEVICE_TYPE" /> is required. Disabling it requires a reset to factory settings.</translation>
 <translation id="1327527584824210101">Use your passkey</translation>
 <translation id="1327794256477341646">Features that need your location won't work</translation>
+<translation id="1328041566565643371">Vertical tab strip resize handle (draggable)</translation>
 <translation id="1328364753167940710">In <ph name="NUM_HR" /> hr</translation>
 <translation id="1328928545650070438">Lower eyebrows</translation>
 <translation id="1329466763986822896">Improve privacy for this hotspot</translation>
@@ -1481,6 +1482,7 @@ Permissions that you've already given to apps may apply to this account. You can
     <ph name="BEGIN_DESCRIPTION3" />The organisation can remotely access a device session in order to provide troubleshooting.<ph name="END_DESCRIPTION3" />
     <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />Enable access<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
     <ph name="BEGIN_DESCRIPTION4" />Organisation apps, services, and networks may only be available on enrolled devices.<ph name="END_DESCRIPTION4" /></translation>
+<translation id="1979208610845113582">You can now directly resume AI Mode threads here. Unpin this at any time.</translation>
 <translation id="1979280758666859181">You are changing to a channel with an older version of <ph name="PRODUCT_NAME" />. The channel change will be applied when the channel version matches the version currently installed on your device.</translation>
 <translation id="1979582938184524893">Manually select personal information you want to include</translation>
 <translation id="197989455406964291">KDC does not support encryption type</translation>
@@ -1948,6 +1950,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2297705863329999812">Search printers</translation>
 <translation id="2297822946037605517">Share this page</translation>
 <translation id="229871422646860597">Unpin from toolbar</translation>
+<translation id="2298749511072894576">You can now directly resume Gemini chats here. Unpin this at any time.</translation>
 <translation id="2299685119225839832">You can get a summary of what people are saying in their reviews</translation>
 <translation id="2299734369537008228">Slider: <ph name="MIN_LABEL" /> to <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">Include all log files collected by debugd as a separate archive.</translation>
@@ -2312,6 +2315,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="252418934079508528">Install <ph name="DEVICE_OS" /></translation>
 <translation id="252513908494776481">Ask about this tab</translation>
 <translation id="2525746158911982776">The update failed because the system lacks sufficient storage space.</translation>
+<translation id="2525842906387880861">You won't see suggestions on this page again</translation>
 <translation id="2526590354069164005">Desktop</translation>
 <translation id="2526619973349913024">Check for update</translation>
 <translation id="2527167509808613699">Any kind of connection</translation>
@@ -2805,6 +2809,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2855243985454069333">Deletes history from all synced devices</translation>
 <translation id="2855812646048059450">Sign in with <ph name="CREDENTIAL_PROVIDER" /></translation>
 <translation id="2857047802954430547">Sign in to get your passwords, bookmarks and more on all your devices</translation>
+<translation id="2857195263461649321">Pick up where you left off on Gemini</translation>
 <translation id="2859741939921354763">Import passwords to <ph name="BRAND" /></translation>
 <translation id="2860284453253554297">Enterprise policies</translation>
 <translation id="2860710618359053450">Shift jaw right</translation>
@@ -5962,6 +5967,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5006778209728626987">Lightning</translation>
 <translation id="5007392906805964215">Review</translation>
 <translation id="50080882645628821">Remove profile</translation>
+<translation id="5008587162781422067">Tab strip now <ph name="TAB_STRIP_PERCENT" /> wide, content area now <ph name="CONTENT_AREA_PERCENT" /> wide.</translation>
 <translation id="5008936837313706385">Activity Name</translation>
 <translation id="5009463889040999939">Renaming profile. This may take a few minutes.</translation>
 <translation id="5010886807652684893">Visual view</translation>
@@ -6608,6 +6614,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5460861858595506978">Inspiration</translation>
 <translation id="5461050611724244538">Connection lost with your phone</translation>
 <translation id="5463275305984126951">Index of <ph name="LOCATION" /></translation>
+<translation id="5463348003600590648">Disable suggestions</translation>
 <translation id="5463450804024056231">Sign up for <ph name="DEVICE_TYPE" /> emails</translation>
 <translation id="5463625433003343978">Finding devices…</translation>
 <translation id="5463856536939868464">Menu containing hidden bookmarks</translation>
@@ -6771,6 +6778,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="557506220935336383">See extension permissions for other sites</translation>
 <translation id="5575473780076478375">Incognito Extension: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">A problem with demo registration request occurred.</translation>
+<translation id="5576472948015790634">You can now manage your tab groups and Gemini chats in one place. Unpin this at any time.</translation>
 <translation id="557722062034137776">Resetting your device will not affect your Google accounts or any data synced to these accounts. However, all files saved locally on your device will be deleted.</translation>
 <translation id="5578059481725149024">Auto sign-in</translation>
 <translation id="5578387000057347457">Enter a custom prompt or highlight text to create an image</translation>
@@ -9950,6 +9958,7 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7758884017823246335">Add Site Search</translation>
 <translation id="7759443981285558794">View imported certificates from ChromeOS</translation>
 <translation id="7759606211476816416">Your site shortcuts</translation>
+<translation id="7759748248923439385">You can now manage your tab groups and AI Mode threads in one place. Unpin this at any time.</translation>
 <translation id="7759809451544302770">Optional</translation>
 <translation id="7760176388948986635">Allow ChromeOS and Android apps, websites and services with location permission to use this device's location. Location Accuracy provides more accurate location for Android apps and services. To do this, Google periodically processes information about device sensors and wireless signals from this device to crowdsource wireless signal locations. These are used without identifying any individual to improve location accuracy and location-based services and to improve, provide and maintain Google's services based on Google's and third parties' legitimate interests to serve users' needs.</translation>
 <translation id="7762024824096060040">Can't use this account</translation>
@@ -12201,6 +12210,7 @@ This can include information about installed software, files, your browser, the 
 <translation id="950079950995628542">From '<ph name="PHONE_NAME" />'</translation>
 <translation id="950307215746360464">Setup guide</translation>
 <translation id="951273949038779544"><ph name="SITE_ACCESS" />. Installed by your administrator</translation>
+<translation id="95160010745047025">Pick up where you left off on AI Mode</translation>
 <translation id="951991426597076286">Decline</translation>
 <translation id="952137968828772361">Learn more about products, places or text that you see on your screen</translation>
 <translation id="952471655966876828">Device will connect automatically when it's turned on and is being used</translation>

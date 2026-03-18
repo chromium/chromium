@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">Sveicam atpakaļ!</translation>
 <translation id="2015722694326466240">Lai skatītu paroles, vispirms ierīcei ir jāiestata piekļuves kods.</translation>
 <translation id="201759455285471444">Izvērst ciļņu grupu.</translation>
-<translation id="202070562065520783">Paskaidro man</translation>
 <translation id="2044394949148788042">Atveriet ciļņu režģi.</translation>
 <translation id="2044681667265133332">Kontu <ph name="USER_EMAIL" /> pārvalda domēnam <ph name="HOSTED_DOMAIN" /> atbilstošā organizācija, kas, iespējams, var skatīt noteiktu informāciju. <ph name="BEGIN_LINK" />Uzzināt vairāk<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">jauns vienums</translation>
@@ -637,6 +636,7 @@
 <translation id="3324193307694657476">2. adrese</translation>
 <translation id="3328801116991980348">Vietnes informācija</translation>
 <translation id="333229797575847124">Kā iespējot šo funkciju</translation>
+<translation id="334004756946755423">Paskaidro man:</translation>
 <translation id="3344233834747405775">Nederīgs kartes īpašnieka vārds</translation>
 <translation id="3344485292736684439">{count,plural, =1{Grāmatzīme ir saglabāta mapē “{title}” jūsu kontā ({email}).}zero{Grāmatzīmes ir saglabātas mapē “{title}” jūsu kontā ({email}).}one{Grāmatzīmes ir saglabātas mapē “{title}” jūsu kontā ({email}).}other{Grāmatzīmes ir saglabātas mapē “{title}” jūsu kontā ({email}).}}</translation>
 <translation id="334690320928261823">Pēdējās cilnes</translation>

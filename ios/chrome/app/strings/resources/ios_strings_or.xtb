@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">ଆପଣଙ୍କୁ ପୁଣି ସ୍ୱାଗତ!</translation>
 <translation id="2015722694326466240">ପାସ୍‍ୱାର୍ଡଗୁଡ଼ିକୁ ଦେଖିବା ପାଇଁ ଆପଣଙ୍କୁ ପ୍ରଥମରୁ ଆପଣଙ୍କ ଡିଭାଇସ୍‌ରେ ନିଶ୍ଚିତ ରୂପେ ଗୋଟିଏ ପାସକୋଡ୍ ସେଟ୍ କରିବାକୁ ହେବ।</translation>
 <translation id="201759455285471444">ଟାବ ଗ୍ରୁପକୁ ବିସ୍ତାର କରନ୍ତୁ।</translation>
-<translation id="202070562065520783">ମୋତେ ଏହାକୁ ବ୍ୟାଖ୍ୟା କରନ୍ତୁ</translation>
 <translation id="2044394949148788042">ଟାବ ଗ୍ରିଡ ଖୋଲନ୍ତୁ</translation>
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> ଆକାଉଣ୍ଟ <ph name="HOSTED_DOMAIN" /> ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି, ଯାହା କିଛି ସୂଚନା ଭ୍ୟୁ କରିବାକୁ ସକ୍ଷମ ହୋଇପାରେ। <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">ନୂଆ ଆଇଟମ</translation>
@@ -637,6 +636,7 @@
 <translation id="3324193307694657476">ଠିକଣା 2</translation>
 <translation id="3328801116991980348">ସାଇଟ୍‌ ସୂଚନା</translation>
 <translation id="333229797575847124">ଏହି ଫିଚରକୁ କିପରି ସକ୍ଷମ କରିବେ</translation>
+<translation id="334004756946755423">ମୋତେ ଏହାକୁ ବ୍ୟାଖ୍ୟା କରନ୍ତୁ:</translation>
 <translation id="3344233834747405775">ଅବୈଧ କାର୍ଡହୋଲ୍ଡରଙ୍କ ନାମ</translation>
 <translation id="3344485292736684439">{count,plural, =1{ଆପଣଙ୍କ ଆକାଉଣ୍ଟ, {email}ରେ ଥିବା "{title}"ରେ ବୁକମାର୍କ ସେଭ କରାଯାଇଛି}other{ଆପଣଙ୍କ ଆକାଉଣ୍ଟ, {email}ରେ ଥିବା "{title}"ରେ ବୁକମାର୍କଗୁଡ଼ିକ ସେଭ କରାଯାଇଛି}}</translation>
 <translation id="334690320928261823">ବର୍ତ୍ତମାନର ଟାବ</translation>

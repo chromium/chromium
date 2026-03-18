@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">Dobrodošli nazaj!</translation>
 <translation id="2015722694326466240">Če si želite ogledati gesla, morate najprej nastaviti geslo v napravi.</translation>
 <translation id="201759455285471444">Razširitev skupine zavihkov.</translation>
-<translation id="202070562065520783">Pojasni mi to</translation>
 <translation id="2044394949148788042">Odprite mrežo zavihkov</translation>
 <translation id="2044681667265133332">Račun <ph name="USER_EMAIL" /> upravlja <ph name="HOSTED_DOMAIN" />, ki si lahko morda ogleda nekatere podatke. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nov element</translation>
@@ -637,6 +636,7 @@
 <translation id="3324193307694657476">Naslov 2</translation>
 <translation id="3328801116991980348">Podatki o mestu</translation>
 <translation id="333229797575847124">Kako omogočite to funkcijo</translation>
+<translation id="334004756946755423">Pojasni mi to:</translation>
 <translation id="3344233834747405775">Neveljavno ime imetnika kartice</translation>
 <translation id="3344485292736684439">{count,plural, =1{Zaznamek je shranjen v »{title}« v vašem računu, {email}}one{Zaznamki so shranjeni v »{title}« v vašem računu, {email}}two{Zaznamki so shranjeni v »{title}« v vašem računu, {email}}few{Zaznamki so shranjeni v »{title}« v vašem računu, {email}}other{Zaznamki so shranjeni v »{title}« v vašem računu, {email}}}</translation>
 <translation id="334690320928261823">Nedavni zavihki</translation>

@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">ಮರಳಿ ಸ್ವಾಗತ!</translation>
 <translation id="2015722694326466240">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಲು, ನೀವು ಮೊದಲು ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಪಾಸ್‌ವಡ್‌ ಅನ್ನು ಸೆಟ್ ಮಾಡಿ.</translation>
 <translation id="201759455285471444">ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ವಿಸ್ತೃತಗೊಳಿಸಿ.</translation>
-<translation id="202070562065520783">ಇದನ್ನು ನನಗೆ ವಿವರಿಸಿ</translation>
 <translation id="2044394949148788042">ಟ್ಯಾಬ್‌ ಗ್ರಿಡ್‌ ಅನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="2044681667265133332">ಖಾತೆ <ph name="USER_EMAIL" /> ಅನ್ನು <ph name="HOSTED_DOMAIN" /> ನಿಂದ ನಿರ್ವಹಿಸಲಾಗುತ್ತದೆ, ಇದು ಕೆಲವು ಮಾಹಿತಿಯನ್ನು ವೀಕ್ಷಿಸಲು ಸಾಧ್ಯವಾಗಬಹುದು. <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">ಹೊಸ ಐಟಂ</translation>
@@ -637,6 +636,7 @@
 <translation id="3324193307694657476">ವಿಳಾಸ 2</translation>
 <translation id="3328801116991980348">ಸೈಟ್ ಮಾಹಿತಿ</translation>
 <translation id="333229797575847124">ಈ ಫೀಚರ್‌ ಅನ್ನು ಹೇಗೆ ಸಕ್ರಿಯಗೊಳಿಸುವುದು</translation>
+<translation id="334004756946755423">ಇದನ್ನು ನನಗೆ ವಿವರಿಸಿ:</translation>
 <translation id="3344233834747405775">ಕಾರ್ಡ್‌ಹೋಲ್ಡರ್ ಹೆಸರು ಅಮಾನ್ಯವಾಗಿದೆ</translation>
 <translation id="3344485292736684439">{count,plural, =1{ಬುಕ್‌ಮಾರ್ಕ್ ಅನ್ನು ನಿಮ್ಮ ಖಾತೆ {email} ನಲ್ಲಿ "{title}" ಎಂಬಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗಿದೆ}one{ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ನಿಮ್ಮ ಖಾತೆ {email} ನಲ್ಲಿ "{title}" ಎಂಬಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗಿದೆ}other{ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ನಿಮ್ಮ ಖಾತೆ {email} ನಲ್ಲಿ "{title}" ಎಂಬಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗಿದೆ}}</translation>
 <translation id="334690320928261823">ಇತ್ತೀಚಿನ ಟ್ಯಾಬ್‌ಗಳು</translation>

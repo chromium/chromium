@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">Welkom terug!</translation>
 <translation id="2015722694326466240">Om wagwoorde te sien, moet jy eers 'n wagkode op jou toestel stel.</translation>
 <translation id="201759455285471444">Vou oortjiegroep uit.</translation>
-<translation id="202070562065520783">Verduidelik dit vir my</translation>
 <translation id="2044394949148788042">Maak die oortjierooster oop</translation>
 <translation id="2044681667265133332">Die rekening <ph name="USER_EMAIL" /> word bestuur deur <ph name="HOSTED_DOMAIN" /> wat dalk sekere inligting kan bekyk. <ph name="BEGIN_LINK" />Meer inligting<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nuwe item</translation>
@@ -637,6 +636,7 @@
 <translation id="3324193307694657476">Adres 2</translation>
 <translation id="3328801116991980348">Werfinligting</translation>
 <translation id="333229797575847124">Hoe om hierdie kenmerk te aktiveer</translation>
+<translation id="334004756946755423">Verduidelik dit vir my:</translation>
 <translation id="3344233834747405775">Ongeldige kaarthouernaam</translation>
 <translation id="3344485292736684439">{count,plural, =1{Boekmerk is gestoor in “{title}” in jou rekening, {email}}other{Boekmerke is gestoor in “{title}” in jou rekening, {email}}}</translation>
 <translation id="334690320928261823">Onlangse oortjies</translation>

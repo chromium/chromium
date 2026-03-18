@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">Bine ai revenit!</translation>
 <translation id="2015722694326466240">Pentru a vedea parolele, trebuie mai întâi să setezi o parolă pe dispozitiv.</translation>
 <translation id="201759455285471444">Extinde grupul de file.</translation>
-<translation id="202070562065520783">Explică-mi</translation>
 <translation id="2044394949148788042">Deschide grila cu file</translation>
 <translation id="2044681667265133332">Contul <ph name="USER_EMAIL" /> este gestionat de <ph name="HOSTED_DOMAIN" />, care poate să vadă anumite informații. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">articol nou</translation>
@@ -637,6 +636,7 @@
 <translation id="3324193307694657476">Adresă 2</translation>
 <translation id="3328801116991980348">Informații despre site</translation>
 <translation id="333229797575847124">Cum să activezi această funcție</translation>
+<translation id="334004756946755423">Explică-mi următorul lucru:</translation>
 <translation id="3344233834747405775">Nume de titular de card nevalid</translation>
 <translation id="3344485292736684439">{count,plural, =1{Marcaj salvat în {title} în contul tău {email}}few{Marcaje salvate în {title} în contul tău {email}}other{Marcaje salvate în {title} în contul tău {email}}}</translation>
 <translation id="334690320928261823">File recente</translation>

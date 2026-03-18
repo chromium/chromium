@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">Добре дојдовте пак!</translation>
 <translation id="2015722694326466240">За да ги видите лозинките, прво мора да поставите лозинка на вашиот уред.</translation>
 <translation id="201759455285471444">Прошири ја групата картички.</translation>
-<translation id="202070562065520783">Објасни ми го ова</translation>
 <translation id="2044394949148788042">Отворете ја мрежата со картички</translation>
 <translation id="2044681667265133332">Со сметката <ph name="USER_EMAIL" /> управува <ph name="HOSTED_DOMAIN" />, што може да прегледува некои податоци. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">нова ставка</translation>
@@ -637,6 +636,7 @@
 <translation id="3324193307694657476">Адреса 2</translation>
 <translation id="3328801116991980348">Информации за веб-локација</translation>
 <translation id="333229797575847124">Како се овозможува функцијава</translation>
+<translation id="334004756946755423">Објасни ми го ова:</translation>
 <translation id="3344233834747405775">Неважечко име на сопственикот на картичката</translation>
 <translation id="3344485292736684439">{count,plural, =1{Обележувачот е зачуван во „{title}“ во вашата сметка, {email}}one{Обележувачите се зачувани во „{title}“ во вашата сметка, {email}}other{Обележувачите се зачувани во „{title}“ во вашата сметка, {email}}}</translation>
 <translation id="334690320928261823">Неодамнешни картички</translation>

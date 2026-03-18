@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">مرحبًا من جديد</translation>
 <translation id="2015722694326466240">للاطّلاع على كلمات المرور، يجب أولاً ضبط رمز مرور على جهازك.</translation>
 <translation id="201759455285471444">توسيع مجموعة علامات التبويب</translation>
-<translation id="202070562065520783">أريد شرحًا لهذا</translation>
 <translation id="2044394949148788042">فتح شبكة علامات التبويب</translation>
 <translation id="2044681667265133332">يتولّى النطاق <ph name="HOSTED_DOMAIN" /> إدارة الحساب <ph name="USER_EMAIL" />، وقد يكون بإمكانه الاطّلاع على بعض البيانات. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">عنصر جديد</translation>
@@ -637,6 +636,7 @@
 <translation id="3324193307694657476">العنوان 2</translation>
 <translation id="3328801116991980348">معلومات الموقع الإلكتروني</translation>
 <translation id="333229797575847124">طريقة تفعيل هذه الميزة</translation>
+<translation id="334004756946755423">أريد شرحًا لهذا:</translation>
 <translation id="3344233834747405775">اسم حامل البطاقة غير صالح</translation>
 <translation id="3344485292736684439">{count,plural, =1{تم حفظ الإشارة المرجعية في "{title}" ضمن حسابك ({email}).}zero{تم حفظ الإشارات المرجعية في "{title}" ضمن حسابك ({email}).}two{تم حفظ الإشارتَين المرجعيتَين في "{title}" ضمن حسابك ({email}).}few{تم حفظ الإشارات المرجعية في "{title}" ضمن حسابك ({email}).}many{تم حفظ الإشارات المرجعية في "{title}" ضمن حسابك ({email}).}other{تم حفظ الإشارات المرجعية في "{title}" ضمن حسابك ({email}).}}</translation>
 <translation id="334690320928261823">علامات التبويب الأخيرة</translation>

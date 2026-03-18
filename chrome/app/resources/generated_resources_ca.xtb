@@ -504,6 +504,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1327495825214193325">Per activar la depuració d'ADB, cal reiniciar el dispositiu <ph name="DEVICE_TYPE" />. Per desactivar-la, cal restablir-ne la configuració de fàbrica.</translation>
 <translation id="1327527584824210101">Utilitza la teva clau d'accés</translation>
 <translation id="1327794256477341646">Les funcions que necessiten la teva ubicació no funcionaran</translation>
+<translation id="1328041566565643371">Ansa de canvi de mida de la barra de pestanyes vertical (arrossegable)</translation>
 <translation id="1328364753167940710">D'aquí a <ph name="NUM_HR" /> h</translation>
 <translation id="1328928545650070438">Baixar les celles</translation>
 <translation id="1329466763986822896">Millora la privadesa d'aquest punt d'accés Wi‐Fi</translation>
@@ -1471,6 +1472,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
     <ph name="BEGIN_DESCRIPTION3" />L'organització pot accedir de manera remota a la sessió d'un dispositiu per resoldre problemes.<ph name="END_DESCRIPTION3" />
     <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />Activar l'accés<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
     <ph name="BEGIN_DESCRIPTION4" />És possible que les aplicacions, els serveis i les xarxes de l'organització només estiguin disponibles en dispositius inscrits.<ph name="END_DESCRIPTION4" /></translation>
+<translation id="1979208610845113582">Ara pots reprendre directament els fils de discussió del mode IA aquí. Deixa de fixar-ho en qualsevol moment.</translation>
 <translation id="1979280758666859181">Esteu a punt de canviar a un canal amb una versió més antiga de <ph name="PRODUCT_NAME" />. El canvi de canal s'aplicarà quan la versió del canal coincideixi amb la versió qui hi ha instal·lada actualment en el vostre dispositiu.</translation>
 <translation id="1979582938184524893">Selecciona manualment la informació personal que vulguis incloure</translation>
 <translation id="197989455406964291">El Centre de distribució de claus de Kerberos no admet aquest tipus d'encriptació</translation>
@@ -1935,6 +1937,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2297705863329999812">Cerca impressores</translation>
 <translation id="2297822946037605517">Comparteix aquesta pàgina</translation>
 <translation id="229871422646860597">Deixa de fixar a la barra d'eines</translation>
+<translation id="2298749511072894576">Ara pots reprendre directament els xats de Gemini aquí. Deixa de fixar-ho en qualsevol moment.</translation>
 <translation id="2299685119225839832">Pots obtenir un resum del que les persones diuen a les ressenyes</translation>
 <translation id="2299734369537008228">Control lliscant: de <ph name="MIN_LABEL" /> a <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">Inclou tots els fitxers de registre recollits per debugd en un arxiu independent.</translation>
@@ -2299,6 +2302,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="252418934079508528">Instal·la <ph name="DEVICE_OS" /></translation>
 <translation id="252513908494776481">Pregunta sobre aquesta pestanya</translation>
 <translation id="2525746158911982776">L'actualització ha fallat perquè el sistema no té prou espai d'emmagatzematge.</translation>
+<translation id="2525842906387880861">No tornaràs a veure suggeriments en aquesta pàgina</translation>
 <translation id="2526590354069164005">Escriptori</translation>
 <translation id="2526619973349913024">Cerca actualitzacions</translation>
 <translation id="2527167509808613699">Qualsevol tipus de connexió</translation>
@@ -2792,6 +2796,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2855243985454069333">Suprimeix l'historial de tots els dispositius sincronitzats</translation>
 <translation id="2855812646048059450">Inicia la sessió amb <ph name="CREDENTIAL_PROVIDER" /></translation>
 <translation id="2857047802954430547">Inicia la sessió per obtenir les teves contrasenyes, adreces d'interès i altres dades en tots els teus dispositius</translation>
+<translation id="2857195263461649321">Continua des d'on ho vas deixar a Gemini</translation>
 <translation id="2859741939921354763">Importa les contrasenyes a <ph name="BRAND" /></translation>
 <translation id="2860284453253554297">Polítiques empresarials</translation>
 <translation id="2860710618359053450">Moure la mandíbula cap a la dreta</translation>
@@ -5945,6 +5950,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir el zoom.</translation>
 <translation id="5006778209728626987">Llampec</translation>
 <translation id="5007392906805964215">Revisa</translation>
 <translation id="50080882645628821">Suprimeix el perfil</translation>
+<translation id="5008587162781422067">Ara l'amplada de la barra de pestanyes és d'un <ph name="TAB_STRIP_PERCENT" /> i la de l'àrea de contingut, d'un <ph name="CONTENT_AREA_PERCENT" />.</translation>
 <translation id="5008936837313706385">Nom de l'activitat</translation>
 <translation id="5009463889040999939">S'està canviant el nom del perfil. Aquest procés pot tardar uns minuts.</translation>
 <translation id="5010886807652684893">Visualització visual</translation>
@@ -6591,6 +6597,7 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="5460861858595506978">Inspiració</translation>
 <translation id="5461050611724244538">S'ha perdut la connexió amb el telèfon</translation>
 <translation id="5463275305984126951">Índex de <ph name="LOCATION" /></translation>
+<translation id="5463348003600590648">Desactiva els suggeriments</translation>
 <translation id="5463450804024056231">Registra't per rebre correus electrònics de <ph name="DEVICE_TYPE" /></translation>
 <translation id="5463625433003343978">S'estan cercant dispositius...</translation>
 <translation id="5463856536939868464">Menú amb adreces d'interès amagades</translation>
@@ -6754,6 +6761,7 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="557506220935336383">Consulta els permisos d'extensions per a altres llocs web</translation>
 <translation id="5575473780076478375">Extensió d'incògnit: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">S'ha produït un problema amb la sol·licitud per registrar la demostració.</translation>
+<translation id="5576472948015790634">Ara pots gestionar els teus grups de pestanyes i els xats de Gemini en un sol lloc. Deixa de fixar-ho en qualsevol moment.</translation>
 <translation id="557722062034137776">Si restabliu el dispositiu, no es produirà cap canvi als vostres comptes de Google ni a les dades sincronitzades en aquests comptes. No obstant això, se suprimiran tots els fitxers desats localment al dispositiu.</translation>
 <translation id="5578059481725149024">Inici de sessió automàtic</translation>
 <translation id="5578387000057347457">Introdueix una indicació personalitzada o marca text per crear una imatge</translation>
@@ -9931,6 +9939,7 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="7758884017823246335">Afegeix una cerca al lloc web</translation>
 <translation id="7759443981285558794">Mostra els certificats importats de ChromeOS</translation>
 <translation id="7759606211476816416">Les teves dreceres de llocs web</translation>
+<translation id="7759748248923439385">Ara pots gestionar els teus grups de pestanyes i els fils de discussió del mode IA en un sol lloc. Deixa de fixar-ho en qualsevol moment.</translation>
 <translation id="7759809451544302770">Opcional</translation>
 <translation id="7760176388948986635">Permet que les aplicacions, els llocs web i els serveis de ChromeOS i d'Android que tinguin permís d'accés a la ubicació utilitzin la ubicació d'aquest dispositiu. La precisió de la ubicació proporciona una ubicació més precisa a les aplicacions i als serveis d'Android. Per fer-ho, Google tracta periòdicament informació sobre els sensors i els senyals sense fil d'aquest dispositiu a fi d'obtenir col·lectivament les ubicacions dels senyals sense fil. Aquestes dades s'utilitzen sense identificar a cap persona a fi de millorar la precisió de la ubicació i els serveis basats en la ubicació. També s'utilitzen per millorar, proporcionar i mantenir els serveis de Google segons els interessos legítims de Google i de tercers a fi de satisfer les necessitats dels usuaris.</translation>
 <translation id="7762024824096060040">No es pot utilitzar aquest compte</translation>
@@ -12182,6 +12191,7 @@ Obtén informació sobre les dades que Google recull i sobre el motiu pel qual h
 <translation id="950079950995628542">De <ph name="PHONE_NAME" /></translation>
 <translation id="950307215746360464">Guia de configuració</translation>
 <translation id="951273949038779544"><ph name="SITE_ACCESS" />. Instal·lada per l'administrador.</translation>
+<translation id="95160010745047025">Continua des d'on ho vas deixar al mode IA</translation>
 <translation id="951991426597076286">Rebutja</translation>
 <translation id="952137968828772361">Obtén més informació sobre productes, llocs o text que veus a la pantalla</translation>
 <translation id="952471655966876828">El dispositiu es desconnectarà automàticament quan s'encengui o s'estigui fent servir</translation>

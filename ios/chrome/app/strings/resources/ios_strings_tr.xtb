@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">Tekrar hoş geldiniz!</translation>
 <translation id="2015722694326466240">Şifreleri görmek için öncelikle cihazınızda bir şifre kodu ayarlamanız gerekir.</translation>
 <translation id="201759455285471444">Sekme grubunu genişletin.</translation>
-<translation id="202070562065520783">Şunu bana açıkla:</translation>
 <translation id="2044394949148788042">Sekme ızgarasını açın</translation>
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> hesabı, bazı bilgileri görüntüleyebilen <ph name="HOSTED_DOMAIN" /> tarafından yönetiliyor. <ph name="BEGIN_LINK" />Daha fazla bilgi edinin<ph name="END_LINK" />.</translation>
 <translation id="20485545164632846">yeni öğe</translation>
@@ -637,6 +636,7 @@
 <translation id="3324193307694657476">Adres 2</translation>
 <translation id="3328801116991980348">Site bilgileri</translation>
 <translation id="333229797575847124">Bu özellik nasıl etkinleştirilir?</translation>
+<translation id="334004756946755423">Şunu bana açıkla:</translation>
 <translation id="3344233834747405775">Geçersiz kart sahibi adı</translation>
 <translation id="3344485292736684439">{count,plural, =1{Yer işareti {email} hesabınızda "{title}" konumuna kaydedildi}other{Yer işaretleri {email} hesabınızda "{title}" konumuna kaydedildi}}</translation>
 <translation id="334690320928261823">Son Sekmeler</translation>

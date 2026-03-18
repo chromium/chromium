@@ -505,6 +505,7 @@
 <translation id="1327495825214193325">‏برای فعال‌سازی اشکال‌زدایی ADB (پل اشکال‌زدایی android)، بازراه‌اندازی <ph name="DEVICE_TYPE" /> لازم است. برای غیرفعال کردن این تنظیم، باید به تنظیمات کارخانه بازنشانی کنید.</translation>
 <translation id="1327527584824210101">استفاده از گذرکلید</translation>
 <translation id="1327794256477341646">ویژگی‌هایی که به مکان شما نیاز دارند کار نخواهند کرد</translation>
+<translation id="1328041566565643371">دسته تغییر اندازه نوار زبانه عمودی (کشیدنی)</translation>
 <translation id="1328364753167940710">‫<ph name="NUM_HR" /> ساعت دیگر</translation>
 <translation id="1328928545650070438">پایین آوردن ابروها</translation>
 <translation id="1329466763986822896">بهبود حریم خصوصی این نقطه اتصال</translation>
@@ -1478,6 +1479,7 @@
     <ph name="BEGIN_DESCRIPTION3" />سازمان می‌تواند برای ارائه عیب‌یابی، از دور به جلسه دستگاه دسترسی داشته باشد.<ph name="END_DESCRIPTION3" />
     <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />فعال کردن دسترسی<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
     <ph name="BEGIN_DESCRIPTION4" />برنامه‌ها، سرویس‌ها، و شبکه‌های سازمان ممکن است فقط در دستگاه‌های ثبت‌نام‌شده دردسترس باشند.<ph name="END_DESCRIPTION4" /></translation>
+<translation id="1979208610845113582">اکنون می‌توانید رشته‌های «حالت هوشواره‌ای» را مستقیماً در اینجا ازسر بگیرید. هرزمان بخواهید می‌توانید سنجاق این بردارید.</translation>
 <translation id="1979280758666859181">شما در حال تغییر کانال به نسخه قدیمی‌تر <ph name="PRODUCT_NAME" /> هستید. تغییر کانال زمانی اعمال می‌شود که نسخه کانال با نسخه فعلی نصب شده در دستگاه یکسان باشد.</translation>
 <translation id="1979582938184524893">انتخاب دستی اطلاعات شخصی مدنظر برای اضافه شدن</translation>
 <translation id="197989455406964291">‏KDC از نوع رمزگذاری پشتیبانی نمی‌کند</translation>
@@ -1945,6 +1947,7 @@
 <translation id="2297705863329999812">جستجوی چاپگرها</translation>
 <translation id="2297822946037605517">هم‌رسانی این صفحه</translation>
 <translation id="229871422646860597">برداشتن سنجاق از نوارابزار</translation>
+<translation id="2298749511072894576">‏اکنون می‌توانید گپ‌های Gemini را مستقیماً از اینجا ازسر بگیرید. هرزمان بخواهید می‌توانید سنجاق این بردارید.</translation>
 <translation id="2299685119225839832">می‌توانید خلاصه‌ای از آنچه که افراد در مرورهایشان می‌گویند دریافت کنید</translation>
 <translation id="2299734369537008228">لغزنده: <ph name="MIN_LABEL" /> تا <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">‏همه فایل‌های گزارش جمع‌آوری‌شده توسط debugd به‌عنوان بایگانی جداگانه‌ای اضافه شود.</translation>
@@ -2309,6 +2312,7 @@
 <translation id="252418934079508528">نصب <ph name="DEVICE_OS" /></translation>
 <translation id="252513908494776481">می‌توانید درباره این زبانه سؤال بپرسید</translation>
 <translation id="2525746158911982776">به‌روزرسانی انجام نشد زیرا سیستم فضای ذخیره‌سازی کافی ندارد.</translation>
+<translation id="2525842906387880861">دیگر پیشنهادی را در این صفحه نخواهید دید</translation>
 <translation id="2526590354069164005">دسک تاپ</translation>
 <translation id="2526619973349913024">بررسی برای وجود به‌روزرسانی</translation>
 <translation id="2527167509808613699">هر نوع اتصال</translation>
@@ -2802,6 +2806,7 @@
 <translation id="2855243985454069333">سابقه از همه دستگاه‌های همگام‌سازی‌شده حذف می‌شود</translation>
 <translation id="2855812646048059450">ورود به سیستم با <ph name="CREDENTIAL_PROVIDER" /></translation>
 <translation id="2857047802954430547">به سیستم وارد شوید تا گذرواژه‌ها، نشانک‌ها، و موارد دیگر را در همه دستگاه‌هایتان دریافت کنید</translation>
+<translation id="2857195263461649321">‏در Gemini از جایی که رها کردید ادامه دهید</translation>
 <translation id="2859741939921354763">وارد کردن گذرواژه‌ها به <ph name="BRAND" /></translation>
 <translation id="2860284453253554297">خط‌مشی‌های سازمانی</translation>
 <translation id="2860710618359053450">بردن فک به‌سمت راست</translation>
@@ -4475,7 +4480,7 @@
 <translation id="3968739731834770921">کانا</translation>
 <translation id="3970114302595058915">شناسه</translation>
 <translation id="397105322502079400">در حال محاسبه…</translation>
-<translation id="3971355433478412726">‏دستورالعمل‌های مربوط به Gemini</translation>
+<translation id="3971355433478412726">‏دستورالعمل‌ها برای Gemini</translation>
 <translation id="3971764089670057203">اثر انگشت‌ها در این کلید امنیتی</translation>
 <translation id="3973005893595042880">کاربر مجاز نیست</translation>
 <translation id="3973660817924297510">درحال بررسی کردن گذرواژه‌ها (<ph name="CHECKED_PASSWORDS" /> از <ph name="TOTAL_PASSWORDS" />)…</translation>
@@ -5959,6 +5964,7 @@
 <translation id="5006778209728626987">آذرخش</translation>
 <translation id="5007392906805964215">مرور</translation>
 <translation id="50080882645628821">حذف نمایه</translation>
+<translation id="5008587162781422067">عرض «نوار زبانه» اکنون <ph name="TAB_STRIP_PERCENT" /> است، عرض «ناحیه محتوا» اکنون <ph name="CONTENT_AREA_PERCENT" /> است.</translation>
 <translation id="5008936837313706385">نام فعالیت</translation>
 <translation id="5009463889040999939">درحال تغییر نام نمایه. ممکن است چند دقیقه طول بکشد.</translation>
 <translation id="5010886807652684893">نمای تصویری</translation>
@@ -6605,6 +6611,7 @@
 <translation id="5460861858595506978">الهام‌بخش</translation>
 <translation id="5461050611724244538">اتصال با تلفنتان قطع شد</translation>
 <translation id="5463275305984126951">شاخص <ph name="LOCATION" /></translation>
+<translation id="5463348003600590648">غیرفعال کردن پیشنهادها</translation>
 <translation id="5463450804024056231">ثبت‌نام برای ایمیل‌های <ph name="DEVICE_TYPE" /></translation>
 <translation id="5463625433003343978">درحال پیدا کردن دستگاه‌ها…</translation>
 <translation id="5463856536939868464">منوی دارای نشانک‌های مخفی</translation>
@@ -6768,6 +6775,7 @@
 <translation id="557506220935336383">دیدن اجازه‌های افزونه برای سایت‌های دیگر</translation>
 <translation id="5575473780076478375">افزونه ناشناس: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">مشکلی در رابطه با درخواست ثبت حالت نمایشی پیش آمد.</translation>
+<translation id="5576472948015790634">‏اکنون می‌توانید گروه‌های زبانه و گپ‌های Gemini را در یک‌جا مدیریت کنید. هرزمان بخواهید می‌توانید سنجاق این بردارید.</translation>
 <translation id="557722062034137776">‏بازنشانی دستگاهتان بر حساب‌های Google شما یا هر گونه داده همگام‌سازی شده با این حساب‌ها تأثیری نمی‌گذارد. اگرچه، همه فایل‌هایی که به‌صورت محلی در دستگاهتان ذخیره شده‌اند، حذف خواهند شد.</translation>
 <translation id="5578059481725149024">ورود به سیستم خودکار</translation>
 <translation id="5578387000057347457">برای ایجاد تصویر، پیام‌واره‌ای سفارشی وارد کنید یا نوشتار را برجسته کنید</translation>
@@ -9949,6 +9957,7 @@
 <translation id="7758884017823246335">افزودن جستجوی سایت</translation>
 <translation id="7759443981285558794">‏مشاهده گواهینامه‌های وارد شده از ChromeOS</translation>
 <translation id="7759606211476816416">میان‌برهای سایت شما</translation>
+<translation id="7759748248923439385">اکنون می‌توانید گروه‌های زبانه و رشته‌های «حالت هوشواره‌ای» را در یک‌جا مدیریت کنید. هرزمان بخواهید می‌توانید سنجاق این بردارید.</translation>
 <translation id="7759809451544302770">اختیاری</translation>
 <translation id="7760176388948986635">‏برنامه‌ها، وب‌سایت‌ها، و سرویس‌های Android و ChromeOS که اجازه مکان دارند مجاز می‌شوند از مکان این دستگاه استفاده کنند. «دقت مکان» مکان دقیق‌تری برای برنامه‌ها و سرویس‌های Android ارائه می‌دهد. برای انجام این کار، Google به‌صورت دوره‌ای اطلاعات مربوط به حسگرهای دستگاه و سیگنال‌های بی‌سیم این دستگاه را برای انبوه‌سپاری مکان‌های سیگنال بی‌سیم پردازش می‌کند. از این اطلاعات بدون شناسایی هیچ فردی برای بهبود دقت مکان و خدمات مکان‌مبنا و همچنین بهبود، ارائه، و حفظ سرویس‌های Google براساس منافع مشروع Google و اشخاص ثالث به‌منظور برآورده کردن نیازهای کاربران استفاده می‌شود.</translation>
 <translation id="7762024824096060040">نمی‌توان از این حساب استفاده کرد</translation>
@@ -12201,6 +12210,7 @@
 <translation id="950079950995628542">از «<ph name="PHONE_NAME" />»</translation>
 <translation id="950307215746360464">راهنمای راه‌اندازی</translation>
 <translation id="951273949038779544"><ph name="SITE_ACCESS" />. سرپرست سیستم شما نصب کرده است</translation>
+<translation id="95160010745047025">در «حالت هوشواره‌ای» از جایی که رها کردید ادامه دهید</translation>
 <translation id="951991426597076286">رد کردن</translation>
 <translation id="952137968828772361">درباره محصولات، مکان‌ها، یا نوشتاری که روی صفحه‌تان می‌بینید اطلاعات بیشتری دریافت کنید</translation>
 <translation id="952471655966876828">وقتی دستگاه روشن شود و از آن استفاده شود، به‌طور خودکار وصل می‌شود</translation>

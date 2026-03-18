@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">Sveiki sugrįžę!</translation>
 <translation id="2015722694326466240">Jei norite matyti slaptažodžius, pirmiausia turite nustatyti įrenginio slaptažodį.</translation>
 <translation id="201759455285471444">Išskleisti skirtukų grupę.</translation>
-<translation id="202070562065520783">Paaiškink tai man</translation>
 <translation id="2044394949148788042">Atidarykite skirtuko tinklelį</translation>
 <translation id="2044681667265133332">Paskyrą <ph name="USER_EMAIL" /> tvarko svetainė <ph name="HOSTED_DOMAIN" />, kuri gali peržiūrėti tam tikrą informaciją. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">naujas elementas</translation>
@@ -637,6 +636,7 @@
 <translation id="3324193307694657476">2 adreso eil.</translation>
 <translation id="3328801116991980348">Svetainės informacija</translation>
 <translation id="333229797575847124">Kaip įgalinti šią funkciją</translation>
+<translation id="334004756946755423">Paaiškink tai man:</translation>
 <translation id="3344233834747405775">Netinkamas kortelės savininko vardas</translation>
 <translation id="3344485292736684439">{count,plural, =1{Žymė išsaugota skiltyje „{title}“ jūsų paskyroje, {email}}one{Žymės išsaugotos skiltyje „{title}“ jūsų paskyroje, {email}}few{Žymės išsaugotos skiltyje „{title}“ jūsų paskyroje, {email}}many{Žymės išsaugotos skiltyje „{title}“ jūsų paskyroje, {email}}other{Žymės išsaugotos skiltyje „{title}“ jūsų paskyroje, {email}}}</translation>
 <translation id="334690320928261823">Naujausi skirtukai</translation>

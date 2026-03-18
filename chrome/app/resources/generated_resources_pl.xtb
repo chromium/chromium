@@ -506,6 +506,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1327495825214193325">Aby włączyć debugowanie ADB, musisz ponownie uruchomić urządzenie <ph name="DEVICE_TYPE" />. W celu wyłączenia tej funkcji trzeba będzie przywrócić na urządzeniu ustawienia fabryczne.</translation>
 <translation id="1327527584824210101">Użyj klucza</translation>
 <translation id="1327794256477341646">Nie będą działać funkcje, które potrzebują lokalizacji</translation>
+<translation id="1328041566565643371">Uchwyt zmiany rozmiaru pionowego paska kart (przeciągalny)</translation>
 <translation id="1328364753167940710">Za <ph name="NUM_HR" /> godz.</translation>
 <translation id="1328928545650070438">Obniżenie brwi</translation>
 <translation id="1329466763986822896">Popraw prywatność tego hotspota</translation>
@@ -1472,6 +1473,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
     <ph name="BEGIN_DESCRIPTION3" />Organizacja może uzyskać zdalny dostęp do sesji na urządzeniu, aby rozwiązać problemy.<ph name="END_DESCRIPTION3" />
     <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />Włączenie dostępu<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
     <ph name="BEGIN_DESCRIPTION4" />Aplikacje, usługi i sieci organizacji mogą być dostępne tylko na zarejestrowanych urządzeniach.<ph name="END_DESCRIPTION4" /></translation>
+<translation id="1979208610845113582">Możesz teraz bezpośrednio wznawiać wątki w Trybie AI. W każdej chwili możesz to odpiąć.</translation>
 <translation id="1979280758666859181">Przechodzisz na kanał, w którym <ph name="PRODUCT_NAME" /> jest w starszej wersji. Zmiana nastąpi wtedy, gdy wersja na wybranym kanale będzie zgodna z tą zainstalowaną na Twoim urządzeniu.</translation>
 <translation id="1979582938184524893">Ręcznie wybierz dane osobowe, które chcesz uwzględnić</translation>
 <translation id="197989455406964291">KDC nie obsługuje tego typu szyfrowania</translation>
@@ -1935,6 +1937,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2297705863329999812">Wyszukaj drukarki</translation>
 <translation id="2297822946037605517">Udostępnij tę stronę</translation>
 <translation id="229871422646860597">Odepnij z paska narzędzi</translation>
+<translation id="2298749511072894576">Możesz teraz bezpośrednio wznawiać rozmowy z Gemini. W każdej chwili możesz to odpiąć.</translation>
 <translation id="2299685119225839832">Możesz zobaczyć podsumowanie opinii użytkowników</translation>
 <translation id="2299734369537008228">Suwak: od <ph name="MIN_LABEL" /> do <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">Uwzględnij wszystkie pliki dzienników zebrane przez debugd jako osobne archiwum.</translation>
@@ -2284,6 +2287,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="252418934079508528">Zainstaluj aplikację <ph name="DEVICE_OS" /></translation>
 <translation id="252513908494776481">Zapytaj o tę kartę</translation>
 <translation id="2525746158911982776">Aktualizacja się nie udała, ponieważ w systemie jest za mało dostępnego miejsca.</translation>
+<translation id="2525842906387880861">Na tej stronie nie zobaczysz już sugestii</translation>
 <translation id="2526590354069164005">Pulpit</translation>
 <translation id="2526619973349913024">Sprawdź dostępność aktualizacji</translation>
 <translation id="2527167509808613699">Dowolny rodzaj połączenia</translation>
@@ -2777,6 +2781,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2855243985454069333">Usuwa historię ze wszystkich zsynchronizowanych urządzeń</translation>
 <translation id="2855812646048059450">Zaloguj się przez: <ph name="CREDENTIAL_PROVIDER" /></translation>
 <translation id="2857047802954430547">Zaloguj się, aby mieć dostęp do haseł, zakładek oraz innych ustawień i danych na wszystkich swoich urządzeniach</translation>
+<translation id="2857195263461649321">Wznów rozmowę z Gemini</translation>
 <translation id="2859741939921354763">Zaimportuj hasła do usługi <ph name="BRAND" /></translation>
 <translation id="2860284453253554297">Zasady firmowe</translation>
 <translation id="2860710618359053450">Przesunięcie żuchwy w prawo</translation>
@@ -4444,6 +4449,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3968739731834770921">Tryb znaków kana</translation>
 <translation id="3970114302595058915">Identyfikator</translation>
 <translation id="397105322502079400">Obliczanie...</translation>
+<translation id="3971154761614127188">Niektóre funkcje mogą spowalniać działanie nieznanych witryn</translation>
 <translation id="3971355433478412726">Instrukcje dla Gemini</translation>
 <translation id="3971764089670057203">Odciski cyfrowe na tym kluczu bezpieczeństwa</translation>
 <translation id="3973005893595042880">Użytkownik nie został dopuszczony</translation>
@@ -5927,6 +5933,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5006778209728626987">Błyskawica</translation>
 <translation id="5007392906805964215">Sprawdź</translation>
 <translation id="50080882645628821">Usuń profil</translation>
+<translation id="5008587162781422067">Pasek kart ma teraz <ph name="TAB_STRIP_PERCENT" /> szerokości, a obszar treści <ph name="CONTENT_AREA_PERCENT" />.</translation>
 <translation id="5008936837313706385">Nazwa działania</translation>
 <translation id="5009463889040999939">Zmieniam nazwę profilu. Może to potrwać kilka minut.</translation>
 <translation id="5010886807652684893">Widok graficzny</translation>
@@ -6571,6 +6578,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5460861858595506978">Inspiracja</translation>
 <translation id="5461050611724244538">Utracono połączenie z telefonem</translation>
 <translation id="5463275305984126951">Indeks – <ph name="LOCATION" /></translation>
+<translation id="5463348003600590648">Wyłącz sugestie</translation>
 <translation id="5463450804024056231">Zasubskrybuj e-maile na temat urządzenia <ph name="DEVICE_TYPE" /></translation>
 <translation id="5463625433003343978">Szukam urządzeń...</translation>
 <translation id="5463856536939868464">Menu zawierające ukryte zakładki</translation>
@@ -6734,6 +6742,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="557506220935336383">Zobacz uprawnienia rozszerzeń dotyczące innych witryn</translation>
 <translation id="5575473780076478375">Rozszerzenie w trybie incognito: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">Wystąpił problem z żądaniem zarejestrowania w trybie demonstracyjnym.</translation>
+<translation id="5576472948015790634">Możesz teraz zarządzać grupami kart i rozmowami z Gemini w jednym miejscu. W każdej chwili możesz to odpiąć.</translation>
 <translation id="557722062034137776">Zresetowanie urządzenia nie będzie miało wpływu na Twoje konta Google ani żadne dane zsynchronizowane z tymi kontami. Wszystkie pliki zapisane lokalnie na urządzeniu zostaną jednak usunięte.</translation>
 <translation id="5578059481725149024">Automatyczne logowanie</translation>
 <translation id="5578387000057347457">Wpisz niestandardowy prompt lub zaznacz tekst, aby utworzyć obraz</translation>
@@ -9914,6 +9923,7 @@ Aby usunąć przypisanie, naciśnij przypisany przełącznik lub klawisz.</trans
 <translation id="7758884017823246335">Dodaj wyszukiwanie w witrynie</translation>
 <translation id="7759443981285558794">Wyświetl certyfikaty zaimportowane z ChromeOS</translation>
 <translation id="7759606211476816416">Twoje skróty do witryn</translation>
+<translation id="7759748248923439385">Możesz teraz zarządzać grupami kart i wątkami w Trybie AI w jednym miejscu. W każdej chwili możesz to odpiąć.</translation>
 <translation id="7759809451544302770">Opcjonalne</translation>
 <translation id="7760176388948986635">Zezwól aplikacjom na ChromeOS i Androida oraz witrynom i usługom, które mają dostęp do lokalizacji, na używanie lokalizacji tego urządzenia. Ustawienie Dokładność lokalizacji zapewnia dokładniejszą lokalizację aplikacjom i usługom na Androida. Aby ją uzyskać, Google okresowo przetwarza dane z czujników urządzenia i sygnały bezprzewodowe z tego urządzenia w celu ustalania lokalizacji sygnałów bezprzewodowych na zasadzie crowdsourcingu. Dane są wykorzystywane – bez identyfikowania osób – do poprawiania dokładności lokalizacji i usług wykorzystujących lokalizację, a także do udoskonalania, świadczenia i utrzymywania usług Google w oparciu o uzasadniony interes Google i innych firm w spełnianiu potrzeb użytkowników.</translation>
 <translation id="7762024824096060040">Nie można użyć tego konta</translation>
@@ -9985,6 +9995,7 @@ Aby usunąć przypisanie, naciśnij przypisany przełącznik lub klawisz.</trans
 <translation id="7800518121066352902">&amp;Obróć w lewo</translation>
 <translation id="780301667611848630">Nie, dziękuję</translation>
 <translation id="7803657407897251194">Aby kontynuować konfigurację na urządzeniu z Androidem, połącz urządzenie <ph name="DEVICE_TYPE" /> z siecią</translation>
+<translation id="7803714812705886512">Google używa mniej danych (np. części adresów URL, informacji o pobranych plikach) do wykrywania zagrożeń</translation>
 <translation id="7804072833593604762">Karta została zamknięta</translation>
 <translation id="7805371082115476536">Mała</translation>
 <translation id="7805768142964895445">Stan</translation>
@@ -10009,6 +10020,7 @@ Aby usunąć przypisanie, naciśnij przypisany przełącznik lub klawisz.</trans
 <translation id="7820400255539998692">Usuń plik <ph name="FILENAME" />, aby Twoje hasła nie były widoczne dla innych osób na tym urządzeniu</translation>
 <translation id="7820561748632634942">Przypisać dodatkowe przełączniki?</translation>
 <translation id="782057141565633384">K&amp;opiuj adres wideo</translation>
+<translation id="7823975162954158194">Zapewnia silną ochronę</translation>
 <translation id="7824665136384946951">Twoja organizacja wyłączyła Bezpieczne przeglądanie</translation>
 <translation id="7824864914877854148">Tworzenie kopii zapasowej nie powiodło się z powodu błędu</translation>
 <translation id="7825289983414309119">Góra</translation>
@@ -11167,6 +11179,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8601206103050338563">Uwierzytelnianie klienta WWW TLS</translation>
 <translation id="8602674530529411098">Aplikacje (beta)</translation>
 <translation id="8602851771975208551">Inny program na Twoim komputerze dodał aplikację, która może zmienić działanie Chrome.</translation>
+<translation id="8602867356511778172">Google używa więcej danych (np. adresów URL, próbek zawartości strony, informacji o systemie), aby szybciej i dokładniej wykrywać zagrożenia</translation>
 <translation id="860399903490378651">Zamknij ten widok</translation>
 <translation id="8605428685123651449">Pamięć SQLite</translation>
 <translation id="8607171490667464784">Gdy urządzenie jest nieaktywne i zasilane z baterii</translation>
@@ -12160,6 +12173,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="950079950995628542">Z telefonu „<ph name="PHONE_NAME" />”</translation>
 <translation id="950307215746360464">Przewodnik po konfiguracji</translation>
 <translation id="951273949038779544"><ph name="SITE_ACCESS" />, zainstalowane przez administratora</translation>
+<translation id="95160010745047025">Wznów od tego samego miejsca w trybie AI</translation>
 <translation id="951991426597076286">Odrzuć</translation>
 <translation id="952137968828772361">Dowiedz się więcej o produktach, miejscach lub tekście, które widzisz na ekranie</translation>
 <translation id="952471655966876828">Gdy urządzenie zostanie włączone i będzie używane, automatycznie się połączy</translation>

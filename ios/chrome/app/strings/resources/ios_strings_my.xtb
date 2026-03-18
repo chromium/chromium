@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">ပြန်လည်ကြိုဆိုပါသည်</translation>
 <translation id="2015722694326466240">စကားဝှက်များကို ကြည့်ရှုရန်အတွက် သင့်စက်တွင် လျှို့ဝှက်ကုဒ်တစ်ခုကို ဦးစွာ သတ်မှတ်ရပါမည်။</translation>
 <translation id="201759455285471444">တဘ်အုပ်စုကို ပိုပြပါ။</translation>
-<translation id="202070562065520783">ကျွန်ုပ်ကို ရှင်းပြပါ</translation>
 <translation id="2044394949148788042">တဘ်ဇယားကွက်ကို ဖွင့်ပါ</translation>
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> အကောင့်ကို <ph name="HOSTED_DOMAIN" /> က စီမံပြီး ၎င်းက အချက်အလက်အချို့ကို ကြည့်နိုင်ရှိသည်။ <ph name="BEGIN_LINK" />ပိုလေ့လာရန်<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">အကြောင်းအရာ အသစ်</translation>
@@ -637,6 +636,7 @@
 <translation id="3324193307694657476">လိပ်စာ 2</translation>
 <translation id="3328801116991980348">ဆိုက် အချက်အလက်များ</translation>
 <translation id="333229797575847124">ဤတူးလ်ကိုဖွင့်နည်း</translation>
+<translation id="334004756946755423">ဤအကြောင်း ရှင်းပြပါ-</translation>
 <translation id="3344233834747405775">ကတ်ကိုင်ဆောင်သူအမည် မမှန်ကန်ပါ</translation>
 <translation id="3344485292736684439">{count,plural, =1{လိပ်စာကို သင့်အကောင့် {email} ရှိ “{title}” တွင် သိမ်းလိုက်သည်}other{လိပ်စာများကို သင့်အကောင့် {email} ရှိ “{title}” တွင် သိမ်းလိုက်သည်}}</translation>
 <translation id="334690320928261823">မကြာသေးမီက တဘ်များ</translation>

@@ -507,6 +507,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="1327495825214193325">Če želite omogočiti odpravljanje napak z mostom za odpravljanje težav s sistemom Android (ADB), morate znova zagnati napravo <ph name="DEVICE_TYPE" />. Če ga onemogočite, je potrebna ponastavitev na tovarniške nastavitve.</translation>
 <translation id="1327527584824210101">Uporaba ključa za dostop</translation>
 <translation id="1327794256477341646">Funkcije, ki potrebujejo lokacijo, ne bodo delovale</translation>
+<translation id="1328041566565643371">Ročica za spreminjanje velikosti navpičnega traku z zavihki (omogoča vlečenje)</translation>
 <translation id="1328364753167940710">Čez <ph name="NUM_HR" /> h</translation>
 <translation id="1328928545650070438">Spustitev obrvi</translation>
 <translation id="1329466763986822896">Izboljšaj zasebnost za to dostopno točko</translation>
@@ -1483,6 +1484,7 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
     <ph name="BEGIN_DESCRIPTION3" />Organizacija lahko na daljavo dostopa do seje v napravi, da zagotovi odpravljanje težav.<ph name="END_DESCRIPTION3" />
     <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />Omogočanje dostopa<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
     <ph name="BEGIN_DESCRIPTION4" />Aplikacije, storitve in omrežja organizacije so morda na voljo samo v včlanjenih napravah.<ph name="END_DESCRIPTION4" /></translation>
+<translation id="1979208610845113582">Tukaj lahko neposredno nadaljujete niti v načinu umetne inteligence. To lahko kadar koli odpnete.</translation>
 <translation id="1979280758666859181">Preklapljate na kanal s starejšo različico brskalnika <ph name="PRODUCT_NAME" />. Sprememba kanala bo uporabljena, ko se različica kanala ujema z različico, ki je trenutno nameščena v vaši napravi.</translation>
 <translation id="1979582938184524893">Ročno izberite osebne podatke, ki jih želite vključiti</translation>
 <translation id="197989455406964291">KDC ne podpira vrste šifriranja</translation>
@@ -1950,6 +1952,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2297705863329999812">Iskanje tiskalnikov</translation>
 <translation id="2297822946037605517">Skupna raba te strani</translation>
 <translation id="229871422646860597">Odpni iz orodne vrstice</translation>
+<translation id="2298749511072894576">Tukaj lahko zdaj neposredno nadaljujete klepete z Geminijem. To lahko kadar koli odpnete.</translation>
 <translation id="2299685119225839832">Dobite lahko povzetek mnenj uporabnikov</translation>
 <translation id="2299734369537008228">Drsnik: od <ph name="MIN_LABEL" /> do <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">Vključi vse dnevniške datoteke, zbrane pri odpravljanju napak, v ločen arhiv.</translation>
@@ -2314,6 +2317,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="252418934079508528">Namestite <ph name="DEVICE_OS" /></translation>
 <translation id="252513908494776481">Vprašajte o tem zavihku</translation>
 <translation id="2525746158911982776">Posodobitev ni uspela, ker sistem nima dovolj prostora za shranjevanje.</translation>
+<translation id="2525842906387880861">Na tej strani ne bo več prikazano to:</translation>
 <translation id="2526590354069164005">Namizje</translation>
 <translation id="2526619973349913024">Poišči posodobitev</translation>
 <translation id="2527167509808613699">Kakršna koli povezava</translation>
@@ -2807,6 +2811,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2855243985454069333">Izbriše zgodovino iz vseh sinhroniziranih naprav</translation>
 <translation id="2855812646048059450">Prijava s ponudnikom <ph name="CREDENTIAL_PROVIDER" /></translation>
 <translation id="2857047802954430547">Prijavite se, da boste lahko dostopali do gesel, zaznamkov in drugega v vseh napravah</translation>
+<translation id="2857195263461649321">Nadaljujte, kjer ste končali v Geminiju</translation>
 <translation id="2859741939921354763">Uvoz gesel v izdelek <ph name="BRAND" /></translation>
 <translation id="2860284453253554297">Pravilniki za podjetja</translation>
 <translation id="2860710618359053450">Premik čeljusti desno</translation>
@@ -5964,6 +5969,7 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="5006778209728626987">Strela</translation>
 <translation id="5007392906805964215">Pregled</translation>
 <translation id="50080882645628821">Odstrani profil</translation>
+<translation id="5008587162781422067">Vrstica zavihkov je široka <ph name="TAB_STRIP_PERCENT" />, območje vsebine je široko <ph name="CONTENT_AREA_PERCENT" />.</translation>
 <translation id="5008936837313706385">Ime dejavnosti</translation>
 <translation id="5009463889040999939">Preimenovanje profila. To lahko traja nekaj minut.</translation>
 <translation id="5010886807652684893">Vizualni pogled</translation>
@@ -6610,6 +6616,7 @@ Temu dejanju lahko dodelite več stikal.</translation>
 <translation id="5460861858595506978">Navdih</translation>
 <translation id="5461050611724244538">Povezava s telefonom je prekinjena</translation>
 <translation id="5463275305984126951">Kazalo lokacije <ph name="LOCATION" /></translation>
+<translation id="5463348003600590648">Onemogoči predloge</translation>
 <translation id="5463450804024056231">Prijava za e-poštna sporočila glede naprave <ph name="DEVICE_TYPE" /></translation>
 <translation id="5463625433003343978">Iskanje naprav …</translation>
 <translation id="5463856536939868464">Meni s skritimi zaznamki</translation>
@@ -6773,6 +6780,7 @@ Temu dejanju lahko dodelite več stikal.</translation>
 <translation id="557506220935336383">Ogled dovoljenj razširitev za druga spletna mesta</translation>
 <translation id="5575473780076478375">Anonimna razširitev: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">Prišlo je do težave z zahtevo za registracijo predstavitve.</translation>
+<translation id="5576472948015790634">Zdaj lahko skupine zavihkov in klepete z Geminijem upravljate na enem mestu. To lahko kadar koli odpnete.</translation>
 <translation id="557722062034137776">Ponastavitev naprave ne bo vplivala na vaše Google Račune ali kakršne koli druge podatke, sinhronizirane s temi računi. Izbrisani pa bodo vsi podatki, shranjeni lokalno v napravi.</translation>
 <translation id="5578059481725149024">Samodejna prijava</translation>
 <translation id="5578387000057347457">Vnesite poziv po meri ali označite besedilo, da ustvarite sliko</translation>
@@ -9960,6 +9968,7 @@ Pritisnite dodeljeno stikalo ali tipko, če želite odstraniti dodelitev.</trans
 <translation id="7758884017823246335">Dodajte iskanje po spletnem mestu</translation>
 <translation id="7759443981285558794">Ogled uvoženih potrdil iz sistema ChromeOS</translation>
 <translation id="7759606211476816416">Bližnjice do spletnih mest</translation>
+<translation id="7759748248923439385">Zdaj lahko skupine zavihkov in niti v načinu umetne inteligence upravljate na enem mestu. To lahko kadar koli odpnete.</translation>
 <translation id="7759809451544302770">Izbirno</translation>
 <translation id="7760176388948986635">Aplikacijam za ChromeOS in Android, spletnim mestom in storitvam z dovoljenjem za lokacijo dovolite uporabo lokacije te naprave. Natančnost zaznavanja lokacije zagotavlja natančnejšo lokacijo za aplikacije in storitve. To Google naredi tako, da redno obdeluje podatke o tipalih naprav in brezžične signale iz naprave in tako zbere lokacije brezžičnih signalov. Ti se uporabljajo, ne da bi se osebno prepoznalo posameznike, zaradi izboljšanja natančnosti zaznavanja lokacije in storitev na podlagi lokacije zaradi izboljšanja, zagotavljanja in vzdrževanja Googlovih storitev glede na zakonite interese Googla in tretjih oseb za izpolnjevanje potreb uporabnikov.</translation>
 <translation id="7762024824096060040">Tega računa ni mogoče uporabiti</translation>
@@ -12214,6 +12223,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="950079950995628542">Iz telefona »<ph name="PHONE_NAME" />«</translation>
 <translation id="950307215746360464">Vodnik za nastavitev</translation>
 <translation id="951273949038779544"><ph name="SITE_ACCESS" />. Namestil skrbnik</translation>
+<translation id="95160010745047025">Nadaljujte, kjer ste končali v načinu umetne inteligence</translation>
 <translation id="951991426597076286">Zavrni</translation>
 <translation id="952137968828772361">Preberite več o izdelkih, mestih ali besedilu, ki ga vidite na zaslonu</translation>
 <translation id="952471655966876828">Naprava samodejno vzpostavi povezavo, ko je vklopljena in je v uporabi.</translation>

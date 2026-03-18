@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">Tervetuloa takaisin!</translation>
 <translation id="2015722694326466240">Jos haluat nähdä salasanat, sinun on ensin määritettävä tunnuskoodi laitteellesi.</translation>
 <translation id="201759455285471444">Laajenna välilehtiryhmä.</translation>
-<translation id="202070562065520783">Selitä tämä minulle</translation>
 <translation id="2044394949148788042">Avaa välilehtiruudukko</translation>
 <translation id="2044681667265133332"><ph name="HOSTED_DOMAIN" /> ylläpitää tiliä <ph name="USER_EMAIL" /> ja voi nähdä joitakin tietoja. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">uusi tuote</translation>
@@ -637,6 +636,7 @@
 <translation id="3324193307694657476">Osoite 2</translation>
 <translation id="3328801116991980348">Tietoja sivustosta</translation>
 <translation id="333229797575847124">Näin otat ominaisuuden käyttöön</translation>
+<translation id="334004756946755423">Selitä tämä minulle:</translation>
 <translation id="3344233834747405775">Virheellinen kortinhaltijan nimi</translation>
 <translation id="3344485292736684439">{count,plural, =1{Kirjanmerkki tallennettu tilillesi: {title}, {email}}other{Kirjanmerkit tallennettu tilillesi: {title}, {email}}}</translation>
 <translation id="334690320928261823">Viimeaikaiset välilehdet</translation>

@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">پھر سے خوش آمدید!</translation>
 <translation id="2015722694326466240">پاسورڈز دیکھنے کے لیے، آپ کو اپنے آلے پر پہلے پاس کوڈ سیٹ کرنا چاہیے۔</translation>
 <translation id="201759455285471444">ٹیب گروپ کو پھیلائیں۔</translation>
-<translation id="202070562065520783">یہ مجھے سمجھائیں</translation>
 <translation id="2044394949148788042">ٹیب گرڈ کھولیں</translation>
 <translation id="2044681667265133332">اکاؤنٹ <ph name="USER_EMAIL" /> کا نظم <ph name="HOSTED_DOMAIN" /> کے ذریعے کیا جاتا ہے جو کچھ معلومات دیکھنے کے قابل ہو سکتا ہے۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">نیا آئٹم</translation>
@@ -637,6 +636,7 @@
 <translation id="3324193307694657476">پتہ 2</translation>
 <translation id="3328801116991980348">سائٹ کی معلومات</translation>
 <translation id="333229797575847124">اس خصوصیت کو فعال کرنے کا طریقہ</translation>
+<translation id="334004756946755423">یہ مجھے سمجھائیں:</translation>
 <translation id="3344233834747405775">کارڈ کے حامل کا نام غلط ہے</translation>
 <translation id="3344485292736684439">{count,plural, =1{بُک مارک کو آپ کے اکاؤنٹ {email} میں "{title}" میں محفوظ کیا گیا}other{بُک مارکس کو آپ کے اکاؤنٹ {email} میں "{title}" میں محفوظ کیا گیا}}</translation>
 <translation id="334690320928261823">حالیہ ٹیبز</translation>

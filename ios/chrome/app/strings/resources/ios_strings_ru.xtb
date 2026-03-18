@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">С возвращением!</translation>
 <translation id="2015722694326466240">Чтобы просматривать пароли, настройте на устройстве код доступа.</translation>
 <translation id="201759455285471444">Развернуть группу вкладок.</translation>
-<translation id="202070562065520783">Объясни мне</translation>
 <translation id="2044394949148788042">Откройте сетку таблицы.</translation>
 <translation id="2044681667265133332">Аккаунтом <ph name="USER_EMAIL" /> управляет <ph name="HOSTED_DOMAIN" />. Некоторая ваша информация может быть видна этой организации. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">новый продукт</translation>
@@ -637,6 +636,7 @@
 <translation id="3324193307694657476">Адрес, строка 2</translation>
 <translation id="3328801116991980348">Информация о сайте</translation>
 <translation id="333229797575847124">Как включить эту функцию</translation>
+<translation id="334004756946755423">Объясни мне</translation>
 <translation id="3344233834747405775">Недействительное имя владельца карты</translation>
 <translation id="3344485292736684439">{count,plural, =1{Закладка сохранена в папке "{title}" в вашем аккаунте ({email}).}one{Закладки сохранены в папке "{title}" в вашем аккаунте ({email}).}few{Закладки сохранены в папке "{title}" в вашем аккаунте ({email}).}many{Закладки сохранены в папке "{title}" в вашем аккаунте ({email}).}other{Закладки сохранены в папке "{title}" в вашем аккаунте ({email}).}}</translation>
 <translation id="334690320928261823">Недавние вкладки</translation>

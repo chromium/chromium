@@ -504,6 +504,7 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1327495825214193325">Hierdie <ph name="DEVICE_TYPE" /> moet herbegin word om ADB-ontfouting te aktiveer. 'n Terugstelling na fabriekinstellings toe is nodig om dit te deaktiveer.</translation>
 <translation id="1327527584824210101">Gebruik jou toegangsleutel</translation>
 <translation id="1327794256477341646">Kenmerke wat jou ligging nodig het, sal nie werk nie</translation>
+<translation id="1328041566565643371">Handvatsel vir grootteverandering van vertikale oortjiestrook (sleepbaar)</translation>
 <translation id="1328364753167940710">Oor <ph name="NUM_HR" /> uur</translation>
 <translation id="1328928545650070438">Laat sak wenkbroue</translation>
 <translation id="1329466763986822896">Verbeter privaatheid vir hierdie warmkol</translation>
@@ -1481,6 +1482,7 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
     <ph name="BEGIN_DESCRIPTION3" />Die organisasie kan op afstand toegang tot ’n toestelsessie kry om foutsporing te verskaf.<ph name="END_DESCRIPTION3" />
     <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />Aktiveer toegang<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
     <ph name="BEGIN_DESCRIPTION4" />Organisasieapps, -dienste en -netwerke is dalk net op ingeskrewe toestelle beskikbaar.<ph name="END_DESCRIPTION4" /></translation>
+<translation id="1979208610845113582">Jy kan KI-modusgespreksdrade nou hier direk hervat. Ontspeld dit enige tyd.</translation>
 <translation id="1979280758666859181">Jy verander tans na 'n kanaal met 'n ouer weergawe van <ph name="PRODUCT_NAME" />. Die kanaalverandering sal toegepas word wanneer die kanaalweergawe ooreenstem met die weergawe wat tans op jou toestel geïnstalleer is.</translation>
 <translation id="1979582938184524893">Kies persoonlike inligting wat jy wil insluit handmatig</translation>
 <translation id="197989455406964291">KDC steun nie enkripsiesoort nie</translation>
@@ -1948,6 +1950,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2297705863329999812">Soek drukkers</translation>
 <translation id="2297822946037605517">Deel hierdie bladsy</translation>
 <translation id="229871422646860597">Ontspeld van nutsbalk</translation>
+<translation id="2298749511072894576">Jy kan Gemini-kletse nou hier direk hervat. Ontspeld dit enige tyd.</translation>
 <translation id="2299685119225839832">Jy kan ’n opsomming kry van wat mense in hul resensies sê</translation>
 <translation id="2299734369537008228">Glyer: <ph name="MIN_LABEL" /> tot <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">Sluit alle loglêers wat deur debugd ingesamel is as 'n afsonderlike argief in.</translation>
@@ -2312,6 +2315,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="252418934079508528">Installeer <ph name="DEVICE_OS" /></translation>
 <translation id="252513908494776481">Vra oor hierdie oortjie</translation>
 <translation id="2525746158911982776">Die opdatering het misluk omdat die stelsel nie genoeg bergingspasie het nie.</translation>
+<translation id="2525842906387880861">Jy sal nie weer voorstelle op hierdie bladsy sien nie</translation>
 <translation id="2526590354069164005">Rekenaar</translation>
 <translation id="2526619973349913024">Gaan na vir opdatering</translation>
 <translation id="2527167509808613699">Enige tipe verbinding</translation>
@@ -2805,6 +2809,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2855243985454069333">Vee geskiedenis op alle gesinkroniseerde toestelle uit</translation>
 <translation id="2855812646048059450">Meld aan met <ph name="CREDENTIAL_PROVIDER" /></translation>
 <translation id="2857047802954430547">Meld aan om jou wagwoorde, boekmerke en meer op al jou toestelle te kry</translation>
+<translation id="2857195263461649321">Gaan aan op Gemini waar jy opgehou het</translation>
 <translation id="2859741939921354763">Voer wagwoorde in na <ph name="BRAND" /></translation>
 <translation id="2860284453253554297">Ondernemingbeleide</translation>
 <translation id="2860710618359053450">Beweeg kakebeen regs</translation>
@@ -5962,6 +5967,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5006778209728626987">Weerlig</translation>
 <translation id="5007392906805964215">Gaan na</translation>
 <translation id="50080882645628821">Verwyder profiel</translation>
+<translation id="5008587162781422067">Oortjiestrook is nou <ph name="TAB_STRIP_PERCENT" /> breed, Inhoudarea is nou <ph name="CONTENT_AREA_PERCENT" /> breed.</translation>
 <translation id="5008936837313706385">Aktiwiteitnaam</translation>
 <translation id="5009463889040999939">Hernoem tans profiel. Dit kan 'n paar minute neem.</translation>
 <translation id="5010886807652684893">Visuele aansig</translation>
@@ -6608,6 +6614,7 @@ Jy kan veelvuldige skakelaars vir hierdie handeling toewys.</translation>
 <translation id="5460861858595506978">Inspirasie</translation>
 <translation id="5461050611724244538">Verbinding met jou foon is verloor</translation>
 <translation id="5463275305984126951">Indeks van <ph name="LOCATION" /></translation>
+<translation id="5463348003600590648">Deaktiveer voorstelle</translation>
 <translation id="5463450804024056231">Teken in op <ph name="DEVICE_TYPE" />-e-posse</translation>
 <translation id="5463625433003343978">Soek tans toestelle …</translation>
 <translation id="5463856536939868464">Kieslys wat versteekte boekmerke bevat</translation>
@@ -6771,6 +6778,7 @@ Jy kan veelvuldige skakelaars vir hierdie handeling toewys.</translation>
 <translation id="557506220935336383">Sien uitbreidingtoestemmings vir ander werwe</translation>
 <translation id="5575473780076478375">Incognito-uitbreiding: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">Iets was fout met demonstrasieregistrasieversoek.</translation>
+<translation id="5576472948015790634">Jy kan jou oortjiegroepe en Gemini-kletse nou op een plek bestuur. Ontspeld dit enige tyd.</translation>
 <translation id="557722062034137776">As jy jou toestel terugstel, sal dit nie jou Google-rekeninge of enige data wat met hierdie rekeninge gesinkroniseer is, affekteer nie. Al die lêers wat plaaslik op jou toestel gestoor is, sal egter uitgevee word.</translation>
 <translation id="5578059481725149024">Outomatiese aanmelding</translation>
 <translation id="5578387000057347457">Voer ’n gepasmaakte porboodskap in of kleurmerk teks om ’n prent te skep</translation>
@@ -9950,6 +9958,7 @@ Druk 'n toegewese skakelaar of sleutel om toewysing te verwyder.</translation>
 <translation id="7758884017823246335">Voeg werfsoektog by</translation>
 <translation id="7759443981285558794">Bekyk ingevoerde sertifikate van ChromeOS af</translation>
 <translation id="7759606211476816416">Jou werfkortpaaie</translation>
+<translation id="7759748248923439385">Jy kan jou oortjiegroepe en KI-modusgespreksdrade nou op een plek bestuur. Ontspeld dit enige tyd.</translation>
 <translation id="7759809451544302770">Opsioneel</translation>
 <translation id="7760176388948986635">Laat ChromeOS en Android-apps, webwerwe en dienste met liggingtoestemming toe om hierdie toestel se ligging te gebruik. Liggingakkuraatheid verskaf ’n akkurater ligging vir Android-apps en -dienste. Om dit te doen, verwerk Google van tyd tot tyd inligting oor toestelsensors en draadlose seine vanaf hierdie toestel om draadloseseinliggings met skareverkryging te kry. Dit word gebruik, sonder om enige individu te identifiseer, om liggingakkuraatheid en ligginggegronde dienste te verbeter en om Google se dienste te verbeter, te verskaf en te handhaaf op grond van Google en derde partye se wettige belange om in gebruikers se behoeftes te voorsien.</translation>
 <translation id="7762024824096060040">Kan nie hierdie rekening gebruik nie</translation>
@@ -12200,6 +12209,7 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier, die toeste
 <translation id="950079950995628542">Van “<ph name="PHONE_NAME" />”</translation>
 <translation id="950307215746360464">Opstellinggids</translation>
 <translation id="951273949038779544"><ph name="SITE_ACCESS" />. Deur jou administrateur geïnstalleer</translation>
+<translation id="95160010745047025">Gaan in KI-modus aan waar jy opgehou het</translation>
 <translation id="951991426597076286">Weier</translation>
 <translation id="952137968828772361">Kry meer inligting oor produkte, plekke of teks wat jy op jou skerm sien</translation>
 <translation id="952471655966876828">Die toestel word outomaties gekoppel wanneer dit aangeskakel of gebruik word</translation>

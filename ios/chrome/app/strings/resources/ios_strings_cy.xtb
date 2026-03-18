@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">Croeso'n ôl!</translation>
 <translation id="2015722694326466240">I weld cyfrineiriau, rhaid i chi osod cod pas ar eich dyfais yn gyntaf.</translation>
 <translation id="201759455285471444">Ehangu'r grŵp tab.</translation>
-<translation id="202070562065520783">Eglurwch hyn i mi</translation>
 <translation id="2044394949148788042">Agorwch y grid tabiau</translation>
 <translation id="2044681667265133332">Mae'r cyfrif <ph name="USER_EMAIL" /> yn cael ei reoli gan <ph name="HOSTED_DOMAIN" />, a allai weld rhywfaint o wybodaeth. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">eitem newydd</translation>
@@ -598,7 +597,7 @@
 <translation id="315778507796115851">Hanes</translation>
 <translation id="31652791196570636">Diystyru</translation>
 <translation id="3167868116600277716">Ffrwd darganfod</translation>
-<translation id="3169472444629675720">Discover</translation>
+<translation id="3169472444629675720">Darganfod</translation>
 <translation id="3174662312949010067">Gallwch hefyd ddefnyddio cyfrineiriau sydd wedi'u cadw ar eich dyfeisiau eraill.</translation>
 <translation id="3177338796769255211">Mewngofnodwch i gael eich nodau tudalen a rhagor ar eich holl ddyfeisiau</translation>
 <translation id="3181954750937456830">Pori'n Ddiogel (yn eich amddiffyn chi a'ch dyfais rhag gwefannau peryglus)</translation>
@@ -637,6 +636,7 @@
 <translation id="3324193307694657476">Cyfeiriad 2</translation>
 <translation id="3328801116991980348">Gwybodaeth am y wefan</translation>
 <translation id="333229797575847124">Sut i alluogi'r nodwedd hon</translation>
+<translation id="334004756946755423">Eglurwch hyn i mi:</translation>
 <translation id="3344233834747405775">Enw deiliad cerdyn annilys</translation>
 <translation id="3344485292736684439">{count,plural, =1{Mae'r nod tudalen wedi'i gadw i "{title}" yn eich cyfrif, {email}}zero{Mae'r nodau tudalen wedi'u cadw i "{title}" yn eich cyfrif, {email}}two{Mae'r nodau tudalen wedi'u cadw i "{title}" yn eich cyfrif, {email}}few{Mae'r nodau tudalen wedi'u cadw i "{title}" yn eich cyfrif, {email}}many{Mae'r nodau tudalen wedi'u cadw i "{title}" yn eich cyfrif, {email}}other{Mae'r nodau tudalen wedi'u cadw i "{title}" yn eich cyfrif, {email}}}</translation>
 <translation id="334690320928261823">Tabiau Diweddar</translation>

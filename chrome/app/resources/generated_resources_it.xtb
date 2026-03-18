@@ -504,6 +504,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1327495825214193325">Per attivare il debug ADB è necessario riavviare questo <ph name="DEVICE_TYPE" />. Per disattivarlo è necessario ripristinare le impostazioni di fabbrica.</translation>
 <translation id="1327527584824210101">Utilizza la tua passkey</translation>
 <translation id="1327794256477341646">Le funzionalità che richiedono la tua posizione non funzioneranno</translation>
+<translation id="1328041566565643371">Punto di ridimensionamento della tabstrip verticale (trascinabile)</translation>
 <translation id="1328364753167940710">Tra <ph name="NUM_HR" /> h</translation>
 <translation id="1328928545650070438">Abbassa le sopracciglia</translation>
 <translation id="1329466763986822896">Migliora la privacy di questo hotspot</translation>
@@ -1470,6 +1471,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
     <ph name="BEGIN_DESCRIPTION3" />L'organizzazione può accedere da remoto a una sessione del dispositivo per la risoluzione dei problemi.<ph name="END_DESCRIPTION3" />
     <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />Abilitare l'accesso<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
     <ph name="BEGIN_DESCRIPTION4" />Le app, i servizi e le reti dell'organizzazione potrebbero essere disponibili solo sui dispositivi registrati.<ph name="END_DESCRIPTION4" /></translation>
+<translation id="1979208610845113582">Ora puoi riprendere direttamente i thread di AI Mode qui. Stacca questo elemento in qualsiasi momento.</translation>
 <translation id="1979280758666859181">Stai per passare a un canale con una versione precedente di <ph name="PRODUCT_NAME" />. Il cambio di canale verrà applicato quando la versione del canale corrisponderà alla versione attualmente installata sul dispositivo.</translation>
 <translation id="1979582938184524893">Seleziona manualmente le informazioni personali che vuoi includere</translation>
 <translation id="197989455406964291">KDC non supporta il tipo di crittografia</translation>
@@ -1934,6 +1936,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2297705863329999812">Cerca stampanti</translation>
 <translation id="2297822946037605517">Condividi questa pagina</translation>
 <translation id="229871422646860597">Sblocca dalla barra degli strumenti</translation>
+<translation id="2298749511072894576">Ora puoi riprendere direttamente le chat con Gemini qui. Stacca questo elemento in qualsiasi momento.</translation>
 <translation id="2299685119225839832">Puoi ricevere un riepilogo di ciò che le persone dicono nelle loro recensioni</translation>
 <translation id="2299734369537008228">Cursore: da <ph name="MIN_LABEL" /> a <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">Includi tutti i file di log raccolti da debugd sotto forma di archivio separato.</translation>
@@ -2298,6 +2301,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="252418934079508528">Installa <ph name="DEVICE_OS" /></translation>
 <translation id="252513908494776481">Chiedi informazioni su questa scheda</translation>
 <translation id="2525746158911982776">Aggiornamento non riuscito perché lo spazio di archiviazione del sistema non è sufficiente.</translation>
+<translation id="2525842906387880861">Non vedrai più suggerimenti in questa pagina</translation>
 <translation id="2526590354069164005">Desktop</translation>
 <translation id="2526619973349913024">Verifica la presenza di aggiornamenti</translation>
 <translation id="2527167509808613699">Qualsiasi tipo di connessione</translation>
@@ -2791,6 +2795,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2855243985454069333">Consente di eliminare la cronologia da tutti i dispositivi sincronizzati.</translation>
 <translation id="2855812646048059450">Accedi con <ph name="CREDENTIAL_PROVIDER" /></translation>
 <translation id="2857047802954430547">Accedi per trovare le password, i preferiti e altri dati su tutti i dispositivi</translation>
+<translation id="2857195263461649321">Riprendi da dove avevi interrotto su Gemini</translation>
 <translation id="2859741939921354763">Importa password in <ph name="BRAND" /></translation>
 <translation id="2860284453253554297">Policy aziendali</translation>
 <translation id="2860710618359053450">Sposta la mascella a destra</translation>
@@ -5947,6 +5952,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5006778209728626987">Fulmine</translation>
 <translation id="5007392906805964215">Visualizza</translation>
 <translation id="50080882645628821">Rimuovi profilo</translation>
+<translation id="5008587162781422067">Larghezza attuale della tabstrip: <ph name="TAB_STRIP_PERCENT" />, larghezza attuale dell'area dei contenuti: <ph name="CONTENT_AREA_PERCENT" />.</translation>
 <translation id="5008936837313706385">Nome attività</translation>
 <translation id="5009463889040999939">Ridenominazione del profilo in corso. Questa operazione può richiedere alcuni minuti.</translation>
 <translation id="5010886807652684893">Visualizzazione grafica</translation>
@@ -6593,6 +6599,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5460861858595506978">Ispirazione</translation>
 <translation id="5461050611724244538">Connessione col telefono persa</translation>
 <translation id="5463275305984126951">Indice di <ph name="LOCATION" /></translation>
+<translation id="5463348003600590648">Disattiva suggerimenti</translation>
 <translation id="5463450804024056231">Registrati per ricevere email relative a <ph name="DEVICE_TYPE" /></translation>
 <translation id="5463625433003343978">Ricerca di dispositivi in corso…</translation>
 <translation id="5463856536939868464">Menu contenente i Preferiti nascosti</translation>
@@ -6756,6 +6763,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="557506220935336383">Visualizza autorizzazioni per le estensioni per altri siti</translation>
 <translation id="5575473780076478375">Estensione in incognito: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">Si è verificato un problema con la richiesta di registrazione alla modalità demo.</translation>
+<translation id="5576472948015790634">Ora puoi gestire i gruppi di schede e le chat con Gemini in un unico posto. Stacca questo elemento in qualsiasi momento.</translation>
 <translation id="557722062034137776">Il reset del dispositivo non influirà sui tuoi Account Google o sui dati sincronizzati con tali account. Tuttavia, tutti i file salvati localmente sul dispositivo verranno eliminati.</translation>
 <translation id="5578059481725149024">Accesso automatico</translation>
 <translation id="5578387000057347457">Inserisci un prompt personalizzato o evidenzia il testo per creare un'immagine</translation>
@@ -9932,6 +9940,7 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7758884017823246335">Aggiungi ricerca su sito</translation>
 <translation id="7759443981285558794">Visualizza i certificati importati da ChromeOS</translation>
 <translation id="7759606211476816416">Scorciatoie per i siti</translation>
+<translation id="7759748248923439385">Ora puoi gestire i gruppi di schede e i thread di AI Mode in un unico posto. Stacca questo elemento in qualsiasi momento.</translation>
 <translation id="7759809451544302770">Facoltativo</translation>
 <translation id="7760176388948986635">Consenti alle app, ai siti web e ai servizi ChromeOS e per Android che dispongono dell'autorizzazione di accesso alla posizione di usare la posizione di questo dispositivo. La precisione della posizione fornisce una posizione più precisa per app e servizi. A questo scopo, Google tratta periodicamente informazioni relative a sensori dei dispositivi e segnali wireless provenienti da questo dispositivo per raccogliere le posizioni dei segnali wireless mediante crowdsourcing. Queste vengono usate senza identificare nessuna persona per migliorare la precisione della posizione e i servizi basati sulla posizione geografica, nonché per migliorare, fornire e mantenere i servizi di Google basati sugli interessi legittimi di Google e di terze parti al fine di soddisfare le esigenze degli utenti.</translation>
 <translation id="7762024824096060040">Impossibile usare questo account</translation>
@@ -12183,6 +12192,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="950079950995628542">Di "<ph name="PHONE_NAME" />"</translation>
 <translation id="950307215746360464">Guida alla configurazione</translation>
 <translation id="951273949038779544"><ph name="SITE_ACCESS" />. Elemento installato dall'amministratore</translation>
+<translation id="95160010745047025">Riprendi da dove avevi interrotto in AI Mode</translation>
 <translation id="951991426597076286">Rifiuta</translation>
 <translation id="952137968828772361">Scopri di più su prodotti, luoghi o testi che vedi sullo schermo</translation>
 <translation id="952471655966876828">Il dispositivo si connetterà automaticamente quando verrà acceso e sarà in uso</translation>

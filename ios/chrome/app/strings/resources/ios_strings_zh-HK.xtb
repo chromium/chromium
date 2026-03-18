@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">歡迎回來！</translation>
 <translation id="2015722694326466240">如要查看密碼，您必須先在裝置上設定密碼。</translation>
 <translation id="201759455285471444">打開分頁群組。</translation>
-<translation id="202070562065520783">為我說明</translation>
 <translation id="2044394949148788042">開啟分頁網格</translation>
 <translation id="2044681667265133332">帳戶 <ph name="USER_EMAIL" /> 由 <ph name="HOSTED_DOMAIN" /> 管理，管理員可以查看某些資料。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">新項目</translation>
@@ -637,6 +636,7 @@
 <translation id="3324193307694657476">地址行 2</translation>
 <translation id="3328801116991980348">網站資料</translation>
 <translation id="333229797575847124">如何啟用此功能</translation>
+<translation id="334004756946755423">為我說明：</translation>
 <translation id="3344233834747405775">持卡人姓名無效</translation>
 <translation id="3344485292736684439">{count,plural, =1{書籤已儲存至您帳戶 ({email}) 中的「{title}」}other{書籤已儲存至您帳戶 ({email}) 中的「{title}」}}</translation>
 <translation id="334690320928261823">最近開啟的分頁</translation>

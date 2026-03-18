@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">வணக்கம்!</translation>
 <translation id="2015722694326466240">கடவுச்சொற்களைப் பார்க்க, முதலில் உங்கள் சாதனத்தில் கடவுக்குறியீட்டை அமைக்க வேண்டும்.</translation>
 <translation id="201759455285471444">பக்கக் குழுவை விரிவாக்கும்.</translation>
-<translation id="202070562065520783">இதை விவரி</translation>
 <translation id="2044394949148788042">பக்கத்தின் கட்டக் காட்சியைத் திறக்கவும்</translation>
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> என்ற கணக்கை <ph name="HOSTED_DOMAIN" /> நிர்வகிக்கிறது, சில தகவல்களை அதனால் பார்க்க முடியலாம். <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">புதியது</translation>
@@ -637,6 +636,7 @@
 <translation id="3324193307694657476">முகவரி 2</translation>
 <translation id="3328801116991980348">தளம் குறித்த தகவல்</translation>
 <translation id="333229797575847124">இந்த அம்சத்தை இயக்குவதற்கான வழிமுறை</translation>
+<translation id="334004756946755423">இதை விவரி:</translation>
 <translation id="3344233834747405775">கார்டு உரிமையாளரின் பெயர் தவறானது</translation>
 <translation id="3344485292736684439">{count,plural, =1{உங்கள் கணக்கில் ({email}) உள்ள “{title}” ஃபோல்டரில் புக்மார்க் சேமிக்கப்பட்டது}other{உங்கள் கணக்கில் ({email}) உள்ள “{title}” ஃபோல்டரில் புக்மார்க்குகள் சேமிக்கப்பட்டன}}</translation>
 <translation id="334690320928261823">சமீபத்தியவை</translation>

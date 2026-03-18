@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">Dobro došli nazad!</translation>
 <translation id="2015722694326466240">Postavite šifru na uređaju da vidite lozinke.</translation>
 <translation id="201759455285471444">Proširivanje grupe kartica.</translation>
-<translation id="202070562065520783">Objasni mi ovo</translation>
 <translation id="2044394949148788042">Otvorite mrežu kartica.</translation>
 <translation id="2044681667265133332">Računom <ph name="USER_EMAIL" /> upravlja domena <ph name="HOSTED_DOMAIN" />, koja će možda moći pregledati određene informacije. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nova stavka</translation>
@@ -637,6 +636,7 @@
 <translation id="3324193307694657476">2. red za adresu</translation>
 <translation id="3328801116991980348">Informacije o web lokaciji</translation>
 <translation id="333229797575847124">Kako omogućiti ovu funkciju</translation>
+<translation id="334004756946755423">Objasni mi ovo:</translation>
 <translation id="3344233834747405775">Nevažeće ime vlasnika kartice</translation>
 <translation id="3344485292736684439">{count,plural, =1{Oznaka je sačuvana u folder "{title}" na računu {email}}one{Oznake su sačuvane u folder "{title}" na računu {email}}few{Oznake su sačuvane u folder "{title}" na računu {email}}other{Oznake su sačuvane u folder "{title}" na računu {email}}}</translation>
 <translation id="334690320928261823">Nedavne kartice</translation>

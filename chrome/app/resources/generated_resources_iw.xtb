@@ -506,6 +506,7 @@
 <translation id="1327495825214193325">‏כדי להשתמש בניפוי באגים באמצעות ADB צריך להפעיל מחדש את ה-<ph name="DEVICE_TYPE" /> הזה. כדי להשבית את האפשרות הזו צריך לאפס את המכשיר להגדרות היצרן.</translation>
 <translation id="1327527584824210101">יש להשתמש במפתח הגישה שלך</translation>
 <translation id="1327794256477341646">תכונות שצריכות גישה למיקום לא יפעלו</translation>
+<translation id="1328041566565643371">נקודת אחיזה לשינוי הגודל של שורת הכרטיסיות האנכית (ניתנת לגרירה)</translation>
 <translation id="1328364753167940710">בעוד <ph name="NUM_HR" /> שעות</translation>
 <translation id="1328928545650070438">מנמיכים את הגבות</translation>
 <translation id="1329466763986822896">שיפור ההגנה על הפרטיות בנקודה הזו לשיתוף אינטרנט</translation>
@@ -1479,6 +1480,7 @@
     <ph name="BEGIN_DESCRIPTION3" />הארגון יכול לגשת מרחוק לסשן במכשיר כדי לפתור בעיות.<ph name="END_DESCRIPTION3" />
     <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />הפעלת גישה<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
     <ph name="BEGIN_DESCRIPTION4" />יכול להיות שאפליקציות, שירותים ורשתות של הארגון יהיו זמינים רק במכשירים רשומים.<ph name="END_DESCRIPTION4" /></translation>
+<translation id="1979208610845113582">‏מעכשיו אפשר להמשיך כאן ישירות את השרשורים במצב AI. אפשר לבטל את ההצמדה בכל שלב.</translation>
 <translation id="1979280758666859181">עברת לערוץ עם גרסה ישנה יותר של <ph name="PRODUCT_NAME" />. שינוי הערוץ יוחל כאשר גרסת הערוץ תתאים לגרסה המותקנת כעת במכשיר שלך.</translation>
 <translation id="1979582938184524893">בחירה ידנית של הפרטים האישיים שרוצים לכלול</translation>
 <translation id="197989455406964291">‏KDC לא תומך בסוג ההצפנה</translation>
@@ -1946,6 +1948,7 @@
 <translation id="2297705863329999812">חיפוש מדפסות</translation>
 <translation id="2297822946037605517">שתף דף זה</translation>
 <translation id="229871422646860597">ביטול ההצמדה לסרגל הכלים</translation>
+<translation id="2298749511072894576">‏מעכשיו אפשר להמשיך כאן ישירות את השיחות עם Gemini. אפשר לבטל את ההצמדה בכל שלב.</translation>
 <translation id="2299685119225839832">אפשר לקבל סיכום של מה שאנשים כותבים בביקורות שלהם</translation>
 <translation id="2299734369537008228">מחוון: <ph name="MIN_LABEL" /> עד <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">הכללה של כל קובצי היומן שנאספו על-ידי ניפוי הבאגים כארכיון נפרד.</translation>
@@ -2310,6 +2313,7 @@
 <translation id="252418934079508528">להתקנת <ph name="DEVICE_OS" /></translation>
 <translation id="252513908494776481">יש לי שאלה לגבי הכרטיסייה הזו</translation>
 <translation id="2525746158911982776">העדכון נכשל כי אין למערכת מספיק נפח אחסון.</translation>
+<translation id="2525842906387880861">מעכשיו לא יוצגו לך הצעות בדף הזה</translation>
 <translation id="2526590354069164005">שולחן עבודה</translation>
 <translation id="2526619973349913024">יש עדכון חדש?</translation>
 <translation id="2527167509808613699">חיבור מכל סוג שהוא</translation>
@@ -2803,6 +2807,7 @@
 <translation id="2855243985454069333">מחיקת ההיסטוריה בכל המכשירים המסונכרנים</translation>
 <translation id="2855812646048059450">כניסה דרך <ph name="CREDENTIAL_PROVIDER" /></translation>
 <translation id="2857047802954430547">לאחר הכניסה לחשבון, הסיסמאות, הסימניות ונתונים נוספים יופיעו בכל המכשירים שלך</translation>
+<translation id="2857195263461649321">‏רוצה להמשיך בשיחה עם Gemini מהמקום שבו הפסקת?</translation>
 <translation id="2859741939921354763">ייבוא סיסמאות אל <ph name="BRAND" /></translation>
 <translation id="2860284453253554297">מדיניות הארגון</translation>
 <translation id="2860710618359053450">מזיזים את הלסת ימינה</translation>
@@ -4476,6 +4481,7 @@
 <translation id="3968739731834770921">קאנה</translation>
 <translation id="3970114302595058915">מזהה</translation>
 <translation id="397105322502079400">מתבצע חישוב...</translation>
+<translation id="3971154761614127188">תכונות מסוימות יכולות להאט אתרים לא מוכרים</translation>
 <translation id="3971355433478412726">‏הוראות ל-Gemini</translation>
 <translation id="3971764089670057203">טביעות אצבעות במפתח האבטחה הזה</translation>
 <translation id="3973005893595042880">המשתמש אינו מורשה</translation>
@@ -5961,6 +5967,7 @@
 <translation id="5006778209728626987">תאורה</translation>
 <translation id="5007392906805964215">עיון</translation>
 <translation id="50080882645628821">הסרת הפרופיל</translation>
+<translation id="5008587162781422067">שורת הכרטיסיות היא ברוחב של <ph name="TAB_STRIP_PERCENT" />, ואזור התוכן הוא ברוחב של <ph name="CONTENT_AREA_PERCENT" />.</translation>
 <translation id="5008936837313706385">שם הפעילות</translation>
 <translation id="5009463889040999939">שינוי שם הפרופיל מתבצע. הפעולה עשויה להימשך מספר דקות.</translation>
 <translation id="5010886807652684893">תצוגה מורחבת</translation>
@@ -6607,6 +6614,7 @@
 <translation id="5460861858595506978">להשראה</translation>
 <translation id="5461050611724244538">החיבור עם הטלפון שלך אבד</translation>
 <translation id="5463275305984126951">אינדקס של <ph name="LOCATION" /></translation>
+<translation id="5463348003600590648">השבתת הצעות</translation>
 <translation id="5463450804024056231">הרשמה לקבלת אימיילים לגבי <ph name="DEVICE_TYPE" /></translation>
 <translation id="5463625433003343978">מתבצע חיפוש מכשירים…</translation>
 <translation id="5463856536939868464">התפריט מכיל סימניות נסתרות</translation>
@@ -6770,6 +6778,7 @@
 <translation id="557506220935336383">הצגה של הרשאות התוספים לאתרים אחרים</translation>
 <translation id="5575473780076478375">תוסף של גלישה פרטית: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">התרחשה בעיה הקשורה לבקשת הרשמה של הדגמה.</translation>
+<translation id="5576472948015790634">‏מעכשיו אפשר לשלוט בקבוצות הכרטיסיות ובשיחות עם Gemini במקום אחד. אפשר לבטל את ההצמדה בכל שלב.</translation>
 <translation id="557722062034137776">‏איפוס של המכשיר לא ישפיע על חשבונות Google שלך או על נתונים המסונכרנים לחשבונות אלה. אך כל הקבצים המאוחסנים במכשיר באופן מקומי יימחקו.</translation>
 <translation id="5578059481725149024">כניסה אוטומטית</translation>
 <translation id="5578387000057347457">מזינים הנחיה מותאמת אישית או מדגישים טקסט כדי ליצור תמונה</translation>
@@ -9953,6 +9962,7 @@
 <translation id="7758884017823246335">הוספת חיפוש באתר</translation>
 <translation id="7759443981285558794">‏הצגת אישורים שיובאו מ-ChromeOS</translation>
 <translation id="7759606211476816416">קיצורי הדרך לאתרים</translation>
+<translation id="7759748248923439385">‏מעכשיו אפשר לשלוט בקבוצות הכרטיסיות ובשרשורים במצב AI במקום אחד. אפשר לבטל את ההצמדה בכל שלב.</translation>
 <translation id="7759809451544302770">אופציונלי</translation>
 <translation id="7760176388948986635">‏מתן אפשרות לאפליקציות, לאתרים ולשירותים של ChromeOS ו-Android עם הרשאת מיקום להשתמש במיקום של המכשיר הזה. ההגדרה 'קביעת מיקום יותר מדויקת' מספקת מיקום מדויק יותר לאפליקציות ולשירותים של Android. כדי לעשות את זה Google מעבדת מדי פעם נתונים על חיישני מכשיר ואותות אלחוטיים מהמכשיר הזה כדי לתמוך במיקור המונים של מיקומי אותות אלחוטיים. השימוש בנתונים האלה נעשה ללא זיהוי של המשתמש כדי לשפר את מידת הדיוק של המיקום ואת האיכות של השירותים מבוססי-המיקום. כמו כן, הנתונים משמשים כדי לשפר, לספק ולתחזק את השירותים של Google על סמך האינטרסים הלגיטימיים של Google ושל צדדים שלישיים כדי לשרת את צורכי המשתמשים.</translation>
 <translation id="7762024824096060040">לא ניתן להשתמש בחשבון הזה</translation>
@@ -10024,6 +10034,7 @@
 <translation id="7800518121066352902">סיבוב נ&amp;גד כיוון השעון</translation>
 <translation id="780301667611848630">לא תודה</translation>
 <translation id="7803657407897251194">‏כדי להמשיך בהגדרה במכשיר Android, עליך לחבר את <ph name="DEVICE_TYPE" /> לרשת</translation>
+<translation id="7803714812705886512">‏‫Google משתמשת בפחות נתונים (לדוגמה, חלקים מכתובות URL, פרטי הורדה) כדי לזהות איומים</translation>
 <translation id="7804072833593604762">הכרטיסייה נסגרה</translation>
 <translation id="7805371082115476536">חלשה</translation>
 <translation id="7805768142964895445">סטטוס</translation>
@@ -10048,6 +10059,7 @@
 <translation id="7820400255539998692">יש למחוק את <ph name="FILENAME" /> כדי שמשתמשים אחרים במכשיר לא יוכלו לראות את הסיסמאות שלך</translation>
 <translation id="7820561748632634942">להקצות עוד מתגים?</translation>
 <translation id="782057141565633384">העתקת כתובת &amp;סרטון</translation>
+<translation id="7823975162954158194">מספקת הגנה חזקה</translation>
 <translation id="7824665136384946951">הארגון שלך השבית את הגלישה הבטוחה</translation>
 <translation id="7824864914877854148">אירעה שגיאה ולא ניתן להשלים את הגיבוי</translation>
 <translation id="7825289983414309119">הר</translation>
@@ -11208,6 +11220,7 @@
 <translation id="8601206103050338563">‏אימות לקוח TLS WWW</translation>
 <translation id="8602674530529411098">אפליקציות (בטא)</translation>
 <translation id="8602851771975208551">‏תוכנית אחרת במחשב שלך הוסיפה אפליקציה שעשויה לשנות את אופן הפעולה של Chrome.</translation>
+<translation id="8602867356511778172">‏‫Google משתמשת בנתונים נוספים (לדוגמה, כתובות URL, דגימות של תוכן הדפים, פרטי מערכת) כדי לזהות איומים מהר יותר ובצורה מדויקת יותר</translation>
 <translation id="860399903490378651">סגירת התצוגה הזו</translation>
 <translation id="8605428685123651449">‏זיכרון SQLite</translation>
 <translation id="8607171490667464784">בזמן שימוש בסוללה ובמצב לא פעיל</translation>
@@ -12208,6 +12221,7 @@
 <translation id="950079950995628542">מהטלפון <ph name="PHONE_NAME" /></translation>
 <translation id="950307215746360464">מדריך ההגדרה</translation>
 <translation id="951273949038779544">‫<ph name="SITE_ACCESS" />. הותקן על ידי האדמין שלך</translation>
+<translation id="95160010745047025">‏רוצה להמשיך מהמקום שבו הפסקת במצב AI?</translation>
 <translation id="951991426597076286">דחייה</translation>
 <translation id="952137968828772361">מידע נוסף על מוצרים, מקומות או טקסט שמוצגים לך במסך</translation>
 <translation id="952471655966876828">כשהמכשיר מופעל ובשימוש, הוא יחובר באופן אוטומטי</translation>

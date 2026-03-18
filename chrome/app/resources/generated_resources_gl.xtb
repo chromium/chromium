@@ -504,6 +504,7 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1327495825214193325">Para activar a depuración de ADB, é necesario reiniciar o <ph name="DEVICE_TYPE" />. Para desactivala debes restablecer a configuración de fábrica.</translation>
 <translation id="1327527584824210101">Usa a clave de acceso</translation>
 <translation id="1327794256477341646">As funcións que requiran a túa localización non estarán dispoñibles</translation>
+<translation id="1328041566565643371">Controlador de cambio de tamaño da franxa de pestanas verticais (arrastrable)</translation>
 <translation id="1328364753167940710">Dentro de <ph name="NUM_HR" /> h</translation>
 <translation id="1328928545650070438">Baixar as cellas</translation>
 <translation id="1329466763986822896">Mellorar privacidade desta zona wifi</translation>
@@ -1470,6 +1471,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
     <ph name="BEGIN_DESCRIPTION3" />A organización pode acceder de maneira remota a calquera sesión dun dispositivo para solucionar problemas.<ph name="END_DESCRIPTION3" />
     <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />Activar acceso<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
     <ph name="BEGIN_DESCRIPTION4" />Pode que só os dispositivo rexistrados poidan acceder ás aplicacións, servizos e redes da organización.<ph name="END_DESCRIPTION4" /></translation>
+<translation id="1979208610845113582">Xa podes retomar directamente os fíos de mensaxes do modo IA aquí. Podes deixar de fixar este elemento cando queiras.</translation>
 <translation id="1979280758666859181">Estás cambiando a unha canle cunha versión anterior de <ph name="PRODUCT_NAME" />. O cambio de canle aplicarase cando a versión da canle coincida coa versión que está instalada actualmente no teu dispositivo.</translation>
 <translation id="1979582938184524893">Seleccionar manualmente a información persoal que queres incluír</translation>
 <translation id="197989455406964291">O KDC non é compatible co tipo de encriptación</translation>
@@ -1934,6 +1936,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2297705863329999812">Buscar impresoras</translation>
 <translation id="2297822946037605517">Compartir esta páxina</translation>
 <translation id="229871422646860597">Deixar de fixar na barra de ferramentas</translation>
+<translation id="2298749511072894576">Xa podes retomar directamente os chats de Gemini aquí. Podes deixar de fixar este elemento cando queiras.</translation>
 <translation id="2299685119225839832">Podes obter un resumo do que din as persoas nas súas recensións</translation>
 <translation id="2299734369537008228">Control desprazable: de <ph name="MIN_LABEL" /> a <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">Incluír todos os ficheiros de rexistro obtidos por debugd como un arquivo independente.</translation>
@@ -2298,6 +2301,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="252418934079508528">Instalar <ph name="DEVICE_OS" /></translation>
 <translation id="252513908494776481">Fai preguntas sobre esta pestana</translation>
 <translation id="2525746158911982776">Produciuse un erro na actualización porque o sistema non ten suficiente espazo de almacenamento.</translation>
+<translation id="2525842906387880861">Non volverás ver suxestións nesta páxina de novo</translation>
 <translation id="2526590354069164005">Ordenador</translation>
 <translation id="2526619973349913024">Buscar actualizacións</translation>
 <translation id="2527167509808613699">Calquera tipo de conexión</translation>
@@ -2791,6 +2795,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2855243985454069333">Elimina o historial de todos os dispositivos sincronizados</translation>
 <translation id="2855812646048059450">Iniciar sesión con <ph name="CREDENTIAL_PROVIDER" /></translation>
 <translation id="2857047802954430547">Inicia sesión para poder acceder aos teus contrasinais, marcadores e outros datos en todos os teus dispositivos</translation>
+<translation id="2857195263461649321">Continúa onde o deixaches en Gemini</translation>
 <translation id="2859741939921354763">Importa os contrasinais a <ph name="BRAND" /></translation>
 <translation id="2860284453253554297">Políticas de empresa</translation>
 <translation id="2860710618359053450">Mover a mandíbula cara á dereita</translation>
@@ -5951,6 +5956,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5006778209728626987">Lóstrego</translation>
 <translation id="5007392906805964215">Revisar</translation>
 <translation id="50080882645628821">Quitar perfil</translation>
+<translation id="5008587162781422067">A franxa de pestanas agora ten un <ph name="TAB_STRIP_PERCENT" /> de ancho e a área de contido, un <ph name="CONTENT_AREA_PERCENT" />.</translation>
 <translation id="5008936837313706385">Nome da actividade</translation>
 <translation id="5009463889040999939">Cambiando nome de perfil. Esta acción pode tardar uns minutos.</translation>
 <translation id="5010886807652684893">Vista visual</translation>
@@ -6597,6 +6603,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5460861858595506978">Inspiración</translation>
 <translation id="5461050611724244538">Perdeuse a conexión co teléfono</translation>
 <translation id="5463275305984126951">Índice de <ph name="LOCATION" /></translation>
+<translation id="5463348003600590648">Desactivar suxestións</translation>
 <translation id="5463450804024056231">Iniciar sesión para recibir correos electrónicos de <ph name="DEVICE_TYPE" /></translation>
 <translation id="5463625433003343978">Buscando dispositivos…</translation>
 <translation id="5463856536939868464">Menú con marcadores ocultos</translation>
@@ -6760,6 +6767,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="557506220935336383">Ver permisos de extensións para outros sitios</translation>
 <translation id="5575473780076478375">Extensión do modo de incógnito: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">Produciuse un problema coa solicitude de rexistro de demostración.</translation>
+<translation id="5576472948015790634">Xa podes xestionar os teus grupos de pestanas e os chats de Gemini nun só lugar. Podes deixar de fixar este elemento cando queiras.</translation>
 <translation id="557722062034137776">Restablecer o dispositivo non afectará ás túas contas de Google nin a ningún dos datos sincronizados con esas contas. Non obstante, eliminaranse todos os ficheiros gardados localmente no teu dispositivo.</translation>
 <translation id="5578059481725149024">Inicio de sesión automático</translation>
 <translation id="5578387000057347457">Escribir unha solicitude personalizada ou destacar texto para crear unha imaxe</translation>
@@ -9935,6 +9943,7 @@ Para quitar unha asignación, preme un interruptor ou unha tecla que teñan unha
 <translation id="7758884017823246335">Engadir unha busca do sitio</translation>
 <translation id="7759443981285558794">Ver os certificados importados de ChromeOS</translation>
 <translation id="7759606211476816416">Os teus atallos a sitios</translation>
+<translation id="7759748248923439385">Xa podes xestionar os grupos de pestanas e os fíos de mensaxes do modo IA nun só lugar. Podes deixar de fixar este elemento cando queiras.</translation>
 <translation id="7759809451544302770">Opcionais</translation>
 <translation id="7760176388948986635">Permite que os servizos, sitios web e aplicacións para Android e ChromeOS con permiso de localización utilicen a deste dispositivo. A opción Precisión da localización proporciónalles unha localización máis exacta aos servizos e aplicacións para Android. Con este fin, Google procesa periodicamente a información captada polos sinais sen fíos e os sensores deste dispositivo para obter con participación colectiva a localización deses sinais. Estes datos utilízanse sen identificar a ninguén para mellorar a precisión da localización e os servizos baseados nela, así como para perfeccionar, proporcionar e manter os servizos de Google en función dos intereses lexítimos de Google e de terceiros coa finalidade de satisfacer as necesidades dos usuarios.</translation>
 <translation id="7762024824096060040">Non se pode usar esta conta</translation>
@@ -12185,6 +12194,7 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="950079950995628542">De <ph name="PHONE_NAME" /></translation>
 <translation id="950307215746360464">Guía de configuración</translation>
 <translation id="951273949038779544"><ph name="SITE_ACCESS" />. Elemento instalado pola persoa administradora</translation>
+<translation id="95160010745047025">Continúa onde o deixaches no modo IA</translation>
 <translation id="951991426597076286">Rexeitar</translation>
 <translation id="952137968828772361">Obtén máis información sobre os produtos, lugares ou textos que ves na pantalla</translation>
 <translation id="952471655966876828">O dispositivo conectarase automaticamente cando se atope acendido e se estea utilizando</translation>

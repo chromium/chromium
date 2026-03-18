@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">おかえりなさい。</translation>
 <translation id="2015722694326466240">パスワードを表示するには、まずデバイスにパスコードを設定する必要があります。</translation>
 <translation id="201759455285471444">タブグループを開く。</translation>
-<translation id="202070562065520783">この内容を説明</translation>
 <translation id="2044394949148788042">タブグリッドを開く</translation>
 <translation id="2044681667265133332">アカウント（<ph name="USER_EMAIL" />）は <ph name="HOSTED_DOMAIN" /> によって管理されており、この組織は一部の情報を見ることができます。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">新しいアイテム</translation>
@@ -637,6 +636,7 @@
 <translation id="3324193307694657476">住所2行目</translation>
 <translation id="3328801116991980348">サイト情報</translation>
 <translation id="333229797575847124">この機能を有効にする方法</translation>
+<translation id="334004756946755423">これについて説明して:</translation>
 <translation id="3344233834747405775">カード名義人が無効です</translation>
 <translation id="3344485292736684439">{count,plural, =1{ブックマークをアカウント（{email}）の「{title}」に保存しました}other{ブックマークをアカウント（{email}）の「{title}」に保存しました}}</translation>
 <translation id="334690320928261823">最近使ったタブ</translation>

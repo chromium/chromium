@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">טוב לראות אותך שוב!</translation>
 <translation id="2015722694326466240">רוצה להציג את הסיסמאות? תחילה עליך להגדיר קוד גישה במכשיר.</translation>
 <translation id="201759455285471444">הרחבה של קבוצת הכרטיסיות.</translation>
-<translation id="202070562065520783">אשמח לקבל הסבר</translation>
 <translation id="2044394949148788042">פתיחה של תצוגת הכרטיסיות</translation>
 <translation id="2044681667265133332">החשבון <ph name="USER_EMAIL" /> מנוהל על ידי <ph name="HOSTED_DOMAIN" />, שיכול להיות שיש לו גישה לחלק מהמידע. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">פריט חדש</translation>
@@ -637,6 +636,7 @@
 <translation id="3324193307694657476">כתובת, שורה 2</translation>
 <translation id="3328801116991980348">פרטי אתר</translation>
 <translation id="333229797575847124">איך מפעילים את התכונה הזו</translation>
+<translation id="334004756946755423">תסביר לי את זה:</translation>
 <translation id="3344233834747405775">השם של בעל הכרטיס לא תקין</translation>
 <translation id="3344485292736684439">{count,plural, =1{הסימנייה נשמרה בתיקייה ’{title}‘ בחשבון שלך, {email}}one{הסימניות נשמרו בתיקייה ’{title}‘ בחשבון שלך, {email}}two{הסימניות נשמרו בתיקייה ’{title}‘ בחשבון שלך, {email}}other{הסימניות נשמרו בתיקייה ’{title}‘ בחשבון שלך, {email}}}</translation>
 <translation id="334690320928261823">כרטיסיות אחרונות</translation>

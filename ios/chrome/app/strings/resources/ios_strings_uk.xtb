@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">З поверненням!</translation>
 <translation id="2015722694326466240">Щоб переглядати паролі, спершу потрібно налаштувати код доступу на пристрої.</translation>
 <translation id="201759455285471444">Розгорнути групу вкладок.</translation>
-<translation id="202070562065520783">Поясни це</translation>
 <translation id="2044394949148788042">Відкрийте сітку вкладок</translation>
 <translation id="2044681667265133332">Обліковим записом <ph name="USER_EMAIL" /> керує адміністратор домену <ph name="HOSTED_DOMAIN" />, який може переглядати певну інформацію. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">новий об’єкт</translation>
@@ -637,6 +636,7 @@
 <translation id="3324193307694657476">Адреса 2</translation>
 <translation id="3328801116991980348">Інформація про сайт</translation>
 <translation id="333229797575847124">Як увімкнути цю функцію</translation>
+<translation id="334004756946755423">Поясни це:</translation>
 <translation id="3344233834747405775">Недійсне ім’я власника картки</translation>
 <translation id="3344485292736684439">{count,plural, =1{Закладку збережено в папці "{title}" у вашому обліковому записі ({email})}one{Закладки збережено в папці "{title}" у вашому обліковому записі ({email})}few{Закладки збережено в папці "{title}" у вашому обліковому записі ({email})}many{Закладки збережено в папці "{title}" у вашому обліковому записі ({email})}other{Закладки збережено в папці "{title}" у вашому обліковому записі ({email})}}</translation>
 <translation id="334690320928261823">Останні вкладки</translation>

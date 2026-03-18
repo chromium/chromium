@@ -504,6 +504,7 @@
 <translation id="1327495825214193325">ADB डीबगिंग सुरू करण्यासाठी, हे <ph name="DEVICE_TYPE" /> रीस्टार्ट करणे आवश्यक आहे. ते बंद करण्यासाठी फॅक्टरी सेटिंग्जवर रीसेट करणे आवश्यक आहे.</translation>
 <translation id="1327527584824210101">तुमची पासकी वापरा</translation>
 <translation id="1327794256477341646">तुमच्या स्थानाची आवश्यकता असलेली वैशिष्ट्ये काम करणार नाहीत</translation>
+<translation id="1328041566565643371">व्हर्टिकल टॅब स्ट्रिपच्या आकाराचे हँडल बदला (ड्रॅग करण्यायोग्य)</translation>
 <translation id="1328364753167940710"><ph name="NUM_HR" /> तासामध्ये</translation>
 <translation id="1328928545650070438">भुवया खाली करा</translation>
 <translation id="1329466763986822896">या हॉटस्पॉटसाठीच्या गोपनीयतेमध्ये सुधारणा करा</translation>
@@ -1481,6 +1482,7 @@
     <ph name="BEGIN_DESCRIPTION3" />ट्रबलशूटिंग पुरवण्यासाठी संस्था रिमोट पद्धतीने डिव्हाइस सेशन अ‍ॅक्सेस करू शकते.<ph name="END_DESCRIPTION3" />
     <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />अ‍ॅक्सेस सुरू करणे<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
     <ph name="BEGIN_DESCRIPTION4" />संस्थेची ॲप्स, सेवा आणि नेटवर्क फक्त नोंदणीकृत डिव्हाइसवर उपलब्ध असतील.<ph name="END_DESCRIPTION4" /></translation>
+<translation id="1979208610845113582">तुम्ही आता इथे थेट AI मोड थ्रेड पुन्हा सुरू करू शकता. हे कधीही अनपिन करा.</translation>
 <translation id="1979280758666859181">तुम्ही <ph name="PRODUCT_NAME" /> च्या जुन्या आवृत्तीसह एका चॅनलमध्ये बदलत आहात. आपल्या डिव्हाइसवर सध्या इंस्टॉल आवृत्तीशी चॅनलची आवृत्ती जुळते तेव्हा चॅनल बदल लागू होईल.</translation>
 <translation id="1979582938184524893">तुम्हाला समाविष्ट करायची असलेली वैयक्तिक माहिती मॅन्युअली निवडा</translation>
 <translation id="197989455406964291">KDC एंक्रिप्शन प्रकाराला सपोर्ट करत नाही</translation>
@@ -1948,6 +1950,7 @@
 <translation id="2297705863329999812">प्रिंटर शोधा</translation>
 <translation id="2297822946037605517">हे पेज शेअर करा</translation>
 <translation id="229871422646860597">टूलबारवरून अनपिन करा</translation>
+<translation id="2298749511072894576">तुम्ही आता इथे थेट Gemini चॅट पुन्‍हा सुरू करू शकता. हे कधीही अनपिन करा.</translation>
 <translation id="2299685119225839832">लोक त्यांच्या परीक्षणांमध्ये काय म्हणत आहेत याचा तुम्ही सारांश मिळवू शकता</translation>
 <translation id="2299734369537008228">स्लायडर: <ph name="MIN_LABEL" /> ते <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">debugd ने गोळा केलेल्या सर्व लॉग फाइलचा स्वतंत्र संग्रहण म्हणून समावेश करा.</translation>
@@ -2312,6 +2315,7 @@
 <translation id="252418934079508528"><ph name="DEVICE_OS" /> हे इंस्टॉल करा</translation>
 <translation id="252513908494776481">या टॅबबद्दल विचारा</translation>
 <translation id="2525746158911982776">सिस्टीममध्ये पुरेशी स्टोरेज जागा नसल्यामुळे अपडेट करता आले नाही.</translation>
+<translation id="2525842906387880861">तुम्हाला या पेजवर सूचना पुन्हा दिसणार नाही</translation>
 <translation id="2526590354069164005">डेस्कटॉप</translation>
 <translation id="2526619973349913024">अपडेटासाठी तपासा</translation>
 <translation id="2527167509808613699">कोणत्याही प्रकारचे कनेक्शन</translation>
@@ -2805,6 +2809,7 @@
 <translation id="2855243985454069333">सर्व सिंक केलेल्या डिव्हाइसवरून इतिहास हटवते</translation>
 <translation id="2855812646048059450"><ph name="CREDENTIAL_PROVIDER" /> वापरून साइन इन करा</translation>
 <translation id="2857047802954430547">तुमच्या सर्व डिव्हाइसवर तुमचे पासवर्ड, बुकमार्क आणि आणखी बरेच काही मिळवण्यासाठी साइन इन करा</translation>
+<translation id="2857195263461649321">तुम्ही Gemini वर जिथे सोडले होते तिथून सुरू करा</translation>
 <translation id="2859741939921354763">पासवर्ड <ph name="BRAND" /> वर इंपोर्ट करा</translation>
 <translation id="2860284453253554297">एंटरप्राइझ धोरणे</translation>
 <translation id="2860710618359053450">जबडा उजवीकडे हलवा</translation>
@@ -4478,6 +4483,7 @@
 <translation id="3968739731834770921">काना</translation>
 <translation id="3970114302595058915">आयडी</translation>
 <translation id="397105322502079400">गणना करत आहे...</translation>
+<translation id="3971154761614127188">काही वैशिष्ट्यांमुळे अनोळखी साइट धीम्या होऊ शकतात</translation>
 <translation id="3971355433478412726">Gemini साठी सूचना</translation>
 <translation id="3971764089670057203">या सिक्युरिटी कीवरील फिंगरप्रिंट</translation>
 <translation id="3973005893595042880">वापरकर्त्याला अनुमती नाही</translation>
@@ -5960,6 +5966,7 @@
 <translation id="5006778209728626987">वीज</translation>
 <translation id="5007392906805964215">पुनरावलोकन करा</translation>
 <translation id="50080882645628821">प्रोफाइल काढून टाका</translation>
+<translation id="5008587162781422067">टॅब स्ट्रिप आता <ph name="TAB_STRIP_PERCENT" /> रुंद आहे, आशय क्षेत्र आता <ph name="CONTENT_AREA_PERCENT" /> रुंद आहे.</translation>
 <translation id="5008936837313706385">ॲक्टिव्हिटीचे नाव</translation>
 <translation id="5009463889040999939">प्रोफाइलचे नाव बदलत आहे. याला काही मिनिटे लागू शकतात.</translation>
 <translation id="5010886807652684893">व्हिज्युअल दृश्य</translation>
@@ -6606,6 +6613,7 @@
 <translation id="5460861858595506978">प्रेरणा</translation>
 <translation id="5461050611724244538">तुमच्या फोनसह कनेक्शन गमावले</translation>
 <translation id="5463275305984126951"><ph name="LOCATION" /> ची अनुक्रमणिका</translation>
+<translation id="5463348003600590648">सूचना बंद करा</translation>
 <translation id="5463450804024056231"><ph name="DEVICE_TYPE" /> ईमेलसाठी साइन अप करा</translation>
 <translation id="5463625433003343978">डिव्हाइस शोधत आहे…</translation>
 <translation id="5463856536939868464">मेनूमध्ये लपलेले बुकमार्क आहेत</translation>
@@ -6769,6 +6777,7 @@
 <translation id="557506220935336383">इतर साइटसाठी एक्स्टेंशन परवानग्या पहा</translation>
 <translation id="5575473780076478375">गुप्त एक्स्टेंशन: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">डेमो नोंदणी विनंतीला समस्या आली.</translation>
+<translation id="5576472948015790634">तुम्ही आता एकाच ठिकाणी तुमचे टॅब गट आणि Gemini चॅट व्यवस्थापित करू शकता. हे कधीही अनपिन करा.</translation>
 <translation id="557722062034137776">तुमचे डिव्हाइस रीसेट केल्याने या खात्यांवरील आपल्या Google खात्यांवर किंवा संकालित केलेल्या कोणत्याही डेटावर प्रभाव पडणार नाही. तथापि, आपल्या डिव्हाइसवर स्थानिकपणे सेव्ह केलेल्या सर्व फाइल हटविल्या जातील.</translation>
 <translation id="5578059481725149024">स्वयं साइन-इन</translation>
 <translation id="5578387000057347457">इमेज तयार करण्यासाठी कस्टम प्रॉम्प्ट एंटर करा किंवा मजकूर हायलाइट करा</translation>
@@ -9951,6 +9960,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7758884017823246335">साइट शोध जोडा</translation>
 <translation id="7759443981285558794">ChromeOS मधून इंपोर्ट केलेली प्रमाणपत्रे पहा</translation>
 <translation id="7759606211476816416">तुमच्या साइटचे शॉर्टकट</translation>
+<translation id="7759748248923439385">तुम्ही आता तुमचे टॅब गट आणि AI मोड थ्रेड एकाच ठिकाणी व्यवस्थापित करू शकता. हे कधीही अनपिन करा.</translation>
 <translation id="7759809451544302770">पर्यायी</translation>
 <translation id="7760176388948986635">स्थान परवानगी असलेल्या ChromeOS आणि Android अ‍ॅप्स, वेबसाइट व सेवांना या डिव्हाइसचे स्थान वापरण्याची अनुमती द्या. स्थान अचूकता हे Android अ‍ॅप्स आणि सेवांसाठी अधिक अचूक स्थान पुरवते. हे करण्यासाठी, Google हे वायरलेस सिग्नल स्थानांना क्राउडसोर्स करण्याकरिता डिव्हाइस सेन्सर आणि या डिव्हाइसच्या वायरलेस सिग्नलबद्दलच्या माहितीवर वेळोवेळी प्रक्रिया करते. स्थान अचूकता आणि स्थान आधारित सेवांमध्ये सुधारणा करण्यासाठी व वापरकर्त्यांच्या गरजा पूर्ण करण्यासाठी Google च्या आणि तृतीय पक्षांच्या कायदेशीर हितसंबंधांवर आधारित Google सेवांमध्ये सुधारणा करण्यासाठी, त्या पुरवण्यासाठी व त्यांची देखभाल करण्यासाठी ही माहिती कोणत्याही व्यक्तीला न ओळखता वापरली जाते.</translation>
 <translation id="7762024824096060040">हे खाते वापरू शकत नाही</translation>
@@ -10022,6 +10032,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7800518121066352902">घड्याळाच्या वि&amp;रुद्ध दिशेने फिरवा</translation>
 <translation id="780301667611848630">नाही, नको</translation>
 <translation id="7803657407897251194">तुमचे Android डिव्हाइस वापरून सेटअप करणे पुढे सुरू ठेवण्यासाठी, तुमचे <ph name="DEVICE_TYPE" /> नेटवर्कशी कनेक्ट करा</translation>
+<translation id="7803714812705886512">धोके डिटेक्ट करण्यासाठी Google कमी डेटा वापरते (उदाहरणार्थ, URLs चे भाग, डाउनलोडसंबंधित माहिती)</translation>
 <translation id="7804072833593604762">टॅब बंद केला</translation>
 <translation id="7805371082115476536">कमी संवेदनशील</translation>
 <translation id="7805768142964895445">स्थिती</translation>
@@ -10046,6 +10057,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7820400255539998692"><ph name="FILENAME" /> हटवा, जेणेकरून हे डिव्हाइस वापरणारे इतर लोक तुमचे पासवर्ड पाहू शकणार नाहीत</translation>
 <translation id="7820561748632634942">अतिरिक्त स्विच असाइन करायचे आहेत का?</translation>
 <translation id="782057141565633384">व्हिडिओ पत्ता कॉपी करा</translation>
+<translation id="7823975162954158194">मजबूत संरक्षण पुरवते</translation>
 <translation id="7824665136384946951">तुमच्या संस्थेने सुरक्षित ब्राउझिंग बंद केले आहे</translation>
 <translation id="7824864914877854148">एररमुळे बॅकअप पूर्ण करता आला नाही</translation>
 <translation id="7825289983414309119">पर्वत</translation>
@@ -11204,6 +11216,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8601206103050338563">TLS WWW क्लायंट ऑथेंटिकेशन</translation>
 <translation id="8602674530529411098">ॲप्स (बीटा)</translation>
 <translation id="8602851771975208551">तुमच्या कॉंप्युटरवरील दुसऱ्या प्रोग्रामने Chrome च्या काम करण्याचा मार्ग बदलू शकणारा अ‍ॅप जोडला.</translation>
+<translation id="8602867356511778172">धोके अधिक जलद आणि अधिक अचूकपणे डिटेक्ट करण्यासाठी Google हे आणखी डेटा वापरते (उदाहरणार्थ, URLs, पेज आशयाचे नमुने, सिस्टीम माहिती)</translation>
 <translation id="860399903490378651">हे दृश्य बंद करा</translation>
 <translation id="8605428685123651449">SQLite मेमरी</translation>
 <translation id="8607171490667464784">इनॅक्टिव्ह आणि बॅटरीवर सुरू असताना</translation>
@@ -12203,6 +12216,7 @@ I feel - विटांची इमारत</translation>
 <translation id="950079950995628542">"<ph name="PHONE_NAME" />" कडील</translation>
 <translation id="950307215746360464">सेटअप मार्गदर्शक</translation>
 <translation id="951273949038779544"><ph name="SITE_ACCESS" />. तुमच्या अ‍ॅडमिनिस्ट्रेटरद्वारे इंस्टॉल केले आहे</translation>
+<translation id="95160010745047025">तुम्ही AI मोड वर जिथे सोडले होते तिथून सुरू करा</translation>
 <translation id="951991426597076286">नकार द्या</translation>
 <translation id="952137968828772361">तुम्हाला तुमच्या स्क्रीनवर दिसणारी उत्पादने, ठिकाणे किंवा मजकूर यांबद्दल अधिक जाणून घ्या</translation>
 <translation id="952471655966876828">डिव्हाइस हे सुरू केले जाईल किंवा वापरले जात असेल, तेव्हा आपोआप कनेक्ट होईल</translation>

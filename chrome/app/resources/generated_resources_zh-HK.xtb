@@ -504,6 +504,7 @@
 <translation id="1327495825214193325">必須重新啟動 <ph name="DEVICE_TYPE" /> 才能啟用 ADB 偵錯。如要停用 ADB 偵錯，則需要將裝置回復原廠設定。</translation>
 <translation id="1327527584824210101">使用您的密鑰</translation>
 <translation id="1327794256477341646">需要所在位置的功能將無法運作</translation>
+<translation id="1328041566565643371">垂直分頁列調整大小控點 (可以拖曳)</translation>
 <translation id="1328364753167940710"><ph name="NUM_HR" /> 小時後</translation>
 <translation id="1328928545650070438">皺眉</translation>
 <translation id="1329466763986822896">改善此熱點的私隱</translation>
@@ -1481,6 +1482,7 @@
     <ph name="BEGIN_DESCRIPTION3" />為協助排解疑難，機構可從遠端存取裝置工作階段。<ph name="END_DESCRIPTION3" />
     <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />啟用存取權<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
     <ph name="BEGIN_DESCRIPTION4" />只有已註冊裝置可使用機構的應用程式、服務和網絡。<ph name="END_DESCRIPTION4" /></translation>
+<translation id="1979208610845113582">你現可直接在這裡恢復 AI 模式對話串。這可以隨時取消固定。</translation>
 <translation id="1979280758666859181">您即將轉用較舊版本的 <ph name="PRODUCT_NAME" /> ，但其版本號與您裝置上所安裝的版本號必須相符，系統才會套用版本變更。</translation>
 <translation id="1979582938184524893">手動選取要包含的個人資料</translation>
 <translation id="197989455406964291">KDC 不支援加密類型</translation>
@@ -1948,6 +1950,7 @@
 <translation id="2297705863329999812">搜尋打印機</translation>
 <translation id="2297822946037605517">分享此頁面</translation>
 <translation id="229871422646860597">從工具列中取消固定</translation>
+<translation id="2298749511072894576">你現可直接在這裡恢復 Gemini 對話。這可以隨時取消固定。</translation>
 <translation id="2299685119225839832">系統會撮要其他使用者的評論內容</translation>
 <translation id="2299734369537008228">滑桿：<ph name="MIN_LABEL" />至<ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">包括 debugd 收集為獨立封存的所有記錄檔案。</translation>
@@ -2312,6 +2315,7 @@
 <translation id="252418934079508528">安裝 <ph name="DEVICE_OS" /></translation>
 <translation id="252513908494776481">詢問有關此分頁的問題</translation>
 <translation id="2525746158911982776">系統儲存空間不足，因此無法更新。</translation>
+<translation id="2525842906387880861">此頁面不會再顯示建議</translation>
 <translation id="2526590354069164005">桌面電腦</translation>
 <translation id="2526619973349913024">檢查更新</translation>
 <translation id="2527167509808613699">任何類型的連線</translation>
@@ -2804,6 +2808,7 @@
 <translation id="2855243985454069333">從所有已同步的裝置刪除記錄</translation>
 <translation id="2855812646048059450">使用 <ph name="CREDENTIAL_PROVIDER" /> 帳戶登入</translation>
 <translation id="2857047802954430547">登入帳戶即可在你的所有裝置上取用密碼、書籤和其他資料</translation>
+<translation id="2857195263461649321">繼續上次未完成的 Gemini 操作</translation>
 <translation id="2859741939921354763">將密碼匯入「<ph name="BRAND" />」</translation>
 <translation id="2860284453253554297">企業政策</translation>
 <translation id="2860710618359053450">下巴向右郁</translation>
@@ -4475,6 +4480,7 @@
 <translation id="3968739731834770921">假名</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">計算中…</translation>
+<translation id="3971154761614127188">部分功能可能會減慢陌生網站的速度</translation>
 <translation id="3971355433478412726">Gemini 指示</translation>
 <translation id="3971764089670057203">此安全金鑰上的指紋</translation>
 <translation id="3973005893595042880">不允許此使用者</translation>
@@ -5955,6 +5961,7 @@
 <translation id="5006778209728626987">閃電</translation>
 <translation id="5007392906805964215">查看</translation>
 <translation id="50080882645628821">移除設定檔</translation>
+<translation id="5008587162781422067">「分頁列」宜家嘅闊度係 <ph name="TAB_STRIP_PERCENT" />，而「內容區域」嘅闊度係 <ph name="CONTENT_AREA_PERCENT" />。</translation>
 <translation id="5008936837313706385">活動名稱</translation>
 <translation id="5009463889040999939">正在重新命名設定檔。這項操作可能需時數分鐘。</translation>
 <translation id="5010886807652684893">視覺化檢視</translation>
@@ -6600,6 +6607,7 @@
 <translation id="5460861858595506978">靈感</translation>
 <translation id="5461050611724244538">手機連線中斷</translation>
 <translation id="5463275305984126951"><ph name="LOCATION" /> 的索引</translation>
+<translation id="5463348003600590648">停用建議</translation>
 <translation id="5463450804024056231">訂閱 <ph name="DEVICE_TYPE" /> 電郵</translation>
 <translation id="5463625433003343978">正在尋找裝置…</translation>
 <translation id="5463856536939868464">選單包含隱藏的書籤</translation>
@@ -6763,6 +6771,7 @@
 <translation id="557506220935336383">查看其他網站的擴充程式權限</translation>
 <translation id="5575473780076478375">無痕模式擴充功能：<ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">示範註冊要求發生問題。</translation>
+<translation id="5576472948015790634">你現可集中一處管理分頁群組和 Gemini 對話。這可以隨時取消固定。</translation>
 <translation id="557722062034137776">重設裝置並不會影響您的 Google 帳戶，以及任何與這些帳戶同步處理的數據。不過，裝置中所有本機儲存檔案將被刪除。</translation>
 <translation id="5578059481725149024">自動登入</translation>
 <translation id="5578387000057347457">輸入自訂提示或醒目顯示文字，即可製作圖像</translation>
@@ -9936,6 +9945,7 @@
 <translation id="7758884017823246335">新增站內搜尋</translation>
 <translation id="7759443981285558794">查看從 ChromeOS 匯入的憑證</translation>
 <translation id="7759606211476816416">你的網站捷徑</translation>
+<translation id="7759748248923439385">你現可集中一處管理分頁群組和 AI 模式對話串。這可以隨時取消固定。</translation>
 <translation id="7759809451544302770">選用</translation>
 <translation id="7760176388948986635">允許有位置權限的 ChromeOS 和 Android 應用程式、網站和服務使用此裝置的位置。「定位精確度」為 Android 應用程式和服務提供更精確的位置。為此，Google 會定期處理你裝置的感應器資料和無線訊號，協助尋找無線訊號位置。這些資料不會識別任何人士的身分，而會用於改善定位精確度和適地性服務，並按照 Google 和第三方合法權益來改善、提供和維護 Google 的服務，以滿足使用者的需要。</translation>
 <translation id="7762024824096060040">無法使用此帳戶</translation>
@@ -10007,6 +10017,7 @@
 <translation id="7800518121066352902">逆時針旋轉(&amp;O)</translation>
 <translation id="780301667611848630">不用了，謝謝</translation>
 <translation id="7803657407897251194">如要繼續使用 Android 裝置進行設定，請將 <ph name="DEVICE_TYPE" /> 連接網絡</translation>
+<translation id="7803714812705886512">Google 會參考較少資料 (例如網址的一部分、下載資料) 以偵測威脅</translation>
 <translation id="7804072833593604762">閂咗分頁</translation>
 <translation id="7805371082115476536">輕</translation>
 <translation id="7805768142964895445">狀態</translation>
@@ -10031,6 +10042,7 @@
 <translation id="7820400255539998692">請刪除「<ph name="FILENAME" />」，讓此裝置的其他使用者無法查看您的密碼</translation>
 <translation id="7820561748632634942">要指派其他按鈕裝置嗎？</translation>
 <translation id="782057141565633384">複製影片位址(&amp;O)</translation>
+<translation id="7823975162954158194">提供強大防護</translation>
 <translation id="7824665136384946951">你的機構已關閉「安全瀏覽」功能</translation>
 <translation id="7824864914877854148">發生錯誤，因此無法完成備份程序</translation>
 <translation id="7825289983414309119">山岳</translation>
@@ -11189,6 +11201,7 @@
 <translation id="8601206103050338563">TLS WWW 用戶端驗證</translation>
 <translation id="8602674530529411098">應用程式 (Beta 版本)</translation>
 <translation id="8602851771975208551">電腦中其他程式所新增的應用程式可能會變更 Chrome 的工作方式。</translation>
+<translation id="8602867356511778172">Google 會參考更多資料 (例如網址、網頁內容範本、系統資料) 以更快更準確地偵測威脅</translation>
 <translation id="860399903490378651">關閉此檢視畫面</translation>
 <translation id="8605428685123651449">SQLite 記憶體使用量</translation>
 <translation id="8607171490667464784">處於閒置狀態且使用電池時</translation>
@@ -12183,6 +12196,7 @@
 <translation id="950079950995628542">來自「<ph name="PHONE_NAME" />」</translation>
 <translation id="950307215746360464">設定指南</translation>
 <translation id="951273949038779544"><ph name="SITE_ACCESS" />，已經由管理員安裝</translation>
+<translation id="95160010745047025">繼續上次未完成的 AI 模式操作</translation>
 <translation id="951991426597076286">拒絕</translation>
 <translation id="952137968828772361">進一步瞭解畫面上顯示的產品、地點或文字</translation>
 <translation id="952471655966876828">當裝置開啟，而且正在使用時，裝置將會自動連線</translation>

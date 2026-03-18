@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">Mirë se erdhe përsëri!</translation>
 <translation id="2015722694326466240">Për të parë fjalëkalimet, duhet të vendosësh në fillim një kod në pajisjen tënde.</translation>
 <translation id="201759455285471444">Zgjero grupin e skedave.</translation>
-<translation id="202070562065520783">Ma shpjego këtë</translation>
 <translation id="2044394949148788042">Hap rrjetën e skedave</translation>
 <translation id="2044681667265133332">Llogaria <ph name="USER_EMAIL" /> menaxhohet nga <ph name="HOSTED_DOMAIN" />, që mund të jetë në gjendje të shikojë disa informacione. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">artikull i ri</translation>
@@ -637,6 +636,7 @@
 <translation id="3324193307694657476">Adresa 2</translation>
 <translation id="3328801116991980348">Informacionet rreth sajtit</translation>
 <translation id="333229797575847124">Si ta aktivizosh këtë veçori</translation>
+<translation id="334004756946755423">Ma shpjego këtë:</translation>
 <translation id="3344233834747405775">Emër i pavlefshëm i mbajtësit të kartës</translation>
 <translation id="3344485292736684439">{count,plural, =1{Faqeshënuesi u ruajt te "{title}" në llogarinë tënde, {email}}other{Faqeshënuesit u ruajtën te "{title}" në llogarinë tënde, {email}}}</translation>
 <translation id="334690320928261823">Skedat e fundit</translation>

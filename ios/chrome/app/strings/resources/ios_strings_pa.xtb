@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">ਮੁੜ ਜੀ ਆਇਆਂ ਨੂੰ!</translation>
 <translation id="2015722694326466240">ਪਾਸਵਰਡਾਂ ਨੂੰ ਦੇਖਣ ਲਈ, ਪਹਿਲਾਂ ਤੁਹਾਨੂੰ ਆਪਣੇ ਡੀਵਾਈਸ 'ਤੇ ਕਿਸੇ ਪਾਸਕੋਡ ਨੂੰ ਸੈੱਟ ਕਰਨ ਦੀ ਲੋੜ ਹੈ।</translation>
 <translation id="201759455285471444">ਟੈਬ ਗਰੁੱਪ ਦਾ ਵਿਸਤਾਰ ਕਰੋ।</translation>
-<translation id="202070562065520783">ਮੈਨੂੰ ਇਸਦਾ ਵਰਣਨ ਦਿਓ</translation>
 <translation id="2044394949148788042">ਟੈਬ GRid ਖੋਲ੍ਹੋ</translation>
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> ਖਾਤੇ ਦਾ ਪ੍ਰਬੰਧਨ <ph name="HOSTED_DOMAIN" /> ਵੱਲੋਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ, ਜਿਸ ਵੱਲੋਂ ਕੁਝ ਜਾਣਕਾਰੀ ਨੂੰ ਦੇਖਿਆ ਜਾ ਸਕਦਾ ਹੈ। <ph name="BEGIN_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">ਨਵੀਂ ਆਈਟਮ</translation>
@@ -637,6 +636,7 @@
 <translation id="3324193307694657476">ਪਤਾ 2</translation>
 <translation id="3328801116991980348">ਸਾਈਟ ਜਾਣਕਾਰੀ</translation>
 <translation id="333229797575847124">ਇਸ ਵਿਸ਼ੇਸ਼ਤਾ ਨੂੰ ਚਾਲੂ ਕਰਨ ਦਾ ਤਰੀਕਾ</translation>
+<translation id="334004756946755423">ਮੈਨੂੰ ਇਸਦਾ ਵਰਣਨ ਦਿਓ:</translation>
 <translation id="3344233834747405775">ਅਵੈਧ ਕਾਰਡਧਾਰਕ ਨਾਮ</translation>
 <translation id="3344485292736684439">{count,plural, =1{ਬੁੱਕਮਾਰਕ ਨੂੰ ਤੁਹਾਡੇ ਖਾਤੇ, {email}, ਵਿੱਚ "{title}" ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ}one{ਬੁੱਕਮਾਰਕ ਨੂੰ ਤੁਹਾਡੇ ਖਾਤੇ, {email}, ਵਿੱਚ "{title}" ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ}other{ਬੁੱਕਮਾਰਕਾਂ ਨੂੰ ਤੁਹਾਡੇ ਖਾਤੇ, {email}, ਵਿੱਚ "{title}" ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ}}</translation>
 <translation id="334690320928261823">ਹਾਲੀਆ ਟੈਬਾਂ</translation>

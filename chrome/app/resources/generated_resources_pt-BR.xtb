@@ -505,6 +505,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1327495825214193325">Para ativar a depuração do adb, é necessário reiniciar este <ph name="DEVICE_TYPE" />. Para desativá-la, é necessário redefinir para a configuração original.</translation>
 <translation id="1327527584824210101">Usar senha de acesso</translation>
 <translation id="1327794256477341646">Recursos que precisam da localização não funcionarão</translation>
+<translation id="1328041566565643371">Alça de redimensionamento da barra de guias vertical (arrastável)</translation>
 <translation id="1328364753167940710">Em <ph name="NUM_HR" /> h</translation>
 <translation id="1328928545650070438">Abaixar as sobrancelhas</translation>
 <translation id="1329466763986822896">Melhorar a privacidade deste ponto de acesso</translation>
@@ -1482,6 +1483,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
     <ph name="BEGIN_DESCRIPTION3" />A organização pode acessar remotamente uma sessão de dispositivo para resolver problemas.<ph name="END_DESCRIPTION3" />
     <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />Ativar o acesso<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
     <ph name="BEGIN_DESCRIPTION4" />Os apps, os serviços e as redes da organização só podem estar disponíveis nos dispositivos inscritos.<ph name="END_DESCRIPTION4" /></translation>
+<translation id="1979208610845113582">Agora você pode retomar as conversas do Modo IA aqui. Você pode desafixar quando quiser.</translation>
 <translation id="1979280758666859181">Você está mudando para um canal com uma versão mais antiga do <ph name="PRODUCT_NAME" />. A mudança de canal será aplicada quando a versão do canal corresponder à versão instalada atualmente no dispositivo.</translation>
 <translation id="1979582938184524893">Selecionar manualmente as informações pessoais a serem incluídas</translation>
 <translation id="197989455406964291">O KDC não é compatível com esse tipo de criptografia</translation>
@@ -1949,6 +1951,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2297705863329999812">Pesquisar impressoras</translation>
 <translation id="2297822946037605517">Compartilhar esta página</translation>
 <translation id="229871422646860597">Liberar da barra de ferramentas</translation>
+<translation id="2298749511072894576">Agora você pode retomar as conversas no Gemini aqui. Você pode desafixar quando quiser.</translation>
 <translation id="2299685119225839832">Você pode ver um resumo do que as pessoas estão dizendo nas avaliações delas</translation>
 <translation id="2299734369537008228">Controle deslizante: <ph name="MIN_LABEL" /> a <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">Incluir todos os arquivos de registros coletados por debugd como um arquivo separado.</translation>
@@ -2313,6 +2316,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="252418934079508528">Instalar o <ph name="DEVICE_OS" /></translation>
 <translation id="252513908494776481">Pergunte sobre esta guia</translation>
 <translation id="2525746158911982776">Falha na atualização por falta de espaço de armazenamento no sistema.</translation>
+<translation id="2525842906387880861">Você não verá mais sugestões nesta página</translation>
 <translation id="2526590354069164005">Área de trabalho</translation>
 <translation id="2526619973349913024">Verificar atualizações</translation>
 <translation id="2527167509808613699">Qualquer tipo de conexão</translation>
@@ -2805,6 +2809,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2855243985454069333">Exclui o histórico de todos os dispositivos sincronizados</translation>
 <translation id="2855812646048059450">Fazer login com <ph name="CREDENTIAL_PROVIDER" /></translation>
 <translation id="2857047802954430547">Faça login para acessar suas senhas, favoritos e muito mais em todos os seus dispositivos</translation>
+<translation id="2857195263461649321">Continue de onde você parou no Gemini</translation>
 <translation id="2859741939921354763">Importar senhas para o <ph name="BRAND" />.</translation>
 <translation id="2860284453253554297">Políticas empresariais</translation>
 <translation id="2860710618359053450">Mover a mandíbula para a direita</translation>
@@ -4479,6 +4484,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">Código</translation>
 <translation id="397105322502079400">Calculando...</translation>
+<translation id="3971154761614127188">Alguns recursos podem diminuir a velocidade de sites desconhecidos.</translation>
 <translation id="3971355433478412726">Instruções para o Gemini</translation>
 <translation id="3971764089670057203">Impressões digitais nesta chave de segurança</translation>
 <translation id="3973005893595042880">O usuário não é permitido</translation>
@@ -5963,6 +5969,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5006778209728626987">Raio</translation>
 <translation id="5007392906805964215">Revisar</translation>
 <translation id="50080882645628821">Remover perfil</translation>
+<translation id="5008587162781422067">A barra de guias agora tem <ph name="TAB_STRIP_PERCENT" /> de largura, e a área de conteúdo tem <ph name="CONTENT_AREA_PERCENT" />.</translation>
 <translation id="5008936837313706385">Nome da atividade</translation>
 <translation id="5009463889040999939">Renomeando o perfil. Pode levar alguns minutos..</translation>
 <translation id="5010886807652684893">Exibição visual</translation>
@@ -6609,6 +6616,7 @@ Você pode atribuir vários interruptores a essa ação.</translation>
 <translation id="5460861858595506978">Inspiração</translation>
 <translation id="5461050611724244538">Conexão com o smartphone perdida</translation>
 <translation id="5463275305984126951">Índice de <ph name="LOCATION" /></translation>
+<translation id="5463348003600590648">Desativar sugestões</translation>
 <translation id="5463450804024056231">Inscreva-se para receber e-mails sobre o <ph name="DEVICE_TYPE" /></translation>
 <translation id="5463625433003343978">Localizando dispositivos…</translation>
 <translation id="5463856536939868464">Menu contendo favoritos ocultos</translation>
@@ -6772,6 +6780,7 @@ Você pode atribuir vários interruptores a essa ação.</translation>
 <translation id="557506220935336383">Ver permissões de extensões para outros sites</translation>
 <translation id="5575473780076478375">Extensão anônima: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">Ocorreu um problema com a solicitação de registro de demonstração.</translation>
+<translation id="5576472948015790634">Agora você pode gerenciar seus grupos de guias e conversas no Gemini em um só lugar. Você pode desafixar quando quiser.</translation>
 <translation id="557722062034137776">Redefinir o dispositivo não afetará suas Contas do Google ou quaisquer dados sincronizados com essas contas. No entanto, todos os arquivos salvos localmente em seu dispositivo serão excluídos.</translation>
 <translation id="5578059481725149024">Login automático</translation>
 <translation id="5578387000057347457">Insira um comando personalizado ou destaque o texto para criar uma imagem</translation>
@@ -9954,6 +9963,7 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="7758884017823246335">Adicionar a Pesquisa no site</translation>
 <translation id="7759443981285558794">Ver certificados importados do ChromeOS</translation>
 <translation id="7759606211476816416">Seus atalhos de sites</translation>
+<translation id="7759748248923439385">Agora você pode gerenciar seus grupos de guias e conversas do Modo IA em um só lugar. Você pode desafixar quando quiser.</translation>
 <translation id="7759809451544302770">Opcional</translation>
 <translation id="7760176388948986635">Permitir que apps, sites e serviços do ChromeOS e do Android com permissão de localização usem o local do dispositivo. A Precisão de Local fornece dados mais precisos para apps e serviços Android. Para isso, o Google processa periodicamente as informações sobre sensores de dispositivos e sinais sem fio do seu dispositivo para contribuir para a localização de sinais sem fio. Essas informações são usadas sem identificar nenhum indivíduo para melhorar a precisão e os serviços com base na localização e para melhorar, fornecer e manter os Serviços do Google com base nos interesses legítimos próprios e de terceiros para atender às necessidades dos usuários.</translation>
 <translation id="7762024824096060040">Não é possível usar esta conta</translation>
@@ -10025,6 +10035,7 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="7800518121066352902">Girar no s&amp;entido anti-horário</translation>
 <translation id="780301667611848630">Agora não</translation>
 <translation id="7803657407897251194">Para continuar a configuração com o dispositivo Android, conecte o <ph name="DEVICE_TYPE" /> a uma rede</translation>
+<translation id="7803714812705886512">O Google usa menos dados (por exemplo, partes de URLs e informações de download) para detectar ameaças.</translation>
 <translation id="7804072833593604762">Guia fechada</translation>
 <translation id="7805371082115476536">Leve</translation>
 <translation id="7805768142964895445">Status</translation>
@@ -10049,6 +10060,7 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="7820400255539998692">Exclua o arquivo <ph name="FILENAME" /> para que outros usuários deste dispositivo não tenham acesso a suas senhas</translation>
 <translation id="7820561748632634942">Atribuir mais interruptores?</translation>
 <translation id="782057141565633384">C&amp;opiar endereço do vídeo</translation>
+<translation id="7823975162954158194">Oferece proteção robusta.</translation>
 <translation id="7824665136384946951">Sua organização desativou a Navegação Segura</translation>
 <translation id="7824864914877854148">Ocorreu um erro e não foi possível concluir o backup</translation>
 <translation id="7825289983414309119">Montanha</translation>
@@ -11207,6 +11219,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8601206103050338563">Autenticação do cliente TLS WWW</translation>
 <translation id="8602674530529411098">Apps (Beta)</translation>
 <translation id="8602851771975208551">Outro programa em seu computador adicionou um aplicativo que pode mudar a forma como o Google Chrome funciona.</translation>
+<translation id="8602867356511778172">Para detectar ameaças com mais rapidez e precisão, o Google usa mais dados (por exemplo, URLs, amostras de conteúdo da página e informações do sistema).</translation>
 <translation id="860399903490378651">Fechar esta visualização</translation>
 <translation id="8605428685123651449">Memória SQLite</translation>
 <translation id="8607171490667464784">Enquanto o dispositivo estiver inativo e usando a bateria</translation>
@@ -12206,6 +12219,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="950079950995628542">De "<ph name="PHONE_NAME" />"</translation>
 <translation id="950307215746360464">Guia de configuração</translation>
 <translation id="951273949038779544"><ph name="SITE_ACCESS" />. Instalado pelo administrador</translation>
+<translation id="95160010745047025">Continue de onde parou no Modo IA</translation>
 <translation id="951991426597076286">Recusar</translation>
 <translation id="952137968828772361">Saiba mais sobre produtos, lugares ou textos que aparecem na tela</translation>
 <translation id="952471655966876828">O dispositivo será conectado automaticamente quando estiver ligado e em uso</translation>

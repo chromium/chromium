@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">Siamo felici di rivederti.</translation>
 <translation id="2015722694326466240">Per visualizzare le password, per prima cosa imposta un passcode sul tuo dispositivo.</translation>
 <translation id="201759455285471444">Espandi il gruppo di schede.</translation>
-<translation id="202070562065520783">Spiegami questo testo</translation>
 <translation id="2044394949148788042">Apri la griglia delle schede</translation>
 <translation id="2044681667265133332">L'account <ph name="USER_EMAIL" /> è gestito da <ph name="HOSTED_DOMAIN" />, che potrebbe essere in grado di visualizzare alcune informazioni. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nuovo elemento</translation>
@@ -637,6 +636,7 @@
 <translation id="3324193307694657476">Indirizzo 2</translation>
 <translation id="3328801116991980348">Informazioni sito</translation>
 <translation id="333229797575847124">Come attivare questa funzionalità</translation>
+<translation id="334004756946755423">Spiegami questo testo:</translation>
 <translation id="3344233834747405775">Nome del titolare della carta non valido</translation>
 <translation id="3344485292736684439">{count,plural, =1{Preferito salvato nella cartella "{title}" nel tuo account {email}}other{Preferiti salvati nella cartella "{title}" nel tuo account {email}}}</translation>
 <translation id="334690320928261823">Schede recenti</translation>

@@ -506,6 +506,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1327495825214193325">K aktivaci ladění ADB je toto zařízení <ph name="DEVICE_TYPE" /> potřeba restartovat. K vypnutí je potřeba resetovat tovární nastavení.</translation>
 <translation id="1327527584824210101">Použití přístupového klíče</translation>
 <translation id="1327794256477341646">Funkce vyžadující polohu nebudou k dispozici</translation>
+<translation id="1328041566565643371">Úchyt pro změnu velikosti vertikální lišty karet (přetahovatelný)</translation>
 <translation id="1328364753167940710">Za <ph name="NUM_HR" /> h</translation>
 <translation id="1328928545650070438">Sklopte obočí</translation>
 <translation id="1329466763986822896">Zlepšit u tohoto hotspotu ochranu soukromí</translation>
@@ -533,7 +534,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1344141078024003905">Odesíláte obrazovku. Odesílání obrazovky můžete kdykoli pozastavit nebo ukončit.</translation>
 <translation id="1346403631707626730">Odesílat údaje o využití a diagnostice. Pomozte prostředí Android svého dítěte zlepšit tím, že necháte do Googlu automaticky odesílat diagnostické údaje a údaje o využití zařízení a aplikací. Tyto údaje nebudou používány ke zjištění totožnosti dítěte a pomohou nám se zvyšováním stability systému a aplikací a dalšími vylepšeními. Některá souhrnná data budou moci využít také naši partneři, například vývojáři aplikací pro Android. Pokud bude mít dítě zapnutou ještě Aktivitu na webu a v aplikacích, mohou se tato data ukládat do jeho účtu Google. <ph name="BEGIN_LINK1" />Další informace o metrikách<ph name="BEGIN_LINK1_END" />Další informace<ph name="END_LINK1" /></translation>
 <translation id="1346630054604077329">Potvrdit a restartovat</translation>
-<translation id="1346748346194534595">Doprava</translation>
+<translation id="1346748346194534595">Vpravo</translation>
 <translation id="1347512539447549782">Úložiště systému Linux</translation>
 <translation id="1347625331607114917">Ověřte kód na svém telefonu s Androidem</translation>
 <translation id="1347975661240122359">Aktualizace bude zahájena, až baterie dosáhne <ph name="BATTERY_LEVEL" /> %.</translation>
@@ -704,7 +705,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="146522654774760805">Hesla a automatické vyplňování</translation>
 <translation id="1465827627707997754">Kousek pizzy</translation>
 <translation id="1467005863208369884">Tento soubor nelze ověřit, protože je Bezpečné prohlížení vypnuté</translation>
-<translation id="1467432559032391204">Doleva</translation>
+<translation id="1467432559032391204">Vlevo</translation>
 <translation id="1468571364034902819">Tento profil nelze použít</translation>
 <translation id="1469702495092129863">Zkontrolujte mikrofon</translation>
 <translation id="1470084204649225129">{NUM_TABS,plural, =1{Přidat kartu do nové skupiny}few{Přidat karty do nové skupiny}many{Přidat karty do nové skupiny}other{Přidat karty do nové skupiny}}</translation>
@@ -1473,6 +1474,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
     <ph name="BEGIN_DESCRIPTION3" />Specialisté organizace se mohou vzdálené připojit k relaci zařízení a pomoci při řešení problémů.<ph name="END_DESCRIPTION3" />
     <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />Povolení přístupu<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
     <ph name="BEGIN_DESCRIPTION4" />Aplikace, služby a sítě organizace mohou být dostupné pouze na zaregistrovaných zařízeních.<ph name="END_DESCRIPTION4" /></translation>
+<translation id="1979208610845113582">Tady teď můžete přímo pokračovat ve vláknech režimu AI. Tlačítko můžete kdykoli odepnout.</translation>
 <translation id="1979280758666859181">Přepínáte na kanál s nižší verzí <ph name="PRODUCT_NAME" />. Změna kanálu bude použita, až bude verze v nově zvoleném kanálu odpovídat verzi nainstalované v zařízení.</translation>
 <translation id="1979582938184524893">Ručně vyberte osobní údaje, které chcete zahrnout</translation>
 <translation id="197989455406964291">KDC nepodporuje typ šifrování</translation>
@@ -1937,6 +1939,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2297705863329999812">Hledat tiskárny</translation>
 <translation id="2297822946037605517">Sdílet tuto stránku</translation>
 <translation id="229871422646860597">Odepnout z lišty</translation>
+<translation id="2298749511072894576">Tady teď můžete přímo pokračovat v chatech s Gemini. Tlačítko můžete kdykoli odepnout.</translation>
 <translation id="2299685119225839832">Můžete získat souhrn toho, co lidé ve svých recenzích říkají</translation>
 <translation id="2299734369537008228">Posuvník: <ph name="MIN_LABEL" /> až <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">Všechny soubory protokolů shromážděné službou debugd zahrnout jako samostatný archiv.</translation>
@@ -2301,6 +2304,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="252418934079508528">Nainstalovat systém <ph name="DEVICE_OS" /></translation>
 <translation id="252513908494776481">Zeptejte se na tuhle kartu</translation>
 <translation id="2525746158911982776">Aktualizace se nezdařila, protože v systému není dost úložného prostoru.</translation>
+<translation id="2525842906387880861">Na této stránce se vám už nebudou zobrazovat návrhy</translation>
 <translation id="2526590354069164005">Plocha</translation>
 <translation id="2526619973349913024">Zkontrolovat aktualizace</translation>
 <translation id="2527167509808613699">Jakýkoli typ spojení</translation>
@@ -2794,6 +2798,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2855243985454069333">Vymaže historii ze všech synchronizovaných zařízení</translation>
 <translation id="2855812646048059450">Přihlaste se pomocí identifikačního údaje typu <ph name="CREDENTIAL_PROVIDER" /></translation>
 <translation id="2857047802954430547">Pokud svá hesla, záložky a další položky chcete mít na všech svých zařízeních, přihlaste se</translation>
+<translation id="2857195263461649321">Pokračujte v Gemini tam, kde jste skončili</translation>
 <translation id="2859741939921354763">Importovat hesla do <ph name="BRAND" /></translation>
 <translation id="2860284453253554297">Podnikové zásady</translation>
 <translation id="2860710618359053450">Posuňte čelist doprava</translation>
@@ -5947,6 +5952,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="5006778209728626987">Blesk</translation>
 <translation id="5007392906805964215">Zkontrolovat</translation>
 <translation id="50080882645628821">Odstranit profil</translation>
+<translation id="5008587162781422067">Lišta karet teď na šířku zabírá <ph name="TAB_STRIP_PERCENT" /> a obsahová oblast <ph name="CONTENT_AREA_PERCENT" />.</translation>
 <translation id="5008936837313706385">Název aktivity</translation>
 <translation id="5009463889040999939">Probíhá přejmenování profilu. Může to trvat několik minut.</translation>
 <translation id="5010886807652684893">Vizuální zobrazení</translation>
@@ -6592,6 +6598,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="5460861858595506978">Inspirace</translation>
 <translation id="5461050611724244538">Spojení s telefonem bylo ztraceno</translation>
 <translation id="5463275305984126951">Index <ph name="LOCATION" /></translation>
+<translation id="5463348003600590648">Deaktivovat návrhy</translation>
 <translation id="5463450804024056231">Zaregistrovat se k odběru e‑mailů ohledně zařízení <ph name="DEVICE_TYPE" /></translation>
 <translation id="5463625433003343978">Hledání zařízení…</translation>
 <translation id="5463856536939868464">Nabídka obsahující skryté záložky</translation>
@@ -6755,6 +6762,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="557506220935336383">Zobrazit oprávnění rozšíření pro jiné weby</translation>
 <translation id="5575473780076478375">Anonymní rozšíření: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">Došlo k problému s ukázkovou žádostí o registraci.</translation>
+<translation id="5576472948015790634">Teď můžete skupiny karet a chaty s Gemini na jednom místě spravovat. Tlačítko můžete kdykoli odepnout.</translation>
 <translation id="557722062034137776">Resetování zařízení nebude mít vliv na vaše účty Google ani na data synchronizovaná s těmito účty. Všechny soubory uložené místně v zařízení však budou smazány.</translation>
 <translation id="5578059481725149024">Automatické přihlášení</translation>
 <translation id="5578387000057347457">Zadáním vlastního pokynu nebo zvýrazněním textu vytvořit obrázek</translation>
@@ -9934,6 +9942,7 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="7758884017823246335">Přidat vyhledávání na webu</translation>
 <translation id="7759443981285558794">Zobrazit importované certifikáty z ChromeOS</translation>
 <translation id="7759606211476816416">Zkratky webů</translation>
+<translation id="7759748248923439385">Teď můžete na jednom místě spravovat skupiny karet a vlákna režimu AI. Tlačítko můžete kdykoli odepnout.</translation>
 <translation id="7759809451544302770">Volitelné</translation>
 <translation id="7760176388948986635">Povolit aplikacím, webům a službám pro Chrome OS a Android s oprávněním pro přístup k poloze používat polohu tohoto zařízení. Přesnost určování polohy poskytuje aplikacím pro Android a službám přesnější polohu. Google toho dosahuje tím, že ze zařízení pravidelně přijímá informace o senzorech a bezdrátových signálech a metodou crowdsourcování určuje polohy bezdrátových signálů v okolí. Tento proces nikoho nijak neidentifikuje. Účelem je vylepšování přesnosti určování polohy, zlepšování služeb založených na poloze a vylepšování, poskytování a správa služeb Google na základě oprávněných zájmů společnosti Google a třetích stran ve snaze sloužit potřebám uživatelů.</translation>
 <translation id="7762024824096060040">Tento účet nelze použít</translation>
@@ -12186,6 +12195,7 @@ Informace o tom, jaká data Google shromažďuje a proč je shromažďuje, naj
 <translation id="950079950995628542">Z telefonu <ph name="PHONE_NAME" /></translation>
 <translation id="950307215746360464">Průvodce nastavením</translation>
 <translation id="951273949038779544"><ph name="SITE_ACCESS" />. Nainstaloval administrátor</translation>
+<translation id="95160010745047025">Pokračujte v režimu AI tam, kde jste skončili</translation>
 <translation id="951991426597076286">Odmítnout</translation>
 <translation id="952137968828772361">Přečtěte si další informace o produktech, místech nebo textu na obrazovce</translation>
 <translation id="952471655966876828">Když zařízení bude zapnuté a bude používáno, automaticky se připojí</translation>

@@ -504,6 +504,7 @@
 <translation id="1327495825214193325">ADB デバッグを有効にするには、この <ph name="DEVICE_TYPE" /> を再起動する必要があります。ADB デバッグを無効にする場合は、出荷時の設定へのリセットが必要になります。</translation>
 <translation id="1327527584824210101">パスキーを使用する</translation>
 <translation id="1327794256477341646">位置情報を必要とする機能は動作しなくなります</translation>
+<translation id="1328041566565643371">垂直タブバーのサイズ変更ハンドル（ドラッグ可能）</translation>
 <translation id="1328364753167940710"><ph name="NUM_HR" /> 時間後</translation>
 <translation id="1328928545650070438">両眉を下げる</translation>
 <translation id="1329466763986822896">このアクセス ポイントのプライバシー保護を強化する</translation>
@@ -1467,6 +1468,7 @@
     <ph name="BEGIN_DESCRIPTION3" />トラブルシューティングのために、組織はリモートでデバイスのセッションにアクセスできます。<ph name="END_DESCRIPTION3" />
     <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />アクセスの有効化<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
     <ph name="BEGIN_DESCRIPTION4" />組織のアプリ、サービス、ネットワークは登録済みデバイスでしか使用できないことがあります。<ph name="END_DESCRIPTION4" /></translation>
+<translation id="1979208610845113582">AI モードのスレッドをここで直接再開できるようになりました。固定はいつでも解除できます。</translation>
 <translation id="1979280758666859181">古いバージョンの <ph name="PRODUCT_NAME" /> のチャンネルに変更しようとしています。このチャンネル変更は、チャンネルのバージョンとお使いのデバイスにインストールされているバージョンとが一致したときに適用されます。</translation>
 <translation id="1979582938184524893">含める個人情報を手動で選択する</translation>
 <translation id="197989455406964291">KDC でサポートされていない暗号化タイプです</translation>
@@ -1930,6 +1932,7 @@
 <translation id="2297705863329999812">プリンタを検索</translation>
 <translation id="2297822946037605517">このページを共有</translation>
 <translation id="229871422646860597">ツールバーの固定を解除する</translation>
+<translation id="2298749511072894576">Gemini とのチャットをここで直接再開できるようになりました。固定はいつでも解除できます。</translation>
 <translation id="2299685119225839832">ユーザーによるレビューの要約を確認できます</translation>
 <translation id="2299734369537008228">スライダー: <ph name="MIN_LABEL" /> から <ph name="MAX_LABEL" /> まで</translation>
 <translation id="2299941608784654630">debugd で収集したすべてのログファイルを個別のアーカイブとして含める。</translation>
@@ -2294,6 +2297,7 @@
 <translation id="252418934079508528"><ph name="DEVICE_OS" /> をインストール</translation>
 <translation id="252513908494776481">このタブについて質問する</translation>
 <translation id="2525746158911982776">システムに十分な空き容量がないため、更新できませんでした。</translation>
+<translation id="2525842906387880861">今後このページで提案は表示されません</translation>
 <translation id="2526590354069164005">デスクトップ</translation>
 <translation id="2526619973349913024">アップデートを確認</translation>
 <translation id="2527167509808613699">あらゆる種類の接続</translation>
@@ -2786,6 +2790,7 @@
 <translation id="2855243985454069333">同期しているすべてのデバイスから履歴を削除します</translation>
 <translation id="2855812646048059450"><ph name="CREDENTIAL_PROVIDER" /> でログイン</translation>
 <translation id="2857047802954430547">ログインすると、すべてのデバイスで同じパスワード、ブックマーク、その他の設定を使用できます</translation>
+<translation id="2857195263461649321">Gemini の作業を続きから再開</translation>
 <translation id="2859741939921354763"><ph name="BRAND" /> にパスワードをインポートします</translation>
 <translation id="2860284453253554297">エンタープライズ ポリシー</translation>
 <translation id="2860710618359053450">あごを右に動かす</translation>
@@ -4456,6 +4461,7 @@
 <translation id="3968739731834770921">かな</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">計算しています...</translation>
+<translation id="3971154761614127188">一部の機能により、未知のサイトの動作が遅くなる場合があります</translation>
 <translation id="3971355433478412726">Gemini への指示</translation>
 <translation id="3971764089670057203">このセキュリティ キーのフィンガープリント</translation>
 <translation id="3973005893595042880">ユーザーは許可されていません</translation>
@@ -5937,6 +5943,7 @@
 <translation id="5006778209728626987">稲妻</translation>
 <translation id="5007392906805964215">内容を確認</translation>
 <translation id="50080882645628821">プロファイルを削除</translation>
+<translation id="5008587162781422067">タブバーの幅が <ph name="TAB_STRIP_PERCENT" />、コンテンツ領域の幅が <ph name="CONTENT_AREA_PERCENT" /> になりました。</translation>
 <translation id="5008936837313706385">アクティビティ名</translation>
 <translation id="5009463889040999939">プロファイルの名前を変更しています。この処理には数分かかることがあります。</translation>
 <translation id="5010886807652684893">ビジュアル表示</translation>
@@ -6579,6 +6586,7 @@
 <translation id="5460861858595506978">インスピレーション</translation>
 <translation id="5461050611724244538">スマートフォンとの接続が切断されました</translation>
 <translation id="5463275305984126951"><ph name="LOCATION" /> のインデックス</translation>
+<translation id="5463348003600590648">提案を無効にする</translation>
 <translation id="5463450804024056231"><ph name="DEVICE_TYPE" /> のメール通知に登録する</translation>
 <translation id="5463625433003343978">デバイスを検出しています...</translation>
 <translation id="5463856536939868464">非表示のブックマークを含むメニュー</translation>
@@ -6742,6 +6750,7 @@
 <translation id="557506220935336383">他のサイトに対する拡張機能の権限を確認する</translation>
 <translation id="5575473780076478375">シークレット モード拡張機能: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">デモ登録リクエストで問題が発生しました。</translation>
+<translation id="5576472948015790634">タブグループや Gemini とのチャットを 1 か所で管理できるようになりました。固定はいつでも解除できます。</translation>
 <translation id="557722062034137776">デバイスをリセットしても、お使いの Google アカウントや、これらのアカウントに同期されているデータには影響しません。ただし、デバイス上でローカルに保存されているすべてのファイルは削除されます。</translation>
 <translation id="5578059481725149024">自動ログイン</translation>
 <translation id="5578387000057347457">カスタムのプロンプトを入力するか、テキストをハイライト表示して画像を作成します。</translation>
@@ -9918,6 +9927,7 @@
 <translation id="7758884017823246335">サイト内検索を追加</translation>
 <translation id="7759443981285558794">ChromeOS からインポートした証明書を表示する</translation>
 <translation id="7759606211476816416">サイトのショートカット</translation>
+<translation id="7759748248923439385">タブグループと AI モードのスレッドを 1 か所で管理できるようになりました。固定はいつでも解除できます。</translation>
 <translation id="7759809451544302770">省略可</translation>
 <translation id="7760176388948986635">位置情報へのアクセス権を持つ ChromeOS アプリ、Android アプリ、ウェブサイト、サービスに対して、このデバイスの位置情報の使用を許可します。[位置情報の精度] 設定では、Android アプリやサービスで使用される位置情報の精度を高めることができます。この設定では、クラウドソースのワイヤレス シグナルを利用した位置情報の向上に役立てるため、デバイスのセンサーに関する情報やこのデバイスから送信されるワイヤレス シグナルが Google で定期的に処理されます。この情報は、ユーザーを特定することなく、位置情報の精度と、位置情報を利用したサービスを改善する目的で使用されます。また、ユーザーのニーズに応えるうえでの Google とサードパーティの正当な利益に基づき、Google のサービスを改善、提供、維持する目的でも使用されます。</translation>
 <translation id="7762024824096060040">このアカウントを使用することはできません</translation>
@@ -9989,6 +9999,7 @@
 <translation id="7800518121066352902">反時計回りに回転(&amp;O)</translation>
 <translation id="780301667611848630">利用しない</translation>
 <translation id="7803657407897251194">Android デバイスで設定を続けるには、<ph name="DEVICE_TYPE" /> をネットワークに接続してください</translation>
+<translation id="7803714812705886512">Google で限られたデータ（URL の一部、ダウンロード情報など）を使用して、脅威を検出します</translation>
 <translation id="7804072833593604762">タブが閉じられました</translation>
 <translation id="7805371082115476536">軽</translation>
 <translation id="7805768142964895445">ステータス</translation>
@@ -10013,6 +10024,7 @@
 <translation id="7820400255539998692"><ph name="FILENAME" /> を削除して、このデバイスを使用する他のユーザーがパスワードを確認できないようにします。</translation>
 <translation id="7820561748632634942">スイッチを追加で割り当てますか？</translation>
 <translation id="782057141565633384">動画アドレスをコピー(&amp;C)</translation>
+<translation id="7823975162954158194">強力なセキュリティで保護します</translation>
 <translation id="7824665136384946951">セーフ ブラウジングは組織によってオフにされています</translation>
 <translation id="7824864914877854148">エラーが発生したため、バックアップを完了できませんでした</translation>
 <translation id="7825289983414309119">山</translation>
@@ -11171,6 +11183,7 @@
 <translation id="8601206103050338563">TLS WWW クライアント認証</translation>
 <translation id="8602674530529411098">アプリ（ベータ版）</translation>
 <translation id="8602851771975208551">パソコン上の別のプログラムにより、Chrome の動作方法を変更する可能性のあるアプリが追加されました。</translation>
+<translation id="8602867356511778172">Google でより多くのデータ（URL、ページ コンテンツのサンプル、システム情報など）を使用して、脅威を迅速かつ正確に検出します</translation>
 <translation id="860399903490378651">このビューを閉じる</translation>
 <translation id="8605428685123651449">SQLite メモリ</translation>
 <translation id="8607171490667464784">非アクティブでバッテリー駆動時</translation>
@@ -12169,6 +12182,7 @@
 <translation id="950079950995628542">「<ph name="PHONE_NAME" />」から</translation>
 <translation id="950307215746360464">セットアップ ガイド</translation>
 <translation id="951273949038779544"><ph name="SITE_ACCESS" />。管理者によりインストールされました</translation>
+<translation id="95160010745047025">AI モードの作業を続きから再開</translation>
 <translation id="951991426597076286">同意しない</translation>
 <translation id="952137968828772361">画面に表示されている商品や場所、テキストの詳細を確認できます</translation>
 <translation id="952471655966876828">デバイスの電源がオンになったときや使用されているときは自動的に接続します</translation>

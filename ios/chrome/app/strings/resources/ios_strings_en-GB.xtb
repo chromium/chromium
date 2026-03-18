@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">Welcome back!</translation>
 <translation id="2015722694326466240">To see passwords, you must first set a passcode on your device.</translation>
 <translation id="201759455285471444">Expand tab group.</translation>
-<translation id="202070562065520783">Explain this to me</translation>
 <translation id="2044394949148788042">Open the tab grid</translation>
 <translation id="2044681667265133332">The account <ph name="USER_EMAIL" /> is managed by <ph name="HOSTED_DOMAIN" />, which may be able to view some information. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">new item</translation>
@@ -637,6 +636,7 @@
 <translation id="3324193307694657476">Address 2</translation>
 <translation id="3328801116991980348">Site information</translation>
 <translation id="333229797575847124">How to enable this feature</translation>
+<translation id="334004756946755423">Explain this to me:</translation>
 <translation id="3344233834747405775">Invalid cardholder name</translation>
 <translation id="3344485292736684439">{count,plural, =1{Bookmark saved to ‘{title}’ in your account, {email}}other{Bookmarks saved to ‘{title}’ in your account, {email}}}</translation>
 <translation id="334690320928261823">Recent tabs</translation>

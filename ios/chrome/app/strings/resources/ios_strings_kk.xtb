@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">Қайта оралғаныңызға қуаныштымыз!</translation>
 <translation id="2015722694326466240">Құпия сөздерді көру үшін алдымен құрылғыға тексеру кодын орнатуыңыз керек.</translation>
 <translation id="201759455285471444">Қойындылар тобын жаю.</translation>
-<translation id="202070562065520783">Түсіндірмесі</translation>
 <translation id="2044394949148788042">Қойынды торын ашу</translation>
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> аккаунтыңызды <ph name="HOSTED_DOMAIN" /> басқарады. Ол кейбір ақпаратты көреді. <ph name="BEGIN_LINK" />Толық ақпарат<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">жаңа элемент</translation>
@@ -637,6 +636,7 @@
 <translation id="3324193307694657476">2-мекенжай</translation>
 <translation id="3328801116991980348">Сайт ақпараты</translation>
 <translation id="333229797575847124">Осы функцияны қосу жолы</translation>
+<translation id="334004756946755423">Оны маған түсіндіріп берші:</translation>
 <translation id="3344233834747405775">Карта иесінің аты жарамсыз</translation>
 <translation id="3344485292736684439">{count,plural, =1{{email} аккаунтыңызда "{title}" қалтасына сақталған бетбелгі}other{{email} аккаунтыңызда "{title}" қалтасына сақталған бетбелгілер}}</translation>
 <translation id="334690320928261823">Соңғы қойындылар</translation>

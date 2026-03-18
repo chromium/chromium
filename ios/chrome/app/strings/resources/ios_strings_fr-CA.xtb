@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">Nous sommes ravis de vous revoir!</translation>
 <translation id="2015722694326466240">Pour afficher vos mots de passe, vous devez d'abord définir un mot de passe sur votre appareil.</translation>
 <translation id="201759455285471444">Développer le groupe d'onglets.</translation>
-<translation id="202070562065520783">Explique-moi ceci</translation>
 <translation id="2044394949148788042">Ouvrir la grille d'onglets</translation>
 <translation id="2044681667265133332">Le compte <ph name="USER_EMAIL" /> est géré par <ph name="HOSTED_DOMAIN" />, qui pourrait être en mesure de consulter certaines informations. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nouvel élément</translation>
@@ -637,6 +636,7 @@
 <translation id="3324193307694657476">Ligne adresse 2</translation>
 <translation id="3328801116991980348">Information sur le site</translation>
 <translation id="333229797575847124">Comment activer cette fonctionnalité</translation>
+<translation id="334004756946755423">Explique-moi ceci :</translation>
 <translation id="3344233834747405775">Nom du titulaire de la carte non valide</translation>
 <translation id="3344485292736684439">{count,plural, =1{Favori enregistré dans « {title} » dans votre compte, {email}}one{Favoris enregistrés dans « {title} » dans votre compte, {email}}other{Favoris enregistrés dans « {title} » dans votre compte, {email}}}</translation>
 <translation id="334690320928261823">Onglets récents</translation>

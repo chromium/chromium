@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">እንኳን በደህና ተመልሰው መጡ!</translation>
 <translation id="2015722694326466240">የይለፍ ቃላትን ለመመልከት በመጀመሪያ በመሣሪያዎ ላይ የይለፍ ኮድ ማዘጋጀት አለብዎት።</translation>
 <translation id="201759455285471444">የትር ቡድኑን ዘርጋ</translation>
-<translation id="202070562065520783">ይህን አብራራልኝ</translation>
 <translation id="2044394949148788042">የትር ፍርግርግን ይክፈቱ</translation>
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> የሚለው መለያ በ<ph name="HOSTED_DOMAIN" /> የሚተዳደር ነው፣ ይህም የተወሰነ መረጃን ሊመለከት ይችላል። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">አዲስ ንጥል</translation>
@@ -637,6 +636,7 @@
 <translation id="3324193307694657476">አድራሻ 2</translation>
 <translation id="3328801116991980348">የጣቢያ መረጃ</translation>
 <translation id="333229797575847124">እንዴት ይህን ባህሪ ማብራት እንደሚቻል</translation>
+<translation id="334004756946755423">ይህን አብራራልኝ፦</translation>
 <translation id="3344233834747405775">ልክ ያልሆነ የካርድ ባለቤት ስም</translation>
 <translation id="3344485292736684439">{count,plural, =1{በመለያዎ፣ {email} ውስጥ ዕልባት ወደ «{title}» ተቀምጧል}one{በመለያዎ፣ {email} ውስጥ ዕልባት ወደ «{title}» ተቀምጧል}other{በመለያዎ፣ {email} ውስጥ ዕልባቶች ወደ «{title}» ተቀምጠዋል}}</translation>
 <translation id="334690320928261823">የቅርብ ጊዜ ትሮች</translation>

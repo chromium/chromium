@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">Et donem la benvinguda de nou!</translation>
 <translation id="2015722694326466240">Per veure les contrasenyes, primer has d'establir una contrasenya al dispositiu.</translation>
 <translation id="201759455285471444">Desplega el grup de pestanyes.</translation>
-<translation id="202070562065520783">Explica-m'ho</translation>
 <translation id="2044394949148788042">Obre la quadrícula de pestanyes</translation>
 <translation id="2044681667265133332"><ph name="HOSTED_DOMAIN" /> gestiona el compte <ph name="USER_EMAIL" />, així que és possible que vegi algunes dades. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">element nou</translation>
@@ -637,6 +636,7 @@
 <translation id="3324193307694657476">Adreça 2</translation>
 <translation id="3328801116991980348">Informació del lloc web</translation>
 <translation id="333229797575847124">Com pots activar aquesta funció</translation>
+<translation id="334004756946755423">Explica-m'ho:</translation>
 <translation id="3344233834747405775">El nom del titular de la targeta no és vàlid</translation>
 <translation id="3344485292736684439">{count,plural, =1{S'ha desat l'adreça d'interès a "{title}" al teu compte, {email}}other{S'han desat les adreces d'interès a "{title}" al teu compte, {email}}}</translation>
 <translation id="334690320928261823">Pestanyes recents</translation>

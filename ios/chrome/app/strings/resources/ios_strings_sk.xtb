@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">Vitajte späť!</translation>
 <translation id="2015722694326466240">Ak si chcete zobraziť heslá, najprv musíte v zariadení nastaviť vstupný kód.</translation>
 <translation id="201759455285471444">Rozbaliť skupinu kariet</translation>
-<translation id="202070562065520783">Vysvetli mi</translation>
 <translation id="2044394949148788042">Otvorte mriežku kariet</translation>
 <translation id="2044681667265133332">Účet <ph name="USER_EMAIL" /> spravuje doména <ph name="HOSTED_DOMAIN" />, ktorá si môže zobraziť určité informácie. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nová položka</translation>
@@ -637,6 +636,7 @@
 <translation id="3324193307694657476">Adresa 2</translation>
 <translation id="3328801116991980348">Informácie o stránkach</translation>
 <translation id="333229797575847124">Ako aktivovať túto funkciu</translation>
+<translation id="334004756946755423">Vysvetli mi:</translation>
 <translation id="3344233834747405775">Neplatné meno majiteľa karty</translation>
 <translation id="3344485292736684439">{count,plural, =1{Záložka bola uložená do priečinka {title} vo vašom účte {email}}few{Záložky boli uložené do priečinka {title} vo vašom účte {email}}many{Bookmarks saved to "{title}" in your account, {email}}other{Záložky boli uložené do priečinka {title} vo vašom účte {email}}}</translation>
 <translation id="334690320928261823">Nedávne karty</translation>

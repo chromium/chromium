@@ -505,6 +505,7 @@
 <translation id="1327495825214193325">ADB නිදොස් කිරීම සබල කිරීමට, මෙම <ph name="DEVICE_TYPE" /> හි යළි ඇරඹුමක් අවශ්‍යයි. එය අබල කිරීමට කර්මාන්තශාලා සැකසුම් වෙත යළි සැකසීමක් අවශ්‍යයි.</translation>
 <translation id="1327527584824210101">ඔබේ මුරයතුර භාවිතා කරන්න</translation>
 <translation id="1327794256477341646">ඔබගේ ස්ථානය අවශ්‍ය විශේෂාංග ක්‍රියා නොකරනු ඇත</translation>
+<translation id="1328041566565643371">සිරස් පටිති තීරුව ප්‍රතිප්‍රමාණ කිරීමේ හසුරුව (ඇදගෙන යා හැකි)</translation>
 <translation id="1328364753167940710">පැය <ph name="NUM_HR" /> න්</translation>
 <translation id="1328928545650070438">ඇහි බැම පහත් කරන්න</translation>
 <translation id="1329466763986822896">මෙම හොට්ස්පොට් සඳහා පෞද්ගලිකත්වය වැඩි දියුණු කරන්න</translation>
@@ -1469,6 +1470,7 @@
     <ph name="BEGIN_DESCRIPTION3" />දෝෂාවේක්ෂය සැපයීම සඳහා සංවිධානයට උපාංග සැසියකට දුරස්ථව ප්‍රවේශ විය හැක.<ph name="END_DESCRIPTION3" />
     <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />ප්‍රවේශය සබල කිරීම<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
     <ph name="BEGIN_DESCRIPTION4" />සංවිධාන යෙදුම්, සේවා, සහ ජාල ලබා ගත හැක්කේ ලියාපදිංචි වූ උපාංගවල පමණි.<ph name="END_DESCRIPTION4" /></translation>
+<translation id="1979208610845113582">ඔබට දැන් AI මාදිලි පොට මෙහි සෘජුවම නැවත ආරම්භ කළ හැක. ඕනෑම වේලාවක මෙය ඉවත් කරන්න.</translation>
 <translation id="1979280758666859181">ඔබ නාලිකාවට මාරු වනුයේ <ph name="PRODUCT_NAME" /> හි පැරණි සංස්කරණයක් මගිනි. නාලිකාවේ සංස්කරණය ඔබේ උපාංගයේ සංස්කරණයත් සමඟ ගැළපෙන විට නාලිකා වෙනස්වීම ඉටුවනු ඇත.</translation>
 <translation id="1979582938184524893">ඔබට ඇතුළත් කිරීමට අවශ්‍ය පුද්ගලික තොරතුරු හස්තීයව තෝරන්න</translation>
 <translation id="197989455406964291">KDC සංකේතන වර්ගයට සහය නොදක්වයි</translation>
@@ -1936,6 +1938,7 @@
 <translation id="2297705863329999812">මුද්‍රණ යන්ත්‍ර සොයන්න</translation>
 <translation id="2297822946037605517">මෙම පිටුව බෙදා ගන්න</translation>
 <translation id="229871422646860597">මෙවලම් තීරුවෙන් ගලවන්න</translation>
+<translation id="2298749511072894576">ඔබට දැන් Gemini කතාබස් මෙහි සෘජුවම නැවත ආරම්භ කළ හැක. ඕනෑම වේලාවක මෙය ඉවත් කරන්න.</translation>
 <translation id="2299685119225839832">පුද්ගලයින් පවසන දේ පිළිබඳ සාරාංශයක් ඔවුන්ගේ සමාලෝචනවලින් ඔබට ලබා ගත හැක</translation>
 <translation id="2299734369537008228">රූටනය: <ph name="MIN_LABEL" /> සිට <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">නිදොසීමෙන් රැස් කළ සියලු ලොග ගොනු වෙනම සංරක්ෂිතයක් ලෙස ඇතුළත් කරන්න.</translation>
@@ -2300,6 +2303,7 @@
 <translation id="252418934079508528"><ph name="DEVICE_OS" /> ස්ථාපනය කරන්න</translation>
 <translation id="252513908494776481">මෙම පටිත්ත ගැන විමසන්න</translation>
 <translation id="2525746158911982776">පද්ධතියට ප්‍රමාණවත් ආචයන ඉඩක් නොමැති නිසා යාවත්කාලීනය අසමත් විය.</translation>
+<translation id="2525842906387880861">ඔබට මෙම පිටුවේ යෝජනා නැවත නොපෙනෙනු ඇත</translation>
 <translation id="2526590354069164005">ඩෙස්ක්ටොප්</translation>
 <translation id="2526619973349913024">යාවත්කාලීනය සඳහා පරික්ෂා කරන්න</translation>
 <translation id="2527167509808613699">කිසියම් ආකාරයක සම්බන්ධය</translation>
@@ -2793,6 +2797,7 @@
 <translation id="2855243985454069333">සියලුම සමමුහූර්ත උපාංගවලින් ඉතිහාසය මකයි</translation>
 <translation id="2855812646048059450"><ph name="CREDENTIAL_PROVIDER" /> සමඟ පුරන්න</translation>
 <translation id="2857047802954430547">ඔබේ සියලු උපාංග මත ඔබේ මුරපද, පිටුසන්, සහ තවත් දේ ලබා ගැනීමට පුරන්න</translation>
+<translation id="2857195263461649321">Gemini මත ඔබ නතර කළ තැනින් පටන් ගන්න</translation>
 <translation id="2859741939921354763"><ph name="BRAND" /> වෙත මුරපද ආයාත කරන්න</translation>
 <translation id="2860284453253554297">ව්‍යවසාය ප්‍රතිපත්ති</translation>
 <translation id="2860710618359053450">හනුව දකුණට චලනය කරන්න</translation>
@@ -5949,6 +5954,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5006778209728626987">අකුණු ගැසීම</translation>
 <translation id="5007392906805964215">සමාලෝචන කරන්න</translation>
 <translation id="50080882645628821">පැතිකඩ ඉවත් කරන්න</translation>
+<translation id="5008587162781422067">පටිති තීරුව දැන් <ph name="TAB_STRIP_PERCENT" /> පළල වේ, අන්තර්ගත ප්‍රදේශය දැන් <ph name="CONTENT_AREA_PERCENT" /> පළල වේ.</translation>
 <translation id="5008936837313706385">ක්‍රියාකාරකමේ නම</translation>
 <translation id="5009463889040999939">පැතිකඩ යළි නම් කරමින්. මෙයට මිනිත්තු කිහිපයක් ගත විය හැකිය.</translation>
 <translation id="5010886807652684893">දෘශ්‍ය දසුන</translation>
@@ -6594,6 +6600,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5460861858595506978">අනුප්‍රාණය</translation>
 <translation id="5461050611724244538">ඔබගේ දුරකථනය සමග සම්බන්ධය අහිමි විය</translation>
 <translation id="5463275305984126951"><ph name="LOCATION" /> දර්ශකය</translation>
+<translation id="5463348003600590648">යෝජනා අබල කරන්න</translation>
 <translation id="5463450804024056231"><ph name="DEVICE_TYPE" /> ඉ-තැපැල් සඳහා ලියාපදිංචි වන්න</translation>
 <translation id="5463625433003343978">උපාංග සොයමින්...</translation>
 <translation id="5463856536939868464">මෙනුව සතුව සැඟවුනු පොත්සලකුණු ඇත</translation>
@@ -6757,6 +6764,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="557506220935336383">වෙනත් අඩවි සඳහා දිගු අවසර බලන්න</translation>
 <translation id="5575473780076478375">Incognito දිගුව: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">ආදර්ශන ලියාපදිංචි ඉල්ලීම සමඟ ගැටලුවක් සිදු විය.</translation>
+<translation id="5576472948015790634">ඔබට දැන් ඔබේ පටිති සමූහ සහ Gemini කතාබස් එක තැනකින් කළමනාකරණය කළ හැක. ඕනෑම වේලාවක මෙය ඉවත් කරන්න.</translation>
 <translation id="557722062034137776">ඔබගේ උපාංගය යළි සැකසීම ඔබගේ Google ගිණුම් හෝ මෙම ගිණුම් වෙත සමමුහුර්ත කළ කිනම් හෝ දත්ත වෙත බලනොපානු ඇත. කෙසේ වුවත්, ඔබගේ උපාංගයෙහි ස්ථානීයව සුරැකී ඇති සියලු ගොනු මැකෙනු ඇත.</translation>
 <translation id="5578059481725149024">ස්වයං පුරනය</translation>
 <translation id="5578387000057347457">රූපයක් නිර්මාණය කිරීමට අභිරුචි ප්‍රේරකයක් හෝ උද්දීපන පෙළක් ඇතුළු කරන්න</translation>
@@ -9936,6 +9944,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7758884017823246335">වෙබ් අඩවි සෙවීම එක් කරන්න</translation>
 <translation id="7759443981285558794">ChromeOS වෙතින් ආයාත කළ සහතික බලන්න</translation>
 <translation id="7759606211476816416">ඔබේ වෙබ් අඩවි කෙටිමං</translation>
+<translation id="7759748248923439385">ඔබට දැන් ඔබේ පටිති සමූහ සහ AI මාදිලි පොටවල් එක තැනක කළමනාකරණය කළ හැක. ඕනෑම වේලාවක මෙය ඉවත් කරන්න.</translation>
 <translation id="7759809451544302770">වෛකල්පිත</translation>
 <translation id="7760176388948986635">ChromeOS සහ Android යෙදුම්වලට, වෙබ් අඩවිවලට, සහ සේවාවලට මෙම උපාංගයේ ස්ථානය භාවිත කිරීමට අවසර දෙන්න. ස්ථාන නිරවද්‍යතාව Android යෙදුම් සහ සේවා සඳහා ඉතා නිරවද්‍ය ස්ථානය සපයයි. මෙය කිරීමට, Google උපාංග සංවේදක සහ මෙම උපාංගයෙන් ලැබෙන රැහැන් රහිත සංඥා පිළිබඳ තොරතුරු රැහැන් රහිත සංඥා ස්ථානවලට ක්‍රවුඩ්සෝස් කිරීමට කලින් කල සැකසුම් කරයි. මේවා කිසියම් පුද්ගලයෙකු හඳුනා නොගෙන ස්ථාන නිරවද්‍යතාව සහ ස්ථාන පාදක සේවා දියුණු කිරීමට සහ පරිශීලකයින්ගේ අවශ්‍යතා ඉටු කිරීමට Google හි සහ තෙවන පාර්ශවවල නීත්‍යානුකූල ලැදිකම්වලට අනුව Google හි සේවා දියුණු කිරීමට, සැපයීමට, සහ නඩත්තු කිරීමට භාවිත කරනු ලැබේ.</translation>
 <translation id="7762024824096060040">මෙම ගිණුම භාවිත කළ නොහැකිය</translation>
@@ -12187,6 +12196,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="950079950995628542">"<ph name="PHONE_NAME" />" වෙතින්</translation>
 <translation id="950307215746360464">පිහිටුවීම් මාර්ගෝපදේශය</translation>
 <translation id="951273949038779544"><ph name="SITE_ACCESS" />. ඔබේ පරිපාලක විසින් ස්ථාපනය කරන ලදි</translation>
+<translation id="95160010745047025">AI මාදිලියේ ඔබ නතර කළ තැනින් පටන් ගන්න</translation>
 <translation id="951991426597076286">පිළිකෙව්</translation>
 <translation id="952137968828772361">ඔබ ඔබේ තිරයේ දකින නිෂ්පාදන, ස්ථාන, හෝ පෙළ ගැන තව දැන ගන්න</translation>
 <translation id="952471655966876828">උපාංගය ක්‍රියාත්මක විට සහ භාවිත කරන විට එය ස්වයංක්‍රීයව සම්බන්ධ වනු ඇත</translation>

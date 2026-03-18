@@ -505,6 +505,7 @@
 <translation id="1327495825214193325">ADB ડિબગીંગ ચાલુ કરવા માટે, આ <ph name="DEVICE_TYPE" />ને ફરી શરૂ કરવું જરૂરી છે. તેને બંધ કરવા ફેક્ટરી સેટિંગ પર રીસેટ કરવું જરૂરી છે.</translation>
 <translation id="1327527584824210101">તમારી પાસકીનો ઉપયોગ કરો</translation>
 <translation id="1327794256477341646">તમારા સ્થાનની આવશ્યકતા હોય તેવી સુવિધાઓ કાર્ય નહીં કરે</translation>
+<translation id="1328041566565643371">વર્ટિકલ ટૅબ સ્ટ્રિપનું કદ બદલવાનું હેન્ડલ (ખેંચી શકાય તેવું)</translation>
 <translation id="1328364753167940710"><ph name="NUM_HR" /> કલાકમાં</translation>
 <translation id="1328928545650070438">ભમ્મરો નીચી કરો</translation>
 <translation id="1329466763986822896">આ હૉટસ્પૉટ માટે તમારી પ્રાઇવસીમાં સુધારો કરો</translation>
@@ -1469,6 +1470,7 @@
     <ph name="BEGIN_DESCRIPTION3" />સમસ્યા નિવારણ કરવાની સગવડ પ્રદાન કરવા માટે, સંસ્થા કોઈ ડિવાઇસ સત્રને રિમોટલી ઍક્સેસ કરી શકે છે.<ph name="END_DESCRIPTION3" />
     <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />ઍક્સેસ ચાલુ કરવા<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
     <ph name="BEGIN_DESCRIPTION4" />સંસ્થાની ઍપ, સેવાઓ તેમજ નેટવર્ક માત્ર નોંધણી કરેલા ડિવાઇસ પર જ ઉપલબ્ધ હોઈ શકે છે.<ph name="END_DESCRIPTION4" /></translation>
+<translation id="1979208610845113582">તમે હવે સીધા અહીંથી AI મોડના થ્રેડ ફરી શરૂ કરી શકો છો. આને કોઈપણ સમયે અનપિન કરો.</translation>
 <translation id="1979280758666859181">તમે ચેનલને <ph name="PRODUCT_NAME" />ના જૂના વર્ઝન સાથે બદલી રહ્યા છો. જ્યારે ચેનલ વર્ઝન હાલમાં તમારા ડિવાઇસ પર ઇન્સ્ટૉલ કરેલા વર્ઝનથી મેળ ખાતું હોય ત્યારે ચેનલ ફેરફાર લાગુ થશે.</translation>
 <translation id="1979582938184524893">તમે શામેલ કરવા માગતા હો તે વ્યક્તિગત માહિતી મેન્યુઅલી પસંદ કરો</translation>
 <translation id="197989455406964291">KDCમાં એન્ક્રિપ્શન પ્રકારની સુવિધા નથી</translation>
@@ -1934,6 +1936,7 @@
 <translation id="2297705863329999812">પ્રિન્ટર શોધો</translation>
 <translation id="2297822946037605517">આ પેજ શેર કરો</translation>
 <translation id="229871422646860597">ટૂલબારથી અનપિન કરો</translation>
+<translation id="2298749511072894576">તમે હવે સીધા અહીંથી Gemini ચૅટ ફરી શરૂ કરી શકો છો. આને કોઈપણ સમયે અનપિન કરો.</translation>
 <translation id="2299685119225839832">લોકો તેમના રિવ્યૂમાં શું કહી રહ્યાં છે તેનો સારાંશ તમે મેળવી શકો છો</translation>
 <translation id="2299734369537008228">સ્લાઇડર: <ph name="MIN_LABEL" />થી <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">debugd દ્વારા એકત્રિત બધી લૉગ ફાઇલોનો અલગ આર્કાઇવ તરીકે સમાવેશ કરો.</translation>
@@ -2298,6 +2301,7 @@
 <translation id="252418934079508528"><ph name="DEVICE_OS" /> ઇન્સ્ટૉલ કરો</translation>
 <translation id="252513908494776481">આ ટૅબ વિશે પૂછો</translation>
 <translation id="2525746158911982776">સિસ્ટમમાં પર્યાપ્ત સ્ટોરેજ સ્પેસ ન હોવાને કારણે અપડેટ નિષ્ફળ રહી.</translation>
+<translation id="2525842906387880861">તમને આ પેજ પર ફરીથી સૂચનો દેખાશે નહીં</translation>
 <translation id="2526590354069164005">ડેસ્કટૉપ</translation>
 <translation id="2526619973349913024">અપડેટ માટે તપાસો</translation>
 <translation id="2527167509808613699">કોઈપણ પ્રકારનું કનેક્શન</translation>
@@ -2791,6 +2795,7 @@
 <translation id="2855243985454069333">સિંક કરેલા બધા ડિવાઇસમાંથી ઇતિહાસ ડિલીટ કરે છે</translation>
 <translation id="2855812646048059450"><ph name="CREDENTIAL_PROVIDER" /> વડે સાઇન ઇન કરો</translation>
 <translation id="2857047802954430547">તમારા બધા ડિવાઇસ પર પાસવર્ડ, બુકમાર્ક અને બીજું ઘણું મેળવવા માટે, સાઇન ઇન કરો</translation>
+<translation id="2857195263461649321">Gemini પર તમે જ્યાંથી છોડ્યું હતું, ત્યાંથી શરૂ કરો</translation>
 <translation id="2859741939921354763"><ph name="BRAND" />માં પાસવર્ડ આયાત કરો</translation>
 <translation id="2860284453253554297">એન્ટરપ્રાઇઝની પૉલિસીઓ</translation>
 <translation id="2860710618359053450">જડબું જમણે ખસેડો</translation>
@@ -4464,6 +4469,7 @@
 <translation id="3968739731834770921">કાના</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">ગણના કરી રહ્યું છે...</translation>
+<translation id="3971154761614127188">કેટલીક સુવિધાઓ અપરિચિત સાઇટને ધીમી કરી શકે છે</translation>
 <translation id="3971355433478412726">Gemini માટેની સૂચનાઓ</translation>
 <translation id="3971764089670057203">આ સિક્યુરિટી કીમાંના ફિંગરપ્રિન્ટ</translation>
 <translation id="3973005893595042880">વપરાશકર્તા કોઈ મંજૂરી ધરાવતા નથી</translation>
@@ -5948,6 +5954,7 @@
 <translation id="5006778209728626987">વીજળી</translation>
 <translation id="5007392906805964215">રિવ્યૂ કરો</translation>
 <translation id="50080882645628821">પ્રોફાઇલ કાઢી નાખો</translation>
+<translation id="5008587162781422067">ટૅબ સ્ટ્રિપ હવે <ph name="TAB_STRIP_PERCENT" /> પહોળી છે, કન્ટેન્ટનો વિસ્તાર હવે <ph name="CONTENT_AREA_PERCENT" /> પહોળો છે.</translation>
 <translation id="5008936837313706385">પ્રવૃત્તિનું નામ</translation>
 <translation id="5009463889040999939">પ્રોફાઇલનું નામ બદલી રહ્યાં છીએ. આમાં થોડો સમય લાગી શકે છે.</translation>
 <translation id="5010886807652684893">વિઝ્યુઅલ વ્યૂ</translation>
@@ -6594,6 +6601,7 @@
 <translation id="5460861858595506978">પ્રેરણા</translation>
 <translation id="5461050611724244538">તમારા ફોન સાથે સંપર્ક ખોરવાઈ ગયો</translation>
 <translation id="5463275305984126951"><ph name="LOCATION" />ની અનુક્રમણિકા</translation>
+<translation id="5463348003600590648">સૂચનો બંધ કરો</translation>
 <translation id="5463450804024056231"><ph name="DEVICE_TYPE" /> સંબંધિત ઇમેઇલ માટે સાઇન અપ કરો</translation>
 <translation id="5463625433003343978">ડિવાઇસ શોધી રહ્યાં છીએ...</translation>
 <translation id="5463856536939868464">મેનૂમાં છુપાયેલા બુકમાર્ક છે</translation>
@@ -6757,6 +6765,7 @@
 <translation id="557506220935336383">અન્ય સાઇટ માટે એક્સ્ટેન્શનની પરવાનગીઓ જુઓ</translation>
 <translation id="5575473780076478375">છુપું એક્સ્ટેંશન: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">ડેમો નોંધણીની વિનંતીમાં સમસ્યા આવી.</translation>
+<translation id="5576472948015790634">હવે તમે તમારા ટૅબના ગ્રૂપ અને Gemini ચૅટ એક જ જગ્યાએ મેનેજ કરી શકો છો. આને કોઈપણ સમયે અનપિન કરો.</translation>
 <translation id="557722062034137776">તમારા ડિવાઇસને ફરીથી સેટ કરવાથી તમારા Google એકાઉન્ટ અથવા આ એકાઉન્ટ સાથે સિંક કરાયેલા કોઈ પણ ડેટા પર અસર થશે નહીં. જોકે, તમારા ડિવાઇસ પર સ્થાનિક રીતે સાચવેલી બધી ફાઇલ ડિલીટ કરવામાં આવશે.</translation>
 <translation id="5578059481725149024">સ્વતઃ સાઇન-ઇન</translation>
 <translation id="5578387000057347457">છબી બનાવવા માટે કસ્ટમ પ્રૉમ્પ્ટ દાખલ કરો અથવા ટેક્સ્ટને હાઇલાઇટ કરો</translation>
@@ -9940,6 +9949,7 @@ USB ડિવાઇસ</translation>
 <translation id="7758884017823246335">સાઇટની શોધ ઉમેરો</translation>
 <translation id="7759443981285558794">ChromeOSમાંથી આયાત કરેલા સર્ટિફિકેટ જુઓ</translation>
 <translation id="7759606211476816416">તમારી સાઇટના શૉર્ટકટ</translation>
+<translation id="7759748248923439385">હવે તમે તમારા ટૅબના ગ્રૂપ અને AI મોડના થ્રેડ એક જ જગ્યાએ મેનેજ કરી શકો છો. આને કોઈપણ સમયે અનપિન કરો.</translation>
 <translation id="7759809451544302770">વૈકલ્પિક</translation>
 <translation id="7760176388948986635">લોકેશનની પરવાનગીઓ ધરાવતી ChromeOS અને Android ઍપ, વેબસાઇટ અને સેવાઓને આ ડિવાઇસના લોકેશનનો ઉપયોગ કરવાની મંજૂરી આપો. લોકેશનની સચોટતા, Android ઍપ અને સેવાઓ માટે લોકેશનની વધુ સચોટ માહિતી પ્રદાન કરે છે. આમ કરવા માટે, Google સમયાંતરે આ ડિવાઇસના સેન્સર અને વાયરલેસ સિગ્નલ વિશેની માહિતી પર પ્રક્રિયા કરે છે, જેથી વાયરલેસ સિગ્નલવાળા લોકેશનને ક્રાઉડસૉર્સ કરી શકાય. કોઈપણ વ્યક્તિની ઓળખાણ છતી કર્યા વિના આ માહિતીનો ઉપયોગ લોકેશનની સચોટતા અને લોકેશન આધારિત સેવાઓને બહેતર બનાવવા તેમજ વપરાશકર્તાઓની જરૂરિયાતો પૂરી કરવા માટે Google અને ત્રીજા પક્ષોના કાયદેસરના હિતસંબંધોના આધારે Googleની સેવાઓને બહેતર બનાવવા, પ્રદાન કરવા અને જાળવી રાખવા માટે કરવામાં આવે છે.</translation>
 <translation id="7762024824096060040">આ એકાઉન્ટનો ઉપયોગ કરી શકાતો નથી</translation>
@@ -10011,6 +10021,7 @@ USB ડિવાઇસ</translation>
 <translation id="7800518121066352902">ઘ&amp;ડિયાળની વિપરિત દિશામાં ફેરવો</translation>
 <translation id="780301667611848630">ના, આભાર</translation>
 <translation id="7803657407897251194">તમારા Android ડિવાઇસ વડે સેટઅપ ચાલુ રાખવા માટે તમારા <ph name="DEVICE_TYPE" />ને નેટવર્ક સાથે કનેક્ટ કરો</translation>
+<translation id="7803714812705886512">જોખમોની ભાળ મેળવવા માટે Google ઓછા ડેટાનો ઉપયોગ કરે છે (ઉદાહરણ તરીકે, URLsના ભાગો, ડાઉનલોડની માહિતી)</translation>
 <translation id="7804072833593604762">ટૅબ બંધ કરી છે</translation>
 <translation id="7805371082115476536">હળવો</translation>
 <translation id="7805768142964895445">સ્થિતિ</translation>
@@ -10035,6 +10046,7 @@ USB ડિવાઇસ</translation>
 <translation id="7820400255539998692"><ph name="FILENAME" /> ડિલીટ કરો, જેથી આ ડિવાઇસનો ઉપયોગ કરતા અન્ય લોકો તમારા પાસવર્ડ જોઈ શકશે નહીં</translation>
 <translation id="7820561748632634942">શું વધારાની સ્વિચ માટે સોંપણી કરીએ?</translation>
 <translation id="782057141565633384">વીડિયો ઍડ્રેસ કૉ&amp;પિ કરો</translation>
+<translation id="7823975162954158194">સશક્ત સુરક્ષા પ્રદાન કરે છે</translation>
 <translation id="7824665136384946951">તમારી સંસ્થા દ્વારા Safe Browsingની સુવિધા બંધ કરવામાં આવી છે</translation>
 <translation id="7824864914877854148">ભૂલને કારણે બૅકઅપ પૂર્ણ ન કરી શકાયું</translation>
 <translation id="7825289983414309119">પર્વત</translation>
@@ -11188,6 +11200,7 @@ USB ડિવાઇસ</translation>
 <translation id="8601206103050338563">TLS WWW ક્લાયંટ પ્રમાણીકરણ</translation>
 <translation id="8602674530529411098">Apps (બીટા)</translation>
 <translation id="8602851771975208551">તમારા કમ્પ્યુટર પરના બીજા પ્રોગ્રામે એક ઍપ્લિકેશન ઉમેરી જે Chrome કાર્ય કરે છે તે રીતને બદલી શકે છે.</translation>
+<translation id="8602867356511778172">જોખમોની વધુ ઝડપથી અને વધુ સચોટ રીતે ભાળ મેળવવા માટે, Google વધુ ડેટાનો ઉપયોગ કરે છે (ઉદાહરણ તરીકે, URLs, પેજ કન્ટેન્ટના સેમ્પલ, સિસ્ટમની માહિતી)</translation>
 <translation id="860399903490378651">આ વ્યૂ બંધ કરો</translation>
 <translation id="8605428685123651449">SQLite મેમરી</translation>
 <translation id="8607171490667464784">જ્યારે નિષ્ક્રિય અને બૅટરી પર ચાલતુ હોય</translation>
@@ -12187,6 +12200,7 @@ USB ડિવાઇસ</translation>
 <translation id="950079950995628542">"<ph name="PHONE_NAME" />"માંથી</translation>
 <translation id="950307215746360464">સેટઅપની માર્ગદર્શિકા</translation>
 <translation id="951273949038779544"><ph name="SITE_ACCESS" />. તમારા ઍડમિનિસ્ટ્રેટર દ્વારા ઇન્સ્ટૉલ કરવામાં આવ્યું છે</translation>
+<translation id="95160010745047025">AI મોડ પર તમે જ્યાંથી છોડ્યું હતું, ત્યાંથી શરૂ કરો</translation>
 <translation id="951991426597076286">નકારો</translation>
 <translation id="952137968828772361">તમારી સ્ક્રીન પર તમને જોવા મળતી પ્રોડક્ટ, જગ્યાઓ અને ટેક્સ્ટ વિશે વધુ જાણો</translation>
 <translation id="952471655966876828">ડિવાઇસ જ્યારે ચાલુ કરવામાં આવે અથવા ઉપયોગમાં હોય, ત્યારે તે ઑટોમૅટિક રીતે કનેક્ટ થઈ જશે</translation>

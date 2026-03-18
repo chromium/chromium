@@ -267,7 +267,7 @@ Egiaztatu pasahitzak <ph name="GOOGLE_PASSWORD_MANAGER" /> zerbitzuan.</translat
 <translation id="1168799042879144934">Galdetu Google-ri aurreko orriari buruz</translation>
 <translation id="116896278675803795">Aldatu hizkuntza automatikoki, hautatutako edukiaren arabera</translation>
 <translation id="1169435433292653700"><ph name="FILE_NAME" /> fitxategiak kontuzko datuak edo datu arriskutsuak dauzka. Administratzaileak hau dio: "<ph name="CUSTOM_MESSAGE" />".</translation>
-<translation id="1171515578268894665"><ph name="ORIGIN" /> webguneak HID gailu batera konektatu nahi du</translation>
+<translation id="1171515578268894665"><ph name="ORIGIN" /> webguneak giza interfazeko gailu batera konektatu nahi du</translation>
 <translation id="1172750555846831341">Irauli ertz laburraren noranzkoan</translation>
 <translation id="1173036203040243666">Fitxa hau Bluetooth bidezko gailu batekin konektatuta dago</translation>
 <translation id="1173332155861271669">Passpoint-en hornitzailearen xehetasunak</translation>
@@ -504,6 +504,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="1327495825214193325">ADB arazketa gaitzeko, <ph name="DEVICE_TYPE" /> gailua berrabiarazi behar da. Desgaitzeko, jatorrizko ezarpenak berrezarri behar dira.</translation>
 <translation id="1327527584824210101">Erabili sarbide-gakoa</translation>
 <translation id="1327794256477341646">Kokapenerako sarbidea behar duten eginbideek ez dute funtzionatuko</translation>
+<translation id="1328041566565643371">Fitxen zinta bertikalaren tamaina aldatzeko kontrol-puntua (arrastatu egin daiteke)</translation>
 <translation id="1328364753167940710"><ph name="NUM_HR" /> h barru</translation>
 <translation id="1328928545650070438">Bekainak jaistea</translation>
 <translation id="1329466763986822896">Hobetu wifi-gune honen pribatutasuna</translation>
@@ -1470,6 +1471,7 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
     <ph name="BEGIN_DESCRIPTION3" />Erakundea urrunetik sar daiteke gailu baten saioan arazoak konpontzeko.<ph name="END_DESCRIPTION3" />
     <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />Sarbidea gaitzeko<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
     <ph name="BEGIN_DESCRIPTION4" />Baliteke erakundearen aplikazioak, zerbitzuak eta sareak erregistratutako gailuetan soilik egotea erabilgarri.<ph name="END_DESCRIPTION4" /></translation>
+<translation id="1979208610845113582">Orain, hemen berrekin diezaiekezu zuzenean AA moduko elkarrizketa-hariei. Edonoiz kendu ahal izango diozu aingura honi.</translation>
 <translation id="1979280758666859181"><ph name="PRODUCT_NAME" /> sistemaren bertsio zaharragoa duen kanal batera aldatzen ari zara. Kanalaren bertsioa gailuan instalatutakoarekin bat datorrenean aldatuko da kanala.</translation>
 <translation id="1979582938184524893">Hautatu eskuz zer informazio pertsonal sartu nahi duzun</translation>
 <translation id="197989455406964291">KDC zentroak ez du onartzen enkriptatze mota hori</translation>
@@ -1934,6 +1936,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2297705863329999812">Bilatu inprimagailuak</translation>
 <translation id="2297822946037605517">Partekatu orria</translation>
 <translation id="229871422646860597">Kendu aingura tresna-barratik</translation>
+<translation id="2298749511072894576">Orain, hemen berrekin diezazkiekezu zuzenean Gemini-ko elkarrizketei. Edonoiz kendu ahal izango diozu aingura honi.</translation>
 <translation id="2299685119225839832">Jendeak iritzietan dioenari buruzko laburpen bat jaso dezakezu</translation>
 <translation id="2299734369537008228">Graduatzailea: <ph name="MIN_LABEL" /> - <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">Sartu arazketan bildutako erregistro-fitxategi guztiak artxibo bereizi batean.</translation>
@@ -2298,6 +2301,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="252418934079508528">Instalatu <ph name="DEVICE_OS" /></translation>
 <translation id="252513908494776481">Egin fitxa honi buruzko galderak</translation>
 <translation id="2525746158911982776">Eguneratzeak huts egin du, sistemak ez duelako behar adina biltegiratzeko toki.</translation>
+<translation id="2525842906387880861">Utzi egingo diozu orri honetan iradokizunak ikusteari</translation>
 <translation id="2526590354069164005">Ordenagailua</translation>
 <translation id="2526619973349913024">Bilatu eguneratzeak</translation>
 <translation id="2527167509808613699">Edozein motatako konexioa</translation>
@@ -2791,6 +2795,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2855243985454069333">Sinkronizatuta dauden gailu guztietako historia ezabatzen du</translation>
 <translation id="2855812646048059450">Hasi saioa <ph name="CREDENTIAL_PROVIDER" /> erabilita</translation>
 <translation id="2857047802954430547">Hasi saioa pasahitzak, laster-markak eta bestelako datuak gailu guztietan gordeta edukitzeko</translation>
+<translation id="2857195263461649321">Berrekin Gemini-ko elkarrizketei utzitako tokitik</translation>
 <translation id="2859741939921354763">Inportatu pasahitzak <ph name="BRAND" /> zerbitzura</translation>
 <translation id="2860284453253554297">Enpresa-gidalerroak</translation>
 <translation id="2860710618359053450">Masailezurra eskuinerantz mugitzea</translation>
@@ -5945,6 +5950,7 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="5006778209728626987">Tximista</translation>
 <translation id="5007392906805964215">Berrikusi</translation>
 <translation id="50080882645628821">Kendu profila</translation>
+<translation id="5008587162781422067">Fitxen zintaren zabalera <ph name="TAB_STRIP_PERCENT" /> da orain, eta eduki-eremuarena, <ph name="CONTENT_AREA_PERCENT" />.</translation>
 <translation id="5008936837313706385">Jardueraren izena</translation>
 <translation id="5009463889040999939">Profilaren izena aldatzen. Agian minutu batzuk beharko dira.</translation>
 <translation id="5010886807652684893">Ikuspegi bisuala</translation>
@@ -6048,7 +6054,7 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="5084622689760736648">Webguneek espero duzun bezala funtzionatzeko probabilitate handiagoa dute</translation>
 <translation id="5084686326967545037">Egin gailuko urratsak</translation>
 <translation id="5085162214018721575">Eguneratzeak bilatzen</translation>
-<translation id="5086082738160935172">HID</translation>
+<translation id="5086082738160935172">Giza interfazeko gailua</translation>
 <translation id="508645147179720015">Oharrak 1.000 karaktere baino gehiago ditu</translation>
 <translation id="5087249366037322692">Hirugarrenen batek gehitu du</translation>
 <translation id="5087580092889165836">Gehitu txartel bat</translation>
@@ -6590,6 +6596,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5460861858595506978">Inspirazioa</translation>
 <translation id="5461050611724244538">Gailuaren eta telefonoaren arteko konexioa eten egin da</translation>
 <translation id="5463275305984126951"><ph name="LOCATION" /> kokapenaren aurkibidea</translation>
+<translation id="5463348003600590648">Desgaitu iradokizunak</translation>
 <translation id="5463450804024056231">Erregistratu <ph name="DEVICE_TYPE" />-ari buruzko mezu elektronikoak jasotzeko</translation>
 <translation id="5463625433003343978">Gailuak bilatzen…</translation>
 <translation id="5463856536939868464">Ezkutuko laster-markak dauzkan menua</translation>
@@ -6753,6 +6760,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="557506220935336383">Ikusi beste webguneetako luzapenen baimenak</translation>
 <translation id="5575473780076478375">Ezkutuko luzapena: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">Arazo bat izan da demoa erregistratzeko eskaerarekin.</translation>
+<translation id="5576472948015790634">Orain, toki berean kudea ditzakezu fitxa taldeak eta Gemini-ko elkarrizketak. Edonoiz kendu ahal izango diozu aingura honi.</translation>
 <translation id="557722062034137776">Gailua berrezartzeak ez die eragingo zure Google-ko kontuei edo kontu horiekin sinkronizatutako datuei. Hala ere, gailuan bertan gorde dituzun fitxategi guztiak ezabatuko dira.</translation>
 <translation id="5578059481725149024">Saio-hasiera automatikoa</translation>
 <translation id="5578387000057347457">Idatzi eskaera-mezu pertsonalizatu bat edo nabarmendu testua irudi bat sortzeko</translation>
@@ -9927,6 +9935,7 @@ Esleipen bat kentzeko, berriz, sakatu esleipen bat daukan erabilerraztasun-eteng
 <translation id="7758884017823246335">Gehitu webgune-bilaketa bat</translation>
 <translation id="7759443981285558794">Ikusi ChromeOS-etik inportatutako ziurtagiriak</translation>
 <translation id="7759606211476816416">Webguneko lasterbideak</translation>
+<translation id="7759748248923439385">Orain, toki berean kudea ditzakezu fitxa taldeak eta AA moduko elkarrizketa-hariak. Edonoiz kendu ahal izango diozu aingura honi.</translation>
 <translation id="7759809451544302770">Aukerakoa</translation>
 <translation id="7760176388948986635">Eman gailuaren kokapena erabiltzeko baimena kokapen-baimena aktibatuta daukaten ChromeOS-erako eta Android-erako aplikazio, webgune eta zerbitzuei. Kokapen-zehaztasuna ezarpenari esker, Android-en aplikazio eta zerbitzuek kokapen zehatzagoa lortzen dute. Horretarako, Google-k gailuaren sentsoreei eta hari gabeko seinaleei buruzko informazioa prozesatzen du aldizka, auzolanean hari gabeko seinaleen kokapenak lortzeko. Inor identifikatu gabe erabiltzen dira datu horiek, kokapen-zehaztasuna eta kokapenean oinarritutako zerbitzuak hobetzeko, baita Google-ren zerbitzuak hobetu, eman eta mantentzeko ere, Google-k eta hirugarrenek erabiltzaileen beharrei erantzuteko duten legezko interesa oinarri hartuta.</translation>
 <translation id="7762024824096060040">Ezin da erabili kontua</translation>
@@ -12177,6 +12186,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="950079950995628542">"<ph name="PHONE_NAME" />" telefonokoak</translation>
 <translation id="950307215746360464">Konfigurazio-gida</translation>
 <translation id="951273949038779544"><ph name="SITE_ACCESS" />. Administratzaileak instalatu du.</translation>
+<translation id="95160010745047025">Jarraitu AA moduan utzitako tokitik</translation>
 <translation id="951991426597076286">Baztertu</translation>
 <translation id="952137968828772361">Lortu pantailan ikusten dituzun produktu, toki edo testuei buruzko informazio gehiago</translation>
 <translation id="952471655966876828">Gailua automatikoki konektatuko da piztuz gero edo norbaitek erabiltzen badu</translation>

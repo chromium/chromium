@@ -504,6 +504,7 @@
 <translation id="1327495825214193325">ADB 디버깅을 사용 설정하려면 이 <ph name="DEVICE_TYPE" /> 기기를 다시 시작해야 합니다. ADB 디버깅을 사용 중지하려면 초기화해야 합니다.</translation>
 <translation id="1327527584824210101">패스키 사용</translation>
 <translation id="1327794256477341646">위치가 필요한 기능이 작동하지 않음</translation>
+<translation id="1328041566565643371">세로 탭 표시줄 핸들 크기 조절(드래그 가능)</translation>
 <translation id="1328364753167940710"><ph name="NUM_HR" />시간 후</translation>
 <translation id="1328928545650070438">눈썹 내리기</translation>
 <translation id="1329466763986822896">이 핫스팟의 개인 정보 보호 개선</translation>
@@ -1482,6 +1483,7 @@
     <ph name="BEGIN_DESCRIPTION3" />조직에서 문제 해결을 위해 원격으로 기기 세션에 액세스할 수 있습니다.<ph name="END_DESCRIPTION3" />
     <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />액세스 사용 설정<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
     <ph name="BEGIN_DESCRIPTION4" />등록된 기기에서만 조직 앱, 서비스, 네트워크를 사용할 수 있습니다.<ph name="END_DESCRIPTION4" /></translation>
+<translation id="1979208610845113582">이제 AI 모드 대화목록을 여기에서 바로 재개할 수 있습니다. 언제든지 고정 해제할 수 있습니다.</translation>
 <translation id="1979280758666859181"><ph name="PRODUCT_NAME" />의 이전 버전으로 채널을 변경하려 합니다. 채널 버전이 현재 기기에 설치되어 있는 버전과 일치할 때 채널 변경이 적용됩니다.</translation>
 <translation id="1979582938184524893">포함할 개인 정보 직접 선택</translation>
 <translation id="197989455406964291">KDC가 암호화 유형을 지원하지 않습니다.</translation>
@@ -1949,6 +1951,7 @@
 <translation id="2297705863329999812">프린터 검색</translation>
 <translation id="2297822946037605517">이 페이지 공유</translation>
 <translation id="229871422646860597">툴바에서 고정 해제</translation>
+<translation id="2298749511072894576">이제 Gemini 채팅을 여기에서 바로 재개할 수 있습니다. 언제든지 고정 해제할 수 있습니다.</translation>
 <translation id="2299685119225839832">리뷰에서 사람들이 말하는 내용을 요약해서 볼 수 있습니다</translation>
 <translation id="2299734369537008228">슬라이더: <ph name="MIN_LABEL" />~<ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">debugd로 수집된 모든 로그 파일을 별도의 보관 파일로 포함합니다.</translation>
@@ -2314,6 +2317,7 @@
 <translation id="252418934079508528"><ph name="DEVICE_OS" /> 설치</translation>
 <translation id="252513908494776481">이 탭에 관해 물어보기</translation>
 <translation id="2525746158911982776">시스템에 저장공간이 부족하여 업데이트할 수 없습니다.</translation>
+<translation id="2525842906387880861">추천이 이 페이지에 더 이상 표시되지 않습니다</translation>
 <translation id="2526590354069164005">데스크톱</translation>
 <translation id="2526619973349913024">업데이트 상태 확인</translation>
 <translation id="2527167509808613699">모든 종류의 연결</translation>
@@ -2807,6 +2811,7 @@
 <translation id="2855243985454069333">동기화된 모든 기기에서 방문 기록 삭제</translation>
 <translation id="2855812646048059450"><ph name="CREDENTIAL_PROVIDER" />로 로그인</translation>
 <translation id="2857047802954430547">모든 기기에서 비밀번호, 북마크 등을 사용하려면 로그인하세요</translation>
+<translation id="2857195263461649321">Gemini에서 중단한 부분부터 이어서 시작하기</translation>
 <translation id="2859741939921354763"><ph name="BRAND" />로 비밀번호를 가져옵니다.</translation>
 <translation id="2860284453253554297">엔터프라이즈 정책</translation>
 <translation id="2860710618359053450">턱을 오른쪽으로 움직이기</translation>
@@ -5963,6 +5968,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5006778209728626987">번개</translation>
 <translation id="5007392906805964215">검토</translation>
 <translation id="50080882645628821">프로필 삭제</translation>
+<translation id="5008587162781422067">이제 탭 표시줄의 너비가 <ph name="TAB_STRIP_PERCENT" />, 콘텐츠 영역의 너비가 <ph name="CONTENT_AREA_PERCENT" />입니다.</translation>
 <translation id="5008936837313706385">활동 이름</translation>
 <translation id="5009463889040999939">프로필 이름을 변경하는 중입니다. 몇 분 정도 소요될 수 있습니다.</translation>
 <translation id="5010886807652684893">시각 뷰</translation>
@@ -6609,6 +6615,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5460861858595506978">영감</translation>
 <translation id="5461050611724244538">휴대전화와 연결 끊김</translation>
 <translation id="5463275305984126951"><ph name="LOCATION" />의 색인</translation>
+<translation id="5463348003600590648">제안 사용 중지</translation>
 <translation id="5463450804024056231"><ph name="DEVICE_TYPE" /> 이메일 가입</translation>
 <translation id="5463625433003343978">기기를 찾는 중...</translation>
 <translation id="5463856536939868464">숨은 북마크를 포함하는 메뉴</translation>
@@ -6772,6 +6779,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="557506220935336383">다른 사이트에 관한 확장 프로그램 권한 보기</translation>
 <translation id="5575473780076478375">시크릿 모드 확장 프로그램: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">데모 등록 요청에 문제가 발생했습니다.</translation>
+<translation id="5576472948015790634">이제 탭 그룹과 Gemini 채팅을 한곳에서 관리할 수 있습니다. 언제든지 고정 해제할 수 있습니다.</translation>
 <translation id="557722062034137776">기기를 재설정해도 Google 계정 또는 계정에 동기화된 데이터에 영향을 주지 않습니다. 하지만 기기에 로컬로 저장된 파일은 모두 삭제됩니다.</translation>
 <translation id="5578059481725149024">자동 로그인</translation>
 <translation id="5578387000057347457">맞춤 프롬프트를 입력하거나 텍스트를 강조 표시하여 이미지를 만드세요.</translation>
@@ -9950,6 +9958,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7758884017823246335">사이트 검색 추가</translation>
 <translation id="7759443981285558794">ChromeOS에서 가져온 인증서 보기</translation>
 <translation id="7759606211476816416">내 사이트 바로가기</translation>
+<translation id="7759748248923439385">이제 탭 그룹과 AI 모드 대화목록을 한곳에서 관리할 수 있습니다. 언제든지 고정 해제할 수 있습니다.</translation>
 <translation id="7759809451544302770">선택사항</translation>
 <translation id="7760176388948986635">위치 정보 액세스 권한이 있는 ChromeOS 및 Android 앱, 웹사이트, 서비스가 이 기기의 위치를 사용하도록 허용합니다. 위치 정확도는 Android 앱 및 서비스에 대해 더 정확한 위치 정보를 제공합니다. 이를 위해 Google은 기기 센서 및 기기의 무선 신호에 대한 정보를 주기적으로 처리하여 무선 신호 위치 정보를 크라우드소싱합니다. 이러한 정보는 개인의 신원을 밝히지 않고 사용되며, 위치 정확도와 위치 기반 서비스를 개선하고, 사용자의 요구사항 충족을 목적으로 Google 및 서드 파티의 적법한 이익에 따라 Google 서비스를 개선, 제공, 유지하는 데 사용됩니다.</translation>
 <translation id="7762024824096060040">이 계정을 사용할 수 없음</translation>
@@ -12202,6 +12211,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="950079950995628542">출처: '<ph name="PHONE_NAME" />'</translation>
 <translation id="950307215746360464">설정 가이드</translation>
 <translation id="951273949038779544"><ph name="SITE_ACCESS" />. 관리자가 설치함</translation>
+<translation id="95160010745047025">AI 모드에서 중단한 부분부터 이어서 작업하기</translation>
 <translation id="951991426597076286">거부</translation>
 <translation id="952137968828772361">화면에 표시되는 제품, 장소 또는 텍스트에 관해 자세히 알아보세요.</translation>
 <translation id="952471655966876828">기기가 켜져 있고 사용 중일 때 자동으로 연결됩니다.</translation>

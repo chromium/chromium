@@ -505,6 +505,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1327495825214193325">Pour activer le débogage PDA, vous devez redémarrer cet appareil <ph name="DEVICE_TYPE" />. Pour désactiver votre appareil, vous devez le réinitialiser à ses paramètres par défaut.</translation>
 <translation id="1327527584824210101">Utilisez votre clé d'accès</translation>
 <translation id="1327794256477341646">Les fonctionnalités qui nécessitent l'accès à votre position ne seront pas accessibles</translation>
+<translation id="1328041566565643371">Poignée de redimensionnement de la bande d'onglets verticale (déplaçable)</translation>
 <translation id="1328364753167940710">Dans <ph name="NUM_HR" /> h</translation>
 <translation id="1328928545650070438">Baissez les sourcils</translation>
 <translation id="1329466763986822896">Améliorer la confidentialité de ce point d’accès</translation>
@@ -1472,6 +1473,7 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
     <ph name="BEGIN_DESCRIPTION3" />L'organisation peut accéder à distance à une session d'appareil afin de fournir un dépannage.<ph name="END_DESCRIPTION3" />
     <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />Activer l'accès<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
     <ph name="BEGIN_DESCRIPTION4" />Les applications, les services et les réseaux de l'organisation sont uniquement accessibles sur les appareils inscrits.<ph name="END_DESCRIPTION4" /></translation>
+<translation id="1979208610845113582">Vous pouvez désormais reprendre directement les fils du mode IA ici. Vous pouvez annuler l'épinglage en tout temps.</translation>
 <translation id="1979280758666859181">Vous passez à un canal ayant une ancienne version de <ph name="PRODUCT_NAME" />. Le changement de canal sera appliqué lorsque la version du canal correspondra à la version actuellement installée sur votre appareil.</translation>
 <translation id="1979582938184524893">Sélectionnez manuellement les renseignements personnels que vous souhaitez inclure</translation>
 <translation id="197989455406964291">KDC ne prend pas en charge ce type de chiffrement</translation>
@@ -1936,6 +1938,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2297705863329999812">Rechercher dans les imprimantes</translation>
 <translation id="2297822946037605517">Partager cette page</translation>
 <translation id="229871422646860597">Détacher de la barre d'outils</translation>
+<translation id="2298749511072894576">Vous pouvez désormais reprendre directement les clavardages Gemini ici. Vous pouvez annuler l'épinglage en tout temps.</translation>
 <translation id="2299685119225839832">Vous pouvez obtenir un résumé de ce que les gens disent dans leurs avis</translation>
 <translation id="2299734369537008228">Curseur : de <ph name="MIN_LABEL" /> à <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">Inclure tous les fichiers de journaux collectés par le service debugd dans une archive distincte.</translation>
@@ -2300,6 +2303,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
 <translation id="252418934079508528">Installer <ph name="DEVICE_OS" /></translation>
 <translation id="252513908494776481">Posez une question sur cet onglet</translation>
 <translation id="2525746158911982776">La mise à jour a échoué, car le système manque d'espace de stockage.</translation>
+<translation id="2525842906387880861">Vous ne verrez plus de suggestions sur cette page</translation>
 <translation id="2526590354069164005">Ordinateur de bureau</translation>
 <translation id="2526619973349913024">Rechercher des mises à jour</translation>
 <translation id="2527167509808613699">Tout type de connexion</translation>
@@ -2795,6 +2799,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="2855243985454069333">Supprime l'historique de tous les appareils synchronisés</translation>
 <translation id="2855812646048059450">Se connecter avec <ph name="CREDENTIAL_PROVIDER" /></translation>
 <translation id="2857047802954430547">Connectez-vous pour accéder à vos mots de passe, vos favoris et plus encore sur tous vos appareils</translation>
+<translation id="2857195263461649321">Reprenez là où vous vous étiez arrêté sur Gemini</translation>
 <translation id="2859741939921354763">Importer des mots de passe dans <ph name="BRAND" /></translation>
 <translation id="2860284453253554297">Politiques d'entreprise</translation>
 <translation id="2860710618359053450">Déplacez la mâchoire vers la droite</translation>
@@ -4468,6 +4473,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">Identifiant</translation>
 <translation id="397105322502079400">Calcul en cours...</translation>
+<translation id="3971154761614127188">Certaines fonctionnalités peuvent ralentir les sites inconnus.</translation>
 <translation id="3971355433478412726">Instructions pour Gemini</translation>
 <translation id="3971764089670057203">Empreintes digitales sur cette clé de sécurité</translation>
 <translation id="3973005893595042880">L'utilisateur n'est pas autorisé</translation>
@@ -5951,6 +5957,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5006778209728626987">Foudre</translation>
 <translation id="5007392906805964215">Examiner</translation>
 <translation id="50080882645628821">Retirer le profil</translation>
+<translation id="5008587162781422067">La largeur de la bande d'onglets est désormais de <ph name="TAB_STRIP_PERCENT" />, et la largeur de la zone de contenu est désormais de <ph name="CONTENT_AREA_PERCENT" />.</translation>
 <translation id="5008936837313706385">Nom de l'activité</translation>
 <translation id="5009463889040999939">Modification du nom du profil en cours… Cette opération peut prendre quelques minutes.</translation>
 <translation id="5010886807652684893">Vue visuelle</translation>
@@ -6596,6 +6603,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5460861858595506978">Sources d'inspiration</translation>
 <translation id="5461050611724244538">La connexion avec votre téléphone a été perdue</translation>
 <translation id="5463275305984126951">Index de <ph name="LOCATION" /></translation>
+<translation id="5463348003600590648">Désactiver les suggestions</translation>
 <translation id="5463450804024056231">Inscrivez-vous pour recevoir des courriels à propos de <ph name="DEVICE_TYPE" /></translation>
 <translation id="5463625433003343978">Recherche d'appareils en cours…</translation>
 <translation id="5463856536939868464">Menu contenant des favoris masqués</translation>
@@ -6759,6 +6767,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="557506220935336383">Voir les autorisations d'extension pour d'autres sites</translation>
 <translation id="5575473780076478375">Extension en mode de navigation privée : <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">Un problème avec la demande d'enregistrement du mode démo s'est produit.</translation>
+<translation id="5576472948015790634">Vous pouvez désormais gérer vos groupes d'onglets et vos clavardages Gemini au même endroit. Vous pouvez annuler l'épinglage en tout temps.</translation>
 <translation id="557722062034137776">La réinitialisation de votre appareil n'a aucune incidence sur vos comptes Google ni sur leurs données synchronisées. Toutefois, tous les fichiers enregistrés localement sur votre appareil vont être supprimés.</translation>
 <translation id="5578059481725149024">Connexion automatique</translation>
 <translation id="5578387000057347457">Saisissez une requête personnalisée ou mettez du texte en surbrillance pour créer une image</translation>
@@ -9939,6 +9948,7 @@ Appuyez sur un commutateur attribué ou une touche du clavier pour retirer l'att
 <translation id="7758884017823246335">Ajouter une recherche de site</translation>
 <translation id="7759443981285558794">Afficher les certificats importés de ChromeOS</translation>
 <translation id="7759606211476816416">Vos raccourcis de sites</translation>
+<translation id="7759748248923439385">Vous pouvez désormais gérer vos groupes d'onglets et vos fils du mode IA en un seul endroit. Vous pouvez annuler l'épinglage en tout temps.</translation>
 <translation id="7759809451544302770">Facultatif</translation>
 <translation id="7760176388948986635">Autorisez les applis, les sites Web et les services ChromeOS et Android disposant d'une autorisation de localisation à utiliser la position de cet appareil. La précision de la localisation fournit une position plus précise pour les applis et les services Android. Pour ce faire, Google traite périodiquement des informations sur les capteurs de l'appareil et les signaux sans fil émis par cet appareil afin de recueillir de façon participative des données sur la position des signaux sans fil. Ces données sont utilisées sans identifier les personnes concernées pour améliorer la précision de la localisation et les services basés sur l'emplacement. Elles le sont aussi pour améliorer, pour fournir et pour maintenir les services de Google en fonction des intérêts légitimes de Google et de tiers envers la satisfaction des besoins des utilisateurs.</translation>
 <translation id="7762024824096060040">Impossible d'utiliser ce compte</translation>
@@ -10010,6 +10020,7 @@ Appuyez sur un commutateur attribué ou une touche du clavier pour retirer l'att
 <translation id="7800518121066352902">Rotation dans le sens c&amp;ontraire des aiguilles d'une montre</translation>
 <translation id="780301667611848630">Non merci</translation>
 <translation id="7803657407897251194">Pour poursuivre la configuration avec votre appareil Android, connectez votre <ph name="DEVICE_TYPE" /> à un réseau</translation>
+<translation id="7803714812705886512">Google utilise moins de données (par exemple, des parties d'URL, des informations de téléchargement) pour détecter les menaces.</translation>
 <translation id="7804072833593604762">Onglet fermé</translation>
 <translation id="7805371082115476536">Léger</translation>
 <translation id="7805768142964895445">État</translation>
@@ -10034,6 +10045,7 @@ Appuyez sur un commutateur attribué ou une touche du clavier pour retirer l'att
 <translation id="7820400255539998692">Supprimez <ph name="FILENAME" /> afin que les autres utilisateurs de cet appareil ne puissent pas voir vos mots de passe</translation>
 <translation id="7820561748632634942">Attribuer des commutateurs supplémentaires?</translation>
 <translation id="782057141565633384">C&amp;opier l'adresse de la vidéo</translation>
+<translation id="7823975162954158194">Fournit une protection renforcée.</translation>
 <translation id="7824665136384946951">Votre organisation a désactivé la Navigation sécurisée</translation>
 <translation id="7824864914877854148">Une erreur s'est produite et la sauvegarde n'a pas pu être terminée</translation>
 <translation id="7825289983414309119">Montagne</translation>
@@ -11191,6 +11203,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8601206103050338563">Authentification du client WWW TLS</translation>
 <translation id="8602674530529411098">Applications (bêta)</translation>
 <translation id="8602851771975208551">Un autre programme sur votre ordinateur a ajouté une application qui risque de modifier le fonctionnement de Google Chrome.</translation>
+<translation id="8602867356511778172">Google utilise davantage de données (par exemple, des URL, des échantillons de contenu de page, des informations système) pour détecter les menaces plus rapidement et avec plus de précision.</translation>
 <translation id="860399903490378651">Fermer cet affichage</translation>
 <translation id="8605428685123651449">Mémoire utilisée par SQLite</translation>
 <translation id="8607171490667464784">En mode inactif et lorsque l'appareil utilise la pile</translation>
@@ -12189,6 +12202,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="950079950995628542">De « <ph name="PHONE_NAME" /> »</translation>
 <translation id="950307215746360464">Guide de configuration</translation>
 <translation id="951273949038779544"><ph name="SITE_ACCESS" />. Installée par votre administrateur</translation>
+<translation id="95160010745047025">Reprenez là où vous vous étiez arrêté en mode IA</translation>
 <translation id="951991426597076286">Refuser</translation>
 <translation id="952137968828772361">Apprenez-en davantage sur les produits, les lieux ou le texte que vous voyez sur votre écran</translation>
 <translation id="952471655966876828">L'appareil se connecte automatiquement lorsqu'il est allumé et utilisé</translation>

@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">Velkommen tilbage.</translation>
 <translation id="2015722694326466240">Angiv en adgangskode på din enhed, før du kan se adgangskoder.</translation>
 <translation id="201759455285471444">Udvid fanegruppe.</translation>
-<translation id="202070562065520783">Forklar dette til mig</translation>
 <translation id="2044394949148788042">Åbn fanegitteret</translation>
 <translation id="2044681667265133332">Kontoen <ph name="USER_EMAIL" /> administreres af <ph name="HOSTED_DOMAIN" />, som muligvis kan se visse oplysninger. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nyt element</translation>
@@ -637,6 +636,7 @@
 <translation id="3324193307694657476">Adresse 2</translation>
 <translation id="3328801116991980348">Webstedoplysninger</translation>
 <translation id="333229797575847124">Sådan aktiverer du denne funktion</translation>
+<translation id="334004756946755423">Forklar dette for mig:</translation>
 <translation id="3344233834747405775">Ugyldigt navn på kortindehaver</translation>
 <translation id="3344485292736684439">{count,plural, =1{Bogmærket er gemt i "{title}" på din konto, {email}}one{Bogmærket er gemt i "{title}" på din konto, {email}}other{Bogmærkerne er gemt i "{title}" på din konto, {email}}}</translation>
 <translation id="334690320928261823">Seneste faner</translation>

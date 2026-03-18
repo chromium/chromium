@@ -504,6 +504,7 @@
 <translation id="1327495825214193325">ADB-virheenkorjauksen käyttöönottoa varten tämä <ph name="DEVICE_TYPE" /> on käynnistettävä uudelleen. Sen poistaminen käytöstä edellyttää tehdasasetusten palautusta.</translation>
 <translation id="1327527584824210101">Käytä avainkoodia</translation>
 <translation id="1327794256477341646">Sijaintia edellyttävät ominaisuudet eivät enää toimi</translation>
+<translation id="1328041566565643371">Pystysuuntaisen välilehtirivin rajauskahva (vedettävä)</translation>
 <translation id="1328364753167940710"><ph name="NUM_HR" /> h päästä</translation>
 <translation id="1328928545650070438">Alenna kulmakarvoja</translation>
 <translation id="1329466763986822896">Paranna tämän hotspotin yksityisyyttä</translation>
@@ -1480,6 +1481,7 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
     <ph name="BEGIN_DESCRIPTION3" />Organisaatio voi käyttää laitteen istuntoa etätuen tarjoamiseen.<ph name="END_DESCRIPTION3" />
     <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />Pääsyoikeuksien antaminen<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
     <ph name="BEGIN_DESCRIPTION4" />Organisaation sovelluksia, palveluita ja verkkoja voi käyttää vain rekisteröidyillä laitteilla.<ph name="END_DESCRIPTION4" /></translation>
+<translation id="1979208610845113582">Voit nyt jatkaa tekoälytilan viestiketjuja suoraan täältä. Voit poistaa kiinnityksen milloin tahansa.</translation>
 <translation id="1979280758666859181">Olet vaihtamassa kanavalle, jossa on käytössä tuotteen <ph name="PRODUCT_NAME" /> vanhempi versio. Kanavan muutos otetaan käyttöön, kun kanavaversio vastaa tällä hetkellä laitteellesi asennettua versiota.</translation>
 <translation id="1979582938184524893">Valitse sisällytettävät henkilökohtaiset tiedot manuaalisesti</translation>
 <translation id="197989455406964291">KDC ei tue salaustyyppiä</translation>
@@ -1947,6 +1949,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2297705863329999812">Hae tulostimia</translation>
 <translation id="2297822946037605517">Jaa tämä sivu</translation>
 <translation id="229871422646860597">Irrota yläpalkista</translation>
+<translation id="2298749511072894576">Voit nyt jatkaa Gemini-keskusteluja suoraan täältä. Voit poistaa kiinnityksen milloin tahansa.</translation>
 <translation id="2299685119225839832">Voit saada yhteenvedon siitä, mitä ihmiset sanovat arvosteluissa</translation>
 <translation id="2299734369537008228">Liukusäädin: <ph name="MIN_LABEL" />–<ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">Sisällytä kaikki debugd-palvelun keräämät lokitiedostot erillisenä arkistona.</translation>
@@ -2311,6 +2314,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="252418934079508528">Asenna <ph name="DEVICE_OS" /></translation>
 <translation id="252513908494776481">Kysy tästä välilehdestä</translation>
 <translation id="2525746158911982776">Päivitys epäonnistui, koska järjestelmässä ei ole tarpeeksi tallennustilaa.</translation>
+<translation id="2525842906387880861">Et enää näe ehdotuksia enää tällä sivulla</translation>
 <translation id="2526590354069164005">Työpöytä</translation>
 <translation id="2526619973349913024">Tarkista päivitykset</translation>
 <translation id="2527167509808613699">Mikä tahansa yhteys</translation>
@@ -2804,6 +2808,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2855243985454069333">Poistaa kaikkien synkronoitujen laitteiden historian</translation>
 <translation id="2855812646048059450">Kirjaudu sisään: <ph name="CREDENTIAL_PROVIDER" /></translation>
 <translation id="2857047802954430547">Kirjaudu sisään, niin voit käyttää salasanoja, kirjanmerkkejä ja muita tietoja kaikilla laitteillasi</translation>
+<translation id="2857195263461649321">Jatka siitä, mihin jäit Geminissä</translation>
 <translation id="2859741939921354763">Tuo salasanoja tänne: <ph name="BRAND" /></translation>
 <translation id="2860284453253554297">Yrityskäytännöt</translation>
 <translation id="2860710618359053450">Käännä leukaa oikealle</translation>
@@ -5958,6 +5963,7 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5006778209728626987">Salama</translation>
 <translation id="5007392906805964215">Tarkista</translation>
 <translation id="50080882645628821">Poista profiili</translation>
+<translation id="5008587162781422067">Välilehtirivin leveys on nyt <ph name="TAB_STRIP_PERCENT" />, sisältöalueen leveys on nyt <ph name="CONTENT_AREA_PERCENT" />.</translation>
 <translation id="5008936837313706385">Toiminnon nimi</translation>
 <translation id="5009463889040999939">Nimetään profiilia uudelleen. Tämä voi kestää muutaman minuutin.</translation>
 <translation id="5010886807652684893">Visuaalinen näkymä</translation>
@@ -6604,6 +6610,7 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="5460861858595506978">Inspiraatiota</translation>
 <translation id="5461050611724244538">Yhteys puhelimeesi on katkennut</translation>
 <translation id="5463275305984126951">Sijainnin <ph name="LOCATION" /> hakemisto</translation>
+<translation id="5463348003600590648">Poista ehdotukset käytöstä</translation>
 <translation id="5463450804024056231">Tilaa sähköpostit: <ph name="DEVICE_TYPE" /></translation>
 <translation id="5463625433003343978">Haetaan laitteita…</translation>
 <translation id="5463856536939868464">Piilotetut kirjanmerkit sisältävä valikko</translation>
@@ -6767,6 +6774,7 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="557506220935336383">Katso muiden sivustojen laajennusluvat</translation>
 <translation id="5575473780076478375">Incognito-laajennus: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">Esittelyn rekisteröintipyynnön kanssa tapahtui ongelma.</translation>
+<translation id="5576472948015790634">Voit nyt ylläpitää välilehtiryhmiä ja Gemini-keskusteluja yhdestä paikasta. Voit poistaa kiinnityksen milloin tahansa.</translation>
 <translation id="557722062034137776">Laitteen nollaus ei vaikuta Google-tileihisi tai mihinkään näihin tileihin synkronoituihin tietoihin. Kaikki paikallisesti laitteellesi tallennetut tiedostot kuitenkin poistetaan.</translation>
 <translation id="5578059481725149024">Automaattinen kirjautuminen</translation>
 <translation id="5578387000057347457">Lisää oma kehote tai korosta tekstiä luodaksesi kuvan</translation>
@@ -9946,6 +9954,7 @@ Poista määritys painamalla määritettyä kytkintä tai näppäintä.</transla
 <translation id="7758884017823246335">Lisää sivustohaku</translation>
 <translation id="7759443981285558794">Näytä ChromeOS:stä tuodut varmenteet</translation>
 <translation id="7759606211476816416">Sivustojen pikakuvakkeet</translation>
+<translation id="7759748248923439385">Voit nyt ylläpitää välilehtiryhmiä ja tekoälytilan viestiketjuja yhdestä paikasta. Voit poistaa kiinnityksen milloin tahansa.</translation>
 <translation id="7759809451544302770">Valinnainen</translation>
 <translation id="7760176388948986635">Salli laitteen sijainnin käyttäminen ChromeOS- ja Android-sovelluksille, -verkkosivustoille ja -palveluille, joilla on sijaintilupa. Sijaintitietojen tarkkuus tarjoaa tarkemman sijainnin Android-sovelluksille ja ‑palveluille. Google käsittelee ajoittain laitteen anturien ja langattoman signaalin tietoja laitteeltasi langattomien signaalien sijainnin keräämistä varten. Näitä anonyymejä tietoja käytetään sijainnin tarkkuuden ja sijaintiin perustuvien palvelujen kehittämiseen, Googlen palveluiden parantamiseen, tarjoamiseen ja ylläpitämiseen Googlen ja kolmansien osapuolten oikeutetun edun mukaisesti.</translation>
 <translation id="7762024824096060040">Tiliä ei voi käyttää</translation>
@@ -12197,6 +12206,7 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="950079950995628542">Täältä: <ph name="PHONE_NAME" /></translation>
 <translation id="950307215746360464">Käyttöönotto-opas</translation>
 <translation id="951273949038779544"><ph name="SITE_ACCESS" />. Järjestelmänvalvojan asentama</translation>
+<translation id="95160010745047025">Jatka siitä, mihin jäit tekoälytilassa</translation>
 <translation id="951991426597076286">Hylkää</translation>
 <translation id="952137968828772361">Lue lisää näytöllä näkyvistä tuotteista, paikoista tai tekstistä</translation>
 <translation id="952471655966876828">Laitteen yhteys muodostetaan automaattisesti, kun laite käynnistetään tai sitä käytetään</translation>

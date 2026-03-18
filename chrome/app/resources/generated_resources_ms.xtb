@@ -504,6 +504,7 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1327495825214193325">Untuk mendayakan penyahpepijatan ADB, <ph name="DEVICE_TYPE" /> perlu dimulakan semula. Tindakan melumpuhkan ADB memerlukan tetapan semula kepada tetapan kilang.</translation>
 <translation id="1327527584824210101">Gunakan kunci laluan anda</translation>
 <translation id="1327794256477341646">Ciri yang memerlukan lokasi anda tidak akan berfungsi</translation>
+<translation id="1328041566565643371">Pemegang Ubah Saiz Jalur Tab Menegak (Boleh Diseret)</translation>
 <translation id="1328364753167940710">Dalam <ph name="NUM_HR" /> jam</translation>
 <translation id="1328928545650070438">Kerutkan kening</translation>
 <translation id="1329466763986822896">Tingkatkan privasi untuk tempat liputan ini</translation>
@@ -1481,6 +1482,7 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
     <ph name="BEGIN_DESCRIPTION3" />Organisasi boleh mengakses sesi peranti dari jauh untuk menyediakan penyelesaian masalah.<ph name="END_DESCRIPTION3" />
     <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />Mendayakan akses<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
     <ph name="BEGIN_DESCRIPTION4" />Apl, perkhidmatan dan rangkaian organisasi mungkin hanya tersedia pada peranti yang didaftarkan.<ph name="END_DESCRIPTION4" /></translation>
+<translation id="1979208610845113582">Kini anda boleh menyambung semula urutan AI Mode secara terus di sini. Nyahsematkan ciri ini pada bila-bila masa.</translation>
 <translation id="1979280758666859181">Anda sedang beralih kepada saluran dengan versi <ph name="PRODUCT_NAME" /> yang lebih lama. Perubahan saluran akan dilaksanakan apabila versi saluran sepadan dengan versi yang sedang terpasang pada peranti anda.</translation>
 <translation id="1979582938184524893">Pilih maklumat peribadi yang mahu anda sertakan secara manual</translation>
 <translation id="197989455406964291">KDC tidak menyokong jenis penyulitan</translation>
@@ -1948,6 +1950,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2297705863329999812">Cari pencetak</translation>
 <translation id="2297822946037605517">Kongsi halaman ini</translation>
 <translation id="229871422646860597">Nyahsemat daripada bar alat</translation>
+<translation id="2298749511072894576">Kini anda boleh menyambung semula sembang Gemini secara terus di sini. Nyahsematkan ciri ini pada bila-bila masa.</translation>
 <translation id="2299685119225839832">Anda boleh mendapatkan ringkasan perkara yang orang katakan dalam ulasan mereka</translation>
 <translation id="2299734369537008228">Peluncur: <ph name="MIN_LABEL" /> hingga <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">Sertakan semua fail log yang dikumpulkan oleh debugd sebagai arkib yang berasingan.</translation>
@@ -2312,6 +2315,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="252418934079508528">Pasang <ph name="DEVICE_OS" /></translation>
 <translation id="252513908494776481">Tanya tentang tab ini</translation>
 <translation id="2525746158911982776">Kemaskinian gagal kerana sistem kekurangan ruang storan yang mencukupi.</translation>
+<translation id="2525842906387880861">Anda tidak akan melihat cadangan pada halaman ini lagi</translation>
 <translation id="2526590354069164005">Desktop</translation>
 <translation id="2526619973349913024">Semak kemaskinian</translation>
 <translation id="2527167509808613699">Mana-mana jenis sambungan</translation>
@@ -2805,6 +2809,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2855243985454069333">Memadamkan sejarah daripada semua peranti yang disegerakkan</translation>
 <translation id="2855812646048059450">Log masuk dengan <ph name="CREDENTIAL_PROVIDER" /></translation>
 <translation id="2857047802954430547">Log masuk untuk mendapatkan kata laluan dan penanda halaman anda serta pelbagai lagi pada semua peranti anda</translation>
+<translation id="2857195263461649321">Sambung semula dari tempat anda berhenti pada Gemini</translation>
 <translation id="2859741939921354763">Import kata laluan kepada <ph name="BRAND" /></translation>
 <translation id="2860284453253554297">Dasar Perusahaan</translation>
 <translation id="2860710618359053450">Alihkan rahang ke kanan</translation>
@@ -5963,6 +5968,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5006778209728626987">Kilat</translation>
 <translation id="5007392906805964215">Semak</translation>
 <translation id="50080882645628821">Alih Keluar Profil</translation>
+<translation id="5008587162781422067">Jalur Tab kini <ph name="TAB_STRIP_PERCENT" /> lebar, Kawasan Kandungan kini <ph name="CONTENT_AREA_PERCENT" /> lebar.</translation>
 <translation id="5008936837313706385">Nama Aktiviti</translation>
 <translation id="5009463889040999939">Menamakan semula profil. Proses ini mungkin mengambil masa beberapa minit.</translation>
 <translation id="5010886807652684893">Paparan visual</translation>
@@ -6609,6 +6615,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="5460861858595506978">Inspirasi</translation>
 <translation id="5461050611724244538">Sambungan dengan telefon anda terputus</translation>
 <translation id="5463275305984126951">Indeks bagi <ph name="LOCATION" /></translation>
+<translation id="5463348003600590648">Lumpuhkan cadangan</translation>
 <translation id="5463450804024056231">Mendaftar untuk e-mel <ph name="DEVICE_TYPE" /></translation>
 <translation id="5463625433003343978">Mencari peranti...</translation>
 <translation id="5463856536939868464">Menu mengandungi penanda halaman tersembunyi</translation>
@@ -6772,6 +6779,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="557506220935336383">Lihat kebenaran sambungan untuk laman lain</translation>
 <translation id="5575473780076478375">Sambungan Inkognito: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">Masalah berkaitan permintaan pendaftaran tunjuk cara telah berlaku.</translation>
+<translation id="5576472948015790634">Kini anda boleh mengurus kumpulan tab dan sembang Gemini anda pada satu tempat. Nyahsematkan ciri ini pada bila-bila masa.</translation>
 <translation id="557722062034137776">Penetapan semula peranti anda tidak akan menjejaskan Google Account anda atau sebarang data yang disegerakkan ke akaun ini. Walau bagaimanapun, semua fail yang disimpan secara setempat pada peranti anda akan dipadamkan.</translation>
 <translation id="5578059481725149024">Auto log masuk</translation>
 <translation id="5578387000057347457">Masukkan gesaan tersuai atau serlahkan teks untuk membuat imej</translation>
@@ -9951,6 +9959,7 @@ Tekan suis atau kekunci yang telah ditetapkan untuk mengalih keluar penetapan.</
 <translation id="7758884017823246335">Tambahkan carian laman</translation>
 <translation id="7759443981285558794">Lihat sijil yang diimport daripada ChromeOS</translation>
 <translation id="7759606211476816416">Pintasan laman anda</translation>
+<translation id="7759748248923439385">Kini anda boleh mengurus kumpulan tab dan urutan AI Mode anda pada satu tempat. Nyahsematkan ciri ini pada bila-bila masa.</translation>
 <translation id="7759809451544302770">Pilihan</translation>
 <translation id="7760176388948986635">Benarkan apl, laman web dan perkhidmatan ChromeOS serta Android dengan kebenaran lokasi untuk menggunakan lokasi peranti ini. Ketepatan Lokasi menyediakan lokasi yang lebih tepat untuk apl dan perkhidmatan Android. Untuk berbuat demikian, Google memproses maklumat tentang penderia peranti dan isyarat wayarles secara berkala daripada peranti ini untuk mengumpulkan lokasi isyarat wayarles. Maklumat ini digunakan tanpa mengenal pasti mana-mana individu untuk meningkatkan ketepatan lokasi dan perkhidmatan berasaskan lokasi serta untuk meningkatkan, menyediakan dan mengekalkan perkhidmatan Google berdasarkan kepentingan sah Google dan pihak ketiga untuk memenuhi keperluan pengguna.</translation>
 <translation id="7762024824096060040">Tidak boleh menggunakan akaun ini</translation>
@@ -12206,6 +12215,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="950079950995628542">Daripada "<ph name="PHONE_NAME" />"</translation>
 <translation id="950307215746360464">Panduan persediaan</translation>
 <translation id="951273949038779544"><ph name="SITE_ACCESS" />. Dipasang oleh pentadbir anda</translation>
+<translation id="95160010745047025">Sambung semula dari tempat anda berhenti pada AI Mode</translation>
 <translation id="951991426597076286">Tolak</translation>
 <translation id="952137968828772361">Ketahui tentang produk, tempat atau teks yang dilihat pada skrin anda dengan lebih lanjut</translation>
 <translation id="952471655966876828">Peranti akan menyambung secara automatik apabila dihidupkan atau digunakan</translation>

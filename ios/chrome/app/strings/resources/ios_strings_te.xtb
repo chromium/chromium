@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">తిరిగి స్వాగతం!</translation>
 <translation id="2015722694326466240">పాస్‌వర్డ్‌లను చూడటానికి, మీరు ముందుగా తప్పక మీ పరికరంలో పాస్‌కోడ్‌ను సెట్ చేయాలి.</translation>
 <translation id="201759455285471444">ట్యాబ్ గ్రూప్‌ను విస్తరించండి.</translation>
-<translation id="202070562065520783">దీన్ని నాకు వివరించు</translation>
 <translation id="2044394949148788042">ట్యాబ్ గ్రిడ్‌ను తెరవండి</translation>
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> ఖాతా <ph name="HOSTED_DOMAIN" /> ద్వారా మేనేజ్ చేయబడుతుంది, ఇది కొంత సమాచారాన్ని చూడగలదు. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">కొత్త ఐటెమ్</translation>
@@ -637,6 +636,7 @@
 <translation id="3324193307694657476">అడ్రస్‌ 2</translation>
 <translation id="3328801116991980348">సైట్ సమాచారం</translation>
 <translation id="333229797575847124">ఈ ఫీచర్‌ను ఎలా ఎనేబుల్ చేయాలి</translation>
+<translation id="334004756946755423">దీన్ని నాకు వివరించు:</translation>
 <translation id="3344233834747405775">కార్డుదారుని పేరు చెల్లదు</translation>
 <translation id="3344485292736684439">{count,plural, =1{బుక్‌మార్క్ మీ {email} ఖాతాలోని "{title}"‌లో సేవ్ అయ్యింది}other{బుక్‌మార్క్‌లు మీ {email} ఖాతాలోని "{title}"‌లో సేవ్ అయ్యాయి}}</translation>
 <translation id="334690320928261823">ఇటీవలి ట్యాబ్‌లు</translation>

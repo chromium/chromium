@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">Willkommen zurück!</translation>
 <translation id="2015722694326466240">Um die Passwörter zu sehen, musst du zuerst einen Sicherheitscode auf deinem Gerät einrichten.</translation>
 <translation id="201759455285471444">Tabgruppe maximieren.</translation>
-<translation id="202070562065520783">Erkläre mir das</translation>
 <translation id="2044394949148788042">Tabraster öffnen</translation>
 <translation id="2044681667265133332">Das Konto <ph name="USER_EMAIL" /> wird von <ph name="HOSTED_DOMAIN" /> verwaltet – bestimmte Informationen sind für diese Domain sichtbar. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">neues Element</translation>
@@ -637,6 +636,7 @@
 <translation id="3324193307694657476">Adresse 2</translation>
 <translation id="3328801116991980348">Websiteinformationen</translation>
 <translation id="333229797575847124">So aktivierst du diese Funktion</translation>
+<translation id="334004756946755423">Erkläre mir das:</translation>
 <translation id="3344233834747405775">Ungültiger Name des Karteninhabers</translation>
 <translation id="3344485292736684439">{count,plural, =1{Lesezeichen unter „{title}“ in deinem Konto {email} gespeichert}other{Lesezeichen unter „{title}“ in deinem Konto {email} gespeichert}}</translation>
 <translation id="334690320928261823">Letzte Tabs</translation>

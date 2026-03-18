@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">Karibu tena!</translation>
 <translation id="2015722694326466240">Ili uone manenosiri, ni lazima kwanza uweke namba ya siri kwenye kifaa chako.</translation>
 <translation id="201759455285471444">Panua kikundi cha vichupo.</translation>
-<translation id="202070562065520783">Nifafanulie hili</translation>
 <translation id="2044394949148788042">Fungua gridi ya kichupo</translation>
 <translation id="2044681667265133332">Akaunti ya <ph name="USER_EMAIL" /> inasimamiwa na <ph name="HOSTED_DOMAIN" />, inayoweza kuangalia baadhi ya maelezo. <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">kipengee kipya</translation>
@@ -637,6 +636,7 @@
 <translation id="3324193307694657476">Anwani ya 2</translation>
 <translation id="3328801116991980348">Maelezo ya tovuti</translation>
 <translation id="333229797575847124">Jinsi ya kuwasha kipengele hiki</translation>
+<translation id="334004756946755423">Nifafanulie hili:</translation>
 <translation id="3344233834747405775">Jina la mwenye kadi si sahihi</translation>
 <translation id="3344485292736684439">{count,plural, =1{Alamisho imehifadhiwa kwenye "{title}" katika akaunti yako, {email}}other{Alamisho zimehifadhiwa kwenye "{title}" katika akaunti yako, {email}}}</translation>
 <translation id="334690320928261823">Vichupo vya Hivi Majuzi</translation>

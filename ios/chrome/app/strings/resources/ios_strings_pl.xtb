@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">Witamy ponownie!</translation>
 <translation id="2015722694326466240">Aby wyświetlić hasła, musisz najpierw ustawić kod dostępu na urządzeniu.</translation>
 <translation id="201759455285471444">Rozwiń grupę kart.</translation>
-<translation id="202070562065520783">Wyjaśnij mi to</translation>
 <translation id="2044394949148788042">Otwieranie siatki kart</translation>
 <translation id="2044681667265133332">Kontem <ph name="USER_EMAIL" /> zarządza domena <ph name="HOSTED_DOMAIN" />, która może wyświetlać niektóre informacje. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nowy element</translation>
@@ -637,6 +636,7 @@
 <translation id="3324193307694657476">Adres 2</translation>
 <translation id="3328801116991980348">Informacje o witrynie</translation>
 <translation id="333229797575847124">Jak włączyć tę funkcję</translation>
+<translation id="334004756946755423">Wyjaśnij mi to:</translation>
 <translation id="3344233834747405775">Nieprawidłowe imię i nazwisko posiadacza karty</translation>
 <translation id="3344485292736684439">{count,plural, =1{Zakładka została zapisana w folderze „{title}” na Twoim koncie {email}}few{Zakładki zostały zapisane w folderze „{title}” na Twoim koncie {email}}many{Zakładki zostały zapisane w folderze „{title}” na Twoim koncie {email}}other{Zakładki zostały zapisane w folderze „{title}” na Twoim koncie {email}}}</translation>
 <translation id="334690320928261823">Ostatnie karty</translation>

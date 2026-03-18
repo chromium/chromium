@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">Καλώς ορίσατε και πάλι!</translation>
 <translation id="2015722694326466240">Για να δείτε τους κωδικούς πρόσβασης, θα πρέπει πρώτα να ορίσετε έναν κωδικό πρόσβασης για τη συσκευή σας.</translation>
 <translation id="201759455285471444">Ανάπτυξη ομάδας καρτελών.</translation>
-<translation id="202070562065520783">Εξήγησέ μου το εξής</translation>
 <translation id="2044394949148788042">Άνοιγμα του πλέγματος καρτελών</translation>
 <translation id="2044681667265133332">Η διαχείριση του λογαριασμού <ph name="USER_EMAIL" /> γίνεται από τον τομέα <ph name="HOSTED_DOMAIN" />, ο οποίος μπορεί να βλέπει ορισμένες πληροφορίες. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">νέο στοιχείο</translation>
@@ -637,6 +636,7 @@
 <translation id="3324193307694657476">Διεύθυνση 2</translation>
 <translation id="3328801116991980348">Πληροφορίες ιστοτόπου</translation>
 <translation id="333229797575847124">Πώς να ενεργοποιήσετε αυτή τη λειτουργία</translation>
+<translation id="334004756946755423">Εξήγησέ μου το εξής:</translation>
 <translation id="3344233834747405775">Μη έγκυρο όνομα κατόχου κάρτας</translation>
 <translation id="3344485292736684439">{count,plural, =1{Ο σελιδοδείκτης αποθηκεύτηκε στον φάκελο {title} στον λογαριασμό {email}}other{Οι σελιδοδείκτες αποθηκεύτηκαν στον φάκελο{title} στον λογαριασμό {email}}}</translation>
 <translation id="334690320928261823">Πρόσφατες καρτέλες</translation>

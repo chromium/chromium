@@ -505,6 +505,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1327495825214193325">Pour activer le débogage ADB, vous devrez redémarrer votre <ph name="DEVICE_TYPE" />. Et, pour le désactiver, vous devrez rétablir la configuration d'usine.</translation>
 <translation id="1327527584824210101">Utiliser votre clé d'accès</translation>
 <translation id="1327794256477341646">Les fonctionnalités qui nécessitent l'accès à votre position ne seront pas disponibles</translation>
+<translation id="1328041566565643371">Poignée de redimensionnement de la barre d'onglets verticale (déplaçable)</translation>
 <translation id="1328364753167940710">Dans <ph name="NUM_HR" /> h</translation>
 <translation id="1328928545650070438">Froncer les sourcils</translation>
 <translation id="1329466763986822896">Améliorer la confidentialité pour ce point d'accès</translation>
@@ -1472,6 +1473,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
     <ph name="BEGIN_DESCRIPTION3" />L'organisation peut accéder à distance à une session sur un appareil à des fins de dépannage.<ph name="END_DESCRIPTION3" />
     <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />Permettre l'accès<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
     <ph name="BEGIN_DESCRIPTION4" />Il est possible que les applis, services et réseaux de l'organisation ne soient disponibles que sur les appareils enregistrés.<ph name="END_DESCRIPTION4" /></translation>
+<translation id="1979208610845113582">Vous pouvez désormais reprendre directement les fils de discussion du Mode IA ici. Vous pouvez retirer cet élément à tout moment.</translation>
 <translation id="1979280758666859181">Vous souhaitez installer une ancienne version de <ph name="PRODUCT_NAME" />. Ce changement sera appliqué dès que cette version correspondra à celle qui est installée sur votre appareil.</translation>
 <translation id="1979582938184524893">Sélectionner manuellement les informations personnelles que vous voulez inclure</translation>
 <translation id="197989455406964291">KDC n'est pas compatible avec ce type de chiffrement</translation>
@@ -1936,6 +1938,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2297705863329999812">Rechercher des imprimantes</translation>
 <translation id="2297822946037605517">Partager cette page</translation>
 <translation id="229871422646860597">Retirer de la barre d'outils</translation>
+<translation id="2298749511072894576">Vous pouvez désormais reprendre directement vos discussions Gemini ici. Vous pouvez retirer cet élément à tout moment.</translation>
 <translation id="2299685119225839832">Vous pouvez obtenir un résumé des avis des utilisateurs</translation>
 <translation id="2299734369537008228">Curseur allant de <ph name="MIN_LABEL" /> à <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">Ajouter tous les fichiers journaux collectés par debugd dans une archive séparée.</translation>
@@ -2300,6 +2303,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="252418934079508528">Installer <ph name="DEVICE_OS" /></translation>
 <translation id="252513908494776481">Posez une question concernant cet onglet</translation>
 <translation id="2525746158911982776">Échec de la mise à jour, car le système manque d'espace de stockage.</translation>
+<translation id="2525842906387880861">Vous ne verrez plus de suggestions sur cette page</translation>
 <translation id="2526590354069164005">Bureau</translation>
 <translation id="2526619973349913024">Rechercher des mises à jour</translation>
 <translation id="2527167509808613699">Toutes sortes de connexions</translation>
@@ -2793,6 +2797,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2855243985454069333">Supprime l'historique de tous les appareils synchronisés</translation>
 <translation id="2855812646048059450">Se connecter avec <ph name="CREDENTIAL_PROVIDER" /></translation>
 <translation id="2857047802954430547">Connectez-vous pour accéder à vos mots de passe, vos favoris et plus sur tous vos appareils</translation>
+<translation id="2857195263461649321">Reprenez là où vous en étiez sur Gemini</translation>
 <translation id="2859741939921354763">Importez des mots de passe dans le <ph name="BRAND" />.</translation>
 <translation id="2860284453253554297">Règles de l'entreprise</translation>
 <translation id="2860710618359053450">Se tordre la mâchoire à droite</translation>
@@ -4464,6 +4469,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">Identifiant</translation>
 <translation id="397105322502079400">Calcul en cours…</translation>
+<translation id="3971154761614127188">Certaines fonctionnalités peuvent ralentir les sites inconnus</translation>
 <translation id="3971355433478412726">Instructions pour Gemini</translation>
 <translation id="3971764089670057203">Empreintes sur cette clé de sécurité</translation>
 <translation id="3973005893595042880">Utilisateur non autorisé</translation>
@@ -5947,6 +5953,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5006778209728626987">Foudre</translation>
 <translation id="5007392906805964215">Afficher</translation>
 <translation id="50080882645628821">Supprimer le profil</translation>
+<translation id="5008587162781422067">La barre d'onglets a désormais une largeur de <ph name="TAB_STRIP_PERCENT" />, et la zone de contenu a désormais une largeur de <ph name="CONTENT_AREA_PERCENT" />.</translation>
 <translation id="5008936837313706385">Nom de l'activité</translation>
 <translation id="5009463889040999939">Changement de nom du profil… Cela peut prendre quelques minutes.</translation>
 <translation id="5010886807652684893">Vue étendue</translation>
@@ -6592,6 +6599,7 @@ Vous pouvez associer plusieurs contacteurs à cette action.</translation>
 <translation id="5460861858595506978">Inspiration</translation>
 <translation id="5461050611724244538">Connexion perdue avec votre téléphone</translation>
 <translation id="5463275305984126951">Index de <ph name="LOCATION" /></translation>
+<translation id="5463348003600590648">Désactiver les suggestions</translation>
 <translation id="5463450804024056231">Inscrivez-vous pour recevoir des e-mails concernant votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="5463625433003343978">Recherche d'appareils…</translation>
 <translation id="5463856536939868464">Menu contenant des favoris masqués</translation>
@@ -6755,6 +6763,7 @@ Vous pouvez associer plusieurs contacteurs à cette action.</translation>
 <translation id="557506220935336383">Afficher les autorisations d'extensions pour les autres sites</translation>
 <translation id="5575473780076478375">Extension en mode navigation privée :<ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">Un problème est survenu avec la demande d'enregistrement en mode de démonstration.</translation>
+<translation id="5576472948015790634">Vous pouvez désormais gérer vos groupes d'onglets et vos discussions Gemini au même endroit. Vous pouvez retirer cet élément à tout moment.</translation>
 <translation id="557722062034137776">La réinitialisation de votre appareil n'a aucune incidence sur vos comptes Google ni sur leurs données synchronisées. Toutefois, tous les fichiers enregistrés en local sur votre appareil vont être supprimés.</translation>
 <translation id="5578059481725149024">Connexion automatique</translation>
 <translation id="5578387000057347457">Saisissez un prompt personnalisé ou mettez du texte en surbrillance pour créer une image</translation>
@@ -9937,6 +9946,7 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="7758884017823246335">Ajouter une recherche sur un site</translation>
 <translation id="7759443981285558794">Afficher les certificats importés depuis ChromeOS</translation>
 <translation id="7759606211476816416">Vos raccourcis de sites</translation>
+<translation id="7759748248923439385">Vous pouvez désormais gérer vos groupes d'onglets et vos fils de discussion en Mode IA au même endroit. Vous pouvez retirer cet élément à tout moment.</translation>
 <translation id="7759809451544302770">Facultatif</translation>
 <translation id="7760176388948986635">Permettez aux applis, sites et services ChromeOS et Android autorisés à accéder à la position d'utiliser celle de cet appareil. La précision de la localisation permet aux applis et services Android d'obtenir une localisation plus précise. Pour ce faire, Google traite périodiquement des informations sur les capteurs de l'appareil et les signaux sans fil émis par cet appareil afin d'obtenir la localisation des signaux sans fil à l'aide du crowdsourcing. Ces informations sont utilisées sans identifier les utilisateurs pour améliorer la précision de la localisation et les services basés sur la localisation, ainsi que pour améliorer, fournir et gérer les services de Google en fonction des intérêts légitimes de Google et de tiers, afin de répondre aux besoins des utilisateurs.</translation>
 <translation id="7762024824096060040">Impossible d'utiliser ce compte</translation>
@@ -10008,6 +10018,7 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="7800518121066352902">Rotation &amp;antihoraire</translation>
 <translation id="780301667611848630">Non, merci</translation>
 <translation id="7803657407897251194">Pour poursuivre la configuration avec votre appareil Android, connectez votre <ph name="DEVICE_TYPE" /> à un réseau</translation>
+<translation id="7803714812705886512">Google utilise moins de données (par exemple, des parties d'URL, des informations sur les téléchargements) pour détecter les menaces</translation>
 <translation id="7804072833593604762">Onglet fermé</translation>
 <translation id="7805371082115476536">Sensible</translation>
 <translation id="7805768142964895445">État</translation>
@@ -10032,6 +10043,7 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="7820400255539998692">Supprimez <ph name="FILENAME" /> afin que les autres utilisateurs de cet appareil ne puissent pas voir vos mots de passe</translation>
 <translation id="7820561748632634942">Associer d'autres contacteurs ?</translation>
 <translation id="782057141565633384">C&amp;opier l'adresse vidéo</translation>
+<translation id="7823975162954158194">Fournit une protection robuste</translation>
 <translation id="7824665136384946951">Votre organisation a désactivé la navigation sécurisée</translation>
 <translation id="7824864914877854148">Échec de la sauvegarde en raison d'une erreur</translation>
 <translation id="7825289983414309119">Montagne</translation>
@@ -11190,6 +11202,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8601206103050338563">Authentification du client WWW TLS</translation>
 <translation id="8602674530529411098">Applis (bêta)</translation>
 <translation id="8602851771975208551">Un autre programme sur votre ordinateur a ajouté une application qui risque de modifier le fonctionnement de Google Chrome.</translation>
+<translation id="8602867356511778172">Google utilise plus de données (par exemple, des URL, des extraits du contenu de pages, des informations système) pour détecter les menaces plus rapidement et avec plus de précision</translation>
 <translation id="860399903490378651">Fermer cette vue</translation>
 <translation id="8605428685123651449">Mémoire SQLite</translation>
 <translation id="8607171490667464784">Lorsque l'appareil est inactif et sur batterie</translation>
@@ -12189,6 +12202,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="950079950995628542">Provenant de <ph name="PHONE_NAME" /></translation>
 <translation id="950307215746360464">Guide de configuration</translation>
 <translation id="951273949038779544"><ph name="SITE_ACCESS" />. Installée par votre administrateur</translation>
+<translation id="95160010745047025">Reprenez là où vous en étiez dans le Mode IA</translation>
 <translation id="951991426597076286">Refuser</translation>
 <translation id="952137968828772361">En savoir plus sur les produits, lieux ou textes que vous voyez sur votre écran</translation>
 <translation id="952471655966876828">L'appareil se connecte automatiquement lorsqu'il est allumé ou utilisé</translation>

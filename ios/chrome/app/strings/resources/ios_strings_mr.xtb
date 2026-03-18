@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">तुमचे पुन्हा स्वागत आहे!</translation>
 <translation id="2015722694326466240">पासवर्ड पाहण्यासाठी, तुम्ही प्रथम तुमच्या डीव्हाइसवर पासकोड सेट करणे आवश्यक आहे.</translation>
 <translation id="201759455285471444">टॅब गटाचा विस्तार करा.</translation>
-<translation id="202070562065520783">मला हे समजवा</translation>
 <translation id="2044394949148788042">टॅब ग्रिड उघडा</translation>
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> हे खाते <ph name="HOSTED_DOMAIN" /> द्वारे व्यवस्थापित केले आहे, ज्याला काही माहिती दिसू शकते. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">नवीन आयटम</translation>
@@ -637,6 +636,7 @@
 <translation id="3324193307694657476">पत्ता 2</translation>
 <translation id="3328801116991980348">साइट माहिती</translation>
 <translation id="333229797575847124">हे वैशिष्ट्य कसे सुरू करावे</translation>
+<translation id="334004756946755423">मला हे समजव:</translation>
 <translation id="3344233834747405775">कार्डधारकाचे नाव चुकीचे आहे</translation>
 <translation id="3344485292736684439">{count,plural, =1{बुकमार्क तुमच्या {email} खात्यामध्ये "{title}" वर सेव्ह केला आहे}other{बुकमार्क तुमच्या {email} खात्यामध्ये "{title}" वर सेव्ह केले आहेत}}</translation>
 <translation id="334690320928261823">अलीकडील टॅब</translation>

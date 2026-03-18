@@ -506,6 +506,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="1327495825214193325">Lai iespējotu ADB atkļūdošanu, ir nepieciešama šīs <ph name="DEVICE_TYPE" /> ierīces restartēšana. Lai to atspējotu, jāveic rūpnīcas iestatījumu atiestatīšana.</translation>
 <translation id="1327527584824210101">Izmantojiet piekļuves atslēgu</translation>
 <translation id="1327794256477341646">Funkcijas, kurām nepieciešama piekļuve atrašanās vietas datiem, nedarbosies</translation>
+<translation id="1328041566565643371">Vertikālās ciļņu joslas lieluma maiņas turis (var vilkt)</translation>
 <translation id="1328364753167940710">Pēc <ph name="NUM_HR" /> h</translation>
 <translation id="1328928545650070438">Nolaidiet uzacis</translation>
 <translation id="1329466763986822896">Uzlabojiet šī tīklāja konfidencialitāti</translation>
@@ -1473,6 +1474,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris lietotnēm. Vara
     <ph name="BEGIN_DESCRIPTION3" />Organizācija var attāli piekļūt ierīces sesijai, lai novērstu problēmas.<ph name="END_DESCRIPTION3" />
     <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />Piekļuves iespējošana<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
     <ph name="BEGIN_DESCRIPTION4" />Organizācijas lietotnes, pakalpojumi un tīkli var būt pieejami tikai reģistrētās ierīcēs.<ph name="END_DESCRIPTION4" /></translation>
+<translation id="1979208610845113582">Šeit tagad varat tieši atsākt MI režīma pavedienus. Jebkurā laikā varat atspraust šo funkciju.</translation>
 <translation id="1979280758666859181">Jūs gatavojaties pāriet uz kanālu ar vecāku <ph name="PRODUCT_NAME" /> versiju. Kanāla maiņa tiks piemērota, kad kanāla versija atbildīs versijai, kas pašreiz instalēta jūsu ierīcē.</translation>
 <translation id="1979582938184524893">Manuāli atlasīt iekļaujamo personas informāciju</translation>
 <translation id="197989455406964291">KDC neatbalsta šifrējuma veidu</translation>
@@ -1937,6 +1939,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2297705863329999812">Meklēt printerus</translation>
 <translation id="2297822946037605517">Kopīgot šo lapu</translation>
 <translation id="229871422646860597">Atspraust no rīkjoslas</translation>
+<translation id="2298749511072894576">Šeit tagad varat tieši atsākt Gemini tērzēšanas sarunas. Jebkurā laikā varat atspraust šo funkciju.</translation>
 <translation id="2299685119225839832">Varat iegūt apkopojumu par to, ko lietotāji raksta atsauksmēs.</translation>
 <translation id="2299734369537008228">Slīdnis: no <ph name="MIN_LABEL" /> līdz <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">Atsevišķā arhīvā iekļaut visus pakalpojuma debugd ievāktos žurnālfailus.</translation>
@@ -2301,6 +2304,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="252418934079508528">Instalēt <ph name="DEVICE_OS" /></translation>
 <translation id="252513908494776481">Uzdodiet jautājumus šo cilni</translation>
 <translation id="2525746158911982776">Atjaunināšana neizdevās, jo sistēmā nepietiek vietas krātuvē.</translation>
+<translation id="2525842906387880861">Ieteikumi vairs netiks rādīti šajā lapā.</translation>
 <translation id="2526590354069164005">Darbvirsma</translation>
 <translation id="2526619973349913024">Pārbaudīt atjauninājumus</translation>
 <translation id="2527167509808613699">Jebkāda veida savienojums</translation>
@@ -2794,6 +2798,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2855243985454069333">Tiks dzēsta vēsture no visām sinhronizētajām ierīcēm</translation>
 <translation id="2855812646048059450">Pierakstīties, izmantojot <ph name="CREDENTIAL_PROVIDER" /> kontu</translation>
 <translation id="2857047802954430547">Pierakstieties, lai varētu piekļūt parolēm, grāmatzīmēm un citiem datiem visās savās ierīcēs.</translation>
+<translation id="2857195263461649321">Turpiniet iesākto pakalpojumā Gemini</translation>
 <translation id="2859741939921354763">Importējiet paroles pakalpojumā <ph name="BRAND" />.</translation>
 <translation id="2860284453253554297">Uzņēmuma politikas</translation>
 <translation id="2860710618359053450">Pārvietojiet apakšžokli pa labi</translation>
@@ -5949,6 +5954,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5006778209728626987">Zibens</translation>
 <translation id="5007392906805964215">Pārskatīt</translation>
 <translation id="50080882645628821">Noņemt profilu</translation>
+<translation id="5008587162781422067">Ciļņu joslas platums tagad ir <ph name="TAB_STRIP_PERCENT" />, satura apgabala platums tagad ir <ph name="CONTENT_AREA_PERCENT" />.</translation>
 <translation id="5008936837313706385">Darbības nosaukums</translation>
 <translation id="5009463889040999939">Notiek profila pārdēvēšana. Tas var ilgt dažas minūtes.</translation>
 <translation id="5010886807652684893">Vizuālais skats</translation>
@@ -6594,6 +6600,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5460861858595506978">Iedvesma</translation>
 <translation id="5461050611724244538">Savienojums ar tālruni tika zaudēts</translation>
 <translation id="5463275305984126951">Indekss <ph name="LOCATION" /></translation>
+<translation id="5463348003600590648">Atspējot ieteikumus</translation>
 <translation id="5463450804024056231">Reģistrēties <ph name="DEVICE_TYPE" /> e-pasta ziņojumiem</translation>
 <translation id="5463625433003343978">Notiek ierīču meklēšana…</translation>
 <translation id="5463856536939868464">Izvēlne ar paslēptām grāmatzīmēm</translation>
@@ -6757,6 +6764,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="557506220935336383">Skatīt paplašinājumu atļaujas citām vietnēm</translation>
 <translation id="5575473780076478375">Inkognito paplašinājums: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">Radās problēma ar demonstrācijas reģistrācijas pieprasījumu.</translation>
+<translation id="5576472948015790634">Tagad varat vienuviet pārvaldīt ciļņu grupas un Gemini tērzēšanas sarunas. Jebkurā laikā varat atspraust šo funkciju.</translation>
 <translation id="557722062034137776">Ierīces atiestatīšana neietekmēs jūsu Google kontus un ar tiem sinhronizētos datus, taču tiks dzēsti visi faili, kuri ierīcē ir saglabāti lokāli.</translation>
 <translation id="5578059481725149024">Automātiska pierakstīšanās</translation>
 <translation id="5578387000057347457">Ievadiet pielāgotu uzvedni vai iezīmējiet tekstu, lai izveidotu attēlu.</translation>
@@ -9937,6 +9945,7 @@ Lai noņemtu piešķīrumu, nospiediet piešķirto slēdzi vai taustiņu.</trans
 <translation id="7758884017823246335">Pievienojiet meklēšanu vietnē</translation>
 <translation id="7759443981285558794">Skatīt no operētājsistēmas ChromeOS importētos sertifikātus</translation>
 <translation id="7759606211476816416">Jūsu vietņu saīsnes</translation>
+<translation id="7759748248923439385">Tagad varat vienuviet pārvaldīt ciļņu grupas un MI režīma pavedienus. Jebkurā laikā varat atspraust šo funkciju.</translation>
 <translation id="7759809451544302770">Neobligātas</translation>
 <translation id="7760176388948986635">Ļauj ChromeOS un Android lietotnēm, vietnēm un pakalpojumiem ar atrašanās vietas atļauju izmantot šīs ierīces atrašanās vietas datus. Iestatījums “Atrašanās vietas precizitāte” Android lietotnēm un pakalpojumiem nodrošina precīzāku atrašanās vietu informāciju. Šim nolūkam Google periodiski apstrādā informāciju par ierīces sensoriem un no šīs ierīces saņemtos bezvadu signālus, lai ar kolektīvo pakalpojumu palīdzību noteiktu bezvadu signālu atrašanās vietas. Neidentificējot nevienu personu, šie dati tiek izmantoti, lai uzlabotu atrašanās vietu precizitāti un ar atrašanās vietu saistītus pakalpojumus, kā arī uzlabotu, nodrošinātu un uzturētu Google pakalpojumus saskaņā ar Google un trešo pušu likumīgām interesēm sniegt lietotāja vajadzībām atbilstošus pakalpojumus.</translation>
 <translation id="7762024824096060040">Nevar izmantot šo kontu</translation>
@@ -12190,6 +12199,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="950079950995628542">No “<ph name="PHONE_NAME" />”</translation>
 <translation id="950307215746360464">Iestatīšanas ceļvedis</translation>
 <translation id="951273949038779544"><ph name="SITE_ACCESS" />. Instalēja administrators</translation>
+<translation id="95160010745047025">Turpiniet iesākto MI režīmā</translation>
 <translation id="951991426597076286">Noraidīt</translation>
 <translation id="952137968828772361">Uzziniet vairāk par ekrānā redzamajiem produktiem, vietām vai tekstu.</translation>
 <translation id="952471655966876828">Ierīcē tiks automātiski izveidots savienojums, kad tā būs ieslēgta vai tiks izmantota.</translation>

@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">Բարի վերադարձ</translation>
 <translation id="2015722694326466240">Գաղտնաբառերը տեսնելու համար ձեր սարքում նախ պետք է անցակոդ սահմանեք:</translation>
 <translation id="201759455285471444">Ծավալել ներդիրների խումբը։</translation>
-<translation id="202070562065520783">Բացատրիր սա</translation>
 <translation id="2044394949148788042">Բացեք ներդիրների ցանցը</translation>
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> հաշիվը կառավարվում է <ph name="HOSTED_DOMAIN" /> տիրույթի կողմից, որին հնարավոր է, որ տեսանելի լինել որոշ տեղեկություններ։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">նոր տարր</translation>
@@ -637,6 +636,7 @@
 <translation id="3324193307694657476">Հասցե 2</translation>
 <translation id="3328801116991980348">Տեղեկություններ կայքի մասին</translation>
 <translation id="333229797575847124">Ինչպես միացնել այս գործառույթը</translation>
+<translation id="334004756946755423">Բացատրիր ինձ հետևյալը՝</translation>
 <translation id="3344233834747405775">Քարտապանի անվավեր անուն</translation>
 <translation id="3344485292736684439">{count,plural, =1{Էջանիշը պահվեց {email} հաշվի «{title}» պանակում}one{Էջանիշը պահվեց {email} հաշվի «{title}» պանակում}other{Էջանիշները պահվեցին {email} հաշվի «{title}» պանակում}}</translation>
 <translation id="334690320928261823">Վերջին ներդիրները</translation>

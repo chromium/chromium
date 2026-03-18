@@ -504,6 +504,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1327495825214193325">ADB sazlamasını aktivləşdirmək üçün bu <ph name="DEVICE_TYPE" /> cihazı yenidən başladılmalıdır. Deaktiv edilməsi üçün ilkin ayarlarına sıfırlanmalıdır.</translation>
 <translation id="1327527584824210101">Giriş açarınızdan istifadə edin</translation>
 <translation id="1327794256477341646">Məkanınızı tələb edən xüsusiyyətlər işləməyəcək</translation>
+<translation id="1328041566565643371">Şaquli tab zolağının ölçüsünü dəyişmək üçün (sürüşdürülə bilən) tutacaq</translation>
 <translation id="1328364753167940710"><ph name="NUM_HR" /> saat sonra</translation>
 <translation id="1328928545650070438">Qaşlarınızı aşağı salın</translation>
 <translation id="1329466763986822896">Bu hotspot üçün məxfiliyi artırın</translation>
@@ -1471,6 +1472,7 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
     <ph name="BEGIN_DESCRIPTION3" />Təşkilat nasazlıqların aradan qaldırılması üçün cihaz sessiyasına məsafədən daxil ola bilər.<ph name="END_DESCRIPTION3" />
     <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />Giriş imkanı vermək<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
     <ph name="BEGIN_DESCRIPTION4" />Təşkilatın tətbiq, xidmət və şəbəkələri yalnız qeydiyyatdan keçirilmiş cihazlarda əlçatan ola bilər.<ph name="END_DESCRIPTION4" /></translation>
+<translation id="1979208610845113582">Artıq Sİ rejimi mövzularını birbaşa burada davam etdirə bilərsiniz. İstənilən vaxt bunun bərkidilməsini ləğv edin.</translation>
 <translation id="1979280758666859181">Köhnə versiyalı <ph name="PRODUCT_NAME" /> ilə kanala keçirsiniz.</translation>
 <translation id="1979582938184524893">Daxil ediləcək şəxsi məlumatları manual seçin</translation>
 <translation id="197989455406964291">KDC şifrələmə növünü dəstəkləmir</translation>
@@ -1938,6 +1940,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2297705863329999812">Printerləri axtarın</translation>
 <translation id="2297822946037605517">Bu səhifəni paylaşın</translation>
 <translation id="229871422646860597">Alətlər panelinə bərkitməyin</translation>
+<translation id="2298749511072894576">Artıq Gemini söhbətlərini birbaşa burada davam etdirə bilərsiniz. İstənilən vaxt bunun bərkidilməsini ləğv edin.</translation>
 <translation id="2299685119225839832">İnsanların rəylərindəki fikirlərinin xülasəsini əldə edə bilərsiniz</translation>
 <translation id="2299734369537008228">Sürüngəc: <ph name="MIN_LABEL" /> və <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">Bütün debugd ilə toplanan loq fayllarını ayrı arxivə daxil edin.</translation>
@@ -2302,6 +2305,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="252418934079508528"><ph name="DEVICE_OS" /> quraşdırın</translation>
 <translation id="252513908494776481">Bu tab haqqında soruşun</translation>
 <translation id="2525746158911982776">Sistemdə kifayət qədər yaddaş yeri olmadığına görə güncəllənmə alınmadı.</translation>
+<translation id="2525842906387880861">Bu səhifədə təklifləri bir daha görməyəcəksiniz</translation>
 <translation id="2526590354069164005">Masaüstü</translation>
 <translation id="2526619973349913024">Güncəllənmə olmasını yoxlayın</translation>
 <translation id="2527167509808613699">Əlaqənin hər hansı növü</translation>
@@ -2795,6 +2799,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2855243985454069333">Bütün sinxronlaşdırılmış cihazlardan tarixçəni silir</translation>
 <translation id="2855812646048059450"><ph name="CREDENTIAL_PROVIDER" /> ilə daxil olun</translation>
 <translation id="2857047802954430547">Daxil olaraq bütün cihazlarda parolları, əlfəcinləri, və daha çoxunu əldə edin</translation>
+<translation id="2857195263461649321">Gemini-da qaldığınız yerdən davam edin</translation>
 <translation id="2859741939921354763">Parolları <ph name="BRAND" /> bölməsinə import edin</translation>
 <translation id="2860284453253554297">Müəssisə Siyasətləri</translation>
 <translation id="2860710618359053450">Çənənizi sağa çevirin</translation>
@@ -5950,6 +5955,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="5006778209728626987">İldırım</translation>
 <translation id="5007392906805964215">Nəzərdən keçirin</translation>
 <translation id="50080882645628821">Profili silin</translation>
+<translation id="5008587162781422067">Tab Zolağının eni hazırda: <ph name="TAB_STRIP_PERCENT" />, Kontent Sahəsinin eni hazırda: <ph name="CONTENT_AREA_PERCENT" />.</translation>
 <translation id="5008936837313706385">Fəaliyyətin Adı</translation>
 <translation id="5009463889040999939">Profilin adı dəyişdirilir. Bu, bir neçə dəqiqə çəkə bilər.</translation>
 <translation id="5010886807652684893">Vizual baxış</translation>
@@ -6596,6 +6602,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="5460861858595506978">İlhamverici nəticələr</translation>
 <translation id="5461050611724244538">Telefonunuzla bağlantı kəsildi</translation>
 <translation id="5463275305984126951"><ph name="LOCATION" /> indeksi</translation>
+<translation id="5463348003600590648">Təklifləri deaktiv edin</translation>
 <translation id="5463450804024056231"><ph name="DEVICE_TYPE" /> e-məktubları üçün qeydiyyatdan keçin</translation>
 <translation id="5463625433003343978">Cihazlar axtarılır...</translation>
 <translation id="5463856536939868464">Gizli əlfəcinlərdən ibarət olan menyu</translation>
@@ -6759,6 +6766,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="557506220935336383">Digər saytlar üçün artırma icazələrinə baxın</translation>
 <translation id="5575473780076478375">İnkoqnito rejimi Artırması: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">Demo qeydiyyat sorğusunda problem yarandı.</translation>
+<translation id="5576472948015790634">Artıq tab qruplarını və Gemini söhbətlərini bir yerdə idarə edə bilərsiniz. İstənilən vaxt bunun bərkidilməsini ləğv edin.</translation>
 <translation id="557722062034137776">Cihazınızın sıfırlanması Google hesablarınıza və ya bu hesablara sinxronizasiya edilmiş dataya təsir etməyəcək. Cihazınızda yerli olaraq saxlanılan bütün fayllar silinəcək.</translation>
 <translation id="5578059481725149024">Hesaba avtomatik giriş</translation>
 <translation id="5578387000057347457">Şəkil yaratmaq üçün fərdi sorğu daxil edin və ya mətni vurğulayın</translation>
@@ -9935,6 +9943,7 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="7758884017823246335">Sayt axtarışı əlavə edin</translation>
 <translation id="7759443981285558794">ChromeOS-dən import edilmiş sertifikatlara baxın</translation>
 <translation id="7759606211476816416">Sayt qısayollarınız</translation>
+<translation id="7759748248923439385">Artıq tab qruplarını və Sİ rejimi mövzularını bir yerdə idarə edə bilərsiniz. İstənilən vaxt bunun bərkidilməsini ləğv edin.</translation>
 <translation id="7759809451544302770">İstəyə görə</translation>
 <translation id="7760176388948986635">Məkan icazəsi olan ChromeOS, habelə Android tətbiq, veb-sayt və xidmətlərinə bu cihazın məkanından istifadə etmək icazəsi verin. Məkan Dəqiqliyi Android tətbiq və xidmətləri üçün daha dəqiq məkan təmin edir. Bunun üçün Google simsiz siqnal məkanları üzrə kütləvi qaynaq yaratmaq məqsədilə cihaz sensorları və bu cihazdan gələn simsiz siqnallar haqqında məlumatları vaxtaşırı emal edir. Bu məlumatlar heç kəsin kimliyini müəyyən etmədən məkan dəqiqliyini və məkan əsaslı xidmətləri təkmilləşdirmək, həmçinin Google xidmətlərini Google və üçüncü tərəflərin qanuni maraqlarına uyğun olmaqla istifadəçilərin ehtiyaclarına xidmət edəcək şəkildə təkmilləşdirmək, təmin etmək və işlək vəziyyətdə saxlamaq kimi məqsədlər üçün istifadə edilir.</translation>
 <translation id="7762024824096060040">Bu hesabı istifadə etmək mümkün deyil</translation>
@@ -12183,6 +12192,7 @@ Buraya quraşdırılmış proqram təminatı, fayllar, brauzeriniz, cihazın əm
 <translation id="950079950995628542">Buradan: "<ph name="PHONE_NAME" />"</translation>
 <translation id="950307215746360464">Ayarlama bələdçisi</translation>
 <translation id="951273949038779544"><ph name="SITE_ACCESS" />. Administrator quraşdırıb</translation>
+<translation id="95160010745047025">Sİ rejimində qaldığınız yerdən davam edin</translation>
 <translation id="951991426597076286">Kənarlaşdırın</translation>
 <translation id="952137968828772361">Ekranda gördüyünüz məhsullar, yerlər və ya mətn haqqında ətraflı məlumat əldə edin</translation>
 <translation id="952471655966876828">Cihaz işə salındıqda və istifadə edildikdə avtomatik olaraq qoşulacaq</translation>
