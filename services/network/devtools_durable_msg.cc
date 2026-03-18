@@ -105,6 +105,9 @@ mojo_base::BigBuffer DevtoolsDurableMessage::Retrieve() const {
 
 void DevtoolsDurableMessage::MarkComplete() {
   is_complete_ = true;
+  // Trim capacity to match the actual size of the data, to avoid
+  // wasting memory.
+  bytes_.shrink_to_fit();
 }
 
 }  // namespace network
