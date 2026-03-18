@@ -139,8 +139,7 @@ class GlicIphControllerTestClassic : public GlicIphControllerTestBase {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{},
         /*disabled_features=*/{feature_engagement::kIPHGlicTryItFeature,
-                               features::kGlicTrustFirstOnboarding,
-                               features::kGlicMultiInstance});
+                               features::kGlicTrustFirstOnboarding});
   }
   ~GlicIphControllerTestClassic() override = default;
 };
@@ -176,8 +175,7 @@ class GlicIphControllerTestTryIt : public GlicIphControllerTestBase {
       : GlicIphControllerTestBase({feature_engagement::kIPHGlicTryItFeature}) {
     // enables FRE warming to test that successful IPH will warm the FRE.
     scoped_feature_list_.InitWithFeatures(
-        {},
-        {features::kGlicTrustFirstOnboarding, features::kGlicMultiInstance});
+        {}, {features::kGlicTrustFirstOnboarding});
   }
 
   ~GlicIphControllerTestTryIt() override = default;
@@ -223,7 +221,6 @@ class GlicIphControllerTestMultiInstance : public GlicIphControllerTestBase {
       : GlicIphControllerTestBase({feature_engagement::kIPHGlicTryItFeature}) {
     scoped_feature_list_.InitWithFeatures(
         {mojom::features::kGlicMultiTab, features::kGlicMultitabUnderlines,
-         features::kGlicMultiInstance,
          feature_engagement::kIPHGlicPromoFeature},
         {features::kGlicTrustFirstOnboarding});
   }
@@ -232,7 +229,6 @@ class GlicIphControllerTestMultiInstance : public GlicIphControllerTestBase {
 
 IN_PROC_BROWSER_TEST_F(GlicIphControllerTestMultiInstance,
                        ShowPromoWithCtaEndsInGlicFre) {
-  ASSERT_TRUE(GlicEnabling::IsMultiInstanceEnabledByFlags());
   RunTestSequence(ObserveState(kFreWebUiState, std::ref(GetFreController())),
                   WaitForGlicIph({feature_engagement::kIPHGlicTryItFeature}),
                   PressDefaultPromoButton(),
@@ -242,7 +238,6 @@ IN_PROC_BROWSER_TEST_F(GlicIphControllerTestMultiInstance,
 
 IN_PROC_BROWSER_TEST_F(GlicIphControllerTestMultiInstance,
                        ShowPromoWithCtaEndsInGlic) {
-  ASSERT_TRUE(GlicEnabling::IsMultiInstanceEnabledByFlags());
   SetFRECompletion(browser()->profile(), prefs::FreStatus::kCompleted);
   RunTestSequence(WaitForGlicIph({feature_engagement::kIPHGlicTryItFeature}),
                   PressDefaultPromoButton(),
