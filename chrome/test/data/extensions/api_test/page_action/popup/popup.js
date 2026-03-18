@@ -4,8 +4,8 @@
 
 // Wait to be resized by the browser once before indicating pass.
 function onResize() {
-  window.removeEventListener("resize", onResize);
+  window.removeEventListener('resize', onResize);
   chrome.test.notifyPass();
 }
 
-window.addEventListener("resize", onResize);
+window.addEventListener('resize', onResize);

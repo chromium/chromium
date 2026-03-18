@@ -19,7 +19,7 @@ async function hasOffscreenDocument() {
 }
 
 self.addEventListener('fetch', (e) => {
-  var url = new URL(e.request.url);
+  const url = new URL(e.request.url);
   if (url.pathname == '/request_handled_by_sw.html') {
     e.respondWith(new Response('<html>Hello, world!</html>'));
   }

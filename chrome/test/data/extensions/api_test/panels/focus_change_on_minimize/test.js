@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var waitingForFocus = true;
-var panelWinId = chrome.windows.WINDOW_ID_NONE;
-var focusedWinId = chrome.windows.WINDOW_ID_NONE;
-var listenDoneCallback;
+let waitingForFocus = true;
+let panelWinId = chrome.windows.WINDOW_ID_NONE;
+let focusedWinId = chrome.windows.WINDOW_ID_NONE;
+let listenDoneCallback;
 
 // Focus change event handler to watch for created panel to gain focus.
 // Then minimize the panel and wait for it to lose focus by watching
@@ -31,7 +31,7 @@ function onFocusChanged(changedWinId) {
 function minimizePanel() {
   chrome.test.assertEq(focusedWinId, panelWinId);
   waitingForFocus = false;
-  chrome.windows.update(panelWinId, {'state': 'minimized'},
+  chrome.windows.update(panelWinId, {state: 'minimized'},
       chrome.test.callbackPass(function(win) {
           chrome.test.assertEq('minimized', win.state);
       }));
@@ -39,7 +39,7 @@ function minimizePanel() {
 
 // Activate panel so we can minimize it.
 function activatePanel() {
-  chrome.windows.update(panelWinId, {'focused': true},
+  chrome.windows.update(panelWinId, {focused: true},
       chrome.test.callbackPass(function(win) {
       }));
 }
@@ -49,7 +49,7 @@ chrome.test.runTests([
     listenDoneCallback = chrome.test.listenForever(
         chrome.windows.onFocusChanged, onFocusChanged);
     chrome.windows.create(
-        {'url': 'about:blank','type': 'panel'},
+        {url: 'about:blank',type: 'panel'},
         chrome.test.callbackPass(function(win) {
             chrome.test.assertEq('panel', win.type);
             chrome.test.assertEq(true, win.alwaysOnTop);

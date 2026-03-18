@@ -14,7 +14,7 @@ const ERROR_MESSAGE_FOR_CHANGE_PASSWORD =
     'is not authenticated or no matching password could be found for the ' +
     'id.';
 
-var availableTests = [
+const availableTests = [
   function getUrlCollectionWhenUrlValidSucceeds() {
     chrome.passwordsPrivate.getUrlCollection(
         'https://example.com', urlCollection => {
@@ -141,9 +141,9 @@ var availableTests = [
   },
 
   function removeAndUndoRemoveSavedPassword() {
-    var numCalls = 0;
-    var numSavedPasswords;
-    var callback = function(savedPasswordsList) {
+    let numCalls = 0;
+    let numSavedPasswords;
+    const callback = function(savedPasswordsList) {
       numCalls++;
 
       if (numCalls == 1) {
@@ -166,14 +166,14 @@ var availableTests = [
   },
 
   function removePasskey() {
-    var numCalls = 0;
-    var numSavedCredentials;
-    var callback = function(credentials) {
+    let numCalls = 0;
+    let numSavedCredentials;
+    const callback = function(credentials) {
       numCalls++;
 
       if (numCalls == 1) {
         numSavedCredentials = credentials.length;
-        var passkey = credentials[numSavedCredentials - 1];
+        const passkey = credentials[numSavedCredentials - 1];
         chrome.test.assertTrue(passkey.isPasskey);
         chrome.passwordsPrivate.removeCredential(passkey.id,
                                                  passkey.storedIn);
@@ -190,9 +190,9 @@ var availableTests = [
   },
 
   function removeAndUndoRemovePasswordException() {
-    var numCalls = 0;
-    var numPasswordExceptions;
-    var callback = function(passwordExceptionsList) {
+    let numCalls = 0;
+    let numPasswordExceptions;
+    const callback = function(passwordExceptionsList) {
       numCalls++;
 
       if (numCalls == 1) {
@@ -263,13 +263,13 @@ var availableTests = [
   },
 
   function getSavedPasswordList() {
-    var callback = function(list) {
+    const callback = function(list) {
       chrome.test.assertTrue(!!list);
       chrome.test.assertTrue(list.length > 0);
 
-      var idSet = new Set();
-      for (var i = 0; i < list.length; ++i) {
-        var entry = list[i];
+      const idSet = new Set();
+      for (let i = 0; i < list.length; ++i) {
+        const entry = list[i];
         chrome.test.assertTrue(!!entry);
         chrome.test.assertEq(1, entry.affiliatedDomains.length);
         idSet.add(entry.id);
@@ -285,13 +285,13 @@ var availableTests = [
   },
 
   function getPasswordExceptionList() {
-    var callback = function(list) {
+    const callback = function(list) {
       chrome.test.assertTrue(!!list);
       chrome.test.assertTrue(list.length > 0);
 
-      var idSet = new Set();
-      for (var i = 0; i < list.length; ++i) {
-        var exception = list[i];
+      const idSet = new Set();
+      for (let i = 0; i < list.length; ++i) {
+        const exception = list[i];
         chrome.test.assertTrue(!!exception.urls.signonRealm);
         chrome.test.assertTrue(!!exception.urls.shown);
         chrome.test.assertTrue(!!exception.urls.link);
@@ -308,7 +308,7 @@ var availableTests = [
   },
 
   function fetchFamilyMembers() {
-    let callback = function(familyFetchResults) {
+    const callback = function(familyFetchResults) {
       chrome.test.assertNoLastError();
       chrome.test.assertTrue(!!familyFetchResults);
       chrome.test.assertEq(
@@ -339,7 +339,7 @@ var availableTests = [
   },
 
   function importPasswords() {
-    let callback = function(importResults) {
+    const callback = function(importResults) {
       chrome.test.assertNoLastError();
       chrome.test.assertTrue(!!importResults);
       chrome.test.assertEq(
@@ -365,7 +365,7 @@ var availableTests = [
   },
 
   function continueImport() {
-    let callback = function(importResults) {
+    const callback = function(importResults) {
       chrome.test.assertNoLastError();
       chrome.test.assertTrue(!!importResults);
       chrome.test.assertEq(
@@ -386,7 +386,7 @@ var availableTests = [
   },
 
   function exportPasswords() {
-    let callback = function() {
+    const callback = function() {
       chrome.test.assertNoLastError();
 
       // Ensure that the callback is invoked.
@@ -397,7 +397,7 @@ var availableTests = [
   },
 
   function requestExportProgressStatus() {
-    let callback = function(status) {
+    const callback = function(status) {
       chrome.test.assertEq(
           chrome.passwordsPrivate.ExportProgressStatus.IN_PROGRESS, status);
 
@@ -409,7 +409,7 @@ var availableTests = [
   },
 
   function accountStorageIsInactive() {
-    var callback = function(active) {
+    const callback = function(active) {
       chrome.test.assertEq(active, false);
       // Ensure that the callback is invoked.
       chrome.test.succeed();
@@ -419,7 +419,7 @@ var availableTests = [
   },
 
   function accountStorageIsActive() {
-    var callback = function(active) {
+    const callback = function(active) {
       chrome.test.assertEq(active, true);
       // Ensure that the callback is invoked.
       chrome.test.succeed();
@@ -449,7 +449,7 @@ var availableTests = [
         insecureCredentials => {
           chrome.test.assertEq(2, insecureCredentials.length);
 
-          var compromisedCredential = insecureCredentials[0];
+          const compromisedCredential = insecureCredentials[0];
           chrome.test.assertEq(
               1, compromisedCredential.affiliatedDomains.length);
           chrome.test.assertEq(
@@ -472,7 +472,7 @@ var availableTests = [
               ['LEAKED'],
               compromisedCredential.compromisedInfo.compromiseTypes);
 
-          var weakredential = insecureCredentials[1];
+          const weakredential = insecureCredentials[1];
           chrome.test.assertEq(1, weakredential.affiliatedDomains.length);
           chrome.test.assertEq(
               'example.com', weakredential.affiliatedDomains[0].name);
@@ -655,7 +655,7 @@ var availableTests = [
   },
 
   function getCredentialGroups() {
-    var callback = function(list) {
+    const callback = function(list) {
       chrome.test.assertTrue(!!list);
       chrome.test.assertEq(list.length, 1);
 
@@ -663,16 +663,16 @@ var availableTests = [
       chrome.test.assertTrue(!!group);
       chrome.test.assertTrue(group.entries.length > 0);
 
-      var idSet = new Set();
-      for (var i = 0; i < group.entries.length; ++i) {
-        var entry = group.entries[i];
+      const idSet = new Set();
+      for (let i = 0; i < group.entries.length; ++i) {
+        const entry = group.entries[i];
         chrome.test.assertTrue(!!entry);
         chrome.test.assertEq(1, entry.affiliatedDomains.length);
         idSet.add(entry.id);
       }
 
       // The last entry should be a passkey.
-      var passkey = group.entries[group.entries.length - 1];
+      const passkey = group.entries[group.entries.length - 1];
       chrome.test.assertTrue(passkey.isPasskey);
       chrome.test.assertEq(passkey.displayName, 'displayName');
       chrome.test.assertEq(passkey.creationTime, 1000);
@@ -691,10 +691,10 @@ var availableTests = [
       credentialsGroupedByPassword => {
         chrome.test.assertEq(1, credentialsGroupedByPassword.length);
 
-        var credentialsWithReusedPassword = credentialsGroupedByPassword[0];
+        const credentialsWithReusedPassword = credentialsGroupedByPassword[0];
         chrome.test.assertEq(2, credentialsWithReusedPassword.entries.length);
 
-        var firstCredentials = credentialsWithReusedPassword.entries[0];
+        const firstCredentials = credentialsWithReusedPassword.entries[0];
         chrome.test.assertEq(1, firstCredentials.affiliatedDomains.length);
         chrome.test.assertEq(
             'example.com', firstCredentials.affiliatedDomains[0].name);
@@ -708,7 +708,7 @@ var availableTests = [
             ['REUSED'],
             firstCredentials.compromisedInfo.compromiseTypes);
 
-        var secondCredential = credentialsWithReusedPassword.entries[1];
+        const secondCredential = credentialsWithReusedPassword.entries[1];
         chrome.test.assertEq(1, secondCredential.affiliatedDomains.length);
         chrome.test.assertEq(
             'test.com', secondCredential.affiliatedDomains[0].name);
@@ -738,7 +738,7 @@ var availableTests = [
   },
 
   function isPasswordManagerPinAvailable() {
-    var callback = function(available) {
+    const callback = function(available) {
       chrome.test.assertFalse(available);
       chrome.test.succeed();
     };
@@ -763,7 +763,7 @@ var availableTests = [
   },
 
   function isConnectedToCloudAuthenticator() {
-    var callback = function(connected) {
+    const callback = function(connected) {
       chrome.test.assertFalse(connected);
       chrome.test.succeed();
     };
@@ -772,7 +772,7 @@ var availableTests = [
   }
 ];
 
-var testToRun = window.location.search.substring(1);
+const testToRun = window.location.search.substring(1);
 chrome.test.runTests(availableTests.filter(function(op) {
   return op.name == testToRun;
 }));

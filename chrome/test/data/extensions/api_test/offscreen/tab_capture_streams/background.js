@@ -5,7 +5,7 @@
 let didCapture = false;
 let didStopCapture = false;
 let onStoppedCapture;
-let captureStopped = new Promise((resolve) => {
+const captureStopped = new Promise((resolve) => {
   onStoppedCapture = resolve;
 });
 

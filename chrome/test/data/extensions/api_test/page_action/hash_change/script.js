@@ -4,4 +4,4 @@
 
 
 // Notify the extension needs to show the page action icon.
-chrome.runtime.sendMessage({msg: "feedIcon"});
+chrome.runtime.sendMessage({msg: 'feedIcon'});

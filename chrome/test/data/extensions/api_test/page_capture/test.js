@@ -8,7 +8,7 @@
 const assertEq = chrome.test.assertEq;
 const assertTrue = chrome.test.assertTrue;
 
-var testUrl = 'http://www.a.com:PORT' +
+let testUrl = 'http://www.a.com:PORT' +
     '/extensions/api_test/page_capture/google.html';
 
 function verifyPageCapture(data, isFile) {
@@ -16,10 +16,10 @@ function verifyPageCapture(data, isFile) {
   assertTrue(data != null);
   // It should contain few KBs of data.
   assertTrue(data.size > 100);
-  var reader = new FileReader();
+  const reader = new FileReader();
   // Let's make sure it contains some well known strings.
   reader.onload = function(e) {
-    var text = e.target.result;
+    const text = e.target.result;
     if (!isFile) {
       assertTrue(text.indexOf(testUrl) != -1);
       assertTrue(text.indexOf('logo.png') != -1);
@@ -56,7 +56,7 @@ chrome.test.getConfig(function(config) {
     },
 
     function saveAsMHTML_FileAccessRequiredForFileUrls() {
-      var captureUrl = config.testDataDirectory + '/';
+      const captureUrl = `${config.testDataDirectory}/`;
       chrome.tabs.onUpdated.addListener(function listener(
           tabId, changeInfo, tab) {
         if (tab.status == 'complete' && tab.url == captureUrl) {

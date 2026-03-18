@@ -7,7 +7,7 @@
 chrome.tabs.query({active: true}, function(tabs) {
   const tab = tabs[0];
   chrome.pageAction.show(tab.id);
-  chrome.pageAction.setTitle({title: "Modified", tabId: tab.id});
+  chrome.pageAction.setTitle({title: 'Modified', tabId: tab.id});
 
   chrome.test.notifyPass();
 });

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var tabId = -1;
+let tabId = -1;
 
 chrome.pageAction.onClicked.addListener(function(tab) {
   chrome.pageAction.hide(tabId);
