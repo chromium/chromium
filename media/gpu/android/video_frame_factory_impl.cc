@@ -254,6 +254,7 @@ void VideoFrameFactoryImpl::CreateVideoFrame_OnImageReady(
   // record before we move it into |completion_cb|.
   auto codec_image_holder = std::move(record.codec_image_holder);
 
+  CHECK(record.shared_image);
   gfx::ColorSpace color_space = record.shared_image->color_space();
   scoped_refptr<VideoFrame> frame = VideoFrame::WrapSharedImage(
       pixel_format, std::move(record.shared_image), gpu::SyncToken(),
