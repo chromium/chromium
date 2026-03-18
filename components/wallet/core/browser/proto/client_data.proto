@@ -6,12 +6,13 @@ syntax = "proto2";
 
 package wallet;
 
-import "common.proto";
-
 option optimize_for = LITE_RUNTIME;
 
 // Client data for the pass.
 message ClientData {
   // Optional. Holds client-specific data for Chrome.
-  optional Any chrome_client_data = 1;
+  // Conceptually, this is an Any proto. In practice, it is a serialized Any
+  // proto to bypass ESF Any proto validation. This validation would fail, since
+  // the proto contained in the Any is only available on the client-side.
+  optional bytes chrome_client_data = 1;
 }

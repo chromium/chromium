@@ -6,10 +6,14 @@
 
 #include <cstdint>
 
+#include "base/test/protobuf_matchers.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
+#include "components/autofill/core/browser/proto/autofill_ai_chrome_metadata.pb.h"
 #include "components/autofill/core/browser/test_utils/entity_data_test_utils.h"
+#include "components/autofill/core/browser/webdata/autofill_ai/entity_sync_util.h"
+#include "components/wallet/core/browser/proto/common.pb.h"
 #include "components/wallet/core/browser/proto/private_pass.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -28,6 +32,23 @@ using wallet::PrivatePass;
 // Matches a `wallet::PrivatePass::NaiveDate` against the provided date.
 MATCHER_P3(EqualsDate, year, month, day, "") {
   return arg.year() == year && arg.month() == month && arg.day() == day;
+}
+
+// Expect that the chrome_client_data is populated with a serialized Any proto
+// containing ChromeValuablesMetadata.
+TEST(PrivatePassConversionUtil, ClientData) {
+  EntityInstance entity = test::GetPassportEntityInstance();
+  PrivatePass private_pass = EntityInstanceToPrivatePass(entity);
+  ASSERT_TRUE(private_pass.has_client_data());
+  wallet::Any chrome_client_data;
+  ASSERT_TRUE(chrome_client_data.ParseFromString(
+      private_pass.client_data().chrome_client_data()));
+  EXPECT_EQ(chrome_client_data.type_url(),
+            "type.googleapis.com/autofill.ChromeValuablesMetadata");
+  ChromeValuablesMetadata metadata;
+  ASSERT_TRUE(metadata.ParseFromString(chrome_client_data.value()));
+  EXPECT_THAT(metadata, base::test::EqualsProto(
+                            SerializeChromeValuablesMetadata(entity)));
 }
 
 TEST(PrivatePassConversionUtil, Passport) {

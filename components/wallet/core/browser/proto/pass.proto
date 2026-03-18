@@ -6,8 +6,6 @@ syntax = "proto2";
 
 package wallet;
 
-import "client_data.proto";
-
 option optimize_for = LITE_RUNTIME;
 
 // Pass data to be created or updated.
@@ -30,15 +28,9 @@ message Pass {
 
   // The pass data to be created or updated.
   oneof data {
-    // The vehicle registration pass data.
-    // VehicleRegistration vehicle_registration = 2;
-
     // The loyalty card pass data.
     LoyaltyCard loyalty_card = 3;
   }
 
-  // Client data for the pass.
-  optional ClientData client_data = 4;
-
-  reserved 2, 5, 6;
+  reserved 2, 4, 5, 6;
 }

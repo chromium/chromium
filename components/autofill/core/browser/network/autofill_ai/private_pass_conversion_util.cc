@@ -182,7 +182,7 @@ PrivatePass EntityInstanceToPrivatePass(const EntityInstance& entity) {
   PrivatePass pass;
   pass.set_pass_id(entity.guid().value());
   *pass.mutable_client_data()->mutable_chrome_client_data() =
-      SerializeMetadata(entity);
+      SerializeMetadata(entity).SerializeAsString();
   switch (entity.type().name()) {
     case EntityTypeName::kPassport:
       *pass.mutable_passport() = EntityInstanceToPassport(entity);
