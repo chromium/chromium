@@ -274,6 +274,14 @@ class CloudBinaryUploadServiceTest : public ::testing::Test {
     return request;
   }
 
+  void ValidateRequestIdMapsCleanedUp(BinaryUploadRequest::Id request_id) {
+    EXPECT_FALSE(service_->active_requests_.contains(request_id));
+    EXPECT_FALSE(service_->active_timers_.contains(request_id));
+    EXPECT_FALSE(service_->active_tokens_.contains(request_id));
+    EXPECT_FALSE(service_->start_times_.contains(request_id));
+    EXPECT_FALSE(service_->received_connector_results_.contains(request_id));
+  }
+
   void ValidateAuthorizationTimerIdle() {
     EXPECT_FALSE(service_->timer_.IsRunning());
     EXPECT_EQ(base::Hours(0), service_->timer_.GetCurrentDelay());
@@ -462,6 +470,20 @@ TEST_F(CloudBinaryUploadServiceTest, Succeeds) {
 
   EXPECT_EQ(scanning_result,
             enterprise_connectors::ScanRequestUploadResult::kSuccess);
+}
+
+TEST_F(CloudBinaryUploadServiceTest, CleansUpRequestAfterSucceeds) {
+  enterprise_connectors::ScanRequestUploadResult scanning_result;
+  enterprise_connectors::ContentAnalysisResponse scanning_response;
+
+  std::unique_ptr<MockRequest> request = MakeRequest(
+      &scanning_result, &scanning_response, /*is_advanced_protection*/ false);
+  BinaryUploadRequest::Id request_id = request->id();
+
+  UploadForDeepScanning(std::move(request));
+  content::RunAllTasksUntilIdle();
+
+  ValidateRequestIdMapsCleanedUp(request_id);
 }
 
 TEST_F(CloudBinaryUploadServiceTest, SucceedsForAuthentication) {

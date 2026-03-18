@@ -642,6 +642,7 @@ void CloudBinaryUploadService::CleanupRequest(BinaryUploadRequest* request) {
   active_uploads_.erase(request_id);
   received_connector_results_.erase(request_id);
   active_tokens_.erase(request_id);
+  start_times_.erase(request_id);
 
   MaybeRunAuthorizationCallbacks(dm_token, connector);
 
