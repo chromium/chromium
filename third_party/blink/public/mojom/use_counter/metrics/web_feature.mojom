@@ -5152,6 +5152,7 @@ enum WebFeature {
   kCSSDiscardedAttrWithValidArgumentGrammar = 5835,
   kCSSDiscardedEnvWithValidArgumentGrammar = 5836,
   kCSSDiscardedIfWithValidArgumentGrammar = 5837,
+  kHttpOnlyCookieShadowedByNonHttpOnlyPartitioned = 5838,
 
   // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra

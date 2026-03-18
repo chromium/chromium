@@ -160,8 +160,8 @@ void RecordFirstPartyPartitionedCookieCrossSiteContextUKM(
 void RecordPartitionedCookieUseV2UKM(RenderFrameHost* rfh,
                                      const net::CanonicalCookie& cookie,
                                      const ukm::SourceId& source_id) {
-  ukm::builders::PartitionedCookiePresentV2(source_id)
-      .SetPartitionedCookiePresentV2(true)
+  ukm::builders::PartitionedCookiePresentV3(source_id)
+      .SetPartitionedCookiePresentV3(true)
       .Record(ukm::UkmRecorder::Get());
 }
 
@@ -177,7 +177,7 @@ void RecordPartitionedCookiesUKMs(RenderFrameHostImpl* render_frame_host_impl,
   }
 
   // Cookies_FirstPartyPartitionedInCrossSiteContextV3 and
-  // PartitionedCookiePresentV2 both measure cookies
+  // PartitionedCookiePresentV3 both measure cookies
   // without the name of 'receive-cookie-deprecation'. Return here to ensure
   // that the metrics do not include those cookies.
   if (cookie.Name() == "receive-cookie-deprecation") {
@@ -371,6 +371,9 @@ void EmitCookieWarningsAndMetrics(
 
   bool partitioned_cookies_exist = false;
 
+  absl::flat_hash_set<std::string> partitioned_non_httponly_cookie_names;
+  absl::flat_hash_set<std::string> httponly_cookie_names;
+
   bool cookie_has_not_been_refreshed_in_201_to_300_days = false;
   bool cookie_has_not_been_refreshed_in_301_to_350_days = false;
   bool cookie_has_not_been_refreshed_in_351_to_400_days = false;
@@ -438,17 +441,26 @@ void EmitCookieWarningsAndMetrics(
         status.HasExclusionReason(net::CookieInclusionStatus::ExclusionReason::
                                       EXCLUDE_DOMAIN_NON_ASCII);
 
-    partitioned_cookies_exist =
-        partitioned_cookies_exist ||
+    bool is_partitioned_cookie =
         (cookie->cookie_or_line->is_cookie() &&
          cookie->cookie_or_line->get_cookie().IsPartitioned() &&
          // Ignore nonced partition keys since this metric is meant to track
          // usage of the Partitioned attribute.
          !cookie->cookie_or_line->get_cookie().PartitionKey()->nonce());
-
-
-    if (partitioned_cookies_exist) {
+    if (is_partitioned_cookie) {
+      if (!cookie->cookie_or_line->get_cookie().IsHttpOnly() &&
+          cookie->access_result.status.IsInclude()) {
+        partitioned_non_httponly_cookie_names.insert(
+            cookie->cookie_or_line->get_cookie().Name());
+      }
       RecordPartitionedCookiesUKMs(rfh, cookie->cookie_or_line->get_cookie());
+      partitioned_cookies_exist = true;
+    }
+
+    if (cookie->cookie_or_line->is_cookie() &&
+        cookie->cookie_or_line->get_cookie().IsHttpOnly() &&
+        !cookie->cookie_or_line->get_cookie().IsPartitioned()) {
+      httponly_cookie_names.insert(cookie->cookie_or_line->get_cookie().Name());
     }
 
     if (cookie->access_result.status.exemption_reason() ==
@@ -546,6 +558,20 @@ void EmitCookieWarningsAndMetrics(
   if (partitioned_cookies_exist) {
     GetContentClient()->browser()->LogWebFeatureForCurrentPage(
         rfh, blink::mojom::WebFeature::kPartitionedCookies);
+  }
+  if (partitioned_cookies_exist && !httponly_cookie_names.empty()) {
+    bool has_shadowed_cookie = false;
+    for (const auto& cookie_name : httponly_cookie_names) {
+      if (partitioned_non_httponly_cookie_names.contains(cookie_name)) {
+        has_shadowed_cookie = true;
+        break;
+      }
+    }
+    if (has_shadowed_cookie) {
+      GetContentClient()->browser()->LogWebFeatureForCurrentPage(
+          rfh, blink::mojom::WebFeature::
+                   kHttpOnlyCookieShadowedByNonHttpOnlyPartitioned);
+    }
   }
 
   if (cookie_has_not_been_refreshed_in_201_to_300_days) {

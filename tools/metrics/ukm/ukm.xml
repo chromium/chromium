@@ -19142,14 +19142,14 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
-<event name="PartitionedCookiePresentV2">
+<event name="PartitionedCookiePresentV3">
   <owner>selya@chromium.org</owner>
   <owner>dylancutler@google.com</owner>
   <summary>
     Recorded when a page has a partitioned cookie present and the cookie's name
     is not receive-cookie-deprecation.
   </summary>
-  <metric name="PartitionedCookiePresentV2" enum="Boolean">
+  <metric name="PartitionedCookiePresentV3" enum="Boolean">
     <summary>
       Records '1' if one or more partitioned cookies are present. This metric is
       only logged for sites that have partitioned cookies.
