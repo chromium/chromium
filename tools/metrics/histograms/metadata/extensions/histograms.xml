@@ -322,6 +322,17 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
+<histogram name="Extensions.Action.SetTitleLength" units="bytes"
+    expires_after="M155">
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>bershanskyi@gmail.com</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    The length (in bytes) of the title string provided to action.setTitle().
+    Recorded each time an extension calls the method successfully.
+  </summary>
+</histogram>
+
 <histogram name="Extensions.AlarmManager.AlarmsMaxNameLength"
     enum="ExtensionAlarmsNameLength" expires_after="2026-08-23">
   <owner>rdevlin.cronin@chromium.org</owner>

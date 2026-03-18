@@ -1,0 +1,10 @@
+{
+  "action": {},
+  "background": {
+    "service_worker": "background.js"
+  },
+  "description": "An extension that modifies the title on extension icon to test a histogram.",
+  "manifest_version": 3,
+  "name": "Action Title Histogram Test Extension",
+  "version": "1.0"
+}

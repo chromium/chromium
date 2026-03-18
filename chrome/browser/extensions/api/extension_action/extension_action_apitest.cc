@@ -234,6 +234,32 @@ class ExtensionActionAPITest : public ExtensionApiTest {
   }
 };
 
+// Test that the histogram for determining maximum title lengths counts
+// the length of the title in each successful call.
+// TODO(crbug.com/492555224): Remove this histogram test.
+IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ActionSetTitleLengthHistogram) {
+  base::HistogramTester histogram;
+
+  // Run extension which modifies the badge text a few times.
+  EXPECT_TRUE(RunExtensionTest("extension_action/title")) << message_;
+
+  // Check that rejected calls do not increment the counts.
+  histogram.ExpectTotalCount("Extensions.Action.SetTitleLength",
+                             /*expected_count=*/4);
+
+  // Check number of samples in each affected bucket and one empty bucket.
+  histogram.ExpectBucketCount("Extensions.Action.SetTitleLength",
+                              /*sample=*/0, /*expected_count=*/1);
+  histogram.ExpectBucketCount("Extensions.Action.SetTitleLength",
+                              /*sample=*/1, /*expected_count=*/1);
+  histogram.ExpectBucketCount("Extensions.Action.SetTitleLength",
+                              /*sample=*/2, /*expected_count=*/0);
+  histogram.ExpectBucketCount("Extensions.Action.SetTitleLength",
+                              /*sample=*/60, /*expected_count=*/1);
+  histogram.ExpectBucketCount("Extensions.Action.SetTitleLength",
+                              /*sample=*/150, /*expected_count=*/1);
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 // Alias these for readability, when a test only exercises one type of action.
 // These APIs are MV2-only, so will never be supported on Android.

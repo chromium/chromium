@@ -335,6 +335,11 @@ ExtensionActionSetTitleFunction::RunExtensionAction() {
   EXTENSION_FUNCTION_VALIDATE(details_);
   const std::string* title = details_->FindString("title");
   EXTENSION_FUNCTION_VALIDATE(title);
+  // Log title length to determine future length limit.
+  // TODO(crbug.com/492555224): After determining suitable length limit, remove
+  // histogram and add handling for excessively long action titles.
+  base::UmaHistogramCounts10000("Extensions.Action.SetTitleLength",
+                               title->length());
   extension_action_->SetTitle(tab_id_, *title);
   NotifyChange();
   return RespondNow(NoArguments());
