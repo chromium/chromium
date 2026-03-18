@@ -15,7 +15,8 @@
 #include "base/no_destructor.h"
 #include "base/numerics/byte_conversions.h"
 #include "crypto/aead.h"
-#include "crypto/hkdf.h"
+#include "crypto/hash.h"
+#include "crypto/kdf.h"
 #include "crypto/random.h"
 
 namespace enterprise_obfuscation {
@@ -95,8 +96,8 @@ base::expected<std::vector<uint8_t>, Error> CreateHeader(
   header.insert(header.end(), salt.begin(), salt.end());
 
   // Generate file-specific key.
-  *derived_key =
-      crypto::HkdfSha256<kKeySize>(GetBaseKey(), salt, base::span<uint8_t>());
+  *derived_key = crypto::kdf::Hkdf<kKeySize>(crypto::hash::kSha256,
+                                             GetBaseKey(), salt, {});
 
   // Generate nonce prefix.
   *nonce_prefix = crypto::RandBytesAsVector(kNoncePrefixSize);
@@ -175,8 +176,8 @@ base::expected<HeaderData, Error> GetHeaderData(
   const auto& [salt, nonce_prefix] = header.split_at<kSaltSize>();
 
   // Generate file-specific key.
-  std::array<uint8_t, kKeySize> derived_key =
-      crypto::HkdfSha256<kKeySize>(GetBaseKey(), salt, {});
+  std::array<uint8_t, kKeySize> derived_key = crypto::kdf::Hkdf<kKeySize>(
+      crypto::hash::kSha256, GetBaseKey(), salt, {});
 
   return base::ok(
       HeaderData(std::move(derived_key), base::ToVector(nonce_prefix)));
