@@ -75,6 +75,12 @@ HTMLUserMediaElement::HTMLUserMediaElement(Document& document)
       document.GetExecutionContext()));
 }
 
+bool HTMLUserMediaElement::IsLegacyMode() const {
+  // If the 'type' attribute is explicitly defined, we fallback to legacy
+  // behavior.
+  return FastHasAttribute(html_names::kTypeAttr);
+}
+
 void HTMLUserMediaElement::AttributeChanged(
     const AttributeModificationParams& params) {
   if (params.name == html_names::kTypeAttr) {
