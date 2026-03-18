@@ -41,21 +41,25 @@ chrome.test.runTests([
   },
 
   function recordValue() {
-    chrome.metricsPrivate.recordValue({
-      'metricName': 'test.h.1',
-      'type': chrome.metricsPrivate.MetricTypeType.HISTOGRAM_LOG,
-      'min': 1,
-      'max': 100,
-      'buckets': 50
-    }, 42);
+    chrome.metricsPrivate.recordValue(
+        {
+          metricName: 'test.h.1',
+          type: chrome.metricsPrivate.MetricTypeType.HISTOGRAM_LOG,
+          min: 1,
+          max: 100,
+          buckets: 50
+        },
+        42);
 
-    chrome.metricsPrivate.recordValue({
-      'metricName': 'test.h.2',
-      'type': chrome.metricsPrivate.MetricTypeType.HISTOGRAM_LINEAR,
-      'min': 1,
-      'max': 200,
-      'buckets': 50
-    }, 42);
+    chrome.metricsPrivate.recordValue(
+        {
+          metricName: 'test.h.2',
+          type: chrome.metricsPrivate.MetricTypeType.HISTOGRAM_LINEAR,
+          min: 1,
+          max: 200,
+          buckets: 50
+        },
+        42);
 
     chrome.metricsPrivate.recordPercentage('test.h.3', 42);
     chrome.metricsPrivate.recordPercentage('test.h.3', 42);
@@ -94,12 +98,12 @@ chrome.test.runTests([
   },
 
   function getFieldTrial() {
-    var test1Callback = function(group) {
+    const test1Callback = function(group) {
       chrome.test.assertEq('', group);
       chrome.metricsPrivate.getFieldTrial('apitestfieldtrial2', test2Callback);
     };
 
-    var test2Callback = function(group) {
+    const test2Callback = function(group) {
       chrome.test.assertEq('group1', group);
       chrome.test.succeed();
     };
@@ -126,33 +130,33 @@ chrome.test.runTests([
   },
 
   function testBucketSizeChanges() {
-    var linear1 = {
-      'metricName': 'test.bucketchange.linear',
-      'type': chrome.metricsPrivate.MetricTypeType.HISTOGRAM_LINEAR,
-      'min': 0,
-      'max': 100,
-      'buckets': 10
+    const linear1 = {
+      metricName: 'test.bucketchange.linear',
+      type: chrome.metricsPrivate.MetricTypeType.HISTOGRAM_LINEAR,
+      min: 0,
+      max: 100,
+      buckets: 10
     };
-    var linear2 = {
-      'metricName': 'test.bucketchange.linear',
-      'type': chrome.metricsPrivate.MetricTypeType.HISTOGRAM_LINEAR,
-      'min': 0,
-      'max': 100,
-      'buckets': 20
+    const linear2 = {
+      metricName: 'test.bucketchange.linear',
+      type: chrome.metricsPrivate.MetricTypeType.HISTOGRAM_LINEAR,
+      min: 0,
+      max: 100,
+      buckets: 20
     };
-    var log1 = {
-      'metricName': 'test.bucketchange.log',
-      'type': chrome.metricsPrivate.MetricTypeType.HISTOGRAM_LOG,
-      'min': 0,
-      'max': 100,
-      'buckets': 10
+    const log1 = {
+      metricName: 'test.bucketchange.log',
+      type: chrome.metricsPrivate.MetricTypeType.HISTOGRAM_LOG,
+      min: 0,
+      max: 100,
+      buckets: 10
     };
-    var log2 = {
-      'metricName': 'test.bucketchange.log',
-      'type': chrome.metricsPrivate.MetricTypeType.HISTOGRAM_LOG,
-      'min': 0,
-      'max': 100,
-      'buckets': 20
+    const log2 = {
+      metricName: 'test.bucketchange.log',
+      type: chrome.metricsPrivate.MetricTypeType.HISTOGRAM_LOG,
+      min: 0,
+      max: 100,
+      buckets: 20
     };
 
     chrome.metricsPrivate.recordValue(linear1, 42);
