@@ -2593,31 +2593,28 @@ bool HTMLElement::HandleCommandInternal(HTMLElement& invoker,
     const auto& first_data = container_data->at(0);
     const auto& second_data = container_data->at(1);
 
-    ScrollOffset scroll_origin =
-        gfx::PointF(scrollable_area->ScrollOrigin()).OffsetFromOrigin();
+    gfx::PointF scroll_origin(scrollable_area->ScrollOrigin());
 
-    // We do the math in absolute space, since that's the space in which our
-    // snap targets are defined.
-    ScrollOffset old_offset =
-        scrollable_area->GetScrollOffset() + scroll_origin;
     ScrollOffset new_offset;
 
-    if (old_offset == scroll_origin) {
-      CHECK(previous_snap_targets.x == first_data.element_id ||
-            previous_snap_targets.y == first_data.element_id);
-
+    if (previous_snap_targets.x == first_data.element_id &&
+        previous_snap_targets.y == first_data.element_id) {
       gfx::RectF target_rect = second_data.rect;
 
       PhysicalSize box_size = overscroll_area_object->PhysicalContentBoxSize();
 
-      // We need to find distances in all 4 directions relative to the current
-      // scroll offset.
-      float min_x_offset = std::min(target_rect.x() - old_offset.x(), 0.f);
-      float min_y_offset = std::min(target_rect.y() - old_offset.y(), 0.f);
+      // We need to find distances in all 4 directions relative to scroll
+      // origin. Note that we use scroll origin here instead of current offset
+      // since we could be in the middle of animating an offset. However we know
+      // that conceptually we should find the furthest area from the position we
+      // would be in if the scroll settled. That position is the scroll origin.
+      float min_x_offset = std::min(target_rect.x() - scroll_origin.x(), 0.f);
+      float min_y_offset = std::min(target_rect.y() - scroll_origin.y(), 0.f);
       float max_x_offset = std::max(
-          target_rect.right() - box_size.width.ToFloat() - old_offset.x(), 0.f);
+          target_rect.right() - box_size.width.ToFloat() - scroll_origin.x(),
+          0.f);
       float max_y_offset = std::max(
-          target_rect.bottom() - box_size.height.ToFloat() - old_offset.y(),
+          target_rect.bottom() - box_size.height.ToFloat() - scroll_origin.y(),
           0.f);
 
       // These are now distances from scroll offset, so we need to pick a
@@ -2633,21 +2630,11 @@ bool HTMLElement::HandleCommandInternal(HTMLElement& invoker,
         new_offset.set_y(-min_y_offset >= max_y_offset ? min_y_offset
                                                        : max_y_offset);
       }
-      // Now new offset has the delta we need to move relative to the old
-      // offset. We need to convert that into an actual offset (still in
-      // absolute space though).
-      new_offset += old_offset;
-    } else {
-      CHECK(previous_snap_targets.x != first_data.element_id ||
-            previous_snap_targets.y != first_data.element_id);
-      new_offset = scroll_origin;
     }
 
+    ScrollOffset old_offset = scrollable_area->GetScrollOffset();
     bool x_changed = new_offset.x() != old_offset.x();
     bool y_changed = new_offset.y() != old_offset.y();
-
-    // Convert the offset into scroll origin space.
-    new_offset -= scroll_origin;
 
     std::unique_ptr<cc::SnapSelectionStrategy> strategy =
         cc::SnapSelectionStrategy::CreateForEndPosition(

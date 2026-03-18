@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" class="reftest-wait">
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="github.com/vmpstr">
+<script src="/common/reftest-wait.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<title>Toggle snap areas crash</title>
+<style>
+.container {
+  width: 200px;
+  height: 200px;
+}
+.menu {
+  height: 100%;
+  width: 100%;
+  background: lightgreen;
+  scroll-behavior: smooth;
+
+  &.left {
+    right: 100%;
+  }
+  &.top {
+    bottom: 100%;
+  }
+}
+</style>
+
+<div class="container" overscrollcontainer>
+  <div id="menu" class="menu left">Menu</div>
+</div>
+<button id=button command="toggle-overscroll" commandfor="menu">Open</button>
+
+<script>
+function click(target) {
+  let event_received = new Promise(resolve => {
+    target.addEventListener("click", resolve, { once: true });
+  });
+  return Promise.all([test_driver.click(button), event_received]);
+}
+
+async function runTest() {
+  for (let i = 0; i < 10; ++i) {
+    await click(button);
+    await new Promise(requestAnimationFrame);
+    await new Promise(requestAnimationFrame);
+    menu.classList.toggle("left");
+    menu.classList.toggle("top");
+    await new Promise(requestAnimationFrame);
+    await new Promise(requestAnimationFrame);
+  }
+  takeScreenshot();
+}
+
+onload = requestAnimationFrame(() => requestAnimationFrame(runTest));
+</script>
+</html>
+
