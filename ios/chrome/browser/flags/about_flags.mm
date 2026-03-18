@@ -1117,6 +1117,14 @@ const FeatureEntry::FeatureVariation kComposeboxDevToolsVariations[] = {
     {"Slow Load (1s)", kComposeboxDevToolsSlowLoad, nullptr},
     {"Slow Upload (3s)", kComposeboxDevToolsSlowUpload, nullptr}};
 
+const FeatureEntry::FeatureParam kComposeboxConditionalPlusButtonHidePreEdit[] =
+    {{kComposeboxConditionalPlusButtonParam, "1"}};
+
+const FeatureEntry::FeatureVariation
+    kComposeboxConditionalPlusButtonVariations[] = {
+        {"(Hide Plus button in pre-edit)",
+         kComposeboxConditionalPlusButtonHidePreEdit, nullptr}};
+
 const FeatureEntry::FeatureParam kMobilePromoOnDesktopLens[] = {
     {kMobilePromoOnDesktopPromoTypeParam, "1"},
     {kMobilePromoOnDesktopNotificationParam, "false"}};
@@ -2431,6 +2439,13 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kComposeboxCloseButtonTopAlignName,
      flag_descriptions::kComposeboxCloseButtonTopAlignDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kComposeboxCloseButtonTopAlign)},
+    {"composebox-conditional-plus-button",
+     flag_descriptions::kComposeboxConditionalPlusButtonName,
+     flag_descriptions::kComposeboxConditionalPlusButtonDescription,
+     flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kComposeboxConditionalPlusButton,
+                                    kComposeboxConditionalPlusButtonVariations,
+                                    "ComposeboxConditionalPlusButton")},
     {"composebox-compact-mode", flag_descriptions::kComposeboxCompactModeName,
      flag_descriptions::kComposeboxCompactModeDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kComposeboxCompactMode)},

@@ -298,6 +298,10 @@ CreateInputDataFromAnnotatedPageContent(
   BOOL _isIncognito;
   // Whether the mediator is currently updating the compact mode.
   BOOL _isUpdatingCompactMode;
+  // Caches whether user input is in progress.
+  BOOL _userInputInProgress;
+  // Caches whether the current input is a search query.
+  BOOL _isSearchQuery;
   // Whether it is in compact mode.
   BOOL _compact;
   // Whether the omnibox has text inputted.
@@ -2068,10 +2072,13 @@ CreateInputDataFromAnnotatedPageContent(
          userInputInProgress:(BOOL)userInputInProgress {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   BOOL hasText = text.length() > 0;
-  if (hasText == _hasText) {
+  if (hasText == _hasText && _userInputInProgress == userInputInProgress &&
+      _isSearchQuery == isSearchQuery) {
     return;
   }
   _hasText = hasText;
+  _userInputInProgress = userInputInProgress;
+  _isSearchQuery = isSearchQuery;
 
   [self commitUIUpdates];
 }
@@ -2159,12 +2166,26 @@ CreateInputDataFromAnnotatedPageContent(
   BOOL showShortcuts =
       !hasContent && !canSend &&
       !base::FeatureList::IsEnabled(kHideFuseboxVoiceLensActions);
-  BOOL showLeadingImage = !compactMode || !allowsMultimodalActions;
+  BOOL hidePlusButton = NO;
+  if (IsComposeboxConditionalPlusButtonEnabled() &&
+      _entrypoint != ComposeboxEntrypoint::kCobrowse &&
+      _modeHolder.isRegularSearch && compactMode) {
+    BOOL isPreEditURL = !_userInputInProgress && _hasText;
+    BOOL isURLQuery = _userInputInProgress && _hasText && !_isSearchQuery;
+    hidePlusButton = isURLQuery;
+    if (GetComposeboxConditionalPlusButtonVariant() ==
+            ComposeboxConditionalPlusButtonVariant::kHideInPreEdit &&
+        isPreEditURL) {
+      hidePlusButton = YES;
+    }
+  }
+  BOOL showLeadingImage =
+      !compactMode || !allowsMultimodalActions || hidePlusButton;
   BOOL shouldPersistAIMButton =
       IsComposeboxAIMNudgeEnabled() && !compactMode && allowsMultimodalActions;
 
   ComposeboxInputPlateControls leadingAction =
-      allowsMultimodalActions ? kPlus : kNone;
+      (allowsMultimodalActions && !hidePlusButton) ? kPlus : kNone;
 
   ComposeboxInputPlateControls leadingImage =
       showLeadingImage ? kLeadingImage : kNone;
