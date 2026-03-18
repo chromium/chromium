@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
 
 namespace autofill {
 
@@ -58,6 +59,11 @@ inline constexpr FieldTypeSet kCvcFieldTypes = {
 
 // The diameter of the loading throbber used in dialogs.
 inline constexpr int kDialogThrobberDiameter = 24;
+
+// The index of the tab that shows all Pay Later suggestions in the suggestion
+// bubble.
+inline constexpr SuggestionTabIndex kPayLaterSuggestionTabIndex =
+    SuggestionTabIndex(1);
 
 }  // namespace autofill
 

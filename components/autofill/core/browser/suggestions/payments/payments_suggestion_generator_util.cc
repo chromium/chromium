@@ -1023,6 +1023,8 @@ Suggestion CreateManageCreditCardsSuggestion(bool with_gpay_logo) {
 Suggestion CreateBnplFootnoteSuggestion() {
   Suggestion bnpl_footnote = Suggestion(SuggestionType::kBnplFootnote);
   bnpl_footnote.acceptability = Suggestion::Acceptability::kUnacceptable;
+  bnpl_footnote.tab_index = kPayLaterSuggestionTabIndex;
+
   return bnpl_footnote;
 }
 

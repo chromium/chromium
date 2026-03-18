@@ -839,6 +839,10 @@ bool PopupViewViews::SearchBarHandleKeyPressed(const ui::KeyEvent& event) {
   return controller_->HandleKeyPressEvent(input::NativeWebKeyboardEvent(event));
 }
 
+void PopupViewViews::TabSelectedAt(int index) {
+  controller_->SetFilter(SuggestionTabIndex(index));
+}
+
 void PopupViewViews::SetSelectedCell(
     std::optional<CellIndex> cell_index,
     PopupCellSelectionSource source,
@@ -1275,6 +1279,10 @@ void PopupViewViews::CreateTabbedPaneView() {
   // Calculate and set the preferred size for the tabbed pane based on its
   // contents.
   tabbed_pane->SetPreferredSize(tabbed_pane->GetPreferredSize());
+  tabbed_pane->SetListener(this);
+
+  // Filter suggestions for the default tab.
+  controller_->SetFilter(kDefaultSuggestionTabIndex);
 
   tabbed_pane_ = AddChildView(std::move(tabbed_pane));
 }

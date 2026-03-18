@@ -81,6 +81,8 @@ constexpr DenseSet<AutofillSuggestionTriggerSource>
     kTriggerSourcesExemptFromTimeReset = {
         AutofillSuggestionTriggerSource::kPlusAddressUpdatedInBrowserProcess};
 
+// TODO(crbug.com/491834951) Replace `SuggestionFiltrationResult` pair with
+// struct.
 using SuggestionFiltrationResult =
     std::pair<std::vector<Suggestion>,
               std::vector<AutofillPopupController::SuggestionFilterMatch>>;
@@ -88,6 +90,13 @@ SuggestionFiltrationResult FilterSuggestions(
     const std::vector<Suggestion>& suggestions,
     const AutofillPopupController::SuggestionFilter& filter) {
   SuggestionFiltrationResult result;
+
+  auto add_suggestion_filtration_result =
+      [&result](const Suggestion& suggestion,
+                gfx::Range main_text_match = gfx::Range()) {
+        result.first.push_back(suggestion);
+        result.second.emplace_back(main_text_match);
+      };
 
   std::optional<std::u16string> lower_string_filter =
       std::holds_alternative<AutofillPopupController::StringFilter>(filter)
@@ -100,17 +109,18 @@ SuggestionFiltrationResult FilterSuggestions(
       continue;
     } else if (suggestion.filtration_policy ==
                Suggestion::FiltrationPolicy::kStatic) {
-      result.first.push_back(suggestion);
-      result.second.emplace_back();
+      add_suggestion_filtration_result(suggestion);
     } else if (lower_string_filter) {
       if (size_t pos = base::i18n::ToLower(suggestion.main_text.value)
                            .find(lower_string_filter.value());
           pos != std::u16string::npos) {
-        result.first.push_back(suggestion);
-        result.second.push_back(AutofillPopupController::SuggestionFilterMatch{
-            .main_text_match = {pos,
-                                pos + lower_string_filter.value().size()}});
+        add_suggestion_filtration_result(
+            suggestion,
+            gfx::Range(pos, pos + lower_string_filter.value().size()));
       }
+    } else if (std::holds_alternative<SuggestionTabIndex>(filter) &&
+               std::get<SuggestionTabIndex>(filter) == suggestion.tab_index) {
+      add_suggestion_filtration_result(suggestion);
     }
   }
 

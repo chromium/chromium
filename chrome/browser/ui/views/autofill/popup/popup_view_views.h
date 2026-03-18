@@ -29,6 +29,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event.h"
+#include "ui/views/controls/tabbed_pane/tabbed_pane_listener.h"
 #include "ui/views/widget/widget.h"
 
 namespace views {
@@ -67,7 +68,8 @@ class PopupViewViews : public PopupBaseView,
                        public AutofillPopupView,
                        public PopupRowView::SelectionDelegate,
                        public ExpandablePopupParentView,
-                       public PopupSearchBarView::Delegate {
+                       public PopupSearchBarView::Delegate,
+                       public views::TabbedPaneListener {
   METADATA_HEADER(PopupViewViews, PopupBaseView)
 
  public:
@@ -161,6 +163,9 @@ class PopupViewViews : public PopupBaseView,
   void SearchBarOnInputChanged(std::u16string_view text) override;
   void SearchBarOnFocusLost() override;
   bool SearchBarHandleKeyPressed(const ui::KeyEvent& event) override;
+
+  // TabbedPaneListener::
+  void TabSelectedAt(int index) override;
 
  private:
   friend class PopupViewViewsTestApi;

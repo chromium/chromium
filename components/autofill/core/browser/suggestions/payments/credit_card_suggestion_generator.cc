@@ -197,6 +197,7 @@ std::vector<Suggestion> GenerateCreditCardOrCvcFieldSuggestionsSync(
           Suggestion::Acceptability::kUnacceptable;
       loading_suggestion.expected_number_of_suggestions =
           payments_data_manager.GetBnplIssuers().size();
+      loading_suggestion.tab_index = kPayLaterSuggestionTabIndex;
       suggestions.push_back(std::move(loading_suggestion));
     } else {
       suggestions.append_range(GetSuggestionsForBnpl(
@@ -395,6 +396,7 @@ std::vector<Suggestion> GetSuggestionsForBnpl(
         issuer_context.issuer.issuer_id(), is_linked);
     bnpl_suggestion.payload =
         Suggestion::BnplIssuer(std::move(issuer_context.issuer));
+    bnpl_suggestion.tab_index = kPayLaterSuggestionTabIndex;
     bnpl_suggestions.emplace_back(bnpl_suggestion);
   }
 

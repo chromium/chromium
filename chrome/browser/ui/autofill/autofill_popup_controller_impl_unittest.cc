@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller_test_base.h"
 #include "chrome/browser/ui/autofill/test_autofill_popup_controller_autofill_client.h"
 #include "components/autofill/core/browser/country_type.h"
+#include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/ui/popup_interaction.h"
@@ -692,6 +693,37 @@ TEST_F(AutofillPopupControllerImplTest,
   EXPECT_THAT(controller.GetSuggestions(),
               ElementsAre(Field(&Suggestion::type, kSeparator),
                           Field(&Suggestion::type, kUndoOrClear)));
+}
+
+TEST_F(AutofillPopupControllerImplTest,
+       SuggestionFiltering_SuggestionsAreFilteredByTabIndex) {
+  Suggestion pay_later_tab_suggestion = Suggestion(SuggestionType::kBnplEntry);
+  pay_later_tab_suggestion.tab_index = kPayLaterSuggestionTabIndex;
+  Suggestion pay_later_tab_footer = Suggestion(SuggestionType::kBnplFootnote);
+  pay_later_tab_footer.tab_index = kPayLaterSuggestionTabIndex;
+
+  AutofillPopupController& controller =
+      client().suggestion_controller(manager());
+  ShowSuggestions(manager(), {
+                                 Suggestion(SuggestionType::kCreditCardEntry),
+                                 std::move(pay_later_tab_suggestion),
+                                 std::move(pay_later_tab_footer),
+                             });
+
+  ASSERT_EQ(controller.GetSuggestions().size(), 3u);
+
+  controller.SetFilter(kDefaultSuggestionTabIndex);
+  EXPECT_EQ(controller.GetSuggestions().size(), 1u);
+  EXPECT_THAT(
+      controller.GetSuggestions(),
+      ElementsAre(Field(&Suggestion::type, SuggestionType::kCreditCardEntry)));
+
+  controller.SetFilter(kPayLaterSuggestionTabIndex);
+  EXPECT_EQ(controller.GetSuggestions().size(), 2u);
+  EXPECT_THAT(
+      controller.GetSuggestions(),
+      ElementsAre(Field(&Suggestion::type, SuggestionType::kBnplEntry),
+                  Field(&Suggestion::type, SuggestionType::kBnplFootnote)));
 }
 
 TEST_F(AutofillPopupControllerImplTest,

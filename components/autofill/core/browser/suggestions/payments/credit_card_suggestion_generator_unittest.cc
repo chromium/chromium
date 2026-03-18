@@ -44,6 +44,7 @@
 #include "components/autofill/core/browser/metrics/payments/save_and_fill_metrics.h"
 #include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
 #include "components/autofill/core/browser/payments/amount_extraction_manager.h"
+#include "components/autofill/core/browser/payments/bnpl_util.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/payments/test/mock_bnpl_manager.h"
 #include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator_util.h"
@@ -111,6 +112,10 @@ Matcher<Suggestion> EqualLabels(
   return EqualLabels(suggestion_objects);
 }
 
+Matcher<Suggestion> EqualSuggestionTabIndex(SuggestionTabIndex tab_index) {
+  return Field("tab_index", &Suggestion::tab_index, tab_index);
+}
+
 // This function is currently only used for BNPL unittests, and BNPL is
 // currently only available for desktop and android platforms.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
@@ -120,7 +125,8 @@ Matcher<Suggestion> EqualsSuggestion(const Suggestion& suggestion) {
                Field(&Suggestion::main_text, suggestion.main_text),
                Field(&Suggestion::minor_texts, suggestion.minor_texts),
                Field(&Suggestion::icon, suggestion.icon),
-               Field(&Suggestion::labels, suggestion.labels));
+               Field(&Suggestion::labels, suggestion.labels),
+               EqualSuggestionTabIndex(suggestion.tab_index));
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
@@ -160,10 +166,6 @@ Matcher<Suggestion> EqualsManagePaymentsMethodsSuggestion(bool with_gpay_logo) {
 testing::Matcher<const std::vector<Suggestion>&>
 ContainsCreditCardFooterSuggestions(bool with_gpay_logo,
                                     bool with_bnpl_footnote = false) {
-  // TODO(crbug.com/477689220): Verify that the BNPL footnote suggestion and the
-  // Manage Payments suggestion have distinct `tab_index` values to ensure they
-  // will not be shown at the same time after suggestion filtering
-  // infrastructure is updated.
   if (with_bnpl_footnote) {
     return AllOf(
         SizeIs(Ge(3)),
@@ -172,9 +174,12 @@ ContainsCreditCardFooterSuggestions(bool with_gpay_logo,
               return base::span(container).template last<3>();
             },
             ElementsAre(
-                EqualsSuggestion(SuggestionType::kBnplFootnote),
-                EqualsSuggestion(SuggestionType::kSeparator),
-                EqualsManagePaymentsMethodsSuggestion(with_gpay_logo))));
+                AllOf(EqualsSuggestion(SuggestionType::kBnplFootnote),
+                      EqualSuggestionTabIndex(kPayLaterSuggestionTabIndex)),
+                AllOf(EqualsSuggestion(SuggestionType::kSeparator),
+                      EqualSuggestionTabIndex(kDefaultSuggestionTabIndex)),
+                AllOf(EqualsManagePaymentsMethodsSuggestion(with_gpay_logo),
+                      EqualSuggestionTabIndex(kDefaultSuggestionTabIndex)))));
   }
   return AllOf(
       SizeIs(Ge(2)),
@@ -182,8 +187,11 @@ ContainsCreditCardFooterSuggestions(bool with_gpay_logo,
           [](const std::vector<Suggestion>& container) {
             return base::span(container).template last<2>();
           },
-          ElementsAre(EqualsSuggestion(SuggestionType::kSeparator),
-                      EqualsManagePaymentsMethodsSuggestion(with_gpay_logo))));
+          ElementsAre(
+              AllOf(EqualsSuggestion(SuggestionType::kSeparator),
+                    EqualSuggestionTabIndex(kDefaultSuggestionTabIndex)),
+              AllOf(EqualsManagePaymentsMethodsSuggestion(with_gpay_logo),
+                    EqualSuggestionTabIndex(kDefaultSuggestionTabIndex)))));
 }
 
 auto SuggestionWithGuidPayload(const Suggestion::Guid& guid) {
@@ -1667,20 +1675,24 @@ TEST_F(PaymentsSuggestionGeneratorBnplTest,
   std::vector<BnplIssuer> bnpl_issuers = payments_data().GetBnplIssuers();
   EXPECT_THAT(
       updated_suggestions[current_suggestion_index++],
-      EqualsSuggestion(
-          SuggestionType::kBnplEntry,
-          l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_PAY_LATER_OPTIONS_TEXT),
-          Suggestion::Icon::kBnplGeneric,
-          {{Suggestion::Text(l10n_util::GetStringFUTF16(
-              IDS_AUTOFILL_BNPL_CREDIT_CARD_SUGGESTION_LABEL_TWO_ISSUERS,
-              bnpl_issuers[1].GetDisplayName(),
-              bnpl_issuers[0].GetDisplayName()))}}));
+      AllOf(EqualsSuggestion(
+                SuggestionType::kBnplEntry,
+                l10n_util::GetStringUTF16(
+                    IDS_AUTOFILL_BNPL_PAY_LATER_OPTIONS_TEXT),
+                Suggestion::Icon::kBnplGeneric,
+                {{Suggestion::Text(l10n_util::GetStringFUTF16(
+                    IDS_AUTOFILL_BNPL_CREDIT_CARD_SUGGESTION_LABEL_TWO_ISSUERS,
+                    bnpl_issuers[1].GetDisplayName(),
+                    bnpl_issuers[0].GetDisplayName()))}}),
+            EqualSuggestionTabIndex(kDefaultSuggestionTabIndex)));
 
   // Checks the footer suggestions stayed in the same order after the insertion.
   EXPECT_THAT(updated_suggestions[current_suggestion_index++],
-              EqualsSuggestion(SuggestionType::kSeparator));
+              AllOf(EqualsSuggestion(SuggestionType::kSeparator),
+                    EqualSuggestionTabIndex(kDefaultSuggestionTabIndex)));
   EXPECT_THAT(updated_suggestions[current_suggestion_index++],
-              EqualsSuggestion(SuggestionType::kManageCreditCard));
+              AllOf(EqualsSuggestion(SuggestionType::kManageCreditCard),
+                    EqualSuggestionTabIndex(kDefaultSuggestionTabIndex)));
   EXPECT_EQ(current_suggestion_index, updated_suggestions.size());
 }
 
@@ -1761,19 +1773,22 @@ TEST_F(PaymentsSuggestionGeneratorBnplTest,
                 .GetPayload<Suggestion::PaymentsPayload>()
                 .extracted_amount_in_micros,
             extracted_amount_in_micros);
-  EXPECT_THAT(
-      updated_suggestions[current_suggestion_index++],
-      EqualsSuggestion(
-          SuggestionType::kBnplEntry,
-          l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_PAY_LATER_OPTIONS_TEXT),
-          Suggestion::Icon::kBnplGeneric,
-          {{Suggestion::Text(bnpl_issuer.GetDisplayName())}}));
+  EXPECT_THAT(updated_suggestions[current_suggestion_index++],
+              AllOf(EqualsSuggestion(
+                        SuggestionType::kBnplEntry,
+                        l10n_util::GetStringUTF16(
+                            IDS_AUTOFILL_BNPL_PAY_LATER_OPTIONS_TEXT),
+                        Suggestion::Icon::kBnplGeneric,
+                        {{Suggestion::Text(bnpl_issuer.GetDisplayName())}}),
+                    EqualSuggestionTabIndex(kDefaultSuggestionTabIndex)));
 
   // Checks the footer suggestions stayed in the same order after the insertion.
   EXPECT_THAT(updated_suggestions[current_suggestion_index++],
-              EqualsSuggestion(SuggestionType::kSeparator));
+              AllOf(EqualsSuggestion(SuggestionType::kSeparator),
+                    EqualSuggestionTabIndex(kDefaultSuggestionTabIndex)));
   EXPECT_THAT(updated_suggestions[current_suggestion_index++],
-              EqualsSuggestion(SuggestionType::kManageCreditCard));
+              AllOf(EqualsSuggestion(SuggestionType::kManageCreditCard),
+                    EqualSuggestionTabIndex(kDefaultSuggestionTabIndex)));
   EXPECT_EQ(current_suggestion_index, updated_suggestions.size());
 }
 
@@ -2177,161 +2192,6 @@ TEST_F(
             &feature_engagement::kIPHAutofillBnplAffirmOrZipSuggestionFeature);
 }
 
-TEST_F(PaymentsSuggestionGeneratorBnplTest,
-       GenerateCreditCardOrCvcFieldSuggestionsSync_LinkedIssuer_Affirm) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillEnablePayNowPayLaterTabs,
-                            features::kAutofillEnableBuyNowPayLater,
-                            features::kAutofillEnableAmountExtraction,
-                            features::kAutofillEnableAiBasedAmountExtraction},
-      /*disabled_features=*/{});
-
-  payments_data().AddCreditCard(test::GetCreditCard());
-  BnplIssuer linked_issuer =
-      test::GetTestLinkedBnplIssuer(BnplIssuer::IssuerId::kBnplAffirm);
-  payments_data().AddBnplIssuer(linked_issuer);
-
-  ON_CALL(*static_cast<MockAutofillOptimizationGuideDecider*>(
-              autofill_client().GetAutofillOptimizationGuideDecider()),
-          IsUrlEligibleForBnplIssuer)
-      .WillByDefault(testing::Return(true));
-
-  FormBundle form_bundle =
-      GetFormWithTypes({.fields = {{.role = CREDIT_CARD_NUMBER}}});
-
-  const std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
-      form_bundle.form, *form_bundle.form_structure, form_bundle.trigger_field,
-      *form_bundle.trigger_autofill_field, autofill_client(),
-      /*four_digit_combinations_in_dom=*/{}, payments::AmountExtractionStatus(),
-      credit_card_form_event_logger(),
-      AutofillMetrics::PaymentsSigninState::kUnknown,
-      /*exclude_virtual_cards=*/false);
-
-  auto bnpl_it = std::find_if(
-      suggestions.begin(), suggestions.end(),
-      [](const Suggestion& s) { return s.type == SuggestionType::kBnplEntry; });
-
-  ASSERT_NE(bnpl_it, suggestions.end())
-      << "Expected a BNPL suggestion to be generated.";
-
-  EXPECT_EQ(bnpl_it->main_text.value, linked_issuer.GetDisplayName());
-  EXPECT_EQ(bnpl_it->icon, Suggestion::Icon::kBnplAffirmLinked);
-  EXPECT_THAT(
-      bnpl_it->labels,
-      ElementsAre(std::vector<
-                  Suggestion::Text>{Suggestion::Text(l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_CARD_BNPL_PAY_LATER_PAYMENT_OPTION_AFFIRM_AND_AFTERPAY))}));
-
-  EXPECT_TRUE(std::holds_alternative<Suggestion::BnplIssuer>(bnpl_it->payload));
-  EXPECT_EQ(std::get<Suggestion::BnplIssuer>(bnpl_it->payload).value(),
-            linked_issuer);
-}
-
-TEST_F(PaymentsSuggestionGeneratorBnplTest,
-       GenerateCreditCardOrCvcFieldSuggestionsSync_UnlinkedIssuer_Zip) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillEnablePayNowPayLaterTabs,
-                            features::kAutofillEnableBuyNowPayLater,
-                            features::kAutofillEnableAmountExtraction,
-                            features::kAutofillEnableAiBasedAmountExtraction},
-      /*disabled_features=*/{});
-
-  payments_data().AddCreditCard(test::GetCreditCard());
-
-  // `GetTestUnlinkedBnplIssuer()` defaults to Zip.
-  BnplIssuer unlinked_issuer = test::GetTestUnlinkedBnplIssuer();
-  ASSERT_EQ(unlinked_issuer.issuer_id(), BnplIssuer::IssuerId::kBnplZip);
-  payments_data().AddBnplIssuer(unlinked_issuer);
-
-  ON_CALL(*static_cast<MockAutofillOptimizationGuideDecider*>(
-              autofill_client().GetAutofillOptimizationGuideDecider()),
-          IsUrlEligibleForBnplIssuer)
-      .WillByDefault(testing::Return(true));
-
-  FormBundle form_bundle =
-      GetFormWithTypes({.fields = {{.role = CREDIT_CARD_NUMBER}}});
-
-  const std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
-      form_bundle.form, *form_bundle.form_structure, form_bundle.trigger_field,
-      *form_bundle.trigger_autofill_field, autofill_client(),
-      /*four_digit_combinations_in_dom=*/{}, payments::AmountExtractionStatus(),
-      credit_card_form_event_logger(),
-      AutofillMetrics::PaymentsSigninState::kUnknown,
-      /*exclude_virtual_cards=*/false);
-
-  auto bnpl_it = std::find_if(
-      suggestions.begin(), suggestions.end(),
-      [](const Suggestion& s) { return s.type == SuggestionType::kBnplEntry; });
-
-  ASSERT_NE(bnpl_it, suggestions.end())
-      << "Expected a BNPL suggestion to be generated.";
-
-  EXPECT_EQ(bnpl_it->main_text.value, unlinked_issuer.GetDisplayName());
-  EXPECT_EQ(bnpl_it->icon, Suggestion::Icon::kBnplZipUnlinked);
-  EXPECT_THAT(bnpl_it->labels,
-              ElementsAre(std::vector<Suggestion::Text>{
-                  Suggestion::Text(l10n_util::GetStringUTF16(
-                      IDS_AUTOFILL_CARD_BNPL_PAY_LATER_PAYMENT_OPTION_ZIP))}));
-
-  EXPECT_TRUE(std::holds_alternative<Suggestion::BnplIssuer>(bnpl_it->payload));
-  EXPECT_EQ(std::get<Suggestion::BnplIssuer>(bnpl_it->payload).value(),
-            unlinked_issuer);
-}
-
-TEST_F(PaymentsSuggestionGeneratorBnplTest,
-       GenerateCreditCardOrCvcFieldSuggestionsSync_LinkedIssuer_Klarna) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillEnablePayNowPayLaterTabs,
-                            features::kAutofillEnableBuyNowPayLater,
-                            features::kAutofillEnableBuyNowPayLaterForKlarna,
-                            features::kAutofillEnableAmountExtraction,
-                            features::kAutofillEnableAiBasedAmountExtraction},
-      /*disabled_features=*/{});
-
-  payments_data().AddCreditCard(test::GetCreditCard());
-  BnplIssuer linked_issuer =
-      test::GetTestLinkedBnplIssuer(BnplIssuer::IssuerId::kBnplKlarna);
-  payments_data().AddBnplIssuer(linked_issuer);
-
-  ON_CALL(*static_cast<MockAutofillOptimizationGuideDecider*>(
-              autofill_client().GetAutofillOptimizationGuideDecider()),
-          IsUrlEligibleForBnplIssuer)
-      .WillByDefault(testing::Return(true));
-
-  FormBundle form_bundle =
-      GetFormWithTypes({.fields = {{.role = CREDIT_CARD_NUMBER}}});
-
-  const std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
-      form_bundle.form, *form_bundle.form_structure, form_bundle.trigger_field,
-      *form_bundle.trigger_autofill_field, autofill_client(),
-      /*four_digit_combinations_in_dom=*/{}, payments::AmountExtractionStatus(),
-      credit_card_form_event_logger(),
-      AutofillMetrics::PaymentsSigninState::kUnknown,
-      /*exclude_virtual_cards=*/false);
-
-  auto bnpl_it = std::find_if(
-      suggestions.begin(), suggestions.end(),
-      [](const Suggestion& s) { return s.type == SuggestionType::kBnplEntry; });
-
-  ASSERT_NE(bnpl_it, suggestions.end())
-      << "Expected a BNPL suggestion to be generated.";
-
-  EXPECT_EQ(bnpl_it->main_text.value, linked_issuer.GetDisplayName());
-  EXPECT_EQ(bnpl_it->icon, Suggestion::Icon::kBnplKlarnaLinked);
-  EXPECT_THAT(
-      bnpl_it->labels,
-      ElementsAre(std::vector<Suggestion::Text>{
-          Suggestion::Text(l10n_util::GetStringUTF16(
-              IDS_AUTOFILL_CARD_BNPL_PAY_LATER_PAYMENT_OPTION_KLARNA))}));
-
-  EXPECT_TRUE(std::holds_alternative<Suggestion::BnplIssuer>(bnpl_it->payload));
-  EXPECT_EQ(std::get<Suggestion::BnplIssuer>(bnpl_it->payload).value(),
-            linked_issuer);
-}
-
 TEST_F(
     PaymentsSuggestionGeneratorBnplTest,
     GenerateCreditCardOrCvcFieldSuggestionsSync_CardNumberFieldNotEmpty_PayLaterIssuerDisabled) {
@@ -2386,6 +2246,7 @@ TEST_F(
   EXPECT_EQ(std::get<Suggestion::BnplIssuer>(disabled_bnpl_suggestion->payload)
                 .value(),
             linked_issuer);
+  EXPECT_EQ(disabled_bnpl_suggestion->tab_index, kPayLaterSuggestionTabIndex);
 }
 
 TEST_F(
@@ -2424,10 +2285,18 @@ TEST_F(
 
   ASSERT_EQ(suggestions.size(), 7U);
 
-  EXPECT_EQ(suggestions[0].type, SuggestionType::kCreditCardEntry);
-  EXPECT_EQ(suggestions[1].type, SuggestionType::kBnplEntry);
-  EXPECT_EQ(suggestions[2].type, SuggestionType::kBnplEntry);
-  EXPECT_EQ(suggestions[3].type, SuggestionType::kBnplEntry);
+  EXPECT_THAT(suggestions[0],
+              AllOf(EqualsSuggestion(SuggestionType::kCreditCardEntry),
+                    EqualSuggestionTabIndex(kDefaultSuggestionTabIndex)));
+  EXPECT_THAT(suggestions[1],
+              AllOf(EqualsSuggestion(SuggestionType::kBnplEntry),
+                    EqualSuggestionTabIndex(kPayLaterSuggestionTabIndex)));
+  EXPECT_THAT(suggestions[2],
+              AllOf(EqualsSuggestion(SuggestionType::kBnplEntry),
+                    EqualSuggestionTabIndex(kPayLaterSuggestionTabIndex)));
+  EXPECT_THAT(suggestions[3],
+              AllOf(EqualsSuggestion(SuggestionType::kBnplEntry),
+                    EqualSuggestionTabIndex(kPayLaterSuggestionTabIndex)));
   EXPECT_THAT(suggestions,
               ContainsCreditCardFooterSuggestions(/*with_gpay_logo=*/false,
                                                   /*with_bnpl_footnote=*/true));
@@ -2481,6 +2350,7 @@ TEST_F(
 
   EXPECT_EQ(loading_throbber_finder->acceptability,
             Suggestion::Acceptability::kUnacceptable);
+  EXPECT_EQ(loading_throbber_finder->tab_index, kPayLaterSuggestionTabIndex);
 
   // 3 BNPL issuers were added.
   EXPECT_EQ(loading_throbber_finder->expected_number_of_suggestions, 3u);
@@ -2525,11 +2395,12 @@ TEST_F(
       /*exclude_virtual_cards=*/false);
 
   ASSERT_EQ(suggestions.size(), 5U);
-  EXPECT_EQ(suggestions[0].type, SuggestionType::kCreditCardEntry);
-  EXPECT_EQ(suggestions[1].type, SuggestionType::kSeparator);
-  EXPECT_EQ(suggestions[2].type, SuggestionType::kBnplEntry);
-  EXPECT_EQ(suggestions[3].type, SuggestionType::kSeparator);
-  EXPECT_EQ(suggestions[4].type, SuggestionType::kManageCreditCard);
+  EXPECT_THAT(suggestions,
+              ElementsAre(EqualsSuggestion(SuggestionType::kCreditCardEntry),
+                          EqualsSuggestion(SuggestionType::kSeparator),
+                          EqualsSuggestion(SuggestionType::kBnplEntry),
+                          EqualsSuggestion(SuggestionType::kSeparator),
+                          EqualsSuggestion(SuggestionType::kManageCreditCard)));
 }
 
 TEST_F(
@@ -2572,6 +2443,7 @@ TEST_F(
 
   EXPECT_EQ(bnpl_footnote->acceptability,
             Suggestion::Acceptability::kUnacceptable);
+  EXPECT_EQ(bnpl_footnote->tab_index, kPayLaterSuggestionTabIndex);
 }
 
 TEST_F(
@@ -2607,6 +2479,90 @@ TEST_F(
                            [](const Suggestion& s) {
                              return s.type == SuggestionType::kBnplFootnote;
                            }));
+}
+
+// Params of PaymentsSuggestionGeneratorPnplTabTestForIssuer:
+// -- BnplIssuer::IssuerId IssuerId: The Buy Now Pay Later issuer which the
+// suggestion is generated for.
+// -- int ExpectedLabelTextId: The id of the expected text that should be
+// displayed in the suggestion label.
+class PaymentsSuggestionGeneratorPnplTabTestForIssuer
+    : public PaymentsSuggestionGeneratorTest,
+      public testing::WithParamInterface<
+          std::tuple<BnplIssuer::IssuerId, int>> {
+ public:
+  BnplIssuer::IssuerId IssuerId() { return std::get<0>(GetParam()); }
+  Suggestion::Text ExpectedLabelText() {
+    return Suggestion::Text(l10n_util::GetStringUTF16(std::get<1>(GetParam())));
+  }
+
+  void SetUp() override {
+    PaymentsSuggestionGeneratorTest::SetUp();
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kAutofillEnablePayNowPayLaterTabs,
+                              features::kAutofillEnableBuyNowPayLater,
+                              features::kAutofillEnableBuyNowPayLaterForKlarna,
+                              features::kAutofillEnableAmountExtraction,
+                              features::kAutofillEnableAiBasedAmountExtraction},
+        /*disabled_features=*/{});
+    autofill_client().GetPrefs()->SetBoolean(
+        prefs::kAutofillAmountExtractionAiTermsSeen, false);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PaymentsSuggestionGeneratorPnplTabTestForIssuer,
+    testing::Values(
+        std::make_tuple(
+            BnplIssuer::IssuerId::kBnplAffirm,
+            IDS_AUTOFILL_CARD_BNPL_PAY_LATER_PAYMENT_OPTION_AFFIRM_AND_AFTERPAY),
+        std::make_tuple(BnplIssuer::IssuerId::kBnplZip,
+                        IDS_AUTOFILL_CARD_BNPL_PAY_LATER_PAYMENT_OPTION_ZIP),
+        std::make_tuple(
+            BnplIssuer::IssuerId::kBnplKlarna,
+            IDS_AUTOFILL_CARD_BNPL_PAY_LATER_PAYMENT_OPTION_KLARNA)));
+
+TEST_P(PaymentsSuggestionGeneratorPnplTabTestForIssuer,
+       GenerateCreditCardOrCvcFieldSuggestionsSync_LinkedIssuer) {
+  payments_data().AddCreditCard(test::GetCreditCard());
+  BnplIssuer issuer = test::GetTestLinkedBnplIssuer(IssuerId());
+  payments_data().AddBnplIssuer(issuer);
+
+  ON_CALL(*static_cast<MockAutofillOptimizationGuideDecider*>(
+              autofill_client().GetAutofillOptimizationGuideDecider()),
+          IsUrlEligibleForBnplIssuer)
+      .WillByDefault(testing::Return(true));
+
+  FormBundle form_bundle =
+      GetFormWithTypes({.fields = {{.role = CREDIT_CARD_NUMBER}}});
+
+  const std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
+      form_bundle.form, *form_bundle.form_structure, form_bundle.trigger_field,
+      *form_bundle.trigger_autofill_field, autofill_client(),
+      /*four_digit_combinations_in_dom=*/{}, payments::AmountExtractionStatus(),
+      credit_card_form_event_logger(),
+      AutofillMetrics::PaymentsSigninState::kUnknown,
+      /*exclude_virtual_cards=*/false);
+
+  auto bnpl_it = std::find_if(
+      suggestions.begin(), suggestions.end(),
+      [](const Suggestion& s) { return s.type == SuggestionType::kBnplEntry; });
+
+  ASSERT_NE(bnpl_it, suggestions.end())
+      << "Expected a BNPL suggestion to be generated.";
+
+  EXPECT_EQ(bnpl_it->main_text.value, issuer.GetDisplayName());
+  EXPECT_EQ(bnpl_it->icon,
+            payments::GetBnplSuggestionIcon(IssuerId(), /*is_linked=*/true));
+  EXPECT_THAT(bnpl_it->labels,
+              ElementsAre(std::vector<Suggestion::Text>{ExpectedLabelText()}));
+  EXPECT_TRUE(std::holds_alternative<Suggestion::BnplIssuer>(bnpl_it->payload));
+  EXPECT_EQ(std::get<Suggestion::BnplIssuer>(bnpl_it->payload).value(), issuer);
+  EXPECT_EQ(bnpl_it->tab_index, kPayLaterSuggestionTabIndex);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

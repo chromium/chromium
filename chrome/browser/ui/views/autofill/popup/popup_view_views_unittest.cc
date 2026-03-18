@@ -2485,6 +2485,22 @@ TEST_F(PopupViewViewsTest, TabbedPane_ConfigPassedThroughAndRendered) {
   EXPECT_EQ(tabbed_pane->GetTabAt(1)->GetTitleText(), u"Pay Later Test");
 }
 
+TEST_F(PopupViewViewsTest, TabbedPane_SuggestionFilteredForInitialShow) {
+  AutofillPopupView::TabbedPaneConfig tabbed_pane_config(
+      {{AutofillPopupView::TabbedPaneConfig::TabType::kPayNow, u"Pay Now Test"},
+       {AutofillPopupView::TabbedPaneConfig::TabType::kPayLater,
+        u"Pay Later Test"}});
+
+  EXPECT_CALL(controller(),
+              SetFilter(Eq(AutofillPopupController::SuggestionFilter(
+                  kDefaultSuggestionTabIndex))));
+
+  CreateAndShowView({SuggestionType::kCreditCardEntry},
+                    /*widget_params=*/std::nullopt,
+                    /*search_bar_config=*/std::nullopt,
+                    std::move(tabbed_pane_config));
+}
+
 TEST_F(PopupViewViewsTest, WarningOnShowA11yFocus) {
   views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
   CreateAndShowView({SuggestionType::kMixedFormMessage});
@@ -2629,6 +2645,14 @@ TEST_F(PopupViewViewsTest, AtMemory_KeyboardNavigation) {
   EXPECT_CALL(controller(), Hide(SuggestionHidingReason::kUserAborted));
   event.windows_key_code = ui::VKEY_ESCAPE;
   EXPECT_TRUE(test_api(view()).HandleKeyPressEvent(event));
+}
+
+TEST_F(PopupViewViewsTest, TabSelectionUpdatesSuggestionFilter) {
+  CreateAndShowView();
+  EXPECT_CALL(controller(),
+              SetFilter(Eq(AutofillPopupController::SuggestionFilter(
+                  SuggestionTabIndex(3)))));
+  view().TabSelectedAt(3);
 }
 
 }  // namespace
