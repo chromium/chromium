@@ -25,6 +25,7 @@ source_set("delegate") {
   deps = [
     "//base",
     "//chrome/browser/glic",
+    "//chrome/browser/password_manager/actor_login:actor_login_permission_service_factory",
     "//chrome/browser/translate",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/webid",
@@ -57,6 +58,7 @@ if (!skip_android_unmigrated_actor_files) {
     deps = [
       ":delegate",
       "//base/test:test_support",
+      "//chrome/browser/password_manager/actor_login:actor_login_permission_service_factory",
       "//chrome/browser/ui/tabs:test_support",
       "//chrome/browser/webid",
       "//chrome/common:mojo_bindings",

@@ -55,6 +55,23 @@ class MockIdentityCredentialSource
   MOCK_METHOD(bool, HasPendingRequest, (), (override));
 };
 
+class MockActorLoginPermissionService : public ActorLoginPermissionService {
+ public:
+  MOCK_METHOD(void,
+              ListPermissions,
+              (const std::vector<FederatedOrigins>&, ListPermissionsResult),
+              (override));
+  MOCK_METHOD(void, ListAllPermissions, (ListPermissionsResult), (override));
+  MOCK_METHOD(void,
+              DeletePermission,
+              (const url::Origin&, DeletePermissionResult),
+              (override));
+  MOCK_METHOD(void,
+              GrantPermission,
+              (const FederatedPermission&, GrantPermissionResult),
+              (override));
+};
+
 scoped_refptr<content::IdentityRequestAccount> CreateTestIdentityRequestAccount(
     const std::string& email,
     const std::string& idp_config_url) {
@@ -94,6 +111,7 @@ class ActorLoginFederatedCredentialsFetcherTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_;
   MockIdentityCredentialSource mock_identity_source_;
+  MockActorLoginPermissionService mock_permission_service_;
 };
 
 TEST_F(ActorLoginFederatedCredentialsFetcherTest, GetCredentialsSuccess) {
@@ -107,15 +125,21 @@ TEST_F(ActorLoginFederatedCredentialsFetcherTest, GetCredentialsSuccess) {
   EXPECT_CALL(mock_identity_source_, GetIdentityCredentialSuggestions)
       .WillOnce(base::test::RunOnceCallback<1>(std::move(accounts)));
 
+  EXPECT_CALL(mock_permission_service_, ListPermissions)
+      .WillOnce(
+          base::test::RunOnceCallback<1>(std::vector<FederatedPermission>()));
+
   base::test::TestFuture<std::vector<Credential>,
                          ActorLoginCredentialsFetcher::Status>
       future;
   url::Origin request_origin = url::Origin::Create(GURL("https://example.com"));
   ActorLoginFederatedCredentialsFetcher fetcher(
-      request_origin, base::BindLambdaForTesting(
-                          [&]() -> content::webid::IdentityCredentialSource* {
-                            return &mock_identity_source_;
-                          }));
+      request_origin,
+      base::BindLambdaForTesting(
+          [&]() -> content::webid::IdentityCredentialSource* {
+            return &mock_identity_source_;
+          }),
+      mock_permission_service_);
   fetcher.Fetch(future.GetCallback());
 
   ASSERT_TRUE(future.Wait());
@@ -135,6 +159,137 @@ TEST_F(ActorLoginFederatedCredentialsFetcherTest, GetCredentialsSuccess) {
             gfx::Size(56, 78));
   EXPECT_TRUE(credentials[0].immediatelyAvailableToLogin);
   EXPECT_EQ(status, ActorLoginCredentialsFetcher::Status::kSuccess);
+  EXPECT_FALSE(credentials[0].has_persistent_permission);
+}
+
+TEST_F(ActorLoginFederatedCredentialsFetcherTest,
+       GetCredentialsWithMatchingPermission) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kFedCmEmbedderInitiatedLogin);
+
+  std::vector<scoped_refptr<content::IdentityRequestAccount>> accounts{
+      CreateTestIdentityRequestAccount("test@example.com", "https://idp.com")};
+
+  EXPECT_CALL(mock_identity_source_, GetIdentityCredentialSuggestions)
+      .WillOnce(base::test::RunOnceCallback<1>(std::move(accounts)));
+
+  FederatedPermission permission;
+  permission.idp_origin = url::Origin::Create(GURL("https://idp.com"));
+  permission.rp_embedder_origin =
+      url::Origin::Create(GURL("https://example.com"));
+  permission.rp_requester_origin =
+      url::Origin::Create(GURL("https://requester.com"));
+  permission.chosen_account_id = "123";
+
+  EXPECT_CALL(mock_permission_service_, ListPermissions)
+      .WillOnce(base::test::RunOnceCallback<1>(
+          std::vector<FederatedPermission>{permission}));
+
+  base::test::TestFuture<std::vector<Credential>,
+                         ActorLoginCredentialsFetcher::Status>
+      future;
+  url::Origin request_origin = url::Origin::Create(GURL("https://example.com"));
+  ActorLoginFederatedCredentialsFetcher fetcher(
+      request_origin,
+      base::BindLambdaForTesting(
+          [&]() -> content::webid::IdentityCredentialSource* {
+            return &mock_identity_source_;
+          }),
+      mock_permission_service_);
+  fetcher.Fetch(future.GetCallback());
+
+  ASSERT_TRUE(future.Wait());
+  const auto& [credentials, status] = future.Get();
+  ASSERT_EQ(credentials.size(), 1u);
+  EXPECT_TRUE(credentials[0].has_persistent_permission);
+}
+
+TEST_F(ActorLoginFederatedCredentialsFetcherTest,
+       GetCredentialsWithMismatchingAccountId) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kFedCmEmbedderInitiatedLogin);
+
+  std::vector<scoped_refptr<content::IdentityRequestAccount>> accounts{
+      CreateTestIdentityRequestAccount("test@example.com", "https://idp.com")};
+
+  EXPECT_CALL(mock_identity_source_, GetIdentityCredentialSuggestions)
+      .WillOnce(base::test::RunOnceCallback<1>(std::move(accounts)));
+
+  FederatedPermission permission;
+  permission.idp_origin = url::Origin::Create(GURL("https://idp.com"));
+  permission.rp_embedder_origin =
+      url::Origin::Create(GURL("https://example.com"));
+  permission.rp_requester_origin =
+      url::Origin::Create(GURL("https://requester.com"));
+  permission.chosen_account_id = "WRONG_ID";
+
+  EXPECT_CALL(mock_permission_service_, ListPermissions)
+      .WillOnce(base::test::RunOnceCallback<1>(
+          std::vector<FederatedPermission>{permission}));
+
+  base::test::TestFuture<std::vector<Credential>,
+                         ActorLoginCredentialsFetcher::Status>
+      future;
+  url::Origin request_origin = url::Origin::Create(GURL("https://example.com"));
+  ActorLoginFederatedCredentialsFetcher fetcher(
+      request_origin,
+      base::BindLambdaForTesting(
+          [&]() -> content::webid::IdentityCredentialSource* {
+            return &mock_identity_source_;
+          }),
+      mock_permission_service_);
+  fetcher.Fetch(future.GetCallback());
+
+  ASSERT_TRUE(future.Wait());
+  const auto& [credentials, status] = future.Get();
+  ASSERT_EQ(credentials.size(), 1u);
+  EXPECT_FALSE(credentials[0].has_persistent_permission);
+}
+
+TEST_F(ActorLoginFederatedCredentialsFetcherTest,
+       GetCredentialsWithMismatchingEmbedderOrigin) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kFedCmEmbedderInitiatedLogin);
+
+  std::vector<scoped_refptr<content::IdentityRequestAccount>> accounts{
+      CreateTestIdentityRequestAccount("test@example.com", "https://idp.com")};
+
+  EXPECT_CALL(mock_identity_source_, GetIdentityCredentialSuggestions)
+      .WillOnce(base::test::RunOnceCallback<1>(std::move(accounts)));
+
+  FederatedPermission permission;
+  permission.idp_origin = url::Origin::Create(GURL("https://idp.com"));
+  // The correct embedder origin is https://example.com
+  permission.rp_embedder_origin =
+      url::Origin::Create(GURL("https://wrong.com"));
+  permission.rp_requester_origin =
+      url::Origin::Create(GURL("https://requester.com"));
+  permission.chosen_account_id = "123";
+
+  EXPECT_CALL(mock_permission_service_, ListPermissions)
+      .WillOnce(base::test::RunOnceCallback<1>(
+          std::vector<FederatedPermission>{permission}));
+
+  base::test::TestFuture<std::vector<Credential>,
+                         ActorLoginCredentialsFetcher::Status>
+      future;
+  url::Origin request_origin = url::Origin::Create(GURL("https://example.com"));
+  ActorLoginFederatedCredentialsFetcher fetcher(
+      request_origin,
+      base::BindLambdaForTesting(
+          [&]() -> content::webid::IdentityCredentialSource* {
+            return &mock_identity_source_;
+          }),
+      mock_permission_service_);
+  fetcher.Fetch(future.GetCallback());
+
+  ASSERT_TRUE(future.Wait());
+  const auto& [credentials, status] = future.Get();
+  ASSERT_EQ(credentials.size(), 1u);
+  EXPECT_FALSE(credentials[0].has_persistent_permission);
 }
 
 TEST_F(ActorLoginFederatedCredentialsFetcherTest, FeatureDisabled) {
@@ -152,7 +307,8 @@ TEST_F(ActorLoginFederatedCredentialsFetcherTest, FeatureDisabled) {
       base::BindLambdaForTesting(
           [&]() -> content::webid::IdentityCredentialSource* {
             return &mock_identity_source_;
-          }));
+          }),
+      mock_permission_service_);
   fetcher.Fetch(future.GetCallback());
 
   ASSERT_TRUE(future.Wait());
@@ -169,6 +325,10 @@ TEST_F(ActorLoginFederatedCredentialsFetcherTest, NoAccounts) {
   EXPECT_CALL(mock_identity_source_, GetIdentityCredentialSuggestions)
       .WillOnce(base::test::RunOnceCallback<1>(std::nullopt));
 
+  EXPECT_CALL(mock_permission_service_, ListPermissions)
+      .WillOnce(
+          base::test::RunOnceCallback<1>(std::vector<FederatedPermission>()));
+
   base::test::TestFuture<std::vector<Credential>,
                          ActorLoginCredentialsFetcher::Status>
       future;
@@ -177,7 +337,8 @@ TEST_F(ActorLoginFederatedCredentialsFetcherTest, NoAccounts) {
       base::BindLambdaForTesting(
           [&]() -> content::webid::IdentityCredentialSource* {
             return &mock_identity_source_;
-          }));
+          }),
+      mock_permission_service_);
   fetcher.Fetch(future.GetCallback());
 
   ASSERT_TRUE(future.Wait());
@@ -199,7 +360,8 @@ TEST_F(ActorLoginFederatedCredentialsFetcherTest, NoSource) {
       base::BindLambdaForTesting(
           [&]() -> content::webid::IdentityCredentialSource* {
             return nullptr;
-          }));
+          }),
+      mock_permission_service_);
   fetcher.Fetch(future.GetCallback());
 
   ASSERT_TRUE(future.Wait());

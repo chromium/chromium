@@ -16,9 +16,11 @@
 #include "base/types/expected.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/password_manager/actor_login/actor_login_permission_service_factory.h"
 #include "chrome/browser/password_manager/actor_login/internal/actor_login_federated_credentials_fetcher.h"
 #include "chrome/browser/password_manager/actor_login/internal/actor_login_metrics_helper.h"
 #include "chrome/browser/password_manager/actor_login/internal/actor_login_siwg_controller.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/buildflags.h"
@@ -133,6 +135,12 @@ void ActorLoginDelegateImpl::GetCredentials(
   fetchers.push_back(std::make_unique<ActorLoginPasswordCredentialsFetcher>(
       request_origin, client_, driver->GetPasswordManager(), mqls_logger));
 
+  ActorLoginPermissionService* permission_service =
+      ActorLoginPermissionServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(GetWebContents().GetBrowserContext()));
+  // This can be nullptr for incognito and guest profiles but these profiles
+  // cannot use actor login.
+  CHECK(permission_service);
   auto federated_fetcher =
       std::make_unique<ActorLoginFederatedCredentialsFetcher>(
           request_origin,
@@ -145,7 +153,8 @@ void ActorLoginDelegateImpl::GetCredentials(
                 return content::webid::IdentityCredentialSource::FromPage(
                     web_contents->GetPrimaryPage());
               },
-              GetWebContents().GetWeakPtr()));
+              GetWebContents().GetWeakPtr()),
+          *permission_service);
   federated_fetcher->SetMetricsHelper(metrics_helper_.get());
   fetchers.push_back(std::move(federated_fetcher));
 

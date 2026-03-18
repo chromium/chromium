@@ -7,8 +7,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/password_manager/actor_login/actor_login_permission_service_factory.h"
 #include "chrome/browser/password_manager/actor_login/internal/actor_login_metrics_helper.h"
 #include "chrome/browser/ui/bookmarks/bookmark_bar_controller.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
@@ -18,6 +20,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/device_reauth/device_authenticator.h"
+#include "components/password_manager/core/browser/actor_login/actor_login_permission_service.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
 #include "components/password_manager/core/browser/actor_login/test/actor_login_test_util.h"
 #include "components/password_manager/core/browser/actor_login/test/mock_actor_login_quality_logger.h"
@@ -139,6 +142,23 @@ class MockPasswordManagerDriver
               (override));
 };
 
+class MockActorLoginPermissionService : public ActorLoginPermissionService {
+ public:
+  MOCK_METHOD(void,
+              ListPermissions,
+              (const std::vector<FederatedOrigins>&, ListPermissionsResult),
+              (override));
+  MOCK_METHOD(void, ListAllPermissions, (ListPermissionsResult), (override));
+  MOCK_METHOD(void,
+              DeletePermission,
+              (const url::Origin&, DeletePermissionResult),
+              (override));
+  MOCK_METHOD(void,
+              GrantPermission,
+              (const FederatedPermission&, GrantPermissionResult),
+              (override));
+};
+
 }  // namespace
 
 class ActorLoginDelegateImplTest : public ChromeRenderViewHostTestHarness {
@@ -149,6 +169,18 @@ class ActorLoginDelegateImplTest : public ChromeRenderViewHostTestHarness {
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
+
+    ActorLoginPermissionServiceFactory::GetInstance()->SetTestingFactory(
+        profile(), base::BindRepeating([](content::BrowserContext* context)
+                                           -> std::unique_ptr<KeyedService> {
+          auto mock_service =
+              std::make_unique<NiceMock<MockActorLoginPermissionService>>();
+          ON_CALL(*mock_service, ListPermissions)
+              .WillByDefault(base::test::RunOnceCallbackRepeatedly<1>(
+                  std::vector<FederatedPermission>()));
+          return mock_service;
+        }));
+
     std::unique_ptr<content::WebContents> contents = CreateTestWebContents();
     content::NavigationSimulator::NavigateAndCommitFromBrowser(contents.get(),
                                                                GURL(kTestUrl));
