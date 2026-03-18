@@ -246,7 +246,7 @@ void TabHoverCardController::UpdateHoverCard(
     HoverCardAnchorTarget* anchor_target,
     TabSlotController::HoverCardUpdateType update_type) {
   // Never display a hover card for an invalid tab.
-  if (anchor_target && !anchor_target->IsValid()) {
+  if (anchor_target && !anchor_target->IsValidHoverCardTarget()) {
     anchor_target = nullptr;
   }
 
@@ -416,8 +416,7 @@ void TabHoverCardController::MaybeStartThumbnailObservation(
     return;
   }
 
-  // Active tabs don't get thumbnails.
-  if (anchor_target->IsActive()) {
+  if (!anchor_target->NeedsToShowThumbnail()) {
     thumbnail_observer_->Observe(nullptr);
     return;
   }
@@ -719,7 +718,7 @@ bool TabHoverCardController::TargetTabIsValid() const {
   // including no longer belonging to the same tabstrip, being dragged or
   // detached, or just not being visible. We need to be vigilant about invalid
   // tabs due to e.g. crbug.com/1295601.
-  return target_tab_ && target_tab_->IsValid();
+  return target_tab_ && target_tab_->IsValidHoverCardTarget();
 }
 
 void TabHoverCardController::OnCardFullyVisible() {

@@ -62,10 +62,10 @@ class HoverCardAnchorTarget {
   virtual ~HoverCardAnchorTarget();
 
   // Returns true if this target is active.
-  virtual bool IsActive() const = 0;
+  virtual bool NeedsToShowThumbnail() const = 0;
 
   // Determines if |this| is a valid target.
-  virtual bool IsValid() const = 0;
+  virtual bool IsValidHoverCardTarget() const = 0;
 
   const CardData& data() const { return hover_card_data_; }
 

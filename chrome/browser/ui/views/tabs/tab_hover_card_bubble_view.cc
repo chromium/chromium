@@ -454,7 +454,7 @@ class TabHoverCardBubbleView::TabCardView : public views::View {
     if (thumbnail_view_) {
       const bool has_thumbnail =
           card_data.thumbnail && card_data.thumbnail->has_data();
-      if (anchor_target->IsActive() ||
+      if (!anchor_target->NeedsToShowThumbnail() ||
           (card_data.is_tab_discarded && !has_thumbnail)) {
         thumbnail_view_->ClearImage();
       } else {
@@ -598,7 +598,7 @@ TabHoverCardBubbleView::TabHoverCardBubbleView(
   const TabCardData& card_data = std::get<TabCardData>(anchor_target->data());
   bool valid_thumbnail = card_data.thumbnail &&
                          card_data.thumbnail->has_data() &&
-                         anchor_target->IsActive();
+                         anchor_target->NeedsToShowThumbnail();
 
   if (tab_card_view_->thumbnail_view() && !valid_thumbnail) {
     // Placeholder image should be used when there is no image data for the

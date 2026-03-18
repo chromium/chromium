@@ -360,6 +360,17 @@ Tab::~Tab() {
   }
 }
 
+bool Tab::IsActive() const {
+  if (split()) {
+    return std::ranges::any_of(controller()->GetTabsInSplit(this),
+                               [this](const Tab* split_tab) {
+                                 return controller_->IsActiveTab(split_tab);
+                               });
+  } else {
+    return controller_->IsActiveTab(this);
+  }
+}
+
 void Tab::AnimationEnded(const gfx::Animation* animation) {
   DCHECK_EQ(animation, &title_animation_);
   title_->SetBoundsRect(target_title_bounds_);
@@ -917,18 +928,11 @@ std::optional<SkColor> Tab::GetGroupColor() const {
       controller_->GetGroupColorId(group().value()));
 }
 
-bool Tab::IsActive() const {
-  if (split()) {
-    return std::ranges::any_of(controller()->GetTabsInSplit(this),
-                               [this](const Tab* split_tab) {
-                                 return controller_->IsActiveTab(split_tab);
-                               });
-  } else {
-    return controller_->IsActiveTab(this);
-  }
+bool Tab::NeedsToShowThumbnail() const {
+  return !IsActive();
 }
 
-bool Tab::IsValid() const {
+bool Tab::IsValidHoverCardTarget() const {
   return !closing() && !detached() && !dragging() && GetVisible();
 }
 

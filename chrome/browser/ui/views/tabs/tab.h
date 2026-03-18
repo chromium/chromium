@@ -86,6 +86,8 @@ class Tab : public gfx::AnimationDelegate,
   Tab& operator=(const Tab&) = delete;
   ~Tab() override;
 
+  bool IsActive() const;
+
   // gfx::AnimationDelegate:
   void AnimationEnded(const gfx::Animation* animation) override;
   void AnimationProgressed(const gfx::Animation* animation) override;
@@ -135,8 +137,8 @@ class Tab : public gfx::AnimationDelegate,
   const tabs::TabData& data() const { return data_; }
 
   // HoverCardAnchorTarget:
-  bool IsActive() const override;
-  bool IsValid() const override;
+  bool NeedsToShowThumbnail() const override;
+  bool IsValidHoverCardTarget() const override;
   views::BubbleBorder::Arrow GetAnchorPosition() const override;
 
   // Notifies the AlertIndicatorButton that the active state of this tab has

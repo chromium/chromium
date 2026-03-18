@@ -841,11 +841,11 @@ void VerticalTabView::ShowContextMenuForViewImpl(
   }
 }
 
-bool VerticalTabView::IsActive() const {
-  return active_;
+bool VerticalTabView::NeedsToShowThumbnail() const {
+  return !IsActive();
 }
 
-bool VerticalTabView::IsValid() const {
+bool VerticalTabView::IsValidHoverCardTarget() const {
   return collection_node_ && !IsDragging();
 }
 

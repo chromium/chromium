@@ -80,13 +80,14 @@ class VerticalTabView : public views::View,
   const TabStyle* tab_style() const { return tab_style_; }
   float radial_highlight_opacity() { return radial_highlight_opacity_; }
   const tabs::TabData& data() const { return tab_data_; }
+  bool IsActive() const { return active_; }
 
   TabCloseButton* close_button_for_testing() { return close_button_; }
   bool collapsed_for_testing() { return collapsed_; }
 
   // HoverCardAnchorTarget:
-  bool IsActive() const override;
-  bool IsValid() const override;
+  bool NeedsToShowThumbnail() const override;
+  bool IsValidHoverCardTarget() const override;
   views::BubbleBorder::Arrow GetAnchorPosition() const override;
   const views::View* GetAnchorView() const override;
 
