@@ -212,6 +212,18 @@ TEST_F(AimEligibilityServiceTest, ClientLocaleParam) {
   EXPECT_EQ(value, "es-419");
 }
 
+TEST_F(AimEligibilityServiceTest, UdmParamAppended) {
+  test_url_loader_factory_.pending_requests()->clear();
+  aim_eligibility_service_->StartServerEligibilityRequestForDebugging();
+
+  const network::ResourceRequest* request =
+      &test_url_loader_factory_.GetPendingRequest(0)->request;
+  EXPECT_TRUE(request);
+  std::string value;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(request->url, "udm", &value));
+  EXPECT_EQ(value, "50");
+}
+
 TEST_F(AimEligibilityServiceTest, RequestMode_Disabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
