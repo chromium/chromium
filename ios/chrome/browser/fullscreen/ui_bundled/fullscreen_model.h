@@ -104,7 +104,10 @@ class FullscreenModel : public ChromeBroadcastObserverInterface,
   UIEdgeInsets current_toolbar_insets() const {
     return GetToolbarInsetsAtProgress(progress_);
   }
-
+  // Setter for whether the force fullscreen mode was triggered manually.
+  void set_manually_forced(bool manually_forced) {
+    manually_forced_ = manually_forced;
+  }
   // Returns the toolbar insets at `progress`.
   UIEdgeInsets GetToolbarInsetsAtProgress(CGFloat progress) const {
     return UIEdgeInsetsMake(GetCollapsedTopToolbarHeight() +
@@ -324,6 +327,8 @@ class FullscreenModel : public ChromeBroadcastObserverInterface,
   CGFloat scroll_threshold_ = 0.0;
   // The content offset when the most recent drag event started.
   CGFloat offset_at_start_of_drag_ = 0;
+  // Whether the force fullscreen mode was triggered manually.
+  bool manually_forced_ = false;
 
   friend class FullscreenModelTest;
 };

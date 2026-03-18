@@ -62,7 +62,7 @@ class LegacyFullscreenMediator : public FullscreenModelObserver {
   void EnterFullscreen();
   void ExitFullscreen(FullscreenModeTransitionTrigger trigger);
 
-  // Force enters fullscreen without animation. This enters fullscreen even when
+  // Force enters fullscreen. This enters fullscreen even when
   // the model is disabled.
   void ForceEnterFullscreen(bool insets_update_enabled,
                             FullscreenModeTransitionTrigger trigger);

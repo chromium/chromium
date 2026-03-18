@@ -89,7 +89,14 @@ void FullscreenModel::ForceEnterFullscreen() {
 
 void FullscreenModel::ResetForNavigation() {
   if (IsForceFullscreenMode()) {
-    return;
+    if (!manually_forced_) {
+      return;
+    }
+    CHECK(base::FeatureList::IsEnabled(kHideToolbarsInOverflowMenu));
+    SetForceFullscreenMode(false);
+    SetInsetsUpdateEnabled(true);
+    set_manually_forced(false);
+    DecrementDisabledCounter();
   }
   base::UmaHistogramEnumeration(kExitFullscreenModeTransitionTriggerHistogram,
                                 FullscreenModeTransitionTrigger::kForcedByCode);

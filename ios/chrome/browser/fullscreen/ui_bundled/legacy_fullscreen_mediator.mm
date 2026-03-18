@@ -68,6 +68,8 @@ void LegacyFullscreenMediator::SetIsBrowserTraitCollectionUpdating(
 
 void LegacyFullscreenMediator::EnterFullscreen() {
   if (model_->enabled()) {
+    fullscreen_enter_trigger_ =
+        FullscreenModeTransitionTrigger::kUserControlled;
     AnimateWithStyle(FullscreenAnimatorStyle::ENTER_FULLSCREEN);
   }
 }
@@ -90,6 +92,9 @@ void LegacyFullscreenMediator::ForceEnterFullscreen(
     bool insets_update_enabled,
     FullscreenModeTransitionTrigger trigger) {
   fullscreen_enter_trigger_ = trigger;
+  if (trigger == FullscreenModeTransitionTrigger::kForcedByUser) {
+    model_->set_manually_forced(true);
+  }
   model_->SetForceFullscreenMode(true);
   model_->SetInsetsUpdateEnabled(insets_update_enabled);
   // Disable fullscreen because:
@@ -103,6 +108,7 @@ void LegacyFullscreenMediator::ForceEnterFullscreen(
 void LegacyFullscreenMediator::ForceExitFullscreen(
     FullscreenModeTransitionTrigger trigger) {
   fullscreen_exit_trigger_ = trigger;
+  model_->set_manually_forced(false);
   model_->SetForceFullscreenMode(false);
   model_->SetInsetsUpdateEnabled(true);
   model_->DecrementDisabledCounter();

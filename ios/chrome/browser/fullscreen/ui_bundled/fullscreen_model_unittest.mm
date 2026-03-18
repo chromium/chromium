@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_model.h"
 
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/test/fullscreen_model_test_util.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/test/test_fullscreen_model_observer.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/fullscreen/toolbars_size.h"
@@ -101,6 +102,30 @@ TEST_F(FullscreenModelTest, ResetForNavigation) {
     EXPECT_FALSE(model()->has_base_offset());
   }
   EXPECT_EQ(observer().progress(), 1.0);
+}
+
+// Tests that ResetForNavigation() correctly resets manually forced fullscreen.
+TEST_F(FullscreenModelTest, ResetForNavigationWithManuallyForced) {
+  // Enable the feature.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kHideToolbarsInOverflowMenu);
+
+  // Manually force fullscreen.
+  model()->SetForceFullscreenMode(true);
+  model()->set_manually_forced(true);
+  model()->SetInsetsUpdateEnabled(false);
+  model()->IncrementDisabledCounter();
+
+  ASSERT_TRUE(model()->IsForceFullscreenMode());
+  ASSERT_FALSE(model()->IsInsetsUpdateEnabled());
+  ASSERT_FALSE(model()->enabled());
+
+  // Call ResetForNavigation() and verify that the forced state is reset.
+  model()->ResetForNavigation();
+
+  EXPECT_FALSE(model()->IsForceFullscreenMode());
+  EXPECT_TRUE(model()->IsInsetsUpdateEnabled());
+  EXPECT_TRUE(model()->enabled());
 }
 
 // Tests that the progress value is not updated if the current scroll is being
