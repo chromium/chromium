@@ -103,6 +103,7 @@
 #include "content/public/browser/preload_pipeline_info.h"
 #include "content/public/browser/preloading.h"
 #include "content/public/browser/prerender_handle.h"
+#include "content/public/browser/prerender_host_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -1465,7 +1466,7 @@ void AwContents::FlushBackForwardCache(JNIEnv* env, int32_t reason) {
       static_cast<NotRestoredReason>(reason));
 }
 
-int32_t AwContents::StartPrerendering(
+int64_t AwContents::StartPrerendering(
     JNIEnv* env,
     const std::string& prerendering_url,
     const base::android::JavaRef<jobject>& j_prefetch_params,
@@ -1492,7 +1493,7 @@ int32_t AwContents::StartPrerendering(
     if (IsPrerenderHandleEquivalentTo(handle, url, no_vary_search_hint)) {
       handle->AddActivationCallback(std::move(activation_callback));
       handle->AddErrorCallback(std::move(error_callback));
-      return handle->GetHandleId();
+      return handle->GetPrerenderHostId().GetUnsafeValue();
     }
 
     // If the handle is not equivalent but has the same prerendering URL, cancel
@@ -1543,9 +1544,9 @@ int32_t AwContents::StartPrerendering(
           /*prerender_navigation_handle_callback=*/{},
           /*allow_reuse=*/false);
 
-  int32_t handle_id = -1;
+  int64_t host_id = -1;
   if (prerender_handle) {
-    handle_id = prerender_handle->GetHandleId();
+    host_id = prerender_handle->GetPrerenderHostId().GetUnsafeValue();
     prerender_handle->AddActivationCallback(std::move(activation_callback));
     prerender_handle->AddErrorCallback(std::move(error_callback));
     prerender_handles_.push_back(std::move(prerender_handle));
@@ -1553,14 +1554,16 @@ int32_t AwContents::StartPrerendering(
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, std::move(error_callback));
   }
-  return handle_id;
+  return host_id;
 }
 
-void AwContents::CancelPrerendering(JNIEnv* env, int32_t prerender_id) {
-  EraseIf(
+void AwContents::CancelPrerendering(JNIEnv* env, int64_t prerender_id) {
+  content::PrerenderHostId host_id =
+      content::PrerenderHostId::FromUnsafeValue(prerender_id);
+  base::EraseIf(
       prerender_handles_,
-      [prerender_id](const std::unique_ptr<content::PrerenderHandle>& handle) {
-        return handle->GetHandleId() == prerender_id;
+      [host_id](const std::unique_ptr<content::PrerenderHandle>& handle) {
+        return handle->GetPrerenderHostId() == host_id;
       });
 }
 

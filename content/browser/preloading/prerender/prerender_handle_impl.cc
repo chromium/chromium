@@ -18,12 +18,6 @@ namespace content {
 
 namespace {
 
-int32_t GetNextHandleId() {
-  static int32_t next_handle_id = 1;
-  CHECK_LT(next_handle_id, std::numeric_limits<int32_t>::max());
-  return next_handle_id++;
-}
-
 // Returns true when the error callback should be fired. The callback does not
 // need to be fired when prerendering succeed but is never activated, or it is
 // intentinally cancelled by an embedder (e.g., calling the cancellation API).
@@ -156,8 +150,7 @@ PrerenderHandleImpl::PrerenderHandleImpl(
     PrerenderHostId prerender_host_id,
     const GURL& prerendering_url,
     std::optional<net::HttpNoVarySearchData> no_vary_search_hint)
-    : handle_id_(GetNextHandleId()),
-      prerender_host_id_(prerender_host_id),
+    : prerender_host_id_(prerender_host_id),
       prerender_host_registry_(std::move(prerender_host_registry)),
       prerendering_url_(prerendering_url),
       no_vary_search_hint_(std::move(no_vary_search_hint)) {
@@ -176,10 +169,6 @@ PrerenderHandleImpl::~PrerenderHandleImpl() {
     prerender_host_registry_->CancelHost(
         prerender_host_id_, PrerenderFinalStatus::kTriggerDestroyed);
   }
-}
-
-int32_t PrerenderHandleImpl::GetHandleId() const {
-  return handle_id_;
 }
 
 PrerenderHostId PrerenderHandleImpl::GetPrerenderHostId() const {

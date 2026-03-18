@@ -11,7 +11,9 @@
 namespace content {
 
 // A strongly-typed identifier for PrerenderHost.
-using PrerenderHostId = base::IdTypeU64<class PrerenderHost>;
+// -1 is used as the invalid value to maintain compatibility with Android
+// WebView APIs which return -1 on failure. 1 is the first generated valid ID.
+using PrerenderHostId = base::IdType<class PrerenderHost, int64_t, -1, 1>;
 
 }  // namespace content
 

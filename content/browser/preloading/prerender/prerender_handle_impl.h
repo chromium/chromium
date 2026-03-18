@@ -30,7 +30,6 @@ class CONTENT_EXPORT PrerenderHandleImpl final
   ~PrerenderHandleImpl() override;
 
   // PrerenderHandle:
-  int32_t GetHandleId() const override;
   PrerenderHostId GetPrerenderHostId() const override;
   const GURL& GetInitialPrerenderingUrl() const override;
   const std::optional<net::HttpNoVarySearchData>& GetNoVarySearchHint()
@@ -56,7 +55,6 @@ class CONTENT_EXPORT PrerenderHandleImpl final
   }
 
  private:
-  const int handle_id_;
   const PrerenderHostId prerender_host_id_;
 
   base::WeakPtr<PrerenderHostRegistry> prerender_host_registry_;

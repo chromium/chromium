@@ -1885,7 +1885,7 @@ public class AwContents implements SmartClipProvider {
         // implementation, bind a tentative error message here. See also the comments in
         // `PrerenderHandleImpl::OnHostDestroyed()`.
         // TODO(crbug.com/41490450): Pass a more meaningful error message to the error callback.
-        int prerenderId =
+        long prerenderId =
                 AwContentsJni.get()
                         .startPrerendering(
                                 mNativeAwContents,
@@ -5096,14 +5096,14 @@ public class AwContents implements SmartClipProvider {
 
         void flushBackForwardCache(long nativeAwContents, int reason);
 
-        int startPrerendering(
+        long startPrerendering(
                 long nativeAwContents,
                 @JniType("std::string") @NonNull String prerenderingUrl,
                 @Nullable AwPrefetchParameters prefetchParameters,
                 @JniType("base::OnceClosure") Runnable activationCallback,
                 @JniType("base::OnceClosure") Runnable errorCallback);
 
-        void cancelPrerendering(long nativeAwContents, int prerenderId);
+        void cancelPrerendering(long nativeAwContents, long prerenderId);
 
         void cancelAllPrerendering(long nativeAwContents);
     }

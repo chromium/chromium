@@ -25,8 +25,6 @@ class PrerenderHandle {
   PrerenderHandle() = default;
   virtual ~PrerenderHandle() = default;
 
-  // TODO(crbug.com/434826191): Replace this with GetPrerenderHostId().
-  virtual int32_t GetHandleId() const = 0;
   virtual PrerenderHostId GetPrerenderHostId() const = 0;
 
   // Returns the initial URL that is passed to PrerenderHostRegistry for
