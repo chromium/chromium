@@ -5176,18 +5176,9 @@ void Element::RecalcStyle(const StyleRecalcChange change,
                         child_recalc_context);
     UpdateColumnPseudoElements(child_change, child_recalc_context);
 
-    if (IsA<HTMLMenuItemElement>(this)) {
-      UpdatePseudoElement(kPseudoIdCheckMark, child_change,
-                          child_recalc_context);
-    }
-
-    if (DynamicTo<HTMLOptionElement>(this)) {
-      UpdatePseudoElement(kPseudoIdCheckMark, child_change,
-                          child_recalc_context);
-    }
-
-    if (DynamicTo<HTMLInputElement>(this) &&
-        RuntimeEnabledFeatures::AppearanceBaseEnabled()) {
+    if (IsA<HTMLMenuItemElement>(this) || IsA<HTMLOptionElement>(this) ||
+        (IsA<HTMLInputElement>(this) &&
+         RuntimeEnabledFeatures::AppearanceBaseEnabled())) {
       UpdatePseudoElement(kPseudoIdCheckMark, child_change,
                           child_recalc_context);
     }
