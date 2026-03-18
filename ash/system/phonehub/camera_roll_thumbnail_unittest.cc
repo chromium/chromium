@@ -4,7 +4,6 @@
 
 #include "ash/system/phonehub/camera_roll_thumbnail.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
@@ -283,8 +282,9 @@ TEST_F(CameraRollThumbnailTest, LeftClickDownloadWithBackoff) {
   EXPECT_EQ(fake_camera_roll_manager()->GetDownloadRequestCount(), 1);
 
   // Wait for enough time to pass to be able to download again
-  task_environment()->FastForwardBy(
-      features::kPhoneHubCameraRollThrottleInterval.Get());
+  constexpr base::TimeDelta kPhoneHubCameraRollThrottleInterval =
+      base::Seconds(2);
+  task_environment()->FastForwardBy(kPhoneHubCameraRollThrottleInterval);
   generator()->ClickLeftButton();
 
   // Menu model of type CameraRollMenuModel is not created

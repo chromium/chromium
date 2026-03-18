@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
@@ -485,26 +484,7 @@ TEST_F(NearbyConnectionBrokerImplTest, DisconnectsUnexpectedly) {
 }
 
 TEST_F(NearbyConnectionBrokerImplTest,
-       DisconnectAfterReceivingFilePayloadWhenFeatureUnsupported) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kPhoneHubCameraRoll);
-  SetUpFullConnection();
-
-  base::RunLoop disconnect_from_endpoint_run_loop;
-  ExpectDisconnectFromEndpoint(disconnect_from_endpoint_run_loop.QuitClosure());
-  base::FilePath path;
-  base::CreateTemporaryFile(&path);
-  ReceiveFilePayload(/*payload_id=*/1234, path);
-  disconnect_from_endpoint_run_loop.Run();
-
-  InvokeDisconnectedFromEndpointCallback(/*success=*/true);
-  InvokeDisconnectedCallback();
-}
-
-TEST_F(NearbyConnectionBrokerImplTest,
        DisconnectAfterReceivingUnregisteredFilePayload) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kPhoneHubCameraRoll);
   SetUpFullConnection();
 
   base::RunLoop disconnect_from_endpoint_run_loop;
@@ -529,8 +509,6 @@ TEST_F(NearbyConnectionBrokerImplTest,
 }
 
 TEST_F(NearbyConnectionBrokerImplTest, FileTransferUpdateForRegisteredPayload) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kPhoneHubCameraRoll);
   SetUpFullConnection();
 
   int64_t payload_id = 1234;
@@ -578,8 +556,6 @@ TEST_F(NearbyConnectionBrokerImplTest, FileTransferUpdateForRegisteredPayload) {
 }
 
 TEST_F(NearbyConnectionBrokerImplTest, FileTransferUpdateForCompletedPayload) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kPhoneHubCameraRoll);
   SetUpFullConnection();
 
   int64_t payload_id = 1234;
@@ -617,8 +593,6 @@ TEST_F(NearbyConnectionBrokerImplTest, FileTransferUpdateForCompletedPayload) {
 
 TEST_F(NearbyConnectionBrokerImplTest,
        FileTransferUpdateForUnregisteredPayload) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kPhoneHubCameraRoll);
   SetUpFullConnection();
 
   base::FilePath path;
@@ -638,8 +612,6 @@ TEST_F(NearbyConnectionBrokerImplTest,
 }
 
 TEST_F(NearbyConnectionBrokerImplTest, FileTransferCanceledOnDisconnect) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kPhoneHubCameraRoll);
   SetUpFullConnection();
 
   int64_t payload_id = 1234;
@@ -673,8 +645,6 @@ TEST_F(NearbyConnectionBrokerImplTest, FileTransferCanceledOnDisconnect) {
 }
 
 TEST_F(NearbyConnectionBrokerImplTest, FileTransferCanceledOnMojoDisconnect) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kPhoneHubCameraRoll);
   SetUpFullConnection();
 
   int64_t payload_id = 1234;

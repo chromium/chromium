@@ -143,9 +143,7 @@ class PhoneStatusProcessorTest : public testing::Test {
     PhoneHubStructuredMetricsLogger::RegisterPrefs(pref_service_.registry());
     multidevice_setup::RegisterFeaturePrefs(pref_service_.registry());
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kEcheSWA,
-                              features::kPhoneHubCameraRoll},
-        /*disabled_features=*/{});
+        /*enabled_features=*/{features::kEcheSWA}, /*disabled_features=*/{});
 
     fake_do_not_disturb_controller_ =
         std::make_unique<FakeDoNotDisturbController>();

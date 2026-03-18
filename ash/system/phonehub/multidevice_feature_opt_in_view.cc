@@ -54,7 +54,6 @@ PermissionsOnboardingSetUpMode GetPermissionSetupMode(
           phonehub::MultideviceFeatureAccessManager::AccessStatus::
               kAvailableButNotGranted;
   bool can_request_camera_roll_access =
-      features::IsPhoneHubCameraRollEnabled() &&
       multidevice_feature_access_manager->IsAccessRequestAllowed(
           Feature::kPhoneHubCameraRoll) &&
       multidevice_feature_access_manager->GetCameraRollAccessStatus() ==

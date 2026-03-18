@@ -317,10 +317,8 @@ void PhoneStatusProcessor::SetReceivedPhoneStatusModelStates(
       ComputeNotificationAccessState(phone_properties),
       ComputeNotificationAccessProhibitedReason(phone_properties));
 
-  if (features::IsPhoneHubCameraRollEnabled()) {
-    multidevice_feature_access_manager_->SetCameraRollAccessStatusInternal(
-        ComputeCameraRollAccessState(phone_properties));
-  }
+  multidevice_feature_access_manager_->SetCameraRollAccessStatusInternal(
+      ComputeCameraRollAccessState(phone_properties));
 
   if (screen_lock_manager_) {
     screen_lock_manager_->SetLockStatusInternal(

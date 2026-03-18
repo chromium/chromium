@@ -105,9 +105,7 @@ RemoteDevice CreateStubClientComputer() {
                                      : SoftwareFeatureState::kNotSupported;
 
     software_features[SoftwareFeature::kPhoneHubCameraRollClient] =
-        features::IsPhoneHubCameraRollEnabled()
-            ? SoftwareFeatureState::kSupported
-            : SoftwareFeatureState::kNotSupported;
+        SoftwareFeatureState::kSupported;
 
     std::vector<BeaconSeed> beacon_seeds = {multidevice::BeaconSeed(
         kBeaconSeedData,

@@ -123,7 +123,6 @@ bool IsFeatureAllowed(mojom::Feature feature, const PrefService* pref_service) {
 
     case mojom::Feature::kPhoneHubCameraRoll:
       return features::IsPhoneHubEnabled() &&
-             features::IsPhoneHubCameraRollEnabled() &&
              pref_service->GetBoolean(kPhoneHubCameraRollAllowedPrefName);
 
     case mojom::Feature::kPhoneHubNotifications:

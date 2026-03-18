@@ -92,9 +92,7 @@ PhoneHubManagerFactory::PhoneHubManagerFactory()
               .WithAshInternals(ProfileSelection::kOriginalOnly)
               .Build()) {
   DependsOn(device_sync::DeviceSyncClientFactory::GetInstance());
-  if (features::IsPhoneHubCameraRollEnabled()) {
-    DependsOn(HoldingSpaceKeyedServiceFactory::GetInstance());
-  }
+  DependsOn(HoldingSpaceKeyedServiceFactory::GetInstance());
   DependsOn(multidevice_setup::MultiDeviceSetupClientFactory::GetInstance());
   DependsOn(secure_channel::NearbyConnectorFactory::GetInstance());
   DependsOn(SessionSyncServiceFactory::GetInstance());
@@ -151,14 +149,11 @@ PhoneHubManagerFactory::BuildServiceInstanceForBrowserContext(
           std::make_unique<BrowserTabsMetadataFetcherImpl>(
               HistoryUiFaviconRequestHandlerFactory::GetInstance()
                   ->GetForBrowserContext(context))),
-      features::IsPhoneHubCameraRollEnabled()
-          ? std::make_unique<CameraRollDownloadManagerImpl>(
-                DownloadPrefs::FromDownloadManager(
-                    profile->GetDownloadManager())
-                    ->DownloadPath(),
-                ash::HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(
-                    profile))
-          : nullptr,
+      std::make_unique<CameraRollDownloadManagerImpl>(
+          DownloadPrefs::FromDownloadManager(profile->GetDownloadManager())
+              ->DownloadPath(),
+          ash::HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(
+              profile)),
       base::BindRepeating(&multidevice_setup::MultiDeviceSetupDialog::Show),
       std::move(attestation_certificate_generator));
 

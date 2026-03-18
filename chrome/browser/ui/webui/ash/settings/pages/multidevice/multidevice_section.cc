@@ -902,8 +902,7 @@ void MultiDeviceSection::OnFeatureStatesChanged(
 
   if (IsFeatureSupported(Feature::kPhoneHub)) {
     updater.AddSearchTags(GetMultiDeviceOptedInPhoneHubSearchConcepts());
-    if (features::IsPhoneHubCameraRollEnabled() &&
-        IsFeatureSupported(Feature::kPhoneHubCameraRoll)) {
+    if (IsFeatureSupported(Feature::kPhoneHubCameraRoll)) {
       updater.AddSearchTags(
           GetMultiDeviceOptedInPhoneHubCameraRollSearchConcepts());
     }

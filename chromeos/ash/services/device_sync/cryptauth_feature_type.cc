@@ -97,16 +97,14 @@ const base::flat_set<CryptAuthFeatureType>& GetAllCryptAuthFeatureTypes() {
           feature_set.insert(CryptAuthFeatureType::kEcheHostSupported);
           feature_set.insert(CryptAuthFeatureType::kEcheHostEnabled);
         }
-        if (features::IsPhoneHubCameraRollEnabled()) {
-          feature_set.insert(
-              CryptAuthFeatureType::kPhoneHubCameraRollClientSupported);
-          feature_set.insert(
-              CryptAuthFeatureType::kPhoneHubCameraRollClientEnabled);
-          feature_set.insert(
-              CryptAuthFeatureType::kPhoneHubCameraRollHostSupported);
-          feature_set.insert(
-              CryptAuthFeatureType::kPhoneHubCameraRollHostEnabled);
-        }
+        feature_set.insert(
+            CryptAuthFeatureType::kPhoneHubCameraRollClientSupported);
+        feature_set.insert(
+            CryptAuthFeatureType::kPhoneHubCameraRollClientEnabled);
+        feature_set.insert(
+            CryptAuthFeatureType::kPhoneHubCameraRollHostSupported);
+        feature_set.insert(
+            CryptAuthFeatureType::kPhoneHubCameraRollHostEnabled);
         return feature_set;
       }());
 
@@ -138,12 +136,10 @@ GetSupportedCryptAuthFeatureTypes() {
           supported_set.insert(CryptAuthFeatureType::kEcheHostSupported);
           supported_set.insert(CryptAuthFeatureType::kEcheClientSupported);
         }
-        if (features::IsPhoneHubCameraRollEnabled()) {
-          supported_set.insert(
-              CryptAuthFeatureType::kPhoneHubCameraRollHostSupported);
-          supported_set.insert(
-              CryptAuthFeatureType::kPhoneHubCameraRollClientSupported);
-        }
+        supported_set.insert(
+            CryptAuthFeatureType::kPhoneHubCameraRollHostSupported);
+        supported_set.insert(
+            CryptAuthFeatureType::kPhoneHubCameraRollClientSupported);
         return supported_set;
       }());
 
@@ -174,12 +170,10 @@ const base::flat_set<CryptAuthFeatureType>& GetEnabledCryptAuthFeatureTypes() {
           enabled_set.insert(CryptAuthFeatureType::kEcheHostEnabled);
           enabled_set.insert(CryptAuthFeatureType::kEcheClientEnabled);
         }
-        if (features::IsPhoneHubCameraRollEnabled()) {
-          enabled_set.insert(
-              CryptAuthFeatureType::kPhoneHubCameraRollHostEnabled);
-          enabled_set.insert(
-              CryptAuthFeatureType::kPhoneHubCameraRollClientEnabled);
-        }
+        enabled_set.insert(
+            CryptAuthFeatureType::kPhoneHubCameraRollHostEnabled);
+        enabled_set.insert(
+            CryptAuthFeatureType::kPhoneHubCameraRollClientEnabled);
         return enabled_set;
       }());
 

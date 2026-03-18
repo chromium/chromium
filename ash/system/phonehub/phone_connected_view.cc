@@ -70,7 +70,7 @@ PhoneConnectedView::PhoneConnectedView(
   }
 
   auto* camera_roll_manager = phone_hub_manager->GetCameraRollManager();
-  if (features::IsPhoneHubCameraRollEnabled() && camera_roll_manager) {
+  if (camera_roll_manager) {
     AddChildView(std::make_unique<CameraRollView>(
         camera_roll_manager, phone_hub_manager->GetUserActionRecorder()));
   }

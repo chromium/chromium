@@ -624,10 +624,7 @@ base::DictValue MultideviceHandler::GeneratePageContentDataDictionary() {
       static_cast<int32_t>(
           feature_states[multidevice_setup::mojom::Feature::kPhoneHub]));
   auto cameraRoll_feature_state =
-      base::FeatureList::IsEnabled(ash::features::kPhoneHubCameraRoll)
-          ? feature_states
-                [multidevice_setup::mojom::Feature::kPhoneHubCameraRoll]
-          : multidevice_setup::mojom::FeatureState::kNotSupportedByChromebook;
+      feature_states[multidevice_setup::mojom::Feature::kPhoneHubCameraRoll];
   page_content_dictionary.Set(kPageContentDataPhoneHubCameraRollStateKey,
                               static_cast<int32_t>(cameraRoll_feature_state));
   page_content_dictionary.Set(
@@ -712,10 +709,7 @@ base::DictValue MultideviceHandler::GeneratePageContentDataDictionary() {
   page_content_dictionary.Set(kIsNearbyShareDisallowedByPolicy,
                               is_nearby_share_disallowed_by_policy);
 
-  bool is_phone_hub_permissions_dialog_supported =
-      features::IsEcheSWAEnabled() || features::IsPhoneHubCameraRollEnabled();
-  page_content_dictionary.Set(kIsPhoneHubPermissionsDialogSupported,
-                              is_phone_hub_permissions_dialog_supported);
+  page_content_dictionary.Set(kIsPhoneHubPermissionsDialogSupported, true);
 
   page_content_dictionary.Set(kIsPhoneHubFeatureCombinedSetupSupported,
                               multidevice_feature_access_manager_

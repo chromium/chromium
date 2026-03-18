@@ -1566,16 +1566,6 @@ BASE_FEATURE(kPerDeskShelf, base::FEATURE_DISABLED_BY_DEFAULT);
 // and perform phone-side actions within ChromeOS.
 BASE_FEATURE(kPhoneHub, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables the Camera Roll feature in Phone Hub, which allows users to access
-// recent photos and videos taken on a connected Android device
-BASE_FEATURE(kPhoneHubCameraRoll, base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Maximum number of seconds to wait before users can download the same photo
-// from Camera Roll again.
-const base::FeatureParam<base::TimeDelta> kPhoneHubCameraRollThrottleInterval{
-    &kPhoneHubCameraRoll, "PhoneHubCameraRollThrottleInterval",
-    base::Seconds(2)};
-
 // Enables the incoming/ongoing call notification feature in Phone Hub.
 BASE_FEATURE(kPhoneHubCallNotification, base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -3129,10 +3119,6 @@ bool IsPerDeskShelfEnabled() {
 bool IsPeripheralNotificationEnabled() {
   return base::FeatureList::IsEnabled(kPeripheralNotification) &&
          IsPeripheralCustomizationEnabled();
-}
-
-bool IsPhoneHubCameraRollEnabled() {
-  return base::FeatureList::IsEnabled(kPhoneHubCameraRoll);
 }
 
 bool IsPhoneHubMonochromeNotificationIconsEnabled() {

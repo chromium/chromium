@@ -119,8 +119,7 @@ void MessageReceiverImpl::OnMessageReceived(const std::string& payload) {
     NotifyFeatureSetupResponseReceived(response);
   }
 
-  if (features::IsPhoneHubCameraRollEnabled() &&
-      message_type == proto::MessageType::FETCH_CAMERA_ROLL_ITEMS_RESPONSE) {
+  if (message_type == proto::MessageType::FETCH_CAMERA_ROLL_ITEMS_RESPONSE) {
     proto::FetchCameraRollItemsResponse response;
     // Serialized proto is after the first two bytes of |payload|.
     if (!response.ParseFromString(payload.substr(2))) {
@@ -132,9 +131,8 @@ void MessageReceiverImpl::OnMessageReceived(const std::string& payload) {
     return;
   }
 
-  if (features::IsPhoneHubCameraRollEnabled() &&
-      message_type ==
-          proto::MessageType::FETCH_CAMERA_ROLL_ITEM_DATA_RESPONSE) {
+  if (message_type ==
+      proto::MessageType::FETCH_CAMERA_ROLL_ITEM_DATA_RESPONSE) {
     proto::FetchCameraRollItemDataResponse response;
     // Serialized proto is after the first two bytes of |payload|.
     if (!response.ParseFromString(payload.substr(2))) {
