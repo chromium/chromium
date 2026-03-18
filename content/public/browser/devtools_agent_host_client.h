@@ -45,6 +45,12 @@ class CONTENT_EXPORT DevToolsAgentHostClient {
   // manipulate browser altogether.
   virtual bool IsTrusted();
 
+  // Returns true if the client has unrestricted access to all cookies
+  // (i.e., MayAttachToURL() returns true for all possible cookie domains).
+  // When true, cookie operations like clearBrowserCookies can use a more
+  // efficient atomic deletion path instead of per-cookie filtering.
+  virtual bool MayAccessAllCookies();
+
   // Returns true if the client is allowed to read local files over the
   // protocol. Example would be exposing file content to the page under debug.
   virtual bool MayReadLocalFiles();

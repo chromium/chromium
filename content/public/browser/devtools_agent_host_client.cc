@@ -40,6 +40,13 @@ bool DevToolsAgentHostClient::AllowUnsafeOperations() {
   return false;
 }
 
+// Default is false. Most privileged clients (DevTools frontend, remote
+// debugger, pipe handler, etc.) should override this to return true.
+// Debugger extension clients should keep the default (false).
+bool DevToolsAgentHostClient::MayAccessAllCookies() {
+  return false;
+}
+
 std::optional<url::Origin>
 DevToolsAgentHostClient::GetNavigationInitiatorOrigin() {
   return std::nullopt;

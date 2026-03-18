@@ -123,6 +123,10 @@ void SimpleDevToolsProtocolClient::AgentHostClosed(
   }
 }
 
+bool SimpleDevToolsProtocolClient::MayAccessAllCookies() {
+  return true;
+}
+
 void SimpleDevToolsProtocolClient::DispatchProtocolMessageTask(
     base::DictValue message) {
   VLOG(kVLogLevel) << "\n[CDP RECV] " << message.DebugString();

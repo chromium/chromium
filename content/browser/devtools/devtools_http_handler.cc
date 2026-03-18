@@ -348,6 +348,8 @@ class DevToolsAgentHostClientImpl : public DevToolsAgentHostClient {
 
   std::string GetTypeForMetrics() override { return "RemoteDebugger"; }
 
+  bool MayAccessAllCookies() override { return true; }
+
   void AgentHostClosed(DevToolsAgentHost* agent_host) override {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     DCHECK(agent_host == agent_host_.get());

@@ -2415,12 +2415,22 @@ void NetworkHandler::ClearCookies(StoragePartition* storage_partition,
                                   bool is_webui,
                                   base::OnceClosure callback) {
   auto* cookie_manager = storage_partition->GetCookieManagerForBrowserProcess();
-  cookie_manager->GetAllCookies(
-      base::BindOnce(&DeleteFilteredCookies, base::Unretained(cookie_manager),
-                     /*name=*/std::nullopt, /*normalized_domain=*/std::nullopt,
-                     /*path=*/std::nullopt, /*partition_key=*/nullptr,
-                     /*filter_by_partition_key=*/false, std::ref(client),
-                     is_webui, std::move(callback)));
+
+  if (client.MayAccessAllCookies()) {
+    // Unrestricted clients can clear all cookies atomically.
+    cookie_manager->DeleteCookies(
+        network::mojom::CookieDeletionFilter::New(),
+        base::BindOnce(base::IgnoreArgs<uint32_t>(std::move(callback))));
+  } else {
+    // Restricted clients must filter by URL permissions before deletion.
+    cookie_manager->GetAllCookies(
+        base::BindOnce(&DeleteFilteredCookies, base::Unretained(cookie_manager),
+                       /*name=*/std::nullopt,
+                       /*normalized_domain=*/std::nullopt,
+                       /*path=*/std::nullopt, /*partition_key=*/nullptr,
+                       /*filter_by_partition_key=*/false, std::ref(client),
+                       is_webui, std::move(callback)));
+  }
 }
 
 // static

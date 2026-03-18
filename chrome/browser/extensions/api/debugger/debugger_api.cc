@@ -388,6 +388,7 @@ class ExtensionDevToolsClientHost : public content::DevToolsAgentHostClient,
   bool MayAttachToRenderFrameHost(
       content::RenderFrameHost* render_frame_host) override;
   bool MayAttachToURL(const GURL& url, bool is_webui) override;
+  bool MayAccessAllCookies() override;
   bool IsTrusted() override;
   bool MayReadLocalFiles() override;
   bool MayWriteLocalFiles() override;
@@ -662,6 +663,10 @@ bool ExtensionDevToolsClientHost::MayAttachToURL(const GURL& url,
   std::string error;
   return ExtensionMayAttachToURLOrInnerURL(*extension_, profile_, url, nullptr,
                                            &error);
+}
+
+bool ExtensionDevToolsClientHost::MayAccessAllCookies() {
+  return false;
 }
 
 bool ExtensionDevToolsClientHost::IsTrusted() {

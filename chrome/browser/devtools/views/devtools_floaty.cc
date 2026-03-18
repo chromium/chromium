@@ -218,6 +218,8 @@ class DevToolsFloatyDialogDelegate : public views::DialogDelegate,
     agent_host_ = nullptr;
   }
 
+  bool MayAccessAllCookies() override { return true; }
+
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override {
     if (agent_host_ && backend_node_id_) {
@@ -433,6 +435,8 @@ class InspectElementGeminiClient : public content::DevToolsAgentHostClient {
   void AgentHostClosed(content::DevToolsAgentHost* agent_host) override {
     delete this;
   }
+
+  bool MayAccessAllCookies() override { return true; }
 
  private:
   raw_ptr<content::BrowserContext> browser_context_;

@@ -132,6 +132,7 @@ class TestDevToolsProtocolClient : public DevToolsAgentHostClient {
   bool MayReadLocalFiles() override;
   bool MayWriteLocalFiles() override;
   bool MayAttachToURL(const GURL& url, bool is_webui) override;
+  bool MayAccessAllCookies() override;
 
   int last_sent_id_ = 0;
   int waiting_for_command_result_id_ = 0;

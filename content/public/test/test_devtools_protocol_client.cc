@@ -220,6 +220,10 @@ bool TestDevToolsProtocolClient::MayAttachToURL(const GURL& url,
          not_attachable_hosts_.end();
 }
 
+bool TestDevToolsProtocolClient::MayAccessAllCookies() {
+  return not_attachable_hosts_.empty();
+}
+
 std::optional<url::Origin>
 TestDevToolsProtocolClient::GetNavigationInitiatorOrigin() {
   return navigation_initiator_origin_;

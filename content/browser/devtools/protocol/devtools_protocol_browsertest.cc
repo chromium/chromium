@@ -2765,6 +2765,43 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, SetAndGetCookies) {
   EXPECT_EQ(2u, found);
 }
 
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
+                       ClearBrowserCookiesWithAllCookieAccess) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL main_page_url = embedded_test_server()->GetURL("a.test", "/title1.html");
+  NavigateToURLBlockUntilNavigationsComplete(shell(), main_page_url, 1);
+  Attach();
+
+  // Set cookies on two different hosts via the protocol.
+  base::DictValue set_cookies_params;
+  base::ListValue cookies_list;
+  base::DictValue cookie_a;
+  cookie_a.Set("name", "cookie_a");
+  cookie_a.Set("value", "value_a");
+  cookie_a.Set("url", embedded_test_server()->GetURL("a.test", "/").spec());
+  cookies_list.Append(std::move(cookie_a));
+  base::DictValue cookie_b;
+  cookie_b.Set("name", "cookie_b");
+  cookie_b.Set("value", "value_b");
+  cookie_b.Set("url", embedded_test_server()->GetURL("b.test", "/").spec());
+  cookies_list.Append(std::move(cookie_b));
+  set_cookies_params.Set("cookies", std::move(cookies_list));
+  SendCommandSync("Network.setCookies", std::move(set_cookies_params));
+  EXPECT_FALSE(error());
+
+  const base::ListValue* cookies =
+      SendCommandSync("Network.getAllCookies")->FindList("cookies");
+  ASSERT_TRUE(cookies);
+  EXPECT_EQ(2u, cookies->size());
+
+  SendCommandSync("Network.clearBrowserCookies");
+  EXPECT_FALSE(error());
+
+  cookies = SendCommandSync("Network.getAllCookies")->FindList("cookies");
+  ASSERT_TRUE(cookies);
+  EXPECT_TRUE(cookies->empty());
+}
+
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, CookiePermissions) {
   SetNotAttachableHosts({"b.test"});
   content::SetupCrossSiteRedirector(embedded_test_server());
