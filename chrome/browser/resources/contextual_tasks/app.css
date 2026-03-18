@@ -10,6 +10,8 @@
 
 :host {
   --color-composebox-cancel-button: rgba(10,10,10, 1);
+  --color-composebox-context-menu-checkbox-override: rgba(11, 87, 208, 1);
+  --color-composebox-context-menu-text: rgba(31, 31, 31, 1);
   /* The top border of matches/tab suggestions dropdown in context menu. */
   --color-composebox-file-carousel-divider: rgba(210, 225, 252, 1);
   --color-composebox-file-carousel-remove-gradient-end: rgba(0, 0, 0, 0.2);
@@ -42,6 +44,7 @@
   --color-composebox-lens-active-background: rgba(225, 227, 232, 1);
   --color-composebox-zero-state-suggestions-background-hovered:
       rgba(247, 248, 250, 1);
+  --color-context-menu-hover-background: rgba(242, 242, 242, 1);
   --color-file-chip-remove-button-fill: rgba(255, 255, 255, 1);
   --color-full-file-chip-remove-button-hover-background:
     rgba(0, 0, 0, 0.6);
@@ -180,6 +183,8 @@
 :host([dark-mode_]) {
   --color-composebox-background: rgba(31, 31, 31, 1);
   --color-composebox-cancel-button: rgba(191, 191, 191, 1);
+  --color-composebox-context-menu-checkbox-override: rgba(168, 199, 250, 1);
+  --color-composebox-context-menu-text: rgba(227, 227, 227, 1);
   --color-composebox-file-carousel-divider: rgba(94, 94, 94, 1);
   --color-composebox-file-carousel-remove-gradient-end: rgba(100, 100, 100, 0.2);
   --color-composebox-file-carousel-remove-gradient-start: rgba(100, 100, 100, 0.2);
@@ -201,9 +206,10 @@
   --color-composebox-type-ahead-chip: rgba(199, 199, 199, 1);
   --color-composebox-voice-lens-button: rgba(191, 191, 191, 1);
   --color-composebox-lens-active-background: rgba(42, 43, 54, 1);
-  --color-searchbox-results-background-hovered: rgba(54, 54, 54, 1);
   --color-composebox-zero-state-suggestions-background-hovered:
       rgba(23, 24, 31, 1);
+  --color-context-menu-hover-background: rgba(53, 53, 53, 1);
+  --color-searchbox-results-background-hovered: rgba(54, 54, 54, 1);
   --color-suggestions-background-loading: rgba(60, 64, 67, 1);
   --color-zero-state-greeting: rgba(230, 232, 240, 1);
   --color-zero-state-match-icon: rgba(139, 140, 145, 1);
