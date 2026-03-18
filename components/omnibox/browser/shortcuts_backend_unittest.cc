@@ -343,6 +343,42 @@ TEST_F(ShortcutsBackendTest, SanitizeMatchCore_Keyword) {
   }
 }
 
+TEST_F(ShortcutsBackendTest,
+       MatchToMatchCore_SearchTypesWithoutSearchTermsArgs) {
+  SetSearchProvider();
+  AutocompleteMatchType::Type search_types[] = {
+      AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED,
+      AutocompleteMatchType::SEARCH_HISTORY,
+      AutocompleteMatchType::SEARCH_SUGGEST,
+      AutocompleteMatchType::SEARCH_SUGGEST_ENTITY,
+      AutocompleteMatchType::SEARCH_SUGGEST_TAIL,
+      AutocompleteMatchType::SEARCH_SUGGEST_PERSONALIZED,
+      AutocompleteMatchType::SEARCH_SUGGEST_PROFILE,
+      AutocompleteMatchType::SEARCH_OTHER_ENGINE,
+      AutocompleteMatchType::CLIPBOARD_TEXT,
+      AutocompleteMatchType::CLIPBOARD_IMAGE,
+      AutocompleteMatchType::VOICE_SUGGEST,
+  };
+
+  for (auto type : search_types) {
+    AutocompleteMatch match;
+    match.type = type;
+    match.search_terms_args = nullptr;
+    match.destination_url = GURL("http://foo.com/search?bar=test");
+
+    // This should not crash even if `search_terms_args` is null.
+    ShortcutsDatabase::Shortcut::MatchCore match_core = MatchToMatchCore(match);
+
+    // `GetTypeForShortcut()` is not public, so expect `SEARCH_HISTORY` for all
+    // search types except `SEARCH_OTHER_ENGINE`.
+    AutocompleteMatchType::Type expected_type =
+        type == AutocompleteMatchType::SEARCH_OTHER_ENGINE
+            ? AutocompleteMatchType::SEARCH_OTHER_ENGINE
+            : AutocompleteMatchType::SEARCH_HISTORY;
+    EXPECT_EQ(match_core.type, expected_type) << "Failed for type: " << type;
+  }
+}
+
 TEST_F(ShortcutsBackendTest, SearchSuggestionTest) {
   SetSearchProvider();
   {

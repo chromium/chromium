@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/autocomplete/model/omnibox_shortcuts_helper.h"
 
+#import <iterator>
+
 #import "base/memory/scoped_refptr.h"
 #import "base/run_loop.h"
 #import "components/omnibox/browser/autocomplete_match.h"
@@ -233,4 +235,37 @@ TEST_F(OmniboxShortcutsHelperTest, SuccessfulNonOmniboxDontAddShortcut) {
   // Verify that the back button navigation is not added to the database.
   ASSERT_FALSE(ShortcutExists(search_terms));
   ASSERT_FALSE(changed_notified());
+}
+
+// Tests that search matches without search_terms_args (e.g. clipboard or voice
+// matches) do not cause a crash when added to the shortcuts database.
+TEST_F(OmniboxShortcutsHelperTest,
+       SearchMatchesWithoutSearchTermsArgsDoesNotCrash) {
+  InitShortcutsBackend();
+
+  AutocompleteMatchType::Type search_types[] = {
+      AutocompleteMatchType::CLIPBOARD_TEXT,
+      AutocompleteMatchType::CLIPBOARD_IMAGE,
+      AutocompleteMatchType::VOICE_SUGGEST,
+  };
+
+  size_t i = 0;
+  for (auto type : search_types) {
+    scoped_refptr<FakeAutocompleteProvider> provider =
+        new FakeAutocompleteProvider(AutocompleteProvider::TYPE_SEARCH);
+    AutocompleteMatch match(provider.get(), 400, true, type);
+    match.search_terms_args = nullptr;
+    match.destination_url = GURL("http://www.google.com/search?q=test");
+
+    std::u16string search_terms = u"input";
+    search_terms += (char16_t)('0' + i);
+    UseAutocompleteMatch(search_terms, match);
+
+    // This should not crash.
+    FinishCurrentNavigationSuccessfully();
+
+    // Verify that it was added.
+    ASSERT_TRUE(ShortcutExists(search_terms));
+    i++;
+  }
 }
