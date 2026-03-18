@@ -11,8 +11,9 @@ import type {ActionChipsElement} from 'chrome://new-tab-page/lazy_load.js';
 import {WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import type {TabUpload} from 'chrome://resources/cr_components/composebox/common.js';
 import {TabUploadOrigin} from 'chrome://resources/cr_components/composebox/common.js';
+import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -426,7 +427,8 @@ suite('NewTabPageActionChipsTest', () => {
           await initializeChips({actionChips});
           assertTrue(!!chips);
           const allChips = Array.from<HTMLButtonElement>(
-              chips.shadowRoot.querySelectorAll<HTMLButtonElement>('button'));
+              chips.shadowRoot.querySelectorAll<HTMLButtonElement>(
+                  '.action-chip'));
           assertEquals(3, allChips.length);
           assertTrue(allChips.every((e: HTMLButtonElement) => !!e));
 
@@ -470,7 +472,7 @@ suite('NewTabPageActionChipsTest', () => {
       await initializeChips({});
       assertTrue(!!chips);
       const allChips = Array.from<HTMLButtonElement>(
-          chips.shadowRoot.querySelectorAll<HTMLButtonElement>('button'));
+          chips.shadowRoot.querySelectorAll<HTMLButtonElement>('.action-chip'));
       assertEquals(3, allChips.length);
 
       assertDeepEquals(
@@ -576,6 +578,84 @@ suite('NewTabPageActionChipsTest', () => {
           chips.shadowRoot.querySelectorAll<HTMLButtonElement>('.action-chip');
       assertEquals(2, allChips.length);
     });
+
+    test(
+        'shows context menu on container when conditions are met', async () => {
+          loadTimeData.overrideValues({
+            ntpNextShowSimplificationUIEnabled: true,
+          });
+          await initializeChips({});
+          chips.showBackground = true;
+          await microtasksFinished();
+
+          const container = chips.shadowRoot.querySelector<HTMLElement>(
+              '.action-chips-container');
+          assertTrue(!!container);
+
+          const actionMenu =
+              chips.shadowRoot.querySelector<CrActionMenuElement>(
+                  '#actionMenu');
+          assertTrue(!!actionMenu);
+
+          container.dispatchEvent(
+              new MouseEvent('contextmenu', {cancelable: true}));
+          await microtasksFinished();
+
+          assertTrue(actionMenu.open);
+        });
+
+    test(
+        'does not show context menu on container when conditions are not met',
+        async () => {
+          loadTimeData.overrideValues({
+            ntpNextShowSimplificationUIEnabled: false,
+          });
+          await initializeChips({});
+          chips.showBackground = false;
+          await microtasksFinished();
+
+          const container = chips.shadowRoot.querySelector<HTMLElement>(
+              '.action-chips-container');
+          assertTrue(!!container);
+
+          const actionMenu =
+              chips.shadowRoot.querySelector<CrActionMenuElement>(
+                  '#actionMenu');
+          assertTrue(!!actionMenu);
+
+          container.dispatchEvent(
+              new MouseEvent('contextmenu', {cancelable: true}));
+          await microtasksFinished();
+
+          assertFalse(actionMenu.open);
+        });
+
+    test(
+        'disables action chips when context menu option is clicked',
+        async () => {
+          await initializeChips({});
+          const allChips = chips.shadowRoot.querySelectorAll<HTMLButtonElement>(
+              '.action-chip');
+          assertEquals(3, allChips.length);
+
+          const firstChip = allChips[0]!;
+          const actionMenu =
+              chips.shadowRoot.querySelector<HTMLElement>('#actionMenu');
+          assertTrue(!!actionMenu);
+
+          firstChip.dispatchEvent(
+              new MouseEvent('contextmenu', {cancelable: true}));
+          await microtasksFinished();
+
+          const disableButton =
+              actionMenu.querySelector<HTMLButtonElement>('.dropdown-item');
+          assertTrue(!!disableButton);
+          disableButton.click();
+          await microtasksFinished();
+
+          assertEquals(1, handler.getCallCount('setActionChipsVisibility'));
+          assertEquals(false, handler.getArgs('setActionChipsVisibility')[0]);
+        });
   });
 
   suite('ReducedMotion', () => {

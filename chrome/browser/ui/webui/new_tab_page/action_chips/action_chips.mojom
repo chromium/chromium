@@ -66,6 +66,9 @@ interface ActionChipsHandler {
 
   // Activates a metrics funnel for the session.
   ActivateMetricsFunnel(string funnel_name);
+
+  // Changes the visibility of the action chips feature.
+  SetActionChipsVisibility(bool is_visible);
 };
 
 // Interface for the page-side handler receiving information from the browser.
