@@ -77,7 +77,7 @@ public class SettingsPromoCardPreferenceTest {
 
         SettingsPromoCardPreference preference = new SettingsPromoCardPreference(mActivity, null);
         preference.initialize(mTestTracker);
-        Assert.assertFalse(preference.isVisible());
+        Assert.assertTrue(preference.isVisible());
 
         when(mMockDefaultBrowserPromoUtils.shouldShowNonRoleManagerPromo(any())).thenReturn(false);
         ThreadUtils.runOnUiThreadBlocking(() -> preference.updatePreferences());

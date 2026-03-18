@@ -23,7 +23,6 @@ public class SettingsPromoCardPreference extends Preference {
     /** Constructor for inflating from XML. */
     public SettingsPromoCardPreference(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        setVisible(false);
         setLayoutResource(R.layout.settings_promo_card);
     }
 
