@@ -199,7 +199,11 @@ public class ExtensionsMenuCoordinatorTest {
 
         // Verify that the menu is closed and the tab is loaded with the correct URL.
         verify(shownListener).onPopupMenuDismissed();
-        verify(mTab).loadUrl(mLoadUrlParamsCaptor.capture());
+        verify(mTabCreator)
+                .createNewTab(
+                        mLoadUrlParamsCaptor.capture(),
+                        Mockito.eq(org.chromium.chrome.browser.tab.TabLaunchType.FROM_CHROME_UI),
+                        Mockito.isNull());
         assertEquals(UrlConstants.CHROME_EXTENSIONS_URL, mLoadUrlParamsCaptor.getValue().getUrl());
     }
 
@@ -222,7 +226,11 @@ public class ExtensionsMenuCoordinatorTest {
 
         // Verify that the menu is closed and the tab is loaded with the correct URL.
         verify(shownListener).onPopupMenuDismissed();
-        verify(mTab).loadUrl(mLoadUrlParamsCaptor.capture());
+        verify(mTabCreator)
+                .createNewTab(
+                        mLoadUrlParamsCaptor.capture(),
+                        Mockito.eq(org.chromium.chrome.browser.tab.TabLaunchType.FROM_CHROME_UI),
+                        Mockito.isNull());
         assertEquals(UrlConstants.CHROME_WEBSTORE_URL, mLoadUrlParamsCaptor.getValue().getUrl());
     }
 

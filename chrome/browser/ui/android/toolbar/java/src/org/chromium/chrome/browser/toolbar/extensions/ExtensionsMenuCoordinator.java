@@ -205,14 +205,7 @@ public class ExtensionsMenuCoordinator implements Destroyable, ExtensionsToolbar
 
         LoadUrlParams params = new LoadUrlParams(url, PageTransition.AUTO_TOPLEVEL);
 
-        // We want to open the URL in the current tab if possible to match the behaviors of other
-        // menu options (e.g. history).
-        Tab currentTab = mCurrentTabSupplier.get();
-        if (currentTab == null) {
-            mTabCreator.createNewTab(params, TabLaunchType.FROM_CHROME_UI, null);
-        } else {
-            currentTab.loadUrl(params);
-        }
+        mTabCreator.createNewTab(params, TabLaunchType.FROM_CHROME_UI, null);
     }
 
     public void onTintChanged(
