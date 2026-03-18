@@ -485,6 +485,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/segmentation_platform/model:unit_tests",
     "//ios/chrome/browser/send_tab_to_self/model:unit_tests",
     "//ios/chrome/browser/sessions/model:unit_tests",
+    "//ios/chrome/browser/settings/autofill/autofill_ai/coordinator:unit_tests",
     "//ios/chrome/browser/settings/autofill/autofill_ai/ui:unit_tests",
     "//ios/chrome/browser/settings/autofill/autofill_ai/utils:unit_tests",
     "//ios/chrome/browser/settings/clear_browsing_data/coordinator:unit_tests",

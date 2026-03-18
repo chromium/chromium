@@ -1,0 +1,42 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "autofill_ai_entity_edit_coordinator.h",
+    "autofill_ai_entity_edit_coordinator.mm",
+    "autofill_ai_entity_edit_coordinator_delegate.h",
+    "autofill_ai_entity_edit_mediator.h",
+    "autofill_ai_entity_edit_mediator.mm",
+  ]
+  deps = [
+    "//components/autofill/core/browser",
+    "//ios/chrome/browser/autofill/model",
+    "//ios/chrome/browser/settings/autofill/autofill_ai/ui",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "autofill_ai_entity_edit_coordinator+testing.h",
+    "autofill_ai_entity_edit_coordinator_unittest.mm",
+  ]
+  deps = [
+    ":coordinator",
+    "//base/test:test_support",
+    "//components/autofill/core/browser:test_support",
+    "//ios/chrome/browser/autofill/model",
+    "//ios/chrome/browser/settings/autofill/autofill_ai/ui",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/webdata_services/model",
+    "//ios/web/public/test",
+    "//third_party/ocmock",
+  ]
+}
