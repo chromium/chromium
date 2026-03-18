@@ -10,6 +10,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/time/time.h"
 #include "third_party/libyuv/include/libyuv/planar_functions.h"
 
@@ -138,6 +139,11 @@ bool CopyD3D11TexToMem(
   d3d11_device->GetImmediateContext(&device_context);
   HRESULT hr = S_OK;
 
+  // Keyed mutex synchronization is still needed for non-camera textures (e.g.
+  // tab capture via WebContentsVideoCaptureDevice) which are created with
+  // D3D11_RESOURCE_MISC_SHARED_KEYEDMUTEX in D3DImageBackingFactory.
+  // Camera textures (created in GpuMemoryBufferTrackerWin) use
+  // D3D11_RESOURCE_MISC_SHARED without keyed mutex and take the else branch.
   if (texture_desc.MiscFlags & D3D11_RESOURCE_MISC_SHARED_KEYEDMUTEX) {
     Microsoft::WRL::ComPtr<IDXGIKeyedMutex> keyed_mutex;
 
@@ -247,6 +253,12 @@ bool CopyMemToD3D11Tex(uint8_t* src_buffer,
   d3d11_device->GetImmediateContext(&device_context);
   HRESULT hr = S_OK;
 
+  // Keyed mutex synchronization is still needed for non-camera textures (e.g.
+  // tab capture via WebContentsVideoCaptureDevice) which are created with
+  // D3D11_RESOURCE_MISC_SHARED_KEYEDMUTEX in D3DImageBackingFactory.
+  // Camera textures (created in GpuMemoryBufferTrackerWin) use
+  // D3D11_RESOURCE_MISC_SHARED without keyed mutex and take the else branch,
+  // which uses EnqueueSetEvent for GPU synchronization instead.
   if (texture_desc.MiscFlags & D3D11_RESOURCE_MISC_SHARED_KEYEDMUTEX) {
     Microsoft::WRL::ComPtr<IDXGIKeyedMutex> keyed_mutex;
 
@@ -275,6 +287,17 @@ bool CopyMemToD3D11Tex(uint8_t* src_buffer,
   } else {
     device_context->UpdateSubresource(output_texture, 0, nullptr, src_buffer,
                                       texture_desc.Width, copy_size);
+
+    // Use EnqueueSetEvent to wait for the GPU to finish the copy. This
+    // replaces keyed mutex synchronization for camera capture textures.
+    Microsoft::WRL::ComPtr<IDXGIDevice2> dxgi_device2;
+    hr = d3d11_device->QueryInterface(IID_PPV_ARGS(&dxgi_device2));
+    CHECK_EQ(hr, S_OK);
+    base::WaitableEvent event;
+    hr = dxgi_device2->EnqueueSetEvent(event.handle());
+    if (SUCCEEDED(hr)) {
+      event.Wait();
+    }
   }
 
   return true;

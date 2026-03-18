@@ -876,13 +876,6 @@ IFACEMETHODIMP MockDXGIResource::GetParent(REFIID riid, void** parent) {
   return E_NOTIMPL;
 }
 
-IFACEMETHODIMP MockDXGIResource::AcquireSync(UINT64 key, DWORD milliseconds) {
-  return S_OK;
-}
-IFACEMETHODIMP MockDXGIResource::ReleaseSync(UINT64 key) {
-  return S_OK;
-}
-
 MockDXGIResource::~MockDXGIResource() {}
 
 MockD3D11Texture2D::MockD3D11Texture2D(D3D11_TEXTURE2D_DESC desc,
@@ -891,7 +884,7 @@ MockD3D11Texture2D::MockD3D11Texture2D(D3D11_TEXTURE2D_DESC desc,
 MockD3D11Texture2D::MockD3D11Texture2D() {}
 
 IFACEMETHODIMP MockD3D11Texture2D::QueryInterface(REFIID riid, void** object) {
-  if (riid == __uuidof(IDXGIResource1) || riid == __uuidof(IDXGIKeyedMutex)) {
+  if (riid == __uuidof(IDXGIResource1)) {
     if (!mock_resource_) {
       mock_resource_ = MakeComPtrFromRefCounted<MockDXGIResource>();
     }

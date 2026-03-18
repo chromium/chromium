@@ -1405,10 +1405,14 @@ bool D3DImageBacking::BeginAccessD3D11(
 
   // D3D11 access is allowed without shared handle for single device scenarios.
   CHECK(dxgi_shared_handle_state_ || d3d11_device == texture_d3d11_device_);
-  if (dxgi_shared_handle_state_ &&
-      !dxgi_shared_handle_state_->AcquireKeyedMutex(d3d11_device)) {
-    LOG(ERROR) << "Failed to synchronize using keyed mutex";
-    return false;
+  if (dxgi_shared_handle_state_) {
+    // Trace event for backings with DXGI shared handles (e.g. camera capture
+    // textures). Used by the MediaFoundationD3D11VideoCapture trace test.
+    TRACE_EVENT0("gpu", "D3DImageBacking::BeginAccessD3D11::DXGISharedHandle");
+    if (!dxgi_shared_handle_state_->AcquireKeyedMutex(d3d11_device)) {
+      LOG(ERROR) << "Failed to synchronize using keyed mutex";
+      return false;
+    }
   }
 
   if (is_overlay_access && dcomp_texture_) {

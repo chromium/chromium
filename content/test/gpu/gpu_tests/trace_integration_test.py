@@ -128,7 +128,10 @@ _MFD3D11VC_ALTERNATIVE_MAP_EVENT_NAME =\
     'GpuChannelMessageFilter::CopyToGpuMemoryBufferAsync'
 _MFD3D11VC_ALTERNATIVE_MAP_EVENT_NAME2 =\
     'MappableBufferDXGI::MapAsync'
-_MFD3D11VC_PRESENT_EVENT_NAME = 'DXGISharedHandleState::AcquireKeyedMutex'
+# GPU-process event: fires when accessing a DXGI shared handle backed texture.
+# Camera capture textures always have dxgi_shared_handle_state_.
+_MFD3D11VC_PRESENT_EVENT_NAME =\
+    'D3DImageBacking::BeginAccessD3D11::DXGISharedHandle'
 
 # Caching events and constants
 _GPU_HOST_STORE_BLOB_EVENT_NAME =\

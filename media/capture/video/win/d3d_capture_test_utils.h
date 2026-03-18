@@ -734,8 +734,7 @@ class MockD3D11Device final : public MockInterface<ID3D11Device1> {
   scoped_refptr<MockDXGIDevice2> mock_dxgi_device2_;
 };
 
-class MockDXGIResource final
-    : public MockInterface<IDXGIResource1, IDXGIKeyedMutex> {
+class MockDXGIResource final : public MockInterface<IDXGIResource1> {
  public:
   // IDXGIResource1
   IFACEMETHODIMP CreateSubresourceSurface(UINT index, IDXGISurface2** surface);
@@ -755,9 +754,6 @@ class MockDXGIResource final
   IFACEMETHODIMP SetPrivateDataInterface(REFGUID name, const IUnknown* unknown);
   IFACEMETHODIMP GetPrivateData(REFGUID name, UINT* data_size, void* data);
   IFACEMETHODIMP GetParent(REFIID riid, void** parent);
-  // IDXGIKeyedMutex
-  IFACEMETHODIMP AcquireSync(UINT64 key, DWORD milliseconds) override;
-  IFACEMETHODIMP ReleaseSync(UINT64 key) override;
 
  private:
   ~MockDXGIResource() override;
