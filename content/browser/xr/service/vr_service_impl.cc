@@ -596,13 +596,6 @@ void VRServiceImpl::GetPermissionStatus(SessionRequestData request,
   DCHECK(runtime);
   DCHECK_EQ(runtime->GetId(), request.runtime_id);
 
-#if BUILDFLAG(ENABLE_OPENXR)
-  if (request.options->mode == device::mojom::XRSessionMode::kImmersiveAr &&
-      runtime->GetId() == device::mojom::XRDeviceId::OPENXR_DEVICE_ID) {
-    DCHECK(device::features::IsOpenXrArEnabled());
-  }
-#endif
-
   // Need to calculate the permissions before the call below, as otherwise
   // std::move nulls options out before `GetRequiredPermissions()` runs.
   const std::vector<blink::PermissionType> permissions_for_mode =

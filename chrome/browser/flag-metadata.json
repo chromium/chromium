@@ -3835,11 +3835,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "enable-openxr-extended",
-    "owners": [ "alcooper@chromium.org", "bajones@chromium.org", "xr-dev@chromium.org" ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "enable-palm-suppression",
     "owners": [ "robsc@chromium.org", "napper@chromium.org", "hcutts@chromium.org", "chromeos-tango@google.com" ],
     // Flag used to test no-full-palm suppression on screen.

@@ -48,13 +48,6 @@ BASE_FEATURE(kOpenXR,
              BUILDFLAG(IS_WIN) ? base::FEATURE_ENABLED_BY_DEFAULT
                                : base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Some WebXR features may have been enabled for ARCore, but are not yet ready
-// to be plumbed up from the OpenXR backend. This feature provides a mechanism
-// to gate such support in a generic way. Note that this feature should not be
-// used for features we intend to ship simultaneously on both OpenXR and ArCore.
-// For those features, a feature-specific flag should be created if needed.
-BASE_FEATURE(kOpenXrExtendedFeatureSupport, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether the OpenXr runtime is allowed to try to use the spatial
 // entities framework.
 BASE_FEATURE(kOpenXrSpatialEntities, base::FEATURE_ENABLED_BY_DEFAULT);
@@ -67,28 +60,10 @@ BASE_FEATURE(kSpatialEntitesDepthHitTest, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kOpenXrAndroidSmoothDepth, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-// Helper for enabling a feature if either the base flag is enabled or if the
-// device is an xr device that can have the feature enabled. This is used since
-// we don't have a BUILDFLAG that we can use to enable the feature only on those
-// devices.
-bool IsXrFeatureEnabled(const base::Feature& base_feature) {
-  // Generally a reboot is required to change the state of a feature; so we
-  // use statics rather than const's here to give a slight optimization,
-  // especially in the case of `is_xr_device`.
-  static bool feature_enabled = base::FeatureList::IsEnabled(base_feature);
-  static bool is_xr_device = IsXrDevice();
-
-  return feature_enabled || is_xr_device;
-}
-
 bool IsOpenXrEnabled() {
-  return IsXrFeatureEnabled(kOpenXR);
+  static bool is_xr_device = IsXrDevice();
+  return base::FeatureList::IsEnabled(kOpenXR) || is_xr_device;
 }
-
-bool IsOpenXrArEnabled() {
-  return IsOpenXrEnabled() && IsXrFeatureEnabled(kOpenXrExtendedFeatureSupport);
-}
-
 #endif  // ENABLE_OPENXR
 
 bool IsXrDevice() {

@@ -5812,9 +5812,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOpenXRAndroidSmoothDepthName,
      flag_descriptions::kOpenXRAndroidSmoothDepthDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(device::features::kOpenXR)},
-    {"enable-openxr-extended", flag_descriptions::kOpenXRExtendedFeaturesName,
-     flag_descriptions::kOpenXRExtendedFeaturesDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(device::features::kOpenXrExtendedFeatureSupport)},
 #endif  // BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_OPENXR)
 #endif  // ENABLE_VR
 #if BUILDFLAG(IS_CHROMEOS)

@@ -6019,12 +6019,6 @@ inline constexpr char kXsurfaceMetricsReportingName[] =
 inline constexpr char kXsurfaceMetricsReportingDescription[] =
     "Allows metrics reporting state to be passed to Xsurface";
 
-inline constexpr char kOpenXRExtendedFeaturesName[] =
-    "WebXR OpenXR Runtime Extended Features";
-inline constexpr char kOpenXRExtendedFeaturesDescription[] =
-    "Enables the use of the OpenXR runtime to create WebXR sessions with a "
-    "broader feature set (e.g. features not currently supported on Desktop).";
-
 inline constexpr char kOpenXRName[] = "Enable OpenXR WebXR Runtime";
 inline constexpr char kOpenXRDescription[] =
     "Enables the use of the OpenXR runtime to create WebXR sessions.";

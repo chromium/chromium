@@ -31,7 +31,10 @@ const std::vector<mojom::XRSessionFeature>& GetSupportedFeatures() {
                           mojom::XRSessionFeature::REF_SPACE_UNBOUNDED,
                           mojom::XRSessionFeature::ANCHORS,
                           mojom::XRSessionFeature::HAND_INPUT,
-                          mojom::XRSessionFeature::SECONDARY_VIEWS}};
+                          mojom::XRSessionFeature::SECONDARY_VIEWS,
+                          mojom::XRSessionFeature::HIT_TEST,
+                          mojom::XRSessionFeature::LIGHT_ESTIMATION,
+                          mojom::XRSessionFeature::DEPTH}};
 
   return *kSupportedFeatures;
 }
@@ -90,19 +93,10 @@ OpenXrDevice::OpenXrDevice(
         mojom::XRSessionFeature::WEBGPU);
   }
 
-  // Only support AR features if AR is enabled.
-  if (device::features::IsOpenXrArEnabled()) {
+  // Only support Plane Detection if the feature flag is enabled.
+  if (base::FeatureList::IsEnabled(features::kWebXRPlaneDetection)) {
     device_data.supported_features.emplace_back(
-        mojom::XRSessionFeature::HIT_TEST);
-    device_data.supported_features.emplace_back(
-        mojom::XRSessionFeature::LIGHT_ESTIMATION);
-    device_data.supported_features.emplace_back(mojom::XRSessionFeature::DEPTH);
-
-    // Only support Plane Detection if the feature flag is enabled.
-    if (base::FeatureList::IsEnabled(features::kWebXRPlaneDetection)) {
-      device_data.supported_features.emplace_back(
-          mojom::XRSessionFeature::PLANE_DETECTION);
-    }
+        mojom::XRSessionFeature::PLANE_DETECTION);
   }
 
   SetDeviceData(std::move(device_data));

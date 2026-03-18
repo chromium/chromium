@@ -97,10 +97,6 @@ bool OpenXrPlatformHelperAndroid::Initialize() {
 
 bool OpenXrPlatformHelperAndroid::CheckHardwareSupport(
     content::WebContents* web_contents) {
-  if (!device::features::IsOpenXrArEnabled()) {
-    return true;
-  }
-
   XrInstance instance = XR_NULL_HANDLE;
   if (!XR_SUCCEEDED(CreateTemporaryInstance(&instance, web_contents))) {
     return false;
