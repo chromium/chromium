@@ -2478,27 +2478,6 @@
             ]
         }
     ],
-    "AutofillEnableSupportForHomeAndWork": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillEnableSupportForHomeAndWork",
-                        "IPH_AutofillHomeWorkProfileSuggestion"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillEnableSupportForNameAndEmail": [
         {
             "platforms": [

@@ -96,9 +96,9 @@ TEST_F(UpdateAddressBubbleControllerTest, UpdatingNonAccountAddress) {
   original_profile.SetInfo(EMAIL_ADDRESS, u"", GetLocale());
   auto controller = CreateController(profile, original_profile);
 
-  EXPECT_EQ(
-      controller->GetWindowTitle(/*has_empty_original_values=*/true),
-      l10n_util::GetStringUTF16(IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE));
+  EXPECT_EQ(controller->GetWindowTitle(/*has_empty_original_values=*/true),
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_ADD_NEW_INFO_ADDRESS_PROMPT_TITLE));
   EXPECT_TRUE(controller->GetFooterMessage().empty());
 }
 
@@ -115,9 +115,9 @@ TEST_F(UpdateAddressBubbleControllerTest, UpdatingAccountAddress) {
                             ->email);
   auto controller = CreateController(profile, original_profile);
 
-  EXPECT_EQ(
-      controller->GetWindowTitle(/*has_empty_original_values=*/true),
-      l10n_util::GetStringUTF16(IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE));
+  EXPECT_EQ(controller->GetWindowTitle(/*has_empty_original_values=*/true),
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_ADD_NEW_INFO_ADDRESS_PROMPT_TITLE));
   EXPECT_EQ(
       controller->GetFooterMessage(),
       l10n_util::GetStringFUTF16(
