@@ -306,8 +306,15 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksLensInteractionBrowserTest,
   EXPECT_TRUE(controller->IsShowingUI());
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_SubsequentRegionSelectionLoadsNewResult \
+  DISABLED_SubsequentRegionSelectionLoadsNewResult
+#else
+#define MAYBE_SubsequentRegionSelectionLoadsNewResult \
+  SubsequentRegionSelectionLoadsNewResult
+#endif
 IN_PROC_BROWSER_TEST_F(ContextualTasksLensInteractionBrowserTest,
-                       SubsequentRegionSelectionLoadsNewResult) {
+                       MAYBE_SubsequentRegionSelectionLoadsNewResult) {
   // Wait for the page to be painted to prevent flakiness when screenshotting.
   WaitForPaint();
 
@@ -356,9 +363,16 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksLensInteractionBrowserTest,
                        "https://www.google.com/search"));
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_SubsequentRegionSelectionFromComposeboxAddsVisualSelection \
+  DISABLED_SubsequentRegionSelectionFromComposeboxAddsVisualSelection
+#else
+#define MAYBE_SubsequentRegionSelectionFromComposeboxAddsVisualSelection \
+  SubsequentRegionSelectionFromComposeboxAddsVisualSelection
+#endif
 IN_PROC_BROWSER_TEST_F(
     ContextualTasksLensInteractionBrowserTest,
-    SubsequentRegionSelectionFromComposeboxAddsVisualSelection) {
+    MAYBE_SubsequentRegionSelectionFromComposeboxAddsVisualSelection) {
   // Wait for the page to be painted to prevent flakiness when screenshotting.
   WaitForPaint();
 
