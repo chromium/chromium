@@ -75,6 +75,8 @@ class TestAccessibilityEventRewriterDelegate
   // Count of captured events sent to the delegate in mv3.
   size_t chromevox_captured_event_count_mv3_ = 0;
 
+  bool should_fail_mv3_dispatch_ = false;
+
   // Last key event sent to ChromeVox.
   ui::Event* GetLastChromeVoxKeyEvent() {
     return last_chromevox_key_event_.get();
@@ -100,12 +102,16 @@ class TestAccessibilityEventRewriterDelegate
     }
     last_chromevox_key_event_ = std::move(event);
   }
-  void DispatchKeyEventToChromeVoxMv3(
+  bool DispatchKeyEventToChromeVoxMv3(
       unsigned int id,
       std::unique_ptr<ui::Event> event) override {
+    if (should_fail_mv3_dispatch_) {
+      return false;
+    }
     chromevox_recorded_event_count_mv3_++;
     chromevox_captured_event_count_mv3_++;
     last_chromevox_key_event_ = std::move(event);
+    return true;
   }
   void DispatchMouseEvent(std::unique_ptr<ui::Event> event) override {
     chromevox_recorded_event_count_++;
@@ -286,6 +292,11 @@ class ChromeVoxAccessibilityEventRewriterTest
   size_t delegate_chromevox_captured_event_count_mv3() {
     return accessibility_event_rewriter_delegate()
         .chromevox_captured_event_count_mv3_;
+  }
+
+  void set_delegate_should_fail_mv3_dispatch(bool should_fail) {
+    accessibility_event_rewriter_delegate().should_fail_mv3_dispatch_ =
+        should_fail;
   }
 
   void SetDelegateChromeVoxCaptureAllKeys(bool value) {
@@ -587,6 +598,39 @@ class ChromeVoxMv3AccessibilityEventRewriterTest
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+TEST_F(ChromeVoxMv3AccessibilityEventRewriterTest,
+       KeysNotEatenWhenDelegateFailsToSendEventsToMv3) {
+  set_delegate_should_fail_mv3_dispatch(true);
+  AccessibilityController* controller = GetAccessibilityController();
+  controller->SetSpokenFeedbackEnabled(true, A11Y_NOTIFICATION_NONE);
+  EXPECT_TRUE(controller->spoken_feedback().enabled());
+  accessibility_event_rewriter().SetSpokenFeedbackMv3KeyHandlingEnabled(
+      true, /*session_id=*/1);
+
+  // Send Search+Shift+Right.
+  generator().PressKey(ui::VKEY_LWIN, ui::EF_COMMAND_DOWN);
+  EXPECT_EQ(1, event_recorder().events_seen());
+  generator().PressKey(ui::VKEY_SHIFT, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN);
+  EXPECT_EQ(2, event_recorder().events_seen());
+
+  // Nothing was enqueued.
+  EXPECT_EQ(0u, next_pending_event_id());
+  EXPECT_EQ(0U, GetPendingKeyEventsSize());
+
+  // Pretend the service worker comes back online.
+  set_delegate_should_fail_mv3_dispatch(false);
+
+  // Now the events should be captured, so event_recorder sees no more events.
+  generator().PressKey(ui::VKEY_LWIN, ui::EF_COMMAND_DOWN);
+  generator().PressKey(ui::VKEY_SHIFT, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN);
+
+  EXPECT_EQ(2, event_recorder().events_seen());
+
+  // These events were enqueued.
+  EXPECT_EQ(2u, next_pending_event_id());
+  EXPECT_EQ(2U, GetPendingKeyEventsSize());
+}
 
 TEST_F(ChromeVoxMv3AccessibilityEventRewriterTest, NextPendingEventId) {
   AccessibilityController* controller = GetAccessibilityController();

@@ -333,11 +333,17 @@ bool AccessibilityEventRewriter::RewriteEventForChromeVox(
       return true;
     }
 
+    // Try to forward the key event to the ChromeVox service worker.
+    if (!delegate_->DispatchKeyEventToChromeVoxMv3(
+            next_pending_event_id_, rewritten_key_event->Clone())) {
+      // Unable to send to the service worker. ChromeVox has probably crashed.
+      // Do not further forward this event, or enqueue it.
+      return false;
+    }
+
     pending_key_events_.emplace(next_pending_event_id_,
                                 rewritten_key_event->Clone(), continuation);
-    // Forward the key event to the ChromeVox service worker.
-    delegate_->DispatchKeyEventToChromeVoxMv3(next_pending_event_id_,
-                                              rewritten_key_event->Clone());
+
     // Forward the key event to other ChromeVox extension contexts, like learn
     // mode and the panel.
     delegate_->DispatchKeyEventToChromeVox(rewritten_key_event->Clone(), true);

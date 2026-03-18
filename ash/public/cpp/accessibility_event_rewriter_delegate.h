@@ -30,8 +30,9 @@ class ASH_PUBLIC_EXPORT AccessibilityEventRewriterDelegate {
                                            bool capture) = 0;
 
   // Used to send key events to the ChromeVox extension in manifest v3 via the
-  // accessibility private extension API.
-  virtual void DispatchKeyEventToChromeVoxMv3(
+  // accessibility private extension API. Returns `true` if the key event was
+  // sent, and `false` otherwise.
+  virtual bool DispatchKeyEventToChromeVoxMv3(
       unsigned int id,
       std::unique_ptr<ui::Event> event) = 0;
 

@@ -32,7 +32,7 @@ class AccessibilityEventRewriterDelegateImpl
   // AccessibilityEventRewriterDelegate:
   void DispatchKeyEventToChromeVox(std::unique_ptr<ui::Event> event,
                                    bool capture) override;
-  void DispatchKeyEventToChromeVoxMv3(
+  bool DispatchKeyEventToChromeVoxMv3(
       unsigned int id,
       std::unique_ptr<ui::Event> event) override;
   void DispatchMouseEvent(std::unique_ptr<ui::Event> event) override;

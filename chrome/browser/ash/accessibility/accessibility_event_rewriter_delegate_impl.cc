@@ -96,7 +96,7 @@ void AccessibilityEventRewriterDelegateImpl::DispatchKeyEventToChromeVox(
   ForwardKeyToExtension(*(event->AsKeyEvent()), host);
 }
 
-void AccessibilityEventRewriterDelegateImpl::DispatchKeyEventToChromeVoxMv3(
+bool AccessibilityEventRewriterDelegateImpl::DispatchKeyEventToChromeVoxMv3(
     unsigned int id,
     std::unique_ptr<ui::Event> event) {
   CHECK(::features::IsAccessibilityManifestV3EnabledForChromeVox());
@@ -106,8 +106,9 @@ void AccessibilityEventRewriterDelegateImpl::DispatchKeyEventToChromeVoxMv3(
     // switching profiles. See b:458302114.
     // AccessibilityManager is the source of truth for whether Spoken Feedback
     // is enabled since it handles loading/unloading.
-    return;
+    return false;
   }
+
   CHECK(event->IsKeyEvent());
   extensions::EventRouter* event_router =
       extensions::EventRouter::Get(AccessibilityManager::Get()->profile());
@@ -115,6 +116,17 @@ void AccessibilityEventRewriterDelegateImpl::DispatchKeyEventToChromeVoxMv3(
 
   // Transform the ui::KeyEvent into an accessibility_private::KeyboardEvent.
   const ui::KeyEvent* key_event = event->AsKeyEvent();
+  bool is_pressed = key_event->type() == ui::EventType::kKeyPressed;
+
+  if (!event_router->HasEventListener(
+          is_pressed
+              ? extensions::api::accessibility_private::OnKeyDown::kEventName
+              : extensions::api::accessibility_private::OnKeyUp::kEventName)) {
+    // In the event the service worker has crashed and there is no longer a
+    // listener, do not try to dispatch the event.
+    return false;
+  }
+
   extensions::api::accessibility_private::KeyboardEvent keyboard_event;
   keyboard_event.id = id;
   keyboard_event.alt_key = key_event->IsAltDown();
@@ -132,7 +144,7 @@ void AccessibilityEventRewriterDelegateImpl::DispatchKeyEventToChromeVoxMv3(
   base::ListValue event_args;
   event_args.Append(keyboard_event.ToValue());
   std::unique_ptr<extensions::Event> extension_event;
-  if (key_event->type() == ui::EventType::kKeyPressed) {
+  if (is_pressed) {
     extension_event = std::make_unique<extensions::Event>(
         extensions::events::ACCESSIBILITY_PRIVATE_ON_KEY_DOWN,
         extensions::api::accessibility_private::OnKeyDown::kEventName,
@@ -144,8 +156,10 @@ void AccessibilityEventRewriterDelegateImpl::DispatchKeyEventToChromeVoxMv3(
         std::move(event_args));
   }
 
-  event_router->DispatchEventWithLazyListener(
-      extension_misc::kChromeVoxExtensionId, std::move(extension_event));
+  event_router->DispatchEventToExtension(extension_misc::kChromeVoxExtensionId,
+                                         std::move(extension_event));
+
+  return true;
 }
 
 void AccessibilityEventRewriterDelegateImpl::DispatchMouseEvent(
