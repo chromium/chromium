@@ -252,8 +252,8 @@ std::unique_ptr<views::Label> AccountChooserView::CreateTitleLabel(
       views::style::STYLE_HEADLINE_4);
   title_label->SetEnabledColor(ui::kColorSysOnSurface);
   SetLabelProperties(title_label.get());
-  title_label->GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
-      IDS_ACCOUNT_CHOOSER_HEADER_ACCESSIBILITY_LABEL));
+  title_label->GetViewAccessibility().SetRole(ax::mojom::Role::kHeading);
+  title_label->GetViewAccessibility().SetHierarchicalLevel(2);
   return title_label;
 }
 
@@ -286,9 +286,6 @@ std::unique_ptr<views::View> AccountChooserView::CreateTitleView(
     const std::vector<AccountInfo>& accounts) {
   auto title_view = std::make_unique<views::FlexLayoutView>();
   title_view->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
-  title_view->GetViewAccessibility().SetRole(ax::mojom::Role::kRegion);
-  title_view->GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
-      IDS_ACCOUNT_CHOOSER_HEADER_ACCESSIBILITY_LABEL));
 
   auto title_container = std::make_unique<views::FlexLayoutView>();
   title_container->SetProperty(
