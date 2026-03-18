@@ -24,6 +24,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RULE_SET_H_
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/stack_allocated.h"
 #include "base/substring_set_matcher/substring_set_matcher.h"
@@ -119,7 +120,8 @@ class CORE_EXPORT RuleData {
   // Member functions related to the descendant Bloom filter.
   const base::span<const uint16_t> DescendantSelectorIdentifierHashes(
       const Vector<uint16_t>& backing) const {
-    return UNSAFE_BUFFERS({backing.data() + bloom_hash_pos_, bloom_hash_size_});
+    return UNSAFE_BUFFERS(
+        {base::unchecked, backing.data() + bloom_hash_pos_, bloom_hash_size_});
   }
   void ComputeBloomFilterHashes(const StyleScope* style_scope,
                                 Vector<uint16_t>& backing);
@@ -248,8 +250,9 @@ class RuleMap {
     if (bucket == nullptr) {
       return {};
     } else {
-      return UNSAFE_BUFFERS(
-          {backing.begin() + bucket->value.start_index, bucket->value.length});
+      return UNSAFE_BUFFERS({base::unchecked,
+                             backing.begin() + bucket->value.start_index,
+                             bucket->value.length});
     }
   }
   bool IsEmpty() const { return backing.empty(); }
@@ -285,19 +288,22 @@ class RuleMap {
  private:
   base::span<RuleData> GetRulesFromExtent(Extent extent) {
     return UNSAFE_BUFFERS(
-        {backing.begin() + extent.start_index, extent.length});
+        {base::unchecked, backing.begin() + extent.start_index, extent.length});
   }
   base::span<const RuleData> GetRulesFromExtent(Extent extent) const {
     return UNSAFE_BUFFERS(
-        {backing.begin() + extent.start_index, extent.length});
+
+        {base::unchecked, backing.begin() + extent.start_index, extent.length});
   }
   base::span<unsigned> GetBucketNumberFromExtent(Extent extent) {
-    return UNSAFE_BUFFERS(
-        {bucket_number_.begin() + extent.start_index, extent.length});
+    return UNSAFE_BUFFERS({base::unchecked,
+                           bucket_number_.begin() + extent.start_index,
+                           extent.length});
   }
   base::span<const unsigned> GetBucketNumberFromExtent(Extent extent) const {
-    return UNSAFE_BUFFERS(
-        {bucket_number_.begin() + extent.start_index, extent.length});
+    return UNSAFE_BUFFERS({base::unchecked,
+                           bucket_number_.begin() + extent.start_index,
+                           extent.length});
   }
 
   RobinHoodMap<AtomicString, Extent> buckets;
