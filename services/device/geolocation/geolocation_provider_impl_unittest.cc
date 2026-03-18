@@ -59,7 +59,8 @@ class GeolocationProviderTest : public testing::Test {
  protected:
   GeolocationProviderTest()
       : task_environment_(
-            base::test::SingleThreadTaskEnvironment::MainThreadType::UI) {
+            base::test::SingleThreadTaskEnvironment::MainThreadType::UI,
+            base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME) {
     mojom::Geoposition& position1 = *position_result1_->get_position();
     position1.latitude = 12;
     position1.longitude = 34;
@@ -102,7 +103,6 @@ class GeolocationProviderTest : public testing::Test {
   }
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
- protected:
   // Called on test thread.
   void SetFakeLocationProviderManager();
   bool ProvidersStarted();
@@ -124,6 +124,8 @@ class GeolocationProviderTest : public testing::Test {
           GeolocationProviderImpl::kSystemPermissionDeniedErrorMessage,
           GeolocationProviderImpl::kSystemPermissionDeniedErrorTechnical));
 
+  base::test::SingleThreadTaskEnvironment task_environment_;
+
  private:
   // Called on provider thread.
   bool GetProvidersStarted();
@@ -136,8 +138,6 @@ class GeolocationProviderTest : public testing::Test {
   // available to register with Singletons and can handle tear down when the
   // test completes.
   base::ShadowingAtExitManager at_exit_;
-
-  base::test::SingleThreadTaskEnvironment task_environment_;
 
   base::ThreadChecker thread_checker_;
 
@@ -582,6 +582,110 @@ TEST_F(GeolocationProviderApproxGeoTest, ConcurrentMode) {
             approximate_position_result_->get_position()->latitude);
   EXPECT_EQ(high_accuracy_future.Get()->get_position()->latitude,
             approximate_position_result_->get_position()->latitude);
+}
+
+TEST_F(GeolocationProviderApproxGeoTest,
+       AddHighAccuracyCallbackWithLowAccuracyCache) {
+  SetFakeLocationProviderManager();
+  SetSystemPermission(LocationSystemPermissionStatus::kAllowed);
+
+  // 1. Send an approximate location update to populate the cache.
+  TestFuture<mojom::GeopositionResultPtr> low_accuracy_future;
+  base::MockCallback<GeolocationProviderImpl::LocationUpdateCallback>
+      low_accuracy_callback;
+  EXPECT_CALL(low_accuracy_callback, Run)
+      .WillOnce([&](const mojom::GeopositionResult& result) {
+        low_accuracy_future.SetValue(result.Clone());
+      });
+  base::CallbackListSubscription low_accuracy_subscription =
+      provider()->AddLocationUpdateCallback(low_accuracy_callback.Get(),
+                                            /*enable_high_accuracy=*/false);
+  SendMockLocation(*approximate_position_result_);
+  EXPECT_TRUE(low_accuracy_future.Wait());
+
+  // 2. Add a high accuracy callback. It should receive the cached approximate
+  // location result immediately.
+  base::MockCallback<GeolocationProviderImpl::LocationUpdateCallback>
+      high_accuracy_callback;
+  TestFuture<mojom::GeopositionResultPtr> high_accuracy_future;
+  EXPECT_CALL(high_accuracy_callback, Run)
+      .WillOnce([&](const mojom::GeopositionResult& result) {
+        high_accuracy_future.SetValue(result.Clone());
+      });
+  base::CallbackListSubscription high_accuracy_subscription =
+      provider()->AddLocationUpdateCallback(high_accuracy_callback.Get(),
+                                            /*enable_high_accuracy=*/true);
+  EXPECT_EQ(high_accuracy_future.Get()->get_position()->latitude,
+            approximate_position_result_->get_position()->latitude);
+}
+
+TEST_F(GeolocationProviderApproxGeoTest, ThrottlingApproximateUpdates) {
+  SetFakeLocationProviderManager();
+  SetSystemPermission(LocationSystemPermissionStatus::kAllowed);
+
+  base::test::TestFuture<mojom::GeopositionResultPtr> low_accuracy_future;
+
+  base::MockCallback<GeolocationProviderImpl::LocationUpdateCallback>
+      low_accuracy_callback;
+  EXPECT_CALL(low_accuracy_callback, Run)
+      .WillRepeatedly([&](const mojom::GeopositionResult& result) {
+        low_accuracy_future.SetValue(result.Clone());
+      });
+  base::CallbackListSubscription low_accuracy_subscription =
+      provider()->AddLocationUpdateCallback(low_accuracy_callback.Get(),
+                                            /*enable_high_accuracy=*/false);
+
+  // 1. First approximate update should be delivered.
+  SendMockLocation(*approximate_position_result_);
+  auto result1 = low_accuracy_future.Take();
+  EXPECT_TRUE(result1->is_position());
+  EXPECT_EQ(result1->get_position()->latitude,
+            approximate_position_result_->get_position()->latitude);
+
+  // 2. Subsequent update within 15 minutes should be ignored.
+  auto second_approx_result = approximate_position_result_.Clone();
+  second_approx_result->get_position()->latitude = 5.0;
+  SendMockLocation(*second_approx_result);
+
+  // Deterministically flush the Geolocation thread and then the Main thread.
+  // Since SendMockLocation posts to Geolocation, which then posts back to Main,
+  // a PostTaskAndReply to Geolocation will arrive at Main AFTER the
+  // location update has been processed.
+  base::test::TestFuture<void> flush_future;
+  provider()->task_runner()->PostTaskAndReply(FROM_HERE, base::DoNothing(),
+                                              flush_future.GetCallback());
+  EXPECT_TRUE(flush_future.Wait());
+  EXPECT_FALSE(low_accuracy_future.IsReady());
+
+  // 3. Fast-forward 14 minutes (still within 15 mins) - still ignored.
+  task_environment_.FastForwardBy(base::Minutes(14));
+  SendMockLocation(*second_approx_result);
+  base::test::TestFuture<void> flush_future2;
+  provider()->task_runner()->PostTaskAndReply(FROM_HERE, base::DoNothing(),
+                                              flush_future2.GetCallback());
+  EXPECT_TRUE(flush_future2.Wait());
+  EXPECT_FALSE(low_accuracy_future.IsReady());
+
+  // 4. Fast-forward past 15 minutes - next update should be accepted.
+  task_environment_.FastForwardBy(base::Minutes(2));  // Total 16 mins
+  SendMockLocation(*second_approx_result);
+  auto result2 = low_accuracy_future.Take();
+  EXPECT_TRUE(result2->is_position());
+  EXPECT_EQ(result2->get_position()->latitude, 5.0);
+
+  // 5. Error should always be delivered and reset throttling.
+  SendMockLocation(*error_result_);
+  auto result3 = low_accuracy_future.Take();
+  EXPECT_TRUE(result3->is_error());
+
+  // Since last successful result was just replaced by an error,
+  // the next successful result should be delivered immediately.
+  auto third_approx_result = approximate_position_result_.Clone();
+  third_approx_result->get_position()->latitude = 7.0;
+  SendMockLocation(*third_approx_result);
+  auto result4 = low_accuracy_future.Take();
+  EXPECT_TRUE(result4->is_position());
+  EXPECT_EQ(result4->get_position()->latitude, 7.0);
 }
 
 #if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)

@@ -167,6 +167,9 @@ class GeolocationProviderImpl
   static constexpr char kSystemPermissionDeniedErrorTechnical[] =
       "User has not allowed access to system location";
 
+  static constexpr base::TimeDelta kApproximateGeolocationUpdateInterval =
+      base::Minutes(15);
+
  private:
   friend struct base::DefaultSingletonTraits<GeolocationProviderImpl>;
   GeolocationProviderImpl();
@@ -260,6 +263,8 @@ class GeolocationProviderImpl
   // accuracy level receive the correct location updates.
   mojom::GeopositionResultPtr high_accuracy_result_;
   mojom::GeopositionResultPtr low_accuracy_result_;
+  // The time when the last low accuracy result was notified.
+  base::TimeTicks last_low_accuracy_result_time_;
 
   // True only in testing, where we want to use a custom position.
   bool ignore_location_updates_ = false;

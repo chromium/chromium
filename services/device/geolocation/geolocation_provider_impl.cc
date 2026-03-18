@@ -124,9 +124,16 @@ GeolocationProviderImpl::AddLocationUpdateCallback(
   OnClientsChanged();
   if (base::FeatureList::IsEnabled(
           content_settings::features::kApproximateGeolocationPermission)) {
-    if (enable_high_accuracy && high_accuracy_result_) {
-      callback.Run(*high_accuracy_result_);
-    } else if (!enable_high_accuracy && low_accuracy_result_) {
+    if (enable_high_accuracy) {
+      // If high accuracy is requested, we prefer to return a cached
+      // high-accuracy result. If one is not available, we fall back to a
+      // cached low-accuracy result.
+      if (high_accuracy_result_) {
+        callback.Run(*high_accuracy_result_);
+      } else if (low_accuracy_result_) {
+        callback.Run(*low_accuracy_result_);
+      }
+    } else if (low_accuracy_result_) {
       callback.Run(*low_accuracy_result_);
     }
   } else {
@@ -238,6 +245,7 @@ void GeolocationProviderImpl::OnClientsChanged() {
       result_.reset();
       low_accuracy_result_.reset();
       high_accuracy_result_.reset();
+      last_low_accuracy_result_time_ = base::TimeTicks();
     }
     task_runner()->PostTask(
         FROM_HERE, base::BindOnce(&GeolocationProviderImpl::StopProviders,
@@ -380,17 +388,28 @@ void GeolocationProviderImpl::NotifyClients(
       // When the `kApproximateGeolocationPermission` feature is enabled,
       // location updates are dispatched to the appropriate callbacks based on
       // the `is_precise` flag.
-      if (result->get_position()->is_precise) {
+      bool is_precise = result->get_position()->is_precise;
+      if (is_precise) {
         high_accuracy_result_ = std::move(result);
         high_accuracy_callbacks_.Notify(*high_accuracy_result_);
       } else {
-        low_accuracy_result_ = std::move(result);
-        low_accuracy_callbacks_.Notify(*low_accuracy_result_);
-        // When in concurrent mode, we also forward approximate location to
-        // precise request client.
-        if (!high_accuracy_callbacks_.empty()) {
-          high_accuracy_result_ = low_accuracy_result_.Clone();
-          high_accuracy_callbacks_.Notify(*high_accuracy_result_);
+        base::TimeTicks now = base::TimeTicks::Now();
+        // Approximate location updates are throttled to a 15-minute window.
+        // This prevents malicious sites from collecting enough approximate
+        // positions to reconstruct a precise location, significantly
+        // increasing the difficulty of such attacks.
+        if (!low_accuracy_result_ || !low_accuracy_result_->is_position() ||
+            now - last_low_accuracy_result_time_ >=
+                kApproximateGeolocationUpdateInterval) {
+          low_accuracy_result_ = std::move(result);
+          last_low_accuracy_result_time_ = now;
+          low_accuracy_callbacks_.Notify(*low_accuracy_result_);
+          // When in concurrent mode, we also forward approximate location to
+          // precise request client.
+          if (!high_accuracy_callbacks_.empty()) {
+            high_accuracy_result_ = low_accuracy_result_.Clone();
+            high_accuracy_callbacks_.Notify(*high_accuracy_result_);
+          }
         }
       }
     } else {
