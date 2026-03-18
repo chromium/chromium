@@ -1611,6 +1611,22 @@ public class LocationBarMediatorTest {
     }
 
     @Test
+    public void testBeginOrResumeInput_updatesModeImmediately() {
+        mMediator.onFinishNativeInitialization();
+        mMediator.setProfile(mProfile);
+        FuseboxSessionState state = getSession();
+
+        state.getAutocompleteInput().setRequestType(AutocompleteRequestType.IMAGE_GENERATION);
+        mMediator.onUrlFocusChange(true);
+        verify(mLocationBarLayout).onSpecializedFuseboxModeActivated(true);
+
+        mMediator.onUrlFocusChange(false);
+        state.getAutocompleteInput().setRequestType(AutocompleteRequestType.SEARCH);
+        mMediator.onUrlFocusChange(true);
+        verify(mLocationBarLayout).onSpecializedFuseboxModeActivated(false);
+    }
+
+    @Test
     public void testDeleteButtonClicked() {
         mMediator.onFinishNativeInitialization();
         mProfileSupplier.set(mProfile);

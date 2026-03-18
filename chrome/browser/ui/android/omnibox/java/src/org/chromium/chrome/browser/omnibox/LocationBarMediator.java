@@ -1037,7 +1037,9 @@ class LocationBarMediator
                 });
 
         mCurrentInput = session.getAutocompleteInput();
-        mCurrentInput.getRequestTypeSupplier().addSyncObserver(mAutocompleteRequestTypeObserver);
+        mCurrentInput
+                .getRequestTypeSupplier()
+                .addSyncObserverAndCallIfNonNull(mAutocompleteRequestTypeObserver);
 
         UrlBarData data = UrlBarData.forNonUrlText(mCurrentInput.getUserText());
         mUrlCoordinator.setUrlBarData(
