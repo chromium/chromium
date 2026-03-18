@@ -31,18 +31,19 @@ class MODULES_EXPORT RespondWithObserver
  public:
   virtual ~RespondWithObserver() = default;
 
-  template <typename IDLType, typename Derived>
-  void RespondWith(ScriptState* script_state,
-                   const ScriptPromise<IDLType>& script_promise,
-                   ThenCallable<IDLType, Derived>* on_fulfill,
-                   ExceptionState& exception_state) {
+  template <typename IDLType, typename DerivedFulfill, typename DerivedReject>
+  void RespondWith(
+      ScriptState* script_state,
+      const ScriptPromise<IDLType>& script_promise,
+      ThenCallable<IDLType, DerivedFulfill>* on_fulfill,
+      ThenCallable<IDLAny, DerivedReject, IDLPromise<IDLAny>>* on_reject,
+      ExceptionState& exception_state) {
     if (!StartRespondWith(exception_state)) {
       return;
     }
     has_started_ = true;
     auto next_promise =
-        script_promise.Then(script_state, on_fulfill,
-                            MakeGarbageCollected<RespondWithReject>(this));
+        script_promise.Then(script_state, on_fulfill, on_reject);
     // 3. `Add r to the extend lifetime promises.`
     // 4. `Increment the pending promises count by one.`
     // This is accomplised by WaitUntil().
@@ -55,6 +56,15 @@ class MODULES_EXPORT RespondWithObserver
     // DidHandleFetchEvent()). So WaitUntilObserver must observe the promise and
     // call our callbacks before it determines the event is done.
     DCHECK(will_wait);
+  }
+
+  template <typename IDLType, typename Derived>
+  void RespondWith(ScriptState* script_state,
+                   const ScriptPromise<IDLType>& script_promise,
+                   ThenCallable<IDLType, Derived>* on_fulfill,
+                   ExceptionState& exception_state) {
+    RespondWith(script_state, script_promise, on_fulfill,
+                MakeGarbageCollected<RespondWithReject>(this), exception_state);
   }
 
   void WillDispatchEvent();

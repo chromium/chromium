@@ -391,6 +391,9 @@ void ServiceWorkerPaymentApp::OnPaymentAppResponse(
     DCHECK(response->payer_phone.value_or("").empty());
     DCHECK(!response->shipping_address);
     DCHECK(response->shipping_option.value_or("").empty());
+    // TODO(crbug.com/473478138): Pass the response_type to the delegate so that
+    // PaymentRequest can differentiate between different error reasons (e.g.
+    // user-cancel vs app-internal-error).
     delegate_->OnInstrumentDetailsError(std::string(
         ConvertPaymentEventResponseTypeToErrorString(response->response_type)));
   }

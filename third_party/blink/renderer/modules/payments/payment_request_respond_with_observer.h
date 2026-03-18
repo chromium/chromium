@@ -19,7 +19,7 @@ class WaitUntilObserver;
 // Implementation for PaymentRequestEvent.respondWith(), which is used by the
 // payment handler to provide a payment response when the payment successfully
 // completes.
-class MODULES_EXPORT PaymentRequestRespondWithObserver final
+class MODULES_EXPORT PaymentRequestRespondWithObserver
     : public RespondWithObserver {
  public:
   PaymentRequestRespondWithObserver(ExecutionContext*,
@@ -33,6 +33,9 @@ class MODULES_EXPORT PaymentRequestRespondWithObserver final
 
   void OnResponseFulfilled(ScriptState*, PaymentHandlerResponse*);
   void OnResponseRejected(mojom::ServiceWorkerResponseError) override;
+  virtual void OnResponseRejected(
+      mojom::blink::ServiceWorkerResponseError,
+      payments::mojom::blink::PaymentEventResponseType);
   void OnNoResponse(ScriptState*) override;
 
   void Trace(Visitor*) const override;

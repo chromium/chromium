@@ -38,12 +38,18 @@ PaymentRequestRespondWithObserver* PaymentRequestRespondWithObserver::Create(
 
 void PaymentRequestRespondWithObserver::OnResponseRejected(
     mojom::ServiceWorkerResponseError error) {
+  OnResponseRejected(
+      error, error == mojom::ServiceWorkerResponseError::kPromiseRejected
+                 ? PaymentEventResponseType::PAYMENT_EVENT_REJECT
+                 : PaymentEventResponseType::PAYMENT_EVENT_INTERNAL_ERROR);
+}
+
+void PaymentRequestRespondWithObserver::OnResponseRejected(
+    mojom::blink::ServiceWorkerResponseError error,
+    PaymentEventResponseType response_type) {
   PaymentHandlerUtils::ReportResponseError(GetExecutionContext(),
                                            "PaymentRequestEvent", error);
-  BlankResponseWithError(
-      error == mojom::ServiceWorkerResponseError::kPromiseRejected
-          ? PaymentEventResponseType::PAYMENT_EVENT_REJECT
-          : PaymentEventResponseType::PAYMENT_EVENT_INTERNAL_ERROR);
+  BlankResponseWithError(response_type);
 }
 
 void PaymentRequestRespondWithObserver::OnResponseFulfilled(

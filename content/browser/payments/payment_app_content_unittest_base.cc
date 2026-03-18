@@ -290,10 +290,10 @@ void PaymentAppContentUnitTestBase::SetNoPaymentRequestResponseImmediately() {
   worker_helper_->respond_payment_request_immediately_ = false;
 }
 
-void PaymentAppContentUnitTestBase::RespondPendingPaymentRequest() {
+void PaymentAppContentUnitTestBase::RespondPendingPaymentRequest(
+    payments::mojom::PaymentHandlerResponsePtr response) {
   std::move(worker_helper_->response_callback_)
-      ->OnResponseForPaymentRequest(
-          payments::mojom::PaymentHandlerResponse::New());
+      ->OnResponseForPaymentRequest(std::move(response));
 }
 
 int64_t PaymentAppContentUnitTestBase::last_sw_registration_id() const {

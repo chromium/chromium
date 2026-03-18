@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_address_errors.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_currency_amount.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_details_modifier.h"
@@ -51,6 +52,46 @@ class PaymentRequestRespondWithFulfill final
   void React(ScriptState* script_state, PaymentHandlerResponse* response) {
     DCHECK(observer_);
     observer_->OnResponseFulfilled(script_state, response);
+  }
+
+ private:
+  Member<PaymentRequestRespondWithObserver> observer_;
+};
+
+class PaymentRequestRespondWithReject final
+    : public ThenCallable<IDLAny,
+                          PaymentRequestRespondWithReject,
+                          IDLPromise<IDLAny>> {
+ public:
+  explicit PaymentRequestRespondWithReject(
+      PaymentRequestRespondWithObserver* observer)
+      : observer_(observer) {}
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(observer_);
+    ThenCallable<IDLAny, PaymentRequestRespondWithReject,
+                 IDLPromise<IDLAny>>::Trace(visitor);
+  }
+
+  ScriptPromise<IDLAny> React(ScriptState* script_state, ScriptValue value) {
+    DCHECK(observer_);
+    payments::mojom::blink::PaymentEventResponseType response_type =
+        payments::mojom::blink::PaymentEventResponseType::PAYMENT_EVENT_REJECT;
+
+    auto* isolate = script_state->GetIsolate();
+    if (V8DOMException::HasInstance(isolate, value.V8Value())) {
+      DOMException* dom_exception =
+          V8DOMException::ToWrappable(isolate, value.V8Value());
+      if (dom_exception && dom_exception->name() == "OperationError") {
+        response_type = payments::mojom::blink::PaymentEventResponseType::
+            PAYMENT_EVENT_INTERNAL_ERROR;
+      }
+    }
+
+    observer_->OnResponseRejected(
+        mojom::blink::ServiceWorkerResponseError::kPromiseRejected,
+        response_type);
+    return ScriptPromise<IDLAny>::Reject(script_state, value);
   }
 
  private:
@@ -355,6 +396,7 @@ void PaymentRequestEvent::respondWith(
     observer_->RespondWith(
         script_state, script_promise,
         MakeGarbageCollected<PaymentRequestRespondWithFulfill>(observer_),
+        MakeGarbageCollected<PaymentRequestRespondWithReject>(observer_),
         exception_state);
   }
 }

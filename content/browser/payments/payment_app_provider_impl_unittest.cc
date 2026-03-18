@@ -67,6 +67,14 @@ void InvokePaymentAppCallback(
   *called = true;
 }
 
+void CaptureInvokePaymentAppResponse(
+    bool* called,
+    payments::mojom::PaymentHandlerResponsePtr* out_response,
+    payments::mojom::PaymentHandlerResponsePtr response) {
+  *called = true;
+  *out_response = std::move(response);
+}
+
 void CaptureAbortResult(base::OnceClosure callback,
                         bool* out_payment_event_result,
                         bool payment_event_result) {
@@ -392,9 +400,53 @@ TEST_F(PaymentAppProviderTest, AbortPaymentWhenClosingOpenedWindow) {
 
   // Response after abort should not crash and take effect.
   called = false;
-  RespondPendingPaymentRequest();
+  auto response_after_abort = payments::mojom::PaymentHandlerResponse::New();
+  response_after_abort->response_type =
+      payments::mojom::PaymentEventResponseType::PAYMENT_EVENT_SUCCESS;
+  RespondPendingPaymentRequest(std::move(response_after_abort));
   base::RunLoop().RunUntilIdle();
   ASSERT_FALSE(called);
+}
+
+TEST_F(PaymentAppProviderTest, InvokePaymentAppInternalErrorTest) {
+  PaymentManager* manager = CreatePaymentManager(
+      GURL("https://example.test"), GURL("https://example.test/script.js"));
+
+  PaymentHandlerStatus status;
+  SetPaymentInstrument(manager, "payment_instrument_key",
+                       payments::mojom::PaymentInstrument::New(),
+                       base::BindOnce(&SetPaymentInstrumentCallback, &status));
+
+  InstalledPaymentAppsFinder::PaymentApps apps;
+  GetAllPaymentApps(base::BindOnce(&GetAllPaymentAppsCallback, &apps));
+  ASSERT_EQ(1U, apps.size());
+
+  payments::mojom::PaymentRequestEventDataPtr event_data =
+      payments::mojom::PaymentRequestEventData::New();
+  event_data->method_data.push_back(payments::mojom::PaymentMethodData::New());
+  event_data->total = payments::mojom::PaymentCurrencyAmount::New();
+
+  SetNoPaymentRequestResponseImmediately();
+
+  bool called = false;
+  payments::mojom::PaymentHandlerResponsePtr response;
+  InvokePaymentApp(
+      last_sw_registration_id(),
+      url::Origin::Create(GURL("https://example.test")), std::move(event_data),
+      base::BindOnce(&CaptureInvokePaymentAppResponse, &called, &response));
+  ASSERT_FALSE(called);
+
+  auto internal_error_response = payments::mojom::PaymentHandlerResponse::New();
+  internal_error_response->response_type =
+      payments::mojom::PaymentEventResponseType::PAYMENT_EVENT_INTERNAL_ERROR;
+  RespondPendingPaymentRequest(std::move(internal_error_response));
+
+  // TODO(crbug.com/493823429): Replace use of base::test::RunUntil with
+  // explicitly waiting for an event.
+  EXPECT_TRUE(base::test::RunUntil([&]() { return called; }));
+  EXPECT_EQ(
+      payments::mojom::PaymentEventResponseType::PAYMENT_EVENT_INTERNAL_ERROR,
+      response->response_type);
 }
 
 TEST_F(PaymentAppProviderTest, OnPaymentHandlerDisconnectedTest) {

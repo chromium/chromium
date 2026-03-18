@@ -48,7 +48,8 @@ class PaymentAppContentUnitTestBase : public testing::Test {
   const GURL& last_sw_scope_url() const;
 
   void SetNoPaymentRequestResponseImmediately();
-  void RespondPendingPaymentRequest();
+  void RespondPendingPaymentRequest(
+      payments::mojom::PaymentHandlerResponsePtr response);
 
  private:
   class PaymentAppForWorkerTestHelper;
