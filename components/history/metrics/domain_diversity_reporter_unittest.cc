@@ -362,8 +362,7 @@ TEST_F(DomainDiversityReporterTest, ScheduleNextDay) {
   histograms().ExpectBucketCount("History.DomainCount28Day_V4", 4, 2);
 }
 
-// TODO(crbug.com/490789221): Re-enable the test.
-TEST_F(DomainDiversityReporterTest, DISABLED_ScheduleNextDaySuspended) {
+TEST_F(DomainDiversityReporterTest, ScheduleNextDaySuspended) {
   // Test if the next domain metrics reporting task is scheduled every 24 hours,
   // even if the computer is sleeping.
   LoadHistory();
