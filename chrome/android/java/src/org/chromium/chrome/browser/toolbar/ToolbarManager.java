@@ -1169,7 +1169,8 @@ public class ToolbarManager
             progressBarStub.setLayoutParams(progressBarParams);
         }
 
-        if (ChromeFeatureList.sAndroidAnimatedProgressBarInBrowser.isEnabled()) {
+        if (ChromeFeatureList.sAndroidAnimatedProgressBarInBrowser.isEnabled()
+                && ChromeFeatureList.sAndroidApb144Patch4.isEnabled()) {
             CoordinatorLayout.LayoutParams progressBarParams =
                     (CoordinatorLayout.LayoutParams) progressBarStub.getLayoutParams();
             progressBarParams.gravity = Gravity.BOTTOM;

@@ -520,7 +520,8 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
                                 (LayoutParams) mToolbarProgressBarContainer.getLayoutParams();
                         progressBarLayoutParams.setAnchorId(mControlContainer.getView().getId());
                         progressBarLayoutParams.anchorGravity = Gravity.BOTTOM;
-                        if (ChromeFeatureList.sAndroidAnimatedProgressBarInBrowser.isEnabled()) {
+                        if (ChromeFeatureList.sAndroidAnimatedProgressBarInBrowser.isEnabled()
+                                && ChromeFeatureList.sAndroidApb144Patch4.isEnabled()) {
                             progressBarLayoutParams.gravity = Gravity.BOTTOM;
                         } else {
                             progressBarLayoutParams.gravity = Gravity.CENTER;

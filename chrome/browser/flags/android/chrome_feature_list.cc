@@ -258,6 +258,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kApb144Patch1,
     &kApb144Patch2,
     &kApb144Patch3,
+    &kApb144Patch4,
     &kAppSpecificHistory,
     &kAppSpecificHistoryViewIntent,
     &kAsyncNotificationManager,
@@ -596,6 +597,7 @@ BASE_FEATURE(kAnnotatedPageContentsVirtualStructure, base::FEATURE_DISABLED_BY_D
 BASE_FEATURE(kApb144Patch1, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kApb144Patch2, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kApb144Patch3, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kApb144Patch4, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAppSpecificHistory, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAppSpecificHistoryViewIntent, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAsyncNotificationManager, base::FEATURE_DISABLED_BY_DEFAULT);

@@ -147,7 +147,10 @@ public class ToolbarProgressBarLayer implements TopControlLayer {
             // integrated with the TopControlsStacker yet, which is why we have to
             // explicitly account for its height after calling getHeightFromLayerToX.
             int toolbarPosition = mControlsPositionSupplier.get();
-            int hairlineHeight = mToolbarHairline.getHeight();
+            int hairlineHeight =
+                    ChromeFeatureList.sAndroidApb144Patch4.isEnabled()
+                            ? mToolbarHairline.getHeight()
+                            : 0;
             // TODO(https://crbug.com/471284846): Default position should be TOP instead of NONE on
             // large form factors.
             if (toolbarPosition == ControlsPosition.TOP
