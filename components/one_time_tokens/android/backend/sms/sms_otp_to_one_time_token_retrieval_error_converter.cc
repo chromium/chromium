@@ -4,6 +4,7 @@
 
 #include "components/one_time_tokens/android/backend/sms/sms_otp_to_one_time_token_retrieval_error_converter.h"
 
+#include "base/notreached.h"
 #include "components/one_time_tokens/android/backend/sms/sms_otp_retrieval_api_error_codes.h"
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
 
@@ -25,6 +26,9 @@ OneTimeTokenRetrievalError ConvertSmsOtpRetrievalApiErrorCode(
       return OneTimeTokenRetrievalError::kSmsOtpBackendApiNotAvailable;
     case SmsOtpRetrievalApiErrorCode::kUserPermissionRequired:
       return OneTimeTokenRetrievalError::kSmsOtpBackendUserPermissionRequired;
+    default:
+      // TODO(crbug.com/493648142) REMOVE THIS ONCE FIXED.
+      return OneTimeTokenRetrievalError::kUnknown;
   }
   // LINT.ThenChange(//components/one_time_tokens/core/browser/one_time_token_retrieval_error.h)
 }
