@@ -322,17 +322,6 @@ void TabAndroid::SetMediaState(int media_state) {
   Java_TabImpl_setMediaState(env, GetJavaObject(env), media_state);
 }
 
-void TabAndroid::SetTabInterfaceAndroid(
-    base::PassKey<TabInterfaceAndroid>,
-    TabInterfaceAndroid* tab_interface_android) {
-  if (tab_interface_android_) {
-    CHECK(!tab_interface_android);
-  } else {
-    CHECK(tab_interface_android);
-  }
-  tab_interface_android_ = tab_interface_android;
-}
-
 void TabAndroid::ResetParentCollection(base::PassKey<TabInterfaceAndroid>) {
   parent_collection_ = nullptr;
 }

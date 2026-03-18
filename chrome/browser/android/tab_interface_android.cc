@@ -9,10 +9,7 @@
 #include "components/tabs/public/tab_interface.h"
 
 TabInterfaceAndroid::TabInterfaceAndroid(TabAndroid* tab_android)
-    : weak_tab_android_(tab_android->GetTabAndroidWeakPtr()) {
-  tab_android->SetTabInterfaceAndroid(base::PassKey<TabInterfaceAndroid>(),
-                                      this);
-}
+    : weak_tab_android_(tab_android->GetTabAndroidWeakPtr()) {}
 
 TabInterfaceAndroid::~TabInterfaceAndroid() {
   // When `this` is destroyed we should reset the connection to the parent
@@ -20,8 +17,6 @@ TabInterfaceAndroid::~TabInterfaceAndroid() {
   if (weak_tab_android_) {
     weak_tab_android_->ResetParentCollection(
         base::PassKey<TabInterfaceAndroid>());
-    weak_tab_android_->SetTabInterfaceAndroid(
-        base::PassKey<TabInterfaceAndroid>(), nullptr);
   }
 }
 
