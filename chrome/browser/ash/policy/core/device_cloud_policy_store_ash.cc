@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -21,7 +22,6 @@
 #include "chrome/browser/ash/policy/dev_mode/dev_mode_policy_util.h"
 #include "chrome/browser/ash/policy/value_validation/onc_device_policy_value_validator.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/dbus/constants/dbus_paths.h"
 #include "components/ownership/owner_key_util.h"
@@ -49,7 +49,7 @@ bool CanUseDeviceIdValidation() {
   // validation now.
   auto* local_state = g_browser_process->local_state();
   return local_state &&
-         !local_state->GetString(prefs::kEnrollmentVersionOS).empty();
+         !local_state->GetString(ash::prefs::kEnrollmentVersionOS).empty();
 }
 
 }  // namespace

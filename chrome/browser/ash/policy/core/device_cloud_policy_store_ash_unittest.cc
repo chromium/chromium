@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
@@ -17,7 +18,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "chrome/browser/ash/settings/device_settings_test_helper.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/device_management/fake_install_attributes_client.h"
@@ -311,7 +311,7 @@ TEST_F(DeviceCloudPolicyStoreAshTest, StorePolicyBadDomain) {
 
 TEST_F(DeviceCloudPolicyStoreAshTest, StoreDeviceIdValidationEnabled) {
   TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetManagedPref(
-      prefs::kEnrollmentVersionOS, base::Value("128"));
+      ash::prefs::kEnrollmentVersionOS, base::Value("128"));
   PrepareExistingPolicy();
 
   // Set the device_id created by the policy generator. Expected to be valid.
@@ -329,7 +329,7 @@ TEST_F(DeviceCloudPolicyStoreAshTest, StoreDeviceIdValidationEnabled) {
 
 TEST_F(DeviceCloudPolicyStoreAshTest, StoreDeviceIdValidationEnabledError) {
   TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetManagedPref(
-      prefs::kEnrollmentVersionOS, base::Value("128"));
+      ash::prefs::kEnrollmentVersionOS, base::Value("128"));
   PrepareExistingPolicy();
 
   device_policy_->policy_data().mutable_device_id()->assign("bad-device-id");

@@ -7,6 +7,7 @@
 #include <optional>
 #include <utility>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/base64.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -32,7 +33,6 @@
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_state_keys_broker.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/attestation/attestation_features.h"
 #include "chromeos/ash/components/attestation/attestation_flow.h"
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"
@@ -130,14 +130,14 @@ em::DeviceRegisterRequest::Flavor EnrollmentModeToRegistrationFlavor(
   }
 }
 
-// Returns the PSM protocol execution result if prefs::kEnrollmentPsmResult is
-// set, and its value is within the
+// Returns the PSM protocol execution result if ash::prefs::kEnrollmentPsmResult
+// is set, and its value is within the
 // em::DeviceRegisterRequest::PsmExecutionResult enum range. Otherwise,
 // std::nullopt.
 std::optional<PsmExecutionResult> GetPsmExecutionResult(
     const PrefService& local_state) {
   const PrefService::Preference* has_psm_execution_result_pref =
-      local_state.FindPreference(prefs::kEnrollmentPsmResult);
+      local_state.FindPreference(ash::prefs::kEnrollmentPsmResult);
 
   if (!has_psm_execution_result_pref ||
       has_psm_execution_result_pref->IsDefaultValue() ||
@@ -160,11 +160,11 @@ std::optional<PsmExecutionResult> GetPsmExecutionResult(
 }
 
 // Returns the PSM determination timestamp in ms if
-// prefs::kEnrollmentPsmDeterminationTime is set. Otherwise, std::nullopt.
+// ash::prefs::kEnrollmentPsmDeterminationTime is set. Otherwise, std::nullopt.
 std::optional<int64_t> GetPsmDeterminationTimestamp(
     const PrefService& local_state) {
   const PrefService::Preference* has_psm_determination_timestamp_pref =
-      local_state.FindPreference(prefs::kEnrollmentPsmDeterminationTime);
+      local_state.FindPreference(ash::prefs::kEnrollmentPsmDeterminationTime);
 
   if (!has_psm_determination_timestamp_pref ||
       has_psm_determination_timestamp_pref->IsDefaultValue()) {
@@ -172,7 +172,7 @@ std::optional<int64_t> GetPsmDeterminationTimestamp(
   }
 
   const base::Time psm_determination_timestamp =
-      local_state.GetTime(prefs::kEnrollmentPsmDeterminationTime);
+      local_state.GetTime(ash::prefs::kEnrollmentPsmDeterminationTime);
 
   // The PSM determination timestamp should exist at this stage. Because
   // we already checked the existence of the pref with non-default value.
@@ -714,9 +714,9 @@ void EnrollmentHandler::StartStoreRobotAuth() {
 void EnrollmentHandler::StoreVersion() {
   DCHECK_EQ(STEP_STORE_VERSION, enrollment_step_);
   PrefService* prefs = g_browser_process->local_state();
-  prefs->SetString(prefs::kEnrollmentVersionOS,
+  prefs->SetString(ash::prefs::kEnrollmentVersionOS,
                    base::SysInfo::OperatingSystemVersion());
-  prefs->SetString(prefs::kEnrollmentVersionBrowser,
+  prefs->SetString(ash::prefs::kEnrollmentVersionBrowser,
                    version_info::GetVersionNumber());
   prefs->CommitPendingWrite();
 

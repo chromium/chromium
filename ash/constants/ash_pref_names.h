@@ -3360,6 +3360,53 @@ inline constexpr char kUserPrintersAllowed[] =
     "native_printing.user_native_printers_allowed";
 
 //-----------------------------------------------------------------------------
+// Enrollment related Prefs
+//-----------------------------------------------------------------------------
+
+// Whether to automatically start the enterprise enrollment step during OOBE.
+inline constexpr char kDeviceEnrollmentAutoStart[] = "enrollment.auto_start";
+
+// Whether the user may exit enrollment.
+inline constexpr char kDeviceEnrollmentCanExit[] = "enrollment.can_exit";
+
+// Device requisition for enterprise enrollment.
+inline constexpr char kDeviceEnrollmentRequisition[] =
+    "enrollment.device_requisition";
+
+// Sub organization for enterprise enrollment.
+inline constexpr char kDeviceEnrollmentSubOrganization[] =
+    "enrollment.sub_organization";
+
+// A boolean pref of the device registered flag (second part after first login).
+inline constexpr char kDeviceRegistered[] = "DeviceRegistered";
+
+// An integer pref. Its valid values are defined in
+// enterprise_management::DeviceRegisterRequest::PsmExecutionResult enum which
+// indicates all possible PSM execution results in the Chrome OS enrollment
+// flow.
+inline constexpr char kEnrollmentPsmResult[] = "EnrollmentPsmResult";
+
+// An int64 pref to record the timestamp of PSM retrieving the device's
+// determination successfully in the Chrome OS enrollment flow.
+inline constexpr char kEnrollmentPsmDeterminationTime[] =
+    "EnrollmentPsmDeterminationTime";
+
+// Boolean pref to signal corrupted enrollment to force the device through
+// enrollment recovery flow upon next boot.
+inline constexpr char kEnrollmentRecoveryRequired[] =
+    "EnrollmentRecoveryRequired";
+
+// String pref with the data about the OS version and browser version at the
+// time of enrollment. The format is established by release management team.
+// The Chrome OS version format is
+// [Milestone.]TIP_BUILD.BRANCH_BUILD.BRANCH_BRANCH_BUILD.
+// Example: 15711.0.0
+// For browser version the format is MAJOR.MINOR.BRANCH.BUILD.
+// Example: 122.0.6252.0
+inline constexpr char kEnrollmentVersionOS[] = "EnrollmentVersionOS";
+inline constexpr char kEnrollmentVersionBrowser[] = "EnrollmentVersionBrowser";
+
+//-----------------------------------------------------------------------------
 // Child account related Prefs
 //-----------------------------------------------------------------------------
 

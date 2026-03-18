@@ -8,6 +8,7 @@
 #include <string>
 #include <string_view>
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/logging.h"
@@ -108,14 +109,14 @@ EnrollmentConfig GetPrescribedRecoveryConfig(
   // Regardless what mode is applicable, the enrollment domain is fixed.
   recovery_config.management_domain = install_attributes.GetDomain();
 
-  if (!local_state->GetBoolean(prefs::kEnrollmentRecoveryRequired)) {
+  if (!local_state->GetBoolean(ash::prefs::kEnrollmentRecoveryRequired)) {
     return recovery_config;
   }
 
   if (ash::DeviceSettingsService::IsInitialized() &&
       ash::DeviceSettingsService::Get()->HasDmToken()) {
     LOG(WARNING) << "False recovery flag.";
-    local_state->ClearPref(::prefs::kEnrollmentRecoveryRequired);
+    local_state->ClearPref(ash::prefs::kEnrollmentRecoveryRequired);
     return recovery_config;
   }
 
@@ -260,14 +261,14 @@ EnrollmentConfig::PrescribedConfig::GetPrescribedConfig(
   }
 
   const bool pref_enrollment_auto_start_present =
-      local_state->HasPrefPath(prefs::kDeviceEnrollmentAutoStart);
+      local_state->HasPrefPath(ash::prefs::kDeviceEnrollmentAutoStart);
   const bool pref_enrollment_auto_start =
-      local_state->GetBoolean(prefs::kDeviceEnrollmentAutoStart);
+      local_state->GetBoolean(ash::prefs::kDeviceEnrollmentAutoStart);
 
   const bool pref_enrollment_can_exit_present =
-      local_state->HasPrefPath(prefs::kDeviceEnrollmentCanExit);
+      local_state->HasPrefPath(ash::prefs::kDeviceEnrollmentCanExit);
   const bool pref_enrollment_can_exit =
-      local_state->GetBoolean(prefs::kDeviceEnrollmentCanExit);
+      local_state->GetBoolean(ash::prefs::kDeviceEnrollmentCanExit);
 
   if (pref_enrollment_auto_start_present && pref_enrollment_auto_start &&
       pref_enrollment_can_exit_present && !pref_enrollment_can_exit) {

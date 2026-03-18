@@ -11,6 +11,7 @@
 #include <tuple>
 #include <variant>
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
@@ -153,7 +154,7 @@ struct DeterminationContext {
 };
 
 void StorePsmError(PrefService* local_state) {
-  local_state->SetInteger(prefs::kEnrollmentPsmResult,
+  local_state->SetInteger(ash::prefs::kEnrollmentPsmResult,
                           em::DeviceRegisterRequest::PSM_RESULT_ERROR);
 }
 
@@ -452,24 +453,24 @@ class RlweQuery {
   }
 
   void StoreResponse(PrefService* local_state, bool is_member) {
-    local_state->SetTime(prefs::kEnrollmentPsmDeterminationTime,
+    local_state->SetTime(ash::prefs::kEnrollmentPsmDeterminationTime,
                          base::Time::Now());
     local_state->SetInteger(
-        prefs::kEnrollmentPsmResult,
+        ash::prefs::kEnrollmentPsmResult,
         is_member
             ? em::DeviceRegisterRequest::PSM_RESULT_SUCCESSFUL_WITH_STATE
             : em::DeviceRegisterRequest::PSM_RESULT_SUCCESSFUL_WITHOUT_STATE);
   }
 
   void MarkResultIgnoredForTokenBasedEnrollment(PrefService* local_state) {
-    local_state->SetTime(prefs::kEnrollmentPsmDeterminationTime,
+    local_state->SetTime(ash::prefs::kEnrollmentPsmDeterminationTime,
                          base::Time::Now());
     // TODO(b/331285209): Consider changing name of
     // PSM_SKIPPED_FOR_FLEX_AUTO_ENROLLMENT (unlikely since it's in a shared
     // proto), or adding a new value, to remove "Flex" from the name, and
     // change "skipped" to "ignored", as "skipped" isn't entirely accurate here.
     local_state->SetInteger(
-        prefs::kEnrollmentPsmResult,
+        ash::prefs::kEnrollmentPsmResult,
         em::DeviceRegisterRequest::PSM_SKIPPED_FOR_FLEX_AUTO_ENROLLMENT);
   }
 
@@ -1081,8 +1082,8 @@ std::unique_ptr<EnrollmentStateFetcher> EnrollmentStateFetcher::Create(
 
 // static
 void EnrollmentStateFetcher::RegisterPrefs(PrefRegistrySimple* registry) {
-  registry->RegisterIntegerPref(prefs::kEnrollmentPsmResult, -1);
-  registry->RegisterTimePref(prefs::kEnrollmentPsmDeterminationTime,
+  registry->RegisterIntegerPref(ash::prefs::kEnrollmentPsmResult, -1);
+  registry->RegisterTimePref(ash::prefs::kEnrollmentPsmDeterminationTime,
                              base::Time());
 }
 

@@ -191,7 +191,7 @@ class POLICY_EXPORT CloudPolicyClient {
     // PSM protocol execution result. Its value will exist if the device
     // undergoes enrollment and a PSM server-backed state determination was
     // performed before (on Chrome OS, as encoded in the
-    // `prefs::kEnrollmentPsmResult` pref).
+    // `ash::prefs::kEnrollmentPsmResult` pref).
     std::optional<
         enterprise_management::DeviceRegisterRequest::PsmExecutionResult>
         psm_execution_result;
@@ -199,7 +199,7 @@ class POLICY_EXPORT CloudPolicyClient {
     // The following field is relevant only to Chrome OS.
     // PSM protocol determination timestamp. Its value will exist if the device
     // undergoes enrollment and PSM got executed successfully (on ChromeOS, as
-    // encoded in `prefs::kEnrollmentPsmDeterminationTime` pref).
+    // encoded in `ash::prefs::kEnrollmentPsmDeterminationTime` pref).
     std::optional<int64_t> psm_determination_timestamp;
 
     // The following field is relevant only to Chrome OS Demo Mode.

@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "ash/constants/ash_paths.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
@@ -113,17 +114,17 @@ void DeviceStateMixin::SetUpLocalState() {
     case DeviceStateMixin::State::OOBE_COMPLETED_CONSUMER_OWNED:
     case DeviceStateMixin::State::OOBE_COMPLETED_DEMO_MODE:
       local_state->SetBoolean(prefs::kOobeComplete, true);
-      local_state->SetInteger(::prefs::kDeviceRegistered, 1);
-      local_state->SetBoolean(::prefs::kEnrollmentRecoveryRequired, false);
+      local_state->SetInteger(ash::prefs::kDeviceRegistered, 1);
+      local_state->SetBoolean(ash::prefs::kEnrollmentRecoveryRequired, false);
       break;
     case DeviceStateMixin::State::OOBE_COMPLETED_UNOWNED:
     case DeviceStateMixin::State::OOBE_COMPLETED_PERMANENTLY_UNOWNED:
       local_state->SetBoolean(prefs::kOobeComplete, true);
-      local_state->SetInteger(::prefs::kDeviceRegistered, 0);
-      local_state->SetBoolean(::prefs::kEnrollmentRecoveryRequired, false);
+      local_state->SetInteger(ash::prefs::kDeviceRegistered, 0);
+      local_state->SetBoolean(ash::prefs::kEnrollmentRecoveryRequired, false);
       break;
     case DeviceStateMixin::State::BEFORE_OOBE:
-      local_state->SetInteger(::prefs::kDeviceRegistered, 0);
+      local_state->SetInteger(ash::prefs::kDeviceRegistered, 0);
       break;
   }
 }

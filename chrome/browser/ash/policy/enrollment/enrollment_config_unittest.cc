@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/strings/stringprintf.h"
@@ -202,7 +203,7 @@ TEST_F(EnrollmentConfigTest, GetPrescribedEnrollmentConfigDuringOOBE) {
   // verify the pref configuration results in the expect behavior on its own.
   statistics_provider_.ClearMachineFlag(
       ash::system::kOemIsEnterpriseManagedKey);
-  local_state_.SetBoolean(prefs::kDeviceEnrollmentAutoStart, true);
+  local_state_.SetBoolean(ash::prefs::kDeviceEnrollmentAutoStart, true);
   {
     const auto config = GetPrescribedConfig();
     EXPECT_EQ(EnrollmentConfig::MODE_LOCAL_ADVERTISED, config.mode);
@@ -243,7 +244,7 @@ TEST_F(EnrollmentConfigTest, GetPrescribedEnrollmentConfigDuringOOBE) {
   // pref configuration results in the expect behavior on its own.
   statistics_provider_.ClearMachineFlag(
       ash::system::kOemIsEnterpriseManagedKey);
-  local_state_.SetBoolean(prefs::kDeviceEnrollmentCanExit, false);
+  local_state_.SetBoolean(ash::prefs::kDeviceEnrollmentCanExit, false);
   {
     const auto config = GetPrescribedConfig();
     EXPECT_EQ(EnrollmentConfig::MODE_LOCAL_FORCED, config.mode);
@@ -352,7 +353,7 @@ TEST_F(EnrollmentConfigTest, GetPrescribedEnrollmentConfigAfterOOBE) {
   }
 
   // Advertised enrollment gets ignored.
-  local_state_.SetBoolean(prefs::kDeviceEnrollmentAutoStart, true);
+  local_state_.SetBoolean(ash::prefs::kDeviceEnrollmentAutoStart, true);
   statistics_provider_.SetMachineFlag(ash::system::kOemIsEnterpriseManagedKey,
                                       true);
   {
@@ -373,7 +374,7 @@ TEST_F(EnrollmentConfigTest, GetPrescribedEnrollmentConfigAfterOOBE) {
   }
 
   // If enrollment recovery is on, this is signaled in |config.mode|.
-  local_state_.SetBoolean(prefs::kEnrollmentRecoveryRequired, true);
+  local_state_.SetBoolean(ash::prefs::kEnrollmentRecoveryRequired, true);
   {
     const auto config = GetPrescribedConfig();
     EXPECT_EQ(EnrollmentConfig::MODE_RECOVERY, config.mode);

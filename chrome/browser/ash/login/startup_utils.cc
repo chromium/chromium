@@ -107,8 +107,8 @@ void StartupUtils::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kOobeComplete, false);
   registry->RegisterStringPref(prefs::kOobeScreenPending, "");
   registry->RegisterTimePref(prefs::kOobeStartTime, base::Time());
-  registry->RegisterIntegerPref(::prefs::kDeviceRegistered, -1);
-  registry->RegisterBooleanPref(::prefs::kEnrollmentRecoveryRequired, false);
+  registry->RegisterIntegerPref(ash::prefs::kDeviceRegistered, -1);
+  registry->RegisterBooleanPref(ash::prefs::kEnrollmentRecoveryRequired, false);
   registry->RegisterStringPref(::prefs::kInitialLocale, "en-US");
   registry->RegisterBooleanPref(kDisableHIDDetectionScreenForTests, false);
   registry->RegisterBooleanPref(prefs::kOobeGuestMetricsEnabled, false);
@@ -210,7 +210,7 @@ void StartupUtils::MarkOobeCompleted() {
   SaveBoolPreferenceForced(prefs::kOobeComplete, true);
 
   // Successful enrollment implies that recovery is not required.
-  SaveBoolPreferenceForced(::prefs::kEnrollmentRecoveryRequired, false);
+  SaveBoolPreferenceForced(ash::prefs::kEnrollmentRecoveryRequired, false);
 
   // If `kOobeComplete` is already true, the `kAutoEnrollmentCheckExited` pref
   // is no longer needed as its purpose is to potentially block OOBE completion.
@@ -247,8 +247,8 @@ base::TimeDelta StartupUtils::GetTimeSinceOobeFlagFileCreation() {
 
 // static
 bool StartupUtils::IsDeviceRegistered() {
-  int value =
-      g_browser_process->local_state()->GetInteger(::prefs::kDeviceRegistered);
+  int value = g_browser_process->local_state()->GetInteger(
+      ash::prefs::kDeviceRegistered);
   if (value > 0) {
     // Recreate flag file in case it was lost.
     base::ThreadPool::PostTask(
@@ -263,7 +263,7 @@ bool StartupUtils::IsDeviceRegistered() {
     base::ScopedAllowBlocking allow_blocking;
     const base::FilePath oobe_complete_flag_path = GetOobeCompleteFlagPath();
     bool file_exists = base::PathExists(oobe_complete_flag_path);
-    SaveIntegerPreferenceForced(::prefs::kDeviceRegistered,
+    SaveIntegerPreferenceForced(ash::prefs::kDeviceRegistered,
                                 file_exists ? 1 : 0);
     return file_exists;
   }
@@ -282,7 +282,7 @@ void StartupUtils::ClearSpecificOobePrefs() {
 
 // static
 void StartupUtils::MarkDeviceRegistered(base::OnceClosure done_callback) {
-  SaveIntegerPreferenceForced(::prefs::kDeviceRegistered, 1);
+  SaveIntegerPreferenceForced(ash::prefs::kDeviceRegistered, 1);
 
   auto* host = LoginDisplayHost::default_host();
   if (host) {
@@ -309,7 +309,7 @@ void StartupUtils::MarkDeviceRegistered(base::OnceClosure done_callback) {
 
 // static
 void StartupUtils::MarkEnrollmentRecoveryRequired() {
-  SaveBoolPreferenceForced(::prefs::kEnrollmentRecoveryRequired, true);
+  SaveBoolPreferenceForced(ash::prefs::kEnrollmentRecoveryRequired, true);
 }
 
 // static

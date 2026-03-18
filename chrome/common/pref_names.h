@@ -2529,17 +2529,6 @@ inline constexpr char kSameOriginTabCaptureAllowedByOrigins[] =
 // "xkb:us::eng".
 inline constexpr char kHardwareKeyboardLayout[] = "intl.hardware_keyboard";
 
-// An integer pref. Its valid values are defined in
-// enterprise_management::DeviceRegisterRequest::PsmExecutionResult enum which
-// indicates all possible PSM execution results in the Chrome OS enrollment
-// flow.
-inline constexpr char kEnrollmentPsmResult[] = "EnrollmentPsmResult";
-
-// An int64 pref to record the timestamp of PSM retrieving the device's
-// determination successfully in the Chrome OS enrollment flow.
-inline constexpr char kEnrollmentPsmDeterminationTime[] =
-    "EnrollmentPsmDeterminationTime";
-
 // The local state pref that stores device activity times before reporting
 // them to the policy server.
 inline constexpr char kDeviceActivityTimes[] = "device_status.activity_times";
@@ -2574,40 +2563,8 @@ inline constexpr char kDeviceRobotAnyApiRefreshTokenV2[] =
 inline constexpr char kDeviceRefreshTokenAnyApiIsV3Used[] =
     "device_refresh_token_is_v3_used.any-api";
 
-// Device requisition for enterprise enrollment.
-inline constexpr char kDeviceEnrollmentRequisition[] =
-    "enrollment.device_requisition";
-
-// Sub organization for enterprise enrollment.
-inline constexpr char kDeviceEnrollmentSubOrganization[] =
-    "enrollment.sub_organization";
-
-// Whether to automatically start the enterprise enrollment step during OOBE.
-inline constexpr char kDeviceEnrollmentAutoStart[] = "enrollment.auto_start";
-
-// Whether the user may exit enrollment.
-inline constexpr char kDeviceEnrollmentCanExit[] = "enrollment.can_exit";
-
 // A string pref with initial locale set in VPD or manifest.
 inline constexpr char kInitialLocale[] = "intl.initial_locale";
-
-// A boolean pref of the device registered flag (second part after first login).
-inline constexpr char kDeviceRegistered[] = "DeviceRegistered";
-
-// Boolean pref to signal corrupted enrollment to force the device through
-// enrollment recovery flow upon next boot.
-inline constexpr char kEnrollmentRecoveryRequired[] =
-    "EnrollmentRecoveryRequired";
-
-// String pref with the data about the OS version and browser version at the
-// time of enrollment. The format is established by release management team.
-// The Chrome OS version format is
-// [Milestone.]TIP_BUILD.BRANCH_BUILD.BRANCH_BRANCH_BUILD.
-// Example: 15711.0.0
-// For browser version the format is MAJOR.MINOR.BRANCH.BUILD.
-// Example: 122.0.6252.0
-inline constexpr char kEnrollmentVersionOS[] = "EnrollmentVersionOS";
-inline constexpr char kEnrollmentVersionBrowser[] = "EnrollmentVersionBrowser";
 
 // Pref name for whether we should show the Getting Started module in the Help
 // app.

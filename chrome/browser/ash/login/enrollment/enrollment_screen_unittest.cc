@@ -10,6 +10,7 @@
 #include <string>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -38,7 +39,6 @@
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/ui/ash/login/fake_login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/online_login_utils.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
@@ -463,7 +463,7 @@ TEST_P(EnrollmentScreenManualFlowTest, ShouldFinishEnrollmentScreen) {
   ShowEnrollmentScreen();
 
   EXPECT_EQ(last_screen_result(), EnrollmentScreen::Result::COMPLETED);
-  EXPECT_EQ(local_state().GetInteger(prefs::kDeviceRegistered), 1);
+  EXPECT_EQ(local_state().GetInteger(ash::prefs::kDeviceRegistered), 1);
 }
 
 TEST_P(EnrollmentScreenManualFlowTest, OobeConfigSkipEnrollmentSuccessScreen) {
@@ -481,7 +481,7 @@ TEST_P(EnrollmentScreenManualFlowTest, OobeConfigSkipEnrollmentSuccessScreen) {
   ShowEnrollmentScreen();
 
   EXPECT_EQ(last_screen_result(), EnrollmentScreen::Result::COMPLETED);
-  EXPECT_EQ(local_state().GetInteger(prefs::kDeviceRegistered), 1);
+  EXPECT_EQ(local_state().GetInteger(ash::prefs::kDeviceRegistered), 1);
 }
 
 TEST_P(EnrollmentScreenManualFlowTest, ShouldNotAutomaticallyRetryEnrollment) {
@@ -532,7 +532,7 @@ TEST_P(EnrollmentScreenManualFlowTest, ShouldRetryEnrollmentOnUserAction) {
 
   EXPECT_EQ(GetEnrollmentScreenRetries(), 1);
   EXPECT_EQ(last_screen_result(), EnrollmentScreen::Result::COMPLETED);
-  EXPECT_EQ(local_state().GetInteger(prefs::kDeviceRegistered), 1);
+  EXPECT_EQ(local_state().GetInteger(ash::prefs::kDeviceRegistered), 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -736,7 +736,7 @@ TEST_P(EnrollmentScreenAttestationFlowTest, ShouldFinishEnrollmentScreen) {
   ShowEnrollmentScreen();
 
   EXPECT_EQ(last_screen_result(), EnrollmentScreen::Result::COMPLETED);
-  EXPECT_EQ(local_state().GetInteger(prefs::kDeviceRegistered), 1);
+  EXPECT_EQ(local_state().GetInteger(ash::prefs::kDeviceRegistered), 1);
 }
 
 TEST_P(EnrollmentScreenAttestationFlowTest,
@@ -788,7 +788,7 @@ TEST_P(EnrollmentScreenAttestationFlowTest, ShouldRetryEnrollmentOnUserAction) {
 
   EXPECT_EQ(GetEnrollmentScreenRetries(), 1);
   EXPECT_EQ(last_screen_result(), EnrollmentScreen::Result::COMPLETED);
-  EXPECT_EQ(local_state().GetInteger(prefs::kDeviceRegistered), 1);
+  EXPECT_EQ(local_state().GetInteger(ash::prefs::kDeviceRegistered), 1);
 }
 
 // The add user flow is expected to only affect the manual enrollment.
@@ -863,7 +863,7 @@ TEST_P(EnrollmentScreenAttestationFlowWithManualFallbackTest,
   ShowEnrollmentScreen();
 
   EXPECT_EQ(last_screen_result(), EnrollmentScreen::Result::COMPLETED);
-  EXPECT_EQ(local_state().GetInteger(prefs::kDeviceRegistered), 1);
+  EXPECT_EQ(local_state().GetInteger(ash::prefs::kDeviceRegistered), 1);
 }
 
 TEST_P(EnrollmentScreenAttestationFlowWithManualFallbackTest,
@@ -900,7 +900,7 @@ TEST_P(EnrollmentScreenAttestationFlowWithManualFallbackTest,
   UserCancel();
 
   EXPECT_EQ(last_screen_result(), EnrollmentScreen::Result::COMPLETED);
-  EXPECT_EQ(local_state().GetInteger(prefs::kDeviceRegistered), 1);
+  EXPECT_EQ(local_state().GetInteger(ash::prefs::kDeviceRegistered), 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(

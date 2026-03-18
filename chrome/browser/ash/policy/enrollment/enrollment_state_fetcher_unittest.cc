@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "base/functional/bind.h"
 #include "base/i18n/time_formatting.h"
@@ -357,12 +358,13 @@ TEST_F(EnrollmentStateFetcherTest, RegisterPrefs) {
   ASSERT_TRUE(defaults->GetValue(prefs::kServerBackedDeviceState, &value));
   ASSERT_TRUE(value->is_dict());
   EXPECT_TRUE(value->GetDict().empty());
-  ASSERT_TRUE(defaults->GetValue(prefs::kEnrollmentPsmResult, &value));
+  ASSERT_TRUE(defaults->GetValue(ash::prefs::kEnrollmentPsmResult, &value));
   EXPECT_EQ(value->GetInt(), -1);
   ASSERT_TRUE(
-      defaults->GetValue(prefs::kEnrollmentPsmDeterminationTime, &value));
+      defaults->GetValue(ash::prefs::kEnrollmentPsmDeterminationTime, &value));
   EXPECT_EQ(value->GetString(), "0");
-  ASSERT_TRUE(defaults->GetValue(prefs::kEnrollmentRecoveryRequired, &value));
+  ASSERT_TRUE(
+      defaults->GetValue(ash::prefs::kEnrollmentRecoveryRequired, &value));
   EXPECT_EQ(value->GetBool(), false);
 }
 

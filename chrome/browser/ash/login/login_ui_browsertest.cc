@@ -38,7 +38,6 @@
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/welcome_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/debug_daemon/fake_debug_daemon_client.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
@@ -69,8 +68,8 @@ class InterruptedAutoStartEnrollmentTest : public OobeBaseTest,
   void SetUpLocalState() override {
     StartupUtils::MarkOobeCompleted();
     PrefService* prefs = g_browser_process->local_state();
-    prefs->SetBoolean(::prefs::kDeviceEnrollmentAutoStart, true);
-    prefs->SetBoolean(::prefs::kDeviceEnrollmentCanExit, false);
+    prefs->SetBoolean(ash::prefs::kDeviceEnrollmentAutoStart, true);
+    prefs->SetBoolean(ash::prefs::kDeviceEnrollmentCanExit, false);
   }
 
  private:

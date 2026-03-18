@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/check_is_test.h"
@@ -18,7 +19,6 @@
 #include "chrome/browser/ash/policy/off_hours/device_off_hours_controller.h"
 #include "chrome/browser/ash/policy/off_hours/off_hours_policy_applier.h"
 #include "chrome/browser/ash/settings/session_manager_operation.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "components/ownership/owner_key_util.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -70,7 +70,7 @@ void RecordDeviceIdValidityMetric(PrefService* local_state,
   // before that don't have the pref on local state.
   const bool is_old_enrollment =
       !local_state ||
-      local_state->GetString(prefs::kEnrollmentVersionOS).empty();
+      local_state->GetString(ash::prefs::kEnrollmentVersionOS).empty();
 
   const char* histogram_name;
   if (is_demo_mode) {
