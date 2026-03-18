@@ -325,8 +325,18 @@ bool OpenXrSpatialPlaneManager::GetPolygonFromBuffer(
     XrSpatialSnapshotEXT snapshot,
     const XrSpatialPolygon2DDataEXT& polygon_data,
     mojom::XRPlaneDataPtr& plane_data) const {
+  // There is currently a runtime error where some runtimes may report the
+  // presence of a polygon, but not actually have populated the buffer yet.
+  // Before querying for the spatial buffer, ensure we have a valid buffer id.
+  if (polygon_data.vertexBuffer.bufferId == XR_NULL_SPATIAL_BUFFER_ID_EXT) {
+    DLOG(ERROR) << __func__
+                << " Runtime reported polygon, but returned invalid buffer id";
+    return false;
+  }
+
   XrSpatialBufferGetInfoEXT buffer_info{XR_TYPE_SPATIAL_BUFFER_GET_INFO_EXT};
   buffer_info.bufferId = polygon_data.vertexBuffer.bufferId;
+
   uint32_t buffer_count_output = 0;
   if (XR_FAILED(
           extension_helper_->ExtensionMethods().xrGetSpatialBufferVector2fEXT(
