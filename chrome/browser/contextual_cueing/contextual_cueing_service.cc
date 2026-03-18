@@ -27,6 +27,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/network_anonymization_key.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
@@ -137,6 +138,7 @@ ContextualCueingService::ContextualCueingService(
         page_content_extraction_service,
     OptimizationGuideKeyedService* optimization_guide_keyed_service,
     predictors::LoadingPredictor* loading_predictor,
+    signin::IdentityManager* identity_manager,
     PrefService* pref_service,
     TemplateURLService* template_url_service)
     : recent_nudge_tracker_(kNudgeCapCount.Get(), kNudgeCapTime.Get()),
@@ -146,6 +148,7 @@ ContextualCueingService::ContextualCueingService(
       loading_predictor_(loading_predictor),
       pref_service_(pref_service),
       template_url_service_(template_url_service),
+      identity_manager_(identity_manager),
       mes_url_(optimization_guide::switches::GetModelExecutionServiceURL()) {
   if (optimization_guide_keyed_service_ && IsZeroStateSuggestionsEnabled()) {
     optimization_guide_keyed_service_->RegisterOptimizationTypes(
@@ -375,8 +378,8 @@ ContextualCueingService::MakeZeroStateSuggestionsRequest(
   }
 
   return std::make_unique<ZeroStateSuggestionsRequest>(
-      optimization_guide_keyed_service_, request_proto, web_contents_list,
-      focused_tab);
+      optimization_guide_keyed_service_, identity_manager_, request_proto,
+      web_contents_list, focused_tab);
 }
 
 void ContextualCueingService::
