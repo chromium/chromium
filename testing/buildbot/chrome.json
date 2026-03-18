@@ -372,6 +372,7 @@
           "libfake"
         ],
         "autotest_name": "chromium",
+        "ci_only": true,
         "cros_board": "betty",
         "dut_pool": "vmlab",
         "experiment_percentage": 100,
@@ -645,6 +646,7 @@
           "--gtest_filter=\"VaapiTest.*\""
         ],
         "autotest_name": "chromium",
+        "ci_only": true,
         "cros_board": "betty",
         "dut_pool": "vmlab",
         "experiment_percentage": 100,
@@ -873,6 +875,7 @@
           "libfake"
         ],
         "autotest_name": "chromium",
+        "ci_only": true,
         "cros_board": "betty",
         "dut_pool": "vmlab",
         "experiment_percentage": 100,
@@ -1146,6 +1149,7 @@
           "--gtest_filter=\"VaapiTest.*\""
         ],
         "autotest_name": "chromium",
+        "ci_only": true,
         "cros_board": "betty",
         "dut_pool": "vmlab",
         "experiment_percentage": 100,
@@ -1546,6 +1550,7 @@
           "libfake"
         ],
         "autotest_name": "chromium",
+        "ci_only": true,
         "cros_board": "betty",
         "dut_pool": "vmlab",
         "experiment_percentage": 100,
@@ -1819,6 +1824,7 @@
           "--gtest_filter=\"VaapiTest.*\""
         ],
         "autotest_name": "chromium",
+        "ci_only": true,
         "cros_board": "betty",
         "dut_pool": "vmlab",
         "experiment_percentage": 100,

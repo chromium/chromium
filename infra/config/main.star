@@ -235,6 +235,7 @@ chromium_luci.configure_targets(
             "chrome-swarming-pool": True,
             "chrome-tester-service-account": True,
             "chromeos-betty-finch": True,
+            "ci_only": True,
             "crosier-no-arc": True,
             "experiments": True,
             "gce": True,

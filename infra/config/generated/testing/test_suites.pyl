@@ -2799,6 +2799,7 @@
       },
       'chromeos_system_friendly_gtests_fails_vmlab': {
         'mixins': [
+          'ci_only',
           'experiments',
           'skylab-rdb-gtest',
         ],
@@ -2816,6 +2817,7 @@
       },
       'chromeos_vaapi_gtests': {
         'mixins': [
+          'ci_only',
           'experiments',
           'skylab-rdb-gtest',
         ],
@@ -2893,6 +2895,7 @@
       },
       'chromeos_system_friendly_gtests_fails_vmlab': {
         'mixins': [
+          'ci_only',
           'experiments',
           'skylab-rdb-gtest',
         ],
@@ -2910,6 +2913,7 @@
       },
       'chromeos_vaapi_gtests': {
         'mixins': [
+          'ci_only',
           'experiments',
           'skylab-rdb-gtest',
         ],

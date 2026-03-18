@@ -69,6 +69,7 @@ targets.legacy_matrix_compound_suite(
         "chromeos_system_friendly_gtests_fails_vmlab": targets.legacy_matrix_config(
             # TODO: remove experimentals after stablization.
             mixins = [
+                "ci_only",
                 "experiments",
                 "skylab-rdb-gtest",
             ],
@@ -79,6 +80,7 @@ targets.legacy_matrix_compound_suite(
         "chromeos_vaapi_gtests": targets.legacy_matrix_config(
             # TODO: remove experimentals after stablization.
             mixins = [
+                "ci_only",
                 "experiments",
                 "skylab-rdb-gtest",
             ],
@@ -202,6 +204,7 @@ targets.legacy_matrix_compound_suite(
         "chromeos_system_friendly_gtests_fails_vmlab": targets.legacy_matrix_config(
             # TODO: remove experimentals after stablization.
             mixins = [
+                "ci_only",
                 "experiments",
                 "skylab-rdb-gtest",
             ],
@@ -212,6 +215,7 @@ targets.legacy_matrix_compound_suite(
         "chromeos_vaapi_gtests": targets.legacy_matrix_config(
             # TODO: remove experimentals after stablization.
             mixins = [
+                "ci_only",
                 "experiments",
                 "skylab-rdb-gtest",
             ],
