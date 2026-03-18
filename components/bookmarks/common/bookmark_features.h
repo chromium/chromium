@@ -40,6 +40,11 @@ bool ShouldVerifyBookmarksDataInSecondaryFileOnLoad();
 // When true, encrypted bookmarks should be read / written first.
 bool ShouldUseEncryptedBookmarksAsPrimarySource();
 
+// Based on kEncryptBookmarks and kBookmarkEncryptionStageParam, this function
+// returns true if the clear text bookmarks file should be deleted after a
+// successful load from the encrypted file.
+bool ShouldDeleteClearTextBookmarksFile();
+
 // Flag to enable bookmark encryption. If false, no encryption will be performed
 // on bookmarks. If true, usage of encryption will be determined by
 // kBookmarkEncryptionStageParam.

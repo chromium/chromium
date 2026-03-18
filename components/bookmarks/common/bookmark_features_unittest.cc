@@ -55,6 +55,11 @@ TEST_P(BookmarkFeaturesWithEncryptionTest,
                 IsWriteOnlyEncryptedReadPreferEncryptedStage());
 }
 
+TEST_P(BookmarkFeaturesWithEncryptionTest, ShouldDeleteClearTextBookmarksFile) {
+  EXPECT_EQ(ShouldDeleteClearTextBookmarksFile(),
+            IsWriteOnlyEncryptedReadPreferEncryptedStage());
+}
+
 INSTANTIATE_TEST_SUITE_P(
     BookmarkFeaturesWithEncryptionTest,
     BookmarkFeaturesWithEncryptionTest,

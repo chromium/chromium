@@ -32,6 +32,8 @@ namespace bookmarks {
 
 namespace {
 
+const base::FilePath::CharType kBackupExtension[] = FILE_PATH_LITERAL("bak");
+
 // Loads a JSON file determined by `file_path` and returns its content as a
 // string or an error code if something fails.
 // No kSuccess result is returned in case of success, it is implied by having a
@@ -191,6 +193,29 @@ void OnFileLoaded(
   }
 }
 
+void MaybeCleanUpFiles(StorageFileEncryptionType primary_source_encryption_type,
+                       metrics::StorageFileForUma storage_file_for_uma,
+                       const base::FilePath& clear_text_file_path) {
+  if (!ShouldDeleteClearTextBookmarksFile() ||
+      primary_source_encryption_type == StorageFileEncryptionType::kClearText) {
+    return;
+  }
+
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](metrics::StorageFileForUma storage_file_for_uma,
+             const base::FilePath& clear_text_file_path) {
+            bool deleted =
+                base::DeleteFile(clear_text_file_path) &&
+                base::DeleteFile(
+                    clear_text_file_path.ReplaceExtension(kBackupExtension));
+            metrics::RecordClearTextFileDeletionResult(storage_file_for_uma,
+                                                       deleted);
+          },
+          storage_file_for_uma, clear_text_file_path));
+}
+
 std::unique_ptr<BookmarkLoadDetails> LoadBookmarks(
     const scoped_refptr<base::RefCountedData<const os_crypt_async::Encryptor>>
         encryptor,
@@ -290,6 +315,9 @@ std::unique_ptr<BookmarkLoadDetails> LoadBookmarks(
                 : account_file_path,
             metrics::StorageFileForUma::kAccount,
             std::move(save_account_single_file_callback));
+        MaybeCleanUpFiles(account_encryption_type,
+                          metrics::StorageFileForUma::kAccount,
+                          account_file_path);
       }
     } else {
       // In the failure case, it is still possible that sync metadata was
@@ -370,6 +398,9 @@ std::unique_ptr<BookmarkLoadDetails> LoadBookmarks(
                 : local_or_syncable_file_path,
             metrics::StorageFileForUma::kLocalOrSyncable,
             std::move(save_local_or_syncable_single_file_callback));
+        MaybeCleanUpFiles(local_or_syncable_encryption_type,
+                          metrics::StorageFileForUma::kLocalOrSyncable,
+                          local_or_syncable_file_path);
       }
     } else {
       OnFileLoaded(

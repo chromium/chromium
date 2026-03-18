@@ -52,6 +52,10 @@ constexpr char kBookmarksTimeToReadFileMetricName[] =
     "Bookmarks.TimeToReadFile";
 constexpr char kBookmarksAverageNodeSizeMetricName[] =
     "Bookmarks.AverageNodeSize";
+constexpr char kBookmarksDeleteFileMetricName[] =
+    "Bookmarks.DeleteClearTextFile";
+constexpr base::FilePath::CharType kBackupExtension[] =
+    FILE_PATH_LITERAL("bak");
 
 const base::FilePath& GetTestDataDir() {
   static base::NoDestructor<base::FilePath> dir([]() {
@@ -70,6 +74,11 @@ const BookmarkNode* FindNodeByUuid(const UuidIndex& index,
   CHECK(uuid.is_valid());
   const auto it = index.find(uuid);
   return it == index.end() ? nullptr : *it;
+}
+
+MATCHER(FileAndBackupFileExist, "") {
+  return base::PathExists(arg) &&
+         base::PathExists(arg.ReplaceExtension(kBackupExtension));
 }
 
 TEST(ModelLoaderTest, LoadEmptyModelFromInexistentFile) {
@@ -1042,6 +1051,15 @@ void VerifyPrimaryLoadCorrectlySecondaryHasGivenResult(
       /*expected_bucket_count=*/1);
 }
 
+base::FilePath CreateCopyWithBackup(const base::FilePath& filepath,
+                                    const std::string_view& file_name) {
+  const base::FilePath temp_dir = base::CreateUniqueTempDirectoryScopedToTest();
+  const base::FilePath copy_filepath = temp_dir.AppendASCII(file_name);
+  base::CopyFile(filepath, copy_filepath);
+  base::CopyFile(filepath, copy_filepath.ReplaceExtension(kBackupExtension));
+  return copy_filepath;
+}
+
 std::optional<base::FilePath> CreateTempEncryptedFile(
     const base::FilePath& file,
     const std::string_view& file_name,
@@ -1079,19 +1097,21 @@ class ModelLoaderWithSecondayFileTest
                                     : StorageFileEncryptionType::kEncrypted;
   }
 
-  base::FilePath GetFilePath(bool primary_content,
-                             std::string_view file_name,
-                             std::string_view encrypted_file_name) {
-    const base::FilePath account_file_path =
-        GetTestDataDir().AppendASCII(file_name);
+  base::FilePath CreateTempEncryptedFileOrClearTextCopy(
+      bool primary_content,
+      std::string_view existing_file_name,
+      std::string_view new_file_name) {
+    const base::FilePath existing_file_path =
+        GetTestDataDir().AppendASCII(existing_file_name);
     if ((primary_content && IsEncryptedFilePrimary()) ||
         (!primary_content && !IsEncryptedFilePrimary())) {
-      std::optional<base::FilePath> encrypted_account_file_path =
-          CreateTempEncryptedFile(account_file_path, encrypted_file_name,
+      std::optional<base::FilePath> encrypted_file_path =
+          CreateTempEncryptedFile(existing_file_path,
+                                  base::StrCat({"Encrypted", new_file_name}),
                                   encryptor_);
-      return encrypted_account_file_path.value();
+      return encrypted_file_path.value();
     }
-    return account_file_path;
+    return CreateCopyWithBackup(existing_file_path, new_file_name);
   }
 
   scoped_refptr<ModelLoader> CreateModelLoader(
@@ -1129,6 +1149,12 @@ class ModelLoaderWithSecondayFileTest
     return IsEncryptedFilePrimary() ? ".ClearText" : ".Encrypted";
   }
 
+  const base::FilePath& GetClearTextFilePath(
+      const base::FilePath& primary_file_path,
+      const base::FilePath& secondary_file_path) {
+    return IsEncryptedFilePrimary() ? secondary_file_path : primary_file_path;
+  }
+
   void VerifyPrimaryLoadCorrectlySecondaryHasGivenResult(
       base::HistogramTester& histogram_tester,
       metrics::BookmarksFileLoadResult secondary_result) {
@@ -1151,16 +1177,18 @@ TEST_P(ModelLoaderWithSecondayFileTest,
   base::test::TaskEnvironment task_environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
-  const base::FilePath primary_local_or_syncable_file_path = GetFilePath(
-      /*primary_content=*/true,
-      /*file_name=*/"bookmarks/model_with_sync_metadata_1.json",
-      /*encrypted_file_name=*/"TestEncryptedBookmarks1");
+  const base::FilePath primary_local_or_syncable_file_path =
+      CreateTempEncryptedFileOrClearTextCopy(
+          /*primary_content=*/true,
+          /*existing_file_name=*/"bookmarks/model_with_sync_metadata_1.json",
+          /*new_file_name=*/"TestBookmarks1");
   const base::FilePath secondary_local_or_syncable_file_path =
       GetTestDataDir().AppendASCII("bookmarks/missing_file_1.json");
-  const base::FilePath primary_account_file_path = GetFilePath(
-      /*primary_content=*/true,
-      /*file_name=*/"bookmarks/model_with_sync_metadata_2.json",
-      /*encrypted_file_name=*/"TestEncryptedBookmarks2");
+  const base::FilePath primary_account_file_path =
+      CreateTempEncryptedFileOrClearTextCopy(
+          /*primary_content=*/true,
+          /*existing_file_name=*/"bookmarks/model_with_sync_metadata_2.json",
+          /*new_file_name=*/"TestBookmarks2");
   const base::FilePath secondary_account_file_path =
       GetTestDataDir().AppendASCII("bookmarks/missing_file_2.json");
 
@@ -1194,22 +1222,26 @@ TEST_P(ModelLoaderWithSecondayFileTest,
   base::test::TaskEnvironment task_environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
-  const base::FilePath primary_local_or_syncable_file_path = GetFilePath(
-      /*primary_content=*/true,
-      /*file_name=*/"bookmarks/model_with_sync_metadata_1.json",
-      /*encrypted_file_name=*/"TestEncryptedBookmarks1");
-  const base::FilePath secondary_local_or_syncable_file_path = GetFilePath(
-      /*primary_content=*/false,
-      /*file_name=*/"bookmarks/model_with_sync_metadata_2.json",
-      /*encrypted_file_name=*/"TestEncryptedBookmarks2");
-  const base::FilePath primary_account_file_path = GetFilePath(
-      /*primary_content=*/true,
-      /*file_name=*/"bookmarks/model_with_sync_metadata_2.json",
-      /*encrypted_file_name=*/"TestEncryptedBookmarks2");
-  const base::FilePath secondary_account_file_path = GetFilePath(
-      /*primary_content=*/false,
-      /*file_name=*/"bookmarks/model_with_sync_metadata_1.json",
-      /*encrypted_file_name=*/"TestEncryptedBookmarks1");
+  const base::FilePath primary_local_or_syncable_file_path =
+      CreateTempEncryptedFileOrClearTextCopy(
+          /*primary_content=*/true,
+          /*existing_file_name=*/"bookmarks/model_with_sync_metadata_1.json",
+          /*new_file_name=*/"TestBookmarks1");
+  const base::FilePath secondary_local_or_syncable_file_path =
+      CreateTempEncryptedFileOrClearTextCopy(
+          /*primary_content=*/false,
+          /*existing_file_name=*/"bookmarks/model_with_sync_metadata_2.json",
+          /*new_file_name=*/"TestBookmarks2");
+  const base::FilePath primary_account_file_path =
+      CreateTempEncryptedFileOrClearTextCopy(
+          /*primary_content=*/true,
+          /*existing_file_name=*/"bookmarks/model_with_sync_metadata_2.json",
+          /*new_file_name=*/"TestBookmarks2");
+  const base::FilePath secondary_account_file_path =
+      CreateTempEncryptedFileOrClearTextCopy(
+          /*primary_content=*/false,
+          /*existing_file_name=*/"bookmarks/model_with_sync_metadata_1.json",
+          /*new_file_name=*/"TestBookmarks1");
 
   base::test::TestFuture<StorageFileEncryptionType>
       save_local_or_syncable_bookmark_future;
@@ -1242,6 +1274,13 @@ TEST_P(ModelLoaderWithSecondayFileTest,
             save_local_or_syncable_bookmark_future.Get());
   EXPECT_EQ(GetSecondaryStorageFileEncryptionType(),
             save_account_bookmark_future.Get());
+
+  EXPECT_THAT(GetClearTextFilePath(primary_local_or_syncable_file_path,
+                                   secondary_local_or_syncable_file_path),
+              FileAndBackupFileExist());
+  EXPECT_THAT(GetClearTextFilePath(primary_account_file_path,
+                                   secondary_account_file_path),
+              FileAndBackupFileExist());
 }
 
 TEST_P(ModelLoaderWithSecondayFileTest,
@@ -1250,22 +1289,26 @@ TEST_P(ModelLoaderWithSecondayFileTest,
   base::test::TaskEnvironment task_environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
-  const base::FilePath primary_local_or_syncable_file_path = GetFilePath(
-      /*primary_content=*/true,
-      /*file_name=*/"bookmarks/model_with_sync_metadata_1.json",
-      /*encrypted_file_name=*/"TestEncryptedBookmarks1");
-  const base::FilePath secondary_local_or_syncable_file_path = GetFilePath(
-      /*primary_content=*/false,
-      /*file_name=*/"bookmarks/model_with_sync_metadata_1.json",
-      /*encrypted_file_name=*/"TestEncryptedBookmarks1");
-  const base::FilePath primary_account_file_path = GetFilePath(
-      /*primary_content=*/true,
-      /*file_name=*/"bookmarks/model_with_sync_metadata_2.json",
-      /*encrypted_file_name=*/"TestEncryptedBookmarks2");
-  const base::FilePath secondary_account_file_path = GetFilePath(
-      /*primary_content=*/false,
-      /*file_name=*/"bookmarks/model_with_sync_metadata_2.json",
-      /*encrypted_file_name=*/"TestEncryptedBookmarks2");
+  const base::FilePath primary_local_or_syncable_file_path =
+      CreateTempEncryptedFileOrClearTextCopy(
+          /*primary_content=*/true,
+          /*existing_file_name=*/"bookmarks/model_with_sync_metadata_1.json",
+          /*new_file_name=*/"TestBookmarks1");
+  const base::FilePath secondary_local_or_syncable_file_path =
+      CreateTempEncryptedFileOrClearTextCopy(
+          /*primary_content=*/false,
+          /*existing_file_name=*/"bookmarks/model_with_sync_metadata_1.json",
+          /*new_file_name=*/"TestBookmarks1");
+  const base::FilePath primary_account_file_path =
+      CreateTempEncryptedFileOrClearTextCopy(
+          /*primary_content=*/true,
+          /*existing_file_name=*/"bookmarks/model_with_sync_metadata_2.json",
+          /*new_file_name=*/"TestBookmarks2");
+  const base::FilePath secondary_account_file_path =
+      CreateTempEncryptedFileOrClearTextCopy(
+          /*primary_content=*/false,
+          /*existing_file_name=*/"bookmarks/model_with_sync_metadata_2.json",
+          /*new_file_name=*/"TestBookmarks2");
 
   base::test::TestFuture<StorageFileEncryptionType>
       save_local_or_syncable_bookmark_future;
@@ -1297,6 +1340,13 @@ TEST_P(ModelLoaderWithSecondayFileTest,
   // Verify that the save encrypted file callback hasn't been called.
   EXPECT_FALSE(save_local_or_syncable_bookmark_future.IsReady());
   EXPECT_FALSE(save_account_bookmark_future.IsReady());
+
+  EXPECT_THAT(GetClearTextFilePath(primary_local_or_syncable_file_path,
+                                   secondary_local_or_syncable_file_path),
+              FileAndBackupFileExist());
+  EXPECT_THAT(GetClearTextFilePath(primary_account_file_path,
+                                   secondary_account_file_path),
+              FileAndBackupFileExist());
 }
 
 TEST_P(ModelLoaderWithSecondayFileTest,
@@ -1305,18 +1355,21 @@ TEST_P(ModelLoaderWithSecondayFileTest,
   base::test::TaskEnvironment task_environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
-  const base::FilePath primary_local_or_syncable_file_path = GetFilePath(
-      /*primary_content=*/true,
-      /*file_name=*/"bookmarks/model_with_sync_metadata_1.json",
-      /*encrypted_file_name=*/"TestEncryptedBookmarks1");
-  const base::FilePath secondary_local_or_syncable_file_path = GetFilePath(
-      /*primary_content=*/false,
-      /*file_name=*/"bookmarks/model_with_sync_metadata_1.json",
-      /*encrypted_file_name=*/"TestEncryptedBookmarks1");
-  const base::FilePath primary_account_file_path = GetFilePath(
-      /*primary_content=*/true,
-      /*file_name=*/"bookmarks/model_with_sync_metadata_2.json",
-      /*encrypted_file_name=*/"TestEncryptedBookmarks2");
+  const base::FilePath primary_local_or_syncable_file_path =
+      CreateTempEncryptedFileOrClearTextCopy(
+          /*primary_content=*/true,
+          /*existing_file_name=*/"bookmarks/model_with_sync_metadata_1.json",
+          /*new_file_name=*/"TestBookmarks1");
+  const base::FilePath secondary_local_or_syncable_file_path =
+      CreateTempEncryptedFileOrClearTextCopy(
+          /*primary_content=*/false,
+          /*existing_file_name=*/"bookmarks/model_with_sync_metadata_1.json",
+          /*new_file_name=*/"TestBookmarks1");
+  const base::FilePath primary_account_file_path =
+      CreateTempEncryptedFileOrClearTextCopy(
+          /*primary_content=*/true,
+          /*existing_file_name=*/"bookmarks/model_with_sync_metadata_2.json",
+          /*new_file_name=*/"TestBookmarks2");
   const base::FilePath secondary_account_file_path =
       GetTestDataDir().AppendASCII("bookmarks/missing_file_2.json");
 
@@ -1363,22 +1416,26 @@ TEST_P(ModelLoaderWithSecondayFileTest,
   base::test::TaskEnvironment task_environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
-  const base::FilePath primary_local_or_syncable_file_path = GetFilePath(
-      /*primary_content=*/true,
-      /*file_name=*/"bookmarks/model_with_sync_metadata_1.json",
-      /*encrypted_file_name=*/"TestEncryptedBookmarks1");
-  const base::FilePath secondary_local_or_syncable_file_path = GetFilePath(
-      /*primary_content=*/false,
-      /*file_name=*/"bookmarks/model_with_sync_metadata_1.json",
-      /*encrypted_file_name=*/"TestEncryptedBookmarks1");
-  const base::FilePath primary_account_file_path = GetFilePath(
-      /*primary_content=*/true,
-      /*file_name=*/"bookmarks/model_with_sync_metadata_2.json",
-      /*encrypted_file_name=*/"TestEncryptedBookmarks2");
-  const base::FilePath secondary_account_file_path = GetFilePath(
-      /*primary_content=*/false,
-      /*file_name=*/"bookmarks/model_with_sync_metadata_2.json",
-      /*encrypted_file_name=*/"TestEncryptedBookmarks2");
+  const base::FilePath primary_local_or_syncable_file_path =
+      CreateTempEncryptedFileOrClearTextCopy(
+          /*primary_content=*/true,
+          /*existing_file_name=*/"bookmarks/model_with_sync_metadata_1.json",
+          /*new_file_name=*/"TestBookmarks1");
+  const base::FilePath secondary_local_or_syncable_file_path =
+      CreateTempEncryptedFileOrClearTextCopy(
+          /*primary_content=*/false,
+          /*existing_file_name=*/"bookmarks/model_with_sync_metadata_1.json",
+          /*new_file_name=*/"TestBookmarks1");
+  const base::FilePath primary_account_file_path =
+      CreateTempEncryptedFileOrClearTextCopy(
+          /*primary_content=*/true,
+          /*existing_file_name=*/"bookmarks/model_with_sync_metadata_2.json",
+          /*new_file_name=*/"TestBookmarks2");
+  const base::FilePath secondary_account_file_path =
+      CreateTempEncryptedFileOrClearTextCopy(
+          /*primary_content=*/false,
+          /*existing_file_name=*/"bookmarks/model_with_sync_metadata_2.json",
+          /*new_file_name=*/"TestBookmarks2");
 
   base::test::TestFuture<StorageFileEncryptionType>
       save_local_or_syncable_bookmark_future;
@@ -1480,8 +1537,8 @@ TEST_P(ModelLoaderWithSecondayFileTest,
 INSTANTIATE_TEST_SUITE_P(
     ModelLoaderWithSecondayFileTest,
     ModelLoaderWithSecondayFileTest,
-    testing::Values(BookmarkEncryptionStage::kWriteBothReadPreferEncrypted,
-                    BookmarkEncryptionStage::kWriteBothReadOnlyClear));
+    testing::Values(BookmarkEncryptionStage::kWriteBothReadOnlyClear,
+                    BookmarkEncryptionStage::kWriteBothReadPreferEncrypted));
 
 TEST(ModelLoaderTest, LoadBookmarks_ShouldReportDecryptionFailed) {
   base::test::ScopedFeatureList features;
@@ -1495,10 +1552,12 @@ TEST(ModelLoaderTest, LoadBookmarks_ShouldReportDecryptionFailed) {
       encryptor = base::MakeRefCounted<
           base::RefCountedData<const os_crypt_async::Encryptor>>(
           std::in_place, os_crypt_async::GetTestEncryptorForTesting());
-  const base::FilePath local_or_syncable_file_path =
-      GetTestDataDir().AppendASCII("bookmarks/model_with_sync_metadata_1.json");
-  const base::FilePath account_file_path =
-      GetTestDataDir().AppendASCII("bookmarks/model_with_sync_metadata_2.json");
+  const base::FilePath local_or_syncable_file_path = CreateCopyWithBackup(
+      GetTestDataDir().AppendASCII("bookmarks/model_with_sync_metadata_1.json"),
+      "Bookmarks");
+  const base::FilePath account_file_path = CreateCopyWithBackup(
+      GetTestDataDir().AppendASCII("bookmarks/model_with_sync_metadata_2.json"),
+      "AccountBookmarks");
   // These files aren't encrypted, so they will will fail decryption.
   const base::FilePath encrypted_local_or_syncable_file_path =
       GetTestDataDir().AppendASCII("bookmarks/model_with_sync_metadata_1.json");
@@ -1528,6 +1587,9 @@ TEST(ModelLoaderTest, LoadBookmarks_ShouldReportDecryptionFailed) {
             StorageFileEncryptionType::kEncrypted);
   EXPECT_EQ(save_account_bookmark_future.Get(),
             StorageFileEncryptionType::kEncrypted);
+
+  EXPECT_THAT(local_or_syncable_file_path, FileAndBackupFileExist());
+  EXPECT_THAT(account_file_path, FileAndBackupFileExist());
 }
 
 class ModelLoaderWithEncryptionFileAsPrimaryTest
@@ -1549,19 +1611,21 @@ TEST_P(ModelLoaderWithEncryptionFileAsPrimaryTest,
       encryptor = base::MakeRefCounted<
           base::RefCountedData<const os_crypt_async::Encryptor>>(
           std::in_place, os_crypt_async::GetTestEncryptorForTesting());
-  const base::FilePath local_or_syncable_file_path =
-      GetTestDataDir().AppendASCII("bookmarks/model_with_sync_metadata_1.json");
+  const base::FilePath local_or_syncable_file_path = CreateCopyWithBackup(
+      GetTestDataDir().AppendASCII("bookmarks/model_with_sync_metadata_1.json"),
+      "Bookmarks");
   const base::FilePath encrypted_local_or_syncable_file_path =
       CreateTempEncryptedFile(GetTestDataDir().AppendASCII(
                                   "bookmarks/model_with_sync_metadata_1.json"),
-                              "TestEncryptedBookmarks1", encryptor)
+                              "EncryptedBookmarks", encryptor)
           .value();
-  const base::FilePath account_file_path =
-      GetTestDataDir().AppendASCII("bookmarks/model_with_sync_metadata_2.json");
+  const base::FilePath account_file_path = CreateCopyWithBackup(
+      GetTestDataDir().AppendASCII("bookmarks/model_with_sync_metadata_2.json"),
+      "AccountBookmarks");
   const base::FilePath encrypted_account_file_path =
       CreateTempEncryptedFile(GetTestDataDir().AppendASCII(
                                   "bookmarks/model_with_sync_metadata_2.json"),
-                              "TestEncryptedBookmarks1", encryptor)
+                              "EncryptedAccountBookmarks", encryptor)
           .value();
 
   base::test::TestFuture<StorageFileEncryptionType>
@@ -1599,10 +1663,12 @@ TEST_P(ModelLoaderWithEncryptionFileAsPrimaryTest,
       encryptor = base::MakeRefCounted<
           base::RefCountedData<const os_crypt_async::Encryptor>>(
           std::in_place, os_crypt_async::GetTestEncryptorForTesting());
-  const base::FilePath local_or_syncable_file_path =
-      GetTestDataDir().AppendASCII("bookmarks/model_with_sync_metadata_1.json");
-  const base::FilePath account_file_path =
-      GetTestDataDir().AppendASCII("bookmarks/model_with_sync_metadata_2.json");
+  const base::FilePath local_or_syncable_file_path = CreateCopyWithBackup(
+      GetTestDataDir().AppendASCII("bookmarks/model_with_sync_metadata_1.json"),
+      "Bookmarks");
+  const base::FilePath account_file_path = CreateCopyWithBackup(
+      GetTestDataDir().AppendASCII("bookmarks/model_with_sync_metadata_2.json"),
+      "AccountBookmarks");
   const base::FilePath encrypted_local_or_syncable_file_path =
       GetTestDataDir().AppendASCII("bookmarks/missing_file_1.json");
   const base::FilePath encrypted_account_file_path =
@@ -1656,6 +1722,9 @@ TEST_P(ModelLoaderWithEncryptionFileAsPrimaryTest,
             save_local_or_syncable_bookmark_future.Get());
   EXPECT_EQ(StorageFileEncryptionType::kEncrypted,
             save_account_bookmark_future.Get());
+
+  EXPECT_THAT(local_or_syncable_file_path, FileAndBackupFileExist());
+  EXPECT_THAT(account_file_path, FileAndBackupFileExist());
 }
 
 TEST_P(ModelLoaderWithEncryptionFileAsPrimaryTest,
@@ -1668,10 +1737,12 @@ TEST_P(ModelLoaderWithEncryptionFileAsPrimaryTest,
       encryptor = base::MakeRefCounted<
           base::RefCountedData<const os_crypt_async::Encryptor>>(
           std::in_place, os_crypt_async::GetTestEncryptorForTesting());
-  const base::FilePath local_or_syncable_file_path =
-      GetTestDataDir().AppendASCII("bookmarks/model_invalid_json.json");
-  const base::FilePath account_file_path =
-      GetTestDataDir().AppendASCII("bookmarks/model_invalid_json.json");
+  const base::FilePath local_or_syncable_file_path = CreateCopyWithBackup(
+      GetTestDataDir().AppendASCII("bookmarks/model_invalid_json.json"),
+      "Bookmarks");
+  const base::FilePath account_file_path = CreateCopyWithBackup(
+      GetTestDataDir().AppendASCII("bookmarks/model_invalid_json.json"),
+      "AccountBookmarks");
   const base::FilePath encrypted_local_or_syncable_file_path =
       GetTestDataDir().AppendASCII("bookmarks/missing_file_1.json");
   const base::FilePath encrypted_account_file_path =
@@ -1725,6 +1796,9 @@ TEST_P(ModelLoaderWithEncryptionFileAsPrimaryTest,
             save_local_or_syncable_bookmark_future.Get());
   EXPECT_EQ(StorageFileEncryptionType::kEncrypted,
             save_account_bookmark_future.Get());
+
+  EXPECT_THAT(local_or_syncable_file_path, FileAndBackupFileExist());
+  EXPECT_THAT(account_file_path, FileAndBackupFileExist());
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1877,6 +1951,70 @@ TEST(ModelLoaderWithEncryptionWriteOnly,
   histogram_tester.ExpectTotalCount(
       base::StrCat({kBookmarksAverageNodeSizeMetricName, ".Encrypted"}),
       /*expected_count=*/1);
+}
+
+TEST(ModelLoaderWithEncryptionWriteOnly,
+     LoadBookmarks_ShouldDeleteClearTextFilesWhenEncryptedReadSucceeds) {
+  base::test::ScopedFeatureList features;
+  test::InitFeaturesForBookmarkTestEncryptionStage(
+      features,
+      BookmarkEncryptionStage::kWriteOnlyEncryptedReadPreferEncrypted);
+  scoped_refptr<base::RefCountedData<const os_crypt_async::Encryptor>>
+      encryptor = base::MakeRefCounted<
+          base::RefCountedData<const os_crypt_async::Encryptor>>(
+          std::in_place, os_crypt_async::GetTestEncryptorForTesting());
+  base::HistogramTester histogram_tester;
+  base::test::TaskEnvironment task_environment{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
+  const base::FilePath local_or_syncable_file_path = CreateCopyWithBackup(
+      GetTestDataDir().AppendASCII("bookmarks/model_with_sync_metadata_1.json"),
+      "TestBookmarks1");
+  const base::FilePath encrypted_local_or_syncable_file_path =
+      CreateTempEncryptedFile(GetTestDataDir().AppendASCII(
+                                  "bookmarks/model_with_sync_metadata_1.json"),
+                              "TestEncryptedBookmarks1", encryptor)
+          .value();
+  const base::FilePath account_file_path = CreateCopyWithBackup(
+      GetTestDataDir().AppendASCII("bookmarks/model_with_sync_metadata_2.json"),
+      "TestBookmarks2");
+  const base::FilePath encrypted_account_file_path =
+      CreateTempEncryptedFile(GetTestDataDir().AppendASCII(
+                                  "bookmarks/model_with_sync_metadata_2.json"),
+                              "TestEncryptedBookmarks2", encryptor)
+          .value();
+
+  base::test::TestFuture<StorageFileEncryptionType>
+      save_local_or_syncable_bookmark_future;
+  base::test::TestFuture<StorageFileEncryptionType>
+      save_account_bookmark_future;
+  scoped_refptr<ModelLoader> loader = ModelLoader::Create(
+      encryptor, local_or_syncable_file_path,
+      encrypted_local_or_syncable_file_path, account_file_path,
+      encrypted_account_file_path, LoadManagedNodeCallback(),
+      save_local_or_syncable_bookmark_future.GetCallback(),
+      save_account_bookmark_future.GetCallback(),
+      /*callback=*/base::DoNothing());
+  task_environment.FastForwardUntilNoTasksRemain();
+
+  // Clear text files are deleted.
+  EXPECT_FALSE(base::PathExists(local_or_syncable_file_path));
+  EXPECT_FALSE(base::PathExists(account_file_path));
+  EXPECT_FALSE(base::PathExists(
+      local_or_syncable_file_path.ReplaceExtension(kBackupExtension)));
+  EXPECT_FALSE(
+      base::PathExists(account_file_path.ReplaceExtension(kBackupExtension)));
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({kBookmarksDeleteFileMetricName, ".LocalOrSyncable"}),
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({kBookmarksDeleteFileMetricName, ".Account"}),
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
+  // Encrypted files still exist.
+  EXPECT_TRUE(base::PathExists(encrypted_local_or_syncable_file_path));
+  EXPECT_TRUE(base::PathExists(encrypted_account_file_path));
 }
 
 }  // namespace

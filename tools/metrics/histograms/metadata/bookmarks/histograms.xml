@@ -400,6 +400,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Bookmarks.DeleteClearTextFile.{BookmarksFileType}"
+    enum="BooleanDeletedOrNot" expires_after="2027-02-24">
+  <owner>plcoirier@google.com</owner>
+  <owner>chrome-collections@google.com</owner>
+  <summary>
+    Records every time we try to delete the clear text file of
+    {BookmarksFileType} bookmarks file and whether or not the deletion was
+    successful. Absence of the file counts as deletion.
+  </summary>
+</histogram>
+
 <histogram name="Bookmarks.EditLocation" enum="BookmarkLaunchLocation"
     expires_after="2026-07-26">
   <owner>dfried@chromium.org</owner>

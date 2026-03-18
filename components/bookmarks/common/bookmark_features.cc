@@ -101,6 +101,18 @@ bool ShouldUseEncryptedBookmarksAsPrimarySource() {
   NOTREACHED();
 }
 
+bool ShouldDeleteClearTextBookmarksFile() {
+  switch (GetBookmarkEncryptionStage()) {
+    case BookmarkEncryptionStage::kWriteOnlyEncryptedReadPreferEncrypted:
+      return true;
+    case BookmarkEncryptionStage::kWriteBothReadOnlyClear:
+    case BookmarkEncryptionStage::kWriteBothReadPreferEncrypted:
+    case BookmarkEncryptionStage::kDisabled:
+      return false;
+  }
+  NOTREACHED();
+}
+
 std::string GetBookmarkEncryptionStageNameForTesting(  // IN-TEST
     BookmarkEncryptionStage stage) {
   for (const auto& pair : kBookmarkEncryptionStageMap) {

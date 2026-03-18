@@ -181,6 +181,9 @@ void RecordTimeToReadFile(StorageFileForUma storage_file,
 void RecordFallbackToClearTextFileOnLoadResult(StorageFileForUma storage_file,
                                                BookmarksFileLoadResult result);
 
+void RecordClearTextFileDeletionResult(StorageFileForUma storage_file,
+                                       bool deletion_result);
+
 }  // namespace metrics
 
 }  // namespace bookmarks

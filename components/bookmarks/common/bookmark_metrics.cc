@@ -290,4 +290,12 @@ void RecordFallbackToClearTextFileOnLoadResult(StorageFileForUma storage_file,
       result);
 }
 
+void RecordClearTextFileDeletionResult(StorageFileForUma storage_file,
+                                       bool deletion_result) {
+  base::UmaHistogramBoolean(
+      base::StrCat({"Bookmarks.DeleteClearTextFile",
+                    GetStorageFileSuffixForMetrics(storage_file)}),
+      deletion_result);
+}
+
 }  // namespace bookmarks::metrics
