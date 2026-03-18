@@ -35,24 +35,39 @@ GlicSidePanelCoordinatorAndroid::GlicSidePanelCoordinatorAndroid(
   JNIEnv* env = AttachCurrentThread();
   java_interface_.Reset(Java_TabBottomSheetNativeInterface_Constructor(
       env, reinterpret_cast<intptr_t>(this), GetTabAndroid()->GetJavaObject()));
+
+  CreateCoBrowseViews();
 }
 
 GlicSidePanelCoordinatorAndroid::~GlicSidePanelCoordinatorAndroid() {
-  if (co_browse_views_) {
-    Java_CoBrowseViews_setWebContents(AttachCurrentThread(), co_browse_views_,
-                                      nullptr);
-  }
+  EnsureCoBrowseViewsDestroyed();
   Java_TabBottomSheetNativeInterface_destroy(AttachCurrentThread(),
                                              java_interface_);
 }
 
+void GlicSidePanelCoordinatorAndroid::EnsureCoBrowseViewsDestroyed() {
+  if (co_browse_views_) {
+    Java_CoBrowseViews_setWebContents(AttachCurrentThread(), co_browse_views_,
+                                      nullptr);
+    Java_CoBrowseViews_destroy(AttachCurrentThread(), co_browse_views_);
+    co_browse_views_.Reset();
+  }
+}
+
 void GlicSidePanelCoordinatorAndroid::Show(bool suppress_animations) {
-  Show(suppress_animations, /* startsExpanded= */ true);
+  Show(suppress_animations,
+       /* starts_expanded= */ pending_starts_expanded_state_);
 }
 
 void GlicSidePanelCoordinatorAndroid::Show(bool suppress_animations,
-                                           bool startsExpanded) {
+                                           bool starts_expanded) {
   if (IsShowing()) {
+    return;
+  }
+
+  if (!web_contents_) {
+    SetState(State::kBackgrounded);
+    pending_starts_expanded_state_ = starts_expanded;
     return;
   }
 
@@ -60,39 +75,65 @@ void GlicSidePanelCoordinatorAndroid::Show(bool suppress_animations,
     SetState(State::kBackgrounded);
     return;
   }
-  Java_TabBottomSheetNativeInterface_show(
-      AttachCurrentThread(), java_interface_, co_browse_views_, startsExpanded);
-  SetState(State::kShown);
+
+  CreateCoBrowseViews();
+  bool shown = Java_TabBottomSheetNativeInterface_show(
+      AttachCurrentThread(), java_interface_, co_browse_views_,
+      starts_expanded);
+  pending_starts_expanded_state_ = true;
+  if (shown) {
+    SetState(State::kShown);
+  } else {
+    // If the sheet failed to show (e.g. due to being suppressed by a
+    // TokenHolder, or placed in a queue behind a higher priority sheet), the
+    // Java layer will NOT fire the onBottomSheetClosed callback. We must
+    // immediately transition to closed so we don't leak state and deadlock
+    // future Close() calls.
+    SetState(State::kClosed);
+  }
 }
 
 void GlicSidePanelCoordinatorAndroid::SetWebContents(
     content::WebContents* web_contents) {
   if (!web_contents) {
-    last_web_contents_.reset();
-    co_browse_views_.Reset();
+    web_contents_.reset();
+    if (co_browse_views_) {
+      Java_CoBrowseViews_setWebContents(AttachCurrentThread(), co_browse_views_,
+                                        nullptr);
+    }
     return;
   }
+
+  web_contents_ = web_contents->GetWeakPtr();
+
+  if (!co_browse_views_) {
+    CreateCoBrowseViews();
+    return;
+  }
+
+  Java_CoBrowseViews_setWebContents(AttachCurrentThread(), co_browse_views_,
+                                    web_contents_.get()->GetJavaWebContents());
+}
+
+void GlicSidePanelCoordinatorAndroid::CreateCoBrowseViews() {
   TabAndroid* tab_android = GetTabAndroid();
   if (!tab_android) {
     return;
   }
+
   ui::WindowAndroid* window_android =
       tab_android->GetContents()->GetTopLevelNativeWindow();
   if (!window_android) {
     return;
   }
 
-  if (last_web_contents_ && last_web_contents_.get() == web_contents) {
-    // The web contents didn't change, so we don't need to do anything.
-    return;
-  }
+  EnsureCoBrowseViewsDestroyed();
 
-  last_web_contents_ = web_contents->GetWeakPtr();
   JNIEnv* env = base::android::AttachCurrentThread();
   // Call Factory to get CoBrowseViews and save it
   co_browse_views_.Reset(Java_CoBrowseViewFactory_getCoBrowseViews(
       env, window_android->GetJavaObject(),
-      web_contents->GetJavaWebContents()));
+      web_contents_ ? web_contents_->GetJavaWebContents() : nullptr));
 }
 
 void GlicSidePanelCoordinatorAndroid::Close(const CloseOptions& options) {
@@ -100,6 +141,16 @@ void GlicSidePanelCoordinatorAndroid::Close(const CloseOptions& options) {
     return;
   }
 
+  if (state_ == State::kBackgrounded) {
+    SetState(State::kClosed);
+    return;
+  }
+
+  CloseInternal(CloseOptions{});
+}
+
+void GlicSidePanelCoordinatorAndroid::CloseInternal(
+    const CloseOptions& options) {
   if (co_browse_views_) {
     Java_CoBrowseViews_setWebContents(AttachCurrentThread(), co_browse_views_,
                                       nullptr);
@@ -146,7 +197,7 @@ void GlicSidePanelCoordinatorAndroid::OnTabDidActivate(
   }
 
   // If we are not closed (e.g. backgrounded), show the panel in peek state.
-  Show(/*suppress_animations=*/true, /* startsExpanded= */ false);
+  Show(/*suppress_animations=*/true, /* starts_expanded= */ false);
 }
 
 void GlicSidePanelCoordinatorAndroid::OnTabWillDeactivate(
@@ -155,12 +206,13 @@ void GlicSidePanelCoordinatorAndroid::OnTabWillDeactivate(
     return;
   }
   SetState(State::kBackgrounded);
+
+  CloseInternal(CloseOptions{});
 }
 
 void GlicSidePanelCoordinatorAndroid::OnClose(JNIEnv* env) {
-  if (co_browse_views_) {
-    Java_CoBrowseViews_destroy(AttachCurrentThread(), co_browse_views_);
-    co_browse_views_.Reset();
+  if (state_ == State::kBackgrounded) {
+    return;
   }
   SetState(State::kClosed);
 }

@@ -35,6 +35,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/device_info.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
 #endif
 
 #if defined(TOOLKIT_VIEWS)
@@ -78,7 +79,15 @@ class GlicBrowserTestMixin : public T {
   template <typename... Args>
   explicit GlicBrowserTestMixin(Args&&... args)
       : T(std::forward<Args>(args)...) {
-    scoped_feature_list_.InitAndEnableFeature(features::kGlicMultiInstance);
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {features::kGlicMultiInstance, {}},
+#if BUILDFLAG(IS_ANDROID)
+        {chrome::android::kBrowserWindowInterfaceMobile, {}},
+        {chrome::android::kTabBottomSheet,
+         { {"dont_show_fusebox", "true"} }},
+#endif
+    };
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
   }
   ~GlicBrowserTestMixin() override = default;
 
@@ -181,6 +190,16 @@ class GlicBrowserTestMixin : public T {
         "Failed to close Glic UI");
   }
 
+  // Closes Glic for a given tab and waits for it to close.
+  [[nodiscard]] bool CloseGlicForTabAndWait(tabs::TabInterface* tab) {
+    GlicInstanceImpl* instance = GetInstanceForTab(tab);
+    if (!instance) {
+      return false;
+    }
+    instance->Close(tab);
+    return WaitForGlicClose(instance);
+  }
+
   [[nodiscard]] GlicInstanceImpl* WaitForGlicInstanceBoundToTab(
       tabs::TabInterface* tab) {
     bool success = RunUntil(
@@ -228,6 +247,12 @@ class GlicBrowserTestMixin : public T {
     tabs::TabInterface* new_tab = T::GetTabListInterface()->OpenTab(url, -1);
     T::GetTabListInterface()->ActivateTab(new_tab->GetHandle());
     return new_tab;
+  }
+
+  // Returns a simple URL for testing that is guaranteed to load properly via
+  // the embedded test server.
+  GURL GetSimpleTestUrl() {
+    return T::embedded_test_server()->GetURL("/test_data/page.html");
   }
 
   void SetGlicPagePath(const std::string& glic_page_path) {

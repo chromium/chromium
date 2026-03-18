@@ -530,7 +530,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
   // Case 1: Create Foreground Tab
   {
     GlicTestTabAddedWaiter waiter(GetProfile());
-    instance->CreateTab(GURL("http://example.com"),
+    instance->CreateTab(GetSimpleTestUrl(),
                         /*open_in_background=*/false,
                         /*window_id=*/std::nullopt, base::DoNothing());
     tabs::TabInterface* tab2 = waiter.Wait();
@@ -545,7 +545,8 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
   // Case 2: Create Background Tab
   {
     GlicTestTabAddedWaiter waiter(GetProfile());
-    instance->CreateTab(GURL("http://example.com"), /*open_in_background=*/true,
+    instance->CreateTab(GetSimpleTestUrl(),
+                        /*open_in_background=*/true,
                         /*window_id=*/std::nullopt, base::DoNothing());
     tabs::TabInterface* tab3 = waiter.Wait();
 

@@ -39,7 +39,10 @@ class GlicSidePanelCoordinatorAndroid : public GlicSidePanelCoordinator {
   void OnClose(JNIEnv* env);
 
  private:
+  void EnsureCoBrowseViewsDestroyed();
   void Show(bool suppress_animations, bool startsExpanded);
+  void CloseInternal(const CloseOptions& options);
+  void CreateCoBrowseViews();
   void SetState(State state);
   void OnTabDidActivate(tabs::TabInterface* tab);
   void OnTabWillDeactivate(tabs::TabInterface* tab);
@@ -48,9 +51,10 @@ class GlicSidePanelCoordinatorAndroid : public GlicSidePanelCoordinator {
   State state_ = State::kClosed;
   base::RepeatingCallbackList<void(State)> state_callbacks_;
   const raw_ref<tabs::TabInterface> tab_;
-  base::WeakPtr<content::WebContents> last_web_contents_;
+  base::WeakPtr<content::WebContents> web_contents_;
   base::CallbackListSubscription did_activate_subscription_;
   base::CallbackListSubscription will_deactivate_subscription_;
+  bool pending_starts_expanded_state_ = true;
   base::android::ScopedJavaGlobalRef<jobject> java_interface_;
   base::android::ScopedJavaGlobalRef<jobject> co_browse_views_;
 };
