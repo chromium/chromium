@@ -133,6 +133,9 @@ export class SelectionOverlayElementElement extends
     if (this.selectionElements.postSelectionRenderer.handleGestureStart(
             this.currentGesture)) {
       this.draggingRespondent = DragFeature.POST_SELECTION;
+    } else {
+      this.activeRegionId = '';
+      this.selectionElements.postSelectionRenderer.clearSelection();
     }
   }
 
@@ -154,6 +157,8 @@ export class SelectionOverlayElementElement extends
     if (this.draggingRespondent === DragFeature.NONE) {
       this.setCursorToCrosshair();
       this.draggingRespondent = DragFeature.MANUAL_REGION;
+
+      this.activeRegionId = '';
       this.selectionElements.postSelectionRenderer.clearSelection();
 
       // TODO(crbug.com/421002691): follow the convention where the layer
