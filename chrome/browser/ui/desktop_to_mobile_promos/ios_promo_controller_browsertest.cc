@@ -154,7 +154,7 @@ IN_PROC_BROWSER_TEST_F(IOSPromoControllerBrowserTest,
   views::test::WaitForWidgetActive(widget, true);
 
   EXPECT_CALL(*mock_user_education_interface(), MaybeShowFeaturePromo(_))
-      .Times(1);
+      .WillOnce(testing::Return(true));
 
   // Trigger the promo.
   promo_service()->NotifyPromoShouldBeShown(PromoType::kPassword);

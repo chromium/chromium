@@ -127,8 +127,6 @@ class AutofillFieldPromoControllerImplTest : public BrowserWithTestWindowTest {
 
 TEST_F(AutofillFieldPromoControllerImplTest, CloseViewOnFailingMaybeShowPromo) {
   auto promo_view = std::make_unique<MockAutofillFieldPromoView>();
-  EXPECT_CALL(*user_education(), CanShowFeaturePromo)
-      .WillOnce(testing::Return(user_education::FeaturePromoResult::Success()));
   EXPECT_CALL(*user_education(), MaybeShowFeaturePromo)
       .WillOnce([this, promo_view_ptr = promo_view->GetWeakPtr()](
                     user_education::FeaturePromoParams params) {
@@ -136,6 +134,7 @@ TEST_F(AutofillFieldPromoControllerImplTest, CloseViewOnFailingMaybeShowPromo) {
             promo_view_ptr);
         std::move(params.show_promo_result_callback)
             .Run(user_education::FeaturePromoResult::kError);
+        return false;
       });
 
   EXPECT_CALL(*promo_view, MakeInvisible());
@@ -155,10 +154,8 @@ class AutofillFieldPromoControllerImplTestWithView
     // Makes sure the promo is not hidden immediately after being shown.
     // This also makes sure that `AutofillFieldPromoControllerImpl::Show()`
     // reaches `MaybeShowFeaturePromo()` and, therefore, doesn't return early.
-    EXPECT_CALL(*user_education(), CanShowFeaturePromo)
-        .WillOnce(
-            testing::Return(user_education::FeaturePromoResult::Success()));
-    EXPECT_CALL(*user_education(), MaybeShowFeaturePromo).Times(1);
+    EXPECT_CALL(*user_education(), MaybeShowFeaturePromo)
+        .WillOnce(testing::Return(true));
     autofill_field_promo_controller()->Show(gfx::RectF(0, 0, 1, 1));
     autofill_field_promo_controller()->SetPromoViewForTesting(
         promo_view_->GetWeakPtr());

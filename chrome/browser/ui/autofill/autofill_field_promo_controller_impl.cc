@@ -75,10 +75,7 @@ void AutofillFieldPromoControllerImpl::Show(const gfx::RectF& bounds) {
   params.show_promo_result_callback =
       base::BindOnce(&AutofillFieldPromoControllerImpl::OnShowPromoResult,
                      weak_ptr_factory_.GetWeakPtr());
-  if (interface->CanShowFeaturePromo(feature_promo_.get())) {
-    is_maybe_showing_ = true;
-    interface->MaybeShowFeaturePromo(std::move(params));
-  }
+  is_maybe_showing_ = interface->MaybeShowFeaturePromo(std::move(params));
 }
 
 void AutofillFieldPromoControllerImpl::Hide() {

@@ -322,7 +322,7 @@ TEST_F(HistoryEmbeddingsHandlerTest, ShowsPromo) {
       *user_education(),
       MaybeShowFeaturePromo(user_education::test::MatchFeaturePromoParams(
           feature_engagement::kIPHHistorySearchFeature)))
-      .Times(1);
+      .WillOnce(testing::Return(true));
   handler_->MaybeShowFeaturePromo();
 }
 

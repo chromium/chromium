@@ -30,11 +30,11 @@ class MockBrowserUserEducationInterface : public BrowserUserEducationInterface {
               HasFeaturePromoBeenDismissed,
               (const base::Feature&),
               (const override));
-  MOCK_METHOD(void,
+  MOCK_METHOD(bool,
               MaybeShowFeaturePromo,
               (user_education::FeaturePromoParams),
               (override));
-  MOCK_METHOD(void,
+  MOCK_METHOD(bool,
               MaybeShowStartupFeaturePromo,
               (user_education::FeaturePromoParams),
               (override));
