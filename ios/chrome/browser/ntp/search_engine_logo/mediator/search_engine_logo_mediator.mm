@@ -320,6 +320,8 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
     _fingerprint = "";
     [self.containerView setLogoState:self.logoState animated:YES];
     self.containerView.isAccessibilityElement = YES;
+    self.view.hidden = (self.logoState == SearchEngineLogoState::kNone);
+    [self.consumer searchEngineLogoStateDidChange:self.logoState];
   }
 
   if (_defaultSearchProvider) {
