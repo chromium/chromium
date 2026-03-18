@@ -28,9 +28,12 @@ class WebStateList;
             reauthModule:(id<ReauthenticationProtocol>)reauthModule
     NS_DESIGNATED_INITIALIZER;
 
-- (instancetype)initWithWebStateList:(WebStateList*)webStateList
-                        reauthModule:(id<ReauthenticationProtocol>)reauthModule
-    NS_UNAVAILABLE;
+- (instancetype)
+    initWithWebStateList:(WebStateList*)webStateList
+            reauthModule:(id<ReauthenticationProtocol>)reauthModule
+             requestInfo:
+                 (std::optional<webauthn::IOSPasskeyClient::RequestInfo>)
+                     requestInfo NS_UNAVAILABLE;
 
 - (instancetype)init NS_UNAVAILABLE;
 

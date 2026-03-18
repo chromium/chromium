@@ -148,6 +148,8 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
         initWithWebStateList:webStateList
                  requestInfo:std::move(*_requestInfo)
                 reauthModule:reauthModule];
+
+    _requestInfo.reset();
   }
   _mediator.presenter = self;
 
@@ -352,6 +354,17 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
   [_navigationController.presentingViewController
       dismissViewControllerAnimated:NO
                          completion:nil];
+}
+
+#pragma mark - Public
+
+- (BOOL)hasPendingRequest:
+    (const webauthn::IOSPasskeyClient::RequestInfo&)requestInfo {
+  if (_mediator) {
+    return [_mediator hasPendingRequest:requestInfo];
+  }
+
+  return _requestInfo.has_value() && *_requestInfo == requestInfo;
 }
 
 #pragma mark - Private

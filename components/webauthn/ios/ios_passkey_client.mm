@@ -19,4 +19,7 @@ IOSPasskeyClient::RequestInfo& IOSPasskeyClient::RequestInfo::operator=(
     RequestInfo&& other) = default;
 IOSPasskeyClient::RequestInfo::~RequestInfo() = default;
 
+bool IOSPasskeyClient::RequestInfo::operator==(const RequestInfo& other) const =
+    default;
+
 }  // namespace webauthn

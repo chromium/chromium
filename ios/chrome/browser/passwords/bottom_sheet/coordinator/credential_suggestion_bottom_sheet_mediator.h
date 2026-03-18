@@ -9,6 +9,7 @@
 #import <vector>
 
 #import "base/memory/scoped_refptr.h"
+#import "components/webauthn/ios/ios_passkey_client.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/coordinator/credential_suggestion_bottom_sheet_mediator_base.h"
 
 namespace autofill {
@@ -60,9 +61,12 @@ class WebStateList;
          engagementTracker:(feature_engagement::Tracker*)engagementTracker
     NS_DESIGNATED_INITIALIZER;
 
-- (instancetype)initWithWebStateList:(WebStateList*)webStateList
-                        reauthModule:(id<ReauthenticationProtocol>)reauthModule
-    NS_UNAVAILABLE;
+- (instancetype)
+    initWithWebStateList:(WebStateList*)webStateList
+            reauthModule:(id<ReauthenticationProtocol>)reauthModule
+             requestInfo:
+                 (std::optional<webauthn::IOSPasskeyClient::RequestInfo>)
+                     requestInfo NS_UNAVAILABLE;
 
 - (instancetype)init NS_UNAVAILABLE;
 

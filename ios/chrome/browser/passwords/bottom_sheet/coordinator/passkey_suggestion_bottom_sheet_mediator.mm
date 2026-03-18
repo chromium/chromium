@@ -17,9 +17,6 @@
 #import "ui/base/l10n/l10n_util.h"
 
 @implementation PasskeySuggestionBottomSheetMediator {
-  // Information of the passkey request which triggered the bottom sheet.
-  std::unique_ptr<webauthn::IOSPasskeyClient::RequestInfo> _requestInfo;
-
   // Delegate used to fetch and select passkey suggestions.
   raw_ptr<webauthn::IOSWebAuthnCredentialsDelegate>
       _webAuthnCredentialsDelegate;
@@ -29,15 +26,16 @@
     initWithWebStateList:(WebStateList*)webStateList
              requestInfo:(webauthn::IOSPasskeyClient::RequestInfo)requestInfo
             reauthModule:(id<ReauthenticationProtocol>)reauthModule {
-  self = [super initWithWebStateList:webStateList reauthModule:reauthModule];
-  if (self) {
-    _requestInfo = std::make_unique<webauthn::IOSPasskeyClient::RequestInfo>(
-        std::move(requestInfo));
+  std::string frameId = requestInfo.frame_id;
 
+  self = [super initWithWebStateList:webStateList
+                        reauthModule:reauthModule
+                         requestInfo:std::move(requestInfo)];
+  if (self) {
     _webAuthnCredentialsDelegate =
         webauthn::IOSWebAuthnCredentialsDelegateFactory::GetFactory(
             webStateList->GetActiveWebState())
-            ->GetDelegateForFrameId(_requestInfo->frame_id);
+            ->GetDelegateForFrameId(frameId);
     if (_webAuthnCredentialsDelegate) {
       base::expected<const std::vector<password_manager::PasskeyCredential>*,
                      password_manager::WebAuthnCredentialsDelegate::
@@ -77,7 +75,6 @@
 - (void)disconnect {
   [super disconnect];
 
-  _requestInfo.reset();
   _webAuthnCredentialsDelegate = nullptr;
 }
 

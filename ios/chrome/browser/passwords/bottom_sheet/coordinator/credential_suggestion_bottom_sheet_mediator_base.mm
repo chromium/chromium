@@ -10,6 +10,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/password_manager/core/browser/password_ui_utils.h"
+#import "components/webauthn/ios/ios_passkey_client.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/coordinator/credential_suggestion_bottom_sheet_mediator_base+Subclassing.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/coordinator/password_suggestion_bottom_sheet_exit_reason.h"
@@ -56,15 +57,22 @@ using ReauthenticationEvent::kSuccess;
 
   // Module containing the reauthentication mechanism.
   id<ReauthenticationProtocol> _reauthenticationModule;
+
+  // Information about the pending passkey request.
+  std::optional<webauthn::IOSPasskeyClient::RequestInfo> _requestInfo;
 }
 
-- (instancetype)initWithWebStateList:(WebStateList*)webStateList
-                        reauthModule:
-                            (id<ReauthenticationProtocol>)reauthModule {
+- (instancetype)
+    initWithWebStateList:(WebStateList*)webStateList
+            reauthModule:(id<ReauthenticationProtocol>)reauthModule
+             requestInfo:
+                 (std::optional<webauthn::IOSPasskeyClient::RequestInfo>)
+                     requestInfo {
   self = [super init];
   if (self) {
     _webStateList = webStateList;
     _reauthenticationModule = reauthModule;
+    _requestInfo = std::move(requestInfo);
 
     // Create and register the observers.
     _webStateListObserver.emplace(self);
@@ -168,6 +176,11 @@ using ReauthenticationEvent::kSuccess;
 }
 
 - (void)onDismissWithoutAnyCredentialAction {
+}
+
+- (BOOL)hasPendingRequest:
+    (const webauthn::IOSPasskeyClient::RequestInfo&)requestInfo {
+  return _requestInfo.has_value() && *_requestInfo == requestInfo;
 }
 
 #pragma mark - CredentialSuggestionBottomSheetDelegate

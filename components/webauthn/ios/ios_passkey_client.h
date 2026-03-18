@@ -27,6 +27,8 @@ class IOSPasskeyClient {
     RequestInfo& operator=(RequestInfo&& other);
     ~RequestInfo();
 
+    bool operator==(const RequestInfo& other) const;
+
     // The web::WebFrame's identifier.
     std::string frame_id;
     // The request id associated with a PublicKeyCredential promise.

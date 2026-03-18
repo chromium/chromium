@@ -7,7 +7,10 @@
 
 #import <Foundation/Foundation.h>
 
+#import <optional>
+
 #import "base/ios/block_types.h"
+#import "components/webauthn/ios/ios_passkey_client.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/ui/credential_suggestion_bottom_sheet_delegate.h"
 
 class WebStateList;
@@ -33,9 +36,14 @@ enum class PasswordSuggestionBottomSheetExitReason;
     presenter;
 
 // Designated initializer. `webStateList` is the list of web states to observe.
-- (instancetype)initWithWebStateList:(WebStateList*)webStateList
-                        reauthModule:(id<ReauthenticationProtocol>)reauthModule
-    NS_DESIGNATED_INITIALIZER;
+// `requestInfo` provides information on the passkey request which triggered the
+// bottom sheet, or std::nullopt if not applicable.
+- (instancetype)
+    initWithWebStateList:(WebStateList*)webStateList
+            reauthModule:(id<ReauthenticationProtocol>)reauthModule
+             requestInfo:
+                 (std::optional<webauthn::IOSPasskeyClient::RequestInfo>)
+                     requestInfo NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -58,6 +66,10 @@ enum class PasswordSuggestionBottomSheetExitReason;
 // Handler called to perform operations when the sheet was dismissed without
 // using any credential action.
 - (void)onDismissWithoutAnyCredentialAction;
+
+// Returns YES if the mediator is currently handling the given passkey request.
+- (BOOL)hasPendingRequest:
+    (const webauthn::IOSPasskeyClient::RequestInfo&)requestInfo;
 
 @end
 

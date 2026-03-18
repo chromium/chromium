@@ -240,7 +240,9 @@ NSArray<FormSuggestion*>* SetParamsAndProviderInSuggestions(
     sharedURLLoaderFactory:
         (scoped_refptr<network::SharedURLLoaderFactory>)sharedURLLoaderFactory
          engagementTracker:(feature_engagement::Tracker*)engagementTracker {
-  self = [super initWithWebStateList:webStateList reauthModule:reauthModule];
+  self = [super initWithWebStateList:webStateList
+                        reauthModule:reauthModule
+                         requestInfo:std::nullopt];
   if (self) {
     _faviconLoader = faviconLoader;
     _prefService = prefService;
