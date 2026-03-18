@@ -40,8 +40,11 @@
 
 namespace default_browser {
 
+DEFINE_USER_DATA(PinInfoBarController);
+
 PinInfoBarController::PinInfoBarController(BrowserWindowInterface* browser)
-    : browser_(browser) {
+    : browser_(browser),
+      scoped_unowned_user_data_(browser->GetUnownedUserDataHost(), *this) {
   CHECK(base::FeatureList::IsEnabled(features::kOfferPinToTaskbarInfoBar));
   browser_subscriptions_.push_back(
       browser_->RegisterBrowserDidClose(base::BindRepeating(
@@ -79,6 +82,12 @@ void PinInfoBarController::OnManagerWillBeDestroyed(
 }
 
 // static
+PinInfoBarController* PinInfoBarController::From(
+    BrowserWindowInterface* window) {
+  return Get(window->GetUnownedUserDataHost());
+}
+
+// static
 void PinInfoBarController::MaybeShowInfoBarForBrowser(
     base::WeakPtr<BrowserWindowInterface> browser,
     base::OnceCallback<void(bool)> done_callback,
@@ -89,8 +98,12 @@ void PinInfoBarController::MaybeShowInfoBarForBrowser(
     std::move(done_callback).Run(false);
     return;
   }
-  browser->GetFeatures().pin_infobar_controller()->MaybeShowInfoBar(
-      std::move(done_callback));
+  PinInfoBarController* controller = PinInfoBarController::From(browser.get());
+  if (controller) {
+    controller->MaybeShowInfoBar(std::move(done_callback));
+  } else {
+    std::move(done_callback).Run(false);
+  }
 }
 
 void PinInfoBarController::MaybeShowInfoBar(

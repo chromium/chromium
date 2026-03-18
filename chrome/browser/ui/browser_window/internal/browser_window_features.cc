@@ -411,7 +411,9 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
   }
   if (base::FeatureList::IsEnabled(features::kOfferPinToTaskbarInfoBar)) {
     pin_infobar_controller_ =
-        std::make_unique<default_browser::PinInfoBarController>(browser);
+        GetUserDataFactory()
+            .CreateInstance<default_browser::PinInfoBarController>(*browser,
+                                                                   browser);
   }
 #endif
 

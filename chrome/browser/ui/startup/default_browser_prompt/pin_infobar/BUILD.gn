@@ -13,6 +13,7 @@ source_set("pin_infobar") {
   public_deps = [
     "//base",
     "//chrome/browser:shell_integration",
+    "//ui/base/unowned_user_data",
   ]
   deps = [
     "//chrome/browser:browser_public_dependencies",

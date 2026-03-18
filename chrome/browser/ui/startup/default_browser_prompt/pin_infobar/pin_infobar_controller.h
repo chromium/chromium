@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/shell_integration.h"
 #include "components/infobars/core/infobar_manager.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class BrowserWindowInterface;
 
@@ -24,8 +25,11 @@ namespace default_browser {
 // not pinned to the taskbar. This infobar offers to pin Chrome to the taskbar.
 class PinInfoBarController : public infobars::InfoBarManager::Observer {
  public:
+  DECLARE_USER_DATA(PinInfoBarController);
   explicit PinInfoBarController(BrowserWindowInterface* browser);
   ~PinInfoBarController() override;
+
+  static PinInfoBarController* From(BrowserWindowInterface* window);
 
   // Callback passed to `BrowserWindowInterface::RegisterBrowserDidClose()`.
   void OnBrowserClosed(BrowserWindowInterface* browser);
@@ -71,6 +75,8 @@ class PinInfoBarController : public infobars::InfoBarManager::Observer {
 
   // Enables `OnBrowserClosed()` to be called.
   std::vector<base::CallbackListSubscription> browser_subscriptions_;
+
+  ui::ScopedUnownedUserData<PinInfoBarController> scoped_unowned_user_data_;
 
   // Must be the last member variable.
   base::WeakPtrFactory<PinInfoBarController> weak_factory_{this};

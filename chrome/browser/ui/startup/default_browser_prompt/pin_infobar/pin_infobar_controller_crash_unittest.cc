@@ -20,6 +20,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
 namespace default_browser {
 
@@ -41,6 +42,8 @@ class PinInfoBarControllerCrashTest : public testing::Test {
     ON_CALL(*browser_window_interface_, GetType())
         .WillByDefault(
             ::testing::Return(BrowserWindowInterface::Type::TYPE_NORMAL));
+    ON_CALL(*browser_window_interface_, GetUnownedUserDataHost())
+        .WillByDefault(::testing::ReturnRef(unowned_user_data_host_));
     delegate_->SetBrowserWindowInterface(browser_window_interface_.get());
   }
 
@@ -65,6 +68,7 @@ class PinInfoBarControllerCrashTest : public testing::Test {
   const std::unique_ptr<TabStripModel> tab_strip_model_;
   const std::unique_ptr<MockBrowserWindowInterface> browser_window_interface_;
   const tabs::TabModel::PreventFeatureInitializationForTesting prevent_;
+  ui::UnownedUserDataHost unowned_user_data_host_;
 };
 
 // Reproduce the crash in b/491643039: OnShouldOfferToPinResult called when
