@@ -9,6 +9,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
@@ -20,8 +22,11 @@
 #include "components/omnibox/browser/omnibox_pref_names.h"
 #include "components/omnibox/browser/omnibox_triggered_feature_service.h"
 #include "components/omnibox/browser/page_classification_functions.h"
+#include "components/omnibox/browser/vector_icons.h"
 #include "components/tabs/public/tab_interface.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
+#include "ui/base/models/image_model.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/view.h"
 
@@ -41,6 +46,18 @@ void SetPageActionVisibility(
     page_actions::PageActionController& page_action_controller,
     bool visible) {
   if (visible) {
+    page_action_controller.OverrideImage(
+        kActionAiMode,
+        ui::ImageModel::FromImageGenerator(
+            base::BindRepeating([](const ui::ColorProvider* color_provider) {
+              return gfx::CreateVectorIcon(
+                  omnibox::kSearchSparkIcon,
+                  GetLayoutConstant(LayoutConstant::kLocationBarChipIconSize),
+                  color_provider->GetColor(kColorOmniboxIconForegroundTonal));
+            }),
+            gfx::Size(
+                GetLayoutConstant(LayoutConstant::kLocationBarChipIconSize),
+                GetLayoutConstant(LayoutConstant::kLocationBarChipIconSize))));
     page_action_controller.Show(kActionAiMode);
     page_action_controller.ShowSuggestionChip(kActionAiMode,
                                               {.should_animate = false});
@@ -93,8 +110,12 @@ bool AiModePageActionController::ShouldShowPageAction(
     return false;
   }
 
-  const OmniboxEditModel* edit_model =
-      location_bar_view.GetOmniboxController()->edit_model();
+  auto* omnibox_controller = location_bar_view.GetOmniboxController();
+  if (!omnibox_controller) {
+    return false;
+  }
+
+  const OmniboxEditModel* edit_model = omnibox_controller->edit_model();
 
   // If the user is currently in keyword mode, then suppress the AIM entrypoint.
   if (edit_model->is_keyword_selected()) {
