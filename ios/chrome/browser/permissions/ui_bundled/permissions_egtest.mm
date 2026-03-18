@@ -122,7 +122,7 @@ void TapDoneButtonOnInfobarModal() {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  if ([self isRunningTest:@selector(testPermissionsWithReaderMode)]) {
+  if ([self isRunningTest:@selector(FLAKY_testPermissionsWithReaderMode)]) {
     config.features_enabled.push_back(kEnableReaderModeInUS);
   }
   return config;
@@ -703,7 +703,8 @@ void TapDoneButtonOnInfobarModal() {
 
 // Tests that by enabling permissions, then triggering Reader mode, then
 // disabling Reader mode, the permission badges are still visible at the end.
-- (void)testPermissionsWithReaderMode {
+// TODO(crbug.com/493975828): Test is flaky.
+- (void)FLAKY_testPermissionsWithReaderMode {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   [ChromeEarlGrey
       loadURL:self.testServer->GetURL("/permissions/camera_only.html")];
