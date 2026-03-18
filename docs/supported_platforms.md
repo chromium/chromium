@@ -279,7 +279,8 @@ https://source.chromium.org/chromium/chromium/src/+/main:build/args/headless.gn)
 ### iOS WebView
 
 iOS WebView is an Objective-C framework that renders web content with
-`[CWVWebView]`. The
-embedder code for iOS WebView lives in //ios/web_view. Details are
+`[CWVWebView]`. It bundles select Chromium features to enhance the web browsing
+experience beyond what WKWebView provides out of the box. The embedder code for
+iOS WebView lives in //ios/web_view. Details are
 [here](https://chromium.googlesource.com/chromium/src/+/main/ios/web_view/README.md).
 
