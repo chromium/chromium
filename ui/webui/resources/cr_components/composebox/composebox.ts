@@ -30,7 +30,6 @@ import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {AutocompleteMatch, AutocompleteResult, FileAttachment, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SearchContext, SelectedFileInfo, TabAttachment, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {ToolMode} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import type {ContextUploadErrorType, InputState} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {ModelMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
@@ -46,6 +45,7 @@ import type {ComposeboxDropdownElement} from './composebox_dropdown.js';
 import type {ComposeboxFileInputsElement} from './composebox_file_inputs.js';
 import {ComposeboxProxyImpl} from './composebox_proxy.js';
 import {ContextUploadStatus, InputType, ToolMode as ComposeboxToolMode} from './composebox_query.mojom-webui.js';
+import type {ContextUploadErrorType, InputState} from './composebox_query.mojom-webui.js';
 import type {ComposeboxVoiceSearchElement} from './composebox_voice_search.js';
 import type {ContextualEntrypointAndMenuElement} from './contextual_entrypoint_and_menu.js';
 import type {ErrorScrimElement} from './error_scrim.js';
@@ -1467,18 +1467,6 @@ export class ComposeboxElement extends I18nMixinLit
     this.handleToolClick_(e.detail.toolMode);
   }
 
-  protected onDeepSearchClick_() {
-    this.handleToolClick_(ComposeboxToolMode.kDeepSearch);
-  }
-
-  protected onCreateImageClick_() {
-    this.handleToolClick_(ComposeboxToolMode.kImageGen);
-  }
-
-  protected onCanvasClick_() {
-    this.handleToolClick_(ComposeboxToolMode.kCanvas);
-  }
-
   protected handleToolClick_(tool: ComposeboxToolMode) {
     if (this.contextMenuDescriptionEnabled_) {
       if (this.activeToolMode_ === tool) {
@@ -2238,26 +2226,6 @@ export class ComposeboxElement extends I18nMixinLit
   protected hasImageFiles_() {
     return Array.from(this.files_.values()).some(
         file => file.type.includes('image'));
-  }
-
-  protected getToolChipLabel_(tool: ComposeboxToolMode): string {
-    if (this.inputState_ && this.inputState_.toolConfigs) {
-      const config = this.inputState_.toolConfigs.find(c => c.tool === tool);
-      if (config && config.chipLabel) {
-        return config.chipLabel;
-      }
-    }
-    // Fallback to i18n strings
-    switch (tool) {
-      case ComposeboxToolMode.kDeepSearch:
-        return this.i18n('deepSearch');
-      case ComposeboxToolMode.kImageGen:
-        return this.i18n('createImages');
-      case ComposeboxToolMode.kCanvas:
-        return this.i18n('canvas');
-      default:
-        return '';
-    }
   }
 
   // This function is called when backend starts a file upload flow, whether

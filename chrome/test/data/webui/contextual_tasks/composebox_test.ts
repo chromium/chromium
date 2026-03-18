@@ -16,7 +16,7 @@ import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as 
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
-import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {$$, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestContextualTasksBrowserProxy} from './test_contextual_tasks_browser_proxy.js';
 import {assertStyle, deleteLastFile, FAKE_TOKEN_STRING, FAKE_TOKEN_STRING_2, fixtureUrl, getSubmitButton, getSubmitContainer, mockInputState, setupAutocompleteResults, simulateUserInput, uploadFileAndVerify} from './test_utils.js';
@@ -565,8 +565,10 @@ suite('ContextualTasksComposeboxTest', () => {
   test('ToolChipVisibilityBasedOnInputState', async () => {
     const innerComposebox = contextualTasksApp.$.composebox.$.composebox;
 
-    const getChip = (id: string) =>
-        innerComposebox.shadowRoot?.querySelector<HTMLElement>(`#${id}`);
+    const getChip = () => {
+      const toolChip = $$(innerComposebox, 'cr-composebox-tool-chip');
+      return toolChip ? $$(toolChip, '#toolEnabledButton') : null;
+    };
 
     // Initial state: No tool active.
     let newInputState = {
@@ -577,11 +579,10 @@ suite('ContextualTasksComposeboxTest', () => {
     await microtasksFinished();
     await innerComposebox.updateComplete;
 
-    assertFalse(isVisible(getChip('deepSearchChip')));
-    assertFalse(isVisible(getChip('nanoBananaChip')));
-    assertFalse(isVisible(getChip('canvasChip')));
+    assertFalse(isVisible(getChip()));
 
     // Activate Deep Search.
+    innerComposebox.onToolClickForTesting(ToolMode.kDeepSearch);
     newInputState = {
       ...mockInputState,
       activeTool: ToolMode.kDeepSearch,
@@ -590,11 +591,13 @@ suite('ContextualTasksComposeboxTest', () => {
     await microtasksFinished();
     await innerComposebox.updateComplete;
 
-    assertTrue(isVisible(getChip('deepSearchChip')));
-    assertFalse(isVisible(getChip('nanoBananaChip')));
-    assertFalse(isVisible(getChip('canvasChip')));
+    assertTrue(isVisible(getChip()), 'Deep search does not exist');
+    assertTrue(
+        getChip()!.textContent.includes('Deep Search'),
+        'Deep search is not the text');
 
     // Activate Image Gen (nanoBananaChip).
+    innerComposebox.onToolClickForTesting(ToolMode.kImageGen);
     newInputState = {
       ...mockInputState,
       activeTool: ToolMode.kImageGen,
@@ -603,11 +606,13 @@ suite('ContextualTasksComposeboxTest', () => {
     await microtasksFinished();
     await innerComposebox.updateComplete;
 
-    assertFalse(isVisible(getChip('deepSearchChip')));
-    assertTrue(isVisible(getChip('nanoBananaChip')));
-    assertFalse(isVisible(getChip('canvasChip')));
+    assertTrue(isVisible(getChip()), 'Create images does not exist');
+    assertTrue(
+        getChip()!.textContent.includes('Create images'),
+        'Create images is not the text');
 
     // Activate Canvas.
+    innerComposebox.onToolClickForTesting(ToolMode.kCanvas);
     newInputState = {
       ...mockInputState,
       activeTool: ToolMode.kCanvas,
@@ -616,11 +621,12 @@ suite('ContextualTasksComposeboxTest', () => {
     await microtasksFinished();
     await innerComposebox.updateComplete;
 
-    assertFalse(isVisible(getChip('deepSearchChip')));
-    assertFalse(isVisible(getChip('nanoBananaChip')));
-    assertTrue(isVisible(getChip('canvasChip')));
+    assertTrue(isVisible(getChip()), 'Canvas does not exist');
+    assertTrue(
+        getChip()!.textContent.includes('Canvas'), 'Canvas is not the text');
 
     // Back to Unspecified.
+    innerComposebox.onToolClickForTesting(ToolMode.kUnspecified);
     newInputState = {
       ...mockInputState,
       activeTool: ToolMode.kUnspecified,
@@ -629,9 +635,7 @@ suite('ContextualTasksComposeboxTest', () => {
     await microtasksFinished();
     await innerComposebox.updateComplete;
 
-    assertFalse(isVisible(getChip('deepSearchChip')));
-    assertFalse(isVisible(getChip('nanoBananaChip')));
-    assertFalse(isVisible(getChip('canvasChip')));
+    assertFalse(isVisible(getChip()), 'Tool chip still visible');
   });
 
   test('EnterKeyAfterSubmitDoesNotAddNewLine', async () => {
