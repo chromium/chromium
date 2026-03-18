@@ -5396,10 +5396,6 @@
       status: "stable",
     },
     {
-      name: "SvgAvoidCullingElementsWithTransformOperations",
-      status: "stable",
-    },
-    {
       name: "SvgAvoidResettingFilterQualityForTiledPattern",
       status: "stable",
     },

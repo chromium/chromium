@@ -187,9 +187,7 @@ void LayoutSVGModelObject::StyleDidChange(
     }
     if ((StyleRef().HasCurrentTransformRelatedAnimation() &&
          !old_style->HasCurrentTransformRelatedAnimation()) ||
-        (RuntimeEnabledFeatures::
-             SvgAvoidCullingElementsWithTransformOperationsEnabled() &&
-         StyleRef().HasNonIdentityTransformOperation() &&
+        (StyleRef().HasNonIdentityTransformOperation() &&
          !old_style->HasNonIdentityTransformOperation())) {
       Parent()->SetSVGDescendantMayHaveTransformRelatedOperations();
     }

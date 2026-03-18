@@ -126,9 +126,7 @@ bool LayoutSVGContainer::UpdateAfterSVGLayout(
         SetTransformAffectsVectorEffect(true);
       if (child->StyleRef().HasCurrentTransformRelatedAnimation() ||
           child->SVGDescendantMayHaveTransformRelatedOperations() ||
-          (RuntimeEnabledFeatures::
-               SvgAvoidCullingElementsWithTransformOperationsEnabled() &&
-           child->StyleRef().HasNonIdentityTransformOperation())) {
+          child->StyleRef().HasNonIdentityTransformOperation()) {
         SetSVGDescendantMayHaveTransformRelatedOperations();
       }
     }

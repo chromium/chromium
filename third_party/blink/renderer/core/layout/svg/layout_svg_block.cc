@@ -155,9 +155,7 @@ void LayoutSVGBlock::StyleDidChange(
 
   if ((style.HasCurrentTransformRelatedAnimation() &&
        !old_style->HasCurrentTransformRelatedAnimation()) ||
-      (RuntimeEnabledFeatures::
-           SvgAvoidCullingElementsWithTransformOperationsEnabled() &&
-       style.HasNonIdentityTransformOperation() &&
+      (style.HasNonIdentityTransformOperation() &&
        !old_style->HasNonIdentityTransformOperation())) {
     Parent()->SetSVGDescendantMayHaveTransformRelatedOperations();
   }
