@@ -105,6 +105,7 @@ class BackgroundContentsServiceTest : public testing::Test {
     return contents_ptr;
   }
 
+ private:
   content::BrowserTaskEnvironment task_environment_;
 };
 
@@ -262,6 +263,33 @@ TEST_F(BackgroundContentsServiceTest, TestApplicationIDLinkage) {
   EXPECT_EQ(nullptr, service.GetAppBackgroundContents("appid"));
   EXPECT_EQ(1U, GetPrefs(&profile).size());
   EXPECT_EQ(url2.spec(), GetPrefURLForApp(&profile, contents2->appid()));
+}
+
+// Regression test for crash. See http://crbug.com/477597409
+TEST_F(BackgroundContentsServiceTest, RestartForceInstalledExtensionOnCrash) {
+  auto profile = std::make_unique<TestingProfile>();
+  auto service = std::make_unique<BackgroundContentsService>(profile.get());
+
+  // Set the extension restart delay to 0 so we can use RunUntilIdle() below.
+  service->zero_restart_delay_for_test_ = true;
+
+  // Create a trivial extension.
+  scoped_refptr<extensions::Extension> extension =
+      extension_test_util::LoadManifest("app", "manifest.json");
+  ASSERT_TRUE(extension.get());
+
+  // Calling restart will post a task.
+  service->RestartForceInstalledExtensionOnCrash(extension.get());
+
+  // Before the task runs, delete the service (which in production is owned by
+  // the profile) and the profile.
+  service.reset();
+  profile.reset();
+
+  // Wait for the restart extension task to run.
+  base::RunLoop().RunUntilIdle();
+
+  // No crash.
 }
 
 TEST_F(BackgroundContentsServiceNotificationTest, TestShowBalloon) {
