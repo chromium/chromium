@@ -679,9 +679,15 @@ export class ComposeboxElement extends I18nMixinLit
   }
 
   setDefaultModel() {
-    if (this.inputState_?.activeModel === ModelMode.kUnspecified) {
+    if (this.inputState_?.activeModel &&
+        (this.inputState_.activeModel as ModelMode) !==
+            ModelMode.kUnspecified) {
+      this.searchboxHandler_.setActiveModelMode(this.inputState_.activeModel);
+    } else if (
+        this.inputState_?.allowedModels &&
+        this.inputState_.allowedModels.length > 0) {
       this.searchboxHandler_.setActiveModelMode(
-          this.inputState_?.allowedModels[0] ?? ModelMode.kUnspecified);
+          this.inputState_.allowedModels[0]!);
     }
   }
 

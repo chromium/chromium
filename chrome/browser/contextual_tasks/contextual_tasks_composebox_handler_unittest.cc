@@ -872,7 +872,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest, AegcParameterDisablesTools) {
   auto session_handle =
       std::make_unique<contextual_search::MockContextualSearchSessionHandle>();
   auto input_state_model = std::make_unique<contextual_search::InputStateModel>(
-      *session_handle, config, /*is_off_the_record=*/false);
+      *session_handle, config, GURL(), /*is_off_the_record=*/false);
 
   EXPECT_CALL(*mock_ui_, TakeInputStateModel())
       .WillOnce(testing::Return(testing::ByMove(std::move(input_state_model))));
@@ -2821,7 +2821,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest, ActiveModelIsPassed) {
       [this]() -> std::unique_ptr<contextual_search::InputStateModel> {
         omnibox::SearchboxConfig config;
         auto model = std::make_unique<contextual_search::InputStateModel>(
-            *session_handle_, config, false);
+            *session_handle_, config, GURL(), false);
         model->setActiveModel(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
         return model;
       });
