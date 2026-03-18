@@ -26,13 +26,15 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/modules/ai/language_model_params.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 
 namespace blink {
 
 // The class that represents a `LanguageModel` object.
-class LanguageModel final : public EventTarget, public ExecutionContextClient {
+class MODULES_EXPORT LanguageModel final : public EventTarget,
+                                           public ExecutionContextClient {
   DEFINE_WRAPPERTYPEINFO();
 
  public:

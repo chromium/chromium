@@ -32,10 +32,13 @@ crbug.com/460555196 external/wpt/ai/language-model/language-model-prompt-multimo
 
 # These tests frequently time out on Mac platforms.
 # Disables tests on all platforms, since disabling these tests on Mac only is not supported.
-crbug.com/460555196 external/wpt/ai/language-model/language-model-prompt-multimodal.tentative.https.window.html [ Timeout Pass ]
-crbug.com/460799715 external/wpt/ai/language-model/language-model-prompt.tentative.https.window.html [ Timeout Pass ]
 crbug.com/460799715 external/wpt/ai/language-model/language-model-clone.tentative.https.window.html [ Timeout Pass ]
 crbug.com/460799715 external/wpt/ai/language-model/language-model-iframe.tentative.https.html [ Timeout Pass ]
+crbug.com/460799715 external/wpt/ai/language-model/language-model-prompt-empty-input.tentative.https.window.html [ Timeout Pass ]
+crbug.com/459864801 external/wpt/ai/language-model/language-model-prompt-multimodal-image.tentative.https.window.html [ Timeout Pass ]
+crbug.com/459864801 external/wpt/ai/language-model/language-model-prompt-multimodal-video.tentative.https.window.html [ Timeout Pass ]
+crbug.com/460555196 external/wpt/ai/language-model/language-model-prompt-multimodal.tentative.https.window.html [ Timeout Pass ]
+crbug.com/460799715 external/wpt/ai/language-model/language-model-prompt.tentative.https.window.html [ Timeout Pass ]
 crbug.com/460799715 external/wpt/ai/language-model/language-model-quota-exceeded.tentative.https.window.html [ Timeout Pass ]
 crbug.com/460799715 external/wpt/ai/language-model/language-model-response-json-schema.tentative.https.window.html [ Timeout Pass ]
 crbug.com/460799715 external/wpt/ai/rewriter/rewriter-abort.tentative.https.window.html [ Timeout Pass ]
@@ -45,7 +48,5 @@ crbug.com/460799715 external/wpt/ai/summarizer/summarizer-summarize-streaming.te
 crbug.com/460799715 external/wpt/ai/writer/writer-abort.tentative.https.window.html [ Timeout Pass ]
 crbug.com/460799715 external/wpt/ai/writer/writer-create-available.tentative.https.window.html [ Timeout Pass ]
 crbug.com/460799715 external/wpt/ai/writer/writer-write-streaming.tentative.https.window.html [ Timeout Pass ]
-crbug.com/459864801 external/wpt/ai/language-model/language-model-prompt-multimodal-image.tentative.https.window.html [ Timeout Pass ]
-crbug.com/459864801 external/wpt/ai/language-model/language-model-prompt-multimodal-video.tentative.https.window.html [ Timeout Pass ]
 
 

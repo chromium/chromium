@@ -808,6 +808,7 @@ LanguageModel::ValidateAndProcessPromptInput(
   }
 
   // TODO(crbug.com/411470034): Aggregate other input type sizes for UMA.
+  CHECK(input);
   if (input->IsString()) {
     base::UmaHistogramCounts1M(
         AIMetrics::GetAISessionRequestSizeMetricName(
@@ -846,6 +847,12 @@ ScriptPromise<IDLUndefined> LanguageModel::append(
   ScriptPromiseResolver<IDLUndefined>* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
   auto promise = resolver->Promise();
+
+  if (input->IsLanguageModelMessageSequence() &&
+      input->GetAsLanguageModelMessageSequence().empty()) {
+    resolver->Resolve();
+    return promise;
+  }
 
   ConvertPromptInputsToMojo(
       script_state, options->getSignalOr(nullptr), input, info_,

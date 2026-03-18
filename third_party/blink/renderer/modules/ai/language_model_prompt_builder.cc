@@ -67,13 +67,18 @@ LanguageModelMessageContent* MakeMessageTextContent(const String& value) {
 
 // Normalizes a prompt message into a list of canonical
 // LanguageModelMessageContent. Shorthand styles are converted into canonical
-// formats.
-HeapVector<Member<LanguageModelMessageContent>> NormalizePromptContent(
+// formats. Adds an empty text content in place of empty sequences.
+HeapVector<Member<LanguageModelMessageContent>> NormalizePrompt(
     const LanguageModelMessage* message) {
   V8UnionLanguageModelMessageContentSequenceOrString* content =
       message->content();
+  CHECK(content);
   if (content->IsLanguageModelMessageContentSequence()) {
-    return content->GetAsLanguageModelMessageContentSequence();
+    auto content_list = content->GetAsLanguageModelMessageContentSequence();
+    if (content_list.empty()) {
+      content_list.push_back(MakeMessageTextContent(g_empty_string));
+    }
+    return content_list;
   }
   CHECK(content->IsString());
   HeapVector<Member<LanguageModelMessageContent>> content_list;
@@ -82,16 +87,28 @@ HeapVector<Member<LanguageModelMessageContent>> NormalizePromptContent(
 }
 
 // Normalizes a prompt into a list of canonical LanguageModelMessage. Shorthand
-// styles are converted into canonical formats.
+// styles are converted into canonical formats. Yields empty user-role text
+// content for empty message sequences.
 HeapVector<Member<LanguageModelMessage>> NormalizePrompt(
     const V8LanguageModelPrompt* prompt) {
+  CHECK(prompt);
   if (prompt->IsLanguageModelMessageSequence()) {
-    for (const auto& message : prompt->GetAsLanguageModelMessageSequence()) {
+    auto messages = prompt->GetAsLanguageModelMessageSequence();
+    if (messages.empty()) {
+      auto* message = MakeGarbageCollected<LanguageModelMessage>();
+      message->setRole(
+          V8LanguageModelMessageRole(V8LanguageModelMessageRole::Enum::kUser));
       message->setContent(MakeGarbageCollected<
                           V8UnionLanguageModelMessageContentSequenceOrString>(
-          NormalizePromptContent(message)));
+          g_empty_string));
+      messages.push_back(std::move(message));
     }
-    return prompt->GetAsLanguageModelMessageSequence();
+    for (const auto& message : messages) {
+      message->setContent(MakeGarbageCollected<
+                          V8UnionLanguageModelMessageContentSequenceOrString>(
+          NormalizePrompt(message)));
+    }
+    return messages;
   }
   CHECK(prompt->IsString());
   HeapVector<Member<LanguageModelMessageContent>> content_list;
@@ -338,10 +355,8 @@ void LanguageModelPromptBuilder::OnPromptContentProcessed(
 void LanguageModelPromptBuilder::Build(const V8LanguageModelPrompt* input) {
   CHECK_EQ(processed_remaining_, 0);  // Prevent parallel Build() calls.
   HeapVector<Member<LanguageModelMessage>> messages = NormalizePrompt(input);
-  if (messages.empty()) {
-    Resolve();
-    return;
-  }
+  // NormalizePrompt ensures that the messages list is never empty.
+  CHECK(!messages.empty());
   scoped_refptr<base::SequencedTaskRunner> task_runner =
       ExecutionContext::From(script_state_)
           ->GetTaskRunner(TaskType::kInternalDefault);
@@ -354,6 +369,8 @@ void LanguageModelPromptBuilder::Build(const V8LanguageModelPrompt* input) {
 
     HeapVector<Member<LanguageModelMessageContent>> content_sequence =
         message->content()->GetAsLanguageModelMessageContentSequence();
+    // Normalization ensures every message has at least one content entry.
+    CHECK(!content_sequence.empty());
     processed_remaining_ += content_sequence.size();
     // Pre-allocate the mojo struct and content array.
     processed_prompts_.push_back(mojom::blink::AILanguageModelPrompt::New(
@@ -411,9 +428,12 @@ void LanguageModelPromptBuilder::Build(const V8LanguageModelPrompt* input) {
 
   size_t message_index = 0;
   for (const auto& message : messages) {
+    auto content_sequence =
+        message->content()->GetAsLanguageModelMessageContentSequence();
+    CHECK(!content_sequence.empty());
     size_t content_index = 0;
-    for (const auto& content :
-         message->content()->GetAsLanguageModelMessageContentSequence()) {
+    for (const auto& content : content_sequence) {
+      CHECK(content);
       // Track the pre-allocated message and content slot that the resulting
       // content will be written to.
       PendingEntry* pending_entry = MakeGarbageCollected<PendingEntry>(
@@ -425,6 +445,9 @@ void LanguageModelPromptBuilder::Build(const V8LanguageModelPrompt* input) {
     }
     message_index++;
   }
+  // As every message is guaranteed to have at least one content entry,
+  // processed_remaining_ will always be greater than 0 here.
+  CHECK_GT(processed_remaining_, 0);
 }
 
 void LanguageModelPromptBuilder::Trace(Visitor* visitor) const {
