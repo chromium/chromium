@@ -1148,7 +1148,7 @@ TEST_F(GlicMetricsTrustFirstOnboardingTest, ShownAndDismissed) {
             1);
 
   // Closing without accept triggers "Dismissed".
-  metrics()->OnGlicWindowClose(nullptr, std::nullopt, gfx::Rect());
+  metrics()->OnInstanceClosed();
   EXPECT_EQ(
       user_action_tester().GetActionCount("Glic.Fre.Dismissed.Onboarding"), 1);
   histogram_tester().ExpectTotalCount("Glic.Fre.TotalTime.Dismissed.Onboarding",

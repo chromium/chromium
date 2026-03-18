@@ -339,12 +339,16 @@ class GlicMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   void OnDetachedFromBrowser(AttachChangeReason reason);
 
   // ----Public API called by other glic classes-----
-  // Called when the "Trust-First Onboarding" flow is shown (side panel).
-  void OnTrustFirstOnboardingShown();
   // Called when the user completes the onboarding flow (consents).
   void OnTrustFirstOnboardingAccept();
-  // Called when the user dismisses the onboarding flow without consenting.
-  void OnTrustFirstOnboardingDismissed();
+  // Called when any instance is opened. This method is used to track whether an
+  // FRE onboarding is going to be shown. If an FRE onboarding is already shown,
+  // this method is idempotent.
+  void OnInstanceOpened();
+  // Called when any instance is closed. This method is idempotent. If
+  // trust-first FRE was shown and not accepted, this metric logs a dismiss
+  // metric, and then clears the bit tracking FRE open.
+  void OnInstanceClosed();
   // Called when the user clicks Accept in the FRE.
   void OnFreAccepted();
   // Called when the glic window starts to open.
@@ -366,7 +370,7 @@ class GlicMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   void OnWidgetUserResizeStarted();
   // Called when the glic window stops being resized by the user.
   void OnWidgetUserResizeEnded();
-  // Called when the glic window finishes closing.
+  // Called when the detached glic window finishes closing.
   void OnGlicWindowClose(Browser* last_active_browser,
                          std::optional<display::Display> display,
                          const gfx::Rect& glic_bounds);
@@ -418,6 +422,11 @@ class GlicMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   void SetWebClientMode(mojom::WebClientMode mode);
 
  private:
+  // Called when the "Trust-First Onboarding" flow is shown (side panel). This
+  // relies on the assumption that the logic governing when this method is
+  // called matches the logic for showing the trust-first FRE.
+  void OnTrustFirstOnboardingShown();
+
   // Called when `impression_timer_` fires.
   void OnImpressionTimerFired();
 

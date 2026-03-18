@@ -399,9 +399,7 @@ void GlicInstanceImpl::Close(EmbedderKey key, const CloseOptions& options) {
   if (!embedder) {
     return;
   }
-  if (GlicEnabling::IsTrustFirstOnboardingEnabledForProfile(profile_)) {
-    service_->metrics()->OnTrustFirstOnboardingDismissed();
-  }
+  service_->metrics()->OnInstanceClosed();
   instance_metrics_.OnClose();
   embedder->Close(options);
 }
@@ -411,9 +409,6 @@ bool GlicInstanceImpl::Toggle(ShowOptions&& options,
                               glic::mojom::InvocationSource source,
                               std::optional<std::string> prompt_suggestion,
                               bool auto_send) {
-  if (GlicEnabling::IsTrustFirstOnboardingEnabledForProfile(profile_)) {
-    service_->metrics()->OnTrustFirstOnboardingShown();
-  }
   instance_metrics_.OnToggle(source, options, IsShowing());
   EmbedderKey key = GetEmbedderKey(options);
   // Close instance on toggle when it has an active embedder.
@@ -423,6 +418,9 @@ bool GlicInstanceImpl::Toggle(ShowOptions&& options,
     }
     return false;
   }
+
+  service_->metrics()->OnInstanceOpened();
+
   // We assume that a toggle is user initiated so focus on show.
   options.focus_on_show = true;
   options.prompt_suggestion = prompt_suggestion;
