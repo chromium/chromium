@@ -24,6 +24,7 @@
 #include "base/time/time.h"
 #include "base/version.h"
 #include "chrome/browser/component_updater/component_updater_utils.h"
+#include "chrome/browser/extensions/updater/authenticated_network_fetcher.h"
 #include "chrome/browser/extensions/updater/extension_update_client_command_line_config_policy.h"
 #include "chrome/browser/extensions/updater/extension_updater_switches.h"
 #include "chrome/browser/google/google_brand.h"
@@ -276,15 +277,16 @@ ChromeUpdateClientConfig::GetNetworkFetcherFactory() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!network_fetcher_factory_) {
     network_fetcher_factory_ =
-        base::MakeRefCounted<update_client::NetworkFetcherChromiumFactory>(
-            context_->GetDefaultStoragePartition()
-                ->GetURLLoaderFactoryForBrowserProcess(),
-            // Only extension updates that require authentication are served
-            // from chrome.google.com, so send cookies if and only if that is
-            // the download domain.
-            base::BindRepeating([](const GURL& url) {
-              return url.DomainIs("chrome.google.com");
-            }));
+        base::MakeRefCounted<AuthenticatedNetworkFetcherFactory>(
+            base::MakeRefCounted<update_client::NetworkFetcherChromiumFactory>(
+                context_->GetDefaultStoragePartition()
+                    ->GetURLLoaderFactoryForBrowserProcess(),
+                // Only extension updates that require authentication are served
+                // from chrome.google.com, so send cookies if and only if that
+                // is the download domain.
+                base::BindRepeating([](const GURL& url) {
+                  return url.DomainIs("chrome.google.com");
+                })));
   }
   return network_fetcher_factory_;
 }

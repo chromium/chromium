@@ -448,6 +448,8 @@ source_set("extensions") {
     "system_display/display_info_provider.h",
     "tab_helper.cc",
     "tab_helper.h",
+    "updater/authenticated_network_fetcher.cc",
+    "updater/authenticated_network_fetcher.h",
     "updater/chrome_extension_downloader_factory.cc",
     "updater/chrome_extension_downloader_factory.h",
     "updater/chrome_update_client_config.cc",
