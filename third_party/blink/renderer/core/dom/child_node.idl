@@ -34,4 +34,10 @@ interface mixin ChildNode {
   [RuntimeEnabled=NewHTMLSettingMethods, RaisesException] void afterHTMLUnsafe((TrustedHTML or DOMString) html, optional (SetHTMLUnsafeOptions or TrustedParserOptions) options = {});
   [RuntimeEnabled=NewHTMLSettingMethods, RaisesException] void replaceWithHTML(DOMString html, optional (SetHTMLOptions or TrustedParserOptions) options = {});
   [RuntimeEnabled=NewHTMLSettingMethods, RaisesException] void replaceWithHTMLUnsafe((TrustedHTML or DOMString) html, optional (SetHTMLUnsafeOptions or TrustedParserOptions) options = {});
+  [RuntimeEnabled=NewHTMLSettingMethods, CallWith=ScriptState, RaisesException] WritableStream streamBeforeHTMLUnsafe(optional (SetHTMLUnsafeOptions or TrustedParserOptions) options = {});
+  [RuntimeEnabled=NewHTMLSettingMethods, CallWith=ScriptState, RaisesException] WritableStream streamBeforeHTML(optional (SetHTMLOptions or TrustedParserOptions) options = {});
+  [RuntimeEnabled=NewHTMLSettingMethods, CallWith=ScriptState, RaisesException] WritableStream streamAfterHTMLUnsafe(optional (SetHTMLUnsafeOptions or TrustedParserOptions) options = {});
+  [RuntimeEnabled=NewHTMLSettingMethods, CallWith=ScriptState, RaisesException] WritableStream streamAfterHTML(optional (SetHTMLOptions or TrustedParserOptions) options = {});
+  [RuntimeEnabled=NewHTMLSettingMethods, CallWith=ScriptState, RaisesException] WritableStream streamReplaceWithHTMLUnsafe(optional (SetHTMLUnsafeOptions or TrustedParserOptions) options = {});
+  [RuntimeEnabled=NewHTMLSettingMethods, CallWith=ScriptState, RaisesException] WritableStream streamReplaceWithHTML(optional (SetHTMLOptions or TrustedParserOptions) options = {});
 };

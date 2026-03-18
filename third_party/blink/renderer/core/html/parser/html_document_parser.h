@@ -80,6 +80,21 @@ enum ParserPrefetchPolicy {
   kDisallowPrefetching
 };
 
+class ParserRootInsertionPoint
+    : public GarbageCollected<ParserRootInsertionPoint> {
+ public:
+  ParserRootInsertionPoint(ContainerNode& target, Node* ref_node)
+      : target(target), ref_node(ref_node) {}
+
+  void Trace(Visitor* visitor) const {
+    visitor->Trace(target);
+    visitor->Trace(ref_node);
+  }
+
+  Member<ContainerNode> target;
+  Member<Node> ref_node;
+};
+
 // TODO(https://crbug.com/1049898): These are only exposed to make it possible
 // to delete an expired histogram. The test should be rewritten to test at a
 // different level, so it won't have to make assertions about internal state.
@@ -92,12 +107,13 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
   HTMLDocumentParser(HTMLDocument&,
                      ParserSynchronizationPolicy,
                      ParserPrefetchPolicy prefetch_policy = kAllowPrefetching);
-  HTMLDocumentParser(ContainerNode* fragment_target,
+  HTMLDocumentParser(DocumentFragment* fragment_target,
                      Element* context_element,
                      ParserContentPolicy,
                      ParserPrefetchPolicy prefetch_policy,
                      CustomElementRegistry* registry,
-                     StreamingSanitizer* sanitizer);
+                     StreamingSanitizer* sanitizer,
+                     ParserRootInsertionPoint* root_insertion_point = nullptr);
   ~HTMLDocumentParser() override;
   void Trace(Visitor*) const override;
 

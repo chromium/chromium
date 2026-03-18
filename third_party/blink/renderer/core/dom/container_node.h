@@ -417,6 +417,14 @@ class CORE_EXPORT ContainerNode : public Node {
   void appendHTML(const String& html,
                   V8UnionSetHTMLOptionsOrTrustedParserOptions* options,
                   ExceptionState& exception_state);
+  WritableStream* streamPrependHTMLUnsafe(
+      ScriptState*,
+      V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions*,
+      ExceptionState&);
+  WritableStream* streamPrependHTML(
+      ScriptState*,
+      V8UnionSetHTMLOptionsOrTrustedParserOptions*,
+      ExceptionState&);
 
   void appendHTMLUnsafe(
       const V8UnionStringOrTrustedHTML* html,

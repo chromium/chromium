@@ -102,7 +102,7 @@ class V8UnionStringOrTrustedScript;
 class V8UnionSetHTMLOptionsOrTrustedParserOptions;
 class V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions;
 class WebPluginContainerImpl;
-
+class WritableStream;
 struct PhysicalRect;
 
 using PartsList = HeapDeque<Member<Part>>;
@@ -289,6 +289,28 @@ class CORE_EXPORT Node : public EventTarget {
   void replaceWithHTMLUnsafe(const V8UnionStringOrTrustedHTML* html,
                              V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions*,
                              ExceptionState&);
+  WritableStream* streamBeforeHTMLUnsafe(
+      ScriptState*,
+      V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions*,
+      ExceptionState&);
+  WritableStream* streamBeforeHTML(ScriptState*,
+                                   V8UnionSetHTMLOptionsOrTrustedParserOptions*,
+                                   ExceptionState&);
+  WritableStream* streamAfterHTMLUnsafe(
+      ScriptState*,
+      V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions*,
+      ExceptionState&);
+  WritableStream* streamAfterHTML(ScriptState*,
+                                  V8UnionSetHTMLOptionsOrTrustedParserOptions*,
+                                  ExceptionState&);
+  WritableStream* streamReplaceWithHTMLUnsafe(
+      ScriptState*,
+      V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions*,
+      ExceptionState&);
+  WritableStream* streamReplaceWithHTML(
+      ScriptState*,
+      V8UnionSetHTMLOptionsOrTrustedParserOptions*,
+      ExceptionState&);
   // NonDocumentTypeChildNode interface. These functions are only actually
   // web-exposed on  interfaces that include NonDocumentTypeChildNode in their
   // idl.

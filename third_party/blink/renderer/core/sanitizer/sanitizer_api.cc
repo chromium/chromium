@@ -87,7 +87,6 @@ void SanitizerAPI::SanitizeInternal(Sanitizer::Mode mode,
 
 StreamingSanitizer* SanitizerAPI::CreateStreamingSanitizerInternal(
     FragmentParserOptions options,
-    const ContainerNode* context,
     ExceptionState& exception_state) {
   const Sanitizer* sanitizer =
       SanitizerFromOptions(options, Sanitizer::Mode::kUnsafe, exception_state);
@@ -95,7 +94,7 @@ StreamingSanitizer* SanitizerAPI::CreateStreamingSanitizerInternal(
     return nullptr;
   }
   CHECK(sanitizer);
-  return StreamingSanitizer::CreateUnsafe(sanitizer, context);
+  return StreamingSanitizer::CreateUnsafe(sanitizer);
 }
 
 }  // namespace blink

@@ -112,6 +112,7 @@
 #include "third_party/blink/renderer/core/html/html_object_element.h"
 #include "third_party/blink/renderer/core/html/html_script_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
+#include "third_party/blink/renderer/core/html/html_stream.h"
 #include "third_party/blink/renderer/core/html/parser/fragment_parser_options.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
@@ -1332,6 +1333,68 @@ void Node::afterHTMLUnsafe(
                                config.interface_name, config.property_name,
                                exception_state),
       config, FragmentParserOptions::From(options), exception_state);
+}
+
+WritableStream* Node::streamBeforeHTMLUnsafe(
+    ScriptState* script_state,
+    V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions* options,
+    ExceptionState& exception_state) {
+  return HTMLStream::Create(
+      script_state, parentNode(), this, FragmentParserOptions::From(options),
+      trusted_types_names::kNode, trusted_types_names::kStreamBeforeHTMLUnsafe,
+      exception_state);
+}
+
+WritableStream* Node::streamBeforeHTML(
+    ScriptState* script_state,
+    V8UnionSetHTMLOptionsOrTrustedParserOptions* options,
+    ExceptionState& exception_state) {
+  return HTMLStream::Create(
+      script_state, parentNode(), this, FragmentParserOptions::From(options),
+      trusted_types_names::kNode, trusted_types_names::kStreamBeforeHTML,
+      exception_state);
+}
+
+WritableStream* Node::streamAfterHTMLUnsafe(
+    ScriptState* script_state,
+    V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions* options,
+    ExceptionState& exception_state) {
+  return HTMLStream::Create(
+      script_state, parentNode(), nextSibling(),
+      FragmentParserOptions::From(options), trusted_types_names::kNode,
+      trusted_types_names::kStreamAfterHTMLUnsafe, exception_state);
+}
+
+WritableStream* Node::streamAfterHTML(
+    ScriptState* script_state,
+    V8UnionSetHTMLOptionsOrTrustedParserOptions* options,
+    ExceptionState& exception_state) {
+  return HTMLStream::Create(
+      script_state, parentNode(), nextSibling(),
+      FragmentParserOptions::From(options), trusted_types_names::kNode,
+      trusted_types_names::kStreamAfterHTML, exception_state);
+}
+
+WritableStream* Node::streamReplaceWithHTMLUnsafe(
+    ScriptState* script_state,
+    V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions* options,
+    ExceptionState& exception_state) {
+  return HTMLStream::Create(script_state, parentNode(), nextSibling(),
+                            FragmentParserOptions::From(options),
+                            trusted_types_names::kNode,
+                            trusted_types_names::kStreamReplaceWithHTMLUnsafe,
+                            exception_state, [&]() { remove(); });
+}
+
+WritableStream* Node::streamReplaceWithHTML(
+    ScriptState* script_state,
+    V8UnionSetHTMLOptionsOrTrustedParserOptions* options,
+    ExceptionState& exception_state) {
+  return HTMLStream::Create(script_state, parentNode(), nextSibling(),
+                            FragmentParserOptions::From(options),
+                            trusted_types_names::kNode,
+                            trusted_types_names::kStreamReplaceWithHTML,
+                            exception_state, [&]() { remove(); });
 }
 
 void Node::replaceWith(

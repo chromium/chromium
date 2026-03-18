@@ -9,27 +9,24 @@
 
 namespace blink {
 
-StreamingSanitizer* StreamingSanitizer::CreateSafe(
-    const Sanitizer* sanitizer,
-    const ContainerNode* context) {
+// TODO(nrosenthal): this class doesn't do much now... Refactor to use normal
+// sanitizer.
+StreamingSanitizer* StreamingSanitizer::CreateSafe(const Sanitizer* sanitizer) {
   Sanitizer* safe = MakeGarbageCollected<Sanitizer>();
   safe->setFrom(*sanitizer);
   safe->removeUnsafe();
-  return MakeGarbageCollected<StreamingSanitizer>(safe, context, true);
+  return MakeGarbageCollected<StreamingSanitizer>(safe, true);
 }
 
 StreamingSanitizer* StreamingSanitizer::CreateUnsafe(
-    const Sanitizer* sanitizer,
-    const ContainerNode* context) {
+    const Sanitizer* sanitizer) {
   Sanitizer* sanitizer_clone = MakeGarbageCollected<Sanitizer>();
   sanitizer_clone->setFrom(*sanitizer);
-  return MakeGarbageCollected<StreamingSanitizer>(sanitizer_clone, context,
-                                                  false);
+  return MakeGarbageCollected<StreamingSanitizer>(sanitizer_clone, false);
 }
 
 bool StreamingSanitizer::ShouldReplaceWithChildren(Node* target) {
-  return target != context_ &&
-         sanitizer_->ShouldReplaceNodeWithChildren(target);
+  return sanitizer_->ShouldReplaceNodeWithChildren(target);
 }
 
 bool StreamingSanitizer::Sanitize(Node* target) {
@@ -39,7 +36,6 @@ bool StreamingSanitizer::Sanitize(Node* target) {
 
 void StreamingSanitizer::Trace(Visitor* visitor) const {
   visitor->Trace(sanitizer_);
-  visitor->Trace(context_);
 }
 
 }  // namespace blink

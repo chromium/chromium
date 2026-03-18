@@ -10,16 +10,13 @@
 
 namespace blink {
 
-class ContainerNode;
 class Node;
 class Sanitizer;
 
 class StreamingSanitizer : public GarbageCollected<StreamingSanitizer> {
  public:
-  static StreamingSanitizer* CreateSafe(const Sanitizer*,
-                                        const ContainerNode* context);
-  static StreamingSanitizer* CreateUnsafe(const Sanitizer*,
-                                          const ContainerNode* context);
+  static StreamingSanitizer* CreateSafe(const Sanitizer*);
+  static StreamingSanitizer* CreateUnsafe(const Sanitizer*);
 
   // Sanitizes a node insertion operation. Can modify element attributes, change
   // the insertion target, or discard the element. Returns the adjusted
@@ -32,14 +29,11 @@ class StreamingSanitizer : public GarbageCollected<StreamingSanitizer> {
   void Trace(Visitor* visitor) const;
 
   virtual ~StreamingSanitizer() = default;
-  StreamingSanitizer(const Sanitizer* sanitizer,
-                     const ContainerNode* context,
-                     bool safe)
-      : sanitizer_(sanitizer), context_(context), safe_(safe) {}
+  StreamingSanitizer(const Sanitizer* sanitizer, bool safe)
+      : sanitizer_(sanitizer), safe_(safe) {}
 
  private:
   Member<const Sanitizer> sanitizer_;
-  Member<const ContainerNode> context_;
   bool safe_ = false;
 };
 

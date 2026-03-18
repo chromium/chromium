@@ -66,6 +66,7 @@
 #include "third_party/blink/renderer/core/html/html_style_element.h"
 #include "third_party/blink/renderer/core/html/html_template_element.h"
 #include "third_party/blink/renderer/core/html/parser/atomic_html_token.h"
+#include "third_party/blink/renderer/core/html/parser/html_document_parser.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_reentry_permit.h"
 #include "third_party/blink/renderer/core/html/parser/html_stack_item.h"
@@ -462,10 +463,10 @@ bool HTMLConstructionSite::SanitizeIfNeeded(HTMLConstructionSiteTask& task) {
 
   // Find the next item in stack that should not be replaced with children
   // according to the sanitizer.
-  while (sanitizer_->ShouldReplaceWithChildren(next->GetNode())) {
-    CHECK(next);
+  while (next && next->IsElementNode() &&
+         sanitizer_->ShouldReplaceWithChildren(next->GetNode())) {
     next = next->NextItemInStack();
-    task.parent = next->GetNode();
+    AdjustInsertionLocation(task, next);
     if (!task.parent) {
       return false;
     }
@@ -474,7 +475,7 @@ bool HTMLConstructionSite::SanitizeIfNeeded(HTMLConstructionSiteTask& task) {
   return true;
 }
 
-void HTMLConstructionSite::AttachLater(ContainerNode* parent,
+void HTMLConstructionSite::AttachLater(InsertionLocation location,
                                        Node* child,
                                        bool self_closing) {
   auto* element = DynamicTo<Element>(child);
@@ -484,7 +485,8 @@ void HTMLConstructionSite::AttachLater(ContainerNode* parent,
          !IsA<HTMLPlugInElement>(child));
 
   HTMLConstructionSiteTask task(HTMLConstructionSiteTask::kInsert);
-  task.parent = parent;
+  task.parent = location.parent;
+  task.next_child = location.next_child;
   task.child = child;
   task.self_closing = self_closing;
 
@@ -541,12 +543,14 @@ HTMLConstructionSite::HTMLConstructionSite(
     ContainerNode* fragment_target,
     Element* context_element,
     CustomElementRegistry* registry,
-    StreamingSanitizer* sanitizer)
+    StreamingSanitizer* sanitizer,
+    ParserRootInsertionPoint* root_insertion_point)
     : reentry_permit_(reentry_permit),
       document_(&document),
       attachment_root_(fragment_target && fragment_target->IsDocumentFragment()
                            ? fragment_target
                            : static_cast<ContainerNode*>(&document)),
+      root_insertion_point_(root_insertion_point),
       parser_content_policy_(parser_content_policy),
       is_scripting_content_allowed_(
           ScriptingContentIsAllowed(parser_content_policy)),
@@ -583,6 +587,7 @@ void HTMLConstructionSite::Trace(Visitor* visitor) const {
   visitor->Trace(reentry_permit_);
   visitor->Trace(document_);
   visitor->Trace(attachment_root_);
+  visitor->Trace(root_insertion_point_);
   visitor->Trace(head_);
   visitor->Trace(form_);
   visitor->Trace(open_elements_);
@@ -861,10 +866,32 @@ ProcessingInstruction* CreateProcessingInstructionFromToken(
 }
 }  // namespace
 
+HTMLConstructionSite::InsertionLocation
+HTMLConstructionSite::CurrentInsertionLocation() {
+  return (CurrentIsRootNode() && root_insertion_point_)
+             ? InsertionLocation{root_insertion_point_->target.Get(),
+                                 root_insertion_point_->ref_node
+                                     ? root_insertion_point_->ref_node.Get()
+                                     : nullptr}
+             : InsertionLocation{CurrentNode(), nullptr};
+}
+
+void HTMLConstructionSite::AdjustInsertionLocation(
+    HTMLConstructionSiteTask& task,
+    HTMLStackItem* stack_item) {
+  if (!stack_item->IsElementNode() && root_insertion_point_) {
+    task.parent = root_insertion_point_->target.Get();
+    task.next_child = root_insertion_point_->ref_node.Get();
+  } else {
+    task.parent = stack_item->GetNode();
+  }
+}
+
 void HTMLConstructionSite::InsertProcessingInstruction(AtomicHTMLToken* token) {
   DCHECK_EQ(token->GetType(), HTMLToken::kProcessingInstruction);
-  AttachLater(CurrentNode(), CreateProcessingInstructionFromToken(
-                                 token, OwnerDocumentForCurrentNode()));
+  AttachLater(CurrentInsertionLocation(),
+              CreateProcessingInstructionFromToken(
+                  token, OwnerDocumentForCurrentNode()));
 }
 
 void HTMLConstructionSite::InsertProcessingInstructionOnDocument(
@@ -886,7 +913,7 @@ void HTMLConstructionSite::InsertComment(AtomicHTMLToken* token) {
   auto comment = token->Comment();
   Comment& comment_node =
       *Comment::Create(OwnerDocumentForCurrentNode(), comment);
-  AttachLater(CurrentNode(), &comment_node);
+  AttachLater(CurrentInsertionLocation(), &comment_node);
 }
 
 void HTMLConstructionSite::InsertCommentOnDocument(AtomicHTMLToken* token) {
@@ -906,14 +933,14 @@ void HTMLConstructionSite::InsertHTMLHeadElement(AtomicHTMLToken* token) {
   DCHECK(!ShouldFosterParent());
   head_ = HTMLStackItem::Create(
       CreateElement(token, html_names::xhtmlNamespaceURI), token);
-  AttachLater(CurrentNode(), head_->GetElement());
+  AttachLater(CurrentInsertionLocation(), head_->GetElement());
   open_elements_.PushHTMLHeadElement(head_);
 }
 
 void HTMLConstructionSite::InsertHTMLBodyElement(AtomicHTMLToken* token) {
   DCHECK(!ShouldFosterParent());
   Element* body = CreateElement(token, html_names::xhtmlNamespaceURI);
-  AttachLater(CurrentNode(), body);
+  AttachLater(CurrentInsertionLocation(), body);
   open_elements_.PushHTMLBodyElement(HTMLStackItem::Create(body, token));
   if (document_)
     document_->WillInsertBody();
@@ -932,7 +959,7 @@ void HTMLConstructionSite::InsertHTMLFormElement(
     UseCounter::Count(OwnerDocumentForCurrentNode(),
                       WebFeature::kDemotedFormElement);
   }
-  AttachLater(CurrentNode(), form_element);
+  AttachLater(CurrentInsertionLocation(), form_element);
   open_elements_.Push(HTMLStackItem::Create(form_element, token));
 }
 
@@ -1001,25 +1028,26 @@ void HTMLConstructionSite::InsertHTMLTemplateElement(
     }
   }
 
-  if (should_attach_template) {
-    if (auto* patch = Patch::Prepare(
-            open_elements_.TopStackItem()->GetNode(),
-            template_element->FastGetAttribute(html_names::kForAttr))) {
-      CHECK(RuntimeEnabledFeatures::DocumentPatchingEnabled());
-      template_element->SetPatch(patch);
-      should_attach_template = false;
-    }
+  auto current_insertion_location = CurrentInsertionLocation();
+  open_elements_.Push(template_stack_item);
+  if (!should_attach_template) {
+    return;
   }
 
-  if (should_attach_template) {
-    AttachLater(CurrentNode(), template_element);
+  if (auto* patch = Patch::Prepare(
+          current_insertion_location.parent,
+          template_element->FastGetAttribute(html_names::kForAttr))) {
+    CHECK(RuntimeEnabledFeatures::DocumentPatchingEnabled());
+    template_element->SetPatch(patch);
+    return;
   }
-  open_elements_.Push(template_stack_item);
+
+  AttachLater(current_insertion_location, template_element);
 }
 
 void HTMLConstructionSite::InsertHTMLElement(AtomicHTMLToken* token) {
   Element* element = CreateElement(token, html_names::xhtmlNamespaceURI);
-  AttachLater(CurrentNode(), element);
+  AttachLater(CurrentInsertionLocation(), element);
   open_elements_.Push(HTMLStackItem::Create(element, token));
 }
 
@@ -1029,7 +1057,7 @@ void HTMLConstructionSite::InsertSelfClosingHTMLElementDestroyingToken(
   // Normally HTMLElementStack is responsible for calling finishParsingChildren,
   // but self-closing elements are never in the element stack so the stack
   // doesn't get a chance to tell them that we're done parsing their children.
-  AttachLater(CurrentNode(),
+  AttachLater(CurrentInsertionLocation(),
               CreateElement(token, html_names::xhtmlNamespaceURI),
               /*self_closing*/ true);
   // FIXME: Do we want to acknowledge the token's self-closing flag?
@@ -1072,7 +1100,7 @@ void HTMLConstructionSite::InsertScriptElement(AtomicHTMLToken* token) {
   }
   SetAttributes(element, token);
   if (is_scripting_content_allowed_)
-    AttachLater(CurrentNode(), element);
+    AttachLater(CurrentInsertionLocation(), element);
   open_elements_.Push(HTMLStackItem::Create(element, token));
 }
 
@@ -1085,7 +1113,7 @@ void HTMLConstructionSite::InsertForeignElement(
 
   Element* element = CreateElement(token, namespace_uri);
   if (is_scripting_content_allowed_ || !element->IsScriptElement()) {
-    AttachLater(CurrentNode(), element, token->SelfClosing());
+    AttachLater(CurrentInsertionLocation(), element, token->SelfClosing());
   }
   if (!token->SelfClosing()) {
     open_elements_.Push(HTMLStackItem::Create(element, token, namespace_uri));
@@ -1095,7 +1123,7 @@ void HTMLConstructionSite::InsertForeignElement(
 void HTMLConstructionSite::InsertTextNode(const StringView& string,
                                           WhitespaceMode whitespace_mode) {
   HTMLConstructionSiteTask dummy_task(HTMLConstructionSiteTask::kInsert);
-  dummy_task.parent = CurrentNode();
+  AdjustInsertionLocation(dummy_task, CurrentStackItem());
 
   if (ShouldFosterParent())
     FindFosterSite(dummy_task);
@@ -1427,7 +1455,7 @@ void HTMLConstructionSite::ReconstructTheActiveFormattingElements() {
         active_formatting_elements_.at(unopen_entry_index);
     HTMLStackItem* reconstructed =
         CreateElementFromSavedToken(unopened_entry.StackItem());
-    AttachLater(CurrentNode(), reconstructed->GetNode());
+    AttachLater(CurrentInsertionLocation(), reconstructed->GetNode());
     open_elements_.Push(reconstructed);
     unopened_entry.ReplaceElement(reconstructed);
   }

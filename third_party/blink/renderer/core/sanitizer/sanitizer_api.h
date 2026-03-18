@@ -26,7 +26,6 @@ class CORE_EXPORT SanitizerAPI final {
                                ExceptionState& exception_state);
   static StreamingSanitizer* CreateStreamingSanitizerInternal(
       FragmentParserOptions options,
-      const ContainerNode* context,
       ExceptionState& exception_state);
 };
 

@@ -28,6 +28,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_TREE_BUILDER_H_
 
 #include "base/dcheck_is_on.h"
+#include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/html/html_template_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_construction_site.h"
 #include "third_party/blink/renderer/core/html/parser/html_element_stack.h"
@@ -40,10 +41,10 @@
 namespace blink {
 
 class AtomicHTMLToken;
-class ContainerNode;
 class Element;
 class HTMLDocument;
 class HTMLDocumentParser;
+class ParserRootInsertionPoint;
 class StreamingSanitizer;
 
 class HTMLTreeBuilder final : public GarbageCollected<HTMLTreeBuilder> {
@@ -59,13 +60,14 @@ class HTMLTreeBuilder final : public GarbageCollected<HTMLTreeBuilder> {
                   bool include_shadow_roots);
   // This constructor is used for fragment parsing.
   HTMLTreeBuilder(HTMLDocumentParser*,
-                  ContainerNode*,
+                  DocumentFragment*,
                   Element* context_element,
                   ParserContentPolicy,
                   const HTMLParserOptions&,
                   bool include_shadow_roots,
                   CustomElementRegistry* registry,
-                  StreamingSanitizer*);
+                  StreamingSanitizer*,
+                  ParserRootInsertionPoint* root_insertion_point);
 
  private:
   HTMLTreeBuilder(HTMLDocumentParser*,
@@ -73,10 +75,11 @@ class HTMLTreeBuilder final : public GarbageCollected<HTMLTreeBuilder> {
                   ParserContentPolicy,
                   const HTMLParserOptions&,
                   bool include_shadow_roots,
-                  ContainerNode* fragment_target,
+                  DocumentFragment* fragment_target,
                   Element* fragment_context_element,
                   CustomElementRegistry* registry,
-                  StreamingSanitizer* sanitizer);
+                  StreamingSanitizer* sanitizer,
+                  ParserRootInsertionPoint* root_insertion_point);
 
  public:
   HTMLTreeBuilder(const HTMLTreeBuilder&) = delete;
@@ -233,8 +236,8 @@ class HTMLTreeBuilder final : public GarbageCollected<HTMLTreeBuilder> {
     FragmentParsingContext() = default;
     FragmentParsingContext(const FragmentParsingContext&) = delete;
     FragmentParsingContext& operator=(const FragmentParsingContext&) = delete;
-    void Init(ContainerNode*, Element* context_element);
-    ContainerNode* FragmentTarget() const { return fragment_target_.Get(); }
+    void Init(DocumentFragment*, Element* context_element);
+    DocumentFragment* FragmentTarget() const { return fragment_target_.Get(); }
     Element* ContextElement() const {
       DCHECK(fragment_target_);
       return context_element_stack_item_->GetElement();
@@ -247,7 +250,7 @@ class HTMLTreeBuilder final : public GarbageCollected<HTMLTreeBuilder> {
     void Trace(Visitor*) const;
 
    private:
-    Member<ContainerNode> fragment_target_;
+    Member<DocumentFragment> fragment_target_;
     Member<HTMLStackItem> context_element_stack_item_;
   };
 

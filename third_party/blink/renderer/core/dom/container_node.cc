@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/dom/child_frame_disconnector.h"
 #include "third_party/blink/renderer/core/dom/child_list_mutation_scope.h"
 #include "third_party/blink/renderer/core/dom/class_collection.h"
+#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/element_rare_data_vector.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_forbidden_scope.h"
@@ -89,6 +90,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
@@ -1917,54 +1919,77 @@ String ContainerNode::getHTML(const GetHTMLOptions* options,
                       shadow_root_inclusion);
 }
 
+namespace {
+const AtomicString& TrustedTypesInterfaceName(ContainerNode* node) {
+  if (IsA<Element>(node)) {
+    return trusted_types_names::kElement;
+  }
+  if (IsA<ShadowRoot>(node)) {
+    return trusted_types_names::kShadowRoot;
+  }
+
+  NOTREACHED();
+}
+}  // namespace
+
 WritableStream* ContainerNode::streamAppendHTMLUnsafe(
     ScriptState* script_state,
     V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions* options,
     ExceptionState& exception_state) {
-  DEFINE_STATIC_LOCAL(AtomicString, kInterfaceName, ("streamAppendHTMLUnsafe"));
-
-  return HTMLStream::Create(script_state, this,
-                            FragmentParserOptions::From(options),
-                            kInterfaceName, exception_state);
+  return HTMLStream::Create(
+      script_state, this, nullptr, FragmentParserOptions::From(options),
+      TrustedTypesInterfaceName(this),
+      trusted_types_names::kStreamAppendHTMLUnsafe, exception_state);
 }
 
 WritableStream* ContainerNode::streamAppendHTML(
     ScriptState* script_state,
     V8UnionSetHTMLOptionsOrTrustedParserOptions* options,
     ExceptionState& exception_state) {
-  DEFINE_STATIC_LOCAL(AtomicString, kPropertyName, ("streamAppendHTML"));
-  WritableStream* stream = HTMLStream::Create(
-      script_state, this, FragmentParserOptions::From(options), kPropertyName,
+  return HTMLStream::Create(
+      script_state, this, nullptr, FragmentParserOptions::From(options),
+      TrustedTypesInterfaceName(this), trusted_types_names::kStreamAppendHTML,
       exception_state);
-  return stream;
+}
+
+WritableStream* ContainerNode::streamPrependHTMLUnsafe(
+    ScriptState* script_state,
+    V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions* options,
+    ExceptionState& exception_state) {
+  return HTMLStream::Create(
+      script_state, this, firstChild(), FragmentParserOptions::From(options),
+      TrustedTypesInterfaceName(this),
+      trusted_types_names::kStreamPrependHTMLUnsafe, exception_state);
+}
+
+WritableStream* ContainerNode::streamPrependHTML(
+    ScriptState* script_state,
+    V8UnionSetHTMLOptionsOrTrustedParserOptions* options,
+    ExceptionState& exception_state) {
+  return HTMLStream::Create(
+      script_state, this, firstChild(), FragmentParserOptions::From(options),
+      TrustedTypesInterfaceName(this), trusted_types_names::kStreamPrependHTML,
+      exception_state);
 }
 
 WritableStream* ContainerNode::streamHTMLUnsafe(
     ScriptState* script_state,
     V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions* options,
     ExceptionState& exception_state) {
-  DEFINE_STATIC_LOCAL(AtomicString, kPropertyName, ("streamHTMLUnsafe"));
-  WritableStream* stream = HTMLStream::Create(
-      script_state, this, FragmentParserOptions::From(options), kPropertyName,
-      exception_state);
-  if (!exception_state.HadException()) {
-    RemoveChildren();
-  }
-  return stream;
+  return HTMLStream::Create(
+      script_state, this, nullptr, FragmentParserOptions::From(options),
+      TrustedTypesInterfaceName(this), trusted_types_names::kStreamHTMLUnsafe,
+      exception_state, [&] { RemoveChildren(); });
 }
 
 WritableStream* ContainerNode::streamHTML(
     ScriptState* script_state,
     V8UnionSetHTMLOptionsOrTrustedParserOptions* options,
     ExceptionState& exception_state) {
-  DEFINE_STATIC_LOCAL(AtomicString, kPropertyName, ("streamHTML"));
-  WritableStream* stream = HTMLStream::Create(
-      script_state, this, FragmentParserOptions::From(options), kPropertyName,
-      exception_state);
-  if (!exception_state.HadException()) {
-    RemoveChildren();
-  }
-  return stream;
+  return HTMLStream::Create(
+      script_state, this, nullptr, FragmentParserOptions::From(options),
+      TrustedTypesInterfaceName(this), trusted_types_names::kStreamHTML,
+      exception_state, [&] { RemoveChildren(); });
 }
 
 void ContainerNode::appendHTML(
