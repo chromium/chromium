@@ -38,4 +38,7 @@ BASE_FEATURE(kEnableEncryptedFileUpload, base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables scanning of pasted images for DLP.
 BASE_FEATURE(kDlpScanPastedImages, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Controls enabling bulk data entry support in Glic actuation logic.
+BASE_FEATURE(kGlicBulkDataEntrySupport, base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace enterprise_connectors

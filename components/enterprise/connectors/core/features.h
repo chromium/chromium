@@ -42,6 +42,9 @@ BASE_DECLARE_FEATURE(kEnableEncryptedFileUpload);
 
 BASE_DECLARE_FEATURE(kDlpScanPastedImages);
 
+// Controls enabling bulk data entry support in Glic actuation logic.
+BASE_DECLARE_FEATURE(kGlicBulkDataEntrySupport);
+
 }  // namespace enterprise_connectors
 
 #endif  // COMPONENTS_ENTERPRISE_CONNECTORS_CORE_FEATURES_H_
