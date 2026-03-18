@@ -360,9 +360,10 @@ ExecutionEngine::GatingDecision ExecutionEngine::DetermineGatingDecision(
     // it is already on the blocklist, and navigation gating prevents the actor
     // from navigating to a blocked origin after. We apply a CHECK to enforce
     // this invariant.
-    CHECK(!safety_list_manager.get_blocked_list()
-               .ContainsUrlPairWithWildcardSource(source_url, destination_url));
-    return GatingDecision::kAllowSameOrigin;
+    return safety_list_manager.get_blocked_list()
+               .ContainsUrlPairWithWildcardSource(source_url, destination_url)
+        ? GatingDecision::kBlockByStaticList
+        : GatingDecision::kAllowSameOrigin;
   }
 
   if (safety_list_manager.get_blocked_list().ContainsUrlPair(source_url,
