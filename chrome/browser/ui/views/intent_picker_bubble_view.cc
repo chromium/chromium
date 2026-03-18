@@ -517,7 +517,7 @@ IntentPickerBubbleView* IntentPickerBubbleView::intent_picker_bubble_ = nullptr;
 // static
 views::Widget* IntentPickerBubbleView::ShowBubble(
     views::View* anchor_view,
-    views::Button* highlighted_button,
+    std::optional<ui::ElementIdentifier> highlighted_element,
     BubbleType bubble_type,
     content::WebContents* web_contents,
     std::vector<AppInfo> app_info,
@@ -532,8 +532,8 @@ views::Widget* IntentPickerBubbleView::ShowBubble(
       anchor_view, bubble_type, std::move(app_info),
       std::move(intent_picker_cb), web_contents, show_stay_in_chrome,
       show_remember_selection, initiating_origin);
-  if (highlighted_button) {
-    intent_picker_bubble_->SetHighlightedButton(highlighted_button);
+  if (highlighted_element) {
+    intent_picker_bubble_->SetHighlightedElement(*highlighted_element);
   }
   intent_picker_bubble_->Initialize();
   views::Widget* widget =

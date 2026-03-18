@@ -69,7 +69,8 @@ void ShowIOSDesktopPromoBubble(PromoType promo_type,
               kActionShowPasswordsBubbleOrPage)},
           toolbar_button_provider->GetPageActionView(
               kActionShowPasswordsBubbleOrPage),
-          profile, PromoType::kPassword, bubble_type);
+          kPasswordsOmniboxKeyIconElementId, profile, PromoType::kPassword,
+          bubble_type);
       break;
     case PromoType::kAddress: {
       IOSPromoBubble::ShowPromoBubble(
@@ -77,7 +78,8 @@ void ShowIOSDesktopPromoBubble(PromoType promo_type,
               kActionShowAddressesBubbleOrPage)},
           toolbar_button_provider->GetPageActionView(
               kActionShowAddressesBubbleOrPage),
-          profile, PromoType::kAddress, bubble_type);
+          kAutofillAddressPageActionElementId, profile, PromoType::kAddress,
+          bubble_type);
       break;
     }
     case PromoType::kPayment:
@@ -91,16 +93,17 @@ void ShowIOSDesktopPromoBubble(PromoType promo_type,
       }
       CHECK(icon_view);
 
-      IOSPromoBubble::ShowPromoBubble({toolbar_button_provider->GetBubbleAnchor(
-                                          kActionShowPaymentsBubbleOrPage)},
-                                      icon_view, profile, PromoType::kPayment,
-                                      bubble_type);
+      IOSPromoBubble::ShowPromoBubble(
+          {toolbar_button_provider->GetBubbleAnchor(
+              kActionShowPaymentsBubbleOrPage)},
+          icon_view, kAutofillSavePaymentsPageActionElementId, profile,
+          PromoType::kPayment, bubble_type);
       break;
     case PromoType::kEnhancedBrowsing:
       IOSPromoBubble::ShowPromoBubble(
           {browser_view->toolbar()->app_menu_button()},
-          /*highlighted_button=*/nullptr, profile, PromoType::kEnhancedBrowsing,
-          bubble_type);
+          /*highlighted_button=*/nullptr, /*highlighted_element=*/std::nullopt,
+          profile, PromoType::kEnhancedBrowsing, bubble_type);
       break;
     case PromoType::kLens: {
       SidePanel* side_panel = browser_view->contents_height_side_panel();
@@ -113,22 +116,23 @@ void ShowIOSDesktopPromoBubble(PromoType promo_type,
         anchor.anchor_base = browser_view->toolbar()->app_menu_button();
       }
       IOSPromoBubble::ShowPromoBubble(anchor,
-                                      /*highlighted_button=*/nullptr, profile,
-                                      PromoType::kLens, bubble_type);
+                                      /*highlighted_button=*/nullptr,
+                                      /*highlighted_element=*/std::nullopt,
+                                      profile, PromoType::kLens, bubble_type);
       break;
     }
     case PromoType::kTabGroups: {
       IOSPromoBubble::ShowPromoBubble(
           {toolbar_button_provider->GetAvatarToolbarButton()},
-          /*highlighted_button=*/nullptr, profile, PromoType::kTabGroups,
-          bubble_type);
+          /*highlighted_button=*/nullptr, /*highlighted_element=*/std::nullopt,
+          profile, PromoType::kTabGroups, bubble_type);
       break;
     }
     case PromoType::kPriceTracking: {
       IOSPromoBubble::ShowPromoBubble(
           {toolbar_button_provider->GetAvatarToolbarButton()},
-          /*highlighted_button=*/nullptr, profile, PromoType::kPriceTracking,
-          bubble_type);
+          /*highlighted_button=*/nullptr, /*highlighted_element=*/std::nullopt,
+          profile, PromoType::kPriceTracking, bubble_type);
       break;
     }
   }

@@ -3225,12 +3225,8 @@ sharing_hub::SharingHubBubbleView* BrowserView::ShowSharingHubBubble(
       toolbar_button_provider()->GetBubbleAnchor(std::nullopt), attempt,
       sharing_hub::SharingHubBubbleController::CreateOrGetFromWebContents(
           attempt.web_contents.get()));
-  PageActionIconView* icon_view =
-      toolbar_button_provider()->GetPageActionIconView(
-          PageActionIconType::kSharingHub);
-  if (icon_view) {
-    bubble->SetHighlightedButton(icon_view);
-  }
+  bubble->SetHighlightedElement(
+      sharing_hub::SharingHubBubbleController::kIconElementId);
 
   views::BubbleDialogDelegateView::CreateBubble(bubble);
   // This is always triggered due to a user gesture, c.f. method documentation.
@@ -3263,17 +3259,17 @@ ShowTranslateBubbleResult BrowserView::ShowTranslateBubble(
     return ShowTranslateBubbleResult::kBrowserWindowMinimized;
   }
 
-  views::Button* highlighted_icon =
-      toolbar_button_provider()->GetPageActionView(kActionShowTranslate);
+  std::optional<ui::ElementIdentifier> highlight_element =
+      kTranslatePageActionElementId;
 
   views::BubbleAnchor anchor =
       toolbar_button_provider()->GetBubbleAnchor(kActionShowTranslate);
   if (bubble_anchor_util::IsHighlightable(anchor)) {
     // No need for a separate highlight.
-    highlighted_icon = nullptr;
+    highlight_element = std::nullopt;
   }
   CHECK_DEREF(TranslateBubbleController::From(browser_.get()))
-      .ShowTranslateBubble(web_contents, anchor, highlighted_icon, step,
+      .ShowTranslateBubble(web_contents, anchor, highlight_element, step,
                            source_language, target_language, error_type,
                            is_user_gesture ? TranslateBubbleView::USER_GESTURE
                                            : TranslateBubbleView::AUTOMATIC);
@@ -3291,14 +3287,12 @@ void BrowserView::StartPartialTranslate(const std::string& source_language,
       ->GetLanguageState()
       ->SetTranslateEnabled(true);
 
-  views::Button* translate_icon =
-      toolbar_button_provider()->GetPageActionView(kActionShowTranslate);
-
   CHECK_DEREF(TranslateBubbleController::From(browser_.get()))
       .StartPartialTranslate(
           GetActiveWebContents(),
           toolbar_button_provider()->GetBubbleAnchor(kActionShowTranslate),
-          translate_icon, source_language, target_language, text_selection);
+          kTranslatePageActionElementId, source_language, target_language,
+          text_selection);
 }
 
 DownloadBubbleUIController* BrowserView::GetDownloadBubbleUIController() {

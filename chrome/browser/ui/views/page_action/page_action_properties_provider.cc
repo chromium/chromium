@@ -53,6 +53,7 @@ constexpr auto kPageActionProperties =
             {
                 .histogram_name = "Translate",
                 .type = PageActionIconType::kTranslate,
+                .element_identifier = kTranslatePageActionElementId,
             },
         },
         {
@@ -84,6 +85,7 @@ constexpr auto kPageActionProperties =
             {
                 .histogram_name = "IntentPicker",
                 .type = PageActionIconType::kIntentPicker,
+                .element_identifier = kIntentPickerPageActionElementId,
             },
         },
         {
@@ -114,6 +116,7 @@ constexpr auto kPageActionProperties =
             {
                 .histogram_name = "ShowFileSystemAccess",
                 .type = PageActionIconType::kFileSystemAccess,
+                .element_identifier = kFileSystemPageActionElementId,
             },
         },
         {

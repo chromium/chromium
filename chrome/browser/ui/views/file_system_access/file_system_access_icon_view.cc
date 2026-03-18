@@ -12,6 +12,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_context_factory.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/file_system_access/file_system_access_usage_bubble_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
@@ -21,6 +22,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/view_class_properties.h"
 
 namespace {
 
@@ -45,6 +47,7 @@ FileSystemAccessIconView::FileSystemAccessIconView(
   SetVisible(false);
   GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
       IDS_FILE_SYSTEM_ACCESS_DIRECTORY_USAGE_TOOLTIP));
+  SetProperty(views::kElementIdentifierKey, kFileSystemPageActionElementId);
 }
 
 views::BubbleDialogDelegate* FileSystemAccessIconView::GetBubble() const {

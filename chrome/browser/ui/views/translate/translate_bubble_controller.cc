@@ -69,7 +69,7 @@ TranslateBubbleController* TranslateBubbleController::From(
 views::Widget* TranslateBubbleController::ShowTranslateBubble(
     content::WebContents* web_contents,
     views::BubbleAnchor anchor,
-    views::Button* highlighted_button,
+    std::optional<ui::ElementIdentifier> highlighted_element,
     translate::TranslateStep step,
     const std::string& source_language,
     const std::string& target_language,
@@ -116,8 +116,8 @@ views::Widget* TranslateBubbleController::ShowTranslateBubble(
       GetOnTranslateBubbleClosedCallback());
   translate_bubble_view_ = translate_bubble_view.get();
 
-  if (highlighted_button) {
-    translate_bubble_view_->SetHighlightedButton(highlighted_button);
+  if (highlighted_element) {
+    translate_bubble_view_->SetHighlightedElement(*highlighted_element);
   }
   views::Widget* bubble_widget = views::BubbleDialogDelegateView::CreateBubble(
       std::move(translate_bubble_view));
@@ -137,11 +137,11 @@ views::Widget* TranslateBubbleController::ShowTranslateBubble(
 void TranslateBubbleController::StartPartialTranslate(
     content::WebContents* web_contents,
     views::BubbleAnchor anchor,
-    views::Button* highlighted_button,
+    std::optional<ui::ElementIdentifier> highlighted_element,
     const std::string& source_language,
     const std::string& target_language,
     const std::u16string& text_selection) {
-  CreatePartialTranslateBubble(web_contents, anchor, highlighted_button,
+  CreatePartialTranslateBubble(web_contents, anchor, highlighted_element,
                                PartialTranslateBubbleModel::VIEW_STATE_WAITING,
                                source_language, target_language, text_selection,
                                /*target_text=*/u"",
@@ -201,7 +201,7 @@ void TranslateBubbleController::OnPartialTranslateComplete() {
 void TranslateBubbleController::CreatePartialTranslateBubble(
     content::WebContents* web_contents,
     views::BubbleAnchor anchor,
-    views::Button* highlighted_button,
+    std::optional<ui::ElementIdentifier> highlighted_element,
     PartialTranslateBubbleModel::ViewState view_state,
     const std::string& source_language,
     const std::string& target_language,
@@ -277,8 +277,8 @@ void TranslateBubbleController::CreatePartialTranslateBubble(
           anchor, std::move(model), web_contents,
           GetOnPartialTranslateBubbleClosedCallback());
   partial_translate_bubble_view_ = partial_translate_bubble_view.get();
-  if (highlighted_button) {
-    partial_translate_bubble_view_->SetHighlightedButton(highlighted_button);
+  if (highlighted_element) {
+    partial_translate_bubble_view_->SetHighlightedElement(*highlighted_element);
   }
   views::BubbleDialogDelegateView::CreateBubble(
       std::move(partial_translate_bubble_view));

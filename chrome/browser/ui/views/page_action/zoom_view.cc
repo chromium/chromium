@@ -6,6 +6,7 @@
 
 #include "base/i18n/number_formatting.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/view_ids.h"
@@ -21,6 +22,7 @@
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/view_class_properties.h"
 
 namespace {
 
@@ -50,6 +52,7 @@ ZoomView::ZoomView(IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
   SetVisible(false);
   GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
       IDS_TOOLTIP_ZOOM, base::FormatPercent(current_zoom_percent_)));
+  SetProperty(views::kElementIdentifierKey, kActionItemZoomElementId);
 }
 
 ZoomView::~ZoomView() = default;

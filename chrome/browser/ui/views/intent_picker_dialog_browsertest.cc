@@ -12,6 +12,7 @@
 #include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
@@ -56,17 +57,16 @@ class IntentPickerDialogTest : public DialogBrowserTest {
     add_entry("d");
     IntentPickerBubbleView::ShowBubble(
         BrowserView::GetBrowserViewForBrowser(browser())->GetLocationBarView(),
-        GetAnchorButton(), IntentPickerBubbleView::BubbleType::kLinkCapturing,
+        GetHighlightElement(),
+        IntentPickerBubbleView::BubbleType::kLinkCapturing,
         browser()->tab_strip_model()->GetActiveWebContents(),
         std::move(app_info), true, true,
         url::Origin::Create(GURL("https://c.com")), base::DoNothing());
   }
 
  private:
-  virtual views::Button* GetAnchorButton() {
-    return BrowserView::GetBrowserViewForBrowser(browser())
-        ->toolbar_button_provider()
-        ->GetPageActionIconView(PageActionIconType::kIntentPicker);
+  virtual ui::ElementIdentifier GetHighlightElement() {
+    return kIntentPickerPageActionElementId;
   }
 };
 
@@ -117,7 +117,9 @@ class IntentPickerDialogGridViewTest
   bool IsMigrationEnabled() const { return std::get<bool>(GetParam()); }
 
  private:
-  views::Button* GetAnchorButton() override { return GetIntentChip(browser()); }
+  ui::ElementIdentifier GetHighlightElement() override {
+    return kIntentChipElementId;
+  }
 
   base::test::ScopedFeatureList feature_list_;
 };

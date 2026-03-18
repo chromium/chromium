@@ -10,6 +10,7 @@
 #include "base/types/to_address.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
@@ -139,17 +140,14 @@ void ZoomBubbleCoordinator::Show(
     bubble_view->SetExtensionInfo(client->extension());
   }
 
-  views::Button* button =
-      browser_view_->toolbar_button_provider()->GetPageActionView(
-          kActionZoomNormal);
-  bubble_view->SetHighlightedButton(button);
-
   // If we don't anchor to anything the BrowserView is our parent. This happens
   // in fullscreen cases.
   bubble_view->set_parent_window(
       bubble_view->anchor_widget()
           ? gfx::NativeView()
           : browser_view_->GetWidget()->GetNativeView());
+
+  bubble_view->SetHighlightedElement(kActionItemZoomElementId);
 
   ZoomBubbleView* bubble_raw = bubble_view.get();
 

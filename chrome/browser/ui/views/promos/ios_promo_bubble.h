@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_PROMOS_IOS_PROMO_BUBBLE_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -49,16 +50,21 @@ class IOSPromoBubble {
   // Creates and shows the promo bubble.
   //
   // Parameters:
-  //   anchor_view: The view to which the bubble will be anchored.
+  //   anchor: The view or element to which the bubble will be anchored.
+  //   highlighted_element: The id of button to highlight when the bubble is
+  // shown. May be nullopt if no button should be highlighted.
   //   highlighted_button: The button to highlight when the bubble is shown. May
-  //   be null if no button should be highlighted. profile: The user's profile.
+  //   be null if no button should be highlighted. This will be forced visible.
+  //   profile: The user's profile.
   //   promo_type: The feature being highlighted in the promo.
   //   bubble_type: The type of bubble to show (e.g., QR code or reminder).
-  static void ShowPromoBubble(Anchor anchor,
-                              views::Button* highlighted_button,
-                              Profile* profile,
-                              desktop_to_mobile_promos::PromoType promo_type,
-                              desktop_to_mobile_promos::BubbleType bubble_type);
+  static void ShowPromoBubble(
+      Anchor anchor,
+      views::Button* highlighted_button,
+      std::optional<ui::ElementIdentifier> highlighted_element,
+      Profile* profile,
+      desktop_to_mobile_promos::PromoType promo_type,
+      desktop_to_mobile_promos::BubbleType bubble_type);
 
   // Hide closes the bubble.
   static void Hide();

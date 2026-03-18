@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_actions.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/file_system_access/file_system_access_ui_helpers.h"
@@ -345,8 +346,7 @@ void FileSystemAccessUsageBubbleView::ShowBubble(
       button_provider->GetBubbleAnchor(std::nullopt), web_contents, origin,
       std::move(usage));
 
-  bubble_->SetHighlightedButton(
-      button_provider->GetPageActionView(kActionShowFileSystemAccess));
+  bubble_->SetHighlightedElement(kFileSystemPageActionElementId);
   views::BubbleDialogDelegateView::CreateBubble(bubble_);
 
   bubble_->ShowForReason(DisplayReason::USER_GESTURE,

@@ -5,11 +5,14 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TRANSLATE_TRANSLATE_BUBBLE_CONTROLLER_H_
 #define CHROME_BROWSER_UI_VIEWS_TRANSLATE_TRANSLATE_BUBBLE_CONTROLLER_H_
 
+#include <optional>
+
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/translate/partial_translate_bubble_view.h"
 #include "chrome/browser/ui/views/translate/translate_bubble_view.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 // Controls both TranslateBubbleView and PartialTranslateBubbleView shown for
@@ -35,7 +38,7 @@ class TranslateBubbleController : public PartialTranslateBubbleModel::Observer {
   views::Widget* ShowTranslateBubble(
       content::WebContents* web_contents,
       views::BubbleAnchor anchor,
-      views::Button* highlighted_button,
+      std::optional<ui::ElementIdentifier> highlighted_element,
       translate::TranslateStep step,
       const std::string& source_language,
       const std::string& target_language,
@@ -44,12 +47,13 @@ class TranslateBubbleController : public PartialTranslateBubbleModel::Observer {
 
   // Initiates the Partial Translate request, showing the bubble after a delay
   // dependent on the Partial Translate response.
-  void StartPartialTranslate(content::WebContents* web_contents,
-                             views::BubbleAnchor anchor,
-                             views::Button* highlighted_button,
-                             const std::string& source_language,
-                             const std::string& target_language,
-                             const std::u16string& text_selection);
+  void StartPartialTranslate(
+      content::WebContents* web_contents,
+      views::BubbleAnchor anchor,
+      std::optional<ui::ElementIdentifier> highlighted_element,
+      const std::string& source_language,
+      const std::string& target_language,
+      const std::u16string& text_selection);
 
   // Closes the current Partial or Full Page Translate bubble, if either exists.
   // At most one of these bubbles should be non-null at any given time.
@@ -94,7 +98,7 @@ class TranslateBubbleController : public PartialTranslateBubbleModel::Observer {
   void CreatePartialTranslateBubble(
       content::WebContents* web_contents,
       views::BubbleAnchor anchor,
-      views::Button* highlighted_button,
+      std::optional<ui::ElementIdentifier> highlighted_element,
       PartialTranslateBubbleModel::ViewState view_state,
       const std::string& source_language,
       const std::string& target_language,

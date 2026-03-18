@@ -1260,21 +1260,21 @@ void ToolbarView::ShowIntentPickerBubble(
     IntentPickerBubbleView::BubbleType bubble_type,
     const std::optional<url::Origin>& initiating_origin,
     IntentPickerResponse callback) {
-  views::Button* highlighted_button = nullptr;
+  std::optional<ui::ElementIdentifier> higlighted_element;
   if (bubble_type != IntentPickerBubbleView::BubbleType::kClickToCall) {
-    if (highlighted_button = GetIntentChipButton(); !highlighted_button) {
-      highlighted_button = GetPageActionView(kActionShowIntentPicker);
-    }
-
-    if (!highlighted_button) {
+    if (GetIntentChipButton()) {
+      higlighted_element = kIntentChipElementId;
+    } else if (GetPageActionView(kActionShowIntentPicker)) {
+      higlighted_element = kIntentPickerPageActionElementId;
+    } else {
       return;
     }
   }
 
-  // At this point, we either have a highlighted_button or it's a ClickToCall
+  // At this point, we either have a highlighted_element or it's a ClickToCall
   // bubble which doesn't have a corresponding page action button to highlight.
   IntentPickerBubbleView::ShowBubble(
-      location_bar_view(), highlighted_button, bubble_type, GetWebContents(),
+      location_bar_view(), higlighted_element, bubble_type, GetWebContents(),
       std::move(app_info), show_stay_in_chrome, show_remember_selection,
       initiating_origin, std::move(callback));
 }
