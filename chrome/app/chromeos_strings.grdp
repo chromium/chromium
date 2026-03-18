@@ -1704,18 +1704,6 @@
   <message name="IDS_LOGIN_PASSWORD_CHANGED_FORGOT_OLD_PASSWORD_BUTTON" desc="Forgot old password button on the recover local data dialog.">
     Forgot old password
   </message>
-  <message name="IDS_LOGIN_PASSWORD_CHANGED_RECOVERY_TITLE" desc="Screen title shown on the opt-in page to the user data recovery feature.">
-    Turn on local data recovery to protect your data?
-  </message>
-  <message name="IDS_LOGIN_PASSWORD_CHANGED_RECOVERY_SUBTITLE" desc="Screen subtitle shown on the opt-in page to the user data recovery feature.">
-    Next time your Google Account password changes, your local data will be recovered automatically after you sign in to your Google Account
-  </message>
-  <message name="IDS_LOGIN_PASSWORD_CHANGED_RECOVERY_NO_BUTTON" desc="Text button shown on the opt-in page to the user data recovery feature. The button skips the recovery opt-in.">
-    No thanks
-  </message>
-  <message name="IDS_LOGIN_PASSWORD_CHANGED_RECOVERY_ENABLE_BUTTON" desc="Text button shown on the opt-in page to the user data recovery feature. The button enables the recovery.">
-    Turn on
-  </message>
 
   <message name="IDS_LOGIN_CRYPTOHOME_RECOVERY_SETUP_ERROR_TITLE" desc="The title message when Cryptohome recovery setup failed.">
     Failed to enable local data recovery
