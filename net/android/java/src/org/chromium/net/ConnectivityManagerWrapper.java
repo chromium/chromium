@@ -43,7 +43,7 @@ public class ConnectivityManagerWrapper {
     @SuppressWarnings("NullAway.Init") // Due to test-only constructor.
     private final ConnectivityManager mConnectivityManager;
 
-    ConnectivityManagerWrapper(Context context) {
+    public ConnectivityManagerWrapper(Context context) {
         mConnectivityManager =
                 (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
     }

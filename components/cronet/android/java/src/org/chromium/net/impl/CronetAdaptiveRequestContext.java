@@ -34,6 +34,7 @@ final class CronetAdaptiveRequestContext {
     private final String[] mAdaptiveNetworkHosts;
     private final Set<String> mAdaptiveNetworkPaths;
     private final AtomicReference<ScheduledExecutorService> mExecutor = new AtomicReference<>(null);
+    private ConnectivityManagerWrapper mConnectivityManagerWrapper;
 
     public CronetAdaptiveRequestContext(Context context) {
         Map<String, ResolvedFlags.Value> flags =
@@ -63,6 +64,7 @@ final class CronetAdaptiveRequestContext {
                 }
             }
         }
+        mConnectivityManagerWrapper = new ConnectivityManagerWrapper(context);
     }
 
     ScheduledExecutorService getOrCreateScheduledExecutor() {
@@ -90,14 +92,18 @@ final class CronetAdaptiveRequestContext {
      * Returns an alternative network, or {@link CronetUrlRequestContext#DEFAULT_NETWORK_HANDLE} if
      * none is available.
      */
-    public static long computeAlternativeNetwork(
-            ConnectivityManagerWrapper connectivityManagerWrapper) {
+    public long computeAlternativeNetwork() {
         Network[] networks =
-                connectivityManagerWrapper.getAllNetworks(
-                        connectivityManagerWrapper.getDefaultNetwork());
+                mConnectivityManagerWrapper.getAllNetworks(
+                        mConnectivityManagerWrapper.getDefaultNetwork());
         if (networks.length > 0) {
             return networks[0].getNetworkHandle();
         }
         return CronetEngineBase.DEFAULT_NETWORK_HANDLE;
+    }
+
+    void setConnectivityManagerWrapperForTest(
+            ConnectivityManagerWrapper connectivityManagerWrapper) {
+        mConnectivityManagerWrapper = connectivityManagerWrapper;
     }
 }
