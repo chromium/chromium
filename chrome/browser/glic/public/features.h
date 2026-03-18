@@ -17,6 +17,7 @@ BASE_DECLARE_FEATURE(kGlicChromeStatusIcon);
 BASE_DECLARE_FEATURE(kGlicOrphanedReattachment);
 
 BASE_DECLARE_FEATURE(kAutoOpenGlicForPdf);
+extern const base::FeatureParam<bool> kAutoOpenGlicForPdfWithOnboarding;
 
 BASE_DECLARE_FEATURE(kGlicInvoke);
 

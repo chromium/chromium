@@ -23,6 +23,11 @@ BASE_FEATURE(kGlicDaisyChainViaCoordinator, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 BASE_FEATURE(kAutoOpenGlicForPdf, base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<bool> kAutoOpenGlicForPdfWithOnboarding({
+    &kAutoOpenGlicForPdf,
+    "AutoOpenGlicForPdfWithOnboarding",
+    false,
+});
 
 BASE_FEATURE(kGlicInvoke, base::FEATURE_ENABLED_BY_DEFAULT);
 

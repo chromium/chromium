@@ -3569,7 +3569,9 @@ class GlicGetHostCapabilityApiTest : public GlicApiTestWithOneTab {
     }
 
     if (GetParam().auto_open_pdf) {
-      enabled_features.push_back({features::kAutoOpenGlicForPdf, {}});
+      enabled_features.push_back(
+          {features::kAutoOpenGlicForPdf,
+           {{"AutoOpenGlicForPdfWithOnboarding", "true"}}});
     }
 
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,

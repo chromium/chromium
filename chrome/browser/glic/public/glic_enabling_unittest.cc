@@ -13,6 +13,7 @@
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_features.mojom-features.h"
 #include "chrome/browser/glic/host/glic_features.mojom.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -622,5 +623,87 @@ TEST_P(GlicEnablingAnyFreModeTest,
 
 INSTANTIATE_TEST_SUITE_P(All, GlicEnablingAnyFreModeTest, testing::Bool());
 
+struct AutoOpenPdfParams {
+  bool auto_open_pdf = false;
+  bool auto_open_pdf_with_onboarding = false;
+  bool has_consent = false;
+  bool trust_first = false;
+  bool result = false;
+};
+
+class GlicEnablingAutoOpenForPdfTest
+    : public GlicEnablingProfileReadyStateTestBase,
+      public testing::WithParamInterface<AutoOpenPdfParams> {
+ public:
+  void SetUp() override {
+    GlicEnablingProfileReadyStateTestBase::SetUp();
+
+    std::vector<base::test::FeatureRefAndParams> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    // Always enable multi-instance features.
+    enabled_features.push_back({features::kGlicMultiInstance, {}});
+    enabled_features.push_back({mojom::features::kGlicMultiTab, {}});
+    enabled_features.push_back({features::kGlicMultitabUnderlines, {}});
+
+    if (GetParam().auto_open_pdf) {
+      enabled_features.push_back(
+          {features::kAutoOpenGlicForPdf,
+           {{"AutoOpenGlicForPdfWithOnboarding",
+             GetParam().auto_open_pdf_with_onboarding ? "true" : "false"}}});
+    } else {
+      disabled_features.push_back(features::kAutoOpenGlicForPdf);
+    }
+
+    if (GetParam().trust_first) {
+      enabled_features.push_back({features::kGlicTrustFirstOnboarding, {}});
+    } else {
+      disabled_features.push_back(features::kGlicTrustFirstOnboarding);
+    }
+
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                       disabled_features);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_P(GlicEnablingAutoOpenForPdfTest, ExpectedBehavior) {
+  const auto fre_status = GetParam().has_consent
+                              ? prefs::FreStatus::kCompleted
+                              : prefs::FreStatus::kIncomplete;
+  profile()->GetPrefs()->SetInteger(prefs::kGlicCompletedFre,
+                                    static_cast<int>(fre_status));
+  EXPECT_EQ(GetParam().result,
+            GlicEnabling::IsAutoOpenForPdfEnabled(profile()));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    GlicEnablingAutoOpenForPdfTest,
+    testing::Values(AutoOpenPdfParams{},  // Default values
+                    AutoOpenPdfParams{.trust_first = true},
+                    AutoOpenPdfParams{.auto_open_pdf = true,
+                                      .has_consent = true,
+                                      .result = true},
+                    AutoOpenPdfParams{.auto_open_pdf = true,
+                                      .has_consent = true,
+                                      .trust_first = true,
+                                      .result = true},
+                    AutoOpenPdfParams{.auto_open_pdf = true,
+                                      .has_consent = false,
+                                      .trust_first = true,
+                                      .result = false},
+                    AutoOpenPdfParams{.auto_open_pdf = true,
+                                      .auto_open_pdf_with_onboarding = true,
+                                      .has_consent = false,
+                                      .trust_first = false,
+                                      .result = false},
+                    AutoOpenPdfParams{.auto_open_pdf = true,
+                                      .auto_open_pdf_with_onboarding = true,
+                                      .has_consent = false,
+                                      .trust_first = true,
+                                      .result = true}));
 }  // namespace
 }  // namespace glic
