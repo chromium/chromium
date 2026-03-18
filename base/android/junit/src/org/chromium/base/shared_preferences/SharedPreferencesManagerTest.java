@@ -17,10 +17,12 @@ import android.content.SharedPreferences;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
@@ -33,6 +35,7 @@ import java.util.Set;
 /** Unit tests for {@link SharedPreferencesManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class SharedPreferencesManagerTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private PreferenceKeyChecker mChecker;
 
     private static final KeyPrefix TEST_PREFIX = new KeyPrefix("TestPrefix.*");
@@ -44,7 +47,6 @@ public class SharedPreferencesManagerTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mSubject = new SharedPreferencesManager(mChecker);
     }
 

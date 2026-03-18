@@ -8,11 +8,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.verify;
 
-import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowProcess;
 
@@ -24,15 +25,11 @@ import org.chromium.base.test.RobolectricUtil;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {ShadowProcess.class})
 public class OneshotSupplierImplTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     private final OneshotSupplierImpl<String> mSupplier = new OneshotSupplierImpl<>();
 
     @Spy private Callback<String> mCallback1;
     @Spy private Callback<String> mCallback2;
-
-    @Before
-    public void setup() {
-        MockitoAnnotations.initMocks(this);
-    }
 
     @Test
     public void testSet() {

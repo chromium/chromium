@@ -30,11 +30,13 @@ import android.os.RemoteException;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
 import org.robolectric.annotation.Config;
 
@@ -51,6 +53,8 @@ import java.util.ArrayList;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ChildProcessConnectionTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     private static class ChildServiceConnectionMock implements ChildServiceConnection {
         private final Intent mBindIntent;
         private final ChildServiceConnectionDelegate mDelegate;
@@ -162,7 +166,6 @@ public class ChildProcessConnectionTest {
 
     @Before
     public void setUp() throws RemoteException {
-        MockitoAnnotations.initMocks(this);
 
         mIChildProcessService = mock(IChildProcessService.class);
         ApplicationInfo appInfo = ApkInfo.getInstance().getBrowserApplicationInfo();

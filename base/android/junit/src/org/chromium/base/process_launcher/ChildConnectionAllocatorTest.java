@@ -26,11 +26,13 @@ import android.os.Bundle;
 import android.os.Handler;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
 import org.robolectric.annotation.Config;
 
@@ -46,6 +48,7 @@ import java.util.Set;
 @Config(manifest = Config.NONE)
 @RunWith(BaseRobolectricTestRunner.class)
 public class ChildConnectionAllocatorTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     private static final String TEST_PACKAGE_NAME = "org.chromium.allocator_test";
 
     private static final int MAX_CONNECTION_NUMBER = 2;
@@ -163,7 +166,6 @@ public class ChildConnectionAllocatorTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
 
         mAllocator =
                 ChildConnectionAllocator.createFixedForTesting(
