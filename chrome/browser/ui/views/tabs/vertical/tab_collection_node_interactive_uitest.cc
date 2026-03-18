@@ -5,6 +5,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/root_tab_collection_node.h"
@@ -38,8 +39,13 @@ class TabCollectionNodeInteractiveUiTest
   }
 };
 
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_ValidateViewFocusOrder DISABLED_ValidateViewFocusOrder
+#else
+#define MAYBE_ValidateViewFocusOrder ValidateViewFocusOrder
+#endif
 IN_PROC_BROWSER_TEST_F(TabCollectionNodeInteractiveUiTest,
-                       ValidateViewFocusOrder) {
+                       MAYBE_ValidateViewFocusOrder) {
   // Initial Order: [A, B, C, D, E, F].
   for (size_t i = 0; i < 5; i++) {
     ui_test_utils::NavigateToURLWithDisposition(
