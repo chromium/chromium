@@ -531,7 +531,7 @@ LoginDisplayHostWebUI::LoginDisplayHostWebUI(
 
   audio::SoundsManager* manager = audio::SoundsManager::Get();
   ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
-  manager->Initialize(static_cast<int>(Sound::kStartup),
+  manager->Initialize(std::to_underlying(Sound::kStartup),
                       bundle.GetRawDataResource(IDR_SOUND_STARTUP_WAV),
                       media::AudioCodec::kPCM);
 }

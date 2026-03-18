@@ -324,8 +324,8 @@ void LoginScreenClientImpl::ShowLockScreenNotificationSettings() {
            {chromeos::settings::mojom::kSecurityAndSignInSubpagePathV2,
             "?settingId=",
             base::NumberToString(
-                static_cast<int>(chromeos::settings::mojom::Setting::
-                                     kLockScreenNotification))})});
+                std::to_underlying(chromeos::settings::mojom::Setting::
+                                       kLockScreenNotification))})});
 }
 
 void LoginScreenClientImpl::OnFocusLeavingSystemTray(bool reverse) {
@@ -442,8 +442,8 @@ void LoginScreenClientImpl::ShowGaiaSigninInternal(
     // to remove the DumpWithoutCrashing if the number of reports will be low.
     base::debug::DumpWithoutCrashing();
     LOG(WARNING) << __func__ << ": ignoring the call, session state: "
-                 << static_cast<int>(session_manager::SessionManager::Get()
-                                         ->session_state());
+                 << std::to_underlying(session_manager::SessionManager::Get()
+                                           ->session_state());
   }
 }
 

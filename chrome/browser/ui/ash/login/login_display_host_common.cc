@@ -333,7 +333,7 @@ void LoginDisplayHostCommon::StartSignInScreen() {
 void LoginDisplayHostCommon::StartKiosk(const KioskAppId& kiosk_app_id,
                                         bool is_auto_launch) {
   VLOG(1) << "Login >> start kiosk of type "
-          << static_cast<int>(kiosk_app_id.type);
+          << std::to_underlying(kiosk_app_id.type);
 
   SetKioskLaunchStateCrashKey(KioskLaunchState::kAttemptToLaunch);
 
@@ -546,7 +546,7 @@ void LoginDisplayHostCommon::OnPowerwashAllowedCallback(
     // Force the TPM firmware update option to be enabled.
     local_state_->SetInteger(
         ash::prefs::kFactoryResetTPMFirmwareUpdateMode,
-        static_cast<int>(tpm_firmware_update_mode.value()));
+        std::to_underlying(tpm_firmware_update_mode.value()));
   }
   StartWizard(ResetView::kScreenId);
 }
@@ -626,7 +626,7 @@ void LoginDisplayHostCommon::StartEncryptionMigration(
 
 void LoginDisplayHostCommon::ShowSigninError(SigninError error,
                                              const std::string& details) {
-  VLOG(1) << "Show error, error_id: " << static_cast<int>(error);
+  VLOG(1) << "Show error, error_id: " << std::to_underlying(error);
 
   if (error == SigninError::kKnownUserFailedNetworkNotConnected ||
       error == SigninError::kKnownUserFailedNetworkConnected) {
