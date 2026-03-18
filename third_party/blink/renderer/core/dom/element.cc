@@ -13482,7 +13482,7 @@ void Element::setHTMLUnsafe(const V8UnionStringOrTrustedHTML* html,
 void Element::setHTMLUnsafe(const V8UnionStringOrTrustedHTML* html,
                             TrustedParserOptions* options,
                             ExceptionState& exception_state) {
-  CHECK(RuntimeEnabledFeatures::DocumentPatchingEnabled());
+  CHECK(RuntimeEnabledFeatures::TrustedTypesCreateParserOptionsEnabled());
   UseCounter::Count(GetDocument(), WebFeature::kHTMLUnsafeMethods);
   SetInnerHTMLInternal(
       CheckTrustedTypes(html, trusted_types_names::kSetHTMLUnsafe,
