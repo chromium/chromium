@@ -992,7 +992,7 @@ BASE_FEATURE(kParseSEIRecoveryPoints, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Allows media to autoplay without a user gesture if the site has been
 // granted microphone or camera permissions.
-BASE_FEATURE(kAutoplayBypassForMicCamera, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAutoplayBypassForMicCamera, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Whether we should show a setting to disable autoplay policy.
 BASE_FEATURE(kAutoplayDisableSettings, base::FEATURE_DISABLED_BY_DEFAULT);
