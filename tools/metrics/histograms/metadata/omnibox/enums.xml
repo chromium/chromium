@@ -91,11 +91,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/omnibox/browser/android/java/src/org/chromium/components/omnibox/AutocompleteRequestType.java,//ios/chrome/browser/composebox/ui/composebox_metrics_recorder.h:AutocompleteRequestType)-->
 
-<enum name="BooleanNavigated">
-  <int value="0" label="Navigation did not occur"/>
-  <int value="1" label="Navigation occurred"/>
-</enum>
-
 <enum name="BooleanNonNull">
   <int value="0" label="Null"/>
   <int value="1" label="Non-null"/>

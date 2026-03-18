@@ -133,15 +133,6 @@ chromium-metrics-reviews@google.com.
              (frame origin). (Deprecated)"/>
 </enum>
 
-<enum name="VariationsHeadersURLValidationResult">
-  <int value="0" label="Rejected: Invalid URL."/>
-  <int value="1" label="Rejected: Not https. (Deprecated)"/>
-  <int value="2" label="Rejected: Not Google domain."/>
-  <int value="3" label="Should append headers."/>
-  <int value="4" label="Rejected: Neither http, nor https."/>
-  <int value="5" label="Rejected: Is a Google domain, but not https."/>
-</enum>
-
 <enum name="VariationsInvalidLayerReason">
   <int value="0" label="Invalid ID"/>
   <int value="1" label="No slots"/>

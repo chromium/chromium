@@ -157,12 +157,6 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Excepted"/>
 </enum>
 
-<enum name="DIPSDirectNavigationSource">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="Omnibar"/>
-  <int value="2" label="Bookmark"/>
-</enum>
-
 <enum name="DIPSErrorCode">
   <int value="0" label="No DIPSDatabase::Read error was encountered"/>
   <int value="1"

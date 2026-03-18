@@ -62,12 +62,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Promo shown threshold exceeded."/>
 </enum>
 
-<enum name="ContentNotificationPromptAction">
-  <int value="0" label="Go to Settings tapped"/>
-  <int value="1" label="No Thanks tapped"/>
-  <int value="2" label="Accepted tapped"/>
-</enum>
-
 <enum name="ContentNotificationSettingsAction">
   <int value="0" label="Enabled Content Notifications Toggle."/>
   <int value="1" label="Disabled Content Notifications Toggle."/>

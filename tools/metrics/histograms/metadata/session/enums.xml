@@ -36,14 +36,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Has fetchers"/>
 </enum>
 
-<enum name="LocalStorageOpenError">
-  <int value="0" label="Directory open failed"/>
-  <int value="1" label="Database open failed"/>
-  <int value="2" label="Invalid schema version"/>
-  <int value="3" label="Error reading schema version"/>
-  <int value="4" label="Success"/>
-</enum>
-
 <enum name="SessionRestoreFinishReason">
   <int value="0"
       label="SessionRestore.ForegroundTabFirstPaint4 successfully recorded."/>

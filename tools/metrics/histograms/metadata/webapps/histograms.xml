@@ -2328,7 +2328,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.PendingUpdateData.ReadResult"
-    units="WebAppUpdateDataReadResult" expires_after="2026-11-12">
+    enum="WebAppUpdateDataReadResult" expires_after="2026-11-12">
   <owner>dibyapal@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>

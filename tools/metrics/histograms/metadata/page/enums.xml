@@ -78,21 +78,6 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Main Frame Origin differs from Ad"/>
 </enum>
 
-<enum name="CrossOriginCreativeStatus">
-  <int value="0" label="Ad Creative Origin indeterminable"/>
-  <int value="1" label="Main Frame Origin same as Ad Creative"/>
-  <int value="2" label="Main Frame Origin differs from Ad Creative"/>
-</enum>
-
-<enum name="CrossOriginCreativeStatusWithThrottling">
-  <int value="0" label="Ad Creative Origin Unknown and Ad Not Throttled"/>
-  <int value="1" label="Ad Creative Origin Unknown and Ad Throttled"/>
-  <int value="2"
-      label="Ad Creative Origin Same as Main Frame and Ad Not Throttled"/>
-  <int value="3"
-      label="Ad Creative Origin Differs from Main Frame and Ad Not Throttled"/>
-</enum>
-
 <!-- LINT.IfChange(GwsWarmUpType) -->
 
 <enum name="GwsWarmUpType">
@@ -166,22 +151,6 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Failure(False positive): Another indexed LCP.">
     Prediction failed. LCP is predicted but the actual LCP is one with another
     leaned locator.
-  </int>
-</enum>
-
-<enum name="MhtmlLoadResult">
-  <int value="0" label="Success">Archive loaded successfully</int>
-  <int value="1" label="Empty file">
-    Failed to load archive because the file was empty
-  </int>
-  <int value="2" label="URL scheme not allowed">
-    Failed to load archive because the url wasn't http(s), file, or content
-  </int>
-  <int value="3" label="Invalid archive">
-    Failed to load archive because it was not valid MHTML
-  </int>
-  <int value="4" label="Missing main resource">
-    Failed to load archive because it had no main resource
   </int>
 </enum>
 
@@ -361,35 +330,6 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//components/page_load_metrics/browser/page_load_metrics_update_dispatcher.h:PageLoadTimingStatus) -->
-
-<enum name="PageVisitType">
-  <int value="0"
-      label="Independent Visit; the page is opened from UI or in new tab, and
-             not followed by any link navigation. (obsolete)"/>
-  <int value="1"
-      label="Origin Visit; the page is opened from UI or in new tab, and
-             followed by a link navigation. (obsolete)"/>
-  <int value="2"
-      label="PassingVisit; the page is visited and followed by link
-             navigations."/>
-  <int value="3"
-      label="TerminalVisit; the page is visited by a link navigation, but not
-             followed by any link navigation."/>
-  <int value="4"
-      label="HistoryVisit; the page is visited by a history navigation."/>
-  <int value="5"
-      label="Independent Link Visit; the page is opened in a new tab, and not
-             followed by any link navigation."/>
-  <int value="6"
-      label="Independent UI Visit; the page is opened from UI, and not
-             followed by any link navigation."/>
-  <int value="7"
-      label="Origin Link Visit; the page is opened in a new tab, and followed
-             by a link navigation."/>
-  <int value="8"
-      label="Origin UI Visit; the page is opened from UI, and followed by a
-             link navigation."/>
-</enum>
 
 <!-- LINT.IfChange(PaidContentState) -->
 

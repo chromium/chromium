@@ -3431,12 +3431,6 @@ Called by update_extension_permission.py.-->
   <int value="5" label="ON_ACTIVE_TAB_ONLY"/>
 </enum>
 
-<enum name="InDeveloperMode">
-  <summary>A boolean for whether the user is in the developer mode.</summary>
-  <int value="0" label="User is not in the developer mode"/>
-  <int value="1" label="User is in the developer mode"/>
-</enum>
-
 <enum name="IsExtensionAllowedResult">
   <int value="0" label="Unspecified"/>
   <int value="1" label="Extension install cloud policy checks disabled"/>

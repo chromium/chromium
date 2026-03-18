@@ -230,12 +230,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//content/browser/attribution_reporting/attribution_reporting.mojom:OsRegistrationResult) -->
 
-<enum name="ConversionOsRegistrationsBufferFlushReason">
-  <int value="0" label="Navigation is done"/>
-  <int value="1" label="Buffer is full"/>
-  <int value="2" label="Timeout reached"/>
-</enum>
-
 <!-- LINT.IfChange(ConversionRegisterDataHostOutcome) -->
 
 <enum name="ConversionRegisterDataHostOutcome">

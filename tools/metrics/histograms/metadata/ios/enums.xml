@@ -712,15 +712,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//ios/chrome/browser/file_upload_panel/ui/constants.h:FileUploadPanelEntryPointVariant) -->
 
-<!-- LINT.IfChange(IOSFileUploadPanelSecurityScopedResourceAccessState) -->
-
-<enum name="IOSFileUploadPanelSecurityScopedResourceAccessState">
-  <int value="0" label="StartedAndStopped"/>
-  <int value="1" label="StartFailed"/>
-</enum>
-
-<!-- LINT.ThenChange(//ios/chrome/browser/file_upload_panel/ui/constants.h:FileUploadPanelSecurityScopedResourceAccessState) -->
-
 <!-- LINT.IfChange(IOSGeminiAspectRatioBucket) -->
 
 <enum name="IOSGeminiAspectRatioBucket">

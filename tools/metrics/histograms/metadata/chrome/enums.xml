@@ -131,42 +131,6 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="PrintToPDF"/>
 </enum>
 
-<enum name="KAnonymityServiceJoinSetAction">
-  <int value="0" label="JoinSet"/>
-  <int value="1" label="JoinSetSuccess"/>
-  <int value="2" label="FetchJoinSetOHTTPKey"/>
-  <int value="3" label="FetchJoinSetOHTTPKeyFailed"/>
-  <int value="4" label="SendJoinSetRequest"/>
-  <int value="5" label="JoinSetRequestFailed"/>
-  <int value="6" label="JoinSetQueueFull"/>
-</enum>
-
-<enum name="KAnonymityServiceQuerySetAction">
-  <int value="0" label="QuerySet"/>
-  <int value="1" label="QuerySetsSuccess"/>
-  <int value="2" label="FetchQuerySetOHTTPKey"/>
-  <int value="3" label="FetchQuerySetOHTTPKeyFailed"/>
-  <int value="4" label="SendQuerySetRequest"/>
-  <int value="5" label="QuerySetRequestFailed"/>
-  <int value="6" label="QuerySetQueueFull"/>
-  <int value="7" label="QuerySetRequestParseError"/>
-</enum>
-
-<enum name="KAnonymityTrustTokenGetterAction">
-  <int value="0" label="TryGetTrustTokenAndKey"/>
-  <int value="1" label="GetTrustTokenSuccess"/>
-  <int value="2" label="RequestAccessToken"/>
-  <int value="3" label="AccessTokenRequestFailed"/>
-  <int value="4" label="FetchNonUniqueClientID"/>
-  <int value="5" label="FetchNonUniqueClientIDFailed"/>
-  <int value="6" label="FetchNonUniqueClientIDParseError"/>
-  <int value="7" label="FetchTrustTokenKey"/>
-  <int value="8" label="FetchTrustTokenKeyFailed"/>
-  <int value="9" label="FetchTrustTokenKeyParseError"/>
-  <int value="10" label="FetchTrustToken"/>
-  <int value="11" label="FetchTrustTokenFailed"/>
-</enum>
-
 <enum name="NetworkSandboxState">
   <summary>
     The possible states for the network service sandbox. See

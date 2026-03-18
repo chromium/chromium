@@ -668,7 +668,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="CustomTabs.OpenType" units="CustomTabsOpenType"
+<histogram name="CustomTabs.OpenType" enum="CustomTabsOpenType"
     expires_after="2026-05-30">
   <owner>jinsukkim@chromium.org</owner>
   <owner>chrome-connective-tissue@google.com</owner>

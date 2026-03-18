@@ -2,17 +2,20 @@
 # Copyright 2013 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Verifies that the histograms XML file is well-formatted."""
+"""Verifies that histograms XML files are well-formatted."""
 
 import argparse
+import io
 import logging
+import os
 import re
 import sys
 from typing import List
 import xml.dom.minidom
 
-import setup_modules
+import setup_modules  # pylint: disable=unused-import
 
+import chromium_src.tools.metrics.common.enums as enums
 import chromium_src.tools.metrics.common.xml_utils as xml_utils
 import chromium_src.tools.metrics.histograms.extract_histograms as extract_histograms
 import chromium_src.tools.metrics.histograms.histogram_paths as histogram_paths
@@ -103,6 +106,26 @@ def _CheckVariantsRegistered(xml_paths: List[str]) -> bool:
   return has_errors
 
 
+def _CheckNoUnusedEnums(xml_paths: List[str]) -> bool:
+  """Checks that all enums are referenced by metrics."""
+  enum_names = enums.get_enums_used_in_files()
+
+  has_errors = False
+  for enum_file in xml_paths:
+    with io.open(enum_file, 'r', encoding='utf-8') as f:
+      document = xml.dom.minidom.parse(f)
+      for enum_node in document.getElementsByTagName('enum'):
+        if enum_node.attributes['name'].value not in enum_names:
+          logging.error(
+              'Enum %s from file %s/enums.xml is not referenced by any metric.',
+              enum_node.attributes['name'].value,
+              os.path.basename(os.path.dirname(enum_file)),
+          )
+          has_errors = True
+
+  return has_errors
+
+
 def main():
   parser = argparse.ArgumentParser()
   parser.add_argument(
@@ -112,6 +135,10 @@ def main():
       default=histogram_paths.ALL_XMLS,
       help='An optional list of paths to XML files to validate passed as'
       ' consecutive arguments. Production XML files are validated by default.')
+  parser.add_argument(
+      '--check_no_unused_enums',
+      action='store_true',
+      help='Whether to check that all enums are referenced by any metric.')
   paths_to_check = parser.parse_args().xml_paths
 
   doc = merge_xml.MergeFiles(paths_to_check,
@@ -119,6 +146,8 @@ def main():
   _, errors = extract_histograms.ExtractHistogramsFromDom(doc)
   errors = errors or CheckNamespaces(paths_to_check)
   errors = errors or _CheckVariantsRegistered(paths_to_check)
+  if parser.parse_args().check_no_unused_enums:
+    errors = errors or _CheckNoUnusedEnums(paths_to_check)
   sys.exit(bool(errors))
 
 
