@@ -50,27 +50,15 @@ public class CustomSiteSearchMediator extends ExpandableSiteSearchMediator {
 
     @Override
     protected void refreshList() {
-        mModelList.clear();
-        clearHiddenItems();
+        clearAllItems();
 
         List<TemplateUrl> urls =
                 mTemplateUrlService.getTemplateUrlsByCategory(
                         TemplateUrlCategory.ACTIVE_SITE_SEARCH);
 
-        setUpSiteSearchList(urls);
+        populateTemplateUrls(urls);
         setUpAddButton();
         setUpMoreButtonIfNeeded(urls.size());
-    }
-
-    private void setUpSiteSearchList(List<TemplateUrl> urls) {
-        for (int i = 0; i < urls.size(); i++) {
-            ListItem item = createListItem(urls.get(i));
-            if (i < DEFAULT_MAX_ROWS) {
-                mModelList.add(item);
-            } else {
-                addHiddenItem(item);
-            }
-        }
     }
 
     private void setUpAddButton() {

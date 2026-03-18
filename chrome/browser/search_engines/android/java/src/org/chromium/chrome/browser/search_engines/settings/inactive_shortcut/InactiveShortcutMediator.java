@@ -21,13 +21,10 @@ import org.chromium.ui.listmenu.ListMenuDelegate;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @NullMarked
 public class InactiveShortcutMediator extends ExpandableSiteSearchMediator {
-    // TODO: Move to ExpandableSiteSearchMediator and add logic in CustomSiteSearchMediator.
-    private final List<TemplateUrl> mHiddenUrls = new ArrayList<>();
 
     public InactiveShortcutMediator(Context context, ModelList modelList, Profile profile) {
         super(context, modelList, profile);
@@ -37,37 +34,14 @@ public class InactiveShortcutMediator extends ExpandableSiteSearchMediator {
 
     @Override
     protected void refreshList() {
-        mModelList.clear();
-        clearHiddenItems();
-        mHiddenUrls.clear();
+        clearAllItems();
 
         List<TemplateUrl> urls =
                 mTemplateUrlService.getTemplateUrlsByCategory(
                         TemplateUrlCategory.INACTIVE_SITE_SEARCH);
 
-        setUpSiteSearchList(urls);
+        populateTemplateUrls(urls);
         setUpMoreButtonIfNeeded(urls.size());
-    }
-
-    private void setUpSiteSearchList(List<TemplateUrl> urls) {
-        for (int i = 0; i < urls.size(); i++) {
-            TemplateUrl url = urls.get(i);
-            if (i < DEFAULT_MAX_ROWS) {
-                mModelList.add(createListItem(url));
-            } else {
-                mHiddenUrls.add(url);
-            }
-        }
-    }
-
-    @Override
-    protected void prepareHiddenItemsIfNeeded() {
-        // Lazy load models and fetch favicons on the first expansion.
-        if (!mHiddenUrls.isEmpty() && areHiddenItemsEmpty()) {
-            for (TemplateUrl url : mHiddenUrls) {
-                addHiddenItem(createListItem(url));
-            }
-        }
     }
 
     @Override

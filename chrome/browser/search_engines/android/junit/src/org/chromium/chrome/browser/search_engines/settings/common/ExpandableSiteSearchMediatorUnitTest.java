@@ -82,19 +82,19 @@ public class ExpandableSiteSearchMediatorUnitTest {
 
     @Test
     public void testHiddenItemsManagement() {
-        assertTrue(mMediator.areHiddenItemsEmpty());
+        assertTrue(mMediator.areExpandableItemsEmptyForTesting());
 
         ListItem item1 = new ListItem(0, null);
         ListItem item2 = new ListItem(0, null);
 
-        mMediator.addHiddenItem(item1);
-        mMediator.addHiddenItem(item2);
+        mMediator.addExpandableItemForTesting(item1);
+        mMediator.addExpandableItemForTesting(item2);
 
-        assertFalse(mMediator.areHiddenItemsEmpty());
+        assertFalse(mMediator.areExpandableItemsEmptyForTesting());
 
-        mMediator.clearHiddenItems();
+        mMediator.clearAllItems();
 
-        assertTrue(mMediator.areHiddenItemsEmpty());
+        assertTrue(mMediator.areExpandableItemsEmptyForTesting());
     }
 
     @Test
@@ -122,8 +122,8 @@ public class ExpandableSiteSearchMediatorUnitTest {
 
         ListItem hiddenItem1 = new ListItem(0, null);
         ListItem hiddenItem2 = new ListItem(0, null);
-        mMediator.addHiddenItem(hiddenItem1);
-        mMediator.addHiddenItem(hiddenItem2);
+        mMediator.addExpandableItemForTesting(hiddenItem1);
+        mMediator.addExpandableItemForTesting(hiddenItem2);
 
         PropertyModel moreButtonModel =
                 new PropertyModel.Builder(SiteSearchProperties.ALL_KEYS)
@@ -139,7 +139,6 @@ public class ExpandableSiteSearchMediatorUnitTest {
 
         assertTrue(mMediator.isExpandedForTesting());
         assertTrue(moreButtonModel.get(SiteSearchProperties.IS_EXPANDED));
-        verify(mMediator).prepareHiddenItemsIfNeeded();
 
         // ModelList should now have 4 items: baseItem, moreButton, hiddenItem1, hiddenItem2
         assertEquals(4, mModelList.size());
