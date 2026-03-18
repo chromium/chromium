@@ -182,6 +182,7 @@ _CONFIG = [
             'base::ToString',
             'base::TrackEvent',
             'base::trace_event::.*',
+            'base::unchecked',
             'base::unexpected',
             'base::UnguessableToken',
             'base::UnguessableTokenHash',
