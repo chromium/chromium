@@ -47,7 +47,7 @@ inline constexpr int kTabGroupIconSize = 12;
 inline constexpr auto kTabGroupIconMargins = gfx::Insets(6);
 
 // Margins for the lists separator.
-inline constexpr gfx::Insets kListsSeparatorMargins = gfx::Insets::VH(12, 20);
+inline constexpr gfx::Insets kListsSeparatorMargins = gfx::Insets::VH(12, 8);
 
 // Maximum number of recent threads displayed in the UI.
 // This value affects how the `Projects.ProjectsPanel.Threads.CountOnPanelOpen`

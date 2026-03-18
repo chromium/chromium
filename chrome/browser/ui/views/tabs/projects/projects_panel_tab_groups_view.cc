@@ -44,7 +44,7 @@
 #include "ui/views/view_utils.h"
 
 namespace {
-constexpr gfx::Insets kNoTabsInteriorMargins = gfx::Insets::VH(0, 8);
+constexpr gfx::Insets kNoTabsInteriorMargins = gfx::Insets::TLBR(0, 8, 8, 8);
 
 // Whether animations should be disabled.
 static bool disable_animations_for_testing_ = false;
