@@ -303,6 +303,12 @@ void ComposeboxQueryControllerBridge::RemoveAttachment(
   }
 }
 
+bool ComposeboxQueryControllerBridge::IsFuseboxEligible(JNIEnv* env) {
+  AimEligibilityService* aim_service =
+      AimEligibilityServiceFactory::GetForProfile(profile_);
+  return aim_service && aim_service->IsFuseboxEligible();
+}
+
 bool ComposeboxQueryControllerBridge::IsPdfUploadEligible(JNIEnv* env) {
   AimEligibilityService* aim_service =
       AimEligibilityServiceFactory::GetForProfile(profile_);

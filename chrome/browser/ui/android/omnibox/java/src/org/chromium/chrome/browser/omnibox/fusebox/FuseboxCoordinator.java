@@ -263,6 +263,8 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
         // This should ideally be an assert ensuring that we don't begin a new input while the old
         // one is still active; will turn to an assert separately in case this scenario happens.
         if (mMediator == null
+                || mComposeboxQueryControllerBridge == null
+                || !mComposeboxQueryControllerBridge.isFuseboxEligible()
                 || !isSupportedDeviceType
                 || !isSupportedPageClass
                 || !mDefaultSearchEngineIsGoogle) {

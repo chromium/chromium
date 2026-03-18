@@ -58,6 +58,7 @@ class ComposeboxQueryControllerBridge
                              GURL url,
                              const base::android::JavaRef<jobject>& j_callback);
   void RemoveAttachment(JNIEnv* env, const std::string& token);
+  bool IsFuseboxEligible(JNIEnv* env);
   bool IsPdfUploadEligible(JNIEnv* env);
   bool IsCreateImagesEligible(JNIEnv* env);
   void SetActiveTool(JNIEnv* env, omnibox::ToolMode tool_mode);

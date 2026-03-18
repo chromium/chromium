@@ -15,7 +15,6 @@ import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -125,6 +124,10 @@ public class FuseboxCoordinatorUnitTest {
 
         lenient().doReturn(mTabModel).when(mTabModelSelector).getCurrentModel();
         lenient().doReturn(new ArrayList<>(mTabs).iterator()).when(mTabModel).iterator();
+        doReturn(true).when(mComposeboxController).isFuseboxEligible(anyLong());
+        doReturn(/* nativeInstance= */ 1L)
+                .when(mComposeboxController)
+                .init(any(Profile.class), any(ComposeboxQueryControllerBridge.class));
 
         doReturn(true).when(mIncognitoProfile).isIncognitoBranded();
 
@@ -145,6 +148,7 @@ public class FuseboxCoordinatorUnitTest {
                         mSnackbarManager);
 
         // By default, make the mediator available.
+        mProfileSupplier.set(mProfile);
         mCoordinator.setMediatorForTesting(mMediator);
         mCoordinator.beginInput(mAutocompleteInput);
     }
@@ -160,11 +164,7 @@ public class FuseboxCoordinatorUnitTest {
     public void testOnProfileAvailable_featureEnabled_withBridge() {
         // Start with a default state.
         mCoordinator.setMediatorForTesting(null);
-
-        doReturn(/* nativeInstance= */ 1L)
-                .when(mComposeboxController)
-                .init(any(Profile.class), any(ComposeboxQueryControllerBridge.class));
-        mProfileSupplier.set(mProfile);
+        mProfileSupplier.set(mock(Profile.class));
         assertNotNull(mCoordinator.getMediatorForTesting());
         assertNotEquals(mMediator, mCoordinator.getMediatorForTesting());
     }
@@ -174,11 +174,6 @@ public class FuseboxCoordinatorUnitTest {
     public void testOnProfileAvailable_featureEnabled_noBridge() {
         // Start with a default state.
         mCoordinator.setMediatorForTesting(null);
-
-        doReturn(/* nativeInstance= */ 0L)
-                .when(mComposeboxController)
-                .init(any(Profile.class), any(ComposeboxQueryControllerBridge.class));
-        mProfileSupplier.set(mProfile);
         assertNull(mCoordinator.getMediatorForTesting());
     }
 
@@ -187,10 +182,6 @@ public class FuseboxCoordinatorUnitTest {
     public void testOnProfileAvailable_featureDisabled() {
         // Start with a default state.
         mCoordinator.setMediatorForTesting(null);
-
-        mProfileSupplier.set(mProfile);
-        verify(mComposeboxController, never())
-                .init(any(Profile.class), any(ComposeboxQueryControllerBridge.class));
         assertNull(mCoordinator.getMediatorForTesting());
     }
 
@@ -199,11 +190,7 @@ public class FuseboxCoordinatorUnitTest {
     public void testOnProfileAvailable_tracksProfileChanges() {
         // Start with a default state.
         mCoordinator.setMediatorForTesting(null);
-
-        doReturn(/* nativeInstance= */ 1L)
-                .when(mComposeboxController)
-                .init(any(Profile.class), any(ComposeboxQueryControllerBridge.class));
-        mProfileSupplier.set(mProfile);
+        mProfileSupplier.set(mock(Profile.class));
         assertNotNull(mCoordinator.getMediatorForTesting());
         assertNotEquals(mMediator, mCoordinator.getMediatorForTesting());
 
@@ -286,21 +273,17 @@ public class FuseboxCoordinatorUnitTest {
         doReturn(false).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
         mCoordinator.beginInput(mAutocompleteInput);
         mTemplateUrlServiceSupplier.set(mTemplateUrlService);
-        ShadowLooper.idleMainLooper();
-
+        ShadowLooper.runUiThreadTasks();
         verify(mMediator).setToolbarVisible(false);
     }
 
     @Test
     @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
     public void testNtpAiModeButtonPress() {
-        doReturn(/* nativeInstance= */ 1L)
-                .when(mComposeboxController)
-                .init(any(Profile.class), any(ComposeboxQueryControllerBridge.class));
-        mProfileSupplier.set(mProfile);
-        ShadowLooper.idleMainLooper();
-        mAutocompleteInput.setRequestType(AutocompleteRequestType.AI_MODE);
+        mCoordinator.endInput();
+        clearInvocations(mMediator);
 
+        mAutocompleteInput.setRequestType(AutocompleteRequestType.AI_MODE);
         mCoordinator.beginInput(mAutocompleteInput);
         verify(mMediator).beginInput(mAutocompleteInput);
     }
@@ -308,13 +291,9 @@ public class FuseboxCoordinatorUnitTest {
     @Test
     @EnableFeatures({OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT})
     public void createImageButtonVisibility_regularProfile() {
-        doReturn(/* nativeInstance= */ 1L)
-                .when(mComposeboxController)
-                .init(any(Profile.class), any(ComposeboxQueryControllerBridge.class));
         doReturn(true).when(mComposeboxController).isCreateImagesEligible(anyLong());
-
+        mProfileSupplier.set(mock(Profile.class));
         OmniboxFeatures.sShowImageGenerationButtonInIncognito.setForTesting(false);
-        mProfileSupplier.set(mProfile);
         assertTrue(
                 mCoordinator
                         .getModelForTesting()
