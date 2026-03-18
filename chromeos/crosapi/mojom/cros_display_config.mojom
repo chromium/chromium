@@ -53,31 +53,6 @@ enum DisplayConfigResult {
   kCalibrationFailedError,
 };
 
-// Describes how the displays are laid out.
-[Extensible]
-enum DisplayLayoutMode {
-  // In normal mode displays are laid out as described by
-  // DisplayLayoutInfo.layouts.
-  [Default] kNormal = 0,
-  // In unified desktop mode, a single desktop will be stretched across all
-  // available displays.
-  kUnified,
-  // In mirrored mode, the display defined by DisplayLayoutInfo.mirrorSourceId
-  // will be mirrored in the displays defined by
-  // DisplayLayoutInfo.mirrorDestinationIds, or in all other displays if
-  // mirrorDestinationIds is empty.
-  kMirrored
-};
-
-// Describes a display edge.
-[Extensible]
-enum DisplayLayoutPosition {
-  [Default] kTop = 0,
-  kRight,
-  kBottom,
-  kLeft
-};
-
 // Describes an overscan or touch calibration operation.
 [Extensible]
 enum DisplayConfigOperation {
@@ -126,39 +101,6 @@ enum DisplayRotationOptions {
   // In physical tablet state, Sets the user rotation lock to 270 degrees.
   // Otherwise, it sets the display rotation 270.
   k270Degrees,
-};
-
-// Defines the layout of a single display.
-struct DisplayLayout {
-  // The unique identifier of the display.
-  string id@0;
-  // The unique identifier of the parent display. Empty for the root display.
-  string parent_id@1;
-  // The edge of the display that is shared with the parent display. Ignored for
-  // the root display.
-  DisplayLayoutPosition position@2;
-  // The offset of the display along the connected edge. 0 indicates that
-  // the topmost or leftmost corner is aligned.
-  int32 offset@3;
-};
-
-// Defines the layout mode and details.
-struct DisplayLayoutInfo {
-  // The layout mode to use, see DisplayLayoutMode for details.
-  DisplayLayoutMode layout_mode@0;
-  // Ignored if If layout_mode is not kMirrored. Otherwise, if provided,
-  // specifies the unique identifier of the source display for mirroring. If
-  // not provided, mirror_destination_ids will be ignored and default ('normal')
-  // mirrored mode will be enabled.
-  string? mirror_source_id@1;
-  // Ignored if layout_mode is not kMirrored. Otherwise, if provided, specifies
-  // the unique identifiers of the displays to mirror the source display. If not
-  // provided or empty, all displays will mirror the source display.
-  array<string>? mirror_destination_ids@2;
-  // An array of layouts describing a directed graph of displays. Required if
-  // layout_mode is kNormal or kMirrored and not all displays are mirrored
-  // ('mixed' mode). Ignored if layout_mode is kUnified.
-  array<DisplayLayout>? layouts@3;
 };
 
 // EDID extracted parameters. Field description refers to "VESA ENHANCED

@@ -5,8 +5,10 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_SYSTEM_DISPLAY_DISPLAY_INFO_PROVIDER_UTILS_H_
 #define CHROME_BROWSER_EXTENSIONS_SYSTEM_DISPLAY_DISPLAY_INFO_PROVIDER_UTILS_H_
 
+#include "ash/display/cros_display_config.h"
 #include "chromeos/crosapi/mojom/cros_display_config.mojom-forward.h"
 #include "extensions/common/api/system_display.h"
+#include "ui/display/display_layout.h"
 #include "ui/display/manager/touch_device_manager.h"
 #include "ui/gfx/geometry/insets.h"
 
@@ -24,8 +26,8 @@ int64_t GetDisplayId(const std::string& display_id_str);
 // Return empty display object otherwise.
 display::Display GetDisplayForId(const std::string& display_id_str);
 
-// Converts display layout `position` from extension api to crosapi type.
-crosapi::mojom::DisplayLayoutPosition GetDisplayLayoutPosition(
+// Converts display layout `position` from extension api to ui type.
+display::DisplayPlacement::Position GetDisplayLayoutPosition(
     api::system_display::LayoutPosition position);
 
 // Converts system display `insets` to gfx type.
@@ -55,7 +57,7 @@ display::TouchCalibrationData::CalibrationPointPair GetTouchCalibrationPair(
     const api::system_display::TouchCalibrationPair& pair);
 
 void SetDisplayUnitInfoLayoutProperties(
-    const crosapi::mojom::DisplayLayoutInfo& layout,
+    const ash::DisplayLayoutInfo& layout,
     api::system_display::DisplayUnitInfo* display);
 
 }  // namespace extensions

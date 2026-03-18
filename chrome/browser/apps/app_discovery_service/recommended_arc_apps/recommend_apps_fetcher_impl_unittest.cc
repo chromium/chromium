@@ -95,11 +95,9 @@ class TestCrosDisplayConfig final : public ash::CrosDisplayConfig {
   // ash::CrosDisplayConfig:
   void AddObserver(Observer* observer) override {}
   void RemoveObserver(Observer* observer) override {}
-  crosapi::mojom::DisplayLayoutInfoPtr GetDisplayLayoutInfo() override {
-    NOTREACHED();
-  }
+  ash::DisplayLayoutInfo GetDisplayLayoutInfo() override { NOTREACHED(); }
   crosapi::mojom::DisplayConfigResult SetDisplayLayoutInfo(
-      crosapi::mojom::DisplayLayoutInfoPtr info) override {
+      const ash::DisplayLayoutInfo& info) override {
     NOTREACHED();
   }
   std::vector<crosapi::mojom::DisplayUnitInfoPtr> GetDisplayUnitInfoList(

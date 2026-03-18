@@ -13,12 +13,57 @@
 #include "base/observer_list_types.h"
 #include "base/types/optional_ref.h"
 #include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
+#include "ui/display/display_layout.h"
 #include "ui/display/manager/touch_device_manager.h"
 
 namespace ash {
 
 class OverscanCalibrator;
 class TouchCalibratorController;
+
+// Describes how the displays are laid out.
+enum class DisplayLayoutMode {
+  // In normal mode displays are laid out as described by
+  // DisplayLayoutInfo::layouts.
+  kNormal,
+  // In unified desktop mode, a single desktop will be stretched across all
+  // available displays.
+  kUnified,
+  // In mirrored mode, the display defined by DisplayLayoutInfo.mirrorSourceId
+  // will be mirrored in the displays defined by
+  // DisplayLayoutInfo::mirrorDestinationIds, or in all other displays if
+  // mirrorDestinationIds is empty.
+  kMirrored
+};
+
+// Defines the layout mode and details.
+struct ASH_EXPORT DisplayLayoutInfo {
+  DisplayLayoutInfo();
+  DisplayLayoutInfo(const DisplayLayoutInfo& other);
+  DisplayLayoutInfo(DisplayLayoutInfo&& other) noexcept;
+  DisplayLayoutInfo& operator=(const DisplayLayoutInfo& other);
+  DisplayLayoutInfo& operator=(DisplayLayoutInfo&& other) noexcept;
+  ~DisplayLayoutInfo();
+
+  // The layout mode to use, see DisplayLayoutMode for details.
+  DisplayLayoutMode layout_mode;
+
+  // Ignored if layout_mode is not kMirrored. Otherwise, if provided, specifies
+  // the unique identifier of the source display for mirroring. If not provided,
+  // mirror_destination_ids will be ignored and default ('normal') mirrored mode
+  // will be enabled.
+  std::optional<int64_t> mirror_source_id;
+
+  // Ignored if layout_mode is not kMirrored. Otherwise, if provided, specifies
+  // the unique identifiers of the displays to mirror the source display. If
+  // empty, all displays will mirror the source display.
+  std::optional<std::vector<int64_t>> mirror_destination_ids;
+
+  // An array of layouts describing a directed graph of displays. Required if
+  // layout_mode is kNormal or kMirrored and not all displays are mirrored
+  // ('mixed' mode). Ignored if layout_mode is kUnified.
+  std::optional<std::vector<display::DisplayPlacement>> layouts;
+};
 
 // Interface for configuring displays in Chrome OS.
 class CrosDisplayConfig {
@@ -36,12 +81,12 @@ class CrosDisplayConfig {
   virtual void RemoveObserver(Observer* observer) = 0;
 
   // Returns the display layout info, including the list of layouts.
-  virtual crosapi::mojom::DisplayLayoutInfoPtr GetDisplayLayoutInfo() = 0;
+  virtual DisplayLayoutInfo GetDisplayLayoutInfo() = 0;
 
   // Sets the layout mode, mirroring, and layouts. Returns kSuccess if the
   // layout is valid or an error value otherwise.
   virtual crosapi::mojom::DisplayConfigResult SetDisplayLayoutInfo(
-      crosapi::mojom::DisplayLayoutInfoPtr info) = 0;
+      const DisplayLayoutInfo& info) = 0;
 
   // Returns the properties for all displays. If |single_unified| is true, a
   // single display will be returned if the display layout is in unified mode.
@@ -107,9 +152,9 @@ class ASH_EXPORT CrosDisplayConfigImpl final : public CrosDisplayConfig {
   // CrosDisplayConfig:
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
-  crosapi::mojom::DisplayLayoutInfoPtr GetDisplayLayoutInfo() override;
+  DisplayLayoutInfo GetDisplayLayoutInfo() override;
   crosapi::mojom::DisplayConfigResult SetDisplayLayoutInfo(
-      crosapi::mojom::DisplayLayoutInfoPtr info) override;
+      const DisplayLayoutInfo& info) override;
   std::vector<crosapi::mojom::DisplayUnitInfoPtr> GetDisplayUnitInfoList(
       bool single_unified) override;
   crosapi::mojom::DisplayConfigResult SetDisplayProperties(

@@ -1,5 +1,8 @@
 specific_include_rules = {
-  "display_info_provider_chromeos*": [
+  "display_info_provider_utils\\.*": [
+    "+ash/display",
+  ],
+  "display_info_provider_chromeos\\.*": [
     "+ash/display",
     "+ash/shell.h",
     "+ash/shell_observer.h",

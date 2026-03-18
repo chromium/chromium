@@ -58,9 +58,7 @@ int64_t GetDisplayId(const std::string& display_id_str) {
   return display_id;
 }
 
-// Gets the display with the provided string id.
-display::Display GetDisplay(const std::string& display_id_str) {
-  int64_t display_id = GetDisplayId(display_id_str);
+display::Display GetDisplay(int64_t display_id) {
   if (display_id == display::kInvalidDisplayId) {
     return display::Display();
   }
@@ -77,62 +75,30 @@ display::Display GetDisplay(const std::string& display_id_str) {
   return display_manager->GetDisplayForId(display_id);
 }
 
-crosapi::mojom::DisplayLayoutPosition GetMojomDisplayLayoutPosition(
-    display::DisplayPlacement::Position position) {
-  switch (position) {
-    case display::DisplayPlacement::TOP:
-      return crosapi::mojom::DisplayLayoutPosition::kTop;
-    case display::DisplayPlacement::RIGHT:
-      return crosapi::mojom::DisplayLayoutPosition::kRight;
-    case display::DisplayPlacement::BOTTOM:
-      return crosapi::mojom::DisplayLayoutPosition::kBottom;
-    case display::DisplayPlacement::LEFT:
-      return crosapi::mojom::DisplayLayoutPosition::kLeft;
-  }
-  NOTREACHED();
+// Gets the display with the provided string id.
+display::Display GetDisplay(const std::string& display_id_str) {
+  return GetDisplay(GetDisplayId(display_id_str));
 }
 
-display::DisplayPlacement::Position GetDisplayPlacementPosition(
-    crosapi::mojom::DisplayLayoutPosition position) {
-  switch (position) {
-    case crosapi::mojom::DisplayLayoutPosition::kTop:
-      return display::DisplayPlacement::TOP;
-    case crosapi::mojom::DisplayLayoutPosition::kRight:
-      return display::DisplayPlacement::RIGHT;
-    case crosapi::mojom::DisplayLayoutPosition::kBottom:
-      return display::DisplayPlacement::BOTTOM;
-    case crosapi::mojom::DisplayLayoutPosition::kLeft:
-      return display::DisplayPlacement::LEFT;
-  }
-  NOTREACHED();
-}
-
-std::vector<crosapi::mojom::DisplayLayoutPtr> GetDisplayLayouts() {
-  auto layouts = std::vector<crosapi::mojom::DisplayLayoutPtr>();
+std::vector<display::DisplayPlacement> GetDisplayLayouts() {
+  std::vector<display::DisplayPlacement> layouts;
   display::Screen* screen = display::Screen::Get();
-  const std::vector<display::Display>& displays = screen->GetAllDisplays();
   display::DisplayManager* display_manager = GetDisplayManager();
-  for (const display::Display& display : displays) {
+  const std::vector<display::Display>& displays = screen->GetAllDisplays();
+  for (const auto& display : displays) {
     const display::DisplayPlacement placement =
         display_manager->GetCurrentResolvedDisplayLayout().FindPlacementById(
             display.id());
-    if (placement.display_id == display::kInvalidDisplayId) {
-      continue;
+    if (placement.display_id != display::kInvalidDisplayId) {
+      layouts.push_back(std::move(placement));
     }
-    auto layout = crosapi::mojom::DisplayLayout::New();
-    layout->id = base::NumberToString(placement.display_id);
-    layout->parent_id = base::NumberToString(placement.parent_display_id);
-    layout->position = GetMojomDisplayLayoutPosition(placement.position);
-    layout->offset = placement.offset;
-    layouts.emplace_back(std::move(layout));
   }
   return layouts;
 }
 
-std::vector<crosapi::mojom::DisplayLayoutPtr> GetDisplayUnifiedLayouts() {
-  auto layouts = std::vector<crosapi::mojom::DisplayLayoutPtr>();
+std::vector<display::DisplayPlacement> GetDisplayUnifiedLayouts() {
+  std::vector<display::DisplayPlacement> layouts;
   display::DisplayManager* display_manager = GetDisplayManager();
-
   const display::UnifiedDesktopLayoutMatrix& matrix =
       display_manager->current_unified_desktop_matrix();
   for (size_t row_index = 0; row_index < matrix.size(); ++row_index) {
@@ -142,40 +108,39 @@ std::vector<crosapi::mojom::DisplayLayoutPtr> GetDisplayUnifiedLayouts() {
         // No placement for the primary display.
         continue;
       }
-      auto layout = crosapi::mojom::DisplayLayout::New();
+      display::DisplayPlacement layout;
       const int64_t display_id = row[column_index];
       // Parent display is either the one in the above row, or the one on the
       // left in the same row.
       const int64_t parent_id = column_index == 0
                                     ? matrix[row_index - 1][column_index]
                                     : row[column_index - 1];
-      layout->id = base::NumberToString(display_id);
-      layout->parent_id = base::NumberToString(parent_id);
-      layout->position = column_index == 0
-                             ? crosapi::mojom::DisplayLayoutPosition::kBottom
-                             : crosapi::mojom::DisplayLayoutPosition::kRight;
-      layout->offset = 0;
-      layouts.emplace_back(std::move(layout));
+      layout.display_id = display_id;
+      layout.parent_display_id = parent_id;
+      layout.position = column_index == 0 ? display::DisplayPlacement::BOTTOM
+                                          : display::DisplayPlacement::RIGHT;
+      layout.offset = 0;
+      layouts.push_back(std::move(layout));
     }
   }
   return layouts;
 }
 
 crosapi::mojom::DisplayConfigResult SetDisplayLayoutMode(
-    const crosapi::mojom::DisplayLayoutInfo& info) {
+    const DisplayLayoutInfo& info) {
   display::DisplayManager* display_manager = GetDisplayManager();
   if (display_manager->num_connected_displays() < 2) {
     return crosapi::mojom::DisplayConfigResult::kSingleDisplayError;
   }
 
-  if (info.layout_mode == crosapi::mojom::DisplayLayoutMode::kNormal) {
+  if (info.layout_mode == DisplayLayoutMode::kNormal) {
     display_manager->SetDefaultMultiDisplayModeForCurrentDisplays(
         display::DisplayManager::EXTENDED);
     display_manager->SetMirrorMode(display::MirrorMode::kOff, std::nullopt);
     return crosapi::mojom::DisplayConfigResult::kSuccess;
   }
 
-  if (info.layout_mode == crosapi::mojom::DisplayLayoutMode::kUnified) {
+  if (info.layout_mode == DisplayLayoutMode::kUnified) {
     if (!display_manager->unified_desktop_enabled()) {
       return crosapi::mojom::DisplayConfigResult::kUnifiedNotEnabledError;
     }
@@ -185,10 +150,10 @@ crosapi::mojom::DisplayConfigResult SetDisplayLayoutMode(
     return crosapi::mojom::DisplayConfigResult::kSuccess;
   }
 
-  DCHECK(info.layout_mode == crosapi::mojom::DisplayLayoutMode::kMirrored);
+  CHECK_EQ(info.layout_mode, DisplayLayoutMode::kMirrored);
 
-  // 'Normal' mirror mode.
-  if (!info.mirror_source_id) {
+  if (!info.mirror_source_id.has_value()) {
+    // 'Normal' mirror mode.
     display_manager->SetMirrorMode(display::MirrorMode::kNormal, std::nullopt);
     return crosapi::mojom::DisplayConfigResult::kSuccess;
   }
@@ -199,9 +164,8 @@ crosapi::mojom::DisplayConfigResult SetDisplayLayoutMode(
     return crosapi::mojom::DisplayConfigResult::kMirrorModeSourceIdError;
   }
   display::DisplayIdList destination_ids;
-  if (info.mirror_destination_ids) {
-    for (const std::string& id_str : *info.mirror_destination_ids) {
-      int64_t destination_id = GetDisplayId(id_str);
+  if (info.mirror_destination_ids.has_value()) {
+    for (int64_t destination_id : *info.mirror_destination_ids) {
       if (destination_id == display::kInvalidDisplayId) {
         return crosapi::mojom::DisplayConfigResult::kMirrorModeDestIdError;
       }
@@ -538,6 +502,16 @@ crosapi::mojom::DisplayConfigResult SetDisplayMode(
 
 }  // namespace
 
+DisplayLayoutInfo::DisplayLayoutInfo() = default;
+DisplayLayoutInfo::DisplayLayoutInfo(const DisplayLayoutInfo& other) = default;
+DisplayLayoutInfo::DisplayLayoutInfo(DisplayLayoutInfo&& other) noexcept =
+    default;
+DisplayLayoutInfo& DisplayLayoutInfo::operator=(
+    const DisplayLayoutInfo& other) = default;
+DisplayLayoutInfo& DisplayLayoutInfo::operator=(
+    DisplayLayoutInfo&& other) noexcept = default;
+DisplayLayoutInfo::~DisplayLayoutInfo() = default;
+
 // -----------------------------------------------------------------------------
 // CrosDisplayConfigImpl::ObserverImpl:
 
@@ -620,64 +594,56 @@ void CrosDisplayConfigImpl::RemoveObserver(
   observer_impl_->RemoveObserver(observer);
 }
 
-crosapi::mojom::DisplayLayoutInfoPtr
-CrosDisplayConfigImpl::GetDisplayLayoutInfo() {
+DisplayLayoutInfo CrosDisplayConfigImpl::GetDisplayLayoutInfo() {
   display::DisplayManager* display_manager = GetDisplayManager();
-
-  auto info = crosapi::mojom::DisplayLayoutInfo::New();
-
+  DisplayLayoutInfo info;
   if (display_manager->IsInUnifiedMode()) {
-    info->layout_mode = crosapi::mojom::DisplayLayoutMode::kUnified;
+    info.layout_mode = DisplayLayoutMode::kUnified;
   } else if (display_manager->IsInMirrorMode()) {
-    info->layout_mode = crosapi::mojom::DisplayLayoutMode::kMirrored;
-    info->mirror_source_id =
-        base::NumberToString(display_manager->mirroring_source_id());
-    info->mirror_destination_ids = std::vector<std::string>();
+    info.layout_mode = DisplayLayoutMode::kMirrored;
+    info.mirror_source_id = display_manager->mirroring_source_id();
+    info.mirror_destination_ids.emplace();
     for (int64_t id : display_manager->GetMirroringDestinationDisplayIdList()) {
-      info->mirror_destination_ids->emplace_back(base::NumberToString(id));
+      info.mirror_destination_ids->push_back(id);
     }
   } else {
-    info->layout_mode = crosapi::mojom::DisplayLayoutMode::kNormal;
+    info.layout_mode = DisplayLayoutMode::kNormal;
   }
-
   if (display_manager->IsInUnifiedMode()) {
-    info->layouts = GetDisplayUnifiedLayouts();
+    info.layouts = GetDisplayUnifiedLayouts();
   } else if (display_manager->num_connected_displays() > 1) {
-    info->layouts = GetDisplayLayouts();
+    info.layouts = GetDisplayLayouts();
   }
-
   return info;
 }
 
 crosapi::mojom::DisplayConfigResult SetDisplayLayouts(
-    const std::vector<crosapi::mojom::DisplayLayoutPtr>& layouts) {
+    const std::vector<display::DisplayPlacement>& layouts) {
   display::DisplayManager* display_manager = GetDisplayManager();
   display::DisplayLayoutBuilder builder(
       display_manager->GetCurrentResolvedDisplayLayout());
   int64_t root_id = display::kInvalidDisplayId;
   std::set<int64_t> layout_ids;
   builder.ClearPlacements();
-  for (const crosapi::mojom::DisplayLayoutPtr& layout_ptr : layouts) {
-    const crosapi::mojom::DisplayLayout& layout = *layout_ptr;
-    display::Display display = GetDisplay(layout.id);
+  for (const auto& layout : layouts) {
+    display::Display display = GetDisplay(layout.display_id);
     if (display.id() == display::kInvalidDisplayId) {
-      DISPLAY_LOG(ERROR) << "Display layout has invalid id: " << layout.id;
+      DISPLAY_LOG(ERROR) << "Display layout has invalid id: "
+                         << layout.display_id;
       return crosapi::mojom::DisplayConfigResult::kInvalidDisplayIdError;
     }
-    display::Display parent = GetDisplay(layout.parent_id);
+    display::Display parent = GetDisplay(layout.parent_display_id);
     if (parent.id() == display::kInvalidDisplayId) {
       if (root_id != display::kInvalidDisplayId) {
         DISPLAY_LOG(ERROR) << "Display layout has invalid parent: "
-                           << layout.parent_id;
+                           << layout.parent_display_id;
         return crosapi::mojom::DisplayConfigResult::kInvalidDisplayLayoutError;
       }
       root_id = display.id();
       continue;  // No placement for root (primary) display.
     }
     layout_ids.insert(display.id());
-    display::DisplayPlacement::Position position =
-        GetDisplayPlacementPosition(layout.position);
-    builder.AddDisplayPlacement(display.id(), parent.id(), position,
+    builder.AddDisplayPlacement(display.id(), parent.id(), layout.position,
                                 layout.offset);
   }
 
@@ -720,13 +686,13 @@ crosapi::mojom::DisplayConfigResult SetDisplayLayouts(
 }
 
 crosapi::mojom::DisplayConfigResult CrosDisplayConfigImpl::SetDisplayLayoutInfo(
-    crosapi::mojom::DisplayLayoutInfoPtr info) {
-  crosapi::mojom::DisplayConfigResult result = SetDisplayLayoutMode(*info);
+    const DisplayLayoutInfo& info) {
+  crosapi::mojom::DisplayConfigResult result = SetDisplayLayoutMode(info);
   if (result != crosapi::mojom::DisplayConfigResult::kSuccess) {
     return result;
   }
-  if (info->layouts) {
-    result = SetDisplayLayouts(*info->layouts);
+  if (info.layouts) {
+    result = SetDisplayLayouts(*info.layouts);
     if (result != crosapi::mojom::DisplayConfigResult::kSuccess) {
       return result;
     }

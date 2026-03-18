@@ -105,12 +105,12 @@ class CrosDisplayConfigTest : public AshTestBase {
     AshTestBase::TearDown();
   }
 
-  crosapi::mojom::DisplayLayoutInfoPtr GetDisplayLayoutInfo() {
+  ash::DisplayLayoutInfo GetDisplayLayoutInfo() {
     return cros_display_config_->GetDisplayLayoutInfo();
   }
 
   crosapi::mojom::DisplayConfigResult SetDisplayLayoutInfo(
-      crosapi::mojom::DisplayLayoutInfoPtr display_layout_info) {
+      const ash::DisplayLayoutInfo& display_layout_info) {
     return cros_display_config_->SetDisplayLayoutInfo(
         std::move(display_layout_info));
   }
@@ -220,25 +220,20 @@ TEST_F(CrosDisplayConfigTest, GetDisplayLayoutInfo) {
       display::Screen::Get()->GetAllDisplays();
   ASSERT_EQ(3u, displays.size());
 
-  crosapi::mojom::DisplayLayoutInfoPtr display_layout_info =
-      GetDisplayLayoutInfo();
-
-  ASSERT_TRUE(display_layout_info);
-  const std::vector<crosapi::mojom::DisplayLayoutPtr>& layouts =
-      *display_layout_info->layouts;
+  ash::DisplayLayoutInfo display_layout_info = GetDisplayLayoutInfo();
+  const std::vector<display::DisplayPlacement>& layouts =
+      *display_layout_info.layouts;
   ASSERT_EQ(2u, layouts.size());
 
-  EXPECT_EQ(base::NumberToString(displays[1].id()), layouts[0]->id);
-  EXPECT_EQ(base::NumberToString(displays[0].id()), layouts[0]->parent_id);
-  EXPECT_EQ(crosapi::mojom::DisplayLayoutPosition::kRight,
-            layouts[0]->position);
-  EXPECT_EQ(0, layouts[0]->offset);
+  EXPECT_EQ(displays[1].id(), layouts[0].display_id);
+  EXPECT_EQ(displays[0].id(), layouts[0].parent_display_id);
+  EXPECT_EQ(display::DisplayPlacement::RIGHT, layouts[0].position);
+  EXPECT_EQ(0, layouts[0].offset);
 
-  EXPECT_EQ(base::NumberToString(displays[2].id()), layouts[1]->id);
-  EXPECT_EQ(layouts[0]->id, layouts[1]->parent_id);
-  EXPECT_EQ(crosapi::mojom::DisplayLayoutPosition::kRight,
-            layouts[1]->position);
-  EXPECT_EQ(0, layouts[1]->offset);
+  EXPECT_EQ(displays[2].id(), layouts[1].display_id);
+  EXPECT_EQ(layouts[0].display_id, layouts[1].parent_display_id);
+  EXPECT_EQ(display::DisplayPlacement::RIGHT, layouts[1].position);
+  EXPECT_EQ(0, layouts[1].offset);
 }
 
 TEST_F(CrosDisplayConfigTest, FailToSetLayoutUnifiedWithOneDisplay) {
@@ -247,8 +242,8 @@ TEST_F(CrosDisplayConfigTest, FailToSetLayoutUnifiedWithOneDisplay) {
 
   // Enable unified desktop and expect to fail due to not enough connected
   // displays.
-  auto properties = crosapi::mojom::DisplayLayoutInfo::New();
-  properties->layout_mode = crosapi::mojom::DisplayLayoutMode::kUnified;
+  ash::DisplayLayoutInfo properties;
+  properties.layout_mode = ash::DisplayLayoutMode::kUnified;
   crosapi::mojom::DisplayConfigResult result =
       SetDisplayLayoutInfo(std::move(properties));
   EXPECT_EQ(crosapi::mojom::DisplayConfigResult::kSingleDisplayError, result);
@@ -265,19 +260,24 @@ TEST_F(CrosDisplayConfigTest, SetLayoutUnified) {
   EXPECT_TRUE(display_manager()->IsInUnifiedMode());
 
   // Disable unified mode.
-  auto properties = crosapi::mojom::DisplayLayoutInfo::New();
-  properties->layout_mode = crosapi::mojom::DisplayLayoutMode::kNormal;
-  crosapi::mojom::DisplayConfigResult result =
-      SetDisplayLayoutInfo(std::move(properties));
-  EXPECT_EQ(crosapi::mojom::DisplayConfigResult::kSuccess, result);
-  EXPECT_FALSE(display_manager()->IsInUnifiedMode());
+  {
+    ash::DisplayLayoutInfo properties;
+    properties.layout_mode = ash::DisplayLayoutMode::kNormal;
+    crosapi::mojom::DisplayConfigResult result =
+        SetDisplayLayoutInfo(std::move(properties));
+    EXPECT_EQ(crosapi::mojom::DisplayConfigResult::kSuccess, result);
+    EXPECT_FALSE(display_manager()->IsInUnifiedMode());
+  }
 
   // Enable unified mode.
-  properties = crosapi::mojom::DisplayLayoutInfo::New();
-  properties->layout_mode = crosapi::mojom::DisplayLayoutMode::kUnified;
-  result = SetDisplayLayoutInfo(std::move(properties));
-  EXPECT_EQ(crosapi::mojom::DisplayConfigResult::kSuccess, result);
-  EXPECT_TRUE(display_manager()->IsInUnifiedMode());
+  {
+    ash::DisplayLayoutInfo properties;
+    properties.layout_mode = ash::DisplayLayoutMode::kUnified;
+    crosapi::mojom::DisplayConfigResult result =
+        SetDisplayLayoutInfo(std::move(properties));
+    EXPECT_EQ(crosapi::mojom::DisplayConfigResult::kSuccess, result);
+    EXPECT_TRUE(display_manager()->IsInUnifiedMode());
+  }
 
   // Restore extended mode.
   cros_display_config()->SetUnifiedDesktopEnabled(false);
@@ -322,8 +322,8 @@ TEST_F(CrosDisplayConfigTest, FailToSetLayoutMirroredDefaultWithOneDisplay) {
 
   // Enable default mirror mode and expect to fail due to not enough connected
   // displays.
-  auto properties = crosapi::mojom::DisplayLayoutInfo::New();
-  properties->layout_mode = crosapi::mojom::DisplayLayoutMode::kMirrored;
+  ash::DisplayLayoutInfo properties;
+  properties.layout_mode = ash::DisplayLayoutMode::kMirrored;
   crosapi::mojom::DisplayConfigResult result =
       SetDisplayLayoutInfo(std::move(properties));
   EXPECT_EQ(crosapi::mojom::DisplayConfigResult::kSingleDisplayError, result);
@@ -337,21 +337,26 @@ TEST_F(CrosDisplayConfigTest, FailToSetLayoutMirroredDefaultWithOneDisplay) {
 TEST_F(CrosDisplayConfigTest, SetLayoutMirroredDefault) {
   UpdateDisplay("500x400,500x400,500x400");
 
-  auto properties = crosapi::mojom::DisplayLayoutInfo::New();
-  properties->layout_mode = crosapi::mojom::DisplayLayoutMode::kMirrored;
-  crosapi::mojom::DisplayConfigResult result =
-      SetDisplayLayoutInfo(std::move(properties));
-  EXPECT_EQ(crosapi::mojom::DisplayConfigResult::kSuccess, result);
-  EXPECT_TRUE(display_manager()->IsInMirrorMode());
-  display::DisplayIdList id_list =
-      display_manager()->GetMirroringDestinationDisplayIdList();
-  ASSERT_EQ(2u, id_list.size());
+  {
+    ash::DisplayLayoutInfo properties;
+    properties.layout_mode = ash::DisplayLayoutMode::kMirrored;
+    crosapi::mojom::DisplayConfigResult result =
+        SetDisplayLayoutInfo(std::move(properties));
+    EXPECT_EQ(crosapi::mojom::DisplayConfigResult::kSuccess, result);
+    EXPECT_TRUE(display_manager()->IsInMirrorMode());
+    display::DisplayIdList id_list =
+        display_manager()->GetMirroringDestinationDisplayIdList();
+    ASSERT_EQ(2u, id_list.size());
+  }
 
-  properties = crosapi::mojom::DisplayLayoutInfo::New();
-  properties->layout_mode = crosapi::mojom::DisplayLayoutMode::kNormal;
-  result = SetDisplayLayoutInfo(std::move(properties));
-  EXPECT_EQ(crosapi::mojom::DisplayConfigResult::kSuccess, result);
-  EXPECT_FALSE(display_manager()->IsInMirrorMode());
+  {
+    ash::DisplayLayoutInfo properties;
+    properties.layout_mode = ash::DisplayLayoutMode::kNormal;
+    crosapi::mojom::DisplayConfigResult result =
+        SetDisplayLayoutInfo(std::move(properties));
+    EXPECT_EQ(crosapi::mojom::DisplayConfigResult::kSuccess, result);
+    EXPECT_FALSE(display_manager()->IsInMirrorMode());
+  }
 }
 
 TEST_F(CrosDisplayConfigTest, FailToSetLayoutMirroredMixedWithOneDisplay) {
@@ -364,11 +369,10 @@ TEST_F(CrosDisplayConfigTest, FailToSetLayoutMirroredMixedWithOneDisplay) {
 
   // Enable mixed mirror mode and expect to fail due to not enough connected
   // displays.
-  auto properties = crosapi::mojom::DisplayLayoutInfo::New();
-  properties->layout_mode = crosapi::mojom::DisplayLayoutMode::kMirrored;
-  properties->mirror_source_id = base::NumberToString(displays[0].id());
-  properties->mirror_destination_ids =
-      std::make_optional<std::vector<std::string>>();
+  ash::DisplayLayoutInfo properties;
+  properties.layout_mode = ash::DisplayLayoutMode::kMirrored;
+  properties.mirror_source_id = displays[0].id();
+  properties.mirror_destination_ids.emplace();
 
   crosapi::mojom::DisplayConfigResult result =
       SetDisplayLayoutInfo(std::move(properties));
@@ -387,13 +391,11 @@ TEST_F(CrosDisplayConfigTest, SetLayoutMirroredMixed) {
       display::Screen::Get()->GetAllDisplays();
   ASSERT_EQ(4u, displays.size());
 
-  auto properties = crosapi::mojom::DisplayLayoutInfo::New();
-  properties->layout_mode = crosapi::mojom::DisplayLayoutMode::kMirrored;
-  properties->mirror_source_id = base::NumberToString(displays[0].id());
-  properties->mirror_destination_ids =
-      std::make_optional<std::vector<std::string>>(
-          {base::NumberToString(displays[1].id()),
-           base::NumberToString(displays[3].id())});
+  ash::DisplayLayoutInfo properties;
+  properties.layout_mode = ash::DisplayLayoutMode::kMirrored;
+  properties.mirror_source_id = displays[0].id();
+  properties.mirror_destination_ids.emplace(
+      {displays[1].id(), displays[3].id()});
   crosapi::mojom::DisplayConfigResult result =
       SetDisplayLayoutInfo(std::move(properties));
   EXPECT_EQ(crosapi::mojom::DisplayConfigResult::kSuccess, result);
