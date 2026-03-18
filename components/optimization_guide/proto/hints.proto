@@ -398,6 +398,9 @@ enum OptimizationType {
   INDIGO = 121;
   // Provides information about the page theme for Finds.
   FINDS_PAGE_THEME = 122;
+  // Provides information on if this merchant page is a good candidate for
+  // Omnibox-chip-triggered Autofill.
+  OMNIBOX_AUTOFILL_IFRAME_ALLOWLIST = 123;
 }
 
 // Presents semantics for how page load URLs should be matched.

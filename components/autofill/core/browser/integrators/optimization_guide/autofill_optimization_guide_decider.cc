@@ -280,6 +280,11 @@ void AutofillOptimizationGuideDecider::OnPaymentsDataLoaded(
         optimization_guide::proto::AUTOFILL_ACTOR_IFRAME_ORIGIN_ALLOWLIST);
   }
 
+  if (base::FeatureList::IsEnabled(features::kAutofillEnableOmniboxAutofill)) {
+    optimization_types.insert(
+        optimization_guide::proto::OMNIBOX_AUTOFILL_IFRAME_ALLOWLIST);
+  }
+
   // If we do not have any optimization types to register, do not do anything.
   if (!optimization_types.empty()) {
     decider_->RegisterOptimizationTypes(

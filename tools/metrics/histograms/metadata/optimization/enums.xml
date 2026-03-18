@@ -812,6 +812,7 @@ struct.unpack('>L', hashlib.md5(version.encode('utf-8')).digest()[4:8])[0]
   <int value="119" label="SKILLS"/>
   <int value="120" label="PIX_PSP_ALLOWLIST"/>
   <int value="121" label="INDIGO"/>
+  <int value="123" label="OMNIBOX_AUTOFILL_IFRAME_ALLOWLIST"/>
 </enum>
 
 <enum name="PageContentAnnotationsStorageStatus">

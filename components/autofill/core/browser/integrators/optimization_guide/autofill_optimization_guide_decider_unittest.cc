@@ -1327,6 +1327,37 @@ TEST_F(AutofillOptimizationGuideDeciderTest,
   guide().OnDidParseForm(form_structure, payments_data_manager());
 }
 
+// Test that the `OMNIBOX_AUTOFILL_IFRAME_ALLOWLIST` optimization type is
+// registered when payments data is loaded.
+TEST_F(AutofillOptimizationGuideDeciderTest,
+       OmniboxAutofillAllowlistRegistered) {
+  base::test::ScopedFeatureList feature{
+      features::kAutofillEnableOmniboxAutofill};
+
+  EXPECT_CALL(
+      decider(),
+      RegisterOptimizationTypes(Contains(
+          optimization_guide::proto::OMNIBOX_AUTOFILL_IFRAME_ALLOWLIST)));
+
+  guide().OnPaymentsDataLoaded(payments_data_manager());
+}
+
+// Test that the `OMNIBOX_AUTOFILL_IFRAME_ALLOWLIST` optimization type is
+// not registered when payments data is loaded if the feature is disabled.
+TEST_F(AutofillOptimizationGuideDeciderTest,
+       OmniboxAutofillAllowlistNotRegistered_FlagOff) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndDisableFeature(features::kAutofillEnableOmniboxAutofill);
+
+  EXPECT_CALL(
+      decider(),
+      RegisterOptimizationTypes(Contains(
+          optimization_guide::proto::OMNIBOX_AUTOFILL_IFRAME_ALLOWLIST)))
+      .Times(0);
+
+  guide().OnPaymentsDataLoaded(payments_data_manager());
+}
+
 struct BenefitOptimizationToBenefitCategoryTestCase {
   const std::string benefit_source;
   const optimization_guide::proto::OptimizationType optimization_type;

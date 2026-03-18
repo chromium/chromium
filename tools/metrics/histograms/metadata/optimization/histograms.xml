@@ -460,6 +460,8 @@ chromium-metrics-reviews@google.com.
       summary="Allowlist for the NTP-Next deep dive action chip."/>
   <variant name="NtpNextDeepDiveActionChipBlocklist"
       summary="Blocklist for the NTP-Next deep dive action chip."/>
+  <variant name="OmniboxAutofillIframeAllowlist"
+      summary="Allowlist for Omnibox-chip-triggered Autofill."/>
   <variant name="OptimizationGuideIconView"
       summary="Provides information for what to show in the debug
                optimization guide icon view."/>
