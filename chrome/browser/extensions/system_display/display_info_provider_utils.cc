@@ -209,13 +209,10 @@ system_display::DisplayUnitInfo GetDisplayUnitInfoFromMojo(
   return info;
 }
 
-crosapi::mojom::TouchCalibrationPairPtr GetTouchCalibrationPair(
+display::TouchCalibrationData::CalibrationPointPair GetTouchCalibrationPair(
     const system_display::TouchCalibrationPair& pair) {
-  auto result = crosapi::mojom::TouchCalibrationPair::New();
-  result->display_point =
-      gfx::Point(pair.display_point.x, pair.display_point.y);
-  result->touch_point = gfx::Point(pair.touch_point.x, pair.touch_point.y);
-  return result;
+  return {gfx::Point(pair.display_point.x, pair.display_point.y),
+          gfx::Point(pair.touch_point.x, pair.touch_point.y)};
 }
 
 void SetDisplayUnitInfoLayoutProperties(

@@ -14,11 +14,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
-#include "chromeos/crosapi/mojom/cros_display_config.mojom-shared.h"
 #include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
-#include "mojo/public/cpp/bindings/pending_associated_remote.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/display.h"
 #include "ui/display/display_observer.h"
@@ -71,10 +67,13 @@ class TestCrosDisplayConfig final : public ash::CrosDisplayConfig {
       const std::optional<gfx::Insets>& delta) override {
     NOTREACHED();
   }
-  void TouchCalibration(const std::string& display_id,
-                        crosapi::mojom::DisplayConfigOperation op,
-                        crosapi::mojom::TouchCalibrationPtr calibration,
-                        TouchCalibrationCallback callback) override {}
+  void TouchCalibration(
+      const std::string& display_id,
+      crosapi::mojom::DisplayConfigOperation op,
+      base::optional_ref<const display::TouchCalibrationData> calibration,
+      TouchCalibrationCallback callback) override {
+    NOTREACHED();
+  }
   void HighlightDisplay(int64_t id) override {}
   void DragDisplayDelta(int64_t display_id,
                         int32_t delta_x,

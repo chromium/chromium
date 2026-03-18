@@ -141,34 +141,28 @@ class CrosDisplayConfigTest : public AshTestBase {
     return display.id() != display::kInvalidDisplayId;
   }
 
-  crosapi::mojom::TouchCalibrationPtr GetDefaultCalibration() {
-    auto calibration = crosapi::mojom::TouchCalibration::New();
-    for (int i = 0; i < 4; ++i)
-      calibration->pairs.emplace_back(
-          crosapi::mojom::TouchCalibrationPair::New());
-    return calibration;
-  }
-
   bool StartTouchCalibration(const std::string& display_id) {
-    return CallTouchCalibration(
-        display_id, crosapi::mojom::DisplayConfigOperation::kStart, nullptr);
+    return CallTouchCalibration(display_id,
+                                crosapi::mojom::DisplayConfigOperation::kStart,
+                                std::nullopt);
   }
 
   bool CompleteCustomTouchCalibration(
       const std::string& display_id,
-      crosapi::mojom::TouchCalibrationPtr calibration) {
+      const display::TouchCalibrationData& calibration) {
     return CallTouchCalibration(
         display_id, crosapi::mojom::DisplayConfigOperation::kComplete,
-        std::move(calibration));
+        calibration);
   }
 
-  bool CallTouchCalibration(const std::string& id,
-                            crosapi::mojom::DisplayConfigOperation op,
-                            crosapi::mojom::TouchCalibrationPtr calibration) {
+  bool CallTouchCalibration(
+      const std::string& id,
+      crosapi::mojom::DisplayConfigOperation op,
+      base::optional_ref<const display::TouchCalibrationData> calibration) {
     crosapi::mojom::DisplayConfigResult result;
     base::RunLoop run_loop;
     cros_display_config_->TouchCalibration(
-        id, op, std::move(calibration),
+        id, op, calibration,
         base::BindOnce(&SetResult, &result, run_loop.QuitClosure()));
     run_loop.Run();
     return result == crosapi::mojom::DisplayConfigResult::kSuccess;
@@ -779,16 +773,20 @@ TEST_F(CrosDisplayConfigTest, CustomTouchCalibrationInvalidPoints) {
 
   std::string id = base::NumberToString(display_id);
 
-  EXPECT_TRUE(StartTouchCalibration(id));
-  crosapi::mojom::TouchCalibrationPtr calibration = GetDefaultCalibration();
-  calibration->pairs[0]->display_point.set_x(-1);
-  EXPECT_FALSE(CompleteCustomTouchCalibration(id, std::move(calibration)));
+  {
+    EXPECT_TRUE(StartTouchCalibration(id));
+    display::TouchCalibrationData calibration;
+    calibration.point_pairs[0].first.set_x(-1);
+    EXPECT_FALSE(CompleteCustomTouchCalibration(id, calibration));
+  }
 
-  EXPECT_TRUE(StartTouchCalibration(id));
-  calibration = GetDefaultCalibration();
-  calibration->bounds.set_width(1);
-  calibration->pairs[0]->display_point.set_x(2);
-  EXPECT_FALSE(CompleteCustomTouchCalibration(id, std::move(calibration)));
+  {
+    EXPECT_TRUE(StartTouchCalibration(id));
+    display::TouchCalibrationData calibration;
+    calibration.bounds.set_width(1);
+    calibration.point_pairs[0].first.set_x(2);
+    EXPECT_FALSE(CompleteCustomTouchCalibration(id, calibration));
+  }
 }
 
 TEST_F(CrosDisplayConfigTest, CustomTouchCalibrationSuccess) {
@@ -812,8 +810,8 @@ TEST_F(CrosDisplayConfigTest, CustomTouchCalibrationSuccess) {
 
   EXPECT_TRUE(StartTouchCalibration(id));
   EXPECT_TRUE(IsTouchCalibrationActive());
-  crosapi::mojom::TouchCalibrationPtr calibration = GetDefaultCalibration();
-  EXPECT_TRUE(CompleteCustomTouchCalibration(id, std::move(calibration)));
+  display::TouchCalibrationData calibration;
+  EXPECT_TRUE(CompleteCustomTouchCalibration(id, calibration));
 }
 
 TEST_F(CrosDisplayConfigTest, TabletModeAutoRotationInternalOnly) {

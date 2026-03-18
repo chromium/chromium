@@ -11,7 +11,9 @@
 
 #include "ash/ash_export.h"
 #include "base/observer_list_types.h"
+#include "base/types/optional_ref.h"
 #include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
+#include "ui/display/manager/touch_device_manager.h"
 
 namespace ash {
 
@@ -71,10 +73,11 @@ class CrosDisplayConfig {
   // identifier |display_id|. If |op| is kShowNative shows the native
   // calibration UI. Runs the callback after performing the operation or on
   // error.
-  virtual void TouchCalibration(const std::string& display_id,
-                                crosapi::mojom::DisplayConfigOperation op,
-                                crosapi::mojom::TouchCalibrationPtr calibration,
-                                TouchCalibrationCallback callback) = 0;
+  virtual void TouchCalibration(
+      const std::string& display_id,
+      crosapi::mojom::DisplayConfigOperation op,
+      base::optional_ref<const display::TouchCalibrationData> calibration,
+      TouchCalibrationCallback callback) = 0;
 
   // Sets |id| of display to render identification highlight on. Invalid |id|
   // turns identification highlight off.
@@ -118,10 +121,11 @@ class ASH_EXPORT CrosDisplayConfigImpl final : public CrosDisplayConfig {
       const std::string& display_id,
       crosapi::mojom::DisplayConfigOperation op,
       const std::optional<gfx::Insets>& delta) override;
-  void TouchCalibration(const std::string& display_id,
-                        crosapi::mojom::DisplayConfigOperation op,
-                        crosapi::mojom::TouchCalibrationPtr calibration,
-                        TouchCalibrationCallback callback) override;
+  void TouchCalibration(
+      const std::string& display_id,
+      crosapi::mojom::DisplayConfigOperation op,
+      base::optional_ref<const display::TouchCalibrationData> calibration,
+      TouchCalibrationCallback callback) override;
   void HighlightDisplay(int64_t display_id) override;
   void DragDisplayDelta(int64_t display_id,
                         int32_t delta_x,

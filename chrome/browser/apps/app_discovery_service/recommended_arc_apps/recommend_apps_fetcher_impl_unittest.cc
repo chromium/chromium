@@ -121,10 +121,13 @@ class TestCrosDisplayConfig final : public ash::CrosDisplayConfig {
       const std::optional<gfx::Insets>& delta) override {
     NOTREACHED();
   }
-  void TouchCalibration(const std::string& display_id,
-                        crosapi::mojom::DisplayConfigOperation op,
-                        crosapi::mojom::TouchCalibrationPtr calibration,
-                        TouchCalibrationCallback callback) override {}
+  void TouchCalibration(
+      const std::string& display_id,
+      crosapi::mojom::DisplayConfigOperation op,
+      base::optional_ref<const display::TouchCalibrationData> calibration,
+      TouchCalibrationCallback callback) override {
+    NOTREACHED();
+  }
   void HighlightDisplay(int64_t id) override {}
   void DragDisplayDelta(int64_t display_id,
                         int32_t delta_x,

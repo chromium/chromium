@@ -469,7 +469,7 @@ void DisplaySettingsProvider::StartNativeTouchscreenMappingExperience() {
           &CrosDisplayConfig::TouchCalibration,
           base::Unretained(Shell::Get()->cros_display_config()), "",
           crosapi::mojom::DisplayConfigOperation::kShowNativeMappingDisplays,
-          nullptr, base::DoNothing()));
+          std::nullopt, base::DoNothing()));
 }
 
 }  // namespace ash::settings

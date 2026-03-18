@@ -536,11 +536,6 @@ crosapi::mojom::DisplayConfigResult SetDisplayMode(
   return crosapi::mojom::DisplayConfigResult::kSuccess;
 }
 
-display::TouchCalibrationData::CalibrationPointPair GetCalibrationPair(
-    const crosapi::mojom::TouchCalibrationPair& pair) {
-  return std::make_pair(pair.display_point, pair.touch_point);
-}
-
 }  // namespace
 
 // -----------------------------------------------------------------------------
@@ -908,7 +903,7 @@ crosapi::mojom::DisplayConfigResult CrosDisplayConfigImpl::OverscanCalibration(
 void CrosDisplayConfigImpl::TouchCalibration(
     const std::string& display_id,
     crosapi::mojom::DisplayConfigOperation op,
-    crosapi::mojom::TouchCalibrationPtr calibration,
+    base::optional_ref<const display::TouchCalibrationData> calibration,
     TouchCalibrationCallback callback) {
   // For native touch display mapping.
   if (op ==
@@ -1010,8 +1005,8 @@ void CrosDisplayConfigImpl::TouchCalibration(
     return;
   }
 
-  if (!calibration || calibration->pairs.size() != 4) {
-    DISPLAY_LOG(ERROR) << "Touch calibration requires four calibration pairs.";
+  if (!calibration.has_value()) {
+    DISPLAY_LOG(ERROR) << "Touch calibration requires calibration data.";
     std::move(callback).Run(
         crosapi::mojom::DisplayConfigResult::kCalibrationInvalidDataError);
     return;
@@ -1019,14 +1014,8 @@ void CrosDisplayConfigImpl::TouchCalibration(
 
   Shell::Get()->touch_transformer_controller()->SetForCalibration(false);
 
-  display::TouchCalibrationData::CalibrationPointPairQuad calibration_points;
-  calibration_points[0] = GetCalibrationPair(*calibration->pairs[0]);
-  calibration_points[1] = GetCalibrationPair(*calibration->pairs[1]);
-  calibration_points[2] = GetCalibrationPair(*calibration->pairs[2]);
-  calibration_points[3] = GetCalibrationPair(*calibration->pairs[3]);
-
-  gfx::Size bounds = calibration->bounds;
-  for (auto& calibration_point : calibration_points) {
+  const gfx::Size bounds = calibration->bounds;
+  for (auto& calibration_point : calibration->point_pairs) {
     // Coordinates for display and touch point cannot be negative.
     if (calibration_point.first.x() < 0 || calibration_point.first.y() < 0 ||
         calibration_point.second.x() < 0 || calibration_point.second.y() < 0) {
@@ -1051,7 +1040,7 @@ void CrosDisplayConfigImpl::TouchCalibration(
     }
   }
 
-  touch_calibrator_->CompleteCalibration(calibration_points, bounds);
+  touch_calibrator_->CompleteCalibration(calibration->point_pairs, bounds);
   std::move(callback).Run(crosapi::mojom::DisplayConfigResult::kSuccess);
 }
 

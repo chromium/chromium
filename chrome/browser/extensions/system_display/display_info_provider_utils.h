@@ -7,6 +7,7 @@
 
 #include "chromeos/crosapi/mojom/cros_display_config.mojom-forward.h"
 #include "extensions/common/api/system_display.h"
+#include "ui/display/manager/touch_device_manager.h"
 #include "ui/gfx/geometry/insets.h"
 
 namespace display {
@@ -49,8 +50,8 @@ std::optional<std::string> ValidateDisplayPropertiesInput(
 api::system_display::DisplayUnitInfo GetDisplayUnitInfoFromMojo(
     const crosapi::mojom::DisplayUnitInfo& mojo_info);
 
-// Converts system display calibration `pair` to crosapi type.
-crosapi::mojom::TouchCalibrationPairPtr GetTouchCalibrationPair(
+// Converts from the api type of touch calibration pairs to the ui one.
+display::TouchCalibrationData::CalibrationPointPair GetTouchCalibrationPair(
     const api::system_display::TouchCalibrationPair& pair);
 
 void SetDisplayUnitInfoLayoutProperties(

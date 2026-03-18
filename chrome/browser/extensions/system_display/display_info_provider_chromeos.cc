@@ -12,10 +12,12 @@
 #include "ash/shell.h"
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/types/optional_ref.h"
 #include "chrome/browser/extensions/system_display/display_info_provider.h"
 #include "chrome/browser/extensions/system_display/display_info_provider_utils.h"
 #include "extensions/common/api/system_display.h"
 #include "ui/display/display.h"
+#include "ui/display/manager/touch_device_manager.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -353,46 +355,46 @@ void DisplayInfoProviderChromeOS::ShowNativeTouchCalibration(
     const std::string& id,
     ErrorCallback callback) {
   CallTouchCalibration(id, crosapi::mojom::DisplayConfigOperation::kShowNative,
-                       nullptr, std::move(callback));
+                       std::nullopt, std::move(callback));
 }
 
 bool DisplayInfoProviderChromeOS::StartCustomTouchCalibration(
     const std::string& id) {
   touch_calibration_target_id_ = id;
   CallTouchCalibration(id, crosapi::mojom::DisplayConfigOperation::kStart,
-                       nullptr, ErrorCallback());
+                       std::nullopt, ErrorCallback());
   return true;
 }
 
 bool DisplayInfoProviderChromeOS::CompleteCustomTouchCalibration(
     const api::system_display::TouchCalibrationPairQuad& pairs,
     const api::system_display::Bounds& bounds) {
-  auto calibration = crosapi::mojom::TouchCalibration::New();
-  calibration->pairs.emplace_back(GetTouchCalibrationPair(pairs.pair1));
-  calibration->pairs.emplace_back(GetTouchCalibrationPair(pairs.pair2));
-  calibration->pairs.emplace_back(GetTouchCalibrationPair(pairs.pair3));
-  calibration->pairs.emplace_back(GetTouchCalibrationPair(pairs.pair4));
-  calibration->bounds = gfx::Size(bounds.width, bounds.height);
+  display::TouchCalibrationData calibration;
+  calibration.point_pairs[0] = GetTouchCalibrationPair(pairs.pair1);
+  calibration.point_pairs[1] = GetTouchCalibrationPair(pairs.pair2);
+  calibration.point_pairs[2] = GetTouchCalibrationPair(pairs.pair3);
+  calibration.point_pairs[3] = GetTouchCalibrationPair(pairs.pair4);
+  calibration.bounds = gfx::Size(bounds.width, bounds.height);
   CallTouchCalibration(touch_calibration_target_id_,
                        crosapi::mojom::DisplayConfigOperation::kComplete,
-                       std::move(calibration), ErrorCallback());
+                       calibration, ErrorCallback());
   return true;
 }
 
 bool DisplayInfoProviderChromeOS::ClearTouchCalibration(const std::string& id) {
   CallTouchCalibration(id, crosapi::mojom::DisplayConfigOperation::kReset,
-                       nullptr, ErrorCallback());
+                       std::nullopt, ErrorCallback());
   return true;
 }
 
 void DisplayInfoProviderChromeOS::CallTouchCalibration(
     const std::string& id,
     crosapi::mojom::DisplayConfigOperation op,
-    crosapi::mojom::TouchCalibrationPtr calibration,
+    base::optional_ref<const display::TouchCalibrationData> calibration,
     ErrorCallback callback) {
   if (cros_display_config_) {
     cros_display_config_->TouchCalibration(
-        id, op, std::move(calibration),
+        id, op, calibration,
         base::BindOnce(
             [](ErrorCallback callback,
                crosapi::mojom::DisplayConfigResult result) {

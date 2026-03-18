@@ -128,23 +128,6 @@ enum DisplayRotationOptions {
   k270Degrees,
 };
 
-// Defines a pair of display + touch points used for touch calibration.
-struct TouchCalibrationPair {
-  // The coordinates of the display point.
-  gfx.mojom.Point display_point@0;
-  // The coordinates of the touch point corresponding to the display point.
-  gfx.mojom.Point touch_point@1;
-};
-
-// Defines the data required for touch calibration.
-struct TouchCalibration {
-  // Must contain exactly four pairs of touch calibration points.
-  array<TouchCalibrationPair> pairs@0;
-  // Width and height of the display area when the touch calibration was
-  // performed.
-  gfx.mojom.Size bounds@1;
-};
-
 // Defines the layout of a single display.
 struct DisplayLayout {
   // The unique identifier of the display.
