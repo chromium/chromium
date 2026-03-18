@@ -894,12 +894,13 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
     private void removeInvalidInstanceData() {
         // Update persisted task state based on current AppTasks.
         Set<Integer> appTaskIds = MultiWindowUtils.getAllAppTaskIds(mActivity);
-        Map<String, Integer> taskMap = ChromeMultiInstancePersistentStore.readTaskMap();
+
+        Map<Integer, Integer> taskMap = ChromeMultiInstancePersistentStore.readTaskMap();
         List<String> tasksRemoved = new ArrayList<>();
-        for (Map.Entry<String, Integer> entry : taskMap.entrySet()) {
+        for (Map.Entry<Integer, Integer> entry : taskMap.entrySet()) {
             if (!appTaskIds.contains(entry.getValue())) {
-                tasksRemoved.add(entry.getKey() + " - " + entry.getValue());
-                ChromeMultiInstancePersistentStore.getManager().removeKey(entry.getKey());
+                tasksRemoved.add("instanceId: " + entry.getKey() + " taskId: " + entry.getValue());
+                ChromeMultiInstancePersistentStore.removeTaskId(entry.getKey());
             }
         }
 
