@@ -289,7 +289,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
         setLayoutManager(mLayoutScrollListener);
         mSelectionController =
                 new RecyclerViewSelectionController(
-                        mLayoutScrollListener, SelectionController.Mode.SATURATING_WITH_SENTINEL);
+                        mLayoutScrollListener, SelectionController.Mode.WRAPPING_WITH_SENTINEL);
         addOnChildAttachStateChangeListener(mSelectionController);
 
         final Resources resources = context.getResources();
@@ -335,6 +335,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
 
     /** Resets selection typically in response to changes to the list. */
     public void resetSelection() {
+        mLayoutScrollListener.scrollToPositionWithOffset(0, 0);
         mSelectionController.reset();
     }
 

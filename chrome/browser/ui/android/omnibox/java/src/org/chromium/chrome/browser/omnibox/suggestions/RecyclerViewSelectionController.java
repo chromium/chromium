@@ -65,8 +65,11 @@ public class RecyclerViewSelectionController extends SelectionController
     /** Returns whether item at specific position is focusable. */
     @Override
     protected boolean isSelectableItem(int index) {
+        // The logic below assumes the first and last item in the list are always selectable.
+        // TODO(crbug.com/479044974): remove the assumption once the group separator and header are
+        // migrated to ItemDecorations.
         View view = mLayoutManager.findViewByPosition(index);
-        return view != null && view.isFocusable();
+        return index == 0 || index == getItemCount() - 1 || (view != null && view.isFocusable());
     }
 
     /**

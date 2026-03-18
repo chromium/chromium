@@ -187,58 +187,6 @@ public class RecyclerViewSelectionControllerUnitTest {
     }
 
     @Test
-    public void selectPreviousItem_ignoreHeadNonFocusableViews() {
-        mSelectionController.setPosition(2);
-        Assert.assertEquals(Integer.valueOf(2), mSelectionController.getPosition());
-        Assert.assertEquals(mChildView3, mSelectionController.getSelectedView());
-
-        // Views at position 0 and 1 are not focusable:
-        doReturn(false).when(mChildView1).isFocusable();
-        doReturn(false).when(mChildView2).isFocusable();
-
-        // Focus must not move.
-        mSelectionController.selectPreviousItem();
-        Assert.assertEquals(Integer.valueOf(2), mSelectionController.getPosition());
-        Assert.assertEquals(mChildView3, mSelectionController.getSelectedView());
-    }
-
-    @Test
-    public void selectPreviousItem_skipNonFocusableItems_withSentinel() {
-        mSelectionControllerWithSentinel.setPosition(1);
-        Assert.assertEquals(Integer.valueOf(1), mSelectionControllerWithSentinel.getPosition());
-        Assert.assertEquals(mChildView2, mSelectionControllerWithSentinel.getSelectedView());
-
-        // View at position 0 is not focusable:
-        doReturn(false).when(mChildView1).isFocusable();
-
-        // We wrap around ignoring view at position 2.
-        mSelectionControllerWithSentinel.selectPreviousItem();
-        Assert.assertEquals(null, mSelectionControllerWithSentinel.getPosition());
-        Assert.assertEquals(null, mSelectionControllerWithSentinel.getSelectedView());
-    }
-
-    @Test
-    public void selectPreviousItem_noFocusableViews() {
-        doReturn(false).when(mChildView1).isFocusable();
-        doReturn(false).when(mChildView2).isFocusable();
-        doReturn(false).when(mChildView3).isFocusable();
-        doReturn(false).when(mChildView4).isFocusable();
-        doReturn(false).when(mChildView5).isFocusable();
-
-        // Re-create controller (because when it was created, all these views were focusable).
-        mSelectionController =
-                new RecyclerViewSelectionController(
-                        mLayoutManager, RecyclerViewSelectionController.Mode.SATURATING);
-
-        Assert.assertEquals(null, mSelectionController.getPosition());
-        Assert.assertEquals(null, mSelectionController.getSelectedView());
-
-        mSelectionController.selectPreviousItem();
-        Assert.assertEquals(null, mSelectionController.getPosition());
-        Assert.assertEquals(null, mSelectionController.getSelectedView());
-    }
-
-    @Test
     public void selectNextItem_skipNonFocusableItems_noCycling() {
         mSelectionController.setPosition(0);
         Assert.assertEquals(Integer.valueOf(0), mSelectionController.getPosition());
@@ -251,63 +199,6 @@ public class RecyclerViewSelectionControllerUnitTest {
         mSelectionController.selectNextItem();
         Assert.assertEquals(Integer.valueOf(2), mSelectionController.getPosition());
         Assert.assertEquals(mChildView3, mSelectionController.getSelectedView());
-    }
-
-    @Test
-    public void selectNextItem_ignoreTailNonFocusableViews() {
-        // This controller initializes at 0th position by default.
-        verify(mLayoutManager).scrollToPosition(2);
-        Assert.assertEquals(Integer.valueOf(0), mSelectionController.getPosition());
-        Assert.assertEquals(mChildView1, mSelectionController.getSelectedView());
-
-        // Views at positions 1-4 are not focusable:
-        doReturn(false).when(mChildView2).isFocusable();
-        doReturn(false).when(mChildView3).isFocusable();
-        doReturn(false).when(mChildView4).isFocusable();
-        doReturn(false).when(mChildView5).isFocusable();
-
-        // Focus must not move.
-        mSelectionController.selectNextItem();
-        Assert.assertEquals(Integer.valueOf(0), mSelectionController.getPosition());
-        Assert.assertEquals(mChildView1, mSelectionController.getSelectedView());
-    }
-
-    @Test
-    public void selectNextItem_skipNonFocusableItems_withSentinel() {
-        mSelectionControllerWithSentinel.setPosition(1);
-        verify(mLayoutManager).scrollToPosition(3);
-        Assert.assertEquals(Integer.valueOf(1), mSelectionControllerWithSentinel.getPosition());
-        Assert.assertEquals(mChildView2, mSelectionControllerWithSentinel.getSelectedView());
-
-        // Views at positions 2-4 are not focusable:
-        doReturn(false).when(mChildView3).isFocusable();
-        doReturn(false).when(mChildView4).isFocusable();
-        doReturn(false).when(mChildView5).isFocusable();
-
-        mSelectionControllerWithSentinel.selectNextItem();
-        Assert.assertEquals(null, mSelectionControllerWithSentinel.getPosition());
-        Assert.assertEquals(null, mSelectionControllerWithSentinel.getSelectedView());
-    }
-
-    @Test
-    public void selectNextItem_noFocusableViews() {
-        doReturn(false).when(mChildView1).isFocusable();
-        doReturn(false).when(mChildView2).isFocusable();
-        doReturn(false).when(mChildView3).isFocusable();
-        doReturn(false).when(mChildView4).isFocusable();
-        doReturn(false).when(mChildView5).isFocusable();
-
-        // Re-create controller (because when it was created, all these views were focusable).
-        mSelectionController =
-                new RecyclerViewSelectionController(
-                        mLayoutManager, RecyclerViewSelectionController.Mode.SATURATING);
-
-        Assert.assertEquals(null, mSelectionController.getPosition());
-        Assert.assertEquals(null, mSelectionController.getSelectedView());
-
-        mSelectionController.selectNextItem();
-        Assert.assertEquals(null, mSelectionController.getPosition());
-        Assert.assertEquals(null, mSelectionController.getSelectedView());
     }
 
     @Test
@@ -407,50 +298,42 @@ public class RecyclerViewSelectionControllerUnitTest {
 
     @Test
     public void onChildViewAttached_viewIsReused_withSentinel() {
-        // Simulates the case where View at position 0 is used as a View at position 3.
+        // Simulates the case where View at position 1 is used as a View at position 3.
         when(mLayoutManager.getItemCount()).thenReturn(4);
 
-        // Select View at position 0.
-        mSelectionControllerWithSentinel.setPosition(0);
-        verify(mChildView1, atLeastOnce()).isFocusable();
-        verify(mChildView1).setSelected(true);
-        verifyNoMoreInteractions(mChildView1);
+        // Select View at position 1.
+        mSelectionControllerWithSentinel.setPosition(1);
+        verify(mChildView2, atLeastOnce()).isFocusable();
+        verify(mChildView2).setSelected(true);
         verifyNoMoreInteractions(mChildView2);
-        verifyNoMoreInteractions(mChildView3);
-        clearInvocations(mChildView1);
+        clearInvocations(mChildView2);
 
         // Pretend that the view is out of screen.
         // This should not result in view selection being cleared.
-        when(mLayoutManager.findViewByPosition(0)).thenReturn(null);
-        mSelectionControllerWithSentinel.onChildViewDetachedFromWindow(mChildView1);
-        verify(mChildView1).setSelected(false);
-        verifyNoMoreInteractions(mChildView1);
+        when(mLayoutManager.findViewByPosition(1)).thenReturn(null);
+        mSelectionControllerWithSentinel.onChildViewDetachedFromWindow(mChildView2);
+        verify(mChildView2).setSelected(false);
         verifyNoMoreInteractions(mChildView2);
-        verifyNoMoreInteractions(mChildView3);
-        clearInvocations(mChildView1);
+        clearInvocations(mChildView2);
 
-        // Pretend that the View 0 is now re-used as View 3.
+        // Pretend that the View 1 is now reused as View 3.
         // We should see that the Selected state is cleared.
-        when(mLayoutManager.findViewByPosition(3)).thenReturn(mChildView1);
-        mSelectionControllerWithSentinel.onChildViewAttachedToWindow(mChildView1);
-        verifyNoMoreInteractions(mChildView1);
+        when(mLayoutManager.findViewByPosition(3)).thenReturn(mChildView2);
+        mSelectionControllerWithSentinel.onChildViewAttachedToWindow(mChildView2);
         verifyNoMoreInteractions(mChildView2);
-        verifyNoMoreInteractions(mChildView3);
 
-        // Finally, pretend that the view 0 is back on screen.
+        // Finally, pretend that the view 1 is back on screen.
         // This happens in 2 steps:
         // - 1. the view is removed from last position
         when(mLayoutManager.findViewByPosition(3)).thenReturn(null);
-        mSelectionControllerWithSentinel.onChildViewDetachedFromWindow(mChildView1);
-        // - 2. the view is inserted at first position.
-        when(mLayoutManager.findViewByPosition(0)).thenReturn(mChildView1);
-        mSelectionControllerWithSentinel.onChildViewAttachedToWindow(mChildView1);
+        mSelectionControllerWithSentinel.onChildViewDetachedFromWindow(mChildView2);
+        // - 2. the view is inserted at position 1.
+        when(mLayoutManager.findViewByPosition(1)).thenReturn(mChildView2);
+        mSelectionControllerWithSentinel.onChildViewAttachedToWindow(mChildView2);
         // This will result in the setSelected(false) being called once, when we signal the view
         // is detached.
-        verify(mChildView1).setSelected(false);
-        verify(mChildView1).setSelected(true);
-        verifyNoMoreInteractions(mChildView1);
+        verify(mChildView2).setSelected(false);
+        verify(mChildView2).setSelected(true);
         verifyNoMoreInteractions(mChildView2);
-        verifyNoMoreInteractions(mChildView3);
     }
 }
