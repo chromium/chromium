@@ -12,13 +12,16 @@
 #include "base/uuid.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_ui_service.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/tabs/projects/projects_panel_state_controller.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/contextual_tasks/public/mock_contextual_tasks_service.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/test_support/mock_tab_group_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
 namespace {
 
@@ -77,16 +80,17 @@ contextual_tasks::ContextualTask CreateTaskWithThread(
     const base::Uuid& task_id,
     const std::string& server_id,
     const std::string& title,
-    int64_t last_turn_time_ms = 0) {
+    int64_t last_turn_time_ms = 0,
+    contextual_tasks::ThreadType thread_type =
+        contextual_tasks::ThreadType::kAiMode) {
   contextual_tasks::ContextualTask task(task_id);
-  contextual_tasks::Thread thread(contextual_tasks::ThreadType::kAiMode,
-                                  server_id, title, last_turn_time_ms,
-                                  "conversation_turn_id");
+  contextual_tasks::Thread thread(thread_type, server_id, title,
+                                  last_turn_time_ms, "conversation_turn_id");
   task.AddThread(thread);
   return task;
 }
 
-const contextual_tasks::ContextualTask& GetTask1() {
+const contextual_tasks::ContextualTask& GetAimTask() {
   static const base::NoDestructor<contextual_tasks::ContextualTask> task(
       CreateTaskWithThread(
           base::Uuid::ParseLowercase("00000000-0000-0000-0000-000000000001"),
@@ -94,7 +98,7 @@ const contextual_tasks::ContextualTask& GetTask1() {
   return *task;
 }
 
-const contextual_tasks::ContextualTask& GetTask1WithUpdatedTitle() {
+const contextual_tasks::ContextualTask& GetAimTaskWithUpdatedTitle() {
   static const base::NoDestructor<contextual_tasks::ContextualTask> task(
       CreateTaskWithThread(
           base::Uuid::ParseLowercase("00000000-0000-0000-0000-000000000001"),
@@ -102,7 +106,7 @@ const contextual_tasks::ContextualTask& GetTask1WithUpdatedTitle() {
   return *task;
 }
 
-const contextual_tasks::ContextualTask& GetTask1WithUpdatedLastTurnTime() {
+const contextual_tasks::ContextualTask& GetAimTaskWithUpdatedLastTurnTime() {
   static const base::NoDestructor<contextual_tasks::ContextualTask> task(
       CreateTaskWithThread(
           base::Uuid::ParseLowercase("00000000-0000-0000-0000-000000000001"),
@@ -110,11 +114,11 @@ const contextual_tasks::ContextualTask& GetTask1WithUpdatedLastTurnTime() {
   return *task;
 }
 
-const contextual_tasks::ContextualTask& GetTask2() {
+const contextual_tasks::ContextualTask& GetGeminiTask() {
   static const base::NoDestructor<contextual_tasks::ContextualTask> task(
       CreateTaskWithThread(
-          base::Uuid::ParseLowercase("00000000-0000-0000-0000-000000000002"),
-          "id2", "Title 2", 2000));
+          base::Uuid::ParseLowercase("00000000-0000-0000-0000-000000000003"),
+          "id3", "Gemini Title", 2000, contextual_tasks::ThreadType::kGemini));
   return *task;
 }
 
@@ -144,6 +148,18 @@ class MockProjectsPanelControllerObserver
               (override));
 };
 
+class MockProjectsPanelStateController : public ProjectsPanelStateController {
+ public:
+  explicit MockProjectsPanelStateController(
+      BrowserWindowInterface* browser_window)
+      : ProjectsPanelStateController(browser_window,
+                                     nullptr,
+                                     nullptr,
+                                     nullptr) {}
+  MOCK_METHOD(bool, CanShowAimThreads, (), (override));
+  MOCK_METHOD(bool, CanShowGeminiThreads, (), (override));
+};
+
 MATCHER_P(GroupIs, expected_group, "") {
   return arg.saved_guid() == expected_group.saved_guid();
 }
@@ -155,17 +171,33 @@ class ProjectsPanelControllerTest : public testing::Test {
   ProjectsPanelControllerTest() {
     EXPECT_CALL(mock_browser_window_interface_, GetBrowserForMigrationOnly())
         .WillRepeatedly(testing::Return(nullptr));
+    EXPECT_CALL(mock_browser_window_interface_, GetUnownedUserDataHost())
+        .WillRepeatedly(testing::ReturnRef(unowned_user_data_host_));
+
+    mock_state_controller_ =
+        std::make_unique<testing::NiceMock<MockProjectsPanelStateController>>(
+            &mock_browser_window_interface_);
+
+    ON_CALL(*mock_state_controller_, CanShowAimThreads())
+        .WillByDefault(testing::Return(true));
+    ON_CALL(*mock_state_controller_, CanShowGeminiThreads())
+        .WillByDefault(testing::Return(true));
   }
 
   std::unique_ptr<ProjectsPanelController> GetInitializedController() {
     auto controller = std::make_unique<ProjectsPanelController>(
-        &mock_browser_window_interface_, &mock_tab_group_sync_service_,
-        &mock_contextual_tasks_service_, &mock_contextual_tasks_ui_service_);
+        &mock_browser_window_interface_, mock_state_controller_.get(),
+        &mock_tab_group_sync_service_, &mock_contextual_tasks_service_,
+        &mock_contextual_tasks_ui_service_);
     controller->OnInitialized();
     return controller;
   }
 
+  TestingPrefServiceSimple pref_service_;
+  ui::UnownedUserDataHost unowned_user_data_host_;
   testing::NiceMock<MockBrowserWindowInterface> mock_browser_window_interface_;
+  std::unique_ptr<testing::NiceMock<MockProjectsPanelStateController>>
+      mock_state_controller_;
   testing::NiceMock<tab_groups::MockTabGroupSyncService>
       mock_tab_group_sync_service_;
   testing::NiceMock<contextual_tasks::MockContextualTasksService>
@@ -328,15 +360,15 @@ TEST_F(ProjectsPanelControllerTest, OpenThreadCallsService) {
   auto controller = GetInitializedController();
 
   controller->OnTaskAdded(
-      GetTask1(),
+      GetAimTask(),
       contextual_tasks::ContextualTasksService::TriggerSource::kLocal);
 
   EXPECT_CALL(
       mock_contextual_tasks_ui_service_,
-      GetThreadUrlFromTaskId(testing::Eq(GetTask1().GetTaskId()), testing::_))
+      GetThreadUrlFromTaskId(testing::Eq(GetAimTask().GetTaskId()), testing::_))
       .Times(1);
 
-  controller->OpenThread(GetTask1().GetThread()->server_id);
+  controller->OpenThread(GetAimTask().GetThread()->server_id);
 }
 
 TEST_F(ProjectsPanelControllerTest, HandlesTaskAdded) {
@@ -344,54 +376,54 @@ TEST_F(ProjectsPanelControllerTest, HandlesTaskAdded) {
 
   // Task 1 has an older last turn time than task 2.
   controller->OnTaskAdded(
-      GetTask1(),
+      GetAimTask(),
       contextual_tasks::ContextualTasksService::TriggerSource::kLocal);
   controller->OnTaskAdded(
-      GetTask2(),
+      GetGeminiTask(),
       contextual_tasks::ContextualTasksService::TriggerSource::kLocal);
 
   const auto& threads = controller->GetThreads();
   ASSERT_EQ(2u, threads.size());
-  ASSERT_LT(GetTask1().GetThread()->last_turn_time,
-            GetTask2().GetThread()->last_turn_time);
+  ASSERT_LT(GetAimTask().GetThread()->last_turn_time,
+            GetGeminiTask().GetThread()->last_turn_time);
 
   // Should be sorted by most to least recent last turn time.
-  EXPECT_EQ(GetTask2().GetThread()->server_id, threads[0].server_id);
-  EXPECT_EQ(GetTask1().GetThread()->server_id, threads[1].server_id);
+  EXPECT_EQ(GetGeminiTask().GetThread()->server_id, threads[0].server_id);
+  EXPECT_EQ(GetAimTask().GetThread()->server_id, threads[1].server_id);
 }
 
 TEST_F(ProjectsPanelControllerTest, HandlesTaskUpdates) {
   auto controller = GetInitializedController();
 
   controller->OnTaskAdded(
-      GetTask1(),
+      GetAimTask(),
       contextual_tasks::ContextualTasksService::TriggerSource::kLocal);
   controller->OnTaskAdded(
-      GetTask2(),
+      GetGeminiTask(),
       contextual_tasks::ContextualTasksService::TriggerSource::kLocal);
 
   // Update task 1.
   controller->OnTaskUpdated(
-      GetTask1WithUpdatedTitle(),
+      GetAimTaskWithUpdatedTitle(),
       contextual_tasks::ContextualTasksService::TriggerSource::kLocal);
 
   const auto& threads = controller->GetThreads();
   ASSERT_EQ(2u, threads.size());
-  EXPECT_EQ(GetTask2().GetThread()->server_id, threads[0].server_id);
-  EXPECT_EQ(GetTask1().GetThread()->server_id, threads[1].server_id);
-  EXPECT_EQ(GetTask1WithUpdatedTitle().GetThread()->title, threads[1].title);
+  EXPECT_EQ(GetGeminiTask().GetThread()->server_id, threads[0].server_id);
+  EXPECT_EQ(GetAimTask().GetThread()->server_id, threads[1].server_id);
+  EXPECT_EQ(GetAimTaskWithUpdatedTitle().GetThread()->title, threads[1].title);
 }
 
 TEST_F(ProjectsPanelControllerTest, HandlesTaskRemoval) {
   auto controller = GetInitializedController();
 
   controller->OnTaskAdded(
-      GetTask1(),
+      GetAimTask(),
       contextual_tasks::ContextualTasksService::TriggerSource::kLocal);
   ASSERT_EQ(1u, controller->GetThreads().size());
 
   controller->OnTaskRemoved(
-      GetTask1().GetTaskId(),
+      GetAimTask().GetTaskId(),
       contextual_tasks::ContextualTasksService::TriggerSource::kLocal);
 
   EXPECT_TRUE(controller->GetThreads().empty());
@@ -404,49 +436,92 @@ TEST_F(ProjectsPanelControllerTest, AddsTaskWhenMissingTaskUpdated) {
   EXPECT_TRUE(controller->GetThreads().empty());
 
   controller->OnTaskUpdated(
-      GetTask1(),
+      GetAimTask(),
       contextual_tasks::ContextualTasksService::TriggerSource::kLocal);
 
   const auto& threads = controller->GetThreads();
   ASSERT_EQ(1u, threads.size());
-  EXPECT_EQ(GetTask1().GetThread()->server_id, threads[0].server_id);
+  EXPECT_EQ(GetAimTask().GetThread()->server_id, threads[0].server_id);
 }
 
 TEST_F(ProjectsPanelControllerTest, OrdersTasksByLastTurnTimeWhenUpdated) {
   auto controller = GetInitializedController();
 
   controller->OnTaskAdded(
-      GetTask1(),
+      GetAimTask(),
       contextual_tasks::ContextualTasksService::TriggerSource::kLocal);
   controller->OnTaskAdded(
-      GetTask2(),
+      GetGeminiTask(),
       contextual_tasks::ContextualTasksService::TriggerSource::kLocal);
 
   // Task 2 has a more recent last turn time (2000) than task 1 (1000).
-  ASSERT_EQ(GetTask2().GetThread()->server_id,
+  ASSERT_EQ(GetGeminiTask().GetThread()->server_id,
             controller->GetThreads()[0].server_id);
-  ASSERT_LT(GetTask1().GetThread()->last_turn_time,
-            GetTask2().GetThread()->last_turn_time);
+  ASSERT_LT(GetAimTask().GetThread()->last_turn_time,
+            GetGeminiTask().GetThread()->last_turn_time);
 
   // Update Task 1 with a more recent last turn time (3000).
   controller->OnTaskUpdated(
-      GetTask1WithUpdatedLastTurnTime(),
+      GetAimTaskWithUpdatedLastTurnTime(),
       contextual_tasks::ContextualTasksService::TriggerSource::kLocal);
 
   const auto& threads = controller->GetThreads();
   ASSERT_EQ(2u, threads.size());
 
   // Now, Task 1 should be first.
-  EXPECT_EQ(GetTask1().GetThread()->server_id, threads[0].server_id);
-  EXPECT_EQ(GetTask2().GetThread()->server_id, threads[1].server_id);
+  EXPECT_EQ(GetAimTask().GetThread()->server_id, threads[0].server_id);
+  EXPECT_EQ(GetGeminiTask().GetThread()->server_id, threads[1].server_id);
+}
+
+TEST_F(ProjectsPanelControllerTest,
+       GetThreadsFiltersThreadsBasedOnEligibility) {
+  auto controller = GetInitializedController();
+
+  controller->OnTaskAdded(
+      GetAimTask(),
+      contextual_tasks::ContextualTasksService::TriggerSource::kLocal);
+  controller->OnTaskAdded(
+      GetGeminiTask(),
+      contextual_tasks::ContextualTasksService::TriggerSource::kLocal);
+
+  // Set AIM ineligible, so we should only see the Gemini thread.
+  EXPECT_CALL(*mock_state_controller_, CanShowAimThreads())
+      .WillRepeatedly(testing::Return(false));
+  {
+    const auto& threads = controller->GetThreads();
+    ASSERT_EQ(1u, threads.size());
+    EXPECT_EQ(contextual_tasks::ThreadType::kGemini, threads[0].type);
+  }
+
+  // Make AIM eligible again, so we should see both threads.
+  EXPECT_CALL(*mock_state_controller_, CanShowAimThreads())
+      .WillRepeatedly(testing::Return(true));
+  {
+    const auto& threads = controller->GetThreads();
+    ASSERT_EQ(2u, threads.size());
+    ASSERT_LE(GetAimTask().GetThread()->last_turn_time,
+              GetGeminiTask().GetThread()->last_turn_time);
+    EXPECT_EQ(GetGeminiTask().GetThread()->server_id, threads[0].server_id);
+    EXPECT_EQ(GetAimTask().GetThread()->server_id, threads[1].server_id);
+  }
+
+  // Set Gemini ineligible, so we should only see the AIM thread.
+  EXPECT_CALL(*mock_state_controller_, CanShowGeminiThreads())
+      .WillRepeatedly(testing::Return(false));
+  {
+    const auto& threads = controller->GetThreads();
+    ASSERT_EQ(1u, threads.size());
+    EXPECT_EQ(contextual_tasks::ThreadType::kAiMode, threads[0].type);
+  }
 }
 
 class ProjectsPanelControllerObserverTest : public ProjectsPanelControllerTest {
  public:
   void SetUp() override {
     controller_ = std::make_unique<ProjectsPanelController>(
-        &mock_browser_window_interface_, &mock_tab_group_sync_service_,
-        &mock_contextual_tasks_service_, &mock_contextual_tasks_ui_service_);
+        &mock_browser_window_interface_, mock_state_controller_.get(),
+        &mock_tab_group_sync_service_, &mock_contextual_tasks_service_,
+        &mock_contextual_tasks_ui_service_);
     controller_->AddObserver(&observer_);
   }
 

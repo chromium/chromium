@@ -26,7 +26,7 @@ class ProjectsPanelControllerBrowserTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     controller_ = std::make_unique<ProjectsPanelController>(
-        browser(), &mock_tab_group_sync_service_,
+        browser(), /*state_controller=*/nullptr, &mock_tab_group_sync_service_,
         &mock_contextual_tasks_service_, &mock_contextual_tasks_ui_service_);
   }
 

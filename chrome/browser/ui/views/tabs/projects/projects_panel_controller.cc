@@ -9,6 +9,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/tabs/projects/projects_panel_state_controller.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
@@ -16,10 +17,12 @@
 
 ProjectsPanelController::ProjectsPanelController(
     BrowserWindowInterface* browser,
+    ProjectsPanelStateController* state_controller,
     tab_groups::TabGroupSyncService* tab_group_sync_service,
     contextual_tasks::ContextualTasksService* contextual_tasks_service,
     contextual_tasks::ContextualTasksUiService* contextual_tasks_ui_service)
     : browser_(browser),
+      state_controller_(state_controller),
       tab_group_sync_service_(tab_group_sync_service),
       contextual_tasks_service_(contextual_tasks_service),
       contextual_tasks_ui_service_(contextual_tasks_ui_service) {
@@ -73,9 +76,33 @@ void ProjectsPanelController::MoveTabGroup(const base::Uuid& group_guid,
   }
 }
 
-const std::vector<contextual_tasks::Thread>&
+const std::vector<contextual_tasks::Thread>
 ProjectsPanelController::GetThreads() {
-  return threads_;
+  std::vector<contextual_tasks::Thread> eligible_threads;
+  if (!state_controller_) {
+    return eligible_threads;
+  }
+
+  for (const auto& thread : threads_) {
+    switch (thread.type) {
+      case contextual_tasks::ThreadType::kAiMode:
+        if (!state_controller_->CanShowAimThreads()) {
+          continue;
+        }
+        eligible_threads.push_back(thread);
+        break;
+      case contextual_tasks::ThreadType::kGemini:
+        if (!state_controller_->CanShowGeminiThreads()) {
+          continue;
+        }
+        eligible_threads.push_back(thread);
+        break;
+      case contextual_tasks::ThreadType::kUnknown:
+        NOTREACHED();
+    }
+  }
+
+  return eligible_threads;
 }
 
 void ProjectsPanelController::OpenThread(const std::string& thread_server_id) {
@@ -205,7 +232,7 @@ void ProjectsPanelController::OnContextualTasksServiceInitialized() {
         weak_this->SortThreads();
 
         for (auto& observer : weak_this->observers_) {
-          observer.OnThreadsInitialized(weak_this->threads_);
+          observer.OnThreadsInitialized(weak_this->GetThreads());
         }
       },
       weak_ptr_factory_.GetWeakPtr()));

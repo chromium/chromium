@@ -3,7 +3,13 @@
 // found in the LICENSE file.
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/tabs/projects/projects_panel_state_controller.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -16,8 +22,11 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "content/public/test/browser_test.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/compositor/layer.h"
@@ -25,13 +34,41 @@
 #include "ui/views/interaction/interactive_views_test.h"
 #include "ui/views/view_shadow.h"
 
+namespace {
+constexpr int kBrowserWindowWidth = 1400;
+constexpr int kBrowserWindowHeight = 800;
+}  // namespace
+
 namespace base::test {
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewTabElementId);
 
+class MockProjectsPanelStateController : public ProjectsPanelStateController {
+ public:
+  MockProjectsPanelStateController(BrowserWindowInterface* browser_window,
+                                   bool is_aim_eligible,
+                                   bool is_gemini_eligible)
+      : ProjectsPanelStateController(browser_window,
+                                     /*root_action_item=*/nullptr,
+                                     /*aim_eligibility_service=*/nullptr,
+                                     /*glic_enabling=*/nullptr),
+        is_aim_eligible_(is_aim_eligible),
+        is_gemini_eligible_(is_gemini_eligible) {}
+
+  bool CanShowAimThreads() override { return is_aim_eligible_; }
+  bool CanShowGeminiThreads() override { return is_gemini_eligible_; }
+
+ private:
+  bool is_aim_eligible_ = false;
+  bool is_gemini_eligible_ = false;
+};
+
 class ProjectsPanelInteractiveUiTest : public InteractiveBrowserTest {
  public:
-  ProjectsPanelInteractiveUiTest() {
+  explicit ProjectsPanelInteractiveUiTest(bool is_aim_eligible = true,
+                                          bool is_gemini_eligible = true)
+      : is_aim_eligible_(is_aim_eligible),
+        is_gemini_eligible_(is_gemini_eligible) {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{tabs::kVerticalTabs, {}},
          {tab_groups::kProjectsPanel,
@@ -40,15 +77,40 @@ class ProjectsPanelInteractiveUiTest : public InteractiveBrowserTest {
     ProjectsPanelView::set_threads_visible_for_testing(true);
     ProjectsPanelView::disable_animations_for_testing();
   }
-  ~ProjectsPanelInteractiveUiTest() override = default;
+
+  void SetUpInProcessBrowserTestFixture() override {
+    InteractiveBrowserTest::SetUpInProcessBrowserTestFixture();
+    projects_panel_state_controller_override_ =
+        BrowserWindowFeatures::GetUserDataFactoryForTesting()
+            .AddOverrideForTesting<MockProjectsPanelStateController>(
+                base::BindRepeating(
+                    [](bool is_aim_eligible, bool is_gemini_eligible,
+                       BrowserWindowInterface& browser)
+                        -> std::unique_ptr<MockProjectsPanelStateController> {
+                      return std::make_unique<MockProjectsPanelStateController>(
+                          &browser, is_aim_eligible, is_gemini_eligible);
+                    },
+                    is_aim_eligible_, is_gemini_eligible_));
+  }
 
   void SetUpOnMainThread() override {
     InteractiveBrowserTest::SetUpOnMainThread();
+
+    // Resize the window to be wide enough to accommodate a wide vertical tab
+    // strip and the toolbar.
+    browser()->window()->SetBounds(
+        gfx::Rect(0, 0, kBrowserWindowWidth, kBrowserWindowHeight));
 
     // Enter Vertical Tabs mode.
     tabs::VerticalTabStripStateController::From(browser())
         ->SetVerticalTabsEnabled(true);
     RunScheduledLayouts();
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    projects_panel_state_controller_override_ =
+        ui::UserDataFactory::ScopedOverride();
+    InteractiveBrowserTest::TearDownInProcessBrowserTestFixture();
   }
 
   auto OpenProjectsPanel() {
@@ -98,6 +160,9 @@ class ProjectsPanelInteractiveUiTest : public InteractiveBrowserTest {
   }
 
  private:
+  bool is_aim_eligible_ = false;
+  bool is_gemini_eligible_ = false;
+  ui::UserDataFactory::ScopedOverride projects_panel_state_controller_override_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -357,6 +422,42 @@ IN_PROC_BROWSER_TEST_F(ProjectsPanelInteractiveUiTest, CreateNewTabGroup) {
                 .size();
           },
           1u));
+}
+
+class ProjectsPanelAimIneligibleInteractiveUiTest
+    : public ProjectsPanelInteractiveUiTest {
+ public:
+  ProjectsPanelAimIneligibleInteractiveUiTest()
+      : ProjectsPanelInteractiveUiTest(/*is_aim_eligible=*/false,
+                                       /*is_gemini_eligible=*/true) {}
+};
+
+IN_PROC_BROWSER_TEST_F(ProjectsPanelAimIneligibleInteractiveUiTest,
+                       ThreadsActivityMenu_AiModeActivityHiddenWhenIneligible) {
+  RunTestSequence(
+      OpenProjectsPanel(),
+      // Click the threads activity menu button.
+      MoveMouseTo(kProjectsPanelThreadsActivityButtonElementId), ClickMouse(),
+      // Verify that "AI Mode activity" is NOT present in the menu.
+      EnsureNotPresent(kProjectsPanelThreadsActivityAiModeItemElementId));
+}
+
+class ProjectsPanelGeminiIneligibleInteractiveUiTest
+    : public ProjectsPanelInteractiveUiTest {
+ public:
+  ProjectsPanelGeminiIneligibleInteractiveUiTest()
+      : ProjectsPanelInteractiveUiTest(/*is_aim_eligible=*/true,
+                                       /*is_gemini_eligible=*/false) {}
+};
+
+IN_PROC_BROWSER_TEST_F(ProjectsPanelGeminiIneligibleInteractiveUiTest,
+                       ThreadsActivityMenu_GeminiActivityHiddenWhenIneligible) {
+  RunTestSequence(
+      OpenProjectsPanel(),
+      // Click the threads activity menu button.
+      MoveMouseTo(kProjectsPanelThreadsActivityButtonElementId), ClickMouse(),
+      // Verify that "Gemini app activity" is NOT present in the menu.
+      EnsureNotPresent(kProjectsPanelThreadsActivityGeminiItemElementId));
 }
 
 }  // namespace base::test
