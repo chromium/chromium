@@ -15,7 +15,7 @@ ContextualSearchSessionEntry::ContextualSearchSessionEntry(
       metrics_recorder_(std::move(other.metrics_recorder_)),
       ref_count_(other.ref_count_) {
   if (controller_) {
-    file_upload_status_observer_.Observe(controller_.get());
+    context_upload_status_observer_.Observe(controller_.get());
   }
 }
 
@@ -25,9 +25,9 @@ ContextualSearchSessionEntry& ContextualSearchSessionEntry::operator=(
     controller_ = std::move(other.controller_);
     metrics_recorder_ = std::move(other.metrics_recorder_);
     ref_count_ = other.ref_count_;
-    file_upload_status_observer_.Reset();
+    context_upload_status_observer_.Reset();
     if (controller_) {
-      file_upload_status_observer_.Observe(controller_.get());
+      context_upload_status_observer_.Observe(controller_.get());
     }
   }
   return *this;
@@ -39,7 +39,7 @@ ContextualSearchSessionEntry::ContextualSearchSessionEntry(
     : controller_(std::move(controller)),
       metrics_recorder_(std::move(metrics_recorder)) {
   if (controller_) {
-    file_upload_status_observer_.Observe(controller_.get());
+    context_upload_status_observer_.Observe(controller_.get());
   }
 }
 

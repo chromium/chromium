@@ -31,7 +31,7 @@ class Profile;
 class GURL;
 
 class ComposeboxQueryControllerBridge
-    : public ComposeboxQueryController::FileUploadStatusObserver {
+    : public ComposeboxQueryController::ContextUploadStatusObserver {
  public:
   explicit ComposeboxQueryControllerBridge(
       Profile* profile,
@@ -67,7 +67,7 @@ class ComposeboxQueryControllerBridge
   std::unique_ptr<lens::proto::LensOverlaySuggestInputs>
   CreateLensOverlaySuggestInputs() const;
 
-  // ComposeboxQueryController::FileUploadStatusObserver:
+  // ComposeboxQueryController::ContextUploadStatusObserver:
   void OnContextUploadStatusChanged(
       const base::UnguessableToken& context_token,
       lens::MimeType mime_type,

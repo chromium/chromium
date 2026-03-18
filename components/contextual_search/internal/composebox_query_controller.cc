@@ -790,11 +790,12 @@ lens::ClientToAimMessage ComposeboxQueryController::CreateClientToAimRequest(
   return client_to_aim_message;
 }
 
-void ComposeboxQueryController::AddObserver(FileUploadStatusObserver* obs) {
+void ComposeboxQueryController::AddObserver(ContextUploadStatusObserver* obs) {
   observers_.AddObserver(obs);
 }
 
-void ComposeboxQueryController::RemoveObserver(FileUploadStatusObserver* obs) {
+void ComposeboxQueryController::RemoveObserver(
+    ContextUploadStatusObserver* obs) {
   observers_.RemoveObserver(obs);
 }
 
