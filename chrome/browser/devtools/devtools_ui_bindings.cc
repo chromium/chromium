@@ -1981,46 +1981,6 @@ base::DictValue DevToolsUIBindings::GetHostConfigDictionary(Profile* profile) {
 
   response_dict.Set("isOffTheRecord", profile->IsOffTheRecord());
 
-  base::DictValue devtools_privacy_ui_dict;
-  devtools_privacy_ui_dict.Set(
-      "enabled", base::FeatureList::IsEnabled(::features::kDevToolsPrivacyUI));
-  response_dict.Set("devToolsPrivacyUI", std::move(devtools_privacy_ui_dict));
-
-  if (base::FeatureList::IsEnabled(features::kDevToolsPrivacyUI)) {
-    base::DictValue third_party_cookie_controls_dict;
-    third_party_cookie_controls_dict.Set(
-        "thirdPartyCookieRestrictionEnabled",
-        base::FeatureList::IsEnabled(
-            content_settings::features::kTrackingProtection3pcd));
-
-    third_party_cookie_controls_dict.Set(
-        "thirdPartyCookieMetadataEnabled",
-        base::FeatureList::IsEnabled(net::features::kTpcdMetadataGrants));
-    third_party_cookie_controls_dict.Set(
-        "thirdPartyCookieHeuristicsEnabled",
-        base::FeatureList::IsEnabled(
-            content_settings::features::kTpcdHeuristicsGrants));
-
-    policy::PolicyService* policy_service =
-        profile->GetProfilePolicyConnector()->policy_service();
-    CHECK(policy_service);
-    const policy::PolicyMap& policies = policy_service->GetPolicies(
-        policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME, std::string()));
-    const base::Value* block_third_party_cookies = policies.GetValue(
-        policy::key::kBlockThirdPartyCookies, base::Value::Type::BOOLEAN);
-    if (block_third_party_cookies && block_third_party_cookies->is_bool()) {
-      third_party_cookie_controls_dict.Set(
-          "managedBlockThirdPartyCookies",
-          block_third_party_cookies->GetBool());
-    } else {
-      third_party_cookie_controls_dict.Set("managedBlockThirdPartyCookies",
-                                           "Unset");
-    }
-    // TODO: Add enterprise policy CookiesAllowedForUrls.
-
-    response_dict.Set("thirdPartyCookieControls",
-                      std::move(third_party_cookie_controls_dict));
-  }
   base::DictValue origin_bound_cookies_dict;
   origin_bound_cookies_dict.Set(
       "portBindingEnabled",
