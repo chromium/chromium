@@ -6811,6 +6811,7 @@
       typedom_types: ["Keyword", "Length", "Percentage"],
       invalidate: ["layout", "paint"],
       percentages_depend_on_used_value: true,
+      affected_by_zoom: true,
     },
     {
       name: "row-gap",
@@ -7088,6 +7089,7 @@
       keywords: ["thin", "medium", "thick"],
       typedom_types: ["Keyword", "Length"],
       invalidate: ["paint"],
+      affected_by_zoom: true,
     },
     {
       name: "row-rule-width",
@@ -7130,6 +7132,7 @@
       keywords: ["auto"],
       typedom_types: ["Keyword", "Length"],
       invalidate: ["layout", "paint"],
+      affected_by_zoom: true,
     },
     {
       name: "column-height",
@@ -7145,6 +7148,7 @@
       keywords: ["auto"],
       typedom_types: ["Keyword", "Length"],
       invalidate: ["layout", "paint"],
+      affected_by_zoom: true,
       runtime_flag: "MulticolColumnWrapping",
     },
     {

@@ -2972,6 +2972,12 @@ const CSSValue* RowRuleStyle::CSSValueFromComputedStyleInternal(
 }
 
 void ColumnRuleWidth::ApplyInherit(StyleResolverState& state) const {
+  if (state.GetDocument().StandardizedBrowserZoomEnabled()) {
+    if (ApplyParentValueIfZoomChanged(state)) {
+      return;
+    }
+  }
+
   // Following the resolution of CSSWG issue 11494, the computed value of
   // column-rule-width should be independent of the column-rule-style.
   // https://github.com/w3c/csswg-drafts/issues/11494#issuecomment-2675800489
