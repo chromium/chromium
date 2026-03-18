@@ -390,6 +390,24 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingOmniboxControllerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(ReadAnythingOmniboxControllerBrowserTest,
+                       TabForegroundedDoesNotCheckIfAlreadyChecked) {
+  RegisterPageActionObserver();
+  NavigateToDistillablePage();
+  WaitForPageActionShowing(true);
+  EXPECT_GT(ReadAnythingEntryPointController::CheckCountForTesting(), 0);
+  ReadAnythingEntryPointController::ResetCheckCountForTesting();
+
+  // Switch tabs in quick succession.
+  chrome::NewTab(browser());
+  browser()->tab_strip_model()->ActivateTabAt(1);
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->tab_strip_model()->ActivateTabAt(1);
+  browser()->tab_strip_model()->ActivateTabAt(0);
+
+  EXPECT_EQ(ReadAnythingEntryPointController::CheckCountForTesting(), 0);
+}
+
+IN_PROC_BROWSER_TEST_P(ReadAnythingOmniboxControllerBrowserTest,
                        TabForegroundedDoesNotCheckIfRMOpened) {
   RegisterPageActionObserver();
   NavigateToDistillablePage();
@@ -458,6 +476,29 @@ IN_PROC_BROWSER_TEST_P(
   browser()->tab_strip_model()->GetActiveTab()->Close();
 
   EXPECT_EQ(GetOmniboxIgnoredCount(), 0);
+}
+
+IN_PROC_BROWSER_TEST_P(
+    ReadAnythingOmniboxControllerBrowserTest,
+    TabDetached_DoesNotUpdateIgnoredCountIfPageWasNotChecked) {
+  chrome::NewTab(browser());
+  RegisterPageActionObserver();
+  NavigateToDistillablePage();
+  WaitForPageActionShowing(true);
+  MockLongDwellTime();
+
+  // Move to the next page without waiting for the load to finish. The ignored
+  // count should increment since the previous page was distillable.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("https://www.example.com"),
+      WindowOpenDisposition::CURRENT_TAB, ui_test_utils::BROWSER_TEST_NO_WAIT);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return GetOmniboxIgnoredCount() == 1; }));
+
+  // Close the tab before the new page is checked. The ignored count should not
+  // increase because it wasn't checked.
+  browser()->tab_strip_model()->GetActiveTab()->Close();
+  EXPECT_EQ(GetOmniboxIgnoredCount(), 1);
 }
 
 IN_PROC_BROWSER_TEST_P(

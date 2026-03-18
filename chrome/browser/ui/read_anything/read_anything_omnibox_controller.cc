@@ -60,7 +60,9 @@ void ReadAnythingOmniboxController::TabWillDetach(
 }
 
 void ReadAnythingOmniboxController::OnTabForegrounded(tabs::TabInterface* tab) {
-  DebounceCheckSuggestion();
+  if (!was_page_checked_) {
+    DebounceCheckSuggestion();
+  }
 }
 
 void ReadAnythingOmniboxController::OnTabBackgrounded(tabs::TabInterface* tab) {
@@ -134,6 +136,9 @@ void ReadAnythingOmniboxController::OnWillClose(
 }
 
 void ReadAnythingOmniboxController::PrimaryPageChanged(content::Page& page) {
+  // Reset the distillable indicator when the page changes.
+  was_last_checked_page_distillable_ = false;
+  was_page_checked_ = false;
   if (IsIrrelevant()) {
     return;
   }
@@ -187,6 +192,7 @@ void ReadAnythingOmniboxController::OnShouldSuggestReadingModeResult(
   // entry point is hidden when the tab is closed, but a closed tab should
   // count as "ignored".
   was_last_checked_page_distillable_ = should_show;
+  was_page_checked_ = true;
   if (IsIrrelevant()) {
     return;
   }
@@ -207,6 +213,10 @@ void ReadAnythingOmniboxController::UpdateVisibility(bool should_show) {
 }
 
 void ReadAnythingOmniboxController::UpdateIgnored(bool is_showing) {
+  if (!is_showing) {
+    return;
+  }
+
   // Indicate that the omnibox entrypoint was ignored if it's still showing when
   // the page changes or tab closes, and the user was on the previous page for a
   // non-trivial amount of time. Without this time check, the omnibox would be
@@ -216,8 +226,8 @@ void ReadAnythingOmniboxController::UpdateIgnored(bool is_showing) {
       candidate_check_triggered_time_ms_.is_null()
           ? base::Milliseconds(0)
           : base::TimeTicks::Now() - candidate_check_triggered_time_ms_;
-  if (is_showing && time_on_previous_page.InMilliseconds() >
-                        kTimeOnPreviousPageBeforeIgnored) {
+  if (time_on_previous_page.InMilliseconds() >
+      kTimeOnPreviousPageBeforeIgnored) {
     read_anything::ReadAnythingEntryPointController::OnPageActionIgnored(
         tab_->GetBrowserWindowInterface());
   }

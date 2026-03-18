@@ -100,6 +100,9 @@ class ReadAnythingOmniboxController : public content::WebContentsObserver,
   // The cached result of CheckIfShouldSuggestReadingMode.
   bool was_last_checked_page_distillable_ = false;
 
+  // Whether the current page has been already been checked for suggesting RM.
+  bool was_page_checked_ = false;
+
   // The last reason Immersive RM was closed. Used to determine whether to show
   // the omnibox entrypoint after RM is closed. This needs to be stored because
   // the ReadingModePresenterChanged callback happens asynchronously.
