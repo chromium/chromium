@@ -5413,7 +5413,7 @@
     // https://github.com/w3c/pointerevents/issues/555
     {
       name: "SuppressPointerStreamAfterDrag",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "SvgAnchorElementAttributes",
