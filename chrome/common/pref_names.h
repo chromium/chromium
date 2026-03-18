@@ -919,6 +919,15 @@ inline constexpr char kShowHomeButton[] = "browser.show_home_button";
 // toolbar.
 inline constexpr char kShowForwardButton[] = "browser.show_forward_button";
 
+// An integer pref that records how many times a user hovers on a bookmark bar
+// button.
+inline constexpr char kBookmarkBarHoverCount[] = "bookmark_bar.hover_count";
+
+// An integer pref that records how many times a user navigates to a bookmark
+// bar link.
+inline constexpr char kBookmarkBarNavigationCount[] =
+    "bookmark_bar.navigation_count";
+
 // A boolean pref set to true if the Split Tab button should be pinned to the
 // toolbar.
 inline constexpr char kPinSplitTabButton[] = "browser.pin_split_tab_button";

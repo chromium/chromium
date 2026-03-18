@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view_test_helper.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -1057,6 +1058,55 @@ IN_PROC_BROWSER_TEST_F(
   histogram_tester.ExpectBucketCount(
       "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_BookmarkBar",
       kFinalStatusActivated, 1);
+}
+
+// Verifies that metrics are recorded when interacting with bookmark buttons.
+IN_PROC_BROWSER_TEST_F(
+    PreloadBookmarkBarPrefetchEnabledPrerenderEnabledNavigationTest,
+    MetricsRecording) {
+  StartServers();
+  base::HistogramTester histogram_tester;
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_test_server()->GetURL("/empty.html")));
+
+  GURL preload_url = https_test_server()->GetURL("/empty.html?preload");
+
+  CreateBookmarkButton(preload_url);
+  views::LabelButton* button = GetBookmarkButton(0);
+
+  gfx::Point center(10, 10);
+
+  EXPECT_EQ(0, browser()->profile()->GetPrefs()->GetInt64(
+                   prefs::kBookmarkBarHoverCount));
+  EXPECT_EQ(0, browser()->profile()->GetPrefs()->GetInt64(
+                   prefs::kBookmarkBarNavigationCount));
+
+  // Trigger on-hover recording.
+  button->OnMouseEntered(ui::MouseEvent(ui::EventType::kMouseEntered, center,
+                                        center, ui::EventTimeForNow(),
+                                        /*flags=*/ui::EF_NONE,
+                                        /*changed_button_flags=*/ui::EF_NONE));
+
+  EXPECT_EQ(1, browser()->profile()->GetPrefs()->GetInt64(
+                   prefs::kBookmarkBarHoverCount));
+  EXPECT_EQ(0, browser()->profile()->GetPrefs()->GetInt64(
+                   prefs::kBookmarkBarNavigationCount));
+
+  content::TestNavigationObserver observer(
+      browser()->tab_strip_model()->GetActiveWebContents(), 1);
+  ;
+  // Trigger navigation recording.
+  button->OnMousePressed(ui::MouseEvent(
+      ui::EventType::kMousePressed, center, center, ui::EventTimeForNow(),
+      ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
+  button->OnMouseReleased(ui::MouseEvent(
+      ui::EventType::kMouseReleased, center, center, ui::EventTimeForNow(),
+      ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
+  observer.Wait();
+
+  EXPECT_EQ(1, browser()->profile()->GetPrefs()->GetInt64(
+                   prefs::kBookmarkBarNavigationCount));
 }
 
 namespace {

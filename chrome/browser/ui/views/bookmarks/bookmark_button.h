@@ -57,7 +57,7 @@ class BookmarkButton : public BookmarkButtonBase, public views::WidgetObserver {
   BookmarkButton& operator=(const BookmarkButton&) = delete;
   ~BookmarkButton() override;
 
-  void OnButtonPressed(const ui::Event& event) { callback_.Run(event); }
+  void OnButtonPressed(const ui::Event& event);
 
   void UpdateTooltipText();
 

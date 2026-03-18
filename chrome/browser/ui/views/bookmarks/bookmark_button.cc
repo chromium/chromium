@@ -14,6 +14,7 @@
 #include "chrome/browser/preloading/bookmarkbar_preload/bookmarkbar_preload_pipeline_manager.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/browser/preloading/prerender/prerender_manager.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
@@ -22,7 +23,9 @@
 #include "chrome/browser/ui/views/bookmarks/bookmark_button_util.h"
 #include "chrome/browser/ui/views/event_utils.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/preloading_data.h"
 #include "content/public/browser/web_contents.h"
@@ -114,6 +117,18 @@ BookmarkButton::BookmarkButton(PressedCallback callback,
 
 BookmarkButton::~BookmarkButton() = default;
 
+void BookmarkButton::OnButtonPressed(const ui::Event& event) {
+  if (base::FeatureList::IsEnabled(features::kBookmarkTriggerForPrefetch) &&
+      browser_) {
+    browser_->profile()->GetPrefs()->SetInt64(
+        prefs::kBookmarkBarNavigationCount,
+        browser_->profile()->GetPrefs()->GetInt64(
+            prefs::kBookmarkBarNavigationCount) +
+            1);
+  }
+  callback_.Run(event);
+}
+
 void BookmarkButton::AddedToWidget() {
   BookmarkButtonBase::AddedToWidget();
 
@@ -167,6 +182,15 @@ void BookmarkButton::OnMouseEntered(const ui::MouseEvent& event) {
   // Reset source information for taking metrics for following mouse events.
 
   BookmarkButtonBase::OnMouseEntered(event);
+
+  if (base::FeatureList::IsEnabled(features::kBookmarkTriggerForPrefetch) &&
+      browser_) {
+    browser_->profile()->GetPrefs()->SetInt64(
+        prefs::kBookmarkBarHoverCount,
+        browser_->profile()->GetPrefs()->GetInt64(
+            prefs::kBookmarkBarHoverCount) +
+            1);
+  }
 
   if (base::FeatureList::IsEnabled(features::kBookmarkTriggerForPreconnect)) {
     preconnect_timer_.Start(
