@@ -193,8 +193,8 @@ TEST(ClientSocketPool, SplitHostCacheByNetworkIsolationKeyDisabled) {
       NetworkAnonymizationKey::CreateSameSite(kSiteBar),
       SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false);
 
-  EXPECT_FALSE(group_id1.network_anonymization_key().IsFullyPopulated());
-  EXPECT_FALSE(group_id2.network_anonymization_key().IsFullyPopulated());
+  EXPECT_TRUE(group_id1.network_anonymization_key().IsEmpty());
+  EXPECT_TRUE(group_id2.network_anonymization_key().IsEmpty());
   EXPECT_EQ(group_id1.network_anonymization_key(),
             group_id2.network_anonymization_key());
   EXPECT_EQ(group_id1, group_id2);

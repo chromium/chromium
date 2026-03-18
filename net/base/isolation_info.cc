@@ -236,7 +236,7 @@ IsolationInfo IsolationInfo::Create(
 
 IsolationInfo IsolationInfo::DoNotUseCreatePartialFromNak(
     const net::NetworkAnonymizationKey& network_anonymization_key) {
-  if (!network_anonymization_key.IsFullyPopulated()) {
+  if (network_anonymization_key.IsEmpty()) {
     return IsolationInfo();
   }
 
@@ -261,7 +261,7 @@ IsolationInfo IsolationInfo::DoNotUseCreatePartialFromNak(
   auto isolation_info = IsolationInfo::Create(
       IsolationInfo::RequestType::kOther, top_frame_origin,
       frame_origin.value(), SiteForCookies(), nonce);
-  // TODO(crbug.com/40852603): DCHECK isolation info is fully populated.
+  // TODO(crbug.com/40852603): DCHECK isolation info is not empty.
   return isolation_info;
 }
 

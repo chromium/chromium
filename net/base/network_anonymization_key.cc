@@ -89,7 +89,7 @@ NetworkAnonymizationKey NetworkAnonymizationKey::CreateTransient() {
 }
 
 std::string NetworkAnonymizationKey::ToDebugString() const {
-  if (!IsFullyPopulated()) {
+  if (IsEmpty()) {
     return "null";
   }
 
@@ -117,13 +117,10 @@ bool NetworkAnonymizationKey::IsEmpty() const {
   return data_->is_empty();
 }
 
-bool NetworkAnonymizationKey::IsFullyPopulated() const {
-  return !IsEmpty();
-}
-
 bool NetworkAnonymizationKey::IsTransient() const {
-  if (!IsFullyPopulated())
+  if (IsEmpty()) {
     return true;
+  }
 
   return GetTopFrameSite()->opaque() || GetNonce().has_value();
 }

@@ -192,6 +192,10 @@ TEST_F(NetworkAnonymizationKeyTest, IsEmpty) {
 
   EXPECT_TRUE(empty_key.IsEmpty());
   EXPECT_FALSE(populated_key.IsEmpty());
+
+  NetworkAnonymizationKey transient_key =
+      NetworkAnonymizationKey::CreateTransient();
+  EXPECT_FALSE(transient_key.IsEmpty());
 }
 
 TEST_F(NetworkAnonymizationKeyTest, CreateTransient) {
@@ -242,21 +246,6 @@ TEST_F(NetworkAnonymizationKeyTest, IsTransient) {
                                                /*nonce=*/std::nullopt);
   EXPECT_FALSE(data_frame_key.IsTransient());
   EXPECT_FALSE(populated_double_key.IsTransient());
-}
-
-TEST_F(NetworkAnonymizationKeyTest, IsFullyPopulated) {
-  NetworkAnonymizationKey empty_key;
-  NetworkAnonymizationKey populated_key =
-      NetworkAnonymizationKey::CreateFromParts(/*top_frame_site=*/kTestSiteA,
-                                               /*is_cross_site=*/false,
-                                               /*nonce=*/std::nullopt);
-  EXPECT_TRUE(populated_key.IsFullyPopulated());
-  EXPECT_FALSE(empty_key.IsFullyPopulated());
-  NetworkAnonymizationKey empty_frame_site_key =
-      NetworkAnonymizationKey::CreateFromParts(/*top_frame_site=*/kTestSiteA,
-                                               /*is_cross_site=*/false,
-                                               /*nonce=*/std::nullopt);
-  EXPECT_TRUE(empty_frame_site_key.IsFullyPopulated());
 }
 
 TEST_F(NetworkAnonymizationKeyTest, Getters) {

@@ -2061,7 +2061,7 @@ int HttpCache::Transaction::DoSuccessfulSendRequest() {
   if (!(effective_load_flags_ & LOAD_DISABLE_CACHE) && method_ == "POST" &&
       NonErrorResponse(new_response_->headers->response_code()) &&
       (!HttpCache::IsSplitCacheEnabled() ||
-       request_->network_isolation_key.IsFullyPopulated())) {
+       !request_->network_isolation_key.IsEmpty())) {
     cache_->DoomMainEntryForUrl(request_->url, request_->network_isolation_key,
                                 request_->is_subframe_document_resource,
                                 request_->is_main_frame_navigation,

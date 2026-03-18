@@ -616,7 +616,7 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
 
   void VerifyIsolationInfo(const net::IsolationInfo& isolation_info) {
     EXPECT_FALSE(isolation_info.IsEmpty());
-    EXPECT_TRUE(isolation_info.network_isolation_key().IsFullyPopulated());
+    EXPECT_FALSE(isolation_info.network_isolation_key().IsEmpty());
     EXPECT_FALSE(isolation_info.network_isolation_key().IsTransient());
     EXPECT_FALSE(isolation_info.site_for_cookies().IsNull());
   }

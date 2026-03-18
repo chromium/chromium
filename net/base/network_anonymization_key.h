@@ -62,6 +62,11 @@ class NetworkIsolationKey;
 // site, URL) and "triple key" (top frame site, frame site, and URL). The
 // `is_cross_site` bit carries more information than a double key, but less than
 // a triple key.
+//
+// An empty NetworkAnonymizationKey (one where the `top_frame_site` and `nonce`
+// are both empty) should be used when network state partitioning is disabled
+// (see `IsPartitioningEnabled()`), or for non-web requests where storage
+// partitioning should not apply.
 class NET_EXPORT NetworkAnonymizationKey {
  public:
   // Construct an empty key.
@@ -131,16 +136,17 @@ class NET_EXPORT NetworkAnonymizationKey {
   // Returns the string representation of the key.
   std::string ToDebugString() const;
 
-  // Returns true if all parts of the key are empty.
+  // Returns true if this is an empty key (i.e. `top_frame_site` is empty). See
+  // the note in the class comment regarding empty NetworkAnonymizationKeys.
   bool IsEmpty() const;
-
-  // Returns true if `top_frame_site_` is non-empty.
-  bool IsFullyPopulated() const;
 
   // Returns true if this key's lifetime is short-lived. It may not make sense
   // to persist state to disk related to it (e.g., disk cache).
   // A NetworkAnonymizationKey will be considered transient if
   // `top_frame_site_` is empty or opaque or if the key has a `nonce_`.
+  // Note that for an empty NetworkAnonymizationKey, IsTransient() will return
+  // true but it's still possible to use this key to persist state to disk (and
+  // this is how persistence is achieved when partitioning is disabled).
   bool IsTransient() const;
 
   // Getters for the top frame, frame site, nonce and is cross site flag.

@@ -128,13 +128,10 @@ std::string NetworkIsolationKey::ToDebugString() const {
   return return_string;
 }
 
-bool NetworkIsolationKey::IsFullyPopulated() const {
-  return !IsEmpty();
-}
-
 bool NetworkIsolationKey::IsTransient() const {
-  if (!IsFullyPopulated())
+  if (IsEmpty()) {
     return true;
+  }
   return IsOpaque();
 }
 
