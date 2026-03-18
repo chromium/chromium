@@ -125,7 +125,8 @@ void SaveDictionaryToFile(
   }
 
   base::ImportantFileWriter::WriteFileAtomically(
-      file_path, std::move(json_content), GetHistogramSuffix(encryption_type));
+      file_path, std::move(json_content),
+      base::StrCat({GetHistogramSuffix(encryption_type), "Immediate"}));
 }
 
 }  // namespace

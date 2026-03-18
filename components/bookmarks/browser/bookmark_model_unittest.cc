@@ -3149,8 +3149,8 @@ class BookmarkModelStorageWithSecondayFileTest
   }
 
   std::string GetSecondaryBookmarkStorageHistogramSuffix() {
-    return IsEncryptedFilePrimary() ? ".BookmarkStorage"
-                                    : ".BookmarkStorageEncrypted";
+    return IsEncryptedFilePrimary() ? ".BookmarkStorageImmediate"
+                                    : ".BookmarkStorageEncryptedImmediate";
   }
 
   bool IsEncryptedFilePrimary() {
@@ -3396,7 +3396,7 @@ TEST_P(BookmarkModelStorageWithEncryptionFileAsPrimaryTest,
       model->client());
 
   histogram_tester.ExpectTotalCount(
-      "ImportantFile.WriteDuration.BookmarkStorageEncrypted",
+      "ImportantFile.WriteDuration.BookmarkStorageEncryptedImmediate",
       /*expected_count=*/2);
 }
 

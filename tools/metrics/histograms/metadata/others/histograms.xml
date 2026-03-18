@@ -55,6 +55,13 @@ chromium-metrics-reviews@google.com.
   <variant name=".BookmarkMergedSurfaceOrderingStorage"
       summary="Bookmarks ordering file"/>
   <variant name=".BookmarkStorage" summary="Bookmarks file"/>
+  <variant name=".BookmarkStorageEncrypted" summary="Bookmarks encrypted file"/>
+  <variant name=".BookmarkStorageEncryptedImmediate"
+      summary="Bookmarks encrypted file saved immediately while loading
+               profile (needed for encryption migration)"/>
+  <variant name=".BookmarkStorageImmediate"
+      summary="Bookmarks file saved immediately while loading profile (needed
+               for encryption migration)"/>
   <variant name=".FeedbackReport" summary="Feedback Report file"/>
   <variant name=".Local_State" summary="Local State file"/>
   <variant name=".LoopBackServer" summary="Sync file"/>

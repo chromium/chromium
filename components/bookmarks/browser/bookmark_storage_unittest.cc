@@ -456,9 +456,7 @@ TEST_P(BookmarkStorageWithSecondayFileTest,
       model->client()->EncodeLocalOrSyncableBookmarkSyncMetadata());
   EXPECT_EQ(expected_file_content, *decrypted_file_content);
   histogram_tester.ExpectTotalCount(
-      "ImportantFile.WriteDuration.BookmarkStorage", 0);
-  histogram_tester.ExpectTotalCount(
-      "ImportantFile.WriteDuration.BookmarkStorageEncrypted", 1);
+      "ImportantFile.WriteDuration.BookmarkStorageEncryptedImmediate", 1);
 }
 
 TEST_P(BookmarkStorageWithSecondayFileTest,
@@ -494,9 +492,7 @@ TEST_P(BookmarkStorageWithSecondayFileTest,
       model->client()->EncodeLocalOrSyncableBookmarkSyncMetadata());
   EXPECT_EQ(expected_file_content, *file_content);
   histogram_tester.ExpectTotalCount(
-      "ImportantFile.WriteDuration.BookmarkStorage", 1);
-  histogram_tester.ExpectTotalCount(
-      "ImportantFile.WriteDuration.BookmarkStorageEncrypted", 0);
+      "ImportantFile.WriteDuration.BookmarkStorageImmediate", 1);
 }
 
 TEST_P(BookmarkStorageWithSecondayFileTest,
