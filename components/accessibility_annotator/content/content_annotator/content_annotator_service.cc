@@ -53,7 +53,8 @@ std::unique_ptr<ContentAnnotatorService> ContentAnnotatorService::Create(
         page_content_extraction_service,
     optimization_guide::RemoteModelExecutor&
         optimization_guide_remote_model_executor,
-    page_content_annotations::PageEmbeddingsService& page_embeddings_service) {
+    page_content_annotations::PageEmbeddingsService& page_embeddings_service,
+    AccessibilityAnnotatorBackend& accessibility_annotator_backend) {
   std::unique_ptr<ContentClassifier> content_classifier =
       ContentClassifier::Create();
   if (!content_classifier) {
@@ -62,7 +63,7 @@ std::unique_ptr<ContentAnnotatorService> ContentAnnotatorService::Create(
   return base::WrapUnique(new ContentAnnotatorService(
       page_content_annotations_service, page_content_extraction_service,
       optimization_guide_remote_model_executor, page_embeddings_service,
-      std::move(content_classifier)));
+      accessibility_annotator_backend, std::move(content_classifier)));
 }
 
 ContentAnnotatorService::ContentAnnotatorService(
@@ -73,12 +74,14 @@ ContentAnnotatorService::ContentAnnotatorService(
     optimization_guide::RemoteModelExecutor&
         optimization_guide_remote_model_executor,
     page_content_annotations::PageEmbeddingsService& page_embeddings_service,
+    AccessibilityAnnotatorBackend& accessibility_annotator_backend,
     std::unique_ptr<ContentClassifier> content_classifier)
     : page_content_annotations_service_(page_content_annotations_service),
       page_content_extraction_service_(page_content_extraction_service),
       optimization_guide_remote_model_executor_(
           optimization_guide_remote_model_executor),
       page_embeddings_service_(page_embeddings_service),
+      accessibility_annotator_backend_(accessibility_annotator_backend),
       join_entries_(kContentAnnotatorMaxPendingUrls.Get()),
       content_classifier_(std::move(content_classifier)) {
   CHECK(content_classifier_);
@@ -205,13 +208,13 @@ void ContentAnnotatorService::MaybeAnnotate(CacheIterator it) {
     page_context.set_title(complete_data.page_title.value());
     *page_context.mutable_annotated_page_content() =
         complete_data.annotated_page_content->data;
-    GenerateAnnotations(std::move(page_context));
+    GenerateAnnotations(std::move(page_context), complete_data.url);
   }
-  // TODO(crbug.com/485675335): Process classification result with gateway flag
-  // to full annotation.
 }
+
 void ContentAnnotatorService::GenerateAnnotations(
-    optimization_guide::proto::PageContext page_context) {
+    optimization_guide::proto::PageContext page_context,
+    const GURL& url) {
   optimization_guide::proto::ContentAnnotationRequest request;
   *request.mutable_page_context() = std::move(page_context);
 
@@ -220,13 +223,18 @@ void ContentAnnotatorService::GenerateAnnotations(
       std::move(request),
       {.execution_timeout = kContentAnnotatorAnnotationTimeout.Get()},
       base::BindOnce(&ContentAnnotatorService::HandleModelExecutionResult,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), url));
 }
 
 void ContentAnnotatorService::HandleModelExecutionResult(
+    const GURL& url,
     optimization_guide::OptimizationGuideModelExecutionResult result,
     std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
-  const std::optional<std::string> extracted_data =
+  if (url.is_empty() || !url.is_valid()) {
+    return;
+  }
+
+  std::optional<std::string> extracted_data =
       base::OptionalFromExpected(result.response)
           .transform([](const optimization_guide::proto::Any& any) {
             auto metadata = optimization_guide::ParsedAnyMetadata<
@@ -235,8 +243,8 @@ void ContentAnnotatorService::HandleModelExecutionResult(
           });
 
   if (extracted_data.has_value() && !extracted_data->empty()) {
-    // TODO(crbug.com/482383206): Handle model execution response.
-    DVLOG(1) << "Successfully extracted data: " << *extracted_data;
+    accessibility_annotator_backend_->SetContentAnnotationsCacheData(
+        url, std::move(*extracted_data));
   }
 }
 

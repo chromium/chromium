@@ -16,6 +16,7 @@ source_set("storage") {
 
   public_deps = [
     "//base",
+    "//components/accessibility_annotator/core:features",
     "//components/accessibility_annotator/core/data_models",
     "//components/history/core/browser",
     "//components/keyed_service/core",

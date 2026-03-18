@@ -21,6 +21,7 @@ source_set("content_annotator") {
   deps = [
     "//base",
     "//components/accessibility_annotator/core:features",
+    "//components/accessibility_annotator/core/storage",
     "//components/keyed_service/core",
     "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
@@ -49,6 +50,7 @@ source_set("unit_tests") {
     ":content_annotator",
     "//base/test:test_support",
     "//components/accessibility_annotator/core:features",
+    "//components/accessibility_annotator/core/storage",
     "//components/history/core/browser",
     "//components/optimization_guide/core:model_execution_test_support",
     "//components/optimization_guide/core:test_support",
@@ -56,6 +58,7 @@ source_set("unit_tests") {
     "//components/page_content_annotations/content:page_embeddings",
     "//components/page_content_annotations/core",
     "//components/page_content_annotations/core:test_support",
+    "//components/sync:test_support",
     "//components/translate/core/common",
     "//components/ukm:test_support",
     "//components/variations",
