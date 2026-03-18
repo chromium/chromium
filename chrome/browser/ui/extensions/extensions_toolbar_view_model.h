@@ -39,8 +39,6 @@ class ExtensionsToolbarViewModel
         const ToolbarActionsModel::ActionId& action_id,
         ExtensionsContainer* extensions_container) = 0;
     // Hides any actively showing popups.
-    // TODO(crbug.com/473701535): Determine whether this method belongs in the
-    // delegate or the observer.
     virtual void HideActivePopup() = 0;
 
     // Closes the overflow menu, if it was open. Returns whether or not the

@@ -88,8 +88,8 @@ void ExtensionsToolbarAndroid::OnRequestAccessButtonParamsChanged(
 }
 
 void ExtensionsToolbarAndroid::HideActivePopup() {
-  // TODO(crbug.com/461981075)
-  NOTIMPLEMENTED();
+  return Java_ExtensionsToolbarBridge_hideActivePopup(AttachCurrentThread(),
+                                                      java_object_);
 }
 
 bool ExtensionsToolbarAndroid::CloseOverflowMenuIfOpen() {

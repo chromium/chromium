@@ -607,5 +607,10 @@ class ExtensionActionListMediator implements Destroyable {
         public boolean hasPoppedOutAction() {
             return ExtensionActionListMediator.this.hasPoppedOutAction();
         }
+
+        @Override
+        public void hideActivePopup() {
+            ExtensionActionListMediator.this.closePopup();
+        }
     }
 }
