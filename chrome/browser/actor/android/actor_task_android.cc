@@ -9,6 +9,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "chrome/browser/actor/android/jni_headers/ActorTask_jni.h"
+#include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/profiles/profile.h"
 
 using base::android::ConvertUTF8ToJavaString;
@@ -85,7 +86,9 @@ ScopedJavaLocalRef<jintArray> ActorTaskAndroid::GetTabs(JNIEnv* env) {
   auto tab_handles = task_->GetTabs();
   std::vector<int> tab_ids;
   for (const auto& handle : tab_handles) {
-    tab_ids.push_back(handle.raw_value());
+    if (auto* tab_android = TabAndroid::FromTabHandle(handle)) {
+      tab_ids.push_back(tab_android->GetAndroidId());
+    }
   }
   return ToJavaIntArray(env, tab_ids);
 }
@@ -94,7 +97,9 @@ ScopedJavaLocalRef<jintArray> ActorTaskAndroid::GetLastActedTabs(JNIEnv* env) {
   auto tab_handles = task_->GetLastActedTabs();
   std::vector<int> tab_ids;
   for (const auto& handle : tab_handles) {
-    tab_ids.push_back(handle.raw_value());
+    if (auto* tab_android = TabAndroid::FromTabHandle(handle)) {
+      tab_ids.push_back(tab_android->GetAndroidId());
+    }
   }
   return ToJavaIntArray(env, tab_ids);
 }
