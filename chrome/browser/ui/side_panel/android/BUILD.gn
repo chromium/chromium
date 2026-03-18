@@ -7,10 +7,10 @@ import("//third_party/jni_zero/jni_zero.gni")
 
 source_set("android") {
   sources = [
+    "side_panel_coordinator_android.cc",
+    "side_panel_coordinator_android.h",
     "side_panel_native_view_android.cc",
     "side_panel_native_view_android.h",
-    "side_panel_ui_android.cc",
-    "side_panel_ui_android.h",
   ]
 
   deps = [
@@ -23,7 +23,7 @@ source_set("android") {
 
 android_library("java") {
   srcjar_deps = [ ":jni_headers" ]
-  sources = [ "java/src/org/chromium/chrome/browser/ui/side_panel/SidePanelUIAndroidBridge.java" ]
+  sources = [ "java/src/org/chromium/chrome/browser/ui/side_panel/SidePanelCoordinatorAndroidBridge.java" ]
 
   deps = [
     "//build/android:build_java",
@@ -32,12 +32,12 @@ android_library("java") {
 }
 
 generate_jni("jni_headers") {
-  sources = [ "java/src/org/chromium/chrome/browser/ui/side_panel/SidePanelUIAndroidBridge.java" ]
+  sources = [ "java/src/org/chromium/chrome/browser/ui/side_panel/SidePanelCoordinatorAndroidBridge.java" ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "side_panel_ui_android_unittest.cc" ]
+  sources = [ "side_panel_coordinator_android_unittest.cc" ]
   deps = [
     ":android",
     "//base",

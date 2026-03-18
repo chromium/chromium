@@ -8,7 +8,7 @@ import("//third_party/jni_zero/jni_zero.gni")
 # Supports native unit tests.
 android_library("native_unit_test_support_java") {
   testonly = true
-  sources = [ "java/src/org/chromium/chrome/browser/ui/side_panel/SidePanelUIAndroidNativeUnitTestSupport.java" ]
+  sources = [ "java/src/org/chromium/chrome/browser/ui/side_panel/SidePanelCoordinatorAndroidNativeUnitTestSupport.java" ]
   deps = [
     "//build/android:build_java",
     "//chrome/browser/ui/side_panel/android:java",
@@ -20,5 +20,5 @@ android_library("native_unit_test_support_java") {
 # JNI for native unit tests.
 generate_jni("native_unit_test_support_jni") {
   testonly = true
-  sources = [ "java/src/org/chromium/chrome/browser/ui/side_panel/SidePanelUIAndroidNativeUnitTestSupport.java" ]
+  sources = [ "java/src/org/chromium/chrome/browser/ui/side_panel/SidePanelCoordinatorAndroidNativeUnitTestSupport.java" ]
 }

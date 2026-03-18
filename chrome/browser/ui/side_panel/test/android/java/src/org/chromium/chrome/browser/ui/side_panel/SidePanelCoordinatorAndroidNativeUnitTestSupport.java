@@ -9,23 +9,23 @@ import org.jni_zero.CalledByNativeForTesting;
 import org.chromium.build.annotations.NullMarked;
 
 /**
- * Supports {@code side_panel_ui_android_unittest.cc}.
+ * Supports {@code side_panel_coordinator_android_unittest.cc}.
  *
  * <p>The native unit test will use this class to:
  *
  * <ul>
- *   <li>Instantiate a Java {@link SidePanelUIAndroidBridge} and its native {@code
- *       SidePanelUIAndroid}; and
- *   <li>Test the Java {@link SidePanelUIAndroidBridge} methods.
+ *   <li>Instantiate a Java {@link SidePanelCoordinatorAndroidBridge} and its native {@code
+ *       SidePanelCoordinatorAndroid}; and
+ *   <li>Test the Java {@link SidePanelCoordinatorAndroidBridge} methods.
  * </ul>
  */
 @NullMarked
-final class SidePanelUIAndroidNativeUnitTestSupport {
-    private final SidePanelUIAndroidBridge mBridge;
+final class SidePanelCoordinatorAndroidNativeUnitTestSupport {
+    private final SidePanelCoordinatorAndroidBridge mBridge;
 
     @CalledByNativeForTesting
-    private SidePanelUIAndroidNativeUnitTestSupport() {
-        mBridge = new SidePanelUIAndroidBridge();
+    private SidePanelCoordinatorAndroidNativeUnitTestSupport() {
+        mBridge = new SidePanelCoordinatorAndroidBridge();
     }
 
     @CalledByNativeForTesting
