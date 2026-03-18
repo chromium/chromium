@@ -43,11 +43,6 @@ class PLATFORM_EXPORT SharedGpuContext {
   static base::WeakPtr<WebGraphicsContext3DProviderWrapper>
   GetExistingContextProviderWrapper();
 
-  // May re-create context provider if context was lost.
-  using ContextProviderCallback = base::OnceCallback<void(
-      base::WeakPtr<WebGraphicsContext3DProviderWrapper>)>;
-  static void ContextProviderWrapperAsync(ContextProviderCallback);
-
   static bool AllowSoftwareToAcceleratedCanvasUpgrade();
   static bool IsValidWithoutRestoringForTesting();
 
@@ -106,8 +101,6 @@ class PLATFORM_EXPORT SharedGpuContext {
 
   SharedGpuContext();
   void CreateContextProviderIfNeeded(bool only_if_gpu_compositing);
-  // Checks if context provider can be created without posting to main thread.
-  bool CreateContextProviderIfNeededNoPost(bool only_if_gpu_compositing);
   void CreateSharedImageInterfaceProviderIfNeeded();
 
   // Can be overridden for tests.
