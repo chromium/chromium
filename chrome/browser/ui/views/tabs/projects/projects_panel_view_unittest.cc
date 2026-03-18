@@ -75,7 +75,8 @@ class ProjectsPanelViewTest : public ChromeViewsTestBase {
         .WillRepeatedly(testing::ReturnRef(unowned_user_data_host_));
 
     state_controller_ = std::make_unique<ProjectsPanelStateController>(
-        &mock_browser_window_interface_, root_action_item_.get());
+        &mock_browser_window_interface_, root_action_item_.get(),
+        /*aim_eligibility_service=*/nullptr, /*glic_enabling=*/nullptr);
 
     EXPECT_CALL(mock_browser_window_interface_, GetProfile())
         .WillRepeatedly(testing::Return(profile()));

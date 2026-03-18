@@ -28,6 +28,7 @@ source_set("impl") {
     "//chrome/app:generated_resources",
     "//chrome/app/vector_icons",
     "//chrome/browser:primitives",
+    "//chrome/browser/glic",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/actions:actions_headers",
     "//chrome/browser/ui/browser_window",
@@ -36,6 +37,7 @@ source_set("impl") {
     "//chrome/common:constants",
     "//components/feature_engagement/public",
     "//components/feature_engagement/public:feature_constants",
+    "//components/omnibox/browser",
     "//components/pref_registry",
     "//components/prefs",
     "//components/saved_tab_groups/public:features",
@@ -49,10 +51,24 @@ source_set("unit_tests") {
   deps = [
     ":impl",
     "//base/test:test_support",
+    "//chrome/browser/glic",
     "//chrome/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
     "//ui/base",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "projects_panel_state_controller_browsertest.cc" ]
+  deps = [
+    ":impl",
+    "//chrome/browser/glic/test_support",
+    "//chrome/test:test_support",
+    "//components/saved_tab_groups/public:features",
+    "//content/test:test_support",
   ]
 }
 

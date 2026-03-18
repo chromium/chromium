@@ -13,6 +13,7 @@
 #include "chrome/browser/actor/ui/actor_border_view_controller.h"
 #include "chrome/browser/actor/ui/actor_ui_window_controller.h"
 #include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_controller.h"
+#include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/collaboration/collaboration_service_factory.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
@@ -29,6 +30,7 @@
 #include "chrome/browser/glic/browser_ui/glic_iph_controller.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/lens/region_search/lens_region_search_controller.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
@@ -322,9 +324,15 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
     }
 
     if (tab_groups::IsProjectsPanelFeatureEnabled()) {
+      glic::GlicKeyedService* glic_service =
+          glic::GlicKeyedServiceFactory::GetGlicKeyedService(
+              browser->GetProfile());
       projects_panel_state_controller_ =
           GetUserDataFactory().CreateInstance<ProjectsPanelStateController>(
-              *browser, browser, browser_actions_->root_action_item());
+              *browser, browser, browser_actions_->root_action_item(),
+              AimEligibilityServiceFactory::GetForProfile(
+                  browser->GetProfile()),
+              glic_service ? &glic_service->enabling() : nullptr);
     }
   }
 
