@@ -712,5 +712,16 @@ class EslintTsTest(unittest.TestCase):
       self.assertFalse(
           e in str(context.exception), f'Found unexpected error: {e}')
 
+  def testWebUiEslintPlugin_NoMixedTypeAndValueImports(self):
+    with self.assertRaises(RuntimeError) as context:
+      self._run_test(
+          ["with_webui_plugin_no_mixed_type_and_value_imports_violations.ts"])
+
+    _EXPECTED_STRING = "@webui-eslint/no-mixed-type-and-value-imports"
+    self.assertTrue(_EXPECTED_STRING in str(context.exception))
+
+    _EXPECTED_ERROR = "Do not mix type and value imports in the same statement. Split them into separate import statements instead"
+    self.assertTrue(_EXPECTED_ERROR in str(context.exception))
+
 if __name__ == "__main__":
   unittest.main()

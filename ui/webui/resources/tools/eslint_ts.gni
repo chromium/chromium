@@ -36,6 +36,7 @@ template("eslint_ts") {
       "//ui/webui/resources/tools/eslint/lit_element_invalid_interface.js",
       "//ui/webui/resources/tools/eslint/lit_element_structure.js",
       "//ui/webui/resources/tools/eslint/lit_element_template_structure.js",
+      "//ui/webui/resources/tools/eslint/no_mixed_type_and_value_imports.js",
       "//ui/webui/resources/tools/eslint/polymer_property_class_member.js",
       "//ui/webui/resources/tools/eslint/polymer_property_declare.js",
       "//ui/webui/resources/tools/eslint/query_utils.js",
