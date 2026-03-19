@@ -261,7 +261,8 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
         EntityDataManager entityDataManager = EntityDataManagerFactory.getForProfile(getProfile());
         if (!disabledSettingsInThirdPartyMode(getProfile())
                 && entityDataManager != null
-                && !entityDataManager.isWalletPublicPassStorageEnabled()) {
+                && !entityDataManager.isWalletPublicPassStorageEnabled()
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)) {
             addDisabledWalletDataSharingDataCard(screen);
         }
 
@@ -716,7 +717,9 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
                             EntityDataManagerFactory.getForProfile(profile);
                     if (!disabledSettingsInThirdPartyMode
                             && entityDataManager != null
-                            && !entityDataManager.isWalletPublicPassStorageEnabled()) {
+                            && !entityDataManager.isWalletPublicPassStorageEnabled()
+                            && ChromeFeatureList.isEnabled(
+                                    ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)) {
                         addDisabledWalletDataSharingDataCard(indexData, getPrefFragmentName());
                     }
                     addAutofillSwitch(indexData);
@@ -771,7 +774,8 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
         EntityDataManager entityDataManager = EntityDataManagerFactory.getForProfile(profile);
         if (!disabledSettingsInThirdPartyMode
                 && entityDataManager != null
-                && !entityDataManager.isWalletPublicPassStorageEnabled()) {
+                && !entityDataManager.isWalletPublicPassStorageEnabled()
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)) {
             if (indexData.getEntryForKey(prefFragmentName, DISABLED_WALLET_DATA_SHARING) == null) {
                 addDisabledWalletDataSharingDataCard(indexData, prefFragmentName);
             }

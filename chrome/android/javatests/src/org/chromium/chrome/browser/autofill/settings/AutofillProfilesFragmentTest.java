@@ -1045,6 +1045,7 @@ public class AutofillProfilesFragmentTest {
 
     @Test
     @MediumTest
+    @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
     public void testDisabledWalletDataSharingDataCard_shownWhenDisabled() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -1065,6 +1066,7 @@ public class AutofillProfilesFragmentTest {
 
     @Test
     @MediumTest
+    @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
     public void testDisabledWalletDataSharingDataCard_notShownWhenWalletPublicPassEnabled()
             throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
@@ -1086,11 +1088,34 @@ public class AutofillProfilesFragmentTest {
 
     @Test
     @MediumTest
+    @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
     public void testDisabledWalletDataSharingDataCard_notShownInThirdPartyMode() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AutofillClientProviderUtils.setAutofillAvailabilityToUseForTesting(
                             AndroidAutofillAvailabilityStatus.AVAILABLE);
+                });
+        when(sEntityDataManager.isWalletPublicPassStorageEnabled()).thenReturn(false);
+
+        AutofillProfilesFragment autofillProfileFragment = sSettingsActivityTestRule.getFragment();
+
+        // Trigger address profile list rebuild.
+        ThreadUtils.runOnUiThreadBlocking(autofillProfileFragment::onPersonalDataChanged);
+
+        assertNull(
+                autofillProfileFragment.findPreference(
+                        AutofillProfilesFragment.DISABLED_WALLET_DATA_SHARING));
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
+    public void testDisabledWalletDataSharingDataCard_notShownWhenFeatureDisabled()
+            throws Exception {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AutofillClientProviderUtils.setAutofillAvailabilityToUseForTesting(
+                            AndroidAutofillAvailabilityStatus.SETTING_TURNED_OFF);
                 });
         when(sEntityDataManager.isWalletPublicPassStorageEnabled()).thenReturn(false);
 
