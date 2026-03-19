@@ -3837,7 +3837,6 @@ if (!is_android) {
       "../browser/task_manager/task_manager_browsertest.cc",
       "../browser/themes/theme_service_browsertest.cc",
       "../browser/top_level_storage_access_api/request_storage_access_for_browsertest.cc",
-      "../browser/tpcd/metadata/devtools_observer_browsertest.cc",
       "../browser/tpcd/metadata/manager_browsertest.cc",
       "../browser/translate/translate_frame_binder_browsertest.cc",
       "../browser/translate/translate_manager_browsertest.cc",

@@ -1189,8 +1189,6 @@ static_library("browser") {
     "tab_group_sync/tab_group_sync_utils.h",
     "tab_group_sync/tab_group_trial.cc",
     "tab_group_sync/tab_group_trial.h",
-    "tpcd/metadata/devtools_observer.cc",
-    "tpcd/metadata/devtools_observer.h",
     "tpcd/metadata/manager_factory.cc",
     "tpcd/metadata/manager_factory.h",
     "translate/chrome_translate_client.cc",
