@@ -38,7 +38,7 @@ namespace media {
 static const int kBenchmarkIterations = 200000;
 static const int kEWMABenchmarkIterations = 50000;
 static const float kScale = 0.5;
-static const int kVectorSize = 8192;
+static const size_t kVectorSize = 8192;
 
 class VectorMathPerfTest : public testing::Test {
  public:
@@ -55,14 +55,19 @@ class VectorMathPerfTest : public testing::Test {
   VectorMathPerfTest(const VectorMathPerfTest&) = delete;
   VectorMathPerfTest& operator=(const VectorMathPerfTest&) = delete;
 
-  void RunBenchmark(void (*fn)(const float[], float, int, float[]),
+  void RunBenchmark(void (*fn)(base::span<const float>,
+                               float,
+                               base::span<float>),
                     bool aligned,
                     const std::string& metric_suffix,
                     const std::string& trace_name) {
+    auto input_vector_resized =
+        input_vector_.first(kVectorSize - (aligned ? 0 : 1));
+    auto output_vector_resized =
+        output_vector_.first(kVectorSize - (aligned ? 0 : 1));
     TimeTicks start = TimeTicks::Now();
     for (int i = 0; i < kBenchmarkIterations; ++i) {
-      fn(input_vector_.data(), kScale, kVectorSize - (aligned ? 0 : 1),
-         output_vector_.data());
+      fn(input_vector_resized, kScale, output_vector_resized);
     }
     double total_time_seconds = (TimeTicks::Now() - start).InSecondsF();
     perf_test::PerfResultReporter reporter = SetUpReporter(trace_name);
@@ -70,16 +75,20 @@ class VectorMathPerfTest : public testing::Test {
                        kBenchmarkIterations / total_time_seconds);
   }
 
-  void RunClampingBenchmark(void (*fn)(const float[], int, float[]),
+  void RunClampingBenchmark(void (*fn)(base::span<const float>,
+                                       base::span<float>),
                             bool aligned,
                             const std::string& metric_suffix,
                             const std::string& trace_name) {
     FillInputWithUnclampedData();
 
+    auto input_vector_resized =
+        input_vector_.first(kVectorSize - (aligned ? 0 : 1));
+    auto output_vector_resized =
+        output_vector_.first(kVectorSize - (aligned ? 0 : 1));
     TimeTicks start = TimeTicks::Now();
     for (int i = 0; i < kBenchmarkIterations; ++i) {
-      fn(input_vector_.data(), kVectorSize - (aligned ? 0 : 1),
-         output_vector_.data());
+      fn(input_vector_resized, output_vector_resized);
     }
     double total_time_seconds = (TimeTicks::Now() - start).InSecondsF();
     perf_test::PerfResultReporter reporter = SetUpReporter(trace_name);
@@ -87,14 +96,16 @@ class VectorMathPerfTest : public testing::Test {
                        kBenchmarkIterations / total_time_seconds);
   }
 
-  void RunBenchmark(
-      std::pair<float, float> (*fn)(float, const float[], int, float),
-      int len,
-      const std::string& metric_suffix,
-      const std::string& trace_name) {
+  void RunBenchmark(std::pair<float, float> (*fn)(float,
+                                                  base::span<const float>,
+                                                  float),
+                    size_t len,
+                    const std::string& metric_suffix,
+                    const std::string& trace_name) {
+    auto input_vector_resized = input_vector_.as_span().first(len);
     TimeTicks start = TimeTicks::Now();
     for (int i = 0; i < kEWMABenchmarkIterations; ++i) {
-      fn(0.5f, input_vector_.data(), len, 0.1f);
+      fn(0.5f, input_vector_resized, 0.1f);
     }
     double total_time_seconds = (TimeTicks::Now() - start).InSecondsF();
     perf_test::PerfResultReporter reporter = SetUpReporter(trace_name);

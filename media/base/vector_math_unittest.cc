@@ -130,8 +130,7 @@ TEST_F(VectorMathTest, FMAC) {
   {
     SCOPED_TRACE("FMAC_C");
     FillTestVectors(kInputFillValue, kOutputFillValue);
-    vector_math::FMAC_C(input_array_.data(), kScale, kVectorSize,
-                        output_array_.data());
+    vector_math::FMAC_C(input_array_, kScale, output_array_);
     VerifyOutput(kResult);
   }
 
@@ -139,8 +138,7 @@ TEST_F(VectorMathTest, FMAC) {
   {
     SCOPED_TRACE("FMAC_SSE");
     FillTestVectors(kInputFillValue, kOutputFillValue);
-    vector_math::FMAC_SSE(input_array_.data(), kScale, kVectorSize,
-                          output_array_.data());
+    vector_math::FMAC_SSE(input_array_, kScale, output_array_);
     VerifyOutput(kResult);
   }
   {
@@ -148,8 +146,7 @@ TEST_F(VectorMathTest, FMAC) {
     if (cpu.has_avx2() && cpu.has_fma3()) {
       SCOPED_TRACE("FMAC_AVX2");
       FillTestVectors(kInputFillValue, kOutputFillValue);
-      vector_math::FMAC_AVX2(input_array_.data(), kScale, kVectorSize,
-                             output_array_.data());
+      vector_math::FMAC_AVX2(input_array_, kScale, output_array_);
       VerifyOutput(kResult);
     }
   }
@@ -159,8 +156,7 @@ TEST_F(VectorMathTest, FMAC) {
   {
     SCOPED_TRACE("FMAC_NEON");
     FillTestVectors(kInputFillValue, kOutputFillValue);
-    vector_math::FMAC_NEON(input_array_.data(), kScale, kVectorSize,
-                           output_array_.data());
+    vector_math::FMAC_NEON(input_array_, kScale, output_array_);
     VerifyOutput(kResult);
   }
 #endif
@@ -180,8 +176,7 @@ TEST_F(VectorMathTest, FMUL) {
   {
     SCOPED_TRACE("FMUL_C");
     FillTestVectors(kInputFillValue, kOutputFillValue);
-    vector_math::FMUL_C(input_array_.data(), kScale, kVectorSize,
-                        output_array_.data());
+    vector_math::FMUL_C(input_array_, kScale, output_array_);
     VerifyOutput(kResult);
   }
 
@@ -189,8 +184,7 @@ TEST_F(VectorMathTest, FMUL) {
   {
     SCOPED_TRACE("FMUL_SSE");
     FillTestVectors(kInputFillValue, kOutputFillValue);
-    vector_math::FMUL_SSE(input_array_.data(), kScale, kVectorSize,
-                          output_array_.data());
+    vector_math::FMUL_SSE(input_array_, kScale, output_array_);
     VerifyOutput(kResult);
   }
   {
@@ -198,8 +192,7 @@ TEST_F(VectorMathTest, FMUL) {
     if (cpu.has_avx2()) {
       SCOPED_TRACE("FMUL_AVX2");
       FillTestVectors(kInputFillValue, kOutputFillValue);
-      vector_math::FMUL_AVX2(input_array_.data(), kScale, kVectorSize,
-                             output_array_.data());
+      vector_math::FMUL_AVX2(input_array_, kScale, output_array_);
       VerifyOutput(kResult);
     }
   }
@@ -209,8 +202,7 @@ TEST_F(VectorMathTest, FMUL) {
   {
     SCOPED_TRACE("FMUL_NEON");
     FillTestVectors(kInputFillValue, kOutputFillValue);
-    vector_math::FMUL_NEON(input_array_.data(), kScale, kVectorSize,
-                           output_array_.data());
+    vector_math::FMUL_NEON(input_array_, kScale, output_array_);
     VerifyOutput(kResult);
   }
 #endif
@@ -228,8 +220,7 @@ TEST_F(VectorMathTest, FCLAMP) {
   {
     SCOPED_TRACE("FCLAMP_C");
     FillTestClampingVectors(kUnclampedInputValues, kOutputFillValue);
-    vector_math::FCLAMP_C(input_array_.data(), kVectorSize,
-                          output_array_.data());
+    vector_math::FCLAMP_C(input_array_, output_array_);
     VerifyClampOutput(kClampedOutputValues);
   }
 
@@ -237,8 +228,7 @@ TEST_F(VectorMathTest, FCLAMP) {
   {
     SCOPED_TRACE("FCLAMP_SSE");
     FillTestClampingVectors(kUnclampedInputValues, kOutputFillValue);
-    vector_math::FCLAMP_SSE(input_array_.data(), kVectorSize,
-                            output_array_.data());
+    vector_math::FCLAMP_SSE(input_array_, output_array_);
     VerifyClampOutput(kClampedOutputValues);
   }
   {
@@ -246,8 +236,7 @@ TEST_F(VectorMathTest, FCLAMP) {
     if (cpu.has_avx()) {
       SCOPED_TRACE("FCLAMP_AVX");
       FillTestClampingVectors(kUnclampedInputValues, kOutputFillValue);
-      vector_math::FCLAMP_AVX(input_array_.data(), kVectorSize,
-                              output_array_.data());
+      vector_math::FCLAMP_AVX(input_array_, output_array_);
       VerifyClampOutput(kClampedOutputValues);
     }
   }
@@ -257,8 +246,7 @@ TEST_F(VectorMathTest, FCLAMP) {
   {
     SCOPED_TRACE("FCLAMP_NEON");
     FillTestClampingVectors(kUnclampedInputValues, kOutputFillValue);
-    vector_math::FCLAMP_NEON(input_array_.data(), kVectorSize,
-                             output_array_.data());
+    vector_math::FCLAMP_NEON(input_array_, output_array_);
     VerifyClampOutput(kClampedOutputValues);
   }
 #endif
@@ -272,12 +260,13 @@ TEST_F(VectorMathTest, FCLAMP_remainder_data) {
   static constexpr float kGuardValue = 123.0f;
 
   const auto run_per_value_clamp_test =
-      [&](void (*fn)(const float[], int, float[])) {
+      [&](void (*fn)(base::span<const float>, base::span<float>)) {
         for (auto [input, output] :
              base::zip(kUnclampedInputValues, kClampedOutputValues)) {
           input_array_[0] = input;
           output_array_[0] = kGuardValue;
-          fn(input_array_.data(), kSmallVectorSize, output_array_.data());
+          fn(input_array_.as_span().first<kSmallVectorSize>(),
+             output_array_.as_span().first<kSmallVectorSize>());
           EXPECT_EQ(output_array_[0], output);
         }
       };
@@ -387,7 +376,7 @@ class EWMATestScenario {
     {
       SCOPED_TRACE("EWMAAndMaxPower_C");
       const std::pair<float, float>& result = vector_math::EWMAAndMaxPower_C(
-          initial_value_, data_.data(), data_.size(), smoothing_factor_);
+          initial_value_, data_, smoothing_factor_);
       EXPECT_NEAR(expected_final_avg_, result.first, 0.0000001f);
       EXPECT_NEAR(expected_max_, result.second, 0.0000001f);
     }
@@ -396,7 +385,7 @@ class EWMATestScenario {
     {
       SCOPED_TRACE("EWMAAndMaxPower_SSE");
       const std::pair<float, float>& result = vector_math::EWMAAndMaxPower_SSE(
-          initial_value_, data_.data(), data_.size(), smoothing_factor_);
+          initial_value_, data_, smoothing_factor_);
       EXPECT_NEAR(expected_final_avg_, result.first, 0.0000001f);
       EXPECT_NEAR(expected_max_, result.second, 0.0000001f);
     }
@@ -405,8 +394,8 @@ class EWMATestScenario {
       if (cpu.has_avx2() && cpu.has_fma3()) {
         SCOPED_TRACE("EWMAAndMaxPower_AVX2");
         const std::pair<float, float>& result =
-            vector_math::EWMAAndMaxPower_AVX2(initial_value_, data_.data(),
-                                              data_.size(), smoothing_factor_);
+            vector_math::EWMAAndMaxPower_AVX2(initial_value_, data_,
+                                              smoothing_factor_);
         EXPECT_NEAR(expected_final_avg_, result.first, 0.0000001f);
         EXPECT_NEAR(expected_max_, result.second, 0.0000001f);
       }
@@ -417,7 +406,7 @@ class EWMATestScenario {
     {
       SCOPED_TRACE("EWMAAndMaxPower_NEON");
       const std::pair<float, float>& result = vector_math::EWMAAndMaxPower_NEON(
-          initial_value_, data_.data(), data_.size(), smoothing_factor_);
+          initial_value_, data_, smoothing_factor_);
       EXPECT_NEAR(expected_final_avg_, result.first, 0.0000001f);
       EXPECT_NEAR(expected_max_, result.second, 0.0000001f);
     }
