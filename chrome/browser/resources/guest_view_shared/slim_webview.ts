@@ -297,7 +297,11 @@ export class SlimWebviewElement extends CrLitElement {
   accessor maxheight: number = 0;
   accessor partition: string = '';
 
-  contentWindow: WindowProxy|null = null;
+  private contentWindow_: WindowProxy|null = null;
+
+  get contentWindow() {
+    return this.contentWindow_;
+  }
 
   private viewInstanceId: number = chrome.slimWebViewPrivate.getNextId();
   private containerId: number|null = null;
@@ -354,7 +358,7 @@ export class SlimWebviewElement extends CrLitElement {
         this.createGuest();
         return;
       }
-      if (this.contentWindow === null) {
+      if (this.contentWindow_ === null) {
         return;
       }
       this.navigate();
@@ -422,7 +426,7 @@ export class SlimWebviewElement extends CrLitElement {
         params,
         iframeElement.contentWindow,
         () => {
-          this.contentWindow = iframeElement.contentWindow;
+          this.contentWindow_ = iframeElement.contentWindow;
           this.navigate();
         },
     );
