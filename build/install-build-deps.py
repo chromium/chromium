@@ -387,6 +387,7 @@ def lib_list():
       "libx11-xcb1",
       "libxau6",
       "libxcb1",
+      "libxcb-cursor0",
       "libxcomposite1",
       "libxcursor1",
       "libxdamage1",
