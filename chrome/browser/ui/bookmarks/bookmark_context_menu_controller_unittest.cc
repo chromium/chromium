@@ -498,6 +498,23 @@ TEST_F(BookmarkContextMenuControllerTest, ShowTabGroupsPref) {
       bookmarks::prefs::kShowTabGroupsInBookmarkBar));
 }
 
+TEST_F(BookmarkContextMenuControllerTest,
+       NoShowTabGroupsItemWithProjectsPanel) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(tab_groups::kProjectsPanel);
+
+  BookmarkContextMenuController controller(
+      /*parent_window=*/gfx::NativeWindow(), /*delegate=*/nullptr,
+      /*browser=*/nullptr, profile_.get(), BookmarkLaunchLocation::kNone,
+      {model_->bookmark_bar_node()}, /*can_paste=*/false);
+
+  ASSERT_TRUE(controller.menu_model());
+  EXPECT_FALSE(
+      controller.menu_model()
+          ->GetIndexOfCommandId(IDC_BOOKMARK_BAR_TOGGLE_SHOW_TAB_GROUPS)
+          .has_value());
+}
+
 TEST_F(BookmarkContextMenuControllerTest, GetParentForNewNodesSelectionURL) {
   // This tests the case where selection contains one item and that item is an
   // url.

@@ -206,12 +206,14 @@
 
         <settings-toggle-button class="hr" id="showSavedTabGroups"
             pref="{{prefs.bookmark_bar.show_tab_groups}}"
-            label="$i18n{showTabGroupsInBookmarksBar}">
+            label="$i18n{showTabGroupsInBookmarksBar}"
+            hidden="[[showProjectsPanelEnabled_]]">
         </settings-toggle-button>
 
         <settings-toggle-button class="hr" id="autoPinNewTabGroups"
             pref="{{prefs.auto_pin_new_tab_groups}}"
-            label="$i18n{autoPinNewTabGroups}">
+            label="$i18n{autoPinNewTabGroups}"
+            hidden="[[showProjectsPanelEnabled_]]">
         </settings-toggle-button>
 
         <div class="cr-row">

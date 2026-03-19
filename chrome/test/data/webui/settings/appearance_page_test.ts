@@ -397,6 +397,26 @@ suite('AppearanceHandler', function() {
     assertFalse(appearancePage.get(
         'prefs.browser.split_view_drag_and_drop_enabled.value'));
   });
+
+  test('ShowSavedTabGroupsHiddenWithProjectsPanel', async function() {
+    loadTimeData.overrideValues({
+      showProjectsPanelEnabled: true,
+    });
+    createAppearancePage();
+    await microtasksFinished();
+
+    const toggle =
+        appearancePage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#showSavedTabGroups');
+    assertTrue(!!toggle);
+    assertTrue(toggle.hidden);
+
+    const autoPinToggle =
+        appearancePage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#autoPinNewTabGroups');
+    assertTrue(!!autoPinToggle);
+    assertTrue(autoPinToggle.hidden);
+  });
 });
 
 suite('TabStripPositionSettings', () => {
