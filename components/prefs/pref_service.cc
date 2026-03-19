@@ -28,6 +28,7 @@
 #include "base/values.h"
 #include "components/prefs/default_pref_store.h"
 #include "components/prefs/json_pref_store.h"
+#include "components/prefs/persistent_pref_store.h"
 #include "components/prefs/pref_notifier_impl.h"
 #include "components/prefs/pref_registry.h"
 
@@ -85,7 +86,11 @@ PrefService::~PrefService() {
 void PrefService::InitFromStorage(bool async) {
   if (!async) {
     if (!user_pref_store_->IsInitializationComplete()) {
-      user_pref_store_->ReadPrefs();
+      PersistentPrefStore::PrefReadError error = user_pref_store_->ReadPrefs();
+      // Synchronous reads shouldn't have async errors.
+      CHECK_NE(
+          error,
+          PersistentPrefStore::PREF_READ_ERROR_ASYNCHRONOUS_TASK_INCOMPLETE);
     }
     CheckPrefsLoaded();
     return;
