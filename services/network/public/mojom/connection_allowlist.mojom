@@ -41,6 +41,11 @@ struct ConnectionAllowlist {
   //
   // Unparsable headers will result in an empty allowlist, which, in turn,
   // will result in fairly complete breakage.
+  //
+  // TODO(crbug.com/447954811): It would be ideal for us to have a URLPattern
+  // representation in mojo rather than using a string here. Moving
+  // `blink::SafeUrlPattern` somewhere usable by both the network service
+  // and Blink might be a reasonable approach in the future.
   array<string> allowlist;
   string? reporting_endpoint;
   array<ConnectionAllowlistIssue> issues;

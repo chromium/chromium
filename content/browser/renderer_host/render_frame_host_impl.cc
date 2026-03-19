@@ -11014,8 +11014,10 @@ void RenderFrameHostImpl::DisableUntrustedNetworkInFencedFrame(
   // constructors to ensure that they are tagged with the relevant partition
   // nonce.
   GetStoragePartition()->RevokeNetworkForNoncesInNetworkContext(
-      {{properties->partition_nonce()->GetValueIgnoringVisibility(), {}},
-       {GetPage().credentialless_iframes_nonce(), {}}},
+      {{properties->partition_nonce()->GetValueIgnoringVisibility(),
+        network::ConnectionAllowlists()},
+       {GetPage().credentialless_iframes_nonce(),
+        network::ConnectionAllowlists()}},
       base::BindOnce(
           &RenderFrameHostImpl::RevokeNetworkForNonceCallback,
           weak_ptr_factory_.GetWeakPtr(),

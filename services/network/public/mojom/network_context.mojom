@@ -13,6 +13,7 @@ import "mojo/public/mojom/base/unguessable_token.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "sandbox/policy/mojom/context.mojom";
 import "services/network/public/mojom/address_list.mojom";
+import "services/network/public/mojom/connection_allowlist.mojom";
 import "services/network/public/mojom/cache_encryption_provider.mojom";
 import "services/network/public/mojom/cert_verifier_service.mojom";
 import "services/network/public/mojom/clear_data_filter.mojom";
@@ -948,11 +949,7 @@ struct URLLoaderFactoryParams {
 // of all network revoked (only applicable to fenced frames).
 struct NonceAndAllowlistedPatterns {
   mojo_base.mojom.UnguessableToken nonce;
-  // TODO(crbug.com/447954811): It would be ideal for us to have a URLPattern
-  // representation in mojo rather than using a string here. Moving
-  // `blink::SafeUrlPattern` somewhere usable by both the network service
-  // and Blink might be a reasonable approach in the future.
-  array<string> allowlisted_patterns;
+  ConnectionAllowlists allowlists;
 };
 
 // Represents a distinct context for making network requests, with its own

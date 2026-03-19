@@ -648,6 +648,14 @@ bool NetworkContext::NetworkContextHttpAuthPreferences::AllowGssapiLibraryLoad()
 }
 #endif  // BUILDFLAG(IS_LINUX)
 
+NetworkContext::NetworkRestriction::NetworkRestriction() = default;
+NetworkContext::NetworkRestriction::NetworkRestriction(
+    NetworkRestriction&& other) = default;
+NetworkContext::NetworkRestriction&
+NetworkContext::NetworkRestriction::operator=(NetworkRestriction&& other) =
+    default;
+NetworkContext::NetworkRestriction::~NetworkRestriction() = default;
+
 NetworkContext::PendingCertVerify::PendingCertVerify() = default;
 NetworkContext::PendingCertVerify::~PendingCertVerify() = default;
 
@@ -3525,25 +3533,41 @@ void NetworkContext::FlushClientCertCache() {
 void NetworkContext::RevokeNetworkForNonces(
     std::vector<mojom::NonceAndAllowlistedPatternsPtr> nonces_to_patterns,
     RevokeNetworkForNoncesCallback callback) {
+  auto parse_allowlist = [](auto& source, auto& dest_endpoint,
+                            auto& dest_patterns) {
+    if (!source) {
+      return;
+    }
+    dest_endpoint = std::move(source->reporting_endpoint);
+    for (const std::string& pattern : source->allowlist) {
+      // TODO(crbug.com/447954811): We can safely DCHECK here, as we've done
+      // pattern validation already while validating the header's syntax. That
+      // said, parsing the pattern twice has performance overhead, and it
+      // would be ideal to change our infrastructure to allow passing a
+      // SimpleUrlPatternMatcher directly rather than creating it anew here.
+      auto matcher = url_pattern::SimpleUrlPatternMatcher::Create(
+          pattern, /*base_url=*/nullptr);
+
+      DCHECK(matcher.has_value());
+      dest_patterns.insert(std::move(matcher.value()));
+    }
+  };
+
   for (auto& entry : nonces_to_patterns) {
     const base::UnguessableToken& nonce = entry->nonce;
 
     // Accessing `network_revocation_nonces_[nonce]` here ensures that if it's
     // not already present in the set, it's default-constructed. This is
-    // important, as an empty `entry->allowlisted_patterns` represents complete
-    // network revocation.
-    auto& revocation_set = network_revocation_nonces_[nonce];
-    for (const std::string& pattern : entry->allowlisted_patterns) {
-      // TODO(crbug.com/447954811): We can safely DCHECK here, as we've done
-      // pattern validation already while validating the header's syntax. That
-      // said, parsing the pattern twice has performance overhead, and it would
-      // be ideal to change our infrastructure to allow passing a
-      // SimpleUrlPatternMatcher directly rather than creating it anew here.
-      auto matcher = url_pattern::SimpleUrlPatternMatcher::Create(
-          pattern, /*base_url=*/nullptr);
-      DCHECK(matcher.has_value());
-      revocation_set.insert(std::move(matcher.value()));
-    }
+    // important, as an empty `entry->allowlists.enforced->allowlist` represents
+    // complete network revocation.
+    NetworkRestriction& restriction = network_revocation_nonces_[nonce];
+
+    parse_allowlist(entry->allowlists.enforced,
+                    restriction.enforced_reporting_endpoint,
+                    restriction.enforced_allowlisted_patterns);
+    parse_allowlist(entry->allowlists.report_only,
+                    restriction.report_only_reporting_endpoint,
+                    restriction.report_only_allowlisted_patterns);
 
     // CancelRequestsIfNonceMatchesAndUrlNotExempted is not needed for
     // connection allowlist since there should not be any ongoing
@@ -3673,10 +3697,10 @@ bool NetworkContext::IsNetworkForNonceAndUrlAllowed(
   // If there are no allowlisted URLs then it is assumed that all network URLs
   // are restricted (unless exempted for FF testing).
   if (base::FeatureList::IsEnabled(network::features::kConnectionAllowlists)) {
-    const std::set<std::unique_ptr<url_pattern::SimpleUrlPatternMatcher>>&
-        allowlisted_patterns = network_revocation_nonces_.find(nonce)->second;
+    const NetworkRestriction& restriction =
+        network_revocation_nonces_.find(nonce)->second;
     for (const std::unique_ptr<url_pattern::SimpleUrlPatternMatcher>& pattern :
-         allowlisted_patterns) {
+         restriction.enforced_allowlisted_patterns) {
       if (pattern->Match(url)) {
         // Redirects are blocked for URLs allowed through connection allowlists.
         return !is_redirect;
@@ -3720,10 +3744,9 @@ bool NetworkContext::IsHostResolutionForNonceAndHostAllowed(
   // https://wicg.github.io/connection-allowlists/#abstract-opdef-match-a-host-to-a-connection-allowlist,
   // we need to match `synthetic_url` against a host-only variant against each
   // URLPattern corresponding to `nonce`.
-  const std::set<std::unique_ptr<url_pattern::SimpleUrlPatternMatcher>>&
-      allowlisted_patterns = it->second;
+  const NetworkRestriction& restriction = it->second;
   for (const std::unique_ptr<url_pattern::SimpleUrlPatternMatcher>& pattern :
-       allowlisted_patterns) {
+       restriction.enforced_allowlisted_patterns) {
     if (pattern->HostOnlyMatch(synthetic_url)) {
       return true;
     }

@@ -43,6 +43,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "net/cookies/cookie_setting_override.h"
+#include "services/network/public/cpp/connection_allowlist.h"
 #include "services/network/public/cpp/network_service_buildflags.h"
 #include "services/network/public/cpp/originating_process_id.h"
 #include "services/network/public/mojom/cert_verifier_service_updater.mojom.h"
@@ -527,8 +528,8 @@ class CONTENT_EXPORT StoragePartitionImpl
   // function saves the nonces so that they can be restored in case of a
   // `NetworkService` crash.
   void RevokeNetworkForNoncesInNetworkContext(
-      const std::map<base::UnguessableToken, std::set<std::string>>&
-          nonces_to_patterns,
+      const std::map<base::UnguessableToken, network::ConnectionAllowlists>&
+          nonces_to_allowlists,
       base::OnceClosure callback);
 
   // Forward the call to `NetworkContext::ClearNonces` and remove the stored
@@ -955,7 +956,7 @@ class CONTENT_EXPORT StoragePartitionImpl
   // allowlists in `NetworkContext`. It is used for restoring the
   // `NetworkContext` nonces when there is a `NetworkService`
   // crash.
-  std::map<base::UnguessableToken, std::set<std::string>>
+  std::map<base::UnguessableToken, network::ConnectionAllowlists>
       network_revocation_nonces_;
 
   // We need to delay deleting stale session cookies until after the cookie db

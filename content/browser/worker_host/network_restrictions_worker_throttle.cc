@@ -57,19 +57,14 @@ void NetworkRestrictionsWorkerThrottle::WillProcessResponse(
         response_head->parsed_headers->connection_allowlists;
   }
 
-  if (!policies.connection_allowlists.enforced) {
+  if (!policies.connection_allowlists.enforced &&
+      !policies.connection_allowlists.report_only) {
     return;
-  }
-
-  std::set<std::string> allowlisted_patterns;
-  for (const auto& pattern_string :
-       policies.connection_allowlists.enforced->allowlist) {
-    allowlisted_patterns.insert(pattern_string);
   }
 
   *defer = true;
   storage_partition_->RevokeNetworkForNoncesInNetworkContext(
-      {{network_restrictions_id_, std::move(allowlisted_patterns)}},
+      {{network_restrictions_id_, policies.connection_allowlists}},
       base::BindOnce(&NetworkRestrictionsWorkerThrottle::OnRevokeComplete,
                      weak_factory_.GetWeakPtr()));
 }

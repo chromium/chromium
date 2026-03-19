@@ -721,6 +721,8 @@ class NetworkContextTest : public testing::Test {
       const base::UnguessableToken& nonce) {
     auto nonce_and_allowlisted_urls = mojom::NonceAndAllowlistedPatterns::New();
     nonce_and_allowlisted_urls->nonce = nonce;
+    nonce_and_allowlisted_urls->allowlists.enforced =
+        network::ConnectionAllowlist();
     return nonce_and_allowlisted_urls;
   }
 
@@ -4685,7 +4687,7 @@ TEST_F(NetworkContextResolveHostTest,
   base::test::TestFuture<void> revoked;
   mojom::NonceAndAllowlistedPatternsPtr revoked_nonce_pattern =
       CreateNonceAndAllowlistedPatterns(nonce);
-  revoked_nonce_pattern->allowlisted_patterns.push_back(url.spec());
+  revoked_nonce_pattern->allowlists.enforced->allowlist.push_back(url.spec());
   std::vector<network::mojom::NonceAndAllowlistedPatternsPtr> nonces_to_urls;
   nonces_to_urls.push_back(std::move(revoked_nonce_pattern));
   network_context->RevokeNetworkForNonces(
@@ -4867,7 +4869,7 @@ TEST_F(NetworkContextResolveHostTest,
   base::test::TestFuture<void> revoked;
   mojom::NonceAndAllowlistedPatternsPtr revoked_nonce_pattern =
       CreateNonceAndAllowlistedPatterns(nonce);
-  revoked_nonce_pattern->allowlisted_patterns.push_back(url.spec());
+  revoked_nonce_pattern->allowlists.enforced->allowlist.push_back(url.spec());
   std::vector<network::mojom::NonceAndAllowlistedPatternsPtr> nonces_to_urls;
   nonces_to_urls.push_back(std::move(revoked_nonce_pattern));
   network_context->RevokeNetworkForNonces(
@@ -4929,7 +4931,7 @@ TEST_F(NetworkContextResolveHostTest,
   base::test::TestFuture<void> revoked;
   mojom::NonceAndAllowlistedPatternsPtr revoked_nonce_pattern =
       CreateNonceAndAllowlistedPatterns(nonce);
-  revoked_nonce_pattern->allowlisted_patterns.push_back(url.spec());
+  revoked_nonce_pattern->allowlists.enforced->allowlist.push_back(url.spec());
   std::vector<network::mojom::NonceAndAllowlistedPatternsPtr> nonces_to_urls;
   nonces_to_urls.push_back(std::move(revoked_nonce_pattern));
   network_context->RevokeNetworkForNonces(
@@ -4993,7 +4995,7 @@ TEST_F(NetworkContextResolveHostTest,
   base::test::TestFuture<void> revoked;
   mojom::NonceAndAllowlistedPatternsPtr revoked_nonce_pattern =
       CreateNonceAndAllowlistedPatterns(nonce);
-  revoked_nonce_pattern->allowlisted_patterns.push_back(url.spec());
+  revoked_nonce_pattern->allowlists.enforced->allowlist.push_back(url.spec());
   std::vector<network::mojom::NonceAndAllowlistedPatternsPtr> nonces_to_urls;
   nonces_to_urls.push_back(std::move(revoked_nonce_pattern));
   network_context->RevokeNetworkForNonces(
