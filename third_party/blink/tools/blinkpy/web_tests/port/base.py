@@ -1578,13 +1578,6 @@ class Port(object):
                 return wpt_dir, test[len(f'{wpt_dir}/'):]
         return None, test
 
-    def is_wpt_file(self, path):
-        """Returns whether a path is a WPT test file."""
-
-        if self.WPT_REGEX.match(path):
-            return self._filesystem.isfile(self.abspath_for_test(path))
-        return False
-
     def get_wpt_type(self, test_name: str) -> Optional[str]:
         """Returns the test type of a web platform test."""
 
