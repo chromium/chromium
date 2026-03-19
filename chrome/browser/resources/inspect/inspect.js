@@ -117,13 +117,16 @@ function selectTab(id) {
   for (let i = 0; i !== tabContents.length; i++) {
     const tabContent = tabContents[i];
     const tabHeader = tabHeaders[i];
+    const tabButton = tabHeader.querySelector('button');
     if (tabContent.id === id) {
       tabContent.classList.add('selected');
       tabHeader.classList.add('selected');
+      tabButton.setAttribute('aria-current', 'true');
       found = true;
     } else {
       tabContent.classList.remove('selected');
       tabHeader.classList.remove('selected');
+      tabButton.removeAttribute('aria-current');
     }
   }
   if (!found) {

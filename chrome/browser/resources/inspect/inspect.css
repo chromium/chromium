@@ -62,6 +62,8 @@ img {
 #caption {
   color: rgb(92, 97, 102);
   font-size: 150%;
+  font-weight: normal;
+  margin: 0;
   padding-bottom: 10px;
   padding-left: 20px;
 }
@@ -90,7 +92,7 @@ img {
 }
 
 .tab-header:not(.selected) > button {
-  color: #999;
+  color: #767676;
 }
 
 #content > div {
@@ -106,6 +108,8 @@ img {
   background: linear-gradient(white, white 40%, rgba(255, 255, 255, 0.92));
   border-bottom: 1px solid #eee;
   font-size: 150%;
+  font-weight: normal;
+  margin: 0;
   padding: 20px 0 10px 0;
   z-index: 1;
 }
