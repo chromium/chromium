@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/byte_count.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
@@ -65,6 +66,19 @@ class TestManifestAssetManagerComponentState::DelegateImpl
         state_->foreground_updates_requested_.insert(asset_id);
       }
     }
+  }
+
+  void GetFreeDiskSpace(const base::FilePath& path,
+                        base::OnceCallback<void(std::optional<base::ByteCount>)>
+                            callback) const override {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback),
+                       state_ ? state_->free_disk_space_ : base::ByteCount(0)));
+  }
+
+  base::FilePath GetInstallDirectory() const override {
+    return base::FilePath(FILE_PATH_LITERAL("/tmp/manifest_asset_install_dir"));
   }
 
  private:

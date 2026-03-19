@@ -7,9 +7,11 @@
 #include <cstdint>
 #include <iterator>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
+#include "base/byte_count.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -79,6 +81,36 @@ bool IsModelAlreadyInstalled(ComponentUpdateService* cus,
 
   return update_item.component->version.CompareToWildcardString(
              target_version) == 0;
+}
+
+base::FilePath GetComponentInstallDirectory() {
+  base::FilePath local_install_path;
+  base::PathService::Get(component_updater::DIR_COMPONENT_USER,
+                         &local_install_path);
+  return local_install_path;
+}
+
+void GetComponentFreeDiskSpace(
+    const base::FilePath& path,
+    base::OnceCallback<void(std::optional<base::ByteCount>)> callback) {
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::MayBlock(),
+       optimization_guide::switches::
+               ShouldGetFreeDiskSpaceWithUserVisiblePriorityTask()
+           ? base::TaskPriority::USER_VISIBLE
+           : base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(
+          [](const base::FilePath& path) -> std::optional<base::ByteCount> {
+            std::optional<int64_t> amount_of_free_disk_space =
+                base::SysInfo::AmountOfFreeDiskSpace(path);
+            if (!amount_of_free_disk_space) {
+              return std::nullopt;
+            }
+            return base::ByteCount(*amount_of_free_disk_space);
+          },
+          path),
+      std::move(callback));
 }
 
 // Legacy installer policy for the base and classifier models.
@@ -205,36 +237,13 @@ class OnDeviceModelComponentStateManagerDelegate final
   ~OnDeviceModelComponentStateManagerDelegate() override = default;
 
   base::FilePath GetInstallDirectory() override {
-    base::FilePath local_install_path;
-    base::PathService::Get(component_updater::DIR_COMPONENT_USER,
-                           &local_install_path);
-    return local_install_path;
+    return GetComponentInstallDirectory();
   }
 
   void GetFreeDiskSpace(const base::FilePath& path,
                         base::OnceCallback<void(std::optional<base::ByteCount>)>
                             callback) override {
-    // TODO(crbug.com/429140103): Convert base::SysInfo::AmountOfFreeDiskSpace
-    // to return std::optional<base::ByteCount> and remove this wrapper.
-    auto amount_of_free_disk_space_wrapper = base::BindOnce(
-        [](const base::FilePath& path) -> std::optional<base::ByteCount> {
-          std::optional<int64_t> amount_of_free_disk_space =
-              base::SysInfo::AmountOfFreeDiskSpace(path);
-          if (!amount_of_free_disk_space) {
-            return std::nullopt;
-          }
-          return base::ByteCount(*amount_of_free_disk_space);
-        },
-        path);
-
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE,
-        {base::MayBlock(),
-         optimization_guide::switches::
-                 ShouldGetFreeDiskSpaceWithUserVisiblePriorityTask()
-             ? base::TaskPriority::USER_VISIBLE
-             : base::TaskPriority::BEST_EFFORT},
-        std::move(amount_of_free_disk_space_wrapper), std::move(callback));
+    GetComponentFreeDiskSpace(path, std::move(callback));
   }
 
   void RegisterInstaller(
@@ -397,6 +406,16 @@ class ManifestComponentsInstallerPolicy final
 class ManifestAssetManagerDelegateImpl final
     : public optimization_guide::ManifestAssetManager::Delegate {
  public:
+  base::FilePath GetInstallDirectory() const override {
+    return GetComponentInstallDirectory();
+  }
+
+  void GetFreeDiskSpace(const base::FilePath& path,
+                        base::OnceCallback<void(std::optional<base::ByteCount>)>
+                            callback) const override {
+    GetComponentFreeDiskSpace(path, std::move(callback));
+  }
+
   void RegisterOnDemandComponent(
       const std::string& asset_id,
       const std::string& public_key_hex,

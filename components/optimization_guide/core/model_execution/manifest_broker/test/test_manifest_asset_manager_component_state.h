@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/byte_count.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
@@ -47,6 +48,8 @@ class TestManifestAssetManagerComponentState final {
 
  private:
   class DelegateImpl;
+
+  base::ByteCount free_disk_space_ = base::GiB(100);
 
   base::flat_set<std::string> registered_assets_;
   base::flat_set<std::string> uninstalled_assets_;

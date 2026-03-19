@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 
+#include "base/byte_count.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
@@ -46,6 +47,15 @@ class ManifestAssetManager {
     virtual void RequestUpdate(const std::string& asset_id,
                                const std::string& public_key_hex,
                                bool is_background) = 0;
+
+    // Gets the available free disk space on a background thread.
+    virtual void GetFreeDiskSpace(
+        const base::FilePath& path,
+        base::OnceCallback<void(std::optional<base::ByteCount>)> callback)
+        const = 0;
+
+    // Returns the base install directory for on-demand models.
+    virtual base::FilePath GetInstallDirectory() const = 0;
   };
 
   explicit ManifestAssetManager(std::unique_ptr<Delegate> delegate);
