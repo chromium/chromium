@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // The NTP may take different forms, depending on the OS.
-var newTabUrls = [
+const newTabUrls = [
   'chrome://newtab/',
   'chrome-native://newtab/',
 ];

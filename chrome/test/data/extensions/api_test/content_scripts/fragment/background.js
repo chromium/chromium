@@ -2,77 +2,80 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var failed = false;
+let failed = false;
 
-function did_fail() {
+function didFail() {
   return failed;
 }
 
-function set_failed(val) {
+function setFailed(val) {
   failed = val;
 }
 
 function fail() {
-  set_failed(true);
-  if (!did_fail()) {
+  setFailed(true);
+  if (!didFail()) {
     chrome.test.fail();
   }
 }
 
-var test_url = "http://localhost:PORT/extensions/test_file.html";
+let testUrl = '';
 
 // For running in normal chrome (ie outside of the browser_tests environment),
 // set debug to 1 here.
-var debug = 0;
+const debug = 0;
 if (debug) {
-  test_url = "http://www.google.com";
+  testUrl = 'http://www.google.com';
   chrome.test.log = function(msg) { console.log(msg) };
   chrome.test.runTests = function(tests) {
-    for (var i in tests) {
+    for (let i in tests) {
       tests[i]();
     }
   };
-  chrome.test.succeed = function(){ console.log("succeed"); };
-  chrome.test.fail = function(){ console.log("fail"); };
+  chrome.test.succeed = function() {
+    console.log('succeed');
+  };
+  chrome.test.fail = function() {
+    console.log('fail');
+  };
 }
 
 function runTests() {
-  chrome.test.runTests([
-    function test1() {
-      chrome.runtime.onMessage.addListener(function(req, sender) {
-        chrome.test.log("got request: " + JSON.stringify(req));
-        if (req == "fail") {
+  chrome.test.runTests([function test1() {
+    chrome.runtime.onMessage.addListener(function(req, sender) {
+      chrome.test.log(`got request: ${JSON.stringify(req)}`);
+      if (req == 'fail') {
+        fail();
+      } else if (req == 'content_script_start') {
+        const tab = sender.tab;
+        if (tab.url.indexOf('#') != -1) {
           fail();
-        } else if (req == "content_script_start") {
-          var tab = sender.tab;
-          if (tab.url.indexOf("#") != -1) {
-            fail();
-          } else {
-            chrome.tabs.update(tab.id, {"url": tab.url + "#foo"});
+        } else {
+          chrome.tabs.update(tab.id, {url: `${tab.url}#foo`});
+        }
+      }
+    });
+    chrome.tabs.onUpdated.addListener(function(tabid, info, tab) {
+      chrome.test.log(`onUpdated status: ${info.status} url:${tab.url}`);
+      if (info.status == 'complete' && tab.url.indexOf('#foo') != -1) {
+        setTimeout(function() {
+          if (!didFail()) {
+            chrome.test.succeed();
           }
-        }
-      });
-      chrome.tabs.onUpdated.addListener(function(tabid, info, tab) {
-        chrome.test.log("onUpdated status: " + info.status + " url:" + tab.url);
-        if (info.status == "complete" && tab.url.indexOf("#foo") != -1) {
-          setTimeout(function() {
-            if (!did_fail()) {
-              chrome.test.succeed();
-            }
-          }, 750);
-        }
-      });
-      chrome.test.log("creating tab");
-      chrome.tabs.create({"url": test_url});
-    }
-  ]);
+        }, 750);
+      }
+    });
+    chrome.test.log('creating tab');
+    chrome.tabs.create({url: testUrl});
+  }]);
 }
 
 if (debug) {
   runTests();
 } else {
   chrome.test.getConfig(function(config) {
-    test_url = test_url.replace(/PORT/, config.testServer.port);
+    testUrl = `http://localhost:${config.testServer.port}` +
+        '/extensions/test_file.html';
     runTests();
   });
 }

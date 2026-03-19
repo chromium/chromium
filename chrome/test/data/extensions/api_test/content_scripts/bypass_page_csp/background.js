@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 chrome.runtime.onConnect.addListener(function(port) {
-  chrome.test.log("got connect");
+  chrome.test.log('got connect');
   port.onMessage.addListener(function(msg) {
-    chrome.test.log("got message: " + msg);
+    chrome.test.log('got message: ' + msg);
     if (msg)
       chrome.test.notifyPass();
     else
@@ -14,11 +14,10 @@ chrome.runtime.onConnect.addListener(function(port) {
 });
 
 chrome.test.getConfig(function(config) {
-  chrome.test.log("Creating tab...");
+  chrome.test.log('Creating tab...');
 
-  var test_url =
-      "http://localhost:PORT/extensions/test_file_with_csp.html"
-          .replace(/PORT/, config.testServer.port);
+  const testUrl = `http://localhost:${config.testServer.port}` +
+      '/extensions/test_file_with_csp.html';
 
-  chrome.tabs.create({ url: test_url });
+  chrome.tabs.create({url: testUrl});
 });

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // Inject an image.
-var img = document.createElement('img');
+const img = document.createElement('img');
 img.onload = function () {
   chrome.runtime.connect().postMessage(true);
 };

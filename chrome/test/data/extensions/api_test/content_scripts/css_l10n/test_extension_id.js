@@ -6,19 +6,20 @@
 // has had the __MSG_@@extension_id__ message replaced ('extension_id' must
 // not be present in any CSS code).
 
+// NOTE: Using `var` because multiple scripts inject with a `message` variable.
 var message = 'Test failed to complete';
 try {
-  var elem = document.getElementById('bodyId');
-  var rules = [];
-  for (var i = 0; i < document.styleSheets.length; ++i) {
-    for (var j = 0; j < sheets[i].rules; ++j) {
+  const elem = document.getElementById('bodyId');
+  const rules = [];
+  for (let i = 0; i < document.styleSheets.length; ++i) {
+    for (let j = 0; j < sheets[i].rules; ++j) {
       rules.push(sheets[i].rules[j]);
     }
   }
 
   if (rules != null) {
     message = 'passed';
-    for (var i = 0; i < rules.length; ++i) {
+    for (let i = 0; i < rules.length; ++i) {
       if (rules.item(i).cssText.indexOf('extension_id') != -1) {
         message = 'Found unreplaced extension_id in: ' + rules.item(i).cssText;
         break;

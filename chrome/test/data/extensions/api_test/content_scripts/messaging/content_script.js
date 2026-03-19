@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var TEST_MESSAGE = 'test_message';
+const TEST_MESSAGE = 'test_message';
 
 function assertValidExternalMessageSender(sender) {
   chrome.test.assertEq(chrome.runtime.id, sender.id);

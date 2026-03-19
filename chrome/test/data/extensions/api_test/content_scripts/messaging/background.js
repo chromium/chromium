@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 chrome.test.getConfig(function(config) {
-  var testUrl =
+  const testUrl =
       `http://localhost:${config.testServer.port}/extensions/test_file.html`;
   chrome.tabs.create({url: testUrl});
 });

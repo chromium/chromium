@@ -6,11 +6,12 @@
 // has had the __MSG_text_color__ message replaced ('text_color' must
 // not be present in any CSS code).
 
+// NOTE: Using `var` because multiple scripts inject with a `message` variable.
 var message = 'Test failed to complete';
 try {
-  var p = document.getElementById('pId');
-  var color = getComputedStyle(p).color;
-  if (getComputedStyle(p).color == "rgb(255, 0, 0)")
+  const p = document.getElementById('pId');
+  let color = getComputedStyle(p).color;
+  if (getComputedStyle(p).color == 'rgb(255, 0, 0)')
     message = 'passed';
   else
     message = 'Paragraph is not red: ' + color;

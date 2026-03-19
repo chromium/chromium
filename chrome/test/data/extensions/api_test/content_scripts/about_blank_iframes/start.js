@@ -3,4 +3,4 @@
 // found in the LICENSE file.
 
 // This variable will be checked in end.js
-var hasRunContentScriptAtDocumentStart = true;
+const hasRunContentScriptAtDocumentStart = true;

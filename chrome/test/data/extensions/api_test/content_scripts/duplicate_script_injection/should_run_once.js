@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var should_be_injected_once = document.createElement('div');
-should_be_injected_once.className = 'injected-once';
-document.body.appendChild(should_be_injected_once);
+// NOTE: This needs to be `var` since it's exercising whether this
+// script gets injected multiple times, and a `let` would interfere with
+// multiple injection -- throwing an error and making it seem like the
+// script wasn't injeted multiple times when it was.
+var shouldBeInjectedOnce = document.createElement('div');
+shouldBeInjectedOnce.className = 'injected-once';
+document.body.appendChild(shouldBeInjectedOnce);

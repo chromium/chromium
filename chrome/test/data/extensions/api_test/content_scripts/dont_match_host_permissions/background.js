@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var receivedRequests = {};
+const receivedRequests = {};
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   if (receivedRequests[request.source]) {

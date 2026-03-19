@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-let requests = [
+const requests = [
   {method: 'GET', url: '/set-cookie?laxcookie=1;samesite=lax'},
   {method: 'GET', url: '/set-cookie?strictcookie=1;samesite=strict'},
   {
@@ -33,7 +33,7 @@ let requests = [
 
   // Verify that the expected cookies were seen on the server side and the
   // expected cookies in response are present.
-  let s = document.cookie.split('; ');
+  const s = document.cookie.split('; ');
   if (s.includes('laxFoundGet=1') &&
       s.includes('strictFoundGet=1') &&
       s.includes('laxFoundPost=1') &&

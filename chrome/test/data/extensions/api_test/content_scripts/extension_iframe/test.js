@@ -15,10 +15,10 @@ chrome.test.runTests([
 ]);
 
 chrome.test.getConfig(function(config) {
-  chrome.test.log("Creating tab...");
+  chrome.test.log('Creating tab...');
 
-  var test_url = "http://localhost:PORT/extensions/test_file.html"
-      .replace(/PORT/, config.testServer.port);
+  const testUrl = `http://localhost:${config.testServer.port}` +
+      '/extensions/test_file.html';
 
-  chrome.tabs.create({ url: test_url });
+  chrome.tabs.create({url: testUrl});
 });

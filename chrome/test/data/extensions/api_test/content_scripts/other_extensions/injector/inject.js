@@ -4,7 +4,7 @@
 
 console.log('INJECTOR: Injecting content script!');
 
-var content = document.getElementById('content');
+const content = document.getElementById('content');
 if (content) {
   content.innerText = 'Injected!!!';
   console.log('INJECTOR: Changed content to: ' + content.innerText);

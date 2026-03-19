@@ -3,4 +3,4 @@
 // found in the LICENSE file.
 
 // This extension just injects script into another one.
-chrome.tabs.create({ url: "test.html" });
+chrome.tabs.create({url: 'test.html'});

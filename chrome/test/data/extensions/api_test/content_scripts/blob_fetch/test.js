@@ -12,12 +12,12 @@ chrome.test.runTests([
     chrome.extension.onMessage.addListener(function(
         request, sender, sendResponse) {
       if (request == 'kindly_reply_with_blob_url') {
-        let blob_url = URL.createObjectURL(new Blob(['success_payload']));
-        sendResponse(blob_url);
+        const blobUrl = URL.createObjectURL(new Blob(['success_payload']));
+        sendResponse(blobUrl);
       } else if (request == 'success_payload') {
         chrome.test.succeed();
       } else {
-        chrome.test.fail('Unexpected request: ' + JSON.stringify(request));
+        chrome.test.fail(`Unexpected request: ${JSON.stringify(request)}`);
       }
     });
   }
@@ -26,8 +26,8 @@ chrome.test.runTests([
 chrome.test.getConfig(function(config) {
   chrome.test.log('Creating tab...');
 
-  var test_url = 'http://localhost:PORT/extensions/test_file.html'.replace(
-      /PORT/, config.testServer.port);
+  const testUrl =
+      `http://localhost:${config.testServer.port}/extensions/test_file.html`;
 
-  chrome.tabs.create({url: test_url});
+  chrome.tabs.create({url: testUrl});
 });

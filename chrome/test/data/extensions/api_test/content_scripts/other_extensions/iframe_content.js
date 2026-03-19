@@ -3,10 +3,11 @@
 // found in the LICENSE file.
 
 window.addEventListener('load', function() {
-  var parent_extension_page = unescape(location.hash.replace('#', ''));
+  const parentExtensionPage = unescape(location.hash.replace('#', ''));
 
-  console.log('PAGE: Sending content to parent extension page - ' +
-              parent_extension_page);
-  window.parent.postMessage(document.getElementById('content').innerText,
-                            parent_extension_page);
+  console.log(
+      `PAGE: Sending content to parent extension page - ${
+          parentExtensionPage}`);
+  window.parent.postMessage(
+      document.getElementById('content').innerText, parentExtensionPage);
 });

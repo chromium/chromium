@@ -5,8 +5,8 @@
 chrome.test.getConfig(function(config) {
   chrome.test.log('Creating tab...');
 
-  var URL = 'http://localhost:PORT/extensions/test_file_with_body.html';
-  var TEST_FILE_URL = URL.replace(/PORT/, config.testServer.port);
+  const TEST_FILE_URL = `http://localhost:${config.testServer.port}` +
+      '/extensions/test_file_with_body.html';
 
   chrome.tabs.onUpdated.addListener(function listener(tabId, changeInfo, tab) {
     if (changeInfo.status != 'complete')

@@ -17,11 +17,11 @@ chrome.test.getConfig(function(config) {
     success = false;
   }
 
-  let checkPrivilegedApi = function(api, name) {
+  const checkPrivilegedApi = function(api, name) {
     if (api)
       return true;
 
-    console.log('Error: ' + name + ' doesn\'t exist, but should.');
+    console.log(`Error: ${name} doesn't exist, but should.`);
     return false;
   };
 

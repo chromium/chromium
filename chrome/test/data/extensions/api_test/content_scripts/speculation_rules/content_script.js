@@ -9,7 +9,7 @@ if (location.pathname == '/empty.html') {
   // Generate the prerendering target URL that is in the same origin with
   // the path '/title1.html'.
   const target = new URL(location.href);
-  target.pathname = "/title1.html";
+  target.pathname = '/title1.html';
 
   // Create a script tag, and inject it.
   const script = document.createElement('script');

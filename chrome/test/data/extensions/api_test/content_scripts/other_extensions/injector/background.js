@@ -4,4 +4,4 @@
 
 console.log('INJECTOR: Loaded injector!');
 
-chrome.tabs.create({ url: "test.html" });
+chrome.tabs.create({url: 'test.html'});

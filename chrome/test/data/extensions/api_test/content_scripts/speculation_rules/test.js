@@ -11,7 +11,7 @@ function getUrl(path) {
 async function testInjectSpeculationRules() {
   // Flags to check if the page is loaded only once.
   let testPageLoaded = false;
-  let prerenderPageLoaded = false;
+  const prerenderPageLoaded = false;
 
   // Monitor messages from the injected content_script.js.
   const testCallback = (message, sender, sendResponse) => {
