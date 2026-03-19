@@ -263,6 +263,7 @@ def HandleReturnCode(completed_process, rustc_env_and_flags=None):
     print(f'ERROR: `{process_name}` was terminated by '\
           f'signal {signal_code} ({signal_name})',
           file=sys.stderr)
+    sys.exit(128 + signal_code)  # like `$?` in `bash`
   else:
     exit_code = return_code
     print(f'ERROR: `{process_name}` exited with '\
@@ -270,7 +271,7 @@ def HandleReturnCode(completed_process, rustc_env_and_flags=None):
           file=sys.stderr)
     if rustc_env_and_flags:
       _RecommendApplyFixesScript(process_path, rustc_env_and_flags)
-  sys.exit(return_code if return_code >= 0 else 128 - return_code)
+    sys.exit(exit_code)
 
 
 def _RecommendApplyFixesScript(tool, rustc_env_and_flags):
