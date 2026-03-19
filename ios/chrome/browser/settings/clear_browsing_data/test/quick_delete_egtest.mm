@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/settings/clear_browsing_data/public/quick_delete_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings_app_interface.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_constants.h"
@@ -61,9 +62,6 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
 
 // GURL inserted into the history service to mock history entries.
 const GURL kMockURL("http://not-a-real-site.test/");
-
-// Link for my activity page.
-const char kMyActivityURL[] = "myactivity.google.com";
 
 // Creates a group with default title from a tab cell at index `tab_cell_index`
 // when no group is in the grid.
@@ -294,10 +292,10 @@ NSString* CapitalizeFirstLetter(NSString* string) {
   // `kPasswordRemovalFromDeleteBrowsingData` as disabled and will be deleted
   // after the feature's launch.
   BOOL isTestRequiringFeatureDisabled =
+      [self
+          isRunningTest:@selector(testOpenSearchHistoryMyActivityFooterLink)] ||
       [self isRunningTest:@selector
-            (DISABLED_testOpenSearchHistoryMyActivityFooterLink)] ||
-      [self isRunningTest:@selector
-            (FLAKY_testOpenOtherFormsOfActivityMyActivityFooterLink)] ||
+            (testOpenOtherFormsOfActivityMyActivityFooterLink)] ||
       [self isRunningTest:@selector(testHideShowFooterBasedOnSignInStatus)] ||
       [self isRunningTest:@selector
             (testButtonColorWhenThePasswordRemovalFeatureIsDisabled)] ||
@@ -1616,9 +1614,7 @@ NSString* CapitalizeFirstLetter(NSString* string) {
 
 // Tests the footer search history link is opened correctly and metrics are
 // recorded in the corrresponding histogram bucket.
-// TODO(crbug.com/443704367): Re-enable test.
-- (void)DISABLED_testOpenSearchHistoryMyActivityFooterLink {
-  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+- (void)testOpenSearchHistoryMyActivityFooterLink {
   // Sign in is required to show the footer.
   [self signIn];
   // Open Quick Delete bottom sheet.
@@ -1631,7 +1627,7 @@ NSString* CapitalizeFirstLetter(NSString* string) {
 
   // Check that Quick Delete is presented.
   [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
-      assertWithMatcher:grey_notNil()];
+      assertWithMatcher:grey_sufficientlyVisible()];
 
   // Check that the footer is presented.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
@@ -1642,10 +1638,10 @@ NSString* CapitalizeFirstLetter(NSString* string) {
   [[EarlGrey selectElementWithMatcher:SearchHistoryLink()]
       performAction:grey_tap()];
 
-  // Check that my activity link was opened.
-  GREYAssertEqual(std::string(kMyActivityURL),
-                  [ChromeEarlGrey webStateVisibleURL].GetHost(),
-                  @"Did not navigate to the search activity url.");
+  // Check that the "Search history" link was opened.
+  [ChromeEarlGrey
+      waitForWebStateVisibleURL:GURL(
+                                    kClearBrowsingDataDSESearchUrlInFooterURL)];
 
   // Assert that the metrics are populated.
   ExpectClearBrowsingDataNavigationHistograms(
@@ -1656,9 +1652,7 @@ NSString* CapitalizeFirstLetter(NSString* string) {
 
 // Tests the footer other forms of activity link is opened correctly and metrics
 // are recorded in the corrresponding histogram bucket.
-// TODO(crbug.com/485590395): Fix flakiness and reenable.
-- (void)FLAKY_testOpenOtherFormsOfActivityMyActivityFooterLink {
-  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+- (void)testOpenOtherFormsOfActivityMyActivityFooterLink {
   // Sign in is required to show the footer.
   [self signIn];
   // Open Quick Delete bottom sheet.
@@ -1671,21 +1665,20 @@ NSString* CapitalizeFirstLetter(NSString* string) {
 
   // Check that Quick Delete is presented.
   [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
-      assertWithMatcher:grey_notNil()];
+      assertWithMatcher:grey_sufficientlyVisible()];
 
   // Check that the footer is presented.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kQuickDeleteFooterIdentifier)]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  // Tap on the "Search history" link.
+  // Tap on the "My Activity" link.
   [[EarlGrey selectElementWithMatcher:OtherFormsOfActivityLink()]
       performAction:grey_tap()];
 
-  // Check that my activity link was opened.
-  GREYAssertEqual(std::string(kMyActivityURL),
-                  [ChromeEarlGrey webStateVisibleURL].GetHost(),
-                  @"Did not navigate to the search activity url.");
+  // Check that the "My Activity" link was opened.
+  [ChromeEarlGrey waitForWebStateVisibleURL:
+                      GURL(kClearBrowsingDataDSEMyActivityUrlInFooterURL)];
 
   // Assert that the metrics are populated.
   ExpectClearBrowsingDataNavigationHistograms(MyActivityNavigation::kTopLevel);
