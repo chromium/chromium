@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
 #include "base/task/sequenced_task_runner.h"
@@ -15,6 +16,7 @@
 #include "components/paint_preview/browser/compositor_utils.h"
 #include "components/paint_preview/browser/paint_preview_base_service.h"
 #include "components/paint_preview/common/recording_map.h"
+#include "components/performance_manager/scenario_api/performance_scenarios.h"
 #include "components/services/paint_preview_compositor/public/mojom/paint_preview_compositor.mojom.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/base/proto_wrapper.h"
@@ -201,6 +203,15 @@ void PageContentScreenshotService::RequestScreenshot(
     return;
   }
 
+  // TODO: crbug.com/493953289 - Remove this once we've gathered data about the
+  // performance impact.
+  const performance_scenarios::InputScenario scenario =
+      performance_scenarios::GetInputScenario(
+          performance_scenarios::ScenarioScope::kGlobal)
+          ->load(std::memory_order_relaxed);
+  const bool is_handling_input =
+      scenario != performance_scenarios::InputScenario::kNoInput;
+
   auto request = std::make_unique<ScreenshotRequest>(
       weak_ptr_factory_.GetWeakPtr(), std::move(params));
 
@@ -216,6 +227,10 @@ void PageContentScreenshotService::RequestScreenshot(
             std::move(callback).Run(result);
           },
           std::move(request), std::move(callback)));
+  base::UmaHistogramBoolean(
+      "OptimizationGuide.PageContentScreenshotService.RequestScreenshot."
+      "IsHandlingInput",
+      is_handling_input);
 }
 
 std::unique_ptr<paint_preview::PaintPreviewCompositorService,

@@ -2026,6 +2026,17 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="OptimizationGuide.PageContentScreenshotService.RequestScreenshot.IsHandlingInput"
+    units="bool" expires_after="M155">
+  <owner>thiabaud@google.com</owner>
+  <owner>jonross@chromium.org</owner>
+  <summary>
+    Records whether Chrome was handling input, at the time when we requested a
+    screenshot.
+  </summary>
+</histogram>
+
+<histogram
     name="OptimizationGuide.PredictionManager.DownloadServiceAvailabilityBlockedFetch"
     enum="BooleanBlocked" expires_after="2026-11-09">
   <owner>rajendrant@chromium.org</owner>

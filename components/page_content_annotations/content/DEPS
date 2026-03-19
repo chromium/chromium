@@ -17,6 +17,7 @@ include_rules = [
     "+components/os_crypt/async/browser",
     "+components/paint_preview",
     "+components/passage_embeddings/core",
+    "+components/performance_manager/scenario_api",
     "+components/pdf/browser",
     "+components/pdf/common",
     "+components/services/paint_preview_compositor",

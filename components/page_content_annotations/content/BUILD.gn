@@ -39,6 +39,7 @@ source_set("content") {
     "//components/optimization_guide/content/browser:page_context_eligibility",
     "//components/page_content_annotations/core",
     "//components/pdf/common:constants",
+    "//components/performance_manager/scenario_api",
     "//components/services/paint_preview_compositor/public/mojom",
     "//components/viz/common",
     "//pdf:buildflags",
