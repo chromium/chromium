@@ -57,8 +57,8 @@ bool Translator::VerifyPrerequisites(
     return false;
   }
 
-  RecordTranslationAPICallForLanguagePair("Translate", source_lang_,
-                                          target_lang_);
+  RecordTranslatorApiCallForLanguagePair("Translate", source_lang_,
+                                         target_lang_);
   RecordTranslationCharacterCount(source_lang_, target_lang_, input.size());
 
   // https://github.com/webmachinelearning/translation-api/pull/38: "If |input|
