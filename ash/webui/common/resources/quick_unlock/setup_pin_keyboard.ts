@@ -304,19 +304,14 @@ export class SetupPinKeyboardElement extends SetupPinKeyboardElementBase {
    */
   private onPinChange_(e: CustomEvent<{pin: string}>): void {
     const newPin = e.detail.pin;
+
+    // Initial PIN setup.
     if (!this.isConfirmStep) {
-      if (newPin) {
-        this.quickUnlockPrivateCheckCredential_(newPin);
-      } else {
-        this.enableSubmit = false;
-        this.showProblem_(
-            MessageType.TOO_SHORT,
-            this.pinHasPassedMinimumLength_ ? ProblemType.ERROR :
-                                              ProblemType.WARNING);
-      }
+      this.quickUnlockPrivateCheckCredential_(newPin);
       return;
     }
 
+    // PIN confirmation.
     this.hideProblem_();
     this.enableSubmit = newPin.length > 0;
   }
@@ -341,8 +336,17 @@ export class SetupPinKeyboardElement extends SetupPinKeyboardElementBase {
     }
     this.enableSubmit = false;
     this.initialPin_ = this.pinKeyboardValue_;
-    this.pinKeyboardValue_ = '';
+    // `isConfirmStep` MUST be set to true BEFORE clearing `pinKeyboardValue_`.
+    // Clearing the PIN triggers a synchronous framework observer:
+    // * `pinKeyboardValue_` is bound to `value` for pin-keyboard (.html file),
+    // * which has an observer which fires a 'pin-change' event,
+    // * which ends up calling `onPinChange_` here.
+    // If `isConfirmStep` is still false when that observer fires, it sends a
+    // request to the backend to validate an empty string. When that callback
+    // eventually returns, it disables the submit button and causes tests to
+    // timeout.
     this.isConfirmStep = true;
+    this.pinKeyboardValue_ = '';
     this.$.pinKeyboard.resetPinVisibility();
     this.hideProblem_();
     this.$.pinKeyboard.focusInput();

@@ -6,7 +6,7 @@ import {CrButtonElement} from 'chrome://os-settings/os_settings.js';
 import {assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-import {hasBooleanProperty, hasStringProperty, retry, sleep} from '../utils.js';
+import {assertAsync, hasBooleanProperty, hasStringProperty, retry} from '../utils.js';
 
 enum PinDialogType {
   SETUP,
@@ -142,10 +142,7 @@ export class PinDialogApi {
   }
 
   async submit(): Promise<void> {
-    // This sleep shouldn't be here, but appears to be necessary because PIN
-    // dialogs can't immediately submit after their PIN values have changed.
-    // Consider removing this check and fixing PIN dialog logic.
-    await sleep(10);
+    await assertAsync(() => this.canSubmit());
     (await retry(() => this.submitButton())).click();
   }
 
