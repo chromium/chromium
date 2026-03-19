@@ -17,6 +17,7 @@
 #include "base/notreached.h"
 #include "base/types/expected.h"
 #include "base/types/strong_alias.h"
+#include "pdf/pdf_ink_ids.h"
 
 namespace chrome_pdf {
 
@@ -30,6 +31,11 @@ PdfInkUndoRedoModel::AddCommands& GetModifiableAddCommands(
 PdfInkUndoRedoModel::RemoveCommands& GetModifiableRemoveCommands(
     PdfInkUndoRedoModel::Commands& commands) {
   return std::get<PdfInkUndoRedoModel::RemoveCommands>(commands);
+}
+
+bool IsAllowedInCommandsStack(IdType id) {
+  return std::holds_alternative<InkStrokeId>(id) ||
+         std::holds_alternative<InkTextId>(id);
 }
 
 }  // namespace
@@ -46,7 +52,7 @@ PdfInkUndoRedoModel::StartAdd() {
 bool PdfInkUndoRedoModel::Add(IdType id) {
   CHECK(!commands_stack_.empty());
 
-  if (!std::holds_alternative<InkStrokeId>(id)) {
+  if (!IsAllowedInCommandsStack(id)) {
     return false;  // Failed invariant 7.
   }
 
@@ -62,10 +68,12 @@ bool PdfInkUndoRedoModel::Add(IdType id) {
       const IdSet& last_add_set = GetAddCommands(commands).value();
       if (!last_add_set.empty()) {
         // Checking the last ID in the set is sufficient because AddCommands
-        // only contains InkStrokeId (Invariant 7), which are added in
-        // strictly increasing order.
+        // only contains InkStrokeId and InkTextId (Invariant 7), which are
+        // added in strictly increasing order.
         const IdType& last_id = *last_add_set.rbegin();
-        if (id <= last_id) {
+        // Compare underlying values, as the default variant operator compares
+        // indices first.
+        if (GetIdTypeValue(id) <= GetIdTypeValue(last_id)) {
           return false;
         }
         break;
@@ -117,7 +125,7 @@ bool PdfInkUndoRedoModel::Remove(IdType id) {
     return false;  // Failed invariant 5.
   }
 
-  if (std::holds_alternative<InkStrokeId>(id) && !HasIdInAddCommands(id)) {
+  if (IsAllowedInCommandsStack(id) && !HasIdInAddCommands(id)) {
     return false;  // Failed invariant 6.
   }
 

@@ -193,19 +193,33 @@ class PdfInkModule {
     std::vector<ink::StrokeInputBatch> inputs;
   };
 
-  class StrokeIdGenerator {
+  // Generates globally unique, monotonically increasing IDs for all user-added
+  // annotations (e.g., strokes and text).
+  //
+  // All user-added annotation types must share this single ID sequence.
+  // `PdfInkUndoRedoModel` relies on the underlying numerical value representing
+  // the chronological order of creation across all types to efficiently
+  // truncate the redo stack.
+  class IdGenerator {
    public:
-    StrokeIdGenerator();
-    ~StrokeIdGenerator();
+    IdGenerator();
+    ~IdGenerator();
 
-    // Returns an available ID and advance the next available ID internally.
-    InkStrokeId GetIdAndAdvance();
+    // Returns an available stroke ID and advance the next available ID
+    // internally.
+    InkStrokeId GetStrokeIdAndAdvance();
 
-    void ResetIdTo(InkStrokeId id);
+    // Returns an available text ID and advance the next available ID
+    // internally.
+    InkTextId GetTextIdAndAdvance();
+
+    void ResetIdTo(size_t id);
 
    private:
-    // The next available ID for use in FinishedStrokeState.
-    InkStrokeId next_stroke_id_ = InkStrokeId(0);
+    size_t GetIdAndAdvance();
+
+    // The next available ID.
+    size_t next_id_ = 0;
   };
 
   struct EraserState {
@@ -446,8 +460,9 @@ class PdfInkModule {
   void ApplyUndoRedoCommandsHelper(const PdfInkUndoRedoModel::IdSet& ids,
                                    bool should_draw);
 
-  // Discards strokes with IDs >= `lowest_discard` and resets the ID generator
-  // so those IDs can be reused. Does nothing if `lowest_discard` is nullopt.
+  // Discards annotations with IDs >= `lowest_discard` and resets the ID
+  // generator so those IDs can be reused. Does nothing if `lowest_discard` is
+  // nullopt.
   void ApplyUndoRedoDiscards(std::optional<IdType> lowest_discard);
 
   // Sets the cursor to a drawing/erasing brush cursor when necessary.
@@ -506,8 +521,9 @@ class PdfInkModule {
   // Shapes loaded from the PDF.
   DocumentV2InkPathShapesMap loaded_v2_shapes_;
 
-  // Generates IDs for use in FinishedStrokeState and PdfInkUndoRedoModel.
-  StrokeIdGenerator stroke_id_generator_;
+  // Generates InkStrokeIds and InkTextIds for use in FinishedStrokeState and
+  // PdfInkUndoRedoModel.
+  IdGenerator id_generator_;
 
   // Store a PdfInkBrush for each brush type so that the brush parameters are
   // saved when swapping between brushes.  The PdfInkBrushes should not be

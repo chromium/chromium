@@ -22,8 +22,11 @@ using InkModeledShapeId = base::StrongAlias<class InkModeledShapeIdTag, size_t>;
 // Identifies ink::Stroke objects.
 using InkStrokeId = base::StrongAlias<class InkStrokeIdTag, size_t>;
 
+// Identifies Ink text objects.
+using InkTextId = base::StrongAlias<class InkTextIdTag, size_t>;
+
 // Set of all IDs.
-using IdType = std::variant<InkStrokeId, InkModeledShapeId>;
+using IdType = std::variant<InkStrokeId, InkModeledShapeId, InkTextId>;
 
 // Returns the underlying value of an IdType.
 size_t GetIdTypeValue(const IdType& id);

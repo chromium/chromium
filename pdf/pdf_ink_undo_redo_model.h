@@ -58,9 +58,9 @@ class PdfInkUndoRedoModel {
   // not at the top of the stack, then this discards all entries from the
   // current position to the top of the stack. Returns the lowest annotation ID
   // among added elements to discard. Since IDs are added in increasing order,
-  // all elements with the same ID or larger IDs can be discarded. This does not
-  // return `InkModeledShapeId`, because model shapes are pre-existing and
-  // cannot be discarded.
+  // all elements with the same ID or larger IDs can be discarded. This will
+  // never return an `InkModeledShapeId`, which is preexisting and cannot be
+  // discarded.
   // Must be called before Add().
   // Must not be called while another add/remove has been started.
   [[nodiscard]] base::expected<std::optional<IdType>, std::monostate>
@@ -79,9 +79,9 @@ class PdfInkUndoRedoModel {
   // not at the top of the stack, then this discards all entries from the
   // current position to the top of the stack. Returns the lowest annotation ID
   // among added elements to discard. Since IDs are added in increasing order,
-  // all elements with the same ID or larger IDs can be discarded. This does not
-  // return `InkModeledShapeId`, because model shapes are pre-existing and
-  // cannot be discarded.
+  // all elements with the same ID or larger IDs can be discarded. This will
+  // never return an `InkModeledShapeId`, which is preexisting and cannot be
+  // discarded.
   // Must be called before Remove().
   // Must not be called while another add/remove has been started.
   [[nodiscard]] base::expected<std::optional<IdType>, std::monostate>
@@ -126,10 +126,10 @@ class PdfInkUndoRedoModel {
   //     `RemoveCommands` elements.
   // (6) IDs added to a `RemoveCommands` must exist in some `AddCommands`
   //     element.
-  // (7) `AddCommands` only contains `InkStrokeId` elements here. The reason
-  //     `AddCommands` can hold `InkModeledShapeId` is to undo an
-  //     `InkModeledShapeId` removal, where the caller needs to know they need
-  //     to draw the shape.
+  // (7) `AddCommands` only contains `InkStrokeId` and `InkTextId` elements
+  //     here. The reason `AddCommands` can hold `InkModeledShapeId` is to undo
+  //     an `InkModeledShapeId` removal, where the caller needs to know they
+  //     need to draw the shape or text annotation.
   std::vector<Commands> commands_stack_ = {std::monostate()};
 
   // Invariants:

@@ -901,7 +901,7 @@ bool PdfInkModule::FinishStroke(const gfx::PointF& position,
     CHECK_GE(state.page_index, 0);
     ink::Envelope invalidate_envelope;
     for (const auto& segment : in_progress_stroke_segments) {
-      InkStrokeId id = stroke_id_generator_.GetIdAndAdvance();
+      InkStrokeId id = id_generator_.GetStrokeIdAndAdvance();
       ink::Stroke stroke = segment.CopyToStroke();
       client_->StrokeAdded(state.page_index, id, stroke);
       invalidate_envelope.Add(stroke.GetShape().Bounds());
@@ -1191,7 +1191,7 @@ bool PdfInkModule::FinishTextHighlight(const gfx::PointF& position,
     highlight_strokes = GetTextSelectionAsStrokes();
     for (const auto& [page_index, strokes] : highlight_strokes) {
       for (const auto& stroke : strokes) {
-        InkStrokeId id = stroke_id_generator_.GetIdAndAdvance();
+        InkStrokeId id = id_generator_.GetStrokeIdAndAdvance();
         client_->StrokeAdded(page_index, id, stroke);
         strokes_[page_index].push_back(
             FinishedStrokeState(std::move(stroke), id));
@@ -1809,9 +1809,9 @@ void PdfInkModule::ApplyUndoRedoDiscards(std::optional<IdType> lowest_discard) {
     }
   }
 
-  // Now that some strokes have been discarded, let the StrokeIdGenerator know
+  // Now that some annotations have been discarded, Let the IdGenerator know
   // there are IDs available for reuse.
-  stroke_id_generator_.ResetIdTo(lowest_stroke_id);
+  id_generator_.ResetIdTo(GetIdTypeValue(lowest_stroke_id));
 }
 
 bool PdfInkModule::MaybeSetDrawingBrush() {
@@ -1928,20 +1928,26 @@ PdfInkModule::LoadedV2ShapeState& PdfInkModule::LoadedV2ShapeState::operator=(
 
 PdfInkModule::LoadedV2ShapeState::~LoadedV2ShapeState() = default;
 
-PdfInkModule::StrokeIdGenerator::StrokeIdGenerator() = default;
+PdfInkModule::IdGenerator::IdGenerator() = default;
 
-PdfInkModule::StrokeIdGenerator::~StrokeIdGenerator() = default;
+PdfInkModule::IdGenerator::~IdGenerator() = default;
 
-InkStrokeId PdfInkModule::StrokeIdGenerator::GetIdAndAdvance() {
-  // Die intentionally if `next_stroke_id_` is about to overflow.
-  CHECK_NE(next_stroke_id_.value(), std::numeric_limits<size_t>::max());
-  InkStrokeId stroke_id = next_stroke_id_;
-  ++next_stroke_id_.value();
-  return stroke_id;
+InkStrokeId PdfInkModule::IdGenerator::GetStrokeIdAndAdvance() {
+  return InkStrokeId(GetIdAndAdvance());
 }
 
-void PdfInkModule::StrokeIdGenerator::ResetIdTo(InkStrokeId id) {
-  next_stroke_id_ = id;
+InkTextId PdfInkModule::IdGenerator::GetTextIdAndAdvance() {
+  return InkTextId(GetIdAndAdvance());
+}
+
+size_t PdfInkModule::IdGenerator::GetIdAndAdvance() {
+  // Die intentionally if `next_id_` is about to overflow.
+  CHECK_NE(next_id_, std::numeric_limits<size_t>::max());
+  return next_id_++;
+}
+
+void PdfInkModule::IdGenerator::ResetIdTo(size_t id) {
+  next_id_ = id;
 }
 
 }  // namespace chrome_pdf
