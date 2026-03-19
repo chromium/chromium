@@ -8,10 +8,13 @@
 #include <utility>
 
 #include "base/functional/callback_helpers.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/default_browser/default_browser_controller.h"
 #include "chrome/browser/default_browser/default_browser_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/common/pref_names.h"
+#include "components/prefs/pref_service.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/win/taskbar_manager.h"
@@ -130,6 +133,15 @@ void DefaultBrowserSurfaceManager::HandleAccept() {
 }
 
 void DefaultBrowserSurfaceManager::HandleDismiss() {
+  PrefService* local_state = g_browser_process->local_state();
+
+  int declined_count =
+      local_state->GetInteger(prefs::kDefaultBrowserDeclinedCount);
+  local_state->SetInteger(prefs::kDefaultBrowserDeclinedCount,
+                          declined_count + 1);
+  local_state->SetTime(prefs::kDefaultBrowserLastDeclinedTime,
+                       base::Time::Now());
+
   if (!controller_) {
     return;
   }
