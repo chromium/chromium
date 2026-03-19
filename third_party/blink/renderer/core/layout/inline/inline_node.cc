@@ -1483,10 +1483,16 @@ bool InlineNode::IsNGShapeCacheAllowed(const String& text_content,
     return false;
   }
 
+  const Font* font = override_font;
+
   for (const auto& item : items) {
     switch (item->Type()) {
       case InlineItem::kControl:
       case InlineItem::kText:
+        // Grab the font from the first text item we see.
+        if (!font && item->Type() == InlineItem::kText) {
+          font = &item->FontWithSvgScaling();
+        }
         if (!RuntimeEnabledFeatures::ExtendedShapeCacheEnabled()) {
           // Only support a single text-item at the moment.
           if (!is_at_text_start()) {
@@ -1546,22 +1552,25 @@ bool InlineNode::IsNGShapeCacheAllowed(const String& text_content,
     return false;
   }
 
-  const Font& font =
-      override_font ? *override_font : items.front()->FontWithSvgScaling();
+  // We didn't find a text-item (just control-items), skip the cache.
+  if (!font) {
+    return false;
+  }
+
   if (RuntimeEnabledFeatures::ExtendedShapeCacheEnabled()) {
     // Only allow the cache for features we can cache.
-    if (!font.HasSimpleFontFeatures()) [[unlikely]] {
+    if (!font->HasSimpleFontFeatures()) [[unlikely]] {
       return false;
     }
   } else {
     // Only allow the cache for initial font features.
-    if (font.HasNonInitialFontFeatures()) [[unlikely]] {
+    if (font->HasNonInitialFontFeatures()) [[unlikely]] {
       return false;
     }
   }
 
   // We mutate the shape-result if there is spacing, it isn't safe to cache.
-  if (spacing.SetSpacing(font.GetFontDescription())) [[unlikely]] {
+  if (spacing.SetSpacing(font->GetFontDescription())) [[unlikely]] {
     return false;
   }
   return true;

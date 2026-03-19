@@ -128,6 +128,15 @@ TEST_F(InlineNodeShapeCacheTest, ShapeCacheFontFeatures) {
   EXPECT_TRUE(node.IsNGShapeCacheAllowed());
 }
 
+TEST_F(InlineNodeShapeCacheTest, ShapeCacheSpacing) {
+  SetBodyInnerHTML(
+      "<div id=t style='letter-spacing: 2px;'>"
+      "  <div style='float: left; letter-spacing: initial;'></div>text"
+      "</div>");
+  InlineNodeForTest node = CreateInlineNode(GetLayoutBlockFlowByElementId("t"));
+  EXPECT_FALSE(node.IsNGShapeCacheAllowed());
+}
+
 TEST_F(InlineNodeShapeCacheTest, ShapeResultPointerEqualFloatsAndOutOfFlow) {
   // We can have a mismatch in the number and type of float/OOF-positioned
   // items as they are transparent to shaping.
