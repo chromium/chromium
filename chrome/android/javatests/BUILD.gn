@@ -816,6 +816,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.firstrun") {
   resources_package = "org.chromium.chrome.test"
 
   sources = [
+    "src/org/chromium/chrome/browser/firstrun/DefaultBrowserPromoFirstRunFragmentRenderTest.java",
     "src/org/chromium/chrome/browser/firstrun/FirstRunActivityTestObserver.java",
     "src/org/chromium/chrome/browser/firstrun/FirstRunIntegrationTest.java",
   ]
