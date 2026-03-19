@@ -7,16 +7,13 @@
 #include <memory>
 #include <string>
 
-#include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/services/storage/privileged/mojom/indexed_db_internals_types.mojom.h"
+#include "content/browser/indexed_db/indexed_db_test_base.h"
 #include "content/browser/indexed_db/instance/fake_transaction.h"
-#include "content/browser/indexed_db/instance/mock_blob_storage_context.h"
-#include "storage/browser/test/mock_quota_manager_proxy.h"
-#include "storage/browser/test/mock_special_storage_policy.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
@@ -26,41 +23,14 @@ namespace content::indexed_db {
 using testing::SizeIs;
 using ITS = storage::mojom::IdbTransactionState;
 
-class BucketContextTest : public testing::Test {
+class BucketContextTest : public IndexedDBTestBase {
  public:
   BucketContextTest()
-      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
-
-  BucketContextTest(const BucketContextTest&) = delete;
-  BucketContextTest& operator=(const BucketContextTest&) = delete;
+      : IndexedDBTestBase(/*use_default_buckets=*/true, /*use_sqlite=*/false) {}
 
   void SetUp() override {
-    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    quota_policy_ = base::MakeRefCounted<storage::MockSpecialStoragePolicy>();
-    quota_manager_ = base::MakeRefCounted<storage::MockQuotaManager>(
-        /*is_incognito=*/false, temp_dir_.GetPath(),
-        base::SingleThreadTaskRunner::GetCurrentDefault().get(),
-        quota_policy_.get());
-    quota_manager_proxy_ = base::MakeRefCounted<storage::MockQuotaManagerProxy>(
-        quota_manager_.get(),
-        base::SingleThreadTaskRunner::GetCurrentDefault().get());
-
-    bucket_context_ = CreateBucketContext();
-  }
-
-  std::unique_ptr<BucketContext> CreateBucketContext() {
-    storage::BucketInfo bucket_info = quota_manager_->CreateBucket(
-        storage::BucketInitParams::ForDefaultBucket(
-            blink::StorageKey::CreateFromStringForTesting(
-                "https://example.com")));
-    mojo::PendingRemote<storage::mojom::BlobStorageContext>
-        blob_storage_context;
-    mock_blob_storage_context_.Clone(
-        blob_storage_context.InitWithNewPipeAndPassReceiver());
-    return std::make_unique<BucketContext>(
-        bucket_info, base::FilePath(), BucketContext::Delegate(),
-        quota_manager_proxy_, std::move(blob_storage_context),
-        /*file_system_access_context=*/mojo::NullRemote());
+    IndexedDBTestBase::SetUp();
+    bucket_context_ = InitBucketContext(GetTestStorageKey()).AsWeakPtr();
   }
 
   void SetQuotaLeft(int64_t quota_manager_response) {
@@ -69,14 +39,7 @@ class BucketContextTest : public testing::Test {
   }
 
  protected:
-  base::test::TaskEnvironment task_environment_;
-
-  base::ScopedTempDir temp_dir_;
-  scoped_refptr<storage::MockSpecialStoragePolicy> quota_policy_;
-  scoped_refptr<storage::MockQuotaManager> quota_manager_;
-  scoped_refptr<storage::MockQuotaManagerProxy> quota_manager_proxy_;
-  MockBlobStorageContext mock_blob_storage_context_;
-  std::unique_ptr<BucketContext> bucket_context_;
+  base::WeakPtr<BucketContext> bucket_context_;
 };
 
 TEST_F(BucketContextTest, CanUseDiskSpaceQueuing) {
@@ -321,10 +284,17 @@ TEST_F(BucketContextTest, MetadataRecordingStateHistory) {
 }
 
 TEST_F(BucketContextTest, OverrideShouldUseSqliteForTesting) {
-  auto is_sqlite_used_by_new_bucket = [this]() {
-    std::unique_ptr<BucketContext> bucket_context = CreateBucketContext();
-    std::ignore = bucket_context->InitBackingStore(/*create_if_missing=*/true);
-    return bucket_context->IsUsingSqlite();
+  {
+    // Toss out the override from the test fixture.
+    auto release = std::move(sqlite_override_);
+  }
+  int bucket_counter = 0;
+  auto is_sqlite_used_by_new_bucket = [&]() {
+    BucketContext& ctx =
+        InitBucketContext(blink::StorageKey::CreateFromStringForTesting(
+            base::StringPrintf("https://test%d.example/", bucket_counter++)));
+    std::ignore = ctx.InitBackingStore(/*create_if_missing=*/true);
+    return ctx.IsUsingSqlite();
   };
   bucket_context_->InitBackingStore(/*create_if_missing=*/true);
   {
