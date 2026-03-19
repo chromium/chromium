@@ -168,8 +168,9 @@ def main(args):
       # This isn't any worse with jj than with git, but it is very annoying.
       # In particular, if you're uploading any commit except @-, expect some
       # weirdness.
-      with tempfile.NamedTemporaryFile(suffix='.json') as out:
-        out = pathlib.Path(out.name)
+      with tempfile.NamedTemporaryFile(suffix='.json', delete=False) as f:
+        out = pathlib.Path(f.name)
+      try:
         run_command([
             'git',
             'cl',
@@ -189,6 +190,12 @@ def main(args):
           if not args.allow_warnings:
             fatal('git cl presubmit had warnings.\n' +
                   'Hint: maybe you want --allow-warnings?')
+      finally:
+        # On Windows, NamedTemporaryFile cannot be opened by another process
+        # while it is still open by the creating process. We use delete=False
+        # so we can close the file before passing it to `git cl presubmit`,
+        # then manually clean it up in the finally block.
+        out.unlink(missing_ok=True)
     else:
       # For consistency's sake, we warn if the intersection of commits is small,
       # so we should also warn if the intersection is emmpty.

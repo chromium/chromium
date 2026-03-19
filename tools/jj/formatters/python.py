@@ -8,6 +8,7 @@ import fnmatch
 import os
 import pathlib
 import shutil
+import subprocess
 import sys
 
 
@@ -35,11 +36,12 @@ def main(path: pathlib.Path):
   if should_ignore(path):
     shutil.copyfileobj(sys.stdin, sys.stdout)
   else:
-    vpython = shutil.which('vpython3')
-    os.execv(
-        vpython,
-        [vpython, shutil.which('yapf'), '--style',
-         get_style(path)])
+    yapf = shutil.which('yapf')
+    args = [yapf, '--style', get_style(path)]
+    if sys.platform == 'win32':
+      sys.exit(subprocess.call(args))
+    else:
+      os.execv(yapf, args)
 
 
 if __name__ == '__main__':
