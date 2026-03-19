@@ -412,9 +412,9 @@ bool LoadingPredictor::HandleHintByOrigin(const GURL& url,
   // preconnect/presolve after a given threshold.
   const bool is_new_origin = origin != preconnect_data.last_origin_;
   preconnect_data.last_origin_ = origin;
-  const net::SchemefulSite site = net::SchemefulSite(origin);
+  net::SchemefulSite site = net::SchemefulSite(origin);
   const auto network_anonymization_key =
-      net::NetworkAnonymizationKey::CreateSameSite(site);
+      net::NetworkAnonymizationKey::CreateSameSite(std::move(site));
   base::TimeTicks now = base::TimeTicks::Now();
   if (preconnectable) {
     if (is_new_origin || now - preconnect_data.last_preconnect_time_ >=

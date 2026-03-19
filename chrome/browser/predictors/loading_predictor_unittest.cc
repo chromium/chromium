@@ -105,7 +105,7 @@ LoadingPredictorConfig CreateConfig() {
 net::NetworkAnonymizationKey CreateNetworkanonymization_key(
     const GURL& main_frame_url) {
   net::SchemefulSite site = net::SchemefulSite(main_frame_url);
-  return net::NetworkAnonymizationKey::CreateSameSite(site);
+  return net::NetworkAnonymizationKey::CreateSameSite(std::move(site));
 }
 
 NavigationId GetNextId() {
@@ -373,11 +373,11 @@ TEST_F(LoadingPredictorPreconnectTest, TestHandleOmniboxHint) {
 
   const GURL preresolve_suggestion = GURL("http://en.wikipedia.org/wiki/main");
   net::SchemefulSite site = net::SchemefulSite(preresolve_suggestion);
-  EXPECT_CALL(
-      *mock_preconnect_manager_,
-      StartPreresolveHost(preresolve_suggestion,
-                          net::NetworkAnonymizationKey::CreateSameSite(site),
-                          kLoadingPredictorPreconnectTrafficAnnotation, _, _));
+  EXPECT_CALL(*mock_preconnect_manager_,
+              StartPreresolveHost(
+                  preresolve_suggestion,
+                  net::NetworkAnonymizationKey::CreateSameSite(std::move(site)),
+                  kLoadingPredictorPreconnectTrafficAnnotation, _, _));
   predictor_->PrepareForPageLoad(/*initiator_origin=*/std::nullopt,
                                  preresolve_suggestion, HintOrigin::OMNIBOX,
                                  false);

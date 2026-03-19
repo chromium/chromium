@@ -175,7 +175,8 @@ class AuctionUrlLoaderFactoryProxyTest : public testing::TestWithParam<bool> {
       } else {
         net::SchemefulSite buyer_site{GURL(kScriptUrl)};
         EXPECT_EQ(preconnect_network_anonymization_key_,
-                  net::NetworkAnonymizationKey::CreateSameSite(buyer_site));
+                  net::NetworkAnonymizationKey::CreateSameSite(
+                      std::move(buyer_site)));
       }
     } else {
       // This check is not strictly needed, since `preconnect_url_` being equal

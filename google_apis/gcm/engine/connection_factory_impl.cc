@@ -371,7 +371,8 @@ void ConnectionFactoryImpl::StartConnection(bool ignore_connection_failure) {
   // GCM in one socket connection, if an H2 or QUIC proxy is in use.
   auto site = net::SchemefulSite(current_endpoint);
   socket_factory_->CreateProxyResolvingSocket(
-      current_endpoint, net::NetworkAnonymizationKey::CreateSameSite(site),
+      current_endpoint,
+      net::NetworkAnonymizationKey::CreateSameSite(std::move(site)),
       std::move(options),
       net::MutableNetworkTrafficAnnotationTag(traffic_annotation),
       socket_.BindNewPipeAndPassReceiver(), mojo::NullRemote() /* observer */,

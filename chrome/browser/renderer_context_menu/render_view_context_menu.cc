@@ -1044,7 +1044,7 @@ void RenderViewContextMenu::IssuePreconnectionToUrl(
   net::SchemefulSite anonymization_key_schemeful_site(anonymization_key_gurl);
   auto network_anonymization_key =
       net::NetworkAnonymizationKey::CreateCrossSite(
-          anonymization_key_schemeful_site);
+          std::move(anonymization_key_schemeful_site));
   loading_predictor->PreconnectURLIfAllowed(GURL(preconnect_url),
                                             /*allow_credentials=*/true,
                                             network_anonymization_key);

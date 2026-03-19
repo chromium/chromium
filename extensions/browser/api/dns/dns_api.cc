@@ -39,10 +39,11 @@ ExtensionFunction::ResponseAction DnsResolveFunction::Run() {
   browser_context()
       ->GetDefaultStoragePartition()
       ->GetNetworkContext()
-      ->ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
-                        std::move(host_port_pair)),
-                    net::NetworkAnonymizationKey::CreateSameSite(site), nullptr,
-                    receiver_.BindNewPipeAndPassRemote());
+      ->ResolveHost(
+          network::mojom::HostResolverHost::NewHostPortPair(
+              std::move(host_port_pair)),
+          net::NetworkAnonymizationKey::CreateSameSite(std::move(site)),
+          nullptr, receiver_.BindNewPipeAndPassRemote());
   receiver_.set_disconnect_handler(base::BindOnce(
       &DnsResolveFunction::OnComplete, base::Unretained(this),
       net::ERR_NAME_NOT_RESOLVED, net::ResolveErrorInfo(net::ERR_FAILED),

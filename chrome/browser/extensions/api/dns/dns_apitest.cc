@@ -123,7 +123,7 @@ IN_PROC_BROWSER_TEST_F(DnsApiTest, DnsResolveHostname) {
   params->source = net::HostResolverSource::LOCAL_ONLY;
   net::SchemefulSite site = net::SchemefulSite(extension->url());
   auto network_anonymization_key =
-      net::NetworkAnonymizationKey::CreateSameSite(site);
+      net::NetworkAnonymizationKey::CreateSameSite(std::move(site));
   network::DnsLookupResult result1 =
       network::BlockingDnsLookup(network_context, host_port_pair,
                                  std::move(params), network_anonymization_key);

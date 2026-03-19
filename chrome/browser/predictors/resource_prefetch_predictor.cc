@@ -364,7 +364,7 @@ bool ResourcePrefetchPredictor::PredictPreconnectOrigins(
   }
   net::SchemefulSite redirect_site = net::SchemefulSite(redirect_origin);
   auto network_anonymization_key =
-      net::NetworkAnonymizationKey::CreateSameSite(redirect_site);
+      net::NetworkAnonymizationKey::CreateSameSite(std::move(redirect_site));
 
   for (const OriginStat& origin : data.origins()) {
     float confidence = static_cast<float>(origin.number_of_hits()) /

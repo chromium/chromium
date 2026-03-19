@@ -271,7 +271,7 @@ void SearchEnginePreconnector::PreconnectDSE() {
       is_browser_app_likely_in_foreground) {
     net::SchemefulSite schemeful_site(preconnect_url);
     auto network_anonymziation_key =
-        net::NetworkAnonymizationKey::CreateSameSite(schemeful_site);
+        net::NetworkAnonymizationKey::CreateSameSite(std::move(schemeful_site));
 
     // Preconnection initiated by search engine is out of scope of connection
     // allowlist, so there is no `network_restrictions_id`.

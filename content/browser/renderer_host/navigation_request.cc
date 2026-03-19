@@ -3060,11 +3060,12 @@ void NavigationRequest::BeginNavigationImpl() {
       // Enforce cross-origin-opener-policy for about:blank, about:srcdoc and
       // MHTML iframe, before selecting the RenderFrameHost.
       const url::Origin origin = GetOriginForURLLoaderFactoryUnchecked();
-      const net::SchemefulSite site = net::SchemefulSite(origin);
+      net::SchemefulSite site = net::SchemefulSite(origin);
 
       coop_status_.EnforceCOOP(
           policy_container_builder_->FinalPolicies().cross_origin_opener_policy,
-          origin, net::NetworkAnonymizationKey::CreateSameSite(site));
+          origin,
+          net::NetworkAnonymizationKey::CreateSameSite(std::move(site)));
 
       SelectFrameHostForCrossDocumentNavigationWithNoUrlLoader();
       return;

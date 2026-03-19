@@ -839,15 +839,14 @@ TEST_P(ResourcePrefetchPredictorPreconnectToRedirectTargetTest,
   }
 
   const GURL main_frame_url("http://google.test/?query=cats");
-  const net::SchemefulSite site = net::SchemefulSite(main_frame_url);
+  net::SchemefulSite site = net::SchemefulSite(main_frame_url);
   auto network_anonymization_key =
-      net::NetworkAnonymizationKey::CreateSameSite(site);
+      net::NetworkAnonymizationKey::CreateSameSite(std::move(site));
   const url::Origin www_google_origin =
       url::Origin::Create(GURL("https://www.google.test"));
-  const net::SchemefulSite www_google_site =
-      net::SchemefulSite(www_google_origin);
+  net::SchemefulSite www_google_site = net::SchemefulSite(www_google_origin);
   auto www_google_network_anonymization_key =
-      net::NetworkAnonymizationKey::CreateSameSite(www_google_site);
+      net::NetworkAnonymizationKey::CreateSameSite(std::move(www_google_site));
   auto prediction = std::make_unique<PreconnectPrediction>();
   // No prefetch data.
   EXPECT_FALSE(predictor_->IsUrlPreconnectable(main_frame_url));
@@ -942,9 +941,9 @@ TEST_F(ResourcePrefetchPredictorTest,
       {});
 
   const GURL main_frame_url("http://google.test/?query=cats");
-  const net::SchemefulSite site = net::SchemefulSite(main_frame_url);
+  net::SchemefulSite site = net::SchemefulSite(main_frame_url);
   auto network_anonymization_key =
-      net::NetworkAnonymizationKey::CreateSameSite(site);
+      net::NetworkAnonymizationKey::CreateSameSite(std::move(site));
   auto prediction = std::make_unique<PreconnectPrediction>();
   // No prefetch data.
   EXPECT_FALSE(predictor_->IsUrlPreconnectable(main_frame_url));

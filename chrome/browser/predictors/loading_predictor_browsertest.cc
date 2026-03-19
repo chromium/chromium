@@ -723,7 +723,7 @@ IN_PROC_BROWSER_TEST_F(LoadingPredictorBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   net::SchemefulSite site = net::SchemefulSite(url);
   auto network_anonymization_key =
-      net::NetworkAnonymizationKey ::CreateSameSite(site);
+      net::NetworkAnonymizationKey ::CreateSameSite(std::move(site));
   // Ensure that no backgound task would make a host lookup or attempt to
   // preconnect.
   base::RunLoop().RunUntilIdle();
@@ -766,7 +766,7 @@ IN_PROC_BROWSER_TEST_F(LoadingPredictorBrowserTest,
                                              embedded_test_server()->port()));
   net::SchemefulSite site = net::SchemefulSite(url);
   auto network_anonymization_key =
-      net::NetworkAnonymizationKey ::CreateSameSite(site);
+      net::NetworkAnonymizationKey ::CreateSameSite(std::move(site));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   ResetNetworkState();
   ResetPredictorState();
@@ -919,7 +919,7 @@ IN_PROC_BROWSER_TEST_F(LoadingPredictorBrowserTest,
                                              embedded_test_server()->port()));
   net::SchemefulSite site = net::SchemefulSite(url);
   auto network_anonymization_key =
-      net::NetworkAnonymizationKey::CreateSameSite(site);
+      net::NetworkAnonymizationKey::CreateSameSite(std::move(site));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   ResetNetworkState();
 
@@ -946,7 +946,7 @@ IN_PROC_BROWSER_TEST_F(LoadingPredictorBrowserTest, DnsPrefetch) {
   GURL url = embedded_test_server()->GetURL("/predictor/dns_prefetch.html");
   net::SchemefulSite site = net::SchemefulSite(url);
   auto network_anonymization_key =
-      net::NetworkAnonymizationKey::CreateSameSite(site);
+      net::NetworkAnonymizationKey::CreateSameSite(std::move(site));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   preconnect_manager_observer()->WaitUntilHostLookedUp(
       GURL(kChromiumUrl).GetHost(), network_anonymization_key);
@@ -2076,7 +2076,7 @@ IN_PROC_BROWSER_TEST_F(LoadingPredictorBrowserTestWithProxy,
                                              embedded_test_server()->port()));
   net::SchemefulSite site = net::SchemefulSite(url);
   auto network_anonymization_key =
-      net::NetworkAnonymizationKey::CreateSameSite(site);
+      net::NetworkAnonymizationKey::CreateSameSite(std::move(site));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   ResetNetworkState();
   ResetPredictorState();
@@ -2105,7 +2105,7 @@ IN_PROC_BROWSER_TEST_F(LoadingPredictorBrowserTestWithProxy,
                                              embedded_test_server()->port()));
   net::SchemefulSite site = net::SchemefulSite(url);
   auto network_anonymization_key =
-      net::NetworkAnonymizationKey::CreateSameSite(site);
+      net::NetworkAnonymizationKey::CreateSameSite(std::move(site));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   ResetNetworkState();
 
@@ -2241,7 +2241,7 @@ IN_PROC_BROWSER_TEST_P(LoadingPredictorBrowserTestWithOptimizationGuide,
                                              embedded_test_server()->port()));
   net::SchemefulSite site = net::SchemefulSite(url);
   auto network_anonymization_key =
-      net::NetworkAnonymizationKey::CreateSameSite(site);
+      net::NetworkAnonymizationKey::CreateSameSite(std::move(site));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   ResetNetworkState();
 
@@ -2283,7 +2283,7 @@ IN_PROC_BROWSER_TEST_P(LoadingPredictorBrowserTestWithOptimizationGuide,
   url::Origin origin = url::Origin::Create(url);
   net::SchemefulSite site = net::SchemefulSite(origin);
   auto network_anonymization_key =
-      net::NetworkAnonymizationKey::CreateSameSite(site);
+      net::NetworkAnonymizationKey::CreateSameSite(std::move(site));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   ResetNetworkState();
 
@@ -2343,7 +2343,7 @@ IN_PROC_BROWSER_TEST_P(LoadingPredictorBrowserTestWithOptimizationGuide,
   url::Origin origin = url::Origin::Create(url);
   net::SchemefulSite site = net::SchemefulSite(origin);
   auto network_anonymization_key =
-      net::NetworkAnonymizationKey::CreateSameSite(site);
+      net::NetworkAnonymizationKey::CreateSameSite(std::move(site));
 
   auto observer = NavigateToURLAsync(url);
   EXPECT_TRUE(observer->WaitForRequestStart());
@@ -2496,7 +2496,7 @@ IN_PROC_BROWSER_TEST_F(LoadingPredictorBrowserTestWithNoLocalPredictions,
   url::Origin origin = url::Origin::Create(url);
   net::SchemefulSite site = net::SchemefulSite(origin);
   auto network_anonymization_key =
-      net::NetworkAnonymizationKey::CreateSameSite(site);
+      net::NetworkAnonymizationKey::CreateSameSite(std::move(site));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   ResetNetworkState();
 

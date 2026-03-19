@@ -639,7 +639,7 @@ void LoadingPredictorTabHelper::OnOptimizationGuideDecision(
   url::Origin main_frame_origin = url::Origin::Create(main_frame_url);
   net::SchemefulSite main_frame_site = net::SchemefulSite(main_frame_url);
   auto network_anonymization_key =
-      net::NetworkAnonymizationKey::CreateSameSite(main_frame_site);
+      net::NetworkAnonymizationKey::CreateSameSite(std::move(main_frame_site));
 
   std::set<url::Origin> predicted_origins;
   std::vector<GURL> predicted_subresources;
