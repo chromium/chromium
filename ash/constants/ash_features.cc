@@ -837,9 +837,6 @@ BASE_FEATURE(kGlanceablesTimeManagementTasksViewAssignedTasks,
 // Enables logging new Gaia account creation event.
 BASE_FEATURE(kGaiaRecordAccountCreation, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables Gamepad Support.
-BASE_FEATURE(kGameDashboardGamepadSupport, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables the Game Dashboard Main Menu utility views.
 BASE_FEATURE(kGameDashboardUtilities, base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -2935,10 +2932,6 @@ bool IsLobsterEnabledForManagedUsers() {
 bool IsLockScreenHideSensitiveNotificationsSupported() {
   return base::FeatureList::IsEnabled(
       kLockScreenHideSensitiveNotificationsSupport);
-}
-
-bool IsGameDashboardGamepadSupportEnabled() {
-  return base::FeatureList::IsEnabled(kGameDashboardGamepadSupport);
 }
 
 bool AreGameDashboardUtilitiesEnabled() {

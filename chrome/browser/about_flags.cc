@@ -8224,11 +8224,6 @@ const FeatureEntry kFeatureEntries[] = {
      SINGLE_VALUE_TYPE(switches::kEnableWebGPUDeveloperFeatures)},
 
 #if BUILDFLAG(IS_CHROMEOS)
-    {"game-dashboard-gamepad-support",
-     flag_descriptions::kGameDashboardGamepadSupport,
-     flag_descriptions::kGameDashboardGamepadSupport, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kGameDashboardGamepadSupport)},
-
     {"game-dashboard-utilities", flag_descriptions::kGameDashboardUtilities,
      flag_descriptions::kGameDashboardUtilitiesDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kGameDashboardUtilities)},

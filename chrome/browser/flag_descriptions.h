@@ -7351,9 +7351,6 @@ inline constexpr char kFuseBoxDebugName[] =
 inline constexpr char kFuseBoxDebugDescription[] =
     "Show additional debugging UI for ChromeOS FuseBox service.";
 
-inline constexpr char kGameDashboardGamepadSupport[] =
-    "Game Dashboard gamepad support.";
-
 inline constexpr char kGameDashboardUtilities[] = "Game Dashboard Utilities";
 inline constexpr char kGameDashboardUtilitiesDescription[] =
     "Enables utility features in the Game Dashboard.";
