@@ -9751,3 +9751,6 @@ crbug.com/492386032 [ Linux ] external/wpt/html/dom/partial-updates/tentative/te
 
 # Flakey on all platforms
 crbug.com/482056706 virtual/threaded/external/wpt/css/css-view-transitions/navigation/pageswap-skip-transition.html [ Failure Pass ]
+
+# Gardener 2026-03-19
+crbug.com/436884031 [ Mac ] http/tests/devtools/console/console-xpath.js [ Failure Pass ]
