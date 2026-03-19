@@ -55,12 +55,6 @@ class PageContext;
 @property(nonatomic, assign) ios::provider::GeminiPageContextComputationState
     geminiPageContextComputationState;
 
-// The state of the BWG PageContext computation.
-// TODO(crbug.com/467341090): Remove this property once all callers have
-// migrated.
-@property(nonatomic, assign) ios::provider::GeminiPageContextComputationState
-    BWGPageContextComputationState;
-
 // The state of the Gemini PageContext attachment.
 @property(nonatomic, assign) ios::provider::GeminiPageContextAttachmentState
     geminiPageContextAttachmentState;
