@@ -268,13 +268,14 @@ as a Cast Receiver). The embedder code for Fuchsia WebEngine lives in
 ### Headless
 
 Headless Chromium allows running Chromium in a headless/server environment.
-The embedder code for Headless lives in //headless. Details are
-[here](https://chromium.googlesource.com/chromium/src/+/main/headless/README.md).
+The embedder code for Headless lives in //headless.
 Headless is supported on Linux, Windows, MacOS, ChromeOS and Fuchsia.
 On Linux, headless supports [numerous build settings for trimming down
 the dependencies and producing a binary capable of running in a minimal
 runtime environment](
 https://source.chromium.org/chromium/chromium/src/+/main:build/args/headless.gn).
+Details are
+[here](https://chromium.googlesource.com/chromium/src/+/main/headless/README.md).
 
 ### iOS WebView
 
