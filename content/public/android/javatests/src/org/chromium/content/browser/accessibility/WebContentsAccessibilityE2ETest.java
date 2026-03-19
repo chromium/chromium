@@ -27,7 +27,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.UrlUtils;
@@ -302,8 +301,11 @@ WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="ro
     @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.BAKLAVA)
     @EnableFeatures({ContentFeatureList.ACCESSIBILITY_EXTENDED_SELECTION})
-    @DisabledTest(message = "https://crbug.com/493575785")
     public void testDumpTreeWithInitialSelection() throws Throwable {
+        Assume.assumeTrue(
+                "Requires Android 16 QPR2 (36.1) or higher",
+                Build.VERSION.SDK_INT_FULL >= Build.VERSION_CODES_FULL.BAKLAVA_1);
+
         // Load a page with an initial selection.
         String html =
                 """
