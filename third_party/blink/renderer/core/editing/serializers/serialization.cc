@@ -695,6 +695,13 @@ DocumentFragment* CreateFragmentForInnerOuterHTML(
     return nullptr;
   }
 
+  // If an inert document is requested, we shouldn't run custom element
+  // callbacks. Those will be run whenever the result template will be inserted
+  // into the final document.
+  if (force_inert == ForceInertTemplate::kForce) {
+    registry = nullptr;
+  }
+
   Document& document =
       (IsA<HTMLTemplateElement>(*context_element) ||
        force_inert == ForceInertTemplate::kForce)
