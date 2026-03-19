@@ -195,10 +195,6 @@ bool TileDisplayLayerImpl::IsDirectlyCompositedImage() const {
   return is_directly_composited_image_;
 }
 
-bool TileDisplayLayerImpl::GetNearestNeighbor() const {
-  return nearest_neighbor_;
-}
-
 gfx::Rect TileDisplayLayerImpl::RecordedBounds() const {
   return recorded_bounds_;
 }

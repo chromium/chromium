@@ -73,6 +73,8 @@ class CC_EXPORT TileBasedLayerImpl : public LayerImpl {
         GetMaximumContentsScaleForUseInAppendQuads());
   }
 
+  bool GetNearestNeighbor() const { return nearest_neighbor_; }
+
   void SetSolidColor(std::optional<SkColor4f> color) { solid_color_ = color; }
 
   std::vector<float>& GetLastAppendQuadsScalesForTesting() {
@@ -108,6 +110,10 @@ class CC_EXPORT TileBasedLayerImpl : public LayerImpl {
 
   void UnionWithExistingDamage(const gfx::Rect& rect) {
     damage_rect_.Union(rect);
+  }
+
+  void SetNearestNeighbor(bool nearest_neighbor) {
+    nearest_neighbor_ = nearest_neighbor;
   }
 
   bool LastAppendQuadsScalesContains(float scale) const {
@@ -183,8 +189,6 @@ class CC_EXPORT TileBasedLayerImpl : public LayerImpl {
                          float max_contents_scale,
                          AppendQuadsCustomSharedData* custom_data);
 
-  virtual bool GetNearestNeighbor() const = 0;
-
   virtual bool IsDirectlyCompositedImage() const = 0;
 
   virtual TilingResolution GetTilingResolutionForDebugBorders(
@@ -218,6 +222,7 @@ class CC_EXPORT TileBasedLayerImpl : public LayerImpl {
   // space.
   gfx::Rect damage_rect_;
 
+  bool nearest_neighbor_ : 1 = false;
   bool produced_tile_last_append_quads_ : 1 = true;
 };
 

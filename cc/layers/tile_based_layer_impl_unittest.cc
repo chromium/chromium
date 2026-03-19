@@ -93,7 +93,6 @@ class TestTileBasedLayerImpl : public TileBasedLayerImpl<FakeTiling> {
     return 1.f;
   }
   bool IsDirectlyCompositedImage() const override { return false; }
-  bool GetNearestNeighbor() const override { return false; }
   TilingResolution GetTilingResolutionForDebugBorders(
       const FakeTiling* tiling) const override {
     return TilingResolution::kHigh;

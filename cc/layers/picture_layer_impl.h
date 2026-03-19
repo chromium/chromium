@@ -202,7 +202,6 @@ class CC_EXPORT PictureLayerImpl
 
   bool IsDirectlyCompositedImage() const override;
   gfx::Rect RecordedBounds() const override;
-  bool GetNearestNeighbor() const override;
 
   void set_should_batch_updated_tiles() { should_batch_updated_tiles_ = true; }
 
@@ -346,8 +345,6 @@ class CC_EXPORT PictureLayerImpl
   }
 
   bool was_screen_space_transform_animating_ : 1 = false;
-
-  bool nearest_neighbor_ : 1 = false;
 
   // This is set by UpdateRasterSource() on change of raster source size. It's
   // used to recalculate raster scale for will-chagne:transform. It's reset to

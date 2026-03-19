@@ -272,7 +272,7 @@ void PictureLayerImpl::AppendQuadsForResourcelessSoftwareDraw(
   auto* quad = render_pass->CreateAndAppendDrawQuad<viz::PictureDrawQuad>();
   quad->SetNew(
       shared_quad_state, geometry_rect, visible_geometry_rect, needs_blending,
-      texture_rect, nearest_neighbor_, quad_content_rect, max_contents_scale,
+      texture_rect, GetNearestNeighbor(), quad_content_rect, max_contents_scale,
       std::move(image_animation_map), raster_source_->GetDisplayItemList(),
       GetRasterInducingScrollOffsets());
   ValidateQuadResources(quad);
@@ -899,10 +899,6 @@ gfx::Rect PictureLayerImpl::RecordedBounds() const {
   return raster_source_ ? raster_source_->recorded_bounds() : gfx::Rect();
 }
 
-bool PictureLayerImpl::GetNearestNeighbor() const {
-  return nearest_neighbor_;
-}
-
 std::vector<const DrawImage*> PictureLayerImpl::GetDiscardableImagesInRect(
     const gfx::Rect& rect) const {
   return discardable_image_map_->GetDiscardableImagesInRect(rect);
@@ -1049,10 +1045,10 @@ void PictureLayerImpl::UpdateDirectlyCompositedImageFromRasterSource() {
       new_default_raster_scale !=
       directly_composited_image_default_raster_scale_;
 
-  if (new_nearest_neighbor != nearest_neighbor_ ||
+  if (new_nearest_neighbor != GetNearestNeighbor() ||
       directly_composited_image_default_raster_scale_changed_) {
     directly_composited_image_default_raster_scale_ = new_default_raster_scale;
-    nearest_neighbor_ = new_nearest_neighbor;
+    SetNearestNeighbor(new_nearest_neighbor);
     NoteLayerPropertyChanged();
   }
 }
