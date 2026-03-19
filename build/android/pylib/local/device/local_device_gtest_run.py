@@ -684,7 +684,6 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
         on_failure=self._env.DenylistDevice)
     def list_tests(dev):
       timeout = 30 * _GetDeviceTimeoutMultiplier()
-      retries = 1
       if self._test_instance.wait_for_java_debugger:
         timeout = None
 
@@ -694,13 +693,12 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
               '--gtest_also_run_disabled_tests'
           ]
       ]
-      flags.append('--gtest_list_tests')
-      device_json_path = posixpath.join(dev.GetExternalStoragePath(),
-                                        'gtest_list_tests.json')
-      flags.append(f'--gtest_output=json:{device_json_path}')
+      with device_temp_file.DeviceTempFile(
+          adb=dev.adb, dir=dev.GetAppWritablePath(),
+          device_utils=dev) as gtest_list_tests_file:
+        flags.append('--gtest_list_tests')
+        flags.append(f'--gtest_output=json:{gtest_list_tests_file.name}')
 
-      # TODO(crbug.com/40522854): Remove retries when no longer necessary.
-      for i in range(0, retries + 1):
         logging.info('flags:')
         for f in flags:
           logging.info('  %s', f)
@@ -716,14 +714,16 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
           logging.info('No tests found. Output:')
           for l in raw_test_list:
             logging.info('  %s', l)
-          if i < retries:
-            logging.info('Retrying...')
         else:
           with tempfile_ext.NamedTemporaryDirectory() as temp_dir:
             host_json_path = os.path.join(temp_dir, 'gtest_list_tests.json')
             try:
-              dev.PullFile(device_json_path, host_json_path)
-              dev.RemovePath(device_json_path)
+              device_json_path = gtest_list_tests_file.name
+              if self._env.force_main_user:
+                device_json_path = dev.ResolveSpecialPath(device_json_path)
+              dev.PullFile(device_json_path,
+                           host_json_path,
+                           as_root=self._env.force_main_user)
               with open(host_json_path, 'r') as f:
                 self._test_locations.update(
                     gtest_test_instance.ParseGTestListTestsJSON(f.read()))
@@ -731,7 +731,6 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
                     device_errors.CommandTimeoutError):
               logging.exception(
                   'Failed to pull gtest list tests JSON from device.')
-          break
       return tests
 
     # Query all devices in case one fails.
