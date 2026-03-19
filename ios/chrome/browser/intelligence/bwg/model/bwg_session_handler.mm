@@ -146,7 +146,6 @@ IOSGeminiSessionCancellationReason HistogramEnumFromGeminiCancelType(
 - (void)UIDidAppearWithClientID:(NSString*)clientID
                        serverID:(NSString*)serverID {
   [self updateSessionWithClientID:clientID serverID:serverID];
-  [self setSessionActive:YES clientID:clientID];
 
   // Start session timer.
   _sessionStartTime = base::TimeTicks::Now();
@@ -163,7 +162,6 @@ IOSGeminiSessionCancellationReason HistogramEnumFromGeminiCancelType(
 - (void)UIDidDisappearWithClientID:(NSString*)clientID
                           serverID:(NSString*)serverID {
   [_geminiHandler dismissGeminiFlowWithCompletion:nil];
-  [self setSessionActive:NO clientID:clientID];
 
   web::WebState* webState = [self webStateWithClientID:clientID];
   if (!webState) {
@@ -352,16 +350,6 @@ IOSGeminiSessionCancellationReason HistogramEnumFromGeminiCancelType(
       base::SysNSStringToUTF8(serverID));
 }
 
-// Sets the session's active state for the given client ID.
-- (void)setSessionActive:(BOOL)active clientID:(NSString*)clientID {
-  web::WebState* webState = [self webStateWithClientID:clientID];
-  if (!webState) {
-    return;
-  }
-
-  BwgTabHelper* BWGTabHelper = BwgTabHelper::FromWebState(webState);
-  BWGTabHelper->SetBwgUiShowing(active);
-}
 
 // Sets all BWG sessions inactive other than for the WebState matching
 // `clientID`.

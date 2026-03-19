@@ -94,7 +94,6 @@ const CGFloat kPromoMaxImpressionCount = 3;
 - (void)stopWithCompletion:(ProceduralBlock)completion {
   BwgTabHelper* BWGTabHelper = [self activeWebStateBWGTabHelper];
   if (BWGTabHelper) {
-    BWGTabHelper->SetBwgUiShowing(false);
     BWGTabHelper->SetPreventContextualPanelEntryPoint(NO);
   }
   ios::provider::ResetGemini();
@@ -154,8 +153,7 @@ const CGFloat kPromoMaxImpressionCount = 3;
   _FREWrapperViewController.sheetPresentationController.delegate = self;
   _FREWrapperViewController.mutator = _mediator;
 
-  BOOL shouldAnimatePresentation =
-      BWGTabHelper ? !BWGTabHelper->GetIsBwgSessionActiveInBackground() : YES;
+  BOOL shouldAnimatePresentation = YES;
 
   [self.baseViewController presentViewController:_FREWrapperViewController
                                         animated:shouldAnimatePresentation
@@ -163,10 +161,6 @@ const CGFloat kPromoMaxImpressionCount = 3;
                                         // Record FRE was shown.
                                         RecordFREShown();
                                       }];
-
-  if (BWGTabHelper) {
-    BWGTabHelper->SetBwgUiShowing(true);
-  }
 
   return YES;
 }

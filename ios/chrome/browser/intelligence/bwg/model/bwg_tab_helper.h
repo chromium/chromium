@@ -53,11 +53,7 @@ class BwgTabHelper : public web::WebStateObserver,
   void ExecuteZeroStateSuggestions(
       base::OnceCallback<void(NSArray<NSString*>* suggestions)> callback);
 
-  // Sets the state of `is_bwg_ui_showing_`.
-  void SetBwgUiShowing(bool showing);
 
-  // Gets the state of `is_bwg_session_active_in_background_`.
-  bool GetIsBwgSessionActiveInBackground();
 
   // Deactivates the BWG associated to this WebState.
   void DeactivateBWGSession();
@@ -80,9 +76,6 @@ class BwgTabHelper : public web::WebStateObserver,
   // Whether Gemini is available for the current web state.
   bool IsGeminiAvailableForWebState();
 
-  // Prepares the WebState for the BWG FRE (first run experience) backgrounding.
-  // Takes a fullscreen screenshot and sets the session to active.
-  void PrepareBwgFreBackgrounding();
 
   // Gets the client and server IDs for the BWG session for the associated
   // WebState. server ID is optional because it may not be found or is expired.
@@ -220,13 +213,6 @@ class BwgTabHelper : public web::WebStateObserver,
   // WebState this tab helper is attached to.
   raw_ptr<web::WebState> web_state_ = nullptr;
 
-  // Whether the BWG UI is currently showing.
-  bool is_bwg_ui_showing_ = false;
-
-  // Whether the BWG session is currently active in the "background", i.e. the
-  // UI is not present since another  WebState is being shown, but the current
-  // WebState has an active session.
-  bool is_bwg_session_active_in_background_ = false;
 
   // Commands handler for BWG commands.
   __weak id<BWGCommands> bwg_commands_handler_ = nullptr;

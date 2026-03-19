@@ -121,12 +121,6 @@ class BwgTabHelperTest : public PlatformTest {
     tab_helper_->SetHelpCommandsHandler(mock_help_handler_);
   }
 
-  bool IsBwgUiShowing() { return tab_helper_->is_bwg_ui_showing_; }
-
-  bool IsBwgSessionActiveInBackground() {
-    return tab_helper_->is_bwg_session_active_in_background_;
-  }
-
   // Environment objects are declared first, so they are destroyed last.
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   web::WebTaskEnvironment task_environment_;
@@ -220,11 +214,6 @@ class BwgTabHelperTest : public PlatformTest {
   }
 };
 
-TEST_F(BwgTabHelperTest, TestSetBwgUiShowing) {
-  ASSERT_FALSE(IsBwgUiShowing());
-  tab_helper_->SetBwgUiShowing(true);
-  ASSERT_TRUE(IsBwgUiShowing());
-}
 
 TEST_F(BwgTabHelperTest, TestContextualChipCommandSent) {
   feature_list_.InitWithFeatures(
@@ -244,34 +233,6 @@ TEST_F(BwgTabHelperTest, TestContextualChipCommandSent) {
   EXPECT_OCMOCK_VERIFY(mock_location_bar_badge_handler_);
 }
 
-TEST_F(BwgTabHelperTest, TestGetIsBwgSessionActiveInBackground) {
-  ASSERT_FALSE(tab_helper_->GetIsBwgSessionActiveInBackground());
-  tab_helper_->SetBwgUiShowing(true);
-  tab_helper_->WasHidden(web_state_.get());
-  ASSERT_TRUE(tab_helper_->GetIsBwgSessionActiveInBackground());
-}
-
-TEST_F(BwgTabHelperTest, TestDeactivateBWGSession) {
-  tab_helper_->SetBwgUiShowing(true);
-  tab_helper_->WasHidden(web_state_.get());
-  ASSERT_TRUE(IsBwgSessionActiveInBackground());
-  // BWG is still considered as being shown in this case.
-  ASSERT_TRUE(IsBwgUiShowing());
-
-  tab_helper_->DeactivateBWGSession();
-  ASSERT_FALSE(IsBwgSessionActiveInBackground());
-  ASSERT_FALSE(IsBwgUiShowing());
-}
-
-TEST_F(BwgTabHelperTest, TestPrepareBwgFreBackgrounding) {
-  ASSERT_FALSE(IsBwgSessionActiveInBackground());
-  tab_helper_->PrepareBwgFreBackgrounding();
-  ASSERT_TRUE(IsBwgSessionActiveInBackground());
-
-  // Showing the UI should reset the background state.
-  tab_helper_->SetBwgUiShowing(true);
-  ASSERT_FALSE(IsBwgSessionActiveInBackground());
-}
 
 TEST_F(BwgTabHelperTest, TestIsLastInteractionUrlDifferent_SameURL) {
   feature_list_.InitWithFeatures(
@@ -363,30 +324,6 @@ TEST_F(BwgTabHelperTest, TestGetServerId_Expired) {
   ASSERT_FALSE(tab_helper_->GetServerId().has_value());
 }
 
-TEST_F(BwgTabHelperTest, TestWasShown_RestoresSession) {
-  OCMExpect([mock_bwg_handler_
-      startGeminiFlowWithStartupState:[OCMArg checkWithBlock:^BOOL(
-                                                  GeminiStartupState* state) {
-        return state.entryPoint == gemini::EntryPoint::TabReopen;
-      }]]);
-
-  // Background a session and then show the tab.
-  tab_helper_->PrepareBwgFreBackgrounding();
-  tab_helper_->WasShown(web_state_.get());
-
-  EXPECT_OCMOCK_VERIFY(mock_bwg_handler_);
-}
-
-TEST_F(BwgTabHelperTest, TestWasHidden_BackgroundsSession) {
-  OCMExpect([mock_bwg_handler_ dismissGeminiFlowWithCompletion:nil]);
-
-  // Show the UI and then hide the tab.
-  tab_helper_->SetBwgUiShowing(true);
-  tab_helper_->WasHidden(web_state_.get());
-
-  ASSERT_TRUE(IsBwgSessionActiveInBackground());
-  EXPECT_OCMOCK_VERIFY(mock_bwg_handler_);
-}
 
 TEST_F(BwgTabHelperTest, TestDidStartNavigation_ShowsImageRemixIPH) {
   feature_engagement::test::ScopedIphFeatureList iph_feature_list;
@@ -598,10 +535,6 @@ TEST_F(BwgTabHelperTest, TestDidStartNavigation_DoesNotShowPromoPrefs) {
 }
 
 TEST_F(BwgTabHelperTest, WebStateDestroyed) {
-  // Set some state.
-  tab_helper_->SetBwgUiShowing(true);
-  tab_helper_->PrepareBwgFreBackgrounding();
-
   // Destroy the webstate.
   web_state_.reset();
 

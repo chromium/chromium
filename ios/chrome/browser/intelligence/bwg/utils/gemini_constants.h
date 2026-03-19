@@ -22,8 +22,7 @@ enum class EntryPoint {
   AIHub = 2,
   // Gemini was opened directly from the Omnibox chip, skipping the AI Hub.
   OmniboxChip = 3,
-  // Gemini was opened via re opening a tab that had Gemini open.
-  TabReopen = 4,
+  // TabReopen = 4, // Deprecated, no longer used.
   // Gemini was opened from the AppBar.
   AppBar = 5,
   // Gemini was opened via the image long-press context menu.

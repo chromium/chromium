@@ -190,21 +190,8 @@ const CGFloat kPromoMaxImpressionCount = 3;
 
 // Open a new tab page given a URL.
 - (void)openNewTabWithURL:(const GURL&)URL {
-  [self prepareFREBackground];
   OpenNewTabCommand* command = [OpenNewTabCommand commandWithURLFromChrome:URL];
   [self.sceneHandler openURLInNewTab:command];
-}
-
-// Notifies the currently active WebState's BWG tab helper that the FRE will be
-// backgrounded.
-- (void)prepareFREBackground {
-  BwgTabHelper* geminiTabHelper = [self activeWebStateGeminiTabHelper];
-  if (!geminiTabHelper) {
-    return;
-  }
-
-  geminiTabHelper->SetBwgUiShowing(false);
-  geminiTabHelper->PrepareBwgFreBackgrounding();
 }
 
 // Returns the currently active WebState's Gemini tab helper.

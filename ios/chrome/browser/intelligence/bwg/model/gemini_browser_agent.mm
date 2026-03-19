@@ -417,18 +417,12 @@ CGFloat GeminiBrowserAgent::GetFloatyOffsetFromFullscreenController(
 
 void GeminiBrowserAgent::InvokeFloaty(GeminiConfiguration* config) {
   if (!IsGeminiCopresenceEnabled()) {
-    web::WebState* web_state = browser_->GetWebStateList()->GetActiveWebState();
-    BwgTabHelper* gemini_tab_helper = GetActiveTabHelper(web_state);
     ios::provider::StartBwgOverlay(config);
-    gemini_tab_helper->SetBwgUiShowing(true);
     return;
   }
 
   PrepareFloatyToBeShown();
-  web::WebState* web_state = browser_->GetWebStateList()->GetActiveWebState();
-  BwgTabHelper* gemini_tab_helper = GetActiveTabHelper(web_state);
   ios::provider::StartBwgOverlay(config);
-  gemini_tab_helper->SetBwgUiShowing(true);
   last_shown_view_state_ = ios::provider::GetCurrentGeminiViewState();
   is_floaty_invoked_ = true;
 }
@@ -618,7 +612,6 @@ void GeminiBrowserAgent::OnGeminiViewStateExpanded() {
   BwgTabHelper* tab_helper = GetActiveTabHelper(active_web_state);
 
   if (tab_helper) {
-    tab_helper->SetBwgUiShowing(true);
     if (CanExtractPageContextForWebState(active_web_state)) {
       tab_helper->SetupPageContextGeneration(
           base::BindRepeating(&GeminiBrowserAgent::UpdateFloatyPageContext,
@@ -707,13 +700,6 @@ void GeminiBrowserAgent::DismissGeminiFromOtherWindows(
 }
 
 void GeminiBrowserAgent::DismissFloaty() {
-  web::WebState* active_web_state =
-      browser_->GetWebStateList()->GetActiveWebState();
-  BwgTabHelper* gemini_tab_helper = GetActiveTabHelper(active_web_state);
-  if (gemini_tab_helper) {
-    gemini_tab_helper->SetBwgUiShowing(false);
-  }
-
   if (IsGeminiCopresenceWithFullscreenDisablerEnabled()) {
     ResetFullscreenDisabler();
   }
@@ -1091,8 +1077,7 @@ void GeminiBrowserAgent::PresentFloatyWithState(
   std::optional<std::string> maybe_server_id = gemini_tab_helper->GetServerId();
   config.serverID =
       maybe_server_id ? base::SysUTF8ToNSString(*maybe_server_id) : nil;
-  config.shouldAnimatePresentation =
-      !gemini_tab_helper->GetIsBwgSessionActiveInBackground();
+  config.shouldAnimatePresentation = YES;
   config.lastInteractionURLDifferent =
       gemini_tab_helper->IsLastInteractionUrlDifferent();
   config.shouldShowSuggestionChips =

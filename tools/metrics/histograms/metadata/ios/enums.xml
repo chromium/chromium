@@ -774,7 +774,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Overflow Menu"/>
   <int value="2" label="AI Hub"/>
   <int value="3" label="Omnibox Chip (Skipped AI Hub)"/>
-  <int value="4" label="Tab Reopen"/>
+  <int value="4" label="Tab Reopen (Deprecated in M148)"/>
   <int value="5" label="App Bar"/>
   <int value="6" label="Image long-press context menu"/>
   <int value="7" label="Image Remix in-product help"/>

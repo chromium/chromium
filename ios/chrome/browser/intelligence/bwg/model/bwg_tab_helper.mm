@@ -190,14 +190,6 @@ void BwgTabHelper::ExecuteZeroStateSuggestions(
       std::move(service_callback));
 }
 
-void BwgTabHelper::SetBwgUiShowing(bool showing) {
-  is_bwg_ui_showing_ = showing;
-
-  // The UI was foregrounded, so it can no longer be active in the background.
-  if (is_bwg_ui_showing_) {
-    is_bwg_session_active_in_background_ = false;
-  }
-}
 
 void BwgTabHelper::SetIsFirstRun(bool is_first_run) {
   is_first_run_ = is_first_run;
@@ -267,13 +259,8 @@ void BwgTabHelper::UpdatePresentedSource(gemini::FloatyUpdateSource source,
   }
 }
 
-bool BwgTabHelper::GetIsBwgSessionActiveInBackground() {
-  return is_bwg_session_active_in_background_;
-}
-
 void BwgTabHelper::DeactivateBWGSession() {
-  is_bwg_session_active_in_background_ = false;
-  is_bwg_ui_showing_ = false;
+  BwgTabHelper::DeleteBwgSessionInStorage();
 }
 
 bool BwgTabHelper::IsLastInteractionUrlDifferent() {
@@ -302,10 +289,6 @@ void BwgTabHelper::CreateOrUpdateBwgSessionInStorage(std::string server_id) {
 
 void BwgTabHelper::DeleteBwgSessionInStorage() {
   CleanupSessionFromPrefs();
-}
-
-void BwgTabHelper::PrepareBwgFreBackgrounding() {
-  is_bwg_session_active_in_background_ = true;
 }
 
 std::string BwgTabHelper::GetClientId() {
@@ -361,32 +344,17 @@ bool BwgTabHelper::IsGeminiAvailableForWebState() {
 #pragma mark - WebStateObserver
 
 void BwgTabHelper::WasShown(web::WebState* web_state) {
-  if (is_bwg_session_active_in_background_) {
-    if (!IsGeminiCopresenceEnabled()) {
-      [bwg_commands_handler_
-          startGeminiFlowWithStartupState:
-              [[GeminiStartupState alloc]
-                  initWithEntryPoint:gemini::EntryPoint::TabReopen]];
-    }
+  if (!IsGeminiCopresenceEnabled()) {
+    return;
   }
 
-  if (IsGeminiCopresenceEnabled()) {
-    [bwg_commands_handler_
-        updateFloatyVisibilityIfEligibleAnimated:NO
-                                      fromSource:gemini::FloatyUpdateSource::
-                                                     WebNavigation];
-  }
+  [bwg_commands_handler_
+      updateFloatyVisibilityIfEligibleAnimated:NO
+                                    fromSource:gemini::FloatyUpdateSource::
+                                                   WebNavigation];
 }
 
 void BwgTabHelper::WasHidden(web::WebState* web_state) {
-  if (is_bwg_ui_showing_) {
-    is_bwg_session_active_in_background_ = true;
-
-    if (!IsGeminiCopresenceEnabled()) {
-      [bwg_commands_handler_ dismissGeminiFlowWithCompletion:nil];
-    }
-  }
-
   if (!IsGeminiCopresenceEnabled()) {
     return;
   }

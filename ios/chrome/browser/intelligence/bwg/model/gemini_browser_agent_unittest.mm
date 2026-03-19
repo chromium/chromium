@@ -230,10 +230,6 @@ TEST_F(GeminiBrowserAgentTest, TestGeminiBrowserAgentStartGeminiFlow) {
       std::make_unique<base::Value>(std::move(result)).release(),
       "pageContextExtractor.extractPageContext");
 
-  // Set the BWG tab helper as backgrounded and assert.
-  bwg_tab_helper_->PrepareBwgFreBackgrounding();
-  ASSERT_TRUE(bwg_tab_helper_->GetIsBwgSessionActiveInBackground());
-
   // Simulate FRE completion.
   profile_->GetPrefs()->SetBoolean(prefs::kIOSBwgConsent, true);
 
@@ -267,9 +263,6 @@ TEST_F(GeminiBrowserAgentTest, TestGeminiBrowserAgentStartGeminiFlow) {
       base::test::RunUntil([delegate_called]() { return *delegate_called; }));
 
   [mock_delegate verify];
-
-  // Assert the BWG tab helper was set as foregrounded.
-  ASSERT_FALSE(bwg_tab_helper_->GetIsBwgSessionActiveInBackground());
 }
 
 TEST_F(GeminiBrowserAgentTest,
@@ -278,17 +271,10 @@ TEST_F(GeminiBrowserAgentTest,
   std::unique_ptr<optimization_guide::proto::PageContext> page_context =
       std::make_unique<optimization_guide::proto::PageContext>();
 
-  // Set the BWG tab helper as backgrounded and assert.
-  bwg_tab_helper_->PrepareBwgFreBackgrounding();
-  ASSERT_TRUE(bwg_tab_helper_->GetIsBwgSessionActiveInBackground());
-
   gemini_browser_agent_->PresentFloatyWithPendingContext(
       base_view_controller, std::move(page_context),
       [[GeminiStartupState alloc]
           initWithEntryPoint:gemini::EntryPoint::Promo]);
-
-  // Assert the BWG tab helper was set as foregrounded.
-  ASSERT_FALSE(bwg_tab_helper_->GetIsBwgSessionActiveInBackground());
 }
 
 // Tests that switching active web states handles observations correctly.

@@ -113,17 +113,12 @@
   _viewController.sheetPresentationController.delegate = self;
   _viewController.mutator = _mediator;
 
-  BwgTabHelper* BWGTabHelper = [self activeWebStateGeminiTabHelper];
   [self.baseViewController presentViewController:_viewController
                                         animated:YES
                                       completion:^{
                                         // Record FRE was shown.
                                         RecordFREShown();
                                       }];
-
-  if (BWGTabHelper) {
-    BWGTabHelper->SetBwgUiShowing(true);
-  }
 
   [super start];
 }
@@ -137,7 +132,6 @@
 - (void)stopWithCompletion:(ProceduralBlock)completion {
   BwgTabHelper* BWGTabHelper = [self activeWebStateGeminiTabHelper];
   if (BWGTabHelper) {
-    BWGTabHelper->SetBwgUiShowing(false);
     BWGTabHelper->SetPreventContextualPanelEntryPoint(NO);
   }
 
