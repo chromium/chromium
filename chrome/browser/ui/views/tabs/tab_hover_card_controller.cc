@@ -21,9 +21,11 @@
 #include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
 #include "chrome/browser/ui/tabs/tab_data.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
+#include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_widget_sublevel.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_views.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
@@ -75,9 +77,9 @@ base::TimeDelta GetPreviewImageCaptureDelay(
   return base::Milliseconds(ms);
 }
 
-base::TimeDelta GetShowDelay(int tab_width) {
-  const TabStyle* tab_style = TabStyle::Get();
-
+base::TimeDelta GetShowDelay(BrowserWindowInterface* browser,
+                             TabStripRegionView* tab_strip,
+                             HoverCardAnchorTarget* anchor_target) {
   static const int max_width_additional_delay =
       base::GetFieldTrialParamByFeatureAsInt(
           features::kTabHoverCardImages,
@@ -85,6 +87,10 @@ base::TimeDelta GetShowDelay(int tab_width) {
 
   // Delay is calculated as a logarithmic scale and bounded by a minimum width
   // based on the width of a pinned tab and a maximum of the standard width.
+  // Once we reach standard width for the tab, we add an additional
+  // |max_width_additional_delay| delay to the computed delay value since the
+  // standard width should provide enough information of the tab reducing the
+  // overall value provided by the hovercard.
   //
   //  delay (ms)
   //           |
@@ -100,25 +106,48 @@ base::TimeDelta GetShowDelay(int tab_width) {
   // min delay-|****
   //           |___________________________________________ tab width
   //               |                                |
-  //       pinned tab width               standard tab width
+  //       minimum tab width               standard tab width
+  int tab_width = 0, tab_min_width = 0, tab_standard_width = 0;
+  auto* vertical_tab_strip_state_controller =
+      tabs::VerticalTabStripStateController::From(browser);
+  if (vertical_tab_strip_state_controller &&
+      vertical_tab_strip_state_controller->ShouldDisplayVerticalTabs()) {
+    // For vertical tabs, we use tab strip width instead of tab widths. The
+    // minimum width is the collapsed state while the standard width is tied to
+    // the default uncollapsed width.
+    tab_width = tab_strip->width();
+
+    tab_min_width = VerticalTabStripRegionView::kCollapsedWidth;
+    tab_standard_width = tabs::kVerticalTabStripDefaultUncollapsedWidth;
+  } else {
+    // Use the largest tab in the tab strip when determining the delay so that
+    // the delay is consistent for all tabs within the tab strip.
+    tab_width = anchor_target->GetAnchorView()->width();
+    for (int i = 0; i < browser->GetTabStripModel()->count(); i++) {
+      tab_width =
+          std::max(tab_width, tab_strip->GetTabAnchorViewAt(i)->width());
+    }
+
+    const TabStyle* tab_style = TabStyle::Get();
+    tab_min_width = tab_style->GetPinnedWidth(/*is_split=*/false);
+    tab_standard_width = tab_style->GetStandardWidth(/*is_split=*/false);
+  }
+
   constexpr base::TimeDelta kMinimumTriggerDelay = base::Milliseconds(300);
-  const int tab_pinned_width = tab_style->GetPinnedWidth(/*is_split=*/false);
-  const int tab_standard_width =
-      tab_style->GetStandardWidth(/*is_split=*/false);
-  if (tab_width < tab_pinned_width) {
+  if (tab_width <= tab_min_width) {
     return kMinimumTriggerDelay;
   }
   constexpr base::TimeDelta kMaximumTriggerDelay = base::Milliseconds(800);
   double logarithmic_fraction =
-      std::log(tab_width - tab_pinned_width + 1) /
-      std::log(tab_standard_width - tab_pinned_width + 1);
+      std::log(tab_width - tab_min_width + 1) /
+      std::log(tab_standard_width - tab_min_width + 1);
   base::TimeDelta scaling_factor = kMaximumTriggerDelay - kMinimumTriggerDelay;
   base::TimeDelta delay =
       logarithmic_fraction * scaling_factor + kMinimumTriggerDelay;
   if (tab_width >= tab_standard_width) {
     delay += base::Milliseconds(max_width_additional_delay);
   }
-  return std::min(kMaximumTriggerDelay, delay);
+  return delay;
 }
 
 bool IsBrowserForSystemWebApp(
@@ -597,16 +626,9 @@ void TabHoverCardController::UpdateOrShowCard(
     ResetCardsSeenCount();
   }
   if (is_initial && !disable_animations_for_testing_) {
-    // Use the largest tab in the tab strip when determining the delay so that
-    // the delay is consistent for all tabs within the tab strip.
-    int largest_tab = anchor_target->GetAnchorView()->width();
-    for (int i = 0; i < browser_window_interface_->GetTabStripModel()->count();
-         i++) {
-      largest_tab =
-          std::max(largest_tab, tab_strip_->GetTabAnchorViewAt(i)->width());
-    }
     delayed_show_timer_.Start(
-        FROM_HERE, GetShowDelay(largest_tab),
+        FROM_HERE,
+        GetShowDelay(browser_window_interface_, tab_strip_, anchor_target),
         base::BindOnce(&TabHoverCardController::ShowHoverCard,
                        weak_ptr_factory_.GetWeakPtr(), true, anchor_target));
   } else {
