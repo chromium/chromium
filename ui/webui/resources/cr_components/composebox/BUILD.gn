@@ -30,6 +30,8 @@ build_webui("build") {
     "composebox_dropdown.ts",
     "composebox_file_inputs.html.ts",
     "composebox_file_inputs.ts",
+    "composebox_input.html.ts",
+    "composebox_input.ts",
     "composebox_lens_search.html.ts",
     "composebox_lens_search.ts",
     "composebox_match.html.ts",
@@ -63,6 +65,7 @@ build_webui("build") {
   css_files = [
     "composebox.css",
     "composebox_dropdown.css",
+    "composebox_input.css",
     "composebox_lens_search.css",
     "composebox_match.css",
     "composebox_shared_style.css",
