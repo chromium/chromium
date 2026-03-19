@@ -257,8 +257,7 @@ bool QuicHttpStream::IsResponseBodyComplete() const {
 }
 
 bool QuicHttpStream::IsConnectionReused() const {
-  // TODO(rch): do something smarter here.
-  return stream_ && stream_->id() > 1;
+  return stream_ && !stream_->IsFirstStream();
 }
 
 base::ByteSize QuicHttpStream::GetTotalReceivedBytes() const {

@@ -702,6 +702,32 @@ TEST_P(QuicHttpStreamTest, DisableConnectionMigrationForStream) {
   EXPECT_FALSE(client_stream->can_migrate_to_cellular_network());
 }
 
+TEST_P(QuicHttpStreamTest, IsConnectionReused) {
+  Initialize();
+
+  stream_->RegisterRequest(&request_);
+  EXPECT_EQ(OK, stream_->InitializeStream(true, DEFAULT_PRIORITY,
+                                          net_log_with_source_,
+                                          callback_.callback()));
+
+  // The very first stream on a connection is not considered reused.
+  EXPECT_FALSE(stream_->IsConnectionReused());
+
+  // Create a second stream on the same connection by using the same domain
+  // (www.example.org) as the first stream.
+  QuicHttpStream stream2(session_->CreateHandle(url::SchemeHostPort(
+                             url::kHttpsScheme, "www.example.org", 443)),
+                         {} /* dns_aliases */);
+  stream2.RegisterRequest(&request_);
+  TestCompletionCallback callback2;
+  EXPECT_EQ(
+      OK, stream2.InitializeStream(true, DEFAULT_PRIORITY, net_log_with_source_,
+                                   callback2.callback()));
+
+  // Subsequent streams on the same connection should be considered reused.
+  EXPECT_TRUE(stream2.IsConnectionReused());
+}
+
 TEST_P(QuicHttpStreamTest, GetRequest) {
   SetRequest("GET", "/", DEFAULT_PRIORITY);
   size_t spdy_request_header_frame_length;
