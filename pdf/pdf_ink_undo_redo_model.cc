@@ -99,23 +99,6 @@ bool PdfInkUndoRedoModel::Add(IdType id) {
   return true;
 }
 
-bool PdfInkUndoRedoModel::Finish() {
-  if (!has_started_) {
-    return false;
-  }
-
-  CHECK(!commands_stack_.empty());
-
-  has_started_ = false;
-  auto& commands = commands_stack_.back();
-  if (!commands.adds.empty() || !commands.removes.empty()) {
-    ++stack_position_;
-  } else {
-    commands_stack_.pop_back();
-  }
-  return true;
-}
-
 bool PdfInkUndoRedoModel::Remove(IdType id) {
   if (!has_started_) {
     return false;
@@ -132,6 +115,23 @@ bool PdfInkUndoRedoModel::Remove(IdType id) {
   }
 
   commands_stack_.back().removes.insert(id);
+  return true;
+}
+
+bool PdfInkUndoRedoModel::Finish() {
+  if (!has_started_) {
+    return false;
+  }
+
+  CHECK(!commands_stack_.empty());
+
+  has_started_ = false;
+  auto& commands = commands_stack_.back();
+  if (!commands.adds.empty() || !commands.removes.empty()) {
+    ++stack_position_;
+  } else {
+    commands_stack_.pop_back();
+  }
   return true;
 }
 
