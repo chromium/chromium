@@ -9,6 +9,11 @@ using blink::WebMouseWheelEvent;
 
 namespace content {
 
+// Minimum ratio between the dominant and non-dominant axis required to engage
+// railing. Below this ratio, the scroll is considered diagonal and rails are
+// not applied.
+constexpr float kMinRailRatio = 2.0f;
+
 MouseWheelRailsFilterMac::MouseWheelRailsFilterMac() {
 }
 
@@ -38,6 +43,16 @@ WebInputEvent::RailsMode MouseWheelRailsFilterMac::UpdateRailsMode(
   decayed_delta_.Scale(kDecayConstant);
   decayed_delta_ +=
       gfx::Vector2dF(std::abs(event.delta_x), std::abs(event.delta_y));
+
+  float max_delta = std::max(decayed_delta_.x(), decayed_delta_.y());
+  float min_delta = std::min(decayed_delta_.x(), decayed_delta_.y());
+
+  // Allow free diagonal scrolling when neither axis clearly dominates. The
+  // ratio is re-evaluated on every event, so that railing naturally re-engages
+  // when the user transitions between scroll directions.
+  if (min_delta * kMinRailRatio > max_delta) {
+    return WebInputEvent::RailsMode::kRailsModeFree;
+  }
 
   if (decayed_delta_.y() >= decayed_delta_.x())
     return WebInputEvent::RailsMode::kRailsModeVertical;

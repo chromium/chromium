@@ -21,37 +21,92 @@ WebMouseWheelEvent MakeEvent(WebMouseWheelEvent::Phase phase,
   return event;
 }
 
-TEST(MouseWheelRailsFilterMacTest, Functionality) {
+TEST(MouseWheelRailsFilterMacTest, StronglyHorizontalStaysLocked) {
   WebInputEvent::RailsMode mode;
   MouseWheelRailsFilterMac filter;
 
-  // Start with a mostly-horizontal event and see that it is locked
-  // horizontally and continues to be locked.
-  mode =
-      filter.UpdateRailsMode(MakeEvent(WebMouseWheelEvent::kPhaseBegan, 2, 1));
-  EXPECT_EQ(mode, WebInputEvent::RailsMode::kRailsModeHorizontal);
-  mode = filter.UpdateRailsMode(
-      MakeEvent(WebMouseWheelEvent::kPhaseChanged, 2, 2));
-  EXPECT_EQ(mode, WebInputEvent::RailsMode::kRailsModeHorizontal);
-  mode = filter.UpdateRailsMode(
-      MakeEvent(WebMouseWheelEvent::kPhaseChanged, 10, -4));
-  EXPECT_EQ(mode, WebInputEvent::RailsMode::kRailsModeHorizontal);
-
-  // Change from horizontal to vertical and back.
+  // A strongly horizontal gesture (ratio >= 2x) should stay locked.
   mode =
       filter.UpdateRailsMode(MakeEvent(WebMouseWheelEvent::kPhaseBegan, 4, 1));
   EXPECT_EQ(mode, WebInputEvent::RailsMode::kRailsModeHorizontal);
   mode = filter.UpdateRailsMode(
-      MakeEvent(WebMouseWheelEvent::kPhaseChanged, 3, 4));
+      MakeEvent(WebMouseWheelEvent::kPhaseChanged, 10, -4));
   EXPECT_EQ(mode, WebInputEvent::RailsMode::kRailsModeHorizontal);
-  mode = filter.UpdateRailsMode(
-      MakeEvent(WebMouseWheelEvent::kPhaseChanged, 1, 4));
+}
+
+TEST(MouseWheelRailsFilterMacTest, StronglyVerticalStaysLocked) {
+  WebInputEvent::RailsMode mode;
+  MouseWheelRailsFilterMac filter;
+
+  mode =
+      filter.UpdateRailsMode(MakeEvent(WebMouseWheelEvent::kPhaseBegan, 1, 5));
   EXPECT_EQ(mode, WebInputEvent::RailsMode::kRailsModeVertical);
   mode = filter.UpdateRailsMode(
-      MakeEvent(WebMouseWheelEvent::kPhaseChanged, 10, 0));
+      MakeEvent(WebMouseWheelEvent::kPhaseChanged, 0, 3));
+  EXPECT_EQ(mode, WebInputEvent::RailsMode::kRailsModeVertical);
+}
+
+TEST(MouseWheelRailsFilterMacTest, DiagonalScrollIsFree) {
+  WebInputEvent::RailsMode mode;
+  MouseWheelRailsFilterMac filter;
+
+  // Equal deltas on both axes. Clearly diagonal, should be free.
+  mode =
+      filter.UpdateRailsMode(MakeEvent(WebMouseWheelEvent::kPhaseBegan, 3, 3));
+  EXPECT_EQ(mode, WebInputEvent::RailsMode::kRailsModeFree);
+  mode = filter.UpdateRailsMode(
+      MakeEvent(WebMouseWheelEvent::kPhaseChanged, 4, 3));
+  EXPECT_EQ(mode, WebInputEvent::RailsMode::kRailsModeFree);
+}
+
+TEST(MouseWheelRailsFilterMacTest, DiagonalThenVerticalReRails) {
+  WebInputEvent::RailsMode mode;
+  MouseWheelRailsFilterMac filter;
+
+  mode =
+      filter.UpdateRailsMode(MakeEvent(WebMouseWheelEvent::kPhaseBegan, 3, 3));
+  EXPECT_EQ(mode, WebInputEvent::RailsMode::kRailsModeFree);
+  mode = filter.UpdateRailsMode(
+      MakeEvent(WebMouseWheelEvent::kPhaseChanged, 3, 3));
+  EXPECT_EQ(mode, WebInputEvent::RailsMode::kRailsModeFree);
+
+  mode = filter.UpdateRailsMode(
+      MakeEvent(WebMouseWheelEvent::kPhaseChanged, 0, 10));
+  EXPECT_EQ(mode, WebInputEvent::RailsMode::kRailsModeVertical);
+}
+
+TEST(MouseWheelRailsFilterMacTest, NewGestureResetsState) {
+  WebInputEvent::RailsMode mode;
+  MouseWheelRailsFilterMac filter;
+
+  mode =
+      filter.UpdateRailsMode(MakeEvent(WebMouseWheelEvent::kPhaseBegan, 5, 1));
   EXPECT_EQ(mode, WebInputEvent::RailsMode::kRailsModeHorizontal);
 
-  // Make sure zeroes don't break things.
+  mode =
+      filter.UpdateRailsMode(MakeEvent(WebMouseWheelEvent::kPhaseBegan, 1, 5));
+  EXPECT_EQ(mode, WebInputEvent::RailsMode::kRailsModeVertical);
+}
+
+TEST(MouseWheelRailsFilterMacTest, SingleAxisWithZeroOtherAxisRails) {
+  WebInputEvent::RailsMode mode;
+  MouseWheelRailsFilterMac filter;
+
+  // Pure horizontal (zero Y) should lock horizontally.
+  mode =
+      filter.UpdateRailsMode(MakeEvent(WebMouseWheelEvent::kPhaseBegan, 5, 0));
+  EXPECT_EQ(mode, WebInputEvent::RailsMode::kRailsModeHorizontal);
+
+  // Pure vertical (zero X) should lock vertically.
+  mode =
+      filter.UpdateRailsMode(MakeEvent(WebMouseWheelEvent::kPhaseBegan, 0, 5));
+  EXPECT_EQ(mode, WebInputEvent::RailsMode::kRailsModeVertical);
+}
+
+TEST(MouseWheelRailsFilterMacTest, ZeroDeltasReturnFree) {
+  WebInputEvent::RailsMode mode;
+  MouseWheelRailsFilterMac filter;
+
   mode = filter.UpdateRailsMode(
       MakeEvent(WebMouseWheelEvent::kPhaseChanged, 0, 0));
   EXPECT_EQ(mode, WebInputEvent::RailsMode::kRailsModeFree);
