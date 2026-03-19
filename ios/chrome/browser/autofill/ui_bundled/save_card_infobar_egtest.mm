@@ -4,8 +4,10 @@
 
 #import <memory>
 
+#import "base/base_paths.h"
 #import "base/i18n/time_formatting.h"
 #import "base/ios/ios_util.h"
+#import "base/path_service.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
@@ -26,11 +28,10 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
-#import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
+#import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
-#import "ios/web/public/test/http_server/http_server.h"
 #import "net/test/embedded_test_server/default_handlers.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -45,8 +46,7 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 
 // URLs of the test pages.
 const char kCreditCardUploadForm[] =
-    "https://components/test/data/autofill/"
-    "credit_card_upload_form_address_and_cc.html";
+    "/credit_card_upload_form_address_and_cc.html";
 
 // Google Payments server requests and responses.
 NSString* const kURLGetUploadDetailsRequest =
@@ -241,7 +241,7 @@ void FillAndSubmitXframeCreditCardForm() {
 
 }  // namespace
 
-@interface SaveCardInfobarEGTest : WebHttpServerChromeTestCase
+@interface SaveCardInfobarEGTest : ChromeTestCase
 
 @end
 
@@ -274,6 +274,14 @@ void FillAndSubmitXframeCreditCardForm() {
 
 - (void)setUp {
   [super setUp];
+
+  net::test_server::RegisterDefaultHandlers(self.testServer);
+
+  self.testServer->ServeFilesFromDirectory(
+      base::PathService::CheckedGet(base::DIR_SRC_TEST_DATA_ROOT)
+          .AppendASCII("components/test/data/autofill"));
+
+  GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
   // Observe histograms in tests.
   chrome_test_util::GREYAssertErrorNil(
       [MetricsAppInterface setupHistogramTester]);
@@ -343,8 +351,7 @@ void FillAndSubmitXframeCreditCardForm() {
                paymentsResponse:(NSString*)fakeResponse
                       errorCode:(int)errorCode
                    forLocalSave:(BOOL)localSave {
-  [ChromeEarlGrey
-      loadURL:web::test::HttpServer::MakeUrl(kCreditCardUploadForm)];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kCreditCardUploadForm)];
 
   // Set up the Google Payments server response.
   [AutofillAppInterface setPaymentsResponse:fakeResponse
@@ -1053,8 +1060,7 @@ void FillAndSubmitXframeCreditCardForm() {
 // dismissed when navigating with a user gesture. Test with the credit card save
 // prompt but the type of credit card prompt doesn't matter in this test case.
 - (void)testStickySavePromptJourney {
-  const GURL testPageURL =
-      web::test::HttpServer::MakeUrl(kCreditCardUploadForm);
+  const GURL testPageURL = self.testServer->GetURL(kCreditCardUploadForm);
 
   [ChromeEarlGrey loadURL:testPageURL];
 
@@ -1242,8 +1248,7 @@ void FillAndSubmitXframeCreditCardForm() {
   GREYAssertEqual(0U, [AutofillAppInterface localCreditCount],
                   @"There should be no saved credit card.");
 
-  [ChromeEarlGrey
-      loadURL:web::test::HttpServer::MakeUrl(kCreditCardUploadForm)];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kCreditCardUploadForm)];
 
   // Set up the Google Payments server response.
   [AutofillAppInterface setPaymentsResponse:kResponseGetUploadDetailsFailure
@@ -1302,8 +1307,7 @@ void FillAndSubmitXframeCreditCardForm() {
   GREYAssertEqual(0U, [AutofillAppInterface localCreditCount],
                   @"There should be no saved credit card.");
 
-  [ChromeEarlGrey
-      loadURL:web::test::HttpServer::MakeUrl(kCreditCardUploadForm)];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kCreditCardUploadForm)];
 
   // Set up the Google Payments server response.
   [AutofillAppInterface setPaymentsResponse:kResponseGetUploadDetailsFailure
