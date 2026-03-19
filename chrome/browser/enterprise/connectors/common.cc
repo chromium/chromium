@@ -196,18 +196,6 @@ google::protobuf::RepeatedPtrField<std::string> CollectFrameUrlsImpl(
 }
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
-#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-bool ShouldAllowDeepScanOnLargeOrEncryptedFiles(
-    ScanRequestUploadResult result,
-    bool block_large_files,
-    bool block_password_protected_files) {
-  return (result == ScanRequestUploadResult::kFileTooLarge &&
-          !block_large_files) ||
-         (result == ScanRequestUploadResult::kFileEncrypted &&
-          !block_password_protected_files);
-}
-#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-
 }  // namespace
 
 policy::BrowserPolicyConnector* GetBrowserPolicyConnector() {
@@ -358,24 +346,6 @@ google::protobuf::RepeatedPtrField<std::string> CollectFrameUrls(
 }
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-
-bool CloudMultipartResultIsFailure(ScanRequestUploadResult result) {
-  return result != ScanRequestUploadResult::kSuccess;
-}
-
-bool CloudResumableResultIsFailure(ScanRequestUploadResult result,
-                                   bool block_large_files,
-                                   bool block_password_protected_files) {
-  return result != ScanRequestUploadResult::kSuccess &&
-         !ShouldAllowDeepScanOnLargeOrEncryptedFiles(
-             result, block_large_files, block_password_protected_files);
-}
-
-bool LocalResultIsFailure(ScanRequestUploadResult result) {
-  return result != ScanRequestUploadResult::kSuccess &&
-         result != ScanRequestUploadResult::kFileTooLarge &&
-         result != ScanRequestUploadResult::kFileEncrypted;
-}
 
 bool ResultIsFailClosed(ScanRequestUploadResult result) {
   return result == ScanRequestUploadResult::kUploadFailure ||

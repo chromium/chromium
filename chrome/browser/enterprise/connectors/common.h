@@ -75,20 +75,6 @@ google::protobuf::RepeatedPtrField<std::string> CollectFrameUrls(
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
 // Returns true if `result` as returned by BinaryUploadService is considered a
-// a failed result when attempting a cloud-based multipart content analysis.
-bool CloudMultipartResultIsFailure(ScanRequestUploadResult result);
-
-// Returns true if `result` as returned by BinaryUploadService is considered a
-// a failed result when attempting a cloud-based resumable content analysis.
-bool CloudResumableResultIsFailure(ScanRequestUploadResult result,
-                                   bool block_large_files,
-                                   bool block_password_protected_files);
-
-// Returns true if `result` as returned by BinaryUploadService is considered a
-// a failed result when attempting a local content analysis.
-bool LocalResultIsFailure(ScanRequestUploadResult result);
-
-// Returns true if `result` as returned by BinaryUploadService is considered a
 // fail-closed result, regardless of attempting a cloud-based or a local-based
 // content analysis.
 bool ResultIsFailClosed(ScanRequestUploadResult result);

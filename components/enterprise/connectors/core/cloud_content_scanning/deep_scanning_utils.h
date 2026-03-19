@@ -40,6 +40,20 @@ bool IsConsumerScanRequest(const BinaryUploadRequest& request);
 // protocol for sending scans to the server.
 bool IsResumableUpload(const BinaryUploadRequest& request);
 
+// Returns true if `result` as returned by BinaryUploadService is considered a
+// a failed result when attempting a cloud-based multipart content analysis.
+bool CloudMultipartResultIsFailure(ScanRequestUploadResult result);
+
+// Returns true if `result` as returned by BinaryUploadService is considered a
+// a failed result when attempting a cloud-based resumable content analysis.
+bool CloudResumableResultIsFailure(ScanRequestUploadResult result,
+                                   bool block_large_files,
+                                   bool block_password_protected_files);
+
+// Returns true if `result` as returned by BinaryUploadService is considered a
+// a failed result when attempting a local content analysis.
+bool LocalResultIsFailure(ScanRequestUploadResult result);
+
 }  // namespace enterprise_connectors
 
 #endif  // COMPONENTS_ENTERPRISE_CONNECTORS_CORE_CLOUD_CONTENT_SCANNING_DEEP_SCANNING_UTILS_H_
