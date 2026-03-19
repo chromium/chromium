@@ -157,6 +157,7 @@ if (!is_ios) {
 
 if (is_android) {
   robolectric_binary("services_junit_tests") {
+    enable_android_resources = false
     sources = [
       "device/generic_sensor/android/junit/src/org/chromium/device/sensors/PlatformSensorAndProviderTest.java",
       "device/geolocation/android/junit/src/org/chromium/device/geolocation/LocationProviderTest.java",

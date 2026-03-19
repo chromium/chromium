@@ -5873,6 +5873,7 @@ if (is_android) {
   }
 
   robolectric_binary("base_junit_tests") {
+    enable_android_resources = false
     shared_libraries = [ ":libbase_junit_tests($robolectric_toolchain)" ]
     sources = [
       "android/junit/src/org/chromium/base/ApplicationStatusTest.java",

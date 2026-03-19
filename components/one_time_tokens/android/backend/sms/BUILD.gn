@@ -62,6 +62,7 @@ android_library("java") {
 }
 
 robolectric_binary("one_time_tokens_junit_tests") {
+  enable_android_resources = false
   testonly = true
 
   sources = [

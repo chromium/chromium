@@ -5,10 +5,11 @@
 import("//build/config/android/rules.gni")
 
 robolectric_binary("media_session_junit_tests") {
+  enable_android_resources = false
   testonly = true
   sources =
       [ "src/org/chromium/services/media_session/MediaPositionUnitTest.java" ]
-  resources_package = "org.chromium.services.media_session"
+
   deps = [
     "//base:base_java",
     "//base:base_java_test_support",

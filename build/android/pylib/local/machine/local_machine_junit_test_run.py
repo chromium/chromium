@@ -102,9 +102,9 @@ class LocalMachineJunitTestRun(test_run.TestRun):
       ]
 
       if not resource_apk:
-        # Setting manifest = NONE improves performance by avoiding Robolectric
+        # Setting manifest = --none improves performance by avoiding Robolectric
         # having to scan for and parse a dummy manifest.
-        props.append('manifest = NONE')
+        props.append('manifest = --none')
 
       z.writestr('robolectric.properties', '\n'.join(props))
     return properties_jar_path

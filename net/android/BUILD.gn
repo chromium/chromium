@@ -272,6 +272,7 @@ java_cpp_enum("net_android_java_enums_srcjar") {
 }
 
 robolectric_binary("net_junit_tests") {
+  enable_android_resources = false
   sources = [
     "junit/src/org/chromium/net/HttpNegotiateAuthenticatorTest.java",
     "junit/src/org/chromium/net/NetworkTrafficAnnotationTagTest.java",
