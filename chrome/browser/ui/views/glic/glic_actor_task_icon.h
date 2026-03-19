@@ -19,6 +19,7 @@
 #include "ui/color/color_id.h"
 #include "ui/color/color_variant.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/button/menu_button_controller.h"
 #include "ui/views/view_class_properties.h"
 
 class BrowserWindowInterface;
@@ -147,6 +148,25 @@ class GlicActorTaskIcon : public GlicBaseShim<T> {
         kColorNewTabButtonCRBackgroundFrameInactive);
   }
 
+  void SetPressedState(bool is_pressed) {
+    SetPressedColor(is_pressed);
+    SetOrResetPressedLock(is_pressed);
+  }
+
+  void SetOrResetPressedLock(bool is_pressed) {
+    views::MenuButtonController* controller =
+        static_cast<views::MenuButtonController*>(this->button_controller());
+    if (is_pressed && controller) {
+      pressed_lock_ = controller->TakeLock();
+    } else {
+      pressed_lock_.reset();
+    }
+  }
+
+  // Get whether the button is currently pressed. The button should be pressed
+  // when the task list bubble is showing.
+  bool GetIsPressed() { return pressed_lock_.get(); }
+
   // Sets the task icon's color to its pressed state color if `is_pressed` is
   // true, or to its default color otherwise.
   void SetPressedColor(bool is_pressed) {
@@ -180,14 +200,8 @@ class GlicActorTaskIcon : public GlicBaseShim<T> {
 
   AnimationMode GetAnimationMode() const { return animation_mode_; }
 
-  // GetBoundsInScreen() gives a rect with some padding that extends beyond the
-  // visible edges of the button. This function returns a rect without that
-  // padding in order to anchor the ActorTaskListBubble on the edge of the
-  // button.
   gfx::Rect GetAnchorBoundsInScreen() const override {
-    gfx::Rect bounds = this->GetBoundsInScreen();
-    bounds.Inset(this->GetInsets());
-    return bounds;
+    return this->GetBoundsInScreen();
   }
 
   float GetWidthFactor() const override { return width_factor_; }
@@ -251,6 +265,8 @@ class GlicActorTaskIcon : public GlicBaseShim<T> {
   base::CallbackListSubscription window_did_become_inactive_subscription_;
 
   float width_factor_ = 0;
+
+  std::unique_ptr<views::MenuButtonController::PressedLock> pressed_lock_;
 
   const raw_ptr<BrowserWindowInterface> browser_window_interface_;
 };

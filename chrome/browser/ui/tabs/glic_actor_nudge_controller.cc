@@ -197,7 +197,7 @@ void GlicActorNudgeController::OnBubbleVisibilityChange(bool is_bubble_open) {
         is_bubble_open);
   }
   if (toolbar_view_->IsGlicAdded()) {
-    toolbar_view_->glic_actor_task_icon()->SetPressedColor(is_bubble_open);
+    toolbar_view_->glic_actor_task_icon()->SetPressedState(is_bubble_open);
   }
 }
 }  // namespace tabs

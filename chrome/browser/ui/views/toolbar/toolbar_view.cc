@@ -741,6 +741,16 @@ ToolbarView::CreateGlicActorTaskIcon() {
           base::BindRepeating(&ToolbarView::OnGlicActorTaskIconClicked,
                               base::Unretained(this)));
 
+  // Add a MenuButtonController in order to keep the task icon pressed while the
+  // bubble is visible.
+  glic_actor_task_icon->SetButtonController(
+      std::make_unique<views::MenuButtonController>(
+          glic_actor_task_icon.get(),
+          base::BindRepeating(&ToolbarView::OnGlicActorTaskIconClicked,
+                              base::Unretained(this)),
+          std::make_unique<views::Button::DefaultButtonControllerDelegate>(
+              glic_actor_task_icon.get())));
+
   glic_actor_task_icon->SetProperty(views::kCrossAxisAlignmentKey,
                                     views::LayoutAlignment::kCenter);
 
@@ -755,7 +765,11 @@ void ToolbarView::OnGlicActorTaskIconClicked() {
 
   ActorTaskListBubbleController* controller =
       ActorTaskListBubbleController::From(browser_view_->browser());
-  controller->ShowBubble(glic_actor_task_icon_);
+  // Only show the bubble if the button is not currently pressed. Clicking on
+  // the pressed button should dismiss the nudge.
+  if (!glic_actor_task_icon_->GetIsPressed()) {
+    controller->ShowBubble(glic_actor_task_icon_);
+  }
 
   auto current_task_nudge_state = icon_manager->GetCurrentActorTaskNudgeState();
   actor::ui::LogGlobalTaskIndicatorClick(current_task_nudge_state);
