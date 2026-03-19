@@ -34,8 +34,8 @@ chrome.test.sendMessage('loaded', function(test) {
             chrome.test.assertThrows(callback, ['XXX'],
                                      'No matching signature.');
           } else if (test == 'INVALID_PRINTER_TYPE') {
-            var expectedError =
-                'Error at parameter \'printerInfo\': Error at index 1: ' +
+            const expectedError =
+                `Error at parameter 'printerInfo': Error at index 1: ` +
                 'Invalid type: expected printerProvider.PrinterInfo, ' +
                 'found string.';
             chrome.test.assertThrows(
@@ -47,9 +47,9 @@ chrome.test.sendMessage('loaded', function(test) {
                 }, 'printer2']],
                 expectedError);
           } else if (test == 'INVALID_PRINTER') {
-            var expectedError =
-                'Error at parameter \'printerInfo\': ' +
-                'Error at index 0: Unexpected property: \'unsupported\'.';
+            const expectedError =
+                `Error at parameter 'printerInfo': ` +
+                `Error at index 0: Unexpected property: 'unsupported'.`;
             chrome.test.assertThrows(
                 callback,
                 [[{

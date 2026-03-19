@@ -19,9 +19,9 @@ chrome.test.sendMessage('loaded', function(test) {
             callback();
           } else {
             callback({
-              'id': 'usbDevice-' + device.device,
-              'name': 'Test Printer',
-              'description': 'This printer is a USB device.',
+              id: `usbDevice-${device.device}`,
+              name: 'Test Printer',
+              description: 'This printer is a USB device.',
             });
           }
 

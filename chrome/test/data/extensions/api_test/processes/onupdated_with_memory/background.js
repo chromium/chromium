@@ -5,7 +5,7 @@
 // Add a simple listener to onUpdatedWithMemory to ensure that the task
 // manager's refresh types are updated correctly.
 chrome.processes.onUpdatedWithMemory.addListener(function(processes) {
-  console.log("Received update with memory.");
+  console.log('Received update with memory.');
 });
 
-chrome.test.sendMessage("ready");
+chrome.test.sendMessage('ready');

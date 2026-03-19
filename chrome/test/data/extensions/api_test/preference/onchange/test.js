@@ -7,8 +7,8 @@
 
 // Listen until |event| has fired with all of the values in |expected|.
 function listenUntil(event, expected) {
-  var done = chrome.test.listenForever(event, function(value) {
-    for (var i = 0; i < expected.length; i++) {
+  const done = chrome.test.listenForever(event, function(value) {
+    for (let i = 0; i < expected.length; i++) {
       if (chrome.test.checkDeepEq(expected[i], value)) {
         expected.splice(i, 1);
         if (expected.length == 0)
@@ -16,80 +16,80 @@ function listenUntil(event, expected) {
         return;
       }
     }
-    chrome.test.fail("Unexpected event: " + JSON.stringify(value));
+    chrome.test.fail(`Unexpected event: ${JSON.stringify(value)}`);
   });
 }
 
-var pw = chrome.privacy.websites;
+const pw = chrome.privacy.websites;
 chrome.test.runTests([
   function changeDefault() {
     // Changing the regular settings when no incognito-specific settings are
     // defined should fire two events.
     listenUntil(pw.hyperlinkAuditingEnabled.onChange, [{
-      'value': false,
-      'levelOfControl': 'controlled_by_this_extension'
+      value: false,
+      levelOfControl: 'controlled_by_this_extension'
     },
     {
-      'value': false,
-      'incognitoSpecific': false,
-      'levelOfControl': 'controlled_by_this_extension'
+      value: false,
+      incognitoSpecific: false,
+      levelOfControl: 'controlled_by_this_extension'
     }]);
     pw.hyperlinkAuditingEnabled.set({
-      'value':false
+      value:false
     }, chrome.test.callbackPass());
   },
   function changeIncognitoOnly() {
     listenUntil(pw.hyperlinkAuditingEnabled.onChange, [{
-      'value': true,
-      'incognitoSpecific': true,
-      'levelOfControl': 'controlled_by_this_extension'
+      value: true,
+      incognitoSpecific: true,
+      levelOfControl: 'controlled_by_this_extension'
     }]);
     pw.hyperlinkAuditingEnabled.set({
-      'value': true,
-      'scope': 'incognito_persistent'
+      value: true,
+      scope: 'incognito_persistent'
     }, chrome.test.callbackPass());
   },
   function changeDefaultOnly() {
     listenUntil(pw.hyperlinkAuditingEnabled.onChange, [{
-      'value': true,
-      'levelOfControl': 'controlled_by_this_extension'
+      value: true,
+      levelOfControl: 'controlled_by_this_extension'
     }]);
     pw.hyperlinkAuditingEnabled.set({
-      'value': true
+      value: true
     }, chrome.test.callbackPass());
   },
   function changeIncognitoOnlyBack() {
     // Change the incognito setting back to false so that we get an event when
     // clearing the value.
     listenUntil(pw.hyperlinkAuditingEnabled.onChange, [{
-      'value': false,
-      'incognitoSpecific': true,
-      'levelOfControl': 'controlled_by_this_extension'
+      value: false,
+      incognitoSpecific: true,
+      levelOfControl: 'controlled_by_this_extension'
     }]);
     pw.hyperlinkAuditingEnabled.set({
-      'value': false,
-      'scope': 'incognito_persistent'
+      value: false,
+      scope: 'incognito_persistent'
     }, chrome.test.callbackPass());
   },
   function clearIncognito() {
     listenUntil(pw.hyperlinkAuditingEnabled.onChange, [{
-      'value': true,
-      'incognitoSpecific': false,
-      'levelOfControl': 'controlled_by_this_extension'
+      value: true,
+      incognitoSpecific: false,
+      levelOfControl: 'controlled_by_this_extension'
     }]);
     pw.hyperlinkAuditingEnabled.clear({
-      'scope': 'incognito_persistent'
+      scope: 'incognito_persistent'
     }, chrome.test.callbackPass());
   },
   function clearDefault() {
     listenUntil(pw.hyperlinkAuditingEnabled.onChange, [{
-      'value': true,
-      'levelOfControl': 'controllable_by_this_extension'
+      value: true,
+      levelOfControl: 'controllable_by_this_extension'
     },
     {
-      'value': true,
-      'incognitoSpecific': false,
-      'levelOfControl': 'controllable_by_this_extension'
+      value: true,
+      incognitoSpecific: false,
+      levelOfControl: 'controllable_by_this_extension'
     }]);
     pw.hyperlinkAuditingEnabled.clear({}, chrome.test.callbackPass());
   }

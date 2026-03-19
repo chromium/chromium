@@ -9,21 +9,21 @@
 function setTrue() {
   return new Promise((resolve) => {
     chrome.privacy.websites.thirdPartyCookiesAllowed.set({ value: true },
-      () => chrome.test.sendMessage("set to true", resolve))
+      () => chrome.test.sendMessage('set to true', resolve))
   });
 }
 
 function setFalse() {
   return new Promise((resolve) => {
     chrome.privacy.websites.thirdPartyCookiesAllowed.set({ value: false },
-      () => chrome.test.sendMessage("set to false", resolve))
+      () => chrome.test.sendMessage('set to false', resolve))
   });
 }
 
 function clearPref() {
   return new Promise((resolve) => {
     chrome.privacy.websites.thirdPartyCookiesAllowed.clear({},
-      () => chrome.test.sendMessage("cleared", resolve))
+      () => chrome.test.sendMessage('cleared', resolve))
   });
 }
 
@@ -31,5 +31,5 @@ function clearPref() {
   await setTrue();
   await clearPref();
   await setFalse();
-  chrome.test.sendMessage("done");
+  chrome.test.sendMessage('done');
 })();

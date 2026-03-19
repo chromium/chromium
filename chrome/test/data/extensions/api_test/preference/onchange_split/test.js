@@ -5,15 +5,15 @@
 // Content settings API test
 // browser_tests.exe --gtest_filter=ExtensionApiTest.PreferenceOnChangeSplit
 
-var inIncognitoContext = chrome.extension.inIncognitoContext;
-var pass = chrome.test.callbackPass;
-var sendMessage = chrome.test.sendMessage;
-var hyperlinkAuditing = chrome.privacy.websites.hyperlinkAuditingEnabled;
+const inIncognitoContext = chrome.extension.inIncognitoContext;
+const pass = chrome.test.callbackPass;
+const sendMessage = chrome.test.sendMessage;
+const hyperlinkAuditing = chrome.privacy.websites.hyperlinkAuditingEnabled;
 
 // Listen until |event| has fired with all of the values in |expected|.
 function listenUntil(event, expected) {
-  var done = chrome.test.listenForever(event, function(value) {
-    for (var i = 0; i < expected.length; i++) {
+  const done = chrome.test.listenForever(event, function(value) {
+    for (let i = 0; i < expected.length; i++) {
       if (chrome.test.checkDeepEq(expected[i], value)) {
         expected.splice(i, 1);
         if (expected.length == 0)
@@ -21,8 +21,8 @@ function listenUntil(event, expected) {
         return;
       }
     }
-    chrome.test.fail("Unexpected event: " + JSON.stringify(value) +
-                     ', incognito: ' + inIncognitoContext);
+    chrome.test.fail(`Unexpected event: ${JSON.stringify(value)}` +
+                     `, incognito: ${inIncognitoContext}`);
   });
 }
 
@@ -31,17 +31,17 @@ function listenUntil(event, expected) {
 // not capture superfluous unexpected events.
 function listenAndFailWhen(event) {
   return chrome.test.listenForever(event, function(value) {
-    chrome.test.fail("Unexpected event: " + JSON.stringify(value) +
-                     ', incognito: ' + inIncognitoContext);
+    chrome.test.fail(`Unexpected event: ${JSON.stringify(value)}` +
+                     `, incognito: ${inIncognitoContext}`);
   });
 }
 
 // Constructs messages to be sent via chrome.test.sendMessage
 function constructMessage(str, caller) {
   caller = caller || arguments.callee.caller.name;
-  var incognitoStr = inIncognitoContext ? " incognito " : " regular ";
-  console.log(caller + incognitoStr + str);
-  return caller + incognitoStr + str;
+  const incognitoStr = inIncognitoContext ? ' incognito ' : ' regular ';
+  console.log(`${caller}${incognitoStr}${str}`);
+  return `${caller}${incognitoStr}${str}`;
 }
 
 chrome.test.runTests([
@@ -49,24 +49,24 @@ chrome.test.runTests([
   // defined should fire one event in the regular window, and two in the
   // incognito.
   function changeDefault() {
-    var expected = [{
-      'value': false,
-      'levelOfControl': 'controlled_by_this_extension'
+    const expected = [{
+      value: false,
+      levelOfControl: 'controlled_by_this_extension'
     }];
 
     if (inIncognitoContext) {
       expected.push({
-        'value': false,
-        'incognitoSpecific': false,
-        'levelOfControl': 'controlled_by_this_extension'
+        value: false,
+        incognitoSpecific: false,
+        levelOfControl: 'controlled_by_this_extension'
       });
     }
 
     listenUntil(hyperlinkAuditing.onChange, expected);
 
-    sendMessage(constructMessage("ready"), pass(function() {
+    sendMessage(constructMessage('ready'), pass(function() {
       if (!inIncognitoContext) {
-        hyperlinkAuditing.set({'value': false}, pass());
+        hyperlinkAuditing.set({value: false}, pass());
       }
     }));
   },
@@ -75,23 +75,23 @@ chrome.test.runTests([
   // incognito window.
   function changeIncognitoOnly() {
     if (!inIncognitoContext) {
-      var done = listenAndFailWhen(hyperlinkAuditing.onChange);
-      sendMessage(constructMessage("listening"), done);
+      const done = listenAndFailWhen(hyperlinkAuditing.onChange);
+      sendMessage(constructMessage('listening'), done);
     } else {
       listenUntil(hyperlinkAuditing.onChange, [{
-        'value': true,
-        'incognitoSpecific': true,
-        'levelOfControl': 'controlled_by_this_extension'
+        value: true,
+        incognitoSpecific: true,
+        levelOfControl: 'controlled_by_this_extension'
       }]);
     }
 
-    sendMessage(constructMessage("ready"), pass(function() {
+    sendMessage(constructMessage('ready'), pass(function() {
       if (inIncognitoContext) {
         hyperlinkAuditing.set({
-          'value': true,
-          'scope': 'incognito_session_only'
+          value: true,
+          scope: 'incognito_session_only'
         }, pass(function() {
-          sendMessage(constructMessage("pref set", "changeIncognitoOnly"),
+          sendMessage(constructMessage('pref set', 'changeIncognitoOnly'),
                       pass())
         }));
       }
@@ -103,20 +103,20 @@ chrome.test.runTests([
   function changeDefaultOnly() {
     if (!inIncognitoContext) {
       listenUntil(hyperlinkAuditing.onChange, [{
-        'value': true,
-        'levelOfControl': 'controlled_by_this_extension'
+        value: true,
+        levelOfControl: 'controlled_by_this_extension'
       }]);
     } else {
-      var done = listenAndFailWhen(hyperlinkAuditing.onChange);
-      sendMessage(constructMessage("listening"), done);
+      const done = listenAndFailWhen(hyperlinkAuditing.onChange);
+      sendMessage(constructMessage('listening'), done);
     }
 
-    sendMessage(constructMessage("ready"), pass(function() {
+    sendMessage(constructMessage('ready'), pass(function() {
       if (!inIncognitoContext) {
         hyperlinkAuditing.set({
-          'value': true
+          value: true
         }, pass(function() {
-          sendMessage(constructMessage("pref set", "changeDefaultOnly"),
+          sendMessage(constructMessage('pref set', 'changeDefaultOnly'),
                                        pass());
         }));
       }
@@ -127,23 +127,23 @@ chrome.test.runTests([
   // clearing the value. Should not be visible to regular window.
   function changeIncognitoOnlyBack() {
     if (!inIncognitoContext) {
-      var done = listenAndFailWhen(hyperlinkAuditing.onChange);
-      sendMessage(constructMessage("listening"), done);
+      const done = listenAndFailWhen(hyperlinkAuditing.onChange);
+      sendMessage(constructMessage('listening'), done);
     } else {
       listenUntil(hyperlinkAuditing.onChange, [{
-        'value': false,
-        'incognitoSpecific': true,
-        'levelOfControl': 'controlled_by_this_extension'
+        value: false,
+        incognitoSpecific: true,
+        levelOfControl: 'controlled_by_this_extension'
       }]);
     }
 
-    sendMessage(constructMessage("ready"), pass(function() {
+    sendMessage(constructMessage('ready'), pass(function() {
       if (inIncognitoContext) {
         hyperlinkAuditing.set({
-          'value': false,
-          'scope': 'incognito_session_only'
+          value: false,
+          scope: 'incognito_session_only'
         }, pass(function() {
-          sendMessage(constructMessage("pref set", "changeIncognitoOnlyBack"),
+          sendMessage(constructMessage('pref set', 'changeIncognitoOnlyBack'),
                       pass())
         }));
       }
@@ -152,22 +152,22 @@ chrome.test.runTests([
 
   function clearIncognito() {
     if (!inIncognitoContext) {
-      var done = listenAndFailWhen(hyperlinkAuditing.onChange);
-      sendMessage(constructMessage("listening"), done);
+      const done = listenAndFailWhen(hyperlinkAuditing.onChange);
+      sendMessage(constructMessage('listening'), done);
     } else {
       listenUntil(hyperlinkAuditing.onChange, [{
-        'value': true,
-        'incognitoSpecific': false,
-        'levelOfControl': 'controlled_by_this_extension'
+        value: true,
+        incognitoSpecific: false,
+        levelOfControl: 'controlled_by_this_extension'
       }]);
     }
 
-    sendMessage(constructMessage("ready"), pass(function() {
+    sendMessage(constructMessage('ready'), pass(function() {
       if (inIncognitoContext) {
         hyperlinkAuditing.clear({
-          'scope': 'incognito_session_only'
+          scope: 'incognito_session_only'
         }, pass(function() {
-          sendMessage(constructMessage("pref cleared", "clearIncognito"),
+          sendMessage(constructMessage('pref cleared', 'clearIncognito'),
                       pass())
         }));
       }
@@ -175,22 +175,22 @@ chrome.test.runTests([
   },
 
   function clearDefault() {
-    var expected = [{
-      'value': true,
-      'levelOfControl': 'controllable_by_this_extension'
+    const expected = [{
+      value: true,
+      levelOfControl: 'controllable_by_this_extension'
     }];
 
     if (inIncognitoContext) {
       expected[1] = {
-        'value': true,
-        'incognitoSpecific': false,
-        'levelOfControl': 'controllable_by_this_extension'
+        value: true,
+        incognitoSpecific: false,
+        levelOfControl: 'controllable_by_this_extension'
       };
     }
 
     listenUntil(hyperlinkAuditing.onChange, expected);
 
-    sendMessage(constructMessage("ready"), pass(function() {
+    sendMessage(constructMessage('ready'), pass(function() {
       if (!inIncognitoContext)
         hyperlinkAuditing.clear({}, pass());
     }));

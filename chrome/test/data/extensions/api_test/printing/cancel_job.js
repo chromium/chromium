@@ -9,7 +9,7 @@ chrome.test.getConfig(function(config) {
     chrome.printing.JobStatus.PENDING, chrome.printing.JobStatus.IN_PROGRESS,
     chrome.printing.JobStatus.CANCELED
   ];
-  var eventCounter = 0;
+  let eventCounter = 0;
   chrome.printing.onJobStatusChanged.addListener((jobId, status) => {
     chrome.test.assertEq(statuses[eventCounter], status);
     eventCounter++;
@@ -23,7 +23,7 @@ chrome.test.getConfig(function(config) {
     }
   });
 
-  const url = 'http://localhost:' + config.testServer.port + '/pdf/test.pdf';
+  const url = `http://localhost:${config.testServer.port}/pdf/test.pdf`;
   submitJob('id', 'test job', url, minimal_ticket, response => {
     chrome.test.assertNe(undefined, response);
     chrome.test.assertNe(undefined, response.status);

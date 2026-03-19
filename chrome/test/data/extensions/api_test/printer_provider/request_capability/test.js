@@ -17,7 +17,7 @@ chrome.test.sendMessage('loaded', function(test) {
           chrome.test.assertTrue(!!callback);
 
           if (test == 'ASYNC_RESPONSE') {
-            setTimeout(callback.bind(null, {'capability': 'value'}), 0);
+            setTimeout(callback.bind(null, {capability: 'value'}), 0);
             chrome.test.succeed();
             return;
           }
@@ -34,12 +34,12 @@ chrome.test.sendMessage('loaded', function(test) {
             callback({});
           } else {
             chrome.test.assertEq('OK', test);
-            callback({'capability': 'value'});
+            callback({capability: 'value'});
           }
 
           chrome.test.assertThrows(
               callback,
-              [{'cap': 'value'}],
+              [{cap: 'value'}],
               'Event callback must not be called more than once.');
 
           chrome.test.succeed();

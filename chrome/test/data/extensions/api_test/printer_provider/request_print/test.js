@@ -7,7 +7,7 @@
 // @param {function(?string)} callback Called with the read blob content.
 //     the content will be null on error.
 function readBlob(blob, callback) {
-  var reader = new FileReader();
+  const reader = new FileReader();
   reader.onerror = function() { callback(null); };
   reader.onloadend = function() {
     callback(reader.result);
@@ -45,8 +45,8 @@ chrome.test.sendMessage('loaded', function(test) {
           setTimeout(callback.bind(null, 'OK'), 0);
           break;
         case 'INVALID_VALUE':
-          var expectedError =
-              'Error at parameter \'result\': Value must be one of ' +
+          const expectedError =
+              `Error at parameter 'result': Value must be one of ` +
               'FAILED, INVALID_DATA, INVALID_TICKET, OK.';
           chrome.test.assertThrows(callback, ['XXX'], expectedError);
           break;

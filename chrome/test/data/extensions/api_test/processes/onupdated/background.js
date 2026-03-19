@@ -5,13 +5,13 @@
 // Add a simple listener to onUpdated to ensure it does not conflict with the
 // task manager.
 chrome.processes.onUpdated.addListener(function(processes) {
-  console.log("Received update.");
+  console.log('Received update.');
 });
 
 // Add a second listener to onUpdated to ensure the task manager only hears
 // about one extension listener per process.
 chrome.processes.onUpdated.addListener(function(processes) {
-  console.log("Second listener received update.");
+  console.log('Second listener received update.');
 });
 
-chrome.test.sendMessage("ready");
+chrome.test.sendMessage('ready');

@@ -12,4 +12,4 @@ function testGetPrinters(expectedName) {
   }]);
 }
 
-testGetPrinters("name");
+testGetPrinters('name');

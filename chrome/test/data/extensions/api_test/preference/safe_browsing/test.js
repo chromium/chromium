@@ -7,19 +7,19 @@
 
 function setTrue(callback) {
   chrome.privacy.services.safeBrowsingEnabled.set({ value: true }, function() {
-    chrome.test.sendMessage("set to true", callback);
+    chrome.test.sendMessage('set to true', callback);
   });
 }
 
 function setFalse(callback) {
   chrome.privacy.services.safeBrowsingEnabled.set({ value: false }, function() {
-    chrome.test.sendMessage("set to false", callback);
+    chrome.test.sendMessage('set to false', callback);
   });
 }
 
 function clearPref(callback) {
   chrome.privacy.services.safeBrowsingEnabled.clear({}, function() {
-    chrome.test.sendMessage("cleared", callback);
+    chrome.test.sendMessage('cleared', callback);
   });
 }
 
@@ -30,5 +30,5 @@ function clearPref(callback) {
 // 4. Done.
 // The callback of each step is calling the next step.
 setTrue(clearPref.bind(this, setFalse.bind(this, function() {
-  chrome.test.sendMessage("done");
+  chrome.test.sendMessage('done');
 })));

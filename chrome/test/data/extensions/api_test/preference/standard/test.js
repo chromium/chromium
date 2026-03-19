@@ -5,16 +5,16 @@
 // Preferences API test
 // Run with browser_tests --gtest_filter=ExtensionPreferenceApiTest.Standard
 
-var pn = chrome.privacy.network;
-var ps = chrome.privacy.services;
+const pn = chrome.privacy.network;
+const ps = chrome.privacy.services;
 
-const privacySandboxErrorMessage =
+const PRIVACY_SANDBOX_ERROR_MESSAGE =
     'Extensions aren’t allowed to enable Privacy Sandbox APIs.'
 
 // The collection of preferences to test, split into objects with a "root"
 // (the root object they preferences are exposed on) and a dictionary of
 // preference name -> default value set on preference_apitest.cc.
-var preferences_to_test = [
+const preferencesToTest = [
   {
     root: chrome.privacy.network,
     preferences: {
@@ -52,7 +52,7 @@ var preferences_to_test = [
 // to disable a pref, split into objects with a "root" (the root object they
 // preferences are exposed on) and a dictionary of preference name -> default
 // value set on preference_apitest.cc.
-const privacy_sandbox_prefs_to_test_only_allowed_to_disable = [{
+const privacySandboxPrefsToTestOnlyAllowedToDisable = [{
   root: chrome.privacy.websites,
   preferences: {
     topicsEnabled: true,
@@ -64,7 +64,7 @@ const privacy_sandbox_prefs_to_test_only_allowed_to_disable = [{
 
 // Some preferences are only present on certain platforms or are hidden
 // behind flags and might not be present when this test runs.
-var possibly_missing_preferences = new Set();
+const possiblyMissingPreferences = new Set();
 
 function expect(expected, message) {
   return chrome.test.callbackPass(function(value) {
@@ -77,8 +77,8 @@ function expectDefault(prefName, defaultValue) {
   return expect({
     value: defaultValue,
     levelOfControl: 'controllable_by_this_extension'
-  }, '`' + prefName + '` is expected to be the default, which is ' +
-     defaultValue);
+  }, `\`${prefName}\` is expected to be the default, which is ${defaultValue}`);
+
 }
 
 // Verifies that the preference is properly controlled by the extension.
@@ -86,13 +86,13 @@ function expectControlled(prefName, newValue) {
   return expect({
     value: newValue,
     levelOfControl: 'controlled_by_this_extension',
-  }, '`' + prefName + '` is expected to be controlled by this extension.');
+  }, `\`${prefName}\` is expected to be controlled by this extension.`);
 }
 
 // Tests getting the preference value (which should be uncontrolled and at its
 // default value).
 function prefGetter(prefName, defaultValue) {
-  if (possibly_missing_preferences.has(prefName)) {
+  if (possiblyMissingPreferences.has(prefName)) {
     return;
   }
   this[prefName].get({}, expectDefault(prefName, defaultValue));
@@ -101,7 +101,7 @@ function prefGetter(prefName, defaultValue) {
 // Tests setting the preference value (to the inverse of the default, so that
 // it should be controlled by this extension).
 function prefSetterOppositeOfDefault(prefName, defaultValue) {
-  if (possibly_missing_preferences.has(prefName)) {
+  if (possiblyMissingPreferences.has(prefName)) {
     return;
   }
   this[prefName].set({value: !defaultValue},
@@ -124,7 +124,7 @@ function privacySandboxPrefSetterToTrueExpectErrorAndDefault(
     prefName, defaultValue) {
   this[prefName].set(
       {value: true},
-      chrome.test.callbackFail(privacySandboxErrorMessage, () => {
+      chrome.test.callbackFail(PRIVACY_SANDBOX_ERROR_MESSAGE, () => {
         this[prefName].get({}, expectDefault(prefName, defaultValue));
       }));
 }
@@ -135,7 +135,7 @@ function privacySandboxPrefSetterToTrueExpectErrorAndDefault(
 function privacySandboxPrefSetterToTrueExpectErrorAndControlled(prefName) {
   this[prefName].set(
       {value: true},
-      chrome.test.callbackFail(privacySandboxErrorMessage, () => {
+      chrome.test.callbackFail(PRIVACY_SANDBOX_ERROR_MESSAGE, () => {
         this[prefName].get({}, expectControlled(prefName, false));
       }));
 }
@@ -145,22 +145,22 @@ chrome.test.sendMessage('ready', function(message) {
     return;
   chrome.test.getConfig(function(config) {
     // Populate the set of missing prefs from config.customArg.
-    var customArg = JSON.parse(config.customArg);
-    customArg.forEach(element => { possibly_missing_preferences.add(element) });
+    const customArg = JSON.parse(config.customArg);
+    customArg.forEach(element => { possiblyMissingPreferences.add(element) });
     chrome.test.runTests([
       function getPreferences() {
-        for (let preferenceSet of
-                 [...preferences_to_test,
-                  ...privacy_sandbox_prefs_to_test_only_allowed_to_disable]) {
-          for (let key in preferenceSet.preferences) {
+        for (const preferenceSet of
+                 [...preferencesToTest,
+                  ...privacySandboxPrefsToTestOnlyAllowedToDisable]) {
+          for (const key in preferenceSet.preferences) {
             prefGetter.call(
                 preferenceSet.root, key, preferenceSet.preferences[key]);
           }
         }
       },
       function setGlobals() {
-        for (let preferenceSet of preferences_to_test) {
-          for (let key in preferenceSet.preferences) {
+        for (const preferenceSet of preferencesToTest) {
+          for (const key in preferenceSet.preferences) {
             prefSetterOppositeOfDefault.call(
                 preferenceSet.root, key, preferenceSet.preferences[key]);
           }
@@ -168,9 +168,9 @@ chrome.test.sendMessage('ready', function(message) {
       },
       // For Privacy Sandbox APIs unable to enable a pref.
       function setToEnableExpectErrorDefault() {
-        for (let preferenceSet of
-                 privacy_sandbox_prefs_to_test_only_allowed_to_disable) {
-          for (let key in preferenceSet.preferences) {
+        for (const preferenceSet of
+                 privacySandboxPrefsToTestOnlyAllowedToDisable) {
+          for (const key in preferenceSet.preferences) {
             privacySandboxPrefSetterToTrueExpectErrorAndDefault.call(
                 preferenceSet.root, key, preferenceSet.preferences[key]);
           }
@@ -178,9 +178,9 @@ chrome.test.sendMessage('ready', function(message) {
       },
       // For Privacy Sandbox APIs only allowed to disable a pref.
       function setToDisableExpectControlled() {
-        for (let preferenceSet of
-                 privacy_sandbox_prefs_to_test_only_allowed_to_disable) {
-          for (let key in preferenceSet.preferences) {
+        for (const preferenceSet of
+                 privacySandboxPrefsToTestOnlyAllowedToDisable) {
+          for (const key in preferenceSet.preferences) {
             privacySandboxPrefSetterToFalseExpectControlled.call(
                 preferenceSet.root, key);
           }
@@ -188,9 +188,9 @@ chrome.test.sendMessage('ready', function(message) {
       },
       // For Privacy Sandbox APIs unable to enable a pref.
       function setToEnableExpectErrorAndControlled() {
-        for (let preferenceSet of
-                 privacy_sandbox_prefs_to_test_only_allowed_to_disable) {
-          for (let key in preferenceSet.preferences) {
+        for (const preferenceSet of
+                 privacySandboxPrefsToTestOnlyAllowedToDisable) {
+          for (const key in preferenceSet.preferences) {
             privacySandboxPrefSetterToTrueExpectErrorAndControlled.call(
                 preferenceSet.root, key);
           }
