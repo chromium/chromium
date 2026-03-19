@@ -199,21 +199,25 @@ TEST(OAuthMultiloginResultTest, TryParseCookiesFromValue) {
           "SID", "vAlUe1", ".google.ru", "/", time_now, time_now,
           expiration_time, time_now, /*secure=*/true,
           /*httponly=*/false, net::CookieSameSite::UNSPECIFIED,
-          net::CookiePriority::COOKIE_PRIORITY_HIGH),
+          net::CookiePriority::COOKIE_PRIORITY_HIGH,
+          net::CookieSourceType::kOther),
       *CanonicalCookie::CreateUnsafeCookieForTesting(
           "SAPISID", "vAlUe2", "google.com", "/", time_now, time_now,
           expiration_time, time_now, /*secure=*/false,
           /*httponly=*/true, net::CookieSameSite::LAX_MODE,
-          net::CookiePriority::COOKIE_PRIORITY_HIGH),
+          net::CookiePriority::COOKIE_PRIORITY_HIGH,
+          net::CookieSourceType::kOther),
       *CanonicalCookie::CreateUnsafeCookieForTesting(
           "HSID", "vAlUe4", "", "/", time_now, time_now, time_now, time_now,
           /*secure=*/true, /*httponly=*/true, net::CookieSameSite::STRICT_MODE,
-          net::CookiePriority::COOKIE_PRIORITY_HIGH),
+          net::CookiePriority::COOKIE_PRIORITY_HIGH,
+          net::CookieSourceType::kOther),
       *CanonicalCookie::CreateUnsafeCookieForTesting(
           "__Secure-1PSID", "vAlUe4", ".google.fr", "/", time_now, time_now,
           expiration_time, time_now, /*secure=*/true, /*httponly=*/true,
           net::CookieSameSite::UNSPECIFIED,
-          net::CookiePriority::COOKIE_PRIORITY_HIGH)};
+          net::CookiePriority::COOKIE_PRIORITY_HIGH,
+          net::CookieSourceType::kOther)};
 
   EXPECT_EQ(result.cookies().size(), 4u);
 
