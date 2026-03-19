@@ -14,13 +14,13 @@
 namespace safe_browsing {
 // Features list
 //
-// These options group the lines into blocks without newlines, then
-// sorts by the name of the BASE_DECLARE_FEATURE in each block. It's
-// recommended to keep all FeatureParams for a given Feature in the same
-// block as as the Feature declaration.
+// These options group together non-empty lines, then sorts by the name
+// of the feature in each block. It's recommended to keep all
+// FeatureParams for a given Feature in the same group as as the Feature
+// declaration.
 //
 // clang-format off
-// keep-sorted start allow_yaml_lists=yes sticky_prefixes=[""] group_prefixes=["#if", "#else", "#endif", "extern const base::FeatureParam", "//", "BASE_DECLARE_FEATURE", "BASE_DECLARE_FEATURE_PARAM"] by_regex=["BASE_DECLARE_FEATURE\\(.*\\);"] skip_lines=2
+// keep-sorted start group_end_regex=^$ allow_yaml_lists=yes by_regex=["BASE_DECLARE_FEATURE\\(.*\\);"] skip_lines=2 newline_separated=true sticky_comments=false
 // clang-format on
 
 // Controls various parameters related to occasionally collecting ad samples,

@@ -24,13 +24,13 @@ namespace safe_browsing {
 // them to the ExperimentalFeaturesList below to start displaying their status
 // on the chrome://safe-browsing page.
 //
-// These keep-sorted instructions group blocks without newlines, and then sort
-// those blocks by their BASE_FEATURE. It's strongly recommended to keep a
-// FeatureParam associated with the Feature by removing and newlines between
-// them.
+// These options group together non-empty lines, then sorts by the name
+// of the feature in each block. It's recommended to keep all
+// FeatureParams for a given Feature in the same group as as the Feature
+// declaration.
 //
 // clang-format off
-// keep-sorted start allow_yaml_lists=yes sticky_prefixes=[""] group_prefixes=["#if", "#else", "#endif", "constexpr base::FeatureParam", "//", "BASE_FEATURE", "BASE_FEATURE_PARAM", ");"] by_regex=["BASE_FEATURE\\(.*,"] skip_lines=2
+// keep-sorted start group_end_regex=^$ allow_yaml_lists=yes by_regex=["BASE_FEATURE\\(.*,"] skip_lines=2 newline_separated=true sticky_comments=false
 // clang-format on
 
 BASE_FEATURE(kAdSamplerTriggerFeature,
@@ -77,7 +77,6 @@ constexpr base::FeatureParam<int> kCsdClipboardCopyApiMinLength{
 const base::FeatureParam<bool> kCSDClipboardCopyApiProcessPayload{
     &kClientSideDetectionClipboardCopyApi, "ProcessPayload",
     /*default_value=*/false};
-
 const base::FeatureParam<bool> kCSDClipboardCopyApiIncludeFullPayload{
     &kClientSideDetectionClipboardCopyApi, "IncludeFullPayload",
     /*default_value=*/false};
