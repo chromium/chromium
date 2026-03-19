@@ -101,10 +101,7 @@ if (is_android) {
   }
 
   android_library("supervised_user_metrics_java") {
-    sources = [
-      "android/java/src/org/chromium/chrome/browser/supervised_user/ParentApprovalMetrics.java",
-      "android/java/src/org/chromium/chrome/browser/supervised_user/WebsiteParentApprovalMetrics.java",
-    ]
+    sources = [ "android/java/src/org/chromium/chrome/browser/supervised_user/ParentApprovalMetrics.java" ]
     deps = [
       "//base:base_java",
       "//third_party/androidx:androidx_annotation_annotation_java",

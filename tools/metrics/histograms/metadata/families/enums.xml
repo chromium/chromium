@@ -153,30 +153,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/supervised_user/core/common/supervised_user_constants.h:LocalApprovalResult) -->
 
-<enum name="FamilyLinkUserLocalWebApprovalOutcome">
-  <int value="0" label="Approved by parent">
-    Request to allow visiting a host was approved by the parent i.e. the parent
-    completed the verification flow and selected the (&quot;Approve&quot;
-    button). Available on Android.
-  </int>
-  <int value="1" label="Denied by parent">
-    Request to allow visiting a host was denied by the parent, i.e. the parent
-    completed the verification flow and selected the (&quot;Don't approve&quot;
-    button).
-  </int>
-  <int value="2" label="Parent approval cancelled">
-    The user cancelled the local website parent approval, i.e. the parent
-    navigated away from the approval widget and did not complete the
-    verification flow.
-  </int>
-  <int value="3" label="Verification widget unsupported API call exception">
-    Feature to support parent verification is missing.
-  </int>
-  <int value="7" label="Verification widget unexpected exception">
-    An unexpected exception occured during parent verification.
-  </int>
-</enum>
-
 <!-- LINT.IfChange(FamilyLinkUserParentAccessWidgetError) -->
 
 <enum name="FamilyLinkUserParentAccessWidgetError">

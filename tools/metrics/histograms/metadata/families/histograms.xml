@@ -447,18 +447,6 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
   </summary>
 </histogram>
 
-<histogram name="FamilyLinkUser.LocalWebApprovalOutcome"
-    enum="FamilyLinkUserLocalWebApprovalOutcome" expires_after="2026-07-26">
-  <owner>anthie@google.com</owner>
-  <owner>ljjlee@google.com</owner>
-  <owner>chrome-kids-eng@google.com</owner>
-  <owner>cros-families-eng@google.com</owner>
-  <summary>
-    The different outcomes that a user may come accross the local web approval
-    flow. Available on Android only.
-  </summary>
-</histogram>
-
 <histogram name="FamilyLinkUser.LocalWebApprovalResult"
     enum="FamilyLinkUserLocalApprovalResult" expires_after="2026-07-26">
   <owner>agawronska@chromium.org</owner>
