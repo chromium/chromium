@@ -35,6 +35,8 @@ export class ComposeboxFileInputsElement extends CrLitElement {
   accessor disableFileInputs: boolean = false;
   // Comma separated list of file types.
   protected accessor attachmentFileTypes_: string =
+      loadTimeData.getBoolean('lensSendRawFileMediaTypesEnabled') ?
+      '*/*' :
       loadTimeData.getString('composeboxAttachmentFileTypes');
   // Comma separated list of file types.
   protected accessor imageFileTypes_: string =

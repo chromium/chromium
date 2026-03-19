@@ -352,6 +352,8 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
   source->AddString(
       "composeboxAttachmentFileTypes",
       contextual_tasks::kContextualTasksNextboxAttachmentFileTypes.Get());
+  source->AddBoolean("lensSendRawFileMediaTypesEnabled",
+                     lens::features::IsLensSendRawFileMediaTypesEnabled());
   source->AddInteger(
       "composeboxFileMaxSize",
       contextual_tasks::kContextualTasksNextboxMaxFileSize.Get());

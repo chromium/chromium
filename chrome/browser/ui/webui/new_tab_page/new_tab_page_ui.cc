@@ -98,6 +98,7 @@
 #include "components/google/core/common/google_util.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/history_clusters/core/features.h"
+#include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/lens/lens_url_utils.h"
 #include "components/ntp_tiles/features.h"
@@ -621,6 +622,8 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(
   const std::string image_mime_types =
       composebox_config.image_upload().mime_types_allowed();
   source->AddString("composeboxImageFileTypes", image_mime_types);
+  source->AddBoolean("lensSendRawFileMediaTypesEnabled",
+                     lens::features::IsLensSendRawFileMediaTypesEnabled());
   const std::string attachment_mime_types =
       composebox_config.attachment_upload().mime_types_allowed();
   source->AddString("composeboxAttachmentFileTypes", attachment_mime_types);

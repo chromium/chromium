@@ -32,6 +32,7 @@
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
 #include "components/contextual_search/contextual_search_service.h"
 #include "components/favicon_base/favicon_url_parser.h"
+#include "components/lens/lens_features.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -116,6 +117,8 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
   const std::string image_mime_types =
       composebox_config.image_upload().mime_types_allowed();
   source->AddString("composeboxImageFileTypes", image_mime_types);
+  source->AddBoolean("lensSendRawFileMediaTypesEnabled",
+                     lens::features::IsLensSendRawFileMediaTypesEnabled());
   const auto* aim_eligibility_service =
       AimEligibilityServiceFactory::GetForProfile(profile_);
   bool show_pdf_upload = aim_eligibility_service &&

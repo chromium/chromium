@@ -172,6 +172,8 @@ LensSidePanelUntrustedUI::LensSidePanelUntrustedUI(content::WebUI* web_ui)
 
   // Support no file types.
   html_source->AddString("composeboxImageFileTypes", "");
+  html_source->AddBoolean("lensSendRawFileMediaTypesEnabled",
+                     lens::features::IsLensSendRawFileMediaTypesEnabled());
   html_source->AddString("composeboxAttachmentFileTypes", "");
   html_source->AddInteger("composeboxFileMaxSize", 0);
   html_source->AddInteger("composeboxFileMaxCount", 0);

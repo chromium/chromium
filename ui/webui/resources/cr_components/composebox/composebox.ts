@@ -404,6 +404,8 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       loadTimeData.getString('composeboxAttachmentFileTypes').split(',');
   private imageFileTypes_: string[] =
       loadTimeData.getString('composeboxImageFileTypes').split(',');
+  private lensSendRawFileMediaTypesEnabled_: boolean =
+      loadTimeData.getBoolean('lensSendRawFileMediaTypesEnabled');
 
   protected get shouldShowDivider_(): boolean {
     // TODO(crbug.com/476175193): Remove `entrypointName` condition.
@@ -2468,6 +2470,9 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   }
 
   private isFileAllowed_(fileType: string): boolean {
+    if (this.lensSendRawFileMediaTypesEnabled_) {
+      return true;
+    }
     return this.isMimeTypeAllowed_(fileType, this.imageFileTypes_) ||
         this.isMimeTypeAllowed_(fileType, this.attachmentFileTypes_);
   }
@@ -2529,6 +2534,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       return InputType.kLensImage;
     }
 
+    // Arbitrary file types are treated as Lens files.
     return InputType.kLensFile;
   }
 
