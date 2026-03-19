@@ -42,7 +42,9 @@ interface SettingsItem {
   title: string;
   itemType: SettingsItemType;
   // Whether the toggle is checked. Only used when itemType is TOGGLE
-  enabled?: boolean;
+  checked?: boolean;
+  // Whether the toggle is disabled. Only used when itemType is TOGGLE
+  disabled?: boolean;
   // Needed when the aria label should be different from the title
   ariaLabel?: string;
   showSeparator?: boolean;
@@ -151,6 +153,7 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
     return {
       isImmersiveMode: {type: Boolean},
       isReadAnythingPinned: {type: Boolean},
+      isSpeechActive: {type: Boolean},
       settingsPrefs: {type: Object},
       currentOpenId_: {state: true},
     };
@@ -158,6 +161,7 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
 
   accessor isImmersiveMode: boolean = false;
   accessor isReadAnythingPinned: boolean = false;
+  accessor isSpeechActive: boolean = false;
   accessor settingsPrefs: SettingsPrefs = DEFAULT_SETTINGS;
 
   protected options_: SettingsItem[] = [];
@@ -188,7 +192,8 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
 
     if (changedProperties.has('settingsPrefs') ||
         changedProperties.has('isImmersiveMode') ||
-        changedProperties.has('isReadAnythingPinned')) {
+        changedProperties.has('isReadAnythingPinned') ||
+        changedProperties.has('isSpeechActive')) {
       this.initializeMenuOptions_();
     }
   }
@@ -235,20 +240,24 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
       const original = MENU_ITEM_DATA[id];
       const title = loadTimeData.getString(original.title);
       let ariaLabel = title;
-      let enabled = false;
+      let checked = false;
+      let disabled = false;
 
       if (id === SettingsOption.IMAGES) {
-        enabled = chrome.readingMode.imagesEnabled;
+        checked = chrome.readingMode.imagesEnabled;
+        disabled = this.isSpeechActive;
         ariaLabel = this.getImageItemLabels();
       }
 
+      // TODO: crbug.com/494316323- Consider disabling the links toggle when
+      // read aloud is speaking, similar to what is done with the images toggle.
       if (id === SettingsOption.LINKS) {
-        enabled = chrome.readingMode.linksEnabled;
+        checked = chrome.readingMode.linksEnabled;
         ariaLabel = this.getLinkItemLabels();
       }
 
       if (id === SettingsOption.PINNED_TO_TOOLBAR) {
-        enabled = this.isReadAnythingPinned;
+        checked = this.isReadAnythingPinned;
         ariaLabel = this.getPinItemLabels();
       }
 
@@ -257,7 +266,8 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
         id,
         title,
         ariaLabel,
-        enabled,
+        checked,
+        disabled,
       };
     });
 
@@ -307,7 +317,7 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
     const currentTarget = e.currentTarget as HTMLElement;
     const index = Number.parseInt(currentTarget.dataset['index']!);
     const item = this.options_[index];
-    if (!item) {
+    if (!item || item.disabled) {
       return;
     }
 
@@ -333,7 +343,7 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
   }
 
   private onToggleMenuItemClick_(item: SettingsItem) {
-    if (item.itemType !== SettingsItemType.TOGGLE) {
+    if (item.itemType !== SettingsItemType.TOGGLE || item.disabled) {
       return;
     }
 
@@ -341,12 +351,12 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
       chrome.readingMode.onLinksEnabledToggled();
       this.fire(ToolbarEvent.LINKS);
       item.ariaLabel = this.getLinkItemLabels();
-      item.enabled = chrome.readingMode.linksEnabled;
+      item.checked = chrome.readingMode.linksEnabled;
     } else if (item.id === SettingsOption.IMAGES) {
       chrome.readingMode.onImagesEnabledToggled();
       this.fire(ToolbarEvent.IMAGES);
       item.ariaLabel = this.getImageItemLabels();
-      item.enabled = chrome.readingMode.imagesEnabled;
+      item.checked = chrome.readingMode.imagesEnabled;
     } else if (item.id === SettingsOption.PINNED_TO_TOOLBAR) {
       chrome.readingMode.togglePinState();
       chrome.readingMode.sendPinStateRequest();

@@ -87,6 +87,16 @@ suite('Toolbar Settings Menu', () => {
     assertTrue(settingsMenu.$.lazyMenu.get().open);
   });
 
+  test('isSpeechActive is passed to settings menu', async () => {
+    toolbar.isSpeechActive = true;
+    await microtasksFinished();
+    assertTrue(settingsMenu.isSpeechActive);
+
+    toolbar.isSpeechActive = false;
+    await microtasksFinished();
+    assertFalse(settingsMenu.isSpeechActive);
+  });
+
   test('settings menu opens submenus on click', () => {
     const targetItem = getMenuItem(SettingsOption.FONT);
     assertTrue(!!targetItem);

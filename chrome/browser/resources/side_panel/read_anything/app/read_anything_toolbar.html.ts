@@ -139,6 +139,7 @@ export function getHtml(this: ReadAnythingToolbarElement) {
       .settingsPrefs="${this.settingsPrefs}"
       .isImmersiveMode="${this.isImmersiveMode}"
       .isReadAnythingPinned="${this.isReadAnythingPinned}"
+      .isSpeechActive="${this.isSpeechActive}"
       @close-submenu-requested="${this.onCloseSubmenuRequested_}"
       @close-all-menus="${this.onCloseAllMenus_}"
       @open-settings-submenu="${this.onOpenSettingsSubmenu_}">
