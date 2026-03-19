@@ -492,7 +492,6 @@ std::unique_ptr<ToolRequest> CreateWaitRequest(const WaitAction& action) {
   return std::make_unique<WaitToolRequest>(wait_time, observe_tab_handle);
 }
 
-#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
 std::unique_ptr<ToolRequest> CreateAttemptLoginRequest(
     const AttemptLoginAction& action) {
   const tabs::TabHandle tab_handle = GetTabHandle(action);
@@ -534,7 +533,6 @@ std::unique_ptr<ToolRequest> CreateAttemptLoginRequest(
   return std::make_unique<AttemptLoginToolRequest>(tab_handle, password_button,
                                                    sign_in_with_google_button);
 }
-#endif  // !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
 
 std::unique_ptr<ToolRequest> CreateAttemptFormFillingRequest(
     const AttemptFormFillingAction& action) {
@@ -771,11 +769,11 @@ std::unique_ptr<ToolRequest> CreateToolRequest(
       const ActivateTabAction& activate_tab_action = action.activate_tab();
       return CreateActivateTabRequest(activate_tab_action);
     }
+#endif  // !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
     case optimization_guide::proto::Action::kAttemptLogin: {
       const AttemptLoginAction& attempt_login_action = action.attempt_login();
       return CreateAttemptLoginRequest(attempt_login_action);
     }
-#endif  // !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
     case optimization_guide::proto::Action::kAttemptFormFilling: {
       const AttemptFormFillingAction& attempt_form_fill_action =
           action.attempt_form_filling();
