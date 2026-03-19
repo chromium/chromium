@@ -201,6 +201,11 @@ void ComposeboxHandler::NavigateUrl(const GURL& url) {
                                     /*navigation_handle_callback=*/{});
 }
 
+void ComposeboxHandler::CloseLensOverlayFromWebUI(
+    composebox::mojom::LensOverlayDismissalSource dismissal_source) {
+  // Ignore, intentionally unimplemented for NTP.
+}
+
 void ComposeboxHandler::ExecuteAction(uint8_t line,
                                       uint8_t action_index,
                                       const GURL& url,

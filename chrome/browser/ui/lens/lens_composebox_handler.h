@@ -48,6 +48,8 @@ class LensComposeboxHandler : public composebox::mojom::PageHandler,
   void HandleLensButtonClick() override;
   void HandleFileUpload(bool is_image) override;
   void NavigateUrl(const GURL& url) override;
+  void CloseLensOverlayFromWebUI(
+      composebox::mojom::LensOverlayDismissalSource dismissal_source) override;
   // searchbox::mojom::PageHandler:
   void DeleteAutocompleteMatch(uint8_t line, const GURL& url) override;
   void ExecuteAction(uint8_t line,

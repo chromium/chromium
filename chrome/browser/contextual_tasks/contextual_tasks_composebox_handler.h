@@ -124,6 +124,8 @@ class ContextualTasksComposeboxHandler : public ComposeboxHandler,
   void OnLensThumbnailCreated(const std::string& thumbnail_data);
   virtual void CloseLensOverlay(
       lens::LensOverlayDismissalSource dismissal_source);
+  void CloseLensOverlayFromWebUI(
+      composebox::mojom::LensOverlayDismissalSource dismissal_source) override;
 
   OmniboxController* GetOmniboxControllerForTesting() const {
     return omnibox_controller();

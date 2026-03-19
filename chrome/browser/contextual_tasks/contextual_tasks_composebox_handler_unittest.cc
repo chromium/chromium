@@ -204,6 +204,10 @@ class MockLensSearchController : public LensSearchController {
               CloseLensSync,
               (lens::LensOverlayDismissalSource dismissal_source),
               (override));
+  MOCK_METHOD(void,
+              CloseLensAsync,
+              (lens::LensOverlayDismissalSource dismissal_source),
+              (override));
 
   lens::LensQueryFlowRouter* query_router() override {
     return mock_router_.get();
@@ -387,8 +391,22 @@ TEST_F(ContextualTasksComposeboxHandlerTest, SubmitQuery) {
   EXPECT_CALL(*mock_controller_, CreateClientToAimRequest(testing::_))
       .WillOnce(testing::Return(lens::ClientToAimMessage()));
   EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_));
+  EXPECT_CALL(
+      *mock_lens_controller_,
+      CloseLensSync(
+          lens::LensOverlayDismissalSource::kContextualTasksQuerySubmitted));
 
   handler_->SubmitQuery("test query", 0, false, false, false, false);
+}
+
+TEST_F(ContextualTasksComposeboxHandlerTest, CloseLensOverlayFromWebUI) {
+  EXPECT_CALL(*mock_lens_controller_,
+              CloseLensAsync(lens::LensOverlayDismissalSource::
+                                 kContextualTasksImageUploadsDisabled));
+
+  handler_->CloseLensOverlayFromWebUI(
+      composebox::mojom::LensOverlayDismissalSource::
+          kContextualTasksImageUploadsDisabled);
 }
 
 TEST_F(ContextualTasksComposeboxHandlerTest, CreateAndSendQueryMessage) {

@@ -7,9 +7,9 @@ import 'chrome://contextual-tasks/app.js';
 import type {ContextualTasksAppElement} from 'chrome://contextual-tasks/app.js';
 import {BrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
 import type {ComposeboxFile} from 'chrome://resources/cr_components/composebox/common.js';
-import {PageCallbackRouter as ComposeboxPageCallbackRouter, PageHandlerRemote as ComposeboxPageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
+import {LensOverlayDismissalSource, PageCallbackRouter as ComposeboxPageCallbackRouter, PageHandlerRemote as ComposeboxPageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
-import {ContextUploadStatus, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
+import {ContextUploadStatus, InputType, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import {createAutocompleteMatch, createAutocompleteResultForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
@@ -140,6 +140,43 @@ suite('ContextualTasksComposeboxTest', () => {
 
   teardown(() => {
     mockTimer.uninstall();
+  });
+
+  test('closes Lens overlay when image uploads are disabled', async () => {
+    const disabledState = {
+      ...mockInputState,
+      disabledInputTypes: [InputType.kLensImage],
+    };
+
+    const innerComposebox = contextualTasksApp.$.composebox.$.composebox;
+    innerComposebox.dispatchEvent(new CustomEvent('input-state-changed', {
+      detail: {inputState: disabledState},
+      bubbles: true,
+      composed: true,
+    }));
+
+    await microtasksFinished();
+
+    assertEquals(
+        1, mockComposeboxPageHandler.getCallCount('closeLensOverlayFromWebUI'));
+    assertEquals(
+        LensOverlayDismissalSource.kContextualTasksImageUploadsDisabled,
+        mockComposeboxPageHandler.getArgs('closeLensOverlayFromWebUI')[0]);
+  });
+
+  test('lens button is disabled when image uploads are disabled', async () => {
+    const disabledState = {
+      ...mockInputState,
+      disabledInputTypes: [InputType.kLensImage],
+    };
+
+    searchboxCallbackRouterRemote.onInputStateChanged(disabledState);
+    await searchboxCallbackRouterRemote.$.flushForTesting();
+    await contextualTasksApp.$.composebox.updateComplete;
+    await composebox.updateComplete;
+    await microtasksFinished();
+
+    assertTrue(composebox.lensButtonDisabled);
   });
 
   test(
@@ -946,58 +983,6 @@ suite('ContextualTasksComposeboxTest', () => {
 
     assertEquals(1, mockSearchboxPageHandler.getCallCount('queryAutocomplete'));
   });
-
-  test(
-      'lens button visibility depends on whether DeepSearch is selected in nextbox',
-      async () => {
-        // The wrapper.
-        const contextualComposebox = contextualTasksApp.$.composebox;
-        // The cr-components composebox in the wrapper.
-        const innerComposebox = composebox;
-
-        // Ensure we are in side panel mode
-        testProxy.handler.setIsShownInTab(false);
-
-        testProxy.callbackRouterRemote.onSidePanelStateChanged();
-
-        await testProxy.callbackRouterRemote.$.flushForTesting();
-        await contextualComposebox.updateComplete;
-        await innerComposebox.updateComplete;
-        await microtasksFinished();
-
-        const getLensIcon = () =>
-            innerComposebox.shadowRoot.querySelector('#lensIcon');
-
-        assertTrue(
-            isVisible(getLensIcon()),
-            'Lens button should be visible initially');
-        assertTrue(
-            innerComposebox.showLensButton,
-            'Child showLensButton should be true initially');
-
-        // Enable Deep Search
-        await setActiveTool(ToolMode.kDeepSearch);
-
-        await microtasksFinished();
-        await contextualComposebox.updateComplete;
-        await innerComposebox.updateComplete;
-
-        // Check the effect
-        assertEquals(
-            null, getLensIcon(),
-            'Lens button should be hidden when Deep Search is active');
-
-        // Disable Deep Search
-        await setActiveTool(ToolMode.kUnspecified);
-
-        await microtasksFinished();
-        await contextualComposebox.updateComplete;
-        await innerComposebox.updateComplete;
-
-        // Check the effect
-        assertTrue(
-            isVisible(getLensIcon()), 'Lens button should be visible again');
-      });
 
   test(
       'does not query autocomplete on load when isZeroState is false',
