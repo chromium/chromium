@@ -66,7 +66,7 @@ source_set("unit_tests") {
     "//components/segmentation_platform/internal/proto",
     "//components/segmentation_platform/public",
     "//components/segmentation_platform/public:test_support",
-    "//components/sync_sessions",
+    "//components/sync_sessions:test_support",
     "//services/network/public/cpp",
     "//testing/gmock",
     "//testing/gtest",

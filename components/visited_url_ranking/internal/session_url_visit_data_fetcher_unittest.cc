@@ -7,14 +7,14 @@
 #include <memory>
 #include <vector>
 
-#include "base/callback_list.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
-#include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/sync_sessions/mock_session_sync_service.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
+#include "components/sync_sessions/synced_session.h"
 #include "components/visited_url_ranking/public/fetch_options.h"
 #include "components/visited_url_ranking/public/fetcher_config.h"
 #include "components/visited_url_ranking/public/url_visit.h"
@@ -122,29 +122,6 @@ class MockOpenTabsUIDelegate : public OpenTabsUIDelegate {
                     std::vector<const sessions::SessionTab*>* tabs));
 
   MOCK_METHOD1(GetLocalSession, bool(const SyncedSession** local_session));
-};
-
-class MockSessionSyncService : public SessionSyncService {
- public:
-  MockSessionSyncService() = default;
-  MockSessionSyncService(const MockSessionSyncService&) = delete;
-  MockSessionSyncService& operator=(const MockSessionSyncService&) = delete;
-  ~MockSessionSyncService() override = default;
-
-  MOCK_CONST_METHOD0(GetGlobalIdMapper, syncer::GlobalIdMapper*());
-
-  MOCK_METHOD0(GetOpenTabsUIDelegate, OpenTabsUIDelegate*());
-
-  base::CallbackListSubscription SubscribeToForeignSessionsChanged(
-      const base::RepeatingClosure& cb) override {
-    return subscriber_list_.Add(cb);
-  }
-
-  MOCK_METHOD0(GetControllerDelegate,
-               base::WeakPtr<syncer::DataTypeControllerDelegate>());
-
- private:
-  base::RepeatingClosureList subscriber_list_;
 };
 
 }  // namespace sync_sessions

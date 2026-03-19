@@ -21,6 +21,7 @@
 #import "components/sync/test/fake_data_type_controller_delegate.h"
 #import "components/sync/test/test_sync_service.h"
 #import "components/sync/test/test_sync_user_settings.h"
+#import "components/sync_sessions/mock_session_sync_service.h"
 #import "components/sync_sessions/open_tabs_ui_delegate.h"
 #import "components/sync_sessions/session_sync_service.h"
 #import "components/sync_sessions/synced_session.h"
@@ -66,28 +67,12 @@ using testing::DoAll;
 using testing::Return;
 using testing::SetArgPointee;
 
+using MockSessionSyncService = sync_sessions::MockSessionSyncService;
+
 namespace {
 
-class SessionSyncServiceMockForRecentTabsTableCoordinator
-    : public sync_sessions::SessionSyncService {
- public:
-  SessionSyncServiceMockForRecentTabsTableCoordinator() {}
-  ~SessionSyncServiceMockForRecentTabsTableCoordinator() override {}
-
-  MOCK_CONST_METHOD0(GetGlobalIdMapper, syncer::GlobalIdMapper*());
-  MOCK_METHOD0(GetOpenTabsUIDelegate, sync_sessions::OpenTabsUIDelegate*());
-  MOCK_METHOD1(
-      SubscribeToForeignSessionsChanged,
-      base::CallbackListSubscription(const base::RepeatingClosure& cb));
-  MOCK_METHOD0(ScheduleGarbageCollection, void());
-  MOCK_METHOD0(GetControllerDelegate,
-               base::WeakPtr<syncer::DataTypeControllerDelegate>());
-};
-
-std::unique_ptr<KeyedService>
-BuildMockSessionSyncServiceForRecentTabsTableCoordinator(ProfileIOS* profile) {
-  return std::make_unique<
-      testing::NiceMock<SessionSyncServiceMockForRecentTabsTableCoordinator>>();
+std::unique_ptr<KeyedService> BuildMockSessionSyncService(ProfileIOS* profile) {
+  return std::make_unique<testing::NiceMock<MockSessionSyncService>>();
 }
 
 // Returns a TestSyncService.
@@ -162,8 +147,7 @@ class RecentTabsTableCoordinatorTest : public BlockCleanupTest {
 
     builder.AddTestingFactory(
         SessionSyncServiceFactory::GetInstance(),
-        base::BindRepeating(
-            &BuildMockSessionSyncServiceForRecentTabsTableCoordinator));
+        base::BindRepeating(&BuildMockSessionSyncService));
     builder.AddTestingFactory(
         IOSChromeTabRestoreServiceFactory::GetInstance(),
         IOSChromeTabRestoreServiceFactory::GetDefaultFactory());
@@ -185,8 +169,8 @@ class RecentTabsTableCoordinatorTest : public BlockCleanupTest {
   }
 
   void SetupSyncState(BOOL signed_in, BOOL has_foreign_sessions) {
-    SessionSyncServiceMockForRecentTabsTableCoordinator* session_sync_service =
-        static_cast<SessionSyncServiceMockForRecentTabsTableCoordinator*>(
+    MockSessionSyncService* session_sync_service =
+        static_cast<MockSessionSyncService*>(
             SessionSyncServiceFactory::GetForProfile(profile_.get()));
 
     sync_service_ = static_cast<syncer::TestSyncService*>(

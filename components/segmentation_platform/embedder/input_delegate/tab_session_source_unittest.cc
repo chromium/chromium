@@ -16,8 +16,9 @@
 #include "components/segmentation_platform/internal/execution/processing/feature_processor_state.h"
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
 #include "components/segmentation_platform/public/input_context.h"
-#include "components/sessions/core/serialized_navigation_entry.h"
 #include "components/sessions/core/session_id.h"
+#include "components/sync_sessions/mock_session_sync_service.h"
+#include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/synced_session.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -28,6 +29,7 @@ namespace {
 
 using ::testing::_;
 using ::testing::Return;
+using MockSessionSyncService = sync_sessions::MockSessionSyncService;
 
 constexpr char kLocalTabName[] = "local";
 constexpr char kRemoteTabName1[] = "remote_1";
@@ -49,28 +51,6 @@ std::unique_ptr<sync_sessions::SyncedSession> CreateNewSession(
   session->windows[SessionID::NewUnique()] = std::move(window);
   return session;
 }
-
-class MockSessionSyncService : public sync_sessions::SessionSyncService {
- public:
-  MockSessionSyncService() = default;
-  ~MockSessionSyncService() override = default;
-
-  MOCK_METHOD(syncer::GlobalIdMapper*,
-              GetGlobalIdMapper,
-              (),
-              (const, override));
-  MOCK_METHOD(sync_sessions::OpenTabsUIDelegate*,
-              GetOpenTabsUIDelegate,
-              (),
-              (override));
-  MOCK_METHOD(base::CallbackListSubscription,
-              SubscribeToForeignSessionsChanged,
-              (const base::RepeatingClosure& cb),
-              (override));
-  MOCK_METHOD(base::WeakPtr<syncer::DataTypeControllerDelegate>,
-              GetControllerDelegate,
-              ());
-};
 
 class MockOpenTabsUIDelegate : public sync_sessions::OpenTabsUIDelegate {
  public:

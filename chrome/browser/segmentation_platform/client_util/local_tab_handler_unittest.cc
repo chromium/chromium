@@ -3,14 +3,19 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/segmentation_platform/client_util/local_tab_handler.h"
+
 #include <memory>
 
 #include "base/test/task_environment.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
+#include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/segmentation_platform/embedder/input_delegate/tab_session_source.h"
 #include "components/segmentation_platform/embedder/tab_fetcher.h"
 #include "components/segmentation_platform/internal/execution/processing/feature_processor_state.h"
+#include "components/sync_sessions/mock_session_sync_service.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
@@ -20,35 +25,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/test/base/test_browser_window.h"
-
 namespace segmentation_platform::processing {
 
 using ::testing::Return;
-
-class MockSessionSyncService : public sync_sessions::SessionSyncService {
- public:
-  MockSessionSyncService() = default;
-  ~MockSessionSyncService() override = default;
-
-  MOCK_METHOD(syncer::GlobalIdMapper*,
-              GetGlobalIdMapper,
-              (),
-              (const, override));
-  MOCK_METHOD(sync_sessions::OpenTabsUIDelegate*,
-              GetOpenTabsUIDelegate,
-              (),
-              (override));
-  MOCK_METHOD(base::CallbackListSubscription,
-              SubscribeToForeignSessionsChanged,
-              (const base::RepeatingClosure& cb),
-              (override));
-  MOCK_METHOD(base::WeakPtr<syncer::DataTypeControllerDelegate>,
-              GetControllerDelegate,
-              ());
-};
+using MockSessionSyncService = sync_sessions::MockSessionSyncService;
 
 class LocalTabHandlerTest : public testing::Test {
  public:

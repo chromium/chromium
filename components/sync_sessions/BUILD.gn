@@ -72,6 +72,8 @@ static_library("test_support") {
   sources = [
     "fake_open_tabs_ui_delegate.cc",
     "fake_open_tabs_ui_delegate.h",
+    "mock_session_sync_service.cc",
+    "mock_session_sync_service.h",
     "mock_sync_sessions_client.cc",
     "mock_sync_sessions_client.h",
     "session_sync_test_helper.cc",

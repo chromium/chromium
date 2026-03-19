@@ -77,7 +77,7 @@ source_set("unit_tests") {
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager:test_support",
     "//components/sync:test_support",
-    "//components/sync_sessions",
+    "//components/sync_sessions:test_support",
     "//components/sync_user_events",
     "//ios/chrome/app/application_delegate:app_state",
     "//ios/chrome/app/application_delegate:test_support",
