@@ -54,6 +54,7 @@ BatchAnnotationResult::~BatchAnnotationResult() = default;
 
 bool BatchAnnotationResult::HasOutputForType() const {
   switch (type()) {
+    case AnnotationType::kCategoryClassifier:
     case AnnotationType::kDeprecatedTextEmbedding:
     case AnnotationType::kDeprecatedPageEntities:
     case AnnotationType::kUnknown:
@@ -147,6 +148,15 @@ PageContentAnnotationsResult::CreateContentVisibilityScoreResult(
   return result;
 }
 
+// static
+PageContentAnnotationsResult
+PageContentAnnotationsResult::CreateCategoryResults(
+    std::vector<Category> categories) {
+  PageContentAnnotationsResult result;
+  result.result_ = std::move(categories);
+  return result;
+}
+
 PageContentAnnotationsResult::PageContentAnnotationsResult() = default;
 
 PageContentAnnotationsResult::PageContentAnnotationsResult(
@@ -159,6 +169,9 @@ AnnotationType PageContentAnnotationsResult::GetType() const {
   if (std::holds_alternative<ContentVisibilityScore>(result_)) {
     return AnnotationType::kContentVisibility;
   }
+  if (std::holds_alternative<std::vector<Category>>(result_)) {
+    return AnnotationType::kCategoryClassifier;
+  }
   return AnnotationType::kUnknown;
 }
 
@@ -167,6 +180,12 @@ PageContentAnnotationsResult::GetContentVisibilityScore() const {
   DCHECK_EQ(AnnotationType::kContentVisibility, GetType());
   return std::get<PageContentAnnotationsResult::ContentVisibilityScore>(
       result_);
+}
+
+const std::vector<Category>& PageContentAnnotationsResult::GetCategoryResults()
+    const {
+  DCHECK_EQ(AnnotationType::kCategoryClassifier, GetType());
+  return std::get<std::vector<Category>>(result_);
 }
 
 }  // namespace page_content_annotations

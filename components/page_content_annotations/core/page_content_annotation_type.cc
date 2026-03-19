@@ -17,6 +17,8 @@ std::string AnnotationTypeToString(AnnotationType type) {
       return "Unknown";
     case AnnotationType::kContentVisibility:
       return "ContentVisibility";
+    case AnnotationType::kCategoryClassifier:
+      return "CategoryClassifier";
     case AnnotationType::kDeprecatedPageEntities:
     case AnnotationType::kDeprecatedTextEmbedding:
       NOTREACHED();

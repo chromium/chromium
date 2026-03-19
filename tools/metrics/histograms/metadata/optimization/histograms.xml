@@ -29,6 +29,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="AnnotationType">
+  <variant name="CategoryClassifier" summary="Category Classifier"/>
   <variant name="ContentVisibility" summary="Content Visibility"/>
   <variant name="Deprecated PageEntities" summary="Deprecated - Page Entities"/>
   <variant name="Unknown" summary="Unknown"/>
