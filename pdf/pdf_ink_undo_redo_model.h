@@ -50,61 +50,47 @@ class PdfInkUndoRedoModel {
   PdfInkUndoRedoModel& operator=(const PdfInkUndoRedoModel&) = delete;
   ~PdfInkUndoRedoModel();
 
-  // For all Add / Remove methods:
-  // - The expected usage is: 1 StartOp call, any number of Op(Variant) calls,
-  //   1 FinishOp call.
-  // - StartOp returns the lowest annotation ID among added elements to discard,
-  //   or nullopt if there are no elements to discard on success. Returns
-  //   `std::monostate` if any requirements are not met.
-  // - Op(Variant) and FinishOp return true on success. Return false if any
-  //   requirements are not met.
+  // For `Start()`, `Add()`, `Remove()`, and `Finish()`:
+  // - The expected usage is: 1 `Start()` call, any number of `Add()` or
+  //   `Remove()` calls, and 1 `Finish()` call.
+  // - `Start()` returns the lowest annotation ID among added elements to
+  //   discard, or nullopt if there are no elements to discard on success.
+  //   Returns `std::monostate` if any requirements are not met.
+  // - `Add()`, `Remove()`, and `Finish()` return true on success. Return false
+  //   if any requirements are not met.
   // - Must not return `std::monostate` or false in production code. Returning
   //   `std::monostate` or false is only allowed in tests to check failure modes
   //   without resorting to death tests.
 
-  // Starts recording add commands. If the current commands stack position is
-  // not at the top of the stack, then this discards all entries from the
-  // current position to the top of the stack. Returns the lowest annotation ID
-  // among added elements to discard. Since IDs are added in increasing order,
-  // all elements with the same ID or larger IDs can be discarded. This will
-  // never return an `InkModeledShapeId`, which is preexisting and cannot be
-  // discarded.
-  // Must be called before Add().
-  // Must not be called while another add/remove has been started.
-  [[nodiscard]] base::expected<std::optional<IdType>, std::monostate>
-  StartAdd();
+  // Starts recording commands. If the current commands stack position is not at
+  // the top of the stack, then this discards all entries from the current
+  // position to the top of the stack. Returns the lowest annotation ID among
+  // added elements to discard. Since IDs are added in increasing order, all
+  // elements with the same ID or larger IDs can be discarded. This will never
+  // return an `InkModeledShapeId` which is preexisting and cannot be discarded.
+  // Must be called before Add() or Remove().
+  // Must not be called while an operation has already started.
+  [[nodiscard]] base::expected<std::optional<IdType>, std::monostate> Start();
+
   // Records adding an annotation identified by `id`.
-  // Must be called between StartAdd() and FinishAdd().
+  // Must be called between Start() and Finish().
   // Callers must ensure that IDs added are in increasing order.
   // `id` must not be on the commands stack.
   // `id` must not be an `InkModeledShapeId`.
   [[nodiscard]] bool Add(IdType id);
-  // Finishes recording add commands and pushes a new element onto the stack.
-  // Must be called after StartAdd().
-  [[nodiscard]] bool FinishAdd();
 
-  // Starts recording remove commands. If the current commands stack position is
-  // not at the top of the stack, then this discards all entries from the
-  // current position to the top of the stack. Returns the lowest annotation ID
-  // among added elements to discard. Since IDs are added in increasing order,
-  // all elements with the same ID or larger IDs can be discarded. This will
-  // never return an `InkModeledShapeId`, which is preexisting and cannot be
-  // discarded.
-  // Must be called before Remove().
-  // Must not be called while another add/remove has been started.
-  [[nodiscard]] base::expected<std::optional<IdType>, std::monostate>
-  StartRemove();
   // Records erasing an annotation identified by `id`.
-  // Must be called between StartRemove() and FinishRemove().
+  // Must be called between Start() and Finish().
   // `id` must not be in any `Commands::removes` on the commands stack.
   // If `id` is for a stroke or text, it must be in a `Commands::adds` on the
   // commands stack.
   // If the caller passes in invalid values, `PdfInkUndoRedoModel` will
   // faithfully give them back during undo/redo operations.
   [[nodiscard]] bool Remove(IdType id);
-  // Finishes recording remove commands and pushes a new element onto the stack.
-  // Must be called after StartRemove().
-  [[nodiscard]] bool FinishRemove();
+
+  // Finishes recording commands and pushes a new element onto the stack. Must
+  // be called after Start().
+  [[nodiscard]] bool Finish();
 
   // Returns the commands that needs to be applied to satisfy the undo / redo
   // request and moves the position in the commands stack without modifying the
@@ -113,11 +99,6 @@ class PdfInkUndoRedoModel {
   Commands Redo();
 
  private:
-  // Starts recording an add or remove session.
-  // Handles branching in the undo/redo history and identifies the first added
-  // element that will be discarded, if necessary.
-  base::expected<std::optional<IdType>, std::monostate> StartImpl();
-
   bool HasIdInAddCommands(IdType id) const;
   bool HasIdInRemoveCommands(IdType id) const;
 

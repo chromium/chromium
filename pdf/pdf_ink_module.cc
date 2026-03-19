@@ -453,7 +453,7 @@ bool PdfInkModule::OnKeyDown(const blink::WebKeyboardEvent& event) {
     current_tool_state_.emplace<TextHighlightState>();
     text_highlight_state().initiated_by_keyboard = true;
     base::expected<std::optional<IdType>, std::monostate> lowest_discard =
-        undo_redo_model_.StartAdd();
+        undo_redo_model_.Start();
     CHECK(lowest_discard.has_value());
     ApplyUndoRedoDiscards(lowest_discard.value());
   }
@@ -784,7 +784,7 @@ bool PdfInkModule::StartStroke(const gfx::PointF& position,
   client_->Invalidate(GetDrawingBrush().GetInvalidateArea(position, position));
 
   base::expected<std::optional<IdType>, std::monostate> lowest_discard =
-      undo_redo_model_.StartAdd();
+      undo_redo_model_.Start();
   CHECK(lowest_discard.has_value());
   ApplyUndoRedoDiscards(lowest_discard.value());
 
@@ -919,7 +919,7 @@ bool PdfInkModule::FinishStroke(const gfx::PointF& position,
   client_->StrokeFinished(/*modified=*/true);
   GenerateAndSendInkThumbnailInternal(state.page_index);
 
-  bool undo_redo_success = undo_redo_model_.FinishAdd();
+  bool undo_redo_success = undo_redo_model_.Finish();
   CHECK(undo_redo_success);
 
   ReportDrawStroke(state.brush_type, GetDrawingBrush().ink_brush(), tool_type);
@@ -956,7 +956,7 @@ bool PdfInkModule::StartEraseStroke(const gfx::PointF& position,
   state.erasing = true;
 
   base::expected<std::optional<IdType>, std::monostate> lowest_discard =
-      undo_redo_model_.StartRemove();
+      undo_redo_model_.Start();
   CHECK(lowest_discard.has_value());
   ApplyUndoRedoDiscards(lowest_discard.value());
 
@@ -1006,7 +1006,7 @@ bool PdfInkModule::FinishEraseStroke(const gfx::PointF& position,
     return false;
   }
 
-  bool undo_redo_success = undo_redo_model_.FinishRemove();
+  bool undo_redo_success = undo_redo_model_.Finish();
   CHECK(undo_redo_success);
 
   CHECK(is_erasing_stroke());
@@ -1142,7 +1142,7 @@ bool PdfInkModule::StartTextHighlight(const gfx::PointF& position,
   }
 
   base::expected<std::optional<IdType>, std::monostate> lowest_discard =
-      undo_redo_model_.StartAdd();
+      undo_redo_model_.Start();
   CHECK(lowest_discard.has_value());
   ApplyUndoRedoDiscards(lowest_discard.value());
 
@@ -1213,7 +1213,7 @@ bool PdfInkModule::FinishTextHighlight(const gfx::PointF& position,
       // Invalidation is already handled by the client during text selection.
     }
 
-    bool undo_redo_success = undo_redo_model_.FinishAdd();
+    bool undo_redo_success = undo_redo_model_.Finish();
     CHECK(undo_redo_success);
 
     client_->ClearSelection();
