@@ -1168,6 +1168,8 @@ class CONTENT_EXPORT WebContentsImpl
   void AdjustSelectionByCharacterOffset(int start_adjust,
                                         int end_adjust,
                                         bool show_selection_menu) override;
+  const std::optional<gfx::Rect> GetTextSelectionBounds(
+      RenderFrameHost* render_frame_host) const override;
   input::RenderWidgetHostInputEventRouter* GetInputEventRouter() override;
   void GetRenderWidgetHostAtPointAsynchronously(
       RenderWidgetHostViewBase* root_view,
