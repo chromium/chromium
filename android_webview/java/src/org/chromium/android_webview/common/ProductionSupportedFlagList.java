@@ -1194,7 +1194,7 @@ public final class ProductionSupportedFlagList {
                         + " as a task but defers it until the next step like "
                         + "NotifyHeadersReceived."),
         Flag.baseFeature(
-                "kNetworkQualityEstimatorAsyncNotifyHeadersReceived",
+                "NetworkQualityEstimatorAsyncNotifyHeadersReceived",
                 "If true, call NQE::NotifyHeadersReceived asynchronously or"
                         + " defer it until the next step like"
                         + " NotifyBytesRead, based on the parameter values."),
