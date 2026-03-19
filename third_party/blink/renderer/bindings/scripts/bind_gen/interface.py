@@ -663,7 +663,7 @@ def _make_blink_api_call(code_node,
         arguments.append("${execution_context}")
     if "Document" in values:
         arguments.append(
-            "*bindings::ToDocumentFromExecutionContext(${execution_context})")
+            "bindings::ToDocumentFromExecutionContext(*${execution_context})")
     if "ThisValue" in values:
         arguments.append("ScriptValue(${isolate}, ${v8_receiver})")
 
