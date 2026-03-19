@@ -293,7 +293,8 @@ class PrefetchURLLoaderInterceptorTestBase : public PrefetchingMetricsTestBase {
     base::RunLoop run_loop;
 
     std::unique_ptr<net::CanonicalCookie> cookie(
-        net::CanonicalCookie::CreateForTesting(url, value, base::Time::Now()));
+        net::CanonicalCookie::CreateForTesting(url, value, base::Time::Now(),
+                                               net::CookieSourceType::kOther));
     EXPECT_TRUE(cookie.get());
     EXPECT_TRUE(cookie->IsHostCookie());
 

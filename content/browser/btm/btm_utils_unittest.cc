@@ -151,10 +151,11 @@ TEST(UpdateTimestampTest, ReplaceAfterIntervalPasses) {
 
 TEST(HasCHIPS, TrueOnlyWhenHasAtLeastOnePartitionedCookie) {
   auto unpartitioned_cookie = net::CanonicalCookie::CreateForTesting(
-      GURL("https://example.com"), "name=value;", base::Time::Now());
+      GURL("https://example.com"), "name=value;", base::Time::Now(),
+      net::CookieSourceType::kOther);
   auto partitioned_cookie = net::CanonicalCookie::CreateForTesting(
       GURL("https://example.com"), "name=value; Partitioned; Path=/; Secure",
-      base::Time::Now(), std::nullopt,
+      base::Time::Now(), net::CookieSourceType::kOther, std::nullopt,
       net::CookiePartitionKey::FromURLForTesting(GURL("https://example.org")));
 
   net::CookieAccessResultList cookie_access_result_list_without_partitioned{

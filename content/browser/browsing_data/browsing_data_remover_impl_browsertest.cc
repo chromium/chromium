@@ -514,8 +514,8 @@ class CookiesBrowsingDataRemoverImplBrowserTest
       const std::string& cookie_line,
       const std::optional<net::CookiePartitionKey>& cookie_partition_key) {
     auto cookie_obj = net::CanonicalCookie::CreateForTesting(
-        url, cookie_line, base::Time::Now(), /*server_time=*/std::nullopt,
-        cookie_partition_key);
+        url, cookie_line, base::Time::Now(), net::CookieSourceType::kOther,
+        /*server_time=*/std::nullopt, cookie_partition_key);
 
     base::test::TestFuture<net::CookieAccessResult> future;
     cookie_manager_->SetCanonicalCookie(*cookie_obj, url,

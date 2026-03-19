@@ -263,8 +263,8 @@ class ClearSiteDataHandlerBrowserTest : public ContentBrowserTest {
     }
     std::unique_ptr<net::CanonicalCookie> cookie(
         net::CanonicalCookie::CreateForTesting(
-            url, cookie_line, base::Time::Now(), /*server_time=*/std::nullopt,
-            cookie_partition_key));
+            url, cookie_line, base::Time::Now(), net::CookieSourceType::kOther,
+            /*server_time=*/std::nullopt, cookie_partition_key));
 
     base::RunLoop run_loop;
     cookie_manager->SetCanonicalCookie(

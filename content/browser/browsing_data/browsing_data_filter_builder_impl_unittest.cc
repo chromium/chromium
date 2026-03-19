@@ -78,7 +78,8 @@ void RunTestCase(TestCase test_case,
   EXPECT_TRUE(test_url.is_valid()) << test_case.url;
   std::unique_ptr<net::CanonicalCookie> cookie =
       net::CanonicalCookie::CreateForTesting(test_url, cookie_line,
-                                             base::Time::Now());
+                                             base::Time::Now(),
+                                             net::CookieSourceType::kOther);
   EXPECT_TRUE(cookie) << cookie_line << " from " << test_case.url
                       << " is not a valid cookie";
   if (cookie) {
@@ -92,8 +93,8 @@ void RunTestCase(TestCase test_case,
   }
 
   cookie_line = std::string("A=2;domain=") + test_url.GetHost();
-  cookie = net::CanonicalCookie::CreateForTesting(test_url, cookie_line,
-                                                  base::Time::Now());
+  cookie = net::CanonicalCookie::CreateForTesting(
+      test_url, cookie_line, base::Time::Now(), net::CookieSourceType::kOther);
   if (cookie) {
     EXPECT_EQ(
         test_case.should_match,
@@ -105,8 +106,8 @@ void RunTestCase(TestCase test_case,
   }
 
   cookie_line = std::string("A=2; HttpOnly;") + test_url.GetHost();
-  cookie = net::CanonicalCookie::CreateForTesting(test_url, cookie_line,
-                                                  base::Time::Now());
+  cookie = net::CanonicalCookie::CreateForTesting(
+      test_url, cookie_line, base::Time::Now(), net::CookieSourceType::kOther);
   if (cookie) {
     EXPECT_EQ(
         test_case.should_match,
@@ -118,8 +119,8 @@ void RunTestCase(TestCase test_case,
   }
 
   cookie_line = std::string("A=2; HttpOnly; Secure;") + test_url.GetHost();
-  cookie = net::CanonicalCookie::CreateForTesting(test_url, cookie_line,
-                                                  base::Time::Now());
+  cookie = net::CanonicalCookie::CreateForTesting(
+      test_url, cookie_line, base::Time::Now(), net::CookieSourceType::kOther);
   if (cookie) {
     EXPECT_EQ(
         test_case.should_match,
@@ -468,7 +469,8 @@ TEST(BrowsingDataFilterBuilderImplTest, PartitionedCookies) {
         net::CanonicalCookie::CreateForTesting(
             GURL("https://www.cookie.com/"),
             "__Host-A=B; Secure; SameSite=None; Path=/; Partitioned;",
-            base::Time::Now(), std::nullopt, test_case.cookie_partition_key);
+            base::Time::Now(), net::CookieSourceType::kOther, std::nullopt,
+            test_case.cookie_partition_key);
     EXPECT_TRUE(cookie);
     EXPECT_EQ(test_case.should_match,
               delete_info.Matches(
@@ -1251,7 +1253,8 @@ TEST(BrowsingDataFilterBuilderImplTest, ExcludeUnpartitionedCookies) {
   std::unique_ptr<net::CanonicalCookie> cookie =
       net::CanonicalCookie::CreateForTesting(
           GURL("https://www.cookie.com/"),
-          "__Host-A=B; Secure; SameSite=None; Path=/;", base::Time::Now());
+          "__Host-A=B; Secure; SameSite=None; Path=/;", base::Time::Now(),
+          net::CookieSourceType::kOther);
   EXPECT_TRUE(cookie);
   EXPECT_FALSE(delete_info.Matches(
       *cookie,
@@ -1262,7 +1265,7 @@ TEST(BrowsingDataFilterBuilderImplTest, ExcludeUnpartitionedCookies) {
   cookie = net::CanonicalCookie::CreateForTesting(
       GURL("https://www.cookie.com/"),
       "__Host-A=B; Secure; SameSite=None; Path=/; Partitioned;",
-      base::Time::Now(), std::nullopt,
+      base::Time::Now(), net::CookieSourceType::kOther, std::nullopt,
       net::CookiePartitionKey::FromURLForTesting(
           GURL("https://toplevelsite.com")));
   EXPECT_TRUE(cookie);
@@ -1275,7 +1278,7 @@ TEST(BrowsingDataFilterBuilderImplTest, ExcludeUnpartitionedCookies) {
   cookie = net::CanonicalCookie::CreateForTesting(
       GURL("https://www.cookie.com/"),
       "__Host-A=B; Secure; SameSite=None; Path=/;", base::Time::Now(),
-      std::nullopt,
+      net::CookieSourceType::kOther, std::nullopt,
       net::CookiePartitionKey::FromURLForTesting(
           GURL("https://toplevelsite.com"),
           net::CookiePartitionKey::AncestorChainBit::kCrossSite,

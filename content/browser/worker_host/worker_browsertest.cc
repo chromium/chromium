@@ -163,7 +163,7 @@ class WorkerTest : public ContentBrowserTest {
     std::unique_ptr<net::CanonicalCookie> cookie =
         net::CanonicalCookie::CreateForTesting(
             cookie_url, std::string(kSameSiteCookie) + "; SameSite=Lax; Secure",
-            base::Time::Now());
+            base::Time::Now(), net::CookieSourceType::kOther);
     base::RunLoop run_loop;
     cookie_manager->SetCanonicalCookie(
         *cookie, cookie_url, options,

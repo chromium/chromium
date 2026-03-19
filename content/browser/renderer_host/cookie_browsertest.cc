@@ -92,8 +92,8 @@ void SetCookieDirect(WebContentsImpl* tab,
   options.set_same_site_cookie_context(
       net::CookieOptions::SameSiteCookieContext::MakeInclusive());
 
-  auto cookie_obj = net::CanonicalCookie::CreateForTesting(url, cookie_line,
-                                                           base::Time::Now());
+  auto cookie_obj = net::CanonicalCookie::CreateForTesting(
+      url, cookie_line, base::Time::Now(), net::CookieSourceType::kOther);
 
   base::RunLoop run_loop;
   tab->GetBrowserContext()

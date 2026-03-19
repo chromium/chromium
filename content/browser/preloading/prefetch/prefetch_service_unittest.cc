@@ -809,7 +809,8 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
 
   bool SetCookie(const GURL& url, const std::string& value) {
     std::unique_ptr<net::CanonicalCookie> cookie(
-        net::CanonicalCookie::CreateForTesting(url, value, base::Time::Now()));
+        net::CanonicalCookie::CreateForTesting(url, value, base::Time::Now(),
+                                               net::CookieSourceType::kOther));
 
     EXPECT_TRUE(cookie.get());
 

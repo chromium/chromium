@@ -843,7 +843,8 @@ void SetCookie(
   auto cookie = net::CanonicalCookie::CreateUnsafeCookieForTesting(
       kCookieName, kCookieValue, "example.test", "/", t, t + base::Days(1),
       base::Time(), base::Time(), /*secure=*/true, /*http-only=*/false,
-      net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_DEFAULT);
+      net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_DEFAULT,
+      net::CookieSourceType::kOther);
   base::RunLoop run_loop;
   cookie_manager->SetCanonicalCookie(
       *cookie, net::cookie_util::SimulatedCookieSource(*cookie, "https"),
