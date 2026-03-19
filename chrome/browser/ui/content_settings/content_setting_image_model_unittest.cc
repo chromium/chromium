@@ -208,7 +208,8 @@ TEST_F(ContentSettingImageModelTest, CookieAccessed) {
 
   GURL origin("http://google.com");
   std::unique_ptr<net::CanonicalCookie> cookie(
-      net::CanonicalCookie::CreateForTesting(origin, "A=B", base::Time::Now()));
+      net::CanonicalCookie::CreateForTesting(origin, "A=B", base::Time::Now(),
+                                             net::CookieSourceType::kOther));
   ASSERT_TRUE(cookie);
   PageSpecificContentSettings::GetForFrame(
       web_contents()->GetPrimaryMainFrame())
@@ -239,7 +240,8 @@ TEST_F(ContentSettingImageModelTest, ThirdPartyCookieAccessed) {
   GURL third_party_url("https://example.com");
   std::unique_ptr<net::CanonicalCookie> cookie(
       net::CanonicalCookie::CreateForTesting(
-          third_party_url, "A=B;SameSite=None;Secure", base::Time::Now()));
+          third_party_url, "A=B;SameSite=None;Secure", base::Time::Now(),
+          net::CookieSourceType::kOther));
   ASSERT_TRUE(cookie);
 
   // A blocked third-party cookie access, should not cause the indicator to be

@@ -4589,8 +4589,8 @@ class SessionRestoreStaleSessionCookieDeletionTest : public SessionRestoreTest {
             /*last_access=*/last_access_and_update,
             /*last_update=*/last_access_and_update, /*secure=*/true,
             /*httponly=*/false, net::CookieSameSite::NO_RESTRICTION,
-            net::COOKIE_PRIORITY_MEDIUM, /*partition_key=*/std::nullopt,
-            net::CookieSourceScheme::kSecure);
+            net::COOKIE_PRIORITY_MEDIUM, net::CookieSourceType::kOther,
+            /*partition_key=*/std::nullopt, net::CookieSourceScheme::kSecure);
     EXPECT_TRUE(cookie->IsCanonicalForFromStorage());
     base::test::TestFuture<net::CookieAccessResult> future;
     cookie_manager->SetCanonicalCookie(*cookie, url,

@@ -39,9 +39,9 @@ TEST(CookieSyncConversionsTest, CookieToProtoAndBack) {
     auto partition_key = net::CookiePartitionKey::FromURLForTesting(
         GURL(kTopLevelSiteForTesting));
     std::unique_ptr<net::CanonicalCookie> cookie =
-        net::CanonicalCookie::CreateForTesting(GURL(kUrlForTesting),
-                                               cookie_line, creation_time,
-                                               server_time, partition_key);
+        net::CanonicalCookie::CreateForTesting(
+            GURL(kUrlForTesting), cookie_line, creation_time,
+            net::CookieSourceType::kOther, server_time, partition_key);
 
     ASSERT_TRUE(cookie);
     ASSERT_EQ(cookie->IsPartitioned(), is_partitioned);

@@ -400,8 +400,8 @@ class RemoveCookieTester {
 
   void AddCookie() {
     base::RunLoop run_loop;
-    auto cookie = net::CanonicalCookie::CreateForTesting(cookie_url_, "A=1",
-                                                         base::Time::Now());
+    auto cookie = net::CanonicalCookie::CreateForTesting(
+        cookie_url_, "A=1", base::Time::Now(), net::CookieSourceType::kOther);
     cookie_manager_->SetCanonicalCookie(
         *cookie, cookie_url_, net::CookieOptions::MakeAllInclusive(),
         base::BindLambdaForTesting([&](net::CookieAccessResult result) {

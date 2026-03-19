@@ -254,7 +254,7 @@ class InlineLoginHandlerTest
     auto url = GaiaUrls::GetInstance()->gaia_url();
     auto cookie_obj = net::CanonicalCookie::CreateForTesting(
         url, std::string("oauth_code=") + kSecondaryAccountOAuthCode,
-        base::Time::Now());
+        base::Time::Now(), net::CookieSourceType::kOther);
     content::StoragePartition* partition =
         signin::GetSigninPartition(web_contents()->GetBrowserContext());
     base::test::TestFuture<net::CookieAccessResult> future;

@@ -370,7 +370,7 @@ class IsolatedWebAppBrowsingDataClearingTest
         cookie_manager.BindNewPipeAndPassReceiver());
 
     auto cookie_obj = net::CanonicalCookie::CreateForTesting(
-        url, cookie_line, time,
+        url, cookie_line, time, net::CookieSourceType::kOther,
         /*server_time=*/std::nullopt, cookie_partition_key);
 
     base::test::TestFuture<net::CookieAccessResult> future;

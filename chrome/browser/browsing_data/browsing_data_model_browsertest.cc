@@ -1701,9 +1701,9 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest, CookiesHandledCorrectly) {
   // Validate that cookie is fetched to browsing data model.
   url::Origin testOrigin = https_test_server()->GetOrigin(kTestHost);
   std::unique_ptr<net::CanonicalCookie> data_key =
-      net::CanonicalCookie::CreateForTesting(testOrigin.GetURL(),
-                                             "foo=bar; Path=/browsing_data",
-                                             base::Time::Now());
+      net::CanonicalCookie::CreateForTesting(
+          testOrigin.GetURL(), "foo=bar; Path=/browsing_data",
+          base::Time::Now(), net::CookieSourceType::kOther);
   ValidateBrowsingDataEntries(browsing_data_model.get(),
                               {{kTestHost,
                                 *(data_key.get()),
@@ -1744,9 +1744,9 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
   // Validate that cookie is fetched to browsing data model.
   url::Origin testOrigin = https_test_server()->GetOrigin(kTestHost);
   std::unique_ptr<net::CanonicalCookie> data_key =
-      net::CanonicalCookie::CreateForTesting(testOrigin.GetURL(),
-                                             "foo=bar; Path=/browsing_data",
-                                             base::Time::Now());
+      net::CanonicalCookie::CreateForTesting(
+          testOrigin.GetURL(), "foo=bar; Path=/browsing_data",
+          base::Time::Now(), net::CookieSourceType::kOther);
   ValidateBrowsingDataEntries(allowed_browsing_data_model,
                               {{kTestHost,
                                 *(data_key.get()),
@@ -1866,9 +1866,9 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
   // Validate the device bound session and the cookie it protects are added
   url::Origin testOrigin = https_test_server()->GetOrigin(kTestHost);
   std::unique_ptr<net::CanonicalCookie> cookie_data_key =
-      net::CanonicalCookie::CreateForTesting(testOrigin.GetURL(),
-                                             "auth_cookie=abcdef0123; Path=/",
-                                             base::Time::Now());
+      net::CanonicalCookie::CreateForTesting(
+          testOrigin.GetURL(), "auth_cookie=abcdef0123; Path=/",
+          base::Time::Now(), net::CookieSourceType::kOther);
   net::device_bound_sessions::SessionKey session_data_key(
       net::SchemefulSite(https_test_server()->GetURL(kTestHost, "/")),
       net::device_bound_sessions::SessionKey::Id("session_id"));
