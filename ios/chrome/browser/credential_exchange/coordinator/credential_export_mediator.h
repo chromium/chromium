@@ -15,7 +15,7 @@
 #import "ios/chrome/browser/credential_exchange/ui/credential_export_favicon_provider.h"
 #import "ios/chrome/browser/credential_exchange/ui/credential_export_view_controller.h"
 #import "ios/chrome/browser/credential_exchange/ui/credential_export_view_controller_presentation_delegate.h"
-#import "ios/chrome/browser/passwords/coordinator/password_export_handler.h"
+#import "ios/chrome/browser/passwords/password_exporter/coordinator/password_export_handler.h"
 
 namespace password_manager {
 class AffiliatedGroup;

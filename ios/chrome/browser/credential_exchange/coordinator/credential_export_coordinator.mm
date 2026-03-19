@@ -23,7 +23,7 @@
 #import "ios/chrome/browser/device_reauth/model/reauthentication_service.h"
 #import "ios/chrome/browser/device_reauth/model/reauthentication_service_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
-#import "ios/chrome/browser/passwords/coordinator/password_export_handler.h"
+#import "ios/chrome/browser/passwords/password_exporter/coordinator/password_export_handler.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/create_password_manager_title_view.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"

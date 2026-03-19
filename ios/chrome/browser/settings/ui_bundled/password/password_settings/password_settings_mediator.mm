@@ -24,7 +24,7 @@
 #import "components/sync/service/sync_service_utils.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/credential_provider/model/features.h"
-#import "ios/chrome/browser/passwords/coordinator/password_exporter.h"
+#import "ios/chrome/browser/passwords/password_exporter/coordinator/password_exporter.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/saved_passwords_presenter_observer.h"
 #import "ios/chrome/browser/settings/ui_bundled/utils/password_auto_fill_status_manager.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"

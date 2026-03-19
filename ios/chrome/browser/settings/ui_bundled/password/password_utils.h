@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_PASSWORDS_COORDINATOR_PASSWORD_UTILS_H_
-#define IOS_CHROME_BROWSER_PASSWORDS_COORDINATOR_PASSWORD_UTILS_H_
+#ifndef IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_PASSWORD_PASSWORD_UTILS_H_
+#define IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_PASSWORD_PASSWORD_UTILS_H_
 
 #import <UIKit/UIKit.h>
 
@@ -32,4 +32,4 @@ bool MatchAffiliatedGroupsForTerm(const AffiliatedGroup& affiliated_group,
 
 }  // namespace password_manager
 
-#endif  // IOS_CHROME_BROWSER_PASSWORDS_COORDINATOR_PASSWORD_UTILS_H_
+#endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_PASSWORD_PASSWORD_UTILS_H_

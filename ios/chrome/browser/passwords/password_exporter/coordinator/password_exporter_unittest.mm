@@ -9,7 +9,7 @@
 #import "components/password_manager/core/browser/password_manager_metrics_util.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/settings/ui_bundled/password/password_exporter_for_testing.h"
+#import "ios/chrome/browser/passwords/password_exporter/coordinator/password_exporter_for_testing.h"
 #import "ios/chrome/common/ui/reauthentication/mock_reauthentication_module.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/platform_test.h"

@@ -19,7 +19,6 @@ source_set("password_issues") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/net/model:crurl",
-    "//ios/chrome/browser/passwords/coordinator",
     "//ios/chrome/browser/passwords/model",
     "//ios/chrome/browser/passwords/model:password_checkup_utils",
     "//ios/chrome/browser/passwords/model/metrics",

@@ -14,6 +14,7 @@ source_set("password") {
   deps = [
     ":common",
     ":password_constants",
+    ":password_utils",
     ":ui",
     "//components/feature_engagement/public",
     "//components/password_manager/core/browser",
@@ -27,7 +28,6 @@ source_set("password") {
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/net/model:crurl",
-    "//ios/chrome/browser/passwords/coordinator",
     "//ios/chrome/browser/passwords/model",
     "//ios/chrome/browser/passwords/model:password_checkup_metrics",
     "//ios/chrome/browser/passwords/model:password_checkup_utils",
@@ -90,6 +90,7 @@ source_set("ui") {
   deps = [
     ":features",
     ":password_constants",
+    ":password_utils",
     ":title_view",
     "//base",
     "//components/application_locale_storage",
@@ -105,7 +106,6 @@ source_set("ui") {
     "//components/sync/service",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/net/model:crurl",
-    "//ios/chrome/browser/passwords/coordinator",
     "//ios/chrome/browser/passwords/model",
     "//ios/chrome/browser/passwords/model:password_checkup_metrics",
     "//ios/chrome/browser/settings/ui_bundled:settings_root",
@@ -180,19 +180,22 @@ source_set("features") {
   public_deps = [ "//base" ]
 }
 
-source_set("test_support") {
-  testonly = true
-  sources = [ "password_exporter_for_testing.h" ]
-  deps = [
-    ":ui",
-    "//ios/chrome/browser/passwords/coordinator",
+source_set("password_utils") {
+  sources = [
+    "password_utils.h",
+    "password_utils.mm",
+  ]
+  public_deps = [
+    "//base",
+    "//components/password_manager/core/browser/ui",
+    "//ios/chrome/app/strings",
+    "//ui/base",
   ]
 }
 
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "password_exporter_unittest.mm",
     "password_manager_view_controller_unittest.mm",
     "passwords_coordinator_unittest.mm",
     "passwords_mediator_unittest.mm",
@@ -200,7 +203,6 @@ source_set("unit_tests") {
   deps = [
     ":password",
     ":password_constants",
-    ":test_support",
     ":ui",
     "//base",
     "//base/test:test_support",
