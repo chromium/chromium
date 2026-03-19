@@ -1038,12 +1038,6 @@ TEST_F(SessionStorageImplFakeDbTest, TransientErrorsAfterRecovery) {
             fake.AsyncCall(&FakeDomStorageDatabase::SetUpdateMapsStatus)
                 .WithArgs(DbStatus::IOError("test"));
             return fake;
-          }),
-      base::BindRepeating(
-          [](const base::FilePath&,
-             DomStorageDatabaseFactory::StatusCallback callback) {
-            base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-                FROM_HERE, base::BindOnce(std::move(callback), DbStatus::OK()));
           }));
 
   std::optional<base::RunLoop> open_loop;
@@ -1372,12 +1366,6 @@ TEST_F(SessionStorageImplFakeDbTest, MetadataReadFailure) {
                   .WithArgs(base::unexpected(DbStatus::Corruption("test")));
             }
             return fake;
-          }),
-      base::BindRepeating(
-          [](const base::FilePath&,
-             DomStorageDatabaseFactory::StatusCallback callback) {
-            base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-                FROM_HERE, base::BindOnce(std::move(callback), DbStatus::OK()));
           }));
 
   EnsureDatabaseOpen();

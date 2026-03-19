@@ -1586,12 +1586,6 @@ TEST_F(LocalStorageImplFakeDbTest, TransientErrorsAfterRecovery) {
             fake.AsyncCall(&FakeDomStorageDatabase::SetUpdateMapsStatus)
                 .WithArgs(DbStatus::IOError("test"));
             return fake;
-          }),
-      base::BindRepeating(
-          [](const base::FilePath&,
-             DomStorageDatabaseFactory::StatusCallback callback) {
-            base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-                FROM_HERE, base::BindOnce(std::move(callback), DbStatus::OK()));
           }));
 
   std::optional<base::RunLoop> open_loop;

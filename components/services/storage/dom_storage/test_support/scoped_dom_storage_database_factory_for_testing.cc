@@ -6,7 +6,28 @@
 
 #include <utility>
 
+#include "base/functional/bind.h"
+#include "base/task/sequenced_task_runner.h"
+#include "components/services/storage/dom_storage/db_status.h"
+
 namespace storage {
+
+namespace {
+
+void DefaultDestroyCallback(
+    const base::FilePath&,
+    DomStorageDatabaseFactory::StatusCallback callback) {
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), DbStatus::OK()));
+}
+
+}  // namespace
+
+ScopedDomStorageDatabaseFactoryForTesting::
+    ScopedDomStorageDatabaseFactoryForTesting(CreateCallback create_callback)
+    : ScopedDomStorageDatabaseFactoryForTesting(
+          std::move(create_callback),
+          base::BindRepeating(&DefaultDestroyCallback)) {}
 
 ScopedDomStorageDatabaseFactoryForTesting::
     ScopedDomStorageDatabaseFactoryForTesting(CreateCallback create_callback,
