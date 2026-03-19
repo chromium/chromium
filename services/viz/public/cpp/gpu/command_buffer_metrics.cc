@@ -32,6 +32,9 @@ void RecordContextLost(ContextType type, ContextLostReason reason) {
     case ContextType::RENDERER_MAIN_THREAD:
       UMA_HISTOGRAM_ENUMERATION("GPU.ContextLost.RendererMainThread", reason);
       break;
+    case ContextType::RENDERER_MEDIA_WORKER:
+      UMA_HISTOGRAM_ENUMERATION("GPU.ContextLost.RendererMediaWorker", reason);
+      break;
     case ContextType::RENDERER_RASTER_WORKER:
       UMA_HISTOGRAM_ENUMERATION("GPU.ContextLost.RendererRasterWorker", reason);
       break;
@@ -84,6 +87,8 @@ std::string ContextTypeToString(ContextType type) {
       return "RendererCompositor";
     case ContextType::RENDERER_MAIN_THREAD:
       return "RendererMainThread";
+    case ContextType::RENDERER_MEDIA_WORKER:
+      return "RendererMediaWorker";
     case ContextType::RENDERER_RASTER_WORKER:
       return "RendererRasterWorker";
     case ContextType::VIDEO_ACCELERATOR:

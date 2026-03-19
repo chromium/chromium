@@ -152,6 +152,9 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
   scoped_refptr<viz::RasterContextProvider>
   SharedCompositorWorkerContextProvider(
       cc::RasterDarkModeFilter* dark_mode_filter) override;
+  void SharedMediaContextProvider(
+      base::OnceCallback<void(scoped_refptr<viz::RasterContextProvider>)>
+          callback) override;
   bool IsGpuRemoteDisconnected() override;
   scoped_refptr<gpu::GpuChannelHost> EstablishGpuChannelSync() override;
   void EstablishGpuChannel(EstablishGpuChannelCallback callback) override;

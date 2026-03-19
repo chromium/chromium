@@ -562,6 +562,12 @@ RendererBlinkPlatformImpl::SharedCompositorWorkerContextProvider(
       dark_mode_filter);
 }
 
+void RendererBlinkPlatformImpl::SharedMediaContextProvider(
+    base::OnceCallback<void(scoped_refptr<viz::RasterContextProvider>)>
+        callback) {
+  RenderThreadImpl::current()->SharedMediaContextProvider(std::move(callback));
+}
+
 bool RendererBlinkPlatformImpl::IsGpuRemoteDisconnected() {
   return RenderThreadImpl::current()->IsGpuRemoteDisconnected();
 }

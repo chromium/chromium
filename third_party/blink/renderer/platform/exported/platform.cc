@@ -312,6 +312,12 @@ Platform::SharedCompositorWorkerContextProvider(
   return nullptr;
 }
 
+void Platform::SharedMediaContextProvider(
+    base::OnceCallback<void(scoped_refptr<viz::RasterContextProvider>)>
+        callback) {
+  std::move(callback).Run(nullptr);
+}
+
 scoped_refptr<gpu::GpuChannelHost> Platform::EstablishGpuChannelSync() {
   return nullptr;
 }

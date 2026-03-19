@@ -603,6 +603,11 @@ class BLINK_PLATFORM_EXPORT Platform {
   SharedCompositorWorkerContextProvider(
       cc::RasterDarkModeFilter* dark_mode_filter);
 
+  // Returns a worker context provider that will be bound on the media thread.
+  virtual void SharedMediaContextProvider(
+      base::OnceCallback<void(scoped_refptr<viz::RasterContextProvider>)>
+          callback);
+
   // Synchronously establish a channel to the GPU plugin if not previously
   // established or if it has been lost (for example if the GPU plugin crashed).
   // If there is a pending asynchronous request, it will be completed by the

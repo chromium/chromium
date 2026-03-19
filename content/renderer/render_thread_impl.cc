@@ -1529,6 +1529,65 @@ RenderThreadImpl::SharedCompositorWorkerContextProvider(
   return shared_worker_context_provider_;
 }
 
+void RenderThreadImpl::SharedMediaContextProvider(
+    base::OnceCallback<void(scoped_refptr<viz::RasterContextProvider>)>
+        callback) {
+  DCHECK(IsMainThread());
+  // Try to reuse existing shared worker context provider.
+  if (shared_media_context_provider_) {
+    // Note: If context is lost, delete reference after releasing the lock.
+    viz::RasterContextProvider::ScopedRasterContextLock lock(
+        shared_media_context_provider_.get());
+    if (lock.RasterInterface()->GetGraphicsResetStatusKHR() == GL_NO_ERROR) {
+      std::move(callback).Run(shared_media_context_provider_);
+      return;
+    }
+  }
+
+  scoped_refptr<gpu::GpuChannelHost> gpu_channel_host(
+      EstablishGpuChannelSync());
+  if (!gpu_channel_host) {
+    shared_media_context_provider_ = nullptr;
+    std::move(callback).Run(shared_media_context_provider_);
+    return;
+  }
+
+  auto shared_memory_limits = gpu::SharedMemoryLimits::ForGPURasterContext();
+
+  auto context_provider = viz::ContextProviderCommandBuffer::CreateForRaster(
+      std::move(gpu_channel_host), kGpuStreamIdWorker, kGpuStreamPriorityWorker,
+      GURL("chrome://gpu/RenderThreadImpl::CreateOffscreenContext/"
+           "MediaWorker"),
+      /*automatic_flushes=*/false, /*support_locking=*/true,
+      shared_memory_limits,
+      viz::command_buffer_metrics::ContextType::RENDERER_MEDIA_WORKER,
+      /*lose_context_when_out_of_memory=*/true);
+
+  GetMediaSequencedTaskRunner()->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&RenderThreadImpl::BindMediaContextProviderOnMediaThread,
+                     base::Unretained(this), std::move(context_provider)),
+      base::BindOnce(&RenderThreadImpl::SetMediaContextProviderOnMainThread,
+                     base::Unretained(this), std::move(callback)));
+}
+
+scoped_refptr<viz::RasterContextProvider>
+RenderThreadImpl::BindMediaContextProviderOnMediaThread(
+    scoped_refptr<viz::RasterContextProvider> rcp) {
+  if (rcp->BindToCurrentSequence() != gpu::ContextResult::kSuccess) {
+    return nullptr;
+  }
+  return rcp;
+}
+
+void RenderThreadImpl::SetMediaContextProviderOnMainThread(
+    base::OnceCallback<void(scoped_refptr<viz::RasterContextProvider>)>
+        callback,
+    scoped_refptr<viz::RasterContextProvider> rcp) {
+  shared_media_context_provider_ = rcp;
+  std::move(callback).Run(rcp);
+}
+
 bool RenderThreadImpl::RendererIsHidden() const {
   return visible_state_ == mojom::RenderProcessVisibleState::kHidden;
 }

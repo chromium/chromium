@@ -142,6 +142,8 @@ class PLATFORM_EXPORT WebRtcVideoFrameAdapter
     base::Lock raster_context_provider_lock_;
     scoped_refptr<viz::RasterContextProvider> raster_context_provider_
         GUARDED_BY(raster_context_provider_lock_);
+    bool async_rcp_request_in_flight_
+        GUARDED_BY(raster_context_provider_lock_) = false;
 
     raw_ptr<media::GpuVideoAcceleratorFactories> gpu_factories_;
 

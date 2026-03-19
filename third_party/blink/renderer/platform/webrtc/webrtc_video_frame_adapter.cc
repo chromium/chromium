@@ -104,6 +104,7 @@ void WebRtcVideoFrameAdapter::SharedResources::SetRasterContextProvider(
     scoped_refptr<viz::RasterContextProvider> provider) {
   base::AutoLock auto_lock(raster_context_provider_lock_);
   raster_context_provider_ = provider;
+  async_rcp_request_in_flight_ = false;
 }
 
 scoped_refptr<WebRtcVideoFrameAdapter::SharedResources>
@@ -175,17 +176,25 @@ void WebRtcVideoFrameAdapter::SharedResources::RequestRasterContextProvider() {
   } else {
     // Post a task to the main thread to fetch the raster context provider, and
     // then asynchronously report back with the value.
+
+    base::AutoLock auto_lock(raster_context_provider_lock_);
+    if (async_rcp_request_in_flight_) {
+      return;
+    }
+    async_rcp_request_in_flight_ = true;
     Thread::MainThread()
         ->GetTaskRunner(MainThreadTaskRunnerRestricted())
-        ->PostTaskAndReplyWithResult(
+        ->PostTask(
             FROM_HERE,
-            base::BindOnce([]() -> scoped_refptr<viz::RasterContextProvider> {
-              return blink::Platform::Current()
-                  ->SharedCompositorWorkerContextProvider(nullptr);
-            }),
-            base::BindOnce(&WebRtcVideoFrameAdapter::SharedResources::
-                               SetRasterContextProvider,
-                           this));
+            base::BindOnce(
+                [](base::OnceCallback<void(
+                       scoped_refptr<viz::RasterContextProvider>)> callback) {
+                  blink::Platform::Current()->SharedMediaContextProvider(
+                      std::move(callback));
+                },
+                base::BindOnce(&WebRtcVideoFrameAdapter::SharedResources::
+                                   SetRasterContextProvider,
+                               this)));
   }
 }
 

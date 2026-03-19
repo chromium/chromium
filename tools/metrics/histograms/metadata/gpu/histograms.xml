@@ -644,6 +644,8 @@ chromium-metrics-reviews@google.com.
         summary="A renderer compositor GPU command buffer context"/>
     <variant name="RendererMainThread"
         summary="A renderer shared main thread GPU command buffer context"/>
+    <variant name="RendererMediaWorker"
+        summary="A renderer media worker GPU command buffer context"/>
     <variant name="RendererRasterWorker"
         summary="A renderer raster worker GPU command buffer context"/>
     <variant name="Unknown"
