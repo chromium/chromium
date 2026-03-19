@@ -36,6 +36,7 @@ class PageAdDensityTracker {
   struct AdDensityCalculationResult {
     std::optional<int> ad_density_by_height;
     std::optional<int> ad_density_by_area;
+    std::optional<int> ad_count;
   };
 
   PageAdDensityTracker(bool is_in_foreground,
@@ -81,6 +82,11 @@ class PageAdDensityTracker {
   // (i.e. no main frame viewport) or if the elapsed time is 0.
   TimeWeightedUnivariateStats::DistributionMoments
   GetViewportAdDensityByAreaStats();
+
+  // Returns the distribution moments of the viewport ad count.
+  // Returns default value (i.e. 0s) if the calculation didn't happen (i.e. no
+  // main frame viewport) or if the elapsed time is 0.
+  TimeWeightedUnivariateStats::DistributionMoments GetViewportAdCountStats();
 
   // Called at the end of the page load to finalize metrics measurement.
   void Finalize();
@@ -152,6 +158,7 @@ class PageAdDensityTracker {
   TimeWeightedUnivariateStats page_ad_density_by_area_stats_;
   TimeWeightedUnivariateStats page_ad_density_by_height_stats_;
   TimeWeightedUnivariateStats viewport_ad_density_by_area_stats_;
+  TimeWeightedUnivariateStats viewport_ad_count_stats_;
 
   bool finalize_called_ = false;
 

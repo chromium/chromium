@@ -559,4 +559,105 @@ TEST(PageAdDensityTrackerTest,
   EXPECT_DOUBLE_EQ(tracker.GetViewportAdDensityByAreaStats().mean, 50.0);
 }
 
+TEST(PageAdDensityTrackerTest, ViewportAdCount_SingleAd) {
+  base::test::SingleThreadTaskEnvironment task_environment(
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME);
+  PageAdDensityTracker tracker(/*is_in_foreground=*/true);
+
+  tracker.UpdateMainFrameViewportRect(gfx::Rect(0, 0, 100, 100));
+  tracker.UpdateMainFrameAdRects({{kRectId1, gfx::Rect(10, 10, 50, 50)}});
+
+  task_environment.FastForwardBy(base::Seconds(1));
+  tracker.Finalize();
+
+  EXPECT_DOUBLE_EQ(tracker.GetViewportAdCountStats().mean, 1.0);
+}
+
+TEST(PageAdDensityTrackerTest, ViewportAdCount_MultipleAds) {
+  base::test::SingleThreadTaskEnvironment task_environment(
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME);
+  PageAdDensityTracker tracker(/*is_in_foreground=*/true);
+
+  tracker.UpdateMainFrameViewportRect(gfx::Rect(0, 0, 100, 100));
+  tracker.UpdateMainFrameAdRects({{kRectId1, gfx::Rect(10, 10, 20, 20)},
+                                  {kRectId2, gfx::Rect(50, 50, 20, 20)}});
+
+  task_environment.FastForwardBy(base::Seconds(1));
+  tracker.Finalize();
+
+  EXPECT_DOUBLE_EQ(tracker.GetViewportAdCountStats().mean, 2.0);
+}
+
+TEST(PageAdDensityTrackerTest, ViewportAdCount_AdOutOfViewport) {
+  base::test::SingleThreadTaskEnvironment task_environment(
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME);
+  PageAdDensityTracker tracker(/*is_in_foreground=*/true);
+
+  tracker.UpdateMainFrameViewportRect(gfx::Rect(0, 0, 100, 100));
+  tracker.UpdateMainFrameAdRects({{kRectId1, gfx::Rect(0, 100, 50, 50)}});
+
+  task_environment.FastForwardBy(base::Seconds(1));
+  tracker.Finalize();
+
+  // Ad is outside the viewport, so the count should be 0.
+  EXPECT_DOUBLE_EQ(tracker.GetViewportAdCountStats().mean, 0.0);
+}
+
+TEST(PageAdDensityTrackerTest, ViewportAdCount_PartialViewportOverlap) {
+  base::test::SingleThreadTaskEnvironment task_environment(
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME);
+  PageAdDensityTracker tracker(/*is_in_foreground=*/true);
+
+  tracker.UpdateMainFrameViewportRect(gfx::Rect(0, 0, 100, 100));
+
+  // Ad intersects the bottom right corner of the viewport.
+  tracker.UpdateMainFrameAdRects({{kRectId1, gfx::Rect(80, 80, 50, 50)}});
+
+  task_environment.FastForwardBy(base::Seconds(1));
+  tracker.Finalize();
+
+  // A partially overlapping ad is still counted as 1 whole ad.
+  EXPECT_DOUBLE_EQ(tracker.GetViewportAdCountStats().mean, 1.0);
+}
+
+TEST(PageAdDensityTrackerTest, ViewportAdCount_OverlappingAds) {
+  base::test::SingleThreadTaskEnvironment task_environment(
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME);
+  PageAdDensityTracker tracker(/*is_in_foreground=*/true);
+
+  tracker.UpdateMainFrameViewportRect(gfx::Rect(0, 0, 100, 100));
+  tracker.UpdateMainFrameAdRects({
+      {kRectId1, gfx::Rect(10, 10, 50, 50)},
+      {kRectId2, gfx::Rect(20, 20, 50, 50)}  // Overlaps kRectId1
+  });
+
+  task_environment.FastForwardBy(base::Seconds(1));
+  tracker.Finalize();
+
+  // Unlike area density, the count should be 2 because there are two distinct
+  // rects.
+  EXPECT_DOUBLE_EQ(tracker.GetViewportAdCountStats().mean, 2.0);
+}
+
+TEST(PageAdDensityTrackerTest, ViewportAdCount_TimeWeightedAverage) {
+  base::test::SingleThreadTaskEnvironment task_environment(
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME);
+  PageAdDensityTracker tracker(/*is_in_foreground=*/true);
+
+  tracker.UpdateMainFrameViewportRect(gfx::Rect(0, 0, 100, 100));
+  tracker.UpdateMainFrameAdRects({{kRectId1, gfx::Rect(0, 0, 50, 50)}});
+
+  task_environment.FastForwardBy(base::Seconds(1));
+
+  // Scroll the viewport so the ad is no longer visible.
+  tracker.UpdateMainFrameViewportRect(gfx::Rect(200, 200, 100, 100));
+
+  task_environment.FastForwardBy(base::Seconds(1));
+
+  tracker.Finalize();
+
+  // 1 ad for 1 second, 0 ads for 1 second. Average = 0.5.
+  EXPECT_DOUBLE_EQ(tracker.GetViewportAdCountStats().mean, 0.5);
+}
+
 }  // namespace page_load_metrics
