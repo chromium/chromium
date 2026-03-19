@@ -3122,6 +3122,7 @@ static_library("ui") {
       "//components/capture_mode",
       "//components/country_codes",
       "//components/on_device_translation",
+      "//components/services/unzip/public/cpp",
       "//services/audio/public/mojom",
       "//services/video_capture/public/mojom",
     ]

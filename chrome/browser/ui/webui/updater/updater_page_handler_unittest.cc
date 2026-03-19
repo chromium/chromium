@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -26,11 +27,14 @@
 #include "chrome/enterprise_companion/global_constants.h"
 #include "chrome/updater/mojom/updater_service.mojom.h"
 #include "chrome/updater/updater_scope.h"
+#include "components/services/unzip/in_process_unzipper.h"
+#include "components/services/unzip/public/mojom/unzipper.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/zlib/google/zip.h"
 
 using base::test::RunOnceCallback;
 using testing::_;
@@ -116,6 +120,10 @@ class MockUpdaterPageHandlerDelegate : public UpdaterPageHandler::Delegate {
               (base::OnceCallback<
                   void(const std::vector<updater::mojom::AppState>&)> callback),
               (const, override));
+  MOCK_METHOD(mojo::PendingRemote<unzip::mojom::Unzipper>,
+              CreateUnzipper,
+              (),
+              (const, override));
 
  private:
   ~MockUpdaterPageHandlerDelegate() override = default;
@@ -134,10 +142,33 @@ class MockUpdaterPage : public updater_ui::mojom::Page {
 class UpdaterPageHandlerTest : public testing::Test {
  public:
   void SetUp() override {
+    EXPECT_CALL(*mock_delegate_, CreateUnzipper()).WillRepeatedly([]() {
+      return unzip::LaunchInProcessUnzipper();
+    });
+
     handler_ = std::make_unique<UpdaterPageHandler>(
         /*profile=*/nullptr,
         mojo::PendingReceiver<updater_ui::mojom::PageHandler>(),
         mock_page_.BindAndGetRemote(), mock_delegate_);
+  }
+
+  mojo_base::BigBuffer CreateZip(
+      const base::flat_map<base::FilePath, std::string>& files) {
+    base::ScopedTempDir src_dir;
+    EXPECT_TRUE(src_dir.CreateUniqueTempDir());
+    for (const auto& [path, contents] : files) {
+      base::FilePath full_path = src_dir.GetPath().Append(path);
+      EXPECT_TRUE(base::CreateDirectory(full_path.DirName()));
+      EXPECT_TRUE(base::WriteFile(full_path, contents));
+    }
+    base::ScopedTempDir dest_dir;
+    EXPECT_TRUE(dest_dir.CreateUniqueTempDir());
+    base::FilePath zip_path = dest_dir.GetPath().AppendASCII("test.zip");
+    EXPECT_TRUE(zip::Zip(src_dir.GetPath(), zip_path, true));
+    std::string zip_contents;
+    EXPECT_TRUE(base::ReadFileToString(zip_path, &zip_contents));
+    mojo_base::BigBuffer buffer(base::as_byte_span(zip_contents));
+    return buffer;
   }
 
  protected:
@@ -634,6 +665,61 @@ TEST_F(UpdaterPageHandlerTest, GetEnterpriseCompanionState_InstallDirMissing) {
         EXPECT_FALSE(result.has_value());
         run_loop.Quit();
       }));
+  run_loop.Run();
+}
+
+TEST_F(UpdaterPageHandlerTest, UnzipUpdaterHistoryFiles_Success) {
+  mojo_base::BigBuffer zip_data = CreateZip(
+      {{base::FilePath(FILE_PATH_LITERAL("updater_history.jsonl")),
+        "event1\nevent2"},
+       {base::FilePath(FILE_PATH_LITERAL("updater_history.jsonl.old")),
+        "event0"}});
+
+  base::RunLoop run_loop;
+  handler_->UnzipUpdaterHistoryFiles(
+      std::move(zip_data),
+      base::BindLambdaForTesting(
+          [&](UpdaterPageHandler::UnzipUpdaterHistoryFilesResult result) {
+            ASSERT_OK_AND_ASSIGN(
+                updater_ui::mojom::UnzipUpdaterHistoryFilesResponsePtr response,
+                std::move(result));
+            EXPECT_THAT(response->history_file_contents,
+                        UnorderedElementsAre("event1\nevent2", "event0"));
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+}
+
+TEST_F(UpdaterPageHandlerTest, UnzipUpdaterHistoryFiles_Filtered) {
+  mojo_base::BigBuffer zip_data = CreateZip(
+      {{base::FilePath(FILE_PATH_LITERAL("updater_history.jsonl")), "event1"},
+       {base::FilePath(FILE_PATH_LITERAL("other.txt")), "ignored"}});
+
+  base::RunLoop run_loop;
+  handler_->UnzipUpdaterHistoryFiles(
+      std::move(zip_data),
+      base::BindLambdaForTesting(
+          [&](UpdaterPageHandler::UnzipUpdaterHistoryFilesResult result) {
+            ASSERT_OK_AND_ASSIGN(
+                updater_ui::mojom::UnzipUpdaterHistoryFilesResponsePtr response,
+                std::move(result));
+            EXPECT_THAT(response->history_file_contents, ElementsAre("event1"));
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+}
+
+TEST_F(UpdaterPageHandlerTest, UnzipUpdaterHistoryFiles_Failure_InvalidZip) {
+  mojo_base::BigBuffer zip_data(base::as_byte_span("not a zip file"));
+
+  base::RunLoop run_loop;
+  handler_->UnzipUpdaterHistoryFiles(
+      std::move(zip_data),
+      base::BindLambdaForTesting(
+          [&](UpdaterPageHandler::UnzipUpdaterHistoryFilesResult result) {
+            EXPECT_FALSE(result.has_value());
+            run_loop.Quit();
+          }));
   run_loop.Run();
 }
 

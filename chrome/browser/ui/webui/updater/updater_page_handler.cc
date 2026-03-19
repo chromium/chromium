@@ -14,8 +14,10 @@
 
 #include "base/barrier_closure.h"
 #include "base/containers/flat_map.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -37,6 +39,10 @@
 #include "chrome/updater/mojom/updater_service.mojom.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/util.h"
+#include "components/services/unzip/content/unzip_service.h"
+#include "components/services/unzip/public/cpp/unzip.h"
+#include "components/services/unzip/public/mojom/unzipper.mojom.h"
+#include "mojo/public/cpp/base/big_buffer.h"
 
 namespace {
 
@@ -85,6 +91,10 @@ class DefaultUpdaterPageHandlerDelegate final
       base::OnceCallback<void(const std::vector<updater::mojom::AppState>&)>
           callback) const override {
     updater::GetUserUpdaterAppStates(std::move(callback));
+  }
+
+  mojo::PendingRemote<unzip::mojom::Unzipper> CreateUnzipper() const override {
+    return unzip::LaunchUnzipper();
   }
 
  private:
@@ -200,6 +210,77 @@ void PopulateUiAppStates(
                                    ? app_state.cohort
                                    : std::nullopt);
                          });
+}
+
+void UnzipUpdaterHistoryFilesImpl(
+    mojo::PendingRemote<unzip::mojom::Unzipper> unzipper,
+    mojo_base::BigBuffer zip_data,
+    UpdaterPageHandler::UnzipUpdaterHistoryFilesCallback callback) {
+  base::ScopedTempDir temp_dir;
+  if (!temp_dir.CreateUniqueTempDir()) {
+    DPLOG(WARNING) << "Failed to create temporary directory";
+    std::move(callback).Run(base::unexpected(
+        updater_ui::mojom::UnzipUpdaterHistoryFilesError::New()));
+    return;
+  }
+
+  base::FilePath archive_path = temp_dir.GetPath().AppendASCII("input.zip");
+  if (!base::WriteFile(archive_path, zip_data)) {
+    DPLOG(WARNING) << "Failed to write user-supplied zip data to storage";
+    std::move(callback).Run(base::unexpected(
+        updater_ui::mojom::UnzipUpdaterHistoryFilesError::New()));
+    return;
+  }
+
+  const base::FilePath output_path = temp_dir.GetPath().AppendASCII("output");
+  if (!base::CreateDirectory(output_path)) {
+    DPLOG(WARNING) << "Failed to create output path in temporary directory";
+    std::move(callback).Run(base::unexpected(
+        updater_ui::mojom::UnzipUpdaterHistoryFilesError::New()));
+    return;
+  }
+
+  unzip::Unzip(
+      std::move(unzipper), archive_path, output_path,
+      unzip::mojom::UnzipOptions::New(),
+      base::BindRepeating([](const base::FilePath& path) {
+        return base::FilePath::CompareEqualIgnoreCase(
+                   path.BaseName().value(),
+                   FILE_PATH_LITERAL("updater_history.jsonl")) ||
+               base::FilePath::CompareEqualIgnoreCase(
+                   path.BaseName().value(),
+                   FILE_PATH_LITERAL("updater_history.jsonl.old"));
+      }),
+      /*listener_callback=*/base::DoNothing(),
+      base::BindOnce(
+          [](base::ScopedTempDir, const base::FilePath& output_path,
+             UpdaterPageHandler::UnzipUpdaterHistoryFilesCallback callback,
+             bool result) {
+            if (!result) {
+              DLOG(WARNING) << "Failed to unzip user-supplied archive";
+              std::move(callback).Run(base::unexpected(
+                  updater_ui::mojom::UnzipUpdaterHistoryFilesError::New()));
+              return;
+            }
+
+            base::FileEnumerator it(output_path, /*recursive=*/true,
+                                    base::FileEnumerator::FILES);
+            auto response =
+                updater_ui::mojom::UnzipUpdaterHistoryFilesResponse::New();
+            for (base::FilePath path = it.Next(); !path.empty();
+                 path = it.Next()) {
+              std::string contents;
+              if (!base::ReadFileToString(path, &contents)) {
+                DPLOG(WARNING) << "Failed to read " << path;
+                std::move(callback).Run(base::unexpected(
+                    updater_ui::mojom::UnzipUpdaterHistoryFilesError::New()));
+                return;
+              }
+              response->history_file_contents.push_back(std::move(contents));
+            }
+            std::move(callback).Run(std::move(response));
+          },
+          std::move(temp_dir), output_path, std::move(callback)));
 }
 
 }  // namespace
@@ -413,4 +494,16 @@ void UpdaterPageHandler::ShowDirectory(
   platform_util::OpenItem(profile_, *install_dir,
                           platform_util::OpenItemType::OPEN_FOLDER,
                           base::DoNothing());
+}
+
+void UpdaterPageHandler::UnzipUpdaterHistoryFiles(
+    mojo_base::BigBuffer zip_data,
+    UnzipUpdaterHistoryFilesCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})
+      ->PostTask(FROM_HERE,
+                 base::BindOnce(
+                     &UnzipUpdaterHistoryFilesImpl, delegate_->CreateUnzipper(),
+                     std::move(zip_data),
+                     base::BindPostTaskToCurrentDefault(std::move(callback))));
 }

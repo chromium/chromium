@@ -121,76 +121,117 @@ suite('UpdaterAppElement', () => {
     });
   });
 
-  test(
-      'switches to file data source on processHistoryFiles success',
-      async () => {
-        await initApp();
-        assertEquals(PageDataSource.INSTALL, element.pageDataSource);
+  suite('presents external data', () => {
+    const events = [
+      JSON.stringify({
+        eventType: 'UPDATER_PROCESS',
+        eventId: '1',
+        deviceUptime: 1000,
+        pid: 123,
+        processToken: 'token',
+        bound: 'START',
+        scope: 'SYSTEM',
+        updaterVersion: '123.0.0.1',
+        timestamp: '13351910400000000',
+      }),
+      JSON.stringify({
+        eventType: 'UPDATER_PROCESS',
+        eventId: '1',
+        deviceUptime: 2000,
+        pid: 123,
+        processToken: 'token',
+        bound: 'END',
+      }),
+      JSON.stringify({
+        eventType: 'PERSISTED_DATA',
+        eventId: '2',
+        deviceUptime: 1500,
+        pid: 123,
+        processToken: 'token',
+        bound: 'INSTANT',
+        eulaRequired: false,
+        registeredApps: [{appId: 'test-app', version: '1.0.0.0'}],
+      }),
+    ].join('\n');
 
-        const events = [
-          JSON.stringify({
-            eventType: 'UPDATER_PROCESS',
-            eventId: '1',
-            deviceUptime: 1000,
-            pid: 123,
-            processToken: 'token',
-            bound: 'START',
-            scope: 'SYSTEM',
-            updaterVersion: '123.0.0.1',
-            timestamp: '13351910400000000',
-          }),
-          JSON.stringify({
-            eventType: 'UPDATER_PROCESS',
-            eventId: '1',
-            deviceUptime: 2000,
-            pid: 123,
-            processToken: 'token',
-            bound: 'END',
-          }),
-          JSON.stringify({
-            eventType: 'PERSISTED_DATA',
-            eventId: '2',
-            deviceUptime: 1500,
-            pid: 123,
-            processToken: 'token',
-            bound: 'INSTANT',
-            eulaRequired: false,
-            registeredApps: [{appId: 'test-app', version: '1.0.0.0'}],
-          }),
-        ].join('\n');
+    test(
+        'switches to file data source on processHistoryFiles success',
+        async () => {
+          await initApp();
+          assertEquals(PageDataSource.INSTALL, element.pageDataSource);
 
-        await setInputFile('history.jsonl', events);
+          await setInputFile('history.jsonl', events);
 
-        assertEquals(PageDataSource.FILE, element.pageDataSource);
-        assertFalse(element.historyLoadError);
-        assertEquals(3, element.messages.length);
-        assertEquals(1, element.apps.length);
-        assertEquals('test-app', element.apps[0]!.appId);
+          assertEquals(PageDataSource.FILE, element.pageDataSource);
+          assertFalse(element.historyLoadError);
+          assertEquals(3, element.messages.length);
+          assertEquals(1, element.apps.length);
+          assertEquals('test-app', element.apps[0]!.appId);
 
-        const closeButton = element.shadowRoot.querySelector<HTMLElement>(
-            '#controls cr-button');
-        assertTrue(!!closeButton);
-        closeButton.click();
-        await microtasksFinished();
+          const closeButton = element.shadowRoot.querySelector<HTMLElement>(
+              '#controls cr-button');
+          assertTrue(!!closeButton);
+          closeButton.click();
+          await microtasksFinished();
 
-        assertEquals(PageDataSource.INSTALL, element.pageDataSource);
-      });
+          assertEquals(PageDataSource.INSTALL, element.pageDataSource);
+        });
 
-  test('handles invalid file extension', async () => {
-    await initApp();
+    test(
+        'switches to file data source on unzipUpdaterHistoryFiles success',
+        async () => {
+          await initApp();
+          assertEquals(PageDataSource.INSTALL, element.pageDataSource);
 
-    await setInputFile('invalid.txt', 'some data');
+          handler.setPromiseResolveFor('unzipUpdaterHistoryFiles', {
+            historyFileContents: [events],
+          });
 
-    assertEquals(PageDataSource.INSTALL, element.pageDataSource);
-    assertTrue(element.historyLoadError);
-  });
+          await setInputFile('history.zip', 'zip content');
 
-  test('handles invalid JSON', async () => {
-    await initApp();
+          assertEquals(PageDataSource.FILE, element.pageDataSource);
+          assertFalse(element.historyLoadError);
+          assertEquals(3, element.messages.length);
+          assertEquals(1, element.apps.length);
+          assertEquals('test-app', element.apps[0]!.appId);
 
-    await setInputFile('invalid.jsonl', 'not json');
+          const closeButton = element.shadowRoot.querySelector<HTMLElement>(
+              '#controls cr-button');
+          assertTrue(!!closeButton);
+          closeButton.click();
+          await microtasksFinished();
 
-    assertEquals(PageDataSource.INSTALL, element.pageDataSource);
-    assertTrue(element.historyLoadError);
+          assertEquals(PageDataSource.INSTALL, element.pageDataSource);
+        });
+
+    test('handles unzipUpdaterHistoryFiles failure', async () => {
+      await initApp();
+
+      handler.setPromiseRejectFor('unzipUpdaterHistoryFiles');
+
+      await setInputFile('history.zip', 'zip content');
+
+      assertEquals(1, handler.getCallCount('unzipUpdaterHistoryFiles'));
+      assertEquals(PageDataSource.INSTALL, element.pageDataSource);
+      assertTrue(element.historyLoadError);
+    });
+
+    test('handles invalid file extension', async () => {
+      await initApp();
+
+      await setInputFile('invalid.txt', 'some data');
+
+      assertEquals(PageDataSource.INSTALL, element.pageDataSource);
+      assertTrue(element.historyLoadError);
+    });
+
+    test('handles invalid JSON', async () => {
+      await initApp();
+
+      await setInputFile('invalid.jsonl', 'not json');
+
+      assertEquals(PageDataSource.INSTALL, element.pageDataSource);
+      assertTrue(element.historyLoadError);
+    });
   });
 });

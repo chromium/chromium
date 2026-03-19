@@ -16,8 +16,13 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/ui/webui/updater/updater_ui.mojom.h"
+#include "chrome/browser/updater/updater.h"
 #include "chrome/updater/mojom/updater_service.mojom.h"
 #include "chrome/updater/updater_scope.h"
+#include "components/services/unzip/public/mojom/unzipper.mojom-forward.h"
+#include "mojo/public/cpp/base/big_buffer.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -49,6 +54,8 @@ class UpdaterPageHandler final : public updater_ui::mojom::PageHandler {
     virtual void GetUserUpdaterAppStates(
         base::OnceCallback<void(const std::vector<updater::mojom::AppState>&)>
             callback) const = 0;
+    virtual mojo::PendingRemote<unzip::mojom::Unzipper> CreateUnzipper()
+        const = 0;
 
    protected:
     friend class base::RefCountedThreadSafe<Delegate>;
@@ -73,6 +80,9 @@ class UpdaterPageHandler final : public updater_ui::mojom::PageHandler {
       GetEnterpriseCompanionStateCallback callback) override;
   void GetAppStates(GetAppStatesCallback callback) override;
   void ShowDirectory(updater_ui::mojom::ShowDirectoryTarget scope) override;
+  void UnzipUpdaterHistoryFiles(
+      mojo_base::BigBuffer zip_data,
+      UnzipUpdaterHistoryFilesCallback callback) override;
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);

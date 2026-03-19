@@ -31,7 +31,8 @@ export function getHtml(this: UpdaterAppElement) {
           </cr-button>
         `}
         <input type="file" id="fileInput" hidden multiple
-            accept=".jsonl, .jsonl.old" @change="${this.onFileInputChange}">
+            accept=".jsonl, .jsonl.old, .zip"
+            @change="${this.onFileInputChange}">
       </div>
     </div>
   </div>

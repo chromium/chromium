@@ -5,6 +5,7 @@
 module updater_ui.mojom;
 
 import "chrome/updater/mojom/updater_service.mojom";
+import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/time.mojom";
 
@@ -89,11 +90,23 @@ enum ShowDirectoryTarget {
   kEnterpriseCompanionApp,
 };
 
+struct UnzipUpdaterHistoryFilesResponse {
+  // The contents of each history JSONL file present in the zip. Each array
+  // entry is an entire file's contents. It is the responsibility of the caller
+  // to split this on newlines to extract JSON messages. Each file is expected
+  // to contain newline-delimited JSON blobs conforming to the format defined in
+  // //docs/updater/history_log.md, however the browser performs no validation
+  // of event fields. Returned data is untrusted.
+  array<string> history_file_contents;
+};
+
+struct UnzipUpdaterHistoryFilesError {};
+
 // Called from TS side of chrome://updater (Renderer -> Browser).
 interface PageHandler {
   // Retrieves the contents of all available updater history logs. Events are
   // expected to be JSON blobs conforming to the format defined in
-  // //docs/updater/history_log.md, however the Renderer performs no validation
+  // //docs/updater/history_log.md, however the browser performs no validation
   // of event fields. Returned data is untrusted.
   GetAllUpdaterEvents() => (array<string> events);
 
@@ -116,6 +129,11 @@ interface PageHandler {
   // installation on the filesystem. Fails silently if the directory does not
   // exist.
   ShowDirectory(ShowDirectoryTarget scope);
+
+  // Extracts all updater history JSONL files from a user-supplied zip. This is
+  // intended to be used to parse data exported by Chrome's support tool.
+  UnzipUpdaterHistoryFiles(mojo_base.mojom.BigBuffer zip_data)
+      => result<UnzipUpdaterHistoryFilesResponse, UnzipUpdaterHistoryFilesError>;
 };
 
 // Called from C++ side of chrome://updater (Browser -> Renderer).

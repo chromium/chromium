@@ -114,13 +114,30 @@ export class UpdaterAppElement extends CrLitElement {
   }
 
   private async processHistoryFiles(files: File[]): Promise<string[]> {
-    const records = await Promise.all(files.map(async file => {
-      if (/\.jsonl(\.old)?$/i.test(file.name)) {
-        const text = await file.text();
-        return text.trim()
+    const processJSONL = (jsonl: string): string[] =>
+        jsonl.trim()
             .split('\n')
             .map(line => line.trim())
             .filter(line => line.length > 0);
+    const records = await Promise.all(files.map(async file => {
+      if (/\.jsonl(\.old)?$/i.test(file.name)) {
+        return processJSONL(await file.text());
+      }
+      if (file.name.toLowerCase().endsWith('.zip')) {
+        const data = new Uint8Array(await file.arrayBuffer());
+        const handle = Mojo.createSharedBuffer(data.byteLength).handle;
+        const buffer =
+            new Uint8Array(handle.mapBuffer(0, data.byteLength).buffer);
+        buffer.set(data);
+
+        const response = await BrowserProxyImpl.getInstance()
+                             .handler.unzipUpdaterHistoryFiles({
+                               sharedMemory: {
+                                 bufferHandle: handle,
+                                 size: data.byteLength,
+                               },
+                             });
+        return response.historyFileContents.flatMap(processJSONL);
       }
       throw new Error(`No handler available for ${file.name}`);
     }));
