@@ -56,6 +56,7 @@ import org.chromium.chrome.browser.feed.FeedSurfaceProvider;
 import org.chromium.chrome.browser.feed.FeedSwipeRefreshLayout;
 import org.chromium.chrome.browser.feed.NtpFeedSurfaceLifecycleManager;
 import org.chromium.chrome.browser.feed.componentinterfaces.SurfaceCoordinator;
+import org.chromium.chrome.browser.glic.GlicHelper;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.LifecycleObserver;
@@ -108,6 +109,7 @@ import org.chromium.chrome.browser.toolbar.top.Toolbar;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.TopInsetProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarManageable;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
@@ -144,7 +146,8 @@ public class NewTabPage
                 BrowserControlsStateProvider.Observer,
                 FeedSurfaceDelegate,
                 VoiceRecognitionHandler.Observer,
-                ModuleDelegateHost {
+                ModuleDelegateHost,
+                SnackbarManageable {
     private static final String TAG = "NewTabPage";
 
     // Key for the scroll position data that may be stored in a navigation entry.
@@ -1035,6 +1038,11 @@ public class NewTabPage
         mNewTabPageCoordinator.updateActionButtonVisibility();
     }
 
+    @Override
+    public SnackbarManager getSnackbarManager() {
+        return mNewTabPageManager.getSnackbarManager();
+    }
+
     /** Adds an observer to be notified on most visited tile clicks. */
     public void addMostVisitedTileClickObserver(MostVisitedTileClickObserver observer) {
         mMostVisitedTileClickObservers.addObserver(observer);
@@ -1053,6 +1061,7 @@ public class NewTabPage
         mLastShownTimeNs = System.nanoTime();
         RecordUserAction.record("MobileNTPShown");
         SuggestionsMetrics.recordSurfaceVisible();
+        GlicHelper.maybeShowGlicTaskInProgressSnackbar(this, mTab.getProfile(), mActivity);
     }
 
     private void maybeUpdateMagicStack() {
