@@ -24,6 +24,17 @@ please read [this article](https://www.chromium.org/developers/enterprise-change
 
 ## Adding a new policy
 
+ℹ️️ An AI agent (e.g., Gemini CLI) can help you write your policy YAML, map it to
+a pref, and write tests. Add the
+[policy-creation](https://source.chromium.org/chromium/chromium/src/+/main:agents/skills/policy-creation/),
+skill, then ask your agent to create a policy.
+
+Example for Gemini CLI:
+
+```sh
+gemini skills link agents/skills/policy-creation
+```
+
 1.  Design the policy, decide policy name, type, function, etc.
     - Please read [policy_design.md](./policy_design.md) for more information.
     - If you are adding support for a GenAI policy, please also read the
