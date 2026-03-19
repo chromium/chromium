@@ -10,7 +10,7 @@ export function getHtml(this: SearchboxMatchElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
 <div class="container">
-  <div aria-hidden="true">
+  <div class="aria-hidden-container" aria-hidden="true">
     <div id="focusIndicator" class="${this.getFocusIndicatorCssClass_()}"></div>
     <cr-searchbox-icon id="icon" .match="${this.match}"></cr-searchbox-icon>
     <div id="text-container">
