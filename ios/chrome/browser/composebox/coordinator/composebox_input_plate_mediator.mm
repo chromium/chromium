@@ -29,6 +29,7 @@
 #import "base/time/time.h"
 #import "base/unguessable_token.h"
 #import "components/contextual_search/contextual_search_context_controller.h"
+#import "components/contextual_search/contextual_search_metrics_recorder.h"
 #import "components/contextual_search/contextual_search_service.h"
 #import "components/contextual_search/contextual_search_session_handle.h"
 #import "components/contextual_search/input_state_model.h"
@@ -38,6 +39,8 @@
 #import "components/omnibox/browser/aim_eligibility_service.h"
 #import "components/omnibox/browser/lens_suggest_inputs_utils.h"
 #import "components/omnibox/common/omnibox_features.h"
+#import "components/omnibox/composebox/composebox_query.mojom.h"
+#import "components/omnibox/composebox/contextual_search_mojom_traits.h"
 #import "components/omnibox/composebox/ios/composebox_context_upload_observer_bridge.h"
 #import "components/omnibox/composebox/ios/composebox_query_controller_ios.h"
 #import "components/prefs/pref_service.h"
@@ -355,7 +358,7 @@ CreateInputDataFromAnnotatedPageContent(
 
 - (void)disconnect {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  [self recordNavigationResult];
+  [self recordSessionEndMetrics];
   [_modeHolder removeObserver:self];
   _modeHolder = nil;
   _faviconLoader = nullptr;
@@ -1285,6 +1288,8 @@ CreateInputDataFromAnnotatedPageContent(
 
 - (void)didCreateSearchURL:(GURL)URL {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  [self recordNavigationInitiated];
+
   // TODO(crbug.com/40280872): Handle AIM enabled in the query controller.
   if ([_modeHolder isRegularSearch]) {
     URL = net::AppendOrReplaceQueryParameter(URL, "udm", "24");
@@ -1295,50 +1300,53 @@ CreateInputDataFromAnnotatedPageContent(
       ui::PAGE_TRANSITION_GENERATED,
       /*destination_url_entered_without_scheme=*/false, _isIncognito);
 
-  _inNavigation = YES;
-
   [self.URLLoader loadURLParams:params];
 }
 
-// Records whether the session resulted in navigation.
-- (void)recordNavigationResult {
+// Returns the current AutocompleteRequestType based on _modeHolder.mode
+- (AutocompleteRequestType)currentAutocompleteRequestType {
   switch (_modeHolder.mode) {
     case ComposeboxMode::kRegularSearch:
-      [self.metricsRecorder
-          recordComposeboxFocusResultedInNavigation:_inNavigation
-                                    withAttachments:!_items.empty
-                                        requestType:AutocompleteRequestType::
-                                                        kSearch];
-      break;
+      return AutocompleteRequestType::kSearch;
     case ComposeboxMode::kAIM:
-      [self.metricsRecorder
-          recordComposeboxFocusResultedInNavigation:_inNavigation
-                                    withAttachments:!_items.empty
-                                        requestType:AutocompleteRequestType::
-                                                        kAIMode];
-      break;
+      return AutocompleteRequestType::kAIMode;
     case ComposeboxMode::kImageGeneration:
-      [self.metricsRecorder
-          recordComposeboxFocusResultedInNavigation:_inNavigation
-                                    withAttachments:!_items.empty
-                                        requestType:AutocompleteRequestType::
-                                                        kImageGeneration];
-      break;
+      return AutocompleteRequestType::kImageGeneration;
     case ComposeboxMode::kCanvas:
-      [self.metricsRecorder
-          recordComposeboxFocusResultedInNavigation:_inNavigation
-                                    withAttachments:!_items.empty
-                                        requestType:AutocompleteRequestType::
-                                                        kCanvas];
-      break;
+      return AutocompleteRequestType::kCanvas;
     case ComposeboxMode::kDeepSearch:
-      [self.metricsRecorder
-          recordComposeboxFocusResultedInNavigation:_inNavigation
-                                    withAttachments:!_items.empty
-                                        requestType:AutocompleteRequestType::
-                                                        kImageGeneration];
-      break;
+      return AutocompleteRequestType::kDeepSearch;
   }
+}
+
+// Centralized entrypoint to record navigation metrics exactly once.
+- (void)recordNavigationInitiated {
+  if (_inNavigation) {
+    return;
+  }
+  _inNavigation = YES;
+
+  [self.metricsRecorder recordAutocompleteRequestTypeAtNavigation:
+                            [self currentAutocompleteRequestType]];
+
+  if (_contextualSearchSession &&
+      _contextualSearchSession->GetMetricsRecorder()) {
+    _contextualSearchSession->GetMetricsRecorder()->RecordModesOnSubmission(
+        mojo::EnumTraits<composebox_query::mojom::ToolMode,
+                         omnibox::ToolMode>::ToMojom(_inputState.active_tool),
+        mojo::EnumTraits<composebox_query::mojom::ModelMode,
+                         omnibox::ModelMode>::ToMojom(_inputState
+                                                          .active_model));
+  }
+}
+
+// Records whether the session resulted in navigation.
+- (void)recordSessionEndMetrics {
+  [self.metricsRecorder
+      recordComposeboxFocusResultedInNavigation:_inNavigation
+                                withAttachments:!_items.empty
+                                    requestType:
+                                        [self currentAutocompleteRequestType]];
 }
 
 // Reloads the displayed suggestions based on the attachments/modeHolder.
@@ -1977,14 +1985,10 @@ CreateInputDataFromAnnotatedPageContent(
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   switch (_modeHolder.mode) {
     case ComposeboxMode::kRegularSearch:
-      _inNavigation = YES;
+      [self recordNavigationInitiated];
       [self.URLLoader loadURLParams:URLLoadParams];
-      [self.metricsRecorder recordAutocompleteRequestTypeAtNavigation:
-                                AutocompleteRequestType::kSearch];
       break;
     case ComposeboxMode::kAIM:
-      [self.metricsRecorder recordAutocompleteRequestTypeAtNavigation:
-                                AutocompleteRequestType::kAIMode];
       if (IsAimURL(destinationURL)) {
         [self sendText:[NSString cr_fromString16:text]
             additionalParams:lens::GetParametersMapWithoutQuery(
@@ -1994,18 +1998,8 @@ CreateInputDataFromAnnotatedPageContent(
       }
       break;
     case ComposeboxMode::kImageGeneration:
-      [self.metricsRecorder recordAutocompleteRequestTypeAtNavigation:
-                                AutocompleteRequestType::kImageGeneration];
-      [self sendText:[NSString cr_fromString16:text]];
-      break;
     case ComposeboxMode::kCanvas:
-      [self.metricsRecorder recordAutocompleteRequestTypeAtNavigation:
-                                AutocompleteRequestType::kCanvas];
-      [self sendText:[NSString cr_fromString16:text]];
-      break;
     case ComposeboxMode::kDeepSearch:
-      [self.metricsRecorder recordAutocompleteRequestTypeAtNavigation:
-                                AutocompleteRequestType::kDeepSearch];
       [self sendText:[NSString cr_fromString16:text]];
       break;
   }
