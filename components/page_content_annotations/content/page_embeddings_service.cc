@@ -160,16 +160,19 @@ PageEmbeddingsService::ScopedPriority::operator=(ScopedPriority&& other) {
 PageEmbeddingsService::PageEmbeddingsService(
     EmbeddingCandidatesGenerator candidates_generator,
     PageContentExtractionService* page_content_extraction_service,
-    passage_embeddings::Embedder* embedder)
+    passage_embeddings::Embedder* embedder,
+    passage_embeddings::EmbedderMetadataProvider* embedder_metadata_provider)
     : candidates_generator_(candidates_generator),
       embedder_(embedder),
+      embedder_metadata_provider_(embedder_metadata_provider),
       page_content_extraction_service_(page_content_extraction_service) {}
 
 PageEmbeddingsService::PageEmbeddingsService(
     PageContentExtractionService* page_content_extraction_service)
     : PageEmbeddingsService(base::BindRepeating(&GenerateEmbeddingsCandidates),
                             page_content_extraction_service,
-                            nullptr) {}
+                            /*embedder=*/nullptr,
+                            /*embedder_metadata_provider=*/nullptr) {}
 
 PageEmbeddingsService::~PageEmbeddingsService() = default;
 
@@ -250,6 +253,11 @@ std::vector<PassageEmbedding> PageEmbeddingsService::GetEmbeddings(
     return available->embeddings;
   }
   return {};
+}
+
+passage_embeddings::EmbedderMetadataProvider*
+PageEmbeddingsService::GetEmbedderMetadataProvider() {
+  return embedder_metadata_provider_;
 }
 
 void PageEmbeddingsService::OnPageContentExtracted(

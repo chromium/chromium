@@ -51,6 +51,10 @@ namespace leveldb_proto {
 class ProtoDatabaseProvider;
 }  // namespace leveldb_proto
 
+namespace passage_embeddings {
+class EmbedderMetadataProvider;
+}  // namespace passage_embeddings
+
 namespace optimization_guide {
 class OptimizationGuideDecider;
 class OptimizationGuideModelProvider;
@@ -147,6 +151,7 @@ class PageContentAnnotationsService
       const base::FilePath& database_dir,
       OptimizationGuideLogger* optimization_guide_logger,
       optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
+      passage_embeddings::EmbedderMetadataProvider* embedder_metadata_provider,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner);
   ~PageContentAnnotationsService() override;
   PageContentAnnotationsService(const PageContentAnnotationsService&) = delete;

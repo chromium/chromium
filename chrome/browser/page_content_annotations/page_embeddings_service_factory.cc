@@ -70,7 +70,8 @@ PageEmbeddingsServiceFactory::BuildServiceInstanceForBrowserContext(
       base::BindRepeating(&GenerateEmbeddingsCandidates),
       page_content_extraction_service,
       passage_embeddings::ChromePassageEmbeddingsServiceController::Get()
-          ->GetEmbedder());
+          ->GetEmbedder(),
+      passage_embeddings::ChromePassageEmbeddingsServiceController::Get());
 #endif
 }
 

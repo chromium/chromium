@@ -86,7 +86,8 @@ class PageEmbeddingsServiceTest : public content::RenderViewHostTestHarness {
 
     page_embeddings_service_.emplace(base::BindRepeating(&GenerateCandidates),
                                      &page_content_extraction_service_.value(),
-                                     &embedder_mock_);
+                                     &embedder_mock_,
+                                     /*embedder_metadata_provider=*/nullptr);
   }
 
   void TearDown() override {

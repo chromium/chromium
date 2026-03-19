@@ -5,19 +5,18 @@
 #ifndef COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CORE_EDU_CLASSIFIER_MODEL_HANDLER_H_
 #define COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CORE_EDU_CLASSIFIER_MODEL_HANDLER_H_
 
+#include <cstdint>
 #include <optional>
 
 #include "base/task/sequenced_task_runner.h"
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
-#include "components/optimization_guide/core/inference/model_handler.h"
+#include "components/page_content_annotations/core/category_classifier_model_handler.h"
 #include "components/page_content_annotations/core/edu_classifier_model_executor.h"
 
 namespace page_content_annotations {
 
 // Implements optimization_guide::ModelHandler for the edu classifier model.
-class EduClassifierModelHandler : public optimization_guide::ModelHandler<
-                                      EduClassifierModelExecutor::ModelOutput,
-                                      EduClassifierModelExecutor::ModelInput> {
+class EduClassifierModelHandler : public CategoryClassifierModelHandler {
  public:
   EduClassifierModelHandler(
       optimization_guide::OptimizationGuideModelProvider* model_provider,
@@ -28,6 +27,9 @@ class EduClassifierModelHandler : public optimization_guide::ModelHandler<
   EduClassifierModelHandler(const EduClassifierModelHandler&) = delete;
   EduClassifierModelHandler& operator=(const EduClassifierModelHandler&) =
       delete;
+
+  // CategoryClassifierModelHandler:
+  std::optional<int64_t> GetRequiredEmbedderVersion() const override;
 };
 
 }  // namespace page_content_annotations

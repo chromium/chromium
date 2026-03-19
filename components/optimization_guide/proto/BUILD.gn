@@ -18,6 +18,7 @@ proto_library("optimization_guide_proto") {
     "common_types.proto",
     "contextual_cueing_metadata.proto",
     "descriptors.proto",
+    "edu_classifier_metadata.proto",
     "features/actions_data.proto",
     "features/actor_login.proto",
     "features/amount_extraction.proto",

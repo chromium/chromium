@@ -10,6 +10,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
+#include "components/optimization_guide/proto/edu_classifier_metadata.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/page_content_annotations/core/edu_classifier_model_executor.h"
 
@@ -25,7 +26,7 @@ using ModelOutput = EduClassifierModelExecutor::ModelOutput;
 EduClassifierModelHandler::EduClassifierModelHandler(
     optimization_guide::OptimizationGuideModelProvider* model_provider,
     scoped_refptr<base::SequencedTaskRunner> model_executor_task_runner)
-    : optimization_guide::ModelHandler<ModelOutput, ModelInput>(
+    : CategoryClassifierModelHandler(
           model_provider,
           model_executor_task_runner,
           std::make_unique<EduClassifierModelExecutor>(),
@@ -34,5 +35,15 @@ EduClassifierModelHandler::EduClassifierModelHandler(
           std::nullopt) {}
 
 EduClassifierModelHandler::~EduClassifierModelHandler() = default;
+
+std::optional<int64_t> EduClassifierModelHandler::GetRequiredEmbedderVersion()
+    const {
+  auto metadata = ParsedSupportedFeaturesForLoadedModel<
+      optimization_guide::proto::EduClassifierMetadata>();
+  if (metadata && metadata->has_required_embedder_version()) {
+    return metadata->required_embedder_version();
+  }
+  return std::nullopt;
+}
 
 }  // namespace page_content_annotations

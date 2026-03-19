@@ -109,7 +109,8 @@ class PageEmbeddingsService : public KeyedService,
   PageEmbeddingsService(
       EmbeddingCandidatesGenerator candidates_generator,
       PageContentExtractionService* page_content_extraction_service,
-      passage_embeddings::Embedder* embedder);
+      passage_embeddings::Embedder* embedder,
+      passage_embeddings::EmbedderMetadataProvider* embedder_metadata_provider);
   explicit PageEmbeddingsService(
       PageContentExtractionService* page_content_extraction_service);
   ~PageEmbeddingsService() override;
@@ -130,6 +131,9 @@ class PageEmbeddingsService : public KeyedService,
   // Virtual for testing.
   virtual std::vector<PassageEmbedding> GetEmbeddings(
       content::Page& page) const;
+
+  // Returns the provider for embedder metadata.
+  passage_embeddings::EmbedderMetadataProvider* GetEmbedderMetadataProvider();
 
   // PageContentExtractionService:
   void OnPageContentExtracted(
@@ -173,6 +177,9 @@ class PageEmbeddingsService : public KeyedService,
   const EmbeddingCandidatesGenerator candidates_generator_;
 
   const raw_ptr<passage_embeddings::Embedder> embedder_;
+
+  const raw_ptr<passage_embeddings::EmbedderMetadataProvider>
+      embedder_metadata_provider_;
 
   raw_ptr<PageContentExtractionService> page_content_extraction_service_;
   base::ScopedObservation<PageContentExtractionService, PageEmbeddingsService>

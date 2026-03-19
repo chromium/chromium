@@ -185,6 +185,7 @@ PageContentAnnotationsService::PageContentAnnotationsService(
     const base::FilePath& database_dir,
     OptimizationGuideLogger* optimization_guide_logger,
     optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
+    passage_embeddings::EmbedderMetadataProvider* embedder_metadata_provider,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner)
     : min_page_category_score_to_persist_(
           features::GetMinimumPageCategoryScoreToPersist()),
@@ -221,7 +222,7 @@ PageContentAnnotationsService::PageContentAnnotationsService(
   if (base::FeatureList::IsEnabled(features::kOnDeviceCategoryClassifier)) {
     on_device_category_classifier_ =
         std::make_unique<OnDeviceCategoryClassifier>(
-            optimization_guide_model_provider);
+            optimization_guide_model_provider, embedder_metadata_provider);
   }
 #endif
 

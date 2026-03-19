@@ -47,6 +47,7 @@ static_library("core") {
   ]
   if (build_with_tflite_lib) {
     sources += [
+      "category_classifier_model_handler.h",
       "edu_classifier_model_executor.cc",
       "edu_classifier_model_executor.h",
       "edu_classifier_model_handler.cc",
@@ -120,6 +121,7 @@ source_set("unit_tests") {
   if (build_with_tflite_lib) {
     sources += [
       "edu_classifier_model_handler_unittest.cc",
+      "on_device_category_classifier_unittest.cc",
       "page_content_annotation_job_executor_unittest.cc",
       "page_visibility_model_handler_unittest.cc",
     ]
@@ -135,6 +137,7 @@ source_set("unit_tests") {
     ":test_support",
     "//base/test:test_support",
     "//components/optimization_guide/core:test_support",
+    "//components/passage_embeddings/core:passage_embeddings_types",
     "//components/search_engines:test_support",
     "//testing/gmock",
     "//testing/gtest",
