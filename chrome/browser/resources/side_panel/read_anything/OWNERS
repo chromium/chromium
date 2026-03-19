@@ -1,7 +1,11 @@
-abigailbklein@google.com
-dtseng@chromium.org
-jocelyntran@google.com
+# See go/reading-mode-code-reviews if in doubt about who to send a review to.
+# Prefer sending reviews to these owners first.
 kristislee@google.com
 lwinston@google.com
 eitang@google.com
 trewin@google.com
+
+# Backup.
+abigailbklein@google.com
+dtseng@chromium.org
+jocelyntran@google.com
