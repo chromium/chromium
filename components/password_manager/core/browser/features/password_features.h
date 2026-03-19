@@ -184,7 +184,8 @@ BASE_DECLARE_FEATURE(kProactivelyDownloadModelForPasswordChange);
 BASE_DECLARE_FEATURE(kReduceRequirementsForPasswordChange);
 
 // Triggers password change glow invoking Glic from settings.
-BASE_DECLARE_FEATURE(kPasswordCheckup);
+// This flag is only for the prototype version.
+BASE_DECLARE_FEATURE(kPasswordCheckupPrototype);
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // Enables "Needs access to keychain, restart chrome" bubble and banner.

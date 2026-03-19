@@ -123,16 +123,22 @@ AttemptLoginTool::~AttemptLoginTool() {
   }
   OptimizationGuideKeyedService* opt_guide_service =
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
-  // Disable MQLS upload if FedCM support is enabled while prototyping to
-  // not upload wrong logs.
+
+  // Disable MQLS upload if FedCM support or Password Checkup is enabled
+  // while prototyping to avoid uploading incorrect logs.
   // TODO(crbug.com/480920277): Remove this check once the prototyping is
-  // complete.
+  // complete for FedCM.
+  // TODO(crbug.com/485620841): Remove this check once the prototyping is
+  // complete for Automated Password Change.
+  bool prototype_features_enabled =
+      base::FeatureList::IsEnabled(features::kFedCmEmbedderInitiatedLogin) ||
+      base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordCheckupPrototype);
+
   if (opt_guide_service &&
       base::FeatureList::IsEnabled(
           password_manager::features::kActorLoginQualityLogs) &&
-      !base::FeatureList::IsEnabled(features::kFedCmEmbedderInitiatedLogin)) {
-    // TODO(crbug.com/459393643): Add a check for filtering out logs of
-    // enterprise users.
+      !prototype_features_enabled) {
     quality_logger_.UploadFinalLog(
         opt_guide_service->GetModelQualityLogsUploaderService());
   }
