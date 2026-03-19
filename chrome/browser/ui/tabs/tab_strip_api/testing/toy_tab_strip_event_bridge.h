@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_TABS_TAB_STRIP_API_TESTING_TOY_TAB_STRIP_EVENT_BRIDGE_H_
 #define CHROME_BROWSER_UI_TABS_TAB_STRIP_API_TESTING_TOY_TAB_STRIP_EVENT_BRIDGE_H_
 
+#include "base/observer_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/adapters/event_bridge.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/testing/toy_tab_strip.h"
 
@@ -19,8 +20,11 @@ class ToyTabStripEventBridge : public EventBridge {
   void AddObserver(events::EventObserver* observer) override;
   void RemoveObserver(events::EventObserver* observer) override;
 
+  void NotifyEvents(const std::vector<events::Event>& events);
+
  private:
   raw_ptr<ToyTabStrip> tab_strip_;
+  base::ObserverList<events::EventObserver> observers_;
 };
 
 }  // namespace tabs_api::testing

@@ -1,0 +1,33 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("aggregation") {
+  sources = [
+    "tab_strip_service_aggregator.cc",
+    "tab_strip_service_aggregator.h",
+    "tab_strip_service_tracker.h",
+  ]
+
+  public_deps = [ "//chrome/browser/ui/tabs/tab_strip_api" ]
+
+  deps = [ "//chrome/browser/ui/tabs/tab_strip_api/observation" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "tab_strip_service_aggregator_unittest.cc" ]
+
+  deps = [
+    ":aggregation",
+    "//base/test:test_support",
+    "//chrome/browser/ui/tabs/tab_strip_api:impl",
+    "//chrome/browser/ui/tabs/tab_strip_api/events",
+    "//chrome/browser/ui/tabs/tab_strip_api/observation",
+    "//chrome/browser/ui/tabs/tab_strip_api/testing",
+    "//components/browser_apis/tab_strip:mojom",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}

@@ -29,7 +29,7 @@ class Injector : public PlatformAdaptersProvider {
     return *translation_adapter_;
   }
 
-  EventBridge& event_bridge() override { return *event_bridge_; }
+  ToyTabStripEventBridge& event_bridge() override { return *event_bridge_; }
 
  private:
   std::unique_ptr<ToyTabStripBrowserAdapter> browser_adapter_;

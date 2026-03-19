@@ -12,11 +12,13 @@ source_set("tab_strip_api") {
 
   public_deps = [
     "adapters",
-    "//chrome/browser/ui/tabs:tab_strip_model_observer",
     "//components/browser_apis/tab_strip:mojom",
   ]
 
-  deps = [ "//components/browser_apis/tab_strip:mojom_experiment" ]
+  deps = [
+    "observation",
+    "//components/browser_apis/tab_strip:mojom_experiment",
+  ]
 }
 
 # This target is needed to prevent circular dependency.
@@ -38,6 +40,7 @@ source_set("impl") {
     "event_broadcaster.cc",
     "event_broadcaster.h",
     "tab_strip_service_impl.cc",
+    "tab_strip_service_impl.h",
     "tab_strip_service_mojo_handler.cc",
     "tab_strip_service_mojo_handler.h",
   ]
@@ -64,6 +67,7 @@ source_set("unit_tests") {
   deps = [
     ":impl",
     ":tab_strip_api",
+    "aggregation:unit_tests",
     "events:unit_tests",
     "observation:unit_tests",
     "tab_strip_model_impl:unit_tests",

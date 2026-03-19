@@ -16,6 +16,8 @@ source_set("testing") {
     "toy_tab_strip_event_bridge.h",
     "toy_tab_strip_model_adapter.cc",
     "toy_tab_strip_model_adapter.h",
+    "toy_tab_strip_service_tracker.cc",
+    "toy_tab_strip_service_tracker.h",
     "toy_tab_strip_translation_adapter.cc",
     "toy_tab_strip_translation_adapter.h",
   ]
@@ -23,6 +25,7 @@ source_set("testing") {
   deps = [
     "//base",
     "//chrome/browser/ui/tabs/tab_strip_api/adapters",
+    "//chrome/browser/ui/tabs/tab_strip_api/aggregation",
     "//chrome/browser/ui/tabs/tab_strip_api/types",
     "//url",
   ]

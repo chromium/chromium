@@ -7,6 +7,8 @@ source_set("tab_strip_model_impl") {
   sources = [
     "browser_adapter_impl.cc",
     "browser_adapter_impl.h",
+    "browser_tab_strip_service_tracker.cc",
+    "browser_tab_strip_service_tracker.h",
     "tab_strip_model_adapter_impl.cc",
     "tab_strip_model_adapter_impl.h",
     "tab_strip_model_event_bridge.cc",
@@ -25,7 +27,10 @@ source_set("tab_strip_model_impl") {
     "//chrome/browser/ui/tabs:tab_group",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/tabs:tab_strip_model_observer",
+    "//chrome/browser/ui/tabs/tab_strip_api",
     "//chrome/browser/ui/tabs/tab_strip_api/adapters",
+    "//chrome/browser/ui/tabs/tab_strip_api/aggregation",
+    "//chrome/browser/ui/tabs/tab_strip_api/observation",
     "//chrome/browser/ui/tabs/tab_strip_api/types",
   ]
 }
