@@ -145,6 +145,7 @@ void LayerContextImplTest::AddDefaultPropertyUpdates(
   update->top_controls_shown_ratio =
       LayerContextImplTest::kDefaultTopControlsShownRatio;
   update->bottom_controls_shown_ratio = kDefaultBottomControlsShownRatio;
+  update->browser_controls_shrink_blink_size = false;
 
   update->num_transform_nodes = next_transform_id_;
   update->num_clip_nodes = next_clip_id_;

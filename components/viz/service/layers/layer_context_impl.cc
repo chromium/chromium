@@ -1999,6 +1999,9 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
       std::clamp(update->browser_controls_params.bottom_controls_min_height,
                  0.f, update->browser_controls_params.bottom_controls_height);
   layers.SetBrowserControlsParams(update->browser_controls_params);
+  DUMP_WILL_BE_CHECK_EQ(
+      update->browser_controls_shrink_blink_size,
+      update->browser_controls_params.browser_controls_shrink_blink_size);
   host_impl_->browser_controls_manager()->SetOffsetTagModifications(
       update->browser_controls_offset_tag_modifications);
 

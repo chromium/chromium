@@ -649,6 +649,8 @@ TEST_F(LayerContextImplLayerTreePropertiesTest, UpdateBrowserControlsParams) {
 
   auto update2 = CreateDefaultUpdate();
   update2->browser_controls_params = params2;
+  update2->browser_controls_shrink_blink_size =
+      params2.browser_controls_shrink_blink_size;
   EXPECT_TRUE(
       layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
   EXPECT_EQ(active_tree->browser_controls_params(), params2);
@@ -665,6 +667,8 @@ TEST_F(LayerContextImplLayerTreePropertiesTest, UpdateBrowserControlsParams) {
 
   auto update3 = CreateDefaultUpdate();
   update3->browser_controls_params = params3;
+  update3->browser_controls_shrink_blink_size =
+      params3.browser_controls_shrink_blink_size;
   EXPECT_TRUE(
       layer_context_impl_->DoUpdateDisplayTree(std::move(update3)).has_value());
   EXPECT_EQ(active_tree->browser_controls_params(), params3);

@@ -238,6 +238,10 @@ struct LayerTreeUpdate {
   // Whether the viewport is mobile optimized.
   bool is_viewport_mobile_optimized;
 
+  // Whether the viewport size should be shrunk by the height of the
+  // URL-bar.
+  bool browser_controls_shrink_blink_size;
+
   // Equivalent to hud_layer() && hud_layer()->IsANimatingHUDContents().
   bool is_animating_hud_contents;
 
