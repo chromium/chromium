@@ -645,7 +645,10 @@ class DenseSet {
   constexpr size_t size() const { return bitset_.num_set_bits(); }
 
   // Returns the maximum number of elements the set can have.
-  constexpr size_t max_size() const { return kMaxBitIndex + 1; }
+  //
+  // This is not necessarily the same as `all().size()` because `max_size()`
+  // does not exclude values that violate Traits::is_valid().
+  static constexpr size_t max_size() { return kMaxBitIndex + 1; }
 
   // Modifiers.
 
