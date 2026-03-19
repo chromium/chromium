@@ -1584,6 +1584,9 @@ def main():
   if not args.bootstrap:
     cmake_args.extend(compiler_wrapper_cmake_args)
 
+  if args.install_dir and os.path.exists(args.install_dir):
+    RmTree(args.install_dir)
+
   if os.path.exists(LLVM_BUILD_DIR):
     RmTree(LLVM_BUILD_DIR)
   EnsureDirExists(LLVM_BUILD_DIR)
