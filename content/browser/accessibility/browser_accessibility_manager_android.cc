@@ -4,6 +4,7 @@
 
 #include "content/browser/accessibility/browser_accessibility_manager_android.h"
 
+#include <optional>
 #include <vector>
 
 #include "base/check.h"
@@ -16,12 +17,38 @@
 #include "content/public/common/content_features.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_event_generator.h"
+#include "ui/accessibility/ax_position.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_selection.h"
 #include "ui/accessibility/platform/ax_platform_tree_manager_delegate.h"
+#include "ui/accessibility/platform/browser_accessibility.h"
 #include "ui/accessibility/platform/one_shot_accessibility_tree_search.h"
 
 namespace content {
+
+namespace {
+
+// In case the `node` does not exist on Android, updates node and offset to the
+// highest leaf node (ancestor of node).
+void UpdateTextPositionForSelection(BrowserAccessibilityAndroid*& node,
+                                    int& offset) {
+  ui::BrowserAccessibility* platform_ancestor =
+      node->PlatformGetLowestPlatformAncestor();
+  if (platform_ancestor == node) {
+    return;
+  }
+  ui::BrowserAccessibility::AXPosition position =
+      node->CreatePositionForSelectionAt(offset);
+  while (position->GetAnchor()->id() != platform_ancestor->GetId()) {
+    position = position->CreateParentPosition();
+  }
+
+  CHECK_EQ(ui::AXPositionKind::TEXT_POSITION, position->kind());
+  node = static_cast<BrowserAccessibilityAndroid*>(platform_ancestor);
+  offset = position->text_offset();
+}
+
+}  // namespace
 
 // static
 ui::BrowserAccessibilityManager* BrowserAccessibilityManagerAndroid::Create(
@@ -267,11 +294,7 @@ void BrowserAccessibilityManagerAndroid::FireSourceEvent(
 
 void BrowserAccessibilityManagerAndroid::FireDocumentSelectionChangedEvent(
     WebContentsAccessibilityAndroid* wcax) {
-  ui::AXNodeID focus_id = ax_tree()->GetUnignoredSelection().focus_object_id;
-  ui::AXNodeID anchor_id = ax_tree()->GetUnignoredSelection().anchor_object_id;
-  BrowserAccessibilityAndroid* focus_object =
-      static_cast<BrowserAccessibilityAndroid*>(GetFromID(focus_id));
-
+  std::optional<SelectionRange> selection = GetSelectionRange();
   const bool extended_selection_enabled =
       base::FeatureList::IsEnabled(features::kAccessibilityExtendedSelection);
   const bool expose_children_enabled = base::FeatureList::IsEnabled(
@@ -288,13 +311,17 @@ void BrowserAccessibilityManagerAndroid::FireDocumentSelectionChangedEvent(
       // Note that this is to support contenteditables, where the
       // contenteditable root itself is a non-atomic text field, and its
       // children may be editable.
-      should_send_to_root = !focus_object || focus_id != anchor_id ||
-                            !focus_object->IsAtomicTextField();
+      should_send_to_root =
+          !selection.has_value() ||
+          selection->focus_object != selection->anchor_object ||
+          !selection->focus_object->IsAtomicTextField();
     } else {
       // Send the event to the root of the frame if selection should be
       // cleared, or multiple nodes are selected, or the node is not editable.
-      should_send_to_root = !focus_object || focus_id != anchor_id ||
-                            !focus_object->IsTextField();
+      should_send_to_root =
+          !selection.has_value() ||
+          selection->focus_object != selection->anchor_object ||
+          !selection->focus_object->IsTextField();
     }
 
     if (should_send_to_root) {
@@ -305,7 +332,7 @@ void BrowserAccessibilityManagerAndroid::FireDocumentSelectionChangedEvent(
       wcax->HandleTextSelectionChanged(android_root_object->GetUniqueId());
       return;
     }
-  } else if (!focus_object) {
+  } else if (!selection.has_value()) {
     // If focus object does not exist and extended selection is not
     // enabled, there is nothing more to do since previous selection node is
     // not known here and can't be cleared.
@@ -313,7 +340,7 @@ void BrowserAccessibilityManagerAndroid::FireDocumentSelectionChangedEvent(
   }
 
   // Send event to the focus node.
-  wcax->HandleTextSelectionChanged(focus_object->GetUniqueId());
+  wcax->HandleTextSelectionChanged(selection->focus_object->GetUniqueId());
 }
 
 void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
@@ -909,6 +936,92 @@ BrowserAccessibilityManagerAndroid::GenerateAccessibilityNodeInfoString(
 std::optional<std::vector<std::string>>
 BrowserAccessibilityManagerAndroid::GetMetadataForTree() const {
   return GetTreeData().metadata;
+}
+
+std::optional<BrowserAccessibilityManagerAndroid::SelectionRange>
+BrowserAccessibilityManagerAndroid::GetSelectionRange() const {
+  ui::AXSelection selection = ax_tree()->GetSelection();
+  ui::AXNode* anchor_node = ax_tree()->GetFromId(selection.anchor_object_id);
+  ui::AXNode* focus_node = ax_tree()->GetFromId(selection.focus_object_id);
+
+  if (!anchor_node || !focus_node) {
+    return std::nullopt;
+  }
+
+  ui::AXNodePosition::AXPositionInstance anchor_position =
+      ui::AXNodePosition::CreatePosition(*anchor_node, selection.anchor_offset,
+                                         selection.anchor_affinity);
+  anchor_position = anchor_position->AsUnignoredSelectionPosition(
+      selection.is_backward ? ui::AXPositionAdjustmentBehavior::kMoveForward
+                            : ui::AXPositionAdjustmentBehavior::kMoveBackward);
+
+  ui::AXNodePosition::AXPositionInstance focus_position =
+      ui::AXNodePosition::CreatePosition(*focus_node, selection.focus_offset,
+                                         selection.focus_affinity);
+  focus_position = focus_position->AsUnignoredSelectionPosition(
+      selection.is_backward ? ui::AXPositionAdjustmentBehavior::kMoveBackward
+                            : ui::AXPositionAdjustmentBehavior::kMoveForward);
+
+  if (focus_position->IsNullPosition() || focus_position->IsNullPosition()) {
+    return std::nullopt;
+  }
+
+  ui::BrowserAccessibility::AXRange range = ui::BrowserAccessibility::AXRange(
+      std::move(anchor_position), std::move(focus_position));
+  anchor_position = nullptr;
+  focus_position = nullptr;
+
+  for (const auto& pos : range) {
+    ui::BrowserAccessibility* android_node =
+        GetFromAXNode(pos.anchor()->GetAnchor())
+            ->PlatformGetLowestPlatformAncestor();
+    if (static_cast<BrowserAccessibilityAndroid*>(android_node)
+            ->CanSetExtendedSelection()) {
+      anchor_position = pos.anchor()->Clone();
+      break;
+    }
+  }
+  if (!anchor_position) {
+    return std::nullopt;
+  }
+  for (auto pos = range.rbegin(); pos != range.rend(); --pos) {
+    ui::BrowserAccessibility* android_node =
+        GetFromAXNode((*pos).focus()->GetAnchor())
+            ->PlatformGetLowestPlatformAncestor();
+    if (static_cast<BrowserAccessibilityAndroid*>(android_node)
+            ->CanSetExtendedSelection()) {
+      focus_position = (*pos).focus()->Clone();
+      break;
+    }
+  }
+  if (!focus_position) {
+    return std::nullopt;
+  }
+
+  CHECK_EQ(ui::AXPositionKind::TEXT_POSITION, anchor_position->kind());
+  CHECK_EQ(ui::AXPositionKind::TEXT_POSITION, focus_position->kind());
+
+  // Swap anchor and focus if original selection was backward.
+  if (selection.is_backward) {
+    std::swap(anchor_position, focus_position);
+  }
+
+  SelectionRange selection_range;
+  BrowserAccessibilityAndroid* node = static_cast<BrowserAccessibilityAndroid*>(
+      GetFromAXNode(anchor_position->GetAnchor()));
+  selection_range.anchor_offset = anchor_position->text_offset();
+  // TODO(crbug.com/490266495): Remove the following when range iterator returns
+  // platform leaf positions.
+  UpdateTextPositionForSelection(node, selection_range.anchor_offset);
+  selection_range.anchor_object = node;
+
+  node = static_cast<BrowserAccessibilityAndroid*>(
+      GetFromAXNode(focus_position->GetAnchor()));
+  selection_range.focus_offset = focus_position->text_offset();
+  UpdateTextPositionForSelection(node, selection_range.focus_offset);
+  selection_range.focus_object = node;
+
+  return selection_range;
 }
 
 // TODO(crbug.com/485227837): Remove experiment's methods

@@ -538,106 +538,6 @@ ScopedJavaLocalRef<jobject> ToJavaStringRangesMap(
       ranges_count);
 }
 
-// In case the `node` does not exist on Android, updates node and offset to the
-// highest leaf node (ancestor of node).
-void UpdateTextPositionForSelection(ui::BrowserAccessibility*& node,
-                                    int& offset) {
-  ui::BrowserAccessibility* platform_ancestor =
-      node->PlatformGetLowestPlatformAncestor();
-  if (platform_ancestor == node) {
-    return;
-  }
-  ui::BrowserAccessibility::AXPosition position =
-      node->CreatePositionForSelectionAt(offset);
-  while (position->GetAnchor()->id() != platform_ancestor->GetId()) {
-    position = position->CreateParentPosition();
-  }
-
-  CHECK_EQ(ui::AXPositionKind::TEXT_POSITION, position->kind());
-  node = platform_ancestor;
-  offset = position->text_offset();
-}
-
-// Updates selection anchor and offset to ensure both nodes are leaf text nodes
-// within the original selection range. Returns true if successful.
-bool ConvertToTextSelectionForAndroid(ui::BrowserAccessibility*& anchor_node,
-                                      int& anchor_offset,
-                                      ui::BrowserAccessibility*& focus_node,
-                                      int& focus_offset) {
-  // TODO(crbug.com/443078007): Consider getting position kind from upstream.
-  bool anchor_is_text_node =
-      anchor_node->IsText() || anchor_node->IsTextField();
-  bool focus_is_text_node = focus_node->IsText() || focus_node->IsTextField();
-
-  ui::BrowserAccessibility::AXPosition anchor_position =
-      anchor_is_text_node
-          ? anchor_node->CreatePositionForSelectionAt(anchor_offset)
-          : ui::AXNodePosition::CreateTreePosition(*anchor_node->node(),
-                                                   anchor_offset);
-
-  ui::BrowserAccessibility::AXPosition focus_position =
-      focus_is_text_node
-          ? focus_node->CreatePositionForSelectionAt(focus_offset)
-          : ui::AXNodePosition::CreateTreePosition(*focus_node->node(),
-                                                   focus_offset);
-
-  ui::BrowserAccessibility::AXRange range = ui::BrowserAccessibility::AXRange(
-      anchor_position->Clone(), focus_position->Clone());
-  std::optional<int> range_direction =
-      ui::BrowserAccessibility::AXRange::CompareEndpoints(range.anchor(),
-                                                          range.focus());
-  if (!range_direction.has_value()) {
-    return false;
-  }
-
-  BrowserAccessibilityManagerAndroid* manager =
-      static_cast<BrowserAccessibilityManagerAndroid*>(anchor_node->manager());
-  CHECK(manager);
-
-  bool found = false;
-  // Range iterator only moves in forward direction. Hence the text leaves in
-  // the entire range are iterated, the first suitable leaf is selected for
-  // anchor, and the last one for focus. Anchor and focus are swapped afterwards
-  // if range direction is backward.
-  // TODO(crbug.com/443078007): Add a backward iterator for AxRange and optimize
-  // here.
-  for (const auto& pos : range) {
-    ui::BrowserAccessibility* android_node =
-        manager->GetFromAXNode(pos.anchor()->GetAnchor())
-            ->PlatformGetLowestPlatformAncestor();
-    if (static_cast<BrowserAccessibilityAndroid*>(android_node)
-            ->CanSetExtendedSelection()) {
-      if (!found) {
-        anchor_position = pos.anchor()->Clone();
-        found = true;
-      }
-      focus_position = pos.focus()->Clone();
-    }
-  }
-  if (!found) {
-    return false;
-  }
-
-  // Swap anchor and focus if original selection was backward.
-  if (range_direction.value() > 0) {
-    std::swap(anchor_position, focus_position);
-  }
-
-  CHECK_EQ(ui::AXPositionKind::TEXT_POSITION, anchor_position->kind());
-  anchor_node = manager->GetFromAXNode(anchor_position->GetAnchor());
-  anchor_offset = anchor_position->text_offset();
-  // TODO(crbug.com/490266495): Remove the following when range iterator returns
-  // platform leaf positions.
-  UpdateTextPositionForSelection(anchor_node, anchor_offset);
-
-  CHECK_EQ(ui::AXPositionKind::TEXT_POSITION, focus_position->kind());
-  focus_node = manager->GetFromAXNode(focus_position->GetAnchor());
-  focus_offset = focus_position->text_offset();
-  UpdateTextPositionForSelection(focus_node, focus_offset);
-
-  return true;
-}
-
 }  // anonymous namespace
 
 class WebContentsAccessibilityAndroid::Connector
@@ -1914,35 +1814,6 @@ void WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfoPaneTitle(
   }
 }
 
-std::optional<ui::AXSelection>
-WebContentsAccessibilityAndroid::GetSelectionInternal(
-    BrowserAccessibilityManagerAndroid* root_manager) {
-  if (!root_manager) {
-    return std::nullopt;
-  }
-
-  ui::AXSelection selection = root_manager->ax_tree()->GetUnignoredSelection();
-
-  ui::BrowserAccessibility* anchor_node =
-      root_manager->GetFromID(selection.anchor_object_id);
-  ui::BrowserAccessibility* focus_node =
-      root_manager->GetFromID(selection.focus_object_id);
-
-  if (!anchor_node || !focus_node) {
-    return std::nullopt;
-  }
-
-  if (!ConvertToTextSelectionForAndroid(anchor_node, selection.anchor_offset,
-                                        focus_node, selection.focus_offset)) {
-    return std::nullopt;
-  }
-
-  // TODO(accessibility): awkward packing/unpacking of args everywhere; pick a
-  // firm representation.
-  selection.anchor_object_id = anchor_node->GetId();
-  selection.focus_object_id = focus_node->GetId();
-  return selection;
-}
 
 void WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfoSelection(
     JNIEnv* env,
@@ -1984,28 +1855,18 @@ void WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfoSelection(
     return;
   }
 
-  std::optional<ui::AXSelection> selection = GetSelectionInternal(root_manager);
+  std::optional<BrowserAccessibilityManagerAndroid::SelectionRange> selection =
+      root_manager->GetSelectionRange();
 
-  if (!selection.has_value()) {
-    Java_AccessibilityNodeInfoBuilder_clearAccessibilityNodeInfoExtendedSelectionAttrs(
-        env, obj, info);
+  if (selection.has_value()) {
+    Java_AccessibilityNodeInfoBuilder_setAccessibilityNodeInfoExtendedSelectionAttrs(
+        env, obj, info, selection->anchor_object->GetUniqueId(),
+        selection->anchor_offset, selection->focus_object->GetUniqueId(),
+        selection->focus_offset);
     return;
   }
-
-  ui::BrowserAccessibility* anchor_node =
-      root_manager->GetFromID(selection->anchor_object_id);
-  CHECK(anchor_node);
-  ui::BrowserAccessibility* focus_node =
-      root_manager->GetFromID(selection->focus_object_id);
-  CHECK(focus_node);
-
-  const int anchor_unique_id =
-      static_cast<BrowserAccessibilityAndroid*>(anchor_node)->GetUniqueId();
-  const int focus_unique_id =
-      static_cast<BrowserAccessibilityAndroid*>(focus_node)->GetUniqueId();
-  Java_AccessibilityNodeInfoBuilder_setAccessibilityNodeInfoExtendedSelectionAttrs(
-      env, obj, info, anchor_unique_id, selection->anchor_offset,
-      focus_unique_id, selection->focus_offset);
+  Java_AccessibilityNodeInfoBuilder_clearAccessibilityNodeInfoExtendedSelectionAttrs(
+      env, obj, info);
 }
 
 ScopedJavaLocalRef<jintArray>
@@ -2018,22 +1879,14 @@ WebContentsAccessibilityAndroid::GetExtendedSelection(JNIEnv* env,
 
   auto* root_manager =
       static_cast<BrowserAccessibilityManagerAndroid*>(node->manager());
-  std::optional<ui::AXSelection> selection = GetSelectionInternal(root_manager);
+  std::optional<BrowserAccessibilityManagerAndroid::SelectionRange> selection =
+      root_manager->GetSelectionRange();
   if (!selection.has_value()) {
     return nullptr;
   }
 
-  ui::BrowserAccessibility* anchor_node =
-      root_manager->GetFromID(selection->anchor_object_id);
-  CHECK(anchor_node);
-  ui::BrowserAccessibility* focus_node =
-      root_manager->GetFromID(selection->focus_object_id);
-  CHECK(focus_node);
-
-  const int anchor_unique_id =
-      static_cast<BrowserAccessibilityAndroid*>(anchor_node)->GetUniqueId();
-  const int focus_unique_id =
-      static_cast<BrowserAccessibilityAndroid*>(focus_node)->GetUniqueId();
+  const int anchor_unique_id = selection->anchor_object->GetUniqueId();
+  const int focus_unique_id = selection->focus_object->GetUniqueId();
 
   int selection_data[] = {anchor_unique_id, selection->anchor_offset,
                           focus_unique_id, selection->focus_offset};

@@ -42,24 +42,7 @@ bool ComputeUnignoredSelectionEndpoint(
     return true;  // We assume that unignored positions are already valid.
   }
 
-  position =
-      position->AsValidPosition()->AsUnignoredPosition(adjustment_behavior);
-
-  // Moving to an unignored position might have placed the position on a leaf
-  // node. Any selection endpoint that is inside a leaf node is expressed as a
-  // text position in AXTreeData. (Note that in this context "leaf node" means
-  // a node with no children or with only ignored children. This does not
-  // refer to a platform leaf.)
-  if (position->IsLeafTreePosition())
-    position = position->AsTextPosition();
-
-  // We do not expect the selection to have an endpoint on an inline text
-  // box as this will create issues with parts of the code that don't use
-  // inline text boxes.
-  if (position->IsTextPosition() &&
-      position->GetRole() == ax::mojom::Role::kInlineTextBox) {
-    position = position->CreateParentPosition();
-  }
+  position = position->AsUnignoredSelectionPosition(adjustment_behavior);
 
   switch (position->kind()) {
     case AXPositionKind::NULL_POSITION:

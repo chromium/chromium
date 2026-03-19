@@ -8,6 +8,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "ui/accessibility/platform/browser_accessibility_manager.h"
@@ -165,6 +166,18 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAndroid
   std::u16string GenerateAccessibilityNodeInfoString(int32_t unique_id);
 
   std::optional<std::vector<std::string>> GetMetadataForTree() const;
+
+  struct SelectionRange {
+    raw_ptr<BrowserAccessibilityAndroid> anchor_object = nullptr;
+    int anchor_offset = -1;
+    raw_ptr<BrowserAccessibilityAndroid> focus_object = nullptr;
+    int focus_offset = -1;
+  };
+
+  // Returns the selection fitted to Android accessibility tree and Selection
+  // API restrictions. If the output has value, all fields of the
+  // `SelectionRange` are populated.
+  std::optional<SelectionRange> GetSelectionRange() const;
 
  protected:
   std::unique_ptr<ui::BrowserAccessibility> CreateBrowserAccessibility(
