@@ -402,6 +402,18 @@ public final class ChromePreferenceKeys {
     /** Whether the Glic button is pinned in the tab strip. */
     public static final String GLIC_BUTTON_PINNED = "Chrome.Glic.ButtonPinned";
 
+    /** Whether the precise location setting is enabled for Glic */
+    public static final String GLIC_PRECISE_LOCATION_SETTING_ENABLED =
+            "Chrome.Glic.PreciseLocationSettingEnabled";
+
+    /** Whether the share current tab default access is enabled for Glic */
+    public static final String GLIC_SHARE_CURRENT_TAB_DEFAULT_ACCESS_ENABLED =
+            "Chrome.Glic.ShareCurrentTabDefaultAccessEnabled";
+
+    /** Whether the auto-browse setting is enabled for Glic */
+    public static final String GLIC_AUTO_BROWSE_SETTING_ENABLED =
+            "Chrome.Glic.AutoBrowseSettingEnabled";
+
     public static final String HISTORY_SHOW_HISTORY_INFO = "history_home_show_info";
 
     /** Whether the app-specific history info text was already seen by users. */
@@ -1187,6 +1199,9 @@ public final class ChromePreferenceKeys {
                 FIRST_CTA_START_TIMESTAMP,
                 FLAGS_LAST_CACHED_MINIMAL_BROWSER_FLAGS_TIME_MILLIS,
                 GLIC_BUTTON_PINNED,
+                GLIC_PRECISE_LOCATION_SETTING_ENABLED,
+                GLIC_SHARE_CURRENT_TAB_DEFAULT_ACCESS_ENABLED,
+                GLIC_AUTO_BROWSE_SETTING_ENABLED,
                 HISTORY_APP_SPECIFIC_INFO_SEEN,
                 HOME_MODULE_CARDS_ENABLED,
                 HOME_MODULE_CONFIGURED,

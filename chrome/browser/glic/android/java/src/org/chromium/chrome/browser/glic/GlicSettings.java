@@ -13,11 +13,14 @@ import android.widget.TextView;
 
 import androidx.preference.Preference;
 
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
 import org.chromium.components.browser_ui.settings.ChromeExpandableSwitchPreference;
@@ -31,6 +34,8 @@ import org.chromium.ui.text.SpanApplier;
 /** Fragment for Glic configurations in Chrome. */
 @NullMarked
 public class GlicSettings extends ChromeBaseSettingsFragment {
+    private static final String PREFERENCE_BUTTON = "glic_button";
+    private static final String PERMISSION_LOCATION = "permissions_location";
     private static final String PERMISSION_DEFAULT_TAB_ACCESS =
             "glic_permissions_default_tab_access";
     private static final String PERMISSION_AUTO_BROWSE= "glic_permissions_auto_browse";
@@ -45,6 +50,8 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
     public static final String PREF_KEY_GLIC_PERMISSIONS_ACTIVITY = "glic_permissions_activity";
     public static final String PREF_KEY_GLIC_EXTENSIONS = "glic_extensions";
 
+    private final SharedPreferencesManager mSharedPreferencesManager =
+            ChromeSharedPreferences.getInstance();
     private final SettableMonotonicObservableSupplier<String> mPageTitle =
             ObservableSuppliers.createMonotonic();
 
@@ -54,8 +61,15 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
         mPageTitle.set(getString(R.string.settings_glic_button_toggle));
         SettingsCustomTabLauncher customTabLauncher = getCustomTabLauncher();
 
-        ChromeSwitchPreference tabAccessPref =
-                assertNonNull(findPreference(PERMISSION_DEFAULT_TAB_ACCESS));
+        setupSwitchPreference(PREFERENCE_BUTTON, ChromePreferenceKeys.GLIC_BUTTON_PINNED);
+
+        setupSwitchPreference(
+                PERMISSION_LOCATION, ChromePreferenceKeys.GLIC_PRECISE_LOCATION_SETTING_ENABLED);
+
+        ChromeExpandableSwitchPreference tabAccessPref =
+                setupSwitchPreference(
+                        PERMISSION_DEFAULT_TAB_ACCESS,
+                        ChromePreferenceKeys.GLIC_SHARE_CURRENT_TAB_DEFAULT_ACCESS_ENABLED);
         String summary =
                 getString(
                         R.string
@@ -64,7 +78,9 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
                 SpanApplier.applySpans(summary, getLearnMoreSpanInfo(LEARN_MORE_AI_URL)));
 
         ChromeExpandableSwitchPreference autoBrowsePref =
-                assertNonNull(findPreference(PERMISSION_AUTO_BROWSE));
+                setupSwitchPreference(
+                        PERMISSION_AUTO_BROWSE,
+                        ChromePreferenceKeys.GLIC_AUTO_BROWSE_SETTING_ENABLED);
         String autoBrowseSummary =
                 getString(R.string.settings_glic_permissions_chrome_web_actuation_toggle_sublabel);
         autoBrowsePref.setSummary(
@@ -92,6 +108,18 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
                         return true;
                     });
         }
+    }
+
+    private <T extends ChromeSwitchPreference> T setupSwitchPreference(
+            String preferenceKey, String sharedPreferenceKey) {
+        T preference = assertNonNull(findPreference(preferenceKey));
+        preference.setChecked(mSharedPreferencesManager.readBoolean(sharedPreferenceKey, false));
+        preference.setOnPreferenceChangeListener(
+                (pref, newValue) -> {
+                    mSharedPreferencesManager.writeBoolean(sharedPreferenceKey, (boolean) newValue);
+                    return true;
+                });
+        return preference;
     }
 
     private void setupAutoBrowseExpandedArea(View expandedArea) {
