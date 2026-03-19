@@ -11814,6 +11814,21 @@
             ]
         }
     ],
+    "HeliosRichAPCExtraction": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GeminiRichAPCExtraction"
+                    ]
+                }
+            ]
+        }
+    ],
     "HeliosWithReaderMode": [
         {
             "platforms": [
@@ -12441,21 +12456,6 @@
                         "LensPrewarmHardStickinessInQueryFormulation",
                         "LensUnaryApisWithHttpTransportEnabled",
                         "LensUnaryHttpTransportEnabled"
-                    ]
-                }
-            ]
-        }
-    ],
-    "IOSGeminiRichAPCExtraction": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "GeminiRichAPCExtraction"
                     ]
                 }
             ]
