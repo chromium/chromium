@@ -51,10 +51,6 @@ class CORE_EXPORT LayoutTreeBuilderTraversal {
     int32_t limit = kTraverseAllSiblings;
     return NextLayoutSibling(node, limit);
   }
-  static Node* PreviousLayoutSibling(const Node& node) {
-    int32_t limit = kTraverseAllSiblings;
-    return PreviousLayoutSibling(node, limit);
-  }
   static Node* FirstLayoutChild(const Node&);
 
   static Node* PreviousSibling(const Node&);
@@ -81,7 +77,6 @@ class CORE_EXPORT LayoutTreeBuilderTraversal {
 
  private:
   static Node* NextLayoutSibling(const Node&, int32_t& limit);
-  static Node* PreviousLayoutSibling(const Node&, int32_t& limit);
 };
 
 }  // namespace blink
