@@ -196,13 +196,6 @@ class CONTENT_EXPORT Database {
 
   base::WeakPtr<Database> AsWeakPtr() { return weak_factory_.GetWeakPtr(); }
 
-  void AddConnectionForTesting(Connection* connection) {
-    if (connections_.empty()) {
-      OpenInternal();
-    }
-    connections_.push_back(connection);
-  }
-
   bool CanBeDestroyed();
 
  protected:
@@ -218,6 +211,7 @@ class CONTENT_EXPORT Database {
   FRIEND_TEST_ALL_PREFIXES(DatabaseOperationTest,
                            IndexGetAllKeysWithInvalidIndexId);
   friend class DatabaseOperationTest;
+  friend class TransactionTestBase;
 
   void CallUpgradeTransactionStartedForTesting(int64_t old_version);
 

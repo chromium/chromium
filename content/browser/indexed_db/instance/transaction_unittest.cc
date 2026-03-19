@@ -8,7 +8,6 @@
 
 #include <memory>
 
-#include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
@@ -16,22 +15,17 @@
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/single_thread_task_runner.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/task_environment.h"
-#include "base/test/test_future.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 #include "content/browser/indexed_db/indexed_db_database_error.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
+#include "content/browser/indexed_db/indexed_db_test_base.h"
 #include "content/browser/indexed_db/instance/bucket_context.h"
 #include "content/browser/indexed_db/instance/connection.h"
 #include "content/browser/indexed_db/instance/database_callbacks.h"
 #include "content/browser/indexed_db/instance/fake_transaction.h"
-#include "content/browser/indexed_db/instance/mock_blob_storage_context.h"
 #include "content/public/common/content_features.h"
-#include "storage/browser/quota/quota_manager_proxy.h"
-#include "storage/browser/test/mock_quota_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 
@@ -59,79 +53,41 @@ class AbortObserver {
   bool abort_task_called_ = false;
 };
 
-class TransactionTestBase : public testing::Test {
+class TransactionTestBase : public IndexedDBTestBase {
  public:
   explicit TransactionTestBase(bool use_sqlite)
-      : sqlite_override_(
-            BucketContext::OverrideShouldUseSqliteForTesting(use_sqlite)),
-        task_environment_(std::make_unique<base::test::TaskEnvironment>()) {}
-
-  TransactionTestBase(const TransactionTestBase&) = delete;
-  TransactionTestBase& operator=(const TransactionTestBase&) = delete;
+      : IndexedDBTestBase(/*use_default_buckets=*/true, use_sqlite) {}
 
   void SetUp() override {
-    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    quota_manager_ = base::MakeRefCounted<storage::MockQuotaManager>(
-        /*is_incognito=*/false, temp_dir_.GetPath(),
-        base::SingleThreadTaskRunner::GetCurrentDefault(),
-        /*special_storage_policy=*/nullptr);
+    IndexedDBTestBase::SetUp();
     SetUpBucketContext();
   }
 
-  void SetUpBucketContext() {
-    BucketContext::Delegate delegate;
-    delegate.on_ready_for_destruction = base::BindOnce(
-        &TransactionTestBase::OnDbReadyForDestruction, base::Unretained(this));
-
-    const blink::StorageKey storage_key =
-        blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
-    mojo::PendingRemote<storage::mojom::BlobStorageContext>
-        blob_storage_context;
-    blob_storage_context_.Clone(
-        blob_storage_context.InitWithNewPipeAndPassReceiver());
-    bucket_context_ = std::make_unique<BucketContext>(
-        GetOrCreateBucket(
-            storage::BucketInitParams::ForDefaultBucket(storage_key)),
-        temp_dir_.GetPath(), std::move(delegate), quota_manager_->proxy(),
-        std::move(blob_storage_context),
-        /*file_system_access_context=*/mojo::NullRemote());
-
-    bucket_context_->InitBackingStore(true);
-    SetDatabaseUnderTest(u"db");
+  void TearDown() override {
+    db_ = nullptr;
+    IndexedDBTestBase::TearDown();
   }
 
-  void TearDown() override { db_ = nullptr; }
+  void SetUpBucketContext() {
+    bucket_context_ = InitBucketContext(GetTestStorageKey()).AsWeakPtr();
+    bucket_context_->InitBackingStore(/*create_if_missing=*/true);
+    SetDatabaseUnderTest(u"db");
+  }
 
   void SetDatabaseUnderTest(std::u16string name) {
     db_ = bucket_context_->CreateAndAddDatabase(name);
   }
 
-  storage::BucketInfo GetOrCreateBucket(
-      const storage::BucketInitParams& params) {
-    base::test::TestFuture<storage::QuotaErrorOr<storage::BucketInfo>> future;
-    quota_manager_->proxy()->UpdateOrCreateBucket(
-        params, base::SingleThreadTaskRunner::GetCurrentDefault(),
-        future.GetCallback());
-    return future.Take().value();
-  }
-
-  void OnDbReadyForDestruction() { bucket_context_.reset(); }
-
-  void RunPostedTasks() { base::RunLoop().RunUntilIdle(); }
-
-  Status DummyOperation(Status result, Transaction* transaction) {
-    return result;
-  }
+  BucketContext* bucket_context() { return bucket_context_.get(); }
 
   std::unique_ptr<Connection> CreateConnection(int priority = 0) {
-    mojo::Remote<storage::mojom::IndexedDBClientStateChecker> remote;
-    auto connection = std::make_unique<Connection>(
-        *bucket_context_, db_->AsWeakPtr(), base::DoNothing(),
-        base::DoNothing(),
+    if (db_->connections_.empty()) {
+      db_->OpenInternal();
+    }
+    return db_->CreateConnection(
         std::make_unique<DatabaseCallbacks>(mojo::NullAssociatedRemote()),
-        std::move(remote), base::UnguessableToken::Create(), priority);
-    db_->AddConnectionForTesting(connection.get());
-    return connection;
+        mojo::Remote<storage::mojom::IndexedDBClientStateChecker>(),
+        base::UnguessableToken::Create(), priority, base::DoNothing());
   }
 
   Transaction* CreateTransaction(Connection* connection,
@@ -166,7 +122,7 @@ class TransactionTestBase : public testing::Test {
     std::unique_ptr<Transaction> transaction = std::make_unique<Transaction>(
         id, connection, object_store_ids, mode,
         blink::mojom::IDBTransactionDurability::Relaxed,
-        BucketContextHandle(*bucket_context_),
+        BucketContextHandle(*bucket_context()),
         std::make_unique<FakeTransaction>(
             commit_phase_two_error_status,
             db_->backing_store_db()->CreateTransaction(
@@ -183,25 +139,19 @@ class TransactionTestBase : public testing::Test {
     return bucket_context_->lock_manager();
   }
 
+  void FlushBucketTasks() {
+    RunPostedTasks(bucket_context()->bucket_locator());
+  }
+
  protected:
-  base::AutoReset<std::optional<bool>> sqlite_override_;
-  base::ScopedTempDir temp_dir_;
-  std::unique_ptr<base::test::TaskEnvironment> task_environment_;
-  MockBlobStorageContext blob_storage_context_;
-  std::unique_ptr<BucketContext> bucket_context_;
-  raw_ptr<Database> db_;
-  scoped_refptr<storage::MockQuotaManager> quota_manager_;
+  base::WeakPtr<BucketContext> bucket_context_;
+  raw_ptr<Database> db_ = nullptr;
 };
 
 class TransactionTest : public TransactionTestBase,
                         public testing::WithParamInterface<bool> {
  public:
-  TransactionTest() : TransactionTestBase(IsSqliteBackingStoreEnabled()) {}
-
-  TransactionTest(const TransactionTest&) = delete;
-  TransactionTest& operator=(const TransactionTest&) = delete;
-
-  bool IsSqliteBackingStoreEnabled() { return GetParam(); }
+  TransactionTest() : TransactionTestBase(GetParam()) {}
 };
 
 class TransactionTestMode
@@ -209,12 +159,7 @@ class TransactionTestMode
       public testing::WithParamInterface<
           std::tuple<bool, blink::mojom::IDBTransactionMode>> {
  public:
-  TransactionTestMode() : TransactionTestBase(IsSqliteBackingStoreEnabled()) {}
-
-  TransactionTestMode(const TransactionTestMode&) = delete;
-  TransactionTestMode& operator=(const TransactionTestMode&) = delete;
-
-  bool IsSqliteBackingStoreEnabled() { return std::get<bool>(GetParam()); }
+  TransactionTestMode() : TransactionTestBase(std::get<bool>(GetParam())) {}
 
   blink::mojom::IDBTransactionMode GetTransactionMode() {
     return std::get<blink::mojom::IDBTransactionMode>(GetParam());
@@ -245,13 +190,12 @@ TEST_P(TransactionTest, Timeout) {
   // Schedule a task - timer won't be started until it's processed.
   transaction->ScheduleTask(
       /*operation_name_for_metrics=*/{},
-      base::BindOnce(&TransactionTest::DummyOperation, base::Unretained(this),
-                     Status::OK()));
+      base::BindOnce([](Transaction*) { return Status::OK(); }));
   EXPECT_FALSE(transaction->IsTimeoutTimerRunning());
   EXPECT_EQ(1, transaction->diagnostics().tasks_scheduled);
   EXPECT_EQ(0, transaction->diagnostics().tasks_completed);
 
-  RunPostedTasks();
+  FlushBucketTasks();
   EXPECT_TRUE(transaction->IsTimeoutTimerRunning());
 
   // Since the transaction isn't blocking another transaction, it's expected to
@@ -283,8 +227,7 @@ TEST_P(TransactionTest, Timeout) {
   // This task will be ignored.
   transaction->ScheduleTask(
       /*operation_name_for_metrics=*/{},
-      base::BindOnce(&TransactionTest::DummyOperation, base::Unretained(this),
-                     Status::OK()));
+      base::BindOnce([](Transaction*) { return Status::OK(); }));
   EXPECT_EQ(Transaction::FINISHED, transaction->state());
   EXPECT_FALSE(transaction->IsTimeoutTimerRunning());
   EXPECT_EQ(1, transaction->diagnostics().tasks_scheduled);
@@ -306,8 +249,7 @@ TEST_P(TransactionTest, TimeoutPreemptive) {
   // Add a preemptive task.
   transaction->ScheduleTask(
       blink::mojom::IDBTaskType::Preemptive, /*operation_name_for_metrics=*/{},
-      base::BindOnce(&TransactionTest::DummyOperation, base::Unretained(this),
-                     Status::OK()));
+      base::BindOnce([](Transaction*) { return Status::OK(); }));
   transaction->AddPreemptiveEvent();
 
   EXPECT_TRUE(transaction->HasPendingTasks());
@@ -317,7 +259,7 @@ TEST_P(TransactionTest, TimeoutPreemptive) {
 
   // Pump the message loop so that the transaction completes all pending tasks,
   // otherwise it will defer the commit.
-  RunPostedTasks();
+  FlushBucketTasks();
   EXPECT_TRUE(transaction->HasPendingTasks());
   EXPECT_FALSE(transaction->IsTimeoutTimerRunning());
   EXPECT_TRUE(transaction->task_queue_.empty());
@@ -326,14 +268,13 @@ TEST_P(TransactionTest, TimeoutPreemptive) {
   // Schedule a task - timer won't be started until preemptive tasks are done.
   transaction->ScheduleTask(
       /*operation_name_for_metrics=*/{},
-      base::BindOnce(&TransactionTest::DummyOperation, base::Unretained(this),
-                     Status::OK()));
+      base::BindOnce([](Transaction*) { return Status::OK(); }));
   EXPECT_FALSE(transaction->IsTimeoutTimerRunning());
   EXPECT_EQ(1, transaction->diagnostics().tasks_scheduled);
   EXPECT_EQ(0, transaction->diagnostics().tasks_completed);
 
   // This shouldn't do anything - the preemptive task is still lurking.
-  RunPostedTasks();
+  FlushBucketTasks();
   EXPECT_TRUE(transaction->HasPendingTasks());
   EXPECT_FALSE(transaction->IsTimeoutTimerRunning());
   EXPECT_EQ(1, transaction->diagnostics().tasks_scheduled);
@@ -378,10 +319,9 @@ TEST_P(TransactionTest, TimeoutWithPriorities) {
     // Schedule a task - timer won't be started until it's processed.
     transaction->ScheduleTask(
         /*operation_name_for_metrics=*/{},
-        base::BindOnce(&TransactionTest::DummyOperation, base::Unretained(this),
-                       Status::OK()));
-    EXPECT_TRUE(base::test::RunUntil(
-        [&]() { return transaction->IsTimeoutTimerRunning(); }));
+        base::BindOnce([](Transaction*) { return Status::OK(); }));
+    FlushBucketTasks();
+    EXPECT_TRUE(transaction->IsTimeoutTimerRunning());
 
     // Since the transaction isn't blocking another transaction, it's expected
     // to do nothing when the timeout fires.
@@ -401,8 +341,10 @@ TEST_P(TransactionTest, TimeoutWithPriorities) {
 
     // Clean up for the next iteration.
     db_ = nullptr;
-    bucket_context_->ForceClose(false,
-                                "The database is force-closed for testing.");
+    bucket_context()->ForceClose(false,
+                                 "The database is force-closed for testing.");
+    RunPostedTasks();
+    EXPECT_FALSE(bucket_context_);
     SetUpBucketContext();
   }
 }
@@ -422,8 +364,7 @@ TEST_P(TransactionTestMode, ScheduleNormalTask) {
 
   transaction->ScheduleTask(
       blink::mojom::IDBTaskType::Normal, /*operation_name_for_metrics=*/{},
-      base::BindOnce(&TransactionTest::DummyOperation, base::Unretained(this),
-                     Status::OK()));
+      base::BindOnce([](Transaction*) { return Status::OK(); }));
 
   EXPECT_EQ(1, transaction->diagnostics().tasks_scheduled);
   EXPECT_EQ(0, transaction->diagnostics().tasks_completed);
@@ -445,7 +386,7 @@ TEST_P(TransactionTestMode, ScheduleNormalTask) {
   EXPECT_EQ(1, transaction->diagnostics().tasks_completed);
 
   transaction->SetCommitFlag();
-  RunPostedTasks();
+  FlushBucketTasks();
   EXPECT_EQ(0UL, connection->transactions().size());
 }
 
@@ -465,8 +406,7 @@ TEST_P(TransactionTestMode, TaskFails) {
 
   transaction->ScheduleTask(
       blink::mojom::IDBTaskType::Normal, /*operation_name_for_metrics=*/{},
-      base::BindOnce(&TransactionTest::DummyOperation, base::Unretained(this),
-                     Status::IOError("error")));
+      base::BindOnce([](Transaction*) { return Status::IOError("error"); }));
 
   EXPECT_EQ(1, transaction->diagnostics().tasks_scheduled);
   EXPECT_EQ(0, transaction->diagnostics().tasks_completed);
@@ -517,8 +457,7 @@ TEST_P(TransactionTest, SchedulePreemptiveTask) {
 
   transaction->ScheduleTask(
       blink::mojom::IDBTaskType::Preemptive, /*operation_name_for_metrics=*/{},
-      base::BindOnce(&TransactionTest::DummyOperation, base::Unretained(this),
-                     Status::OK()));
+      base::BindOnce([](Transaction*) { return Status::OK(); }));
   transaction->AddPreemptiveEvent();
 
   EXPECT_TRUE(transaction->HasPendingTasks());
@@ -543,12 +482,12 @@ TEST_P(TransactionTest, SchedulePreemptiveTask) {
   if (!IsSqliteBackingStoreEnabled()) {
     // The bucket context should have been destroyed via
     // `OnDbReadyForDestruction`.
-    EXPECT_FALSE(bucket_context_);
+    EXPECT_FALSE(bucket_context());
   } else {
     // Only the database should have been closed.
-    EXPECT_TRUE(bucket_context_);
+    EXPECT_TRUE(bucket_context());
     ASSERT_TRUE(base::test::RunUntil(
-        [&]() { return bucket_context_->GetDatabasesForTesting().empty(); }));
+        [&]() { return bucket_context()->GetDatabasesForTesting().empty(); }));
   }
 }
 
@@ -564,13 +503,12 @@ TEST_P(TransactionTestMode, AbortPreemptive) {
 
   transaction->ScheduleTask(
       blink::mojom::IDBTaskType::Preemptive, /*operation_name_for_metrics=*/{},
-      base::BindOnce(&TransactionTest::DummyOperation, base::Unretained(this),
-                     Status::OK()));
+      base::BindOnce([](Transaction*) { return Status::OK(); }));
   EXPECT_EQ(0, transaction->pending_preemptive_events_);
   transaction->AddPreemptiveEvent();
   EXPECT_EQ(1, transaction->pending_preemptive_events_);
 
-  RunPostedTasks();
+  FlushBucketTasks();
 
   transaction->Abort(DatabaseError(blink::mojom::IDBException::kAbortError,
                                    "Transaction aborted by user."));
@@ -589,8 +527,7 @@ TEST_P(TransactionTestMode, AbortPreemptive) {
   // This task will be ignored.
   transaction->ScheduleTask(
       /*operation_name_for_metrics=*/{},
-      base::BindOnce(&TransactionTest::DummyOperation, base::Unretained(this),
-                     Status::OK()));
+      base::BindOnce([](Transaction*) { return Status::OK(); }));
   EXPECT_EQ(Transaction::FINISHED, transaction->state());
   EXPECT_FALSE(transaction->IsTimeoutTimerRunning());
   EXPECT_FALSE(transaction->HasPendingTasks());
@@ -681,7 +618,7 @@ TEST_P(TransactionTest, PostedStartTaskRunAfterAbort) {
   // posted RunTasksForDatabase() tasks which, if we waited to run them
   // until after Abort is called, would destroy our transactions and mask
   // a potential race condition.
-  RunPostedTasks();
+  FlushBucketTasks();
 
   // Abort all of the transactions, which should cause the second transaction's
   // posted Start() task to run.
@@ -691,7 +628,7 @@ TEST_P(TransactionTest, PostedStartTaskRunAfterAbort) {
   EXPECT_EQ(transaction2->state(), Transaction::FINISHED);
 
   // Run tasks to ensure Start() is called but does not DCHECK.
-  RunPostedTasks();
+  FlushBucketTasks();
 
   // It's not safe to check the state of the transaction at this point since it
   // is freed when the Database::RunTasks call happens via the posted
@@ -728,13 +665,13 @@ TEST_P(TransactionTest, IsTransactionBlockingOtherClients) {
       connection2.get(),
       /*id=*/1, object_store_ids, blink::mojom::IDBTransactionMode::ReadWrite);
 
-  RunPostedTasks();
+  FlushBucketTasks();
 
   // Abort the blocked transaction, and the previous transaction should not be
   // blocking others anymore.
   transaction3->Abort(DatabaseError(blink::mojom::IDBException::kUnknownError));
   EXPECT_EQ(transaction3->state(), Transaction::FINISHED);
-  RunPostedTasks();
+  FlushBucketTasks();
   EXPECT_FALSE(transaction->IsTransactionBlockingOtherClients());
 }
 

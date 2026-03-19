@@ -105,9 +105,15 @@ void IndexedDBTestBase::SetUpInMemoryContext() {
   RunPostedTasks();
 }
 
-void IndexedDBTestBase::RunPostedTasks() {
+void IndexedDBTestBase::RunPostedTasks(
+    std::optional<storage::BucketLocator> bucket_locator) {
   base::RunLoop loop;
-  context_->idb_task_runner()->PostTask(FROM_HERE, loop.QuitClosure());
+  if (bucket_locator) {
+    context_->FlushBucketSequenceForTesting(*bucket_locator,
+                                            loop.QuitClosure());
+  } else {
+    context_->idb_task_runner()->PostTask(FROM_HERE, loop.QuitClosure());
+  }
   loop.Run();
 }
 

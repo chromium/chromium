@@ -47,7 +47,11 @@ class IndexedDBTestBase : public testing::Test {
   IndexedDBContextImpl* context() const { return context_.get(); }
 
   void SetUpInMemoryContext();
-  void RunPostedTasks();
+
+  // Flushes the main IDB sequence if `bucket_locator` is not provided. Flushes
+  // the bucket sequence corresponding to `bucket_locator` if it is provided.
+  void RunPostedTasks(
+      std::optional<storage::BucketLocator> bucket_locator = std::nullopt);
 
   storage::BucketInfo GetOrCreateBucket(
       const storage::BucketInitParams& params);
