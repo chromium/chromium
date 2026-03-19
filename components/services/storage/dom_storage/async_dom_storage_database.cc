@@ -6,6 +6,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/histogram_functions.h"
 
 namespace storage {
 
@@ -33,6 +34,39 @@ DbStatus RecordStatus(std::string histogram_name,
   return status;
 }
 
+// Records the duration of an operation to a histogram suffixed with
+// ".InMemory" or ".OnDisk".
+void RecordDuration(const std::string& histogram_name,
+                    bool in_memory,
+                    base::TimeTicks start_time) {
+  base::UmaHistogramTimes(
+      histogram_name + (in_memory ? ".InMemory" : ".OnDisk"),
+      base::TimeTicks::Now() - start_time);
+}
+
+// Like `RecordExpected`, but also records a duration histogram.
+template <typename T>
+StatusOr<T> RecordExpectedAndDuration(std::string status_histogram_name,
+                                      std::string duration_histogram_name,
+                                      bool in_memory,
+                                      base::TimeTicks start_time,
+                                      StatusOr<T> result) {
+  RecordDuration(duration_histogram_name, in_memory, start_time);
+  return RecordExpected(std::move(status_histogram_name), in_memory,
+                        std::move(result));
+}
+
+// Like `RecordStatus`, but also records a duration histogram.
+DbStatus RecordStatusAndDuration(std::string status_histogram_name,
+                                 std::string duration_histogram_name,
+                                 bool in_memory,
+                                 base::TimeTicks start_time,
+                                 DbStatus status) {
+  RecordDuration(duration_histogram_name, in_memory, start_time);
+  return RecordStatus(std::move(status_histogram_name), in_memory,
+                      std::move(status));
+}
+
 }  // namespace
 
 // static
@@ -53,7 +87,7 @@ std::unique_ptr<AsyncDomStorageDatabase> AsyncDomStorageDatabase::Open(
       .WithArgs(database_path, memory_dump_id)
       .Then(base::BindOnce(&AsyncDomStorageDatabase::OnDatabaseOpened,
                            instance->weak_ptr_factory_.GetWeakPtr(),
-                           std::move(callback)));
+                           std::move(callback), base::TimeTicks::Now()));
   return instance;
 }
 
@@ -70,12 +104,16 @@ void AsyncDomStorageDatabase::ReadMapKeyValues(
     ReadMapKeyValuesCallback callback) {
   CHECK(is_database_opened_);
 
+  base::TimeTicks start_time = base::TimeTicks::Now();
   database_.AsyncCall(&DomStorageDatabase::ReadMapKeyValues)
       .WithArgs(std::move(map_locator))
-      .Then(base::BindOnce(&RecordExpected<std::map<DomStorageDatabase::Key,
-                                                    DomStorageDatabase::Value>>,
-                           GetHistogram("ReadMapKeyValues"), in_memory_)
-                .Then(std::move(callback)));
+      .Then(
+          base::BindOnce(
+              &RecordExpectedAndDuration<
+                  std::map<DomStorageDatabase::Key, DomStorageDatabase::Value>>,
+              GetHistogram("ReadMapKeyValues"), GetDurationHistogram("GetAll"),
+              in_memory_, start_time)
+              .Then(std::move(callback)));
 }
 
 void AsyncDomStorageDatabase::CloneMap(
@@ -177,6 +215,7 @@ void AsyncDomStorageDatabase::RemoveCommitter(Committer* source) {
 void AsyncDomStorageDatabase::InitiateCommit() {
   CHECK(is_database_opened_);
 
+  base::TimeTicks commit_start_time = base::TimeTicks::Now();
   std::vector<DomStorageDatabase::MapBatchUpdate> commits;
   std::vector<base::OnceCallback<void(DbStatus)>> commit_dones;
   commit_dones.reserve(committers_.size());
@@ -200,17 +239,21 @@ void AsyncDomStorageDatabase::InitiateCommit() {
 
   database_.AsyncCall(&DomStorageDatabase::UpdateMaps)
       .WithArgs(std::move(commits))
-      .Then(
-          base::BindOnce(&RecordStatus, GetHistogram("UpdateMaps"), in_memory_)
-              .Then(std::move(run_all)));
+      .Then(base::BindOnce(&RecordStatusAndDuration, GetHistogram("UpdateMaps"),
+                           GetDurationHistogram("InitiateCommit"), in_memory_,
+                           commit_start_time)
+                .Then(std::move(run_all)));
 }
 
 void AsyncDomStorageDatabase::OnDatabaseOpened(StatusCallback callback,
+                                               base::TimeTicks open_start_time,
                                                DbStatus open_status) {
   CHECK(!is_database_opened_);
   is_database_opened_ = open_status.ok();
 
-  RecordStatus(GetHistogram("OpenDatabase"), in_memory_, open_status);
+  RecordStatusAndDuration(GetHistogram("OpenDatabase"),
+                          GetDurationHistogram("OpenDatabase"), in_memory_,
+                          open_start_time, open_status);
   std::move(callback).Run(open_status);
 }
 
@@ -226,6 +269,11 @@ std::string_view AsyncDomStorageDatabase::StorageTypeForHistograms() const {
 std::string AsyncDomStorageDatabase::GetHistogram(
     std::string_view operation) const {
   return base::StrCat({StorageTypeForHistograms(), ".", operation});
+}
+
+std::string AsyncDomStorageDatabase::GetDurationHistogram(
+    std::string_view operation) const {
+  return base::StrCat({StorageTypeForHistograms(), ".Duration.", operation});
 }
 
 }  // namespace storage

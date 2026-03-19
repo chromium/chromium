@@ -2965,6 +2965,33 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Storage.{DomStorageType}.Duration.{Operation}.{DomStorageBackingStoreLifetime}"
+    units="ms" expires_after="2027-02-28">
+  <owner>leimy@chromium.org</owner>
+  <owner>fergal@chromium.org</owner>
+  <owner>rahsin@microsoft.com</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Records the duration of {Operation} operations in {DomStorageType} using
+    {DomStorageBackingStoreLifetime} database. This helps compare latency
+    between the LevelDB and SQLite backends.
+  </summary>
+  <token key="Operation">
+    <variant name="GetAll"
+        summary="reading all key-value pairs for a storage area via the async
+                 ReadMapKeyValues round-trip"/>
+    <variant name="InitiateCommit"
+        summary="the end-to-end async commit round-trip from collecting
+                 pending map updates through the single UpdateMaps call to
+                 receiving the result callback"/>
+    <variant name="OpenDatabase"
+        summary="the end-to-end async open round-trip from initiating the
+                 DomStorageDatabase::Open call to receiving the result
+                 callback"/>
+  </token>
+</histogram>
+
 <histogram name="Storage.{DomStorageType}.Recovery.{DomStorageRecoveryReason}"
     enum="DomStorageDatabaseRecoveryOutcome" expires_after="2027-02-24">
   <owner>fergal@chromium.org</owner>

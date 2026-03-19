@@ -460,6 +460,13 @@ TEST_P(LocalStorageImplTest, Basic) {
   // The Put and WaitForMapEntries each trigger a ReadMapKeyValues.
   histograms.ExpectUniqueSample("Storage.LocalStorage.ReadMapKeyValues.OnDisk",
                                 0, 2);
+
+  // Verify duration histograms were recorded for the commit and read
+  // operations.
+  histograms.ExpectTotalCount(
+      "Storage.LocalStorage.Duration.InitiateCommit.OnDisk", 1);
+  // The Put and WaitForMapEntries each trigger a ReadMapKeyValues/GetAll.
+  histograms.ExpectTotalCount("Storage.LocalStorage.Duration.GetAll.OnDisk", 2);
 }
 
 TEST_P(LocalStorageImplTest, StorageKeysAreIndependent) {
@@ -750,6 +757,9 @@ TEST_P(LocalStorageImplTest, CheckAccessMetaData) {
   // ResetStorage results in a PutMetadata call to update last_accessed.
   histograms.ExpectUniqueSample("Storage.LocalStorage.PutMetadata.OnDisk",
                                 /*sample=*/0, 1);
+  // Verify the OpenDatabase duration histogram was recorded.
+  histograms.ExpectTotalCount(
+      "Storage.LocalStorage.Duration.OpenDatabase.OnDisk", 1);
 }
 
 TEST_P(LocalStorageImplTest, MetaDataClearedOnDelete) {

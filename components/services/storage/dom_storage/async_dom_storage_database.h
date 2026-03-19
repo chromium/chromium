@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/threading/sequence_bound.h"
+#include "base/time/time.h"
 #include "base/trace_event/memory_allocator_dump_guid.h"
 #include "components/services/storage/dom_storage/db_status.h"
 #include "components/services/storage/dom_storage/dom_storage_database.h"
@@ -97,10 +98,13 @@ class AsyncDomStorageDatabase {
 
   std::string_view StorageTypeForHistograms() const;
   std::string GetHistogram(std::string_view operation) const;
+  std::string GetDurationHistogram(std::string_view operation) const;
 
   // Sets `is_database_opened_` to true when `open_status` is ok.  Then runs
   // `callback` with `open_status`.
-  void OnDatabaseOpened(StatusCallback callback, DbStatus open_status);
+  void OnDatabaseOpened(StatusCallback callback,
+                        base::TimeTicks open_start_time,
+                        DbStatus open_status);
 
   // `database_` must not be used until `is_database_opened_` is true.
   bool is_database_opened_ = false;

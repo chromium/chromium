@@ -245,6 +245,10 @@ TEST_P(SessionStorageImplTest, CommitRecordsUpdateMapsHistogram) {
   WaitForDatabaseTasks();
   histograms.ExpectUniqueSample("Storage.SessionStorage.UpdateMaps.OnDisk", 0,
                                 1);
+
+  // Verify duration histograms were recorded for the commit operations.
+  histograms.ExpectTotalCount(
+      "Storage.SessionStorage.Duration.InitiateCommit.OnDisk", 1);
 }
 
 TEST_P(SessionStorageImplTest, StartupShutdownSave) {
@@ -321,6 +325,13 @@ TEST_P(SessionStorageImplTest, StartupShutdownSave) {
   histograms.ExpectUniqueSample(
       "Storage.SessionStorage.ReadMapKeyValues.OnDisk",
       /*sample=*/0, 1);
+
+  // Verify duration histograms. OpenDatabase duration fires for each open.
+  histograms.ExpectTotalCount(
+      "Storage.SessionStorage.Duration.OpenDatabase.OnDisk", 3);
+  // GetAll duration fires for each ReadMapKeyValues async round-trip.
+  histograms.ExpectTotalCount("Storage.SessionStorage.Duration.GetAll.OnDisk",
+                              1);
 }
 
 TEST_P(SessionStorageImplTest, CloneBeforeBrowserClone) {
