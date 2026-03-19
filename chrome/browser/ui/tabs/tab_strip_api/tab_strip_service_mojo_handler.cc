@@ -33,6 +33,7 @@ void TabStripServiceMojoHandler::GetTabs(GetTabsCallback callback) {
   auto result = tab_strip_service_->GetTabs();
   if (!result.has_value()) {
     std::move(callback).Run(base::unexpected(std::move(result.error())));
+    return;
   }
   snapshot->tab_strip = std::move(result.value());
 
