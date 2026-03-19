@@ -7,6 +7,7 @@ import argparse
 import logging
 import os
 import pathlib
+import re
 import shutil
 import subprocess
 import sys
@@ -40,13 +41,20 @@ def gen_spec(config: installer.InstallerConfig,
 def verify_package(config: installer.InstallerConfig,
                    rpm_file: pathlib.Path) -> None:
     depends = config.rpm_depends
+    version_output = subprocess.check_output(["rpm", "--version"])
+    version_match = re.match(r'.*version ([.\d]*)', str(version_output))
     additional_deps = [
         "/bin/sh",
-        "rpmlib(CompressedFileNames) <= 3.0.4-1",
-        "rpmlib(FileDigests) <= 4.6.0-1",
-        "rpmlib(PayloadFilesHavePrefix) <= 4.0-1",
         "/usr/sbin/update-alternatives",
     ]
+    if version_match and version_match[1] >= '6.0':
+        additional_deps += ['rpmlib(LargeFiles) <= 4.12.0-1']
+    else:
+        additional_deps += [
+            "rpmlib(CompressedFileNames) <= 3.0.4-1",
+            "rpmlib(FileDigests) <= 4.6.0-1",
+            "rpmlib(PayloadFilesHavePrefix) <= 4.0-1",
+        ]
     if config.is_official_build:
         additional_deps.append("rpmlib(PayloadIsXz) <= 5.2-1")
 
