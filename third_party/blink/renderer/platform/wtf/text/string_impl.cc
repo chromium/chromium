@@ -572,10 +572,10 @@ scoped_refptr<StringImpl> StringImpl::StripWhiteSpace(
 template <typename CharType>
 ALWAYS_INLINE scoped_refptr<StringImpl> StringImpl::RemoveCharacters(
     base::span<const CharType> characters,
-    CharacterMatchFunctionPtr find_match) {
+    CharacterMatchFunctionPtr matcher) {
   // Assume the common case will not remove any characters
   size_t i = 0;
-  while (i < characters.size() && !find_match(characters[i])) {
+  while (i < characters.size() && !matcher(characters[i])) {
     ++i;
   }
   if (i == characters.size()) {
@@ -590,17 +590,12 @@ ALWAYS_INLINE scoped_refptr<StringImpl> StringImpl::RemoveCharacters(
     to.copy_prefix_from(characters.first(outc));
   }
 
-  while (true) {
-    while (i < characters.size() && find_match(characters[i])) {
-      ++i;
+  for (; i < characters.size(); ++i) {
+    const CharType c = characters[i];
+    if (matcher(c)) {
+      continue;
     }
-    while (i < characters.size() && !find_match(characters[i])) {
-      to[outc++] = characters[i];
-      ++i;
-    }
-    if (i == characters.size()) {
-      break;
-    }
+    to[outc++] = c;
   }
 
   data.Shrink(outc);
