@@ -20,6 +20,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -77,6 +78,7 @@ public class HistoryPaneTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/494280678")
     public void testEmptyView() {
         RegularTabSwitcherStation tabSwitcher = mStartingPage.openRegularTabSwitcher();
         tabSwitcher.selectHistoryPane().expectEmptyState(mIsLLFDevice);
@@ -84,6 +86,7 @@ public class HistoryPaneTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/494280678")
     public void testOpenedHistoryItem_HistoryItemsAreDisplayed() {
         String urlOne =
                 mCtaTestRule.getTestServer().getURL("/chrome/test/data/android/navigate/one.html");
@@ -102,6 +105,7 @@ public class HistoryPaneTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/494280678")
     public void testOpenedHistoryItem_SearchMatch() {
         String urlOne =
                 mCtaTestRule.getTestServer().getURL("/chrome/test/data/android/navigate/one.html");
@@ -151,6 +155,7 @@ public class HistoryPaneTest {
     @Test
     @MediumTest
     @EnableFeatures(ChromeFeatureList.ANDROID_HISTORY_CLUSTERING)
+    @DisabledTest(message = "https://crbug.com/494280678")
     public void testHistoryClustering_ExpandCollapse() {
         String urlOne =
                 mCtaTestRule.getTestServer().getURL("/chrome/test/data/android/navigate/one.html");
