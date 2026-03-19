@@ -83,7 +83,11 @@ source_set("apple") {
 }
 
 source_set("unit_tests") {
-  visibility = [ "//media/capture:capture_unittests" ]
+  visibility = [
+    "//media/capture:capture_unittests",
+    "//media/capture:capture_unittests_executable",
+    "//media/capture:run_capture_unittests",
+  ]
   testonly = true
 
   sources = [

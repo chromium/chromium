@@ -14,11 +14,11 @@
 #include "media/capture/capture_export.h"
 #include "ui/gfx/geometry/size.h"
 
+namespace media {
+
 #if BUILDFLAG(IS_IOS)
 class PixelBufferRotator;
 #endif
-
-namespace media {
 
 class PixelBufferPool;
 class PixelBufferTransferer;
