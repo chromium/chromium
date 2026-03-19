@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/drive/model/drive_tab_helper.h"
 #import "ios/chrome/browser/drive/model/upload_task.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/download/download_task.h"
@@ -57,6 +58,11 @@ void DownloadManagerMediator::SetIdentityManager(
 void DownloadManagerMediator::SetDriveService(
     drive::DriveService* drive_service) {
   drive_service_ = drive_service;
+}
+
+void DownloadManagerMediator::SetAuthenticationService(
+    AuthenticationService* auth_service) {
+  auth_service_ = auth_service;
 }
 
 void DownloadManagerMediator::SetPrefService(PrefService* pref_service) {
@@ -165,7 +171,8 @@ DownloadManagerState DownloadManagerMediator::GetDownloadManagerState() const {
 
 bool DownloadManagerMediator::IsSaveToDriveAvailable() const {
   return drive::IsSaveToDriveAvailable(is_incognito_, identity_manager_,
-                                       drive_service_, pref_service_);
+                                       drive_service_, pref_service_,
+                                       auth_service_);
 }
 
 void DownloadManagerMediator::StartObservingNotifications() {
