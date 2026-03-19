@@ -100,6 +100,8 @@ ComposeboxModelOption ModelOptionForModelMode(omnibox::ModelMode model_mode) {
       return ComposeboxModelOption::kAuto;
     case omnibox::ModelMode::MODEL_MODE_GEMINI_PRO:
       return ComposeboxModelOption::kThinking;
+    case omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_NO_GEN_UI:
+      return ComposeboxModelOption::kThinkingNoGenUI;
     case omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR:
     default:
       return ComposeboxModelOption::kRegular;
@@ -651,6 +653,10 @@ CreateInputDataFromAnnotatedPageContent(
       case kThinking:
         _inputStateModel->setActiveModel(
             omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+        break;
+      case kThinkingNoGenUI:
+        _inputStateModel->setActiveModel(
+            omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_NO_GEN_UI);
         break;
       default:
         break;

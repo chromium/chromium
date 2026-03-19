@@ -61,6 +61,7 @@ enum class InputPlateString {
   kRegularModel,
   kAutoModel,
   kThinkingModel,
+  kThinkingModelNoGenUI,
   kToolsSection,
   kModelsSection,
 };
@@ -1778,6 +1779,27 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
       [thinkingModelOption setState:UIMenuElementStateOn];
     }
 
+    UIAction* thinkingModelNoGenUIOption = [UIAction
+        actionWithTitle:[self titleFor:InputPlateString::kThinkingModelNoGenUI
+                                  type:InputPlateStringType::kMenuLabel]
+                  image:DefaultSymbolWithPointSize(kClockSymbol,
+                                                   kSymbolActionPointSize)
+             identifier:nil
+                handler:^(UIAction* action) {
+                  [weakSelf handleModelChangeFromToolsMenuWithOption:
+                                ComposeboxModelOption::kThinkingNoGenUI];
+                }];
+
+    if (!_allowedModels.contains(ComposeboxModelOption::kThinkingNoGenUI)) {
+      thinkingModelNoGenUIOption.attributes |= UIMenuElementAttributesHidden;
+    }
+    if (_disabledModels.contains(ComposeboxModelOption::kThinkingNoGenUI)) {
+      thinkingModelNoGenUIOption.attributes |= UIMenuElementAttributesDisabled;
+    }
+    if (_modelOption == ComposeboxModelOption::kThinkingNoGenUI) {
+      [thinkingModelNoGenUIOption setState:UIMenuElementStateOn];
+    }
+
     NSString* modelPickerTitle =
         [self titleFor:InputPlateString::kModelsSection
                   type:InputPlateStringType::kMenuLabel];
@@ -1787,7 +1809,8 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
                    identifier:nil
                       options:UIMenuOptionsDisplayInline
                      children:@[
-                       regularModelOption, autoModelOption, thinkingModelOption
+                       regularModelOption, autoModelOption, thinkingModelOption,
+                       thinkingModelNoGenUIOption
                      ]];
 
     [sections addObject:modelPickerMenu];
@@ -2129,6 +2152,10 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
       serverBundle =
           [_serverStrings stringsForModel:ComposeboxModelOption::kThinking];
       break;
+    case kThinkingModelNoGenUI:
+      serverBundle = [_serverStrings
+          stringsForModel:ComposeboxModelOption::kThinkingNoGenUI];
+      break;
   }
 
   switch (type) {
@@ -2180,6 +2207,7 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
       return l10n_util::GetNSString(
           IDS_IOS_COMPOSEBOX_MODEL_SELECTOR_OPTION_AUTO);
     case kThinkingModel:
+    case kThinkingModelNoGenUI:
       return l10n_util::GetNSString(
           IDS_IOS_COMPOSEBOX_MODEL_SELECTOR_OPTION_THINKING);
   }
