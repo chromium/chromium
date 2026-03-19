@@ -5,18 +5,18 @@
 onload = function() {
   chrome.test.runTests([
     function registerListeners() {
-      var numEvents = 0;
+      let numEvents = 0;
       chrome.mdns.onServiceList.addListener(function(services) {
         if (numEvents++ == 1) {
           chrome.test.succeed();
         }
-      }, {'serviceType': '_googlecast._tcp.local'});
+      }, {serviceType: '_googlecast._tcp.local'});
 
       chrome.mdns.onServiceList.addListener(function(services) {
         if (numEvents++ == 1) {
           chrome.test.succeed();
         }
-      }, {'serviceType': '_testing._tcp.local'});
+      }, {serviceType: '_testing._tcp.local'});
       chrome.test.notifyPass();
     }
   ]);

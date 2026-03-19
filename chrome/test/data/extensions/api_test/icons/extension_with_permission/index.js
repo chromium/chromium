@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var TEST_CASES = [
+const TEST_CASES = [
   // Tests loading a standard 128px icon.
   {
     url: 'chrome://extension-icon/gbmgkahjioeacddebbnengilkgbkhodg/128/0',
@@ -29,16 +29,16 @@ var TEST_CASES = [
   }
 ];
 
-var loadedImageCount = 0;
+let loadedImageCount = 0;
 
 TEST_CASES.forEach(function(testCase) {
-  var img = document.createElement('img');
+  const img = document.createElement('img');
   img.onload = function() {
     if (img.naturalWidth != testCase.expectedSize ||
         img.naturalHeight != testCase.expectedSize) {
-      document.title = 'Incorrect size on ' + testCase.url +
-          ' Expected: ' + testCase.expectedSize + 'x' + testCase.expectedSize +
-          ' Actual: ' + img.naturalWidth + 'x' + img.naturalHeight;
+      document.title = `Incorrect size on ${testCase.url} ` +
+          `Expected: ${testCase.expectedSize}x${testCase.expectedSize} ` +
+          `Actual: ${img.naturalWidth}x${img.naturalHeight}`;
       return;
     }
 
@@ -48,7 +48,7 @@ TEST_CASES.forEach(function(testCase) {
   };
   img.onerror = function() {
     // We failed to load an image that should have loaded.
-    document.title = 'Couldn\'t load ' + testCase.url;
+    document.title = `Couldn't load ${testCase.url}`;
   };
   img.src = testCase.url;
   document.body.appendChild(img);

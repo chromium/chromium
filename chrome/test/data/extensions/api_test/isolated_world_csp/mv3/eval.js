@@ -4,10 +4,10 @@
 
 chrome.test.runTests([function testEval() {
   window.foo = 2;
-  var exceptedExceptionMessage = 'Evaluating a string as JavaScript ' +
+  const expectedExceptionMessage = 'Evaluating a string as JavaScript ' +
       'violates the following Content Security Policy directive';
   chrome.test.assertThrows(
-      eval, ['window.foo = 3;'], new RegExp(exceptedExceptionMessage));
+      eval, ['window.foo = 3;'], new RegExp(expectedExceptionMessage));
   chrome.test.assertEq(2, window.foo);
   chrome.test.succeed();
 }]);

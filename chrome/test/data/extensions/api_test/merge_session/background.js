@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var googleResponseReceived = false;
-var googleRequestSent = false;
-var nonGoogleResponseReceived = false;
-var nonGoogleRequestSent = false;
+let googleResponseReceived = false;
+let googleRequestSent = false;
+let nonGoogleResponseReceived = false;
+let nonGoogleRequestSent = false;
 
 function initGlobals() {
   googleResponseReceived = false;
@@ -17,11 +17,11 @@ function initGlobals() {
 // Starts XHR requests - one for google.com and one later for non-google.
 function startXHRRequests(
     googlePageUrl, googlePageCheckCallback, nonGooglePageUrl,
-    nonGooglePageCheckCallback, is_async) {
+    nonGooglePageCheckCallback, isAsync) {
   // Kick off google XHR first.
-  var xhr = new XMLHttpRequest();
+  const xhr = new XMLHttpRequest();
 
-  var validateResponse = function() {
+  const validateResponse = function() {
     if (xhr.status == 200 &&
         xhr.responseText.indexOf('Hello Google') != -1) {
       chrome.test.sendMessage('google-xhr-received');
@@ -31,32 +31,32 @@ function startXHRRequests(
   };
 
   xhr.onreadystatechange = function() {
-    console.warn("xhr.onreadystatechange: " + xhr.readyState);
+    console.warn(`xhr.onreadystatechange: ${xhr.readyState}`);
     switch (xhr.readyState) {
       case XMLHttpRequest.OPENED:
         startNonGoogleXHRRequests(
-            nonGooglePageUrl, nonGooglePageCheckCallback, is_async);
+            nonGooglePageUrl, nonGooglePageCheckCallback, isAsync);
         break;
       case XMLHttpRequest.DONE:
         validateResponse();
         break;
     }
   };
-  chrome.test.sendMessage("opening " + googlePageUrl);
-  xhr.open('GET', googlePageUrl, is_async);
+  chrome.test.sendMessage(`opening ${googlePageUrl}`);
+  xhr.open('GET', googlePageUrl, isAsync);
   xhr.send();
   googleRequestSent = true;
-  if (!is_async) {
+  if (!isAsync) {
     validateResponse();
   }
 }
 
 function startNonGoogleXHRRequests(
-    nonGooglePageUrl, nonGooglePageCheckCallback, is_async) {
+    nonGooglePageUrl, nonGooglePageCheckCallback, isAsync) {
   // Kick off non-google XHR next.
-  var xhr = new XMLHttpRequest();
+  const xhr = new XMLHttpRequest();
 
-  var validateResponse = function() {
+  const validateResponse = function() {
     if (xhr.status == 200 &&
         xhr.responseText.indexOf('SomethingElse') != -1) {
       chrome.test.sendMessage('non-google-xhr-received');
@@ -66,8 +66,8 @@ function startNonGoogleXHRRequests(
   };
 
   xhr.onreadystatechange = function() {
-    console.warn("xhr.onreadystatechange: " + xhr.readyState);
-    chrome.test.sendMessage("xhr.onreadystatechange: " + xhr.readyState);
+    console.warn(`xhr.onreadystatechange: ${xhr.readyState}`);
+    chrome.test.sendMessage(`xhr.onreadystatechange: ${xhr.readyState}`);
     switch (xhr.readyState) {
       case XMLHttpRequest.OPENED:
         chrome.test.sendMessage("Both XHR's Opened");
@@ -77,10 +77,10 @@ function startNonGoogleXHRRequests(
         break;
     }
   };
-  xhr.open('GET', nonGooglePageUrl, is_async);
+  xhr.open('GET', nonGooglePageUrl, isAsync);
   xhr.send();
   nonGoogleRequestSent = true;
-  if (!is_async) {
+  if (!isAsync) {
     validateResponse();
   }
 }
@@ -102,12 +102,12 @@ function nonGooglePageCheck() {
 }
 
 // Performs test that will verify if XHR request had completed prematurely.
-function startThrottledTests(googlePageUrl, nonGooglePageUrl, is_async) {
+function startThrottledTests(googlePageUrl, nonGooglePageUrl, isAsync) {
   chrome.test.runTests([function testXHRThrottle() {
     initGlobals();
     startXHRRequests(
         googlePageUrl, googlePageCheck, nonGooglePageUrl, nonGooglePageCheck,
-        is_async);
+        isAsync);
   }]);
   return true;
 }

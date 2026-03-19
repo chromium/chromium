@@ -5,16 +5,16 @@
 
 // storage_unit_id is skipped because it is generated to point at a temporary
 // file.
-var expectedDevices = [{
-  'vendor': 'Vendor 1',
-  'model': 'Model 1',
-  'capacity': 1 << 15,
-  'removable': true,
+const expectedDevices = [{
+  vendor: 'Vendor 1',
+  model: 'Model 1',
+  capacity: 1 << 15,
+  removable: true,
   }, {
-  'vendor': 'Vendor 2',
-  'model': 'Model 2',
-  'capacity': 1 << 17,
-  'removable': false,
+  vendor: 'Vendor 2',
+  model: 'Model 2',
+  capacity: 1 << 17,
+  removable: false,
   }];
 
 
@@ -33,7 +33,7 @@ function listRemovableDevicesCallback(deviceList) {
   chrome.test.assertEq(2, deviceList.length);
 
   deviceList.forEach(function (dev, i) {
-    var expected = expectedDevices[i];
+    const expected = expectedDevices[i];
     chrome.test.assertEq(expected.vendor, dev.vendor);
     chrome.test.assertEq(expected.model, dev.model);
     chrome.test.assertEq(expected.capacity, dev.capacity);

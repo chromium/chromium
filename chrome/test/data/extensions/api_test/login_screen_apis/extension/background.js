@@ -177,7 +177,7 @@ const tests = {
 function waitForTestName(testName) {
   if (!tests.hasOwnProperty(testName) ||
       typeof tests[testName] !== 'function') {
-    chrome.test.fail('Test not found: ' + testName);
+    chrome.test.fail(`Test not found: ${testName}`);
     return;
   }
 

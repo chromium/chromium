@@ -4,25 +4,25 @@
 
 chrome.test.runTests([function registerListeners() {
   // Add the maximum number of listeners.
-  var listeners = [];
-  var MAX_LISTENERS = 10;
-  for (var i = 0; i < MAX_LISTENERS; i++) {
+  const listeners = [];
+  const MAX_LISTENERS = 10;
+  for (let i = 0; i < MAX_LISTENERS; i++) {
     listeners.push({
-      'callback': function() {},
-      'filter': {'serviceType': '_' + i + '._tcp.local'}
+      callback: function() {},
+      filter: {serviceType: `_${i}._tcp.local`}
     });
   }
   listeners.forEach(function(x) {
     chrome.mdns.onServiceList.addListener(x.callback, x.filter);
   });
 
-  var removeAllListeners = function() {};
+  const removeAllListeners = function() {};
 
   // Now try adding one more.  This should exceed the limit.
-  var failedToAddLast = false;
+  let failedToAddLast = false;
   try {
     chrome.mdns.onServiceList.addListener(function() {}, {
-      'serviceType': '_one_too_many._tcp.local'
+      serviceType: '_one_too_many._tcp.local'
     });
   } catch (e) {
     chrome.test.assertTrue(

@@ -8,11 +8,11 @@ function assertNotNullOrUndefined(value, message) {
 }
 
 function testWriteFromFile() {
-  var fileEntry;
-  var storageDevice;
-  var currentStage = "none";
-  var currentProgress = -1;
-  var started = true;
+  let fileEntry;
+  let storageDevice;
+  let currentStage = 'none';
+  let currentProgress = -1;
+  let started = true;
 
   function chooseEntryCallback(entry) {
     fileEntry = entry;
@@ -29,9 +29,9 @@ function testWriteFromFile() {
   }
 
   function startWrite() {
-    assertNotNullOrUndefined(fileEntry, "FileEntry should be defined.");
+    assertNotNullOrUndefined(fileEntry, 'FileEntry should be defined.');
     assertNotNullOrUndefined(
-        storageDevice.storageUnitId, "Storage Unit should be defined.");
+        storageDevice.storageUnitId, 'Storage Unit should be defined.');
 
     chrome.imageWriterPrivate.writeFromFile(
         storageDevice.storageUnitId,
@@ -49,13 +49,13 @@ function testWriteFromFile() {
   }
 
   function writeCompleteCallback() {
-    chrome.test.assertTrue(started, "Complete triggered before being started.");
+    chrome.test.assertTrue(started, 'Complete triggered before being started.');
     chrome.test.assertEq(100, currentProgress);
-    chrome.test.succeed("Write completed successfully.");
+    chrome.test.succeed('Write completed successfully.');
   }
 
   function writeErrorCallback(message) {
-    chrome.test.fail("An error occurred during writing.");
+    chrome.test.fail('An error occurred during writing.');
   }
 
   chrome.imageWriterPrivate.onWriteProgress.

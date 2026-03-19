@@ -5,7 +5,7 @@
 onload = function() {
   chrome.test.runTests([
     function registerListener() {
-      var numEvents = 0;
+      let numEvents = 0;
       chrome.mdns.onServiceList.addListener(function(services) {
         if (services[0].serviceName != '_googlecast._tcp.local') {
           chrome.test.fail();
@@ -15,7 +15,7 @@ onload = function() {
         } else {
           numEvents++;
         }
-      }, {'serviceType': '_googlecast._tcp.local'});
+      }, {serviceType: '_googlecast._tcp.local'});
       chrome.test.notifyPass();
     }
   ]);
