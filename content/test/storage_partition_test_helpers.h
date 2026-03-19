@@ -6,7 +6,7 @@
 #define CONTENT_TEST_STORAGE_PARTITION_TEST_HELPERS_H_
 
 #include "base/functional/callback.h"
-#include "content/test/test_content_browser_client.h"
+#include "content/public/test/test_content_browser_client.h"
 
 namespace content {
 class StoragePartition;

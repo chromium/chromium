@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <stdint.h>
+
 #include <memory>
 #include <string>
 #include <utility>
@@ -32,9 +33,9 @@
 #include "content/public/browser/media_device_id.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
+#include "content/public/test/test_content_browser_client.h"
 #include "content/test/fuzzer/mojolpm_fuzzer_support.h"
 #include "content/test/fuzzer/video_capture_host_mojolpm_fuzzer.pb.h"
-#include "content/test/test_content_browser_client.h"
 #include "media/audio/audio_system_impl.h"
 #include "media/audio/mock_audio_manager.h"
 #include "media/audio/test_audio_thread.h"

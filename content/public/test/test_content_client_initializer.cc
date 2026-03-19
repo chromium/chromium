@@ -9,9 +9,9 @@
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/mock_render_process_host.h"
+#include "content/public/test/test_content_browser_client.h"
+#include "content/public/test/test_content_client.h"
 #include "content/test/mock_agent_scheduling_group_host.h"
-#include "content/test/test_content_browser_client.h"
-#include "content/test/test_content_client.h"
 #include "content/test/test_render_view_host_factory.h"
 #include "services/network/test/test_network_connection_tracker.h"
 

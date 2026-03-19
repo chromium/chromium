@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/test/test_content_browser_client.h"
+#include "content/public/test/test_content_browser_client.h"
 
 #include "base/check.h"
 #include "base/files/file_path.h"
@@ -23,8 +23,9 @@ TestContentBrowserClient::TestContentBrowserClient() {
 }
 
 TestContentBrowserClient::~TestContentBrowserClient() {
-  if (instance_ == this)
+  if (instance_ == this) {
     instance_ = nullptr;
+  }
 }
 
 // static

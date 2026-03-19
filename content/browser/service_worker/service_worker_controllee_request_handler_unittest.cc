@@ -26,7 +26,7 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
-#include "content/test/test_content_browser_client.h"
+#include "content/public/test/test_content_browser_client.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request_context.h"

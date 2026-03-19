@@ -17,7 +17,7 @@
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/browser_task_environment.h"
-#include "content/test/test_content_browser_client.h"
+#include "content/public/test/test_content_browser_client.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/http/http_cache.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"

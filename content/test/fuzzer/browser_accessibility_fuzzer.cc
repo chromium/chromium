@@ -16,8 +16,8 @@
 #endif
 #include "content/public/common/content_client.h"
 #include "content/public/test/browser_task_environment.h"
-#include "content/test/test_content_browser_client.h"
-#include "content/test/test_content_client.h"
+#include "content/public/test/test_content_browser_client.h"
+#include "content/public/test/test_content_client.h"
 #include "ui/accessibility/platform/browser_accessibility_manager.h"
 #include "ui/accessibility/platform/one_shot_accessibility_tree_search.h"
 #include "ui/accessibility/platform/test_ax_node_id_delegate.h"

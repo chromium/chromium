@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/browser/cookie_store/cookie_store_manager.h"
+
 #include <memory>
 
 #include "base/files/scoped_temp_dir.h"
@@ -11,7 +13,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
-#include "content/browser/cookie_store/cookie_store_manager.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "content/browser/service_worker/fake_embedded_worker_instance_client.h"
 #include "content/browser/service_worker/fake_service_worker.h"
@@ -21,9 +22,9 @@
 #include "content/public/common/content_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
+#include "content/public/test/test_content_browser_client.h"
 #include "content/public/test/test_utils.h"
 #include "content/test/storage_partition_test_helpers.h"
-#include "content/test/test_content_browser_client.h"
 #include "mojo/public/cpp/test_support/fake_message_dispatch_context.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/base/features.h"

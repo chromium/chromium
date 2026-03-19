@@ -13,7 +13,7 @@
 #include "content/browser/accessibility/web_contents_accessibility_android.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
-#include "content/test/test_content_client.h"
+#include "content/public/test/test_content_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"

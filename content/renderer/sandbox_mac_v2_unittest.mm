@@ -23,7 +23,7 @@
 #include "base/system/sys_info.h"
 #include "base/test/multiprocess_test.h"
 #include "base/test/test_timeouts.h"
-#include "content/test/test_content_client.h"
+#include "content/public/test/test_content_client.h"
 #include "sandbox/mac/sandbox_serializer.h"
 #include "sandbox/mac/seatbelt_exec.h"
 #include "sandbox/policy/mac/common.sb.h"

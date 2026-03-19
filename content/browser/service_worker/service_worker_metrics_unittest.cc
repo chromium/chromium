@@ -5,7 +5,7 @@
 #include "content/browser/service_worker/service_worker_metrics.h"
 
 #include "base/test/metrics/histogram_tester.h"
-#include "content/test/test_content_browser_client.h"
+#include "content/public/test/test_content_browser_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {

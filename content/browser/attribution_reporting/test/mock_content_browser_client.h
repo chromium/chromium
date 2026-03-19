@@ -6,7 +6,7 @@
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_TEST_MOCK_CONTENT_BROWSER_CLIENT_H_
 
 #include "content/public/browser/content_browser_client.h"
-#include "content/test/test_content_browser_client.h"
+#include "content/public/test/test_content_browser_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace url {

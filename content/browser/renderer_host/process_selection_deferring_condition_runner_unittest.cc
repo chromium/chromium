@@ -11,9 +11,9 @@
 #include "content/public/browser/process_selection_deferring_condition.h"
 #include "content/public/browser/process_selection_user_data.h"
 #include "content/public/test/navigation_simulator.h"
+#include "content/public/test/test_content_browser_client.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/test/mock_process_selection_deferring_condition_tester.h"
-#include "content/test/test_content_browser_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace content {

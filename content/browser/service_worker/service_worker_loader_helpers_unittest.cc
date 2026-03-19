@@ -7,9 +7,9 @@
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/browser_task_environment.h"
-#include "content/test/test_render_view_host.h"
 #include "content/public/test/test_browser_context.h"
-#include "content/test/test_content_browser_client.h"
+#include "content/public/test/test_content_browser_client.h"
+#include "content/test/test_render_view_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {

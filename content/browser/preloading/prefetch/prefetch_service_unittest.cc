@@ -54,7 +54,7 @@
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/preloading_test_util.h"
 #include "content/public/test/test_browser_context.h"
-#include "content/test/test_content_browser_client.h"
+#include "content/public/test/test_content_browser_client.h"
 #include "net/base/load_flags.h"
 #include "net/base/load_timing_internal_info.h"
 #include "net/base/proxy_chain.h"
