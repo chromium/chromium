@@ -14,12 +14,11 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_callback_support.h"
 #include "chrome/browser/webapps/webapps_client_desktop.h"
-#include "components/password_manager/content/common/web_ui_constants.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
 #include "components/webapps/browser/installable/installable_data.h"
+#include "components/webapps/browser/web_app_url_config.h"
 #include "components/webapps/browser/webapps_client.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/url_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 
@@ -121,11 +120,10 @@ void TestAppBannerManagerDesktop::DidFinishLoad(
     content::RenderFrameHost* render_frame_host,
     const GURL& validated_url) {
   debug_log_.Append(base::StrCat({"DidFinishLoad ", validated_url.spec()}));
-  // This mirrors AppBannerManager::UrlType::kInvalidPrimaryFrameUrl in
-  // AppBannerManager::GetUrlType()
-  if (content::HasWebUIScheme(validated_url) &&
-      (validated_url.GetHost() !=
-       password_manager::kChromeUIPasswordManagerHost)) {
+  // If the URL is not eligible for web apps, AppBannerManager::DidFinishLoad
+  // will return early without starting the installable check pipeline. In that
+  // case, we need to unblock WaitForInstallableCheck() ourselves.
+  if (!IsUrlEligibleForWebApp(validated_url)) {
     RunInstallableQuitClosureIfNeeded();
     return;
   }

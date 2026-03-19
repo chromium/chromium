@@ -24,7 +24,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
-#include "components/password_manager/content/common/web_ui_constants.h"
 #include "components/webapps/browser/banners/app_banner_metrics.h"
 #include "components/webapps/browser/banners/app_banner_settings_helper.h"
 #include "components/webapps/browser/banners/install_banner_config.h"
@@ -35,12 +34,12 @@
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_manager.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/browser/web_app_url_config.h"
 #include "components/webapps/browser/webapps_client.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/url_utils.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/net_errors.h"
@@ -312,14 +311,7 @@ AppBannerManager::UrlType AppBannerManager::GetUrlType(
   if (render_frame_host && !render_frame_host->IsInPrimaryMainFrame())
     return UrlType::kNotPrimaryFrame;
 
-  if (url.IsAboutBlank()) {
-    return UrlType::kInvalidPrimaryFrameUrl;
-  }
-
-  // There is never a need to trigger a banner for a WebUI page, except
-  // for PasswordManager WebUI.
-  if (content::HasWebUIScheme(url) &&
-      (url.GetHost() != password_manager::kChromeUIPasswordManagerHost)) {
+  if (!IsUrlEligibleForWebApp(url)) {
     return UrlType::kInvalidPrimaryFrameUrl;
   }
 

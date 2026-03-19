@@ -44,6 +44,7 @@
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/installable/ml_install_operation_tracker.h"
 #include "components/webapps/browser/installable/ml_installability_promoter.h"
+#include "components/webapps/browser/web_app_url_config.h"
 #include "content/public/browser/navigation_entry.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -165,7 +166,7 @@ bool CanCreateWebApp(const Browser* browser) {
   // Check whether we're able to install the current page as an app.
   content::WebContents* web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
-  if (!IsValidWebAppUrl(web_contents->GetLastCommittedURL()) ||
+  if (!webapps::IsUrlEligibleForWebApp(web_contents->GetLastCommittedURL()) ||
       web_contents->IsCrashed()) {
     return false;
   }

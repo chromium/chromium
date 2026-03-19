@@ -8,7 +8,6 @@
 #include <optional>
 #include <string>
 
-#include "base/functional/callback_helpers.h"
 #include "components/webapps/common/web_app_id.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "url/gurl.h"
@@ -81,14 +80,6 @@ webapps::ManifestId GenerateManifestId(const std::string& manifest_id_path,
 webapps::ManifestId GenerateManifestIdUnsafe(
     const std::string& manifest_id_path,
     const GURL& start_url);
-
-// Returns whether the given |app_url| is a valid web app url.
-bool IsValidWebAppUrl(const GURL& app_url);
-
-// Adds chrome://`host` as an origin that IsValidWebAppUrl will consider valid.
-// The returned ScopedClosureRunner undoes this registration.
-base::ScopedClosureRunner AddValidWebAppChromeUrlHostForTesting(
-    const std::string& host);
 
 // Searches for the first locally installed app id in the registry for which
 // the |url| is in scope. If |window_only| is specified, only apps that

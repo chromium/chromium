@@ -597,7 +597,6 @@ source_set("web_applications") {
     "//components/keep_alive_registry",
     "//components/keyed_service/content",
     "//components/page_load_metrics/browser",
-    "//components/password_manager/content/common",
     "//components/performance_manager",
     "//components/permissions",
     "//components/policy/core/browser",
