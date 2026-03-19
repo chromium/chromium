@@ -8084,13 +8084,6 @@ inline constexpr char kLocalNetworkAccessChecksWebTransportDescription[] =
     "#local-network-access-check flag to also be enabled "
     "See: https://chromestatus.com/feature/5126430912544768";
 
-inline constexpr char kLocalNetworkAccessChecksSplitPermissionsName[] =
-    "Local Network Access Checks with Split Permissions";
-inline constexpr char kLocalNetworkAccessChecksSplitPermissionsDescription[] =
-    "Splits the local-network-acccess permission into 2 different permissions. "
-    "Requires the "
-    "#local-network-access-check flag to also be enabled.";
-
 inline constexpr char kGeminiAntiscamProtectionsMetricsOnlyName[] =
     "Gemini Antiscam Protection";
 inline constexpr char kGeminiAntiscamProtectionsMetricsOnlyDescription[] =

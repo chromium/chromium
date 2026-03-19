@@ -6411,16 +6411,7 @@
       "hchao@chromium.org",
       "chrome-secure-web-and-net@chromium.org"
     ],
-    "expiry_milestone": 148
-  },
-  {
-    "name": "local-network-access-check-split-permissions",
-    "owners": [
-      "cthomp@chromium.org",
-      "hchao@chromium.org",
-      "chrome-secure-web-and-net@chromium.org"
-    ],
-    "expiry_milestone": 148
+    "expiry_milestone": 152
   },
   {
     "name": "local-network-access-check-webrtc",
@@ -6429,7 +6420,7 @@
       "ortuno@chromium.org",
       "chrome-secure-web-and-net@chromium.org"
     ],
-    "expiry_milestone": 150
+    "expiry_milestone": 152
   },
   {
     "name": "local-network-access-check-websockets",
@@ -6438,7 +6429,7 @@
       "hchao@chromium.org",
       "chrome-secure-web-and-net@chromium.org"
     ],
-    "expiry_milestone": 148
+    "expiry_milestone": 152
   },
   {
     "name": "local-network-access-check-webtransport",
@@ -6447,7 +6438,7 @@
       "hchao@chromium.org",
       "chrome-secure-web-and-net@chromium.org"
     ],
-    "expiry_milestone": 148
+    "expiry_milestone": 152
   },
   {
     "name": "location-bar-badge-migration",

@@ -11363,12 +11363,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAll,
      FEATURE_VALUE_TYPE(
          network::features::kLocalNetworkAccessChecksWebTransport)},
-    {"local-network-access-check-split-permissions",
-     flag_descriptions::kLocalNetworkAccessChecksSplitPermissionsName,
-     flag_descriptions::kLocalNetworkAccessChecksSplitPermissionsDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         network::features::kLocalNetworkAccessChecksSplitPermissions)},
 
 #if !BUILDFLAG(IS_ANDROID)
     {"tab-capture-infobar-links",
