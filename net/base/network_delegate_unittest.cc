@@ -27,7 +27,7 @@ CanonicalCookie MakeCookie(const std::string& name) {
       /*expiration=*/base::Time(), /*last_access=*/base::Time(),
       /*last_update=*/base::Time(),
       /*secure=*/true, /*httponly=*/false, CookieSameSite::UNSPECIFIED,
-      CookiePriority::COOKIE_PRIORITY_DEFAULT);
+      CookiePriority::COOKIE_PRIORITY_DEFAULT, CookieSourceType::kOther);
 }
 
 CookieAccessResult Include() {

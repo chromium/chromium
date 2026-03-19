@@ -69,6 +69,7 @@ CanonicalCookie CreateCanonicalCookie(
     base::Time creation_time = kCreationTime) {
   std::unique_ptr<CanonicalCookie> canonical_cookie =
       CanonicalCookie::CreateForTesting(url, cookie_line, creation_time,
+                                        CookieSourceType::kOther,
                                         /*server_time=*/std::nullopt);
   EXPECT_TRUE(canonical_cookie);
   EXPECT_TRUE(canonical_cookie->IsCanonical());
