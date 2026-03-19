@@ -92,7 +92,12 @@ dav1d_copts = [
 
 if (is_win) {
   if (!is_clang) {
-    dav1d_copts += [ "/wd4028" ]
+    dav1d_copts += [
+      "/wd4028",  # parameter different from declaration
+      "/wd4090",  # broken with arrays of pointers
+      "/wd4996",  # use of POSIX functions
+      "/wd5287",  # operands are different enum types
+    ]
   }
 } else {
   dav1d_copts += [ "-std=c99" ]
