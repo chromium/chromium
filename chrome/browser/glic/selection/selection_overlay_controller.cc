@@ -298,7 +298,9 @@ bool SelectionOverlayController::UseOverlayBlur() {
   return true;
 }
 
-void SelectionOverlayController::NotifyPageNavigated() {}
+void SelectionOverlayController::NotifyPageNavigated() {
+  CloseUI();
+}
 
 void SelectionOverlayController::NotifyTabForegrounded() {}
 

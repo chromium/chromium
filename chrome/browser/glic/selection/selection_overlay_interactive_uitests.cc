@@ -46,4 +46,25 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest, SmokeTest) {
                                                     "glic-selection-overlay"}));
 }
 
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
+                       OverlayDismissedOnNavigation) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
+
+  RunTestSequence(
+      InstrumentTab(kActiveTab), OpenGlic(),
+      ClickMockGlicElement({"#captureRegionBtn"}),
+      WaitForShow(OverlayBaseController::kOverlayId),
+      InstrumentNonTabWebView(kOverlayWebContentsId,
+                              OverlayBaseController::kOverlayId),
+      WaitForJsResultAt(kOverlayWebContentsId, {"selection-overlay-app"},
+                        "el => el.screenshot_ !== null"),
+      // glic-selection-overlay is expected to be displayed.
+      WaitForElementVisible(kOverlayWebContentsId, {"selection-overlay-app",
+                                                    "glic-selection-overlay"}),
+      NavigateWebContents(kActiveTab,
+                          embedded_test_server()->GetURL("/empty.html")),
+      WaitForHide(OverlayBaseController::kOverlayId));
+}
+
 }  // namespace glic
