@@ -37,6 +37,7 @@ namespace indigo {
 namespace {
 const char kForceIndigoSwitch[] = "force-indigo";
 const char kForceIndigoOnboardingSwitch[] = "force-indigo-onboarding";
+const char kForceIndigoToolbarSwitch[] = "force-indigo-toolbar";
 }  // namespace
 
 DEFINE_USER_DATA(IndigoPageActionController);
@@ -67,7 +68,15 @@ IndigoPageActionController::IndigoPageActionController(
   UpdateEntryPointsState();
 }
 
-IndigoPageActionController::~IndigoPageActionController() = default;
+IndigoPageActionController::~IndigoPageActionController() {
+  // If there is a toolbar, hide it before anything else. This makes sure that
+  // the OnClose delegate function isn't called after some members have been
+  // destroyed.
+  if (toolbar_) {
+    toolbar_->Hide();
+    toolbar_.reset();
+  }
+}
 
 // static
 IndigoPageActionController* IndigoPageActionController::From(
@@ -103,6 +112,17 @@ void IndigoPageActionController::InvokeAction() {
 
   if (IndigoAgentHost::GetOrCreateForPage(web_contents->GetPrimaryPage())
           ->Invoke()) {
+    return;
+  }
+
+  // The toolbar isn't quite ready yet (nor is it integrated with anything else)
+  // but it's useful to force it to show for manual testing.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          kForceIndigoToolbarSwitch)) {
+    if (!toolbar_) {
+      toolbar_ = std::make_unique<IndigoToolbar>(this);
+    }
+    toolbar_->Show(web_contents->GetNativeView());
     return;
   }
 
@@ -150,6 +170,11 @@ void IndigoPageActionController::DidFinishNavigation(
     return;
   }
 
+  if (toolbar_) {
+    toolbar_->Hide();
+    toolbar_.reset();
+  }
+
   optimization_guide_decision_ =
       optimization_guide::OptimizationGuideDecision::kUnknown;
   UpdateEntryPointsState();
@@ -171,6 +196,23 @@ void IndigoPageActionController::OnPrimaryAccountChanged(
 void IndigoPageActionController::OnExtendedAccountInfoUpdated(
     const AccountInfo& info) {
   UpdateEntryPointsState();
+}
+
+void IndigoPageActionController::OnClose(IndigoToolbar* toolbar) {
+  NOTIMPLEMENTED();
+}
+
+void IndigoPageActionController::OnRegenerate(IndigoToolbar* toolbar) {
+  NOTIMPLEMENTED();
+}
+
+void IndigoPageActionController::OnReplaceOriginalPhoto(
+    IndigoToolbar* toolbar) {
+  NOTIMPLEMENTED();
+}
+
+void IndigoPageActionController::OnDeleteOriginalPhoto(IndigoToolbar* toolbar) {
+  NOTIMPLEMENTED();
 }
 
 void IndigoPageActionController::UpdateEntryPointsState() {

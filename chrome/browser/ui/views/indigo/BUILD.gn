@@ -1,0 +1,52 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ui.gni")
+
+assert(toolkit_views)
+
+source_set("indigo") {
+  sources = [ "indigo_toolbar.h" ]
+
+  public_deps = [
+    "//base",
+    "//ui/base",
+    "//ui/gfx",
+    "//ui/views",
+  ]
+}
+
+source_set("impl") {
+  sources = [ "indigo_toolbar.cc" ]
+
+  deps = [
+    ":indigo",
+    "//base",
+    "//chrome/app:generated_resources",
+    "//chrome/app/vector_icons",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/color:color_headers",
+    "//components/strings:components_strings",
+    "//components/vector_icons",
+    "//ui/base",
+    "//ui/base/metadata",
+    "//ui/color:color_headers",
+    "//ui/gfx",
+    "//ui/views",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "indigo_toolbar_unittest.cc" ]
+  deps = [
+    ":impl",
+    ":indigo",
+    "//chrome/browser/ui",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/views",
+    "//ui/views:test_support",
+  ]
+}

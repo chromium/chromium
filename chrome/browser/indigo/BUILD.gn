@@ -15,6 +15,7 @@ source_set("indigo") {
   public_deps = [
     "//base",
     "//chrome/browser/ui/tabs",
+    "//chrome/browser/ui/views/indigo",
     "//chrome/common:mojo_bindings",
     "//components/optimization_guide/core",
     "//components/signin/public/identity_manager",
@@ -40,7 +41,9 @@ source_set("impl") {
     "//chrome/browser/optimization_guide",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/signin",
+    "//chrome/browser/ui",
     "//chrome/browser/ui/actions:actions_headers",
+    "//chrome/browser/ui/views/indigo:impl",
     "//chrome/browser/ui/views/page_action",
     "//chrome/common:chrome_features",
     "//chrome/common:mojo_bindings",
