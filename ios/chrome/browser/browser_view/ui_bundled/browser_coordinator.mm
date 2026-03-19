@@ -60,6 +60,8 @@
 #import "ios/chrome/browser/autocomplete/model/autocomplete_browser_agent.h"
 #import "ios/chrome/browser/autofill/authentication/coordinator/card_unmask_authentication_coordinator.h"
 #import "ios/chrome/browser/autofill/autofill_ai/coordinator/autofill_ai_save_entity_coordinator.h"
+#import "ios/chrome/browser/autofill/autofill_ai/error_dialog/coordinator/autofill_ai_error_dialog_coordinator.h"
+#import "ios/chrome/browser/autofill/autofill_ai/error_dialog/model/autofill_ai_error_dialog_context.h"
 #import "ios/chrome/browser/autofill/autofill_ai/public/save_entity_params.h"
 #import "ios/chrome/browser/autofill/form_input_accessory/coordinator/form_input_accessory_coordinator.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
@@ -576,6 +578,10 @@ const char kChromeAppStoreUrl[] =
 // Coordinator to show the Autofill error dialog.
 @property(nonatomic, strong)
     AutofillErrorDialogCoordinator* autofillErrorDialogCoordinator;
+
+// Coordinator for Autofill AI error dialog.
+@property(nonatomic, strong)
+    AutofillAiErrorDialogCoordinator* autofillAiErrorDialogCoordinator;
 
 // Coordinator in charge of the presenting autofill options above the
 // keyboard.
@@ -2313,6 +2319,27 @@ const char kChromeAppStoreUrl[] =
 - (void)dismissAutofillErrorDialog {
   [self.autofillErrorDialogCoordinator stop];
   self.autofillErrorDialogCoordinator = nil;
+}
+
+- (void)showAutofillAiErrorDialog:
+    (autofill::AutofillAiErrorDialogContext)errorContext {
+  if (self.autofillAiErrorDialogCoordinator) {
+    [self.autofillAiErrorDialogCoordinator stop];
+  }
+
+  self.autofillAiErrorDialogCoordinator =
+      [[AutofillAiErrorDialogCoordinator alloc]
+          initWithBaseViewController:self.viewController
+                             browser:self.browser
+                        errorContext:std::move(errorContext)];
+  self.autofillAiErrorDialogCoordinator.autofillCommandsHandler =
+      HandlerForProtocol(self.dispatcher, AutofillCommands);
+  [self.autofillAiErrorDialogCoordinator start];
+}
+
+- (void)dismissAutofillAiErrorDialog {
+  [self.autofillAiErrorDialogCoordinator stop];
+  self.autofillAiErrorDialogCoordinator = nil;
 }
 
 - (void)showAutofillProgressDialog {

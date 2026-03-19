@@ -51,6 +51,7 @@
 #import "components/sync/service/sync_service.h"
 #import "components/translate/core/browser/translate_manager.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
+#import "ios/chrome/browser/autofill/autofill_ai/error_dialog/model/autofill_ai_error_dialog_context.h"
 #import "ios/chrome/browser/autofill/autofill_ai/public/save_entity_params.h"
 #import "ios/chrome/browser/autofill/model/address_normalizer_factory.h"
 #import "ios/chrome/browser/autofill/model/autocomplete_history_manager_factory.h"
@@ -634,6 +635,27 @@ void ChromeAutofillClientIOS::CloseEntityImportBubble() {
   if (existing_infobar != infobar_manager_->infobars().cend()) {
     infobar_manager_->RemoveInfoBar(*existing_infobar);
   }
+}
+
+void ChromeAutofillClientIOS::ShowAutofillAiLocalSaveNotification() {
+  autofill::AutofillAiErrorDialogContext errorContext;
+  errorContext.type = autofill::AutofillAiErrorDialogType::kTypeLocalSave;
+  [commands_handler_ showAutofillAiErrorDialog:errorContext];
+}
+
+void ChromeAutofillClientIOS::ShowAutofillAiSaveToWalletFailureNotification() {
+  autofill::AutofillAiErrorDialogContext errorContext;
+  errorContext.type =
+      autofill::AutofillAiErrorDialogType::kTypeSaveToWalletFailure;
+  [commands_handler_ showAutofillAiErrorDialog:errorContext];
+}
+
+void ChromeAutofillClientIOS::
+    ShowAutofillAiFetchFromWalletFailureNotification() {
+  autofill::AutofillAiErrorDialogContext errorContext;
+  errorContext.type =
+      autofill::AutofillAiErrorDialogType::kTypeFetchFromWalletFailure;
+  [commands_handler_ showAutofillAiErrorDialog:errorContext];
 }
 
 AutofillAiSaveEntityInfoBarDelegateIOS*

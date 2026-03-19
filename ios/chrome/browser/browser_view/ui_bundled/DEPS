@@ -8,6 +8,8 @@ include_rules = [
   "+ios/chrome/browser/autocomplete/model",
   "+ios/chrome/browser/autofill/authentication/coordinator",
   "+ios/chrome/browser/autofill/autofill_ai/coordinator",
+  "+ios/chrome/browser/autofill/autofill_ai/error_dialog/coordinator",
+  "+ios/chrome/browser/autofill/autofill_ai/error_dialog/model",
   "+ios/chrome/browser/autofill/autofill_ai/public",
   "+ios/chrome/browser/autofill/form_input_accessory/coordinator/form_input_accessory_coordinator.h",
   "+ios/chrome/browser/autofill/model",

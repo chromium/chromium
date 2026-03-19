@@ -87,6 +87,8 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/autofill/authentication/coordinator:card_unmask_authentication_coordinator",
     "//ios/chrome/browser/autofill/authentication/coordinator:otp_input_dialog",
     "//ios/chrome/browser/autofill/autofill_ai/coordinator",
+    "//ios/chrome/browser/autofill/autofill_ai/error_dialog/coordinator",
+    "//ios/chrome/browser/autofill/autofill_ai/error_dialog/model",
     "//ios/chrome/browser/autofill/autofill_ai/public",
     "//ios/chrome/browser/autofill/form_input_accessory/coordinator",
     "//ios/chrome/browser/autofill/form_input_accessory/ui",

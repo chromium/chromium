@@ -8,6 +8,7 @@
 #import "components/plus_addresses/core/browser/plus_address_types.h"
 
 namespace autofill {
+struct AutofillAiErrorDialogContext;
 struct AutofillErrorDialogContext;
 struct FormActivityParams;
 struct SaveEntityParams;
@@ -62,6 +63,11 @@ class WebState;
 - (void)showAutofillErrorDialog:
     (autofill::AutofillErrorDialogContext)errorContext;
 - (void)dismissAutofillErrorDialog;
+
+// Commands to manage the Autofill AI error dialog.
+- (void)showAutofillAiErrorDialog:
+    (autofill::AutofillAiErrorDialogContext)errorContext;
+- (void)dismissAutofillAiErrorDialog;
 
 // Commands to manage the Autofill progress dialog.
 - (void)showAutofillProgressDialog;

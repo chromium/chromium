@@ -19,6 +19,7 @@
 #import "components/autofill/ios/browser/autofill_agent.h"
 #import "components/autofill/ios/browser/test_autofill_client_ios.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/autofill/autofill_ai/error_dialog/model/autofill_ai_error_dialog_context.h"
 #import "ios/chrome/browser/autofill/autofill_ai/public/save_entity_params.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/ui_bundled/chrome_autofill_client_ios.h"
@@ -114,6 +115,14 @@
 
 - (void)dismissAutofillErrorDialog {
 }
+
+- (void)showAutofillAiErrorDialog:
+    (autofill::AutofillAiErrorDialogContext)errorContext {
+}
+
+- (void)dismissAutofillAiErrorDialog {
+}
+
 - (void)showAutofillProgressDialog {
 }
 - (void)dismissAutofillProgressDialog {
