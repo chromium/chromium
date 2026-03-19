@@ -24,6 +24,7 @@
 #include "components/optimization_guide/proto/substitution.pb.h"
 #include "services/on_device_model/ml/chrome_ml_audio_buffer.h"
 #include "services/on_device_model/ml/chrome_ml_types.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace optimization_guide {
@@ -32,7 +33,6 @@ namespace {
 
 using google::protobuf::RepeatedPtrField;
 using on_device_model::mojom::Input;
-using on_device_model::mojom::InputPiece;
 using on_device_model::mojom::InputPtr;
 
 // A context for resolving substitution expressions.
@@ -361,6 +361,42 @@ std::string PlaceholderForToken(ml::Token token) {
   }
 }
 
+template <typename Piece>
+std::string OnDeviceInputPieceToString(const Piece& piece) {
+  return std::visit(
+      absl::Overload{
+          [](const std::string& text) { return text; },
+          [](ml::Token token) { return PlaceholderForToken(token); },
+          [](const SkBitmap&) { return std::string("<image>"); },
+          [](const ml::AudioBuffer&) { return std::string("<audio>"); },
+          [](const ml::ToolResponse& response) {
+            // Tool responses include result or error for safety checking.
+            std::string result =
+                base::StrCat({"<tool-response id=", response.call_id,
+                              " name=", response.name});
+            if (!response.result_json.empty()) {
+              base::StrAppend(&result, {" result=", response.result_json});
+            }
+            if (!response.error_message.empty()) {
+              base::StrAppend(&result,
+                              {" error=\"", response.error_message, "\""});
+            }
+            result += ">";
+            return result;
+          },
+          [](const ml::ToolDeclaration& decl) {
+            // Tool declarations include description and schema for safety
+            // checking.
+            return base::StrCat({"<tool name=", decl.name, " description=\"",
+                                 decl.description,
+                                 "\" schema=", decl.input_schema_json, ">"});
+          },
+          [](bool) -> std::string {
+            NOTREACHED();
+          }},
+      piece);
+}
+
 }  // namespace
 
 SubstitutionResult::SubstitutionResult() = default;
@@ -371,37 +407,8 @@ SubstitutionResult& SubstitutionResult::operator=(SubstitutionResult&&) =
 
 std::string OnDeviceInputToString(const on_device_model::mojom::Input& input) {
   std::string result;
-  // TODO(crbug.com/422803232): Rewrite this formatter with `std::visit()`.
   for (const auto& piece : input.pieces) {
-    if (std::holds_alternative<std::string>(piece)) {
-      result += std::get<std::string>(piece);
-    } else if (std::holds_alternative<ml::Token>(piece)) {
-      result += PlaceholderForToken(std::get<ml::Token>(piece));
-    } else if (std::holds_alternative<SkBitmap>(piece)) {
-      result += "<image>";
-    } else if (std::holds_alternative<ml::AudioBuffer>(piece)) {
-      result += "<audio>";
-    } else if (std::holds_alternative<ml::ToolResponse>(piece)) {
-      // Tool responses include result or error for safety checking.
-      const auto& response = std::get<ml::ToolResponse>(piece);
-      base::StrAppend(&result, {"<tool-response id=", response.call_id,
-                                " name=", response.name});
-      if (!response.result_json.empty()) {
-        base::StrAppend(&result, {" result=", response.result_json});
-      }
-      if (!response.error_message.empty()) {
-        base::StrAppend(&result, {" error=\"", response.error_message, "\""});
-      }
-      result += ">";
-    } else if (std::holds_alternative<ml::ToolDeclaration>(piece)) {
-      // Tool declarations include description and schema for safety checking.
-      const auto& decl = std::get<ml::ToolDeclaration>(piece);
-      base::StrAppend(&result, {"<tool name=", decl.name, " description=\"",
-                                decl.description,
-                                "\" schema=", decl.input_schema_json, ">"});
-    } else {
-      NOTREACHED();
-    }
+    result += OnDeviceInputPieceToString(piece);
   }
   return result;
 }
