@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/ui/popup_interaction.h"
 #include "components/autofill/core/browser/ui/suggestion_button_action.h"
@@ -321,10 +322,11 @@ TEST_F(AutofillPopupControllerImplTest,
       client().suggestion_controller(manager()).OpenSubPopup(
           {0, 0, 10, 10}, {}, AutoselectFirstSuggestion(false));
 
-  EXPECT_CALL(manager().external_delegate(), OnSuggestionsHidden()).Times(0);
+  EXPECT_CALL(manager().external_delegate(), OnSuggestionsHidden).Times(0);
   sub_controller->Hide(SuggestionHidingReason::kUserAborted);
 
-  EXPECT_CALL(manager().external_delegate(), OnSuggestionsHidden());
+  EXPECT_CALL(manager().external_delegate(),
+              OnSuggestionsHidden(SuggestionHidingReason::kUserAborted));
   client().suggestion_controller(manager()).Hide(
       SuggestionHidingReason::kUserAborted);
 }

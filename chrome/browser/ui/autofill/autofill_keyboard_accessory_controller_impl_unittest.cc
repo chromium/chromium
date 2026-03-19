@@ -175,6 +175,20 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest, HideDestroysView) {
   EXPECT_FALSE(client().popup_view());
 }
 
+// Tests that calling `Hide()` on the controller forwards the hiding reason
+// to the delegate.
+TEST_F(AutofillKeyboardAccessoryControllerImplTest,
+       HideForwardsReasonToDelegate) {
+  ShowSuggestions(manager(), {Suggestion(u"Autocomplete entry",
+                                         SuggestionType::kAutocompleteEntry)});
+
+  EXPECT_CALL(manager().external_delegate(),
+              OnSuggestionsHidden(SuggestionHidingReason::kNavigation));
+
+  client().suggestion_controller(manager()).Hide(
+      SuggestionHidingReason::kNavigation);
+}
+
 TEST_F(AutofillKeyboardAccessoryControllerImplTest,
        GetRemovalConfirmationText_UnrelatedSuggestionType) {
   ShowSuggestions(

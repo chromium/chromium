@@ -381,7 +381,7 @@ TEST_F(AutofillSuggestionControllerTest, ProperlyResetController) {
 
 TEST_F(AutofillSuggestionControllerTest, HidingClearsPreview) {
   EXPECT_CALL(manager().external_delegate(), ClearPreviewedForm());
-  EXPECT_CALL(manager().external_delegate(), OnSuggestionsHidden());
+  EXPECT_CALL(manager().external_delegate(), OnSuggestionsHidden);
   client().suggestion_controller(manager()).DoHide();
 }
 

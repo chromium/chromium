@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/foundations/browser_autofill_manager_test_delegate.h"
 
+#include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
+
 namespace autofill {
 
 BrowserAutofillManagerTestDelegate::BrowserAutofillManagerTestDelegate() =
@@ -55,7 +57,8 @@ void BrowserAutofillManagerTestDelegate::OnSuggestionsShown(
 }
 
 void BrowserAutofillManagerTestDelegate::OnSuggestionsHidden(
-    AutofillManager& manager) {
+    AutofillManager& manager,
+    SuggestionHidingReason reason) {
   DidHideSuggestions();
 }
 

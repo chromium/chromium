@@ -35,6 +35,7 @@
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
 #include "components/autofill/core/browser/metrics/quality_metrics.h"
+#include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/suggestions/suggestion_util.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_data_validation.h"
@@ -483,13 +484,13 @@ void AutofillManager::OnHidePopup() {
   OnHidePopupImpl();
 }
 
-void AutofillManager::OnSuggestionsHidden() {
+void AutofillManager::OnSuggestionsHidden(SuggestionHidingReason reason) {
   // If the unmask prompt is shown, keep showing the preview. The preview
   // will be cleared when the prompt closes.
   if (ShouldClearPreviewedForm()) {
     driver().RendererShouldClearPreviewedForm();
   }
-  NotifyObservers(&Observer::OnSuggestionsHidden);
+  NotifyObservers(&Observer::OnSuggestionsHidden, reason);
 }
 
 void AutofillManager::OnSelectFieldOptionsDidChange(

@@ -301,7 +301,7 @@ void AutofillKeyboardAccessoryControllerImpl::Hide(
 
   if (delegate_) {
     delegate_->ClearPreviewedForm();
-    delegate_->OnSuggestionsHidden();
+    delegate_->OnSuggestionsHidden(reason);
   }
   popup_hide_helper_.reset();
   AutofillMetrics::LogAutofillSuggestionHidingReason(

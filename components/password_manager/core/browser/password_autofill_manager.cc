@@ -240,7 +240,8 @@ PasswordAutofillManager::GetDriver() {
 void PasswordAutofillManager::OnSuggestionsShown(
     base::span<const Suggestion> suggestions) {}
 
-void PasswordAutofillManager::OnSuggestionsHidden() {
+void PasswordAutofillManager::OnSuggestionsHidden(
+    autofill::SuggestionHidingReason reason) {
   password_client_->GetUndoPasswordChangeController()->OnSuggestionsHidden();
   metrics_util::LogPasswordDropdownHidden();
 }

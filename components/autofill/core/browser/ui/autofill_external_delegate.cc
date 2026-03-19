@@ -515,8 +515,9 @@ void AutofillExternalDelegate::OnSuggestionsShown(
                                CreateUpdateSuggestionsCallback());
 }
 
-void AutofillExternalDelegate::OnSuggestionsHidden() {
-  manager_->OnSuggestionsHidden();
+void AutofillExternalDelegate::OnSuggestionsHidden(
+    SuggestionHidingReason reason) {
+  manager_->OnSuggestionsHidden(reason);
 }
 
 void AutofillExternalDelegate::DidSelectSuggestion(

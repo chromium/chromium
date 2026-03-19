@@ -8,6 +8,7 @@
 #include <variant>
 
 #include "base/memory/weak_ptr.h"
+#include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
 #include "components/autofill/core/browser/ui/suggestion_button_action.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -29,7 +30,7 @@ class MockAutofillSuggestionDelegate : public AutofillSuggestionDelegate {
               OnSuggestionsShown,
               (base::span<const Suggestion>),
               (override));
-  MOCK_METHOD(void, OnSuggestionsHidden, (), (override));
+  MOCK_METHOD(void, OnSuggestionsHidden, (SuggestionHidingReason), (override));
   MOCK_METHOD(void,
               DidSelectSuggestion,
               (const Suggestion& suggestion),

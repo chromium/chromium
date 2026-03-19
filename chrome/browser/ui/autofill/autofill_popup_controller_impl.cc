@@ -396,7 +396,7 @@ void AutofillPopupControllerImpl::Hide(SuggestionHidingReason reason) {
 
   if (delegate_ && IsRootPopup()) {
     delegate_->ClearPreviewedForm();
-    delegate_->OnSuggestionsHidden();
+    delegate_->OnSuggestionsHidden(reason);
   }
   key_press_observer_.Reset();
   popup_hide_helper_.reset();

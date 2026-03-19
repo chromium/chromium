@@ -8,8 +8,9 @@
 #include <vector>
 
 #include "base/run_loop.h"
-#include "components/autofill/core/browser/ui/autofill_external_delegate.h"
 #include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
+#include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
+#include "components/autofill/core/browser/ui/autofill_external_delegate.h"
 
 namespace gfx {
 class Rect;
@@ -30,7 +31,7 @@ class TestAutofillExternalDelegate : public AutofillExternalDelegate {
 
   // AutofillExternalDelegate overrides.
   void OnSuggestionsShown(base::span<const Suggestion> suggestions) override;
-  void OnSuggestionsHidden() override;
+  void OnSuggestionsHidden(SuggestionHidingReason reason) override;
   void OnQuery(const FormData& form,
                const FormFieldData& field,
                const gfx::Rect& caret_bounds,

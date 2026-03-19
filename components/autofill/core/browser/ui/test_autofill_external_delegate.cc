@@ -8,6 +8,7 @@
 #include "base/strings/stringprintf.h"
 #include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect_f.h"
 
@@ -26,7 +27,8 @@ void TestAutofillExternalDelegate::OnSuggestionsShown(
   AutofillExternalDelegate::OnSuggestionsShown(suggestions);
 }
 
-void TestAutofillExternalDelegate::OnSuggestionsHidden() {
+void TestAutofillExternalDelegate::OnSuggestionsHidden(
+    SuggestionHidingReason reason) {
   popup_hidden_ = true;
 
   run_loop_.Quit();

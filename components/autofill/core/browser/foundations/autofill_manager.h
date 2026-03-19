@@ -32,6 +32,7 @@
 #include "components/autofill/core/browser/filling/form_filler.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/autofill_driver.h"
+#include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/form_data.h"
@@ -207,7 +208,8 @@ class AutofillManager
     // Fired when the suggestions are *actually* shown or hidden.
     virtual void OnSuggestionsShown(AutofillManager& manager,
                                     base::span<const Suggestion> suggestions) {}
-    virtual void OnSuggestionsHidden(AutofillManager& manager) {}
+    virtual void OnSuggestionsHidden(AutofillManager& manager,
+                                     SuggestionHidingReason reason) {}
 
     // Fired when a form is filled or previewed with a AutofillProfile or
     // CreditCard.
@@ -292,7 +294,7 @@ class AutofillManager
       const std::u16string& old_value);
 
   // Invoked when the suggestions are actually hidden.
-  void OnSuggestionsHidden();
+  virtual void OnSuggestionsHidden(SuggestionHidingReason reason);
 
   // Routes calls from external components to FormFiller::FillOrPreviewField.
   // Virtual for testing.

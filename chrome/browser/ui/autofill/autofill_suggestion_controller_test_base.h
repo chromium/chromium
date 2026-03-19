@@ -21,6 +21,7 @@
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
+#include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/ui/autofill_external_delegate.h"
 #include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
 #include "components/autofill/core/browser/ui/suggestion_button_action.h"
@@ -223,7 +224,7 @@ class AutofillExternalDelegateForPopupTest : public AutofillExternalDelegate {
               OnSuggestionsShown,
               (base::span<const Suggestion>),
               (override));
-  MOCK_METHOD(void, OnSuggestionsHidden, (), (override));
+  MOCK_METHOD(void, OnSuggestionsHidden, (SuggestionHidingReason), (override));
   MOCK_METHOD(void, DidSelectSuggestion, (const Suggestion&), (override));
   MOCK_METHOD(void,
               DidAcceptSuggestion,

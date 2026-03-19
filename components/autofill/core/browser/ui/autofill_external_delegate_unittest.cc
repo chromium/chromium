@@ -364,6 +364,8 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
                FieldType,
                const std::string&),
               (override));
+
+  MOCK_METHOD(void, OnSuggestionsHidden, (SuggestionHidingReason), (override));
 };
 
 class AutofillExternalDelegateTest : public testing::Test,
@@ -928,6 +930,19 @@ TEST_F(AutofillExternalDelegateTest, BnplSuggestionsShownWithCreditCardEntry) {
       CreateAutofillSuggestion(SuggestionType::kManageCreditCard)};
 
   external_delegate().OnSuggestionsShown(suggestions);
+}
+
+// Tests that when suggestions are hidden, the reason is correctly forwarded to
+// the autofill manager.
+TEST_F(AutofillExternalDelegateTest,
+       OnSuggestionsHidden_NotifiesAutofillManager) {
+  IssueOnQuery();
+
+  SuggestionHidingReason reason = SuggestionHidingReason::kFocusChanged;
+
+  EXPECT_CALL(autofill_manager(), OnSuggestionsHidden(reason));
+
+  external_delegate().OnSuggestionsHidden(reason);
 }
 
 // Tests that the Autofill delegate fills a form with a VCN when a suggestion

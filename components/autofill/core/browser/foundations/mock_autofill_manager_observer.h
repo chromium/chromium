@@ -136,6 +136,11 @@ class MockAutofillManagerObserver : public AutofillManager::Observer {
               (override));
 
   MOCK_METHOD(void,
+              OnSuggestionsHidden,
+              (AutofillManager&, SuggestionHidingReason),
+              (override));
+
+  MOCK_METHOD(void,
               OnFillOrPreviewForm,
               (AutofillManager&,
                FormGlobalId,

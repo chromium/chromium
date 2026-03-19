@@ -516,6 +516,10 @@ TEST_F(AutofillManagerTest_ObserverCalls, CallsEvents) {
     std::move(run_loop).Run();
   }
 
+  EXPECT_CALL(observer(),
+              OnSuggestionsHidden(m, SuggestionHidingReason::kFocusChanged));
+  autofill_manager().OnSuggestionsHidden(SuggestionHidingReason::kFocusChanged);
+
   // TODO(crbug.com/) Test in browser_autofill_manager_unittest.cc that
   // FillOrPreviewForm() triggers OnFillOrPreviewForm().
 
