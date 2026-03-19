@@ -364,6 +364,10 @@ class HttpStreamFactory::Job
   // proxy. This differs from `using_ssl_`, which only describes the origin.
   bool using_spdy() const;
 
+  // True if this is a preconnect job (i.e. PRECONNECT or
+  // PRECONNECT_DNS_ALPN_H3).
+  bool is_preconnect() const;
+
   // Calculates SchemeHostPort for HttpServerProperties::{Set,Get}SupportsSpdy()
   // calls.
   url::SchemeHostPort SchemeHostPortForSupportsSpdy() const;

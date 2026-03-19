@@ -375,6 +375,10 @@ bool HttpStreamFactory::Job::using_spdy() const {
   return negotiated_protocol_ == NextProto::kProtoHTTP2;
 }
 
+bool HttpStreamFactory::Job::is_preconnect() const {
+  return job_type_ == PRECONNECT || job_type_ == PRECONNECT_DNS_ALPN_H3;
+}
+
 url::SchemeHostPort HttpStreamFactory::Job::SchemeHostPortForSupportsSpdy()
     const {
   return url::SchemeHostPort(using_ssl_ ? url::kHttpsScheme : url::kHttpScheme,
@@ -552,7 +556,7 @@ void HttpStreamFactory::Job::RunLoop(int result) {
   // Record histograms which are required for the end of session creation.
   RecordCompletionHistograms(result);
 
-  if ((job_type_ == PRECONNECT) || (job_type_ == PRECONNECT_DNS_ALPN_H3)) {
+  if (is_preconnect()) {
     TaskRunner(priority_)->PostTask(
         FROM_HERE,
         base::BindOnce(&HttpStreamFactory::Job::OnPreconnectsComplete,
@@ -864,10 +868,9 @@ int HttpStreamFactory::Job::DoInitConnectionImplQuic() {
                 proxy_info_.traffic_annotation())
           : std::nullopt;
 
-  auto initiator =
-      (job_type_ == PRECONNECT || job_type_ == PRECONNECT_DNS_ALPN_H3)
-          ? MultiplexedSessionCreationInitiator::kPreconnect
-          : MultiplexedSessionCreationInitiator::kUnknown;
+  auto initiator = is_preconnect()
+                       ? MultiplexedSessionCreationInitiator::kPreconnect
+                       : MultiplexedSessionCreationInitiator::kUnknown;
 
   SSLConfig server_ssl_config;
   server_ssl_config.disable_cert_verification_network_fetches =
@@ -952,23 +955,7 @@ int HttpStreamFactory::Job::DoInitConnectionComplete(int result) {
   // established.
   spdy_session_request_.reset();
 
-  if (!using_quic_ && management_config_.has_value()) {
-    // If `DoInitConnection` has completed successfully, we should have a
-    // session in the pool. Note that we cannot rely on `result`, since we would
-    // always get `OK` for preconnects in this situation.
-    if (session_->spdy_session_pool()->FindAvailableSession(
-            spdy_session_key_, enable_ip_based_pooling_for_h2_, is_websocket_,
-            net_log_)) {
-      session_->spdy_session_pool()->AddConnectionManagementConfig(
-          spdy_session_key_, management_config_.value());
-    } else if (management_config_->connection_change_observer) {
-      // If we do not have a session, then we should notify the
-      // ConnectionChangeObserver that the connection establishment has failed.
-      management_config_->connection_change_observer->OnConnectionFailed();
-    }
-  }
-
-  if ((job_type_ == PRECONNECT) || (job_type_ == PRECONNECT_DNS_ALPN_H3)) {
+  if (is_preconnect()) {
     if (using_quic_) {
       return result;
     }
@@ -976,8 +963,36 @@ int HttpStreamFactory::Job::DoInitConnectionComplete(int result) {
     if (!base::FeatureList::IsEnabled(
             net::features::kEnableErrorCodePropagationForPreconnect)) {
       DCHECK_EQ(OK, result);
+      return OK;
     }
-    return result;
+
+    // If we have a session already, this means that the preconnect succeeded,
+    // but the connection was used immediately for a different request that came
+    // in later but was prioritized over the preconnect. In this case, we
+    // proceed to `DoCreateStream`.
+    if (existing_spdy_session_) {
+      CHECK_EQ(OK, result);
+      next_state_ = STATE_CREATE_STREAM;
+      return OK;
+    }
+
+    // Check if the result was not OK (i.e. preconnect failed), or if the
+    // connection was not initialized (i.e. the preconnect succeeded, but was
+    // immediately used for a different request that came in later but was
+    // prioritized over the preconnect. Since we already handle H2 cases above,
+    // we handle H1 cases here).
+    if (result != OK || !connection_->is_initialized()) {
+      // If we do not have a session, then we should notify the
+      // ConnectionChangeObserver that the connection establishment has
+      // failed.
+      if (base::FeatureList::IsEnabled(
+              net::features::kConnectionKeepAliveForHttp2) &&
+          management_config_.has_value() &&
+          management_config_->connection_change_observer) {
+        management_config_->connection_change_observer->OnConnectionFailed();
+      }
+      return result;
+    }
   }
 
   resolve_error_info_ = connection_->resolve_error_info();
@@ -1172,6 +1187,11 @@ int HttpStreamFactory::Job::DoCreateStream() {
 
   if (!using_spdy()) {
     DCHECK(!expect_spdy_);
+    // If this is a preconnect, we do not want to create a stream since there is
+    // no request associated with the connection. Hence, we return early.
+    if (is_preconnect()) {
+      return OK;
+    }
     bool is_for_get_to_http_proxy = UsingHttpProxyWithoutTunnel();
     if (is_websocket_) {
       DCHECK_NE(job_type_, PRECONNECT);
@@ -1220,6 +1240,12 @@ int HttpStreamFactory::Job::DoCreateStream() {
     }
     connection_->Reset();
 
+    // If this is a preconnect, we do not want to create a stream since there is
+    // no request associated with the connection. Hence, we return early.
+    if (is_preconnect()) {
+      return OK;
+    }
+
     int set_result =
         SetSpdyHttpStreamOrBidirectionalStreamImpl(existing_spdy_session_);
     existing_spdy_session_.reset();
@@ -1232,10 +1258,9 @@ int HttpStreamFactory::Job::DoCreateStream() {
     connection_->CloseIdleSocketsInGroup("Switching to HTTP2 session");
   }
 
-  auto initiator =
-      (job_type_ == PRECONNECT || job_type_ == PRECONNECT_DNS_ALPN_H3)
-          ? MultiplexedSessionCreationInitiator::kPreconnect
-          : MultiplexedSessionCreationInitiator::kUnknown;
+  auto initiator = is_preconnect()
+                       ? MultiplexedSessionCreationInitiator::kPreconnect
+                       : MultiplexedSessionCreationInitiator::kUnknown;
 
   base::WeakPtr<SpdySession> spdy_session;
   int rv =
@@ -1251,6 +1276,12 @@ int HttpStreamFactory::Job::DoCreateStream() {
   session_->http_server_properties()->SetSupportsSpdy(
       SchemeHostPortForSupportsSpdy(), request_info_.network_anonymization_key,
       /*supports_spdy=*/true);
+
+  // If this is a preconnect, we do not want to create a stream since there is
+  // no request associated with the connection. Hence, we return early.
+  if (is_preconnect()) {
+    return OK;
+  }
 
   // Create a SpdyHttpStream or a BidirectionalStreamImpl attached to the
   // session.
@@ -1372,6 +1403,27 @@ bool HttpStreamFactory::Job::ShouldThrottleConnectForSpdy() const {
 void HttpStreamFactory::Job::OnPreconnectSocketsComplete(
     bool success,
     std::unique_ptr<ClientSocketHandle> handle) {
+  if (success) {
+    if (handle) {
+      CHECK(handle->is_initialized());
+      connection_ = std::move(handle);
+    } else {
+      // If the preconnect succeeded, but the handle is not initialized, then
+      // this means that the preconnected socket was used for a different
+      // request before creating the `ClientSocketHandle`. Find the existing
+      // session. Note that this will fail if the negotiated protocol is H1,
+      // since we do not create `SpdySession` for H1 sessions.
+      CHECK(!existing_spdy_session_);
+      existing_spdy_session_ =
+          session_->spdy_session_pool()->FindAvailableSession(
+              spdy_session_key_, enable_ip_based_pooling_for_h2_, is_websocket_,
+              net_log_);
+      if (existing_spdy_session_) {
+        negotiated_protocol_ = NextProto::kProtoHTTP2;
+      }
+    }
+  }
+
   // The preconnect callback only provides a boolean indicating success or
   // failure. We convert this to a `net::Error` to use the existing logic
   // which uses `int` to pass around the errors as an argument including
@@ -1380,7 +1432,7 @@ void HttpStreamFactory::Job::OnPreconnectSocketsComplete(
 }
 
 void HttpStreamFactory::Job::RecordPreconnectHistograms(int result) {
-  CHECK(job_type_ == PRECONNECT || job_type_ == PRECONNECT_DNS_ALPN_H3);
+  CHECK(is_preconnect());
   constexpr std::string_view kHistogramBase =
       "Net.SessionCreate.GoogleSearch.Preconnect2";
   if (!IsGoogleHostWithAlpnH3(destination_.host())) {

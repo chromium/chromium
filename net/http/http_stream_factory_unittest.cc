@@ -3947,6 +3947,75 @@ TEST_P(HttpStreamFactoryTest, SpdyIPPoolingWithDnsAliases) {
                                  ProxyChain::Direct()));
 }
 
+TEST_P(HttpStreamFactoryTest, PreconnectDirectCreatesSpdySession) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      net::features::kEnableErrorCodePropagationForPreconnect);
+
+  SpdySessionDependencies session_deps;
+
+  // Prepare for an HTTPS connect that negotiates H2.
+  MockRead mock_read(ASYNC, OK);
+  SequencedSocketData socket_data(base::span_from_ref(mock_read),
+                                  base::span<MockWrite>());
+  socket_data.set_connect_data(MockConnect(ASYNC, OK));
+  session_deps.socket_factory->AddSocketDataProvider(&socket_data);
+
+  SSLSocketDataProvider ssl_socket_data(ASYNC, OK);
+  ssl_socket_data.next_proto = NextProto::kProtoHTTP2;
+  session_deps.socket_factory->AddSSLSocketDataProvider(&ssl_socket_data);
+
+  std::unique_ptr<HttpNetworkSession> session(
+      SpdySessionDependencies::SpdyCreateSession(&session_deps));
+
+  // Verify initially no sessions exist.
+  EXPECT_EQ(0, GetSpdySessionCount(session.get()));
+
+  // Preconnect 1 stream.
+  PreconnectHelperForURL(1, GURL("https://www.google.com"),
+                         NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                         session.get());
+
+  // Verify that a SpdySession was created as a result of the preconnect.
+  EXPECT_EQ(1, GetSpdySessionCount(session.get()));
+  // Since we created a SpdySession, there should be no idle sockets.
+  EXPECT_EQ(0, session
+                   ->GetSocketPool(HttpNetworkSession::SocketPoolType::kNormal,
+                                   ProxyChain::Direct())
+                   ->IdleSocketCount());
+}
+
+TEST_P(HttpStreamFactoryTest, PreconnectDirectNoSpdySessionForHttp1) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      net::features::kEnableErrorCodePropagationForPreconnect);
+  SpdySessionDependencies session_deps;
+
+  // Prepare for an HTTPS connect that negotiates HTTP/1.1.
+  MockRead mock_read(ASYNC, OK);
+  SequencedSocketData socket_data(base::span_from_ref(mock_read),
+                                  base::span<MockWrite>());
+  socket_data.set_connect_data(MockConnect(ASYNC, OK));
+  session_deps.socket_factory->AddSocketDataProvider(&socket_data);
+
+  SSLSocketDataProvider ssl_socket_data(ASYNC, OK);
+  ssl_socket_data.next_proto = NextProto::kProtoHTTP11;
+  session_deps.socket_factory->AddSSLSocketDataProvider(&ssl_socket_data);
+
+  std::unique_ptr<HttpNetworkSession> session(
+      SpdySessionDependencies::SpdyCreateSession(&session_deps));
+
+  EXPECT_EQ(0, GetSpdySessionCount(session.get()));
+
+  // Preconnect 1 stream.
+  PreconnectHelperForURL(1, GURL("https://www.google.com"),
+                         NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                         session.get());
+
+  // Verify that a SpdySession was not created as a result of the preconnect.
+  EXPECT_EQ(0, GetSpdySessionCount(session.get()));
+}
+
 TEST_P(HttpStreamFactoryBidirectionalQuicTest, QuicIPPoolingWithDnsAliases) {
   const GURL kUrlA("https://a.example.org");
   const GURL kUrlB("https://b.example.org");
