@@ -187,7 +187,9 @@ bool ScrollSnapshotTimeline::UpdateSnapshot() {
 }
 
 void ScrollSnapshotTimeline::UpdateSnapshotForServiceAnimations() {
-  UpdateSnapshotInternal(/*service_animations=*/true);
+  if (!RuntimeEnabledFeatures::SnapshotScrollTimelinesPostLayoutEnabled()) {
+    UpdateSnapshotInternal(/*service_animations=*/true);
+  }
 }
 
 bool ScrollSnapshotTimeline::UpdateSnapshotInternal(bool service_animations) {

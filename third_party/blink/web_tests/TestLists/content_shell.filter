@@ -928,7 +928,7 @@ virtual/produce-compile-hints/external/wpt/html/semantics/scripting-1/the-script
 virtual/produce-compile-hints/external/wpt/html/semantics/scripting-1/the-script-element/moving-between-documents/ordering/*
 virtual/produce-compile-hints/external/wpt/fetch/fetch-later/new-window.https.window.html
 virtual/produce-compile-hints/external/wpt/fetch/stale-while-revalidate/stale-*
-virtual/run-snapshot-post-layout/external/wpt/scroll-animations/scroll-timelines/layout-changes-on-percentage-based-timeline.html
+virtual/snapshot-scroll-timelines-post-layout/external/wpt/scroll-animations/scroll-timelines/layout-changes-on-percentage-based-timeline.html
 virtual/scalefactor200/external/wpt/css/filter-effects/backdrop-filter*
 virtual/scalefactor200/external/wpt/css/filter-effects/css-filters-animation-opacity.html
 virtual/scalefactor200/external/wpt/css/filter-effects/drop-shadow-currentcolor-dynamic-003.html

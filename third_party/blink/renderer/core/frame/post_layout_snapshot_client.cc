@@ -15,7 +15,9 @@ PostLayoutSnapshotClient::PostLayoutSnapshotClient(LocalFrame* frame) {
 }
 
 void PostLayoutSnapshotClient::UpdateSnapshotForServiceAnimations() {
-  UpdateSnapshot();
+  if (!RuntimeEnabledFeatures::RunSnapshotPostLayoutStateStepsEnabled()) {
+    UpdateSnapshot();
+  }
 }
 
 }  // namespace blink

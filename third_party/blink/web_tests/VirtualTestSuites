@@ -2796,7 +2796,7 @@
     "expires": "Nov 29, 2025"
   },
   {
-    "prefix": "run-snapshot-post-layout",
+    "prefix": "snapshot-scroll-timelines-post-layout",
     "owners": [
       "futhark@chromium.org",
       "flackr@chromium.org"
@@ -2805,13 +2805,11 @@
       "Linux"
     ],
     "bases": [
-      "external/wpt/css/css-anchor-position/",
-      "external/wpt/css/css-conditional/container-queries/scroll-state/",
       "external/wpt/scroll-animations/",
       "fast/animation/scroll-animations/"
     ],
     "args": [
-      "--enable-blink-features=RunSnapshotPostLayoutStateSteps"
+      "--enable-blink-features=SnapshotScrollTimelinesPostLayout"
     ],
     "expires": "Jun 1, 2026"
   },
