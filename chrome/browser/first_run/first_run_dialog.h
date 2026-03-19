@@ -18,12 +18,6 @@ namespace first_run {
 // Invokes ChangeMetricsReportingState() if consent is given to enable crash
 // reporting, and may initiate the flow to set the default browser.
 void ShowFirstRunDialog();
-void ShowFirstRunDialogViews();
-// Maintain Cocoa-based first run dialog until we are confident that views'
-// implementation works well on macOS.
-#if BUILDFLAG(IS_MAC)
-void ShowFirstRunDialogCocoa();
-#endif
 
 // Returns a Closure invoked before calling ShowFirstRunDialog(). For testing.
 base::OnceClosure& GetBeforeShowFirstRunDialogHookForTesting();

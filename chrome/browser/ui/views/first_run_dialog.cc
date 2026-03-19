@@ -18,8 +18,6 @@
 #include "chrome/browser/metrics/metrics_reporting_state.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/shell_integration.h"
-#include "chrome/browser/ui/dialogs/browser_dialogs.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/branded_strings.h"
@@ -46,18 +44,6 @@ void ShowFirstRunDialog() {
     return;
   }
 
-#if BUILDFLAG(IS_MAC)
-  if (base::FeatureList::IsEnabled(features::kViewsFirstRunDialog)) {
-    ShowFirstRunDialogViews();
-  } else {
-    ShowFirstRunDialogCocoa();
-  }
-#else
-  ShowFirstRunDialogViews();
-#endif
-}
-
-void ShowFirstRunDialogViews() {
   base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
   bool closed_through_accept_button = false;
 

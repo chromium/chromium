@@ -3247,8 +3247,6 @@ static_library("ui") {
       "cocoa/confirm_quit_panel_controller.mm",
       "cocoa/dock_icon.h",
       "cocoa/dock_icon.mm",
-      "cocoa/first_run_dialog_cocoa.h",
-      "cocoa/first_run_dialog_cocoa.mm",
       "cocoa/first_run_dialog_controller.h",
       "cocoa/first_run_dialog_controller.mm",
       "cocoa/fullscreen/fullscreen_menubar_tracker.h",
