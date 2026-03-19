@@ -55,20 +55,22 @@
   return self;
 }
 
-- (UIAction*)actionToOpenInNewTabWithURL:(const GURL)URL
+- (UIAction*)actionToOpenInNewTabWithURL:(const GURL&)URL
                               completion:(ProceduralBlock)completion {
   UrlLoadParams params = UrlLoadParams::InNewTab(URL);
-  UrlLoadingBrowserAgent* loadingAgent =
-      UrlLoadingBrowserAgent::FromBrowser(self.browser);
+  base::WeakPtr<Browser> weakBrowser = self.browser->AsWeakPtr();
   return [self actionToOpenInNewTabWithBlock:^{
-    loadingAgent->Load(params);
+    if (!weakBrowser) {
+      return;
+    }
+    UrlLoadingBrowserAgent::FromBrowser(weakBrowser.get())->Load(params);
     if (completion) {
       completion();
     }
   }];
 }
 
-- (UIAction*)actionToOpenInNewIncognitoTabWithURL:(const GURL)URL
+- (UIAction*)actionToOpenInNewIncognitoTabWithURL:(const GURL&)URL
                                        completion:(ProceduralBlock)completion {
   if (!_browser) {
     return nil;
@@ -76,10 +78,12 @@
 
   UrlLoadParams params = UrlLoadParams::InNewTab(URL);
   params.in_incognito = YES;
-  UrlLoadingBrowserAgent* loadingAgent =
-      UrlLoadingBrowserAgent::FromBrowser(self.browser);
+  base::WeakPtr<Browser> weakBrowser = self.browser->AsWeakPtr();
   return [self actionToOpenInNewIncognitoTabWithBlock:^{
-    loadingAgent->Load(params);
+    if (!weakBrowser) {
+      return;
+    }
+    UrlLoadingBrowserAgent::FromBrowser(weakBrowser.get())->Load(params);
     if (completion) {
       completion();
     }
@@ -99,7 +103,7 @@
                          block:completionBlock];
 }
 
-- (UIAction*)actionToOpenInNewWindowWithURL:(const GURL)URL
+- (UIAction*)actionToOpenInNewWindowWithURL:(const GURL&)URL
                              activityOrigin:
                                  (WindowActivityOrigin)activityOrigin {
   id<SceneCommands> windowOpener =
@@ -132,10 +136,10 @@
                          }];
 }
 
-- (UIAction*)actionOpenImageWithURL:(const GURL)URL
+- (UIAction*)actionOpenImageWithURL:(const GURL&)URL
                          completion:(ProceduralBlock)completion {
-  UrlLoadingBrowserAgent* loadingAgent =
-      UrlLoadingBrowserAgent::FromBrowser(self.browser);
+  UrlLoadParams params = UrlLoadParams::InCurrentTab(URL);
+  base::WeakPtr<Browser> weakBrowser = self.browser->AsWeakPtr();
   UIImage* image = DefaultSymbolWithPointSize(kOpenImageActionSymbol,
                                               kSymbolActionPointSize);
   UIAction* action = [self
@@ -143,7 +147,11 @@
                 image:image
                  type:MenuActionType::OpenImageInCurrentTab
                 block:^{
-                  loadingAgent->Load(UrlLoadParams::InCurrentTab(URL));
+                  if (!weakBrowser) {
+                    return;
+                  }
+                  UrlLoadingBrowserAgent::FromBrowser(weakBrowser.get())
+                      ->Load(params);
                   if (completion) {
                     completion();
                   }
@@ -154,8 +162,7 @@
 - (UIAction*)actionOpenImageInNewTabWithUrlLoadParams:(UrlLoadParams)params
                                            completion:
                                                (ProceduralBlock)completion {
-  UrlLoadingBrowserAgent* loadingAgent =
-      UrlLoadingBrowserAgent::FromBrowser(self.browser);
+  base::WeakPtr<Browser> weakBrowser = self.browser->AsWeakPtr();
   UIImage* image =
       CustomSymbolWithPointSize(kPhotoBadgePlusSymbol, kSymbolActionPointSize);
   UIAction* action =
@@ -164,7 +171,11 @@
                       image:image
                        type:MenuActionType::OpenImageInNewTab
                       block:^{
-                        loadingAgent->Load(params);
+                        if (!weakBrowser) {
+                          return;
+                        }
+                        UrlLoadingBrowserAgent::FromBrowser(weakBrowser.get())
+                            ->Load(params);
                         if (completion) {
                           completion();
                         }

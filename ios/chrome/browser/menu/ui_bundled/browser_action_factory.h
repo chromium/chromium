@@ -36,13 +36,13 @@ class WebState;
 
 // Creates a UIAction instance configured for opening the `URL` in a new tab and
 // which will invoke the given `completion` block after execution.
-- (UIAction*)actionToOpenInNewTabWithURL:(const GURL)URL
+- (UIAction*)actionToOpenInNewTabWithURL:(const GURL&)URL
                               completion:(ProceduralBlock)completion;
 
 // Creates a UIAction instance configured for opening the `URL` in a new
 // incognito tab and which will invoke the given `completion` block after
 // execution.
-- (UIAction*)actionToOpenInNewIncognitoTabWithURL:(const GURL)URL
+- (UIAction*)actionToOpenInNewIncognitoTabWithURL:(const GURL&)URL
                                        completion:(ProceduralBlock)completion;
 
 // Creates a UIAction instance whose title and icon are configured for opening a
@@ -52,7 +52,7 @@ class WebState;
 
 // Creates a UIAction instance configured for opening the `URL` in a new window
 // from `activityOrigin`.
-- (UIAction*)actionToOpenInNewWindowWithURL:(const GURL)URL
+- (UIAction*)actionToOpenInNewWindowWithURL:(const GURL&)URL
                              activityOrigin:
                                  (WindowActivityOrigin)activityOrigin;
 
@@ -62,7 +62,7 @@ class WebState;
 
 // Creates a UIAction instance for opening an image `URL` in current tab and
 // invoke the given `completion` block after execution.
-- (UIAction*)actionOpenImageWithURL:(const GURL)URL
+- (UIAction*)actionOpenImageWithURL:(const GURL&)URL
                          completion:(ProceduralBlock)completion;
 
 // Creates a UIAction instance for opening an image `params` in a new tab and
