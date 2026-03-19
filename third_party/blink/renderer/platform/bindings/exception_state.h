@@ -72,13 +72,9 @@ class PLATFORM_EXPORT ExceptionState {
   ExceptionState(const ExceptionState&) = delete;
   ExceptionState& operator=(const ExceptionState&) = delete;
 
-#if DCHECK_IS_ON()
   ~ExceptionState() {
     DCHECK(!had_exception_ || !isolate_ || isolate_->HasPendingException());
   }
-#else
-  ~ExceptionState() = default;
-#endif
 
   // Throws a DOMException due to the given exception code.
   NOINLINE void ThrowDOMException(DOMExceptionCode, const String& message);
@@ -127,6 +123,12 @@ class PLATFORM_EXPORT ExceptionState {
   v8::Isolate* GetIsolate() const { return isolate_; }
 
   ExceptionState& ReturnThis() { return *this; }
+
+  // A helper for correctly asserting no pending v8 exception (which,
+  // as it happens, involved properly excluding a termination exception).
+  static void AssertNoPendingException(v8::Isolate* isolate) {
+    CHECK(!isolate->HasPendingException() || isolate->IsExecutionTerminating());
+  }
 
  protected:
   // Delegated constructor for NonThrowableExceptionState
