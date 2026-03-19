@@ -201,6 +201,7 @@ if (enable_webui_generate_code_cache) {
       "side_panel/customize_chrome:code_cache_resources",
       "side_panel/reading_list:code_cache_resources",
       "side_panel/shared:code_cache_resources",
+      "webui_toolbar:code_cache_resources",
     ]
   }
 }

@@ -23,10 +23,12 @@
 #include "ui/webui/buildflags.h"
 
 #if BUILDFLAG(ENABLE_WEBUI_GENERATE_CODE_CACHE)
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/grit/side_panel_bookmarks_code_cache_resources_map.h"
 #include "chrome/grit/side_panel_customize_chrome_code_cache_resources_map.h"
 #include "chrome/grit/side_panel_reading_list_code_cache_resources_map.h"
 #include "chrome/grit/side_panel_shared_code_cache_resources_map.h"
+#include "chrome/grit/webui_toolbar_code_cache_resources_map.h"
 #include "content/public/common/content_features.h"
 #include "ui/webui/resources/grit/webui_code_cache_resources_map.h"
 #endif  // BUILDFLAG(ENABLE_WEBUI_GENERATE_CODE_CACHE)
@@ -212,6 +214,13 @@ base::flat_map<GURL, int> GetWebUIResourceUrlToCodeCacheMap() {
     AppendWebUIResourceURLToCodeCachePairs(
         content::kChromeUIScheme, chrome::kChromeUIReadLaterHost,
         kSidePanelReadingListCodeCacheResources, url_to_code_cache_pairs);
+
+    // chrome://webui_toolbar.top-chrome
+    if (features::IsWebUIToolbarEnabled()) {
+      AppendWebUIResourceURLToCodeCachePairs(
+          content::kChromeUIScheme, chrome::kChromeUIWebUIToolbarHost,
+          kWebuiToolbarCodeCacheResources, url_to_code_cache_pairs);
+    }
   }
 #endif  // BUILDFLAG(ENABLE_WEBUI_GENERATE_CODE_CACHE)
 

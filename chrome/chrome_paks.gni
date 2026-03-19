@@ -610,6 +610,7 @@ template("chrome_extra_paks") {
         "$root_gen_dir/chrome/side_panel_customize_chrome_code_cache_resources.pak",
         "$root_gen_dir/chrome/side_panel_reading_list_code_cache_resources.pak",
         "$root_gen_dir/chrome/side_panel_shared_code_cache_resources.pak",
+        "$root_gen_dir/chrome/webui_toolbar_code_cache_resources.pak",
         "$root_gen_dir/ui/webui/resources/webui_code_cache_resources.pak",
       ]
       deps += [
