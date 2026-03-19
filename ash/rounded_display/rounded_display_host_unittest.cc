@@ -57,32 +57,27 @@ class RoundedDisplayHostTest : public AshTestBase {
     AshTestBase::SetUp();
 
     auto host_window = std::make_unique<aura::Window>(/*delegate=*/nullptr);
-    host_window_ = host_window.release();
-    host_window_->Init(ui::LayerType::LAYER_SOLID_COLOR);
+    host_window->Init(ui::LayerType::LAYER_SOLID_COLOR);
 
     auto* root_window = ash_test_helper()->GetHost()->window();
-    root_window->AddChild(host_window_);
+    root_window->AddChild(host_window.get());
 
     host_ = std::make_unique<TestRoundedDisplayHost>(base::DoNothing());
-    host_->Init(host_window_);
-  }
-
-  // AshTestBase:
-  void TearDown() override {
-    // Host needs to outlive the `host_window_`.
-    host_.reset();
-    AshTestBase::TearDown();
+    // `host_` is a subclass of `FrameSinkHost` and manages the lifetime of
+    // `host_window` after this.
+    host_->Init(host_window.release());
   }
 
  protected:
-  raw_ptr<aura::Window, DanglingUntriaged> host_window_;
+  aura::Window* host_window() { return host_->host_window(); }
+
   std::unique_ptr<TestRoundedDisplayHost> host_;
 };
 
 TEST_F(RoundedDisplayHostTest, NewSurfaceIdIsCreatedWhenNeeded) {
   // RoundedDisplayHost creates the frame of the same size as the display size.
   UpdateDisplay("1920x1080");
-  host_window_->SetBounds(gfx::Rect(1920, 1080));
+  host_window()->SetBounds(gfx::Rect(1920, 1080));
 
   auto primary_display = display::Screen::Get()->GetPrimaryDisplay();
 
@@ -92,7 +87,7 @@ TEST_F(RoundedDisplayHostTest, NewSurfaceIdIsCreatedWhenNeeded) {
   // First frame is created.
   auto frame = host_->CreateCompositorFrameForTest(initial_frame_size,
                                                    initial_device_scale_factor);
-  auto frame_sink_id = host_window_->GetSurfaceId();
+  auto frame_sink_id = host_window()->GetSurfaceId();
   ASSERT_TRUE(frame_sink_id.is_valid());
 
   UpdateDisplay("1920x1080*2");
@@ -102,7 +97,7 @@ TEST_F(RoundedDisplayHostTest, NewSurfaceIdIsCreatedWhenNeeded) {
   auto old_frame_sink_id = frame_sink_id;
   frame = host_->CreateCompositorFrameForTest(frame->size_in_pixels(),
                                               frame->device_scale_factor());
-  auto new_frame_sink_id = host_window_->GetSurfaceId();
+  auto new_frame_sink_id = host_window()->GetSurfaceId();
   ASSERT_TRUE(new_frame_sink_id.is_valid());
   EXPECT_TRUE(new_frame_sink_id.IsNewerThan(old_frame_sink_id));
 
@@ -113,7 +108,7 @@ TEST_F(RoundedDisplayHostTest, NewSurfaceIdIsCreatedWhenNeeded) {
   old_frame_sink_id = new_frame_sink_id;
   frame = host_->CreateCompositorFrameForTest(frame->size_in_pixels(),
                                               frame->device_scale_factor());
-  new_frame_sink_id = host_window_->GetSurfaceId();
+  new_frame_sink_id = host_window()->GetSurfaceId();
   ASSERT_TRUE(new_frame_sink_id.is_valid());
   EXPECT_TRUE(new_frame_sink_id.IsNewerThan(old_frame_sink_id));
 
@@ -123,7 +118,7 @@ TEST_F(RoundedDisplayHostTest, NewSurfaceIdIsCreatedWhenNeeded) {
   // changed.
   frame = host_->CreateCompositorFrameForTest(frame->size_in_pixels(),
                                               frame->device_scale_factor());
-  new_frame_sink_id = host_window_->GetSurfaceId();
+  new_frame_sink_id = host_window()->GetSurfaceId();
   ASSERT_TRUE(new_frame_sink_id.is_valid());
 
   // We should have not identified a new surface.
