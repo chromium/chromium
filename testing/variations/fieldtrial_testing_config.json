@@ -5298,28 +5298,6 @@
             ]
         }
     ],
-    "ChromnientAimM3": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "contextualize-on-focus": "true",
-                        "enable-client-side-header": "true"
-                    },
-                    "enable_features": [
-                        "LensSearchAimM3"
-                    ]
-                }
-            ]
-        }
-    ],
     "ChromnientEduActionChipV2": [
         {
             "platforms": [
@@ -6482,6 +6460,51 @@
                     },
                     "enable_features": [
                         "ContextualCueing"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ContextualSearchBoxGlobalExpansion": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWithOmniboxAndAimM3",
+                    "params": {
+                        "auto-focus-searchbox": "true",
+                        "contextualize-on-focus": "true",
+                        "enable-client-side-header": "true",
+                        "page-content-request-id-fix": "true",
+                        "pdf-text-character-limit": "5000",
+                        "send-page-url-for-contextualization": "true",
+                        "show-contextual-searchbox-ghost-loader-loading-state": "true",
+                        "update-viewport-each-query": "true",
+                        "use-apc-as-context": "true",
+                        "use-inner-html-as-context": "false",
+                        "use-inner-text-as-context": "false",
+                        "use-pdf-interaction-type": "true",
+                        "use-pdf-vit-param": "true",
+                        "use-pdfs-as-context": "true",
+                        "use-updated-content-fields": "true",
+                        "use-webpage-interaction-type": "true",
+                        "use-webpage-vit-param": "true"
+                    },
+                    "enable_features": [
+                        "ContextualSuggestionsAblateOthersWhenPresent",
+                        "ContextualZeroSuggestLensFulfillment",
+                        "LensOverlayContextualSearchbox",
+                        "LensOverlayVisualSelectionUpdates",
+                        "LensSearchAimM3",
+                        "SendContextualUrlSuggestParam",
+                        "SendPageTitleSuggestParam",
+                        "ShowSuggestionsOnNoApc",
+                        "UseApcPaywallSignal"
                     ]
                 }
             ]
