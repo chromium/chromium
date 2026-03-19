@@ -55,8 +55,8 @@ import java.util.concurrent.TimeUnit;
 // TODO:(crbug.com/466442723): Try move RecentTabs related file to a separate package.
 @NullMarked
 public class RecentlyClosedEntriesManager {
+    public static final int RECENTLY_CLOSED_MAX_ENTRY_COUNT_WITH_WINDOW = 25;
     private static final int RECENTLY_CLOSED_MAX_ENTRY_COUNT = 5;
-    private static final int RECENTLY_CLOSED_MAX_ENTRY_COUNT_WITH_WINDOW = 25;
     private static final long SIX_MONTHS_MS = TimeUnit.DAYS.toMillis(6 * 30);
     private static @Nullable RecentlyClosedTabManager sRecentlyClosedTabManagerForTests;
     private static @Nullable Integer sMaxEntriesForTests;
@@ -467,7 +467,7 @@ public class RecentlyClosedEntriesManager {
             }
             if (excessInstanceIds.size() > 0) {
                 mMultiInstanceManager.closeWindows(
-                        excessInstanceIds, CloseWindowAppSource.RECENT_TABS);
+                        excessInstanceIds, CloseWindowAppSource.RECENTLY_CLOSED_LIMIT_EXCEEDED);
             }
 
             assert mRecentlyClosedEntries.size() <= RECENTLY_CLOSED_MAX_ENTRY_COUNT_WITH_WINDOW;

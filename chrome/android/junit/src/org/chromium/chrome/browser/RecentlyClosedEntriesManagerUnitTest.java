@@ -781,7 +781,9 @@ public class RecentlyClosedEntriesManagerUnitTest {
                 Arrays.asList(newWindow1, newWindow2), /* isPermanentDeletion= */ false);
         ArgumentCaptor<List<Integer>> listCaptor = ArgumentCaptor.forClass(List.class);
         verify(mMultiInstanceManager)
-                .closeWindows(listCaptor.capture(), eq(CloseWindowAppSource.RECENT_TABS));
+                .closeWindows(
+                        listCaptor.capture(),
+                        eq(CloseWindowAppSource.RECENTLY_CLOSED_LIMIT_EXCEEDED));
         assertEquals(2, listCaptor.getValue().size());
         verify(mRecentlyClosedTabManager, never()).clearLeastRecentlyUsedClosedEntries(anyInt());
 

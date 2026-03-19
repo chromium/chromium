@@ -3646,7 +3646,7 @@ chromium-metrics-reviews@google.com.
       variants="ActivityIndexMismatchAssignmentState"/>
 </histogram>
 
-<histogram name="Android.MultiWindowMode.CloseWindow.AppSource2"
+<histogram name="Android.MultiWindowMode.CloseWindow.AppSource3"
     enum="CloseWindowAppSource" expires_after="2026-10-28">
   <owner>aishwaryarj@google.com</owner>
   <owner>clank-large-form-factors@google.com</owner>

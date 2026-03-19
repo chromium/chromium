@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.multiwindow;
 
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.multiwindow.MultiWindowUtils.INVALID_TASK_ID;
 
 import android.app.Activity;
 import android.app.ActivityManager;
@@ -36,6 +37,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.RecentlyClosedEntriesManager;
 import org.chromium.chrome.browser.RecentlyClosedEntriesManagerTrackerFactory;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
@@ -865,13 +867,43 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         }
 
         List<Integer> instancesRemoved = new ArrayList<>();
-        // Remove persistent data for unrecoverable instances.
+        List<Integer> inactiveInstances = new ArrayList<>();
         for (int i : MultiWindowUtils.getPersistedInstanceIds(PersistedInstanceType.ANY)) {
+            // Remove persistent data for unrecoverable instances.
             if (!MultiWindowUtils.isRestorableInstance(i)) {
                 instancesRemoved.add(i);
                 // An instance with no live task is deleted if it has no tabs.
                 removeInstanceInfo(i, CloseWindowAppSource.NO_TABS_IN_WINDOW);
+            } else if (ChromeMultiInstancePersistentStore.readTaskId(i) == INVALID_TASK_ID) {
+                inactiveInstances.add(i);
             }
+        }
+
+        int numInactiveInstances = inactiveInstances.size();
+
+        // This could be invoked during early startup before mTabModelOrchestratorSupplier is
+        // initialized. In that case, skip and let a subsequent call handle it.
+        int inactiveInstanceLimit =
+                RecentlyClosedEntriesManager.RECENTLY_CLOSED_MAX_ENTRY_COUNT_WITH_WINDOW;
+        if (numInactiveInstances > inactiveInstanceLimit
+                && mTabModelOrchestratorSupplier.get() != null) {
+            // Sort list by last closure time or last accessed time to ensure only the oldest
+            // inactive instances are closed.
+            inactiveInstances.sort(
+                    (id1, id2) -> {
+                        long time1 = ChromeMultiInstancePersistentStore.readClosureTime(id1);
+                        if (time1 <= 0) {
+                            time1 = ChromeMultiInstancePersistentStore.readLastAccessedTime(id1);
+                        }
+                        long time2 = ChromeMultiInstancePersistentStore.readClosureTime(id2);
+                        if (time2 <= 0) {
+                            time2 = ChromeMultiInstancePersistentStore.readLastAccessedTime(id2);
+                        }
+                        return Long.compare(time2, time1);
+                    });
+            closeWindows(
+                    inactiveInstances.subList(inactiveInstanceLimit, numInactiveInstances),
+                    CloseWindowAppSource.RECENTLY_CLOSED_LIMIT_EXCEEDED);
         }
 
         if (!tasksRemoved.isEmpty() || !instancesRemoved.isEmpty()) {

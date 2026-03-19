@@ -27,6 +27,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.multiwindow.MultiWindowUtils.INVALID_TASK_ID;
 import static org.chromium.chrome.browser.tabwindow.TabWindowManager.INVALID_WINDOW_ID;
 
 import android.app.Activity;
@@ -1027,6 +1028,40 @@ public class MultiInstanceManagerApi31UnitTest {
         assertEquals(
                 "INACTIVE | REGULAR should return 1 instance", 1, inactiveRegularInstances.size());
         assertEquals(2, inactiveRegularInstances.get(0).instanceId);
+    }
+
+    @Test
+    public void testGetInstanceInfo_closesInactiveInstancesExceedingLimit() {
+        // Setup 30 inactive instances with distinct lastAccessedTimes.
+        // MAX_INACTIVE_INSTANCE_COUNT is 25.
+        // Use instance IDs from 100 to 129 to avoid conflict with existing test setup IDs.
+        for (int i = 0; i < 30; i++) {
+            int instanceId = i + 100;
+            MultiWindowTestUtils.createInstance(
+                    instanceId, "https://url" + instanceId + ".com", 1, INVALID_TASK_ID);
+            // Advance time to ensure each instance has a different lastAccessedTime.
+            mFakeTimeTestRule.advanceMillis(1);
+        }
+
+        // Trigger cleanup by calling getInstanceInfo.
+        mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY);
+
+        // Verify closeWindows was called with the inactive instances exceeding the limit.
+        ArgumentCaptor<List<Integer>> captor = ArgumentCaptor.forClass(List.class);
+        verify(mMultiInstanceManager)
+                .closeWindows(
+                        captor.capture(), eq(CloseWindowAppSource.RECENTLY_CLOSED_LIMIT_EXCEEDED));
+
+        List<Integer> closedInstances = captor.getValue();
+        // Since we have 30 inactive instances and the limit is 25, 5 should be closed.
+        assertEquals("Should have closed 5 instances", 5, closedInstances.size());
+
+        // The first 5 instances (100-104) are the oldest and should have been closed.
+        for (int i = 0; i < 5; i++) {
+            assertTrue(
+                    "Instance " + (i + 100) + " should be among closed instances.",
+                    closedInstances.contains(i + 100));
+        }
     }
 
     @Test

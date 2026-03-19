@@ -44,7 +44,7 @@ public abstract class MultiInstanceManager {
 
     @VisibleForTesting
     static final String CLOSE_WINDOW_APP_SOURCE_HISTOGRAM =
-            "Android.MultiWindowMode.CloseWindow.AppSource2";
+            "Android.MultiWindowMode.CloseWindow.AppSource3";
 
     // These values are persisted to logs. Entries should not be renumbered and numeric values
     // should never be reused. If none of the existing values are suitable for a feature that
@@ -92,7 +92,8 @@ public abstract class MultiInstanceManager {
         CloseWindowAppSource.WINDOW_MANAGER,
         CloseWindowAppSource.RETENTION_PERIOD_EXPIRATION,
         CloseWindowAppSource.NO_TABS_IN_WINDOW,
-        CloseWindowAppSource.RECENT_TABS
+        CloseWindowAppSource.RECENT_TABS,
+        CloseWindowAppSource.RECENTLY_CLOSED_LIMIT_EXCEEDED
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface CloseWindowAppSource {
@@ -101,8 +102,10 @@ public abstract class MultiInstanceManager {
         int RETENTION_PERIOD_EXPIRATION = 2;
         int NO_TABS_IN_WINDOW = 3;
         int RECENT_TABS = 4;
-        int NUM_ENTRIES = 5;
+        int RECENTLY_CLOSED_LIMIT_EXCEEDED = 5;
+        int NUM_ENTRIES = 6;
     }
+
     // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml)
 
     @IntDef({

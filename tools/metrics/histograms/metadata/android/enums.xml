@@ -946,6 +946,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Instance retention period expiration"/>
   <int value="3" label="No tabs in window"/>
   <int value="4" label="Recent Tabs page"/>
+  <int value="5" label="Recently closed limit exceeded"/>
 </enum>
 
 <enum name="ContactsPickerDialogAction">
