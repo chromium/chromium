@@ -20,22 +20,17 @@ std::vector<uint8_t> EncryptPayload(
     base::span<const uint8_t> nonce) {
   std::string payload_bytes;
   payload.SerializeToString(&payload_bytes);
-
-  crypto::Aead aead(crypto::Aead::AES_256_GCM);
-  aead.Init(secret);
-  return aead.Seal(
-      std::vector<uint8_t>(payload_bytes.begin(), payload_bytes.end()), nonce,
-      /*additional_data=*/base::span<uint8_t>());
+  return crypto::aead::Seal(crypto::aead::AES_256_GCM, secret,
+                            base::as_byte_span(payload_bytes), nonce,
+                            /*associated_data=*/{});
 }
 
 std::optional<std::vector<uint8_t>> DecryptPayload(
     base::span<const uint8_t> payload,
     base::span<const uint8_t> secret,
     base::span<const uint8_t> nonce) {
-  crypto::Aead aead(crypto::Aead::AES_256_GCM);
-  aead.Init(secret);
-  return aead.Open(payload, nonce,
-                   /*additional_data=*/base::span<uint8_t>());
+  return crypto::aead::Open(crypto::aead::AES_256_GCM, secret, payload, nonce,
+                            /*associated_data=*/{});
 }
 
 std::optional<proto::V1Message> ParseAuthMessage(

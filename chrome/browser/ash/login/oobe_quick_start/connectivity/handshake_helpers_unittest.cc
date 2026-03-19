@@ -52,12 +52,9 @@ std::vector<uint8_t> BuildRawAuthMessage(
   }
   proto::V1Message* v1 = auth_message.mutable_v1();
   if (payload) {
-    crypto::Aead aead(crypto::Aead::AES_256_GCM);
-    aead.Init(kSharedSecret);
-    std::vector<uint8_t> enc_payload = aead.Seal(
-        std::vector<uint8_t>(payload->begin(), payload->end()), kNonce,
-        /*additional_data=*/base::span<uint8_t>());
-
+    std::vector<uint8_t> enc_payload =
+        crypto::aead::Seal(crypto::aead::AES_256_GCM, kSharedSecret, *payload,
+                           kNonce, /*additional_data=*/{});
     v1->set_payload(std::string(enc_payload.begin(), enc_payload.end()));
   }
   if (nonce) {
