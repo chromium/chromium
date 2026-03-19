@@ -424,7 +424,11 @@ void VerticalTabView::OnMouseMoved(const ui::MouseEvent& event) {
   if (split_) {
     return;
   }
-
+  // Windows synthesizes mouse move events if the user does a touch drag.
+  // Don't set the hover state for those events.
+  if (event.flags() & ui::EF_FROM_TOUCH) {
+    return;
+  }
   // Linux enter/leave events are sometimes flaky, so we don't want to "miss"
   // an enter event and fail to hover the tab.
   UpdateHovered(true);
@@ -436,6 +440,11 @@ void VerticalTabView::OnMouseEntered(const ui::MouseEvent& event) {
 
   // Hover state is handled by the parent if it is split.
   if (split_) {
+    return;
+  }
+  // Windows synthesizes mouse events if the user does a touch drag.
+  // Don't set the hover state for those events.
+  if (event.flags() & ui::EF_FROM_TOUCH) {
     return;
   }
 
