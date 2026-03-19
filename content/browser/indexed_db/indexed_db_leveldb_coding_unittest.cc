@@ -1184,4 +1184,42 @@ TEST(IndexedDBLevelDBCodingTest, Empty) {
   EXPECT_EQ(KeyPrefix::EncodeInternal(0, 0, 0), KeyPrefix::EncodeEmpty());
 }
 
+TEST(IndexedDBLevelDBCodingTest, CompareEncodedIDBKeysInvalidTypeByte) {
+  // Valid type bytes are 0-6. Byte value 7 and above are invalid.
+  constexpr unsigned char kInvalidTypeByte = 7;
+
+  std::string valid_key;
+  EncodeIDBKey(IndexedDBKey(u"valid key"), &valid_key);
+
+  std::string invalid_key;
+  EncodeByte(kInvalidTypeByte, &invalid_key);
+
+  // Comparing with invalid key in first position should fail.
+  {
+    std::string_view slice_a(invalid_key);
+    std::string_view slice_b(valid_key);
+    bool ok = true;
+    CompareEncodedIDBKeys(&slice_a, &slice_b, &ok);
+    EXPECT_FALSE(ok);
+  }
+
+  // Comparing with invalid key in second position should fail.
+  {
+    std::string_view slice_a(valid_key);
+    std::string_view slice_b(invalid_key);
+    bool ok = true;
+    CompareEncodedIDBKeys(&slice_a, &slice_b, &ok);
+    EXPECT_FALSE(ok);
+  }
+
+  // Comparing two invalid keys should also fail.
+  {
+    std::string_view slice_a(invalid_key);
+    std::string_view slice_b(invalid_key);
+    bool ok = true;
+    CompareEncodedIDBKeys(&slice_a, &slice_b, &ok);
+    EXPECT_FALSE(ok);
+  }
+}
+
 }  // namespace content::indexed_db

@@ -8,6 +8,7 @@
 #include <iterator>
 #include <limits>
 #include <list>
+#include <optional>
 #include <sstream>
 #include <string>
 #include <string_view>
@@ -1062,7 +1063,8 @@ bool ExtractEncodedIDBKey(std::string_view* slice, std::string* result) {
   return true;
 }
 
-static blink::mojom::IDBKeyType KeyTypeByteToKeyType(unsigned char type) {
+static std::optional<blink::mojom::IDBKeyType> KeyTypeByteToKeyType(
+    unsigned char type) {
   switch (type) {
     case kIndexedDBKeyNullTypeByte:
       return blink::mojom::IDBKeyType::Invalid;
@@ -1078,10 +1080,9 @@ static blink::mojom::IDBKeyType KeyTypeByteToKeyType(unsigned char type) {
       return blink::mojom::IDBKeyType::Number;
     case kIndexedDBKeyMinKeyTypeByte:
       return blink::mojom::IDBKeyType::Min;
+    default:
+      return std::nullopt;
   }
-
-  DUMP_WILL_BE_NOTREACHED() << "Got invalid type " << type;
-  return blink::mojom::IDBKeyType::Invalid;
 }
 
 int CompareEncodedStringsWithLength(std::string_view* slice1,
@@ -1183,9 +1184,17 @@ int CompareEncodedIDBKeys(std::string_view* slice_a,
   slice_a->remove_prefix(1);
   slice_b->remove_prefix(1);
 
-  if (int x = CompareTypes(KeyTypeByteToKeyType(type_a),
-                           KeyTypeByteToKeyType(type_b)))
+  std::optional<blink::mojom::IDBKeyType> key_type_a =
+      KeyTypeByteToKeyType(type_a);
+  std::optional<blink::mojom::IDBKeyType> key_type_b =
+      KeyTypeByteToKeyType(type_b);
+  if (!key_type_a || !key_type_b) {
+    *ok = false;
+    return 0;
+  }
+  if (int x = CompareTypes(*key_type_a, *key_type_b)) {
     return x;
+  }
 
   switch (type_a) {
     case kIndexedDBKeyNullTypeByte:
