@@ -104,6 +104,7 @@ export class ClientRenderer {
     }
 
     this.players = {};
+    this.registeredCdms = [];
     this.selectedPlayer = null;
     this.selectedAudioComponentType = null;
     this.selectedAudioComponentId = null;
@@ -133,6 +134,11 @@ export class ClientRenderer {
     this.saveLogButton = $('save-log-button');
     if (this.saveLogButton) {
       this.saveLogButton.onclick = this.saveLog_.bind(this);
+    }
+
+    this.copyCdmsButton = $('copy-cdm-button');
+    if (this.copyCdmsButton) {
+      this.copyCdmsButton.onclick = this.copyCdms_.bind(this);
     }
 
     this.closePlayerViewButton = $('close-player-view-button');
@@ -211,11 +217,19 @@ export class ClientRenderer {
    * @param sessions A list of CDM info that contain the current state.
    */
   updateRegisteredCdms(cdms) {
-    removeChildren(this.cdmListElement_);
+    this.registeredCdms = cdms || [];
+    const fragment = document.createDocumentFragment();
 
-    cdms.forEach(cdm => {
-      this.cdmListElement_.appendChild(this.createCdmRow_(cdm));
+    this.registeredCdms.forEach(cdm => {
+      fragment.appendChild(this.createCdmRow_(cdm));
     });
+
+    removeChildren(this.cdmListElement_);
+    this.cdmListElement_.appendChild(fragment);
+
+    if (this.copyCdmsButton) {
+      this.copyCdmsButton.disabled = this.registeredCdms.length === 0;
+    }
   }
 
   /**
@@ -327,7 +341,8 @@ export class ClientRenderer {
   redrawVideoCaptureCapabilities(videoCaptureCapabilities, keys) {
     const copyButtonElement = $('video-capture-capabilities-copy-button');
     copyButtonElement.onclick = function() {
-      this.renderClipboard(JSON.stringify(videoCaptureCapabilities, null, 2));
+      this.renderClipboard(
+          JSON.stringify(videoCaptureCapabilities, null, 2), copyButtonElement);
     }.bind(this);
 
     const videoTableBodyElement = $('video-capture-capabilities-tbody');
@@ -733,11 +748,41 @@ export class ClientRenderer {
     const p = this.selectedPlayer;
     const playerLog = {properties: p.properties, events: p.allEvents};
 
-    this.renderClipboard(JSON.stringify(playerLog, null, 2));
+    this.renderClipboard(
+        JSON.stringify(playerLog, null, 2), this.copyLogButton);
   }
 
-  renderClipboard(string) {
+  copyCdms_() {
+    if (!this.registeredCdms || this.registeredCdms.length === 0) {
+      return;
+    }
+
+    const orderedCdms = this.registeredCdms.map(cdm => {
+      return {
+        name: cdm.name || '',
+        version: cdm.version || '',
+        status: cdm.status || '',
+        key_system: cdm.key_system || '',
+        robustness: cdm.robustness || '',
+        path: cdm.path || '',
+        capability: cdm.capability || {},
+      };
+    });
+    this.renderClipboard(
+        JSON.stringify(orderedCdms, null, 2), this.copyCdmsButton);
+  }
+
+  renderClipboard(string, feedbackElement) {
     navigator.clipboard.writeText(string);
+    if (feedbackElement) {
+      const originalText = feedbackElement.textContent;
+      feedbackElement.textContent = 'Copied!';
+      feedbackElement.disabled = true;
+      setTimeout(() => {
+        feedbackElement.textContent = originalText;
+        feedbackElement.disabled = false;
+      }, 1000);
+    }
   }
 
   onTextChange_(event) {

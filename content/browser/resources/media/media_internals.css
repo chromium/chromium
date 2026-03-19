@@ -153,7 +153,8 @@ h3 {
 
 .property-wrapper h2,
 #log-wrapper h2,
-#video-capture-capabilities-wrapper h2 {
+#video-capture-capabilities-wrapper h2,
+#cdms-panel h2 {
   display: flex;
   align-items: center;
 }
