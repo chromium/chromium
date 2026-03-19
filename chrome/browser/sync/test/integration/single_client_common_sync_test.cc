@@ -71,17 +71,8 @@ namespace {
 std::unique_ptr<syncer::LoopbackServerEntity> CreateTombstone(
     syncer::DataType data_type,
     std::string_view client_tag) {
-  const std::string client_tag_hash =
-      syncer::ClientTagHash::FromUnhashed(data_type, client_tag).value();
-
-  // For all data types except bookmarks, the server ID is built based on the
-  // client tag *hash*. For bookmarks, the non-hashed client tag (aka UUID) is
-  // used.
-  return syncer::PersistentTombstoneEntity::CreateNew(
-      syncer::LoopbackServerEntity::CreateId(
-          data_type, (data_type == syncer::BOOKMARKS) ? std::string(client_tag)
-                                                      : client_tag_hash),
-      client_tag_hash);
+  return syncer::PersistentTombstoneEntity::CreateNewForTest(
+      data_type, std::string(client_tag));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

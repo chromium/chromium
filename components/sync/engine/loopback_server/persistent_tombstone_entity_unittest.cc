@@ -4,6 +4,7 @@
 
 #include "components/sync/engine/loopback_server/persistent_tombstone_entity.h"
 
+#include "components/sync/base/client_tag_hash.h"
 #include "components/sync/protocol/sync_entity.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -20,10 +21,10 @@ TEST(PersistentTombstoneEntityTest, CreateFromEntity) {
 }
 
 TEST(PersistentTombstoneEntityTest, CreateNew) {
-  ASSERT_FALSE(
-      PersistentTombstoneEntity::CreateNew("invalid_id", "client_tag_hash"));
-  ASSERT_TRUE(
-      PersistentTombstoneEntity::CreateNew("37702_id", "client_tag_hash"));
+  ASSERT_FALSE(PersistentTombstoneEntity::CreateNewForTest(
+      "invalid_id", ClientTagHash::FromHashed("client_tag_hash")));
+  ASSERT_TRUE(PersistentTombstoneEntity::CreateNewForTest(
+      "37702_id", ClientTagHash::FromHashed("client_tag_hash")));
 }
 
 }  // namespace

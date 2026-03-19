@@ -7,7 +7,9 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
+#include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/engine/loopback_server/loopback_server_entity.h"
 #include "components/sync/protocol/sync_entity.pb.h"
@@ -26,15 +28,19 @@ class PersistentTombstoneEntity : public LoopbackServerEntity {
 
   // Factory function for PersistentTombstoneEntity.
   static std::unique_ptr<LoopbackServerEntity> CreateFromEntity(
-      const sync_pb::SyncEntity& id);
+      const sync_pb::SyncEntity& entity);
 
-  static std::unique_ptr<LoopbackServerEntity> CreateNew(
-      const std::string& id,
-      const std::string& client_tag_hash);
+  static std::unique_ptr<LoopbackServerEntity> CreateNewForTest(
+      syncer::DataType data_type,
+      std::string_view client_tag);
 
-  static std::unique_ptr<LoopbackServerEntity> CreateNewShared(
+  static std::unique_ptr<LoopbackServerEntity> CreateNewForTest(
       const std::string& id,
-      const std::string& client_tag_hash,
+      const ClientTagHash& client_tag_hash);
+
+  static std::unique_ptr<LoopbackServerEntity> CreateNewSharedForTest(
+      syncer::DataType data_type,
+      std::string_view client_tag,
       const sync_pb::SyncEntity::CollaborationMetadata& collaboration_metadata);
 
   // LoopbackServerEntity implementation.
@@ -49,18 +55,18 @@ class PersistentTombstoneEntity : public LoopbackServerEntity {
   static std::unique_ptr<LoopbackServerEntity> CreateNewInternal(
       const std::string& id,
       int64_t version,
-      const std::string& client_tag_hash,
+      const ClientTagHash& client_tag_hash,
       const sync_pb::SyncEntity::CollaborationMetadata& collaboration_metadata);
 
   PersistentTombstoneEntity(
       const std::string& id,
       int64_t version,
       const syncer::DataType& data_type,
-      const std::string& client_tag_hash,
+      const ClientTagHash& client_tag_hash,
       const sync_pb::SyncEntity::CollaborationMetadata& collaboration_metadata);
 
   // The tag hash for this entity.
-  const std::string client_tag_hash_;
+  const ClientTagHash client_tag_hash_;
 
   // Collaboration metadata for this entity for shared data types.
   const sync_pb::SyncEntity::CollaborationMetadata collaboration_metadata_;

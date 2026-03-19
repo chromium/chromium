@@ -902,9 +902,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientBookmarksSyncTest, DownloadDeletedBookmark) {
   std::vector<sync_pb::SyncEntity> server_bookmarks =
       GetFakeServer()->GetSyncEntitiesByDataType(syncer::BOOKMARKS);
   ASSERT_EQ(1ul, server_bookmarks.size());
-  std::string entity_id = server_bookmarks[0].id_string();
   std::unique_ptr<syncer::LoopbackServerEntity> tombstone(
-      syncer::PersistentTombstoneEntity::CreateNew(entity_id, std::string()));
+      syncer::PersistentTombstoneEntity::CreateFromEntity(server_bookmarks[0]));
   GetFakeServer()->InjectEntity(std::move(tombstone));
 
   const int kExpectedCountAfterDeletion = 0;

@@ -169,16 +169,10 @@ class SingleClientWebAuthnCredentialsSyncTestBase : public SyncTest {
   }
 
   // Marks the WEBAUTHN_CREDENTIAL with `sync_id` as deleted on the server.
-  void DeletePasskeyFromFakeServer(const std::string& sync_id) {
-    const std::string client_tag_hash =
-        syncer::ClientTagHash::FromUnhashed(syncer::WEBAUTHN_CREDENTIAL,
-                                            sync_id)
-            .value();
+  void DeletePasskeyFromFakeServer(std::string_view sync_id) {
     fake_server_->InjectEntity(
-        syncer::PersistentTombstoneEntity::PersistentTombstoneEntity::CreateNew(
-            syncer::LoopbackServerEntity::CreateId(syncer::WEBAUTHN_CREDENTIAL,
-                                                   client_tag_hash),
-            client_tag_hash));
+        syncer::PersistentTombstoneEntity::CreateNewForTest(
+            syncer::WEBAUTHN_CREDENTIAL, sync_id));
   }
 
   webauthn::PasskeySyncBridge& GetModel() {

@@ -13,7 +13,6 @@
 #include "components/plus_addresses/core/browser/settings/plus_address_setting_sync_test_util.h"
 #include "components/plus_addresses/core/browser/settings/plus_address_setting_sync_util.h"
 #include "components/plus_addresses/core/common/features.h"
-#include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
 #include "components/sync/engine/loopback_server/persistent_unique_client_entity.h"
@@ -174,15 +173,9 @@ IN_PROC_BROWSER_TEST_P(SingleClientPlusAddressSettingSyncTest,
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(WaitForPlusAddressEnabledState(true));
   // Simulate removing the `kIsEnabledSettingName` setting on the server.
-  const std::string client_tag_hash =
-      syncer::ClientTagHash::FromUnhashed(syncer::PLUS_ADDRESS_SETTING,
-                                          kIsEnabledSettingName)
-          .value();
   GetFakeServer()->InjectEntity(
-      syncer::PersistentTombstoneEntity::PersistentTombstoneEntity::CreateNew(
-          syncer::LoopbackServerEntity::CreateId(syncer::PLUS_ADDRESS_SETTING,
-                                                 client_tag_hash),
-          client_tag_hash));
+      syncer::PersistentTombstoneEntity::CreateNewForTest(
+          syncer::PLUS_ADDRESS_SETTING, kIsEnabledSettingName));
   // Non-existing settings behave as if they have their (setting-specific)
   // default value - which is true for the enabled setting.
   EXPECT_TRUE(WaitForPlusAddressEnabledState(true));

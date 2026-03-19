@@ -358,21 +358,13 @@ void DeleteAutofillProfileFromFakeSyncServer(std::string guid) {
 
   std::vector<sync_pb::SyncEntity> autofill_profiles =
       gSyncFakeServer->GetSyncEntitiesByDataType(syncer::AUTOFILL_PROFILE);
-  std::string entity_id;
-  std::string client_tag_hash;
   for (const sync_pb::SyncEntity& autofill_profile : autofill_profiles) {
     if (autofill_profile.specifics().autofill_profile().guid() == guid) {
-      entity_id = autofill_profile.id_string();
-      client_tag_hash = autofill_profile.client_tag_hash();
+      gSyncFakeServer->InjectEntity(
+          syncer::PersistentTombstoneEntity::CreateFromEntity(
+              autofill_profile));
       break;
     }
-  }
-  // Delete the entity if it exists.
-  if (!entity_id.empty()) {
-    std::unique_ptr<syncer::LoopbackServerEntity> entity;
-    entity = syncer::PersistentTombstoneEntity::CreateNew(entity_id,
-                                                          client_tag_hash);
-    gSyncFakeServer->InjectEntity(std::move(entity));
   }
 }
 

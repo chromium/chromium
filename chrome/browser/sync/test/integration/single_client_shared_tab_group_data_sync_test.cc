@@ -28,7 +28,6 @@
 #include "components/saved_tab_groups/public/versioning_message_controller.h"
 #include "components/saved_tab_groups/test_support/saved_tab_group_test_utils.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/collaboration_id.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/protocol/saved_tab_group_specifics.pb.h"
@@ -273,17 +272,10 @@ class SingleClientSharedTabGroupDataSyncTest
   void InjectTombstoneToFakeServer(
       const sync_pb::SharedTabGroupDataSpecifics& shared_group_specifics,
       const syncer::CollaborationId& collaboration_id) {
-    const syncer::ClientTagHash shared_group_client_tag_hash =
-        syncer::ClientTagHash::FromUnhashed(
-            syncer::SHARED_TAB_GROUP_DATA,
-            GetClientTag(shared_group_specifics, collaboration_id));
-
     GetFakeServer()->InjectEntity(
-        syncer::PersistentTombstoneEntity::CreateNewShared(
-            syncer::LoopbackServerEntity::CreateId(
-                syncer::SHARED_TAB_GROUP_DATA,
-                shared_group_client_tag_hash.value()),
-            shared_group_client_tag_hash.value(),
+        syncer::PersistentTombstoneEntity::CreateNewSharedForTest(
+            syncer::SHARED_TAB_GROUP_DATA,
+            GetClientTag(shared_group_specifics, collaboration_id),
             MakeCollaborationMetadata(collaboration_id)));
   }
 

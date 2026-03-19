@@ -116,15 +116,10 @@ class SingleClientPlusAddressSyncTest
   }
 
   // Injects a tombstone for the PLUS_ADDRESS entity with given `client_tag`.
-  void InjectTombstoneToServer(const std::string& client_tag) {
-    const std::string client_tag_hash =
-        syncer::ClientTagHash::FromUnhashed(syncer::PLUS_ADDRESS, client_tag)
-            .value();
+  void InjectTombstoneToServer(std::string_view client_tag) {
     fake_server_->InjectEntity(
-        syncer::PersistentTombstoneEntity::PersistentTombstoneEntity::CreateNew(
-            syncer::LoopbackServerEntity::CreateId(syncer::PLUS_ADDRESS,
-                                                   client_tag_hash),
-            client_tag_hash));
+        syncer::PersistentTombstoneEntity::CreateNewForTest(
+            syncer::PLUS_ADDRESS, client_tag));
   }
 
  private:

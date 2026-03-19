@@ -10,7 +10,6 @@
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "components/autofill/core/browser/webdata/account_settings/account_setting_service.h"
 #include "components/autofill/core/browser/webdata/account_settings/account_setting_sync_util.h"
-#include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
 #include "components/sync/engine/loopback_server/persistent_unique_client_entity.h"
@@ -141,15 +140,9 @@ IN_PROC_BROWSER_TEST_P(SingleClientAccountSettingSyncTest,
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(WaitForWalletSurfacingState(true));
   // Simulate removing the `kIsEnabledSettingName` setting on the server.
-  const std::string client_tag_hash =
-      syncer::ClientTagHash::FromUnhashed(
-          syncer::ACCOUNT_SETTING, kWalletPrivacyContextualSurfacingSetting)
-          .value();
   GetFakeServer()->InjectEntity(
-      syncer::PersistentTombstoneEntity::PersistentTombstoneEntity::CreateNew(
-          syncer::LoopbackServerEntity::CreateId(syncer::ACCOUNT_SETTING,
-                                                 client_tag_hash),
-          client_tag_hash));
+      syncer::PersistentTombstoneEntity::CreateNewForTest(
+          syncer::ACCOUNT_SETTING, kWalletPrivacyContextualSurfacingSetting));
   // Non-existing settings behave as if they have their default value.
   EXPECT_TRUE(WaitForWalletSurfacingState(false));
 }

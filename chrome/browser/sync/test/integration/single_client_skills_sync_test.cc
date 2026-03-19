@@ -16,7 +16,6 @@
 #include "components/skills/features.h"
 #include "components/skills/public/skill.h"
 #include "components/skills/public/skills_service.h"
-#include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
 #include "components/sync/engine/loopback_server/persistent_tombstone_entity.h"
@@ -200,13 +199,9 @@ class SingleClientSkillsSyncTest
   }
 
   void InjectTombstoneToFakeServer(const std::string& skill_id) {
-    syncer::ClientTagHash client_tag_hash =
-        syncer::ClientTagHash::FromUnhashed(syncer::SKILL, skill_id);
-
-    fake_server_->InjectEntity(syncer::PersistentTombstoneEntity::CreateNew(
-        syncer::LoopbackServerEntity::CreateId(syncer::SKILL,
-                                               client_tag_hash.value()),
-        client_tag_hash.value()));
+    fake_server_->InjectEntity(
+        syncer::PersistentTombstoneEntity::CreateNewForTest(syncer::SKILL,
+                                                            skill_id));
   }
 
  private:

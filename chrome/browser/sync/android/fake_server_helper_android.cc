@@ -407,7 +407,8 @@ static void JNI_FakeServerHelper_DeleteEntity(
   fake_server::FakeServer* fake_server_ptr =
       reinterpret_cast<fake_server::FakeServer*>(fake_server);
   fake_server_ptr->InjectEntity(
-      syncer::PersistentTombstoneEntity::CreateNew(id, client_tag_hash));
+      syncer::PersistentTombstoneEntity::CreateNewForTest(  // IN-TEST
+          id, syncer::ClientTagHash::FromHashed(client_tag_hash)));
 }
 
 static void JNI_FakeServerHelper_SetCustomPassphraseNigori(

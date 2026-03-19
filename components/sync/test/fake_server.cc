@@ -283,17 +283,13 @@ void FakeServer::HandleEvent(const sync_pb::EventRequest& request) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   if (request.has_sync_disabled()) {
-    const std::string& cache_guid = request.sync_disabled().cache_guid();
     sync_pb::DeviceInfoSpecifics specifics;
-    specifics.set_cache_guid(cache_guid);
-    std::string client_tag = syncer::DeviceInfoUtil::SpecificsToTag(specifics);
-    syncer::ClientTagHash client_tag_hash =
-        syncer::ClientTagHash::FromUnhashed(syncer::DEVICE_INFO, client_tag);
-    std::string id = syncer::LoopbackServerEntity::CreateId(
-        syncer::DEVICE_INFO, client_tag_hash.value());
+    specifics.set_cache_guid(request.sync_disabled().cache_guid());
 
-    InjectEntity(syncer::PersistentTombstoneEntity::CreateNew(
-        id, client_tag_hash.value()));
+    InjectEntity(
+        syncer::PersistentTombstoneEntity::CreateNewForTest(  // IN-TEST
+            syncer::DEVICE_INFO,
+            syncer::DeviceInfoUtil::SpecificsToTag(specifics)));
   }
 }
 
