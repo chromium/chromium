@@ -45,7 +45,7 @@ class MessageTest : public testing::Test {
         .WillRepeatedly([&](IpczDriverHandle driver_transport, const void* data,
                             size_t num_bytes, const IpczDriverHandle* handles,
                             size_t num_handles, uint32_t, const void*) {
-          const uint8_t* bytes = static_cast<const uint8_t*>(data);
+          const uint8_t* bytes = reinterpret_cast<const uint8_t*>(data);
           received_messages_.push(
               {{bytes, IPCZ_UNSAFE_TODO(bytes + num_bytes)},
                {handles, IPCZ_UNSAFE_TODO(handles + num_handles)}});
@@ -73,7 +73,7 @@ class MessageTest : public testing::Test {
           if (!data || !handles || data_capacity < 2 || handle_capacity < 1) {
             return IPCZ_RESULT_RESOURCE_EXHAUSTED;
           }
-          static_cast<volatile uint16_t*>(data)[0] =
+          reinterpret_cast<volatile uint16_t*>(data)[0] =
               static_cast<uint16_t>(handle >> 16);
           handles[0] = handle & 0xffff;
           return IPCZ_RESULT_OK;
@@ -94,7 +94,7 @@ class MessageTest : public testing::Test {
           ABSL_ASSERT(num_bytes == 2);
           ABSL_ASSERT(num_handles == 1);
           const uint16_t data_value =
-              static_cast<const volatile uint16_t*>(data)[0];
+              reinterpret_cast<const volatile uint16_t*>(data)[0];
           *handle =
               (static_cast<IpczDriverHandle>(data_value) << 16) | handles[0];
           return IPCZ_RESULT_OK;
@@ -381,6 +381,66 @@ TEST_F(MessageTest, UnclaimedDriverObjects) {
   EXPECT_EQ(kObjectHandle1, out.driver_objects()[0].release());
   EXPECT_EQ(kObjectHandle2, out.driver_objects()[1].release());
   EXPECT_EQ(kObjectHandle3, out.driver_objects()[2].release());
+}
+
+TEST_F(MessageTest, OverlappingDriverHandles) {
+  Message in(0, 0);
+
+  // Driver objects are serialized as an array of raw bytes and an array of
+  // driver handles. MockDriver uses 32-bit handle values and packs the high 16
+  // bits into the raw bytes and the low 16 bits into the handle value; each
+  // DriverObject is expected to be represented with exactly 2 raw bytes and 1
+  // handle value.
+  uint32_t first_object_bytes = in.AllocateArray<uint8_t>(2);
+  *reinterpret_cast<uint16_t*>(
+      in.GetArrayView<uint8_t>(first_object_bytes).data()) = 0x90ab;
+
+  uint32_t second_object_bytes = in.AllocateArray<uint8_t>(2);
+  *reinterpret_cast<uint16_t*>(
+      in.GetArrayView<uint8_t>(second_object_bytes).data()) = 0x90ab;
+
+  uint32_t object_data_offset = in.AllocateArray<internal::DriverObjectData>(2);
+  in.header().driver_object_data_array = object_data_offset;
+
+  std::vector<IpczDriverHandle> handles = {0x12345678, 0xcdef};
+
+  auto object_data =
+      in.GetArrayView<internal::DriverObjectData>(object_data_offset);
+  // The first driver object data entry references `handles[1]`.
+  object_data[0].driver_data_array = first_object_bytes;
+  object_data[0].first_driver_handle = 1;
+  object_data[0].num_driver_handles = 1;
+
+  // The second driver object data entry references `handles[0]` and
+  // `handles[1]`. This tests that:
+  // - rejection of this entry still frees the resources associated with
+  //   `handles[0]`.
+  // - a second claim on `handles[1]` is rejected.
+  //
+  // This violates MockDriver's expectations of how serialized driver objects
+  // are represented on the wire, but that should not be a problem as the
+  // message should be rejected before trying to call the mock driver's
+  // deserialization method.
+  object_data[1].driver_data_array = second_object_bytes;
+  object_data[1].first_driver_handle = 0;
+  object_data[1].num_driver_handles = 2;
+
+  // This is normally all handled by `DriverTransport::Transmit()`, but this
+  // test manually executes the steps normally taken by `Message::Serialize()`
+  // to build an invalid message.
+  transport().driver_object().driver()->Transmit(
+      transport().driver_object().handle(), in.data_view().data(),
+      in.data_view().size(), handles.data(), handles.size(), IPCZ_NO_FLAGS,
+      nullptr);
+
+  ReceivedMessage serialized = TakeNextReceivedMessage();
+
+  Message out;
+  EXPECT_CALL(driver(), Close(0x12345678, _, _));
+  EXPECT_FALSE(
+      out.DeserializeUnknownType(serialized.AsTransportMessage(), transport()));
+
+  EXPECT_CALL(driver(), Close(0x90abcdef, _, _));
 }
 
 TEST_F(MessageTest, BadEnums) {
