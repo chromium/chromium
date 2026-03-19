@@ -1511,20 +1511,6 @@ CanvasNon2DResourceProviderSharedImage::CreateForSoftwareCompositor(
 }
 
 std::unique_ptr<CanvasNon2DResourceProviderSharedImage>
-CanvasNon2DResourceProviderSharedImage::CreateWithClearForSoftwareCompositor(
-    gfx::Size size,
-    viz::SharedImageFormat format,
-    SkAlphaType alpha_type,
-    const gfx::ColorSpace& color_space,
-    WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
-    Delegate* delegate) {
-  return CreateSharedImageProviderForSoftwareCompositorBase<
-      CanvasNon2DResourceProviderSharedImage>(
-      size, format, alpha_type, color_space, ShouldInitialize::kCallClear,
-      shared_image_interface_provider, delegate);
-}
-
-std::unique_ptr<CanvasNon2DResourceProviderSharedImage>
 CanvasNon2DResourceProviderSharedImage::CreateForSoftwareCompositor(
     gfx::Size size,
     const Canvas2DColorParams& color_params,

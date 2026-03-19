@@ -651,15 +651,6 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
       WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
       Delegate* delegate = nullptr);
 
-  // The returned instance will have been cleared at creation.
-  static std::unique_ptr<CanvasNon2DResourceProviderSharedImage>
-  CreateWithClearForSoftwareCompositor(
-      gfx::Size size,
-      viz::SharedImageFormat format,
-      SkAlphaType alpha_type,
-      const gfx::ColorSpace& color_space,
-      WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
-      Delegate* delegate = nullptr);
   static std::unique_ptr<CanvasNon2DResourceProviderSharedImage>
   CreateForSoftwareCompositor(
       gfx::Size size,
