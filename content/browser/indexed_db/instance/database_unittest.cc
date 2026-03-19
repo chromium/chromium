@@ -12,33 +12,25 @@
 #include <string>
 #include <utility>
 
-#include "base/auto_reset.h"
 #include "base/containers/span.h"
-#include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/run_until.h"
-#include "base/test/task_environment.h"
+#include "content/browser/indexed_db/indexed_db_test_base.h"
 #include "content/browser/indexed_db/instance/bucket_context.h"
 #include "content/browser/indexed_db/instance/connection.h"
 #include "content/browser/indexed_db/instance/database_callbacks.h"
-#include "content/browser/indexed_db/instance/mock_blob_storage_context.h"
-#include "content/browser/indexed_db/instance/mock_file_system_access_context.h"
 #include "content/browser/indexed_db/instance/transaction.h"
 #include "content/browser/indexed_db/mock_mojo_indexed_db_database_callbacks.h"
 #include "content/browser/indexed_db/mock_mojo_indexed_db_factory_client.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/test_support/fake_message_dispatch_context.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
-#include "storage/browser/test/mock_quota_manager.h"
-#include "storage/browser/test/mock_quota_manager_proxy.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using blink::IndexedDBDatabaseMetadata;
@@ -58,84 +50,37 @@ ACTION_TEMPLATE(MoveArgPointee,
 
 }  // namespace
 
-class DatabaseTest : public ::testing::Test,
+class DatabaseTest : public IndexedDBTestBase,
                      public testing::WithParamInterface<bool> {
  public:
   DatabaseTest()
-      : sqlite_override_(BucketContext::OverrideShouldUseSqliteForTesting(
-            IsSqliteBackingStoreEnabled())) {}
-
-  bool IsSqliteBackingStoreEnabled() { return GetParam(); }
+      : IndexedDBTestBase(/*use_default_buckets=*/true,
+                          /*use_sqlite=*/GetParam()) {}
 
   void SetUp() override {
-    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    quota_manager_ = base::MakeRefCounted<storage::MockQuotaManager>(
-        /*is_incognito=*/false, temp_dir_.GetPath(),
-        base::SingleThreadTaskRunner::GetCurrentDefault(),
-        /*special_storage_policy=*/nullptr);
+    IndexedDBTestBase::SetUp();
 
-    quota_manager_proxy_ = base::MakeRefCounted<storage::MockQuotaManagerProxy>(
-        quota_manager_.get(),
-        base::SingleThreadTaskRunner::GetCurrentDefault().get());
-
-    BucketContext::Delegate delegate;
-    delegate.on_ready_for_destruction =
-        base::BindOnce(&DatabaseTest::OnBucketContextReadyForDestruction,
-                       weak_factory_.GetWeakPtr());
-
-    mojo::PendingRemote<storage::mojom::BlobStorageContext>
-        blob_storage_context;
-    blob_storage_context_.Clone(
-        blob_storage_context.InitWithNewPipeAndPassReceiver());
-    mojo::PendingRemote<storage::mojom::FileSystemAccessContext> fsa_context;
-    file_system_access_context_ =
-        std::make_unique<test::MockFileSystemAccessContext>();
-    file_system_access_context_->Clone(
-        fsa_context.InitWithNewPipeAndPassReceiver());
-
-    bucket_context_ = std::make_unique<BucketContext>(
-        storage::BucketInfo(), temp_dir_.GetPath(), std::move(delegate),
-        quota_manager_proxy_,
-        /*blob_storage_context=*/std::move(blob_storage_context),
-        /*file_system_access_context=*/std::move(fsa_context));
-
-    bucket_context_->InitBackingStore(true);
+    bucket_context_ = InitBucketContext(GetTestStorageKey()).AsWeakPtr();
+    bucket_context_->InitBackingStore(/*create_if_missing=*/true);
     db_ = bucket_context_->CreateAndAddDatabase(u"db");
   }
 
-  void TearDown() override { db_ = nullptr; }
-
-  void OnBucketContextReadyForDestruction() { bucket_context_.reset(); }
-
-  void RunPostedTasks() {
-    base::RunLoop run_loop;
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, run_loop.QuitClosure());
-    run_loop.Run();
+  void TearDown() override {
+    db_ = nullptr;
+    IndexedDBTestBase::TearDown();
   }
 
  protected:
-  base::AutoReset<std::optional<bool>> sqlite_override_;
-  base::test::TaskEnvironment task_environment_;
+  base::WeakPtr<BucketContext> bucket_context_;
 
-  base::ScopedTempDir temp_dir_;
-  MockBlobStorageContext blob_storage_context_;
-  std::unique_ptr<test::MockFileSystemAccessContext>
-      file_system_access_context_;
-  scoped_refptr<storage::MockQuotaManager> quota_manager_;
-  scoped_refptr<storage::MockQuotaManagerProxy> quota_manager_proxy_;
-  std::unique_ptr<BucketContext> bucket_context_;
-
-  // As this is owned by `bucket_context_`, tests that cause the database to
-  // be destroyed must manually reset this to null to avoid triggering dangling
-  // pointer warnings.
+  // As this is owned by the BucketContext, tests that cause the database
+  // to be destroyed must manually reset this to null to avoid triggering
+  // dangling pointer warnings.
   raw_ptr<Database> db_ = nullptr;
-
-  base::WeakPtrFactory<DatabaseTest> weak_factory_{this};
 };
 
 INSTANTIATE_TEST_SUITE_P(
-    /* no prefix */,
+    IndexedDB,
     DatabaseTest,
     /*use SQLite backing store*/ testing::Bool(),
     [](const testing::TestParamInfo<DatabaseTest::ParamType>& info) {
@@ -170,8 +115,7 @@ TEST_P(DatabaseTest, ConnectionLifecycle) {
 
   pending_connection.reset();
 
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return bucket_context_->GetDatabasesForTesting().empty(); }));
+  ASSERT_TRUE(base::test::RunUntil([&]() { return !bucket_context_; }));
 }
 
 TEST_P(DatabaseTest, ForcedClose) {

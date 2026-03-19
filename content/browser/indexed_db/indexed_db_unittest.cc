@@ -64,6 +64,7 @@
 #include "content/browser/indexed_db/indexed_db_data_format_version.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
 #include "content/browser/indexed_db/indexed_db_reporting.h"
+#include "content/browser/indexed_db/indexed_db_test_base.h"
 #include "content/browser/indexed_db/instance/bucket_context.h"
 #include "content/browser/indexed_db/instance/bucket_context_handle.h"
 #include "content/browser/indexed_db/instance/connection.h"
@@ -136,11 +137,6 @@ ACTION_TEMPLATE(MoveArgPointee,
                 HAS_1_TEMPLATE_PARAMS(int, k),
                 AND_1_VALUE_PARAMS(out)) {
   *out = std::move(*::testing::get<k>(args));
-}
-
-base::FilePath CreateAndReturnTempDir(base::ScopedTempDir* temp_dir) {
-  CHECK(temp_dir->CreateUniqueTempDir());
-  return temp_dir->GetPath();
 }
 
 storage::BucketInfo ToBucketInfo(const BucketLocator& bucket_locator) {
@@ -234,182 +230,51 @@ class TestIndexedDBObserver : public storage::mojom::IndexedDBObserver {
 
 }  // namespace
 
-class IndexedDBTestBase : public testing::Test {
+// Name subject to change pending further refactoring.
+class IndexedDBTestBaseWithExtras : public IndexedDBTestBase {
  public:
-  blink::StorageKey kNormalFirstPartyStorageKey;
   BucketLocator kNormalFirstPartyBucketLocator;
-  blink::StorageKey kSessionOnlyFirstPartyStorageKey;
   BucketLocator kSessionOnlyFirstPartyBucketLocator;
-  blink::StorageKey kSessionOnlySubdomainFirstPartyStorageKey;
-  BucketLocator kSessionOnlySubdomainFirstPartyBucketLocator;
-  blink::StorageKey kNormalThirdPartyStorageKey;
   BucketLocator kNormalThirdPartyBucketLocator;
-  blink::StorageKey kSessionOnlyThirdPartyStorageKey;
   BucketLocator kSessionOnlyThirdPartyBucketLocator;
-  blink::StorageKey kSessionOnlySubdomainThirdPartyStorageKey;
-  BucketLocator kSessionOnlySubdomainThirdPartyBucketLocator;
-  blink::StorageKey kInvertedNormalThirdPartyStorageKey;
-  BucketLocator kInvertedNormalThirdPartyBucketLocator;
-  blink::StorageKey kInvertedSessionOnlyThirdPartyStorageKey;
-  BucketLocator kInvertedSessionOnlyThirdPartyBucketLocator;
-  blink::StorageKey kInvertedSessionOnlySubdomainThirdPartyStorageKey;
-  BucketLocator kInvertedSessionOnlySubdomainThirdPartyBucketLocator;
 
-  IndexedDBTestBase(bool use_default_buckets, bool use_sqlite)
-      : sqlite_override_(
-            BucketContext::OverrideShouldUseSqliteForTesting(use_sqlite)),
-        use_default_buckets_(use_default_buckets),
-        use_sqlite_(use_sqlite),
-        special_storage_policy_(
-            base::MakeRefCounted<storage::MockSpecialStoragePolicy>()),
-        quota_manager_(base::MakeRefCounted<storage::MockQuotaManager>(
-            /*is_incognito=*/false,
-            CreateAndReturnTempDir(&temp_dir_),
-            base::SingleThreadTaskRunner::GetCurrentDefault(),
-            special_storage_policy_)),
-        quota_manager_proxy_(
-            base::MakeRefCounted<storage::MockQuotaManagerProxy>(
-                quota_manager_.get(),
-                base::SequencedTaskRunner::GetCurrentDefault())) {
-    mojo::PendingRemote<storage::mojom::BlobStorageContext>
-        pending_blob_storage_context;
-    blob_storage_context_.Clone(
-        pending_blob_storage_context.InitWithNewPipeAndPassReceiver());
-    mojo::PendingRemote<storage::mojom::FileSystemAccessContext> fsa_context;
-    file_system_access_context_.Clone(
-        fsa_context.InitWithNewPipeAndPassReceiver());
+  IndexedDBTestBaseWithExtras(bool use_default_buckets, bool use_sqlite)
+      : IndexedDBTestBase(use_default_buckets, use_sqlite) {}
 
-    context_ = std::make_unique<IndexedDBContextImpl>(
-        temp_dir_.GetPath(), quota_manager_proxy_.get(),
-        std::move(pending_blob_storage_context), std::move(fsa_context),
-        base::SequencedTaskRunner::GetCurrentDefault());
-    // Let the mojo pipes be bound before proceeding. See
-    // IndexedDBContextImpl::BindPipesOnIDBSequence().
-    RunPostedTasks();
+  IndexedDBTestBaseWithExtras(const IndexedDBTestBaseWithExtras&) = delete;
+  IndexedDBTestBaseWithExtras& operator=(const IndexedDBTestBaseWithExtras&) =
+      delete;
 
-    kNormalFirstPartyStorageKey =
-        blink::StorageKey::CreateFromStringForTesting("http://normal.com/");
-    storage::BucketInfo bucket_info = InitBucket(kNormalFirstPartyStorageKey);
-    kNormalFirstPartyBucketLocator = bucket_info.ToBucketLocator();
+  ~IndexedDBTestBaseWithExtras() override = default;
 
-    kSessionOnlyFirstPartyStorageKey =
-        blink::StorageKey::CreateFromStringForTesting(
-            "http://session-only.com/");
-    bucket_info = InitBucket(kSessionOnlyFirstPartyStorageKey);
-    kSessionOnlyFirstPartyBucketLocator = bucket_info.ToBucketLocator();
+  void SetUpStorageKeysForSessionOnlyTests() {
+    kNormalFirstPartyBucketLocator =
+        InitBucket(
+            blink::StorageKey::CreateFromStringForTesting("http://normal.com/"))
+            .ToBucketLocator();
 
-    kSessionOnlySubdomainFirstPartyStorageKey =
-        blink::StorageKey::CreateFromStringForTesting(
-            "http://subdomain.session-only.com/");
-    bucket_info = InitBucket(kSessionOnlySubdomainFirstPartyStorageKey);
-    kSessionOnlySubdomainFirstPartyBucketLocator =
-        bucket_info.ToBucketLocator();
+    kSessionOnlyFirstPartyBucketLocator =
+        InitBucket(blink::StorageKey::CreateFromStringForTesting(
+                       "http://session-only.com/"))
+            .ToBucketLocator();
 
-    kNormalThirdPartyStorageKey = blink::StorageKey::Create(
-        url::Origin::Create(GURL("http://normal.com/")),
-        net::SchemefulSite(GURL("http://rando.com/")),
-        blink::mojom::AncestorChainBit::kCrossSite);
-    bucket_info = InitBucket(kNormalThirdPartyStorageKey);
-    kNormalThirdPartyBucketLocator = bucket_info.ToBucketLocator();
+    kNormalThirdPartyBucketLocator =
+        InitBucket(blink::StorageKey::Create(
+                       url::Origin::Create(GURL("http://normal.com/")),
+                       net::SchemefulSite(GURL("http://rando.com/")),
+                       blink::mojom::AncestorChainBit::kCrossSite))
+            .ToBucketLocator();
 
-    kSessionOnlyThirdPartyStorageKey = blink::StorageKey::Create(
-        url::Origin::Create(GURL("http://session-only.com/")),
-        net::SchemefulSite(GURL("http://rando.com/")),
-        blink::mojom::AncestorChainBit::kCrossSite);
-    bucket_info = InitBucket(kSessionOnlyThirdPartyStorageKey);
-    kSessionOnlyThirdPartyBucketLocator = bucket_info.ToBucketLocator();
-
-    kSessionOnlySubdomainThirdPartyStorageKey = blink::StorageKey::Create(
-        url::Origin::Create(GURL("http://subdomain.session-only.com/")),
-        net::SchemefulSite(GURL("http://rando.com/")),
-        blink::mojom::AncestorChainBit::kCrossSite);
-    bucket_info = InitBucket(kSessionOnlySubdomainThirdPartyStorageKey);
-    kSessionOnlySubdomainThirdPartyBucketLocator =
-        bucket_info.ToBucketLocator();
-
-    kInvertedNormalThirdPartyStorageKey = blink::StorageKey::Create(
-        url::Origin::Create(GURL("http://rando.com/")),
-        net::SchemefulSite(GURL("http://normal.com/")),
-        blink::mojom::AncestorChainBit::kCrossSite);
-    bucket_info = InitBucket(kInvertedNormalThirdPartyStorageKey);
-    kInvertedNormalThirdPartyBucketLocator = bucket_info.ToBucketLocator();
-
-    kInvertedSessionOnlyThirdPartyStorageKey = blink::StorageKey::Create(
-        url::Origin::Create(GURL("http://rando.com/")),
-        net::SchemefulSite(GURL("http://session-only.com/")),
-        blink::mojom::AncestorChainBit::kCrossSite);
-    bucket_info = InitBucket(kInvertedSessionOnlyThirdPartyStorageKey);
-    kInvertedSessionOnlyThirdPartyBucketLocator = bucket_info.ToBucketLocator();
-
-    kInvertedSessionOnlySubdomainThirdPartyStorageKey =
-        blink::StorageKey::Create(
-            url::Origin::Create(GURL("http://rando.com/")),
-            net::SchemefulSite(GURL("http://subdomain.session-only.com/")),
-            blink::mojom::AncestorChainBit::kCrossSite);
-    bucket_info = InitBucket(kInvertedSessionOnlySubdomainThirdPartyStorageKey);
-    kInvertedSessionOnlySubdomainThirdPartyBucketLocator =
-        bucket_info.ToBucketLocator();
+    kSessionOnlyThirdPartyBucketLocator =
+        InitBucket(blink::StorageKey::Create(
+                       url::Origin::Create(GURL("http://session-only.com/")),
+                       net::SchemefulSite(GURL("http://rando.com/")),
+                       blink::mojom::AncestorChainBit::kCrossSite))
+            .ToBucketLocator();
   }
 
-  IndexedDBTestBase(const IndexedDBTestBase&) = delete;
-  IndexedDBTestBase& operator=(const IndexedDBTestBase&) = delete;
-
-  ~IndexedDBTestBase() override = default;
-
-  bool UseDefaultBuckets() const { return use_default_buckets_; }
-
-  bool IsSqliteBackingStoreEnabled() { return use_sqlite_; }
-
-  storage::BucketInfo InitBucket(const blink::StorageKey& storage_key) {
-    return GetOrCreateBucket(
-        UseDefaultBuckets()
-            ? storage::BucketInitParams::ForDefaultBucket(storage_key)
-            : storage::BucketInitParams(storage_key, "non_default"));
-  }
-
-  void SetUpInMemoryContext() {
-    mojo::PendingRemote<storage::mojom::BlobStorageContext>
-        pending_blob_storage_context;
-    blob_storage_context_.Clone(
-        pending_blob_storage_context.InitWithNewPipeAndPassReceiver());
-    mojo::PendingRemote<storage::mojom::FileSystemAccessContext> fsa_context;
-    file_system_access_context_.Clone(
-        fsa_context.InitWithNewPipeAndPassReceiver());
-    context_ = std::make_unique<IndexedDBContextImpl>(
-        base::FilePath(), quota_manager_proxy_.get(),
-        std::move(pending_blob_storage_context), std::move(fsa_context),
-        base::SequencedTaskRunner::GetCurrentDefault());
-    // The mojo pipes are bound asynchronously, and must be bound before
-    // proceeding with testing.
-    RunPostedTasks();
-  }
-
-  void RunPostedTasks() {
-    base::RunLoop loop;
-    context_->idb_task_runner()->PostTask(FROM_HERE, loop.QuitClosure());
-    loop.Run();
-  }
-
-  void SetUp() override { ResetGlobalSweepAndCompactionTimesForTest(); }
-
-  void TearDown() override {
-    factory_remote_.reset();
-
-    if (context_ && !context_->in_memory()) {
-      std::set<BucketLocator> buckets = context_->bucket_set_;
-      base::RunLoop run_loop;
-      auto barrier = base::IgnoreArgs<blink::mojom::QuotaStatusCode>(
-          base::BarrierClosure(buckets.size(), run_loop.QuitClosure()));
-      for (const BucketLocator& bucket_locator : buckets) {
-        context_->DeleteBucketData(bucket_locator, barrier);
-      }
-      run_loop.Run();
-    }
-
-    EXPECT_TRUE(temp_dir_.Delete());
-  }
-
-  base::FilePath GetFilePathForTesting(const BucketLocator& bucket_locator) {
+  base::FilePath GetFilePathForTesting(
+      const storage::BucketLocator& bucket_locator) {
     return context()->GetFilePathForTesting(bucket_locator,
                                             IsSqliteBackingStoreEnabled());
   }
@@ -426,20 +291,6 @@ class IndexedDBTestBase : public testing::Test {
     context()->DeleteBucketData(bucket_info->ToBucketLocator(),
                                 result_code.GetCallback());
     return result_code.Get() == blink::mojom::QuotaStatusCode::kOk;
-  }
-
-  void BindFactory(
-      mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
-          checker_remote,
-      mojo::PendingReceiver<blink::mojom::IDBFactory> receiver,
-      storage::QuotaErrorOr<storage::BucketInfo> bucket_info) {
-    context()->BindIndexedDBImpl(storage::BucketClientInfo{},
-                                 std::move(checker_remote), std::move(receiver),
-                                 bucket_info);
-  }
-
-  blink::StorageKey GetTestStorageKey() {
-    return blink::StorageKey::CreateFromStringForTesting("http://test/");
   }
 
   // Opens a database connection, runs `action`, and verifies that the
@@ -488,57 +339,11 @@ class IndexedDBTestBase : public testing::Test {
     run_loop2.Run();
   }
 
-  BucketContext& GetOrCreateBucketContext(
-      const storage::BucketInfo& bucket,
-      const base::FilePath& data_directory) {
-    context_->EnsureBucketContext(bucket, data_directory);
-    return *GetBucketContext(bucket.id);
-  }
-
-  BucketContext* GetBucketContext(storage::BucketId id) {
-    auto* sequence_bound = context_->GetBucketContextForTesting(id);
-    if (!sequence_bound) {
-      return nullptr;
-    }
-    base::test::TestFuture<BucketContext*> future;
-    sequence_bound->AsyncCall(&BucketContext::GetReferenceForTesting)
-        .Then(future.GetCallback());
-    return future.Get();
-  }
-
-  storage::BucketInfo GetOrCreateBucket(
-      const storage::BucketInitParams& params) {
-    base::test::TestFuture<storage::QuotaErrorOr<storage::BucketInfo>> future;
-    quota_manager_proxy_->UpdateOrCreateBucket(
-        params, base::SingleThreadTaskRunner::GetCurrentDefault(),
-        future.GetCallback());
-    return future.Take().value();
-  }
-
-  BucketContextHandle CreateBucketHandle(
-      std::optional<storage::BucketLocator> bucket_locator = std::nullopt) {
-    if (!bucket_locator) {
-      const blink::StorageKey storage_key =
-          blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
-      bucket_locator = BucketLocator();
-      bucket_locator->id = storage::BucketId::FromUnsafeValue(7);
-      bucket_locator->is_default = true;
-      bucket_locator->storage_key = storage_key;
-    }
-    context_->EnsureBucketContext(ToBucketInfo(*bucket_locator),
-                                  context()->GetDataPath(*bucket_locator));
-    BucketContextHandle bucket_context_handle(
-        *GetBucketContext(bucket_locator->id));
-    bucket_context_handle->InitBackingStore(
-        /*create_if_missing=*/true);
-    return bucket_context_handle;
-  }
-
   void VerifyBucketContextWaitIfNeeded(
       const storage::BucketLocator& bucket_locator,
       bool expected_context_exists) {
     while (expected_context_exists !=
-           context_->BucketContextExists(bucket_locator)) {
+           context()->BucketContextExists(bucket_locator)) {
       RunPostedTasks();
     }
     VerifyBucketContext(bucket_locator, expected_context_exists);
@@ -625,32 +430,15 @@ class IndexedDBTestBase : public testing::Test {
     return mojo::AssociatedRemote<blink::mojom::IDBDatabase>(
         std::move(pending_database));
   }
-
- protected:
-  IndexedDBContextImpl* context() const { return context_.get(); }
-  base::AutoReset<std::optional<bool>> sqlite_override_;
-  bool use_default_buckets_;
-  bool use_sqlite_;
-
-  base::test::TaskEnvironment task_environment_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  base::ScopedTempDir temp_dir_;
-  scoped_refptr<storage::MockSpecialStoragePolicy> special_storage_policy_;
-  scoped_refptr<storage::MockQuotaManager> quota_manager_;
-  scoped_refptr<storage::MockQuotaManagerProxy> quota_manager_proxy_;
-  MockBlobStorageContext blob_storage_context_;
-  test::MockFileSystemAccessContext file_system_access_context_;
-  std::unique_ptr<IndexedDBContextImpl> context_;
-  mojo::Remote<blink::mojom::IDBFactory> factory_remote_;
 };
 
 // Parametrized by SQLite (true) vs LevelDB (false) backing store.
-class IndexedDBTest : public IndexedDBTestBase,
+class IndexedDBTest : public IndexedDBTestBaseWithExtras,
                       public testing::WithParamInterface<bool> {
  public:
   IndexedDBTest()
-      : IndexedDBTestBase(/*use_default_buckets=*/true,
-                          /*use_sqlite=*/GetParam()) {}
+      : IndexedDBTestBaseWithExtras(/*use_default_buckets=*/true,
+                                    /*use_sqlite=*/GetParam()) {}
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -666,12 +454,13 @@ INSTANTIATE_TEST_SUITE_P(
 // use different base paths, which is relevant to code paths that manipulate
 // files on disk.
 class IndexedDBTestWithBucketType
-    : public IndexedDBTestBase,
+    : public IndexedDBTestBaseWithExtras,
       public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   IndexedDBTestWithBucketType()
-      : IndexedDBTestBase(/*use_default_buckets=*/std::get<0>(GetParam()),
-                          /*use_sqlite=*/std::get<1>(GetParam())) {}
+      : IndexedDBTestBaseWithExtras(
+            /*use_default_buckets=*/std::get<0>(GetParam()),
+            /*use_sqlite=*/std::get<1>(GetParam())) {}
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1543,40 +1332,78 @@ TEST_P(IndexedDBTest, DISABLED_DatabaseOperationSequencing) {
 }
 
 TEST_P(IndexedDBTest, ClearSessionOnlyDatabases) {
+  SetUpStorageKeysForSessionOnlyTests();
+
   std::vector<storage::mojom::StoragePolicyUpdatePtr> policy_updates;
   policy_updates.emplace_back(storage::mojom::StoragePolicyUpdate::New(
       url::Origin::Create(GURL("http://subdomain.session-only.com")),
       /*should_purge_on_shutdown=*/true));
   context_->ApplyPolicyUpdates(std::move(policy_updates));
 
-  base::FilePath normal_path_first_party;
-  base::FilePath session_only_path_first_party;
-  base::FilePath session_only_subdomain_path_first_party;
-  base::FilePath normal_path_third_party;
-  base::FilePath session_only_path_third_party;
-  base::FilePath session_only_subdomain_path_third_party;
-  base::FilePath inverted_normal_path_third_party;
-  base::FilePath inverted_session_only_path_third_party;
-  base::FilePath inverted_session_only_subdomain_path_third_party;
+  // Create additional storage keys/buckets only needed by this test.
+  blink::StorageKey session_only_subdomain_first_party_storage_key =
+      blink::StorageKey::CreateFromStringForTesting(
+          "http://subdomain.session-only.com/");
+  storage::BucketInfo bucket_info =
+      InitBucket(session_only_subdomain_first_party_storage_key);
+  BucketLocator session_only_subdomain_first_party_bucket_locator =
+      bucket_info.ToBucketLocator();
 
-  normal_path_first_party =
+  blink::StorageKey session_only_subdomain_third_party_storage_key =
+      blink::StorageKey::Create(
+          url::Origin::Create(GURL("http://subdomain.session-only.com/")),
+          net::SchemefulSite(GURL("http://rando.com/")),
+          blink::mojom::AncestorChainBit::kCrossSite);
+  bucket_info = InitBucket(session_only_subdomain_third_party_storage_key);
+  BucketLocator session_only_subdomain_third_party_bucket_locator =
+      bucket_info.ToBucketLocator();
+
+  blink::StorageKey inverted_normal_third_party_storage_key =
+      blink::StorageKey::Create(url::Origin::Create(GURL("http://rando.com/")),
+                                net::SchemefulSite(GURL("http://normal.com/")),
+                                blink::mojom::AncestorChainBit::kCrossSite);
+  bucket_info = InitBucket(inverted_normal_third_party_storage_key);
+  BucketLocator inverted_normal_third_party_bucket_locator =
+      bucket_info.ToBucketLocator();
+
+  blink::StorageKey inverted_session_only_third_party_storage_key =
+      blink::StorageKey::Create(
+          url::Origin::Create(GURL("http://rando.com/")),
+          net::SchemefulSite(GURL("http://session-only.com/")),
+          blink::mojom::AncestorChainBit::kCrossSite);
+  bucket_info = InitBucket(inverted_session_only_third_party_storage_key);
+  BucketLocator inverted_session_only_third_party_bucket_locator =
+      bucket_info.ToBucketLocator();
+
+  blink::StorageKey inverted_session_only_subdomain_third_party_storage_key =
+      blink::StorageKey::Create(
+          url::Origin::Create(GURL("http://rando.com/")),
+          net::SchemefulSite(GURL("http://subdomain.session-only.com/")),
+          blink::mojom::AncestorChainBit::kCrossSite);
+  bucket_info =
+      InitBucket(inverted_session_only_subdomain_third_party_storage_key);
+  BucketLocator inverted_session_only_subdomain_third_party_bucket_locator =
+      bucket_info.ToBucketLocator();
+
+  base::FilePath normal_path_first_party =
       GetFilePathForTesting(kNormalFirstPartyBucketLocator);
-  session_only_path_first_party =
+  base::FilePath session_only_path_first_party =
       GetFilePathForTesting(kSessionOnlyFirstPartyBucketLocator);
-  session_only_subdomain_path_first_party =
-      GetFilePathForTesting(kSessionOnlySubdomainFirstPartyBucketLocator);
-  normal_path_third_party =
+  base::FilePath session_only_subdomain_path_first_party =
+      GetFilePathForTesting(session_only_subdomain_first_party_bucket_locator);
+  base::FilePath normal_path_third_party =
       GetFilePathForTesting(kNormalThirdPartyBucketLocator);
-  session_only_path_third_party =
+  base::FilePath session_only_path_third_party =
       GetFilePathForTesting(kSessionOnlyThirdPartyBucketLocator);
-  session_only_subdomain_path_third_party =
-      GetFilePathForTesting(kSessionOnlySubdomainThirdPartyBucketLocator);
-  inverted_normal_path_third_party =
-      GetFilePathForTesting(kInvertedNormalThirdPartyBucketLocator);
-  inverted_session_only_path_third_party =
-      GetFilePathForTesting(kInvertedSessionOnlyThirdPartyBucketLocator);
-  inverted_session_only_subdomain_path_third_party = GetFilePathForTesting(
-      kInvertedSessionOnlySubdomainThirdPartyBucketLocator);
+  base::FilePath session_only_subdomain_path_third_party =
+      GetFilePathForTesting(session_only_subdomain_third_party_bucket_locator);
+  base::FilePath inverted_normal_path_third_party =
+      GetFilePathForTesting(inverted_normal_third_party_bucket_locator);
+  base::FilePath inverted_session_only_path_third_party =
+      GetFilePathForTesting(inverted_session_only_third_party_bucket_locator);
+  base::FilePath inverted_session_only_subdomain_path_third_party =
+      GetFilePathForTesting(
+          inverted_session_only_subdomain_third_party_bucket_locator);
   if (IsThirdPartyStoragePartitioningEnabled()) {
     EXPECT_NE(normal_path_first_party, normal_path_third_party);
     EXPECT_NE(session_only_path_first_party, session_only_path_third_party);
@@ -1637,6 +1464,8 @@ TEST_P(IndexedDBTest, ClearSessionOnlyDatabases) {
 }
 
 TEST_P(IndexedDBTest, SetForceKeepSessionState) {
+  SetUpStorageKeysForSessionOnlyTests();
+
   base::FilePath normal_path_first_party;
   base::FilePath session_only_path_first_party;
   base::FilePath normal_path_third_party;
@@ -1680,10 +1509,12 @@ TEST_P(IndexedDBTest, SetForceKeepSessionState) {
 }
 
 TEST_P(IndexedDBTest, Bug464999826) {
+  storage::BucketInfo bucket_info = InitBucket(GetTestStorageKey());
+
   quota_manager_->HoldBackResults();
 
   base::FilePath db_directory =
-      GetFilePathForTesting(kNormalFirstPartyBucketLocator);
+      GetFilePathForTesting(bucket_info.ToBucketLocator());
   ASSERT_TRUE(base::CreateDirectory(db_directory));
   context()->ForceInitializeFromFilesForTesting(base::DoNothing());
 
@@ -2907,12 +2738,12 @@ TEST_P(IndexedDBTestWithBucketType, DataLoss) {
 }
 
 class IndexedDBTestForSqliteMigration
-    : public IndexedDBTestBase,
+    : public IndexedDBTestBaseWithExtras,
       public testing::WithParamInterface<bool> {
  public:
   IndexedDBTestForSqliteMigration()
-      : IndexedDBTestBase(/*use_default_buckets=*/GetParam(),
-                          /*use_sqlite=*/false) {}
+      : IndexedDBTestBaseWithExtras(/*use_default_buckets=*/GetParam(),
+                                    /*use_sqlite=*/false) {}
   ~IndexedDBTestForSqliteMigration() override = default;
 
   void SetUp() override {

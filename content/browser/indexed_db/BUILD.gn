@@ -139,6 +139,8 @@ source_set("unit_tests") {
     "indexed_db_context_unittest.cc",
     "indexed_db_leveldb_coding_unittest.cc",
     "indexed_db_quota_client_unittest.cc",
+    "indexed_db_test_base.cc",
+    "indexed_db_test_base.h",
     "indexed_db_unittest.cc",
     "instance/backing_store_pre_close_task_queue_unittest.cc",
     "instance/backing_store_test_base.cc",
