@@ -2792,16 +2792,6 @@
   <message name="IDS_FILEMANAGER_APP_NAME" desc="Name for the File Manager app.">
     Files
   </message>
-  <if expr="reven">
-    <message name="IDS_FILEMANAGER_APP_DESCRIPTION" desc="Description for the File Manager app.">
-      The Files app provides quick access to files that you've saved on Google Drive, external storage, or your ChromeOS Flex device.
-    </message>
-  </if>
-  <if expr="not reven">
-    <message name="IDS_FILEMANAGER_APP_DESCRIPTION" desc="Description for the File Manager app.">
-      The Files app provides quick access to files that you've saved on Google Drive, external storage, or your ChromeOS device.
-    </message>
-  </if>
 
   <!-- Network portal notification -->
   <message name="IDS_NEW_PORTAL_DETECTION_NOTIFICATION_TITLE_WIRED" desc="Title for the new system notification that current wired network is behind captive portal">
