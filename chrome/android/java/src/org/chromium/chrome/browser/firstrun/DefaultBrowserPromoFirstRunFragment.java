@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils.DefaultBrowserPromoEntryPoint;
+import org.chromium.chrome.browser.ui.signin.SigninUtils;
 
 @NullMarked
 public class DefaultBrowserPromoFirstRunFragment extends Fragment implements FirstRunFragment {
@@ -126,9 +127,8 @@ public class DefaultBrowserPromoFirstRunFragment extends Fragment implements Fir
     }
 
     private void updateView(LayoutInflater inflater, ViewGroup container) {
-        // Check the orientation directly from resources.
-        int orientation = getResources().getConfiguration().orientation;
-        boolean useLandscape = (orientation == Configuration.ORIENTATION_LANDSCAPE);
+        // TODO(https://crbug.com/483539670): Re-use this method and move it to a shared location.
+        boolean useLandscape = SigninUtils.shouldShowDualPanesHorizontalLayout(getActivity());
 
         int layoutId =
                 useLandscape
