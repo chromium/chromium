@@ -850,8 +850,12 @@ bool Element::WasLastFocusFromUserGestureInternal() const {
 
 const HeapVector<Member<Node>> Element::ReadingFlowChildren() const {
   HeapVector<Member<Node>> children;
+  bool is_non_container_slot =
+      RuntimeEnabledFeatures::ReadingFlowWithSlotsEnabled()
+          ? (IsA<HTMLSlotElement>(this) && !IsReadingFlowContainer())
+          : false;
   const Element* layout_parent =
-      HasDisplayContentsStyle()
+      HasDisplayContentsStyle() || is_non_container_slot
           ? LayoutTreeBuilderTraversal::LayoutParentElement(*this)
           : this;
   if (!layout_parent || !layout_parent->IsReadingFlowContainer()) {
@@ -865,7 +869,16 @@ const HeapVector<Member<Node>> Element::ReadingFlowChildren() const {
     // direct child of this. Loop the parents and only add the node if its
     // FlatTreeTraversal::ParentElement is this element.
     while (reading_flow_item) {
-      auto* parent = FlatTreeTraversal::ParentElement(*reading_flow_item);
+      Node* flat_parent_anchor = reading_flow_item;
+      if (RuntimeEnabledFeatures::ReadingFlowWithSlotsEnabled()) {
+        if (!is_non_container_slot && !reading_flow_item->IsPseudoElement()) {
+          auto* assigned_slot = reading_flow_item->AssignedSlot();
+          if (assigned_slot && !assigned_slot->IsReadingFlowContainer()) {
+            flat_parent_anchor = assigned_slot;
+          }
+        }
+      }
+      auto* parent = FlatTreeTraversal::ParentElement(*flat_parent_anchor);
       if (parent == this) {
         if (visited_children.insert(reading_flow_item).is_new_entry) {
           children.push_back(reading_flow_item);

@@ -6135,18 +6135,43 @@ void AXNodeObject::AddNodeChildren() {
   // reading-flow container, and not for the case where the element is a
   // reading-flow item.
   HeapVector<Member<Node>> reading_flow_children;
-  if (Element* element = GetElement()) {
+  Element* element = GetElement();
+  if (element) {
     reading_flow_children = element->ReadingFlowChildren();
   }
   if (!reading_flow_children.empty()) {
+    CHECK(element);
     HeapHashSet<Member<Node>> ax_children_added;
     // Add reading flow siblings in order.
     for (Node* reading_flow_item : reading_flow_children) {
-      if (IsAddedOnlyViaSpecialTraversal(reading_flow_item)) {
+      // Walk up the flat tree to find the direct child of `element`, since
+      // `reading_flow_item` may be a slotted node whose flat tree parent is
+      // a `<slot>` rather than `element` itself.
+      Node* child_of_element = reading_flow_item;
+      if (RuntimeEnabledFeatures::ReadingFlowWithSlotsEnabled()) {
+        while (true) {
+          Element* parent = FlatTreeTraversal::ParentElement(*child_of_element);
+          // `parent` should never become null here: `ReadingFlowChildren`
+          // only returns flat-tree descendants of `element`, so walking up
+          // flat-tree parents must reach a direct child of `element` before
+          // reaching the root.
+          CHECK(parent);
+          if (parent == element) {
+            break;
+          }
+          child_of_element = parent;
+        }
+      }
+      // `child_of_element` should never become null here: `ReadingFlowChildren`
+      // only returns flat-tree descendants of `element`, so walking up
+      // flat-tree parents must reach a direct child of `element` before
+      // reaching null.
+      DCHECK(child_of_element);
+      if (IsAddedOnlyViaSpecialTraversal(child_of_element)) {
         continue;
       }
-      if (ax_children_added.insert(reading_flow_item).is_new_entry) {
-        AddNodeChild(reading_flow_item);
+      if (ax_children_added.insert(child_of_element).is_new_entry) {
+        AddNodeChild(child_of_element);
       }
     }
 #if DCHECK_IS_ON()

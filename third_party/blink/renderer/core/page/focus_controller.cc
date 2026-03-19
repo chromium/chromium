@@ -466,14 +466,17 @@ class FocusNavigation final {
       reading_flow_last_element_ = prev_element;
     }
 #if DCHECK_IS_ON()
-    // At this point, the number of reading flow elements added should equal the
-    // number of children.
-    size_t num_children = 0;
-    for (Element& child : ElementTraversal::ChildrenOf(*root_)) {
-      DCHECK(reading_flow_next_elements_.Contains(&child));
-      ++num_children;
+    // This invariant (every direct DOM child of root_ appearing in
+    // reading_flow_next_elements_) only holds when slots are not involved,
+    // as slotted children may be promoted into reading_flow_next_elements_.
+    if (!RuntimeEnabledFeatures::ReadingFlowWithSlotsEnabled()) {
+      size_t num_children = 0;
+      for (Element& child : ElementTraversal::ChildrenOf(*root_)) {
+        DCHECK(reading_flow_next_elements_.Contains(&child));
+        ++num_children;
+      }
+      DCHECK_EQ(reading_flow_next_elements_.size(), num_children);
     }
-    DCHECK_EQ(reading_flow_next_elements_.size(), num_children);
 #endif
   }
 
@@ -2183,6 +2186,15 @@ FocusController::FindScopeOwnerSlotOrScrollMarkerOrReadingFlowContainer(
   }
   while (element) {
     if (HTMLSlotElement* slot_element = element->AssignedSlot()) {
+      if (RuntimeEnabledFeatures::ReadingFlowWithSlotsEnabled()) {
+        if (slot_element->GetLayoutBox()) {
+          return slot_element;
+        }
+        auto* parent = FlatTreeTraversal::ParentElement(*slot_element);
+        if (parent && IsReadingFlowScopeOwner(parent)) {
+          return DynamicTo<HTMLElement>(parent);
+        }
+      }
       return slot_element;
     }
     if (auto* scroll_marker =

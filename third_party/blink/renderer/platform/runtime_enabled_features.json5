@@ -4508,6 +4508,13 @@
       status: "test",
     },
     {
+      // Enables correct reading-flow ordering when slots are involved.
+      // This will be shipped in M148, and it can be removed in M150.
+      // See https://issues.chromium.org/issues/452981723.
+      name: "ReadingFlowWithSlots",
+      status: "stable",
+    },
+    {
       name: "RecordSameDocumentPresentationTimeOnce",
       status: "stable",
     },
