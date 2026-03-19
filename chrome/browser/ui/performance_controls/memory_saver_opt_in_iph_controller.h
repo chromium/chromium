@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class BrowserWindowInterface;
 
@@ -15,8 +16,12 @@ class MemorySaverOptInIPHController
     : public performance_manager::user_tuning::UserPerformanceTuningManager::
           Observer {
  public:
+  DECLARE_USER_DATA(MemorySaverOptInIPHController);
+
   explicit MemorySaverOptInIPHController(BrowserWindowInterface* interface);
   ~MemorySaverOptInIPHController() override;
+
+  static MemorySaverOptInIPHController* From(BrowserWindowInterface* interface);
 
   MemorySaverOptInIPHController(const MemorySaverOptInIPHController&) = delete;
   MemorySaverOptInIPHController& operator=(
@@ -36,6 +41,9 @@ class MemorySaverOptInIPHController
       memory_saver_observer_{this};
 
   const raw_ptr<BrowserWindowInterface> browser_window_interface_;
+
+  ui::ScopedUnownedUserData<MemorySaverOptInIPHController>
+      scoped_unowned_user_data_;
 };
 
 #endif  // CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_MEMORY_SAVER_OPT_IN_IPH_CONTROLLER_H_

@@ -825,8 +825,8 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
     // The controller relies on performance manager which isn't initialized in
     // some unit tests without browser view.
     memory_saver_opt_in_iph_controller_ =
-        std::make_unique<MemorySaverOptInIPHController>(
-            browser_view->browser());
+        GetUserDataFactory().CreateInstance<MemorySaverOptInIPHController>(
+            *browser_, browser_);
 
     if (media_router::MediaRouterEnabled(browser_view->browser()->profile())) {
       cast_browser_controller_ =
