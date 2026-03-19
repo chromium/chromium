@@ -20,6 +20,7 @@ build_webui("build") {
     "card.ts",
     "discover_skills_page.html.ts",
     "discover_skills_page.ts",
+    "emoji_data.ts",
     "error_page.html.ts",
     "error_page.ts",
     "icons.html.ts",
@@ -28,6 +29,8 @@ build_webui("build") {
     "skills_dialog_app.html.ts",
     "skills_dialog_app.ts",
     "skills_dialog_browser_proxy.ts",
+    "skills_emoji_picker.html.ts",
+    "skills_emoji_picker.ts",
     "skills_empty.html.ts",
     "skills_empty.ts",
     "skills_page_browser_proxy.ts",
@@ -44,6 +47,7 @@ build_webui("build") {
     "shared_vars.css",
     "sidebar.css",
     "skills_dialog.css",
+    "skills_emoji_picker.css",
     "user_skills_page.css",
   ]
 

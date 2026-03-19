@@ -130,4 +130,10 @@
   <message name="IDS_SKILLS_DIALOG_SAVE_ERROR" desc="Error message for saving a skill" translateable="false">
     Unable to save. Try again
   </message>
+  <message name="IDS_SKILLS_EMOJI_PICKER_SEARCH_PLACEHOLDER" desc="Placeholder text for the search bar in the emoji picker." translateable="false">
+    Search
+  </message>
+  <message name="IDS_SKILLS_EMOJI_PICKER_ARIA_LABEL" desc="Aria label for the emoji picker." translateable="false">
+    Emoji Picker
+  </message>
 </grit-part>
