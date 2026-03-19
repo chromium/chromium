@@ -1,0 +1,50 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_INDIGO_INDIGO_IMAGE_REPLACEMENT_MANAGER_H_
+#define CHROME_BROWSER_INDIGO_INDIGO_IMAGE_REPLACEMENT_MANAGER_H_
+
+#include "content/public/browser/page_user_data.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/blink/public/mojom/image_replacement/image_replacement.mojom.h"
+
+namespace content {
+class Page;
+}  // namespace content
+
+namespace indigo {
+
+class IndigoImageReplacementManager
+    : public content::PageUserData<IndigoImageReplacementManager>,
+      public blink::mojom::ImageReplacementHost {
+ public:
+  ~IndigoImageReplacementManager() override;
+
+  IndigoImageReplacementManager(const IndigoImageReplacementManager&) = delete;
+  IndigoImageReplacementManager& operator=(
+      const IndigoImageReplacementManager&) = delete;
+
+  void RegisterImageReplacement(
+      mojo::PendingRemote<blink::mojom::ImageReplacement> image_replacement);
+
+  // blink::mojom::ImageReplacementHost implementation:
+  void ReplacementFrameAttached(
+      const blink::LocalFrameToken& replacement_frame_token) override;
+
+ private:
+  friend class content::PageUserData<IndigoImageReplacementManager>;
+  PAGE_USER_DATA_KEY_DECL();
+
+  explicit IndigoImageReplacementManager(content::Page& page);
+
+  mojo::ReceiverSet<blink::mojom::ImageReplacementHost,
+                    mojo::Remote<blink::mojom::ImageReplacement>>
+      receivers_;
+};
+
+}  // namespace indigo
+
+#endif  // CHROME_BROWSER_INDIGO_INDIGO_IMAGE_REPLACEMENT_MANAGER_H_

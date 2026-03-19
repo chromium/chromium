@@ -8,6 +8,7 @@ source_set("indigo") {
   sources = [
     "indigo_agent_host.h",
     "indigo_alpha_rpc.h",
+    "indigo_image_replacement_manager.h",
     "indigo_page_action_controller.h",
     "indigo_script_loader.h",
   ]
@@ -20,16 +21,17 @@ source_set("indigo") {
     "//components/optimization_guide/core",
     "//components/signin/public/identity_manager",
     "//components/tabs:public",
+    "//content/public/browser",
+    "//content/public/common",
     "//url",
   ]
-
-  deps = [ "//content/public/browser" ]
 }
 
 source_set("impl") {
   sources = [
     "indigo_agent_host.cc",
     "indigo_alpha_rpc.cc",
+    "indigo_image_replacement_manager.cc",
     "indigo_page_action_controller.cc",
     "indigo_script_loader.cc",
   ]
@@ -53,6 +55,7 @@ source_set("impl") {
     "//net",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
+    "//third_party/blink/public/common",
   ]
 }
 
