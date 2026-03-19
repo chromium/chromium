@@ -5,7 +5,6 @@
 #include "ash/public/cpp/lobster/lobster_system_state.h"
 
 #include "ash/public/cpp/lobster/lobster_enums.h"
-#include "base/containers/enum_set.h"
 
 namespace ash {
 

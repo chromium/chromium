@@ -4,7 +4,6 @@
 
 #include "components/android_autofill/browser/android_form_event_logger.h"
 
-#include "base/containers/enum_set.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/strcat.h"

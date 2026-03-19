@@ -10,7 +10,6 @@
 #include <tuple>
 #include <utility>
 
-#include "base/containers/enum_set.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "url/gurl.h"

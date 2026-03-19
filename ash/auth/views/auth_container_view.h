@@ -19,7 +19,6 @@
 #include "ash/login/ui/animated_rounded_image_view.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/pill_button.h"
-#include "base/containers/enum_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"

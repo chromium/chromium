@@ -11,7 +11,6 @@
 
 #include "base/barrier_closure.h"
 #include "base/check.h"
-#include "base/containers/enum_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"

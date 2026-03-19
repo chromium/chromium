@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/arc/tracing/test/arc_app_performance_tracing_test_helper.h"
 
 #include "ash/constants/ash_features.h"
-#include "base/containers/enum_set.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing.h"

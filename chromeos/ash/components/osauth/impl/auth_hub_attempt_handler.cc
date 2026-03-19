@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/containers/enum_set.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/osauth/impl/auth_hub_common.h"
 #include "chromeos/ash/components/osauth/public/auth_factor_engine.h"

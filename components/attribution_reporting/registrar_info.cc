@@ -6,7 +6,6 @@
 
 #include <optional>
 
-#include "base/containers/enum_set.h"
 #include "base/functional/function_ref.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/attribution_reporting/registrar.h"

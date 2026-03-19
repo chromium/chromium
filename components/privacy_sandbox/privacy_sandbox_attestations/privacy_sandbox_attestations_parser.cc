@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/containers/enum_set.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/proto/privacy_sandbox_attestations.pb.h"

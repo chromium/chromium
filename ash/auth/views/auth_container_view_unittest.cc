@@ -14,7 +14,6 @@
 #include "ash/public/cpp/login_types.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_util.h"
-#include "base/containers/enum_set.h"
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
 #include "ui/views/accessibility/view_accessibility.h"

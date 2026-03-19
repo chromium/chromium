@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/containers/enum_set.h"
 #include "base/feature_list.h"
 #include "base/json/json_writer.h"
 #include "base/strings/string_util.h"

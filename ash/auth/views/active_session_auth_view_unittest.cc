@@ -14,7 +14,6 @@
 #include "ash/auth/views/test_support/mock_active_session_auth_view_observer.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_util.h"
-#include "base/containers/enum_set.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "components/account_id/account_id.h"

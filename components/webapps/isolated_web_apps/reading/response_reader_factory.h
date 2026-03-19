@@ -9,7 +9,6 @@
 #include <optional>
 #include <string>
 
-#include "base/containers/enum_set.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"

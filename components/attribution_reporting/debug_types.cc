@@ -6,7 +6,6 @@
 
 #include <string_view>
 
-#include "base/containers/enum_set.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/notreached.h"
 #include "base/types/expected.h"

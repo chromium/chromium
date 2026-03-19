@@ -10,7 +10,6 @@
 
 #include "base/check_is_test.h"
 #include "base/check_op.h"
-#include "base/containers/enum_set.h"
 #include "base/feature_list.h"
 #include "base/numerics/safe_conversions.h"
 #include "content/browser/devtools/devtools_instrumentation.h"

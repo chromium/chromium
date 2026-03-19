@@ -11,7 +11,6 @@
 
 #include "base/barrier_closure.h"
 #include "base/byte_size.h"
-#include "base/containers/enum_set.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"

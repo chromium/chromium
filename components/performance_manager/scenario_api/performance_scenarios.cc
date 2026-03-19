@@ -7,7 +7,6 @@
 #include <atomic>
 #include <utility>
 
-#include "base/containers/enum_set.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/performance_manager/scenario_api/performance_scenario_memory.h"
 

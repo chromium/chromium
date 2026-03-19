@@ -9,7 +9,6 @@
 #include <string>
 #include <string_view>
 
-#include "base/containers/enum_set.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"

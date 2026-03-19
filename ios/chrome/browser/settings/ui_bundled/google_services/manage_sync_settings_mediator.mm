@@ -10,7 +10,6 @@
 #import "base/apple/foundation_util.h"
 #import "base/auto_reset.h"
 #import "base/check_op.h"
-#import "base/containers/enum_set.h"
 #import "base/containers/fixed_flat_map.h"
 #import "base/i18n/message_formatter.h"
 #import "base/memory/raw_ptr.h"

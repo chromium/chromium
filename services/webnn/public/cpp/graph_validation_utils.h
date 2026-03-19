@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/containers/enum_set.h"
 #include "base/containers/span.h"
 #include "base/types/expected.h"
 #include "services/webnn/public/cpp/context_properties.h"

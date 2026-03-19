@@ -10,7 +10,6 @@
 
 #include "base/byte_count.h"
 #include "base/command_line.h"
-#include "base/containers/enum_set.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial.h"

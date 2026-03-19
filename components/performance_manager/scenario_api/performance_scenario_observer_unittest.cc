@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/barrier_closure.h"
-#include "base/containers/enum_set.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/test/gmock_callback_support.h"

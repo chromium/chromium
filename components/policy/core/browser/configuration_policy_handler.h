@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/containers/enum_set.h"
 #include "base/functional/callback.h"
 #include "base/values.h"
 #include "components/policy/core/common/policy_map.h"

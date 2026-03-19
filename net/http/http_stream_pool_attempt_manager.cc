@@ -10,7 +10,6 @@
 #include <string_view>
 #include <utility>
 
-#include "base/containers/enum_set.h"
 #include "base/debug/alias.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"

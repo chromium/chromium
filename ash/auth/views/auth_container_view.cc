@@ -20,7 +20,6 @@
 #include "ash/style/pill_button.h"
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/containers/enum_set.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"

@@ -8,7 +8,6 @@
 #include <ostream>
 #include <utility>
 
-#include "base/containers/enum_set.h"
 #include "base/functional/bind.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/scoped_refptr.h"

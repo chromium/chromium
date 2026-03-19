@@ -5,7 +5,6 @@
 #include "chrome/browser/web_applications/commands/uninstall_all_user_installed_web_apps_command.h"
 
 #include "base/check.h"
-#include "base/containers/enum_set.h"
 #include "base/functional/bind.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"

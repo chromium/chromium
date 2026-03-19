@@ -19,7 +19,6 @@
 #include "base/base64.h"
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/containers/enum_set.h"
 #include "base/containers/extend.h"
 #include "base/containers/map_util.h"
 #include "base/containers/to_value_list.h"

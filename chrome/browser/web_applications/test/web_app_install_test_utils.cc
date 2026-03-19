@@ -5,7 +5,6 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 
 #include "base/command_line.h"
-#include "base/containers/enum_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/concurrent_callbacks.h"
 #include "base/run_loop.h"

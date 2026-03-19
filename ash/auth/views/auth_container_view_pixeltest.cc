@@ -16,7 +16,6 @@
 #include "ash/test/ash_test_util.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
-#include "base/containers/enum_set.h"
 #include "base/files/file_path.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/view.h"

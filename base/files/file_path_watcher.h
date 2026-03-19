@@ -13,7 +13,6 @@
 #include <utility>
 
 #include "base/base_export.h"
-#include "base/containers/enum_set.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"

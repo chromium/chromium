@@ -15,7 +15,6 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/containers/enum_set.h"
 #include "base/functional/function_ref.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"

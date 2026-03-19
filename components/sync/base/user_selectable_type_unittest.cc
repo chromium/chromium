@@ -4,7 +4,6 @@
 
 #include "components/sync/base/user_selectable_type.h"
 
-#include "base/containers/enum_set.h"
 #include "build/build_config.h"
 #include "components/sync/base/data_type.h"
 #include "testing/gtest/include/gtest/gtest.h"

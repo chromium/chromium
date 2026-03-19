@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <optional>
 
-#include "base/containers/enum_set.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
