@@ -5479,6 +5479,7 @@ def CheckNoDeprecatedCss(input_api, output_api):
             # The NTP team prefers reserving -webkit-line-clamp for
             # ellipsis effect which can only be used with -webkit-box.
             r'ui/webui/resources/cr_components/most_visited/.*\.css$',
+            r'ui/webui/resources/cr_components/composebox/composebox_match.css$',
             r'ui/webui/resources/cr_components/searchbox/searchbox_match.css$')
     )
     file_filter = lambda f: input_api.FilterSourceFile(

@@ -92,15 +92,7 @@
   overflow: hidden;
   padding-inline: var(--cr-searchbox-match-text-padding-inline-start, 12px) 4px;
   text-overflow: ellipsis;
-  /* Default one line if not clamping lines
-   * (from non-deep-search, or not overriding
-   * forced clamp lines)
-   */
   white-space: nowrap;
-}
-
-:host(:not([override-clamp-line-num='-1'])) #textContainer {
-  white-space: normal;
 }
 
 :host(:is(:focus-visible, [selected])) #textContainer {
@@ -133,10 +125,13 @@
 }
 
 /* Enum 1 is deepSearch. */
-:host([tool-mode='1']) #textContainer {
-  overflow: hidden;
+:host([tool-mode='1']) #textContainer,
+:host(:not([override-clamp-line-num='-1'])) #textContainer {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: var(--clamp-line-num);
+  line-height: var(--cr-composebox-match-line-height, 24px);
   white-space: normal;
-  line-height: 24px;
 }
 
 :host([tool-mode='1']) #focusIndicator {
@@ -149,6 +144,7 @@
 :host([tool-mode='1']) {
   height: auto;
   min-height: var(--cr-composebox-match-height, 44px);
+  white-space: nowrap;
 }
 
 /* Enum 1 is deepSearch. */
