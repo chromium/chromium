@@ -50,7 +50,8 @@ struct DiceResponseParams {
       SigninAccount(AccountInfo account_info,
                     std::string authorization_code,
                     bool no_authorization_code,
-                    std::string supported_algorithms_for_token_binding);
+                    std::string supported_algorithms_for_token_binding,
+                    bool mtls_token_binding);
       SigninAccount(const SigninAccount&);
       ~SigninAccount();
 
@@ -66,6 +67,9 @@ struct DiceResponseParams {
       // If the account is eligible for token binding, this string is non-empty
       // and contains a list of supported binding algorithms separated by space.
       std::string supported_algorithms_for_token_binding;
+      // If true then mTLS endpoints should be used for getting the LST and
+      // exchanging the LST for access tokens.
+      bool mtls_token_binding = false;
     };
 
     SigninInfo();

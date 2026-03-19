@@ -50,12 +50,14 @@ DiceResponseParams::SigninInfo::SigninAccount::SigninAccount(
     AccountInfo account_info,
     std::string authorization_code,
     bool no_authorization_code,
-    std::string supported_algorithms_for_token_binding)
+    std::string supported_algorithms_for_token_binding,
+    bool mtls_token_binding)
     : account_info(std::move(account_info)),
       authorization_code(std::move(authorization_code)),
       no_authorization_code(no_authorization_code),
       supported_algorithms_for_token_binding(
-          std::move(supported_algorithms_for_token_binding)) {}
+          std::move(supported_algorithms_for_token_binding)),
+      mtls_token_binding(mtls_token_binding) {}
 DiceResponseParams::SigninInfo::SigninAccount::~SigninAccount() = default;
 DiceResponseParams::SigninInfo::SigninAccount::SigninAccount(
     const SigninAccount&) = default;

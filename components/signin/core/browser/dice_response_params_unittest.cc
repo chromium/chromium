@@ -23,7 +23,7 @@ TEST(DiceResponseParamsTest, IsValid) {
   EXPECT_FALSE(params.IsValid());  // Empty accounts.
 
   params.signin_info->AddAccount(
-      {{GaiaId("id"), "email", 0}, "code", false, "binding"});
+      {{GaiaId("id"), "email", 0}, "code", false, "binding", false});
   EXPECT_TRUE(params.IsValid());
 
   params.signin_info->SetInitiator(GaiaId("unknown"));
@@ -34,7 +34,7 @@ TEST(DiceResponseParamsTest, IsValid) {
 
   params.signin_info->SetInitiator(GaiaId());
   params.signin_info->AddAccount(
-      {{GaiaId("id2"), "email2", 0}, "code2", false, "binding2"});
+      {{GaiaId("id2"), "email2", 0}, "code2", false, "binding2", false});
   EXPECT_FALSE(params.IsValid());  // Multiple accounts, no initiator.
 
   params.signin_info->SetInitiator(GaiaId("id2"));

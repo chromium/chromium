@@ -116,15 +116,17 @@ DiceResponseHandler::DiceTokenFetcher::DiceTokenFetcher(
     const GaiaId& gaia_id,
     const std::string& email,
     const std::string& authorization_code,
+    bool mtls_token_binding,
     SigninClient* signin_client,
     AccountReconcilor* account_reconcilor,
     std::unique_ptr<ProcessDiceHeaderDelegate> delegate,
-    base::expected<raw_ref<BindingKeyRegistrationTokenHelper>, TokenBindingOutcome>
-        registration_token_helper_or_error,
+    base::expected<raw_ref<BindingKeyRegistrationTokenHelper>,
+                   TokenBindingOutcome> registration_token_helper_or_error,
     DiceResponseHandler* dice_response_handler)
     : gaia_id_(gaia_id),
       email_(email),
       authorization_code_(authorization_code),
+      mtls_token_binding_(mtls_token_binding),
       delegate_(std::move(delegate)),
       dice_response_handler_(dice_response_handler),
       signin_client_(signin_client),
@@ -271,11 +273,11 @@ void DiceResponseHandler::ProcessDiceHeader(
       CHECK(initiator);
       const signin::DiceResponseParams::AccountInfo& info =
           initiator->account_info;
-      ProcessDiceSigninHeader(info.gaia_id, info.email,
-                              initiator->authorization_code,
-                              initiator->no_authorization_code,
-                              initiator->supported_algorithms_for_token_binding,
-                              std::move(delegate));
+      ProcessDiceSigninHeader(
+          info.gaia_id, info.email, initiator->authorization_code,
+          initiator->no_authorization_code,
+          initiator->supported_algorithms_for_token_binding,
+          initiator->mtls_token_binding, std::move(delegate));
       return;
     }
     case signin::DiceAction::ENABLE_SYNC: {
@@ -320,6 +322,7 @@ void DiceResponseHandler::ProcessDiceSigninHeader(
     const std::string& authorization_code,
     bool no_authorization_code,
     const std::string& supported_algorithms_for_token_binding,
+    bool mtls_token_binding,
     std::unique_ptr<ProcessDiceHeaderDelegate> delegate) {
   if (no_authorization_code) {
     lock_ = std::make_unique<AccountReconcilor::Lock>(account_reconcilor_);
@@ -370,8 +373,9 @@ void DiceResponseHandler::ProcessDiceSigninHeader(
               supported_algorithms_for_token_binding);
 
   token_fetchers_.push_back(std::make_unique<DiceTokenFetcher>(
-      gaia_id, email, authorization_code, signin_client_, account_reconcilor_,
-      std::move(delegate), registration_token_helper_or_error, this));
+      gaia_id, email, authorization_code, mtls_token_binding, signin_client_,
+      account_reconcilor_, std::move(delegate),
+      registration_token_helper_or_error, this));
 }
 
 void DiceResponseHandler::ProcessEnableSyncHeader(
@@ -470,6 +474,10 @@ void DiceResponseHandler::OnTokenExchangeSuccess(
     const std::vector<uint8_t>& wrapped_binding_key) {
   const std::string& email = token_fetcher->email();
   const GaiaId& gaia_id = token_fetcher->gaia_id();
+  // TODO(crbug.com/481624833): propagate `mtls_token_binding` to the
+  // AccountsMutator.
+  [[maybe_unused]] const bool mtls_token_binding =
+      token_fetcher->mtls_token_binding();
 
   // Log is consumed by E2E tests. Please CC potassium-engprod@google.com if you
   // have to change this log.

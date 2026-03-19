@@ -123,7 +123,7 @@ TEST_F(DiceHeaderHelperTest, BuildDiceSigninResponseParams) {
         DiceHeaderHelper::BuildDiceSigninResponseParams(base::StringPrintf(
             "action=SIGNIN,id=%s,email=%s,authuser=%i,"
             "authorization_code=%s,"
-            "eligible_for_token_binding=%s",
+            "eligible_for_token_binding=%s,",
             kGaiaID.ToString().c_str(), kEmail, kSessionIndex,
             kAuthorizationCode, kSupportedTokenBindingAlgorithms));
     EXPECT_EQ(DiceAction::SIGNIN, params.user_intention);
@@ -136,6 +136,7 @@ TEST_F(DiceHeaderHelperTest, BuildDiceSigninResponseParams) {
     EXPECT_EQ(kAuthorizationCode, account->authorization_code);
     EXPECT_EQ(kSupportedTokenBindingAlgorithms,
               account->supported_algorithms_for_token_binding);
+    EXPECT_FALSE(account->mtls_token_binding);
     histogram_tester.ExpectUniqueSample("Signin.DiceAuthorizationCode", true,
                                         1);
   }
@@ -170,6 +171,7 @@ TEST_F(DiceHeaderHelperTest, BuildDiceSigninResponseParams) {
     EXPECT_EQ(kSessionIndex, account->account_info.session_index);
     EXPECT_TRUE(account->authorization_code.empty());
     EXPECT_TRUE(account->no_authorization_code);
+    EXPECT_FALSE(account->mtls_token_binding);
     histogram_tester.ExpectUniqueSample("Signin.DiceAuthorizationCode", false,
                                         1);
   }
@@ -194,6 +196,35 @@ TEST_F(DiceHeaderHelperTest, BuildDiceSigninResponseParams) {
     EXPECT_EQ(DiceAction::SIGNIN, params.user_intention);
     EXPECT_FALSE(params.IsValid());
   }
+}
+
+TEST_F(DiceHeaderHelperTest,
+       BuildDiceSigninResponseParamsWithMtlsTokenBinding) {
+  const char kAuthorizationCode[] = "authorization_code";
+  const char kEmail[] = "foo@example.com";
+  const GaiaId kGaiaID("gaia_id");
+  const char kSupportedTokenBindingAlgorithms[] = "ES256 RS256";
+  const int kSessionIndex = 42;
+  base::HistogramTester histogram_tester;
+  DiceResponseParams params = DiceHeaderHelper::BuildDiceSigninResponseParams(
+      base::StringPrintf("action=SIGNIN,id=%s,email=%s,authuser=%i,"
+                         "authorization_code=%s,"
+                         "eligible_for_token_binding=%s,"
+                         "mtls_token_binding=true",
+                         kGaiaID.ToString().c_str(), kEmail, kSessionIndex,
+                         kAuthorizationCode, kSupportedTokenBindingAlgorithms));
+  EXPECT_EQ(DiceAction::SIGNIN, params.user_intention);
+  ASSERT_TRUE(params.signin_info);
+  const auto* account = params.signin_info->GetInitiator();
+  ASSERT_TRUE(account);
+  EXPECT_EQ(kGaiaID, account->account_info.gaia_id);
+  EXPECT_EQ(kEmail, account->account_info.email);
+  EXPECT_EQ(kSessionIndex, account->account_info.session_index);
+  EXPECT_EQ(kAuthorizationCode, account->authorization_code);
+  EXPECT_EQ(kSupportedTokenBindingAlgorithms,
+            account->supported_algorithms_for_token_binding);
+  EXPECT_TRUE(account->mtls_token_binding);
+  histogram_tester.ExpectUniqueSample("Signin.DiceAuthorizationCode", true, 1);
 }
 
 TEST_F(DiceHeaderHelperTest, BuildDiceSignoutResponseParams) {

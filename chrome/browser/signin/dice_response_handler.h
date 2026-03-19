@@ -147,12 +147,12 @@ class DiceResponseHandler : public KeyedService {
         const GaiaId& gaia_id,
         const std::string& email,
         const std::string& authorization_code,
+        bool mtls_token_binding,
         SigninClient* signin_client,
         AccountReconcilor* account_reconcilor,
         std::unique_ptr<ProcessDiceHeaderDelegate> delegate,
         base::expected<raw_ref<BindingKeyRegistrationTokenHelper>,
-                       TokenBindingOutcome>
-            registration_token_helper_or_error,
+                       TokenBindingOutcome> registration_token_helper_or_error,
         DiceResponseHandler* dice_response_handler);
 
     DiceTokenFetcher(const DiceTokenFetcher&) = delete;
@@ -169,6 +169,7 @@ class DiceResponseHandler : public KeyedService {
     void set_should_enable_sync(bool should_enable_sync) {
       should_enable_sync_ = should_enable_sync;
     }
+    bool mtls_token_binding() const { return mtls_token_binding_; }
     ProcessDiceHeaderDelegate* delegate() { return delegate_.get(); }
 
    private:
@@ -193,11 +194,12 @@ class DiceResponseHandler : public KeyedService {
     const GaiaId gaia_id_;
     const std::string email_;
     const std::string authorization_code_;
+    const bool mtls_token_binding_ = false;
     const std::unique_ptr<ProcessDiceHeaderDelegate> delegate_;
-    const raw_ptr<DiceResponseHandler> dice_response_handler_;
-    const raw_ptr<SigninClient> signin_client_;
+    const raw_ptr<DiceResponseHandler> dice_response_handler_ = nullptr;
+    const raw_ptr<SigninClient> signin_client_ = nullptr;
     base::CancelableOnceClosure timeout_closure_;
-    bool should_enable_sync_;
+    bool should_enable_sync_ = false;
     std::unique_ptr<GaiaAuthFetcher> gaia_auth_fetcher_;
     TokenBindingOutcome token_binding_outcome_ =
         TokenBindingOutcome::kNotBoundUnknown;
@@ -216,6 +218,7 @@ class DiceResponseHandler : public KeyedService {
       const std::string& authorization_code,
       bool no_authorization_code,
       const std::string& supported_algorithms_for_token_binding,
+      bool mtls_token_binding,
       std::unique_ptr<ProcessDiceHeaderDelegate> delegate);
 
   // Process the Dice enable sync action.
