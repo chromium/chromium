@@ -124,7 +124,8 @@ VerticalTabGroupHeaderView::VerticalTabGroupHeaderView(
     Delegate& delegate,
     tabs::VerticalTabStripStateController* state_controller,
     const tab_groups::TabGroupVisualData* tab_group_visual_data)
-    : tab_group_visual_data_(*tab_group_visual_data),
+    : HoverCardAnchorTarget(this),
+      tab_group_visual_data_(*tab_group_visual_data),
       sync_icon_(AddChildView(std::make_unique<views::ImageView>())),
       group_header_label_(
           AddChildView(std::make_unique<VerticalTabGroupHeaderLabel>())),
@@ -305,7 +306,8 @@ void VerticalTabGroupHeaderView::OnMouseMoved(const ui::MouseEvent& event) {
 }
 
 void VerticalTabGroupHeaderView::OnMouseEntered(const ui::MouseEvent& event) {
-  delegate_->HideHoverCard();
+  SetHoverCardDataFrom(delegate_->GetTabGroup());
+  delegate_->UpdateHoverCard();
   UpdateEditorBubbleButtonVisibility();
 }
 
@@ -321,6 +323,8 @@ void VerticalTabGroupHeaderView::OnMouseExited(const ui::MouseEvent& event) {
 
 void VerticalTabGroupHeaderView::OnFocus() {
   UpdateEditorBubbleButtonVisibility();
+  SetHoverCardDataFrom(delegate_->GetTabGroup());
+  delegate_->UpdateHoverCard();
 }
 
 void VerticalTabGroupHeaderView::OnBlur() {
@@ -404,6 +408,19 @@ void VerticalTabGroupHeaderView::ShowContextMenuForViewImpl(
       delegate_->ShowGroupEditorBubble(kStopContextMenuPropagation));
 }
 
+bool VerticalTabGroupHeaderView::NeedsToShowThumbnail() const {
+  return false;
+}
+
+bool VerticalTabGroupHeaderView::IsValidHoverCardTarget() const {
+  return delegate_->IsValid();
+}
+
+views::BubbleBorder::Arrow VerticalTabGroupHeaderView::GetAnchorPosition()
+    const {
+  return views::BubbleBorder::LEFT_TOP;
+}
+
 void VerticalTabGroupHeaderView::OnDataChanged(
     const tab_groups::TabGroupVisualData* tab_group_visual_data,
     bool is_shared) {
@@ -453,7 +470,7 @@ void VerticalTabGroupHeaderView::OnDataChanged(
 
   UpdateIsCollapsed();
   UpdateAccessibleName();
-  UpdateTooltipText();
+  SetHoverCardDataFrom(delegate_->GetTabGroup());
 }
 
 void VerticalTabGroupHeaderView::OnAttentionStateChanged(bool needs_attention) {
@@ -472,6 +489,10 @@ void VerticalTabGroupHeaderView::OnAttentionStateChanged(bool needs_attention) {
   }
 
   UpdateAccessibleName();
+}
+
+void VerticalTabGroupHeaderView::SetHoverCardDataForTesting() {
+  SetHoverCardDataFrom(delegate_->GetTabGroup());
 }
 
 void VerticalTabGroupHeaderView::UpdateTooltipText() {

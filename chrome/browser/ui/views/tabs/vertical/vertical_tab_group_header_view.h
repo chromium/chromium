@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
+#include "chrome/browser/ui/views/tabs/hover_card_anchor_target.h"
 #include "chrome/browser/ui/views/tabs/tab_group_editor_bubble_tracker.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_types.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -34,7 +35,8 @@ class Label;
 // title, editor icon and the collapsed/expand icon.
 class VerticalTabGroupHeaderView : public views::FlexLayoutView,
                                    public views::ContextMenuController,
-                                   public views::FocusChangeListener {
+                                   public views::FocusChangeListener,
+                                   public HoverCardAnchorTarget {
   METADATA_HEADER(VerticalTabGroupHeaderView, views::FlexLayoutView)
 
  public:
@@ -47,9 +49,12 @@ class VerticalTabGroupHeaderView : public views::FlexLayoutView,
         bool stop_context_menu_propagation) = 0;
     virtual std::u16string GetGroupContentString() const = 0;
 
+    virtual bool IsValid() const = 0;
     virtual void InitHeaderDrag(const ui::LocatedEvent& event) = 0;
     virtual bool ContinueHeaderDrag(const ui::LocatedEvent& event) = 0;
     virtual void CancelHeaderDrag() = 0;
+    virtual const TabGroup& GetTabGroup() const = 0;
+    virtual void UpdateHoverCard() const = 0;
     virtual void HideHoverCard() const = 0;
 
     virtual void ShiftGroupUp() = 0;
@@ -91,6 +96,11 @@ class VerticalTabGroupHeaderView : public views::FlexLayoutView,
       const gfx::Point& point,
       ui::mojom::MenuSourceType source_type) override;
 
+  // HoverCardAnchorTarget:
+  bool NeedsToShowThumbnail() const override;
+  bool IsValidHoverCardTarget() const override;
+  views::BubbleBorder::Arrow GetAnchorPosition() const override;
+
   void OnDataChanged(
       const tab_groups::TabGroupVisualData* tab_group_visual_data,
       bool is_shared);
@@ -102,6 +112,7 @@ class VerticalTabGroupHeaderView : public views::FlexLayoutView,
   views::ImageView* attention_indicator_for_testing() {
     return attention_indicator_;
   }
+  void SetHoverCardDataForTesting();
 
  private:
   void UpdateEditorBubbleButtonVisibility();

@@ -296,6 +296,10 @@ std::u16string VerticalTabGroupView::GetGroupContentString() const {
   return tab_groups::GetGroupContentString(group);
 }
 
+bool VerticalTabGroupView::IsValid() const {
+  return collection_node_;
+}
+
 void VerticalTabGroupView::AttachChildView(
     std::unique_ptr<views::View> child_view,
     const gfx::Rect& previous_bounds_in_screen) {
@@ -512,6 +516,23 @@ bool VerticalTabGroupView::ContinueHeaderDrag(const ui::LocatedEvent& event) {
 
 void VerticalTabGroupView::CancelHeaderDrag() {
   GetDragHandler().EndDrag(EndDragReason::kCancel);
+}
+
+const TabGroup& VerticalTabGroupView::GetTabGroup() const {
+  CHECK(collection_node_);
+  return *GetTabGroupFromNode(collection_node_);
+}
+
+void VerticalTabGroupView::UpdateHoverCard() const {
+  if (!collection_node_ || !group_header_) {
+    return;
+  }
+
+  if (TabHoverCardController* hover_card_controller =
+          collection_node_->GetController()->GetHoverCardController()) {
+    hover_card_controller->UpdateHoverCard(
+        group_header_, TabSlotController::HoverCardUpdateType::kEvent);
+  }
 }
 
 void VerticalTabGroupView::HideHoverCard() const {

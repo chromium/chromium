@@ -29,6 +29,7 @@
 #include "ui/menus/simple_menu_model.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/interaction/interactive_views_test.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/view_utils.h"
 
 namespace {
@@ -556,19 +557,5 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerInteractiveUiTest,
       WaitForShow(TabHoverCardBubbleView::kHoverCardBubbleElementId),
       ClickMouse(ui_controls::MouseButton::LEFT, /*release=*/false),
       WaitForHide(TabHoverCardBubbleView::kHoverCardBubbleElementId));
-}
-
-IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerInteractiveUiTest,
-                       DISABLED_VerticalTabHoverCardShowPinned) {
-  TabStripModel* model = browser()->tab_strip_model();
-  model->SetTabPinned(0, true);
-
-  RunTestSequence(
-      WaitForShow(kVerticalTabStripBottomContainerElementId),
-      NameDescendantViewByType<VerticalTabView>(kBrowserViewElementId,
-                                                kFirstTabName, 0),
-      MoveMouseTo(kVerticalTabStripBottomContainerElementId),
-      MoveMouseTo(kFirstTabName),
-      WaitForShow(TabHoverCardBubbleView::kHoverCardBubbleElementId));
 }
 }  // namespace

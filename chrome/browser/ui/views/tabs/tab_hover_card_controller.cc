@@ -421,6 +421,11 @@ void TabHoverCardController::MaybeStartThumbnailObservation(
     return;
   }
 
+  // Only Tabs have associated thumbnails.
+  if (std::holds_alternative<GroupCardData>(anchor_target->data())) {
+    return;
+  }
+
   // Discarded tabs that don't already have a thumbnail won't get one.
   const TabCardData& tab_card_data =
       std::get<TabCardData>(anchor_target->data());
@@ -542,6 +547,10 @@ void TabHoverCardController::UpdateOrShowCard(
 
     // When a tab has been discarded, the thumbnail is moved to a new
     // ThumbnailTabHelper so it must be observed again.
+    if (std::holds_alternative<GroupCardData>(anchor_target->data())) {
+      return;
+    }
+
     const TabCardData& card_data = std::get<TabCardData>(anchor_target->data());
     if (card_data.is_tab_discarded) {
       MaybeStartThumbnailObservation(anchor_target,

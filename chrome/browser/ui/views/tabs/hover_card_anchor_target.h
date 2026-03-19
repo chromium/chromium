@@ -17,6 +17,7 @@ namespace tabs {
 struct TabData;
 }
 
+class TabGroup;
 class TabResourceUsage;
 
 struct TabCardData {
@@ -42,8 +43,11 @@ struct TabCardData {
 struct GroupCardData {
   GroupCardData();
   ~GroupCardData();
-  FadeLabelViewData title_data;
-  std::vector<FadeLabelViewData> domain_data;
+  FadeLabelViewData group_title_data;
+  std::vector<FadeLabelViewData> tab_title_data;
+  FadeLabelViewData excess_tab_data;
+  // Maximum number of tab titles to show in the hover card for a tab group
+  static constexpr size_t kMaxTabs = 5;
 };
 
 namespace views {
@@ -61,7 +65,8 @@ class HoverCardAnchorTarget {
   explicit HoverCardAnchorTarget(views::View* anchor_view);
   virtual ~HoverCardAnchorTarget();
 
-  // Returns true if this target is active.
+  // Returns true if the anchor target should get a thumbnail on
+  // its hover card.
   virtual bool NeedsToShowThumbnail() const = 0;
 
   // Determines if |this| is a valid target.
@@ -76,6 +81,7 @@ class HoverCardAnchorTarget {
 
  protected:
   void SetHoverCardDataFrom(const tabs::TabData& data);
+  void SetHoverCardDataFrom(const TabGroup& data);
 
  private:
   raw_ptr<views::View> anchor_view_ = nullptr;

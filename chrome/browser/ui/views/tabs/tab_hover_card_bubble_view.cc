@@ -74,6 +74,14 @@ constexpr int kTitleDomainSpacing = 4;
 // Margins space surrounding the text (title and domain) in the hover card.
 constexpr auto kTextMargins = gfx::Insets::VH(12, 12);
 
+// Margins space surrounding the titles for tabs in the hover card for tab
+// group headers.
+constexpr auto kGroupTitleMargins = gfx::Insets::VH(10, 20);
+
+// Margin space surrounding the text for the footer in the hover card for tab
+// group headers.
+constexpr auto kGroupFooterMargins = gfx::Insets::VH(12, 11);
+
 // Calculates an appropriate size to display a preview image in the hover card.
 // For the vast majority of images, the `preferred_size` is used, but extremely
 // tall or wide images use the image size instead, centering in the available
@@ -410,10 +418,10 @@ class TabHoverCardBubbleView::TabCardView : public views::View {
     // Set up layout.
     views::FlexLayout* const layout =
         SetLayoutManager(std::make_unique<views::FlexLayout>());
-    layout->SetOrientation(views::LayoutOrientation::kVertical);
-    layout->SetMainAxisAlignment(views::LayoutAlignment::kStart);
-    layout->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
-    layout->SetCollapseMargins(true);
+    layout->SetOrientation(views::LayoutOrientation::kVertical)
+        .SetMainAxisAlignment(views::LayoutAlignment::kStart)
+        .SetCrossAxisAlignment(views::LayoutAlignment::kStretch)
+        .SetCollapseMargins(true);
 
     // In some browser types (e.g. ChromeOS terminal app) we hide the domain
     // label. In those cases, we need to adjust the bottom margin of the title
@@ -547,8 +555,90 @@ class TabHoverCardBubbleView::TabCardView : public views::View {
 BEGIN_METADATA(TabHoverCardBubbleView, TabCardView)
 END_METADATA
 
-// TabHoverCardBubbleView:
+// TabHoverCardBubbleView::GroupCardView
 // ----------------------------------------------------------
+class TabHoverCardBubbleView::GroupCardView : public views::View {
+  METADATA_HEADER(GroupCardView, views::View)
+
+ public:
+  explicit GroupCardView(TabHoverCardBubbleView* bubble_view)
+      : tab_titles_(GroupCardData::kMaxTabs, nullptr) {
+    title_ = AddChildView(std::make_unique<FadeLabelView>(
+        kHoverCardTitleMaxLines, CONTEXT_TAB_HOVER_CARD_TITLE,
+        views::style::STYLE_BODY_3_EMPHASIS));
+
+    title_->SetProperty(views::kMarginsKey, kTextMargins);
+
+    gfx::Insets tab_title_margins = kGroupTitleMargins;
+    tab_title_margins.set_top(kTitleDomainSpacing);
+
+    for (raw_ptr<FadeLabelView>& label : tab_titles_) {
+      label = AddChildView(std::make_unique<FadeLabelView>(
+          1, views::style::CONTEXT_DIALOG_BODY_TEXT,
+          views::style::STYLE_BODY_4));
+      label->SetProperty(views::kMarginsKey, tab_title_margins);
+      label->SetEnabledColor(kColorTabHoverCardSecondaryText);
+    }
+
+    footer_ = AddChildView(std::make_unique<FadeLabelView>(
+        1, views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_BODY_4));
+    footer_->SetProperty(views::kMarginsKey, kGroupFooterMargins);
+    footer_->SetEnabledColor(kColorTabHoverCardSecondaryText);
+
+    views::FlexLayout* const layout =
+        SetLayoutManager(std::make_unique<views::FlexLayout>());
+    layout->SetOrientation(views::LayoutOrientation::kVertical)
+        .SetMainAxisAlignment(views::LayoutAlignment::kStart)
+        .SetCrossAxisAlignment(views::LayoutAlignment::kStretch)
+        .SetCollapseMargins(true);
+  }
+
+  void UpdateContent(const HoverCardAnchorTarget* anchor_target) {
+    CHECK(std::holds_alternative<GroupCardData>(anchor_target->data()));
+    const GroupCardData& card_data =
+        std::get<GroupCardData>(anchor_target->data());
+
+    title_->SetData(card_data.group_title_data);
+
+    for (size_t i = 0; i < tab_titles_.size(); ++i) {
+      if (i >= card_data.tab_title_data.size()) {
+        tab_titles_[i]->SetData({u"", false});
+        tab_titles_[i]->SetVisible(false);
+      } else {
+        tab_titles_[i]->SetData(card_data.tab_title_data[i]);
+        tab_titles_[i]->SetVisible(true);
+      }
+    }
+
+    footer_->SetData(card_data.excess_tab_data);
+    if (card_data.excess_tab_data.text.empty()) {
+      footer_->SetVisible(false);
+    } else {
+      footer_->SetVisible(true);
+    }
+  }
+
+  void SetTextFade(double percent) {
+    title_->SetFade(percent);
+    for (raw_ptr<FadeLabelView> label : tab_titles_) {
+      label->SetFade(percent);
+    }
+    footer_->SetFade(percent);
+  }
+
+  FadeLabelView* title() const { return title_; }
+  const std::vector<raw_ptr<FadeLabelView>>& tab_titles() const {
+    return tab_titles_;
+  }
+  FadeLabelView* footer() const { return footer_; }
+
+ private:
+  raw_ptr<FadeLabelView> title_ = nullptr;
+  std::vector<raw_ptr<FadeLabelView>> tab_titles_;
+  raw_ptr<FadeLabelView> footer_ = nullptr;
+};
+BEGIN_METADATA(TabHoverCardBubbleView, GroupCardView)
+END_METADATA
 
 // static
 constexpr base::TimeDelta TabHoverCardBubbleView::kHoverCardSlideDuration;
@@ -588,30 +678,37 @@ TabHoverCardBubbleView::TabHoverCardBubbleView(
   // navigating through the tab strip.
   set_focus_traversable_from_anchor_view(false);
 
-  SetLayoutManager(std::make_unique<views::FillLayout>());
-
-  tab_card_view_ = AddChildView(std::make_unique<TabCardView>(this));
-  tab_card_view_->SetVisible(true);
+  views::FlexLayout* const layout =
+      SetLayoutManager(std::make_unique<views::FlexLayout>());
+  layout->SetOrientation(views::LayoutOrientation::kVertical)
+      .SetMainAxisAlignment(views::LayoutAlignment::kStart)
+      .SetCrossAxisAlignment(views::LayoutAlignment::kStretch)
+      .SetCollapseMargins(true);
 
   SetProperty(views::kElementIdentifierKey, kHoverCardBubbleElementId);
 
-  const TabCardData& card_data = std::get<TabCardData>(anchor_target->data());
-  bool valid_thumbnail = card_data.thumbnail &&
-                         card_data.thumbnail->has_data() &&
-                         anchor_target->NeedsToShowThumbnail();
+  tab_card_view_ = AddChildView(std::make_unique<TabCardView>(this));
 
-  if (tab_card_view_->thumbnail_view() && !valid_thumbnail) {
-    // Placeholder image should be used when there is no image data for the
-    // given tab. Otherwise don't flash the placeholder while we wait for the
-    // existing thumbnail to be decompressed.
-    //
-    // We tell the ThumbnailView to initialize with a place holder image when
-    // it is added to the widget. Note that the ThumbnailView has to set the
-    // placeholder image after CreateBubble() below, since setting up the
-    // placeholder image and background color require a ColorProvider,
-    // which is only available once this View has been added to its widget.
-    tab_card_view_->thumbnail_view()->SetPlaceholderImage();
+  if (std::holds_alternative<TabCardData>(anchor_target->data())) {
+    const TabCardData& card_data = std::get<TabCardData>(anchor_target->data());
+    bool valid_thumbnail = card_data.thumbnail &&
+                           card_data.thumbnail->has_data() &&
+                           anchor_target->NeedsToShowThumbnail();
+    if (tab_card_view_->thumbnail_view() && !valid_thumbnail) {
+      // Placeholder image should be used when there is no image data for the
+      // given tab. Otherwise don't flash the placeholder while we wait for the
+      // existing thumbnail to be decompressed.
+      //
+      // We tell the ThumbnailView to initialize with a place holder image when
+      // it is added to the widget. Note that the ThumbnailView has to set the
+      // placeholder image after CreateBubble() below, since setting up the
+      // placeholder image and background color require a ColorProvider,
+      // which is only available once this View has been added to its widget.
+      tab_card_view_->thumbnail_view()->SetPlaceholderImage();
+    }
   }
+
+  group_card_view_ = AddChildView(std::make_unique<GroupCardView>(this));
 
   // Create the widget from the view. Additional setup happens in
   // `AddedToWidget()`.
@@ -622,11 +719,22 @@ TabHoverCardBubbleView::~TabHoverCardBubbleView() = default;
 
 void TabHoverCardBubbleView::UpdateCardContent(
     const HoverCardAnchorTarget* anchor_target) {
-  tab_card_view_->UpdateContent(anchor_target);
+  tab_card_view_->SetVisible(
+      std::holds_alternative<TabCardData>(anchor_target->data()));
+  group_card_view_->SetVisible(
+      std::holds_alternative<GroupCardData>(anchor_target->data()));
+
+  if (std::holds_alternative<TabCardData>(anchor_target->data())) {
+    tab_card_view_->UpdateContent(anchor_target);
+  } else {
+    CHECK(std::holds_alternative<GroupCardData>(anchor_target->data()));
+    group_card_view_->UpdateContent(anchor_target);
+  }
 }
 
 void TabHoverCardBubbleView::SetTextFade(double percent) {
   tab_card_view_->SetTextFade(percent);
+  group_card_view_->SetTextFade(percent);
 }
 
 void TabHoverCardBubbleView::SetTargetTabImage(gfx::ImageSkia preview_image) {
@@ -667,6 +775,19 @@ views::View* TabHoverCardBubbleView::GetThumbnailViewForTesting() {
 
 FooterView* TabHoverCardBubbleView::GetFooterViewForTesting() {
   return tab_card_view_->footer_view();
+}
+
+FadeLabelView* TabHoverCardBubbleView::GetGroupTitleViewForTesting() const {
+  return group_card_view_->title();
+}
+
+const std::vector<raw_ptr<FadeLabelView>>&
+TabHoverCardBubbleView::GetGroupTabTitleViewsForTesting() const {
+  return group_card_view_->tab_titles();
+}
+
+FadeLabelView* TabHoverCardBubbleView::GetGroupFooterViewForTesting() const {
+  return group_card_view_->footer();
 }
 
 // static

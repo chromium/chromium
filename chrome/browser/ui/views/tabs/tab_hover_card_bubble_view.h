@@ -94,6 +94,11 @@ class TabHoverCardBubbleView : public views::BubbleDialogDelegateView {
   views::View* GetThumbnailViewForTesting();
   FooterView* GetFooterViewForTesting();
 
+  FadeLabelView* GetGroupTitleViewForTesting() const;
+  const std::vector<raw_ptr<FadeLabelView>>& GetGroupTabTitleViewsForTesting()
+      const;
+  FadeLabelView* GetGroupFooterViewForTesting() const;
+
   // Returns the percentage complete during transition animations when a
   // pre-emptive crossfade to a placeholder should start if a new image is not
   // available, or `std::nullopt` to disable crossfades entirely.
@@ -110,6 +115,7 @@ class TabHoverCardBubbleView : public views::BubbleDialogDelegateView {
 
  private:
   class TabCardView;
+  class GroupCardView;
 
   // views::BubbleDialogDelegateView:
   gfx::Size CalculatePreferredSize(
@@ -120,6 +126,7 @@ class TabHoverCardBubbleView : public views::BubbleDialogDelegateView {
 
   bool sliding_ = false;
   raw_ptr<TabCardView> tab_card_view_ = nullptr;
+  raw_ptr<GroupCardView> group_card_view_ = nullptr;
   const raw_ptr<const TabStyle> tab_style_;
   const InitParams bubble_params_;
   int corner_radius_ = ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
