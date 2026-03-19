@@ -265,36 +265,39 @@ public class FullscreenSigninMediator
     void onInitialLoadCompleted(boolean hasPolicies) {
         if (mDestroyed) return;
 
+        Log.i(TAG, "#onInitialLoadCompleted() hasPolicies:" + hasPolicies);
         Profile profile = assumeNonNull(mDelegate.getProfileSupplier().get()).getOriginalProfile();
+        mSigninManager = assertNonNull(IdentityServicesProvider.get().getSigninManager(profile));
         initializeProfileDataCache(profile);
 
-        mSigninManager = assertNonNull(IdentityServicesProvider.get().getSigninManager(profile));
-
-        // Check which policies are enabled, if any, and update the UI accordingly.
-        Log.i(TAG, "#onInitialLoadCompleted() hasPolicies:" + hasPolicies);
+        // 1. Update all fields.
+        mIsSigninSupported = isSigninSupported(profile);
         if (hasPolicies) {
-            checkPolicyValues();
+            mAllowMetricsAndCrashUploading =
+                    mPrivacyPreferencesManager.isUsageAndCrashReportingPermittedByPolicy();
+            mIsSigninForcedByPolicy =
+                    SigninFeatureMap.isEnabled(SigninFeatures.SUPPORT_FORCED_SIGNIN_POLICY)
+                            && mSigninManager.isForceSigninEnabled();
         } else {
             mAllowMetricsAndCrashUploading = true;
+            mIsSigninForcedByPolicy = false;
         }
 
-        mIsSigninSupported = isSigninSupported(profile);
+        // 2. Update the property model.
         mModel.set(FullscreenSigninProperties.IS_SIGNIN_SUPPORTED, mIsSigninSupported);
+        mModel.set(
+                FullscreenSigninProperties.SHOW_ENTERPRISE_MANAGEMENT_NOTICE,
+                hasPolicies && mDelegate.shouldDisplayManagementNoticeOnManagedDevices());
         updateShouldHideDismissButton();
 
-        if (mIsSigninForcedByPolicy) {
-            updateStringsAndHideDismissButtonForForcedSignin();
-        } else if (!mIsSigninSupported) {
-            mModel.set(FullscreenSigninProperties.SUBTITLE_STRING, null);
-        } else {
-            mModel.set(FullscreenSigninProperties.TITLE_STRING, mConfig.title);
-            maybeUpdateSubtitle(profile, hasPolicies);
-        }
+        mModel.set(FullscreenSigninProperties.TITLE_STRING, getTitleText());
+        mModel.set(
+                FullscreenSigninProperties.SUBTITLE_STRING, getSubtitleText(profile, hasPolicies));
 
-        mModel.set(FullscreenSigninProperties.SHOW_INITIAL_LOAD_PROGRESS_SPINNER, false);
         mModel.set(
                 FullscreenSigninProperties.FOOTER_STRING,
                 getFooterString(!mAllowMetricsAndCrashUploading));
+        mModel.set(FullscreenSigninProperties.SHOW_INITIAL_LOAD_PROGRESS_SPINNER, false);
 
         // Apply supervised account properties
         AccountUtils.checkIsSubjectToParentalControls(
@@ -314,41 +317,32 @@ public class FullscreenSigninMediator
         updateSelectedAccountData();
     }
 
-    private void checkPolicyValues() {
-        mAllowMetricsAndCrashUploading =
-                mPrivacyPreferencesManager.isUsageAndCrashReportingPermittedByPolicy();
-        mModel.set(
-                FullscreenSigninProperties.SHOW_ENTERPRISE_MANAGEMENT_NOTICE,
-                mDelegate.shouldDisplayManagementNoticeOnManagedDevices());
-        mIsSigninForcedByPolicy =
-                SigninFeatureMap.isEnabled(SigninFeatures.SUPPORT_FORCED_SIGNIN_POLICY)
-                        && assumeNonNull(mSigninManager).isForceSigninEnabled();
-        updateShouldHideDismissButton();
-    }
-
-    private void updateStringsAndHideDismissButtonForForcedSignin() {
-        assert mIsSigninForcedByPolicy;
-        updateShouldHideDismissButton();
-        mModel.set(
-                FullscreenSigninProperties.TITLE_STRING,
-                mContext.getString(R.string.signin_fre_title_signin_forced_by_policy));
-        mModel.set(
-                FullscreenSigninProperties.SUBTITLE_STRING,
-                mContext.getString(R.string.signin_fre_subtitle_signin_forced_by_policy));
-    }
-
     private boolean isSigninSupported(Profile profile) {
         return ExternalAuthUtils.getInstance().canUseGooglePlayServices()
                 && UserPrefs.get(profile).getBoolean(Pref.SIGNIN_ALLOWED)
                 && !mConfig.shouldDisableSignin;
     }
 
-    private void maybeUpdateSubtitle(Profile profile, boolean hasPolicies) {
-        // This method is only called if signin is not forced by policy.
-        if (hasPolicies && mDelegate.shouldDisplayManagementNoticeOnManagedDevices()) {
-            mModel.set(FullscreenSigninProperties.SUBTITLE_STRING, null);
-            return;
+    private String getTitleText() {
+        if (mIsSigninForcedByPolicy) {
+            return mContext.getString(R.string.signin_fre_title_signin_forced_by_policy);
         }
+        if (!mIsSigninSupported) {
+            return mContext.getString(R.string.fre_welcome);
+        }
+        return mConfig.title;
+    }
+
+    private @Nullable String getSubtitleText(Profile profile, boolean hasPolicies) {
+        if (!mIsSigninSupported || mIsChild) {
+            return null;
+        }
+        if (mIsSigninForcedByPolicy) {
+            return mContext.getString(R.string.signin_fre_subtitle_signin_forced_by_policy);
+        } else if (hasPolicies && mDelegate.shouldDisplayManagementNoticeOnManagedDevices()) {
+            return null;
+        }
+
         SyncService syncService = SyncServiceFactory.getForProfile(profile);
         assumeNonNull(syncService);
         boolean isSyncDataManaged = false;
@@ -360,11 +354,9 @@ public class FullscreenSigninMediator
                 break;
             }
         }
-        mModel.set(
-                FullscreenSigninProperties.SUBTITLE_STRING,
-                isSyncDataManaged
-                        ? mContext.getString(R.string.signin_fre_subtitle_without_sync)
-                        : mConfig.subtitle);
+        return isSyncDataManaged
+                ? mContext.getString(R.string.signin_fre_subtitle_without_sync)
+                : mConfig.subtitle;
     }
 
     private void updateShouldHideDismissButton() {
