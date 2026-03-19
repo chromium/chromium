@@ -40,6 +40,7 @@
 #include "base/test/test_switches.h"
 #include "base/test/test_timeouts.h"
 #include "base/trace_event/typed_macros.h"
+#include "base/types/expected_macros.h"
 #include "base/types/optional_ref.h"
 #include "base/types/optional_util.h"
 #include "base/uuid.h"
@@ -601,6 +602,12 @@ bool IsRequestCompatibleWithSpeculativeRFH(NavigationRequest* request) {
              NavigationRequest::NavigationState::WILL_PROCESS_RESPONSE &&
          request->GetAssociatedRFHType() ==
              NavigationRequest::AssociatedRenderFrameHostType::NONE;
+}
+
+// Converts 0 to std::nullopt (for use with std::optional::and_then), otherwise
+// just returns the input as an optional.
+std::optional<int> FilterZeroes(int value) {
+  return value == 0 ? std::nullopt : std::make_optional(value);
 }
 
 }  // namespace
@@ -4836,24 +4843,20 @@ std::optional<int> GetDOMNodeId(RenderFrameHost& rfh,
   CHECK(document_id.has_value());
 
   // Find a node matching the selector in the document.
-  auto params = base::DictValue()
-                    .Set("nodeId", document_id.value())
-                    .Set("selector", query_selector);
-  result =
-      devtools_client.SendCommandSync("DOM.querySelector", std::move(params));
+  result = devtools_client.SendCommandSync(
+      "DOM.querySelector", base::DictValue()
+                               .Set("nodeId", document_id.value())
+                               .Set("selector", query_selector));
   CHECK(result);
 
   // QuerySelector returns a node_id: 0 when the selector isn't matched.
-  std::optional<int> node_id = result->FindInt("nodeId");
-  if (!node_id || node_id.value() == 0) {
-    return std::nullopt;
-  }
+  ASSIGN_OR_RETURN(int node_id,
+                   result->FindInt("nodeId").and_then(FilterZeroes));
 
   // Extract the backendNodeId from the matched node. backendNodeId corresponds
   // to the Blink DOMNodeId
-  params = base::DictValue().Set("nodeId", node_id.value());
-  result =
-      devtools_client.SendCommandSync("DOM.describeNode", std::move(params));
+  result = devtools_client.SendCommandSync(
+      "DOM.describeNode", base::DictValue().Set("nodeId", node_id));
   CHECK(result);
 
   std::optional<int> dom_node_id =
@@ -4877,33 +4880,26 @@ std::optional<int> GetDOMNodeIdFromSubframe(
   CHECK(document_id.has_value());
 
   // Find the <iframe> element node in the main document.
-  auto params = base::DictValue()
-                    .Set("nodeId", document_id.value())
-                    .Set("selector", subframe_query_selector);
-  result =
-      devtools_client.SendCommandSync("DOM.querySelector", std::move(params));
+  result = devtools_client.SendCommandSync(
+      "DOM.querySelector", base::DictValue()
+                               .Set("nodeId", document_id.value())
+                               .Set("selector", subframe_query_selector));
   CHECK(result);
-  std::optional<int> iframe_node_id = result->FindInt("nodeId");
-  if (!iframe_node_id || iframe_node_id.value() == 0) {
-    return std::nullopt;
-  }
+  ASSIGN_OR_RETURN(int iframe_node_id,
+                   result->FindInt("nodeId").and_then(FilterZeroes));
 
   // Get contentDocument of iframe.
-  params = base::DictValue().Set("nodeId", iframe_node_id.value());
-  result =
-      devtools_client.SendCommandSync("DOM.describeNode", std::move(params));
+  result = devtools_client.SendCommandSync(
+      "DOM.describeNode", base::DictValue().Set("nodeId", iframe_node_id));
   CHECK(result);
-  std::optional<int> content_doc_backend_node_id =
-      result->FindIntByDottedPath("node.contentDocument.backendNodeId");
-  if (!content_doc_backend_node_id) {
-    return std::nullopt;
-  }
+  ASSIGN_OR_RETURN(
+      int content_doc_backend_node_id,
+      result->FindIntByDottedPath("node.contentDocument.backendNodeId"));
 
   // Resolve that backendNodeId to get a Runtime objectId for the document.
-  params = base::DictValue().Set("backendNodeId",
-                                 content_doc_backend_node_id.value());
-  result =
-      devtools_client.SendCommandSync("DOM.resolveNode", std::move(params));
+  result = devtools_client.SendCommandSync(
+      "DOM.resolveNode",
+      base::DictValue().Set("backendNodeId", content_doc_backend_node_id));
   CHECK(result);
   const std::string* content_doc_object_id =
       result->FindStringByDottedPath("object.objectId");
@@ -4912,30 +4908,24 @@ std::optional<int> GetDOMNodeIdFromSubframe(
   }
 
   // Request the DOM nodeId for the iframe's document from its objectId.
-  params = base::DictValue().Set("objectId", *content_doc_object_id);
-  result =
-      devtools_client.SendCommandSync("DOM.requestNode", std::move(params));
+  result = devtools_client.SendCommandSync(
+      "DOM.requestNode",
+      base::DictValue().Set("objectId", *content_doc_object_id));
   CHECK(result);
-  std::optional<int> content_doc_node_id = result->FindInt("nodeId");
-  if (!content_doc_node_id || content_doc_node_id.value() == 0) {
-    return std::nullopt;
-  }
+  ASSIGN_OR_RETURN(int content_doc_node_id,
+                   result->FindInt("nodeId").and_then(FilterZeroes));
 
   // Query for the target element within the iframe's document.
-  params = base::DictValue()
-               .Set("nodeId", content_doc_node_id.value())
-               .Set("selector", query_selector);
-  result =
-      devtools_client.SendCommandSync("DOM.querySelector", std::move(params));
+  result = devtools_client.SendCommandSync(
+      "DOM.querySelector", base::DictValue()
+                               .Set("nodeId", content_doc_node_id)
+                               .Set("selector", query_selector));
   CHECK(result);
-  std::optional<int> final_node_id = result->FindInt("nodeId");
-  if (!final_node_id || final_node_id.value() == 0) {
-    return std::nullopt;
-  }
+  ASSIGN_OR_RETURN(int final_node_id,
+                   result->FindInt("nodeId").and_then(FilterZeroes));
 
-  params = base::DictValue().Set("nodeId", final_node_id.value());
-  result =
-      devtools_client.SendCommandSync("DOM.describeNode", std::move(params));
+  result = devtools_client.SendCommandSync(
+      "DOM.describeNode", base::DictValue().Set("nodeId", final_node_id));
   CHECK(result);
   std::optional<int> dom_node_id =
       result->FindIntByDottedPath("node.backendNodeId");
