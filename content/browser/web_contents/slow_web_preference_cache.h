@@ -64,7 +64,11 @@ class CONTENT_EXPORT SlowWebPreferenceCache
 
   bool is_initialized_ = false;
   base::ObserverList<SlowWebPreferenceCacheObserver> observers_;
-  base::ScopedObservation<ui::GpuSwitchingManager, ui::GpuSwitchingObserver>
+  // TODO(crbug.com/494157380): ensure that SlowWebPreferenceCache is
+  // destroyed before ui::GpuSwitchingManager, or stop using a scoped
+  // observation if the object is intended to be leaked (singleton).
+  base::ScopedObservation<ui::GpuSwitchingManager,
+                          ui::GpuSwitchingObserver>::LeakedDanglingUntriaged
       gpu_switch_observation_{this};
 
   bool touch_event_feature_detection_enabled_ = false;
