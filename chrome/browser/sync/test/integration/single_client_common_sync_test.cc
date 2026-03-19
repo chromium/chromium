@@ -479,10 +479,9 @@ class SingleClientFeatureToTransportSyncTest : public SyncTest {
 
   ~SingleClientFeatureToTransportSyncTest() override = default;
 
-  void BeforeSetupClient(int index,
-                         const base::FilePath& profile_path) override {
+  void OnProfileCreationStarted(Profile* profile) override {
     if (!content::IsPreTest()) {
-      base::FilePath prefs_path = profile_path.AppendASCII("Preferences");
+      base::FilePath prefs_path = profile->GetPath().AppendASCII("Preferences");
       std::string prefs_string;
       ASSERT_TRUE(base::ReadFileToString(prefs_path, &prefs_string));
       std::optional<base::Value> prefs = base::JSONReader::Read(
@@ -496,6 +495,8 @@ class SingleClientFeatureToTransportSyncTest : public SyncTest {
       ASSERT_TRUE(updated_prefs_string);
       ASSERT_TRUE(base::WriteFile(prefs_path, *updated_prefs_string));
     }
+
+    SyncTest::OnProfileCreationStarted(profile);
   }
 
   bool SetupClients() override {

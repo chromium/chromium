@@ -322,9 +322,6 @@ void SyncTest::SetUpCommandLine(base::CommandLine* cl) {
 #endif
 }
 
-void SyncTest::BeforeSetupClient(int index,
-                                 const base::FilePath& profile_path) {}
-
 base::FilePath SyncTest::GetProfileBaseName(int index) {
   return base::FilePath::FromASCII("SyncIntegrationTestClient" +
                                    base::NumberToString(index));
@@ -395,8 +392,6 @@ bool SyncTest::CreateProfile(int index) {
   // directory and carry over state.
   profile_path = user_data_dir.Append(GetProfileBaseName(index));
 #endif
-
-  BeforeSetupClient(index, profile_path);
 
 #if BUILDFLAG(IS_ANDROID)
   DCHECK_EQ(index, 0);
