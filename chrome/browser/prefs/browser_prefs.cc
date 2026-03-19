@@ -1905,6 +1905,11 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   extensions_ui_prefs::RegisterProfilePrefs(registry);
   ExtensionUrlOverrides::RegisterProfilePrefs(registry);
   update_client::RegisterProfilePrefs(registry);
+
+#if BUILDFLAG(IS_ANDROID)
+  registry->RegisterBooleanPref(prefs::kPinExtensionsMenuButton, true);
+#endif
+
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)

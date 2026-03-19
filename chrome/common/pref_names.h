@@ -995,6 +995,13 @@ inline constexpr char kGrayscaleThemeEnabled[] = "browser.theme.is_grayscale2";
 inline constexpr char kExtensionsUIDeveloperMode[] =
     "extensions.ui.developer_mode";
 
+#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+// A boolean pref set to true if the extensions menu button should be pinned to
+// the toolbar.
+inline constexpr char kPinExtensionsMenuButton[] =
+    "extensions.pin_extensions_menu_button";
+#endif
+
 // Dictionary pref that tracks which command belongs to which
 // extension + named command pair.
 inline constexpr char kExtensionCommands[] = "extensions.commands";
