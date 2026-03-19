@@ -389,7 +389,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
     public @Nullable Intent createNewWindowIntent(
             boolean isIncognito, @NewWindowAppSource int source) {
         boolean openAdjacently =
-                (mMultiWindowModeStateDispatcher.canEnterMultiWindowMode()
+                (MultiWindowUtils.canEnterMultiWindowMode()
                                 || mMultiWindowModeStateDispatcher.isInMultiWindowMode()
                                 || mMultiWindowModeStateDispatcher.isInMultiDisplayMode())
                         && MultiWindowUtils.shouldOpenInAdjacentWindow(mActivity);

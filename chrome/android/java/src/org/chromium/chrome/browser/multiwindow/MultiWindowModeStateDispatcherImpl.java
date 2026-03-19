@@ -79,11 +79,6 @@ public class MultiWindowModeStateDispatcherImpl implements MultiWindowModeStateD
     }
 
     @Override
-    public boolean canEnterMultiWindowMode() {
-        return MultiWindowUtils.getInstance().canEnterMultiWindowMode();
-    }
-
-    @Override
     public @Nullable Class<? extends Activity> getOpenInOtherWindowActivity() {
         return MultiWindowUtils.getInstance().getOpenInOtherWindowActivity(mActivity);
     }

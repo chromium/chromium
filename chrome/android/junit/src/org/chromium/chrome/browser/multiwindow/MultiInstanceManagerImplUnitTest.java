@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.multiwindow;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
@@ -28,13 +27,12 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.annotation.Config;
 
-import org.chromium.base.FeatureOverrides;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -98,8 +96,8 @@ public class MultiInstanceManagerImplUnitTest {
     }
 
     @Test
+    @Config(sdk = 29)
     public void testCreateNewWindowIntent_unsupportedWindowingMode_throwsException() {
-        when(mMultiWindowModeStateDispatcher.canEnterMultiWindowMode()).thenReturn(false);
         when(mMultiWindowModeStateDispatcher.isInMultiWindowMode()).thenReturn(false);
         when(mMultiWindowModeStateDispatcher.isInMultiDisplayMode()).thenReturn(false);
         MultiInstanceManagerImpl multiInstanceManager =
@@ -120,7 +118,7 @@ public class MultiInstanceManagerImplUnitTest {
     @Test
     public void
             testCreateNewWindowIntent_nullIntentFromMultiWindowModeStateDispatcher_returnsNull() {
-        when(mMultiWindowModeStateDispatcher.canEnterMultiWindowMode()).thenReturn(true);
+        when(mMultiWindowModeStateDispatcher.isInMultiWindowMode()).thenReturn(true);
         when(mMultiWindowModeStateDispatcher.getOpenInOtherWindowIntent()).thenReturn(null);
         MultiInstanceManagerImpl multiInstanceManager =
                 new MultiInstanceManagerImpl(
@@ -136,77 +134,10 @@ public class MultiInstanceManagerImplUnitTest {
     }
 
     @Test
-    public void
-            testCreateNewWindowIntent_nonMultiWindowMode_shouldNotOpenInAdjacentWindow_noLaunchAdjacentFlag() {
-        when(mMultiWindowModeStateDispatcher.getOpenInOtherWindowIntent()).thenReturn(new Intent());
-
-        // Non-multi-window mode.
-        when(mMultiWindowModeStateDispatcher.canEnterMultiWindowMode()).thenReturn(true);
-        when(mMultiWindowModeStateDispatcher.isInMultiWindowMode()).thenReturn(false);
-        Activity mockActivity = mock(Activity.class);
-        when(mockActivity.isInMultiWindowMode()).thenReturn(false);
-
-        // The new window shouldn't be opened as an adjacent window.
-        FeatureOverrides.overrideParam(
-                ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL,
-                MultiWindowUtils.OPEN_ADJACENTLY_PARAM,
-                false);
-
-        MultiInstanceManagerImpl multiInstanceManager =
-                new MultiInstanceManagerImpl(
-                        mockActivity,
-                        mTabModelOrchestratorSupplier,
-                        mMultiWindowModeStateDispatcher,
-                        mActivityLifecycleDispatcher,
-                        mMenuOrKeyboardActionController);
-
-        Intent intent =
-                multiInstanceManager.createNewWindowIntent(
-                        /* isIncognito= */ false, NewWindowAppSource.MENU);
-
-        assertNotNull(intent);
-        assertEquals(0, (intent.getFlags() & Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT));
-    }
-
-    @Test
-    public void
-            testCreateNewWindowIntent_nonMultiWindowMode_shouldOpenInAdjacentWindow_addsLaunchAdjacentFlag() {
-        when(mMultiWindowModeStateDispatcher.getOpenInOtherWindowIntent()).thenReturn(new Intent());
-
-        // Non-multi-window mode.
-        when(mMultiWindowModeStateDispatcher.canEnterMultiWindowMode()).thenReturn(true);
-        when(mMultiWindowModeStateDispatcher.isInMultiWindowMode()).thenReturn(false);
-        Activity mockActivity = mock(Activity.class);
-        when(mockActivity.isInMultiWindowMode()).thenReturn(false);
-
-        // The new window should be opened as an adjacent window.
-        FeatureOverrides.overrideParam(
-                ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL,
-                MultiWindowUtils.OPEN_ADJACENTLY_PARAM,
-                true);
-
-        MultiInstanceManagerImpl multiInstanceManager =
-                new MultiInstanceManagerImpl(
-                        mockActivity,
-                        mTabModelOrchestratorSupplier,
-                        mMultiWindowModeStateDispatcher,
-                        mActivityLifecycleDispatcher,
-                        mMenuOrKeyboardActionController);
-
-        Intent intent =
-                multiInstanceManager.createNewWindowIntent(
-                        /* isIncognito= */ false, NewWindowAppSource.MENU);
-
-        assertNotNull(intent);
-        assertTrue((intent.getFlags() & Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT) != 0);
-    }
-
-    @Test
     public void testCreateNewWindowIntent_multiWindowMode_addsLaunchAdjacentFlag() {
         when(mMultiWindowModeStateDispatcher.getOpenInOtherWindowIntent()).thenReturn(new Intent());
 
         // Multi-window mode.
-        when(mMultiWindowModeStateDispatcher.canEnterMultiWindowMode()).thenReturn(true);
         when(mMultiWindowModeStateDispatcher.isInMultiWindowMode()).thenReturn(true);
         Activity mockActivity = mock(Activity.class);
         when(mockActivity.isInMultiWindowMode()).thenReturn(true);

@@ -1346,8 +1346,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         if (!didTriggerPromo) {
             mToolbarButtonInProductHelpController.showColdStartIph();
             mReadLaterIphController.showColdStartIph();
-            if (MultiWindowUtils.instanceSwitcherEnabled()
-                    && MultiWindowUtils.shouldShowManageWindowsMenu()) {
+            if (MultiWindowUtils.shouldShowManageWindowsMenu()) {
                 MultiInstanceIphController.maybeShowInProductHelp(
                         mActivity,
                         profile,

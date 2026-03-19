@@ -78,12 +78,6 @@ public interface MultiWindowModeStateDispatcher {
     boolean isMoveToOtherWindowSupported(TabModelSelector totalTabCountSupplier);
 
     /**
-     * See {@link MultiWindowUtils#canEnterMultiWindowMode(Activity)}.
-     * @return Whether Chrome can get itself into multi-window mode.
-     */
-    boolean canEnterMultiWindowMode();
-
-    /**
      * Returns the activity to use when handling "open in other window" or "move to other window".
      * Returns null if the current activity doesn't support opening/moving tabs to another activity.
      */

@@ -2115,7 +2115,6 @@ public class MultiInstanceManagerApi31UnitTest {
     public void
             testCreateNewWindowIntent_NonMultiWindowMode_ShouldNotOpenInAdjacentWindow_NoLaunchAdjacentFlag() {
         // Non-multi-window mode
-        when(mMultiWindowModeStateDispatcher.canEnterMultiWindowMode()).thenReturn(true);
         when(mMultiWindowModeStateDispatcher.isInMultiWindowMode()).thenReturn(false);
         when(mCurrentActivity.isInMultiWindowMode()).thenReturn(false);
 
@@ -2134,11 +2133,10 @@ public class MultiInstanceManagerApi31UnitTest {
     }
 
     @Test
+    @Config(sdk = 32)
     public void
             testCreateNewWindowIntent_NonMultiWindowMode_ShouldOpenInAdjacentWindow_AddLaunchAdjacentFlag() {
         // Non-multi-window mode
-        when(mMultiWindowModeStateDispatcher.canEnterMultiWindowMode()).thenReturn(true);
-        when(mMultiWindowModeStateDispatcher.isInMultiWindowMode()).thenReturn(false);
         when(mCurrentActivity.isInMultiWindowMode()).thenReturn(false);
 
         // The new window should be opened as an adjacent window.
@@ -2157,7 +2155,6 @@ public class MultiInstanceManagerApi31UnitTest {
 
     @Test
     public void testCreateNewWindowIntent_MultiWindowMode_AddLaunchAdjacentFlag() {
-        when(mMultiWindowModeStateDispatcher.canEnterMultiWindowMode()).thenReturn(true);
         when(mMultiWindowModeStateDispatcher.isInMultiWindowMode()).thenReturn(true);
         when(mCurrentActivity.isInMultiWindowMode()).thenReturn(true);
 

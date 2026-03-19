@@ -483,8 +483,7 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
     public @Nullable Intent createNewWindowIntent(
             boolean isIncognito, @NewWindowAppSource int source) {
         assert !isIncognito : "Opening an incognito window isn't supported";
-        assert mMultiWindowModeStateDispatcher.canEnterMultiWindowMode()
-                        || mMultiWindowModeStateDispatcher.isInMultiWindowMode()
+        assert mMultiWindowModeStateDispatcher.isInMultiWindowMode()
                         || mMultiWindowModeStateDispatcher.isInMultiDisplayMode()
                 : "Current windowing mode doesn't support opening a new window";
 

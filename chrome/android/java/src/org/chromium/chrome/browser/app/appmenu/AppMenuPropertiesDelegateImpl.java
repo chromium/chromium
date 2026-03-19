@@ -596,9 +596,8 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
     }
 
     @VisibleForTesting
-    public boolean instanceSwitcherWithMultiInstanceEnabled() {
-        return MultiWindowUtils.instanceSwitcherEnabled()
-                && MultiWindowUtils.isMultiInstanceApi31Enabled();
+    public boolean isMultiInstanceEnabled() {
+        return MultiWindowUtils.isMultiInstanceApi31Enabled();
     }
 
     @VisibleForTesting

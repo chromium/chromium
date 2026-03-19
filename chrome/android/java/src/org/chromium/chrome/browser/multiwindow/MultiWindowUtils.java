@@ -172,16 +172,6 @@ public class MultiWindowUtils implements ActivityStateListener {
     protected MultiWindowUtils() {}
 
     /**
-     * @return Whether the feature flag is on to enable instance switcher UI/menu.
-     */
-    public static boolean instanceSwitcherEnabled() {
-        // Instance switcher is supported on S, and on some R platforms where the new
-        // launch mode is backported.
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) return false;
-        return true;
-    }
-
-    /**
      * @return Whether the new launch mode 'singleInstancePerTask' is configured to allow multiple
      *     instantiation of Chrome instance.
      */
@@ -302,7 +292,7 @@ public class MultiWindowUtils implements ActivityStateListener {
         if (hasAtMostOneTabWithHomepageEnabled(tabModelSelector)) {
             return false;
         }
-        if (instanceSwitcherEnabled() && isMultiInstanceApi31Enabled()) {
+        if (isMultiInstanceApi31Enabled()) {
             @PersistedInstanceType int instanceType = PersistedInstanceType.ACTIVE;
             if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
                 if (tabModelSelector.isIncognitoBrandedModelSelected()) {
@@ -378,24 +368,16 @@ public class MultiWindowUtils implements ActivityStateListener {
      *
      * @return {@code True} if Chrome can get itself into multi-window mode.
      */
-    public boolean canEnterMultiWindowMode() {
+    public static boolean canEnterMultiWindowMode() {
         // Automotive is currently restricted to a single window.
         if (DeviceInfo.isAutomotive()) return false;
 
-        return aospMultiWindowModeSupported() || customMultiWindowModeSupported();
-    }
-
-    @VisibleForTesting
-    boolean aospMultiWindowModeSupported() {
         // Auto screen splitting works from sc-v2.
-        return Build.VERSION.SDK_INT > Build.VERSION_CODES.S
-                || Build.VERSION.CODENAME.equals("Sv2");
-    }
-
-    @VisibleForTesting
-    boolean customMultiWindowModeSupported() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
-                && Build.MANUFACTURER.toUpperCase(Locale.ENGLISH).equals("SAMSUNG");
+        boolean aospMultiWindowModeSupported = Build.VERSION.SDK_INT >= VERSION_CODES.S_V2;
+        boolean customMultiWindowModeSupported =
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
+                        && Build.MANUFACTURER.toUpperCase(Locale.ENGLISH).equals("SAMSUNG");
+        return aospMultiWindowModeSupported || customMultiWindowModeSupported;
     }
 
     /**

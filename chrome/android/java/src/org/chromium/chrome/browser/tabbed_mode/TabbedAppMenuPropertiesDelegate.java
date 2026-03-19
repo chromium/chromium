@@ -1432,7 +1432,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         // Hide the menu on automotive devices.
         if (DeviceInfo.isAutomotive()) return false;
 
-        if (instanceSwitcherWithMultiInstanceEnabled()) {
+        if (isMultiInstanceEnabled()) {
             // Hide the menu if we already have the maximum number of windows.
             if (MultiWindowUtils.getInstanceCountWithFallback(PersistedInstanceType.ACTIVE)
                     >= MultiWindowUtils.getMaxInstances()) return false;
@@ -1445,9 +1445,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                                     || mMultiWindowModeStateDispatcher.isInMultiDisplayMode()));
         } else {
             if (mMultiWindowModeStateDispatcher.isMultiInstanceRunning()) return false;
-            return (mMultiWindowModeStateDispatcher.canEnterMultiWindowMode()
-                            && isTabletSizeScreen())
-                    || mMultiWindowModeStateDispatcher.isInMultiWindowMode()
+            return mMultiWindowModeStateDispatcher.isInMultiWindowMode()
                     || mMultiWindowModeStateDispatcher.isInMultiDisplayMode();
         }
     }
@@ -1476,7 +1474,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
      * @return Whether the "Move to other window" menu item should be displayed.
      */
     protected boolean shouldShowMoveToOtherWindow() {
-        if (!instanceSwitcherWithMultiInstanceEnabled() && shouldShowNewWindow()) return false;
+        if (!isMultiInstanceEnabled() && shouldShowNewWindow()) return false;
         return mMultiWindowModeStateDispatcher.isMoveToOtherWindowSupported(mTabModelSelector);
     }
 

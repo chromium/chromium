@@ -28,6 +28,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.os.PersistableBundle;
 
@@ -43,6 +44,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
+import org.robolectric.util.ReflectionHelpers;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
@@ -115,8 +117,6 @@ public class MultiWindowUtilsUnitTest {
     private boolean mIsInMultiWindowMode;
     private boolean mIsInMultiDisplayMode;
     private boolean mIsMultipleInstanceRunning;
-    private boolean mIsAutosplitSupported;
-    private boolean mCustomMultiWindowSupported;
     private Boolean mOverrideOpenInNewWindowSupported;
 
     @Mock TabModelSelector mTabModelSelector;
@@ -153,16 +153,6 @@ public class MultiWindowUtilsUnitTest {
                     @Override
                     public boolean areMultipleChromeInstancesRunning(Context context) {
                         return mIsMultipleInstanceRunning;
-                    }
-
-                    @Override
-                    public boolean aospMultiWindowModeSupported() {
-                        return mIsAutosplitSupported;
-                    }
-
-                    @Override
-                    public boolean customMultiWindowModeSupported() {
-                        return mCustomMultiWindowSupported;
                     }
 
                     @Override
@@ -268,32 +258,39 @@ public class MultiWindowUtilsUnitTest {
     }
 
     @Test
-    public void testCanEnterMultiWindowMode() {
-        // Chrome can enter multi-window mode through menu on the platform that supports it
-        // (Android S or certain vendor-customized platform).
-        for (int i = 0; i < 32; ++i) {
-            mIsInMultiWindowMode = ((i >> 0) & 1) == 1;
-            mIsInMultiDisplayMode = ((i >> 1) & 1) == 1;
-            mIsMultipleInstanceRunning = ((i >> 2) & 1) == 1;
-            mIsAutosplitSupported = ((i >> 3) & 1) == 1;
-            mCustomMultiWindowSupported = ((i >> 4) & 1) == 1;
+    public void testCanEnterMultiWindowMode_isAutomotive_returnsFalse() {
+        mOverrideContextWrapperTestRule.setIsAutomotive(true);
+        assertFalse(MultiWindowUtils.canEnterMultiWindowMode());
+    }
 
-            boolean canEnter = mIsAutosplitSupported || mCustomMultiWindowSupported;
-            assertEquals(
-                    " api-s: " + mIsAutosplitSupported + " vendor: " + mCustomMultiWindowSupported,
-                    canEnter,
-                    mUtils.canEnterMultiWindowMode());
-        }
+    @Test
+    @Config(sdk = VERSION_CODES.R)
+    public void testCanEnterMultiWindowMode_withCustomOemSupport_returnsTrue() {
+        mOverrideContextWrapperTestRule.setIsAutomotive(false);
+        ReflectionHelpers.setStaticField(Build.class, "MANUFACTURER", "samsung");
+        assertTrue(MultiWindowUtils.canEnterMultiWindowMode());
+    }
+
+    @Test
+    @Config(sdk = VERSION_CODES.S)
+    public void testCanEnterMultiWindowMode_withoutAutoSplitSupport_returnsFalse() {
+        mOverrideContextWrapperTestRule.setIsAutomotive(false);
+        assertFalse(MultiWindowUtils.canEnterMultiWindowMode());
+    }
+
+    @Test
+    @Config(sdk = VERSION_CODES.S_V2)
+    public void testCanEnterMultiWindowMode_withAutoSplitSupport_returnsTrue() {
+        mOverrideContextWrapperTestRule.setIsAutomotive(false);
+        assertTrue(MultiWindowUtils.canEnterMultiWindowMode());
     }
 
     @Test
     public void testIsOpenInOtherWindowEnabled() {
-        for (int i = 0; i < 32; ++i) {
+        for (int i = 0; i < 8; ++i) {
             mIsInMultiWindowMode = ((i >> 0) & 1) == 1;
             mIsInMultiDisplayMode = ((i >> 1) & 1) == 1;
             mIsMultipleInstanceRunning = ((i >> 2) & 1) == 1;
-            mIsAutosplitSupported = ((i >> 3) & 1) == 1;
-            mCustomMultiWindowSupported = ((i >> 4) & 1) == 1;
 
             // 'openInOtherWindow' is supported if we are already in multi-window/display mode.
             boolean openInOtherWindow = (mIsInMultiWindowMode || mIsInMultiDisplayMode);
