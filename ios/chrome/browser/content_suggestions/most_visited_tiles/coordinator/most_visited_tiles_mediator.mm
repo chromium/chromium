@@ -54,6 +54,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message_action.h"
+#import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
@@ -284,6 +285,14 @@ GURL GetValidUrl(NSString* urlString) {
 - (void)moveMostVisitedItem:(MostVisitedItem*)item toIndex:(NSUInteger)index {
   _mostVisitedSites->ReorderCustomLink(item.URL, index);
   RecordReorderUserAction();
+
+  // VoiceOver announcement.
+  NSString* announcement = l10n_util::GetNSStringF(
+      IDS_IOS_CONTENT_SUGGESTIONS_MOVE_ANNOUNCEMENT,
+      base::SysNSStringToUTF16(item.title),
+      base::SysNSStringToUTF16([NSString stringWithFormat:@"%lu", index + 1]));
+  UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification,
+                                  announcement);
 }
 
 - (void)openModalToAddPinnedSite {
@@ -304,6 +313,7 @@ GURL GetValidUrl(NSString* urlString) {
 - (NSArray<UIAccessibilityCustomAction*>*)
     accessibilityCustomActionsForItem:(MostVisitedItem*)item
                              fromView:(UIView*)view {
+  // Add actions from the context menu.
   NSArray<UIAction*>* actions = [self actionsForItem:item fromView:view];
   NSMutableArray<UIAccessibilityCustomAction*>* accessibilityActions =
       [[NSMutableArray alloc] init];
@@ -319,6 +329,39 @@ GURL GetValidUrl(NSString* urlString) {
                         [action performWithSender:view target:nil];
                         return YES;
                       }]];
+  }
+  // Add reorder custom actions.
+  if (item.isPinned) {
+    CHECK(IsContentSuggestionsCustomizable());
+    __weak MostVisitedTilesMediator* weakSelf = self;
+    NSUInteger index = static_cast<NSUInteger>(item.index);
+    NSString* moveLeftTitle =
+        l10n_util::GetNSString(IDS_IOS_CONTENT_SUGGESTIONS_MOVE_LEFT);
+    NSString* moveRightTitle =
+        l10n_util::GetNSString(IDS_IOS_CONTENT_SUGGESTIONS_MOVE_RIGHT);
+    if (index > 0) {
+      [accessibilityActions
+          addObject:[[UIAccessibilityCustomAction alloc]
+                         initWithName:UseRTLLayout() ? moveRightTitle
+                                                     : moveLeftTitle
+                        actionHandler:^BOOL(
+                            UIAccessibilityCustomAction* customAction) {
+                          [weakSelf moveMostVisitedItem:item toIndex:index - 1];
+                          return YES;
+                        }]];
+    }
+    NSArray<MostVisitedItem*>* items = _mostVisitedConfig.mostVisitedItems;
+    if (index < items.count - 1 && items[index + 1].isPinned) {
+      [accessibilityActions
+          addObject:[[UIAccessibilityCustomAction alloc]
+                         initWithName:UseRTLLayout() ? moveLeftTitle
+                                                     : moveRightTitle
+                        actionHandler:^BOOL(
+                            UIAccessibilityCustomAction* customAction) {
+                          [weakSelf moveMostVisitedItem:item toIndex:index + 1];
+                          return YES;
+                        }]];
+    }
   }
   return accessibilityActions;
 }
@@ -446,6 +489,7 @@ GURL GetValidUrl(NSString* urlString) {
 
 - (NSArray<UIAction*>*)actionsForItem:(MostVisitedItem*)item
                              fromView:(UIView*)view {
+  CHECK(self.actionFactory);
   NSMutableArray<UIAction*>* actions = [[NSMutableArray alloc] init];
 
   CGPoint centerPoint = [view.superview convertPoint:view.center toView:nil];

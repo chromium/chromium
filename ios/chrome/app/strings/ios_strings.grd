@@ -1881,6 +1881,15 @@
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_MOST_VISITED_MODULE_TITLE" desc="The Most Visited module title on the new tab page [Length: 10em]">
         Your top sites
       </message>
+      <message name="IDS_IOS_CONTENT_SUGGESTIONS_MOVE_ANNOUNCEMENT" desc="VoiceOver announcement after moving a most visited tile to a new position. [iOS only]">
+        Moved <ph name="WEBSITE_TITLE">$1<ex>Google</ex></ph> to position <ph name="POSITION">$2<ex>2</ex></ph>
+      </message>
+      <message name="IDS_IOS_CONTENT_SUGGESTIONS_MOVE_LEFT" desc="The accessibility label for moving a most visited tile to the left. Will be read aloud in VoiceOver mode. [iOS only]">
+        Move Left
+      </message>
+      <message name="IDS_IOS_CONTENT_SUGGESTIONS_MOVE_RIGHT" desc="The accessibility label for moving a most visited tile to the right. Will be read aloud in VoiceOver mode. [iOS only]">
+        Move Right
+      </message>
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_NEVER_SHOW_SITE" desc="The name of the 'Never Show this Site' command in the Content Suggestions articles context menu">
         Never Show This Site
       </message>

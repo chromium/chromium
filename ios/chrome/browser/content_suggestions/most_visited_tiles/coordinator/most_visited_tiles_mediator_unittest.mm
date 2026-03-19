@@ -20,9 +20,12 @@
 #import "ios/chrome/browser/content_suggestions/model/content_suggestions_metrics_recorder.h"
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_item.h"
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_tile_view.h"
+#import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_tiles_config.h"
+#import "ios/chrome/browser/content_suggestions/ui/content_suggestions_actions_provider.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_cache_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_service_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
+#import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
 #import "ios/chrome/browser/metrics/model/constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_actions_delegate.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
@@ -34,11 +37,14 @@
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/url_loading/model/fake_url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
+#import "ios/chrome/browser/window_activities/model/window_activity_helpers.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
 
 namespace {
@@ -155,6 +161,7 @@ class MostVisitedTilesMediatorTest : public PlatformTest {
 
     metrics_recorder_ = [[ContentSuggestionsMetricsRecorder alloc]
         initWithLocalState:local_state()];
+    mediator_.actionFactory = mock_action_factory();
     mediator_.contentSuggestionsMetricsRecorder = metrics_recorder_;
     delegate_ = OCMProtocolMock(@protocol(NewTabPageActionsDelegate));
     mediator_.NTPActionsDelegate = delegate_;
@@ -174,6 +181,40 @@ class MostVisitedTilesMediatorTest : public PlatformTest {
 
   void set_captured_observer(ntp_tiles::MostVisitedSites::Observer* observer) {
     captured_observer_ = observer;
+  }
+
+  id mock_action_factory() {
+    id mock_action_factory = OCMClassMock([BrowserActionFactory class]);
+    UIAction* dummy_action = [UIAction actionWithTitle:@""
+                                                 image:nil
+                                            identifier:nil
+                                               handler:^(UIAction* action){
+                                               }];
+    OCMStub([mock_action_factory actionToOpenInNewTabWithBlock:[OCMArg any]])
+        .andReturn(dummy_action);
+    OCMStub([mock_action_factory
+                actionToOpenInNewIncognitoTabWithBlock:[OCMArg any]])
+        .andReturn(dummy_action);
+    OCMStub([[mock_action_factory ignoringNonObjectArgs]
+                actionToOpenInNewWindowWithURL:GURL()
+                                activityOrigin:WindowActivityUnknownOrigin])
+        .andReturn(dummy_action);
+    OCMStub([mock_action_factory actionToCopyURL:[OCMArg any]])
+        .andReturn(dummy_action);
+    OCMStub([mock_action_factory actionToShareWithBlock:[OCMArg any]])
+        .andReturn(dummy_action);
+    OCMStub([mock_action_factory
+                actionToEditPinnedSiteOnMostVisitedTileWithBlock:[OCMArg any]])
+        .andReturn(dummy_action);
+    OCMStub([mock_action_factory
+                actionToUnpinSiteFromMostVisitedTileWithBlock:[OCMArg any]])
+        .andReturn(dummy_action);
+    OCMStub([mock_action_factory
+                actionToPinSiteToMostVisitedTileWithBlock:[OCMArg any]])
+        .andReturn(dummy_action);
+    OCMStub([mock_action_factory actionToRemoveWithBlock:[OCMArg any]])
+        .andReturn(dummy_action);
+    return mock_action_factory;
   }
 
  protected:
@@ -269,4 +310,106 @@ TEST_F(MostVisitedTilesMediatorTest, TestPinSiteInProductHelpCondition) {
   captured_observer_->OnURLsAvailable(/*is_user_triggered=*/true, sections);
   history::BlockUntilHistoryProcessesPendingRequests(history_service);
   EXPECT_OCMOCK_VERIFY(help_handler);
+}
+
+// Tests that accessibility custom actions for pinned items include move actions
+// when customization is enabled.
+TEST_F(MostVisitedTilesMediatorTest, TestAccessibilityCustomActionsMove) {
+  // Create a list of tiles with one pinned site and one top site.
+  ntp_tiles::NTPTile pinnedTile;
+  pinnedTile.title = u"Pinned";
+  pinnedTile.url = GURL("https://pinned.com");
+  pinnedTile.source = ntp_tiles::TileSource::CUSTOM_LINKS;
+
+  ntp_tiles::NTPTile topTile;
+  topTile.title = u"Top";
+  topTile.url = GURL("https://top.com");
+  topTile.source = ntp_tiles::TileSource::TOP_SITES;
+
+  ntp_tiles::NTPTilesVector tiles_vector;
+  tiles_vector.push_back(pinnedTile);
+  tiles_vector.push_back(topTile);
+
+  std::map<ntp_tiles::SectionType, ntp_tiles::NTPTilesVector> sections;
+  sections[ntp_tiles::SectionType::PERSONALIZED] = tiles_vector;
+
+  // Trigger tile update to populate _mostVisitedConfig.
+  captured_observer_->OnURLsAvailable(/*is_user_triggered=*/true, sections);
+  MostVisitedTilesConfig* config = mediator_.mostVisitedConfig;
+  ASSERT_EQ(2U, config.mostVisitedItems.count);
+  MostVisitedItem* item0 = config.mostVisitedItems[0];
+  EXPECT_TRUE(item0.isPinned);
+  NSArray<UIAccessibilityCustomAction*>* actions =
+      [item0.actionsProvider accessibilityCustomActionsForItem:item0
+                                                      fromView:nil];
+  // In LTR, at index 0, it should NOT have "Move Left" but should have "Move
+  // Right" if the next is pinned.
+  // In this example, the next site is NOT pinned. So it should have NO move
+  // actions.
+  BOOL foundMoveLeft = NO;
+  BOOL foundMoveRight = NO;
+  for (UIAccessibilityCustomAction* action in actions) {
+    if ([action.name
+            isEqualToString:l10n_util::GetNSString(
+                                IDS_IOS_CONTENT_SUGGESTIONS_MOVE_LEFT)]) {
+      foundMoveLeft = YES;
+    }
+    if ([action.name
+            isEqualToString:l10n_util::GetNSString(
+                                IDS_IOS_CONTENT_SUGGESTIONS_MOVE_RIGHT)]) {
+      foundMoveRight = YES;
+    }
+  }
+  EXPECT_FALSE(foundMoveLeft);
+  EXPECT_FALSE(foundMoveRight);
+
+  // Now test with two pinned sites.
+  tiles_vector.clear();
+  tiles_vector.push_back(pinnedTile);
+  tiles_vector.push_back(pinnedTile);  // Another pinned site
+  sections[ntp_tiles::SectionType::PERSONALIZED] = tiles_vector;
+  captured_observer_->OnURLsAvailable(/*is_user_triggered=*/true, sections);
+  config = mediator_.mostVisitedConfig;
+
+  // Test first item; it should only be able to move right.
+  item0 = config.mostVisitedItems[0];
+  actions = [item0.actionsProvider accessibilityCustomActionsForItem:item0
+                                                            fromView:nil];
+  foundMoveLeft = NO;
+  foundMoveRight = NO;
+  for (UIAccessibilityCustomAction* action in actions) {
+    if ([action.name
+            isEqualToString:l10n_util::GetNSString(
+                                IDS_IOS_CONTENT_SUGGESTIONS_MOVE_LEFT)]) {
+      foundMoveLeft = YES;
+    }
+    if ([action.name
+            isEqualToString:l10n_util::GetNSString(
+                                IDS_IOS_CONTENT_SUGGESTIONS_MOVE_RIGHT)]) {
+      foundMoveRight = YES;
+    }
+  }
+  EXPECT_FALSE(foundMoveLeft);
+  EXPECT_TRUE(foundMoveRight);
+
+  // Test second item; it should only be able to move left.
+  MostVisitedItem* item1 = config.mostVisitedItems[1];
+  actions = [item1.actionsProvider accessibilityCustomActionsForItem:item1
+                                                            fromView:nil];
+  foundMoveLeft = NO;
+  foundMoveRight = NO;
+  for (UIAccessibilityCustomAction* action in actions) {
+    if ([action.name
+            isEqualToString:l10n_util::GetNSString(
+                                IDS_IOS_CONTENT_SUGGESTIONS_MOVE_LEFT)]) {
+      foundMoveLeft = YES;
+    }
+    if ([action.name
+            isEqualToString:l10n_util::GetNSString(
+                                IDS_IOS_CONTENT_SUGGESTIONS_MOVE_RIGHT)]) {
+      foundMoveRight = YES;
+    }
+  }
+  EXPECT_TRUE(foundMoveLeft);
+  EXPECT_FALSE(foundMoveRight);
 }
