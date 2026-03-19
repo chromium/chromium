@@ -16,6 +16,7 @@
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/android/omnibox/tab_context_capture_request.h"
@@ -222,8 +223,10 @@ ComposeboxQueryControllerBridge::AddTabContext(
   // Leak this pointer it will delete itself when it's done.
   TabContextCaptureRequest* tab_context_capture = new TabContextCaptureRequest(
       tab_contextualization_controller, tab,
-      base::BindOnce(&ComposeboxQueryControllerBridge::OnGetTabPageContext,
-                     weak_ptr_factory_.GetWeakPtr(), env, file_token));
+      base::BindOnce(
+          &ComposeboxQueryControllerBridge::StartTabContextUploadFlow,
+          weak_ptr_factory_.GetWeakPtr(), env, file_token,
+          /*was_cached=*/false, base::TimeTicks::Now()));
   tab_context_capture->Start();
 
   return base::android::ConvertUTF8ToJavaString(env, file_token.ToString());
@@ -250,7 +253,8 @@ ComposeboxQueryControllerBridge::AddTabContextFromCache(JNIEnv* env,
   cache->GetPageContentForTab(
       tab_id, base::BindOnce(
                   &ComposeboxQueryControllerBridge::OnGetPageContentFromCache,
-                  weak_ptr_factory_.GetWeakPtr(), env, file_token));
+                  weak_ptr_factory_.GetWeakPtr(), env, file_token,
+                  base::TimeTicks::Now()));
 
   return base::android::ConvertUTF8ToJavaString(env, file_token.ToString());
 }
@@ -390,33 +394,10 @@ void ComposeboxQueryControllerBridge::OnContextUploadStatusChanged(
   }
 }
 
-void ComposeboxQueryControllerBridge::OnGetTabPageContext(
-    JNIEnv* env,
-    const base::UnguessableToken& context_token,
-    std::unique_ptr<lens::ContextualInputData> page_content_data) {
-  if (!page_content_data || !page_content_data->context_input.has_value() ||
-      page_content_data->context_input->size() <= 0) {
-    OnContextUploadStatusChanged(
-        context_token, lens::MimeType::kUnknown,
-        contextual_search::ContextUploadStatus::kValidationFailed,
-        contextual_search::ContextUploadErrorType::kBrowserProcessingError);
-    return;
-  }
-
-  std::optional<lens::ImageEncodingOptions> image_options =
-      lens::ImageEncodingOptions{.enable_webp_encoding = false,
-                                 .max_size = 1500000,
-                                 .max_height = 1600,
-                                 .max_width = 1600,
-                                 .compression_quality = 40};
-
-  session_handle_->StartTabContextUploadFlow(
-      context_token, std::move(page_content_data), std::move(image_options));
-}
-
 void ComposeboxQueryControllerBridge::OnGetPageContentFromCache(
     JNIEnv* env,
     const base::UnguessableToken& context_token,
+    base::TimeTicks start_time,
     std::optional<optimization_guide::proto::PageContext> page_context) {
   // TODO(crbug.com/457869241): Merge this and the code in
   // TabContextualizationController.
@@ -466,7 +447,39 @@ void ComposeboxQueryControllerBridge::OnGetPageContentFromCache(
     }
   }
 
-  OnGetTabPageContext(env, context_token, std::move(input_data));
+  StartTabContextUploadFlow(env, context_token, /*was_cached=*/true, start_time,
+                            std::move(input_data));
+}
+
+void ComposeboxQueryControllerBridge::StartTabContextUploadFlow(
+    JNIEnv* env,
+    const base::UnguessableToken& context_token,
+    bool was_cached,
+    base::TimeTicks start_time,
+    std::unique_ptr<lens::ContextualInputData> page_content_data) {
+  if (!page_content_data || !page_content_data->context_input.has_value() ||
+      page_content_data->context_input->size() <= 0) {
+    OnContextUploadStatusChanged(
+        context_token, lens::MimeType::kUnknown,
+        contextual_search::ContextUploadStatus::kValidationFailed,
+        contextual_search::ContextUploadErrorType::kBrowserProcessingError);
+    return;
+  }
+  base::UmaHistogramMediumTimes(
+      was_cached
+          ? "Android.ComposeboxQueryController.AddTabContextCachedDuration"
+          : "Android.ComposeboxQueryController.AddTabContextDuration",
+      base::TimeTicks::Now() - start_time);
+
+  std::optional<lens::ImageEncodingOptions> image_options =
+      lens::ImageEncodingOptions{.enable_webp_encoding = false,
+                                 .max_size = 1500000,
+                                 .max_height = 1600,
+                                 .max_width = 1600,
+                                 .compression_quality = 40};
+
+  session_handle_->StartTabContextUploadFlow(
+      context_token, std::move(page_content_data), std::move(image_options));
 }
 
 void ComposeboxQueryControllerBridge::OnInputStateChanged(
