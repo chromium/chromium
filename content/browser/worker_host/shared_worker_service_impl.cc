@@ -147,6 +147,14 @@ void SharedWorkerServiceImpl::ConnectToWorker(
     return;
   }
 
+  // If the enterprise policy disables the extended lifetime feature, we should
+  // disable it.
+  if (info->extended_lifetime &&
+      !GetContentClient()->browser()->AllowSharedWorkerExtendedLifetime(
+          render_frame_host->GetBrowserContext())) {
+    info->extended_lifetime = false;
+  }
+
   // If we are overriding the storage key it must be to a first-party context
   // version of the storage key in the `render_frame_host`.
   CHECK(!storage_key_override ||

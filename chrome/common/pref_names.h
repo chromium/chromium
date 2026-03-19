@@ -3645,6 +3645,10 @@ inline constexpr char kServiceWorkerToControlSrcdocIframeEnabled[] =
 inline constexpr char kSharedWorkerBlobURLFixEnabled[] =
     "worker.shared_worker_blob_url_fix_enabled";
 
+// Boolean that specifies whether the shared worker has extended lifetime.
+inline constexpr char kSharedWorkerExtendedLifetimeEnabled[] =
+    "worker.shared_worker_extended_lifetime_enabled";
+
 // Boolean indicating whether clearing window.name when the navigation is
 // top-level, cross-site and swaps BrowsingContextGroup is allowed or not.
 inline constexpr char kClearWindowNameForNewBrowsingContextGroup[] =

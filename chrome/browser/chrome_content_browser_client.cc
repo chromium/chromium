@@ -1604,6 +1604,8 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
 
   registry->RegisterBooleanPref(prefs::kWebAudioOutputBufferingEnabled, false);
   registry->RegisterBooleanPref(prefs::kSharedWorkerBlobURLFixEnabled, true);
+  registry->RegisterBooleanPref(prefs::kSharedWorkerExtendedLifetimeEnabled,
+                                true);
   registry->RegisterBooleanPref(
       prefs::kServiceWorkerToControlSrcdocIframeEnabled, true);
   registry->RegisterBooleanPref(prefs::kReduceAcceptLanguageEnabled, true);
@@ -3306,6 +3308,14 @@ bool ChromeContentBrowserClient::AllowSharedWorkerBlobURLFix(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   Profile* profile = Profile::FromBrowserContext(browser_context);
   return profile->GetPrefs()->GetBoolean(prefs::kSharedWorkerBlobURLFixEnabled);
+}
+
+bool ChromeContentBrowserClient::AllowSharedWorkerExtendedLifetime(
+    content::BrowserContext* browser_context) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  return profile->GetPrefs()->GetBoolean(
+      prefs::kSharedWorkerExtendedLifetimeEnabled);
 }
 
 void ChromeContentBrowserClient::RequestFilesAccess(

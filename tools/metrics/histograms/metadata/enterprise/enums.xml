@@ -2385,6 +2385,7 @@ chromium-metrics-reviews@google.com.
   <int value="1432" label="WebRtcDiagnosticLogCollectionAllowedForOrigins"/>
   <int value="1433" label="IsolatedWebAppUserInstallationEnabled"/>
   <int value="1434" label="ExtensionDOMActivityLoggingEnabled"/>
+  <int value="1435" label="SharedWorkerExtendedLifetimeEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

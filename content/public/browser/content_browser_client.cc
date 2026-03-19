@@ -547,6 +547,11 @@ bool ContentBrowserClient::AllowSharedWorkerBlobURLFix(
   return true;
 }
 
+bool ContentBrowserClient::AllowSharedWorkerExtendedLifetime(
+    BrowserContext* context) {
+  return true;
+}
+
 bool ContentBrowserClient::OverrideWebPreferencesAfterNavigation(
     WebContents* web_contents,
     SiteInstance& main_frame_site,

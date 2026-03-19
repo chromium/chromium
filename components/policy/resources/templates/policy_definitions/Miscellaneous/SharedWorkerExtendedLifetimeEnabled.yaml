@@ -1,0 +1,31 @@
+caption: Enable extended lifetime for SharedWorkers
+desc: |-
+  SharedWorkers can have an extended lifetime if the "extendedLifetime" option is set to true in the SharedWorker constructor.
+
+  If this policy is set to Enabled or left unset, SharedWorkers can have an extended lifetime.
+
+  If this policy is set to Disabled, SharedWorkers cannot have an extended lifetime, even if the option is set to true.
+
+  This policy is intended to be temporary and will be removed in the future.
+default: true
+example_value: true
+features:
+  dynamic_refresh: false
+  per_profile: true
+items:
+- caption: SharedWorkers can have an extended lifetime.
+  value: true
+- caption: SharedWorkers cannot have an extended lifetime.
+  value: false
+owners:
+- yyanagisawa@chromium.org
+- file://content/browser/worker_host/OWNERS
+schema:
+  type: boolean
+supported_on:
+- android:148-
+- chrome.*:148-
+- chrome_os:148-
+- fuchsia:148-
+tags: []
+type: main
