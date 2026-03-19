@@ -181,13 +181,13 @@ public class SupportLibProfile implements ProfileBoundaryInterface {
     @Override
     public void setMaxPrefetches(@Nullable Integer maxPrefetches) {
         recordApiCall(ApiCall.SET_MAX_PREFETCHES);
-        mProfileImpl.setMaxPrerenders(maxPrefetches);
+        mProfileImpl.setMaxPrefetches(maxPrefetches);
     }
 
     @Override
     public void setPrefetchTtlSeconds(@Nullable Integer prefetchTtlSeconds) {
         recordApiCall(ApiCall.SET_PREFETCH_TTL_SECONDS);
-        mProfileImpl.setMaxPrerenders(prefetchTtlSeconds);
+        mProfileImpl.setPrefetchTtlSeconds(prefetchTtlSeconds);
     }
 
     /**
