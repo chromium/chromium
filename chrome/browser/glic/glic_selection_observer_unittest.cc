@@ -39,6 +39,9 @@ class TestGlicSelectionObserver : public GlicSelectionObserver {
     update_count_ = 0;
   }
 
+  // Expose OnInputEvent for testing.
+  using GlicSelectionObserver::OnInputEvent;
+
  private:
   std::optional<std::u16string> last_processed_text_;
   int update_count_ = 0;
@@ -169,6 +172,54 @@ TEST_F(GlicSelectionObserverTest, DebounceRestarted) {
   task_environment()->FastForwardBy(base::Milliseconds(60));
   EXPECT_EQ(2, observer->update_count());
   EXPECT_EQ(u"Second", *observer->last_processed_text());
+}
+
+TEST_F(GlicSelectionObserverTest, KeyboardSelectionIgnored) {
+  auto* observer = GetObserver();
+  ASSERT_TRUE(observer);
+
+  // Simulate a keyboard event.
+  blink::WebKeyboardEvent key_event(
+      blink::WebInputEvent::Type::kKeyDown, blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+
+  // We need a dummy RenderWidgetHost, but we can pass a nullptr since it's not
+  // used by OnInputEvent in this context except for signature. Wait,
+  // OnInputEvent takes `const content::RenderWidgetHost&`, so passing nullptr
+  // is UB. Let's just create a dummy WebMouseEvent. Wait, I can use the
+  // web_contents's RWH.
+  content::RenderWidgetHost* rwh =
+      web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost();
+  ASSERT_TRUE(rwh);
+
+  observer->OnInputEvent(*rwh, key_event,
+                         content::RenderWidgetHost::InputEventObserver::
+                             InputEventSource::kUnknown);
+
+  // Send a text selection event
+  observer->OnTextSelectionChanged(nullptr, u"Keyboard Selection");
+
+  // It should clear the selection immediately
+  EXPECT_EQ(1, observer->update_count());
+  ASSERT_TRUE(observer->last_processed_text().has_value());
+  EXPECT_EQ(u"", *observer->last_processed_text());
+
+  observer->Reset();
+
+  // Now simulate a mouse down event to clear the keyboard state.
+  blink::WebMouseEvent mouse_event(
+      blink::WebInputEvent::Type::kMouseDown,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  observer->OnInputEvent(*rwh, mouse_event,
+                         content::RenderWidgetHost::InputEventObserver::
+                             InputEventSource::kUnknown);
+
+  observer->OnTextSelectionChanged(nullptr, u"Mouse Selection");
+  // Should update immediately
+  EXPECT_EQ(1, observer->update_count());
+  ASSERT_TRUE(observer->last_processed_text().has_value());
+  EXPECT_EQ(u"Mouse Selection", *observer->last_processed_text());
 }
 
 }  // namespace glic
