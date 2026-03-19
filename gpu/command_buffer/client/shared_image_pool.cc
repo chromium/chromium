@@ -13,7 +13,8 @@ gpu::ImageInfo GetImageInfo(scoped_refptr<gpu::ClientImage> image) {
   return gpu::ImageInfo(
       shared_image->size(), shared_image->format(), shared_image->usage(),
       shared_image->color_space(), shared_image->surface_origin(),
-      shared_image->alpha_type(), shared_image->buffer_usage());
+      shared_image->alpha_type(), shared_image->buffer_usage(),
+      shared_image->is_software());
 }
 
 }  // namespace
@@ -78,7 +79,12 @@ bool SharedImagePoolBase::IsReclaimTimerRunningForTesting() const {
 scoped_refptr<ClientSharedImage>
 SharedImagePoolBase::CreateSharedImageInternal() {
   CHECK(sii_);
-  if (image_info_.buffer_usage.has_value()) {
+  if (image_info_.is_software) {
+    return sii_->CreateSharedImageForSoftwareCompositor(
+        {image_info_.format, image_info_.size, image_info_.color_space,
+         image_info_.surface_origin, image_info_.alpha_type, image_info_.usage,
+         debug_label_ + "Software"});
+  } else if (image_info_.buffer_usage.has_value()) {
     // Creates a Mappable shared image. Note that eventually when shared image
     // usage is merged with buffer usage, there will be only one method to
     // create both mappable and non-mappable shared image. These 2 paths will be
