@@ -771,6 +771,15 @@ void DesktopSessionProxy::OnLocalKeyboardInputDetected(int32_t usb_keycode) {
   }
 }
 
+void DesktopSessionProxy::OnSecurityKeyConnection(
+    mojo::PendingReceiver<mojom::SecurityKeyForwarder> receiver) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (client_session_events_) {
+    client_session_events_->OnSecurityKeyConnection(std::move(receiver));
+  }
+}
+
 void DesktopSessionProxy::OnClipboardEvent(
     const protocol::ClipboardEvent& event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

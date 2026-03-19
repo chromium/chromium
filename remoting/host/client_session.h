@@ -193,6 +193,8 @@ class ClientSession : public protocol::HostStub,
   // ClientSessionEvents interface.
   void OnDesktopAttached(std::uint32_t session_id) override;
   void OnDesktopDetached() override;
+  void OnSecurityKeyConnection(
+      mojo::PendingReceiver<mojom::SecurityKeyForwarder> receiver) override;
 
   // ClientSessionDetails interface.
   std::uint32_t desktop_session_id() const override;

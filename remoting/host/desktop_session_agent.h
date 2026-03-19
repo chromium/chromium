@@ -10,13 +10,16 @@
 #include <optional>
 #include <string>
 
+#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/threading/sequence_bound.h"
 #include "ipc/ipc_listener.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "remoting/base/errors.h"
@@ -28,6 +31,7 @@
 #include "remoting/host/mojom/desktop_session.mojom.h"
 #include "remoting/host/mojom/remoting_mojom_traits.h"
 #include "remoting/host/mouse_shape_pump.h"
+#include "remoting/host/security_key/security_key_auth_handler.h"
 #include "remoting/proto/control.pb.h"
 #include "remoting/proto/coordinates.pb.h"
 #include "remoting/proto/event.pb.h"
@@ -189,6 +193,10 @@ class DesktopSessionAgent
   void OnUrlForwarderSetUpStateChanged(
       protocol::UrlForwarderControl::SetUpUrlForwarderResponse::State state);
 
+  void OnSecurityKeyMessage(int connection_id, const std::string& data);
+  void OnSecurityKeyResponse(int connection_id, const std::string& data);
+  void OnSecurityKeyRemoteDisconnected(int connection_id);
+
   // Task runner dedicated to running methods of |audio_capturer_|.
   scoped_refptr<AutoThreadTaskRunner> audio_capture_task_runner_;
 
@@ -261,6 +269,14 @@ class DesktopSessionAgent
 
   std::unique_ptr<RemoteWebAuthnStateChangeNotifier>
       webauthn_state_change_notifier_;
+
+  // Handles security key requests.
+  base::SequenceBound<SecurityKeyAuthHandler> security_key_auth_handler_;
+
+  // Tracks the mojo remote for each security key forwarding session.
+  base::flat_map</*connection_id=*/int,
+                 mojo::Remote<mojom::SecurityKeyForwarder>>
+      security_key_remotes_;
 
   // Whether the host cursor is rendered by the client.
   // TODO: crbug.com/455622961 - Remove this once the clientRenderedHostCursor

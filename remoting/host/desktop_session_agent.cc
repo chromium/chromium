@@ -12,12 +12,14 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/process/process_handle.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "ipc/ipc_channel_proxy.h"
@@ -51,6 +53,10 @@
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor.h"
 #include "ui/events/types/event_type.h"
+
+#if BUILDFLAG(IS_POSIX)
+#include "remoting/host/security_key/security_key_auth_handler_posix.h"
+#endif
 
 namespace remoting {
 
@@ -245,6 +251,30 @@ void DesktopSessionAgent::Start(
   network_channel_->GetRemoteAssociatedInterface(
       &desktop_session_state_handler_);
 
+#if BUILDFLAG(IS_POSIX)
+  if (!SecurityKeyAuthHandlerPosix::GetSecurityKeySocketName().empty()) {
+    // While SecurityKeyAuthHandlerPosix already takes a `file_task_runner`, it
+    // is only used for creating and deleting files, while all the socket
+    // operations are still done on the caller's sequence. So we need to wrap it
+    // with a SequenceBound.
+    security_key_auth_handler_ =
+        base::SequenceBound<SecurityKeyAuthHandlerPosix>(io_task_runner_,
+                                                         io_task_runner_);
+
+    security_key_auth_handler_
+        .AsyncCall(&SecurityKeyAuthHandler::SetSendMessageCallback)
+        .WithArgs(base::BindPostTaskToCurrentDefault(
+            base::BindRepeating(&DesktopSessionAgent::OnSecurityKeyMessage,
+                                weak_factory_.GetWeakPtr())));
+
+    security_key_auth_handler_.AsyncCall(
+        &SecurityKeyAuthHandler::CreateSecurityKeyConnection);
+  } else {
+    LOG(WARNING) << "Security key socket name is empty. Security key "
+                 << "forwarding will not work.";
+  }
+#endif
+
   // Create a desktop environment for the new session.
   delegate_->desktop_environment_factory().Create(
       weak_factory_.GetWeakPtr(), /* client_session_events= */ nullptr, options,
@@ -360,6 +390,8 @@ void DesktopSessionAgent::Stop() {
     input_injector_.reset();
     screen_controls_.reset();
     keyboard_layout_monitor_.reset();
+    security_key_auth_handler_ = {};
+    security_key_remotes_.clear();
 
     // Stop the audio capturer.
     audio_capture_task_runner_->PostTask(
@@ -675,4 +707,34 @@ void DesktopSessionAgent::OnUrlForwarderSetUpStateChanged(
   desktop_session_event_handler_->OnUrlForwarderStateChange(mojo_state);
 }
 
+void DesktopSessionAgent::OnSecurityKeyMessage(int connection_id,
+                                               const std::string& data) {
+  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+
+  auto& remote = security_key_remotes_[connection_id];
+  if (!remote.is_bound()) {
+    desktop_session_event_handler_->OnSecurityKeyConnection(
+        remote.BindNewPipeAndPassReceiver());
+    remote.set_disconnect_handler(
+        base::BindOnce(&DesktopSessionAgent::OnSecurityKeyRemoteDisconnected,
+                       weak_factory_.GetWeakPtr(), connection_id));
+  }
+
+  remote->OnSecurityKeyRequest(
+      data, base::BindOnce(&DesktopSessionAgent::OnSecurityKeyResponse,
+                           weak_factory_.GetWeakPtr(), connection_id));
+}
+
+void DesktopSessionAgent::OnSecurityKeyResponse(int connection_id,
+                                                const std::string& data) {
+  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  security_key_auth_handler_
+      .AsyncCall(&SecurityKeyAuthHandler::SendClientResponse)
+      .WithArgs(connection_id, data);
+}
+
+void DesktopSessionAgent::OnSecurityKeyRemoteDisconnected(int connection_id) {
+  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  security_key_remotes_.erase(connection_id);
+}
 }  // namespace remoting

@@ -1025,17 +1025,7 @@ void ClientSession::BindRemoteUrlOpener(
 #if BUILDFLAG(IS_WIN)
 void ClientSession::BindSecurityKeyForwarder(
     mojo::PendingReceiver<mojom::SecurityKeyForwarder> receiver) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  auto* extension_session = reinterpret_cast<SecurityKeyExtensionSession*>(
-      extension_manager_->FindExtensionSession(
-          SecurityKeyExtension::kCapability));
-  if (!extension_session) {
-    LOG(WARNING) << "Security key extension not found. "
-                 << "Binding request rejected.";
-    return;
-  }
-  extension_session->BindSecurityKeyForwarder(std::move(receiver));
+  OnSecurityKeyConnection(std::move(receiver));
 }
 #endif
 
@@ -1468,6 +1458,21 @@ void ClientSession::OnDesktopDetached() {
   if (remote_open_url_message_handler_) {
     remote_open_url_message_handler_->ClearReceivers();
   }
+}
+
+void ClientSession::OnSecurityKeyConnection(
+    mojo::PendingReceiver<mojom::SecurityKeyForwarder> receiver) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  auto* extension_session = static_cast<SecurityKeyExtensionSession*>(
+      extension_manager_->FindExtensionSession(
+          SecurityKeyExtension::kCapability));
+  if (!extension_session) {
+    LOG(WARNING) << "Security key extension not found. "
+                 << "Binding request rejected.";
+    return;
+  }
+  extension_session->BindSecurityKeyForwarder(std::move(receiver));
 }
 
 void ClientSession::CreateFileTransferMessageHandler(

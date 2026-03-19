@@ -1103,7 +1103,7 @@ void HostProcess::StartOnUiThread() {
   if (!security_key_socket_name.empty()) {
     remoting::SecurityKeyAuthHandlerPosix::SetSecurityKeySocketName(
         security_key_socket_name);
-  } else {
+  } else if (!multi_process_) {
     security_key_extension_supported_ = false;
   }
 #endif  // BUILDFLAG(IS_POSIX)

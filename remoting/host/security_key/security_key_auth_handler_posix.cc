@@ -16,12 +16,13 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/no_destructor.h"
+#include "base/notimplemented.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
@@ -31,13 +32,17 @@
 #include "remoting/base/logging.h"
 #include "remoting/host/security_key/security_key_socket.h"
 
+namespace remoting {
+
 namespace {
 
 const int64_t kDefaultRequestTimeoutSeconds = 60;
 
-// The name of the socket to listen for security key requests on.
-base::LazyInstance<base::FilePath>::Leaky g_security_key_socket_name =
-    LAZY_INSTANCE_INITIALIZER;
+base::FilePath& GetMutableSecurityKeySocketName() {
+  static base::NoDestructor<base::FilePath> path{
+      SecurityKeyAuthHandlerPosix::GetDefaultSecurityKeySocketName()};
+  return *path;
+}
 
 // Socket authentication function that only allows connections from callers with
 // the current uid.
@@ -57,11 +62,29 @@ unsigned int GetCommandCode(const std::string& data) {
 
 }  // namespace
 
-namespace remoting {
+// static
+base::FilePath SecurityKeyAuthHandlerPosix::GetDefaultSecurityKeySocketName() {
+#if BUILDFLAG(IS_LINUX)
+  const char* xdg_runtime_dir = getenv("XDG_RUNTIME_DIR");
+  if (xdg_runtime_dir) {
+    return base::FilePath(xdg_runtime_dir).Append("crd_ssh_auth_sock");
+  }
+  LOG(WARNING) << "Cannot find the XDG_RUNTIME_DIR environment variable.";
+#else
+  NOTIMPLEMENTED();
+#endif
+  return {};
+}
 
+// static
+const base::FilePath& SecurityKeyAuthHandlerPosix::GetSecurityKeySocketName() {
+  return GetMutableSecurityKeySocketName();
+}
+
+// static
 void SecurityKeyAuthHandlerPosix::SetSecurityKeySocketName(
     const base::FilePath& security_key_socket_name) {
-  g_security_key_socket_name.Get() = security_key_socket_name;
+  GetMutableSecurityKeySocketName() = security_key_socket_name;
 }
 
 SecurityKeyAuthHandlerPosix::SecurityKeyAuthHandlerPosix(
@@ -74,14 +97,13 @@ SecurityKeyAuthHandlerPosix::~SecurityKeyAuthHandlerPosix() {
   if (file_task_runner_) {
     // Attempt to clean up the socket before being destroyed.
     file_task_runner_->PostTask(
-        FROM_HERE,
-        base::GetDeleteFileCallback(g_security_key_socket_name.Get()));
+        FROM_HERE, base::GetDeleteFileCallback(GetSecurityKeySocketName()));
   }
 }
 
 void SecurityKeyAuthHandlerPosix::CreateSecurityKeyConnection() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(!g_security_key_socket_name.Get().empty());
+  DCHECK(!GetSecurityKeySocketName().empty());
 
   // We need to run the DeleteFile method on |file_task_runner_| as it is a
   // blocking function call which cannot be run on the main thread.  Once
@@ -89,7 +111,7 @@ void SecurityKeyAuthHandlerPosix::CreateSecurityKeyConnection() {
   // resume setting up our security key auth socket there.
   file_task_runner_->PostTask(
       FROM_HERE, base::GetDeleteFileCallback(
-                     g_security_key_socket_name.Get(),
+                     GetSecurityKeySocketName(),
                      base::BindOnce(&SecurityKeyAuthHandlerPosix::CreateSocket,
                                     weak_factory_.GetWeakPtr())));
 }
@@ -97,7 +119,7 @@ void SecurityKeyAuthHandlerPosix::CreateSecurityKeyConnection() {
 void SecurityKeyAuthHandlerPosix::CreateSocket(bool success) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   HOST_LOG << "Listening for security key requests on "
-           << g_security_key_socket_name.Get().value();
+           << GetSecurityKeySocketName().value();
 
   if (!success) {
     LOG(ERROR) << "Delete g_security_key_socket_name failed";
@@ -106,7 +128,7 @@ void SecurityKeyAuthHandlerPosix::CreateSocket(bool success) {
 
   auth_socket_ = std::make_unique<net::UnixDomainServerSocket>(
       base::BindRepeating(MatchUid), false);
-  int rv = auth_socket_->BindAndListen(g_security_key_socket_name.Get().value(),
+  int rv = auth_socket_->BindAndListen(GetSecurityKeySocketName().value(),
                                        /*backlog=*/1);
   if (rv != net::OK) {
     LOG(ERROR) << "Failed to open socket for auth requests: '" << rv << "'";

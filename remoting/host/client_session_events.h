@@ -7,6 +7,9 @@
 
 #include <stdint.h>
 
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "remoting/host/mojom/remote_security_key.mojom.h"
+
 namespace remoting {
 
 // Allow the desktop environment to trigger events on the client session.
@@ -23,6 +26,11 @@ class ClientSessionEvents {
   // session. This method is only called on platforms that use a multi-process
   // architecture (i.e. ones where the desktop being remoted can change).
   virtual void OnDesktopDetached() = 0;
+
+  // Called when a new security key connection has been established and passes
+  // the SecurityKeyForwarder receiver to it.
+  virtual void OnSecurityKeyConnection(
+      mojo::PendingReceiver<mojom::SecurityKeyForwarder> receiver) = 0;
 
  protected:
   ClientSessionEvents() = default;

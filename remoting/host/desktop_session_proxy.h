@@ -184,6 +184,8 @@ class DesktopSessionProxy
   void OnLocalMouseMoveDetected(
       const webrtc::DesktopVector& new_position) override;
   void OnLocalKeyboardInputDetected(int32_t usb_keycode) override;
+  void OnSecurityKeyConnection(
+      mojo::PendingReceiver<mojom::SecurityKeyForwarder> receiver) override;
 
   // mojom::DesktopSessionStateHandler implementation.
   void DisconnectSession(protocol::ErrorCode error,
