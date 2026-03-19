@@ -4,6 +4,7 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
+import {PageDataSource} from './app.js';
 import type {UpdaterAppElement} from './app.js';
 
 export function getHtml(this: UpdaterAppElement) {
@@ -14,16 +15,37 @@ export function getHtml(this: UpdaterAppElement) {
   <div class="header-bar">
     <div id="logo"></div>
     <h1>$i18n{title}</h1>
+    <div id="controls">
+      <div class="file-selection-banner" ?error="${this.historyLoadError}">
+        ${this.historyLoadError ? html`
+          <span>$i18n{loadHistoryFileError}</span>
+        ` : ''}
+        ${this.pageDataSource === PageDataSource.FILE ? html`
+          <span>${this.fileSelectionBannerLabel}</span>
+          <cr-button @click="${this.onCloseFileClick}">
+            $i18n{returnToLocal}
+          </cr-button>
+        ` : html`
+          <cr-button @click="${this.onLoadHistoryClick}">
+            $i18n{loadHistoryFile}
+          </cr-button>
+        `}
+        <input type="file" id="fileInput" hidden multiple
+            accept=".jsonl, .jsonl.old" @change="${this.onFileInputChange}">
+      </div>
+    </div>
   </div>
 </header>
 <div id="content">
-  <div>
-    <h2>$i18n{updaterStateTitle}</h2>
-    <updater-state .userUpdaterState="${this.userUpdaterState}"
-        .systemUpdaterState="${this.systemUpdaterState}"
-        .error="${this.updaterStateError}">
-    </updater-state>
-  </div>
+  ${this.pageDataSource === PageDataSource.INSTALL ? html`
+    <div>
+      <h2>$i18n{updaterStateTitle}</h2>
+      <updater-state .userUpdaterState="${this.userUpdaterState}"
+          .systemUpdaterState="${this.systemUpdaterState}"
+          .error="${this.updaterStateError}">
+      </updater-state>
+    </div>
+  ` : ''}
   <div>
     <h2>$i18n{installedAppsTitle}</h2>
     <app-list .apps="${this.apps}" .error="${this.appStateError}"></app-list>

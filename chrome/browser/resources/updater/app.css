@@ -5,6 +5,7 @@
 /* #css_wrapper_metadata_start
  * #type=style-lit
  * #import=//resources/cr_elements/cr_shared_vars.css.js
+ * #import=./updater_shared.css.js
  * #scheme=relative
  * #css_wrapper_metadata_end */
 
@@ -16,6 +17,23 @@
   display: flex;
   align-items: center;
   gap: 4px;
+}
+
+#controls {
+  margin-inline-start: auto;
+}
+
+.file-selection-banner {
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+}
+
+.file-selection-banner[error] {
+  background-color: var(--error-background-color);
+  color: var(--error-icon-color);
 }
 
 #logo {

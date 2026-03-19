@@ -4,11 +4,14 @@
 
 import 'chrome://updater/app.js';
 
+import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
+import {PageDataSource} from 'chrome://updater/app.js';
 import type {UpdaterAppElement} from 'chrome://updater/app.js';
 import {BrowserProxyImpl} from 'chrome://updater/browser_proxy.js';
 import {PageHandlerRemote} from 'chrome://updater/updater_ui.mojom-webui.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
+import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 suite('UpdaterAppElement', () => {
@@ -21,10 +24,20 @@ suite('UpdaterAppElement', () => {
     await microtasksFinished();
   }
 
+  async function setInputFile(filename: string, content: string) {
+    const dataTransfer = new DataTransfer();
+    dataTransfer.items.add(new File([content], filename));
+    element.$.fileInput.files = dataTransfer.files;
+    element.$.fileInput.dispatchEvent(new Event('change'));
+    await microtasksFinished();
+  }
+
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     handler = TestMock.fromClass(PageHandlerRemote);
     BrowserProxyImpl.getInstance().handler = handler;
+
+    PluralStringProxyImpl.setInstance(new TestPluralStringProxy());
 
     handler.setPromiseResolveFor('getAllUpdaterEvents', {events: []});
     handler.setPromiseResolveFor('getUpdaterStates', {
@@ -106,5 +119,78 @@ suite('UpdaterAppElement', () => {
       assertTrue(!!eventList);
       assertEquals(0, eventList.messages.length);
     });
+  });
+
+  test(
+      'switches to file data source on processHistoryFiles success',
+      async () => {
+        await initApp();
+        assertEquals(PageDataSource.INSTALL, element.pageDataSource);
+
+        const events = [
+          JSON.stringify({
+            eventType: 'UPDATER_PROCESS',
+            eventId: '1',
+            deviceUptime: 1000,
+            pid: 123,
+            processToken: 'token',
+            bound: 'START',
+            scope: 'SYSTEM',
+            updaterVersion: '123.0.0.1',
+            timestamp: '13351910400000000',
+          }),
+          JSON.stringify({
+            eventType: 'UPDATER_PROCESS',
+            eventId: '1',
+            deviceUptime: 2000,
+            pid: 123,
+            processToken: 'token',
+            bound: 'END',
+          }),
+          JSON.stringify({
+            eventType: 'PERSISTED_DATA',
+            eventId: '2',
+            deviceUptime: 1500,
+            pid: 123,
+            processToken: 'token',
+            bound: 'INSTANT',
+            eulaRequired: false,
+            registeredApps: [{appId: 'test-app', version: '1.0.0.0'}],
+          }),
+        ].join('\n');
+
+        await setInputFile('history.jsonl', events);
+
+        assertEquals(PageDataSource.FILE, element.pageDataSource);
+        assertFalse(element.historyLoadError);
+        assertEquals(3, element.messages.length);
+        assertEquals(1, element.apps.length);
+        assertEquals('test-app', element.apps[0]!.appId);
+
+        const closeButton = element.shadowRoot.querySelector<HTMLElement>(
+            '#controls cr-button');
+        assertTrue(!!closeButton);
+        closeButton.click();
+        await microtasksFinished();
+
+        assertEquals(PageDataSource.INSTALL, element.pageDataSource);
+      });
+
+  test('handles invalid file extension', async () => {
+    await initApp();
+
+    await setInputFile('invalid.txt', 'some data');
+
+    assertEquals(PageDataSource.INSTALL, element.pageDataSource);
+    assertTrue(element.historyLoadError);
+  });
+
+  test('handles invalid JSON', async () => {
+    await initApp();
+
+    await setInputFile('invalid.jsonl', 'not json');
+
+    assertEquals(PageDataSource.INSTALL, element.pageDataSource);
+    assertTrue(element.historyLoadError);
   });
 });

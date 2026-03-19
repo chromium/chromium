@@ -6,18 +6,35 @@ import './app_list/app_list.js';
 import './enterprise_policy_table/enterprise_policy_table.js';
 import './event_list/event_list.js';
 import './updater_state/updater_state.js';
+import '//resources/cr_elements/cr_button/cr_button.js';
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
+import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import type {AppStateDisplay} from './app_list/app_list.js';
 import {BrowserProxyImpl} from './browser_proxy.js';
-import {parsePolicySet} from './event_history.js';
-import type {PolicySet} from './event_history.js';
+import {deduplicateEvents, isMergedHistoryEvent, mergeEvents, parseEvents, parsePolicySet, SCOPES, UpdaterProcessMap} from './event_history.js';
+import type {MergedLoadPolicyEvent, PersistedDataEvent, PolicySet} from './event_history.js';
 import {getKnownAppNamesById} from './known_apps.js';
 import type {EnterpriseCompanionState, GetAppStatesResponse, GetEnterpriseCompanionStateResponse, GetUpdaterStatesResponse, UpdaterState} from './updater_ui.mojom-webui.js';
+
+export enum PageDataSource {
+  // The page displays current information about the updater installations on
+  // the users system.
+  INSTALL,
+  // The page displays a snapshot of an updater installation given files it has
+  // emitted (e.g. a updater_history.jsonl file or a chrome://support-tool zip).
+  FILE,
+}
+
+export interface UpdaterAppElement {
+  $: {
+    fileInput: HTMLInputElement,
+  };
+}
 
 export class UpdaterAppElement extends CrLitElement {
   static get is() {
@@ -41,6 +58,9 @@ export class UpdaterAppElement extends CrLitElement {
       updaterStateError: {type: Boolean},
       apps: {type: Array},
       appStateError: {type: Boolean},
+      pageDataSource: {type: Number},
+      fileSelectionBannerLabel: {type: String},
+      historyLoadError: {type: Boolean},
     };
   }
 
@@ -51,12 +71,70 @@ export class UpdaterAppElement extends CrLitElement {
   accessor updaterStateError = false;
   accessor apps: AppStateDisplay[] = [];
   accessor appStateError = false;
+  accessor pageDataSource: PageDataSource = PageDataSource.INSTALL;
+  accessor fileSelectionBannerLabel: string = '';
+  accessor historyLoadError = false;
 
   protected policies: PolicySet|undefined = undefined;
 
 
   override connectedCallback() {
     super.connectedCallback();
+    if (this.pageDataSource === PageDataSource.INSTALL) {
+      this.fetchInstallData();
+    }
+  }
+
+  protected onLoadHistoryClick() {
+    this.$.fileInput.click();
+  }
+
+  protected async onFileInputChange(e: Event) {
+    const fileInput = e.target as HTMLInputElement;
+    if (!fileInput.files || fileInput.files.length === 0) {
+      return;
+    }
+
+    this.historyLoadError = false;
+    const files = Array.from(fileInput.files);
+
+    try {
+      const records = await this.processHistoryFiles(files);
+      const events = records.map(e => JSON.parse(e));
+      this.fileSelectionBannerLabel =
+          await PluralStringProxyImpl.getInstance().getPluralString(
+              'viewingHistoryFiles', files.length);
+      this.computeStateFromHistory(events);
+      this.pageDataSource = PageDataSource.FILE;
+    } catch (err) {
+      this.historyLoadError = true;
+    } finally {
+      fileInput.value = '';
+    }
+  }
+
+  private async processHistoryFiles(files: File[]): Promise<string[]> {
+    const records = await Promise.all(files.map(async file => {
+      if (/\.jsonl(\.old)?$/i.test(file.name)) {
+        const text = await file.text();
+        return text.trim()
+            .split('\n')
+            .map(line => line.trim())
+            .filter(line => line.length > 0);
+      }
+      throw new Error(`No handler available for ${file.name}`);
+    }));
+    return records.flat();
+  }
+
+  protected onCloseFileClick() {
+    this.pageDataSource = PageDataSource.INSTALL;
+    this.fileSelectionBannerLabel = '';
+    this.historyLoadError = false;
+    this.fetchInstallData();
+  }
+
+  private fetchInstallData() {
     this.getAllUpdaterEvents().then(messages => this.messages = messages);
     this.getUpdaterStates()
         .then(response => {
@@ -78,14 +156,62 @@ export class UpdaterAppElement extends CrLitElement {
         .catch(() => this.appStateError = true);
   }
 
+  private computeStateFromHistory(rawMessages: Array<Record<string, unknown>>) {
+    this.messages = rawMessages;
+    const {valid} = parseEvents(rawMessages);
+    const events = deduplicateEvents(valid);
+    const {paired, unpaired} = mergeEvents(events);
+    const processMap = new UpdaterProcessMap(paired);
+    const {sortedEventsWithDates} =
+        processMap.sortEventsByDate(unpaired, paired);
+
+    const knownApps = getKnownAppNamesById();
+    const apps: AppStateDisplay[] = [];
+    let policies: PolicySet|undefined = undefined;
+    for (const scope of SCOPES) {
+      const latestPersistedData = sortedEventsWithDates.find(
+          (e): e is PersistedDataEvent => e.eventType === 'PERSISTED_DATA' &&
+              processMap.getUpdaterProcessForEvent(e)?.startEvent.scope ===
+                  scope);
+      if (latestPersistedData) {
+        apps.push(...latestPersistedData.registeredApps.map(
+            app => ({
+              appId: app.appId,
+              version: app.version,
+              cohort: app.cohort || null,
+              scope,
+              displayName: knownApps.get(app.appId.toLowerCase()) || app.appId,
+            })));
+      }
+
+      const latestLoadPolicy = sortedEventsWithDates.find(
+          (e): e is MergedLoadPolicyEvent => e.eventType === 'LOAD_POLICY' &&
+              isMergedHistoryEvent(e) &&
+              processMap.getUpdaterProcessForEvent(e)?.startEvent.scope ===
+                  scope);
+      if (latestLoadPolicy) {
+        policies = latestLoadPolicy.endEvent.policySet;
+      }
+    }
+
+    this.apps = apps;
+    this.enterpriseCompanionState = null;
+    this.systemUpdaterState = null;
+    this.userUpdaterState = null;
+    this.updaterStateError = false;
+    this.appStateError = false;
+    this.policies = policies;
+  }
+
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
-    if (changedProperties.has('systemUpdaterState')) {
-      this.policies = this.computePolicies();
+    if (changedProperties.has('systemUpdaterState') &&
+        this.pageDataSource === PageDataSource.INSTALL) {
+      this.policies = this.computePoliciesFromInstall();
     }
   }
 
-  private computePolicies(): PolicySet|undefined {
+  private computePoliciesFromInstall(): PolicySet|undefined {
     if (this.systemUpdaterState === null) {
       return undefined;
     }

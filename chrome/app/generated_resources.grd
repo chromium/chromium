@@ -20029,6 +20029,12 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_UPDATER_LAST_STARTED_LABEL" desc="A label for a timestamp indicating the last time the Chrome Updater performed its periodic tasks.">
         Last Periodic Task Run:
       </message>
+      <message name="IDS_UPDATER_LOAD_HISTORY_FILE" desc="Label for the button that allows users to upload one or more external updater history files for display.">
+        Load History Files
+      </message>
+      <message name="IDS_UPDATER_LOAD_HISTORY_FILE_ERROR" desc="Error message displayed when one or more uploaded history files could not be parsed or processed.">
+        Failed to load history. Ensure files contain valid updater logs.
+      </message>
       <message name="IDS_UPDATER_NO_APPS_FOUND" desc="A message indicating that Chrome's updater is not managing any applications on the user's system.">
         No applications are installed.
       </message>
@@ -20107,6 +20113,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_UPDATER_REMOVE_FILTER" desc="Accessibility label for the button that removes a specific filter chip.">
         Remove filter
       </message>
+      <message name="IDS_UPDATER_RETURN_TO_LOCAL" desc="Label for the button that returns the page to displaying data from the user's updater installation after viewing the data contained in one or more history files.">
+        View Local Data
+      </message>
       <message name="IDS_UPDATER_SCOPE" desc="Label for a filter category allowing the user to filter Chrome Updater logs by the scope of the updater. Chrome Updater may be scoped per-user or per-system.">
         Updater Scope
       </message>
@@ -20142,6 +20151,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
       <message name="IDS_UPDATER_VERSION_LABEL" desc="A label for the version of the updater.">
         Version:
+      </message>
+      <message name="IDS_UPDATER_VIEWING_HISTORY_FILES" desc="Banner text indicating that the page is currently displaying data from an uploaded history file rather than the local machine.">
+        {NUM_EVENTS, plural, =1 {Viewing history from 1 file} other {Viewing history from # files}}
       </message>
       <message name="IDS_UPDATER_UPDATE_ERROR" desc="Summary of an update event that failed.">
         Update operation failed
