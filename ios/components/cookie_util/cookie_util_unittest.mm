@@ -92,7 +92,7 @@ TEST_F(CookieUtilTest, CreateCookieStore) {
   std::string cookie_line = base::SysNSStringToUTF8(cookie_name) + "=" +
                             base::SysNSStringToUTF8(cookie_value);
   auto canonical_cookie = net::CanonicalCookie::CreateForTesting(
-      test_url, cookie_line, base::Time::Now());
+      test_url, cookie_line, base::Time::Now(), net::CookieSourceType::kOther);
   cookie_store->SetCanonicalCookieAsync(std::move(canonical_cookie), test_url,
                                         options,
                                         net::CookieStore::SetCookiesCallback());

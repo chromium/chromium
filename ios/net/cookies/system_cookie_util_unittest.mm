@@ -39,7 +39,8 @@ void CheckSystemCookie(const base::Time& expires, bool secure, bool httponly) {
           expires,
           base::Time(),  // last_access
           base::Time(),  // last_update
-          secure, httponly, same_site, net::COOKIE_PRIORITY_DEFAULT);
+          secure, httponly, same_site, net::COOKIE_PRIORITY_DEFAULT,
+          net::CookieSourceType::kOther);
   // Convert it to system cookie.
   NSHTTPCookie* system_cookie =
       SystemCookieFromCanonicalCookie(*canonical_cookie);
@@ -155,7 +156,8 @@ TEST_F(CookieUtil, SystemCookieFromBadCanonicalCookie) {
           base::Time(),  // last_update
           false,         // secure
           false,         // httponly
-          net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_DEFAULT);
+          net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_DEFAULT,
+          net::CookieSourceType::kOther);
   // Convert it to system cookie.
   NSHTTPCookie* system_cookie =
       SystemCookieFromCanonicalCookie(*bad_canonical_cookie);
@@ -173,7 +175,8 @@ TEST_F(CookieUtil, SystemCookiesFromCanonicalCookieList) {
           base::Time(),  // last_update
           false,         // secure
           false,         // httponly
-          net::CookieSameSite::UNSPECIFIED, net::COOKIE_PRIORITY_DEFAULT),
+          net::CookieSameSite::UNSPECIFIED, net::COOKIE_PRIORITY_DEFAULT,
+          net::CookieSourceType::kOther),
       *net::CanonicalCookie::CreateUnsafeCookieForTesting(
           "name2", "value2", "domain2", "path2/",
           base::Time(),  // creation
@@ -182,7 +185,8 @@ TEST_F(CookieUtil, SystemCookiesFromCanonicalCookieList) {
           base::Time(),  // last_update
           false,         // secure
           false,         // httponly
-          net::CookieSameSite::UNSPECIFIED, net::COOKIE_PRIORITY_DEFAULT),
+          net::CookieSameSite::UNSPECIFIED, net::COOKIE_PRIORITY_DEFAULT,
+          net::CookieSourceType::kOther),
   };
 
   NSArray<NSHTTPCookie*>* system_cookies =

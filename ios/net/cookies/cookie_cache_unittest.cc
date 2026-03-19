@@ -21,7 +21,8 @@ CanonicalCookie MakeCookie(const GURL& url,
   return *CanonicalCookie::CreateUnsafeCookieForTesting(
       name, value, url.GetHost(), url.GetPath(), base::Time(), base::Time(),
       base::Time(), base::Time(), false, false,
-      net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_DEFAULT);
+      net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_DEFAULT,
+      net::CookieSourceType::kOther);
 }
 
 }  // namespace

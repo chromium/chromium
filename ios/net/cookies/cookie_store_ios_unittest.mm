@@ -247,7 +247,7 @@ TEST_F(CookieStoreIOSTest, DeleteCanonicalCookie) {
   // for same key if cookie value changed.  Document CookieStoreIOS compat.
   std::unique_ptr<CanonicalCookie> non_equiv_cookie =
       CanonicalCookie::CreateForTesting(kTestCookieURLFooBar, "abc=wfg",
-                                        not_now);
+                                        not_now, net::CookieSourceType::kOther);
   base::RunLoop run_loop;
   store_->DeleteCanonicalCookieAsync(
       *non_equiv_cookie, base::BindLambdaForTesting([&](uint32_t deleted) {
@@ -271,7 +271,7 @@ TEST_F(CookieStoreIOSTest, DeleteCanonicalCookie) {
   // Now delete equivalent one with non-matching ctime.
   std::unique_ptr<CanonicalCookie> equiv_cookie =
       CanonicalCookie::CreateForTesting(kTestCookieURLFooBar, "abc=def",
-                                        not_now);
+                                        not_now, net::CookieSourceType::kOther);
 
   base::RunLoop run_loop3;
   store_->DeleteCanonicalCookieAsync(
@@ -336,7 +336,8 @@ TEST_F(CookieStoreIOSTest, GetAllCookies) {
 
   // Add a cookie.
   auto canonical_cookie = net::CanonicalCookie::CreateForTesting(
-      kTestCookieURLFooBar, "a=b", base::Time::Now());
+      kTestCookieURLFooBar, "a=b", base::Time::Now(),
+      net::CookieSourceType::kOther);
   cookie_store->SetCanonicalCookieAsync(std::move(canonical_cookie),
                                         kTestCookieURLFooBar,
                                         net::CookieOptions::MakeAllInclusive(),
