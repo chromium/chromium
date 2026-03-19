@@ -240,121 +240,9 @@ void BrowserActions::InitializeBrowserActions() {
   actions::ActionManager::Get().AddAction(
       actions::ActionItem::Builder()
           .CopyAddressTo(&root_action_item_)
-          .AddChildren(
-              SidePanelAction(
-                  SidePanelEntryId::kBookmarks, IDS_BOOKMARK_MANAGER_TITLE,
-                  IDS_BOOKMARK_MANAGER_TITLE, kBookmarksSidePanelRefreshIcon,
-                  kActionSidePanelShowBookmarks, bwi, true),
-              SidePanelAction(SidePanelEntryId::kReadingList,
-                              IDS_READ_LATER_TITLE, IDS_READ_LATER_TITLE,
-                              kReadingListIcon, kActionSidePanelShowReadingList,
-                              bwi, true),
-              SidePanelAction(SidePanelEntryId::kAboutThisSite,
-                              IDS_PAGE_INFO_ABOUT_THIS_PAGE_TITLE,
-                              IDS_PAGE_INFO_ABOUT_THIS_PAGE_TITLE,
-                              PageInfoViewFactory::GetAboutThisSiteVectorIcon(),
-                              kActionSidePanelShowAboutThisSite, bwi, false),
-              SidePanelAction(SidePanelEntryId::kCustomizeChrome,
-                              IDS_SIDE_PANEL_CUSTOMIZE_CHROME_TITLE,
-                              IDS_SIDE_PANEL_CUSTOMIZE_CHROME_TITLE,
-                              vector_icons::kEditChromeRefreshIcon,
-                              kActionSidePanelShowCustomizeChrome, bwi, false),
-              SidePanelAction(SidePanelEntryId::kShoppingInsights,
-                              IDS_SHOPPING_INSIGHTS_SIDE_PANEL_TITLE,
-                              IDS_SHOPPING_INSIGHTS_SIDE_PANEL_TITLE,
-                              vector_icons::kShoppingBagIcon,
-                              kActionSidePanelShowShoppingInsights, bwi, false),
-              SidePanelAction(SidePanelEntryId::kMerchantTrust,
-                              IDS_MERCHANT_TRUST_SIDE_PANEL_TITLE,
-                              IDS_MERCHANT_TRUST_SIDE_PANEL_TITLE,
-                              vector_icons::kStorefrontIcon,
-                              kActionSidePanelShowMerchantTrust, bwi, false))
           .Build());
 
-  if (side_panel::history_clusters::
-          IsHistoryClustersSidePanelSupportedForProfile(profile) &&
-      !HistorySidePanelCoordinator::IsSupported()) {
-    root_action_item_->AddChild(
-        SidePanelAction(SidePanelEntryId::kHistoryClusters, IDS_HISTORY_TITLE,
-                        IDS_HISTORY_CLUSTERS_SHOW_SIDE_PANEL,
-                        vector_icons::kHistoryChromeRefreshIcon,
-                        kActionSidePanelShowHistoryCluster, bwi, true)
-            .Build());
-  }
-
-  if (HistorySidePanelCoordinator::IsSupported()) {
-    root_action_item_->AddChild(
-        SidePanelAction(SidePanelEntryId::kHistory, IDS_HISTORY_TITLE,
-                        IDS_HISTORY_SHOW_SIDE_PANEL,
-                        vector_icons::kHistoryChromeRefreshIcon,
-                        kActionSidePanelShowHistory, bwi, true)
-            .Build());
-  }
-
-  if (features::IsReadAnythingOmniboxChipEnabled() ||
-      features::IsImmersiveReadAnythingEnabled()) {
-    actions::ActionItem::InvokeActionCallback read_anything_callback =
-        base::BindRepeating(
-            [](BrowserWindowInterface* bwi, actions::ActionItem* item,
-               actions::ActionInvocationContext context) {
-              read_anything::ReadAnythingEntryPointController::InvokePageAction(
-                  bwi, context);
-            },
-            bwi);
-    root_action_item_->AddChild(
-        actions::ActionItem::Builder(read_anything_callback)
-            .SetActionId(kActionSidePanelShowReadAnything)
-            .SetText(l10n_util::GetStringUTF16(IDS_READING_MODE_TITLE))
-            .SetTooltipText(l10n_util::GetStringUTF16(IDS_READING_MODE_TITLE))
-            .SetImage(ui::ImageModel::FromVectorIcon(kMenuBookChromeRefreshIcon,
-                                                     ui::kColorIcon))
-            .SetProperty(
-                actions::kActionItemPinnableKey,
-                static_cast<
-                    std::underlying_type_t<actions::ActionPinnableState>>(
-                    actions::ActionPinnableState::kPinnable))
-            .Build());
-  } else {
-    root_action_item_->AddChild(
-        SidePanelAction(SidePanelEntryId::kReadAnything, IDS_READING_MODE_TITLE,
-                        IDS_READING_MODE_TITLE, kMenuBookChromeRefreshIcon,
-                        kActionSidePanelShowReadAnything, bwi, true)
-            .Build());
-  }
-
-  if (lens::features::IsLensOverlayEnabled()) {
-    actions::ActionItem::InvokeActionCallback callback = base::BindRepeating(
-        [](base::WeakPtr<BrowserWindowInterface> bwi, actions::ActionItem* item,
-           actions::ActionInvocationContext context) {
-          if (!bwi) {
-            return;
-          }
-          lens::LensOverlayEntryPointController::InvokeAction(
-              bwi->GetActiveTabInterface(), context);
-        },
-        bwi->GetWeakPtr());
-    const gfx::VectorIcon& icon =
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-        vector_icons::kGoogleLensMonochromeLogoIcon;
-#else
-        vector_icons::kSearchChromeRefreshIcon;
-#endif
-    root_action_item_->AddChild(
-        actions::ActionItem::Builder(callback)
-            .SetActionId(kActionSidePanelShowLensOverlayResults)
-            .SetText(l10n_util::GetStringUTF16(
-                lens::GetLensOverlayEntrypointLabelAltIds(
-                    IDS_SHOW_LENS_OVERLAY)))
-            .SetTooltipText(l10n_util::GetStringUTF16(
-                lens::GetLensOverlayEntrypointLabelAltIds(
-                    IDS_SIDE_PANEL_LENS_OVERLAY_TOOLBAR_TOOLTIP)))
-            .SetImage(ui::ImageModel::FromVectorIcon(
-                icon, ui::kColorIcon, ui::SimpleMenuModel::kDefaultIconSize))
-            .SetProperty(actions::kActionItemPinnableKey,
-                         std::underlying_type_t<actions::ActionPinnableState>(
-                             actions::ActionPinnableState::kPinnable))
-            .Build());
-  }
+  InitializeSidePanelActions();
 
   root_action_item_->AddChild(
       actions::ActionItem::Builder(
@@ -372,14 +260,6 @@ void BrowserActions::InitializeBrowserActions() {
           .SetImage(ui::ImageModel::FromVectorIcon(
               kLocalOfferFlippedRefreshIcon, ui::kColorIcon,
               ui::SimpleMenuModel::kDefaultIconSize))
-          .Build());
-
-  // Create the lens action item. The icon and text are set appropriately in the
-  // lens side panel coordinator. They have default values here.
-  root_action_item_->AddChild(
-      SidePanelAction(SidePanelEntryId::kLens, IDS_LENS_DEFAULT_TITLE,
-                      IDS_LENS_DEFAULT_TITLE, vector_icons::kImageSearchIcon,
-                      kActionSidePanelShowLens, bwi, false)
           .Build());
 
   // TODO(crbug.com/435220196): Ideally this action would have
@@ -1403,43 +1283,7 @@ void BrowserActions::InitializeBrowserActions() {
           .SetActionId(kActionSidePanelShowCustomizeChromeFooter)
           .Build());
 
-  if (CommentsSidePanelCoordinator::IsSupported()) {
-    root_action_item_->AddChild(
-        SidePanelAction(SidePanelEntryId::kComments,
-                        IDS_COLLABORATION_SHARED_TAB_GROUPS_COMMENTS_TITLE,
-                        IDS_COLLABORATION_SHARED_TAB_GROUPS_COMMENTS_TITLE,
-                        vector_icons::kChatIcon, kActionSidePanelShowComments,
-                        bwi, false)
-            .Build());
-  }
 
-  if (base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks)) {
-    actions::ActionItem::InvokeActionCallback contextual_task_callback =
-        base::BindRepeating(
-            [](BrowserWindowInterface* bwi, actions::ActionItem* item,
-               actions::ActionInvocationContext context) {
-              if (!bwi) {
-                return;
-              }
-              chrome::ToggleContextualTasksSidePanel(bwi);
-            },
-            bwi);
-    root_action_item_->AddChild(
-        actions::ActionItem::Builder(contextual_task_callback)
-            .SetActionId(kActionSidePanelShowContextualTasks)
-            .SetText(l10n_util::GetStringUTF16(
-                IDS_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_TITLE))
-            .SetTooltipText(l10n_util::GetStringUTF16(
-                IDS_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_TITLE))
-            .SetImage(ui::ImageModel::FromVectorIcon(kDockToRightSparkIcon,
-                                                     ui::kColorIcon))
-            .SetProperty(
-                actions::kActionItemPinnableKey,
-                static_cast<
-                    std::underlying_type_t<actions::ActionPinnableState>>(
-                    actions::ActionPinnableState::kNotPinnable))
-            .Build());
-  }
 
   if (base::FeatureList::IsEnabled(features::kTabGroupsFocusing)) {
     root_action_item_->AddChild(
@@ -1487,47 +1331,11 @@ void BrowserActions::InitializeBrowserActions() {
             .Build());
   }
 
-// TODO(crbug.com/454112198): Delete this after Multi Instance launches. This
-// is currently only used in the experimental single instance side panel.
-  auto* glic_service = glic::GlicKeyedService::Get(bwi->GetProfile());
-  if (glic_service && !glic::GlicEnabling::IsMultiInstanceEnabled()) {
-    actions::ActionItem::InvokeActionCallback toggle_glic_callback =
-        base::BindRepeating(
-            [](base::WeakPtr<BrowserWindowInterface> bwi,
-               actions::ActionItem* item,
-               actions::ActionInvocationContext context) {
-              if (!bwi) {
-                return;
-              }
-              if (auto* glic_service =
-                      glic::GlicKeyedService::Get(bwi->GetProfile())) {
-                // TODO: create a new invocation source if we end up
-                // keeping toolbar icon
-                glic_service->ToggleUI(
-                    bwi.get(), /*prevent_close=*/false,
-                    glic::mojom::InvocationSource::kTopChromeButton);
-              }
-            },
-            bwi->GetWeakPtr());
-
-    root_action_item_->AddChild(
-        actions::ActionItem::Builder(toggle_glic_callback)
-            .SetActionId(kActionSidePanelShowGlic)
-            .SetText(l10n_util::GetStringUTF16(IDS_SETTINGS_GLIC_PAGE_TITLE))
-            .SetTooltipText(
-                l10n_util::GetStringUTF16(IDS_SETTINGS_GLIC_PAGE_TITLE))
-            .SetImage(ui::ImageModel::FromVectorIcon(
-                glic::GlicVectorIconManager::GetVectorIcon(
-                    IDR_GLIC_BUTTON_VECTOR_ICON),
-                ui::kColorIcon))
-            .SetProperty(actions::kActionItemPinnableKey, true)
-            .Build());
-  }
-
   // Registration of Gemini in Chrome Anchored Cues, but requires call-time
   // configuration to update the label, button text, and suggested prompt. As
   // such, this action is disabled upon registration, and enabled at call time
   // by OnTriggerAnchoredMessage().
+  auto* glic_service = glic::GlicKeyedService::Get(bwi->GetProfile());
   if (glic_service) {
     root_action_item_->AddChild(
         actions::ActionItem::Builder(
@@ -1577,6 +1385,212 @@ void BrowserActions::InitializeBrowserActions() {
           .Build());
 
   AddListeners();
+}
+
+void BrowserActions::InitializeSidePanelActions() {
+  Profile* const profile = base::to_address(profile_);
+  BrowserWindowInterface* const bwi = base::to_address(bwi_);
+
+  root_action_item_->AddChild(
+      SidePanelAction(SidePanelEntryId::kBookmarks, IDS_BOOKMARK_MANAGER_TITLE,
+                      IDS_BOOKMARK_MANAGER_TITLE,
+                      kBookmarksSidePanelRefreshIcon,
+                      kActionSidePanelShowBookmarks, bwi, true)
+          .Build());
+  root_action_item_->AddChild(
+      SidePanelAction(SidePanelEntryId::kReadingList, IDS_READ_LATER_TITLE,
+                      IDS_READ_LATER_TITLE, kReadingListIcon,
+                      kActionSidePanelShowReadingList, bwi, true)
+          .Build());
+  root_action_item_->AddChild(
+      SidePanelAction(SidePanelEntryId::kAboutThisSite,
+                      IDS_PAGE_INFO_ABOUT_THIS_PAGE_TITLE,
+                      IDS_PAGE_INFO_ABOUT_THIS_PAGE_TITLE,
+                      PageInfoViewFactory::GetAboutThisSiteVectorIcon(),
+                      kActionSidePanelShowAboutThisSite, bwi, false)
+          .Build());
+  root_action_item_->AddChild(
+      SidePanelAction(SidePanelEntryId::kCustomizeChrome,
+                      IDS_SIDE_PANEL_CUSTOMIZE_CHROME_TITLE,
+                      IDS_SIDE_PANEL_CUSTOMIZE_CHROME_TITLE,
+                      vector_icons::kEditChromeRefreshIcon,
+                      kActionSidePanelShowCustomizeChrome, bwi, false)
+          .Build());
+  root_action_item_->AddChild(
+      SidePanelAction(SidePanelEntryId::kShoppingInsights,
+                      IDS_SHOPPING_INSIGHTS_SIDE_PANEL_TITLE,
+                      IDS_SHOPPING_INSIGHTS_SIDE_PANEL_TITLE,
+                      vector_icons::kShoppingBagIcon,
+                      kActionSidePanelShowShoppingInsights, bwi, false)
+          .Build());
+  root_action_item_->AddChild(
+      SidePanelAction(
+          SidePanelEntryId::kMerchantTrust, IDS_MERCHANT_TRUST_SIDE_PANEL_TITLE,
+          IDS_MERCHANT_TRUST_SIDE_PANEL_TITLE, vector_icons::kStorefrontIcon,
+          kActionSidePanelShowMerchantTrust, bwi, false)
+          .Build());
+
+  if (side_panel::history_clusters::
+          IsHistoryClustersSidePanelSupportedForProfile(profile) &&
+      !HistorySidePanelCoordinator::IsSupported()) {
+    root_action_item_->AddChild(
+        SidePanelAction(SidePanelEntryId::kHistoryClusters, IDS_HISTORY_TITLE,
+                        IDS_HISTORY_CLUSTERS_SHOW_SIDE_PANEL,
+                        vector_icons::kHistoryChromeRefreshIcon,
+                        kActionSidePanelShowHistoryCluster, bwi, true)
+            .Build());
+  }
+
+  if (HistorySidePanelCoordinator::IsSupported()) {
+    root_action_item_->AddChild(
+        SidePanelAction(SidePanelEntryId::kHistory, IDS_HISTORY_TITLE,
+                        IDS_HISTORY_SHOW_SIDE_PANEL,
+                        vector_icons::kHistoryChromeRefreshIcon,
+                        kActionSidePanelShowHistory, bwi, true)
+            .Build());
+  }
+
+  if (features::IsReadAnythingOmniboxChipEnabled() ||
+      features::IsImmersiveReadAnythingEnabled()) {
+    root_action_item_->AddChild(
+        actions::ActionItem::Builder(
+            base::BindRepeating(
+                [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                   actions::ActionInvocationContext context) {
+                  read_anything::ReadAnythingEntryPointController::
+                      InvokePageAction(bwi, context);
+                },
+                bwi))
+            .SetActionId(kActionSidePanelShowReadAnything)
+            .SetText(l10n_util::GetStringUTF16(IDS_READING_MODE_TITLE))
+            .SetTooltipText(l10n_util::GetStringUTF16(IDS_READING_MODE_TITLE))
+            .SetImage(ui::ImageModel::FromVectorIcon(kMenuBookChromeRefreshIcon,
+                                                     ui::kColorIcon))
+            .SetProperty(
+                actions::kActionItemPinnableKey,
+                static_cast<
+                    std::underlying_type_t<actions::ActionPinnableState>>(
+                    actions::ActionPinnableState::kPinnable))
+            .Build());
+  } else {
+    root_action_item_->AddChild(
+        SidePanelAction(SidePanelEntryId::kReadAnything, IDS_READING_MODE_TITLE,
+                        IDS_READING_MODE_TITLE, kMenuBookChromeRefreshIcon,
+                        kActionSidePanelShowReadAnything, bwi, true)
+            .Build());
+  }
+
+  if (lens::features::IsLensOverlayEnabled()) {
+    const gfx::VectorIcon& icon =
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+        vector_icons::kGoogleLensMonochromeLogoIcon;
+#else
+        vector_icons::kSearchChromeRefreshIcon;
+#endif
+    root_action_item_->AddChild(
+        actions::ActionItem::Builder(
+            base::BindRepeating(
+                [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                   actions::ActionInvocationContext context) {
+                  if (!bwi) {
+                    return;
+                  }
+                  lens::LensOverlayEntryPointController::InvokeAction(
+                      bwi->GetActiveTabInterface(), context);
+                },
+                bwi))
+            .SetActionId(kActionSidePanelShowLensOverlayResults)
+            .SetText(l10n_util::GetStringUTF16(
+                lens::GetLensOverlayEntrypointLabelAltIds(
+                    IDS_SHOW_LENS_OVERLAY)))
+            .SetTooltipText(l10n_util::GetStringUTF16(
+                lens::GetLensOverlayEntrypointLabelAltIds(
+                    IDS_SIDE_PANEL_LENS_OVERLAY_TOOLBAR_TOOLTIP)))
+            .SetImage(ui::ImageModel::FromVectorIcon(
+                icon, ui::kColorIcon, ui::SimpleMenuModel::kDefaultIconSize))
+            .SetProperty(actions::kActionItemPinnableKey,
+                         std::underlying_type_t<actions::ActionPinnableState>(
+                             actions::ActionPinnableState::kPinnable))
+            .Build());
+  }
+
+  // Create the lens action item. The icon and text are set appropriately in the
+  // lens side panel coordinator. They have default values here.
+  root_action_item_->AddChild(
+      SidePanelAction(SidePanelEntryId::kLens, IDS_LENS_DEFAULT_TITLE,
+                      IDS_LENS_DEFAULT_TITLE, vector_icons::kImageSearchIcon,
+                      kActionSidePanelShowLens, bwi, false)
+          .Build());
+
+  if (CommentsSidePanelCoordinator::IsSupported()) {
+    root_action_item_->AddChild(
+        SidePanelAction(SidePanelEntryId::kComments,
+                        IDS_COLLABORATION_SHARED_TAB_GROUPS_COMMENTS_TITLE,
+                        IDS_COLLABORATION_SHARED_TAB_GROUPS_COMMENTS_TITLE,
+                        vector_icons::kChatIcon, kActionSidePanelShowComments,
+                        bwi, false)
+            .Build());
+  }
+
+  if (base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks)) {
+    root_action_item_->AddChild(
+        actions::ActionItem::Builder(
+            base::BindRepeating(
+                [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                   actions::ActionInvocationContext context) {
+                  if (!bwi) {
+                    return;
+                  }
+                  chrome::ToggleContextualTasksSidePanel(bwi);
+                },
+                bwi))
+            .SetActionId(kActionSidePanelShowContextualTasks)
+            .SetText(l10n_util::GetStringUTF16(
+                IDS_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_TITLE))
+            .SetTooltipText(l10n_util::GetStringUTF16(
+                IDS_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_TITLE))
+            .SetImage(ui::ImageModel::FromVectorIcon(kDockToRightSparkIcon,
+                                                     ui::kColorIcon))
+            .SetProperty(
+                actions::kActionItemPinnableKey,
+                static_cast<
+                    std::underlying_type_t<actions::ActionPinnableState>>(
+                    actions::ActionPinnableState::kNotPinnable))
+            .Build());
+  }
+
+  // TODO(crbug.com/454112198): Delete this after Multi Instance launches. This
+  // is currently only used in the experimental single instance side panel.
+  auto* glic_service = glic::GlicKeyedService::Get(bwi->GetProfile());
+  if (glic_service && !glic::GlicEnabling::IsMultiInstanceEnabled()) {
+    root_action_item_->AddChild(
+        actions::ActionItem::Builder(
+            base::BindRepeating(
+                [](base::WeakPtr<BrowserWindowInterface> bwi,
+                   actions::ActionItem* item,
+                   actions::ActionInvocationContext context) {
+                  if (!bwi) {
+                    return;
+                  }
+                  if (auto* glic_service =
+                          glic::GlicKeyedService::Get(bwi->GetProfile())) {
+                    glic_service->ToggleUI(
+                        bwi.get(), /*prevent_close=*/false,
+                        glic::mojom::InvocationSource::kTopChromeButton);
+                  }
+                },
+                bwi->GetWeakPtr()))
+            .SetActionId(kActionSidePanelShowGlic)
+            .SetText(l10n_util::GetStringUTF16(IDS_SETTINGS_GLIC_PAGE_TITLE))
+            .SetTooltipText(
+                l10n_util::GetStringUTF16(IDS_SETTINGS_GLIC_PAGE_TITLE))
+            .SetImage(ui::ImageModel::FromVectorIcon(
+                glic::GlicVectorIconManager::GetVectorIcon(
+                    IDR_GLIC_BUTTON_VECTOR_ICON),
+                ui::kColorIcon))
+            .SetProperty(actions::kActionItemPinnableKey, true)
+            .Build());
+  }
 }
 
 void BrowserActions::AddListeners() {
