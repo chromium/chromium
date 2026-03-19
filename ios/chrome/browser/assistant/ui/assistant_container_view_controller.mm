@@ -35,12 +35,9 @@ constexpr CGFloat kMomentumProjectionSeconds = 0.2;
 constexpr CGFloat kGestureTopAreaHeight = 44.0;
 
 // The maximum width of the container on iPad devices.
-constexpr CGFloat kMaxWidthRegularSizeClass = 450.0;
+constexpr CGFloat kMaxWidthRegularSizeClass = 700.0;
 // The multiplier for the width of the container relative to the parent view.
-constexpr CGFloat kWidthMultiplierRegularSizeClass = 0.5;
-
-// The padding added to the sides of the container in landscape compact mode.
-constexpr CGFloat kLandscapeSidePadding = 20.0;
+constexpr CGFloat kWidthMultiplierRegularSizeClass = 2.0 / 3.0;
 
 // The absolute minimum padding between the top of the container and the top of
 // the screen if no safe area insets exist (e.g. iPad full screen, iPhone
@@ -87,8 +84,8 @@ NSInteger GetMediumDetentHeight(NSInteger absoluteMax) {
   NSLayoutConstraint* _trailingConstraint;
   NSLayoutConstraint* _bottomConstraint;
 
-  // Layout constraints for iPad.
-  NSArray<NSLayoutConstraint*>* _ipadConstraints;
+  // Layout constraints for width-restricted contexts (iPad/Landscape).
+  NSArray<NSLayoutConstraint*>* _widthRestrictedConstraints;
 
   // Constraints pinning the container to the parent view.
   NSArray<NSLayoutConstraint*>* _parentConstraints;
@@ -183,8 +180,8 @@ NSInteger GetMediumDetentHeight(NSInteger absoluteMax) {
   _trailingConstraint = [_assistantContainerView.trailingAnchor
       constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor];
 
-  // Set up iPad constraints, inactive by default.
-  _ipadConstraints = @[
+  // Set up width-restricted constraints, inactive by default.
+  _widthRestrictedConstraints = @[
     [_assistantContainerView.centerXAnchor
         constraintEqualToAnchor:self.view.safeAreaLayoutGuide.centerXAnchor],
     [_assistantContainerView.widthAnchor
@@ -429,14 +426,9 @@ NSInteger GetMediumDetentHeight(NSInteger absoluteMax) {
     constraints.bottom_margin = kMorphingBaseMargin;
   }
 
-  CGFloat extraSidePadding = 0.0;
-  if (IsiPhoneLandscapeLayout(self.traitCollection)) {
-    extraSidePadding = kLandscapeSidePadding;
-  }
-
   _heightConstraint.constant = constraints.actual_height;
-  _leadingConstraint.constant = constraints.side_margin + extraSidePadding;
-  _trailingConstraint.constant = -(constraints.side_margin + extraSidePadding);
+  _leadingConstraint.constant = constraints.side_margin;
+  _trailingConstraint.constant = -constraints.side_margin;
   _bottomConstraint.constant = -constraints.bottom_margin;
   [_assistantContainerView
       updateTopCornerRadius:constraints.top_corner_radius
@@ -767,12 +759,13 @@ NSInteger GetMediumDetentHeight(NSInteger absoluteMax) {
 // Updates layout constants and constraints based on the current trait
 // collection.
 - (void)updateLayoutForCurrentTraitCollection {
-  if (IsiPadLayout(self.traitCollection)) {
+  if (IsiPadLayout(self.traitCollection) ||
+      IsiPhoneLandscapeLayout(self.traitCollection)) {
     [NSLayoutConstraint
         deactivateConstraints:@[ _leadingConstraint, _trailingConstraint ]];
-    [NSLayoutConstraint activateConstraints:_ipadConstraints];
+    [NSLayoutConstraint activateConstraints:_widthRestrictedConstraints];
   } else {
-    [NSLayoutConstraint deactivateConstraints:_ipadConstraints];
+    [NSLayoutConstraint deactivateConstraints:_widthRestrictedConstraints];
     [NSLayoutConstraint
         activateConstraints:@[ _leadingConstraint, _trailingConstraint ]];
   }
