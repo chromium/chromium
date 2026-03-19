@@ -55,8 +55,7 @@ class WebFrame : public base::SupportsUserData {
   // webpage DOM could change in a way which prevents the function from
   // executing.
   // Returns true if function call was requested, false otherwise. Function call
-  // may still fail even if this function returns true. Always returns false if
-  // `CanCallJavaScriptFunction` is false.
+  // may still fail even if this function returns true.
   virtual bool CallJavaScriptFunction(const std::string& name,
                                       const base::ListValue& parameters) = 0;
 
@@ -66,8 +65,7 @@ class WebFrame : public base::SupportsUserData {
   // If `timeout` is reached, callback is called with the nullptr parameter
   // and no result received later will be sent.
   // Returns true if function call was requested, false otherwise. Function call
-  // may still fail even if this function returns true. Always returns false if
-  // `CanCallJavaScriptFunction` is false.
+  // may still fail even if this function returns true.
   virtual bool CallJavaScriptFunction(
       const std::string& name,
       const base::ListValue& parameters,

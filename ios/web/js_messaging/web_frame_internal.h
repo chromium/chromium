@@ -34,8 +34,7 @@ class WebFrameInternal {
   // completes before `timeout` is reached. If `timeout` is reached, `callback`
   // is called with a null value.
   // Returns true if function call was requested, false otherwise. Function call
-  // may still fail even if this function returns true. Always returns false if
-  // `CanCallJavaScriptFunction` is false.
+  // may still fail even if this function returns true.
   virtual bool CallJavaScriptFunctionInContentWorld(
       const std::string& name,
       const base::ListValue& parameters,
