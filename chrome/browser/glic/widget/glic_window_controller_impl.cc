@@ -561,27 +561,6 @@ void GlicWindowControllerImpl::Show(
   }
 }
 
-std::unique_ptr<views::View> GlicWindowControllerImpl::CreateViewForSidePanel(
-    tabs::TabInterface& tab) {
-  // GetBrowserForMigrationOnly() is a stop-gap until the rest of the code in
-  // GlicWindowController is updated to use BrowserWindowInterface instead of
-  // Browser
-  auto* browser = tab.GetBrowserWindowInterface()->GetBrowserForMigrationOnly();
-  // TODO: Add Invocation source for toolbar button
-  if (BeforeViewCreated(browser, mojom::InvocationSource::kThreeDotsMenu,
-                        std::nullopt, /*auto_send=*/false) &&
-      browser) {
-    AttachToBrowser(*browser, AttachChangeReason::kInit);
-  }
-  auto glic_view =
-      std::make_unique<GlicView>(profile_, GlicWidget::GetInitialSize(),
-                                 glic_panel_hotkey_manager_->GetWeakPtr());
-  glic_view->SetWebContents(host().webui_contents());
-  glic_view->UpdateBackgroundColor();
-  glic_view_ = glic_view.get();
-  SetWindowState(GlicWindowController::State::kWaitingForSidePanelToShow);
-  return glic_view;
-}
 
 void GlicWindowControllerImpl::SetupAndShowGlicWidget(Browser* browser) {
   const gfx::Rect initial_bounds = GetInitialBounds(browser);

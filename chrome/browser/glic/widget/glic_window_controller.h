@@ -40,10 +40,6 @@ namespace tabs {
 class TabInterface;
 }
 
-namespace views {
-class View;
-}  // namespace views
-
 namespace glic {
 DECLARE_CUSTOM_ELEMENT_EVENT_TYPE(kGlicWidgetAttached);
 
@@ -211,8 +207,6 @@ class GlicWindowControllerInterface : public GlicWindowController,
   virtual bool IsWarmed() const = 0;
 
   virtual void SidePanelShown(BrowserWindowInterface* browser) = 0;
-  virtual std::unique_ptr<views::View> CreateViewForSidePanel(
-      tabs::TabInterface& tab) = 0;
 
   // Update the resize state of the widget if it is needed and safe to do so.
   // On Windows make sure that the client area size remains the same even if
