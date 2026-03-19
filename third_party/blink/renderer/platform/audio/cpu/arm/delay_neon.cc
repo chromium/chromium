@@ -5,6 +5,7 @@
 #include <arm_neon.h>
 
 #include <algorithm>
+#include <array>
 
 #include "base/compiler_specific.h"
 #include "build/build_config.h"
@@ -51,16 +52,14 @@ ALWAYS_INLINE static float32x4_t WrapPositionVector(
                        reinterpret_cast<uint32x4_t>(v_buffer_length), cmp)));
 }
 
-std::tuple<unsigned, int> Delay::ProcessARateVector(
-    float* destination,
-    uint32_t frames_to_process) const {
-  const int buffer_length = buffer_.size();
-  const float* buffer = buffer_.Data();
+std::tuple<size_t, size_t> Delay::ProcessARateVector(
+    base::span<float> destination,
+    size_t frames_to_process) const {
+  const size_t buffer_length = buffer_.size();
 
   const float sample_rate = sample_rate_;
-  const float* delay_times = delay_times_.Data();
 
-  int w_index = write_index_;
+  size_t w_index = write_index_;
 
   const float32x4_t v_sample_rate = vdupq_n_f32(sample_rate);
   const float32x4_t v_all_zeros = vdupq_n_f32(0);
@@ -74,25 +73,26 @@ std::tuple<unsigned, int> Delay::ProcessARateVector(
   const int32x4_t v_incr = vdupq_n_s32(4);
 
   // Temp arrays for storing the samples needed for interpolation
-  float sample1[4] __attribute((aligned(16)));
-  float sample2[4] __attribute((aligned(16)));
+  std::array<float, 4> sample1 __attribute((aligned(16)));
+  std::array<float, 4> sample2 __attribute((aligned(16)));
 
   // Temp array for holding the indices so we can access them
   // individually.
-  int read_index1[4] __attribute((aligned(16)));
-  int read_index2[4] __attribute((aligned(16)));
+  std::array<int, 4> read_index1 __attribute((aligned(16)));
+  std::array<int, 4> read_index2 __attribute((aligned(16)));
 
   // Initialize the write index vector, and  wrap the values if needed.
-  int32x4_t v_write_index = {w_index + 0, w_index + 1, w_index + 2,
-                             w_index + 3};
+  int32x4_t v_write_index = {
+      static_cast<int32_t>(w_index + 0), static_cast<int32_t>(w_index + 1),
+      static_cast<int32_t>(w_index + 2), static_cast<int32_t>(w_index + 3)};
   v_write_index = WrapIndexVector(v_write_index, v_buffer_length_int);
 
   int number_of_loops = frames_to_process / 4;
-  int k = 0;
+  size_t k = 0;
 
   for (int n = 0; n < number_of_loops; ++n, k += 4) {
-    const float32x4_t v_delay_time =
-        vmaxq_f32(UNSAFE_TODO(vld1q_f32(delay_times + k)), v_all_zeros);
+    const float32x4_t v_delay_time = vmaxq_f32(
+        vld1q_f32(delay_times_.as_span().subspan(k, 4u).data()), v_all_zeros);
     const float32x4_t v_desired_delay_frames =
         vmulq_f32(v_delay_time, v_sample_rate);
 
@@ -115,16 +115,16 @@ std::tuple<unsigned, int> Delay::ProcessARateVector(
 
     // Save indices so we can access the components individually for
     // getting the aamples from the buffer.
-    vst1q_s32(read_index1, v_read_index1);
-    vst1q_s32(read_index2, v_read_index2);
+    vst1q_s32(read_index1.data(), v_read_index1);
+    vst1q_s32(read_index2.data(), v_read_index2);
 
     for (int m = 0; m < 4; ++m) {
-      UNSAFE_TODO(sample1[m]) = UNSAFE_TODO(buffer[read_index1[m])];
-      UNSAFE_TODO(sample2[m]) = UNSAFE_TODO(buffer[read_index2[m])];
+      sample1[m] = buffer_[read_index1[m]];
+      sample2[m] = buffer_[read_index2[m]];
     }
 
-    const float32x4_t v_sample1 = vld1q_f32(sample1);
-    const float32x4_t v_sample2 = vld1q_f32(sample2);
+    const float32x4_t v_sample1 = vld1q_f32(sample1.data());
+    const float32x4_t v_sample2 = vld1q_f32(sample2.data());
 
     v_write_index = vaddq_s32(v_write_index, v_incr);
     v_write_index = WrapIndexVector(v_write_index, v_buffer_length_int);
@@ -133,7 +133,7 @@ std::tuple<unsigned, int> Delay::ProcessARateVector(
     const float32x4_t sample = vaddq_f32(
         v_sample1,
         vmulq_f32(interpolation_factor, vsubq_f32(v_sample2, v_sample1)));
-    UNSAFE_TODO(vst1q_f32(destination + k, sample));
+    vst1q_f32(destination.subspan(k, 4u).data(), sample);
   }
 
   // Update |w_index| based on how many frames we processed here, wrapping
@@ -146,8 +146,8 @@ std::tuple<unsigned, int> Delay::ProcessARateVector(
   return std::make_tuple(k, w_index);
 }
 
-void Delay::HandleNaN(float* delay_times,
-                      uint32_t frames_to_process,
+void Delay::HandleNaN(base::span<float> delay_times,
+                      size_t frames_to_process,
                       float max_time) {
   unsigned k = 0;
   int number_of_loops = frames_to_process / 4;
@@ -156,7 +156,7 @@ void Delay::HandleNaN(float* delay_times,
 
   // This is approximately 4 times faster than the scalar version.
   for (int loop = 0; loop < number_of_loops; ++loop, k += 4) {
-    float32x4_t x = UNSAFE_TODO(vld1q_f32(delay_times + k));
+    float32x4_t x = vld1q_f32(delay_times.subspan(k, 4u).data());
     // x == x only fails when x is NaN.  Then cmp is set to 0. Otherwise
     // 0xffffffff
     uint32x4_t cmp = vceqq_f32(x, x);
@@ -180,14 +180,14 @@ void Delay::HandleNaN(float* delay_times,
     xint = vorrq_u32(xint, cmp);
 
     // Finally, save the float result.
-    UNSAFE_TODO(
-        vst1q_f32(delay_times + k, reinterpret_cast<float32x4_t>(xint)));
+    vst1q_f32(delay_times.subspan(k, 4u).data(),
+              reinterpret_cast<float32x4_t>(xint));
   }
 
   // Handle any frames not done in the loop above.
   for (; k < frames_to_process; ++k) {
-    if (std::isnan(UNSAFE_TODO(delay_times[k]))) {
-      UNSAFE_TODO(delay_times[k]) = max_time;
+    if (std::isnan(delay_times[k])) {
+      delay_times[k] = max_time;
     }
   }
 }

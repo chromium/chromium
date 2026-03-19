@@ -38,31 +38,29 @@ namespace blink {
 
 namespace {
 
-void CopyToCircularBuffer(float* buffer,
-                          int write_index,
-                          int buffer_length,
-                          const float* source,
-                          uint32_t frames_to_process) {
+void CopyToCircularBuffer(base::span<float> buffer,
+                          size_t write_index,
+                          base::span<const float> source,
+                          size_t frames_to_process) {
   // The algorithm below depends on this being true because we don't expect to
   // have to fill the entire buffer more than once.
-  DCHECK_GE(static_cast<uint32_t>(buffer_length), frames_to_process);
+  DCHECK_GE(buffer.size(), frames_to_process);
+  DCHECK_GE(buffer.size(), write_index);
 
   // Copy `frames_to_process` values from `source` to the circular buffer that
-  // starts at `buffer` of length `buffer_length`.  The copy starts at index
+  // starts at `buffer` of length `buffer.size()`.  The copy starts at index
   // `write_index` into the buffer.
-  float* write_pointer = &UNSAFE_TODO(buffer[write_index]);
-  int remainder = buffer_length - write_index;
+  const size_t remainder = buffer.size() - write_index;
 
-  // Copy the sames over, carefully handling the case where we need to wrap
-  // around to the beginning of the buffer.
-  UNSAFE_TODO(
-      memcpy(write_pointer, source,
-             sizeof(*write_pointer) *
-                 std::min(static_cast<int>(frames_to_process), remainder)));
-  UNSAFE_TODO(
-      memcpy(buffer, source + remainder,
-             sizeof(*write_pointer) *
-                 std::max(0, static_cast<int>(frames_to_process) - remainder)));
+  // Carefully handle the case where we need to wrap around to the beginning of
+  // the buffer.
+  const size_t first_size = std::min(frames_to_process, remainder);
+  buffer.subspan(write_index, first_size).copy_from(source.first(first_size));
+
+  if (frames_to_process > remainder) {
+    const size_t second_size = frames_to_process - remainder;
+    buffer.first(second_size).copy_from(source.subspan(remainder, second_size));
+  }
 }
 
 }  // namespace
@@ -103,7 +101,7 @@ double Delay::DelayTime(float sample_rate) {
 
 #if !(defined(ARCH_CPU_X86_FAMILY) || defined(CPU_ARM_NEON))
 // Default scalar versions if simd/neon are not available.
-std::tuple<unsigned, int> Delay::ProcessARateVector(
+std::tuple<size_t, size_t> Delay::ProcessARateVector(
     float* destination,
     uint32_t frames_to_process) const {
   // We don't have a vectorized version, so just do nothing and return the 0 to
@@ -111,10 +109,10 @@ std::tuple<unsigned, int> Delay::ProcessARateVector(
   return std::make_tuple(0, write_index_);
 }
 
-void Delay::HandleNaN(float* delay_times,
-                      uint32_t frames_to_process,
+void Delay::HandleNaN(base::span<float> delay_times,
+                      size_t frames_to_process,
                       float max_time) {
-  for (unsigned k = 0; k < frames_to_process; ++k) {
+  for (size_t k = 0; k < frames_to_process; ++k) {
     if (std::isnan(delay_times[k])) {
       delay_times[k] = max_time;
     }
@@ -122,78 +120,60 @@ void Delay::HandleNaN(float* delay_times,
 }
 #endif
 
-int Delay::ProcessARateScalar(unsigned start,
-                              int w_index,
-                              float* destination,
-                              uint32_t frames_to_process) const {
-  const int buffer_length = buffer_.size();
-  const float* buffer = buffer_.Data();
+size_t Delay::ProcessARateScalar(size_t start,
+                                 size_t w_index,
+                                 base::span<float> destination,
+                                 size_t frames_to_process) const {
+  const size_t buffer_length = buffer_.size();
 
-  DCHECK(buffer_length);
-  DCHECK(destination);
-  DCHECK_GE(write_index_, 0);
   DCHECK_LT(write_index_, buffer_length);
 
-  float sample_rate = sample_rate_;
-  const float* delay_times = delay_times_.Data();
-
   for (unsigned i = start; i < frames_to_process; ++i) {
-    double delay_time = std::fmax(UNSAFE_TODO(delay_times[i]), 0);
-    double desired_delay_frames = delay_time * sample_rate;
+    double delay_time = std::fmax(delay_times_[i], 0);
+    double desired_delay_frames = delay_time * sample_rate_;
 
     double read_position = w_index + buffer_length - desired_delay_frames;
     if (read_position >= buffer_length) {
       read_position -= buffer_length;
     }
+    DCHECK_GE(read_position, 0);
 
     // Linearly interpolate in-between delay times.
-    int read_index1 = static_cast<int>(read_position);
-    DCHECK_GE(read_index1, 0);
+    size_t read_index1 = static_cast<size_t>(read_position);
     DCHECK_LT(read_index1, buffer_length);
-    int read_index2 = read_index1 + 1;
+    size_t read_index2 = read_index1 + 1;
     if (read_index2 >= buffer_length) {
       read_index2 -= buffer_length;
     }
-    DCHECK_GE(read_index2, 0);
     DCHECK_LT(read_index2, buffer_length);
 
     float interpolation_factor = read_position - read_index1;
 
-    float sample1 = UNSAFE_TODO(buffer[read_index1]);
-    float sample2 = UNSAFE_TODO(buffer[read_index2]);
+    float sample1 = buffer_[read_index1];
+    float sample2 = buffer_[read_index2];
 
     ++w_index;
     if (w_index >= buffer_length) {
       w_index -= buffer_length;
     }
 
-    UNSAFE_TODO(destination[i]) =
-        sample1 + interpolation_factor * (sample2 - sample1);
+    destination[i] = sample1 + interpolation_factor * (sample2 - sample1);
   }
 
   return w_index;
 }
 
-void Delay::ProcessARate(const float* source,
-                         float* destination,
-                         uint32_t frames_to_process) {
-  int buffer_length = buffer_.size();
-  float* buffer = buffer_.Data();
-
-  DCHECK(buffer_length);
-  DCHECK(source);
-  DCHECK(destination);
-  DCHECK_GE(write_index_, 0);
-  DCHECK_LT(write_index_, buffer_length);
-
-  float* delay_times = delay_times_.Data();
+void Delay::ProcessARate(base::span<const float> source,
+                         base::span<float> destination,
+                         size_t frames_to_process) {
+  DCHECK_LT(write_index_, buffer_.size());
 
   // Any NaN's get converted to max time
   // TODO(crbug.com/1013345): Don't need this if that bug is fixed
   double max_time = MaxDelayTime();
-  HandleNaN(delay_times, frames_to_process, max_time);
+  HandleNaN(delay_times_.as_span(), frames_to_process, max_time);
 
-  CopyToCircularBuffer(buffer, write_index_, buffer_length, source,
+  CopyToCircularBuffer(buffer_.as_span(), write_index_, source,
                        frames_to_process);
 
   unsigned frames_processed;
@@ -206,17 +186,13 @@ void Delay::ProcessARate(const float* source,
   }
 }
 
-void Delay::ProcessKRate(const float* source,
-                         float* destination,
-                         uint32_t frames_to_process) {
-  int buffer_length = buffer_.size();
-  float* buffer = buffer_.Data();
+void Delay::ProcessKRate(base::span<const float> source,
+                         base::span<float> destination,
+                         size_t frames_to_process) {
+  const size_t buffer_length = buffer_.size();
 
-  DCHECK(buffer_length);
-  DCHECK(source);
-  DCHECK(destination);
-  DCHECK_GE(write_index_, 0);
   DCHECK_LT(write_index_, buffer_length);
+  DCHECK_GE(buffer_length, frames_to_process);
 
   float sample_rate = sample_rate_;
   double max_time = MaxDelayTime();
@@ -228,30 +204,24 @@ void Delay::ProcessKRate(const float* source,
   // Make sure the delay time is in a valid range.
   delay_time = ClampTo(delay_time, 0.0, max_time);
   double desired_delay_frames = delay_time * sample_rate;
-  int w_index = write_index_;
+  size_t w_index = write_index_;
   double read_position = w_index + buffer_length - desired_delay_frames;
 
   if (read_position >= buffer_length) {
     read_position -= buffer_length;
   }
+  DCHECK_GE(read_position, 0);
 
   // Linearly interpolate in-between delay times.  `read_index1` and
   // `read_index2` are the indices of the frames to be used for
   // interpolation.
-  int read_index1 = static_cast<int>(read_position);
+  size_t read_index1 = static_cast<size_t>(read_position);
   float interpolation_factor = read_position - read_index1;
-  float* buffer_end = &UNSAFE_TODO(buffer[buffer_length]);
-  DCHECK_GE(static_cast<unsigned>(buffer_length), frames_to_process);
-
-  // sample1 and sample2 hold the current and next samples in the buffer.
-  // These are used for interoplating the delay value.  To reduce memory
-  // usage and an extra memcpy, sample1 can be the same as destination.
-  float* sample1 = destination;
 
   // Copy data from the source into the buffer, starting at the write index.
   // The buffer is circular, so carefully handle the wrapping of the write
   // pointer.
-  CopyToCircularBuffer(buffer, write_index_, buffer_length, source,
+  CopyToCircularBuffer(buffer_.as_span(), write_index_, source,
                        frames_to_process);
   w_index += frames_to_process;
   if (w_index >= buffer_length) {
@@ -261,46 +231,46 @@ void Delay::ProcessKRate(const float* source,
 
   // Now copy out the samples from the buffer, starting at the read pointer,
   // carefully handling wrapping of the read pointer.
-  float* read_pointer = &UNSAFE_TODO(buffer[read_index1]);
+  size_t remainder = buffer_length - read_index1;
 
-  uint32_t remainder = static_cast<uint32_t>(buffer_end - read_pointer);
-  UNSAFE_TODO(
-      memcpy(sample1, read_pointer,
-             sizeof(*sample1) * std::min(frames_to_process, remainder)));
+  size_t first_size = std::min(frames_to_process, remainder);
+  destination.first(first_size)
+      .copy_from(buffer_.as_span().subspan(read_index1, first_size));
   if (frames_to_process > remainder) {
-    UNSAFE_TODO(memcpy(sample1 + remainder, buffer,
-                       sizeof(*sample1) * (frames_to_process - remainder)));
+    const size_t second_size = frames_to_process - remainder;
+    destination.subspan(remainder, second_size)
+        .copy_from(buffer_.as_span().first(second_size));
   }
 
   // If interpolation_factor = 0, we don't need to do any interpolation and
-  // sample1 contains the desried values.  We can skip the following code.
+  // destination contains the desired values.  We can skip the following code.
   if (interpolation_factor != 0) {
     DCHECK_LE(frames_to_process, temp_buffer_.size());
-
-    int read_index2 = (read_index1 + 1) % buffer_length;
-    float* sample2 = temp_buffer_.Data();
-
-    read_pointer = &UNSAFE_TODO(buffer[read_index2]);
-    remainder = static_cast<uint32_t>(buffer_end - read_pointer);
-    UNSAFE_TODO(
-        memcpy(sample2, read_pointer,
-               sizeof(*sample1) * std::min(frames_to_process, remainder)));
+    const size_t read_index2 = (read_index1 + 1) % buffer_length;
+    remainder = buffer_length - read_index2;
+    first_size = std::min(frames_to_process, remainder);
+    temp_buffer_.as_span()
+        .first(first_size)
+        .copy_from(buffer_.as_span().subspan(read_index2, first_size));
     if (frames_to_process > remainder) {
-      UNSAFE_TODO(memcpy(sample2 + remainder, buffer,
-                         sizeof(*sample1) * (frames_to_process - remainder)));
+      const size_t second_size = frames_to_process - remainder;
+      temp_buffer_.as_span()
+          .subspan(remainder, second_size)
+          .copy_from(buffer_.as_span().first(second_size));
     }
 
     // Interpolate samples, where f = interpolation_factor
-    //   dest[k] = sample1[k] + f*(sample2[k] - sample1[k]);
+    //   dest[k] = dest[k] + f*(temp_buffer_[k] - dest[k]);
 
-    // sample2[k] = sample2[k] - sample1[k]
-    vector_math::Vsub(sample2, 1, sample1, 1, sample2, 1, frames_to_process);
+    // temp_buffer_[k] = temp_buffer_[k] - dest[k]
+    vector_math::Vsub(temp_buffer_.Data(), 1, destination.data(), 1,
+                      temp_buffer_.Data(), 1, frames_to_process);
 
-    // dest[k] = dest[k] + f*sample2[k]
-    //         = sample1[k] + f*(sample2[k] - sample1[k]);
+    // dest[k] = dest[k] + f*temp_buffer_[k]
+    //         = dest[k] + f*(temp_buffer_[k] - dest[k]);
     //
-    vector_math::Vsma(sample2, 1, interpolation_factor, destination, 1,
-                      frames_to_process);
+    vector_math::Vsma(temp_buffer_.Data(), 1, interpolation_factor,
+                      destination.data(), 1, frames_to_process);
   }
 }
 
