@@ -680,7 +680,7 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
   private computeShowExistingPassphraseBelowAccount_(): boolean {
     return this.syncStatus_ !== undefined &&
         this.syncStatus_.signedInState === SignedInState.SYNCING &&
-        this.syncPrefs !== undefined && !!this.syncPrefs.passphraseRequired;
+        this.syncPrefs !== undefined && this.syncPrefs.passphraseRequired;
   }
 
   private onSyncAdvancedClick_() {

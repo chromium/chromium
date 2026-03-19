@@ -66,7 +66,7 @@ function processPredictionResult(segmentInfo: SegmentInfo) {
     openError();
     return;
   }
-  const result = String(segmentInfo.predictionResult) +
+  const result = segmentInfo.predictionResult +
       ' Timestamp: ' + String(segmentInfo.predictionTimestamp.internalValue);
   const encoded = window.btoa(result);
   if (!openSurvey(encoded)) {

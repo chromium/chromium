@@ -151,7 +151,7 @@ suite('SiteDataTest', function() {
     let exceptionLists = page.shadowRoot!.querySelectorAll('site-list');
     assertEquals(exceptionLists.length, 3);
     for (const list of exceptionLists) {
-      assertTrue(!!list.readOnlyList);
+      assertTrue(list.readOnlyList);
     }
 
     // Return preference to unmanaged state and check all exception lists
@@ -163,7 +163,7 @@ suite('SiteDataTest', function() {
     exceptionLists = page.shadowRoot!.querySelectorAll('site-list');
     assertEquals(exceptionLists.length, 3);
     for (const list of exceptionLists) {
-      assertFalse(!!list.readOnlyList);
+      assertFalse(list.readOnlyList);
     }
   });
 

@@ -16,9 +16,8 @@ function addClientInfo(parent: HTMLElement, info: ClientInfo) {
   const div = document.createElement('div');
   div.className = 'client';
   const configTitle = document.createElement('h5');
-  configTitle.textContent =
-      'Segmentation Key: ' + String(info.segmentationKey) +
-      ', Selected Segment: ' + String(info.selectedSegment);
+  configTitle.textContent = 'Segmentation Key: ' + info.segmentationKey +
+      ', Selected Segment: ' + info.selectedSegment;
   div.appendChild(configTitle);
   for (let i = 0; i < info.segmentInfo.length; ++i) {
     addSegmentInfoToParent(div, info.segmentationKey, info.segmentInfo[i]!);
@@ -31,10 +30,10 @@ function addSegmentInfoToParent(
   const div = document.createElement('div');
   div.className = 'segment';
   const targetDiv = document.createElement('div');
-  targetDiv.textContent = 'Segment Id: ' + String(info.segmentName);
+  targetDiv.textContent = 'Segment Id: ' + info.segmentName;
   div.appendChild(targetDiv);
   const resultDiv = document.createElement('div');
-  resultDiv.textContent = 'Result: ' + String(info.predictionResult) +
+  resultDiv.textContent = 'Result: ' + info.predictionResult +
       ' Time: ' + String(info.predictionTimestamp.internalValue);
   div.appendChild(resultDiv);
   const buttonDiv = document.createElement('div');
@@ -69,7 +68,7 @@ function addSegmentInfoToParent(
   buttonDiv.appendChild(setSelectionBtn);
   div.appendChild(buttonDiv);
   const dataDiv = document.createElement('div');
-  dataDiv.textContent = String(info.segmentData);
+  dataDiv.textContent = info.segmentData;
   div.appendChild(dataDiv);
   dataDiv.className = 'hidden-meta';
   div.setAttribute('simple', '');

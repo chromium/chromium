@@ -371,9 +371,9 @@ async function onMqlsLogsPageOpen() {
     const mqlsLogs = response.mqlsLogs;
     for (const {feature, proto, status} of mqlsLogs) {
       const row = mqlsLogsContainer.insertRow();
-      const featureStr = feature.toString();
-      const protoStr = proto.toString();
-      const statusStr = status.toString();
+      const featureStr = feature;
+      const protoStr = proto;
+      const statusStr = status;
       appendTD(row, featureStr, 'mqls-logs-feature');
       appendTD(row, protoStr, 'mqls-logs-proto');
       appendTD(row, statusStr, 'mqls-logs-status');

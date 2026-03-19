@@ -150,7 +150,7 @@ suite('ManageProfileTests', function() {
   test('ManageProfileChangeName', async function() {
     const nameInput = manageProfile.$.nameInput;
     assertTrue(!!nameInput);
-    assertFalse(!!nameInput.disabled);
+    assertFalse(nameInput.disabled);
     assertEquals('.*\\S.*', nameInput.pattern);
 
     assertEquals('Initial Fake Name', nameInput.value);

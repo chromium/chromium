@@ -286,7 +286,7 @@ export class CastFeedbackUiElement extends CrLitElement {
     const data = [
       {
         key: 'feedbackUserCtlConsent',
-        value: String(!!this.allowContactByEmail_),
+        value: String(this.allowContactByEmail_),
       },
     ];
     return data;

@@ -370,9 +370,9 @@ suite('AppearanceHandler', function() {
     await microtasksFinished();
     assertTrue(
         !!appearancePage.shadowRoot!.querySelector('#splitViewDragAndDrop'));
-    assertFalse(!!appearancePage.shadowRoot!
-                      .querySelector<SettingsToggleButtonElement>(
-                          '#splitViewDragAndDrop')!.hidden);
+    assertFalse(appearancePage.shadowRoot!
+                    .querySelector<SettingsToggleButtonElement>(
+                        '#splitViewDragAndDrop')!.hidden);
   });
 
   test('split view drag and drop toggle updates pref', async function() {

@@ -55,10 +55,10 @@ suite('PaymentsSectionPayOverTime', function() {
     assertTrue(!!payOverTimeToggle);
     assertEquals(
         loadTimeData.getString('autofillPayOverTimeSettingsLabel'),
-        payOverTimeToggle.label.toString());
+        payOverTimeToggle.label);
     assertEquals(
         loadTimeData.getString('autofillPayOverTimeSettingsSublabel'),
-        payOverTimeToggle.subLabelWithLink.toString());
+        payOverTimeToggle.subLabelWithLink);
   });
 
   test(

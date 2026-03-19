@@ -39,8 +39,7 @@ function assertFontFamilyRule(
   const fontFamily = styleRules[0]!.style.getPropertyValue('font-family');
   const expectedFontFamily = getExpectedFontFamily(expectingSystemFont);
   assertTrue(
-      fontFamily.startsWith(expectedFontFamily),
-      `Found: '${fontFamily.toString()}'`);
+      fontFamily.startsWith(expectedFontFamily), `Found: '${fontFamily}'`);
 }
 
 // Asserts that a 'div' inherits the expected font-family value.

@@ -15,7 +15,7 @@ import {SiteEngagementDetailsProvider} from './site_engagement_details.mojom-web
  * Rounds the supplied value to two decimal places of accuracy.
  */
 function roundScore(score: number): number {
-  return Number(Math.round(score * 100) / 100);
+  return Math.round(score * 100) / 100;
 }
 
 /**

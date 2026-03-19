@@ -183,7 +183,7 @@ async function asyncGetBrowsingTopicsState(calculateNow: boolean) {
   if (result.overrideStatusMessage) {
     document.querySelector(
                 '#topics-state-override-status-message-div')!.textContent =
-        result.overrideStatusMessage.toString();
+        result.overrideStatusMessage;
     setElementVisible('topics-state-override-status-message-div', true);
     return;
   }
@@ -295,7 +295,7 @@ async function asyncGetModelInfo() {
   if (result.overrideStatusMessage) {
     document.querySelector(
                 '#model-info-override-status-message-div')!.textContent =
-        result.overrideStatusMessage.toString();
+        result.overrideStatusMessage;
     setElementVisible('model-info-override-status-message-div', true);
     return;
   }

@@ -135,7 +135,7 @@ export class SettingsPaymentsListElement extends PolymerElement {
 
     const index = [...paymentMethods].findIndex((element) => element.id === id);
     const isLastItem = index === paymentMethods.length - 1;
-    const indexToFocus = index + (isLastItem ? -1 : +1);
+    const indexToFocus = index + (isLastItem ? -1 : 1);
     const menu = paymentMethods[indexToFocus].dotsMenu;
     if (menu) {
       focusWithoutInk(menu);

@@ -449,7 +449,7 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
 
   override ready() {
     super.ready();
-    recordTimeToWebUIReady(Number(Date.now() - this.invocationTime));
+    recordTimeToWebUIReady(Date.now() - this.invocationTime);
   }
 
   private handlePointerEnter() {

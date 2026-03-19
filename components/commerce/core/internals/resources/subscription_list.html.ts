@@ -23,10 +23,10 @@ export function getHtml(this: SubscriptionListElement) {
       ${this.subscriptions_.map(subscription =>
         subscription.productInfos.length === 0 ? html`
           <tr>
-            <td>${BigInt(subscription.clusterId)}</td>
+            <td>${subscription.clusterId}</td>
           </tr>` : subscription.productInfos.map(productInfo => html`
           <tr>
-            <td>${BigInt(productInfo.info.clusterId)}</td>
+            <td>${productInfo.info.clusterId}</td>
             <td>${productInfo.info.domain}</td>
             <td>${productInfo.info.currentPrice}</td>
             <td>${productInfo.info.previousPrice}</td>

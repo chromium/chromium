@@ -289,7 +289,7 @@ export class PdfViewerPrintElement extends PdfViewerBaseElement {
 
   override handlePluginMessage(e: CustomEvent<MessageData>) {
     const data = e.detail;
-    switch (data.type.toString()) {
+    switch (data.type) {
       case 'documentDimensions':
         this.setDocumentDimensions(convertDocumentDimensionsMessage(data));
         return;

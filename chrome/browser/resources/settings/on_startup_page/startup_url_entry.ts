@@ -47,6 +47,7 @@ export class SettingsStartupUrlEntryElement extends
     return {
       editable: {
         type: Boolean,
+        value: false,
         reflectToAttribute: true,
       },
 

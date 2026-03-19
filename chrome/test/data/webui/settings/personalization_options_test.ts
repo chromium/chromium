@@ -174,7 +174,7 @@ suite('AllBuilds', function() {
     // Check initial setup.
     assertTrue(toggle.checked);
     assertTrue(testElement.prefs.signin.allowed_on_next_startup.value);
-    assertFalse(!!testElement.$.toast.open);
+    assertFalse(testElement.$.toast.open);
 
     // When the user is signed out, clicking the toggle should work
     // normally and the restart toast should be opened.

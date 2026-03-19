@@ -230,7 +230,7 @@ export class AppearanceElement extends AppearanceElementBase {
   }
 
   private computeShowBottomDivider_(): boolean {
-    return !!(this.showClassicChromeButton_ || this.showDeviceThemeToggle_);
+    return this.showClassicChromeButton_ || this.showDeviceThemeToggle_;
   }
 
   private computeShowClassicChromeButton_(): boolean {

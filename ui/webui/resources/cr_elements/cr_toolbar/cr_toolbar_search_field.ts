@@ -124,7 +124,7 @@ export class CrToolbarSearchFieldElement extends
   }
 
   protected getIconAriaHidden_(): string {
-    return Boolean(!this.narrow || this.hasSearchText).toString();
+    return (!this.narrow || this.hasSearchText).toString();
   }
 
   protected shouldShowSpinner_(): boolean {

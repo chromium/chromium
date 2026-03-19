@@ -86,7 +86,7 @@ async function assertErrorStateAndClose(
 
   const description = dialog.querySelector('#description');
   assertTrue(!!description);
-  assertEquals(expectedDescription, description.innerHTML.toString());
+  assertEquals(expectedDescription, description.innerHTML);
 
   assertVisibleTextContent(
       dialog, '#selectFileButtonError', importer.i18n('selectFile'));
@@ -275,7 +275,7 @@ suite('PasswordsImporterTest', function() {
     const deleteFileOption = dialog.querySelector('#deleteFileOption');
     assertTrue(!!deleteFileOption);
     assertEquals(
-        deleteFileOption.innerHTML.toString(),
+        deleteFileOption.innerHTML,
         importer
             .i18nAdvanced(
                 'importPasswordsDeleteFileOption',

@@ -350,7 +350,7 @@ export class PolicyTestRowElement extends CustomElement {
     const policyScopeInput =
         this.getRequiredElement<HTMLInputElement>('.scope');
 
-    policyNamespaceInput.value = String(initialValues.namespace);
+    policyNamespaceInput.value = initialValues.namespace;
     this.updatePolicyNames();
 
     policySourceInput.value = String(initialValues.source);
@@ -393,7 +393,7 @@ export class PolicyTestRowElement extends CustomElement {
     const inputElement = this.getRequiredElement<HTMLInputElement>('.value');
     // If the policy expects a string, any input is valid.
     if (this.inputType_ === String) {
-      return inputElement.value.toString();
+      return inputElement.value;
     }
     try {
       const obj = JSON.parse(inputElement.value);
@@ -443,10 +443,9 @@ export class PolicyTestRowElement extends CustomElement {
   }
 
   // Class method for returning the string value of the given attribute in this
-  // row. Should only be used for enum attributes (level, scope and source).
   getStringPolicyAttribute(attributeName: string): string|undefined {
     const intVal: number =
-        parseInt(String(this.getPolicyAttribute(`${attributeName}`)));
+        parseInt(this.getPolicyAttribute(`${attributeName}`));
     switch (attributeName) {
       case 'level':
         return Object.keys(LevelNamesToValues)

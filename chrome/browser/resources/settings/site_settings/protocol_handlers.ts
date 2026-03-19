@@ -254,7 +254,7 @@ export class ProtocolHandlersElement extends ProtocolHandlersElementBase {
    */
   private onToggleChange_() {
     this.browserProxy.setProtocolHandlerDefault(
-        !!this.handlersEnabledPref_.value);
+        this.handlersEnabledPref_.value);
   }
 
   /**

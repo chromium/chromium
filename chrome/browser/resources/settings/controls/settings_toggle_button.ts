@@ -190,8 +190,8 @@ export class SettingsToggleButtonElement extends
   /**
    * Set up the contents of sub label with link.
    */
-  private getSubLabelWithLinkContent_(contents: string) {
-    return sanitizeInnerHtml(contents, {
+  private getSubLabelWithLinkContent_(): TrustedHTML {
+    return sanitizeInnerHtml(this.subLabelWithLink, {
       attrs: [
         'id',
         'is',

@@ -295,5 +295,5 @@ function hasCtrlModifierOnly(e: KeyboardEvent): boolean {
 
 // TODO(crbug.com/40792950): Load from chrome://resources/js/util.js instead.
 function hasKeyModifiers(e: KeyboardEvent): boolean {
-  return !!(e.altKey || e.ctrlKey || e.metaKey || e.shiftKey);
+  return e.altKey || e.ctrlKey || e.metaKey || e.shiftKey;
 }

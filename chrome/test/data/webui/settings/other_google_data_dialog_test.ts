@@ -121,7 +121,7 @@ suite('OtherGoogleDataDialog', function() {
             '#nonGoogleSearchHistoryLink');
     assertTrue(!!nonGoogleSearchHistoryLink);
     assertTrue(isVisible(nonGoogleSearchHistoryLink));
-    assertEquals('test', nonGoogleSearchHistoryLink.subLabel.toString());
+    assertEquals('test', nonGoogleSearchHistoryLink.subLabel);
   });
 
   test('MyActivityVisibility', async function() {

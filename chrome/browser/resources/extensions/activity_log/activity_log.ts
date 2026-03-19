@@ -119,8 +119,8 @@ export class ExtensionsActivityLogElement extends
   }
 
   protected isPlaceholder_(): boolean {
-    return !!(this.extensionInfo as ActivityLogExtensionPlaceholder)
-                 .isPlaceholder;
+    return (this.extensionInfo as ActivityLogExtensionPlaceholder)
+        .isPlaceholder;
   }
 
   protected getExtensionIconUrl_(): string {

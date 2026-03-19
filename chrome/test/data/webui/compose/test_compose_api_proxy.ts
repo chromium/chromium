@@ -46,8 +46,8 @@ function getDefaultUndoRedoComposeState(): ComposeState {
     },
     webuiState: JSON.stringify({
       input: 'some other input',
-      selectedLength: Number(StyleModifier.kUnset),
-      selectedTone: Number(StyleModifier.kUnset),
+      selectedLength: StyleModifier.kUnset,
+      selectedTone: StyleModifier.kUnset,
     }),
     feedback: UserFeedback.kUserFeedbackUnspecified,
   };

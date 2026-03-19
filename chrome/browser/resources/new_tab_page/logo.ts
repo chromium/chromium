@@ -158,7 +158,7 @@ export class LogoElement extends CrLitElement {
   }
 
   private computeShowLogo_(): boolean {
-    return !!this.loaded_ && !this.showDoodle_;
+    return this.loaded_ && !this.showDoodle_;
   }
 
   private computeShowDoodle_(): boolean {

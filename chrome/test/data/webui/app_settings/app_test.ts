@@ -416,7 +416,7 @@ suite('AppSettingsAppTest', () => {
         'app-management-app-content-item')!;
     assertTrue(!!appContentItem);
 
-    assertFalse(!!appContentItem.hidden);
+    assertFalse(appContentItem.hidden);
   });
 
   // Check that the app content element is hidden when there are no

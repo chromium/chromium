@@ -98,8 +98,8 @@ class ActorEventLog {
     const row = clone.children[0] as HTMLTableRowElement;
     row.dataset['timestamp'] = entry.timestamp.getTime().toString();
     row.dataset['taskId'] = entry.taskId.toString();
-    row.dataset['type'] = entry.type.toString();
-    row.dataset['track'] = entry.track.toString();
+    row.dataset['type'] = entry.type;
+    row.dataset['track'] = entry.track;
 
     const cells = clone.querySelectorAll('td');
     cells[0]!.textContent = entry.taskId === 0 ? '' : entry.taskId.toString();

@@ -148,7 +148,7 @@ export function listenOnce(
  * @return Whether a modifier key was down when processing |e|.
  */
 export function hasKeyModifiers(e: KeyboardEvent): boolean {
-  return !!(e.altKey || e.ctrlKey || e.metaKey || e.shiftKey);
+  return e.altKey || e.ctrlKey || e.metaKey || e.shiftKey;
 }
 
 /**

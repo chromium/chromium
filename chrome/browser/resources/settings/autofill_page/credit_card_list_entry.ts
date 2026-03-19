@@ -141,9 +141,8 @@ export class SettingsCreditCardListEntryElement extends
    * if the card is eligible for virtual card enrollment.
    */
   private showDots_(): boolean {
-    return !!(
-        this.creditCard.metadata!.isLocal ||
-        this.isVirtualCardEnrollmentEligible_());
+    return this.creditCard.metadata!.isLocal ||
+        this.isVirtualCardEnrollmentEligible_();
   }
 
   private shouldShowOutlinkWithWalletBranding_(): boolean {
@@ -194,7 +193,7 @@ export class SettingsCreditCardListEntryElement extends
     assert(this.creditCard.expirationYear);
     // Truncate the year down to two digits (eg. 2023 to 23).
     return this.creditCard.expirationMonth + '/' +
-        this.creditCard.expirationYear.toString().substring(2);
+        this.creditCard.expirationYear.substring(2);
   }
 
   private getCardSublabelType(): CardSummarySublabelType {

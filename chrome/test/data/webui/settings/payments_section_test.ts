@@ -561,7 +561,7 @@ suite('PaymentsSection', function() {
     assertTrue(!!cvcStorageToggle);
     assertEquals(
         loadTimeData.getString('enableCvcStorageSublabel'),
-        cvcStorageToggle.subLabelWithLink.toString());
+        cvcStorageToggle.subLabelWithLink);
     assertEquals(
         loadTimeData.getString('enableCvcStorageAriaLabelForNoCvcSaved'),
         cvcStorageToggle.ariaLabel);
@@ -585,7 +585,7 @@ suite('PaymentsSection', function() {
     assertTrue(!!cvcStorageToggle);
     assertEquals(
         loadTimeData.getString('enableCvcStorageDeleteDataSublabel'),
-        cvcStorageToggle.subLabelWithLink.toString());
+        cvcStorageToggle.subLabelWithLink);
     assertEquals(
         loadTimeData.getString('enableCvcStorageLabel'),
         cvcStorageToggle.ariaLabel);
@@ -610,7 +610,7 @@ suite('PaymentsSection', function() {
         assertTrue(!!cvcStorageToggle);
         assertEquals(
             loadTimeData.getString('enableCvcStorageSublabel'),
-            cvcStorageToggle.subLabelWithLink.toString());
+            cvcStorageToggle.subLabelWithLink);
       });
 
   // Test to verify if bulk delete is triggered or not based on how user
@@ -639,7 +639,7 @@ suite('PaymentsSection', function() {
           assertTrue(!!cvcStorageToggle);
           assertEquals(
               loadTimeData.getString('enableCvcStorageDeleteDataSublabel'),
-              cvcStorageToggle.subLabelWithLink.toString());
+              cvcStorageToggle.subLabelWithLink);
 
           const cvcStorageToggleSublabelLink =
               cvcStorageToggle.$.labelWrapper
@@ -703,11 +703,10 @@ suite('PaymentsSection', function() {
 
     assertTrue(!!cardBenefitsToggle);
     assertEquals(
-        loadTimeData.getString('cardBenefitsLabel'),
-        cardBenefitsToggle.label.toString());
+        loadTimeData.getString('cardBenefitsLabel'), cardBenefitsToggle.label);
     assertEquals(
         loadTimeData.getString('cardBenefitsToggleSublabel'),
-        cardBenefitsToggle.subLabelWithLink.toString());
+        cardBenefitsToggle.subLabelWithLink);
   });
 
   test(

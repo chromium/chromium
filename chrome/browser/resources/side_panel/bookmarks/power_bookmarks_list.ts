@@ -427,7 +427,7 @@ export class PowerBookmarksListElement extends PolymerElement implements
   }
 
   setImageUrl(bookmark: BookmarksTreeNode, url: string) {
-    this.set(`imageUrls_.${bookmark.id.toString()}`, url);
+    this.set(`imageUrls_.${bookmark.id}`, url);
     this.imageUrls_ = structuredClone(this.imageUrls_);
   }
 
@@ -968,11 +968,9 @@ export class PowerBookmarksListElement extends PolymerElement implements
             ?.[1] ??
         false;
     if (event.detail.checked && !isSelected) {
-      this.set(
-          `selectedBookmarks_.${event.detail.bookmark.id.toString()}`, true);
+      this.set(`selectedBookmarks_.${event.detail.bookmark.id}`, true);
     } else if (!event.detail.checked && isSelected) {
-      this.set(
-          `selectedBookmarks_.${event.detail.bookmark.id.toString()}`, false);
+      this.set(`selectedBookmarks_.${event.detail.bookmark.id}`, false);
     }
   }
 

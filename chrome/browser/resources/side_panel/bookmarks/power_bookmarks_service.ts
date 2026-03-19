@@ -523,8 +523,7 @@ export class PowerBookmarksService {
    */
   private findBookmarkImageUrls_(
       bookmark: BookmarksTreeNode, recurse: boolean, forceUpdate: boolean) {
-    const hasImage =
-        this.bookmarksWithCachedImages_.has(bookmark.id.toString());
+    const hasImage = this.bookmarksWithCachedImages_.has(bookmark.id);
     if (forceUpdate || !hasImage) {
       // Reset image url to ensure old images don't persist while the new image
       // is being fetched.
@@ -533,7 +532,7 @@ export class PowerBookmarksService {
         const productImageUrl = this.delegate_.getProductImageUrl(bookmark);
         if (productImageUrl) {
           this.delegate_.setImageUrl(bookmark, productImageUrl);
-          this.bookmarksWithCachedImages_.add(bookmark.id.toString());
+          this.bookmarksWithCachedImages_.add(bookmark.id);
         } else {
           if (this.activeImageServiceRequestCount_ <
               this.maxImageServiceRequests_) {
@@ -576,7 +575,7 @@ export class PowerBookmarksService {
     // If there is no result, cache an empty URL because we are unlikely to get
     // a different result in the same session.
     this.delegate_.setImageUrl(bookmark, result ? result.imageUrl : '');
-    this.bookmarksWithCachedImages_.add(bookmark.id.toString());
+    this.bookmarksWithCachedImages_.add(bookmark.id);
 
     if (this.inactiveImageServiceRequests_.size > 0) {
       this.findBookmarkImageUrl_(

@@ -76,7 +76,7 @@ suite('PasswordManagerAppTest', function() {
 
   test('app drawer', async () => {
     assertEquals(null, app.shadowRoot!.querySelector('#drawerSidebar'));
-    assertFalse(!!app.$.drawer.open);
+    assertFalse(app.$.drawer.open);
 
     const drawerOpened = eventToPromise('cr-drawer-opened', app.$.drawer);
     app.$.drawer.openDrawer();
@@ -100,7 +100,7 @@ suite('PasswordManagerAppTest', function() {
     app.setNarrowForTesting(true);
 
     assertEquals(null, app.shadowRoot!.querySelector('#drawerSidebar'));
-    assertFalse(!!app.$.drawer.open);
+    assertFalse(app.$.drawer.open);
 
     const drawerOpened = eventToPromise('cr-drawer-opened', app.$.drawer);
     app.$.drawer.openDrawer();

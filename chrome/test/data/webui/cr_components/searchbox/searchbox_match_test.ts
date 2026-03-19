@@ -196,7 +196,7 @@ suite('CrComponentsRealboxMatchTest', () => {
       ...matchEl.shadowRoot.querySelectorAll(
           '#actions-container cr-searchbox-action'),
     ].map(action => action.classList.contains('selected')));
-    assertFalse(!!matchEl.$.remove.classList.contains('selected'));
+    assertFalse(matchEl.$.remove.classList.contains('selected'));
 
     // When the keyword chip is selected.
     matchEl.selection = {

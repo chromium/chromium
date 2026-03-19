@@ -418,7 +418,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
         this.response_ = composeState.response;
         this.undoEnabled_ = Boolean(this.response_?.undoAvailable);
         this.redoEnabled_ = Boolean(this.response_?.redoAvailable);
-        this.feedbackEnabled_ = Boolean(!this.response_?.providedByUser);
+        this.feedbackEnabled_ = !this.response_?.providedByUser;
       }
 
       if (composeState.webuiState) {
@@ -847,7 +847,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
   protected isBackFromErrorAvailable_(): boolean {
     // True when the current response is a filtering error and resulted from
     // applying a modifier.
-    return Boolean(
+    return (
         this.response_?.status === ComposeStatus.kFiltered &&
         this.response_?.triggeredFromModifier);
   }

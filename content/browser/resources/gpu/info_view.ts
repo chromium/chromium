@@ -175,7 +175,7 @@ function createInfoElements(
     return [
       desc,
       createElem('td', {
-        textContent: data.value.toString().trim(),
+        textContent: data.value.trim(),
         id: (data as Data).id!,
       }),
     ];

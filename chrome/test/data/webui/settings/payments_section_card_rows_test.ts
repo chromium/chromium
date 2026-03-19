@@ -965,10 +965,10 @@ suite('PaymentsSectionCardRows', function() {
 
           const serverCardExpectedSublabel = '· ' +
               serverCreditCard.expirationMonth + '/' +
-              serverCreditCard.expirationYear!.toString().substring(2);
+              serverCreditCard.expirationYear!.substring(2);
           const localCardExpectedSublabel = '· ' +
               localCreditCard.expirationMonth + '/' +
-              localCreditCard.expirationYear!.toString().substring(2);
+              localCreditCard.expirationYear!.substring(2);
           const paymentsList = getLocalAndServerCreditCardListItems();
 
           assertTrue(isVisible(

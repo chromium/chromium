@@ -53,8 +53,15 @@ export const UserUtilMixin = dedupingMixin(
               computed: 'computeAvatarImage_(accountInfo_)',
             },
 
-            syncInfo_: Object,
-            accountInfo_: Object,
+            syncInfo_: {
+              type: Object,
+              value: null,
+            },
+
+            accountInfo_: {
+              type: Object,
+              value: null,
+            },
           };
         }
 
@@ -62,8 +69,8 @@ export const UserUtilMixin = dedupingMixin(
         declare isSyncingPasswords: boolean;
         declare accountEmail: string;
         declare avatarImage: string;
-        declare private syncInfo_: SyncInfo;
-        declare private accountInfo_: AccountInfo;
+        declare private syncInfo_: SyncInfo|null;
+        declare private accountInfo_: AccountInfo|null;
 
         private setIsAccountStorageActiveListener_: ((active: boolean) => void)|
             null = null;

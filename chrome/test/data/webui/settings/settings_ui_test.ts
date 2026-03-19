@@ -40,7 +40,7 @@ suite('SettingsUIToolbarAndDrawer', function() {
 
   test('app drawer', async () => {
     assertEquals(null, ui.shadowRoot!.querySelector('cr-drawer settings-menu'));
-    assertFalse(!!drawer.open);
+    assertFalse(drawer.open);
 
     const drawerOpened = eventToPromise('cr-drawer-opened', drawer);
     drawer.openDrawer();

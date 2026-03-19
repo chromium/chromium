@@ -110,7 +110,7 @@ chrome.test.runTests([
           HIGHLIGHTER_COLORS[i]!.color, highlighterColors[i]!.color);
       // Highlighter colors should indicate that they should be displayed
       // blended with white.
-      chrome.test.assertTrue(!!highlighterColors[i]!.blended);
+      chrome.test.assertTrue(highlighterColors[i]!.blended);
     }
     chrome.test.succeed();
   },

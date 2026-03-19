@@ -976,7 +976,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
 
   handlePluginMessage(e: CustomEvent<MessageData>) {
     const data = e.detail;
-    switch (data.type.toString()) {
+    switch (data.type) {
       case 'attachments':
         const attachmentsData =
             data as unknown as {attachmentsData: Attachment[]};

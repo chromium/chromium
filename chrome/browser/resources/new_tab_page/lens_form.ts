@@ -157,7 +157,7 @@ export class LensFormElement extends CrLitElement {
     const action = new URL(this.uploadFileAction_);
     action.searchParams.set('ep', UPLOAD_FILE_ENTRYPOINT);
     action.searchParams.set('hl', this.language_);
-    action.searchParams.set('st', this.startTime_.toString());
+    action.searchParams.set('st', this.startTime_);
     action.searchParams.set('cd', this.clientData_);
     action.searchParams.set('re', RENDERING_ENVIRONMENT);
     action.searchParams.set('s', CHROMIUM_SURFACE);

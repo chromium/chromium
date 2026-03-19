@@ -732,9 +732,9 @@ export class SettingsPaymentsSectionElement extends
    * hyperlink is returned else return the regular sublabel.
    * @returns Cvc storage toggle sublabel string.
    */
-  private getCvcStorageSublabel_(): TrustedHTML {
+  private getCvcStorageSublabel_(): string {
     const card = this.creditCards.find(cc => !!cc.cvc);
-    return this.i18nAdvanced(
+    return loadTimeData.getStringF(
         card === undefined ? 'enableCvcStorageSublabel' :
                              'enableCvcStorageDeleteDataSublabel');
   }

@@ -303,10 +303,8 @@ function appendLocalFile(logBlock: HTMLElement, eventLogEntry: EventLogEntry) {
 
 function appendLocalLogId(logBlock: HTMLElement, eventLogEntry: EventLogEntry) {
   const localIdLine = document.createElement('p');
-  localIdLine.textContent =
-      loadTimeData.getStringF(
-          'webrtcEventLogLocalLogIdFormat', eventLogEntry['local_id']) +
-      '';
+  localIdLine.textContent = loadTimeData.getStringF(
+      'webrtcEventLogLocalLogIdFormat', eventLogEntry['local_id']);
   logBlock.appendChild(localIdLine);
 }
 
