@@ -9,12 +9,11 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_actions.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/media_router/cast_browser_controller.h"
@@ -116,9 +115,11 @@ void CastToolbarButtonController::OnDialogHidden() {
 }
 
 void CastToolbarButtonController::UpdateIcon() {
-  for (Browser* browser : chrome::FindAllBrowsersWithProfile(profile_)) {
-    browser->browser_window_features()->cast_browser_controller()->UpdateIcon();
-  }
+  ProfileBrowserCollection::GetForProfile(profile_)
+      ->ForEach([](BrowserWindowInterface* browser) {
+        browser->GetFeatures().cast_browser_controller()->UpdateIcon();
+        return true;
+      });
 }
 
 void CastToolbarButtonController::KeepIconShownOnPressed() {
@@ -207,10 +208,12 @@ void CastToolbarButtonController::MaybeToggleIconVisibility() {
 void CastToolbarButtonController::UpdateToggleMediaRouterRemotingAction() {
   bool checked = profile_->GetPrefs()->GetBoolean(
       media_router::prefs::kMediaRouterMediaRemotingEnabled);
-  for (Browser* browser : chrome::FindAllBrowsersWithProfile(profile_)) {
-    actions::ActionManager::Get()
-        .FindAction(kActionMediaRouterToggleMediaRemoting,
-                    browser->browser_actions()->root_action_item())
-        ->SetChecked(checked);
-  }
+  ProfileBrowserCollection::GetForProfile(profile_)
+      ->ForEach([checked](BrowserWindowInterface* browser) {
+        actions::ActionManager::Get()
+            .FindAction(kActionMediaRouterToggleMediaRemoting,
+                        browser->GetActions()->root_action_item())
+            ->SetChecked(checked);
+        return true;
+      });
 }

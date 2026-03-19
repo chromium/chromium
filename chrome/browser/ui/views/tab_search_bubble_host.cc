@@ -14,8 +14,9 @@
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
@@ -233,14 +234,19 @@ void TabSearchBubbleHost::CloseTabSearchBubble() {
   webui_bubble_manager_->CloseBubble();
 }
 
-Browser* TabSearchBubbleHost::GetBrowser() {
-  for (Browser* browser : chrome::FindAllBrowsersWithProfile(profile_)) {
-    BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-    if (browser_view->GetTabSearchBubbleHost() == this) {
-      return browser;
-    }
-  }
-  return nullptr;
+BrowserWindowInterface* TabSearchBubbleHost::GetBrowser() {
+  BrowserWindowInterface* result = nullptr;
+  ProfileBrowserCollection::GetForProfile(profile_)
+      ->ForEach([&](BrowserWindowInterface* browser) {
+        BrowserView* browser_view =
+            BrowserView::GetBrowserViewForBrowser(browser);
+        if (browser_view->GetTabSearchBubbleHost() == this) {
+          result = browser;
+          return false;  // Stop iterating.
+        }
+        return true;  // Continue iterating.
+      });
+  return result;
 }
 
 void TabSearchBubbleHost::ButtonPressed(const ui::Event& event) {

@@ -11,6 +11,8 @@
 #include "components/offline_items_collection/core/offline_item.h"
 #include "components/webapps/common/web_app_id.h"
 
+class BrowserWindowInterface;
+
 base::Time GetItemStartTime(const download::DownloadItem* item);
 base::Time GetItemStartTime(const offline_items_collection::OfflineItem& item);
 
@@ -47,8 +49,9 @@ DownloadBubbleAccessibleAlertsMap::Alert GetAccessibleAlertForModel(
 
 // Finds the browser most appropriate to show the "download started" animation
 // in.
-Browser* FindBrowserToShowAnimation(download::DownloadItem* item,
-                                    Profile* profile);
+BrowserWindowInterface* FindBrowserToShowAnimation(
+    download::DownloadItem* item,
+    Profile* profile);
 
 // Gets a pointer to the web app id, if the browser is for a web app, otherwise
 // nullptr.

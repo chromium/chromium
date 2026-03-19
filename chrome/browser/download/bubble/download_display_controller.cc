@@ -20,9 +20,10 @@
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/download/download_ui_controller.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/download/download_item_mode.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_type.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
@@ -73,20 +74,24 @@ bool HasRecentCompleteDownload(base::TimeDelta interval,
 // `profile` must be non-null. `app_id` can be null, signifying no app. This
 // returns the most recent browser for the profile which matches the given app
 // or lack thereof.
-Browser* FindMostRecentBrowserForProfileMatchingWebApp(
+BrowserWindowInterface* FindMostRecentBrowserForProfileMatchingWebApp(
     Profile* profile,
     const webapps::AppId* app_id) {
-  for (Browser* browser : chrome::FindAllBrowsersWithProfile(profile)) {
-    const webapps::AppId* browser_app_id = GetWebAppIdForBrowser(browser);
-    bool app_ids_match =
-        (!app_id && !browser_app_id) ||
-        (app_id && browser_app_id && *app_id == *browser_app_id);
-    if (!app_ids_match) {
-      continue;
-    }
-    return browser;
-  }
-  return nullptr;
+  BrowserWindowInterface* result = nullptr;
+  ProfileBrowserCollection::GetForProfile(profile)
+      ->ForEach([&](BrowserWindowInterface* browser) {
+        const webapps::AppId* browser_app_id =
+            GetWebAppIdForBrowser(browser->GetBrowserForMigrationOnly());
+        bool app_ids_match =
+            (!app_id && !browser_app_id) ||
+            (app_id && browser_app_id && *app_id == *browser_app_id);
+        if (!app_ids_match) {
+          return true;  // Continue iterating.
+        }
+        result = browser;
+        return false;  // Stop iterating.
+      });
+  return result;
 }
 
 }  // namespace

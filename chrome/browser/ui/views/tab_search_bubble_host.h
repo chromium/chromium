@@ -53,7 +53,7 @@ class TabSearchBubbleHost : public views::WidgetObserver,
   bool ShowTabSearchBubble(bool triggered_by_keyboard_shortcut = false);
   void CloseTabSearchBubble();
 
-  Browser* GetBrowser();
+  BrowserWindowInterface* GetBrowser();
 
   views::View* button() { return button_; }
 

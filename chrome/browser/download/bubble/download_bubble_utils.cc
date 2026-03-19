@@ -185,8 +185,9 @@ DownloadBubbleAccessibleAlertsMap::Alert GetAccessibleAlertForModel(
   return Alert{Alert::Urgency::kAlertWhenAppropriate, u""};
 }
 
-Browser* FindBrowserToShowAnimation(download::DownloadItem* item,
-                                    Profile* profile) {
+BrowserWindowInterface* FindBrowserToShowAnimation(
+    download::DownloadItem* item,
+    Profile* profile) {
   content::WebContents* web_contents =
       content::DownloadItemUtils::GetWebContents(item);
   // For the case of DevTools web contents, we'd like to use target browser
