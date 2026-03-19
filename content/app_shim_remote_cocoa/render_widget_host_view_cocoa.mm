@@ -2237,6 +2237,10 @@ extern NSString* NSTextInputReplacementRangeAttributeName;
   thePoint.y = NSHeight([self frame]) - thePoint.y;
   gfx::PointF rootPoint(thePoint.x, thePoint.y);
 
+  // SyncGetCharacterIndexAtPoint can enter a nested RunLoop that might delete
+  // `self`.
+  NS_VALID_UNTIL_END_OF_SCOPE RenderWidgetHostViewCocoa* keepSelfAlive = self;
+
   uint32_t index = UINT32_MAX;
   _host->SyncGetCharacterIndexAtPoint(rootPoint, &index);
   // |index| could be blink::kNotFound (-1) and its value is different from
@@ -2258,6 +2262,11 @@ extern NSString* NSTextInputReplacementRangeAttributeName;
   bool success = false;
   if (actualRange)
     gfxActualRange = gfx::Range::FromPossiblyInvalidNSRange(*actualRange);
+
+  // SyncGetFirstRectForRange can enter a nested RunLoop that might delete
+  // `self`.
+  NS_VALID_UNTIL_END_OF_SCOPE RenderWidgetHostViewCocoa* keepSelfAlive = self;
+
   _host->SyncGetFirstRectForRange(
       gfx::Range::FromPossiblyInvalidNSRange(theRange), &gfxRect,
       &gfxActualRange, &success);

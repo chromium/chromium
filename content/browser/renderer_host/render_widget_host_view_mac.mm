@@ -2174,6 +2174,11 @@ bool RenderWidgetHostViewMac::SyncGetFirstRectForRange(
   *success = true;
   if (!GetCachedFirstRectForCharacterRange(requested_range, rect,
                                            actual_range)) {
+    // GetFirstRectForRange() can enter a nested RunLoop that might clear the
+    // ScreenInfos list used by GetDeviceScaleFactor(), so cache the result
+    // first.
+    const float device_scale_factor = GetDeviceScaleFactor();
+
     // https://crbug.com/121917
     base::ScopedAllowBlocking allow_wait;
     // TODO(thakis): Pipe |actualRange| through TextInputClientMac machinery.
@@ -2183,7 +2188,7 @@ bool RenderWidgetHostViewMac::SyncGetFirstRectForRange(
 
     // With zoom-for-dsf, RenderWidgetHost coordinate system is physical points,
     // which means we have to scale the rect by the device scale factor.
-    *rect = gfx::ScaleToEnclosingRect(blink_rect, 1.f / GetDeviceScaleFactor());
+    *rect = gfx::ScaleToEnclosingRect(blink_rect, 1.f / device_scale_factor);
   }
   return true;
 }
