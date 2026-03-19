@@ -405,7 +405,10 @@ public abstract class TouchToFillViewBase implements BottomSheetContent {
 
     public void updateScreenHeight() {
         remeasure();
-        mBottomSheetController.expandSheet();
+        // Use post() to ensure the RecyclerView has finished laying out the new items before the
+        // sheet resizes.
+        assumeNonNull(mSheetItemListView);
+        mSheetItemListView.post(() -> mBottomSheetController.expandSheet());
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
