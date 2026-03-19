@@ -1724,6 +1724,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7149893636342594995">Վերջին 24 ժամվա</translation>
 <translation id="7154417656353909837">Հեռացնել հասցեները</translation>
 <translation id="7161230316646448869">Համաժամացրեք ձեր էջանիշները, պատմությունն ու մյուս կարգավորումները բոլոր սարքերում</translation>
+<translation id="7165323152084385463">VIN համարը</translation>
 <translation id="7173114856073700355">Բացել կարգավորումները</translation>
 <translation id="7173721738069475737">{count,plural, =1{Էջանիշը պահվեց}one{{count} էջանիշ պահվեց}other{{count} էջանիշ պահվեց}}</translation>
 <translation id="7176183551031110427">Փոքրացնել</translation>
@@ -2218,6 +2219,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8863067612494559785">Ներդիրն ուղարկվում է <ph name="DEVICE_NAME" />-ին…</translation>
 <translation id="8863431381414769983">Ստացեք երթուղիներ և օգտակար տեղեկություններ Google Քարտեզներից</translation>
 <translation id="8871974300055371298">Բովանդակության կարգավորումներ</translation>
+<translation id="8876661425082386199">Ստուգեք ձեր կապը</translation>
 <translation id="8877788021141246043">Ստեղծել հիշեցում</translation>
 <translation id="8879604564928138696">Կրկնակի հպեք փորձելու համար</translation>
 <translation id="8879952635974818770">Անհատականացված բովանդակություն</translation>

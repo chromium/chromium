@@ -273,7 +273,6 @@
 <translation id="200669432486043882">Magpalit ng file</translation>
 <translation id="2006864819935886708">Pagkakakonekta</translation>
 <translation id="2008685064673031089">Prime na paghahanap</translation>
-<translation id="2011174342667534258">Bersyon ng SDK:</translation>
 <translation id="2016697457005847575">Subukan ang mga hakbang sa pag-troubleshoot</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2045814230297767491">kubyertos</translation>
@@ -523,7 +522,6 @@
 <translation id="3291996639387199448">Direksyon ng key</translation>
 <translation id="3294437725009624529">Bisita</translation>
 <translation id="3303855915957856445">Walang nakitang resulta ng paghahanap</translation>
-<translation id="3305294846493618482">higit pa</translation>
 <translation id="3310640316857623290">Napakataas kumpara sa pinapayagang limitasyon ang latency ng DNS</translation>
 <translation id="3316495615885967552">Natapos na ang pag-download sa modelo para sa paggawa ng buod at pamagat</translation>
 <translation id="3321030238473337787">Bilis ng pag-playback</translation>
@@ -702,7 +700,6 @@
 <translation id="4126551873361000548">Bumalik nang 10 segundo</translation>
 <translation id="4128271910628504223">Maglagay ng prompt tulad ng "gumuhit ng mahamog na gubat"</translation>
 <translation id="4130035430755296270">Mag-hover lang para sa higit pang opsyon sa layout</translation>
-<translation id="4130750466177569591">Sumasang-ayon ako</translation>
 <translation id="4131410914670010031">Itim at puti</translation>
 <translation id="4137700675046373159">sa Sabado</translation>
 <translation id="4139326893730851150">Mga update sa firmware</translation>
@@ -1051,7 +1048,6 @@
 <translation id="5606865426897221650">Tab</translation>
 <translation id="5612205513582918357">Shine-share ng Tools sa Klase ang iyong screen sa <ph name="RECEIVER_NAME" /></translation>
 <translation id="5613201299517339763">Na-sign out ka</translation>
-<translation id="5620281292257375798">Internal lang</translation>
 <translation id="5628106863521633649">Mga available na wika</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">abstract</translation>
@@ -1415,7 +1411,6 @@
 <translation id="7184043045742675738">Mag-click sa anumang key para i-customize ang iyong button. Baguhin ang posisyon ng key gamit ang mouse o mga arrow key.</translation>
 <translation id="7187669805838282391">sa Miyerkoles</translation>
 <translation id="7205318498545665455">Piliin ang iyong mikropono</translation>
-<translation id="7206979415662233817">Mga tuntunin ng serbisyo</translation>
 <translation id="7210635925306941239">cyan</translation>
 <translation id="7212547870105584639">Pamahalaan ang mga setting ng APN ng network. Bumubuo ang mga APN ng koneksyon sa pagitan ng cellular network at internet. <ph name="BEGIN_LINK_LEARN_MORE" />Matuto pa<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Mga update sa firmware para sa mga external na device</translation>
@@ -1446,11 +1441,6 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7321055305895875150">berde at teal</translation>
 <translation id="7328475450575141167">bird of paradise</translation>
-<translation id="7331297744262591636">Dapat ay hindi ka bababa sa 18 taong gulang at dapat kang sumang-ayon na napapailalim sa <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Mga Tuntunin ng Serbisyo ng Google<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> at <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />Mga Karagdagang Tuntunin ng Serbisyo ng Generative AI<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" /> ang iyong paggamit ng mga AI wallpaper.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Makakagawa ka lang ng mga wallpaper gamit ang AI para sa personal at di-komersyal na paggamit. Kapag humihingi ka ng tulong sa wallpaper, magpapadala ng text sa mga server ng Google AI para bumuo ng mga suhestyon sa wallpaper, na napapailalim sa <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Patakaran sa Privacy ng Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. <ph name="BEGIN_LINK_LEARN_MORE" />Matuto pa<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Pindutin ang Search at Space para tingnan ang resulta sa Google Search.</translation>
 <translation id="7343649194310845056">Mga Device sa Network</translation>
 <translation id="7344788170842919262">earthy</translation>
 <translation id="7346768383111016081">Ilagay ang kontrol sa pagkilos sa laro para maglaro gamit ang iyong keyboard</translation>
@@ -1838,7 +1828,6 @@ I-download ang modelo ng transcription (hanggang 100MB) para makuha ang mga tran
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">Gamitin ang video na ito</translation>
-<translation id="9087578468327036362">Iulat ang query na ito</translation>
 <translation id="9088306295921699330">Kasalukuyang paggamit</translation>
 <translation id="9088994563996376283">Pasimplehin</translation>
 <translation id="9095775724867566971">Pluginvm</translation>

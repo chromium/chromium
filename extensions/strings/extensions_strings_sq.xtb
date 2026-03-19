@@ -25,6 +25,7 @@
 <translation id="3115238746683532089">Produkt i panjohur <ph name="PRODUCT_ID" /> nga shitësi <ph name="VENDOR_ID" /> (numri i serisë <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Zëvendësimi i skedarit crx dështoi. Kontrollo për të parë nëse skedari është në përdorim.</translation>
 <translation id="3163201441334626963">Produkt i panjohur <ph name="PRODUCT_ID" /> nga shitësi <ph name="VENDOR_ID" /></translation>
+<translation id="3174723475300476613">Qasja në këtë shtesë është bllokuar nga organizata jote.</translation>
 <translation id="3242289508736283383">Aplikacioni me atributin e manifestimit "kiosk_only" duhet të instalohet në modalitetin "kioskë" të ChromeOS.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (numri i serisë <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> nga shitësi <ph name="VENDOR_ID" /> (numri i serisë <ph name="SERIAL_NUMBER" />)</translation>
@@ -32,6 +33,7 @@
 <translation id="3834775135533257713">Aplikacioni "<ph name="TO_INSTALL_APP_NAME" />" nuk mund të shtohej sepse është në konflikt me "<ph name="INSTALLED_APP_NAME" />".</translation>
 <translation id="388442998277590542">Faqja e opsioneve <ph name="OPTIONS_PAGE" /> nuk mund të ngarkohej.</translation>
 <translation id="3984413272403535372">Gabim gjatë nënshkrimit të shtesës.</translation>
+<translation id="4094452115117798451">Qasja në këtë kategori shtesash është bllokuar nga organizata jote.</translation>
 <translation id="4233778200880751280">Faqja informuese <ph name="ABOUT_PAGE" /> nuk mund të ngarkohej.</translation>
 <translation id="424963718355121712">Aplikacionet duhet të shërbehen nga strehuesi që prekin</translation>
 <translation id="4306119971288449206">Aplikacionet duhet të shërbehen me llojin "<ph name="CONTENT_TYPE" />" të përmbajtjes</translation>

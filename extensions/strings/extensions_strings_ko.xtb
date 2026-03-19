@@ -25,6 +25,7 @@
 <translation id="3115238746683532089">공급업체 <ph name="VENDOR_ID" />의 알 수 없는 제품 <ph name="PRODUCT_ID" />(일련번호 <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">crx 파일을 대체하지 못했습니다. 파일을 사용 중인지 확인하세요.</translation>
 <translation id="3163201441334626963">공급업체 <ph name="VENDOR_ID" />의 알 수 없는 제품 <ph name="PRODUCT_ID" /></translation>
+<translation id="3174723475300476613">조직에서 이 확장 프로그램에 대한 액세스를 차단했습니다.</translation>
 <translation id="3242289508736283383">'kiosk_only' 매니페스트 속성을 사용하는 앱은 ChromeOS 키오스크 모드에 설치되어야 합니다.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" />(일련번호 <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397">공급업체 <ph name="VENDOR_ID" />의 <ph name="PRODUCT_NAME" />(일련번호 <ph name="SERIAL_NUMBER" />)</translation>
@@ -32,6 +33,7 @@
 <translation id="3834775135533257713">애플리케이션 '<ph name="TO_INSTALL_APP_NAME" />'이(가) '<ph name="INSTALLED_APP_NAME" />'와(과) 충돌하기 때문에 추가하지 못했습니다.</translation>
 <translation id="388442998277590542">옵션 페이지('<ph name="OPTIONS_PAGE" />')를 로드하지 못했습니다.</translation>
 <translation id="3984413272403535372">확장 프로그램에 서명하는 중에 오류가 발생했습니다.</translation>
+<translation id="4094452115117798451">조직에서 이 확장 프로그램 카테고리에 대한 액세스를 차단했습니다.</translation>
 <translation id="4233778200880751280">정보 페이지 '<ph name="ABOUT_PAGE" />'을(를) 로드할 수 없습니다.</translation>
 <translation id="424963718355121712">앱은 영향을 미치는 호스트에서 제공되어야 합니다</translation>
 <translation id="4306119971288449206">앱은 '<ph name="CONTENT_TYPE" />' 콘텐츠 유형으로 제공되어야 합니다</translation>

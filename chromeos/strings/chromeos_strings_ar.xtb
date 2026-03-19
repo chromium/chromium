@@ -273,7 +273,6 @@
 <translation id="200669432486043882">استبدال ملف</translation>
 <translation id="2006864819935886708">إمكانية التوصيل</translation>
 <translation id="2008685064673031089">البحث الأوّلي</translation>
-<translation id="2011174342667534258">‏إصدار حزمة تطوير البرامج (SDK):</translation>
 <translation id="2016697457005847575">تجربة خطوات تحديد المشاكل وحلّها</translation>
 <translation id="202500043506723828">‏معرّف شريحة SIM المضمّنة (EID)</translation>
 <translation id="2045814230297767491">أدوات مائدة</translation>
@@ -523,7 +522,6 @@
 <translation id="3291996639387199448">اتجاه المفتاح</translation>
 <translation id="3294437725009624529">ضيف</translation>
 <translation id="3303855915957856445">لم يتم العثور على أي نتائج بحث</translation>
-<translation id="3305294846493618482">عرض المزيد</translation>
 <translation id="3310640316857623290">وقت استجابة "نظام أسماء النطاقات" أعلى بكثير من الحدّ الأقصى المسموح به.</translation>
 <translation id="3316495615885967552">اكتمل تنزيل نموذج إنشاء الملخّص والعنوان</translation>
 <translation id="3321030238473337787">سرعة التشغيل</translation>
@@ -702,7 +700,6 @@
 <translation id="4126551873361000548">ترجيع بمقدار 10 ثوانٍ</translation>
 <translation id="4128271910628504223">يُرجى إدخال طلب، مثل "رسم غابة مليئة بالضباب"</translation>
 <translation id="4130035430755296270">استمِر في تمرير مؤشر الماوس هنا للاطّلاع على المزيد من خيارات التنسيق.</translation>
-<translation id="4130750466177569591">أوافق</translation>
 <translation id="4131410914670010031">أبيض وأسود</translation>
 <translation id="4137700675046373159">يوم السبت</translation>
 <translation id="4139326893730851150">تحديثات البرامج الثابتة</translation>
@@ -1051,7 +1048,6 @@
 <translation id="5606865426897221650">‏مفتاح Tab</translation>
 <translation id="5612205513582918357">تتم مشاركة شاشتك مع "<ph name="RECEIVER_NAME" />" من خلال "أدوات الدراسة"</translation>
 <translation id="5613201299517339763">لقد سجّلت الخروج</translation>
-<translation id="5620281292257375798">داخلي فقط</translation>
 <translation id="5628106863521633649">اللغات المتاحة</translation>
 <translation id="5630438231335788050">فن الباوهاوس</translation>
 <translation id="5631759159893697722">نبذة مختصرة</translation>
@@ -1415,7 +1411,6 @@
 <translation id="7184043045742675738">انقر على أي مفتاح لتخصيص الزر. غيِّر موضع المفتاح باستخدام الماوس أو مفاتيح الأسهم.</translation>
 <translation id="7187669805838282391">يوم الأربعاء</translation>
 <translation id="7205318498545665455">اختيار الميكروفون</translation>
-<translation id="7206979415662233817">بنود الخدمة</translation>
 <translation id="7210635925306941239">سماوي</translation>
 <translation id="7212547870105584639">يمكنك إدارة إعدادات اسم نقطة الوصول للشبكة. وتُنشئ أسماء نقاط الوصول اتصالاً بين شبكة الجوّال والإنترنت. <ph name="BEGIN_LINK_LEARN_MORE" />مزيد من المعلومات<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">تحديثات البرامج الثابتة للأجهزة الخارجية</translation>
@@ -1446,11 +1441,6 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7321055305895875150">الأخضر والأزرق المخضر</translation>
 <translation id="7328475450575141167">عصفور الجنة</translation>
-<translation id="7331297744262591636">‏يجب ألا يقلّ عمرك عن 18 عامًا وأن توافق على أنّ استخدامك للخلفيات القائمة على الذكاء الاصطناعي يخضع <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />لبنود خدمة Google<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> و<ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />بنود الخدمة الإضافية الخاصة بالذكاء الاصطناعي التوليدي<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          يمكنك فقط إنشاء خلفيات باستخدام الذكاء الاصطناعي (AI) للاستخدام الشخصي وغير التجاري. وعند الحصول على مساعدة بشأن الخلفيات، يتم إرسال النص إلى خوادم تكنولوجيات الذكاء الاصطناعي من Google لإنشاء خلفيات مقترحة، وذلك بموجب <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />سياسة خصوصية Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. <ph name="BEGIN_LINK_LEARN_MORE" />مزيد من المعلومات<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="7343581795491695942">‏<ph name="QUERY_TEXT" />، <ph name="RESULT_TEXT" />، اضغط على مفتاحَي البحث والمسافة لعرض النتائج في "بحث Google".</translation>
 <translation id="7343649194310845056">أجهزة الشبكات</translation>
 <translation id="7344788170842919262">ترابية</translation>
 <translation id="7346768383111016081">خصِّص لكل إجراء في اللعبة مفتاحًا معيّنًا لتلعب باستخدام لوحة المفاتيح</translation>
@@ -1838,7 +1828,6 @@
 <translation id="9073281213608662541">‏بروتوكول مصادقة كلمات المرور (PAP)</translation>
 <translation id="9074739597929991885">بلوتوث</translation>
 <translation id="9082718469794970195">استخدام هذا الفيديو</translation>
-<translation id="9087578468327036362">الإبلاغ عن هذا الطلب</translation>
 <translation id="9088306295921699330">الاستخدام الحالي</translation>
 <translation id="9088994563996376283">تبسيط</translation>
 <translation id="9095775724867566971">Pluginvm</translation>

@@ -196,7 +196,7 @@
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> a <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1678855624321223424">Según las políticas de tu organización, es posible que este archivo contenga información sensible</translation>
 <translation id="168389590065701766">Ahora puedes abrir Google Lens desde la barra de direcciones y buscar lo que ves</translation>
-<translation id="1689333818294560261">Sobrenombre</translation>
+<translation id="1689333818294560261">Alias</translation>
 <translation id="169048873465870056">¿Quieres quitar la pestaña y borrar el grupo?</translation>
 <translation id="1698090540708020240">Importar contraseñas…</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> seleccionados</translation>
@@ -1724,6 +1724,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="7149893636342594995">Últimas 24 horas</translation>
 <translation id="7154417656353909837">Quitar direcciones</translation>
 <translation id="7161230316646448869">Sincroniza tus favoritos, historial y más en todos los dispositivos</translation>
+<translation id="7165323152084385463">VIN</translation>
 <translation id="7173114856073700355">Abrir la configuración</translation>
 <translation id="7173721738069475737">{count,plural, =1{Se guardó el favorito}other{Se guardaron {count} favoritos}}</translation>
 <translation id="7176183551031110427">Alejar</translation>
@@ -1934,7 +1935,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="7921559948846049514">Elige un tema, un color o más para tu fondo</translation>
 <translation id="792357691529995513">No se encontraron problemas</translation>
 <translation id="7925108652071887026">Datos de Autocompletar</translation>
-<translation id="7926975587469166629">Sobrenombre de la tarjeta</translation>
+<translation id="7926975587469166629">Alias de la tarjeta</translation>
 <translation id="7927711904086083099">Sin seleccionar</translation>
 <translation id="7927902634113905831">Selecciona la cuenta que quieres usar para guardar "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" (<ph name="FILESIZE" />)</translation>
 <translation id="7930998711684428189">Te advierte si quedan expuestas las contraseñas ante una violación de la seguridad de los datos.</translation>
@@ -2218,6 +2219,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="8863067612494559785">Enviando a <ph name="DEVICE_NAME" />…</translation>
 <translation id="8863431381414769983">Obtén instrucciones sobre cómo llegar, así como información local de Google Maps</translation>
 <translation id="8871974300055371298">Configuración de contenido</translation>
+<translation id="8876661425082386199">Revisa tu conexión</translation>
 <translation id="8877788021141246043">Establecer un recordatorio</translation>
 <translation id="8879604564928138696">Presionar dos veces para probar</translation>
 <translation id="8879952635974818770">Contenido personalizado</translation>

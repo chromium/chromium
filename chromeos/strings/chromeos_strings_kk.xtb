@@ -273,7 +273,6 @@
 <translation id="200669432486043882">Файлды ауыстыру</translation>
 <translation id="2006864819935886708">Байланыс</translation>
 <translation id="2008685064673031089">Prime search</translation>
-<translation id="2011174342667534258">SDK нұсқасы:</translation>
 <translation id="2016697457005847575">Ақауларды жою қадамдарын орындап көріңіз</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2045814230297767491">асүй құралдары</translation>
@@ -523,7 +522,6 @@
 <translation id="3291996639387199448">Кілт бағыты</translation>
 <translation id="3294437725009624529">Қонақ</translation>
 <translation id="3303855915957856445">Іздеу нәтижелері табылмады</translation>
-<translation id="3305294846493618482">тағы</translation>
 <translation id="3310640316857623290">DNS кідірісі рұқсат етілетін шектен әлдеқайда жоғары.</translation>
 <translation id="3316495615885967552">Қорытынды жазу және атау жасау моделін жүктеп алу аяқталды.</translation>
 <translation id="3321030238473337787">Ойнату жылдамдығы</translation>
@@ -702,7 +700,6 @@
 <translation id="4126551873361000548">10 секунд артқа айналдыру</translation>
 <translation id="4128271910628504223">"Тұманды орманның суретін салу" деген сияқты нұсқауды енгізіңіз.</translation>
 <translation id="4130035430755296270">Тағы басқа формат опцияларын көру үшін курсорды апарыңыз.</translation>
-<translation id="4130750466177569591">Мен келісемін</translation>
 <translation id="4131410914670010031">Қара мен ақ</translation>
 <translation id="4137700675046373159">сенбі күні</translation>
 <translation id="4139326893730851150">Микробағдарлама жаңартулары</translation>
@@ -1051,7 +1048,6 @@
 <translation id="5606865426897221650">Қойынды</translation>
 <translation id="5612205513582918357">Сабақ құралдары экраныңызды <ph name="RECEIVER_NAME" /> дисплейіне жіберіп жатыр.</translation>
 <translation id="5613201299517339763">Аккаунттан шығарылдыңыз.</translation>
-<translation id="5620281292257375798">Тек ішкі қолданысқа арналған</translation>
 <translation id="5628106863521633649">Қолжетімді тілдер</translation>
 <translation id="5630438231335788050">баухауз</translation>
 <translation id="5631759159893697722">аннотация</translation>
@@ -1415,7 +1411,6 @@
 <translation id="7184043045742675738">Түймені бейімдеу үшін кез келген пернені басыңыз. Тінтуір немесе бағыт пернелері көмегімен перне орнын өзгертіңіз.</translation>
 <translation id="7187669805838282391">сәрсенбі күні</translation>
 <translation id="7205318498545665455">Микрофон таңдау</translation>
-<translation id="7206979415662233817">Қызмет көрсету шарттары</translation>
 <translation id="7210635925306941239">көк жасыл</translation>
 <translation id="7212547870105584639">Желінің APN параметрлерін басқаруға арналған. APN аттары ұялы желі мен интернет арасында байланыс орнатады. <ph name="BEGIN_LINK_LEARN_MORE" />Толық ақпарат<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Сыртқы құрылғыларға арналған микробағдарламаның жаңа нұсқалары</translation>
@@ -1446,11 +1441,6 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7321055305895875150">жасыл және көкшіл жасыл</translation>
 <translation id="7328475450575141167">жұмақ құсы</translation>
-<translation id="7331297744262591636">18 жастан асқан болуыңыз керек. Сондай-ақ AI тұсқағаздарын пайдаланған кезіңізде, <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Google Қызмет көрсету шарттары<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> және <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />Жасампаз жасанды интеллектіге қатысты қосымша қызмет көрсету шарттары<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" /> қолданылатынына келісім беруіңіз қажет.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Тұсқағаздарды AI технологиясымен тек коммерциялық емес жеке мақсатта жасай аласыз. Тұсқағазға қатысты көмек алған кезіңізде, тұсқағаз ұсыныстарын жасау үшін мәтін Google AI серверлеріне <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google Құпиялық саясатына<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> сәйкес жіберіледі. <ph name="BEGIN_LINK_LEARN_MORE" />Толық ақпарат<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Нәтижені Google Search-тен көру үшін іздеу және бос орын пернелерін бірге басыңыз.</translation>
 <translation id="7343649194310845056">Желілік құрылғылар</translation>
 <translation id="7344788170842919262">табиғи</translation>
 <translation id="7346768383111016081">Пернетақтамен ойнау үшін басқару элементін ойын әрекетіне қойыңыз</translation>
@@ -1838,7 +1828,6 @@
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">Осы бейнені қолдану</translation>
-<translation id="9087578468327036362">Осы сұрау туралы хабарлау</translation>
 <translation id="9088306295921699330">Қазір пайдаланылуы</translation>
 <translation id="9088994563996376283">Қысқарту</translation>
 <translation id="9095775724867566971">Pluginvm</translation>

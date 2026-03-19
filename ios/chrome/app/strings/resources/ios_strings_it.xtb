@@ -1724,6 +1724,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="7149893636342594995">Ultime 24 ore</translation>
 <translation id="7154417656353909837">Rimuovi indirizzi</translation>
 <translation id="7161230316646448869">Sincronizza i tuoi preferiti, la tua cronologia e altro su tutti i tuoi dispositivi</translation>
+<translation id="7165323152084385463">Numero telaio</translation>
 <translation id="7173114856073700355">Apri Impostazioni</translation>
 <translation id="7173721738069475737">{count,plural, =1{Preferito salvato}other{{count} preferiti salvati}}</translation>
 <translation id="7176183551031110427">Diminuisci zoom</translation>
@@ -2218,6 +2219,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="8863067612494559785">Invio a <ph name="DEVICE_NAME" /> in corso…</translation>
 <translation id="8863431381414769983">Ricevi indicazioni stradali e informazioni locali da Google Maps</translation>
 <translation id="8871974300055371298">Impostazioni contenuti</translation>
+<translation id="8876661425082386199">Controlla la connessione</translation>
 <translation id="8877788021141246043">Imposta un promemoria</translation>
 <translation id="8879604564928138696">Tocca due volte per provare</translation>
 <translation id="8879952635974818770">Contenuto personalizzato</translation>

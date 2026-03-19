@@ -1724,6 +1724,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="7149893636342594995">Last 24 hours</translation>
 <translation id="7154417656353909837">Remove addresses</translation>
 <translation id="7161230316646448869">Sync your bookmarks, history and more on all devices</translation>
+<translation id="7165323152084385463">VIN</translation>
 <translation id="7173114856073700355">Open settings</translation>
 <translation id="7173721738069475737">{count,plural, =1{Bookmark saved}other{{count} bookmarks saved}}</translation>
 <translation id="7176183551031110427">Zoom out</translation>
@@ -2218,6 +2219,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8863067612494559785">Sending to <ph name="DEVICE_NAME" />…</translation>
 <translation id="8863431381414769983">Get directions and local info from Google Maps</translation>
 <translation id="8871974300055371298">Content settings</translation>
+<translation id="8876661425082386199">Check your connection</translation>
 <translation id="8877788021141246043">Set a reminder</translation>
 <translation id="8879604564928138696">Double tap to try</translation>
 <translation id="8879952635974818770">Personalised content</translation>

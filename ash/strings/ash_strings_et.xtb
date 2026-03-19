@@ -8,6 +8,7 @@
 <translation id="1017556409696559990">Minimeeri pealmine aken, kui Chrome'is ei saa ajaloos tagasi liikuda</translation>
 <translation id="101823271612280837">Salvestamine on peatatud. Mängu juhtpaneeli ei saa kasutada tahvelarvuti režiimis.</translation>
 <translation id="1024364763893396229">Salvestage oma <ph name="NAME" /></translation>
+<translation id="103279545524624934">Vabastage Androidi rakenduste käivitamiseks kettaruumi.</translation>
 <translation id="1032891413405719768">Elektronpliiatsi aku hakkab tühjaks saama</translation>
 <translation id="1036348656032585052">Lülita välja</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> lisati</translation>
@@ -35,6 +36,7 @@
 <translation id="1129383337808748948">Värskendage üksust <ph name="CONTENT_TITLE" /></translation>
 <translation id="1142002900084379065">Hiljutised fotod</translation>
 <translation id="114221662579355151">See lubab rakendustel <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> ning kõikidel kaamerale juurdepääsemise loaga rakendustel ja veebisaitidel kaamerale juurde pääseda. Võimalik, et peate veebilehte värskendama või rakenduse taaskäivitama.</translation>
+<translation id="1147991416141538220">Juurdepääsu palumiseks võtke ühendust selle seadme administraatoriga.</translation>
 <translation id="1148499908455722006">Avage konto <ph name="USER_NAME" /> teabedialoog</translation>
 <translation id="1150989369772528668">Kalender</translation>
 <translation id="1153356358378277386">Seotud seadmed</translation>
@@ -114,6 +116,7 @@
 <translation id="1340378040547539434">Lehel väljasuumimine</translation>
 <translation id="1341651618736211726">Ületäide</translation>
 <translation id="1341926407152459446">Helisisendiks ja -väljundiks hakatakse kasutama seadet „<ph name="DEVICE_NAME" />“.</translation>
+<translation id="1346403631707626730">Kasutus- ja diagnostikaandmete saatmine. Aidake täiustada oma lapse Androidi kasutuskogemust, saates Google'ile automaatselt seadme teavet ning rakenduse kasutus- ja diagnostikaandmeid. Neid andmeid ei kasutata teie lapse isiku tuvastamiseks ning need aitavad parandada süsteemi ja rakenduse stabiilsust ning muud. Teatud koondandmed on abiks ka Google'i rakendustele ja partneritele, näiteks Androidi arendajatele. Kui täiendavad veebi- ja rakendustegevused on teie lapse jaoks sisse lülitatud, võidakse need andmed salvestada tema Google'i kontole. <ph name="BEGIN_LINK1" />Lisateave mõõdikute kohta<ph name="BEGIN_LINK1_END" />Lisateave<ph name="END_LINK1" /></translation>
 <translation id="1346748346194534595">Paremale</translation>
 <translation id="1350494136075914725">Pooleli · Kuva see vaheleht</translation>
 <translation id="1351937230027495976">Ahenda menüü</translation>
@@ -196,6 +199,7 @@
 <translation id="1610778689852195798">„Võta tagasi“</translation>
 <translation id="1611993646327628135">Sees</translation>
 <translation id="1612679292338846734">Kui lülitate need funktsioonid sisse, võidakse sisendtekst, dokumendi sisu ja veebilehe URL saata Google'i AI serveritesse. Seda teavet kasutatakse selleks, et genereerida kirjutamissoovitusi ja kokkuvõtteid, vastata küsimustele ning täiustada toodet dokumendi <ph name="LINK_TO_SERVICE_TERMS" /> kohaselt. Ärge lisage midagi isiklikku, delikaatset ega konfidentsiaalset.</translation>
+<translation id="1619879934359211038">Ei õnnestunud Google Playga ühendust luua. Kontrollige võrguühendust ja proovige uuesti. Veakood: <ph name="ERROR_CODE" />.</translation>
 <translation id="1620510694547887537">Kaamera</translation>
 <translation id="1623768535032616219">Google Classroomi ahendamine</translation>
 <translation id="163032029566320584"><ph name="UNAVAILABLE_DLC" /> pole saadaval.</translation>
@@ -224,6 +228,7 @@
 <translation id="1719094688023114093">Reaalajas subtiitrid on sisse lülitatud.</translation>
 <translation id="1720011244392820496">Lülitage WiFi sünkroonimine sisse</translation>
 <translation id="1720230731642245863">Kuumkoht on väljas</translation>
+<translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />Rakenduste eemaldamiseks avage menüü Seaded&gt; Google Play pood &gt; Androidi eelistuste haldamine &gt; Rakendused või Rakenduste haldur. Seejärel puudutage rakendust, mille soovite desinstallida (rakenduse leidmiseks peate võib-olla paremale või vasakule pühkima). Seejärel puudutage käsku Desinstalli või Keela.<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1731815243805539470">Aktiveeri eelmine kasutaja</translation>
 <translation id="1733996486177697563">Vahetage tumeda ja heleda teema vahel. Puudutage pikalt töölauda ning tehke valik Taustapilt ja stiil.</translation>
 <translation id="1734230530703461088">Laienduste laadimine määratud aja piires ebaõnnestus. Võtke ühendust administraatoriga.</translation>
@@ -277,6 +282,7 @@
 <translation id="1882814835921407042">Mobiilsidevõrku pole</translation>
 <translation id="1882897271359938046">Peegeldamine asukohta <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Sõrmejäljega avamine</translation>
+<translation id="1891362123137972260">Kettaruumi on kriitiliselt vähe. Vabastage kettaruumi.</translation>
 <translation id="1894024878080591367">Seadistage klaviatuuriga mängimiseks</translation>
 <translation id="1896383923047738322">Klaviatuuri kohandamine</translation>
 <translation id="1904997243703671177">Kui lülitate Bluetoothi välja, katkestatakse <ph name="DEVICE_COUNT" /> välisseadme ühendus teie seadmega <ph name="DEVICE_TYPE" />, sealhulgas:</translation>
@@ -309,11 +315,13 @@
 <translation id="1996162290124031907">Järgmisele vahelehele liikumine</translation>
 <translation id="1998100899771863792">Praegune töölaud</translation>
 <translation id="2001444736072756133">Otsige <ph name="CATEGORY" />, faile, rakendusi ja muud.</translation>
+<translation id="2011174342667534258">SDK versioon:</translation>
 <translation id="2017998995161831444">Jaotise „Abi“ avamine rakenduses Avastamine</translation>
 <translation id="2021864487439853900">Klõpsake avamiseks</translation>
 <translation id="2034971124472263449">Salvesta ikkagi</translation>
 <translation id="2041220428661959602">Aku tase: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="204259843076055848">Otsetee <ph name="SIX_PACK_KEY_NAME" /> on praegu välja lülitatud</translation>
+<translation id="2048653237708779538">Toiming pole saadaval</translation>
 <translation id="2049240716062114887">Töölaua nimeks määrati <ph name="DESK_NAME" /></translation>
 <translation id="2064048859448024834">Kaamera eelvaade on sisse lülitatud</translation>
 <translation id="2065098273523946419">Lisateabe link. Aktiveerimisel suuna brauserisse</translation>
@@ -378,18 +386,21 @@
 <translation id="2305738328104302723">Google'i ülesannete loend: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: hiljutised kuvatõmmised, allalaadimised ja kinnitatud failid</translation>
 <translation id="2318576281648121272">Täna, <ph name="TODAY_DATE" /></translation>
+<translation id="2318817390901984578">Androidi rakenduste kasutamiseks laadige ja värskendage oma seadet <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2322065293366551060"><ph name="CATEGORY" />, otsingutulemuse kategooria</translation>
 <translation id="2322173485024759474">Tähe võrra tagasi</translation>
 <translation id="2326112202058075478">Kuva rohkem emotikone</translation>
 <translation id="2335091074961603075">Teie Chromebook või Bluetooth-seade kasutab Bluetoothi vanemat versiooni. Parema helikvaliteedi huvides kasutage sisemist mikrofoni.</translation>
 <translation id="2339073806695260576">Puudutage riiulil elektronpliiatsi nuppu, et teha märkmeid, jäädvustada ekraanipilt, kasutada laserkursorit või suurendusklaasi.</translation>
 <translation id="2341729377289034582">Lukustatud vertikaalasendisse</translation>
+<translation id="2344032937402519675">Ei saanud serveriga ühendust. Kontrollige võrguühendust ja proovige uuesti. Kui teil on endiselt probleeme, proovige Chromebook taaskäivitada.</translation>
 <translation id="2345226652884463045">Vajutage sisestusklahvi või otsingu- ja tühikuklahvi, et tekst muutmiseks valida.</translation>
 <translation id="2349785431103945039">Kuumkoha üksikasjade kuvamine. Kuumkoha kasutamiseks looge ühendus mobiilsidevõrguga.</translation>
 <translation id="2350182423316644347">Rakenduse lähtestamine ...</translation>
 <translation id="2350794187831162545"><ph name="LANGUAGE" /> keelt töödeldakse nüüd kohalikult ja see töötab võrguühenduseta. Dikteerimise keelt saate muuta, kui teete valikud Seaded &gt; Juurdepääsetavus.</translation>
 <translation id="2352467521400612932">Elektronpliiatsi seaded</translation>
 <translation id="2354174487190027830">Võrgu <ph name="NAME" /> aktiveerimine</translation>
+<translation id="2355314311311231464">Ettevalmistamine ebaõnnestus, kuna teie konto üksikasju ei õnnestunud hankida. Proovige uuesti. Veakood: <ph name="ERROR_CODE" />.</translation>
 <translation id="2359808026110333948">Jätka</translation>
 <translation id="2360398059912971776">aku</translation>
 <translation id="2361210043495191221">Lülita WiFi sisse/välja. <ph name="STATE" />.</translation>
@@ -412,6 +423,7 @@
 <translation id="240545663114741956">Väljalogimiseks vajutage kaks korda klahvikombinatsiooni <ph name="ACCELERATOR" />.</translation>
 <translation id="2405664212338326887">Ühendus puudub</translation>
 <translation id="2406710117564540804">Mitte-segada-režiimi sisse/välja lülitamine</translation>
+<translation id="240789602312469910">Kasutus- ja diagnostikaandmete saatmine. Aidake täiustada oma lapse Androidi kasutuskogemust, saates Google'ile automaatselt seadme teavet ning rakenduse kasutus- ja diagnostikaandmeid. Neid andmeid ei kasutata teie lapse isiku tuvastamiseks ning need aitavad parandada süsteemi ja rakenduse stabiilsust ning muud. Teatud koondandmed on abiks ka Google'i rakendustele ja partneritele, näiteks Androidi arendajatele. Selle <ph name="BEGIN_LINK1" />seade<ph name="END_LINK1" /> on jõustanud omanik. Omanik võib otsustada saata Google'ile selle seadme diagnostika- ja kasutusandmeid. Kui täiendavad veebi- ja rakendustegevused on teie lapse jaoks sisse lülitatud, võidakse need andmed salvestada tema Google'i kontole. <ph name="BEGIN_LINK2" />Lisateave mõõdikute kohta<ph name="BEGIN_LINK2_END" />Lisateave<ph name="END_LINK2" /></translation>
 <translation id="2408955596600435184">Sisestage PIN-kood</translation>
 <translation id="2412593942846481727">Värskendus on saadaval</translation>
 <translation id="2416438829169535743">Kas väljuda vaatest?</translation>
@@ -464,6 +476,7 @@
 <translation id="2531025035050312891">aeglane seade</translation>
 <translation id="2531107890083353124">Vahelehte lohistades vajutage klahvi <ph name="KEY_ONE" /></translation>
 <translation id="2532199152994248594">Jäädvustatava ala valimiseks lohistage või vajutage tühikuklahvi</translation>
+<translation id="2540651571961486573">Midagi läks valesti. Veakood: <ph name="ERROR_CODE" />.</translation>
 <translation id="2545334090614121435">Kas proovite kasutada klahvi Home? Kasutage</translation>
 <translation id="254900897760075745">Valitud sisu kopeerimine lõikelauale</translation>
 <translation id="2549711466868162843">Valgustuse parandamine</translation>
@@ -511,8 +524,11 @@
 <translation id="2701576323154693023">Kuumkoht on sisse lülitatud (Wi-Fi on välja lülitatud)</translation>
 <translation id="2704781753052663061">Muude WiFi-võrkudega liitumine</translation>
 <translation id="2705001408393684014">Lülitage mikrofoni. <ph name="STATE_TEXT" /></translation>
+<translation id="2706304388244371417">Varundage andmed Google Drive'i. Saate andmed igal ajal hõlpsasti taastada või seadet vahetada. See varukoopia hõlmab rakenduste andmeid. Varukoopiad laaditakse Google'isse üles ja krüpteeritakse teie lapse Google'i konto parooliga. <ph name="BEGIN_LINK1" />Lisateave varukoopia kohta<ph name="BEGIN_LINK1_END" />Lisateave<ph name="END_LINK1" /></translation>
 <translation id="2706462751667573066">Üles</translation>
+<translation id="2710101514844343743">Kasutus- ja diagnostikaandmed</translation>
 <translation id="2710984741481549981">Lukusta aknad</translation>
+<translation id="2714393097308983682">Google Play pood</translation>
 <translation id="2718395828230677721">Öövalgus</translation>
 <translation id="2726420622004325180">Teie telefonil peab kuumkoha pakkumiseks olema mobiilne andmesideühendus</translation>
 <translation id="2727175239389218057">Vasta</translation>
@@ -574,6 +590,8 @@ Muidu lubatakse sisseehitatud puuteplaat uuesti pärast ajavahemikku <ph name="T
 <translation id="2893701697603065178">Hallatav arenduskeskkond</translation>
 <translation id="2894949423239620203">Kaabel võib toimivust mõjutada</translation>
 <translation id="2902312830803030883">Veel toiminguid</translation>
+<translation id="2909506265808101667">Google'i teenustega ei õnnestunud ühendust luua. Kontrollige võrguühendust ja proovige uuesti. Veakood: <ph name="ERROR_CODE" />.</translation>
+<translation id="2910718431259223434">Midagi läks valesti. Proovige uuesti või võtke ühendust seadme omaniku või administraatoriga. Veakood: <ph name="ERROR_CODE" />.</translation>
 <translation id="2914580577416829331">Ekraanipildid</translation>
 <translation id="2924416280450782352">Ei saa üksusi kuvada. Avage see paneel uuesti.</translation>
 <translation id="292506373491190801">Praegu toimuvalt sündmuselt</translation>
@@ -633,7 +651,9 @@ Muidu lubatakse sisseehitatud puuteplaat uuesti pärast ajavahemikku <ph name="T
 <translation id="3093423061078042895">Tähtaja ületanud</translation>
 <translation id="3095995014811312755">Versioon</translation>
 <translation id="309749186376891736">Kursori liigutamine</translation>
+<translation id="3100071818310370858">Kasutage asukohta. Lubage asukohale juurdepääsu loaga rakendustel ja teenustel kasutada selle seadme asukohta. Google võib aeg-ajalt koguda asukohaandmeid ja kasutada neid anonüümselt asukoha täpsuse ning asukohapõhiste teenuste parendamiseks. <ph name="BEGIN_LINK1" />Lisateave asukoha kohta<ph name="BEGIN_LINK1_END" />Lisateave<ph name="END_LINK1" /></translation>
 <translation id="3100274880412651815">Loobu jäädvustusrežiimist</translation>
+<translation id="3104948640446684649">Kasutus- ja diagnostikaandmete saatmine. See seade saadab Google'ile praegu automaatselt seadme teavet ning rakenduse kasutus- ja diagnostikaandmeid. See aitab parandada süsteemi ja rakenduse stabiilsust ning muud. Teatud koondandmed on abiks ka Google'i rakendustele ja partneritele, näiteks Androidi arendajatele. Kui täiendavad veebi- ja rakendustegevused on sisse lülitatud, võidakse need andmed salvestada teie Google'i kontole. <ph name="BEGIN_LINK2" />Lisateave mõõdikute kohta<ph name="BEGIN_LINK2_END" />Lisateave<ph name="END_LINK2" /></translation>
 <translation id="3105917916468784889">Teeb kuvatõmmise</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3107155169630537783">Tervitusmärguanne on olekus <ph name="STATE" /></translation>
@@ -697,6 +717,7 @@ Muidu lubatakse sisseehitatud puuteplaat uuesti pärast ajavahemikku <ph name="T
 <translation id="3306386552969601301">Seadme <ph name="DEVICE_NAME" /> kuumkohaga on ühendatud <ph name="DEVICECOUNT" /> seadet</translation>
 <translation id="3307642347673023554">Lülitati sülearvutirežiimile</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> saab siiski hiljem sisse logida.</translation>
+<translation id="3313950410573257029">Kontrolli ühendust</translation>
 <translation id="3321628682574733415">Vanema kood on vale</translation>
 <translation id="332827762492701193">Märguanded on peidetud</translation>
 <translation id="3333674550998107387">Märguande <ph name="NOTIFICATION_TITLE" /> laiendamine</translation>
@@ -814,6 +835,7 @@ Muidu lubatakse sisseehitatud puuteplaat uuesti pärast ajavahemikku <ph name="T
 <translation id="3638400994746983214">Privaatsuskuvale lülitamine. <ph name="STATE_TEXT" />.</translation>
 <translation id="3641070112313110357">Steami Chromebookile (beeta) tuleb värskendada. Taaskäivitage Chromebook ja proovige uuesti.</translation>
 <translation id="3649256019230929621">Minimeeri aken</translation>
+<translation id="3650952250015018111">Andke rakendusele „<ph name="APP_NAME" />” juurdepääs:</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
         <ph name="START_TIME" /> kuni
@@ -860,6 +882,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="3779139509281456663">Seadme <ph name="NAME" /> ühendamine</translation>
 <translation id="3781910048497807059">Eelmise paani esile tõstmine</translation>
 <translation id="3783640748446814672">alt</translation>
+<translation id="3783889407390048282">Vabastage ruumi, et vältida Androidile juurdepääsu kaotamist.</translation>
 <translation id="3784455785234192852">Lukusta</translation>
 <translation id="3788301286821743879">Kioskirakendust ei saanud käivitada.</translation>
 <translation id="3789841737615482174">Installi</translation>
@@ -869,6 +892,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="3804737937830804242">Kaamera ahendamine</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 emotikon. Muid tulemusi pole.}other{# emotikoni. Muid tulemusi pole.}}</translation>
 <translation id="3822403841174077928">Vorminguga kopeerimine ei õnnestunud</translation>
+<translation id="3824621460022590830">Seadme registreerimistunnus on sobimatu. Võtke ühendust seadme omaniku või administraatoriga. Veakood: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824784079442479685">See lubab rakendusel <ph name="APP_NAME" /> ning kõikidel kaamerale juurdepääsemise loaga rakendustel ja veebisaitidel kaamerale juurde pääseda. Võimalik, et peate veebilehte värskendama või rakenduse taaskäivitama.</translation>
 <translation id="3826099427150913765">Kasuta parooli</translation>
 <translation id="383058930331066723">Akusäästja režiim on sisse lülitatud</translation>
@@ -893,6 +917,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="3898464793473355515">Pööra ekraani 90 kraadi päripäeva</translation>
 <translation id="3900355044994618856">Teie seanss lõpeb <ph name="SESSION_TIME_REMAINING" /> pärast</translation>
 <translation id="3901991538546252627">Võrguga <ph name="NAME" /> ühenduse loomine</translation>
+<translation id="3904326018476041253">Asukohateenused</translation>
 <translation id="3904768293285573640">Paanidega muudetava suurusega aken vasakule</translation>
 <translation id="3923221004758245114">Kas eemaldada <ph name="VM_NAME" /> teie seadmest <ph name="DEVICE_TYPE" />? See kustutab virtuaalmasinas kõik rakendused ja andmed!</translation>
 <translation id="3923494859158167397">Ühtegi mobiilsidevõrku pole seadistatud</translation>
@@ -907,6 +932,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="3950272133184491871">Logi kohe välja?</translation>
 <translation id="3950820424414687140">Logige sisse</translation>
 <translation id="3953130726459169782">Ühtki ülesannet pole veel lõpetatud.</translation>
+<translation id="3957844511978444971">Puudutage valikut „Nõustun”, et kinnitada Google'i teenuste jaoks valitud seaded.</translation>
 <translation id="3958714870339660776">Terve päev</translation>
 <translation id="3962859241508114581">Eelmine lugu</translation>
 <translation id="3963124517343721543">Jätkake sealt, kus pooleli jäite, avades oma eelmise seansi aknad ja vahelehed. Samuti näete isikupärastatud soovitusi järgmiste tegevuste kohta.</translation>
@@ -1022,6 +1048,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="4278779213160967034">See protsess võib võtta mõne minuti. Faile laaditakse alla.</translation>
 <translation id="4279490309300973883">Peegeldamine</translation>
 <translation id="4280601795273309128">Turvavärskenduste saatmine lõppes. Viige seade üle uuemale versioonile.</translation>
+<translation id="4281844954008187215">Teenusetingimused</translation>
 <translation id="4283888303416325161">Sisestage tugevama turvalisuse jaoks parool</translation>
 <translation id="4285498937028063278">Vabasta</translation>
 <translation id="428715201724021596">Profiiliga luuakse ühendust. See võib võtta mõne minuti.</translation>
@@ -1066,6 +1093,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="4406883609789734330">Reaalajas subtiitrid</translation>
 <translation id="4412698727486357573">Abikeskus</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> on väljas.</translation>
+<translation id="44141919652824029">Kas lubate rakendusel „<ph name="APP_NAME" />” hankida ühendatud USB-seadmete loendi?</translation>
 <translation id="4414242853388122273"><ph name="VM_NAME" /> eemaldamisel ilmnes viga. Proovige uuesti.</translation>
 <translation id="4417647906073317561">Keskendumise režiimi seaded. Määrake keskendumiseks taimer, ülesanne ja muusika.</translation>
 <translation id="4418600384772451109">Paneeli sulgemine</translation>
@@ -1107,6 +1135,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> täislaadimiseni</translation>
 <translation id="4538824937723742295">Täisekraani ekraanipildi jäädvustamine</translation>
 <translation id="4539127209940689201">Praeguse lehe printimine</translation>
+<translation id="4541123282641193691">Teie kontot ei õnnestunud kinnitada. Proovige uuesti või taaskäivitage oma Chromebook.</translation>
 <translation id="4541505619120536051">Alati avatud</translation>
 <translation id="4541706525461326392">Profiil eemaldatakse. See võib võtta mõne minuti.</translation>
 <translation id="4544483149666270818">Valige salvestatav aken</translation>
@@ -1117,6 +1146,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="4556953949326137018">Kui kasutate soovitatud toiminguid, nagu „lisa Kalendrisse“ või „loo Google'i dokument“, saadetakse sisu valitud piirkonnast Google'i serveritesse, et toiminguid soovitada. Selle puhul kehtivad <ph name="LINK_TO_SERVICE_TERMS" />. Ärge lisage midagi isiklikku, delikaatset ega konfidentsiaalset.</translation>
 <translation id="4560576029703263363">Sees</translation>
 <translation id="4561267230861221837">3G</translation>
+<translation id="4562091353415772246">Installige rakendusi ja värskendusi. Jätkamisel nõustute, et see seade võib Google'i, teie operaatori ja seadme tootja värskendusi ning rakendusi automaatselt alla laadida ja installida, kasutades selleks võib-olla teie mobiilset andmesidet. Mõned rakendused võivad pakkuda rakendusesiseseid oste. <ph name="BEGIN_LINK1" />Lisateave funktsiooni Automaatne installimine Playst kohta<ph name="BEGIN_LINK1_END" />Lisateave<ph name="END_LINK1" /></translation>
 <translation id="4565377596337484307">Peida parool</translation>
 <translation id="4566144812051858745">Pole huvitatud ühestki soovitusest</translation>
 <translation id="4569753163207712681">Teie telefoni hiljutiste fotode, meediafailide ja rakenduste kuvamine</translation>
@@ -1136,6 +1166,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="4628757576491864469">Seadmed</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, tärnhinnang <ph name="RATING_SCORE" /></translation>
 <translation id="4633636853437260449">Kustutamiseks vajutage klahve Ctrl + W</translation>
+<translation id="4633757335284074492">Andmete varundamine Google Drive'i. Teil on alati võimalik andmed hõlpsalt taastada või seadet vahetada. Varukoopia hõlmab rakenduste andmeid. Varukoopiad laaditakse Google'isse üles ja krüpteeritakse teie lapse Google'i konto parooliga.</translation>
 <translation id="4635501805800894201">{0,plural, =0{Viige nüüd seade tagasi eelmisele versioonile}=1{Viige seade tagasi eelmisele versioonile ühe sekundi jooksul}other{Viige seade tagasi eelmisele versioonile # sekundi jooksul}}</translation>
 <translation id="4642092649622328492">Osalise ekraanipildi jäädvustamine</translation>
 <translation id="4642587497923912728">Steam Chromebookile (beeta) on saadaval ainult konto jaoks, millega selles Chromebookis esimesena sisse logiti.</translation>
@@ -1178,6 +1209,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="4759238208242260848">Allalaadimised</translation>
 <translation id="4762160261012420470"><ph name="LAUNCHER_KEY_NAME" /> + ülesnool</translation>
 <translation id="4762573482154983647">Rakenduste peitmine</translation>
+<translation id="4762718786438001384">Seadmes on kriitiliselt vähe kettaruumi</translation>
 <translation id="4763885921995354846">See lubab kõikidel kaamerale juurdepääsemise loaga rakendustel ja veebisaitidel kaamerale juurde pääseda. Võimalik, et peate veebilehte värskendama või rakenduse taaskäivitama.</translation>
 <translation id="4774338217796918551">Tulge tagasi homme kell <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776584068981882959">Teie parooli ei õnnestunud ikka kinnitada. Proovige uuesti.</translation>
@@ -1284,6 +1316,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="5077936103761694531">Kas kinnitada eraldusvõime?</translation>
 <translation id="5078796286268621944">Vale PIN-kood</translation>
 <translation id="5083035541015925118">ctrl + alt + ülesnool</translation>
+<translation id="5084328598860513926">Ettevalmistamise voogu katkestati. Proovige uuesti või võtke ühendust seadme omaniku või administraatoriga. Veakood: <ph name="ERROR_CODE" />.</translation>
 <translation id="5091636240353511739">Kuva PIN-kood</translation>
 <translation id="5092436659250499817">Lülita klaviatuuri taustavalgus sisse/välja</translation>
 <translation id="5094577350232361255">teave</translation>
@@ -1313,6 +1346,7 @@ Kasutada saate ka klaviatuuri otseteed. Esmalt tõstke tekst esile, seejärel va
 <translation id="5170568018924773124">Kuva kaustas</translation>
 <translation id="5176318573511391780">Ekraani osa salvestamine</translation>
 <translation id="5187627942836026988">Kuumkoha üksikasjade kuvamine. Teie administraator on kuumkoha blokeerinud.</translation>
+<translation id="5188648870018555788">Asukoha kasutamine. Lubage asukohale juurdepääsu loaga ChromeOS-i ja Androidi rakendustel, veebisaitidel ning teenustel teie seadme asukohta kasutada. Asukohatäpsus pakub Androidi rakenduste ja teenuste jaoks täpsemat asukohta. Selleks töötleb Google regulaarselt teavet seadme andurite ja teie seadme juhtmeta signaalide kohta, et juhtmeta signaalide asukohti ühiselt tuvastada. Neid kasutatakse teie isikut tuvastamata asukohatäpsuse ja asukohapõhiste teenuste parandamiseks ning Google’i teenuste täiustamiseks, pakkumiseks ja haldamiseks, lähtudes Google’i ning kolmandate osapoolte õigustatud huvidest, et kasutajate vajadusi rahuldada. <ph name="BEGIN_LINK1" />Lisateave asukoha kasutamise kohta<ph name="END_LINK1" /></translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198039720391525849">Esiletõstetud GIF-id</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> sündmust</translation>
@@ -1333,6 +1367,7 @@ Kasutada saate ka klaviatuuri otseteed. Esmalt tõstke tekst esile, seejärel va
 <translation id="5238719049014159442">Käivitaja avamine/sulgemine</translation>
 <translation id="5240725217819182328">Kiirjuurdepääs konkreetsetele lehtedele või toimingutele installitud rakendustes</translation>
 <translation id="5243355658487390559">Otsige kuupäeva</translation>
+<translation id="5243522832766285132">Proovige mõne aja pärast uuesti</translation>
 <translation id="5245201184978705914">Ei saa transkriptsiooni luua</translation>
 <translation id="5251174953851719648">Sisu värskendamine</translation>
 <translation id="5253783950165989294">Ühendatud seadmega <ph name="DEVICE_NAME" /> (akutase <ph name="BATTERY_PERCENTAGE" />%)</translation>
@@ -1340,6 +1375,7 @@ Kasutada saate ka klaviatuuri otseteed. Esmalt tõstke tekst esile, seejärel va
 <translation id="5256939106029293271">Mikrofoni testimine</translation>
 <translation id="5258528442992323769">Salvestatud töölaudu ei ole</translation>
 <translation id="5260676007519551770">Töölaud 4</translation>
+<translation id="5264148714798105376">Selleks võib kuluda mõni minut.</translation>
 <translation id="5265391159779542051">Tulemused on laaditud</translation>
 <translation id="5270547718570958938">Google Calendar</translation>
 <translation id="5277869901083657836">Eektronpliiatsi tööriistade sisse- ja väljalülitamine</translation>
@@ -1416,6 +1452,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="5506975627792768506">Lülita luup sisse või välja</translation>
 <translation id="5507778598655387680"><ph name="VOLUME_LEVEL" />, sisestusklahvi vajutamisel heli vaigistatakse.</translation>
 <translation id="5512042095225963688">Eelmise sõna kustutamine</translation>
+<translation id="5517304475148761050">See rakendus nõuab juurdepääsu Play poele</translation>
 <translation id="5519005148254860683">Google Tasksi laiendamine</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Teie administraator on kõik eSIM-i profiilid eemaldanud. Lisateabe saamiseks võtke ühendust administraatoriga.</translation>
@@ -1443,6 +1480,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="5577281275355252094">Phone Hubi kasutamiseks veenduge, et Bluetooth oleks teie telefonis lubatud</translation>
 <translation id="5578188167649348993">mälumaht</translation>
 <translation id="5580000943347215299">Kogu</translation>
+<translation id="5581972110672966454">Ei õnnestunud seadet domeeniga ühendada. Proovige uuesti või võtke ühendust seadme omaniku või administraatoriga. Veakood: <ph name="ERROR_CODE" />.</translation>
 <translation id="5586388332127302891">Dokitud luup on lubatud. Vajutage uuesti nuppu <ph name="ACCELERATOR" />, et see välja lülitada.</translation>
 <translation id="5587506661873751671">Allalaadimine: <ph name="DOWNLOAD_PERCENT" />%</translation>
 <translation id="558849140439112033">Lohistage jäädvustatava piirkonna valimiseks</translation>
@@ -1467,6 +1505,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="5662075790140998213">Töölaud 10</translation>
 <translation id="5662709761327382534">Mikrofoni salvestamine: <ph name="CURRENT_STATE" />, vajutage sisestusklahvi, et mikrofoni salvestamine <ph name="NEW_STATE" /> lülitada</translation>
 <translation id="5662919923378083468"><ph name="ACTION_DESCRIPTION" />, <ph name="SHORTCUT_HINT" /></translation>
+<translation id="5667546120811588575">Google Play seadistamine …</translation>
 <translation id="5669267381087807207">Aktiveerimine</translation>
 <translation id="5671658447180261823">Eemalda soovitus <ph name="SUGGESTION_NAME" /></translation>
 <translation id="5672890847723042801">Utiliidid</translation>
@@ -1483,6 +1522,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="5691772641933328258">Sõrmejälge ei tuntud ära</translation>
 <translation id="5693255400847650006">Mikrofon on kasutuses</translation>
 <translation id="5699366815052349604">Aktiivse akna kõikidele töölaudadele määramine</translation>
+<translation id="570043786759263127">Google Play rakendused ja teenused</translation>
 <translation id="570390244361237317">Kõik rakendused, kõigile rakendustele juurdepääsemiseks navigeerige nooleklahvidega</translation>
 <translation id="5705197514573687092">Kuva keskendumise režiimi seaded. Taimeri kestuseks on määratud: <ph name="FOCUS_DURATION" />.</translation>
 <translation id="5707775774148071965">Teie seade toetab kiiremat andmesidet kui teie kaabel. Seadme toimivus võib olla piiratud.</translation>
@@ -1497,6 +1537,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="574392208103952083">Keskmine</translation>
 <translation id="5744083938413354016">Puudutusega lohistamine</translation>
 <translation id="5745612484876805746">Öövalgus lülitub päikeseloojangul automaatselt sisse</translation>
+<translation id="5749214722697335450">Kasutus- ja diagnostikaandmete saatmine. Aidake täiustada Androidi kasutuskogemust, saates Google'ile automaatselt seadme teavet ning rakenduse kasutus- ja diagnostikaandmeid. See aitab parandada süsteemi ja rakenduse stabiilsust ning muud. Teatud koondandmed on abiks ka Google'i rakendustele ja partneritele, näiteks Androidi arendajatele. Kui täiendavad veebi- ja rakendustegevused on sisse lülitatud, võidakse need andmed salvestada teie Google'i kontole. <ph name="BEGIN_LINK1" />Lisateave mõõdikute kohta<ph name="BEGIN_LINK1_END" />Lisateave<ph name="END_LINK1" /></translation>
 <translation id="5750765938512549687">Bluetooth on välja lülitatud</translation>
 <translation id="5758114525425072423">Käivita keskendumise režiim. Taimeri kestuseks on määratud: <ph name="FOCUS_DURATION" />.</translation>
 <translation id="5759522586053040964">Kuulake, kuidas te teistele kõlate. Lõpetamiseks klõpsake testimisikoonil või sulgege videokõne paneel.</translation>
@@ -1513,6 +1554,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="5775936059231769503">Kuumkoha sisse-/väljalülitamine. Kuumkoht on välja lülitatud.</translation>
 <translation id="5777841717266010279">Kas peatada ekraani jagamine?</translation>
 <translation id="5779721926447984944">Kinnitatud failid</translation>
+<translation id="5780940414249100901">Kasutus- ja diagnostikaandmete saatmine. See seade saadab Google'ile praegu automaatselt seadme teavet ning rakenduse kasutus- ja diagnostikaandmeid. Neid andmeid ei kasutata teie lapse isiku tuvastamiseks ning need aitavad parandada süsteemi ja rakenduse stabiilsust ning muud. Teatud koondandmed on abiks ka Google'i rakendustele ja partneritele, näiteks Androidi arendajatele. Selle <ph name="BEGIN_LINK1" />seade<ph name="END_LINK1" /> on jõustanud omanik. Kui täiendavad veebi- ja rakendustegevused on teie lapse jaoks sisse lülitatud, võidakse need andmed salvestada tema Google'i kontole. <ph name="BEGIN_LINK2" />Lisateave mõõdikute kohta<ph name="BEGIN_LINK2_END" />Lisateave<ph name="END_LINK2" /></translation>
 <translation id="5785221443435874078">Eemalda soovitus</translation>
 <translation id="5787431783058088906">Hangi hüve</translation>
 <translation id="5788127256798019331">Play failid</translation>
@@ -1528,6 +1570,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="5823239091726045201">Google Tasks veebis</translation>
 <translation id="5825969630400862129">Ühendatud seadmete seaded</translation>
 <translation id="5830180081891717894">Veel <ph name="WINDOWS" /></translation>
+<translation id="583281660410589416">Tundmatu</translation>
 <translation id="5837036133683224804">Katkesta <ph name="ROUTE_TITLE" /> asukohas <ph name="RECEIVER_NAME" /></translation>
 <translation id="5840658767386246331">Otsi Google’iga</translation>
 <translation id="5841296711770970362">Mine järgmisele loole</translation>
@@ -1593,6 +1636,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="6032620807120418574">Täisekraani salvestamiseks klõpsake ekraanikuval kus tahes</translation>
 <translation id="6040071906258664830">Mikrofoni salvestamine: <ph name="STATE" /></translation>
 <translation id="6040143037577758943">Sulge</translation>
+<translation id="6042308850641462728">Rohkem</translation>
 <translation id="6043212731627905357">See monitor ei toimi teie seadmega <ph name="DEVICE_TYPE" /> (seda monitori ei toetata).</translation>
 <translation id="6043994281159824495">Logi nüüd välja</translation>
 <translation id="6045629311476491587">Kasutavad <ph name="APP_COUNT" /> rakendust</translation>
@@ -1672,9 +1716,12 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="6274422179279280249">Sisestage linke, emotikone ja muud. Samuti võite kirjutamisel Google'i AI abi kasutada. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="6276708887952587684">Lehe allika kuvamine</translation>
 <translation id="6285871695023807425">Lisa kalendrisse</translation>
+<translation id="628699625505156622">Asukoha kasutamine. Lubage asukohale juurdepääsu loaga ChromeOS-i ja Androidi rakendustel, veebisaitidel ning teenustel selle seadme asukohta kasutada. Asukohatäpsus pakub Androidi rakenduste ja teenuste jaoks täpsemat asukohta. Selleks töötleb Google regulaarselt teavet seadme andurite ja selle seadme juhtmeta signaalide kohta, et juhtmeta signaalide asukohti ühiselt tuvastada. Neid kasutatakse ühtki isikut tuvastamata asukohatäpsuse ja asukohapõhiste teenuste parandamiseks ning Google’i teenuste täiustamiseks, pakkumiseks ja haldamiseks, lähtudes Google’i ning kolmandate osapoolte õigustatud huvidest, et kasutajate vajadusi rahuldada. <ph name="BEGIN_LINK1" />Lisateave asukoha kasutamise kohta<ph name="END_LINK1" /></translation>
 <translation id="6288235558961782912">Aadressi <ph name="USER_EMAIL_ADDRESS" /> saab hiljem vanema loaga uuesti lisada.</translation>
 <translation id="6291221004442998378">Ei lae</translation>
+<translation id="6297986260307280218">Kasutus- ja diagnostikaandmete saatmine. Aidake täiustada Androidi kasutuskogemust, saates Google'ile automaatselt seadme teavet ning rakenduse kasutus- ja diagnostikaandmeid. See aitab parandada süsteemi ja rakenduse stabiilsust ning muud. Teatud koondandmed on abiks ka Google'i rakendustele ja partneritele, näiteks Androidi arendajatele. Selle <ph name="BEGIN_LINK1" />seade<ph name="END_LINK1" /> on jõustanud omanik. Omanik võib otsustada saata Google'ile selle seadme diagnostika- ja kasutusandmeid. Kui täiendavad veebi- ja rakendustegevused on sisse lülitatud, võidakse need andmed salvestada teie Google'i kontole. <ph name="BEGIN_LINK2" />Lisateave mõõdikute kohta<ph name="BEGIN_LINK2_END" />Lisateave<ph name="END_LINK2" /></translation>
 <translation id="6298183524022479114">Kohandage seda seadet rakenduses</translation>
+<translation id="6298962879096096191">Androidi rakenduste installimiseks kasutatakse Google Playd</translation>
 <translation id="6304076460080088478">Google Lensi abil ekraanilt otsimiseks sulgege või minimeerige inkognito aknad</translation>
 <translation id="6309219492973062892">Klõps või puudutus riiuli ikoonil 1–8</translation>
 <translation id="6315170314923504164">Hääl</translation>
@@ -1704,8 +1751,10 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="6406458002328242616">Muutke taimerit. <ph name="FOCUS_DURATION" />.</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6414618057231176439">Valige, milline VM-i <ph name="VM_NAME" /> versioon installida.</translation>
+<translation id="641469293210305670">Värskenduste ja rakenduste installimine</translation>
 <translation id="6417265370957905582">Google'i assistent</translation>
 <translation id="641817663353603351">lehe võrra üles</translation>
+<translation id="6418511932144861495">Installige kriitiline värskendus</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, signaalitugevus <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Kõikide märguannete kustutamine</translation>
 <translation id="6426905245930183644">Loomine…</translation>
@@ -1731,6 +1780,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="6482559668224714696">Täisekraani luup</translation>
 <translation id="6485086611007560630">Ilm (pole saadaval)</translation>
 <translation id="6490471652906364588">C-tüüpi USB-seade (parempoolne port)</translation>
+<translation id="6491376743066338510">Volitamine ebaõnnestus</translation>
 <translation id="649452524636452238">Kiipkaardi PIN-kood</translation>
 <translation id="6495322433318104734">Ekraanisäästja kuvamisel vajutage väljumiseks mis tahes klahvi</translation>
 <translation id="6495400115277918834">Pilt pildis käivitati, esiletõstmiseks vajutage klahvikombinatsiooni Alt + Tõstuklahv + V</translation>
@@ -1784,10 +1834,12 @@ Uus installimine</translation>
 <translation id="6625718907317144388">Rakenduste <ph name="APP_1_TITLE" /> ja <ph name="APP_2_TITLE" /> ning muud märguanded on peidetud, kuna vaatamiskaitse on sisse lülitatud</translation>
 <translation id="6627638273713273709">Otsing + Tõstuklahv + K</translation>
 <translation id="662830937908749204">Järgmise paani esile tõstmine</translation>
+<translation id="6635674640674343739">Võrguühendust ei saa luua. Kontrollige võrguühendust ja proovige uuesti.</translation>
 <translation id="6637729079642709226">Kellaaja muutmine</translation>
 <translation id="6641720045729354415">Reaalajas subtiitrite lüliti. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">Võta nime järgi sortimine tagasi</translation>
 <translation id="664793810957802384">Soovitatud grupis olevad üksused</translation>
+<translation id="6649018507441623493">Oodake pisut …</translation>
 <translation id="6649641931981131786">Kohandage kaamerat, et oleksite ekraanikuva keskel.</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> soovib kinnitada, et see olete teie</translation>
 <translation id="6650742588569439432">Üksusi ei saanud laadida.</translation>
@@ -1812,6 +1864,7 @@ Uus installimine</translation>
 <translation id="6706742084323792866">Klaviatuuri kinnitamine</translation>
 <translation id="6709719156428404245">Salvestatava ala valimiseks lohistage või vajutage tühikuklahvi</translation>
 <translation id="6710213216561001401">Eelmine</translation>
+<translation id="6716798148881908873">Võrguühendus katkes. Kontrollige võrguühendust või proovige mõnda teist WiFi-võrku.</translation>
 <translation id="6723839937902243910">Toide</translation>
 <translation id="672609503628871915">Vaadake, mis on uut</translation>
 <translation id="6727969043791803658">Ühendatud, <ph name="BATTERY_PERCENTAGE" />% akut</translation>
@@ -1851,6 +1904,7 @@ Uus installimine</translation>
 <translation id="6819327813400217281">Kaamera kinnitati vasakusse alanurka</translation>
 <translation id="6820676911989879663">Tehke paus!</translation>
 <translation id="6827049576281411231">Sule sündmuste paneel</translation>
+<translation id="682971198310367122">Google'i privaatsuseeskirjad</translation>
 <translation id="6836499262298959512">Ohtlik fail</translation>
 <translation id="6837621009301897464">Ekraanipildi jäädvustamiseks puudutage nuppu</translation>
 <translation id="6852052252232534364">Klõpsake aktiveerimiseks</translation>
@@ -1882,6 +1936,7 @@ Uus installimine</translation>
 <translation id="6942518653766415536">Salvestise vormingu menüü</translation>
 <translation id="6945221475159498467">Vali</translation>
 <translation id="6945922087561257829">Teie telefon kasutab mobiilsidevõrku. Veenduge, et teie telefon ja Chromebook oleksid samas WiFi-võrgus, ning seejärel proovige uuesti. <ph name="LEARN_MORE" /></translation>
+<translation id="6950627417367801484">Rakenduste taastamine</translation>
 <translation id="6960565108681981554">Aktiveerimata. Võtke oma operaatoriga ühendust.</translation>
 <translation id="6961121602502368900">Telefoni vaigistamine pole tööprofiilil saadaval</translation>
 <translation id="6961840794482373852">Klaviatuuri otseteed Alt + ülesnool on muudetud. Lehe võrra üles klahvi kasutamiseks vajutage klahvi <ph name="LAUNCHER_KEY_NAME" /> + ülesnoolt.</translation>
@@ -2053,6 +2108,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="7541773865713908457"><ph name="ACTION_NAME" /> rakendusega <ph name="APP_NAME" /></translation>
 <translation id="7543399541175347147">Linuxi rakendusi ja inkognito aknaid praegu ei toetata. Muud rakendused salvestatakse.</translation>
 <translation id="7544300628205093162">Klaviatuuri taustavalgus on sisse lülitatud</translation>
+<translation id="7545466883021407599">Ei saanud serveriga ühendust. Kontrollige võrguühendust ja proovige uuesti. Kui teil on endiselt probleeme, proovige Chromebook taaskäivitada. Veakood: <ph name="ERROR_CODE" />.</translation>
 <translation id="7548434653388805669">Aeg magama minna</translation>
 <translation id="7551643184018910560">Riiulile kinnitamine</translation>
 <translation id="7557816257942363084"><ph name="APP_NAME" /> kasutab praegu teie mikrofoni</translation>
@@ -2068,6 +2124,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="7579778809502851308">Ekraanikuva jäädvustamine</translation>
 <translation id="7588317312481506627">Kopeeriti lõikelauale.</translation>
 <translation id="7593891976182323525">Otsinguklahv või tõstuklahv</translation>
+<translation id="7595453277607160340">Androidi rakenduste kasutamiseks ja seadme <ph name="DEVICE_TYPE" /> õige töö tagamiseks logige uuesti sisse ja värskendage.</translation>
 <translation id="7598054670902114203">Protsessori kasutuse ülevaade, <ph name="CPU_USEAGE" />%. temperatuur <ph name="TEMPERATURE" /> °C, praegune kiirus: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="7599378375976398913">Valitud tulemuse sisestamine</translation>
 <translation id="7600875258240007829">Kuva kõik märguanded</translation>
@@ -2077,6 +2134,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="7609951632080598826">Kalendrivaade, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Kaamera ühendati uuesti.</translation>
 <translation id="7613620083300976559">Lülita mängu juhtnupud sisse</translation>
+<translation id="761530003705945209">Andmete varundamine Google Drive'i. Teil on alati võimalik oma andmed hõlpsalt taastada või seadet vahetada. Teie varukoopia hõlmab rakenduste andmeid. Teie varukoopiad laaditakse Google'isse üles ja krüpteeritakse teie Google'i konto parooliga.</translation>
 <translation id="761736749114493194">Kaamera kadreerimise lüliti. <ph name="STATE_TEXT" /></translation>
 <translation id="7621008024906456933">Kiirjagamise seaded</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
@@ -2125,6 +2183,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="7748275671948949022">Riiulil Käivitaja nupu esile tõstmine</translation>
 <translation id="7749443890790263709">Töölaudade maksimaalne arv on täis.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7750228210027921155">Pilt pildis</translation>
 <translation id="7751260505918304024">Kuva kõik</translation>
 <translation id="7762664108390426952">Google'i teenusetingimused ja privaatsuseeskirjad</translation>
 <translation id="7768784765476638775">Vali ja kuula</translation>
@@ -2243,6 +2302,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="8092380135549145188">Kerimise juhtelemendid</translation>
 <translation id="8098591350844501178">Peata ekraani ülekandmine vastuvõtjasse <ph name="RECEIVER_NAME" /></translation>
 <translation id="810637681351706236">Vabasta rakendus riiulist</translation>
+<translation id="8107015733319732394">Google Play pood installitakse teie seadmesse <ph name="DEVICE_TYPE" />. See võib võtta mõne minuti.</translation>
 <translation id="8113423164597455979">Sees, kõik rak.</translation>
 <translation id="8113515504791187892">Nupp Vali ja kuula</translation>
 <translation id="8120151603115102514">Teie telefonil pole lukustuskuva. Chromebooki avamiseks sisestage parool.</translation>
@@ -2325,6 +2385,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="8388750414311082622">Viimast töölauda ei saa eemaldada.</translation>
 <translation id="8394567579869570560">Vanem lukustas selle seadme</translation>
 <translation id="8401850874595457088">Ava keelemenüü</translation>
+<translation id="8410775397654368139">Google Play</translation>
 <translation id="8412677897383510995">Kuva kuvaseaded</translation>
 <translation id="8413272770729657668">Salvestamine algab: 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (ümbris)</translation>
@@ -2350,11 +2411,13 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" />: <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Tühistamiseks vajutage klahvikombinatsiooni Alt + Otsing või tõstuklahvi.</translation>
 <translation id="8480418399907765580">Näita tööriistariba</translation>
+<translation id="8481187309597259238">USB loa kinnitamine</translation>
 <translation id="8487660088084188539">Kui lülitate need funktsioonid sisse, võidakse sisendtekst, dokumendi sisu ja veebilehe URL saata Google'i serveritesse. Seda teavet kasutatakse selleks, et genereerida kirjutussoovitusi ja kokkuvõtteid, vastata küsimustele ning täiustada toodet dokumendi <ph name="LINK_TO_SERVICE_TERMS" /> kohaselt. Ärge lisage midagi isiklikku, delikaatset ega konfidentsiaalset.</translation>
 <translation id="8487699605742506766">Kuumkoht</translation>
 <translation id="8490896350101740396">Järgmiseid kioski rakendusi „<ph name="UPDATED_APPS" />” värskendati. Värskendamisprotsessi lõpetamiseks taaskäivitage seade.</translation>
 <translation id="8491237443345908933">Lingi avamine uuel vahelehel</translation>
 <translation id="8492573885090281069">Seade <ph name="DISPLAY_NAME" /> ei toeta eraldusvõimet <ph name="SPECIFIED_RESOLUTION" />. Eraldusvõimeks määrati <ph name="FALLBACK_RESOLUTION" />. Muudatuste säilitamiseks klõpsake nupul Kinnita. Eelmised seaded taastatakse <ph name="TIMEOUT_SECONDS" /> pärast.</translation>
+<translation id="8502536196501630039">Google Play rakenduste kasutamiseks peate esmalt oma rakendused taastama. Osa andmeid võivad olla kaotsi läinud.</translation>
 <translation id="8507563469658346379">Kõik, <ph name="REMAINING_TIME" /></translation>
 <translation id="8511123073331775246">Uue töölaua loomine</translation>
 <translation id="85123341071060231">Teie Chromebooki Bluetooth on välja lülitatud. Chromebooki avamiseks sisestage parool.</translation>
@@ -2408,6 +2471,8 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="8676770494376880701">Väikese energiakuluga laadija on ühendatud</translation>
 <translation id="8679158879996532670">Kuva keskendumise režiimi seaded. Keskendumise režiim on sisse lülitatud, jäänud on <ph name="REMAINING_TIME" />.</translation>
 <translation id="8683506306463609433">Toimivuse jälgimine on aktiivne</translation>
+<translation id="8698432579173128320">Varundage andmed Google Drive'i. Saate andmed igal ajal hõlpsasti taastada või seadet vahetada. Teie varukoopia hõlmab rakenduste andmeid. Teie varukoopiad laaditakse Google'isse üles ja krüpteeritakse teie Google'i konto parooliga. <ph name="BEGIN_LINK1" />Lisateave varukoopia kohta<ph name="BEGIN_LINK1_END" />Lisateave<ph name="END_LINK1" /></translation>
+<translation id="8700087567921985940">Kasutage asukohta. Lubage asukohale juurdepääsu loaga rakendustel ja teenustel kasutada oma seadme asukohta. Google võib aeg-ajalt koguda asukohaandmeid ja kasutada neid anonüümselt asukoha täpsuse ning asukohapõhiste teenuste parendamiseks. <ph name="BEGIN_LINK1" />Lisateave asukoha kohta<ph name="BEGIN_LINK1_END" />Lisateave<ph name="END_LINK1" /></translation>
 <translation id="8703634754197148428">Alusta salvestust. Kui salvestamine on alanud, vajutage klahvikombinatsiooni Alt + tõstuklahv + L, et liikuda riiulile ja leida salvestamise peatamise nupp.</translation>
 <translation id="8704155109538237473">Pilt pildis akna esile tõstmine</translation>
 <translation id="870917907284186124">Lülita dikteerimine (häälega teksti sisestamine) sisse/välja</translation>
@@ -2471,6 +2536,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="8875021410787719674">Fookuse teisaldamine järgmises järjestuses: parem allnurk, käivitaja, aadressiriba, järjehoidjariba, avatud veebisait, allalaadimised</translation>
 <translation id="8876148469852588625">Sündmus <ph name="EVENT_POSITION" />/<ph name="EVENT_TOTAL_COUNT" /></translation>
 <translation id="8876661425082386199">Kontrollige ühendust</translation>
+<translation id="8883478023074930307">Kasutus- ja diagnostikaandmete saatmine. See seade saadab Google'ile praegu automaatselt seadme teavet ning rakenduse kasutus- ja diagnostikaandmeid. See aitab parandada süsteemi ja rakenduse stabiilsust ning muud. Teatud koondandmed on abiks ka Google'i rakendustele ja partneritele, näiteks Androidi arendajatele. Selle <ph name="BEGIN_LINK1" />seade<ph name="END_LINK1" /> on jõustanud omanik. Kui täiendavad veebi- ja rakendustegevused on sisse lülitatud, võidakse need andmed salvestada teie Google'i kontole. <ph name="BEGIN_LINK2" />Lisateave mõõdikute kohta<ph name="BEGIN_LINK2_END" />Lisateave<ph name="END_LINK2" /></translation>
 <translation id="8885424115080869847">Ei saanud YouTube Musicuga ühendada</translation>
 <translation id="888982883502837004">Teie seadme jaoks on saadaval püsivara värskendused. Klõpsake ülevaatamiseks ja värskendamiseks.</translation>
 <translation id="8896630965521842259">Mall <ph name="DESK_TEMPLATE_NAME" /> kustutatakse jäädavalt</translation>
@@ -2513,10 +2579,12 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="9000771174482730261">HALLAKE SALVESTUSRUUMI</translation>
 <translation id="9003374957546315126">Emotikonid ja muu</translation>
 <translation id="9005984960510803406">Avab Croshi akna</translation>
+<translation id="901668144954885282">Varundamine Google Drive'i</translation>
 <translation id="9017320285115481645">Sisestage Family Linki vanema pääsukood.</translation>
 <translation id="9024331582947483881">täisekraan</translation>
 <translation id="9029736946581028033">Seade lülitub peagi välja</translation>
 <translation id="9030319654231318877">Päikeseloojanguni väljas</translation>
+<translation id="9030515284705930323">Organisatsioon pole Google Play poodi teie kontol lubanud. Lisateabe saamiseks võtke ühendust oma administraatoriga.</translation>
 <translation id="9030665205623277906">Protsessori kasutuse ülevaade: <ph name="CPU_USEAGE" />%</translation>
 <translation id="9034924485347205037">Linuxi failid</translation>
 <translation id="9047624247355796468">Ava võrgu <ph name="NETWORK_NAME" /> seaded</translation>
@@ -2566,8 +2634,10 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="9195857219954068558">Teie Chromebook on värskendatud. Avage oma eelmised aknad ja rakendused.</translation>
 <translation id="9195990613383871904">Homme</translation>
 <translation id="9198992156681343238">Seadme <ph name="DISPLAY_NAME" /> eraldusvõimeks määrati <ph name="RESOLUTION" />. Muudatuste säilitamiseks klõpsake nupul Kinnita. Eelmised seaded taastatakse <ph name="TIMEOUT_SECONDS" /> pärast.</translation>
+<translation id="9199853905755292769">Kasutus- ja diagnostikaandmete saatmine. See seade saadab Google'ile praegu automaatselt seadme teavet ning rakenduse kasutus- ja diagnostikaandmeid. Neid andmeid ei kasutata teie lapse isiku tuvastamiseks ning need aitavad parandada süsteemi ja rakenduse stabiilsust ning muud. Teatud koondandmed on abiks ka Google'i rakendustele ja partneritele, näiteks Androidi arendajatele. Kui täiendavad veebi- ja rakendustegevused on teie lapse jaoks sisse lülitatud, võidakse need andmed salvestada tema Google'i kontole. <ph name="BEGIN_LINK2" />Lisateave mõõdikute kohta<ph name="BEGIN_LINK2_END" />Lisateave<ph name="END_LINK2" /></translation>
 <translation id="9201044636667689546">Ühendage seade <ph name="NAME" /> selle Chromebookiga</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, võrku haldab teie administraator</translation>
+<translation id="9201842707396338580">Midagi läks valesti. Võtke ühendust seadme omaniku või administraatoriga. Veakood: <ph name="ERROR_CODE" />.</translation>
 <translation id="9207682216934703221">See võimaldab rakendustel <ph name="APP_NAME" />, <ph name="APP2_NAME" /> ning kõigil asukohale juurdepääsu loaga rakendustel ja veebisaitidel ning ChromeOS-il kasutada WiFi- ja mobiilsidevõrkude asukohta.</translation>
 <translation id="9210037371811586452">Ühendatud töölaua režiimist väljumine</translation>
 <translation id="9211490828691860325">Kõik töölauad</translation>
@@ -2580,6 +2650,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="923686485342484400">Väljalogimiseks vajutage kaks korda klahvikombinatsiooni Ctrl + tõstuklahv + Q.</translation>
 <translation id="92580429198593979">Vajutasite värvide ümberpööramise klaviatuuri otseteed. Kas soovite selle sisse lülitada?</translation>
 <translation id="925832987464884575">Peida eelvaated</translation>
+<translation id="93140074055951850">Androidi rakendused peatati</translation>
 <translation id="938407504481277932">Praegune töölaud: <ph name="DESK_NAME" /> <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. Töölaud <ph name="DESK_INDEX" />/<ph name="DESK_COUNT" />.</translation>
 <translation id="94468042118567862">Seade pole ajakohane</translation>
 <translation id="945383118875625837">Lohistage link järjehoidjaribale</translation>

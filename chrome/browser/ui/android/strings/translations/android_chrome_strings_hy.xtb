@@ -1820,6 +1820,7 @@
 <translation id="8282950411412455249">Բացել անվտանգության կարգավորումները</translation>
 <translation id="8288688997999490824">{NUM_WINDOWS,plural, =1{Փակել 1 ինկոգնիտո պատուհան}one{Փակել # ինկոգնիտո պատուհան}other{Փակել # ինկոգնիտո պատուհան}}</translation>
 <translation id="831192587911042850">Ավելացնում է ընթացիկ կայքը վեբ կայքերի ցանկում, որոնց հետևում եք։</translation>
+<translation id="8313599942510782709">Ձեր առաջադրանքը դեռ կատարման փուլում է</translation>
 <translation id="8317318757008452355">Բացել տպելու ընտրանքները</translation>
 <translation id="8320212361750431956">Վերջին գործողությունները</translation>
 <translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />Նորույթ<ph name="END_NEW" /></translation>

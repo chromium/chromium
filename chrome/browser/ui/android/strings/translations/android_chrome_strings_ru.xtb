@@ -1820,6 +1820,7 @@
 <translation id="8282950411412455249">Открыть настройки безопасности</translation>
 <translation id="8288688997999490824">{NUM_WINDOWS,plural, =1{Закрыть 1 окно в режиме инкогнито}one{Закрыть # окно в режиме инкогнито}few{Закрыть # окна в режиме инкогнито}many{Закрыть # окон в режиме инкогнито}other{Закрыть # окна в режиме инкогнито}}</translation>
 <translation id="831192587911042850">Добавляет текущий сайт в список сайтов, на которые вы подписаны.</translation>
+<translation id="8313599942510782709">Задача ещё не выполнена.</translation>
 <translation id="8317318757008452355">Открыть параметры печати</translation>
 <translation id="8320212361750431956">Недавние действия</translation>
 <translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />Новая функция<ph name="END_NEW" /></translation>

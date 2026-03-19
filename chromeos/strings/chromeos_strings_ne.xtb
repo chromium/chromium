@@ -273,7 +273,6 @@
 <translation id="200669432486043882">फाइल बदल्नुहोस्</translation>
 <translation id="2006864819935886708">कनेक्टिभिटी</translation>
 <translation id="2008685064673031089">प्राइम सर्च</translation>
-<translation id="2011174342667534258">SDK को संस्करण:</translation>
 <translation id="2016697457005847575">समस्या निवारण गर्ने चरणहरू पालना गरी हेर्नुहोस्</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2045814230297767491">काँटा, चम्चा र चक्कुहरू</translation>
@@ -523,7 +522,6 @@
 <translation id="3291996639387199448">मुख्य डिरेक्सन</translation>
 <translation id="3294437725009624529">पाहुना</translation>
 <translation id="3303855915957856445">खोजका परिणाम फेला परेनन्</translation>
-<translation id="3305294846493618482">थप</translation>
 <translation id="3310640316857623290">DNS को विलम्बता तोकिएको समयसीमाभन्दा अत्यधिक मात्रामा बढी छ</translation>
 <translation id="3316495615885967552">सारांश तथा शीर्षक बनाउने मोडेल डाउनलोड गर्ने प्रक्रिया पूरा भयो</translation>
 <translation id="3321030238473337787">प्लेब्याकको गति</translation>
@@ -702,7 +700,6 @@
 <translation id="4126551873361000548">१० सेकेन्ड पछाडि जानुहोस्</translation>
 <translation id="4128271910628504223">"कुहिरोले ढाकेको जङ्गलको चित्र कोर्नुहोस्" जस्तो प्रम्प्ट हाल्नुहोस्</translation>
 <translation id="4130035430755296270">लेआउटसम्बन्धी थप विकल्पहरू प्राप्त गर्न होभर गरिराख्नुहोस्</translation>
-<translation id="4130750466177569591">म सहमत गर्छु</translation>
 <translation id="4131410914670010031">कालो र सेतो</translation>
 <translation id="4137700675046373159">शनिवार</translation>
 <translation id="4139326893730851150">फर्मवेयरसम्बन्धी अपडेटहरू</translation>
@@ -1051,7 +1048,6 @@
 <translation id="5606865426897221650">ट्याब</translation>
 <translation id="5612205513582918357">कक्षाका टुलहरूले <ph name="RECEIVER_NAME" /> सँग तपाईंको स्क्रिन सेयर गरिरहेका छन्</translation>
 <translation id="5613201299517339763">तपाईंलाई साइन आउट गरिएको छ</translation>
-<translation id="5620281292257375798">आन्तरिक प्रयोजनका लागि मात्र</translation>
 <translation id="5628106863521633649">उपलब्ध भाषाहरू</translation>
 <translation id="5630438231335788050">बाउहाउस</translation>
 <translation id="5631759159893697722">अमूर्त</translation>
@@ -1415,7 +1411,6 @@
 <translation id="7184043045742675738">आफ्नो बटन कस्टमाइज गर्न जुनसुकै कीमा क्लिक गर्नुहोस्। माउस वा एरो कीहरू प्रयोग गरेर की यताउता सार्नुहोस्।</translation>
 <translation id="7187669805838282391">बुधवार</translation>
 <translation id="7205318498545665455">आफ्नो माइक छनौट गर्नुहोस्</translation>
-<translation id="7206979415662233817">सेवाका सर्तहरू</translation>
 <translation id="7210635925306941239">सायन</translation>
 <translation id="7212547870105584639">नेटवर्क APN सम्बन्धी सेटिङ मिलाउनुहोस्। APN ले मोबाइल नेटवर्क र इन्टरनेटबिचको कनेक्सन बनाउँछ। <ph name="BEGIN_LINK_LEARN_MORE" />थप जान्नुहोस्<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">बाह्य डिभाइसहरूका लागि फर्मवेयरसम्बन्धी अपडेटहरू</translation>
@@ -1446,11 +1441,6 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7321055305895875150">हरियो र टिल</translation>
 <translation id="7328475450575141167">बर्ड अफ प्याराडाइज</translation>
-<translation id="7331297744262591636">तपाईंको उमेर कम्तीमा १८ वर्ष पुगेको हुनु पर्छ र तपाईंले AI वालपेपरहरूको प्रयोगमा <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Google का सेवाका सर्त<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> र <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />जेनेरेटिभ AI का सेवाका अतिरिक्त सर्तहरू<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" /> लागू हुन्छन् भन्ने कुरामा सहमति जनाउनु पर्ने हुन्छ।
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          तपाईं AI प्रयोग गरेर व्यक्तिगत र गैर व्यापारिक प्रयोजनका लागि मात्र वालपेपर बनाउन सक्नुहुन्छ। तपाईंले वालपेपर बनाउन AI को मद्दत लिँदा वालपेपरका सुझावहरू देखाउने प्रयोजनका लागि तपाईंले हालेको टेक्स्ट <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google को गोपनीयता नीति<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />बमोजिम Google AI मा पठाइन्छ। <ph name="BEGIN_LINK_LEARN_MORE" />थप जान्नुहोस्<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Search मा परिणाम हेर्न Search र Space बटन एकै चोटि थिच्नुहोस्।</translation>
 <translation id="7343649194310845056">नेटवर्कसम्बन्धी यन्त्रहरू</translation>
 <translation id="7344788170842919262">मटमैलो</translation>
 <translation id="7346768383111016081">किबोर्ड प्रयोग गरेर गेम खेल्न गेममा कन्ट्रोल सेट गर्नुहोस्</translation>
@@ -1838,7 +1828,6 @@
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">ब्लुटुथ</translation>
 <translation id="9082718469794970195">यो भिडियो प्रयोग गर्नुहोस्</translation>
-<translation id="9087578468327036362">यो क्वेरीका बारेमा रिपोर्ट गर्नुहोस्</translation>
 <translation id="9088306295921699330">हालको प्रयोग</translation>
 <translation id="9088994563996376283">सरल बनाउनुहोस्</translation>
 <translation id="9095775724867566971">Pluginvm</translation>

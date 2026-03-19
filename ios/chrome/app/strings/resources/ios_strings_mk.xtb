@@ -1724,6 +1724,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7149893636342594995">Минатите 24 часа</translation>
 <translation id="7154417656353909837">Отстрани ги адресите</translation>
 <translation id="7161230316646448869">Синхронизација на обележувачите, историјата и друго на сите уреди</translation>
+<translation id="7165323152084385463">VIN</translation>
 <translation id="7173114856073700355">Отвори „Поставки“</translation>
 <translation id="7173721738069475737">{count,plural, =1{Обележувачот е зачуван}one{{count} обележувач се зачувани}other{{count} обележувачи се зачувани}}</translation>
 <translation id="7176183551031110427">Одзумирајте</translation>
@@ -2218,6 +2219,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8863067612494559785">Се испраќа до <ph name="DEVICE_NAME" />…</translation>
 <translation id="8863431381414769983">Добивање насоки и локални податоци од „Карти на Google“</translation>
 <translation id="8871974300055371298">Поставки за содржина</translation>
+<translation id="8876661425082386199">Проверете ја врската</translation>
 <translation id="8877788021141246043">Потсетник</translation>
 <translation id="8879604564928138696">Допрете двапати за да се обидете</translation>
 <translation id="8879952635974818770">Персонализирани содржини</translation>

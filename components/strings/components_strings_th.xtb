@@ -1073,6 +1073,7 @@
 <translation id="2673968385134502798">เกม</translation>
 <translation id="2674170444375937751">คุณแน่ใจหรือไม่ว่าต้องการนำออกหน้าเหล่านี้ออกจากประวัติการเข้าชมของคุณ</translation>
 <translation id="2674524144218093528">การทาสีบ้านและการเก็บรายละเอียด</translation>
+<translation id="2675716371350192683">จะไม่มีการนำเนื้อหาของคุณไปใช้ปรับปรุง AI องค์กรของคุณอาจเปลี่ยนการตั้งค่าเหล่านี้ได้ทุกเมื่อ</translation>
 <translation id="26774279487328902">กลุ่มแท็บ <ph name="GROUP_COUNT" /> กลุ่มใช้งานไม่ได้อีกต่อไป</translation>
 <translation id="2677748264148917807">ออก</translation>
 <translation id="2679216653373462289">ใช้เซ็นเซอร์ตรวจจับการเคลื่อนไหวและเซ็นเซอร์แสง</translation>
@@ -2656,6 +2657,7 @@
 <translation id="5190835502935405962">แถบบุ๊กมาร์ก</translation>
 <translation id="5191315092027169558">โปรไฟล์ของคุณจัดการโดย <ph name="DOMAIN" /></translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> ต้องการดาวน์โหลดหลายไฟล์</translation>
+<translation id="519528950056409240">อนุญาตให้ Wallet แชร์ข้อมูล</translation>
 <translation id="5199121357983849992">บันทึกบัตรประชาชนไหม</translation>
 <translation id="5200063972779787617">บันทึกที่อยู่ในบัญชี</translation>
 <translation id="5201306358585911203">หน้าที่ฝังไว้ในหน้าเว็บนี้บอกว่า</translation>
@@ -3103,6 +3105,7 @@
 <translation id="5910140988253729859">ยกเลิกการป้อนข้อความอัตโนมัติ</translation>
 <translation id="5911020115933784199">กิจกรรมและรายการ</translation>
 <translation id="5911110632211230665">การเปิดไฟล์ถูกบล็อก</translation>
+<translation id="5912796581727968237">เปิด Google Wallet</translation>
 <translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" /> เพิ่มแท็บนี้แล้ว</translation>
 <translation id="5915189366813702112">ความยืดหยุ่นเรื่องการทำงาน</translation>
 <translation id="59174027418879706">เปิดใช้งาน</translation>

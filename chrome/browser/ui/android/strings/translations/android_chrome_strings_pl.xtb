@@ -1820,6 +1820,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="8282950411412455249">Otwórz ustawienia zabezpieczeń</translation>
 <translation id="8288688997999490824">{NUM_WINDOWS,plural, =1{Zamknij 1 okno incognito}few{Zamknij # okna incognito}many{Zamknij # okien incognito}other{Zamknij # okna incognito}}</translation>
 <translation id="831192587911042850">Dodaje otwartą witrynę do listy obserwowanych.</translation>
+<translation id="8313599942510782709">Zadanie jest nadal w toku</translation>
 <translation id="8317318757008452355">Otwórz opcje drukowania</translation>
 <translation id="8320212361750431956">Ostatnia aktywność</translation>
 <translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />Nowość<ph name="END_NEW" /></translation>

@@ -1725,6 +1725,7 @@
 <translation id="7149893636342594995">Τελευταίες 24 ώρες</translation>
 <translation id="7154417656353909837">Κατάργηση διευθύνσεων</translation>
 <translation id="7161230316646448869">Συγχρονίστε τους σελιδοδείκτες, το ιστορικό σας και πολλά άλλα σε όλες τις συσκευές</translation>
+<translation id="7165323152084385463">Αναγνωριστικός αριθμός οχήματος</translation>
 <translation id="7173114856073700355">Άνοιγμα ρυθμίσεων</translation>
 <translation id="7173721738069475737">{count,plural, =1{Ο σελιδοδείκτης αποθηκεύτηκε}other{{count} σελιδοδείκτες αποθηκεύτηκαν}}</translation>
 <translation id="7176183551031110427">Σμίκρυνση</translation>
@@ -2219,6 +2220,7 @@
 <translation id="8863067612494559785">Αποστολή σε <ph name="DEVICE_NAME" />…</translation>
 <translation id="8863431381414769983">Λάβετε οδηγίες και τοπικές πληροφορίες από τους Χάρτες Google</translation>
 <translation id="8871974300055371298">Ρυθμίσεις περιεχομένου</translation>
+<translation id="8876661425082386199">Ελέγξτε τη σύνδεσή σας</translation>
 <translation id="8877788021141246043">Ορισμός υπενθύμισης</translation>
 <translation id="8879604564928138696">Πατήστε δύο φορές για δοκιμή</translation>
 <translation id="8879952635974818770">Εξατομικευμένο περιεχόμενο</translation>

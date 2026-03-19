@@ -1820,6 +1820,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="8282950411412455249">Prejsť do nastavení zabezpečenia</translation>
 <translation id="8288688997999490824">{NUM_WINDOWS,plural, =1{Zavrieť 1 okno inkognito}few{Zavrieť # okná inkognito}many{Close # Incognito windows}other{Zavrieť # okien inkognito}}</translation>
 <translation id="831192587911042850">Týmto pridáte aktuálny web na zoznam sledovaných webov.</translation>
+<translation id="8313599942510782709">Vaša úloha stále prebieha</translation>
 <translation id="8317318757008452355">Otvorenie možností tlače</translation>
 <translation id="8320212361750431956">Nedávna aktivita</translation>
 <translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />Nové<ph name="END_NEW" /></translation>

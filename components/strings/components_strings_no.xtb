@@ -1073,6 +1073,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2673968385134502798">Spill</translation>
 <translation id="2674170444375937751">Er du sikker på at du vil slette disse sidene fra loggen?</translation>
 <translation id="2674524144218093528">Husmaling og -beising</translation>
+<translation id="2675716371350192683">Innholdet ditt blir ikke brukt for å forbedre AI. Organisasjonen din kan endre disse innstillingene når som helst.</translation>
 <translation id="26774279487328902"><ph name="GROUP_COUNT" /> fanegrupper er ikke tilgjengelige lenger</translation>
 <translation id="2677748264148917807">Gå ut</translation>
 <translation id="2679216653373462289">Bruk bevegelses- og lyssensorene</translation>
@@ -2657,6 +2658,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="5190835502935405962">Bokmerkerad</translation>
 <translation id="5191315092027169558">Profilen din administreres av <ph name="DOMAIN" /></translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> ber om å laste ned flere filer</translation>
+<translation id="519528950056409240">Tillat at Wallet deler data</translation>
 <translation id="5199121357983849992">Vil du lagre ID-kortet?</translation>
 <translation id="5200063972779787617">Lagre adressen i kontoen</translation>
 <translation id="5201306358585911203">På en innebygd side på denne siden står det</translation>
@@ -3104,6 +3106,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="5910140988253729859">Angre autofyll</translation>
 <translation id="5911020115933784199">Arrangementer og lister</translation>
 <translation id="5911110632211230665">Blokkert åpning</translation>
+<translation id="5912796581727968237">Åpne Google Wallet</translation>
 <translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" /> la til denne fanen</translation>
 <translation id="5915189366813702112">Fleksibel arbeidshverdag</translation>
 <translation id="59174027418879706">Aktivert</translation>

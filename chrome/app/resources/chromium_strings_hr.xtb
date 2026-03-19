@@ -196,6 +196,7 @@
 <translation id="3045032126857188731">Jezik prijevoda: <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">Zatvori dijalog povratnih informacija</translation>
 <translation id="3068187312562070417">Ostali profili na Chromiumu</translation>
+<translation id="3068290154869370196">Proširenja su programski dodaci koji vam omogućuju da prilagodite Chromium. Od organizacije do pojednostavljenja svakodnevnih zadataka, proširenja vam pomažu da Chromium prilagodite svojim potrebama.</translation>
 <translation id="3068515742935458733">Pomognite nam poboljšati Chromium šaljući izvješća o rušenju programa i <ph name="UMA_LINK" /> Googleu</translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{Jedno ili više Chromiumovih proširenja pristupalo je jednom USB uređaju}=1{Jedno ili više Chromiumovih proširenja pristupa jednom USB uređaju}one{Jedno ili više Chromiumovih proširenja pristupa # USB uređaju}few{Jedno ili više Chromiumovih proširenja pristupa # USB uređaja}other{Jedno ili više Chromiumovih proširenja pristupa # USB uređaja}}</translation>
 <translation id="3095811995836568724">Povijest u Chromiumu</translation>
@@ -430,6 +431,7 @@
 <translation id="5821520528363214608">Da biste upotrebljavali i spremali Chromiumove podatke spremljene na vašem Google računu, ažurirajte Chromium</translation>
 <translation id="5824893331272123205">Učitavanje ploče nije uspjelo, pokušajte ponovo</translation>
 <translation id="5862307444128926510">Dobro došli u Chromium</translation>
+<translation id="5867606647614813312">Uključuje dodatne značajke radi pružanja najsnažnije zaštite koju nudi Chromium</translation>
 <translation id="5871205389137001634">Kliknite da biste zatvorili pretraživanje slika</translation>
 <translation id="5883558403894052917">Chromium je otkrio da ove stavke sadrže zlonamjerni softver:</translation>
 <translation id="5889361821821684993">Chromium redovito provjerava jesu li postavke preglednika najsigurnije. Obavijestit ćemo vas ako bilo što treba pregledati.</translation>

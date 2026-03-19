@@ -198,6 +198,7 @@
 <translation id="3045032126857188731">Орчуулсан хэл: <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">Санал хүсэлтийн харилцах цонхыг хаах</translation>
 <translation id="3068187312562070417">Chromium-н бусад профайл</translation>
+<translation id="3068290154869370196">Өргөтгөл нь танд Chromium-г тусгайлан өөрчлөх боломжийг олгодог нэмэлт юм. Цэгцтэй байхаас эхлээд өдөр тутмын ажлыг хялбаршуулах хүртэл өргөтгөл танд Chromium-г өөрийн болгоход тусалдаг.</translation>
 <translation id="3068515742935458733">Алдаа ослын тайлан болон <ph name="UMA_LINK" />-ыг Google рүү илгээх замаар Chromium-ыг улам сайжруулахад тусална уу.</translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{1 USB төхөөрөмжид нэг эсвэл түүнээс олон Chromium-н өргөтгөл хандаж байсан}=1{1 USB төхөөрөмжид нэг эсвэл түүнээс олон Chromium-н өргөтгөл хандаж байна}other{# USB төхөөрөмжид нэг эсвэл түүнээс олон Chromium-н өргөтгөл хандаж байна}}</translation>
 <translation id="3095811995836568724">Chromium-н түүх</translation>

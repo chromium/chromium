@@ -1820,6 +1820,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />eyða Chrome-g�
 <translation id="8282950411412455249">Opna öryggisstillingar</translation>
 <translation id="8288688997999490824">{NUM_WINDOWS,plural, =1{Loka einum huliðsglugga}one{Loka # huliðsglugga}other{Loka # huliðsgluggum}}</translation>
 <translation id="831192587911042850">Bætir núverandi vefsvæði á lista yfir vefsvæði sem þú fylgir.</translation>
+<translation id="8313599942510782709">Verkefnið þitt er enn í vinnslu</translation>
 <translation id="8317318757008452355">Opna valkosti til að prenta</translation>
 <translation id="8320212361750431956">Nýlegar aðgerðir</translation>
 <translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />Nýtt<ph name="END_NEW" /></translation>

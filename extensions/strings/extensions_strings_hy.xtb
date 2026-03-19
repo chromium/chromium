@@ -25,6 +25,7 @@
 <translation id="3115238746683532089">Անհայտ <ph name="PRODUCT_ID" /> արտադրանք <ph name="VENDOR_ID" /> վաճառողի կողմից (սերիական համարը՝ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Չհաջողվեց փոխարինել crx ֆայլը: Ստուգեք՝ արդյոք ֆայլը չի օգտագործվում այս պահին:</translation>
 <translation id="3163201441334626963">Անհայտ <ph name="PRODUCT_ID" /> արտադրանք <ph name="VENDOR_ID" /> վաճառողի կողմից</translation>
+<translation id="3174723475300476613">Ձեր կազմակերպությունն արգելափակել է այս ընդլայնման հասանելիությունը։</translation>
 <translation id="3242289508736283383">«Kiosk_only» մանիֆեստի հատկանիշով հավելվածը պետք է տեղադրվի ChromeOS-ի կրպակի ռեժիմում</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (սերիական համարը՝ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> արտադրանք <ph name="VENDOR_ID" /> վաճառողի կողմից (սերիական համարը՝ <ph name="SERIAL_NUMBER" />)</translation>
@@ -32,6 +33,7 @@
 <translation id="3834775135533257713">Չհաջողվեց ավելացնել «<ph name="TO_INSTALL_APP_NAME" />» հավելվածը, քանի որ այն հակասում է «<ph name="INSTALLED_APP_NAME" />» հավելվածին:</translation>
 <translation id="388442998277590542">Չհաջողվեց բեռնել «<ph name="OPTIONS_PAGE" />» ընտրանքների էջը:</translation>
 <translation id="3984413272403535372">Ընդլայնումը ստորագրելիս սխալ առաջացավ:</translation>
+<translation id="4094452115117798451">Ձեր կազմակերպությունն արգելափակել է այս կատեգորիայի ընդլայնումների հասանելիությունը։</translation>
 <translation id="4233778200880751280">Չհաջողվեց բեռնել տեղեկությունների էջը` «<ph name="ABOUT_PAGE" />»:</translation>
 <translation id="424963718355121712">Հավելվածները պետք է բեռնվեն այն կայքից, որի հետ աշխատում են</translation>
 <translation id="4306119971288449206">Հավելվածները պետք է ունենան «<ph name="CONTENT_TYPE" />» բովանդակության տեսակը</translation>

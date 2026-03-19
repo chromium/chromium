@@ -1073,6 +1073,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2673968385134502798">Pelit</translation>
 <translation id="2674170444375937751">Haluatko varmasti poistaa nämä sivut historiastasi?</translation>
 <translation id="2674524144218093528">Talon maalaus ja viimeistelytyöt</translation>
+<translation id="2675716371350192683">Sisältöäsi ei käytetä tekoälyn parantamiseen. Organisaatio voi muuttaa näitä asetuksia milloin tahansa.</translation>
 <translation id="26774279487328902"><ph name="GROUP_COUNT" /> välilehtiryhmää ei enää saatavilla</translation>
 <translation id="2677748264148917807">Poistu</translation>
 <translation id="2679216653373462289">Käytä liike- ja valoantureita</translation>
@@ -2658,6 +2659,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="5190835502935405962">Kirjanmerkkipalkki</translation>
 <translation id="5191315092027169558"><ph name="DOMAIN" /> ylläpitää profiiliasi</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> haluaa ladata useita tiedostoja</translation>
+<translation id="519528950056409240">Salli Walletin jakaa dataa</translation>
 <translation id="5199121357983849992">Tallennetaanko henkilötodistus?</translation>
 <translation id="5200063972779787617">Tallenna osoite tilille</translation>
 <translation id="5201306358585911203">Viesti tälle sivulle upotetulta sivulta</translation>
@@ -3105,6 +3107,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="5910140988253729859">Kumoa automaattinen täyttö</translation>
 <translation id="5911020115933784199">Tapahtumat ja tiedot</translation>
 <translation id="5911110632211230665">Avaaminen estetty</translation>
+<translation id="5912796581727968237">Avaa Google Wallet</translation>
 <translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" /> lisäsi tämän välilehden</translation>
 <translation id="5915189366813702112">Joustavat työolosuhteet</translation>
 <translation id="59174027418879706">Käytössä</translation>

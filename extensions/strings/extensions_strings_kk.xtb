@@ -25,6 +25,7 @@
 <translation id="3115238746683532089">Жеткізуші <ph name="VENDOR_ID" /> ұсынған белгісіз өнім <ph name="PRODUCT_ID" /> (сериялық нөмірі <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">CRX файлын ауыстыру мүмкін болмады. Файл пайдаланылып жатқан болуы мүмкін.</translation>
 <translation id="3163201441334626963">Жеткізуші <ph name="VENDOR_ID" /> ұсынған белгісіз өнім <ph name="PRODUCT_ID" /></translation>
+<translation id="3174723475300476613">Бұл кеңейтімді пайдалану рұқсатын ұйымыңыз блоктаған.</translation>
 <translation id="3242289508736283383">"kiosk_only" манифест төлсипатына ие қолданба ChromeOS киоск режимінде орнатылуы тиіс.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (сериялық нөмірі <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="VENDOR_ID" /> ұсынған <ph name="PRODUCT_NAME" /> (сериялық нөмірі <ph name="SERIAL_NUMBER" />)</translation>
@@ -32,6 +33,7 @@
 <translation id="3834775135533257713">"<ph name="TO_INSTALL_APP_NAME" />" қолданбасы қосылмады, себебі ол "<ph name="INSTALLED_APP_NAME" />" қолданбасымен қайшы.</translation>
 <translation id="388442998277590542">"<ph name="OPTIONS_PAGE" />" опциялар бетін жүктеу мүмкін емес.</translation>
 <translation id="3984413272403535372">Кеңейтімді белгілеу кезіндегі қате.</translation>
+<translation id="4094452115117798451">Бұл кеңейтім санатын пайдалану рұқсатын ұйымыңыз блоктаған.</translation>
 <translation id="4233778200880751280">"<ph name="ABOUT_PAGE" />" анықтама бетін жүктеу мүмкін емес.</translation>
 <translation id="424963718355121712">Қолданбаларға олар қолданылатын хостан қызмет көрсетілуі керек</translation>
 <translation id="4306119971288449206">Қолданбаларға "<ph name="CONTENT_TYPE" />" контентімен қызмет көрсетілуі керек</translation>

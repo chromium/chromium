@@ -273,7 +273,6 @@
 <translation id="200669432486043882">ගොනුව ප්‍රතිස්ථාපනය කරන්න</translation>
 <translation id="2006864819935886708">සබැඳුම</translation>
 <translation id="2008685064673031089">ප්‍රයිම් සෙවීම</translation>
-<translation id="2011174342667534258">SDK අනුවාදය:</translation>
 <translation id="2016697457005847575">දෝෂාවේක්ෂ පියවර උත්සාහ කරන්න</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2045814230297767491">හැඳි ගෑරුප්පු</translation>
@@ -523,7 +522,6 @@
 <translation id="3291996639387199448">ප්‍රධාන මගපෙන්වීම</translation>
 <translation id="3294437725009624529">ආගන්තුක</translation>
 <translation id="3303855915957856445">සෙවුම් ප්‍රතිඵල හමු නොවිණි</translation>
-<translation id="3305294846493618482">තවත්</translation>
 <translation id="3310640316857623290">DNS පමාව ඉඩ දිය හැකි මායිමෙන් සැලකිය යුතු ලෙස ඉහළය</translation>
 <translation id="3316495615885967552">සාරාංශය සහ මාතෘකා නිර්මාණ ආකෘති බාගත කිරීම සම්පූර්ණ කරන ලදි</translation>
 <translation id="3321030238473337787">පසුධාවන වේගය</translation>
@@ -702,7 +700,6 @@
 <translation id="4126551873361000548">තත්පර 10ක් ආපස්සට</translation>
 <translation id="4128271910628504223">"මීදුම සහිත වනාන්තරයක් අඳින්න" වැනි ප්‍රේරකයක් ඇතුළත් කරන්න</translation>
 <translation id="4130035430755296270">තවත් පිරිසැලසුම් විකල්ප සඳහා දිගටම උඩින් තබා ගන්න</translation>
-<translation id="4130750466177569591">මම එකඟ වෙමි</translation>
 <translation id="4131410914670010031">කළු සහ සුදු</translation>
 <translation id="4137700675046373159">සෙනසුරාදා</translation>
 <translation id="4139326893730851150">නිත්‍ය මෘදුකාංග යාවත්කාලීන</translation>
@@ -1051,7 +1048,6 @@
 <translation id="5606865426897221650">පටිත්ත</translation>
 <translation id="5612205513582918357">පන්ති මෙවලම් ඔබේ තිරය <ph name="RECEIVER_NAME" /> වෙත බෙදා ගනිමින් සිටී</translation>
 <translation id="5613201299517339763">ඔබ වරනය වී ඇත</translation>
-<translation id="5620281292257375798">අභ්‍යන්තර පමණයි</translation>
 <translation id="5628106863521633649">තිබෙන භාෂා</translation>
 <translation id="5630438231335788050">බෝහෝස්</translation>
 <translation id="5631759159893697722">උද්ධෘතය</translation>
@@ -1415,7 +1411,6 @@
 <translation id="7184043045742675738">ඔබේ බොත්තම අභිරුචිකරණය කිරීමට ඕනෑම යතුරක් මත ක්ලික් කරන්න. මූසිකය හෝ ඊතල යතුරු සමග යතුර නැවත ස්ථානගත කරන්න.</translation>
 <translation id="7187669805838282391">බදාදා</translation>
 <translation id="7205318498545665455">ඔබේ මයික්‍රෆෝනය තෝරා ගන්න</translation>
-<translation id="7206979415662233817">සේවා නියම</translation>
 <translation id="7210635925306941239">සියන්</translation>
 <translation id="7212547870105584639">ජාල APN සැකසීම් කළමනා කරන්න. APN සෙලියුලර් ජාලයක් සහ අන්තර්ජාලය අතර සම්බන්‍ධතාවක් ඇති කරයි. <ph name="BEGIN_LINK_LEARN_MORE" />තව දැන ගන්න<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">බාහිර උපාංග සඳහා නිත්‍ය මෘදුකාංග යාවත්කාලීන</translation>
@@ -1446,11 +1441,6 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7321055305895875150">කොළ සහ හරිත නිල</translation>
 <translation id="7328475450575141167">චන්‍ද්‍රවාසි කුරුල්ලා</translation>
-<translation id="7331297744262591636">ඔබට අවම වශයෙන් වයස අවුරුදු 18ක් විය යුතු අතර ඔබේ AI වෝල්පේපර භාවිතය <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Google සේවා නියම<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> සහ <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />උත්පාදක AI අතිරේක සේවා නියම<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" /> වෙත යටත් වන බවට එකඟ විය යුතු යි.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          ඔබට පුද්ගලික සහ වාණිජ නොවන භාවිතය සඳහා පමණක් AI සමග වෝල්පේපර තැනීමට හැක. ඔබට වෝල්පේපර් උදවු ලැබුණු විට, <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google හි පෞද්ගලිකත්ව ප්‍රතිපත්තියට<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> යටත්ව, වෝල්පේපර් යෝජනා උත්පාදනය කිරීමට Google AI සේවාදායක වෙත පෙළ යවනු ලැබේ. <ph name="BEGIN_LINK_LEARN_MORE" />තව දැන ගන්න<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google සෙවීම තුළ ප්‍රතිඵලය බැලීමට සෙවීම සහ ඉඩ යතුර ඔබන්න.</translation>
 <translation id="7343649194310845056">ජාල උපාංග</translation>
 <translation id="7344788170842919262">පෘථිවිමය</translation>
 <translation id="7346768383111016081">ඔබේ යතුරු පුවරුව සමග ක්‍රීඩා කිරීමට ක්‍රීඩා ක්‍රියාව මත පාලනය තබන්න</translation>
@@ -1838,7 +1828,6 @@
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">මෙම වීඩියෝව භාවිත කරන්න</translation>
-<translation id="9087578468327036362">මෙම විමසුම වාර්තා කරන්න</translation>
 <translation id="9088306295921699330">වත්මන් භාවිතය</translation>
 <translation id="9088994563996376283">සරල කරන්න</translation>
 <translation id="9095775724867566971">Pluginvm</translation>

@@ -1724,6 +1724,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="7149893636342594995">Siste døgn</translation>
 <translation id="7154417656353909837">Fjern adresser</translation>
 <translation id="7161230316646448869">Synkroniser bokmerker, logg med mer på alle enheter</translation>
+<translation id="7165323152084385463">VIN</translation>
 <translation id="7173114856073700355">Åpne Innstillinger</translation>
 <translation id="7173721738069475737">{count,plural, =1{Bokmerket er lagret}other{{count} bokmerker er lagret}}</translation>
 <translation id="7176183551031110427">Zoom ut</translation>
@@ -2218,6 +2219,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="8863067612494559785">Sender til <ph name="DEVICE_NAME" /> …</translation>
 <translation id="8863431381414769983">Få veibeskrivelser og lokal informasjon fra Google Maps</translation>
 <translation id="8871974300055371298">Innholdsinnstillinger</translation>
+<translation id="8876661425082386199">Sjekk tilkoblingen din</translation>
 <translation id="8877788021141246043">Angi en påminnelse</translation>
 <translation id="8879604564928138696">Dobbelttrykk for å prøve</translation>
 <translation id="8879952635974818770">Personlig tilpasset innhold</translation>

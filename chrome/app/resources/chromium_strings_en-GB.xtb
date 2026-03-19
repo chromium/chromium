@@ -198,6 +198,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="3045032126857188731">Translated language: <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">Close feedback dialogue</translation>
 <translation id="3068187312562070417">Other Chromium profiles</translation>
+<translation id="3068290154869370196">Extensions are add-ons that let you customise Chromium. From staying organised to simplifying everyday tasks, extensions help you make Chromium your own.</translation>
 <translation id="3068515742935458733">Help make Chromium better by sending crash reports and <ph name="UMA_LINK" /> to Google</translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{1 USB device was being accessed by one or more Chromium extensions}=1{1 USB device is being accessed by one or more Chromium extensions}other{# USB devices are being accessed by one or more Chromium extensions}}</translation>
 <translation id="3095811995836568724">Chromium history</translation>
@@ -432,6 +433,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="5821520528363214608">To use and save Chromium data in your Google Account, update Chromium</translation>
 <translation id="5824893331272123205">Couldn't load this panel, try again</translation>
 <translation id="5862307444128926510">Welcome to Chromium</translation>
+<translation id="5867606647614813312">Turns on additional features to provide Chromium’s strongest protections</translation>
 <translation id="5871205389137001634">Click to exit image search</translation>
 <translation id="5883558403894052917">Chromium found that these items contain malware:</translation>
 <translation id="5889361821821684993">Chromium regularly checks to make sure your browser has the safest settings. We'll let you know if anything needs your review.</translation>

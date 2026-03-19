@@ -1073,6 +1073,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2673968385134502798">Jogos</translation>
 <translation id="2674170444375937751">Você quer mesmo excluir essas páginas do seu histórico?</translation>
 <translation id="2674524144218093528">Pintura e acabamento de casas</translation>
+<translation id="2675716371350192683">Seu conteúdo não será usado para aprimorar a IA. Sua organização pode mudar essas configurações a qualquer momento.</translation>
 <translation id="26774279487328902"><ph name="GROUP_COUNT" /> grupos de guias não estão mais disponíveis</translation>
 <translation id="2677748264148917807">Sair</translation>
 <translation id="2679216653373462289">Usar sensores de movimento e luz</translation>
@@ -2657,6 +2658,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="5190835502935405962">Barra de favoritos</translation>
 <translation id="5191315092027169558">Seu perfil é gerenciado pelo domínio <ph name="DOMAIN" /></translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> gostaria de baixar vários arquivos</translation>
+<translation id="519528950056409240">Permitir que a Carteira compartilhe dados</translation>
 <translation id="5199121357983849992">Salvar documento de identificação?</translation>
 <translation id="5200063972779787617">Salvar endereço na conta</translation>
 <translation id="5201306358585911203">Uma página incorporada nesta página diz</translation>
@@ -3104,6 +3106,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="5910140988253729859">Desfazer preenchimento automático</translation>
 <translation id="5911020115933784199">Eventos e programações</translation>
 <translation id="5911110632211230665">A abertura de arquivos está bloqueada</translation>
+<translation id="5912796581727968237">Abrir a Carteira do Google</translation>
 <translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" /> adicionou esta guia</translation>
 <translation id="5915189366813702112">Condições flexíveis de trabalho</translation>
 <translation id="59174027418879706">Ativado</translation>

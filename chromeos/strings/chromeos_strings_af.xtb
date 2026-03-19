@@ -273,7 +273,6 @@
 <translation id="200669432486043882">Vervang lêer</translation>
 <translation id="2006864819935886708">Konnektiwiteit</translation>
 <translation id="2008685064673031089">Hoofsoektog</translation>
-<translation id="2011174342667534258">SDK-weergawe:</translation>
 <translation id="2016697457005847575">Probeer foutsporingstappe</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2045814230297767491">eetgerei</translation>
@@ -523,7 +522,6 @@
 <translation id="3291996639387199448">Sleutelrigting</translation>
 <translation id="3294437725009624529">Gas</translation>
 <translation id="3303855915957856445">Geen soekresultate gevind nie</translation>
-<translation id="3305294846493618482">meer</translation>
 <translation id="3310640316857623290">DNS-traagheid is aansienlik bo toelaatbare drempel</translation>
 <translation id="3316495615885967552">Aflaai van model vir opsomming en titelskepping is voltooi</translation>
 <translation id="3321030238473337787">Terugspeelspoed</translation>
@@ -702,7 +700,6 @@
 <translation id="4126551873361000548">Spring 10 sekondes terug</translation>
 <translation id="4128271910628504223">Voer porteks soos “teken ’n mistige woud” in</translation>
 <translation id="4130035430755296270">Hou oor kieslys vir nog uitlegopsies</translation>
-<translation id="4130750466177569591">Ek stem in</translation>
 <translation id="4131410914670010031">Swart en wit</translation>
 <translation id="4137700675046373159">op Saterdag</translation>
 <translation id="4139326893730851150">Fermwareopdaterings</translation>
@@ -1051,7 +1048,6 @@
 <translation id="5606865426897221650">Oortjie</translation>
 <translation id="5612205513582918357">Klasnutsgoed deel tans jou skerm met <ph name="RECEIVER_NAME" /></translation>
 <translation id="5613201299517339763">Jy is afgemeld</translation>
-<translation id="5620281292257375798">Slegs intern</translation>
 <translation id="5628106863521633649">Beskikbare tale</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">opsomming</translation>
@@ -1415,7 +1411,6 @@
 <translation id="7184043045742675738">Klik op enige sleutel om jou knoppie te pasmaak. Herposisioneer sleutel met muis of pylsleutels.</translation>
 <translation id="7187669805838282391">op Woensdag</translation>
 <translation id="7205318498545665455">Kies jou mikrofoon</translation>
-<translation id="7206979415662233817">Diensbepalings</translation>
 <translation id="7210635925306941239">siaan</translation>
 <translation id="7212547870105584639">Bestuur netwerk-APN-instellings. APN’e vestig ’n verbinding tussen ’n selnetwerk en die internet. <ph name="BEGIN_LINK_LEARN_MORE" />Meer inligting<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Fermware-opdaterings vir eksterne toestelle</translation>
@@ -1446,11 +1441,6 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7321055305895875150">groen en blougroen</translation>
 <translation id="7328475450575141167">paradysvoël</translation>
-<translation id="7331297744262591636">Jy moet ten minste 18 jaar oud wees en instem dat jou gebruik van AI-muurpapiere onderworpe is aan <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Google se diensbepalings<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> en <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />Bykomende diensbepalings vir Generatiewe AI<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Jy kan net muurpapiere met AI vir persoonlike en niekommersiële gebruik skep. Wanneer jy muurpapierhulp kry, word teks na Google AI-bedieners gestuur om muurpapiervoorstelle te genereer, onderworpe aan <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google se privaatheidsbeleid<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. <ph name="BEGIN_LINK_LEARN_MORE" />Meer inligting<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Druk Search plus spasiebalk om resultaat in Google Search te sien.</translation>
 <translation id="7343649194310845056">Netwerktoestelle</translation>
 <translation id="7344788170842919262">aards</translation>
 <translation id="7346768383111016081">Plaas kontrole op speletjie-aksie om met jou sleutelbord te speel</translation>
@@ -1838,7 +1828,6 @@ Laai die transkripsiemodel (tot 100 MB) af om hierdie transkripsies te kry.</tr
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">Gebruik hierdie video</translation>
-<translation id="9087578468327036362">Gee hierdie navraag aan</translation>
 <translation id="9088306295921699330">Huidige gebruik</translation>
 <translation id="9088994563996376283">Vereenvoudig</translation>
 <translation id="9095775724867566971">Pluginvm</translation>

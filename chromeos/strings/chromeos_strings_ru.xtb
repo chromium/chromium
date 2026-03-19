@@ -273,7 +273,6 @@
 <translation id="200669432486043882">Заменить файл</translation>
 <translation id="2006864819935886708">Подключение</translation>
 <translation id="2008685064673031089">Поиск простых чисел</translation>
-<translation id="2011174342667534258">Версия SDK:</translation>
 <translation id="2016697457005847575">Инструкции по устранению неполадок</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2045814230297767491">столовые приборы</translation>
@@ -523,7 +522,6 @@
 <translation id="3291996639387199448">Направление ключа</translation>
 <translation id="3294437725009624529">Гость</translation>
 <translation id="3303855915957856445">Ничего не найдено</translation>
-<translation id="3305294846493618482">ещё</translation>
 <translation id="3310640316857623290">Задержка на сервере доменных имен существенно превышает допустимое значение.</translation>
 <translation id="3316495615885967552">Модель для создания названий и кратких пересказов скачана</translation>
 <translation id="3321030238473337787">Скорость воспроизведения</translation>
@@ -702,7 +700,6 @@
 <translation id="4126551873361000548">Перемотать назад на 10 секунд</translation>
 <translation id="4128271910628504223">Введите запрос, например "нарисуй туманный лес"</translation>
 <translation id="4130035430755296270">Наведите указатель, чтобы увидеть больше вариантов показа</translation>
-<translation id="4130750466177569591">Принимаю</translation>
 <translation id="4131410914670010031">Черно-белая печать</translation>
 <translation id="4137700675046373159">в субботу</translation>
 <translation id="4139326893730851150">Обновления встроенного ПО</translation>
@@ -1051,7 +1048,6 @@
 <translation id="5606865426897221650">Tab</translation>
 <translation id="5612205513582918357">Приложение "Инструменты для уроков" транслирует экран на устройство "<ph name="RECEIVER_NAME" />".</translation>
 <translation id="5613201299517339763">Вы вышли из системы</translation>
-<translation id="5620281292257375798">Конфиденциально</translation>
 <translation id="5628106863521633649">Доступные языки</translation>
 <translation id="5630438231335788050">баухаус</translation>
 <translation id="5631759159893697722">аннотация</translation>
@@ -1415,7 +1411,6 @@
 <translation id="7184043045742675738">Чтобы настроить кнопку, нажмите на любую клавишу. Измените положение с помощью мыши или клавиш со стрелками.</translation>
 <translation id="7187669805838282391">в среду</translation>
 <translation id="7205318498545665455">Выберите микрофон</translation>
-<translation id="7206979415662233817">Условия использования</translation>
 <translation id="7210635925306941239">циановый</translation>
 <translation id="7212547870105584639">Управление настройками точки доступа. С помощью точек доступа устанавливается подключение между мобильной сетью и интернетом. <ph name="BEGIN_LINK_LEARN_MORE" />Подробнее…<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Обновление встроенного ПО на внешних устройствах</translation>
@@ -1446,11 +1441,6 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7321055305895875150">зеленый и сине-зеленый</translation>
 <translation id="7328475450575141167">стрелиция</translation>
-<translation id="7331297744262591636">Вам должно быть не менее 18 лет, и вы должны согласиться использовать ИИ-обои в соответствии с <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Условиями использования Google<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> и <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />дополнительными условиями использования генеративного искусственного интеллекта<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          ИИ для создания обоев предназначено только для личного и некоммерческого использования. Когда вы создаете запрос, согласно <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Политике конфиденциальности Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> его текст отправляется на серверы ИИ от Google, а затем используется для генерации предложений обоев. <ph name="BEGIN_LINK_LEARN_MORE" />Подробнее…<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Чтобы посмотреть результат в Google Поиске, нажмите "Поиск + Пробел".</translation>
 <translation id="7343649194310845056">Сетевые устройства</translation>
 <translation id="7344788170842919262">природные тона</translation>
 <translation id="7346768383111016081">Выберите клавишу для действия, чтобы играть с помощью клавиатуры.</translation>
@@ -1838,7 +1828,6 @@
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">Использовать это видео</translation>
-<translation id="9087578468327036362">Сообщить о запросе</translation>
 <translation id="9088306295921699330">Используется</translation>
 <translation id="9088994563996376283">Упростить</translation>
 <translation id="9095775724867566971">Pluginvm</translation>

@@ -273,7 +273,6 @@
 <translation id="200669432486043882">替换文件</translation>
 <translation id="2006864819935886708">连接</translation>
 <translation id="2008685064673031089">高峰搜索</translation>
-<translation id="2011174342667534258">SDK 版本：</translation>
 <translation id="2016697457005847575">尝试问题排查步骤</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2045814230297767491">餐具</translation>
@@ -523,7 +522,6 @@
 <translation id="3291996639387199448">密钥方向</translation>
 <translation id="3294437725009624529">访客</translation>
 <translation id="3303855915957856445">未找到任何搜索结果</translation>
-<translation id="3305294846493618482">更多</translation>
 <translation id="3310640316857623290">DNS 延迟时间明显超出了允许的阈值</translation>
 <translation id="3316495615885967552">摘要和标题创建模型下载完毕</translation>
 <translation id="3321030238473337787">播放速度</translation>
@@ -702,7 +700,6 @@
 <translation id="4126551873361000548">后退 10 秒</translation>
 <translation id="4128271910628504223">输入一条提示，例如“画一片雾气蒙蒙的森林”</translation>
 <translation id="4130035430755296270">将鼠标指针悬停于此处可查看更多布局选项</translation>
-<translation id="4130750466177569591">我同意</translation>
 <translation id="4131410914670010031">黑白色</translation>
 <translation id="4137700675046373159">在周六</translation>
 <translation id="4139326893730851150">固件更新</translation>
@@ -1051,7 +1048,6 @@
 <translation id="5606865426897221650">Tab 键</translation>
 <translation id="5612205513582918357">课堂工具正在与“<ph name="RECEIVER_NAME" />”共享您的屏幕</translation>
 <translation id="5613201299517339763">您已退出账号</translation>
-<translation id="5620281292257375798">仅供内部使用</translation>
 <translation id="5628106863521633649">支持的语言</translation>
 <translation id="5630438231335788050">包豪斯</translation>
 <translation id="5631759159893697722">摘要</translation>
@@ -1415,7 +1411,6 @@
 <translation id="7184043045742675738">点击任意键自定义您的按钮。使用鼠标或箭头键调整键的位置。</translation>
 <translation id="7187669805838282391">在周三</translation>
 <translation id="7205318498545665455">选择麦克风</translation>
-<translation id="7206979415662233817">服务条款</translation>
 <translation id="7210635925306941239">青色</translation>
 <translation id="7212547870105584639">管理网络 APN 设置。APN 会在移动网络和互联网之间建立连接。<ph name="BEGIN_LINK_LEARN_MORE" />了解详情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">外部设备的固件更新</translation>
@@ -1446,11 +1441,6 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7321055305895875150">绿色和蓝绿色</translation>
 <translation id="7328475450575141167">鹤望兰</translation>
-<translation id="7331297744262591636">您必须年满 18 周岁，并且同意在使用 AI 壁纸时遵守 <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Google 服务条款<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" />和<ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />生成式 AI 附加服务条款<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />。
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          您只能利用 AI 制作用于个人和非商业用途的壁纸。当您获取壁纸方面的帮助时，系统会将相关文字发送到 Google AI 服务器，以根据 <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google 的隐私权政策<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />生成壁纸建议。<ph name="BEGIN_LINK_LEARN_MORE" />了解详情<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="7343581795491695942"><ph name="QUERY_TEXT" />；<ph name="RESULT_TEXT" />；按搜索键 + 空格键即可查看“Google 搜索”中的结果。</translation>
 <translation id="7343649194310845056">网络设备</translation>
 <translation id="7344788170842919262">自然色</translation>
 <translation id="7346768383111016081">使用键盘控制游戏操作</translation>
@@ -1838,7 +1828,6 @@
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">蓝牙</translation>
 <translation id="9082718469794970195">使用此视频</translation>
-<translation id="9087578468327036362">报告此次查询</translation>
 <translation id="9088306295921699330">目前用量</translation>
 <translation id="9088994563996376283">简化</translation>
 <translation id="9095775724867566971">Pluginvm</translation>

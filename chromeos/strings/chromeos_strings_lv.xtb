@@ -267,7 +267,6 @@
 <translation id="200669432486043882">Aizstāt failu</translation>
 <translation id="2006864819935886708">Savienojamība</translation>
 <translation id="2008685064673031089">Pirmskaitļu meklēšana</translation>
-<translation id="2011174342667534258">SDK versija:</translation>
 <translation id="2016697457005847575">Skatīt problēmu novēršanas darbības</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2045814230297767491">galda piederumi</translation>
@@ -517,7 +516,6 @@
 <translation id="3291996639387199448">Atslēgas pozīcija</translation>
 <translation id="3294437725009624529">Viesis</translation>
 <translation id="3303855915957856445">Netika atrasts neviens meklēšanas rezultāts.</translation>
-<translation id="3305294846493618482">vēl</translation>
 <translation id="3310640316857623290">DNS latentums ievērojami pārsniedz pieļaujamo slieksni</translation>
 <translation id="3316495615885967552">Kopsavilkuma un nosaukuma izveides modeļa lejupielāde pabeigta</translation>
 <translation id="3321030238473337787">Atskaņošanas ātrums</translation>
@@ -696,7 +694,6 @@
 <translation id="4126551873361000548">Atpakaļ par 10 sekundēm</translation>
 <translation id="4128271910628504223">Ievadiet uzvedni, piemēram, “uzzīmēt miglainu mežu”.</translation>
 <translation id="4130035430755296270">Lai skatītu citas izkārtojuma iespējas, turpiniet turēt kursoru turpat</translation>
-<translation id="4130750466177569591">Piekrītu</translation>
 <translation id="4131410914670010031">Melnbaltā</translation>
 <translation id="4137700675046373159">sestdien</translation>
 <translation id="4139326893730851150">Aparātprogrammatūras atjauninājumi</translation>
@@ -1039,7 +1036,6 @@
 <translation id="5606865426897221650">Tabulēšanas taustiņš</translation>
 <translation id="5612205513582918357">Lietotnē Klases rīki jūsu ekrāns tiek kopīgots ar displeju “<ph name="RECEIVER_NAME" />”.</translation>
 <translation id="5613201299517339763">Jūs tikāt izrakstīts</translation>
-<translation id="5620281292257375798">Tikai iekšējai lietošanai</translation>
 <translation id="5628106863521633649">Pieejamās valodas</translation>
 <translation id="5630438231335788050">Bauhaus</translation>
 <translation id="5631759159893697722">kopsavilkums</translation>
@@ -1403,7 +1399,6 @@
 <translation id="7184043045742675738">Lai pielāgotu pogu, nospiediet jebkuru taustiņu. Mainiet izvietojumu, izmantojot peli vai bultiņas.</translation>
 <translation id="7187669805838282391">trešdien</translation>
 <translation id="7205318498545665455">Izvēlieties mikrofonu</translation>
-<translation id="7206979415662233817">Pakalpojumu sniegšanas noteikumi</translation>
 <translation id="7210635925306941239">ciāna</translation>
 <translation id="7212547870105584639">Pārvaldiet tīkla APN iestatījumus. APN izveido savienojumu starp mobilo tīklu un internetu. <ph name="BEGIN_LINK_LEARN_MORE" />Uzziniet vairāk<ph name="END_LINK_LEARN_MORE" />.</translation>
 <translation id="7212734716605298123">Aparātprogrammatūras atjauninājumi ārējām ierīcēm</translation>
@@ -1434,11 +1429,6 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7321055305895875150">zaļa un zilganzaļa</translation>
 <translation id="7328475450575141167">strelīcija</translation>
-<translation id="7331297744262591636">Jums ir jābūt vismaz 18 gadus vecam un jāpiekrīt, ka uz MI fona tapešu izmantošanu attiecas <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Google pakalpojumu sniegšanas noteikumi<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> un <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />ģeneratīvā MI papildu pakalpojumu sniegšanas noteikumi<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          MI fona tapešu izveidei var izmantot tikai personīgiem un nekomerciāliem mērķiem. Ja izmantojat palīdzību fona tapešu veidošanai, Google MI serveriem tiek nosūtīts teksts fona tapešu ieteikumu ģenerēšanai atbilstoši <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google konfidencialitātes politiku<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. <ph name="BEGIN_LINK_LEARN_MORE" />Uzzināt vairāk<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; lai skatītu rezultātu Google meklēšanā, nospiediet meklēšanas taustiņu un atstarpes taustiņu.</translation>
 <translation id="7343649194310845056">Tīkla ierīces</translation>
 <translation id="7344788170842919262">zemes toņu</translation>
 <translation id="7346768383111016081">Piešķiriet vadīklu spēles darbībai, lai spēlētu ar tastatūru</translation>
@@ -1826,7 +1816,6 @@ Lai varētu izveidot šādas transkripcijas, lejupielādējiet transkribēšanas
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">Izmantot šo videoklipu</translation>
-<translation id="9087578468327036362">Ziņot par šo vaicājumu</translation>
 <translation id="9088306295921699330">Pašreizējais lietojums</translation>
 <translation id="9088994563996376283">Vienkāršot</translation>
 <translation id="9095775724867566971">Pluginvm</translation>

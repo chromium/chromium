@@ -273,7 +273,6 @@
 <translation id="200669432486043882">ଫାଇଲକୁ ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
 <translation id="2006864819935886708">ସଂଯୋଗ</translation>
 <translation id="2008685064673031089">ପ୍ରାଇମ୍ ସନ୍ଧାନ</translation>
-<translation id="2011174342667534258">SDK ସଂସ୍କରଣ:</translation>
 <translation id="2016697457005847575">ଟ୍ରବୁଲସୁଟିଂ ଷ୍ଟେପଗୁଡ଼ିକୁ ବ୍ୟବହାର କରି ଦେଖନ୍ତୁ</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2045814230297767491">କଟଲେରି</translation>
@@ -523,7 +522,6 @@
 <translation id="3291996639387199448">ପ୍ରମାଣୀକରଣ କୀ'ର ଦିଗ</translation>
 <translation id="3294437725009624529">ଅତିଥି</translation>
 <translation id="3303855915957856445">କୌଣସି ସର୍ଚ୍ଚ ଫଳାଫଳ ମିଳିଲା ନାହିଁ</translation>
-<translation id="3305294846493618482">ଅଧିକ</translation>
 <translation id="3310640316857623290">DNS ଲାଟେନ୍ସି ଅନୁମୋଦିତ ସୀମା ଠାରୁ ଉଲ୍ଲେଖଯୋଗ୍ୟ ଭାବରେ ଉପରେ ଅଛି</translation>
 <translation id="3316495615885967552">ସାରାଂଶ ଏବଂ ଟାଇଟେଲ କ୍ରିଏସନ ମଡେଲ ଡାଉନଲୋଡ ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି</translation>
 <translation id="3321030238473337787">ପ୍ଲେବ୍ୟାକର ସ୍ପିଡ୍</translation>
@@ -702,7 +700,6 @@
 <translation id="4126551873361000548">10 ସେକେଣ୍ଡ ପଛକୁ ନିଅନ୍ତୁ</translation>
 <translation id="4128271910628504223">"ଏକ ଘଞ୍ଚ ଜଙ୍ଗଲ ଡ୍ର କରନ୍ତୁ" ଭଳି ଏକ ପ୍ରମ୍ପ୍ଟ ଲେଖନ୍ତୁ</translation>
 <translation id="4130035430755296270">ଅଧିକ ଲେଆଉଟ ବିକଳ୍ପ ପାଇଁ ହୋଭର କରିବା ଜାରି ରଖନ୍ତୁ</translation>
-<translation id="4130750466177569591">ମୁଁ ରାଜି</translation>
 <translation id="4131410914670010031">କଳା ଏବଂ ଧଳା</translation>
 <translation id="4137700675046373159">ଶନିବାର ଦିନ</translation>
 <translation id="4139326893730851150">ଫାର୍ମୱେର ଅପଡେଟଗୁଡ଼ିକ</translation>
@@ -1051,7 +1048,6 @@
 <translation id="5606865426897221650">ଟାବ</translation>
 <translation id="5612205513582918357">କ୍ଲାସ ଟୁଲ ଆପଣଙ୍କ ସ୍କ୍ରିନକୁ <ph name="RECEIVER_NAME" />ଙ୍କ ସହ ସେୟାର କରୁଛି</translation>
 <translation id="5613201299517339763">ଆପଣଙ୍କୁ ସାଇନ ଆଉଟ କରାଯାଇଛି</translation>
-<translation id="5620281292257375798">କେବଳ ଇଣ୍ଟର୍ନଲ୍</translation>
 <translation id="5628106863521633649">ଉପଲବ୍ଧ ଭାଷା</translation>
 <translation id="5630438231335788050">ବଉହସ</translation>
 <translation id="5631759159893697722">ସାରାଂଶ</translation>
@@ -1415,7 +1411,6 @@
 <translation id="7184043045742675738">ଆପଣଙ୍କ ବଟନକୁ କଷ୍ଟମାଇଜ କରିବା ପାଇଁ ଯେ କୌଣସି କୀ'ରେ କ୍ଲିକ କରନ୍ତୁ। ମାଉସ କିମ୍ବା ତୀର କୀ'ଗୁଡ଼ିକ ସହ କୀ ରିପୋଜିସନ କରନ୍ତୁ।</translation>
 <translation id="7187669805838282391">ବୁଧବାର ଦିନ</translation>
 <translation id="7205318498545665455">ଆପଣଙ୍କର ମାଇକ ବାଛନ୍ତୁ</translation>
-<translation id="7206979415662233817">ସେବାର ସର୍ତ୍ତାବଳୀ</translation>
 <translation id="7210635925306941239">ସିଆନ</translation>
 <translation id="7212547870105584639">ନେଟୱାର୍କ APN ସେଟିଂସକୁ ପରିଚାଳନା କରନ୍ତୁ। APNଗୁଡ଼ିକ ଏକ ସେଲୁଲାର ନେଟୱାର୍କ ଏବଂ ଇଣ୍ଟରନେଟ ମଧ୍ୟରେ ଏକ କନେକ୍ସନ ତିଆରି କରେ। <ph name="BEGIN_LINK_LEARN_MORE" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">ଏକ୍ସଟର୍ନଲ ଡିଭାଇସଗୁଡ଼ିକ ପାଇଁ ଫାର୍ମୱେର ଅପଡେଟଗୁଡ଼ିକ</translation>
@@ -1446,11 +1441,6 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7321055305895875150">ସବୁଜ ଏବଂ ଟିଲ</translation>
 <translation id="7328475450575141167">ବାର୍ଡ ଅଫ ପାରାଡାଇଜ</translation>
-<translation id="7331297744262591636">ଆପଣଙ୍କ ବୟସ ଅତି କମରେ 18 ବର୍ଷ ହୋଇଥିବା ଆବଶ୍ୟକ ଏବଂ AI ୱାଲପେପରଗୁଡ଼ିକର ଆପଣଙ୍କ ବ୍ୟବହାର <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Google ସେବାର ସର୍ତ୍ତାବଳୀ<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> ଏବଂ <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />ଜେନେରେଟିଭ AI ଅତିରିକ୍ତ ସେବା ସର୍ତ୍ତାବଳୀ<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />ର ଅଧୀନ ବୋଲି ଆପଣ ରାଜି ହେବା ଆବଶ୍ୟକ।
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          ଆପଣ କେବଳ ବ୍ୟକ୍ତିଗତ ଏବଂ ଅଣ-କମର୍ସିଆଲ ବ୍ୟବହାର ପାଇଁ AI ମାଧ୍ୟମରେ ୱାଲପେପରଗୁଡ଼ିକ ତିଆରି କରିପାରିବେ। ଆପଣ ୱାଲପେପର ସମ୍ବନ୍ଧୀୟ ସହାୟତା ପାଇବା ସମୟରେ, ୱାଲପେପର ପରମର୍ଶ ଜେନେରେଟ କରିବାକୁ Google AI ସର୍ଭରଗୁଡ଼ିକୁ ଟେକ୍ସଟ ପଠାଯାଏ, ଏହା <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googleର ଗୋପନୀୟତା ନୀତି<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />ର ଅଧୀନ ଅଟେ। <ph name="BEGIN_LINK_LEARN_MORE" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Searchରେ ଫଳାଫଳ ଦେଖିବାକୁ Search ସହିତ Space ଦବାନ୍ତୁ।</translation>
 <translation id="7343649194310845056">ନେଟୱାର୍କ ଡିଭାଇସଗୁଡ଼ିକ</translation>
 <translation id="7344788170842919262">ଆର୍ଥି</translation>
 <translation id="7346768383111016081">ଆପଣଙ୍କ କୀବୋର୍ଡ ମାଧ୍ୟମରେ ପ୍ଲେ କରିବା ପାଇଁ ଗେମ ଆକ୍ସନରେ ନିୟନ୍ତ୍ରଣ ଲାଗୁ କରନ୍ତୁ</translation>
@@ -1838,7 +1828,6 @@
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">ବ୍ଲୁଟୁଥ୍</translation>
 <translation id="9082718469794970195">ଏହି ଭିଡିଓ ବ୍ୟବହାର କରନ୍ତୁ</translation>
-<translation id="9087578468327036362">ଏହି କ୍ୱେରୀ ବିଷୟରେ ରିପୋର୍ଟ କରନ୍ତୁ</translation>
 <translation id="9088306295921699330">ବର୍ତ୍ତମାନର ବ୍ୟବହାର</translation>
 <translation id="9088994563996376283">ସରଳ କରନ୍ତୁ</translation>
 <translation id="9095775724867566971">Pluginvm</translation>

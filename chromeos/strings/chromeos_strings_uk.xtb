@@ -273,7 +273,6 @@
 <translation id="200669432486043882">Замінити файл</translation>
 <translation id="2006864819935886708">Підключення</translation>
 <translation id="2008685064673031089">Пошук Prime</translation>
-<translation id="2011174342667534258">Версія пакета SDK:</translation>
 <translation id="2016697457005847575">Виконайте дії для вирішення проблеми</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2045814230297767491">столові прибори</translation>
@@ -523,7 +522,6 @@
 <translation id="3291996639387199448">Напрямок ключа</translation>
 <translation id="3294437725009624529">Гість</translation>
 <translation id="3303855915957856445">Немає результатів</translation>
-<translation id="3305294846493618482">більше</translation>
 <translation id="3310640316857623290">Затримка DNS значно довша, ніж дозволено</translation>
 <translation id="3316495615885967552">Модель для створення підсумку й назви завантажено</translation>
 <translation id="3321030238473337787">Швидкість відтворення</translation>
@@ -702,7 +700,6 @@
 <translation id="4126551873361000548">Перемотати назад на 10 с</translation>
 <translation id="4128271910628504223">Введіть запит, наприклад "намалюй туманний ліс"</translation>
 <translation id="4130035430755296270">Продовжуйте наводити курсор на варіанти макета</translation>
-<translation id="4130750466177569591">Прийняти</translation>
 <translation id="4131410914670010031">Чорно-білий</translation>
 <translation id="4137700675046373159">у суботу</translation>
 <translation id="4139326893730851150">Оновлення мікропрограми</translation>
@@ -1051,7 +1048,6 @@
 <translation id="5606865426897221650">Tab</translation>
 <translation id="5612205513582918357">Додаток Інструменти для уроків показує ваш екран на дисплеї <ph name="RECEIVER_NAME" /></translation>
 <translation id="5613201299517339763">Ви вийшли з облікового запису</translation>
-<translation id="5620281292257375798">Лише для внутрішнього використання</translation>
 <translation id="5628106863521633649">Доступні мови</translation>
 <translation id="5630438231335788050">баухаус</translation>
 <translation id="5631759159893697722">автореферат</translation>
@@ -1415,7 +1411,6 @@
 <translation id="7184043045742675738">Щоб налаштувати кнопку, натисніть будь-яку клавішу. Змініть положення клавіші за допомогою миші або стрілок.</translation>
 <translation id="7187669805838282391">у середу</translation>
 <translation id="7205318498545665455">Виберіть мікрофон</translation>
-<translation id="7206979415662233817">Умови використання</translation>
 <translation id="7210635925306941239">ціанового</translation>
 <translation id="7212547870105584639">Керуйте налаштуваннями APN мережі: за допомогою ідентифікаторів APN установлюється зв’язок між мобільною мережею і Інтернетом. <ph name="BEGIN_LINK_LEARN_MORE" />Докладніше<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Оновлення мікропрограми для зовнішніх пристроїв</translation>
@@ -1446,11 +1441,6 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7321055305895875150">зеленого й ціанового</translation>
 <translation id="7328475450575141167">стреліція</translation>
-<translation id="7331297744262591636">Застосовувати цю функцію можуть лише особи, які досягли 18-річного віку й погодилися, що користування шпалерами від ШІ регулюється <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Загальними положеннями й умовами Google<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> і <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />Додатковими умовами використання генеративного штучного інтелекту<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          За допомогою ШІ можна створювати шпалери лише для особистого некомерційного використання. Коли ви запитуєте генерування шпалер, текст надсилається на сервери ШІ від Google, як описано в <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Політиці конфіденційності Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. <ph name="BEGIN_LINK_LEARN_MORE" />Докладніше<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />. Щоб переглянути результат у Пошуку Google, натисніть клавішу пошуку та пробіл.</translation>
 <translation id="7343649194310845056">Мережеві пристрої</translation>
 <translation id="7344788170842919262">землистих</translation>
 <translation id="7346768383111016081">Виберіть клавішу для дії, щоб грати за допомогою клавіатури</translation>
@@ -1838,7 +1828,6 @@
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">Використати це відео</translation>
-<translation id="9087578468327036362">Повідомити про проблеми із запитом</translation>
 <translation id="9088306295921699330">Використовується</translation>
 <translation id="9088994563996376283">Спростити</translation>
 <translation id="9095775724867566971">PluginVM</translation>

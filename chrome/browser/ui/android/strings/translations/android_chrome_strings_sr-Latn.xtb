@@ -1820,6 +1820,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="8282950411412455249">Idi u Bezbednosna podešavanja</translation>
 <translation id="8288688997999490824">{NUM_WINDOWS,plural, =1{Zatvori 1 prozor bez arhiviranja}one{Zatvori # prozor bez arhiviranja}few{Zatvori # prozora bez arhiviranja}other{Zatvori # prozora bez arhiviranja}}</translation>
 <translation id="831192587911042850">Dodaje aktuelni veb-sajt na listu veb-sajtova koje pratite.</translation>
+<translation id="8313599942510782709">Zadatak je još uvek u toku</translation>
 <translation id="8317318757008452355">Otvorite opcije za štampanje</translation>
 <translation id="8320212361750431956">Nedavna aktivnost</translation>
 <translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>

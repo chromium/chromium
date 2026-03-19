@@ -1820,6 +1820,7 @@
 <translation id="8282950411412455249">Μετάβαση στις ρυθμίσεις ασφαλείας</translation>
 <translation id="8288688997999490824">{NUM_WINDOWS,plural, =1{Κλείσιμο 1 παραθύρου για ανώνυμη περιήγηση}other{Κλείσιμο # παραθύρων για ανώνυμη περιήγηση}}</translation>
 <translation id="831192587911042850">Προσθέτει τον τρέχοντα ιστότοπο στη λίστα των ιστοτόπων που ακολουθείτε.</translation>
+<translation id="8313599942510782709">Η εργασία σας βρίσκεται ακόμη σε εξέλιξη</translation>
 <translation id="8317318757008452355">Άνοιγμα επιλογών για εκτύπωση</translation>
 <translation id="8320212361750431956">Πρόσφατη δραστηριότητα</translation>
 <translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />Νέο<ph name="END_NEW" /></translation>

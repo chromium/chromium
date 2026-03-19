@@ -1824,6 +1824,7 @@
 <translation id="8282950411412455249">الانتقال إلى إعدادات الأمان</translation>
 <translation id="8288688997999490824">{NUM_WINDOWS,plural, =1{إغلاق نافذة واحدة للتصفّح المتخفي}zero{إغلاق # نافذة للتصفّح المتخفي}two{إغلاق نافذتَي التصفّح المتخفي}few{إغلاق # نوافذ للتصفّح المتخفي}many{إغلاق # نافذة للتصفّح المتخفي}other{إغلاق # نافذة للتصفّح المتخفي}}</translation>
 <translation id="831192587911042850">تعمل هذه الميزة على إضافة الموقع الإلكتروني الحالي إلى قائمة المواقع الإلكترونية التي تتابعها.</translation>
+<translation id="8313599942510782709">لا تزال المَهمّة جارية</translation>
 <translation id="8317318757008452355">فتح الخيارات للطباعة</translation>
 <translation id="8320212361750431956">الأنشطة الحديثة</translation>
 <translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />إعداد جديد<ph name="END_NEW" /></translation>

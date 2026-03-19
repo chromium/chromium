@@ -273,7 +273,6 @@
 <translation id="200669432486043882">Înlocuiește un fișier</translation>
 <translation id="2006864819935886708">Conectivitate</translation>
 <translation id="2008685064673031089">Căutare de numere prime</translation>
-<translation id="2011174342667534258">Versiunea SDK:</translation>
 <translation id="2016697457005847575">Încearcă pașii pentru remedierea erorilor</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2045814230297767491">tacâmuri</translation>
@@ -523,7 +522,6 @@
 <translation id="3291996639387199448">Direcția cheii</translation>
 <translation id="3294437725009624529">Invitat</translation>
 <translation id="3303855915957856445">Nu s-au găsit rezultate de căutare</translation>
-<translation id="3305294846493618482">mai multe</translation>
 <translation id="3310640316857623290">Latența DNS depășește semnificativ pragul permisibil</translation>
 <translation id="3316495615885967552">Descărcarea modelului pentru crearea de rezumate și titluri s-a finalizat</translation>
 <translation id="3321030238473337787">Viteza de redare</translation>
@@ -702,7 +700,6 @@
 <translation id="4126551873361000548">Derulează înapoi cu 10 secunde</translation>
 <translation id="4128271910628504223">Introdu o solicitare, de exemplu „desenează o pădure în ceață”</translation>
 <translation id="4130035430755296270">Plasează cursorul pentru mai multe opțiuni de aspect</translation>
-<translation id="4130750466177569591">Sunt de acord</translation>
 <translation id="4131410914670010031">Alb-negru</translation>
 <translation id="4137700675046373159">sâmbătă</translation>
 <translation id="4139326893730851150">Actualizări de firmware</translation>
@@ -1051,7 +1048,6 @@
 <translation id="5606865426897221650">Tab</translation>
 <translation id="5612205513582918357">Class Tools permite accesul la ecranul tău pentru <ph name="RECEIVER_NAME" /></translation>
 <translation id="5613201299517339763">Te-ai deconectat</translation>
-<translation id="5620281292257375798">Numai intern</translation>
 <translation id="5628106863521633649">Limbi disponibile</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">rezumat</translation>
@@ -1415,7 +1411,6 @@
 <translation id="7184043045742675738">Dă clic pe orice tastă pentru a personaliza butonul. Repoziționează tasta folosind mouse-ul sau tastele săgeată.</translation>
 <translation id="7187669805838282391">miercuri</translation>
 <translation id="7205318498545665455">Alege microfonul</translation>
-<translation id="7206979415662233817">Termeni și condiții</translation>
 <translation id="7210635925306941239">azuriu</translation>
 <translation id="7212547870105584639">Gestionează setările APN ale rețelei. APN-urile stabilesc o conexiune între o rețea de date mobile și internet. <ph name="BEGIN_LINK_LEARN_MORE" />Află mai multe<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Actualizări de firmware pentru dispozitive externe</translation>
@@ -1446,11 +1441,6 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7321055305895875150">verde și verde-albăstrui</translation>
 <translation id="7328475450575141167">pasărea paradisului</translation>
-<translation id="7331297744262591636">Trebuie să ai cel puțin 18 ani și să accepți că folosirea fundalurilor AI se supune <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Termenilor și condițiilor Google<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> și <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />Termenilor și condițiilor suplimentare privind AI generativ<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Poți să creezi fundaluri cu AI numai pentru utilizare personală și non-comercială. Când soliciți ajutor pentru fundaluri, textul este trimis la serverele Google AI pentru a genera sugestii de fundaluri, în conformitate cu <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Politica de confidențialitate Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. <ph name="BEGIN_LINK_LEARN_MORE" />Află mai multe<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; apasă tasta de căutare + bara de spațiu pentru a vedea rezultatul în Căutarea Google.</translation>
 <translation id="7343649194310845056">Dispozitive de rețea</translation>
 <translation id="7344788170842919262">pământii</translation>
 <translation id="7346768383111016081">Plasează comanda pe acțiunea în joc pentru a juca folosind tastatura</translation>
@@ -1838,7 +1828,6 @@ Descarcă modelul de transcriere (până la 100 MB) pentru a obține aceste tran
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">Folosește videoclipul</translation>
-<translation id="9087578468327036362">Raportează interogarea</translation>
 <translation id="9088306295921699330">Folosire actuală</translation>
 <translation id="9088994563996376283">Simplifică</translation>
 <translation id="9095775724867566971">Pluginvm</translation>

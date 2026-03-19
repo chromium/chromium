@@ -273,7 +273,6 @@
 <translation id="200669432486043882">Substitueix el fitxer</translation>
 <translation id="2006864819935886708">Connectivitat</translation>
 <translation id="2008685064673031089">Cerca principal</translation>
-<translation id="2011174342667534258">Versió de l'SDK:</translation>
 <translation id="2016697457005847575">Prova els passos de resolució de problemes</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2045814230297767491">coberteria</translation>
@@ -523,7 +522,6 @@
 <translation id="3291996639387199448">Direcció de la clau</translation>
 <translation id="3294437725009624529">Convidat</translation>
 <translation id="3303855915957856445">No s'ha trobat cap resultat de la cerca</translation>
-<translation id="3305294846493618482">més</translation>
 <translation id="3310640316857623290">La latència DNS supera significativament el llindar permès</translation>
 <translation id="3316495615885967552">S'ha completat la baixada del model de creació de títols i resums</translation>
 <translation id="3321030238473337787">Velocitat de reproducció</translation>
@@ -702,7 +700,6 @@
 <translation id="4126551873361000548">Retrocedeix 10 segons</translation>
 <translation id="4128271910628504223">Introdueix una indicació, com ara "dibuixa un bosc cobert per la boira"</translation>
 <translation id="4130035430755296270">Mantén el cursor a sobre per veure més opcions de disseny</translation>
-<translation id="4130750466177569591">Accepto</translation>
 <translation id="4131410914670010031">Blanc i negre</translation>
 <translation id="4137700675046373159">dissabte</translation>
 <translation id="4139326893730851150">Actualitzacions de microprogramari</translation>
@@ -1051,7 +1048,6 @@
 <translation id="5606865426897221650">Tab</translation>
 <translation id="5612205513582918357">Eines de classe està compartint la pantalla amb <ph name="RECEIVER_NAME" /></translation>
 <translation id="5613201299517339763">S'ha tancat la teva sessió</translation>
-<translation id="5620281292257375798">Només intern</translation>
 <translation id="5628106863521633649">Idiomes disponibles</translation>
 <translation id="5630438231335788050">Bauhaus</translation>
 <translation id="5631759159893697722">resum</translation>
@@ -1415,7 +1411,6 @@
 <translation id="7184043045742675738">Fes clic en qualsevol tecla per personalitzar el teu botó. Canvia la posició de la tecla amb el ratolí o les tecles de fletxa.</translation>
 <translation id="7187669805838282391">dimecres</translation>
 <translation id="7205318498545665455">Tria el micròfon</translation>
-<translation id="7206979415662233817">Condicions del servei</translation>
 <translation id="7210635925306941239">cian</translation>
 <translation id="7212547870105584639">Gestiona la configuració de l'APN de la xarxa. Els APN estableixen una connexió entre una xarxa mòbil i Internet. <ph name="BEGIN_LINK_LEARN_MORE" />Més informació<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Actualitzacions de microprogramari per a dispositius externs</translation>
@@ -1446,11 +1441,6 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7321055305895875150">verd i verd blavós</translation>
 <translation id="7328475450575141167">flor d'ocell</translation>
-<translation id="7331297744262591636">Has de tenir com a mínim 18 anys i has d'acceptar que l'ús que fas dels fons de pantalla IA està subjecte a les <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />condicions del servei de Google<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> i a les <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />condicions del servei addicionals de la IA generativa<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Només pots crear fons de pantalla amb IA per a un ús personal i no comercial. Quan reps ajuda sobre fons de pantalla, el text s'envia als servidors de la IA de Google per generar suggeriments de fons de pantalla, de conformitat amb la <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />política de privadesa de Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. <ph name="BEGIN_LINK_LEARN_MORE" />Més informació<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Prem Cerca+Espai per veure el resultat a la Cerca de Google.</translation>
 <translation id="7343649194310845056">Dispositius de xarxa</translation>
 <translation id="7344788170842919262">terrossos</translation>
 <translation id="7346768383111016081">Col·loca el control sobre l'acció del joc per jugar amb el teclat</translation>
@@ -1838,7 +1828,6 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">Utilitza aquest vídeo</translation>
-<translation id="9087578468327036362">Informa d'aquesta consulta</translation>
 <translation id="9088306295921699330">Ús actual</translation>
 <translation id="9088994563996376283">Simplifica</translation>
 <translation id="9095775724867566971">Pluginvm</translation>

@@ -1073,6 +1073,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2673968385134502798">Igre</translation>
 <translation id="2674170444375937751">Želite li stvarno da izbrišete ove stranice iz istorije?</translation>
 <translation id="2674524144218093528">Krečenje i završni radovi</translation>
+<translation id="2675716371350192683">Sadržaj se neće koristiti za poboljšanje veštačke inteligencije. Organizacija može da promeni ova podešavanja u svakom trenutku.</translation>
 <translation id="26774279487328902">Broj grupa kartica koje više nisu dostupne je <ph name="GROUP_COUNT" /></translation>
 <translation id="2677748264148917807">Zatvori</translation>
 <translation id="2679216653373462289">Koristi senzore pokreta i svetlosti</translation>
@@ -2657,6 +2658,7 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="5190835502935405962">Traka sa obeleživačima</translation>
 <translation id="5191315092027169558">Profilom upravlja <ph name="DOMAIN" /></translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> želi da preuzme više datoteka</translation>
+<translation id="519528950056409240">Dozvoli Novčaniku da deli podatke</translation>
 <translation id="5199121357983849992">Želite da sačuvate lični dokument?</translation>
 <translation id="5200063972779787617">Sačuvajte adresu na nalogu</translation>
 <translation id="5201306358585911203">Ugrađena stranica na ovoj veb-stranici navodi:</translation>
@@ -3104,6 +3106,7 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="5910140988253729859">Opozovi automatsko popunjavanje</translation>
 <translation id="5911020115933784199">Događaji i rasporedi</translation>
 <translation id="5911110632211230665">Otvaranje je blokirano</translation>
+<translation id="5912796581727968237">Otvori Google novčanik</translation>
 <translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" /> je dodao/la ovu karticu</translation>
 <translation id="5915189366813702112">Fleksibilni uslovi rada</translation>
 <translation id="59174027418879706">Omogućeno</translation>

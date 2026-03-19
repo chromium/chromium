@@ -8,6 +8,7 @@
 <translation id="1017556409696559990">Het bovenste venster minimaliseren als er geen geschiedenis voor teruggaan in Chrome is</translation>
 <translation id="101823271612280837">Opname gestopt. Kan Game Dashboard niet gebruiken in de tabletmodus.</translation>
 <translation id="1024364763893396229">Je <ph name="NAME" /> opslaan</translation>
+<translation id="103279545524624934">Maak schijfruimte vrij om Android-apps te starten.</translation>
 <translation id="1032891413405719768">Batterij van stylus bijna leeg</translation>
 <translation id="1036348656032585052">Uitzetten</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> toegevoegd</translation>
@@ -35,6 +36,7 @@
 <translation id="1129383337808748948"><ph name="CONTENT_TITLE" /> vernieuwen</translation>
 <translation id="1142002900084379065">Recente foto's</translation>
 <translation id="114221662579355151">Hiermee geef je <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> en alle apps en websites met camerarechten toegang tot de camera. Je moet misschien de webpagina vernieuwen of de app opnieuw starten.</translation>
+<translation id="1147991416141538220">Neem contact op met de beheerder van dit apparaat om toegang te vragen.</translation>
 <translation id="1148499908455722006">Dialoogvenster met informatie openen voor <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Agenda</translation>
 <translation id="1153356358378277386">Gekoppelde apparaten</translation>
@@ -114,6 +116,7 @@
 <translation id="1340378040547539434">Uitzoomen op pagina</translation>
 <translation id="1341651618736211726">Overloop</translation>
 <translation id="1341926407152459446"><ph name="DEVICE_NAME" /> gebruiken voor audio-invoer en -uitvoer</translation>
+<translation id="1346403631707626730">Stuur gebruiks- en diagnostische gegevens. Verbeter de Android-functionaliteit voor je kind door automatisch diagnostische, apparaat- en app-gebruiksgegevens naar Google te sturen. Deze gegevens worden niet gebruikt om je kind te identificeren en kunnen helpen om de systeem- en app-stabiliteit te verbeteren en andere optimalisaties mogelijk te maken. Ook zijn bepaalde verzamelde gegevens nuttig voor Google-apps en -partners, zoals Android-ontwikkelaars. Als je Web- en app-activiteit aanstaat voor het account van je kind, kunnen deze gegevens worden opgeslagen in hun Google-account. <ph name="BEGIN_LINK1" />Meer informatie over statistieken<ph name="BEGIN_LINK1_END" />Meer informatie<ph name="END_LINK1" /></translation>
 <translation id="1346748346194534595">Rechts</translation>
 <translation id="1350494136075914725">Actief · Overschakelen naar tabblad</translation>
 <translation id="1351937230027495976">Menu samenvouwen</translation>
@@ -196,6 +199,7 @@
 <translation id="1610778689852195798">'Ongedaan maken'</translation>
 <translation id="1611993646327628135">Aan</translation>
 <translation id="1612679292338846734">Als je deze functies aanzet, kunnen de ingevoerde tekst, de documentcontent en de URL van de webpagina naar de servers van AI van Google worden gestuurd. Deze informatie wordt gebruikt om schrijfsuggesties te genereren, samenvattingen te genereren, vragen te beantwoorden en het product te verbeteren, in overeenstemming met <ph name="LINK_TO_SERVICE_TERMS" />. Voeg geen persoonlijke, gevoelige of vertrouwelijke informatie toe.</translation>
+<translation id="1619879934359211038">Kan geen verbinding maken met Google Play. Check je netwerkverbinding en probeer het opnieuw. Foutcode: <ph name="ERROR_CODE" />.</translation>
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1623768535032616219">Google Classroom samenvouwen</translation>
 <translation id="163032029566320584"><ph name="UNAVAILABLE_DLC" /> is niet beschikbaar.</translation>
@@ -224,6 +228,7 @@
 <translation id="1719094688023114093">Live ondertiteling staat aan.</translation>
 <translation id="1720011244392820496">Wifi-synchronisatie aanzetten</translation>
 <translation id="1720230731642245863">Hotspot staat uit</translation>
+<translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />Als je apps wilt verwijderen, ga je naar Instellingen &gt; Google Play Store &gt; Android-voorkeuren beheren &gt; Apps of App-beheer en tik je op de app die je wilt verwijderen (je moet mogelijk naar rechts of links swipen om de app te vinden). Tik vervolgens op Verwijderen of Uitzetten.<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1731815243805539470">Overschakelen naar vorige gebruiker</translation>
 <translation id="1733996486177697563">Schakelen tussen het donkere en lichte thema. Tik op het bureaublad en houd vast en selecteer daarna Achtergrond en stijl.</translation>
 <translation id="1734230530703461088">Kan extensies niet binnen de tijdslimiet laden. Neem contact op met je beheerder.</translation>
@@ -277,6 +282,7 @@
 <translation id="1882814835921407042">Geen mobiel netwerk</translation>
 <translation id="1882897271359938046">Spiegelen naar <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Ontgrendelen met vingerafdruk</translation>
+<translation id="1891362123137972260">Er is zeer weinig schijfruimte beschikbaar. Maak ruimte vrij.</translation>
 <translation id="1894024878080591367">Instellen om met je toetsenbord te spelen</translation>
 <translation id="1896383923047738322">Je toetsenbord aanpassen</translation>
 <translation id="1904997243703671177">Als je bluetooth uitzet, wordt de verbinding van <ph name="DEVICE_COUNT" /> externe apparaten met je <ph name="DEVICE_TYPE" /> verbroken, waaronder:</translation>
@@ -309,11 +315,13 @@
 <translation id="1996162290124031907">Naar het volgende tabblad gaan</translation>
 <translation id="1998100899771863792">Huidig bureau</translation>
 <translation id="2001444736072756133">Doorzoek onder andere je <ph name="CATEGORY" />, bestanden en apps…</translation>
+<translation id="2011174342667534258">SDK-versie:</translation>
 <translation id="2017998995161831444">Help openen in de app Ontdekken</translation>
 <translation id="2021864487439853900">Klik om te ontgrendelen</translation>
 <translation id="2034971124472263449">Toch opslaan</translation>
 <translation id="2041220428661959602">Batterijniveau: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="204259843076055848">De sneltoets <ph name="SIX_PACK_KEY_NAME" /> staat op dit moment uit</translation>
+<translation id="2048653237708779538">Actie niet beschikbaar</translation>
 <translation id="2049240716062114887">Bureaunaam is veranderd in <ph name="DESK_NAME" /></translation>
 <translation id="2064048859448024834">Het cameravoorbeeld staat aan</translation>
 <translation id="2065098273523946419">Link Meer informatie. Omleiden naar de browser wanneer deze wordt geactiveerd</translation>
@@ -378,18 +386,21 @@
 <translation id="2305738328104302723">Google-takenlijst: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: recente schermopnamen, downloads en vastgezette bestanden</translation>
 <translation id="2318576281648121272">Vandaag <ph name="TODAY_DATE" /></translation>
+<translation id="2318817390901984578">Je moet je <ph name="DEVICE_TYPE" /> opladen en updaten om Android-apps te gebruiken.</translation>
 <translation id="2322065293366551060"><ph name="CATEGORY" />, zoekresultaatcategorie</translation>
 <translation id="2322173485024759474">Terug per letter</translation>
 <translation id="2326112202058075478">Meer emoji's tonen</translation>
 <translation id="2335091074961603075">Je Chromebook of bluetooth-apparaat gebruikt een oudere versie van bluetooth. Gebruik de interne microfoon voor betere audiokwaliteit.</translation>
 <translation id="2339073806695260576">Tik op de stylusknop op de plank om een notitie of screenshot te maken, of om de Assistent, de laserpen of het vergrootglas te gebruiken.</translation>
 <translation id="2341729377289034582">Vergrendeld in verticale stand</translation>
+<translation id="2344032937402519675">Kan geen verbinding maken met de server. Check je netwerkverbinding en probeer het opnieuw. Als je nog steeds problemen ondervindt, start je de Chromebook opnieuw op.</translation>
 <translation id="2345226652884463045">Druk op Enter of de zoektoets + spatiebalk om de tekst te selecteren die je wilt bewerken.</translation>
 <translation id="2349785431103945039">Toon de hotspotdetails. Maak verbinding met mobiele data om een hotspot te gebruiken.</translation>
 <translation id="2350182423316644347">App initialiseren...</translation>
 <translation id="2350794187831162545">Spraak in het <ph name="LANGUAGE" /> wordt nu lokaal verwerkt en werkt offline. Je kunt je dicteertaal wijzigen via Instellingen &gt; Toegankelijkheid.</translation>
 <translation id="2352467521400612932">Stylusinstellingen</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> activeren</translation>
+<translation id="2355314311311231464">Het instelproces is mislukt omdat je accountgegevens niet kunnen worden opgehaald. Probeer het opnieuw. Foutcode: <ph name="ERROR_CODE" />.</translation>
 <translation id="2359808026110333948">Doorgaan</translation>
 <translation id="2360398059912971776">batterij</translation>
 <translation id="2361210043495191221">Wifi aan-/uitzetten. <ph name="STATE" />.</translation>
@@ -412,6 +423,7 @@
 <translation id="240545663114741956">Druk 2 keer op <ph name="ACCELERATOR" /> om uit te loggen.</translation>
 <translation id="2405664212338326887">Niet verbonden</translation>
 <translation id="2406710117564540804">Niet storen aan-/uitzetten</translation>
+<translation id="240789602312469910">Stuur gebruiks- en diagnostische gegevens. Verbeter de Android-functionaliteit voor je kind door automatisch diagnostische, apparaat- en app-gebruiksgegevens naar Google te sturen. Deze gegevens worden niet gebruikt om je kind te identificeren en kunnen helpen om de systeem- en app-stabiliteit te verbeteren en andere optimalisaties mogelijk te maken. Ook zijn bepaalde verzamelde gegevens nuttig voor Google-apps en -partners, zoals Android-ontwikkelaars. Deze <ph name="BEGIN_LINK1" />instelling<ph name="END_LINK1" /> wordt afgedwongen door de eigenaar. De eigenaar kan ervoor kiezen diagnostische en gebruiksgegevens voor dit apparaat naar Google te sturen. Als de instelling voor aanvullende Web- en app-activiteit aanstaat voor je kind, kunnen deze gegevens worden opgeslagen in hun Google-account. <ph name="BEGIN_LINK2" />Meer informatie over statistieken<ph name="BEGIN_LINK2_END" />Meer informatie<ph name="END_LINK2" /></translation>
 <translation id="2408955596600435184">Je pincode invoeren</translation>
 <translation id="2412593942846481727">Update beschikbaar</translation>
 <translation id="2416438829169535743">Weergave sluiten?</translation>
@@ -464,6 +476,7 @@
 <translation id="2531025035050312891">apparaat langzaam</translation>
 <translation id="2531107890083353124">Druk op <ph name="KEY_ONE" /> terwijl je het tabblad sleept</translation>
 <translation id="2532199152994248594">Sleep of druk op de spatiebalk om een gebied te selecteren om vast te leggen</translation>
+<translation id="2540651571961486573">Er is iets misgegaan. Foutcode: <ph name="ERROR_CODE" />.</translation>
 <translation id="2545334090614121435">Probeer je Home te gebruiken? Gebruik</translation>
 <translation id="254900897760075745">Geselecteerde content kopiëren naar klembord</translation>
 <translation id="2549711466868162843">Belichting verbeteren</translation>
@@ -511,8 +524,11 @@
 <translation id="2701576323154693023">Hotspot staat aan (wifi staat uit)</translation>
 <translation id="2704781753052663061">Verbinden met andere wifi-netwerken</translation>
 <translation id="2705001408393684014">Microfoon aan/uit. <ph name="STATE_TEXT" /></translation>
+<translation id="2706304388244371417">Maak een back-up op Google Drive. Zet gegevens eenvoudig terug of wissel wanneer je wilt tussen apparaten. Deze back-up omvat app-gegevens. Back-ups worden geüpload naar Google en versleuteld met het wachtwoord van het Google-account van je kind. <ph name="BEGIN_LINK1" />Meer informatie over back-ups<ph name="BEGIN_LINK1_END" />Meer informatie<ph name="END_LINK1" /></translation>
 <translation id="2706462751667573066">Omhoog</translation>
+<translation id="2710101514844343743">Gebruiks- en diagnostische gegevens</translation>
 <translation id="2710984741481549981">De vensters vergrendelen</translation>
+<translation id="2714393097308983682">Google Play Store</translation>
 <translation id="2718395828230677721">Nachtlicht</translation>
 <translation id="2726420622004325180">Je telefoon moet mobiele data hebben om als hotspot te werken</translation>
 <translation id="2727175239389218057">Reageren</translation>
@@ -574,6 +590,8 @@ Anders wordt de ingebouwde touchpad over <ph name="TIMEOUT_SECONDS" /> weer aang
 <translation id="2893701697603065178">Beheerde ontwikkelomgeving</translation>
 <translation id="2894949423239620203">De kabel kan invloed hebben op de prestaties</translation>
 <translation id="2902312830803030883">Meer acties</translation>
+<translation id="2909506265808101667">Kan geen verbinding maken met Google-services. Check je netwerkverbinding en probeer het opnieuw. Foutcode: <ph name="ERROR_CODE" />.</translation>
+<translation id="2910718431259223434">Er is iets misgegaan. Probeer het opnieuw of neem contact op met de eigenaar of beheerder van het apparaat. Foutcode: <ph name="ERROR_CODE" />.</translation>
 <translation id="2914580577416829331">Schermopnamen</translation>
 <translation id="2924416280450782352">Kan geen items tonen. Probeer dit deelvenster opnieuw te openen.</translation>
 <translation id="292506373491190801">Vanuit actuele afspraak</translation>
@@ -633,7 +651,9 @@ Anders wordt de ingebouwde touchpad over <ph name="TIMEOUT_SECONDS" /> weer aang
 <translation id="3093423061078042895">Ontbreekt</translation>
 <translation id="3095995014811312755">versie</translation>
 <translation id="309749186376891736">Cursor verplaatsen</translation>
+<translation id="3100071818310370858">Gebruik de locatie. Apps en services met locatierechten mogen de locatie van dit apparaat gebruiken. Google kan af en toe locatiegegevens verzamelen en anoniem gebruiken om de locatienauwkeurigheid en locatiegebaseerde services te verbeteren. <ph name="BEGIN_LINK1" />Meer informatie over locatie<ph name="BEGIN_LINK1_END" />Meer informatie<ph name="END_LINK1" /></translation>
 <translation id="3100274880412651815">Opnamemodus sluiten</translation>
+<translation id="3104948640446684649">Stuur gebruiks- en diagnostische gegevens. Dit apparaat stuurt op dit moment automatisch diagnostische, apparaat- en app-gebruiksgegevens naar Google. Deze gegevens kunnen worden gebruikt om de systeem- en app-stabiliteit te verbeteren en andere optimalisaties mogelijk te maken. Ook zijn bepaalde verzamelde gegevens nuttig voor Google-apps en -partners, zoals Android-ontwikkelaars. Als de instelling voor aanvullende Web- en app-activiteit aanstaat, kunnen deze gegevens worden opgeslagen in je Google-account. <ph name="BEGIN_LINK2" />Meer informatie over statistieken<ph name="BEGIN_LINK2_END" />Meer informatie<ph name="END_LINK2" /></translation>
 <translation id="3105917916468784889">Screenshot maken</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3107155169630537783">Welkomstmelding is <ph name="STATE" /></translation>
@@ -697,6 +717,7 @@ Anders wordt de ingebouwde touchpad over <ph name="TIMEOUT_SECONDS" /> weer aang
 <translation id="3306386552969601301"><ph name="DEVICECOUNT" /> apparaten verbonden met <ph name="DEVICE_NAME" />-hotspot</translation>
 <translation id="3307642347673023554">Overgeschakeld naar laptopmodus</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> kan later nog inloggen.</translation>
+<translation id="3313950410573257029">Verbinding checken</translation>
 <translation id="3321628682574733415">Onjuiste oudercode</translation>
 <translation id="332827762492701193">Meldingen zijn verborgen</translation>
 <translation id="3333674550998107387">Vouw de melding <ph name="NOTIFICATION_TITLE" /> uit</translation>
@@ -814,6 +835,7 @@ Anders wordt de ingebouwde touchpad over <ph name="TIMEOUT_SECONDS" /> weer aang
 <translation id="3638400994746983214">Privacyscherm aan/uit. <ph name="STATE_TEXT" />.</translation>
 <translation id="3641070112313110357">Steam voor Chromebook (bèta) moet worden geüpdatet. Start je Chromebook opnieuw op en probeer het nog een keer.</translation>
 <translation id="3649256019230929621">Venster minimaliseren</translation>
+<translation id="3650952250015018111">"<ph name="APP_NAME" />" toegang verlenen:</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
 <ph name="EVENT_SUMMARY" />,
 <ph name="START_TIME" /> tot
@@ -859,6 +881,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="3779139509281456663"><ph name="NAME" /> koppelen</translation>
 <translation id="3781910048497807059">De focus naar het vorige deelvenster verplaatsen</translation>
 <translation id="3783640748446814672">alt</translation>
+<translation id="3783889407390048282">Maak ruimte vrij om te voorkomen dat je de toegang tot Android kwijtraakt.</translation>
 <translation id="3784455785234192852">Vergrendelen</translation>
 <translation id="3788301286821743879">De kiosk-app kan niet worden gestart.</translation>
 <translation id="3789841737615482174">Installeren</translation>
@@ -868,6 +891,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="3804737937830804242">Camera samenvouwen</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 emoji. Geen andere resultaten.}other{# emoji's. Geen andere resultaten.}}</translation>
 <translation id="3822403841174077928">Kan niet kopiëren met opmaak</translation>
+<translation id="3824621460022590830">Token voor apparaatinschrijving is ongeldig. Neem contact op met de eigenaar of beheerder van het apparaat. Foutcode: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824784079442479685">Hiermee geef je <ph name="APP_NAME" /> en alle apps en websites met camerarechten toegang tot de camera. Je moet misschien de webpagina vernieuwen of de app opnieuw starten.</translation>
 <translation id="3826099427150913765">Overschakelen naar wachtwoord</translation>
 <translation id="383058930331066723">Batterijbesparing staat aan</translation>
@@ -892,6 +916,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="3898464793473355515">Scherm 90 graden rechtsom draaien</translation>
 <translation id="3900355044994618856">Je sessie loopt over <ph name="SESSION_TIME_REMAINING" /> af</translation>
 <translation id="3901991538546252627">Verbinding maken met <ph name="NAME" /></translation>
+<translation id="3904326018476041253">Locatieservices</translation>
 <translation id="3904768293285573640">Venster met tegels voor formaat aanpassen naar links verplaatsen</translation>
 <translation id="3923221004758245114"><ph name="VM_NAME" /> verwijderen van je <ph name="DEVICE_TYPE" />? Hierdoor worden alle apps en gegevens in de virtuele machine verwijderd.</translation>
 <translation id="3923494859158167397">Geen mobiele netwerken ingesteld</translation>
@@ -906,6 +931,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="3950272133184491871">Nu uitloggen?</translation>
 <translation id="3950820424414687140">Inloggen</translation>
 <translation id="3953130726459169782">Nog geen opdrachten afgerond.</translation>
+<translation id="3957844511978444971">Tik op Accepteren om je keuze van deze instellingen voor Google-services te bevestigen.</translation>
 <translation id="3958714870339660776">Hele dag</translation>
 <translation id="3962859241508114581">Vorig nummer</translation>
 <translation id="3963124517343721543">Ga makkelijk verder waar je gebleven was door je vorige vensters en tabbladen te openen. Je ziet ook gepersonaliseerde suggesties voor wat je daarna kunt doen.</translation>
@@ -1021,6 +1047,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="4278779213160967034">Dit kan een paar minuten duren. Bestanden downloaden.</translation>
 <translation id="4279490309300973883">Mirroring</translation>
 <translation id="4280601795273309128">Beveiligingsupdates gestopt. Upgrade je apparaat.</translation>
+<translation id="4281844954008187215">Servicevoorwaarden</translation>
 <translation id="4283888303416325161">Geef het wachtwoord op voor extra beveiliging</translation>
 <translation id="4285498937028063278">Losmaken</translation>
 <translation id="428715201724021596">Verbinding maken met profiel. Dit kan een paar minuten duren.</translation>
@@ -1065,6 +1092,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="4406883609789734330">Live ondertiteling</translation>
 <translation id="4412698727486357573">Helpcentrum</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> staat uit.</translation>
+<translation id="44141919652824029"><ph name="APP_NAME" /> toestaan om de lijst met je aangesloten USB-apparaten op te halen?</translation>
 <translation id="4414242853388122273">Fout bij het verwijderen van <ph name="VM_NAME" />. Probeer het opnieuw.</translation>
 <translation id="4417647906073317561">Focusinstellingen. Stel een timer, taak en muziek in om in de flow te komen.</translation>
 <translation id="4418600384772451109">Deelvenster sluiten</translation>
@@ -1106,6 +1134,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> tot volledig opgeladen</translation>
 <translation id="4538824937723742295">Screenshot van volledig scherm maken</translation>
 <translation id="4539127209940689201">Huidige pagina afdrukken</translation>
+<translation id="4541123282641193691">Kan je account niet verifiëren. Probeer het opnieuw of start je Chromebook opnieuw op.</translation>
 <translation id="4541505619120536051">Altijd openen</translation>
 <translation id="4541706525461326392">Profiel verwijderen. Dit kan een paar minuten duren.</translation>
 <translation id="4544483149666270818">Selecteer een venster om op te nemen</translation>
@@ -1116,6 +1145,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="4556953949326137018">Als je aanbevolen acties gebruikt, zoals Toevoegen aan Agenda of Google-documenten maken, wordt de content van het geselecteerde gebied naar Google-servers gestuurd om acties aan te bevelen, onder de <ph name="LINK_TO_SERVICE_TERMS" />. Voeg geen persoonlijke, gevoelige of vertrouwelijke informatie toe.</translation>
 <translation id="4560576029703263363">Aan</translation>
 <translation id="4561267230861221837">3G</translation>
+<translation id="4562091353415772246">Installeer updates en apps. Als je doorgaat, ga je ermee akkoord dat dit apparaat ook automatisch updates of apps van Google, je provider of de fabrikant van je apparaat kan downloaden en installeren, en dat hiervoor misschien mobiele data worden gebruikt. Sommige van deze apps kunnen in-app aankopen aanbieden. <ph name="BEGIN_LINK1" />Meer informatie over automatische installatie via Play<ph name="BEGIN_LINK1_END" />Meer informatie<ph name="END_LINK1" /></translation>
 <translation id="4565377596337484307">Wachtwoord verbergen</translation>
 <translation id="4566144812051858745">Niet geïnteresseerd in suggesties</translation>
 <translation id="4569753163207712681">Recente foto's, media en meldingen van je telefoon bekijken</translation>
@@ -1135,6 +1165,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="4628757576491864469">Apparaten</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, sterbeoordeling <ph name="RATING_SCORE" /></translation>
 <translation id="4633636853437260449">Druk op Ctrl + W om te verwijderen</translation>
+<translation id="4633757335284074492">Maak een back-up op Google Drive. Zet gegevens eenvoudig terug of schakel wanneer je wilt tussen apparaten. Deze back-up omvat app-gegevens. Back-ups worden geüpload naar Google en versleuteld met het wachtwoord van het Google-account van je kind.</translation>
 <translation id="4635501805800894201">{0,plural, =0{Update het apparaat nu naar een eerdere versie}=1{Update het apparaat binnen 1 seconde naar een eerdere versie}other{Update het apparaat binnen # seconden naar een eerdere versie}}</translation>
 <translation id="4642092649622328492">Gedeeltelijk screenshot maken</translation>
 <translation id="4642587497923912728">Steam voor Chromebook (bèta) is alleen beschikbaar voor het account dat als eerste is ingelogd op deze Chromebook.</translation>
@@ -1177,6 +1208,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="4759238208242260848">Downloads</translation>
 <translation id="4762160261012420470"><ph name="LAUNCHER_KEY_NAME" /> + pijl-omhoog</translation>
 <translation id="4762573482154983647">Apps verbergen</translation>
+<translation id="4762718786438001384">Er is zeer weinig schijfruimte beschikbaar op het apparaat</translation>
 <translation id="4763885921995354846">Hiermee geef je alle apps en websites met camerarechten toegang tot de camera. Je moet misschien de webpagina vernieuwen of de app opnieuw starten.</translation>
 <translation id="4774338217796918551">Kom morgen terug om <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776584068981882959">Je wachtwoord kan nog steeds niet worden geverifieerd. Probeer het opnieuw.</translation>
@@ -1283,6 +1315,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="5077936103761694531">Resolutie bevestigen?</translation>
 <translation id="5078796286268621944">Onjuiste pincode</translation>
 <translation id="5083035541015925118">ctrl + alt + pijl-omhoog</translation>
+<translation id="5084328598860513926">Het instelproces is onderbroken. Probeer het opnieuw of neem contact op met de eigenaar of beheerder van het apparaat. Foutcode: <ph name="ERROR_CODE" />.</translation>
 <translation id="5091636240353511739">Pincode tonen</translation>
 <translation id="5092436659250499817">Achtergrondverlichting van toetsenbord aan-/uitzetten</translation>
 <translation id="5094577350232361255">over</translation>
@@ -1312,6 +1345,7 @@ Je kunt ook de sneltoets gebruiken. Markeer eerst de tekst en druk dan op <ph na
 <translation id="5170568018924773124">Tonen in map</translation>
 <translation id="5176318573511391780">Opname van gedeeltelijk scherm maken</translation>
 <translation id="5187627942836026988">Toon de hotspotdetails. Hotspot wordt geblokkeerd door je beheerder.</translation>
+<translation id="5188648870018555788">Gebruik de locatie. Sta toe dat ChromeOS- en Android-apps, websites en services met locatierechten de locatie van je apparaat gebruiken. Locatienauwkeurigheid biedt een nauwkeurigere locatie voor Android-apps en -services. Hiervoor verwerkt Google periodiek gegevens over apparaatsensoren en draadloze signalen van je apparaat om bij te dragen aan draadloze signaallocaties op basis van crowdsourcing. Deze worden zonder je te identificeren gebruikt om de locatienauwkeurigheid en services op een fysieke locatie te verbeteren. Ze worden ook gebruikt om de services van Google te verbeteren, aan te bieden en te onderhouden op basis van de gerechtvaardigde belangen van Google en derden om aan de behoeften van gebruikers te voldoen. <ph name="BEGIN_LINK1" />Meer informatie over het gebruik van locatie<ph name="END_LINK1" /></translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198039720391525849">Aanbevolen gifjes</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> afspraken</translation>
@@ -1332,6 +1366,7 @@ Je kunt ook de sneltoets gebruiken. Markeer eerst de tekst en druk dan op <ph na
 <translation id="5238719049014159442">Launcher openen/sluiten</translation>
 <translation id="5240725217819182328">Snelle toegang tot specifieke pagina's of acties binnen geïnstalleerde apps</translation>
 <translation id="5243355658487390559">Datum zoeken</translation>
+<translation id="5243522832766285132">Probeer het over enige tijd opnieuw</translation>
 <translation id="5245201184978705914">Kan geen transcript genereren</translation>
 <translation id="5251174953851719648">Content vernieuwen</translation>
 <translation id="5253783950165989294">Verbonden met een apparaat met de naam <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" />% batterijlading</translation>
@@ -1339,6 +1374,7 @@ Je kunt ook de sneltoets gebruiken. Markeer eerst de tekst en druk dan op <ph na
 <translation id="5256939106029293271">Je microfoon testen</translation>
 <translation id="5258528442992323769">Geen opgeslagen bureaus</translation>
 <translation id="5260676007519551770">Bureau 4</translation>
+<translation id="5264148714798105376">Dit kan een minuut duren.</translation>
 <translation id="5265391159779542051">Resultaten geladen</translation>
 <translation id="5270547718570958938">Google Agenda</translation>
 <translation id="5277869901083657836">Stylustools aan-/uitzetten</translation>
@@ -1415,6 +1451,7 @@ Geen apparaten verbonden.</translation>
 <translation id="5506975627792768506">Vergrootglas aan- of uitzetten</translation>
 <translation id="5507778598655387680"><ph name="VOLUME_LEVEL" />, als je op Enter drukt, wordt de audio uitgezet.</translation>
 <translation id="5512042095225963688">Vorig woord verwijderen</translation>
+<translation id="5517304475148761050">Deze app heeft toegang tot de Play Store nodig</translation>
 <translation id="5519005148254860683">Google Tasks uitvouwen</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Je beheerder heeft alle e-simkaartprofielen verwijderd. Neem contact op met je beheerder voor meer informatie.</translation>
@@ -1442,6 +1479,7 @@ Geen apparaten verbonden.</translation>
 <translation id="5577281275355252094">Ga na of bluetooth aanstaat op je telefoon als je Telefoonhub wilt gebruiken</translation>
 <translation id="5578188167649348993">geheugen</translation>
 <translation id="5580000943347215299">Bibliotheek</translation>
+<translation id="5581972110672966454">Kan het apparaat niet aan het domein koppelen. Probeer het opnieuw of neem contact op met de eigenaar of beheerder van het apparaat. Foutcode: <ph name="ERROR_CODE" />.</translation>
 <translation id="5586388332127302891">Vastgezet vergrootglas staat aan. Druk nogmaals op <ph name="ACCELERATOR" /> om dit uit te zetten.</translation>
 <translation id="5587506661873751671">Download <ph name="DOWNLOAD_PERCENT" />%</translation>
 <translation id="558849140439112033">Sleep om het gedeelte te selecteren dat je wilt opnemen</translation>
@@ -1466,6 +1504,7 @@ Geen apparaten verbonden.</translation>
 <translation id="5662075790140998213">Bureau 10</translation>
 <translation id="5662709761327382534">Microfoon opnemen <ph name="CURRENT_STATE" />. Druk op Enter om microfoonopnamen <ph name="NEW_STATE" /> te zetten.</translation>
 <translation id="5662919923378083468"><ph name="ACTION_DESCRIPTION" />, <ph name="SHORTCUT_HINT" /></translation>
+<translation id="5667546120811588575">Google Play instellen...</translation>
 <translation id="5669267381087807207">Activeren</translation>
 <translation id="5671658447180261823">De suggestie <ph name="SUGGESTION_NAME" /> verwijderen</translation>
 <translation id="5672890847723042801">Hulpprogramma's</translation>
@@ -1482,6 +1521,7 @@ Geen apparaten verbonden.</translation>
 <translation id="5691772641933328258">Vingerafdruk niet herkend</translation>
 <translation id="5693255400847650006">Microfoon in gebruik</translation>
 <translation id="5699366815052349604">Actief venster toewijzen aan alle bureaus</translation>
+<translation id="570043786759263127">Google Play-apps en -services</translation>
 <translation id="570390244361237317">Alle apps, navigeer met de pijltoetsen voor toegang tot alle apps</translation>
 <translation id="5705197514573687092">Focusinstellingen tonen. Timer ingesteld op <ph name="FOCUS_DURATION" />.</translation>
 <translation id="5707775774148071965">Je apparaat ondersteunt een hogere datasnelheid dan je kabel. De prestaties van het apparaat kunnen beperkt zijn.</translation>
@@ -1496,6 +1536,7 @@ Geen apparaten verbonden.</translation>
 <translation id="574392208103952083">Gemiddeld</translation>
 <translation id="5744083938413354016">Tikken en slepen</translation>
 <translation id="5745612484876805746">Nachtverlichting wordt automatisch aangezet bij zonsondergang</translation>
+<translation id="5749214722697335450">Stuur gebruiks- en diagnostische gegevens. Verbeter je Android-functionaliteit door automatisch diagnostische, apparaat- en app-gebruiksgegevens naar Google te sturen. Deze gegevens kunnen worden gebruikt om de systeem- en app-stabiliteit te verbeteren en andere optimalisaties mogelijk te maken. Ook zijn bepaalde verzamelde gegevens nuttig voor Google-apps en -partners, zoals Android-ontwikkelaars. Als de instelling voor aanvullende Web- en app-activiteit aanstaat, kunnen deze gegevens worden opgeslagen in je Google-account. <ph name="BEGIN_LINK1" />Meer informatie over statistieken<ph name="BEGIN_LINK1_END" />Meer informatie<ph name="END_LINK1" /></translation>
 <translation id="5750765938512549687">Bluetooth staat uit</translation>
 <translation id="5758114525425072423">Focus starten. Timer ingesteld op <ph name="FOCUS_DURATION" />.</translation>
 <translation id="5759522586053040964">Hoor hoe je klinkt voor anderen. Klik op het testicoon of sluit het videogespreksvenster om te stoppen.</translation>
@@ -1512,6 +1553,7 @@ Geen apparaten verbonden.</translation>
 <translation id="5775936059231769503">Hotspot aan-/uitzetten. Hotspot staat uit.</translation>
 <translation id="5777841717266010279">Stoppen met scherm delen?</translation>
 <translation id="5779721926447984944">Vastgezette bestanden</translation>
+<translation id="5780940414249100901">Stuur gebruiks- en diagnostische gegevens. Dit apparaat stuurt op dit moment automatisch diagnostische, apparaat- en app-gebruiksgegevens naar Google. Deze gegevens worden niet gebruikt om je kind te identificeren en kunnen helpen om de systeem- en app-stabiliteit te verbeteren en andere optimalisaties mogelijk te maken. Ook zijn bepaalde verzamelde gegevens nuttig voor Google-apps en -partners, zoals Android-ontwikkelaars. Deze <ph name="BEGIN_LINK1" />instelling<ph name="END_LINK1" /> wordt afgedwongen door de eigenaar. Als de instelling voor aanvullende Web- en app-activiteit aanstaat voor je kind, kunnen deze gegevens worden opgeslagen in hun Google-account. <ph name="BEGIN_LINK2" />Meer informatie over statistieken<ph name="BEGIN_LINK2_END" />Meer informatie<ph name="END_LINK2" /></translation>
 <translation id="5785221443435874078">Deze suggestie verwijderen</translation>
 <translation id="5787431783058088906">Ja, graag</translation>
 <translation id="5788127256798019331">Play-bestanden</translation>
@@ -1527,6 +1569,7 @@ Geen apparaten verbonden.</translation>
 <translation id="5823239091726045201">Google Tasks op het web</translation>
 <translation id="5825969630400862129">Instellingen voor verbonden apparaten</translation>
 <translation id="5830180081891717894">Nog <ph name="WINDOWS" /></translation>
+<translation id="583281660410589416">Onbekend</translation>
 <translation id="5837036133683224804"><ph name="ROUTE_TITLE" /> in <ph name="RECEIVER_NAME" /> stopzetten</translation>
 <translation id="5840658767386246331">Zoeken met Google</translation>
 <translation id="5841296711770970362">Naar de volgende track gaan</translation>
@@ -1592,6 +1635,7 @@ Geen apparaten verbonden.</translation>
 <translation id="6032620807120418574">Klik ergens om het volledige scherm op te nemen</translation>
 <translation id="6040071906258664830">Microfoon opnemen <ph name="STATE" /></translation>
 <translation id="6040143037577758943">Sluiten</translation>
+<translation id="6042308850641462728">Meer</translation>
 <translation id="6043212731627905357">Dit beeldscherm werkt niet met je <ph name="DEVICE_TYPE" /> (het beeldscherm wordt niet ondersteund).</translation>
 <translation id="6043994281159824495">Nu uitloggen</translation>
 <translation id="6045629311476491587">Gebruikt door <ph name="APP_COUNT" /> apps</translation>
@@ -1671,9 +1715,12 @@ Geen apparaten verbonden.</translation>
 <translation id="6274422179279280249">Voeg onder andere links en emoji's in. Je kunt ook hulp krijgen bij het schrijven met AI van Google. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="6276708887952587684">Paginabron bekijken</translation>
 <translation id="6285871695023807425">Toevoegen aan Agenda</translation>
+<translation id="628699625505156622">Gebruik de locatie. Sta toe dat ChromeOS- en Android-apps, websites en services met locatierechten de locatie van dit apparaat gebruiken. Locatienauwkeurigheid biedt een nauwkeurigere locatie voor Android-apps en -services. Hiervoor verwerkt Google periodiek gegevens over apparaatsensoren en draadloze signalen van dit apparaat om bij te dragen aan draadloze signaallocaties op basis van crowdsourcing. Deze worden zonder een bepaalde persoon te identificeren gebruikt om de locatienauwkeurigheid en services op een fysieke locatie te verbeteren. Ze worden ook gebruikt om de services van Google te verbeteren, aan te bieden en te onderhouden op basis van de gerechtvaardigde belangen van Google en derden om aan de behoeften van gebruikers te voldoen. <ph name="BEGIN_LINK1" />Meer informatie over het gebruik van locatie<ph name="END_LINK1" /></translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> kan later opnieuw worden toegevoegd met toestemming van een ouder.</translation>
 <translation id="6291221004442998378">Wordt niet opgeladen</translation>
+<translation id="6297986260307280218">Stuur gebruiks- en diagnostische gegevens. Verbeter je Android-functionaliteit door automatisch diagnostische, apparaat- en app-gebruiksgegevens naar Google te sturen. Deze gegevens kunnen worden gebruikt om de systeem- en app-stabiliteit te verbeteren en andere optimalisaties mogelijk te maken. Ook zijn bepaalde verzamelde gegevens nuttig voor Google-apps en -partners, zoals Android-ontwikkelaars. Deze <ph name="BEGIN_LINK1" />instelling<ph name="END_LINK1" /> wordt afgedwongen door de eigenaar. De eigenaar kan ervoor kiezen diagnostische en gebruiksgegevens voor dit apparaat naar Google te sturen. Als de instelling voor aanvullende Web- en app-activiteit aanstaat, kunnen deze gegevens worden opgeslagen in je Google-account. <ph name="BEGIN_LINK2" />Meer informatie over statistieken<ph name="BEGIN_LINK2_END" />Meer informatie<ph name="END_LINK2" /></translation>
 <translation id="6298183524022479114">Dit apparaat aanpassen in de app</translation>
+<translation id="6298962879096096191">Gebruik Google Play om Android-apps te installeren</translation>
 <translation id="6304076460080088478">Sluit of minimaliseer incognitovensters om op je scherm te zoeken met Google Lens</translation>
 <translation id="6309219492973062892">Klik of tik op icoon 1-8 op de plank</translation>
 <translation id="6315170314923504164">Spraak</translation>
@@ -1703,8 +1750,10 @@ Geen apparaten verbonden.</translation>
 <translation id="6406458002328242616">Timer bewerken. <ph name="FOCUS_DURATION" />.</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6414618057231176439">Selecteer welke versie van <ph name="VM_NAME" /> je wilt installeren.</translation>
+<translation id="641469293210305670">Updates en apps installeren</translation>
 <translation id="6417265370957905582">Google Assistent</translation>
 <translation id="641817663353603351">page up</translation>
+<translation id="6418511932144861495">Essentiële update installeren</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Alle meldingen verwijderen</translation>
 <translation id="6426905245930183644">Maken…</translation>
@@ -1730,6 +1779,7 @@ Geen apparaten verbonden.</translation>
 <translation id="6482559668224714696">Volledig scherm vergroten</translation>
 <translation id="6485086611007560630">Weer (niet beschikbaar)</translation>
 <translation id="6490471652906364588">USB-C-apparaat (poort aan rechterkant)</translation>
+<translation id="6491376743066338510">Autorisatie mislukt</translation>
 <translation id="649452524636452238">Pincode van smartkaart</translation>
 <translation id="6495322433318104734">Screensaver wordt weergegeven, druk op een toets om af te sluiten</translation>
 <translation id="6495400115277918834">Scherm-in-scherm gestart, Alt+Shift+V om te focussen</translation>
@@ -1783,10 +1833,12 @@ Nieuwe installatie</translation>
 <translation id="6625718907317144388">Meldingen van <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> en andere apps zijn verborgen omdat weergavebeveiliging aanstaat</translation>
 <translation id="6627638273713273709">Zoeken+Shift+K</translation>
 <translation id="662830937908749204">De focus naar het volgende deelvenster verplaatsen</translation>
+<translation id="6635674640674343739">Netwerkverbinding kan niet tot stand worden gebracht. Check je netwerkverbinding en probeer het opnieuw.</translation>
 <translation id="6637729079642709226">Tijd wijzigen</translation>
 <translation id="6641720045729354415">Live ondertiteling aan-/uitzetten. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">Sorteren op naam ongedaan maken</translation>
 <translation id="664793810957802384">Items in de voorgestelde groep</translation>
+<translation id="6649018507441623493">Een ogenblik…</translation>
 <translation id="6649641931981131786">Pas de camera aan zodat je in het midden van het scherm wordt geplaatst.</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> wil bevestigen dat jij het bent</translation>
 <translation id="6650742588569439432">Kan items niet laden.</translation>
@@ -1811,6 +1863,7 @@ Nieuwe installatie</translation>
 <translation id="6706742084323792866">Toetsenbord vastzetten</translation>
 <translation id="6709719156428404245">Sleep of druk op de spatiebalk om een gebied te selecteren om op te nemen</translation>
 <translation id="6710213216561001401">Vorige</translation>
+<translation id="6716798148881908873">De netwerkverbinding is verbroken. Check je netwerkverbinding of probeer een ander wifi-netwerk.</translation>
 <translation id="6723839937902243910">Voeding</translation>
 <translation id="672609503628871915">Wat is er nieuw?</translation>
 <translation id="6727969043791803658">Verbonden, batterij <ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -1850,6 +1903,7 @@ Nieuwe installatie</translation>
 <translation id="6819327813400217281">Camera uitgelijnd op de linkerbenedenhoek</translation>
 <translation id="6820676911989879663">Neem een pauze</translation>
 <translation id="6827049576281411231">Afsprakenvenster sluiten</translation>
+<translation id="682971198310367122">Privacybeleid van Google</translation>
 <translation id="6836499262298959512">Gevaarlijk bestand</translation>
 <translation id="6837621009301897464">Als je een screenshot wilt maken, druk je op</translation>
 <translation id="6852052252232534364">Klik om te activeren</translation>
@@ -1881,6 +1935,7 @@ Nieuwe installatie</translation>
 <translation id="6942518653766415536">Menu voor opname-indelingen</translation>
 <translation id="6945221475159498467">Selecteren</translation>
 <translation id="6945922087561257829">Je telefoon gebruikt een mobiel netwerk. Zorg dat je telefoon en Chromebook met hetzelfde wifi-netwerk zijn verbonden en probeer het opnieuw. <ph name="LEARN_MORE" /></translation>
+<translation id="6950627417367801484">Apps herstellen</translation>
 <translation id="6960565108681981554">Niet geactiveerd. Neem contact op met je provider.</translation>
 <translation id="6961121602502368900">Geluid van telefoon kan niet worden uitgezet in je werkprofiel</translation>
 <translation id="6961840794482373852">De sneltoets Alt + pijl-omhoog is veranderd. Als je de toets Page Up wilt gebruiken, druk je op de <ph name="LAUNCHER_KEY_NAME" />-toets + pijl-omhoog.</translation>
@@ -2052,6 +2107,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="7541773865713908457"><ph name="ACTION_NAME" /> met <ph name="APP_NAME" />-app</translation>
 <translation id="7543399541175347147">Linux-apps en incognitovensters worden momenteel niet ondersteund. Andere apps worden opgeslagen.</translation>
 <translation id="7544300628205093162">Achtergrondverlichting van toetsenbord staat aan</translation>
+<translation id="7545466883021407599">Kan geen verbinding maken met de server. Check je netwerkverbinding en probeer het opnieuw. Als je nog steeds problemen ondervindt, start je de Chromebook opnieuw op. Foutcode: <ph name="ERROR_CODE" />.</translation>
 <translation id="7548434653388805669">Bedtijd</translation>
 <translation id="7551643184018910560">Vastzetten op plank</translation>
 <translation id="7557816257942363084"><ph name="APP_NAME" /> gebruikt momenteel je microfoon</translation>
@@ -2067,6 +2123,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="7579778809502851308">Schermopname</translation>
 <translation id="7588317312481506627">Naar klembord gekopieerd.</translation>
 <translation id="7593891976182323525">Zoeken of Shift</translation>
+<translation id="7595453277607160340">Log opnieuw in en update de versleuteling om Android-apps te kunnen gebruiken en ervoor te zorgen dat je <ph name="DEVICE_TYPE" /> goed blijft functioneren.</translation>
 <translation id="7598054670902114203">Momentopname van CPU-gebruik, <ph name="CPU_USEAGE" />%. Temperatuur <ph name="TEMPERATURE" /> graden Celsius, huidige snelheid: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="7599378375976398913">Geselecteerd resultaat invoegen</translation>
 <translation id="7600875258240007829">Alle meldingen bekijken</translation>
@@ -2076,6 +2133,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="7609951632080598826">Agendaweergave, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Camera opnieuw verbonden.</translation>
 <translation id="7613620083300976559">Gamebediening aanzetten</translation>
+<translation id="761530003705945209">Maak een back-up op Google Drive. Zet je gegevens eenvoudig terug of schakel wanneer je wilt tussen apparaten. De back-up bevat app-gegevens. Je back-ups worden geüpload naar Google en versleuteld met het wachtwoord van je Google-account.</translation>
 <translation id="761736749114493194">Cameraframing aan-/uitzetten. <ph name="STATE_TEXT" /></translation>
 <translation id="7621008024906456933">Instellingen voor Quick Share</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
@@ -2124,6 +2182,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="7748275671948949022">Launcher-knop op de plank markeren</translation>
 <translation id="7749443890790263709">Maximum aantal bureaus bereikt.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7750228210027921155">Scherm-in-scherm</translation>
 <translation id="7751260505918304024">Alles bekijken</translation>
 <translation id="7762664108390426952">de Servicevoorwaarden en het Privacybeleid van Google</translation>
 <translation id="7768784765476638775">Selecteer om voor te lezen</translation>
@@ -2242,6 +2301,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8092380135549145188">Bedieningselementen voor scrollen</translation>
 <translation id="8098591350844501178">Schermcast naar <ph name="RECEIVER_NAME" /> stopzetten</translation>
 <translation id="810637681351706236">App losmaken van plank</translation>
+<translation id="8107015733319732394">De Google Play Store wordt geïnstalleerd op je <ph name="DEVICE_TYPE" />. Dit kan enkele minuten duren.</translation>
 <translation id="8113423164597455979">Aan, alle apps</translation>
 <translation id="8113515504791187892">Knop Selecteer om voor te lezen</translation>
 <translation id="8120151603115102514">Je telefoon heeft geen vergrendelscherm. Geef het wachtwoord op om je Chromebook te ontgrendelen.</translation>
@@ -2324,6 +2384,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8388750414311082622">Het laatste bureaublad kan niet worden verwijderd.</translation>
 <translation id="8394567579869570560">Je ouder heeft dit apparaat vergrendeld</translation>
 <translation id="8401850874595457088">Taalmenu openen</translation>
+<translation id="8410775397654368139">Google Play</translation>
 <translation id="8412677897383510995">Scherminstellingen bekijken</translation>
 <translation id="8413272770729657668">Opname start over 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (case)</translation>
@@ -2349,11 +2410,13 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> heeft <ph name="FEATURE_NAME" /> <ph name="FEATURE_STATE" />.</translation>
 <translation id="8477270416194247200">Druk op Alt+Zoeken of Shift om te annuleren.</translation>
 <translation id="8480418399907765580">Werkbalk tonen</translation>
+<translation id="8481187309597259238">USB-rechten bevestigen</translation>
 <translation id="8487660088084188539">Als je deze functies aanzet, kunnen de ingevoerde tekst, de documentcontent en de URL van de webpagina naar de servers van Google worden gestuurd. Deze informatie wordt gebruikt om schrijfsuggesties te genereren, samenvattingen te genereren, vragen te beantwoorden en het product te verbeteren, in overeenstemming met <ph name="LINK_TO_SERVICE_TERMS" />. Voeg geen persoonlijke, gevoelige of vertrouwelijke informatie toe.</translation>
 <translation id="8487699605742506766">Hotspot</translation>
 <translation id="8490896350101740396">De volgende kiosk-apps '<ph name="UPDATED_APPS" />' zijn geüpdatet. Start het apparaat opnieuw op om het updateproces te voltooien.</translation>
 <translation id="8491237443345908933">Link openen in een nieuw tabblad</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> ondersteunt <ph name="SPECIFIED_RESOLUTION" /> niet. De resolutie is gewijzigd in <ph name="FALLBACK_RESOLUTION" />. Klik op 'Bevestigen' om de wijzigingen te behouden. De vorige instellingen worden over <ph name="TIMEOUT_SECONDS" /> hersteld.</translation>
+<translation id="8502536196501630039">Als je apps van Google Play wilt gebruiken, moet je eerst je apps herstellen. Sommige gegevens zijn mogelijk verloren gegaan.</translation>
 <translation id="8507563469658346379">Iedereen, <ph name="REMAINING_TIME" /></translation>
 <translation id="8511123073331775246">Nieuw bureau maken</translation>
 <translation id="85123341071060231">Bluetooth staat uit op je Chromebook. Geef het wachtwoord op om je Chromebook te ontgrendelen.</translation>
@@ -2407,6 +2470,8 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8676770494376880701">Laag-vermogen-lader aangesloten</translation>
 <translation id="8679158879996532670">Focusinstellingen tonen. Focus staat aan, nog <ph name="REMAINING_TIME" />.</translation>
 <translation id="8683506306463609433">Bijhouden van prestaties is actief</translation>
+<translation id="8698432579173128320">Maak een back-up op Google Drive. Zet je gegevens eenvoudig terug of wissel wanneer je wilt tussen apparaten. De back-up omvat app-gegevens. Je back-ups worden geüpload naar Google en versleuteld met het wachtwoord van je Google-account. <ph name="BEGIN_LINK1" />Meer informatie over back-ups<ph name="BEGIN_LINK1_END" />Meer informatie<ph name="END_LINK1" /></translation>
+<translation id="8700087567921985940">Gebruik de locatie. Apps en services met locatierechten mogen de locatie van je apparaat gebruiken. Google kan af en toe locatiegegevens verzamelen en anoniem gebruiken om de locatienauwkeurigheid en locatiegebaseerde services te verbeteren. <ph name="BEGIN_LINK1" />Meer informatie over locatie<ph name="BEGIN_LINK1_END" />Meer informatie<ph name="END_LINK1" /></translation>
 <translation id="8703634754197148428">Opname starten. Nadat de opname is gestart, gebruik je Alt + Shift + L om op de plank naar de knop voor het stoppen van de opname te gaan.</translation>
 <translation id="8704155109538237473">De focus op het scherm-in-scherm-venster zetten</translation>
 <translation id="870917907284186124">Dicteren (typen met je stem) aan-/uitzetten</translation>
@@ -2470,6 +2535,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8875021410787719674">Schakelen tussen rechterbenedenhoek, Launcher, adresbalk, bookmarkbalk, website die is geopend en downloads</translation>
 <translation id="8876148469852588625">Afspraak <ph name="EVENT_POSITION" /> van <ph name="EVENT_TOTAL_COUNT" /></translation>
 <translation id="8876661425082386199">Je verbinding checken</translation>
+<translation id="8883478023074930307">Stuur gebruiks- en diagnostische gegevens. Dit apparaat stuurt op dit moment automatisch diagnostische, apparaat- en app-gebruiksgegevens naar Google. Deze gegevens kunnen worden gebruikt om de systeem- en app-stabiliteit te verbeteren en andere optimalisaties mogelijk te maken. Ook zijn bepaalde verzamelde gegevens nuttig voor Google-apps en -partners, zoals Android-ontwikkelaars. Deze <ph name="BEGIN_LINK1" />instelling<ph name="END_LINK1" /> wordt afgedwongen door de eigenaar. Als de instelling voor aanvullende Web- en app-activiteit aanstaat, kunnen deze gegevens worden opgeslagen in je Google-account. <ph name="BEGIN_LINK2" />Meer informatie over statistieken<ph name="BEGIN_LINK2_END" />Meer informatie<ph name="END_LINK2" /></translation>
 <translation id="8885424115080869847">Kan geen verbinding maken met YouTube Music</translation>
 <translation id="888982883502837004">Firmware-updates zijn beschikbaar voor je apparaat. Klik om te bekijken en te updaten.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> wordt definitief verwijderd</translation>
@@ -2512,10 +2578,12 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="9000771174482730261">OPSLAG BEHEREN</translation>
 <translation id="9003374957546315126">Emoji's en meer</translation>
 <translation id="9005984960510803406">Crosh-venster openen</translation>
+<translation id="901668144954885282">Back-up maken in Google Drive</translation>
 <translation id="9017320285115481645">Geef de Family Link-toegangscode voor ouders op.</translation>
 <translation id="9024331582947483881">volledig scherm</translation>
 <translation id="9029736946581028033">Apparaat gaat straks uit</translation>
 <translation id="9030319654231318877">Uit tot zonsondergang</translation>
+<translation id="9030515284705930323">Je organisatie heeft de Google Play Store niet aangezet voor jouw account. Neem contact op met je beheerder voor meer informatie.</translation>
 <translation id="9030665205623277906">Momentopname van CPU-gebruik: <ph name="CPU_USEAGE" />%</translation>
 <translation id="9034924485347205037">Linux-bestanden</translation>
 <translation id="9047624247355796468">Instellingen openen voor <ph name="NETWORK_NAME" /></translation>
@@ -2565,8 +2633,10 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="9195857219954068558">Je Chromebook is geüpdatet. Open je vorige vensters en apps.</translation>
 <translation id="9195990613383871904">Morgen</translation>
 <translation id="9198992156681343238">De resolutie van <ph name="DISPLAY_NAME" /> is gewijzigd in <ph name="RESOLUTION" />. Klik op 'Bevestigen' om de wijzigingen te behouden. De vorige instellingen worden over <ph name="TIMEOUT_SECONDS" /> hersteld.</translation>
+<translation id="9199853905755292769">Stuur gebruiks- en diagnostische gegevens. Dit apparaat stuurt op dit moment automatisch diagnostische, apparaat- en app-gebruiksgegevens naar Google. Deze gegevens worden niet gebruikt om je kind te identificeren en helpen om de systeem- en app-stabiliteit te verbeteren en andere optimalisaties mogelijk te maken. Ook zijn bepaalde verzamelde gegevens nuttig voor Google-apps en -partners, zoals Android-ontwikkelaars. Als de instelling voor aanvullende Web- en app-activiteit aanstaat voor je kind, kunnen deze gegevens worden opgeslagen in hun Google-account. <ph name="BEGIN_LINK2" />Meer informatie over statistieken<ph name="BEGIN_LINK2_END" />Meer informatie<ph name="END_LINK2" /></translation>
 <translation id="9201044636667689546"><ph name="NAME" /> koppelen aan deze Chromebook</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, beheerd door je beheerder</translation>
+<translation id="9201842707396338580">Er is iets misgegaan. Neem contact op met de eigenaar of beheerder van het apparaat. Foutcode: <ph name="ERROR_CODE" />.</translation>
 <translation id="9207682216934703221">Hiermee kunnen <ph name="APP_NAME" />, <ph name="APP2_NAME" /> en alle apps en websites met locatierechten en ChromeOS de locatie van wifi en mobiele netwerken gebruiken.</translation>
 <translation id="9210037371811586452">Samengestelde desktopmodus wordt gesloten</translation>
 <translation id="9211490828691860325">Alle bureaus</translation>
@@ -2579,6 +2649,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="923686485342484400">Druk twee keer op Control+Shift+Q om uit te loggen.</translation>
 <translation id="92580429198593979">Je hebt op de sneltoets voor kleurinversie gedrukt. Wil je dit aanzetten?</translation>
 <translation id="925832987464884575">Voorbeelden verbergen</translation>
+<translation id="93140074055951850">Android-apps zijn gestopt</translation>
 <translation id="938407504481277932">Huidig bureau: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. Bureau <ph name="DESK_INDEX" /> van <ph name="DESK_COUNT" />.</translation>
 <translation id="94468042118567862">Apparaat niet up-to-date</translation>
 <translation id="945383118875625837">Link naar bookmarkbalk slepen</translation>

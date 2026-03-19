@@ -1073,6 +1073,7 @@
 <translation id="2673968385134502798">ગેમ</translation>
 <translation id="2674170444375937751">શું તમે ખરેખર તમારા ઇતિહાસમાંથી આ પેજને ડિલીટ કરવા માંગો છો?</translation>
 <translation id="2674524144218093528">ઘરનું રંગકામ અને ફીનિશિંગ</translation>
+<translation id="2675716371350192683">તમારા કન્ટેન્ટનો ઉપયોગ AIને બહેતર બનાવવા માટે કરવામાં નહીં આવે. તમારી સંસ્થા કોઈપણ સમયે આ સેટિંગ બદલી શકે છે.</translation>
 <translation id="26774279487328902"><ph name="GROUP_COUNT" /> ટૅબના ગ્રૂપ હવે ઉપલબ્ધ નથી</translation>
 <translation id="2677748264148917807">છોડો</translation>
 <translation id="2679216653373462289">તમારા મોશન અને લાઇટ સેન્સરનો ઉપયોગ કરો</translation>
@@ -2657,6 +2658,7 @@
 <translation id="5190835502935405962">બુકમાર્ક બાર</translation>
 <translation id="5191315092027169558">તમારી પ્રોફાઇલ <ph name="DOMAIN" /> દ્વારા મેનેજ કરવામાં આવે છે</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> એકથી વધુ ફાઇલો ડાઉનલોડ કરવા માગે છે</translation>
+<translation id="519528950056409240">Walletને ડેટા શેર કરવાની મંજૂરી આપો</translation>
 <translation id="5199121357983849992">ID કાર્ડ સાચવીએ?</translation>
 <translation id="5200063972779787617">એકાઉન્ટમાં સરનામું સાચવો</translation>
 <translation id="5201306358585911203">આ પેજ પરનું શામેલ કરેલ પેજ કહે છે કે</translation>
@@ -3104,6 +3106,7 @@
 <translation id="5910140988253729859">ઑટોમૅટિક રીતે ભરવાની સુવિધાનો છેલ્લો ફેરફાર રદ કરો</translation>
 <translation id="5911020115933784199">ઇવેન્ટ અને સૂચિઓ</translation>
 <translation id="5911110632211230665">ફાઇલો ખોલવાનું બ્લૉક કરેલું છે</translation>
+<translation id="5912796581727968237">Google Wallet ખોલો</translation>
 <translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" /> દ્વારા આ ટૅબ ઉમેરવામાં આવ્યું</translation>
 <translation id="5915189366813702112">અનુકૂળતા અનુસાર કામ કરવાની વ્યવસ્થા</translation>
 <translation id="59174027418879706">સક્ષમ કરેલું</translation>
@@ -4566,6 +4569,7 @@
 <translation id="8175796834047840627">તમે સાઇન ઇન કરેલું છે તેથી Chrome તમને તમારા કાર્ડ તમારા Google એકાઉન્ટમાં સાચવવાની ઑફર કરે છે. તમે સેટિંગમાં આ વર્તણૂકને બદલી શકો છો.</translation>
 <translation id="8176440868214972690">આ ડિવાઇસના વ્યવસ્થાપકે સેટિંગ અથવા પૉલિસી જેવી અમુક માહિતી નીચેની વેબસાઇટને મોકલી છે.</translation>
 <translation id="817820454357658398">મહિલાઓની સ્વચ્છતા માટેની પ્રોડક્ટ</translation>
+<translation id="8182470873445638343"><ph name="BEGIN_BOLD" />આ વિકલ્પો ઑફર કરવા માટે ચેકઆઉટ પેજ પરનું કન્ટેન્ટ Google સાથે શેર કરવામાં આવે છે.<ph name="END_BOLD" /> ચુકવણીના પ્લાન યોગ્યતાને આધીન છે. પછીથી ચુકવણી કરવાના વિકલ્પો છુપાવવા માટે, <ph name="BEGIN_LINK" />ચુકવણી માટેના સેટિંગ<ph name="END_LINK" /> પર જાઓ</translation>
 <translation id="818254048113802060">{0,plural, =1{કન્ટેન્ટને કારણે <ph name="FILE_NAME" /> બ્લૉક કરવામાં આવી હતી}one{કન્ટેન્ટને કારણે <ph name="FILE_COUNT" /> ફાઇલ બ્લૉક કરવામાં આવી હતી}other{કન્ટેન્ટને કારણે <ph name="FILE_COUNT" /> ફાઇલ બ્લૉક કરવામાં આવી હતી}}</translation>
 <translation id="8183800802493617952">કુટુંબલક્ષી ગેમ અને પ્રવૃત્તિઓ</translation>
 <translation id="8184538546369750125">વૈશ્વિક ડિફોલ્ટનો ઉપયોગ કરો (મંજૂરી આપો)</translation>

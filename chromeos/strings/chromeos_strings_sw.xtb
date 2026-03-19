@@ -273,7 +273,6 @@
 <translation id="200669432486043882">Badilisha faili</translation>
 <translation id="2006864819935886708">Uunganishaji</translation>
 <translation id="2008685064673031089">Prime search</translation>
-<translation id="2011174342667534258">Toleo la SDK:</translation>
 <translation id="2016697457005847575">Jaribu hatua za utatuzi</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2045814230297767491">vyombo vya kulia mezani</translation>
@@ -523,7 +522,6 @@
 <translation id="3291996639387199448">Uelekeo wa ufunguo</translation>
 <translation id="3294437725009624529">Mgeni</translation>
 <translation id="3303855915957856445">Hakuna matokeo ya utafutaji yaliyopatikana</translation>
-<translation id="3305294846493618482">zaidi</translation>
 <translation id="3310640316857623290">Muda wa kusubiri wa DNS umezidi zaidi kiwango cha juu kinachoruhusiwa</translation>
 <translation id="3316495615885967552">Upakuaji wa mfumo wa kutayarisha muhtasari jina umekamilika</translation>
 <translation id="3321030238473337787">Kasi ya uchezaji</translation>
@@ -702,7 +700,6 @@
 <translation id="4126551873361000548">Rudi nyuma kwa sekunde 10</translation>
 <translation id="4128271910628504223">Weka kidokezo kama vile "chora msitu wenye umande"</translation>
 <translation id="4130035430755296270">Endelea kuelea juu yake ili upate chaguo zaidi za muundo</translation>
-<translation id="4130750466177569591">Ninakubali</translation>
 <translation id="4131410914670010031">Nyeusi na nyeupe</translation>
 <translation id="4137700675046373159">Jumamosi</translation>
 <translation id="4139326893730851150">Masasisho ya programu dhibiti</translation>
@@ -1051,7 +1048,6 @@
 <translation id="5606865426897221650">Kichupo</translation>
 <translation id="5612205513582918357">Zana za Darasani zinaruhusu <ph name="RECEIVER_NAME" /> ifikie skrini yako</translation>
 <translation id="5613201299517339763">Umeondolewa kwenye akaunti</translation>
-<translation id="5620281292257375798">Ndani ya kampuni pekee</translation>
 <translation id="5628106863521633649">Lugha zinazopatikana</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">ikisiri</translation>
@@ -1415,7 +1411,6 @@
 <translation id="7184043045742675738">Bofya kitufe chochote ili kuweka mapendeleo katika kitufe chako. Badilisha nafasi ya kitufe ukitumia kipanya au vitufe vya vishale.</translation>
 <translation id="7187669805838282391">Jumatano</translation>
 <translation id="7205318498545665455">Chagua maikrofoni yako</translation>
-<translation id="7206979415662233817">Sheria na masharti</translation>
 <translation id="7210635925306941239">rangi ya samawati-kijani</translation>
 <translation id="7212547870105584639">Dhibiti mipangilio ya APN ya mtandao. APN huanzisha muunganisho kati ya mtandao wa simu na intaneti. <ph name="BEGIN_LINK_LEARN_MORE" />Pata maelezo zaidi<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Masasisho ya programu dhibiti kwa vifaa vya nje</translation>
@@ -1446,11 +1441,6 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7321055305895875150">kijani na samawati kijani</translation>
 <translation id="7328475450575141167">ua la mmea wa strelitzia</translation>
-<translation id="7331297744262591636">Ni lazima uwe na umri wa angalau miaka 18 na ukubali kuwa matumizi yako ya mandhari ya AI yanategemea <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Sheria na Masharti ya Google<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> na <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />Sheria na Masharti ya Ziada ya AI Zalishi<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Unaweza tu kutayarisha mandhari ukitumia AI kwa matumizi binafsi na yasiyo ya kibiashara. Unapopata usaidizi wa mandhari, maandishi hutumwa kwenye seva za Google AI ili kuzalisha mapendekezo ya mandhari, yanayotegemea <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Sera ya Faragha ya Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. <ph name="BEGIN_LINK_LEARN_MORE" />Pata maelezo zaidi<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Bonyeza kitufe cha Utafutaji pamoja na kitufe cha Nafasi ili uone matokeo katika huduma ya Tafuta na Google.</translation>
 <translation id="7343649194310845056">Vifaa vya Mtandao</translation>
 <translation id="7344788170842919262">ardhi</translation>
 <translation id="7346768383111016081">Weka kidhibiti kwenye kitendo cha mchezo ili ucheze ukitumia kibodi yako</translation>
@@ -1838,7 +1828,6 @@ Pakua mfumo wa unukuzi (hadi MB 100) ili upate manukuu haya.</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">Tumia video hii</translation>
-<translation id="9087578468327036362">Ripoti hoja hii</translation>
 <translation id="9088306295921699330">Matumizi ya sasa</translation>
 <translation id="9088994563996376283">Fupisha</translation>
 <translation id="9095775724867566971">Pluginvm</translation>

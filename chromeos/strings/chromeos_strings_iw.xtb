@@ -273,7 +273,6 @@
 <translation id="200669432486043882">החלף קובץ</translation>
 <translation id="2006864819935886708">קישוריות</translation>
 <translation id="2008685064673031089">חיפוש מספרים ראשוניים</translation>
-<translation id="2011174342667534258">‏גרסת SDK:</translation>
 <translation id="2016697457005847575">להוראות לפתרון בעיות</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2045814230297767491">סכו"ם</translation>
@@ -523,7 +522,6 @@
 <translation id="3291996639387199448">כיוון המפתח</translation>
 <translation id="3294437725009624529">אורח</translation>
 <translation id="3303855915957856445">לא נמצאו תוצאות חיפוש</translation>
-<translation id="3305294846493618482">עוד</translation>
 <translation id="3310640316857623290">‏זמן האחזור של ה-DNS גבוה במידה משמעותית מהסף המותר</translation>
 <translation id="3316495615885967552">הורדת המודל ליצירת סיכום ושם הסתיימה</translation>
 <translation id="3321030238473337787">מהירות הפעלה</translation>
@@ -702,7 +700,6 @@
 <translation id="4126551873361000548">חזרה של 10 שניות אחורה</translation>
 <translation id="4128271910628504223">אפשר להזין הנחיה כמו "אני רוצה לצייר יער ערפילי"</translation>
 <translation id="4130035430755296270">כשמציבים את העכבר מעל אפשרויות הפריסה אפשר לראות עוד אפשרויות</translation>
-<translation id="4130750466177569591">מקובל עליי</translation>
 <translation id="4131410914670010031">שחור ולבן</translation>
 <translation id="4137700675046373159">ביום שבת</translation>
 <translation id="4139326893730851150">עדכוני קושחה</translation>
@@ -1051,7 +1048,6 @@
 <translation id="5606865426897221650">‏מקש Tab</translation>
 <translation id="5612205513582918357">אפליקציית כלי העזר להוראה משתפת את המסך שלך עם <ph name="RECEIVER_NAME" /></translation>
 <translation id="5613201299517339763">התנתקת מהחשבון</translation>
-<translation id="5620281292257375798">פנימי בלבד</translation>
 <translation id="5628106863521633649">השפות הזמינות</translation>
 <translation id="5630438231335788050">באוהאוס</translation>
 <translation id="5631759159893697722">תקציר</translation>
@@ -1415,7 +1411,6 @@
 <translation id="7184043045742675738">כדי להתאים אישית את הכפתור, לוחצים על מקש כלשהו. משנים את מיקום המקש באמצעות העכבר או מקשי החיצים.</translation>
 <translation id="7187669805838282391">ביום רביעי</translation>
 <translation id="7205318498545665455">בחירת המיקרופון</translation>
-<translation id="7206979415662233817">תנאים והגבלות</translation>
 <translation id="7210635925306941239">ציאן</translation>
 <translation id="7212547870105584639">‏ניהול הגדרות APN של הרשת. נקודות APN יוצרות חיבור בין רשת סלולרית לבין האינטרנט. <ph name="BEGIN_LINK_LEARN_MORE" />מידע נוסף<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">עדכוני קושחה למכשירים חיצוניים</translation>
@@ -1446,11 +1441,6 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7321055305895875150">ירוק וכחול-ירקרק</translation>
 <translation id="7328475450575141167">ציפור גן-עדן</translation>
-<translation id="7331297744262591636">‏עליך להיות בגיל 18 לפחות ולאשר שהשימוש שלך בטפטים מבוססי-AI יהיה כפוף <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />לתנאים ולהגבלות של Google<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> ו<ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />לתנאים ולהגבלות הנוספים ל-AI גנרטיבי<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          מותר ליצור טפטים באמצעות AI רק לשימוש אישי ולא לשימוש מסחרי. כשמקבלים עזרה לגבי יצירת טפטים, הטקסט של הבקשה נשלח לשרתים של ה-AI מבית Google כדי ליצור הצעות לטפטים, בכפוף ל<ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />מדיניות הפרטיות של Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. <ph name="BEGIN_LINK_LEARN_MORE" />מידע נוסף<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="7343581795491695942">‏<ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; כדי לראות את התוצאות בחיפוש Google, לוחצים על 'חיפוש' ועל מקש הרווח.</translation>
 <translation id="7343649194310845056">מכשירים ברשת</translation>
 <translation id="7344788170842919262">אדמה</translation>
 <translation id="7346768383111016081">הקצאת אמצעי בקרה לפעולה במשחק כדי לשחק באמצעות המקלדת</translation>
@@ -1838,7 +1828,6 @@
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">שימוש בסרטון הזה</translation>
-<translation id="9087578468327036362">דיווח על השאילתה הזו</translation>
 <translation id="9088306295921699330">שימוש נוכחי</translation>
 <translation id="9088994563996376283">פישוט</translation>
 <translation id="9095775724867566971">Pluginvm</translation>

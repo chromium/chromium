@@ -196,6 +196,7 @@
 <translation id="3045032126857188731">Idioma traducido: <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">Cerrar diálogo de comentarios</translation>
 <translation id="3068187312562070417">Otros perfiles de Chromium</translation>
+<translation id="3068290154869370196">Las extensiones son complementos que te permiten personalizar Chromium. Desde mantener la organización hasta simplificar las tareas cotidianas, las extensiones te ayudan a personalizar Chromium.</translation>
 <translation id="3068515742935458733">Envía a Google informes de fallos y <ph name="UMA_LINK" /> para ayudar a mejorar Chromium.</translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{Una o más extensiones de Chromium tenían acceso a 1 dispositivo USB}=1{Una o más extensiones de Chromium tienen acceso a 1 dispositivo USB}other{Una o más extensiones de Chromium tienen acceso a # dispositivos USB}}</translation>
 <translation id="3095811995836568724">Historial de Chromium</translation>
@@ -428,6 +429,7 @@
 <translation id="5821520528363214608">Para usar y guardar datos de Chromium en tu Cuenta de Google, actualiza Chromium</translation>
 <translation id="5824893331272123205">No se pudo cargar el panel, vuelve a intentarlo</translation>
 <translation id="5862307444128926510">Bienvenido a Chromium</translation>
+<translation id="5867606647614813312">Activa funciones adicionales para otorgar las protecciones más sólidas de Chromium</translation>
 <translation id="5871205389137001634">Haz clic para salir de la Búsqueda con imágenes</translation>
 <translation id="5883558403894052917">Chromium detectó que estos elementos contienen software malicioso:</translation>
 <translation id="5889361821821684993">Chromium verifica con regularidad que el navegador tenga la configuración más segura. Te avisaremos si hay algo que debas revisar.</translation>

@@ -1820,6 +1820,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="8282950411412455249">Go to security settings</translation>
 <translation id="8288688997999490824">{NUM_WINDOWS,plural, =1{Close 1 Incognito window}other{Close # Incognito windows}}</translation>
 <translation id="831192587911042850">Adds the current web site to the list of web sites that you are following.</translation>
+<translation id="8313599942510782709">Your task is still in progress</translation>
 <translation id="8317318757008452355">Open options to print</translation>
 <translation id="8320212361750431956">Recent activity</translation>
 <translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>

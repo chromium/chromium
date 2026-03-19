@@ -8,6 +8,7 @@
 <translation id="1017556409696559990">Riduci a icona la finestra principale quando non è presente una cronologia precedente in Chrome</translation>
 <translation id="101823271612280837">Registrazione interrotta. Impossibile utilizzare il Pannello di gioco in modalità tablet.</translation>
 <translation id="1024364763893396229">Salva <ph name="NAME" /></translation>
+<translation id="103279545524624934">Libera spazio sul disco per avviare le app Android.</translation>
 <translation id="1032891413405719768">Batteria dello stilo in esaurimento</translation>
 <translation id="1036348656032585052">Disattiva</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> aggiunto</translation>
@@ -35,6 +36,7 @@
 <translation id="1129383337808748948">Aggiorna <ph name="CONTENT_TITLE" /></translation>
 <translation id="1142002900084379065">Foto recenti</translation>
 <translation id="114221662579355151">Consente l'accesso alla fotocamera per <ph name="APP1_NAME" />, <ph name="APP2_NAME" />, tutte le app e tutti i siti web che hanno l'autorizzazione di accesso alla fotocamera. Potresti dover aggiornare la pagina web o riavviare l'app.</translation>
+<translation id="1147991416141538220">Per richiedere l'accesso, contatta l'amministratore del dispositivo.</translation>
 <translation id="1148499908455722006">Apri la finestra di dialogo delle informazioni per <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Calendario</translation>
 <translation id="1153356358378277386">Dispositivi accoppiati</translation>
@@ -114,6 +116,7 @@
 <translation id="1340378040547539434">Diminuisci lo zoom sulla pagina</translation>
 <translation id="1341651618736211726">Overflow</translation>
 <translation id="1341926407152459446">Usa "<ph name="DEVICE_NAME" />" come dispositivo di input e output audio</translation>
+<translation id="1346403631707626730">Invia dati su utilizzo e diagnostica. Contribuisci a migliorare l'esperienza Android di tuo figlio tramite l'invio automatico a Google di dati diagnostici e sull'utilizzo delle app e del dispositivo. Non verranno utilizzati per identificare tuo figlio e contribuiranno alla stabilità delle app e del sistema, nonché ad altri miglioramenti. Alcuni dati aggregati saranno utili anche per app e partner di Google, ad esempio gli sviluppatori Android. Se l'impostazione Attività web e app aggiuntiva è attiva per tuo figlio, queste informazioni potrebbero essere salvate nel suo Account Google. <ph name="BEGIN_LINK1" />Scopri di più sulle metriche<ph name="BEGIN_LINK1_END" />Scopri di più<ph name="END_LINK1" /></translation>
 <translation id="1346748346194534595">Destra</translation>
 <translation id="1350494136075914725">In corso · Passa alla scheda</translation>
 <translation id="1351937230027495976">Comprimi il menu</translation>
@@ -196,6 +199,7 @@
 <translation id="1610778689852195798">"Annulla"</translation>
 <translation id="1611993646327628135">On</translation>
 <translation id="1612679292338846734">Quando attivi queste funzionalità, il testo di input, i contenuti del documento e l'URL della pagina web potrebbero essere inviati ai server di Google AI. Queste informazioni vengono utilizzate per generare suggerimenti di bozza e riassunti, rispondere a domande e migliorare il prodotto, in conformità ai <ph name="LINK_TO_SERVICE_TERMS" />. Non includere informazioni personali, sensibili o riservate.</translation>
+<translation id="1619879934359211038">Impossibile connettersi a Google Play. Controlla la connessione di rete e riprova. Codice di errore: <ph name="ERROR_CODE" />.</translation>
 <translation id="1620510694547887537">Videocamera</translation>
 <translation id="1623768535032616219">Comprimi Google Classroom</translation>
 <translation id="163032029566320584">La funzionalità <ph name="UNAVAILABLE_DLC" /> non è disponibile.</translation>
@@ -224,6 +228,7 @@
 <translation id="1719094688023114093">La funzionalità Sottotitoli in tempo reale è attiva.</translation>
 <translation id="1720011244392820496">Attiva Sync Wi-Fi</translation>
 <translation id="1720230731642245863">L'hotspot è disattivato</translation>
+<translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />Per rimuovere le app apri Impostazioni &gt; Google Play Store &gt; Gestisci le preferenze Android &gt; App o Gestione applicazioni, quindi tocca l'app che vuoi disinstallare (potresti dover scorrere verso sinistra o verso destra per trovarla) e infine tocca Disinstalla o Disattiva.<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1731815243805539470">Passa all'utente precedente</translation>
 <translation id="1733996486177697563">Passa dal tema chiaro al tema scuro e viceversa. Tocca e tieni premuto il desktop e seleziona Sfondo e stile.</translation>
 <translation id="1734230530703461088">Impossibile caricare le estensioni entro il limite di tempo. Contatta l'amministratore.</translation>
@@ -277,6 +282,7 @@
 <translation id="1882814835921407042">Nessuna rete mobile</translation>
 <translation id="1882897271359938046">Mirroring su <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Sblocca con l'impronta digitale</translation>
+<translation id="1891362123137972260">Lo spazio sul disco sta per esaurirsi. Libera spazio.</translation>
 <translation id="1894024878080591367">Configura per giocare con la tastiera</translation>
 <translation id="1896383923047738322">Personalizza la tastiera</translation>
 <translation id="1904997243703671177">Se disattivi il Bluetooth, <ph name="DEVICE_COUNT" /> dispositivi esterni verranno scollegati da <ph name="DEVICE_TYPE" />, tra cui:</translation>
@@ -309,11 +315,13 @@
 <translation id="1996162290124031907">Passa alla scheda successiva</translation>
 <translation id="1998100899771863792">Scrivania corrente</translation>
 <translation id="2001444736072756133">Cerca <ph name="CATEGORY" />, file, app e altro ancora.</translation>
+<translation id="2011174342667534258">Versione SDK:</translation>
 <translation id="2017998995161831444">Apri "Guida" nell'app Esplora</translation>
 <translation id="2021864487439853900">Fai clic per sbloccare</translation>
 <translation id="2034971124472263449">Salva comunque</translation>
 <translation id="2041220428661959602">Livello batteria: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="204259843076055848">La scorciatoia <ph name="SIX_PACK_KEY_NAME" /> è attualmente disattivata</translation>
+<translation id="2048653237708779538">Azione non disponibile</translation>
 <translation id="2049240716062114887">Il nome della scrivania è stato modificato in <ph name="DESK_NAME" /></translation>
 <translation id="2064048859448024834">Anteprima della videocamera attiva</translation>
 <translation id="2065098273523946419">Link Scopri di più. Quando attivato, reindirizza al browser.</translation>
@@ -378,18 +386,21 @@
 <translation id="2305738328104302723">Elenco Google Tasks: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: acquisizioni schermo recenti, download e file fissati</translation>
 <translation id="2318576281648121272">Oggi, <ph name="TODAY_DATE" /></translation>
+<translation id="2318817390901984578">Per utilizzare le app Android, metti sotto carica il tuo dispositivo <ph name="DEVICE_TYPE" /> e aggiornalo.</translation>
 <translation id="2322065293366551060"><ph name="CATEGORY" />, categoria di risultati di ricerca</translation>
 <translation id="2322173485024759474">Indietro per lettera</translation>
 <translation id="2326112202058075478">Mostra altre emoji</translation>
 <translation id="2335091074961603075">Il tuo Chromebook o dispositivo Bluetooth sta utilizzando una versione precedente di Bluetooth. Usa il microfono interno per una migliore qualità audio.</translation>
 <translation id="2339073806695260576">Tocca il pulsante dello stilo nella barra delle app per creare note, acquisire screenshot, usare il puntatore laser o la lente d'ingrandimento.</translation>
 <translation id="2341729377289034582">Bloccata in verticale</translation>
+<translation id="2344032937402519675">Impossibile connettersi al server. Controlla la connessione di rete e riprova. Se continui ad avere problemi, prova a riavviare Chromebook.</translation>
 <translation id="2345226652884463045">Premi Invio o il tasto per la ricerca + barra spaziatrice per selezionare il testo da modificare.</translation>
 <translation id="2349785431103945039">Mostra i dettagli relativi all'hotspot. Connettiti alla rete mobile per usare l'hotspot.</translation>
 <translation id="2350182423316644347">Inizializzazione dell'applicazione in corso...</translation>
 <translation id="2350794187831162545">La lingua <ph name="LANGUAGE" /> adesso viene elaborata localmente e funziona offline. Puoi modificare la lingua di dettatura in Impostazioni &gt; Accessibilità.</translation>
 <translation id="2352467521400612932">Impostazioni di stilo</translation>
 <translation id="2354174487190027830">Attivazione di <ph name="NAME" /></translation>
+<translation id="2355314311311231464">Provisioning non andato a buon fine perché non è stato possibile recuperare i dati dell'account. Riprova. Codice di errore: <ph name="ERROR_CODE" />.</translation>
 <translation id="2359808026110333948">Continua</translation>
 <translation id="2360398059912971776">batteria</translation>
 <translation id="2361210043495191221">Attiva/disattiva il Wi-Fi <ph name="STATE" />.</translation>
@@ -412,6 +423,7 @@
 <translation id="240545663114741956">Premi due volte <ph name="ACCELERATOR" /> per uscire.</translation>
 <translation id="2405664212338326887">Non connessa</translation>
 <translation id="2406710117564540804">Attiva/Disattiva Non disturbare</translation>
+<translation id="240789602312469910">Invia dati su utilizzo e diagnostica. Contribuisci a migliorare l'esperienza Android di tuo figlio tramite l'invio automatico a Google di dati diagnostici e sull'utilizzo delle app e del dispositivo. Non verranno utilizzati per identificare tuo figlio e contribuiranno alla stabilità delle app e del sistema, nonché ad altri miglioramenti. Alcuni dati aggregati saranno utili anche per app e partner di Google, ad esempio gli sviluppatori Android. Questa <ph name="BEGIN_LINK1" />impostazione<ph name="END_LINK1" /> è applicata dal proprietario. Il proprietario potrebbe decidere di inviare a Google dati diagnostici e sull'utilizzo di questo dispositivo. Se l'impostazione Attività web e app aggiuntiva è attiva per tuo figlio, questi dati potrebbero essere salvati nel suo Account Google. <ph name="BEGIN_LINK2" />Scopri di più sulle metriche<ph name="BEGIN_LINK2_END" />Scopri di più<ph name="END_LINK2" /></translation>
 <translation id="2408955596600435184">Inserisci il codice PIN</translation>
 <translation id="2412593942846481727">Aggiornamento disponibile</translation>
 <translation id="2416438829169535743">Uscire dalla visualizzazione?</translation>
@@ -464,6 +476,7 @@
 <translation id="2531025035050312891">dispositivo lento</translation>
 <translation id="2531107890083353124">Mentre trascini la scheda, premi <ph name="KEY_ONE" /></translation>
 <translation id="2532199152994248594">Trascina o premi la barra spaziatrice per selezionare un'area da acquisire</translation>
+<translation id="2540651571961486573">Si è verificato un errore. Codice di errore: <ph name="ERROR_CODE" />.</translation>
 <translation id="2545334090614121435">Stai cercando di usare Home? Usa</translation>
 <translation id="254900897760075745">Copia i contenuti selezionati negli appunti</translation>
 <translation id="2549711466868162843">Luce migliorata</translation>
@@ -511,8 +524,11 @@
 <translation id="2701576323154693023">L'hotspot è attivo (il Wi-Fi non è attivo)</translation>
 <translation id="2704781753052663061">Visualizza altre reti Wi-Fi</translation>
 <translation id="2705001408393684014">Attiva/disattiva il microfono. <ph name="STATE_TEXT" /></translation>
+<translation id="2706304388244371417">Esegui il backup su Google Drive. Ripristina i dati o cambia dispositivo in qualsiasi momento e in tutta facilità. Questo backup include i dati delle app. I backup vengono caricati su Google e criptati mediante la password del tuo Account Google. <ph name="BEGIN_LINK1" />Scopri di più sul backup<ph name="BEGIN_LINK1_END" />Scopri di più<ph name="END_LINK1" /></translation>
 <translation id="2706462751667573066">Su</translation>
+<translation id="2710101514844343743">Dati diagnostici e sull'utilizzo</translation>
 <translation id="2710984741481549981">Blocca le finestre</translation>
+<translation id="2714393097308983682">Google Play Store</translation>
 <translation id="2718395828230677721">Luce notturna</translation>
 <translation id="2726420622004325180">Il telefono deve avere i dati mobili per poter fornire un hotspot</translation>
 <translation id="2727175239389218057">Rispondi</translation>
@@ -574,6 +590,8 @@ In caso contrario, il touchpad integrato verrà riattivato dopo <ph name="TIMEOU
 <translation id="2893701697603065178">Ambiente di sviluppo gestito</translation>
 <translation id="2894949423239620203">Il cavo può influire sulle prestazioni</translation>
 <translation id="2902312830803030883">Altre azioni</translation>
+<translation id="2909506265808101667">Impossibile connettersi ai servizi Google. Controlla la connessione di rete e riprova. Codice di errore: <ph name="ERROR_CODE" />.</translation>
+<translation id="2910718431259223434">Si è verificato un problema. Riprova oppure contatta l'amministratore o il proprietario del dispositivo. Codice di errore: <ph name="ERROR_CODE" />.</translation>
 <translation id="2914580577416829331">Schermate acquisite</translation>
 <translation id="2924416280450782352">Impossibile mostrare elementi. Prova a riaprire questo riquadro.</translation>
 <translation id="292506373491190801">Dell'evento in corso ora</translation>
@@ -633,7 +651,9 @@ In caso contrario, il touchpad integrato verrà riattivato dopo <ph name="TIMEOU
 <translation id="3093423061078042895">Mancante</translation>
 <translation id="3095995014811312755">versione</translation>
 <translation id="309749186376891736">Sposta il cursore</translation>
+<translation id="3100071818310370858">Utilizza la geolocalizzazione. Consenti ad app e servizi che dispongono dell'autorizzazione di accesso alla posizione di usare la posizione del dispositivo. Google potrebbe raccogliere periodicamente dati sulla posizione da usare in forma anonima per migliorare la precisione della geolocalizzazione e i servizi basati sulla posizione geografica. <ph name="BEGIN_LINK1" />Scopri di più sulla geolocalizzazione<ph name="BEGIN_LINK1_END" />Scopri di più<ph name="END_LINK1" /></translation>
 <translation id="3100274880412651815">Ignora modalità di acquisizione</translation>
+<translation id="3104948640446684649">Invia dati su utilizzo e diagnostica. Attualmente, questo dispositivo invia a Google dati diagnostici e sull'utilizzo delle app e del dispositivo. Questi dati contribuiranno alla stabilità delle app e del sistema, nonché ad altri miglioramenti. Alcuni dati aggregati saranno utili anche per app e partner di Google, ad esempio gli sviluppatori Android. Se l'impostazione Attività web e app aggiuntiva è attiva, questi dati potrebbero essere salvati nel tuo Account Google. <ph name="BEGIN_LINK2" />Scopri di più sulle metriche<ph name="BEGIN_LINK2_END" />Scopri di più<ph name="END_LINK2" /></translation>
 <translation id="3105917916468784889">Acquisisce uno screenshot</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3107155169630537783">La notifica di benvenuto è <ph name="STATE" /></translation>
@@ -697,6 +717,7 @@ In caso contrario, il touchpad integrato verrà riattivato dopo <ph name="TIMEOU
 <translation id="3306386552969601301"><ph name="DEVICECOUNT" /> dispositivi connessi all'hotspot di <ph name="DEVICE_NAME" /></translation>
 <translation id="3307642347673023554">Passaggio alla modalità laptop effettuato</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> può ancora accedere in seguito.</translation>
+<translation id="3313950410573257029">Controlla la connessione</translation>
 <translation id="3321628682574733415">Codice genitore errato</translation>
 <translation id="332827762492701193">Le notifiche sono nascoste</translation>
 <translation id="3333674550998107387">Espandi la notifica <ph name="NOTIFICATION_TITLE" /></translation>
@@ -814,6 +835,7 @@ In caso contrario, il touchpad integrato verrà riattivato dopo <ph name="TIMEOU
 <translation id="3638400994746983214">Attiva/disattiva Schermata sulla privacy. <ph name="STATE_TEXT" />.</translation>
 <translation id="3641070112313110357">È necessario aggiornare Steam per Chromebook (beta). Riavvia Chromebook e riprova.</translation>
 <translation id="3649256019230929621">Riduce la finestra</translation>
+<translation id="3650952250015018111">Consenti a "<ph name="APP_NAME" />" di accedere a:</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />, <ph name="EVENT_SUMMARY" />, dalle ore <ph name="START_TIME" /> alle ore <ph name="END_TIME" />, <ph name="TIME_ZONE" />. Seleziona per avere maggiori dettagli in Google Calendar.</translation>
 <translation id="3659444876902283058">(giorno <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659667652322717492">Puoi modificare il comportamento del microfono in qualsiasi momento.</translation>
@@ -856,6 +878,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="3779139509281456663">Connessione di <ph name="NAME" /> in corso…</translation>
 <translation id="3781910048497807059">Sposta lo stato attivo sul riquadro precedente</translation>
 <translation id="3783640748446814672">alt</translation>
+<translation id="3783889407390048282">Libera spazio per evitare di perdere l'accesso ad Android.</translation>
 <translation id="3784455785234192852">Blocca</translation>
 <translation id="3788301286821743879">Non è possibile avviare l'applicazione kiosk.</translation>
 <translation id="3789841737615482174">Installa</translation>
@@ -865,6 +888,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="3804737937830804242">Comprimi fotocamera</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 emoji. Nessun altro risultato.}other{# emoji. Nessun altro risultato.}}</translation>
 <translation id="3822403841174077928">Impossibile copiare la formattazione</translation>
+<translation id="3824621460022590830">Token di registrazione dei dispositivi non valido. Contatta l'amministratore o il proprietario del dispositivo. Codice di errore: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824784079442479685">Consente l'accesso alla fotocamera per <ph name="APP_NAME" />, tutte le app e tutti i siti web che hanno l'autorizzazione di accesso alla fotocamera. Potresti dover aggiornare la pagina web o riavviare l'app.</translation>
 <translation id="3826099427150913765">Passa alla password</translation>
 <translation id="383058930331066723">La modalità Risparmio energetico è attiva</translation>
@@ -889,6 +913,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="3898464793473355515">Ruota lo schermo di 90 gradi in senso orario</translation>
 <translation id="3900355044994618856">La sessione terminerà tra <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">Connessione a: <ph name="NAME" /></translation>
+<translation id="3904326018476041253">Servizi di geolocalizzazione</translation>
 <translation id="3904768293285573640">Allinea a sinistra finestra ridimensionata a riquadro</translation>
 <translation id="3923221004758245114">Vuoi rimuovere <ph name="VM_NAME" /> da <ph name="DEVICE_TYPE" />? Verranno eliminati tutti i dati e le app nella macchina virtuale.</translation>
 <translation id="3923494859158167397">Nessuna rete mobile configurata</translation>
@@ -903,6 +928,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="3950272133184491871">Uscire ora?</translation>
 <translation id="3950820424414687140">Accedi</translation>
 <translation id="3953130726459169782">Ancora nessun compito completato.</translation>
+<translation id="3957844511978444971">Tocca "Accetta" per confermare la selezione delle impostazioni di questi servizi di Google.</translation>
 <translation id="3958714870339660776">Tutto il giorno</translation>
 <translation id="3962859241508114581">Traccia precedente</translation>
 <translation id="3963124517343721543">Continua facilmente da dove avevi interrotto aprendo le finestre e le schede precedenti. Vedrai anche suggerimenti personalizzati su cosa fare dopo.</translation>
@@ -1018,6 +1044,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="4278779213160967034">Questa procedura potrebbe richiedere alcuni minuti. È in corso il download dei file.</translation>
 <translation id="4279490309300973883">Mirroring</translation>
 <translation id="4280601795273309128">Aggiornamenti della sicurezza terminati. Aggiorna il tuo dispositivo.</translation>
+<translation id="4281844954008187215">Termini di servizio</translation>
 <translation id="4283888303416325161">Inserisci la password per una maggior sicurezza</translation>
 <translation id="4285498937028063278">Stacca</translation>
 <translation id="428715201724021596">Connessione al profilo in corso. Questa operazione può richiedere alcuni minuti.</translation>
@@ -1062,6 +1089,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="4406883609789734330">Sottotitoli in tempo reale</translation>
 <translation id="4412698727486357573">Centro assistenza</translation>
 <translation id="4412944820643904175">La funzionalità <ph name="FEATURE_NAME" /> è disattivata.</translation>
+<translation id="44141919652824029">Vuoi consentire a "<ph name="APP_NAME" />" di recuperare l'elenco di dispositivi USB collegati?</translation>
 <translation id="4414242853388122273">Errore durante la rimozione di <ph name="VM_NAME" />. Riprova.</translation>
 <translation id="4417647906073317561">Impostazioni della modalità Niente distrazioni. Imposta un timer, un'attività e la musica per iniziare a concentrarti.</translation>
 <translation id="4418600384772451109">Chiudi riquadro</translation>
@@ -1103,6 +1131,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="453661520163887813"><ph name="TIME" /> alla ricarica completa</translation>
 <translation id="4538824937723742295">Acquisisci screenshot a schermo intero</translation>
 <translation id="4539127209940689201">Stampa pagina corrente</translation>
+<translation id="4541123282641193691">Impossibile verificare l'account. Riprova o riavvia il tuo Chromebook.</translation>
 <translation id="4541505619120536051">Sempre aperta</translation>
 <translation id="4541706525461326392">Rimozione del profilo in corso. Questa operazione può richiedere alcuni minuti.</translation>
 <translation id="4544483149666270818">Seleziona una finestra da registrare</translation>
@@ -1113,6 +1142,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="4556953949326137018">Quando utilizzi azioni suggerite come "aggiungi a Calendar" o "crea documenti Google", i contenuti dell'area selezionata vengono inviati ai server di Google per suggerire azioni, in base a <ph name="LINK_TO_SERVICE_TERMS" />. Non includere informazioni personali, sensibili o riservate.</translation>
 <translation id="4560576029703263363">On</translation>
 <translation id="4561267230861221837">3G</translation>
+<translation id="4562091353415772246">Installa aggiornamenti e app. Se continui, accetti che questo dispositivo possa anche scaricare e installare automaticamente aggiornamenti e app da Google, dal tuo operatore e dal produttore del tuo dispositivo, utilizzando eventualmente la rete dati. Alcune di queste app potrebbero offrire acquisti in-app. <ph name="BEGIN_LINK1" />Scopri di più sull'Installazione automatica<ph name="BEGIN_LINK1_END" />Scopri di più<ph name="END_LINK1" /></translation>
 <translation id="4565377596337484307">Nascondi password</translation>
 <translation id="4566144812051858745">Non mi interessa alcun suggerimento</translation>
 <translation id="4569753163207712681">Visualizza app, contenuti multimediali e foto recenti dello smartphone</translation>
@@ -1132,6 +1162,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="4628757576491864469">Dispositivi</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, valutazione a stelle <ph name="RATING_SCORE" /></translation>
 <translation id="4633636853437260449">Premi Ctrl + W per eliminare</translation>
+<translation id="4633757335284074492">Effettua il backup su Google Drive. Ripristina i dati facilmente o cambia dispositivo in qualsiasi momento. Questa copia di backup include i dati delle app. Le copie di backup vengono caricate su Google e criptate mediante la password del tuo Account Google.</translation>
 <translation id="4635501805800894201">{0,plural, =0{Esegui il rollback del dispositivo alla versione precedente ora}=1{Esegui il rollback del dispositivo alla versione precedente entro 1 secondo}other{Esegui il rollback del dispositivo alla versione precedente entro # secondi}}</translation>
 <translation id="4642092649622328492">Acquisisce lo screenshot parziale</translation>
 <translation id="4642587497923912728">Steam per Chromebook (beta) è disponibile soltanto per il primo account a cui è stato eseguito l'accesso su questo Chromebook.</translation>
@@ -1174,6 +1205,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="4759238208242260848">Download</translation>
 <translation id="4762160261012420470"><ph name="LAUNCHER_KEY_NAME" /> + Freccia su</translation>
 <translation id="4762573482154983647">Nascondi le app</translation>
+<translation id="4762718786438001384">Lo spazio sul disco del dispositivo sta per esaurirsi</translation>
 <translation id="4763885921995354846">Consente l'accesso alla fotocamera per tutte le app e tutti i siti web che hanno l'autorizzazione di accesso alla fotocamera. Potresti dover aggiornare la pagina web o riavviare l'app.</translation>
 <translation id="4774338217796918551">Puoi riprendere domani alle ore <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776584068981882959">Ancora impossibile verificare la password. Riprova.</translation>
@@ -1280,6 +1312,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="5077936103761694531">Confermare la risoluzione?</translation>
 <translation id="5078796286268621944">PIN errato</translation>
 <translation id="5083035541015925118">Ctrl + Alt + Freccia su</translation>
+<translation id="5084328598860513926">Il flusso di provisioning è stato interrotto. Riprova oppure contatta l'amministratore o il proprietario del dispositivo. Codice di errore: <ph name="ERROR_CODE" />.</translation>
 <translation id="5091636240353511739">Mostra il PIN</translation>
 <translation id="5092436659250499817">Attiva/disattiva la retroilluminazione della tastiera</translation>
 <translation id="5094577350232361255">informazioni</translation>
@@ -1309,6 +1342,7 @@ Puoi anche utilizzare la scorciatoia da tastiera. Evidenzia il testo, quindi pre
 <translation id="5170568018924773124">Mostra nella cartella</translation>
 <translation id="5176318573511391780">Registra schermo parziale</translation>
 <translation id="5187627942836026988">Mostra i dettagli relativi all'hotspot. L'hotspot è stato bloccato dall'amministratore.</translation>
+<translation id="5188648870018555788">Utilizza la posizione. Consenti alle app, ai siti web e ai servizi ChromeOS e per Android che dispongono dell'autorizzazione di accesso alla posizione di usare la posizione del tuo dispositivo. La precisione della posizione fornisce una posizione più precisa per app e servizi. A questo scopo, Google tratta periodicamente informazioni relative a sensori dei dispositivi e segnali wireless provenienti dal tuo dispositivo per raccogliere le posizioni dei segnali wireless mediante crowdsourcing. Queste vengono usate senza identificarti per migliorare la precisione della posizione e i servizi basati sulla posizione geografica, nonché per migliorare, fornire e mantenere i servizi di Google basati sugli interessi legittimi di Google e di terze parti al fine di soddisfare le esigenze degli utenti. <ph name="BEGIN_LINK1" />Scopri di più sull'utilizzo della posizione<ph name="END_LINK1" /></translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198039720391525849">GIF in primo piano</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> eventi</translation>
@@ -1329,6 +1363,7 @@ Puoi anche utilizzare la scorciatoia da tastiera. Evidenzia il testo, quindi pre
 <translation id="5238719049014159442">Apri/chiudi Avvio app</translation>
 <translation id="5240725217819182328">Accedi rapidamente a pagine o azioni specifiche all'interno delle app installate</translation>
 <translation id="5243355658487390559">Cerca data</translation>
+<translation id="5243522832766285132">Riprova tra qualche istante</translation>
 <translation id="5245201184978705914">Impossibile generare la trascrizione</translation>
 <translation id="5251174953851719648">Aggiorna contenuti</translation>
 <translation id="5253783950165989294">Connessione stabilita con un dispositivo di nome <ph name="DEVICE_NAME" />; batteria <ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -1336,6 +1371,7 @@ Puoi anche utilizzare la scorciatoia da tastiera. Evidenzia il testo, quindi pre
 <translation id="5256939106029293271">Testa il microfono</translation>
 <translation id="5258528442992323769">Nessuna scrivania salvata</translation>
 <translation id="5260676007519551770">Scrivania 4</translation>
+<translation id="5264148714798105376">L'operazione potrebbe richiedere un minuto circa.</translation>
 <translation id="5265391159779542051">Risultati caricati</translation>
 <translation id="5270547718570958938">Google Calendar</translation>
 <translation id="5277869901083657836">Attiva/disattiva strumenti per stilo</translation>
@@ -1412,6 +1448,7 @@ Nessun dispositivo connesso.</translation>
 <translation id="5506975627792768506">Attiva o disattiva la lente d'ingrandimento</translation>
 <translation id="5507778598655387680"><ph name="VOLUME_LEVEL" />, premendo Invio verrà disattivato l'audio.</translation>
 <translation id="5512042095225963688">Elimina parola precedente</translation>
+<translation id="5517304475148761050">L'app richiede l'accesso al Play Store</translation>
 <translation id="5519005148254860683">Espandi Google Tasks</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">L'amministratore ha rimosso tutti i profili eSIM. Per ulteriori informazioni al riguardo rivolgiti all’amministratore.</translation>
@@ -1439,6 +1476,7 @@ Nessun dispositivo connesso.</translation>
 <translation id="5577281275355252094">Verifica che il Bluetooth sia attivato sul telefono per utilizzare Phone Hub</translation>
 <translation id="5578188167649348993">memoria</translation>
 <translation id="5580000943347215299">Raccolta</translation>
+<translation id="5581972110672966454">Impossibile aggiungere il dispositivo al dominio. Riprova oppure contatta l'amministratore o il proprietario del dispositivo. Codice di errore: <ph name="ERROR_CODE" />.</translation>
 <translation id="5586388332127302891">Riquadro d'ingrandimento ancorato attivato. Premi nuovamente <ph name="ACCELERATOR" /> per disattivarlo.</translation>
 <translation id="5587506661873751671">Download al <ph name="DOWNLOAD_PERCENT" />%</translation>
 <translation id="558849140439112033">Trascina per selezionare l'area da acquisire</translation>
@@ -1463,6 +1501,7 @@ Nessun dispositivo connesso.</translation>
 <translation id="5662075790140998213">Scrivania 10</translation>
 <translation id="5662709761327382534">Registrazione con microfono <ph name="CURRENT_STATE" />, Premi Invio per attivare la registrazione del microfono <ph name="NEW_STATE" /></translation>
 <translation id="5662919923378083468"><ph name="ACTION_DESCRIPTION" />, <ph name="SHORTCUT_HINT" /></translation>
+<translation id="5667546120811588575">Configurazione di Google Play...</translation>
 <translation id="5669267381087807207">Attivazione</translation>
 <translation id="5671658447180261823">Rimuovi il suggerimento <ph name="SUGGESTION_NAME" /></translation>
 <translation id="5672890847723042801">Utilità</translation>
@@ -1479,6 +1518,7 @@ Nessun dispositivo connesso.</translation>
 <translation id="5691772641933328258">Impronta digitale non riconosciuta</translation>
 <translation id="5693255400847650006">Microfono in uso</translation>
 <translation id="5699366815052349604">Assegna la finestra attiva a tutte le scrivanie</translation>
+<translation id="570043786759263127">Servizi e app Google Play</translation>
 <translation id="570390244361237317">Tutte le app: usa i tasti freccia per accedere a tutte le app</translation>
 <translation id="5705197514573687092">Mostra le impostazioni della modalità Niente distrazioni. Timer impostato su <ph name="FOCUS_DURATION" />.</translation>
 <translation id="5707775774148071965">Il dispositivo supporta una velocità dati superiore rispetto al cavo. Le prestazioni del dispositivo potrebbero essere limitate.</translation>
@@ -1493,6 +1533,7 @@ Nessun dispositivo connesso.</translation>
 <translation id="574392208103952083">Medio</translation>
 <translation id="5744083938413354016">Trascinamento al tocco</translation>
 <translation id="5745612484876805746">La funzione Luminosità notturna viene attivata automaticamente al tramonto</translation>
+<translation id="5749214722697335450">Invia dati su utilizzo e diagnostica. Contribuisci a migliorare la tua esperienza Android tramite l'invio automatico a Google di dati diagnostici e sull'utilizzo delle app e del dispositivo. Questi dati contribuiranno alla stabilità delle app e del sistema, nonché ad altri miglioramenti. Alcuni dati aggregati saranno utili anche per app e partner di Google, ad esempio gli sviluppatori Android. Se l'impostazione Attività web e app aggiuntiva è attiva, questi dati potrebbero essere salvati nel tuo Account Google. <ph name="BEGIN_LINK1" />Scopri di più sulle metriche<ph name="BEGIN_LINK1_END" />Scopri di più<ph name="END_LINK1" /></translation>
 <translation id="5750765938512549687">Bluetooth non attivo.</translation>
 <translation id="5758114525425072423">Avvia la modalità Niente distrazioni. Timer impostato su <ph name="FOCUS_DURATION" />.</translation>
 <translation id="5759522586053040964">Ascolta come ti sentiranno gli altri. Per interrompere, fai clic sull'icona del test o chiudi il riquadro della videochiamata.</translation>
@@ -1509,6 +1550,7 @@ Nessun dispositivo connesso.</translation>
 <translation id="5775936059231769503">Attiva/disattiva l'hotspot. L'hotspot è disattivato.</translation>
 <translation id="5777841717266010279">Interrompere la condivisione dello schermo?</translation>
 <translation id="5779721926447984944">File fissati</translation>
+<translation id="5780940414249100901">Invia dati su utilizzo e diagnostica. Attualmente, questo dispositivo invia a Google dati diagnostici e sull'utilizzo delle app e del dispositivo. Non verranno utilizzati per identificare tuo figlio e contribuiranno alla stabilità delle app e del sistema, nonché ad altri miglioramenti. Alcuni dati aggregati saranno utili anche per app e partner di Google, ad esempio gli sviluppatori Android. Questa <ph name="BEGIN_LINK1" />impostazione<ph name="END_LINK1" /> è applicata dal proprietario. Se l'impostazione Attività web e app aggiuntiva è attiva per tuo figlio, questi dati potrebbero essere salvati nel suo Account Google. <ph name="BEGIN_LINK2" />Scopri di più sulle metriche<ph name="BEGIN_LINK2_END" />Scopri di più<ph name="END_LINK2" /></translation>
 <translation id="5785221443435874078">Rimuovi questo suggerimento</translation>
 <translation id="5787431783058088906">Ricevi vantaggio</translation>
 <translation id="5788127256798019331">File Google Play</translation>
@@ -1524,6 +1566,7 @@ Nessun dispositivo connesso.</translation>
 <translation id="5823239091726045201">Google Tasks sul web</translation>
 <translation id="5825969630400862129">Impostazioni dispositivi connessi</translation>
 <translation id="5830180081891717894">Altre <ph name="WINDOWS" /></translation>
+<translation id="583281660410589416">Sconosciuto</translation>
 <translation id="5837036133683224804">Interrompi <ph name="ROUTE_TITLE" /> su <ph name="RECEIVER_NAME" /></translation>
 <translation id="5840658767386246331">Cerca con Google</translation>
 <translation id="5841296711770970362">Vai alla traccia successiva</translation>
@@ -1589,6 +1632,7 @@ Nessun dispositivo connesso.</translation>
 <translation id="6032620807120418574">Fai clic su un punto qualsiasi per registrare l'intera schermata</translation>
 <translation id="6040071906258664830">Registrazione con microfono <ph name="STATE" /></translation>
 <translation id="6040143037577758943">Chiudi</translation>
+<translation id="6042308850641462728">Altro</translation>
 <translation id="6043212731627905357">Questo monitor non è compatibile con il tuo dispositivo <ph name="DEVICE_TYPE" /> (il monitor non è supportato).</translation>
 <translation id="6043994281159824495">Esci ora</translation>
 <translation id="6045629311476491587">Usati da <ph name="APP_COUNT" /> app</translation>
@@ -1668,9 +1712,12 @@ Nessun dispositivo connesso.</translation>
 <translation id="6274422179279280249">Inserisci link, emoji e altro ancora. Puoi anche ricevere aiuto con la scrittura con Google AI. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="6276708887952587684">Visualizza il codice sorgente della pagina</translation>
 <translation id="6285871695023807425">Aggiungi a Calendar</translation>
+<translation id="628699625505156622">Utilizza la posizione. Consenti alle app, ai siti web e ai servizi ChromeOS e per Android che dispongono dell'autorizzazione di accesso alla posizione di usare la posizione di questo dispositivo. La precisione della posizione fornisce una posizione più precisa per app e servizi. A questo scopo, Google tratta periodicamente informazioni relative a sensori dei dispositivi e segnali wireless provenienti da questo dispositivo per raccogliere le posizioni dei segnali wireless mediante crowdsourcing. Queste vengono usate senza identificare nessuna persona per migliorare la precisione della posizione e i servizi basati sulla posizione geografica, nonché per migliorare, fornire e mantenere i servizi di Google basati sugli interessi legittimi di Google e di terze parti al fine di soddisfare le esigenze degli utenti. <ph name="BEGIN_LINK1" />Scopri di più sull'utilizzo della posizione<ph name="END_LINK1" /></translation>
 <translation id="6288235558961782912">L'indirizzo <ph name="USER_EMAIL_ADDRESS" /> potrà essere aggiunto di nuovo in un secondo momento con l'autorizzazione di un genitore.</translation>
 <translation id="6291221004442998378">Non in carica</translation>
+<translation id="6297986260307280218">Invia dati su utilizzo e diagnostica. Contribuisci a migliorare la tua esperienza Android tramite l'invio automatico a Google di dati diagnostici e sull'utilizzo delle app e del dispositivo. Questi dati contribuiranno alla stabilità delle app e del sistema, nonché ad altri miglioramenti. Alcuni dati aggregati saranno utili anche per app e partner di Google, ad esempio gli sviluppatori Android. Questa <ph name="BEGIN_LINK1" />impostazione<ph name="END_LINK1" /> è applicata dal proprietario. Il proprietario potrebbe decidere di inviare a Google dati diagnostici e sull'utilizzo di questo dispositivo. Se l'impostazione Attività web e app aggiuntiva è attiva, questi dati potrebbero essere salvati nel tuo Account Google. <ph name="BEGIN_LINK2" />Scopri di più sulle metriche<ph name="BEGIN_LINK2_END" />Scopri di più<ph name="END_LINK2" /></translation>
 <translation id="6298183524022479114">Personalizza questo dispositivo nell'app</translation>
+<translation id="6298962879096096191">Utilizza Google Play per installare le app Android</translation>
 <translation id="6304076460080088478">Chiudi o riduci a icona le finestre Incognito per cercare sullo schermo con Google Lens</translation>
 <translation id="6309219492973062892">Tocca o fai clic sulle icone 1-8 nella barra delle app</translation>
 <translation id="6315170314923504164">Voce</translation>
@@ -1700,8 +1747,10 @@ Nessun dispositivo connesso.</translation>
 <translation id="6406458002328242616">Modifica il timer. <ph name="FOCUS_DURATION" />.</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6414618057231176439">Seleziona la versione di <ph name="VM_NAME" /> da installare.</translation>
+<translation id="641469293210305670">Installa aggiornamenti e app</translation>
 <translation id="6417265370957905582">Assistente Google</translation>
 <translation id="641817663353603351">pagina su</translation>
+<translation id="6418511932144861495">Installa aggiornamento critico</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, intensità del segnale <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Cancella tutte le notifiche</translation>
 <translation id="6426905245930183644">Creazione in corso…</translation>
@@ -1727,6 +1776,7 @@ Nessun dispositivo connesso.</translation>
 <translation id="6482559668224714696">Lente d'ingrandimento a schermo intero</translation>
 <translation id="6485086611007560630">Informazioni meteo (non disponibili)</translation>
 <translation id="6490471652906364588">Dispositivo USB-C (porta a destra)</translation>
+<translation id="6491376743066338510">Autorizzazione negata</translation>
 <translation id="649452524636452238">PIN della smart card</translation>
 <translation id="6495322433318104734">Visualizzazione del salvaschermo; premi un tasto qualsiasi per uscire</translation>
 <translation id="6495400115277918834">Funzionalità Picture in picture avviata, premi Alt + Maiusc + V per impostare lo stato attivo</translation>
@@ -1780,10 +1830,12 @@ Nuova installazione</translation>
 <translation id="6625718907317144388">Le notifiche di <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> e altre app sono nascoste perché è attiva la visualizzazione protetta</translation>
 <translation id="6627638273713273709">Tasto per la ricerca + MAIUSC + K</translation>
 <translation id="662830937908749204">Sposta lo stato attivo sul riquadro successivo</translation>
+<translation id="6635674640674343739">Impossibile stabilire una connessione di rete. Controlla la connessione di rete e riprova.</translation>
 <translation id="6637729079642709226">Modifica tempo</translation>
 <translation id="6641720045729354415">Attiva o disattiva Sottotitoli in tempo reale. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">Annulla l'ordinamento per nome</translation>
 <translation id="664793810957802384">Elementi nel gruppo suggerito</translation>
+<translation id="6649018507441623493">Solo un secondo...</translation>
 <translation id="6649641931981131786">Regola la fotocamera per metterti al centro dello schermo.</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> vorrebbe verificare la tua identità</translation>
 <translation id="6650742588569439432">Impossibile caricare gli elementi.</translation>
@@ -1808,6 +1860,7 @@ Nuova installazione</translation>
 <translation id="6706742084323792866">Blocca tastiera</translation>
 <translation id="6709719156428404245">Trascina o premi la barra spaziatrice per selezionare un'area da registrare</translation>
 <translation id="6710213216561001401">Precedente</translation>
+<translation id="6716798148881908873">Connessione di rete interrotta. Controlla la connessione o prova a usare un'altra rete Wi-Fi.</translation>
 <translation id="6723839937902243910">Alimentazione</translation>
 <translation id="672609503628871915">Scopri le novità</translation>
 <translation id="6727969043791803658">Dispositivo connesso. Livello batteria: <ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -1847,6 +1900,7 @@ Nuova installazione</translation>
 <translation id="6819327813400217281">Fotocamera allineata all'angolo in basso a sinistra</translation>
 <translation id="6820676911989879663">Fai una pausa!</translation>
 <translation id="6827049576281411231">Chiudi il riquadro degli eventi</translation>
+<translation id="682971198310367122">Norme sulla privacy di Google</translation>
 <translation id="6836499262298959512">File pericoloso</translation>
 <translation id="6837621009301897464">Per fare uno screenshot, premi</translation>
 <translation id="6852052252232534364">Fai clic per attivare</translation>
@@ -1878,6 +1932,7 @@ Nuova installazione</translation>
 <translation id="6942518653766415536">Menu del formato di registrazione</translation>
 <translation id="6945221475159498467">Seleziona</translation>
 <translation id="6945922087561257829">Il tuo telefono è connesso a una rete mobile. Assicurati che il telefono e Chromebook siano collegati alla stessa rete Wi-Fi, quindi riprova. <ph name="LEARN_MORE" />:</translation>
+<translation id="6950627417367801484">Ripristina le app</translation>
 <translation id="6960565108681981554">Non attiva. Contatta l'operatore.</translation>
 <translation id="6961121602502368900">La funzionalità Disattiva audio non è disponibile sul profilo di lavoro</translation>
 <translation id="6961840794482373852">La scorciatoia da tastiera Alt + Freccia su è cambiata. Per usare il tasto Pagina su, premi il tasto <ph name="LAUNCHER_KEY_NAME" /> + Freccia su.</translation>
@@ -2049,6 +2104,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="7541773865713908457"><ph name="ACTION_NAME" /> con l'app <ph name="APP_NAME" /></translation>
 <translation id="7543399541175347147">Al momento le app Linux e le finestre Incognito non sono supportate. Le altre app verranno salvate.</translation>
 <translation id="7544300628205093162">La retroilluminazione della tastiera è attiva</translation>
+<translation id="7545466883021407599">Impossibile connettersi al server. Controlla la connessione di rete e riprova. Se continui ad avere problemi, prova a riavviare Chromebook. Codice di errore: <ph name="ERROR_CODE" />.</translation>
 <translation id="7548434653388805669">È ora di andare a letto</translation>
 <translation id="7551643184018910560">Blocca sulla barra delle app</translation>
 <translation id="7557816257942363084"><ph name="APP_NAME" /> sta usando il microfono</translation>
@@ -2064,6 +2120,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="7579778809502851308">Cattura schermo</translation>
 <translation id="7588317312481506627">Copiata negli appunti.</translation>
 <translation id="7593891976182323525">Tasto per la ricerca o Maiusc</translation>
+<translation id="7595453277607160340">Per usare app Android e assicurarti che il tuo dispositivo <ph name="DEVICE_TYPE" /> continui a funzionare correttamente, accedi di nuovo ed esegui l'aggiornamento.</translation>
 <translation id="7598054670902114203">Istantanea dell'utilizzo della CPU, <ph name="CPU_USEAGE" />%. Temperatura: <ph name="TEMPERATURE" /> gradi centigradi, velocità attuale: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="7599378375976398913">Inserimento del risultato selezionato in corso…</translation>
 <translation id="7600875258240007829">Visualizza tutte le notifiche</translation>
@@ -2073,6 +2130,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="7609951632080598826">Visualizzazione Calendario, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Fotocamera riconnessa.</translation>
 <translation id="7613620083300976559">Attiva i controlli di gioco</translation>
+<translation id="761530003705945209">Effettua il backup su Google Drive. Ripristina facilmente i tuoi dati o cambia dispositivo in qualsiasi momento. La copia di backup include i dati delle app. Le copie di backup vengono caricate su Google e criptate usando la password del tuo Account Google.</translation>
 <translation id="761736749114493194">Attiva/disattiva Zoom automatico. <ph name="STATE_TEXT" /></translation>
 <translation id="7621008024906456933">Impostazioni di Quick Share</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
@@ -2121,6 +2179,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="7748275671948949022">Evidenzia il pulsante Avvio app nella barra delle app</translation>
 <translation id="7749443890790263709">Numero massimo di scrivanie raggiunto.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7750228210027921155">Picture in picture</translation>
 <translation id="7751260505918304024">Mostra tutto</translation>
 <translation id="7762664108390426952">I Termini di servizio e le Norme sulla privacy di Google</translation>
 <translation id="7768784765476638775">Seleziona per ascoltare</translation>
@@ -2239,6 +2298,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8092380135549145188">Controlli di scorrimento</translation>
 <translation id="8098591350844501178">Interrompi la trasmissione dello schermo su <ph name="RECEIVER_NAME" /></translation>
 <translation id="810637681351706236">Sblocca app dalla barra delle app</translation>
+<translation id="8107015733319732394">Installazione in corso del Google Play Store sul tuo dispositivo <ph name="DEVICE_TYPE" />. L'operazione potrebbe richiedere alcuni minuti.</translation>
 <translation id="8113423164597455979">On, tutte</translation>
 <translation id="8113515504791187892">Pulsante Seleziona per ascoltare</translation>
 <translation id="8120151603115102514">Sul tuo telefono non è presente una schermata di blocco. Per sbloccare Chromebook, inserisci la password.</translation>
@@ -2321,6 +2381,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8388750414311082622">Impossibile rimuovere l'ultima scrivania.</translation>
 <translation id="8394567579869570560">Uno dei tuoi genitori ha bloccato questo dispositivo</translation>
 <translation id="8401850874595457088">Menu per impostare la lingua</translation>
+<translation id="8410775397654368139">Google Play</translation>
 <translation id="8412677897383510995">Mostra impostazioni di visualizzazione</translation>
 <translation id="8413272770729657668">Avvio registrazione tra 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (custodia)</translation>
@@ -2346,11 +2407,13 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> ha <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Premi ALT + tasto per la ricerca o MAIUSC per annullare.</translation>
 <translation id="8480418399907765580">Mostra barra degli strumenti</translation>
+<translation id="8481187309597259238">Conferma l'autorizzazione USB</translation>
 <translation id="8487660088084188539">Quando attivi queste funzionalità, il testo di input, i contenuti del documento e l'URL della pagina web potrebbero essere inviati ai server di Google. Queste informazioni vengono utilizzate per generare suggerimenti di bozza e riassunti, rispondere a domande e migliorare il prodotto, in conformità ai <ph name="LINK_TO_SERVICE_TERMS" />. Non includere informazioni personali, sensibili o riservate.</translation>
 <translation id="8487699605742506766">Hotspot</translation>
 <translation id="8490896350101740396">Le seguenti app kiosk "<ph name="UPDATED_APPS" />" sono state aggiornate. Riavvia il dispositivo per completare la procedura di aggiornamento.</translation>
 <translation id="8491237443345908933">Apri link in un'altra scheda</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> non supporta la risoluzione <ph name="SPECIFIED_RESOLUTION" />. È stata impostata la risoluzione <ph name="FALLBACK_RESOLUTION" />. Fai clic su Conferma per mantenere le modifiche. Le impostazioni precedenti verranno ripristinate tra <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="8502536196501630039">Per utilizzare le app di Google Play, è prima necessario ripristinare le app. Alcuni dati potrebbero essere andati persi.</translation>
 <translation id="8507563469658346379">Per tutti, <ph name="REMAINING_TIME" /></translation>
 <translation id="8511123073331775246">Crea una nuova scrivania</translation>
 <translation id="85123341071060231">Il Bluetooth di Chromebook è disattivato. Per sbloccare Chromebook, inserisci la password.</translation>
@@ -2404,6 +2467,8 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8676770494376880701">Caricabatterie a basso consumo collegato</translation>
 <translation id="8679158879996532670">Mostra le impostazioni della modalità Niente distrazioni. La modalità Niente distrazioni è attiva, mancano <ph name="REMAINING_TIME" />.</translation>
 <translation id="8683506306463609433">Tracciamento prestazioni attivo</translation>
+<translation id="8698432579173128320">Esegui il backup su Google Drive. Ripristina i dati o cambia dispositivo in qualsiasi momento e in tutta facilità. Il backup include i dati delle app. I backup vengono caricati su Google e criptati usando la password del tuo Account Google. <ph name="BEGIN_LINK1" />Scopri di più sul backup<ph name="BEGIN_LINK1_END" />Scopri di più<ph name="END_LINK1" /></translation>
+<translation id="8700087567921985940">Utilizza la geolocalizzazione. Consenti ad app e servizi che dispongono dell'autorizzazione di accesso alla posizione di usare la posizione del dispositivo. Google potrebbe raccogliere periodicamente dati sulla posizione da usare in forma anonima per migliorare la precisione della geolocalizzazione e i servizi basati sulla posizione geografica. <ph name="BEGIN_LINK1" />Scopri di più sulla geolocalizzazione<ph name="BEGIN_LINK1_END" />Scopri di più<ph name="END_LINK1" /></translation>
 <translation id="8703634754197148428">Avvia registrazione. Dopo aver avviato la registrazione, utilizza i tasti Alt + Maiusc + L per accedere alla barra delle app e individuare il pulsante per interrompere la registrazione</translation>
 <translation id="8704155109538237473">Imposta lo stato attivo sulla finestra Picture in picture</translation>
 <translation id="870917907284186124">Attiva/disattiva la dettatura (digitazione con la voce)</translation>
@@ -2466,6 +2531,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8875021410787719674">Spostati tra l'angolo in basso a destra, Avvio app, la barra degli indirizzi, la barra dei preferiti, il sito web aperto e i download</translation>
 <translation id="8876148469852588625">Evento <ph name="EVENT_POSITION" /> di <ph name="EVENT_TOTAL_COUNT" /></translation>
 <translation id="8876661425082386199">Controlla la connessione</translation>
+<translation id="8883478023074930307">Invia dati su utilizzo e diagnostica. Attualmente, questo dispositivo invia a Google dati diagnostici e sull'utilizzo delle app e del dispositivo. Questi dati contribuiranno alla stabilità delle app e del sistema, nonché ad altri miglioramenti. Alcuni dati aggregati saranno utili anche per app e partner di Google, ad esempio gli sviluppatori Android. Questa <ph name="BEGIN_LINK1" />impostazione<ph name="END_LINK1" /> è applicata dal proprietario. Se l'impostazione Attività web e app aggiuntiva è attiva, questi dati potrebbero essere salvati nel tuo Account Google. <ph name="BEGIN_LINK2" />Scopri di più sulle metriche<ph name="BEGIN_LINK2_END" />Scopri di più<ph name="END_LINK2" /></translation>
 <translation id="8885424115080869847">Impossibile connettersi a YouTube Music</translation>
 <translation id="888982883502837004">Sono disponibili degli aggiornamenti del firmware per il tuo dispositivo. Fai clic per esaminarli ed eseguire gli aggiornamenti.</translation>
 <translation id="8896630965521842259">Il modello <ph name="DESK_TEMPLATE_NAME" /> verrà eliminato definitivamente</translation>
@@ -2508,10 +2574,12 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="9000771174482730261">GESTISCI SPAZIO DI ARCHIVIAZIONE</translation>
 <translation id="9003374957546315126">Emoji e altro</translation>
 <translation id="9005984960510803406">Consente di aprire la finestra Crosh</translation>
+<translation id="901668144954885282">Backup su Google Drive</translation>
 <translation id="9017320285115481645">Inserisci il codice accesso genitori di Family Link.</translation>
 <translation id="9024331582947483881">schermo intero</translation>
 <translation id="9029736946581028033">Il dispositivo si spegnerà a breve</translation>
 <translation id="9030319654231318877">Disattivato fino al tramonto</translation>
+<translation id="9030515284705930323">La tua organizzazione non ha attivato Google Play Store per il tuo account. Contatta l'amministratore per avere ulteriori informazioni.</translation>
 <translation id="9030665205623277906">Istantanea di utilizzo della CPU: <ph name="CPU_USEAGE" />%</translation>
 <translation id="9034924485347205037">File Linux</translation>
 <translation id="9047624247355796468">Apri Impostazioni per <ph name="NETWORK_NAME" /></translation>
@@ -2561,8 +2629,10 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="9195857219954068558">Chromebook è stato aggiornato. Apri le finestre e le app precedenti.</translation>
 <translation id="9195990613383871904">Domani</translation>
 <translation id="9198992156681343238">La risoluzione di <ph name="DISPLAY_NAME" /> è stata cambiata in <ph name="RESOLUTION" />. Fai clic su Conferma per mantenere le modifiche. Le impostazioni precedenti verranno ripristinate tra <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="9199853905755292769">Invia dati su utilizzo e diagnostica. Attualmente, questo dispositivo invia a Google dati diagnostici e sull'utilizzo delle app e del dispositivo. Non verranno utilizzati per identificare tuo figlio e contribuiranno alla stabilità di app e sistema, nonché ad altri miglioramenti. Alcuni dati aggregati saranno utili anche per app e partner di Google, ad esempio gli sviluppatori Android. Se l'impostazione Attività web e app aggiuntiva è attiva per tuo figlio, questi dati potrebbero essere salvati nel suo Account Google. <ph name="BEGIN_LINK2" />Scopri di più sulle metriche<ph name="BEGIN_LINK2_END" />Scopri di più<ph name="END_LINK2" /></translation>
 <translation id="9201044636667689546">Connetti <ph name="NAME" /> a questo Chromebook</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, gestita dall'amministratore</translation>
+<translation id="9201842707396338580">Si è verificato un problema. Contatta l'amministratore o il proprietario del dispositivo. Codice di errore: <ph name="ERROR_CODE" />.</translation>
 <translation id="9207682216934703221"><ph name="APP_NAME" />, <ph name="APP2_NAME" /> e tutti i siti web e le app che dispongono dell'autorizzazione di accesso alla posizione e di ChromeOS possono usare la posizione rilevata da reti Wi-Fi e mobili.</translation>
 <translation id="9210037371811586452">Uscita dalla modalità Desktop unificato</translation>
 <translation id="9211490828691860325">Tutte le scrivanie</translation>
@@ -2575,6 +2645,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="923686485342484400">Premi due volte Control Maiusc Q per uscire.</translation>
 <translation id="92580429198593979">Hai premuto la scorciatoia da tastiera per l'inversione dei colori. Vuoi attivarla?</translation>
 <translation id="925832987464884575">Nascondi anteprime</translation>
+<translation id="93140074055951850">Le app per Android sono state interrotte</translation>
 <translation id="938407504481277932">Scrivania corrente: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. Scrivania <ph name="DESK_INDEX" /> di <ph name="DESK_COUNT" />.</translation>
 <translation id="94468042118567862">Dispositivo non aggiornato</translation>
 <translation id="945383118875625837">Trascina il link nella barra dei preferiti</translation>

@@ -8,6 +8,7 @@
 <translation id="1017556409696559990">A legfelső ablak kis méretre állítása, ha nincsenek előzmények a Chrome-ban</translation>
 <translation id="101823271612280837">A felvétel leállt. Táblagép módban nem használható a Játékok irányítópultja.</translation>
 <translation id="1024364763893396229"><ph name="NAME" /> eszközének mentése</translation>
+<translation id="103279545524624934">Szabadítson fel tárhelyet az Android-alkalmazások elindításához.</translation>
 <translation id="1032891413405719768">Az érintőceruza töltöttségi szintje alacsony</translation>
 <translation id="1036348656032585052">Kikapcsolás</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> hozzáadva</translation>
@@ -35,6 +36,7 @@
 <translation id="1129383337808748948"><ph name="CONTENT_TITLE" /> frissítése</translation>
 <translation id="1142002900084379065">Nemrégiben feltöltött fotók</translation>
 <translation id="114221662579355151">Ezzel engedélyezi a kamerához való hozzáférést a(z) <ph name="APP1_NAME" />, a(z) <ph name="APP2_NAME" />, valamint a kamerahasználati engedéllyel rendelkező összes alkalmazás és webhely számára. Előfordulhat, hogy frissítenie kell a weboldalt, vagy újra kell indítania az alkalmazást.</translation>
+<translation id="1147991416141538220">Hozzáférés kéréséhez forduljon az eszköz adminisztrátorához.</translation>
 <translation id="1148499908455722006">Információs párbeszédpanel, <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Naptár</translation>
 <translation id="1153356358378277386">Párosított eszközök</translation>
@@ -114,6 +116,7 @@
 <translation id="1340378040547539434">Kicsinyítés az oldalon</translation>
 <translation id="1341651618736211726">Túlcsordulás</translation>
 <translation id="1341926407152459446">A(z) „<ph name="DEVICE_NAME" />” használata hangbemenethez és -kimenethez</translation>
+<translation id="1346403631707626730">Használati és diagnosztikai adatok küldése. Segítsen gyermeke Android-élményének továbbfejlesztésében azzal, hogy automatikusan diagnosztikai, valamint eszköz- és alkalmazáshasználati adatokat küld a Google-nak. Az adatok a rendszer- és alkalmazásstabilitás javításában, valamint más fejlesztésekben segítenek, és nem használjuk fel őket az Ön gyermekének azonosítására. Bizonyos összesített adatok a Google-alkalmazásoknak és -partnereknek, például az Android-fejlesztőknek is segítenek. Ha az Internetes és alkalmazástevékenységek beállítás is be van kapcsolva a gyermekénél, akkor a rendszer ezeket az adatokat mentheti az ő Google-fiókjába. <ph name="BEGIN_LINK1" />További információ a mutatókról<ph name="BEGIN_LINK1_END" />További információ<ph name="END_LINK1" />.</translation>
 <translation id="1346748346194534595">Jobbra</translation>
 <translation id="1350494136075914725">Folyamatban · Váltás a lapra</translation>
 <translation id="1351937230027495976">Menü összecsukása</translation>
@@ -196,6 +199,7 @@
 <translation id="1610778689852195798">„Undo” (Visszavonás)</translation>
 <translation id="1611993646327628135">Be</translation>
 <translation id="1612679292338846734">Ha bekapcsolja ezeket a funkciókat, a rendszer elküldi a bevitt szöveget, a dokumentum tartalmát és a weboldal URL-jét a Google AI szervereinek. Ezeket az információkat írási javaslatok és összefoglalók generálásához, kérdések megválaszolásához, valamint a termék fejlesztéséhez használjuk fel a <ph name="LINK_TO_SERVICE_TERMS" /> értelmében. Ne adjon meg személyes, kényes vagy bizalmas adatokat.</translation>
+<translation id="1619879934359211038">Nem sikerült csatlakozni a Google Playhez. Ellenőrizze a hálózati kapcsolatot, és próbálja újra. Hibakód: <ph name="ERROR_CODE" />.</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1623768535032616219">A Google Tanterem összecsukása</translation>
 <translation id="163032029566320584">A(z) <ph name="UNAVAILABLE_DLC" /> nem áll rendelkezésre.</translation>
@@ -224,6 +228,7 @@
 <translation id="1719094688023114093">Az Élő feliratozás be van kapcsolva.</translation>
 <translation id="1720011244392820496">Wi-Fi szinkronizálásának bekapcsolása</translation>
 <translation id="1720230731642245863">A hotspot ki van kapcsolva</translation>
+<translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />Az alkalmazásokat a Beállítások &gt; Google Play Áruház &gt; Android-beállítások kezelése &gt; Alkalmazások vagy Alkalmazáskezelő menüben távolíthatja el. Koppintson a törölni kívánt alkalmazásra (lehet, hogy jobbra vagy balra kell csúsztatnia az alkalmazásokat, hogy megtalálja), majd koppintson az Eltávolítás vagy Letiltás lehetőségre.<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1731815243805539470">Váltás az előző felhasználóra</translation>
 <translation id="1733996486177697563">Válthat a sötét és a világos téma között. Tartsa lenyomva ujját az asztalon, majd válassza a Háttérkép és stílus elemet.</translation>
 <translation id="1734230530703461088">Nem sikerült betölteni a bővítményeket az időkorláton belül. Forduljon a rendszergazdához.</translation>
@@ -277,6 +282,7 @@
 <translation id="1882814835921407042">Nincs mobilhálózat</translation>
 <translation id="1882897271359938046">Tükrözés: <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Feloldás ujjlenyomattal</translation>
+<translation id="1891362123137972260">A lemez nagyon kevés szabad tárhellyel rendelkezik. Szabadítson fel rajta tárhelyet.</translation>
 <translation id="1894024878080591367">Állítsa be a billentyűzettel való játékhoz</translation>
 <translation id="1896383923047738322">Billentyűzet személyre szabása</translation>
 <translation id="1904997243703671177">A Bluetooth kikapcsolásakor megszakad a(z) Ön <ph name="DEVICE_TYPE" /> eszköze és a következő <ph name="DEVICE_COUNT" /> külső eszköz közötti kapcsolat:</translation>
@@ -309,11 +315,13 @@
 <translation id="1996162290124031907">Ugrás a következő lapra</translation>
 <translation id="1998100899771863792">Jelenlegi asztal</translation>
 <translation id="2001444736072756133">Keresés a következők között: <ph name="CATEGORY" />, fájlok, alkalmazások és egyebek.</translation>
+<translation id="2011174342667534258">SDK-verzió:</translation>
 <translation id="2017998995161831444">A „Súgó” megnyitása a Felfedezés alkalmazásban</translation>
 <translation id="2021864487439853900">Kattintson a feloldáshoz</translation>
 <translation id="2034971124472263449">Mentés mindenképp</translation>
 <translation id="2041220428661959602">Akkumulátor töltöttségi szintje: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="204259843076055848">A(z) <ph name="SIX_PACK_KEY_NAME" /> billentyűparancsa jelenleg ki van kapcsolva</translation>
+<translation id="2048653237708779538">A művelet nem végezhető el</translation>
 <translation id="2049240716062114887">Az asztal neve a következőre változott: <ph name="DESK_NAME" /></translation>
 <translation id="2064048859448024834">Kamera-előnézet bekapcsolva</translation>
 <translation id="2065098273523946419">További információkhoz vezető link. Aktiválásakor átirányítja a rendszer a böngészőbe.</translation>
@@ -378,18 +386,21 @@
 <translation id="2305738328104302723">Google-feladatlista: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: nemrég készült képernyőfelvételek, letöltések és kitűzött fájlok</translation>
 <translation id="2318576281648121272">Ma <ph name="TODAY_DATE" /></translation>
+<translation id="2318817390901984578">Android-alkalmazások használatához előbb töltse fel és frissítse a(z) <ph name="DEVICE_TYPE" /> eszközt.</translation>
 <translation id="2322065293366551060"><ph name="CATEGORY" />, keresésitalálat-kategória</translation>
 <translation id="2322173485024759474">Visszalépés betűnként</translation>
 <translation id="2326112202058075478">További emojik megjelenítése</translation>
 <translation id="2335091074961603075">Chromebookja vagy Bluetooth-eszköze régebbi Bluetooth-verziót használ. A jobb hangminőség érdekében a belső mikrofont használja.</translation>
 <translation id="2339073806695260576">Koppintson a polcon az érintőceruza gombra, ha jegyzetet vagy képernyőképet szeretne készíteni, illetve ha a lézermutatót vagy a nagyítót kívánja használni.</translation>
 <translation id="2341729377289034582">Függőleges helyzetben zárolva</translation>
+<translation id="2344032937402519675">Nem sikerült csatlakozni a szerverhez. Ellenőrizze a hálózati kapcsolatot, és próbálja újra. Ha továbbra is jelentkeznek a problémák, próbálkozzon a Chromebook újraindításával.</translation>
 <translation id="2345226652884463045">Az Enter vagy a Keresés + Szóköz billentyűkombinációval kiválaszthatja a szerkeszteni kívánt szöveget.</translation>
 <translation id="2349785431103945039">Hotspotadatok megjelenítése. Hotspot használatához csatlakozzon mobilhálózathoz.</translation>
 <translation id="2350182423316644347">Alkalmazás indítása...</translation>
 <translation id="2350794187831162545">A(z) <ph name="LANGUAGE" /> nyelvű beszéd feldolgozása helyben, offline történik. A diktálás nyelvét a Beállítások &gt; Kisegítő lehetőségek pontban módosíthatja.</translation>
 <translation id="2352467521400612932">Az érintőceruza beállításai</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> aktiválása</translation>
+<translation id="2355314311311231464">Hiba történt az ellátási folyamat során, mert nem sikerült a fiókadatok lekérése. Próbálja újra. Hibakód: <ph name="ERROR_CODE" />.</translation>
 <translation id="2359808026110333948">Tovább</translation>
 <translation id="2360398059912971776">akkumulátor</translation>
 <translation id="2361210043495191221">Wi-Fi be-/kikapcsolása. <ph name="STATE" />.</translation>
@@ -412,6 +423,7 @@
 <translation id="240545663114741956">A kijelentkezéshez nyomja meg kétszer a <ph name="ACCELERATOR" /> billentyűkombinációt.</translation>
 <translation id="2405664212338326887">Nincs kapcsolat</translation>
 <translation id="2406710117564540804">A Ne zavarjanak funkció be-/kikapcsolása</translation>
+<translation id="240789602312469910">Használati és diagnosztikai adatok küldése. Segítsen gyermeke Android-élményének továbbfejlesztésében azzal, hogy automatikusan diagnosztikai, valamint eszköz- és alkalmazáshasználati adatokat küld a Google-nak. Az adatok a rendszer- és alkalmazásstabilitás javításában, valamint más fejlesztésekben segítenek, és nem használjuk fel őket az Ön gyermekének azonosítására. Bizonyos összesített adatok a Google-alkalmazásoknak és -partnereknek, például az Android-fejlesztőknek is segítenek. Ezt a <ph name="BEGIN_LINK1" />beállítást<ph name="END_LINK1" /> kötelezővé tette az eszköz tulajdonosa. A tulajdonos dönthet úgy, hogy elküldi az eszközzel kapcsolatos diagnosztikai és használati adatokat a Google-nak. Ha az Internetes és alkalmazástevékenységek beállítás is be van kapcsolva a gyermekénél, akkor a rendszer ezeket az adatokat mentheti az ő Google-fiókjába. <ph name="BEGIN_LINK2" />További információ a mutatókról<ph name="BEGIN_LINK2_END" />További információ<ph name="END_LINK2" />.</translation>
 <translation id="2408955596600435184">PIN-kód megadása</translation>
 <translation id="2412593942846481727">Rendelkezésre áll frissítés</translation>
 <translation id="2416438829169535743">Kilép a nézetből?</translation>
@@ -464,6 +476,7 @@
 <translation id="2531025035050312891">eszköz lassú</translation>
 <translation id="2531107890083353124">A lap húzása közben nyomja le a(z) <ph name="KEY_ONE" /> billentyűt</translation>
 <translation id="2532199152994248594">Húzással vagy a szóköz billentyű lenyomásával válassza ki a rögzíteni kívánt területet</translation>
+<translation id="2540651571961486573">Hiba történt. Hibakód: <ph name="ERROR_CODE" />.</translation>
 <translation id="2545334090614121435">A Home billentyűt próbálja használni? Használja a következőt:</translation>
 <translation id="254900897760075745">Kijelölt tartalom másolása a vágólapra</translation>
 <translation id="2549711466868162843">Megvilágítás javítása</translation>
@@ -511,8 +524,11 @@
 <translation id="2701576323154693023">A hotspot be van kapcsolva (a Wi-Fi ki van kapcsolva)</translation>
 <translation id="2704781753052663061">Csatlakozás másik Wi-Fi-hálózatokhoz</translation>
 <translation id="2705001408393684014">Mikrofon be-/kikapcsolása. <ph name="STATE_TEXT" /></translation>
+<translation id="2706304388244371417">Biztonsági mentés a Google Drive-ra. Bármikor könnyedén visszaállíthatja adatait vagy lecserélheti eszközét. A biztonsági mentés alkalmazásadatokat tartalmaz. A biztonsági másolatokat a Google szervereire tölti fel a rendszer, és a gyermeke Google-fiókjához használt jelszóval titkosítja őket. <ph name="BEGIN_LINK1" />További információ a biztonsági mentésről<ph name="BEGIN_LINK1_END" />További információ<ph name="END_LINK1" />.</translation>
 <translation id="2706462751667573066">Fel</translation>
+<translation id="2710101514844343743">Használati és diagnosztikai adatok</translation>
 <translation id="2710984741481549981">Az ablakok zárolása</translation>
+<translation id="2714393097308983682">Google Play Áruház</translation>
 <translation id="2718395828230677721">Éjszakai fény</translation>
 <translation id="2726420622004325180">Hotspot biztosításához telefonján engedélyeznie kell a mobiladat-használatot</translation>
 <translation id="2727175239389218057">Válasz</translation>
@@ -574,6 +590,8 @@ Ellenkező esetben a beépített érintőpad <ph name="TIMEOUT_SECONDS" /> múlv
 <translation id="2893701697603065178">Felügyelt fejlesztői környezet</translation>
 <translation id="2894949423239620203">A kábel befolyásolhatja a teljesítményt</translation>
 <translation id="2902312830803030883">További műveletek</translation>
+<translation id="2909506265808101667">Nem sikerült csatlakozni a Google-szolgáltatásokhoz. Ellenőrizze a hálózati kapcsolatot, és próbálja újra. Hibakód: <ph name="ERROR_CODE" />.</translation>
+<translation id="2910718431259223434">Hiba történt. Próbálja újra, illetve forduljon az eszköz tulajdonosához vagy rendszergazdájához. Hibakód: <ph name="ERROR_CODE" />.</translation>
 <translation id="2914580577416829331">Képernyőfelvételek</translation>
 <translation id="2924416280450782352">Nem sikerült megjeleníteni az elemeket. Próbálja meg újra megnyitni ezt a panelt.</translation>
 <translation id="292506373491190801">A folyamatban lévő eseményből</translation>
@@ -633,7 +651,9 @@ Ellenkező esetben a beépített érintőpad <ph name="TIMEOUT_SECONDS" /> múlv
 <translation id="3093423061078042895">Hiányzik</translation>
 <translation id="3095995014811312755">verzió</translation>
 <translation id="309749186376891736">Kurzor mozgatása</translation>
+<translation id="3100071818310370858">Helyadatok használata. A helymeghatározási jogosultsággal rendelkező alkalmazások és szolgáltatások számára lehetővé teszi az eszköz tartózkodási helyének használatát. A Google a pontosság javítása és a helyalapú szolgáltatások továbbfejlesztése érdekében rendszeresen gyűjtheti és felhasználhatja ezeket az anonimizált helyadatokat. <ph name="BEGIN_LINK1" />További információ a helyadatokról<ph name="BEGIN_LINK1_END" />További információ<ph name="END_LINK1" />.</translation>
 <translation id="3100274880412651815">Rögzítés mód elvetése</translation>
+<translation id="3104948640446684649">Használati és diagnosztikai adatok küldése. Ez az eszköz jelenleg automatikusan küld diagnosztikai, eszköz- és alkalmazáshasználati adatokat a Google-nak. Az adatok a rendszer- és alkalmazásstabilitás javításában, valamint más fejlesztésekben segítenek. Bizonyos összesített adatok a Google-alkalmazásoknak és -partnereknek, például az Android-fejlesztőknek is segítenek. Ha az Internetes és alkalmazástevékenységek beállítás is be van kapcsolva, akkor a rendszer ezeket az adatokat mentheti az Ön Google-fiókjába. <ph name="BEGIN_LINK2" />További információ a mutatókról<ph name="BEGIN_LINK2_END" />További információ<ph name="END_LINK2" />.</translation>
 <translation id="3105917916468784889">Képernyőkép készítése</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3107155169630537783">Az üdvözlő értesítés állapota: <ph name="STATE" /></translation>
@@ -697,6 +717,7 @@ Ellenkező esetben a beépített érintőpad <ph name="TIMEOUT_SECONDS" /> múlv
 <translation id="3306386552969601301"><ph name="DEVICECOUNT" /> eszköz csatlakozik a következő hotspothoz: <ph name="DEVICE_NAME" /></translation>
 <translation id="3307642347673023554">Visszaváltott laptop módra</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> később be tud jelentkezni.</translation>
+<translation id="3313950410573257029">Kapcsolat ellenőrzése</translation>
 <translation id="3321628682574733415">Érvénytelen szülői kód</translation>
 <translation id="332827762492701193">Az értesítések el vannak rejtve</translation>
 <translation id="3333674550998107387">A következővel kapcsolatos értesítés kibontása: <ph name="NOTIFICATION_TITLE" /></translation>
@@ -814,6 +835,7 @@ Ellenkező esetben a beépített érintőpad <ph name="TIMEOUT_SECONDS" /> múlv
 <translation id="3638400994746983214">Adatvédelmi képernyő be- és kikapcsolása. <ph name="STATE_TEXT" />.</translation>
 <translation id="3641070112313110357">Szükség van a Steam for Chromebook (béta) frissítésére. Indítsa újra a Chromebookot, majd próbálja újra.</translation>
 <translation id="3649256019230929621">Ablak kis méretre állítása</translation>
+<translation id="3650952250015018111">A következőhöz való hozzáférés engedélyezése a(z) „<ph name="APP_NAME" />” számára:</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
         ettől: <ph name="START_TIME" />
@@ -860,6 +882,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="3779139509281456663">Csatlakozás: <ph name="NAME" /></translation>
 <translation id="3781910048497807059">Fókusz áthelyezése az előző panelre</translation>
 <translation id="3783640748446814672">alt</translation>
+<translation id="3783889407390048282">Szabadítson fel tárhelyet, hogy ne veszítse el az Androidhoz való hozzáférését.</translation>
 <translation id="3784455785234192852">Zárolás</translation>
 <translation id="3788301286821743879">A kioszkalkalmazást nem lehetett elindítani.</translation>
 <translation id="3789841737615482174">Telepítés</translation>
@@ -869,6 +892,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="3804737937830804242">Kamera összecsukása</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 emoji. Nincs más találat.}other{# emoji. Nincs más találat.}}</translation>
 <translation id="3822403841174077928">Nem sikerült a formázás megtartásával másolni</translation>
+<translation id="3824621460022590830">Érvénytelen eszközregisztrációs token. Vegye fel a kapcsolatot az eszköz tulajdonosával vagy rendszergazdájával. Hibakód: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824784079442479685">Ezzel engedélyezi a kamerához való hozzáférést a(z) <ph name="APP_NAME" />, valamint a kamerahasználati engedéllyel rendelkező összes alkalmazás és webhely számára. Előfordulhat, hogy frissítenie kell a weboldalt, vagy újra kell indítania az alkalmazást.</translation>
 <translation id="3826099427150913765">Váltás jelszóra</translation>
 <translation id="383058930331066723">Az Akkumulátorkímélő mód be van kapcsolva</translation>
@@ -893,6 +917,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="3898464793473355515">A képernyő elforgatása 90 fokkal az óramutató járásával megegyezően</translation>
 <translation id="3900355044994618856">Munkamenete <ph name="SESSION_TIME_REMAINING" /> elteltével lejár</translation>
 <translation id="3901991538546252627">Csatlakozás a következőhöz: <ph name="NAME" /></translation>
+<translation id="3904326018476041253">Helyszolgáltatások</translation>
 <translation id="3904768293285573640">Ablak mozaikszerű átméretezése balra</translation>
 <translation id="3923221004758245114">Eltávolítja a következőt a(z) <ph name="DEVICE_TYPE" /> eszközről: <ph name="VM_NAME" />? Ezzel minden alkalmazást és adatot töröl a virtuális gépről.</translation>
 <translation id="3923494859158167397">Nincs beállítva mobilhálózat</translation>
@@ -907,6 +932,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="3950272133184491871">Kijelentkezik most?</translation>
 <translation id="3950820424414687140">Bejelentkezés</translation>
 <translation id="3953130726459169782">Még nincsenek befejezve feladatok.</translation>
+<translation id="3957844511978444971">Koppintson az „Elfogadás” lehetőségre a Google-szolgáltatások jelen beállításainak megerősítéséhez.</translation>
 <translation id="3958714870339660776">Egész nap</translation>
 <translation id="3962859241508114581">Előző szám</translation>
 <translation id="3963124517343721543">Az előző ablakok és lapok megnyitásával egyszerűen folytathatja ott, ahol abbahagyta. Emellett személyre szabott javaslatokat is láthat a következő műveletekre.</translation>
@@ -1022,6 +1048,7 @@ Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozotta
 <translation id="4278779213160967034">Ez a folyamat néhány percet is igénybe vehet. Fájlok letöltése…</translation>
 <translation id="4279490309300973883">Tükrözés</translation>
 <translation id="4280601795273309128">A továbbiakban már nem érkeznek biztonsági frissítések. Váltson újabb eszközre.</translation>
+<translation id="4281844954008187215">Általános Szerződési Feltételek</translation>
 <translation id="4283888303416325161">A nagyobb biztonság érdekében adja meg a jelszót</translation>
 <translation id="4285498937028063278">Rögzítés megszüntetése</translation>
 <translation id="428715201724021596">Csatlakozás a profilhoz. Ez eltarthat néhány percig.</translation>
@@ -1066,6 +1093,7 @@ Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozotta
 <translation id="4406883609789734330">Élő feliratozás</translation>
 <translation id="4412698727486357573">Súgó</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> kikapcsolva.</translation>
+<translation id="44141919652824029">Engedélyezi a(z) „<ph name="APP_NAME" />” számára, hogy hozzáférjen a csatlakoztatott USB-eszközeinek listájához?</translation>
 <translation id="4414242853388122273">Hiba történt a(z) <ph name="VM_NAME" /> eltávolításakor. Kérjük, próbálja újra.</translation>
 <translation id="4417647906073317561">Összpontosítási üzemmód beállításai. Állítson be időzítőt, feladatot és zenét, hogy lendületbe kerüljön.</translation>
 <translation id="4418600384772451109">Panel bezárása</translation>
@@ -1107,6 +1135,7 @@ Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozotta
 <translation id="453661520163887813"><ph name="TIME" /> a teljes feltöltésig</translation>
 <translation id="4538824937723742295">Teljes képernyős képernyőkép készítése</translation>
 <translation id="4539127209940689201">Aktuális oldal nyomtatása</translation>
+<translation id="4541123282641193691">Nem sikerült ellenőrizni a fiókot. Próbálja meg ismét, vagy indítsa újra a Chromebookot.</translation>
 <translation id="4541505619120536051">Mindig nyitva</translation>
 <translation id="4541706525461326392">Profil eltávolítása. Ez eltarthat néhány percig.</translation>
 <translation id="4544483149666270818">Jelölje ki a felvenni kívánt ablakot</translation>
@@ -1117,6 +1146,7 @@ Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozotta
 <translation id="4556953949326137018">Javasolt műveletek (például a „Hozzáadás a Naptárhoz” vagy a „Google Dokumentumok létrehozása”) használatakor a kijelölt területen szereplő tartalmat a rendszer elküldi a Google szervereire, hogy műveleteket javasoljon, a következő feltételek mellett: <ph name="LINK_TO_SERVICE_TERMS" />. Ne adjon meg személyes, kényes vagy bizalmas adatokat.</translation>
 <translation id="4560576029703263363">Be</translation>
 <translation id="4561267230861221837">3G</translation>
+<translation id="4562091353415772246">Alkalmazások és frissítések telepítése. Ha továbblép, azzal elfogadja, hogy az eszköz automatikusan letölthet és telepíthet frissítéseket és alkalmazásokat a Google-tól, az Ön szolgáltatójától és az eszköz gyártójától, akár mobiladat-kapcsolaton keresztül is. Egyes alkalmazások alkalmazáson belüli vásárlásokat kínálhatnak. <ph name="BEGIN_LINK1" />További információ a Play automatikus telepítéséről<ph name="BEGIN_LINK1_END" />További információ<ph name="END_LINK1" />.</translation>
 <translation id="4565377596337484307">Jelszó elrejtése</translation>
 <translation id="4566144812051858745">Semmilyen javaslat nem érdekel</translation>
 <translation id="4569753163207712681">A telefon legutóbbi fotóinak, médiatartalmainak és alkalmazásainak megtekintése</translation>
@@ -1136,6 +1166,7 @@ Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozotta
 <translation id="4628757576491864469">Eszközök</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, <ph name="RATING_SCORE" /> csillagos értékelés</translation>
 <translation id="4633636853437260449">A törléshez nyomja meg a Ctrl + W billentyűkombinációt.</translation>
+<translation id="4633757335284074492">Biztonsági mentés a Google Drive-ra. Bármikor könnyedén visszaállíthatja adatait vagy lecserélheti eszközét. A biztonsági másolat alkalmazásadatokat tartalmaz. A biztonsági másolatokat a Google szervereire tölti fel a rendszer, és a gyermeke Google-fiókjához használt jelszóval titkosítja őket.</translation>
 <translation id="4635501805800894201">{0,plural, =0{Eszköz frissítése az előző verzióra most}=1{Eszköz frissítése az előző verzióra 1 másodpercen belül}other{Eszköz frissítése az előző verzióra # másodpercen belül}}</translation>
 <translation id="4642092649622328492">Részleges képernyőkép készítése</translation>
 <translation id="4642587497923912728">A Steam Chromebook-verziója (béta) csak annál a fióknál használható, amely elsőként jelentkezett be ezen a Chromebookon.</translation>
@@ -1178,6 +1209,7 @@ Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozotta
 <translation id="4759238208242260848">Letöltések</translation>
 <translation id="4762160261012420470"><ph name="LAUNCHER_KEY_NAME" /> + felfelé nyíl</translation>
 <translation id="4762573482154983647">Alkalmazások elrejtése</translation>
+<translation id="4762718786438001384">Az eszköz lemezterülete nagyon kevés</translation>
 <translation id="4763885921995354846">Ezzel engedélyezi a kamerához való hozzáférést a kamerahasználati engedéllyel rendelkező összes alkalmazás és webhely számára. Előfordulhat, hogy frissítenie kell a weboldalt, vagy újra kell indítania az alkalmazást.</translation>
 <translation id="4774338217796918551">Térjen vissza holnap, ekkor: <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776584068981882959">Jelszavának ellenőrzése még mindig nem sikerült. Próbálja újra.</translation>
@@ -1284,6 +1316,7 @@ Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozotta
 <translation id="5077936103761694531">Megerősíti a felbontást?</translation>
 <translation id="5078796286268621944">Helytelen PIN-kód</translation>
 <translation id="5083035541015925118">ctrl + alt + felfelé nyíl</translation>
+<translation id="5084328598860513926">Megszakadt az ellátási folyamat. Próbálja újra, illetve forduljon az eszköz tulajdonosához vagy rendszergazdájához. Hibakód: <ph name="ERROR_CODE" />.</translation>
 <translation id="5091636240353511739">PIN-kód megjelenítése</translation>
 <translation id="5092436659250499817">A billentyűzet háttérvilágításának be- vagy kikapcsolása</translation>
 <translation id="5094577350232361255">névjegy</translation>
@@ -1313,6 +1346,7 @@ Használhatja a billentyűparancsot is. Először jelölje ki a szöveget, majd 
 <translation id="5170568018924773124">Megjelenítés mappában</translation>
 <translation id="5176318573511391780">Részleges képernyő rögzítése</translation>
 <translation id="5187627942836026988">Hotspotadatok megjelenítése. A rendszergazda letiltotta a hotspotot.</translation>
+<translation id="5188648870018555788">Helyadatok használata. Engedélyezheti a helymeghatározási jogosultsággal rendelkező ChromeOS- és Android-alkalmazások, webhelyek és szolgáltatások számára, hogy használják az eszköz helyadatait. A Helymeghatározás pontossága beállítás pontosabb helyadatokat szolgáltat az androidos alkalmazások és szolgáltatások számára. Ebből a célból a Google rendszeresen feldolgozza az eszköz érzékelőitől és a vezeték nélküli jelekből kapott információkat, hogy hozzájáruljon a vezeték nélküli jelek alapján történő közösségi helymeghatározáshoz. Ezek – az Ön azonosítása nélkül – arra szolgálnak, hogy javítsák a helymeghatározás pontosságát és a helyalapú szolgáltatásokat, valamint javítsák, biztosítsák és fenntartsák a Google szolgáltatásait a Google-nak és harmadik feleknek a felhasználói igények kiszolgálására vonatkozó jogos érdekei alapján. <ph name="BEGIN_LINK1" />További információ a helyadatok használatáról.<ph name="END_LINK1" /></translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198039720391525849">Kiemelt GIF-ek</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> esemény</translation>
@@ -1333,6 +1367,7 @@ Használhatja a billentyűparancsot is. Először jelölje ki a szöveget, majd 
 <translation id="5238719049014159442">Indító megnyitása/bezárása</translation>
 <translation id="5240725217819182328">Gyors hozzáférés bizonyos oldalakhoz vagy műveletekhez a telepített alkalmazásokon belül</translation>
 <translation id="5243355658487390559">Dátum keresése</translation>
+<translation id="5243522832766285132">Próbálkozzon újra néhány pillanat múlva</translation>
 <translation id="5245201184978705914">Nem sikerült az átirat létrehozása</translation>
 <translation id="5251174953851719648">Tartalom frissítése</translation>
 <translation id="5253783950165989294">Csatlakoztatva van a(z) <ph name="DEVICE_NAME" /> nevű eszközhöz, akkumulátor töltöttségi szintje: <ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -1340,6 +1375,7 @@ Használhatja a billentyűparancsot is. Először jelölje ki a szöveget, majd 
 <translation id="5256939106029293271">Mikrofon tesztelése</translation>
 <translation id="5258528442992323769">Nincsenek mentett asztalok</translation>
 <translation id="5260676007519551770">4. asztal</translation>
+<translation id="5264148714798105376">Ez eltarthat egy-két percig.</translation>
 <translation id="5265391159779542051">Eredmények betöltve</translation>
 <translation id="5270547718570958938">Google Naptár</translation>
 <translation id="5277869901083657836">Érintőceruza-eszközök ki- és bekapcsolása</translation>
@@ -1416,6 +1452,7 @@ Nincsenek csatlakoztatott eszközök.</translation>
 <translation id="5506975627792768506">Nagyító be- vagy kikapcsolása</translation>
 <translation id="5507778598655387680"><ph name="VOLUME_LEVEL" />. Az Enter billentyű lenyomása némítja a hangot.</translation>
 <translation id="5512042095225963688">Előző szó törlése</translation>
+<translation id="5517304475148761050">Ennek az alkalmazásnak hozzáférésre van szüksége a Play Áruházhoz</translation>
 <translation id="5519005148254860683">A Google Tasks kibontása</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">A rendszergazda az összes eSIM-profilt eltávolította. További információért forduljon a rendszergazdához.</translation>
@@ -1443,6 +1480,7 @@ Nincsenek csatlakoztatott eszközök.</translation>
 <translation id="5577281275355252094">A Telefonközpont használatához ellenőrizze, hogy a Bluetooth be van-e kapcsolva a telefonon</translation>
 <translation id="5578188167649348993">memória</translation>
 <translation id="5580000943347215299">Könyvtár</translation>
+<translation id="5581972110672966454">Nem sikerült csatlakoztatni az eszközt a domainhez. Próbálja újra, illetve forduljon az eszköz tulajdonosához vagy rendszergazdájához. Hibakód: <ph name="ERROR_CODE" />.</translation>
 <translation id="5586388332127302891">Dokkolt nagyító engedélyezve. A kikapcsoláshoz nyomja meg újra a(z) <ph name="ACCELERATOR" /> billentyűparancsot.</translation>
 <translation id="5587506661873751671">Letöltés… <ph name="DOWNLOAD_PERCENT" />%</translation>
 <translation id="558849140439112033">Húzással jelölje ki a felvenni kívánt területet</translation>
@@ -1467,6 +1505,7 @@ Nincsenek csatlakoztatott eszközök.</translation>
 <translation id="5662075790140998213">10. asztal</translation>
 <translation id="5662709761327382534">A mikrofonos hangrögzítés jelenleg <ph name="CURRENT_STATE" /> állásban van. Ha <ph name="NEW_STATE" /> állásba szeretné állítani, nyomja meg az Enter billentyűt</translation>
 <translation id="5662919923378083468"><ph name="ACTION_DESCRIPTION" />, <ph name="SHORTCUT_HINT" /></translation>
+<translation id="5667546120811588575">A Google Play beállítása…</translation>
 <translation id="5669267381087807207">Aktiválás</translation>
 <translation id="5671658447180261823">A következő javaslat eltávolítása: <ph name="SUGGESTION_NAME" /></translation>
 <translation id="5672890847723042801">Segédprogramok</translation>
@@ -1483,6 +1522,7 @@ Nincsenek csatlakoztatott eszközök.</translation>
 <translation id="5691772641933328258">Ujjlenyomat felismerése sikertelen</translation>
 <translation id="5693255400847650006">A mikrofon használatban van</translation>
 <translation id="5699366815052349604">Rendeljen hozzá aktív ablakot minden asztalhoz.</translation>
+<translation id="570043786759263127">Google Play-alkalmazások és -szolgáltatások</translation>
 <translation id="570390244361237317">Az összes alkalmazás, a nyílbillentyűk használatával férhet hozzá az összes alkalmazáshoz</translation>
 <translation id="5705197514573687092">Összpontosítási üzemmód beállításainak megjelenítése. Időzítés beállítva ennyire: <ph name="FOCUS_DURATION" />.</translation>
 <translation id="5707775774148071965">Az eszköz nagyobb adatátviteli sebességre képes, mint amit a kábel biztosítani tud. Ez korlátozhatja az eszköz teljesítményét.</translation>
@@ -1497,6 +1537,7 @@ Nincsenek csatlakoztatott eszközök.</translation>
 <translation id="574392208103952083">Közepes</translation>
 <translation id="5744083938413354016">Érintéssel húzás</translation>
 <translation id="5745612484876805746">Az Éjszakai fény funkció automatikusan bekapcsol naplementekor</translation>
+<translation id="5749214722697335450">Használati és diagnosztikai adatok küldése. Segítsen az Android-élmény továbbfejlesztésében azzal, hogy automatikusan diagnosztikai, valamint eszköz- és alkalmazáshasználati adatokat küld a Google-nak. Az adatok a rendszer- és alkalmazásstabilitás javításában, valamint más fejlesztésekben segítenek. Bizonyos összesített adatok a Google-alkalmazásoknak és -partnereknek, például az Android-fejlesztőknek is segítenek. Ha az Internetes és alkalmazástevékenységek beállítás is be van kapcsolva, akkor a rendszer ezeket az adatokat mentheti az Ön Google-fiókjába. <ph name="BEGIN_LINK1" />További információ a mutatókról<ph name="BEGIN_LINK1_END" />További információ<ph name="END_LINK1" />.</translation>
 <translation id="5750765938512549687">Kikapcsolt Bluetooth</translation>
 <translation id="5758114525425072423">Összpontosítási üzemmód indítása. Időzítés beállítva ennyire: <ph name="FOCUS_DURATION" />.</translation>
 <translation id="5759522586053040964">Hallgassa meg, hogy mások hogyan hallják a hangját. A leállításhoz kattintson a teszt ikonra, vagy zárja be a videohívás panelt.</translation>
@@ -1513,6 +1554,7 @@ Nincsenek csatlakoztatott eszközök.</translation>
 <translation id="5775936059231769503">Hotspot be- vagy kikapcsolása. A hotspot ki van kapcsolva.</translation>
 <translation id="5777841717266010279">Leállítja a képernyőmegosztást?</translation>
 <translation id="5779721926447984944">Kitűzött fájlok</translation>
+<translation id="5780940414249100901">Használati és diagnosztikai adatok küldése. Ez az eszköz jelenleg automatikusan küld diagnosztikai, eszköz- és alkalmazáshasználati adatokat a Google-nak. Az adatok a rendszer- és alkalmazásstabilitás javításában, valamint más fejlesztésekben segítenek, és nem használjuk fel őket az Ön gyermekének azonosítására. Bizonyos összesített adatok a Google-alkalmazásoknak és -partnereknek, például az Android-fejlesztőknek is segítenek. Ezt a <ph name="BEGIN_LINK1" />beállítást<ph name="END_LINK1" /> kötelezővé tette az eszköz tulajdonosa. Ha az Internetes és alkalmazástevékenységek beállítás is be van kapcsolva a gyermekénél, akkor a rendszer ezeket az adatokat mentheti az ő Google-fiókjába. <ph name="BEGIN_LINK2" />További információ a mutatókról<ph name="BEGIN_LINK2_END" />További információ<ph name="END_LINK2" />.</translation>
 <translation id="5785221443435874078">Javaslat eltávolítása</translation>
 <translation id="5787431783058088906">Jutalom megszerzése</translation>
 <translation id="5788127256798019331">Play-fájlok</translation>
@@ -1528,6 +1570,7 @@ Nincsenek csatlakoztatott eszközök.</translation>
 <translation id="5823239091726045201">Google Tasks-feladatok az interneten</translation>
 <translation id="5825969630400862129">Csatlakoztatott eszközök beállításai</translation>
 <translation id="5830180081891717894">További <ph name="WINDOWS" /></translation>
+<translation id="583281660410589416">Ismeretlen</translation>
 <translation id="5837036133683224804">A(z) <ph name="ROUTE_TITLE" /> leállítása itt: <ph name="RECEIVER_NAME" /></translation>
 <translation id="5840658767386246331">Keresés a Google-lal</translation>
 <translation id="5841296711770970362">Ugrás a következő számra</translation>
@@ -1593,6 +1636,7 @@ Nincsenek csatlakoztatott eszközök.</translation>
 <translation id="6032620807120418574">Kattintson bárhova a teljes képernyőről való felvétel készítéséhez</translation>
 <translation id="6040071906258664830">Mikrofonos hangrögzítés <ph name="STATE" /> állásban</translation>
 <translation id="6040143037577758943">Bezárás</translation>
+<translation id="6042308850641462728">Továbbiak</translation>
 <translation id="6043212731627905357">Ez a monitor nem illik össze <ph name="DEVICE_TYPE" />-eszközével (a monitor nem támogatott).</translation>
 <translation id="6043994281159824495">Kijelentkezés most</translation>
 <translation id="6045629311476491587"><ph name="APP_COUNT" /> alkalmazás használja</translation>
@@ -1672,9 +1716,12 @@ Nincsenek csatlakoztatott eszközök.</translation>
 <translation id="6274422179279280249">Linkeket, emojikat és még sok mást is beilleszthet. A Google AI használatával az íráshoz is segítséget kaphat. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="6276708887952587684">Az oldal forrásának megtekintése</translation>
 <translation id="6285871695023807425">Hozzáadás a Naptárhoz</translation>
+<translation id="628699625505156622">Helyadatok használata. Engedélyezheti a helymeghatározási jogosultsággal rendelkező ChromeOS- és Android-alkalmazások, webhelyek és szolgáltatások számára, hogy használják az eszköz helyadatait. A Helymeghatározás pontossága beállítás pontosabb helyadatokat szolgáltat az androidos alkalmazások és szolgáltatások számára. Ebből a célból a Google rendszeresen feldolgozza az eszköz érzékelőitől és a vezeték nélküli jelekből kapott információkat, hogy hozzájáruljon a vezeték nélküli jelek alapján történő közösségi helymeghatározáshoz. A Google ezeket az információkat – anélkül, hogy ezzel bárkit is azonosítana – arra használja, hogy javítsa a helymeghatározás pontosságát és a helyalapú szolgáltatásokat, valamint javítsa, biztosítsa és fenntartsa a Google-szolgáltatásokat a Google-nak és harmadik feleknek a felhasználói igények kiszolgálására vonatkozó jogos érdekei alapján. <ph name="BEGIN_LINK1" />További információ a helyadatok használatáról.<ph name="END_LINK1" /></translation>
 <translation id="6288235558961782912">A(z) <ph name="USER_EMAIL_ADDRESS" /> felhasználót később szülői engedéllyel újra hozzáadhatja.</translation>
 <translation id="6291221004442998378">Nem tölt</translation>
+<translation id="6297986260307280218">Használati és diagnosztikai adatok küldése. Segítsen az Android-élmény továbbfejlesztésében azzal, hogy automatikusan diagnosztikai, valamint eszköz- és alkalmazáshasználati adatokat küld a Google-nak. Az adatok a rendszer- és alkalmazásstabilitás javításában, valamint más fejlesztésekben segítenek. Bizonyos összesített adatok a Google-alkalmazásoknak és -partnereknek, például az Android-fejlesztőknek is segítenek. Ezt a <ph name="BEGIN_LINK1" />beállítást<ph name="END_LINK1" /> kötelezővé tette az eszköz tulajdonosa. A tulajdonos dönthet úgy, hogy elküldi az eszközzel kapcsolatos diagnosztikai és használati adatokat a Google-nak. Ha az Internetes és alkalmazástevékenységek beállítás is be van kapcsolva, akkor a rendszer ezeket az adatokat mentheti az Ön Google-fiókjába. <ph name="BEGIN_LINK2" />További információ a mutatókról<ph name="BEGIN_LINK2_END" />További információ<ph name="END_LINK2" />.</translation>
 <translation id="6298183524022479114">Eszköz személyre szabása az alkalmazásban</translation>
+<translation id="6298962879096096191">A Google Play használata Android-alkalmazások telepítésére</translation>
 <translation id="6304076460080088478">Zárja be, vagy állítsa kis méretűre az inkognitó ablakokat, hogy keresni tudjon a képernyőn a Google Lens segítségével</translation>
 <translation id="6309219492973062892">Kattintson vagy koppintson a polcon lévő ikonokra (1–8)</translation>
 <translation id="6315170314923504164">Hang</translation>
@@ -1704,8 +1751,10 @@ Nincsenek csatlakoztatott eszközök.</translation>
 <translation id="6406458002328242616">Időzítés módosítása. <ph name="FOCUS_DURATION" />.</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6414618057231176439">Válassza ki a(z) <ph name="VM_NAME" /> telepíteni kívánt verzióját.</translation>
+<translation id="641469293210305670">Frissítések és alkalmazások telepítése</translation>
 <translation id="6417265370957905582">Google Segéd</translation>
 <translation id="641817663353603351">page up</translation>
+<translation id="6418511932144861495">Fontos frissítés telepítése</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, jelerősség: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Az összes értesítés törlése</translation>
 <translation id="6426905245930183644">Létrehozás…</translation>
@@ -1731,6 +1780,7 @@ Nincsenek csatlakoztatott eszközök.</translation>
 <translation id="6482559668224714696">Teljes képernyős nagyító</translation>
 <translation id="6485086611007560630">Időjárás (nem áll rendelkezésre)</translation>
 <translation id="6490471652906364588">C típusú USB-vel kompatibilis eszköz (jobb oldali port)</translation>
+<translation id="6491376743066338510">Sikertelen engedélyezés</translation>
 <translation id="649452524636452238">Az intelligens kártya PIN-kódja</translation>
 <translation id="6495322433318104734">Képernyővédő megjelenítése, a kilépéshez nyomja meg bármelyik gombot</translation>
 <translation id="6495400115277918834">Kép a képben mód elindítva, a fókuszáláshoz nyomja le az Alt+Shift+V billentyűparancsot</translation>
@@ -1784,10 +1834,12 @@ Frissen telepítve</translation>
 <translation id="6625718907317144388">A(z) <ph name="APP_1_TITLE" />, a(z) <ph name="APP_2_TITLE" /> és további alkalmazások értesítései rejtve vannak, mert be van kapcsolva a megtekintési védelem</translation>
 <translation id="6627638273713273709">Keresés+Shift+K</translation>
 <translation id="662830937908749204">Fókusz áthelyezése a következő panelre</translation>
+<translation id="6635674640674343739">Nem lehet hálózati kapcsolatot létrehozni. Ellenőrizze a hálózati kapcsolatot, és próbálja újra.</translation>
 <translation id="6637729079642709226">Idő módosítása</translation>
 <translation id="6641720045729354415">Az Élő feliratozás be- és kikapcsolása. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">Név szerinti rendezés visszavonása</translation>
 <translation id="664793810957802384">A javasolt csoport elemei</translation>
+<translation id="6649018507441623493">Egy pillanat…</translation>
 <translation id="6649641931981131786">Állítsa a kamerát úgy, hogy Ön a képernyő közepén legyen.</translation>
 <translation id="6650072551060208490">A(z) <ph name="ORIGIN_NAME" /> szeretne meggyőződni a személyazonosságáról</translation>
 <translation id="6650742588569439432">Nem sikerült betölteni az elemeket.</translation>
@@ -1812,6 +1864,7 @@ Frissen telepítve</translation>
 <translation id="6706742084323792866">Billentyűzet kitűzése</translation>
 <translation id="6709719156428404245">Húzással vagy a szóköz billentyű lenyomásával válassza ki a felvenni kívánt területet</translation>
 <translation id="6710213216561001401">Előző</translation>
+<translation id="6716798148881908873">Megszűnt a hálózati kapcsolat. Ellenőrizze a hálózati kapcsolatot, vagy próbáljon másik Wi-Fi-hálózatra csatlakozni.</translation>
 <translation id="6723839937902243910">Energiaellátás</translation>
 <translation id="672609503628871915">Újdonságok</translation>
 <translation id="6727969043791803658">Csatlakoztatva, <ph name="BATTERY_PERCENTAGE" />%-os töltöttség</translation>
@@ -1851,6 +1904,7 @@ Frissen telepítve</translation>
 <translation id="6819327813400217281">Kamera a bal alsó sarokhoz igazítva</translation>
 <translation id="6820676911989879663">Tartson egy kis szünetet!</translation>
 <translation id="6827049576281411231">Eseménypanel bezárása</translation>
+<translation id="682971198310367122">A Google adatvédelmi irányelvei</translation>
 <translation id="6836499262298959512">Veszélyes fájl</translation>
 <translation id="6837621009301897464">Képernyőkép készítéséhez nyomja meg a következőt:</translation>
 <translation id="6852052252232534364">Aktiválás</translation>
@@ -1882,6 +1936,7 @@ Frissen telepítve</translation>
 <translation id="6942518653766415536">Rögzítési formátum menüje</translation>
 <translation id="6945221475159498467">Kiválasztás</translation>
 <translation id="6945922087561257829">Telefonja mobilhálózathoz csatlakozik. Győződjön meg arról, hogy a telefon és a Chromebook ugyanahhoz a Wi-Fi-hálózathoz csatlakozik, majd próbálja újra. <ph name="LEARN_MORE" />.</translation>
+<translation id="6950627417367801484">Alkalmazások visszaállítása</translation>
 <translation id="6960565108681981554">Nincs aktiválva. Forduljon a szolgáltatójához.</translation>
 <translation id="6961121602502368900">A Telefon némítása funkció nem használható munkaprofillal</translation>
 <translation id="6961840794482373852">Az Alt + Felfelé nyíl billentyűparancs módosult. A Felfelé nyíl billentyű használatához nyomja le a következő billentyűparancsot: <ph name="LAUNCHER_KEY_NAME" /> + Felfelé nyíl.</translation>
@@ -2053,6 +2108,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="7541773865713908457"><ph name="ACTION_NAME" /> a következő alkalmazással: <ph name="APP_NAME" /></translation>
 <translation id="7543399541175347147">A Linux-alkalmazások és az inkognitó ablakok jelenleg nem támogatottak. Az egyéb alkalmazásokat menti a rendszer.</translation>
 <translation id="7544300628205093162">Billentyűzet háttérvilágítása bekapcsolva</translation>
+<translation id="7545466883021407599">Nem sikerült csatlakozni a szerverhez. Ellenőrizze a hálózati kapcsolatot, és próbálja újra. Ha továbbra is jelentkeznek a problémák, próbálkozzon a Chromebook újraindításával. Hibakód: <ph name="ERROR_CODE" />.</translation>
 <translation id="7548434653388805669">Ideje aludni</translation>
 <translation id="7551643184018910560">Rögzítés a polcra</translation>
 <translation id="7557816257942363084">A(z) <ph name="APP_NAME" /> jelenleg használja a mikrofont</translation>
@@ -2068,6 +2124,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="7579778809502851308">Képernyőfelvétel</translation>
 <translation id="7588317312481506627">A vágólapra másolva.</translation>
 <translation id="7593891976182323525">Keresés vagy Shift</translation>
+<translation id="7595453277607160340">Az androidos alkalmazások használatához, valamint <ph name="DEVICE_TYPE" /> eszköze további megfelelő működésének fenntartásához jelentkezzen be újra, és frissítsen.</translation>
 <translation id="7598054670902114203">Pillanatkép a CPU-használatról, <ph name="CPU_USEAGE" />%. Hőmérséklet: <ph name="TEMPERATURE" /> Celsius-fok, jelenlegi sebesség: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="7599378375976398913">A kijelölt találat beszúrása</translation>
 <translation id="7600875258240007829">Összes értesítés megtekintése</translation>
@@ -2077,6 +2134,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="7609951632080598826">Naptárnézet, <ph name="DATE" /> <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Helyreállt a kapcsolat a kamerával.</translation>
 <translation id="7613620083300976559">Játékvezérlők bekapcsolása</translation>
+<translation id="761530003705945209">Biztonsági mentés a Google Drive-ra. Bármikor könnyedén visszaállíthatja adatait vagy lecserélheti eszközét. A biztonsági másolat tartalmazza az alkalmazásadatokat. A biztonsági másolatokat a Google szervereire tölti fel a rendszer, és az Ön Google-fiókjához használt jelszóval titkosítja őket.</translation>
 <translation id="761736749114493194">A keretezés be- vagy kikapcsolása. <ph name="STATE_TEXT" /></translation>
 <translation id="7621008024906456933">A Quick Share beállításai</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />°F</translation>
@@ -2125,6 +2183,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="7748275671948949022">Az indítógomb kiemelése a polcon</translation>
 <translation id="7749443890790263709">Elérte az asztalok maximális számát.</translation>
 <translation id="7749958366403230681">4. ExpressKey</translation>
+<translation id="7750228210027921155">Kép a képben</translation>
 <translation id="7751260505918304024">Összes megjelenítése</translation>
 <translation id="7762664108390426952">Google Általános Szerződési Feltételei és adatvédelmi irányelvei</translation>
 <translation id="7768784765476638775">Felolvasás</translation>
@@ -2243,6 +2302,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="8092380135549145188">Görgetési vezérlők</translation>
 <translation id="8098591350844501178">A képernyő „<ph name="RECEIVER_NAME" />” eszközre történő átküldésének leállítása</translation>
 <translation id="810637681351706236">Alkalmazás kitűzésének feloldása a polcon</translation>
+<translation id="8107015733319732394">Folyamatban van a Google Play Áruház telepítése a(z) <ph name="DEVICE_TYPE" /> eszközre. Ez eltarthat néhány percig.</translation>
 <translation id="8113423164597455979">Be, összes app</translation>
 <translation id="8113515504791187892">Felolvasás gomb</translation>
 <translation id="8120151603115102514">Telefonján nincs beállítva lezárási képernyő. A Chromebook feloldásához írja be jelszavát.</translation>
@@ -2325,6 +2385,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="8388750414311082622">Nem lehetséges a legutóbbi asztal eltávolítása.</translation>
 <translation id="8394567579869570560">A szülőd zárolta az eszközt</translation>
 <translation id="8401850874595457088">Nyelv menü megnyitása</translation>
+<translation id="8410775397654368139">Google Play</translation>
 <translation id="8412677897383510995">Kijelzőbeállítások megjelenítése</translation>
 <translation id="8413272770729657668">Felvételkészítés indul, 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (tok)</translation>
@@ -2350,11 +2411,13 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="8473301994082929012">A(z) <ph name="ORGANIZATION_NAME" /> szervezetnél <ph name="FEATURE_STATE" /> van a(z) <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">A kikapcsoláshoz nyomja meg az Alt+Keresés billentyűkombinációt vagy a Shift billentyűt.</translation>
 <translation id="8480418399907765580">Az eszköztár megjelenítése</translation>
+<translation id="8481187309597259238">USB-engedély megerősítése</translation>
 <translation id="8487660088084188539">Ha bekapcsolja ezeket a funkciókat, a rendszer elküldheti a bevitt szöveget, a dokumentum tartalmát és a weboldal URL-jét a Google szervereinek. Ezeket az információkat írási javaslatok és összefoglalók generálásához, kérdések megválaszolásához, valamint a termék fejlesztéséhez használjuk fel a <ph name="LINK_TO_SERVICE_TERMS" /> értelmében. Ne adjon meg személyes, kényes vagy bizalmas adatokat.</translation>
 <translation id="8487699605742506766">Hotspot</translation>
 <translation id="8490896350101740396">A(z) „<ph name="UPDATED_APPS" />” kioszkalkalmazás frissítve lett. Kérjük, indítsa újra az eszközt a frissítési folyamat befejezéséhez.</translation>
 <translation id="8491237443345908933">Link megnyitása új lapon</translation>
 <translation id="8492573885090281069">A(z) <ph name="DISPLAY_NAME" /> nem támogatja a következő felbontást: <ph name="SPECIFIED_RESOLUTION" />. A felbontás erre módosult: <ph name="FALLBACK_RESOLUTION" />. A módosítás megtartásához kattintson a Megerősítés gombra. A beállítás <ph name="TIMEOUT_SECONDS" /> múlva visszaáll a korábbi értékre.</translation>
+<translation id="8502536196501630039">A Google Play alkalmazásainak használatához először vissza kell állítania saját alkalmazásait. Lehet, hogy bizonyos adatok elvesztek.</translation>
 <translation id="8507563469658346379">Mindenki, <ph name="REMAINING_TIME" /></translation>
 <translation id="8511123073331775246">Új asztal létrehozása</translation>
 <translation id="85123341071060231">A Chromebookon ki van kapcsolva a Bluetooth. A zárolás feloldásához írja be jelszavát.</translation>
@@ -2408,6 +2471,8 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="8676770494376880701">Kis teljesítményű töltő csatlakoztatva</translation>
 <translation id="8679158879996532670">Összpontosítási üzemmód beállításainak megjelenítése. Összpontosítási üzemmód bekapcsolva, <ph name="REMAINING_TIME" /> van hátra.</translation>
 <translation id="8683506306463609433">A teljesítménykövetés aktív</translation>
+<translation id="8698432579173128320">Biztonsági mentés a Google Drive-ra. Bármikor könnyedén visszaállíthatja adatait vagy lecserélheti eszközét. A biztonsági másolat tartalmazza az alkalmazásadatokat. A biztonsági másolatokat a Google szervereire tölti fel a rendszer, és az Ön Google-fiókjához használt jelszóval titkosítja. <ph name="BEGIN_LINK1" />További információ a biztonsági mentésről<ph name="BEGIN_LINK1_END" />További információ<ph name="END_LINK1" />.</translation>
+<translation id="8700087567921985940">Helyadatok használata. A helymeghatározási jogosultsággal rendelkező alkalmazások és szolgáltatások számára lehetővé teszi az eszköz tartózkodási helyének használatát. A Google a pontosság javítása és a helyalapú szolgáltatások továbbfejlesztése érdekében rendszeresen gyűjtheti és felhasználhatja ezeket az anonimizált helyadatokat. <ph name="BEGIN_LINK1" />További információ a helyadatokról<ph name="BEGIN_LINK1_END" />További információ<ph name="END_LINK1" />.</translation>
 <translation id="8703634754197148428">Indítsa el a rögzítést. A rögzítés elindítása után nyissa meg az Alt+Shift+L billentyűkombináció segítségével a polcot, és keresse meg a felvétel leállítása gombot.</translation>
 <translation id="8704155109538237473">Fókuszálás a kép a képben ablakra</translation>
 <translation id="870917907284186124">Diktálás be- vagy kikapcsolása (írás beszédhanggal)</translation>
@@ -2471,6 +2536,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="8875021410787719674">Váltás a jobb alsó sarok, az Indító, a címsáv, a könyvjelzősáv, a megnyitott webhely és a letöltések között</translation>
 <translation id="8876148469852588625"><ph name="EVENT_TOTAL_COUNT" />/<ph name="EVENT_POSITION" />. esemény</translation>
 <translation id="8876661425082386199">Ellenőrizze az internetkapcsolatot</translation>
+<translation id="8883478023074930307">Használati és diagnosztikai adatok küldése. Ez az eszköz jelenleg automatikusan küld diagnosztikai, eszköz- és alkalmazáshasználati adatokat a Google-nak. Az adatok a rendszer- és alkalmazásstabilitás javításában, valamint más fejlesztésekben segítenek. Bizonyos összesített adatok a Google-alkalmazásoknak és -partnereknek, például az Android-fejlesztőknek is segítenek. Ezt a <ph name="BEGIN_LINK1" />beállítást<ph name="END_LINK1" /> kötelezővé tette az eszköz tulajdonosa. Ha az Internetes és alkalmazástevékenységek beállítás is be van kapcsolva, akkor a rendszer ezeket az adatokat mentheti az Ön Google-fiókjába. <ph name="BEGIN_LINK2" />További információ a mutatókról<ph name="BEGIN_LINK2_END" />További információ<ph name="END_LINK2" />.</translation>
 <translation id="8885424115080869847">Nem sikerült csatlakozni a YouTube Musichoz</translation>
 <translation id="888982883502837004">Firmware-frissítések állnak rendelkezésre eszközéhez. Kattintson az áttekintésükhöz és a frissítéshez.</translation>
 <translation id="8896630965521842259">A(z) <ph name="DESK_TEMPLATE_NAME" /> sablon véglegesen törlésre kerül.</translation>
@@ -2513,10 +2579,12 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="9000771174482730261">TÁRHELY KEZELÉSE</translation>
 <translation id="9003374957546315126">Emojik és egyebek</translation>
 <translation id="9005984960510803406">Crosh-ablak megnyitása</translation>
+<translation id="901668144954885282">Biztonsági mentés a Google Drive-ra</translation>
 <translation id="9017320285115481645">Adja meg a Family Link szülői hozzáférési kódját.</translation>
 <translation id="9024331582947483881">teljes képernyő</translation>
 <translation id="9029736946581028033">Az eszköz hamarosan lemerül</translation>
 <translation id="9030319654231318877">Kikapcsolva napnyugtáig</translation>
+<translation id="9030515284705930323">Szervezete még nem engedélyezte a Google Play Áruház szolgáltatást a fiókjánál. További tájékoztatásért forduljon rendszergazdájához.</translation>
 <translation id="9030665205623277906">Processzorhasználati pillanatkép: <ph name="CPU_USEAGE" />%</translation>
 <translation id="9034924485347205037">Linux-fájlok</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> beállításainak megnyitása</translation>
@@ -2566,8 +2634,10 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="9195857219954068558">Sikerült a Chromebook frissítése. Megnyithatja az előző ablakokat és alkalmazásokat.</translation>
 <translation id="9195990613383871904">Holnap</translation>
 <translation id="9198992156681343238">A(z) <ph name="DISPLAY_NAME" /> felbontása a következőre módosult: <ph name="RESOLUTION" />. A módosítás megtartásához kattintson a Megerősítés gombra. A beállítás <ph name="TIMEOUT_SECONDS" /> múlva visszaáll a korábbi értékre.</translation>
+<translation id="9199853905755292769">Használati és diagnosztikai adatok küldése. Ez az eszköz jelenleg automatikusan küld diagnosztikai, eszköz- és alkalmazáshasználati adatokat a Google-nak. Az adatok a rendszer- és alkalmazásstabilitás javításában, valamint más fejlesztésekben segítenek, és nem használjuk fel őket az Ön gyermekének azonosítására. Bizonyos összesített adatok a Google-alkalmazásoknak és -partnereknek, például az Android-fejlesztőknek is segítenek. Ha az Internetes és alkalmazástevékenységek beállítás is be van kapcsolva a gyermekénél, akkor a rendszer ezeket az adatokat mentheti az ő Google-fiókjába. <ph name="BEGIN_LINK2" />További információ a mutatókról<ph name="BEGIN_LINK2_END" />További információ<ph name="END_LINK2" />.</translation>
 <translation id="9201044636667689546"><ph name="NAME" /> csatlakoztatása ehhez a Chromebookhoz</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, a rendszergazdája kezeli</translation>
+<translation id="9201842707396338580">Hiba történt. Vegye fel a kapcsolatot az eszköz tulajdonosával vagy rendszergazdájával. Hibakód: <ph name="ERROR_CODE" />.</translation>
 <translation id="9207682216934703221">Ezzel lehetővé teszi a(z) <ph name="APP_NAME" /> és a(z) <ph name="APP2_NAME" />, valamint a helymeghatározási jogosultsággal rendelkező és ChromeOS-t futtató alkalmazások és webhelyek mindegyike számára, hogy használják a Wi-Fi- és a mobilhálózatok helyadatait.</translation>
 <translation id="9210037371811586452">Kilépés az Egységes asztali módból</translation>
 <translation id="9211490828691860325">Az összes asztal</translation>
@@ -2580,6 +2650,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="923686485342484400">Nyomja meg a Ctrl Shift Q billentyűkombinációt kétszer a kijelentkezéshez.</translation>
 <translation id="92580429198593979">Megnyomta a színinvertálásra szolgáló billentyűparancsot. Bekapcsolja ezt a funkciót?</translation>
 <translation id="925832987464884575">Előnézetek elrejtése</translation>
+<translation id="93140074055951850">Az Android-alkalmazások leálltak</translation>
 <translation id="938407504481277932">Jelenlegi asztal: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. <ph name="DESK_COUNT" />/<ph name="DESK_INDEX" />. asztal.</translation>
 <translation id="94468042118567862">Az eszköz nem naprakész</translation>
 <translation id="945383118875625837">Link húzása a könyvjelzősávra</translation>

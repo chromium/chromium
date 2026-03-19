@@ -273,7 +273,6 @@ L'IA générative est expérimentale, en début de développement et sa disponib
 <translation id="200669432486043882">Remplacer un fichier</translation>
 <translation id="2006864819935886708">Connectivité</translation>
 <translation id="2008685064673031089">Recherche de numéros premiers</translation>
-<translation id="2011174342667534258">Version de la trousse SDK :</translation>
 <translation id="2016697457005847575">Essayer les étapes de dépannage</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2045814230297767491">coutellerie</translation>
@@ -523,7 +522,6 @@ L'IA générative est expérimentale, en début de développement et sa disponib
 <translation id="3291996639387199448">Direction de la clé</translation>
 <translation id="3294437725009624529">Invité</translation>
 <translation id="3303855915957856445">Aucun résultat de recherche n'a été trouvé</translation>
-<translation id="3305294846493618482">plus</translation>
 <translation id="3310640316857623290">La latence du DNS dépasse le seuil acceptable de manière considérable</translation>
 <translation id="3316495615885967552">Téléchargement du modèle de création de résumés et de titres terminé</translation>
 <translation id="3321030238473337787">Vitesse de lecture</translation>
@@ -702,7 +700,6 @@ L'IA générative est expérimentale, en début de développement et sa disponib
 <translation id="4126551873361000548">Reculer de 10 secondes</translation>
 <translation id="4128271910628504223">Saisissez une requête comme « dessiner une forêt brumeuse »</translation>
 <translation id="4130035430755296270">Continuez à pointer pour plus d'options de mise en page</translation>
-<translation id="4130750466177569591">J'accepte</translation>
 <translation id="4131410914670010031">Noir et blanc</translation>
 <translation id="4137700675046373159">samedi</translation>
 <translation id="4139326893730851150">Mises à jour du micrologiciel</translation>
@@ -1051,7 +1048,6 @@ L'IA générative peut se tromper, même à propos de personnes. Veuillez donc v
 <translation id="5606865426897221650">Onglet</translation>
 <translation id="5612205513582918357">Outils de cours partage votre écran avec <ph name="RECEIVER_NAME" /></translation>
 <translation id="5613201299517339763">Vous avez été déconnecté</translation>
-<translation id="5620281292257375798">Pour usage interne seulement</translation>
 <translation id="5628106863521633649">Langues prises en charge</translation>
 <translation id="5630438231335788050">Bauhaus</translation>
 <translation id="5631759159893697722">résumé</translation>
@@ -1415,7 +1411,6 @@ L'IA générative peut se tromper, même à propos de personnes. Veuillez donc v
 <translation id="7184043045742675738">Cliquez sur n'importe quelle touche pour personnaliser votre bouton. Repositionnez la touche avec la souris ou les touches fléchées.</translation>
 <translation id="7187669805838282391">mercredi</translation>
 <translation id="7205318498545665455">Choisissez votre micro</translation>
-<translation id="7206979415662233817">Conditions d'utilisation</translation>
 <translation id="7210635925306941239">cyan</translation>
 <translation id="7212547870105584639">Gérez les paramètres de nom de point d'accès du réseau. Les noms de point d'accès établissent une connexion entre un réseau cellulaire et Internet. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Mises à jour du micrologiciel pour les appareils externes</translation>
@@ -1446,11 +1441,6 @@ L'IA générative peut se tromper, même à propos de personnes. Veuillez donc v
 <translation id="7319430975418800333">A3</translation>
 <translation id="7321055305895875150">vert et sarcelle</translation>
 <translation id="7328475450575141167">oiseaux de paradis</translation>
-<translation id="7331297744262591636">Vous devez être âgé d'au moins 18 ans et accepter que votre utilisation des fonds d'écran IA soit soumise aux <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />conditions d'utilisation de Google<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> et aux <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />conditions d'utilisation supplémentaires relatives à l'IA générative<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Vous ne pouvez créer des fonds d'écran avec l'IA que pour un usage personnel et non commercial. Lorsque vous obtenez de l'aide sur les fonds d'écran, du texte est envoyé aux serveurs de l'IA de Google pour générer des suggestions de fonds d'écran, conformément à la <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />politique de confidentialité de Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Appuyez simultanément sur le bouton de recherche et la barre d'espacement pour afficher les résultats dans la recherche Google.</translation>
 <translation id="7343649194310845056">Appareils réseau</translation>
 <translation id="7344788170842919262">terreux</translation>
 <translation id="7346768383111016081">Placez la commande sur l'action du jeu pour jouer avec votre clavier</translation>
@@ -1838,7 +1828,6 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">Utiliser cette vidéo</translation>
-<translation id="9087578468327036362">Signalez cette requête</translation>
 <translation id="9088306295921699330">Utilisation actuelle</translation>
 <translation id="9088994563996376283">Simplifier</translation>
 <translation id="9095775724867566971">Pluginvm</translation>

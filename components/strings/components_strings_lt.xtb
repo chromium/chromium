@@ -1073,6 +1073,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2673968385134502798">Žaidimai</translation>
 <translation id="2674170444375937751">Ar tikrai norite pašalinti šiuos puslapius iš savo istorijos?</translation>
 <translation id="2674524144218093528">Namų dažymas ir apdaila</translation>
+<translation id="2675716371350192683">Jūsų turinys nebus naudojamas DI tobulinti. Organizacija gali bet kada pakeisti šiuos nustatymus.</translation>
 <translation id="26774279487328902">Nebepasiekiamų skirtukų grupių: <ph name="GROUP_COUNT" /></translation>
 <translation id="2677748264148917807">Išeiti</translation>
 <translation id="2679216653373462289">Naudoti judesio ir šviesos jutiklius</translation>
@@ -2658,6 +2659,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="5190835502935405962">Žymių juosta</translation>
 <translation id="5191315092027169558">Jūsų profilį tvarko <ph name="DOMAIN" /></translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> nori atsisiųsti kelis failus</translation>
+<translation id="519528950056409240">Leisti „Wallet“ bendrinti duomenis</translation>
 <translation id="5199121357983849992">Išsaugoti asmens tapatybės kortelę?</translation>
 <translation id="5200063972779787617">Adreso išsaugojimas paskyroje</translation>
 <translation id="5201306358585911203">Šiame puslapyje įterptame puslapyje nurodyta:</translation>
@@ -3105,6 +3107,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="5910140988253729859">Anuliuoti automatinį pildymą</translation>
 <translation id="5911020115933784199">Renginiai ir sąrašai</translation>
 <translation id="5911110632211230665">Užblokuotas atidarymas</translation>
+<translation id="5912796581727968237">Atidaryti „Google Wallet“</translation>
 <translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" /> pridėjo šį skirtuką</translation>
 <translation id="5915189366813702112">Lanksčios darbo sąlygos</translation>
 <translation id="59174027418879706">Įjungta</translation>

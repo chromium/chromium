@@ -1724,6 +1724,7 @@
 <translation id="7149893636342594995">过去 24 小时</translation>
 <translation id="7154417656353909837">移除地址</translation>
 <translation id="7161230316646448869">将您的书签、历史记录等信息同步到所有设备上</translation>
+<translation id="7165323152084385463">车辆识别码</translation>
 <translation id="7173114856073700355">打开“设置”</translation>
 <translation id="7173721738069475737">{count,plural, =1{书签已保存}other{{count} 个书签已保存}}</translation>
 <translation id="7176183551031110427">缩小</translation>
@@ -2218,6 +2219,7 @@
 <translation id="8863067612494559785">正在发送到<ph name="DEVICE_NAME" />…</translation>
 <translation id="8863431381414769983">通过 Google 地图获取路线和本地信息</translation>
 <translation id="8871974300055371298">内容设置</translation>
+<translation id="8876661425082386199">请检查您的网络连接状况</translation>
 <translation id="8877788021141246043">设置提醒</translation>
 <translation id="8879604564928138696">点按两次即可试用</translation>
 <translation id="8879952635974818770">个性化内容</translation>

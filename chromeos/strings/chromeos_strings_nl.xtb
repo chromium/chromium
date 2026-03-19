@@ -273,7 +273,6 @@ Generatieve AI is experimenteel, in vroege ontwikkeling en op dit moment beperkt
 <translation id="200669432486043882">Bestand vervangen</translation>
 <translation id="2006864819935886708">Connectiviteit</translation>
 <translation id="2008685064673031089">Priemgetallen zoeken</translation>
-<translation id="2011174342667534258">SDK-versie:</translation>
 <translation id="2016697457005847575">Probeer de stappen voor probleemoplossing</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2045814230297767491">bestek</translation>
@@ -523,7 +522,6 @@ Generatieve AI is experimenteel, in vroege ontwikkeling en op dit moment beperkt
 <translation id="3291996639387199448">Sleutelrichting</translation>
 <translation id="3294437725009624529">Gast</translation>
 <translation id="3303855915957856445">Geen zoekresultaten gevonden</translation>
-<translation id="3305294846493618482">meer</translation>
 <translation id="3310640316857623290">DNS-latentie aanzienlijk langer dan toelaatbare drempel</translation>
 <translation id="3316495615885967552">Download van model voor het maken van overzichten en titels afgerond</translation>
 <translation id="3321030238473337787">Afspeelsnelheid</translation>
@@ -702,7 +700,6 @@ Generatieve AI is experimenteel, in vroege ontwikkeling en op dit moment beperkt
 <translation id="4126551873361000548">10 seconden terug</translation>
 <translation id="4128271910628504223">Voer een prompt in, zoals 'teken een mistig bos'</translation>
 <translation id="4130035430755296270">Plaats de cursor voor meer lay-outopties.</translation>
-<translation id="4130750466177569591">Ik ga akkoord</translation>
 <translation id="4131410914670010031">Zwart/wit</translation>
 <translation id="4137700675046373159">op zaterdag</translation>
 <translation id="4139326893730851150">Firmware-updates</translation>
@@ -1051,7 +1048,6 @@ Generatieve AI kan fouten maken, ook in informatie over mensen, dus dubbelcheck 
 <translation id="5606865426897221650">Tab</translation>
 <translation id="5612205513582918357">Tools voor lesgroepen deelt je scherm met <ph name="RECEIVER_NAME" /></translation>
 <translation id="5613201299517339763">Je bent uitgelogd</translation>
-<translation id="5620281292257375798">Alleen voor intern gebruik</translation>
 <translation id="5628106863521633649">Beschikbare talen</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">uittreksel</translation>
@@ -1415,7 +1411,6 @@ Generatieve AI kan fouten maken, ook in informatie over mensen, dus dubbelcheck 
 <translation id="7184043045742675738">Klik op een toets om je knop aan te passen. Verplaats de toets met de muis of de pijltoetsen.</translation>
 <translation id="7187669805838282391">op woensdag</translation>
 <translation id="7205318498545665455">Kies je microfoon</translation>
-<translation id="7206979415662233817">Servicevoorwaarden</translation>
 <translation id="7210635925306941239">cyaan</translation>
 <translation id="7212547870105584639">Beheer de APN-instellingen voor het netwerk. APN's maken verbinding tussen een mobiel netwerk en internet. <ph name="BEGIN_LINK_LEARN_MORE" />Meer informatie<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Firmware-updates voor externe apparaten</translation>
@@ -1446,11 +1441,6 @@ Generatieve AI kan fouten maken, ook in informatie over mensen, dus dubbelcheck 
 <translation id="7319430975418800333">A3</translation>
 <translation id="7321055305895875150">groen en groenblauw</translation>
 <translation id="7328475450575141167">paradijsvogel­bloem</translation>
-<translation id="7331297744262591636">Je moet minstens 18 jaar oud zijn en ermee akkoord gaan dat je gebruik van AI-achtergronden valt onder de <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Servicevoorwaarden van Google<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> en de <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />Aanvullende Servicevoorwaarden voor generatieve AI<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
-          <ph name="LINE_BREAK" />
-<ph name="LINE_BREAK" />
-Je kunt alleen achtergronden met AI maken voor persoonlijk, niet-commercieel gebruik. Als je hulp voor de achtergrond krijgt, wordt er tekst naar de AI-servers van Google gestuurd om achtergrondsuggesties te genereren, in overeenstemming met het <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Privacybeleid van Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. <ph name="BEGIN_LINK_LEARN_MORE" />Meer informatie<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; druk op de knop Zoeken en de spatiebalk om het resultaat te bekijken in Google Zoeken</translation>
 <translation id="7343649194310845056">Netwerkapparaten</translation>
 <translation id="7344788170842919262">aards</translation>
 <translation id="7346768383111016081">Plaats een bedieningselement op de game-actie om te spelen met je toetsenbord</translation>
@@ -1838,7 +1828,6 @@ Download het transcriptiemodel (maximaal 100 MB) om deze transcripties te krijg
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">Deze video gebruiken</translation>
-<translation id="9087578468327036362">Deze zoekopdracht melden</translation>
 <translation id="9088306295921699330">Huidig gebruik</translation>
 <translation id="9088994563996376283">Vereenvoudigen</translation>
 <translation id="9095775724867566971">Pluginvm</translation>

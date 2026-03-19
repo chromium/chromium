@@ -273,7 +273,6 @@
 <translation id="200669432486043882">Замяна на файла</translation>
 <translation id="2006864819935886708">Свързване към мрежата</translation>
 <translation id="2008685064673031089">Търсене на прости числа</translation>
-<translation id="2011174342667534258">Версия на SDK:</translation>
 <translation id="2016697457005847575">Изпробвайте стъпките за отстраняване на неизправности</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2045814230297767491">прибори за хранене</translation>
@@ -523,7 +522,6 @@
 <translation id="3291996639387199448">Посока на ключа</translation>
 <translation id="3294437725009624529">Гост</translation>
 <translation id="3303855915957856445">Няма намерени резултати от търсенето</translation>
-<translation id="3305294846493618482">още</translation>
 <translation id="3310640316857623290">Забавянето на DNS е значително над допустимия праг</translation>
 <translation id="3316495615885967552">Моделът за създаване на обобщения и заглавия бе изтеглен</translation>
 <translation id="3321030238473337787">Скорост на възпроизвеждане</translation>
@@ -702,7 +700,6 @@
 <translation id="4126551873361000548">Превъртане с 10 секунди назад</translation>
 <translation id="4128271910628504223">Въведете подкана, като например „нарисувай мъглива гора“</translation>
 <translation id="4130035430755296270">Продължете да задържате курсора на мишката за още опции за оформление</translation>
-<translation id="4130750466177569591">Приемам</translation>
 <translation id="4131410914670010031">Черно-бяло</translation>
 <translation id="4137700675046373159">в събота</translation>
 <translation id="4139326893730851150">Актуализации на фърмуера</translation>
@@ -1051,7 +1048,6 @@
 <translation id="5606865426897221650">Tab</translation>
 <translation id="5612205513582918357">„Инструменти за класната стая“ споделя екрана ви с(ъс) <ph name="RECEIVER_NAME" /></translation>
 <translation id="5613201299517339763">Вече не сте в профила си</translation>
-<translation id="5620281292257375798">Само за вътрешно ползване</translation>
 <translation id="5628106863521633649">Налични езици</translation>
 <translation id="5630438231335788050">Баухаус</translation>
 <translation id="5631759159893697722">резюме</translation>
@@ -1415,7 +1411,6 @@
 <translation id="7184043045742675738">Кликнете върху който и да е клавиш, за да персонализирате бутона. Преместете клавиша с мишката или клавишите със стрелки.</translation>
 <translation id="7187669805838282391">в сряда</translation>
 <translation id="7205318498545665455">Изберете микрофон</translation>
-<translation id="7206979415662233817">Общи условия</translation>
 <translation id="7210635925306941239">синьо-зелен</translation>
 <translation id="7212547870105584639">Управление на настройките за името на точката за достъп (APN) за мрежата. Чрез APN се установява връзка между мобилна мрежа и интернет. <ph name="BEGIN_LINK_LEARN_MORE" />Научете повече<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Актуализации на фърмуера на външни устройства</translation>
@@ -1446,11 +1441,6 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7321055305895875150">зелено и тъмно синьо-зелено</translation>
 <translation id="7328475450575141167">Стрелиция</translation>
-<translation id="7331297744262591636">Трябва да сте навършили 18 години и да приемете, че използването на тапети от AI от ваша страна е предмет на <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Общите условия на Google<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> и <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />Допълнителните общи условия за генеративния AI<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
-          <ph name="LINE_BREAK" />
-<ph name="LINE_BREAK" />
-Можете да създавате тапети с AI само за лична употреба с нетърговска цел. Когато получавате помощ за създаването на тапет, до сървърите за AI на Google се изпраща текст с цел генериране на съответните предложения, като това е предмет на <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Декларацията ни за поверителност<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. <ph name="BEGIN_LINK_LEARN_MORE" />Научете повече<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; За да видите резултата в Google Търсене, натиснете клавиша „търсене“ + интервал.</translation>
 <translation id="7343649194310845056">Мрежови устройства</translation>
 <translation id="7344788170842919262">земни</translation>
 <translation id="7346768383111016081">Задайте контрола за действие в играта, за да играете с клавиатурата</translation>
@@ -1838,7 +1828,6 @@
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">Използване на този видеоклип</translation>
-<translation id="9087578468327036362">Подаване на сигнал за тази заявка</translation>
 <translation id="9088306295921699330">Текущо използване</translation>
 <translation id="9088994563996376283">Опростяване</translation>
 <translation id="9095775724867566971">Pluginvm</translation>

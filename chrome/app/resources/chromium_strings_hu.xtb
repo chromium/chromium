@@ -196,6 +196,7 @@
 <translation id="3045032126857188731">Fordítás nyelve: <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">Visszajelzési párbeszédpanel bezárása</translation>
 <translation id="3068187312562070417">Egyéb Chromium-profilok</translation>
+<translation id="3068290154869370196">A bővítmények olyan kiegészítők, amelyekkel személyre szabhatja a Chromiumot. A bővítmények sok mindenben segítenek a rendszerezéstől kezdve a mindennapi feladatok egyszerűsítéséig, így a Chromiumot a saját igényeihez igazíthatja.</translation>
 <translation id="3068515742935458733">Segítse a Chromium fejlesztését azáltal, hogy elküldi a Google-nak a következőket: hibajelentések és <ph name="UMA_LINK" /></translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{Valamelyik (akár több is) Chromium-bővítmény hozzáfért 1 USB-eszközhöz}=1{Valamelyik (akár több is) Chromium-bővítmény éppen hozzáfér 1 USB-eszközhöz}other{Valamelyik (akár több is) Chromium-bővítmény éppen hozzáfér # USB-eszközhöz}}</translation>
 <translation id="3095811995836568724">Chromium-előzmények</translation>
@@ -430,6 +431,7 @@
 <translation id="5821520528363214608">Ha Chromium-adatokat szeretne használni és tárolni Google-fiókjában, frissítse a Chromiumot</translation>
 <translation id="5824893331272123205">Nem sikerült betölteni ezt a panelt. Próbálja újra.</translation>
 <translation id="5862307444128926510">Üdvözli a Chromium!</translation>
+<translation id="5867606647614813312">További funkciókat kapcsol be, hogy a Chromium a lehető legerősebb védelmet nyújthassa</translation>
 <translation id="5871205389137001634">Kattintson a Képkeresőből való kilépéshez</translation>
 <translation id="5883558403894052917">A Chromium rosszindulatú programot talált a következő elemekben:</translation>
 <translation id="5889361821821684993">A Chromium rendszeresen ellenőrzi, hogy a böngészője a legbiztonságosabb beállításokkal rendelkezik-e. Tudatni fogjuk, ha bármit felül kell vizsgálni.</translation>

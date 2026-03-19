@@ -273,7 +273,6 @@
 <translation id="200669432486043882">Pakeisti failą</translation>
 <translation id="2006864819935886708">Jungiamumas</translation>
 <translation id="2008685064673031089">Pagrindinė paieška</translation>
-<translation id="2011174342667534258">SDK versija:</translation>
 <translation id="2016697457005847575">Išbandykite trikčių šalinimo veiksmus</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2045814230297767491">stalo įrankiai</translation>
@@ -523,7 +522,6 @@
 <translation id="3291996639387199448">Rakto kryptis</translation>
 <translation id="3294437725009624529">Svečias</translation>
 <translation id="3303855915957856445">Nerasta jokių paieškos rezultatų</translation>
-<translation id="3305294846493618482">daugiau</translation>
 <translation id="3310640316857623290">DNS delsa gerokai viršija leistiną slenksčio vertę</translation>
 <translation id="3316495615885967552">Suvestinės ir pavadinimo kūrimo modelis atsisiųstas</translation>
 <translation id="3321030238473337787">Atkūrimo sparta</translation>
@@ -702,7 +700,6 @@
 <translation id="4126551873361000548">Atsukti 10 sek.</translation>
 <translation id="4128271910628504223">Įveskite užklausą, pvz., „nupiešk miglotą mišką“</translation>
 <translation id="4130035430755296270">Laikykite pelės žymeklį, kad būtų parodyta daugiau išdėstymo parinkčių</translation>
-<translation id="4130750466177569591">Sutinku</translation>
 <translation id="4131410914670010031">Nespalvotai</translation>
 <translation id="4137700675046373159">šeštadienį</translation>
 <translation id="4139326893730851150">Programinės aparatinės įrangos naujiniai</translation>
@@ -1051,7 +1048,6 @@
 <translation id="5606865426897221650">Tabuliavimo klavišas</translation>
 <translation id="5612205513582918357">Mokymosi įrankiai bendrina jūsų ekraną su <ph name="RECEIVER_NAME" /></translation>
 <translation id="5613201299517339763">Buvote atjungti</translation>
-<translation id="5620281292257375798">Tik vidiniams naudotojams</translation>
 <translation id="5628106863521633649">Pasiekiamos kalbos</translation>
 <translation id="5630438231335788050">bauhauzas</translation>
 <translation id="5631759159893697722">santrauka</translation>
@@ -1415,7 +1411,6 @@
 <translation id="7184043045742675738">Spustelėkite bet kurį klavišą, jei norite tinkinti mygtuką. Pakeiskite klavišo padėtį naudodami pelės arba rodyklių klavišus.</translation>
 <translation id="7187669805838282391">trečiadienį</translation>
 <translation id="7205318498545665455">Pasirinkite mikrofoną</translation>
-<translation id="7206979415662233817">Paslaugų teikimo sąlygos</translation>
 <translation id="7210635925306941239">žydros spalvos</translation>
 <translation id="7212547870105584639">Tvarkyti tinklo APN nustatymus. APN užmezga ryšį tarp mobiliojo ryšio tinklo ir interneto. <ph name="BEGIN_LINK_LEARN_MORE" />Sužinokite daugiau<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Išorinių įrenginių programinės aparatinės įrangos naujiniai</translation>
@@ -1446,11 +1441,6 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7321055305895875150">žalios ir žalsvai mėlynos spalvų</translation>
 <translation id="7328475450575141167">nuostabioji cezalpinija</translation>
-<translation id="7331297744262591636">Turite būti ne jaunesni nei aštuoniolikos metų ir sutikti, kad naudojant DI ekrano fonus taikomos <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />„Google“ paslaugų teikimo sąlygos<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> ir <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />papildomos generatyvinio DI paslaugų teikimo sąlygos<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Ekrano fonus galite kurti naudodami DI tik asmeniniais ir nekomerciniais tikslais. Kai gaunate pagalbos dėl ekrano fono, tekstas siunčiamas į „Google“ DI serverius, kad būtų sugeneruoti ekrano fonų pasiūlymai, vadovaujantis <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />„Google“ privatumo politika<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. <ph name="BEGIN_LINK_LEARN_MORE" />Sužinokite daugiau<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; paspauskite paieškos ir tarpo klavišus, kad rezultatą galėtumėte peržiūrėti naudodami „Google“ paiešką.</translation>
 <translation id="7343649194310845056">Tinklo įrenginiai</translation>
 <translation id="7344788170842919262">žemiškas</translation>
 <translation id="7346768383111016081">Nustatykite žaidimo veiksmo valdiklį, kad galėtumėte žaisti klaviatūra</translation>
@@ -1838,7 +1828,6 @@ Atsisiųskite transkribavimo modelį (iki 100 MB), kad gautumėte transkribuotus
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">Naudoti šį vaizdo įrašą</translation>
-<translation id="9087578468327036362">Pranešti apie šią užklausą</translation>
 <translation id="9088306295921699330">Dabartinis naudojimas</translation>
 <translation id="9088994563996376283">Supaprastinimas</translation>
 <translation id="9095775724867566971">Pluginvm</translation>

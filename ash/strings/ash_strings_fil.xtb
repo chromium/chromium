@@ -8,6 +8,7 @@
 <translation id="1017556409696559990">I-minimize ang nasa ibabaw na window kapag walang history ng pagbalik sa Chrome</translation>
 <translation id="101823271612280837">Tumigil ang pag-record. Hindi magagamit ang Dashboard ng game sa tablet mode.</translation>
 <translation id="1024364763893396229">I-save ang iyong <ph name="NAME" /></translation>
+<translation id="103279545524624934">Magbakante ng disk space upang mailunsad ang Android apps.</translation>
 <translation id="1032891413405719768">Mahina na ang baterya ng stylus</translation>
 <translation id="1036348656032585052">I-off</translation>
 <translation id="1037492556044956303">Idinagdag ang <ph name="DEVICE_NAME" /></translation>
@@ -35,6 +36,7 @@
 <translation id="1129383337808748948">I-refresh ang <ph name="CONTENT_TITLE" /></translation>
 <translation id="1142002900084379065">Mga pinakabagong larawan</translation>
 <translation id="114221662579355151">Pinapayagan nito ang access sa camera para sa <ph name="APP1_NAME" />, <ph name="APP2_NAME" />, at lahat ng app at website na may pahintulot sa camera. Posibleng kailanganin mong i-refresh ang web page o i-restart ang app.</translation>
+<translation id="1147991416141538220">Para humiling ng access, makipag-ugnayan sa administrator ng device na ito.</translation>
 <translation id="1148499908455722006">Buksan ang dialog ng impormasyon para sa <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Kalendaryo</translation>
 <translation id="1153356358378277386">Mga nakapares na device</translation>
@@ -114,6 +116,7 @@
 <translation id="1340378040547539434">Mag-zoom out sa page</translation>
 <translation id="1341651618736211726">Overflow</translation>
 <translation id="1341926407152459446">Gamitin ang "<ph name="DEVICE_NAME" />" para sa audio input at audio output</translation>
+<translation id="1346403631707626730">Magpadala ng data ng paggamit at diagnostic. Tumulong na pagandahin ang experience sa Android ng iyong anak sa pamamagitan ng awtomatikong pagpapadala ng data ng diagnostic, device, at paggamit ng app sa Google. Hindi ito gagamitin para tukuyin ang iyong anak, at makakatulong ito sa stability ng system at ng app, at sa iba pang pagpapahusay. Makakatulong din ang ilang pinagsama-samang data sa mga app at partner ng Google, gaya ng mga developer ng Android. Kung naka-on ang karagdagang Aktibidad sa Web at App para sa iyong anak, posibleng ma-save ang data na ito sa kanyang Google account. <ph name="BEGIN_LINK1" />Matuto pa tungkol sa mga sukatan<ph name="BEGIN_LINK1_END" />Matuto Pa<ph name="END_LINK1" /></translation>
 <translation id="1346748346194534595">Kanan</translation>
 <translation id="1350494136075914725">Isinasagawa · Lumipat sa tab</translation>
 <translation id="1351937230027495976">I-collapse ang menu</translation>
@@ -196,6 +199,7 @@
 <translation id="1610778689852195798">"I-undo"</translation>
 <translation id="1611993646327628135">Naka-on</translation>
 <translation id="1612679292338846734">Kapag in-on mo ang mga feature na ito, puwedeng ipadala ang text ng input, content ng dokumento, at URL ng web page sa mga server ng Google AI. Ginagamit ang impormasyong ito para bumuo ng mga writing suggestion, bumuo ng mga buod, sumagot ng mga tanong, at pahusayin ang produkto, nang napapailalim sa <ph name="LINK_TO_SERVICE_TERMS" />. Huwag maglagay ng kahit anong personal, sensitibo, o kumpidensyal.</translation>
+<translation id="1619879934359211038">Hindi makakonekta sa Google Play. Tingnan ang iyong koneksyon ng network at subukan ulit. Code ng error: <ph name="ERROR_CODE" />.</translation>
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1623768535032616219">I-collapse ang Google Classroom</translation>
 <translation id="163032029566320584">Hindi available ang <ph name="UNAVAILABLE_DLC" />.</translation>
@@ -224,6 +228,7 @@
 <translation id="1719094688023114093">Naka-on ang Instant Caption.</translation>
 <translation id="1720011244392820496">I-on ang Wi-Fi Sync</translation>
 <translation id="1720230731642245863">Naka-off ang Hotspot</translation>
+<translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />Para mag-alis ng mga app, pumunta sa Mga Setting &gt; Google Play Store &gt; Pamahalaan ang mga kagustuhan sa Android &gt; Mga App o Application manager. Pagkatapos ay i-tap ang app na gusto mong i-uninstall (maaaring kailanganin mong mag-swipe pakanan o pakaliwa para mahanap ang app). Pagkatapos, i-tap ang I-uninstall o I-disable.<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1731815243805539470">Lumipat sa nakaraang user</translation>
 <translation id="1733996486177697563">Magpalipat-lipat sa madilim at maliwanag na tema. Pindutin nang matagal ang desktop, pagkatapos ay piliin ang Wallpaper at style.</translation>
 <translation id="1734230530703461088">Hindi na-load ang mga extension sa loob ng limitasyon sa oras. Makipag-ugnayan sa iyong administrator.</translation>
@@ -277,6 +282,7 @@
 <translation id="1882814835921407042">Walang mobile network</translation>
 <translation id="1882897271359938046">Nagmi-mirror sa <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">I-unlock gamit ang fingerprint</translation>
+<translation id="1891362123137972260">Kaunting-kaunti na lang ang espasyo sa disk. Magbakante ng espasyo sa disk.</translation>
 <translation id="1894024878080591367">I-set up para makapaglaro gamit ang iyong keyboard</translation>
 <translation id="1896383923047738322">I-customize ang iyong keyboard</translation>
 <translation id="1904997243703671177">Kapag in-off mo ang Bluetooth, madidiskonekta ang <ph name="DEVICE_COUNT" /> (na) external na device sa iyong <ph name="DEVICE_TYPE" />, kabilang ang:</translation>
@@ -309,11 +315,13 @@
 <translation id="1996162290124031907">Pumunta sa susunod na tab</translation>
 <translation id="1998100899771863792">Kasalukuyang desk</translation>
 <translation id="2001444736072756133">Hanapin ang iyong mga <ph name="CATEGORY" />, file, app, at higit pa.</translation>
+<translation id="2011174342667534258">Bersyon ng SDK:</translation>
 <translation id="2017998995161831444">Buksan ang "Tulong" sa Explore app</translation>
 <translation id="2021864487439853900">I-click para i-unlock</translation>
 <translation id="2034971124472263449">I-save pa rin</translation>
 <translation id="2041220428661959602">Level ng baterya: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="204259843076055848">Kasalukuyang naka-off ang shortcut para sa <ph name="SIX_PACK_KEY_NAME" /></translation>
+<translation id="2048653237708779538">Hindi available ang pagkilos</translation>
 <translation id="2049240716062114887">Ginawang <ph name="DESK_NAME" /> ang pangalan ng desk</translation>
 <translation id="2064048859448024834">Naka-on ang preview ng camera</translation>
 <translation id="2065098273523946419">Link ng matuto pa. Magre-redirect sa browser kapag na-activate</translation>
@@ -378,18 +386,21 @@
 <translation id="2305738328104302723">Listahan ng mga gawain sa Google: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: mga kamakailang screen capture, download, at naka-pin na file</translation>
 <translation id="2318576281648121272">Ngayon <ph name="TODAY_DATE" /></translation>
+<translation id="2318817390901984578">Upang gamitin ang mga Android app, i-charge at i-update ang iyong <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2322065293366551060"><ph name="CATEGORY" /> , kategorya ng resulta ng paghahanap</translation>
 <translation id="2322173485024759474">Bumalik nang paisa-isang titik</translation>
 <translation id="2326112202058075478">Magpakita ng higit pang emoji</translation>
 <translation id="2335091074961603075">Gumagamit ng mas lumang bersyon ng Bluetooth ang iyong Chromebook o Bluetooth device. Gamitin ang internal na mikropono para sa mas magandang kalidad ng audio.</translation>
 <translation id="2339073806695260576">I-tap ang button na stylus sa shelf para magsulat ng tala, mag-screenshot, gamitin ang laser pointer, o magnifying glass.</translation>
 <translation id="2341729377289034582">Naka-lock sa vertical</translation>
+<translation id="2344032937402519675">Hindi makakonekta sa server. Suriin ang iyong koneksyon sa network at subukan ulit. Kung nagkakaproblema ka pa rin, subukang i-restart ang iyong Chromebook.</translation>
 <translation id="2345226652884463045">Pindutin ang enter o hanapin + space para piliin ang text na ie-edit.</translation>
 <translation id="2349785431103945039">Ipakita ang mga detalye ng hotspot. Kumonekta sa mobile network para magamit ang hotspot.</translation>
 <translation id="2350182423316644347">Sinisimulan ang application...</translation>
 <translation id="2350794187831162545">Lokal nang ipinoproseso ang <ph name="LANGUAGE" /> at gumagana ito offline. Puwede mong palitan ang wika ng iyong Dictation sa Mga Setting &gt; Pagiging Accessible.</translation>
 <translation id="2352467521400612932">Mga setting ng stylus</translation>
 <translation id="2354174487190027830">Ina-activate ang <ph name="NAME" /></translation>
+<translation id="2355314311311231464">Hindi naisagawa ang pag-provision dahil hindi makuha ang mga detalye ng iyong account. Pakisubukan ulit. Code ng error: <ph name="ERROR_CODE" />.</translation>
 <translation id="2359808026110333948">Magpatuloy</translation>
 <translation id="2360398059912971776">baterya</translation>
 <translation id="2361210043495191221">I-toggle ang Wi-Fi. <ph name="STATE" />.</translation>
@@ -412,6 +423,7 @@
 <translation id="240545663114741956">Pindutin ang <ph name="ACCELERATOR" /> nang dalawang beses para mag-sign out.</translation>
 <translation id="2405664212338326887">Hindi nakakonekta</translation>
 <translation id="2406710117564540804">I-on/i-off ang huwag istorbohin</translation>
+<translation id="240789602312469910">Magpadala ng data ng paggamit at diagnostic. Tumulong na pagandahin ang experience sa Android ng iyong anak sa pamamagitan ng awtomatikong pagpapadala ng data ng diagnostic, device, at paggamit ng app sa Google. Hindi ito gagamitin para tukuyin ang iyong anak, at makakatulong ito sa stability ng system at ng app, at sa iba pang pagpapahusay. Makakatulong din ang ilang pinagsama-samang data sa mga app at partner ng Google, gaya ng mga developer ng Android. Ipinapatupad ng may-ari ang <ph name="BEGIN_LINK1" />setting<ph name="END_LINK1" /> na ito. Puwedeng piliin ng may-ari na magpadala ng data ng diagnostic at paggamit para sa device na ito sa Google. Kung naka-on ang setting na karagdagang Aktibidad sa Web at App para sa iyong anak, posibleng ma-save ang data na ito sa kanyang Google account. <ph name="BEGIN_LINK2" />Matuto pa tungkol sa mga sukatan<ph name="BEGIN_LINK2_END" />Matuto Pa<ph name="END_LINK2" /></translation>
 <translation id="2408955596600435184">Ilagay ang iyong PIN</translation>
 <translation id="2412593942846481727">May available na update</translation>
 <translation id="2416438829169535743">Lumabas sa view?</translation>
@@ -464,6 +476,7 @@
 <translation id="2531025035050312891">mabagal ang device</translation>
 <translation id="2531107890083353124">Habang dina-drag ang tab, pindutin ang <ph name="KEY_ONE" /></translation>
 <translation id="2532199152994248594">I-drag o pindutin ang Space para pumili ng bahaging ika-capture</translation>
+<translation id="2540651571961486573">Nagkaproblema. Code ng error: <ph name="ERROR_CODE" />.</translation>
 <translation id="2545334090614121435">Sinusubukang gamitin ang Home? Gamitin ang</translation>
 <translation id="254900897760075745">Kopyahin ang napiling content sa clipboard</translation>
 <translation id="2549711466868162843">Ayusin ang lighting</translation>
@@ -511,8 +524,11 @@
 <translation id="2701576323154693023">Naka-on ang hotspot (naka-off ang Wi-Fi)</translation>
 <translation id="2704781753052663061">Sumali sa iba pang Wi-Fi network</translation>
 <translation id="2705001408393684014">I-toggle ang Mikropono. <ph name="STATE_TEXT" /></translation>
+<translation id="2706304388244371417">Mag-back up sa Google Drive. Walang kahirap-hirap na i-restore ang data o magpalit ng device anumang oras. Kasama sa backup na ito ang data ng app. Ia-upload sa Google ang mga backup at ie-encrypt gamit ang password ng Google Account ng iyong anak. <ph name="BEGIN_LINK1" />Matuto pa tungkol sa backup<ph name="BEGIN_LINK1_END" />Matuto Pa<ph name="END_LINK1" /></translation>
 <translation id="2706462751667573066">Up</translation>
+<translation id="2710101514844343743">Data ng paggamit at mga diagnostic</translation>
 <translation id="2710984741481549981">I-lock ang mga window</translation>
+<translation id="2714393097308983682">Google Play Store</translation>
 <translation id="2718395828230677721">Night Light</translation>
 <translation id="2726420622004325180">Dapat na mayroong mobile data ang iyong telepono para makapagbigay ito ng hotspot</translation>
 <translation id="2727175239389218057">Sumagot</translation>
@@ -574,6 +590,8 @@ Kung hindi naman, ie-enable ulit ang naka-built in na touchpad sa loob ng <ph na
 <translation id="2893701697603065178">Pinapamahalaang Environment sa Pag-develop</translation>
 <translation id="2894949423239620203">Posibleng naaapektuhan ng cable ang performance</translation>
 <translation id="2902312830803030883">Higit pang pagkilos</translation>
+<translation id="2909506265808101667">Hindi makakonekta sa mga serbisyo ng Google. Tingnan ang iyong koneksyon ng network at subukan ulit. Code ng error: <ph name="ERROR_CODE" />.</translation>
+<translation id="2910718431259223434">Nagkaproblema. Pakisubukan ulit o makipag-ugnayan sa may-ari o administrator ng iyong device. Code ng error: <ph name="ERROR_CODE" />.</translation>
 <translation id="2914580577416829331">Mga pag-capture ng screen</translation>
 <translation id="2924416280450782352">Hindi maipakita ang mga item. Subukang buksan ulit ang panel na ito.</translation>
 <translation id="292506373491190801">Mula sa event na nagaganap ngayon</translation>
@@ -633,7 +651,9 @@ Kung hindi naman, ie-enable ulit ang naka-built in na touchpad sa loob ng <ph na
 <translation id="3093423061078042895">Nawawala</translation>
 <translation id="3095995014811312755">bersyon</translation>
 <translation id="309749186376891736">Ilipat ang cursor</translation>
+<translation id="3100071818310370858">Gamitin ang lokasyon. Payagan ang mga app at serbisyong may pahintulot sa lokasyon na gamitin ang lokasyon ng device na ito. Puwedeng pana-panahong mangolekta ang Google ng data ng lokasyon at gamitin ang data na ito sa anonymous na paraan para mapahusay ang katumpakan ng lokasyon at mga serbisyong batay sa lokasyon. <ph name="BEGIN_LINK1" />Matuto pa tungkol sa lokasyon<ph name="BEGIN_LINK1_END" />Matuto Pa<ph name="END_LINK1" /></translation>
 <translation id="3100274880412651815">I-dismiss ang capture mode</translation>
+<translation id="3104948640446684649">Magpadala ng data ng paggamit at diagnostic. Kasalukuyang awtomatikong nagpapadala ang device na ito ng data ng diagnostic, device, at paggamit ng app sa Google. Makakatulong ito sa stability ng system at ng app, at sa iba pang pagpapahusay. Makakatulong din ang ilang pinagsama-samang data sa mga app at partner ng Google, gaya ng mga developer ng Android. Kung naka-on ang iyong setting na karagdagang Aktibidad sa Web at App, posibleng ma-save ang data na ito sa Google Account mo. <ph name="BEGIN_LINK2" />Matuto pa tungkol sa mga sukatan<ph name="BEGIN_LINK2_END" />Matuto Pa<ph name="END_LINK2" /></translation>
 <translation id="3105917916468784889">Kunin screenshot</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3107155169630537783"><ph name="STATE" /> ang notification ng pagbati</translation>
@@ -697,6 +717,7 @@ Kung hindi naman, ie-enable ulit ang naka-built in na touchpad sa loob ng <ph na
 <translation id="3306386552969601301"><ph name="DEVICECOUNT" /> (na) device ang nakakonekta sa hotspot ng <ph name="DEVICE_NAME" /></translation>
 <translation id="3307642347673023554">Lumipat sa laptop mode</translation>
 <translation id="3308453408813785101">Maaari pa ring mag-sign in si <ph name="USER_EMAIL_ADDRESS" /> sa ibang pagkakataon.</translation>
+<translation id="3313950410573257029">Suriin ang koneksyon</translation>
 <translation id="3321628682574733415">Maling code ng magulang</translation>
 <translation id="332827762492701193">Nakatago ang mga notification</translation>
 <translation id="3333674550998107387">I-expand ang notification na <ph name="NOTIFICATION_TITLE" /></translation>
@@ -814,6 +835,7 @@ Kung hindi naman, ie-enable ulit ang naka-built in na touchpad sa loob ng <ph na
 <translation id="3638400994746983214">I-toggle ang privacy screen. <ph name="STATE_TEXT" />.</translation>
 <translation id="3641070112313110357">Kailangang i-update ang Steam para sa Chromebook (Beta). I-restart ang iyong Chromebook at subukan ulit.</translation>
 <translation id="3649256019230929621">I-minimize ang window</translation>
+<translation id="3650952250015018111">Payagan ang "<ph name="APP_NAME" />" na ma-access ang:</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
         <ph name="START_TIME" /> hanggang
@@ -859,6 +881,7 @@ Isaksak ang iyong device.</translation>
 <translation id="3779139509281456663">Ikinokonekta ang <ph name="NAME" /></translation>
 <translation id="3781910048497807059">Ilipat ang focus sa nakaraang pane</translation>
 <translation id="3783640748446814672">alt</translation>
+<translation id="3783889407390048282">Magbakante ng espasyo para maiwasan ang pagkawala ng access sa Android.</translation>
 <translation id="3784455785234192852">I-lock</translation>
 <translation id="3788301286821743879">Hindi mailunsad ang kiosk application.</translation>
 <translation id="3789841737615482174">Mag-install</translation>
@@ -868,6 +891,7 @@ Isaksak ang iyong device.</translation>
 <translation id="3804737937830804242">I-collapse ang camera</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 emoji. Walang ibang resulta.}one{# emoji. Walang ibang resulta.}other{# na emoji. Walang ibang resulta.}}</translation>
 <translation id="3822403841174077928">Hindi makopya kasama ang formatting</translation>
+<translation id="3824621460022590830">Invalid ang token sa pag-enroll ng device. Makipag-ugnayan sa may-ari o administrator ng iyong device. Code ng error: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824784079442479685">Pinapayagan nito ang access sa camera para sa <ph name="APP_NAME" /> at lahat ng app at website na may pahintulot sa camera. Posibleng kailanganin mong i-refresh ang web page o i-restart ang app.</translation>
 <translation id="3826099427150913765">Lumipat sa password</translation>
 <translation id="383058930331066723">Naka-on ang battery saver mode</translation>
@@ -892,6 +916,7 @@ Isaksak ang iyong device.</translation>
 <translation id="3898464793473355515">I-rotate ang screen nang 90 degrees clockwise</translation>
 <translation id="3900355044994618856">Matatapos ang iyong session sa loob ng <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">Kumokonekta sa <ph name="NAME" /></translation>
+<translation id="3904326018476041253">Mga Serbisyo ng Lokasyon</translation>
 <translation id="3904768293285573640">I-resize ang naka-tile na window papuntang kaliwa</translation>
 <translation id="3923221004758245114">Alisin ang <ph name="VM_NAME" /> sa iyong <ph name="DEVICE_TYPE" />? Ide-delete nito ang lahat ng app at data sa virtual machine!</translation>
 <translation id="3923494859158167397">Walang naka-set up na mobile network</translation>
@@ -906,6 +931,7 @@ Isaksak ang iyong device.</translation>
 <translation id="3950272133184491871">Mag-sign out ngayon?</translation>
 <translation id="3950820424414687140">Mag-sign in</translation>
 <translation id="3953130726459169782">Wala pang natatapos na assignment.</translation>
+<translation id="3957844511978444971">I-tap ang “Tanggapin” para kumpirmahin ang iyong pagpili sa mga setting ng mga serbisyo ng Google na ito.</translation>
 <translation id="3958714870339660776">Buong Araw</translation>
 <translation id="3962859241508114581">Nakaraang Track</translation>
 <translation id="3963124517343721543">Madaling magpatuloy kung saan ka huminto sa pamamagitan ng pagbukas sa iyong mga dating window at tab. Makakakita ka rin ng mga naka-personalize na suhestyon para sa mga susunod na puwedeng gawin.</translation>
@@ -1021,6 +1047,7 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="4278779213160967034">Puwedeng magtagal ang prosesong ito nang ilang minuto. Nagda-download ng mga file.</translation>
 <translation id="4279490309300973883">Nagmi-mirror</translation>
 <translation id="4280601795273309128">Natapos na ang mga update sa seguridad. I-upgrade ang iyong device.</translation>
+<translation id="4281844954008187215">Mga Tuntunin ng Serbisyo</translation>
 <translation id="4283888303416325161">Ilagay ang password para sa higit pang seguridad</translation>
 <translation id="4285498937028063278">I-unpin</translation>
 <translation id="428715201724021596">Kumokonekta sa profile. Puwede itong tumagal nang ilang minuto.</translation>
@@ -1065,6 +1092,7 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="4406883609789734330">Instant Caption</translation>
 <translation id="4412698727486357573">Help center</translation>
 <translation id="4412944820643904175">Naka-off ang <ph name="FEATURE_NAME" />.</translation>
+<translation id="44141919652824029">Payagan ang "<ph name="APP_NAME" />" na makuha ang listahan ng iyong mga naka-attach na USB device?</translation>
 <translation id="4414242853388122273">Nagka-error sa pagtanggal sa <ph name="VM_NAME" />. Pakisubukan ulit.</translation>
 <translation id="4417647906073317561">Mga setting ng Pag-focus. Magtakda ng timer, gawain, at musika para makapag-focus.</translation>
 <translation id="4418600384772451109">Isara ang Panel</translation>
@@ -1106,6 +1134,7 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> na lang bago mapuno</translation>
 <translation id="4538824937723742295">Kumuha ng screenshot ng full screen</translation>
 <translation id="4539127209940689201">I-print ang kasalukuyang page</translation>
+<translation id="4541123282641193691">Hindi ma-verify ang iyong account. Pakisubukan ulit o i-restart ang Chromebook mo.</translation>
 <translation id="4541505619120536051">Palaging buksan</translation>
 <translation id="4541706525461326392">Inaalis ang profile. Puwede itong tumagal nang ilang minuto.</translation>
 <translation id="4544483149666270818">Pumili ng window na ire-record</translation>
@@ -1116,6 +1145,7 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="4556953949326137018">Kapag gumamit ka ng mga suggested action tulad ng “idagdag sa Calendar” o “gumawa ng mga Google Doc,” ipapadala sa mga server ng Google ang content mula sa napiling area para magmungkahi ng mga aksyon, na napapailalim sa <ph name="LINK_TO_SERVICE_TERMS" />. Huwag maglagay ng kahit anong personal, sensitibo, o kumpidensyal.</translation>
 <translation id="4560576029703263363">Naka-on</translation>
 <translation id="4561267230861221837">3G</translation>
+<translation id="4562091353415772246">Mag-install ng mga update at app. Sa pamamagitan ng pagpapatuloy, sumasang-ayon kang posible ring awtomatikong mag-download at mag-install ang device na ito ng mga update at app mula sa Google, iyong carrier, at manufacturer ng device mo, na posibleng gumamit ng cellular data. Posibleng mag-alok ang ilan sa mga app na ito ng mga in-app na pagbili. <ph name="BEGIN_LINK1" />Matuto pa tungkol sa awtomatikong pag-install sa pamamagitan ng Play<ph name="BEGIN_LINK1_END" /><ph name="END_LINK1" /></translation>
 <translation id="4565377596337484307">Itago ang password</translation>
 <translation id="4566144812051858745">Hindi interesado sa anumang suhestyon</translation>
 <translation id="4569753163207712681">Tingnan ang mga kamakailang larawan, media, at app ng iyong telepono</translation>
@@ -1135,6 +1165,7 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="4628757576491864469">Mga Device</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, Star na rating <ph name="RATING_SCORE" /></translation>
 <translation id="4633636853437260449">Pindutin ang Ctrl+W para i-delete</translation>
+<translation id="4633757335284074492">I-back up sa Google Drive. Walang hirap na mag-restore ng data o lumipat ng device anumang oras. Kasama sa backup na ito ang data ng app. Ang mga backup ay ina-upload sa Google at ine-encrypt gamit ang password sa Google Account ng iyong anak.</translation>
 <translation id="4635501805800894201">{0,plural, =0{I-update sa nakaraang bersyon ang device ngayon}=1{I-update sa nakaraang bersyon ang device sa loob ng 1 segundo}one{I-update sa nakaraang bersyon ang device sa loob ng # segundo}other{I-update sa nakaraang bersyon ang device sa loob ng # na segundo}}</translation>
 <translation id="4642092649622328492">Kumuha ng screenshot ng bahagi ng screen</translation>
 <translation id="4642587497923912728">Available lang ang Steam para sa Chromebook (Beta) para sa account na unang nag-sign in sa Chromebook na ito.</translation>
@@ -1177,6 +1208,7 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="4759238208242260848">Mga Download </translation>
 <translation id="4762160261012420470"><ph name="LAUNCHER_KEY_NAME" /> + pataas na arrow</translation>
 <translation id="4762573482154983647">Itago ang mga app</translation>
+<translation id="4762718786438001384">Sobrang kaunti na lang ang espasyo sa disk ng device</translation>
 <translation id="4763885921995354846">Pinapayagan nito ang access sa camera para sa lahat ng app at website na may pahintulot sa camera. Posibleng kailanganin mong i-refresh ang web page o i-restart ang app.</translation>
 <translation id="4774338217796918551">Bumalik nang <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776584068981882959">Hindi pa rin ma-verify ang iyong password. Subukan ulit.</translation>
@@ -1283,6 +1315,7 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="5077936103761694531">Kumpirmahin ang resolution?</translation>
 <translation id="5078796286268621944">Maling PIN</translation>
 <translation id="5083035541015925118">ctrl + alt + pataas na arrow</translation>
+<translation id="5084328598860513926">Naantala ang daloy ng pag-provision. Pakisubukan ulit o makipag-ugnayan sa may-ari o administrator ng iyong device. Code ng error: <ph name="ERROR_CODE" />.</translation>
 <translation id="5091636240353511739">Ipakita ang PIN</translation>
 <translation id="5092436659250499817">I-on/i-off ang backlight ng keyboard</translation>
 <translation id="5094577350232361255">tungkol sa</translation>
@@ -1312,6 +1345,7 @@ Puwede mo ring gamitin ang keyboard shortcut. Una, i-highlight ang text, at pagk
 <translation id="5170568018924773124">Ipinakita sa folder</translation>
 <translation id="5176318573511391780">I-record ang hindi buong screen</translation>
 <translation id="5187627942836026988">Ipakita ang mga detalye ng hotspot. Na-block ng iyong administrator ang hotspot.</translation>
+<translation id="5188648870018555788">Gumamit ng lokasyon. Payagan ang mga app, website, at serbisyo ng ChromeOS at Android na may pahintulot sa lokasyon na gamitin ang lokasyon ng iyong device. Nagbibigay ang Katumpakan ng Lokasyon ng mas tumpak na lokasyon para sa mga app at serbisyo ng Android. Para magawa ito, pana-panahong pinoproseso ng Google ang impormasyon tungkol sa mga sensor ng device at wireless na signal mula sa iyong device para i-crowdsource ang mga lokasyon ng wireless na signal. Ginagamit ang mga ito nang hindi ibinibigay ang pagkakakilanlan mo para mapahusay ang katumpakan ng lokasyon at mga serbisyong batay sa lokasyon, at para mapahusay, maibigay, at mapanatili ang mga serbisyo ng Google batay sa mga lehitimong interes ng Google at mga third party para matugunan ang mga pangangailangan ng mga user. <ph name="BEGIN_LINK1" />Matuto pa tungkol sa paggamit ng lokasyon<ph name="END_LINK1" /></translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198039720391525849">Mga itinatampok na GIF</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> (na) event</translation>
@@ -1332,6 +1366,7 @@ Puwede mo ring gamitin ang keyboard shortcut. Una, i-highlight ang text, at pagk
 <translation id="5238719049014159442">Buksan/isara ang Launcher</translation>
 <translation id="5240725217819182328">Mabilis na pag-access sa mga partikular na page o pagkilos sa mga naka-install na app</translation>
 <translation id="5243355658487390559">Maghanap ng petsa</translation>
+<translation id="5243522832766285132">Pakisubukang muli pagkalipas ng ilang sandali</translation>
 <translation id="5245201184978705914">Hindi makabuo ng transcript</translation>
 <translation id="5251174953851719648">I-refresh ang content</translation>
 <translation id="5253783950165989294">Nakakonekta sa isang device na may pangalang <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" />% baterya</translation>
@@ -1339,6 +1374,7 @@ Puwede mo ring gamitin ang keyboard shortcut. Una, i-highlight ang text, at pagk
 <translation id="5256939106029293271">I-test ang iyong mikropono</translation>
 <translation id="5258528442992323769">Walang naka-save na desk</translation>
 <translation id="5260676007519551770">Desk 4</translation>
+<translation id="5264148714798105376">Maaari itong abutin nang isang minuto o higit pa.</translation>
 <translation id="5265391159779542051">Na-load ang mga resulta</translation>
 <translation id="5270547718570958938">Google Calendar</translation>
 <translation id="5277869901083657836">I-toggle ang mga stylus tool</translation>
@@ -1415,6 +1451,7 @@ Walang nakakonektang device.</translation>
 <translation id="5506975627792768506">I-on o i-off ang magnifier</translation>
 <translation id="5507778598655387680"><ph name="VOLUME_LEVEL" />, Kapag pinindot ang enter, mamu-mute ang audio.</translation>
 <translation id="5512042095225963688">I-delete ang nakaraang salita</translation>
+<translation id="5517304475148761050">Kinakailangan ng app na ito ng access sa Play Store</translation>
 <translation id="5519005148254860683">Palawakin ang Google Tasks</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Inalis ng iyong administrator ang lahat ng profile ng eSIM. Makipag-ugnayan sa iyong administrator para sa higit pang impormasyon.</translation>
@@ -1442,6 +1479,7 @@ Walang nakakonektang device.</translation>
 <translation id="5577281275355252094">Tingnan kung naka-enable ang Bluetooth sa iyong telepono para magamit ang Phone Hub</translation>
 <translation id="5578188167649348993">memory</translation>
 <translation id="5580000943347215299">Library</translation>
+<translation id="5581972110672966454">Hindi maisama ang device sa domain. Pakisubukan ulit o makipag-ugnayan sa may-ari o administrator ng iyong device. Code ng error: <ph name="ERROR_CODE" />.</translation>
 <translation id="5586388332127302891">Na-enable ang Naka-dock na Magnifier. Pindutin ulit ang <ph name="ACCELERATOR" /> para i-off ito.</translation>
 <translation id="5587506661873751671"><ph name="DOWNLOAD_PERCENT" />% na ang pag-download</translation>
 <translation id="558849140439112033">Mag-drag para pumili ng bahaging ika-capture</translation>
@@ -1466,6 +1504,7 @@ Walang nakakonektang device.</translation>
 <translation id="5662075790140998213">Desk 10</translation>
 <translation id="5662709761327382534"><ph name="CURRENT_STATE" /> ang I-record ang mikropono, Pindutin ang enter para itakda sa <ph name="NEW_STATE" /> ang pag-record ng mikropono</translation>
 <translation id="5662919923378083468"><ph name="ACTION_DESCRIPTION" />, <ph name="SHORTCUT_HINT" /></translation>
+<translation id="5667546120811588575">Sine-set up ang Google Play...</translation>
 <translation id="5669267381087807207">Ina-activate</translation>
 <translation id="5671658447180261823">Alisin ang suhestyong <ph name="SUGGESTION_NAME" /></translation>
 <translation id="5672890847723042801">Mga Utility</translation>
@@ -1482,6 +1521,7 @@ Walang nakakonektang device.</translation>
 <translation id="5691772641933328258">Hindi nakilala ang fingerprint</translation>
 <translation id="5693255400847650006">Ginagamit ang mikropono</translation>
 <translation id="5699366815052349604">Magtalaga ng aktibong window sa lahat ng desk</translation>
+<translation id="570043786759263127">Mga app at serbisyo ng Google Play</translation>
 <translation id="570390244361237317">Lahat ng App, mag-navigate gamit ang mga arrow key para ma-access ang lahat ng app</translation>
 <translation id="5705197514573687092">Ipakita ang mga setting ng Pag-focus. Itinakda ang orasan sa <ph name="FOCUS_DURATION" />.</translation>
 <translation id="5707775774148071965">Sinusuportahan ng iyong device ang mas mataas na rate ng data kaysa sa iyong cable. Posibleng maging limitado ang performance ng device.</translation>
@@ -1496,6 +1536,7 @@ Walang nakakonektang device.</translation>
 <translation id="574392208103952083">Katamtaman</translation>
 <translation id="5744083938413354016">Pag-tap upang mag-drag</translation>
 <translation id="5745612484876805746">Awtomatikong nag-o-on ang Night Light sa paglubog ng araw</translation>
+<translation id="5749214722697335450">Magpadala ng data ng paggamit at diagnostic. Tumulong na pagandahin ang iyong experience sa Android sa pamamagitan ng awtomatikong pagpapadala ng data ng diagnostic, device, at paggamit ng app sa Google. Makakatulong ito sa stability ng system at ng app, at sa iba pang pagpapahusay. Makakatulong din ang ilang pinagsama-samang data sa mga app at partner ng Google, gaya ng mga developer ng Android. Kung naka-on ang iyong setting na karagdagang Aktibidad sa Web at App, posibleng ma-save ang data na ito sa Google account mo. <ph name="BEGIN_LINK1" />Matuto pa tungkol sa mga sukatan<ph name="BEGIN_LINK1_END" />Matuto Pa<ph name="END_LINK1" /></translation>
 <translation id="5750765938512549687">Naka-off ang Bluetooth</translation>
 <translation id="5758114525425072423">Simulan ang Pag-focus. Itinakda ang orasan sa <ph name="FOCUS_DURATION" />.</translation>
 <translation id="5759522586053040964">Pakinggan kung paano ka maririnig ng iba. Para ihinto ito, i-click ang icon ng pag-test o isara ang panel ng video call.</translation>
@@ -1512,6 +1553,7 @@ Walang nakakonektang device.</translation>
 <translation id="5775936059231769503">I-toggle ang hotspot. Naka-off ang hotspot.</translation>
 <translation id="5777841717266010279">Itigil ang screen sharing?</translation>
 <translation id="5779721926447984944">Mga naka-pin na file</translation>
+<translation id="5780940414249100901">Magpadala ng data ng paggamit at diagnostic. Kasalukuyang awtomatikong nagpapadala ang device na ito ng data ng diagnostic, device, at paggamit ng app sa Google. Hindi ito gagamitin para tukuyin ang iyong anak, at makakatulong ito sa stability ng system at ng app, at sa iba pang pagpapahusay. Makakatulong din ang ilang pinagsama-samang data sa mga app at partner ng Google, gaya ng mga developer ng Android. Ipinapatupad ng may-ari ang <ph name="BEGIN_LINK1" />setting<ph name="END_LINK1" /> na ito. Kung naka-on ang setting na karagdagang Aktibidad sa Web at App para sa iyong anak, posibleng ma-save ang data na ito sa kanyang Google account. <ph name="BEGIN_LINK2" />Matuto pa tungkol sa mga sukatan<ph name="BEGIN_LINK2_END" />Matuto Pa<ph name="END_LINK2" /></translation>
 <translation id="5785221443435874078">Alisin ang suhestyong ito</translation>
 <translation id="5787431783058088906">Kunin ang perk</translation>
 <translation id="5788127256798019331">Mga Play file</translation>
@@ -1527,6 +1569,7 @@ Walang nakakonektang device.</translation>
 <translation id="5823239091726045201">Google Tasks sa web</translation>
 <translation id="5825969630400862129">Mga setting ng mga nakakonektang device</translation>
 <translation id="5830180081891717894"><ph name="WINDOWS" /> pa</translation>
+<translation id="583281660410589416">Hindi-alam</translation>
 <translation id="5837036133683224804">Ihinto ang <ph name="ROUTE_TITLE" /> sa <ph name="RECEIVER_NAME" /></translation>
 <translation id="5840658767386246331">Maghanap gamit ang Google</translation>
 <translation id="5841296711770970362">Pumunta sa susunod na track</translation>
@@ -1592,6 +1635,7 @@ Walang nakakonektang device.</translation>
 <translation id="6032620807120418574">Mag-click kahit saan para i-record ang full screen</translation>
 <translation id="6040071906258664830">I-record ang mikropono <ph name="STATE" /></translation>
 <translation id="6040143037577758943">Isara</translation>
+<translation id="6042308850641462728">Marami pang iba</translation>
 <translation id="6043212731627905357">Hindi gumagana ang monitor na ito sa iyong <ph name="DEVICE_TYPE" /> (hindi sinusuportahan ang monitor).</translation>
 <translation id="6043994281159824495">Mag-sign out ngayon</translation>
 <translation id="6045629311476491587">Ginagamit ng <ph name="APP_COUNT" /> (na) app</translation>
@@ -1671,9 +1715,12 @@ Walang nakakonektang device.</translation>
 <translation id="6274422179279280249">Maglagay ng mga link, emoji, at higit pa. Puwede ka ring makatanggap ng tulong sa pagsusulat gamit ang Google AI. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="6276708887952587684">Tingnan ang source ng page</translation>
 <translation id="6285871695023807425">Idagdag sa Calendar</translation>
+<translation id="628699625505156622">Gumamit ng lokasyon. Payagan ang mga app, website, at serbisyo ng Android at ChromeOS na may pahintulot sa lokasyon na gamitin ang lokasyon ng device na ito. Nagbibigay ang Katumpakan ng Lokasyon ng mas tumpak na lokasyon para sa mga app at serbisyo ng Android. Para magawa ito, pana-panahong pinoproseso ng Google ang impormasyon tungkol sa mga sensor ng device at wireless na signal mula sa device na ito para i-crowdsource ang mga lokasyon ng wireless na signal. Ginagamit ang mga ito nang hindi ibinibigay ang pagkakakilanlan ng sinumang indibidwal para mapahusay ang katumpakan ng lokasyon at mga serbisyong batay sa lokasyon, at para mapahusay, maibigay, at mapanatili ang mga serbisyo ng Google batay sa mga lehitimong interes ng Google at mga third party para matugunan ang mga pangangailangan ng mga user. <ph name="BEGIN_LINK1" />Matuto pa tungkol sa paggamit ng lokasyon<ph name="END_LINK1" /></translation>
 <translation id="6288235558961782912">Puwedeng idagdag ulit ang <ph name="USER_EMAIL_ADDRESS" /> kung may pahintulot ng magulang.</translation>
 <translation id="6291221004442998378">Hindi nagcha-charge</translation>
+<translation id="6297986260307280218">Magpadala ng data ng paggamit at diagnostic. Tumulong na pagandahin ang iyong experience sa Android sa pamamagitan ng awtomatikong pagpapadala ng data ng diagnostic, device, at paggamit ng app sa Google. Makakatulong ito sa stability ng system at ng app, at sa iba pang pagpapahusay. Makakatulong din ang ilang pinagsama-samang data sa mga app at partner ng Google, gaya ng mga developer ng Android. Ipinapatupad ng may-ari ang <ph name="BEGIN_LINK1" />setting<ph name="END_LINK1" /> na ito. Puwedeng piliin ng may-ari na magpadala ng data ng diagnostic at paggamit para sa device na ito sa Google. Kung naka-on ang iyong setting na karagdagang Aktibidad sa Web at App, posibleng ma-save ang data na ito sa Google account mo. <ph name="BEGIN_LINK2" />Matuto pa tungkol sa mga sukatan<ph name="BEGIN_LINK2_END" />Matuto Pa<ph name="END_LINK2" /></translation>
 <translation id="6298183524022479114">I-customize ang device na ito sa app</translation>
+<translation id="6298962879096096191">Gamitin ang Google Play upang mag-install ng mga Android app</translation>
 <translation id="6304076460080088478">Isara o i-minimize ang mga Incognito window para makapaghanap sa iyong screen gamit ang Google Lens</translation>
 <translation id="6309219492973062892">I-click o i-tap ang mga icon na shelf 1-8</translation>
 <translation id="6315170314923504164">Voice</translation>
@@ -1703,8 +1750,10 @@ Walang nakakonektang device.</translation>
 <translation id="6406458002328242616">I-edit ang orasan. <ph name="FOCUS_DURATION" />.</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6414618057231176439">Piliin kung aling bersyon ng <ph name="VM_NAME" /> ang ii-install.</translation>
+<translation id="641469293210305670">Mag-install ng Mga Update at App</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
 <translation id="641817663353603351">page up</translation>
+<translation id="6418511932144861495">I-install ang mahalagang update</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">I-clear ang lahat ng notification</translation>
 <translation id="6426905245930183644">Ginagawa...</translation>
@@ -1730,6 +1779,7 @@ Walang nakakonektang device.</translation>
 <translation id="6482559668224714696">Full-screen magnifier</translation>
 <translation id="6485086611007560630">Lagay ng panahon (hindi available)</translation>
 <translation id="6490471652906364588">USB-C device (port sa kanan)</translation>
+<translation id="6491376743066338510">Hindi nabigyan ng pahintulot</translation>
 <translation id="649452524636452238">PIN ng smart card</translation>
 <translation id="6495322433318104734">Ipinapakita ang screen saver, pumindot ng anumang key para lumabas</translation>
 <translation id="6495400115277918834">Nasimulan ang picture-in-picture, pindutin ang Alt+Shift+V para mag-focus</translation>
@@ -1783,10 +1833,12 @@ Kaka-install lang</translation>
 <translation id="6625718907317144388">Nakatago ang mga notification sa <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" />, at iba pang notification dahil naka-on ang proteksyon sa pagtingin</translation>
 <translation id="6627638273713273709">Maghanap+Shift+K</translation>
 <translation id="662830937908749204">Ilipat ang focus sa susunod na pane</translation>
+<translation id="6635674640674343739">Hindi makakonekta sa network. Suriin ang iyong koneksyon sa network at subukan ulit.</translation>
 <translation id="6637729079642709226">Baguhin ang oras</translation>
 <translation id="6641720045729354415">I-toggle ang Instant Caption. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">I-undo ang ayos ng pagkakasunod-sunod ayon sa pangalan</translation>
 <translation id="664793810957802384">Mga item sa iminumungkahing grupo</translation>
+<translation id="6649018507441623493">Sandali lang...</translation>
 <translation id="6649641931981131786">I-adjust ang camera para mapunta ka sa gitna ng screen.</translation>
 <translation id="6650072551060208490">Gustong kumpirmahin ng <ph name="ORIGIN_NAME" /> na ikaw ito</translation>
 <translation id="6650742588569439432">Hindi ma-load ang mga item.</translation>
@@ -1811,6 +1863,7 @@ Kaka-install lang</translation>
 <translation id="6706742084323792866">I-pin ang keyboard</translation>
 <translation id="6709719156428404245">I-drag o pindutin ang Space para pumili ng bahaging ire-record</translation>
 <translation id="6710213216561001401">Nauna</translation>
+<translation id="6716798148881908873">Nawala ang koneksyon sa network. Suriin ang iyong koneksyon sa network o sumubok ng ibang Wi-Fi network.</translation>
 <translation id="6723839937902243910">Power</translation>
 <translation id="672609503628871915">Tingnan kung ano'ng bago</translation>
 <translation id="6727969043791803658">Nakakonekta, <ph name="BATTERY_PERCENTAGE" />% ang baterya</translation>
@@ -1850,6 +1903,7 @@ Kaka-install lang</translation>
 <translation id="6819327813400217281">Nag-snap ang camera sa kaliwang sulok sa ibaba</translation>
 <translation id="6820676911989879663">Magpahinga!</translation>
 <translation id="6827049576281411231">Isara ang panel ng event</translation>
+<translation id="682971198310367122">Patakaran sa privacy ng Google</translation>
 <translation id="6836499262298959512">Mapanganib na file</translation>
 <translation id="6837621009301897464">Para kumuha ng screenshot, pindutin</translation>
 <translation id="6852052252232534364">I-activate</translation>
@@ -1881,6 +1935,7 @@ Kaka-install lang</translation>
 <translation id="6942518653766415536">Menu ng format ng recording</translation>
 <translation id="6945221475159498467">Pumili</translation>
 <translation id="6945922087561257829">Gumagamit ang iyong telepono ng mobile network. Tiyaking nasa iisang Wi-Fi network ang iyong telepono at Chromebook at pagkatapos ay subukan ulit. <ph name="LEARN_MORE" /></translation>
+<translation id="6950627417367801484">I-restore ang mga app</translation>
 <translation id="6960565108681981554">Hindi na-activate. Makipag-ugnayan sa iyong carrier.</translation>
 <translation id="6961121602502368900">Hindi available ang Pag-silent ng telepono sa profile sa trabaho</translation>
 <translation id="6961840794482373852">Nagbago ang keyboard shortcut na Alt + Pataas na Arrow. Para magamit ang Page Up key, pindutin ang <ph name="LAUNCHER_KEY_NAME" /> key + Pataas na Arrow.</translation>
@@ -2051,6 +2106,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="7541773865713908457"><ph name="ACTION_NAME" /> gamit ang <ph name="APP_NAME" /> App</translation>
 <translation id="7543399541175347147">Kasalukuyang hindi sinusuportahan ang mga Linux app at Incognito window. Mase-save ang iba pang app.</translation>
 <translation id="7544300628205093162">Na-on ang backlight ng keyboard</translation>
+<translation id="7545466883021407599">Hindi makakonekta sa server. Suriin ang iyong koneksyon sa network at subukan ulit. Kung nagkakaproblema ka pa rin, subukang i-restart ang iyong Chromebook. Code ng error: <ph name="ERROR_CODE" />.</translation>
 <translation id="7548434653388805669">Oras nang matulog</translation>
 <translation id="7551643184018910560">I-pin sa shelf</translation>
 <translation id="7557816257942363084">Kasalukuyang ginagamit ng <ph name="APP_NAME" /> ang iyong mikropono</translation>
@@ -2066,6 +2122,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="7579778809502851308">Screen capture</translation>
 <translation id="7588317312481506627">Nakopya sa clipboard.</translation>
 <translation id="7593891976182323525">Search or Shift</translation>
+<translation id="7595453277607160340">Para gumamit ng mga Android app at panatilihing gumagana nang maayos ang iyong <ph name="DEVICE_TYPE" />, mag-sign in muli at mag-update.</translation>
 <translation id="7598054670902114203">Snapshot ng paggamit ng CPU, <ph name="CPU_USEAGE" />%. Temperatura <ph name="TEMPERATURE" /> degrees celsius, kasalukuyang bilis: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" />GHz</translation>
 <translation id="7599378375976398913">Inilalagay ang piniling resulta</translation>
 <translation id="7600875258240007829">Tingnan ang lahat ng notification</translation>
@@ -2075,6 +2132,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="7609951632080598826">View ng kalendaryo, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Nakakonekta ulit ang camera.</translation>
 <translation id="7613620083300976559">I-on ang mga kontrol ng laro</translation>
+<translation id="761530003705945209">I-back up sa Google Drive. Walang hirap na i-restore ang iyong data o magpalit ng device anumang oras. Kasama sa iyong backup ang data ng app. Ina-upload ang mga backup mo sa Google at ine-encrypt ang mga ito gamit ang password ng iyong Google Account.</translation>
 <translation id="761736749114493194">I-toggle ang camera framing. <ph name="STATE_TEXT" /></translation>
 <translation id="7621008024906456933">Mga setting ng Quick Share</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
@@ -2123,6 +2181,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="7748275671948949022">I-highlight ang button ng Launcher sa shelf</translation>
 <translation id="7749443890790263709">Naabot ang maximum na bilang ng desk.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7750228210027921155">Picture in picture</translation>
 <translation id="7751260505918304024">Ipakita lahat</translation>
 <translation id="7762664108390426952">Mga Tuntunin ng Serbisyo at Patakaran sa Privacy ng Google</translation>
 <translation id="7768784765476638775">Select to Speak</translation>
@@ -2241,6 +2300,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="8092380135549145188">Mga kontrol sa pag-scroll</translation>
 <translation id="8098591350844501178">Ihinto ang pag-cast ng screen sa <ph name="RECEIVER_NAME" /></translation>
 <translation id="810637681351706236">I-unpin ang app sa shelf</translation>
+<translation id="8107015733319732394">Ini-install ang Google Play Store sa iyong <ph name="DEVICE_TYPE" />. Maaaring abutin ito nang ilang minuto.</translation>
 <translation id="8113423164597455979">Naka-on lahat</translation>
 <translation id="8113515504791187892">Button na Select-to-speak</translation>
 <translation id="8120151603115102514">Walang lock screen ang iyong telepono. Para i-unlock ang iyong Chromebook, ilagay ang password.</translation>
@@ -2323,6 +2383,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="8388750414311082622">Hindi puwedeng alisin ang huling desk.</translation>
 <translation id="8394567579869570560">Ni-lock ng iyong magulang ang device na ito</translation>
 <translation id="8401850874595457088">Menu na maglagay ng wika</translation>
+<translation id="8410775397654368139">Google Play</translation>
 <translation id="8412677897383510995">Ipakita ang mga setting ng display</translation>
 <translation id="8413272770729657668">Magsisimula ang pag-record pagkalipas ng 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (Case)</translation>
@@ -2348,11 +2409,13 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="8473301994082929012">Ang <ph name="ORGANIZATION_NAME" /> ay may <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Pindutin ang Alt+Search o Shift upang kanselahin.</translation>
 <translation id="8480418399907765580">Ipakita ang toolbar</translation>
+<translation id="8481187309597259238">Kumpirmahin ang Pahintulot sa USB</translation>
 <translation id="8487660088084188539">Kapag na-on mo ang mga feature na ito, puwedeng ipadala ang text ng input, content ng dokumento, at URL ng web page sa mga server ng Google. Ginagamit ang impormasyong ito para bumuo ng mga writing suggestion, bumuo ng mga buod, sumagot ng mga tanong, at pahusayin ang produkto, nang napapailalim sa <ph name="LINK_TO_SERVICE_TERMS" />. Huwag maglagay ng kahit anong personal, sensitibo, o kumpidensyal.</translation>
 <translation id="8487699605742506766">Hotspot</translation>
 <translation id="8490896350101740396">Na-update ang mga sumusunod na kiosk app "<ph name="UPDATED_APPS" />." Mangyaring i-reboot ang device upang makumpleto ang proseso ng pag-update.</translation>
 <translation id="8491237443345908933">Buksan ang link sa bagong tab</translation>
 <translation id="8492573885090281069">Hindi sinusuportahan ng <ph name="DISPLAY_NAME" /> ang <ph name="SPECIFIED_RESOLUTION" />. Ginawang <ph name="FALLBACK_RESOLUTION" /> ang resolution. I-click ang kumpirmahin para panatilihin ang mga pagbabago. Ire-restore ang mga dating setting pagkalipas ng <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="8502536196501630039">Para magamit ang mga app mula sa Google Play, dapat mo munang i-restore ang iyong mga app. Maaaring mawala ang ilang data.</translation>
 <translation id="8507563469658346379">Lahat, <ph name="REMAINING_TIME" /></translation>
 <translation id="8511123073331775246">Gumawa ng bagong desk</translation>
 <translation id="85123341071060231">Naka-off ang Bluetooth ng Chromebook mo. Para i-unlock ito, ilagay ang password.</translation>
@@ -2406,6 +2469,8 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="8676770494376880701">Nakakabit ang low-power charger</translation>
 <translation id="8679158879996532670">Ipakita ang mga setting ng Pag-focus. Naka-on ang Pag-focus, may <ph name="REMAINING_TIME" /> pa.</translation>
 <translation id="8683506306463609433">Aktibo ang pag-trace ng performance</translation>
+<translation id="8698432579173128320">Mag-back up sa Google Drive. Walang kahirap-hirap na i-restore ang iyong data o magpalit ng device anumang oras. Kasama sa iyong backup ang data ng app. Ia-upload sa Google ang iyong mga backup at ie-encrypt gamit ang password ng Google Account mo. <ph name="BEGIN_LINK1" />Matuto pa tungkol sa backup<ph name="BEGIN_LINK1_END" />Matuto Pa<ph name="END_LINK1" /></translation>
+<translation id="8700087567921985940">Gamitin ang lokasyon. Payagan ang mga app at serbisyong may pahintulot sa lokasyon na gamitin ang lokasyon ng device na ito. Posibleng pana-panahong mangolekta ang Google ng data ng lokasyon at gamitin ang data na ito sa anonymous na paraan para mapahusay ang katumpakan ng lokasyon at mga serbisyong batay sa lokasyon. <ph name="BEGIN_LINK1" />Matuto pa tungkol sa lokasyon<ph name="BEGIN_LINK1_END" />Matuto Pa<ph name="END_LINK1" /></translation>
 <translation id="8703634754197148428">Simulang mag-record. Kapag nagsimula na ang pag-record, gamitin ang Alt + Shift + L para mag-navigate papunta sa shelf at makita ang button na ihinto ang pag-record</translation>
 <translation id="8704155109538237473">Mag-focus sa picture-in-picture na window</translation>
 <translation id="870917907284186124">I-on/i-off ang dictation (mag-type gamit ang iyong boses)</translation>
@@ -2468,6 +2533,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="8875021410787719674">Magpalipat-lipat sa kanang sulok sa ibaba, Launcher, address bar, bookmarks bar, website na nakabukas, at mga download</translation>
 <translation id="8876148469852588625">Event <ph name="EVENT_POSITION" /> sa <ph name="EVENT_TOTAL_COUNT" /></translation>
 <translation id="8876661425082386199">Suriin ang iyong koneksyon</translation>
+<translation id="8883478023074930307">Magpadala ng data ng paggamit at diagnostic. Kasalukuyang awtomatikong nagpapadala ang device na ito ng data ng diagnostic, device, at paggamit ng app sa Google. Makakatulong ito sa stability ng system at ng app, at sa iba pang pagpapahusay. Makakatulong din ang ilang pinagsama-samang data sa mga app at partner ng Google, gaya ng mga developer ng Android. Ipinapatupad ng may-ari ang <ph name="BEGIN_LINK1" />setting<ph name="END_LINK1" /> na ito. Kung naka-on ang iyong setting na karagdagang Aktibidad sa Web at App, posibleng ma-save ang data na ito sa Google account mo. <ph name="BEGIN_LINK2" />Matuto pa tungkol sa mga sukatan<ph name="BEGIN_LINK2_END" />Matuto Pa<ph name="END_LINK2" /></translation>
 <translation id="8885424115080869847">Hindi makakonekta sa YouTube Music</translation>
 <translation id="888982883502837004">May mga available na update sa firmware para sa iyong device. I-click para suriin at i-update.</translation>
 <translation id="8896630965521842259">Permanenteng ide-delete ang <ph name="DESK_TEMPLATE_NAME" /></translation>
@@ -2510,10 +2576,12 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="9000771174482730261">PAMAHALAAN ANG STORAGE</translation>
 <translation id="9003374957546315126">Mga emoji at higit pa</translation>
 <translation id="9005984960510803406">Buksan ang window ng Crosh</translation>
+<translation id="901668144954885282">I-back up sa Google Drive</translation>
 <translation id="9017320285115481645">Ilagay ang access code ng magulang sa Family Link.</translation>
 <translation id="9024331582947483881">buong screen</translation>
 <translation id="9029736946581028033">Malapit nang mag-off ang device</translation>
 <translation id="9030319654231318877">Naka-off hanggang paglubog ng araw</translation>
+<translation id="9030515284705930323">Hindi na-enable ng iyong organisasyon ang Google Play Store para sa iyong account. Makipag-ugnayan sa iyong administrator para sa higit pang impormasyon.</translation>
 <translation id="9030665205623277906">Snapshot ng paggamit ng CPU: <ph name="CPU_USEAGE" />%</translation>
 <translation id="9034924485347205037">Mga Linux file</translation>
 <translation id="9047624247355796468">Buksan ang mga setting para sa <ph name="NETWORK_NAME" /></translation>
@@ -2563,8 +2631,10 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="9195857219954068558">Na-update ang iyong Chromebook. Buksan ang iyong mga nakaraang window at app.</translation>
 <translation id="9195990613383871904">Bukas</translation>
 <translation id="9198992156681343238">Ginawang <ph name="RESOLUTION" /> ang resolution ng <ph name="DISPLAY_NAME" />. I-click ang kumpirmahin para panatilihin ang mga pagbabago. Ire-restore ang mga dating setting pagkalipas ng <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="9199853905755292769">Magpadala ng data ng paggamit at diagnostic. Kasalukuyang awtomatikong nagpapadala ang device na ito ng data ng diagnostic, device, at paggamit ng app sa Google. Hindi ito gagamitin para tukuyin ang iyong anak, at makakatulong ito sa stability ng system at ng app, at sa iba pang pagpapahusay. Makakatulong din ang ilang pinagsama-samang data sa mga app at partner ng Google, gaya ng mga developer ng Android. Kung naka-on ang setting na karagdagang Aktibidad sa Web at App para sa iyong anak, posibleng ma-save ang data na ito sa kanyang Google Account. <ph name="BEGIN_LINK2" />Matuto pa tungkol sa mga sukatan<ph name="BEGIN_LINK2_END" />Matuto Pa<ph name="END_LINK2" /></translation>
 <translation id="9201044636667689546">Ikonekta ang <ph name="NAME" /> sa Chromebook na ito</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, Pinapamahalaan ng iyong Administrator</translation>
+<translation id="9201842707396338580">Nagkaproblema. Makipag-ugnayan sa may-ari o administrator ng iyong device. Code ng error: <ph name="ERROR_CODE" />.</translation>
 <translation id="9207682216934703221">Binibigyang-daan nito ang <ph name="APP_NAME" />, <ph name="APP2_NAME" />, at lahat ng app at website na may pahintulot sa lokasyon at ChromeOS na gumamit ng Wi-Fi at lokasyon ng mga mobile network.</translation>
 <translation id="9210037371811586452">Lumalabas sa unified desktop mode</translation>
 <translation id="9211490828691860325">Lahat ng desk</translation>
@@ -2577,6 +2647,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="923686485342484400">Pindutin ang Control Shift Q nang dalawang beses upang mag-sign out.</translation>
 <translation id="92580429198593979">Napindot mo ang keyboard shortcut para sa pag-invert ng kulay. Gusto mo ba itong i-on?</translation>
 <translation id="925832987464884575">Itago ang mga preview</translation>
+<translation id="93140074055951850">Inihinto ang mga Android app</translation>
 <translation id="938407504481277932">Kasalukuyang desk: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. Desk <ph name="DESK_INDEX" /> ng <ph name="DESK_COUNT" />.</translation>
 <translation id="94468042118567862">Hindi up to date ang device</translation>
 <translation id="945383118875625837">I-drag ang link papunta sa bookmarks bar</translation>

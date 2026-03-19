@@ -25,6 +25,7 @@
 <translation id="3115238746683532089">အမည်မသိ ပစ္စည်း <ph name="PRODUCT_ID" /> သည် ရောင်းသူ <ph name="VENDOR_ID" /> ထံမှဖြစ်၏ (နံပါတ်စဉ် <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Failed to replace crx ဖိုင်ကို အစားထိုးပေး မရခဲ့ပါ။ ဖိုင်ကို သုံးနေသလား စစ်ကြည့်ပါ။</translation>
 <translation id="3163201441334626963">အမည်မသိပစ္စည်း <ph name="PRODUCT_ID" /> သည် ရောင်းသူ <ph name="VENDOR_ID" /> မှဖြစ်၏</translation>
+<translation id="3174723475300476613">ဤနောက်ဆက်တွဲကို သင့်အဖွဲ့အစည်းက သုံးခွင့်ပိတ်ထားသည်။</translation>
 <translation id="3242289508736283383">'kiosk_only' မန်နီးဖက်စ်ရည်ညွှန်းချက်ပါသည့် အက်ပ်ကို ChromeOS kiosk မုဒ်တွင် ထည့်သွင်းရမည်</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (နံပါတ်စဉ် <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> သည် ရောင်းသူ <ph name="VENDOR_ID" /> ထံမှဖြစ်၏ (နံပါတ်စဉ် <ph name="SERIAL_NUMBER" />)</translation>
@@ -32,6 +33,7 @@
 <translation id="3834775135533257713">"<ph name="INSTALLED_APP_NAME" />" နှင့် တူနေသောကြောင့် "<ph name="TO_INSTALL_APP_NAME" />" အပလီကေးရှင်းကိုထည့်သွင်း၍မရပါ။</translation>
 <translation id="388442998277590542">ရွေးစရာ စာမျက်နှာ'<ph name="OPTIONS_PAGE" />'ကို တင် မပေးနိုင်ခဲ့ပါ။</translation>
 <translation id="3984413272403535372">အိတ်စတန်းရှင်းအား လတ်မှတ်ထိုးစဉ် မှားယွင်းနေ</translation>
+<translation id="4094452115117798451">ဤနောက်ဆက်တွဲအမျိုးအစားကို သင့်အဖွဲ့အစည်းက သုံးခွင့်ပိတ်ထားသည်။</translation>
 <translation id="4233778200880751280">စာမျက်နှာ '<ph name="ABOUT_PAGE" />' အကြောင်းကို တင် မပေးနိုင်ခဲ့ပါ။</translation>
 <translation id="424963718355121712">အက်ပ်များကို ၎င်းတို့အကျိုးသက်ရောက်မှုရှိသည့် ဆာဗာပင်ရင်းက ဝန်ဆောင်ပေးရမည်</translation>
 <translation id="4306119971288449206">အက်ပ်များကို "<ph name="CONTENT_TYPE" />" အကြောင်းအရာ အမျိုးအစားဖြင့် ဝန်ဆောင်ပေးရမည်</translation>

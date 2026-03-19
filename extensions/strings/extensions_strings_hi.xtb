@@ -25,6 +25,7 @@
 <translation id="3115238746683532089"><ph name="VENDOR_ID" /> (क्रमांक <ph name="SERIAL_NUMBER" />) विक्रेता की ओर से <ph name="PRODUCT_ID" /> अज्ञात प्रॉडक्ट</translation>
 <translation id="3144135466825225871">crx फ़ाइल बदला नहीं जा सका. यह देखने के लिए जाँच करें कि क्या फ़ाइल उपयोग में है.</translation>
 <translation id="3163201441334626963"><ph name="VENDOR_ID" /> की ओर से अज्ञात <ph name="PRODUCT_ID" /> प्रॉडक्ट</translation>
+<translation id="3174723475300476613">आपके संगठन ने इस एक्सटेंशन का ऐक्सेस ब्लॉक किया है.</translation>
 <translation id="3242289508736283383">'kiosk_only' मेनिफ़ेस्ट एट्रिब्यूट वाला ऐप्लिकेशन ChromeOS कीऑस्क मोड में इंस्टॉल किया जाना चाहिए</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (क्रमांक <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="VENDOR_ID" /> (क्रमांक <ph name="SERIAL_NUMBER" />) विक्रेता की ओर से <ph name="PRODUCT_NAME" /></translation>
@@ -32,6 +33,7 @@
 <translation id="3834775135533257713">"<ph name="TO_INSTALL_APP_NAME" />" ऐप्लिकेशन जोड़ा नहीं जा सका क्योंकि उसका "<ph name="INSTALLED_APP_NAME" />" से विरोध है.</translation>
 <translation id="388442998277590542">विकल्‍प पेज '<ph name="OPTIONS_PAGE" />' लोड नहीं कर सका.</translation>
 <translation id="3984413272403535372">एक्सटेंशन हस्ताक्षरित करते समय गड़बड़ी आई.</translation>
+<translation id="4094452115117798451">आपके संगठन ने इस एक्सटेंशन कैटगरी का ऐक्सेस ब्लॉक किया है.</translation>
 <translation id="4233778200880751280">संक्षिप्त विवरण पेज '<ph name="ABOUT_PAGE" />' लोड नहीं हो सका.</translation>
 <translation id="424963718355121712">ऐप्लिकेशन को उस होस्ट से पेश किया जाना चाहिए, जिसे वे प्रभावित करते हैं</translation>
 <translation id="4306119971288449206">ऐप्लिकेशन को सामग्री-प्रकार "<ph name="CONTENT_TYPE" />" के साथ दिया जाना चाहिए</translation>

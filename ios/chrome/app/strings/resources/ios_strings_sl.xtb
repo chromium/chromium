@@ -1724,6 +1724,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="7149893636342594995">Zadnjih 24 ur</translation>
 <translation id="7154417656353909837">Odstrani naslove</translation>
 <translation id="7161230316646448869">Sinhronizirajte zaznamke, zgodovino in drugo v vseh napravah</translation>
+<translation id="7165323152084385463">VIN</translation>
 <translation id="7173114856073700355">Odpri nastavitve</translation>
 <translation id="7173721738069475737">{count,plural, =1{Zaznamek je shranjen}one{{count} zaznamek je shranjen}two{{count} zaznamka sta shranjena}few{{count} zaznamki so shranjeni}other{{count} zaznamkov je shranjenih}}</translation>
 <translation id="7176183551031110427">Pomanjšava</translation>
@@ -2218,6 +2219,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8863067612494559785">Pošiljanje v napravo <ph name="DEVICE_NAME" /> …</translation>
 <translation id="8863431381414769983">Pridobivanje navodil za pot in lokalnih informacij iz Google Zemljevidov</translation>
 <translation id="8871974300055371298">Nastavitve vsebine</translation>
+<translation id="8876661425082386199">Preverjanje povezave</translation>
 <translation id="8877788021141246043">Nastavi opomnik</translation>
 <translation id="8879604564928138696">Dvakrat se dotaknite, če želite poskusiti</translation>
 <translation id="8879952635974818770">Osebno prilagojena vsebina</translation>

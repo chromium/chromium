@@ -1073,6 +1073,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2673968385134502798">Spel</translation>
 <translation id="2674170444375937751">Vill du ta bort de här sidorna från historiken?</translation>
 <translation id="2674524144218093528">Målning av hus</translation>
+<translation id="2675716371350192683">Ditt innehåll används inte för att förbättra AI. Din organisation kan ändra dessa inställningar när som helst.</translation>
 <translation id="26774279487328902"><ph name="GROUP_COUNT" /> flikgrupper är inte längre tillgängliga</translation>
 <translation id="2677748264148917807">Lämna</translation>
 <translation id="2679216653373462289">Använd rörelse- och ljussensorer</translation>
@@ -2657,6 +2658,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="5190835502935405962">Bokmärkesfältet</translation>
 <translation id="5191315092027169558">Profilen hanteras av <ph name="DOMAIN" /></translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> vill ladda ned flera filer</translation>
+<translation id="519528950056409240">Tillåt att Wallet delar data</translation>
 <translation id="5199121357983849992">Vill du spara id-kortet?</translation>
 <translation id="5200063972779787617">Spara adressen i kontot</translation>
 <translation id="5201306358585911203">På en inbäddad sida på den här sidan står det</translation>
@@ -3104,6 +3106,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="5910140988253729859">Ångra autofyll</translation>
 <translation id="5911020115933784199">Evenemang och evenemangsuppgifter</translation>
 <translation id="5911110632211230665">Öppning har blockerats</translation>
+<translation id="5912796581727968237">Öppna Google Wallet</translation>
 <translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" /> lade till den här fliken</translation>
 <translation id="5915189366813702112">Flexibla arbetsarrangemang</translation>
 <translation id="59174027418879706">Aktiverad</translation>

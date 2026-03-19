@@ -8,6 +8,7 @@
 <translation id="1017556409696559990">Minimer det øverste vinduet når det ikke er noen tilbakelogg i Chrome</translation>
 <translation id="101823271612280837">Opptaket er stoppet. Kan ikke bruke Spilloversikt i nettbrettmodus.</translation>
 <translation id="1024364763893396229">Lagre <ph name="NAME" /></translation>
+<translation id="103279545524624934">Frigjør lagringsplass for å starte Android-apper.</translation>
 <translation id="1032891413405719768">Pekepennen har lite batteri</translation>
 <translation id="1036348656032585052">Slå av</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> er lagt til</translation>
@@ -35,6 +36,7 @@
 <translation id="1129383337808748948">Last inn <ph name="CONTENT_TITLE" /> på nytt</translation>
 <translation id="1142002900084379065">Nylige bilder</translation>
 <translation id="114221662579355151">Dette gir <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> og alle apper og nettsteder som har kameratillatelsen, tilgang til kameraet. Det kan hende du må laste inn nettsiden på nytt eller starte appen på nytt.</translation>
+<translation id="1147991416141538220">For å be om tilgang, kontakt administratoren for denne enheten.</translation>
 <translation id="1148499908455722006">Åpne dialogboksen for informasjon om <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Kalender</translation>
 <translation id="1153356358378277386">Tilkoblede enheter</translation>
@@ -114,6 +116,7 @@
 <translation id="1340378040547539434">Zoom ut på siden</translation>
 <translation id="1341651618736211726">Overflyt</translation>
 <translation id="1341926407152459446">Bruk «<ph name="DEVICE_NAME" />» som inn- og utenhet for lyd</translation>
+<translation id="1346403631707626730">Send bruks- og diagnostikkdata. Hjelp til med å gjøre Android-opplevelsen bedre for barnet ditt ved å sende diagnostikk-, enhets- og appbruksdata til Google automatisk. Disse dataene brukes ikke til å identifisere barnet ditt, men bidrar til å gjøre systemet og appene bedre og mer stabile. Noen samlede data er også til nytte for Google-apper og partnere, for eksempel Android-utviklere. Hvis du har slått på annen nett- og appaktivitet for barnet ditt, kan disse dataene bli lagret i barnets Google-konto. <ph name="BEGIN_LINK1" />Finn ut mer om beregninger<ph name="BEGIN_LINK1_END" />Finn ut mer<ph name="END_LINK1" /></translation>
 <translation id="1346748346194534595">Høyre</translation>
 <translation id="1350494136075914725">Aktiv · Bytt til fane</translation>
 <translation id="1351937230027495976">Skjul menyen</translation>
@@ -196,6 +199,7 @@
 <translation id="1610778689852195798">«Angre»</translation>
 <translation id="1611993646327628135">På</translation>
 <translation id="1612679292338846734">Når du slår på disse funksjonene, kan inndatateksten, dokumentinnholdet og nettadressen til nettsiden bli sendt til Googles AI-tjenere. Denne informasjonen brukes til å generere skriveforslag, generere sammendrag, svare på spørsmål og forbedre produktet, i henhold til <ph name="LINK_TO_SERVICE_TERMS" />. Ikke ta med noe som er personlig, sensitivt eller konfidensielt.</translation>
+<translation id="1619879934359211038">Kunne ikke koble til Google Play. Kontroller nettverkstilkoblingen og prøv på nytt. Feilkode: <ph name="ERROR_CODE" />.</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1623768535032616219">Skjul Google Classroom</translation>
 <translation id="163032029566320584"><ph name="UNAVAILABLE_DLC" /> er ikke tilgjengelig.</translation>
@@ -224,6 +228,7 @@
 <translation id="1719094688023114093">Direkteteksting er på.</translation>
 <translation id="1720011244392820496">Slå på wifi-synkronisering</translation>
 <translation id="1720230731642245863">Wifi-sonen er av</translation>
+<translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />For å fjerne apper, gå til Innstillinger &gt; Google Play Butikk &gt; Administrer Android-innstillinger &gt; Apper eller Appstyring. Trykk på appen du vil avinstallere (du må kanskje sveipe til høyre eller venstre for å finne den). Trykk deretter på Avinstaller eller Slå av.<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1731815243805539470">Bytt til forrige bruker</translation>
 <translation id="1733996486177697563">Bytt mellom mørkt og lyst tema. Trykk og hold på skrivebordet, og velg Bakgrunn og stil.</translation>
 <translation id="1734230530703461088">Kunne ikke laste inn utvidelser innenfor tidsgrensen. Kontakt administratoren din.</translation>
@@ -277,6 +282,7 @@
 <translation id="1882814835921407042">Ingen mobilnettverk</translation>
 <translation id="1882897271359938046">Speiler <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Lås opp med fingeravtrykk</translation>
+<translation id="1891362123137972260">Det er kritisk lite diskplass. Frigjør diskplass.</translation>
 <translation id="1894024878080591367">Konfigurer for å spille med tastaturet</translation>
 <translation id="1896383923047738322">Tilpass tastaturet</translation>
 <translation id="1904997243703671177">Når du slår av Bluetooth, blir <ph name="DEVICE_COUNT" /> eksterne enheter koblet fra <ph name="DEVICE_TYPE" />, inkludert disse:</translation>
@@ -309,11 +315,13 @@
 <translation id="1996162290124031907">Gå til neste fane</translation>
 <translation id="1998100899771863792">Gjeldende skrivebord</translation>
 <translation id="2001444736072756133">Søk i <ph name="CATEGORY" />, filer, apper med mer.</translation>
+<translation id="2011174342667534258">SDK-versjon:</translation>
 <translation id="2017998995161831444">Åpne «Hjelp» i Utforsk-appen</translation>
 <translation id="2021864487439853900">Klikk for å låse opp</translation>
 <translation id="2034971124472263449">Lagre likevel</translation>
 <translation id="2041220428661959602">Batterinivå: <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="204259843076055848"><ph name="SIX_PACK_KEY_NAME" />-hurtigtasten er avslått</translation>
+<translation id="2048653237708779538">Handlingen er ikke tilgjengelig</translation>
 <translation id="2049240716062114887">Skrivebordsnavnet ble endret til <ph name="DESK_NAME" /></translation>
 <translation id="2064048859448024834">Kameraforhåndsvisningen er på</translation>
 <translation id="2065098273523946419">Finn ut mer-link. Viderekobling til nettleseren ved aktivering</translation>
@@ -378,18 +386,21 @@
 <translation id="2305738328104302723">Liste fra Google Huskeliste: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: nylige skjermbilder, nedlastinger og festede filer</translation>
 <translation id="2318576281648121272">I dag, <ph name="TODAY_DATE" /></translation>
+<translation id="2318817390901984578">For å bruke Android-apper, lad og oppdater <ph name="DEVICE_TYPE" />-enheten din.</translation>
 <translation id="2322065293366551060"><ph name="CATEGORY" /> – kategori for søkeresultat</translation>
 <translation id="2322173485024759474">Én bokstav tilbake</translation>
 <translation id="2326112202058075478">Vis flere emojier</translation>
 <translation id="2335091074961603075">Chromebooken eller Bluetooth-enheten bruker en eldre versjon av Bluetooth. Bruk den interne mikrofonen for å få bedre lydkvalitet.</translation>
 <translation id="2339073806695260576">Trykk på pekepennknappen på hyllen for å ta et notat, ta et skjermbilde, bruke laserpekeren eller bruke forstørrelsesglasset.</translation>
 <translation id="2341729377289034582">Låst til vertikal</translation>
+<translation id="2344032937402519675">Kunne ikke koble til tjeneren. Kontroller nettverkstilkoblingen og prøv på nytt. Hvis du fremdeles har problemer, kan du prøve å starte Chromebook på nytt.</translation>
 <translation id="2345226652884463045">Trykk på Enter eller Søk + mellomrom for å markere teksten som skal redigeres.</translation>
 <translation id="2349785431103945039">Vis detaljer for wifi-sonen. Koble til mobilnettet for å bruke wifi-sone.</translation>
 <translation id="2350182423316644347">Appen startes opp …</translation>
 <translation id="2350794187831162545">Tale på<ph name="LANGUAGE" /> behandles nå lokalt og fungerer uten nett. Du kan endre dikteringsspråk i Innstillinger &gt; Tilgjengelighet.</translation>
 <translation id="2352467521400612932">Innstillinger for pekepenn</translation>
 <translation id="2354174487190027830">Aktiverer <ph name="NAME" /></translation>
+<translation id="2355314311311231464">Klargjøringen mislyktes fordi kontoopplysningene dine ikke kunne hentes. Prøv på nytt. Feilkode: <ph name="ERROR_CODE" />.</translation>
 <translation id="2359808026110333948">Fortsett</translation>
 <translation id="2360398059912971776">batteri</translation>
 <translation id="2361210043495191221">Slå av/på wifi. <ph name="STATE" />.</translation>
@@ -412,6 +423,7 @@
 <translation id="240545663114741956">Trykk på <ph name="ACCELERATOR" /> to ganger for å logge av.</translation>
 <translation id="2405664212338326887">Ikke tilkoblet</translation>
 <translation id="2406710117564540804">Slå på/av Ikke forstyrr</translation>
+<translation id="240789602312469910">Send bruks- og diagnostikkdata. Hjelp til med å gjøre Android-opplevelsen bedre for barnet ditt ved å sende diagnostikk-, enhets- og appbruksdata til Google automatisk. Disse dataene brukes ikke til å identifisere barnet ditt, men bidrar til å gjøre systemet og appene bedre og mer stabile. Noen samlede data er også til nytte for Google-apper og partnere, for eksempel Android-utviklere. Denne <ph name="BEGIN_LINK1" />innstillingen<ph name="END_LINK1" /> håndheves av eieren. Eieren kan velge å sende diagnostikk- og bruksdata for denne enheten til Google. Hvis du har slått på innstillingen for annen nett- og appaktivitet for barnet ditt, kan disse dataene bli lagret i barnets Google-konto. <ph name="BEGIN_LINK2" />Finn ut mer om beregninger<ph name="BEGIN_LINK2_END" />Finn ut mer<ph name="END_LINK2" /></translation>
 <translation id="2408955596600435184">Skriv inn PIN-koden din</translation>
 <translation id="2412593942846481727">En oppdatering er tilgjengelig</translation>
 <translation id="2416438829169535743">Vil du gå ut av visningen?</translation>
@@ -464,6 +476,7 @@
 <translation id="2531025035050312891">enhet treg</translation>
 <translation id="2531107890083353124">Trykk på <ph name="KEY_ONE" /> mens du drar fanen</translation>
 <translation id="2532199152994248594">Dra eller trykk på mellomromstasten for å velge området du vil registrere</translation>
+<translation id="2540651571961486573">Noe gikk galt. Feilkode: <ph name="ERROR_CODE" />.</translation>
 <translation id="2545334090614121435">Prøver du å bruke Home-tasten? Bruk</translation>
 <translation id="254900897760075745">Kopier det merkede innholdet til utklippstavlen</translation>
 <translation id="2549711466868162843">Bedre lys</translation>
@@ -511,8 +524,11 @@
 <translation id="2701576323154693023">Wifi-sonen er på (wifi er av)</translation>
 <translation id="2704781753052663061">Koble til andre Wifi-nettverk</translation>
 <translation id="2705001408393684014">Slå av/på mikrofonen. <ph name="STATE_TEXT" /></translation>
+<translation id="2706304388244371417">Sikkerhetskopier til Google Disk. Gjenopprett data enkelt eller bytt enhet når som helst. Denne sikkerhetskopien inkluderer appdata. Sikkerhetskopier lastes opp til Google og krypteres med passordet for barnets Google-konto. <ph name="BEGIN_LINK1" />Finn ut mer om sikkerhetskopiering<ph name="BEGIN_LINK1_END" />Finn ut mer<ph name="END_LINK1" /></translation>
 <translation id="2706462751667573066">Opp</translation>
+<translation id="2710101514844343743">Bruks- og diagnostikkdata</translation>
 <translation id="2710984741481549981">Lås vinduene</translation>
+<translation id="2714393097308983682">Google Play Butikk</translation>
 <translation id="2718395828230677721">Nattlys</translation>
 <translation id="2726420622004325180">Telefonen må ha mobildata for å kunne tilby en wifi-sone</translation>
 <translation id="2727175239389218057">Svar</translation>
@@ -574,6 +590,8 @@ Ellers blir den innebygde styreflaten slått på igjen om <ph name="TIMEOUT_SECO
 <translation id="2893701697603065178">Administrert utviklingsmiljø</translation>
 <translation id="2894949423239620203">Kabelen kan påvirke ytelsen</translation>
 <translation id="2902312830803030883">Flere handlinger</translation>
+<translation id="2909506265808101667">Kunne ikke koble til Google-tjenester. Kontroller nettverkstilkoblingen og prøv på nytt. Feilkode: <ph name="ERROR_CODE" />.</translation>
+<translation id="2910718431259223434">Noe gikk galt. Prøv på nytt, eller kontakt eieren eller administratoren av enheten. Feilkode: <ph name="ERROR_CODE" />.</translation>
 <translation id="2914580577416829331">Skjermbilder</translation>
 <translation id="2924416280450782352">Kan ikke vise elementene. Prøv å åpne dette panelet på nytt.</translation>
 <translation id="292506373491190801">Fra en hendelse som pågår nå</translation>
@@ -633,7 +651,9 @@ Ellers blir den innebygde styreflaten slått på igjen om <ph name="TIMEOUT_SECO
 <translation id="3093423061078042895">Mangler</translation>
 <translation id="3095995014811312755">versjon</translation>
 <translation id="309749186376891736">Flytt markøren</translation>
+<translation id="3100071818310370858">Bruk posisjon. Tillat at apper og tjenester med posisjonstillatelse bruker posisjonen til enheten. Google kan samle inn posisjonsdata med jevne mellomrom og bruke disse dataene anonymt for å gjøre posisjonsnøyaktigheten og posisjonsbaserte tjenester bedre. <ph name="BEGIN_LINK1" />Finn ut mer om posisjon<ph name="BEGIN_LINK1_END" />Finn ut mer<ph name="END_LINK1" /></translation>
 <translation id="3100274880412651815">Lukk opptaksmodus</translation>
+<translation id="3104948640446684649">Send bruks- og diagnostikkdata. Denne enheten sender for øyeblikket diagnostikk-, enhets- og appbruksdata til Google automatisk. Dette bidrar til å gjøre systemet og appene bedre og mer stabile. Noen samlede data er også til nytte for Google-apper og partnere, for eksempel Android-utviklere. Hvis du har slått på innstillingen for annen nett- og appaktivitet, kan disse dataene bli lagret i Google-kontoen din. <ph name="BEGIN_LINK2" />Finn ut mer om beregninger<ph name="BEGIN_LINK2_END" />Finn ut mer<ph name="END_LINK2" /></translation>
 <translation id="3105917916468784889">Ta skjermbilde</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3107155169630537783">Velkomstvarselet er <ph name="STATE" /></translation>
@@ -697,6 +717,7 @@ Ellers blir den innebygde styreflaten slått på igjen om <ph name="TIMEOUT_SECO
 <translation id="3306386552969601301"><ph name="DEVICECOUNT" /> enheter er koblet til wifi-sonen på <ph name="DEVICE_NAME" /></translation>
 <translation id="3307642347673023554">Byttet til laptopmodus</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> kan fortsatt logge på senere.</translation>
+<translation id="3313950410573257029">Kontroller tilkoblingen</translation>
 <translation id="3321628682574733415">Feil kode for foreldertilgang</translation>
 <translation id="332827762492701193">Varsler er skjult</translation>
 <translation id="3333674550998107387">Vis varselet <ph name="NOTIFICATION_TITLE" /></translation>
@@ -814,6 +835,7 @@ Ellers blir den innebygde styreflaten slått på igjen om <ph name="TIMEOUT_SECO
 <translation id="3638400994746983214">Slå av/på personvernskjermen. <ph name="STATE_TEXT" />.</translation>
 <translation id="3641070112313110357">Steam for Chromebook (beta) må oppdateres. Start Chromebooken på nytt, og prøv igjen.</translation>
 <translation id="3649256019230929621">Minimer vinduet</translation>
+<translation id="3650952250015018111">Tillat at «<ph name="APP_NAME" />» får tilgang til</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
         <ph name="START_TIME" /> til
@@ -859,6 +881,7 @@ Koble enheten til strøm.</translation>
 <translation id="3779139509281456663">Kobler til <ph name="NAME" /></translation>
 <translation id="3781910048497807059">Flytt fokus til forrige felt</translation>
 <translation id="3783640748446814672">alt</translation>
+<translation id="3783889407390048282">Frigjør plass for å unngå å miste tilgangen til Android.</translation>
 <translation id="3784455785234192852">Lås</translation>
 <translation id="3788301286821743879">Kunne ikke starte kiosk-appen.</translation>
 <translation id="3789841737615482174">Installer</translation>
@@ -868,6 +891,7 @@ Koble enheten til strøm.</translation>
 <translation id="3804737937830804242">Skjul kameraet</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 emoji. Ingen andre resultater.}other{# emojier. Ingen andre resultater.}}</translation>
 <translation id="3822403841174077928">Kunne ikke kopiere med formatering</translation>
+<translation id="3824621460022590830">Tokenet for registrering av enheten er ugyldig. Kontakt eieren eller administratoren av enheten. Feilkode: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824784079442479685">Dette gir <ph name="APP_NAME" /> og alle apper og nettsteder som har kameratillatelsen, tilgang til kameraet. Det kan hende du må laste inn nettsiden på nytt eller starte appen på nytt.</translation>
 <translation id="3826099427150913765">Bytt til passord</translation>
 <translation id="383058930331066723">Batterisparing er på</translation>
@@ -892,6 +916,7 @@ Koble enheten til strøm.</translation>
 <translation id="3898464793473355515">Roter skjermen 90 grader med klokken</translation>
 <translation id="3900355044994618856">Økten din avsluttes om <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">Kobler til <ph name="NAME" /></translation>
+<translation id="3904326018476041253">Stedstjenester</translation>
 <translation id="3904768293285573640">Endre vindusstørrelse feltvis mot venstre</translation>
 <translation id="3923221004758245114">Vil du fjerne <ph name="VM_NAME" /> fra <ph name="DEVICE_TYPE" />? Dette medfører at alle apper og data på den virtuelle maskinen blir slettet.</translation>
 <translation id="3923494859158167397">Ingen mobilnettverk er konfigurert</translation>
@@ -906,6 +931,7 @@ Koble enheten til strøm.</translation>
 <translation id="3950272133184491871">Vil du logge av nå?</translation>
 <translation id="3950820424414687140">Logg på</translation>
 <translation id="3953130726459169782">Ingen oppgaver er fullført ennå.</translation>
+<translation id="3957844511978444971">Trykk på «Godta» for å bekrefte valget ditt av disse innstillingene for Google-tjenester.</translation>
 <translation id="3958714870339660776">Hele dagen</translation>
 <translation id="3962859241508114581">Forrige spor</translation>
 <translation id="3963124517343721543">Du kan enkelt fortsette der du slapp, ved å åpne tidligere vinduer og faner. Du ser også personlig tilpassede forslag til ting du kan gjøre videre.</translation>
@@ -1021,6 +1047,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="4278779213160967034">Denne prosessen kan ta noen minutter. Laster ned filer.</translation>
 <translation id="4279490309300973883">Speiling</translation>
 <translation id="4280601795273309128">Sikkerhetsoppdateringer er avsluttet. Oppgrader enheten.</translation>
+<translation id="4281844954008187215">Vilkår for bruk</translation>
 <translation id="4283888303416325161">Oppgi passordet for høyere sikkerhet</translation>
 <translation id="4285498937028063278">Løsne</translation>
 <translation id="428715201724021596">Kobler til profilen. Dette kan ta noen minutter.</translation>
@@ -1065,6 +1092,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="4406883609789734330">Direkteteksting</translation>
 <translation id="4412698727486357573">Brukerstøtte</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> er av.</translation>
+<translation id="44141919652824029">Vil du gi «<ph name="APP_NAME" />» tilgang til listen over tilkoblede USB-enheter?</translation>
 <translation id="4414242853388122273">Feil under fjerning av <ph name="VM_NAME" />. Prøv på nytt.</translation>
 <translation id="4417647906073317561">Innstillinger for fokus. Start en nedtelling, velg en oppgave og sett på musikk for å komme inn i en god flyt.</translation>
 <translation id="4418600384772451109">Lukk panelet</translation>
@@ -1106,6 +1134,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> til batteriet er fulladet</translation>
 <translation id="4538824937723742295">Ta skjermbilde i fullskjerm</translation>
 <translation id="4539127209940689201">Skriv ut gjeldende side</translation>
+<translation id="4541123282641193691">Kunne ikke bekrefte kontoen din. Prøv på nytt, eller start Chromebooken på nytt.</translation>
 <translation id="4541505619120536051">Åpne alltid</translation>
 <translation id="4541706525461326392">Fjerner profilen. Dette kan ta noen minutter.</translation>
 <translation id="4544483149666270818">Velg vinduet du vil ta opp</translation>
@@ -1116,6 +1145,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="4556953949326137018">Når du bruker foreslåtte handlinger, for eksempel «legg til i Kalender» eller «lag Google-dokumenter», blir innholdet fra det valgte området sendt til Google-tjenere for å foreslå handlinger, i henhold til <ph name="LINK_TO_SERVICE_TERMS" />. Ikke ta med noe som er personlig, sensitivt eller konfidensielt.</translation>
 <translation id="4560576029703263363">På</translation>
 <translation id="4561267230861221837">3G</translation>
+<translation id="4562091353415772246">Installer oppdateringer og apper. Ved å fortsette godtar du at denne enheten også kan laste ned og installere oppdateringer automatisk fra Google, operatøren din og enhetens produsent. Dette bruker muligens mobildata. Noen av disse appene kan tilby kjøp i appen. <ph name="BEGIN_LINK1" />Finn ut mer om automatisk Play-installering<ph name="BEGIN_LINK1_END" />Finn ut mer<ph name="END_LINK1" /></translation>
 <translation id="4565377596337484307">Skjul passord</translation>
 <translation id="4566144812051858745">Ikke interessert i noen forslag</translation>
 <translation id="4569753163207712681">Se nylige bilder, medier og apper fra telefonen din</translation>
@@ -1135,6 +1165,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="4628757576491864469">Enheter</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" /> – stjernevurdering <ph name="RATING_SCORE" /></translation>
 <translation id="4633636853437260449">Trykk på Ctrl + W for å slette</translation>
+<translation id="4633757335284074492">Sikkerhetskopiér til Google Disk. Gjenopprett data enkelt eller bytt enhet når som helst. Denne sikkerhetskopien inkluderer appdata. Sikkerhetskopier lastes opp til Google og krypteres med passordet for Google-kontoen til barnet ditt.</translation>
 <translation id="4635501805800894201">{0,plural, =0{Oppdater enheten til en tidligere versjon nå}=1{Oppdater enheten til en tidligere versjon innen 1 sekund}other{Oppdater enheten til en tidligere versjon innen # sekunder}}</translation>
 <translation id="4642092649622328492">Ta en delvis skjermbilde</translation>
 <translation id="4642587497923912728">Steam for Chromebook (beta) er bare tilgjengelig for den første kontoen som logget på denne Chromebooken.</translation>
@@ -1177,6 +1208,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="4759238208242260848">Nedlastinger</translation>
 <translation id="4762160261012420470"><ph name="LAUNCHER_KEY_NAME" /> + oppoverpil</translation>
 <translation id="4762573482154983647">Skjul apper</translation>
+<translation id="4762718786438001384">Det er kritisk lite plass på enheten</translation>
 <translation id="4763885921995354846">Dette gir alle apper og nettsteder som har kameratillatelsen, tilgang til kameraet. Det kan hende du må laste inn nettsiden på nytt eller starte appen på nytt.</translation>
 <translation id="4774338217796918551">Kom tilbake i morgen <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776584068981882959">Passordet ditt kunne fremdeles ikke verifiseres. Prøv på nytt.</translation>
@@ -1283,6 +1315,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="5077936103761694531">Vil du bekrefte oppløsningen?</translation>
 <translation id="5078796286268621944">Feil personlig kode</translation>
 <translation id="5083035541015925118">ctrl + alt + oppoverpil</translation>
+<translation id="5084328598860513926">Identitetshåndteringen ble avbrutt. Prøv på nytt, eller kontakt eieren eller administratoren av enheten. Feilkode: <ph name="ERROR_CODE" />.</translation>
 <translation id="5091636240353511739">Vis PIN-koden</translation>
 <translation id="5092436659250499817">Slå tastaturets bakgrunnsbelysning av eller på</translation>
 <translation id="5094577350232361255">omtrent</translation>
@@ -1312,6 +1345,7 @@ Du kan også bruke hurtigtasten. Marker først teksten, og trykk deretter på <p
 <translation id="5170568018924773124">Vis i mappen</translation>
 <translation id="5176318573511391780">Ta opp en del av skjermen</translation>
 <translation id="5187627942836026988">Vis detaljer for wifi-sonen. Administratoren din har blokkert wifi-soner.</translation>
+<translation id="5188648870018555788">Bruk posisjon. Tillat at ChromeOS- og Android-apper, -nettsteder og -tjenester med posisjonstillatelse bruker posisjonen til enheten din. Med Posisjonsnøyaktighet får Android-apper og tjenester mer nøyaktige posisjoner. For å få til dette behandler Google med jevne mellomrom informasjon om enhetssensorer og trådløse signaler fra enheten din for å bidra til crowdsourcing av posisjonene til trådløse signaler. Disse brukes uten å identifisere deg for å forbedre posisjonsnøyaktigheten og posisjonsbaserte tjenester og for å forbedre, levere og vedlikeholde Googles tjenester basert på Googles og tredjeparters berettigede interesser i å oppfylle brukernes behov. <ph name="BEGIN_LINK1" />Finn ut mer om bruk av posisjon<ph name="END_LINK1" /></translation>
 <translation id="5197255632782567636">Internett</translation>
 <translation id="5198039720391525849">Fremhevede GIF-er</translation>
 <translation id="5198413532174090167"><ph name="DATE" /> – <ph name="NUMBER" /> hendelser</translation>
@@ -1332,6 +1366,7 @@ Du kan også bruke hurtigtasten. Marker først teksten, og trykk deretter på <p
 <translation id="5238719049014159442">Åpne/lukk appoversikten</translation>
 <translation id="5240725217819182328">Rask tilgang til bestemte sider eller handlinger i installerte apper</translation>
 <translation id="5243355658487390559">Søk på dato</translation>
+<translation id="5243522832766285132">Prøv på nytt om en liten stund</translation>
 <translation id="5245201184978705914">Kan ikke generere noen transkripsjon</translation>
 <translation id="5251174953851719648">Last inn innholdet på nytt</translation>
 <translation id="5253783950165989294">Koblet til enheten <ph name="DEVICE_NAME" /> – <ph name="BATTERY_PERCENTAGE" /> % batteri</translation>
@@ -1339,6 +1374,7 @@ Du kan også bruke hurtigtasten. Marker først teksten, og trykk deretter på <p
 <translation id="5256939106029293271">Test mikrofonen</translation>
 <translation id="5258528442992323769">Ingen lagrede skrivebord</translation>
 <translation id="5260676007519551770">Skrivebord 4</translation>
+<translation id="5264148714798105376">Dette kan ta omtrent ett minutt.</translation>
 <translation id="5265391159779542051">Resultatene er lastet inn</translation>
 <translation id="5270547718570958938">Google Kalender</translation>
 <translation id="5277869901083657836">Slå av/på pekepennverktøyene</translation>
@@ -1415,6 +1451,7 @@ Ingen enheter er tilkoblet.</translation>
 <translation id="5506975627792768506">Slå på forstørreren av eller på</translation>
 <translation id="5507778598655387680"><ph name="VOLUME_LEVEL" />. Hvis du trykker på Enter, kuttes lyden.</translation>
 <translation id="5512042095225963688">Slett forrige ord</translation>
+<translation id="5517304475148761050">Denne appen krever tilgang til Play-butikken</translation>
 <translation id="5519005148254860683">Vis Google Huskeliste</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Administratoren din har fjernet alle eSIM-kortprofiler. Kontakt administratoren for å få mer informasjon.</translation>
@@ -1442,6 +1479,7 @@ Ingen enheter er tilkoblet.</translation>
 <translation id="5577281275355252094">Sjekk at Bluetooth er påslått på telefonen, for å bruke Telefonstyring</translation>
 <translation id="5578188167649348993">minne</translation>
 <translation id="5580000943347215299">Bibliotek</translation>
+<translation id="5581972110672966454">Kan ikke knytte enheten til domenet. Prøv på nytt, eller kontakt eieren eller administratoren av enheten. Feilkode: <ph name="ERROR_CODE" />.</translation>
 <translation id="5586388332127302891">Den dokkede lupen er slått på. Trykk på <ph name="ACCELERATOR" /> igjen for å slå den av.</translation>
 <translation id="5587506661873751671">Laster ned <ph name="DOWNLOAD_PERCENT" /> %</translation>
 <translation id="558849140439112033">Dra for å velge området du vil ta bilde av</translation>
@@ -1466,6 +1504,7 @@ Ingen enheter er tilkoblet.</translation>
 <translation id="5662075790140998213">Skrivebord 10</translation>
 <translation id="5662709761327382534">Mikrofonopptak er <ph name="CURRENT_STATE" />. Trykk på Enter for å slå mikrofonopptak <ph name="NEW_STATE" /></translation>
 <translation id="5662919923378083468"><ph name="ACTION_DESCRIPTION" />, <ph name="SHORTCUT_HINT" /></translation>
+<translation id="5667546120811588575">Konfigurerer Google Play …</translation>
 <translation id="5669267381087807207">Aktiverer</translation>
 <translation id="5671658447180261823">Fjerner forslaget <ph name="SUGGESTION_NAME" /></translation>
 <translation id="5672890847723042801">Systemverktøy</translation>
@@ -1482,6 +1521,7 @@ Ingen enheter er tilkoblet.</translation>
 <translation id="5691772641933328258">Gjenkjenner ikke fingeravtrykket</translation>
 <translation id="5693255400847650006">Mikrofonen er i bruk</translation>
 <translation id="5699366815052349604">Tilordne det aktive vinduet til alle skrivebord</translation>
+<translation id="570043786759263127">Google Play-apper og -tjenester</translation>
 <translation id="570390244361237317">Alle apper – naviger med piltastene for å få tilgang til alle appene</translation>
 <translation id="5705197514573687092">Vis innstillinger for fokus. Nedtellingen er satt til <ph name="FOCUS_DURATION" />.</translation>
 <translation id="5707775774148071965">Enheten støtter en høyere datafrekvens enn kabelen. Enhetens ytelse kan være begrenset.</translation>
@@ -1496,6 +1536,7 @@ Ingen enheter er tilkoblet.</translation>
 <translation id="574392208103952083">Medium</translation>
 <translation id="5744083938413354016">Trykk-og-dra</translation>
 <translation id="5745612484876805746">Nattlys slås på automatisk ved solnedgang</translation>
+<translation id="5749214722697335450">Send bruks- og diagnostikkdata. Hjelp til med å gjøre Android-opplevelsen din bedre ved å sende diagnostikk-, enhets- og appbruksdata til Google automatisk. Dette bidrar til å gjøre systemet og appene bedre og mer stabile. Noen samlede data er også til nytte for Google-apper og partnere, for eksempel Android-utviklere. Hvis du har slått på innstillingen for annen nett- og appaktivitet, kan disse dataene bli lagret i Google-kontoen din. <ph name="BEGIN_LINK1" />Finn ut mer om beregninger<ph name="BEGIN_LINK1_END" />Finn ut mer<ph name="END_LINK1" /></translation>
 <translation id="5750765938512549687">Bluetooth er av</translation>
 <translation id="5758114525425072423">Start fokus. Nedtellingen er satt til <ph name="FOCUS_DURATION" />.</translation>
 <translation id="5759522586053040964">Hør hvordan du høres ut for andre. For å stoppe, klikk på testikonet eller lukk videoanropspanelet.</translation>
@@ -1512,6 +1553,7 @@ Ingen enheter er tilkoblet.</translation>
 <translation id="5775936059231769503">Slå av/på wifi-sonen. Wifi-sonen er av.</translation>
 <translation id="5777841717266010279">Vil du stoppe skjermdelingen?</translation>
 <translation id="5779721926447984944">Festede filer</translation>
+<translation id="5780940414249100901">Send bruks- og diagnostikkdata. Denne enheten sender for øyeblikket diagnostikk-, enhets- og appbruksdata til Google automatisk. Disse dataene brukes ikke til å identifisere barnet ditt, men bidrar til å gjøre systemet og appene bedre og mer stabile. Noen samlede data er også til nytte for Google-apper og partnere, for eksempel Android-utviklere. Denne <ph name="BEGIN_LINK1" />innstillingen<ph name="END_LINK1" /> håndheves av eieren. Hvis du har slått på innstillingen for annen nett- og appaktivitet for barnet ditt, kan disse dataene bli lagret i barnets Google-konto. <ph name="BEGIN_LINK2" />Finn ut mer om beregninger<ph name="BEGIN_LINK2_END" />Finn ut mer<ph name="END_LINK2" /></translation>
 <translation id="5785221443435874078">Fjern dette forslaget</translation>
 <translation id="5787431783058088906">Motta fordelen</translation>
 <translation id="5788127256798019331">Play-filer</translation>
@@ -1527,6 +1569,7 @@ Ingen enheter er tilkoblet.</translation>
 <translation id="5823239091726045201">Google Oppgaver på nettet</translation>
 <translation id="5825969630400862129">Innstillinger for tilkoblede enheter</translation>
 <translation id="5830180081891717894"><ph name="WINDOWS" /> til</translation>
+<translation id="583281660410589416">Ukjent</translation>
 <translation id="5837036133683224804">Stopp <ph name="ROUTE_TITLE" /> på <ph name="RECEIVER_NAME" /></translation>
 <translation id="5840658767386246331">Søk med Google</translation>
 <translation id="5841296711770970362">Gå til neste spor</translation>
@@ -1592,6 +1635,7 @@ Ingen enheter er tilkoblet.</translation>
 <translation id="6032620807120418574">Klikk hvor som helst for å ta opp i fullskjerm</translation>
 <translation id="6040071906258664830">Mikrofonopptak er <ph name="STATE" /></translation>
 <translation id="6040143037577758943">Lukk</translation>
+<translation id="6042308850641462728">Mer</translation>
 <translation id="6043212731627905357">Denne skjermen liker ikke <ph name="DEVICE_TYPE" /> (skjermen støttes ikke).</translation>
 <translation id="6043994281159824495">Logg av nå</translation>
 <translation id="6045629311476491587">Brukt av <ph name="APP_COUNT" /> apper</translation>
@@ -1671,9 +1715,12 @@ Ingen enheter er tilkoblet.</translation>
 <translation id="6274422179279280249">Sett inn linker, emojier med mer. Du kan også få hjelp til å skrive med AI fra Google. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="6276708887952587684">Se sidekilden</translation>
 <translation id="6285871695023807425">Legg til i Kalender</translation>
+<translation id="628699625505156622">Bruk posisjon. Tillat at ChromeOS- og Android-apper, -nettsteder og -tjenester med posisjonstillatelse bruker posisjonen til denne enheten. Med Posisjonsnøyaktighet får Android-apper og tjenester mer nøyaktige posisjoner. For å få til dette behandler Google med jevne mellomrom informasjon om enhetssensorer og trådløse signaler fra denne enheten for å bidra til crowdsourcing av posisjonene til trådløse signaler. Disse brukes uten å identifisere enkeltpersoner for å forbedre posisjonsnøyaktigheten og posisjonsbaserte tjenester og for å forbedre, levere og vedlikeholde Googles tjenester basert på Googles og tredjeparters berettigede interesser i å oppfylle brukernes behov. <ph name="BEGIN_LINK1" />Finn ut mer om bruk av posisjon<ph name="END_LINK1" /></translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> kan legges til på nytt senere med tillatelse fra en forelder.</translation>
 <translation id="6291221004442998378">Lader ikke</translation>
+<translation id="6297986260307280218">Send bruks- og diagnostikkdata. Hjelp til med å gjøre Android-opplevelsen din bedre ved å sende diagnostikk-, enhets- og appbruksdata til Google automatisk. Dette bidrar til å gjøre systemet og appene bedre og mer stabile. Noen samlede data er også til nytte for Google-apper og partnere, for eksempel Android-utviklere. Denne <ph name="BEGIN_LINK1" />innstillingen<ph name="END_LINK1" /> håndheves av eieren. Eieren kan velge å sende diagnostikk- og bruksdata for denne enheten til Google. Hvis du har slått på innstillingen for annen nett- og appaktivitet, kan disse dataene bli lagret i Google-kontoen din. <ph name="BEGIN_LINK2" />Finn ut mer om beregninger<ph name="BEGIN_LINK2_END" />Finn ut mer<ph name="END_LINK2" /></translation>
 <translation id="6298183524022479114">Tilpass denne enheten i appen</translation>
+<translation id="6298962879096096191">Bruk Google Play til å installere Android-apper</translation>
 <translation id="6304076460080088478">Lukk eller minimer inkognitovinduer for å søke på skjermen med Google Lens</translation>
 <translation id="6309219492973062892">Klikk eller trykk på hylleikonene 1–8</translation>
 <translation id="6315170314923504164">Tale</translation>
@@ -1703,8 +1750,10 @@ Ingen enheter er tilkoblet.</translation>
 <translation id="6406458002328242616">Endre nedtellingen. <ph name="FOCUS_DURATION" />.</translation>
 <translation id="6406704438230478924">alt gr</translation>
 <translation id="6414618057231176439">Velg hvilken versjon av <ph name="VM_NAME" /> du vil installere.</translation>
+<translation id="641469293210305670">Installer oppdateringer og apper</translation>
 <translation id="6417265370957905582">Google Assistent</translation>
 <translation id="641817663353603351">page up</translation>
+<translation id="6418511932144861495">Installer en kritisk oppdatering</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Fjern alle varsler</translation>
 <translation id="6426905245930183644">Oppretter ...</translation>
@@ -1730,6 +1779,7 @@ Ingen enheter er tilkoblet.</translation>
 <translation id="6482559668224714696">Lupe for hele skjermen</translation>
 <translation id="6485086611007560630">Været (ikke tilgjengelig)</translation>
 <translation id="6490471652906364588">USB-C-enhet (porten på høyre side)</translation>
+<translation id="6491376743066338510">Kunne ikke autorisere</translation>
 <translation id="649452524636452238">PIN-koden til smartkortet</translation>
 <translation id="6495322433318104734">Viser skjermspareren. Trykk på en hvilken som helst tast for å avslutte</translation>
 <translation id="6495400115277918834">Bilde-i-bilde er startet – trykk på Alt + Shift + V for å fokusere</translation>
@@ -1783,10 +1833,12 @@ Nylig installert</translation>
 <translation id="6625718907317144388">Varsler fra <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> og andre steder er skjult fordi visningsbeskyttelse er på</translation>
 <translation id="6627638273713273709">Søk + Shift + K</translation>
 <translation id="662830937908749204">Flytt fokus til neste felt</translation>
+<translation id="6635674640674343739">Det kan ikke opprettes noen nettverkstilkobling. Kontroller nettverkstilkoblingen og prøv på nytt.</translation>
 <translation id="6637729079642709226">Endre tiden</translation>
 <translation id="6641720045729354415">Slå av/på Direkteteksting. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">Angre sortering etter navn</translation>
 <translation id="664793810957802384">Elementer i den foreslåtte gruppen</translation>
+<translation id="6649018507441623493">Vent litt</translation>
 <translation id="6649641931981131786">Juster kameraet så du er midt på skjermen.</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> vil bekrefte at det er deg</translation>
 <translation id="6650742588569439432">Kunne ikke laste inn elementene.</translation>
@@ -1811,6 +1863,7 @@ Nylig installert</translation>
 <translation id="6706742084323792866">PIN-tastatur</translation>
 <translation id="6709719156428404245">Dra eller trykk på mellomromstasten for å velge området du vil ta opp</translation>
 <translation id="6710213216561001401">Forrige</translation>
+<translation id="6716798148881908873">Nettverkstilkoblingen ble brutt. Kontroller tilkoblingen eller prøv et annet Wifi-nettverk.</translation>
 <translation id="6723839937902243910">Strøm</translation>
 <translation id="672609503628871915">Se hva som er nytt</translation>
 <translation id="6727969043791803658">Koblet til – <ph name="BATTERY_PERCENTAGE" /> % batteri</translation>
@@ -1850,6 +1903,7 @@ Nylig installert</translation>
 <translation id="6819327813400217281">Kameraet er festet til nedre venstre hjørne</translation>
 <translation id="6820676911989879663">Ta en pause!</translation>
 <translation id="6827049576281411231">Lukk hendelsespanelet</translation>
+<translation id="682971198310367122">Googles personvernregler</translation>
 <translation id="6836499262298959512">Farlig fil</translation>
 <translation id="6837621009301897464">For å ta et skjermbilde, trykk på</translation>
 <translation id="6852052252232534364">Klikk for å aktivere</translation>
@@ -1881,6 +1935,7 @@ Nylig installert</translation>
 <translation id="6942518653766415536">Meny for opptaksformat</translation>
 <translation id="6945221475159498467">Velg</translation>
 <translation id="6945922087561257829">Telefonen bruker et mobilnettverk. Sørg for at telefonen og Chromebooken er koblet til det samme wifi-nettverket, og prøv på nytt. <ph name="LEARN_MORE" /></translation>
+<translation id="6950627417367801484">Gjenopprett apper</translation>
 <translation id="6960565108681981554">Ikke aktivert. Kontakt operatøren din.</translation>
 <translation id="6961121602502368900">Demp telefonen er ikke tilgjengelig for jobbprofiler</translation>
 <translation id="6961840794482373852">Hurtigtasten Alt + oppoverpil er endret. For å bruke Page Up-tasten, trykk på <ph name="LAUNCHER_KEY_NAME" />-tasten + oppoverpilen.</translation>
@@ -2052,6 +2107,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="7541773865713908457"><ph name="ACTION_NAME" /> med <ph name="APP_NAME" />-appen</translation>
 <translation id="7543399541175347147">Linux-apper og inkognitovinduer støttes ikke for øyeblikket. Andre apper blir lagret.</translation>
 <translation id="7544300628205093162">Tastaturets bakgrunnsbelysning er på</translation>
+<translation id="7545466883021407599">Kunne ikke koble til tjeneren. Kontroller nettverkstilkoblingen og prøv på nytt. Hvis du fremdeles har problemer, kan du prøve å starte Chromebook på nytt. Feilkode: <ph name="ERROR_CODE" />.</translation>
 <translation id="7548434653388805669">Nå er det sengetid</translation>
 <translation id="7551643184018910560">Fest til hyllen</translation>
 <translation id="7557816257942363084"><ph name="APP_NAME" /> bruker mikrofonen din for øyeblikket</translation>
@@ -2067,6 +2123,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="7579778809502851308">Skjermbilde</translation>
 <translation id="7588317312481506627">Kopiert til utklippstavlen.</translation>
 <translation id="7593891976182323525">Søk eller Shift</translation>
+<translation id="7595453277607160340">For å bruke Android-apper og sikre at <ph name="DEVICE_TYPE" /> fungerer som den skal, logg på igjen og oppdater.</translation>
 <translation id="7598054670902114203">Øyeblikksbilde av prosessorbruken: <ph name="CPU_USEAGE" /> %. Temperatur: <ph name="TEMPERATURE" /> grader celsius. Gjeldende hastighet: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="7599378375976398913">Setter inn det valgte resultatet</translation>
 <translation id="7600875258240007829">Se alle varslene</translation>
@@ -2076,6 +2133,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="7609951632080598826">Kalendervisning, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Kameraet er koblet til igjen.</translation>
 <translation id="7613620083300976559">Slå på spillkontroller</translation>
+<translation id="761530003705945209">Sikkerhetskopiér til Google Disk. Gjenopprett dataene dine enkelt eller bytt enhet når som helst. Sikkerhetskopien din inkluderer appdata. Sikkerhetskopiene dine lastes opp til Google og krypteres med passordet til Google-kontoen din.</translation>
 <translation id="761736749114493194">Slå av/på kamerainnramming. <ph name="STATE_TEXT" /></translation>
 <translation id="7621008024906456933">Innstillinger for Quick Share</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
@@ -2124,6 +2182,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="7748275671948949022">Fremhev Appoversikt-knappen på hyllen</translation>
 <translation id="7749443890790263709">Maksimalt antall skrivebord er nådd.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7750228210027921155">Bilde i bilde</translation>
 <translation id="7751260505918304024">Vis alle</translation>
 <translation id="7762664108390426952">Googles vilkår for bruk og personvernregler</translation>
 <translation id="7768784765476638775">Tekstopplesing</translation>
@@ -2242,6 +2301,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8092380135549145188">Rullekontroller</translation>
 <translation id="8098591350844501178">Slutt å caste skjermen til <ph name="RECEIVER_NAME" /></translation>
 <translation id="810637681351706236">Løsne appen fra hyllen</translation>
+<translation id="8107015733319732394">Installerer Google Play-butikken på <ph name="DEVICE_TYPE" />-enheten din. Dette kan ta noen minutter.</translation>
 <translation id="8113423164597455979">På, alle apper</translation>
 <translation id="8113515504791187892">Tekstopplesingsknapp</translation>
 <translation id="8120151603115102514">Telefonen har ingen låseskjerm. For å låse opp Chromebooken, skriv inn passordet.</translation>
@@ -2324,6 +2384,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8388750414311082622">Det siste skrivebordet kan ikke fjernes.</translation>
 <translation id="8394567579869570560">Forelderen din har låst denne enheten</translation>
 <translation id="8401850874595457088">Åpne språkmenyen</translation>
+<translation id="8410775397654368139">Google Play</translation>
 <translation id="8412677897383510995">Vis skjerminnstillinger</translation>
 <translation id="8413272770729657668">Opptaket starter om 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (etui)</translation>
@@ -2349,11 +2410,13 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> har <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Trykk på Alt + Søk eller Shift for å avbryte.</translation>
 <translation id="8480418399907765580">Vis verktøylinje</translation>
+<translation id="8481187309597259238">Bekreft USB-tillatelse</translation>
 <translation id="8487660088084188539">Når du slår på disse funksjonene, kan inndatateksten, dokumentinnholdet og nettadressen til nettsiden bli sendt til Googles tjenere. Denne informasjonen brukes til å generere skriveforslag, generere sammendrag, svare på spørsmål og forbedre produktet, i henhold til <ph name="LINK_TO_SERVICE_TERMS" />. Ikke ta med noe som er personlig, sensitivt eller konfidensielt.</translation>
 <translation id="8487699605742506766">Wifi-sone</translation>
 <translation id="8490896350101740396">Kioskappene «<ph name="UPDATED_APPS" />» er oppdatert. Start opp enheten på nytt for å fullføre oppdateringsprosessen.</translation>
 <translation id="8491237443345908933">Åpne link i en ny fane</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> støtter ikke <ph name="SPECIFIED_RESOLUTION" />. Oppløsningen ble endret til <ph name="FALLBACK_RESOLUTION" />. Klikk på bekreft for å beholde endringene. De forrige innstillingene blir gjenopprettet om <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="8502536196501630039">For å bruke apper fra Google Play må du først gjenopprette appene dine. Noe data kan ha gått tapt.</translation>
 <translation id="8507563469658346379">Alle, <ph name="REMAINING_TIME" /></translation>
 <translation id="8511123073331775246">Opprett nytt skrivebord</translation>
 <translation id="85123341071060231">Bluetooth er avslått på Chromebooken din. For å låse den opp, skriv inn passordet.</translation>
@@ -2407,6 +2470,8 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8676770494376880701">Laveffektslader er tilkoblet</translation>
 <translation id="8679158879996532670">Vis innstillinger for fokus. Fokus er på. <ph name="REMAINING_TIME" /> gjenstår.</translation>
 <translation id="8683506306463609433">Ytelsessporing er aktiv</translation>
+<translation id="8698432579173128320">Sikkerhetskopier til Google Disk. Gjenopprett dataene dine enkelt eller bytt enhet når som helst. Sikkerhetskopien din inkluderer appdata. Sikkerhetskopier lastes opp til Google og krypteres med passordet for Google-kontoen din. <ph name="BEGIN_LINK1" />Finn ut mer om sikkerhetskopiering<ph name="BEGIN_LINK1_END" />Finn ut mer<ph name="END_LINK1" /></translation>
+<translation id="8700087567921985940">Bruk posisjon. Tillat at apper og tjenester med posisjonstillatelse bruker posisjonen til enheten din. Google kan samle inn posisjonsdata med jevne mellomrom og bruke disse dataene anonymt for å gjøre posisjonsnøyaktigheten og posisjonsbaserte tjenester bedre. <ph name="BEGIN_LINK1" />Finn ut mer om posisjon<ph name="BEGIN_LINK1_END" />Finn ut mer<ph name="END_LINK1" /></translation>
 <translation id="8703634754197148428">Start opptak. Når opptaket har startet, kan du bruke Alt + Shift + L for å navigere til hyllen og finne knappen for å stoppe opptaket</translation>
 <translation id="8704155109538237473">Fokuser på bilde-i-bilde-vinduet</translation>
 <translation id="870917907284186124">Slå diktering på/av (skriv med stemmen)</translation>
@@ -2470,6 +2535,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8875021410787719674">Beveg deg mellom nedre høyre hjørne, Appoversikt, adressefeltet, bokmerkeraden, nettstedet som er åpent og nedlastingene.</translation>
 <translation id="8876148469852588625">Hendelse <ph name="EVENT_POSITION" /> av <ph name="EVENT_TOTAL_COUNT" />.</translation>
 <translation id="8876661425082386199">Sjekk tilkoblingen din</translation>
+<translation id="8883478023074930307">Send bruks- og diagnostikkdata. Denne enheten sender for øyeblikket diagnostikk-, enhets- og appbruksdata til Google automatisk. Dette bidrar til å gjøre systemet og appene bedre og mer stabile. Noen samlede data er også til nytte for Google-apper og partnere, for eksempel Android-utviklere. Denne <ph name="BEGIN_LINK1" />innstillingen<ph name="END_LINK1" /> håndheves av eieren. Hvis du har slått på innstillingen for annen nett- og appaktivitet, kan disse dataene bli lagret i Google-kontoen din. <ph name="BEGIN_LINK2" />Finn ut mer om beregninger<ph name="BEGIN_LINK2_END" />Finn ut mer<ph name="END_LINK2" /></translation>
 <translation id="8885424115080869847">Kunne ikke koble til YouTube Music</translation>
 <translation id="888982883502837004">Fastvareoppdateringer er tilgjengelige for enheten. Klikk for å gjennomgå dem og oppdatere.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> blir slettet permanent</translation>
@@ -2512,10 +2578,12 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="9000771174482730261">ADMINISTRER LAGRING</translation>
 <translation id="9003374957546315126">Emojier med mer</translation>
 <translation id="9005984960510803406">Åpne Crosh-vindu</translation>
+<translation id="901668144954885282">Sikkerhetskopiér til Google Disk</translation>
 <translation id="9017320285115481645">Skriv inn koden for foreldretilgang til Family Link.</translation>
 <translation id="9024331582947483881">full skjerm</translation>
 <translation id="9029736946581028033">Enheten slår seg av snart</translation>
 <translation id="9030319654231318877">Avslått til solnedgang</translation>
+<translation id="9030515284705930323">Organisasjonen din har ikke slått på Google Play-butikken for kontoen din. Kontakt administratoren din for å få mer informasjon.</translation>
 <translation id="9030665205623277906">Øyeblikksbilde av prosessorbruken: <ph name="CPU_USEAGE" /> %</translation>
 <translation id="9034924485347205037">Linux-filer</translation>
 <translation id="9047624247355796468">Åpne innstillinger for <ph name="NETWORK_NAME" /></translation>
@@ -2565,8 +2633,10 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="9195857219954068558">Chromebooken er oppdatert. Åpne tidligere vinduer og apper.</translation>
 <translation id="9195990613383871904">I morgen</translation>
 <translation id="9198992156681343238">Oppløsningen for <ph name="DISPLAY_NAME" /> ble endret til <ph name="RESOLUTION" />. Klikk på bekreft for å beholde endringene. De forrige innstillingene blir gjenopprettet om <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="9199853905755292769">Send bruks- og diagnostikkdata. Denne enheten sender for øyeblikket diagnostikk-, enhets- og appbruksdata til Google automatisk. Disse dataene brukes ikke til å identifisere barnet ditt, men bidrar til å gjøre systemet og appene bedre og mer stabile. Noen samlede data er også til nytte for Google-apper og partnere, for eksempel Android-utviklere. Hvis du har slått på innstillingen for annen nett- og appaktivitet for barnet ditt, kan disse dataene bli lagret i barnets Google-konto. <ph name="BEGIN_LINK2" />Finn ut mer om beregninger<ph name="BEGIN_LINK2_END" />Finn ut mer<ph name="END_LINK2" /></translation>
 <translation id="9201044636667689546">Koble <ph name="NAME" /> til denne Chromebooken</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" /> – administreres av administratoren din</translation>
+<translation id="9201842707396338580">Noe gikk galt. Kontakt eieren eller administratoren av enheten. Feilkode: <ph name="ERROR_CODE" />.</translation>
 <translation id="9207682216934703221">Dette gjør at <ph name="APP_NAME" />, <ph name="APP2_NAME" /> og alle apper og nettsteder med posisjonstillatelse og ChromeOS kan bruke wifi- og mobilnettverksposisjoner.</translation>
 <translation id="9210037371811586452">Avslutter enhetlig skrivebordsmodus</translation>
 <translation id="9211490828691860325">Alle skrivebord</translation>
@@ -2579,6 +2649,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="923686485342484400">Trykk på Control+Shift+Q to ganger for å logge av.</translation>
 <translation id="92580429198593979">Du har trykket på hurtigtasten for modus for fargeinvertering. Vil du slå den på?</translation>
 <translation id="925832987464884575">Skjul forhåndsvisninger</translation>
+<translation id="93140074055951850">Android-apper ble stoppet</translation>
 <translation id="938407504481277932">Gjeldende skrivebord: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> (<ph name="EMAIL" />). Skrivebord <ph name="DESK_INDEX" /> av <ph name="DESK_COUNT" />.</translation>
 <translation id="94468042118567862">Enheten er ikke oppdatert</translation>
 <translation id="945383118875625837">Dra linken til bokmerkeraden</translation>

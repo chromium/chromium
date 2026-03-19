@@ -1073,6 +1073,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2673968385134502798">Mga Laro</translation>
 <translation id="2674170444375937751">Sigurado ka bang nais mong tanggalin ang mga pahinang ito mula sa iyong history?</translation>
 <translation id="2674524144218093528">Pagpipintura at Finishing ng Bahay</translation>
+<translation id="2675716371350192683">Hindi gagamitin ang iyong content para pahusayin ang AI. Posibleng baguhin ng iyong organisasyon ang mga setting na ito anumang oras.</translation>
 <translation id="26774279487328902"><ph name="GROUP_COUNT" /> (na) grupo ng tab ang hindi na available</translation>
 <translation id="2677748264148917807">Umalis</translation>
 <translation id="2679216653373462289">Gamitin ang iyong mga sensor ng paggalaw at liwanag</translation>
@@ -2657,6 +2658,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="5190835502935405962">Bar ng Mga Bookmark</translation>
 <translation id="5191315092027169558">Ang iyong profile ay pinapamahalaan ng <ph name="DOMAIN" /></translation>
 <translation id="51918995459521422">Gustong mag-download ng <ph name="ORIGIN" /> ng maraming file</translation>
+<translation id="519528950056409240">Payagan ang Wallet na mag-share ng data</translation>
 <translation id="5199121357983849992">I-save ang ID card?</translation>
 <translation id="5200063972779787617">I-save ang address sa account</translation>
 <translation id="5201306358585911203">Isinasaad ng naka-embed na page sa page na ito na</translation>
@@ -3104,6 +3106,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="5910140988253729859">I-undo ang autofill</translation>
 <translation id="5911020115933784199">Mga Event at Listing</translation>
 <translation id="5911110632211230665">Naka-block ang pagbubukas</translation>
+<translation id="5912796581727968237">Buksan ang Google Wallet</translation>
 <translation id="5914465277418006379">Idinagdag ni <ph name="MEMBER_FIRST_NAME" /> ang tab na ito</translation>
 <translation id="5915189366813702112">Mga Flexible na Work Arrangement</translation>
 <translation id="59174027418879706">Pinagana</translation>
@@ -4566,6 +4569,7 @@ Mga karagdagang detalye:
 <translation id="8175796834047840627">Nag-aalok ang Chrome na i-save ang iyong mga card sa Google Account mo dahil naka-sign in ka. Maaari mong baguhin ang gawing ito sa mga setting.</translation>
 <translation id="8176440868214972690">Nagpadala ang administrator ng device na ito ng ilang impormasyon sa mga sumusunod na website, tulad ng mga setting o patakaran.</translation>
 <translation id="817820454357658398">Mga Produkto para sa Pambabaeng Hygiene</translation>
+<translation id="8182470873445638343"><ph name="BEGIN_BOLD" />Sine-share sa Google ang content mula sa page para sa pag-checkout para maialok ang mga opsyong ito.<ph name="END_BOLD" /> Napapailalim sa pagiging kwalipikado ang mga plan sa pagbabayad. Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga setting ng pagbabayad<ph name="END_LINK" /></translation>
 <translation id="818254048113802060">{0,plural, =1{Na-block ang <ph name="FILE_NAME" /> dahil sa content}one{<ph name="FILE_COUNT" /> file ang na-block dahil sa content}other{<ph name="FILE_COUNT" /> na file ang na-block dahil sa content}}</translation>
 <translation id="8183800802493617952">Mga Pampamilyang Laro at Aktibidad</translation>
 <translation id="8184538546369750125">Gamitin ang pangkalahatang default (Payagan)</translation>

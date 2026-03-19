@@ -1820,6 +1820,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="8282950411412455249">Pumunta sa mga setting ng seguridad</translation>
 <translation id="8288688997999490824">{NUM_WINDOWS,plural, =1{Isara ang 1 Incognito window}one{Isara ang # Incognito window}other{Isara ang # na Incognito window}}</translation>
 <translation id="831192587911042850">Idinaragdag ang kasalukuyang web site sa listahan ng mga web site na sinusubaybayan mo.</translation>
+<translation id="8313599942510782709">Isinasagawa pa ang iyong gawain</translation>
 <translation id="8317318757008452355">Buksan ang mga opsyon para mag-print</translation>
 <translation id="8320212361750431956">Kamakailang Aktibidad</translation>
 <translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />Bago<ph name="END_NEW" /></translation>

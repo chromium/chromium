@@ -195,6 +195,7 @@
 <translation id="3045032126857188731">譯文語言：<ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">關閉意見回饋對話方塊</translation>
 <translation id="3068187312562070417">其他 Chromium 設定檔</translation>
+<translation id="3068290154869370196">擴充功能是外掛程式，可用來自訂 Chromium。無論是整理資料或簡化日常工作，都能用擴充功能打造個人化的 Chromium。</translation>
 <translation id="3068515742935458733">將當機報告和<ph name="UMA_LINK" />傳送給 Google，助我們一臂之力，讓 Chromium 更臻完美</translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{至少有 1 個 Chromium 擴充功能當時正在存取 1 部 USB 裝置}=1{至少有 1 個 Chromium 擴充功能正在存取 1 部 USB 裝置}other{至少有 1 個 Chromium 擴充功能正在存取 # 部 USB 裝置}}</translation>
 <translation id="3095811995836568724">Chromium 歷史記錄</translation>
@@ -429,6 +430,7 @@
 <translation id="5821520528363214608">如要將 Chromium 資料儲存到 Google 帳戶，或使用帳戶中的 Chromium 資料，請更新 Chromium</translation>
 <translation id="5824893331272123205">無法載入這個面板，請再試一次</translation>
 <translation id="5862307444128926510">歡迎使用 Chromium</translation>
+<translation id="5867606647614813312">啟用額外功能，提供 Chromium 最強大的防護機制</translation>
 <translation id="5871205389137001634">按一下即可退出「圖片搜尋」</translation>
 <translation id="5883558403894052917">Chromium 偵測到下列項目含有惡意軟體：</translation>
 <translation id="5889361821821684993">Chromium 會定期檢查，確保瀏覽器採用最安全的設定。如有任何需要你檢查的事項，我們會通知你。</translation>

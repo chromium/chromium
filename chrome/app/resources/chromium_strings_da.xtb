@@ -196,6 +196,7 @@
 <translation id="3045032126857188731">Oversat sprog: <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">Luk dialogboks til feedback</translation>
 <translation id="3068187312562070417">Andre Chromium-profiler</translation>
+<translation id="3068290154869370196">Udvidelser er tilføjelser, der giver dig mulighed for at tilpasse Chromium. Udvidelser hjælper dig med at organisere og forenkle hverdagens opgaver ved at tilpasse Chromium efter dine behov.</translation>
 <translation id="3068515742935458733">Hjælp med at gøre Chromium bedre ved at sende fejlrapporter og <ph name="UMA_LINK" /> til Google</translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{En eller flere Chromium-udvidelser havde adgang til 1 USB-enhed}=1{En eller flere Chromium-udvidelser har adgang til 1 USB-enhed}one{En eller flere Chromium-udvidelser har adgang til # USB-enhed}other{En eller flere Chromium-udvidelser har adgang til # USB-enheder}}</translation>
 <translation id="3095811995836568724">Chromium-historik</translation>
@@ -430,6 +431,7 @@
 <translation id="5821520528363214608">For at bruge og gemme Chromium-data på din Google-konto skal du opdatere Chromium</translation>
 <translation id="5824893331272123205">Dette panel kunne ikke indlæses. Prøv igen</translation>
 <translation id="5862307444128926510">Velkommen til Chromium</translation>
+<translation id="5867606647614813312">Aktiverer yderligere funktioner for at levere Chromiums stærkeste beskyttelse</translation>
 <translation id="5871205389137001634">Klik for at afslutte billedsøgning</translation>
 <translation id="5883558403894052917">Chromium har registreret malware i disse elementer:</translation>
 <translation id="5889361821821684993">Chromium tjekker regelmæssigt, om din browser har de sikreste indstillinger. Vi giver dig besked, hvis der er noget, du skal gennemgå.</translation>

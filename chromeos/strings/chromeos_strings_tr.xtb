@@ -273,7 +273,6 @@
 <translation id="200669432486043882">Dosyayı değiştir</translation>
 <translation id="2006864819935886708">Bağlantı</translation>
 <translation id="2008685064673031089">Asal sayı arama</translation>
-<translation id="2011174342667534258">SDK Sürümü:</translation>
 <translation id="2016697457005847575">Sorun giderme adımlarını deneyin</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2045814230297767491">çatal bıçak takımı</translation>
@@ -523,7 +522,6 @@
 <translation id="3291996639387199448">Anahtar yönü</translation>
 <translation id="3294437725009624529">Misafir</translation>
 <translation id="3303855915957856445">Arama sonucu bulunamadı</translation>
-<translation id="3305294846493618482">daha fazla</translation>
 <translation id="3310640316857623290">DNS gecikmesi, izin verilen eşiğin çok üzerinde</translation>
 <translation id="3316495615885967552">Özet ve başlık oluşturma modelini indirme işlemi tamamlandı</translation>
 <translation id="3321030238473337787">Oynatma hızı</translation>
@@ -702,7 +700,6 @@
 <translation id="4126551873361000548">10 saniye geri</translation>
 <translation id="4128271910628504223">"Sisli orman çiz" gibi bir istem girin</translation>
 <translation id="4130035430755296270">Fareyle üzerine gelmeye devam ederek düzenle ilgili daha fazla seçenek görün</translation>
-<translation id="4130750466177569591">Kabul ediyorum</translation>
 <translation id="4131410914670010031">Siyah beyaz</translation>
 <translation id="4137700675046373159">Cumartesi günü</translation>
 <translation id="4139326893730851150">Donanım yazılımı güncellemeleri</translation>
@@ -1051,7 +1048,6 @@
 <translation id="5606865426897221650">Sekme</translation>
 <translation id="5612205513582918357">Sınıf araçları, ekranınızı <ph name="RECEIVER_NAME" /> ile paylaşıyor</translation>
 <translation id="5613201299517339763">Oturumunuz kapatıldı</translation>
-<translation id="5620281292257375798">Yalnızca dahili</translation>
 <translation id="5628106863521633649">Kullanıma sunulduğu diller</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">özet</translation>
@@ -1415,7 +1411,6 @@
 <translation id="7184043045742675738">Düğmenizi özelleştirmek için herhangi bir tuşu tıklayın. Fare veya ok tuşlarını kullanarak tuşun yerini değiştirin.</translation>
 <translation id="7187669805838282391">Çarşamba günü</translation>
 <translation id="7205318498545665455">Mikrofonunuzu seçin</translation>
-<translation id="7206979415662233817">Hizmet şartları</translation>
 <translation id="7210635925306941239">camgöbeği</translation>
 <translation id="7212547870105584639">Ağ APN ayarlarını yönetin. APN'ler, hücresel ağ ve internet arasında bir bağlantı oluşturur. <ph name="BEGIN_LINK_LEARN_MORE" />Daha fazla bilgi<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Harici cihazlar için donanım yazılımı güncellemeleri</translation>
@@ -1446,11 +1441,6 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7321055305895875150">yeşil ve deniz mavisi</translation>
 <translation id="7328475450575141167">cennet kuşu çiçeği</translation>
-<translation id="7331297744262591636">En az 18 yaşında olmanız ve yapay zeka duvar kağıtlarını kullanımınızın <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Google Hizmet Şartları<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> ile <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />Üretken Yapay Zeka Ek Hizmet Şartları<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />'na tabi olduğunu kabul etmeniz gerekir.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Yalnızca ticari olmayan ve kişisel kullanım için yapay zeka ile duvar kağıdı oluşturabilirsiniz. Duvar kağıdı konusunda yardım aldığınızda, <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google'ın Gizlilik Politikası<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />'na tabi olarak duvar kağıdı önerileri üretmek için Google Yapay Zeka sunucularına metin gönderilir. <ph name="BEGIN_LINK_LEARN_MORE" />Daha fazla bilgi<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Sonucu Google Arama'da görmek için Ara'ya ve Boşluk çubuğuna basın.</translation>
 <translation id="7343649194310845056">Ağ Cihazları</translation>
 <translation id="7344788170842919262">doğal</translation>
 <translation id="7346768383111016081">Klavyenizle oynamak için oyun işlemine kontrol ekleyin</translation>
@@ -1838,7 +1828,6 @@ Bu transkriptleri almak için metne dönüştürme modelini (100 MB'a kadar) ind
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">Bu videoyu kullan</translation>
-<translation id="9087578468327036362">Bu sorguyu bildirir</translation>
 <translation id="9088306295921699330">Mevcut kullanım</translation>
 <translation id="9088994563996376283">Sadeleştir</translation>
 <translation id="9095775724867566971">Pluginvm</translation>

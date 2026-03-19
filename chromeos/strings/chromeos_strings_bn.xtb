@@ -273,7 +273,6 @@
 <translation id="200669432486043882">ফাইলটি প্রতিস্থাপন করুন</translation>
 <translation id="2006864819935886708">সংযোজকতা</translation>
 <translation id="2008685064673031089">প্রাইম সার্চ</translation>
-<translation id="2011174342667534258">SDK ভার্সন:</translation>
 <translation id="2016697457005847575">সমস্যার সমাধান করার বিভিন্ন ধাপ অনুসরণ করে দেখুন</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2045814230297767491">কাঁটা-চামচ-ছুরি</translation>
@@ -523,7 +522,6 @@
 <translation id="3291996639387199448">মূল দিকনির্দেশ</translation>
 <translation id="3294437725009624529">অতিথি</translation>
 <translation id="3303855915957856445">কোনো সার্চ ফলাফল পাওয়া যায়নি</translation>
-<translation id="3305294846493618482">আরও</translation>
 <translation id="3310640316857623290">যতদূর পর্যন্ত লেটেন্সির ঊর্ধ্বসীমা অনুমোদন করা যায়, ডিএনএস লেটেন্সি উল্লেখযোগ্যভাবে তার চেয়ে বেশি</translation>
 <translation id="3316495615885967552">সারসংক্ষেপ ও শিরোনাম তৈরির মডেল ডাউনলোড করা সম্পূর্ণ হয়ে গেছে</translation>
 <translation id="3321030238473337787">প্লেব্যাক স্পিড</translation>
@@ -702,7 +700,6 @@
 <translation id="4126551873361000548">১০ সেকেন্ড পিছনে যান</translation>
 <translation id="4128271910628504223">কোনও প্রম্পট লিখুন, যেমন "কুয়াশাচ্ছন্ন বনের ছবি আঁকো"</translation>
 <translation id="4130035430755296270">আরও লেআউট বিকল্পের জন্য ঘোরাতে থাকুন</translation>
-<translation id="4130750466177569591">আমি সম্মত</translation>
 <translation id="4131410914670010031">সাদা ও কালো</translation>
 <translation id="4137700675046373159">শনিবারে</translation>
 <translation id="4139326893730851150">ফার্মওয়্যার আপডেট দেখুন</translation>
@@ -1051,7 +1048,6 @@
 <translation id="5606865426897221650">ট্যাব</translation>
 <translation id="5612205513582918357">ক্লাস টুল আপনার স্ক্রিন <ph name="RECEIVER_NAME" />-এর সাথে শেয়ার করছে</translation>
 <translation id="5613201299517339763">আপনি সাইন-আউট করেছেন</translation>
-<translation id="5620281292257375798">শুধুমাত্র ইন্টার্নাল</translation>
 <translation id="5628106863521633649">উপলভ্য ভাষা</translation>
 <translation id="5630438231335788050">বাউহাউস</translation>
 <translation id="5631759159893697722">বিমূর্ত</translation>
@@ -1415,7 +1411,6 @@
 <translation id="7184043045742675738">আপনার বোতামটি কাস্টমাইজ করতে, যেকোনও 'কী'-এর উপরে ক্লিক করুন। মাউস বা তীরচিহ্নযুক্ত 'কী'-এর সাহায্যে 'কী' অন্য জায়গায় সরান।</translation>
 <translation id="7187669805838282391">বুধবারে</translation>
 <translation id="7205318498545665455">আপনার মাইক্রোফোন বেছে নিন</translation>
-<translation id="7206979415662233817">পরিষেবার শর্তাবলী</translation>
 <translation id="7210635925306941239">সায়ান</translation>
 <translation id="7212547870105584639">নেটওয়ার্কের APN সেটিংস ম্যানেজ করুন। APN মোবাইল নেটওয়ার্ক এবং ইন্টারনেটের মধ্যে কানেকশন তৈরি করে। <ph name="BEGIN_LINK_LEARN_MORE" />আরও জানুন<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">এক্সটার্নাল ডিভাইসের জন্য ফার্মওয়্যার আপডেট</translation>
@@ -1446,11 +1441,6 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7321055305895875150">সবুজ ও টিল</translation>
 <translation id="7328475450575141167">বার্ড অফ প্যারাডাইস</translation>
-<translation id="7331297744262591636">আপনার বয়স কমপক্ষে ১৮ বছর হতে হবে এবং আপনাকে সম্মত হতে হবে যে, এআই (AI) ওয়ালপেপারের ব্যবহার <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Google পরিষেবার শর্তাবলী<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> এবং <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />জেনারেটিভ AI অতিরিক্ত শর্তাবলী<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" /> অনুযায়ী হবে।
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          আপনি ব্যক্তিগত ও অ-বাণিজ্যিক ব্যবহারের জন্য AI-এর সাহায্যে শুধুমাত্র ওয়ালপেপার তৈরি করতে পারবেন। ওয়ালপেপার সম্পর্কে সাহায্য পেলে, টেক্সট Google AI সার্ভারে পাঠানো হয় যাতে ওয়ালপেপার সাজেশন, <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google-এর সাজেশন গোপনীয়তা নীতি<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> অনুযায়ী হয়। <ph name="BEGIN_LINK_LEARN_MORE" />আরও জানুন<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Search-এ ফলাফল দেখতে Search ও Space 'কী' প্রেস করুন।</translation>
 <translation id="7343649194310845056">নেটওয়ার্ক ডিভাইস</translation>
 <translation id="7344788170842919262">আর্দি</translation>
 <translation id="7346768383111016081">আপনার কীবোর্ডের মাধ্যমে খেলার জন্য গেমের অ্যাকশন কন্ট্রোল করুন</translation>
@@ -1838,7 +1828,6 @@
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">ব্লুটুথ</translation>
 <translation id="9082718469794970195">এই ভিডিওটি ব্যবহার করুন</translation>
-<translation id="9087578468327036362">এই কোয়েরি সম্পর্কে রিপোর্ট করুন</translation>
 <translation id="9088306295921699330">বর্তমান ব্যবহার</translation>
 <translation id="9088994563996376283">সহজ করুন</translation>
 <translation id="9095775724867566971">Pluginvm</translation>

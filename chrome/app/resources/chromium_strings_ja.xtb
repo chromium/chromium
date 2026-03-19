@@ -195,6 +195,7 @@
 <translation id="3045032126857188731">翻訳先の言語: <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">フィードバック ダイアログを閉じる</translation>
 <translation id="3068187312562070417">その他の Chromium プロフィール</translation>
+<translation id="3068290154869370196">拡張機能は、Chromium をカスタマイズできるアドオンです。情報整理や日々のタスクの効率化など、拡張機能を使って Chromium を自分仕様にすることができます。</translation>
 <translation id="3068515742935458733">障害レポートと<ph name="UMA_LINK" />を Google に自動送信して Chromium の機能向上に役立てる</translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{1 つ以上の Chromium 拡張機能が 1 台の USB デバイスにアクセスしていました}=1{1 つ以上の Chromium 拡張機能が 1 台の USB デバイスにアクセスしています}other{1 つ以上の Chromium 拡張機能が # 台の USB デバイスにアクセスしています}}</translation>
 <translation id="3095811995836568724">Chromium の履歴</translation>

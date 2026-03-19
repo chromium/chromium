@@ -273,7 +273,6 @@
 <translation id="200669432486043882">Faylni almashtirish</translation>
 <translation id="2006864819935886708">Ulanish</translation>
 <translation id="2008685064673031089">Oddiy sonlarni qidirish</translation>
-<translation id="2011174342667534258">SDK versiyasi:</translation>
 <translation id="2016697457005847575">Muammoni hal qilishga urining</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2045814230297767491">pichoqchilik</translation>
@@ -523,7 +522,6 @@
 <translation id="3291996639387199448">Kalit yoʻnalishi</translation>
 <translation id="3294437725009624529">Mehmon</translation>
 <translation id="3303855915957856445">Qidiruv hech qanday natija bermadi</translation>
-<translation id="3305294846493618482">yana</translation>
 <translation id="3310640316857623290">DNS kutish vaqti ruxsat etilgan chegaradan juda baland</translation>
 <translation id="3316495615885967552">Xulosa va nom yaratish modeli yuklab olindi</translation>
 <translation id="3321030238473337787">Ijro tezligi</translation>
@@ -702,7 +700,6 @@
 <translation id="4126551873361000548">10 soniya orqaga</translation>
 <translation id="4128271910628504223">“Tumanli oʻrmon chizish” kabi soʻrov kiriting</translation>
 <translation id="4130035430755296270">Boshqa dizayn variantlari uchun kursorni shu joyda ushlab turing</translation>
-<translation id="4130750466177569591">Men roziman</translation>
 <translation id="4131410914670010031">Oq-qora</translation>
 <translation id="4137700675046373159">Shanba kuni</translation>
 <translation id="4139326893730851150">Mikrodastur yangilanishlari</translation>
@@ -1051,7 +1048,6 @@
 <translation id="5606865426897221650">Tab</translation>
 <translation id="5612205513582918357">Class Tools ekraningizni foydalanuvchiga (<ph name="RECEIVER_NAME" />) ulashmoqda</translation>
 <translation id="5613201299517339763">Siz tizimdan chiqdingiz</translation>
-<translation id="5620281292257375798">Maxfiy</translation>
 <translation id="5628106863521633649">Mavjud tillar</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">annotatsiya</translation>
@@ -1415,7 +1411,6 @@
 <translation id="7184043045742675738">Tugmani sozlash uchun istalgan klaviatura tugmasini bosing. Sichqoncha yoki strelka tugmalari bilan tugma joylashuvini oʻzgartiring</translation>
 <translation id="7187669805838282391">Chorshanba kuni</translation>
 <translation id="7205318498545665455">Mikrofonni tanlang</translation>
-<translation id="7206979415662233817">Xizmat shartlari</translation>
 <translation id="7210635925306941239">havorang</translation>
 <translation id="7212547870105584639">Tarmoq APN sozlamalarini boshqarish. APN sozlamalari mobil tarmoq va internet orasida aloqani taʼminlaydi. <ph name="BEGIN_LINK_LEARN_MORE" />Batafsil<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Tashqi qurilmalar uchun mikrodastur yangilanishi</translation>
@@ -1446,11 +1441,6 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7321055305895875150">yashil va moviy</translation>
 <translation id="7328475450575141167">strelitsiya</translation>
-<translation id="7331297744262591636">AI fon rasmidan foydalanish uchun kamida 18 yoshga kirgan boʻlishingiz kerak. Bu funksiya ishlashida <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Google xizmat shartlari<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> va <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />Generativ AI qoʻshimcha xizmat shartlari<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" /> amal qiladi.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          AI yordamida fon rasmlarini faqat shaxsiy yoki notijoriy maqsadlar uchun yaratish mumkin. Fon rasmini yaratishda yordam olishda siz kiritgan matn Google AI serverlariga yuboriladi va fon rasmlarini yaratib taklif qiladi. Bu funksiya ishlashida <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google Maxfiylik siyosati<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> amal qiladi. <ph name="BEGIN_LINK_LEARN_MORE" />Batafsil<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Natijalarni Google Qidiruvida chiqarish uchun Qidiruv + Boʻshliq tugmalarini bosing.</translation>
 <translation id="7343649194310845056">Tarmoq qurilmalari</translation>
 <translation id="7344788170842919262">yersimon</translation>
 <translation id="7346768383111016081">Klaviaturada oʻynash uchun oʻyin amali uchun tugma tanlang</translation>
@@ -1838,7 +1828,6 @@ Mazkur transkripsiyalar uchun transkripsiya modelini (&lt;100MB) yuklab oling.</
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">Bu videodan foydalanish</translation>
-<translation id="9087578468327036362">Bu soʻrov haqida xabar berish</translation>
 <translation id="9088306295921699330">Joriy faollik</translation>
 <translation id="9088994563996376283">Soddalashtirish</translation>
 <translation id="9095775724867566971">Pluginvm</translation>

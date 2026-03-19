@@ -273,7 +273,6 @@
 <translation id="200669432486043882">ファイルを交換</translation>
 <translation id="2006864819935886708">接続</translation>
 <translation id="2008685064673031089">Prime サーチ</translation>
-<translation id="2011174342667534258">SDK のバージョン:</translation>
 <translation id="2016697457005847575">トラブルシューティングの手順を試す</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2045814230297767491">カトラリー</translation>
@@ -523,7 +522,6 @@
 <translation id="3291996639387199448">鍵の方向</translation>
 <translation id="3294437725009624529">ゲスト</translation>
 <translation id="3303855915957856445">一致する結果は見つかりませんでした</translation>
-<translation id="3305294846493618482">続き</translation>
 <translation id="3310640316857623290">DNS の応答時間が許容値を大幅に超えています</translation>
 <translation id="3316495615885967552">要約とタイトル作成のモデルのダウンロードが完了しました</translation>
 <translation id="3321030238473337787">再生速度</translation>
@@ -702,7 +700,6 @@
 <translation id="4126551873361000548">10 秒巻き戻し</translation>
 <translation id="4128271910628504223">「霧の森を描く」などのプロンプトを入力</translation>
 <translation id="4130035430755296270">カーソルを合わせると他のレイアウト オプションが表示されます</translation>
-<translation id="4130750466177569591">同意する</translation>
 <translation id="4131410914670010031">白黒</translation>
 <translation id="4137700675046373159">土曜日</translation>
 <translation id="4139326893730851150">ファームウェア アップデート</translation>
@@ -1051,7 +1048,6 @@
 <translation id="5606865426897221650">タブ</translation>
 <translation id="5612205513582918357">クラスツールが画面を <ph name="RECEIVER_NAME" /> に共有しています</translation>
 <translation id="5613201299517339763">ログアウトしました</translation>
-<translation id="5620281292257375798">内部専用</translation>
 <translation id="5628106863521633649">対応言語</translation>
 <translation id="5630438231335788050">バウハウス</translation>
 <translation id="5631759159893697722">概要</translation>
@@ -1415,7 +1411,6 @@
 <translation id="7184043045742675738">ボタンをカスタマイズするには、いずれかのキーをクリックします。マウスまたは矢印キーを使用してキーの位置を変更します。</translation>
 <translation id="7187669805838282391">水曜日</translation>
 <translation id="7205318498545665455">マイクを指定してください</translation>
-<translation id="7206979415662233817">利用規約</translation>
 <translation id="7210635925306941239">シアン</translation>
 <translation id="7212547870105584639">ネットワークの APN 設定を管理します。APN は、モバイル ネットワークとインターネットの間の接続を確立します。<ph name="BEGIN_LINK_LEARN_MORE" />詳細<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">外部デバイスのファームウェア アップデート</translation>
@@ -1446,11 +1441,6 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7321055305895875150">緑色とティール</translation>
 <translation id="7328475450575141167">フウチョウ科</translation>
-<translation id="7331297744262591636">AI 壁紙を使用できるのは 18 歳以上の方に限られ、ご使用には <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Google 利用規約<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" />と<ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />生成 AI の追加利用規約<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />が適用されることに同意していただく必要があります。
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          AI による壁紙は非営利の個人的な目的でのみ作成できます。壁紙の作成サポートでは、<ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google のプライバシー ポリシー<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />に沿ってテキストが Google AI サーバーに送信され、壁紙の候補が生成されます。<ph name="BEGIN_LINK_LEARN_MORE" />詳細<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google 検索で結果を確認するには [検索]+Space キーを押してください。</translation>
 <translation id="7343649194310845056">ネットワーク デバイス</translation>
 <translation id="7344788170842919262">アースカラー</translation>
 <translation id="7346768383111016081">キーボードでプレイするにはゲーム操作のコントロールを設定します</translation>
@@ -1838,7 +1828,6 @@
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">この動画を使う</translation>
-<translation id="9087578468327036362">このクエリを報告</translation>
 <translation id="9088306295921699330">現在の使用状況</translation>
 <translation id="9088994563996376283">簡略化</translation>
 <translation id="9095775724867566971">Pluginvm</translation>

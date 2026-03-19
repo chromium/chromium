@@ -470,7 +470,7 @@
 <translation id="2658056020748144467">Dosya açılamıyor</translation>
 <translation id="2661809266906115479"><ph name="TITLE" />, <ph name="STATE" />, yalnızca bu cihazda, <ph name="URL" /></translation>
 <translation id="2664621323652615289">Durdur</translation>
-<translation id="2666092431469916601">Üst</translation>
+<translation id="2666092431469916601">Üstte</translation>
 <translation id="2669454659051515572">Bu cihazı kullanan herkes indirilen dosyaları görebilir</translation>
 <translation id="2671423594960767771">Grubu paylaş</translation>
 <translation id="2673508731173059946">Kopyalanan bağlantıyı ziyaret et</translation>
@@ -574,7 +574,7 @@
 <translation id="3073633853887034268">Anladım</translation>
 <translation id="3080525922482950719">Sayfaları daha sonra veya çevrimdışı okumak için kaydedebilirsiniz</translation>
 <translation id="3081338492074632642">Kaydettiğiniz şifrenin <ph name="WEBSITE" /> için kullandığınız şifreyle eşleştiğinden emin olun</translation>
-<translation id="3087734570205094154">Alt</translation>
+<translation id="3087734570205094154">Altta</translation>
 <translation id="309710370695886264">Yeniden kullanılan 1 şifreniz var. Güvende kalmak için sorunu hemen giderin.</translation>
 <translation id="3099402981545350675">Bu işlem, bu cihaza kaydedilen adresleri siler. Ayrıca, seçilen bilgiler Chrome'dan kaldırılır ancak Google Hesabınızdan silinmez.</translation>
 <translation id="3106258548858559536">Okuma Modu'nu kapat</translation>
@@ -1724,6 +1724,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="7149893636342594995">Son 24 saat</translation>
 <translation id="7154417656353909837">Adresleri kaldır</translation>
 <translation id="7161230316646448869">Tüm cihazlardaki yer işaretleriniz, geçmişiniz ve diğer öğelerinizi senkronize edin</translation>
+<translation id="7165323152084385463">Araç şasi numarası</translation>
 <translation id="7173114856073700355">Ayarları Aç</translation>
 <translation id="7173721738069475737">{count,plural, =1{Yer işareti kaydedildi}other{{count} yer işareti kaydedildi}}</translation>
 <translation id="7176183551031110427">Uzaklaştır</translation>
@@ -2218,6 +2219,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="8863067612494559785"><ph name="DEVICE_NAME" /> cihazına gönderiliyor…</translation>
 <translation id="8863431381414769983">Google Haritalar'dan yol tarifi ve bölgenizle ilgili bilgiler alın</translation>
 <translation id="8871974300055371298">İçerik ayarları</translation>
+<translation id="8876661425082386199">Bağlantınızı denetleyin</translation>
 <translation id="8877788021141246043">Hatırlatıcı oluştur</translation>
 <translation id="8879604564928138696">Denemek için iki kez dokunun</translation>
 <translation id="8879952635974818770">Kişiselleştirilmiş içerik</translation>

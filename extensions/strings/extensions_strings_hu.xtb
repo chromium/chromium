@@ -25,6 +25,7 @@
 <translation id="3115238746683532089">Ismeretlen termék (<ph name="PRODUCT_ID" />) <ph name="VENDOR_ID" /> szolgáltatótól (sorozatszám: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Nem sikerült lecserélni a crx-fájlt. Ellenőrizze, hogy nincs-e használatban a fájl.</translation>
 <translation id="3163201441334626963">Ismeretlen termék (<ph name="PRODUCT_ID" />) a következő forgalmazótól: <ph name="VENDOR_ID" /></translation>
+<translation id="3174723475300476613">A szervezete letiltotta az ezen bővítményhez való hozzáférést.</translation>
 <translation id="3242289508736283383">A „kiosk_only” manifestattribútummal rendelkező alkalmazást kioszk módban kell telepíteni a ChromeOS rendszeren</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (sorozatszám: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> termék a következő forgalmazótól: <ph name="VENDOR_ID" /> (sorozatszám: <ph name="SERIAL_NUMBER" />)</translation>
@@ -32,6 +33,7 @@
 <translation id="3834775135533257713">Nem sikerült hozzáadni a(z) „<ph name="TO_INSTALL_APP_NAME" />” alkalmazást, mert ütközik a következővel: „<ph name="INSTALLED_APP_NAME" />”.</translation>
 <translation id="388442998277590542">Nem lehet betölteni a(z) "<ph name="OPTIONS_PAGE" />" opcióoldalt.</translation>
 <translation id="3984413272403535372">Hiba történt a bővítmények aláírása során.</translation>
+<translation id="4094452115117798451">A szervezete letiltotta az ezen bővítménykategóriához való hozzáférést.</translation>
 <translation id="4233778200880751280">A(z) „<ph name="ABOUT_PAGE" />” névjegyoldal betöltése sikertelen volt.</translation>
 <translation id="424963718355121712">Az alkalmazásokat az általuk érintett gazdagépről kell kiszolgálni</translation>
 <translation id="4306119971288449206">Az alkalmazásokat „<ph name="CONTENT_TYPE" />” tartalomtípussal kell ellátni</translation>

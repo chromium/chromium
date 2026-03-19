@@ -1818,6 +1818,7 @@
 <translation id="8282950411412455249">前往安全设置</translation>
 <translation id="8288688997999490824">{NUM_WINDOWS,plural, =1{关闭 1 个无痕式窗口}other{关闭 # 个无痕式窗口}}</translation>
 <translation id="831192587911042850">将当前网站添加到您关注的网站的列表中。</translation>
+<translation id="8313599942510782709">您的任务仍在进行中</translation>
 <translation id="8317318757008452355">打开打印网页的选项</translation>
 <translation id="8320212361750431956">近期活动</translation>
 <translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />新<ph name="END_NEW" /></translation>

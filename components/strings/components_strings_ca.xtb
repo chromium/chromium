@@ -1073,6 +1073,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2673968385134502798">Jocs</translation>
 <translation id="2674170444375937751">Confirmes que vols suprimir aquestes pàgines de l'historial?</translation>
 <translation id="2674524144218093528">Pintura i acabaments de cases</translation>
+<translation id="2675716371350192683">El teu contingut no s'utilitzarà per millorar la IA. La teva organització pot canviar aquestes opcions de configuració en qualsevol moment.</translation>
 <translation id="26774279487328902"><ph name="GROUP_COUNT" /> grups de pestanyes ja no estan disponibles</translation>
 <translation id="2677748264148917807">Surt</translation>
 <translation id="2679216653373462289">Utilitzar els sensors de moviment i de llum</translation>
@@ -2657,6 +2658,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="5190835502935405962">Barra d'adreces d'interès</translation>
 <translation id="5191315092027169558">El teu perfil està gestionat per <ph name="DOMAIN" /></translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> vol baixar diversos fitxers</translation>
+<translation id="519528950056409240">Permet que Wallet comparteixi dades</translation>
 <translation id="5199121357983849992">Vols desar el document d'identitat?</translation>
 <translation id="5200063972779787617">Desa l'adreça al compte</translation>
 <translation id="5201306358585911203">Una pàgina inserida en aquesta pàgina diu</translation>
@@ -3104,6 +3106,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="5910140988253729859">Desfés l'emplenament automàtic</translation>
 <translation id="5911020115933784199">Esdeveniments i agendes culturals</translation>
 <translation id="5911110632211230665">Opció d'obrir bloquejada</translation>
+<translation id="5912796581727968237">Obre Google Wallet</translation>
 <translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" /> ha afegit aquesta pestanya</translation>
 <translation id="5915189366813702112">Treball flexible</translation>
 <translation id="59174027418879706">Activat</translation>

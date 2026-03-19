@@ -8,6 +8,7 @@
 <translation id="1017556409696559990">如果 Chrome 沒有返回歷史記錄，就將頂層視窗最小化</translation>
 <translation id="101823271612280837">已停止錄製。無法在平板模式下使用遊戲資訊主頁。</translation>
 <translation id="1024364763893396229">儲存 <ph name="NAME" /></translation>
+<translation id="103279545524624934">請釋出磁碟空間以啟動 Android 應用程式。</translation>
 <translation id="1032891413405719768">觸控筆電量偏低</translation>
 <translation id="1036348656032585052">關閉</translation>
 <translation id="1037492556044956303">已新增 <ph name="DEVICE_NAME" /></translation>
@@ -35,6 +36,7 @@
 <translation id="1129383337808748948">重新整理<ph name="CONTENT_TITLE" /></translation>
 <translation id="1142002900084379065">最近的相片</translation>
 <translation id="114221662579355151">這將允許「<ph name="APP1_NAME" />」、「<ph name="APP2_NAME" />」與具有攝影機權限的所有應用程式和網站存取。系統可能會要求你重新整理網頁或重新啟動應用程式。</translation>
+<translation id="1147991416141538220">如需要求存取權限，請與這個裝置的系統管理員聯絡。</translation>
 <translation id="1148499908455722006">開啟「<ph name="USER_NAME" />」的資訊對話方塊</translation>
 <translation id="1150989369772528668">日曆</translation>
 <translation id="1153356358378277386">配對裝置</translation>
@@ -114,6 +116,7 @@
 <translation id="1340378040547539434">縮小網頁</translation>
 <translation id="1341651618736211726">溢位</translation>
 <translation id="1341926407152459446">使用「<ph name="DEVICE_NAME" />」做為音訊輸入和輸出裝置</translation>
+<translation id="1346403631707626730">傳送使用狀況與診斷資料。如要協助改善貴子女的 Android 使用體驗，可以選擇讓系統自動將診斷情形、裝置狀態和應用程式使用資料傳送給 Google。這些資料將有助於改善系統和應用程式的穩定性與其他功能，並不會用於識別貴子女的身分。部分匯總資料還能協助 Google 應用程式和合作夥伴 (例如 Android 開發人員) 提升產品和服務品質。如果將貴子女的「其他網路和應用程式活動」設定為開啟，這類資料可能會儲存在他們的 Google 帳戶中。<ph name="BEGIN_LINK1" />進一步瞭解指標<ph name="BEGIN_LINK1_END" />瞭解詳情<ph name="END_LINK1" /></translation>
 <translation id="1346748346194534595">向右</translation>
 <translation id="1350494136075914725">進行中 · 切換至分頁</translation>
 <translation id="1351937230027495976">收合選單</translation>
@@ -196,6 +199,7 @@
 <translation id="1610778689852195798">「復原」</translation>
 <translation id="1611993646327628135">開啟</translation>
 <translation id="1612679292338846734">開啟這些功能後，輸入的文字、文件內容和網頁網址可能會傳送到 Google AI 伺服器。依據 <ph name="LINK_TO_SERVICE_TERMS" />規定，這類資訊會用於產生撰寫建議、生成摘要、回答問題及提升產品品質，請勿加入任何個人、敏感或機密資訊。</translation>
+<translation id="1619879934359211038">無法連線至 Google Play。請檢查網路連線，然後再試一次。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
 <translation id="1620510694547887537">攝影機</translation>
 <translation id="1623768535032616219">收合 Google Classroom</translation>
 <translation id="163032029566320584">目前無法使用「<ph name="UNAVAILABLE_DLC" />」。</translation>
@@ -224,6 +228,7 @@
 <translation id="1719094688023114093">即時字幕功能已開啟。</translation>
 <translation id="1720011244392820496">開啟 Wi-Fi 同步功能</translation>
 <translation id="1720230731642245863">無線基地台已關閉</translation>
+<translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />如要移除應用程式，請依序前往 [設定] &gt; [Google Play 商店] &gt; [管理 Android 偏好設定] &gt; [應用程式] 或 [應用程式管理員]，然後輕觸你要解除安裝的應用程式 (你可能需要向左或向右滑動才能找出應用程式)。接著，輕觸 [解除安裝] 或 [停用]。<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1731815243805539470">切換到前一位使用者</translation>
 <translation id="1733996486177697563">在深色和淺色主題之間切換。按住桌面，接著選取桌布和樣式。</translation>
 <translation id="1734230530703461088">無法在時限內載入擴充功能，請與系統管理員聯絡。</translation>
@@ -277,6 +282,7 @@
 <translation id="1882814835921407042">沒有行動網路</translation>
 <translation id="1882897271359938046">正在建立 <ph name="DISPLAY_NAME" /> 鏡像</translation>
 <translation id="1885785240814121742">使用指紋解鎖</translation>
+<translation id="1891362123137972260">磁碟空間嚴重不足，請釋出磁碟空間。</translation>
 <translation id="1894024878080591367">設定後即可使用鍵盤玩遊戲</translation>
 <translation id="1896383923047738322">自訂鍵盤</translation>
 <translation id="1904997243703671177">關閉藍牙後，<ph name="DEVICE_COUNT" /> 個外接裝置會與 <ph name="DEVICE_TYPE" /> 中斷連線，包括：</translation>
@@ -309,11 +315,13 @@
 <translation id="1996162290124031907">前往下一個分頁</translation>
 <translation id="1998100899771863792">目前的桌面</translation>
 <translation id="2001444736072756133">搜尋<ph name="CATEGORY" />、檔案、應用程式和其他內容。</translation>
+<translation id="2011174342667534258">SDK 版本：</translation>
 <translation id="2017998995161831444">在「探索」應用程式中開啟「說明」</translation>
 <translation id="2021864487439853900">按一下即可解鎖</translation>
 <translation id="2034971124472263449">仍要儲存</translation>
 <translation id="2041220428661959602">電池電量：<ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="204259843076055848">「<ph name="SIX_PACK_KEY_NAME" />」快速鍵目前已關閉</translation>
+<translation id="2048653237708779538">無法執行操作</translation>
 <translation id="2049240716062114887">已將桌面名稱變更為「<ph name="DESK_NAME" />」</translation>
 <translation id="2064048859448024834">已開啟攝影機預覽畫面</translation>
 <translation id="2065098273523946419">瞭解詳情連結。啟用時重新導向到瀏覽器</translation>
@@ -378,18 +386,21 @@
 <translation id="2305738328104302723">Google Tasks 清單：<ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />：最近的螢幕畫面截圖、下載內容和固定的檔案</translation>
 <translation id="2318576281648121272">今天 <ph name="TODAY_DATE" /></translation>
+<translation id="2318817390901984578">如要使用 Android 應用程式，請先為你的 <ph name="DEVICE_TYPE" /> 充電並進行更新。</translation>
 <translation id="2322065293366551060"><ph name="CATEGORY" />，搜尋結果類別</translation>
 <translation id="2322173485024759474">移至上一個字母</translation>
 <translation id="2326112202058075478">顯示更多表情符號</translation>
 <translation id="2335091074961603075">Chromebook 或藍牙裝置使用的是舊版藍牙。如要提高音訊品質，請使用內部麥克風。</translation>
 <translation id="2339073806695260576">輕觸檔案櫃的觸控筆圖示即可做筆記、擷取螢幕畫面，以及使用雷射筆或放大鏡。</translation>
 <translation id="2341729377289034582">已鎖定為垂直畫面</translation>
+<translation id="2344032937402519675">無法連上伺服器。請檢查網路連線，然後再試一次。如果問題仍然無法解決，請嘗試重新啟動 Chromebook。</translation>
 <translation id="2345226652884463045">按下 Enter 鍵或搜尋 + 空格鍵即可選取要編輯的文字。</translation>
 <translation id="2349785431103945039">顯示無線基地台詳細資料。連線至行動網路即可使用無線基地台。</translation>
 <translation id="2350182423316644347">正在初始化應用程式...</translation>
 <translation id="2350794187831162545"><ph name="LANGUAGE" />語音處理程序已在本機執行，相關內容會離線運作。你可以前往 [設定] &gt; [無障礙中心] 變更語音輸入語言。</translation>
 <translation id="2352467521400612932">觸控筆設定</translation>
 <translation id="2354174487190027830">正在啟用 <ph name="NAME" /></translation>
+<translation id="2355314311311231464">無法擷取你的帳戶詳細資料，因此佈建失敗。請再試一次。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
 <translation id="2359808026110333948">繼續</translation>
 <translation id="2360398059912971776">電池</translation>
 <translation id="2361210043495191221">切換 Wi-Fi。<ph name="STATE" />。</translation>
@@ -412,6 +423,7 @@
 <translation id="240545663114741956">按兩次 <ph name="ACCELERATOR" /> 即可登出。</translation>
 <translation id="2405664212338326887">未連線</translation>
 <translation id="2406710117564540804">開啟/關閉零打擾模式</translation>
+<translation id="240789602312469910">傳送使用狀況與診斷資料。如要協助改善貴子女的 Android 使用體驗，可以選擇讓系統自動將診斷情形、裝置狀態和應用程式使用資料傳送給 Google。這些資料將有助於改善系統和應用程式的穩定性與其他功能，並不會用於識別貴子女的身分。部分匯總資料還能協助 Google 應用程式和合作夥伴 (例如 Android 開發人員) 提升產品和服務品質。這項<ph name="BEGIN_LINK1" />設定<ph name="END_LINK1" />是由裝置擁有者執行。擁有者可選擇將這部裝置的診斷資料與使用資料傳送給 Google。如果將貴子女的「其他網路和應用程式活動」設定為開啟，這類資料可能會儲存在他們的 Google 帳戶中。<ph name="BEGIN_LINK2" />進一步瞭解指標<ph name="BEGIN_LINK2_END" />瞭解詳情<ph name="END_LINK2" /></translation>
 <translation id="2408955596600435184">請輸入你的 PIN 碼</translation>
 <translation id="2412593942846481727">有可用的更新</translation>
 <translation id="2416438829169535743">要離開檢視畫面嗎？</translation>
@@ -464,6 +476,7 @@
 <translation id="2531025035050312891">裝置運作緩慢</translation>
 <translation id="2531107890083353124">拖曳分頁時按下 <ph name="KEY_ONE" /> 鍵</translation>
 <translation id="2532199152994248594">拖曳或按下空格鍵，選取要擷圖的區域</translation>
+<translation id="2540651571961486573">發生錯誤。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
 <translation id="2545334090614121435">要使用 Home 鍵嗎？使用</translation>
 <translation id="254900897760075745">將所選內容複製到剪貼簿</translation>
 <translation id="2549711466868162843">改善光線</translation>
@@ -511,8 +524,11 @@
 <translation id="2701576323154693023">無線基地台已開啟 (Wi-Fi 已關閉)</translation>
 <translation id="2704781753052663061">加入其他 Wi-Fi 網路</translation>
 <translation id="2705001408393684014">切換麥克風。<ph name="STATE_TEXT" /></translation>
+<translation id="2706304388244371417">使用 Google 雲端硬碟備份資料。隨時可以輕鬆還原資料或改用其他裝置。備份項目包含應用程式資料。備份內容會上傳到 Google，並使用貴子女的 Google 帳戶密碼加密。<ph name="BEGIN_LINK1" />進一步瞭解備份功能<ph name="BEGIN_LINK1_END" />瞭解詳情<ph name="END_LINK1" /></translation>
 <translation id="2706462751667573066">向上鍵</translation>
+<translation id="2710101514844343743">使用狀況與診斷資料</translation>
 <translation id="2710984741481549981">鎖定視窗</translation>
+<translation id="2714393097308983682">Google Play 商店</translation>
 <translation id="2718395828230677721">夜燈</translation>
 <translation id="2726420622004325180">你的手機必須有行動數據才能提供無線基地台</translation>
 <translation id="2727175239389218057">回覆</translation>
@@ -574,6 +590,8 @@
 <translation id="2893701697603065178">受管理的開發環境</translation>
 <translation id="2894949423239620203">連接線可能會影響效能</translation>
 <translation id="2902312830803030883">更多動作</translation>
+<translation id="2909506265808101667">無法連上 Google 服務。請檢查網路連線，然後再試一次。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
+<translation id="2910718431259223434">發生錯誤。請再試一次，或與裝置擁有者或系統管理員聯絡。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
 <translation id="2914580577416829331">螢幕截圖</translation>
 <translation id="2924416280450782352">無法顯示項目。請嘗試重新開啟這個面板。</translation>
 <translation id="292506373491190801">來自進行中的活動</translation>
@@ -633,7 +651,9 @@
 <translation id="3093423061078042895">沒有截止日期</translation>
 <translation id="3095995014811312755">版本</translation>
 <translation id="309749186376891736">移動游標</translation>
+<translation id="3100071818310370858">使用位置資訊。允許具有位置存取權的應用程式和服務使用這部裝置的位置資訊。Google 可能會定期蒐集位置資料，並以匿名方式使用，改進定位精確度和適地性服務品質。<ph name="BEGIN_LINK1" />進一步瞭解位置資訊<ph name="BEGIN_LINK1_END" />瞭解詳情<ph name="END_LINK1" /></translation>
 <translation id="3100274880412651815">關閉擷取模式</translation>
+<translation id="3104948640446684649">傳送使用狀況與診斷資料。這部裝置目前會自動將診斷情形、裝置狀態和應用程式使用資料傳送給 Google。這些資料將有助於改善系統和應用程式的穩定性與其他功能。部分匯總資料還能協助 Google 應用程式和合作夥伴 (例如 Android 開發人員) 提升產品和服務品質。如果將「其他網路和應用程式活動」設定為開啟，這類資料可能會儲存在您的 Google 帳戶中。<ph name="BEGIN_LINK2" />進一步瞭解指標<ph name="BEGIN_LINK2_END" />瞭解詳情<ph name="END_LINK2" /></translation>
 <translation id="3105917916468784889">擷取螢幕畫面</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (藍牙)</translation>
 <translation id="3107155169630537783">歡迎通知已<ph name="STATE" /></translation>
@@ -697,6 +717,7 @@
 <translation id="3306386552969601301"><ph name="DEVICECOUNT" /> 部裝置已連線至「<ph name="DEVICE_NAME" />」無線基地台</translation>
 <translation id="3307642347673023554">已切換為筆記型電腦模式</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> 日後仍可登入。</translation>
+<translation id="3313950410573257029">檢查連線狀態</translation>
 <translation id="3321628682574733415">家長存取碼不正確</translation>
 <translation id="332827762492701193">通知已隱藏</translation>
 <translation id="3333674550998107387">展開「<ph name="NOTIFICATION_TITLE" />」通知</translation>
@@ -814,6 +835,7 @@
 <translation id="3638400994746983214">切換隱私保護畫面。<ph name="STATE_TEXT" />。</translation>
 <translation id="3641070112313110357">Chromebook 版 Steam (Beta 版) 必須更新。請重新啟動 Chromebook，然後再試一次。</translation>
 <translation id="3649256019230929621">將視窗縮到最小</translation>
+<translation id="3650952250015018111">允許「<ph name="APP_NAME" />」存取：</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />：
         <ph name="START_TIME" /> 至 <ph name="END_TIME" /> (<ph name="TIME_ZONE" />)。選取活動即可在 Google 日曆中查看詳情。</translation>
@@ -857,6 +879,7 @@
 <translation id="3779139509281456663">正在連結 <ph name="NAME" /></translation>
 <translation id="3781910048497807059">將焦點移至上一個窗格</translation>
 <translation id="3783640748446814672">Alt</translation>
+<translation id="3783889407390048282">請釋出空間，以免無法存取 Android。</translation>
 <translation id="3784455785234192852">鎖定</translation>
 <translation id="3788301286821743879">無法啟動資訊站應用程式。</translation>
 <translation id="3789841737615482174">安裝</translation>
@@ -866,6 +889,7 @@
 <translation id="3804737937830804242">收合相機調整大小的按鈕</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 個表情符號圖示。沒有其他相符的結果。}other{# 個表情符號圖示。沒有其他相符的結果。}}</translation>
 <translation id="3822403841174077928">無法複製格式</translation>
+<translation id="3824621460022590830">裝置註冊憑證無效。請與裝置擁有者或系統管理員聯絡。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
 <translation id="3824784079442479685">這將允許「<ph name="APP_NAME" />」和具有攝影機權限的所有應用程式和網站存取攝影機。系統可能會要求你重新整理網頁或重新啟動應用程式。</translation>
 <translation id="3826099427150913765">切換為密碼</translation>
 <translation id="383058930331066723">省電模式已開啟</translation>
@@ -890,6 +914,7 @@
 <translation id="3898464793473355515">將畫面順時針旋轉 90 度</translation>
 <translation id="3900355044994618856">你的工作階段將於 <ph name="SESSION_TIME_REMAINING" />後結束</translation>
 <translation id="3901991538546252627">正在連線至：<ph name="NAME" /></translation>
+<translation id="3904326018476041253">定位服務</translation>
 <translation id="3904768293285573640">向左調整並排視窗的大小</translation>
 <translation id="3923221004758245114">要將「<ph name="VM_NAME" />」從 <ph name="DEVICE_TYPE" /> 中移除嗎？這項操作會刪除虛擬機器中的所有應用程式和資料！</translation>
 <translation id="3923494859158167397">尚未設定行動網路</translation>
@@ -904,6 +929,7 @@
 <translation id="3950272133184491871">要立即登出嗎？</translation>
 <translation id="3950820424414687140">登入</translation>
 <translation id="3953130726459169782">尚未完成任何作業。</translation>
+<translation id="3957844511978444971">輕觸「接受」即表示您確認所選的這些 Google 服務設定。</translation>
 <translation id="3958714870339660776">全天</translation>
 <translation id="3962859241508114581">上一首曲目</translation>
 <translation id="3963124517343721543">開啟先前的視窗和分頁，輕鬆繼續未完成的操作。此外，系統也會顯示個人化的後續事項建議。</translation>
@@ -1018,6 +1044,7 @@
 <translation id="4278779213160967034">這項程序可能需要幾分鐘才能完成。正在下載檔案。</translation>
 <translation id="4279490309300973883">鏡像</translation>
 <translation id="4280601795273309128">安全性更新已終止，請升級裝置。</translation>
+<translation id="4281844954008187215">服務條款</translation>
 <translation id="4283888303416325161">基於安全考量，請輸入密碼</translation>
 <translation id="4285498937028063278">取消固定</translation>
 <translation id="428715201724021596">正在連線至設定檔。請稍候片刻。</translation>
@@ -1062,6 +1089,7 @@
 <translation id="4406883609789734330">即時字幕</translation>
 <translation id="4412698727486357573">說明中心</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" />功能已關閉。</translation>
+<translation id="44141919652824029">要允許「<ph name="APP_NAME" />」取得已連結 USB 裝置的清單嗎？</translation>
 <translation id="4414242853388122273">移除「<ph name="VM_NAME" />」時發生錯誤，請再試一次。</translation>
 <translation id="4417647906073317561">專注模式設定。你可以設定計時器、工作和音樂，讓工作更有效率。</translation>
 <translation id="4418600384772451109">關閉面板</translation>
@@ -1103,6 +1131,7 @@
 <translation id="453661520163887813"><ph name="TIME" /> 後充飽</translation>
 <translation id="4538824937723742295">擷取全螢幕畫面</translation>
 <translation id="4539127209940689201">列印目前的網頁</translation>
+<translation id="4541123282641193691">無法驗證帳戶。請再試一次，或重新啟動 Chromebook。</translation>
 <translation id="4541505619120536051">一律開啟</translation>
 <translation id="4541706525461326392">正在移除設定檔。請稍候片刻。</translation>
 <translation id="4544483149666270818">選取要錄影的視窗</translation>
@@ -1113,6 +1142,7 @@
 <translation id="4556953949326137018">使用「新增至 Google 日曆」或「建立 Google 文件」這類建議的動作時，系統會將所選區域的內容傳送到 Google 伺服器以建議相關動作，過程中會遵守《<ph name="LINK_TO_SERVICE_TERMS" />》的規定。請勿加入任何個人、敏感或機密資訊。</translation>
 <translation id="4560576029703263363">開啟</translation>
 <translation id="4561267230861221837">3G</translation>
+<translation id="4562091353415772246">安裝更新內容和應用程式。如果選擇繼續，即表示您允許這部裝置自動下載及安裝來自 Google、您的電信業者和裝置製造商的更新內容和應用程式，上述程序可能會使用行動數據。其中有些應用程式或許會提供應用程式內購項目。<ph name="BEGIN_LINK1" />進一步瞭解 Play 自動安裝功能<ph name="BEGIN_LINK1_END" />瞭解詳情<ph name="END_LINK1" /></translation>
 <translation id="4565377596337484307">隱藏密碼</translation>
 <translation id="4566144812051858745">對任何建議都不感興趣</translation>
 <translation id="4569753163207712681">查看手機上最近的相片、媒體和應用程式</translation>
@@ -1132,6 +1162,7 @@
 <translation id="4628757576491864469">裝置</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />，星級評等 <ph name="RATING_SCORE" /></translation>
 <translation id="4633636853437260449">按下 Ctrl 和 W 鍵即可刪除</translation>
+<translation id="4633757335284074492">使用 Google 雲端硬碟備份你的資料。你隨時可以輕鬆還原資料或切換裝置。這個備份項目包含應用程式資料。備份內容會上傳到 Google，並使用貴子女的 Google 帳戶密碼加密。</translation>
 <translation id="4635501805800894201">{0,plural, =0{立即將裝置復原為先前的版本}=1{在 1 秒內將裝置復原為先前的版本}other{在 # 秒內將裝置復原為先前的版本}}</translation>
 <translation id="4642092649622328492">擷取部分螢幕畫面</translation>
 <translation id="4642587497923912728">Steam for Chromebook (Beta 版) 僅供第一個登入這部 Chromebook 的帳戶使用。</translation>
@@ -1174,6 +1205,7 @@
 <translation id="4759238208242260848">下載</translation>
 <translation id="4762160261012420470"><ph name="LAUNCHER_KEY_NAME" /> + 向上鍵</translation>
 <translation id="4762573482154983647">隱藏應用程式</translation>
+<translation id="4762718786438001384">裝置磁碟空間嚴重不足</translation>
 <translation id="4763885921995354846">這將允許具有攝影機權限的所有應用程式和網站存取攝影機。系統可能會要求你重新整理網頁或重新啟動應用程式。</translation>
 <translation id="4774338217796918551"><ph name="COME_BACK_TIME" /> 裝置就會解除鎖定。</translation>
 <translation id="4776584068981882959">系統仍無法驗證密碼，請再試一次。</translation>
@@ -1280,6 +1312,7 @@
 <translation id="5077936103761694531">要確認解析度嗎？</translation>
 <translation id="5078796286268621944">PIN 不正確</translation>
 <translation id="5083035541015925118">ctrl + alt + 向上鍵</translation>
+<translation id="5084328598860513926">佈建流程已中斷。請再試一次，或與裝置擁有者或系統管理員聯絡。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
 <translation id="5091636240353511739">顯示 PIN 碼</translation>
 <translation id="5092436659250499817">開啟/關閉鍵盤背光</translation>
 <translation id="5094577350232361255">關於</translation>
@@ -1309,6 +1342,7 @@
 <translation id="5170568018924773124">在資料夾中顯示</translation>
 <translation id="5176318573511391780">錄製部分螢幕畫面</translation>
 <translation id="5187627942836026988">顯示無線基地台詳細資料。系統管理員已封鎖無線基地台。</translation>
+<translation id="5188648870018555788">使用定位服務。允許 ChromeOS 和具有位置存取權的 Android 應用程式、網站及服務使用裝置的位置資訊。「定位精確度」可為 Android 應用程式和服務提供更精確的位置資訊。為達成此目標，Google 會定期處理裝置感應器相關資訊和來自裝置的無線訊號，然後匯總這些無線訊號定位資料並建立資料庫。這些資料不含身分識別資訊，可用於提高定位精確度和適地性服務的品質，並基於 Google 和第三方的正當利益改善、提供及維護 Google 服務，以滿足使用者需求。<ph name="BEGIN_LINK1" />進一步瞭解定位服務使用情形<ph name="END_LINK1" /></translation>
 <translation id="5197255632782567636">網際網路</translation>
 <translation id="5198039720391525849">精選 GIF</translation>
 <translation id="5198413532174090167"><ph name="DATE" />，<ph name="NUMBER" /> 個活動</translation>
@@ -1329,6 +1363,7 @@
 <translation id="5238719049014159442">開啟/關閉啟動器</translation>
 <translation id="5240725217819182328">快速存取特定頁面或在已安裝應用程式中執行操作</translation>
 <translation id="5243355658487390559">搜尋日期</translation>
+<translation id="5243522832766285132">請稍後再試</translation>
 <translation id="5245201184978705914">無法產生轉錄稿</translation>
 <translation id="5251174953851719648">重新整理內容</translation>
 <translation id="5253783950165989294">已連線至名為「<ph name="DEVICE_NAME" />」的裝置，電池電力：<ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -1336,6 +1371,7 @@
 <translation id="5256939106029293271">測試麥克風</translation>
 <translation id="5258528442992323769">沒有已儲存的桌面</translation>
 <translation id="5260676007519551770">桌面 4</translation>
+<translation id="5264148714798105376">請稍候片刻。</translation>
 <translation id="5265391159779542051">已載入結果</translation>
 <translation id="5270547718570958938">Google 日曆</translation>
 <translation id="5277869901083657836">切換觸控筆工具</translation>
@@ -1412,6 +1448,7 @@
 <translation id="5506975627792768506">開啟或關閉放大鏡</translation>
 <translation id="5507778598655387680"><ph name="VOLUME_LEVEL" />，按下 Enter 鍵即可設為靜音。</translation>
 <translation id="5512042095225963688">刪除上一個字詞</translation>
+<translation id="5517304475148761050">這個應用程式需要存取 Play 商店才能執行</translation>
 <translation id="5519005148254860683">展開 Google Tasks</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">你的管理員已移除所有 eSIM 設定檔。如需更多資訊，請向管理員洽詢。</translation>
@@ -1439,6 +1476,7 @@
 <translation id="5577281275355252094">如要使用 Phone Hub，請確認手機已開啟藍牙功能</translation>
 <translation id="5578188167649348993">記憶體</translation>
 <translation id="5580000943347215299">資料庫</translation>
+<translation id="5581972110672966454">無法將裝置加入網域。請再試一次，或與裝置擁有者或系統管理員聯絡。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
 <translation id="5586388332127302891">置頂放大鏡已啟用，再次按下 <ph name="ACCELERATOR" />即可停用。</translation>
 <translation id="5587506661873751671">目前下載進度：<ph name="DOWNLOAD_PERCENT" />%</translation>
 <translation id="558849140439112033">拖曳選取要擷圖的區域</translation>
@@ -1463,6 +1501,7 @@
 <translation id="5662075790140998213">桌面 10</translation>
 <translation id="5662709761327382534">錄音麥克風已<ph name="CURRENT_STATE" />，按下 Enter 鍵即可<ph name="NEW_STATE" />麥克風錄音功能</translation>
 <translation id="5662919923378083468"><ph name="ACTION_DESCRIPTION" />、<ph name="SHORTCUT_HINT" /></translation>
+<translation id="5667546120811588575">正在設定 Google Play...</translation>
 <translation id="5669267381087807207">啟用中</translation>
 <translation id="5671658447180261823">移除這項建議：<ph name="SUGGESTION_NAME" /></translation>
 <translation id="5672890847723042801">公用程式</translation>
@@ -1479,6 +1518,7 @@
 <translation id="5691772641933328258">指紋辨識失敗</translation>
 <translation id="5693255400847650006">麥克風正在使用中</translation>
 <translation id="5699366815052349604">將使用中的視窗指派給所有桌面</translation>
+<translation id="570043786759263127">Google Play 應用程式和服務</translation>
 <translation id="570390244361237317">所有的應用程式，以方向鍵瀏覽即可存取所有的應用程式</translation>
 <translation id="5705197514573687092">顯示專注模式設定。計時器已設為 <ph name="FOCUS_DURATION" />。</translation>
 <translation id="5707775774148071965">你使用的連接線無法達到裝置所支援的資料傳輸速率。裝置效能可能會因此受到限制。</translation>
@@ -1493,6 +1533,7 @@
 <translation id="574392208103952083">中</translation>
 <translation id="5744083938413354016">輕觸拖曳</translation>
 <translation id="5745612484876805746">夜燈功能會在日落時自動開啟</translation>
+<translation id="5749214722697335450">傳送使用狀況與診斷資料。如要協助改善您的 Android 使用體驗，可以選擇讓系統自動將診斷情形、裝置狀態和應用程式使用資料傳送給 Google。這些資料將有助於改善系統和應用程式的穩定性與其他功能。部分匯總資料還能協助 Google 應用程式和合作夥伴 (例如 Android 開發人員) 提升產品和服務品質。如果將「其他網路和應用程式活動」設定為開啟，這類資料可能會儲存在您的 Google 帳戶中。<ph name="BEGIN_LINK1" />進一步瞭解指標<ph name="BEGIN_LINK1_END" />瞭解詳情<ph name="END_LINK1" /></translation>
 <translation id="5750765938512549687">藍牙已關閉</translation>
 <translation id="5758114525425072423">啟動專注模式，計時器已設為 <ph name="FOCUS_DURATION" />。</translation>
 <translation id="5759522586053040964">聽聽自己的聲音聽起來如何。如要停止，請按一下測試圖示或關閉視訊通話面板。</translation>
@@ -1509,6 +1550,7 @@
 <translation id="5775936059231769503">切換無線基地台。無線基地台已關閉。</translation>
 <translation id="5777841717266010279">停止共用螢幕？</translation>
 <translation id="5779721926447984944">固定的檔案</translation>
+<translation id="5780940414249100901">傳送使用狀況與診斷資料。這部裝置目前會自動將診斷情形、裝置狀態和應用程式使用資料傳送給 Google。這些資料將有助於改善系統和應用程式的穩定性與其他功能，並不會用於識別貴子女的身分。部分匯總資料還能協助 Google 應用程式和合作夥伴 (例如 Android 開發人員) 提升產品和服務品質。這項<ph name="BEGIN_LINK1" />設定<ph name="END_LINK1" />是由裝置擁有者執行。如果將貴子女的「其他網路和應用程式活動」設定為開啟，這類資料可能會儲存在他們的 Google 帳戶中。<ph name="BEGIN_LINK2" />進一步瞭解指標<ph name="BEGIN_LINK2_END" />瞭解詳情<ph name="END_LINK2" /></translation>
 <translation id="5785221443435874078">移除這項建議</translation>
 <translation id="5787431783058088906">取得獎勵</translation>
 <translation id="5788127256798019331">Play 檔案</translation>
@@ -1524,6 +1566,7 @@
 <translation id="5823239091726045201">Google Tasks 網頁版</translation>
 <translation id="5825969630400862129">設定已連結的裝置</translation>
 <translation id="5830180081891717894">還有 <ph name="WINDOWS" /> 個</translation>
+<translation id="583281660410589416">未知</translation>
 <translation id="5837036133683224804">停止透過<ph name="RECEIVER_NAME" />投放「<ph name="ROUTE_TITLE" />」</translation>
 <translation id="5840658767386246331">透過 Google 搜尋</translation>
 <translation id="5841296711770970362">播放下一首曲目</translation>
@@ -1589,6 +1632,7 @@
 <translation id="6032620807120418574">點擊任一處即可錄製全螢幕畫面</translation>
 <translation id="6040071906258664830">錄音麥克風已<ph name="STATE" /></translation>
 <translation id="6040143037577758943">關閉</translation>
+<translation id="6042308850641462728">更多</translation>
 <translation id="6043212731627905357">這個顯示器與你的 <ph name="DEVICE_TYPE" /> 不相容 (這是不支援的顯示器)。</translation>
 <translation id="6043994281159824495">立即登出</translation>
 <translation id="6045629311476491587">正由 <ph name="APP_COUNT" /> 個應用程式使用</translation>
@@ -1668,9 +1712,12 @@
 <translation id="6274422179279280249">你可以插入連結、表情符號等等，也可以讓 Google AI 幫忙撰寫。<ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="6276708887952587684">查看網頁原始碼</translation>
 <translation id="6285871695023807425">新增至日曆</translation>
+<translation id="628699625505156622">使用定位服務。允許 ChromeOS 和具有位置存取權的 Android 應用程式、網站及服務使用這部裝置的位置資訊。「定位精確度」可為 Android 應用程式和服務提供更精確的位置資訊。為達成此目標，Google 會定期處理裝置感應器相關資訊和來自這部裝置的無線訊號，然後匯總這些無線訊號定位資料並建立資料庫。這些資料不含任何身分識別資訊，可用於提高定位精確度和適地性服務的品質，並基於 Google 和第三方的正當利益改善、提供及維護 Google 服務，以滿足使用者需求。<ph name="BEGIN_LINK1" />進一步瞭解定位服務使用情形<ph name="END_LINK1" /></translation>
 <translation id="6288235558961782912">取得家長同意後即可再次新增 <ph name="USER_EMAIL_ADDRESS" />。</translation>
 <translation id="6291221004442998378">非充電中</translation>
+<translation id="6297986260307280218">傳送使用狀況與診斷資料。如要協助改善您的 Android 使用體驗，可以選擇讓系統自動將診斷情形、裝置狀態和應用程式使用資料傳送給 Google。這些資料將有助於改善系統和應用程式的穩定性與其他功能。部分匯總資料還能協助 Google 應用程式和合作夥伴 (例如 Android 開發人員) 提升產品和服務品質。這項<ph name="BEGIN_LINK1" />設定<ph name="END_LINK1" />是由裝置擁有者執行。擁有者可選擇將這部裝置的診斷資料與使用資料傳送給 Google。如果將「其他網路和應用程式活動」設定為開啟，這類資料可能會儲存在您的 Google 帳戶中。<ph name="BEGIN_LINK2" />進一步瞭解指標<ph name="BEGIN_LINK2_END" />瞭解詳情<ph name="END_LINK2" /></translation>
 <translation id="6298183524022479114">在應用程式中自訂這部裝置</translation>
+<translation id="6298962879096096191">使用 Google Play 安裝 Android 應用程式</translation>
 <translation id="6304076460080088478">請關閉或最小化無痕視窗，才能使用 Google 智慧鏡頭搜尋畫面內容</translation>
 <translation id="6309219492973062892">點選或輕觸檔案櫃圖示 1-8</translation>
 <translation id="6315170314923504164">語音</translation>
@@ -1700,8 +1747,10 @@
 <translation id="6406458002328242616">編輯計時器。<ph name="FOCUS_DURATION" />。</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6414618057231176439">選取要安裝的「<ph name="VM_NAME" />」版本。</translation>
+<translation id="641469293210305670">安裝更新內容和應用程式</translation>
 <translation id="6417265370957905582">Google 助理</translation>
 <translation id="641817663353603351">page up 鍵</translation>
+<translation id="6418511932144861495">安裝重大更新</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />，訊號強度 <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">清除所有通知</translation>
 <translation id="6426905245930183644">建立中...</translation>
@@ -1727,6 +1776,7 @@
 <translation id="6482559668224714696">全螢幕放大鏡</translation>
 <translation id="6485086611007560630">天氣 (無法取得資訊)</translation>
 <translation id="6490471652906364588">USB-C 裝置 (右側連接埠)</translation>
+<translation id="6491376743066338510">授權失敗</translation>
 <translation id="649452524636452238">智慧型卡片 PIN 碼</translation>
 <translation id="6495322433318104734">目前顯示的是螢幕保護程式，按下任一按鍵即可退出</translation>
 <translation id="6495400115277918834">已開啟子母畫面，按下 Alt+Shift+V 可聚焦</translation>
@@ -1779,10 +1829,12 @@
 <translation id="6625718907317144388">檢視防護功能已開啟，因此系統隱藏了 <ph name="APP_1_TITLE" />、<ph name="APP_2_TITLE" /> 和其他應用程式的通知</translation>
 <translation id="6627638273713273709">搜尋鍵 + Shift + K 鍵</translation>
 <translation id="662830937908749204">將焦點移至下一個窗格</translation>
+<translation id="6635674640674343739">無法建立網路連線。請檢查網路連線，然後再試一次。</translation>
 <translation id="6637729079642709226">變更時間</translation>
 <translation id="6641720045729354415">切換即時字幕。<ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">復原依名稱排列順序</translation>
 <translation id="664793810957802384">建議群組中的項目</translation>
+<translation id="6649018507441623493">請稍候...</translation>
 <translation id="6649641931981131786">調整攝影機，讓自己保持在畫面中央。</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> 要求確認你的身分</translation>
 <translation id="6650742588569439432">無法載入項目。</translation>
@@ -1807,6 +1859,7 @@
 <translation id="6706742084323792866">PIN 碼鍵盤</translation>
 <translation id="6709719156428404245">拖曳或按下空格鍵，選取要錄影的區域</translation>
 <translation id="6710213216561001401">返回</translation>
+<translation id="6716798148881908873">網路連線已中斷。請檢查網路連線，或改用其他 Wi-Fi 網路。</translation>
 <translation id="6723839937902243910">電源</translation>
 <translation id="672609503628871915">查看新功能</translation>
 <translation id="6727969043791803658">已連線，電量為 <ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -1846,6 +1899,7 @@
 <translation id="6819327813400217281">攝影機已對齊左下角</translation>
 <translation id="6820676911989879663">目前禁止使用裝置！</translation>
 <translation id="6827049576281411231">關閉活動面板</translation>
+<translation id="682971198310367122">Google 隱私權政策</translation>
 <translation id="6836499262298959512">危險檔案</translation>
 <translation id="6837621009301897464">如要擷取螢幕截圖，請按下：</translation>
 <translation id="6852052252232534364">按一下即可啟動</translation>
@@ -1877,6 +1931,7 @@
 <translation id="6942518653766415536">錄製內容格式選單</translation>
 <translation id="6945221475159498467">選取</translation>
 <translation id="6945922087561257829">手機目前使用的是行動網路。請確定你的手機和 Chromebook 已連上同一個 Wi-Fi 網路，然後再試一次。<ph name="LEARN_MORE" /></translation>
+<translation id="6950627417367801484">還原應用程式</translation>
 <translation id="6960565108681981554">未啟用。請與你的電信業者聯絡。</translation>
 <translation id="6961121602502368900">工作資料夾不支援將手機設為靜音</translation>
 <translation id="6961840794482373852">「Alt + 向上鍵」的鍵盤快速鍵已變更。如要使用 Page Up 鍵，請按下<ph name="LAUNCHER_KEY_NAME" />鍵 + 向上鍵。</translation>
@@ -2048,6 +2103,7 @@
 <translation id="7541773865713908457">使用「<ph name="APP_NAME" />」應用程式<ph name="ACTION_NAME" /></translation>
 <translation id="7543399541175347147">目前不支援 Linux 應用程式和無痕視窗。系統將儲存其他應用程式。</translation>
 <translation id="7544300628205093162">鍵盤背光功能已開啟</translation>
+<translation id="7545466883021407599">無法連上伺服器。請檢查網路連線，然後再試一次。如果問題仍然無法解決，請嘗試重新啟動 Chromebook。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
 <translation id="7548434653388805669">就寢時間到了</translation>
 <translation id="7551643184018910560">固定至檔案櫃</translation>
 <translation id="7557816257942363084">「<ph name="APP_NAME" />」正在使用你的麥克風</translation>
@@ -2063,6 +2119,7 @@
 <translation id="7579778809502851308">擷取螢幕畫面</translation>
 <translation id="7588317312481506627">已複製到剪貼簿。</translation>
 <translation id="7593891976182323525">搜尋鍵或 Shift 鍵</translation>
+<translation id="7595453277607160340">如要使用 Android 應用程式並確保你的 <ph name="DEVICE_TYPE" /> 正常運作，請重新登入並進行更新。</translation>
 <translation id="7598054670902114203">CPU 用量數據匯報：<ph name="CPU_USEAGE" />%；溫度：攝氏 <ph name="TEMPERATURE" /> 度；目前速度：<ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" />GHz</translation>
 <translation id="7599378375976398913">正在插入所選結果</translation>
 <translation id="7600875258240007829">查看所有通知</translation>
@@ -2072,6 +2129,7 @@
 <translation id="7609951632080598826">日曆檢視畫面，<ph name="DATE" /> <ph name="TIME" /></translation>
 <translation id="7611213136657090146">已重新連接攝影機。</translation>
 <translation id="7613620083300976559">開啟遊戲控制選項</translation>
+<translation id="761530003705945209">使用 Google 雲端硬碟備份你的資料。你隨時可以輕鬆還原資料或切換裝置。備份項目包含應用程式資料。備份內容會上傳到 Google，並使用你的 Google 帳戶密碼加密。</translation>
 <translation id="761736749114493194">切換相機取景功能。<ph name="STATE_TEXT" /></translation>
 <translation id="7621008024906456933">「快速分享」設定</translation>
 <translation id="7624117708979618027">華氏 <ph name="TEMPERATURE_F" />°</translation>
@@ -2120,6 +2178,7 @@
 <translation id="7748275671948949022">醒目顯示檔案櫃中的啟動鍵</translation>
 <translation id="7749443890790263709">桌面數量已達上限。</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7750228210027921155">子母畫面</translation>
 <translation id="7751260505918304024">全部顯示</translation>
 <translation id="7762664108390426952">Google 的《服務條款》和《隱私權政策》</translation>
 <translation id="7768784765476638775">隨選朗讀</translation>
@@ -2238,6 +2297,7 @@
 <translation id="8092380135549145188">捲動控制選項</translation>
 <translation id="8098591350844501178">停止將畫面投放到「<ph name="RECEIVER_NAME" />」</translation>
 <translation id="810637681351706236">不再讓應用程式顯示在檔案櫃中</translation>
+<translation id="8107015733319732394">正在為 <ph name="DEVICE_TYPE" /> 安裝 Google Play 商店。這可能需要幾分鐘時間。</translation>
 <translation id="8113423164597455979">開啟，所有應用程式</translation>
 <translation id="8113515504791187892">隨選朗讀按鈕</translation>
 <translation id="8120151603115102514">你的手機未設定螢幕鎖定。如要解鎖 Chromebook，請輸入密碼。</translation>
@@ -2320,6 +2380,7 @@
 <translation id="8388750414311082622">無法移除最後一個桌面。</translation>
 <translation id="8394567579869570560">你的家長已鎖定這部裝置</translation>
 <translation id="8401850874595457088">輸入語言選單</translation>
+<translation id="8410775397654368139">Google Play</translation>
 <translation id="8412677897383510995">顯示螢幕設定</translation>
 <translation id="8413272770729657668">3、2、1，開始錄影</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (充電盒)</translation>
@@ -2345,11 +2406,13 @@
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> 已<ph name="FEATURE_STATE" /><ph name="FEATURE_NAME" />。</translation>
 <translation id="8477270416194247200">按下 Alt + 搜尋鍵或 Shift 鍵即可取消。</translation>
 <translation id="8480418399907765580">顯示工具列</translation>
+<translation id="8481187309597259238">確認 USB 權限</translation>
 <translation id="8487660088084188539">開啟這些功能後，輸入的文字、文件內容和網頁網址可能會傳送到 Google 伺服器，用於產生撰寫建議、生成摘要、回答問題及提升產品品質。我們使用這類資訊時會遵守<ph name="LINK_TO_SERVICE_TERMS" />的規定。輸入內容時，請勿加入任何個人、敏感或機密資訊。</translation>
 <translation id="8487699605742506766">熱點</translation>
 <translation id="8490896350101740396">下列 Kiosk 應用程式「<ph name="UPDATED_APPS" />」已更新。請重新啟動裝置，以完成更新程序。</translation>
 <translation id="8491237443345908933">在新分頁中開啟連結</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> 不支援 <ph name="SPECIFIED_RESOLUTION" />，解析度已變更為 <ph name="FALLBACK_RESOLUTION" />。請按一下 [確認] 以保留變更。系統會在 <ph name="TIMEOUT_SECONDS" />後還原先前的設定。</translation>
+<translation id="8502536196501630039">如要使用透過 Google Play 安裝的應用程式，請先還原你的應用程式。這可能導致部分資料遺失。</translation>
 <translation id="8507563469658346379">所有人，<ph name="REMAINING_TIME" /></translation>
 <translation id="8511123073331775246">建立新桌面</translation>
 <translation id="85123341071060231">Chromebook 的藍牙功能已關閉。如要解鎖 Chromebook，請輸入密碼。</translation>
@@ -2403,6 +2466,8 @@
 <translation id="8676770494376880701">已連接低功率充電器</translation>
 <translation id="8679158879996532670">顯示專注模式設定。專注模式已開啟，還剩 <ph name="REMAINING_TIME" />。</translation>
 <translation id="8683506306463609433">效能追蹤已啟用</translation>
+<translation id="8698432579173128320">使用 Google 雲端硬碟備份資料。隨時可以輕鬆還原資料或改用其他裝置。備份項目包含應用程式資料。備份內容會上傳到 Google，並使用您的 Google 帳戶密碼加密。<ph name="BEGIN_LINK1" />進一步瞭解備份功能<ph name="BEGIN_LINK1_END" />瞭解詳情<ph name="END_LINK1" /></translation>
+<translation id="8700087567921985940">使用位置資訊。允許具有位置存取權的應用程式和服務使用裝置的位置資訊。Google 可能會定期蒐集位置資料，並以匿名方式使用，改進定位精確度和適地性服務品質。<ph name="BEGIN_LINK1" />進一步瞭解位置資訊<ph name="BEGIN_LINK1_END" />瞭解詳情<ph name="END_LINK1" /></translation>
 <translation id="8703634754197148428">開始錄製。如要停止已經開始的錄製作業，請按下 Alt + Shift + L 鍵前往檔案櫃，並從中找出停止錄影的按鈕</translation>
 <translation id="8704155109538237473">聚焦在子母畫面視窗</translation>
 <translation id="870917907284186124">開啟/關閉語音輸入功能 (使用語音輸入內容)</translation>
@@ -2465,6 +2530,7 @@
 <translation id="8875021410787719674">在以下位置之間移動：右下角、啟動器、網址列、書籤列、開啟的網站和下載內容</translation>
 <translation id="8876148469852588625">第 <ph name="EVENT_POSITION" /> 項活動，共 <ph name="EVENT_TOTAL_COUNT" /> 項</translation>
 <translation id="8876661425082386199">請檢查連線狀態</translation>
+<translation id="8883478023074930307">傳送使用狀況與診斷資料。這部裝置目前會自動將診斷情形、裝置狀態和應用程式使用資料傳送給 Google。這些資料將有助於改善系統和應用程式的穩定性與其他功能。部分匯總資料還能協助 Google 應用程式和合作夥伴 (例如 Android 開發人員) 提升產品和服務品質。這項<ph name="BEGIN_LINK1" />設定<ph name="END_LINK1" />是由裝置擁有者執行。如果將「其他網路和應用程式活動」設定為開啟，這類資料可能會儲存在您的 Google 帳戶中。<ph name="BEGIN_LINK2" />進一步瞭解指標<ph name="BEGIN_LINK2_END" />瞭解詳情<ph name="END_LINK2" /></translation>
 <translation id="8885424115080869847">無法連線至 YouTube Music</translation>
 <translation id="888982883502837004">有適用於裝置的韌體更新，按一下即可查看並更新。</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> 將永久刪除</translation>
@@ -2507,10 +2573,12 @@
 <translation id="9000771174482730261">管理儲存空間</translation>
 <translation id="9003374957546315126">表情符號和其他實用符號</translation>
 <translation id="9005984960510803406">開啟 Crosh 視窗</translation>
+<translation id="901668144954885282">備份到 Google 雲端硬碟</translation>
 <translation id="9017320285115481645">請輸入 Family Link 家長存取碼。</translation>
 <translation id="9024331582947483881">全螢幕</translation>
 <translation id="9029736946581028033">裝置即將關機</translation>
 <translation id="9030319654231318877">關閉，直到日落</translation>
+<translation id="9030515284705930323">貴機構尚未為您的帳戶啟用 Google Play 商店。如需瞭解詳情，請與您的管理員聯絡。</translation>
 <translation id="9030665205623277906">CPU 用量數據匯報：<ph name="CPU_USEAGE" />%</translation>
 <translation id="9034924485347205037">Linux 檔案</translation>
 <translation id="9047624247355796468">開啟「<ph name="NETWORK_NAME" />」設定</translation>
@@ -2560,8 +2628,10 @@
 <translation id="9195857219954068558">Chromebook 已更新。開啟先前的視窗和應用程式。</translation>
 <translation id="9195990613383871904">明天</translation>
 <translation id="9198992156681343238"><ph name="DISPLAY_NAME" /> 的解析度已變更為 <ph name="RESOLUTION" />。請按一下 [確認] 以保留變更。系統會在 <ph name="TIMEOUT_SECONDS" />後還原先前的設定。</translation>
+<translation id="9199853905755292769">傳送使用狀況與診斷資料。這部裝置目前會自動將診斷情形、裝置狀態和應用程式使用資料傳送給 Google。這些資料將有助於改善系統和應用程式的穩定性與其他功能，並不會用於識別貴子女的身分。部分匯總資料還能協助 Google 應用程式和合作夥伴 (例如 Android 開發人員) 提升產品和服務品質。如果將貴子女的「其他網路和應用程式活動」設定為開啟，這類資料可能會儲存在他們的 Google 帳戶中。<ph name="BEGIN_LINK2" />進一步瞭解指標<ph name="BEGIN_LINK2_END" />瞭解詳情<ph name="END_LINK2" /></translation>
 <translation id="9201044636667689546">請將 <ph name="NAME" /> 連結到 Chromebook</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />，由系統管理員管理</translation>
+<translation id="9201842707396338580">發生錯誤，請與裝置擁有者或系統管理員聯絡。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
 <translation id="9207682216934703221">這項操作會允許「<ph name="APP_NAME" />」、「<ph name="APP2_NAME" />」、具有位置存取權的所有應用程式/網站和 ChromeOS 使用 Wi-Fi 和行動網路的位置資訊。</translation>
 <translation id="9210037371811586452">退出整合桌面模式</translation>
 <translation id="9211490828691860325">所有桌面</translation>
@@ -2574,6 +2644,7 @@
 <translation id="923686485342484400">按兩下 Ctrl+Shift+Q 鍵即可登出。</translation>
 <translation id="92580429198593979">你已按下色彩反轉模式的鍵盤快速鍵。要開啟這項功能嗎？</translation>
 <translation id="925832987464884575">隱藏預覽</translation>
+<translation id="93140074055951850">Android 應用程式已停止</translation>
 <translation id="938407504481277932">目前的桌面：<ph name="DESK_NAME" />。<ph name="PROFILE_NAME" /> (<ph name="EMAIL" />)。第 <ph name="DESK_INDEX" /> 個桌面，共 <ph name="DESK_COUNT" /> 個。</translation>
 <translation id="94468042118567862">裝置不是最新版本</translation>
 <translation id="945383118875625837">將連結拖曳到書籤列</translation>

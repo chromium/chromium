@@ -25,6 +25,7 @@
 <translation id="3115238746683532089"><ph name="VENDOR_ID" /> වෙතින් නොදන්නා නිෂ්පාදනය <ph name="PRODUCT_ID" /> (අනුක්‍රමික අංකය <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">crx ගොනුව යළි පිහිටුවිය නොහැකි විය. මෙම ගොනුව භාවිතයේදැයි පිරික්සන්න.</translation>
 <translation id="3163201441334626963"><ph name="VENDOR_ID" /> වෙතින් නොදන්නා නිෂ්පාදනය <ph name="PRODUCT_ID" /></translation>
+<translation id="3174723475300476613">මෙම දිගුවට ප්‍රවේශය ඔබේ සංවිධානය විසින් අවහිර කර ඇත.</translation>
 <translation id="3242289508736283383">'kiosk_only' මැනිෆෙස්ට් උපලක්ෂණය සහිත යෙදුම ChromeOS කියෝස්ක් ප්‍රකාරයේ ස්ථාපනය කළ යුතුය</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (අනුක්‍රමික අංකය <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="VENDOR_ID" /> වෙතින් <ph name="PRODUCT_NAME" />  (අනුක්‍රමික අංකය <ph name="SERIAL_NUMBER" />)</translation>
@@ -32,6 +33,7 @@
 <translation id="3834775135533257713">"<ph name="INSTALLED_APP_NAME" />" සමඟ ගැටෙන නිසා "<ph name="TO_INSTALL_APP_NAME" />" යෙදුම එක් කිරීමට නොහැකි විය.</translation>
 <translation id="388442998277590542">'<ph name="OPTIONS_PAGE" />' අභිප්‍රේත පිටුව පූර්ණය කළ නොහැක.</translation>
 <translation id="3984413272403535372">දිගුවට ප්‍රවිෂ්ට වීමේදී දෝෂයක් මතුවිය.</translation>
+<translation id="4094452115117798451">මෙම දිගු කාණ්ඩයට ප්‍රවේශය ඔබේ සංවිධානය විසින් අවහිර කර ඇත.</translation>
 <translation id="4233778200880751280">පිටුව '<ph name="ABOUT_PAGE" />' පිළිබඳව ප්‍රවේශනය කළ නොහැක.</translation>
 <translation id="424963718355121712">යෙදුම් ඒවාට බලපාන සත්කාරක වෙතින් සැපයිය යුතුය</translation>
 <translation id="4306119971288449206">යෙදුම් පිරිනැමිය යුත්තේ "<ph name="CONTENT_TYPE" />" අන්තර්ගත වර්ගය සමඟිනි</translation>

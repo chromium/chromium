@@ -273,7 +273,6 @@
 <translation id="200669432486043882">Skipta út skrá</translation>
 <translation id="2006864819935886708">Tenging</translation>
 <translation id="2008685064673031089">Aðalleit</translation>
-<translation id="2011174342667534258">Útgáfa forritunarverkfæra:</translation>
 <translation id="2016697457005847575">Prófaðu skref úrræðaleitar</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2045814230297767491">hnífapör</translation>
@@ -523,7 +522,6 @@
 <translation id="3291996639387199448">Lykilstefna</translation>
 <translation id="3294437725009624529">Gestur</translation>
 <translation id="3303855915957856445">Engar leitarniðurstöður fundust</translation>
-<translation id="3305294846493618482">meira</translation>
 <translation id="3310640316857623290">DNS-biðtími er töluvert yfir leyfðum þröskuldi</translation>
 <translation id="3316495615885967552">Líkan sem býr til samantektir og titla var sótt</translation>
 <translation id="3321030238473337787">Spilunarhraði</translation>
@@ -702,7 +700,6 @@
 <translation id="4126551873361000548">Til baka um 10 sekúndur</translation>
 <translation id="4128271910628504223">Sláðu inn skipun á borð við: „Teiknaðu þokukenndan skóg“</translation>
 <translation id="4130035430755296270">Haltu bendlinum lengur yfir til að sjá fleiri valkosti fyrir uppsetningu</translation>
-<translation id="4130750466177569591">Ég samþykki</translation>
 <translation id="4131410914670010031">Svarthvítt</translation>
 <translation id="4137700675046373159">á laugardaginn</translation>
 <translation id="4139326893730851150">Uppfærslur fastbúnaðar</translation>
@@ -1051,7 +1048,6 @@
 <translation id="5606865426897221650">Dálkalykill</translation>
 <translation id="5612205513582918357">Hjálpargögn bekkjar deila skjánum þínum með <ph name="RECEIVER_NAME" /></translation>
 <translation id="5613201299517339763">Þú hefur verið skráð(ur) út</translation>
-<translation id="5620281292257375798">Aðeins innanhúss</translation>
 <translation id="5628106863521633649">Tiltæk tungumál</translation>
 <translation id="5630438231335788050">bauhausstíl</translation>
 <translation id="5631759159893697722">ágrip</translation>
@@ -1415,7 +1411,6 @@
 <translation id="7184043045742675738">Smelltu á hvaða lykil sem er til að sérsníða hnappinn. Breyttu staðsetningu lykilsins með mús eða örvalyklum.</translation>
 <translation id="7187669805838282391">á miðvikudaginn</translation>
 <translation id="7205318498545665455">Velja hljóðnema</translation>
-<translation id="7206979415662233817">Þjónustuskilmálar</translation>
 <translation id="7210635925306941239">blágrænn</translation>
 <translation id="7212547870105584639">Stjórna stillingum aðgangsstaðar netkerfis. Aðgangsstaðir tengja saman farsímakerfi og internetið. <ph name="BEGIN_LINK_LEARN_MORE" />Nánar<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Fastbúnaðaruppfærslur fyrir ytri tæki</translation>
@@ -1446,11 +1441,6 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7321055305895875150">grænum og grænbláum lit</translation>
 <translation id="7328475450575141167">paradísarfuglajurt</translation>
-<translation id="7331297744262591636">Þú þarft að hafa náð 18 ára aldri og samþykkja að notkun þín á gervigreindarveggfóðrum sé háð <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />þjónustuskilmálum Google<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> og <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />viðbótarnotkunarskilmálum skapandi gervigreindar<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Þú getur aðeins búið til veggfóður með gervigreind til einkanota. Þegar þú færð aðstoð við að búa til veggfóður er texti sendur til gervigreindarþjóna Google til að koma með tillögur að veggfóðri í samræmi við <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />persónuverndarstefnu Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. <ph name="BEGIN_LINK_LEARN_MORE" />Nánar<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Ýttu á leitarhnappinn og bilslána til að skoða niðurstöður í Google-leit.</translation>
 <translation id="7343649194310845056">Netkerfistæki</translation>
 <translation id="7344788170842919262">jarðlitum</translation>
 <translation id="7346768383111016081">Setja stýringu á leikjaaðgerð til að spila með lyklaborðinu</translation>
@@ -1838,7 +1828,6 @@ Sæktu umritunarlíkanið (allt að 100 MB) til að fá þessar textauppskriftir
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">Nota þetta myndskeið</translation>
-<translation id="9087578468327036362">Tilkynna þessa fyrirspurn</translation>
 <translation id="9088306295921699330">Núverandi notkun</translation>
 <translation id="9088994563996376283">Einfalda</translation>
 <translation id="9095775724867566971">VM-viðbót</translation>

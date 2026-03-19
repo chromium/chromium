@@ -198,6 +198,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="3045032126857188731">Översatt språk: <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">Stäng dialogrutan för feedback</translation>
 <translation id="3068187312562070417">Andra Chromium-profiler</translation>
+<translation id="3068290154869370196">Tillägg är add-ons som gör att du kan anpassa Chromium. Med tillägg kan du anpassa Chromium så att det passar dig, från att hålla ordning till att förenkla vardagssysslor.</translation>
 <translation id="3068515742935458733">Hjälp oss att göra Chromium bättre genom att skicka felrapporter och <ph name="UMA_LINK" /> till Google</translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{Minst ett Chromium-tillägg har fått åtkomst till 1 USB-enhet}=1{Minst ett Chromium-tillägg har åtkomst till 1 USB-enhet}other{Minst ett Chromium-tillägg har åtkomst till # USB-enheter}}</translation>
 <translation id="3095811995836568724">Chromium-historik</translation>
@@ -432,6 +433,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="5821520528363214608">Uppdatera Chromium om du vill använda och spara Chromium-data i ditt Google-konto</translation>
 <translation id="5824893331272123205">Det gick inte att läsa in panelen. Försök igen</translation>
 <translation id="5862307444128926510">Välkommen till Chromium</translation>
+<translation id="5867606647614813312">Aktiverar ytterligare funktioner för att tillhandahålla Chromiums starkaste skydd</translation>
 <translation id="5871205389137001634">Klicka för att avsluta bildsökningen</translation>
 <translation id="5883558403894052917">Chromium har upptäckt att dessa objekt innehåller skadlig kod:</translation>
 <translation id="5889361821821684993">Chromium kontrollerar regelbundet att webbläsaren har de säkraste inställningarna. Vi meddelar dig om du behöver granska något.</translation>

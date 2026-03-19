@@ -1724,6 +1724,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="7149893636342594995">De seneste 24 timer</translation>
 <translation id="7154417656353909837">Fjern adresser</translation>
 <translation id="7161230316646448869">Synkroniser dine adgangskoder, din historik og meget mere på alle enheder</translation>
+<translation id="7165323152084385463">Stelnummer</translation>
 <translation id="7173114856073700355">Åbn Indstillinger</translation>
 <translation id="7173721738069475737">{count,plural, =1{Bogmærket er gemt}one{{count} bogmærke er gemt}other{{count} bogmærker er gemt}}</translation>
 <translation id="7176183551031110427">Zoom ud</translation>
@@ -2218,6 +2219,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="8863067612494559785">Sender til <ph name="DEVICE_NAME" />…</translation>
 <translation id="8863431381414769983">Få rutevejledning og lokale oplysninger fra Google Maps</translation>
 <translation id="8871974300055371298">Indholdsindstillinger</translation>
+<translation id="8876661425082386199">Tjek din forbindelse</translation>
 <translation id="8877788021141246043">Opret en påmindelse</translation>
 <translation id="8879604564928138696">Tryk to gange for at prøve</translation>
 <translation id="8879952635974818770">Personligt tilpasset indhold</translation>

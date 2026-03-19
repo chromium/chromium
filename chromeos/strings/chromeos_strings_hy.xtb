@@ -273,7 +273,6 @@
 <translation id="200669432486043882">Փոխարինել ֆայլը</translation>
 <translation id="2006864819935886708">Կապ</translation>
 <translation id="2008685064673031089">Prime որոնում</translation>
-<translation id="2011174342667534258">SDK-ի տարբերակը՝</translation>
 <translation id="2016697457005847575">Փորձել վերացնել անսարքությունները</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2045814230297767491">դանակ-պատառաքաղ</translation>
@@ -523,7 +522,6 @@
 <translation id="3291996639387199448">Բանալու ուղղություն</translation>
 <translation id="3294437725009624529">Հյուր</translation>
 <translation id="3303855915957856445">Որոնման արդյունքներ չկան</translation>
-<translation id="3305294846493618482">ավելին</translation>
 <translation id="3310640316857623290">DNS-ի հապաղումը մեծ առավելություն ունի թույլատրելի սահմանափակման նկատմամբ</translation>
 <translation id="3316495615885967552">Ամփոփման և անվանման ստեղծման մոդելի ներբեռնումն ավարտված է</translation>
 <translation id="3321030238473337787">Նվագարկման արագություն</translation>
@@ -702,7 +700,6 @@
 <translation id="4126551873361000548">10 վայրկյան հետ գնալ</translation>
 <translation id="4128271910628504223">Մուտքագրեք հուշում, ինչպիսին է «նկարել մառախլապատ անտառ»</translation>
 <translation id="4130035430755296270">Մկնիկի նշորդը շարունակեք պահել վրան՝ դասավորության այլ տարբերակներ տեսնելու համար</translation>
-<translation id="4130750466177569591">Համաձայն եմ</translation>
 <translation id="4131410914670010031">Սև ու սպիտակ</translation>
 <translation id="4137700675046373159">շաբաթ օրը</translation>
 <translation id="4139326893730851150">Ներկառուցված ծրագրի թարմացումներ</translation>
@@ -1051,7 +1048,6 @@
 <translation id="5606865426897221650">Ներդիր</translation>
 <translation id="5612205513582918357">Class Tools-ը ցուցադրում է ձեր էկրանը <ph name="RECEIVER_NAME" />-ին</translation>
 <translation id="5613201299517339763">Դուք դուրս եք գրվել հաշվից</translation>
-<translation id="5620281292257375798">Միայն ներքին օգտագործման համար</translation>
 <translation id="5628106863521633649">Հասանելի լեզուներ</translation>
 <translation id="5630438231335788050">բաուհաուս</translation>
 <translation id="5631759159893697722">համառոտ շարադրանք</translation>
@@ -1415,7 +1411,6 @@
 <translation id="7184043045742675738">Կոճակը կարգավորելու համար սեղմեք ցանկացած ստեղն։ Փոխեք դիրքը մկնիկի կամ սլաքի ստեղների միջոցով։</translation>
 <translation id="7187669805838282391">չորեքշաբթի օրը</translation>
 <translation id="7205318498545665455">Ընտրեք ձեր խոսափողը</translation>
-<translation id="7206979415662233817">Օգտագործման պայմաններ</translation>
 <translation id="7210635925306941239">կապտականաչ</translation>
 <translation id="7212547870105584639">Կառավարեք ցանցի APN-ի կարգավորումները։ APN-ները կապ են հաստատում բջջային ցանցի և համացանցի միջև։ <ph name="BEGIN_LINK_LEARN_MORE" />Իմանալ ավելին<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Ներկառուցված ծրագրաշարի թարմացումներ արտաքին սարքերի համար</translation>
@@ -1446,11 +1441,6 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7321055305895875150">կանաչ և փիրուզագույն</translation>
 <translation id="7328475450575141167">ստրելիցիա</translation>
-<translation id="7331297744262591636">Դուք պետք է առնվազն 18 տարեկան լինեք և համաձայնեք օգտագործել AI պաստառները՝ <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Google-ի օգտագործման պայմանների<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> և <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />Գեներատիվ արհեստական բանականության օգտագործման պայմանների<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" /> համաձայն։
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Արհեստական բանականության միջոցով պաստառներ կարող եք ստեղծել միայն անձնական և ոչ առևտրային նպատակներով։ Երբ դուք պաստառի հետ կապված հարցում եք անում, <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google-ի գաղտնիության քաղաքականության<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> համաձայն՝ հարցման տեքստն ուղարկվում է Google AI-ի սերվերներ՝ պաստառների առաջարկներ գեներացնելու համար։ <ph name="BEGIN_LINK_LEARN_MORE" />Իմանալ ավելին<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />։ Արդյունքը Google Որոնման մեջ տեսնելու համար սեղմեք «Որոնում» + բացատ։</translation>
 <translation id="7343649194310845056">Ցանցային սարքեր</translation>
 <translation id="7344788170842919262">հողեղեն</translation>
 <translation id="7346768383111016081">Ստեղնաշարի միջոցով խաղալու համար ընտրեք գործողության համար ստեղն</translation>
@@ -1838,7 +1828,6 @@
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">Օգտագործել այս տեսանյութը</translation>
-<translation id="9087578468327036362">Հաղորդել այս հարցման մասին</translation>
 <translation id="9088306295921699330">Օգտագործված տարածքը</translation>
 <translation id="9088994563996376283">Պարզեցնել</translation>
 <translation id="9095775724867566971">PluginVm</translation>

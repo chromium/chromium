@@ -197,6 +197,7 @@
 <translation id="3045032126857188731">번역된 언어, <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">의견 닫기 대화상자</translation>
 <translation id="3068187312562070417">기타 Chromium 프로필</translation>
+<translation id="3068290154869370196">확장 프로그램은 Chromium을 맞춤설정할 수 있는 부가기능입니다. 정리부터 일상적인 할 일을 간소화하는 것까지, 확장 프로그램을 통해 Chromium을 나만의 브라우저로 만들 수 있습니다.</translation>
 <translation id="3068515742935458733">비정상 종료 보고서와 <ph name="UMA_LINK" />을(를) Google로 전송하여 Chromium 개선에 참여합니다.</translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{하나 이상의 Chromium 확장 프로그램에서 USB 기기 1대에 액세스함}=1{하나 이상의 Chromium 확장 프로그램에서 USB 기기 1대에 액세스 중}other{하나 이상의 Chromium 확장 프로그램에서 USB 기기 #대에 액세스 중}}</translation>
 <translation id="3095811995836568724">Chromium 방문 기록</translation>
@@ -431,6 +432,7 @@
 <translation id="5821520528363214608">Google 계정에서 Chromium 데이터를 사용하고 저장하려면 Chromium을 업데이트하세요.</translation>
 <translation id="5824893331272123205">패널을 로드할 수 없습니다. 다시 시도해 주세요.</translation>
 <translation id="5862307444128926510">Chromium에 오신 것을 환영합니다.</translation>
+<translation id="5867606647614813312">Chromium의 가장 강력한 보호 기능을 제공하는 추가 기능을 사용 설정합니다.</translation>
 <translation id="5871205389137001634">클릭하여 이미지 검색 종료</translation>
 <translation id="5883558403894052917">Chromium에서 다음 항목에 멀웨어가 포함된 것을 발견했습니다.</translation>
 <translation id="5889361821821684993">Chromium에서는 브라우저가 가장 안전하게 설정되어 있는지 정기적으로 확인합니다. 검토가 필요한 사항이 있으면 알려 드리겠습니다.</translation>

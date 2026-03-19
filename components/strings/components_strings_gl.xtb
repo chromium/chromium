@@ -1073,6 +1073,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2673968385134502798">Xogos</translation>
 <translation id="2674170444375937751">Seguro que queres eliminar estas páxinas do teu historial?</translation>
 <translation id="2674524144218093528">Pintura da casa e acabados</translation>
+<translation id="2675716371350192683">O teu contido non se usará para mellorar a IA. A túa organización pode cambiar esta configuración en calquera momento.</translation>
 <translation id="26774279487328902"><ph name="GROUP_COUNT" /> grupos de pestanas xa no están dispoñibles</translation>
 <translation id="2677748264148917807">Saír</translation>
 <translation id="2679216653373462289">Usar os sensores de movemento e de luz</translation>
@@ -2657,6 +2658,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="5190835502935405962">Barra de marcadores</translation>
 <translation id="5191315092027169558"><ph name="DOMAIN" /> xestiona o teu perfil</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> quere descargar varios ficheiros</translation>
+<translation id="519528950056409240">Permitir que Wallet comparta datos</translation>
 <translation id="5199121357983849992">Queres gardar o carné de identidade?</translation>
 <translation id="5200063972779787617">Gardar o enderezo na conta</translation>
 <translation id="5201306358585911203">Unha páxina inserida nesta páxina di</translation>
@@ -3104,6 +3106,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="5910140988253729859">Desfacer autocompletado</translation>
 <translation id="5911020115933784199">Acontecementos e axendas</translation>
 <translation id="5911110632211230665">Non se permite abrir ficheiros</translation>
+<translation id="5912796581727968237">Abrir Google Wallet</translation>
 <translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" /> engadiu esta pestana</translation>
 <translation id="5915189366813702112">Traballo flexible</translation>
 <translation id="59174027418879706">Activado</translation>

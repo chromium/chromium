@@ -8,6 +8,7 @@
 <translation id="1017556409696559990">Chrome තුළ ආපසු ඉතිහාසයක් නොමැති විට ඉහළ කවුළුව අවම කරන්න</translation>
 <translation id="101823271612280837">පටිගත කිරීම නවත්වන ලදී. ටැබ්ලට් ප්‍රකාරයේ ක්‍රීඩා උපකරණ පුවරුව භාවිතා කළ නොහැක.</translation>
 <translation id="1024364763893396229">ඔබගේ <ph name="NAME" /> සුරකින්න</translation>
+<translation id="103279545524624934">Android යෙදුම් දියත් කිරීමට තැටි ඉඩ නිදහස් කර ගන්න.</translation>
 <translation id="1032891413405719768">පන්හිඳ බැටරිය අඩුයි</translation>
 <translation id="1036348656032585052">ක්‍රියා විරහිතය</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> එක් කරන ලදී</translation>
@@ -35,6 +36,7 @@
 <translation id="1129383337808748948"><ph name="CONTENT_TITLE" /> නැවුම් කරන්න</translation>
 <translation id="1142002900084379065">මෑත ඡායාරූප</translation>
 <translation id="114221662579355151">මෙය <ph name="APP1_NAME" />, <ph name="APP2_NAME" />, සහ කැමරා අවසරය ඇති සියලු යෙදුම් සහ වෙබ් අඩවි සඳහා කැමරා ප්‍රවේශයට ඉඩ දෙයි. ඔබට වෙබ් පිටුව නැවුම් කිරීමට හෝ යෙදුම නැවත ආරම්භ කිරීමට අවශ්‍ය වේවි.</translation>
+<translation id="1147991416141538220">ප්‍රවේශය ඉල්ලීමට, මෙම උපාංගයේ පරිපාලකයා සම්බන්ධ කර ගන්න.</translation>
 <translation id="1148499908455722006"><ph name="USER_NAME" /> සඳහා තතු සංවාදය විවෘත කරන්න</translation>
 <translation id="1150989369772528668">දින දර්ශනය</translation>
 <translation id="1153356358378277386">යුගලිත උපාංග</translation>
@@ -114,6 +116,7 @@
 <translation id="1340378040547539434">පිටුවෙන් විශාලනය අඩු කරන්න</translation>
 <translation id="1341651618736211726">පිටාරය</translation>
 <translation id="1341926407152459446">ශ්‍රව්‍ය ආදානය සහ ප්‍රතිදානය සඳහා "<ph name="DEVICE_NAME" />" භාවිතා කරන්න</translation>
+<translation id="1346403631707626730">භාවිත සහ දෝෂ නිර්ණ දත්ත යවන්න. ස්වයංක්‍රියව රෝග විනිශ්චය, උපාංග සහ යෙදුම් භාවිත දත්ත Google වෙත යැවීමෙන් ඔබේ දරුවාගේ Android අත්දැකීම දියුණු කර ගැනීමට උදවු කරන්න. මෙය ඔබේ දරුවා හඳුනා ගැනීමට භාවිත නොකෙරෙන අතර, පද්ධති සහ යෙදුම් ස්ථායිතාවට සහ අනෙකුත් දියුණු කිරීම්වලට උදවු කරයි. සමහර සමස්ත දත්ත Google යෙදුම්වලට සහ Android සංවර්ධකයින් වැනි හවුල්කරුවන්ට ද උදවු කරයි. ඔබේ දරුවා සඳහා අමතර වෙබ් සහ යෙදුම් ක්‍රියාකාරකම සක්‍රීය කර තිබේ නම්, මෙම දත්ත ඔවුන්ගේ Google ගිණුමට සුරැකේවි. <ph name="BEGIN_LINK1" />මාත්‍රික ගැන තව දැන ගන්න<ph name="BEGIN_LINK1_END" />තව දැන ගන්න<ph name="END_LINK1" /></translation>
 <translation id="1346748346194534595">දක්ෂිණාවර්ත</translation>
 <translation id="1350494136075914725">සිදුවෙමින් පවතී · පටිත්තට මාරු වන්න</translation>
 <translation id="1351937230027495976">මෙනුව හකුළන්න</translation>
@@ -196,6 +199,7 @@
 <translation id="1610778689852195798">"පසුගමනය කරන්න"</translation>
 <translation id="1611993646327628135">ක්‍රියාත්මකයි</translation>
 <translation id="1612679292338846734">ඔබ මෙම විශේෂාංග ක්‍රියාත්මක කළ විට, ආදාන පෙළ, ලේඛන අන්තර්ගතය සහ වෙබ් පිටු URL Google AI සේවාදායක වෙත යැවිය හැක. මෙම තොරතුරු <ph name="LINK_TO_SERVICE_TERMS" /> වෙත යටත්ව ලිවීමේ යෝජනා ජනනය කිරීමට, සාරාංශ ජනනය කිරීමට, ප්‍රශ්නවලට පිළිතුරු දීමට සහ නිෂ්පාදනය වැඩිදියුණු කිරීමට භාවිත කරයි. පුද්ගලික, සංවේදී, හෝ රහසිගත කිසිවක් ඇතුළත් නොකරන්න.</translation>
+<translation id="1619879934359211038">Google Play වෙත සම්බන්ධ වීමට නොහැකි විය. ඔබගේ ජාල සබැඳුම පරීක්ෂා කර නැවත උත්සාහ කරන්න. දෝෂ කේතය: <ph name="ERROR_CODE" />.</translation>
 <translation id="1620510694547887537">කැමරාව</translation>
 <translation id="1623768535032616219">Google පන්ති කාමරය හකුළන්න</translation>
 <translation id="163032029566320584"><ph name="UNAVAILABLE_DLC" /> නොමැත.</translation>
@@ -224,6 +228,7 @@
 <translation id="1719094688023114093">සජීවී සිරස්තල ක්‍රියාත්මකයි.</translation>
 <translation id="1720011244392820496">Wi-Fi සමමුහුර්තකරණය ක්‍රියාත්මක කරන්න</translation>
 <translation id="1720230731642245863">හොට්ස්පොට් ක්‍රියා විරහිතයි</translation>
+<translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />යෙදුම් ඉවත් කිරීමට, සැකසීම් &gt; Google Play Store &gt; Android මනාප කළමනාකරණය &gt; යෙදුම් හෝ යෙදුම් කළමනාකරු වෙත යන්න. අනතුරුව ඔබට අස්ථාපන කිරීමට අවශ්‍ය යෙදුම තට්ටු කරන්න (ඔබට යෙදුම සොයා ගැනීමට දකුණට හෝ වමට ස්වයිප් කිරීමට අවශ්‍ය විය හැක). අනතුරුව අස්ථාපන කරන්න හෝ අබල කරන්න තට්ටු කරන්න.<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1731815243805539470">පෙර පරිශීලක වෙත මාරු කරන්න</translation>
 <translation id="1733996486177697563">අඳුරු සහ ළා තේමා අතර මාරු වන්න. ඩෙස්ක්ටොප් එක ස්පර්ශ කර අල්ලාගෙන සිටින්න, අනතුරුව වෝල්පේපරය සහ ශෛලිය තෝරන්න.</translation>
 <translation id="1734230530703461088">කාල සීමාව තුළ දිගු පූරණය කිරීම අසාර්ථක විය. කරුණාකර ඔබගේ පරිපාලක සම්බන්ධ කර ගන්න.</translation>
@@ -277,6 +282,7 @@
 <translation id="1882814835921407042">ජංගම ජාලයක් නැත</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> වෙත කැඩපත් කරයි</translation>
 <translation id="1885785240814121742">ඇඟිලි සලකුණින් අගුළු හරින්න</translation>
+<translation id="1891362123137972260">තැටියේ ඉඩ බරපතළ ලෙස අඩුය. කරුණාකර තැටි ඉඩ නිදහස් කර ගන්න.</translation>
 <translation id="1894024878080591367">ඔබේ යතුරු පුවරුව සමග ක්‍රීඩා කිරීමට පිහිටුවන්න</translation>
 <translation id="1896383923047738322">ඔබේ යතුරු පුවරුව අභිරුචි කරන්න</translation>
 <translation id="1904997243703671177">ඔබ බ්ලූටූත් ක්‍රියාවිරහිත කළ විට, මේවා ඇතුළුව, බාහිර උපාංග <ph name="DEVICE_COUNT" />ක් ඔබේ <ph name="DEVICE_TYPE" /> වෙතින් විසන්ධි වනු ඇත:</translation>
@@ -309,11 +315,13 @@
 <translation id="1996162290124031907">මීළඟ පටිත්තට යන්න</translation>
 <translation id="1998100899771863792">වත්මන් වැඩතලය</translation>
 <translation id="2001444736072756133">ඔබගේ <ph name="CATEGORY" />, ගොනු, යෙදුම් සහ තවත් දේ සොයන්න.</translation>
+<translation id="2011174342667534258">SDK අනුවාදය:</translation>
 <translation id="2017998995161831444">ගවේෂණ යෙදුම තුළ "උදවු" විවෘත කරන්න</translation>
 <translation id="2021864487439853900">අගුලු හැරීමට ක්ලික් කරන්න</translation>
 <translation id="2034971124472263449">කෙසේ වෙතත් සුරකින්න</translation>
 <translation id="2041220428661959602">බැටරි මට්ටම: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="204259843076055848"><ph name="SIX_PACK_KEY_NAME" /> කෙටිමඟ දැනට ක්‍රියාවිරහිතයි</translation>
+<translation id="2048653237708779538">ක්‍රියාව ලබා ගත නොහැක</translation>
 <translation id="2049240716062114887">ඩෙස්ක් නම <ph name="DESK_NAME" /> ලෙස වෙනස් කරන ලදි</translation>
 <translation id="2064048859448024834">කැමරා පෙරදසුන ක්‍රියාත්මකයි</translation>
 <translation id="2065098273523946419">තව දැන ගැනීමේ සබැඳිය. සක්‍රීය වූ විට බ්‍රවුසරයට හරවා යවන්න</translation>
@@ -378,18 +386,21 @@
 <translation id="2305738328104302723">Google කාර්ය ලැයිස්තුව: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: මෑත තිර ග්‍රහණ, බාගැනීම්, සහ ඇමිණූ ගොනු</translation>
 <translation id="2318576281648121272">අද <ph name="TODAY_DATE" /></translation>
+<translation id="2318817390901984578">Android යෙදුම් භාවිත කිරීමට, ඔබේ <ph name="DEVICE_TYPE" /> ආරෝපණය සහ යාවත්කාලීන කරන්න.</translation>
 <translation id="2322065293366551060"><ph name="CATEGORY" /> , සෙවීම් ප්‍රතිඵල ප්‍රවර්ගය</translation>
 <translation id="2322173485024759474">අකුරෙන් ආපසු</translation>
 <translation id="2326112202058075478">තවත් ඉමෝජි පෙන්වන්න</translation>
 <translation id="2335091074961603075">ඔබේ Chromebook හෝ බ්ලූටූත් උපාංගය බ්ලූටූත් හි පැරණි අනුවාදයක් භාවිතා කරයි. වඩා හොඳ ශ්‍රව්‍ය ගුණත්වය සඳහා අභ්‍යන්තර මයික්‍රෆෝනය භාවිතා කරන්න.</translation>
 <translation id="2339073806695260576">සටහනක්, තිර රුවක් ගැනීමට, ලේසර් දර්ශකය හෝ විශාලක කදාව භාවිතා කිරීමට රක්කයේ පන්හිඳ බොත්තම තට්ටු කරන්න.</translation>
 <translation id="2341729377289034582">සිරසට අගුළු දමා ඇත</translation>
+<translation id="2344032937402519675">සේවාදායකය සමග සම්බන්ධ විය නොහැකි විය. ඔබේ ජාල සබැඳුම පරීක්ෂා කර නැවත උත්සාහ කරන්න. ඔබට තවමත් ගැටලු තිබේ නම්, ඔබගේ Chromebook යළි ආරම්භ කිරීම උත්සාහ කරන්න.</translation>
 <translation id="2345226652884463045">සංස්කරණය සඳහා පෙළ තේරීමට enter හෝ search + space ඔබන්න.</translation>
 <translation id="2349785431103945039">හොට්ස්පොට් විස්තර පෙන්වන්න. හොට්ස්පොට් භාවිතා කිරීමට ජංගම ජාලය වෙත සම්බන්ධ කරන්න.</translation>
 <translation id="2350182423316644347">යෙදුම ආරම්භ කරමින්...</translation>
 <translation id="2350794187831162545"><ph name="LANGUAGE" /> කථනය දැන් ස්ථානීයව සකසන අතර නොබැඳිව ක්‍රියා කරයි. ඔබට ඔබගේ අනුලේඛන භාෂාව සැකසීම් &gt; ප්‍රවේශ්‍යතාව තුළ වෙනස් කළ හැකිය.</translation>
 <translation id="2352467521400612932">පන්හිඳ සැකසීම්</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> සක්‍රීය කරමින්</translation>
+<translation id="2355314311311231464">ඔබගේ ගිණුම් විස්තර යළි ලබා ගත නොහැකි වූ බැවින් ප්‍රතිපාදනය අසාර්ථක විය. කරුණාකර නැවත උත්සාහ කරන්න. දෝෂ කේතය: <ph name="ERROR_CODE" />.</translation>
 <translation id="2359808026110333948">කරගෙන යන්න</translation>
 <translation id="2360398059912971776">බැටරිය</translation>
 <translation id="2361210043495191221">Wi-Fi ටොගල් කරන්න. <ph name="STATE" />.</translation>
@@ -412,6 +423,7 @@
 <translation id="240545663114741956">වරනය වීමට <ph name="ACCELERATOR" /> දෙවරක් ඔබන්න.</translation>
 <translation id="2405664212338326887">සම්බන්ධ නැත</translation>
 <translation id="2406710117564540804">බාධා නොකරන්න ක්‍රියාත්මක/ක්‍රියාවිරහිත කරන්න</translation>
+<translation id="240789602312469910">භාවිත සහ දෝෂ නිර්ණ දත්ත යවන්න. ස්වයංක්‍රියව රෝග විනිශ්චය, උපාංග සහ යෙදුම් භාවිත දත්ත Google වෙත යැවීමෙන් ඔබේ දරුවාගේ Android අත්දැකීම දියුණු කර ගැනීමට උදවු කරන්න. මෙය ඔබේ දරුවා හඳුනා ගැනීමට භාවිත නොකෙරෙන අතර, පද්ධති සහ යෙදුම් ස්ථායිතාවට සහ අනෙකුත් දියුණු කිරීම්වලට උදවු කරයි. සමහර සමස්ත දත්ත Google යෙදුම්වලට සහ Android සංවර්ධකයින් වැනි හවුල්කරුවන්ට ද උදවු කරයි. මෙම <ph name="BEGIN_LINK1" />සැකසීම<ph name="END_LINK1" /> හිමිකරු විසින් බලාත්මක කෙරේ. හිමිකරු Google වෙත ස්වයංක්‍රියව දෝෂ නිර්ණ සහ භාවිත දත්ත යැවීමට තෝරා ගනීවි. ඔබේ දරුවා සඳහා අමතර වෙබ් සහ යෙදුම් ක්‍රියාකාරකම් සැකසීම සක්‍රීය කර තිබේ නම්, මෙම දත්ත ඔවුන්ගේ Google ගිණුමට සුරැකේවි. <ph name="BEGIN_LINK2" />මාත්‍රික ගැන තව දැන ගන්න<ph name="BEGIN_LINK2_END" />තව දැන ගන්න<ph name="END_LINK2" /></translation>
 <translation id="2408955596600435184">ඔබගේ PIN එක ඇතුළු කරන්න</translation>
 <translation id="2412593942846481727">යාවත්කාලීනයක් ඇත</translation>
 <translation id="2416438829169535743">දසුනින් පිටවන්න ද?</translation>
@@ -464,6 +476,7 @@
 <translation id="2531025035050312891">උපාංගය මන්දගාමී වේ</translation>
 <translation id="2531107890083353124">පටිත්ත ඇදගෙන යන අතරේ, <ph name="KEY_ONE" /> ඔබන්න</translation>
 <translation id="2532199152994248594">ගැනීමට ප්‍රදේශයක් තේරීමට ඉඩ ඇදගෙන යන්න හෝ ඔබන්න</translation>
+<translation id="2540651571961486573">යම් දෙයක් වැරදිණි. දෝෂ කේතය: <ph name="ERROR_CODE" />.</translation>
 <translation id="2545334090614121435">නිවස භාවිතා කිරීමට උත්සාහ කරන්නේ ද? භාවිතා කරන්න</translation>
 <translation id="254900897760075745">තෝරන ලද අන්තර්ගතය ක්ලිප්බෝඩ් වෙත පිටපත් කරන්න</translation>
 <translation id="2549711466868162843">ආලෝකකරණය වැඩි දියුණු කිරීම</translation>
@@ -511,8 +524,11 @@
 <translation id="2701576323154693023">හොට්ස්පොට් ක්‍රියාත්මකයි (Wi-Fi ක්‍රියාවිරහිතයි)</translation>
 <translation id="2704781753052663061">වෙනත් Wi-Fi ජාලවලට එක් වන්න</translation>
 <translation id="2705001408393684014">මයිකය ටොගල් කරන්න. <ph name="STATE_TEXT" /></translation>
+<translation id="2706304388244371417">Google Drive වෙත උපස්ථ කරන්න. දත්ත පහසුවෙන් ප්‍රතිසාධන කරන්න හෝ ඕනෑම වේලාවක උපාංගය මාරු කරන්න. මෙම උපස්ථයට යෙදුම් දත්ත ඇතුළු වෙයි. උපස්ථ Google වෙත උඩුගත කරනු ලබන අතර ඔබේ දරුවාගේ Google ගිණුම් මුරපදය භාවිත කර කේතන කරනු ලැබේ. <ph name="BEGIN_LINK1" />උපස්ථය ගැන තව දැන ගන්න<ph name="BEGIN_LINK1_END" />තව දැන ගන්න<ph name="END_LINK1" /></translation>
 <translation id="2706462751667573066">ඉහළ</translation>
+<translation id="2710101514844343743">භාවිත සහ දෝෂ නිර්ණ දත්ත</translation>
 <translation id="2710984741481549981">කවුළු අගුළු දමන්න</translation>
+<translation id="2714393097308983682">Google Play Store</translation>
 <translation id="2718395828230677721">රාත්‍රී ආලෝකය</translation>
 <translation id="2726420622004325180">හොට්ස්පොට් එකක් ලබා දීමට ඔබගේ දුරකථනයේ ජංගම දත්ත තිබිය යුතුය</translation>
 <translation id="2727175239389218057">පිළිතුරු දෙන්න</translation>
@@ -574,6 +590,8 @@
 <translation id="2893701697603065178">කළමනා කෙරෙන සංවර්ධන පරිසරය</translation>
 <translation id="2894949423239620203">කේබලය කාර්ය සාධනයට බලපෑ හැකිය</translation>
 <translation id="2902312830803030883">තවත් ක්‍රියා</translation>
+<translation id="2909506265808101667">Google සේවා සමඟ සම්බන්ධ වීමට නොහැකි විය. ඔබගේ ජාල සබැඳුම පරීක්ෂා කර නැවත උත්සාහ කරන්න. දෝෂ කේතය: <ph name="ERROR_CODE" />.</translation>
+<translation id="2910718431259223434">යම් දෙයක් වැරදිණි. කරුණාකර නැවත උත්සාහ කරන්න, නැති නම් ඔබේ උපාංග හිමිකරු හෝ පරිපාලක සම්බන්ධ කර ගන්න. දෝෂ කේතය: <ph name="ERROR_CODE" />.</translation>
 <translation id="2914580577416829331">තිර ග්‍රහණ</translation>
 <translation id="2924416280450782352">අයිතම පෙන්විය නොහැක. මෙම පැනලය නැවත විවෘත කිරීමට උත්සාහ කරන්න.</translation>
 <translation id="292506373491190801">දැන් සිදුවෙමින් පවතින සිදුවීමෙන්</translation>
@@ -633,7 +651,9 @@
 <translation id="3093423061078042895">අස්ථානගතයි</translation>
 <translation id="3095995014811312755">අනුවාදය</translation>
 <translation id="309749186376891736">කර්සරය එහා මෙහා කරන්න</translation>
+<translation id="3100071818310370858">ස්ථානය භාවිත කරන්න. මෙම උපාංගයේ ස්ථානය භාවිත කිරීමට ස්ථාන අවසරය සහිත යෙදුම්වලට සහ සේවාවලට ඉඩ දෙන්න. Google ස්ථාන දත්ත වරින් වර රැස් කිරීම සහ මෙම දත්ත ස්ථාන නිරවද්‍යතාව සහ ස්ථානය පදනම් සේවා දියුණු කිරීමට උදවු කිරීමට භාවිත කළ හැක. <ph name="BEGIN_LINK1" />ස්ථානය ගැන තව දැන ගන්න<ph name="BEGIN_LINK1_END" />තව දැන ගන්න<ph name="END_LINK1" /></translation>
 <translation id="3100274880412651815">ග්‍රහණ ප්‍රකාරය ඉවත ලන්න</translation>
+<translation id="3104948640446684649">භාවිත සහ දෝෂ නිර්ණ දත්ත යවන්න. මෙම උපාංගය ස්වයංක්‍රියව රෝග විනිශ්චය, උපාංග සහ යෙදුම් භාවිත දත්ත Google වෙත යවයි. මෙය පද්ධති සහ යෙදුම් ස්ථායිතාවට සහ අනෙකුත් දියුණු කිරීම්වලට උදවු කරයි. සමහර සමස්ත දත්ත Google යෙදුම්වලට සහ Android සංවර්ධකයින් වැනි හවුල්කරුවන්ට ද උදවු කරයි. ඔබේ අමතර වෙබ් සහ යෙදුම් ක්‍රියාකාරකම් සැකසීම සක්‍රීය නම්, මෙම දත්ත ඔබේ Google ගිණුුමට සුරකිනු ලැබේ. <ph name="BEGIN_LINK2" />මාත්‍රික ගැන තව දැන ගන්න<ph name="BEGIN_LINK2_END" />තව දැන ගන්න<ph name="END_LINK2" /></translation>
 <translation id="3105917916468784889">තිරපිටපත් ගන්න</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3107155169630537783">පිළිගැනීමේ දැනුම්දීම <ph name="STATE" /> වේ</translation>
@@ -697,6 +717,7 @@
 <translation id="3306386552969601301"><ph name="DEVICE_NAME" /> හොට්ස්පොට් වෙත උපාංග <ph name="DEVICECOUNT" />ක් සම්බන්ධ වී ඇත</translation>
 <translation id="3307642347673023554">ලැප්ටොප් ප්‍රකාරයට මාරු විය</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> හට තවමත් පසුව පිරිය හැක.</translation>
+<translation id="3313950410573257029">සම්බන්ධතාව පරීක්ෂා කරන්න</translation>
 <translation id="3321628682574733415">වැරදි මාපිය කේතය</translation>
 <translation id="332827762492701193">දැනුම්දීම් සැඟවී ඇත</translation>
 <translation id="3333674550998107387"><ph name="NOTIFICATION_TITLE" /> දැනුම්දීම දිග හරින්න</translation>
@@ -814,6 +835,7 @@
 <translation id="3638400994746983214">පෞද්ගලිකත්ව තිරය ටොගල් කරන්න. <ph name="STATE_TEXT" />.</translation>
 <translation id="3641070112313110357">Chromebook (බීටා) සඳහා Steam යාවත්කාලීන කිරීමට අවශ්‍යයි. ඔබේ Chromebook යළි අරඹා නැවත උත්සාහ කරන්න.</translation>
 <translation id="3649256019230929621">කවුළුව කුඩා කරන්න</translation>
+<translation id="3650952250015018111">"<ph name="APP_NAME" />" හට පිවිසීමට ඉඩ දෙන්න:</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
         <ph name="START_TIME" /> සිට
@@ -859,6 +881,7 @@
 <translation id="3779139509281456663"><ph name="NAME" /> සම්බන්ධ වෙමින්</translation>
 <translation id="3781910048497807059">අවධානය පෙර කවුළුව වෙත ගෙන යන්න</translation>
 <translation id="3783640748446814672">alt</translation>
+<translation id="3783889407390048282">Android වෙත ප්‍රවේශය අහිමි වීම වළක්වා ගැනීමට ඉඩ නිදහස් කරන්න.</translation>
 <translation id="3784455785234192852">අගුලු ලන්න</translation>
 <translation id="3788301286821743879">ඩාර්න්, කියෝස්ක් යෙදුම දියත් කිරීමට නොහැකි විය.</translation>
 <translation id="3789841737615482174">ස්ථාපනය</translation>
@@ -868,6 +891,7 @@
 <translation id="3804737937830804242">කැමරාව හකුළන්න</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 ඉමොජියක්. වෙනත් ප්‍රතිඵල නැත.}one{ඉමොජි #ක්. වෙනත් ප්‍රතිඵල නැත.}other{ඉමොජි #ක්. වෙනත් ප්‍රතිඵල නැත.}}</translation>
 <translation id="3822403841174077928">හැඩතල ගැන්වීම සමග පිටපත් කිරීමට නොහැකි විය</translation>
+<translation id="3824621460022590830">උපාංග ලියාපදිංචි කිරීමේ ටෝකනය වලංගු නැත. කරුණාකර ඔබේ උපාංගයේ හිමිකරු හෝ පරිපාලක සම්බන්ධ කර ගන්න. දෝෂ කේතය: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824784079442479685">මෙය <ph name="APP_NAME" /> සහ කැමරා අවසරය ඇති සියලු යෙදුම් සහ වෙබ් අඩවි සඳහා කැමරා ප්‍රවේශයට ඉඩ දෙයි. ඔබට වෙබ් පිටුව නැවුම් කිරීමට හෝ යෙදුම නැවත ආරම්භ කිරීමට අවශ්‍ය වේවි.</translation>
 <translation id="3826099427150913765">මුරපදයට මාරු වන්න</translation>
 <translation id="383058930331066723">බැටරි සුරැකුම් ප්‍රකාරය ක්‍රියාත්මකයි</translation>
@@ -892,6 +916,7 @@
 <translation id="3898464793473355515">තිරය දක්ෂිණාවර්තව අංශක 90ක් කරකවන්න</translation>
 <translation id="3900355044994618856">ඔබගේ සැසිය <ph name="SESSION_TIME_REMAINING" /> කින් අවසන් වනු ඇත</translation>
 <translation id="3901991538546252627"><ph name="NAME" /> වෙත සබඳ වෙමින්</translation>
+<translation id="3904326018476041253">ස්ථානීය සේවා</translation>
 <translation id="3904768293285573640">වමට කැට කරන ලද ප්‍රතිප්‍රමාණ කවුළුව</translation>
 <translation id="3923221004758245114">ඔබේ <ph name="DEVICE_TYPE" /> වෙතින් <ph name="VM_NAME" /> ඉවත් කරන්න ද? මෙය අතථ්‍ය යන්ත්‍රයේ ඇති සියලු ම යෙදුම් සහ දත්ත මකනු ඇත!</translation>
 <translation id="3923494859158167397">ජංගම ජාල පිහිටුවා නැත</translation>
@@ -906,6 +931,7 @@
 <translation id="3950272133184491871">දැන් වරන්න ද?</translation>
 <translation id="3950820424414687140">පුරන්න</translation>
 <translation id="3953130726459169782">තවම පැවරුම් කිසිවක් සම්පූර්ණ කර නැත.</translation>
+<translation id="3957844511978444971">මෙම Google සේවා සැකසීම්වල ඔබේ තේරීම තහවුරු කිරීමට “පිළිගන්න” තට්ටු කරන්න.</translation>
 <translation id="3958714870339660776">දවස පුරා</translation>
 <translation id="3962859241508114581">පෙර ඛණ්ඩය</translation>
 <translation id="3963124517343721543">ඔබේ පෙර කවුළු සහ පටිති විවෘත කිරීමෙන් ඔබ හැර ගිය තැනින් පහසුවෙන් ඉදිරියට යන්න. ඔබ ඊළඟට කළ යුතු දේ සඳහා පුද්ගලායන කළ යෝජනා ද දකියි.</translation>
@@ -1021,6 +1047,7 @@
 <translation id="4278779213160967034">මෙම ක්‍රියාවලියට මිනිත්තු කිහිපයක් ගත විය හැක. ගොනු බාගනිමින්.</translation>
 <translation id="4279490309300973883">ආදර්ශනය කරමින්</translation>
 <translation id="4280601795273309128">ආරක්ෂක යාවත්කාලීන නිමා විය. ඔබගේ උපාංගය උත්ශ්‍රේණි කරන්න.</translation>
+<translation id="4281844954008187215">සේවා කොන්දේසි</translation>
 <translation id="4283888303416325161">වැඩි ආරක්ෂාව සඳහා මුරපදය ඇතුළු කරන්න</translation>
 <translation id="4285498937028063278">ගලවන්න</translation>
 <translation id="428715201724021596">පැතිකඩ වෙත සම්බන්ධ වෙමින්. මෙයට මිනිත්තු කිහිපයක් ගත විය හැකිය.</translation>
@@ -1065,6 +1092,7 @@
 <translation id="4406883609789734330">සජීවී සිරස්තලය</translation>
 <translation id="4412698727486357573">උදවු මධ්‍යස්ථානය</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> ක්‍රියාවිරහිතයි.</translation>
+<translation id="44141919652824029">ඔබගේ අමුණා ඇති USB උපාංග ලැයිස්තුවක් ලබා ගැනීමට "<ph name="APP_NAME" />" හට ඉඩ දෙන්නද?</translation>
 <translation id="4414242853388122273"><ph name="VM_NAME" /> ඉවත් කිරීමේ දෝෂයකි. නැවත උත්සාහ කරන්න.</translation>
 <translation id="4417647906073317561">අවධාන සැකසීම්. ප්‍රවාහයට ඇතුළු වීමට මුහූර්තකයක්, කාර්යයක්, සහ සංගීතය සකසන්න.</translation>
 <translation id="4418600384772451109">පැනලය වසන්න</translation>
@@ -1106,6 +1134,7 @@
 <translation id="453661520163887813">පිරෙන තෙක් <ph name="TIME" /></translation>
 <translation id="4538824937723742295">පූර්ණ තිරයේ තිර රුවක් ගන්න</translation>
 <translation id="4539127209940689201">වත්මන් පිටුව මුද්‍රණය කරන්න</translation>
+<translation id="4541123282641193691">ඔබගේ ගිණුම සත්‍යාපනය කළ නොහැකි විය. නැවත උත්සාහ කරන්න හෝ ඔබගේ Chromebook යළි අරඹන්න.</translation>
 <translation id="4541505619120536051">සැම විට විවෘත කරන්න</translation>
 <translation id="4541706525461326392">පැතිකඩ ඉවත් කරමින්. මෙයට මිනිත්තු කිහිපයක් ගත විය හැකිය.</translation>
 <translation id="4544483149666270818">පටිගත කිරීමට කවුළුවක් තෝරන්න</translation>
@@ -1116,6 +1145,7 @@
 <translation id="4556953949326137018">ඔබ “දින දර්ශනයට එක් කරන්න” හෝ “Google Docs තනන්න” වැනි යෝජිත ක්‍රියා භාවිතා කරන විට, තෝරාගත් ප්‍රදේශයෙන් අන්තර්ගතය <ph name="LINK_TO_SERVICE_TERMS" /> වෙත යටත්ව, ක්‍රියා යෝජනා කිරීමට Google සේවාදායකයන් වෙත යවනු ලැබේ. පුද්ගලික, සංවේදී, හෝ රහසිගත කිසිවක් ඇතුළත් නොකරන්න.</translation>
 <translation id="4560576029703263363">සක්‍රියයි</translation>
 <translation id="4561267230861221837">3G</translation>
+<translation id="4562091353415772246">යාවත්කාලීන සහ යෙදුම් ස්ථාපන කරන්න. ඉදිරියට යාමෙන්, ඔබ Wi-Fi නොමැති නම් සෙලියුලර් දත්ත භාවිත කර, Google, ඔබේ වාහකය සහ ඔබේ උපාංගයේ නිෂ්පාදකයා වෙතින් යාවත්කාලීන සහ යෙදුම් ස්වයංක්‍රීයව බා ගෙන ස්ථාපනය කළ හැකි බවට ඔබ එකඟ වෙයි. මෙම යෙදුම්වලින් සමහරක් යෙදුම තුළ මිල දී ගැනීම් පිරිනැමිය හැක. <ph name="BEGIN_LINK1" />Play ස්වයං ස්ථාපනය ගැන තව දැන ගන්න<ph name="BEGIN_LINK1_END" />තව දැන ගන්න<ph name="END_LINK1" /></translation>
 <translation id="4565377596337484307">මුරපදය සඟවන්න</translation>
 <translation id="4566144812051858745">කිසිදු යෝජනාවක් පිළිබඳ ලැදිකමක් නැත</translation>
 <translation id="4569753163207712681">ඔබේ දුරකථනයේ මෑත ඡායාරූප, මාධ්‍ය සහ යෙදුම් බලන්න</translation>
@@ -1135,6 +1165,7 @@
 <translation id="4628757576491864469">උපාංග</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, තරු ඇගයීම <ph name="RATING_SCORE" /></translation>
 <translation id="4633636853437260449">මකා දැමීමට Ctrl+W ඔබන්න</translation>
+<translation id="4633757335284074492">Google Drive වෙත උපස්ථ කරන්න. ඕනෑම වේලාවක දත්ත පහසුවෙන් නැවත සකසන්න හෝ උපාංග අතර මාරු වන්න. මෙම උපස්ථයට යෙදුම් දත්ත ඇතුළුයි. උපස්ථ Google වෙත උඩුගත කෙරෙන අතර ඔබේ දරුවාගේ Google ගිණුමේ මුරපදය භාවිත කර සංකේතන කෙරේ.</translation>
 <translation id="4635501805800894201">{0,plural, =0{උපාංගය දැන් පෙර අනුවාදයට යාවත්කාලීන කරන්න}=1{තත්පර 1ක් ඇතුළත උපාංගය පෙර අනුවාදයට යාවත්කාලීන කරන්න}one{තත්පර #ක් ඇතුළත උපාංගය පෙර අනුවාදයට යාවත්කාලීන කරන්න}other{තත්පර #ක් ඇතුළත උපාංගය පෙර අනුවාදයට යාවත්කාලීන කරන්න}}</translation>
 <translation id="4642092649622328492">අර්ධ තිර රුවක් ගන්න</translation>
 <translation id="4642587497923912728">Chromebook (බීටා) සඳහා Steam ලබා ගත හැක්කේ මෙම Chromebook හි පළමුව පුරනය වූ ගිණුම සඳහා පමණි.</translation>
@@ -1177,6 +1208,7 @@
 <translation id="4759238208242260848">බාගැනීම්</translation>
 <translation id="4762160261012420470"><ph name="LAUNCHER_KEY_NAME" /> + ඉහළට ඊතලය</translation>
 <translation id="4762573482154983647">යෙදුම් සඟවන්න</translation>
+<translation id="4762718786438001384">උපාංග තැටි ඉඩ දරුණු ලෙස අඩුය</translation>
 <translation id="4763885921995354846">මෙය කැමරා අවසරය ඇති සියලු යෙදුම් සහ වෙබ් අඩවි සඳහා කැමරා ප්‍රවේශයට ඉඩ දෙයි. ඔබට වෙබ් පිටුව නැවුම් කිරීමට හෝ යෙදුම නැවත ආරම්භ කිරීමට අවශ්‍ය වේවි.</translation>
 <translation id="4774338217796918551">හෙට <ph name="COME_BACK_TIME" />ට ආපසු එන්න.</translation>
 <translation id="4776584068981882959">ඔබේ මුරපදය තවමත් සත්‍යාපනය කළ නොහැකි විය. නැවත උත්සාහ කරන්න.</translation>
@@ -1283,6 +1315,7 @@
 <translation id="5077936103761694531">විභේදනය තහවුරු කරන්න ද?</translation>
 <translation id="5078796286268621944">වැරදි PIN</translation>
 <translation id="5083035541015925118">ctrl + alt + ඉහළට ඊතලය</translation>
+<translation id="5084328598860513926">ප්‍රතිපාදන ප්‍රවාහයට බාධා විය. කරුණාකර නැවත උත්සාහ කරන්න, නැති නම් ඔබේ උපාංග හිමිකරු හෝ පරිපාලක සම්බන්ධ කර ගන්න. දෝෂ කේතය: <ph name="ERROR_CODE" />.</translation>
 <translation id="5091636240353511739">PIN පෙන්වන්න</translation>
 <translation id="5092436659250499817">යතුරු පුවරු පසුතල ආලෝකය ක්‍රියාත්මක/ක්‍රියාවිරහිත කරන්න</translation>
 <translation id="5094577350232361255">පිළිබඳව</translation>
@@ -1312,6 +1345,7 @@
 <translation id="5170568018924773124">ෆෝල්ඩරයේ පෙන්වන්න</translation>
 <translation id="5176318573511391780">අර්ධ තිරය පටිගත කරන්න</translation>
 <translation id="5187627942836026988">හොට්ස්පොට් විස්තර පෙන්වන්න. හොට්ස්පොට් ඔබේ පරිපාලක විසින් අවහිර කර ඇත.</translation>
+<translation id="5188648870018555788">ස්ථානය භාවිත කරන්න. ChromeOS සහ Android යෙදුම්වලට, වෙබ් අඩවිවලට, සහ සේවාවලට ඔබේ උපාංගයේ ස්ථානය භාවිත කිරීමට අවසර දෙන්න. ස්ථාන නිරවද්‍යතාව Android යෙදුම් සහ සේවා සඳහා ඉතා නිරවද්‍ය ස්ථානය සපයයි. මෙය කිරීමට, Google උපාංග සංවේදක සහ ඔබේ උපාංගයෙන් ලැබෙන රැහැන් රහිත සංඥා පිළිබඳ තොරතුරු රැහැන් රහිත සංඥා ස්ථානවලට ක්‍රවුඩ්සෝස් කිරීමට කලින් කල සැකසුම් කරයි. මේවා ඔබව හඳුනා නොගෙන ස්ථාන නිරවද්‍යතාව සහ ස්ථාන පාදක සේවා දියුණු කිරීමට සහ පරිශීලකයින්ගේ අවශ්‍යතා ඉටු කිරීමට Google හි සහ තෙවන පාර්ශවවල නීත්‍යානුකූල ලැදිකම්වලට අනුව Google හි සේවා දියුණු කිරීමට, සැපයීමට, සහ නඩත්තු කිරීමට භාවිත කරනු ලැබේ. <ph name="BEGIN_LINK1" />ස්ථානය භාවිත කිරීම ගැන තව දැන ගන්න<ph name="END_LINK1" /></translation>
 <translation id="5197255632782567636">අන්තර්ජාලය</translation>
 <translation id="5198039720391525849">විශේෂාංගී GIFs</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, සිදුවීම් <ph name="NUMBER" />ක්</translation>
@@ -1332,6 +1366,7 @@
 <translation id="5238719049014159442">දියත්කරණය විවෘත කරන්න/වසන්න</translation>
 <translation id="5240725217819182328">ස්ථාපිත යෙදුම් තුළ නිශ්චිත පිටු හෝ ක්‍රියා වෙත ඉක්මන් ප්‍රවේශය</translation>
 <translation id="5243355658487390559">සෙවීම් දිනය</translation>
+<translation id="5243522832766285132">කරුණාකර සුළු මොහොතකින් නැවත උත්සාහ කරන්න</translation>
 <translation id="5245201184978705914">අනුපත ජනනය කළ නොහැකිය</translation>
 <translation id="5251174953851719648">අන්තර්ගතය නැවුම් කරන්න</translation>
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> නම් වූ උපාංගයකට සම්බන්ධ විය, බැටරිය <ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -1339,6 +1374,7 @@
 <translation id="5256939106029293271">ඔබේ මයික්‍රෆෝනය පරීක්ෂා කරන්න</translation>
 <translation id="5258528442992323769">සුරැකි මේස නැත</translation>
 <translation id="5260676007519551770">4 වෙනි මේසය</translation>
+<translation id="5264148714798105376">මෙය මිනිත්තුවක් හෝ කිහිපයක් ගත හැකිය.</translation>
 <translation id="5265391159779542051">ප්‍රතිඵල පූරණය කර ඇත</translation>
 <translation id="5270547718570958938">Google දින දර්ශනය</translation>
 <translation id="5277869901083657836">පන්හිඳ මෙවලම් ටොගල් කරන්න</translation>
@@ -1415,6 +1451,7 @@
 <translation id="5506975627792768506">විශාලකය සක්‍රීය හෝ අක්‍රිය කරන්න</translation>
 <translation id="5507778598655387680"><ph name="VOLUME_LEVEL" />, enter එබීමෙන් ශ්‍රව්‍ය නිශ්ශබ්ද වනු ඇත.</translation>
 <translation id="5512042095225963688">පෙර වචනය මකන්න</translation>
+<translation id="5517304475148761050">මෙම යෙදුම Play Store වෙත ප්‍රවේශය අවශ්‍ය කරයි</translation>
 <translation id="5519005148254860683">Google Tasks දිග හරින්න</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">ඔබගේ පරිපාලක සියලු eSIM පැතිකඩවල් ඉවත් කර ඇත. වැඩිදුර තොරතුරු සඳහා ඔබගේ පරිපාලක සම්බන්ධ කරගන්න.</translation>
@@ -1442,6 +1479,7 @@
 <translation id="5577281275355252094">Phone Hub භාවිත කිරීමට ඔබගේ දුරකථනයෙහි බ්ලූටූත් සබල කර තිබේද යන්න බලන්න</translation>
 <translation id="5578188167649348993">මතකය</translation>
 <translation id="5580000943347215299">පුස්තකාලය</translation>
+<translation id="5581972110672966454">වසමට උපාංගය එක් කළ නොහැකිය. කරුණාකර නැවත උත්සාහ කරන්න, නැති නම් ඔබේ උපාංග හිමිකරු හෝ පරිපාලක සම්බන්ධ කර ගන්න. දෝෂ කේතය: <ph name="ERROR_CODE" />.</translation>
 <translation id="5586388332127302891">ඩොක් කළ විශාලකය සබලයි. එය ටොගල් කිරීමට නැවත <ph name="ACCELERATOR" /> ඔබන්න.</translation>
 <translation id="5587506661873751671"><ph name="DOWNLOAD_PERCENT" />% බාගනිමින්</translation>
 <translation id="558849140439112033">ග්‍රහණය කිරීමට ප්‍රදේශයක් තේරීමට අදින්න</translation>
@@ -1466,6 +1504,7 @@
 <translation id="5662075790140998213">10 වෙනි මේසය</translation>
 <translation id="5662709761327382534">පටිගත කිරීම් මයික්‍රෆෝනය <ph name="CURRENT_STATE" />, මයික්‍රෆෝන පටිගත කිරීම ක්‍රියාත්මක කිරීමට <ph name="NEW_STATE" /> Enter ඔබන්න</translation>
 <translation id="5662919923378083468"><ph name="ACTION_DESCRIPTION" />, <ph name="SHORTCUT_HINT" /></translation>
+<translation id="5667546120811588575">Google Play පිහිටුවමින්...</translation>
 <translation id="5669267381087807207">සක්‍රීය වෙමින්...</translation>
 <translation id="5671658447180261823"><ph name="SUGGESTION_NAME" /> යෝජනාව ඉවත් කරන්න</translation>
 <translation id="5672890847723042801">උපයෝගිතා</translation>
@@ -1482,6 +1521,7 @@
 <translation id="5691772641933328258">ඇඟිලි සලකුණ හඳුනා නොගැනිණි</translation>
 <translation id="5693255400847650006">මයික්‍රෆෝනය භාවිතා වේ</translation>
 <translation id="5699366815052349604">සියලු මේසවලට සක්‍රිය කවුළුව පවරන්න</translation>
+<translation id="570043786759263127">Google Play යෙදුම් සහ සේවාවන්</translation>
 <translation id="570390244361237317">සියලු යෙදුම්, සියලු යෙදුම් වෙත ප්‍රවේශ වීමට ඊතල යතුරු සමඟ සංචාලනය කරන්න</translation>
 <translation id="5705197514573687092">අවධාන සැකසීම් පෙන්වන්න. මුහූර්තකය <ph name="FOCUS_DURATION" /> ලෙස සකසන ලදි</translation>
 <translation id="5707775774148071965">ඔබගේ උපාංගය ඔබගේ කේබලයට වඩා ඉහළ දත්ත අනුපාතයකට සහාය දක්වයි. උපාංග කාර්ය සාධනය සීමා විය හැකිය.</translation>
@@ -1496,6 +1536,7 @@
 <translation id="574392208103952083">මධ්‍යම</translation>
 <translation id="5744083938413354016">ඇදගෙන යාම තට්ටු කරන්න</translation>
 <translation id="5745612484876805746">රාත්‍රී ආලෝකය හිරු බැස යන විට දී ස්වයංක්‍රීයව ක්‍රියාත්මක වේ</translation>
+<translation id="5749214722697335450">භාවිත සහ දෝෂ නිර්ණ දත්ත යවන්න. ස්වයංක්‍රියව රෝග විනිශ්චය, උපාංග සහ යෙදුම් භාවිත දත්ත Google වෙත යැවීමෙන් ඔබේ Android අත්දැකීම දියුණු කර ගැනීමට උදවු කරන්න. මෙය පද්ධති සහ යෙදුම් ස්ථායිතාවට සහ අනෙකුත් දියුණු කිරීම්වලට උදවු කරයි. සමහර සමස්ත දත්ත Google යෙදුම්වලට සහ Android සංවර්ධකයින් වැනි හවුල්කරුවන්ට ද උදවු කරයි. ඔබේ අමතර වෙබ් සහ යෙදුම් ක්‍රියාකාරකම් සැකසීම සක්‍රීය නම්, මෙම දත්ත ඔබේ Google ගිණුුමට සුරකිනු ලැබේ. <ph name="BEGIN_LINK1" />මාත්‍රික ගැන තව දැන ගන්න<ph name="BEGIN_LINK1_END" />තව දැන ගන්න<ph name="END_LINK1" /></translation>
 <translation id="5750765938512549687">බ්ලූටූත් ක්‍රියා විරහිතයි</translation>
 <translation id="5758114525425072423">අවධානය පටන් ගන්න. මුහූර්තකය <ph name="FOCUS_DURATION" /> ලෙස සකසන ලදි</translation>
 <translation id="5759522586053040964">ඔබ අන් අයට කෙසේ ශබ්ද වන්නේ දැයි අසන්න. නැවැත්වීමට, පරීක්ෂණ නිරූපකය ක්ලික් කරන්න හෝ වීඩියෝ ඇමතුම් පැනලය වසන්න.</translation>
@@ -1512,6 +1553,7 @@
 <translation id="5775936059231769503">හොට්ස්පොට් ටොගල් කරන්න. හොට්ස්පොට් ක්‍රියා විරහිතයි.</translation>
 <translation id="5777841717266010279">තිර හවුල්කිරීම නවතන්නද?</translation>
 <translation id="5779721926447984944">ඇමුණූ ගොනු</translation>
+<translation id="5780940414249100901">භාවිත සහ දෝෂ නිර්ණ දත්ත යවන්න. මෙම උපාංගය ස්වයංක්‍රියව රෝග විනිශ්චය, උපාංග සහ යෙදුම් භාවිත දත්ත Google වෙත යවයි. මෙය ඔබේ දරුවා හඳුනා ගැනීමට භාවිත නොකෙරෙන අතර, පද්ධති සහ යෙදුම් ස්ථායිතාවට සහ අනෙකුත් දියුණු කිරීම්වලට උදවු කරයි. සමහර සමස්ත දත්ත Google යෙදුම්වලට සහ Android සංවර්ධකයින් වැනි හවුල්කරුවන්ට ද උදවු කරයි. මෙම <ph name="BEGIN_LINK1" />සැකසීම<ph name="END_LINK1" /> හිමිකරු විසින් බලාත්මක කෙරේ. ඔබේ දරුවා සඳහා අමතර වෙබ් සහ යෙදුම් ක්‍රියාකාරකම් සැකසීම සක්‍රීය කර තිබේ නම්, මෙම දත්ත ඔවුන්ගේ Google ගිණුමට සුරැකේවි. <ph name="BEGIN_LINK2" />මාත්‍රික ගැන තව දැන ගන්න<ph name="BEGIN_LINK2_END" />තව දැන ගන්න<ph name="END_LINK2" /></translation>
 <translation id="5785221443435874078">මෙම යෝජනාව ඉවත් කරන්න</translation>
 <translation id="5787431783058088906">වරප්‍රසාදය ලබා ගන්න</translation>
 <translation id="5788127256798019331">Play ගොනු</translation>
@@ -1527,6 +1569,7 @@
 <translation id="5823239091726045201">වෙබ් මත Google Tasks</translation>
 <translation id="5825969630400862129">සම්බන්ධිත උපාංග සැකසීම්</translation>
 <translation id="5830180081891717894">තව <ph name="WINDOWS" /></translation>
+<translation id="583281660410589416">නොදනී</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> මත <ph name="ROUTE_TITLE" /> නවත්වන්න</translation>
 <translation id="5840658767386246331">Google සමග සොයන්න</translation>
 <translation id="5841296711770970362">මීළඟ ශ්‍රව්‍ය ඛණ්ඩයට යන්න</translation>
@@ -1592,6 +1635,7 @@
 <translation id="6032620807120418574">පූර්ණ තිරය පටිගත කිරීමට ඕනෑම තැනක ක්ලික් කරන්න</translation>
 <translation id="6040071906258664830">මයික්‍රෆෝනය <ph name="STATE" /> පටිගත කරන්න</translation>
 <translation id="6040143037577758943">වසන්න</translation>
+<translation id="6042308850641462728">වැඩිදුර</translation>
 <translation id="6043212731627905357">මෙම මොනිටරය ඔබේ <ph name="DEVICE_TYPE" /> සමග නොගැළපෙයි (මොනිටරය සහාය නොදක්වයි).</translation>
 <translation id="6043994281159824495">දැන් පිටවන්න</translation>
 <translation id="6045629311476491587">යෙදුම් <ph name="APP_COUNT" />කින් භාවිතා කරයි</translation>
@@ -1671,9 +1715,12 @@
 <translation id="6274422179279280249">සබැඳි, ඉමොජි, සහ තවත් දේ ඇතුළත් කරන්න. ඔබට Google AI සමග ලිවීමට උදවු ලබා ගත හැක. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="6276708887952587684">පිටු මූලාශ්‍රය බලන්න</translation>
 <translation id="6285871695023807425">දින දර්ශනයට එක් කරන්න</translation>
+<translation id="628699625505156622">ස්ථානය භාවිත කරන්න. ChromeOS සහ Android යෙදුම්වලට, වෙබ් අඩවිවලට, සහ සේවාවලට මෙම උපාංගයේ ස්ථානය භාවිත කිරීමට අවසර දෙන්න. ස්ථාන නිරවද්‍යතාව Android යෙදුම් සහ සේවා සඳහා ඉතා නිරවද්‍ය ස්ථානය සපයයි. මෙය කිරීමට, Google උපාංග සංවේදක සහ මෙම උපාංගයෙන් ලැබෙන රැහැන් රහිත සංඥා පිළිබඳ තොරතුරු රැහැන් රහිත සංඥා ස්ථානවලට ක්‍රවුඩ්සෝස් කිරීමට කලින් කල සැකසුම් කරයි. මේවා කිසියම් පුද්ගලයෙකු හඳුනා නොගෙන ස්ථාන නිරවද්‍යතාව සහ ස්ථාන පාදක සේවා දියුණු කිරීමට සහ පරිශීලකයින්ගේ අවශ්‍යතා ඉටු කිරීමට Google හි සහ තෙවන පාර්ශවවල නීත්‍යානුකූල ලැදිකම්වලට අනුව Google හි සේවා දියුණු කිරීමට, සැපයීමට, සහ නඩත්තු කිරීමට භාවිත කරනු ලැබේ. <ph name="BEGIN_LINK1" />ස්ථානය භාවිත කිරීම ගැන තව දැන ගන්න<ph name="END_LINK1" /></translation>
 <translation id="6288235558961782912">මාපියෙකුගේ අවසරය සමඟ පසුව <ph name="USER_EMAIL_ADDRESS" /> එක් කළ හැක.</translation>
 <translation id="6291221004442998378">ආරෝපණය නොවේ</translation>
+<translation id="6297986260307280218">භාවිත සහ දෝෂ නිර්ණ දත්ත යවන්න. ස්වයංක්‍රියව රෝග විනිශ්චය, උපාංග සහ යෙදුම් භාවිත දත්ත Google වෙත යැවීමෙන් ඔබේ Android අත්දැකීම දියුණු කර ගැනීමට උදවු කරන්න. මෙය පද්ධති සහ යෙදුම් ස්ථායිතාවට සහ අනෙකුත් දියුණු කිරීම්වලට උදවු කරයි. සමහර සමස්ත දත්ත Google යෙදුම්වලට සහ Android සංවර්ධකයින් වැනි හවුල්කරුවන්ට ද උදවු කරයි. මෙම <ph name="BEGIN_LINK1" />සැකසීම<ph name="END_LINK1" /> හිමිකරු විසින් බලාත්මක කෙරේ. හිමිකරු Google වෙත ස්වයංක්‍රියව දෝෂ නිර්ණ සහ භාවිත දත්ත යැවීමට තෝරා ගනීවි. ඔබේ අමතර වෙබ් සහ යෙදුම් ක්‍රියාකාරකම් සැකසීම සක්‍රීය නම්, මෙම දත්ත ඔබේ Google ගිණුුමට සුරකිනු ලැබේ. <ph name="BEGIN_LINK2" />මාත්‍රික ගැන තව දැන ගන්න<ph name="BEGIN_LINK2_END" />තව දැන ගන්න<ph name="END_LINK2" /></translation>
 <translation id="6298183524022479114">යෙදුම තුළ මෙම උපාංගය අභිරුචිකරණය කරන්න</translation>
+<translation id="6298962879096096191">Android යෙදුම් ස්ථාපනය කිරීමට Google Play භාවිත කරන්න</translation>
 <translation id="6304076460080088478">Google Lens සමග ඔබේ තිරය සෙවීමට අප්‍රසිද්ධ කවුළු වසන්න හෝ අවම කරන්න</translation>
 <translation id="6309219492973062892">1-8 දක්වා රාක්ක නිරූපක ක්ලික් කරන්න හෝ තට්ටු කරන්න</translation>
 <translation id="6315170314923504164">හඬ</translation>
@@ -1703,8 +1750,10 @@
 <translation id="6406458002328242616">මුහූර්තකය සංස්කරණ කරන්න. <ph name="FOCUS_DURATION" />.</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6414618057231176439">ස්ථාපනය කිරීමට අවශ්‍ය <ph name="VM_NAME" /> හි කුමන අනුවාදය දැයි තෝරන්න.</translation>
+<translation id="641469293210305670">යාවත්කාලීන සහ යෙදුම් ස්ථාපන කරන්න</translation>
 <translation id="6417265370957905582">Google සහායක</translation>
 <translation id="641817663353603351">පිටුව ඉහළට</translation>
+<translation id="6418511932144861495">වැදගත් යාවත්කාලීනය ස්ථාපනය කරන්න</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">සියලු දැනුම්දීම් හිස් කරන්න</translation>
 <translation id="6426905245930183644">තනමින්…</translation>
@@ -1730,6 +1779,7 @@
 <translation id="6482559668224714696">පූර්ණ තිර විශාලකය</translation>
 <translation id="6485086611007560630">කාලගුණය (ලබා ගත නොහැක)</translation>
 <translation id="6490471652906364588">USB-C උපාංගය (දකුණු තොට)</translation>
+<translation id="6491376743066338510">අනුමැතිය දීම අසාර්ථක විය</translation>
 <translation id="649452524636452238">ස්මාර්ට් කාඩ්පත් රහස් අංකය</translation>
 <translation id="6495322433318104734">තිර සුරැකුම සංදර්ශනය වේ, පිටවීමට ඕනෑම යතුරක් ඔබන්න</translation>
 <translation id="6495400115277918834">පින්තූරයක් තුළ පින්තූරයක් ආරම්භ විය, නාභිගත කිරීමට Alt+Shift+V</translation>
@@ -1783,10 +1833,12 @@
 <translation id="6625718907317144388"><ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> සහ වෙනත් දැනුම්දීම් බැලීමේ ආරක්ෂාව ක්‍රියාත්මක බැවින් සඟවා ඇත</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
 <translation id="662830937908749204">ඊළඟ පැනලය වෙත අවධානය යොමු කරන්න</translation>
+<translation id="6635674640674343739">ජාල සබැඳුම ස්ථාපනය කළ නොහැකිය. ඔබේ ජාල සබැඳුම පරීක්ෂා කර නැවත උත්සාහ කරන්න.</translation>
 <translation id="6637729079642709226">වේලාව වෙනස් කරන්න</translation>
 <translation id="6641720045729354415">සජීවී සිරස්තල ටොගල කරන්න. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">නාමය අනුව අනුපිළිවෙලට සැකසීමේ පිළිවෙළ පසුගමනය කරන්න</translation>
 <translation id="664793810957802384">යෝජිත සමූහයේ අයිතම</translation>
+<translation id="6649018507441623493">තත්පරයක් ඉන්න…</translation>
 <translation id="6649641931981131786">ඔබව තිරයේ මැදට දැමීමට කැමරාව හරි ගස්සන්න.</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> ඒ ඔබ බව තහවුරු කිරීමට කැමතියි</translation>
 <translation id="6650742588569439432">අයිතම පූරණ කළ නොහැකි විය.</translation>
@@ -1811,6 +1863,7 @@
 <translation id="6706742084323792866">යතුරු පුවරුව අමුණන්න</translation>
 <translation id="6709719156428404245">පටිගත කිරීමට ප්‍රදේශයක් තේරීමට ඉඩ ඇදගෙන යන්න හෝ ඔබන්න</translation>
 <translation id="6710213216561001401">පෙර</translation>
+<translation id="6716798148881908873">ජාල සබැඳුම අහිමි විය. ඔබගේ ජාල සබැඳුම පරීක්ෂා කරන්න හෝ වෙනත් Wi-Fi ජාලයක් උත්සාහ කරන්න.</translation>
 <translation id="6723839937902243910">බලය</translation>
 <translation id="672609503628871915">අළුත් මොනවාදැයි බලන්න</translation>
 <translation id="6727969043791803658">සම්බන්ධිතයි, බැටරිය <ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -1850,6 +1903,7 @@
 <translation id="6819327813400217281">කැමරාව පහළ වම් කෙළවරට සවි කර ඇත</translation>
 <translation id="6820676911989879663">විවේකයක් ගන්න!</translation>
 <translation id="6827049576281411231">සිදුවීම් පැනලය වසන්න</translation>
+<translation id="682971198310367122">Google රහස්‍යතා ප්‍රතිපත්තිය</translation>
 <translation id="6836499262298959512">අනතුරුදායක ගොනුව</translation>
 <translation id="6837621009301897464">තිර රුවක් ගැනීම සඳහා, ඔබන්න</translation>
 <translation id="6852052252232534364">සක්‍රිය ක්ලික්</translation>
@@ -1881,6 +1935,7 @@
 <translation id="6942518653766415536">පටිගත කිරීමේ ආකෘති මෙනුව</translation>
 <translation id="6945221475159498467">තෝරන්න</translation>
 <translation id="6945922087561257829">ඔබේ දුරකථනය ජංගම ජාලයක් භාවිත කරයි. ඔබේ දුරකථනය සහ Chromebook එකම Wi-Fi ජාලයක ඇති බව සහතික කර ගෙන නැවත උත්සාහ කරන්න. <ph name="LEARN_MORE" /></translation>
+<translation id="6950627417367801484">යෙදුම් ප්‍රතිස්ථාපනය කරන්න</translation>
 <translation id="6960565108681981554">සක්‍රිය කර නැත. ඔබගේ වාහකය අමතන්න.</translation>
 <translation id="6961121602502368900">කාර්යාල පැතිකඩෙහි දුරකථනය නිහඬ කිරීම ලබා ගත නොහැකිය</translation>
 <translation id="6961840794482373852">Alt + ඉහළට ඊතලය යතුරු පුවරු කෙටි මග වෙනස් වී ඇත. Page Up යතුර භාවිත කිරීමට, <ph name="LAUNCHER_KEY_NAME" /> යතුර + ඉහළට ඊතලය ඔබන්න.</translation>
@@ -2052,6 +2107,7 @@
 <translation id="7541773865713908457"><ph name="APP_NAME" /> යෙදුම සමඟින් <ph name="ACTION_NAME" /></translation>
 <translation id="7543399541175347147">Linux යෙදුම් සහ අප්‍රසිද්ධ කවුළු දැනට සහාය නොදක්වයි. වෙනත් යෙදුම් සුරකිනු ඇත.</translation>
 <translation id="7544300628205093162">යතුරුපුවරු පසුආලෝකය ක්‍රියාත්මකයි</translation>
+<translation id="7545466883021407599">සේවාදායකය සමග සම්බන්ධ විය නොහැකි විය. ඔබේ ජාල සබැඳුම පරීක්ෂා කර නැවත උත්සාහ කරන්න. ඔබට තවමත් ගැටලු තිබේ නම්, ඔබගේ Chromebook යළි ආරම්භ කිරීම උත්සාහ කරන්න. දෝෂ කේතය: <ph name="ERROR_CODE" />.</translation>
 <translation id="7548434653388805669">නිදා ගන්නා වේලාවයි</translation>
 <translation id="7551643184018910560">රාක්කය වෙත අමුණන්න</translation>
 <translation id="7557816257942363084"><ph name="APP_NAME" /> දැනට ඔබේ මයික්‍රෆෝනය භාවිතා කරයි</translation>
@@ -2067,6 +2123,7 @@
 <translation id="7579778809502851308">තිර ග්‍රහණය</translation>
 <translation id="7588317312481506627">පසුරු පුවරුවට පිටපත් කරන ලදි.</translation>
 <translation id="7593891976182323525">Search හෝ Shift</translation>
+<translation id="7595453277607160340">Android යෙදුම් භාවිතා කිරීමට සහ ඔබගේ <ph name="DEVICE_TYPE" /> හොඳින් ක්‍රියා කිරීම වළක්වා ගැනීමට, නැවත පුරනය වී යාවත්කාලීන කරන්න.</translation>
 <translation id="7598054670902114203">CPU භාවිත සැණ රුව, <ph name="CPU_USEAGE" />%. උෂ්ණත්වය සෙල්සියස් අංශක <ph name="TEMPERATURE" /> යි, වත්මන් වේගය: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" />GHz</translation>
 <translation id="7599378375976398913">තෝරා ගත් ප්‍රතිඵලය ඇතුළත් කිරීම</translation>
 <translation id="7600875258240007829">සියලු දැනුම්දීම් බලන්න</translation>
@@ -2076,6 +2133,7 @@
 <translation id="7609951632080598826">දින දර්ශන දසුන, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">කැමරාව යළි සම්බන්ධ කරන ලදි.</translation>
 <translation id="7613620083300976559">ක්‍රීඩා පාලක ක්‍රියාත්මක කරන්න</translation>
+<translation id="761530003705945209">Google Drive වෙත උපස්ථ කරන්න. ඕනෑම වේලාවක ඔබගේ දත්ත පහසුවෙන් ප්‍රතිසාධන කරන්න හෝ උපාංග අතර මාරු වන්න. ඔබගේ උපස්ථයට යෙදුම් දත්ත අන්තර්ගතයි. ඔබේ උපස්ථ Google වෙත උඩුගත කෙරෙන අතර ඔබේ Google ගිණුමේ මුරපදය භාවිත කර සංකේතන කෙරේ.</translation>
 <translation id="761736749114493194">කැමරා රාමු කිරීම ටොගල් කරන්න. <ph name="STATE_TEXT" /></translation>
 <translation id="7621008024906456933">ඉක්මන් බෙදා ගැනීමේ සැකසීම්</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
@@ -2124,6 +2182,7 @@
 <translation id="7748275671948949022">රාක්කයේ දියත්කරණ බොත්තම උද්දීපනය කරන්න</translation>
 <translation id="7749443890790263709">උපරිම මේස ගණන ළඟා විය.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7750228210027921155">පින්තූරය-තුළ-පින්තූරය</translation>
 <translation id="7751260505918304024">සියල්ල පෙන්වන්න</translation>
 <translation id="7762664108390426952">Google හි සේවා නියම සහ රහස්‍යතා ප්‍රතිපත්තිය</translation>
 <translation id="7768784765476638775">කීමට-තේරීම</translation>
@@ -2242,6 +2301,7 @@
 <translation id="8092380135549145188">අනුචලන පාලන</translation>
 <translation id="8098591350844501178"><ph name="RECEIVER_NAME" /> වෙත තිරය විකාශය නවතන්න</translation>
 <translation id="810637681351706236">යෙදුම රාක්කයෙන් ගලවන්න</translation>
+<translation id="8107015733319732394">ඔබේ <ph name="DEVICE_TYPE" /> මත Google Play Store ස්ථාපනය කරමින්. මේ සඳහා විනාඩි කිහිපයක් ගත විය හැකිය.</translation>
 <translation id="8113423164597455979">සියලු යෙදුම් සක්‍රිය.</translation>
 <translation id="8113515504791187892">කථා-කිරීමට-තෝරන්න බොත්තම</translation>
 <translation id="8120151603115102514">ඔබගේ දුරකථනයට අගුලු තිරයක් නොමැත. ඔබගේ Chromebook අගුලු හැරීමට, මුරපදය ඇතුළු කරන්න.</translation>
@@ -2324,6 +2384,7 @@
 <translation id="8388750414311082622">අවසාන මේසය ඉවත් නොකළ හැක.</translation>
 <translation id="8394567579869570560">ඔබේ මාපියන් මෙම උපාංගයට අඟුලු දමා ඇත</translation>
 <translation id="8401850874595457088">භාෂා මෙනුව ඇතුළු කරන්න</translation>
+<translation id="8410775397654368139">Google Play</translation>
 <translation id="8412677897383510995">සංදර්ශක සැකසීම් පෙන්වන්න</translation>
 <translation id="8413272770729657668">පටිගත කිරීම ආරම්භ වන්නේ 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (කොපුව)</translation>
@@ -2349,11 +2410,13 @@
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> හට <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" /> ඇත.</translation>
 <translation id="8477270416194247200">අවලංගු කිරීමට Alt+සෙවීම හෝ Shift ඔබන්න.</translation>
 <translation id="8480418399907765580">මෙවලම් තීරුව පෙන්වන්න</translation>
+<translation id="8481187309597259238">USB අවසරය තහවුරු කරන්න</translation>
 <translation id="8487660088084188539">ඔබ මෙම විශේෂාංග ක්‍රියාත්මක කළ විට, ආදාන පෙළ, ලේඛන අන්තර්ගතය සහ වෙබ් පිටු URL Google සේවාදායක වෙත යැවිය හැක. මෙම තොරතුරු <ph name="LINK_TO_SERVICE_TERMS" /> වෙත යටත්ව ලිවීමේ යෝජනා ජනනය කිරීමට, සාරාංශ ජනනය කිරීමට, ප්‍රශ්නවලට පිළිතුරු දීමට සහ නිෂ්පාදනය වැඩිදියුණු කිරීමට භාවිත කරයි. පුද්ගලික, සංවේදී, හෝ රහසිගත කිසිවක් ඇතුළත් නොකරන්න.</translation>
 <translation id="8487699605742506766">හොට්ස්පොට්</translation>
 <translation id="8490896350101740396">යාවත්කාලීන කළ kiosk යෙදුම් "<ph name="UPDATED_APPS" />" අනුගමනය කරන්න. කරුණාකර යාවත්කාලීන ක්‍රියාවලිය සම්පුර්ණ කිරීමට උපාංගය නැවත පනගන්වන්න.</translation>
 <translation id="8491237443345908933">සබැඳිය නව පටිත්තක විවෘත කරන්න</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> හට සහය නොදක්වයි. විභේදනය <ph name="FALLBACK_RESOLUTION" /> ට වෙනස් විය. වෙනස්කම් තබා ගැනීමට තහවුරු කිරීම ක්ලික් කරන්න. පෙර සැකසුම් <ph name="TIMEOUT_SECONDS" /> තුළ ප්‍රතිසාධන කෙරේ.</translation>
+<translation id="8502536196501630039">Google Play වෙතින් යෙදුම් භාවිතා කිරීම සඳහා, පළමුව ඔබ ඔබගේ යෙදුම් ප්‍රතිස්ථාපනය කළ යුතුය. ඇතැම් දත්ත නොමැති වී යනු ඇත.</translation>
 <translation id="8507563469658346379">සියලු දෙනා, <ph name="REMAINING_TIME" /></translation>
 <translation id="8511123073331775246">නව මේසය තනන්න</translation>
 <translation id="85123341071060231">ඔබගේ Chromebook හි බ්ලූටූත් ක්‍රියාවිරහිතයි. ඔබගේ Chromebook අගුලු හැරීමට, මුරපදය ඇතුළු කරන්න.</translation>
@@ -2407,6 +2470,8 @@
 <translation id="8676770494376880701">අඩු-බල ආරෝපකය සමබන්ධ කර ඇත</translation>
 <translation id="8679158879996532670">අවධාන සැකසීම් පෙන්වන්න. අවධානය සක්‍රීයයි, <ph name="REMAINING_TIME" /> ඉතුරුයි.</translation>
 <translation id="8683506306463609433">කාර්ය සාධන අනුරේඛනය සක්‍රියයි</translation>
+<translation id="8698432579173128320">Google Drive වෙත උපස්ථ කරන්න. ඔබේ දත්ත පහසුවෙන් ප්‍රතිසාධන කරන්න හෝ ඕනෑම වේලාවක උපාංගය මාරු කරන්න. ඔබේ උපස්ථයට යෙදුම් දත්ත ඇතුළු වෙයි. ඔබේ උපස්ථ Google වෙත උඩුගත කරනු ලබන අතර ඔබේ Google ගිණුම් මුරපදය භාවිත කර කේතන කරනු ලැබේ. <ph name="BEGIN_LINK1" />උපස්ථය ගැන තව දැන ගන්න<ph name="BEGIN_LINK1_END" />තව දැන ගන්න<ph name="END_LINK1" /></translation>
+<translation id="8700087567921985940">ස්ථානය භාවිත කරන්න. ඔබේ උපාංගයේ ස්ථානය භාවිත කිරීමට ස්ථාන අවසරය සහිත යෙදුම්වලට සහ සේවාවලට ඉඩ දෙන්න. Google ස්ථාන දත්ත වරින් වර රැස් කිරීම සහ මෙම දත්ත ස්ථාන නිරවද්‍යතාව සහ ස්ථානය පදනම් සේවා දියුණු කිරීමට උදවු කිරීමට භාවිත කළ හැක. <ph name="BEGIN_LINK1" />ස්ථානය ගැන තව දැන ගන්න<ph name="BEGIN_LINK1_END" />තව දැන ගන්න<ph name="END_LINK1" /></translation>
 <translation id="8703634754197148428">පටිගත කිරීම ආරම්භ කරන්න. පටිගත කිරීම ආරම්භ වූ පසුව රාක්කයට සංචාලනය කිරීම සහ පටිගත කිරීම නවත්වන්න බොත්තම සොයා ගැනීම සඳහා Alt + Shift + L භාවිත කරන්න</translation>
 <translation id="8704155109538237473">පින්තූරය තුළ පින්තූරය කවුළුව වෙත අවධානය යොමු කරන්න</translation>
 <translation id="870917907284186124">අනුලේඛනය සක්‍රීය/අක්‍රිය කරන්න (ඔබේ හඬ මඟින් ටයිප් කරන්න)</translation>
@@ -2470,6 +2535,7 @@
 <translation id="8875021410787719674">පහළ දකුණු කෙළවර, දියත්කරණය, ලිපින තීරුව, පිටුසන තීරුව, විවෘත වෙබ් අඩවි සහ බා ගැනීම් අතර ගෙන යන්න</translation>
 <translation id="8876148469852588625"><ph name="EVENT_TOTAL_COUNT" />න් <ph name="EVENT_POSITION" /> වැනි සිදුවීම</translation>
 <translation id="8876661425082386199">ඔබේ සම්බන්ධතාවය පරීක්ෂා කරන්න</translation>
+<translation id="8883478023074930307">භාවිත සහ දෝෂ නිර්ණ දත්ත යවන්න. මෙම උපාංගය ස්වයංක්‍රියව රෝග විනිශ්චය, උපාංග සහ යෙදුම් භාවිත දත්ත Google වෙත යවයි. මෙය පද්ධති සහ යෙදුම් ස්ථායිතාවට සහ අනෙකුත් දියුණු කිරීම්වලට උදවු කරයි. සමහර සමස්ත දත්ත Google යෙදුම්වලට සහ Android සංවර්ධකයින් වැනි හවුල්කරුවන්ට ද උදවු කරයි. මෙම <ph name="BEGIN_LINK1" />සැකසීම<ph name="END_LINK1" /> හිමිකරු විසින් බලාත්මක කෙරේ. ඔබේ අමතර වෙබ් සහ යෙදුම් ක්‍රියාකාරකම් සැකසීම සක්‍රීය නම්, මෙම දත්ත ඔබේ Google ගිණුුමට සුරකිනු ලැබේ. <ph name="BEGIN_LINK2" />මාත්‍රික ගැන තව දැන ගන්න<ph name="BEGIN_LINK2_END" />තව දැන ගන්න<ph name="END_LINK2" /></translation>
 <translation id="8885424115080869847">YouTube Music වෙත සම්බන්ධ වීමට නොහැකි විය</translation>
 <translation id="888982883502837004">ඔබගේ උපාංගය සඳහා නිත්‍ය මෘදුකාංග යාවත්කාලීන තිබේ. සමාලෝචනය කිරීමට සහ යාවත්කාලීන කිරීමට ක්ලික් කරන්න.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> ස්ථිරවම මකනු ඇත</translation>
@@ -2512,10 +2578,12 @@
 <translation id="9000771174482730261">ගබඩාව කළමනාකරණය කරන්න</translation>
 <translation id="9003374957546315126">ඉමොජි සහ තවත් දේ</translation>
 <translation id="9005984960510803406">Crosh කවුළුව විවෘත කරන්න</translation>
+<translation id="901668144954885282">Google Drive වෙත උපස්ථ කරන්න</translation>
 <translation id="9017320285115481645">Family Link මාපිය ප්‍රවේශ්‍ය කේතය ඇතුළත් කරන්න.</translation>
 <translation id="9024331582947483881">පූර්ණ තිරය</translation>
 <translation id="9029736946581028033">උපාංගය ඉක්මනින් ක්‍රියා විරහිත වනු ඇත</translation>
 <translation id="9030319654231318877">හිරු බැස යන තෙක් ක්‍රියාවිරහිතයි</translation>
+<translation id="9030515284705930323">ඔබගේ සංවිධානය ඔබගේ ගිණුම සඳහා Google Play Store සබල කර නැත. වැඩිදුර තොරතුරු සඳහා ඔබගේ පරිපාලක අමතන්න.</translation>
 <translation id="9030665205623277906">CPU භාවිත සැණ රුව: <ph name="CPU_USEAGE" />%</translation>
 <translation id="9034924485347205037">Linux ගොනු</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> සඳහ සැකසීම් විවෘත කරන්න</translation>
@@ -2565,8 +2633,10 @@
 <translation id="9195857219954068558">ඔබේ Chromebook යාවත්කාලීන කර ඇත. ඔබේ පෙර කවුළු සහ යෙදුම් විවෘත කරන්න.</translation>
 <translation id="9195990613383871904">හෙට</translation>
 <translation id="9198992156681343238"><ph name="DISPLAY_NAME" /> විභේදනය <ph name="RESOLUTION" /> ට වෙනස් කළා. වෙනස්කම් තබා ගැනීමට තහවුරු කිරීම ක්ලික් කරන්න. පෙර සැකසුම් <ph name="TIMEOUT_SECONDS" /> තුළ ප්‍රතිසාධන කෙරේ.</translation>
+<translation id="9199853905755292769">භාවිත සහ දෝෂ නිර්ණ දත්ත යවන්න. මෙම උපාංගය ස්වයංක්‍රියව රෝග විනිශ්චය, උපාංග සහ යෙදුම් භාවිත දත්ත Google වෙත යවයි. මෙය ඔබේ දරුවා හඳුනා ගැනීමට භාවිත නොකෙරෙන අතර, පද්ධති සහ යෙදුම් ස්ථායිතාවට සහ අනෙකුත් වැඩිදියුණු කිරීම්වලට උදවු කරයි. සමහර සමස්ත දත්ත Google යෙදුම්වලට සහ Android සංවර්ධකයින් වැනි හවුල්කරුවන්ට ද උදවු කරයි. ඔබේ දරුවා සඳහා අමතර වෙබ් සහ යෙදුම් ක්‍රියාකාරකම් සැකසීම සක්‍රීය කර තිබේ නම්, මෙම දත්ත ඔවුන්ගේ Google ගිණුමට සුරැකේවි. <ph name="BEGIN_LINK2" />මාත්‍රික ගැන තව දැන ගන්න<ph name="BEGIN_LINK2_END" />තව දැන ගන්න<ph name="END_LINK2" /></translation>
 <translation id="9201044636667689546"><ph name="NAME" /> මෙම Chromebook වෙත සම්බන්ධ කරන්න</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, ඔබේ පරිපාලකයා විසින් කළමනාකරණය කරයි</translation>
+<translation id="9201842707396338580">යම් දෙයක් වැරදිණි. කරුණාකර ඔබේ උපාංගයේ හිමිකරු හෝ පරිපාලක සම්බන්ධ කර ගන්න. දෝෂ කේතය: <ph name="ERROR_CODE" />.</translation>
 <translation id="9207682216934703221">මෙය ​<ph name="APP_NAME" />, <ph name="APP2_NAME" /> සහ ස්ථාන අවසරය ඇති සියලු යෙදුම් සහ වෙබ් අඩවි සහ ChromeOS හට Wi-Fi සහ ජංගම ජාල ස්ථානය භාවිතා කිරීමට ඉඩ දෙයි.</translation>
 <translation id="9210037371811586452">එකාබද්ධ ඩෙස්ක්ටොප් ප්‍රකාරයෙන් ඉවත් වෙමින්</translation>
 <translation id="9211490828691860325">සියලු වැඩතල</translation>
@@ -2579,6 +2649,7 @@
 <translation id="923686485342484400">වැරීමට Control Shift Q දෙසැරයක් ඔබන්න</translation>
 <translation id="92580429198593979">ඔබ වර්ණ අපවර්තනය සඳහා යතුරුපුවරු කෙටිමඟ ඔබා ඇත. ඔබට එය ක්‍රියාත්මක කිරීමට අවශ්‍ය ද?</translation>
 <translation id="925832987464884575">පෙරදසුන් සඟවන්න</translation>
+<translation id="93140074055951850">Android යෙදුම් නවත්වන ලදි</translation>
 <translation id="938407504481277932">වත්මන් මේසය: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. මේස <ph name="DESK_COUNT" /> න් <ph name="DESK_INDEX" />.</translation>
 <translation id="94468042118567862">උපාංගය යාවත්කාලීන නොවේ</translation>
 <translation id="945383118875625837">පොත්සලකුණු තීරුවට සබැඳිය ඇදගෙන යන්න</translation>

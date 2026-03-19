@@ -195,6 +195,7 @@
 <translation id="3045032126857188731">Lingua di destinazione: <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">Chiudi finestra di dialogo di feedback</translation>
 <translation id="3068187312562070417">Altri profili Chromium</translation>
+<translation id="3068290154869370196">Le estensioni sono componenti aggiuntivi che ti consentono di personalizzare Chromium. Le estensioni ti aiutano a personalizzare Chromium, ad esempio tenendo tutto organizzato e semplificando le attività quotidiane.</translation>
 <translation id="3068515742935458733">Aiutaci a migliorare Chromium inviando a Google report sugli arresti anomali e <ph name="UMA_LINK" /></translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{Una o più estensioni di Chromium stavano accedendo a 1 dispositivo USB}=1{Una o più estensioni di Chromium stanno accedendo a 1 dispositivo USB}other{Una o più estensioni di Chromium stanno accedendo a # dispositivi USB}}</translation>
 <translation id="3095811995836568724">Cronologia di Chromium</translation>
@@ -429,6 +430,7 @@
 <translation id="5821520528363214608">Aggiorna Chromium per usare e salvare i dati di Chromium nel tuo Account Google</translation>
 <translation id="5824893331272123205">Impossibile caricare questo riquadro. Riprova.</translation>
 <translation id="5862307444128926510">Benvenuto in Chromium</translation>
+<translation id="5867606647614813312">Attiva funzionalità aggiuntive per fornire le protezioni più efficaci di Chromium</translation>
 <translation id="5871205389137001634">Fai clic per uscire dalla ricerca immagini</translation>
 <translation id="5883558403894052917">Chromium ha rilevato che i seguenti elementi contengono malware:</translation>
 <translation id="5889361821821684993">Chromium esegue controlli regolari per verificare che il browser disponga delle impostazioni più sicure. Ti informeremo qualora fosse necessario un controllo da parte tua.</translation>

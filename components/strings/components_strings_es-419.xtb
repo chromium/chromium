@@ -259,7 +259,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1393071644879491291">Los atacantes del sitio que intentaste visitar podrían engañarte para que instales software o reveles información como tus contraseñas, teléfono o números de tarjeta de crédito. Chrome recomienda que regreses a un sitio seguro. <ph name="BEGIN_LEARN_MORE_LINK" />Más información sobre esta advertencia<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1402151528875251561">Mostrar el historial en el panel lateral</translation>
 <translation id="1405567553485452995">Verde claro</translation>
-<translation id="1406370515365284486">Se seguirán guardando tus formas de pago</translation>
+<translation id="1406370515365284486">Tus formas de pago seguirán guardadas</translation>
 <translation id="1406500794671479665">Verificando...</translation>
 <translation id="1406812885827747674">Permitir esta vez</translation>
 <translation id="14070772729708640">Los archivos se subieron correctamente a <ph name="FOLDER_NAME" /> en <ph name="CLOUD_PROVIDER" /></translation>
@@ -440,7 +440,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="168693727862418163">No se pudo validar el valor de esta política con su esquema y, por lo tanto, se ignorará.</translation>
 <translation id="168841957122794586">El certificado del servidor contiene una clave criptográfica no segura.</translation>
 <translation id="1688718429648938412">Guarda la tarjeta de lealtad en la Billetera</translation>
-<translation id="1689333818294560261">Sobrenombre</translation>
+<translation id="1689333818294560261">Alias</translation>
 <translation id="1692622044604477956">Cartelera de películas y horarios de cines</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Cómo puedes administrar tus datos:<ph name="END_BOLD" /> Chrome elimina los temas de forma automática luego de 4 semanas. A medida que navegues, un tema puede volver a aparecer en la lista. También puedes bloquear los temas que no quieras que Chrome comparta con los sitios y desactivar los temas de anuncios en cualquier momento en la configuración de Chrome.</translation>
 <translation id="1699651774646344471">Ahora puedes usar las direcciones desde tu Cuenta de Google</translation>
@@ -1073,6 +1073,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2673968385134502798">Juegos</translation>
 <translation id="2674170444375937751">¿Estás seguro de que deseas eliminar estas páginas del historial?</translation>
 <translation id="2674524144218093528">Pintura y terminaciones para casas</translation>
+<translation id="2675716371350192683">No se usará tu contenido para mejorar la IA. Tu organización puede cambiar esta configuración en cualquier momento.</translation>
 <translation id="26774279487328902"><ph name="GROUP_COUNT" /> grupos de pestañas ya no están disponibles</translation>
 <translation id="2677748264148917807">Abandonar</translation>
 <translation id="2679216653373462289">Usar los sensores de movimiento y de luz</translation>
@@ -2658,6 +2659,7 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="5190835502935405962">Barra de favoritos</translation>
 <translation id="5191315092027169558"><ph name="DOMAIN" /> administra tu perfil</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> quiere descargar varios archivos</translation>
+<translation id="519528950056409240">Permitir que la Billetera comparta datos</translation>
 <translation id="5199121357983849992">¿Quieres guardar el documento de identidad?</translation>
 <translation id="5200063972779787617">Guarda la dirección en la cuenta</translation>
 <translation id="5201306358585911203">Una página incorporada en esta página dice</translation>
@@ -3105,6 +3107,7 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="5910140988253729859">Deshacer la acción de Autocompletar</translation>
 <translation id="5911020115933784199">Eventos y listados</translation>
 <translation id="5911110632211230665">Se bloqueó la opción para abrir archivos</translation>
+<translation id="5912796581727968237">Abrir la Billetera de Google</translation>
 <translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" /> agregó esta pestaña</translation>
 <translation id="5915189366813702112">Acuerdos de trabajo flexible</translation>
 <translation id="59174027418879706">Habilitado</translation>

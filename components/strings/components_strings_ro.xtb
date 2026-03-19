@@ -1073,6 +1073,7 @@
 <translation id="2673968385134502798">Jocuri</translation>
 <translation id="2674170444375937751">Sigur doriți să ștergeți aceste pagini din istoric?</translation>
 <translation id="2674524144218093528">Zugrăvirea și finisarea locuințelor</translation>
+<translation id="2675716371350192683">Conținutul tău nu va fi folosit pentru a îmbunătăți AI. Organizația poate să modifice oricând aceste setări.</translation>
 <translation id="26774279487328902"><ph name="GROUP_COUNT" /> grupuri de file nu mai sunt disponibile</translation>
 <translation id="2677748264148917807">Ieși</translation>
 <translation id="2679216653373462289">Folosește senzorii de mișcare și de lumină</translation>
@@ -2657,6 +2658,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="5190835502935405962">Bară de marcaje</translation>
 <translation id="5191315092027169558">Profilul este gestionat de <ph name="DOMAIN" /></translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> vrea să descarce mai multe fișiere</translation>
+<translation id="519528950056409240">Permite Portofelului să trimită date</translation>
 <translation id="5199121357983849992">Salvezi documentul de identitate?</translation>
 <translation id="5200063972779787617">Salvează adresa în cont</translation>
 <translation id="5201306358585911203">O pagină încorporată de pe această pagină afișează mesajul</translation>
@@ -3104,6 +3106,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="5910140988253729859">Anulează completarea automată</translation>
 <translation id="5911020115933784199">Evenimente și înregistrări</translation>
 <translation id="5911110632211230665">Deschidere blocată</translation>
+<translation id="5912796581727968237">Deschide Portofelul Google</translation>
 <translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" /> a adăugat această filă</translation>
 <translation id="5915189366813702112">Flexibilitate la locul de muncă</translation>
 <translation id="59174027418879706">Activat</translation>
@@ -4648,7 +4651,7 @@ Detalii suplimentare:
 <translation id="8288320283441806607">Pentru a folosi această funcție, activează opțiunea Îmbunătățește căutările și navigarea</translation>
 <translation id="8288807391153049143">Afișează certificatul</translation>
 <translation id="8289355894181816810">Dacă nu știți sigur ce înseamnă aceasta, contactați administratorul de rețea.</translation>
-<translation id="8291367150570302588">Cardul de identitate</translation>
+<translation id="8291367150570302588">Cartea de identitate</translation>
 <translation id="829335040383910391">Sunet</translation>
 <translation id="8294431847097064396">Sursă</translation>
 <translation id="8297545700510100061">Cookie-urile și alte date ale site-urilor sunt folosite pentru a te reține, de exemplu, pentru a te conecta sau pentru a personaliza anunțuri. Pentru a gestiona cookie-urile pentru toate site-urile, consultă <ph name="SETTINGS" />.</translation>

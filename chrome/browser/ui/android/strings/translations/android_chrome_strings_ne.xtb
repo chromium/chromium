@@ -1617,7 +1617,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="7514365320538308">डाउनलोड गर्नुहोस्</translation>
 <translation id="7517292544534877198">आफ्नो Google खातामा सेभ गरिएका पासवर्डहरू सुरक्षित राख्न Google को डिफल्ट इन्क्रिप्सन प्रयोग गर्नुहोस्</translation>
 <translation id="7518079994230200553">यो विकल्प अहिले उपलब्ध छैन।</translation>
-<translation id="751961395872307827">साइटमा जडान गर्न सकिँदैन</translation>
+<translation id="751961395872307827">साइटमा कनेक्ट गर्न सकिँदैन</translation>
 <translation id="7523960634226602883">Google लेन्स प्रयोग गरी आफ्नो क्यामेरामार्फत खोज्नुहोस्</translation>
 <translation id="7525248386620136756"><ph name="TAB_GROUPS_AND_TABS_PART" /> बन्द र सेभ गरियो</translation>
 <translation id="7545347190366646170">एक्सेस भएका मान्छेहरू</translation>
@@ -1819,6 +1819,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="8282950411412455249">सुरक्षासम्बन्धी सेटिङमा जानुहोस्</translation>
 <translation id="8288688997999490824">{NUM_WINDOWS,plural, =1{एउटा इन्कोग्निटो विन्डो बन्द गर्नुहोस्}other{# वटा इन्कोग्निटो विन्डो बन्द गर्नुहोस्}}</translation>
 <translation id="831192587911042850">यसले तपाईंले फलो गरिरहेका वेबसाइटहरूको सूचीमा हालको वेबसाइट थप्छ।</translation>
+<translation id="8313599942510782709">तपाईंको कार्य अझै पनि पूरा भएको छैन</translation>
 <translation id="8317318757008452355">प्रिन्ट गर्ने विकल्पहरू खोल्नुहोस्</translation>
 <translation id="8320212361750431956">हालसालैको क्रियाकलाप</translation>
 <translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />नयाँ सुविधा<ph name="END_NEW" /></translation>

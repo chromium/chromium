@@ -1725,6 +1725,7 @@
 <translation id="7149893636342594995">গত ২৪ ঘণ্টা</translation>
 <translation id="7154417656353909837">ঠিকানাগুলি সরান</translation>
 <translation id="7161230316646448869">সমস্ত ডিভাইসে আপনার বুকমার্ক, ইতিহাস ও আরও অনেক কিছু সিঙ্ক করুন</translation>
+<translation id="7165323152084385463">VIN</translation>
 <translation id="7173114856073700355">সেটিংস খুলুন</translation>
 <translation id="7173721738069475737">{count,plural, =1{বুকমার্ক সেভ করা হয়েছে}one{{count}টি বুকমার্ক সেভ করা হয়েছে}other{{count}টি বুকমার্ক সেভ করা হয়েছে}}</translation>
 <translation id="7176183551031110427">ছোট করুন</translation>
@@ -2219,6 +2220,7 @@
 <translation id="8863067612494559785"><ph name="DEVICE_NAME" /> ডিভাইসে পাঠানো হচ্ছে…</translation>
 <translation id="8863431381414769983">Google Maps থেকে স্থানীয় তথ্য এবং দিকনির্দেশ পান</translation>
 <translation id="8871974300055371298">কন্টেন্ট সেটিংস</translation>
+<translation id="8876661425082386199">আপনার ইন্টারনেট কানেকশন চেক করুন</translation>
 <translation id="8877788021141246043">রিমাইন্ডার সেট করুন</translation>
 <translation id="8879604564928138696">চেষ্টা করতে ডবল ট্যাপ করুন</translation>
 <translation id="8879952635974818770">পছন্দমতো কন্টেন্ট</translation>

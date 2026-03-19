@@ -1073,6 +1073,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2673968385134502798">Permainan</translation>
 <translation id="2674170444375937751">Adakah anda pasti anda mahu memadamkan halaman ini daripada sejarah anda?</translation>
 <translation id="2674524144218093528">Cat &amp; Kemasan Rumah</translation>
+<translation id="2675716371350192683">Kandungan anda tidak akan digunakan untuk meningkatkan AI. Organisasi anda boleh mengubah tetapan ini pada bila-bila masa.</translation>
 <translation id="26774279487328902">Kumpulan tab <ph name="GROUP_COUNT" /> tidak tersedia lagi</translation>
 <translation id="2677748264148917807">Tinggalkan</translation>
 <translation id="2679216653373462289">Gunakan penderia gerakan dan cahaya anda</translation>
@@ -2658,6 +2659,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="5190835502935405962">Bar Penanda Halaman</translation>
 <translation id="5191315092027169558">Profil anda diurus oleh <ph name="DOMAIN" /></translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> mahu memuat turun berbilang fail</translation>
+<translation id="519528950056409240">Benarkan Wallet berkongsi data</translation>
 <translation id="5199121357983849992">Simpan kad ID?</translation>
 <translation id="5200063972779787617">Simpan alamat dalam akaun</translation>
 <translation id="5201306358585911203">Halaman terbenam pada halaman ini menyatakan</translation>
@@ -3105,6 +3107,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="5910140988253729859">Buat asal autolengkap</translation>
 <translation id="5911020115933784199">Acara &amp; Penyenaraian</translation>
 <translation id="5911110632211230665">Buka disekat</translation>
+<translation id="5912796581727968237">Buka Google Wallet</translation>
 <translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" /> menambahkan tab ini</translation>
 <translation id="5915189366813702112">Aturan Kerja Fleksibel</translation>
 <translation id="59174027418879706">Didayakan</translation>
@@ -4567,6 +4570,7 @@ Butiran tambahan:
 <translation id="8175796834047840627">Chrome menawarkan penyimpanan kad dalam Google Account anda kerana anda log masuk. Anda boleh menukar gelagat ini dalam tetapan.</translation>
 <translation id="8176440868214972690">Pentadbir peranti ini telah menghantar beberapa maklumat, seperti tetapan atau dasar ke laman web berikut.</translation>
 <translation id="817820454357658398">Produk Kebersihan Wanita</translation>
+<translation id="8182470873445638343"><ph name="BEGIN_BOLD" />Kandungan daripada halaman semak keluar dikongsi dengan Google untuk menawarkan pilihan ini.<ph name="END_BOLD" /> Pelan pembayaran tertakluk pada kelayakan. Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetapan pembayaran<ph name="END_LINK" /></translation>
 <translation id="818254048113802060">{0,plural, =1{<ph name="FILE_NAME" /> disekat disebabkan oleh kandungan}other{<ph name="FILE_COUNT" /> fail disekat disebabkan oleh kandungan}}</translation>
 <translation id="8183800802493617952">Permainan &amp; Aktiviti Berorientasikan Keluarga</translation>
 <translation id="8184538546369750125">Gunakan lalai global (Benarkan)</translation>

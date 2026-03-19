@@ -1724,6 +1724,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7149893636342594995">Последња 24 сата</translation>
 <translation id="7154417656353909837">Уклони адресе</translation>
 <translation id="7161230316646448869">Синхронизујте обележиваче, историју и други садржај на свим уређајима</translation>
+<translation id="7165323152084385463">Идентификациони број возила</translation>
 <translation id="7173114856073700355">Отвори Подешавања</translation>
 <translation id="7173721738069475737">{count,plural, =1{Обележивач је сачуван}one{{count} обележивач је сачуван}few{{count} обележивача су сачувана}other{{count} обележивача је сачувано}}</translation>
 <translation id="7176183551031110427">Умањите</translation>
@@ -2218,6 +2219,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8863067612494559785">Шаље се кориснику <ph name="DEVICE_NAME" />…</translation>
 <translation id="8863431381414769983">Добијајте упутства и локалне информације од Google мапа</translation>
 <translation id="8871974300055371298">Подешавања садржаја</translation>
+<translation id="8876661425082386199">Проверите везу</translation>
 <translation id="8877788021141246043">Подеси подсетник</translation>
 <translation id="8879604564928138696">Двапут додирните да бисте пробали</translation>
 <translation id="8879952635974818770">Персонализовани садржај</translation>

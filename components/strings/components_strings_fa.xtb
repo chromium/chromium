@@ -108,7 +108,7 @@
 <translation id="1175364870820465910">&amp;چاپ...</translation>
 <translation id="1175393348063009671">عکس (مات)</translation>
 <translation id="1175875016430184367">سه منگنه در راست</translation>
-<translation id="1177548198167638471">دوباره پرسیده نشود</translation>
+<translation id="1177548198167638471">دوباره نپرسیدن</translation>
 <translation id="1177863135347784049">سفارشی</translation>
 <translation id="1178581264944972037">مکث</translation>
 <translation id="1178821169867863726">۱۶ × ۱۲ اینچ</translation>
@@ -1074,6 +1074,7 @@
 <translation id="2673968385134502798">بازی‌ها</translation>
 <translation id="2674170444375937751">آیا مطمئن هستید می‌خواهید این صفحات را از سابقه خود حذف کنید؟</translation>
 <translation id="2674524144218093528">نقاشی خانه و نازک‌کاری</translation>
+<translation id="2675716371350192683">از محتوای شما برای بهبود هوش مصنوعی استفاده نخواهد شد. سازمان شما هرزمان بخواهد می‌تواند این تنظیمات را تغییر دهد.</translation>
 <translation id="26774279487328902">‫<ph name="GROUP_COUNT" /> گروه زبانه دیگر دردسترس نیست</translation>
 <translation id="2677748264148917807">خروج</translation>
 <translation id="2679216653373462289">استفاده از حسگرهای حرکتی و نوری</translation>
@@ -2658,6 +2659,7 @@
 <translation id="5190835502935405962">نوار نشانک‌ها</translation>
 <translation id="5191315092027169558">نمایه‌تان تحت‌مدیریت <ph name="DOMAIN" /> است</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> می‌خواهد چند فایل را بارگیری کند</translation>
+<translation id="519528950056409240">به «کیف پول» اجازه دهید داده‌ها را هم‌رسانی کند</translation>
 <translation id="5199121357983849992">کارت شناسایی ذخیره شود؟</translation>
 <translation id="5200063972779787617">ذخیره نشانی در حساب</translation>
 <translation id="5201306358585911203">صفحه جاسازی‌شده‌ای در این صفحه می‌گوید</translation>
@@ -3105,6 +3107,7 @@
 <translation id="5910140988253729859">واگرد تکمیل خودکار</translation>
 <translation id="5911020115933784199">رویداد و نام‌نویسی</translation>
 <translation id="5911110632211230665">باز کردن مسدود است</translation>
+<translation id="5912796581727968237">‏باز کردن «کیف پول Google»</translation>
 <translation id="5914465277418006379">‫<ph name="MEMBER_FIRST_NAME" /> این زبانه را اضافه کرد</translation>
 <translation id="5915189366813702112">ساعات کاری انعطاف‌پذیر</translation>
 <translation id="59174027418879706">فعال شد</translation>
@@ -3739,7 +3742,7 @@
 <translation id="6893057134494550310">فویل لمینت‌کاری</translation>
 <translation id="6893204630281237373">‏برای خاموش کردن برنامه پرداخت در Chrome، به <ph name="BEGIN_LINK1" />تنظیمات پرداخت<ph name="END_LINK1" /> بروید</translation>
 <translation id="6895330447102777224">کارتتان تأیید شد</translation>
-<translation id="6896758677409633944">کپی</translation>
+<translation id="6896758677409633944">کپی کردن</translation>
 <translation id="6897140037006041989">نماینده کاربر</translation>
 <translation id="6898699227549475383">‏سازمان (O)</translation>
 <translation id="6900702165119149418">از سیستم خارج شده‌اید</translation>
@@ -4567,6 +4570,7 @@
 <translation id="8175796834047840627">‏چون به سیستم وارد شده‌اید، Chrome پیشنهاد می‌کند کارت‌ها را در حساب Google ذخیره کنید. در تنظیمات می‌توانید این رفتار را تغییر دهید.</translation>
 <translation id="8176440868214972690">سرپرست این دستگاه اطلاعاتی (مثل تنظیمات یا خط‌مشی‌ها) را به وب‌سایت‌های زیر ارسال کرده است.</translation>
 <translation id="817820454357658398">محصولات بهداشتی بانوان</translation>
+<translation id="8182470873445638343">‏<ph name="BEGIN_BOLD" />محتوای صفحه تسویه‌حساب برای ارائه این گزینه‌ها، با Google هم‌رسانی می‌شود.<ph name="END_BOLD" /> طرح‌های پرداخت مشروط به واجدشرایط بودن هستند. برای پنهان کردن گزینه‌های «بعداً پرداخت کنید»، به <ph name="BEGIN_LINK" />تنظیمات پرداخت<ph name="END_LINK" /> بروید</translation>
 <translation id="818254048113802060">{0,plural, =1{<ph name="FILE_NAME" /> به‌دلیل محتوا مسدود شده است}one{<ph name="FILE_COUNT" /> به‌دلیل محتوا مسدود شده است}other{<ph name="FILE_COUNT" /> به‌دلیل محتوا مسدود شده است}}</translation>
 <translation id="8183800802493617952">بازی‌ها و فعالیت‌های خانوادگی</translation>
 <translation id="8184538546369750125">استفاده از پیش‌فرض جهانی (مجاز)</translation>

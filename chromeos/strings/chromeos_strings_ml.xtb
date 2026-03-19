@@ -273,7 +273,6 @@
 <translation id="200669432486043882">ഫയൽ മാറ്റി പകരംവെയ്‌ക്കുക</translation>
 <translation id="2006864819935886708">കണക്റ്റിവിറ്റി</translation>
 <translation id="2008685064673031089">പ്രധാന തിരയൽ</translation>
-<translation id="2011174342667534258">SDK പതിപ്പ്:</translation>
 <translation id="2016697457005847575">ട്രബിള്‍ഷൂട്ടിംഗ് ഘട്ടങ്ങൾ പരീക്ഷിക്കുക</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2045814230297767491">കട്ട്ലറി</translation>
@@ -523,7 +522,6 @@
 <translation id="3291996639387199448">കീയുടെ ദിശ</translation>
 <translation id="3294437725009624529">അതിഥി</translation>
 <translation id="3303855915957856445">തിരയൽ ഫലങ്ങളൊന്നും കണ്ടെത്തിയില്ല</translation>
-<translation id="3305294846493618482">കൂടുതൽ</translation>
 <translation id="3310640316857623290">DNS പ്രതികരണ സമയം അനുവദിക്കപ്പെട്ട പരിധിയേക്കാൾ വളരെ മുകളിലാണ്</translation>
 <translation id="3316495615885967552">'സംഗ്രഹവും പേരും സൃഷ്ടിക്കൽ' മോഡലിന്റെ ഡൗൺലോഡ് പൂർത്തിയായി</translation>
 <translation id="3321030238473337787">പ്ലേബാക്ക് വേഗത</translation>
@@ -702,7 +700,6 @@
 <translation id="4126551873361000548">10 സെക്കൻഡ് പിന്നോട്ട് നീക്കുക</translation>
 <translation id="4128271910628504223">"മൂടൽമഞ്ഞുള്ള ഒരു കാട് വരയ്ക്കുക" എന്നത് പോലുള്ള ഒരു പ്രോംപ്റ്റ് നൽകുക</translation>
 <translation id="4130035430755296270">കൂടുതൽ ലേഔട്ട് ഓപ്ഷനുകൾക്ക് ഹോവർ ചെയ്യുന്നത് തുടരുക</translation>
-<translation id="4130750466177569591">ഞാന്‍ അംഗീകരിക്കുന്നു</translation>
 <translation id="4131410914670010031">കറുപ്പും വെള്ളയും</translation>
 <translation id="4137700675046373159">ശനിയാഴ്ച</translation>
 <translation id="4139326893730851150">ഫേംവെയര്‍ അപ്ഡേറ്റുകൾ</translation>
@@ -1051,7 +1048,6 @@
 <translation id="5606865426897221650">ടാബ്</translation>
 <translation id="5612205513582918357"><ph name="RECEIVER_NAME" /> എന്നതിലേക്ക് ക്ലാസ് ടൂളുകൾ നിങ്ങളുടെ സ്ക്രീൻ പങ്കിടുന്നു</translation>
 <translation id="5613201299517339763">നിങ്ങൾ സൈൻ ഔട്ട് ചെയ്തു</translation>
-<translation id="5620281292257375798">ആന്തരികം മാത്രം</translation>
 <translation id="5628106863521633649">ലഭ്യമായ ഭാഷകൾ</translation>
 <translation id="5630438231335788050">ബൗഹൗസ്</translation>
 <translation id="5631759159893697722">സംക്ഷേപം</translation>
@@ -1415,7 +1411,6 @@
 <translation id="7184043045742675738">നിങ്ങളുടെ ബട്ടൺ ഇഷ്ടാനുസൃതമാക്കാൻ ഏതെങ്കിലും കീയിൽ ക്ലിക്ക് ചെയ്യുക. മൗസ് അല്ലെങ്കിൽ അമ്പടയാള കീകൾ ഉപയോഗിച്ച് കീയുടെ സ്ഥാനം മാറ്റുക.</translation>
 <translation id="7187669805838282391">ബുധനാഴ്ച</translation>
 <translation id="7205318498545665455">നിങ്ങളുടെ മൈക്ക് തിരഞ്ഞെടുക്കുക</translation>
-<translation id="7206979415662233817">സേവന നിബന്ധനകൾ</translation>
 <translation id="7210635925306941239">സിയാൻ</translation>
 <translation id="7212547870105584639">നെറ്റ്‌വർക്ക് APN ക്രമീകരണം മാനേജ് ചെയ്യുക. സെല്ലുലാർ നെറ്റ്‌വർക്കിനും ഇന്റർനെറ്റിനും ഇടയിൽ APN-കൾ കണക്ഷൻ സ്ഥാപിക്കുന്നു. <ph name="BEGIN_LINK_LEARN_MORE" />കൂടുതലറിയുക<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">ബാഹ്യ ഉപകരണങ്ങൾക്കുള്ള ഫേംവെയർ അപ്ഡേറ്റുകൾ</translation>
@@ -1446,11 +1441,6 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7321055305895875150">പച്ചയും ടീലും</translation>
 <translation id="7328475450575141167">ബേഡ് ഓഫ് പാരഡെെസ്</translation>
-<translation id="7331297744262591636">നിങ്ങൾക്ക് കുറഞ്ഞത് 18 വയസ്സ് പ്രായമുണ്ടായിരിക്കണം, കൂടാതെ നിങ്ങളുടെ AI വാൾപേപ്പറുകളുടെ ഉപയോഗം <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Google സേവന നിബന്ധനകൾ<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" />, <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />ജനറേറ്റീവ് AI അധിക സേവന നിബന്ധനകൾ<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" /> എന്നിവയ്ക്ക് വിധേയമാണെന്ന് സമ്മതിക്കുകയും വേണം.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          വ്യക്തിപരവും വാണിജ്യേതരവുമായ ഉപയോഗത്തിനായി നിങ്ങൾക്ക് AI ഉപയോഗിച്ച് മാത്രമേ വാൾപേപ്പറുകൾ സൃഷ്ടിക്കാനാകൂ. നിങ്ങൾക്ക് വാൾപേപ്പറുമായി ബന്ധപ്പെട്ട സഹായം ലഭിക്കുമ്പോൾ, <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google-ന്റെ സ്വകാര്യതാ നയത്തിന്<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> വിധേയമായി വാൾപേപ്പർ നിർദ്ദേശങ്ങൾ സൃഷ്ടിക്കാൻ Google AI സെർവറുകളിലേക്ക് ടെക്‌സ്‌റ്റ് അയയ്‌ക്കും. <ph name="BEGIN_LINK_LEARN_MORE" />കൂടുതലറിയുക<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Search-ൽ ഫലം കാണാൻ Search+space അമർത്തുക.</translation>
 <translation id="7343649194310845056">നെറ്റ്‌വർക്ക് ഉപകരണങ്ങൾ</translation>
 <translation id="7344788170842919262">എർത്തി</translation>
 <translation id="7346768383111016081">നിങ്ങളുടെ കീബോർഡ് ഉപയോഗിച്ച് കളിക്കാൻ ഗെയിം പ്രവർത്തനത്തിൽ നിയന്ത്രണം സജ്ജീകരിക്കുക</translation>
@@ -1838,7 +1828,6 @@
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">ഈ വീഡിയോ ഉപയോഗിക്കുക</translation>
-<translation id="9087578468327036362">ഈ ചോദ്യം റിപ്പോർട്ട് ചെയ്യുക</translation>
 <translation id="9088306295921699330">നിലവിലെ ഉപയോഗം</translation>
 <translation id="9088994563996376283">ലളിതമാക്കുക</translation>
 <translation id="9095775724867566971">Pluginvm</translation>

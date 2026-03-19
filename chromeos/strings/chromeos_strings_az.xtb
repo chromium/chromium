@@ -273,7 +273,6 @@
 <translation id="200669432486043882">Faylı əvəz edin</translation>
 <translation id="2006864819935886708">Bağlantı</translation>
 <translation id="2008685064673031089">Əsas axtarış</translation>
-<translation id="2011174342667534258">SDK Versiyası:</translation>
 <translation id="2016697457005847575">Nasazlıqların aradan qaldırılması addımlarını sınayın</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2045814230297767491">süfrə aksesuarları</translation>
@@ -523,7 +522,6 @@
 <translation id="3291996639387199448">Açar istiqaməti</translation>
 <translation id="3294437725009624529">Qonaq</translation>
 <translation id="3303855915957856445">Heç bir axtarış nəticəsi tapılmadı</translation>
-<translation id="3305294846493618482">ardı</translation>
 <translation id="3310640316857623290">DNS gecikməsi icazə verilən həddən xeyli yuxarıdır</translation>
 <translation id="3316495615885967552">Xülasə və başlıq yaratma modelinin endirilməsi tamamlandı</translation>
 <translation id="3321030238473337787">Oxutma sürəti</translation>
@@ -702,7 +700,6 @@
 <translation id="4126551873361000548">10 saniyə geri çəkin</translation>
 <translation id="4128271910628504223">"Dumanlı meşə çək" kimi sorğu daxil edin</translation>
 <translation id="4130035430755296270">Digər düzən seçimləri üçün mausla tuşlamağa davam edin</translation>
-<translation id="4130750466177569591">Razıyam</translation>
 <translation id="4131410914670010031">Ağ və qara</translation>
 <translation id="4137700675046373159">Şənbə</translation>
 <translation id="4139326893730851150">Proqram güncəlləmələri</translation>
@@ -1051,7 +1048,6 @@
 <translation id="5606865426897221650">Tab</translation>
 <translation id="5612205513582918357">Sinif alətləri ekranınızı <ph name="RECEIVER_NAME" /> ilə paylaşır</translation>
 <translation id="5613201299517339763">Hesabdan çıxdınız</translation>
-<translation id="5620281292257375798">Yalnız daxili</translation>
 <translation id="5628106863521633649">Əlçatan dillər</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">abstrakt</translation>
@@ -1415,7 +1411,6 @@
 <translation id="7184043045742675738">Düyməni fərdiləşdirmək üçün istənilən düyməyə klikləyin. Maus və ya ox düymələri ilə mövqenin dəyişdirilməsi düyməsi.</translation>
 <translation id="7187669805838282391">Çərşənbə</translation>
 <translation id="7205318498545665455">Mikrofon seçin</translation>
-<translation id="7206979415662233817">Xidmət şərtləri</translation>
 <translation id="7210635925306941239">yaşıl-mavi</translation>
 <translation id="7212547870105584639">Şəbəkə APN ayarlarını idarə edin. APN mobil şəbəkə ilə internet arasında əlaqə yaradır. <ph name="BEGIN_LINK_LEARN_MORE" />Ətraflı məlumat<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Xarici cihazlar üçün proqram güncəlləmələri</translation>
@@ -1446,11 +1441,6 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7321055305895875150">yaşıl və yaşılımtıl mavi</translation>
 <translation id="7328475450575141167">cənnət quşu</translation>
-<translation id="7331297744262591636">18 yaşınız tamam olmalıdır və Sİ divar kağızlarından istifadənin <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Google Xidmət Şərtlərinə<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> və <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />Generativ süni intellekt əlavə xidmət şərtlərinə<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" /> tabe olması ilə razılaşmalısınız.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Sİ ilə yalnız şəxsi və qeyri-kommersiya məqsədli istifadə üçün divar kağızı yarada bilərsiniz. Divar kağızı ilə bağlı kömək aldıqda divar kağızı təklifləri yaratmaq üçün mətn <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google Məxfilik Siyasətinə<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> əsasən Google AI-a göndərilir. <ph name="BEGIN_LINK_LEARN_MORE" />Ətraflı məlumat<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Axtarışda nəticəni görmək üçün Axtarış və Boşluq düyməsinə basın.</translation>
 <translation id="7343649194310845056">Şəbəkə Cihazları</translation>
 <translation id="7344788170842919262">torpaq</translation>
 <translation id="7346768383111016081">Klaviatura ilə oynamaq üçün oyun əməliyyatına nizamlayıcı yerləşdirin</translation>
@@ -1838,7 +1828,6 @@ Bu transkripsiyaları əldə etmək üçün transkripsiya modelini (maksimum 100
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">Bu videonu istifadə edin</translation>
-<translation id="9087578468327036362">Bu sorğunu bildirin</translation>
 <translation id="9088306295921699330">Cari istifadə</translation>
 <translation id="9088994563996376283">Sadələşdirin</translation>
 <translation id="9095775724867566971">Pluginvm</translation>

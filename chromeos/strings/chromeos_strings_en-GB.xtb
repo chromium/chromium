@@ -273,7 +273,6 @@
 <translation id="200669432486043882">Replace file</translation>
 <translation id="2006864819935886708">Connectivity</translation>
 <translation id="2008685064673031089">Prime search</translation>
-<translation id="2011174342667534258">SDK version:</translation>
 <translation id="2016697457005847575">Try troubleshooting steps</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2045814230297767491">cutlery</translation>
@@ -523,7 +522,6 @@
 <translation id="3291996639387199448">Key direction</translation>
 <translation id="3294437725009624529">Guest</translation>
 <translation id="3303855915957856445">No search results found</translation>
-<translation id="3305294846493618482">more</translation>
 <translation id="3310640316857623290">DNS latency significantly above allowable threshold</translation>
 <translation id="3316495615885967552">Summary and title creation model download completed</translation>
 <translation id="3321030238473337787">Playback speed</translation>
@@ -702,7 +700,6 @@
 <translation id="4126551873361000548">Backwards 10 seconds</translation>
 <translation id="4128271910628504223">Enter a prompt like 'draw a misty forest'</translation>
 <translation id="4130035430755296270">Keep hovering for more layout options</translation>
-<translation id="4130750466177569591">I agree</translation>
 <translation id="4131410914670010031">Black and white</translation>
 <translation id="4137700675046373159">on Saturday</translation>
 <translation id="4139326893730851150">Firmware updates</translation>
@@ -1051,7 +1048,6 @@
 <translation id="5606865426897221650">Tab</translation>
 <translation id="5612205513582918357">Class tools is sharing your screen to <ph name="RECEIVER_NAME" /></translation>
 <translation id="5613201299517339763">You've been signed out</translation>
-<translation id="5620281292257375798">Internal only</translation>
 <translation id="5628106863521633649">Available languages</translation>
 <translation id="5630438231335788050">Bauhaus</translation>
 <translation id="5631759159893697722">abstract</translation>
@@ -1415,7 +1411,6 @@
 <translation id="7184043045742675738">Click on any key to customise your button. Reposition key with mouse or arrow keys.</translation>
 <translation id="7187669805838282391">on Wednesday</translation>
 <translation id="7205318498545665455">Choose your mic</translation>
-<translation id="7206979415662233817">Terms of Service</translation>
 <translation id="7210635925306941239">cyan</translation>
 <translation id="7212547870105584639">Manage network APN settings. APNs establish a connection between a cellular network and the internet. <ph name="BEGIN_LINK_LEARN_MORE" />Learn more<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Firmware updates for external devices</translation>
@@ -1446,11 +1441,6 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7321055305895875150">green and teal</translation>
 <translation id="7328475450575141167">bird of paradise</translation>
-<translation id="7331297744262591636">You must be at least 18 years old and agree that your use of AI wallpapers is subject to <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Google Terms of Service<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> and <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />Generative AI Additional Terms of Service<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          You can only create wallpapers with AI for personal and non-commercial use. When you get wallpaper help, text is sent to Google AI servers to generate wallpaper suggestions, subject to <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google's Privacy Policy<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. <ph name="BEGIN_LINK_LEARN_MORE" />Learn more<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; press Search plus Space to see the result in Google Search.</translation>
 <translation id="7343649194310845056">Network devices</translation>
 <translation id="7344788170842919262">earthy</translation>
 <translation id="7346768383111016081">Place control on game action to play with your keyboard</translation>
@@ -1838,7 +1828,6 @@ Download the transcription model (up to 100 MB) to get these transcriptions.</tr
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">Use this video</translation>
-<translation id="9087578468327036362">Report this query</translation>
 <translation id="9088306295921699330">Current usage</translation>
 <translation id="9088994563996376283">Simplify</translation>
 <translation id="9095775724867566971">PluginVm</translation>

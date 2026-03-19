@@ -8,6 +8,7 @@
 <translation id="1017556409696559990">Réduire la fenêtre supérieure lorsqu'il n'y a pas d'historique dans Chrome</translation>
 <translation id="101823271612280837">L'enregistrement a été interrompu. Impossible d'utiliser le Tableau de bord de jeu en mode Tablette.</translation>
 <translation id="1024364763893396229">Enregistrez votre <ph name="NAME" /></translation>
+<translation id="103279545524624934">Libérez de l'espace disque pour lancer les applications Android.</translation>
 <translation id="1032891413405719768">Le niveau de la pile du stylet est faible</translation>
 <translation id="1036348656032585052">Désactiver</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> ajouté</translation>
@@ -35,6 +36,7 @@
 <translation id="1129383337808748948">Actualiser <ph name="CONTENT_TITLE" /></translation>
 <translation id="1142002900084379065">Photos récentes</translation>
 <translation id="114221662579355151">Cela autorise l'accès à l'appareil photo pour <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> et pour toutes les applications et tous les sites Web disposant de l'autorisation d'accès à l'appareil photo. Vous devrez peut-être actualiser la page Web ou redémarrer l'application.</translation>
+<translation id="1147991416141538220">Pour demander l'accès, communiquez avec l'administrateur de cet appareil.</translation>
 <translation id="1148499908455722006">Ouvrir la boîte de dialogue d'information pour <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Agenda</translation>
 <translation id="1153356358378277386">Appareils associés</translation>
@@ -114,6 +116,7 @@
 <translation id="1340378040547539434">Dézoomer sur la page</translation>
 <translation id="1341651618736211726">Dépassement</translation>
 <translation id="1341926407152459446">Utilisez « <ph name="DEVICE_NAME" /> » pour l'entrée et la sortie audio</translation>
+<translation id="1346403631707626730">Envoyez les données d'utilisation et de diagnostic. Aidez-nous à améliorer l'expérience Android de votre enfant en envoyant automatiquement à Google des données de diagnostic, de l'appareil et d'utilisation des applis. L'envoi de ces données ne sera pas utilisé pour identifier votre enfant, mais pour assurer la stabilité du système et des applis, et pour apporter d'autres améliorations. Certaines données agrégées contribueront également à améliorer les applis Google et elles aideront nos partenaires, comme les développeurs Android. Si le paramètre relatif aux autres activités sur le Web et dans les applis est activé pour votre enfant, ces données peuvent être enregistrées dans son compte Google. <ph name="BEGIN_LINK1" />En savoir plus sur les mesures<ph name="BEGIN_LINK1_END" />En savoir plus<ph name="END_LINK1" /></translation>
 <translation id="1346748346194534595">À droite</translation>
 <translation id="1350494136075914725">En cours · Passer à l'onglet</translation>
 <translation id="1351937230027495976">Réduire le menu</translation>
@@ -196,6 +199,7 @@
 <translation id="1610778689852195798">« Annuler »</translation>
 <translation id="1611993646327628135">Activé</translation>
 <translation id="1612679292338846734">Lorsque vous activez ces fonctionnalités, le texte saisi, le contenu du document et l'URL de la page Web peuvent être envoyés aux serveurs de l'IA de Google. Ces informations sont utilisées pour générer des suggestions de rédaction, des résumés, répondre à des questions et améliorer le produit, sous réserve des <ph name="LINK_TO_SERVICE_TERMS" />. N'incluez aucun élément personnel ni aucun élément confidentiel.</translation>
+<translation id="1619879934359211038">Impossible de se connecter à Google Play. Vérifiez votre connexion réseau et réessayez. Code d'erreur : <ph name="ERROR_CODE" />.</translation>
 <translation id="1620510694547887537">Caméra</translation>
 <translation id="1623768535032616219">Réduire Google Classroom</translation>
 <translation id="163032029566320584">La fonctionnalité <ph name="UNAVAILABLE_DLC" /> n'est pas accessible.</translation>
@@ -224,6 +228,7 @@
 <translation id="1719094688023114093">Les sous-titres instantanés sont activés.</translation>
 <translation id="1720011244392820496">Activer la synchronisation Wi-Fi</translation>
 <translation id="1720230731642245863">Le point d'accès sans fil est désactivé</translation>
+<translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />Pour supprimer des applications, sélectionnez Paramètres &gt; Google Play Store &gt; Gérer les préférences Android &gt; Applications ou Gestionnaire d'applications. Ensuite, touchez l'application que vous souhaitez désinstaller (vous devrez peut-être balayer l'écran vers la droite ou vers la gauche pour trouver l'application). Enfin, touchez Désinstaller ou Désactiver.<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1731815243805539470">Passer à l'utilisateur précédent</translation>
 <translation id="1733996486177697563">Basculez entre les thèmes sombre et clair. Maintenez le doigt sur le bureau et sélectionnez Fond d'écran et style.</translation>
 <translation id="1734230530703461088">Échec du chargement des extensions dans le délai prévu. Veuillez communiquer avec votre administrateur.</translation>
@@ -277,6 +282,7 @@
 <translation id="1882814835921407042">Aucun réseau cellulaire</translation>
 <translation id="1882897271359938046">Mise en miroir pour <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Déverrouillage avec empreinte digitale</translation>
+<translation id="1891362123137972260">L'espace de stockage du disque est presque plein. Veuillez libérer de l'espace.</translation>
 <translation id="1894024878080591367">Procédez à la configuration pour jouer avec votre clavier</translation>
 <translation id="1896383923047738322">Personnaliser votre clavier</translation>
 <translation id="1904997243703671177">Lorsque vous désactivez le Bluetooth, les <ph name="DEVICE_COUNT" /> appareils externes suivants se déconnecteront de votre <ph name="DEVICE_TYPE" /> :</translation>
@@ -309,11 +315,13 @@
 <translation id="1996162290124031907">Accéder à l'onglet suivant</translation>
 <translation id="1998100899771863792">Bureau actuel</translation>
 <translation id="2001444736072756133">Recherchez vos <ph name="CATEGORY" />, vos fichiers, vos applications et plus.</translation>
+<translation id="2011174342667534258">Version de la trousse SDK :</translation>
 <translation id="2017998995161831444">Ouvrir « Aide » dans l'application Explorer</translation>
 <translation id="2021864487439853900">Cliquez pour le déverrouiller</translation>
 <translation id="2034971124472263449">Enregistrer quand même</translation>
 <translation id="2041220428661959602">Niveau de la pile : <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="204259843076055848">Le raccourci <ph name="SIX_PACK_KEY_NAME" /> est actuellement désactivé</translation>
+<translation id="2048653237708779538">Action non disponible</translation>
 <translation id="2049240716062114887">Le bureau a été renommé : <ph name="DESK_NAME" /></translation>
 <translation id="2064048859448024834">Aperçu de la caméra affiché</translation>
 <translation id="2065098273523946419">Lien pour en savoir plus. Redirection vers le navigateur en cas d'activation</translation>
@@ -378,18 +386,21 @@
 <translation id="2305738328104302723">Liste Google Tâches : <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" /> : captures d'écran, téléchargements et fichiers épinglés récents</translation>
 <translation id="2318576281648121272">Aujourd'hui le <ph name="TODAY_DATE" /></translation>
+<translation id="2318817390901984578">Pour utiliser des applications Android, chargez et mettez à jour votre <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2322065293366551060"><ph name="CATEGORY" />, catégorie de résultats de recherche</translation>
 <translation id="2322173485024759474">Déplacer une lettre vers l'arrière</translation>
 <translation id="2326112202058075478">Afficher plus d'émojis</translation>
 <translation id="2335091074961603075">Votre Chromebook ou votre appareil Bluetooth utilise une ancienne version de Bluetooth. Utilisez le microphone interne pour une meilleure qualité audio.</translation>
 <translation id="2339073806695260576">Touchez le bouton du stylet sur l'étagère pour créer une note, pour prendre une capture d'écran, ou pour utiliser le pointeur laser ou la loupe.</translation>
 <translation id="2341729377289034582">Verrouillée à la verticale</translation>
+<translation id="2344032937402519675">Impossible de se connecter au serveur. Vérifiez votre connexion réseau et réessayez. Si vous rencontrez toujours des problèmes, essayez de redémarrer votre Chromebook.</translation>
 <translation id="2345226652884463045">Appuyez sur Entrée ou Rechercher + Espace pour sélectionner le texte à modifier.</translation>
 <translation id="2349785431103945039">Afficher les détails du point d'accès sans fil. Connectez-vous au réseau cellulaire pour utiliser le point d'accès sans fil.</translation>
 <translation id="2350182423316644347">Initialisation de l'application en cours…</translation>
 <translation id="2350794187831162545">La langue suivante est maintenant traitée localement et elle fonctionne hors ligne : <ph name="LANGUAGE" />. Vous pouvez modifier votre langue de dictée dans Paramètres &gt; Accessibilité.</translation>
 <translation id="2352467521400612932">Paramètres du stylet</translation>
 <translation id="2354174487190027830">Activation du réseau <ph name="NAME" /> en cours…</translation>
+<translation id="2355314311311231464">L'approvisionnement a échoué parce que les renseignements de votre compte n'ont pas pu être récupérés. Veuillez réessayer. Code d'erreur : <ph name="ERROR_CODE" />.</translation>
 <translation id="2359808026110333948">Continuer</translation>
 <translation id="2360398059912971776">pile</translation>
 <translation id="2361210043495191221">Activer ou désactiver le Wi-Fi. <ph name="STATE" />.</translation>
@@ -412,6 +423,7 @@
 <translation id="240545663114741956">Appuyez deux fois sur <ph name="ACCELERATOR" /> pour vous déconnecter.</translation>
 <translation id="2405664212338326887">Fonctionnalité non connectée</translation>
 <translation id="2406710117564540804">Activer/Désactiver le mode Ne pas déranger</translation>
+<translation id="240789602312469910">Envoyez les données d'utilisation et de diagnostic. Aidez-nous à améliorer l'expérience Android de votre enfant en envoyant automatiquement à Google des données de diagnostic, de l'appareil et d'utilisation des applis. L'envoi de ces données ne sera pas utilisé pour identifier votre enfant, mais pour assurer la stabilité du système et des applis, et pour apporter d'autres améliorations. Certaines données agrégées contribueront également à améliorer les applis Google et elles aideront nos partenaires, comme les développeurs Android. Ce <ph name="BEGIN_LINK1" />paramètre<ph name="END_LINK1" /> est appliqué par le propriétaire du compte. C'est à lui de choisir d'envoyer ou non à Google les données de diagnostic et d'utilisation de cet appareil. Si le paramètre relatif aux autres activités sur le Web et dans les applis est activé pour votre enfant, ces données peuvent être enregistrées dans son compte Google. <ph name="BEGIN_LINK2" />En savoir plus sur les mesures<ph name="BEGIN_LINK2_END" />En savoir plus<ph name="END_LINK2" /></translation>
 <translation id="2408955596600435184">Entrez votre NIP</translation>
 <translation id="2412593942846481727">Mise à jour disponible</translation>
 <translation id="2416438829169535743">Quitter l'affichage?</translation>
@@ -464,6 +476,7 @@
 <translation id="2531025035050312891">appareil lent</translation>
 <translation id="2531107890083353124">En faisant glisser l'onglet, appuyez sur <ph name="KEY_ONE" /></translation>
 <translation id="2532199152994248594">Faire glisser ou appuyer sur la barre d'espace pour sélectionner une zone à capturer</translation>
+<translation id="2540651571961486573">Une erreur s'est produite. Code d'erreur : <ph name="ERROR_CODE" />.</translation>
 <translation id="2545334090614121435">Vous essayez d'utiliser la touche Début? Utiliser</translation>
 <translation id="254900897760075745">Copier le contenu sélectionné dans le presse-papiers</translation>
 <translation id="2549711466868162843">Améliorer l'éclairage</translation>
@@ -511,8 +524,11 @@
 <translation id="2701576323154693023">Le point d'accès sans fil est activé (le Wi-Fi est désactivé)</translation>
 <translation id="2704781753052663061">Se connecter à d'autres réseaux Wi-Fi</translation>
 <translation id="2705001408393684014">Activer/Désactiver le microphone. <ph name="STATE_TEXT" /></translation>
+<translation id="2706304388244371417">Sauvegarder sur Google Disque. Restaurez facilement vos données ou changez d'appareil à tout moment. Les données des applis sont également sauvegardées. Les sauvegardes sont téléversées dans les serveurs de Google et sont chiffrées en utilisant le mot de passe du compte Google de votre enfant. <ph name="BEGIN_LINK1" />En savoir plus sur la sauvegarde<ph name="BEGIN_LINK1_END" />En savoir plus<ph name="END_LINK1" /></translation>
 <translation id="2706462751667573066">Haut</translation>
+<translation id="2710101514844343743">Données d'utilisation et de diagnostics</translation>
 <translation id="2710984741481549981">Verrouiller les fenêtres</translation>
+<translation id="2714393097308983682">Google Play Store</translation>
 <translation id="2718395828230677721">Éclairage nocturne</translation>
 <translation id="2726420622004325180">Les données cellulaires doivent être activées sur votre téléphone pour que celui-ci puisse offrir un point d'accès sans fil</translation>
 <translation id="2727175239389218057">Répondre</translation>
@@ -574,6 +590,8 @@ Sinon, le pavé tactile intégré sera réactivé dans <ph name="TIMEOUT_SECONDS
 <translation id="2893701697603065178">Environnement de développement géré</translation>
 <translation id="2894949423239620203">Le câble peut avoir une incidence sur la performance</translation>
 <translation id="2902312830803030883">Autres actions</translation>
+<translation id="2909506265808101667">Impossible de se connecter aux services Google. Vérifiez votre connexion réseau et réessayez. Code d'erreur : <ph name="ERROR_CODE" />.</translation>
+<translation id="2910718431259223434">Une erreur s'est produite. Veuillez réessayer ou communiquer avec l'administrateur ou le propriétaire de votre appareil. Code d'erreur : <ph name="ERROR_CODE" />.</translation>
 <translation id="2914580577416829331">Captures d'écran</translation>
 <translation id="2924416280450782352">Impossible d'afficher les éléments. Essayez de rouvrir ce panneau.</translation>
 <translation id="292506373491190801">De l'événement qui se passe actuellement</translation>
@@ -633,7 +651,9 @@ Sinon, le pavé tactile intégré sera réactivé dans <ph name="TIMEOUT_SECONDS
 <translation id="3093423061078042895">Manquant</translation>
 <translation id="3095995014811312755">Version</translation>
 <translation id="309749186376891736">Déplacer le curseur</translation>
+<translation id="3100071818310370858">Utiliser la position. Autoriser les applis et les services disposant de l'autorisation de localisation à utiliser la position de l'appareil. Google peut régulièrement collecter des données de localisation et les utiliser anonymement afin d'améliorer la précision de la localisation et les services basés sur l'emplacement. <ph name="BEGIN_LINK1" />En savoir plus sur la localisation<ph name="BEGIN_LINK1_END" />En savoir plus<ph name="END_LINK1" /></translation>
 <translation id="3100274880412651815">Fermer le mode de capture</translation>
+<translation id="3104948640446684649">Envoyez les données d'utilisation et de diagnostic. Actuellement, cet appareil envoie automatiquement à Google des données de diagnostic, de l'appareil et d'utilisation des applis. Cela nous permettra d'assurer la stabilité du système et des applis, et d'apporter d'autres améliorations. Certaines données agrégées contribueront également à améliorer les applis Google et elles aideront nos partenaires, comme les développeurs Android. Si votre paramètre relatif aux autres activités sur le Web et dans les applis est activé, ces données peuvent être enregistrées dans votre compte Google. <ph name="BEGIN_LINK2" />En savoir plus sur les mesures<ph name="BEGIN_LINK2_END" />En savoir plus<ph name="END_LINK2" /></translation>
 <translation id="3105917916468784889">Faire une capture d'écran</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3107155169630537783">La notification de bienvenue est <ph name="STATE" /></translation>
@@ -697,6 +717,7 @@ Sinon, le pavé tactile intégré sera réactivé dans <ph name="TIMEOUT_SECONDS
 <translation id="3306386552969601301"><ph name="DEVICECOUNT" /> appareils connectés au point d'accès sans fil <ph name="DEVICE_NAME" /></translation>
 <translation id="3307642347673023554">Mode ordinateur portable activé</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> peut toujours se connecter plus tard.</translation>
+<translation id="3313950410573257029">Vérifier la connexion</translation>
 <translation id="3321628682574733415">Code parental incorrect</translation>
 <translation id="332827762492701193">Les notifications sont masquées</translation>
 <translation id="3333674550998107387">Développer la notification <ph name="NOTIFICATION_TITLE" /></translation>
@@ -814,6 +835,7 @@ Sinon, le pavé tactile intégré sera réactivé dans <ph name="TIMEOUT_SECONDS
 <translation id="3638400994746983214">Basculer l'écran de confidentialité. <ph name="STATE_TEXT" />.</translation>
 <translation id="3641070112313110357">Steam pour Chromebook (version bêta) doit être mis à jour. Redémarrez votre Chromebook et réessayez.</translation>
 <translation id="3649256019230929621">Réduire la fenêtre</translation>
+<translation id="3650952250015018111">Autoriser « <ph name="APP_NAME" /> » à accéder à l'appareil suivant :</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
         de <ph name="START_TIME" /> à
@@ -859,6 +881,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="3779139509281456663">Connexion à <ph name="NAME" /> en cours…</translation>
 <translation id="3781910048497807059">Déplacer la cible vers le volet précédent</translation>
 <translation id="3783640748446814672">alt</translation>
+<translation id="3783889407390048282">Libérez de l'espace pour éviter de perdre l'accès à Android.</translation>
 <translation id="3784455785234192852">Verrouiller</translation>
 <translation id="3788301286821743879">Impossible de lancer l'application de kiosque.</translation>
 <translation id="3789841737615482174">Installer</translation>
@@ -868,6 +891,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="3804737937830804242">Réduire le bouton caméra</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 émoji. Aucun autre résultat.}one{# émoji. Aucun autre résultat.}other{# émojis. Aucun autre résultat.}}</translation>
 <translation id="3822403841174077928">Impossible de copier le texte avec le formatage</translation>
+<translation id="3824621460022590830">Le jeton d'inscription d'appareil n'est pas valide. Veuillez communiquer avec l'administrateur ou le propriétaire de votre appareil. Code d'erreur : <ph name="ERROR_CODE" />.</translation>
 <translation id="3824784079442479685">Cela autorise l'accès à l'appareil photo pour <ph name="APP_NAME" /> et pour toutes les applications et tous les sites Web disposant de l'autorisation d'accès à l'appareil photo. Vous devrez peut-être actualiser la page Web ou redémarrer l'application.</translation>
 <translation id="3826099427150913765">Passer au mot de passe</translation>
 <translation id="383058930331066723">Le mode Économiseur de pile est activé</translation>
@@ -892,6 +916,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="3898464793473355515">Faire pivoter l'écran de 90 degrés dans le sens des aiguilles d'une montre</translation>
 <translation id="3900355044994618856">Votre session se terminera dans <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">Connexion à <ph name="NAME" /> en cours...</translation>
+<translation id="3904326018476041253">Services de localisation</translation>
 <translation id="3904768293285573640">Fenêtre de redimensionnement en tuile vers la gauche</translation>
 <translation id="3923221004758245114">Retirer <ph name="VM_NAME" /> de votre <ph name="DEVICE_TYPE" />? Toutes les applications et les données de la machine virtuelle seront ainsi supprimées!</translation>
 <translation id="3923494859158167397">Aucun réseau cellulaire n'est configuré</translation>
@@ -906,6 +931,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="3950272133184491871">Se déconnecter maintenant?</translation>
 <translation id="3950820424414687140">Connexion</translation>
 <translation id="3953130726459169782">Aucun devoir n'est terminé pour le moment.</translation>
+<translation id="3957844511978444971">Touchez « Accepter » pour confirmer votre sélection des paramètres de ces services Google.</translation>
 <translation id="3958714870339660776">Toute la journée</translation>
 <translation id="3962859241508114581">Chanson précédente</translation>
 <translation id="3963124517343721543">Reprenez facilement là où vous vous étiez arrêté en ouvrant vos fenêtres et onglets précédents. Vous obtiendrez également des suggestions personnalisées sur d'autres choses à faire.</translation>
@@ -1020,6 +1046,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4278779213160967034">Ce processus peut prendre quelques minutes. Téléchargement des fichiers.</translation>
 <translation id="4279490309300973883">Mise en miroir</translation>
 <translation id="4280601795273309128">Les mises à jour de sécurité sont terminées. Améliorer votre appareil.</translation>
+<translation id="4281844954008187215">Conditions d'utilisation</translation>
 <translation id="4283888303416325161">Entrez le mot de passe pour plus de sécurité</translation>
 <translation id="4285498937028063278">Annuler l'épinglage</translation>
 <translation id="428715201724021596">Connexion au profil en cours… Cette opération peut prendre quelques minutes.</translation>
@@ -1064,6 +1091,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4406883609789734330">Sous-titres instantanés</translation>
 <translation id="4412698727486357573">Centre d'aide</translation>
 <translation id="4412944820643904175">La fonctionnalité <ph name="FEATURE_NAME" /> est désactivée.</translation>
+<translation id="44141919652824029">Autoriser « <ph name="APP_NAME" /> » à obtenir la liste de vos appareils USB connectés?</translation>
 <translation id="4414242853388122273">Erreur lors du retrait de <ph name="VM_NAME" />. Veuillez réessayer.</translation>
 <translation id="4417647906073317561">Paramètres du mode Sans distractions. Réglez une minuterie, une tâche et de la musique pour vous mettre dans l'ambiance.</translation>
 <translation id="4418600384772451109">Fermer le panneau</translation>
@@ -1105,6 +1133,7 @@ Un appareil connecté.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> avant la recharge complète</translation>
 <translation id="4538824937723742295">Prendre une capture de l'écran au complet</translation>
 <translation id="4539127209940689201">Imprimer la page actuelle</translation>
+<translation id="4541123282641193691">Impossible de vérifier votre compte. Veuillez réessayer ou redémarrer votre Chromebook.</translation>
 <translation id="4541505619120536051">Toujours ouvert</translation>
 <translation id="4541706525461326392">Retrait du profil en cours… Cette opération peut prendre quelques minutes.</translation>
 <translation id="4544483149666270818">Sélectionnez une fenêtre à enregistrer</translation>
@@ -1115,6 +1144,7 @@ Un appareil connecté.</translation>
 <translation id="4556953949326137018">Lorsque vous utilisez des actions suggérées telles que « ajouter au calendrier » ou « créer des documents Google », le contenu de la zone sélectionnée est envoyé aux serveurs Google pour suggérer des actions, sous réserve des <ph name="LINK_TO_SERVICE_TERMS" />. N'incluez aucun élément personnel ni aucun élément confidentiel.</translation>
 <translation id="4560576029703263363">Activé</translation>
 <translation id="4561267230861221837">3G</translation>
+<translation id="4562091353415772246">Installez les mises à jour et les applis. En continuant, vous acceptez que cet appareil puisse également télécharger et installer automatiquement des mises à jour et des applis de Google, de votre fournisseur de services et du fabricant de l'appareil, possiblement par l'intermédiaire du réseau de données cellulaires. Certaines de ces applis peuvent proposer des achats au moyen de l'appli. <ph name="BEGIN_LINK1" />En savoir plus sur l'installation automatique de Google Play<ph name="BEGIN_LINK1_END" />En savoir plus<ph name="END_LINK1" /></translation>
 <translation id="4565377596337484307">Masquer le mot de passe</translation>
 <translation id="4566144812051858745">Aucune suggestion ne m'intéresse</translation>
 <translation id="4569753163207712681">Affichez les applications, les photos et le contenu multimédia récents de votre téléphone</translation>
@@ -1134,6 +1164,7 @@ Un appareil connecté.</translation>
 <translation id="4628757576491864469">Appareils</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, note <ph name="RATING_SCORE" /></translation>
 <translation id="4633636853437260449">Appuyez sur Ctrl+W pour supprimer</translation>
+<translation id="4633757335284074492">Sauvegarder sur Google Disque. Restaurez facilement vos données ou changez d'appareil à tout moment. Les données des applications sont également sauvegardées. Les sauvegardes sont téléversées dans les serveurs de Google et sont chiffrées en utilisant le mot de passe du compte Google de votre enfant.</translation>
 <translation id="4635501805800894201">{0,plural, =0{Mettez à jour l'appareil vers la version précédente maintenant}=1{Mettez à jour l'appareil vers la version précédente dans un délai d'une seconde}one{Mettez à jour l'appareil vers la version précédente dans un délai de # seconde}other{Mettez à jour l'appareil vers la version précédente dans un délai de # secondes}}</translation>
 <translation id="4642092649622328492">Effectuer une capture d'écran partielle</translation>
 <translation id="4642587497923912728">Steam pour Chromebook (Bêta) n'est offert que pour le compte qui s'est connecté en premier sur ce Chromebook.</translation>
@@ -1176,6 +1207,7 @@ Un appareil connecté.</translation>
 <translation id="4759238208242260848">Téléchargements</translation>
 <translation id="4762160261012420470"><ph name="LAUNCHER_KEY_NAME" />+flèche vers le haut</translation>
 <translation id="4762573482154983647">Masquer les applications</translation>
+<translation id="4762718786438001384">Vous n'avez presque plus d'espace disque sur votre appareil</translation>
 <translation id="4763885921995354846">Cela autorise l'accès à l'appareil photo pour toutes les applications et tous les sites Web disposant de l'autorisation d'accès à l'appareil photo. Vous devrez peut-être actualiser la page Web ou redémarrer l'application.</translation>
 <translation id="4774338217796918551">Reviens demain à <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776584068981882959">Votre mot de passe n'a toujours pas pu être vérifié. Réessayez.</translation>
@@ -1282,6 +1314,7 @@ Un appareil connecté.</translation>
 <translation id="5077936103761694531">Confirmer la résolution?</translation>
 <translation id="5078796286268621944">NIP incorrect</translation>
 <translation id="5083035541015925118">ctrl+alt+flèche vers le haut</translation>
+<translation id="5084328598860513926">Le flux d'approvisionnement a été interrompu. Veuillez réessayer ou communiquer avec l'administrateur ou le propriétaire de votre appareil. Code d'erreur : <ph name="ERROR_CODE" />.</translation>
 <translation id="5091636240353511739">Afficher le NIP</translation>
 <translation id="5092436659250499817">Activer ou désactiver le rétroéclairage du clavier</translation>
 <translation id="5094577350232361255">à propos de</translation>
@@ -1311,6 +1344,7 @@ Vous pouvez également utiliser le raccourci-clavier. Tout d'abord, mettez le te
 <translation id="5170568018924773124">Afficher dans le dossier</translation>
 <translation id="5176318573511391780">Enregistrer une partie de l'écran</translation>
 <translation id="5187627942836026988">Afficher les détails du point d'accès sans fil. Le point d'accès sans fil est bloqué par votre administrateur.</translation>
+<translation id="5188648870018555788">Utiliser la position. Autorisez les applis, les sites Web et les services ChromeOS et Android disposant d'une autorisation de localisation à utiliser la position de votre appareil. La précision de la localisation fournit une position plus précise pour les applis et les services Android. Pour ce faire, Google traite périodiquement des informations sur les capteurs de l'appareil et les signaux sans fil émis par votre appareil afin de recueillir de façon participative des données sur la position des signaux sans fil. Ces données sont utilisées sans vous identifier pour améliorer la précision de la localisation et les services basés sur l'emplacement. Elles le sont aussi pour améliorer, pour fournir et pour maintenir les services de Google en fonction des intérêts légitimes de Google et de tiers envers la satisfaction des besoins des utilisateurs. <ph name="BEGIN_LINK1" />En savoir plus sur l'utilisation de la position<ph name="END_LINK1" /></translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198039720391525849">GIF en vedette</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> événements</translation>
@@ -1331,6 +1365,7 @@ Vous pouvez également utiliser le raccourci-clavier. Tout d'abord, mettez le te
 <translation id="5238719049014159442">Ouvrir/fermer le lanceur</translation>
 <translation id="5240725217819182328">Accès rapide à des pages ou à des actions précises dans les applications installées</translation>
 <translation id="5243355658487390559">Rechercher la date</translation>
+<translation id="5243522832766285132">Veuillez réessayer dans quelques instants</translation>
 <translation id="5245201184978705914">Impossible de générer la transcription</translation>
 <translation id="5251174953851719648">Actualiser le contenu</translation>
 <translation id="5253783950165989294">Connecté à un appareil nommé <ph name="DEVICE_NAME" />, dont le niveau de pile est à<ph name="BATTERY_PERCENTAGE" /> %</translation>
@@ -1338,6 +1373,7 @@ Vous pouvez également utiliser le raccourci-clavier. Tout d'abord, mettez le te
 <translation id="5256939106029293271">Tester votre micro</translation>
 <translation id="5258528442992323769">Aucun bureau enregistré</translation>
 <translation id="5260676007519551770">Bureau 4</translation>
+<translation id="5264148714798105376">Cette opération peut prendre environ une minute.</translation>
 <translation id="5265391159779542051">Résultats chargés</translation>
 <translation id="5270547718570958938">Google Agenda</translation>
 <translation id="5277869901083657836">Basculer les outils du stylet</translation>
@@ -1414,6 +1450,7 @@ Aucun appareil n'est connecté.</translation>
 <translation id="5506975627792768506">Activer ou désactiver la loupe</translation>
 <translation id="5507778598655387680"><ph name="VOLUME_LEVEL" />, appuyer sur Entrée désactive l'audio.</translation>
 <translation id="5512042095225963688">Supprimer le mot précédent</translation>
+<translation id="5517304475148761050">Cette application a besoin de l'accès à la boutique Play Store</translation>
 <translation id="5519005148254860683">Développer Google Tâches</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Votre administrateur a retiré tous les profils eSIM. Pour en savoir plus, communiquez avec votre administrateur.</translation>
@@ -1441,6 +1478,7 @@ Aucun appareil n'est connecté.</translation>
 <translation id="5577281275355252094">Pour utiliser Phone Hub, assurez-vous que le Bluetooth est activé</translation>
 <translation id="5578188167649348993">mémoire</translation>
 <translation id="5580000943347215299">Bibliothèque</translation>
+<translation id="5581972110672966454">Impossible d'associer l'appareil au domaine. Veuillez réessayer ou communiquer avec l'administrateur ou le propriétaire de votre appareil. Code d'erreur : <ph name="ERROR_CODE" />.</translation>
 <translation id="5586388332127302891">Loupe en mode Ancré activée Appuyez à nouveau sur <ph name="ACCELERATOR" /> pour la désactiver.</translation>
 <translation id="5587506661873751671">Téléchargement en cours… <ph name="DOWNLOAD_PERCENT" /> %</translation>
 <translation id="558849140439112033">Faites glisser le curseur pour sélectionner une région à capturer</translation>
@@ -1465,6 +1503,7 @@ Aucun appareil n'est connecté.</translation>
 <translation id="5662075790140998213">Bureau 10</translation>
 <translation id="5662709761327382534">Enregistrement avec le microphone <ph name="CURRENT_STATE" />; appuyez sur Entrée pour <ph name="NEW_STATE" /> l'enregistrement avec le microphone</translation>
 <translation id="5662919923378083468"><ph name="ACTION_DESCRIPTION" />, <ph name="SHORTCUT_HINT" /></translation>
+<translation id="5667546120811588575">Configuration de Google Play en cours…</translation>
 <translation id="5669267381087807207">Activation…</translation>
 <translation id="5671658447180261823">Supprimer la suggestion <ph name="SUGGESTION_NAME" /></translation>
 <translation id="5672890847723042801">Utilitaires</translation>
@@ -1481,6 +1520,7 @@ Aucun appareil n'est connecté.</translation>
 <translation id="5691772641933328258">Empreinte digitale non reconnue</translation>
 <translation id="5693255400847650006">Le microphone est en cours d'utilisation</translation>
 <translation id="5699366815052349604">Attribuez la fenêtre active à tous les bureaux</translation>
+<translation id="570043786759263127">Applications et services Google Play</translation>
 <translation id="570390244361237317">Toutes les applications, naviguer avec les touches fléchées pour accéder à toutes les applications</translation>
 <translation id="5705197514573687092">Afficher les paramètres du mode Sans distractions. Minuterie réglée à <ph name="FOCUS_DURATION" />.</translation>
 <translation id="5707775774148071965">Votre appareil prend en charge un débit de données supérieur à celui de votre câble. La performance de l'appareil peut être limitée.</translation>
@@ -1495,6 +1535,7 @@ Aucun appareil n'est connecté.</translation>
 <translation id="574392208103952083">Moyenne</translation>
 <translation id="5744083938413354016">Déplacement tactile</translation>
 <translation id="5745612484876805746">La fonction Éclairage nocturne s'active automatiquement au coucher du soleil</translation>
+<translation id="5749214722697335450">Envoyez les données d'utilisation et de diagnostic. Aidez-nous à améliorer votre expérience Android en envoyant automatiquement à Google des données de diagnostic, de l'appareil et d'utilisation des applis. Cela nous permettra d'assurer la stabilité du système et des applis, et d'apporter d'autres améliorations. Certaines données agrégées contribueront également à améliorer les applis Google et elles aideront nos partenaires, comme les développeurs Android. Si le paramètre relatif aux autres activités sur le Web et dans les applis est activé, ces données peuvent être enregistrées dans votre compte Google. <ph name="BEGIN_LINK1" />En savoir plus sur les mesures<ph name="BEGIN_LINK1_END" />En savoir plus<ph name="END_LINK1" /></translation>
 <translation id="5750765938512549687">Le Bluetooth est désactivé</translation>
 <translation id="5758114525425072423">Activer le mode Sans distractions. Minuterie réglée à <ph name="FOCUS_DURATION" />.</translation>
 <translation id="5759522586053040964">Entendez votre voix telle que les autres l'entendent. Pour l'arrêter, cliquez sur l'icône de test ou fermez le panneau d'appel vidéo.</translation>
@@ -1511,6 +1552,7 @@ Aucun appareil n'est connecté.</translation>
 <translation id="5775936059231769503">Basculez le point d'accès sans fil. Le point d'accès sans fil est désactivé.</translation>
 <translation id="5777841717266010279">Arrêter le partage d'écran?</translation>
 <translation id="5779721926447984944">Fichiers épinglés</translation>
+<translation id="5780940414249100901">Envoyez les données d'utilisation et de diagnostic. Actuellement, cet appareil envoie automatiquement à Google des données de diagnostic, de l'appareil et d'utilisation des applis. L'envoi de ces données ne sera pas utilisé pour identifier votre enfant, mais pour assurer la stabilité du système et des applis, et pour apporter d'autres améliorations. Certaines données agrégées contribueront également à améliorer les applis Google et elles aideront nos partenaires, comme les développeurs Android. Ce <ph name="BEGIN_LINK1" />paramètre<ph name="END_LINK1" /> est appliqué par le propriétaire du compte. Si le paramètre relatif aux autres activités sur le Web et dans les applis est activé pour votre enfant, ces données peuvent être enregistrées dans son compte Google. <ph name="BEGIN_LINK2" />En savoir plus sur les mesures<ph name="BEGIN_LINK2_END" />En savoir plus<ph name="END_LINK2" /></translation>
 <translation id="5785221443435874078">Supprimer cette suggestion</translation>
 <translation id="5787431783058088906">Obtenir l'avantage</translation>
 <translation id="5788127256798019331">Fichiers Google Play</translation>
@@ -1526,6 +1568,7 @@ Aucun appareil n'est connecté.</translation>
 <translation id="5823239091726045201">Google Tâches sur le Web</translation>
 <translation id="5825969630400862129">Paramètres des appareils connectés</translation>
 <translation id="5830180081891717894"><ph name="WINDOWS" /> de plus</translation>
+<translation id="583281660410589416">Inconnu</translation>
 <translation id="5837036133683224804">Arrêter <ph name="ROUTE_TITLE" /> sur <ph name="RECEIVER_NAME" /></translation>
 <translation id="5840658767386246331">Rechercher avec Google</translation>
 <translation id="5841296711770970362">Passer à la chanson suivante</translation>
@@ -1591,6 +1634,7 @@ Aucun appareil n'est connecté.</translation>
 <translation id="6032620807120418574">Cliquez n'importe où pour capturer la totalité de l'écran</translation>
 <translation id="6040071906258664830">Enregistrement avec le microphone <ph name="STATE" /></translation>
 <translation id="6040143037577758943">Fermer</translation>
+<translation id="6042308850641462728">Plus</translation>
 <translation id="6043212731627905357">Ce moniteur n'est pas compatible avec votre <ph name="DEVICE_TYPE" /> (le moniteur n'est pas pris en charge).</translation>
 <translation id="6043994281159824495">Se déconnecter maintenant</translation>
 <translation id="6045629311476491587">Utilisée par <ph name="APP_COUNT" /> applications</translation>
@@ -1670,9 +1714,12 @@ Aucun appareil n'est connecté.</translation>
 <translation id="6274422179279280249">Insérez des liens, des émojis et plus. Vous pouvez également obtenir de l'aide à la rédaction avec l'IA de Google. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="6276708887952587684">Afficher la source de la page</translation>
 <translation id="6285871695023807425">Ajouter à Agenda</translation>
+<translation id="628699625505156622">Utiliser la position. Autorisez les applis, les sites Web et les services ChromeOS et Android disposant d'une autorisation de localisation à utiliser la position de cet appareil. La précision de la localisation fournit une position plus précise pour les applis et les services Android. Pour ce faire, Google traite périodiquement des informations sur les capteurs de l'appareil et les signaux sans fil émis par cet appareil afin de recueillir de façon participative des données sur la position des signaux sans fil. Ces données sont utilisées sans identifier les personnes concernées pour améliorer la précision de la localisation et les services basés sur l'emplacement. Elles le sont aussi pour améliorer, pour fournir et pour maintenir les services de Google en fonction des intérêts légitimes de Google et de tiers envers la satisfaction des besoins des utilisateurs. <ph name="BEGIN_LINK1" />En savoir plus sur l'utilisation de la position<ph name="END_LINK1" /></translation>
 <translation id="6288235558961782912">L'utilisateur <ph name="USER_EMAIL_ADDRESS" /> peut être ajouté de nouveau plus tard, avec l'autorisation d'un parent.</translation>
 <translation id="6291221004442998378">La pile n'est pas en train d'être rechargée</translation>
+<translation id="6297986260307280218">Envoyez les données d'utilisation et de diagnostic. Aidez-nous à améliorer votre expérience Android en envoyant automatiquement à Google des données de diagnostic, de l'appareil et d'utilisation des applis. Cela nous permettra d'assurer la stabilité du système et des applis, et d'apporter d'autres améliorations. Certaines données agrégées contribueront également à améliorer les applis Google et elles aideront nos partenaires, comme les développeurs Android. Ce <ph name="BEGIN_LINK1" />paramètre<ph name="END_LINK1" /> est appliqué par le propriétaire du compte. C'est à lui de choisir d'envoyer ou non à Google les données de diagnostic et d'utilisation de cet appareil. Si le paramètre relatif aux autres activités sur le Web et dans les applis est activé, ces données peuvent être enregistrées dans votre compte Google. <ph name="BEGIN_LINK2" />En savoir plus sur les mesures<ph name="BEGIN_LINK2_END" />En savoir plus<ph name="END_LINK2" /></translation>
 <translation id="6298183524022479114">Personnalisez cet appareil dans l'application</translation>
+<translation id="6298962879096096191">Utilisez Google Play pour installer des applications Android</translation>
 <translation id="6304076460080088478">Fermez ou réduisez les fenêtres de navigation privée pour effectuer une recherche sur votre écran avec Lentille Google</translation>
 <translation id="6309219492973062892">Cliquer sur les icônes d'étagère 1 à 8 ou les toucher</translation>
 <translation id="6315170314923504164">Voix</translation>
@@ -1702,8 +1749,10 @@ Aucun appareil n'est connecté.</translation>
 <translation id="6406458002328242616">Modifier la minuterie. <ph name="FOCUS_DURATION" />.</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6414618057231176439">Sélectionnez la version de <ph name="VM_NAME" /> à installer.</translation>
+<translation id="641469293210305670">Installer les mises à jour et les applications</translation>
 <translation id="6417265370957905582">Assistant Google</translation>
 <translation id="641817663353603351">page précédente</translation>
+<translation id="6418511932144861495">Installer une mise à jour essentielle</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Effacer toutes les notifications</translation>
 <translation id="6426905245930183644">Création en cours…</translation>
@@ -1729,6 +1778,7 @@ Aucun appareil n'est connecté.</translation>
 <translation id="6482559668224714696">Loupe en mode plein écran</translation>
 <translation id="6485086611007560630">Météo (non accessible)</translation>
 <translation id="6490471652906364588">Appareil USB-C (port de droite)</translation>
+<translation id="6491376743066338510">Échec de l'autorisation</translation>
 <translation id="649452524636452238">NIP de la carte à puce</translation>
 <translation id="6495322433318104734">Affichage de l'économiseur d'écran, appuyez sur n'importe quelle touche pour quitter</translation>
 <translation id="6495400115277918834">Début de l'incrustation d'image, appuyez sur les touches Alt+Majuscule+V pour sélectionner</translation>
@@ -1782,10 +1832,12 @@ Nouvelle installation</translation>
 <translation id="6625718907317144388">Les notifications de <ph name="APP_1_TITLE" />, de <ph name="APP_2_TITLE" /> et d'autres applications sont masquées parce que la protection de l'affichage est activée</translation>
 <translation id="6627638273713273709">Recherche+Maj+K</translation>
 <translation id="662830937908749204">Déplacer la cible vers le volet suivant</translation>
+<translation id="6635674640674343739">Impossible d'établir une connexion réseau. Vérifiez votre connexion réseau et réessayez.</translation>
 <translation id="6637729079642709226">Changer l'heure</translation>
 <translation id="6641720045729354415">Acviter/désactiver les sous-titres instantanés. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">Annuler l'ordre de tri par nom</translation>
 <translation id="664793810957802384">Éléments dans le groupe suggéré</translation>
+<translation id="6649018507441623493">Un instant…</translation>
 <translation id="6649641931981131786">Ajustez la caméra de manière à ce que vous soyez au centre de l'écran.</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> souhaite confirmer qu'il s'agit bien de vous</translation>
 <translation id="6650742588569439432">Impossible de charger les éléments.</translation>
@@ -1810,6 +1862,7 @@ Nouvelle installation</translation>
 <translation id="6706742084323792866">Clavier NIP</translation>
 <translation id="6709719156428404245">Faire glisser ou appuyer sur la barre d'espace pour sélectionner une zone à enregistrer</translation>
 <translation id="6710213216561001401">Précédent</translation>
+<translation id="6716798148881908873">La connexion réseau a été perdue. Vérifiez votre connexion réseau ou essayez un autre réseau Wi-Fi.</translation>
 <translation id="6723839937902243910">Alimentation</translation>
 <translation id="672609503628871915">Découvrir les nouveautés</translation>
 <translation id="6727969043791803658">Connecté, pile chargée à <ph name="BATTERY_PERCENTAGE" /> %</translation>
@@ -1849,6 +1902,7 @@ Nouvelle installation</translation>
 <translation id="6819327813400217281">Caméra alignée sur le coin inférieur gauche</translation>
 <translation id="6820676911989879663">Prenez une pause!</translation>
 <translation id="6827049576281411231">Fermer le panneau d'événements</translation>
+<translation id="682971198310367122">Politique de confidentialité de Google</translation>
 <translation id="6836499262298959512">Fichier dangereux</translation>
 <translation id="6837621009301897464">Pour prendre une capture d'écran, appuyez sur</translation>
 <translation id="6852052252232534364">Cliquer pour activer</translation>
@@ -1880,6 +1934,7 @@ Nouvelle installation</translation>
 <translation id="6942518653766415536">Menu du format d'enregistrement</translation>
 <translation id="6945221475159498467">Sélectionner</translation>
 <translation id="6945922087561257829">Votre téléphone utilise un réseau cellulaire. Assurez-vous que votre téléphone et votre Chromebook sont sur le même réseau Wi-Fi, puis réessayez. <ph name="LEARN_MORE" /></translation>
+<translation id="6950627417367801484">Restaurer les applications</translation>
 <translation id="6960565108681981554">Pas activée. Communiquez avec votre fournisseur de services.</translation>
 <translation id="6961121602502368900">Le mode silencieux du téléphone n'est pas accessible dans le profil professionnel</translation>
 <translation id="6961840794482373852">Le raccourci-clavier Alt+flèche vers le haut a changé. Pour utiliser la touche Page précédente, appuyez sur la touche <ph name="LAUNCHER_KEY_NAME" />+flèche vers le haut.</translation>
@@ -2051,6 +2106,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="7541773865713908457"><ph name="ACTION_NAME" /> avec l'application <ph name="APP_NAME" /></translation>
 <translation id="7543399541175347147">Les applications Linux et les fenêtres de navigation privée ne sont pas prises en charge actuellement. Les autres applications seront enregistrées.</translation>
 <translation id="7544300628205093162">Le rétroéclairage du clavier est activé</translation>
+<translation id="7545466883021407599">Impossible de se connecter au serveur. Vérifiez votre connexion réseau et réessayez. Si vous rencontrez toujours des problèmes, essayez de redémarrer votre Chromebook. Code d'erreur : <ph name="ERROR_CODE" />.</translation>
 <translation id="7548434653388805669">C'est l'heure du dodo</translation>
 <translation id="7551643184018910560">Épingler sur l'étagère</translation>
 <translation id="7557816257942363084"><ph name="APP_NAME" /> utilise actuellement votre microphone</translation>
@@ -2066,6 +2122,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="7579778809502851308">Capture d'écran</translation>
 <translation id="7588317312481506627">Copiée dans le presse-papiers.</translation>
 <translation id="7593891976182323525">Recherche ou Majuscule</translation>
+<translation id="7595453277607160340">Pour utiliser des applications Android et assurer le bon fonctionnement de votre <ph name="DEVICE_TYPE" />, reconnectez-vous et effectuez une mise à jour.</translation>
 <translation id="7598054670902114203">Aperçu d'utilisation du processeur, <ph name="CPU_USEAGE" /> %. Température <ph name="TEMPERATURE" /> degrés Celsius, vitesse actuelle : <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="7599378375976398913">Insertion du résultat sélectionné</translation>
 <translation id="7600875258240007829">Afficher toutes les notifications</translation>
@@ -2075,6 +2132,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="7609951632080598826">Vue de l'agenda, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Caméra reconnectée.</translation>
 <translation id="7613620083300976559">Activer les commandes de jeu</translation>
+<translation id="761530003705945209">Sauvegarder sur Google Disque. Restaurez facilement vos données ou changez d'appareil à tout moment. Votre sauvegarde inclut les données des applications. Vos sauvegardes sont téléversées vers les serveurs de Google et sont chiffrées en utilisant le mot de passe de votre compte Google.</translation>
 <translation id="761736749114493194">Basculer le cadrage de l'appareil photo. <ph name="STATE_TEXT" /></translation>
 <translation id="7621008024906456933">Paramètres du Partage rapide</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
@@ -2123,6 +2181,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="7748275671948949022">Mettre en évidence le bouton du lanceur sur l'étagère</translation>
 <translation id="7749443890790263709">Le nombre maximal de bureaux a été atteint.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7750228210027921155">Incrustation d'image</translation>
 <translation id="7751260505918304024">Tout afficher</translation>
 <translation id="7762664108390426952">conditions d'utilisation et de la politique de confidentialité de Google</translation>
 <translation id="7768784765476638775">Sélectionner pour énoncer</translation>
@@ -2241,6 +2300,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="8092380135549145188">Commandes de défilement</translation>
 <translation id="8098591350844501178">Arrêter la diffusion de l'écran sur <ph name="RECEIVER_NAME" /></translation>
 <translation id="810637681351706236">Annuler l'épinglage de l'application dans l'étagère</translation>
+<translation id="8107015733319732394">Installation du Google Play Store sur votre <ph name="DEVICE_TYPE" /> en cours… Cela peut prendre quelques minutes.</translation>
 <translation id="8113423164597455979">Activées, toutes applis</translation>
 <translation id="8113515504791187892">Bouton Sélectionner pour énoncer</translation>
 <translation id="8120151603115102514">Votre téléphone n'a pas d'écran de verrouillage. Pour déverrouiller votre Chromebook, entrez votre mot de passe.</translation>
@@ -2323,6 +2383,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="8388750414311082622">Impossible de supprimer le dernier bureau.</translation>
 <translation id="8394567579869570560">Ton parent a verrouillé cet appareil</translation>
 <translation id="8401850874595457088">Entrez la langue du menu</translation>
+<translation id="8410775397654368139">Google Play</translation>
 <translation id="8412677897383510995">Afficher les paramètres d'affichage</translation>
 <translation id="8413272770729657668">L'enregistrement va commencer dans 3 secondes, 2 secondes, 1 seconde</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (étui)</translation>
@@ -2348,11 +2409,13 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> a <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Appuyez sur Alt + Recherche ou Majuscule pour le désactiver.</translation>
 <translation id="8480418399907765580">Afficher la barre d'outils</translation>
+<translation id="8481187309597259238">Confirmer l'autorisation USB</translation>
 <translation id="8487660088084188539">Lorsque vous activez ces fonctionnalités, le texte saisi, le contenu du document et l'URL de la page Web peuvent être envoyés aux serveurs de Google. Ces informations sont utilisées pour générer des suggestions de rédaction, des résumés, répondre à des questions et améliorer le produit, sous réserve des <ph name="LINK_TO_SERVICE_TERMS" />. N'incluez aucun élément personnel ni aucun élément confidentiel.</translation>
 <translation id="8487699605742506766">Point d'accès sans fil</translation>
 <translation id="8490896350101740396">Les applications de kiosque suivantes « <ph name="UPDATED_APPS" /> » ont été mises à jour. Veuillez redémarrer l'appareil pour terminer le processus de mise à jour.</translation>
 <translation id="8491237443345908933">Ouvrir le lien dans un nouvel onglet</translation>
 <translation id="8492573885090281069">L'écran <ph name="DISPLAY_NAME" /> ne prend pas en charge la résolution de <ph name="SPECIFIED_RESOLUTION" />. La résolution a été changée à <ph name="FALLBACK_RESOLUTION" />. Cliquez sur Confirmer pour garder les changements. Les paramètres précédents seront restaurés dans <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="8502536196501630039">Pour utiliser des applications de Google Play, vous devez d'abord restaurer vos applications. Certaines données ont peut-être été perdues.</translation>
 <translation id="8507563469658346379">Tous les utilisateurs, <ph name="REMAINING_TIME" /></translation>
 <translation id="8511123073331775246">Créer un bureau</translation>
 <translation id="85123341071060231">Le Bluetooth de votre Chromebook est désactivé. Pour déverrouiller votre Chromebook, entrez votre mot de passe.</translation>
@@ -2406,6 +2469,8 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="8676770494376880701">Chargeur de faible puissance connecté</translation>
 <translation id="8679158879996532670">Afficher les paramètres du mode Sans distractions. Le mode Sans distractions est activé; il reste <ph name="REMAINING_TIME" />.</translation>
 <translation id="8683506306463609433">Suivi des performances activé</translation>
+<translation id="8698432579173128320">Sauvegarder sur Google Disque. Restaurez facilement vos données ou changez d'appareil à tout moment. Votre sauvegarde inclut les données des applis. Vos sauvegardes sont téléversées dans les serveurs de Google et sont chiffrées en utilisant le mot de passe de votre compte Google. <ph name="BEGIN_LINK1" />En savoir plus sur la sauvegarde<ph name="BEGIN_LINK1_END" />En savoir plus<ph name="END_LINK1" /></translation>
+<translation id="8700087567921985940">Utiliser la position. Permettez aux applis et aux services munis de l'autorisation de localisation d'utiliser la position de votre appareil. Google peut régulièrement collecter des données de localisation et les utiliser anonymement afin d'améliorer la précision de la localisation et les services basés sur l'emplacement. <ph name="BEGIN_LINK1" />En savoir plus sur la localisation<ph name="BEGIN_LINK1_END" />En savoir plus<ph name="END_LINK1" /></translation>
 <translation id="8703634754197148428">Commencer l'enregistrement. Une fois que l'enregistrement a commencé, servez-vous des touches Alt+Majuscule+L pour naviguer jusqu'à l'étagère et trouver le bouton d'arrêt de l'enregistrement</translation>
 <translation id="8704155109538237473">Concentrez-vous sur la fenêtre d'incrustation d'image</translation>
 <translation id="870917907284186124">Activer/désactiver la dictée (taper avec la voix)</translation>
@@ -2468,6 +2533,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="8875021410787719674">Se déplacer entre le coin inférieur droit, le lanceur, la barre d'adresse, la barre de favoris, le site Web ouvert et les téléchargements</translation>
 <translation id="8876148469852588625">Événement <ph name="EVENT_POSITION" /> sur <ph name="EVENT_TOTAL_COUNT" /></translation>
 <translation id="8876661425082386199">Vérifiez votre connexion</translation>
+<translation id="8883478023074930307">Envoyez les données d'utilisation et de diagnostic. Actuellement, cet appareil envoie automatiquement à Google des données de diagnostic, de l'appareil et d'utilisation des applis. Cela nous permettra d'assurer la stabilité du système et des applis, et d'apporter d'autres améliorations. Certaines données agrégées contribueront également à améliorer les applis Google et elles aideront nos partenaires, comme les développeurs Android. Ce <ph name="BEGIN_LINK1" />paramètre<ph name="END_LINK1" /> est appliqué par le propriétaire du compte. Si le paramètre relatif aux autres activités sur le Web et dans les applis est activé, ces données peuvent être enregistrées dans votre compte Google. <ph name="BEGIN_LINK2" />En savoir plus sur les mesures<ph name="BEGIN_LINK2_END" />En savoir plus<ph name="END_LINK2" /></translation>
 <translation id="8885424115080869847">Impossible de se connecter à YouTube Music</translation>
 <translation id="888982883502837004">Des mises à jour du micrologiciel sont disponibles pour votre appareil. Cliquez pour les passer en revue et lancer la mise à jour.</translation>
 <translation id="8896630965521842259">Le modèle <ph name="DESK_TEMPLATE_NAME" /> sera définitivement supprimé</translation>
@@ -2510,10 +2576,12 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="9000771174482730261">GÉRER L'ESPACE DE STOCKAGE</translation>
 <translation id="9003374957546315126">Émojis et plus</translation>
 <translation id="9005984960510803406">Ouvrir une fenêtre Crosh</translation>
+<translation id="901668144954885282">Sauvegarder sur Google Disque</translation>
 <translation id="9017320285115481645">Entrez le code d'accès parental pour Family Link.</translation>
 <translation id="9024331582947483881">plein écran</translation>
 <translation id="9029736946581028033">L'appareil va s'éteindre sous peu</translation>
 <translation id="9030319654231318877">Désactivé jusqu'au couchant</translation>
+<translation id="9030515284705930323">Votre entreprise n'a pas activé la boutique Google Play Store pour votre compte. Communiquez avec votre administrateur pour en savoir plus.</translation>
 <translation id="9030665205623277906">Aperçu de l'utilisation du processeur : <ph name="CPU_USEAGE" /> %</translation>
 <translation id="9034924485347205037">Fichiers Linux</translation>
 <translation id="9047624247355796468">Ouvrir les paramètres pour <ph name="NETWORK_NAME" /></translation>
@@ -2563,8 +2631,10 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="9195857219954068558">Votre Chromebook a été mis à jour. Ouvrez vos fenêtres et vos applis précédentes.</translation>
 <translation id="9195990613383871904">Demain</translation>
 <translation id="9198992156681343238">La résolution de l'écran <ph name="DISPLAY_NAME" /> est maintenant de <ph name="RESOLUTION" />. Cliquez sur Confirmer pour garder les changements. Les paramètres précédents seront restaurés dans <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="9199853905755292769">Envoyez les données d'utilisation et de diagnostic. Actuellement, cet appareil envoie automatiquement à Google des données de diagnostic, de l'appareil et d'utilisation des applis. L'envoi de ces données ne sera pas utilisé pour identifier votre enfant, mais pour assurer la stabilité du système et des applis, et pour apporter d'autres améliorations. Certaines données agrégées contribueront également à améliorer les applis Google et elles aideront nos partenaires, comme les développeurs Android. Si le paramètre relatif aux autres activités sur le Web et dans les applis est activé pour votre enfant, ces données peuvent être enregistrées dans son compte Google. <ph name="BEGIN_LINK2" />En savoir plus sur les mesures<ph name="BEGIN_LINK2_END" />En savoir plus<ph name="END_LINK2" /></translation>
 <translation id="9201044636667689546">Connectez <ph name="NAME" /> à ce Chromebook</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, géré par votre administrateur</translation>
+<translation id="9201842707396338580">Une erreur s'est produite. Veuillez communiquer avec l'administrateur ou le propriétaire de votre appareil. Code d'erreur : <ph name="ERROR_CODE" />.</translation>
 <translation id="9207682216934703221"><ph name="APP_NAME" />, <ph name="APP2_NAME" /> et toutes les applications et tous les sites Web disposant de l'autorisation de localisation ainsi que ChromeOS peuvent utiliser la localisation sur les réseaux Wi-Fi et mobiles.</translation>
 <translation id="9210037371811586452">Fermeture du mode Bureau unifié</translation>
 <translation id="9211490828691860325">Tous les bureaux</translation>
@@ -2577,6 +2647,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="923686485342484400">Appuyez deux fois sur Contrôle + Maj + Q pour vous déconnecter.</translation>
 <translation id="92580429198593979">Vous avez appuyé sur le raccourci-clavier pour l'inversion des couleurs. Voulez-vous l'activer?</translation>
 <translation id="925832987464884575">Masquer les aperçus</translation>
+<translation id="93140074055951850">Les applications Android ont cessé de fonctionner</translation>
 <translation id="938407504481277932">Bureau actuel : <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. Bureau <ph name="DESK_INDEX" /> de <ph name="DESK_COUNT" />.</translation>
 <translation id="94468042118567862">L'appareil n'est pas à jour</translation>
 <translation id="945383118875625837">Faites glisser le lien vers la barre de favoris</translation>

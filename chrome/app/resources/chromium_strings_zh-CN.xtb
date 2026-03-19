@@ -195,6 +195,7 @@
 <translation id="3045032126857188731">译文语言：<ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">关闭反馈对话框</translation>
 <translation id="3068187312562070417">其他 Chromium 个人资料</translation>
+<translation id="3068290154869370196">扩展程序是可让您自定义 Chromium 的插件。从保持井然有序到简化日常任务，扩展程序可帮助您打造专属的 Chromium。</translation>
 <translation id="3068515742935458733">将崩溃报告和<ph name="UMA_LINK" />发送给Google，帮助我们完善Chromium。</translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{一个或多个 Chromium 扩展程序访问过 1 部 USB 设备}=1{一个或多个 Chromium 扩展程序正在访问 1 部 USB 设备}other{一个或多个 Chromium 扩展程序正在访问 # 部 USB 设备}}</translation>
 <translation id="3095811995836568724">Chromium 历史记录</translation>
@@ -429,6 +430,7 @@
 <translation id="5821520528363214608">如要将 Chromium 数据保存在 Google 账号中并使用这些数据，请更新 Chromium</translation>
 <translation id="5824893331272123205">无法加载此面板，请重试</translation>
 <translation id="5862307444128926510">欢迎使用 Chromium</translation>
+<translation id="5867606647614813312">开启更多功能，提供 Chromium 最强大的安全防护</translation>
 <translation id="5871205389137001634">点击即可退出图片搜索功能</translation>
 <translation id="5883558403894052917">Chromium 发现这些内容包含恶意软件：</translation>
 <translation id="5889361821821684993">Chromium 会定期进行检查，以确保您的浏览器使用了最安全的设置。如有任何事项需要您审核，我们会通知您。</translation>

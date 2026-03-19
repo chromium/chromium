@@ -1073,6 +1073,7 @@
 <translation id="2673968385134502798">ゲーム</translation>
 <translation id="2674170444375937751">履歴からこれらのページを削除してもよろしいですか？</translation>
 <translation id="2674524144218093528">家屋塗装、仕上げ</translation>
+<translation id="2675716371350192683">AI を改善するためにコンテンツが使用されることはありません。組織はこれらの設定をいつでも変更できます。</translation>
 <translation id="26774279487328902"><ph name="GROUP_COUNT" /> 個のタブグループはご利用いただけなくなりました</translation>
 <translation id="2677748264148917807">このページを離れる</translation>
 <translation id="2679216653373462289">モーション センサーと光センサーの使用</translation>
@@ -2657,6 +2658,7 @@
 <translation id="5190835502935405962">ブックマーク バー</translation>
 <translation id="5191315092027169558">お使いのプロフィールは <ph name="DOMAIN" /> によって管理されています</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> で複数のファイルがダウンロードされようとしています</translation>
+<translation id="519528950056409240">ウォレットにデータの共有を許可する</translation>
 <translation id="5199121357983849992">ID カードを保存しますか？</translation>
 <translation id="5200063972779787617">アカウントに住所を保存</translation>
 <translation id="5201306358585911203">このページに埋め込まれているページの内容</translation>
@@ -3104,6 +3106,7 @@
 <translation id="5910140988253729859">自動入力を取り消す</translation>
 <translation id="5911020115933784199">イベント情報</translation>
 <translation id="5911110632211230665">開けないようブロックされました</translation>
+<translation id="5912796581727968237">Google ウォレットを開く</translation>
 <translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" /> さんがこのタブを追加しました</translation>
 <translation id="5915189366813702112">フレックス タイム制</translation>
 <translation id="59174027418879706">有効</translation>

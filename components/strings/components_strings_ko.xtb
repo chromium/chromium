@@ -1073,6 +1073,7 @@
 <translation id="2673968385134502798">게임</translation>
 <translation id="2674170444375937751">방문 기록에서 이 페이지를 삭제하시겠습니까?</translation>
 <translation id="2674524144218093528">페인트칠 및 마감</translation>
+<translation id="2675716371350192683">AI를 개선하는 데 내 콘텐츠를 사용하지 않습니다. 조직에서 언제든지 이 설정을 변경할 수도 있습니다.</translation>
 <translation id="26774279487328902">탭 그룹 <ph name="GROUP_COUNT" />개를 더 이상 사용할 수 없음</translation>
 <translation id="2677748264148917807">나가기</translation>
 <translation id="2679216653373462289">움직임 감지 센서 및 조도 센서 사용</translation>
@@ -2657,6 +2658,7 @@
 <translation id="5190835502935405962">북마크바</translation>
 <translation id="5191315092027169558">내 프로필은 <ph name="DOMAIN" />에서 관리합니다</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" />에서 여러 파일을 다운로드하려고 합니다.</translation>
+<translation id="519528950056409240">월렛에서 데이터 공유 허용</translation>
 <translation id="5199121357983849992">신분증을 저장하시겠습니까?</translation>
 <translation id="5200063972779787617">계정에 주소 저장</translation>
 <translation id="5201306358585911203">이 페이지에 삽입된 페이지 내용:</translation>
@@ -3104,6 +3106,7 @@
 <translation id="5910140988253729859">자동 완성 실행취소</translation>
 <translation id="5911020115933784199">이벤트 및 등록정보</translation>
 <translation id="5911110632211230665">파일 열기 차단됨</translation>
+<translation id="5912796581727968237">Google 월렛 열기</translation>
 <translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" />님이 이 탭을 추가했습니다.</translation>
 <translation id="5915189366813702112">유연 근무제</translation>
 <translation id="59174027418879706">사용 가능</translation>

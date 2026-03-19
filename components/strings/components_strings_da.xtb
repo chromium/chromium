@@ -1073,6 +1073,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2673968385134502798">Spil</translation>
 <translation id="2674170444375937751">Er du sikker på, at du vil slette disse sider fra din historik?</translation>
 <translation id="2674524144218093528">Husmaling og overfladebehandling</translation>
+<translation id="2675716371350192683">Dit indhold bruges ikke til at forbedre AI. Din organisation kan til enhver tid ændre disse indstillinger.</translation>
 <translation id="26774279487328902"><ph name="GROUP_COUNT" /> fanegrupper er ikke længere tilgængelige</translation>
 <translation id="2677748264148917807">Forlad</translation>
 <translation id="2679216653373462289">Brug dine bevægelses- og lyssensorer</translation>
@@ -2657,6 +2658,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="5190835502935405962">Bogmærkelinje</translation>
 <translation id="5191315092027169558">Din profil administreres af <ph name="DOMAIN" /></translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> vil downloade flere filer</translation>
+<translation id="519528950056409240">Tillad, at Wallet deler data</translation>
 <translation id="5199121357983849992">Vil du gemme id-kortet?</translation>
 <translation id="5200063972779787617">Gem adressen på kontoen</translation>
 <translation id="5201306358585911203">En integreret side på denne side siger</translation>
@@ -3104,6 +3106,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="5910140988253729859">Fortryd autofyld</translation>
 <translation id="5911020115933784199">Arrangementer, aktiviteter og oversigter</translation>
 <translation id="5911110632211230665">Åbning er ikke tilladt</translation>
+<translation id="5912796581727968237">Åbn Google Wallet</translation>
 <translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" /> har tilføjet denne fane</translation>
 <translation id="5915189366813702112">Fleksibelt arbejde</translation>
 <translation id="59174027418879706">Aktiveret</translation>

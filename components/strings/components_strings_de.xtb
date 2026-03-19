@@ -1073,6 +1073,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2673968385134502798">Spiele</translation>
 <translation id="2674170444375937751">Möchtest du diese Seiten wirklich aus dem Verlauf löschen?</translation>
 <translation id="2674524144218093528">Malern und Lackieren</translation>
+<translation id="2675716371350192683">Deine Inhalte werden nicht verwendet, um die KI zu verbessern. Diese Einstellungen können jederzeit von deiner Organisation geändert werden.</translation>
 <translation id="26774279487328902"><ph name="GROUP_COUNT" /> Tabgruppen sind nicht mehr verfügbar</translation>
 <translation id="2677748264148917807">Verlassen</translation>
 <translation id="2679216653373462289">Bewegungs- und Lichtsensoren verwenden</translation>
@@ -2655,6 +2656,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="5190835502935405962">Lesezeichenleiste</translation>
 <translation id="5191315092027169558">Dein Profil wird von <ph name="DOMAIN" /> verwaltet</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> möchte mehrere Dateien herunterladen</translation>
+<translation id="519528950056409240">Wallet erlauben, Daten weiterzugeben</translation>
 <translation id="5199121357983849992">Ausweisdaten speichern?</translation>
 <translation id="5200063972779787617">Adresse im Konto speichern</translation>
 <translation id="5201306358585911203">Auf einer in dieser Seite eingebetteten Seite wird Folgendes angezeigt</translation>
@@ -3102,6 +3104,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="5910140988253729859">Autofill rückgängig machen</translation>
 <translation id="5911020115933784199">Veranstaltungen und Freizeitangebote</translation>
 <translation id="5911110632211230665">Öffnen blockiert</translation>
+<translation id="5912796581727968237">Google Wallet öffnen</translation>
 <translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" /> hat diesen Tab hinzugefügt</translation>
 <translation id="5915189366813702112">Flexible Arbeits(-zeit-)modelle</translation>
 <translation id="59174027418879706">Aktiviert</translation>

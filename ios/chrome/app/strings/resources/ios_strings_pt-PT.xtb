@@ -1724,6 +1724,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="7149893636342594995">Últimas 24 horas</translation>
 <translation id="7154417656353909837">Remover moradas</translation>
 <translation id="7161230316646448869">Sincronize os seus marcadores, histórico e muito mais em todos os dispositivos</translation>
+<translation id="7165323152084385463">VIN</translation>
 <translation id="7173114856073700355">Abrir Definições</translation>
 <translation id="7173721738069475737">{count,plural, =1{Marcador guardado}other{{count} marcadores guardados}}</translation>
 <translation id="7176183551031110427">Diminuir zoom</translation>
@@ -2218,6 +2219,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="8863067612494559785">A enviar para <ph name="DEVICE_NAME" />…</translation>
 <translation id="8863431381414769983">Obtenha direções e informações locais do Google Maps</translation>
 <translation id="8871974300055371298">Definições de conteúdo</translation>
+<translation id="8876661425082386199">Verifique a sua ligação</translation>
 <translation id="8877788021141246043">Definir um lembrete</translation>
 <translation id="8879604564928138696">Toque duas vezes para experimentar</translation>
 <translation id="8879952635974818770">Conteúdo personalizado</translation>

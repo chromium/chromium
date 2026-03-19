@@ -1073,6 +1073,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2673968385134502798">Játékok</translation>
 <translation id="2674170444375937751">Biztosan törölni szeretné ezeket az oldalakat az előzmények közül?</translation>
 <translation id="2674524144218093528">Házfestés és dekoráció</translation>
+<translation id="2675716371350192683">Az Ön tartalmait nem használjuk fel az AI fejlesztésére. Szervezete bármikor módosíthatja ezeket a beállításokat.</translation>
 <translation id="26774279487328902"><ph name="GROUP_COUNT" /> lapcsoport már nem áll rendelkezésre</translation>
 <translation id="2677748264148917807">Lap elhagyása</translation>
 <translation id="2679216653373462289">Mozgás- és fényérzékelők használata</translation>
@@ -2654,6 +2655,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="5190835502935405962">Könyvjelzősáv</translation>
 <translation id="5191315092027169558">Profilját a következő kezeli: <ph name="DOMAIN" /></translation>
 <translation id="51918995459521422">A(z) <ph name="ORIGIN" /> több fájlt szeretne letölteni</translation>
+<translation id="519528950056409240">Adatmegosztás engedélyezése a Wallet számára</translation>
 <translation id="5199121357983849992">Menti az igazolványt?</translation>
 <translation id="5200063972779787617">Cím mentése a fiókba</translation>
 <translation id="5201306358585911203">Az oldal egyik beágyazott oldalának közlendője</translation>
@@ -3101,6 +3103,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="5910140988253729859">Automatikus kitöltés visszavonása</translation>
 <translation id="5911020115933784199">Események és listák</translation>
 <translation id="5911110632211230665">Megnyitás letiltva</translation>
+<translation id="5912796581727968237">A Google Wallet megnyitása</translation>
 <translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" /> hozzáadta ezt a lapot</translation>
 <translation id="5915189366813702112">Rugalmas munkaidő</translation>
 <translation id="59174027418879706">Engedélyezve</translation>

@@ -273,7 +273,6 @@
 <translation id="200669432486043882">Zamenjava datoteke</translation>
 <translation id="2006864819935886708">Povezljivost</translation>
 <translation id="2008685064673031089">Začetno iskanje</translation>
-<translation id="2011174342667534258">Različica kompleta za razvoj programske opreme:</translation>
 <translation id="2016697457005847575">Poskusite postopke za odpravljanje težav.</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2045814230297767491">jedilni pribor</translation>
@@ -523,7 +522,6 @@
 <translation id="3291996639387199448">Smer ključa</translation>
 <translation id="3294437725009624529">Gost</translation>
 <translation id="3303855915957856445">Ni rezultatov iskanja</translation>
-<translation id="3305294846493618482">več</translation>
 <translation id="3310640316857623290">Zakasnitev DNS-ja je znatno nad dovoljenim pragom</translation>
 <translation id="3316495615885967552">Prenos modela za ustvarjanje povzetkov in naslovov je končan</translation>
 <translation id="3321030238473337787">Hitrost predvajanja</translation>
@@ -702,7 +700,6 @@
 <translation id="4126551873361000548">Nazaj 10 sekund</translation>
 <translation id="4128271910628504223">Vnesite poziv, kot je »nariši megleni gozd«</translation>
 <translation id="4130035430755296270">Premikajte miškin kazalec, če želite več možnosti postavitve.</translation>
-<translation id="4130750466177569591">Strinjam se</translation>
 <translation id="4131410914670010031">Črno-belo</translation>
 <translation id="4137700675046373159">v soboto</translation>
 <translation id="4139326893730851150">Posodobitve vdelane programske opreme</translation>
@@ -1051,7 +1048,6 @@
 <translation id="5606865426897221650">Tabulatorka</translation>
 <translation id="5612205513582918357">Razredna orodja delijo vaš zaslon z razredom <ph name="RECEIVER_NAME" /></translation>
 <translation id="5613201299517339763">Odjavljeni ste</translation>
-<translation id="5620281292257375798">Samo za interno rabo</translation>
 <translation id="5628106863521633649">Razpoložljivi jeziki</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">izvleček</translation>
@@ -1415,7 +1411,6 @@
 <translation id="7184043045742675738">Če želite prilagoditi gumb, kliknite katero koli tipko. Prestavite tipko z miško ali puščičnimi tipkami.</translation>
 <translation id="7187669805838282391">v sredo</translation>
 <translation id="7205318498545665455">Izberite mikrofon</translation>
-<translation id="7206979415662233817">Pogoji storitve</translation>
 <translation id="7210635925306941239">cijan</translation>
 <translation id="7212547870105584639">Upravljanje nastavitev APN-ja. APN-ji vzpostavijo povezavo med mobilnim omrežjem in internetom. <ph name="BEGIN_LINK_LEARN_MORE" />Več o tem<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Posodobitve vdelane programske opreme za zunanje naprave</translation>
@@ -1446,11 +1441,6 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7321055305895875150">zelena in zelenomodra</translation>
 <translation id="7328475450575141167">strelicija</translation>
-<translation id="7331297744262591636">Stari morate biti vsaj 18 let in se strinjati, da za vašo uporabo UI zaslonskih ozadij veljajo <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Googlovi pogoji storitve<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> in <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />dodatni pogoji storitve za generativno umetno inteligenco<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Zaslonska ozadja z umetno inteligenco lahko ustvarjate samo za osebno in nekomercialno uporabo. Ko prejmete pomoč za zaslonsko ozadje, se besedilo pošlje v strežnike Googlove umetne inteligence zaradi ustvarjanja predlogov za zaslonska ozadja v skladu z <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googlovim pravilnikom o zasebnosti<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. <ph name="BEGIN_LINK_LEARN_MORE" />Več o tem<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Pritisnite tipko za iskanje in preslednico, če si želite rezultat ogledati v Iskanju Google.</translation>
 <translation id="7343649194310845056">Omrežne naprave</translation>
 <translation id="7344788170842919262">zemeljsko</translation>
 <translation id="7346768383111016081">Prestavite upravljanje na dejanje v igri, če želite igrati s tipkovnico</translation>
@@ -1838,7 +1828,6 @@
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">Uporabi ta videoposnetek</translation>
-<translation id="9087578468327036362">Prijavite to poizvedbo</translation>
 <translation id="9088306295921699330">Trenutna poraba</translation>
 <translation id="9088994563996376283">Poenostavi</translation>
 <translation id="9095775724867566971">Pluginvm</translation>

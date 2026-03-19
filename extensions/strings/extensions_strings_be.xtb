@@ -25,6 +25,7 @@
 <translation id="3115238746683532089">Невядомы прадукт <ph name="PRODUCT_ID" /> ад пастаўшчыка <ph name="VENDOR_ID" /> (серыйны нумар <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Не ўдалося замяніць файл "crx". Праверце, ці не выкарыстоўваецца гэты файл зараз.</translation>
 <translation id="3163201441334626963">Невядомы прадукт <ph name="PRODUCT_ID" /> ад пастаўшчыка <ph name="VENDOR_ID" /></translation>
+<translation id="3174723475300476613">Ваша арганізацыя заблакіравала доступ да гэтага пашырэння.</translation>
 <translation id="3242289508736283383">Праграма з атрыбутам маніфеста "kiosk_only" павінна ўсталёўвацца ў рэжыме кіёска Chrome OS</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (серыйны нумар <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> ад пастаўшчыка "<ph name="VENDOR_ID" />" (серыйны нумар <ph name="SERIAL_NUMBER" />)</translation>
@@ -32,6 +33,7 @@
 <translation id="3834775135533257713">Не ўдалося дадаць праграму "<ph name="TO_INSTALL_APP_NAME" />", бо яна канфліктуе з праграмай "<ph name="INSTALLED_APP_NAME" />".</translation>
 <translation id="388442998277590542">Не ўдалося загрузіць старонку параметраў "<ph name="OPTIONS_PAGE" />".</translation>
 <translation id="3984413272403535372">Памылка падчас подпісу пашырэння.</translation>
+<translation id="4094452115117798451">Ваша арганізацыя заблакіравала доступ да гэтай катэгорыі пашырэнняў.</translation>
 <translation id="4233778200880751280">Не ўдалося загрузіць старонку "<ph name="ABOUT_PAGE" />".</translation>
 <translation id="424963718355121712">Праграмы павінны ўсталёўвацца з тых хостаў, з якімі яны працуюць</translation>
 <translation id="4306119971288449206">Праграмы павінны ўключаць наступны тып змесціва: <ph name="CONTENT_TYPE" /></translation>

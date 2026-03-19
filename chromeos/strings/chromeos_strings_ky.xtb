@@ -273,7 +273,6 @@
 <translation id="200669432486043882">Файлды алмаштыруу</translation>
 <translation id="2006864819935886708">Байланыш</translation>
 <translation id="2008685064673031089">Баштапкы издөө</translation>
-<translation id="2011174342667534258">Иштеп чыгуучунун топтомунун версиясы:</translation>
 <translation id="2016697457005847575">Бузулууларды аныктап оңдоо кадамдарын аткарып көрүңүз</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2045814230297767491">идиш-аяк</translation>
@@ -523,7 +522,6 @@
 <translation id="3291996639387199448">Ачкычтын багыты</translation>
 <translation id="3294437725009624529">Конок</translation>
 <translation id="3303855915957856445">Эч нерсе табылган жок</translation>
-<translation id="3305294846493618482">дагы</translation>
 <translation id="3310640316857623290">DNS күтүү убакыты уруксат берилген босогодон бир кыйла жогору</translation>
 <translation id="3316495615885967552">Корутунду жана аталыш түзүү үлгүсүн жүктөп алуу аяктады</translation>
 <translation id="3321030238473337787">Ылдамдыгы</translation>
@@ -702,7 +700,6 @@
 <translation id="4126551873361000548">10 секунд артка түрдүрүү</translation>
 <translation id="4128271910628504223">Мисалы, "тумандуу токойдун сүрөтүн тарт" деген сурамды киргизиңиз</translation>
 <translation id="4130035430755296270">Дагы башка калыптарды көрүү үчүн үстүнө алып келиңиз</translation>
-<translation id="4130750466177569591">Макул</translation>
 <translation id="4131410914670010031">Ак-кара</translation>
 <translation id="4137700675046373159">ишембиде</translation>
 <translation id="4139326893730851150">Орнотулган программанын жаңыртуулары</translation>
@@ -1051,7 +1048,6 @@
 <translation id="5606865426897221650">Өтмөк</translation>
 <translation id="5612205513582918357">Окуу куралдары экраныңызды <ph name="RECEIVER_NAME" /> менен бөлүшүп жатат</translation>
 <translation id="5613201299517339763">Чыгып кеттиңиз</translation>
-<translation id="5620281292257375798">Ички колдонуу үчүн</translation>
 <translation id="5628106863521633649">Жеткиликтүү тилдер</translation>
 <translation id="5630438231335788050">баухаус</translation>
 <translation id="5631759159893697722">аннотация</translation>
@@ -1415,7 +1411,6 @@
 <translation id="7184043045742675738">Баскычты тууралоо үчүн каалаган баскычты басыңыз. Чычкан же жебе баскычтары менен баскычты жылдырыңыз.</translation>
 <translation id="7187669805838282391">шаршембиде</translation>
 <translation id="7205318498545665455">Микрофонуңузду тандаңыз</translation>
-<translation id="7206979415662233817">Тейлөө шарттары</translation>
 <translation id="7210635925306941239">көгүлтүр</translation>
 <translation id="7212547870105584639">Тармактын APN параметрлерин тескеңиз. APN'дер мобилдик тармак менен Интернеттин ортосундагы байланышты түзүшөт. <ph name="BEGIN_LINK_LEARN_MORE" />Кеңири маалымат<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Тышкы түзмөктөр үчүн орнотулган программанын жаңыртуулары</translation>
@@ -1446,11 +1441,6 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7321055305895875150">жашыл жана көгүш жашыл</translation>
 <translation id="7328475450575141167">бейиш кушу</translation>
-<translation id="7331297744262591636">Сиз кеминде 18 жашта болуп, ЖИ тушкагаздарын <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Google'дун Тейлөө шарттарына<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> жана <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />Генеративдик ЖИни пайдалануунун кошумча шарттарына<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" /> ылайык колдонууга макул болушуңуз керек.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          ЖИ менен тушкагаздарды коммерциялык максатта эмес, жеке колдонуу үчүн гана түзө аласыз. Тушкагаз сунуштарын алуу үчүн сиз киргизген текст <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google'дун Купуялык саясатына<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> ылайык Google'дун ЖИ серверлерине жөнөтүлөт. <ph name="BEGIN_LINK_LEARN_MORE" />Кеңири маалымат<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Издөөдөгү натыйжаларды көрүү үчүн Издөө жана Боштук баскычтарын басыңыз.</translation>
 <translation id="7343649194310845056">Тармак түзмөктөрү</translation>
 <translation id="7344788170842919262">топурак түсү</translation>
 <translation id="7346768383111016081">Баскычтоп менен ойноо үчүн оюн аракетине башкаруу элементин коюңуз</translation>
@@ -1838,7 +1828,6 @@
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">Ушул видеону колдонуу</translation>
-<translation id="9087578468327036362">Бул сурам тууралуу кабарлоо</translation>
 <translation id="9088306295921699330">Учурдагы колдонулушу</translation>
 <translation id="9088994563996376283">Жөнөкөйлөтүү</translation>
 <translation id="9095775724867566971">Pluginvm</translation>

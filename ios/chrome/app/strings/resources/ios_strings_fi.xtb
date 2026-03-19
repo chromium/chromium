@@ -1724,6 +1724,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="7149893636342594995">Viimeiset 24 tuntia</translation>
 <translation id="7154417656353909837">Poista osoitteet</translation>
 <translation id="7161230316646448869">Synkronoi kirjanmerkkisi, historiasi ja paljon muuta kaikilla laitteilla</translation>
+<translation id="7165323152084385463">VIN</translation>
 <translation id="7173114856073700355">Avaa asetukset</translation>
 <translation id="7173721738069475737">{count,plural, =1{Kirjanmerkki tallennettu}other{{count} kirjanmerkkiä tallennettu}}</translation>
 <translation id="7176183551031110427">Loitonna</translation>
@@ -2218,6 +2219,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="8863067612494559785">Lähetetään laitteelle <ph name="DEVICE_NAME" />…</translation>
 <translation id="8863431381414769983">Saat reittiohjeita ja paikallisia tietoja Google Mapsista</translation>
 <translation id="8871974300055371298">Sisältöasetukset</translation>
+<translation id="8876661425082386199">Tarkista yhteys</translation>
 <translation id="8877788021141246043">Aseta muistutus</translation>
 <translation id="8879604564928138696">Kokeile kaksoisnapauttamalla</translation>
 <translation id="8879952635974818770">Oma sisältö</translation>

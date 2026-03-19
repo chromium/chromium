@@ -1820,6 +1820,7 @@
 <translation id="8282950411412455249">Перейти до налаштувань безпеки</translation>
 <translation id="8288688997999490824">{NUM_WINDOWS,plural, =1{Закрити 1 анонімне вікно}one{Закрити # анонімне вікно}few{Закрити # анонімні вікна}many{Закрити # анонімних вікон}other{Закрити # анонімного вікна}}</translation>
 <translation id="831192587911042850">Поточний веб-сайт буде додано до списку тих, на які ви підписалися.</translation>
+<translation id="8313599942510782709">Завдання ще виконується</translation>
 <translation id="8317318757008452355">Відкрити параметри друку</translation>
 <translation id="8320212361750431956">Останні дії</translation>
 <translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />Новинка<ph name="END_NEW" /></translation>

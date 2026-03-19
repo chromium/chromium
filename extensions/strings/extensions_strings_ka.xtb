@@ -25,6 +25,7 @@
 <translation id="3115238746683532089">უცნობი პროდუქტი – <ph name="PRODUCT_ID" /> მომწოდებლისგან: <ph name="VENDOR_ID" /> (სერიული ნომერი: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">crx ფაილის შეცვლა ვერ მოხერხდა. შეამოწმეთ, რომ ფაილი არ გამოიყენება.</translation>
 <translation id="3163201441334626963">უცნობი პროდუქტი – <ph name="PRODUCT_ID" /> მომწოდებლისგან: <ph name="VENDOR_ID" /></translation>
+<translation id="3174723475300476613">ამ გაფართოებაზე წვდომა დაბლოკილია თქვენი ორგანიზაციის მიერ.</translation>
 <translation id="3242289508736283383">აპი, რომლის მანიფესტის ატრიბუტიცაა „kiosk_only“, უნდა დაინსტალირდეს ChromeOS-ის კიოსკის რეჟიმში</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (სერიული ნომერი: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> მომწოდებლისგან: <ph name="VENDOR_ID" /> (სერიული ნომერი: <ph name="SERIAL_NUMBER" />)</translation>
@@ -32,6 +33,7 @@
 <translation id="3834775135533257713">აპლიკაცია „<ph name="TO_INSTALL_APP_NAME" />“ ვერ დაემატა, რადგან „<ph name="INSTALLED_APP_NAME" />“ მასთან კონფლიქტშია.</translation>
 <translation id="388442998277590542">პარამეტრების გვერდი „<ph name="OPTIONS_PAGE" />“ ვერ ჩაიტვირთა.</translation>
 <translation id="3984413272403535372">შეცდომა გაფართოების ხელმოწერისას.</translation>
+<translation id="4094452115117798451">ამ გაფართოების კატეგორიაზე წვდომა დაბლოკილია თქვენი ორგანიზაციის მიერ.</translation>
 <translation id="4233778200880751280">ინფორმაციის გვერდი ვერ ჩაიტვირთა: '<ph name="ABOUT_PAGE" />'.</translation>
 <translation id="424963718355121712">აპები მოწოდებული უნდა იყოს იმ საიტის მიერ, რომელზეც ისინი გავლენას ახდენს</translation>
 <translation id="4306119971288449206">მოწოდებული აპების კონტენტის ტიპი უნდა იყოს „<ph name="CONTENT_TYPE" />“</translation>

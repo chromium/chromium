@@ -273,7 +273,6 @@
 <translation id="200669432486043882">Замени датотеку</translation>
 <translation id="2006864819935886708">Успостављање везе</translation>
 <translation id="2008685064673031089">Примарна претрага</translation>
-<translation id="2011174342667534258">Верзија пакета за развој софтвера:</translation>
 <translation id="2016697457005847575">Испробајте кораке за решавање проблема</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2045814230297767491">прибор за јело</translation>
@@ -523,7 +522,6 @@
 <translation id="3291996639387199448">Смер кључа</translation>
 <translation id="3294437725009624529">Гост</translation>
 <translation id="3303855915957856445">Нису пронађени резултати претраге</translation>
-<translation id="3305294846493618482">још</translation>
 <translation id="3310640316857623290">Кашњење DNS-а знатно премашује дозвољену граничну вредност</translation>
 <translation id="3316495615885967552">Преузимање модела за прављење резимеа и наслова је завршено</translation>
 <translation id="3321030238473337787">Брзина репродукције</translation>
@@ -702,7 +700,6 @@
 <translation id="4126551873361000548">10 секунди уназад</translation>
 <translation id="4128271910628504223">Унесите упит као што је „нацртај шуму у магли“</translation>
 <translation id="4130035430755296270">Наставите да прелазите курсором за још опција изгледа</translation>
-<translation id="4130750466177569591">Прихватам</translation>
 <translation id="4131410914670010031">Црно-бело</translation>
 <translation id="4137700675046373159">у суботу</translation>
 <translation id="4139326893730851150">Ажурирања фирмвера</translation>
@@ -1051,7 +1048,6 @@
 <translation id="5606865426897221650">Картица</translation>
 <translation id="5612205513582918357">Алатке у разреду деле екран са: <ph name="RECEIVER_NAME" /></translation>
 <translation id="5613201299517339763">Одјављени сте</translation>
-<translation id="5620281292257375798">Само интерно</translation>
 <translation id="5628106863521633649">Доступни језици</translation>
 <translation id="5630438231335788050">баухаус</translation>
 <translation id="5631759159893697722">сажетак</translation>
@@ -1415,7 +1411,6 @@
 <translation id="7184043045742675738">Кликните на било који тастер да бисте прилагодили дугме. Промените положај тастера помоћу тастера миша или тастера са стрелицама.</translation>
 <translation id="7187669805838282391">у среду</translation>
 <translation id="7205318498545665455">Одаберите микрофон</translation>
-<translation id="7206979415662233817">Услови коришћења услуге</translation>
 <translation id="7210635925306941239">цијан</translation>
 <translation id="7212547870105584639">Управљајте подешавањима назива приступне тачке мреже. Називи приступних тачака успостављају везу између мобилне мреже и интернета. <ph name="BEGIN_LINK_LEARN_MORE" />Сазнајте више<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Ажурирања фирмвера за екстерне уређаје</translation>
@@ -1446,11 +1441,6 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7321055305895875150">зелене и плавозелене боје</translation>
 <translation id="7328475450575141167">рајска птица</translation>
-<translation id="7331297744262591636">Морате да имате најмање 18 година и да прихватате да ваше коришћење AI позадина подлеже <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Google условима коришћења услуге<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> и <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />Додатним условима коришћења услуге Генеративна вештачка интелигенција<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Позадине можете да правите помоћу вештачке интелигенције само за личну и некомерцијалну употребу. Када добијете помоћ за позадину, текст се шаље серверима Google вештачке интелигенције да би се генерисали предлози за позадине, у складу са <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google политиком приватности<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. <ph name="BEGIN_LINK_LEARN_MORE" />Сазнајте више<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Притисните тастер за претрагу и размак да бисте видели резултат у Google претрази.</translation>
 <translation id="7343649194310845056">Мрежни уређаји</translation>
 <translation id="7344788170842919262">земљани</translation>
 <translation id="7346768383111016081">Поставите контролу за радњу у игри да бисте играли помоћу тастатуре</translation>
@@ -1838,7 +1828,6 @@
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">Користи овај видео</translation>
-<translation id="9087578468327036362">Пријавите овај упит</translation>
 <translation id="9088306295921699330">Тренутна искоришћеност</translation>
 <translation id="9088994563996376283">Поједностави</translation>
 <translation id="9095775724867566971">Pluginvm</translation>

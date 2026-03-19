@@ -273,7 +273,6 @@
 <translation id="200669432486043882">แทนที่ไฟล์</translation>
 <translation id="2006864819935886708">การเชื่อมต่อ</translation>
 <translation id="2008685064673031089">Prime Search</translation>
-<translation id="2011174342667534258">เวอร์ชันของ SDK:</translation>
 <translation id="2016697457005847575">ลองทำตามขั้นตอนการแก้ปัญหา</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2045814230297767491">เครื่องใช้บนโต๊ะอาหาร</translation>
@@ -523,7 +522,6 @@
 <translation id="3291996639387199448">ทิศทางของคีย์</translation>
 <translation id="3294437725009624529">ผู้มาเยือน</translation>
 <translation id="3303855915957856445">ไม่พบผลการค้นหา</translation>
-<translation id="3305294846493618482">เพิ่มเติม</translation>
 <translation id="3310640316857623290">เวลาในการตอบสนอง DNS สูงกว่าเกณฑ์ที่ยอมรับได้อย่างมีนัยสำคัญ</translation>
 <translation id="3316495615885967552">ดาวน์โหลดโมเดลการสร้างชื่อและสรุปเสร็จสมบูรณ์</translation>
 <translation id="3321030238473337787">ความเร็วในการเล่น</translation>
@@ -702,7 +700,6 @@
 <translation id="4126551873361000548">กรอกลับ 10 วินาที</translation>
 <translation id="4128271910628504223">ป้อนพรอมต์ เช่น "วาดป่าที่ปกคลุมด้วยหมอก"</translation>
 <translation id="4130035430755296270">ลากเมาส์ไปเรื่อยๆ เพื่อดูตัวเลือกเลย์เอาต์เพิ่มเติม</translation>
-<translation id="4130750466177569591">ฉันยอมรับ</translation>
 <translation id="4131410914670010031">ขาวดำ</translation>
 <translation id="4137700675046373159">ในวันเสาร์</translation>
 <translation id="4139326893730851150">การอัปเดตเฟิร์มแวร์</translation>
@@ -1051,7 +1048,6 @@
 <translation id="5606865426897221650">Tab</translation>
 <translation id="5612205513582918357">เครื่องมือสำหรับชั้นเรียนกำลังแชร์หน้าจอของคุณกับ <ph name="RECEIVER_NAME" /></translation>
 <translation id="5613201299517339763">คุณออกจากระบบแล้ว</translation>
-<translation id="5620281292257375798">ภายในเท่านั้น</translation>
 <translation id="5628106863521633649">ภาษาที่พร้อมให้บริการ</translation>
 <translation id="5630438231335788050">สถาบันเบาเฮาส์</translation>
 <translation id="5631759159893697722">บทคัดย่อ</translation>
@@ -1415,7 +1411,6 @@
 <translation id="7184043045742675738">คลิกแป้นใดก็ได้เพื่อปรับแต่งปุ่ม เปลี่ยนตำแหน่งแป้นด้วยเมาส์หรือแป้นลูกศร</translation>
 <translation id="7187669805838282391">ในวันพุธ</translation>
 <translation id="7205318498545665455">เลือกไมค์</translation>
-<translation id="7206979415662233817">ข้อกำหนดในการให้บริการ</translation>
 <translation id="7210635925306941239">ฟ้าอมเขียว</translation>
 <translation id="7212547870105584639">จัดการการตั้งค่า APN ของเครือข่าย APN จะเริ่มการเชื่อมต่อระหว่างเครือข่ายมือถือกับอินเทอร์เน็ต <ph name="BEGIN_LINK_LEARN_MORE" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">การอัปเดตเฟิร์มแวร์สำหรับอุปกรณ์ภายนอก</translation>
@@ -1446,11 +1441,6 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7321055305895875150">เขียวและน้ำเงินอมเขียว</translation>
 <translation id="7328475450575141167">ปักษาสวรรค์</translation>
-<translation id="7331297744262591636">คุณต้องมีอายุไม่ต่ำกว่า 18 ปีและยอมรับว่าการใช้วอลเปเปอร์ AI ของคุณอยู่ภายใต้<ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />ข้อกำหนดในการให้บริการของ Google<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> และ<ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />ข้อกำหนดในการให้บริการเพิ่มเติมของ Generative AI<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          คุณสามารถสร้างวอลเปเปอร์ด้วย AI สำหรับการใช้งานส่วนบุคคลและไม่ใช่เชิงพาณิชย์เท่านั้น เมื่อคุณรับความช่วยเหลือเกี่ยวกับวอลเปเปอร์ ระบบจะส่งข้อความไปยังเซิร์ฟเวอร์ AI ของ Google เพื่อสร้างคำแนะนำเกี่ยวกับวอลเปเปอร์ โดยอยู่ภายใต้<ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />นโยบายความเป็นส่วนตัวของ Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> <ph name="BEGIN_LINK_LEARN_MORE" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="7343581795491695942"><ph name="QUERY_TEXT" /> <ph name="RESULT_TEXT" /> กดแป้นค้นหากับแป้นเว้นวรรคเพื่อดูผลการค้นหาใน Google Search</translation>
 <translation id="7343649194310845056">อุปกรณ์เครือข่าย</translation>
 <translation id="7344788170842919262">เอิร์ธโทน</translation>
 <translation id="7346768383111016081">วางตัวควบคุมสำหรับการดำเนินการในเกมเพื่อเล่นด้วยแป้นพิมพ์</translation>
@@ -1838,7 +1828,6 @@
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">บลูทูธ</translation>
 <translation id="9082718469794970195">ใช้วิดีโอนี้</translation>
-<translation id="9087578468327036362">โปรดรายงานการค้นหานี้</translation>
 <translation id="9088306295921699330">การใช้งานปัจจุบัน</translation>
 <translation id="9088994563996376283">ย่อความ</translation>
 <translation id="9095775724867566971">Pluginvm</translation>

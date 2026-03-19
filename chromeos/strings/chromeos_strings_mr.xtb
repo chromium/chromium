@@ -273,7 +273,6 @@
 <translation id="200669432486043882">फाईल बदला</translation>
 <translation id="2006864819935886708">कनेक्टिव्हिटी</translation>
 <translation id="2008685064673031089">प्राइम शोध</translation>
-<translation id="2011174342667534258">SDK आवृत्ती:</translation>
 <translation id="2016697457005847575">ट्रबलशूटिंगच्या पायऱ्या वापरून पहा</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2045814230297767491">कटलरी</translation>
@@ -523,7 +522,6 @@
 <translation id="3291996639387199448">कीची दिशा</translation>
 <translation id="3294437725009624529">अतिथी</translation>
 <translation id="3303855915957856445">कोणतेही शोध परिणाम आढळले नाहीत</translation>
-<translation id="3305294846493618482">आणखी</translation>
 <translation id="3310640316857623290">DNS लेटन्सी अनुमती असलेल्या सीमेपेक्षा लक्षणीयरीत्या जास्त आहे</translation>
 <translation id="3316495615885967552">सारांश आणि शीर्षक तयार करण्यासंबंधित मॉडेल डाउनलोड केले आहे</translation>
 <translation id="3321030238473337787">प्लेबॅकचा वेग</translation>
@@ -702,7 +700,6 @@
 <translation id="4126551873361000548">१० सेकंद मागे जा</translation>
 <translation id="4128271910628504223">"धुके असलेले जंगल ड्रॉ करा" यासारखा प्रॉम्प्ट एंटर करा</translation>
 <translation id="4130035430755296270">आणखी लेआउट पर्यायांसाठी फिरवत रहा</translation>
-<translation id="4130750466177569591">मला मान्य आहे</translation>
 <translation id="4131410914670010031">कृष्ण धवल</translation>
 <translation id="4137700675046373159">शनिवारी</translation>
 <translation id="4139326893730851150">फर्मवेअर अपडेट</translation>
@@ -1051,7 +1048,6 @@
 <translation id="5606865426897221650">टॅब</translation>
 <translation id="5612205513582918357">क्लास टूल <ph name="RECEIVER_NAME" /> सोबत तुमची स्क्रीन शेअर करत आहे</translation>
 <translation id="5613201299517339763">तुम्हाला साइन आउट केले गेले आहे</translation>
-<translation id="5620281292257375798">फक्त अंतर्गत</translation>
 <translation id="5628106863521633649">उपलब्ध भाषा</translation>
 <translation id="5630438231335788050">बावहाउस</translation>
 <translation id="5631759159893697722">अमूर्त</translation>
@@ -1415,7 +1411,6 @@
 <translation id="7184043045742675738">तुमचे बटण कस्टमाइझ करण्यासाठी कोणत्याही कीवर क्लिक करा. माउस आणि अ‍ॅरो की वापरून कीची स्थिती पुन्हा बदला.</translation>
 <translation id="7187669805838282391">बुधवारी</translation>
 <translation id="7205318498545665455">तुमचा माइक निवडा</translation>
-<translation id="7206979415662233817">सेवा अटी</translation>
 <translation id="7210635925306941239">निळसर</translation>
 <translation id="7212547870105584639">नेटवर्क APN सेटिंग्ज व्यवस्थापित करा. APNs ही मोबाइल नेटवर्क आणि इंटरनेटदरम्यान कनेक्शन तयार करतात. <ph name="BEGIN_LINK_LEARN_MORE" />अधिक जाणून घ्या<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">बाह्य डिव्हाइससाठी फर्मवेअर अपडेट</translation>
@@ -1446,11 +1441,6 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7321055305895875150">हिरवा आणि टील</translation>
 <translation id="7328475450575141167">बर्ड ऑफ पॅराडाइज</translation>
-<translation id="7331297744262591636">तुमचे वय किमान १८ वर्षे असणे आणि तुमचा AI वॉलपेपरचा वापर हा <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Google सेवा अटी<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> व <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />जनरेटिव्ह AI अतिरिक्त सेवा अटी<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" /> यांच्या अधीन असल्याची सहमती दर्शवणे आवश्यक आहे.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          तुम्ही फक्त वैयक्तिक आणि अव्यावसायिक वापरासाठी AI सह वॉलपेपर तयार करू शकता. तुम्ही वॉलपेपरसंबंधित मदत मिळवता, तेव्हा <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google चे गोपनीयता धोरण<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> याच्या अधीन वॉलपेपर सूचना जनरेट करण्यासाठी Google AI सर्व्हरना मजकूर पाठवला जातो. <ph name="BEGIN_LINK_LEARN_MORE" />अधिक जाणून घ्या<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Search मध्ये परिणाम पाहण्यासाठी सर्च आणि स्पेस प्रेस करा.</translation>
 <translation id="7343649194310845056">नेटवर्क डिव्हाइस</translation>
 <translation id="7344788170842919262">मातकट</translation>
 <translation id="7346768383111016081">तुमचा कीबोर्ड वापरून खेळण्यासाठी गेमसंबंधित कृतीला नियंत्रण लागू करा</translation>
@@ -1838,7 +1828,6 @@
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">ब्लूटूथ</translation>
 <translation id="9082718469794970195">हा व्हिडिओ वापरा</translation>
-<translation id="9087578468327036362">या क्वेरीची तक्रार करा</translation>
 <translation id="9088306295921699330">सद्य वापर</translation>
 <translation id="9088994563996376283">सोपे करा</translation>
 <translation id="9095775724867566971">Pluginvm</translation>

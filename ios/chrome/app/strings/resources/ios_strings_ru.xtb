@@ -1724,6 +1724,7 @@
 <translation id="7149893636342594995">Последние 24 часа</translation>
 <translation id="7154417656353909837">Удалить адреса</translation>
 <translation id="7161230316646448869">Синхронизируйте закладки, историю и другие данные на всех своих устройствах</translation>
+<translation id="7165323152084385463">Номер VIN</translation>
 <translation id="7173114856073700355">Открыть настройки</translation>
 <translation id="7173721738069475737">{count,plural, =1{Закладка сохранена.}one{{count} закладка сохранена.}few{{count} закладки сохранено.}many{{count} закладок сохранено.}other{{count} закладки сохранено.}}</translation>
 <translation id="7176183551031110427">Уменьшить</translation>
@@ -2218,6 +2219,7 @@
 <translation id="8863067612494559785">Отправка на устройство <ph name="DEVICE_NAME" />…</translation>
 <translation id="8863431381414769983">Прокладывайте маршруты и получайте полезную информацию в Google Картах</translation>
 <translation id="8871974300055371298">Настройки контента</translation>
+<translation id="8876661425082386199">Проверьте подключение</translation>
 <translation id="8877788021141246043">Создать напоминание</translation>
 <translation id="8879604564928138696">Чтобы попробовать, нажмите дважды</translation>
 <translation id="8879952635974818770">Персонализированный контент</translation>

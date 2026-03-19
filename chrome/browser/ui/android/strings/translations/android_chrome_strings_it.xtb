@@ -1820,6 +1820,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="8282950411412455249">Vai alle impostazioni di sicurezza</translation>
 <translation id="8288688997999490824">{NUM_WINDOWS,plural, =1{Chiudi 1 finestra Incognito}other{Chiudi # finestre Incognito}}</translation>
 <translation id="831192587911042850">Consente di aggiungere il sito web corrente all'elenco di siti web che segui.</translation>
+<translation id="8313599942510782709">L'attività è ancora in corso</translation>
 <translation id="8317318757008452355">Apri le opzioni per stampare</translation>
 <translation id="8320212361750431956">Attività recente</translation>
 <translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />Novità<ph name="END_NEW" /></translation>

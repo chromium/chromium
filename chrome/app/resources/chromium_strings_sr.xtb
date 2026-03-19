@@ -198,6 +198,7 @@
 <translation id="3045032126857188731">Језик превода: <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">Затворите дијалог повратних информација</translation>
 <translation id="3068187312562070417">Други Chromium профили</translation>
+<translation id="3068290154869370196">Додаци су програмски додаци који вам омогућавају да прилагодите Chromium. Додаци вам помажу да прилагодите Chromium, од организације до поједностављивања свакодневних задатака.</translation>
 <translation id="3068515742935458733">Помозите нам да побољшамо Chromium тако што ћете Google-у слати извештаје о отказивању и <ph name="UMA_LINK" /></translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{Један или више додатака за Chromium су приступали 1 USB уређају}=1{Један или више додатака за Chromium приступају 1 USB уређају}one{Један или више додатака за Chromium приступају # USB уређају}few{Један или више додатака за Chromium приступају USB уређајима (#)}other{Један или више додатака за Chromium приступају USB уређајима (#)}}</translation>
 <translation id="3095811995836568724">Историја Chromium-а</translation>
@@ -432,6 +433,7 @@
 <translation id="5821520528363214608">Да бисте користили и чували Chromium податке на Google налогу, ажурирајте Chromium</translation>
 <translation id="5824893331272123205">Учитавање овог окна није успело. Пробајте поново</translation>
 <translation id="5862307444128926510">Добро дошли у Chromium</translation>
+<translation id="5867606647614813312">Укључује додатне функције ради пружања најснажније Chromium заштите</translation>
 <translation id="5871205389137001634">Кликните да бисте напустили претрагу слика</translation>
 <translation id="5883558403894052917">Chromium је открио малвер у овим ставкама:</translation>
 <translation id="5889361821821684993">Chromium редовно проверава да ли прегледач има најбезбеднија подешавања. Обавестићемо вас ако је потребно да нешто прегледате.</translation>

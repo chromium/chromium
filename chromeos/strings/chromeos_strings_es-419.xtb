@@ -273,7 +273,6 @@
 <translation id="200669432486043882">Reemplazar el archivo</translation>
 <translation id="2006864819935886708">Conectividad</translation>
 <translation id="2008685064673031089">Búsqueda de números primos</translation>
-<translation id="2011174342667534258">Versión del SDK:</translation>
 <translation id="2016697457005847575">Probar los pasos para solucionar el problema</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2045814230297767491">cubiertos</translation>
@@ -523,7 +522,6 @@
 <translation id="3291996639387199448">Dirección de la clave</translation>
 <translation id="3294437725009624529">Invitado</translation>
 <translation id="3303855915957856445">No se encontraron resultados en la búsqueda</translation>
-<translation id="3305294846493618482">más</translation>
 <translation id="3310640316857623290">La latencia de DNS supera significativamente el umbral permitido</translation>
 <translation id="3316495615885967552">Se completó la descarga del modelo de creación de títulos y resúmenes</translation>
 <translation id="3321030238473337787">Velocidad de reproducción</translation>
@@ -702,7 +700,6 @@
 <translation id="4126551873361000548">Retroceder 10 segundos</translation>
 <translation id="4128271910628504223">Ingresa una instrucción como "dibuja un bosque con niebla"</translation>
 <translation id="4130035430755296270">Sigue colocando el cursor sobre otras opciones de diseño</translation>
-<translation id="4130750466177569591">Acepto</translation>
 <translation id="4131410914670010031">Blanco y negro</translation>
 <translation id="4137700675046373159">el sábado</translation>
 <translation id="4139326893730851150">Actualizaciones de Firmware</translation>
@@ -1051,7 +1048,6 @@
 <translation id="5606865426897221650">Tab</translation>
 <translation id="5612205513582918357">Herramientas de clase está compartiendo tu pantalla con <ph name="RECEIVER_NAME" /></translation>
 <translation id="5613201299517339763">Saliste de la cuenta</translation>
-<translation id="5620281292257375798">Solo para uso interno</translation>
 <translation id="5628106863521633649">Idiomas disponibles</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">resumen</translation>
@@ -1415,7 +1411,6 @@
 <translation id="7184043045742675738">Haz clic en cualquier tecla para personalizar tu botón. Cambia la posición de la tecla con las teclas del mouse o de flecha.</translation>
 <translation id="7187669805838282391">el miércoles</translation>
 <translation id="7205318498545665455">Elige tu micrófono</translation>
-<translation id="7206979415662233817">Condiciones del Servicio</translation>
 <translation id="7210635925306941239">cian</translation>
 <translation id="7212547870105584639">Administra la configuración del APN de red. Los APN establecen una conexión entre Internet y una red móvil. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Actualizaciones de firmware para dispositivos externos</translation>
@@ -1446,11 +1441,6 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7321055305895875150">verde y verde azulado</translation>
 <translation id="7328475450575141167">ave del paraíso</translation>
-<translation id="7331297744262591636">Debes tener al menos 18 años y aceptar que el uso de los fondos de pantalla creados con IA esté sujeto a las <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Condiciones del Servicio de Google<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> y a las <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />Condiciones del Servicio Adicionales para IA Generativas<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Solo puedes crear fondos de pantalla con IA para uso personal y no comercial. Cuando recibes ayuda sobre el fondo de pantalla, se envía texto a los servidores de la IA de Google para generar sugerencias de fondos de pantalla, sujeto a la <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Política de Privacidad de Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Presiona la tecla de búsqueda+barra espaciadora para ver el resultado en la Búsqueda de Google.</translation>
 <translation id="7343649194310845056">Dispositivos de red</translation>
 <translation id="7344788170842919262">terroso</translation>
 <translation id="7346768383111016081">Ubica el control en una acción del juego para jugar con el teclado</translation>
@@ -1838,7 +1828,6 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcri
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">Usar este video</translation>
-<translation id="9087578468327036362">Denuncia esta búsqueda</translation>
 <translation id="9088306295921699330">Uso actual</translation>
 <translation id="9088994563996376283">Simplificar</translation>
 <translation id="9095775724867566971">Pluginvm</translation>

@@ -8,6 +8,7 @@
 <translation id="1017556409696559990">Minimalizácia horného okna, keď v Chrome nie je žiadna história</translation>
 <translation id="101823271612280837">Nahrávanie bolo zastavené. Herný panel sa nedá používať v režime tabletu.</translation>
 <translation id="1024364763893396229">Uložte zariadenie <ph name="NAME" /></translation>
+<translation id="103279545524624934">Ak chcete spúšťať aplikácie pre Android, uvoľnite miesto na disku.</translation>
 <translation id="1032891413405719768">Batéria dotykového pera je takmer vybitá</translation>
 <translation id="1036348656032585052">Vypnúť</translation>
 <translation id="1037492556044956303">Pridali ste zariadenie <ph name="DEVICE_NAME" /></translation>
@@ -35,6 +36,7 @@
 <translation id="1129383337808748948">Obnovte <ph name="CONTENT_TITLE" /></translation>
 <translation id="1142002900084379065">Najnovšie fotky</translation>
 <translation id="114221662579355151">Týmto povolíte prístup ku kamere aplikáciám <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> aj všetkým aplikáciám a webom s povolením používať kameru. Zrejme budete musieť obnoviť webovú stránku alebo reštartovať aplikáciu.</translation>
+<translation id="1147991416141538220">Ak chcete požiadať o prístup, kontaktujte správcu tohto zariadenia.</translation>
 <translation id="1148499908455722006">Otvoriť dialógové okno informácií o používateľovi <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Kalendár</translation>
 <translation id="1153356358378277386">Spárované zariadenia</translation>
@@ -114,6 +116,7 @@
 <translation id="1340378040547539434">Oddialenie na stránke</translation>
 <translation id="1341651618736211726">Rozšírené</translation>
 <translation id="1341926407152459446">Používať <ph name="DEVICE_NAME" /> pre zvukový vstup aj výstup</translation>
+<translation id="1346403631707626730">Odosielajte údaje o využití a diagnostike. Pomôžte zlepšiť prostredie Androidu svojho dieťaťa automatickým odosielaním diagnostík a údajov o využití zariadenia a používaní aplikácií do Googlu. Pomocou daných údajov sa nebude zisťovať totožnosť vášho dieťaťa. Pomôžu zvýšiť stabilitu systému a aplikácií a poskytovať ďalšie zlepšenia. Niektoré súhrnné dáta pomôžu aj aplikáciám a partnerom Googlu, napríklad vývojárom pre Android. Ak pre dieťa zapnete ďalšiu aktivitu na internete a v aplikáciách, tieto údaje sa budú môcť ukladať do jeho účtu Google. <ph name="BEGIN_LINK1" />Ďalšie informácie o metrikách<ph name="BEGIN_LINK1_END" />Ďalšie informácie<ph name="END_LINK1" /></translation>
 <translation id="1346748346194534595">Doprava</translation>
 <translation id="1350494136075914725">Prebieha · Prepnúť na kartu</translation>
 <translation id="1351937230027495976">Zbaliť ponuku</translation>
@@ -196,6 +199,7 @@
 <translation id="1610778689852195798">Späť</translation>
 <translation id="1611993646327628135">Zapnuté</translation>
 <translation id="1612679292338846734">Keď tieto funkcie zapnete, vstupný text, obsah dokumentov a webová adresa stránky môžu byť odoslané na servery umelej inteligencie od Googlu. Tieto informácie sa používajú na účely generovania návrhov formulácií aj zhrnutí, odpovedania na otázky a zlepšovania danej služby v súlade s <ph name="LINK_TO_SERVICE_TERMS" />. Neuvádzajte žiadne osobné, citlivé ani dôverné údaje.</translation>
+<translation id="1619879934359211038">K službe Google Play sa nepodarilo pripojiť. Skontrolujte pripojenie k sieti a skúste to znova. Kód chyby: <ph name="ERROR_CODE" />.</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1623768535032616219">Zbaliť Učebňu Google</translation>
 <translation id="163032029566320584"><ph name="UNAVAILABLE_DLC" /> nie je k dispozícii.</translation>
@@ -224,6 +228,7 @@
 <translation id="1719094688023114093">Živý prepis je zapnutý.</translation>
 <translation id="1720011244392820496">Zapnite Synchronizáciu Wi‑Fi</translation>
 <translation id="1720230731642245863">Hotspot je vypnutý</translation>
+<translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />Ak chcete odstrániť aplikácie, prejdite do časti Nastavenia &gt; Obchod Google Play &gt; Spravovať predvoľby Androidu &gt; Aplikácie alebo Správca aplikácií. Potom klepnite na aplikáciu, ktorú chcete odinštalovať (možno budete musieť aplikáciu nájsť potiahnutím prstom doľava alebo doprava). Potom klepnite na možnosť Odinštalovať alebo Deaktivovať.<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1731815243805539470">Prepnutie na predchádzajúceho používateľa</translation>
 <translation id="1733996486177697563">Prepínajte medzi tmavým a svetlým motívom. Pridržte pracovnú plochu a vyberte Tapety a štýl.</translation>
 <translation id="1734230530703461088">Rozšírenia sa nepodarilo načítať v časovom limite. Kontaktujte správcu.</translation>
@@ -277,6 +282,7 @@
 <translation id="1882814835921407042">Žiadna mobilná sieť</translation>
 <translation id="1882897271359938046">Zrkadlenie na displej <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Odomykajte odtlačkom prsta</translation>
+<translation id="1891362123137972260">Na disku je kritický nedostatok priestoru. Uvoľnite priestor na disku.</translation>
 <translation id="1894024878080591367">Nastavte, aby ste mohli hrať pomocou klávesnice</translation>
 <translation id="1896383923047738322">Prispôsobte si klávesnicu</translation>
 <translation id="1904997243703671177">Keď Bluetooth vypnete, od zariadenia <ph name="DEVICE_TYPE" /> sa odpoja externé zariadenia (<ph name="DEVICE_COUNT" />) zahŕňajúce:</translation>
@@ -309,11 +315,13 @@
 <translation id="1996162290124031907">Prechod na ďalšiu kartu</translation>
 <translation id="1998100899771863792">Aktuálna plocha</translation>
 <translation id="2001444736072756133">Hľadajte <ph name="CATEGORY" />, súbory, aplikácie a ďalší obsah.</translation>
+<translation id="2011174342667534258">Verzia súpravy SDK:</translation>
 <translation id="2017998995161831444">Otvorenie pomocníka v aplikácii Preskúmať</translation>
 <translation id="2021864487439853900">Odomknite kliknutím</translation>
 <translation id="2034971124472263449">Napriek tomu uložiť</translation>
 <translation id="2041220428661959602">Stav batérie: <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="204259843076055848">Skratka <ph name="SIX_PACK_KEY_NAME" /> je momentálne vypnutá</translation>
+<translation id="2048653237708779538">Akcia nie je k dispozícii</translation>
 <translation id="2049240716062114887">Názov plochy bol zmenený na <ph name="DESK_NAME" /></translation>
 <translation id="2064048859448024834">Ukážka kamery je zapnutá</translation>
 <translation id="2065098273523946419">Odkaz, pomocou ktorého sa dozviete viac. Po aktivácii nastane presmerovanie do prehliadača.</translation>
@@ -378,18 +386,21 @@
 <translation id="2305738328104302723">Zoznam úloh Google: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: nedávne záznamy obrazovky, stiahnuté a pripnuté súbory</translation>
 <translation id="2318576281648121272">Dnes o <ph name="TODAY_DATE" /></translation>
+<translation id="2318817390901984578">Ak chcete používať aplikácie pre Android, nabite a aktualizujte zariadenie <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2322065293366551060"><ph name="CATEGORY" />, kategória výsledkov vyhľadávania</translation>
 <translation id="2322173485024759474">Dozadu o písmeno</translation>
 <translation id="2326112202058075478">Zobraziť ďalšie emodži</translation>
 <translation id="2335091074961603075">Chromebook alebo zariadenie s rozhraním Bluetooth používa staršiu verziu rozhrania Bluetooth. Ak chcete dosiahnuť lepšiu kvalitu zvuku, použite interný mikrofón.</translation>
 <translation id="2339073806695260576">Klepnite na tlačidlo dotykového pera na poličke a vytvorte poznámku, snímku obrazovky alebo použite laserový ukazovateľ či lupu.</translation>
 <translation id="2341729377289034582">Uzamknuté zvisle</translation>
+<translation id="2344032937402519675">Nepodarilo sa pripojiť k serveru. Skontrolujte ho a skúste to znova. Ak problémy pretrvávajú, skúste reštartovať Chromebook.</translation>
 <translation id="2345226652884463045">Stlačením klávesa Enter alebo tlačidla vyhľadávania a medzerníka vyberte text, ktorý chcete upraviť.</translation>
 <translation id="2349785431103945039">Zobraziť podrobnosti o hotspote Ak chcete používať hotspot, pripojte sa k mobilnej sieti.</translation>
 <translation id="2350182423316644347">Inicializujú sa aplikácie...</translation>
 <translation id="2350794187831162545">Reč v jazyku <ph name="LANGUAGE" /> sa teraz spracúva miestne a funguje offline. Jazyk diktovania môžete zmeniť v sekcii Nastavenia &gt; Dostupnosť.</translation>
 <translation id="2352467521400612932">Nastavenia dotykového pera</translation>
 <translation id="2354174487190027830">Aktivujte sa sieť <ph name="NAME" /></translation>
+<translation id="2355314311311231464">Poskytovanie bolo neúspešné, pretože sa nepodarilo načítať podrobnosti o vašom účte. Skúste to znova. Kód chyby: <ph name="ERROR_CODE" />.</translation>
 <translation id="2359808026110333948">Pokračovať</translation>
 <translation id="2360398059912971776">batéria</translation>
 <translation id="2361210043495191221">Prepnúť Wi-Fi <ph name="STATE" />.</translation>
@@ -412,6 +423,7 @@ Pripojených je viacero zariadení (<ph name="DEVICECOUNT" />).</translation>
 <translation id="240545663114741956">Ak sa chcete odhlásiť, dvakrát stlačte <ph name="ACCELERATOR" />.</translation>
 <translation id="2405664212338326887">Nepripojené</translation>
 <translation id="2406710117564540804">Zapnúť alebo vypnúť režim bez vyrušení</translation>
+<translation id="240789602312469910">Odosielajte údaje o využití a diagnostike. Pomôžte zlepšiť prostredie Androidu svojho dieťaťa automatickým odosielaním diagnostík a údajov o využití zariadenia a používaní aplikácií do Googlu. Pomocou daných údajov sa nebude zisťovať totožnosť vášho dieťaťa. Pomôžu zvýšiť stabilitu systému a aplikácií a poskytovať ďalšie zlepšenia. Niektoré súhrnné dáta pomôžu aj aplikáciám a partnerom Googlu, napríklad vývojárom pre Android. Používanie <ph name="BEGIN_LINK1" />tohto nastavenia<ph name="END_LINK1" /> je presadzované vlastníkom. Vlastník môže odosielať Googlu diagnostiky a údaje o využití tohto zariadenia. Ak pre dieťa zapnete ďalšiu aktivitu na internete a v aplikáciách, tieto údaje sa budú môcť ukladať do jeho účtu Google. <ph name="BEGIN_LINK2" />Ďalšie informácie o metrikách<ph name="BEGIN_LINK2_END" />Ďalšie informácie<ph name="END_LINK2" /></translation>
 <translation id="2408955596600435184">Zadajte kód PIN</translation>
 <translation id="2412593942846481727">K dispozícii je aktualizácia</translation>
 <translation id="2416438829169535743">Chcete ukončiť zobrazenie?</translation>
@@ -464,6 +476,7 @@ Pripojených je viacero zariadení (<ph name="DEVICECOUNT" />).</translation>
 <translation id="2531025035050312891">zariadenie je pomalé</translation>
 <translation id="2531107890083353124">Pri presúvaní karty stlačte <ph name="KEY_ONE" /></translation>
 <translation id="2532199152994248594">Presunutím alebo stlačením medzerníka vyberte oblasť na zaznamenanie</translation>
+<translation id="2540651571961486573">Vyskytol sa problém. Kód chyby: <ph name="ERROR_CODE" />.</translation>
 <translation id="2545334090614121435">Pokúšate sa použiť kláves Home? Použite</translation>
 <translation id="254900897760075745">Skopírovanie vybraného obsahu do schránky</translation>
 <translation id="2549711466868162843">Zlepšenie osvetlenia</translation>
@@ -511,8 +524,11 @@ Pripojených je viacero zariadení (<ph name="DEVICECOUNT" />).</translation>
 <translation id="2701576323154693023">Hotspot je zapnutý (pripojenie Wi-Fi je vypnuté)</translation>
 <translation id="2704781753052663061">Pripojiť sa k iným sieťam Wi-Fi</translation>
 <translation id="2705001408393684014">Prepnúť mikrofón. <ph name="STATE_TEXT" /></translation>
+<translation id="2706304388244371417">Zálohujte na Disk Google. Jednoducho kedykoľvek obnovte údaje alebo prejdite na iné zariadenie. Táto záloha zahrnuje dáta aplikácií. Zálohy sa nahrajú do Googlu a zašifrujú pomocou hesla účtu Google vášho dieťaťa. <ph name="BEGIN_LINK1" />Ďalšie informácie o zálohe<ph name="BEGIN_LINK1_END" />Ďalšie informácie<ph name="END_LINK1" /></translation>
 <translation id="2706462751667573066">Hore</translation>
+<translation id="2710101514844343743">Údaje o využití a diagnostike</translation>
 <translation id="2710984741481549981">Uzamknúť okná</translation>
+<translation id="2714393097308983682">Obchod Google Play</translation>
 <translation id="2718395828230677721">Nočný režim</translation>
 <translation id="2726420622004325180">Ak chcete aktivovať hotspot, musíte v telefóne používať mobilné dáta</translation>
 <translation id="2727175239389218057">Odpovedať</translation>
@@ -574,6 +590,8 @@ Ak to neurobíte, vstavaný touchpad sa znova aktivuje o <ph name="TIMEOUT_SECO
 <translation id="2893701697603065178">Spravované vývojové prostredie</translation>
 <translation id="2894949423239620203">Kábel môže ovplyvniť výkonnosť</translation>
 <translation id="2902312830803030883">Ďalšie akcie</translation>
+<translation id="2909506265808101667">Nepodarilo sa pripojiť k službám Googlu. Skontrolujte pripojenie k sieti a skúste to znova. Kód chyby: <ph name="ERROR_CODE" />.</translation>
+<translation id="2910718431259223434">Vyskytol sa problém. Skúste to znova alebo kontaktujte vlastníka či správcu zariadenia. Kód chyby: <ph name="ERROR_CODE" />.</translation>
 <translation id="2914580577416829331">Snímky obrazovky</translation>
 <translation id="2924416280450782352">Položky sa nepodarilo zobraziť. Skúste tento panel znova otvoriť.</translation>
 <translation id="292506373491190801">Z práve prebiehajúcej udalosti</translation>
@@ -633,7 +651,9 @@ Ak to neurobíte, vstavaný touchpad sa znova aktivuje o <ph name="TIMEOUT_SECO
 <translation id="3093423061078042895">Po termíne</translation>
 <translation id="3095995014811312755">verzia</translation>
 <translation id="309749186376891736">Presunúť kurzor</translation>
+<translation id="3100071818310370858">Používajte polohu. Povoľte aplikáciám a službám s povoleným prístupom k polohe používať polohu tohto zariadenia. Google môže pravidelne zhromažďovať údaje o polohe a anonymne pomocou nich zlepšovať presnosť určovania polohy a služby podmienené polohou. <ph name="BEGIN_LINK1" />Ďalšie informácie o polohe<ph name="BEGIN_LINK1_END" />Ďalšie informácie<ph name="END_LINK1" /></translation>
 <translation id="3100274880412651815">Zrušiť režim snímania</translation>
+<translation id="3104948640446684649">Odosielajte údaje o využití a diagnostike. Toto zariadenie momentálne automaticky odosiela Googlu diagnostiky a údaje o využití zariadenia a používaní aplikácií. Pomôžu zvýšiť stabilitu systému a aplikácií a poskytovať ďalšie zlepšenia. Niektoré súhrnné dáta pomôžu aj aplikáciám a partnerom Googlu, napríklad vývojárom pre Android. Ak zapnete ďalšiu aktivitu na internete a v aplikáciách, tieto údaje sa budú môcť ukladať do vášho účtu Google. <ph name="BEGIN_LINK2" />Ďalšie informácie o metrikách<ph name="BEGIN_LINK2_END" />Ďalšie informácie<ph name="END_LINK2" /></translation>
 <translation id="3105917916468784889">Nasnímať obrazovku</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3107155169630537783">Uvítacie upozornenie je <ph name="STATE" /></translation>
@@ -697,6 +717,7 @@ Ak to neurobíte, vstavaný touchpad sa znova aktivuje o <ph name="TIMEOUT_SECO
 <translation id="3306386552969601301">K hotspotu zariadenia <ph name="DEVICE_NAME" /> je pripojených niekoľko zariadení (<ph name="DEVICECOUNT" />)</translation>
 <translation id="3307642347673023554">Prepnuté na režim laptopu</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> sa bude môcť stále prihlásiť neskôr.</translation>
+<translation id="3313950410573257029">Skontrolovať pripojenie</translation>
 <translation id="3321628682574733415">Nesprávny kód rodiča</translation>
 <translation id="332827762492701193">Upozornenia sú skryté</translation>
 <translation id="3333674550998107387">Rozbaliť upozornenie <ph name="NOTIFICATION_TITLE" /></translation>
@@ -814,6 +835,7 @@ Ak to neurobíte, vstavaný touchpad sa znova aktivuje o <ph name="TIMEOUT_SECO
 <translation id="3638400994746983214">Prepnúť obrazovku ochrany súkromia. <ph name="STATE_TEXT" />.</translation>
 <translation id="3641070112313110357">Steam pre Chromebook (beta) je potrebné aktualizovať. Reštartujte Chromebook a skúste to znova.</translation>
 <translation id="3649256019230929621">Minimalizovať okno</translation>
+<translation id="3650952250015018111">Povoľte aplikácii "<ph name="APP_NAME" />" prístup do zariadenia:</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
         <ph name="START_TIME" /> do
@@ -859,6 +881,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="3779139509281456663">Pripája sa zariadenie <ph name="NAME" /></translation>
 <translation id="3781910048497807059">Presunutie označenia na predchádzajúci panel</translation>
 <translation id="3783640748446814672">alt</translation>
+<translation id="3783889407390048282">Ak nechcete prísť o prístup k Androidu, uvoľnite priestor</translation>
 <translation id="3784455785234192852">Uzamknúť</translation>
 <translation id="3788301286821743879">Verejnú aplikáciu sa nepodarilo spustiť.</translation>
 <translation id="3789841737615482174">Inštalovať</translation>
@@ -868,6 +891,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="3804737937830804242">Zbaliť kameru</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 emodži. Žiadne ďalšie výsledky.}few{# emodži. Žiadne ďalšie výsledky.}many{# emojis. No other results.}other{# emodži. Žiadne ďalšie výsledky.}}</translation>
 <translation id="3822403841174077928">Nepodarilo sa skopírovať s formátovaním</translation>
+<translation id="3824621460022590830">Token registrácie zariadenia je neplatný. Kontaktujte vlastníka či správcu zariadenia. Kód chyby: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824784079442479685">Týmto povolíte prístup ku kamere aplikácii <ph name="APP_NAME" /> a všetkým aplikáciám a webom s povolením používať kameru. Zrejme budete musieť obnoviť webovú stránku alebo reštartovať aplikáciu.</translation>
 <translation id="3826099427150913765">Prepnúť na heslo</translation>
 <translation id="383058930331066723">Režim šetriča batérie je zapnutý</translation>
@@ -892,6 +916,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="3898464793473355515">Otočenie obrazovky o 90 stupňov v smere hodinových ručičiek</translation>
 <translation id="3900355044994618856">Relácia sa skončí o <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">Pripája sa k sieti <ph name="NAME" /></translation>
+<translation id="3904326018476041253">Služby určovania polohy</translation>
 <translation id="3904768293285573640">Okno veľkosti dlaždice naľavo</translation>
 <translation id="3923221004758245114">Chcete odstrániť virtuálny počítač <ph name="VM_NAME" /> zo zariadenia <ph name="DEVICE_TYPE" />? Odstránite tým všetky aplikácie a údaje vo virtuálnom počítači.</translation>
 <translation id="3923494859158167397">Žiadne nastavené mobilné siete</translation>
@@ -906,6 +931,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="3950272133184491871">Chcete sa odhlásiť?</translation>
 <translation id="3950820424414687140">Prihlásiť sa</translation>
 <translation id="3953130726459169782">Zatiaľ nemáte žiadne dokončené zadania.</translation>
+<translation id="3957844511978444971">Klepnutím na Prijať potvrdzujete svoj výber týchto nastavení služieb Googlu.</translation>
 <translation id="3958714870339660776">Celý deň</translation>
 <translation id="3962859241508114581">Predchádzajúca stopa</translation>
 <translation id="3963124517343721543">Môžete otvoriť okná a karty zavreté v minulosti a jednoducho pokračovať tam, kde ste prestali. Zobrazia sa vám aj prispôsobené návrhy pre ďalšie úlohy.</translation>
@@ -1021,6 +1047,7 @@ Niektoré funkcie sú obmedzené, aby sa predĺžila výdrž batérie.</translat
 <translation id="4278779213160967034">Tento proces môže trvať niekoľko minút. Sťahujú sa súbory.</translation>
 <translation id="4279490309300973883">Zrkadlenie</translation>
 <translation id="4280601795273309128">Bezpečnostné aktualizácie už nie sú k dispozícii. Inovujte zariadenie.</translation>
+<translation id="4281844954008187215">Zmluvné podmienky</translation>
 <translation id="4283888303416325161">Zadajte heslo, zvýšite tým zabezpečenie</translation>
 <translation id="4285498937028063278">Odopnúť</translation>
 <translation id="428715201724021596">Pripája sa k profilu. Môže to trvať niekoľko minút.</translation>
@@ -1065,6 +1092,7 @@ Niektoré funkcie sú obmedzené, aby sa predĺžila výdrž batérie.</translat
 <translation id="4406883609789734330">Živý prepis</translation>
 <translation id="4412698727486357573">Centrum pomoci</translation>
 <translation id="4412944820643904175">Funkcia <ph name="FEATURE_NAME" /> je vypnutá.</translation>
+<translation id="44141919652824029">Povoliť aplikácii <ph name="APP_NAME" /> získať zoznam pripojených zariadení USB?</translation>
 <translation id="4414242853388122273">Pri odstraňovaní virtuálneho počítača <ph name="VM_NAME" /> došlo k chybe. Skúste to znova.</translation>
 <translation id="4417647906073317561">Nastavenia sústredenia. Nastavte si časovač, úlohu a hudbu, aby ste sa dostali do tej správnej nálady.</translation>
 <translation id="4418600384772451109">Zavrieť panel</translation>
@@ -1106,6 +1134,7 @@ Pripojené je jedno zariadenie.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> do úplného nabitia</translation>
 <translation id="4538824937723742295">Nasnímať celú obrazovku</translation>
 <translation id="4539127209940689201">Vytlačenie aktuálnej stránky</translation>
+<translation id="4541123282641193691">Účet sa nepodarilo overiť. Skúste to neskôr alebo reštartujte Chromebook.</translation>
 <translation id="4541505619120536051">Vždy otvorené</translation>
 <translation id="4541706525461326392">Odstraňuje sa profil. Môže to trvať niekoľko minút.</translation>
 <translation id="4544483149666270818">Vyberte okno, ktoré chcete nahrať</translation>
@@ -1116,6 +1145,7 @@ Pripojené je jedno zariadenie.</translation>
 <translation id="4556953949326137018">Keď používate navrhované akcie, ako je napríklad „pridať do Kalendára“ alebo „vytvoriť dokumenty Google“, obsah z vybraného priestoru sa odosiela na servery Googlu s cieľom navrhovať akcie, pričom sa uplatňuje dokument <ph name="LINK_TO_SERVICE_TERMS" />. Neuvádzajte žiadne osobné, citlivé ani dôverné údaje.</translation>
 <translation id="4560576029703263363">Zapnuté</translation>
 <translation id="4561267230861221837">3G</translation>
+<translation id="4562091353415772246">Inštalujte si aktualizácie a aplikácie. Pokračovaním vyjadrujete súhlas s tým, že toto zariadenie môže tiež automaticky sťahovať a inštalovať aktualizácie a aplikácie od Googlu, vášho operátora a výrobcu zariadenia a v prípade potreby pri tom môže používať mobilné dáta. Niektoré z týchto aplikácií môžu ponúkať nákupy v aplikácii. <ph name="BEGIN_LINK1" />Ďalšie informácie o automatickej inštalácii z Obchodu Play<ph name="BEGIN_LINK1_END" />Ďalšie informácie<ph name="END_LINK1" /></translation>
 <translation id="4565377596337484307">Skryť heslo</translation>
 <translation id="4566144812051858745">Nezaujímajú ma žiadne návrhy</translation>
 <translation id="4569753163207712681">Zobrazujte si nedávne fotky, médiá a aplikácie z telefónu</translation>
@@ -1135,6 +1165,7 @@ Pripojené je jedno zariadenie.</translation>
 <translation id="4628757576491864469">Zariadenia</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, hodnotenie hviezdičkami <ph name="RATING_SCORE" /></translation>
 <translation id="4633636853437260449">Položku odstránite stlačením klávesov Ctrl + W</translation>
+<translation id="4633757335284074492">Zálohovanie na Disk Google. Jednoducho kedykoľvek obnovte údaje alebo prejdite na iné zariadenie. Táto záloha zahrnuje dáta aplikácií. Zálohy sa nahrajú do Googlu a zašifrujú pomocou hesla účtu Google vášho dieťaťa.</translation>
 <translation id="4635501805800894201">{0,plural, =0{Teraz aktualizujte zariadenie na predchádzajúcu verziu}=1{Do 1 sekundy aktualizujte zariadenie na predchádzajúcu verziu}few{Do # sekúnd aktualizujte zariadenie na predchádzajúcu verziu}many{Do # sekundy aktualizujte zariadenie na predchádzajúcu verziu}other{Do # sekúnd aktualizujte zariadenie na predchádzajúcu verziu}}</translation>
 <translation id="4642092649622328492">Vytvorenie čiastočnej snímky obrazovky</translation>
 <translation id="4642587497923912728">Steam pre Chromebook (beta) je k dispozícii iba pre účet, ktorý bol v tomto Chromebooku prihlásený ako prvý.</translation>
@@ -1177,6 +1208,7 @@ Pripojené je jedno zariadenie.</translation>
 <translation id="4759238208242260848">Stiahnuté</translation>
 <translation id="4762160261012420470"><ph name="LAUNCHER_KEY_NAME" /> + šípka nahor</translation>
 <translation id="4762573482154983647">Skryť aplikácie</translation>
+<translation id="4762718786438001384">Kritický nedostatok miesta na disku zariadenia</translation>
 <translation id="4763885921995354846">Týmto povolíte prístup ku kamere všetkým aplikáciám a webom s povolením používať kameru. Zrejme budete musieť obnoviť webovú stránku alebo reštartovať aplikáciu.</translation>
 <translation id="4774338217796918551">Vráť sa zajtra o <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776584068981882959">Vaše heslo sa stále nepodarilo overiť. Skúste to znova.</translation>
@@ -1283,6 +1315,7 @@ Pripojené je jedno zariadenie.</translation>
 <translation id="5077936103761694531">Chcete potvrdiť rozlíšenie?</translation>
 <translation id="5078796286268621944">Nesprávny kód PIN</translation>
 <translation id="5083035541015925118">ctrl + alt + šípka nahor</translation>
+<translation id="5084328598860513926">Nastavovanie bolo prerušené. Skúste to znova alebo kontaktujte vlastníka či správcu zariadenia. Kód chyby: <ph name="ERROR_CODE" />.</translation>
 <translation id="5091636240353511739">Zobraziť PIN</translation>
 <translation id="5092436659250499817">Zapnutie alebo vypnutie podsvietenia klávesnice</translation>
 <translation id="5094577350232361255">informácie</translation>
@@ -1312,6 +1345,7 @@ Môžete použiť aj klávesovú skratku. Najprv zvýraznite text, potom stlačt
 <translation id="5170568018924773124">Zobraziť v priečinku</translation>
 <translation id="5176318573511391780">Nahrať časť obrazovky</translation>
 <translation id="5187627942836026988">Zobraziť podrobnosti o hotspote Hotspot zablokoval váš správca.</translation>
+<translation id="5188648870018555788">Používať polohu Povoľte aplikáciám, webom a službám pre ChromeOS a Android s povoleným prístupom k polohe používať polohu vášho zariadenia. Presnosť určovania polohy poskytuje aplikáciám aj službám pre Android presnejšiu polohu. Google na tento účel pravidelne spracúva informácie o senzoroch zariadení a bezdrôtových signáloch z vášho zariadenia, aby zaistil crowdsourcing polôh bezdrôtového signálu. Používajú sa bez toho, aby umožňovali zistenie vašej totožnosti, na účely zlepšenia presnosti určovania polohy a služieb podmienených polohou, ale aj zlepšenia, poskytovania a udržiavania služieb Googlu na základe oprávnených záujmov Googlu a tretích strán pri uspokojovaní potrieb používateľov. <ph name="BEGIN_LINK1" />Ďalšie informácie o používaní polohy<ph name="END_LINK1" /></translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198039720391525849">Vybrané gify</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, udalosti: <ph name="NUMBER" /></translation>
@@ -1332,6 +1366,7 @@ Môžete použiť aj klávesovú skratku. Najprv zvýraznite text, potom stlačt
 <translation id="5238719049014159442">Otvorenie alebo zavretie Spúšťača</translation>
 <translation id="5240725217819182328">Rýchly prístup ku konkrétnym stránkam alebo akciám v nainštalovaných aplikáciách</translation>
 <translation id="5243355658487390559">Nájsť dátum</translation>
+<translation id="5243522832766285132">Skúste to znova o chvíľu</translation>
 <translation id="5245201184978705914">Prepis sa nedá vygenerovať</translation>
 <translation id="5251174953851719648">Obnoviť obsah</translation>
 <translation id="5253783950165989294">Pripojené k zariadeniu <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" /> % batéria</translation>
@@ -1339,6 +1374,7 @@ Môžete použiť aj klávesovú skratku. Najprv zvýraznite text, potom stlačt
 <translation id="5256939106029293271">Otestujte mikrofón</translation>
 <translation id="5258528442992323769">Žiadne uložené plochy</translation>
 <translation id="5260676007519551770">4. plocha</translation>
+<translation id="5264148714798105376">Môže to chvíľu trvať.</translation>
 <translation id="5265391159779542051">Výsledky sú načítané</translation>
 <translation id="5270547718570958938">Kalendár Google</translation>
 <translation id="5277869901083657836">Prepnúť nástroje pre dotykové pero</translation>
@@ -1415,6 +1451,7 @@ Nie sú pripojené žiadne zariadenia.</translation>
 <translation id="5506975627792768506">Zapnutie alebo vypnutie lupy</translation>
 <translation id="5507778598655387680"><ph name="VOLUME_LEVEL" />, stlačením klávesa Enter vypnete zvuk.</translation>
 <translation id="5512042095225963688">Odstránenie predchádzajúceho slova</translation>
+<translation id="5517304475148761050">Táto aplikácia vyžaduje prístup k Obchodu Play</translation>
 <translation id="5519005148254860683">Rozbaliť Úlohy Google</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Váš správca odstránil všetky profily eSIM. Ďalšie informácie vám poskytne správca.</translation>
@@ -1442,6 +1479,7 @@ Nie sú pripojené žiadne zariadenia.</translation>
 <translation id="5577281275355252094">Ak chcete použiť Telefónne centrum, skontrolujte, či je v telefóne zapnuté rozhranie Bluetooth</translation>
 <translation id="5578188167649348993">pamäť</translation>
 <translation id="5580000943347215299">Knižnica</translation>
+<translation id="5581972110672966454">Zariadenie sa nepodarilo pripojiť k doméne. Skúste to znova alebo kontaktujte vlastníka či správcu zariadenia. Kód chyby: <ph name="ERROR_CODE" />.</translation>
 <translation id="5586388332127302891">Bola zapnutá ukotvená lupa. Vypnete ju opätovným stlačením klávesov <ph name="ACCELERATOR" />.</translation>
 <translation id="5587506661873751671">Sťahuje sa (<ph name="DOWNLOAD_PERCENT" /> %)</translation>
 <translation id="558849140439112033">Presunutím vyberte oblasť, ktorú chcete nasnímať</translation>
@@ -1466,6 +1504,7 @@ Nie sú pripojené žiadne zariadenia.</translation>
 <translation id="5662075790140998213">10. plocha</translation>
 <translation id="5662709761327382534">Nahrávať mikrofón <ph name="CURRENT_STATE" />. Stlačením klávesa Enter zapnete nahrávanie zvuku z mikrofónu <ph name="NEW_STATE" />.</translation>
 <translation id="5662919923378083468"><ph name="ACTION_DESCRIPTION" />, <ph name="SHORTCUT_HINT" /></translation>
+<translation id="5667546120811588575">Nastavuje sa služba Google Play...</translation>
 <translation id="5669267381087807207">Aktivuje sa</translation>
 <translation id="5671658447180261823">Odstrániť návrh <ph name="SUGGESTION_NAME" /></translation>
 <translation id="5672890847723042801">Utility</translation>
@@ -1482,6 +1521,7 @@ Nie sú pripojené žiadne zariadenia.</translation>
 <translation id="5691772641933328258">Odtlačok prsta nebol rozpoznaný</translation>
 <translation id="5693255400847650006">Mikrofón sa používa</translation>
 <translation id="5699366815052349604">Prideľte aktívne okno všetkým plochám</translation>
+<translation id="570043786759263127">Aplikácie a služby Google Play</translation>
 <translation id="570390244361237317">Všetky aplikácie: prístup k všetkým aplikáciám získate klávesmi so šípkami</translation>
 <translation id="5705197514573687092">Zobrazte si nastavenia zamerania. Časovač je nastavený na <ph name="FOCUS_DURATION" />.</translation>
 <translation id="5707775774148071965">Zariadenie podporuje vyššiu rýchlosť prenosu dát než kábel. Výkonnosť zariadenia môže byť obmedzená.</translation>
@@ -1496,6 +1536,7 @@ Nie sú pripojené žiadne zariadenia.</translation>
 <translation id="574392208103952083">Stredné</translation>
 <translation id="5744083938413354016">Presunutie klepnutím</translation>
 <translation id="5745612484876805746">Nočný režim sa automaticky zapína pri západe slnka</translation>
+<translation id="5749214722697335450">Odosielajte údaje o využití a diagnostike. Pomôžte zlepšiť prostredie Androidu automatickým odosielaním diagnostík a údajov o využití zariadenia a používaní aplikácií do Googlu. Pomôžu zvýšiť stabilitu systému a aplikácií a poskytovať ďalšie zlepšenia. Niektoré súhrnné dáta pomôžu aj aplikáciám a partnerom Googlu, napríklad vývojárom pre Android. Ak zapnete ďalšiu aktivitu na internete a v aplikáciách, tieto údaje sa budú môcť ukladať do vášho účtu Google. <ph name="BEGIN_LINK1" />Ďalšie informácie o metrikách<ph name="BEGIN_LINK1_END" />Ďalšie informácie<ph name="END_LINK1" /></translation>
 <translation id="5750765938512549687">Rozhranie Bluetooth je vypnuté</translation>
 <translation id="5758114525425072423">Zapnúť režim sústredenia. Časovač je nastavený na <ph name="FOCUS_DURATION" />.</translation>
 <translation id="5759522586053040964">Vypočujte si, ako budete znieť ostatným. Ak chcete test zastaviť, kliknite na jeho ikonu alebo zatvorte panel videohovoru.</translation>
@@ -1512,6 +1553,7 @@ Nie sú pripojené žiadne zariadenia.</translation>
 <translation id="5775936059231769503">Prepnúť hotspot. Hotspot je vypnutý.</translation>
 <translation id="5777841717266010279">Chcete ukončiť zdieľanie obrazovky?</translation>
 <translation id="5779721926447984944">Pripnuté súbory</translation>
+<translation id="5780940414249100901">Odosielajte údaje o využití a diagnostike. Toto zariadenie momentálne automaticky odosiela Googlu diagnostiky a údaje o využití zariadenia a používaní aplikácií. Pomocou daných údajov sa nebude zisťovať totožnosť vášho dieťaťa. Pomôžu zvýšiť stabilitu systému a aplikácií a poskytovať ďalšie zlepšenia. Niektoré súhrnné dáta pomôžu aj aplikáciám a partnerom Googlu, napríklad vývojárom pre Android. Používanie <ph name="BEGIN_LINK1" />tohto nastavenia<ph name="END_LINK1" /> je presadzované vlastníkom. Ak pre dieťa zapnete ďalšiu aktivitu na internete a v aplikáciách, tieto údaje sa budú môcť ukladať do jeho účtu Google. <ph name="BEGIN_LINK2" />Ďalšie informácie o metrikách<ph name="BEGIN_LINK2_END" />Ďalšie informácie<ph name="END_LINK2" /></translation>
 <translation id="5785221443435874078">Odstrániť tento návrh</translation>
 <translation id="5787431783058088906">Získať výhodu</translation>
 <translation id="5788127256798019331">Súbory Play</translation>
@@ -1527,6 +1569,7 @@ Nie sú pripojené žiadne zariadenia.</translation>
 <translation id="5823239091726045201">Úlohy Google na internete</translation>
 <translation id="5825969630400862129">Nastavenia pripojených zariadení</translation>
 <translation id="5830180081891717894">Ešte <ph name="WINDOWS" /></translation>
+<translation id="583281660410589416">Neznáme</translation>
 <translation id="5837036133683224804">Zastaviť prenos obsahu <ph name="ROUTE_TITLE" /> do zariadenia <ph name="RECEIVER_NAME" /></translation>
 <translation id="5840658767386246331">Hľadať pomocou Googlu</translation>
 <translation id="5841296711770970362">Prechod na ďalšiu skladbu</translation>
@@ -1592,6 +1635,7 @@ Nie sú pripojené žiadne zariadenia.</translation>
 <translation id="6032620807120418574">Kliknutím na ľubovoľné miesto nahráte celú obrazovku</translation>
 <translation id="6040071906258664830">Nahrávať zvuk z mikrofónu <ph name="STATE" /></translation>
 <translation id="6040143037577758943">Zavrieť</translation>
+<translation id="6042308850641462728">Viac</translation>
 <translation id="6043212731627905357">Tento monitor nie je kompatibilný s vaším zariadením <ph name="DEVICE_TYPE" /> (monitor nie je podporovaný).</translation>
 <translation id="6043994281159824495">Odhlásiť sa</translation>
 <translation id="6045629311476491587">Používané <ph name="APP_COUNT" /> aplikáciami</translation>
@@ -1671,9 +1715,12 @@ Nie sú pripojené žiadne zariadenia.</translation>
 <translation id="6274422179279280249">Vkladajte odkazy, emodži a ďalšie položky. Umelá inteligencia od Googlu vám môže pomôcť s písaním. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="6276708887952587684">Zobrazenie zdrojového kódu stránky</translation>
 <translation id="6285871695023807425">Pridať do Kalendára</translation>
+<translation id="628699625505156622">Používať polohu Povoľte aplikáciám, webom a službám pre ChromeOS a Android s povoleným prístupom k polohe používať polohu tohto zariadenia. Presnosť určovania polohy poskytuje aplikáciám aj službám pre Android presnejšiu polohu. Google na tento účel pravidelne spracúva informácie o senzoroch zariadení a bezdrôtových signáloch z tohto zariadenia, aby zaistil crowdsourcing polôh bezdrôtového signálu. Používajú sa bez toho, aby umožňovali zistenie kohokoľvek totožnosti, na účely zlepšenia presnosti určovania polohy a služieb podmienených polohou, ale aj zlepšenia, poskytovania a udržiavania služieb Googlu na základe oprávnených záujmov Googlu a tretích strán pri uspokojovaní potrieb používateľov. <ph name="BEGIN_LINK1" />Ďalšie informácie o používaní polohy<ph name="END_LINK1" /></translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> môžete znova pridať neskôr s povolením rodiča.</translation>
 <translation id="6291221004442998378">Nenabíja sa</translation>
+<translation id="6297986260307280218">Odosielajte údaje o využití a diagnostike. Pomôžte zlepšiť prostredie Androidu automatickým odosielaním diagnostík a údajov o využití zariadenia a používaní aplikácií do Googlu. Pomôžu zvýšiť stabilitu systému a aplikácií a poskytovať ďalšie zlepšenia. Niektoré súhrnné dáta pomôžu aj aplikáciám a partnerom Googlu, napríklad vývojárom pre Android. Používanie <ph name="BEGIN_LINK1" />tohto nastavenia<ph name="END_LINK1" /> je presadzované vlastníkom. Vlastník môže odosielať Googlu diagnostiky a údaje o využití tohto zariadenia. Ak zapnete ďalšiu aktivitu na internete a v aplikáciách, tieto údaje sa budú môcť ukladať do vášho účtu Google. <ph name="BEGIN_LINK2" />Ďalšie informácie o metrikách<ph name="BEGIN_LINK2_END" />Ďalšie informácie<ph name="END_LINK2" /></translation>
 <translation id="6298183524022479114">Prispôsobte toto zariadenie v aplikácii</translation>
+<translation id="6298962879096096191">Inštalácia aplikácií pre Android pomocou služby Google Play</translation>
 <translation id="6304076460080088478">Ak chcete vyhľadávať na obrazovke pomocou funkcie Google Lens, zatvorte alebo minimalizujte okná inkognito</translation>
 <translation id="6309219492973062892">Kliknutie alebo klepnutie na prvú až ôsmu ikonu poličky</translation>
 <translation id="6315170314923504164">Hlas</translation>
@@ -1703,8 +1750,10 @@ Nie sú pripojené žiadne zariadenia.</translation>
 <translation id="6406458002328242616">Upravte časovač. <ph name="FOCUS_DURATION" />.</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6414618057231176439">Vyberte, ktorú verziu virtuálneho počítača <ph name="VM_NAME" /> chcete nainštalovať.</translation>
+<translation id="641469293210305670">Inštalácia aktualizácií a aplikácií</translation>
 <translation id="6417265370957905582">Asistent Google</translation>
 <translation id="641817663353603351">page up (o stránku nahor)</translation>
+<translation id="6418511932144861495">Inštalácia kritickej aktualizácie</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, sila signálu <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Vymazanie všetkých upozornení</translation>
 <translation id="6426905245930183644">Vytvára sa…</translation>
@@ -1730,6 +1779,7 @@ Nie sú pripojené žiadne zariadenia.</translation>
 <translation id="6482559668224714696">Lupa na celú obrazovku</translation>
 <translation id="6485086611007560630">Počasie (návrhy nie sú k dispozícii)</translation>
 <translation id="6490471652906364588">Zariadenie USB-C (port vpravo)</translation>
+<translation id="6491376743066338510">Autorizácia zlyhala</translation>
 <translation id="649452524636452238">PIN inteligentnej karty</translation>
 <translation id="6495322433318104734">Zobrazuje sa šetrič obrazovky. Ukončíte ho stlačením ľubovoľného klávesa.</translation>
 <translation id="6495400115277918834">Bol spustený obraz v obraze, označíte ho klávesmi Alt + Shift + V</translation>
@@ -1783,10 +1833,12 @@ Nová inštalácia</translation>
 <translation id="6625718907317144388">Upozornenia z aplikácií <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> a ďalších sú skryté, pretože je zapnutá ochrana pred zobrazením</translation>
 <translation id="6627638273713273709">Hľadať+Shift+K</translation>
 <translation id="662830937908749204">Presunutie označenia na ďalší panel</translation>
+<translation id="6635674640674343739">Nedá sa nadviazať pripojenie k sieti. Skontrolujte ho a skúste to znova.</translation>
 <translation id="6637729079642709226">Zmena času</translation>
 <translation id="6641720045729354415">Prepnúť živý prepis. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">Vrátiť späť poradie zoradenia podľa názvu</translation>
 <translation id="664793810957802384">Položky v navrhovanej skupine</translation>
+<translation id="6649018507441623493">Moment...</translation>
 <translation id="6649641931981131786">Upravte kameru, aby ste boli v strede obrazovky.</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> chce potvrdiť, že ste to vy</translation>
 <translation id="6650742588569439432">Položky sa nepodarilo načítať.</translation>
@@ -1811,6 +1863,7 @@ Nová inštalácia</translation>
 <translation id="6706742084323792866">Pripnúť klávesnicu</translation>
 <translation id="6709719156428404245">Presunutím alebo stlačením medzerníka vyberte oblasť na zaznamenanie</translation>
 <translation id="6710213216561001401">Späť</translation>
+<translation id="6716798148881908873">Pripojenie k sieti bolo prerušené. Skontrolujte ho alebo skúste inú sieť Wi-Fi.</translation>
 <translation id="6723839937902243910">Napájanie</translation>
 <translation id="672609503628871915">Zobraziť novinky</translation>
 <translation id="6727969043791803658">Pripojené, <ph name="BATTERY_PERCENTAGE" /> % batérie</translation>
@@ -1850,6 +1903,7 @@ Nová inštalácia</translation>
 <translation id="6819327813400217281">Kamera bola prichytená do ľavého dolného rohu</translation>
 <translation id="6820676911989879663">Urobte si prestávku.</translation>
 <translation id="6827049576281411231">Zavrieť panel udalosti</translation>
+<translation id="682971198310367122">Pravidlá ochrany súkromia Google</translation>
 <translation id="6836499262298959512">Nebezpečný súbor</translation>
 <translation id="6837621009301897464">Ak chcete vytvoriť snímku obrazovky, stlačte</translation>
 <translation id="6852052252232534364">Aktivovať kliknutím</translation>
@@ -1881,6 +1935,7 @@ Nová inštalácia</translation>
 <translation id="6942518653766415536">Ponuka formátu nahrávky</translation>
 <translation id="6945221475159498467">Vybrať</translation>
 <translation id="6945922087561257829">Váš telefón používa mobilnú sieť. Uistite sa, že telefón aj Chromebook sú v rovnakej sieti Wi‑Fi a potom to skúste znova. <ph name="LEARN_MORE" /></translation>
+<translation id="6950627417367801484">Obnoviť aplikácie</translation>
 <translation id="6960565108681981554">Neaktivované. Kontaktujte operátora.</translation>
 <translation id="6961121602502368900">Stíšenie telefónu nie je v pracovnom profile k dispozícii</translation>
 <translation id="6961840794482373852">Klávesová skratka Alt + šípka nahor bola zmenená. Ak chcete použiť kláves Page Up, stlačte klávesy <ph name="LAUNCHER_KEY_NAME" /> + šípka nahor.</translation>
@@ -2052,6 +2107,7 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="7541773865713908457"><ph name="ACTION_NAME" /> pomocou aplikácie <ph name="APP_NAME" /></translation>
 <translation id="7543399541175347147">Aplikácie pre Linux a okná inkognito momentálne nie sú podporované. Ostatné aplikácie budú uložené.</translation>
 <translation id="7544300628205093162">Podsvietenie klávesnice je zapnuté</translation>
+<translation id="7545466883021407599">Nepodarilo sa pripojiť k serveru. Skontrolujte ho a skúste to znova. Ak problémy pretrvávajú, skúste reštartovať Chromebook. Kód chyby: <ph name="ERROR_CODE" />.</translation>
 <translation id="7548434653388805669">Je čas ísť do postele</translation>
 <translation id="7551643184018910560">Pripnúť na poličku</translation>
 <translation id="7557816257942363084"><ph name="APP_NAME" /> momentálne používa mikrofón</translation>
@@ -2067,6 +2123,7 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="7579778809502851308">Snímanie obrazovky</translation>
 <translation id="7588317312481506627">Skopírované do schránky.</translation>
 <translation id="7593891976182323525">Hľadať alebo Shift</translation>
+<translation id="7595453277607160340">Ak chcete používať aplikácie pre Android a zaistiť správne fungovanie zariadenia <ph name="DEVICE_TYPE" />, znova sa prihláste a aktualizujte.</translation>
 <translation id="7598054670902114203">Snímka používania procesora, <ph name="CPU_USEAGE" /> %. Teplota: <ph name="TEMPERATURE" /> stup. Celzia, aktuálna rýchlosť: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="7599378375976398913">Vkladá sa vybraný výsledok</translation>
 <translation id="7600875258240007829">Zobraziť všetky upozornenia</translation>
@@ -2076,6 +2133,7 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="7609951632080598826">Zobrazenie kalendára, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Kamera bola odpojená</translation>
 <translation id="7613620083300976559">Zapnúť ovládanie hry</translation>
+<translation id="761530003705945209">Zálohovanie na Disk Google. Jednoducho kedykoľvek obnovte svoje údaje alebo prejdite na iné zariadenie. Záloha obsahuje dáta aplikácií. Zálohy nahrané do Googlu sú šifrované heslom vášho účtu Google.</translation>
 <translation id="761736749114493194">Prepnúť centrovanie kamery. <ph name="STATE_TEXT" /></translation>
 <translation id="7621008024906456933">Nastavenia funkcie Quick Share</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
@@ -2124,6 +2182,7 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="7748275671948949022">Zvýraznenie tlačidla Spúšťača na poličke</translation>
 <translation id="7749443890790263709">Dosiahli ste maximálny počet pracovných prostredí.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7750228210027921155">Obraz v obraze</translation>
 <translation id="7751260505918304024">Zobraziť všetky</translation>
 <translation id="7762664108390426952">zmluvnými podmienkami a pravidlami ochrany osobných údajov spoločnosti Google</translation>
 <translation id="7768784765476638775">Vyslovenie položky po vybratí</translation>
@@ -2242,6 +2301,7 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="8092380135549145188">Ovládanie posúvania</translation>
 <translation id="8098591350844501178">Zastaviť prenos obrazovky do zariadenia <ph name="RECEIVER_NAME" /></translation>
 <translation id="810637681351706236">Odopnutie aplikácie z poličky</translation>
+<translation id="8107015733319732394">Inštaluje sa Obchod Google Play na zariadení <ph name="DEVICE_TYPE" />. Môžete to chvíľu trvať.</translation>
 <translation id="8113423164597455979">Zap., vš. apl.</translation>
 <translation id="8113515504791187892">Tlačidlo počúvania vybraného textu</translation>
 <translation id="8120151603115102514">Telefón nemá zámku obrazovky. Ak chcete Chromebook odomknúť, zadajte heslo.</translation>
@@ -2324,6 +2384,7 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="8388750414311082622">Posledná plocha sa nedá odstrániť.</translation>
 <translation id="8394567579869570560">Tvoj rodič uzamkol toto zariadenie</translation>
 <translation id="8401850874595457088">Otvoriť ponuku jazyka</translation>
+<translation id="8410775397654368139">Google Play</translation>
 <translation id="8412677897383510995">Zobraziť nastavenia obrazovky</translation>
 <translation id="8413272770729657668">Nahrávanie sa začne o 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (puzdro)</translation>
@@ -2349,11 +2410,13 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> má <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Ak to chcete zrušiť, stlačte klávesy Alt+Hľadať alebo Shift.</translation>
 <translation id="8480418399907765580">Zobraziť panel s nástrojmi</translation>
+<translation id="8481187309597259238">Potvrdenie povolenia pre USB</translation>
 <translation id="8487660088084188539">Keď tieto funkcie zapnete, vstupný text, obsah dokumentov a webová adresa stránky môžu byť odoslané na servery Googlu. Tieto informácie sa používajú na účely generovania návrhov formulácií aj zhrnutí, odpovedania na otázky a zlepšovania danej služby v súlade s <ph name="LINK_TO_SERVICE_TERMS" />. Neuvádzajte žiadne osobné, citlivé ani dôverné údaje.</translation>
 <translation id="8487699605742506766">Hotspot</translation>
 <translation id="8490896350101740396">Aplikácie Kiosku (<ph name="UPDATED_APPS" />) boli aktualizované. Reštartujte zariadenie a dokončite tak proces aktualizácie.</translation>
 <translation id="8491237443345908933">Otvorenie odkazu na novej karte</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> nepodporuje rozlíšenie <ph name="SPECIFIED_RESOLUTION" />. Preto bolo zmenené na <ph name="FALLBACK_RESOLUTION" />. Zmeny ponecháte kliknutím na Potvrdiť. Predchádzajúce nastavenia budú obnovené o <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="8502536196501630039">Ak chcete používať aplikácie zo služby Google Play, najprv musíte obnoviť svoje aplikácie. Mohlo dôjsť k strate niektorých dát.</translation>
 <translation id="8507563469658346379">Všetci, <ph name="REMAINING_TIME" /></translation>
 <translation id="8511123073331775246">Vytvorenie novej plochy</translation>
 <translation id="85123341071060231">V Chromebooku je vypnuté rozhranie Bluetooth. Ak chcete Chromebook odomknúť, zadajte heslo.</translation>
@@ -2407,6 +2470,8 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="8676770494376880701">Pripojila sa nabíjačka s nízkym výkonom</translation>
 <translation id="8679158879996532670">Zobraziť nastavenia sústredenia. Režim sústredenia bude zapnutý ešte <ph name="REMAINING_TIME" />.</translation>
 <translation id="8683506306463609433">Trasovanie výkonnosti je aktívne</translation>
+<translation id="8698432579173128320">Zálohujte na Disk Google. Jednoducho kedykoľvek obnovte svoje údaje alebo prejdite na iné zariadenie. Záloha obsahuje dáta aplikácií. Zálohy nahrané do Googlu sú šifrované heslom vášho účtu Google. <ph name="BEGIN_LINK1" />Ďalšie informácie o zálohe<ph name="BEGIN_LINK1_END" />Ďalšie informácie<ph name="END_LINK1" /></translation>
+<translation id="8700087567921985940">Používajte polohu. Povoľte aplikáciám a službám s povoleným prístupom k polohe používať polohu vášho zariadenia. Google môže pravidelne zhromažďovať údaje o polohe a anonymne pomocou nich zlepšovať presnosť určovania polohy a služby podmienené polohou. <ph name="BEGIN_LINK1" />Ďalšie informácie o polohe<ph name="BEGIN_LINK1_END" />Ďalšie informácie<ph name="END_LINK1" /></translation>
 <translation id="8703634754197148428">Spustiť nahrávanie. Po spustení nahrávania nájdete tlačidlo na jeho zastavenie v poličke, kam prejdete pomocou skratky Alt + Shift + L.</translation>
 <translation id="8704155109538237473">Označenie okna obrazu v obraze</translation>
 <translation id="870917907284186124">Zapnutie alebo vypnutie diktovania (zadávanie textu hlasom)</translation>
@@ -2469,6 +2534,7 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="8875021410787719674">Presúvanie medzi pravým dolným rohom, Spúšťačom, panelom s adresou, panelom so záložkami, otvoreným webom a stiahnutými súbormi</translation>
 <translation id="8876148469852588625"><ph name="EVENT_POSITION" />. udalosť z <ph name="EVENT_TOTAL_COUNT" /></translation>
 <translation id="8876661425082386199">Skontrolujte pripojenie</translation>
+<translation id="8883478023074930307">Odosielajte údaje o využití a diagnostike. Toto zariadenie momentálne automaticky odosiela Googlu diagnostiky a údaje o využití zariadenia a používaní aplikácií. Pomôžu zvýšiť stabilitu systému a aplikácií a poskytovať ďalšie zlepšenia. Niektoré súhrnné dáta pomôžu aj aplikáciám a partnerom Googlu, napríklad vývojárom pre Android. Používanie <ph name="BEGIN_LINK1" />tohto nastavenia<ph name="END_LINK1" /> je presadzované vlastníkom. Ak zapnete ďalšiu aktivitu na internete a v aplikáciách, tieto údaje sa budú môcť ukladať do vášho účtu Google. <ph name="BEGIN_LINK2" />Ďalšie informácie o metrikách<ph name="BEGIN_LINK2_END" />Ďalšie informácie<ph name="END_LINK2" /></translation>
 <translation id="8885424115080869847">Nepodarilo sa pripojiť k službe YouTube Music</translation>
 <translation id="888982883502837004">Pre vaše zariadenie sú k dispozícii aktualizácie firmvéru. Kliknutím si ich zobrazte a firmvér aktualizujte.</translation>
 <translation id="8896630965521842259">Šablóna <ph name="DESK_TEMPLATE_NAME" /> bude natrvalo odstránená</translation>
@@ -2511,10 +2577,12 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="9000771174482730261">SPRAVOVAŤ PRIESTOR</translation>
 <translation id="9003374957546315126">Emodži a mnoho iného</translation>
 <translation id="9005984960510803406">Otvorenie okna Crosh</translation>
+<translation id="901668144954885282">Záloha na Disku Google</translation>
 <translation id="9017320285115481645">Zadajte prístupový kód rodiča Family Link.</translation>
 <translation id="9024331582947483881">celá obrazovka</translation>
 <translation id="9029736946581028033">Zariadenie sa čoskoro vypne</translation>
 <translation id="9030319654231318877">Vypnutý do západu slnka</translation>
+<translation id="9030515284705930323">Vaša organizácia nepovoľuje vo vašom účte Obchod Google Play. Ak chcete získať ďalšie informácie, kontaktujte svojho správcu.</translation>
 <translation id="9030665205623277906">Prehľad stavu používania procesora: <ph name="CPU_USEAGE" /> %</translation>
 <translation id="9034924485347205037">Súbory systému Linux</translation>
 <translation id="9047624247355796468">Otvoriť nastavenia siete <ph name="NETWORK_NAME" /></translation>
@@ -2564,8 +2632,10 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="9195857219954068558">Váš Chromebook bol aktualizovaný. Otvorte predchádzajúce okná a aplikácie.</translation>
 <translation id="9195990613383871904">Zajtra</translation>
 <translation id="9198992156681343238">Rozlíšenie obrazovky <ph name="DISPLAY_NAME" /> bolo zmenené na <ph name="RESOLUTION" />. Zmeny ponecháte kliknutím na Potvrdiť. Predchádzajúce nastavenia budú obnovené o <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="9199853905755292769">Odosielajte údaje o využití a diagnostike. Toto zariadenie momentálne automaticky odosiela Googlu diagnostiky a údaje o využití zariadenia a používaní aplikácií. Pomocou daných údajov sa nebude zisťovať totožnosť vášho dieťaťa. Pomôžu zvýšiť stabilitu systému a aplikácií a poskytovať ďalšie vylepšenia. Niektoré súhrnné dáta pomôžu aj aplikáciám a partnerom Googlu, napríklad vývojárom pre Android. Ak pre dieťa zapnete ďalšiu aktivitu na internete a v aplikáciách, tieto údaje sa budú môcť ukladať do jeho účtu Google. <ph name="BEGIN_LINK2" />Ďalšie informácie o metrikách<ph name="BEGIN_LINK2_END" />Ďalšie informácie<ph name="END_LINK2" /></translation>
 <translation id="9201044636667689546">Pripojiť <ph name="NAME" /> k tomuto Chromebooku</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, ovládané správcom</translation>
+<translation id="9201842707396338580">Vyskytol sa problém. Kontaktujte vlastníka či správcu zariadenia. Kód chyby: <ph name="ERROR_CODE" />.</translation>
 <translation id="9207682216934703221">Týmto povolíte aplikáciám <ph name="APP_NAME" />, <ph name="APP2_NAME" /> a všetkým aplikáciám a webom s povoleným prístupom k polohe, ako aj systému ChromeOS používať polohu v sieti Wi‑Fi a mobilných sieťach.</translation>
 <translation id="9210037371811586452">Ukončuje sa režim jednotnej pracovnej plochy</translation>
 <translation id="9211490828691860325">Všetky plochy</translation>
@@ -2578,6 +2648,7 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="923686485342484400">Ak sa chcete odhlásiť, stlačte dvakrát kombináciu klávesov Ctrl, Shift a Q.</translation>
 <translation id="92580429198593979">Stlačili ste klávesovú skratku inverzie farieb. Chcete ju zapnúť?</translation>
 <translation id="925832987464884575">Skryť ukážky</translation>
+<translation id="93140074055951850">Aplikácie pre Android boli zastavené</translation>
 <translation id="938407504481277932">Aktuálna plocha: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. <ph name="DESK_INDEX" />. plocha z <ph name="DESK_COUNT" />.</translation>
 <translation id="94468042118567862">Zariadenie nie je aktuálne</translation>
 <translation id="945383118875625837">Presuňte odkaz na panel so záložkami</translation>

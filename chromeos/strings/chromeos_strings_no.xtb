@@ -273,7 +273,6 @@
 <translation id="200669432486043882">Bytt ut fil</translation>
 <translation id="2006864819935886708">Tilkobling</translation>
 <translation id="2008685064673031089">Primtallsøk</translation>
-<translation id="2011174342667534258">SDK-versjon:</translation>
 <translation id="2016697457005847575">Prøv feilsøkingstrinn</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2045814230297767491">bestikk</translation>
@@ -523,7 +522,6 @@
 <translation id="3291996639387199448">Nøkkelretning</translation>
 <translation id="3294437725009624529">Gjest</translation>
 <translation id="3303855915957856445">Søket ga ingen treff</translation>
-<translation id="3305294846493618482">mer</translation>
 <translation id="3310640316857623290">DNS-forsinkelsen er betydelig høyere enn den tillatte grenseverdien</translation>
 <translation id="3316495615885967552">Modellen for oppretting av sammendrag og titler er lastet ned</translation>
 <translation id="3321030238473337787">Avspillingshastighet</translation>
@@ -702,7 +700,6 @@
 <translation id="4126551873361000548">10 sekunder bakover</translation>
 <translation id="4128271910628504223">Skriv inn en forespørsel som «tegn en tåkelagt skog»</translation>
 <translation id="4130035430755296270">Hold markøren i ro for å se flere oppsettsalternativer</translation>
-<translation id="4130750466177569591">Godta</translation>
 <translation id="4131410914670010031">Svarthvitt</translation>
 <translation id="4137700675046373159">på lørdag</translation>
 <translation id="4139326893730851150">Fastvareoppdateringer</translation>
@@ -1051,7 +1048,6 @@
 <translation id="5606865426897221650">Fane</translation>
 <translation id="5612205513582918357">Kursverktøy deler skjermen din med <ph name="RECEIVER_NAME" /></translation>
 <translation id="5613201299517339763">Du er blitt logget av</translation>
-<translation id="5620281292257375798">Bare internt</translation>
 <translation id="5628106863521633649">Tilgjengelige språk</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">abstrakt</translation>
@@ -1415,7 +1411,6 @@
 <translation id="7184043045742675738">Klikk på hvilken som helst tast for å tilpasse knappen. Flytt tasten med musen eller piltastene.</translation>
 <translation id="7187669805838282391">på onsdag</translation>
 <translation id="7205318498545665455">Velg mikrofon</translation>
-<translation id="7206979415662233817">Vilkår for bruk</translation>
 <translation id="7210635925306941239">cyan</translation>
 <translation id="7212547870105584639">Administrer APN-innstillingene for nettverket. APN oppretter en tilkobling mellom et mobilnettverk og internett. <ph name="BEGIN_LINK_LEARN_MORE" />Finn ut mer<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Fastvareoppdateringer for eksterne enheter</translation>
@@ -1446,11 +1441,6 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7321055305895875150">grønn og blågrønn</translation>
 <translation id="7328475450575141167">paradisfuglblomst</translation>
-<translation id="7331297744262591636">Du må være minst 18 år gammel og godta at bruken din av AI-bakgrunner er underlagt <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Googles vilkår for bruk<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> og <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />tilleggsvilkårene for bruk av generativ AI<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Du kan bare lage bakgrunner med AI til personlig og ikke-kommersiell bruk. Når du får hjelp med bakgrunner, sendes tekst til Googles AI-tjenere for å generere forslag til bakgrunner. Dette er underlagt <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googles personvernregler<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. <ph name="BEGIN_LINK_LEARN_MORE" />Finn ut mer<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Trykk på Søk + mellomrom for å se resultatet i Google Søk.</translation>
 <translation id="7343649194310845056">Nettverksenheter</translation>
 <translation id="7344788170842919262">jordaktig</translation>
 <translation id="7346768383111016081">Plasser kontrollen på spillhandlingen for å spille med tastaturet</translation>
@@ -1838,7 +1828,6 @@ Last ned transkripsjonsmodellen (opptil 100 MB) for å få disse transkripsjonen
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">Bruk denne videoen</translation>
-<translation id="9087578468327036362">Rapportér dette søket</translation>
 <translation id="9088306295921699330">Nåværende bruk</translation>
 <translation id="9088994563996376283">Forenkle</translation>
 <translation id="9095775724867566971">Pluginvm</translation>

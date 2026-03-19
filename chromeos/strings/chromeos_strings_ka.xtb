@@ -273,7 +273,6 @@
 <translation id="200669432486043882">ფაილის ჩანაცვლება</translation>
 <translation id="2006864819935886708">კავშირი</translation>
 <translation id="2008685064673031089">Prime Search</translation>
-<translation id="2011174342667534258">SDK ვერსია:</translation>
 <translation id="2016697457005847575">გამოცადეთ დეფექტების აღმოფხვრის საფეხურები</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2045814230297767491">დანა-ჩანგალი</translation>
@@ -523,7 +522,6 @@
 <translation id="3291996639387199448">გასაღების მიმართულება</translation>
 <translation id="3294437725009624529">სტუმარი</translation>
 <translation id="3303855915957856445">ძიების შედეგები ვერ მოიძებნა</translation>
-<translation id="3305294846493618482">მეტი</translation>
 <translation id="3310640316857623290">DNS-ის რეაგირების დრო მნიშვნელოვნად აღემატება დასაშვებ ზღვარს</translation>
 <translation id="3316495615885967552">შეჯამების და სათაურის შექმნის მოდელის ჩამოტვირთვა დასრულდა</translation>
 <translation id="3321030238473337787">დაკვრის სიჩქარე</translation>
@@ -702,7 +700,6 @@
 <translation id="4126551873361000548">10 წამით უკან გადახვევა</translation>
 <translation id="4128271910628504223">შეიყვანეთ მოთხოვნა, მაგალითად, „დახატე ნისლიანი ტყე“</translation>
 <translation id="4130035430755296270">განლაგებების მეტი ვარიანტებისთვის გააგრძელეთ გადატარება</translation>
-<translation id="4130750466177569591">ვეთანხმები</translation>
 <translation id="4131410914670010031">შავი და თეთრი</translation>
 <translation id="4137700675046373159">შაბათს</translation>
 <translation id="4139326893730851150">ჩაშენებული პროგრამული უზრუნველყოფის განახლებები</translation>
@@ -1051,7 +1048,6 @@
 <translation id="5606865426897221650">ჩანართი</translation>
 <translation id="5612205513582918357">საკლასო ხელსაწყოები აზიარებს თქვენს ეკრანს <ph name="RECEIVER_NAME" />-თან</translation>
 <translation id="5613201299517339763">თქვენ სისტემიდან გამოხვედით</translation>
-<translation id="5620281292257375798">მხოლოდ შიდა გამოყენებისთვის</translation>
 <translation id="5628106863521633649">ხელმისაწვდომი ენები</translation>
 <translation id="5630438231335788050">ბაუჰაუსი</translation>
 <translation id="5631759159893697722">რეზიუმე</translation>
@@ -1415,7 +1411,6 @@
 <translation id="7184043045742675738">ღილაკის მოსარგებად დააწკაპუნეთ ნებისმიერ კლავიშზე. კლავიშის გადაადგილება შეგიძლიათ მაუსის ან ისრიანი კლავიშების მეშვეობით.</translation>
 <translation id="7187669805838282391">ოთხშაბათს</translation>
 <translation id="7205318498545665455">აირჩიეთ თქვენი მიკროფონი</translation>
-<translation id="7206979415662233817">მომსახურების პირობები</translation>
 <translation id="7210635925306941239">ციანი</translation>
 <translation id="7212547870105584639">მართეთ ქსელის APN-ის პარამეტრები. APN ამყარებს კავშირს ფიჭურ ქსელსა და ინტერნეტს შორის. <ph name="BEGIN_LINK_LEARN_MORE" />შეიტყვეთ მეტი<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">გარე მოწყობილობებში ჩაშენებული პროგრამული უზრუნველყოფის განახლებები</translation>
@@ -1446,11 +1441,6 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7321055305895875150">მწვანე და ზურმუხტისფერი</translation>
 <translation id="7328475450575141167">სტრელიცია</translation>
-<translation id="7331297744262591636">თქვენ უნდა იყოთ მინიმუმ 18 წლის და თანხმობა განაცხადოთ მასზე, რომ AI ფონების თქვენ მიერ გამოყენება ექვემდებარება <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Google-ის მომსახურების პირობებსა<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> და <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />გენერაციული ხელოვნური ინტელექტის მომსახურების დამატებით პირობებს<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          ხელოვნური ინტელექტით ფონების შექმნა შეგიძლიათ მხოლოდ პირადი, არაკომერციული მიზნით. ფონებთან დაკავშირებით დახმარების მიღებისას ინფორმაცია ეგზავნება Google-ის ხელოვნური ინტელექტის სერვერებს ფონების შემოსათავაზებლად, რაც <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google-ის კონფიდენციალურობის დებულებას<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> ექვემდებარება. <ph name="BEGIN_LINK_LEARN_MORE" />შეიტყვეთ მეტი<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; შედეგის Google Search-ში სანახავად დააჭირეთ კლავიშთა კომბინაციას Search პლუს შორისი.</translation>
 <translation id="7343649194310845056">ქსელური მოწყობილობები</translation>
 <translation id="7344788170842919262">მიწიერი</translation>
 <translation id="7346768383111016081">გამოიყენეთ მართვის საშუალება თამაშში განსაზღვრული მოქმედებისთვის, კლავიატურით რომ ითამაშოთ</translation>
@@ -1838,7 +1828,6 @@
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">ამ ვიდეოს გამოყენება</translation>
-<translation id="9087578468327036362">მოხსენება ამ მოთხოვნის შესახებ</translation>
 <translation id="9088306295921699330">ამჟამად გამოყენებული</translation>
 <translation id="9088994563996376283">გამარტივება</translation>
 <translation id="9095775724867566971">Pluginvm</translation>

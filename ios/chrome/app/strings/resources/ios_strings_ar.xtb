@@ -1722,6 +1722,7 @@
 <translation id="7149893636342594995">آخر 24 ساعة</translation>
 <translation id="7154417656353909837">إزالة العناوين</translation>
 <translation id="7161230316646448869">مزامنة الإشارات المرجعية والسجلّ وغير ذلك على جميع الأجهزة</translation>
+<translation id="7165323152084385463">رقم تعريف المركبة</translation>
 <translation id="7173114856073700355">فتح الإعدادات</translation>
 <translation id="7173721738069475737">{count,plural, =1{تمّ حفظ إشارة مرجعية واحدة}zero{تمّ حفظ {count} إشارة مرجعية}two{تمّ حفظ إشارتَين مرجعيتَين ({count})}few{تمّ حفظ {count} إشارات مرجعية}many{تمّ حفظ {count} إشارة مرجعية}other{تمّ حفظ {count} إشارة مرجعية}}</translation>
 <translation id="7176183551031110427">تصغير</translation>
@@ -1929,7 +1930,7 @@
 <translation id="7899199123054742721">وضع علامة "غير مقروءة" على الكل</translation>
 <translation id="7911190106180361398">لا تسمح لك مؤسستك بمزامنة كل البيانات.</translation>
 <translation id="7918999344502274923">إخفاء تفاصيل <ph name="SEARCH_ENGINE_NAME" /></translation>
-<translation id="7921559948846049514">يمكنك اختيار مظهر أو لون أو غير ذلك لتخصيص خلفيتك</translation>
+<translation id="7921559948846049514">يمكنك تخصيص الخلفية من خلال اختيار المظهر واللون والمزيد</translation>
 <translation id="792357691529995513">لم يتم رصد أي مشاكل.</translation>
 <translation id="7925108652071887026">بيانات الملء التلقائي</translation>
 <translation id="7926975587469166629">لقب البطاقة</translation>
@@ -2217,6 +2218,7 @@
 <translation id="8863067612494559785">جارٍ إرسال علامة التبويب إلى <ph name="DEVICE_NAME" />…</translation>
 <translation id="8863431381414769983">‏الحصول على الاتجاهات والمعلومات المحلية من "خرائط Google"</translation>
 <translation id="8871974300055371298">إعدادات المحتوى</translation>
+<translation id="8876661425082386199">التحقُّق من الاتصال</translation>
 <translation id="8877788021141246043">ضبط تذكير</translation>
 <translation id="8879604564928138696">انقر مرّتين للتجربة</translation>
 <translation id="8879952635974818770">محتوى مخصّص</translation>

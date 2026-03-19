@@ -1073,6 +1073,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2673968385134502798">Giochi</translation>
 <translation id="2674170444375937751">Eliminare le pagine dalla cronologia?</translation>
 <translation id="2674524144218093528">Verniciatura e finitura case</translation>
+<translation id="2675716371350192683">I tuoi contenuti non verranno utilizzati per migliorare l'AI. La tua organizzazione può modificare queste impostazioni in qualsiasi momento.</translation>
 <translation id="26774279487328902"><ph name="GROUP_COUNT" /> gruppi di schede non sono più disponibili</translation>
 <translation id="2677748264148917807">Esci</translation>
 <translation id="2679216653373462289">Usare i sensori di movimento e di luce</translation>
@@ -2654,6 +2655,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="5190835502935405962">Barra dei preferiti</translation>
 <translation id="5191315092027169558">Il tuo profilo è gestito da <ph name="DOMAIN" /></translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> vuole scaricare più file</translation>
+<translation id="519528950056409240">Consenti a Wallet di condividere i dati</translation>
 <translation id="5199121357983849992">Salvare il documento d'identità?</translation>
 <translation id="5200063972779787617">Salva l'indirizzo nell'account</translation>
 <translation id="5201306358585911203">Una pagina incorporata in questa pagina dice</translation>
@@ -3101,6 +3103,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="5910140988253729859">Annulla la compilazione automatica</translation>
 <translation id="5911020115933784199">Eventi e spettacoli</translation>
 <translation id="5911110632211230665">Apertura bloccata</translation>
+<translation id="5912796581727968237">Apri Google Wallet</translation>
 <translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" /> ha aggiunto questa scheda</translation>
 <translation id="5915189366813702112">Condizioni lavorative flessibili</translation>
 <translation id="59174027418879706">Attivato</translation>

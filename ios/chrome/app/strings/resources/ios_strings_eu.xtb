@@ -1724,6 +1724,7 @@
 <translation id="7149893636342594995">Azken 24 orduetakoak</translation>
 <translation id="7154417656353909837">Kendu helbideak</translation>
 <translation id="7161230316646448869">Sinkronizatu laster-markak, historia eta beste gauza asko gailu guztietan</translation>
+<translation id="7165323152084385463">VIN</translation>
 <translation id="7173114856073700355">Ireki Ezarpenak</translation>
 <translation id="7173721738069475737">{count,plural, =1{Laster-marka gorde da}other{{count} laster-marka gorde dira}}</translation>
 <translation id="7176183551031110427">Txikitu</translation>
@@ -2218,6 +2219,7 @@
 <translation id="8863067612494559785"><ph name="DEVICE_NAME" /> gailura bidaltzen…</translation>
 <translation id="8863431381414769983">Lortu jarraibideak eta tokiko informazioa Google Maps-en bidez</translation>
 <translation id="8871974300055371298">Edukiaren ezarpenak</translation>
+<translation id="8876661425082386199">Egiaztatu konektatuta zaudela</translation>
 <translation id="8877788021141246043">Ezarri gogorarazpen bat</translation>
 <translation id="8879604564928138696">Saiatzeko, sakatu birritan</translation>
 <translation id="8879952635974818770">Pertsonalizatutako edukia</translation>

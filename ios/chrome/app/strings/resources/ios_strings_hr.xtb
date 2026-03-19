@@ -1724,6 +1724,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="7149893636342594995">Posljednja 24 sata</translation>
 <translation id="7154417656353909837">Ukloni adrese</translation>
 <translation id="7161230316646448869">Sinkronizirajte svoje oznake, povijest i drugo na svim uređajima</translation>
+<translation id="7165323152084385463">Broj šasije (VIN)</translation>
 <translation id="7173114856073700355">Otvorite Postavke</translation>
 <translation id="7173721738069475737">{count,plural, =1{Oznaka je spremljena}one{Spremljena je {count} oznaka}few{Spremljene su {count} oznake}other{Spremljeno je {count} oznaka}}</translation>
 <translation id="7176183551031110427">Smanjite</translation>
@@ -2218,6 +2219,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="8863067612494559785">Slanje na uređaj <ph name="DEVICE_NAME" />…</translation>
 <translation id="8863431381414769983">Preuzmite upute i lokalne informacije s Google karata</translation>
 <translation id="8871974300055371298">Postavke sadržaja</translation>
+<translation id="8876661425082386199">Provjerite vezu</translation>
 <translation id="8877788021141246043">Postavi podsjetnik</translation>
 <translation id="8879604564928138696">Dodirnite dvaput da biste isprobali</translation>
 <translation id="8879952635974818770">Personalizirani sadržaj</translation>

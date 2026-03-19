@@ -1724,6 +1724,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="7149893636342594995">Az elmúlt 24 órából</translation>
 <translation id="7154417656353909837">Címek eltávolítása</translation>
 <translation id="7161230316646448869">Könyvjelzők, előzmények és egyebek szinkronizálása valamennyi eszközén</translation>
+<translation id="7165323152084385463">Járműazonosító szám</translation>
 <translation id="7173114856073700355">Beállítások megnyitása</translation>
 <translation id="7173721738069475737">{count,plural, =1{Könyvjelző mentve}other{{count} könyvjelző mentve}}</translation>
 <translation id="7176183551031110427">Kicsinyítés</translation>
@@ -2218,6 +2219,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="8863067612494559785">Küldés ide: <ph name="DEVICE_NAME" />…</translation>
 <translation id="8863431381414769983">Útvonaltervet és helyi információkat kérhet a Google Térképtől.</translation>
 <translation id="8871974300055371298">Tartalombeállítások</translation>
+<translation id="8876661425082386199">Ellenőrizze az internetkapcsolatot</translation>
 <translation id="8877788021141246043">Emlékeztető beállítása</translation>
 <translation id="8879604564928138696">Koppintson duplán a kipróbáláshoz</translation>
 <translation id="8879952635974818770">Személyre szabott tartalom</translation>

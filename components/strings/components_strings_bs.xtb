@@ -1073,6 +1073,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2673968385134502798">Igre</translation>
 <translation id="2674170444375937751">Jeste li sigurni da želite izbrisati ove stranice iz historije?</translation>
 <translation id="2674524144218093528">Krečenje i fasadni radovi kuće</translation>
+<translation id="2675716371350192683">Vaš sadržaj se neće koristiti za poboljšanje AI-ja. Vaša organizacija može promijeniti ove postavke bilo kada.</translation>
 <translation id="26774279487328902">Više grupa kartica (<ph name="GROUP_COUNT" />) nije dostupno</translation>
 <translation id="2677748264148917807">Napusti</translation>
 <translation id="2679216653373462289">Koristi senzore kretanja i svjetla</translation>
@@ -2657,6 +2658,7 @@ Da sakrijete opcije kasnijeg plaćanja, idite u <ph name="BEGIN_LINK" />postavke
 <translation id="5190835502935405962">Traka oznaka</translation>
 <translation id="5191315092027169558">Vašim profilom upravlja domena <ph name="DOMAIN" /></translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> želi preuzeti više fajlova</translation>
+<translation id="519528950056409240">Dozvolite Novčaniku da dijeli podatke</translation>
 <translation id="5199121357983849992">Sačuvati lični dokument?</translation>
 <translation id="5200063972779787617">Sačuvajte adresu na račun</translation>
 <translation id="5201306358585911203">Stranica ugrađena u ovu stranicu kaže</translation>
@@ -3104,6 +3106,7 @@ Da sakrijete opcije kasnijeg plaćanja, idite u <ph name="BEGIN_LINK" />postavke
 <translation id="5910140988253729859">Poništi automatsko popunjavanje</translation>
 <translation id="5911020115933784199">Događaji i oglasi</translation>
 <translation id="5911110632211230665">Otvaranje je blokirano</translation>
+<translation id="5912796581727968237">Otvori Google Novčanik</translation>
 <translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" /> je dodao/la ovu karticu</translation>
 <translation id="5915189366813702112">Fleksibilni radni aranžmani</translation>
 <translation id="59174027418879706">Omogućeno</translation>

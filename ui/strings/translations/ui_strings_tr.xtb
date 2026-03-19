@@ -69,7 +69,7 @@
 <translation id="2583543531130364912">Dokunmatik ekranınızı ayarlayın</translation>
 <translation id="2586657967955657006">Pano</translation>
 <translation id="2653844658857826081">YENİ</translation>
-<translation id="2666092431469916601">Üst</translation>
+<translation id="2666092431469916601">Üstte</translation>
 <translation id="2701330563083355633">Paylaşan: <ph name="DEVICE_NAME" /></translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{1 yıl önce}other{# yıl önce}}</translation>
 <translation id="2878511608894704031">Tümünü Sil</translation>
@@ -78,7 +78,7 @@
 <translation id="293972288692056847">{COUNT,plural, =1{Uzantı bulunamıyor}other{Uzantılar bulunamıyor}}</translation>
 <translation id="3036649622769666520">Dosya Aç</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
-<translation id="3087734570205094154">Alt</translation>
+<translation id="3087734570205094154">Altta</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3157931365184549694">Geri yükle</translation>
 <translation id="3183922693828471536">Buraya Kaydır</translation>

@@ -273,7 +273,6 @@
 <translation id="200669432486043882">파일 바꾸기</translation>
 <translation id="2006864819935886708">연결</translation>
 <translation id="2008685064673031089">Prime 검색</translation>
-<translation id="2011174342667534258">SDK 버전:</translation>
 <translation id="2016697457005847575">문제 해결 단계 시도해 보기</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2045814230297767491">식사용 날붙이</translation>
@@ -523,7 +522,6 @@
 <translation id="3291996639387199448">키 방향</translation>
 <translation id="3294437725009624529">게스트</translation>
 <translation id="3303855915957856445">검색결과 없음</translation>
-<translation id="3305294846493618482">더보기</translation>
 <translation id="3310640316857623290">DNS 지연 시간이 허용되는 기준을 훨씬 초과했습니다.</translation>
 <translation id="3316495615885967552">요약 및 제목 생성 모델 다운로드 완료</translation>
 <translation id="3321030238473337787">재생 속도</translation>
@@ -702,7 +700,6 @@
 <translation id="4126551873361000548">10초 뒤로 이동</translation>
 <translation id="4128271910628504223">'안개 낀 숲을 그려 줘'와 같은 프롬프트를 입력하세요.</translation>
 <translation id="4130035430755296270">마우스를 가져가면 더 많은 레이아웃 옵션이 표시됩니다.</translation>
-<translation id="4130750466177569591">동의함</translation>
 <translation id="4131410914670010031">흑백</translation>
 <translation id="4137700675046373159">토요일</translation>
 <translation id="4139326893730851150">펌웨어 업데이트</translation>
@@ -1051,7 +1048,6 @@
 <translation id="5606865426897221650">Tab</translation>
 <translation id="5612205513582918357">수업 도구에서 <ph name="RECEIVER_NAME" />에 화면을 공유 중입니다.</translation>
 <translation id="5613201299517339763">로그아웃되었습니다</translation>
-<translation id="5620281292257375798">내부용</translation>
 <translation id="5628106863521633649">지원 언어</translation>
 <translation id="5630438231335788050">바우하우스</translation>
 <translation id="5631759159893697722">초록</translation>
@@ -1415,7 +1411,6 @@
 <translation id="7184043045742675738">아무 키나 클릭하여 버튼을 맞춤설정합니다. 마우스 또는 화살표 키를 사용하여 키를 재배치합니다.</translation>
 <translation id="7187669805838282391">수요일</translation>
 <translation id="7205318498545665455">마이크 선택</translation>
-<translation id="7206979415662233817">서비스 약관</translation>
 <translation id="7210635925306941239">비취색</translation>
 <translation id="7212547870105584639">네트워크 APN 설정을 관리하세요. APN은 셀룰러 네트워크와 인터넷 간의 연결을 설정합니다. <ph name="BEGIN_LINK_LEARN_MORE" />자세히 알아보기<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">외부 기기 펌웨어 업데이트</translation>
@@ -1446,11 +1441,6 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7321055305895875150">녹색 및 청록색</translation>
 <translation id="7328475450575141167">극락조</translation>
-<translation id="7331297744262591636">18세 이상이어야 하며 AI 배경화면 사용 시 <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Google 서비스 약관<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> 및 <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />생성형 AI 추가 서비스 약관<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />이 적용된다는 점에 동의해야 합니다.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          AI로는 개인용 배경화면 및 비상업용 배경화면만 만들 수 있습니다. 배경화면 지원을 받는 경우 배경화면 추천을 생성하기 위해 <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google 개인정보처리방침<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />에 따라 텍스트가 Google AI 서버로 전송됩니다. <ph name="BEGIN_LINK_LEARN_MORE" />자세히 알아보기<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="7343581795491695942"><ph name="QUERY_TEXT" />, <ph name="RESULT_TEXT" />, Search와 Space키를 눌러 Google 검색에서 검색결과를 확인하세요.</translation>
 <translation id="7343649194310845056">네트워크 기기</translation>
 <translation id="7344788170842919262">황톳빛</translation>
 <translation id="7346768383111016081">게임 액션에 컨트롤을 사용하여 키보드로 플레이하세요.</translation>
@@ -1838,7 +1828,6 @@
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">블루투스</translation>
 <translation id="9082718469794970195">이 동영상 사용</translation>
-<translation id="9087578468327036362">쿼리 보고</translation>
 <translation id="9088306295921699330">현재 사용량</translation>
 <translation id="9088994563996376283">간결하게 바꾸기</translation>
 <translation id="9095775724867566971">Pluginvm</translation>

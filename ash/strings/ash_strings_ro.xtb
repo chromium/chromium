@@ -8,6 +8,7 @@
 <translation id="1017556409696559990">Minimizează fereastra de sus când nu există istoric în Chrome</translation>
 <translation id="101823271612280837">S-a oprit înregistrarea. Nu poți folosi Tabloul de bord al jocului în modul tabletă.</translation>
 <translation id="1024364763893396229">Salvează <ph name="NAME" /></translation>
+<translation id="103279545524624934">Eliberează spațiu pe disc pentru a lansa aplicații Android.</translation>
 <translation id="1032891413405719768">Bateria creionului este descărcată</translation>
 <translation id="1036348656032585052">Dezactivează</translation>
 <translation id="1037492556044956303">S-a adăugat <ph name="DEVICE_NAME" /></translation>
@@ -35,6 +36,7 @@
 <translation id="1129383337808748948">Actualizează <ph name="CONTENT_TITLE" /></translation>
 <translation id="1142002900084379065">Fotografii recente</translation>
 <translation id="114221662579355151">Astfel, se permite accesul la cameră pentru <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> și pentru toate aplicațiile și site-urile care au permisiune pentru camera foto. Poate fi necesar să actualizezi pagina web sau să repornești aplicația.</translation>
+<translation id="1147991416141538220">Pentru a solicita acces, contactează administratorul dispozitivului.</translation>
 <translation id="1148499908455722006">Deschide fereastra de dialog cu informații pentru <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Calendar</translation>
 <translation id="1153356358378277386">Dispozitive asociate</translation>
@@ -114,6 +116,7 @@
 <translation id="1340378040547539434">Micșorează în pagină</translation>
 <translation id="1341651618736211726">Suplimentar</translation>
 <translation id="1341926407152459446">Folosește <ph name="DEVICE_NAME" /> pentru intrare și ieșire audio</translation>
+<translation id="1346403631707626730">Trimite date de utilizare și diagnosticare. Contribuie la îmbunătățirea experienței Android a copilului trimițând automat la Google date de diagnosticare și utilizare a dispozitivului și a aplicațiilor. Acestea nu vor fi folosite la identificarea copilului și vor ajuta la stabilitatea sistemului, a aplicațiilor și altele. Unele date agregate vor ajuta aplicațiile și partenerii Google, cum ar fi dezvoltatorii Android. Dacă ai activat setarea Activitatea suplimentară de pe web și din aplicații pentru copilul tău, aceste date pot fi salvate în Contul său Google. <ph name="BEGIN_LINK1" />Află mai multe despre valori<ph name="BEGIN_LINK1_END" />Află mai multe<ph name="END_LINK1" /></translation>
 <translation id="1346748346194534595">Dreapta</translation>
 <translation id="1350494136075914725">În desfășurare · Comută la fila</translation>
 <translation id="1351937230027495976">Restrânge meniul</translation>
@@ -196,6 +199,7 @@
 <translation id="1610778689852195798">Anulează</translation>
 <translation id="1611993646327628135">Activat</translation>
 <translation id="1612679292338846734">Când activezi aceste funcții, textul introdus, conținutul documentului și adresa URL a paginii web pot fi trimise la serverele Google AI. Aceste informații sunt folosite pentru a genera sugestii de scris și rezumate, pentru a răspunde la întrebări și pentru a îmbunătăți produsul, în conformitate cu <ph name="LINK_TO_SERVICE_TERMS" />. Nu include conținut personal, sensibil sau confidențial.</translation>
+<translation id="1619879934359211038">Nu s-a putut conecta la Google Play. Verifică starea conexiunii la rețea și încearcă din nou. Cod de eroare: <ph name="ERROR_CODE" />.</translation>
 <translation id="1620510694547887537">Cameră</translation>
 <translation id="1623768535032616219">Restrânge Google Classroom</translation>
 <translation id="163032029566320584"><ph name="UNAVAILABLE_DLC" /> nu este disponibil.</translation>
@@ -224,6 +228,7 @@
 <translation id="1719094688023114093">Funcția Subtitrări live este activată.</translation>
 <translation id="1720011244392820496">Activează Sincronizarea Wi-Fi</translation>
 <translation id="1720230731642245863">Hotspotul este dezactivat</translation>
+<translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />Pentru a elimina aplicații, accesează Setări &gt; Magazin Google Play &gt; Gestionează preferințele Android &gt; Aplicații sau Manager de aplicații. Apoi atinge aplicația pe care dorești să o dezinstalezi (poate fi necesar să glisezi la dreapta sau la stânga pentru a găsi aplicația). Apoi, atinge Dezinstalează sau Dezactivează.<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1731815243805539470">Comută la utilizatorul anterior</translation>
 <translation id="1733996486177697563">Comută între tema luminoasă și cea întunecată Atinge lung pe desktop, apoi selectează Stil și imagine de fundal.</translation>
 <translation id="1734230530703461088">Extensiile nu s-au încărcat astfel încât să respecte limita de timp. Contactează administratorul.</translation>
@@ -277,6 +282,7 @@
 <translation id="1882814835921407042">Nu este disponibilă nicio rețea mobilă</translation>
 <translation id="1882897271359938046">Se oglindește pe <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Deblochează cu amprenta</translation>
+<translation id="1891362123137972260">Spațiul de pe disc este foarte redus. Eliberează spațiu pe disc.</translation>
 <translation id="1894024878080591367">Configurează pentru a juca cu tastatura</translation>
 <translation id="1896383923047738322">Personalizează-ți tastatura</translation>
 <translation id="1904997243703671177">Când dezactivezi Bluetooth, <ph name="DEVICE_COUNT" /> dispozitive externe se vor deconecta de la <ph name="DEVICE_TYPE" />, inclusiv:</translation>
@@ -309,11 +315,13 @@
 <translation id="1996162290124031907">Accesează fila următoare</translation>
 <translation id="1998100899771863792">Desktopul actual</translation>
 <translation id="2001444736072756133">Caută în <ph name="CATEGORY" />, fișiere, aplicații și altele.</translation>
+<translation id="2011174342667534258">Versiunea SDK:</translation>
 <translation id="2017998995161831444">Deschide Ajutor în aplicația Explorare</translation>
 <translation id="2021864487439853900">Dă clic pentru deblocare</translation>
 <translation id="2034971124472263449">Salvează oricum</translation>
 <translation id="2041220428661959602">Nivelul bateriei: <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="204259843076055848">Comanda rapidă <ph name="SIX_PACK_KEY_NAME" /> este dezactivată momentan</translation>
+<translation id="2048653237708779538">Acțiunea nu este disponibilă</translation>
 <translation id="2049240716062114887">Numele desktopului a fost schimbat în <ph name="DESK_NAME" /></translation>
 <translation id="2064048859448024834">Previzualizarea camerei este activată</translation>
 <translation id="2065098273523946419">Linkul Află mai multe. Redirecționează către browser când este activat</translation>
@@ -378,18 +386,21 @@
 <translation id="2305738328104302723">Lista de activități Google: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: capturi de ecran, descărcări și fișiere fixate recente</translation>
 <translation id="2318576281648121272">Astăzi, la <ph name="TODAY_DATE" /></translation>
+<translation id="2318817390901984578">Ca să folosești aplicații Android, încarcă și actualizează dispozitivul <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2322065293366551060"><ph name="CATEGORY" />, categoria de rezultate ale căutării</translation>
 <translation id="2322173485024759474">Înapoi cu o literă</translation>
 <translation id="2326112202058075478">Afișează mai multe emojiuri</translation>
 <translation id="2335091074961603075">Chromebookul sau dispozitivul Bluetooth folosește o versiune Bluetooth mai veche. Folosește microfonul intern pentru o calitate audio mai bună.</translation>
 <translation id="2339073806695260576">Atinge butonul creion de pe raft ca să creezi note și capturi de ecran, să folosești indicatorul laser sau lupa.</translation>
 <translation id="2341729377289034582">Blocată pe verticală</translation>
+<translation id="2344032937402519675">Nu s-a putut conecta la server. Verifică starea conexiunii la rețea și încearcă din nou. Dacă ai în continuare probleme, repornește Chromebookul.</translation>
 <translation id="2345226652884463045">Apasă pe Enter sau căutare + spațiu pentru a selecta textul de editat.</translation>
 <translation id="2349785431103945039">Afișează detaliile despre hotspot. Conectează-te la rețeaua mobilă pentru a folosi hotspotul.</translation>
 <translation id="2350182423316644347">Se inițializează aplicația...</translation>
 <translation id="2350794187831162545">Vorbirea în <ph name="LANGUAGE" /> este acum procesată local și funcționează offline. Poți să schimbi limba de dictare în Setări &gt; Accesibilitate.</translation>
 <translation id="2352467521400612932">Setările creionului</translation>
 <translation id="2354174487190027830">Se activează <ph name="NAME" /></translation>
+<translation id="2355314311311231464">Provizionarea nu a reușit, deoarece detaliile contului nu au putut fi preluate. Încearcă din nou. Cod de eroare: <ph name="ERROR_CODE" />.</translation>
 <translation id="2359808026110333948">Continuă</translation>
 <translation id="2360398059912971776">baterie</translation>
 <translation id="2361210043495191221">Comută Wi-Fi. <ph name="STATE" />.</translation>
@@ -412,6 +423,7 @@
 <translation id="240545663114741956">Apasă de două ori pe <ph name="ACCELERATOR" /> pentru a te deconecta.</translation>
 <translation id="2405664212338326887">Nu s-a conectat</translation>
 <translation id="2406710117564540804">Activează / dezactivează funcția Nu deranja</translation>
+<translation id="240789602312469910">Trimite date de utilizare și diagnosticare. Contribuie la îmbunătățirea experienței Android a copilului trimițând automat la Google date de diagnosticare și utilizare a dispozitivului și a aplicațiilor. Acestea nu vor fi folosite la identificarea copilului și vor ajuta la stabilitatea sistemului, a aplicațiilor și altele. Unele date agregate vor ajuta aplicațiile și partenerii Google, cum ar fi dezvoltatorii Android. Această <ph name="BEGIN_LINK1" />setare<ph name="END_LINK1" /> este impusă de proprietar. Proprietarul poate alege să trimită date de diagnosticare și utilizare a dispozitivului la Google. Dacă ai activat setarea Activitatea suplimentară de pe web și din aplicații pentru copilul tău, aceste date pot fi salvate în Contul său Google. <ph name="BEGIN_LINK2" />Află mai multe despre valori<ph name="BEGIN_LINK2_END" />Află mai multe<ph name="END_LINK2" /></translation>
 <translation id="2408955596600435184">Introdu codul PIN</translation>
 <translation id="2412593942846481727">Actualizare disponibilă</translation>
 <translation id="2416438829169535743">Ieși din vizualizare?</translation>
@@ -464,6 +476,7 @@
 <translation id="2531025035050312891">dispozitiv lent</translation>
 <translation id="2531107890083353124">În timp ce tragi fila, apasă pe <ph name="KEY_ONE" /></translation>
 <translation id="2532199152994248594">Trage sau apasă pe tasta de spațiu pentru a selecta o zonă de capturat</translation>
+<translation id="2540651571961486573">A apărut o eroare. Cod de eroare: <ph name="ERROR_CODE" />.</translation>
 <translation id="2545334090614121435">Încerci să folosești Home? Folosește</translation>
 <translation id="254900897760075745">Copiază conținutul selectat în clipboard</translation>
 <translation id="2549711466868162843">Iluminare îmbunătățită</translation>
@@ -511,8 +524,11 @@
 <translation id="2701576323154693023">Hotspotul este activat (funcția Wi-Fi este dezactivată)</translation>
 <translation id="2704781753052663061">Alătură-te altor rețele Wi-Fi</translation>
 <translation id="2705001408393684014">Comută microfonul. <ph name="STATE_TEXT" /></translation>
+<translation id="2706304388244371417">Fă backup în Google Drive. Restabilește datele sau schimbă dispozitivul cu ușurință, în orice moment. Acest backup include datele aplicațiilor. Backupurile sunt încărcate pe serverele Google și sunt criptate folosind parola pentru Contul Google al copilului tău. <ph name="BEGIN_LINK1" />Află mai multe despre backup<ph name="BEGIN_LINK1_END" />Află mai multe<ph name="END_LINK1" /></translation>
 <translation id="2706462751667573066">În sus</translation>
+<translation id="2710101514844343743">Date de utilizare și diagnosticare</translation>
 <translation id="2710984741481549981">Blochează ferestrele</translation>
+<translation id="2714393097308983682">Magazinul Google Play</translation>
 <translation id="2718395828230677721">Lum. de noapte</translation>
 <translation id="2726420622004325180">Telefonul trebuie să aibă date mobile pentru a crea un hotspot</translation>
 <translation id="2727175239389218057">Răspunde</translation>
@@ -574,6 +590,8 @@
 <translation id="2893701697603065178">Mediu de dezvoltare gestionat</translation>
 <translation id="2894949423239620203">Cablul poate afecta performanța</translation>
 <translation id="2902312830803030883">Mai multe acțiuni</translation>
+<translation id="2909506265808101667">Nu s-a putut conecta la serviciile Google. Verifică starea conexiunii la rețea și încearcă din nou. Cod de eroare: <ph name="ERROR_CODE" />.</translation>
+<translation id="2910718431259223434">A apărut o eroare. Încearcă din nou sau contactează proprietarul dispozitivului ori administratorul. Cod de eroare: <ph name="ERROR_CODE" />.</translation>
 <translation id="2914580577416829331">Capturi de ecran</translation>
 <translation id="2924416280450782352">Nu se pot afișa elementele. Încearcă să redeschizi acest panou.</translation>
 <translation id="292506373491190801">De la evenimentul care are loc acum</translation>
@@ -633,7 +651,9 @@
 <translation id="3093423061078042895">Lipsesc</translation>
 <translation id="3095995014811312755">versiune</translation>
 <translation id="309749186376891736">Mută cursorul</translation>
+<translation id="3100071818310370858">Folosește locația. Permite aplicațiilor și serviciilor cu permisiune pentru locație să folosească locația acestui dispozitiv. Google poate colecta periodic date privind locațiile și le poate folosi în mod anonim pentru a îmbunătăți precizia locației și serviciile bazate pe locație. <ph name="BEGIN_LINK1" />Află mai multe despre locație<ph name="BEGIN_LINK1_END" />Află mai multe<ph name="END_LINK1" /></translation>
 <translation id="3100274880412651815">Închide modul de capturare</translation>
+<translation id="3104948640446684649">Trimite date de utilizare și diagnosticare. Momentan, dispozitivul trimite automat date de diagnosticare și de utilizare a dispozitivului și aplicațiilor la Google. Aceasta va ajuta la stabilitatea sistemului, a aplicației și altele. Unele date agregate vor ajuta aplicațiile și partenerii Google, cum ar fi dezvoltatorii Android. Dacă setarea Activitatea suplimentară de pe web și din aplicații este activată, aceste date pot fi salvate în Contul tău Google. <ph name="BEGIN_LINK2" />Află mai multe despre valori<ph name="BEGIN_LINK2_END" />Află mai multe<ph name="END_LINK2" /></translation>
 <translation id="3105917916468784889">Realizează o captură de ecran</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3107155169630537783">Notificarea de bun venit este <ph name="STATE" /></translation>
@@ -697,6 +717,7 @@
 <translation id="3306386552969601301"><ph name="DEVICECOUNT" /> dispozitive conectate la hotspotul <ph name="DEVICE_NAME" /></translation>
 <translation id="3307642347673023554">S-a comutat la modul laptop</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> se poate conecta în continuare mai târziu.</translation>
+<translation id="3313950410573257029">Verifică starea conexiunii</translation>
 <translation id="3321628682574733415">Codul pentru părinte este incorect</translation>
 <translation id="332827762492701193">Notificările sunt ascunse</translation>
 <translation id="3333674550998107387">Extinde notificarea <ph name="NOTIFICATION_TITLE" /></translation>
@@ -814,6 +835,7 @@
 <translation id="3638400994746983214">Activează/dezactivează ecranul de confidențialitate. <ph name="STATE_TEXT" />.</translation>
 <translation id="3641070112313110357">Aplicația Steam pentru Chromebook (Beta) trebuie actualizată. Repornește Chromebookul și încearcă din nou.</translation>
 <translation id="3649256019230929621">Minimizați fereastra</translation>
+<translation id="3650952250015018111">Permite accesul „<ph name="APP_NAME" />” la:</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
         de la <ph name="START_TIME" /> la
@@ -859,6 +881,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="3779139509281456663">Se conectează <ph name="NAME" /></translation>
 <translation id="3781910048497807059">Mută focalizarea pe panoul anterior</translation>
 <translation id="3783640748446814672">alt</translation>
+<translation id="3783889407390048282">Eliberează spațiu pentru a evita pierderea accesului la Android.</translation>
 <translation id="3784455785234192852">Blochează</translation>
 <translation id="3788301286821743879">Aplicația chioșc nu a putut fi lansată.</translation>
 <translation id="3789841737615482174">Instalează</translation>
@@ -868,6 +891,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="3804737937830804242">Restrânge camera</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{Un emoji. Nu există alte rezultate.}few{# emojiuri. Nu există alte rezultate.}other{# de emojiuri. Nu există alte rezultate.}}</translation>
 <translation id="3822403841174077928">Nu s-a putut copia cu formatare</translation>
+<translation id="3824621460022590830">Indicativul de înregistrare a dispozitivului nu este valid. Contactează proprietarul dispozitivului ori administratorul. Cod de eroare: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824784079442479685">Astfel, se permite accesul la cameră pentru <ph name="APP_NAME" /> și pentru toate aplicațiile și site-urile care au permisiunea adecvată Poate fi necesar să actualizezi pagina web sau să repornești aplicația.</translation>
 <translation id="3826099427150913765">Comută la parolă</translation>
 <translation id="383058930331066723">Modul Economisirea bateriei este activat</translation>
@@ -892,6 +916,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="3898464793473355515">Rotește ecranul la 90 de grade spre dreapta</translation>
 <translation id="3900355044994618856">Sesiunea se va încheia în <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">Se conectează la <ph name="NAME" /></translation>
+<translation id="3904326018476041253">Servicii de localizare</translation>
 <translation id="3904768293285573640">Redimensionează ferestrele sub formă de dale spre stânga</translation>
 <translation id="3923221004758245114">Elimini <ph name="VM_NAME" /> de pe <ph name="DEVICE_TYPE" />? Astfel se vor șterge toate aplicațiile și datele de pe mașina virtuală!</translation>
 <translation id="3923494859158167397">Nu a fost configurată nicio rețea mobilă</translation>
@@ -906,6 +931,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="3950272133184491871">Te deconectezi acum?</translation>
 <translation id="3950820424414687140">Conectează-te</translation>
 <translation id="3953130726459169782">Încă nu s-a finalizat nicio temă.</translation>
+<translation id="3957844511978444971">Atinge „Acceptă” ca să confirmi selectarea acestor setări pentru serviciile Google.</translation>
 <translation id="3958714870339660776">Toată ziua</translation>
 <translation id="3962859241508114581">Melodia anterioară</translation>
 <translation id="3963124517343721543">Continuă cu ușurință de unde ai rămas, deschizând ferestrele și filele anterioare. Vei vedea și sugestii personalizate privind pașii următori.</translation>
@@ -1021,6 +1047,7 @@ Unele funcții sunt limitate pentru a crește autonomia.</translation>
 <translation id="4278779213160967034">Procesul poate dura câteva minute. Se descarcă fișierele.</translation>
 <translation id="4279490309300973883">Oglindire</translation>
 <translation id="4280601795273309128">Actualizările de securitate s-au încheiat. Fă upgrade dispozitivului.</translation>
+<translation id="4281844954008187215">Condiții de furnizare a serviciilor</translation>
 <translation id="4283888303416325161">Introdu parola pentru mai multă siguranță</translation>
 <translation id="4285498937028063278">Anulați fixarea</translation>
 <translation id="428715201724021596">Se conectează la profil. Poate dura câteva minute.</translation>
@@ -1065,6 +1092,7 @@ Unele funcții sunt limitate pentru a crește autonomia.</translation>
 <translation id="4406883609789734330">Subtitrări live</translation>
 <translation id="4412698727486357573">Centrul de ajutor</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> este dezactivat.</translation>
+<translation id="44141919652824029">Permiți ca „<ph name="APP_NAME" />” să obțină lista dispozitivelor USB atașate?</translation>
 <translation id="4414242853388122273">Eroare la eliminarea <ph name="VM_NAME" />. Încearcă din nou.</translation>
 <translation id="4417647906073317561">Setări pentru Focus. Setează un temporizator, o activitate și muzică pentru a te concentra.</translation>
 <translation id="4418600384772451109">Închide panoul</translation>
@@ -1106,6 +1134,7 @@ Un dispozitiv conectat.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> până la încărcare completă</translation>
 <translation id="4538824937723742295">Capturează ecranul complet</translation>
 <translation id="4539127209940689201">Printează pagina actuală</translation>
+<translation id="4541123282641193691">Contul nu a putut fi verificat. Încearcă din nou sau repornește Chromebookul.</translation>
 <translation id="4541505619120536051">Deschide întotdeauna</translation>
 <translation id="4541706525461326392">Se elimină profilul. Poate dura câteva minute.</translation>
 <translation id="4544483149666270818">Selectează o fereastră de înregistrat</translation>
@@ -1116,6 +1145,7 @@ Un dispozitiv conectat.</translation>
 <translation id="4556953949326137018">Când folosești acțiuni sugerate, cum ar fi „adaugă la Calendar” sau „creează documente Google”, conținutul din zona selectată este trimis pe serverele Google pentru a sugera acțiuni, în conformitate cu <ph name="LINK_TO_SERVICE_TERMS" />. Nu include conținut personal, sensibil sau confidențial.</translation>
 <translation id="4560576029703263363">Activat</translation>
 <translation id="4561267230861221837">3G</translation>
+<translation id="4562091353415772246">Instalează actualizări și aplicații. Dacă alegi să continui, accepți ca acest dispozitiv să descarce și să instaleze automat actualizări și aplicații de la Google, de la operatorul tău și de la producătorul dispozitivului, posibil folosind datele mobile. Unele dintre aceste aplicații pot oferi achiziții în aplicație. <ph name="BEGIN_LINK1" />Află mai multe despre opțiunea Redă instalarea automată<ph name="BEGIN_LINK1_END" />Află mai multe<ph name="END_LINK1" /></translation>
 <translation id="4565377596337484307">Ascunde parola</translation>
 <translation id="4566144812051858745">Nu mă interesează sugestiile</translation>
 <translation id="4569753163207712681">Afișează fotografiile, elementele media și aplicațiile recente ale telefonului</translation>
@@ -1135,6 +1165,7 @@ Un dispozitiv conectat.</translation>
 <translation id="4628757576491864469">Dispozitive</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, evaluare cu stele: <ph name="RATING_SCORE" /></translation>
 <translation id="4633636853437260449">Apasă Ctrl + W pentru a șterge</translation>
+<translation id="4633757335284074492">Fă backup în Google Drive. Restabilește datele sau schimbă dispozitivul cu ușurință, în orice moment. Acest backup include datele aplicațiilor. Backupurile sunt încărcate pe serverele Google și sunt criptate folosind parola pentru Contul Google al copilului tău.</translation>
 <translation id="4635501805800894201">{0,plural, =0{Treci la versiunea anterioară a dispozitivului acum}=1{Treci la versiunea anterioară a dispozitivului într-o secundă}few{Treci la versiunea anterioară a dispozitivului în # secunde}other{Treci la versiunea anterioară a dispozitivului în # de secunde}}</translation>
 <translation id="4642092649622328492">Realizează o captură de ecran parțială</translation>
 <translation id="4642587497923912728">Steam pentru Chromebook (beta) este disponibil numai pentru contul care s-a conectat primul pe acest Chromebook.</translation>
@@ -1177,6 +1208,7 @@ Un dispozitiv conectat.</translation>
 <translation id="4759238208242260848">Descărcări</translation>
 <translation id="4762160261012420470"><ph name="LAUNCHER_KEY_NAME" /> + săgeată în sus</translation>
 <translation id="4762573482154983647">Ascunde aplicațiile</translation>
+<translation id="4762718786438001384">Spațiul de pe hard diskul dispozitivului este foarte redus</translation>
 <translation id="4763885921995354846">Astfel, se permite accesul la cameră pentru toate aplicațiile și site-urile care au permisiunea adecvată. Poate fi necesar să actualizezi pagina web sau să repornești aplicația.</translation>
 <translation id="4774338217796918551">Revino mâine la <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776584068981882959">Parola tot nu a putut fi confirmată. Încearcă din nou.</translation>
@@ -1283,6 +1315,7 @@ Un dispozitiv conectat.</translation>
 <translation id="5077936103761694531">Confirmi rezoluția?</translation>
 <translation id="5078796286268621944">Cod PIN incorect</translation>
 <translation id="5083035541015925118">ctrl + alt + săgeată în sus</translation>
+<translation id="5084328598860513926">Fluxul de provizionare a fost întrerupt. Încearcă din nou sau contactează proprietarul dispozitivului ori administratorul. Cod de eroare: <ph name="ERROR_CODE" />.</translation>
 <translation id="5091636240353511739">Afișează codul PIN</translation>
 <translation id="5092436659250499817">Activează / dezactivează retroiluminarea tastaturii</translation>
 <translation id="5094577350232361255">despre</translation>
@@ -1312,6 +1345,7 @@ Poți folosi și comanda rapidă de la tastatură. Mai întâi, evidențiază te
 <translation id="5170568018924773124">Afișează în dosar</translation>
 <translation id="5176318573511391780">Înregistrează ecranul parțial</translation>
 <translation id="5187627942836026988">Afișează detaliile despre hotspot. Hotspotul este blocat de administrator.</translation>
+<translation id="5188648870018555788">Folosește locația. Permite aplicațiilor, site-urilor și serviciilor ChromeOS și Android cu permisiune pentru locație să folosească locația acestui dispozitiv. Precizia locației afișează locația mai precisă pentru aplicațiile și serviciile Android. În acest scop, Google prelucrează periodic informații despre senzorii și semnalele wireless de la dispozitivul tău, pentru a obține locația semnalelor wireless prin crowdsourcing. Acestea se folosesc fără a te identifica, pentru a îmbunătăți precizia locației și serviciile bazate pe locație și pentru a îmbunătăți, a oferi și a întreține serviciile Google în scopul intereselor legitime ale companiei Google și ale terților de a deservi nevoile utilizatorilor. <ph name="BEGIN_LINK1" />Află mai multe despre folosirea locației<ph name="END_LINK1" /></translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198039720391525849">GIF-uri recomandate</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> evenimente</translation>
@@ -1332,6 +1366,7 @@ Poți folosi și comanda rapidă de la tastatură. Mai întâi, evidențiază te
 <translation id="5238719049014159442">Deschide / închide Lansatorul</translation>
 <translation id="5240725217819182328">Acces rapid la anumite pagini sau acțiuni din aplicațiile instalate</translation>
 <translation id="5243355658487390559">Data căutării</translation>
+<translation id="5243522832766285132">Încearcă din nou în câteva momente</translation>
 <translation id="5245201184978705914">Nu se poate genera transcrierea</translation>
 <translation id="5251174953851719648">Actualizează conținutul</translation>
 <translation id="5253783950165989294">S-a conectat la dispozitivul <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" />% baterie</translation>
@@ -1339,6 +1374,7 @@ Poți folosi și comanda rapidă de la tastatură. Mai întâi, evidențiază te
 <translation id="5256939106029293271">Testează microfonul</translation>
 <translation id="5258528442992323769">Nu există desktopuri salvate</translation>
 <translation id="5260676007519551770">Desktop 4</translation>
+<translation id="5264148714798105376">Poate dura câteva minute.</translation>
 <translation id="5265391159779542051">Rezultatele s-au încărcat</translation>
 <translation id="5270547718570958938">Google Calendar</translation>
 <translation id="5277869901083657836">Activează / dezactivează instrumentele pentru creion</translation>
@@ -1415,6 +1451,7 @@ Niciun dispozitiv conectat.</translation>
 <translation id="5506975627792768506">Activează sau dezactivează lupa</translation>
 <translation id="5507778598655387680"><ph name="VOLUME_LEVEL" />, dacă apeși pe Enter, sunetul va fi dezactivat.</translation>
 <translation id="5512042095225963688">Șterge cuvântul anterior</translation>
+<translation id="5517304475148761050">Aplicația necesită acces la Magazinul Play</translation>
 <translation id="5519005148254860683">Extinde Google Tasks</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Administratorul a eliminat toate profilurile eSIM. Contactează administratorul pentru mai multe informații.</translation>
@@ -1442,6 +1479,7 @@ Niciun dispozitiv conectat.</translation>
 <translation id="5577281275355252094">Asigură-te că ai activat Bluetooth pe telefon pentru a folosi Phone Hub</translation>
 <translation id="5578188167649348993">memorie</translation>
 <translation id="5580000943347215299">Bibliotecă</translation>
+<translation id="5581972110672966454">Dispozitivul nu a putut fi asociat domeniului. Încearcă din nou sau contactează proprietarul dispozitivului ori administratorul. Cod de eroare: <ph name="ERROR_CODE" />.</translation>
 <translation id="5586388332127302891">S-a activat lupa andocată. Apasă din nou <ph name="ACCELERATOR" /> pentru a o dezactiva.</translation>
 <translation id="5587506661873751671">Se descarcă: <ph name="DOWNLOAD_PERCENT" /> %</translation>
 <translation id="558849140439112033">Trage pentru a selecta o zonă de capturat</translation>
@@ -1466,6 +1504,7 @@ Niciun dispozitiv conectat.</translation>
 <translation id="5662075790140998213">Biroul 10</translation>
 <translation id="5662709761327382534">Înregistrare audio <ph name="CURRENT_STATE" />, Apasă pe Enter pentru înregistrare audio <ph name="NEW_STATE" /></translation>
 <translation id="5662919923378083468"><ph name="ACTION_DESCRIPTION" />, <ph name="SHORTCUT_HINT" /></translation>
+<translation id="5667546120811588575">Se configurează Google Play...</translation>
 <translation id="5669267381087807207">Se activează</translation>
 <translation id="5671658447180261823">Elimină sugestia <ph name="SUGGESTION_NAME" /></translation>
 <translation id="5672890847723042801">Utilitare</translation>
@@ -1482,6 +1521,7 @@ Niciun dispozitiv conectat.</translation>
 <translation id="5691772641933328258">Amprenta nu a fost recunoscută</translation>
 <translation id="5693255400847650006">Microfonul este în uz</translation>
 <translation id="5699366815052349604">Atribuie fereastra activă tuturor desktopurilor</translation>
+<translation id="570043786759263127">Aplicații și servicii Google Play</translation>
 <translation id="570390244361237317">Toate aplicațiile, navighează cu tastele săgeți ca să le accesezi</translation>
 <translation id="5705197514573687092">Afișează setările pentru Focus. Temporizatorul este setat la <ph name="FOCUS_DURATION" />.</translation>
 <translation id="5707775774148071965">Dispozitivul acceptă o rată mai mare de transfer de date decât cablul. Este posibil ca performanța dispozitivului să fie limitată.</translation>
@@ -1496,6 +1536,7 @@ Niciun dispozitiv conectat.</translation>
 <translation id="574392208103952083">Mediu</translation>
 <translation id="5744083938413354016">Tragere prin atingere</translation>
 <translation id="5745612484876805746">Lumina de noapte se activează automat la apus</translation>
+<translation id="5749214722697335450">Trimite date de utilizare și diagnosticare. Contribuie la îmbunătățirea experienței Android trimițând automat la Google date de diagnosticare și utilizare a dispozitivelor și a aplicațiilor. Aceasta va ajuta la stabilitatea sistemului, a aplicației și altele. Unele date agregate vor ajuta aplicațiile și partenerii Google, cum ar fi dezvoltatorii Android. Dacă setarea Activitatea suplimentară de pe web și din aplicații este activată, aceste date pot fi salvate în Contul tău Google. <ph name="BEGIN_LINK1" />Află mai multe despre valori<ph name="BEGIN_LINK1_END" />Află mai multe<ph name="END_LINK1" /></translation>
 <translation id="5750765938512549687">Bluetooth este dezactivat</translation>
 <translation id="5758114525425072423">Activează modul Focus. Temporizatorul este setat la <ph name="FOCUS_DURATION" />.</translation>
 <translation id="5759522586053040964">Auzi cum vei suna pentru ceilalți. Pentru a opri, dă clic pe pictograma de testare sau închide panoul apelului video.</translation>
@@ -1512,6 +1553,7 @@ Niciun dispozitiv conectat.</translation>
 <translation id="5775936059231769503">Activează hotspotul. Hotspotul este dezactivat.</translation>
 <translation id="5777841717266010279">Oprești permiterea accesului la ecran?</translation>
 <translation id="5779721926447984944">Fișiere fixate</translation>
+<translation id="5780940414249100901">Trimite date de utilizare și diagnosticare. Momentan, dispozitivul trimite automat date de diagnosticare și de utilizare a dispozitivului și aplicațiilor la Google. Acestea nu vor fi folosite la identificarea copilului și vor ajuta la stabilitatea sistemului, a aplicațiilor și altele. Unele date agregate vor ajuta aplicațiile și partenerii Google, cum ar fi dezvoltatorii Android. Această <ph name="BEGIN_LINK1" />setare<ph name="END_LINK1" /> este impusă de proprietar. Dacă ai activat setarea Activitatea suplimentară de pe web și din aplicații pentru copilul tău, aceste date pot fi salvate în Contul său Google. <ph name="BEGIN_LINK2" />Află mai multe despre valori<ph name="BEGIN_LINK2_END" />Află mai multe<ph name="END_LINK2" /></translation>
 <translation id="5785221443435874078">Elimină această sugestie</translation>
 <translation id="5787431783058088906">Valorifică beneficiul</translation>
 <translation id="5788127256798019331">Fișiere Play</translation>
@@ -1527,6 +1569,7 @@ Niciun dispozitiv conectat.</translation>
 <translation id="5823239091726045201">Google Tasks pe web</translation>
 <translation id="5825969630400862129">Setări pentru dispozitivele conectate</translation>
 <translation id="5830180081891717894">Încă <ph name="WINDOWS" /></translation>
+<translation id="583281660410589416">Necunoscut</translation>
 <translation id="5837036133683224804">Întrerupe <ph name="ROUTE_TITLE" /> pe <ph name="RECEIVER_NAME" /></translation>
 <translation id="5840658767386246331">Caută cu Google</translation>
 <translation id="5841296711770970362">Accesează melodia următoare</translation>
@@ -1592,6 +1635,7 @@ Niciun dispozitiv conectat.</translation>
 <translation id="6032620807120418574">Dă clic oriunde pentru a înregistra ecranul complet</translation>
 <translation id="6040071906258664830">Înregistrare audio <ph name="STATE" /></translation>
 <translation id="6040143037577758943">Închide</translation>
+<translation id="6042308850641462728">Mai multe</translation>
 <translation id="6043212731627905357">Monitorul nu funcționează cu <ph name="DEVICE_TYPE" /> (monitorul nu este compatibil).</translation>
 <translation id="6043994281159824495">Deconectați-vă acum</translation>
 <translation id="6045629311476491587">Folosite de <ph name="APP_COUNT" /> aplicații</translation>
@@ -1671,9 +1715,12 @@ Niciun dispozitiv conectat.</translation>
 <translation id="6274422179279280249">Inserează linkuri, emoji și multe altele. În plus, poți să primești ajutor pentru a scrie de la Google AI. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="6276708887952587684">Afișează sursa paginii</translation>
 <translation id="6285871695023807425">Adaugă în Calendar</translation>
+<translation id="628699625505156622">Folosește locația. Permite aplicațiilor, site-urilor și serviciilor ChromeOS și Android cu permisiune pentru locație să folosească locația acestui dispozitiv. Precizia locației afișează locația mai precisă pentru aplicațiile și serviciile Android. În acest scop, Google prelucrează periodic informații despre senzorii dispozitivului și semnalele wireless de la acesta, pentru a externaliza spre public locațiile semnalelor wireless. Acestea se folosesc fără a identifica persoane, pentru a îmbunătăți precizia locației și serviciile bazate pe locație și pentru a îmbunătăți, a oferi și a întreține serviciile Google în scopul intereselor legitime ale companiei Google și ale terților de a deservi nevoile utilizatorilor. <ph name="BEGIN_LINK1" />Află mai multe despre folosirea locației<ph name="END_LINK1" /></translation>
 <translation id="6288235558961782912">Utilizatorul <ph name="USER_EMAIL_ADDRESS" /> poate fi adăugat din nou mai târziu, cu permisiunea părintelui.</translation>
 <translation id="6291221004442998378">Nu se încarcă</translation>
+<translation id="6297986260307280218">Trimite date de utilizare și diagnosticare. Contribuie la îmbunătățirea experienței Android trimițând automat la Google date de diagnosticare și utilizare a dispozitivelor și a aplicațiilor. Aceasta va ajuta la stabilitatea sistemului, a aplicației și altele. Unele date agregate vor ajuta aplicațiile și partenerii Google, cum ar fi dezvoltatorii Android. Această <ph name="BEGIN_LINK1" />setare<ph name="END_LINK1" /> este impusă de proprietar. Proprietarul poate alege să trimită date de diagnosticare și utilizare a dispozitivului la Google. Dacă setarea Activitatea suplimentară de pe web și din aplicații este activată, aceste date pot fi salvate în Contul tău Google. <ph name="BEGIN_LINK2" />Află mai multe despre valori<ph name="BEGIN_LINK2_END" />Află mai multe<ph name="END_LINK2" /></translation>
 <translation id="6298183524022479114">Personalizează dispozitivul în aplicație</translation>
+<translation id="6298962879096096191">Folosește Google Play pentru a instala aplicații Android</translation>
 <translation id="6304076460080088478">Închide sau minimizează ferestrele incognito pentru a căuta pe ecran folosind Google Lens</translation>
 <translation id="6309219492973062892">Dă clic sau atinge pictogramele raftului 1 – 8</translation>
 <translation id="6315170314923504164">Voce</translation>
@@ -1703,8 +1750,10 @@ Niciun dispozitiv conectat.</translation>
 <translation id="6406458002328242616">Editează temporizatorul. <ph name="FOCUS_DURATION" />.</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6414618057231176439">Selectează versiunea de <ph name="VM_NAME" /> pe care dorești să o instalezi.</translation>
+<translation id="641469293210305670">Instalează actualizări și aplicații</translation>
 <translation id="6417265370957905582">Asistent Google</translation>
 <translation id="641817663353603351">o pagină mai sus</translation>
+<translation id="6418511932144861495">Instalează actualizarea importantă</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Șterge toate notificările</translation>
 <translation id="6426905245930183644">Se creează…</translation>
@@ -1730,6 +1779,7 @@ Niciun dispozitiv conectat.</translation>
 <translation id="6482559668224714696">Lupă de ecran complet</translation>
 <translation id="6485086611007560630">Vreme (indisponibilă)</translation>
 <translation id="6490471652906364588">Dispozitiv USB-C (portul din dreapta)</translation>
+<translation id="6491376743066338510">Autorizarea nu a reușit</translation>
 <translation id="649452524636452238">Codul PIN al cardului inteligent</translation>
 <translation id="6495322433318104734">Se afișează screensaverul, apasă orice tastă pentru a ieși</translation>
 <translation id="6495400115277918834">Picture-in-picture a început, apasă pe Alt+Shift+V pentru a focaliza</translation>
@@ -1783,10 +1833,12 @@ Instalare nouă</translation>
 <translation id="6625718907317144388">Notificările pentru <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> și altele sunt ascunse deoarece este activată protecția la afișare</translation>
 <translation id="6627638273713273709">Tasta de căutare + Shift + K</translation>
 <translation id="662830937908749204">Mută focalizarea pe panoul următor</translation>
+<translation id="6635674640674343739">Conexiunea la rețea nu poate fi stabilită. Verifică starea conexiunii la rețea și încearcă din nou.</translation>
 <translation id="6637729079642709226">Schimbă ora</translation>
 <translation id="6641720045729354415">Activează / dezactivează funcția Subtitrări live. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">Anulează sortarea după nume</translation>
 <translation id="664793810957802384">Elemente din grupul sugerat</translation>
+<translation id="6649018507441623493">O secundă…</translation>
 <translation id="6649641931981131786">Ajustează camera foto pentru a te plasa în centrul ecranului.</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> solicită să îți confirmi identitatea</translation>
 <translation id="6650742588569439432">Elementele nu au putut fi încărcate.</translation>
@@ -1811,6 +1863,7 @@ Instalare nouă</translation>
 <translation id="6706742084323792866">Fixează tastatura</translation>
 <translation id="6709719156428404245">Trage sau apasă pe tasta de spațiu pentru a selecta o zonă de înregistrat</translation>
 <translation id="6710213216561001401">Înapoi</translation>
+<translation id="6716798148881908873">S-a pierdut conexiunea la rețea. Verifică starea conexiunii la rețea sau încearcă o altă rețea Wi-Fi.</translation>
 <translation id="6723839937902243910">Alimentare</translation>
 <translation id="672609503628871915">Vedeți noutățile</translation>
 <translation id="6727969043791803658">Conectat, nivelul bateriei: <ph name="BATTERY_PERCENTAGE" /> %</translation>
@@ -1850,6 +1903,7 @@ Instalare nouă</translation>
 <translation id="6819327813400217281">Camera foto este aliniată cu colțul din stânga jos</translation>
 <translation id="6820676911989879663">Fă o pauză!</translation>
 <translation id="6827049576281411231">Închide panoul de evenimente</translation>
+<translation id="682971198310367122">Politica de confidențialitate Google</translation>
 <translation id="6836499262298959512">Fișier periculos</translation>
 <translation id="6837621009301897464">Pentru a face o captură de ecran, apasă</translation>
 <translation id="6852052252232534364">Dă clic pentru activare</translation>
@@ -1881,6 +1935,7 @@ Instalare nouă</translation>
 <translation id="6942518653766415536">Meniu cu formatul de înregistrare</translation>
 <translation id="6945221475159498467">Selectează</translation>
 <translation id="6945922087561257829">Telefonul folosește o rețea mobilă. Verifică dacă telefonul și Chromebookul sunt în aceeași rețea Wi-Fi, apoi încearcă din nou. <ph name="LEARN_MORE" /></translation>
+<translation id="6950627417367801484">Restabilește aplicațiile</translation>
 <translation id="6960565108681981554">Neactivată. Contactează operatorul.</translation>
 <translation id="6961121602502368900">Dezactivarea sunetului telefonului nu este disponibilă în profilul de serviciu</translation>
 <translation id="6961840794482373852">Comanda rapidă de la tastatură Alt + săgeată în sus s-a schimbat. Ca să folosești tasta Page Up, apasă tasta <ph name="LAUNCHER_KEY_NAME" /> + săgeata în sus.</translation>
@@ -2052,6 +2107,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="7541773865713908457"><ph name="ACTION_NAME" /> cu aplicația <ph name="APP_NAME" /></translation>
 <translation id="7543399541175347147">Aplicațiile Linux și ferestrele incognito nu sunt acceptate. Alte aplicații se vor salva.</translation>
 <translation id="7544300628205093162">Retroiluminarea tastaturii este activată</translation>
+<translation id="7545466883021407599">Nu s-a putut conecta la server. Verifică starea conexiunii la rețea și încearcă din nou. Dacă ai în continuare probleme, repornește Chromebookul. Cod de eroare: <ph name="ERROR_CODE" />.</translation>
 <translation id="7548434653388805669">Este timpul pentru culcare</translation>
 <translation id="7551643184018910560">Fixați în raft</translation>
 <translation id="7557816257942363084"><ph name="APP_NAME" /> folosește momentan microfonul</translation>
@@ -2067,6 +2123,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="7579778809502851308">Captură de ecran</translation>
 <translation id="7588317312481506627">S-a copiat în clipboard.</translation>
 <translation id="7593891976182323525">Căutare sau Shift</translation>
+<translation id="7595453277607160340">Ca să folosești aplicații Android și să te asiguri că <ph name="DEVICE_TYPE" /> funcționează corect, conectează-te din nou și actualizează.</translation>
 <translation id="7598054670902114203">Instantaneu de utilizare CPU, <ph name="CPU_USEAGE" /> %. Temperatura: <ph name="TEMPERATURE" /> grade Celsius, viteza actuală: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="7599378375976398913">Se inserează rezultatul selectat</translation>
 <translation id="7600875258240007829">Vezi toate notificările</translation>
@@ -2076,6 +2133,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="7609951632080598826">Afișarea calendar, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Camera foto a fost reconectată.</translation>
 <translation id="7613620083300976559">Activează comenzile jocului</translation>
+<translation id="761530003705945209">Fă backup în Google Drive. Restabilește datele sau schimbă dispozitivul cu ușurință, în orice moment. Backupul include datele aplicațiilor. Backupurile sunt încărcate pe serverele Google și sunt criptate folosind parola pentru Contul Google.</translation>
 <translation id="761736749114493194">Comută încadrarea camerei. <ph name="STATE_TEXT" /></translation>
 <translation id="7621008024906456933">Setările Quick Share</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
@@ -2124,6 +2182,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="7748275671948949022">Evidențiază butonul Lansator de pe raft</translation>
 <translation id="7749443890790263709">S-a atins numărul maxim de desktopuri.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7750228210027921155">Picture-in-picture</translation>
 <translation id="7751260505918304024">Afișați-le pe toate</translation>
 <translation id="7762664108390426952">Termenii și condițiile și Politica de confidențialitate Google</translation>
 <translation id="7768784765476638775">Selectează și ascultă</translation>
@@ -2242,6 +2301,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="8092380135549145188">Comenzi de derulare</translation>
 <translation id="8098591350844501178">Nu mai proiecta ecranul pe dispozitivul <ph name="RECEIVER_NAME" /></translation>
 <translation id="810637681351706236">Anulează fixarea aplicației pe raft</translation>
+<translation id="8107015733319732394">Se instalează Magazinul Google Play pe dispozitivul <ph name="DEVICE_TYPE" />. Ar putea dura câteva minute.</translation>
 <translation id="8113423164597455979">Activat, toate</translation>
 <translation id="8113515504791187892">Butonul Selectează și ascultă</translation>
 <translation id="8120151603115102514">Telefonul nu are ecran de blocare. Pentru a debloca Chromebookul, introdu parola.</translation>
@@ -2324,6 +2384,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="8388750414311082622">Ultimul desktop nu poate fi eliminat.</translation>
 <translation id="8394567579869570560">Părintele tău a blocat dispozitivul</translation>
 <translation id="8401850874595457088">Accesează meniul de limbă</translation>
+<translation id="8410775397654368139">Google Play</translation>
 <translation id="8412677897383510995">Afișează setările de afișare</translation>
 <translation id="8413272770729657668">Înregistrarea începe în 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (carcasă)</translation>
@@ -2349,11 +2410,13 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> are <ph name="FEATURE_NAME" /> <ph name="FEATURE_STATE" />.</translation>
 <translation id="8477270416194247200">Apasă pe Alt + tasta de căutare sau pe Shift pentru a anula.</translation>
 <translation id="8480418399907765580">Afișați bara de instrumente</translation>
+<translation id="8481187309597259238">Confirmă permisiunea pentru USB</translation>
 <translation id="8487660088084188539">Când activezi aceste funcții, textul introdus, conținutul documentului și adresa URL a paginii web pot fi trimise la serverele Google. Aceste informații sunt folosite pentru a genera sugestii de scris și rezumate, pentru a răspunde la întrebări și pentru a îmbunătăți produsul, în conformitate cu <ph name="LINK_TO_SERVICE_TERMS" />. Nu include conținut personal, sensibil sau confidențial.</translation>
 <translation id="8487699605742506766">Hotspot</translation>
 <translation id="8490896350101740396">Următoarele aplicații de tip chioșc „<ph name="UPDATED_APPS" />” au fost actualizate. Repornește dispozitivul pentru a finaliza procesul de actualizare.</translation>
 <translation id="8491237443345908933">Deschide linkul într-o filă nouă</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> nu acceptă <ph name="SPECIFIED_RESOLUTION" />. Rezoluția a fost modificată la <ph name="FALLBACK_RESOLUTION" />. Dă clic pe Confirmă pentru a păstra modificările. Setările anterioare vor fi restabilite în <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="8502536196501630039">Ca să folosești aplicații din Google Play, trebuie mai întâi să restabilești aplicațiile. Este posibil ca unele date să se fi pierdut.</translation>
 <translation id="8507563469658346379">Toți, <ph name="REMAINING_TIME" /></translation>
 <translation id="8511123073331775246">Creează un nou desktop</translation>
 <translation id="85123341071060231">Bluetooth-ul Chromebook-ului este dezactivat. Pentru a-ți debloca Chromebookul, introdu parola.</translation>
@@ -2407,6 +2470,8 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="8676770494376880701">A fost conectat un încărcător de putere joasă</translation>
 <translation id="8679158879996532670">Afișează setările pentru Focus. Modul Focus este activat, timp rămas: <ph name="REMAINING_TIME" />.</translation>
 <translation id="8683506306463609433">Urmărirea performanțelor este activă</translation>
+<translation id="8698432579173128320">Fă backup în Google Drive. Restabilește datele sau schimbă dispozitivul cu ușurință, în orice moment. Backupul include datele aplicațiilor. Backupurile sunt încărcate pe serverele Google și sunt criptate folosind parola Contului Google. <ph name="BEGIN_LINK1" />Află mai multe despre backup<ph name="BEGIN_LINK1_END" />Află mai multe<ph name="END_LINK1" /></translation>
+<translation id="8700087567921985940">Folosește locația. Permite aplicațiilor și serviciilor cu permisiune pentru locație să folosească locația dispozitivului tău. Google poate colecta periodic date privind locațiile și le poate folosi în mod anonim pentru a îmbunătăți precizia locației și serviciile bazate pe locație. <ph name="BEGIN_LINK1" />Află mai multe despre locație<ph name="BEGIN_LINK1_END" />Află mai multe<ph name="END_LINK1" /></translation>
 <translation id="8703634754197148428">Pornește înregistrarea. După ce a început înregistrarea, apasă pe Alt + Shift + L pentru a naviga la raft și caută butonul de oprire a înregistrării</translation>
 <translation id="8704155109538237473">Focalizează fereastra picture-in-picture</translation>
 <translation id="870917907284186124">Activează / dezactivează dictarea (introdu text folosind vocea)</translation>
@@ -2470,6 +2535,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="8875021410787719674">Mută între colțul din dreapta jos, Lansator, bara de adrese, bara de marcaje, site-ul deschis și descărcări</translation>
 <translation id="8876148469852588625">Evenimentul <ph name="EVENT_POSITION" /> din <ph name="EVENT_TOTAL_COUNT" /></translation>
 <translation id="8876661425082386199">Verifică-ți conexiunea</translation>
+<translation id="8883478023074930307">Trimite date de utilizare și diagnosticare. Momentan, dispozitivul trimite automat date de diagnosticare și de utilizare a dispozitivului și aplicațiilor la Google. Aceasta va ajuta la stabilitatea sistemului, a aplicației și altele. Unele date agregate vor ajuta aplicațiile și partenerii Google, cum ar fi dezvoltatorii Android. Această <ph name="BEGIN_LINK1" />setare<ph name="END_LINK1" /> este impusă de proprietar. Dacă setarea Activitatea suplimentară de pe web și din aplicații este activată, aceste date pot fi salvate în Contul tău Google. <ph name="BEGIN_LINK2" />Află mai multe despre valori<ph name="BEGIN_LINK2_END" />Află mai multe<ph name="END_LINK2" /></translation>
 <translation id="8885424115080869847">Nu se poate conecta la YouTube Music</translation>
 <translation id="888982883502837004">Sunt disponibile actualizări de firmware pentru dispozitivul tău. Dă clic pentru a examina și actualiza.</translation>
 <translation id="8896630965521842259">Șablonul <ph name="DESK_TEMPLATE_NAME" /> va fi șters definitiv</translation>
@@ -2512,10 +2578,12 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="9000771174482730261">GESTIONEAZĂ SPAȚIUL DE STOCARE</translation>
 <translation id="9003374957546315126">Emoji-uri și altele</translation>
 <translation id="9005984960510803406">Deschide fereastra Crosh</translation>
+<translation id="901668144954885282">Fă backup în Google Drive</translation>
 <translation id="9017320285115481645">Introdu codul de acces parental pentru Family Link.</translation>
 <translation id="9024331582947483881">ecran complet</translation>
 <translation id="9029736946581028033">Dispozitivul se va închide în curând</translation>
 <translation id="9030319654231318877">Dezactivată până la apus</translation>
+<translation id="9030515284705930323">Organizația nu a activat Magazinul Google Play pentru contul tău. Contactează administratorul pentru mai multe informații.</translation>
 <translation id="9030665205623277906">Instantaneu de utilizare CPU: <ph name="CPU_USEAGE" /> %</translation>
 <translation id="9034924485347205037">Fișiere Linux</translation>
 <translation id="9047624247355796468">Deschide setările pentru <ph name="NETWORK_NAME" /></translation>
@@ -2565,8 +2633,10 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="9195857219954068558">Chromebookul a fost actualizat. Deschide ferestrele și aplicațiile anterioare.</translation>
 <translation id="9195990613383871904">Mâine</translation>
 <translation id="9198992156681343238">Rezoluția pentru <ph name="DISPLAY_NAME" /> a fost modificată la <ph name="RESOLUTION" />. Dă clic pe Confirmă pentru a păstra modificările. Setările anterioare vor fi restabilite în <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="9199853905755292769">Trimite date de utilizare și diagnosticare. Momentan, dispozitivul trimite automat date de diagnosticare și de utilizare a dispozitivului și aplicațiilor la Google. Acestea nu vor fi folosite la identificarea copilului și vor ajuta la stabilitatea sistemului, a aplicațiilor și altele. Unele date agregate vor ajuta aplicațiile și partenerii Google, cum ar fi dezvoltatorii Android. Dacă ai activat setarea Activitatea suplimentară de pe web și din aplicații pentru copilul tău, aceste date pot fi salvate în Contul său Google. <ph name="BEGIN_LINK2" />Află mai multe despre valori<ph name="BEGIN_LINK2_END" />Află mai multe<ph name="END_LINK2" /></translation>
 <translation id="9201044636667689546">Conectează <ph name="NAME" /> la acest Chromebook</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, gestionată de administratorul tău</translation>
+<translation id="9201842707396338580">A apărut o eroare. Contactează proprietarul dispozitivului ori administratorul. Cod de eroare: <ph name="ERROR_CODE" />.</translation>
 <translation id="9207682216934703221">Astfel, <ph name="APP_NAME" />, <ph name="APP2_NAME" /> și toate aplicațiile și site-urile care au permisiunea pentru locație și ChromeOS pot să folosească locația prin Wi-Fi și rețele mobile.</translation>
 <translation id="9210037371811586452">Se iese din modul desktop unificat</translation>
 <translation id="9211490828691860325">Toate desktopurile</translation>
@@ -2579,6 +2649,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="923686485342484400">Apăsați de două ori Control Shift Q pentru a vă deconecta.</translation>
 <translation id="92580429198593979">Ai apăsat pe comanda rapidă de la tastatură pentru inversarea culorilor. Dorești să o activezi?</translation>
 <translation id="925832987464884575">Ascunde previzualizările</translation>
+<translation id="93140074055951850">Aplicațiile Android au fost oprite</translation>
 <translation id="938407504481277932">Desktopul actual: <ph name="DESK_NAME" /> <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. Desktopul <ph name="DESK_INDEX" /> din <ph name="DESK_COUNT" />.</translation>
 <translation id="94468042118567862">Dispozitivul nu este actualizat</translation>
 <translation id="945383118875625837">Trage linkul în bara de marcaje</translation>

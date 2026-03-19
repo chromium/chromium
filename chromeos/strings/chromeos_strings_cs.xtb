@@ -273,7 +273,6 @@
 <translation id="200669432486043882">Nahradit soubor</translation>
 <translation id="2006864819935886708">Připojení</translation>
 <translation id="2008685064673031089">Vyhledávání prvočísel</translation>
-<translation id="2011174342667534258">Verze sady SDK:</translation>
 <translation id="2016697457005847575">Vyzkoušet postup odstraňování problémů</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2045814230297767491">příbory</translation>
@@ -523,7 +522,6 @@
 <translation id="3291996639387199448">Směr klíče</translation>
 <translation id="3294437725009624529">Host</translation>
 <translation id="3303855915957856445">Nebyly nalezeny žádné výsledky</translation>
-<translation id="3305294846493618482">více</translation>
 <translation id="3310640316857623290">DNS má latenci výrazně nad prahovou hodnotou</translation>
 <translation id="3316495615885967552">Stažení modelu k vytváření souhrnů a názvů bylo dokončeno</translation>
 <translation id="3321030238473337787">Rychlost přehrávání</translation>
@@ -702,7 +700,6 @@
 <translation id="4126551873361000548">O 10 sekund zpět</translation>
 <translation id="4128271910628504223">Zadejte pokyn jako „nakresli mlžný les“</translation>
 <translation id="4130035430755296270">Umístěním kurzoru zobrazíte další možnosti rozvržení.</translation>
-<translation id="4130750466177569591">Souhlasím</translation>
 <translation id="4131410914670010031">Černobíle</translation>
 <translation id="4137700675046373159">v sobotu</translation>
 <translation id="4139326893730851150">Aktualizace firmwaru</translation>
@@ -1051,7 +1048,6 @@
 <translation id="5606865426897221650">Karta</translation>
 <translation id="5612205513582918357">Nástroje pro výuku sdílejí vaši obrazovku se zařízením <ph name="RECEIVER_NAME" /></translation>
 <translation id="5613201299517339763">Byli jste odhlášeni</translation>
-<translation id="5620281292257375798">Pouze pro interní použití</translation>
 <translation id="5628106863521633649">Dostupné jazyky</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">abstrakt</translation>
@@ -1415,7 +1411,6 @@
 <translation id="7184043045742675738">Pokud své tlačítko chcete přizpůsobit, klikněte na libovolnou klávesu. Přemístěte klávesu pomocí myši nebo kláves se šipkami.</translation>
 <translation id="7187669805838282391">ve středu</translation>
 <translation id="7205318498545665455">Vyberte mikrofon</translation>
-<translation id="7206979415662233817">Smluvní podmínky</translation>
 <translation id="7210635925306941239">azurová</translation>
 <translation id="7212547870105584639">Spravovat nastavení názvů přístupových bodů (APN) sítě. Názvy přístupových bodů umožňují navázat spojení mezi mobilní sítí a internetem. <ph name="BEGIN_LINK_LEARN_MORE" />Další informace<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Aktualizace firmwaru pro externí zařízení</translation>
@@ -1446,11 +1441,6 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7321055305895875150">zelená a šedozelená</translation>
 <translation id="7328475450575141167">rajka</translation>
-<translation id="7331297744262591636">Musíte být starší 18 let a musíte souhlasit s tím, že se používání AI tapet podléhá <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />smluvním podmínkám společnosti Google<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> a <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />doplňujícím smluvním podmínkám generativní umělé inteligence<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Tapety můžete pomocí umělé inteligence vytvářet pouze pro osobní a nekomerční použití. Když požádáte o pomoc s tapetou, text se odešle na servery Google AI, aby vygenerovaly návrhy tapet. Platí <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />zásady ochrany soukromí společnosti Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. <ph name="BEGIN_LINK_LEARN_MORE" />Další informace<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Ve Vyhledávání Google výsledek zobrazíte stisknutím tlačítka Hledat a mezerníku.</translation>
 <translation id="7343649194310845056">Síťová zařízení</translation>
 <translation id="7344788170842919262">zemité</translation>
 <translation id="7346768383111016081">Přiřaďte k herní akci způsob ovládání, abyste mohli hrát pomocí klávesnice</translation>
@@ -1838,7 +1828,6 @@ Pokud přepisy chcete získat, stáhněte si pro ně model (až 100 MB).</trans
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">Použít toto video</translation>
-<translation id="9087578468327036362">Nahlaste tento dotaz</translation>
 <translation id="9088306295921699330">Současné využití</translation>
 <translation id="9088994563996376283">Zjednodušit</translation>
 <translation id="9095775724867566971">Pluginvm</translation>

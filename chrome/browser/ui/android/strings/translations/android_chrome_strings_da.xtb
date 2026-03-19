@@ -1820,6 +1820,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="8282950411412455249">Gå til sikkerhedsindstillingerne</translation>
 <translation id="8288688997999490824">{NUM_WINDOWS,plural, =1{Luk 1 inkognitovindue}one{Luk # inkognitovindue}other{Luk # inkognitovinduer}}</translation>
 <translation id="831192587911042850">Føjer det aktuelle website til den liste over websites, du følger.</translation>
+<translation id="8313599942510782709">Din opgave er stadig i gang</translation>
 <translation id="8317318757008452355">Åbn valgmulighederne for udskrivning</translation>
 <translation id="8320212361750431956">Seneste aktivitet</translation>
 <translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />Nyhed<ph name="END_NEW" /></translation>

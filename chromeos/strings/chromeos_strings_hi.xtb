@@ -273,7 +273,6 @@
 <translation id="200669432486043882">फ़ाइल प्रतिस्‍थापित करें</translation>
 <translation id="2006864819935886708">कनेक्टिविटी</translation>
 <translation id="2008685064673031089">प्राइम सर्च</translation>
-<translation id="2011174342667534258">SDK टूल का वर्शन:</translation>
 <translation id="2016697457005847575">समस्या ठीक करने के तरीके आज़माएं</translation>
 <translation id="202500043506723828">ईआईडी</translation>
 <translation id="2045814230297767491">कटलरी</translation>
@@ -523,7 +522,6 @@
 <translation id="3291996639387199448">कुंजी का डायरेक्शन</translation>
 <translation id="3294437725009624529">मेहमान</translation>
 <translation id="3303855915957856445">कोई खोज नतीजे नहीं मिले</translation>
-<translation id="3305294846493618482">पूरा यूआरएल देखें</translation>
 <translation id="3310640316857623290">डीएनएस, इंतज़ार की समयसीमा से बहुत ऊपर है</translation>
 <translation id="3316495615885967552">खास जानकारी और टाइटल जनरेट करने का मॉडल डाउनलोड हो गया है</translation>
 <translation id="3321030238473337787">वीडियो चलाने की रफ़्तार</translation>
@@ -702,7 +700,6 @@
 <translation id="4126551873361000548">10 सेकंड पीछे ले जाएं</translation>
 <translation id="4128271910628504223">कोई प्रॉम्प्ट डालें. जैसे, "कोहरे से भरे जंगल की इमेज बनाओ"</translation>
 <translation id="4130035430755296270">लेआउट के ज़्यादा विकल्प देखने के लिए कर्सर घुमाते रहें</translation>
-<translation id="4130750466177569591">मैं सहमत हूं</translation>
 <translation id="4131410914670010031">श्याम और श्वेत</translation>
 <translation id="4137700675046373159">शनिवार को</translation>
 <translation id="4139326893730851150">फ़र्मवेयर से जुड़े अपडेट</translation>
@@ -1051,7 +1048,6 @@
 <translation id="5606865426897221650">टैब</translation>
 <translation id="5612205513582918357">क्लास टूल, <ph name="RECEIVER_NAME" /> के साथ आपकी स्क्रीन शेयर कर रहा है</translation>
 <translation id="5613201299517339763">आपको साइन आउट कर दिया गया है</translation>
-<translation id="5620281292257375798">सिर्फ़ अंदरूनी</translation>
 <translation id="5628106863521633649">उपलब्ध भाषाएं</translation>
 <translation id="5630438231335788050">बाओहाउस</translation>
 <translation id="5631759159893697722">संक्षेप</translation>
@@ -1415,7 +1411,6 @@
 <translation id="7184043045742675738">अपने बटन को पसंद के मुताबिक बनाने के लिए, किसी भी बटन पर क्लिक करें. माउस या ऐरो बटन की मदद से, बटन की जगह बदलें.</translation>
 <translation id="7187669805838282391">बुधवार को</translation>
 <translation id="7205318498545665455">माइक्रोफ़ोन चुनें</translation>
-<translation id="7206979415662233817">सेवा की शर्तें</translation>
 <translation id="7210635925306941239">सायन</translation>
 <translation id="7212547870105584639">नेटवर्क एपीएन सेटिंग मैनेज करें. एपीएन, मोबाइल नेटवर्क और इंटरनेट के बीच कनेक्शन बनाते हैं. <ph name="BEGIN_LINK_LEARN_MORE" />ज़्यादा जानें<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">बाहरी डिवाइसों के लिए फ़र्मवेयर अपडेट</translation>
@@ -1446,11 +1441,6 @@
 <translation id="7319430975418800333">ए3</translation>
 <translation id="7321055305895875150">हरा और टील</translation>
 <translation id="7328475450575141167">बर्ड ऑफ़ पैराडाइस</translation>
-<translation id="7331297744262591636">आपकी उम्र कम से कम 18 साल होनी चाहिए. साथ ही, आपको इस बात के लिए सहमति जतानी होगी कि एआई वॉलपेपर के आपके इस्तेमाल पर, <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Google की सेवा की शर्तें<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> और <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />जनरेटिव एआई की सेवा की अन्य शर्तें<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" /> लागू होंगी.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          एआई की मदद से, सिर्फ़ निजी और गैर-व्यावसायिक इस्तेमाल के लिए वॉलपेपर बनाए जा सकते हैं. जब आपको वॉलपेपर के लिए मदद मिलती है, तब Google के एआई से जुड़े सभी सर्वर को टेक्स्ट भेजा जाता है, ताकि वॉलपेपर के लिए सुझाव जनरेट किए जा सकें. इस पर <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google की निजता नीति<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> लागू होती है. <ph name="BEGIN_LINK_LEARN_MORE" />ज़्यादा जानें<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Search में नतीजा देखने के लिए, Search के साथ Space दबाएं.</translation>
 <translation id="7343649194310845056">नेटवर्क के डिवाइस</translation>
 <translation id="7344788170842919262">अर्थी</translation>
 <translation id="7346768383111016081">कीबोर्ड की मदद से गेम खेलने के लिए, उसमें कंट्रोल जोड़ें</translation>
@@ -1837,7 +1827,6 @@
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">ब्लूटूथ</translation>
 <translation id="9082718469794970195">इस वीडियो का इस्तेमाल करें</translation>
-<translation id="9087578468327036362">इस क्वेरी की शिकायत करें</translation>
 <translation id="9088306295921699330">मौजूदा इस्तेमाल</translation>
 <translation id="9088994563996376283">आसान शब्दों में समझें</translation>
 <translation id="9095775724867566971">Pluginvm</translation>

@@ -25,6 +25,7 @@
 <translation id="3115238746683532089"><ph name="VENDOR_ID" /> дегенден белгисиз өндүрүм <ph name="PRODUCT_ID" /> (сериялык номери – <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">crx файлы алмаштырылган жок. Файлдын колдонулуп жаткандыгын текшериңиз.</translation>
 <translation id="3163201441334626963"><ph name="VENDOR_ID" /> дегенден белгисиз өндүрүм <ph name="PRODUCT_ID" /></translation>
+<translation id="3174723475300476613">Уюмуңуз бул кеңейтүүнү бөгөттөп койгон.</translation>
 <translation id="3242289508736283383">"Киоск_гана" деген манифести бар колдонмо ChromeOS киоск режиминде орнотулушу керек</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (сериялык номери – <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="VENDOR_ID" /> дегенден <ph name="PRODUCT_NAME" /> (сериялык номери – <ph name="SERIAL_NUMBER" />)</translation>
@@ -32,6 +33,7 @@
 <translation id="3834775135533257713">"<ph name="TO_INSTALL_APP_NAME" />" колдонмосу "<ph name="INSTALLED_APP_NAME" />" колдонмосуна карама-каршы келгендиктен, кошулбай койду.</translation>
 <translation id="388442998277590542">'<ph name="OPTIONS_PAGE" />' параметрлер бети ачылган жок.</translation>
 <translation id="3984413272403535372">Кеңейтүү киргизилип жатканда ката кетти.</translation>
+<translation id="4094452115117798451">Уюмуңуз бул кеңейтүү категориясын бөгөттөп койгон.</translation>
 <translation id="4233778200880751280">Кандайдыр бир нерсе жөнүндө бет жүктөлгөн жок '<ph name="ABOUT_PAGE" />'.</translation>
 <translation id="424963718355121712">Колдонмолор өзүлөрүнө тиешеси бар башкы түйүндөн тейленишет</translation>
 <translation id="4306119971288449206">Колдонмолор "<ph name="CONTENT_TYPE" />" мазмун түрү менен тейлениши керек</translation>

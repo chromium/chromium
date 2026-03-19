@@ -273,7 +273,6 @@
 <translation id="200669432486043882">فائل تبدیل کریں</translation>
 <translation id="2006864819935886708">کنیکٹویٹی</translation>
 <translation id="2008685064673031089">پرائم تلاش</translation>
-<translation id="2011174342667534258">‏SDK ورژن:</translation>
 <translation id="2016697457005847575">ٹربل شوٹنگ اقدامات کو آزمائیں</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2045814230297767491">کٹلری</translation>
@@ -523,7 +522,6 @@
 <translation id="3291996639387199448">کلیدی ڈائریکشن</translation>
 <translation id="3294437725009624529">مہمان</translation>
 <translation id="3303855915957856445">تلاش کے کوئی نتائج نہیں ملے</translation>
-<translation id="3305294846493618482">مزید</translation>
 <translation id="3310640316857623290">‏DNS تاخیر قابل اجازت حد سے نمایاں طور پر زیادہ ہے</translation>
 <translation id="3316495615885967552">خلاصہ اور عنوان کی تخلیق کے ماڈل کی ڈاؤن لوڈ مکمل ہو گئی</translation>
 <translation id="3321030238473337787">پلے بیک کی رفتار</translation>
@@ -702,7 +700,6 @@
 <translation id="4126551873361000548">‫10 سیکنڈز پیچھے جائیں</translation>
 <translation id="4128271910628504223">ایک پرامپٹ درج کریں جیسے "ایک دھندلا ہوا جنگل ڈرا کریں"</translation>
 <translation id="4130035430755296270">لے آؤٹ کے مزید اختیارات کیلئے اسکرول کرتے رہیں</translation>
-<translation id="4130750466177569591">میں متفق ہوں</translation>
 <translation id="4131410914670010031">سیاہ اور سفید</translation>
 <translation id="4137700675046373159">ہفتہ کو</translation>
 <translation id="4139326893730851150">فرم ویئر اپ ڈیٹس</translation>
@@ -1051,7 +1048,6 @@
 <translation id="5606865426897221650">ٹیب</translation>
 <translation id="5612205513582918357">کلاس ٹولز آپ کی اسکرین کا اشتراک <ph name="RECEIVER_NAME" /> کے ساتھ کر رہا ہے</translation>
 <translation id="5613201299517339763">آپ سائن آؤٹ ہو گئے ہیں</translation>
-<translation id="5620281292257375798">صرف داخلی</translation>
 <translation id="5628106863521633649">دستیاب زبانیں</translation>
 <translation id="5630438231335788050">باہاؤس</translation>
 <translation id="5631759159893697722">تجریدی</translation>
@@ -1415,7 +1411,6 @@
 <translation id="7184043045742675738">اپنے بٹن کو حسب ضرورت بنانے کے لیے کسی بھی کلید پر کلک کریں۔ ماؤس یا تیر کے نشان والی کلیدوں کے ساتھ کلید کی پوزیشن تبدیل کریں۔</translation>
 <translation id="7187669805838282391">بدھ کو</translation>
 <translation id="7205318498545665455">اپنا مائیک منتخب کریں</translation>
-<translation id="7206979415662233817">سروس کی شرائط</translation>
 <translation id="7210635925306941239">سبزی مائل نیلا</translation>
 <translation id="7212547870105584639">‏نیٹ ورک APN کی ترتیبات کا نظم کریں۔ APNs سیلولر نیٹ ورک اور انٹرنیٹ کے درمیان رابطہ قائم کرتے ہیں۔ <ph name="BEGIN_LINK_LEARN_MORE" />مزید جانیں<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">بیرونی آلات کیلئے فرم ویئر اپ ڈیٹس</translation>
@@ -1446,11 +1441,6 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7321055305895875150">سبز اور نیلگوں سبز</translation>
 <translation id="7328475450575141167">جنت کا پرندہ</translation>
-<translation id="7331297744262591636">‏آپ کی عمر کم از کم 18 سال ہونی چاہیے اور اس بات سے اتفاق کرتے ہیں کہ آپ کا AI وال پیپرز کا استعمال <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Google کی سروس کی شرائط<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> اور <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />تخلیق کر سکنے والے AI نظام کی سروس کی اضافی شرائط<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" /> کے ساتھ مشروط ہے۔
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          آپ صرف ذاتی اور غیر تجارتی استعمال کے لیے AI کے ساتھ وال پیپرز بنا سکتے ہیں۔ جب آپ وال پیپر کی مدد حاصل کرتے ہیں تو <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google کی رازداری کی پالیسی<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> کے ساتھ مشروط وال پیپر کی تجاویز تیار کرنے کے لیے Google AI سرورز ٹیکسٹ پیغام بھیجا جاتا ہے۔ <ph name="BEGIN_LINK_LEARN_MORE" />مزید جانیں<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="7343581795491695942">‏<ph name="QUERY_TEXT" />؛ <ph name="RESULT_TEXT" />؛ Google تلاش میں نتیجہ دیکھنے کیلئے Search اور Space دبائیں۔</translation>
 <translation id="7343649194310845056">نیٹ ورک کے آلات</translation>
 <translation id="7344788170842919262">زمینی رنگ</translation>
 <translation id="7346768383111016081">اپنے کی بورڈ کے ساتھ کھیلنے کے لیے گیم ایکشن پر کنٹرول رکھیں</translation>
@@ -1838,7 +1828,6 @@
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">بلوٹوتھ</translation>
 <translation id="9082718469794970195">یہ ویڈیو استعمال کریں</translation>
-<translation id="9087578468327036362">اس استفسار کی اطلاع دیں</translation>
 <translation id="9088306295921699330">حالیہ استعمال</translation>
 <translation id="9088994563996376283">آسان بنائیں</translation>
 <translation id="9095775724867566971">Pluginvm</translation>

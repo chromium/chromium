@@ -273,7 +273,6 @@
 <translation id="200669432486043882">Ordeztu fitxategia</translation>
 <translation id="2006864819935886708">Konexioa</translation>
 <translation id="2008685064673031089">Prime bilaketa</translation>
-<translation id="2011174342667534258">SDKaren bertsioa:</translation>
 <translation id="2016697457005847575">Egin arazoa konpontzeko urratsak</translation>
 <translation id="202500043506723828">EIDa</translation>
 <translation id="2045814230297767491">mahai-tresnak</translation>
@@ -523,7 +522,6 @@
 <translation id="3291996639387199448">Gakoaren norabidea</translation>
 <translation id="3294437725009624529">Gonbidatua</translation>
 <translation id="3303855915957856445">Ez da aurkitu bilaketa-emaitzarik</translation>
-<translation id="3305294846493618482">gehiago</translation>
 <translation id="3310640316857623290">DNSaren latentzia onartzen den atalasetik askoz gorago dago</translation>
 <translation id="3316495615885967552">Deskargatu da laburpenak eta izenak sortzeko eredua</translation>
 <translation id="3321030238473337787">Erreprodukzio-abiadura</translation>
@@ -702,7 +700,6 @@
 <translation id="4126551873361000548">Atzeratu 10 segundo</translation>
 <translation id="4128271910628504223">Idatzi eskaera-mezu bat; adibidez, "marraztu baso lainotsu bat"</translation>
 <translation id="4130035430755296270">Diseinu-aukera gehiago ikusteko, jarraitu gainetik pasatzen</translation>
-<translation id="4130750466177569591">Ados nago</translation>
 <translation id="4131410914670010031">Zuri-beltzez</translation>
 <translation id="4137700675046373159">larunbatean</translation>
 <translation id="4139326893730851150">Firmware-eguneratzeak</translation>
@@ -1051,7 +1048,6 @@
 <translation id="5606865426897221650">Fitxa</translation>
 <translation id="5612205513582918357">Klaseko tresnak zure pantaila <ph name="RECEIVER_NAME" /> aplikazioarekin partekatzen ari da</translation>
 <translation id="5613201299517339763">Amaitu egin da saioa</translation>
-<translation id="5620281292257375798">Barnekoa soilik</translation>
 <translation id="5628106863521633649">Erabilgarri dauden hizkuntzak</translation>
 <translation id="5630438231335788050">bauhaus-a</translation>
 <translation id="5631759159893697722">laburpena</translation>
@@ -1415,7 +1411,6 @@
 <translation id="7184043045742675738">Botoia pertsonalizatzeko, egin klik edozein teklatan. Aldatu teklaren posizioa saguarekin edo gezi-teklekin.</translation>
 <translation id="7187669805838282391">asteazkenean</translation>
 <translation id="7205318498545665455">Aukeratu mikrofonoa</translation>
-<translation id="7206979415662233817">Zerbitzu-baldintzak</translation>
 <translation id="7210635925306941239">zian-koloreko</translation>
 <translation id="7212547870105584639">Kudeatu sarearen APNaren ezarpenak. Sare mugikorren eta Interneten arteko konexioak ezartzen dituzte APNek. <ph name="BEGIN_LINK_LEARN_MORE" />Lortu informazio gehiago<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Kanpoko gailuen firmware-eguneratzeak</translation>
@@ -1446,11 +1441,6 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7321055305895875150">berde eta berde urdinxka</translation>
 <translation id="7328475450575141167">Strelitzia reginae</translation>
-<translation id="7331297744262591636">Gutxienez 18 urte izan behar dituzu, eta AAko horma-paperen erabilera <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Google-ren Zerbitzu-baldintzek<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> eta <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />AA generatiboaren zerbitzu-baldintza gehigarriek<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" /> arautzen dutela onartu.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          AAko horma-paperak erabilera pertsonal eta ez-komertzialerako soilik sor ditzakezu. Horma-paperak sortzeko laguntza jasotzen duzunean, testua Google-ren AAren zerbitzarietara bidaltzen da horma-paperen iradokizunak sortzeko, <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google-ren Pribatutasun-gidalerroei<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> jarraikiz. <ph name="BEGIN_LINK_LEARN_MORE" />Lortu informazio gehiago<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; emaitza Google Bilaketa zerbitzuan ikusteko, sakatu Bilaketa eta, gero, zuriune-barra.</translation>
 <translation id="7343649194310845056">Sareko gailuak</translation>
 <translation id="7344788170842919262">lur-koloreko</translation>
 <translation id="7346768383111016081">Ezarri kontrolatzeko aukera bat jokoko ekintza bati teklatuarekin jokatzeko</translation>
@@ -1838,7 +1828,6 @@ Transkripzio horiek lortzeko, deskargatu transkripzio-eredua (gehienez ere 100 
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetootha</translation>
 <translation id="9082718469794970195">Erabili bideoa</translation>
-<translation id="9087578468327036362">Salatu kontsulta</translation>
 <translation id="9088306295921699330">Oraingo erabilera</translation>
 <translation id="9088994563996376283">Sinplifikatu</translation>
 <translation id="9095775724867566971">Pluginvm</translation>

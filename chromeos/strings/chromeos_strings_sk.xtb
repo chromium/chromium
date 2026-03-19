@@ -273,7 +273,6 @@
 <translation id="200669432486043882">Nahradiť súbor</translation>
 <translation id="2006864819935886708">Pripojiteľnosť</translation>
 <translation id="2008685064673031089">Vyhľadávanie prvočísel</translation>
-<translation id="2011174342667534258">Verzia súpravy SDK:</translation>
 <translation id="2016697457005847575">Vyskúšať kroky na riešenie problémov</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2045814230297767491">príbor</translation>
@@ -523,7 +522,6 @@
 <translation id="3291996639387199448">Smer kľúča</translation>
 <translation id="3294437725009624529">Hosť</translation>
 <translation id="3303855915957856445">Nič sa nenašlo</translation>
-<translation id="3305294846493618482">viac</translation>
 <translation id="3310640316857623290">Latencia servera DNS výrazne prekračuje povolenú úroveň</translation>
 <translation id="3316495615885967552">Sťahovanie modelu na vytvorenie súhrnu a názvu bolo dokončené</translation>
 <translation id="3321030238473337787">Rýchlosť prehrávania</translation>
@@ -702,7 +700,6 @@
 <translation id="4126551873361000548">Preskočiť o 10 sekúnd dozadu</translation>
 <translation id="4128271910628504223">Zadajte pokyn, napríklad „nakresli hmlistý les“</translation>
 <translation id="4130035430755296270">Ďalšie možnosti rozloženia zobrazíte umiestnením kurzora na príslušné miesto</translation>
-<translation id="4130750466177569591">Súhlasím</translation>
 <translation id="4131410914670010031">Čiernobielo</translation>
 <translation id="4137700675046373159">v sobotu</translation>
 <translation id="4139326893730851150">Aktualizácie firmvéru</translation>
@@ -1051,7 +1048,6 @@
 <translation id="5606865426897221650">Tab</translation>
 <translation id="5612205513582918357">Učebné nástroje zdieľajú vašu obrazovku so zariadením <ph name="RECEIVER_NAME" /></translation>
 <translation id="5613201299517339763">Odhlásili ste sa</translation>
-<translation id="5620281292257375798">Iba interné</translation>
 <translation id="5628106863521633649">Dostupné jazyky</translation>
 <translation id="5630438231335788050">bauhausu</translation>
 <translation id="5631759159893697722">abstrakt</translation>
@@ -1415,7 +1411,6 @@
 <translation id="7184043045742675738">Ak chcete tlačidlo prispôsobiť, kliknite na ľubovoľný kláves. Presuňte kláves myšou alebo klávesmi so šípkami.</translation>
 <translation id="7187669805838282391">v stredu</translation>
 <translation id="7205318498545665455">Vyberte mikrofón</translation>
-<translation id="7206979415662233817">Zmluvné podmienky</translation>
 <translation id="7210635925306941239">azúrové</translation>
 <translation id="7212547870105584639">Spravujte nastavenia názvov prístupových bodov (APN) siete. Názvy prístupových bodov umožňujú nadviazať pripojenie medzi mobilnou sieťou a internetom. <ph name="BEGIN_LINK_LEARN_MORE" />Ďalšie informácie<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Aktualizácie firmvéru pre externé zariadenia</translation>
@@ -1446,11 +1441,6 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7321055305895875150">zelená a modrozelená</translation>
 <translation id="7328475450575141167">strelícia</translation>
-<translation id="7331297744262591636">Musíte mať minimálne 18 rokov a vyjadriť súhlas s tým, že na vaše používanie tapiet od umelej inteligencie sa vzťahujú <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />zmluvné podmienky spoločnosti Google<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> a <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />dodatočné zmluvné podmienky generatívnej umelej inteligencie<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Tapety môžete pomocou umelej inteligencie vytvárať iba na osobné a nekomerčné použitie. Keď získate pomoc s tapetou, text sa odošle na servery umelej inteligencie od Googlu, ktoré vygenerujú návrhy tapety, a to v súlade s <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />pravidlami ochrany súkromia spoločnosti Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. <ph name="BEGIN_LINK_LEARN_MORE" />Ďalšie informácie<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; stlačením klávesa vyhľadávania a medzerníka zobrazíte výsledok vo Vyhľadávaní Google.</translation>
 <translation id="7343649194310845056">Sieťové zariadenia</translation>
 <translation id="7344788170842919262">zemitými</translation>
 <translation id="7346768383111016081">Vložte ovládací prvok do hernej akcie a hrajte pomocou klávesnice</translation>
@@ -1838,7 +1828,6 @@ Ak chcete mať tieto prepisy k dispozícii, stiahnite si model prepisov (až 10
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">Použiť toto video</translation>
-<translation id="9087578468327036362">Nahlásiť tento dopyt</translation>
 <translation id="9088306295921699330">Aktuálne využitie</translation>
 <translation id="9088994563996376283">Zjednodušiť</translation>
 <translation id="9095775724867566971">Pluginvm</translation>

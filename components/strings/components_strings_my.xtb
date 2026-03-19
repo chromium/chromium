@@ -1078,6 +1078,7 @@
 <translation id="2673968385134502798">ဂိမ်းများ</translation>
 <translation id="2674170444375937751">သင့်သမိုင်းမှ ဤစာမျက်နှာများကို သင်ဖျက်လိုသည်မှာ သင်သေချာပါသလား?</translation>
 <translation id="2674524144218093528">အိမ်ဆေးသုတ်ခြင်းနှင့် အချောကိုင်ခြင်း</translation>
+<translation id="2675716371350192683">သင့်အကြောင်းအရာကို AI ပိုကောင်းမွန်စေရန် သုံးမည်မဟုတ်ပါ။ သင့်အဖွဲ့အစည်းက ဤဆက်တင်များကို အချိန်မရွေး ပြောင်းနိုင်သည်။</translation>
 <translation id="26774279487328902">တဘ်အုပ်စု <ph name="GROUP_COUNT" /> ခု မရနိုင်တော့ပါ</translation>
 <translation id="2677748264148917807">ထွက်ခွာရန်</translation>
 <translation id="2679216653373462289">လှုပ်ရှားမှုနှင့် မီးရောင်အာရုံခံကိရိယာများ သုံးလိုသည်</translation>
@@ -2658,6 +2659,7 @@
 <translation id="5190835502935405962">စာညှပ် ဘား</translation>
 <translation id="5191315092027169558">သင့်ပရိုဖိုင်ကို <ph name="DOMAIN" /> က စီမံသည်</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> က ဖိုင်အများအပြားကို ​ဒေါင်းလုဒ်လုပ်လိုသည်</translation>
+<translation id="519528950056409240">Wallet ကို ဒေတာမျှဝေခွင့်ပြုရန်</translation>
 <translation id="5199121357983849992">ID ကတ်ကို သိမ်းမလား</translation>
 <translation id="5200063972779787617">အကောင့်တွင် လိပ်စာသိမ်းခြင်း</translation>
 <translation id="5201306358585911203">ဤစာမျက်နှာပေါ်တွင် ထည့်ထားသည့် စာမျက်နှာက ဆိုထားသည်မှာ</translation>
@@ -3105,6 +3107,7 @@
 <translation id="5910140988253729859">အော်တိုဖြည့်ကို နောက်ပြန်ရန်</translation>
 <translation id="5911020115933784199">အစီအစဉ်နှင့် ဖော်ပြချက်</translation>
 <translation id="5911110632211230665">ဖွင့်ခွင့် ပိတ်ထားသည်</translation>
+<translation id="5912796581727968237">Google Wallet ဖွင့်ရန်</translation>
 <translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" /> က ဤတဘ်ကို ထည့်လိုက်သည်</translation>
 <translation id="5915189366813702112">လိုက်လျောညီထွေ အလုပ်စီစဉ်ပေးမှု</translation>
 <translation id="59174027418879706">ဖွင့်ထားသည်</translation>

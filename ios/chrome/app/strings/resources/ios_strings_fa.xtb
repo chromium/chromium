@@ -1657,7 +1657,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6882836635272038266">محافظت استاندارد دربرابر وب‌سایت‌ها، بارگیری‌ها، و افزونه‌هایی که خطرناک بودنشان مشخص شده است.</translation>
 <translation id="6884135917113737984">{COUNT,plural, =1{‏ذخیره کردن {COUNT} گذرواژه در «حساب Google» شما}one{‏ذخیره کردن {COUNT} گذرواژه در «حساب Google» شما}other{‏ذخیره کردن {COUNT} گذرواژه در «حساب Google» شما}}</translation>
 <translation id="6888009575607455378">مطمئن هستید می‌خواهید از تغییراتتان صرف‌نظر کنید؟</translation>
-<translation id="6896758677409633944">کپی</translation>
+<translation id="6896758677409633944">کپی کردن</translation>
 <translation id="6897187120838603299">گذرواژه در دستگاهتان ذخیره خواهد شد.</translation>
 <translation id="6899890595581608884">اعلان‌های «بررسی ایمنی» خاموش شد</translation>
 <translation id="6900532703269623216">محافظت بهبودیافته</translation>
@@ -1724,6 +1724,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7149893636342594995">۲۴ ساعت گذشته</translation>
 <translation id="7154417656353909837">برداشتن نشانی‌ها</translation>
 <translation id="7161230316646448869">همگام‌سازی نشانک‌ها، سابقه، و موارد دیگر در همه دستگاه‌ها</translation>
+<translation id="7165323152084385463">شماره شناسایی خودرو</translation>
 <translation id="7173114856073700355">باز کردن تنظیمات</translation>
 <translation id="7173721738069475737">{count,plural, =1{نشانک ذخیره شد}one{‫{count} نشانک ذخیره شد}other{‫{count} نشانک ذخیره شد}}</translation>
 <translation id="7176183551031110427">زوم‌پس کردن</translation>
@@ -2218,6 +2219,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8863067612494559785">درحال ارسال به <ph name="DEVICE_NAME" />…</translation>
 <translation id="8863431381414769983">‏دریافت مسیر و اطلاعات محلی از Google Maps</translation>
 <translation id="8871974300055371298">تنظیمات محتوا</translation>
+<translation id="8876661425082386199">بررسی اتصال</translation>
 <translation id="8877788021141246043">‏Set a reminder (یادآوری تنظیم کن)</translation>
 <translation id="8879604564928138696">برای امتحان کردن، دو تک‌ضرب بزنید</translation>
 <translation id="8879952635974818770">محتوای شخصی‌سازی‌شده</translation>

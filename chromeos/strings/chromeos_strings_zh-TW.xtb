@@ -273,7 +273,6 @@
 <translation id="200669432486043882">取代檔案</translation>
 <translation id="2006864819935886708">連線問題</translation>
 <translation id="2008685064673031089">尖峰搜尋</translation>
-<translation id="2011174342667534258">SDK 版本：</translation>
 <translation id="2016697457005847575">試試疑難排解步驟</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2045814230297767491">餐具</translation>
@@ -523,7 +522,6 @@
 <translation id="3291996639387199448">金鑰方向</translation>
 <translation id="3294437725009624529">訪客</translation>
 <translation id="3303855915957856445">找不到相符的搜尋結果</translation>
-<translation id="3305294846493618482">更多</translation>
 <translation id="3310640316857623290">DNS 延遲時間大幅超過允許的門檻</translation>
 <translation id="3316495615885967552">摘要和標題建立模型下載完畢</translation>
 <translation id="3321030238473337787">播放速度</translation>
@@ -702,7 +700,6 @@
 <translation id="4126551873361000548">倒轉 10 秒</translation>
 <translation id="4128271910628504223">輸入提示詞，例如「畫出籠罩在薄霧下的森林」</translation>
 <translation id="4130035430755296270">將滑鼠游標懸停在上方，即可查看更多版面配置選項</translation>
-<translation id="4130750466177569591">我同意</translation>
 <translation id="4131410914670010031">黑白</translation>
 <translation id="4137700675046373159">星期六</translation>
 <translation id="4139326893730851150">韌體更新</translation>
@@ -1051,7 +1048,6 @@
 <translation id="5606865426897221650">Tab 鍵</translation>
 <translation id="5612205513582918357">課程工具組正與「<ph name="RECEIVER_NAME" />」分享你的螢幕畫面</translation>
 <translation id="5613201299517339763">你已登出</translation>
-<translation id="5620281292257375798">僅供內部使用</translation>
 <translation id="5628106863521633649">可用的語言</translation>
 <translation id="5630438231335788050">包浩斯</translation>
 <translation id="5631759159893697722">摘要</translation>
@@ -1415,7 +1411,6 @@
 <translation id="7184043045742675738">按一下任何按鍵可自訂按鈕，使用滑鼠或方向鍵可調整位置。</translation>
 <translation id="7187669805838282391">星期三</translation>
 <translation id="7205318498545665455">選擇麥克風</translation>
-<translation id="7206979415662233817">服務條款</translation>
 <translation id="7210635925306941239">青色</translation>
 <translation id="7212547870105584639">管理網路 APN 設定。APN 會在行動網路和網際網路之間建立連線。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">外部裝置適用的韌體更新</translation>
@@ -1446,11 +1441,6 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7321055305895875150">綠色和藍綠色</translation>
 <translation id="7328475450575141167">天堂鳥</translation>
-<translation id="7331297744262591636">您必須年滿 18 歲，並同意在使用 AI 桌布時遵守《<ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Google 服務條款<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" />》和《<ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />生成式 AI 附加服務條款<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />》。
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          AI 生成的桌布只能用於個人和非商業用途。當您使用這項服務時，系統會將文字內容傳送到 Google AI 伺服器生成桌布建議，並在處理資料的過程中遵守《<ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google 隱私權政策<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />》的規定。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="7343581795491695942"><ph name="QUERY_TEXT" />；<ph name="RESULT_TEXT" />；按下搜尋鍵加空白鍵即可在 Google 搜尋中查看結果。</translation>
 <translation id="7343649194310845056">網路裝置</translation>
 <translation id="7344788170842919262">大地</translation>
 <translation id="7346768383111016081">針對遊戲操作設定控制項，即可使用鍵盤玩遊戲</translation>
@@ -1838,7 +1828,6 @@
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">藍牙</translation>
 <translation id="9082718469794970195">使用這部影片</translation>
-<translation id="9087578468327036362">請回報這項查詢</translation>
 <translation id="9088306295921699330">目前用量</translation>
 <translation id="9088994563996376283">精簡</translation>
 <translation id="9095775724867566971">Pluginvm</translation>

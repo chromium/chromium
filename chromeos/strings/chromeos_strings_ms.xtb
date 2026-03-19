@@ -273,7 +273,6 @@
 <translation id="200669432486043882">Gantikan fail</translation>
 <translation id="2006864819935886708">Kesambungan</translation>
 <translation id="2008685064673031089">Carian nombor perdana</translation>
-<translation id="2011174342667534258">Versi SDK:</translation>
 <translation id="2016697457005847575">Cuba langkah penyelesaian masalah</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2045814230297767491">kutleri</translation>
@@ -523,7 +522,6 @@
 <translation id="3291996639387199448">Arahan utama</translation>
 <translation id="3294437725009624529">Tetamu</translation>
 <translation id="3303855915957856445">Tiada hasil carian ditemui</translation>
-<translation id="3305294846493618482">lagi</translation>
 <translation id="3310640316857623290">Kependaman DNS ternyata melebihi ambang yang dibenarkan</translation>
 <translation id="3316495615885967552">Proses muat turun model penciptaan ringkasan dan tajuk selesai</translation>
 <translation id="3321030238473337787">Kelajuan main balik</translation>
@@ -702,7 +700,6 @@
 <translation id="4126551873361000548">Undur ke belakang 10 saat</translation>
 <translation id="4128271910628504223">Masukkan gesaan seperti "lukis hutan berkabus"</translation>
 <translation id="4130035430755296270">Teruskan menuding untuk mendapatkan lagi pilihan reka letak</translation>
-<translation id="4130750466177569591">Saya bersetuju</translation>
 <translation id="4131410914670010031">Hitam putih</translation>
 <translation id="4137700675046373159">pada hari Sabtu</translation>
 <translation id="4139326893730851150">Kemaskinian perisian tegar</translation>
@@ -1051,7 +1048,6 @@
 <translation id="5606865426897221650">Tab</translation>
 <translation id="5612205513582918357">Alatan Pembelajaran berkongsi skrin anda dengan <ph name="RECEIVER_NAME" /></translation>
 <translation id="5613201299517339763">Anda telah dilog keluar</translation>
-<translation id="5620281292257375798">Dalaman sahaja</translation>
 <translation id="5628106863521633649">Bahasa yang tersedia</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">abstrak</translation>
@@ -1415,7 +1411,6 @@
 <translation id="7184043045742675738">Klik sebarang kekunci untuk menyesuaikan butang anda. Ubah kedudukan kekunci dengan tetikus atau kekunci anak panah.</translation>
 <translation id="7187669805838282391">pada hari Rabu</translation>
 <translation id="7205318498545665455">Pilih mikrofon anda</translation>
-<translation id="7206979415662233817">Syarat perkhidmatan</translation>
 <translation id="7210635925306941239">sian</translation>
 <translation id="7212547870105584639">Urus tetapan APN rangkaian. APN mewujudkan sambungan antara rangkaian selular dengan Internet. <ph name="BEGIN_LINK_LEARN_MORE" />Ketahui lebih lanjut<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Kemaskinian perisian tegar untuk peranti luaran</translation>
@@ -1446,11 +1441,6 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7321055305895875150">hijau dan hijau kebiruan</translation>
 <translation id="7328475450575141167">bunga cenderawasih</translation>
-<translation id="7331297744262591636">Anda mestilah berumur sekurang-kurangnya 18 tahun dan bersetuju bahawa penggunaan anda berkenaan dengan hiasan latar AI tertakluk pada <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Syarat Perkhidmatan Google<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> dan <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />Syarat Perkhidmatan Tambahan AI Generatif<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Anda boleh membuat hiasan latar dengan AI untuk kegunaan peribadi dan bukan komersial sahaja. Apabila anda mendapatkan bantuan hiasan latar, teks akan dihantar kepada pelayan Google AI untuk menjana cadangan hiasan latar, tertakluk pada <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Dasar Privasi Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. <ph name="BEGIN_LINK_LEARN_MORE" />Ketahui lebih lanjut<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Tekan Cari dan Ruang untuk melihat hasil carian dalam Google Search.</translation>
 <translation id="7343649194310845056">Peranti Rangkaian</translation>
 <translation id="7344788170842919262">berwarna tanah</translation>
 <translation id="7346768383111016081">Letakkan kawalan pada tindakan permainan untuk bermain dengan papan kekunci anda</translation>
@@ -1838,7 +1828,6 @@ Muat turun model transkripsi (hingga 100MB) untuk mendapatkan transkripsi ini.</
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">Gunakan video ini</translation>
-<translation id="9087578468327036362">Laporkan pertanyaan ini</translation>
 <translation id="9088306295921699330">Penggunaan semasa</translation>
 <translation id="9088994563996376283">Ringkaskan</translation>
 <translation id="9095775724867566971">Pluginvm</translation>

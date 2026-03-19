@@ -1073,6 +1073,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2673968385134502798">Igre</translation>
 <translation id="2674170444375937751">Jeste li sigurni da te stranice želite izbrisati iz Vaše povijesti?</translation>
 <translation id="2674524144218093528">Ličenje i završni radovi</translation>
+<translation id="2675716371350192683">Vaš sadržaj neće se upotrebljavati za poboljšanje AI-ja. Vaša organizacija uvijek može promijeniti te postavke.</translation>
 <translation id="26774279487328902">Sljedeći broj grupa kartica više nije dostupan: <ph name="GROUP_COUNT" /></translation>
 <translation id="2677748264148917807">Napusti</translation>
 <translation id="2679216653373462289">Upotrebljavajte senzore kretanja i svjetlosne senzore</translation>
@@ -2656,6 +2657,7 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="5190835502935405962">Traka oznaka</translation>
 <translation id="5191315092027169558">Vašim profilom upravlja <ph name="DOMAIN" /></translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> želi preuzeti više datoteka</translation>
+<translation id="519528950056409240">Dopusti Walletu da dijeli podatke</translation>
 <translation id="5199121357983849992">Želite li spremiti identifikacijski dokument?</translation>
 <translation id="5200063972779787617">Spremite adresu na račun</translation>
 <translation id="5201306358585911203">Na ugrađenoj stranici na ovoj stranici navodi se sljedeće</translation>
@@ -3103,6 +3105,7 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="5910140988253729859">Poništi automatsko popunjavanje</translation>
 <translation id="5911020115933784199">Događaji i rasporedi</translation>
 <translation id="5911110632211230665">Otvaranje je blokirano</translation>
+<translation id="5912796581727968237">Otvorite Google Wallet</translation>
 <translation id="5914465277418006379">Korisnik <ph name="MEMBER_FIRST_NAME" /> dodao je ovu karticu</translation>
 <translation id="5915189366813702112">Fleksibilni radni uvjeti</translation>
 <translation id="59174027418879706">Omogućeno</translation>

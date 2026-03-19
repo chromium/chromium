@@ -295,6 +295,7 @@
 <translation id="4053720452172726777">自定义及控制 Google Chrome</translation>
 <translation id="408393047846373801">如需将密码等信息同步到您的所有设备上，请登录 Chrome。登录后，这个密码将保存到您的 Google 账号。</translation>
 <translation id="409936259433005390">即将升级到 Windows 11？将 Chrome 安装程序下载到 OneDrive，预先准备即可随时开始。</translation>
+<translation id="4102173024714616627">扩展程序是可让您自定义 Chrome 的插件。从保持井然有序到简化日常任务，扩展程序可帮助您打造专属的 Chrome。</translation>
 <translation id="4110895483821904099">设置您的新 Chrome 个人资料</translation>
 <translation id="4111566860456076004">Chrome 无法验证此扩展程序的来源，它可能不安全。请将其从 Chrome 中移除，这样它便无法再查看和更改您在所访问的网站上的数据，包括个人信息。</translation>
 <translation id="4147555960264124640">您目前登录的账号是一个受管理账号，该账号的管理员将能够控制您的 Google Chrome 个人资料。您的 Chrome 数据（例如您的应用、书签、历史记录、密码和其他设置）将永远与 <ph name="USER_NAME" /> 相关联。您可以通过 Google 账号信息中心删除这些数据，但无法将这些数据与其他账号相关联。<ph name="LEARN_MORE" /></translation>
@@ -354,6 +355,7 @@
 <translation id="4756182432527369254">使用 Chrome 的 V8 引擎加快网站速度，但 Chrome 的防范攻击能力会略微降低</translation>
 <translation id="479167709087336770">这项服务会使用 Google 搜索所用的拼写检查工具。您在浏览器中输入的文字会被发送给 Google。您随时可在“设置”中更改此行为。</translation>
 <translation id="4793679854893018356">了解 Chrome 如何保障您的安全</translation>
+<translation id="4799870290441980300">开启更多功能，提供 Chrome 最强大的安全防护</translation>
 <translation id="4828579605166583682">Google Chrome 正在尝试替换现有密码。请输入您的 Windows 密码以允许此操作。</translation>
 <translation id="4842397268809523050">ChromeOS Flex 无法同步您的数据，因为您的网域不支持同步。</translation>
 <translation id="4851866215237571846">目前登录的账号是：<ph name="EXISTING_USER" />。若要单独存储您的浏览数据，请使用您自己的个人资料 (<ph name="USER_EMAIL_ADDRESS" />) 登录 Chrome。</translation>

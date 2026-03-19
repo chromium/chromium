@@ -8,6 +8,7 @@
 <translation id="1017556409696559990">Chrome に戻る操作の履歴がない場合にトップ ウィンドウを最小化する</translation>
 <translation id="101823271612280837">録画を停止しました。タブレット モードではゲーム ダッシュボードを使用できません。</translation>
 <translation id="1024364763893396229"><ph name="NAME" /> を保存</translation>
+<translation id="103279545524624934">Android アプリを起動できるようにディスク領域を解放します。</translation>
 <translation id="1032891413405719768">タッチペンのバッテリー残量が少なくなっています</translation>
 <translation id="1036348656032585052">オフにする</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> が追加されました</translation>
@@ -35,6 +36,7 @@
 <translation id="1129383337808748948"><ph name="CONTENT_TITLE" /> を更新する</translation>
 <translation id="1142002900084379065">最近の写真</translation>
 <translation id="114221662579355151">カメラへのアクセス権を持つ <ph name="APP1_NAME" />、<ph name="APP2_NAME" />、およびすべてのアプリとウェブサイトに対して、カメラへのアクセスを許可します。ウェブページの更新またはアプリの再起動が必要となる場合があります。</translation>
+<translation id="1147991416141538220">アクセスをリクエストするには、このデバイスの管理者にご連絡ください。</translation>
 <translation id="1148499908455722006"><ph name="USER_NAME" /> の情報ダイアログを開きます</translation>
 <translation id="1150989369772528668">カレンダー</translation>
 <translation id="1153356358378277386">ペア設定されたデバイス</translation>
@@ -114,6 +116,7 @@
 <translation id="1340378040547539434">ページを縮小する</translation>
 <translation id="1341651618736211726">オーバーフロー</translation>
 <translation id="1341926407152459446">オーディオの入出力に "<ph name="DEVICE_NAME" />" を使用する</translation>
+<translation id="1346403631707626730">使用状況データや診断データを送信します。診断データやデバイスとアプリの使用状況データを Google に自動送信して、お子様向けの Android 機能の向上にご協力ください。この情報を使ってお子様個人が特定されることはありません。この情報は、システムとアプリの安定性の向上やその他の機能の改善に役立てられます。また、Google のアプリやパートナー（Android デベロッパーなど）も、集計データとしてこの情報を活用します。お子様の [その他のウェブとアプリのアクティビティ] の設定がオンになっている場合、このデータはお子様の Google アカウントに保存されます。<ph name="BEGIN_LINK1" />統計情報の詳細<ph name="BEGIN_LINK1_END" />詳細<ph name="END_LINK1" /></translation>
 <translation id="1346748346194534595">右</translation>
 <translation id="1350494136075914725">進行中 · タブに切り替え</translation>
 <translation id="1351937230027495976">メニューを折りたたむ</translation>
@@ -196,6 +199,7 @@
 <translation id="1610778689852195798">"元に戻す"</translation>
 <translation id="1611993646327628135">オン</translation>
 <translation id="1612679292338846734">これらの機能をオンにすると、入力したテキスト、ドキュメントの内容、ウェブページの URL が Google AI サーバーに送信されることがあります。この情報は、<ph name="LINK_TO_SERVICE_TERMS" /> に沿って、文章作成の提案や要約の生成、質問への回答、サービスの改善に使用されます。個人情報や機密情報は含めないでください。</translation>
+<translation id="1619879934359211038">Google Play に接続できませんでした。ネットワーク接続を確認してからもう一度お試しください。エラーコード: <ph name="ERROR_CODE" />。</translation>
 <translation id="1620510694547887537">カメラ</translation>
 <translation id="1623768535032616219">Google Classroom を折りたたむ</translation>
 <translation id="163032029566320584"><ph name="UNAVAILABLE_DLC" /> は使用できません。</translation>
@@ -224,6 +228,7 @@
 <translation id="1719094688023114093">自動字幕起こしはオンになっています。</translation>
 <translation id="1720011244392820496">Wi-Fi 同期をオンにする</translation>
 <translation id="1720230731642245863">アクセス ポイントはオフです</translation>
+<translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />アプリを削除するには、まず [設定] &gt; [Google Play ストア] &gt; [Android 設定を管理] &gt; [アプリ] または [アプリケーション管理] に移動して、アンインストールするアプリをタップします（必要であれば左右にスワイプしてアプリを見つけます）。次に、[アンインストール] または [無効にする] をタップします。<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1731815243805539470">前のユーザーに切り替えます</translation>
 <translation id="1733996486177697563">ダークモードとライトモードを切り替えます。デスクトップを長押しして、[壁紙とスタイル] を選択します。</translation>
 <translation id="1734230530703461088">制限時間内に拡張機能を読み込めませんでした。管理者にお問い合わせください。</translation>
@@ -277,6 +282,7 @@
 <translation id="1882814835921407042">モバイル ネットワークに接続されていません</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> へミラーリング</translation>
 <translation id="1885785240814121742">指紋でロックを解除する</translation>
+<translation id="1891362123137972260">ディスクの空き領域が非常に少なくなっています。空き容量を増やしてください。</translation>
 <translation id="1894024878080591367">キーボードでプレイするよう設定する</translation>
 <translation id="1896383923047738322">キーボードのカスタマイズ</translation>
 <translation id="1904997243703671177">Bluetooth をオフにすると、次を含む <ph name="DEVICE_COUNT" /> 台の外部デバイスが <ph name="DEVICE_TYPE" /> と接続解除されます。</translation>
@@ -309,11 +315,13 @@
 <translation id="1996162290124031907">次のタブに移動する</translation>
 <translation id="1998100899771863792">現在のデスク</translation>
 <translation id="2001444736072756133"><ph name="CATEGORY" />、ファイル、アプリなどを検索できます。</translation>
+<translation id="2011174342667534258">SDK のバージョン:</translation>
 <translation id="2017998995161831444">「使い方・ヒント」アプリで「ヘルプ」を開く</translation>
 <translation id="2021864487439853900">クリックしてロックを解除</translation>
 <translation id="2034971124472263449">このまま保存</translation>
 <translation id="2041220428661959602">バッテリー残量: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="204259843076055848"><ph name="SIX_PACK_KEY_NAME" /> のショートカットは現在無効になっています</translation>
+<translation id="2048653237708779538">操作できません</translation>
 <translation id="2049240716062114887">デスクの名前を <ph name="DESK_NAME" /> に変更しました</translation>
 <translation id="2064048859448024834">カメラ プレビューがオンになっています</translation>
 <translation id="2065098273523946419">詳細リンク。有効にするとブラウザにリダイレクトされます</translation>
@@ -378,18 +386,21 @@
 <translation id="2305738328104302723">Google ToDo リストのタスク一覧: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: 最近撮影したスクリーン キャプチャや、最近ダウンロードまたは固定したファイル</translation>
 <translation id="2318576281648121272">今日 <ph name="TODAY_DATE" /></translation>
+<translation id="2318817390901984578">Android アプリを使用するには、<ph name="DEVICE_TYPE" /> を充電し、アップデートを行ってください。</translation>
 <translation id="2322065293366551060"><ph name="CATEGORY" />、検索結果のカテゴリ</translation>
 <translation id="2322173485024759474">1 字戻る</translation>
 <translation id="2326112202058075478">他の絵文字を表示</translation>
 <translation id="2335091074961603075">Chromebook または Bluetooth デバイスで古いバージョンの Bluetooth が使用されています。音質を向上させるには、内蔵マイクを使用してください。</translation>
 <translation id="2339073806695260576">シェルフにあるタッチペン ボタンをタップして、メモやスクリーンショットをとったり、レーザー ポインタや虫メガネを使用したりすることができます。</translation>
 <translation id="2341729377289034582">縦に固定</translation>
+<translation id="2344032937402519675">サーバーに接続できませんでした。ネットワーク接続を確認して、もう一度お試しください。接続を確認しても問題が解決しない場合は、Chromebook を再起動してみてください。</translation>
 <translation id="2345226652884463045">Enter キーまたは検索+Space キーを押して、編集するテキストを選択します。</translation>
 <translation id="2349785431103945039">アクセス ポイントの詳細を表示します。アクセス ポイントを使用するには、モバイル ネットワークに接続してください。</translation>
 <translation id="2350182423316644347">アプリケーションを初期化しています...</translation>
 <translation id="2350794187831162545"><ph name="LANGUAGE" /> の音声はローカルで処理され、オフラインで使用できます。音声入力の言語は [設定] &gt; [ユーザー補助] で変更できます。</translation>
 <translation id="2352467521400612932">タッチペンの設定</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> を有効にしています</translation>
+<translation id="2355314311311231464">アカウントの詳細を取得できなかったため、プロピジョニングに失敗しました。もう一度お試しください。エラーコード: <ph name="ERROR_CODE" />。</translation>
 <translation id="2359808026110333948">続行</translation>
 <translation id="2360398059912971776">バッテリー</translation>
 <translation id="2361210043495191221">Wi-Fi のオンとオフを切り替える。<ph name="STATE" />。</translation>
@@ -412,6 +423,7 @@
 <translation id="240545663114741956"><ph name="ACCELERATOR" /> を 2 回押すとログアウトします。</translation>
 <translation id="2405664212338326887">未接続</translation>
 <translation id="2406710117564540804">サイレント モードをオン / オフにする</translation>
+<translation id="240789602312469910">使用状況データや診断データを送信します。診断データやデバイスとアプリの使用状況データを Google に自動送信して、お子様向けの Android 機能の向上にご協力ください。この情報を使ってお子様個人が特定されることはありません。この情報は、システムとアプリの安定性の向上やその他の機能の改善に役立てられます。また、Google のアプリやパートナー（Android デベロッパーなど）も、集計データとしてこの情報を活用します。この<ph name="BEGIN_LINK1" />設定<ph name="END_LINK1" />は所有者によって管理されています。このデバイスの診断データや使用状況データを Google に送信するよう所有者が設定している可能性があります。お子様の [その他のウェブとアプリのアクティビティ] の設定がオンになっている場合、このデータはお子様の Google アカウントに保存されます。<ph name="BEGIN_LINK2" />統計情報の詳細<ph name="BEGIN_LINK2_END" />詳細<ph name="END_LINK2" /></translation>
 <translation id="2408955596600435184">PIN を入力してください</translation>
 <translation id="2412593942846481727">アップデートが利用可能</translation>
 <translation id="2416438829169535743">画面を離れますか？</translation>
@@ -464,6 +476,7 @@
 <translation id="2531025035050312891">デバイスの動作が遅い</translation>
 <translation id="2531107890083353124">タブをドラッグしながら、<ph name="KEY_ONE" /> キーを押す</translation>
 <translation id="2532199152994248594">キャプチャする範囲をドラッグするか、Space キーを押して選択します</translation>
+<translation id="2540651571961486573">エラーが発生しました。エラーコード: <ph name="ERROR_CODE" />。</translation>
 <translation id="2545334090614121435">Home キーの代わりに次のキーを使用してください</translation>
 <translation id="254900897760075745">選択した内容をクリップボードにコピーする</translation>
 <translation id="2549711466868162843">明るさ補正</translation>
@@ -511,8 +524,11 @@
 <translation id="2701576323154693023">アクセス ポイントがオンになっています（Wi-Fi はオフ）</translation>
 <translation id="2704781753052663061">他の Wi-Fi ネットワークに接続</translation>
 <translation id="2705001408393684014">マイクを切り替えます。<ph name="STATE_TEXT" /></translation>
+<translation id="2706304388244371417">Google ドライブにデータをバックアップします。これにより、いつでも簡単にデータを復元したりデバイスを切り替えたりできます。バックアップ内容にはアプリのデータが含まれます。バックアップ データは Google にアップロードされ、お子様の Google アカウントのパスワードを使用して暗号化されます。 <ph name="BEGIN_LINK1" />バックアップの詳細<ph name="BEGIN_LINK1_END" />詳細<ph name="END_LINK1" /></translation>
 <translation id="2706462751667573066">上矢印キー</translation>
+<translation id="2710101514844343743">使用状況データと診断データ</translation>
 <translation id="2710984741481549981">ウィンドウを固定</translation>
+<translation id="2714393097308983682">Google Play ストア</translation>
 <translation id="2718395828230677721">夜間モード</translation>
 <translation id="2726420622004325180">ホットスポットを提供するにはスマートフォンにモバイルデータが必要です</translation>
 <translation id="2727175239389218057">返信</translation>
@@ -574,6 +590,8 @@
 <translation id="2893701697603065178">管理対象の開発環境</translation>
 <translation id="2894949423239620203">ケーブルがパフォーマンスに影響している可能性があります</translation>
 <translation id="2902312830803030883">その他の操作</translation>
+<translation id="2909506265808101667">Google サービスに接続できませんでした。ネットワーク接続を確認してからもう一度お試しください。エラーコード: <ph name="ERROR_CODE" />。</translation>
+<translation id="2910718431259223434">エラーが発生しました。もう一度お試しいただくか、デバイス所有者または管理者にお問い合わせください。エラーコード: <ph name="ERROR_CODE" />。</translation>
 <translation id="2914580577416829331">画面キャプチャ</translation>
 <translation id="2924416280450782352">アイテムを表示できません。このパネルをもう一度開いてみてください。</translation>
 <translation id="292506373491190801">進行中の予定から</translation>
@@ -633,7 +651,9 @@
 <translation id="3093423061078042895">不明</translation>
 <translation id="3095995014811312755">バージョン</translation>
 <translation id="309749186376891736">カーソルを移動</translation>
+<translation id="3100071818310370858">位置情報を使用するとともに、位置情報の利用を許可されているアプリやサービスがこのデバイスの位置情報を使用することを許可します。Google は、位置情報の精度と位置情報を利用したサービスを改善する目的で、位置情報を定期的に収集し、このデータを匿名で使用することがあります。<ph name="BEGIN_LINK1" />位置情報の詳細<ph name="BEGIN_LINK1_END" />詳細<ph name="END_LINK1" /></translation>
 <translation id="3100274880412651815">キャプチャ モードを閉じる</translation>
+<translation id="3104948640446684649">使用状況データや診断データを送信します。このデバイスは現在、診断データやデバイスとアプリの使用状況データを Google に自動送信するように設定されています。この情報は、システムとアプリの安定性の向上やその他の機能の改善に役立てられます。また、Google のアプリやパートナー（Android デベロッパーなど）も、集計データとしてこの情報を活用します。[その他のウェブとアプリのアクティビティ] 設定がオンになっている場合、このデータは Google アカウントに保存されます。<ph name="BEGIN_LINK2" />統計情報の詳細<ph name="BEGIN_LINK2_END" />詳細<ph name="END_LINK2" /></translation>
 <translation id="3105917916468784889">スクリーンショットを撮る</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" />（Bluetooth）</translation>
 <translation id="3107155169630537783">ようこそ通知は <ph name="STATE" /> です</translation>
@@ -697,6 +717,7 @@
 <translation id="3306386552969601301"><ph name="DEVICECOUNT" /> 台のデバイスが <ph name="DEVICE_NAME" /> のアクセス ポイントに接続されています</translation>
 <translation id="3307642347673023554">ノートパソコン モードに切り替えました</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> が後でログインすることは引き続き可能です。</translation>
+<translation id="3313950410573257029">接続を確認</translation>
 <translation id="3321628682574733415">保護者用コードが間違っています</translation>
 <translation id="332827762492701193">通知は非表示になっています</translation>
 <translation id="3333674550998107387"><ph name="NOTIFICATION_TITLE" /> の通知を開く</translation>
@@ -814,6 +835,7 @@
 <translation id="3638400994746983214">プライバシー スクリーンを切り替えます。<ph name="STATE_TEXT" />。</translation>
 <translation id="3641070112313110357">Chromebook 向け Steam（ベータ版）を更新する必要があります。Chromebook を再起動してもう一度お試しください。</translation>
 <translation id="3649256019230929621">ウィンドウを最小化</translation>
+<translation id="3650952250015018111">「<ph name="APP_NAME" />」のアクセスを許可する:</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />、
         <ph name="START_TIME" /> から
@@ -859,6 +881,7 @@
 <translation id="3779139509281456663"><ph name="NAME" /> を接続しています</translation>
 <translation id="3781910048497807059">前のペインにフォーカスを移動する</translation>
 <translation id="3783640748446814672">alt</translation>
+<translation id="3783889407390048282">Android へのアクセスを確保するため、空き容量を増やしてください。</translation>
 <translation id="3784455785234192852">ロック</translation>
 <translation id="3788301286821743879">キオスク アプリケーションを起動できませんでした。</translation>
 <translation id="3789841737615482174">インストール</translation>
@@ -868,6 +891,7 @@
 <translation id="3804737937830804242">カメラをたたむ</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 個の絵文字が見つかりました。他に一致する結果はありません。}other{# 個の絵文字が見つかりました。他に一致する結果はありません。}}</translation>
 <translation id="3822403841174077928">書式設定付きでコピーできませんでした</translation>
+<translation id="3824621460022590830">デバイス登録トークンが無効です。デバイスの所有者または管理者にお問い合わせください。エラーコード: <ph name="ERROR_CODE" />。</translation>
 <translation id="3824784079442479685">カメラへのアクセス権を持つ <ph name="APP_NAME" /> およびすべてのアプリとウェブサイトに対して、カメラへのアクセスを許可します。ウェブページの更新またはアプリの再起動が必要となる場合があります。</translation>
 <translation id="3826099427150913765">パスワードに切り替える</translation>
 <translation id="383058930331066723">バッテリー セーバー モードがオンです</translation>
@@ -892,6 +916,7 @@
 <translation id="3898464793473355515">画面を時計回りに 90 度回転させる</translation>
 <translation id="3900355044994618856">セッションの制限時間まであと <ph name="SESSION_TIME_REMAINING" /> です</translation>
 <translation id="3901991538546252627"><ph name="NAME" /> に接続しています</translation>
+<translation id="3904326018476041253">位置情報サービス</translation>
 <translation id="3904768293285573640">タイル表示のウィンドウを左方向にサイズ変更</translation>
 <translation id="3923221004758245114"><ph name="DEVICE_TYPE" /> から <ph name="VM_NAME" /> を削除しますか？仮想マシン内のすべてのアプリとデータが削除されます。</translation>
 <translation id="3923494859158167397">モバイル ネットワークが設定されていません</translation>
@@ -906,6 +931,7 @@
 <translation id="3950272133184491871">今すぐログアウトしますか？</translation>
 <translation id="3950820424414687140">ログイン</translation>
 <translation id="3953130726459169782">完了した課題はまだありません。</translation>
+<translation id="3957844511978444971">[同意する] をタップすると、この Google サービスの設定の選択内容を確認したことになります。</translation>
 <translation id="3958714870339660776">終日</translation>
 <translation id="3962859241508114581">前の曲</translation>
 <translation id="3963124517343721543">以前のウィンドウやタブが開かれ、中断したところから簡単に再開できます。また、次のアクティビティに関するパーソナライズされた候補も表示されます。</translation>
@@ -1021,6 +1047,7 @@
 <translation id="4278779213160967034">この処理には数分かかることがあります。ファイルをダウンロードしています。</translation>
 <translation id="4279490309300973883">ミラーリング</translation>
 <translation id="4280601795273309128">セキュリティ アップデートが終了しました。デバイスをアップグレードしてください。</translation>
+<translation id="4281844954008187215">利用規約</translation>
 <translation id="4283888303416325161">セキュリティ強化のためパスワードを入力してください</translation>
 <translation id="4285498937028063278">固定を解除</translation>
 <translation id="428715201724021596">プロファイルに接続しています。この処理には数分かかることがあります。</translation>
@@ -1065,6 +1092,7 @@
 <translation id="4406883609789734330">自動字幕起こし</translation>
 <translation id="4412698727486357573">ヘルプセンター</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> はオフになっています。</translation>
+<translation id="44141919652824029">接続された USB デバイスのリストを「<ph name="APP_NAME" />」が取得することを許可しますか？</translation>
 <translation id="4414242853388122273"><ph name="VM_NAME" /> の削除中にエラーが発生しました。もう一度お試しください。</translation>
 <translation id="4417647906073317561">フォーカス モードの設定。タイマー、タスク、音楽を設定して、作業に集中できます。</translation>
 <translation id="4418600384772451109">パネルを閉じる</translation>
@@ -1106,6 +1134,7 @@
 <translation id="453661520163887813">あと <ph name="TIME" /> で充電完了</translation>
 <translation id="4538824937723742295">全画面のスクリーンショットを撮影</translation>
 <translation id="4539127209940689201">現在のページを印刷する</translation>
+<translation id="4541123282641193691">アカウントを確認できませんでした。もう一度お試しになるか、Chromebook を再起動してください。</translation>
 <translation id="4541505619120536051">常に開く</translation>
 <translation id="4541706525461326392">プロファイルを削除しています。この処理には数分かかることがあります。</translation>
 <translation id="4544483149666270818">録画するウィンドウを選択してください</translation>
@@ -1116,6 +1145,7 @@
 <translation id="4556953949326137018">[カレンダーに追加] や [Google ドキュメントを作成] などの提案されたアクションを使用すると、選択した領域のコンテンツが Google のサーバーに送信され、<ph name="LINK_TO_SERVICE_TERMS" /> に沿ってアクションが提案されます。個人情報や機密情報は含めないでください。</translation>
 <translation id="4560576029703263363">オン</translation>
 <translation id="4561267230861221837">3G</translation>
+<translation id="4562091353415772246">アップデートやアプリをインストールします。続行すると、Google、ご利用の通信キャリア、デバイスの製造元からのアップデートやアプリをデバイスで自動的にダウンロードおよびインストールされる場合があることに同意したことになります（ダウンロードの際はモバイルデータ通信が使用される可能性もあります）。こうしたアプリの一部ではアプリ内購入が提案される場合もあります。<ph name="BEGIN_LINK1" />Play 自動インストールの詳細<ph name="BEGIN_LINK1_END" />詳細<ph name="END_LINK1" /></translation>
 <translation id="4565377596337484307">パスワードを表示しない</translation>
 <translation id="4566144812051858745">提案自体に興味がない</translation>
 <translation id="4569753163207712681">スマートフォンの最近の写真、メディア、アプリを表示する</translation>
@@ -1135,6 +1165,7 @@
 <translation id="4628757576491864469">デバイス</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />、評価 <ph name="RATING_SCORE" /></translation>
 <translation id="4633636853437260449">Ctrl+W キーを押して削除します</translation>
+<translation id="4633757335284074492">Google ドライブにデータをバックアップします。これにより、いつでも簡単にデータを復元したりデバイスを切り替えたりできます。バックアップ内容にはアプリのデータが含まれます。バックアップ データは Google にアップロードされ、お子様の Google アカウントのパスワードを使って暗号化されます。</translation>
 <translation id="4635501805800894201">{0,plural, =0{今すぐデバイスを以前のバージョンに更新してください}=1{1 秒以内にデバイスを以前のバージョンに更新してください}other{# 秒以内にデバイスを以前のバージョンに更新してください}}</translation>
 <translation id="4642092649622328492">画面の一部のスクリーンショットを撮影する</translation>
 <translation id="4642587497923912728">Steam for Chromebook（ベータ版）は、この Chromebook で最初にログインしたアカウントでのみご利用いただけます。</translation>
@@ -1177,6 +1208,7 @@
 <translation id="4759238208242260848">ダウンロード</translation>
 <translation id="4762160261012420470"><ph name="LAUNCHER_KEY_NAME" />+上矢印</translation>
 <translation id="4762573482154983647">アプリを非表示</translation>
+<translation id="4762718786438001384">デバイスのディスク空き領域が非常に少なくなっています</translation>
 <translation id="4763885921995354846">カメラへのアクセス権を持つすべてのアプリとウェブサイトに対して、カメラへのアクセスを許可します。ウェブページの更新またはアプリの再起動が必要となる場合があります。</translation>
 <translation id="4774338217796918551">明日の <ph name="COME_BACK_TIME" /> になったら利用を再開できます。</translation>
 <translation id="4776584068981882959">パスワードはまだ確認されていません。もう一度お試しください。</translation>
@@ -1283,6 +1315,7 @@
 <translation id="5077936103761694531">解像度を確定しますか？</translation>
 <translation id="5078796286268621944">PIN が正しくありません</translation>
 <translation id="5083035541015925118">Ctrl+Alt+上矢印</translation>
+<translation id="5084328598860513926">プロビジョニング フローが中断されました。もう一度お試しいただくか、デバイス所有者または管理者にお問い合わせください。エラーコード: <ph name="ERROR_CODE" />。</translation>
 <translation id="5091636240353511739">PIN を表示</translation>
 <translation id="5092436659250499817">キーボード バックライトのオン / オフを切り替える</translation>
 <translation id="5094577350232361255">基本情報</translation>
@@ -1312,6 +1345,7 @@
 <translation id="5170568018924773124">フォルダを開く</translation>
 <translation id="5176318573511391780">画面の一部を録画</translation>
 <translation id="5187627942836026988">アクセス ポイントの詳細を表示します。アクセス ポイントは管理者によってブロックされています。</translation>
+<translation id="5188648870018555788">位置情報を使用するとともに、位置情報へのアクセス権を持つ ChromeOS アプリ、Android アプリ、ウェブサイト、サービスに対して、デバイスの位置情報の使用を許可します。[位置情報の精度] 設定では、Android アプリやサービスで使用される位置情報の精度を高めることができます。この設定では、クラウドソースのワイヤレス シグナルを利用した位置情報の向上に役立てるため、デバイスのセンサーに関する情報やデバイスから送信されるワイヤレス シグナルが Google で定期的に処理されます。この情報は、ユーザーを特定することなく、位置情報の精度と、位置情報を利用したサービスを改善する目的で使用されます。また、ユーザーのニーズに応えるうえでの Google とサードパーティの正当な利益に基づき、Google のサービスを改善、提供、維持する目的でも使用されます。<ph name="BEGIN_LINK1" />位置情報の使用に関する詳細<ph name="END_LINK1" /></translation>
 <translation id="5197255632782567636">インターネット</translation>
 <translation id="5198039720391525849">おすすめの GIF</translation>
 <translation id="5198413532174090167"><ph name="DATE" />、<ph name="NUMBER" /> 件の予定</translation>
@@ -1332,6 +1366,7 @@
 <translation id="5238719049014159442">ランチャーを起動または終了する</translation>
 <translation id="5240725217819182328">インストール済みアプリ内の特定のページやアクションへのクイック アクセス</translation>
 <translation id="5243355658487390559">検索日</translation>
+<translation id="5243522832766285132">しばらくしてからもう一度お試しください</translation>
 <translation id="5245201184978705914">文字起こしを生成できません</translation>
 <translation id="5251174953851719648">コンテンツを更新</translation>
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> という名前のデバイスに接続しています、電池残量 <ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -1339,6 +1374,7 @@
 <translation id="5256939106029293271">マイクのテスト</translation>
 <translation id="5258528442992323769">保存したデスクはありません</translation>
 <translation id="5260676007519551770">デスク 4</translation>
+<translation id="5264148714798105376">これには 1 分ほどかかる場合があります。</translation>
 <translation id="5265391159779542051">結果を読み込みました</translation>
 <translation id="5270547718570958938">Google カレンダー</translation>
 <translation id="5277869901083657836">タッチペン ツールを切り替える</translation>
@@ -1415,6 +1451,7 @@
 <translation id="5506975627792768506">拡大鏡をオンまたはオフにします</translation>
 <translation id="5507778598655387680"><ph name="VOLUME_LEVEL" />、Enter キーを押すと音声がミュートされます。</translation>
 <translation id="5512042095225963688">前の単語を削除する</translation>
+<translation id="5517304475148761050">このアプリは、Play ストアへのアクセスが必要です</translation>
 <translation id="5519005148254860683">Google ToDo リストを展開</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">管理者によって eSIM プロファイルがすべて削除されています。詳しくは管理者にお問い合わせください。</translation>
@@ -1442,6 +1479,7 @@
 <translation id="5577281275355252094">スマートフォン ハブを使用するには、スマートフォンで Bluetooth が有効になっていることを確認してください</translation>
 <translation id="5578188167649348993">メモリ</translation>
 <translation id="5580000943347215299">ライブラリ</translation>
+<translation id="5581972110672966454">デバイスをドメインに追加できません。もう一度お試しいただくか、デバイス所有者または管理者にお問い合わせください。エラーコード: <ph name="ERROR_CODE" />。</translation>
 <translation id="5586388332127302891">ドッキング拡大鏡をオンにしました。オフにするには、もう一度 <ph name="ACCELERATOR" /> を押します。</translation>
 <translation id="5587506661873751671">ダウンロード中: <ph name="DOWNLOAD_PERCENT" />%</translation>
 <translation id="558849140439112033">キャプチャする領域をドラッグして選択してください</translation>
@@ -1466,6 +1504,7 @@
 <translation id="5662075790140998213">デスク 10</translation>
 <translation id="5662709761327382534">マイク録音は <ph name="CURRENT_STATE" /> です。マイク録音を <ph name="NEW_STATE" /> にするには Enter キーを押してください</translation>
 <translation id="5662919923378083468"><ph name="ACTION_DESCRIPTION" />、<ph name="SHORTCUT_HINT" /></translation>
+<translation id="5667546120811588575">Google Play を設定しています...</translation>
 <translation id="5669267381087807207">有効化中</translation>
 <translation id="5671658447180261823">候補<ph name="SUGGESTION_NAME" />を削除します</translation>
 <translation id="5672890847723042801">ユーティリティ</translation>
@@ -1482,6 +1521,7 @@
 <translation id="5691772641933328258">指紋を認識できません</translation>
 <translation id="5693255400847650006">マイクを使用中</translation>
 <translation id="5699366815052349604">すべてのデスクにアクティブなウィンドウを割り当てる</translation>
+<translation id="570043786759263127">Google Play のアプリとサービス</translation>
 <translation id="570390244361237317">すべてのアプリ、矢印キーで操作して、すべてのアプリにアクセスできます</translation>
 <translation id="5705197514573687092">フォーカス モード設定を表示します。タイマーを <ph name="FOCUS_DURATION" /> に設定しました。</translation>
 <translation id="5707775774148071965">ケーブルの対応データレートがデバイスより低くなっています。デバイスのパフォーマンスが制限される可能性があります。</translation>
@@ -1496,6 +1536,7 @@
 <translation id="574392208103952083">中</translation>
 <translation id="5744083938413354016">タップによるドラッグ</translation>
 <translation id="5745612484876805746">夜間モードは日の入り時刻に自動的にオンになります</translation>
+<translation id="5749214722697335450">使用状況データや診断データを送信します。診断データやデバイスとアプリの使用状況データを Google に自動送信して、Android の機能向上にご協力ください。この情報は、システムとアプリの安定性の向上やその他の機能の改善に役立てられます。また、Google のアプリやパートナー（Android デベロッパーなど）も、集計データとしてこの情報を活用します。[その他のウェブとアプリのアクティビティ] の設定がオンになっている場合、このデータは Google アカウントに保存されます。<ph name="BEGIN_LINK1" />統計情報の詳細<ph name="BEGIN_LINK1_END" />詳細<ph name="END_LINK1" /></translation>
 <translation id="5750765938512549687">Bluetooth はオフです</translation>
 <translation id="5758114525425072423">フォーカス モードを開始します。タイマーを <ph name="FOCUS_DURATION" /> に設定しました。</translation>
 <translation id="5759522586053040964">相手に声がどう聞こえているかを確認できます。停止するには、テストアイコンをクリックするか、ビデオ通話パネルを閉じてください。</translation>
@@ -1512,6 +1553,7 @@
 <translation id="5775936059231769503">アクセス ポイントを切り替えます。アクセス ポイントはオフです。</translation>
 <translation id="5777841717266010279">画面の共有を解除しますか？</translation>
 <translation id="5779721926447984944">固定したファイル</translation>
+<translation id="5780940414249100901">使用状況データや診断データを送信します。このデバイスは現在、診断データやデバイスとアプリの使用状況データを Google に自動送信するように設定されています。この情報を使ってお子様個人が特定されることはありません。この情報は、システムとアプリの安定性の向上やその他の機能の改善に役立てられます。また、Google のアプリやパートナー（Android デベロッパーなど）も、集計データとしてこの情報を活用します。この<ph name="BEGIN_LINK1" />設定<ph name="END_LINK1" />は所有者によって管理されています。お子様の [その他のウェブとアプリのアクティビティ] の設定がオンになっている場合、このデータはお子様の Google アカウントに保存されます。<ph name="BEGIN_LINK2" />統計情報の詳細<ph name="BEGIN_LINK2_END" />詳細<ph name="END_LINK2" /></translation>
 <translation id="5785221443435874078">この候補を削除</translation>
 <translation id="5787431783058088906">特典を利用</translation>
 <translation id="5788127256798019331">Play ファイル</translation>
@@ -1527,6 +1569,7 @@
 <translation id="5823239091726045201">ウェブの Google ToDo リスト</translation>
 <translation id="5825969630400862129">接続済みデバイスの設定</translation>
 <translation id="5830180081891717894">他 <ph name="WINDOWS" /> 件</translation>
+<translation id="583281660410589416">不明</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> の「<ph name="ROUTE_TITLE" />」を停止します</translation>
 <translation id="5840658767386246331">Google で検索</translation>
 <translation id="5841296711770970362">次のトラックに移動する</translation>
@@ -1592,6 +1635,7 @@
 <translation id="6032620807120418574">全画面を録画するには任意の場所をクリックしてください</translation>
 <translation id="6040071906258664830">マイク録音は <ph name="STATE" /> です</translation>
 <translation id="6040143037577758943">閉じる</translation>
+<translation id="6042308850641462728">もっと見る</translation>
 <translation id="6043212731627905357">このモニターは <ph name="DEVICE_TYPE" /> では使用できません（サポートされていません）。</translation>
 <translation id="6043994281159824495">ログアウト</translation>
 <translation id="6045629311476491587"><ph name="APP_COUNT" /> 件のアプリで使用</translation>
@@ -1671,9 +1715,12 @@
 <translation id="6274422179279280249">リンクや絵文字などを挿入したり、Google AI を使用して文章を作成したりできます。<ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="6276708887952587684">ページのソースを表示する</translation>
 <translation id="6285871695023807425">カレンダーに追加</translation>
+<translation id="628699625505156622">位置情報を使用するとともに、位置情報へのアクセス権を持つ ChromeOS アプリ、Android アプリ、ウェブサイト、サービスに対して、このデバイスの位置情報の使用を許可します。[位置情報の精度] 設定では、Android アプリやサービスで使用される位置情報の精度を高めることができます。この設定では、クラウドソースのワイヤレス シグナルを利用した位置情報の向上に役立てるため、デバイスのセンサーに関する情報やこのデバイスから送信されるワイヤレス シグナルが Google で定期的に処理されます。この情報は、ユーザーを特定することなく、位置情報の精度と、位置情報を利用したサービスを改善する目的で使用されます。また、ユーザーのニーズに応えるうえでの Google とサードパーティの正当な利益に基づき、Google のサービスを改善、提供、維持する目的でも使用されます。<ph name="BEGIN_LINK1" />位置情報の使用に関する詳細<ph name="END_LINK1" /></translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> は、保護者の許可があれば後から追加できます。</translation>
 <translation id="6291221004442998378">充電していません</translation>
+<translation id="6297986260307280218">使用状況データや診断データを送信します。診断データやデバイスとアプリの使用状況データを Google に自動送信して、Android の機能向上にご協力ください。この情報は、システムとアプリの安定性の向上やその他の機能の改善に役立てられます。また、Google のアプリやパートナー（Android デベロッパーなど）も、集計データとしてこの情報を活用します。この<ph name="BEGIN_LINK1" />設定<ph name="END_LINK1" />は所有者によって管理されています。このデバイスの診断データや使用状況データを Google に送信するよう所有者が設定している可能性があります。[その他のウェブとアプリのアクティビティ] の設定がオンになっている場合、このデータは Google アカウントに保存されます。<ph name="BEGIN_LINK2" />統計情報の詳細<ph name="BEGIN_LINK2_END" />詳細<ph name="END_LINK2" /></translation>
 <translation id="6298183524022479114">アプリでこのデバイスをカスタマイズ</translation>
+<translation id="6298962879096096191">Google Play を使用して Android アプリをインストールします</translation>
 <translation id="6304076460080088478">Google レンズで画面を検索するには、シークレット ウィンドウを閉じるか最小化します</translation>
 <translation id="6309219492973062892">シェルフ アイコン 1～8 をクリックまたはタップします</translation>
 <translation id="6315170314923504164">音声</translation>
@@ -1703,8 +1750,10 @@
 <translation id="6406458002328242616">タイマーを編集します。<ph name="FOCUS_DURATION" />。</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6414618057231176439">インストールする <ph name="VM_NAME" /> のバージョンを選択してください。</translation>
+<translation id="641469293210305670">アップデートとアプリのインストール</translation>
 <translation id="6417265370957905582">Google アシスタント</translation>
 <translation id="641817663353603351">PageUp</translation>
+<translation id="6418511932144861495">重要なアップデートのインストール</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">通知をすべて消去</translation>
 <translation id="6426905245930183644">作成しています...</translation>
@@ -1730,6 +1779,7 @@
 <translation id="6482559668224714696">全画面拡大鏡</translation>
 <translation id="6485086611007560630">天気情報（利用不可）</translation>
 <translation id="6490471652906364588">USB-C デバイス（右側面のポート）</translation>
+<translation id="6491376743066338510">認証できませんでした</translation>
 <translation id="649452524636452238">スマートカードの PIN</translation>
 <translation id="6495322433318104734">スクリーン セーバーを表示しています。終了するにはどれかキーを押してください</translation>
 <translation id="6495400115277918834">ピクチャー イン ピクチャーを開始しました。フォーカスするには Alt+Shift+V キーを押してください</translation>
@@ -1783,10 +1833,12 @@
 <translation id="6625718907317144388">表示保護機能が有効になっているため、<ph name="APP_1_TITLE" />、<ph name="APP_2_TITLE" />、その他の通知は表示されません</translation>
 <translation id="6627638273713273709">検索+Shift+K</translation>
 <translation id="662830937908749204">次のペインにフォーカスを移動する</translation>
+<translation id="6635674640674343739">ネットワーク接続を確立できません。ネットワーク接続を確認して、もう一度お試しください。</translation>
 <translation id="6637729079642709226">時間を変更</translation>
 <translation id="6641720045729354415">自動字幕起こしを切り替えます。<ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">名前による並べ替えを元に戻す</translation>
 <translation id="664793810957802384">提案グループ内のアイテム</translation>
+<translation id="6649018507441623493">お待ちください…</translation>
 <translation id="6649641931981131786">自分が画面の中心に表示されるようカメラを調整します。</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> が本人確認をリクエストしています</translation>
 <translation id="6650742588569439432">アイテムを読み込めませんでした。</translation>
@@ -1811,6 +1863,7 @@
 <translation id="6706742084323792866">キーボードを固定</translation>
 <translation id="6709719156428404245">録画する範囲をドラッグするか、Space キーを押して選択します</translation>
 <translation id="6710213216561001401">前へ</translation>
+<translation id="6716798148881908873">ネットワーク接続が切断されました。ネットワーク接続を確認するか、別の Wi-Fi ネットワークをお試しください。</translation>
 <translation id="6723839937902243910">電源</translation>
 <translation id="672609503628871915">新機能を確認する</translation>
 <translation id="6727969043791803658">接続済み、<ph name="BATTERY_PERCENTAGE" />% のバッテリー残量</translation>
@@ -1850,6 +1903,7 @@
 <translation id="6819327813400217281">カメラは左下にスナップされています</translation>
 <translation id="6820676911989879663">休憩の時間です！</translation>
 <translation id="6827049576281411231">予定パネルを閉じる</translation>
+<translation id="682971198310367122">Google プライバシー ポリシー</translation>
 <translation id="6836499262298959512">危険なファイル</translation>
 <translation id="6837621009301897464">スクリーンショットを撮るには、押します</translation>
 <translation id="6852052252232534364">クリックして有効にする</translation>
@@ -1881,6 +1935,7 @@
 <translation id="6942518653766415536">録画形式メニュー</translation>
 <translation id="6945221475159498467">選択</translation>
 <translation id="6945922087561257829">スマートフォンはモバイル ネットワークを使用しています。スマートフォンと Chromebook が同じ Wi-Fi ネットワークに接続されていることを確認してから、もう一度お試しください。<ph name="LEARN_MORE" /></translation>
+<translation id="6950627417367801484">アプリを復元</translation>
 <translation id="6960565108681981554">無効です。ご利用の携帯通信会社にお問い合わせください。</translation>
 <translation id="6961121602502368900">スマートフォンの消音は仕事用プロファイルでは使用できません</translation>
 <translation id="6961840794482373852">キーボード ショートカット「Alt+上矢印」が変更されました。PageUp キーを使用するには、<ph name="LAUNCHER_KEY_NAME" />+上矢印キーを押してください。</translation>
@@ -2053,6 +2108,7 @@
 <translation id="7541773865713908457"><ph name="APP_NAME" /> アプリで <ph name="ACTION_NAME" /></translation>
 <translation id="7543399541175347147">Linux アプリとシークレット ウィンドウは現在サポートされていません。他のアプリは保存されます。</translation>
 <translation id="7544300628205093162">キーボードのバックライトはオンです</translation>
+<translation id="7545466883021407599">サーバーに接続できませんでした。ネットワーク接続を確認して、もう一度お試しください。接続を確認しても問題が解決しない場合は、Chromebook を再起動してみてください。エラーコード: <ph name="ERROR_CODE" />。</translation>
 <translation id="7548434653388805669">おやすみの時間です</translation>
 <translation id="7551643184018910560">シェルフに固定</translation>
 <translation id="7557816257942363084"><ph name="APP_NAME" /> がマイクを使用しています</translation>
@@ -2068,6 +2124,7 @@
 <translation id="7579778809502851308">スクリーン キャプチャ</translation>
 <translation id="7588317312481506627">クリップボードにコピーしました。</translation>
 <translation id="7593891976182323525">検索/Shift</translation>
+<translation id="7595453277607160340">Android アプリを使用し、<ph name="DEVICE_TYPE" /> が適切に動作し続けるようにするには、もう一度ログインしてアップデートを行ってください。</translation>
 <translation id="7598054670902114203">CPU 使用状況のスナップショット、<ph name="CPU_USEAGE" />%。気温 <ph name="TEMPERATURE" /> 度（摂氏）、現在の速度: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="7599378375976398913">選択した結果を挿入します</translation>
 <translation id="7600875258240007829">通知をすべて表示</translation>
@@ -2077,6 +2134,7 @@
 <translation id="7609951632080598826">カレンダー表示、<ph name="DATE" />、<ph name="TIME" /></translation>
 <translation id="7611213136657090146">カメラが再接続されました。</translation>
 <translation id="7613620083300976559">ゲーム操作キーをオンにする</translation>
+<translation id="761530003705945209">Google ドライブにデータをバックアップします。これにより、いつでも簡単にデータを復元したりデバイスを切り替えたりできます。バックアップ内容にはアプリのデータが含まれます。バックアップ データは Google にアップロードされ、Google アカウントのパスワードを使って暗号化されます。</translation>
 <translation id="761736749114493194">カメラのフレーミングを切り替えます。<ph name="STATE_TEXT" /></translation>
 <translation id="7621008024906456933">Quick Share の設定</translation>
 <translation id="7624117708979618027">華氏 <ph name="TEMPERATURE_F" /> 度</translation>
@@ -2125,6 +2183,7 @@
 <translation id="7748275671948949022">シェルフのランチャー ボタンをハイライト表示する</translation>
 <translation id="7749443890790263709">デスクの数が上限に達しました。</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7750228210027921155">ピクチャー イン ピクチャー</translation>
 <translation id="7751260505918304024">すべて表示</translation>
 <translation id="7762664108390426952">Google の利用規約とプライバシー ポリシー</translation>
 <translation id="7768784765476638775">選択して読み上げ</translation>
@@ -2243,6 +2302,7 @@
 <translation id="8092380135549145188">スクロール設定</translation>
 <translation id="8098591350844501178"><ph name="RECEIVER_NAME" /> への画面のキャストを停止する</translation>
 <translation id="810637681351706236">シェルフへのアプリの固定を解除します</translation>
+<translation id="8107015733319732394"><ph name="DEVICE_TYPE" /> に Google Play ストアをインストールしています。この処理には数分かかる可能性があります。</translation>
 <translation id="8113423164597455979">オン: 全アプリ</translation>
 <translation id="8113515504791187892">選択して読み上げボタン</translation>
 <translation id="8120151603115102514">スマートフォンにロック画面が設定されていません。パスワードを入力してChromebookのロックを解除してください</translation>
@@ -2325,6 +2385,7 @@
 <translation id="8388750414311082622">最後のデスクは削除できません。</translation>
 <translation id="8394567579869570560">保護者の方がこのデバイスをロックしました</translation>
 <translation id="8401850874595457088">言語メニューを入力してください</translation>
+<translation id="8410775397654368139">Google Play</translation>
 <translation id="8412677897383510995">ディスプレイの設定を表示</translation>
 <translation id="8413272770729657668">録画開始まで 3、2、1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />%（ケース）</translation>
@@ -2350,11 +2411,13 @@
 <translation id="8473301994082929012"><ph name="FEATURE_NAME" />は <ph name="ORGANIZATION_NAME" /> により<ph name="FEATURE_STATE" />に設定されています。</translation>
 <translation id="8477270416194247200">キャンセルするには Alt+ 検索キーまたは Shift キーを押します。</translation>
 <translation id="8480418399907765580">ツールバーを表示</translation>
+<translation id="8481187309597259238">USB のアクセス許可の確認</translation>
 <translation id="8487660088084188539">これらの機能をオンにすると、入力したテキスト、ドキュメントの内容、ウェブページの URL が Google サーバーに送信されることがあります。この情報は、<ph name="LINK_TO_SERVICE_TERMS" /> に沿って、文章作成の提案や要約の生成、質問への回答、サービスの改善に使用されます。個人情報や機密情報は含めないでください。</translation>
 <translation id="8487699605742506766">アクセス ポイント</translation>
 <translation id="8490896350101740396">キオスクアプリ「<ph name="UPDATED_APPS" />」を更新しました。更新処理を完了するためにデバイスを再起動してください。</translation>
 <translation id="8491237443345908933">新しいタブでリンクを開く</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> は <ph name="SPECIFIED_RESOLUTION" /> に対応していません。解像度を <ph name="FALLBACK_RESOLUTION" /> に変更しました。変更を保存するには確定してください。<ph name="TIMEOUT_SECONDS" /> 秒後に以前の設定に戻ります。</translation>
+<translation id="8502536196501630039">Google Play のアプリを使用するには、まずアプリを復元する必要があります。一部のデータは失われている可能性があります。</translation>
 <translation id="8507563469658346379">全ユーザー対象（<ph name="REMAINING_TIME" />）</translation>
 <translation id="8511123073331775246">新しいデスクを作成する</translation>
 <translation id="85123341071060231">Chromebook の Bluetooth がオフになっています。ロックを解除するにはパスワードをご入力ください</translation>
@@ -2408,6 +2471,8 @@
 <translation id="8676770494376880701">低電力の充電器に接続されています</translation>
 <translation id="8679158879996532670">フォーカス モード設定を表示します。フォーカス モードはオンになっています。残り時間は <ph name="REMAINING_TIME" /> です。</translation>
 <translation id="8683506306463609433">パフォーマンス追跡機能が有効</translation>
+<translation id="8698432579173128320">Google ドライブにデータをバックアップします。これにより、いつでも簡単にデータを復元したりデバイスを切り替えたりできます。バックアップ内容にはアプリのデータが含まれます。バックアップ データは Google にアップロードされ、Google アカウントのパスワードを使って暗号化されます。<ph name="BEGIN_LINK1" />バックアップの詳細<ph name="BEGIN_LINK1_END" />詳細<ph name="END_LINK1" /></translation>
+<translation id="8700087567921985940">位置情報を使用するとともに、位置情報の利用を許可されているアプリやサービスがデバイスの位置情報を使用することを許可します。Google は、位置情報の精度と位置情報を利用したサービスを改善する目的で、位置情報を定期的に収集し、このデータを匿名で使用することがあります。<ph name="BEGIN_LINK1" />位置情報の詳細<ph name="BEGIN_LINK1_END" />詳細<ph name="END_LINK1" /></translation>
 <translation id="8703634754197148428">録画を開始します。録画を開始した後、シェルフにある [録画を停止] ボタンに移動するには、Alt+Shift+L キーを使用してください</translation>
 <translation id="8704155109538237473">ピクチャー イン ピクチャー ウィンドウにフォーカスする</translation>
 <translation id="870917907284186124">音声入力をオンまたはオフにします</translation>
@@ -2470,6 +2535,7 @@
 <translation id="8875021410787719674">右下隅、ランチャー、アドレスバー、ブックマーク バー、開いているウェブサイト、ダウンロード ページ間を移動します</translation>
 <translation id="8876148469852588625"><ph name="EVENT_TOTAL_COUNT" /> 件中 <ph name="EVENT_POSITION" /> 件目の予定</translation>
 <translation id="8876661425082386199">接続を確認してください</translation>
+<translation id="8883478023074930307">使用状況データや診断データを送信します。このデバイスは現在、診断データやデバイスとアプリの使用状況データを Google に自動送信するように設定されています。この情報は、システムとアプリの安定性の向上やその他の機能の改善に役立てられます。また、Google のアプリやパートナー（Android デベロッパーなど）も、集計データとしてこの情報を活用します。この<ph name="BEGIN_LINK1" />設定<ph name="END_LINK1" />は所有者によって管理されています。[その他のウェブとアプリのアクティビティ] の設定がオンになっている場合、このデータは Google アカウントに保存されます。<ph name="BEGIN_LINK2" />統計情報の詳細<ph name="BEGIN_LINK2_END" />詳細<ph name="END_LINK2" /></translation>
 <translation id="8885424115080869847">YouTube Music に接続できませんでした</translation>
 <translation id="888982883502837004">デバイスで利用可能なファームウェアのアップデートがあります。確認して更新するにはクリックしてください。</translation>
 <translation id="8896630965521842259">「<ph name="DESK_TEMPLATE_NAME" />」を完全に削除します</translation>
@@ -2512,10 +2578,12 @@
 <translation id="9000771174482730261">ストレージを管理</translation>
 <translation id="9003374957546315126">絵文字など</translation>
 <translation id="9005984960510803406">Crosh ウィンドウを開く</translation>
+<translation id="901668144954885282">Google ドライブへのバックアップ</translation>
 <translation id="9017320285115481645">ファミリー リンクの保護者のアクセスコードを入力してください。</translation>
 <translation id="9024331582947483881">全画面表示</translation>
 <translation id="9029736946581028033">デバイスの電源がまもなく切れます</translation>
 <translation id="9030319654231318877">日の入りまでオフ</translation>
+<translation id="9030515284705930323">組織の設定により、アカウントで Google Play ストアをご利用いただくことができません。詳しくは管理者にお尋ねください。</translation>
 <translation id="9030665205623277906">CPU 使用率のスナップショット: <ph name="CPU_USEAGE" />%</translation>
 <translation id="9034924485347205037">Linux ファイル</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> の設定を開く</translation>
@@ -2565,8 +2633,10 @@
 <translation id="9195857219954068558">Chromebook が更新されました。前回使用していたウィンドウやアプリを開きます。</translation>
 <translation id="9195990613383871904">明日</translation>
 <translation id="9198992156681343238"><ph name="DISPLAY_NAME" /> の解像度を <ph name="RESOLUTION" /> に変更しました。変更を保存するには確定してください。<ph name="TIMEOUT_SECONDS" /> 秒後に以前の設定に戻ります。</translation>
+<translation id="9199853905755292769">使用状況データや診断データを送信します。このデバイスは現在、診断データやデバイスとアプリの使用状況データを Google に自動送信するように設定されています。この情報を使ってお子様個人が特定されることはありません。この情報は、システムとアプリの安定性の向上やその他の機能の改善に役立てられます。また、Google のアプリやパートナー（Android デベロッパーなど）も、集計データとしてこの情報を活用します。お子様の [その他のウェブとアプリのアクティビティ] の設定がオンになっている場合、このデータはお子様の Google アカウントに保存されます。<ph name="BEGIN_LINK2" />統計情報の詳細<ph name="BEGIN_LINK2_END" />詳細<ph name="END_LINK2" /></translation>
 <translation id="9201044636667689546">この Chromebook に <ph name="NAME" /> を接続してください</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />、管理者によって管理</translation>
+<translation id="9201842707396338580">エラーが発生しました。デバイスの所有者または管理者にお問い合わせください。エラーコード: <ph name="ERROR_CODE" />。</translation>
 <translation id="9207682216934703221">位置情報へのアクセスを許可した <ph name="APP_NAME" />、<ph name="APP2_NAME" /> およびすべてのアプリとウェブサイト、ChromeOS で、Wi-Fi とモバイル ネットワークの位置情報を使用できるようになります。</translation>
 <translation id="9210037371811586452">デスクトップ統合モードの終了中</translation>
 <translation id="9211490828691860325">すべてのデスク</translation>
@@ -2579,6 +2649,7 @@
 <translation id="923686485342484400">ログアウトするには、Ctrl Shift Q を 2 回押します。</translation>
 <translation id="92580429198593979">色反転のキーボード ショートカットを押しました。オンにしますか？</translation>
 <translation id="925832987464884575">プレビューを非表示</translation>
+<translation id="93140074055951850">Android アプリを停止しました</translation>
 <translation id="938407504481277932">現在のデスク: <ph name="DESK_NAME" />。<ph name="PROFILE_NAME" /> <ph name="EMAIL" />。デスク <ph name="DESK_INDEX" />/<ph name="DESK_COUNT" />。</translation>
 <translation id="94468042118567862">デバイスは最新の状態ではありません</translation>
 <translation id="945383118875625837">リンクをブックマーク バーにドラッグする</translation>
