@@ -34,6 +34,26 @@ gfx::SizeF GetSpecifiedSize(const gfx::SizeF& size, float zoom) {
   return gfx::SizeF(un_zoom_fn(size.width()), un_zoom_fn(size.height()));
 }
 
+std::unique_ptr<CrossThreadStyleValue> CreateUpdatedStyleValue(
+    const PaintWorkletInput::PropertyValue& value,
+    const CrossThreadStyleValue& old_style_value) {
+  switch (old_style_value.GetType()) {
+    case CrossThreadStyleValue::StyleValueType::kUnitType:
+      DCHECK(value.float_value);
+      return std::make_unique<CrossThreadUnitValue>(
+          value.float_value.value(),
+          To<CrossThreadUnitValue>(old_style_value).GetUnitType());
+    case CrossThreadStyleValue::StyleValueType::kColorType:
+      DCHECK(value.color_value);
+      return std::make_unique<CrossThreadColorValue>(
+          Color::FromSkColor4f(value.color_value.value()));
+    case CrossThreadStyleValue::StyleValueType::kUnknownType:
+    case CrossThreadStyleValue::StyleValueType::kUnparsedType:
+    case CrossThreadStyleValue::StyleValueType::kKeywordType:
+      NOTREACHED();
+  }
+}
+
 }  // namespace
 
 CSSPaintDefinition::CSSPaintDefinition(
@@ -132,34 +152,14 @@ void CSSPaintDefinition::ApplyAnimatedPropertyOverrides(
     PaintWorkletStylePropertyMap* style_map,
     const CompositorPaintWorkletJob::AnimatedPropertyValues&
         animated_property_values) {
-  for (const auto& property_value : animated_property_values) {
-    DCHECK(property_value.second.has_value());
-    String property_name(
-        property_value.first.custom_property_name.value().c_str());
-    DCHECK(style_map->StyleMapData().Contains(property_name));
-    CrossThreadStyleValue* old_value =
-        style_map->StyleMapData().at(property_name);
-    switch (old_value->GetType()) {
-      case CrossThreadStyleValue::StyleValueType::kUnitType: {
-        DCHECK(property_value.second.float_value);
-        std::unique_ptr<CrossThreadUnitValue> new_value =
-            std::make_unique<CrossThreadUnitValue>(
-                property_value.second.float_value.value(),
-                DynamicTo<CrossThreadUnitValue>(old_value)->GetUnitType());
-        style_map->StyleMapData().Set(property_name, std::move(new_value));
-        break;
-      }
-      case CrossThreadStyleValue::StyleValueType::kColorType: {
-        DCHECK(property_value.second.color_value);
-        std::unique_ptr<CrossThreadColorValue> new_value =
-            std::make_unique<CrossThreadColorValue>(Color::FromSkColor4f(
-                property_value.second.color_value.value()));
-        style_map->StyleMapData().Set(property_name, std::move(new_value));
-        break;
-      }
-      default:
-        NOTREACHED();
-    }
+  auto& style_map_data = style_map->StyleMapData();
+  for (const auto& [key, value] : animated_property_values) {
+    DCHECK(value.has_value());
+    String property_name(key.custom_property_name.value().c_str());
+    auto it = style_map_data.find(property_name);
+    DCHECK_NE(it, style_map_data.end());
+    DCHECK(it->value);
+    it->value = CreateUpdatedStyleValue(value, *it->value);
   }
 }
 
