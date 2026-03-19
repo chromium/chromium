@@ -2010,39 +2010,88 @@ TEST_F(RevokedPermissionsServiceBackfillTest,
       permissions::features::
           kSafetyHubUnusedPermissionRevocationForAllSurfaces);
 
+  base::HistogramTester histogram_tester;
+  const std::string completion_status_histogram_name =
+      "Settings.SafetyHub.UnusedSitePermissionsModule."
+      "Backfill.CompletionStatus";
+  const std::string run_status_histogram_name =
+      "Settings.SafetyHub.UnusedSitePermissionsModule."
+      "Backfill.RunStatus";
+  const std::string count_histogram_name =
+      "Settings.SafetyHub.UnusedSitePermissionsModule."
+      "Backfill.ListCountOnCompletion";
+
   // Check that backfill status is 'not completed' before triggering the
   // backfill.
   EXPECT_FALSE(prefs()->GetBoolean(
       safety_hub_prefs::kUnusedSitePermissionsRevocationBackfillCompleted));
 
   // Trigger the background task and check that it did not find any
-  // untimestamped permissions.
+  // untimestamped permissions and recorded the backfill completion status for
+  // the user as 'not completed'.
   safety_hub_test_util::UpdateRevokedPermissionsServiceAsync(service());
   EXPECT_EQ(service()->GetUntimestampedPermissionsForTesting().size(), 0u);
+  EXPECT_EQ(
+      1U,
+      histogram_tester.GetAllSamples(completion_status_histogram_name).size());
+  histogram_tester.ExpectBucketCount(completion_status_histogram_name, false,
+                                     1);
 
   // Check that UI thread that starts on background task completion marked the
   // backfill as completed.
   EXPECT_TRUE(prefs()->GetBoolean(
       safety_hub_prefs::kUnusedSitePermissionsRevocationBackfillCompleted));
+
+  // Assert that one backfill attempt and one backfill completion are recorded
+  // in UMA metrics.
+  EXPECT_EQ(2U,
+            histogram_tester.GetAllSamples(run_status_histogram_name).size());
+  histogram_tester.ExpectBucketCount(run_status_histogram_name,
+                                     false /*run started*/, 1);
+  histogram_tester.ExpectBucketCount(run_status_histogram_name,
+                                     true /*run completed*/, 1);
+
+  // Assert that the number of timestamped permissions (zero) is recorded in UMA
+  // metrics.
+  histogram_tester.ExpectTotalCount(count_histogram_name, 1);
+  histogram_tester.ExpectUniqueSample(count_histogram_name, 0, 1);
 }
+
 TEST_F(RevokedPermissionsServiceBackfillTest,
        LastVisitedBackfill_SuccessfullCompletion) {
   feature_list()->InitAndEnableFeature(
       permissions::features::
           kSafetyHubUnusedPermissionRevocationForAllSurfaces);
 
+  base::HistogramTester histogram_tester;
+  const std::string completion_status_histogram_name =
+      "Settings.SafetyHub.UnusedSitePermissionsModule."
+      "Backfill.CompletionStatus";
+  const std::string run_status_histogram_name =
+      "Settings.SafetyHub.UnusedSitePermissionsModule."
+      "Backfill.RunStatus";
+  const std::string count_histogram_name =
+      "Settings.SafetyHub.UnusedSitePermissionsModule."
+      "Backfill.ListCountOnCompletion";
+
   // Add two permissions without `last_visited` timestamp.
   SetUntrackedContentSettingForType(url5, geolocation_type);
   SetUntrackedContentSettingForType(url4, mediastream_type);
 
   // Trigger the background task and check that it added both permissions to
-  // `untimestamped_permissions_` list.
+  // `untimestamped_permissions_` list and recorded the backfill completion
+  // status for the user as 'not completed'.
   safety_hub_test_util::UpdateRevokedPermissionsServiceAsync(service());
   EXPECT_EQ(service()->GetUntimestampedPermissionsForTesting().size(), 2u);
   EXPECT_EQ(service()->GetUntimestampedPermissionsForTesting()[0].type,
             geolocation_type);
   EXPECT_EQ(service()->GetUntimestampedPermissionsForTesting()[1].type,
             mediastream_type);
+  EXPECT_EQ(
+      1U,
+      histogram_tester.GetAllSamples(completion_status_histogram_name).size());
+  histogram_tester.ExpectBucketCount(completion_status_histogram_name, false,
+                                     1);
 
   // Check that UI thread that starts on background task completion performed
   // the backfill process on the `untimestampe_permissions_` leaving them
@@ -2061,6 +2110,20 @@ TEST_F(RevokedPermissionsServiceBackfillTest,
   EXPECT_LE(info.metadata.last_visited(), now);
   EXPECT_TRUE(prefs()->GetBoolean(
       safety_hub_prefs::kUnusedSitePermissionsRevocationBackfillCompleted));
+
+  // Assert that one backfill attempt and one backfill completion are recorded
+  // in UMA metrics.
+  EXPECT_EQ(2U,
+            histogram_tester.GetAllSamples(run_status_histogram_name).size());
+  histogram_tester.ExpectBucketCount(run_status_histogram_name,
+                                     false /*started*/, 1);
+  histogram_tester.ExpectBucketCount(run_status_histogram_name,
+                                     true /*completed*/, 1);
+
+  // Assert that the number of timestamped permissions (two) is recorded in UMA
+  // metrics.
+  histogram_tester.ExpectTotalCount(count_histogram_name, 1);
+  histogram_tester.ExpectUniqueSample(count_histogram_name, 2, 1);
 }
 
 TEST_F(RevokedPermissionsServiceBackfillTest,
@@ -2069,20 +2132,40 @@ TEST_F(RevokedPermissionsServiceBackfillTest,
       permissions::features::
           kSafetyHubUnusedPermissionRevocationForAllSurfaces);
 
+  base::HistogramTester histogram_tester;
+  const std::string completion_status_histogram_name =
+      "Settings.SafetyHub.UnusedSitePermissionsModule."
+      "Backfill.CompletionStatus";
+
   // Add two permissions without `last_visited` timestamp.
   SetUntrackedContentSettingForType(url5, geolocation_type);
   SetUntrackedContentSettingForType(url4, mediastream_type);
 
-  // Trigger the backfill and check both permissions were timestamped.
+  // Trigger the backfill and check both permissions were timestamped and the
+  // backfill completion status was recorded for the user as 'not completed'.
   safety_hub_test_util::UpdateRevokedPermissionsServiceAsync(service());
   EXPECT_EQ(service()->GetUntimestampedPermissionsForTesting().size(), 2u);
   EXPECT_TRUE(prefs()->GetBoolean(
       safety_hub_prefs::kUnusedSitePermissionsRevocationBackfillCompleted));
+  EXPECT_EQ(
+      1U,
+      histogram_tester.GetAllSamples(completion_status_histogram_name).size());
+  histogram_tester.ExpectBucketCount(completion_status_histogram_name, false,
+                                     1);
+
+  // Move forward for 10 days and trigger the background task again.
+  clock()->Advance(base::Days(10));
+  safety_hub_test_util::UpdateRevokedPermissionsServiceAsync(service());
+
+  // Check that on consecutive runs the completion status for the user recorded
+  // as 'completed'.
+  EXPECT_EQ(
+      2U,
+      histogram_tester.GetAllSamples(completion_status_histogram_name).size());
+  histogram_tester.ExpectBucketCount(completion_status_histogram_name, true, 1);
 
   // Check that backfilled permissions start being tracked as unused just like
   // permissions stamped on creation.
-  clock()->Advance(base::Days(10));
-  safety_hub_test_util::UpdateRevokedPermissionsServiceAsync(service());
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return service()->GetTrackedUnusedPermissionsForTesting().size() == 2u;
   })) << "Backfilled permissions are not being tracked as unused.";
@@ -2103,6 +2186,8 @@ TEST_F(RevokedPermissionsServiceBackfillTest, LastVisitedBackfill_FlagIsOff) {
       permissions::features::
           kSafetyHubUnusedPermissionRevocationForAllSurfaces);
 
+  base::HistogramTester histogram_tester;
+
   // Trigger the UpdateAsync() that would perform the backfill if the flag was
   // enabled.
   safety_hub_test_util::UpdateRevokedPermissionsServiceAsync(service());
@@ -2110,4 +2195,23 @@ TEST_F(RevokedPermissionsServiceBackfillTest, LastVisitedBackfill_FlagIsOff) {
   // Check that backfill did not run.
   EXPECT_FALSE(prefs()->GetBoolean(
       safety_hub_prefs::kUnusedSitePermissionsRevocationBackfillCompleted));
+
+  // Assert that no completion status for the user is recorded.
+  EXPECT_EQ(0U,
+            histogram_tester
+                .GetAllSamples("Settings.SafetyHub.UnusedSitePermissionsModule."
+                               "Backfill.CompletionStatus")
+                .size());
+
+  // Assert that no backfill attempts or completions are recorded in UMA
+  // metrics.
+  histogram_tester.ExpectTotalCount(
+      "Settings.SafetyHub.UnusedSitePermissionsModule.Backfill.RunStatus", 0);
+
+  // Assert that no counts of timestamped permissions are recorded in UMA
+  // metrics.
+  histogram_tester.ExpectTotalCount(
+      "Settings.SafetyHub.UnusedSitePermissionsModule.Backfill."
+      "ListCountOnCompletion",
+      0);
 }

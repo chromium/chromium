@@ -16,6 +16,7 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
@@ -174,6 +175,20 @@ UnusedSitePermissionsManager::UpdateOnBackgroundThread(
           kSafetyHubUnusedPermissionRevocationForAllSurfaces);
   // Pass the flag to UI thread to maintain consistency throughout the session.
   result->SetRevocationBackfillEnabled(revocation_backfill_enabled);
+  if (revocation_backfill_enabled) {
+    // Record whether the backfill was already completed for the user or not.
+    UMA_HISTOGRAM_BOOLEAN(
+        "Settings.SafetyHub.UnusedSitePermissionsModule.Backfill."
+        "CompletionStatus",
+        revocation_backfill_completed);
+
+    if (!revocation_backfill_completed) {
+      // Record the attempt to run the backfill code.
+      UMA_HISTOGRAM_BOOLEAN(
+          "Settings.SafetyHub.UnusedSitePermissionsModule.Backfill.RunStatus",
+          false /*STARTED*/);
+    }
+  }
 
   UnusedSitePermissionsManager::UnusedPermissionMap recently_unused;
   UnusedSitePermissionsManager::UntimestampedPermissionList
@@ -221,11 +236,11 @@ UnusedSitePermissionsManager::UpdateOnBackgroundThread(
         }
       }
     }
+  }
 
-    if (revocation_backfill_enabled && !revocation_backfill_completed &&
-        !untimestamped_permissions.empty()) {
-      result->SetUntimestampedPermissions(untimestamped_permissions);
-    }
+  if (revocation_backfill_enabled && !revocation_backfill_completed &&
+      !untimestamped_permissions.empty()) {
+    result->SetUntimestampedPermissions(untimestamped_permissions);
   }
 
   result->SetRecentlyUnusedPermissions(recently_unused);
@@ -739,4 +754,14 @@ void UnusedSitePermissionsManager::MaybePerformLastVisitedBackfill(
   pref_change_registrar_->prefs()->SetBoolean(
       safety_hub_prefs::kUnusedSitePermissionsRevocationBackfillCompleted,
       true);
+
+  // Record the successful completion of the backfill run.
+  UMA_HISTOGRAM_BOOLEAN(
+      "Settings.SafetyHub.UnusedSitePermissionsModule.Backfill.RunStatus",
+      true /*COMPLETED*/);
+  // Record the number of permissions backfilled during one run.
+  base::UmaHistogramCounts10000(
+      "Settings.SafetyHub.UnusedSitePermissionsModule.Backfill."
+      "ListCountOnCompletion",
+      untimestamped_permissions_.size());
 }

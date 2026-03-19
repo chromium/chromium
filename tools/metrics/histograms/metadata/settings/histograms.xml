@@ -1260,6 +1260,44 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
   </summary>
 </histogram>
 
+<histogram
+    name="Settings.SafetyHub.UnusedSitePermissionsModule.Backfill.CompletionStatus"
+    enum="Boolean" expires_after="2026-09-20">
+  <owner>aisulu@google.com</owner>
+  <owner>fsenra@google.com</owner>
+  <owner>chrome-privacy-controls@google.com</owner>
+  <summary>
+    Records on startup whether the user previously went through backfill or not.
+    The backfill here is a process of adding `last_visited` timestamp to all
+    granted permissions of the user that do not have it yet.
+  </summary>
+</histogram>
+
+<histogram
+    name="Settings.SafetyHub.UnusedSitePermissionsModule.Backfill.ListCountOnCompletion"
+    units="permissions" expires_after="2026-09-20">
+  <owner>aisulu@google.com</owner>
+  <owner>fsenra@google.com</owner>
+  <owner>chrome-privacy-controls@google.com</owner>
+  <summary>
+    The number of permissions that a successfull backfill run timestamped with
+    `last_visited` field.
+  </summary>
+</histogram>
+
+<histogram
+    name="Settings.SafetyHub.UnusedSitePermissionsModule.Backfill.RunStatus"
+    enum="BooleanStartedCompleted" expires_after="2026-09-20">
+  <owner>aisulu@google.com</owner>
+  <owner>fsenra@google.com</owner>
+  <owner>chrome-privacy-controls@google.com</owner>
+  <summary>
+    Records whenever the backfill was started or completed. The backfill here
+    adds `last_visited` timestamp to all granted permissions of the user that do
+    not have it yet.
+  </summary>
+</histogram>
+
 <histogram name="Settings.SafetyHub.UnusedSitePermissionsModule.Interactions"
     enum="SafetyCheckUnusedSitePermissionsModuleInteractions"
     expires_after="2026-09-06">
