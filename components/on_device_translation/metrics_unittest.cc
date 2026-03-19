@@ -8,6 +8,7 @@
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/on_device_translation/public/language_pack.h"
+#include "metrics.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -188,5 +189,34 @@ TEST_F(TranslationMetricsTest, RecordOnDeviceTranslationLength) {
       "Translate.OnDeviceTranslation.TargetLanguage.es.TranslationLength", 100,
       1);
 }
+
+TEST_F(TranslationMetricsTest, RecordTranslatorApiLanguageSupportTrue) {
+  base::HistogramTester histogram_tester;
+  RecordOnDeviceTranslationSupportedSourceLanguage("CreateTranslator", true);
+  RecordOnDeviceTranslationSupportedTargetLanguage("CreateTranslator", true);
+  histogram_tester.ExpectUniqueSample(
+      "Translate.OnDeviceTranslation.CreateTranslator."
+      "IsSourceLanguageSupported",
+      1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Translate.OnDeviceTranslation.CreateTranslator."
+      "IsTargetLanguageSupported",
+      1, 1);
+}
+
+TEST_F(TranslationMetricsTest, RecordTranslatorApiLanguageSupportFalse) {
+  base::HistogramTester histogram_tester;
+  RecordOnDeviceTranslationSupportedSourceLanguage("CreateTranslator", false);
+  RecordOnDeviceTranslationSupportedTargetLanguage("CreateTranslator", false);
+  histogram_tester.ExpectUniqueSample(
+      "Translate.OnDeviceTranslation.CreateTranslator."
+      "IsSourceLanguageSupported",
+      0, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Translate.OnDeviceTranslation.CreateTranslator."
+      "IsTargetLanguageSupported",
+      0, 1);
+}
+
 }  // namespace
 }  // namespace on_device_translation

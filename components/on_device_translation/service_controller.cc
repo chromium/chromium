@@ -36,6 +36,7 @@
 #include "components/on_device_translation/translation_manager_util.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/browser/service_process_host_passkeys.h"
+#include "metrics.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -196,6 +197,11 @@ void OnDeviceTranslationServiceController::CreateTranslator(
       GetBestFitLanguageCode(source_lang);
   std::optional<std::string> best_fit_target_language =
       GetBestFitLanguageCode(target_lang);
+
+  RecordOnDeviceTranslationSupportedSourceLanguage(
+      "CreateTranslator", best_fit_source_language.has_value());
+  RecordOnDeviceTranslationSupportedTargetLanguage(
+      "CreateTranslator", best_fit_target_language.has_value());
   if (!best_fit_source_language.has_value() ||
       !best_fit_target_language.has_value()) {
     std::move(callback).Run(
@@ -299,6 +305,10 @@ void OnDeviceTranslationServiceController::CanTranslate(
       GetBestFitLanguageCode(source_lang_arg);
   std::optional<std::string> best_fit_target_language =
       GetBestFitLanguageCode(target_lang_arg);
+  RecordOnDeviceTranslationSupportedSourceLanguage(
+      "CanTranslate", best_fit_source_language.has_value());
+  RecordOnDeviceTranslationSupportedTargetLanguage(
+      "CanTranslate", best_fit_target_language.has_value());
   if (!best_fit_source_language.has_value() ||
       !best_fit_target_language.has_value()) {
     std::move(callback).Run(CanTranslateResult::kNoNotSupportedLanguage);
