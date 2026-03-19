@@ -51,8 +51,6 @@ class SafeBrowsingChildNavigationThrottleTest
                     auto throttle =
                         std::make_unique<SafeBrowsingChildNavigationThrottle>(
                             registry, parent_filter_.get(),
-                            /*profile_interaction_manager=*/
-                            base::WeakPtr<ProfileInteractionManager>(),
                             base::BindRepeating([](const GURL& filtered_url) {
                               return base::StringPrintf(
                                   kDisallowChildFrameConsoleMessageFormat,

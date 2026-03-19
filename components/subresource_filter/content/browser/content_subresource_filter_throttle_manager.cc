@@ -636,8 +636,7 @@ void ContentSubresourceFilterThrottleManager::
     return;
   }
   registry.AddThrottle(std::make_unique<SafeBrowsingChildNavigationThrottle>(
-      registry, parent_filter, profile_interaction_manager_->AsWeakPtr(),
-      base::BindRepeating([](const GURL& url) {
+      registry, parent_filter, base::BindRepeating([](const GURL& url) {
         return base::StringPrintf(kDisallowChildFrameConsoleMessageFormat,
                                   url.possibly_invalid_spec().c_str());
       }),

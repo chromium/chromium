@@ -18,15 +18,6 @@ BASE_DECLARE_FEATURE(kAdTagging);
 // or same-domain to the top-level).
 BASE_DECLARE_FEATURE(kDelayUnsafeAds);
 
-// Enables ad tagging decisions to be propagated to network requests by removing
-// an optimization which parallelizes filter list checks and navigation request
-// start.
-BASE_DECLARE_FEATURE(kTPCDAdHeuristicSubframeRequestTagging);
-
-// Param which governs whether to check if a third-party cookie exception
-// applies to a network request before removing the optimization which
-// parallelizes its start with filter list checks.
-extern const base::FeatureParam<bool> kCheckFor3pcException;
 
 // Param which governs how much to delay non-secure (i.e. http) subresources for
 // DelayUnsafeAds.

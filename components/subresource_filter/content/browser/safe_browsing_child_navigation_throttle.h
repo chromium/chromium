@@ -22,7 +22,6 @@ class NavigationThrottle;
 namespace subresource_filter {
 
 class AsyncDocumentSubresourceFilter;
-class ProfileInteractionManager;
 
 // ChildFrameNavigationFilteringThrottle implementation for Safe Browsing.
 //
@@ -37,7 +36,6 @@ class SafeBrowsingChildNavigationThrottle
   SafeBrowsingChildNavigationThrottle(
       content::NavigationThrottleRegistry& registry,
       AsyncDocumentSubresourceFilter* parent_frame_filter,
-      base::WeakPtr<ProfileInteractionManager> profile_interaction_manager,
       base::RepeatingCallback<std::string(const GURL& url)>
           disallow_message_callback,
       std::optional<blink::FrameAdEvidence> ad_evidence);
@@ -55,12 +53,8 @@ class SafeBrowsingChildNavigationThrottle
   bool ShouldDeferNavigation() const override;
   void OnReadyToResumeNavigationWithLoadPolicy() override;
   void NotifyLoadPolicy() const override;
-  bool NavigationHasCookieException() const;
 
   std::optional<blink::FrameAdEvidence> ad_evidence_;
-
-  // May be null. If non-null, must outlive this class.
-  base::WeakPtr<ProfileInteractionManager> profile_interaction_manager_;
 
   base::WeakPtrFactory<SafeBrowsingChildNavigationThrottle> weak_ptr_factory_{
       this};
