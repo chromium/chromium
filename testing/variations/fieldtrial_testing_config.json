@@ -12218,7 +12218,28 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_Header1",
+                    "params": {
+                        "IOSDockingPromoV2VariationParam": "IOSDockingPromoV2VariationHeader1"
+                    },
+                    "enable_features": [
+                        "IOSDockingPromoV2"
+                    ]
+                },
+                {
+                    "name": "Enabled_Header2",
+                    "params": {
+                        "IOSDockingPromoV2VariationParam": "IOSDockingPromoV2VariationHeader2"
+                    },
+                    "enable_features": [
+                        "IOSDockingPromoV2"
+                    ]
+                },
+                {
+                    "name": "Enabled_Header3",
+                    "params": {
+                        "IOSDockingPromoV2VariationParam": "IOSDockingPromoV2VariationHeader3"
+                    },
                     "enable_features": [
                         "IOSDockingPromoV2"
                     ]
