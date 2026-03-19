@@ -517,6 +517,12 @@ void ServerWrapper::OnHttpRequest(int connection_id,
 void ServerWrapper::OnWebSocketRequest(
     int connection_id,
     const net::HttpServerRequestInfo& request) {
+  if (!RequestIsSafeToServe(request)) {
+    Send500(connection_id,
+            "Host header is specified and is not an IP address or localhost.");
+    return;
+  }
+
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&DevToolsHttpHandler::OnWebSocketRequest,
                                 handler_, connection_id, request));

@@ -568,6 +568,22 @@ TEST_F(DevToolsWebSocketHandlerTest, TestAllowsCLIOverrideAllowsOriginsStar) {
   StopServer();
 }
 
+TEST_F(DevToolsWebSocketHandlerTest, TestRejectsForbiddenHostHeader) {
+  int port = StartServer();
+
+  std::string debugging_url = GetWebSocketDebuggingURL(port);
+
+  auto request =
+      RunRequestUntilCompletion(debugging_url, {
+                                                   {"connection", "upgrade"},
+                                                   {"upgrade", "websocket"},
+                                                   {"host", "attacker.com"},
+                                               });
+  EXPECT_EQ(request->GetResponseCode(), 500);
+
+  StopServer();
+}
+
 TEST_F(DevToolsWebSocketHandlerTest, TestAllowsCLIOverrideAllowsOrigins) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kRemoteAllowOrigins, "http://localhost");
