@@ -18,7 +18,6 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/plural_string_handler.h"
 #include "chrome/browser/ui/webui/updater/updater_page_handler.h"
 #include "chrome/browser/ui/webui/updater/updater_ui.mojom.h"
@@ -65,10 +64,6 @@ void AddKnownApp(content::WebUIDataSource& source,
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 }  // namespace
-
-bool UpdaterUIConfig::IsWebUIEnabled(content::BrowserContext* browser_context) {
-  return base::FeatureList::IsEnabled(features::kUpdaterUI);
-}
 
 // enable_chrome_send is needed for plural_string_handler.
 UpdaterUI::UpdaterUI(content::WebUI* web_ui)

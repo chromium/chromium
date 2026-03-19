@@ -495,8 +495,4 @@ BASE_FEATURE_PARAM(bool,
                    "tab_groups_focusing_default_to_focused",
                    false);
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-BASE_FEATURE(kUpdaterUI, base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 }  // namespace features

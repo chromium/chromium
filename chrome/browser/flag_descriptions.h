@@ -973,7 +973,6 @@ inline constexpr char kAutofillEnableNewFopDisplayAndroidDescription[] =
     "When enabled, updates payment method Autofill suggestions and settings "
     "UI.";
 
-
 inline constexpr char kAutofillEnableOffersInClankKeyboardAccessoryName[] =
     "Enable Autofill offers in keyboard accessory";
 inline constexpr char
@@ -5986,10 +5985,6 @@ inline constexpr char kAimUsePecApiDescription[] =
     "When enabled, all composebox context menus will use the `SearchboxConfig` "
     "from the PEC API.";
 
-inline constexpr char kUpdaterUIName[] = "Chrome Updater UI";
-inline constexpr char kUpdaterUIDescription[] =
-    "When enabled, the chrome://updater page is available.";
-
 inline constexpr char kUseAngleDescriptionAndroid[] =
     "Choose the graphics backend for ANGLE. The Vulkan backend is still "
     "experimental, and may contain bugs that "
@@ -6167,7 +6162,6 @@ inline constexpr char kReadAnythingImmersiveReadingModeName[] =
     "Reading Mode Experimental Immersive Mode";
 inline constexpr char kReadAnythingImmersiveReadingModeDescription[] =
     "Enables the infrastructure for Immersive Reading Mode.";
-
 
 inline constexpr char kReadAnythingOmniboxChipName[] =
     "Reading Mode Omnibox Chip";

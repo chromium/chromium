@@ -23,8 +23,6 @@ class UpdaterUIConfig : public content::DefaultWebUIConfig<UpdaterUI> {
   UpdaterUIConfig()
       : DefaultWebUIConfig(content::kChromeUIScheme,
                            chrome::kChromeUIUpdaterHost) {}
-
-  bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
 };
 
 // The WebUI for chrome://updater.

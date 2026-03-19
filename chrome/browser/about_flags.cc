@@ -12803,12 +12803,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillAiWithDataSchemaDescription, kOsAll,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillAiWithDataSchema)},
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-    {"updater-ui", flag_descriptions::kUpdaterUIName,
-     flag_descriptions::kUpdaterUIDescription, kOsLinux | kOsMac | kOsWin,
-     FEATURE_VALUE_TYPE(features::kUpdaterUI)},
-#endif
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
     {"read-anything-line-focus", flag_descriptions::kReadAnythingLineFocusName,
