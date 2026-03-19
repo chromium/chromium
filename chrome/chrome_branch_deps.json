@@ -17,6 +17,6 @@
   "src:src/third_party/tflite/src": "refs/heads/chromium/7727",
   "src:src/third_party/vulkan-deps": "refs/heads/chromium/7727",
   "src:src/third_party/webrtc": "refs/branch-heads/7727",
-  "src:src/third_party/xnnpack/src": "refs/branch-heads/7727",
+  "src:src/third_party/xnnpack/src": "refs/heads/chromium/7727",
   "src:src/v8": "refs/heads/chromium/7727"
 }
