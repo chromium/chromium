@@ -37,6 +37,7 @@ class BrowserActions {
   // Helper functions to initialize actions grouped roughly by their type.
   void InitializeSidePanelActions();
   void InitializePageActionIconActions();
+  void InitializeChromeMenuActions();
 
   // Creates all the listeners for the action items that update different states
   // and property of the action item.
