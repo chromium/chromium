@@ -298,42 +298,40 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
             createMandatoryReauthSwitch();
         }
 
-        if (shouldShowSaveCvcSwitch()) {
-            ChromeSwitchPreference saveCvcSwitch =
-                    new ChromeSwitchPreference(getStyledContext(), null);
-            saveCvcSwitch.setTitle(R.string.autofill_settings_page_enable_cvc_storage_label);
-            saveCvcSwitch.setSummary(R.string.autofill_settings_page_enable_cvc_storage_sublabel);
-            saveCvcSwitch.setKey(PREF_SAVE_CVC);
-            // When "Save And Fill Payments Methods" is disabled or Chrome is in third party mode,
-            // we disable this cvc storage toggle.
-            saveCvcSwitch.setEnabled(
-                    personalDataManager.isAutofillPaymentMethodsEnabled() && !disabledSettings);
-            saveCvcSwitch.setOnPreferenceChangeListener(
-                    (preference, newValue) -> {
+        ChromeSwitchPreference saveCvcSwitch =
+                new ChromeSwitchPreference(getStyledContext(), null);
+        saveCvcSwitch.setTitle(R.string.autofill_settings_page_enable_cvc_storage_label);
+        saveCvcSwitch.setSummary(R.string.autofill_settings_page_enable_cvc_storage_sublabel);
+        saveCvcSwitch.setKey(PREF_SAVE_CVC);
+        // When "Save And Fill Payments Methods" is disabled or Chrome is in third party mode,
+        // we disable this cvc storage toggle.
+        saveCvcSwitch.setEnabled(
+                personalDataManager.isAutofillPaymentMethodsEnabled() && !disabledSettings);
+        saveCvcSwitch.setOnPreferenceChangeListener(
+                (preference, newValue) -> {
                         personalDataManager.setAutofillPaymentCvcStorage((boolean) newValue);
                         return true;
-                    });
-            getPreferenceScreen().addPreference(saveCvcSwitch);
+                });
+        getPreferenceScreen().addPreference(saveCvcSwitch);
 
-            // When "Save And Fill Payments Methods" is disabled, we override this toggle's value to
-            // off (but not change the underlying pref value). When "Save And Fill Payments Methods"
-            // is ON, show the cvc storage pref value.
-            // When "Save And Fill Payments Methods" is disabled because of third party mode, we
-            // also override this toggle's value to off (but not change the underlying pref value).
-            saveCvcSwitch.setChecked(
-                    personalDataManager.isAutofillPaymentMethodsEnabled()
-                            && personalDataManager.isPaymentCvcStorageEnabled()
-                            && !disabledSettings);
+        // When "Save And Fill Payments Methods" is disabled, we override this toggle's value to
+        // off (but not change the underlying pref value). When "Save And Fill Payments Methods"
+        // is ON, show the cvc storage pref value.
+        // When "Save And Fill Payments Methods" is disabled because of third party mode, we
+        // also override this toggle's value to off (but not change the underlying pref value).
+        saveCvcSwitch.setChecked(
+                personalDataManager.isAutofillPaymentMethodsEnabled()
+                        && personalDataManager.isPaymentCvcStorageEnabled()
+                        && !disabledSettings);
 
-            // Add the deletion button for saved CVCs. Note that this button's presence doesn't
-            // depend on the value of the "Save and fill payment methods" toggle, since we would
-            // like to allow the user to delete saved CVCs even when the toggle is disabled.
-            // Conditionally show the deletion button based on whether there are any CVCs stored.
-            for (CreditCard card : personalDataManager.getCreditCardsForSettings()) {
-                if (!card.getCvc().isEmpty()) {
-                    createDeleteSavedCvcsButton();
-                    break;
-                }
+        // Add the deletion button for saved CVCs. Note that this button's presence doesn't
+        // depend on the value of the "Save and fill payment methods" toggle, since we would
+        // like to allow the user to delete saved CVCs even when the toggle is disabled.
+        // Conditionally show the deletion button based on whether there are any CVCs stored.
+        for (CreditCard card : personalDataManager.getCreditCardsForSettings()) {
+            if (!card.getCvc().isEmpty()) {
+                createDeleteSavedCvcsButton();
+                break;
             }
         }
 
@@ -367,8 +365,7 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
             if (card.getVirtualCardEnrollmentState() == VirtualCardEnrollmentState.ENROLLED) {
                 card_pref.setSummary(R.string.autofill_virtual_card_enrolled_text);
             } else {
-                if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE)
-                        && !card.getCvc().isEmpty()) {
+                if (!card.getCvc().isEmpty()) {
                     card_pref.setSummary(
                             card.getFormattedExpirationDateWithCvcSavedMessage(getActivity()));
                 } else {
@@ -867,10 +864,6 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
         return !DeviceInfo.isAutomotive();
     }
 
-    private static boolean shouldShowSaveCvcSwitch() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE);
-    }
-
     private static boolean shouldShowCardBenefitsPref(
             PersonalDataManager manager, Profile profile) {
         return !disabledSettingsInThirdPartyMode(profile)
@@ -983,13 +976,11 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
                                 R.string
                                         .autofill_settings_page_enable_payment_method_mandatory_reauth_sublabel);
                     }
-                    if (shouldShowSaveCvcSwitch()) {
                         indexData.addEntryForKey(
                                 frag,
                                 PREF_SAVE_CVC,
                                 R.string.autofill_settings_page_enable_cvc_storage_label,
                                 R.string.autofill_settings_page_enable_cvc_storage_sublabel);
-                    }
                     if (shouldShowCardBenefitsPref(personalDataManager, profile)) {
                         indexData.addEntryForKey(
                                 frag,

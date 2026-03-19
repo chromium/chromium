@@ -85,7 +85,6 @@ import java.util.List;
 /** Unit tests for {@link AutofillLocalCardEditorTest}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE})
 @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
 public class AutofillLocalCardEditorTest {
     // This is a non-amex card without a CVC code.
@@ -374,39 +373,6 @@ public class AutofillLocalCardEditorTest {
 
     @Test
     @MediumTest
-    @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE})
-    public void testErrorMessageHiddenAfterNicknameIsEditedFromInvalidToValid() {
-        initFragment(getSampleLocalCard());
-        // "Nickname 123" is an incorrect nickname because it contains digits.
-        mNicknameText.setText("Nickname 123");
-
-        assertThat(mNicknameLabel.getError()).isEqualTo(mNicknameInvalidError);
-
-        // Set the nickname to valid one.
-        mNicknameText.setText("Valid Nickname");
-        assertThat(mNicknameLabel.getError()).isNull();
-        assertTrue(mCardEditor.validateFormAndUpdateErrorAndFocusErrorField());
-    }
-
-    @Test
-    @MediumTest
-    @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE})
-    public void testErrorMessageHiddenAfterNicknameIsEditedFromInvalidToEmpty() {
-        initFragment(getSampleLocalCard());
-        // "Nickname 123" is an incorrect nickname because it contains digits.
-        mNicknameText.setText("Nickname 123");
-
-        assertThat(mNicknameLabel.getError()).isEqualTo(mNicknameInvalidError);
-
-        // Set the nickname to null.
-        mNicknameText.setText(null);
-
-        assertThat(mNicknameLabel.getError()).isNull();
-        assertTrue(mCardEditor.validateFormAndUpdateErrorAndFocusErrorField());
-    }
-
-    @Test
-    @MediumTest
     public void testNicknameLengthCappedAt25Characters() {
         initFragment(getSampleLocalCard());
         String veryLongNickname = "This is a very very long nickname";
@@ -414,24 +380,6 @@ public class AutofillLocalCardEditorTest {
 
         // The maximum nickname length is 25.
         assertThat(mNicknameText.getText().toString()).isEqualTo(veryLongNickname.substring(0, 25));
-    }
-
-    @Test
-    @MediumTest
-    @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE})
-    public void testExpirationDateSpinnerAreShownWhenCvcFlagOff() {
-        initFragment(getSampleLocalCardWithCvc());
-
-        // When the flag is off, month and year fields should be visible.
-        assertThat(mExpirationMonth.getVisibility()).isEqualTo(View.VISIBLE);
-        assertThat(mExpirationYear.getVisibility()).isEqualTo(View.VISIBLE);
-
-        assertTrue(mExpirationMonth.isShown());
-        assertTrue(mExpirationYear.isShown());
-
-        // The expiration date and the cvc fields should not be shown to the user.
-        assertFalse(mExpirationDate.isShown());
-        assertFalse(mCvc.isShown());
     }
 
     @Test
@@ -712,30 +660,6 @@ public class AutofillLocalCardEditorTest {
 
         // Verify the card entry is deleted.
         verify(mMockPersonalDataManager).deleteCreditCard(card.getGUID());
-    }
-
-    @Test
-    @MediumTest
-    @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE})
-    public void testRecordHistogram_whenNewCreditCardIsAddedWithoutCvc() {
-        initFragment(null);
-        // Mock that there are already 4 cards saved.
-        when(mMockPersonalDataManager.getCreditCardCountForSettings()).thenReturn(4);
-
-        // Expect histogram to record 4 for 4 existing cards.
-        HistogramWatcher saveCardCountHistogram =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord(
-                                AutofillLocalCardEditor.CARD_COUNT_BEFORE_ADDING_NEW_CARD_HISTOGRAM,
-                                4)
-                        .build();
-
-        mNumberText.setText(NON_AMEX_CARD_NUMBER);
-        mExpirationMonth.setSelection(/* monthSelection= */ 1);
-        mExpirationYear.setSelection(/* yearSelection= */ 1);
-        mDoneButton.performClick();
-
-        saveCardCountHistogram.assertExpected();
     }
 
     @Test
@@ -1036,21 +960,6 @@ public class AutofillLocalCardEditorTest {
 
         assertThat(mExpirationDate.getText().toString())
                 .isEqualTo(String.format("%s/%s", card.getMonth(), card.getYear().substring(2)));
-    }
-
-    @Test
-    @MediumTest
-    @DisableFeatures({
-        ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE
-    }) // Feature disabled to allow saving cards without expiration dates.
-    public void onCardSave_scannerManagerLogScanResultIsCalled() {
-        initFragment(null);
-        mCardEditor.setCreditCardScannerManagerForTesting(mMockScannerManager);
-        mNumberText.setText(NON_AMEX_CARD_NUMBER);
-
-        mDoneButton.performClick();
-
-        verify(mMockScannerManager).logScanResult();
     }
 
     @Test
