@@ -335,22 +335,30 @@ export class SetupPinKeyboardElement extends SetupPinKeyboardElementBase {
     this.dispatchEvent(new Event('pin-submit'));
   }
 
-  /** This is called by container object when user initiated submit. */
+  /** This is called by the container object when user initiates submit. */
   async doSubmit(): Promise<void> {
     if (!this.isConfirmStep) {
-      if (!this.enableSubmit) {
-        return;
-      }
-      this.initialPin_ = this.pinKeyboardValue_;
-      this.pinKeyboardValue_ = '';
-      this.isConfirmStep = true;
-      this.$.pinKeyboard.resetPinVisibility();
-      this.onPinChange_(new CustomEvent(
-          'pin-change', {detail: {pin: this.pinKeyboardValue_}}));
-      this.$.pinKeyboard.focusInput();
-      recordLockScreenProgress(LockScreenProgress.ENTER_PIN);
+      this.handleInitialPinSubmit_();
+    } else {
+      this.handleConfirmPinSubmit_();
+    }
+  }
+
+  private handleInitialPinSubmit_(): void {
+    if (!this.enableSubmit) {
       return;
     }
+    this.initialPin_ = this.pinKeyboardValue_;
+    this.pinKeyboardValue_ = '';
+    this.isConfirmStep = true;
+    this.$.pinKeyboard.resetPinVisibility();
+    this.onPinChange_(
+        new CustomEvent('pin-change', {detail: {pin: this.pinKeyboardValue_}}));
+    this.$.pinKeyboard.focusInput();
+    recordLockScreenProgress(LockScreenProgress.ENTER_PIN);
+  }
+
+  private async handleConfirmPinSubmit_(): Promise<void> {
     if (this.pinKeyboardValue_ !== this.initialPin_) {
       this.showProblem_(MessageType.MISMATCH, ProblemType.ERROR);
       this.enableSubmit = false;
@@ -359,6 +367,10 @@ export class SetupPinKeyboardElement extends SetupPinKeyboardElementBase {
       return;
     }
 
+    await this.submitPinToBackend_();
+  }
+
+  private async submitPinToBackend_(): Promise<void> {
     if (typeof this.authToken !== 'string') {
       fireAuthTokenInvalidEvent(this);
       return;
@@ -376,6 +388,10 @@ export class SetupPinKeyboardElement extends SetupPinKeyboardElementBase {
     }
     this.isSetPinCallPending_ = false;
 
+    this.handleBackendResult_(result);
+  }
+
+  private handleBackendResult_(result: ConfigureResult): void {
     switch (result) {
       case ConfigureResult.kSuccess:
         break;
