@@ -2662,6 +2662,18 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.ReportUnsafeSiteDialog.IsTabSplit"
+    enum="BooleanTabIsSplit" expires_after="2026-09-01">
+  <owner>nwokedi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs whether the tab is split when the Report-Unsafe-Site dialog is shown.
+    When a tab is split and the Report-Unsafe-Site dialog is triggered from the
+    app menu, it is possible that the dialog is shown for a different tab than
+    the user expected.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.ResumableUploader.NetworkResult.EnterpriseUpload"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-07-26">
 <!-- Note to owner: This histogram can be renewed 1 full year if it is still

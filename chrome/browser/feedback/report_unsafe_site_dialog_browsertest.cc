@@ -2,12 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/feedback/report_unsafe_site_dialog.h"
+
 #include <string>
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -81,4 +87,29 @@ IN_PROC_BROWSER_TEST_F(ReportUnsafeSiteDialogBrowserTest,
   ASSERT_TRUE(content::NavigateToURL(web_contents(), GURL("about:blank")));
   NavigateAndCheckTitle(GURL("chrome://feedback/report-unsafe-site"),
                         report_unsafe_site_title);
+}
+
+IN_PROC_BROWSER_TEST_F(ReportUnsafeSiteDialogBrowserTest,
+                       RecordsIsTabSplitHistogram_NotSplit) {
+  base::HistogramTester histogram_tester;
+  feedback::ReportUnsafeSiteDialog::Show(browser());
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.ReportUnsafeSiteDialog.IsTabSplit", false, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ReportUnsafeSiteDialogBrowserTest,
+                       RecordsIsTabSplitHistogram_Split) {
+  base::HistogramTester histogram_tester;
+
+  chrome::NewTab(browser());
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  EXPECT_EQ(tab_strip_model->count(), 2);
+
+  // Split the current tab.
+  tab_strip_model->ExecuteContextMenuCommand(1,
+                                             TabStripModel::CommandAddToSplit);
+
+  feedback::ReportUnsafeSiteDialog::Show(browser());
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.ReportUnsafeSiteDialog.IsTabSplit", true, 1);
 }

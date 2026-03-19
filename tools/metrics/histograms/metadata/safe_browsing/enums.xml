@@ -144,6 +144,11 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Subsequent Response"/>
 </enum>
 
+<enum name="BooleanTabIsSplit">
+  <int value="0" label="Tab not split"/>
+  <int value="1" label="Tab is split"/>
+</enum>
+
 <enum name="BooleanTransferred">
   <int value="0" label="Did not transfer"/>
   <int value="1" label="Transferred"/>

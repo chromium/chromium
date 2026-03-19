@@ -4,6 +4,7 @@
 
 #include "chrome/browser/feedback/report_unsafe_site_dialog_views.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/feedback/report_unsafe_site/screenshot_taker.h"
 #include "chrome/browser/feedback/report_unsafe_site_dialog.h"
 #include "chrome/browser/platform_util.h"
@@ -113,6 +114,11 @@ void ReportUnsafeSiteDialog::Show(Browser* browser) {
   if (!tab_interface->CanShowModalUI()) {
     return;
   }
+
+  // The dialog might be shown for a different tab than the user expected when
+  // the tab is split.
+  base::UmaHistogramBoolean("SafeBrowsing.ReportUnsafeSiteDialog.IsTabSplit",
+                            tab_interface->IsSplit());
 
   auto contents_wrapper = std::make_unique<WebUIContentsWrapperT<FeedbackUI>>(
       GURL(chrome::kChromeUIFeedbackReportUnsafeSiteURL), profile,
