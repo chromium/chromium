@@ -18,6 +18,7 @@
 #include "RawPtrHelpers.h"
 #include "SeparateRepositoryPaths.h"
 #include "SpanifyManualPathsToIgnore.h"
+#include "chrome_project.h"
 #include "clang/AST/ASTContext.h"
 #include "clang/ASTMatchers/ASTMatchFinder.h"
 #include "clang/Basic/SourceLocation.h"
@@ -28,12 +29,14 @@
 #include "llvm/ADT/STLExtras.h"
 #include "llvm/Support/FormatVariadic.h"
 #include "llvm/Support/TargetSelect.h"
-
-using namespace clang::ast_matchers;
+#include "partition_alloc_project.h"
+#include "project.h"
 
 namespace {
 
-enum class Project {
+using namespace clang::ast_matchers;
+
+enum class ProjectName {
   kChrome,
   kPartitionAlloc,
   kDawn,
@@ -41,7 +44,21 @@ enum class Project {
   kAngle,
 };
 
-Project g_project;
+ProjectName g_project;
+
+// This does a switch on g_project and returns the correct global.
+const Project* GetProject() {
+  static constexpr ChromeProject kChromeProject;
+  static constexpr PartitionAllocProject kPartitionAllocProject;
+  switch (g_project) {
+    case ProjectName::kChrome:
+      return &kChromeProject;
+    case ProjectName::kPartitionAlloc:
+      return &kPartitionAllocProject;
+    default:
+      llvm_unreachable("Unhandled project type in GetProject()");
+  }
+}
 
 // Specifies how `EmitContainerPointerRewrites()` should behave.
 enum class ContainerPointerRewritesMode {
@@ -77,15 +94,6 @@ void DumpMatchResult(const MatchFinder::MatchResult& result) {
     node.second.dump(llvm::errs(), *result.Context);
   }
 }
-
-const char kBaseSpanIncludePath[] = "base/containers/span.h";
-
-// Include path that needs to be added to all the files where
-// base::raw_span<...> replaces a raw_ptr<...>.
-const char kBaseRawSpanIncludePath[] = "base/memory/raw_span.h";
-
-const char kBaseAutoSpanificationHelperIncludePath[] =
-    "base/containers/auto_spanification_helper.h";
 
 const char kArrayIncludePath[] = "array";
 
@@ -552,10 +560,11 @@ std::string GetReplacementDirective(const clang::SourceRange& replacement_range,
                        precedence, replacement_text);
 }
 
-std::string GetIncludeDirective(const clang::SourceRange replacement_range,
-                                const clang::SourceManager& source_manager,
-                                const char* include_path = kBaseSpanIncludePath,
-                                bool is_system_include_path = false) {
+std::string GetIncludeDirective(
+    const clang::SourceRange replacement_range,
+    const clang::SourceManager& source_manager,
+    std::string_view include_path = GetProject()->GetSpanIncludePath(),
+    bool is_system_include_path = false) {
   return llvm::formatv(
       "{0}:::{1}:::-1:::-1:::{2}",
       is_system_include_path ? "include-system-header" : "include-user-header",
@@ -846,7 +855,8 @@ std::string getNodeFromPointerTypeLoc(const clang::PointerTypeLoc* type_loc,
           source_manager, lang_opts)
           .str();
   initial_text.pop_back();
-  std::string replacement_text = "base::span<" + initial_text + ">";
+  std::string replacement_text = llvm::formatv(
+      "{0}<{1}>", GetProject()->GetSpanRelativePath(result), initial_text);
 
   const std::string key = NodeKey(type_loc, source_manager);
   EmitReplacement(key,
@@ -864,11 +874,15 @@ std::string getNodeFromRawPtrTypeLoc(
                                               raw_ptr_type_loc->getLAngleLoc());
 
   const std::string key = NodeKey(raw_ptr_type_loc, source_manager);
+  EmitReplacement(
+      key,
+      GetReplacementDirective(
+          replacement_range,
+          llvm::formatv("{0}", GetProject()->GetRawSpanRelativePath(result)),
+          source_manager));
   EmitReplacement(key,
-                  GetReplacementDirective(replacement_range, "base::raw_span",
-                                          source_manager));
-  EmitReplacement(key, GetIncludeDirective(replacement_range, source_manager,
-                                           kBaseRawSpanIncludePath));
+                  GetIncludeDirective(replacement_range, source_manager,
+                                      GetProject()->GetRawSpanIncludePath()));
   return key;
 }
 
@@ -901,11 +915,14 @@ std::string getNodeFromFunctionArrayParameter(
       GetArraySize(array_type_loc, source_manager, ast_context);
   std::string span_type;
   if (array_size_as_string.empty()) {
-    span_type = llvm::formatv("base::span<{0}> ", type).str();
+    span_type = llvm::formatv("{0}<{1}> ",
+                              GetProject()->GetSpanRelativePath(result), type)
+                    .str();
   } else {
-    span_type =
-        llvm::formatv("base::span<{0}, {1}> ", type, array_size_as_string)
-            .str();
+    span_type = llvm::formatv("{0}<{1}, {2}> ",
+                              GetProject()->GetSpanRelativePath(result), type,
+                              array_size_as_string)
+                    .str();
   }
   // In case of array types, replacement_range is expanded to include the
   // brackets, and replacement_text includes the identifier accordingly.
@@ -950,7 +967,9 @@ std::string getNodeFromDecl(const clang::DeclaratorDecl* decl,
   std::string type = GetTypeAsString(qual_type->getPointeeType(), ast_context);
 
   std::string replacement_text =
-      qualifiers.str() + llvm::formatv("base::span<{0}>", type).str();
+      qualifiers.str() +
+      llvm::formatv("{0}<{1}>", GetProject()->GetSpanRelativePath(result), type)
+          .str();
 
   // Since the `type` might be clang deduced type, this node is keyed by the
   // type because it could be different depending on the context. This
@@ -1065,8 +1084,9 @@ SubspanExprReplacement GetSubspanExprReplacement(
     return RangedReplacement{.range = range.getEnd(), .text = "u"};
   }
 
-  EmitReplacement(key, GetIncludeDirective(range, source_manager,
-                                           "base/numerics/safe_conversions.h"));
+  EmitReplacement(
+      key, GetIncludeDirective(range, source_manager,
+                               GetProject()->GetSafeConversionsIncludePath()));
   EmitReplacement(key, GetIncludeDirective(range, source_manager, "cstdint",
                                            /*is_system_include_path=*/true));
   return CheckedCastReplacement{
@@ -1187,7 +1207,8 @@ void AdaptBinaryOperation(const MatchFinder::MatchResult& result) {
     EmitReplacement(
         key, GetReplacementDirective(
                  concrete_binary_operation->getLHS()->getBeginLoc(),
-                 llvm::formatv("base::span<{0}>(",
+                 llvm::formatv("{0}<{1}>(",
+                               GetProject()->GetSpanRelativePath(result),
                                GetTypeAsString(rhs_array_type->getInnerType(),
                                                *result.Context)),
                  source_manager, kAdaptBinaryOperationPrecedence));
@@ -1513,12 +1534,12 @@ clang::SourceLocation EmitContainerPointerRewrites(
     const auto& contained_type = *GetNodeOrCrash<clang::QualType>(
         result, "contained_type", __FUNCTION__);
     EmitReplacement(
-        key,
-        GetReplacementDirective(
-            replacement_range,
-            llvm::formatv("base::span<{0}>(",
-                          GetTypeAsString(contained_type, *result.Context)),
-            source_manager));
+        key, GetReplacementDirective(
+                 replacement_range,
+                 llvm::formatv(
+                     "{0}<{1}>(", GetProject()->GetSpanRelativePath(result),
+                     GetTypeAsString(contained_type, *result.Context)),
+                 source_manager));
   } else {
     // Just delete the `&`.
     EmitReplacement(key,
@@ -1572,9 +1593,12 @@ void EmitSingleVariableSpan(const std::string& key,
       ampersand_loc, clang::Lexer::getLocForEndOfToken(
                          ampersand_loc, 0u, source_manager, lang_opts)};
 
-  EmitReplacement(key, GetReplacementDirective(
-                           ampersand_range, "base::span_from_ref(",
-                           source_manager, kEmitSingleVariableSpanPrecedence));
+  EmitReplacement(
+      key, GetReplacementDirective(
+               ampersand_range,
+               llvm::formatv("{0}(",
+                             GetProject()->GetSpanFromRefRelativePath(result)),
+               source_manager, kEmitSingleVariableSpanPrecedence));
   EmitReplacement(
       key, GetReplacementDirective(
                GetExprRange(*operand_expr, source_manager, lang_opts).getEnd(),
@@ -1652,9 +1676,10 @@ void EmitUnsafeCxxMethodCall(const std::string& key,
                                  : member_call_expr->getRParenLoc()),
           has_arg ? ", " : "", source_manager));
 
-  EmitReplacement(key, GetIncludeDirective(
-                           member_call_expr->getSourceRange(), source_manager,
-                           kBaseAutoSpanificationHelperIncludePath));
+  EmitReplacement(key,
+                  GetIncludeDirective(
+                      member_call_expr->getSourceRange(), source_manager,
+                      GetProject()->GetAutoSpanificationHelperIncludePath()));
 }
 
 // Rewrites unsafe third-party free function calls to helper macro calls.
@@ -1694,9 +1719,10 @@ void EmitUnsafeFreeFuncCall(const std::string& key,
                                                 entry.function_name.length())),
                std::string(entry.macro_name), source_manager));
 
-  EmitReplacement(
-      key, GetIncludeDirective(call_expr->getSourceRange(), source_manager,
-                               kBaseAutoSpanificationHelperIncludePath));
+  EmitReplacement(key,
+                  GetIncludeDirective(
+                      call_expr->getSourceRange(), source_manager,
+                      GetProject()->GetAutoSpanificationHelperIncludePath()));
 }
 
 void EmitUnsafeFunctionCall(const std::string& key,
@@ -1732,16 +1758,8 @@ void EmitCArrayIterCallExpr(const std::string& key,
   assert(func_decl);
   const std::string& function_name = func_decl->getQualifiedNameAsString();
 
-  struct FuncMapping {
-    const std::string_view function_name;
-    const std::string_view replacement_function_name;
-  };
-  static constexpr FuncMapping func_mapping_table[] = {
-      {"std::begin", "base::SpanificationArrayBegin"},
-      {"std::end", "base::SpanificationArrayEnd"},
-      {"std::cbegin", "base::SpanificationArrayCBegin"},
-      {"std::cend", "base::SpanificationArrayCEnd"},
-  };
+  const std::vector<FuncMapping>& func_mapping_table =
+      GetProject()->GetFuncMappingTable();
   std::string replacement_function_name;
   for (const auto& entry : func_mapping_table) {
     if (function_name == entry.function_name) {
@@ -1759,8 +1777,9 @@ void EmitCArrayIterCallExpr(const std::string& key,
       key, GetReplacementDirective(replacement_range, replacement_function_name,
                                    source_manager));
   EmitReplacement(key,
-                  GetIncludeDirective(replacement_range, source_manager,
-                                      kBaseAutoSpanificationHelperIncludePath));
+                  GetIncludeDirective(
+                      replacement_range, source_manager,
+                      GetProject()->GetAutoSpanificationHelperIncludePath()));
 }
 
 std::string GetNodeFromSizeExpr(const clang::Expr* size_expr,
@@ -1902,8 +1921,9 @@ void RewriteUnaryOperation(const MatchFinder::MatchResult& result) {
                                    -kRewriteUnaryOperationPrecedence));
 
   EmitReplacement(key,
-                  GetIncludeDirective(operand_range, source_manager,
-                                      kBaseAutoSpanificationHelperIncludePath));
+                  GetIncludeDirective(
+                      operand_range, source_manager,
+                      GetProject()->GetAutoSpanificationHelperIncludePath()));
 }
 
 // Rewrite:
@@ -1946,8 +1966,9 @@ void RewriteArraySizeof(const MatchFinder::MatchResult& result) {
                                     array_decl_as_string),
                       source_manager));
   EmitReplacement(key,
-                  GetIncludeDirective(replacement_range, source_manager,
-                                      kBaseAutoSpanificationHelperIncludePath));
+                  GetIncludeDirective(
+                      replacement_range, source_manager,
+                      GetProject()->GetAutoSpanificationHelperIncludePath()));
 }
 
 // Add `.data()` at the frontier of a span change. This is applied if the node
@@ -2956,13 +2977,15 @@ void RemoveReinterpretCastExpr(const MatchFinder::MatchResult& result,
         GetNodeOrCrash<clang::QualType>(
             result, "target_type", "`reinterpret_cast` implies `target_type`")
             ->isConstQualified();
-    std::string replacement = target_type_is_const
-                                  ? "base::as_byte_span"
-                                  : "base::as_writable_byte_span";
+    std::string_view replacement =
+        (target_type_is_const
+             ? GetProject()->GetAsByteSpanRelativePath(result)
+             : GetProject()->GetAsWritableByteSpanRelativePath(result));
 
     return EmitReplacement(
-        node_key, GetReplacementDirective(replacement_range, replacement,
-                                          *result.SourceManager));
+        node_key,
+        GetReplacementDirective(replacement_range, std::string(replacement),
+                                *result.SourceManager));
   }
 }
 
@@ -3042,33 +3065,6 @@ void MatchAdjacency(const MatchFinder::MatchResult& result) {
   EmitEdge(lhs, rhs);
 }
 
-// TODO(angdaniel): Convert this to use the project.h interface instead of a
-// switch statement.
-raw_ptr_plugin::FilterFile PathsToExclude() {
-  std::vector<std::string> paths_to_exclude_lines;
-  switch (g_project) {
-    case ProjectName::kPartitionAlloc:
-      break;
-    case ProjectName::kDawn:
-    case ProjectName::kSkia:
-    case ProjectName::kAngle:
-      // Fallback: Currently these projects have no specific exclusions defined.
-      break;
-    case ProjectName::kChrome:
-    default:
-      paths_to_exclude_lines.insert(paths_to_exclude_lines.end(),
-                                    kSpanifyManualPathsToIgnoreChrome.begin(),
-                                    kSpanifyManualPathsToIgnoreChrome.end());
-
-      paths_to_exclude_lines.insert(paths_to_exclude_lines.end(),
-                                    kSeparateRepositoryPaths.begin(),
-                                    kSeparateRepositoryPaths.end());
-      break;
-  }
-
-  return raw_ptr_plugin::FilterFile(paths_to_exclude_lines);
-}
-
 class ExprVisitor
     : public clang::ast_matchers::internal::BoundNodesTreeBuilder::Visitor {
  public:
@@ -3109,6 +3105,15 @@ AST_MATCHER_P(clang::Expr,
     return matcher.matches(*n, Finder, Builder);
   }
   return InnerMatcher.matches(Node, Finder, Builder);
+}
+
+AST_MATCHER_P(clang::Decl,
+              isExcludedFromProject,
+              const raw_ptr_plugin::FilterFile*,
+              excluded_paths) {
+  using namespace clang::ast_matchers;
+  return GetProject()->IsExcludedFromProject(Node, Finder, Builder,
+                                             excluded_paths);
 }
 
 class Spanifier {
@@ -3843,7 +3848,7 @@ class Spanifier {
     match_callbacks_.push_back(std::move(match_callback));
   }
 
-  raw_ptr_plugin::FilterFile paths_to_exclude_ = PathsToExclude();
+  raw_ptr_plugin::FilterFile paths_to_exclude_ = GetProject()->PathsToExclude();
   MatchFinder& match_finder_;
   std::vector<std::unique_ptr<MatchCallback>> match_callbacks_;
 };
@@ -3855,18 +3860,18 @@ static llvm::cl::OptionCategory g_spanifier_category(
     " 1- |T* var| to |base::span<T> var|."
     " 2- |raw_ptr<T> var| to |base::raw_span<T> var|");
 
-static llvm::cl::opt<Project> g_project_opt(
+static llvm::cl::opt<ProjectName> g_project_opt(
     "project",
     llvm::cl::desc("The project to run on."),
     llvm::cl::values(
-        clEnumValN(Project::kChrome, "chrome", "The Chrome browser."),
-        clEnumValN(Project::kPartitionAlloc,
+        clEnumValN(ProjectName::kChrome, "chrome", "The Chrome browser."),
+        clEnumValN(ProjectName::kPartitionAlloc,
                    "partition_alloc",
                    "The PartitionAlloc project."),
-        clEnumValN(Project::kDawn, "dawn", "The Dawn project."),
-        clEnumValN(Project::kSkia, "skia", "The Skia project."),
-        clEnumValN(Project::kAngle, "angle", "The Angle project.")),
-    llvm::cl::init(Project::kChrome),
+        clEnumValN(ProjectName::kDawn, "dawn", "The Dawn project."),
+        clEnumValN(ProjectName::kSkia, "skia", "The Skia project."),
+        clEnumValN(ProjectName::kAngle, "angle", "The Angle project.")),
+    llvm::cl::init(ProjectName::kChrome),
     llvm::cl::cat(g_spanifier_category));
 
 int main(int argc, const char* argv[]) {
