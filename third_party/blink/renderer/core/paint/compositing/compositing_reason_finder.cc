@@ -306,27 +306,13 @@ CompositingReasons CompositingReasonsForScrollDependentPosition(
   }
 
   // Don't promote sticky position elements that cannot move with scrolls.
-  // We check for |HasOverflow| instead of |ScrollsOverflow| to ensure sticky
-  // position elements are composited under overflow: hidden, which can still
-  // have smooth scroll animations.
+  // |StickyPositionScrollingConstraints::HasScrollDependentOffset()| uses
+  // |HasOverflow| instead of |ScrollsOverflow| so sticky elements can still be
+  // composited under overflow: hidden, which can still have smooth scroll
+  // animations.
   auto constraints = layer.GetLayoutObject().StickyConstraints();
   if (constraints.HasScrollDependentOffset()) {
-    const auto* x_data = constraints.AxisData(PhysicalAxis::kHorizontal);
-    const auto* y_data = constraints.AxisData(PhysicalAxis::kVertical);
-    const auto* x_layer =
-        x_data ? x_data->containing_scroll_container_layer.Get() : nullptr;
-    const auto* y_layer =
-        y_data ? y_data->containing_scroll_container_layer.Get() : nullptr;
-
-    bool has_multiple_scrollers = x_layer && y_layer && x_layer != y_layer;
-    CHECK(RuntimeEnabledFeatures::SingleAxisScrollContainersEnabled() ||
-          !has_multiple_scrollers);
-
-    if (!has_multiple_scrollers) {
-      // TODO(crbug.com/481019005): Implement compositor support for multiple
-      // scroll container parents. Fall back to main-thread scrolling for now.
-      reasons |= CompositingReason::kStickyPosition;
-    }
+    reasons |= CompositingReason::kStickyPosition;
   }
 
   return reasons;

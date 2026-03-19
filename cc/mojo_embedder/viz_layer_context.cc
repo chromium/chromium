@@ -370,7 +370,8 @@ std::vector<viz::mojom::StickyPositionNodeDataPtr> SerializeStickyPositionData(
   std::vector<viz::mojom::StickyPositionNodeDataPtr> wire_data;
   for (const auto& data : entries) {
     auto wire = viz::mojom::StickyPositionNodeData::New();
-    wire->scroll_ancestor = data.scroll_ancestor;
+    wire->x_scroll_ancestor = data.x_scroll_ancestor;
+    wire->y_scroll_ancestor = data.y_scroll_ancestor;
     wire->is_anchored_left = data.constraints.is_anchored_left;
     wire->is_anchored_right = data.constraints.is_anchored_right;
     wire->is_anchored_top = data.constraints.is_anchored_top;

@@ -479,20 +479,32 @@ gfx::Vector2dF TransformTree::StickyPositionOffset(TransformNode* node) {
   if (!sticky_data)
     return gfx::Vector2dF();
   const StickyPositionConstraint& constraint = sticky_data->constraints;
-  const ScrollNode* scroll_node =
-      property_trees()->scroll_tree().Node(sticky_data->scroll_ancestor);
-  const TransformNode* transform_node = Node(scroll_node->transform_id);
-  DCHECK(transform_node);
+
+  const ScrollNode* scroll_node_x =
+      property_trees()->scroll_tree().Node(sticky_data->x_scroll_ancestor);
+  const ScrollNode* scroll_node_y =
+      property_trees()->scroll_tree().Node(sticky_data->y_scroll_ancestor);
+
+  const TransformNode* transform_node_x =
+      scroll_node_x ? Node(scroll_node_x->transform_id) : nullptr;
+  const TransformNode* transform_node_y =
+      scroll_node_y ? Node(scroll_node_y->transform_id) : nullptr;
+  DCHECK(transform_node_x || transform_node_y);
+
   // We need the scroll offset from the transform tree, not the scroll tree.
   // Tracking the scroll tree here would make sticky elements run "ahead" of a
   // main-repainted scroll.
-  gfx::PointF scroll_position = transform_node->scroll_offset();
-  if (transform_node->scrolls) {
-    // The scroll position does not include snapping which shifts the scroll
-    // offset to align to a pixel boundary, we need to manually include it here.
-    // In this case, snapping is caused by a scroll.
-    scroll_position -= transform_node->snap_amount;
+  gfx::PointF scroll_position;
+  gfx::Vector2dF snap_offset;
+  if (transform_node_x) {
+    scroll_position.set_x(transform_node_x->scroll_offset().x());
+    snap_offset.set_x(transform_node_x->snap_amount.x());
   }
+  if (transform_node_y) {
+    scroll_position.set_y(transform_node_y->scroll_offset().y());
+    snap_offset.set_y(transform_node_y->snap_amount.y());
+  }
+  scroll_position -= snap_offset;
 
   gfx::RectF clip = constraint.constraint_box_rect;
   clip.Offset(scroll_position.x(), scroll_position.y());
@@ -500,43 +512,78 @@ gfx::Vector2dF TransformTree::StickyPositionOffset(TransformNode* node) {
   // The clip region may need to be offset by the outer viewport bounds, e.g. if
   // the top bar hides/shows. Position sticky should never attach to the inner
   // viewport since it shouldn't be affected by pinch-zoom.
-  DCHECK(!scroll_node->scrolls_inner_viewport);
-  if (scroll_node->scrolls_outer_viewport) {
-    clip.set_width(
-        clip.width() +
-        property_trees()->outer_viewport_container_bounds_delta().x());
-    clip.set_height(
-        clip.height() +
-        property_trees()->outer_viewport_container_bounds_delta().y());
+  if (scroll_node_x) {
+    DCHECK(!scroll_node_x->scrolls_inner_viewport);
+    if (scroll_node_x->scrolls_outer_viewport) {
+      clip.set_width(
+          clip.width() +
+          property_trees()->outer_viewport_container_bounds_delta().x());
+    }
+  }
+  if (scroll_node_y) {
+    DCHECK(!scroll_node_y->scrolls_inner_viewport);
+    if (scroll_node_y->scrolls_outer_viewport) {
+      clip.set_height(
+          clip.height() +
+          property_trees()->outer_viewport_container_bounds_delta().y());
+    }
   }
 
+  // Used to find shifting ancestors that affect this sticky element itself
+  // (sticky box) and its "cage" (containing block).
+  auto get_ancestor =
+      [&](int transform_node_id) -> const StickyPositionNodeData* {
+    if (transform_node_id == kInvalidPropertyNodeId) {
+      return nullptr;
+    }
+    // TODO(crbug.com/40053373): Investigate why there would be an invalid index
+    // passed in. Early return for now.
+    if (transform_node_id >=
+        static_cast<int>(property_trees()->transform_tree().size())) {
+      return nullptr;
+    }
+    const StickyPositionNodeData* ancestor_data =
+        GetStickyPositionData(transform_node_id);
+    DCHECK(ancestor_data);
+    return ancestor_data;
+  };
+
+  // Ancestor sticky elements between the element itself, and its containing
+  // block can apply additional dynamic offsets.
   gfx::Vector2dF ancestor_sticky_box_offset;
-  if (sticky_data->nearest_node_shifting_sticky_box != kInvalidPropertyNodeId) {
-    // TODO(crbug.com/40053373): Investigate why there would be an invalid index
-    // passed in. Early return for now.
-    if (sticky_data->nearest_node_shifting_sticky_box >=
-        static_cast<int>(property_trees()->transform_tree().size()))
-      return gfx::Vector2dF();
-    const StickyPositionNodeData* ancestor_sticky_data =
-        GetStickyPositionData(sticky_data->nearest_node_shifting_sticky_box);
-    DCHECK(ancestor_sticky_data);
-    ancestor_sticky_box_offset =
-        ancestor_sticky_data->total_sticky_box_sticky_offset;
+  if (const StickyPositionNodeData* ancestor_sticky_data =
+          get_ancestor(sticky_data->nearest_node_shifting_sticky_box)) {
+    // Only shifting sticky ancestors that share the same scroll ancestor for a
+    // given axis need to be applied.
+    if (ancestor_sticky_data->x_scroll_ancestor ==
+        sticky_data->x_scroll_ancestor) {
+      ancestor_sticky_box_offset.set_x(
+          ancestor_sticky_data->total_sticky_box_sticky_offset.x());
+    }
+    if (ancestor_sticky_data->y_scroll_ancestor ==
+        sticky_data->y_scroll_ancestor) {
+      ancestor_sticky_box_offset.set_y(
+          ancestor_sticky_data->total_sticky_box_sticky_offset.y());
+    }
   }
 
+  // Ancestor sticky elements between the element's containing block, and
+  // containing scroll container can apply additional dynamic offsets.
   gfx::Vector2dF ancestor_containing_block_offset;
-  if (sticky_data->nearest_node_shifting_containing_block !=
-      kInvalidPropertyNodeId) {
-    // TODO(crbug.com/40053373): Investigate why there would be an invalid index
-    // passed in. Early return for now.
-    if (sticky_data->nearest_node_shifting_containing_block >=
-        static_cast<int>(property_trees()->transform_tree().size()))
-      return gfx::Vector2dF();
-    const StickyPositionNodeData* ancestor_sticky_data = GetStickyPositionData(
-        sticky_data->nearest_node_shifting_containing_block);
-    DCHECK(ancestor_sticky_data);
-    ancestor_containing_block_offset =
-        ancestor_sticky_data->total_containing_block_sticky_offset;
+  if (const StickyPositionNodeData* ancestor_sticky_data =
+          get_ancestor(sticky_data->nearest_node_shifting_containing_block)) {
+    // Only shifting sticky ancestors that share the same scroll ancestor for a
+    // given axis need to be applied.
+    if (ancestor_sticky_data->x_scroll_ancestor ==
+        sticky_data->x_scroll_ancestor) {
+      ancestor_containing_block_offset.set_x(
+          ancestor_sticky_data->total_containing_block_sticky_offset.x());
+    }
+    if (ancestor_sticky_data->y_scroll_ancestor ==
+        sticky_data->y_scroll_ancestor) {
+      ancestor_containing_block_offset.set_y(
+          ancestor_sticky_data->total_containing_block_sticky_offset.y());
+    }
   }
 
   // Compute the current position of the constraint rects based on the original

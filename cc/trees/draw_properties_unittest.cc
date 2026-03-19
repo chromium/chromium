@@ -4923,7 +4923,9 @@ class DrawPropertiesStickyPositionTest : public DrawPropertiesTest {
     sticky->SetBounds(gfx::Size(10, 10));
     CopyProperties(parent, sticky.get());
     CreateTransformNode(sticky.get());
-    EnsureStickyData(sticky.get()).scroll_ancestor =
+    EnsureStickyData(sticky.get()).x_scroll_ancestor =
+        parent->scroll_tree_index();
+    EnsureStickyData(sticky.get()).y_scroll_ancestor =
         parent->scroll_tree_index();
     root_->AddChild(sticky);
     return sticky;

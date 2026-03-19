@@ -51,6 +51,11 @@ struct CC_EXPORT StickyPositionConstraint {
   // but need to be adjusted by this for pixel snapping.
   gfx::Vector2dF pixel_snap_offset;
 
+  // The scroll ancestor for each axis. These are used to populate
+  // `StickyPositionNodeData` when the property trees are generated.
+  ElementId x_scroll_ancestor_element_id;
+  ElementId y_scroll_ancestor_element_id;
+
   // The nearest ancestor sticky element ids that affect the sticky box
   // constraint rect and the containing block constraint rect respectively.
   // They are used to generate nearest_node_shifting_sticky_box and

@@ -334,8 +334,9 @@ struct AnchorPositionScrollData {
 
 // See blink::StickyPositionScrollingConstraints for documentation on this data.
 struct StickyPositionNodeData {
-  // Must be a valid index into the scroll tree.
-  int32 scroll_ancestor;
+  // At least one scroll ancestor must be a valid index into the scroll tree.
+  int32 x_scroll_ancestor;
+  int32 y_scroll_ancestor;
 
   // Additional fields derived from StickyPositionConstraint (which itself is
   // populated from StickyPositionScrollingConstraints).

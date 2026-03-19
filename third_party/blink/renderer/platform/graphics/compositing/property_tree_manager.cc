@@ -491,26 +491,58 @@ int PropertyTreeManager::EnsureCompositorTransformNode(
     cc::StickyPositionNodeData& sticky_data =
         transform_tree_.EnsureStickyPositionData(id);
     sticky_data.constraints = *sticky_constraint;
-    const auto& scroll_ancestor = transform_node.NearestScrollTranslationNode();
-    sticky_data.scroll_ancestor =
-        EnsureCompositorScrollAndTransformNode(scroll_ancestor);
-    const auto& scroll_ancestor_compositor_node =
-        *scroll_tree_.Node(sticky_data.scroll_ancestor);
-    if (scroll_ancestor_compositor_node.scrolls_outer_viewport)
-      transform_tree_.AddNodeAffectedByOuterViewportBoundsDelta(id);
-    if (auto shifting_sticky_box_element_id =
-            sticky_data.constraints.nearest_element_shifting_sticky_box) {
-      sticky_data.nearest_node_shifting_sticky_box =
-          transform_tree_.FindNodeFromElementId(shifting_sticky_box_element_id)
-              ->id;
-    }
-    if (auto shifting_containing_block_element_id =
-            sticky_data.constraints.nearest_element_shifting_containing_block) {
-      // TODO(crbug.com/1224888): Get rid of the nullptr check below:
-      if (cc::TransformNode* node = transform_tree_.FindNodeFromElementId(
-              shifting_containing_block_element_id)) {
-        sticky_data.nearest_node_shifting_containing_block = node->id;
+
+    auto scroll_node_id = [&](CompositorElementId element_id) -> int {
+      if (!element_id) {
+        return cc::kInvalidPropertyNodeId;
       }
+      if (cc::ScrollNode* node =
+              scroll_tree_.FindNodeFromElementId(element_id)) {
+        return node->id;
+      }
+      return cc::kInvalidPropertyNodeId;
+    };
+
+    const int x_scroll_ancestor =
+        scroll_node_id(sticky_data.constraints.x_scroll_ancestor_element_id);
+    const int y_scroll_ancestor =
+        scroll_node_id(sticky_data.constraints.y_scroll_ancestor_element_id);
+
+    sticky_data.x_scroll_ancestor = x_scroll_ancestor;
+    sticky_data.y_scroll_ancestor = y_scroll_ancestor;
+
+    auto sticky_translation_node_id =
+        [&](CompositorElementId element_id) -> int {
+      if (!element_id) {
+        return cc::kInvalidPropertyNodeId;
+      }
+      // TODO(crbug.com/1224888): Get rid of the nullptr check below:
+      cc::TransformNode* node =
+          transform_tree_.FindNodeFromElementId(element_id);
+      if (!node ||
+          node->sticky_position_constraint_id == cc::kInvalidPropertyNodeId) {
+        return cc::kInvalidPropertyNodeId;
+      }
+      return node->id;
+    };
+
+    sticky_data.nearest_node_shifting_sticky_box = sticky_translation_node_id(
+        sticky_data.constraints.nearest_element_shifting_sticky_box);
+    sticky_data.nearest_node_shifting_containing_block =
+        sticky_translation_node_id(
+            sticky_data.constraints.nearest_element_shifting_containing_block);
+
+    auto scrolls_outer_viewport = [&](int scroll_ancestor_id) {
+      if (scroll_ancestor_id == cc::kInvalidPropertyNodeId) {
+        return false;
+      }
+      const cc::ScrollNode* scroll_node = scroll_tree_.Node(scroll_ancestor_id);
+      return scroll_node && scroll_node->scrolls_outer_viewport;
+    };
+
+    if (scrolls_outer_viewport(x_scroll_ancestor) ||
+        scrolls_outer_viewport(y_scroll_ancestor)) {
+      transform_tree_.AddNodeAffectedByOuterViewportBoundsDelta(id);
     }
   }
 

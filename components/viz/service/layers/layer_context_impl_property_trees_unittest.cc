@@ -715,7 +715,8 @@ TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
 
   auto tree_props = mojom::TransformTreeUpdate::New();
   auto sticky_data = mojom::StickyPositionNodeData::New();
-  sticky_data->scroll_ancestor = scroll_node_id;
+  sticky_data->x_scroll_ancestor = scroll_node_id;
+  sticky_data->y_scroll_ancestor = scroll_node_id;
   sticky_data->is_anchored_top = true;
   sticky_data->top_offset = 10.f;
   tree_props->sticky_position_data.push_back(std::move(sticky_data));
@@ -737,7 +738,9 @@ TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
                                    ->property_trees()
                                    ->transform_tree();
   ASSERT_EQ(transform_tree.sticky_position_data().size(), 1u);
-  EXPECT_EQ(transform_tree.sticky_position_data()[0].scroll_ancestor,
+  EXPECT_EQ(transform_tree.sticky_position_data()[0].x_scroll_ancestor,
+            scroll_node_id);
+  EXPECT_EQ(transform_tree.sticky_position_data()[0].y_scroll_ancestor,
             scroll_node_id);
   EXPECT_TRUE(
       transform_tree.sticky_position_data()[0].constraints.is_anchored_top);
@@ -750,7 +753,8 @@ TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
   auto update = CreateDefaultUpdate();
   auto tree_props = mojom::TransformTreeUpdate::New();
   auto sticky_data = mojom::StickyPositionNodeData::New();
-  sticky_data->scroll_ancestor = 99;  // Invalid scroll node ID
+  sticky_data->x_scroll_ancestor = 99;  // Invalid scroll node ID
+  sticky_data->y_scroll_ancestor = 99;  // Invalid scroll node ID
   tree_props->sticky_position_data.push_back(std::move(sticky_data));
   update->transform_tree_update = std::move(tree_props);
 
@@ -892,7 +896,8 @@ TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
   // AddScrollNode to update1 to make scroll_ancestor valid for
   // DeserializeStickyPositionData.
   int scroll_node_id = AddScrollNode(update1.get(), cc::kRootPropertyNodeId);
-  sticky_data->scroll_ancestor = scroll_node_id;
+  sticky_data->x_scroll_ancestor = scroll_node_id;
+  sticky_data->y_scroll_ancestor = scroll_node_id;
   tree_props->sticky_position_data.push_back(std::move(sticky_data));
   update1->transform_tree_update = std::move(tree_props);
 

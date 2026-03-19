@@ -19,6 +19,8 @@ bool StickyPositionConstraint::operator==(
          is_anchored_right == other.is_anchored_right &&
          is_anchored_top == other.is_anchored_top &&
          is_anchored_bottom == other.is_anchored_bottom &&
+         x_scroll_ancestor_element_id == other.x_scroll_ancestor_element_id &&
+         y_scroll_ancestor_element_id == other.y_scroll_ancestor_element_id &&
          left_offset == other.left_offset &&
          right_offset == other.right_offset && top_offset == other.top_offset &&
          bottom_offset == other.bottom_offset &&

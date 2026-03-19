@@ -406,15 +406,19 @@ struct CC_EXPORT AnchorPositionScrollData {
 };
 
 struct CC_EXPORT StickyPositionNodeData {
-  int scroll_ancestor;
+  int x_scroll_ancestor = kInvalidPropertyNodeId;
+  int y_scroll_ancestor = kInvalidPropertyNodeId;
+
   StickyPositionConstraint constraints;
 
   // In order to properly compute the sticky offset, we need to know if we have
   // any sticky ancestors both between ourselves and our containing block and
   // between our containing block and the viewport. These ancestors are then
-  // used to correct the constraining rect locations.
-  int nearest_node_shifting_sticky_box;
-  int nearest_node_shifting_containing_block;
+  // used to correct the constraining rect locations. Whether they contribute in
+  // a given axis is determined by whether that ancestor shares the same scroll
+  // ancestor in that axis.
+  int nearest_node_shifting_sticky_box = kInvalidPropertyNodeId;
+  int nearest_node_shifting_containing_block = kInvalidPropertyNodeId;
 
   // For performance we cache our accumulated sticky offset to allow descendant
   // sticky elements to offset their constraint rects. Because we can either
@@ -423,10 +427,7 @@ struct CC_EXPORT StickyPositionNodeData {
   gfx::Vector2dF total_sticky_box_sticky_offset;
   gfx::Vector2dF total_containing_block_sticky_offset;
 
-  StickyPositionNodeData()
-      : scroll_ancestor(kInvalidPropertyNodeId),
-        nearest_node_shifting_sticky_box(kInvalidPropertyNodeId),
-        nearest_node_shifting_containing_block(kInvalidPropertyNodeId) {}
+  StickyPositionNodeData() = default;
 
   bool operator==(const StickyPositionNodeData&) const;
 };
