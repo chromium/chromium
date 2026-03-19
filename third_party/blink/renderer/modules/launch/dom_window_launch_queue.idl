@@ -6,7 +6,7 @@
 // Explainer: https://github.com/WICG/file-handling/blob/main/explainer.md
 
 [
-    ImplementedAs=DOMWindowLaunchQueue,
+    ImplementedAs=LaunchQueue,
     RuntimeEnabled=WebAppLaunchQueue
 ] partial interface Window {
     readonly attribute LaunchQueue launchQueue;
