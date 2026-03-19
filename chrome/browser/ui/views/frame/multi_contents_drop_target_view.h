@@ -29,8 +29,8 @@ class MultiContentsDropTargetView : public views::View,
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMultiContentsDropTargetElementId);
 
   static constexpr int kDropTargetMinWidth = 120;
-  static constexpr int kDropTargetMaxWidth = 420;
-  static constexpr int kDropTargetTargetWidthPercentage = 30;
+  static constexpr int kDropTargetMaxWidth = 360;
+  static constexpr int kDropTargetTargetWidthPercentage = 25;
   static constexpr int kDropTargetForLinkTargetWidthPercentage = 15;
   static constexpr int kNudgeMinWidth = 80;
   static constexpr int kNudgeMaxWidth = 200;
