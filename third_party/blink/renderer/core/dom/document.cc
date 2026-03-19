@@ -202,7 +202,9 @@
 #include "third_party/blink/renderer/core/events/event_factory.h"
 #include "third_party/blink/renderer/core/events/event_util.h"
 #include "third_party/blink/renderer/core/events/hash_change_event.h"
+#include "third_party/blink/renderer/core/events/page_hide_event.h"
 #include "third_party/blink/renderer/core/events/page_transition_event.h"
+#include "third_party/blink/renderer/core/events/speculation_data.h"
 #include "third_party/blink/renderer/core/events/visual_viewport_resize_event.h"
 #include "third_party/blink/renderer/core/events/visual_viewport_scroll_event.h"
 #include "third_party/blink/renderer/core/events/visual_viewport_scrollend_event.h"
@@ -4628,8 +4630,17 @@ void Document::DispatchUnloadEvents(UnloadEventTimingInfo* unload_timing_info) {
   // |dispatched_pagehide_persisted| above, if we enable same-site
   // ProactivelySwapBrowsingInstance but not BackForwardCache.
   if (window && !GetPage()->DispatchedPagehideAndStillHidden()) {
-    window->DispatchEvent(
-        *PageTransitionEvent::Create(event_type_names::kPagehide, false), this);
+    if (RuntimeEnabledFeatures::PageHideSpeculationsEnabled()) {
+      window->DispatchEvent(
+          *PageHideEvent::Create(kPageTransitionEventNotPersisted,
+                                 window->CreateSpeculationData()),
+          this);
+    } else {
+      window->DispatchEvent(
+          *PageTransitionEvent::Create(event_type_names::kPagehide,
+                                       kPageTransitionEventNotPersisted),
+          this);
+    }
   }
   if (!dom_window_)
     return;

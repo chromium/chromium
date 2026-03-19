@@ -85,8 +85,10 @@
 #include "third_party/blink/renderer/core/editing/suggestion/text_suggestion_controller.h"
 #include "third_party/blink/renderer/core/events/hash_change_event.h"
 #include "third_party/blink/renderer/core/events/message_event.h"
+#include "third_party/blink/renderer/core/events/page_hide_event.h"
 #include "third_party/blink/renderer/core/events/page_transition_event.h"
 #include "third_party/blink/renderer/core/events/pop_state_event.h"
+#include "third_party/blink/renderer/core/events/speculation_data.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/execution_context/window_agent.h"
 #include "third_party/blink/renderer/core/frame/attribution_src_loader.h"
@@ -155,6 +157,7 @@
 #include "third_party/blink/renderer/platform/blob/blob_url.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/network/network_state_notifier.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -962,13 +965,15 @@ void LocalDOMWindow::EnqueueNonPersistedPageshowEvent() {
   if (ScopedEventQueue::Instance()->ShouldQueueEvents() && document_) {
     // The task source should be kDOMManipulation, but the spec doesn't say
     // anything about this.
-    EnqueueWindowEvent(*PageTransitionEvent::Create(event_type_names::kPageshow,
-                                                    false /* persisted */),
-                       TaskType::kMiscPlatformAPI);
+    EnqueueWindowEvent(
+        *PageTransitionEvent::Create(event_type_names::kPageshow,
+                                     kPageTransitionEventNotPersisted),
+        TaskType::kMiscPlatformAPI);
   } else {
-    DispatchEvent(*PageTransitionEvent::Create(event_type_names::kPageshow,
-                                               false /* persisted */),
-                  document_.Get());
+    DispatchEvent(
+        *PageTransitionEvent::Create(event_type_names::kPageshow,
+                                     kPageTransitionEventNotPersisted),
+        document_.Get());
   }
 }
 
@@ -992,9 +997,28 @@ void LocalDOMWindow::DispatchPagehideEvent(
     return;
   }
 
-  DispatchEvent(
-      *PageTransitionEvent::Create(event_type_names::kPagehide, persistence),
-      document_.Get());
+  if (RuntimeEnabledFeatures::PageHideSpeculationsEnabled()) {
+    DispatchEvent(*PageHideEvent::Create(persistence, CreateSpeculationData()),
+                  document_.Get());
+  } else {
+    DispatchEvent(
+        *PageTransitionEvent::Create(event_type_names::kPagehide, persistence),
+        document_.Get());
+  }
+}
+
+SpeculationData* LocalDOMWindow::CreateSpeculationData() {
+  HeapVector<Member<Preload>> preloads;
+  if (document_ && document_->Fetcher()) {
+    Vector<ResourceFetcher::PreloadInfoWithUrl> preload_infos =
+        document_->Fetcher()->GetPreloads();
+    for (const auto& info : preload_infos) {
+      preloads.push_back(MakeGarbageCollected<Preload>(
+          info.url, ResourceTypeToAsAttributeString(info.resource_type),
+          info.credentials_mode, info.request_mode, info.used));
+    }
+  }
+  return MakeGarbageCollected<SpeculationData>(std::move(preloads));
 }
 
 void LocalDOMWindow::EnqueueHashchangeEvent(

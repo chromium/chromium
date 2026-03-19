@@ -71,6 +71,38 @@
 
 namespace blink {
 
+String ResourceTypeToAsAttributeString(ResourceType type) {
+  switch (type) {
+    case ResourceType::kImage:
+      return "image";
+    case ResourceType::kScript:
+      return "script";
+    case ResourceType::kCSSStyleSheet:
+    case ResourceType::kXSLStyleSheet:
+      return "style";
+    case ResourceType::kTextTrack:
+      return "track";
+    case ResourceType::kFont:
+      return "font";
+    case ResourceType::kAudio:
+      return "audio";
+    case ResourceType::kVideo:
+      return "video";
+    case ResourceType::kManifest:
+      return "manifest";
+    case ResourceType::kSpeculationRules:
+      return "speculationrules";
+    case ResourceType::kDictionary:
+      return "dictionary";
+    case ResourceType::kSVGDocument:
+      return "document";
+    case ResourceType::kRaw:
+    case ResourceType::kLinkPrefetch:
+    case ResourceType::kMock:
+      return "fetch";
+  }
+}
+
 namespace {
 
 void NotifyFinishObservers(

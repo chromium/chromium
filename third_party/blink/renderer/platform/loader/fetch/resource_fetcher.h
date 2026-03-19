@@ -254,6 +254,30 @@ class PLATFORM_EXPORT ResourceFetcher
   void ScheduleWarnUnusedPreloads(
       base::OnceCallback<void(Vector<KURL> unused_preloads)> callback);
 
+  // Information about a preload for the PageHideSpeculations API.
+  struct PreloadInfo {
+    ResourceType resource_type;
+    network::mojom::CredentialsMode credentials_mode;
+    network::mojom::RequestMode request_mode;
+    bool used = false;
+  };
+
+  // Collects information about all preloads (both used and unused).
+  // Returns a map from URL to PreloadInfo.
+  const HashMap<KURL, PreloadInfo>& GetPreloadRecords() const {
+    return preload_records_;
+  }
+
+  // Returns preload info including early hints preloads.
+  struct PreloadInfoWithUrl {
+    KURL url;
+    ResourceType resource_type;
+    network::mojom::CredentialsMode credentials_mode;
+    network::mojom::RequestMode request_mode;
+    bool used;
+  };
+  Vector<PreloadInfoWithUrl> GetPreloads() const;
+
   MHTMLArchive* Archive() const { return archive_.Get(); }
 
   // Set the deferring state of each loader owned by this ResourceFetcher. This
@@ -652,6 +676,9 @@ class PLATFORM_EXPORT ResourceFetcher
 
   HeapHashMap<PreloadKey, Member<Resource>> preloads_;
   HeapVector<Member<Resource>> matched_preloads_;
+
+  // Records of all preloads (used and unused) for the PageHideSpeculations API.
+  HashMap<KURL, PreloadInfo> preload_records_;
 
   // Keeps preloads which are deferred to start loading based on the LCPP
   // signal of potentially unused preloads, in order to prevent subsequent

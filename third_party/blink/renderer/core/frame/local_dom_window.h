@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_checker.h"
 #include "third_party/blink/renderer/core/editing/suggestion/text_suggestion_controller.h"
+#include "third_party/blink/renderer/core/events/page_transition_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -91,6 +92,7 @@ class ScriptController;
 class ScriptState;
 class ScrollToOptions;
 class SecurityOrigin;
+class SpeculationData;
 class SerializedScriptValue;
 class SoftNavigationHeuristics;
 class SourceLocation;
@@ -103,11 +105,6 @@ class WindowAgent;
 namespace scheduler {
 class TaskAttributionInfo;
 }
-
-enum PageTransitionEventPersistence {
-  kPageTransitionEventNotPersisted = 0,
-  kPageTransitionEventPersisted = 1
-};
 
 // Note: if you're thinking of returning something DOM-related by reference,
 // please ping dcheng@chromium.org first. You probably don't want to do that.
@@ -485,6 +482,10 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   void DispatchPersistedPageshowEvent(base::TimeTicks navigation_start);
 
   void DispatchPagehideEvent(PageTransitionEventPersistence persistence);
+
+  // Creates SpeculationData for the PageHideSpeculations API,
+  // collecting information about all preloads (used and unused).
+  SpeculationData* CreateSpeculationData();
 
   InputMethodController& GetInputMethodController() const {
     return *input_method_controller_;

@@ -47,6 +47,7 @@
 #include "base/unguessable_token.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/request_mode.h"
+#include "services/network/public/mojom/fetch_api.mojom-blink.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-blink.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/blink/public/common/features.h"
@@ -1891,6 +1892,12 @@ Resource* ResourceFetcher::MatchPreload(
   resource->MatchPreload(params);
   preloads_.erase(it);
   matched_preloads_.push_back(resource);
+
+  auto record_it = preload_records_.find(resource->Url());
+  if (record_it != preload_records_.end()) {
+    record_it->value.used = true;
+  }
+
   return resource;
 }
 
@@ -1975,6 +1982,16 @@ void ResourceFetcher::InsertAsPreloadIfNecessary(Resource* resource,
   resource->MarkAsPreload();
   if (preloaded_urls_for_test_) {
     preloaded_urls_for_test_->insert(resource->Url().GetString());
+  }
+
+  const KURL& url = resource->Url();
+  if (!preload_records_.Contains(url)) {
+    PreloadInfo info;
+    info.resource_type = resource->GetType();
+    info.credentials_mode = resource->GetResourceRequest().GetCredentialsMode();
+    info.request_mode = resource->GetResourceRequest().GetMode();
+    info.used = false;
+    preload_records_.insert(url, std::move(info));
   }
 }
 
@@ -2393,6 +2410,38 @@ void ResourceFetcher::ScheduleWarnUnusedPreloads(
       blink::BindOnce(&ResourceFetcher::WarnUnusedPreloads,
                       WrapWeakPersistent(this), std::move(callback)),
       kUnusedPreloadTimeout);
+}
+
+Vector<ResourceFetcher::PreloadInfoWithUrl> ResourceFetcher::GetPreloads()
+    const {
+  Vector<PreloadInfoWithUrl> result;
+  result.ReserveInitialCapacity(preload_records_.size() +
+                                unused_early_hints_preloaded_resources_.size());
+
+  for (const auto& pair : preload_records_) {
+    PreloadInfoWithUrl info;
+    info.url = pair.key;
+    info.resource_type = pair.value.resource_type;
+    info.credentials_mode = pair.value.credentials_mode;
+    info.request_mode = pair.value.request_mode;
+    info.used = pair.value.used;
+    result.push_back(std::move(info));
+  }
+
+  // Also include early hints preloads.
+  // TODO(crbug.com/493637574): Currently only URLs are passed for early hints
+  // preloads. The resource type, credentials mode, request mode and used flag
+  // should be passed from the browser process via WebNavigationParams.
+  for (const auto& pair : unused_early_hints_preloaded_resources_) {
+    PreloadInfoWithUrl info;
+    info.url = pair.key;
+    info.resource_type = ResourceType::kRaw;
+    info.credentials_mode = network::mojom::CredentialsMode::kOmit;
+    info.request_mode = network::mojom::RequestMode::kNoCors;
+    info.used = false;
+    result.push_back(std::move(info));
+  }
+  return result;
 }
 
 void ResourceFetcher::WarnUnusedPreloads(
