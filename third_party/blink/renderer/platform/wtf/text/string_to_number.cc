@@ -248,8 +248,9 @@ static inline double ToDoubleType(base::span<const CharType> data,
   size_t length = data.size();
   size_t leading_spaces_length = 0;
   while (leading_spaces_length < length &&
-         IsASCIISpace(data[leading_spaces_length]))
+         IsAsciiSpace(data[leading_spaces_length])) {
     ++leading_spaces_length;
+  }
 
   double number =
       ParseDouble(data.subspan(leading_spaces_length), parsed_length);

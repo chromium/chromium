@@ -207,8 +207,8 @@ static bool IsValidExtendedLanguageRange(const String& range) {
 
       // First subtag must be alphabetic, subsequent ones can be alphanumeric.
       for (wtf_size_t j = subtag_start; j < pos; ++j) {
-        const bool valid = is_first_subtag ? IsASCIIAlpha(range[j])
-                                           : IsASCIIAlphanumeric(range[j]);
+        const bool valid = is_first_subtag ? IsAsciiAlpha(range[j])
+                                           : IsAsciiAlphanumeric(range[j]);
         if (!valid) {
           return false;
         }

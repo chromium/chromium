@@ -66,7 +66,7 @@ String EncodeHint(StringView hint) {
   if (!hint.IsNull()) {
     for (unsigned i = 0; i < hint.length(); ++i) {
       UChar c = hint[i];
-      if (IsASCIIPrintable(c)) {
+      if (IsAsciiPrintable(c)) {
         builder.Append(static_cast<char>(c));
       } else {
         // Print "\uXXXX" for control or non-ASCII characters.
@@ -233,7 +233,7 @@ String GetErrorStringForConsoleMessage(const network::CorsErrorStatus& status,
   const char* resource_kind_raw =
       Resource::ResourceTypeToString(resource_type, initiator_name);
   String resource_kind(resource_kind_raw);
-  if (resource_kind.length() >= 2 && IsASCIILower(resource_kind[1])) {
+  if (resource_kind.length() >= 2 && IsAsciiLower(resource_kind[1])) {
     resource_kind = resource_kind.ToAsciiLower();
   }
 

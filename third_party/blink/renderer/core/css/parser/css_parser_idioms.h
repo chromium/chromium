@@ -52,7 +52,7 @@ inline bool IsCSSNewLine(UChar cc) {
 // https://drafts.csswg.org/css-syntax/#name-start-code-point
 template <typename CharacterType>
 bool IsNameStartCodePoint(CharacterType c) {
-  return IsASCIIAlpha(c) || c == '_' || !IsAscii(c);
+  return IsAsciiAlpha(c) || c == '_' || !IsAscii(c);
 }
 
 // https://drafts.csswg.org/css-syntax/#name-code-point

@@ -38,7 +38,7 @@ CharacterAttributes(base::span<const LChar> chars) {
   // First, process any unaligned characters.
   while (!remaining.empty() && !IsAlignedToMachineWord(remaining.data())) {
     all_char_bits_word |= remaining.front();
-    contains_ascii_upper_case |= IsASCIIUpper(remaining.front());
+    contains_ascii_upper_case |= IsAsciiUpper(remaining.front());
     remaining = remaining.subspan(1u);
   }
 
@@ -95,7 +95,7 @@ CharacterAttributes(base::span<const LChar> chars) {
   // Finally, process trailing unaligned bytes.
   while (!remaining.empty()) {
     all_char_bits_word |= remaining.front();
-    contains_ascii_upper_case |= IsASCIIUpper(remaining.front());
+    contains_ascii_upper_case |= IsAsciiUpper(remaining.front());
     remaining = remaining.subspan(1u);
   }
 

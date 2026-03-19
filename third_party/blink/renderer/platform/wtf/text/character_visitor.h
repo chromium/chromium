@@ -26,7 +26,7 @@ namespace blink {
 //   return VisitCharacters(string, [&](auto chars) {
 //     bool contains_space = false;
 //     for (auto ch : chars)
-//       contains_space |= IsASCIISpace(ch);
+//       contains_space |= IsAsciiSpace(ch);
 //     return contains_space;
 //   });
 //

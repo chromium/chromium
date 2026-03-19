@@ -40,8 +40,9 @@ static bool IsValidAttributeName(const String& name) {
 
   unsigned length = name.length();
   for (unsigned i = 5; i < length; ++i) {
-    if (IsASCIIUpper(name[i]))
+    if (IsAsciiUpper(name[i])) {
       return false;
+    }
   }
 
   return true;
@@ -56,8 +57,8 @@ static String ConvertAttributeNameToPropertyName(const String& name) {
     if (character != '-') {
       string_builder.Append(character);
     } else {
-      if ((i + 1 < length) && IsASCIILower(name[i + 1])) {
-        string_builder.Append(ToASCIIUpper(name[i + 1]));
+      if ((i + 1 < length) && IsAsciiLower(name[i + 1])) {
+        string_builder.Append(ToAsciiUpper(name[i + 1]));
         ++i;
       } else {
         string_builder.Append(character);
@@ -78,11 +79,11 @@ static bool PropertyNameMatchesAttributeName(
   while (a < attribute_name.size() && p < property_name.size()) {
     const CharType2 current_attribute_char = attribute_name[a];
     if (current_attribute_char == '-' && a + 1 < attribute_name.size() &&
-        IsASCIILower(attribute_name[a + 1])) {
+        IsAsciiLower(attribute_name[a + 1])) {
       word_boundary = true;
     } else {
       const CharType2 current_attribute_char_to_compare =
-          word_boundary ? ToASCIIUpper(current_attribute_char)
+          word_boundary ? ToAsciiUpper(current_attribute_char)
                         : current_attribute_char;
       if (current_attribute_char_to_compare != property_name[p]) {
         return false;
@@ -122,8 +123,9 @@ static bool PropertyNameMatchesAttributeName(const String& property_name,
 static bool IsValidPropertyName(const String& name) {
   unsigned length = name.length();
   for (unsigned i = 0; i < length; ++i) {
-    if (name[i] == '-' && (i + 1 < length) && IsASCIILower(name[i + 1]))
+    if (name[i] == '-' && (i + 1 < length) && IsAsciiLower(name[i + 1])) {
       return false;
+    }
   }
   return true;
 }
@@ -137,7 +139,7 @@ static AtomicString ConvertPropertyNameToAttributeName(const String& name) {
   unsigned length = name.length();
   for (unsigned i = 0; i < length; ++i) {
     UChar character = name[i];
-    if (IsASCIIUpper(character)) {
+    if (IsAsciiUpper(character)) {
       builder.Append('-');
       builder.Append(ToAsciiLower(character));
     } else {

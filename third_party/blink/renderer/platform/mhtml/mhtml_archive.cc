@@ -178,7 +178,7 @@ String ConvertToPrintableCharacters(const String& text) {
   // If the text contains all printable ASCII characters, no need for encoding.
   bool found_non_printable_char = false;
   for (wtf_size_t i = 0; i < text.length(); ++i) {
-    if (!IsASCIIPrintable(text[i])) {
+    if (!IsAsciiPrintable(text[i])) {
       found_non_printable_char = true;
       break;
     }

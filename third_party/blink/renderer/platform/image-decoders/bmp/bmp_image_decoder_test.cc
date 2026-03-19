@@ -556,7 +556,7 @@ std::string BMPComparisonTestName(
   std::string name = entry.entry_dir() + "_" + entry.entry_bmp();
   // Replace invalid characters (dashes, etc.) with underscores
   for (char& c : name) {
-    if (!IsASCIIAlphanumeric(c) && c != '_') {
+    if (!IsAsciiAlphanumeric(c) && c != '_') {
       c = '_';
     }
   }

@@ -558,7 +558,7 @@ std::optional<CharType> ParseNamespacePrefix(
     // A string is a valid namespace prefix if its length is at least 1 and
     // it does not contain ASCII whitespace, U+0000 NULL, U+002F (/), or
     // U+003E (>).
-    if (c == '>' || c == '/' || !c || IsASCIISpaceWHATWG(c)) {
+    if (c == '>' || c == '/' || !c || IsAsciiSpaceWhatwg(c)) {
       return c;
     }
   }
@@ -576,7 +576,7 @@ std::optional<CharType> ParseAttributeLocalName(
     // A string is a valid attribute local name if its length is at least 1
     // and it does not contain ASCII whitespace, U+0000 NULL, U+002F (/),
     // U+003D (=), or U+003E (>).
-    if (!c || IsASCIISpaceWHATWG(c) || c == '/' || c == '=' || c == '>') {
+    if (!c || IsAsciiSpaceWhatwg(c) || c == '/' || c == '=' || c == '>') {
       return c;
     }
   }
@@ -592,12 +592,12 @@ std::optional<CharType> ParseElementLocalName(
   DCHECK(!characters.empty());
   CharType next_char = characters[0];
   // If name's 0th code point is an ASCII alpha, then:
-  if (IsASCIIAlpha(next_char)) {
+  if (IsAsciiAlpha(next_char)) {
     for (size_t i = 1; i < characters.size(); i++) {
       // If name contains ASCII whitespace, U+0000 NULL, U+002F (/), or U+003E
       // (>), then return false.
       next_char = characters[i];
-      if (!next_char || IsASCIISpaceWHATWG(next_char) || next_char == '/' ||
+      if (!next_char || IsAsciiSpaceWhatwg(next_char) || next_char == '/' ||
           next_char == '>') {
         return next_char;
       }
@@ -613,7 +613,7 @@ std::optional<CharType> ParseElementLocalName(
       // digits, U+002D (-), U+002E (.), U+003A (:), U+005F (_), or in the range
       // U+0080 to U+10FFFF, inclusive, then return false.
       next_char = characters[i];
-      if (!IsASCIIAlpha(next_char) && !IsAsciiDigit(next_char) &&
+      if (!IsAsciiAlpha(next_char) && !IsAsciiDigit(next_char) &&
           next_char != '-' && next_char != '.' && next_char != ':' &&
           next_char != '_' && next_char < 0x80) {
         return next_char;
@@ -7366,14 +7366,16 @@ static bool IsValidNameNonASCII(base::span<const UChar> characters) {
 template <typename CharType>
 static inline bool IsValidNameASCII(base::span<const CharType> characters) {
   CharType c = characters[0];
-  if (!(IsASCIIAlpha(c) || c == ':' || c == '_'))
+  if (!(IsAsciiAlpha(c) || c == ':' || c == '_')) {
     return false;
+  }
 
   for (size_t i = 1; i < characters.size(); ++i) {
     c = characters[i];
-    if (!(IsASCIIAlphanumeric(c) || c == ':' || c == '_' || c == '-' ||
-          c == '.'))
+    if (!(IsAsciiAlphanumeric(c) || c == ':' || c == '_' || c == '-' ||
+          c == '.')) {
       return false;
+    }
   }
 
   return true;

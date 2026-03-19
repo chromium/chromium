@@ -141,7 +141,7 @@ constexpr bool VerifyAlgorithmNameMappings() {
       return false;
     }
     auto is_valid_algorithm_char = [](char c) {
-      return IsAscii(c) && c == ToASCIIUpper(c);
+      return IsAscii(c) && c == ToAsciiUpper(c);
     };
     if (!std::ranges::all_of(name, is_valid_algorithm_char)) {
       return false;
@@ -177,7 +177,7 @@ bool AlgorithmNameComparator(const AlgorithmNameMapping& a,
     if (!IsAscii(c2)) {
       return false;
     }
-    c2 = ToASCIIUpper(c2);
+    c2 = ToAsciiUpper(c2);
 
     const CharType c1 = a_name[reverse_index];
     if (c1 < c2)

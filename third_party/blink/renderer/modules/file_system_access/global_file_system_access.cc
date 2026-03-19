@@ -51,11 +51,11 @@ constexpr bool IsHTTPWhitespace(UChar chr) {
 }
 
 bool IsValidSuffixCodePoint(UChar chr) {
-  return IsASCIIAlphanumeric(chr) || chr == '+' || chr == '.';
+  return IsAsciiAlphanumeric(chr) || chr == '+' || chr == '.';
 }
 
 bool IsValidIdCodePoint(UChar chr) {
-  return IsASCIIAlphanumeric(chr) || chr == '_' || chr == '-';
+  return IsAsciiAlphanumeric(chr) || chr == '_' || chr == '-';
 }
 
 bool VerifyIsValidExtension(const String& extension,

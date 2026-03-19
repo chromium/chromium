@@ -323,7 +323,7 @@ String ConvertWindowsDateTimeFormat(const String& format) {
       } else {
         last_quote_can_be_literal = true;
       }
-    } else if (IsASCIIAlpha(ch)) {
+    } else if (IsAsciiAlpha(ch)) {
       CommitLiteralToken(literal_buffer, converted);
       wtf_size_t symbol_start = i;
       wtf_size_t count = CountContinuousLetters(format, i);

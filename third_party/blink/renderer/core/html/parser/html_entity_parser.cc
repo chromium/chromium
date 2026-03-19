@@ -125,7 +125,7 @@ bool ConsumeNamedEntity(SegmentedString& source,
   }
   if (entity_search.MostRecentMatch()->LastCharacter() == ';' ||
       !additional_allowed_character ||
-      !(IsASCIIAlphanumeric(cc) || cc == '=')) {
+      !(IsAsciiAlphanumeric(cc) || cc == '=')) {
     AppendMatchToDecoded(*entity_search.MostRecentMatch(), decoded_entity);
     return true;
   }

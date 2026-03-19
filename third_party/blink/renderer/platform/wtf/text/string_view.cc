@@ -196,7 +196,7 @@ bool StringView::SubstringContainsOnlyWhitespaceOrEmpty(size_type from,
   DCHECK_LE(from, to);
   return VisitCharacters(StringView(*this, from, to - from), [](auto chars) {
     for (size_t i = 0; i < chars.size(); ++i) {
-      if (!IsASCIISpace(chars[i])) {
+      if (!IsAsciiSpace(chars[i])) {
         return false;
       }
     }
@@ -315,7 +315,7 @@ String StringView::EncodeForDebugging() const {
         builder.Append("\\\\");
         break;
       default:
-        if (IsASCIIPrintable(character)) {
+        if (IsAsciiPrintable(character)) {
           builder.Append(static_cast<char>(character));
         } else {
           // Print "\uXXXX" for control or non-ASCII characters.

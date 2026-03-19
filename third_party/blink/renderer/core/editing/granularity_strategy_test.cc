@@ -114,10 +114,10 @@ void GranularityStrategyTest::ParseText(const TextNodeVector& text_nodes) {
       letter_pos_.push_back(VisiblePositionToContentsPoint(
           CreateVisiblePosition(Position(text, i))));
       char c = str[i];
-      if (IsASCIIAlphanumeric(c) && !word_started) {
+      if (IsAsciiAlphanumeric(c) && !word_started) {
         word_start_index = i + word_start_index_offset;
         word_started = true;
-      } else if (!IsASCIIAlphanumeric(c) && word_started) {
+      } else if (!IsAsciiAlphanumeric(c) && word_started) {
         gfx::Point word_middle((letter_pos_[word_start_index].x() +
                                 letter_pos_[i + word_start_index_offset].x()) /
                                    2,

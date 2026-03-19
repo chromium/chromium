@@ -1008,7 +1008,7 @@ TEST(StringViewTest, StripWhiteSpace) {
 
 TEST(StringViewTest, StripWhiteSpaceWithPredicate) {
   StringView expected("Hello  world");
-  IsWhiteSpaceFunctionPtr p = IsASCIISpaceWHATWG;
+  IsWhiteSpaceFunctionPtr p = IsAsciiSpaceWhatwg;
   EXPECT_EQ(expected, StringView("Hello  world").StripWhiteSpace(p));
   EXPECT_EQ(expected, StringView("  Hello  world  ").StripWhiteSpace(p));
   EXPECT_EQ("Hello  world\v",

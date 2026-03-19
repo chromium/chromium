@@ -142,7 +142,7 @@ static bool IsInvalidDomainCharacter(UChar ch) {
   if (!IsAscii(ch)) {
     return true;
   }
-  return !IsASCIILower(ch) && !IsASCIIUpper(ch) && !IsAsciiDigit(ch) &&
+  return !IsAsciiLower(ch) && !IsAsciiUpper(ch) && !IsAsciiDigit(ch) &&
          ch != '.' && ch != '-';
 }
 

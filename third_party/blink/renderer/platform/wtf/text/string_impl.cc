@@ -376,7 +376,7 @@ bool StringImpl::ContainsOnlyWhitespaceOrEmpty() {
   // that are not whitespace from the point of view of LayoutText; I wonder if
   // that's a problem in practice.
   return VisitCharacters(*this, [](const auto& str) {
-    return std::ranges::all_of(str, [](auto ch) { return IsASCIISpace(ch); });
+    return std::ranges::all_of(str, [](auto ch) { return IsAsciiSpace(ch); });
   });
 }
 

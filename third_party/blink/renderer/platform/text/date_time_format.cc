@@ -92,11 +92,13 @@ static const std::array<DateTimeFormat::FieldType, 26>
 };
 
 static DateTimeFormat::FieldType MapCharacterToFieldType(const UChar ch) {
-  if (IsASCIIUpper(ch))
+  if (IsAsciiUpper(ch)) {
     return kUpperCaseToFieldTypeMap[ch - 'A'];
+  }
 
-  if (IsASCIILower(ch))
+  if (IsAsciiLower(ch)) {
     return kLowerCaseToFieldTypeMap[ch - 'a'];
+  }
 
   return DateTimeFormat::kFieldTypeLiteral;
 }
@@ -240,7 +242,7 @@ bool DateTimeFormat::Parse(const String& source, TokenHandler& token_handler) {
 }
 
 static bool IsASCIIAlphabetOrQuote(UChar ch) {
-  return IsASCIIAlpha(ch) || ch == '\'';
+  return IsAsciiAlpha(ch) || ch == '\'';
 }
 
 void DateTimeFormat::QuoteAndAppend(const StringView& literal,

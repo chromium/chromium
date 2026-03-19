@@ -41,8 +41,9 @@ CSSPropertyID AnimationInputHelpers::KeyframeAttributeToCSSProperty(
   // Disallow prefixed properties.
   if (property[0] == '-')
     return CSSPropertyID::kInvalid;
-  if (IsASCIIUpper(property[0]))
+  if (IsAsciiUpper(property[0])) {
     return CSSPropertyID::kInvalid;
+  }
   if (property == "cssFloat")
     return CSSPropertyID::kFloat;
   if (property == "cssOffset")
@@ -53,8 +54,9 @@ CSSPropertyID AnimationInputHelpers::KeyframeAttributeToCSSProperty(
     // Disallow hyphenated properties.
     if (property[i] == '-')
       return CSSPropertyID::kInvalid;
-    if (IsASCIIUpper(property[i]))
+    if (IsAsciiUpper(property[i])) {
       builder.Append('-');
+    }
     builder.Append(property[i]);
   }
   return CssPropertyID(document.GetExecutionContext(), builder.ToString());

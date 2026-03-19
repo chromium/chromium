@@ -15,11 +15,11 @@ namespace blink {
 namespace {
 
 bool IsCSPDirectiveNameCharacter(UChar c) {
-  return IsASCIIAlphanumeric(c) || c == '-';
+  return IsAsciiAlphanumeric(c) || c == '-';
 }
 
 bool IsCSPDirectiveValueCharacter(UChar c) {
-  return IsASCIISpace(c) || (IsASCIIPrintable(c) && c != ',' && c != ';');
+  return IsAsciiSpace(c) || (IsAsciiPrintable(c) && c != ',' && c != ';');
 }
 
 }  // namespace
@@ -28,7 +28,7 @@ bool MatchesTheSerializedCSPGrammar(const String& value) {
   return VisitCharacters(value, [](auto chars) {
     while (!chars.empty()) {
       // Consume any whitespaces.
-      while (!chars.empty() && IsASCIISpace(chars.front())) {
+      while (!chars.empty() && IsAsciiSpace(chars.front())) {
         chars = chars.template subspan<1u>();
       }
       // Consume a directive name.
@@ -41,7 +41,7 @@ bool MatchesTheSerializedCSPGrammar(const String& value) {
       // name followed by at least one whitespace.
       if (directive_name_found) {
         bool space_found = false;
-        while (!chars.empty() && IsASCIISpace(chars.front())) {
+        while (!chars.empty() && IsAsciiSpace(chars.front())) {
           chars = chars.template subspan<1u>();
           space_found = true;
         }

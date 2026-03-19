@@ -88,7 +88,7 @@ WTF_EXPORT uint64_t CharactersToUInt64(base::span<const UChar>,
 //  - numbers without leading zeros such as ".5"
 //  - numbers ending with "." such as "3."
 //  - scientific notation
-//  - leading whitespace (IsASCIISpace, not IsHTMLSpace)
+//  - leading whitespace (IsAsciiSpace, not IsHTMLSpace)
 //  - no trailing whitespace
 //  - no trailing garbage
 //  - no numbers such as "NaN" "Infinity"
@@ -117,7 +117,7 @@ WTF_EXPORT double CharactersToDouble(base::span<const UChar>,
 //  - numbers without leading zeros such as ".5"
 //  - numbers ending with "." such as "3."
 //  - scientific notation
-//  - leading whitespace (IsASCIISpace, not IsHTMLSpace)
+//  - leading whitespace (IsAsciiSpace, not IsHTMLSpace)
 //  - no trailing whitespace
 //  - no trailing garbage
 //  - no numbers such as "NaN" "Infinity"
@@ -202,7 +202,7 @@ WTF_EXPORT std::optional<uint32_t> StringToUintLoose(const StringView& input);
 //  - numbers without leading zeros such as ".5"
 //  - numbers ending with "." such as "3."
 //  - scientific notation
-//  - leading whitespace (IsASCIISpace, not IsHTMLSpace)
+//  - leading whitespace (IsAsciiSpace, not IsHTMLSpace)
 //  - no trailing whitespace
 //  - no trailing garbage
 //  - no numbers such as "NaN" "Infinity"

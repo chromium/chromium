@@ -472,7 +472,7 @@ TEST(HTTPParsersTest, ParseHTTPRefresh) {
   EXPECT_EQ(base::Seconds(1), delay);
   EXPECT_EQ("dest", url);
   EXPECT_TRUE(
-      ParseHTTPRefresh("1 ;\nurl=dest", IsASCIISpace<UChar>, delay, url));
+      ParseHTTPRefresh("1 ;\nurl=dest", IsAsciiSpace<UChar>, delay, url));
   EXPECT_EQ(base::Seconds(1), delay);
   EXPECT_EQ("dest", url);
   EXPECT_TRUE(ParseHTTPRefresh("1 ;\nurl=dest", nullptr, delay, url));
@@ -484,20 +484,20 @@ TEST(HTTPParsersTest, ParseHTTPRefresh) {
   EXPECT_EQ("dest", url);
 
   EXPECT_TRUE(
-      ParseHTTPRefresh("10\nurl=dest", IsASCIISpace<UChar>, delay, url));
+      ParseHTTPRefresh("10\nurl=dest", IsAsciiSpace<UChar>, delay, url));
   EXPECT_EQ(base::Seconds(10), delay);
   EXPECT_EQ("dest", url);
 
   EXPECT_TRUE(
-      ParseHTTPRefresh("1.5; url=dest", IsASCIISpace<UChar>, delay, url));
+      ParseHTTPRefresh("1.5; url=dest", IsAsciiSpace<UChar>, delay, url));
   EXPECT_EQ(base::Seconds(1), delay);
   EXPECT_EQ("dest", url);
   EXPECT_TRUE(
-      ParseHTTPRefresh("1.5.9; url=dest", IsASCIISpace<UChar>, delay, url));
+      ParseHTTPRefresh("1.5.9; url=dest", IsAsciiSpace<UChar>, delay, url));
   EXPECT_EQ(base::Seconds(1), delay);
   EXPECT_EQ("dest", url);
   EXPECT_TRUE(
-      ParseHTTPRefresh("7..; url=dest", IsASCIISpace<UChar>, delay, url));
+      ParseHTTPRefresh("7..; url=dest", IsAsciiSpace<UChar>, delay, url));
   EXPECT_EQ(base::Seconds(7), delay);
   EXPECT_EQ("dest", url);
 }

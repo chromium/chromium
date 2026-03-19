@@ -334,7 +334,7 @@ bool Locale::DetectSignAndGetDigitRange(const String& input,
                                         bool& is_negative,
                                         unsigned& start_index,
                                         unsigned& end_index) {
-  DCHECK_EQ(input.Find(IsASCIISpace), kNotFound);
+  DCHECK_EQ(input.Find(IsAsciiSpace), kNotFound);
   start_index = 0;
   end_index = input.length();
   const auto adjust_for_affixes = [&](const String& prefix,
@@ -386,7 +386,7 @@ unsigned Locale::MatchedDecimalSymbolIndex(const String& input,
 
 String Locale::ConvertFromLocalizedNumber(const String& localized) {
   InitializeLocaleData();
-  String input = localized.RemoveCharacters(IsASCIISpace);
+  String input = localized.RemoveCharacters(IsAsciiSpace);
   if (!has_locale_data_ || input.empty())
     return input;
 

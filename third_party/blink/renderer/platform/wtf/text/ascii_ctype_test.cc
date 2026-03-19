@@ -15,12 +15,12 @@ TEST(ASCIICTypeTest, ASCIICaseFoldTable) {
   }
 }
 
-TEST(ASCIICTypeTest, IsASCIISpaceWHATWG) {
+TEST(ASCIICTypeTest, IsAsciiSpaceWhatwg) {
   char c = 0xFF;
   do {
     bool expected_whitespace =
         c == 0x9 || c == 0xA || c == 0xC || c == 0xD || c == 0x20;
-    EXPECT_EQ(IsASCIISpaceWHATWG(c), expected_whitespace);
+    EXPECT_EQ(IsAsciiSpaceWhatwg(c), expected_whitespace);
   } while (c--);
 }
 

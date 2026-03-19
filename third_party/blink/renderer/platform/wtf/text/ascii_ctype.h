@@ -55,7 +55,7 @@ constexpr inline bool IsAscii(CharType c) {
 }
 
 template <typename CharType>
-inline bool IsASCIIAlpha(CharType c) {
+inline bool IsAsciiAlpha(CharType c) {
   return (c | 0x20) >= 'a' && (c | 0x20) <= 'z';
 }
 
@@ -65,8 +65,8 @@ inline bool IsAsciiDigit(CharType c) {
 }
 
 template <typename CharType>
-inline bool IsASCIIAlphanumeric(CharType c) {
-  return IsAsciiDigit(c) || IsASCIIAlpha(c);
+inline bool IsAsciiAlphanumeric(CharType c) {
+  return IsAsciiDigit(c) || IsAsciiAlpha(c);
 }
 
 // Returns true if the character is an ASCII hex digit (0-9, a-f, or A-F).
@@ -76,17 +76,17 @@ inline bool IsAsciiHexDigit(CharType c) {
 }
 
 template <typename CharType>
-inline bool IsASCIILower(CharType c) {
+inline bool IsAsciiLower(CharType c) {
   return c >= 'a' && c <= 'z';
 }
 
 template <typename CharType>
-inline bool IsASCIIPrintable(CharType c) {
+inline bool IsAsciiPrintable(CharType c) {
   return c >= ' ' && c <= '~';
 }
 
 /*
- Statistics from a run of Apple's page load test for callers of IsASCIISpace:
+ Statistics from a run of Apple's page load test for callers of IsAsciiSpace:
 
  character          count
  ---------          -----
@@ -99,21 +99,21 @@ inline bool IsASCIIPrintable(CharType c) {
  0B  \v             0
  */
 template <typename CharType>
-inline bool IsASCIISpace(CharType c) {
+inline bool IsAsciiSpace(CharType c) {
   return c <= ' ' && (c == ' ' || (c <= 0xD && c >= 0x9));
 }
 
-// This version of IsASCIISpace adheres to WHATWG specs which don't include the
+// This version of IsAsciiSpace adheres to WHATWG specs which don't include the
 // Vertical Tab character 0xB in whitespace.
 // https://infra.spec.whatwg.org/#ascii-whitespace
 // https://github.com/whatwg/infra/issues/670
 template <typename CharType>
-inline bool IsASCIISpaceWHATWG(CharType c) {
-  return IsASCIISpace(c) && c != 0xB;
+inline bool IsAsciiSpaceWhatwg(CharType c) {
+  return IsAsciiSpace(c) && c != 0xB;
 }
 
 template <typename CharType>
-inline bool IsASCIIUpper(CharType c) {
+inline bool IsAsciiUpper(CharType c) {
   return c >= 'A' && c <= 'Z';
 }
 
@@ -155,7 +155,7 @@ inline char ToAsciiLower(char c) {
 }
 
 template <typename CharType>
-constexpr inline CharType ToASCIIUpper(CharType c) {
+constexpr inline CharType ToAsciiUpper(CharType c) {
   return c & ~((c >= 'a' && c <= 'z') << 5);
 }
 

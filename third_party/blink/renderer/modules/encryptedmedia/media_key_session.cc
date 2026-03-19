@@ -93,8 +93,9 @@ static bool IsValidSessionId(const String& session_id) {
   // are key systems using Base64 session IDs (which may include spaces). See
   // https://crbug.com/902828.
   for (unsigned i = 0; i < session_id.length(); ++i) {
-    if (!IsASCIIPrintable(session_id[i]))
+    if (!IsAsciiPrintable(session_id[i])) {
       return false;
+    }
   }
 
   return true;

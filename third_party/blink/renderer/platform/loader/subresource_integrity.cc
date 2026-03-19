@@ -33,7 +33,7 @@ namespace blink {
 static bool IsIntegrityCharacter(UChar c) {
   // Check if it's a base64 encoded value. We're pretty loose here, as there's
   // not much risk in it, and it'll make it simpler for developers.
-  return IsASCIIAlphanumeric(c) || c == '_' || c == '-' || c == '+' ||
+  return IsAsciiAlphanumeric(c) || c == '_' || c == '-' || c == '+' ||
          c == '/' || c == '=';
 }
 

@@ -77,17 +77,17 @@ CSSPropertyID ParseCSSPropertyID(const ExecutionContext* execution_context,
 
   if (HasWebkitPrefix(property_name)) {
     builder.Append('-');
-  } else if (IsASCIIUpper(property_name[0])) {
+  } else if (IsAsciiUpper(property_name[0])) {
     return CSSPropertyID::kInvalid;
   }
 
-  bool has_seen_upper = IsASCIIUpper(property_name[i]);
+  bool has_seen_upper = IsAsciiUpper(property_name[i]);
 
   builder.Append(ToAsciiLower(property_name[i++]));
 
   for (; i < length; ++i) {
     UChar c = property_name[i];
-    if (!IsASCIIUpper(c)) {
+    if (!IsAsciiUpper(c)) {
       if (c == '-') {
         has_seen_dash = true;
       }

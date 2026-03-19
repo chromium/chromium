@@ -487,7 +487,7 @@ String LayoutText::PlainText() const {
     // Append a trailing space of the last |text_box| if it was collapsed.
     const unsigned end_offset = text_box.dom_start_offset + text_box.dom_length;
     if (last_end_offset && text_box.dom_start_offset > last_end_offset &&
-        !IsASCIISpace(text_[end_offset - 1])) {
+        !IsAsciiSpace(text_[end_offset - 1])) {
       plain_text_builder.Append(uchar::kSpace);
     }
     last_end_offset = end_offset;

@@ -297,7 +297,7 @@ namespace {
 
 template <typename CharType>
 inline bool IsAsciiAlphaOrHyphen(CharType c) {
-  return IsASCIIAlpha(c) || c == '-';
+  return IsAsciiAlpha(c) || c == '-';
 }
 
 }  // namespace

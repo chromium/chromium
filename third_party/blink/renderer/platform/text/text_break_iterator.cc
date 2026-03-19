@@ -215,7 +215,7 @@ struct LazyLineBreakIterator::Context {
           // Don't allow line breaking between '-' and a digit if the '-' may
           // mean a minus sign in the context, while allow breaking in
           // 'ABCD-1234' and '1234-5678' which may be in long URLs.
-          return IsASCIIAlphanumeric(last_last_ch) ? FastBreakResult::kCanBreak
+          return IsAsciiAlphanumeric(last_last_ch) ? FastBreakResult::kCanBreak
                                                    : FastBreakResult::kNoBreak;
         }
       } else {

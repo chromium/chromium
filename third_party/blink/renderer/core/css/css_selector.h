@@ -904,12 +904,7 @@ inline bool CSSSelector::LegacyCaseInsensitiveMatch() const {
 }
 
 inline bool CSSSelector::IsASCIILower(const AtomicString& value) {
-  for (wtf_size_t i = 0; i < value.length(); ++i) {
-    if (IsASCIIUpper(value[i])) {
-      return false;
-    }
-  }
-  return true;
+  return value.ContainsNoAsciiUpper();
 }
 
 inline void CSSSelector::SetValue(const AtomicString& value,

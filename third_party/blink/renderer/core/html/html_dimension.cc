@@ -46,7 +46,7 @@ static HTMLDimension ParseDimension(
   // HTML5's split removes leading and trailing spaces so we need to skip the
   // leading spaces here.
   const size_t digits_start =
-      SkipWhile<CharacterType, IsASCIISpace>(characters, 0);
+      SkipWhile<CharacterType, IsAsciiSpace>(characters, 0);
 
   // This is Step 5.5. in the algorithm. Going to the last step would make the
   // code less readable.
@@ -71,7 +71,7 @@ static HTMLDimension ParseDimension(
       Vector<CharacterType> fraction_numbers;
       while (position < characters.size() &&
              (IsAsciiDigit(characters[position]) ||
-              IsASCIISpace(characters[position]))) {
+              IsAsciiSpace(characters[position]))) {
         if (IsAsciiDigit(characters[position])) {
           fraction_numbers.push_back(characters[position]);
         }
@@ -90,7 +90,7 @@ static HTMLDimension ParseDimension(
     }
   }
 
-  position = SkipWhile<CharacterType, IsASCIISpace>(characters, position);
+  position = SkipWhile<CharacterType, IsAsciiSpace>(characters, position);
 
   HTMLDimension::HTMLDimensionType type = HTMLDimension::kAbsolute;
   if (position < characters.size()) {

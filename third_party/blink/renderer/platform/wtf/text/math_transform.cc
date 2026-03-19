@@ -67,10 +67,10 @@ UChar32 ItalicMathVariant(UChar32 code_point) {
   CharacterType var_type;
   const UChar32 kASCIIUpperStart = 'A';
   const UChar32 kASCIILowerStart = 'a';
-  if (IsASCIIUpper(code_point)) {
+  if (IsAsciiUpper(code_point)) {
     base_char = code_point - kASCIIUpperStart;
     var_type = kLatin;
-  } else if (IsASCIILower(code_point)) {
+  } else if (IsAsciiLower(code_point)) {
     // Lowercase characters are placed immediately after the uppercase
     // characters in the Unicode mathematical block. The constant subtraction
     // represents the number of characters between the start of the sequence
