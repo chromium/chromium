@@ -137,4 +137,9 @@ rust_static_library("support_bridge_rust") {
   crate_root = "${_crubit_src_dir}/support/bridge.rs"
   allow_unsafe = true
   sources = [ crate_root ]
+
+  # Crubit doesn't currently enforce Clippy cleaniness.  And even if it did,
+  # we don't want Chromium to re-check Crubit support libraries, or 2nd-guess
+  # which Clippy lints should apply to Crubit support libraries.
+  no_clippy = true
 }
