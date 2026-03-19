@@ -3347,6 +3347,7 @@ static_library("ui") {
     deps += [
       "//chrome/browser/apps/app_shim",
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core/mac",
+      "//chrome/browser/renderer_host:delegate",
       "//chrome/browser/updater",
       "//chrome/browser/web_applications/extensions",
       "//chrome/updater:browser_sources",

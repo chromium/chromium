@@ -50,4 +50,26 @@ if (is_mac) {
       "//third_party/blink/public/common:headers",
     ]
   }
+
+  source_set("delegate") {
+    sources = [ "chrome_render_widget_host_view_mac_delegate.h" ]
+    public_deps = [ "//content/public/browser" ]
+  }
+
+  # TODO(crbug.com/479890756): Merge :delegate and :delegate_impl targets when
+  # c/b/ui/views/tab_contents/chrome_web_contents_view_delegate_views_mac.mm
+  # gets componentized.
+  source_set("delegate_impl") {
+    sources = [ "chrome_render_widget_host_view_mac_delegate.mm" ]
+    deps = [
+      ":delegate",
+      ":history_swiper",
+      "//base",
+      "//chrome/browser/actor/ui:actor_overlay",
+      "//chrome/browser/devtools",
+      "//chrome/browser/glic",
+      "//chrome/browser/ui",
+      "//components/spellcheck/browser",
+    ]
+  }
 }
