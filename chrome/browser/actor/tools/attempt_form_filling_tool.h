@@ -76,15 +76,13 @@ class AttemptFormFillingTool : public Tool,
   tabs::TabHandle tab_handle_;
   std::vector<AttemptFormFillingToolRequest::FormFillingRequest>
       tool_fill_requests_;
-  // Fill requests as determined by the ActorFormFillingService. Will be moved
-  // when the tool is invoked, and thus unavailable after the tool is invoked.
+  // Fill requests as determined by the ActorFormFillingService. Initially
+  // populated in TimeOfUseValidation and then updated in OnSuggestionsRetrieved
+  // to reflect the actual requests returned by the service, which may have
+  // been split.
   std::vector<std::pair<AttemptFormFillingToolRequest::RequestedData,
                         std::vector<autofill::FieldGlobalId>>>
       service_fill_requests_;
-  // The requested data of the fill requests. Unlike `service_fill_requests_`
-  // this is available even after the tool is invoked.
-  std::vector<AttemptFormFillingToolRequest::RequestedData>
-      service_requested_data_;
   base::WeakPtrFactory<AttemptFormFillingTool> weak_factory_{this};
 };
 

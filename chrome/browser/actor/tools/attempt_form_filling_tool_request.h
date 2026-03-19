@@ -12,6 +12,7 @@
 
 #include "chrome/browser/actor/shared_types.h"
 #include "chrome/browser/actor/tools/tool_request.h"
+#include "components/autofill/core/browser/integrators/actor/actor_form_filling_types.h"
 
 namespace actor {
 
@@ -20,46 +21,7 @@ class ToolRequestVisitorFunctor;
 class AttemptFormFillingToolRequest : public TabToolRequest {
  public:
   static constexpr char kName[] = "AttemptFormFilling";
-  // Note: While autofill detects the type of data to be filled into a field
-  // (address or credit card), autofill is unable to identify the purpose (e.g.
-  // shipping v.s. billing address). Therefore the purpose needs to be provided
-  // when showing UI, so that multiple sections of the same type can be
-  // disambiguated in the UI.
-  //
-  // See also RequestedData in actions_data.proto.
-  // Values are persisted in UMA logs, values should not be reused/renumbered.
-  // LINT.IfChange(ActorFormFillingRequestedData)
-  enum class RequestedData {
-    // The requested data is not specified.
-    kUnknown = 0,
-
-    // An address should be filled. This value can be used as a catch-all when
-    // the more specific address options below do not fit.
-    kAddress = 1,
-
-    // A shipping address should be filled.
-    kShippingAddress = 2,
-
-    // A billing address should be filled.
-    kBillingAddress = 3,
-
-    // A home address should be filled.
-    kHomeAddress = 4,
-
-    // A work address should be filled.
-    kWorkAddress = 5,
-
-    // A credit card should be filled.
-    kCreditCard = 6,
-
-    // Contact information should be filled. Contact information includes name,
-    // email, phone number, but not postal address information (street, city,
-    // etc.)
-    kContactInformation = 7,
-
-    kMaxValue = kContactInformation,
-  };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:ActorFormFillingRequestedData)
+  using RequestedData = autofill::ActorFormFillingRequestedData;
 
   struct FormFillingRequest {
     FormFillingRequest();

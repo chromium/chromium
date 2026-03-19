@@ -526,12 +526,12 @@ void ActorFormFillingServiceImpl::GetSuggestions(
     std::vector<SubRequest> sub_requests;
 
     switch (requested_data) {
-      case FormFillingRequest_RequestedData_ADDRESS:
-      case FormFillingRequest_RequestedData_SHIPPING_ADDRESS:
-      case FormFillingRequest_RequestedData_BILLING_ADDRESS:
-      case FormFillingRequest_RequestedData_HOME_ADDRESS:
-      case FormFillingRequest_RequestedData_WORK_ADDRESS:
-      case FormFillingRequest_RequestedData_CONTACT_INFORMATION: {
+      case kAddress:
+      case kShippingAddress:
+      case kBillingAddress:
+      case kHomeAddress:
+      case kWorkAddress:
+      case kContactInformation: {
         if (!base::FeatureList::IsEnabled(
                 ::features::kActorFormFillingServiceEnableAddress)) {
           LOG_AF(log_manager) << LoggingScope::kAutofillActor
@@ -544,16 +544,13 @@ void ActorFormFillingServiceImpl::GetSuggestions(
         if (actor::ShouldSplitOutContactInfo(trigger_fields, autofill_manager,
                                              log_manager)) {
           sub_requests.push_back(
-              {FormFillingRequest_RequestedData_CONTACT_INFORMATION,
-               actor::SectionSplitPart::kContactInfo});
+              {kContactInformation, actor::SectionSplitPart::kContactInfo});
           // For the address split part, use the original requested_data type
           // unless it was CONTACT_INFORMATION as that would create a misleading
           // UX (two contact info cards back to back).
           ActorFormFillingRequest::RequestedData address_requested_data =
-              (requested_data ==
-               FormFillingRequest_RequestedData_CONTACT_INFORMATION)
-                  ? FormFillingRequest_RequestedData_ADDRESS
-                  : requested_data;
+              (requested_data == kContactInformation) ? kAddress
+                                                      : requested_data;
           sub_requests.push_back(
               {address_requested_data, actor::SectionSplitPart::kAddress});
         } else {
@@ -562,7 +559,7 @@ void ActorFormFillingServiceImpl::GetSuggestions(
         }
         break;
       }
-      case FormFillingRequest_RequestedData_CREDIT_CARD: {
+      case kCreditCard: {
         if (!base::FeatureList::IsEnabled(
                 ::features::kActorFormFillingServiceEnableCreditCard)) {
           LOG_AF(log_manager) << LoggingScope::kAutofillActor
@@ -571,8 +568,8 @@ void ActorFormFillingServiceImpl::GetSuggestions(
               .Run(base::unexpected(kAutofillNotAvailable));
           return;
         }
-        sub_requests.push_back({FormFillingRequest_RequestedData_CREDIT_CARD,
-                                actor::SectionSplitPart::kNoSplit});
+        sub_requests.push_back(
+            {kCreditCard, actor::SectionSplitPart::kNoSplit});
         break;
       }
       default: {
@@ -588,17 +585,17 @@ void ActorFormFillingServiceImpl::GetSuggestions(
     for (const SubRequest& sub_request : sub_requests) {
       ActorSuggestions suggestion_data;
       switch (sub_request.requested_data) {
-        case FormFillingRequest_RequestedData_ADDRESS:
-        case FormFillingRequest_RequestedData_SHIPPING_ADDRESS:
-        case FormFillingRequest_RequestedData_BILLING_ADDRESS:
-        case FormFillingRequest_RequestedData_HOME_ADDRESS:
-        case FormFillingRequest_RequestedData_WORK_ADDRESS:
-        case FormFillingRequest_RequestedData_CONTACT_INFORMATION:
+        case kAddress:
+        case kShippingAddress:
+        case kBillingAddress:
+        case kHomeAddress:
+        case kWorkAddress:
+        case kContactInformation:
           suggestion_data =
               GetAddressSuggestions(trigger_fields, autofill_manager,
                                     log_manager, sub_request.split_part);
           break;
-        case FormFillingRequest_RequestedData_CREDIT_CARD:
+        case kCreditCard:
           suggestion_data = GetCreditCardSuggestions(
               trigger_fields, autofill_manager, log_manager);
           break;
@@ -621,8 +618,7 @@ void ActorFormFillingServiceImpl::GetSuggestions(
       if (const FormStructure* form_structure =
               autofill_manager.FindCachedFormById(trigger_fields[0])) {
         products_by_form[form_structure->global_id()].insert(
-            sub_request.requested_data ==
-                    FormFillingRequest_RequestedData_CREDIT_CARD
+            sub_request.requested_data == kCreditCard
                 ? FillingProduct::kCreditCard
                 : FillingProduct::kAddress);
       }

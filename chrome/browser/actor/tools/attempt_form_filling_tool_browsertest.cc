@@ -60,16 +60,15 @@ auto EqActorSuggestion(const autofill::ActorSuggestion& expected) {
 
 // Helper function that returns a composed matcher for FillRequest.
 auto EqFormFillingRequest(
-    optimization_guide::proto::FormFillingRequest_RequestedData expected_data,
+    RequestedData expected_data,
     const std::vector<autofill::FieldGlobalId>& expected_ids) {
   return FieldsAre(Eq(expected_data), Eq(expected_ids));
 }
 
 // Helper function that returns a composed matcher for ActorFormFillingRequest.
 template <typename SuggestionsMatcher>
-auto EqActorFormFillingRequest(
-    optimization_guide::proto::FormFillingRequest_RequestedData expected_data,
-    SuggestionsMatcher suggestions_matcher) {
+auto EqActorFormFillingRequest(RequestedData expected_data,
+                               SuggestionsMatcher suggestions_matcher) {
   return AllOf(Field(&autofill::ActorFormFillingRequest::requested_data,
                      Eq(expected_data)),
                Field(&autofill::ActorFormFillingRequest::suggestions,
@@ -311,15 +310,13 @@ IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest, DialogEventsForwarding) {
   ASSERT_TRUE(phone_number);
 
   autofill::ActorFormFillingRequest request1;
-  request1.requested_data =
-      optimization_guide::proto::FormFillingRequest_RequestedData_HOME_ADDRESS;
+  request1.requested_data = RequestedData::kHomeAddress;
   autofill::ActorSuggestion suggestion1;
   suggestion1.id = autofill::ActorSuggestionId(123);
   request1.suggestions.push_back(suggestion1);
 
   autofill::ActorFormFillingRequest request2;
-  request2.requested_data = optimization_guide::proto::
-      FormFillingRequest_RequestedData_CONTACT_INFORMATION;
+  request2.requested_data = RequestedData::kContactInformation;
   autofill::ActorSuggestion suggestion2;
   suggestion2.id = autofill::ActorSuggestionId(234);
   request2.suggestions.push_back(suggestion2);
@@ -714,16 +711,13 @@ IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest,
           _,
           ElementsAre(
               EqFormFillingRequest(
-                  optimization_guide::proto::
-                      FormFillingRequest_RequestedData_SHIPPING_ADDRESS,
+                  RequestedData::kShippingAddress,
                   std::vector<autofill::FieldGlobalId>{expected_field_id}),
               EqFormFillingRequest(
-                  optimization_guide::proto::
-                      FormFillingRequest_RequestedData_CREDIT_CARD,
+                  RequestedData::kCreditCard,
                   std::vector<autofill::FieldGlobalId>{expected_field_id}),
               EqFormFillingRequest(
-                  optimization_guide::proto::
-                      FormFillingRequest_RequestedData_CONTACT_INFORMATION,
+                  RequestedData::kContactInformation,
                   std::vector<autofill::FieldGlobalId>{expected_field_id})),
           _))
       .WillOnce(RunOnceCallback<2>(
@@ -756,8 +750,7 @@ IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest,
   ASSERT_TRUE(address_home_line1);
 
   autofill::ActorFormFillingRequest request;
-  request.requested_data =
-      optimization_guide::proto::FormFillingRequest_RequestedData_ADDRESS;
+  request.requested_data = RequestedData::kAddress;
   autofill::ActorSuggestion suggestion;
   suggestion.id = autofill::ActorSuggestionId(123);
   suggestion.title = "My Test Address";
@@ -848,15 +841,13 @@ IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest, ServiceSplitsRequests) {
   ASSERT_TRUE(address_home_line1);
 
   autofill::ActorFormFillingRequest request1;
-  request1.requested_data =
-      optimization_guide::proto::FormFillingRequest_RequestedData_ADDRESS;
+  request1.requested_data = RequestedData::kAddress;
   autofill::ActorSuggestion suggestion1;
   suggestion1.id = autofill::ActorSuggestionId(123);
   request1.suggestions.push_back(suggestion1);
 
   autofill::ActorFormFillingRequest request2;
-  request2.requested_data = optimization_guide::proto::
-      FormFillingRequest_RequestedData_CONTACT_INFORMATION;
+  request2.requested_data = RequestedData::kContactInformation;
   autofill::ActorSuggestion suggestion2;
   suggestion2.id = autofill::ActorSuggestionId(234);
   request2.suggestions.push_back(suggestion2);

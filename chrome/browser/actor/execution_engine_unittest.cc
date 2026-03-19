@@ -1046,7 +1046,7 @@ TEST_F(ExecutionEngineTest,
   ExecutionEngine& execution_engine = task_->GetExecutionEngine();
   std::vector<autofill::ActorFormFillingRequest> test_requests;
   test_requests.emplace_back().requested_data =
-      optimization_guide::proto::FormFillingRequest_RequestedData_ADDRESS;
+      autofill::ActorFormFillingRequestedData::kAddress;
 
   // Hold the forwarded value in `received_requests`.
   std::vector<autofill::ActorFormFillingRequest> received_requests;
@@ -1066,9 +1066,8 @@ TEST_F(ExecutionEngineTest,
 
   // The vector of requests broadcast by the service should match what we sent.
   ASSERT_EQ(received_requests.size(), 1u);
-  EXPECT_EQ(
-      received_requests[0].requested_data,
-      optimization_guide::proto::FormFillingRequest_RequestedData_ADDRESS);
+  EXPECT_EQ(received_requests[0].requested_data,
+            autofill::ActorFormFillingRequestedData::kAddress);
   EXPECT_EQ(received_handler.get(), &event_handler);
 }
 

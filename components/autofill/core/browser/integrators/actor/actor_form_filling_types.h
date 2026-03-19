@@ -8,10 +8,10 @@
 #include <optional>
 #include <ostream>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/types/id_type.h"
-#include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "ui/gfx/image/image.h"
 #include "url/origin.h"
 
@@ -41,6 +41,52 @@ enum class ActorFormFillingError {
 // LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:ActorFormFillingOutcome)
 
 std::ostream& operator<<(std::ostream& os, ActorFormFillingError error);
+
+// Note: While autofill detects the type of data to be filled into a field
+// (address or credit card), autofill is unable to identify the purpose (e.g.
+// shipping v.s. billing address). Therefore the purpose needs to be provided
+// when showing UI, so that multiple sections of the same type can be
+// disambiguated in the UI.
+//
+// See also RequestedData in actions_data.proto.
+// Values are persisted in UMA logs, values should not be reused/renumbered.
+// LINT.IfChange(ActorFormFillingRequestedData)
+enum class ActorFormFillingRequestedData {
+  // The requested data is not specified.
+  kUnknown = 0,
+
+  // An address should be filled. This value can be used as a catch-all when
+  // the more specific address options below do not fit.
+  kAddress = 1,
+
+  // A shipping address should be filled.
+  kShippingAddress = 2,
+
+  // A billing address should be filled.
+  kBillingAddress = 3,
+
+  // A home address should be filled.
+  kHomeAddress = 4,
+
+  // A work address should be filled.
+  kWorkAddress = 5,
+
+  // A credit card should be filled.
+  kCreditCard = 6,
+
+  // Contact information should be filled. Contact information includes name,
+  // email, phone number, but not postal address information (street, city,
+  // etc.)
+  kContactInformation = 7,
+
+  kMaxValue = kContactInformation,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:ActorFormFillingRequestedData)
+
+std::string_view ActorFormFillingRequestedDataToStringView(
+    ActorFormFillingRequestedData data);
+
+std::ostream& operator<<(std::ostream& os, ActorFormFillingRequestedData data);
 
 using ActorSuggestionId = base::IdTypeU32<class ActorSuggestionIdMarker>;
 
@@ -75,11 +121,8 @@ struct ActorFormFillingRequest {
   ActorFormFillingRequest& operator=(ActorFormFillingRequest&&);
   ~ActorFormFillingRequest();
 
-  // See the FormFillingRequest.RequestedData enum in actions_data.proto.
-  using RequestedData =
-      optimization_guide::proto::FormFillingRequest_RequestedData;
-  RequestedData requested_data =
-      RequestedData::FormFillingRequest_RequestedData_REQUESTED_DATA_UNKNOWN;
+  using RequestedData = ActorFormFillingRequestedData;
+  RequestedData requested_data = RequestedData::kUnknown;
   url::Origin request_origin;
   std::vector<ActorSuggestion> suggestions;
 };

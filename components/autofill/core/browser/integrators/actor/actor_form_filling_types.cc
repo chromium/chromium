@@ -24,6 +24,33 @@ std::ostream& operator<<(std::ostream& os, ActorFormFillingError error) {
   NOTREACHED();
 }
 
+std::string_view ActorFormFillingRequestedDataToStringView(
+    ActorFormFillingRequestedData data) {
+  switch (data) {
+    case ActorFormFillingRequestedData::kUnknown:
+      return "kUnknown";
+    case ActorFormFillingRequestedData::kAddress:
+      return "kAddress";
+    case ActorFormFillingRequestedData::kShippingAddress:
+      return "kShippingAddress";
+    case ActorFormFillingRequestedData::kBillingAddress:
+      return "kBillingAddress";
+    case ActorFormFillingRequestedData::kHomeAddress:
+      return "kHomeAddress";
+    case ActorFormFillingRequestedData::kWorkAddress:
+      return "kWorkAddress";
+    case ActorFormFillingRequestedData::kCreditCard:
+      return "kCreditCard";
+    case ActorFormFillingRequestedData::kContactInformation:
+      return "kContactInformation";
+  }
+  NOTREACHED();
+}
+
+std::ostream& operator<<(std::ostream& os, ActorFormFillingRequestedData data) {
+  return os << ActorFormFillingRequestedDataToStringView(data);
+}
+
 ActorSuggestion::ActorSuggestion() = default;
 ActorSuggestion::ActorSuggestion(const ActorSuggestion&) = default;
 ActorSuggestion& ActorSuggestion::operator=(const ActorSuggestion&) = default;

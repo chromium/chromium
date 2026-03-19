@@ -553,28 +553,28 @@ std::unique_ptr<ToolRequest> CreateAttemptFormFillingRequest(
   auto requested_data_enum_converter = [](optimization_guide::proto::
                                               FormFillingRequest_RequestedData
                                                   proto_enum) {
+    using RequestedData = AttemptFormFillingToolRequest::RequestedData;
     switch (proto_enum) {
       case optimization_guide::proto::FormFillingRequest_RequestedData_ADDRESS:
-        return AttemptFormFillingToolRequest::RequestedData::kAddress;
+        return RequestedData::kAddress;
       case optimization_guide::proto::
           FormFillingRequest_RequestedData_BILLING_ADDRESS:
-        return AttemptFormFillingToolRequest::RequestedData::kBillingAddress;
+        return RequestedData::kBillingAddress;
       case optimization_guide::proto::
           FormFillingRequest_RequestedData_SHIPPING_ADDRESS:
-        return AttemptFormFillingToolRequest::RequestedData::kShippingAddress;
+        return RequestedData::kShippingAddress;
       case optimization_guide::proto::
           FormFillingRequest_RequestedData_WORK_ADDRESS:
-        return AttemptFormFillingToolRequest::RequestedData::kWorkAddress;
+        return RequestedData::kWorkAddress;
       case optimization_guide::proto::
           FormFillingRequest_RequestedData_HOME_ADDRESS:
-        return AttemptFormFillingToolRequest::RequestedData::kHomeAddress;
+        return RequestedData::kHomeAddress;
       case optimization_guide::proto::
           FormFillingRequest_RequestedData_CREDIT_CARD:
-        return AttemptFormFillingToolRequest::RequestedData::kCreditCard;
+        return RequestedData::kCreditCard;
       case optimization_guide::proto::
           FormFillingRequest_RequestedData_CONTACT_INFORMATION:
-        return AttemptFormFillingToolRequest::RequestedData::
-            kContactInformation;
+        return RequestedData::kContactInformation;
       default:
         // A default is needed:
         // 1. To ease importing the actions_data.proto from an external
@@ -583,7 +583,7 @@ std::unique_ptr<ToolRequest> CreateAttemptFormFillingRequest(
         // 2. Since an old build may receive a yet unimported enum value in a
         //    new proto message.
         NOTIMPLEMENTED();
-        return AttemptFormFillingToolRequest::RequestedData::kUnknown;
+        return RequestedData::kUnknown;
     }
   };
 

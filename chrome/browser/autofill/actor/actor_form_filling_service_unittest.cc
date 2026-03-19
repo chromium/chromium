@@ -120,33 +120,27 @@ IsActorFormFillingRequestWithOrigin(const url::Origin request_origin) {
 
 // Returns a fill-request with a non-sensical (because null) field id.
 FillRequest UnfindableFillRequest() {
-  return {ActorFormFillingRequest::RequestedData::
-              FormFillingRequest_RequestedData_ADDRESS,
-          {FieldGlobalId()}};
+  return {ActorFormFillingRequest::RequestedData::kAddress, {FieldGlobalId()}};
 }
 
 FillRequest AddressFillRequest(std::vector<FieldGlobalId> field_ids) {
-  return {ActorFormFillingRequest::RequestedData::
-              FormFillingRequest_RequestedData_ADDRESS,
+  return {ActorFormFillingRequest::RequestedData::kAddress,
           std::move(field_ids)};
 }
 
 FillRequest CreditCardFillRequest(std::vector<FieldGlobalId> field_ids) {
-  return {ActorFormFillingRequest::RequestedData::
-              FormFillingRequest_RequestedData_CREDIT_CARD,
+  return {ActorFormFillingRequest::RequestedData::kCreditCard,
           std::move(field_ids)};
 }
 
 FillRequest ContactInformationFillRequest(
     std::vector<FieldGlobalId> field_ids) {
-  return {ActorFormFillingRequest::RequestedData::
-              FormFillingRequest_RequestedData_CONTACT_INFORMATION,
+  return {ActorFormFillingRequest::RequestedData::kContactInformation,
           std::move(field_ids)};
 }
 
 FillRequest BillingAddressFillRequest(std::vector<FieldGlobalId> field_ids) {
-  return {ActorFormFillingRequest::RequestedData::
-              FormFillingRequest_RequestedData_BILLING_ADDRESS,
+  return {ActorFormFillingRequest::RequestedData::kBillingAddress,
           std::move(field_ids)};
 }
 
@@ -451,8 +445,7 @@ TEST_F(ActorFormFillingServiceTest, SimpleAddressForm) {
                            future.GetCallback());
   EXPECT_THAT(future.Get(),
               ValueIs(ElementsAre(IsActorFormFillingRequest(
-                  ActorFormFillingRequest::RequestedData::
-                      FormFillingRequest_RequestedData_ADDRESS))));
+                  ActorFormFillingRequest::RequestedData::kAddress))));
 
   std::vector<ActorFormFillingRequest> requests = future.Take().value();
   service().FillForm(tab(), /*form_index=*/0,
@@ -497,10 +490,10 @@ TEST_F(ActorFormFillingServiceTest, ContactInformationForm) {
   service().GetSuggestions(
       tab(), {ContactInformationFillRequest({form.fields()[0].global_id()})},
       future.GetCallback());
-  EXPECT_THAT(future.Get(),
-              ValueIs(ElementsAre(IsActorFormFillingRequest(
-                  ActorFormFillingRequest::RequestedData::
-                      FormFillingRequest_RequestedData_CONTACT_INFORMATION))));
+  EXPECT_THAT(
+      future.Get(),
+      ValueIs(ElementsAre(IsActorFormFillingRequest(
+          ActorFormFillingRequest::RequestedData::kContactInformation))));
 
   std::vector<ActorFormFillingRequest> requests = future.Take().value();
   service().FillForm(tab(), /*form_index=*/0,
@@ -529,10 +522,10 @@ TEST_F(ActorFormFillingServiceTest, ContactInformationRequestOnMixedForm) {
   service().GetSuggestions(
       tab(), {ContactInformationFillRequest({form.fields()[1].global_id()})},
       future.GetCallback());
-  EXPECT_THAT(future.Get(),
-              ValueIs(ElementsAre(IsActorFormFillingRequest(
-                  ActorFormFillingRequest::RequestedData::
-                      FormFillingRequest_RequestedData_CONTACT_INFORMATION))));
+  EXPECT_THAT(
+      future.Get(),
+      ValueIs(ElementsAre(IsActorFormFillingRequest(
+          ActorFormFillingRequest::RequestedData::kContactInformation))));
 
   std::vector<ActorFormFillingRequest> requests = future.Take().value();
   service().FillForm(tab(), /*form_index=*/0,
@@ -569,8 +562,7 @@ TEST_F(ActorFormFillingServiceTest, MixedForm_SectionSplitting_Disabled) {
   // Should return exactly one request (ADDRESS).
   std::vector<ActorFormFillingRequest> requests = future.Take().value();
   EXPECT_THAT(requests, ElementsAre(IsActorFormFillingRequest(
-                            ActorFormFillingRequest::RequestedData::
-                                FormFillingRequest_RequestedData_ADDRESS)));
+                            ActorFormFillingRequest::RequestedData::kAddress)));
 
   service().FillForm(tab(), /*form_index=*/0,
                      ActorFormFillingSelection(requests[0].suggestions[0].id));
@@ -607,12 +599,11 @@ TEST_F(ActorFormFillingServiceTest, MixedForm_SectionSplitting_Enabled) {
   std::vector<ActorFormFillingRequest> requests = future.Take().value();
   EXPECT_THAT(
       requests,
-      ElementsAre(IsActorFormFillingRequest(
-                      ActorFormFillingRequest::RequestedData::
-                          FormFillingRequest_RequestedData_CONTACT_INFORMATION),
-                  IsActorFormFillingRequest(
-                      ActorFormFillingRequest::RequestedData::
-                          FormFillingRequest_RequestedData_BILLING_ADDRESS)));
+      ElementsAre(
+          IsActorFormFillingRequest(
+              ActorFormFillingRequest::RequestedData::kContactInformation),
+          IsActorFormFillingRequest(
+              ActorFormFillingRequest::RequestedData::kBillingAddress)));
 
   // Mock out the user having selected profile #2 for the contact part, and
   // profile #1 for the address part.
@@ -653,14 +644,13 @@ TEST_F(ActorFormFillingServiceTest,
       tab(), {ContactInformationFillRequest({form.fields()[0].global_id()})},
       future.GetCallback());
   // Should return two requests: CONTACT_INFORMATION and ADDRESS.
-  EXPECT_THAT(future.Get(),
-              ValueIs(ElementsAre(
-                  IsActorFormFillingRequest(
-                      ActorFormFillingRequest::RequestedData::
-                          FormFillingRequest_RequestedData_CONTACT_INFORMATION),
-                  IsActorFormFillingRequest(
-                      ActorFormFillingRequest::RequestedData::
-                          FormFillingRequest_RequestedData_ADDRESS))));
+  EXPECT_THAT(
+      future.Get(),
+      ValueIs(ElementsAre(
+          IsActorFormFillingRequest(
+              ActorFormFillingRequest::RequestedData::kContactInformation),
+          IsActorFormFillingRequest(
+              ActorFormFillingRequest::RequestedData::kAddress))));
 }
 
 // Tests that if section splitting occurs, we properly retarget the trigger
@@ -687,16 +677,14 @@ TEST_F(ActorFormFillingServiceTest, MixedForm_SectionSplitting_Retargeting) {
   // The CONTACT_INFORMATION request should be retargeted to the EMAIL_ADDRESS
   // field.
   EXPECT_EQ(requests[0].requested_data,
-            ActorFormFillingRequest::RequestedData::
-                FormFillingRequest_RequestedData_CONTACT_INFORMATION);
+            ActorFormFillingRequest::RequestedData::kContactInformation);
   EXPECT_THAT(
       requests[0].suggestions[0].title,
       HasSubstr(base::UTF16ToUTF8(GetFillValue(GetProfile1(), EMAIL_ADDRESS))));
 
   // The ADDRESS request should be retargeted to the ADDRESS_HOME_LINE1 field.
   EXPECT_EQ(requests[1].requested_data,
-            ActorFormFillingRequest::RequestedData::
-                FormFillingRequest_RequestedData_ADDRESS);
+            ActorFormFillingRequest::RequestedData::kAddress);
   EXPECT_THAT(requests[1].suggestions[0].title,
               HasSubstr(base::UTF16ToUTF8(
                   GetFillValue(GetProfile1(), ADDRESS_HOME_LINE1))));
@@ -722,8 +710,7 @@ TEST_F(ActorFormFillingServiceTest, SplitAddressForm) {
       future.GetCallback());
   EXPECT_THAT(future.Get(),
               ValueIs(ElementsAre(IsActorFormFillingRequest(
-                  ActorFormFillingRequest::RequestedData::
-                      FormFillingRequest_RequestedData_ADDRESS))));
+                  ActorFormFillingRequest::RequestedData::kAddress))));
 
   std::vector<ActorFormFillingRequest> requests = future.Take().value();
   service().FillForm(tab(), /*form_index=*/0,
@@ -753,8 +740,7 @@ TEST_F(ActorFormFillingServiceTest, SimpleCreditCardForm) {
       future.GetCallback());
   EXPECT_THAT(future.Get(),
               ValueIs(ElementsAre(IsActorFormFillingRequest(
-                  ActorFormFillingRequest::RequestedData::
-                      FormFillingRequest_RequestedData_CREDIT_CARD))));
+                  ActorFormFillingRequest::RequestedData::kCreditCard))));
 
   std::vector<ActorFormFillingRequest> requests = future.Take().value();
   service().FillForm(tab(), /*form_index=*/0,
@@ -908,8 +894,7 @@ TEST_F(ActorFormFillingServiceTest, FillAfterFetchingServerCard) {
       future.GetCallback());
   EXPECT_THAT(future.Get(),
               ValueIs(ElementsAre(IsActorFormFillingRequest(
-                  ActorFormFillingRequest::RequestedData::
-                      FormFillingRequest_RequestedData_CREDIT_CARD))));
+                  ActorFormFillingRequest::RequestedData::kCreditCard))));
 
   std::vector<ActorFormFillingRequest> requests = future.Take().value();
   service().FillForm(tab(), /*form_index=*/0,
@@ -959,8 +944,7 @@ TEST_F(ActorFormFillingServiceTest, TimeoutWithFetching) {
       future.GetCallback());
   EXPECT_THAT(future.Get(),
               ValueIs(ElementsAre(IsActorFormFillingRequest(
-                  ActorFormFillingRequest::RequestedData::
-                      FormFillingRequest_RequestedData_CREDIT_CARD))));
+                  ActorFormFillingRequest::RequestedData::kCreditCard))));
 
   std::vector<ActorFormFillingRequest> requests = future.Take().value();
 
@@ -1021,8 +1005,7 @@ TEST_F(ActorFormFillingServiceTest, TriggerOnSelect) {
                            request_future.GetCallback());
   EXPECT_THAT(request_future.Get(),
               ValueIs(ElementsAre(IsActorFormFillingRequest(
-                  ActorFormFillingRequest::RequestedData::
-                      FormFillingRequest_RequestedData_ADDRESS))));
+                  ActorFormFillingRequest::RequestedData::kAddress))));
 
   std::vector<ActorFormFillingRequest> requests = request_future.Take().value();
   ASSERT_THAT(requests, Not(IsEmpty()));
@@ -1048,14 +1031,13 @@ TEST_F(ActorFormFillingServiceTest, FillOrPreview) {
       tab(), {BillingAddressFillRequest({form.fields().front().global_id()})},
       future.GetCallback());
 
-  ASSERT_THAT(future.Get(),
-              ValueIs(ElementsAre(
-                  IsActorFormFillingRequest(
-                      ActorFormFillingRequest::RequestedData::
-                          FormFillingRequest_RequestedData_CONTACT_INFORMATION),
-                  IsActorFormFillingRequest(
-                      ActorFormFillingRequest::RequestedData::
-                          FormFillingRequest_RequestedData_BILLING_ADDRESS))));
+  ASSERT_THAT(
+      future.Get(),
+      ValueIs(ElementsAre(
+          IsActorFormFillingRequest(
+              ActorFormFillingRequest::RequestedData::kContactInformation),
+          IsActorFormFillingRequest(
+              ActorFormFillingRequest::RequestedData::kBillingAddress))));
 
   std::vector<ActorFormFillingRequest> requests = future.Take().value();
 
@@ -1151,11 +1133,9 @@ TEST_F(ActorFormFillingServiceTest, ScrollToForm) {
   ASSERT_THAT(future.Get(),
               ValueIs(ElementsAre(
                   IsActorFormFillingRequest(
-                      ActorFormFillingRequest::RequestedData::
-                          FormFillingRequest_RequestedData_ADDRESS),
+                      ActorFormFillingRequest::RequestedData::kAddress),
                   IsActorFormFillingRequest(
-                      ActorFormFillingRequest::RequestedData::
-                          FormFillingRequest_RequestedData_CREDIT_CARD))));
+                      ActorFormFillingRequest::RequestedData::kCreditCard))));
 
   {
     testing::InSequence seq;

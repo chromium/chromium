@@ -36,7 +36,7 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Suggestion not found"/>
 </enum>
 
-<!-- LINT.ThenChange(//components/autofill/core/browser/integrators/glic/actor_form_filling_types.h:ActorFormFillingError) -->
+<!-- LINT.ThenChange(//components/autofill/core/browser/integrators/actor/actor_form_filling_types.h:ActorFormFillingError) -->
 
 <!-- LINT.IfChange(ActorFormFillingRequestedData) -->
 
@@ -51,7 +51,7 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="ContactInformation"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/actor/tools/attempt_form_filling_tool_request.h:ActorFormFillingRequestedData) -->
+<!-- LINT.ThenChange(//components/autofill/core/browser/integrators/actor/actor_form_filling_types.h:ActorFormFillingRequestedData) -->
 
 <!-- LINT.IfChange(RetargetTriggerFieldResult) -->
 
