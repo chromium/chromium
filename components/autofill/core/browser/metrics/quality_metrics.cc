@@ -4,11 +4,10 @@
 
 #include "components/autofill/core/browser/metrics/quality_metrics.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
-#include "base/containers/flat_map.h"
-#include "base/containers/span.h"
 #include "base/i18n/char_iterator.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/autofill/core/browser/autofill_browser_util.h"
@@ -38,18 +37,17 @@ namespace {
 void LogPerfectFillingMetric(const FormStructure& form) {
   // Denotes whether for a given FillingProduct, the form has a field which was
   // last filled with this product (and maybe user/JS edited afterwards).
-  const base::flat_map<FillingProduct, bool> filling_product_was_used =
-      base::MakeFlatMap<FillingProduct, bool>(
-          base::span<const FillingProduct, 2>(
-              {FillingProduct::kAddress, FillingProduct::kCreditCard}),
-          {}, [&form](FillingProduct filling_product) {
-            return std::make_pair(
-                filling_product,
-                std::ranges::any_of(
-                    form, [&filling_product](const auto& field) {
-                      return field->filling_product() == filling_product;
-                    }));
-          });
+  const bool has_address = std::ranges::any_of(form, [](const auto& field) {
+    return field->filling_product() == FillingProduct::kAddress;
+  });
+  const bool has_credit_card = std::ranges::any_of(form, [](const auto& field) {
+    return field->filling_product() == FillingProduct::kCreditCard;
+  });
+
+  if (!has_address && !has_credit_card) {
+    return;
+  }
+
   // A perfectly filled form is submitted as it was filled from Autofill
   // without subsequent changes. This means that in a perfect filling
   // scenario, a field is either autofilled, empty, has value at page load or
@@ -60,11 +58,11 @@ void LogPerfectFillingMetric(const FormStructure& form) {
   // least one field. This conditions this metric on Assistance, Readiness and
   // Acceptance. Perfect filling is recorded for addresses and credit cards
   // separately.
-  if (filling_product_was_used.at(FillingProduct::kAddress)) {
+  if (has_address) {
     AutofillMetrics::LogAutofillPerfectFilling(/*is_address=*/true,
                                                perfect_filling);
   }
-  if (filling_product_was_used.at(FillingProduct::kCreditCard)) {
+  if (has_credit_card) {
     AutofillMetrics::LogAutofillPerfectFilling(/*is_address=*/false,
                                                perfect_filling);
   }
