@@ -55,7 +55,7 @@ public class GestureListenerManagerImplUnitTest {
     @Before
     public void setup() {
         GestureListenerManagerImplJni.setInstanceForTesting(mMockJniGestureListenerManager);
-        doReturn(1L).when(mMockJniGestureListenerManager).init(any(), any());
+        doReturn(1L).when(mMockJniGestureListenerManager).init(any());
 
         setupMockWebContents();
 

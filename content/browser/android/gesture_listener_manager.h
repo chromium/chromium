@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_ANDROID_GESTURE_LISTENER_MANAGER_H_
 #define CONTENT_BROWSER_ANDROID_GESTURE_LISTENER_MANAGER_H_
 
-#include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
@@ -35,14 +34,14 @@ class CONTENT_EXPORT GestureListenerManager
       public RenderWidgetHost::InputEventObserver,
       public WebContentsObserver {
  public:
-  GestureListenerManager(JNIEnv* env,
-                         const base::android::JavaRef<jobject>& obj,
-                         WebContentsImpl* web_contents);
+  explicit GestureListenerManager(WebContentsImpl* web_contents);
 
   GestureListenerManager(const GestureListenerManager&) = delete;
   GestureListenerManager& operator=(const GestureListenerManager&) = delete;
 
   ~GestureListenerManager() override;
+
+  base::android::ScopedJavaLocalRef<jobject> GetJavaObject(JNIEnv* env);
 
   void ResetGestureDetection(JNIEnv* env);
   void SetDoubleTapSupportEnabled(JNIEnv* env, bool enabled);
@@ -109,9 +108,6 @@ class CONTENT_EXPORT GestureListenerManager
   raw_ptr<WebContentsImpl> web_contents_;
   raw_ptr<RenderWidgetHostViewAndroid> rwhva_ = nullptr;
   bool is_in_a_fling_ = false;
-
-  // A weak reference to the Java GestureListenerManager object.
-  JavaObjectWeakGlobalRef java_ref_;
 
   // Highest update frequency requested by any of the listeners.
   std::optional<cc::mojom::RootScrollOffsetUpdateFrequency>

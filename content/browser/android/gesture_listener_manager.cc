@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/browser/android/gesture_listener_manager.h"
+
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "content/browser/android/gesture_listener_manager.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/web_contents/web_contents_view_android.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/events/android/gesture_event_type.h"
@@ -109,14 +111,11 @@ void GestureListenerManager::ResetScrollObserver::
   manager_->OnRenderProcessGone();
 }
 
-GestureListenerManager::GestureListenerManager(JNIEnv* env,
-                                               const JavaRef<jobject>& obj,
-                                               WebContentsImpl* web_contents)
+GestureListenerManager::GestureListenerManager(WebContentsImpl* web_contents)
     : RenderWidgetHostConnector(web_contents),
       WebContentsObserver(web_contents),
       reset_scroll_observer_(new ResetScrollObserver(web_contents, this)),
-      web_contents_(web_contents),
-      java_ref_(env, obj) {
+      web_contents_(web_contents) {
   RenderFrameHost* host = web_contents->GetPrimaryMainFrame();
   if (host) {
     host->GetRenderWidgetHost()->AddInputEventObserver(this);
@@ -128,10 +127,15 @@ GestureListenerManager::~GestureListenerManager() {
   UnobserveRenderFrames();
 
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> j_obj = java_ref_.get(env);
-  if (j_obj.is_null())
-    return;
-  Java_GestureListenerManagerImpl_onNativeDestroyed(env, j_obj);
+  ScopedJavaLocalRef<jobject> j_obj = GetJavaObject(env);
+  if (!j_obj.is_null()) {
+    Java_GestureListenerManagerImpl_destroyFromNative(env, j_obj);
+  }
+}
+
+ScopedJavaLocalRef<jobject> GestureListenerManager::GetJavaObject(JNIEnv* env) {
+  return Java_GestureListenerManagerImpl_get(env,
+                                             reinterpret_cast<intptr_t>(this));
 }
 
 void GestureListenerManager::ResetGestureDetection(JNIEnv* env) {
@@ -219,7 +223,7 @@ void GestureListenerManager::GestureEventAck(
   if (web_contents_->IsBeingDestroyed())
     return;
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> j_obj = java_ref_.get(env);
+  ScopedJavaLocalRef<jobject> j_obj = GetJavaObject(env);
   if (j_obj.is_null())
     return;
   if (event.GetType() == blink::WebInputEvent::Type::kGestureScrollBegin) {
@@ -254,7 +258,7 @@ void GestureListenerManager::OnInputEventAck(
 
 void GestureListenerManager::DidStopFlinging() {
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> j_obj = java_ref_.get(env);
+  ScopedJavaLocalRef<jobject> j_obj = GetJavaObject(env);
   if (j_obj.is_null())
     return;
   Java_GestureListenerManagerImpl_onFlingEnd(env, j_obj);
@@ -266,7 +270,7 @@ bool GestureListenerManager::FilterInputEvent(const WebInputEvent& event) {
   }
 
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> j_obj = java_ref_.get(env);
+  ScopedJavaLocalRef<jobject> j_obj = GetJavaObject(env);
   if (j_obj.is_null())
     return false;
 
@@ -293,7 +297,7 @@ void GestureListenerManager::UpdateScrollInfo(const gfx::PointF& scroll_offset,
                                               const float top_shown_pix,
                                               bool top_changed) {
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
+  ScopedJavaLocalRef<jobject> obj = GetJavaObject(env);
   if (obj.is_null())
     return;
 
@@ -306,7 +310,7 @@ void GestureListenerManager::UpdateScrollInfo(const gfx::PointF& scroll_offset,
 
 void GestureListenerManager::UpdateOnTouchDown() {
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
+  ScopedJavaLocalRef<jobject> obj = GetJavaObject(env);
   if (obj.is_null())
     return;
 
@@ -315,7 +319,7 @@ void GestureListenerManager::UpdateOnTouchDown() {
 
 void GestureListenerManager::UpdateOnTouchUp() {
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
+  ScopedJavaLocalRef<jobject> obj = GetJavaObject(env);
   if (obj.is_null()) {
     return;
   }
@@ -326,7 +330,7 @@ void GestureListenerManager::UpdateOnTouchUp() {
 void GestureListenerManager::OnRootScrollOffsetChanged(
     const gfx::PointF& root_scroll_offset) {
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
+  ScopedJavaLocalRef<jobject> obj = GetJavaObject(env);
   if (obj.is_null())
     return;
 
@@ -354,7 +358,7 @@ void GestureListenerManager::OnRenderProcessGone() {
 
 bool GestureListenerManager::IsScrollInProgressForTesting() {
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
+  ScopedJavaLocalRef<jobject> obj = GetJavaObject(env);
   if (obj.is_null())
     return false;
 
@@ -363,7 +367,7 @@ bool GestureListenerManager::IsScrollInProgressForTesting() {
 
 void GestureListenerManager::ResetPopupsAndInput(bool render_process_gone) {
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
+  ScopedJavaLocalRef<jobject> obj = GetJavaObject(env);
   if (obj.is_null())
     return;
   Java_GestureListenerManagerImpl_resetPopupsAndInput(env, obj,
@@ -384,16 +388,13 @@ void GestureListenerManager::UnobserveRenderFrames() {
   observed_render_frames_.clear();
 }
 
-static int64_t JNI_GestureListenerManagerImpl_Init(
-    JNIEnv* env,
-    const JavaRef<jobject>& obj,
-    const JavaRef<jobject>& jweb_contents) {
-  auto* web_contents = WebContents::FromJavaWebContents(jweb_contents);
+static int64_t JNI_GestureListenerManagerImpl_Init(JNIEnv* env,
+                                                   WebContents* web_contents) {
   CHECK(web_contents) << "Should be created with a valid WebContents.";
 
   // Owns itself and gets destroyed when |WebContentsDestroyed| is called.
-  auto* manager = new GestureListenerManager(
-      env, obj, static_cast<WebContentsImpl*>(web_contents));
+  auto* manager =
+      new GestureListenerManager(static_cast<WebContentsImpl*>(web_contents));
   manager->Initialize();
   return reinterpret_cast<intptr_t>(manager);
 }

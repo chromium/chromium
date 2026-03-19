@@ -14,6 +14,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ObserverList;
@@ -38,8 +39,10 @@ import org.chromium.content_public.browser.WebContents.UserDataFactory;
 import org.chromium.ui.base.GestureEventType;
 import org.chromium.ui.base.ViewAndroidDelegate;
 
+import java.lang.ref.WeakReference;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Implementation of the interface {@link GestureListenerManager}. Manages
@@ -60,6 +63,13 @@ public class GestureListenerManagerImpl
     }
 
     private static @Nullable GestureListenerManagerImpl sInstanceForTesting;
+
+    // A map of native helper objects to their Java counterparts allows unlimited scaling in number
+    // of tabs. The UserDataHost owns the GestureListenerManagerImpl objects. This is used since
+    // UserData#destroy() is not always called when the WebContents are destroyed, leading to memory
+    // leaks.
+    private static final Map<Long, WeakReference<GestureListenerManagerImpl>> sNativeHelperMap =
+            new HashMap<>();
 
     private final WebContentsImpl mWebContents;
     private final ObserverList<GestureStateListener> mListeners;
@@ -99,6 +109,12 @@ public class GestureListenerManagerImpl
                 GestureListenerManagerImpl.class, UserDataFactoryLazyHolder.INSTANCE);
     }
 
+    @CalledByNative
+    private static @Nullable GestureListenerManagerImpl get(long nativeObj) {
+        WeakReference<GestureListenerManagerImpl> managerRef = sNativeHelperMap.get(nativeObj);
+        return managerRef != null ? managerRef.get() : null;
+    }
+
     // TODO(crbug.com/40850475): Mocking |#fromWebContents()| may be a better option, when
     // available.
     public static void setInstanceForTesting(GestureListenerManagerImpl instance) {
@@ -106,7 +122,8 @@ public class GestureListenerManagerImpl
         ResettersForTesting.register(() -> sInstanceForTesting = null);
     }
 
-    public GestureListenerManagerImpl(WebContents webContents) {
+    @VisibleForTesting
+    GestureListenerManagerImpl(WebContents webContents) {
         mWebContents = (WebContentsImpl) webContents;
         mListeners = new ObserverList<GestureStateListener>();
         mIterator = mListeners.rewindableIterator();
@@ -114,12 +131,28 @@ public class GestureListenerManagerImpl
         mViewDelegate = assumeNonNull(mWebContents.getViewAndroidDelegate());
         mViewDelegate.addVerticalScrollDirectionChangeListener(this);
         WindowEventObserverManager.from(mWebContents).addObserver(this);
-        mNativeGestureListenerManager =
-                GestureListenerManagerImplJni.get().init(this, mWebContents);
+        mNativeGestureListenerManager = GestureListenerManagerImplJni.get().init(mWebContents);
+        sNativeHelperMap.put(mNativeGestureListenerManager, new WeakReference<>(this));
         mHidePastePopupOnGSB =
                 ContentFeatureMap.isEnabled(ContentFeatureList.HIDE_PASTE_POPUP_ON_GSB);
         mResetGestureDetectionOnLosingFocus =
                 !ContentFeatureMap.isEnabled(ContentFeatureList.CONTINUE_GESTURE_ON_LOSING_FOCUS);
+    }
+
+    @CalledByNative
+    private void destroyFromNative() {
+        if (mNativeGestureListenerManager == 0) return;
+
+        for (mIterator.rewind(); mIterator.hasNext(); ) mIterator.next().onDestroyed();
+        mListeners.clear();
+        mListenerFrequency.clear();
+        mViewDelegate.removeVerticalScrollDirectionChangeListener(this);
+
+        WeakReference<GestureListenerManagerImpl> oldValue =
+                sNativeHelperMap.remove(mNativeGestureListenerManager);
+        assert oldValue != null;
+        assert oldValue.get() == this;
+        mNativeGestureListenerManager = 0;
     }
 
     public void resetGestureDetection() {
@@ -407,15 +440,6 @@ public class GestureListenerManagerImpl
         }
     }
 
-    @CalledByNative
-    private void onNativeDestroyed() {
-        for (mIterator.rewind(); mIterator.hasNext(); ) mIterator.next().onDestroyed();
-        mListeners.clear();
-        mListenerFrequency.clear();
-        mViewDelegate.removeVerticalScrollDirectionChangeListener(this);
-        mNativeGestureListenerManager = 0;
-    }
-
     /** Called just prior to a tap or press gesture being forwarded to the renderer. */
     @SuppressWarnings("unused")
     @CalledByNative
@@ -571,7 +595,7 @@ public class GestureListenerManagerImpl
 
     @NativeMethods
     interface Natives {
-        long init(GestureListenerManagerImpl self, WebContentsImpl webContents);
+        long init(@JniType("WebContents*") WebContents webContents);
 
         void resetGestureDetection(long nativeGestureListenerManager);
 
