@@ -2611,8 +2611,8 @@
       // This fixes the suppression of markers for <details> and
       // list items for appearance:auto.
       // This was added in M146 and can be removed after M148.
+      // Note that as-is, this flag triggers crbug.com/408002786.
       name: "FixMarkerSuppressionForAppearanceAuto",
-      status: "stable",
     },
     {
       // crbug.com/411739501
