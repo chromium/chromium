@@ -1639,30 +1639,16 @@ bool PdfInkModule::RecordStrokePosition(
 
 void PdfInkModule::ApplyUndoRedoCommands(
     const PdfInkUndoRedoModel::Commands& commands) {
-  switch (PdfInkUndoRedoModel::GetCommandsType(commands)) {
-    case PdfInkUndoRedoModel::CommandsType::kNone: {
-      return;
-    }
-    case PdfInkUndoRedoModel::CommandsType::kAdd: {
-      ApplyUndoRedoCommandsHelper(
-          PdfInkUndoRedoModel::GetAddCommands(commands).value(),
-          /*should_draw=*/true);
-      return;
-    }
-    case PdfInkUndoRedoModel::CommandsType::kRemove: {
-      ApplyUndoRedoCommandsHelper(
-          PdfInkUndoRedoModel::GetRemoveCommands(commands).value(),
-          /*should_draw=*/false);
-      return;
-    }
-  }
-  NOTREACHED();
+  ApplyUndoRedoCommandsHelper(commands.adds, /*should_draw=*/true);
+  ApplyUndoRedoCommandsHelper(commands.removes, /*should_draw=*/false);
 }
 
 void PdfInkModule::ApplyUndoRedoCommandsHelper(
     const PdfInkUndoRedoModel::IdSet& ids,
     bool should_draw) {
-  CHECK(!ids.empty());
+  if (ids.empty()) {
+    return;
+  }
 
   std::set<InkStrokeId> stroke_ids;
   std::set<InkModeledShapeId> shape_ids;
