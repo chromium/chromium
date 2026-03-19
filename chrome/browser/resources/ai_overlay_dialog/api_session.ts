@@ -72,19 +72,28 @@ interface ApiConfig {
 }
 
 /**
- * Manages the API session.
+ * Manages the connection and communication with the server.
  */
 export class ApiSession {
+  private readonly apiKey: string;
+  private readonly systemInstruction: string;
+  private readonly audioCapturer: AudioCapturer;
+  private readonly audioPlayer: AudioPlayer;
+
   private ws: WebSocket|null = null;
-  private audioCapturer: AudioCapturer;
-  private audioPlayer: AudioPlayer;
+  // TODO(bokan): the session shouldn't interact with state, the coordinator
+  // should be responsible for this based on the incoming messages.
   private onStateChange: (state: SessionState) => void;
   private config_: ApiConfig|null = null;
 
   constructor(
-      audioCapturer: AudioCapturer,
+      apiKey: string, systemInstruction: string,
+      audioCapturer: AudioCapturer, audioPlayer: AudioPlayer,
       onStateChange: (state: SessionState) => void) {
+    this.apiKey = apiKey;
+    this.systemInstruction = systemInstruction;
     this.audioCapturer = audioCapturer;
+    this.audioPlayer = audioPlayer;
     this.onStateChange = onStateChange;
     // TODO(bokan): 24000 Hz (the default sampleRate in AudioPlayer) happens to
     // be what we receive from the server but we should be looking at the value
@@ -93,7 +102,7 @@ export class ApiSession {
         new AudioPlayer(onStateChange.bind(this, SessionState.LISTENING));
   }
 
-  async connect(apiKey: string) {
+  async connect() {
     if (!this.config_) {
       try {
         const response = await fetch('api_config.json');
@@ -106,7 +115,7 @@ export class ApiSession {
     }
 
     assert(this.config_);
-    const url = `${this.config_.endpoint_url}?key=${apiKey}`;
+    const url = `${this.config_.endpoint_url}?key=${this.apiKey}`;
     this.ws = new WebSocket(url);
 
     this.ws.onopen = async () => {
@@ -119,26 +128,21 @@ export class ApiSession {
     };
 
     this.ws.onmessage = async (event) => {
+      let jsonPayload: any;
       if (event.data instanceof Blob) {
         try {
           const text = await event.data.text();
-          const jsonPayload = JSON.parse(text);
-          this.handleMessage(jsonPayload);
-          if (jsonPayload.serverContent?.modelTurn?.parts) {
-            for (const part of jsonPayload.serverContent.modelTurn.parts) {
-              if (part.inlineData?.data) {
-                part.inlineData.data =
-                    `<length ${part.inlineData.data.length}>`;
-              }
-            }
-
-            console.info('WS Blob: ', JSON.stringify(jsonPayload));
-          }
+          jsonPayload = JSON.parse(text);
         } catch (e) {
           console.error('Failed message decode: ', e);
+          return;
         }
-      } else {
-        console.info('WS Message: ', event);
+      } else if (typeof event.data === 'string') {
+        jsonPayload = JSON.parse(event.data);
+      }
+
+      if (jsonPayload) {
+        this.handleMessage(jsonPayload);
       }
     };
 
@@ -175,8 +179,7 @@ export class ApiSession {
         },
         systemInstruction: {
           parts: [{
-            text: 'You are a helpful assistant in a Chrome overlay. ' +
-                'Keep responses brief and conversational.',
+            text: this.systemInstruction,
           }],
         },
       },

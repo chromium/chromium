@@ -19,11 +19,13 @@ build_webui("build") {
   web_component_files = [ "app.ts" ]
 
   ts_files = [
+    "api_session.ts",
     "audio_capturer.ts",
     "audio_player.ts",
     "audio_processor.ts",
     "audio_utils.ts",
-    "api_session.ts",
+    "conversation.ts",
+    "persona.ts",
   ]
 
   ts_deps = [
