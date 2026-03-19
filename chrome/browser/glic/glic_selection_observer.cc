@@ -7,6 +7,8 @@
 #include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
@@ -14,6 +16,7 @@
 #include "chrome/browser/glic/glic_zero_state_suggestions_manager.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -43,6 +46,18 @@ constexpr size_t kMaxSelectionLength = 1000;
 // The MIME type for selected text.
 constexpr char kSelectionMimeType[] = "application/x-glic-selection";
 constexpr char kPromptMimeType[] = "application/x-glic-prompt";
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(GlicSelectionAction)
+enum class GlicSelectionAction {
+  kNudgeShown = 0,
+  kWidgetShown = 1,
+  kNudgeClicked = 2,
+  kWidgetClicked = 3,
+  kMaxValue = kWidgetClicked
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicSelectionAction)
 
 }  // namespace
 
@@ -210,9 +225,41 @@ void GlicSelectionObserver::ProcessPendingSelection() {
 }
 
 // static
-void GlicSelectionObserver::InvokeGlicFromSelectionWidget(
+void GlicSelectionObserver::InvokeGlicFromSelectionAffordance(
     std::string prompt_text,
-    base::WeakPtr<content::WebContents> web_contents) {
+    size_t text_length,
+    bool is_widget,
+    base::WeakPtr<content::WebContents> web_contents,
+    GlicNudgeActivity activity) {
+  if (activity != GlicNudgeActivity::kNudgeClicked) {
+    return;
+  }
+
+  bool is_post_fre = false;
+  if (web_contents) {
+    Profile* profile =
+        Profile::FromBrowserContext(web_contents->GetBrowserContext());
+    is_post_fre = GlicEnabling::HasConsentedForProfile(profile);
+  }
+
+  const char* histogram_suffix = is_post_fre ? ".PostFre" : ".PreFre";
+
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Glic.Selection.Action", histogram_suffix}),
+      is_widget ? GlicSelectionAction::kWidgetClicked
+                : GlicSelectionAction::kNudgeClicked);
+  if (is_widget) {
+    base::UmaHistogramCounts1000(
+        base::StrCat(
+            {"Glic.Selection.WidgetClicked.SelectionLength", histogram_suffix}),
+        text_length);
+  } else {
+    base::UmaHistogramCounts1000(
+        base::StrCat(
+            {"Glic.Selection.NudgeClicked.SelectionLength", histogram_suffix}),
+        text_length);
+  }
+
   if (web_contents) {
     if (auto* tab_interface =
             tabs::TabInterface::MaybeGetFromContents(web_contents.get())) {
@@ -316,12 +363,28 @@ void GlicSelectionObserver::ShowSelectionAffordance(
     std::u16string title = l10n_util::GetStringFUTF16(
         IDS_GLIC_SELECTION_TELL_ME_ABOUT, selected_text);
 
+    bool is_post_fre = GlicEnabling::HasConsentedForProfile(
+        Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
+    const char* histogram_suffix = is_post_fre ? ".PostFre" : ".PreFre";
+
     if (!features::kGlicSelectionPromptUseWidget.Get()) {
       // Show selection nudge
-      controller->UpdateNudgeLabel(web_contents(), base::UTF16ToUTF8(label),
-                                   std::make_optional(base::UTF16ToUTF8(title)),
-                                   /*anchored_message_text=*/std::string(),
-                                   std::nullopt, base::DoNothing());
+      base::UmaHistogramEnumeration(
+          base::StrCat({"Glic.Selection.Action", histogram_suffix}),
+          GlicSelectionAction::kNudgeShown);
+      auto invoke_glic = base::BindRepeating(
+          &GlicSelectionObserver::InvokeGlicFromSelectionAffordance,
+          base::UTF16ToUTF8(selected_text), selected_text.length(),
+          /*is_widget=*/false, web_contents()->GetWeakPtr());
+      controller->UpdateNudgeLabel(
+          web_contents(), base::UTF16ToUTF8(label),
+          std::make_optional(base::UTF16ToUTF8(title)),
+          /*anchored_message_text=*/std::string(), std::nullopt,
+          base::BindRepeating(
+              [](base::RepeatingCallback<void(GlicNudgeActivity)>
+                     invoke_glic_cb,
+                 GlicNudgeActivity activity) { invoke_glic_cb.Run(activity); },
+              std::move(invoke_glic)));
     } else {
       // Show selection widget
       if (!is_mouse_down_) {
@@ -336,13 +399,23 @@ void GlicSelectionObserver::ShowSelectionAffordance(
                 views::Widget::ClosedReason::kLostFocus);
           }
 
+          base::UmaHistogramEnumeration(
+              base::StrCat({"Glic.Selection.Action", histogram_suffix}),
+              GlicSelectionAction::kWidgetShown);
           auto invoke_glic = base::BindRepeating(
-              &GlicSelectionObserver::InvokeGlicFromSelectionWidget,
-              base::UTF16ToUTF8(selected_text), web_contents()->GetWeakPtr());
+              &GlicSelectionObserver::InvokeGlicFromSelectionAffordance,
+              base::UTF16ToUTF8(selected_text), selected_text.length(),
+              /*is_widget=*/true, web_contents()->GetWeakPtr(),
+              GlicNudgeActivity::kNudgeClicked);
 
           selection_widget_ =
-              GlicSelectionWidgetDelegate::Show(web_contents(), *bounds,
-                                                std::move(invoke_glic))
+              GlicSelectionWidgetDelegate::Show(
+                  web_contents(), *bounds,
+                  base::BindRepeating(
+                      [](base::RepeatingCallback<void()> invoke_glic_cb) {
+                        invoke_glic_cb.Run();
+                      },
+                      std::move(invoke_glic)))
                   ->GetWeakPtr();
         } else if (bounds_retry_count_ < 5) {
           // Retry showing the widget, bounds might not be available yet due

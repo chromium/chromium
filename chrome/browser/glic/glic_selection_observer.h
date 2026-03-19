@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -28,6 +29,8 @@ class Widget;
 class BrowserWindowInterface;
 
 namespace glic {
+
+enum class GlicNudgeActivity;
 
 class GlicKeyedService;
 
@@ -62,9 +65,12 @@ class GlicSelectionObserver
  private:
   void ProcessPendingSelection();
 
-  static void InvokeGlicFromSelectionWidget(
+  static void InvokeGlicFromSelectionAffordance(
       std::string prompt_text,
-      base::WeakPtr<content::WebContents> web_contents);
+      size_t text_length,
+      bool is_widget,
+      base::WeakPtr<content::WebContents> web_contents,
+      GlicNudgeActivity activity);
 
   void ShowSelectionAffordance(const std::u16string& selected_text,
                                BrowserWindowInterface* bwi);

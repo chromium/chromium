@@ -56,12 +56,12 @@ class GlicNudgeController {
   // The nudge will be removed from `web_contents` if `nudge_label` is empty.
   // `activity` must be supplied iff. `nudge_label` is empty, to identify the
   // reason of nudge removal.
-  void UpdateNudgeLabel(content::WebContents* web_contents,
-                        const std::string& nudge_label,
-                        std::optional<std::string> prompt_suggestion,
-                        const std::string& anchored_message_text,
-                        std::optional<GlicNudgeActivity> activity,
-                        GlicNudgeActivityCallback callback);
+  virtual void UpdateNudgeLabel(content::WebContents* web_contents,
+                                const std::string& nudge_label,
+                                std::optional<std::string> prompt_suggestion,
+                                const std::string& anchored_message_text,
+                                std::optional<GlicNudgeActivity> activity,
+                                GlicNudgeActivityCallback callback);
 
   void OnNudgeActivity(GlicNudgeActivity activity);
 

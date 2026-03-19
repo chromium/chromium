@@ -2131,6 +2131,48 @@ chromium-metrics-reviews@google.com.
   <token key="Mode" variants="WebClientMode"/>
 </histogram>
 
+<histogram name="Glic.Selection.Action.{FreState}" enum="GlicSelectionAction"
+    expires_after="2026-12-31">
+  <owner>gklassen@chromium.org</owner>
+  <owner>vollick@chromium.org</owner>
+  <summary>
+    Records the actions taken on the Glic selection affordance (nudge or
+    widget). This includes when the affordance is shown and when it is clicked.
+  </summary>
+  <token key="FreState">
+    <variant name="PostFre" summary="User has accepted the FRE"/>
+    <variant name="PreFre" summary="User has not accepted the FRE"/>
+  </token>
+</histogram>
+
+<histogram name="Glic.Selection.NudgeClicked.SelectionLength.{FreState}"
+    units="characters" expires_after="2026-12-31">
+  <owner>gklassen@chromium.org</owner>
+  <owner>vollick@chromium.org</owner>
+  <summary>
+    Records the length of the selected text (in characters) when the Glic
+    selection nudge is clicked.
+  </summary>
+  <token key="FreState">
+    <variant name="PostFre" summary="User has accepted the FRE"/>
+    <variant name="PreFre" summary="User has not accepted the FRE"/>
+  </token>
+</histogram>
+
+<histogram name="Glic.Selection.WidgetClicked.SelectionLength.{FreState}"
+    units="characters" expires_after="2026-12-31">
+  <owner>gklassen@chromium.org</owner>
+  <owner>vollick@chromium.org</owner>
+  <summary>
+    Records the length of the selected text (in characters) when the Glic
+    selection widget is clicked.
+  </summary>
+  <token key="FreState">
+    <variant name="PostFre" summary="User has accepted the FRE"/>
+    <variant name="PreFre" summary="User has not accepted the FRE"/>
+  </token>
+</histogram>
+
 <histogram name="Glic.Session.AttachStateChanges" units="count"
     expires_after="2026-07-26">
   <owner>dullweber@chromium.org</owner>

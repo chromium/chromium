@@ -10,8 +10,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "chrome/test/base/testing_profile.h"
-#include "content/public/test/web_contents_tester.h"
+#include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace glic {
