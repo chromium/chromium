@@ -138,6 +138,7 @@
 
 #include "remoting/host/pam_authorization_factory_posix.h"
 #include "remoting/host/posix/signal_handler.h"
+#include "remoting/host/security_key/security_key_auth_handler_posix.h"
 #endif  // BUILDFLAG(IS_POSIX)
 
 #if BUILDFLAG(IS_APPLE)
@@ -1100,7 +1101,7 @@ void HostProcess::StartOnUiThread() {
       base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
           kAuthSocknameSwitchName);
   if (!security_key_socket_name.empty()) {
-    remoting::SecurityKeyAuthHandler::SetSecurityKeySocketName(
+    remoting::SecurityKeyAuthHandlerPosix::SetSecurityKeySocketName(
         security_key_socket_name);
   } else {
     security_key_extension_supported_ = false;
@@ -2251,6 +2252,8 @@ int HostProcessMain(bool multi_process) {
             .AsUTF8Unsafe()
             .c_str());
   }
+
+  SecurityKeyAuthHandler::set_use_mojo_handler(multi_process);
 
   base::ThreadPoolInstance::CreateAndStartWithDefaultParams("Me2Me");
 

@@ -6,7 +6,10 @@ import("//remoting/build/config/remoting_build.gni")
 
 source_set("security_key") {
   sources = [
+    "security_key_auth_handler.cc",
     "security_key_auth_handler.h",
+    "security_key_auth_handler_mojo.cc",
+    "security_key_auth_handler_mojo.h",
     "security_key_extension.cc",
     "security_key_extension.h",
     "security_key_extension_session.cc",
@@ -40,12 +43,14 @@ source_set("security_key") {
   public_deps = [ "//remoting/host:common_headers" ]
 
   if (is_posix) {
-    sources += [ "security_key_auth_handler_posix.cc" ]
+    sources += [
+      "security_key_auth_handler_posix.cc",
+      "security_key_auth_handler_posix.h",
+    ]
   }
 
   if (is_win) {
     sources += [
-      "security_key_auth_handler_win.cc",
       "security_key_ipc_client.cc",
       "security_key_ipc_client.h",
       "security_key_message_handler.cc",
@@ -103,6 +108,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "security_key_auth_handler_mojo_unittest.cc",
     "security_key_extension_session_unittest.cc",
     "security_key_message_reader_impl_unittest.cc",
     "security_key_message_writer_impl_unittest.cc",
@@ -129,7 +135,6 @@ source_set("unit_tests") {
 
   if (is_win) {
     sources += [
-      "security_key_auth_handler_win_unittest.cc",
       "security_key_ipc_client_unittest.cc",
       "security_key_message_handler_unittest.cc",
     ]

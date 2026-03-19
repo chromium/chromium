@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/host/security_key/security_key_auth_handler.h"
+#include "remoting/host/security_key/security_key_auth_handler_posix.h"
 
 #include <stddef.h>
 #include <sys/socket.h>
@@ -77,7 +77,8 @@ class SecurityKeyAuthHandlerPosixTest : public testing::Test {
             sizeof(kResponseData) - 4) {
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
     socket_path_ = temp_dir_.GetPath().Append(kSocketFilename);
-    remoting::SecurityKeyAuthHandler::SetSecurityKeySocketName(socket_path_);
+    remoting::SecurityKeyAuthHandlerPosix::SetSecurityKeySocketName(
+        socket_path_);
 
     EXPECT_TRUE(file_thread_.StartWithOptions(
         base::Thread::Options(base::MessagePumpType::IO, 0)));

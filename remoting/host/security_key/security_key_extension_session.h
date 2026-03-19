@@ -49,10 +49,8 @@ class SecurityKeyExtensionSession : public HostExtensionSession {
                           protocol::ClientStub* client_stub,
                           const protocol::ExtensionMessage& message) override;
 
-#if BUILDFLAG(IS_WIN)
   void BindSecurityKeyForwarder(
       mojo::PendingReceiver<mojom::SecurityKeyForwarder> receiver);
-#endif  // BUILDFLAG(IS_WIN)
 
   // Allows overriding SecurityKeyAuthHandler for unit testing.
   void SetSecurityKeyAuthHandlerForTesting(

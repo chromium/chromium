@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,12 +11,10 @@
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
-#include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "remoting/host/mojom/remote_security_key.mojom.h"
 
 namespace base {
-class FilePath;
 class SingleThreadTaskRunner;
 }  // namespace base
 
@@ -34,6 +32,8 @@ class SecurityKeyAuthHandler {
   using SendMessageCallback =
       base::RepeatingCallback<void(int connection_id, const std::string& data)>;
 
+  static void set_use_mojo_handler(bool use_mojo_handler);
+
   // Creates a platform-specific SecurityKeyAuthHandler.
   // All invocations of |send_message_callback| are guaranteed to occur before
   // the underlying SecurityKeyAuthHandler object is destroyed.  It is not safe
@@ -44,17 +44,9 @@ class SecurityKeyAuthHandler {
       const SendMessageCallback& send_message_callback,
       scoped_refptr<base::SingleThreadTaskRunner> file_task_runner);
 
-#if BUILDFLAG(IS_POSIX)
-  // Specify the name of the socket to listen to security key requests on.
-  static void SetSecurityKeySocketName(
-      const base::FilePath& security_key_socket_name);
-#endif  // BUILDFLAG(IS_POSIX)
-
-#if BUILDFLAG(IS_WIN)
   // Binds a SecurityKeyForwarder receiver for receiving SK forwarding requests.
   virtual void BindSecurityKeyForwarder(
-      mojo::PendingReceiver<mojom::SecurityKeyForwarder> receiver) = 0;
-#endif  // BUILDFLAG(IS_WIN)
+      mojo::PendingReceiver<mojom::SecurityKeyForwarder> receiver);
 
   // Sets the callback used to send messages to the client.
   virtual void SetSendMessageCallback(const SendMessageCallback& callback) = 0;
