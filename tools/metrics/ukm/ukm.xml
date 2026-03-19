@@ -270,26 +270,61 @@ be describing additional metrics about the same event.
     <summary>
       Records whether the canvas listens to keyboard events or not.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="HasMouseListener" enum="Boolean">
     <summary>
       Records whether the canvas listens to mouse events or not.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="HasText" enum="Boolean">
     <summary>
       Records whether the canvas drew any text or not.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="IsOffscreen" enum="Boolean">
     <summary>
       Records whether the canvas is off-screen or not.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="RenderingContext" enum="CanvasRenderingAPI">
     <summary>
       Type of the rendering contexts created for the canvas.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
 </event>
 
