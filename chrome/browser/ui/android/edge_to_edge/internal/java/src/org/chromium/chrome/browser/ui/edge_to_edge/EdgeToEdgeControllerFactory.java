@@ -98,7 +98,6 @@ public class EdgeToEdgeControllerFactory {
             BottomControlsStacker bottomControlsStacker,
             FullscreenManager fullscreenManager,
             boolean defaultVisibility) {
-        assert EdgeToEdgeUtils.isBottomChinFeatureEnabled();
         return new EdgeToEdgeBottomChinCoordinator(
                 androidView,
                 keyboardVisibilityDelegate,

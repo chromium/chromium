@@ -99,16 +99,6 @@ public class EdgeToEdgeUtils {
         int NUM_ENTRIES = 5;
     }
 
-    /**
-     * Whether the edge-to-edge bottom chin is enabled.
-     *
-     * <p>When enabled, Chrome will replace the OS navigation bar with a thin "Chin" layer in the
-     * browser controls and can be scrolled off the screen on web pages.
-     */
-    public static boolean isBottomChinFeatureEnabled() {
-        return ChromeFeatureList.sEdgeToEdgeBottomChin.isEnabled();
-    }
-
     /** Whether it is allowed to use other insets as a backup for missing navigation bar insets. */
     public static boolean isUseBackupNavbarInsetsEnabled() {
         return ChromeFeatureList.sEdgeToEdgeUseBackupNavbarInsets.isEnabled();
@@ -140,7 +130,6 @@ public class EdgeToEdgeUtils {
             return false;
         }
 
-        if (!isBottomChinFeatureEnabled()) return false;
         return !DeviceInfo.isAutomotive() && !hasTappableNavigationBar(activity.getWindow());
     }
 
@@ -213,14 +202,6 @@ public class EdgeToEdgeUtils {
             Log.i(TAG, "sIsTargetSdkEnforceEdgeToEdge " + sIsTargetSdkEnforceEdgeToEdge);
         }
         return sIsTargetSdkEnforceEdgeToEdge;
-    }
-
-    /**
-     * Whether reporting the page's safe area constraint to the bottom chin. Required when {@link
-     * isEdgeToEdgeBottomChinEnabled}.
-     */
-    public static boolean isSafeAreaConstraintEnabled() {
-        return isBottomChinFeatureEnabled();
     }
 
     /**
@@ -310,7 +291,7 @@ public class EdgeToEdgeUtils {
     static boolean shouldDrawToEdge(
             boolean isPageOptedIntoEdgeToEdge, @LayoutType int layoutType, int bottomInset) {
         return isPageOptedIntoEdgeToEdge
-                || (isBottomChinFeatureEnabled() && isBottomChinAllowed(layoutType, bottomInset))
+                || isBottomChinAllowed(layoutType, bottomInset)
                 || (layoutType == LayoutType.TAB_SWITCHER);
     }
 
