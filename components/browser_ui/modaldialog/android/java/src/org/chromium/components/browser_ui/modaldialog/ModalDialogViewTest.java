@@ -606,6 +606,7 @@ public class ModalDialogViewTest {
     @Test
     @MediumTest
     @Feature({"ModalDialog"})
+    @DisabledTest(message = "https://crbug.com/494305292")
     public void testCheckbox_InteractionUpdatesModel() {
         final String checkboxText = "Opt-in for awesome features";
 
