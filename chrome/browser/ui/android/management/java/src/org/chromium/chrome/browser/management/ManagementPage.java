@@ -5,19 +5,23 @@
 package org.chromium.chrome.browser.management;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.native_page.BasicNativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 
 /** Native page that displays whether the current profile is managed or not. */
 @NullMarked
 public class ManagementPage extends BasicNativePage {
     private final ManagementCoordinator mManagementCoordinator;
     private final String mTitle;
+    private @Nullable EdgeToEdgePadAdjuster mPadAdjuster;
 
     /**
      * Create a new instance of the management page.
+     *
      * @param host A NativePageHost to load urls.
      * @param profile The current Profile.
      */
@@ -28,6 +32,7 @@ public class ManagementPage extends BasicNativePage {
         mManagementCoordinator = new ManagementCoordinator(host, profile);
 
         initWithView(mManagementCoordinator.getView());
+        mPadAdjuster = host.createEdgeToEdgePadAdjuster(getView());
     }
 
     @Override
@@ -38,5 +43,19 @@ public class ManagementPage extends BasicNativePage {
     @Override
     public String getHost() {
         return UrlConstants.MANAGEMENT_HOST;
+    }
+
+    @Override
+    public boolean supportsEdgeToEdge() {
+        return true;
+    }
+
+    @Override
+    public void destroy() {
+        super.destroy();
+        if (mPadAdjuster != null) {
+            mPadAdjuster.destroy();
+            mPadAdjuster = null;
+        }
     }
 }

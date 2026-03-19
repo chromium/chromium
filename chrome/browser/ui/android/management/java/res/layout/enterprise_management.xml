@@ -10,7 +10,9 @@ found in the LICENSE file.
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@macro/default_bg_color">
+    android:background="@macro/default_bg_color"
+    android:clipToPadding="false"
+    android:scrollbarStyle="outsideOverlay">
 
     <LinearLayout
         android:id="@+id/management_container"

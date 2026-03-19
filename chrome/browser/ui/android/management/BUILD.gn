@@ -20,6 +20,7 @@ android_library("java") {
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
+    "//chrome/browser/ui/android/edge_to_edge:java",
     "//chrome/browser/ui/android/native_page:java",
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/widget/android:java",
@@ -31,6 +32,7 @@ android_library("java") {
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_core_core_java",
     "//ui/android:ui_no_recycler_view_java",
+    "//ui/edge_to_edge:java",
   ]
   resources_package = "org.chromium.chrome.browser.management"
 }
@@ -55,17 +57,21 @@ android_resources("java_resources") {
 robolectric_library("junit") {
   resources_package = "org.chromium.chrome.browser.management"
   sources = [
+    "java/src/org/chromium/chrome/browser/management/ManagementPageUnitTest.java",
     "java/src/org/chromium/chrome/browser/management/ManagementViewTest.java",
   ]
 
   deps = [
     ":java",
     ":java_resources",
+    "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//chrome/browser/enterprise/util:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
+    "//chrome/browser/ui/android/edge_to_edge:factory_java",
+    "//chrome/browser/ui/android/edge_to_edge:java",
     "//chrome/browser/ui/android/native_page:java",
     "//components/prefs/android:java",
     "//components/user_prefs/android:java",
@@ -77,5 +83,6 @@ robolectric_library("junit") {
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java_test_support",
+    "//ui/edge_to_edge:java",
   ]
 }
