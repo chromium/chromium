@@ -23,7 +23,11 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_ui_provider.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/signin/coordinator/age_mismatch_signout_coordinator.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
@@ -52,6 +56,9 @@
 
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityManagerObserver;
+
+  // Coordinator for the Age Mismatch prompt.
+  AgeMismatchSignoutCoordinator* _ageMismatchSignoutCoordinator;
 }
 
 - (instancetype)initWithSceneUIProvider:(id<SceneUIProvider>)sceneUIProvider {
@@ -75,9 +82,11 @@
   signin::IdentityManager* identityManager =
       IdentityManagerFactory::GetForProfile(
           self.sceneState.profileState.profile);
-  _identityManagerObserver =
-      std::make_unique<signin::IdentityManagerObserverBridge>(identityManager,
-                                                              self);
+  if (identityManager) {
+    _identityManagerObserver =
+        std::make_unique<signin::IdentityManagerObserverBridge>(identityManager,
+                                                                self);
+  }
 }
 
 #pragma mark - SceneStateObserver
@@ -93,6 +102,8 @@
   [self.sceneState removeObserver:self];
   _systemIdentityManagerObserver.reset();
   _identityManagerObserver.reset();
+  [_ageMismatchSignoutCoordinator stop];
+  _ageMismatchSignoutCoordinator = nil;
 }
 
 - (void)sceneStateDidHideModalOverlay:(SceneState*)sceneState {
@@ -104,6 +115,16 @@
 - (void)profileState:(ProfileState*)profileState
     didTransitionToInitStage:(ProfileInitStage)nextInitStage
                fromInitStage:(ProfileInitStage)fromInitStage {
+  // The services (including e.g. IdentityManager) are available at this stage.
+  if (nextInitStage >= ProfileInitStage::kProfileLoaded &&
+      !_identityManagerObserver) {
+    signin::IdentityManager* identityManager =
+        IdentityManagerFactory::GetForProfile(
+            self.sceneState.profileState.profile);
+    _identityManagerObserver =
+        std::make_unique<signin::IdentityManagerObserverBridge>(identityManager,
+                                                                self);
+  }
   [self fetchCapabilitiesForUnhandledIdentities];
 }
 
@@ -135,6 +156,15 @@
     authenticationService->SignOut(
         signin_metrics::ProfileSignout::kSignoutFromCanSignInToChromeCapability,
         nil);
+
+    // Show the age mismatch signout screen.
+    if (!_ageMismatchSignoutCoordinator) {
+      _ageMismatchSignoutCoordinator = [[AgeMismatchSignoutCoordinator alloc]
+          initWithBaseViewController:[_sceneUIProvider activeViewController]
+                             browser:self.sceneState.browserProviderInterface
+                                         .mainBrowserProvider.browser];
+      [_ageMismatchSignoutCoordinator start];
+    }
   }
 }
 

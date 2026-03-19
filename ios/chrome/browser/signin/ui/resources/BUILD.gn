@@ -1,0 +1,15 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ios/rules.gni")
+
+bundle_data_xcassets("resources") {
+  catalog = "Assets.xcassets"
+  sources = [
+    "Assets.xcassets/Contents.json",
+    "Assets.xcassets/age_mismatch_prompt_image.imageset/Contents.json",
+    "Assets.xcassets/age_mismatch_prompt_image.imageset/age_mismatch_prompt_image.pdf",
+    "Assets.xcassets/age_mismatch_prompt_image.imageset/age_mismatch_prompt_image_dark.pdf",
+  ]
+}

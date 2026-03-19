@@ -24,7 +24,9 @@
 #import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/ui_blocker_target.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_ui_provider.h"
+#import "ios/chrome/browser/shared/coordinator/scene/test/stub_browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/authentication_service_observer_bridge.h"
@@ -64,7 +66,17 @@ class SigninAccountCapabilitiesSceneAgentTest : public PlatformTest {
     profile_ = std::move(builder).Build();
 
     app_state_ = OCMClassMock([AppState class]);
-    scene_state_ = [[SceneState alloc] initWithAppState:app_state_];
+    SceneState* scene_state = [[SceneState alloc] initWithAppState:app_state_];
+    scene_state_ = OCMPartialMock(scene_state);
+
+    browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);
+    stub_browser_interface_provider_ =
+        [[StubBrowserProviderInterface alloc] init];
+    stub_browser_interface_provider_.mainBrowserProvider.browser =
+        browser_.get();
+    OCMStub([scene_state_ browserProviderInterface])
+        .andReturn(stub_browser_interface_provider_);
+
     scene_ui_provider_ = OCMProtocolMock(@protocol(SceneUIProvider));
 
     profile_state_ = [[ProfileState alloc] initWithAppState:app_state_];
@@ -120,6 +132,8 @@ class SigninAccountCapabilitiesSceneAgentTest : public PlatformTest {
   ProfileState* profile_state_;
   AppState* app_state_;
   SceneState* scene_state_;
+  std::unique_ptr<TestBrowser> browser_;
+  StubBrowserProviderInterface* stub_browser_interface_provider_;
   SigninAccountCapabilitiesSceneAgent* agent_;
   raw_ptr<FakeSystemIdentityManager> fake_system_identity_manager_;
 };

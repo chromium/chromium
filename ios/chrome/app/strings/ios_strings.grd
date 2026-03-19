@@ -323,6 +323,27 @@
       <message name="IDS_IOS_ADVANCED_SIGNIN_SETTINGS_CANCEL_SYNC_ALERT_MESSAGE" desc="Alert title to ask if the user really wants to cancel sign-in and sync.">
         Cancel sync? You can turn on sync anytime in settings.
       </message>
+      <message name="IDS_IOS_AGE_MISMATCH_DISCLAIMER" translateable="false" desc="Disclaimer text with Learn more link for the Age Mismatch Prompt.">
+        To continue with Chrome, sign in with a Google Account that’s also set up for a child or sign out. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn more<ph name="END_LINK">END_LINK</ph>
+      </message>
+      <message name="IDS_IOS_AGE_MISMATCH_HEADER_IPAD" translateable="false" desc="Title of the Age Mismatch Prompt on iPad.">
+        This iPad is set up for a child
+      </message>
+      <message name="IDS_IOS_AGE_MISMATCH_HEADER_IPHONE" translateable="false" desc="Title of the Age Mismatch Prompt on iPhone.">
+        This iPhone is set up for a child
+      </message>
+      <message name="IDS_IOS_AGE_MISMATCH_PRIMARY_BUTTON" translateable="false" desc="Primary button text of the Age Mismatch Prompt.">
+        Sign in to Chrome as a child
+      </message>
+      <message name="IDS_IOS_AGE_MISMATCH_SECONDARY_BUTTON" translateable="false" desc="Secondary button text of the Age Mismatch Prompt.">
+        Use without an account
+      </message>
+      <message name="IDS_IOS_AGE_MISMATCH_SUBTITLE_IPAD" translateable="false" desc="Subtitle of the Age Mismatch Prompt on iPad.">
+        Your iPad uses the birthday in your Apple Account. If you're not a child, you may want to check the Apple Account on this device.
+      </message>
+      <message name="IDS_IOS_AGE_MISMATCH_SUBTITLE_IPHONE" translateable="false" desc="Subtitle of the Age Mismatch Prompt on iPhone.">
+        Your iPhone uses the birthday in your Apple Account. If you're not a child, you may want to check the Apple Account on this device.
+      </message>
       <message name="IDS_IOS_AI_HUB_ALWAYS_SHOW_POPUPS_ACCESSIBILITY_LABEL" desc="The accessibility label for the button to always show pop-ups on this site in the AI hub.">
         Always show pop-ups on this site
       </message>
