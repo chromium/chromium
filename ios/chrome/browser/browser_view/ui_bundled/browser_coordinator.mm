@@ -3730,7 +3730,13 @@ const char kChromeAppStoreUrl[] =
 }
 
 - (void)showHomeBackgroundCustomizationPromo {
-  CHECK(_NTPCoordinator.isNTPActiveForCurrentWebState);
+  // The promos manager tries to check if the current page is an NTP before
+  // showing the promo, but asynchronous navigation can cause that to be
+  // incorrect.
+  if (!_NTPCoordinator.isNTPActiveForCurrentWebState) {
+    [_promosManagerCoordinator promoWasDismissed];
+    return;
+  }
   [_NTPCoordinator showHomeBackgroundCustomizationPromoWithUIHandler:
                        _promosManagerCoordinator];
 }

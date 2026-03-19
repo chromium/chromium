@@ -30,7 +30,9 @@ struct PromoConfig {
   // The feature engagement tracker feature for this promo.
   raw_ref<const base::Feature> feature_engagement_feature;
 
-  // If present, the promo will only be displayed at this time.
+  // If present, the promo will only be displayed at this time. This is
+  // "best-effort." It is possible that, due to asynchronous behavior or
+  // race-conditions, the promo may be triggered at other times.
   std::optional<PromoDisplayTime> display_time;
 };
 

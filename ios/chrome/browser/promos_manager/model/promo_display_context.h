@@ -9,7 +9,10 @@ enum class PromoDisplayTime {
   kFreshNtp,
 };
 
-// Structure holding the context for displaying a promo.
+// Structure holding the context for displaying a promo. This is "best-effort."
+// It is possible that race conditions or asynchronous behavior may change
+// the UI in between getting the display context and the promo actually being
+// displayed.
 struct PromoDisplayContext {
   // Whether current display will be on an NTP that hasn't scrolled.
   bool is_on_fresh_ntp = false;
