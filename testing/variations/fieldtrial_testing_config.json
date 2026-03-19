@@ -12263,7 +12263,37 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_SafariImport",
+                    "params": {
+                        "kIOSExpandedSetupListVariationParam": "kIOSExpandedSetupListVariationParamSafariImport"
+                    },
+                    "enable_features": [
+                        "IOSExpandedSetupList"
+                    ]
+                },
+                {
+                    "name": "Enabled_BackgroundCustomization",
+                    "params": {
+                        "kIOSExpandedSetupListVariationParam": "kIOSExpandedSetupListVariationParamBackgroundCustomization"
+                    },
+                    "enable_features": [
+                        "IOSExpandedSetupList"
+                    ]
+                },
+                {
+                    "name": "Enabled_AllExceptCPE",
+                    "params": {
+                        "kIOSExpandedSetupListVariationParam": "kIOSExpandedSetupListVariationParamAllExceptCPE"
+                    },
+                    "enable_features": [
+                        "IOSExpandedSetupList"
+                    ]
+                },
+                {
+                    "name": "Enabled_All",
+                    "params": {
+                        "kIOSExpandedSetupListVariationParam": "kIOSExpandedSetupListVariationParamAll"
+                    },
                     "enable_features": [
                         "IOSExpandedSetupList"
                     ]
