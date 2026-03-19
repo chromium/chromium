@@ -45,34 +45,38 @@ class StringBuffer {
  public:
   StringBuffer() = default;
 
-  explicit StringBuffer(unsigned length) {
-    base::span<CharType> characters;
-    data_ = StringImpl::CreateUninitialized(length, characters);
-  }
+  explicit StringBuffer(StringImpl::size_type length)
+      : data_(Allocate(length)) {}
 
   StringBuffer(const StringBuffer&) = delete;
   StringBuffer& operator=(const StringBuffer&) = delete;
 
   ~StringBuffer() = default;
 
-  void Shrink(unsigned new_length);
+  void Shrink(StringImpl::size_type new_length);
 
   base::span<CharType> Span() {
     return data_ ? data_->Span<CharType>() : base::span<CharType>();
   }
 
-  unsigned length() const { return data_ ? data_->length() : 0; }
+  StringImpl::size_type length() const { return data_ ? data_->length() : 0; }
 
-  CharType& operator[](unsigned i) { return data_->Span<CharType>()[i]; }
+  CharType& operator[](StringImpl::size_type i) {
+    return data_->Span<CharType>()[i];
+  }
 
   scoped_refptr<StringImpl> Release() { return std::move(data_); }
 
  private:
+  static scoped_refptr<StringImpl> Allocate(StringImpl::size_type length) {
+    base::span<CharType> characters;
+    return StringImpl::CreateUninitialized(length, characters);
+  }
   scoped_refptr<StringImpl> data_;
 };
 
 template <typename CharType>
-void StringBuffer<CharType>::Shrink(unsigned new_length) {
+void StringBuffer<CharType>::Shrink(StringImpl::size_type new_length) {
   DCHECK(data_);
   if (data_->length() == new_length)
     return;
