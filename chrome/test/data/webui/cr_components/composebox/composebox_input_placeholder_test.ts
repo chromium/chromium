@@ -15,6 +15,7 @@ import {WindowProxy} from 'chrome://resources/cr_components/composebox/window_pr
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {TabInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {PageRemote as SearchboxPageRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -25,6 +26,8 @@ suite('ComposeboxInputPlaceholder', () => {
   let composebox: ComposeboxElement;
   let searchboxHandler: TestMock<SearchboxPageHandlerRemote>;
   let windowProxy: TestMock<WindowProxy>;
+  let searchboxCallbackRouter: SearchboxPageCallbackRouter;
+  let searchboxPageRemote: SearchboxPageRemote;
 
   async function setupComposeboxWithInputState(inputState: InputState) {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -49,11 +52,13 @@ suite('ComposeboxInputPlaceholder', () => {
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
+    searchboxCallbackRouter = new SearchboxPageCallbackRouter();
+    searchboxPageRemote = searchboxCallbackRouter.$.bindNewPipeAndPassRemote();
     installMock(
         PageHandlerRemote,
         mock => ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
             mock, new PageCallbackRouter(), new SearchboxPageHandlerRemote(),
-            new SearchboxPageCallbackRouter())));
+            searchboxCallbackRouter)));
 
     searchboxHandler = installMock(
         SearchboxPageHandlerRemote,
@@ -163,6 +168,13 @@ suite('ComposeboxInputPlaceholder', () => {
         detail: {toolMode: tool},
       }));
       await microtasksFinished();
+      searchboxPageRemote.onInputStateChanged({
+        ...mockInputState,
+        activeTool: tool,
+      });
+      await searchboxPageRemote.$.flushForTesting();
+      await microtasksFinished();
+
       assertEquals(hint, composebox.$.input.placeholder);
 
       // Disable tool mode.
@@ -172,6 +184,13 @@ suite('ComposeboxInputPlaceholder', () => {
         detail: {toolMode: tool},
       }));
       await microtasksFinished();
+      searchboxPageRemote.onInputStateChanged({
+        ...mockInputState,
+        activeTool: ComposeboxToolMode.kUnspecified,
+      });
+      await searchboxPageRemote.$.flushForTesting();
+      microtasksFinished();
+
       assertEquals(defaultApiHint, composebox.$.input.placeholder);
     });
   });

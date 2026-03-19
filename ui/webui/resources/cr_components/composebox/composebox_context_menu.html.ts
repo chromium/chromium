@@ -33,7 +33,7 @@ export function getHtml(this: ComposeboxElement) {
         .searchboxLayoutMode="${this.searchboxLayoutMode}"
         .tabSuggestions="${this.tabSuggestions_}"
         .inCreateImageMode="${
-            this.activeToolMode === ComposeboxToolMode.kImageGen}"
+            this.inputState?.activeTool === ComposeboxToolMode.kImageGen}"
         .hasImageFiles="${this.hasImageFiles_()}"
         .disabledTabIds="${this.addedTabsIds}"
         .fileNum="${this.files.size}"

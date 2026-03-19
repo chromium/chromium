@@ -39,6 +39,13 @@ suite('ContextualTasksComposeboxTest', () => {
   let searchboxCallbackRouterRemote: SearchboxPageRemote;
   let mockTimer: MockTimer;
 
+  async function setActiveTool(tool: ToolMode) {
+    searchboxCallbackRouterRemote.onInputStateChanged({
+      ...mockInputState,
+      activeTool: tool,
+    });
+    await microtasksFinished();
+  }
   class MockResizeObserver {
     static instances: MockResizeObserver[] = [];
 
@@ -572,25 +579,12 @@ suite('ContextualTasksComposeboxTest', () => {
     };
 
     // Initial state: No tool active.
-    let newInputState = {
-      ...mockInputState,
-      activeTool: ToolMode.kUnspecified,
-    };
-    searchboxCallbackRouterRemote.onInputStateChanged(newInputState);
-    await microtasksFinished();
-    await innerComposebox.updateComplete;
+    await setActiveTool(ToolMode.kUnspecified);
 
     assertFalse(isVisible(getChip()));
 
     // Activate Deep Search.
-    innerComposebox.onToolClickForTesting(ToolMode.kDeepSearch);
-    newInputState = {
-      ...mockInputState,
-      activeTool: ToolMode.kDeepSearch,
-    };
-    searchboxCallbackRouterRemote.onInputStateChanged(newInputState);
-    await microtasksFinished();
-    await innerComposebox.updateComplete;
+    await setActiveTool(ToolMode.kDeepSearch);
 
     assertTrue(isVisible(getChip()), 'Deep search does not exist');
     assertTrue(
@@ -598,14 +592,7 @@ suite('ContextualTasksComposeboxTest', () => {
         'Deep search is not the text');
 
     // Activate Image Gen (nanoBananaChip).
-    innerComposebox.onToolClickForTesting(ToolMode.kImageGen);
-    newInputState = {
-      ...mockInputState,
-      activeTool: ToolMode.kImageGen,
-    };
-    searchboxCallbackRouterRemote.onInputStateChanged(newInputState);
-    await microtasksFinished();
-    await innerComposebox.updateComplete;
+    await setActiveTool(ToolMode.kImageGen);
 
     assertTrue(isVisible(getChip()), 'Create images does not exist');
     assertTrue(
@@ -613,28 +600,14 @@ suite('ContextualTasksComposeboxTest', () => {
         'Create images is not the text');
 
     // Activate Canvas.
-    innerComposebox.onToolClickForTesting(ToolMode.kCanvas);
-    newInputState = {
-      ...mockInputState,
-      activeTool: ToolMode.kCanvas,
-    };
-    searchboxCallbackRouterRemote.onInputStateChanged(newInputState);
-    await microtasksFinished();
-    await innerComposebox.updateComplete;
+    await setActiveTool(ToolMode.kCanvas);
 
     assertTrue(isVisible(getChip()), 'Canvas does not exist');
     assertTrue(
         getChip()!.textContent.includes('Canvas'), 'Canvas is not the text');
 
     // Back to Unspecified.
-    innerComposebox.onToolClickForTesting(ToolMode.kUnspecified);
-    newInputState = {
-      ...mockInputState,
-      activeTool: ToolMode.kUnspecified,
-    };
-    searchboxCallbackRouterRemote.onInputStateChanged(newInputState);
-    await microtasksFinished();
-    await innerComposebox.updateComplete;
+    await setActiveTool(ToolMode.kUnspecified);
 
     assertFalse(isVisible(getChip()), 'Tool chip still visible');
   });
@@ -1003,12 +976,7 @@ suite('ContextualTasksComposeboxTest', () => {
             'Child showLensButton should be true initially');
 
         // Enable Deep Search
-        innerComposebox.dispatchEvent(
-            new CustomEvent('active-tool-mode-changed', {
-              bubbles: true,
-              composed: true,
-              detail: {value: 1},
-            }));
+        await setActiveTool(ToolMode.kDeepSearch);
 
         await microtasksFinished();
         await contextualComposebox.updateComplete;
@@ -1020,12 +988,7 @@ suite('ContextualTasksComposeboxTest', () => {
             'Lens button should be hidden when Deep Search is active');
 
         // Disable Deep Search
-        innerComposebox.dispatchEvent(
-            new CustomEvent('active-tool-mode-changed', {
-              bubbles: true,
-              composed: true,
-              detail: {value: 0},
-            }));
+        await setActiveTool(ToolMode.kUnspecified);
 
         await microtasksFinished();
         await contextualComposebox.updateComplete;

@@ -67,6 +67,14 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
   let windowProxy: TestMock<WindowProxy>;
   let mockTimer: MockTimer;
 
+  async function setActiveTool(tool: ComposeboxToolMode) {
+    searchboxCallbackRouterRemote.onInputStateChanged({
+      ...mockInputState,
+      activeTool: tool,
+    });
+    await microtasksFinished();
+  }
+
   setup(async () => {
     const win = window as any;
 
@@ -741,11 +749,8 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
      text: 'Canvas',
    }].forEach((toolModeInfo: ToolModeInfo) => {
     test(toolModeInfo.text + ': thread change resets input', async () => {
-      composebox.onToolClickForTesting(toolModeInfo.toolMode);
-      searchboxCallbackRouterRemote.onInputStateChanged({
-        ...mockInputState,
-        activeTool: ComposeboxToolMode.kDeepSearch,
-      });
+      await setActiveTool(toolModeInfo.toolMode);
+
 
       await composebox.updateComplete;
       await microtasksFinished();

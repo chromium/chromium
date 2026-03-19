@@ -93,6 +93,9 @@ const DeepQuery kCreateImagesItem = {
 const DeepQuery kCanvasItem = {
     "ntp-app", "cr-searchbox", "#context", "#menu",
     GetModeSelector(omnibox::ToolMode::TOOL_MODE_CANVAS)};
+const DeepQuery kToolChipButton = {"ntp-app", "cr-composebox", "#context",
+                                   "cr-composebox-tool-chip",
+                                   "#toolEnabledButton"};
 
 // Contains variables on which these tests may be parameterized. This approach
 // makes it easy to build sets of relevant tests, vs. the brute-force
@@ -667,10 +670,12 @@ INSTANTIATE_TEST_SUITE_P(
     ValuesIn(std::vector<NtpRealboxToolInteractiveTestParams>{
         {
             .tool_context_menu_item = kCanvasItem,
+            .tool_chip = kToolChipButton,
             .tool_label = std::string(kToolCanvas),
         },
         {
             .tool_context_menu_item = kCreateImagesItem,
+            .tool_chip = kToolChipButton,
             .tool_label = std::string(kToolCreateImages),
         },
     }));
@@ -678,14 +683,16 @@ INSTANTIATE_TEST_SUITE_P(
 IN_PROC_BROWSER_TEST_P(NtpRealboxToolInteractiveTest,
                        ContextualEntrypointOpenComposeboxWithChip) {
   DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kContextMenuOpenEvent);
-
-  const DeepQuery kToolChip = {"ntp-app", "cr-composebox", "#context",
-                               "cr-composebox-tool-chip", "#toolEnabledButton"};
-
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kToolChipReadyEvent);
   WebContentsInteractionTestUtil::StateChange context_menu_open;
   context_menu_open.event = kContextMenuOpenEvent;
   context_menu_open.where = kContextMenuDialog;
   context_menu_open.test_function = "(el) => el && el.open";
+  WebContentsInteractionTestUtil::StateChange tool_chip_ready;
+  tool_chip_ready.event = kToolChipReadyEvent;
+  tool_chip_ready.where = GetParam().tool_chip;
+  tool_chip_ready.test_function =
+      "(el) => el && el.textContent.includes('" + GetParam().tool_label + "')";
 
   RunTestSequence(
       // 1. Open NTP Tab.
@@ -701,10 +708,6 @@ IN_PROC_BROWSER_TEST_P(NtpRealboxToolInteractiveTest,
       WaitForElementToRender(kNtpElementId, GetParam().tool_context_menu_item),
       // 6. Click on tool button in context menu.
       ClickElement(kNtpElementId, GetParam().tool_context_menu_item),
-      // 7. Wait for composebox to open with toolchip.
-      WaitForElementToRender(kNtpElementId, kToolChip),
-      // 8. Assert the toolchip text corresponds to selected tool.
-      CheckJsResultAt(
-          kNtpElementId, kToolChip,
-          "(el) => el.textContent.includes('" + GetParam().tool_label + "')"));
+      // 7. Wait for the tool chip to render with the correct text.
+      WaitForStateChange(kNtpElementId, tool_chip_ready));
 }

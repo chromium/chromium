@@ -528,12 +528,14 @@ suite('NewTabPageComposeboxUploadFileTest', () => {
         assertFalse(testProxy.element['uploadButtonDisabled_']);
 
         // Enter create image mode.
-        testProxy.element['activeToolMode'] = ComposeboxToolMode.kImageGen;
+        testProxy.searchboxCallbackRouterRemote.onInputStateChanged(
+            {...testInputState, activeTool: ComposeboxToolMode.kImageGen});
         await testProxy.element.updateComplete;
         assertFalse(testProxy.element['uploadButtonDisabled_']);
 
         // Exit create image mode. `uploadButtonDisabled` should be false.
-        testProxy.element['activeToolMode'] = ComposeboxToolMode.kUnspecified;
+        testProxy.searchboxCallbackRouterRemote.onInputStateChanged(
+            {...testInputState, activeTool: ComposeboxToolMode.kUnspecified});
         await testProxy.element.updateComplete;
         assertFalse(testProxy.element['uploadButtonDisabled_']);
       });
@@ -1467,8 +1469,11 @@ suite('NewTabPageComposeboxUploadContextTest', () => {
     };
     testProxy.element.addSearchContext(deepSearchContext);
     await microtasksFinished();
-    assertEquals(
-        ComposeboxToolMode.kDeepSearch, testProxy.element.activeToolMode);
+
+    let activeTool =
+        await testProxy.searchboxHandler.whenCalled('setActiveToolMode');
+    assertEquals(ComposeboxToolMode.kDeepSearch, activeTool);
+    testProxy.searchboxHandler.resetResolver('setActiveToolMode');
 
     const imageContext = {
       input: '',
@@ -1478,8 +1483,11 @@ suite('NewTabPageComposeboxUploadContextTest', () => {
     };
     testProxy.element.addSearchContext(imageContext);
     await microtasksFinished();
-    assertEquals(
-        ComposeboxToolMode.kImageGen, testProxy.element.activeToolMode);
+
+    activeTool =
+        await testProxy.searchboxHandler.whenCalled('setActiveToolMode');
+    assertEquals(ComposeboxToolMode.kImageGen, activeTool);
+    testProxy.searchboxHandler.resetResolver('setActiveToolMode');
 
     const canvasContext = {
       input: '',
@@ -1489,7 +1497,11 @@ suite('NewTabPageComposeboxUploadContextTest', () => {
     };
     testProxy.element.addSearchContext(canvasContext);
     await microtasksFinished();
-    assertEquals(ComposeboxToolMode.kCanvas, testProxy.element.activeToolMode);
+
+    activeTool =
+        await testProxy.searchboxHandler.whenCalled('setActiveToolMode');
+    assertEquals(ComposeboxToolMode.kCanvas, activeTool);
+    testProxy.searchboxHandler.resetResolver('setActiveToolMode');
   });
 
   test(

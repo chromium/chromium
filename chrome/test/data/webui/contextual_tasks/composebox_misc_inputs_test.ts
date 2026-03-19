@@ -157,6 +157,14 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
   let mockTimer: MockTimer;
   let metrics: MetricsTracker;
 
+  async function setActiveTool(tool: ComposeboxToolMode) {
+    searchboxCallbackRouterRemote.onInputStateChanged({
+      ...mockInputState,
+      activeTool: tool,
+    });
+    await microtasksFinished();
+  }
+
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
@@ -711,10 +719,9 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
             bubbles: true,
             composed: true,
           }));
-          await microtasksFinished();
-          await composebox.updateComplete;
+          await setActiveTool(toolModeInfo.toolMode);
           assertEquals(
-              toolModeInfo.toolMode, composebox.activeToolMode,
+              toolModeInfo.toolMode, composebox.inputState.activeTool,
               'Active tool should be' + toolModeInfo.text +
                   ' after clicking tool');
           await contextEntrypoint.dispatchEvent(new CustomEvent('tool-click', {
@@ -723,22 +730,18 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
             composed: true,
           }));
 
-          await microtasksFinished();
-          await composebox.updateComplete;
+          await setActiveTool(ComposeboxToolMode.kUnspecified);
 
           assertEquals(
-              ComposeboxToolMode.kUnspecified, composebox.activeToolMode,
+              ComposeboxToolMode.kUnspecified,
+              composebox.inputState.activeTool,
               'Active tool should be unspecified after clicking tool twice');
         });
 
     test(
         toolModeInfo.text + ' tool is not reset after submitting a query',
         async () => {
-          composebox.onToolClickForTesting(toolModeInfo.toolMode);
-          searchboxCallbackRouterRemote.onInputStateChanged({
-            ...mockInputState,
-            activeTool: toolModeInfo.toolMode,
-          });
+          await setActiveTool(toolModeInfo.toolMode);
           await microtasksFinished();
 
           let toolChip =
@@ -770,14 +773,7 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
         });
 
     test(toolModeInfo.text + ' mode: cancel resets mode', async () => {
-      composebox.onToolClickForTesting(toolModeInfo.toolMode);
-      searchboxCallbackRouterRemote.onInputStateChanged({
-        ...mockInputState,
-        activeTool: toolModeInfo.toolMode,
-      });
-
-      await composebox.updateComplete;
-      await microtasksFinished();
+      await setActiveTool(toolModeInfo.toolMode);
 
       let toolChip =
           composebox.shadowRoot.querySelector('cr-composebox-tool-chip');
@@ -785,6 +781,7 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
       assertTrue(!!toolChip, toolModeInfo.text + ' chip should be present');
       // Simulate cancel button click without having to fully render button.
       composebox.onCancelClick_();
+      await setActiveTool(ComposeboxToolMode.kUnspecified);
 
       await composebox.updateComplete;
       await microtasksFinished();
@@ -794,17 +791,13 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
     });
 
     test(toolModeInfo.text + ' mode: esc resets mode', async () => {
-      composebox.onToolClickForTesting(toolModeInfo.toolMode);
-      searchboxCallbackRouterRemote.onInputStateChanged({
-        ...mockInputState,
-        activeTool: toolModeInfo.toolMode,
-      });
-      await microtasksFinished();
+      await setActiveTool(toolModeInfo.toolMode);
       let toolChip =
           composebox.shadowRoot.querySelector('cr-composebox-tool-chip');
 
       assertTrue(!!toolChip, toolModeInfo.text + ' chip should be present');
       composebox.handleEscapeKeyLogic();
+      await setActiveTool(ComposeboxToolMode.kUnspecified);
 
       await composebox.updateComplete;
       await microtasksFinished();
