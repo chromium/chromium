@@ -7,9 +7,9 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {SelectionOverlayAppElement} from './selection_overlay_app.js';
 
 export function getHtml(this: SelectionOverlayAppElement) {
-  return html`
-    <cr-button id="closeButton" @click="${this.onCloseClick_}">
-      Close
-    </cr-button>
-  `;
+  // clang-format off
+  return html`<!--_html_template_start_-->
+    <glic-selection-overlay></glic-selection-overlay>
+    <!--_html_template_end_-->`;
+  // clang-format on
 }
