@@ -89,6 +89,8 @@ void ExternalBeginFrameSourceMac::CreateDelayBasedTimeSourceIfNeeded() {
     time_source_ = std::make_unique<DelayBasedTimeSource>(
         base::SingleThreadTaskRunner::GetCurrentDefault().get());
     time_source_->SetClient(this);
+    // reset preferred interval.
+    preferred_interval_ = BeginFrameArgs::DefaultInterval();
     time_source_->SetTimebaseAndInterval(base::TimeTicks::Now(),
                                          preferred_interval_);
   }
@@ -131,9 +133,17 @@ void ExternalBeginFrameSourceMac::SetVSyncDisplayID(int64_t display_id,
     StopBeginFrame();
   }
 
-  // Remove the old DisplayLinkMac or timer.
+  // Remove the old DisplayLinkMac.
   display_link_mac_.reset();
-  time_source_.reset();
+
+  // To avoid invoking ExternalBeginFrameSourceMac::OnTimerTick() on a
+  // NextTickTask that has already been scheduled, Stop the existing
+  // DelayBasedTimeSource timer first before removing it.
+  if (time_source_) {
+    time_source_->SetActive(/*active=*/false);
+    time_source_->SetClient(nullptr);
+    time_source_.reset();
+  }
 
   display_id_ = display_id;
 
@@ -360,6 +370,7 @@ void ExternalBeginFrameSourceMac::OnTimerTick() {
   if (!needs_begin_frames_) {
     return;
   }
+  DCHECK(time_source_);
 
   // See comments in DelayBasedBeginFrameSource::OnTimerTick regarding the
   // computation of `frame_time`.
