@@ -24,7 +24,13 @@ def powershell_path_context():
 
     # Entry: Only modify if we are on Windows and .PS1 isn't already there
     if is_windows and '.PS1' not in original_pathext.upper():
-        os.environ['PATHEXT'] = original_pathext + ';.PS1'
+        # Prefer .PS1 over .JS if .JS is present.
+        start = original_pathext.upper().find('.JS')
+        if start >= 0:
+            os.environ['PATHEXT'] = (original_pathext[:start] + '.PS1;' +
+                                     original_pathext[start:])
+        else:
+            os.environ['PATHEXT'] = original_pathext + ';.PS1'
 
     try:
         yield
@@ -38,8 +44,8 @@ def get_gemini_command(use_alias=False) -> list[str]:
     """Returns the command prefix to run the gemini executable.
     Order of preference is
       1. alias if use_alias is true
-      2. binfs path
-      3. which gemini
+      2. which gemini
+      3. binfs path
       4 'gemini' string
     """
     if use_alias and sys.platform != 'win32':
