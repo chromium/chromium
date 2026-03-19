@@ -1983,7 +1983,10 @@ void CanvasResourceProvider::ClearAtCreation() {
   RasterRecord(recorder.ReleaseMainRecording());
 }
 
-void CanvasResourceProvider::RestoreBackBuffer(const cc::PaintImage& image) {
+void CanvasResourceProvider::RestoreBackBufferForCanvas2D(
+    const cc::PaintImage& image) {
+  CHECK(IsCanvas2D());
+
   DCHECK_EQ(image.height(), Size().height());
   DCHECK_EQ(image.width(), Size().width());
 

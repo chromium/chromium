@@ -168,7 +168,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
   CanvasResourceProvider& operator=(const CanvasResourceProvider&) = delete;
   ~CanvasResourceProvider() override;
 
-  void RestoreBackBuffer(const cc::PaintImage&);
+  void RestoreBackBufferForCanvas2D(const cc::PaintImage&);
 
   ResourceProviderType GetType() const { return type_; }
 
@@ -269,6 +269,9 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // only needed for ganesh.
   virtual void DisableLineDrawingAsPathsIfNecessary() {}
 
+  // Whether this CanvasResourceProvider is for Canvas2D.
+  virtual bool IsCanvas2D() const = 0;
+
  protected:
   // Should only be called from static Create*() methods.
   // TODO(crbug.com/352263194): Eliminate this method by inlining its body at
@@ -356,6 +359,7 @@ class PLATFORM_EXPORT Canvas2DResourceProviderBitmap
                                  Delegate* delegate);
 
   sk_sp<SkSurface> CreateSkSurface() const override;
+  bool IsCanvas2D() const override { return true; }
 };
 
 // * Renders to a SharedImage, which manages memory internally.
@@ -611,6 +615,8 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
   void TransferBackFromWebGPU(const gpu::SyncToken& webgpu_write_sync_token);
 
  private:
+  bool IsCanvas2D() const override { return true; }
+
   std::unique_ptr<gpu::RasterScopedAccess> WillDrawInternal();
 };
 
@@ -725,6 +731,8 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
   void EndExternalWrite(const gpu::SyncToken& external_write_sync_token);
 
  private:
+  bool IsCanvas2D() const override { return false; }
+
   std::unique_ptr<gpu::RasterScopedAccess> WillDrawInternal();
 };
 
