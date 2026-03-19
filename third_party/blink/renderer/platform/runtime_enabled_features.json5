@@ -1347,7 +1347,10 @@
       // https://chromestatus.com/feature/5189864286978048
       // https://github.com/explainers-by-googlers/cpu-performance
       name: "CpuPerformance",
-      status: "experimental"
+      status: "experimental",
+      origin_trial_feature_name: "CpuPerformance",
+      base_feature_status: "enabled",
+      copied_from_base_feature_if: "overridden",
     },
     {
       name: "CrashReportingStorageAPI",
