@@ -77,10 +77,10 @@ class VIEWS_EXPORT WidgetObserver : public base::CheckedObserver {
                                      const gfx::Rect& new_bounds) {}
 
   // Invoked when the user started resizing the window.
-  virtual void OnWidgetUserResizeStarted() {}
+  virtual void OnWidgetUserResizeStarted(Widget* widget) {}
 
   // Invoked when the user stopped resizing the window.
-  virtual void OnWidgetUserResizeEnded() {}
+  virtual void OnWidgetUserResizeEnded(Widget* widget) {}
 
   virtual void OnWidgetThemeChanged(Widget* widget) {}
 

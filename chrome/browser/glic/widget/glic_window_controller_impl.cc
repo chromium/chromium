@@ -232,7 +232,8 @@ void GlicWindowControllerImpl::OnWidgetBoundsChanged(
       &web_modal::ModalDialogHostObserver::OnPositionRequiresUpdate);
 }
 
-void GlicWindowControllerImpl::OnWidgetUserResizeStarted() {
+void GlicWindowControllerImpl::OnWidgetUserResizeStarted(
+    views::Widget* widget) {
   user_resizing_ = true;
   glic_service_->metrics()->OnWidgetUserResizeStarted();
   if (GlicWebClientAccess* client = host().GetPrimaryWebClient()) {
@@ -240,7 +241,7 @@ void GlicWindowControllerImpl::OnWidgetUserResizeStarted() {
   }
 }
 
-void GlicWindowControllerImpl::OnWidgetUserResizeEnded() {
+void GlicWindowControllerImpl::OnWidgetUserResizeEnded(views::Widget* widget) {
   if (!IsDetached()) {
     // TODO(crbug.com/439745838): Implement for side panel if needed.
     NOTIMPLEMENTED();

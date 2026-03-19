@@ -144,8 +144,8 @@ class GlicWindowControllerImpl
   void OnWidgetDestroyed(views::Widget* widget) override;
   void OnWidgetBoundsChanged(views::Widget* widget,
                              const gfx::Rect& new_bounds) override;
-  void OnWidgetUserResizeStarted() override;
-  void OnWidgetUserResizeEnded() override;
+  void OnWidgetUserResizeStarted(views::Widget* widget) override;
+  void OnWidgetUserResizeEnded(views::Widget* widget) override;
 
   // Host::EmbedderDelegate implementation
   void Resize(const gfx::Size& size,

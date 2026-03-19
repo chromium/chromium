@@ -390,7 +390,7 @@ void GlicFloatingUi::OnWidgetBoundsChanged(views::Widget* widget,
       &web_modal::ModalDialogHostObserver::OnPositionRequiresUpdate);
 }
 
-void GlicFloatingUi::OnWidgetUserResizeStarted() {
+void GlicFloatingUi::OnWidgetUserResizeStarted(views::Widget* widget) {
   user_resizing_ = true;
   instance_metrics_->OnUserResizeStarted(GetPanelSize());
   if (GlicWebClientAccess* client = delegate_->host().GetPrimaryWebClient()) {
@@ -398,7 +398,7 @@ void GlicFloatingUi::OnWidgetUserResizeStarted() {
   }
 }
 
-void GlicFloatingUi::OnWidgetUserResizeEnded() {
+void GlicFloatingUi::OnWidgetUserResizeEnded(views::Widget* widget) {
   instance_metrics_->OnUserResizeEnded(GetPanelSize());
   if (GlicWebClientAccess* client = delegate_->host().GetPrimaryWebClient()) {
     client->ManualResizeChanged(false);
