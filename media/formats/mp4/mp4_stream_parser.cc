@@ -428,6 +428,7 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
   VideoDecoderConfig video_config;
   int detected_audio_track_count = 0;
   int detected_video_track_count = 0;
+  int detected_metadata_track_count = 0;
 
   for (std::vector<Track>::const_iterator track = moov_->tracks.begin();
        track != moov_->tracks.end(); ++track) {
@@ -834,6 +835,32 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
           MediaTrack::Label(track->media.handler.name),
           MediaTrack::Language(track->media.header.language()));
       continue;
+    } else if (track->media.handler.type == kMetadata) {
+      // If the metadata sample index does not refer to one of the sample
+      // entries that we understand, gracefully ignore it.
+      if (desc_idx >= samp_descr.metadata_t35_entries.size()) {
+        continue;
+      }
+
+      // Extract the list of tracks that this metadata is to refer to for
+      // rendering. Skip metadata tracks that do not refer to any tracks.
+      std::vector<StreamParser::TrackId> render_track_ids;
+      for (const auto& track_reference_type : track->references.types) {
+        if (track_reference_type.reference_type == FOURCC_RNDR) {
+          for (uint32_t ref_track_id : track_reference_type.track_ids) {
+            render_track_ids.push_back(
+                static_cast<StreamParser::TrackId>(ref_track_id));
+          }
+        }
+      }
+      if (render_track_ids.empty()) {
+        continue;
+      }
+
+      // TODO(https://crbug.com/490319976): Save metadata track information, to
+      // allow attaching metadata to referenced video DecodeBuffers.
+      detected_metadata_track_count++;
+      continue;
     }
   }
 
@@ -891,6 +918,7 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
   if (init_cb_) {
     params.detected_audio_track_count = detected_audio_track_count;
     params.detected_video_track_count = detected_video_track_count;
+    params.detected_metadata_track_count = detected_metadata_track_count;
     std::move(init_cb_).Run(params);
   }
 

@@ -372,6 +372,18 @@ struct MEDIA_EXPORT VideoSampleEntry : Box {
       const ColorParameterInformation& info);
 };
 
+struct MEDIA_EXPORT MetadataIT35SampleEntry : Box {
+  DECLARE_BOX_METHODS(MetadataIT35SampleEntry);
+
+  uint16_t data_reference_index = 0;
+
+  enum class IT35PrefixType {
+    kUnknown,
+    kSmpteSt2094App5,
+  };
+  IT35PrefixType it35_prefix_type = IT35PrefixType::kUnknown;
+};
+
 struct MEDIA_EXPORT ElementaryStreamDescriptor : Box {
   DECLARE_BOX_METHODS(ElementaryStreamDescriptor);
 
@@ -493,6 +505,7 @@ struct MEDIA_EXPORT SampleDescription : Box {
   TrackType type;
   std::vector<VideoSampleEntry> video_entries;
   std::vector<AudioSampleEntry> audio_entries;
+  std::vector<MetadataIT35SampleEntry> metadata_t35_entries;
 };
 
 struct MEDIA_EXPORT CencSampleEncryptionInfoEntry {
@@ -554,12 +567,25 @@ struct MEDIA_EXPORT Media : Box {
   MediaInformation information;
 };
 
+struct MEDIA_EXPORT TrackReferenceType : Box {
+  DECLARE_BOX_METHODS(TrackReferenceType);
+  FourCC reference_type;
+  std::vector<uint32_t> track_ids;
+};
+
+struct MEDIA_EXPORT TrackReference : Box {
+  DECLARE_BOX_METHODS(TrackReference);
+  std::vector<TrackReferenceType> types;
+};
+
 struct MEDIA_EXPORT Track : Box {
   DECLARE_BOX_METHODS(Track);
 
   TrackHeader header;
   Media media;
   Edit edit;
+  // References are only parsed for metadata tracks.
+  TrackReference references;
 };
 
 struct MEDIA_EXPORT MovieExtendsHeader : Box {

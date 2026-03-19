@@ -80,6 +80,7 @@ class MEDIA_EXPORT StreamParser {
     // tracks may be selected for use by the parser.
     int detected_audio_track_count = 0;
     int detected_video_track_count = 0;
+    int detected_metadata_track_count = 0;
   };
 
   // Indicates completion of parser initialization.

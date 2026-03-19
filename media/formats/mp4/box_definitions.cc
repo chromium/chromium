@@ -6,6 +6,7 @@
 
 #include <bitset>
 #include <memory>
+#include <tuple>
 #include <utility>
 
 #include "base/command_line.h"
@@ -573,12 +574,50 @@ SampleDescription::SampleDescription(const SampleDescription& other) = default;
 SampleDescription::~SampleDescription() = default;
 FourCC SampleDescription::BoxType() const { return FOURCC_STSD; }
 
+MetadataIT35SampleEntry::MetadataIT35SampleEntry() = default;
+MetadataIT35SampleEntry::MetadataIT35SampleEntry(
+    const MetadataIT35SampleEntry& other) = default;
+MetadataIT35SampleEntry::~MetadataIT35SampleEntry() = default;
+FourCC MetadataIT35SampleEntry::BoxType() const {
+  return FOURCC_IT35;
+}
+
+bool MetadataIT35SampleEntry::Parse(BoxReader* reader) {
+  RCHECK(reader->SkipBytes(6) && reader->Read2(&data_reference_index));
+
+  // Read the null-terminated description string byte-by-byte.
+  // TODO(https://crbug.com/490319976): This is not present in the revised
+  // proposal. Remove it from the implementation.
+  while (true) {
+    uint8_t c = 0;
+    RCHECK(reader->Read1(&c));
+    if (c == 0) {
+      break;
+    }
+  }
+
+  size_t remaining_size = reader->box_size() - reader->pos();
+  std::vector<uint8_t> it35_prefix;
+  RCHECK(reader->ReadVec(&it35_prefix, remaining_size));
+
+  // See SMPTE ST 2094-50 CD2, Clause 7.3, Metadata carriage.
+  constexpr std::array<uint8_t, 5> kSmpteStApp5Prefix = {0xb5, 0x00, 0x90, 0x00,
+                                                         0x01};
+  if (std::equal(it35_prefix.begin(), it35_prefix.end(),
+                 kSmpteStApp5Prefix.begin(), kSmpteStApp5Prefix.end())) {
+    it35_prefix_type = IT35PrefixType::kSmpteSt2094App5;
+  }
+
+  return true;
+}
+
 bool SampleDescription::Parse(BoxReader* reader) {
   uint32_t count;
   RCHECK(reader->SkipBytes(4) &&
          reader->Read4(&count));
   video_entries.clear();
   audio_entries.clear();
+  metadata_t35_entries.clear();
 
   // Note: this value is preset before scanning begins. See comments in the
   // Parse(Media*) function.
@@ -586,6 +625,11 @@ bool SampleDescription::Parse(BoxReader* reader) {
     RCHECK(reader->ReadAllChildren(&video_entries));
   } else if (type == kAudio) {
     RCHECK(reader->ReadAllChildren(&audio_entries));
+  } else if (type == kMetadata) {
+    // Gracefully ignore metadata sample entries that are not supported.
+    if (!reader->ReadAllChildren(&metadata_t35_entries)) {
+      metadata_t35_entries.clear();
+    }
   }
   return true;
 }
@@ -690,8 +734,14 @@ bool HandlerReference::Parse(BoxReader* reader) {
     type = kVideo;
   } else if (hdlr_type == FOURCC_SOUN) {
     type = kAudio;
-  } else if (hdlr_type == FOURCC_META || hdlr_type == FOURCC_SUBT ||
-             hdlr_type == FOURCC_TEXT || hdlr_type == FOURCC_SBTL) {
+  } else if (hdlr_type == FOURCC_META) {
+    if (base::FeatureList::IsEnabled(kMP4TimedMetadataTrack)) {
+      type = kMetadata;
+    } else {
+      type = kText;
+    }
+  } else if (hdlr_type == FOURCC_SUBT || hdlr_type == FOURCC_TEXT ||
+             hdlr_type == FOURCC_SBTL) {
     // For purposes of detection, we include 'sbtl' handler here. Note, though
     // that ISO-14496-12 and its 2012 Amendment 2, and the spec for sourcing
     // inband tracks all reference only 'text' or 'subt', and 14496-30
@@ -2056,6 +2106,36 @@ bool Media::Parse(BoxReader* reader) {
   return true;
 }
 
+TrackReferenceType::TrackReferenceType() = default;
+TrackReferenceType::TrackReferenceType(const TrackReferenceType& other) =
+    default;
+TrackReferenceType::~TrackReferenceType() = default;
+FourCC TrackReferenceType::BoxType() const {
+  // Any fourcc is valid here.
+  return FOURCC_NULL;
+}
+
+bool TrackReferenceType::Parse(BoxReader* reader) {
+  reference_type = reader->type();
+  size_t remaining_size = reader->box_size() - reader->pos();
+  RCHECK(remaining_size % sizeof(uint32_t) == 0);
+  track_ids.resize(remaining_size / sizeof(uint32_t));
+  for (auto& track_id : track_ids) {
+    RCHECK(reader->Read4(&track_id));
+  }
+  return true;
+}
+
+TrackReference::TrackReference() = default;
+TrackReference::TrackReference(const TrackReference& other) = default;
+TrackReference::~TrackReference() = default;
+FourCC TrackReference::BoxType() const {
+  return FOURCC_TREF;
+}
+bool TrackReference::Parse(BoxReader* reader) {
+  return reader->ReadAllChildren(&types);
+}
+
 Track::Track() = default;
 Track::Track(const Track& other) = default;
 Track::~Track() = default;
@@ -2066,6 +2146,10 @@ bool Track::Parse(BoxReader* reader) {
          reader->ReadChild(&header) &&
          reader->ReadChild(&media) &&
          reader->MaybeReadChild(&edit));
+  if (media.handler.type == kMetadata) {
+    // Gracefully ignore metadata references that fail to parse.
+    std::ignore = reader->MaybeReadChild(&references);
+  }
   return true;
 }
 

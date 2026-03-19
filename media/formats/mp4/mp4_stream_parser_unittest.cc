@@ -18,6 +18,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/decoder_buffer.h"
@@ -142,6 +143,8 @@ class MP4StreamParserTest : public testing::Test {
               params.detected_audio_track_count);
     EXPECT_EQ(expected_params.detected_video_track_count,
               params.detected_video_track_count);
+    EXPECT_EQ(expected_params.detected_metadata_track_count,
+              params.detected_metadata_track_count);
   }
 
   bool NewConfigF(std::unique_ptr<MediaTracks> tracks) {
@@ -1074,6 +1077,18 @@ TEST_F(MP4StreamParserTest, MultiTrackFile) {
   EXPECT_EQ(audio_track2.kind().value(), "");
   EXPECT_EQ(audio_track2.label().value(), "SoundHandler");
   EXPECT_EQ(audio_track2.language().value(), "und");
+}
+
+TEST_F(MP4StreamParserTest, TimedMetadataTrackDetected) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kMP4TimedMetadataTrack);
+
+  auto params = GetDefaultInitParametersExpectations();
+  params.detected_video_track_count = 1;
+  params.detected_audio_track_count = 1;
+  params.detected_metadata_track_count = 1;
+  InitializeParserWithInitParametersExpectations(params);
+  ParseMP4File("agtm-metadata-track-frag.mp4", 16 * 1024 * 1024);
 }
 
 // <cos(θ), sin(θ), θ expressed as a rotation Enum>
