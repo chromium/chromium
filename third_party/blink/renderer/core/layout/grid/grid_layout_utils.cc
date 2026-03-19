@@ -714,29 +714,40 @@ void BuildGridSizingSubtree(const LayoutAlgorithmType& algorithm,
                                     needs_intrinsic_track_size, &virtual_items);
   }
 
-  // TODO(almaher): Remove the Grid Lanes check once more of the functionality
-  // is in place for subgrid support in Grid Lanes.
-  if (!has_nested_subgrid || style.IsDisplayGridLanesBox()) {
+  if (!has_nested_subgrid) {
     sizing_tree->SetSizingNodeData(node, grid_items, layout_data,
                                    virtual_items);
     return;
   }
 
-  // TODO(almaher): Update this for masonry to only be one axis.
-  InitializeTrackCollection(opt_subgrid_data, style, constraint_space,
-                            algorithm.BorderScrollbarPadding(),
-                            algorithm.GetGridAvailableSize(), kForColumns,
-                            layout_data);
-  InitializeTrackCollection(opt_subgrid_data, style, constraint_space,
-                            algorithm.BorderScrollbarPadding(),
-                            algorithm.GetGridAvailableSize(), kForRows,
-                            layout_data);
+  // For grid-lanes, only the grid axis has tracks; the stacking axis does not.
+  if (style.HasGridTrackAxis(kForColumns)) {
+    InitializeTrackCollection(opt_subgrid_data, style, constraint_space,
+                              algorithm.BorderScrollbarPadding(),
+                              algorithm.GetGridAvailableSize(), kForColumns,
+                              layout_data);
+  }
+  if (style.HasGridTrackAxis(kForRows)) {
+    InitializeTrackCollection(opt_subgrid_data, style, constraint_space,
+                              algorithm.BorderScrollbarPadding(),
+                              algorithm.GetGridAvailableSize(), kForRows,
+                              layout_data);
+  }
 
-  if (has_standalone_columns) {
+  if (has_standalone_columns && style.HasGridTrackAxis(kForColumns)) {
     layout_data->SizingCollection(kForColumns).CacheDefiniteSetsGeometry();
   }
-  if (has_standalone_rows) {
+  if (has_standalone_rows && style.HasGridTrackAxis(kForRows)) {
     layout_data->SizingCollection(kForRows).CacheDefiniteSetsGeometry();
+  }
+
+  // TODO(almaher): Remove the Grid Lanes check once more of the functionality
+  // is in place for subgrid support in Grid Lanes (specifically using virtual
+  // items for track sizing instead of the grid items directly).
+  if (style.IsDisplayGridLanesBox()) {
+    sizing_tree->SetSizingNodeData(node, grid_items, layout_data,
+                                   virtual_items);
+    return;
   }
 
   // `AppendSubgriddedItems` rely on the cached placement data of a subgrid to

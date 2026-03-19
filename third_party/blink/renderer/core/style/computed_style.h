@@ -1215,6 +1215,17 @@ class ComputedStyle final : public ComputedStyleBase {
     return GridLanesPack() == EGridLanesPack::kDense;
   }
 
+  // Returns whether the given `track_direction` is an axis with grid tracks.
+  // For grid, both axes always have grid tracks. For grid-lanes, only the grid
+  // axis has grid tracks (the stacking axis does not).
+  bool HasGridTrackAxis(GridTrackSizingDirection track_direction) const {
+    if (IsDisplayGridBox()) {
+      return true;
+    }
+    DCHECK(IsDisplayGridLanesBox());
+    return GridLanesTrackSizingDirection() == track_direction;
+  }
+
   // Grid axis utility functions, usable in Grid and Grid Lanes.
   const GridTrackList& AutoTracks(
       GridTrackSizingDirection track_direction) const {
