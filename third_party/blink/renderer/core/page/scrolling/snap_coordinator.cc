@@ -213,6 +213,9 @@ void SnapCoordinator::AddOverscrollSnapAreas(
       snap_container.GetNode()->GetDomNodeId());
   overscroll_initial_snap_area.scroll_snap_align = cc::ScrollSnapAlign(
       cc::SnapAlignment::kCenter, cc::SnapAlignment::kCenter);
+  // We must always stop at the initial area, i.e. it is unexpected to swipe
+  // from one side of overscroll to the other.
+  overscroll_initial_snap_area.must_snap = true;
   snap_container_data.AddSnapAreaData(overscroll_initial_snap_area);
 
   // Create a snap area for the overscroll area.
