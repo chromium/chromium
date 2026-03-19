@@ -1040,8 +1040,8 @@ void MaybeRegisterChromeFeaturePromos(
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForToastPromo(
           feature_engagement::kIPHResumptionRailFeature,
-          kVerticalTabStripProjectsButtonElementId,
-          IDS_RESUMPTION_RAIL_IPH_BODY, IDS_RESUMPTION_RAIL_IPH_TITLE,
+          kVerticalTabStripProjectsButtonElementId, IDS_WILDCARD,
+          IDS_RESUMPTION_RAIL_IPH_TITLE,
           FeaturePromoSpecification::AcceleratorInfo())
           .SetBubbleTitleText(IDS_RESUMPTION_RAIL_IPH_TITLE)
           .SetBubbleArrow(HelpBubbleArrow::kTopLeft)
