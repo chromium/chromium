@@ -1022,11 +1022,6 @@ const char kLensUnaryHttpTransportEnabledName[] =
 const char kLensUnaryHttpTransportEnabledDescription[] =
     "Enables the HTTP transport for unary requests.";
 
-const char kLensWebPageLoadOptimizationEnabledName[] =
-    "Lens web page load optimization";
-const char kLensWebPageLoadOptimizationEnabledDescription[] =
-    "Enables optmized loading for the Lens web page.";
-
 const char kLocationBarBadgeMigrationName[] = "LocationBarBadgeMigration";
 const char kLocationBarBadgeMigrationDescription[] =
     "Enables the LocationBarBadgeMigration feature.";

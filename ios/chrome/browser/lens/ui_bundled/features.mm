@@ -34,9 +34,6 @@ int LensTranslateToggleMode() {
   return kLensTranslateToggleModeFeature.Get();
 }
 
-BASE_FEATURE(kLensWebPageLoadOptimizationEnabled,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kLensUnaryApisWithHttpTransportEnabled,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
