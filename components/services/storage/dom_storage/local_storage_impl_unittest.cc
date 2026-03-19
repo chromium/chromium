@@ -274,6 +274,14 @@ class LocalStorageImplTestBase : public testing::Test {
   // `TestFuture`.
   void RunUntilIdle() { task_environment_->RunUntilIdle(); }
 
+  // Waits for all pending tasks on the database thread to complete.
+  void WaitForDatabaseTasks() {
+    base::RunLoop loop;
+    context()->GetDatabaseForTesting()->database().PostTaskWithThisObject(
+        base::BindLambdaForTesting([&](DomStorageDatabase*) { loop.Quit(); }));
+    loop.Run();
+  }
+
   void DoTestPut(const std::vector<uint8_t>& key,
                  const std::vector<uint8_t>& value) {
     mojo::Remote<blink::mojom::StorageArea> area;
@@ -1544,6 +1552,9 @@ TEST_P(LocalStorageImplTest, DontRecreateOnRepeatedCommitFailure) {
   area.FlushForTesting();
   EXPECT_TRUE(area.is_connected());
 
+  // Wait for all pending commits on the database thread to complete.
+  WaitForDatabaseTasks();
+
   // Verify recovery histogram was emitted for the first recovery.
   histograms.ExpectBucketCount(
       "Storage.LocalStorage.Recovery.CommitErrorThresholdExceeded",
@@ -1678,12 +1689,7 @@ TEST_F(LocalStorageImplFakeDbTest, TransientErrorsAfterRecovery) {
   EXPECT_TRUE(area.is_connected());
 
   // Wait for all pending commits on the database thread to complete.
-  {
-    base::RunLoop loop;
-    context()->GetDatabaseForTesting()->database().PostTaskWithThisObject(
-        base::BindLambdaForTesting([&](DomStorageDatabase*) { loop.Quit(); }));
-    loop.Run();
-  }
+  WaitForDatabaseTasks();
 
   // Verify the transient errors histogram was emitted exactly once.
   histograms.ExpectBucketCount(
