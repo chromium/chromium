@@ -15,8 +15,6 @@
 #include "chrome/browser/ui/tabs/organization/tab_organization.h"
 #include "components/tab_groups/tab_group_id.h"
 
-class TabOrganizationSession;
-
 struct GroupData {
   explicit GroupData(tab_groups::TabGroupId id_,
                      std::u16string label_,
@@ -29,9 +27,6 @@ struct GroupData {
 };
 
 struct TabOrganizationResponse {
-  using LogResultsCallback =
-      base::OnceCallback<void(const TabOrganizationSession* session)>;
-
   struct Organization {
     explicit Organization(
         std::u16string label_,
@@ -48,17 +43,14 @@ struct TabOrganizationResponse {
     std::optional<TabOrganization::ID> organization_id;
   };
 
-  explicit TabOrganizationResponse(
-      std::vector<Organization> organizations_,
-      std::u16string feedback_id_ = u"",
-      LogResultsCallback log_results_callback_ = base::DoNothing());
+  explicit TabOrganizationResponse(std::vector<Organization> organizations_,
+                                   std::u16string feedback_id_ = u"");
   ~TabOrganizationResponse();
 
   int GetTabCount();
 
   std::vector<Organization> organizations;
   const std::u16string feedback_id;
-  LogResultsCallback log_results_callback;
 };
 
 class TabOrganizationRequest {
@@ -118,7 +110,6 @@ class TabOrganizationRequest {
       std::unique_ptr<TabOrganizationResponse> response) {
     CompleteRequest(std::move(response));
   }
-  void LogResults(const TabOrganizationSession* session);
 
  private:
   void CompleteRequest(std::unique_ptr<TabOrganizationResponse> response);

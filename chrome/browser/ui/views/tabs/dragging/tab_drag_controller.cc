@@ -32,7 +32,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/sad_tab_helper.h"
 #include "chrome/browser/ui/tabs/features.h"
-#include "chrome/browser/ui/tabs/organization/metrics.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/split_tab_util.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
@@ -2255,12 +2254,6 @@ void TabDragController::CompleteDrag() {
       selection.set_anchor(static_cast<size_t>(index));
       UpdateSelectionModel(model, selection);
     }
-  }
-
-  if (source_context_ == attached_context_) {
-    LogTabStripOrganizationUKM(
-        attached_context_->GetTabStripModel(),
-        SuggestedTabStripOrganizationReason::kDraggedWithinSameTabstrip);
   }
 }
 

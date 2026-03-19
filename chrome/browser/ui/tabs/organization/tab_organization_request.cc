@@ -39,11 +39,8 @@ TabOrganizationResponse::Organization::~Organization() = default;
 
 TabOrganizationResponse::TabOrganizationResponse(
     std::vector<TabOrganizationResponse::Organization> organizations_,
-    std::u16string feedback_id_,
-    LogResultsCallback log_results_callback_)
-    : organizations(organizations_),
-      feedback_id(feedback_id_),
-      log_results_callback(std::move(log_results_callback_)) {}
+    std::u16string feedback_id_)
+    : organizations(organizations_), feedback_id(feedback_id_) {}
 
 TabOrganizationResponse::~TabOrganizationResponse() = default;
 
@@ -129,14 +126,4 @@ void TabOrganizationRequest::CancelRequest() {
     std::move(response_callback_).Run(response_.get());
   }
   state_ = State::CANCELED;
-}
-
-void TabOrganizationRequest::LogResults(const TabOrganizationSession* session) {
-  if (!response_ || state_ != State::COMPLETED) {
-    return;
-  }
-
-  if (response_->log_results_callback) {
-    std::move(response_->log_results_callback).Run(session);
-  }
 }

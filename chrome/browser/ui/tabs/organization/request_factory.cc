@@ -16,9 +16,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/tabs/organization/logging_util.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_request.h"
-#include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -42,24 +40,6 @@ bool CanUseOptimizationGuide(Profile* profile) {
   return base::FeatureList::IsEnabled(
              optimization_guide::features::kOptimizationGuideModelExecution) &&
          OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
-}
-
-void OnLogResults(
-    Profile* profile,
-    std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry,
-    const TabOrganizationSession* session) {
-  if (log_entry && session->request() && session->request()->response() &&
-      session->request()->response()->organizations.size() > 0 &&
-      session->tab_organizations().size() > 0) {
-    optimization_guide::proto::TabOrganizationQuality* quality =
-        log_entry->log_ai_data_request()
-            ->mutable_tab_organization()
-            ->mutable_quality();
-
-    AddSessionDetailsToQuality(quality, session);
-  }
-
-  optimization_guide::ModelQualityLogEntry::Upload(std::move(log_entry));
 }
 
 void OnTabOrganizationModelExecutionResult(
@@ -114,8 +94,7 @@ void OnTabOrganizationModelExecutionResult(
 
   std::unique_ptr<TabOrganizationResponse> local_response =
       std::make_unique<TabOrganizationResponse>(
-          std::move(organizations), base::UTF8ToUTF16(execution_id),
-          base::BindOnce(OnLogResults, profile, std::move(log_entry)));
+          std::move(organizations), base::UTF8ToUTF16(execution_id));
 
   std::move(on_completion).Run(std::move(local_response));
 }

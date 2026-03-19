@@ -6,8 +6,6 @@ assert(!is_android)
 
 source_set("organization") {
   sources = [
-    "logging_util.h",
-    "metrics.h",
     "request_factory.h",
     "tab_data.h",
     "tab_organization.h",
@@ -40,8 +38,6 @@ source_set("organization") {
 
 source_set("impl") {
   sources = [
-    "logging_util.cc",
-    "metrics.cc",
     "request_factory.cc",
     "tab_data.cc",
     "tab_organization.cc",
