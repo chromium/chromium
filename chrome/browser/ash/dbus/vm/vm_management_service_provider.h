@@ -29,6 +29,8 @@ class VmManagementServiceProvider
   void Start(scoped_refptr<dbus::ExportedObject> exported_object) override;
 
  private:
+  void GetCrostiniVmType(dbus::MethodCall* method_call,
+                         dbus::ExportedObject::ResponseSender response_sender);
   void SetCrostiniVmType(dbus::MethodCall* method_call,
                          dbus::ExportedObject::ResponseSender response_sender);
 

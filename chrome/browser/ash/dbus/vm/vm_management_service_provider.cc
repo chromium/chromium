@@ -59,6 +59,60 @@ void VmManagementServiceProvider::Start(
       base::BindRepeating(&VmManagementServiceProvider::SetCrostiniVmType,
                           weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&OnExported));
+  exported_object->ExportMethod(
+      chromeos::kVmManagementServiceInterface,
+      chromeos::kVmManagementServiceGetCrostiniVmTypeMethod,
+      base::BindRepeating(&VmManagementServiceProvider::GetCrostiniVmType,
+                          weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&OnExported));
+}
+
+void VmManagementServiceProvider::GetCrostiniVmType(
+    dbus::MethodCall* method_call,
+    dbus::ExportedObject::ResponseSender response_sender) {
+  dbus::MessageReader reader(method_call);
+  std::string user_id_hash;
+
+  if (!reader.PopString(&user_id_hash)) {
+    LOG(ERROR) << "Failed to pop user_id_hash from incoming message.";
+    std::move(response_sender)
+        .Run(dbus::ErrorResponse::FromMethodCall(method_call,
+                                                 DBUS_ERROR_INVALID_ARGS,
+                                                 "No user_id_hash string arg"));
+    return;
+  }
+
+  Profile* profile = GetProfileFromUserIdHash(user_id_hash);
+
+  if (!profile) {
+    std::move(response_sender)
+        .Run(dbus::ErrorResponse::FromMethodCall(
+            method_call, DBUS_ERROR_FAILED,
+            "No profile or user could be found"));
+    return;
+  }
+
+  std::string reason;
+  if (!crostini::CrostiniFeatures::Get()->IsAllowedNow(profile, &reason)) {
+    LOG(ERROR) << "Crostini is not allowed: " << reason;
+    std::move(response_sender)
+        .Run(dbus::ErrorResponse::FromMethodCall(
+            method_call, DBUS_ERROR_INVALID_ARGS, "Crostini is not allowed"));
+    return;
+  }
+
+  int vm_type = guest_os::VmType::UNKNOWN;
+
+  std::optional<int> vm_type_pref =
+      guest_os::GetContainerVmType(profile, crostini::kCrostiniDefaultVmName);
+  if (vm_type_pref.has_value()) {
+    if (vm_type_pref >= vm_tools::apps::VmType_MIN &&
+        vm_type_pref <= vm_tools::apps::VmType_MAX) {
+      vm_type = vm_type_pref.value();
+    }
+  }
+
+  SendResponse(method_call, std::move(response_sender), vm_type);
 }
 
 void VmManagementServiceProvider::SetCrostiniVmType(

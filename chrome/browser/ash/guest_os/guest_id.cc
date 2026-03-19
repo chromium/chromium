@@ -215,6 +215,20 @@ void UpdateContainerPref(Profile* profile,
   }
 }
 
+std::optional<int> GetContainerVmType(Profile* profile,
+                                      std::string_view vm_name) {
+  const base::ListValue& containers =
+      profile->GetPrefs()->GetList(prefs::kGuestOsContainers);
+  for (const auto& dict : containers) {
+    const std::string* curr_vm_name =
+        dict.GetDict().FindString(prefs::kVmNameKey);
+    if (curr_vm_name && *curr_vm_name == vm_name) {
+      return dict.GetDict().FindInt(guest_os::prefs::kVmTypeKey);
+    }
+  }
+  return {};
+}
+
 bool UpdateContainerVmType(Profile* profile,
                            int vm_type,
                            std::string_view container_vm_name) {
