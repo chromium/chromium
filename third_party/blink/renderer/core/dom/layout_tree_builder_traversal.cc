@@ -711,35 +711,31 @@ static Node* NextLayoutSiblingInBoxTreeOrder(const Node& node) {
   return next;
 }
 
-static Node* NextLayoutSiblingInternal(Node* node, int32_t& limit) {
-  for (Node* sibling = node; sibling && limit-- != 0;
+static Node* NextLayoutSiblingInternal(Node* node) {
+  for (Node* sibling = node; sibling;
        sibling = NextLayoutSiblingInBoxTreeOrder(*sibling)) {
     if (!HasDisplayContentsStyle(*sibling))
       return sibling;
 
     if (Node* inner = NextLayoutSiblingInternal(
-            LayoutTreeBuilderTraversal::FirstChild(*sibling), limit))
+            LayoutTreeBuilderTraversal::FirstChild(*sibling))) {
       return inner;
-
-    if (limit == -1)
-      return nullptr;
+    }
   }
 
   return nullptr;
 }
 
-Node* LayoutTreeBuilderTraversal::NextLayoutSibling(const Node& node,
-                                                    int32_t& limit) {
-  DCHECK_NE(limit, -1);
-  if (Node* sibling = NextLayoutSiblingInternal(
-          NextLayoutSiblingInBoxTreeOrder(node), limit)) {
+Node* LayoutTreeBuilderTraversal::NextLayoutSibling(const Node& node) {
+  if (Node* sibling =
+          NextLayoutSiblingInternal(NextLayoutSiblingInBoxTreeOrder(node))) {
     return sibling;
   }
 
   Node* parent = LayoutTreeBuilderTraversal::Parent(node);
-  while (limit != -1 && parent && HasDisplayContentsStyle(*parent)) {
+  while (parent && HasDisplayContentsStyle(*parent)) {
     if (Node* sibling = NextLayoutSiblingInternal(
-            NextLayoutSiblingInBoxTreeOrder(*parent), limit)) {
+            NextLayoutSiblingInBoxTreeOrder(*parent))) {
       return sibling;
     }
     parent = LayoutTreeBuilderTraversal::Parent(*parent);
@@ -749,16 +745,13 @@ Node* LayoutTreeBuilderTraversal::NextLayoutSibling(const Node& node,
 }
 
 Node* LayoutTreeBuilderTraversal::FirstLayoutChild(const Node& node) {
-  int32_t limit = kTraverseAllSiblings;
-  return NextLayoutSiblingInternal(FirstChild(node), limit);
+  return NextLayoutSiblingInternal(FirstChild(node));
 }
 
 LayoutObject* LayoutTreeBuilderTraversal::NextSiblingLayoutObject(
-    const Node& node,
-    int32_t limit) {
-  DCHECK(limit == kTraverseAllSiblings || limit >= 0) << limit;
-  for (Node* sibling = NextLayoutSibling(node, limit); sibling && limit != -1;
-       sibling = NextLayoutSibling(*sibling, limit)) {
+    const Node& node) {
+  for (Node* sibling = NextLayoutSibling(node); sibling;
+       sibling = NextLayoutSibling(*sibling)) {
     LayoutObject* layout_object = sibling->GetLayoutObject();
     if (layout_object && !IsLayoutObjectReparented(layout_object))
       return layout_object;

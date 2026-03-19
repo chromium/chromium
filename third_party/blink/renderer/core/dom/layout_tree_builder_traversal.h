@@ -40,17 +40,12 @@ class CORE_EXPORT LayoutTreeBuilderTraversal {
   STATIC_ONLY(LayoutTreeBuilderTraversal);
 
  public:
-  static const int32_t kTraverseAllSiblings = -2;
-
   static ContainerNode* Parent(const Node&);
   static ContainerNode* LayoutParent(const Node&);
   static Node* FirstChild(const Node&);
   static Node* LastChild(const Node&);
   static Node* NextSibling(const Node&);
-  static Node* NextLayoutSibling(const Node& node) {
-    int32_t limit = kTraverseAllSiblings;
-    return NextLayoutSibling(node, limit);
-  }
+  static Node* NextLayoutSibling(const Node&);
   static Node* FirstLayoutChild(const Node&);
 
   static Node* PreviousSibling(const Node&);
@@ -58,9 +53,7 @@ class CORE_EXPORT LayoutTreeBuilderTraversal {
   static Node* Next(const Node&, const Node* stay_within);
   static Node* NextSkippingChildren(const Node&, const Node* stay_within);
   static LayoutObject* ParentLayoutObject(const Node&);
-  static LayoutObject* NextSiblingLayoutObject(
-      const Node&,
-      int32_t limit = kTraverseAllSiblings);
+  static LayoutObject* NextSiblingLayoutObject(const Node&);
   static LayoutObject* NextInTopLayer(const Element&);
 
   static inline Element* ParentElement(const Node& node) {
@@ -74,9 +67,6 @@ class CORE_EXPORT LayoutTreeBuilderTraversal {
   // Return -1 if the first one goes first, 0 if they are the same
   // and 1 if the second goes first.
   static int ComparePreorderTreePosition(const Node&, const Node&);
-
- private:
-  static Node* NextLayoutSibling(const Node&, int32_t& limit);
 };
 
 }  // namespace blink
