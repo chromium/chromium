@@ -416,10 +416,6 @@ void CustomElementRegistry::upgrade(Node* root) {
     CustomElement::TryToUpgrade(*candidate);
 }
 
-bool CustomElementRegistry::IsGlobalRegistry() const {
-  return this == owner_->customElements();
-}
-
 void CustomElementRegistry::AssociatedWith(Document& document) {
   associated_documents_->insert(&document);
 }

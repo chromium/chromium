@@ -78,7 +78,8 @@ class CORE_EXPORT CustomElementRegistry final : public ScriptWrappable,
 
   const LocalDOMWindow* GetOwnerWindow() const { return owner_.Get(); }
 
-  bool IsGlobalRegistry() const;
+  bool IsGlobalRegistry() const { return is_global_registry_; }
+  void MarkAsGlobalRegistry() { is_global_registry_ = true; }
 
   void AssociatedWith(Document& document);
 
@@ -97,6 +98,7 @@ class CORE_EXPORT CustomElementRegistry final : public ScriptWrappable,
                          HeapVector<Member<Element>>*);
 
   bool element_definition_is_running_;
+  bool is_global_registry_ = false;
 
   using ConstructorMap = HeapHashMap<Member<V8CustomElementConstructor>,
                                      Member<CustomElementDefinition>,
