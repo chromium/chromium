@@ -691,8 +691,9 @@ TextBreakIterator* WordBreakIteratorPool::Get(base::span<const UChar> string) {
 }  // namespace
 
 TextBreakIterator* WordBreakIterator(base::span<const UChar> string) {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(WordBreakIteratorPool, pool, ());
-  return pool.Get(string);
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<WordBreakIteratorPool>, pool,
+                                  ());
+  return pool->Get(string);
 }
 
 TextBreakIterator* WordBreakIterator(const StringView& string) {
@@ -700,8 +701,9 @@ TextBreakIterator* WordBreakIterator(const StringView& string) {
     return nullptr;
   }
   if (string.Is8Bit()) {
-    DEFINE_THREAD_SAFE_STATIC_LOCAL(WordBreakIteratorPool, pool, ());
-    return pool.Get(string.Span8());
+    DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<WordBreakIteratorPool>, pool,
+                                    ());
+    return pool->Get(string.Span8());
   }
   return WordBreakIterator(string.Span16());
 }
@@ -927,20 +929,23 @@ int CharacterBreakIterator::Following(int offset) const {
 
 TextBreakIterator* SentenceBreakIterator(base::span<const UChar> string) {
   UErrorCode open_status = U_ZERO_ERROR;
-  static TextBreakIterator* iterator = nullptr;
-  if (!iterator) {
-    iterator = icu::BreakIterator::createSentenceInstance(
-        CurrentTextBreakIcuLocale(), open_status);
+  // We cannot use ThreadSpecific<TextBreakIterator> directly because
+  // TextBreakIterator is an abstract class. So a pointer is required.
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(
+      ThreadSpecific<std::unique_ptr<TextBreakIterator>>, iterator, ());
+  if (!iterator->get()) {
+    *iterator = base::WrapUnique(icu::BreakIterator::createSentenceInstance(
+        CurrentTextBreakIcuLocale(), open_status));
     DCHECK(U_SUCCESS(open_status))
         << "ICU could not open a break iterator: " << u_errorName(open_status)
         << " (" << open_status << ")";
-    if (!iterator) {
+    if (!iterator->get()) {
       return nullptr;
     }
   }
 
-  SetText16(iterator, string);
-  return iterator;
+  SetText16(iterator->get(), string);
+  return iterator->get();
 }
 
 bool IsWordTextBreak(TextBreakIterator* iterator) {
