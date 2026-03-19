@@ -28,57 +28,16 @@
 
 <div class="card settings-card">
 
+<!-- Toggle to enable/disable overall payments autofill. If disabled, almost all
+     below toggles are effectively disabled. -->
 <settings-toggle-button id="autofillCreditCardToggle"
     no-extension-indicator label="$i18n{enableCreditCardsLabel}"
     sub-label="$i18n{enableCreditCardsSublabel}"
     pref="{{prefs.autofill.credit_card_enabled}}">
 </settings-toggle-button>
-<if expr="is_win or is_macosx or is_chromeos">
-<template is="dom-if" if="[[mandatoryReauthFeatureFlagEnabled_]]">
-  <settings-toggle-button id="mandatoryAuthToggle"
-      no-extension-indicator label="$i18n{enableMandatoryAuthToggleLabel}"
-      sub-label="$i18n{enableMandatoryAuthToggleSublabel}"
-      pref="{{prefs.autofill.payment_methods_mandatory_reauth}}" no-set-pref
-      disabled="[[shouldDisableAuthToggle_(
-          prefs.autofill.credit_card_enabled.value, deviceAuthAvailable_)]]"
-      on-settings-boolean-control-change="onMandatoryAuthToggleChange_">
-  </settings-toggle-button>
-</template>
-</if>
-<template is="dom-if" if="[[cvcStorageAvailable_]]">
-  <settings-toggle-button id="cvcStorageToggle"
-        no-extension-indicator label="$i18n{enableCvcStorageLabel}"
-        aria-label="[[getCvcStorageAriaLabel_(creditCards)]]"
-        sub-label-with-link="[[getCvcStorageSublabel_(creditCards)]]"
-        disabled="[[!prefs.autofill.credit_card_enabled.value]]"
-        on-sub-label-link-clicked="onBulkRemoveCvcClick_"
-        pref="{{prefs.autofill.payment_cvc_storage}}">
-    </settings-toggle-button>
-</template>
-<template is="dom-if" if="[[cardBenefitsFlagEnabled_]]">
-  <settings-toggle-button id="cardBenefitsToggle"
-      no-extension-indicator label="$i18n{cardBenefitsLabel}"
-      sub-label-with-link="[[cardBenefitsSublabel_]]"
-      on-sub-label-link-clicked="onCardBenefitsSublabelLinkClick_"
-      disabled="[[!prefs.autofill.credit_card_enabled.value]]"
-      pref="{{prefs.autofill.payment_card_benefits}}">
-  </settings-toggle-button>
-</template>
-<template is="dom-if" if="[[shouldShowPayOverTimeSettings_]]">
-  <settings-toggle-button id="payOverTimeToggle"
-      no-extension-indicator label="$i18n{autofillPayOverTimeSettingsLabel}"
-      sub-label-with-link="[[payOverTimeSublabel_]]"
-      on-sub-label-link-clicked="onPayOverTimeSublabelLinkClick_"
-      disabled="[[!prefs.autofill.credit_card_enabled.value]]"
-      pref="{{prefs.autofill.bnpl_enabled}}">
-  </settings-toggle-button>
-</template>
-<settings-toggle-button id="canMakePaymentToggle"
-    aria-label="$i18n{canMakePaymentToggleLabel}"
-    label="$i18n{canMakePaymentToggleLabel}"
-    pref="{{prefs.payments.can_make_payment_enabled}}"
-    on-settings-boolean-control-change="onCanMakePaymentChange_">
-</settings-toggle-button>
+
+<!-- Extension-override indicator for payments autofill enable/disable; this
+     MUST come immediately after the autofillCreditCardToggle toggle. -->
 <template is="dom-if"
     if="[[prefs.autofill.credit_card_enabled.extensionId]]">
   <div class="cr-row continuation">
@@ -92,6 +51,66 @@
     </extension-controlled-indicator>
   </div>
 </template>
+
+<!-- Toggle to enable/disable mandatory re-authentication when user attempts to
+     view or autofill payment methods. -->
+<if expr="is_win or is_macosx or is_chromeos">
+<template is="dom-if" if="[[mandatoryReauthFeatureFlagEnabled_]]">
+  <settings-toggle-button id="mandatoryAuthToggle"
+      no-extension-indicator label="$i18n{enableMandatoryAuthToggleLabel}"
+      sub-label="$i18n{enableMandatoryAuthToggleSublabel}"
+      pref="{{prefs.autofill.payment_methods_mandatory_reauth}}" no-set-pref
+      disabled="[[shouldDisableAuthToggle_(
+          prefs.autofill.credit_card_enabled.value, deviceAuthAvailable_)]]"
+      on-settings-boolean-control-change="onMandatoryAuthToggleChange_">
+  </settings-toggle-button>
+</template>
+</if>
+
+<!-- Toggle to enable/disable CVC storage. -->
+<template is="dom-if" if="[[cvcStorageAvailable_]]">
+  <settings-toggle-button id="cvcStorageToggle"
+        no-extension-indicator label="$i18n{enableCvcStorageLabel}"
+        aria-label="[[getCvcStorageAriaLabel_(creditCards)]]"
+        sub-label-with-link="[[getCvcStorageSublabel_(creditCards)]]"
+        disabled="[[!prefs.autofill.credit_card_enabled.value]]"
+        on-sub-label-link-clicked="onBulkRemoveCvcClick_"
+        pref="{{prefs.autofill.payment_cvc_storage}}">
+    </settings-toggle-button>
+</template>
+
+<!-- Toggle to enable/disable showing card benefits/rewards in autofill. -->
+<template is="dom-if" if="[[cardBenefitsFlagEnabled_]]">
+  <settings-toggle-button id="cardBenefitsToggle"
+      no-extension-indicator label="$i18n{cardBenefitsLabel}"
+      sub-label-with-link="[[cardBenefitsSublabel_]]"
+      on-sub-label-link-clicked="onCardBenefitsSublabelLinkClick_"
+      disabled="[[!prefs.autofill.credit_card_enabled.value]]"
+      pref="{{prefs.autofill.payment_card_benefits}}">
+  </settings-toggle-button>
+</template>
+
+<!-- Toggle to enable/disable Buy Now, Pay Later (BNPL) in autofill. -->
+<template is="dom-if" if="[[shouldShowPayOverTimeSettings_]]">
+  <settings-toggle-button id="payOverTimeToggle"
+      no-extension-indicator label="$i18n{autofillPayOverTimeSettingsLabel}"
+      sub-label-with-link="[[payOverTimeSublabel_]]"
+      on-sub-label-link-clicked="onPayOverTimeSublabelLinkClick_"
+      disabled="[[!prefs.autofill.credit_card_enabled.value]]"
+      pref="{{prefs.autofill.bnpl_enabled}}">
+  </settings-toggle-button>
+</template>
+
+<!-- Toggle to allow/disallow certain behavior for the Payment Request API. Note
+     that this setting does *NOT* relate to payments autofill, but lives in
+     chrome://settings/payments for legacy reasons (and lack of a better place
+     to put it). -->
+<settings-toggle-button id="canMakePaymentToggle"
+    aria-label="$i18n{canMakePaymentToggleLabel}"
+    label="$i18n{canMakePaymentToggleLabel}"
+    pref="{{prefs.payments.can_make_payment_enabled}}"
+    on-settings-boolean-control-change="onCanMakePaymentChange_">
+</settings-toggle-button>
 
 <div id="manageLink" class="cr-row">
   <!-- This span lays out the link correctly, relative to the text. -->
