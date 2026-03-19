@@ -19,6 +19,7 @@
 #include "chrome/browser/glic/host/context/glic_sharing_utils.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/service/metrics/metrics_types.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -370,16 +371,13 @@ void GlicMetrics::RecordGlicProfilePreferences() {
       profile_prefs->GetBoolean(prefs::kGlicUserEnabledActuationOnWeb));
 }
 
-void GlicMetrics::OnTrustFirstOnboardingShown() {
-  base::RecordAction(base::UserMetricsAction("Glic.Fre.Shown"));
-  base::RecordAction(base::UserMetricsAction("Glic.Fre.Shown.Onboarding"));
-  onboarding_shown_time_ = base::TimeTicks::Now();
-}
-
 void GlicMetrics::OnTrustFirstOnboardingAccept() {
   OnFreAccepted();
   base::RecordAction(base::UserMetricsAction("Glic.Fre.Accept"));
   base::RecordAction(base::UserMetricsAction("Glic.Fre.Accept.Onboarding"));
+  base::UmaHistogramEnumeration(
+      "Glic.Fre.Accept.Entrypoint",
+      glic::GetEntrypointFromInvocationSource(invocation_source_));
 
   if (!onboarding_shown_time_.is_null()) {
     base::UmaHistogramLongTimes(
@@ -395,7 +393,12 @@ void GlicMetrics::OnInstanceOpened() {
   }
 
   if (GlicEnabling::IsTrustFirstOnboardingEnabledForProfile(profile_)) {
-    OnTrustFirstOnboardingShown();
+    base::RecordAction(base::UserMetricsAction("Glic.Fre.Shown"));
+    base::RecordAction(base::UserMetricsAction("Glic.Fre.Shown.Onboarding"));
+    base::UmaHistogramEnumeration(
+        "Glic.Fre.Shown.Entrypoint",
+        glic::GetEntrypointFromInvocationSource(invocation_source_));
+    onboarding_shown_time_ = base::TimeTicks::Now();
   }
 }
 
@@ -405,6 +408,9 @@ void GlicMetrics::OnInstanceClosed() {
   }
 
   base::RecordAction(base::UserMetricsAction("Glic.Fre.Dismissed.Onboarding"));
+  base::UmaHistogramEnumeration(
+      "Glic.Fre.Dismissed.Entrypoint",
+      glic::GetEntrypointFromInvocationSource(invocation_source_));
   base::UmaHistogramLongTimes("Glic.Fre.TotalTime.Dismissed.Onboarding",
                               base::TimeTicks::Now() - onboarding_shown_time_);
   onboarding_shown_time_ = base::TimeTicks();
@@ -624,17 +630,20 @@ void GlicMetrics::OnRecordUseCounter(uint16_t counter) {
 
 void GlicMetrics::OnGlicWindowStartedOpening(bool attached,
                                              mojom::InvocationSource source) {
-  OnInstanceOpened();
+  // With the exception of setting invocation_source_ and OnInstanceOpened,
+  // everything in this method is deprecated post multi-instance side panel.
+  // It's kept for now to reduce merge conflicts.
 
-  base::UmaHistogramEnumeration(
-      "Glic.Session.Open.BrowserActiveState",
-      browser_activity_observer_->GetBrowserActiveState());
   base::RecordAction(base::UserMetricsAction("GlicSessionBegin"));
   show_start_time_ = base::TimeTicks::Now();
   session_start_time_ = base::TimeTicks::Now();
   invocation_source_ = source;
   base::UmaHistogramBoolean("Glic.Session.Open.Attached", attached);
   base::UmaHistogramEnumeration("Glic.Session.Open.InvocationSource", source);
+
+  // This method depends on first setting invocation_source_. This is used for
+  // trust-first FRE metrics.
+  OnInstanceOpened();
 
   // TODO(b/452120577): turn.chosen_source_id_ is still undefined at this point.
   ukm::builders::Glic_WindowOpen(turn_.chosen_source_id_)
