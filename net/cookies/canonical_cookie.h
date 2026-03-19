@@ -284,7 +284,7 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
   // Like Create but with some more friendly defaults for use in tests.
   static std::unique_ptr<CanonicalCookie> CreateForTesting(
       const GURL& url,
-      const std::string& cookie_line,
+      std::string_view cookie_line,
       base::Time creation_time,
       CookieSourceType source_type,
       std::optional<base::Time> server_time = std::nullopt,
@@ -295,7 +295,7 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
   // requires CookieSourceType.
   static std::unique_ptr<CanonicalCookie> CreateForTesting(
       const GURL& url,
-      const std::string& cookie_line,
+      std::string_view cookie_line,
       base::Time creation_time,
       std::optional<base::Time> server_time = std::nullopt,
       std::optional<CookiePartitionKey> cookie_partition_key = std::nullopt,
@@ -310,7 +310,7 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
   // reorder.
   static std::unique_ptr<CanonicalCookie> CreateForTesting(
       const GURL& url,
-      const std::string& cookie_line,
+      std::string_view cookie_line,
       base::Time creation_time,
       std::optional<base::Time> server_time,
       std::optional<CookiePartitionKey> cookie_partition_key,

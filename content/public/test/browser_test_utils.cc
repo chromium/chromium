@@ -2217,7 +2217,7 @@ std::vector<net::CanonicalCookie> GetCanonicalCookies(
 bool SetCookie(
     BrowserContext* browser_context,
     const GURL& url,
-    const std::string& value,
+    std::string_view value,
     net::CookieOptions::SameSiteCookieContext context,
     base::optional_ref<const net::CookiePartitionKey> cookie_partition_key) {
   if (cookie_partition_key) {

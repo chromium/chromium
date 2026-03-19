@@ -855,7 +855,7 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::CreateUnsafeCookieForTesting(
 // static
 std::unique_ptr<CanonicalCookie> CanonicalCookie::CreateForTesting(
     const GURL& url,
-    const std::string& cookie_line,
+    std::string_view cookie_line,
     base::Time creation_time,
     CookieSourceType source_type,
     std::optional<base::Time> server_time,
