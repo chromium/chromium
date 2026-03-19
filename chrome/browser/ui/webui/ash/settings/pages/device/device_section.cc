@@ -1239,7 +1239,7 @@ void DeviceSection::OnDisplayConfigChanged() {
     return;
   }
 
-  std::vector<crosapi::mojom::DisplayUnitInfoPtr> display_unit_info_list =
+  std::vector<ash::DisplayUnitInfo> display_unit_info_list =
       cros_display_config_->GetDisplayUnitInfoList(
           /*single_unified=*/true);
 
@@ -1256,10 +1256,10 @@ void DeviceSection::OnDisplayConfigChanged() {
   bool has_external_display = false;
   bool unified_desktop_mode = false;
   for (const auto& display_unit_info : display_unit_info_list) {
-    has_internal_display |= display_unit_info->is_internal;
-    has_external_display |= !display_unit_info->is_internal;
+    has_internal_display |= display_unit_info.is_internal;
+    has_external_display |= !display_unit_info.is_internal;
     unified_desktop_mode |=
-        display_unit_info->is_primary &&
+        display_unit_info.is_primary &&
         display_layout_info.layout_mode == ash::DisplayLayoutMode::kUnified;
   }
 

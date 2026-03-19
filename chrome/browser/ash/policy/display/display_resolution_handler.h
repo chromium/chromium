@@ -7,14 +7,13 @@
 
 #include <memory>
 #include <set>
-#include <string>
 #include <vector>
 
 #include "chrome/browser/ash/policy/display/display_settings_handler.h"
-#include "chromeos/crosapi/mojom/cros_display_config.mojom-forward.h"
 
 namespace ash {
 class CrosDisplayConfig;
+struct DisplayUnitInfo;
 }  // namespace ash
 
 namespace policy {
@@ -46,9 +45,9 @@ class DisplayResolutionHandler : public DisplaySettingsPolicyHandler {
   // DisplaySettingsPolicyHandler
   const char* SettingName() override;
   void OnSettingUpdate() override;
-  void ApplyChanges(ash::CrosDisplayConfig& cros_display_config,
-                    const std::vector<crosapi::mojom::DisplayUnitInfoPtr>&
-                        info_list) override;
+  void ApplyChanges(
+      ash::CrosDisplayConfig& cros_display_config,
+      const std::vector<ash::DisplayUnitInfo>& info_list) override;
 
  private:
   struct InternalDisplaySettings;
@@ -58,7 +57,7 @@ class DisplayResolutionHandler : public DisplaySettingsPolicyHandler {
   bool recommended_ = false;
   std::unique_ptr<ExternalDisplaySettings> external_display_settings_;
   std::unique_ptr<InternalDisplaySettings> internal_display_settings_;
-  std::set<std::string> resized_display_ids_;
+  std::set<int64_t> resized_display_ids_;
 };
 
 }  // namespace policy

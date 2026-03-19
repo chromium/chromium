@@ -6,11 +6,9 @@
 #define CHROME_BROWSER_ASH_POLICY_DISPLAY_DISPLAY_ROTATION_DEFAULT_HANDLER_H_
 
 #include <set>
-#include <string>
 #include <vector>
 
 #include "chrome/browser/ash/policy/display/display_settings_handler.h"
-#include "chromeos/crosapi/mojom/cros_display_config.mojom-forward.h"
 #include "ui/display/display.h"
 
 namespace ash {
@@ -43,15 +41,15 @@ class DisplayRotationDefaultHandler : public DisplaySettingsPolicyHandler {
   // DisplaySettingsPolicyHandler
   const char* SettingName() override;
   void OnSettingUpdate() override;
-  void ApplyChanges(ash::CrosDisplayConfig& cros_display_config,
-                    const std::vector<crosapi::mojom::DisplayUnitInfoPtr>&
-                        info_list) override;
+  void ApplyChanges(
+      ash::CrosDisplayConfig& cros_display_config,
+      const std::vector<ash::DisplayUnitInfo>& info_list) override;
 
  private:
   bool policy_enabled_ = false;
   display::Display::Rotation display_rotation_default_ =
       display::Display::ROTATE_0;
-  std::set<std::string> rotated_display_ids_;
+  std::set<int64_t> rotated_display_ids_;
 };
 
 }  // namespace policy

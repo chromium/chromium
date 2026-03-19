@@ -43,7 +43,7 @@ class TestCrosDisplayConfig final : public ash::CrosDisplayConfig {
       const ash::DisplayLayoutInfo& info) override {
     NOTREACHED();
   }
-  std::vector<crosapi::mojom::DisplayUnitInfoPtr> GetDisplayUnitInfoList(
+  std::vector<ash::DisplayUnitInfo> GetDisplayUnitInfoList(
       bool single_unified) override {
     NOTREACHED();
   }

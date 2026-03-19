@@ -200,21 +200,14 @@ void DisplayInfoProviderChromeOS::SetDisplayProperties(
 
   // Display mode.
   if (properties.display_mode) {
-    auto mojo_display_mode = crosapi::mojom::DisplayMode::New();
     const api::system_display::DisplayMode& api_display_mode =
         *properties.display_mode;
-    mojo_display_mode->size =
-        gfx::Size(api_display_mode.width, api_display_mode.height);
-    mojo_display_mode->size_in_native_pixels =
-        gfx::Size(api_display_mode.width_in_native_pixels,
-                  api_display_mode.height_in_native_pixels);
-    mojo_display_mode->device_scale_factor =
-        api_display_mode.device_scale_factor;
-    mojo_display_mode->refresh_rate = api_display_mode.refresh_rate;
-    mojo_display_mode->is_native = api_display_mode.is_native;
-    mojo_display_mode->is_interlaced =
-        api_display_mode.is_interlaced && *(api_display_mode.is_interlaced);
-    config_properties.display_mode = std::move(mojo_display_mode);
+    gfx::Size size_in_native_pixels(api_display_mode.width_in_native_pixels,
+                                    api_display_mode.height_in_native_pixels);
+    config_properties.display_mode = display::ManagedDisplayMode(
+        size_in_native_pixels, api_display_mode.refresh_rate,
+        api_display_mode.is_interlaced && *(api_display_mode.is_interlaced),
+        api_display_mode.is_native, api_display_mode.device_scale_factor);
   }
 
   if (cros_display_config_) {
@@ -270,12 +263,11 @@ void DisplayInfoProviderChromeOS::GetAllDisplaysInfo(
   if (cros_display_config_) {
     ash::DisplayLayoutInfo layout =
         cros_display_config_->GetDisplayLayoutInfo();
-    std::vector<crosapi::mojom::DisplayUnitInfoPtr> info_list =
+    std::vector<ash::DisplayUnitInfo> info_list =
         cros_display_config_->GetDisplayUnitInfoList(single_unified);
     DisplayUnitInfoList all_displays;
-    for (const crosapi::mojom::DisplayUnitInfoPtr& info : info_list) {
-      system_display::DisplayUnitInfo display =
-          GetDisplayUnitInfoFromMojo(*info);
+    for (const auto& info : info_list) {
+      system_display::DisplayUnitInfo display = GetDisplayUnitInfoFromAsh(info);
       SetDisplayUnitInfoLayoutProperties(layout, &display);
       all_displays.push_back(std::move(display));
     }

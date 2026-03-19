@@ -187,24 +187,24 @@ std::string GetEnrollmentStatusString() {
   }
 }
 
-std::string GetDisplayInfoString(
-    const crosapi::mojom::DisplayUnitInfo& display_info) {
+std::string GetDisplayInfoString(const ash::DisplayUnitInfo& display_info) {
   std::string entry;
-  if (!display_info.name.empty())
+  if (!display_info.name.empty()) {
     base::StringAppendF(&entry, "%s : ", display_info.name.c_str());
-  if (!display_info.edid)
-    return entry;
-  const crosapi::mojom::Edid& edid = *display_info.edid;
-  if (!edid.manufacturer_id.empty()) {
-    base::StringAppendF(&entry, "Manufacturer: %s - ",
-                        edid.manufacturer_id.c_str());
   }
-  if (!edid.product_id.empty()) {
-    base::StringAppendF(&entry, "Product ID: %s - ", edid.product_id.c_str());
-  }
-  if (edid.year_of_manufacture != display::kInvalidYearOfManufacture) {
-    base::StringAppendF(&entry, "Year of Manufacture: %d",
-                        edid.year_of_manufacture);
+  if (display_info.edid.has_value()) {
+    const ash::Edid& edid = *display_info.edid;
+    if (!edid.manufacturer_id.empty()) {
+      base::StringAppendF(&entry, "Manufacturer: %s - ",
+                          edid.manufacturer_id.c_str());
+    }
+    if (!edid.product_id.empty()) {
+      base::StringAppendF(&entry, "Product ID: %s - ", edid.product_id.c_str());
+    }
+    if (edid.year_of_manufacture != display::kInvalidYearOfManufacture) {
+      base::StringAppendF(&entry, "Year of Manufacture: %d",
+                          edid.year_of_manufacture);
+    }
   }
   return entry;
 }
@@ -284,7 +284,7 @@ void PopulateDiskSpaceLogsAsync(std::unique_ptr<SystemLogsResponse> response,
 void PopulateMonitorInfoAsync(SystemLogsResponse* response,
                               base::OnceCallback<void()> callback) {
   if (ash::Shell::HasInstance()) {
-    std::vector<crosapi::mojom::DisplayUnitInfoPtr> info_list =
+    std::vector<ash::DisplayUnitInfo> info_list =
         ash::Shell::Get()->cros_display_config()->GetDisplayUnitInfoList(
             /*single_unified=*/false);
     std::string entry;
@@ -292,7 +292,7 @@ void PopulateMonitorInfoAsync(SystemLogsResponse* response,
       if (!entry.empty()) {
         base::StringAppendF(&entry, "\n");
       }
-      entry += GetDisplayInfoString(*info);
+      entry += GetDisplayInfoString(info);
     }
     response->emplace(kMonitorInfoKey, entry);
     std::move(callback).Run();

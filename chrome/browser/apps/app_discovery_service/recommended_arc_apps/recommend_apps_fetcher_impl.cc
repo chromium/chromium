@@ -332,15 +332,13 @@ void RecommendAppsFetcherImpl::PopulateDisplaySettings() {
     return;
   }
 
-  std::vector<crosapi::mojom::DisplayUnitInfoPtr> all_displays_info =
+  std::vector<ash::DisplayUnitInfo> all_displays_info =
       cros_display_config_->GetDisplayUnitInfoList(/*single_unified=*/false);
 
   int screen_density = 0;
-  for (const crosapi::mojom::DisplayUnitInfoPtr& display_info :
-       all_displays_info) {
-    if (base::NumberToString(display::Display::InternalDisplayId()) ==
-        display_info->id) {
-      screen_density = display_info->dpi_x + display_info->dpi_y;
+  for (const ash::DisplayUnitInfo& display_info : all_displays_info) {
+    if (display::Display::InternalDisplayId() == display_info.id) {
+      screen_density = display_info.dpi_x + display_info.dpi_y;
       break;
     }
   }

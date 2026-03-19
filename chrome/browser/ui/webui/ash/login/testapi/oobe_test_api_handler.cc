@@ -221,14 +221,14 @@ void OobeTestAPIHandler::ShowGaiaDialog() {
 
 void OobeTestAPIHandler::HandleGetPrimaryDisplayName(
     const std::string& callback_id) {
-  std::vector<crosapi::mojom::DisplayUnitInfoPtr> info_list =
+  std::vector<ash::DisplayUnitInfo> info_list =
       ash::Shell::Get()->cros_display_config()->GetDisplayUnitInfoList(
           /*single_unified=*/false);
 
   std::string display_name;
-  for (const crosapi::mojom::DisplayUnitInfoPtr& info : info_list) {
-    if (info->is_primary) {
-      display_name = info->name;
+  for (const auto& info : info_list) {
+    if (info.is_primary) {
+      display_name = info.name;
       break;
     }
   }

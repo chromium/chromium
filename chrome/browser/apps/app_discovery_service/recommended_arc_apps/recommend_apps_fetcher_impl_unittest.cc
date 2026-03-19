@@ -14,7 +14,6 @@
 #include "base/files/file_path.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/apps/app_discovery_service/recommended_arc_apps/fake_recommend_apps_fetcher_delegate.h"
 #include "chrome/browser/apps/app_discovery_service/recommended_arc_apps/recommend_apps_fetcher.h"
@@ -88,7 +87,7 @@ class TestCrosDisplayConfig final : public ash::CrosDisplayConfig {
   ~TestCrosDisplayConfig() = default;
 
   void SetNextDisplayUnitInfoList(
-      std::vector<crosapi::mojom::DisplayUnitInfoPtr> unit_info_list) {
+      std::vector<ash::DisplayUnitInfo> unit_info_list) {
     next_display_unit_info_list_ = std::move(unit_info_list);
   }
 
@@ -100,7 +99,7 @@ class TestCrosDisplayConfig final : public ash::CrosDisplayConfig {
       const ash::DisplayLayoutInfo& info) override {
     NOTREACHED();
   }
-  std::vector<crosapi::mojom::DisplayUnitInfoPtr> GetDisplayUnitInfoList(
+  std::vector<ash::DisplayUnitInfo> GetDisplayUnitInfoList(
       bool single_unified) override {
     auto result = std::move(next_display_unit_info_list_);
     next_display_unit_info_list_.clear();
@@ -132,7 +131,7 @@ class TestCrosDisplayConfig final : public ash::CrosDisplayConfig {
                         int32_t delta_y) override {}
 
  private:
-  std::vector<crosapi::mojom::DisplayUnitInfoPtr> next_display_unit_info_list_;
+  std::vector<ash::DisplayUnitInfo> next_display_unit_info_list_;
 };
 
 // Helper class to extract relevant information from the app list request
@@ -271,26 +270,25 @@ class RecommendAppsFetcherImplTest : public testing::Test {
     const float y;
   };
 
-  std::vector<crosapi::mojom::DisplayUnitInfoPtr> CreateDisplayUnitInfo(
+  std::vector<ash::DisplayUnitInfo> CreateDisplayUnitInfo(
       const Dpi& internal_dpi,
       std::optional<Dpi> external_dpi) {
-    std::vector<crosapi::mojom::DisplayUnitInfoPtr> info_list;
+    std::vector<ash::DisplayUnitInfo> info_list;
 
     if (external_dpi.has_value()) {
-      auto external_info = crosapi::mojom::DisplayUnitInfo::New();
-      external_info->id =
-          base::NumberToString(test_screen_.GetPrimaryDisplay().id() + 1);
-      external_info->is_internal = false;
-      external_info->dpi_x = external_dpi->x;
-      external_info->dpi_y = external_dpi->y;
+      ash::DisplayUnitInfo external_info;
+      external_info.id = test_screen_.GetPrimaryDisplay().id() + 1;
+      external_info.is_internal = false;
+      external_info.dpi_x = external_dpi->x;
+      external_info.dpi_y = external_dpi->y;
       info_list.emplace_back(std::move(external_info));
     }
 
-    auto info = crosapi::mojom::DisplayUnitInfo::New();
-    info->id = base::NumberToString(test_screen_.GetPrimaryDisplay().id());
-    info->is_internal = true;
-    info->dpi_x = internal_dpi.x;
-    info->dpi_y = internal_dpi.y;
+    ash::DisplayUnitInfo info;
+    info.id = test_screen_.GetPrimaryDisplay().id();
+    info.is_internal = true;
+    info.dpi_x = internal_dpi.x;
+    info.dpi_y = internal_dpi.y;
     info_list.emplace_back(std::move(info));
 
     return info_list;

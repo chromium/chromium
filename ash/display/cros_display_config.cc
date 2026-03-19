@@ -198,20 +198,6 @@ DisplayConfigResult SetDisplayLayoutMode(const DisplayLayoutInfo& info) {
   return DisplayConfigResult::kSuccess;
 }
 
-crosapi::mojom::DisplayModePtr GetDisplayMode(
-    const display::ManagedDisplayInfo& display_info,
-    const display::ManagedDisplayMode& display_mode) {
-  auto result = crosapi::mojom::DisplayMode::New();
-  gfx::Size size_dip = display_mode.GetSizeInDIP();
-  result->size = size_dip;
-  result->size_in_native_pixels = display_mode.size();
-  result->device_scale_factor = display_mode.device_scale_factor();
-  result->refresh_rate = display_mode.refresh_rate();
-  result->is_native = display_mode.native();
-  result->is_interlaced = display_mode.is_interlaced();
-  return result;
-}
-
 display::Display::Rotation DisplayRotationFromRotationOptions(
     crosapi::mojom::DisplayRotationOptions option) {
   switch (option) {
@@ -260,52 +246,51 @@ crosapi::mojom::DisplayRotationOptions RotationOptionsFromDisplayRotation(
   }
 }
 
-crosapi::mojom::DisplayUnitInfoPtr GetDisplayUnitInfo(
-    const display::Display& display,
-    int64_t primary_id) {
+DisplayUnitInfo GetDisplayUnitInfo(const display::Display& display,
+                                   int64_t primary_id) {
   display::DisplayManager* display_manager = GetDisplayManager();
   const display::ManagedDisplayInfo& display_info =
       display_manager->GetDisplayInfo(display.id());
 
-  auto info = crosapi::mojom::DisplayUnitInfo::New();
-  info->id = base::NumberToString(display.id());
-  info->name = display_manager->GetDisplayNameForId(display.id());
+  DisplayUnitInfo info;
+  info.id = display.id();
+  info.name = display_manager->GetDisplayNameForId(display.id());
 
   if (!display_info.manufacturer_id().empty() ||
       !display_info.product_id().empty() ||
       (display_info.year_of_manufacture() !=
        display::kInvalidYearOfManufacture)) {
-    info->edid = crosapi::mojom::Edid::New();
-    info->edid->manufacturer_id = display_info.manufacturer_id();
-    info->edid->product_id = display_info.product_id();
-    info->edid->year_of_manufacture = display_info.year_of_manufacture();
+    info.edid.emplace();
+    info.edid->manufacturer_id = display_info.manufacturer_id();
+    info.edid->product_id = display_info.product_id();
+    info.edid->year_of_manufacture = display_info.year_of_manufacture();
   }
 
-  info->is_primary = display.id() == primary_id;
-  info->is_internal = display.IsInternal();
-  info->is_enabled = true;
-  info->is_detected = display.detected();
-  info->is_auto_rotation_allowed =
+  info.is_primary = display.id() == primary_id;
+  info.is_internal = display.IsInternal();
+  info.is_enabled = true;
+  info.is_detected = display.detected();
+  info.is_auto_rotation_allowed =
       Shell::Get()->screen_orientation_controller()->IsAutoRotationAllowed() &&
       display.IsInternal();
   const bool has_accelerometer_support =
       display.accelerometer_support() ==
       display::Display::AccelerometerSupport::AVAILABLE;
-  info->has_touch_support =
+  info.has_touch_support =
       display.touch_support() == display::Display::TouchSupport::AVAILABLE;
-  info->has_accelerometer_support = has_accelerometer_support;
+  info.has_accelerometer_support = has_accelerometer_support;
 
   const float device_dpi = display_info.device_dpi();
-  info->dpi_x = device_dpi * display.size().width() /
-                display_info.bounds_in_native().width();
-  info->dpi_y = device_dpi * display.size().height() /
-                display_info.bounds_in_native().height();
+  info.dpi_x = device_dpi * display.size().width() /
+               display_info.bounds_in_native().width();
+  info.dpi_y = device_dpi * display.size().height() /
+               display_info.bounds_in_native().height();
 
-  info->rotation_options = RotationOptionsFromDisplayRotation(
+  info.rotation_options = RotationOptionsFromDisplayRotation(
       display.rotation(), display.IsInternal());
-  info->bounds = display.bounds();
-  info->overscan = display_manager->GetOverscanInsets(display.id());
-  info->work_area = display.work_area();
+  info.bounds = display.bounds();
+  info.overscan = display_manager->GetOverscanInsets(display.id());
+  info.work_area = display.work_area();
 
   int display_mode_index = 0;
   display::ManagedDisplayMode active_mode;
@@ -313,22 +298,21 @@ crosapi::mojom::DisplayUnitInfoPtr GetDisplayUnitInfo(
       display_info.id(), &active_mode);
   for (const display::ManagedDisplayMode& display_mode :
        display_info.display_modes()) {
-    info->available_display_modes.emplace_back(
-        GetDisplayMode(display_info, display_mode));
+    info.available_display_modes.push_back(display_mode);
     if (has_active_mode && display_mode.IsEquivalent(active_mode)) {
-      info->selected_display_mode_index = display_mode_index;
+      info.selected_display_mode_index = display_mode_index;
     }
     ++display_mode_index;
   }
 
-  info->display_zoom_factor = display_info.zoom_factor();
+  info.display_zoom_factor = display_info.zoom_factor();
   if (has_active_mode) {
     auto zoom_levels = display::GetDisplayZoomFactors(active_mode);
-    info->available_display_zoom_factors.reserve(zoom_levels.size());
-    info->available_display_zoom_factors.assign(zoom_levels.begin(),
-                                                zoom_levels.end());
+    info.available_display_zoom_factors.reserve(zoom_levels.size());
+    info.available_display_zoom_factors.assign(zoom_levels.begin(),
+                                               zoom_levels.end());
   } else {
-    info->available_display_zoom_factors.push_back(display_info.zoom_factor());
+    info.available_display_zoom_factors.push_back(display_info.zoom_factor());
   }
 
   return info;
@@ -463,7 +447,7 @@ void SetDisplayLayoutFromBounds(const gfx::Rect& primary_display_bounds,
 // Attempts to set the display mode for display |id|.
 DisplayConfigResult SetDisplayMode(
     int64_t id,
-    const crosapi::mojom::DisplayMode& display_mode,
+    const display::ManagedDisplayMode& display_mode,
     crosapi::mojom::DisplayConfigSource source) {
   display::DisplayManager* display_manager = GetDisplayManager();
 
@@ -472,12 +456,7 @@ DisplayConfigResult SetDisplayMode(
     return DisplayConfigResult::kInvalidDisplayIdError;
   }
 
-  display::ManagedDisplayMode new_mode(
-      display_mode.size_in_native_pixels, display_mode.refresh_rate,
-      display_mode.is_interlaced, display_mode.is_native,
-      display_mode.device_scale_factor);
-
-  if (!new_mode.IsEquivalent(current_mode)) {
+  if (!display_mode.IsEquivalent(current_mode)) {
     // For the internal display, the display mode will be applied directly.
     // Otherwise a confirm/revert notification will be prepared first, and the
     // display mode will be applied. If the user accepts the mode change by
@@ -486,7 +465,7 @@ DisplayConfigResult SetDisplayMode(
     if (!Shell::Get()
              ->resolution_notification_controller()
              ->PrepareNotificationAndSetDisplayMode(
-                 id, current_mode, new_mode, source, base::BindOnce([]() {
+                 id, current_mode, display_mode, source, base::BindOnce([]() {
                    Shell::Get()->display_prefs()->MaybeStoreDisplayPrefs();
                  }))) {
       return DisplayConfigResult::kSetDisplayModeError;
@@ -510,10 +489,23 @@ DisplayLayoutInfo::~DisplayLayoutInfo() = default;
 
 DisplayConfigProperties::DisplayConfigProperties() = default;
 DisplayConfigProperties::DisplayConfigProperties(
+    const DisplayConfigProperties& other) = default;
+DisplayConfigProperties::DisplayConfigProperties(
     DisplayConfigProperties&& other) noexcept = default;
+DisplayConfigProperties& DisplayConfigProperties::operator=(
+    const DisplayConfigProperties& other) = default;
 DisplayConfigProperties& DisplayConfigProperties::operator=(
     DisplayConfigProperties&& other) noexcept = default;
 DisplayConfigProperties::~DisplayConfigProperties() = default;
+
+DisplayUnitInfo::DisplayUnitInfo() = default;
+DisplayUnitInfo::DisplayUnitInfo(const DisplayUnitInfo& other) = default;
+DisplayUnitInfo::DisplayUnitInfo(DisplayUnitInfo&& other) noexcept = default;
+DisplayUnitInfo& DisplayUnitInfo::operator=(const DisplayUnitInfo& other) =
+    default;
+DisplayUnitInfo& DisplayUnitInfo::operator=(DisplayUnitInfo&& other) noexcept =
+    default;
+DisplayUnitInfo::~DisplayUnitInfo() = default;
 
 // -----------------------------------------------------------------------------
 // CrosDisplayConfigImpl::ObserverImpl:
@@ -703,9 +695,9 @@ DisplayConfigResult CrosDisplayConfigImpl::SetDisplayLayoutInfo(
   return DisplayConfigResult::kSuccess;
 }
 
-std::vector<crosapi::mojom::DisplayUnitInfoPtr>
-CrosDisplayConfigImpl::GetDisplayUnitInfoList(bool single_unified) {
-  std::vector<crosapi::mojom::DisplayUnitInfoPtr> info_list;
+std::vector<DisplayUnitInfo> CrosDisplayConfigImpl::GetDisplayUnitInfoList(
+    bool single_unified) {
+  std::vector<DisplayUnitInfo> info_list;
   display::DisplayManager* display_manager = GetDisplayManager();
 
   std::vector<display::Display> displays;
@@ -799,7 +791,7 @@ DisplayConfigResult CrosDisplayConfigImpl::SetDisplayProperties(
   // Set the display mode. Note: if this returns an error, other properties
   // will have already been applied. TODO(stevenjb): Validate the display mode
   // before applying any properties.
-  if (properties.display_mode) {
+  if (properties.display_mode.has_value()) {
     result = SetDisplayMode(display.id(), *properties.display_mode, source);
     if (result != DisplayConfigResult::kSuccess) {
       return result;

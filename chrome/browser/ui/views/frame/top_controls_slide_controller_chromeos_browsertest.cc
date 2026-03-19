@@ -20,6 +20,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/safe_sprintf.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "cc/base/math_util.h"
@@ -950,10 +951,10 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest, DisplayRotation) {
 
   ash::CrosDisplayConfig* cros_display_config =
       ash::Shell::Get()->cros_display_config();
-  std::vector<crosapi::mojom::DisplayUnitInfoPtr> info_list =
+  std::vector<ash::DisplayUnitInfo> info_list =
       cros_display_config->GetDisplayUnitInfoList(/*single_unified=*/false);
   for (const auto& display_unit_info : info_list) {
-    const std::string display_id = display_unit_info->id;
+    const std::string display_id = base::NumberToString(display_unit_info.id);
     for (const auto& rotation : rotations_to_try) {
       BrowserViewLayoutWaiter browser_view_layout_waiter(browser_view());
       ash::DisplayConfigProperties config_properties;

@@ -16,9 +16,11 @@
 #include "base/types/optional_ref.h"
 #include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
 #include "ui/display/display_layout.h"
+#include "ui/display/manager/managed_display_info.h"
 #include "ui/display/manager/touch_device_manager.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace ash {
 
@@ -73,10 +75,9 @@ struct ASH_EXPORT DisplayLayoutInfo {
 // SetDisplayProperties.
 struct ASH_EXPORT DisplayConfigProperties {
   DisplayConfigProperties();
-  DisplayConfigProperties(const DisplayConfigProperties& other) = delete;
+  DisplayConfigProperties(const DisplayConfigProperties& other);
   DisplayConfigProperties(DisplayConfigProperties&& other) noexcept;
-  DisplayConfigProperties& operator=(const DisplayConfigProperties& other) =
-      delete;
+  DisplayConfigProperties& operator=(const DisplayConfigProperties& other);
   DisplayConfigProperties& operator=(DisplayConfigProperties&& other) noexcept;
   ~DisplayConfigProperties();
 
@@ -105,10 +106,10 @@ struct ASH_EXPORT DisplayConfigProperties {
   // just performing a pixel by pixel stretch enlargement.
   double display_zoom_factor = 0.0;
 
-  // Optional DisplayMode properties to set. This should match one of the
+  // Optional display mode properties to set. This should match one of the
   // modes listed in DisplayUnitInfo.available_display_modes. Other custom
   // modes may or may not be valid.
-  crosapi::mojom::DisplayModePtr display_mode;
+  std::optional<display::ManagedDisplayMode> display_mode;
 };
 
 // SetDisplayLayoutInfo or SetDisplayProperties result.
@@ -150,6 +151,96 @@ enum class DisplayConfigResult {
   kCalibrationFailedError,
 };
 
+// EDID extracted parameters. Field description refers to "VESA ENHANCED
+// EXTENDED DISPLAY IDENTIFICATION DATA STANDARD (Defines EDID Structure
+// Version 1, Revision 4)" Release A, Revision 2 September 25, 2006.
+// https://www.vesa.org/vesa-standards
+struct ASH_EXPORT Edid {
+  // Three character manufacturer code, Sec. 3.4.1 page 21.
+  std::string manufacturer_id;
+
+  // Two byte manufacturer-assigned code, Sec. 3.4.2 page 21.
+  std::string product_id;
+
+  // Year of manufacture. Sec. 3.4.4 page 22.
+  int32_t year_of_manufacture = 0;
+};
+
+// Defines the properties of an individual display, returned by
+// GetDisplayLayoutInfo.
+struct ASH_EXPORT DisplayUnitInfo {
+  DisplayUnitInfo();
+  DisplayUnitInfo(const DisplayUnitInfo& other);
+  DisplayUnitInfo(DisplayUnitInfo&& other) noexcept;
+  DisplayUnitInfo& operator=(const DisplayUnitInfo& other);
+  DisplayUnitInfo& operator=(DisplayUnitInfo&& other) noexcept;
+  ~DisplayUnitInfo();
+
+  // The unique identifier of the display.
+  int64_t id = 0;
+
+  // The user-friendly name (e.g. "Acme LCD monitor").
+  std::string name;
+
+  // EDID properties when available.
+  std::optional<Edid> edid;
+
+  // True if this is the primary display.
+  bool is_primary = false;
+
+  // True if this is an internal display.
+  bool is_internal = false;
+
+  // True if this display is enabled.
+  bool is_enabled = false;
+
+  // True if auto-rotation is allowed. It happens when the device is in a
+  // physical tablet state or kSupportsClamshellAutoRotation is set.
+  bool is_auto_rotation_allowed = false;
+
+  // True if this display has a touch input device associated with it.
+  bool has_touch_support = false;
+
+  // True if this display has an accelerometer associated with it.
+  bool has_accelerometer_support = false;
+
+  // The number of pixels per inch along the x-axis.
+  double dpi_x = 0.0;
+
+  // The number of pixels per inch along the y-axis.
+  double dpi_y = 0.0;
+
+  // The display rotation options.
+  crosapi::mojom::DisplayRotationOptions rotation_options =
+      crosapi::mojom::DisplayRotationOptions::kAutoRotate;
+
+  // The display's logical bounds.
+  gfx::Rect bounds;
+
+  // The display's ovserscan insets within its screen's bounds.
+  gfx::Insets overscan;
+
+  // The usable work area of the display within the display bounds. Excludes
+  // areas of the display reserved for the OS, e.g. the taskbar and launcher.
+  gfx::Rect work_area;
+
+  // The index of the selected display mode.
+  int32_t selected_display_mode_index = 0;
+
+  // The list of available display modes.
+  std::vector<display::ManagedDisplayMode> available_display_modes;
+
+  // The ratio between the display's current and default zoom. i.e. 1.0 is
+  // is equivalent to 100% zoom, and value 1.5 is equivalent to 150% zoom.
+  double display_zoom_factor = 0.0;
+
+  // The list of allowed zoom factor values for the display.
+  std::vector<double> available_display_zoom_factors;
+
+  // True if the display was detected by the system.
+  bool is_detected = false;
+};
+
 // Interface for configuring displays in Chrome OS.
 class CrosDisplayConfig {
  public:
@@ -175,8 +266,8 @@ class CrosDisplayConfig {
 
   // Returns the properties for all displays. If |single_unified| is true, a
   // single display will be returned if the display layout is in unified mode.
-  virtual std::vector<crosapi::mojom::DisplayUnitInfoPtr>
-  GetDisplayUnitInfoList(bool single_unified) = 0;
+  virtual std::vector<DisplayUnitInfo> GetDisplayUnitInfoList(
+      bool single_unified) = 0;
 
   // Sets |properties| for individual display with identifier |id|. |source|
   // should describe who initiated the change. Returns Success if the properties
@@ -240,7 +331,7 @@ class ASH_EXPORT CrosDisplayConfigImpl final : public CrosDisplayConfig {
   DisplayLayoutInfo GetDisplayLayoutInfo() override;
   DisplayConfigResult SetDisplayLayoutInfo(
       const DisplayLayoutInfo& info) override;
-  std::vector<crosapi::mojom::DisplayUnitInfoPtr> GetDisplayUnitInfoList(
+  std::vector<DisplayUnitInfo> GetDisplayUnitInfoList(
       bool single_unified) override;
   DisplayConfigResult SetDisplayProperties(
       const std::string& id,

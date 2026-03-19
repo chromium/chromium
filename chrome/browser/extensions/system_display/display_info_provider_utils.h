@@ -48,9 +48,9 @@ std::optional<std::string> ValidateDisplayPropertiesInput(
     const std::string& display_id_str,
     const api::system_display::DisplayProperties& info);
 
-// Converts display unit crosapi `mojo_info` to system display type.
-api::system_display::DisplayUnitInfo GetDisplayUnitInfoFromMojo(
-    const crosapi::mojom::DisplayUnitInfo& mojo_info);
+// Converts display unit info from ash type to api type.
+api::system_display::DisplayUnitInfo GetDisplayUnitInfoFromAsh(
+    const ash::DisplayUnitInfo& ash_info);
 
 // Converts from the api type of touch calibration pairs to the ui one.
 display::TouchCalibrationData::CalibrationPointPair GetTouchCalibrationPair(

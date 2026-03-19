@@ -9,6 +9,7 @@
 #include "ash/display/cros_display_config.h"
 #include "ash/shell.h"
 #include "base/functional/callback_helpers.h"
+#include "base/strings/string_number_conversions.h"
 
 namespace policy {
 
@@ -93,19 +94,18 @@ void DisplayRotationDefaultHandler::OnSettingUpdate() {
 
 void DisplayRotationDefaultHandler::ApplyChanges(
     ash::CrosDisplayConfig& cros_display_config,
-    const std::vector<crosapi::mojom::DisplayUnitInfoPtr>& info_list) {
+    const std::vector<ash::DisplayUnitInfo>& info_list) {
   if (!policy_enabled_)
     return;
-  for (const crosapi::mojom::DisplayUnitInfoPtr& display_unit_info :
-       info_list) {
-    std::string display_id = display_unit_info->id;
-
-    if (rotated_display_ids_.find(display_id) != rotated_display_ids_.end())
+  for (const auto& display_unit_info : info_list) {
+    if (rotated_display_ids_.find(display_unit_info.id) !=
+        rotated_display_ids_.end()) {
       continue;
+    }
 
-    rotated_display_ids_.insert(display_id);
+    rotated_display_ids_.insert(display_unit_info.id);
     display::Display::Rotation rotation =
-        DisplayRotationFromRotationOptions(display_unit_info->rotation_options);
+        DisplayRotationFromRotationOptions(display_unit_info.rotation_options);
     if (rotation == display_rotation_default_)
       continue;
 
@@ -115,7 +115,7 @@ void DisplayRotationDefaultHandler::ApplyChanges(
     config_properties.rotation =
         RotationOptionsFromDisplayRotation(display_rotation_default_);
     cros_display_config.SetDisplayProperties(
-        display_unit_info->id, config_properties,
+        base::NumberToString(display_unit_info.id), config_properties,
         crosapi::mojom::DisplayConfigSource::kPolicy);
   }
 }
