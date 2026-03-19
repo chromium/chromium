@@ -184,7 +184,7 @@ bool ConsumeHTMLEntity(SegmentedString& source,
           entity_state = kNumber;
           break;
         }
-        if ((cc >= 'a' && cc <= 'z') || (cc >= 'A' && cc <= 'Z')) {
+        if (IsAsciiAlpha(cc)) {
           entity_state = kNamed;
           continue;
         }
@@ -199,7 +199,7 @@ bool ConsumeHTMLEntity(SegmentedString& source,
           entity_state = kMaybeHexUpperCaseX;
           break;
         }
-        if (cc >= '0' && cc <= '9') {
+        if (IsAsciiDigit(cc)) {
           entity_state = kDecimal;
           continue;
         }
@@ -239,7 +239,7 @@ bool ConsumeHTMLEntity(SegmentedString& source,
         break;
       }
       case kDecimal: {
-        if (cc >= '0' && cc <= '9') {
+        if (IsAsciiDigit(cc)) {
           if (result != kInvalidUnicode)
             result = result * 10 + cc - '0';
         } else if (cc == ';') {

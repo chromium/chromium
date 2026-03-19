@@ -202,12 +202,12 @@ LChar HTMLEntityTableEntry::LastCharacter() const {
 }
 
 base::span<const HTMLEntityTableEntry> HTMLEntityTable::EntriesStartingWith(UChar c) {
-  if (c >= 'A' && c <= 'Z') {
+  if (IsAsciiUpper(c)) {
     const size_t first = kUppercaseOffset[c - 'A'];
     const size_t last = kUppercaseOffset[c - 'A' + 1];
     return AllEntries().subspan(first, last - first);
   }
-  if (c >= 'a' && c <= 'z') {
+  if (IsAsciiLower(c)) {
     const size_t first = kLowercaseOffset[c - 'a'];
     const size_t last = kLowercaseOffset[c - 'a' + 1];
     return AllEntries().subspan(first, last - first);

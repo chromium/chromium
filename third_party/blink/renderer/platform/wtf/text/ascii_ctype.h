@@ -60,7 +60,7 @@ inline bool IsAsciiAlpha(CharType c) {
 }
 
 template <typename CharType>
-inline bool IsAsciiDigit(CharType c) {
+constexpr inline bool IsAsciiDigit(CharType c) {
   return c >= '0' && c <= '9';
 }
 

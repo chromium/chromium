@@ -62,7 +62,7 @@ namespace {
 void AssertProtocolIsGood(const StringView protocol) {
   DCHECK(protocol != "");
   DCHECK(std::ranges::all_of(protocol.Span8(), [](const LChar c) {
-    return c > ' ' && c < 0x7F && !(c >= 'A' && c <= 'Z');
+    return IsAsciiPrintable(c) && c != ' ' && !IsAsciiUpper(c);
   }));
 }
 #endif
@@ -88,12 +88,12 @@ std::string_view CharactersOrEmpty(const StringUtf8Adaptor& string) {
 }
 
 bool IsSchemeFirstChar(char c) {
-  return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
+  return IsAsciiAlpha(c);
 }
 
 bool IsSchemeChar(char c) {
-  return IsSchemeFirstChar(c) || (c >= '0' && c <= '9') || c == '.' ||
-         c == '-' || c == '+';
+  return IsSchemeFirstChar(c) || IsAsciiDigit(c) || c == '.' || c == '-' ||
+         c == '+';
 }
 
 bool IsUnicodeEncoding(const TextEncoding* encoding) {

@@ -196,7 +196,7 @@ bool MIMETypeRegistry::IsXMLMIMEType(const String& mime_type) {
   // Per RFCs 3023 and 2045, an XML MIME type is of the form:
   // ^[0-9a-zA-Z_\\-+~!$\\^{}|.%'`#&*]+/[0-9a-zA-Z_\\-+~!$\\^{}|.%'`#&*]+\+xml$
 
-  int length = mime_type.length();
+  String::size_type length = mime_type.length();
   if (length < 7)
     return false;
 
@@ -206,14 +206,11 @@ bool MIMETypeRegistry::IsXMLMIMEType(const String& mime_type) {
   }
 
   bool has_slash = false;
-  for (int i = 0; i < length - 4; ++i) {
+  for (String::size_type i = 0; i < length - 4; ++i) {
     UChar ch = mime_type[i];
-    if (ch >= '0' && ch <= '9')
+    if (IsAsciiAlphanumeric(ch)) {
       continue;
-    if (ch >= 'a' && ch <= 'z')
-      continue;
-    if (ch >= 'A' && ch <= 'Z')
-      continue;
+    }
     switch (ch) {
       case '_':
       case '-':

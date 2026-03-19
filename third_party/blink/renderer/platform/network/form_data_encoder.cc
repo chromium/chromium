@@ -255,8 +255,7 @@ void FormDataEncoder::EncodeStringAsFormData(Vector<char>& buffer,
   for (size_t i = 0; i < length; ++i) {
     const unsigned char c = string[i];
 
-    if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') ||
-        (c >= '0' && c <= '9') ||
+    if (IsAsciiAlphanumeric(c) ||
         (c != '\0' && kSafeCharacters.find(c) != std::string_view::npos)) {
       buffer.push_back(c);
     } else if (c == ' ') {

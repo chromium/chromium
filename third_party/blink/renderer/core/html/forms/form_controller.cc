@@ -150,7 +150,7 @@ class SavedFormState {
 };
 
 static bool IsNotFormControlTypeCharacter(UChar ch) {
-  return ch != '-' && (ch > 'z' || ch < 'a');
+  return ch != '-' && !IsAsciiLower(ch);
 }
 
 std::unique_ptr<SavedFormState> SavedFormState::Deserialize(

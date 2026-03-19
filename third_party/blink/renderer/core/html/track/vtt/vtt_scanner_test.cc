@@ -110,21 +110,17 @@ TEST(VTTScannerTest, BasicOperations2) {
   TEST_WITH(ScanSequenceHelper2, "foe");
 }
 
-bool LowerCaseAlpha(UChar c) {
-  return c >= 'a' && c <= 'z';
-}
-
 void ScanWithPredicate(const String& input) {
   VTTScanner scanner(input);
   EXPECT_FALSE(scanner.IsAtEnd());
   // Collect "bad".
-  size_t lc_run_length = scanner.CountWhile<LowerCaseAlpha>();
+  size_t lc_run_length = scanner.CountWhile<IsAsciiLower>();
   // CountWhile doesn't move the scan position.
   EXPECT_TRUE(scanner.Match('b'));
 
   size_t length_before = scanner.Remaining();
   // Consume "bad".
-  scanner.SkipWhile<LowerCaseAlpha>();
+  scanner.SkipWhile<IsAsciiLower>();
   EXPECT_TRUE(scanner.Match('A'));
   EXPECT_EQ(scanner.Remaining(), length_before - lc_run_length);
 
@@ -132,13 +128,13 @@ void ScanWithPredicate(const String& input) {
   EXPECT_TRUE(scanner.Scan('A'));
 
   // Collect "bing".
-  lc_run_length = scanner.CountWhile<LowerCaseAlpha>();
+  lc_run_length = scanner.CountWhile<IsAsciiLower>();
   // CountWhile doesn't move the scan position.
   EXPECT_FALSE(scanner.IsAtEnd());
 
   length_before = scanner.Remaining();
   // Consume "bing".
-  scanner.SkipWhile<LowerCaseAlpha>();
+  scanner.SkipWhile<IsAsciiLower>();
   EXPECT_EQ(scanner.Remaining(), length_before - lc_run_length);
   EXPECT_TRUE(scanner.IsAtEnd());
 }
@@ -153,13 +149,13 @@ void ScanWithInvPredicate(const String& input) {
   VTTScanner scanner(input);
   EXPECT_FALSE(scanner.IsAtEnd());
   // Collect "BAD".
-  size_t uc_run_length = scanner.CountUntil<LowerCaseAlpha>();
+  size_t uc_run_length = scanner.CountUntil<IsAsciiLower>();
   // CountUntil doesn't move the scan position.
   EXPECT_TRUE(scanner.Match('B'));
 
   size_t length_before = scanner.Remaining();
   // Consume "BAD".
-  scanner.SkipUntil<LowerCaseAlpha>();
+  scanner.SkipUntil<IsAsciiLower>();
   EXPECT_TRUE(scanner.Match('a'));
   EXPECT_EQ(scanner.Remaining(), length_before - uc_run_length);
 
@@ -167,13 +163,13 @@ void ScanWithInvPredicate(const String& input) {
   EXPECT_TRUE(scanner.Scan('a'));
 
   // Collect "BING".
-  uc_run_length = scanner.CountUntil<LowerCaseAlpha>();
+  uc_run_length = scanner.CountUntil<IsAsciiLower>();
   // CountUntil doesn't move the scan position.
   EXPECT_FALSE(scanner.IsAtEnd());
 
   length_before = scanner.Remaining();
   // Consume "BING".
-  scanner.SkipUntil<LowerCaseAlpha>();
+  scanner.SkipUntil<IsAsciiLower>();
   EXPECT_EQ(scanner.Remaining(), length_before - uc_run_length);
   EXPECT_TRUE(scanner.IsAtEnd());
 }
@@ -189,7 +185,7 @@ void ScanRuns(const String& input) {
   String bar_string("bar");
   VTTScanner scanner(input);
   EXPECT_FALSE(scanner.IsAtEnd());
-  VTTScanner foo_scanner = scanner.SubrangeWhile<LowerCaseAlpha>();
+  VTTScanner foo_scanner = scanner.SubrangeWhile<IsAsciiLower>();
   EXPECT_FALSE(foo_scanner.Scan(bar_string));
   EXPECT_TRUE(foo_scanner.Scan(foo_string));
   EXPECT_TRUE(foo_scanner.IsAtEnd());
@@ -198,12 +194,12 @@ void ScanRuns(const String& input) {
   EXPECT_TRUE(scanner.Scan(':'));
 
   // Skip 'baz'.
-  scanner.SubrangeWhile<LowerCaseAlpha>();
+  scanner.SubrangeWhile<IsAsciiLower>();
 
   EXPECT_TRUE(scanner.Match(':'));
   EXPECT_TRUE(scanner.Scan(':'));
 
-  VTTScanner bar_scanner = scanner.SubrangeWhile<LowerCaseAlpha>();
+  VTTScanner bar_scanner = scanner.SubrangeWhile<IsAsciiLower>();
   EXPECT_FALSE(bar_scanner.Scan(foo_string));
   EXPECT_TRUE(bar_scanner.Scan(bar_string));
   EXPECT_TRUE(bar_scanner.IsAtEnd());
@@ -220,7 +216,7 @@ void ScanRunsToStrings(const String& input) {
   VTTScanner scanner(input);
   EXPECT_FALSE(scanner.IsAtEnd());
 
-  size_t word_length = scanner.CountWhile<LowerCaseAlpha>();
+  size_t word_length = scanner.CountWhile<IsAsciiLower>();
   size_t length_before = scanner.Remaining();
   String foo_string = scanner.ExtractString(word_length);
   EXPECT_EQ(foo_string, "foo");
@@ -229,7 +225,7 @@ void ScanRunsToStrings(const String& input) {
   EXPECT_TRUE(scanner.Match(':'));
   EXPECT_TRUE(scanner.Scan(':'));
 
-  word_length = scanner.CountWhile<LowerCaseAlpha>();
+  word_length = scanner.CountWhile<IsAsciiLower>();
   length_before = scanner.Remaining();
   String bar_string = scanner.ExtractString(word_length);
   EXPECT_EQ(bar_string, "bar");

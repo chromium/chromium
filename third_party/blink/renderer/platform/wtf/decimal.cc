@@ -684,7 +684,7 @@ Decimal Decimal::FromString(const String& str) {
     const int ch = str[index];
     switch (state) {
       case kStateDigit:
-        if (ch >= '0' && ch <= '9') {
+        if (IsAsciiDigit(ch)) {
           if (number_of_digits < kPrecision) {
             ++number_of_digits;
             accumulator *= 10;
@@ -701,7 +701,7 @@ Decimal Decimal::FromString(const String& str) {
 
       case kStateDot:
       case kStateDotDigit:
-        if (ch >= '0' && ch <= '9') {
+        if (IsAsciiDigit(ch)) {
           if (number_of_digits < kPrecision) {
             ++number_of_digits;
             ++number_of_digits_after_dot;
@@ -728,7 +728,7 @@ Decimal Decimal::FromString(const String& str) {
           break;
         }
 
-        if (ch >= '0' && ch <= '9') {
+        if (IsAsciiDigit(ch)) {
           exponent = ch - '0';
           state = kStateEDigit;
           break;
@@ -737,7 +737,7 @@ Decimal Decimal::FromString(const String& str) {
         return Nan();
 
       case kStateEDigit:
-        if (ch >= '0' && ch <= '9') {
+        if (IsAsciiDigit(ch)) {
           exponent *= 10;
           exponent += ch - '0';
           if (exponent > kExponentMax + kPrecision) {
@@ -753,7 +753,7 @@ Decimal Decimal::FromString(const String& str) {
         return Nan();
 
       case kStateESign:
-        if (ch >= '0' && ch <= '9') {
+        if (IsAsciiDigit(ch)) {
           exponent = ch - '0';
           state = kStateEDigit;
           break;

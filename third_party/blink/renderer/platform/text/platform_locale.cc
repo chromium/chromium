@@ -320,7 +320,7 @@ String Locale::ConvertToLocalizedNumber(const String& input) {
 
   for (unsigned i = is_negative ? 1 : 0; i < input.length(); ++i) {
     const UChar c = input[i];
-    CHECK(c == '.' || (c >= '0' && c <= '9'));
+    CHECK(c == '.' || IsAsciiDigit(c));
     builder.Append(
         decimal_symbols_[c == '.' ? kDecimalSeparatorIndex : (c - '0')]);
   }
@@ -488,8 +488,9 @@ bool Locale::HasSignNotAfterE(const String& str) {
 
 bool Locale::IsDigit(UChar ch) {
   // Always allow 0 - 9.
-  if (ch >= '0' && ch <= '9')
+  if (IsAsciiDigit(ch)) {
     return true;
+  }
   // Check each digit otherwise
   String ch_str(base::span_from_ref(ch));
   return (ch_str == decimal_symbols_[0] || ch_str == decimal_symbols_[1] ||

@@ -99,8 +99,8 @@ SVGPathSegType MapLetterToSegmentType(unsigned lookahead) {
 }
 
 bool IsNumberStart(unsigned lookahead) {
-  return (lookahead >= '0' && lookahead <= '9') || lookahead == '+' ||
-         lookahead == '-' || lookahead == '.';
+  return IsAsciiDigit(lookahead) || lookahead == '+' || lookahead == '-' ||
+         lookahead == '.';
 }
 
 bool MaybeImplicitCommand(unsigned lookahead,

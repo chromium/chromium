@@ -140,13 +140,14 @@ inline void CSSPreloadScanner::Tokenize(UChar c,
         state_ = kComment;
       break;
     case kRuleStart:
-      if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')) {
+      if (IsAsciiAlpha(c)) {
         rule_.Clear();
         rule_value_.Clear();
         rule_.Append(c);
         state_ = kRule;
-      } else
+      } else {
         state_ = kInitial;
+      }
       break;
     case kRule:
       if (IsHTMLSpace<UChar>(c))

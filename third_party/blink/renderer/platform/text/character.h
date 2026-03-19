@@ -204,7 +204,7 @@ class PLATFORM_EXPORT Character {
   static bool IsEmojiEmojiDefault(UChar32);
   static bool IsEmojiModifierBase(UChar32);
   static constexpr bool IsEmojiKeycapBase(UChar32 ch) {
-    return (ch >= '0' && ch <= '9') || ch == '#' || ch == '*';
+    return IsAsciiDigit(ch) || ch == '#' || ch == '*';
   }
   static bool IsRegionalIndicator(UChar32);
   static bool IsModifier(UChar32 c) { return c >= 0x1F3FB && c <= 0x1F3FF; }

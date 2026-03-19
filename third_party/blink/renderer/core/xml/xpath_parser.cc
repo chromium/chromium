@@ -216,7 +216,7 @@ Token Parser::LexNumber() {
     if (a_char >= 0xff)
       break;
 
-    if (a_char < '0' || a_char > '9') {
+    if (!IsAsciiDigit(a_char)) {
       if (a_char == '.' && !seen_dot)
         seen_dot = true;
       else
@@ -302,8 +302,9 @@ Token Parser::NextTokenInternal() {
       char next = PeekAheadHelper();
       if (next == '.')
         return MakeTokenAndAdvance(TokenType::kDotDot, 2);
-      if (next >= '0' && next <= '9')
+      if (IsAsciiDigit(next)) {
         return LexNumber();
+      }
       return MakeTokenAndAdvance('.');
     }
     case '/':
