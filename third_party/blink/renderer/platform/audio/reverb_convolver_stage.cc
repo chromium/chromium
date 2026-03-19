@@ -41,8 +41,7 @@
 namespace blink {
 
 ReverbConvolverStage::ReverbConvolverStage(
-    const float* impulse_response,
-    size_t,
+    base::span<const float> impulse_response,
     size_t reverb_total_latency,
     size_t stage_offset,
     unsigned stage_length,
@@ -56,13 +55,14 @@ ReverbConvolverStage::ReverbConvolverStage(
       accumulation_read_index_(0),
       input_read_index_(0),
       direct_mode_(direct_mode) {
-  DCHECK(impulse_response);
   DCHECK(accumulation_buffer);
 
   if (!direct_mode_) {
+    DCHECK_LE(stage_length + stage_offset, impulse_response.size());
+
     fft_kernel_ = std::make_unique<FFTFrame>(fft_size);
-    fft_kernel_->DoPaddedFFT(UNSAFE_TODO(impulse_response + stage_offset),
-                             stage_length);
+    fft_kernel_->DoPaddedFFT(
+        impulse_response.subspan(stage_offset, stage_length));
     // Account for the normalization (if any) of the convolver.  By linearity,
     // we can scale the FFT by the factor instead of the input.  We do it this
     // way so we don't need to create a temporary for the scaled result before
@@ -74,9 +74,12 @@ ReverbConvolverStage::ReverbConvolverStage(
   } else {
     DCHECK(!stage_offset);
     DCHECK_LE(stage_length, fft_size / 2);
+    DCHECK_LE(stage_length, impulse_response.size());
 
     auto direct_kernel = std::make_unique<AudioFloatArray>(fft_size / 2);
-    direct_kernel->CopyToRange(impulse_response, 0, stage_length);
+    direct_kernel->as_span()
+        .first(stage_length)
+        .copy_from(impulse_response.first(stage_length));
     // Account for the normalization (if any) of the convolver node.
     if (scale != 1) {
       vector_math::Vsmul(direct_kernel->Data(), 1, &scale,

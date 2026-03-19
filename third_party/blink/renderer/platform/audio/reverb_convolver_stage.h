@@ -55,8 +55,7 @@ class ReverbConvolverStage final {
   // renderPhase is useful to know so that we can manipulate the pre versus post
   // delay so that stages will perform their heavy work (FFT processing) on
   // different slices to balance the load in a real-time thread.
-  ReverbConvolverStage(const float* impulse_response,
-                       size_t response_length,
+  ReverbConvolverStage(base::span<const float> impulse_response,
                        size_t reverb_total_latency,
                        size_t stage_offset,
                        unsigned stage_length,

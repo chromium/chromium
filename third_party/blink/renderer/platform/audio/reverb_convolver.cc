@@ -77,7 +77,6 @@ ReverbConvolver::ReverbConvolver(AudioChannel* impulse_response,
   // processing slices.
   max_realtime_fft_size_ = kMaxRealtimeFFTSize;
 
-  const float* response = impulse_response->Data();
   uint32_t total_response_length = impulse_response->length();
 
   // The total latency is zero because the direct-convolution is used in the
@@ -105,7 +104,7 @@ ReverbConvolver::ReverbConvolver(AudioChannel* impulse_response,
 
     std::unique_ptr<ReverbConvolverStage> stage =
         std::make_unique<ReverbConvolverStage>(
-            response, total_response_length, reverb_total_latency, stage_offset,
+            impulse_response->Span(), reverb_total_latency, stage_offset,
             stage_size, fft_size, render_phase, render_slice_size,
             &accumulation_buffer_, scale, use_direct_convolver);
 

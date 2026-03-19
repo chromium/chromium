@@ -23,23 +23,19 @@ SimpleFFTConvolver::SimpleFFTConvolver(
   // Do padded FFT to get frequency-domain version of the convolution kernel.
   // This FFT and caching is done once in here so that it does not have to be
   // done repeatedly in |Process|.
-  fft_kernel_.DoPaddedFFT(convolution_kernel->Data(), convolution_kernel_size_);
+  fft_kernel_.DoPaddedFFT(convolution_kernel->as_span());
 }
 
-void SimpleFFTConvolver::Process(const float* source_p,
-                                 float* dest_p,
-                                 uint32_t frames_to_process) {
+void SimpleFFTConvolver::Process(base::span<const float> source,
+                                 base::span<float> dest) {
   const unsigned half_size = FftSize() / 2;
-
-  // frames_to_process must be exactly half_size.
-  DCHECK(source_p);
-  DCHECK(dest_p);
-  DCHECK_EQ(frames_to_process, half_size);
+  DCHECK_LE(half_size, source.size());
+  DCHECK_LE(half_size, dest.size());
 
   // Do padded FFT (get frequency-domain version) by copying samples to the 1st
   // half of the input buffer (the second half is always zero), multiply in
   // frequency-domain and do inverse FFT to get output samples.
-  input_buffer_.CopyToRange(source_p, 0, half_size);
+  input_buffer_.as_span().first(half_size).copy_from(source.first(half_size));
   frame_.DoFFT(input_buffer_.Data());
   frame_.Multiply(fft_kernel_);
   frame_.DoInverseFFT(output_buffer_.Data());
@@ -47,7 +43,7 @@ void SimpleFFTConvolver::Process(const float* source_p,
   // Overlap-add 1st half with 2nd half from previous time and write
   // to destination.
   vector_math::Vadd(output_buffer_.Data(), 1, last_overlap_buffer_.Data(), 1,
-                    dest_p, 1, half_size);
+                    dest.data(), 1, half_size);
 
   // Finally, save 2nd half for the next time.
   last_overlap_buffer_.as_span().copy_from(

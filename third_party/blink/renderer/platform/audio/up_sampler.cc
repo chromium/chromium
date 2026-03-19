@@ -131,8 +131,7 @@ void UpSampler::Process(base::span<const float> source,
   if (direct_convolver_) {
     direct_convolver_->Process(source, odd_samples);
   } else {
-    simple_fft_convolver_->Process(source.data(), odd_samples.data(),
-                                   source_frames_to_process);
+    simple_fft_convolver_->Process(source, odd_samples);
   }
 
   for (unsigned i = 0; i < source_frames_to_process; ++i) {

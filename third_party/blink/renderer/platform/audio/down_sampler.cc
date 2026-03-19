@@ -126,7 +126,7 @@ void DownSampler::Process(base::span<const float> source,
   // Actually process oddSamplesP with m_reducedKernel for efficiency.
   // The theoretical kernel is double this size with 0 values for even terms
   // (except center).
-  convolver_.Process(odd_samples.data(), dest.data(), dest_frames_to_process);
+  convolver_.Process(odd_samples, dest);
 
   // Now, account for the 0.5 term right in the middle of the kernel.
   // This amounts to a delay-line of length halfSize (at the source

@@ -30,6 +30,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_FFT_FRAME_H_
 
 #include <memory>
+
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/audio/audio_array.h"
@@ -98,7 +100,7 @@ class PLATFORM_EXPORT FFTFrame final {
       const FFTFrame& frame2,
       double x);
   // zero-padding with dataSize <= fftSize
-  void DoPaddedFFT(const float* data, unsigned data_size);
+  void DoPaddedFFT(base::span<const float> data);
   double ExtractAverageGroupDelay();
   void AddConstantGroupDelay(double sample_frame_delay);
   // multiplies ourself with frame : effectively operator*=()

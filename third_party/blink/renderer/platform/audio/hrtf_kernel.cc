@@ -100,7 +100,7 @@ HRTFKernel::HRTFKernel(AudioChannel* channel,
   }
 
   fft_frame_ = std::make_unique<FFTFrame>(fft_size);
-  fft_frame_->DoPaddedFFT(impulse_response.data(), truncated_response_length);
+  fft_frame_->DoPaddedFFT(impulse_response.first(truncated_response_length));
 }
 
 // Interpolates two kernels with x: 0 -> 1 and returns the result.
