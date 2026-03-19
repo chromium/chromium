@@ -10107,12 +10107,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDataSharingDebugLogsDescription, kOsAll,
      SINGLE_VALUE_TYPE(data_sharing::kDataSharingDebugLoggingEnabled)},
 
-    {"autofill-shared-storage-server-card-data",
-     flag_descriptions::kAutofillSharedStorageServerCardDataName,
-     flag_descriptions::kAutofillSharedStorageServerCardDataDescription, kOsAll,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillSharedStorageServerCardData)},
-
 #if BUILDFLAG(IS_CHROMEOS)
     {"multi-calendar-in-quick-settings",
      flag_descriptions::kMultiCalendarSupportName,

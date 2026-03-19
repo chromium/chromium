@@ -1091,12 +1091,6 @@ inline constexpr char kAutofillShowBubblesBasedOnPrioritiesDescription[] =
     "When enabled, the autofill and the password manager bubbles would be"
     "shown based on their respective priorities compared to each other";
 
-inline constexpr char kAutofillSharedStorageServerCardDataName[] =
-    "Enable storing autofill server card data in the shared storage database";
-inline constexpr char kAutofillSharedStorageServerCardDataDescription[] =
-    "When enabled, the cached server credit card data from autofill will be "
-    "pushed into the shared storage database for the payments origin.";
-
 inline constexpr char kAutofillTouchToFillShowManualFillForVcnFixName[] =
     "Ensures showing of the BNPL VCN on manual fallback sheet in the Touch To "
     "Fill flow";

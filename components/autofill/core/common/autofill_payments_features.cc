@@ -294,10 +294,6 @@ BASE_FEATURE(kAutofillPrioritizeSaveCardOverMandatoryReauth,
 BASE_FEATURE(kAutofillRetryImageFetchOnFailure,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// If enabled, we will store autofill server card data in shared storage.
-BASE_FEATURE(kAutofillSharedStorageServerCardData,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Kill switch, when enabled, will prevent the display of the save card bubble
 // within a tab modal pop-up window.
 BASE_FEATURE(kAutofillSkipSaveCardForTabModalPopup,
