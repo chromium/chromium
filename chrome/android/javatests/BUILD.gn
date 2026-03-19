@@ -578,6 +578,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.autofill") {
     "src/org/chromium/chrome/browser/autofill/settings/AutofillPaymentMethodsFragmentCardBenefitsTest.java",
     "src/org/chromium/chrome/browser/autofill/settings/AutofillPaymentMethodsFragmentTest.java",
     "src/org/chromium/chrome/browser/autofill/settings/AutofillProfilesFragmentTest.java",
+    "src/org/chromium/chrome/browser/autofill/settings/HomeOfTransactionsFragmentTest.java",
     "src/org/chromium/chrome/browser/autofill/settings/AutofillTestRule.java",
     "src/org/chromium/chrome/browser/autofill/settings/FinancialAccountsManagementFragmentTest.java",
     "src/org/chromium/chrome/browser/autofill/settings/NonCardPaymentMethodsManagementFragmentTest.java",
