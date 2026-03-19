@@ -102,6 +102,7 @@ robolectric_library("junit") {
   sources = [
     "java/src/org/chromium/chrome/browser/multiwindow/InstanceSwitcherCoordinatorUnitTest.java",
     "java/src/org/chromium/chrome/browser/multiwindow/MultiInstanceOrchestratorFactoryUnitTest.java",
+    "java/src/org/chromium/chrome/browser/multiwindow/MultiInstancePersistentStoreUnitTest.java",
     "java/src/org/chromium/chrome/browser/multiwindow/MultiInstanceStateUnitTest.java",
     "java/src/org/chromium/chrome/browser/multiwindow/MultiWindowMetricsUtilsUnitTest.java",
     "java/src/org/chromium/chrome/browser/multiwindow/UiUtilsUnitTest.java",

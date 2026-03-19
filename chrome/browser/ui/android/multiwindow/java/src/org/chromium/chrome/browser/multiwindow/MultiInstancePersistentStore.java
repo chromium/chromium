@@ -468,4 +468,15 @@ public class MultiInstancePersistentStore {
     static boolean contains(String key) {
         return getManager().contains(key);
     }
+
+    public static void resetForTesting() {
+        sInitialized = false;
+        sData = null;
+
+        // Delete the physical file so the next 'enabled' run starts fresh.
+        if (sAtomicFile != null) {
+            sAtomicFile.delete();
+            sAtomicFile = null;
+        }
+    }
 }

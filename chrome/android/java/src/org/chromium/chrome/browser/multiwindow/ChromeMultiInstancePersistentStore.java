@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.multiwindow;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.multiwindow.MultiInstanceManager.INVALID_WINDOW_ID;
 
 import org.chromium.base.TimeUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
@@ -308,7 +309,7 @@ class ChromeMultiInstancePersistentStore extends MultiInstancePersistentStore {
     static int readLatestPersistentStateId(int instanceId) {
         if (sData != null) {
             InstanceData instance = sData.getInstancesMap().get(instanceId);
-            return instance != null ? instance.getLatestPersistentStateId() : 0;
+            return instance != null ? instance.getLatestPersistentStateId() : INVALID_WINDOW_ID;
         }
         return getManager().readInt(latestPersistentStateIdKey(instanceId));
     }
