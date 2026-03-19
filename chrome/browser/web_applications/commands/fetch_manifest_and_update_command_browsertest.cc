@@ -66,9 +66,7 @@ class FetchManifestAndUpdateCommandMigrationTest
     : public FetchManifestAndUpdateCommandTest {
  public:
   FetchManifestAndUpdateCommandMigrationTest() {
-    feature_list_.InitWithFeatures({blink::features::kWebAppMigrationApi,
-                                    features::kWebAppPredictableAppUpdating},
-                                   {});
+    feature_list_.InitAndEnableFeature(blink::features::kWebAppMigrationApi);
   }
 
  private:

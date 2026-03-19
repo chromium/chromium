@@ -32,7 +32,6 @@ namespace web_app {
 namespace {
 using Param = std::tuple<bool /*wait_8_days*/,
                          bool /*sync_broken_icons*/,
-                         bool /*predictable_app_updates_enabled*/,
                          SyncTest::SetupSyncMode>;
 }  // namespace
 
@@ -46,10 +45,7 @@ class SingleClientWebAppsSyncGeneratedIconFixSyncTest
         "_",
         std::get<1>(param.param) ? "SyncBrokenIcons" : "SyncNormalIcons",
         "_",
-        std::get<2>(param.param) ? "PredictableAppUpdatesEnabled"
-                                 : "PredictableAppUpdatesDisabled",
-        "_",
-        testing::PrintToString(std::get<3>(param.param)),
+        testing::PrintToString(std::get<2>(param.param)),
     });
   }
 
@@ -63,12 +59,6 @@ class SingleClientWebAppsSyncGeneratedIconFixSyncTest
       enabled_features.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
     }
 
-    if (predictable_app_updates_enabled()) {
-      enabled_features.push_back(features::kWebAppPredictableAppUpdating);
-    } else {
-      disabled_features.push_back(features::kWebAppPredictableAppUpdating);
-    }
-
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
@@ -76,9 +66,6 @@ class SingleClientWebAppsSyncGeneratedIconFixSyncTest
 
   bool wait_8_days() const { return std::get<0>(GetParam()); }
   bool sync_broken_icons() const { return std::get<1>(GetParam()); }
-  bool predictable_app_updates_enabled() const {
-    return std::get<2>(GetParam());
-  }
 
   WebAppProvider& provider(int index) {
     return *WebAppProvider::GetForTest(GetProfile(index));
@@ -112,7 +99,7 @@ class SingleClientWebAppsSyncGeneratedIconFixSyncTest
   }
 
   SyncTest::SetupSyncMode GetSetupSyncMode() const override {
-    return std::get<3>(GetParam());
+    return std::get<2>(GetParam());
   }
 
   // Triggers a manifest update by launching the app or loading the update_url
@@ -125,14 +112,9 @@ class SingleClientWebAppsSyncGeneratedIconFixSyncTest
     // waiting for page load to the update command.
     provider(0).manifest_update_manager().SetLoadFinishedCallbackForTesting(
         future.GetCallback());
-    if (predictable_app_updates_enabled()) {
-      Browser* app_browser =
-          LaunchWebAppBrowserAndWait(GetProfile(/*index=*/0), app_id);
-      CHECK(app_browser);
-    } else {
-      CHECK(AddTabAtIndexToBrowser(GetBrowser(0), 0, update_url,
-                                   ui::PAGE_TRANSITION_AUTO_TOPLEVEL));
-    }
+    Browser* app_browser =
+        LaunchWebAppBrowserAndWait(GetProfile(/*index=*/0), app_id);
+    CHECK(app_browser);
     EXPECT_TRUE(future.Wait());
     provider(0).command_manager().AwaitAllCommandsCompleteForTesting();
   }
@@ -282,7 +264,6 @@ INSTANTIATE_TEST_SUITE_P(
     SingleClientWebAppsSyncGeneratedIconFixSyncTest,
     testing::Combine(/*wait_8_days=*/testing::Bool(),
                      /*sync_broken_icons=*/testing::Bool(),
-                     /*predictable_app_updates_enabled=*/testing::Bool(),
                      GetSyncTestModes()),
     SingleClientWebAppsSyncGeneratedIconFixSyncTest::ParamToString);
 

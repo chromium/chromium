@@ -41,10 +41,8 @@ class WebAppInstallFromMigrateFromFieldCommandBrowserTest
     : public WebAppBrowserTestBase {
  public:
   WebAppInstallFromMigrateFromFieldCommandBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {blink::features::kWebAppMigrationApi,
-         features::kWebAppPredictableAppUpdating},
-        {});
+    scoped_feature_list_.InitAndEnableFeature(
+        blink::features::kWebAppMigrationApi);
   }
 
   void SetUp() override {

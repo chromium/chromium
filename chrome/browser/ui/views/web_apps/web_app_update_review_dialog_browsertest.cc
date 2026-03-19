@@ -439,8 +439,6 @@ class WebAppUpdateDialogBrowserTests : public WebAppBrowserTestBase {
   }
 
   base::HistogramTester tester_;
-  base::test::ScopedFeatureList feature_list_{
-      features::kWebAppPredictableAppUpdating};
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppUpdateDialogBrowserTests,

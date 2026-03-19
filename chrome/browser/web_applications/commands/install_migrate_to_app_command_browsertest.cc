@@ -29,10 +29,8 @@ class InstallMigrateToAppCommandBrowserTest : public WebAppBrowserTestBase {
       "/web_apps/migration/migrate_to/manifest_id";
 
   InstallMigrateToAppCommandBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {blink::features::kWebAppMigrationApi,
-         features::kWebAppPredictableAppUpdating},
-        {});
+    scoped_feature_list_.InitAndEnableFeature(
+        blink::features::kWebAppMigrationApi);
   }
 
   webapps::AppId GetTargetAppId() {

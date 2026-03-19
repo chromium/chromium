@@ -36,7 +36,7 @@ namespace web_app {
 
 class TestWebAppMenuModelCR2023 : public WebAppBrowserTestBase {
  public:
-  TestWebAppMenuModelCR2023() : WebAppBrowserTestBase({}, {}) {}
+  TestWebAppMenuModelCR2023() = default;
 
   TestWebAppMenuModelCR2023(const TestWebAppMenuModelCR2023&) = delete;
   TestWebAppMenuModelCR2023& operator=(const TestWebAppMenuModelCR2023&) =
@@ -107,8 +107,7 @@ IN_PROC_BROWSER_TEST_F(TestWebAppMenuModelCR2023, CommandStatusTest) {
 
 class WebAppMenuModelBrowserTest : public WebAppBrowserTestBase {
  public:
-  WebAppMenuModelBrowserTest()
-      : WebAppBrowserTestBase({features::kWebAppPredictableAppUpdating}, {}) {}
+  WebAppMenuModelBrowserTest() = default;
   ~WebAppMenuModelBrowserTest() override = default;
 };
 

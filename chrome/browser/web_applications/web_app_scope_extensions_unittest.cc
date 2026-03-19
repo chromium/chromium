@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/web_applications/scheduler/manifest_silent_update_result.h"
 #include "chrome/browser/web_applications/test/fake_web_app_origin_association_manager.h"
@@ -83,10 +82,6 @@ class WebAppScopeExtensionsTest : public WebAppTest {
   }
 
   WebAppRegistrar& registrar() { return fake_provider().registrar_unsafe(); }
-
- private:
-  base::test::ScopedFeatureList feature_list_{
-      features::kWebAppPredictableAppUpdating};
 };
 
 TEST_F(WebAppScopeExtensionsTest, TestScopeNotifiedOnReinstall) {

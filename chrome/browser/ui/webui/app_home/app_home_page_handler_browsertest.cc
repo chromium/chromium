@@ -577,17 +577,10 @@ IN_PROC_BROWSER_TEST_F(AppHomePageHandlerTest, HandleLaunchDeprecatedApp) {
 
 class AppHomePageHandlerUpdateTest : public AppHomePageHandlerTest {
  public:
-  AppHomePageHandlerUpdateTest() {
-    feature_list_.InitAndEnableFeature(features::kWebAppPredictableAppUpdating);
-  }
-
   void SetUpOnMainThread() override {
     AppHomePageHandlerTest::SetUpOnMainThread();
     EXPECT_TRUE(embedded_https_test_server().Start());
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(AppHomePageHandlerUpdateTest, HandlePageCalls) {

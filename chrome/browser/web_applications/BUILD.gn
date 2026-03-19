@@ -1267,7 +1267,6 @@ source_set("web_applications_browser_tests") {
     "isolated_web_apps/policy/isolated_web_app_policy_manager_browsertest.cc",
     "isolated_web_apps/unframed_browsertest.cc",
     "isolated_web_apps/update/isolated_web_app_update_manager_browsertest.cc",
-    "manifest_update_manager_browsertest.cc",
     "navigation_capturing_browser_navigator_browsertest.cc",
     "navigation_capturing_forced_off_browsertest.cc",
     "policy/pre_redirection_url_observer_browsertest.cc",

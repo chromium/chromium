@@ -54,8 +54,7 @@ class WebAppMenuBrowserTest
  public:
   WebAppMenuBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        {features::kWebAppPredictableAppUpdating,
-         blink::features::kWebAppMigrationApi,
+        {blink::features::kWebAppMigrationApi,
          blink::features::kDesktopPWAsTabStrip,
          blink::features::kDesktopPWAsTabStripCustomizations},
         {});

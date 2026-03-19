@@ -11,7 +11,6 @@
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
@@ -77,21 +76,14 @@ SkBitmap GetBitmapForInstalledAppOnDisk(const webapps::AppId& app_id,
 
 class ManifestSilentUpdateCommandBrowserTest : public WebAppBrowserTestBase {
  public:
-  ManifestSilentUpdateCommandBrowserTest() {
-    feature_list_.InitAndEnableFeature(features::kWebAppPredictableAppUpdating);
-  }
-  ~ManifestSilentUpdateCommandBrowserTest() override = default;
-
   void SetUpOnMainThread() override {
     clock_ = std::make_unique<base::SimpleTestClock>();
     provider().SetClockForTesting(clock_.get());
     WebAppBrowserTestBase::SetUpOnMainThread();
   }
 
+ protected:
   std::unique_ptr<base::SimpleTestClock> clock_;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(ManifestSilentUpdateCommandBrowserTest, SilentUpdate) {
