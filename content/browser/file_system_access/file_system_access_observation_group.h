@@ -103,7 +103,10 @@ class CONTENT_EXPORT FileSystemAccessObservationGroup
 
     OnChangesCallback on_change_callback_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-    base::ScopedObservation<FileSystemAccessObservationGroup, Observer> obs_
+    // TODO(crbug.com/494157385): remove when the Observer are no longer
+    // outliving the FileSystemAccessObservationGroup they observe.
+    base::ScopedObservation<FileSystemAccessObservationGroup,
+                            Observer>::LeakedDanglingUntriaged obs_
         GUARDED_BY_CONTEXT(sequence_checker_){this};
   };
 
