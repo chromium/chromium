@@ -158,7 +158,8 @@ TEST_F(PageSpecificContentSettingsTest, BlockedContent) {
   // popup.
   GURL origin("http://google.com");
   std::unique_ptr<net::CanonicalCookie> cookie1(
-      net::CanonicalCookie::CreateForTesting(origin, "A=B", base::Time::Now()));
+      net::CanonicalCookie::CreateForTesting(origin, "A=B", base::Time::Now(),
+                                             net::CookieSourceType::kOther));
   ASSERT_TRUE(cookie1);
   GetHandle()->OnCookiesAccessed(web_contents()->GetPrimaryMainFrame(),
                                  {content::CookieAccessDetails::Type::kChange,
@@ -204,7 +205,8 @@ TEST_F(PageSpecificContentSettingsTest, BlockedContent) {
 
   // Block a cookie.
   std::unique_ptr<net::CanonicalCookie> cookie2(
-      net::CanonicalCookie::CreateForTesting(origin, "C=D", base::Time::Now()));
+      net::CanonicalCookie::CreateForTesting(origin, "C=D", base::Time::Now(),
+                                             net::CookieSourceType::kOther));
   ASSERT_TRUE(cookie2);
   GetHandle()->OnCookiesAccessed(web_contents()->GetPrimaryMainFrame(),
                                  {content::CookieAccessDetails::Type::kChange,
@@ -295,7 +297,8 @@ TEST_F(PageSpecificContentSettingsTest, AllowedContent) {
   // Record a cookie.
   GURL origin("http://google.com");
   std::unique_ptr<net::CanonicalCookie> cookie1(
-      net::CanonicalCookie::CreateForTesting(origin, "A=B", base::Time::Now()));
+      net::CanonicalCookie::CreateForTesting(origin, "A=B", base::Time::Now(),
+                                             net::CookieSourceType::kOther));
   ASSERT_TRUE(cookie1);
   GetHandle()->OnCookiesAccessed(web_contents()->GetPrimaryMainFrame(),
                                  {content::CookieAccessDetails::Type::kChange,
@@ -309,7 +312,8 @@ TEST_F(PageSpecificContentSettingsTest, AllowedContent) {
 
   // Record a blocked cookie.
   std::unique_ptr<net::CanonicalCookie> cookie2(
-      net::CanonicalCookie::CreateForTesting(origin, "C=D", base::Time::Now()));
+      net::CanonicalCookie::CreateForTesting(origin, "C=D", base::Time::Now(),
+                                             net::CookieSourceType::kOther));
   ASSERT_TRUE(cookie2);
   GetHandle()->OnCookiesAccessed(web_contents()->GetPrimaryMainFrame(),
                                  {content::CookieAccessDetails::Type::kChange,
@@ -450,7 +454,8 @@ TEST_F(PageSpecificContentSettingsTest, BlockedThirdPartyCookie) {
   std::unique_ptr<net::CanonicalCookie> cookie(
       net::CanonicalCookie::CreateForTesting(
           GURL("https://google.com"),
-          "CookieName=CookieValue;Secure;SameSite=None", base::Time::Now()));
+          "CookieName=CookieValue;Secure;SameSite=None", base::Time::Now(),
+          net::CookieSourceType::kOther));
 
   // 1P cookie should not be blocked.
   GetHandle()->OnCookiesAccessed(
@@ -496,7 +501,8 @@ TEST_F(PageSpecificContentSettingsTest, BlockedThirdPartyCookie) {
   std::unique_ptr<net::CanonicalCookie> third_party_cookie(
       net::CanonicalCookie::CreateForTesting(
           GURL("https://example.com"),
-          "CookieName=CookieValue;Secure;SameSite=None", base::Time::Now()));
+          "CookieName=CookieValue;Secure;SameSite=None", base::Time::Now(),
+          net::CookieSourceType::kOther));
 
   // 3P cookie should be blocked.
   GetHandle()->OnCookiesAccessed(
@@ -528,7 +534,8 @@ TEST_F(PageSpecificContentSettingsTest, SiteDataObserver) {
   bool blocked_by_policy = false;
   GURL origin("http://google.com");
   std::unique_ptr<net::CanonicalCookie> cookie(
-      net::CanonicalCookie::CreateForTesting(origin, "A=B", base::Time::Now()));
+      net::CanonicalCookie::CreateForTesting(origin, "A=B", base::Time::Now(),
+                                             net::CookieSourceType::kOther));
   ASSERT_TRUE(cookie);
   GetHandle()->OnCookiesAccessed(web_contents()->GetPrimaryMainFrame(),
                                  {content::CookieAccessDetails::Type::kChange,
@@ -539,9 +546,9 @@ TEST_F(PageSpecificContentSettingsTest, SiteDataObserver) {
 
   net::CookieAccessResultList cookie_list;
   std::unique_ptr<net::CanonicalCookie> other_cookie(
-      net::CanonicalCookie::CreateForTesting(GURL("http://google.com"),
-                                             "CookieName=CookieValue",
-                                             base::Time::Now()));
+      net::CanonicalCookie::CreateForTesting(
+          GURL("http://google.com"), "CookieName=CookieValue",
+          base::Time::Now(), net::CookieSourceType::kOther));
   ASSERT_TRUE(other_cookie);
 
   cookie_list.emplace_back(*other_cookie);
@@ -798,10 +805,10 @@ TEST_F(PageSpecificContentSettingsTest, AllowedSitesCountedFromBothModels) {
   bool blocked_by_policy = false;
   auto googleURL = GURL("http://google.com");
   auto exampleURL = GURL("https://example.com");
-  auto cookie1 = net::CanonicalCookie::CreateForTesting(googleURL, "k1=v",
-                                                        base::Time::Now());
-  auto cookie2 = net::CanonicalCookie::CreateForTesting(exampleURL, "k2=v",
-                                                        base::Time::Now());
+  auto cookie1 = net::CanonicalCookie::CreateForTesting(
+      googleURL, "k1=v", base::Time::Now(), net::CookieSourceType::kOther);
+  auto cookie2 = net::CanonicalCookie::CreateForTesting(
+      exampleURL, "k2=v", base::Time::Now(), net::CookieSourceType::kOther);
   GetHandle()->OnCookiesAccessed(web_contents()->GetPrimaryMainFrame(),
                                  {content::CookieAccessDetails::Type::kRead,
                                   googleURL,
@@ -892,8 +899,8 @@ TEST_F(PageSpecificContentSettingsWithPrerenderTest, SiteDataAccessed) {
     // a popup.
     GURL origin("http://google.com");
     std::unique_ptr<net::CanonicalCookie> cookie1(
-        net::CanonicalCookie::CreateForTesting(origin, "A=B",
-                                               base::Time::Now()));
+        net::CanonicalCookie::CreateForTesting(origin, "A=B", base::Time::Now(),
+                                               net::CookieSourceType::kOther));
     ASSERT_TRUE(cookie1);
     pscs->OnCookiesAccessed({content::CookieAccessDetails::Type::kChange,
                              origin,
@@ -933,8 +940,8 @@ TEST_F(PageSpecificContentSettingsWithPrerenderTest,
   EXPECT_CALL(*mock_delegate, OnContentBlocked).Times(0);
 
   const GURL url = GURL("http://google.com");
-  auto cookie =
-      net::CanonicalCookie::CreateForTesting(url, "k=v", base::Time::Now());
+  auto cookie = net::CanonicalCookie::CreateForTesting(
+      url, "k=v", base::Time::Now(), net::CookieSourceType::kOther);
   pscs->OnCookiesAccessed({content::CookieAccessDetails::Type::kRead,
                            url,
                            url,
@@ -1077,8 +1084,8 @@ TEST_F(PageSpecificContentSettingsWithFencedFrameTest, SiteDataAccessed) {
     // a popup.
     GURL origin("http://google.com");
     std::unique_ptr<net::CanonicalCookie> cookie1(
-        net::CanonicalCookie::CreateForTesting(origin, "A=B",
-                                               base::Time::Now()));
+        net::CanonicalCookie::CreateForTesting(origin, "A=B", base::Time::Now(),
+                                               net::CookieSourceType::kOther));
     ASSERT_TRUE(cookie1);
     ff_pscs->OnCookiesAccessed({content::CookieAccessDetails::Type::kChange,
                                 origin,
@@ -1107,8 +1114,8 @@ TEST_F(PageSpecificContentSettingsWithFencedFrameTest, DelegateUpdatesSent) {
   EXPECT_CALL(*mock_delegate, OnContentBlocked(ContentSettingsType::COOKIES))
       .Times(1);
 
-  auto cookie =
-      net::CanonicalCookie::CreateForTesting(ff_url, "k=v", base::Time::Now());
+  auto cookie = net::CanonicalCookie::CreateForTesting(
+      ff_url, "k=v", base::Time::Now(), net::CookieSourceType::kOther);
   ff_pscs->OnCookiesAccessed({content::CookieAccessDetails::Type::kRead,
                               ff_url,
                               ff_url,

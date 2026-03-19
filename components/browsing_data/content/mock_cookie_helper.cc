@@ -36,8 +36,8 @@ void MockCookieHelper::AddCookieSamples(
     std::optional<net::CookiePartitionKey> cookie_partition_key) {
   std::unique_ptr<net::CanonicalCookie> cc(
       net::CanonicalCookie::CreateForTesting(
-          url, cookie_line, base::Time::Now(), std::nullopt /* server_time */,
-          cookie_partition_key));
+          url, cookie_line, base::Time::Now(), net::CookieSourceType::kOther,
+          std::nullopt /* server_time */, cookie_partition_key));
 
   if (cc.get()) {
     if (cookies_.count(*cc))
