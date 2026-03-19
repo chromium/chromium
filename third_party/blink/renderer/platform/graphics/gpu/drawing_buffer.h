@@ -310,9 +310,6 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   // latency (e.g., to the display compositor).
   bool SupportsNoCopyExportForLowLatency();
 
-  // Keep track of low latency buffer status.
-  bool low_latency_enabled() const { return low_latency_enabled_; }
-
   scoped_refptr<CanvasResource> ExportCanvasResource();
 
   scoped_refptr<ExternalCanvasResource> ExportLowLatencyCanvasResource();
@@ -619,7 +616,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
       viz::SinglePlaneFormat::kRGBA_8888;
 
   Platform::WebGLContextInfo context_info_;
-  bool low_latency_enabled_ = false;
+  const bool low_latency_enabled_ = false;
   bool has_implicit_stencil_buffer_ = false;
 
   // The current state restorer, which is used to track state dirtying. It is an
