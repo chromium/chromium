@@ -538,4 +538,14 @@ bool AutofillOptimizationGuideDecider::IsIframeUrlAllowlistedForActor(
              optimization_guide::OptimizationGuideDecision::kTrue;
 }
 
+bool AutofillOptimizationGuideDecider::IsUrlEligibleForOmniboxAutofill(
+    const GURL& url) const {
+  return base::FeatureList::IsEnabled(
+             features::kAutofillEnableOmniboxAutofill) &&
+         decider_->CanApplyOptimization(
+             url, optimization_guide::proto::OMNIBOX_AUTOFILL_IFRAME_ALLOWLIST,
+             /*optimization_metadata=*/nullptr) ==
+             optimization_guide::OptimizationGuideDecision::kTrue;
+}
+
 }  // namespace autofill

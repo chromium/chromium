@@ -102,6 +102,10 @@ class AutofillOptimizationGuideDecider : public KeyedService {
   // field in a cross-origin iframe hosted at `url`.
   virtual bool IsIframeUrlAllowlistedForActor(const GURL& url) const;
 
+  // Returns whether omnibox-triggered autofill may appear for an iframe hosted
+  // at `url`.
+  virtual bool IsUrlEligibleForOmniboxAutofill(const GURL& url) const;
+
  private:
   // Raw pointer to a decider which is owned by the decider's factory.
   // The factory dependencies ensure that the `decider_` outlives this object.

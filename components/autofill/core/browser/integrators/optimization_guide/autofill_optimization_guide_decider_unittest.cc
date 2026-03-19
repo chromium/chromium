@@ -1358,6 +1358,49 @@ TEST_F(AutofillOptimizationGuideDeciderTest,
   guide().OnPaymentsDataLoaded(payments_data_manager());
 }
 
+// Tests that the optimization guide decision on whether a URL is allowlisted
+// for iframe fill triggering via omnibox autofill is queried correctly.
+TEST_F(AutofillOptimizationGuideDeciderTest, IsUrlEligibleForOmniboxAutofill) {
+  base::test::ScopedFeatureList feature{
+      features::kAutofillEnableOmniboxAutofill};
+
+  ON_CALL(
+      decider(),
+      CanApplyOptimization(
+          _, Eq(optimization_guide::proto::OMNIBOX_AUTOFILL_IFRAME_ALLOWLIST),
+          Matcher<optimization_guide::OptimizationMetadata*>(Eq(nullptr))))
+      .WillByDefault(WithArg<0>([](const GURL& url) {
+        return url.host() == "www.example.com"
+                   ? OptimizationGuideDecision::kTrue
+                   : OptimizationGuideDecision::kFalse;
+      }));
+
+  EXPECT_TRUE(
+      guide().IsUrlEligibleForOmniboxAutofill(GURL("https://www.example.com")));
+  EXPECT_FALSE(guide().IsUrlEligibleForOmniboxAutofill(
+      GURL("https://www.othersite.com")));
+}
+
+// Tests that the optimization guide decision on whether a URL is allowlisted
+// for iframe fill triggering via omnibox autofill always returns false if the
+// feature is disabled.
+TEST_F(AutofillOptimizationGuideDeciderTest,
+       IsUrlEligibleForOmniboxAutofill_FlagOff) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndDisableFeature(features::kAutofillEnableOmniboxAutofill);
+
+  ON_CALL(
+      decider(),
+      CanApplyOptimization(
+          _, Eq(optimization_guide::proto::OMNIBOX_AUTOFILL_IFRAME_ALLOWLIST),
+          Matcher<optimization_guide::OptimizationMetadata*>(Eq(nullptr))))
+      .WillByDefault(WithArg<0>(
+          [](const GURL& url) { return OptimizationGuideDecision::kTrue; }));
+
+  EXPECT_FALSE(
+      guide().IsUrlEligibleForOmniboxAutofill(GURL("https://www.example.com")));
+}
+
 struct BenefitOptimizationToBenefitCategoryTestCase {
   const std::string benefit_source;
   const optimization_guide::proto::OptimizationType optimization_type;
