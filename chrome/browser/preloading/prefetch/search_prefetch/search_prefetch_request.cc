@@ -366,21 +366,18 @@ bool SearchPrefetchRequest::StartPrefetchRequest(
     }
   }
 
-  if (base::FeatureList::IsEnabled(features::kPrewarm) &&
-      features::kPrewarmThrottlePrefetch.Get()) {
-    auto* service = SearchPrewarmProgressServiceFactory::GetForProfile(profile);
-    if (service && service->HasOnGoingSearchPrewarm()) {
-      CHECK(!pending_request_);
-      pending_request_.emplace(profile, &web_contents);
-      service->AddSearchPrewarmFinishedCallback(
-          base::BindOnce(&SearchPrefetchRequest::OnSearchPrewarmFinished,
-                         weak_factory_.GetWeakPtr()));
-      // Return true to indicate that the request is accepted and ownership is
-      // transferred to SearchPrefetchService (which puts it in `prefetches_`).
-      // The actual network request is deferred until OnSearchPrewarmFinished is
-      // called.
-      return true;
-    }
+  auto* service = SearchPrewarmProgressServiceFactory::GetForProfile(profile);
+  if (service && service->ShouldThrottleSearchPreloads()) {
+    CHECK(!pending_request_);
+    pending_request_.emplace(profile, &web_contents);
+    service->AddSearchPrewarmFinishedCallback(
+        base::BindOnce(&SearchPrefetchRequest::OnSearchPrewarmFinished,
+                       weak_factory_.GetWeakPtr()));
+    // Return true to indicate that the request is accepted and ownership is
+    // transferred to SearchPrefetchService (which puts it in `prefetches_`).
+    // The actual network request is deferred until OnSearchPrewarmFinished is
+    // called.
+    return true;
   }
 
   prefetch_url_ = resource_request->url;
