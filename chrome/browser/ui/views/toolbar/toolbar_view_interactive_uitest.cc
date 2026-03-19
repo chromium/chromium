@@ -471,7 +471,14 @@ IN_PROC_BROWSER_TEST_P(ToolbarViewTest,
 // assigned so that the menu can be located by tests when it is shown.
 //
 // The back button is just one example for which the menu identifier is defined.
-IN_PROC_BROWSER_TEST_P(ToolbarViewTest, BackButtonMenu) {
+//
+// TODO: crbug.com/494279213 - Re-enable this test on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_BackButtonMenu DISABLED_BackButtonMenu
+#else
+#define MAYBE_BackButtonMenu BackButtonMenu
+#endif
+IN_PROC_BROWSER_TEST_P(ToolbarViewTest, MAYBE_BackButtonMenu) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsId);
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL url1 = embedded_test_server()->GetURL("/title1.html");
