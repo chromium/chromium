@@ -1870,12 +1870,12 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
      * @return Whether the Intent was successfully handled.
      */
     private boolean maybeHandleUrlIntent(Intent intent) {
+        if (intent.hasExtra(IntentHandler.EXTRA_MULTI_TAB_REPARENTING_METADATA)) {
+            return maybeHandleMultipleUrlIntent(intent);
+        }
         @Nullable TabGroupMetadata tabGroupMetadata = IntentHandler.getTabGroupMetadata(intent);
         if (tabGroupMetadata != null) {
             return maybeHandleGroupUrlsIntent(intent, tabGroupMetadata);
-        }
-        if (intent.hasExtra(IntentHandler.EXTRA_MULTI_TAB_REPARENTING_METADATA)) {
-            return maybeHandleMultipleUrlIntent(intent);
         }
         return maybeHandleSingleUrlIntent(intent);
     }

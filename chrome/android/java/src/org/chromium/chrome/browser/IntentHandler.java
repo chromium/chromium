@@ -961,6 +961,8 @@ public class IntentHandler {
                         tabIds.remove(i);
                     }
                 }
+                setMultiTabMetadata(intent, multiTabMetadata);
+
                 return urls.isEmpty();
             }
             // Ignore all invalid URLs, regardless of what the intent was.
@@ -983,6 +985,8 @@ public class IntentHandler {
                         iterator.remove();
                     }
                 }
+                setTabGroupMetadata(intent, tabGroupMetadata);
+
                 // TODO(crbug.com/384979079) Add metrics for invalid url and ignored intent during
                 // group drag drop.
                 return tabIdsToUrls.size() == 0;
