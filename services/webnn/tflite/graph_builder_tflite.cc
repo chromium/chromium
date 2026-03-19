@@ -3281,10 +3281,13 @@ auto GraphBuilderTflite::SerializeBinaryOperation(
 auto GraphBuilderTflite::SerializeConcatOperation(
     base::span<const TensorIndex> input_tensor_indices,
     TensorIndex output_tensor_index,
-    uint32_t axis) -> OperatorOffset {
+    uint32_t axis) -> base::expected<OperatorOffset, std::string> {
+  if (!base::IsValueInRangeForNumericType<int32_t>(axis)) {
+    return base::unexpected("The axis is out of range for int32_t.");
+  }
   // Create `tflite::ConcatenationOptions` with axis.
-  const auto concat_options =
-      ::tflite::CreateConcatenationOptions(builder_, axis);
+  const auto concat_options = ::tflite::CreateConcatenationOptions(
+      builder_, base::checked_cast<int32_t>(axis));
 
   // Create `tflite::Operator` with the tensor index of inputs and outputs
   // operand. The type of operation is determined by the index of the operator
@@ -4199,18 +4202,25 @@ auto GraphBuilderTflite::SerializeConv2d(const mojom::Conv2d& conv2d)
       operator_kind = ::tflite::BuiltinOperator_DEPTHWISE_CONV_2D;
       builtin_options =
           ::tflite::CreateDepthwiseConv2DOptions(
-              builder_, padding_mode.mode, conv2d.strides->width,
-              conv2d.strides->height, /*depth_multiplier=*/1, activation_type,
-              conv2d.dilations->width, conv2d.dilations->height)
+              builder_, padding_mode.mode,
+              base::checked_cast<int32_t>(conv2d.strides->width),
+              base::checked_cast<int32_t>(conv2d.strides->height),
+              /*depth_multiplier=*/1, activation_type,
+              base::checked_cast<int32_t>(conv2d.dilations->width),
+              base::checked_cast<int32_t>(conv2d.dilations->height))
               .Union();
       builtin_options_type = ::tflite::BuiltinOptions_DepthwiseConv2DOptions;
     } else {
       operator_kind = ::tflite::BuiltinOperator_CONV_2D;
-      builtin_options = ::tflite::CreateConv2DOptions(
-                            builder_, padding_mode.mode, conv2d.strides->width,
-                            conv2d.strides->height, activation_type,
-                            conv2d.dilations->width, conv2d.dilations->height)
-                            .Union();
+      builtin_options =
+          ::tflite::CreateConv2DOptions(
+              builder_, padding_mode.mode,
+              base::checked_cast<int32_t>(conv2d.strides->width),
+              base::checked_cast<int32_t>(conv2d.strides->height),
+              activation_type,
+              base::checked_cast<int32_t>(conv2d.dilations->width),
+              base::checked_cast<int32_t>(conv2d.dilations->height))
+              .Union();
       builtin_options_type = ::tflite::BuiltinOptions_Conv2DOptions;
     }
   } else {
@@ -4226,8 +4236,10 @@ auto GraphBuilderTflite::SerializeConv2d(const mojom::Conv2d& conv2d)
                  bias_index};
     operator_kind = ::tflite::BuiltinOperator_TRANSPOSE_CONV;
     builtin_options = ::tflite::CreateTransposeConvOptions(
-                          builder_, padding_mode.mode, conv2d.strides->width,
-                          conv2d.strides->height, activation_type)
+                          builder_, padding_mode.mode,
+                          base::checked_cast<int32_t>(conv2d.strides->width),
+                          base::checked_cast<int32_t>(conv2d.strides->height),
+                          activation_type)
                           .Union();
     builtin_options_type = ::tflite::BuiltinOptions_TransposeConvOptions;
   }
@@ -6091,16 +6103,20 @@ auto GraphBuilderTflite::SerializeRecurrentNetwork(
                 mojom::RecurrentNetworkDirection::kForward ||
             (dir == 0 && recurrent_network.direction ==
                              mojom::RecurrentNetworkDirection::kBoth)) {
-          forward_sequence = SerializeSubGraphReshapeConcat(
-              input_tensor_type, current_hidden_tensor_index, new_shape,
-              forward_sequence, concat_output_shape);
+          ASSIGN_OR_RETURN(
+              forward_sequence,
+              SerializeSubGraphReshapeConcat(
+                  input_tensor_type, current_hidden_tensor_index, new_shape,
+                  forward_sequence, concat_output_shape));
         } else if (recurrent_network.direction ==
                        mojom::RecurrentNetworkDirection::kBackward ||
                    (dir == 1 && recurrent_network.direction ==
                                     mojom::RecurrentNetworkDirection::kBoth)) {
-          backward_sequence = SerializeSubGraphReshapeConcat(
-              input_tensor_type, current_hidden_tensor_index, new_shape,
-              backward_sequence, concat_output_shape, /*backward=*/true);
+          ASSIGN_OR_RETURN(
+              backward_sequence,
+              SerializeSubGraphReshapeConcat(
+                  input_tensor_type, current_hidden_tensor_index, new_shape,
+                  backward_sequence, concat_output_shape, /*backward=*/true));
         }
       }
     }
@@ -6111,14 +6127,16 @@ auto GraphBuilderTflite::SerializeRecurrentNetwork(
     const std::array<int32_t, 3> concat_output_shape = {dir + 1, batch_size,
                                                         hidden_size};
     // Concat along axis 0 (numDirections dimension)
-    output_hidden = SerializeSubGraphReshapeConcat(
-        input_tensor_type, current_hidden_tensor_index, new_shape,
-        output_hidden, concat_output_shape);
+    ASSIGN_OR_RETURN(output_hidden,
+                     SerializeSubGraphReshapeConcat(
+                         input_tensor_type, current_hidden_tensor_index,
+                         new_shape, output_hidden, concat_output_shape));
 
     if constexpr (std::is_same<RecurrentNetworkType, mojom::Lstm>::value) {
-      output_cell = SerializeSubGraphReshapeConcat(
-          input_tensor_type, current_cell_tensor_index, new_shape, output_cell,
-          concat_output_shape);
+      ASSIGN_OR_RETURN(output_cell,
+                       SerializeSubGraphReshapeConcat(
+                           input_tensor_type, current_cell_tensor_index,
+                           new_shape, output_cell, concat_output_shape));
     }
   }
 
@@ -6144,9 +6162,12 @@ auto GraphBuilderTflite::SerializeRecurrentNetwork(
         const TensorIndex concat_tensor_index =
             SerializeTemporaryTensor(concat_output_shape, input_tensor_type);
         // Concat along axis 1 (numDirections dimension)
-        operators_.emplace_back(SerializeConcatOperation(
-            std::array<TensorIndex, 2>({*forward_sequence, *backward_sequence}),
-            concat_tensor_index, 1));
+        ASSIGN_OR_RETURN(OperatorOffset operator_offset,
+                         SerializeConcatOperation(
+                             std::array<TensorIndex, 2>(
+                                 {*forward_sequence, *backward_sequence}),
+                             concat_tensor_index, 1));
+        operators_.emplace_back(operator_offset);
         sequence_tensor_index = concat_tensor_index;
         break;
       }
@@ -6631,7 +6652,8 @@ auto GraphBuilderTflite::GetInitialHiddenAndCellState(
   return state_tensor_index;
 }
 
-TensorIndex GraphBuilderTflite::SerializeSubGraphReshapeConcat(
+base::expected<TensorIndex, std::string>
+GraphBuilderTflite::SerializeSubGraphReshapeConcat(
     ::tflite::TensorType input_tensor_type,
     TensorIndex input_tensor_index,
     base::span<const int32_t> new_shape,
@@ -6650,8 +6672,10 @@ TensorIndex GraphBuilderTflite::SerializeSubGraphReshapeConcat(
                        {out_tensor_index_of_shape, *concat_input_tensor_index})
                  : std::array<TensorIndex, 2>(
                        {*concat_input_tensor_index, out_tensor_index_of_shape});
-    operators_.emplace_back(SerializeConcatOperation(
-        inputs, concat_output_tensor_index, /*axis=*/0));
+    ASSIGN_OR_RETURN(OperatorOffset operator_offset,
+                     SerializeConcatOperation(
+                         inputs, concat_output_tensor_index, /*axis=*/0));
+    operators_.emplace_back(operator_offset);
     return concat_output_tensor_index;
   }
 
@@ -6872,6 +6896,21 @@ auto GraphBuilderTflite::SerializePool2d(const mojom::Pool2d& pool2d)
   webnn::Size2d<uint32_t> filter_size2d = {
       .height = pool2d.window_dimensions->height,
       .width = pool2d.window_dimensions->width};
+
+  // TODO(crbug.com/493988762): Explicitly restrict to int32_t in the WebNN spec
+  // or opSupportLimits for synchronous frontend validation.
+  if (!base::IsValueInRangeForNumericType<int32_t>(pool2d.strides->height) ||
+      !base::IsValueInRangeForNumericType<int32_t>(pool2d.strides->width)) {
+    return base::unexpected(
+        "Stride width and height must fit within the int32 range");
+  }
+
+  if (!base::IsValueInRangeForNumericType<int32_t>(filter_size2d.height) ||
+      !base::IsValueInRangeForNumericType<int32_t>(filter_size2d.width)) {
+    return base::unexpected(
+        "Filter width and height must fit within the int32 range");
+  }
+
   ASSIGN_OR_RETURN(TfLitePadding padding_mode,
                    GetPool2dTfLitePaddingMode(
                        *pool2d.padding, input_size2d, filter_size2d,
@@ -6886,8 +6925,11 @@ auto GraphBuilderTflite::SerializePool2d(const mojom::Pool2d& pool2d)
           /*fuse_dequantize_quantize=*/quantized_output.has_value()));
 
   const auto pool_2d_options = ::tflite::CreatePool2DOptions(
-      builder_, padding_mode.mode, pool2d.strides->width,
-      pool2d.strides->height, filter_size2d.width, filter_size2d.height,
+      builder_, padding_mode.mode,
+      base::checked_cast<int32_t>(pool2d.strides->width),
+      base::checked_cast<int32_t>(pool2d.strides->height),
+      base::checked_cast<int32_t>(filter_size2d.width),
+      base::checked_cast<int32_t>(filter_size2d.height),
       ::tflite::ActivationFunctionType_NONE);
 
   // Create `tflite::Operator` with the tensor index of inputs and outputs
