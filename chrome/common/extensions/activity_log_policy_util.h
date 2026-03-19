@@ -29,6 +29,15 @@ enum class TelemetrySignalType {
   kScriptInjection,  // Matches integrity-sensitive activities.
 };
 
+// Defines the broad categories of extension activity for telemetry filtering.
+enum class ActivityType {
+  kApiCall,
+  kApiEvent,
+  kWebRequest,
+  kDomAccess,
+  kContentScript,
+};
+
 // Returns the specific telemetry signal type for a given extension
 // activity.
 // The `api_name` parameter contains the name of the API or action
@@ -50,6 +59,12 @@ TelemetrySignalType GetTelemetrySignalType(
 // Primarily used by the Renderer-side delegate to decide if the
 // corresponding extension action should be forwarded to the browser.
 bool IsHighRiskEvent(TelemetrySignalType signal_type);
+
+// Returns true if the specific activity is relevant to enterprise telemetry.
+// Used as a fast-path filter in the browser to drop noisy APIs (e.g.,
+// storage.get) before expensive processing occurs.
+bool IsActivityIncludedInTelemetry(const std::string& api_name,
+                                   ActivityType type);
 
 // Normalizes a raw argument list for telemetry by applying
 // API-specific rules. (e.g., dropping the 'old value' at index 2 for

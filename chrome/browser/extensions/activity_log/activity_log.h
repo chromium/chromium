@@ -102,7 +102,9 @@ class ActivityLog : public BrowserContextKeyedAPI,
   void LogAction(scoped_refptr<Action> action);
 
   // Returns true if an event for the given extension should be logged.
-  bool ShouldLog(const std::string& extension_id) const;
+  bool ShouldLog(const std::string& extension_id,
+                 Action::ActionType type,
+                 const std::string& api_name) const;
 
   // Gets all actions that match the specified fields. URLs are treated like
   // prefixes; other fields are exact matches. Empty strings are not matched to

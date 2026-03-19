@@ -338,7 +338,8 @@ TEST_F(ActivityLogTest, LogPrerender) {
           .Build();
   ExtensionRegistrar::Get(profile())->AddExtension(extension);
   ActivityLog* activity_log = ActivityLog::GetInstance(profile());
-  EXPECT_TRUE(activity_log->ShouldLog(extension->id()));
+  EXPECT_TRUE(activity_log->ShouldLog(extension->id(),
+                                      Action::ACTION_CONTENT_SCRIPT, ""));
   ASSERT_TRUE(GetDatabaseEnabled());
   GURL url("http://www.google.com");
 
@@ -374,7 +375,8 @@ TEST_F(ActivityLogTest, ArgUrlExtraction) {
 
   // Submit a DOM API call which should have its URL extracted into the arg_url
   // field.
-  EXPECT_TRUE(activity_log->ShouldLog(kExtensionId));
+  EXPECT_TRUE(activity_log->ShouldLog(kExtensionId, Action::ACTION_DOM_ACCESS,
+                                      "XMLHttpRequest.open"));
   scoped_refptr<Action> action = new Action(kExtensionId,
                                             now,
                                             Action::ACTION_DOM_ACCESS,
@@ -598,23 +600,28 @@ TEST_F(ActivityLogTestWithoutSwitch, TestShouldLog) {
   ExtensionRegistrar::Get(profile())->AddExtension(empty_extension);
   // Since the command line switch for logging isn't enabled and there's no
   // watchdog app active, the activity log shouldn't log anything.
-  EXPECT_FALSE(activity_log->ShouldLog(empty_extension->id()));
+  EXPECT_FALSE(activity_log->ShouldLog(empty_extension->id(),
+                                       Action::ACTION_API_CALL, "tabs.query"));
   const char kAllowlistedExtensionId[] = "eplckmlabaanikjjcgnigddmagoglhmp";
   scoped_refptr<const Extension> activity_log_extension =
       ExtensionBuilder("Test").SetID(kAllowlistedExtensionId).Build();
   ExtensionRegistrar::Get(profile())->AddExtension(activity_log_extension);
   // Loading a watchdog app means the activity log should log other extension
   // activities...
-  EXPECT_TRUE(activity_log->ShouldLog(empty_extension->id()));
+  EXPECT_TRUE(activity_log->ShouldLog(empty_extension->id(),
+                                      Action::ACTION_API_CALL, "tabs.query"));
   // ... but not those of the watchdog app...
-  EXPECT_FALSE(activity_log->ShouldLog(activity_log_extension->id()));
+  EXPECT_FALSE(activity_log->ShouldLog(activity_log_extension->id(),
+                                       Action::ACTION_API_CALL, "tabs.query"));
   // ... or activities from the browser/extensions page, represented by an empty
   // extension ID.
-  EXPECT_FALSE(activity_log->ShouldLog(std::string()));
+  EXPECT_FALSE(activity_log->ShouldLog(std::string(), Action::ACTION_API_CALL,
+                                       "tabs.query"));
   ExtensionRegistrar::Get(profile())->DisableExtension(
       activity_log_extension->id(), {disable_reason::DISABLE_USER_ACTION});
   // Disabling the watchdog app means that we're back to never logging anything.
-  EXPECT_FALSE(activity_log->ShouldLog(empty_extension->id()));
+  EXPECT_FALSE(activity_log->ShouldLog(empty_extension->id(),
+                                       Action::ACTION_API_CALL, "tabs.query"));
 }
 
 TEST_F(ActivityLogTestWithoutSwitch, TelemetryActivation) {
@@ -652,17 +659,34 @@ TEST_F(ActivityLogTestWithoutSwitch, TelemetryShouldLog) {
       extensions_features::kEnterpriseExtensionDOMActivityTelemetry);
 
   const char kExtensionId[] = "ext-1";
-  EXPECT_FALSE(activity_log->ShouldLog(kExtensionId));
+  EXPECT_FALSE(activity_log->ShouldLog(kExtensionId, Action::ACTION_API_CALL,
+                                       "tabs.query"));
 
   activity_log->SetTelemetryLoggingEnabled(
       true, base::BindRepeating([](scoped_refptr<Action> action) {}));
-  EXPECT_TRUE(activity_log->ShouldLog(kExtensionId));
+
+  // 1. DOM access should always be logged.
+  EXPECT_TRUE(activity_log->ShouldLog(kExtensionId, Action::ACTION_DOM_ACCESS,
+                                      "Document.cookie"));
+
+  // 2. High-risk APIs should be logged.
+  EXPECT_TRUE(activity_log->ShouldLog(kExtensionId, Action::ACTION_API_CALL,
+                                      "scripting.executeScript"));
+
+  // 3. Low-risk APIs and Content Scripts should be dropped.
+  EXPECT_FALSE(activity_log->ShouldLog(
+      kExtensionId, Action::ACTION_CONTENT_SCRIPT, std::string()));
+  EXPECT_FALSE(activity_log->ShouldLog(kExtensionId, Action::ACTION_API_CALL,
+                                       "storage.get"));
+  EXPECT_FALSE(activity_log->ShouldLog(kExtensionId, Action::ACTION_API_EVENT,
+                                       "tabs.onUpdated"));
 
   // Verify database is NOT enabled.
   EXPECT_FALSE(GetDatabaseEnabled());
 
   activity_log->SetTelemetryLoggingEnabled(false, base::NullCallback());
-  EXPECT_FALSE(activity_log->ShouldLog(kExtensionId));
+  EXPECT_FALSE(activity_log->ShouldLog(kExtensionId, Action::ACTION_API_CALL,
+                                       "scripting.executeScript"));
 }
 
 }  // namespace extensions

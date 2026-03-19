@@ -144,6 +144,23 @@ bool IsHighRiskEvent(TelemetrySignalType signal_type) {
   return signal_type != TelemetrySignalType::kNone;
 }
 
+bool IsActivityIncludedInTelemetry(const std::string& api_name,
+                                   ActivityType type) {
+  // DOM access is always included for deeper inspection.
+  if (type == ActivityType::kDomAccess) {
+    return true;
+  }
+
+  // For standard API calls, only include high-risk ones.
+  if (type == ActivityType::kApiCall) {
+    return api_name == "scripting.executeScript";
+  }
+
+  // Web Request activity, API events, and manifest content scripts
+  // are not currently used by telemetry.
+  return false;
+}
+
 std::vector<std::string> GetArgumentsList(const std::string& api_name,
                                           const base::ListValue& args_unsafe) {
   std::vector<std::string> arg_strings;
