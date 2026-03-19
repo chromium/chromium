@@ -196,7 +196,7 @@ void DecryptingDemuxerStream::OnBufferReadFromDemuxerStream(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(state_, kPendingDemuxerRead) << state_;
   DCHECK(read_cb_);
-  DCHECK_EQ(buffer.get() != nullptr, status == kOk) << status;
+  DCHECK_EQ(buffer != nullptr, status == kOk) << status;
 
   // Even when |reset_cb_|, we need to pass |kConfigChanged| back to
   // the caller so that the downstream decoder can be properly reinitialized.
@@ -244,6 +244,9 @@ void DecryptingDemuxerStream::OnBufferReadFromDemuxerStream(
   // One time set of `has_clear_lead_`.
   if (!has_clear_lead_.has_value()) {
     has_clear_lead_ = !buffer->decrypt_config();
+    if (!has_clear_lead_.value()) {
+      LogMetadata();
+    }
   }
 
   if (!buffer->decrypt_config()) {
@@ -279,8 +282,10 @@ void DecryptingDemuxerStream::DecryptPendingBuffer() {
   if (HasClearLead() && !switched_clear_to_encrypted_ &&
       pending_buffer_to_decrypt_->is_encrypted()) {
     MEDIA_LOG(INFO, media_log_)
-        << "First switch from clear to encrypted buffers.";
+        << DemuxerStream::GetTypeName(demuxer_stream_->type())
+        << " stream: First switch from clear to encrypted buffers.";
     switched_clear_to_encrypted_ = true;
+    LogMetadata();
   }
 
   decryptor_->Decrypt(GetDecryptorStreamType(), pending_buffer_to_decrypt_,
@@ -429,11 +434,33 @@ void DecryptingDemuxerStream::InitializeDecoderConfig() {
 }
 
 void DecryptingDemuxerStream::LogMetadata() {
-  std::vector<AudioDecoderConfig> audio_metadata{audio_config_};
-  std::vector<VideoDecoderConfig> video_metadata{video_config_};
-  media_log_->SetProperty<MediaLogProperty::kAudioTracks>(audio_metadata);
-  media_log_->SetProperty<MediaLogProperty::kVideoTracks>(video_metadata);
-  // FFmpegDemuxer also provides a max diration, start time, and bitrate.
+  if (!demuxer_stream_ || !IsStreamValid(demuxer_stream_)) {
+    return;
+  }
+
+  const bool should_log_encrypted_config =
+      has_clear_lead_.has_value() &&
+      (!has_clear_lead_.value() || switched_clear_to_encrypted_);
+
+  switch (demuxer_stream_->type()) {
+    case AUDIO: {
+      std::vector<AudioDecoderConfig> audio_metadata{
+          should_log_encrypted_config ? demuxer_stream_->audio_decoder_config()
+                                      : audio_config_};
+      media_log_->SetProperty<MediaLogProperty::kAudioTracks>(audio_metadata);
+      break;
+    }
+    case VIDEO: {
+      std::vector<VideoDecoderConfig> video_metadata{
+          should_log_encrypted_config ? demuxer_stream_->video_decoder_config()
+                                      : video_config_};
+      media_log_->SetProperty<MediaLogProperty::kVideoTracks>(video_metadata);
+      break;
+    }
+
+    default:
+      break;
+  }
 }
 
 void DecryptingDemuxerStream::CompletePendingDecrypt(Decryptor::Status status) {

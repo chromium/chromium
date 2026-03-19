@@ -1162,7 +1162,7 @@ void DecoderStream<StreamType>::ReportEncryptionType(
 
   if (encryption_type == EncryptionType::kEncryptedWithClearLead) {
     MEDIA_LOG(INFO, media_log_)
-        << GetStreamTypeString() << "stream is encrypted with clear lead";
+        << GetStreamTypeString() << " stream is encrypted with clear lead";
   }
 
   traits_->SetEncryptionType(encryption_type);

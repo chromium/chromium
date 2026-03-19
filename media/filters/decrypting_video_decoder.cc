@@ -134,7 +134,7 @@ void DecryptingVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
   if (HasClearLead() && !switched_clear_to_encrypted_ &&
       !buffer->end_of_stream() && buffer->is_encrypted()) {
     MEDIA_LOG(INFO, media_log_)
-        << "First switch from clear to encrypted buffers.";
+        << "video stream: First switch from clear to encrypted buffers.";
     switched_clear_to_encrypted_ = true;
   }
 
@@ -262,7 +262,7 @@ void DecryptingVideoDecoder::DeliverFrame(Decryptor::Status status,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(state_, kPendingDecode) << state_;
   DCHECK(decode_cb_);
-  DCHECK(pending_buffer_to_decode_.get());
+  DCHECK(pending_buffer_to_decode_);
   CompletePendingDecode(status);
 
   bool need_to_try_again_if_nokey_is_returned = key_added_while_decode_pending_;
@@ -277,7 +277,7 @@ void DecryptingVideoDecoder::DeliverFrame(Decryptor::Status status,
     return;
   }
 
-  DCHECK_EQ(status == Decryptor::kSuccess, frame.get() != nullptr);
+  DCHECK_EQ(frame != nullptr, status == Decryptor::kSuccess);
 
   if (status == Decryptor::kError) {
     DVLOG(2) << "DeliverFrame() - kError";

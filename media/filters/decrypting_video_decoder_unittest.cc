@@ -297,7 +297,8 @@ TEST_F(DecryptingVideoDecoderTest, ClearToEncryptedNormal) {
       .WillRepeatedly(RunOnceCallbackRepeatedly<1>(Decryptor::kSuccess,
                                                    decoded_video_frame_));
 
-  EXPECT_MEDIA_LOG(HasSubstr("First switch from clear to encrypted buffers."));
+  EXPECT_MEDIA_LOG(
+      HasSubstr("video stream: First switch from clear to encrypted buffers."));
 
   // Mimicking clear lead content by starting off with a clear buffer and
   // switching to encrypted buffers.
@@ -315,7 +316,8 @@ TEST_F(DecryptingVideoDecoderTest, EncryptedBuffersNoMediaLog) {
       .WillRepeatedly(RunOnceCallbackRepeatedly<1>(Decryptor::kSuccess,
                                                    decoded_video_frame_));
 
-  EXPECT_MEDIA_LOG(HasSubstr("First switch from clear to encrypted buffers."))
+  EXPECT_MEDIA_LOG(
+      HasSubstr("video stream: First switch from clear to encrypted buffers."))
       .Times(0);
 
   DecodeAndExpect(CreateFakeEncryptedBuffer(), DecoderStatus::Codes::kOk);

@@ -15,6 +15,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "media/base/channel_layout.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/decrypt_config.h"
@@ -73,17 +74,13 @@ ACTION_P(ReturnBuffer, buffer) {
 
 }  // namespace
 
-class DecryptingDemuxerStreamTest : public testing::Test {
+class DecryptingDemuxerStreamTestBase : public testing::Test {
  public:
-  DecryptingDemuxerStreamTest()
-      : demuxer_stream_(std::make_unique<DecryptingDemuxerStream>(
-            task_environment_.GetMainThreadTaskRunner(),
-            &media_log_,
-            base::BindRepeating(&DecryptingDemuxerStreamTest::OnWaiting,
-                                base::Unretained(this)))),
-        cdm_context_(std::make_unique<StrictMock<MockCdmContext>>()),
+  enum CdmType { CDM_WITHOUT_DECRYPTOR, CDM_WITH_DECRYPTOR };
+
+  DecryptingDemuxerStreamTestBase()
+      : cdm_context_(std::make_unique<StrictMock<MockCdmContext>>()),
         decryptor_(std::make_unique<StrictMock<MockDecryptor>>()),
-        is_initialized_(false),
         input_audio_stream_(std::make_unique<StrictMock<MockDemuxerStream>>(
             DemuxerStream::AUDIO)),
         input_video_stream_(std::make_unique<StrictMock<MockDemuxerStream>>(
@@ -94,13 +91,89 @@ class DecryptingDemuxerStreamTest : public testing::Test {
         decrypted_buffer_(
             base::MakeRefCounted<DecoderBuffer>(kFakeBufferSize)) {}
 
+  DecryptingDemuxerStreamTestBase(const DecryptingDemuxerStreamTestBase&) =
+      delete;
+  DecryptingDemuxerStreamTestBase& operator=(
+      const DecryptingDemuxerStreamTestBase&) = delete;
+
+  ~DecryptingDemuxerStreamTestBase() override = default;
+
+  void SetCdmType(CdmType cdm_type) {
+    const bool has_decryptor = cdm_type == CDM_WITH_DECRYPTOR;
+    EXPECT_CALL(*cdm_context_, GetDecryptor())
+        .WillRepeatedly(Return(has_decryptor ? decryptor_.get() : nullptr));
+  }
+
+  void InitStream(DecryptingDemuxerStream* stream,
+                  MockDemuxerStream* input_stream,
+                  DemuxerStream::Type type) {
+    const char* track_log =
+        (type == DemuxerStream::AUDIO) ? "kAudioTracks" : "kVideoTracks";
+    EXPECT_CALL(media_log_, DoAddLogRecordLogString(HasSubstr(track_log)))
+        .Times(testing::AnyNumber());
+
+    base::test::TestFuture<PipelineStatus> future;
+    stream->Initialize(input_stream, cdm_context_.get(), future.GetCallback());
+    EXPECT_EQ(future.Get(), PIPELINE_OK);
+  }
+
+  void ReadAndBlock(DecryptingDemuxerStream* stream) {
+    base::test::TestFuture<DemuxerStream::Status,
+                           DemuxerStream::DecoderBufferVector>
+        future;
+    stream->Read(1, future.GetCallback());
+    EXPECT_EQ(future.Get<0>(), DemuxerStream::kOk);
+  }
+
+  static std::string EncryptionTypeToString(EncryptionType type) {
+    switch (type) {
+      case EncryptionType::kEncrypted:
+        return "Encrypted";
+      case EncryptionType::kEncryptedWithClearLead:
+        return "ClearLead";
+      case EncryptionType::kClear:
+        return "Unencrypted";
+      default:
+        NOTREACHED();
+    }
+  }
+
+ protected:
+  base::test::SingleThreadTaskEnvironment task_environment_;
+  StrictMock<MockMediaLog> media_log_;
+  std::unique_ptr<StrictMock<MockCdmContext>> cdm_context_;
+  std::unique_ptr<StrictMock<MockDecryptor>> decryptor_;
+  std::unique_ptr<StrictMock<MockDemuxerStream>> input_audio_stream_;
+  std::unique_ptr<StrictMock<MockDemuxerStream>> input_video_stream_;
+
+  CdmContext::EventCB event_cb_;
+
+  // Constant buffers to be returned by the input demuxer streams and the
+  // |decryptor_|.
+  scoped_refptr<DecoderBuffer> clear_buffer_;
+  scoped_refptr<DecoderBuffer> clear_encrypted_stream_buffer_;
+  scoped_refptr<DecoderBuffer> encrypted_buffer_;
+  scoped_refptr<DecoderBuffer> decrypted_buffer_;
+};
+
+class DecryptingDemuxerStreamTest : public DecryptingDemuxerStreamTestBase {
+ public:
+  DecryptingDemuxerStreamTest()
+      : demuxer_stream_(std::make_unique<DecryptingDemuxerStream>(
+            task_environment_.GetMainThreadTaskRunner(),
+            &media_log_,
+            base::BindRepeating(&DecryptingDemuxerStreamTest::OnWaiting,
+                                base::Unretained(this)))),
+        is_initialized_(false) {}
+
   DecryptingDemuxerStreamTest(const DecryptingDemuxerStreamTest&) = delete;
   DecryptingDemuxerStreamTest& operator=(const DecryptingDemuxerStreamTest&) =
       delete;
 
   ~DecryptingDemuxerStreamTest() override {
-    if (is_initialized_)
+    if (is_initialized_) {
       EXPECT_CALL(*decryptor_, CancelDecrypt(_));
+    }
     demuxer_stream_.reset();
     base::RunLoop().RunUntilIdle();
   }
@@ -130,20 +203,12 @@ class DecryptingDemuxerStreamTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-  enum CdmType { CDM_WITHOUT_DECRYPTOR, CDM_WITH_DECRYPTOR };
-
-  void SetCdmType(CdmType cdm_type) {
-    const bool has_decryptor = cdm_type == CDM_WITH_DECRYPTOR;
-    EXPECT_CALL(*cdm_context_, GetDecryptor())
-        .WillRepeatedly(Return(has_decryptor ? decryptor_.get() : nullptr));
-  }
-
   // The following functions are used to test stream-type-neutral logic in
   // DecryptingDemuxerStream. Therefore, we don't specify audio or video in the
   // function names. But for testing purpose, they all use an audio input
   // demuxer stream.
 
-  void Initialize(int audio_init_times = 1, int video_init_times = 1) {
+  void Initialize(int audio_init_times = 1) {
     SetCdmType(CDM_WITH_DECRYPTOR);
     EXPECT_CALL(*cdm_context_, RegisterEventCB(_)).WillOnce([&](auto cb) {
       event_cb_ = cb;
@@ -154,8 +219,8 @@ class DecryptingDemuxerStreamTest : public testing::Test {
                                     kChannelLayoutConfig, 44100,
                                     EmptyExtraData(), EncryptionScheme::kCenc);
 
-    EXPECT_MEDIA_LOG(HasSubstr("kAudioTracks")).Times(audio_init_times);
-    EXPECT_MEDIA_LOG(HasSubstr("kVideoTracks")).Times(video_init_times);
+    EXPECT_MEDIA_LOG(HasSubstr("kAudioTracks"))
+        .Times(testing::AtLeast(audio_init_times));
 
     InitializeAudioAndExpectStatus(input_config, PIPELINE_OK);
 
@@ -172,16 +237,15 @@ class DecryptingDemuxerStreamTest : public testing::Test {
               output_config.samples_per_second());
   }
 
-  void ReadAndExpectBufferReadyWith(
-      DemuxerStream::Status status,
-      scoped_refptr<DecoderBuffer> decrypted_buffer) {
-    if (status != DemuxerStream::kOk)
+  void ReadAndExpectBufferReadyWith(DemuxerStream::Status status,
+                                    scoped_refptr<DecoderBuffer> buffer) {
+    if (status != DemuxerStream::kOk) {
       EXPECT_CALL(*this, BufferReady(status, IsEmpty()));
-    else if (decrypted_buffer->end_of_stream())
+    } else if (buffer->end_of_stream()) {
       EXPECT_CALL(*this, BufferReady(status, ReadOneAndIsEndOfStream()));
-    else {
+    } else {
       DemuxerStream::DecoderBufferVector buffers;
-      buffers.emplace_back(decrypted_buffer_);
+      buffers.emplace_back(buffer);
       EXPECT_CALL(*this, BufferReady(status, buffers));
     }
 
@@ -294,26 +358,12 @@ class DecryptingDemuxerStreamTest : public testing::Test {
                void(DemuxerStream::Status, DemuxerStream::DecoderBufferVector));
   MOCK_METHOD1(OnWaiting, void(WaitingReason));
 
-  base::test::SingleThreadTaskEnvironment task_environment_;
-  StrictMock<MockMediaLog> media_log_;
   std::unique_ptr<DecryptingDemuxerStream> demuxer_stream_;
-  std::unique_ptr<StrictMock<MockCdmContext>> cdm_context_;
-  std::unique_ptr<StrictMock<MockDecryptor>> decryptor_;
   // Whether the |demuxer_stream_| is successfully initialized.
   bool is_initialized_;
-  std::unique_ptr<StrictMock<MockDemuxerStream>> input_audio_stream_;
-  std::unique_ptr<StrictMock<MockDemuxerStream>> input_video_stream_;
 
   DemuxerStream::ReadCB pending_demuxer_read_cb_;
-  CdmContext::EventCB event_cb_;
   Decryptor::DecryptCB pending_decrypt_cb_;
-
-  // Constant buffers to be returned by the input demuxer streams and the
-  // |decryptor_|.
-  scoped_refptr<DecoderBuffer> clear_buffer_;
-  scoped_refptr<DecoderBuffer> clear_encrypted_stream_buffer_;
-  scoped_refptr<DecoderBuffer> encrypted_buffer_;
-  scoped_refptr<DecoderBuffer> decrypted_buffer_;
 };
 
 TEST_F(DecryptingDemuxerStreamTest, Initialize_NormalAudio) {
@@ -328,8 +378,7 @@ TEST_F(DecryptingDemuxerStreamTest, Initialize_NormalVideo) {
   });
 
   VideoDecoderConfig input_config = TestVideoConfig::NormalEncrypted();
-  EXPECT_MEDIA_LOG(HasSubstr("kAudioTracks"));
-  EXPECT_MEDIA_LOG(HasSubstr("kVideoTracks"));
+  EXPECT_MEDIA_LOG(HasSubstr("kVideoTracks")).Times(testing::AnyNumber());
   InitializeVideoAndExpectStatus(input_config, PIPELINE_OK);
 
   const VideoDecoderConfig& output_config =
@@ -350,8 +399,7 @@ TEST_F(DecryptingDemuxerStreamTest, Initialize_CdmWithoutDecryptor) {
   AudioDecoderConfig input_config(AudioCodec::kVorbis, kSampleFormatPlanarF32,
                                   kChannelLayoutConfig, 44100, EmptyExtraData(),
                                   EncryptionScheme::kCenc);
-  EXPECT_MEDIA_LOG(HasSubstr("kAudioTracks"));
-  EXPECT_MEDIA_LOG(HasSubstr("kVideoTracks"));
+  EXPECT_MEDIA_LOG(HasSubstr("kAudioTracks")).Times(testing::AnyNumber());
   InitializeAudioAndExpectStatus(input_config, DECODER_ERROR_NOT_SUPPORTED);
 }
 
@@ -545,7 +593,7 @@ TEST_F(DecryptingDemuxerStreamTest, Reset_DuringAbortedDemuxerRead) {
 
 // Test config change on the input demuxer stream.
 TEST_F(DecryptingDemuxerStreamTest, DemuxerRead_ConfigChanged) {
-  Initialize(2, 2);
+  Initialize(2);
 
   AudioDecoderConfig new_config(AudioCodec::kVorbis, kSampleFormatPlanarF32,
                                 kChannelLayoutConfig, 88200, EmptyExtraData(),
@@ -561,7 +609,7 @@ TEST_F(DecryptingDemuxerStreamTest, DemuxerRead_ConfigChanged) {
 
 // Test resetting when waiting for a config changed read.
 TEST_F(DecryptingDemuxerStreamTest, Reset_DuringConfigChangedDemuxerRead) {
-  Initialize(2, 2);
+  Initialize(2);
   EnterPendingReadState();
 
   // Make sure we get a |kConfigChanged| instead of a |kAborted|.
@@ -616,5 +664,135 @@ TEST_F(DecryptingDemuxerStreamTest, Destroy_AfterReset) {
   EnterNormalReadingState();
   Reset();
 }
+
+class DecryptingDemuxerStreamComboTest
+    : public DecryptingDemuxerStreamTestBase,
+      public testing::WithParamInterface<
+          std::tuple<EncryptionType, EncryptionType>> {
+ public:
+  DecryptingDemuxerStreamComboTest()
+      : audio_stream_(std::make_unique<DecryptingDemuxerStream>(
+            task_environment_.GetMainThreadTaskRunner(),
+            &media_log_,
+            base::DoNothing())),
+        video_stream_(std::make_unique<DecryptingDemuxerStream>(
+            task_environment_.GetMainThreadTaskRunner(),
+            &media_log_,
+            base::DoNothing())) {}
+
+  DecryptingDemuxerStreamComboTest(const DecryptingDemuxerStreamComboTest&) =
+      delete;
+  DecryptingDemuxerStreamComboTest& operator=(
+      const DecryptingDemuxerStreamComboTest&) = delete;
+
+  ~DecryptingDemuxerStreamComboTest() override = default;
+
+  void SetUp() override {
+    DecryptingDemuxerStreamTestBase::SetCdmType(CDM_WITH_DECRYPTOR);
+    EXPECT_CALL(*cdm_context_, RegisterEventCB(_)).WillRepeatedly([&](auto cb) {
+      event_cb_ = cb;
+      return std::make_unique<CallbackRegistration>();
+    });
+    EXPECT_CALL(*decryptor_, CancelDecrypt(_)).WillRepeatedly(Return());
+
+    AudioDecoderConfig audio_config(AudioCodec::kVorbis, kSampleFormatPlanarF32,
+                                    kChannelLayoutConfig, 44100,
+                                    EmptyExtraData(), EncryptionScheme::kCenc);
+    input_audio_stream_->set_audio_decoder_config(audio_config);
+
+    VideoDecoderConfig video_config = TestVideoConfig::NormalEncrypted();
+    input_video_stream_->set_video_decoder_config(video_config);
+  }
+
+  void DriveStream(DecryptingDemuxerStream* stream,
+                   MockDemuxerStream* input_stream,
+                   EncryptionType state,
+                   DemuxerStream::Type type) {
+    const char* stream_type_str = DemuxerStream::GetTypeName(type);
+    Decryptor::StreamType decryptor_type =
+        (type == DemuxerStream::AUDIO) ? Decryptor::kAudio : Decryptor::kVideo;
+
+    switch (state) {
+      case EncryptionType::kEncrypted:
+        EXPECT_CALL(*input_stream, OnRead(_))
+            .WillOnce(ReturnBuffer(encrypted_buffer_));
+        EXPECT_CALL(*decryptor_, Decrypt(decryptor_type, encrypted_buffer_, _))
+            .WillOnce(
+                RunOnceCallback<2>(Decryptor::kSuccess, decrypted_buffer_));
+        ReadAndBlock(stream);
+        break;
+
+      case EncryptionType::kEncryptedWithClearLead:
+        EXPECT_CALL(*input_stream, OnRead(_))
+            .WillOnce(ReturnBuffer(clear_buffer_))
+            .WillOnce(ReturnBuffer(encrypted_buffer_));
+        ReadAndBlock(stream);
+        EXPECT_TRUE(stream->HasClearLead());
+
+        EXPECT_CALL(*decryptor_, Decrypt(decryptor_type, encrypted_buffer_, _))
+            .WillOnce(
+                RunOnceCallback<2>(Decryptor::kSuccess, decrypted_buffer_));
+
+        EXPECT_CALL(
+            media_log_,
+            DoAddLogRecordLogString(base::StrCat(
+                {"{\"info\":\"", stream_type_str,
+                 " stream: First switch from clear to encrypted buffers.\"}"})))
+            .Times(1);
+
+        ReadAndBlock(stream);
+        break;
+
+      case EncryptionType::kClear:
+        EXPECT_CALL(*input_stream, OnRead(_))
+            .WillRepeatedly(ReturnBuffer(clear_buffer_));
+        ReadAndBlock(stream);
+        ReadAndBlock(stream);
+        break;
+
+      default:
+        NOTREACHED();
+    }
+
+    EXPECT_EQ(stream->HasClearLead(), state != EncryptionType::kEncrypted);
+  }
+
+  std::unique_ptr<DecryptingDemuxerStream> audio_stream_;
+  std::unique_ptr<DecryptingDemuxerStream> video_stream_;
+};
+
+TEST_P(DecryptingDemuxerStreamComboTest, ClearLeadReporting) {
+  InitStream(audio_stream_.get(), input_audio_stream_.get(),
+             DemuxerStream::AUDIO);
+  InitStream(video_stream_.get(), input_video_stream_.get(),
+             DemuxerStream::VIDEO);
+
+  const auto& [audio_state, video_state] = GetParam();
+
+  DriveStream(audio_stream_.get(), input_audio_stream_.get(), audio_state,
+              DemuxerStream::AUDIO);
+  DriveStream(video_stream_.get(), input_video_stream_.get(), video_state,
+              DemuxerStream::VIDEO);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    AllCombos,
+    DecryptingDemuxerStreamComboTest,
+    testing::Combine(testing::Values(EncryptionType::kEncrypted,
+                                     EncryptionType::kEncryptedWithClearLead,
+                                     EncryptionType::kClear),
+                     testing::Values(EncryptionType::kEncrypted,
+                                     EncryptionType::kEncryptedWithClearLead,
+                                     EncryptionType::kClear)),
+    [](const testing::TestParamInfo<
+        DecryptingDemuxerStreamComboTest::ParamType>& info) {
+      return base::StrCat(
+          {"Audio",
+           DecryptingDemuxerStreamTestBase::EncryptionTypeToString(
+               std::get<0>(info.param)),
+           "_Video",
+           DecryptingDemuxerStreamTestBase::EncryptionTypeToString(
+               std::get<1>(info.param))});
+    });
 
 }  // namespace media
