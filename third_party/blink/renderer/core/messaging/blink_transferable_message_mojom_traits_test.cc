@@ -10,7 +10,6 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/null_task_runner.h"
-#include "base/threading/sequence_local_storage_map.h"
 #include "components/viz/test/test_raster_interface.h"
 #include "mojo/public/cpp/base/big_buffer_mojom_traits.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -229,6 +228,11 @@ class BlinkTransferableMessageStructTraitsWithFakeGpuTest : public Test {
  public:
   void SetUp() override {
     context_provider_ = viz::TestContextProvider::CreateRaster();
+    InitializeSharedGpuContext(context_provider_.get());
+  }
+
+  void TearDown() override {
+    SharedGpuContext::Reset();
   }
 
   gpu::SyncToken GenTestSyncToken(GLbyte id) {
@@ -272,7 +276,6 @@ TEST_F(BlinkTransferableMessageStructTraitsWithFakeGpuTest,
       ->GetTaskRunner(TaskType::kInternalTest)
       ->PostTask(
           FROM_HERE, base::BindLambdaForTesting([&]() {
-            InitializeSharedGpuContext(context_provider_.get());
             ImageBitmap* image_bitmap = CreateAcceleratedStaticImageBitmap();
             v8::Local<v8::Value> wrapper = ToV8Traits<ImageBitmap>::ToV8(
                 scope.GetScriptState(), image_bitmap);
@@ -310,12 +313,6 @@ TEST_F(BlinkTransferableMessageStructTraitsWithFakeGpuTest,
       ->PostTask(FROM_HERE, base::BindLambdaForTesting(
                                 [&]() { EXPECT_TRUE(image_destroyed_); }));
   base::RunLoop().RunUntilIdle();
-
-  scope.GetExecutionContext()
-      ->GetTaskRunner(TaskType::kInternalTest)
-      ->PostTask(FROM_HERE, base::BindLambdaForTesting(
-                                [&]() { SharedGpuContext::Reset(); }));
-  base::RunLoop().RunUntilIdle();
 }
 
 TEST_F(BlinkTransferableMessageStructTraitsWithFakeGpuTest,
@@ -326,7 +323,6 @@ TEST_F(BlinkTransferableMessageStructTraitsWithFakeGpuTest,
       ->GetTaskRunner(TaskType::kInternalTest)
       ->PostTask(
           FROM_HERE, base::BindLambdaForTesting([&]() {
-            InitializeSharedGpuContext(context_provider_.get());
             ImageBitmap* image_bitmap = CreateAcceleratedStaticImageBitmap();
 
             v8::Local<v8::Value> wrapper = ToV8Traits<ImageBitmap>::ToV8(
@@ -356,12 +352,6 @@ TEST_F(BlinkTransferableMessageStructTraitsWithFakeGpuTest,
       ->GetTaskRunner(TaskType::kInternalTest)
       ->PostTask(FROM_HERE, base::BindLambdaForTesting(
                                 [&]() { EXPECT_TRUE(image_destroyed_); }));
-  base::RunLoop().RunUntilIdle();
-
-  scope.GetExecutionContext()
-      ->GetTaskRunner(TaskType::kInternalTest)
-      ->PostTask(FROM_HERE, base::BindLambdaForTesting(
-                                [&]() { SharedGpuContext::Reset(); }));
   base::RunLoop().RunUntilIdle();
 }
 

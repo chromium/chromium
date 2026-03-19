@@ -10,7 +10,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/weak_ptr.h"
-#include "base/threading/sequence_local_storage_slot.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/platform/web_graphics_shared_image_interface_provider.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
@@ -33,6 +32,8 @@ class WebGraphicsContext3DProvider;
 // Platform::CreateSharedOffscreenGraphicsContext3DProvider, and the
 // same query as Platform::IsGPUCompositingEnabled().
 class PLATFORM_EXPORT SharedGpuContext {
+  DISALLOW_NEW();
+
  public:
   // Thread-safe query if gpu compositing is enabled. This should be done before
   // calling ContextProviderWrapper() if the context will be used to make
@@ -99,9 +100,9 @@ class PLATFORM_EXPORT SharedGpuContext {
   static void Reset();
 
  private:
-  friend class base::GenericSequenceLocalStorageSlot<SharedGpuContext>;
+  friend class ThreadSpecific<SharedGpuContext>;
 
-  static SharedGpuContext* GetInstanceForCurrentSequence();
+  static SharedGpuContext* GetInstanceForCurrentThread();
 
   SharedGpuContext();
   void CreateContextProviderIfNeeded(bool only_if_gpu_compositing);
