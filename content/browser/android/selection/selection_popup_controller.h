@@ -36,7 +36,9 @@ class SelectionPopupController : public RenderWidgetHostConnector {
  public:
   static SelectionPopupController* FromWebContents(WebContents& web_contents);
 
-  explicit SelectionPopupController(WebContents* web_contents);
+  SelectionPopupController(JNIEnv* env,
+                           const base::android::JavaRef<jobject>& obj,
+                           WebContents* web_contents);
 
   void SetTextHandlesHiddenForDropdownMenu(JNIEnv* env, bool hidden);
 
@@ -81,14 +83,14 @@ class SelectionPopupController : public RenderWidgetHostConnector {
 
  private:
   ~SelectionPopupController() override;
-  base::android::ScopedJavaLocalRef<jobject> GetContext(JNIEnv* env) const;
-  base::android::ScopedJavaLocalRef<jobject> GetJavaObject(JNIEnv* env) const;
-
+  base::android::ScopedJavaLocalRef<jobject> GetContext() const;
   raw_ptr<RenderWidgetHostViewAndroid> rwhva_ = nullptr;
   std::unique_ptr<SelectionPopupDelegate> selection_popup_delegate_;
   // Retained to keep the model in scope until the menu is dismissed.
   std::unique_ptr<ui::MenuModelBridge> menu_model_bridge_;
   std::unique_ptr<ui::MenuModel> extra_items_menu_model_;
+
+  JavaObjectWeakGlobalRef java_obj_;
 };
 
 }  // namespace content
