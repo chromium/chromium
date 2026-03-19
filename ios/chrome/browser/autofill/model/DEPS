@@ -1,5 +1,6 @@
 include_rules = [
   # keep-sorted start
+  "+components/wallet/core/browser",
   "+ios/chrome/browser/history/model",
   "+ios/chrome/browser/infobars/model",
   "+ios/chrome/browser/optimization_guide/model",

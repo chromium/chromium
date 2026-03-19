@@ -94,6 +94,7 @@ class ChromeAutofillClientIOS : public AutofillClientIOS {
   PersonalDataManager& GetPersonalDataManager() override;
   ValuablesDataManager* GetValuablesDataManager() override;
   EntityDataManager* GetEntityDataManager() override;
+  WalletPassAccessManager* GetWalletPassAccessManager() override;
   FieldClassificationModelHandler*
   GetAutofillFieldClassificationModelHandler() override;
   FieldClassificationModelHandler*
