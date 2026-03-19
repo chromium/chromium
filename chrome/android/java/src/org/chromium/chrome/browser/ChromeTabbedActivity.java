@@ -4183,7 +4183,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         } else if (id == R.id.focus_url_bar) {
             boolean isUrlBarVisible =
                     !isInOverviewMode() && (!isTablet() || getCurrentTabModel().getCount() != 0);
-            if (isUrlBarVisible) {
+            boolean isUrlBarFocused = getToolbarManager().isUrlBarFocused();
+            if (isUrlBarVisible && !isUrlBarFocused) {
                 getToolbarManager()
                         .setUrlBarFocus(true, OmniboxFocusReason.MENU_OR_KEYBOARD_ACTION);
             }
