@@ -88,7 +88,6 @@ class DevicePickerBottomSheetAdapter extends BaseAdapter {
 
     private static Drawable getDrawableForDeviceType(
             Context context, TargetDeviceInfo targetDevice) {
-        // TODO(crbug.com/40868175): Update cases to handle a tablet device case.
         switch (targetDevice.formFactor) {
             case FormFactor.DESKTOP:
                 {
@@ -98,6 +97,10 @@ class DevicePickerBottomSheetAdapter extends BaseAdapter {
                 {
                     return AppCompatResources.getDrawable(
                             context, R.drawable.smartphone_black_24dp);
+                }
+            case FormFactor.TABLET:
+                {
+                    return AppCompatResources.getDrawable(context, R.drawable.tablet_black_24dp);
                 }
         }
         return AppCompatResources.getDrawable(context, R.drawable.devices_black_24dp);

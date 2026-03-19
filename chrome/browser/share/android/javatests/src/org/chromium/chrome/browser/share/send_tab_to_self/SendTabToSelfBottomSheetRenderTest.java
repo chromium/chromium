@@ -88,7 +88,12 @@ public class SendTabToSelfBottomSheetRenderTest {
                                 "My Computer",
                                 "guid2",
                                 FormFactor.DESKTOP,
-                                todayTimestamp - TimeUnit.DAYS.toMillis(1)));
+                                todayTimestamp - TimeUnit.DAYS.toMillis(1)),
+                        new TargetDeviceInfo(
+                                "My Tablet",
+                                "guid3",
+                                FormFactor.TABLET,
+                                todayTimestamp - TimeUnit.DAYS.toMillis(2)));
         View view =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
@@ -121,7 +126,12 @@ public class SendTabToSelfBottomSheetRenderTest {
                                 "My Computer",
                                 "guid2",
                                 FormFactor.DESKTOP,
-                                todayTimestamp - TimeUnit.DAYS.toMillis(1)));
+                                todayTimestamp - TimeUnit.DAYS.toMillis(1)),
+                        new TargetDeviceInfo(
+                                "My Tablet",
+                                "guid3",
+                                FormFactor.TABLET,
+                                todayTimestamp - TimeUnit.DAYS.toMillis(2)));
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     DevicePickerBottomSheetContent sheetContent =
