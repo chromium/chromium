@@ -3656,13 +3656,19 @@ CSSValue* ConsumeImage(
         IsGeneratedImage(id)) {
       return ConsumeGeneratedImage(stream, context, local_context);
     }
-    if (IsUASheetBehavior(context.Mode())) {
-      return ConsumeLightDark(
-          static_cast<
-              CSSValue* (*)(CSSParserTokenStream&, const CSSParserContext&,
-                            CSSParserLocalContext&, const ColorParserContext&)>(
-              ConsumeImageOrNone),
-          stream, context, local_context, ColorParserContext());
+    if (IsUASheetBehavior(context.Mode()) ||
+        RuntimeEnabledFeatures::CSSLightDarkImageEnabled()) {
+      if (CSSLightDarkValuePair* value = ConsumeLightDark(
+              static_cast<
+                  CSSValue* (*)(CSSParserTokenStream&, const CSSParserContext&,
+                                CSSParserLocalContext&,
+                                const ColorParserContext&)>(ConsumeImageOrNone),
+              stream, context, local_context, ColorParserContext())) {
+        if (!IsUASheetBehavior(context.Mode())) {
+          context.Count(WebFeature::kCSSLightDarkImage);
+        }
+        return value;
+      }
     }
   }
   return nullptr;

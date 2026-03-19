@@ -174,8 +174,8 @@ class CORE_EXPORT StyleResolverState {
   void LoadPendingResources();
 
   StyleImage* GetStyleImage(CSSPropertyID property_id, const CSSValue& value) {
-    return element_style_resources_.GetStyleImage(property_id,
-                                                  ResolveGradients(value));
+    return element_style_resources_.GetStyleImage(
+        property_id, ResolveGradients(ResolveLightDarkPair(value)));
   }
   SVGResource* GetSVGResource(CSSPropertyID, const cssvalue::CSSURIValue&);
 

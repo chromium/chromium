@@ -5155,6 +5155,7 @@ enum WebFeature {
   kHttpOnlyCookieShadowedByNonHttpOnlyPartitioned = 5838,
   kXRMeshDetection = 5839,
   kXRFrameDetectedMeshes = 5840,
+  kCSSLightDarkImage = 5841,
 
   // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra

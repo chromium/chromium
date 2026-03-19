@@ -1628,6 +1628,12 @@
       status: "stable",
     },
     {
+      // light-dark() for image values (background-image, etc.)
+      // https://drafts.csswg.org/css-color-5/#light-dark
+      name: "CSSLightDarkImage",
+      status: "experimental",
+    },
+    {
       name: "CSSLineClamp",
       status: "experimental",
     },

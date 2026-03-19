@@ -916,10 +916,39 @@ TEST(CSSPropertyParserTest, LightDarkAuthor) {
       CSSPropertyID::kColor, "light-dark(#000000, #ffffff)", context));
   ASSERT_TRUE(CSSParser::ParseSingleValue(CSSPropertyID::kColor,
                                           "light-dark(red, green)", context));
-  // light-dark() is only valid for background-image in UA sheets.
+  // light-dark() for background-image requires CSSLightDarkImage flag.
+  ScopedCSSLightDarkImageForTest scoped_feature(false);
   ASSERT_FALSE(CSSParser::ParseSingleValue(
       CSSPropertyID::kBackgroundImage,
       "light-dark(url(light.png), url(dark.png))", context));
+}
+
+TEST(CSSPropertyParserTest, LightDarkImageAuthor) {
+  ScopedCSSLightDarkImageForTest scoped_feature(true);
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+
+  const struct {
+    const char* value;
+    bool valid;
+  } tests[] = {
+      {"light-dark()", false},
+      {"light-dark(url(light.png))", false},
+      {"light-dark(url(light.png) url(dark.png))", false},
+      {"light-dark(url(light.png),,url(dark.png))", false},
+      {"light-dark(url(light.png), url(dark.png))", true},
+      {"light-dark(url(light.png), none)", true},
+      {"light-dark(none, image-set(url(dark.png) 1x))", true},
+      {"light-dark(  none  ,  none   )", true},
+      {"light-dark(  url(light.png)  ,  url(dark.png)   )", true},
+  };
+
+  for (const auto& test : tests) {
+    EXPECT_EQ(!!CSSParser::ParseSingleValue(CSSPropertyID::kBackgroundImage,
+                                            test.value, context),
+              test.valid)
+        << test.value;
+  }
 }
 
 TEST(CSSPropertyParserTest, UALightDarkBackgroundImage) {

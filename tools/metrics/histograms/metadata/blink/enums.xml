@@ -6479,6 +6479,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5838" label="HttpOnlyCookieShadowedByNonHttpOnlyPartitioned"/>
   <int value="5839" label="XRMeshDetection"/>
   <int value="5840" label="XRFrameDetectedMeshes"/>
+  <int value="5841" label="CSSLightDarkImage"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

@@ -3517,7 +3517,7 @@ void Content::ApplyValue(StyleResolverState& state,
   for (auto& item : To<CSSValueList>(outer_list.Item(0))) {
     ContentData* next_content = nullptr;
     if (item->IsImageGeneratorValue() || item->IsImageSetValue() ||
-        item->IsImageValue()) {
+        item->IsImageValue() || item->IsLightDarkValuePair()) {
       next_content = MakeGarbageCollected<ImageContentData>(
           state.GetStyleImage(CSSPropertyID::kContent, *item));
     } else if (const auto* counter_value =
