@@ -17,8 +17,10 @@ class CloudPolicyCore;
 // A cloud policy status provider for user policy.
 class UserCloudPolicyStatusProvider : public CloudPolicyCoreStatusProvider {
  public:
-  explicit UserCloudPolicyStatusProvider(policy::CloudPolicyCore* core,
-                                         Profile* profile);
+  explicit UserCloudPolicyStatusProvider(
+      policy::CloudPolicyCore* core,
+      policy::CloudPolicyCore* extension_install_core,
+      Profile* profile);
 
   UserCloudPolicyStatusProvider(const UserCloudPolicyStatusProvider&) = delete;
   UserCloudPolicyStatusProvider& operator=(

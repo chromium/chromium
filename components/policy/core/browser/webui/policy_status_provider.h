@@ -64,7 +64,12 @@ class POLICY_EXPORT PolicyStatusProvider {
   // Returns a dictionary with metadata about policies.
   virtual base::DictValue GetStatus();
 
-  static base::DictValue GetStatusFromCore(const CloudPolicyCore* core);
+  // Returns a dictionary with metadata about policies from a
+  // CloudPolicyCore instance. If |is_extension_install_policy| is true, the
+  // dictionary will be for extension install policies.
+  static base::DictValue GetStatusFromCore(
+      const CloudPolicyCore* core,
+      bool is_extension_install_policy = false);
   static base::DictValue GetStatusFromPolicyData(
       const enterprise_management::PolicyData* policy);
 

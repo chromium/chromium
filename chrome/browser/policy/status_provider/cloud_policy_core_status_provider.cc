@@ -7,9 +7,14 @@
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 
 CloudPolicyCoreStatusProvider::CloudPolicyCoreStatusProvider(
-    policy::CloudPolicyCore* core)
-    : core_(core) {
+    policy::CloudPolicyCore* core,
+    policy::CloudPolicyCore* extension_install_core)
+    : core_(core), extension_install_core_(extension_install_core) {
   scoped_observation_.Observe(core_->store());
+  if (extension_install_core_ && extension_install_core_->store()) {
+    extension_install_core_scoped_observation_.Observe(
+        extension_install_core_->store());
+  }
   // TODO(bartfab): Add an observer that watches for client errors. Observing
   // core_->client() directly is not safe as the client may be destroyed and
   // (re-)created anytime if the user signs in or out on desktop platforms.
@@ -30,4 +35,7 @@ void CloudPolicyCoreStatusProvider::OnStoreError(
 void CloudPolicyCoreStatusProvider::OnStoreDestruction(
     policy::CloudPolicyStore* store) {
   scoped_observation_.Reset();
+  if (extension_install_core_) {
+    extension_install_core_scoped_observation_.Reset();
+  }
 }

@@ -14,7 +14,11 @@
 UserCloudPolicyStatusProviderChromeOS::UserCloudPolicyStatusProviderChromeOS(
     policy::CloudPolicyCore* core,
     Profile* profile)
-    : UserCloudPolicyStatusProvider(core, profile) {
+    // TODO(b/486888143): ChromeOS only supports user policies, so there is no
+    // extension install core.
+    : UserCloudPolicyStatusProvider(core,
+                                    /*extension_install_core=*/nullptr,
+                                    profile) {
   profile_ = profile;
 }
 

@@ -563,6 +563,12 @@ Additional details:
   <message name="IDS_POLICY_LABEL_TIME_SINCE_LAST_REFRESH" desc="Label for the time since the last refresh in the policy status boxes.">
     Last policy timestamp:
   </message>
+  <message name="IDS_POLICY_LABEL_POLICY_FETCH" desc="Label for the policy fetch section.">
+    Policy fetch
+  </message>
+  <message name="IDS_POLICY_LABEL_EXTENSION_INSTALL_POLICY_FETCH" desc="Label for the extension install policy fetch section.">
+    Extension install policy fetch
+  </message>
   <message name="IDS_POLICY_LABEL_LAST_CLOUD_REPORT_SENT_TIMESTAMP" desc="Label for the time when the last cloud report is sent successfully.">
     Report sent:
   </message>

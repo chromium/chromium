@@ -140,7 +140,8 @@ void PolicyUIHandler::RegisterMessages() {
   if (manager) {
     machine_status_provider_ =
         std::make_unique<policy::MachineLevelUserCloudPolicyStatusProvider>(
-            manager->core(), GetApplicationContext()->GetLocalState(),
+            manager->core(), manager->extension_install_core(),
+            GetApplicationContext()->GetLocalState(),
             new policy::MachineLevelUserCloudPolicyContext(
                 {dm_token_storage->RetrieveEnrollmentToken(),
                  dm_token_storage->RetrieveClientId(),

@@ -14,15 +14,17 @@ namespace policy {
 class CloudPolicyCore;
 }  // namespace policy
 
-// Status provider implementation that pulls cloud policy status from a
-// CloudPolicyCore instance provided at construction time. Also listens for
-// changes on that CloudPolicyCore and reports them through the status change
+// Status provider implementation that pulls cloud policy status up to two
+// CloudPolicyCore instances provided at construction time. Also listens for
+// changes on those CloudPolicyCores and reports them through the status change
 // callback.
 class CloudPolicyCoreStatusProvider
     : public policy::PolicyStatusProvider,
       public policy::CloudPolicyStore::Observer {
  public:
-  explicit CloudPolicyCoreStatusProvider(policy::CloudPolicyCore* core);
+  explicit CloudPolicyCoreStatusProvider(
+      policy::CloudPolicyCore* core,
+      policy::CloudPolicyCore* extension_install_core);
 
   CloudPolicyCoreStatusProvider(const CloudPolicyCoreStatusProvider&) = delete;
   CloudPolicyCoreStatusProvider& operator=(
@@ -37,13 +39,19 @@ class CloudPolicyCoreStatusProvider
 
  protected:
   // Policy status is read from the CloudPolicyClient, CloudPolicyStore and
-  // CloudPolicyRefreshScheduler hosted by this |core_|.
+  // CloudPolicyRefreshScheduler hosted by this |core_|. core_ cannot be null.
   raw_ptr<policy::CloudPolicyCore> core_;
+  // Policy status is read from the extension install CloudPolicyCore instance.
+  // extension_install_core_ can be null.
+  raw_ptr<policy::CloudPolicyCore> extension_install_core_;
 
  private:
   base::ScopedObservation<policy::CloudPolicyStore,
                           policy::CloudPolicyStore::Observer>
       scoped_observation_{this};
+  base::ScopedObservation<policy::CloudPolicyStore,
+                          policy::CloudPolicyStore::Observer>
+      extension_install_core_scoped_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_POLICY_STATUS_PROVIDER_CLOUD_POLICY_CORE_STATUS_PROVIDER_H_

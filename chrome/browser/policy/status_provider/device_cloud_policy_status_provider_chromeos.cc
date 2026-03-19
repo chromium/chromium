@@ -15,7 +15,8 @@ DeviceCloudPolicyStatusProviderChromeOS::
     DeviceCloudPolicyStatusProviderChromeOS(
         const policy::BrowserPolicyConnectorAsh* connector)
     : CloudPolicyCoreStatusProvider(
-          connector->GetDeviceCloudPolicyManager()->core()) {
+          connector->GetDeviceCloudPolicyManager()->core(),
+          connector->GetDeviceCloudPolicyManager()->extension_install_core()) {
   enterprise_domain_manager_ = connector->GetEnterpriseDomainManager();
 }
 

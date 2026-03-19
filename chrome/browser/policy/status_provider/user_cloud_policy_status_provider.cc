@@ -14,6 +14,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/enterprise/browser/reporting/common_pref_names.h"
 #include "components/policy/core/browser/webui/policy_status_provider.h"
+#include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -21,8 +22,10 @@
 
 UserCloudPolicyStatusProvider::UserCloudPolicyStatusProvider(
     policy::CloudPolicyCore* core,
+    policy::CloudPolicyCore* extension_install_core,
     Profile* profile)
-    : CloudPolicyCoreStatusProvider(core), profile_(profile) {}
+    : CloudPolicyCoreStatusProvider(core, extension_install_core),
+      profile_(profile) {}
 
 UserCloudPolicyStatusProvider::~UserCloudPolicyStatusProvider() = default;
 
@@ -50,6 +53,12 @@ base::DictValue UserCloudPolicyStatusProvider::GetStatus() {
       entry ? entry->GetProfileManagementEnrollmentToken() : std::string();
 
   base::DictValue dict = policy::PolicyStatusProvider::GetStatusFromCore(core_);
+
+  if (extension_install_core_ && extension_install_core_->client() &&
+      extension_install_core_->client()->HasPolicyTypeToFetch()) {
+    dict.Merge(policy::PolicyStatusProvider::GetStatusFromCore(
+        extension_install_core_, /*is_extension_install_policy=*/true));
+  }
 
   if (enrollment_token.empty()) {
     SetDomainExtractedFromUsername(dict);

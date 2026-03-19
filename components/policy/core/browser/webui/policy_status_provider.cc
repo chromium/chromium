@@ -86,7 +86,8 @@ void PolicyStatusProvider::NotifyStatusChange() {
 
 // static
 base::DictValue PolicyStatusProvider::GetStatusFromCore(
-    const CloudPolicyCore* core) {
+    const CloudPolicyCore* core,
+    bool is_extension_install_policy) {
   const CloudPolicyStore* store = core->store();
   const CloudPolicyClient* client = core->client();
   const CloudPolicyRefreshScheduler* refresh_scheduler =
@@ -95,19 +96,26 @@ base::DictValue PolicyStatusProvider::GetStatusFromCore(
   const std::u16string status = GetPolicyStatusFromStore(store, client);
 
   const em::PolicyData* policy = store->policy();
-  base::DictValue dict = GetStatusFromPolicyData(policy);
+  base::DictValue dict;
 
-  SetPolicyPushAndRefreshStatus(dict, refresh_scheduler);
+  // Only populate identity and shared status for the main policy core.
+  if (!is_extension_install_policy) {
+    dict = GetStatusFromPolicyData(policy);
+    SetPolicyPushAndRefreshStatus(dict, refresh_scheduler);
+  }
 
   bool no_error = store->status() == CloudPolicyStore::STATUS_OK && client &&
                   client->last_dm_status() == DM_STATUS_SUCCESS;
-  dict.Set("error", !no_error);
-  dict.Set("status", status);
+  dict.Set(is_extension_install_policy ? "extensionInstallError" : "error",
+           !no_error);
+  dict.Set(is_extension_install_policy ? "extensionInstallStatus" : "status",
+           status);
   base::Time last_refresh_time =
       policy && policy->has_timestamp()
           ? base::Time::FromMillisecondsSinceUnixEpoch(policy->timestamp())
           : base::Time();
-  dict.Set("timeSinceLastRefresh",
+  dict.Set(is_extension_install_policy ? "extensionInstallTimeSinceLastRefresh"
+                                       : "timeSinceLastRefresh",
            GetTimeSinceLastActionString(last_refresh_time));
 
   // In case of ChromeOS device policies, if state keys are supported but not
@@ -116,7 +124,9 @@ base::DictValue PolicyStatusProvider::GetStatusFromCore(
   // `DeviceCloudPolicyManagerAsh::StartConnection`.
   base::Time last_fetch_attempted_time =
       refresh_scheduler ? refresh_scheduler->last_refresh() : base::Time();
-  dict.Set("timeSinceLastFetchAttempt",
+  dict.Set(is_extension_install_policy
+               ? "extensionInstallTimeSinceLastFetchAttempt"
+               : "timeSinceLastFetchAttempt",
            GetTimeSinceLastActionString(last_fetch_attempted_time));
   return dict;
 }

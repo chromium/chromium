@@ -36,17 +36,28 @@ namespace policy {
 MachineLevelUserCloudPolicyStatusProvider::
     MachineLevelUserCloudPolicyStatusProvider(
         CloudPolicyCore* core,
+        CloudPolicyCore* extension_install_core,
         PrefService* prefs,
         MachineLevelUserCloudPolicyContext* context)
-    : core_(core), prefs_(prefs), context_(context) {
+    : core_(core),
+      extension_install_core_(extension_install_core),
+      prefs_(prefs),
+      context_(context) {
   if (core_->store())
     core_->store()->AddObserver(this);
+
+  if (extension_install_core_ && extension_install_core_->store()) {
+    extension_install_core_->store()->AddObserver(this);
+  }
 }
 
 MachineLevelUserCloudPolicyStatusProvider::
     ~MachineLevelUserCloudPolicyStatusProvider() {
   if (core_->store())
     core_->store()->RemoveObserver(this);
+  if (extension_install_core_ && extension_install_core_->store()) {
+    extension_install_core_->store()->RemoveObserver(this);
+  }
 }
 
 base::DictValue MachineLevelUserCloudPolicyStatusProvider::GetStatus() {
@@ -85,6 +96,12 @@ base::DictValue MachineLevelUserCloudPolicyStatusProvider::GetStatus() {
 
   UpdateLastReportTimestamp(dict, prefs_,
                             context_->lastReportTimestampPrefName);
+
+  if (extension_install_core_ && extension_install_core_->client() != nullptr &&
+      extension_install_core_->client()->HasPolicyTypeToFetch()) {
+    dict.Merge(GetStatusFromCore(extension_install_core_,
+                                 /*is_extension_install_policy=*/true));
+  }
   return dict;
 }
 

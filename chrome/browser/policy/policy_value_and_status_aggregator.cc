@@ -101,7 +101,8 @@ std::unique_ptr<policy::PolicyStatusProvider> GetUserPolicyStatusProvider(
       profile->GetCloudPolicyManager();
   if (cloud_policy_manager) {
     return std::make_unique<UserCloudPolicyStatusProvider>(
-        cloud_policy_manager->core(), profile);
+        cloud_policy_manager->core(),
+        cloud_policy_manager->extension_install_core(), profile);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
   return std::make_unique<policy::PolicyStatusProvider>();
@@ -124,7 +125,8 @@ std::unique_ptr<policy::PolicyStatusProvider> GetMachinePolicyStatusProvider(
       policy::BrowserDMTokenStorage::Get();
 
   return std::make_unique<policy::MachineLevelUserCloudPolicyStatusProvider>(
-      manager->core(), g_browser_process->local_state(),
+      manager->core(), manager->extension_install_core(),
+      g_browser_process->local_state(),
       new policy::MachineLevelUserCloudPolicyContext(
           {dmTokenStorage->RetrieveEnrollmentToken(),
            dmTokenStorage->RetrieveClientId(),

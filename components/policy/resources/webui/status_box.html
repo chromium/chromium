@@ -99,14 +99,7 @@ a {
     <div class="label">$i18n{labelDirectoryApiId}</div>
     <div class="directory-api-id status-entry-value"></div>
   </div>
-  <div class="status-entry" hidden>
-    <div class="label">$i18n{labelTimeSinceLastFetchAttempt}</div>
-    <div class="time-since-last-fetch-attempt status-entry-value"></div>
-  </div>
-  <div class="status-entry" hidden>
-    <div class="label">$i18n{labelTimeSinceLastRefresh}</div>
-    <div class="time-since-last-refresh status-entry-value"></div>
-  </div>
+
   <div class="status-entry" hidden>
     <div class="label">$i18n{labelRefreshInterval}</div>
     <div class="refresh-interval status-entry-value"></div>
@@ -114,10 +107,6 @@ a {
   <div class="status-entry" hidden>
     <div class="label">$i18n{labelPoliciesPush}</div>
     <div class="policy-push status-entry-value"></div>
-  </div>
-  <div class="status-entry" hidden>
-    <div class="label">$i18n{labelStatus}</div>
-    <div class="status status-entry-value"></div>
   </div>
   <div class="status-entry" hidden>
     <div class="label">$i18n{labelIsAffiliated}</div>
@@ -136,11 +125,43 @@ a {
     <div class="last-cloud-report-sent-timestamp status-entry-value"></div>
   </div>
   <div class="status-entry" hidden>
+    <div class="label">$i18n{labelWarning}:</div>
+    <div class="warning status-entry-value"></div>
+  </div>
+  <hr class="policy-fetch-separator" hidden>
+  <h3 class="status-box-heading policy-fetch-heading" hidden>$i18n{labelPolicyFetch}</h3>
+  <div class="status-entry" hidden>
+    <div class="label">$i18n{labelTimeSinceLastFetchAttempt}</div>
+    <div class="time-since-last-fetch-attempt status-entry-value"></div>
+  </div>
+  <div class="status-entry" hidden>
+    <div class="label">$i18n{labelTimeSinceLastRefresh}</div>
+    <div class="time-since-last-refresh status-entry-value"></div>
+  </div>
+   <div class="status-entry" hidden>
+    <div class="label">$i18n{labelStatus}</div>
+    <div class="status status-entry-value"></div>
+  </div>
+  <div class="status-entry" hidden>
     <div class="label">$i18n{labelError}:</div>
     <div class="error status-entry-value"></div>
   </div>
+  <hr class="extension-install-separator" hidden>
+  <h3 class="status-box-heading extension-install-heading" hidden>$i18n{labelExtensionInstallPolicyFetch}</h3>
   <div class="status-entry" hidden>
-    <div class="label">$i18n{labelWarning}:</div>
-    <div class="warning status-entry-value"></div>
+    <div class="label">$i18n{labelTimeSinceLastFetchAttempt}</div>
+    <div class="extension-install-time-since-last-fetch-attempt status-entry-value"></div>
+  </div>
+  <div class="status-entry" hidden>
+    <div class="label">$i18n{labelTimeSinceLastRefresh}</div>
+    <div class="extension-install-time-since-last-refresh status-entry-value"></div>
+  </div>
+  <div class="status-entry" hidden>
+    <div class="label">$i18n{labelStatus}</div>
+    <div class="extension-install-status status-entry-value"></div>
+  </div>
+  <div class="status-entry" hidden>
+    <div class="label">$i18n{labelError}:</div>
+    <div class="extension-install-error status-entry-value"></div>
   </div>
 </div>

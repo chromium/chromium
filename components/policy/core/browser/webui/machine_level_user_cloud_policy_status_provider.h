@@ -34,6 +34,7 @@ class POLICY_EXPORT MachineLevelUserCloudPolicyStatusProvider
  public:
   MachineLevelUserCloudPolicyStatusProvider(
       CloudPolicyCore* core,
+      CloudPolicyCore* extension_install_core,
       PrefService* prefs,
       MachineLevelUserCloudPolicyContext* context);
   MachineLevelUserCloudPolicyStatusProvider(
@@ -51,6 +52,7 @@ class POLICY_EXPORT MachineLevelUserCloudPolicyStatusProvider
 
  private:
   raw_ptr<CloudPolicyCore> core_;
+  raw_ptr<CloudPolicyCore> extension_install_core_;
   raw_ptr<PrefService> prefs_;
   raw_ptr<MachineLevelUserCloudPolicyContext> context_;
 };

@@ -27,15 +27,19 @@ export interface Status {
   gaiaId: string;
   profileId: string;
   status: string;
+  extensionInstallStatus: string;
   refreshInterval: string;
   timeSinceLastRefresh: string;
   timeSinceLastFetchAttempt: string;
+  extensionInstallTimeSinceLastRefresh: string;
+  extensionInstallTimeSinceLastFetchAttempt: string;
   enterpriseDomainManager: string;
   isAffiliated: boolean;
   lastCloudReportSentTimestamp: string;
   timeSinceLastCloudReportSent: string;
   policiesPushAvailable: boolean;
   error: boolean;
+  extensionInstallError: boolean;
 }
 
 export class StatusBoxElement extends CustomElement {
@@ -146,11 +150,41 @@ export class StatusBoxElement extends CustomElement {
     if (status.timeSinceLastFetchAttempt) {
       this.setLabelAndShow(
           '.time-since-last-fetch-attempt', status.timeSinceLastFetchAttempt);
+      this.shadowRoot!.querySelector<HTMLElement>(
+                          '.policy-fetch-separator')!.hidden = false;
+      this.shadowRoot!.querySelector<HTMLElement>(
+                          '.policy-fetch-heading')!.hidden = false;
+    }
+
+    if (status.extensionInstallTimeSinceLastFetchAttempt) {
+      this.setLabelAndShow(
+          '.extension-install-time-since-last-fetch-attempt',
+          status.extensionInstallTimeSinceLastFetchAttempt);
+      this.shadowRoot!
+          .querySelector<HTMLElement>('.extension-install-separator')!.hidden =
+          false;
+      this.shadowRoot!.querySelector<HTMLElement>(
+                          '.extension-install-heading')!.hidden = false;
     }
 
     if (status.timeSinceLastRefresh) {
       this.setLabelAndShow(
           '.time-since-last-refresh', status.timeSinceLastRefresh);
+      this.shadowRoot!.querySelector<HTMLElement>(
+                          '.policy-fetch-separator')!.hidden = false;
+      this.shadowRoot!.querySelector<HTMLElement>(
+                          '.policy-fetch-heading')!.hidden = false;
+    }
+
+    if (status.extensionInstallTimeSinceLastRefresh) {
+      this.setLabelAndShow(
+          '.extension-install-time-since-last-refresh',
+          status.extensionInstallTimeSinceLastRefresh);
+      this.shadowRoot!
+          .querySelector<HTMLElement>('.extension-install-separator')!.hidden =
+          false;
+      this.shadowRoot!.querySelector<HTMLElement>(
+                          '.extension-install-heading')!.hidden = false;
     }
 
     if (scope !== 'updater') {
@@ -165,6 +199,11 @@ export class StatusBoxElement extends CustomElement {
                                              'policiesPushOff'));
     }
 
+    if (status.extensionInstallStatus) {
+      this.setLabelAndShow(
+          '.extension-install-status', status.extensionInstallStatus);
+    }
+
     if (status.lastCloudReportSentTimestamp) {
       this.setLabelAndShow(
           '.last-cloud-report-sent-timestamp',
@@ -175,6 +214,21 @@ export class StatusBoxElement extends CustomElement {
     if (status.error) {
       this.setLabelAndShow(
           '.error', loadTimeData.getString('statusErrorManagedNoPolicy'));
+      this.shadowRoot!.querySelector<HTMLElement>(
+                          '.policy-fetch-separator')!.hidden = false;
+      this.shadowRoot!.querySelector<HTMLElement>(
+                          '.policy-fetch-heading')!.hidden = false;
+    }
+
+    if (status.extensionInstallError) {
+      this.setLabelAndShow(
+          '.extension-install-error',
+          loadTimeData.getString('statusErrorManagedNoPolicy'));
+      this.shadowRoot!
+          .querySelector<HTMLElement>('.extension-install-separator')!.hidden =
+          false;
+      this.shadowRoot!.querySelector<HTMLElement>(
+                          '.extension-install-heading')!.hidden = false;
     }
   }
 }
