@@ -370,21 +370,19 @@ scoped_refptr<VideoFrame> VideoFrame::WrapSharedImage(
     const gfx::Rect& visible_rect,
     const gfx::Size& natural_size,
     base::TimeDelta timestamp) {
-  CHECK(shared_image, base::NotFatalUntil::M149);
+  CHECK(shared_image);
   scoped_refptr<VideoFrame> frame = CreateFrameForNativeTexturesInternal(
       format, coded_size, visible_rect, natural_size, timestamp);
   if (!frame) {
     return nullptr;
   }
 
-  if (shared_image) {
-    frame->acquire_sync_token_ = sync_token;
-    frame->shared_image_ = shared_image->MakeUnowned();
-    CHECK_EQ(coded_size, shared_image->size())
-        << "coded_size (" << coded_size.ToString()
-        << ") does not match shared_image size ("
-        << shared_image->size().ToString() << ")";
-  }
+  frame->acquire_sync_token_ = sync_token;
+  frame->shared_image_ = shared_image->MakeUnowned();
+  CHECK_EQ(coded_size, shared_image->size())
+      << "coded_size (" << coded_size.ToString()
+      << ") does not match shared_image size ("
+      << shared_image->size().ToString() << ")";
   frame->shared_image_release_cb_ = std::move(shared_image_release_cb);
   return frame;
 }
