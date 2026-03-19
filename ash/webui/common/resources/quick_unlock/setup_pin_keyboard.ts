@@ -376,16 +376,13 @@ export class SetupPinKeyboardElement extends SetupPinKeyboardElementBase {
       return;
     }
 
-    this.isSetPinCallPending_ = true;
     this.enableSubmit = false;
-    let result: any;
-    if (this.useRecoveryModeApi) {
-      ({result} = await PinFactorEditor.getRemote().updatePin(
-           this.authToken, this.pinKeyboardValue_));
-    } else {
-      ({result} = await PinFactorEditor.getRemote().setPin(
-           this.authToken, this.pinKeyboardValue_));
-    }
+    this.isSetPinCallPending_ = true;
+    const {result} = await (this.useRecoveryModeApi ?
+                                PinFactorEditor.getRemote().updatePin(
+                                    this.authToken, this.pinKeyboardValue_) :
+                                PinFactorEditor.getRemote().setPin(
+                                    this.authToken, this.pinKeyboardValue_));
     this.isSetPinCallPending_ = false;
 
     this.handleBackendResult_(result);
