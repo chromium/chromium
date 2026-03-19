@@ -58,6 +58,13 @@ class SelectionOverlayController
   std::optional<std::vector<uint8_t>>& GetEncodedData() { return encoded_; }
 
  private:
+  void WillDiscardContents(tabs::TabInterface* tab,
+                           content::WebContents* old_contents,
+                           content::WebContents* new_contents);
+  void WillDetach(tabs::TabInterface* tab,
+                  tabs::TabInterface::DetachReason reason);
+  void TabDeactivated(tabs::TabInterface* tab);
+
   void InitializeOverlay();
 
   // OverlayBaseController overrides:
@@ -123,6 +130,9 @@ class SelectionOverlayController
 
   ui::ScopedUnownedUserData<SelectionOverlayController>
       scoped_unowned_user_data_;
+
+  // Holds subscriptions for TabInterface callbacks.
+  std::vector<base::CallbackListSubscription> tab_subscriptions_;
 
   // Must be the last member.
   base::WeakPtrFactory<SelectionOverlayController> weak_factory_{this};
