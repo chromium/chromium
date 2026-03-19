@@ -1,4 +1,5 @@
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS
 
+nwokedi@chromium.org
 file://components/safe_browsing/OWNERS
