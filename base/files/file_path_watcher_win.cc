@@ -285,11 +285,9 @@ CompletionIOPortThread::AddWatcher(FilePathWatcherImpl& watcher,
     return std::nullopt;
   }
 
-  auto [it, inserted] = watcher_entries_.emplace(
-      std::piecewise_construct, std::forward_as_tuple(watcher_id),
-      std::forward_as_tuple(watcher.weak_factory_.GetWeakPtr(),
-                            watcher.task_runner(), std::move(watched_handle),
-                            std::move(watched_path)));
+  auto [it, inserted] = watcher_entries_.try_emplace(
+      watcher_id, watcher.weak_factory_.GetWeakPtr(), watcher.task_runner(),
+      std::move(watched_handle), std::move(watched_path));
 
   CHECK(inserted);
 

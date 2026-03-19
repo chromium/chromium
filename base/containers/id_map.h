@@ -291,7 +291,7 @@ class IDMap final {
       removed_ids_.erase(id);
       data_[id] = std::move(data);
     } else {
-      auto [_, inserted] = data_.emplace(id, std::move(data));
+      auto [_, inserted] = data_.try_emplace(id, std::move(data));
       CHECK(inserted) << "Inserting duplicate item";
     }
   }

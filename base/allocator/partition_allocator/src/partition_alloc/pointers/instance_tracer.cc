@@ -63,7 +63,7 @@ void InstanceTracer::TraceImpl(uint64_t owner_id,
           slot_and_size.slot_start, slot_and_size.size));
 
   const std::lock_guard guard(GetStorageMutex());
-  GetStorage().insert({owner_id, Info(slot_count, may_dangle)});
+  GetStorage().try_emplace(owner_id, slot_count, may_dangle);
 }
 
 void InstanceTracer::UntraceImpl(uint64_t owner_id) {

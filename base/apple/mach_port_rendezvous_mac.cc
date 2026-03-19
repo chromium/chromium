@@ -103,7 +103,7 @@ MachPortRendezvousServerMac::ClientData&
 MachPortRendezvousServerMac::ClientDataForPid(pid_t pid) {
   lock_.AssertAcquired();
 
-  auto [it, inserted] = client_data_.emplace(pid, ClientData{});
+  auto [it, inserted] = client_data_.try_emplace(pid);
   if (inserted) {
     apple::ScopedDispatchObject<dispatch_source_t> exit_watcher(
         dispatch_source_create(DISPATCH_SOURCE_TYPE_PROC,

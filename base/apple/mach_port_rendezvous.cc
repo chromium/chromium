@@ -283,9 +283,9 @@ bool MachPortRendezvousClient::SendRequest(
   }
 
   for (size_t i = 0; i < port_count; ++i) {
-    MachRendezvousPort rendezvous_port(descriptors[i].name,
-                                       descriptors[i].disposition);
-    ports_.emplace(port_identifiers[i], rendezvous_port);
+    const auto& descriptor = descriptors[i];
+    ports_.try_emplace(port_identifiers[i], descriptor.name,
+                       descriptor.disposition);
   }
 
   return true;

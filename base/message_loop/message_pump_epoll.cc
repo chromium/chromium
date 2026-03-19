@@ -185,7 +185,7 @@ bool MessagePumpEpoll::WatchFileDescriptor(int fd,
       .one_shot = !persistent,
   };
 
-  auto [it, is_new_fd_entry] = entries_.emplace(fd, fd);
+  auto [it, is_new_fd_entry] = entries_.try_emplace(fd, fd);
   EpollEventEntry& entry = it->second;
   scoped_refptr<Interest> existing_interest = controller->interest();
   if (existing_interest && existing_interest->params().IsEqual(params)) {

@@ -369,7 +369,8 @@ void ProcessMemoryDump::SetAllEdgesForSerialization(
     const std::vector<ProcessMemoryDump::MemoryAllocatorDumpEdge>& edges) {
   DCHECK(allocator_dumps_edges_.empty());
   for (const MemoryAllocatorDumpEdge& edge : edges) {
-    auto it_and_inserted = allocator_dumps_edges_.emplace(edge.source, edge);
+    auto it_and_inserted =
+        allocator_dumps_edges_.try_emplace(edge.source, edge);
     DCHECK(it_and_inserted.second);
   }
 }

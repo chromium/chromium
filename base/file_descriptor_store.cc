@@ -64,8 +64,7 @@ void FileDescriptorStore::Set(const std::string& key, base::ScopedFD fd) {
 void FileDescriptorStore::Set(const std::string& key,
                               base::ScopedFD fd,
                               base::MemoryMappedFile::Region region) {
-  Descriptor descriptor(key, std::move(fd), region);
-  descriptors_.insert(std::make_pair(key, std::move(descriptor)));
+  descriptors_.try_emplace(key, key, std::move(fd), region);
 }
 
 FileDescriptorStore::FileDescriptorStore() = default;
