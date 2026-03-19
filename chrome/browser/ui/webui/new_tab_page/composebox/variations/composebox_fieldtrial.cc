@@ -227,10 +227,6 @@ const base::FeatureParam<bool> kShowContextMenuDescription(
     &kNtpComposebox,
     "NtpComposeboxShowContextMenuDescription",
     true);
-const base::FeatureParam<bool> kEnableEphemeralContextMenuDescription(
-    &kNtpComposebox,
-    "EnableEphemeralContextMenuDescription",
-    false);
 
 const base::FeatureParam<bool> kShowContextMenuHeaders(&kNtpComposebox,
                                                        "ShowContextMenuHeaders",

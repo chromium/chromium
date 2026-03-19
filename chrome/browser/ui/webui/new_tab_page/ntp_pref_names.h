@@ -19,7 +19,6 @@ extern const char kNtpShortcutsAutoRemovalDisabled[];
 extern const char kNtpLastModuleStalenessUpdate[];
 extern const char kNtpModuleStalenessCountDict[];
 extern const char kNtpModulesAutoRemovalDisabledDict[];
-extern const char kNtpContextMenuClickCount[];
 extern const char kNtpAnimatedDoodlesEnabled[];
 extern const char kNtpDoodleMuralsEnabled[];
 }  // namespace ntp_prefs

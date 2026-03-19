@@ -43,9 +43,6 @@ extern const base::FeatureParam<int> kMaxNumFiles;
 // Whether or not to show a description in the context menu entrypoint, or just
 // the icon.
 extern const base::FeatureParam<bool> kShowContextMenuDescription;
-// Whether or not to show the context menu description only when the user
-// hovers over the button.
-extern const base::FeatureParam<bool> kEnableEphemeralContextMenuDescription;
 // Whether to show section headers in the context menu.
 extern const base::FeatureParam<bool> kShowContextMenuHeaders;
 

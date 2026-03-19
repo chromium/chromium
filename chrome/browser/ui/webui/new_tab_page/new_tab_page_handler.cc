@@ -1237,13 +1237,6 @@ void NewTabPageHandler::MaybeTriggerAutomaticCustomizeChromePromo() {
       web_contents_);
 }
 
-void NewTabPageHandler::RecordContextMenuClick() {
-  int current_count =
-      profile_->GetPrefs()->GetInteger(ntp_prefs::kNtpContextMenuClickCount);
-  profile_->GetPrefs()->SetInteger(ntp_prefs::kNtpContextMenuClickCount,
-                                   current_count + 1);
-}
-
 void NewTabPageHandler::LogEvent(NTPLoggingEventType event) {
   logger_.LogEvent(event, base::TimeDelta() /* unused */);
 }

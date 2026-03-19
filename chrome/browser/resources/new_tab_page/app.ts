@@ -435,8 +435,6 @@ export class AppElement extends AppElementBase {
       GlifAnimationState.INELIGIBLE;
   protected accessor undoToastCallback_: (() => void)|null = null;
   protected accessor undoToastMessage_: string|null = null;
-  protected ephemeralContextMenuDescriptionEnabled_: boolean =
-      loadTimeData.getBoolean('enableEphemeralContextMenuDescription') ?? false;
   protected showContextMenuDescription_: boolean =
       loadTimeData.getBoolean('composeboxShowContextMenuDescription');
   protected accessor enableThreadsRail_: boolean =
@@ -960,13 +958,6 @@ export class AppElement extends AppElementBase {
 
   protected onCloseLensSearch_() {
     this.showLensUploadDialog_ = false;
-  }
-
-  protected onContextMenuEntrypointClick_() {
-    if (this.ephemeralContextMenuDescriptionEnabled_ &&
-        this.showContextMenuDescription_) {
-      this.pageHandler_.recordContextMenuClick();
-    }
   }
 
   protected onCustomizeClick_() {

@@ -175,7 +175,6 @@ NewTabPageUIConfig::CreateWebUIController(content::WebUI* web_ui,
 namespace {
 
 constexpr char kPrevNavigationTimePrefName[] = "NewTabPage.PrevNavigationTime";
-constexpr int kContextMenuDescriptionClickThreshold = 2;
 // The value for the "udm" (Unified Drilldown Mode) query parameter.
 // value "50" triggers AI mode as opposed to traditional search.
 constexpr char kAIMDisplayMode[] = "50";
@@ -694,18 +693,8 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(
       ntp_composebox::kShowContextMenuDescription.Get() &&
       ntp_realbox::kRealboxLayoutMode.Get() !=
           ntp_realbox::RealboxLayoutMode::kCompact;
-  if (show_context_menu_description &&
-      ntp_composebox::kEnableEphemeralContextMenuDescription.Get()) {
-    show_context_menu_description =
-        (profile->GetPrefs()->GetInteger(ntp_prefs::kNtpContextMenuClickCount) <
-         kContextMenuDescriptionClickThreshold);
-  }
   source->AddBoolean("composeboxShowContextMenuDescription",
                      show_context_menu_description);
-
-  source->AddBoolean(
-      "enableEphemeralContextMenuDescription",
-      ntp_composebox::kEnableEphemeralContextMenuDescription.Get());
 
   source->AddBoolean("composeboxCloseByEscape", false);
   // TODO(b/477969358): Remove "close by click outside" boolean.
@@ -969,7 +958,6 @@ void NewTabPageUI::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(ntp_prefs::kNtpModuleStalenessCountDict);
   registry->RegisterDictionaryPref(
       ntp_prefs::kNtpModulesAutoRemovalDisabledDict);
-  registry->RegisterIntegerPref(ntp_prefs::kNtpContextMenuClickCount, 0);
   registry->RegisterBooleanPref(ntp_prefs::kNtpAnimatedDoodlesEnabled, true);
   registry->RegisterBooleanPref(ntp_prefs::kNtpDoodleMuralsEnabled, true);
 }
@@ -989,7 +977,6 @@ void NewTabPageUI::ResetProfilePrefs(PrefService* prefs) {
   prefs->SetDict(ntp_prefs::kNtpModuleStalenessCountDict, base::DictValue());
   prefs->SetDict(ntp_prefs::kNtpModulesAutoRemovalDisabledDict,
                  base::DictValue());
-  prefs->SetInteger(ntp_prefs::kNtpContextMenuClickCount, 0);
   prefs->SetBoolean(ntp_prefs::kNtpAnimatedDoodlesEnabled, true);
   prefs->SetBoolean(ntp_prefs::kNtpDoodleMuralsEnabled, true);
 }
