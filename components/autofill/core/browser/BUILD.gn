@@ -125,6 +125,8 @@ static_library("browser") {
   sources = [
     "at_memory/at_memory_data_type.cc",
     "at_memory/at_memory_data_type.h",
+    "at_memory/at_memory_funnel_metrics.cc",
+    "at_memory/at_memory_funnel_metrics.h",
     "at_memory/autofill_data_provider_impl.cc",
     "at_memory/autofill_data_provider_impl.h",
     "autofill_ai_form_rationalization.cc",
@@ -1521,6 +1523,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "at_memory/at_memory_data_type_unittest.cc",
+    "at_memory/at_memory_funnel_metrics_unittest.cc",
     "at_memory/autofill_data_provider_impl_unittest.cc",
     "autofill_ai_form_rationalization_unittest.cc",
     "autofill_feedback_data_unittest.cc",
