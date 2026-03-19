@@ -1278,7 +1278,7 @@ public class ChromeAndroidTaskIntegrationTest {
         int mTimesOnTaskBoundsChanged;
 
         @Override
-        public void onAddedToTask() {}
+        public void onAddedToTask(long nativeBrowserWindowPtr) {}
 
         @Override
         public void onFeatureRemoved() {}

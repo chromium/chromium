@@ -31,6 +31,7 @@ import static org.robolectric.Shadows.shadowOf;
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskUnitTestSupport.DEFAULT_CURRENT_WINDOW_BOUNDS_IN_PX;
 import static org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskUnitTestSupport.DEFAULT_MAXIMIZED_WINDOW_BOUNDS_IN_PX;
+import static org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskUnitTestSupport.FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR;
 
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
@@ -268,8 +269,7 @@ public class ChromeAndroidTaskImplUnitTest {
 
         // Assert.
         verify(mockTabModel, times(1))
-                .associateWithBrowserWindow(
-                        ChromeAndroidTaskUnitTestSupport.FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR);
+                .associateWithBrowserWindow(FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR);
     }
 
     @Test
@@ -487,8 +487,7 @@ public class ChromeAndroidTaskImplUnitTest {
 
         // Assert.
         verify(newMockTabModel, times(1))
-                .associateWithBrowserWindow(
-                        ChromeAndroidTaskUnitTestSupport.FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR);
+                .associateWithBrowserWindow(FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR);
     }
 
     @Test
@@ -637,11 +636,11 @@ public class ChromeAndroidTaskImplUnitTest {
 
         // Assert:
         // (1) Feature associated with activity 2 is destroyed.
-        testFeature2.mOnTaskRemovedHelper.waitForCallback(0, 1);
+        testFeature2.mOnFeatureRemovedHelper.waitForCallback(0, 1);
         assertNull(chromeAndroidTask.getFeatureForTesting(featureKey2));
 
         // (2) Feature associated with activity 1 is NOT destroyed.
-        assertEquals(0, testFeature1.mOnTaskRemovedHelper.getCallCount());
+        assertEquals(0, testFeature1.mOnFeatureRemovedHelper.getCallCount());
         assertNotNull(chromeAndroidTask.getFeatureForTesting(featureKey1));
     }
 
@@ -742,7 +741,7 @@ public class ChromeAndroidTaskImplUnitTest {
 
         // Verify native destroy was called for both.
         verify(chromeAndroidTaskWithMockDeps.mMockAndroidBrowserWindowNatives, times(1))
-                .destroy(ChromeAndroidTaskUnitTestSupport.FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR);
+                .destroy(FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR);
         verify(chromeAndroidTaskWithMockDeps.mMockAndroidBrowserWindowNatives, times(1))
                 .destroy(
                         ChromeAndroidTaskUnitTestSupport
@@ -777,8 +776,7 @@ public class ChromeAndroidTaskImplUnitTest {
         // Assert:
         // 1. Exactly one window was destroyed natively. (Both windows share the same mock native
         //    pointer, so we verify the destroy method was invoked exactly 1 time in total).
-        verify(mockNatives, times(1))
-                .destroy(ChromeAndroidTaskUnitTestSupport.FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR);
+        verify(mockNatives, times(1)).destroy(FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR);
 
         // 2. Only Activity 1's window remains tracked in the Java layer.
         var remainingWindows = chromeAndroidTask.getBrowserWindowsForTesting(profile);
@@ -885,41 +883,82 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
-    public void addFeature_invokesOnAddedToTaskForFeature() throws Exception {
+    public void
+            addFeature_nativeBrowserWindowMatchingFeatureKeyExists_invokesOnAddedToTaskWithBrowserWindowPtr() {
         // Arrange.
-        var chromeAndroidTask =
-                createChromeAndroidTaskWithMockDeps(/* taskId= */ 1).mChromeAndroidTask;
+        var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
+        var chromeAndroidTask = chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        var profile = chromeAndroidTaskWithMockDeps.mMockProfile;
+        var activityWindowAndroid =
+                chromeAndroidTaskWithMockDeps
+                        .mActivityWindowAndroidMocks
+                        .mMockActivityWindowAndroid;
         var testFeature = new TestChromeAndroidTaskFeature(chromeAndroidTask);
 
         // Act.
         chromeAndroidTask.addFeature(
                 new ChromeAndroidTaskFeatureKey(
-                        TestChromeAndroidTaskFeature.class, /* profile= */ null),
+                        TestChromeAndroidTaskFeature.class, profile, activityWindowAndroid),
                 () -> testFeature);
 
         // Assert.
-        testFeature.mOnAddedToTaskHelper.waitForCallback(
-                /* currentCallCount= */ 0, /* numberOfCallsToWaitFor= */ 1);
+        assertEquals(1, testFeature.mOnAddedToTaskHistory.size());
+        assertEquals(
+                FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR,
+                (long) testFeature.mOnAddedToTaskHistory.get(0));
     }
 
     @Test
-    public void addFeature_featureAlreadyAdded_doesNotInvokeOnAddedToTaskForFeature()
-            throws Exception {
+    public void
+            addFeature_nativeBrowserWindowMatchingFeatureKeyDoesNotExist_invokesOnAddedToTaskWithNullPtr() {
         // Arrange.
-        var chromeAndroidTask =
-                createChromeAndroidTaskWithMockDeps(/* taskId= */ 1).mChromeAndroidTask;
+        var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
+        var chromeAndroidTask = chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        var activityWindowAndroid =
+                chromeAndroidTaskWithMockDeps
+                        .mActivityWindowAndroidMocks
+                        .mMockActivityWindowAndroid;
+        var testFeature = new TestChromeAndroidTaskFeature(chromeAndroidTask);
+
+        // Act.
+        chromeAndroidTask.addFeature(
+                new ChromeAndroidTaskFeatureKey(
+                        TestChromeAndroidTaskFeature.class,
+                        // A native BrowserWindowInterface is always associated with a valid
+                        // Profile, so a null Profile will not match any BrowserWindowInterface.
+                        /* profile= */ null,
+                        activityWindowAndroid),
+                () -> testFeature);
+
+        // Assert.
+        assertEquals(1, testFeature.mOnAddedToTaskHistory.size());
+        assertEquals(0, (long) testFeature.mOnAddedToTaskHistory.get(0));
+    }
+
+    @Test
+    public void addFeature_featureAlreadyAdded_doesNotInvokeOnAddedToTaskForFeature() {
+        // Arrange.
+        var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
+        var chromeAndroidTask = chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        var profile = chromeAndroidTaskWithMockDeps.mMockProfile;
+        var activityWindowAndroid =
+                chromeAndroidTaskWithMockDeps
+                        .mActivityWindowAndroidMocks
+                        .mMockActivityWindowAndroid;
         var testFeature = new TestChromeAndroidTaskFeature(chromeAndroidTask);
         var featureKey =
                 new ChromeAndroidTaskFeatureKey(
-                        TestChromeAndroidTaskFeature.class, /* profile= */ null);
+                        TestChromeAndroidTaskFeature.class, profile, activityWindowAndroid);
 
         // Act: add the feature twice.
         chromeAndroidTask.addFeature(featureKey, () -> testFeature);
         chromeAndroidTask.addFeature(featureKey, () -> testFeature);
 
         // Assert: only the first addFeature() should invoke onAddedToTask().
-        testFeature.mOnAddedToTaskHelper.waitForCallback(
-                /* currentCallCount= */ 0, /* numberOfCallsToWaitFor= */ 1);
+        assertEquals(1, testFeature.mOnAddedToTaskHistory.size());
+        assertEquals(
+                FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR,
+                (long) testFeature.mOnAddedToTaskHistory.get(0));
     }
 
     @Test
@@ -959,7 +998,7 @@ public class ChromeAndroidTaskImplUnitTest {
         chromeAndroidTask.removeAllFeaturesForActivity(windowAndroid);
 
         // Assert.
-        testFeature.mOnTaskRemovedHelper.waitForCallback(
+        testFeature.mOnFeatureRemovedHelper.waitForCallback(
                 /* currentCallCount= */ 0, /* numberOfCallsToWaitFor= */ 1);
         assertNull(
                 "Feature should be removed from the Task.",
@@ -994,7 +1033,7 @@ public class ChromeAndroidTaskImplUnitTest {
         chromeAndroidTask.removeAllFeaturesForActivity(windowAndroid);
 
         // Assert.
-        testFeature.mOnTaskRemovedHelper.waitForCallback(
+        testFeature.mOnFeatureRemovedHelper.waitForCallback(
                 /* currentCallCount= */ 0, /* numberOfCallsToWaitFor= */ 1);
         assertNull(
                 "Feature should be removed from the Task.",
@@ -1052,9 +1091,7 @@ public class ChromeAndroidTaskImplUnitTest {
         long nativeBrowserWindowPtr = chromeAndroidTask.getOrCreateNativeBrowserWindowPtr(profile);
 
         // Assert.
-        assertEquals(
-                ChromeAndroidTaskUnitTestSupport.FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR,
-                nativeBrowserWindowPtr);
+        assertEquals(FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR, nativeBrowserWindowPtr);
     }
 
     @Test
@@ -1069,9 +1106,7 @@ public class ChromeAndroidTaskImplUnitTest {
         long nativeBrowserWindowPtr = chromeAndroidTask.getOrCreateNativeBrowserWindowPtr(profile);
 
         // Assert.
-        assertEquals(
-                ChromeAndroidTaskUnitTestSupport.FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR,
-                nativeBrowserWindowPtr);
+        assertEquals(FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR, nativeBrowserWindowPtr);
     }
 
     @Test
@@ -1152,7 +1187,7 @@ public class ChromeAndroidTaskImplUnitTest {
         chromeAndroidTask.destroy();
 
         // Assert.
-        testFeature.mOnTaskRemovedHelper.waitForCallback(
+        testFeature.mOnFeatureRemovedHelper.waitForCallback(
                 /* currentCallCount= */ 0, /* numberOfCallsToWaitFor= */ 1);
         assertTrue(chromeAndroidTask.getAllFeaturesForTesting().isEmpty());
     }
@@ -1273,12 +1308,12 @@ public class ChromeAndroidTaskImplUnitTest {
         ProfileManager.onProfileDestroyed(profile);
 
         // Assert.
-        profileScopedFeature.mOnTaskRemovedHelper.waitForCallback(0, 1);
+        profileScopedFeature.mOnFeatureRemovedHelper.waitForCallback(0, 1);
         assertNull(chromeAndroidTask.getFeatureForTesting(profileScopedFeatureKey));
         assertEquals(
                 nonProfileScopedFeature,
                 chromeAndroidTask.getFeatureForTesting(nonProfileScopedFeatureKey));
-        assertEquals(0, nonProfileScopedFeature.mOnTaskRemovedHelper.getCallCount());
+        assertEquals(0, nonProfileScopedFeature.mOnFeatureRemovedHelper.getCallCount());
     }
 
     @Test
@@ -3191,7 +3226,7 @@ public class ChromeAndroidTaskImplUnitTest {
 
         // Assert.
         verify(pendingTaskInfo.mTaskCreationCallbackForNative)
-                .onResult(ChromeAndroidTaskUnitTestSupport.FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR);
+                .onResult(FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR);
     }
 
     @Test
@@ -3362,9 +3397,7 @@ public class ChromeAndroidTaskImplUnitTest {
 
         var allPtrs = chromeAndroidTask.getAllNativeBrowserWindowPtrs();
         assertEquals(2, allPtrs.size());
-        assertTrue(
-                allPtrs.contains(
-                        ChromeAndroidTaskUnitTestSupport.FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR));
+        assertTrue(allPtrs.contains(FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR));
         assertTrue(
                 allPtrs.contains(
                         ChromeAndroidTaskUnitTestSupport
@@ -3405,9 +3438,7 @@ public class ChromeAndroidTaskImplUnitTest {
         verify(incognitoTabModel).dissociateWithBrowserWindow();
         var allPtrsAfter = chromeAndroidTask.getAllNativeBrowserWindowPtrs();
         assertEquals(1, allPtrsAfter.size());
-        assertTrue(
-                allPtrsAfter.contains(
-                        ChromeAndroidTaskUnitTestSupport.FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR));
+        assertTrue(allPtrsAfter.contains(FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR));
         verify(chromeAndroidTaskWithMockDeps.mMockAndroidBrowserWindowNatives, times(1))
                 .destroy(
                         ChromeAndroidTaskUnitTestSupport
@@ -3460,12 +3491,12 @@ public class ChromeAndroidTaskImplUnitTest {
         incognitoObserverCaptor.getValue().didBecomeEmpty();
 
         // Assert
-        tabModelScopedFeature.mOnTaskRemovedHelper.waitForCallback(0, 1);
+        tabModelScopedFeature.mOnFeatureRemovedHelper.waitForCallback(0, 1);
         assertNull(chromeAndroidTask.getFeatureForTesting(tabModelScopedFeatureKey));
         assertEquals(
                 nonTabModelScopedFeature,
                 chromeAndroidTask.getFeatureForTesting(nonTabModelScopedFeatureKey));
-        assertEquals(0, nonTabModelScopedFeature.mOnTaskRemovedHelper.getCallCount());
+        assertEquals(0, nonTabModelScopedFeature.mOnFeatureRemovedHelper.getCallCount());
     }
 
     @Test
@@ -3509,9 +3540,7 @@ public class ChromeAndroidTaskImplUnitTest {
                 chromeAndroidTask.getSessionIdForTesting(incognitoProfile));
         var allPtrs = chromeAndroidTask.getAllNativeBrowserWindowPtrs();
         assertEquals(1, allPtrs.size());
-        assertEquals(
-                (Long) ChromeAndroidTaskUnitTestSupport.FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR,
-                allPtrs.get(0));
+        assertEquals((Long) FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR, allPtrs.get(0));
     }
 
     @Test
@@ -3563,8 +3592,7 @@ public class ChromeAndroidTaskImplUnitTest {
                                 .FAKE_INCOGNITO_NATIVE_ANDROID_BROWSER_WINDOW_PTR);
 
         // 2. Regular window was NOT destroyed.
-        verify(mockNatives, never())
-                .destroy(ChromeAndroidTaskUnitTestSupport.FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR);
+        verify(mockNatives, never()).destroy(FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR);
 
         // 3. The ActivityScopedObjects wrapper should STILL exist because the regular window is
         // still alive.
@@ -3665,9 +3693,7 @@ public class ChromeAndroidTaskImplUnitTest {
         chromeAndroidTask.destroy();
 
         // Assert.
-        verify(observer, times(1))
-                .onBrowserWindowRemoved(
-                        ChromeAndroidTaskUnitTestSupport.FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR);
+        verify(observer, times(1)).onBrowserWindowRemoved(FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR);
     }
 
     @Test
@@ -3725,8 +3751,10 @@ public class ChromeAndroidTaskImplUnitTest {
 
     private static final class TestChromeAndroidTaskFeature implements ChromeAndroidTaskFeature {
 
-        final CallbackHelper mOnAddedToTaskHelper = new CallbackHelper();
-        final CallbackHelper mOnTaskRemovedHelper = new CallbackHelper();
+        final CallbackHelper mOnFeatureRemovedHelper = new CallbackHelper();
+
+        /** Records the {@code nativeBrowserWindowPtr} passed to {@link #onAddedToTask(long)}. */
+        final List<Long> mOnAddedToTaskHistory = new ArrayList<>();
 
         /** Records the bounds passed to {@link #onTaskBoundsChanged}. */
         final List<Rect> mTaskBoundsChangeHistory = new ArrayList<>();
@@ -3739,7 +3767,7 @@ public class ChromeAndroidTaskImplUnitTest {
 
         /**
          * If true, enable the malicious behavior: add the feature itself to {@link
-         * ChromeAndroidTask} in {@link #onTaskRemoved()}.
+         * ChromeAndroidTask} in {@link #onFeatureRemoved()}.
          */
         boolean mShouldRefuseToBeRemoved;
 
@@ -3750,13 +3778,13 @@ public class ChromeAndroidTaskImplUnitTest {
         }
 
         @Override
-        public void onAddedToTask() {
-            mOnAddedToTaskHelper.notifyCalled();
+        public void onAddedToTask(long nativeBrowserWindowPtr) {
+            mOnAddedToTaskHistory.add(nativeBrowserWindowPtr);
         }
 
         @Override
         public void onFeatureRemoved() {
-            mOnTaskRemovedHelper.notifyCalled();
+            mOnFeatureRemovedHelper.notifyCalled();
 
             if (mShouldRefuseToBeRemoved) {
                 var featureKey =

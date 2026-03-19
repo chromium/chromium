@@ -698,6 +698,33 @@ final class ChromeAndroidTaskImpl
             return;
         }
 
+        var feature = featureSupplier.get();
+        if (feature == null) {
+            return;
+        }
+
+        mFeatures.put(featureKey, feature);
+
+        // Invoke ChromeAndroidTaskFeature#onAddedToTask() with the native BrowserWindowInterface
+        // matching ChromeAndroidTaskFeatureKey.
+        AndroidBrowserWindow browserWindowForFeature = null;
+        for (var obj : mActivityScopedObjectsDeque) {
+            if (obj.mActivityScopedObjects.mActivityWindowAndroid
+                    != featureKey.mActivityWindowAndroid) {
+                continue;
+            }
+
+            browserWindowForFeature = obj.mAndroidBrowserWindows.get(featureKey.mProfile);
+            if (browserWindowForFeature != null) {
+                feature.onAddedToTask(browserWindowForFeature.getOrCreateNativePtr());
+                break;
+            }
+        }
+        if (browserWindowForFeature == null) {
+            feature.onAddedToTask(/* nativeBrowserWindowPtr= */ 0);
+        }
+
+        // Invoke ChromeAndroidTaskFeature#onTabModelSelected() with the current TabModel.
         var internalActivityScopedObjects = mActivityScopedObjectsDeque.peekFirst();
         var topActivityScopedObjects =
                 internalActivityScopedObjects == null
@@ -707,14 +734,8 @@ final class ChromeAndroidTaskImpl
                 topActivityScopedObjects == null
                         ? null
                         : topActivityScopedObjects.mTabModelSelector;
-
-        var feature = featureSupplier.get();
-        if (feature != null) {
-            mFeatures.put(featureKey, feature);
-            feature.onAddedToTask();
-            if (tabModelSelector != null) {
-                feature.onTabModelSelected(tabModelSelector.getCurrentModel());
-            }
+        if (tabModelSelector != null) {
+            feature.onTabModelSelected(tabModelSelector.getCurrentModel());
         }
     }
 

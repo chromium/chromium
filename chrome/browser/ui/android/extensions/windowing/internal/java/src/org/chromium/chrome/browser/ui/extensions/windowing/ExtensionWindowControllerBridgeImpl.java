@@ -84,10 +84,12 @@ final class ExtensionWindowControllerBridgeImpl implements ExtensionWindowContro
     }
 
     @Override
-    public void onAddedToTask() {
+    public void onAddedToTask(long nativeBrowserWindowPtr) {
         assert mNativeExtensionWindowControllerBridge == 0
                 : "ExtensionWindowControllerBridge is already added to a task.";
 
+        // TODO(crbug.com/494028927): Use the nativeBrowserWindowPtr parameter to create
+        // mNativeExtensionWindowControllerBridge.
         mNativeExtensionWindowControllerBridge =
                 ExtensionWindowControllerBridgeImplJni.get()
                         .create(

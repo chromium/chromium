@@ -58,7 +58,8 @@ final class ExtensionWindowControllerBridgeNativeUnitTestSupport {
 
     @CalledByNative
     private void invokeOnAddedToTask() {
-        mExtensionWindowControllerBridge.onAddedToTask();
+        // We don't care about nativeBrowserWindowPtr in the test, so we pass 0 here.
+        mExtensionWindowControllerBridge.onAddedToTask(/* nativeBrowserWindowPtr= */ 0);
     }
 
     @CalledByNative

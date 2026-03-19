@@ -23,9 +23,32 @@ public interface ChromeAndroidTaskFeature {
      * <p>This is the start of the feature's lifecycle. Usually a feature would initialize objects
      * it owns in this method.
      *
+     * <p>This is also the moment when the feature can associate itself with the matching native
+     * {@code BrowserWindowInterface} (see documentation for the {@code nativeBrowserWindowPtr}
+     * parameter below).
+     *
+     * <p>TODO(crbug.com/493930386): Make this method non-default. This needs a default and empty
+     * implementation because downstream test code implements ChromeAndroidTaskFeature.
+     *
+     * @param nativeBrowserWindowPtr The native {@code BrowserWindowInterface} matching this
+     *     feature's {@link ChromeAndroidTaskFeatureKey}. The value 0 will be provided if there is
+     *     no matching {@code BrowserWindowInterface}. For a {@code BrowserWindowInterface} to match
+     *     the {@link ChromeAndroidTaskFeatureKey}, the {@code BrowserWindowInterface} must be
+     *     associated with the same {@code Profile} and {@code ActivityWindowAndroid} in the {@link
+     *     ChromeAndroidTaskFeatureKey}.
      * @see ChromeAndroidTask#addFeature
      */
-    void onAddedToTask();
+    default void onAddedToTask(long nativeBrowserWindowPtr) {}
+
+    /**
+     * This is an outdated version of {@link #onAddedToTask(long)}. It won't be invoked in any case.
+     *
+     * <p>We only keep this because downstream test code implements it.
+     *
+     * <p>TODO(crbug.com/493930386): Delete this.
+     */
+    @Deprecated
+    default void onAddedToTask() {}
 
     /**
      * Called by a {@link ChromeAndroidTask} when the feature is being removed.
