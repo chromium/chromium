@@ -375,6 +375,7 @@ public class CompositorView extends FrameLayout
         mResourceManager = CompositorViewJni.get().getResourceManager(mNativeCompositorView);
 
         // Redraw in case there are callbacks pending |mDrawingFinishedCallback|.
+        updateNeedsDidSwapBuffersCallback();
         CompositorViewJni.get().setNeedsComposite(mNativeCompositorView);
     }
 
