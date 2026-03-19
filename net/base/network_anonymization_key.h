@@ -85,8 +85,7 @@ class NET_EXPORT NetworkAnonymizationKey {
 
   // Create a `NetworkAnonymizationKey` from a `top_frame_site`, assuming it is
   // same-site (see comment on the class, above) and has no nonce.
-  static NetworkAnonymizationKey CreateSameSite(
-      const SchemefulSite top_frame_site) {
+  static NetworkAnonymizationKey CreateSameSite(SchemefulSite top_frame_site) {
     return NetworkAnonymizationKey(std::move(top_frame_site), false,
                                    std::nullopt,
                                    NetworkIsolationPartition::kGeneral);
