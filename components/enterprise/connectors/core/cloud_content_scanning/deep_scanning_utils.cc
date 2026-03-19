@@ -4,6 +4,7 @@
 
 #include "components/enterprise/connectors/core/cloud_content_scanning/deep_scanning_utils.h"
 
+#include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_request.h"
 #include "components/enterprise/connectors/core/common.h"
 
 namespace enterprise_connectors {
@@ -95,6 +96,31 @@ void MaybeReportDeepScanningVerdict(
           content_analysis_info->frame_url_chain(), event_result);
     }
   }
+}
+
+bool IsConsumerScanRequest(const BinaryUploadRequest& request) {
+  if (request.cloud_or_local_settings().is_local_analysis()) {
+    return false;
+  }
+
+  for (const std::string& tag : request.content_analysis_request().tags()) {
+    if (tag == "dlp") {
+      return false;
+    }
+  }
+  return request.device_token().empty();
+}
+
+bool IsResumableUpload(const BinaryUploadRequest& request) {
+  if (IsConsumerScanRequest(request) ||
+      !request.cloud_or_local_settings().is_cloud_analysis()) {
+    return false;
+  }
+  // Use the Resumable request protocol only for image pastes and
+  // non-paste requests.
+  return request.content_analysis_request().analysis_connector() !=
+             enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY ||
+         request.image_paste();
 }
 
 }  // namespace enterprise_connectors

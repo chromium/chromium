@@ -73,9 +73,6 @@ google::protobuf::RepeatedPtrField<std::string> CollectFrameUrls(
     DeepScanAccessPoint access_point);
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-// Returns true if the request will use the scotty resumable upload
-// protocol for sending scans to the server.
-bool IsResumableUpload(const BinaryUploadRequest& request);
 
 // Returns true if `result` as returned by BinaryUploadService is considered a
 // a failed result when attempting a cloud-based multipart content analysis.

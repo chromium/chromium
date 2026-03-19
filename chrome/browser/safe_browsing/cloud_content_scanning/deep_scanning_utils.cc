@@ -310,18 +310,4 @@ void DecrementCrashKey(ScanningCrashKey key, int delta) {
   ModifyKey(key, -delta);
 }
 
-bool IsConsumerScanRequest(
-    const enterprise_connectors::BinaryUploadRequest& request) {
-  if (request.cloud_or_local_settings().is_local_analysis()) {
-    return false;
-  }
-
-  for (const std::string& tag : request.content_analysis_request().tags()) {
-    if (tag == "dlp") {
-      return false;
-    }
-  }
-  return request.device_token().empty();
-}
-
 }  // namespace safe_browsing

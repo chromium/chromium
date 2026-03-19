@@ -89,10 +89,6 @@ enum class ScanningCrashKey {
 void IncrementCrashKey(ScanningCrashKey key, int delta = 1);
 void DecrementCrashKey(ScanningCrashKey key, int delta = 1);
 
-// Returns true for consumer scans and not on enterprise scans.
-bool IsConsumerScanRequest(
-    const enterprise_connectors::BinaryUploadRequest& request);
-
 }  // namespace safe_browsing
 
 #endif  // CHROME_BROWSER_SAFE_BROWSING_CLOUD_CONTENT_SCANNING_DEEP_SCANNING_UTILS_H_
