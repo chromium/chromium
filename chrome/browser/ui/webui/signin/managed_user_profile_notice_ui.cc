@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
@@ -20,6 +21,7 @@
 #include "chrome/browser/profiles/profile_statistics.h"
 #include "chrome/browser/profiles/profile_statistics_common.h"
 #include "chrome/browser/profiles/profile_statistics_factory.h"
+#include "chrome/browser/regional_capabilities/regional_capabilities_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/managed_ui.h"
@@ -32,6 +34,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/signin_resources.h"
 #include "components/prefs/pref_service.h"
+#include "components/regional_capabilities/regional_capabilities_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -368,6 +371,27 @@ void ManagedUserProfileNoticeUI::Initialize(
         "separateBrowsingDataChoiceTitle",
         l10n_util::GetStringUTF16(
             IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_DATA_SCHOOL_CHOICE));
+  }
+  if (type == ManagedUserProfileNoticeUI::ScreenType::kFirstRun) {
+    const bool is_in_search_engine_choice_region =
+        CHECK_DEREF(regional_capabilities::RegionalCapabilitiesServiceFactory::
+                        GetForProfile(profile))
+            .IsInSearchEngineChoiceScreenRegion();
+    if (switches::IsFirstRunDesktopRefreshEnabled(
+            is_in_search_engine_choice_region)) {
+      update_data.Set(
+          "profileDisclosureTitle",
+          l10n_util::GetStringFUTF16(
+              IDS_FRE_SIGN_IN_CELEBRATION_WELCOME_TITLE,
+              base::UTF8ToUTF16(
+                  create_param->account_info.GetGivenName().value_or(
+                      create_param->account_info.email))));
+      update_data.Set(
+          "profileDisclosureSubtitle",
+          l10n_util::GetStringFUTF16(
+              IDS_ENTERPRISE_WELCOME_PROFILE_DISCLOSURE_KNOWN_DOMAIN_SUBTITLE,
+              base::UTF8ToUTF16(domain)));
+    }
   }
 
   // Change the text so that the "(Recommended)" label is not shown when the
