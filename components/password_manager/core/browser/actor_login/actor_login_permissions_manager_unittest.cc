@@ -154,9 +154,10 @@ TEST_F(ActorLoginPermissionsManagerTest, RevokePermission) {
 
   EXPECT_CALL(
       actor_login_permission_service_,
-      DeletePermission(url::Origin::Create(GURL("https://example.com/")), _));
+      DeletePermission(url::Origin::Create(GURL("https://example.com/")),
+                       "user1", _));
 
-  permissions_manager_->RevokePermission("https://example.com/");
+  permissions_manager_->RevokePermission("https://example.com/", "user1");
   revoke_run_loop.Run();
 
   base::test::TestFuture<base::flat_set<password_manager::ActorLoginPermission>>
@@ -285,14 +286,14 @@ TEST_F(ActorLoginPermissionsManagerTest,
   MockObserver observer;
   permissions_manager_->AddObserver(&observer);
 
-  EXPECT_CALL(
-      actor_login_permission_service_,
-      DeletePermission(url::Origin::Create(GURL("https://example.com/")), _))
-      .WillOnce(base::test::RunOnceCallback<1>(true));
+  EXPECT_CALL(actor_login_permission_service_,
+              DeletePermission(
+                  url::Origin::Create(GURL("https://example.com/")), "user", _))
+      .WillOnce(base::test::RunOnceCallback<2>(true));
 
   EXPECT_CALL(observer, OnPermissionsChanged);
 
-  permissions_manager_->RevokePermission("https://example.com/");
+  permissions_manager_->RevokePermission("https://example.com/", "user");
 }
 
 TEST_F(ActorLoginPermissionsManagerTest,
@@ -300,14 +301,14 @@ TEST_F(ActorLoginPermissionsManagerTest,
   MockObserver observer;
   permissions_manager_->AddObserver(&observer);
 
-  EXPECT_CALL(
-      actor_login_permission_service_,
-      DeletePermission(url::Origin::Create(GURL("https://example.com/")), _))
-      .WillOnce(base::test::RunOnceCallback<1>(false));
+  EXPECT_CALL(actor_login_permission_service_,
+              DeletePermission(
+                  url::Origin::Create(GURL("https://example.com/")), "user", _))
+      .WillOnce(base::test::RunOnceCallback<2>(false));
 
   EXPECT_CALL(observer, OnPermissionsChanged).Times(0);
 
-  permissions_manager_->RevokePermission("https://example.com/");
+  permissions_manager_->RevokePermission("https://example.com/", "user");
 }
 
 }  // namespace actor_login

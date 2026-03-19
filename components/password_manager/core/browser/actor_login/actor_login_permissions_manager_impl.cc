@@ -90,14 +90,15 @@ void ActorLoginPermissionsManagerImpl::RemoveObserver(
 }
 
 void ActorLoginPermissionsManagerImpl::RevokePermission(
-    const std::string& signon_realm) {
-  presenter_.RevokeActorLoginPermission(signon_realm);
+    const std::string& signon_realm,
+    const std::string& username) {
+  presenter_.RevokeActorLoginPermission(signon_realm, username);
   // The service is constructed via a factory that returns a nullptr for
   // incognito and guest profiles. The settings page is not accessible for those
   // profiles, so we can assert that the service is valid.
   CHECK(actor_login_permission_service_);
   actor_login_permission_service_->DeletePermission(
-      url::Origin::Create(GURL(signon_realm)),
+      url::Origin::Create(GURL(signon_realm)), username,
       base::BindOnce(&ActorLoginPermissionsManagerImpl::OnPermissionDeleted,
                      weak_ptr_factory_.GetWeakPtr()));
 }

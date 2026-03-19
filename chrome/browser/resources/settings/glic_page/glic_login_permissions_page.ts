@@ -77,7 +77,8 @@ export class SettingsGlicLoginPermissionsPageElement extends
     assert(this.selectedPermissionToRemove_);
     if (dialog.wasConfirmed()) {
       this.browserProxy_.revokeActorLoginPermission(
-          this.selectedPermissionToRemove_.signonRealm);
+          this.selectedPermissionToRemove_.signonRealm,
+          this.selectedPermissionToRemove_.username);
     }
     this.selectedPermissionToRemove_ = null;
   }

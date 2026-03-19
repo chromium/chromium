@@ -198,7 +198,8 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
 
   // Revokes actor login permission for all credentials stored for the given
   // `signon_realm`.
-  void RevokeActorLoginPermission(const std::string& signon_realm);
+  void RevokeActorLoginPermission(const std::string& signon_realm,
+                                  const std::string& username);
 
   // Returns PasswordForms corresponding to |credential|.
   std::vector<PasswordForm> GetCorrespondingPasswordForms(

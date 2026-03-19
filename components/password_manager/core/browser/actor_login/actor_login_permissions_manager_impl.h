@@ -47,7 +47,8 @@ class ActorLoginPermissionsManagerImpl
   void AddObserver(ActorLoginPermissionsManager::Observer* observer) override;
   void RemoveObserver(
       ActorLoginPermissionsManager::Observer* observer) override;
-  void RevokePermission(const std::string& signon_realm) override;
+  void RevokePermission(const std::string& signon_realm,
+                        const std::string& username) override;
   void GetAllPermissions(const syncer::SyncService* sync_service,
                          GetAllPermissionsResult callback) override;
 

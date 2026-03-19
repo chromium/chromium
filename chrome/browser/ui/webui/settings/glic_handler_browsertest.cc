@@ -37,7 +37,10 @@ class MockActorLoginPermissionsManager
  public:
   MOCK_METHOD(void, AddObserver, (Observer*), (override));
   MOCK_METHOD(void, RemoveObserver, (Observer*), (override));
-  MOCK_METHOD(void, RevokePermission, (const std::string&), (override));
+  MOCK_METHOD(void,
+              RevokePermission,
+              (const std::string&, const std::string&),
+              (override));
   MOCK_METHOD(void,
               GetAllPermissions,
               (const syncer::SyncService*, GetAllPermissionsResult),
@@ -157,7 +160,7 @@ IN_PROC_BROWSER_TEST_F(GlicHandlerBrowserTest, RevokeActorLoginPermission) {
 
   auto mock_manager =
       std::make_unique<testing::NiceMock<MockActorLoginPermissionsManager>>();
-  EXPECT_CALL(*mock_manager, RevokePermission("example.com"));
+  EXPECT_CALL(*mock_manager, RevokePermission("example.com", "user"));
 
   glic_handler()->observation_.Reset();
   glic_handler()->actor_login_permissions_manager_ = std::move(mock_manager);
@@ -166,6 +169,7 @@ IN_PROC_BROWSER_TEST_F(GlicHandlerBrowserTest, RevokeActorLoginPermission) {
 
   base::ListValue args;
   args.Append("example.com");
+  args.Append("user");
   glic_handler()->HandleRevokeActorLoginPermission(args);
 }
 }  // namespace settings

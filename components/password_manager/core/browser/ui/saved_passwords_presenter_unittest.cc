@@ -2070,7 +2070,8 @@ TEST_F(SavedPasswordsPresenterTest, RevokeActorLoginPermission) {
   store().AddLogin(form);
   RunUntilIdle();
 
-  presenter().RevokeActorLoginPermission(form.signon_realm);
+  presenter().RevokeActorLoginPermission(
+      form.signon_realm, base::UTF16ToUTF8(form.username_value));
   RunUntilIdle();
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -2087,6 +2088,39 @@ TEST_F(SavedPasswordsPresenterTest, RevokeActorLoginPermission) {
 }
 
 TEST_F(SavedPasswordsPresenterTest,
+       RevokeActorLoginPermissionFiltersByUsername) {
+  PasswordForm form_1 =
+      CreateTestPasswordForm(PasswordForm::Store::kProfileStore);
+  form_1.actor_login_approved = true;
+  form_1.username_value = u"user_1";
+
+  PasswordForm form_2 = form_1;
+  form_2.username_value = u"user_2";
+  form_2.actor_login_approved = true;
+
+  store().AddLogins({form_1, form_2});
+  RunUntilIdle();
+
+#if !BUILDFLAG(IS_ANDROID)
+  EXPECT_EQ(2u, presenter().GetActorLoginPermissions(GetSyncService()).size());
+#endif
+
+  presenter().RevokeActorLoginPermission(form_1.signon_realm, "user_1");
+  RunUntilIdle();
+
+#if !BUILDFLAG(IS_ANDROID)
+  form_1.actor_login_approved = false;
+  EXPECT_THAT(store().stored_passwords(),
+              ElementsAre(Pair(form_1.signon_realm,
+                               UnorderedElementsAre(form_1, form_2))));
+#else
+  EXPECT_THAT(store().stored_passwords(),
+              ElementsAre(Pair(form_1.signon_realm,
+                               UnorderedElementsAre(form_1, form_2))));
+#endif
+}
+
+TEST_F(SavedPasswordsPresenterTest,
        RevokeActorLoginPermissionHandlesDuplicates) {
   PasswordForm form_1 =
       CreateTestPasswordForm(PasswordForm::Store::kProfileStore);
@@ -2098,7 +2132,8 @@ TEST_F(SavedPasswordsPresenterTest,
   store().AddLogin(form_2);
   RunUntilIdle();
 
-  presenter().RevokeActorLoginPermission(form_1.signon_realm);
+  presenter().RevokeActorLoginPermission(
+      form_1.signon_realm, base::UTF16ToUTF8(form_1.username_value));
   RunUntilIdle();
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -2126,7 +2161,8 @@ TEST_F(SavedPasswordsPresenterTest,
   store().AddLogin(form_1);
   RunUntilIdle();
 
-  presenter().RevokeActorLoginPermission(form_1.signon_realm);
+  presenter().RevokeActorLoginPermission(
+      form_1.signon_realm, base::UTF16ToUTF8(form_1.username_value));
   RunUntilIdle();
 
 #if !BUILDFLAG(IS_ANDROID)

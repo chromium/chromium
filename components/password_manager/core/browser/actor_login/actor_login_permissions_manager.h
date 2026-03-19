@@ -37,9 +37,10 @@ class ActorLoginPermissionsManager {
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
 
-  // Revokes the actor login permission for the specified `signon_realm` for all
-  // credential types.
-  virtual void RevokePermission(const std::string& signon_realm) = 0;
+  // Revokes the actor login permission for the specified `signon_realm` and
+  // `username` for all credential types.
+  virtual void RevokePermission(const std::string& signon_realm,
+                                const std::string& username) = 0;
 
   // Fetches all actor login permissions and returns them via the callback.
   virtual void GetAllPermissions(const syncer::SyncService* sync_service,

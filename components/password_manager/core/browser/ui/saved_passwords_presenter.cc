@@ -470,10 +470,12 @@ SavedPasswordsPresenter::GetActorLoginPermissions(
 }
 
 void SavedPasswordsPresenter::RevokeActorLoginPermission(
-    const std::string& signon_realm) {
+    const std::string& signon_realm,
+    const std::string& username) {
   for (const auto& credential : passwords_grouper_->GetAllCredentials()) {
     for (const auto& form : GetCorrespondingPasswordForms(credential)) {
-      if (form.signon_realm == signon_realm) {
+      if (form.signon_realm == signon_realm &&
+          form.username_value == base::UTF8ToUTF16(username)) {
         PasswordForm updated_form = form;
         updated_form.actor_login_approved = false;
         GetStoreFor(updated_form).UpdateLogin(updated_form);

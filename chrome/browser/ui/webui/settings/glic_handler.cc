@@ -293,10 +293,12 @@ void GlicHandler::OnGetActorLoginPermissions(std::string callback_id_str,
 
 void GlicHandler::HandleRevokeActorLoginPermission(
     const base::ListValue& args) {
-  CHECK_EQ(1U, args.size());
+  CHECK_EQ(2U, args.size());
   const std::string* signon_realm = args[0].GetIfString();
-  if (signon_realm) {
-    actor_login_permissions_manager_->RevokePermission(*signon_realm);
+  const std::string* username = args[1].GetIfString();
+  if (signon_realm && username) {
+    actor_login_permissions_manager_->RevokePermission(*signon_realm,
+                                                       *username);
   }
 }
 

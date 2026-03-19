@@ -101,7 +101,7 @@ void PasswordManagerUIHandler::GetActorLoginPermissions(
 void PasswordManagerUIHandler::RevokeActorLoginPermission(
     password_manager::mojom::ActorLoginPermissionPtr site) {
   GetSavedPasswordsPresenter()->RevokeActorLoginPermission(
-      site->domain_info->signon_realm);
+      site->domain_info->signon_realm, site->username);
 }
 
 void PasswordManagerUIHandler::ChangePasswordManagerPin(
