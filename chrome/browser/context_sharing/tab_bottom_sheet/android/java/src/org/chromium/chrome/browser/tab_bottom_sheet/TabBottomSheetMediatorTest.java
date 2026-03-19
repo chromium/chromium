@@ -12,12 +12,14 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link TabBottomSheetMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -27,9 +29,12 @@ public class TabBottomSheetMediatorTest {
 
     private TabBottomSheetMediator mMediator;
 
+    @Mock private CoBrowseViews mCoBrowseViews;
+
     @Before
     public void setUp() {
-        mMediator = new TabBottomSheetMediator();
+        PropertyModel model = TabBottomSheetProperties.createDefaultModel(mCoBrowseViews);
+        mMediator = new TabBottomSheetMediator(model);
     }
 
     @Test
@@ -37,5 +42,16 @@ public class TabBottomSheetMediatorTest {
     public void testOnSheetStateChanged_expanded() {
         mMediator.onSheetStateChanged(BottomSheetController.SheetState.FULL);
         assertEquals(BottomSheetController.SheetState.FULL, mMediator.getSheetStateForTesting());
+    }
+
+    @Test
+    @SmallTest
+    public void testSetMaxSheetHeight_setsSheetHeight() {
+        int maxHeight = 1000;
+        int expectedHeight = (int) (maxHeight * mMediator.getFullHeightRatioForTesting());
+        mMediator.setMaxSheetHeight(maxHeight);
+        assertEquals(
+                expectedHeight,
+                (int) mMediator.getModelForTesting().get(TabBottomSheetProperties.SHEET_HEIGHT));
     }
 }

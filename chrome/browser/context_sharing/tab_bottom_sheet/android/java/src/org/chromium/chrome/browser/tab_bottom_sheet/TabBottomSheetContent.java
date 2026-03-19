@@ -75,12 +75,12 @@ public class TabBottomSheetContent implements BottomSheetContent {
 
     @Override
     public float getHalfHeightRatio() {
-        return 0.4f;
+        return HeightMode.DISABLED;
     }
 
     @Override
     public float getFullHeightRatio() {
-        return HeightMode.DEFAULT;
+        return HeightMode.WRAP_CONTENT;
     }
 
     @Override

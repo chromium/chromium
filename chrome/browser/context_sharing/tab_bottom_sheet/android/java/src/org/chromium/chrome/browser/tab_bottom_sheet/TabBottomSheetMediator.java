@@ -8,20 +8,39 @@ import android.view.MotionEvent;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
+import org.chromium.ui.modelutil.PropertyModel;
 
 /** Mediator for tab bottom sheet */
 @NullMarked
 public class TabBottomSheetMediator {
     private final TouchArbitrator mTouchArbitrator;
+    private final PropertyModel mModel;
+    private final float mFullheightRatio;
 
     private @SheetState int mCurrentSheetState = SheetState.HIDDEN;
 
-    public TabBottomSheetMediator() {
+    public TabBottomSheetMediator(PropertyModel model) {
+        mModel = model;
         mTouchArbitrator = new TouchArbitrator();
+        // Setting statically right now, can be modified later to be set dynamically based on device
+        // type.
+        mFullheightRatio = 0.7f;
     }
 
     void onSheetStateChanged(@SheetState int state) {
         mCurrentSheetState = state;
+    }
+
+    /**
+     * Sets the sheets height to 70% of the bottom sheet container height. If the bottom sheet had
+     * never been called before, BottomSheetController.getContainerHeight() returns 0. To avoid this
+     * we set the height after the sheet has been initialized. TODO(crbug.com/486916366): Temporary
+     * fix until bottom sheet resizing is implemented.
+     */
+    void setMaxSheetHeight(int maxSheetHeight) {
+        mModel.set(
+                TabBottomSheetProperties.SHEET_HEIGHT,
+                Math.round(maxSheetHeight * mFullheightRatio));
     }
 
     /** Returns the touch handler for the WebUI container. */
@@ -51,5 +70,13 @@ public class TabBottomSheetMediator {
     @SheetState
     int getSheetStateForTesting() {
         return mCurrentSheetState;
+    }
+
+    PropertyModel getModelForTesting() {
+        return mModel;
+    }
+
+    float getFullHeightRatioForTesting() {
+        return mFullheightRatio;
     }
 }

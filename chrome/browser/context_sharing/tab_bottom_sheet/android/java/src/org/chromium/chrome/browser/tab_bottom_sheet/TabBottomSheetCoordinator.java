@@ -45,7 +45,7 @@ public class TabBottomSheetCoordinator {
 
         mModel = TabBottomSheetProperties.createDefaultModel(coBrowseViews);
 
-        mMediator = new TabBottomSheetMediator();
+        mMediator = new TabBottomSheetMediator(mModel);
 
         coBrowseViews.setWebUiTouchHandler(mMediator.getWebUiTouchHandler());
     }
@@ -132,6 +132,11 @@ public class TabBottomSheetCoordinator {
             @Override
             public void onSheetStateChanged(@SheetState int state, @StateChangeReason int reason) {
                 mMediator.onSheetStateChanged(state);
+            }
+
+            @Override
+            public void onSheetOffsetChanged(float heightFraction, float offsetPx) {
+                mMediator.setMaxSheetHeight(mBottomSheetController.getContainerHeight());
             }
         };
     }

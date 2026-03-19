@@ -20,5 +20,11 @@ public class TabBottomSheetViewBinder {
      * @param view The inflated Android {@link View} of the promo sheet.
      * @param propertyKey The {@link PropertyKey} that changed.
      */
-    public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {}
+    public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
+        if (propertyKey == TabBottomSheetProperties.SHEET_HEIGHT) {
+            int sheetHeight = model.get(TabBottomSheetProperties.SHEET_HEIGHT);
+            CoBrowseViews coBrowseViews = model.get(TabBottomSheetProperties.BOTTOM_SHEET_VIEWS);
+            coBrowseViews.setSheetHeight(sheetHeight);
+        }
+    }
 }

@@ -109,6 +109,17 @@ public class CoBrowseViews {
         return mWebUi != null ? mWebUi.getWebContents() : null;
     }
 
+    /** Sets the sheet's height. */
+    public void setSheetHeight(int height) {
+        ViewGroup sheetContent = mView.findViewById(R.id.expanded_content_group);
+        ViewGroup.LayoutParams sheetContentParams = sheetContent.getLayoutParams();
+
+        if (sheetContentParams.height != height) {
+            sheetContentParams.height = height;
+            sheetContent.setLayoutParams(sheetContentParams);
+        }
+    }
+
     int getToolbarHeight() {
         if (mToolbar != null) {
             return mToolbar.getToolbarView().getHeight();
