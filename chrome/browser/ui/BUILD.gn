@@ -1773,7 +1773,7 @@ static_library("ui") {
       "//chrome/browser/ui/read_anything",
       "//chrome/browser/ui/tabs:tab_enums",
       "//chrome/browser/ui/views/side_panel",
-      "//chrome/browser/ui/waap",
+      "//chrome/browser/ui/waap:manager",
       "//chrome/browser/ui/webui/feedback/report_unsafe_site",
       "//chrome/browser/ui/webui/on_device_internals",
     ]

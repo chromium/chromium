@@ -6,6 +6,7 @@
 
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
@@ -13,16 +14,21 @@ DEFINE_USER_DATA(InitialWebUIManager);
 
 InitialWebUIManager::InitialWebUIManager(BrowserWindowInterface* browser)
     : is_initial_web_ui_pending_(features::IsWebUIToolbarEnabled()),
-      scoped_data_holder_(browser->GetUnownedUserDataHost(), *this) {}
+      scoped_data_holder_(browser->GetUnownedUserDataHost(), *this),
+      metrics_manager_(InitialWebUIWindowMetricsManager::From(browser)) {}
 
 InitialWebUIManager::~InitialWebUIManager() = default;
 
+// static
 InitialWebUIManager* InitialWebUIManager::From(
     BrowserWindowInterface* browser_window_interface) {
   return Get(browser_window_interface->GetUnownedUserDataHost());
 }
 
 bool InitialWebUIManager::RequestDeferShow(base::OnceClosure unsafe_callback) {
+  if (metrics_manager_) {
+    metrics_manager_->OnBrowserWindowShowRequested(base::TimeTicks::Now());
+  }
   if (!base::FeatureList::IsEnabled(features::kWebUIReloadButton) &&
       !features::kWebUIReloadButtonDeferBrowserViewShow.Get()) {
     return false;

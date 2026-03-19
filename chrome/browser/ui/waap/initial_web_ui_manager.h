@@ -10,6 +10,7 @@
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class BrowserWindowInterface;
+class InitialWebUIWindowMetricsManager;
 
 // Manages the initialization state of WebUI components that must be loaded
 // before the browser window is shown.
@@ -62,6 +63,8 @@ class InitialWebUIManager {
   bool is_show_pending_ = false;
 
   ui::ScopedUnownedUserData<InitialWebUIManager> scoped_data_holder_;
+
+  raw_ptr<InitialWebUIWindowMetricsManager> metrics_manager_;
 };
 
 #endif  // CHROME_BROWSER_UI_WAAP_INITIAL_WEB_UI_MANAGER_H_

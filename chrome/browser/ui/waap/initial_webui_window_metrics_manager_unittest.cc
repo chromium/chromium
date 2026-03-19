@@ -104,3 +104,78 @@ TEST_F(InitialWebUIWindowMetricsManagerTest, RecordsFirstPaintGapDelta) {
       "FirstPaintGap",
       webui_delay, 1);
 }
+
+TEST_F(InitialWebUIWindowMetricsManagerTest, RecordsShowRequestedToFirstPaint) {
+  const base::TimeTicks start_time = base::TimeTicks::Now();
+  InitialWebUIWindowMetricsManager manager(&browser_window_);
+  manager.SetWindowCreationInfo(
+      waap::NewWindowCreationSource::kBrowserInitiated, start_time);
+  manager.SkipStartupForTesting();
+
+  base::HistogramTester tester;
+
+  // Simulate show request.
+  base::TimeDelta show_request_delay = base::Milliseconds(30);
+  base::TimeTicks show_request_time = start_time + show_request_delay;
+  manager.OnBrowserWindowShowRequested(show_request_time);
+
+  // Still no metric because first presentation hasn't happened.
+  tester.ExpectTotalCount(
+      "InitialWebUI.NewWindow.AllSources.BrowserWindow."
+      "ShowRequestedToFirstPaint",
+      0);
+
+  // Simulate presenting native window.
+  base::TimeDelta total_delay = base::Milliseconds(100);
+  base::TimeTicks browser_window_time = start_time + total_delay;
+  manager.OnBrowserWindowFirstPresentation(browser_window_time);
+
+  // ShowRequestedToFirstPaint should be the time between show request and
+  // presentation.
+  base::TimeDelta expected_delta = total_delay - show_request_delay;
+
+  tester.ExpectUniqueTimeSample(
+      "InitialWebUI.NewWindow.AllSources.BrowserWindow."
+      "ShowRequestedToFirstPaint.FromConstructor",
+      expected_delta, 1);
+  tester.ExpectUniqueTimeSample(
+      "InitialWebUI.NewWindow.BrowserInitiated.BrowserWindow."
+      "ShowRequestedToFirstPaint."
+      "FromConstructor",
+      expected_delta, 1);
+}
+
+TEST_F(InitialWebUIWindowMetricsManagerTest,
+       ShowRequestedToFirstPaintIsIdempotent) {
+  const base::TimeTicks start_time = base::TimeTicks::Now();
+  InitialWebUIWindowMetricsManager manager(&browser_window_);
+  manager.SetWindowCreationInfo(
+      waap::NewWindowCreationSource::kBrowserInitiated, start_time);
+  manager.SkipStartupForTesting();
+
+  base::HistogramTester tester;
+
+  // 1st show request.
+  base::TimeDelta first_delay = base::Milliseconds(30);
+  base::TimeTicks first_time = start_time + first_delay;
+  manager.OnBrowserWindowShowRequested(first_time);
+
+  // 2nd show request, which should be ignored.
+  base::TimeDelta second_delay = base::Milliseconds(60);
+  base::TimeTicks second_time = start_time + second_delay;
+  manager.OnBrowserWindowShowRequested(second_time);
+
+  // Simulate presentation.
+  base::TimeDelta total_delay = base::Milliseconds(100);
+  base::TimeTicks browser_window_time = start_time + total_delay;
+  manager.OnBrowserWindowFirstPresentation(browser_window_time);
+
+  // Baseline should be the 1st show request.
+  base::TimeDelta expected_delta = total_delay - first_delay;
+
+  tester.ExpectUniqueTimeSample(
+      "InitialWebUI.NewWindow.AllSources.BrowserWindow."
+      "ShowRequestedToFirstPaint."
+      "FromConstructor",
+      expected_delta, 1);
+}

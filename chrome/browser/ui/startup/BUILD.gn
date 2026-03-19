@@ -219,7 +219,7 @@ source_set("impl") {
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/toasts",
       "//chrome/browser/ui/toasts/api:toasts",
-      "//chrome/browser/ui/waap",
+      "//chrome/browser/ui/waap:manager",
       "//chrome/browser/ui/webui/whats_new",
       "//chrome/browser/web_applications",
       "//chrome/common",
