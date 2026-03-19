@@ -342,6 +342,7 @@ gfx::ImageSkia GlicStatusIcon::GetIcon() const {
 #if BUILDFLAG(IS_MAC)
   if (base::FeatureList::IsEnabled(features::kGlicChromeStatusIcon)) {
     return gfx::CreateVectorIcon(omnibox::kProductChromeRefreshIcon,
+                                 features::kGlicChromeStatusIconSizePx.Get(),
                                  SK_ColorWHITE);
   }
 #endif

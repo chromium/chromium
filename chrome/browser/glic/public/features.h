@@ -13,6 +13,7 @@ namespace features {
 BASE_DECLARE_FEATURE(kGlicTabRestoration);
 BASE_DECLARE_FEATURE(kGlicDaisyChainViaCoordinator);
 BASE_DECLARE_FEATURE(kGlicChromeStatusIcon);
+extern const base::FeatureParam<int> kGlicChromeStatusIconSizePx;
 
 BASE_DECLARE_FEATURE(kGlicOrphanedReattachment);
 
