@@ -140,22 +140,29 @@ export function getHtml(this: ComposeboxFileThumbnailElement) {
               @click="${this.onRemoveButtonClick_}">
           </cr-icon-button>`: ''}
         </div>` : html`
-        <div id="pdfChip" class="chip">
-          <div id="pdfThumbnail" class="thumbnail" part="thumbnail">
+        <div id="documentChip" class="chip">
+          <div id="documentThumbnail" class="thumbnail" part="thumbnail">
             ${this.isUploading_ ? html`
               <svg role="image" class="spinner" viewBox="0 0 100 100">
                 <circle class="spinner-circle" cx="50" cy="50" r="40" />
               </svg>
             ` : html`
-              <cr-icon icon="thumbnail:pdf" class="pdf-icon"></cr-icon>
+              <cr-icon icon="${
+                  this.lensSendRawFileMediaTypesEnabled_ ?
+                      'thumbnail:document' :
+                      'thumbnail:pdf'}"
+                  class="${
+                  this.lensSendRawFileMediaTypesEnabled_ ?
+                      'document-icon' :
+                      'pdf-icon'}"></cr-icon>
             `}
           </div>
           <p class="title"
-              part="thumbnail-title" id="pdfTitle">${this.file.name}</p>
+              part="thumbnail-title" id="documentTitle">${this.file.name}</p>
           <div class="overlay">
             <div class="gradient-protection"></div>
             ${this.file.isDeletable ? html`<cr-icon-button
-                id="removePdfButton"
+                id="removeDocumentButton"
                 class="remove-button"
                 iron-icon="cr:clear"
                 title="${this.file.name}"

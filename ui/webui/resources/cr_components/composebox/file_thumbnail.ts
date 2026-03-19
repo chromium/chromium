@@ -19,7 +19,7 @@ import {getHtml} from './file_thumbnail.html.js';
 export interface ComposeboxFileThumbnailElement {
   $: {
     removeImgButton: HTMLElement,
-    removePdfButton: HTMLElement,
+    removeDocumentButton: HTMLElement,
     removeTabButton: HTMLElement,
   };
 }
@@ -65,6 +65,9 @@ export class ComposeboxFileThumbnailElement extends CrLitElement {
   getIsUploadingForTesting(): boolean {
     return this.isUploading_;
   }
+
+  protected lensSendRawFileMediaTypesEnabled_: boolean =
+      loadTimeData.getBoolean('lensSendRawFileMediaTypesEnabled');
 
   protected accessor isUploading_: boolean = false;
 
