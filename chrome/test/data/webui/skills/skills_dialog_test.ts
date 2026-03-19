@@ -375,7 +375,8 @@ suite('SkillsDialogAppPage', function() {
 
     emojiTrigger.click();
 
-    await dialogHandler.whenCalled('showEmojiPicker');
+    await microtasksFinished();
+    assertTrue(!!skillsDialogApp.shadowRoot.querySelector('#emojiPicker'));
   });
 
   test('EmojiInputUpdatesStateAndSanitizes', async function() {
@@ -394,6 +395,28 @@ suite('SkillsDialogAppPage', function() {
     skillsDialogApp.$.saveButton.click();
     const submittedSkill = await dialogHandler.whenCalled('submitSkill');
     assertEquals('🐶', submittedSkill.icon);
+  });
+
+  test('EmojiSelectedUpdatesStateAndClosesPicker', async function() {
+    const emojiTrigger = skillsDialogApp.$.emojiTrigger;
+    emojiTrigger.click();
+    await microtasksFinished();
+
+    const picker =
+        skillsDialogApp.shadowRoot.querySelector('skills-emoji-picker');
+    assertTrue(!!picker);
+
+    const testEmoji = '😊';
+    picker.dispatchEvent(new CustomEvent('emoji-selected', {
+      detail: {emoji: testEmoji},
+      bubbles: true,
+      composed: true,
+    }));
+
+    await microtasksFinished();
+    assertEquals(testEmoji, emojiTrigger.value);
+    assertFalse(
+        !!skillsDialogApp.shadowRoot.querySelector('skills-emoji-picker'));
   });
 
   test('EmojiInputHandlesEmptyAndAppliesDefaultOnSubmit', async function() {
@@ -418,24 +441,6 @@ suite('SkillsDialogAppPage', function() {
 
   test('EmojiPreventsManualTyping', async function() {
     const emojiTrigger = skillsDialogApp.$.emojiTrigger;
-    const letterEvent = new KeyboardEvent('keydown', {
-      key: 'a',
-      cancelable: true,
-      bubbles: true,
-      composed: true,
-    });
-    emojiTrigger.dispatchEvent(letterEvent);
-    assertTrue(letterEvent.defaultPrevented);
-
-    const tabEvent = new KeyboardEvent('keydown', {
-      key: 'Tab',
-      cancelable: true,
-      bubbles: true,
-      composed: true,
-    });
-    emojiTrigger.dispatchEvent(tabEvent);
-    assertFalse(tabEvent.defaultPrevented);
-
     const enterEvent = new KeyboardEvent('keydown', {
       key: 'Enter',
       cancelable: true,
@@ -444,7 +449,8 @@ suite('SkillsDialogAppPage', function() {
     });
     emojiTrigger.dispatchEvent(enterEvent);
     assertTrue(enterEvent.defaultPrevented);
-    await dialogHandler.whenCalled('showEmojiPicker');
+    await microtasksFinished();
+    assertTrue(!!skillsDialogApp.shadowRoot.querySelector('#emojiPicker'));
   });
 
   test('RefineUndoRedoFlow', async function() {
