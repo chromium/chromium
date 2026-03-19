@@ -95,23 +95,22 @@ class PdfInkUndoRedoModel {
   bool HasIdInRemoveCommands(IdType id) const;
 
   // Invariants:
-  // (1) Never empty.
-  // (2) The last element and only the last element can be empty.
-  // (3) IDs used in `Commands::adds` are unique among all `Commands::adds`
+  // (1) IDs used in `Commands::adds` are unique among all `Commands::adds`
   //     elements.
-  // (4) IDs in `Commands::adds` must not exist in any `Commands::removes`.
-  // (5) IDs used in `Commands::removes` are unique among all
+  // (2) IDs in `Commands::adds` must not exist in any `Commands::removes`.
+  // (3) IDs used in `Commands::removes` are unique among all
   //     `Commands::removes` elements.
-  // (6) IDs added to a `Commands::removes` must exist in some `Commands::adds`
+  // (4) IDs added to a `Commands::removes` must exist in some `Commands::adds`
   //     element.
-  // (7) `Commands::adds` only contains `InkStrokeId` and `InkTextId` elements
+  // (5) `Commands::adds` only contains `InkStrokeId` and `InkTextId` elements
   //     here. The reason `Commands::adds` can hold `InkModeledShapeId` is to
   //     undo an `InkModeledShapeId` removal, where the caller needs to know
   //     they need to draw the shape or text annotation.
-  std::vector<Commands> commands_stack_ = {Commands()};
+  std::vector<Commands> commands_stack_;
 
   // Invariants:
-  // (8) Always less than the size of `commands_stack_`.
+  // (6) Always less than or equal to the size of `commands_stack_`.
+  //     When `has_started_` is true, it is strictly less than the size.
   size_t stack_position_ = 0;
 
   // Whether a recording session is currently in progress.

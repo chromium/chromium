@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/check_op.h"
 #include "base/containers/adapters.h"
 #include "base/types/expected.h"
 #include "pdf/pdf_ink_ids.h"
@@ -43,19 +42,12 @@ PdfInkUndoRedoModel::~PdfInkUndoRedoModel() = default;
 
 base::expected<std::optional<IdType>, std::monostate>
 PdfInkUndoRedoModel::Start() {
-  CHECK(!commands_stack_.empty());
-  CHECK_LT(stack_position_, commands_stack_.size());
-
   if (has_started_) {
     return base::unexpected(std::monostate());
   }
 
   std::optional<IdType> lowest_discard;
-  auto& commands = commands_stack_[stack_position_];
-  if (stack_position_ < commands_stack_.size() - 1) {
-    // Invariant 2.
-    CHECK(!commands.adds.empty() || !commands.removes.empty());
-
+  if (stack_position_ < commands_stack_.size()) {
     // Find the lowest add command to discard.
     for (size_t i = stack_position_; i < commands_stack_.size(); ++i) {
       const auto& current_commands = commands_stack_[i];
@@ -66,29 +58,23 @@ PdfInkUndoRedoModel::Start() {
     }
 
     // Discard rest of stack.
-    //
-    // The vector capacity is never reduced when resizing to smaller size. Thus
-    // references to `commands_stack_` elements are not invalidated and safe to
-    // use.
-    commands_stack_.resize(stack_position_ + 1);
+    commands_stack_.resize(stack_position_);
   }
 
-  // Safe to reuse `commands`, which references an element inside of
-  // `commands_stack_`. See note above the resize() call regarding safety.
-  commands = Commands();
+  commands_stack_.push_back(Commands());
   has_started_ = true;
   return lowest_discard;
 }
 
 bool PdfInkUndoRedoModel::Add(IdType id) {
-  CHECK(!commands_stack_.empty());
-
   if (!has_started_) {
     return false;
   }
 
+  CHECK(!commands_stack_.empty());
+
   if (!IsAllowedInCommandsStack(id)) {
-    return false;  // Failed invariant 7.
+    return false;  // Failed invariant 5.
   }
 
   // Check the last add in the commands stack to ensure IDs are added in
@@ -107,41 +93,42 @@ bool PdfInkUndoRedoModel::Add(IdType id) {
     }
   }
 
-  // Invariant 4 holds if invariant 6 holds.
+  // Invariant 2 holds if invariant 4 holds.
   CHECK(!HasIdInRemoveCommands(id));
   commands_stack_.back().adds.insert(id);
   return true;
 }
 
 bool PdfInkUndoRedoModel::Finish() {
-  CHECK(!commands_stack_.empty());
-
   if (!has_started_) {
     return false;
   }
 
+  CHECK(!commands_stack_.empty());
+
   has_started_ = false;
   auto& commands = commands_stack_.back();
   if (!commands.adds.empty() || !commands.removes.empty()) {
-    commands_stack_.push_back(Commands());
     ++stack_position_;
+  } else {
+    commands_stack_.pop_back();
   }
   return true;
 }
 
 bool PdfInkUndoRedoModel::Remove(IdType id) {
-  CHECK(!commands_stack_.empty());
-
   if (!has_started_) {
     return false;
   }
 
+  CHECK(!commands_stack_.empty());
+
   if (HasIdInRemoveCommands(id)) {
-    return false;  // Failed invariant 5.
+    return false;  // Failed invariant 3.
   }
 
   if (IsAllowedInCommandsStack(id) && !HasIdInAddCommands(id)) {
-    return false;  // Failed invariant 6.
+    return false;  // Failed invariant 4.
   }
 
   commands_stack_.back().removes.insert(id);
@@ -149,13 +136,12 @@ bool PdfInkUndoRedoModel::Remove(IdType id) {
 }
 
 PdfInkUndoRedoModel::Commands PdfInkUndoRedoModel::Undo() {
-  CHECK(!commands_stack_.empty());
-  CHECK_LT(stack_position_, commands_stack_.size());
-
   if (has_started_ || stack_position_ == 0) {
     // Cannot undo while adding/removing or at the bottom of the stack.
     return Commands();
   }
+
+  CHECK(!commands_stack_.empty());
 
   // Result is the reverse of the recorded commands.
   --stack_position_;
@@ -167,13 +153,12 @@ PdfInkUndoRedoModel::Commands PdfInkUndoRedoModel::Undo() {
 }
 
 PdfInkUndoRedoModel::Commands PdfInkUndoRedoModel::Redo() {
-  CHECK(!commands_stack_.empty());
-  CHECK_LT(stack_position_, commands_stack_.size());
-
-  if (has_started_ || stack_position_ == commands_stack_.size() - 1) {
+  if (has_started_ || stack_position_ == commands_stack_.size()) {
     // Cannot redo while adding/removing or at the top of the stack.
     return Commands();
   }
+
+  CHECK(!commands_stack_.empty());
 
   // Result is the recorded commands as-is.
   return commands_stack_[stack_position_++];
