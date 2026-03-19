@@ -443,8 +443,8 @@ ShouldShowHistorySyncOptinResult ShouldShowHistorySyncOptinScreen(
   }
 
   syncer::UserSelectableTypeSet required_types(
-      {syncer::UserSelectableType::kHistory, syncer::UserSelectableType::kTabs,
-       syncer::UserSelectableType::kSavedTabGroups});
+      {syncer::UserSelectableType::kHistory,
+       syncer::UserSelectableType::kTabs});
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(&profile);
   if (!IsSyncingUserSelectableTypesAllowedByPolicy(sync_service,
