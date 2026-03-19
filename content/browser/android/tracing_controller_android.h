@@ -6,10 +6,15 @@
 #define CONTENT_BROWSER_ANDROID_TRACING_CONTROLLER_ANDROID_H_
 
 #include <set>
+#include <string>
+#include <string_view>
 
 #include "base/android/jni_weak_ref.h"
-#include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
+
+namespace base {
+class FilePath;
+}  // namespace base
 
 namespace content {
 
@@ -41,7 +46,7 @@ class TracingControllerAndroid {
   // Locate the appropriate directory to write the trace to and use it to
   // generate the path. |basename| might be empty, then TracingControllerAndroid
   // will generate an appropriate one as well.
-  static base::FilePath GenerateTracingFilePath(const std::string& basename);
+  static base::FilePath GenerateTracingFilePath(std::string_view basename);
 
  private:
   ~TracingControllerAndroid();

@@ -4,10 +4,15 @@
 
 #include "content/browser/tracing/startup_tracing_controller.h"
 
+#include <string>
+#include <string_view>
+#include <utility>
+
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
@@ -331,7 +336,7 @@ StartupTracingController& StartupTracingController::GetInstance() {
 
 namespace {
 
-base::FilePath BasenameToPath(std::string basename) {
+base::FilePath BasenameToPath(std::string_view basename) {
 #if BUILDFLAG(IS_ANDROID)
   return TracingControllerAndroid::GenerateTracingFilePath(basename);
 #elif BUILDFLAG(IS_IOS)
@@ -377,9 +382,10 @@ base::FilePath StartupTracingController::GetOutputPath() {
   if (!result.empty() && !result.EndsWithSeparator())
     return result;
 
-  std::string basename = default_basename_;
-  if (basename.empty())
+  std::string_view basename = default_basename_;
+  if (basename.empty()) {
     basename = "chrometrace.log";
+  }
 
   // If a non-empty directory is specified, use it.
   if (!result.empty())
@@ -496,14 +502,14 @@ void StartupTracingController::SetDefaultBasename(
         break;
     }
   }
-  default_basename_ = basename;
+  default_basename_ = std::move(basename);
 }
 
 void StartupTracingController::SetDefaultBasenameForTest(
     std::string basename,
     ExtensionType extension_type) {
   basename_for_test_set_ = false;
-  SetDefaultBasename(basename, extension_type);
+  SetDefaultBasename(std::move(basename), extension_type);
   basename_for_test_set_ = true;
 }
 

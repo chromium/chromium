@@ -171,7 +171,7 @@ void TracingControllerAndroid::StopTracing(
 }
 
 base::FilePath TracingControllerAndroid::GenerateTracingFilePath(
-    const std::string& basename) {
+    std::string_view basename) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jstring> jfilename =
