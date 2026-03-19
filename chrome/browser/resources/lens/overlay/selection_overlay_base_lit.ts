@@ -18,6 +18,7 @@ import type {PostSelectionBoundingBox, PostSelectionRendererElement} from './pos
 import type {RegionSelectionElement} from './region_selection.js';
 import {ScreenshotBitmapBrowserProxyImpl} from './screenshot_bitmap_browser_proxy.js';
 import {renderScreenshot} from './screenshot_utils.js';
+import type {SelectedRegion} from './selection_overlay_base_handler.js';
 import {SelectionOverlayBaseHandler} from './selection_overlay_base_handler.js';
 import {CursorType, DRAG_THRESHOLD, DragFeature, emptyGestureEvent, focusShimmerOnRegion, GestureState, ShimmerControlRequester} from './selection_utils.js';
 import type {GestureEvent, OverlayShimmerFocusedRegion} from './selection_utils.js';
@@ -149,7 +150,7 @@ export abstract class SelectionOverlayBaseLitElement extends
   protected accessor isPointerInside: boolean = false;
 
   protected accessor theme: OverlayTheme = getFallbackTheme();
-  protected accessor activeRegionId: string = '';
+  accessor activeRegionId: string = '';
 
   protected eventTracker_: EventTracker = new EventTracker();
   // Listener ids for events from the browser side.
@@ -168,6 +169,8 @@ export abstract class SelectionOverlayBaseLitElement extends
   private hasInitialFlashAnimationEnded = false;
   protected baseHandler: SelectionOverlayBaseHandler =
       SelectionOverlayBaseHandler.getInstance();
+  private regions: SelectedRegion[] = [];
+  private creationOrder: string[] = [];
 
   // The ID returned by requestAnimationFrame for the updateCursorPosition,
   // onPointerMove, and handleResize functions.
@@ -210,8 +213,34 @@ export abstract class SelectionOverlayBaseLitElement extends
         this.removeDragListeners();
       }),
       this.baseHandler.addMultiRegionSelectionListener((regions) => {
-        if (regions.length > 0 && !this.activeRegionId) {
-          this.activeRegionId = regions[0].id;
+        // Identify if a new region has been added by comparing against the
+        // previous set of IDs.
+        const currentIds = new Set(regions.map(r => r.id));
+        const oldIds = new Set(this.regions.map(r => r.id));
+        const newRegion = regions.find(r => !oldIds.has(r.id));
+        this.regions = regions;
+
+        // Maintain the order in which regions were created to provide a
+        // predictable sequential fallback when regions are deleted.
+        if (newRegion) {
+          this.creationOrder.push(newRegion.id);
+        }
+        this.creationOrder =
+            this.creationOrder.filter(id => currentIds.has(id));
+
+        if (regions.length === 0) {
+          // Reset state if all regions are cleared.
+          this.activeRegionId = '';
+          this.creationOrder = [];
+        } else if (newRegion) {
+          // Automatically focus any newly created region.
+          this.activeRegionId = newRegion.id;
+        } else if (!currentIds.has(this.activeRegionId)) {
+          // If the currently active region was deleted, fall back to the most
+          // recently created remaining region.
+          this.activeRegionId =
+              this.creationOrder[this.creationOrder.length - 1] ||
+              regions[0].id;
         }
       }),
     ];
@@ -293,6 +322,10 @@ export abstract class SelectionOverlayBaseLitElement extends
 
     if (changedProperties.has('isResized')) {
       this.onIsResizedChanged(this.isResized);
+    }
+
+    if (changedProperties.has('activeRegionId')) {
+      this.baseHandler.activeRegionId = this.activeRegionId;
     }
   }
 

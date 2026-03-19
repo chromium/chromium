@@ -23,6 +23,7 @@ export interface SelectedRegion {
  */
 export abstract class SelectionOverlayBaseHandler {
   private static instance: SelectionOverlayBaseHandler|null = null;
+  activeRegionId: string = '';
 
   static getInstance(): SelectionOverlayBaseHandler {
     return SelectionOverlayBaseHandler.instance!;
@@ -53,6 +54,7 @@ export abstract class SelectionOverlayBaseHandler {
       number;
   abstract adjustRegionSelected(rect: RectF, source: RegionSource, id?: string):
       void;
+  abstract deleteRegion(id: string): void;
   abstract closePreselectionBubble(): void;
   abstract notifyOverlayInitialized(): void;
   abstract setLiveBlur(enabled: boolean): void;

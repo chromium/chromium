@@ -184,6 +184,22 @@
     pointer-events: none;
     object-fit: contain;
   }
+
+  .close-button {
+    --cr-icon-button-icon-size: 22px;
+    --cr-icon-button-size: 28px;
+    --cr-icon-button-fill-color: white;
+    --cr-icon-image: url("icon_clear.svg");
+    background-color: #5f6368cc;
+    border-radius: 50%;
+    height: 28px;
+    position: absolute;
+    right: -15px;
+    top: -15px;
+    width: 28px;
+    z-index: 10;
+    pointer-events: auto;
+  }
 </style>
 <div id="postSelectionScrim" style$="[[getScrimStyleProperties(height, width)]]"></div>
 <template is="dom-if" if="[[multiRegionSelectionEnabled]]">
@@ -198,7 +214,7 @@
     </canvas>
     <div class="static-region"
         data-id$="[[item.id]]"
-        on-pointerdown="onStaticRegionPointerdown"
+        on-pointerenter="onStaticRegionPointerEnter"
         style$="left: [[item.left]]; top: [[item.top]];
                 width: [[item.width]]; height: [[item.height]];">
     </div>
@@ -217,6 +233,13 @@
     id="postSelection"
   ></div>
   <div id="selectionCorners">
+    <template is="dom-if" if="[[multiRegionSelectionEnabled]]">
+      <cr-icon-button class="close-button"
+          on-click="onCloseActiveButtonClick"
+          on-pointerdown="onCloseButtonPointerdown"
+          title="$i18n{close}">
+      </cr-icon-button>
+    </template>
     <template is="dom-repeat" items="[[cornerIds]]">
       <div id="[[item]]" class="corner-hit-box">
         <template is="dom-if" if="[[cornerSlidersEnabled]]">
