@@ -458,7 +458,7 @@ bool SearchPrefetchService::MaybePrefetchURL(
 
   std::unique_ptr<SearchPrefetchRequest> prefetch_request =
       std::make_unique<SearchPrefetchRequest>(
-          canonical_search_url, url, navigation_prefetch, attempt,
+          *profile_, canonical_search_url, url, navigation_prefetch, attempt,
           base::BindOnce(&SearchPrefetchService::ReportFetchResult,
                          base::Unretained(this)));
 

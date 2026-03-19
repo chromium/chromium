@@ -19,6 +19,7 @@
 #include "chrome/browser/preloading/prerender/prerender_utils.h"
 #include "chrome/browser/preloading/prerender/search_prewarm_progress_service.h"
 #include "chrome/browser/preloading/prerender/search_prewarm_progress_service_factory.h"
+#include "chrome/browser/preloading/prerender/search_prewarm_progress_test_utils.h"
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -1276,20 +1277,15 @@ IN_PROC_BROWSER_TEST_F(PrerenderPrewarmDefaultSearchEngineTest,
   ASSERT_TRUE(host_id);
   EXPECT_TRUE(service->IsOnGoingSearchPrewarm(host_id));
 
-  bool callback_called = false;
-  base::RunLoop run_loop;
-  service->AddSearchPrewarmFinishedCallback(base::BindLambdaForTesting([&]() {
-    callback_called = true;
-    run_loop.QuitClosure().Run();
-  }));
-  EXPECT_FALSE(callback_called);
+  SearchPrewarmProgressTestObserver observer(service);
+  EXPECT_FALSE(observer.was_notified());
 
   // Resume the navigation.
   EXPECT_TRUE(navigation_manager.WaitForResponse());
   navigation_manager.ResumeNavigation();
   prerender_helper().WaitForPrerenderLoadCompletion(host_id);
 
-  run_loop.Run();
+  observer.WaitForNotification();
   EXPECT_FALSE(service->HasOnGoingSearchPrewarm());
   EXPECT_FALSE(service->IsOnGoingSearchPrewarm(host_id));
 }
@@ -1326,19 +1322,15 @@ IN_PROC_BROWSER_TEST_F(PrerenderPrewarmDefaultSearchEngineTest,
   auto host_id = prerender_helper().GetPrewarmSearchResultHost(prewarm_url_);
   ASSERT_TRUE(host_id);
   EXPECT_TRUE(service->IsOnGoingSearchPrewarm(host_id));
+  SearchPrewarmProgressTestObserver observer(service);
+  EXPECT_FALSE(observer.was_notified());
 
-  bool callback_called = false;
-  base::RunLoop run_loop;
-  service->AddSearchPrewarmFinishedCallback(base::BindLambdaForTesting([&]() {
-    callback_called = true;
-    run_loop.QuitClosure().Run();
-  }));
-  EXPECT_FALSE(callback_called);
+  // Destroy the tab.
+  GetActiveWebContents()->Close();
 
-  // Destroy the second web contents by closing the tab.
-  web_contents2->Close();
-  run_loop.Run();
+  observer.WaitForNotification();
   EXPECT_FALSE(service->HasOnGoingSearchPrewarm());
+
   EXPECT_FALSE(service->IsOnGoingSearchPrewarm(host_id));
 }
 
@@ -1389,13 +1381,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderPrewarmDefaultSearchEngineTest,
   ASSERT_TRUE(host_id2);
   EXPECT_TRUE(service->IsOnGoingSearchPrewarm(host_id2));
 
-  bool callback_called = false;
-  base::RunLoop run_loop;
-  service->AddSearchPrewarmFinishedCallback(base::BindLambdaForTesting([&]() {
-    callback_called = true;
-    run_loop.QuitClosure().Run();
-  }));
-  EXPECT_FALSE(callback_called);
+  SearchPrewarmProgressTestObserver observer(service);
+  EXPECT_FALSE(observer.was_notified());
 
   // Resume the navigation in the first tab.
   EXPECT_TRUE(navigation_manager.WaitForResponse());
@@ -1403,7 +1390,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderPrewarmDefaultSearchEngineTest,
   EXPECT_TRUE(navigation_manager.WaitForNavigationFinished());
 
   EXPECT_TRUE(service->HasOnGoingSearchPrewarm());
-  EXPECT_FALSE(callback_called);
+  EXPECT_FALSE(observer.was_notified());
   EXPECT_FALSE(service->IsOnGoingSearchPrewarm(host_id1));
   EXPECT_TRUE(service->IsOnGoingSearchPrewarm(host_id2));
 
@@ -1412,7 +1399,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderPrewarmDefaultSearchEngineTest,
   navigation_manager2.ResumeNavigation();
   EXPECT_TRUE(navigation_manager2.WaitForNavigationFinished());
 
-  run_loop.Run();
+  observer.WaitForNotification();
   EXPECT_FALSE(service->HasOnGoingSearchPrewarm());
   EXPECT_FALSE(service->IsOnGoingSearchPrewarm(host_id1));
   EXPECT_FALSE(service->IsOnGoingSearchPrewarm(host_id2));

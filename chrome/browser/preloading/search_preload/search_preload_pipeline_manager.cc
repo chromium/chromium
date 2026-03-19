@@ -89,6 +89,21 @@ SearchPreloadPipelineManager::SearchPreloadPipelineManager(
   auto* preloading_data =
       content::PreloadingData::GetOrCreateForWebContents(web_contents);
   SetIsNavigationInDomainCallback(preloading_data);
+
+  auto* browser_context = web_contents->GetBrowserContext();
+  CHECK(browser_context);
+  auto* profile = Profile::FromBrowserContext(browser_context);
+  CHECK(profile);
+  auto* service = SearchPrewarmProgressServiceFactory::GetForProfile(profile);
+  if (!service) {
+    return;
+  }
+  prewarm_progress_service_ = service->GetWeakPtr();
+  prewarm_finished_subscription_ =
+      prewarm_progress_service_->RegisterSearchPrewarmFinishedCallback(
+          base::BindRepeating(
+              &SearchPreloadPipelineManager::OnSearchPrewarmFinished,
+              weak_factory_.GetWeakPtr()));
 }
 
 SearchPreloadPipelineManager::~SearchPreloadPipelineManager() = default;
@@ -227,22 +242,11 @@ SearchPreloadPipelineManager::OnAutocompleteResultChangedProcessOne(
                                              template_url_service);
   }
 
-  auto* service = SearchPrewarmProgressServiceFactory::GetForProfile(&profile);
-  if (service && service->ShouldThrottleSearchPreloads()) {
+  if (prewarm_progress_service_ &&
+      prewarm_progress_service_->ShouldThrottleSearchPreloads()) {
     // Defer the prefetch/prerender to reduce the network contention with the
-    // ongoing search prewarm. We only register the callback when
-    // `deferred_trigger_data_` is unset to avoid redundant callbacks. The
-    // deferred preloads will be started when `OnSearchPrewarmFinished` is
-    // called.
-    //
-    // TODO(crbug.com/40285918): Replace ad-hoc callback registration with
-    // base::CheckedObserver. With unconditional registration in the
-    // constructor, we can remove the optional callback registration here.
-    if (!deferred_trigger_data_.has_value()) {
-      service->AddSearchPrewarmFinishedCallback(
-          base::BindOnce(&SearchPreloadPipelineManager::OnSearchPrewarmFinished,
-                         weak_factory_.GetWeakPtr()));
-    }
+    // ongoing search prewarm. The deferred preloads will be started when
+    // `OnSearchPrewarmFinished` is called.
     deferred_trigger_data_.emplace(search_preload_service, canonical_url,
                                    prefetch_url, prerender_url,
                                    no_vary_search_hint, confidence);

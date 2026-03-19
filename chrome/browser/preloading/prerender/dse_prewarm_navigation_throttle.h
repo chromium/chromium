@@ -5,7 +5,9 @@
 #ifndef CHROME_BROWSER_PRELOADING_PRERENDER_DSE_PREWARM_NAVIGATION_THROTTLE_H_
 #define CHROME_BROWSER_PRELOADING_PRERENDER_DSE_PREWARM_NAVIGATION_THROTTLE_H_
 
+#include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/preloading/prerender/search_prewarm_progress_service.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "url/gurl.h"
 
@@ -29,16 +31,24 @@ class DSEPrewarmNavigationThrottle : public content::NavigationThrottle {
       delete;
 
   // content::NavigationThrottle:
-  // TODO(crbug.com/485414743): Add WillRedirectRequest handling.
   ThrottleCheckResult WillStartRequest() override;
   ThrottleCheckResult WillRedirectRequest() override;
   const char* GetNameForLogging() override;
 
- private:
-  ThrottleCheckResult CheckNoRaceWithDSEPrewarm();
   void OnSearchPrewarmFinished();
 
+ private:
+  ThrottleCheckResult CheckNoRaceWithDSEPrewarm();
+
   GURL dse_url_;
+
+  // Prewarm page loading status tracker to throttle the concurrent requests to
+  // search.
+  base::WeakPtr<SearchPrewarmProgressService> prewarm_progress_service_;
+
+  base::CallbackListSubscription prewarm_finished_subscription_;
+
+  bool is_deferring_ = false;
 
   base::WeakPtrFactory<DSEPrewarmNavigationThrottle> weak_factory_{this};
 };

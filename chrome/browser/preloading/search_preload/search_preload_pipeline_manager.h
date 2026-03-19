@@ -5,8 +5,10 @@
 #ifndef CHROME_BROWSER_PRELOADING_SEARCH_PRELOAD_SEARCH_PRELOAD_PIPELINE_MANAGER_H_
 #define CHROME_BROWSER_PRELOADING_SEARCH_PRELOAD_SEARCH_PRELOAD_PIPELINE_MANAGER_H_
 
+#include "base/callback_list.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/preloading/prerender/search_prewarm_progress_service.h"
 #include "chrome/browser/preloading/search_preload/search_preload_pipeline.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -79,6 +81,8 @@ class SearchPreloadPipelineManager
   // Returns true iff invalidated successfully.
   bool InvalidatePipelineForTesting(GURL canonical_url);
 
+  void OnSearchPrewarmFinished();
+
  private:
   friend content::WebContentsUserData<SearchPreloadPipelineManager>;
   WEB_CONTENTS_USER_DATA_KEY_DECL();
@@ -95,9 +99,6 @@ class SearchPreloadPipelineManager
       TemplateURLService& template_url_service,
       const AutocompleteMatch& match,
       const std::optional<net::HttpNoVarySearchData>& no_vary_search_hint);
-
-  // Helper to resume the prefetch/prerender after search prewarm finishes.
-  void OnSearchPrewarmFinished();
 
   // Helper to record histograms.
   void RecordPreloadHistograms(
@@ -135,6 +136,12 @@ class SearchPreloadPipelineManager
   // Only the latest trigger data is stored, as only the latest input is the
   // most likely to navigate.
   std::optional<TriggerPreloadsData> deferred_trigger_data_;
+
+  // Prewarm page loading status tracker to throttle the concurrent requests to
+  // search.
+  base::WeakPtr<SearchPrewarmProgressService> prewarm_progress_service_;
+
+  base::CallbackListSubscription prewarm_finished_subscription_;
 
   // Trigger prefetch and prerender for a specific URL, which can be deferred.
   std::tuple<std::optional<SearchPreloadSignalResult>,

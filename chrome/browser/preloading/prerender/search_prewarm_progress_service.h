@@ -5,10 +5,10 @@
 #ifndef CHROME_BROWSER_PRELOADING_PRERENDER_SEARCH_PREWARM_PROGRESS_SERVICE_H_
 #define CHROME_BROWSER_PRELOADING_PRERENDER_SEARCH_PREWARM_PROGRESS_SERVICE_H_
 
-#include <vector>
-
+#include "base/callback_list.h"
 #include "base/containers/flat_set.h"
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/prerender_host_id.h"
 
@@ -32,22 +32,26 @@ class SearchPrewarmProgressService : public KeyedService {
   // prewarm.
   bool ShouldThrottleSearchPreloads() const;
 
-  // Adds a callback to be executed when all ongoing search prewarms have
-  // finished. This must only be called when `HasOnGoingSearchPrewarm()` returns
-  // true.
-  void AddSearchPrewarmFinishedCallback(base::OnceClosure callback);
+  // Registers a callback to be called when all ongoing search prewarms have
+  // finished.
+  base::CallbackListSubscription RegisterSearchPrewarmFinishedCallback(
+      base::RepeatingClosure callback);
+
+  base::WeakPtr<SearchPrewarmProgressService> GetWeakPtr();
 
   // Called when a search prewarm request starts.
   void OnSearchPrewarmStarted(content::PrerenderHostId host_id);
 
   // Called when a search prewarm request finishes (i.e. receives its headers,
-  // or fails/is cancelled). If there are no more ongoing prewarms, it will run
-  // all the registered callbacks.
+  // or fails/is cancelled). If there are no more ongoing prewarms, it will
+  // notify all observers.
   void OnSearchPrewarmFinished(content::PrerenderHostId host_id);
 
  private:
   base::flat_set<content::PrerenderHostId> ongoing_prewarms_;
-  std::vector<base::OnceClosure> on_finished_callbacks_;
+  base::RepeatingClosureList callbacks_;
+
+  base::WeakPtrFactory<SearchPrewarmProgressService> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_PRELOADING_PRERENDER_SEARCH_PREWARM_PROGRESS_SERVICE_H_

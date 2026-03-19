@@ -23,6 +23,13 @@ void DSEPrewarmNavigationThrottle::MaybeCreateAndAdd(
       !features::kPrewarmThrottleUserNavigation.Get()) {
     return;
   }
+  auto* profile = Profile::FromBrowserContext(
+      registry.GetNavigationHandle().GetWebContents()->GetBrowserContext());
+  auto* prewarm_progress_service =
+      SearchPrewarmProgressServiceFactory::GetForProfile(profile);
+  if (!prewarm_progress_service) {
+    return;
+  }
 
   registry.AddThrottle(
       std::make_unique<DSEPrewarmNavigationThrottle>(registry));
@@ -35,6 +42,17 @@ DSEPrewarmNavigationThrottle::DSEPrewarmNavigationThrottle(
   CHECK(web_contents);
   auto* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
+
+  auto* prewarm_progress_service =
+      SearchPrewarmProgressServiceFactory::GetForProfile(profile);
+  CHECK(prewarm_progress_service);
+  prewarm_progress_service_ = prewarm_progress_service->GetWeakPtr();
+  prewarm_finished_subscription_ =
+      prewarm_progress_service_->RegisterSearchPrewarmFinishedCallback(
+          base::BindRepeating(
+              &DSEPrewarmNavigationThrottle::OnSearchPrewarmFinished,
+              weak_factory_.GetWeakPtr()));
+
   auto* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile);
   if (!template_url_service) {
@@ -73,24 +91,19 @@ DSEPrewarmNavigationThrottle::CheckNoRaceWithDSEPrewarm() {
     return PROCEED;
   }
 
-  auto* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  auto* service = SearchPrewarmProgressServiceFactory::GetForProfile(profile);
-  if (!service) {
+  if (!prewarm_progress_service_) {
     return PROCEED;
   }
 
   content::PrerenderHostId host_id = navigation_handle()->GetPrerenderHostId();
-  if (host_id && service->IsOnGoingSearchPrewarm(host_id)) {
+  if (host_id && prewarm_progress_service_->IsOnGoingSearchPrewarm(host_id)) {
     // If this navigation itself is an ongoing prewarm, we shouldn't throttle
     // it.
     return PROCEED;
   }
 
-  if (service->HasOnGoingSearchPrewarm()) {
-    service->AddSearchPrewarmFinishedCallback(
-        base::BindOnce(&DSEPrewarmNavigationThrottle::OnSearchPrewarmFinished,
-                       weak_factory_.GetWeakPtr()));
+  if (prewarm_progress_service_->HasOnGoingSearchPrewarm()) {
+    is_deferring_ = true;
     return DEFER;
   }
 
@@ -102,6 +115,11 @@ const char* DSEPrewarmNavigationThrottle::GetNameForLogging() {
 }
 
 void DSEPrewarmNavigationThrottle::OnSearchPrewarmFinished() {
+  if (!is_deferring_) {
+    return;
+  }
+  is_deferring_ = false;
+
   auto* web_contents = navigation_handle()->GetWebContents();
   // The callback can be called during the destruction of the web contents.
   // In this case, the navigation is no longer required, triggering resume

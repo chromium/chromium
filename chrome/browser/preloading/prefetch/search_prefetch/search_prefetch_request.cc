@@ -156,6 +156,7 @@ void MaybeRecordTraceFromSearchPrefetchRequestStartToNavigationIntercepted(
 }  // namespace
 
 SearchPrefetchRequest::SearchPrefetchRequest(
+    Profile& profile,
     const GURL& canonical_search_url,
     const GURL& prefetch_url,
     bool navigation_prefetch,
@@ -170,6 +171,16 @@ SearchPrefetchRequest::SearchPrefetchRequest(
               : nullptr),
       report_error_callback_(std::move(report_error_callback)) {
   base::trace_event::EmitNamedTrigger("search-prefetch-start");
+  auto* prewarm_service =
+      SearchPrewarmProgressServiceFactory::GetForProfile(&profile);
+  if (!prewarm_service) {
+    return;
+  }
+  prewarm_progress_service_ = prewarm_service->GetWeakPtr();
+  prewarm_finished_subscription_ =
+      prewarm_progress_service_->RegisterSearchPrewarmFinishedCallback(
+          base::BindRepeating(&SearchPrefetchRequest::OnSearchPrewarmFinished,
+                              weak_factory_.GetWeakPtr()));
 }
 
 SearchPrefetchRequest::~SearchPrefetchRequest() {
@@ -187,9 +198,9 @@ SearchPrefetchRequest::~SearchPrefetchRequest() {
 }
 
 SearchPrefetchRequest::PendingRequest::PendingRequest(
-    Profile* profile,
+    Profile& profile,
     content::WebContents* web_contents)
-    : profile(profile), web_contents(web_contents->GetWeakPtr()) {}
+    : profile(&profile), web_contents(web_contents->GetWeakPtr()) {}
 
 SearchPrefetchRequest::PendingRequest::~PendingRequest() = default;
 
@@ -366,13 +377,10 @@ bool SearchPrefetchRequest::StartPrefetchRequest(
     }
   }
 
-  auto* service = SearchPrewarmProgressServiceFactory::GetForProfile(profile);
-  if (service && service->ShouldThrottleSearchPreloads()) {
+  if (prewarm_progress_service_ &&
+      prewarm_progress_service_->ShouldThrottleSearchPreloads()) {
     CHECK(!pending_request_);
-    pending_request_.emplace(profile, &web_contents);
-    service->AddSearchPrewarmFinishedCallback(
-        base::BindOnce(&SearchPrefetchRequest::OnSearchPrewarmFinished,
-                       weak_factory_.GetWeakPtr()));
+    pending_request_.emplace(*profile, &web_contents);
     // Return true to indicate that the request is accepted and ownership is
     // transferred to SearchPrefetchService (which puts it in `prefetches_`).
     // The actual network request is deferred until OnSearchPrewarmFinished is

@@ -34,10 +34,15 @@ bool SearchPrewarmProgressService::ShouldThrottleSearchPreloads() const {
   return HasOnGoingSearchPrewarm();
 }
 
-void SearchPrewarmProgressService::AddSearchPrewarmFinishedCallback(
-    base::OnceClosure callback) {
-  CHECK(HasOnGoingSearchPrewarm());
-  on_finished_callbacks_.push_back(std::move(callback));
+base::CallbackListSubscription
+SearchPrewarmProgressService::RegisterSearchPrewarmFinishedCallback(
+    base::RepeatingClosure callback) {
+  return callbacks_.Add(std::move(callback));
+}
+
+base::WeakPtr<SearchPrewarmProgressService>
+SearchPrewarmProgressService::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
 }
 
 void SearchPrewarmProgressService::OnSearchPrewarmStarted(
@@ -52,11 +57,6 @@ void SearchPrewarmProgressService::OnSearchPrewarmFinished(
   if (HasOnGoingSearchPrewarm()) {
     return;
   }
-  // Copy the callbacks just in case the keyed service is
-  // destructed in the callback.
-  std::vector<base::OnceClosure> callbacks = std::move(on_finished_callbacks_);
-  on_finished_callbacks_.clear();
-  for (auto& callback : callbacks) {
-    std::move(callback).Run();
-  }
+
+  callbacks_.Notify();
 }
