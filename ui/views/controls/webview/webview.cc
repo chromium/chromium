@@ -101,7 +101,7 @@ void WebView::SetWebContents(content::WebContents* replacement) {
   if (replacement == web_contents()) {
     return;
   }
-  TakeCrashedOverlayView(nullptr);
+  SetCrashedOverlayView(nullptr);
   DetachWebContentsNativeView();
   WebContentsObserver::Observe(replacement);
 
@@ -175,6 +175,37 @@ void WebView::EnableSizingFromWebContents(const gfx::Size& min_size,
   }
 }
 
+void WebView::SetCrashedOverlayView(View* crashed_overlay_view) {
+  if (crashed_overlay_view_.view() == crashed_overlay_view) {
+    return;
+  }
+
+  if (crashed_overlay_view_.view()) {
+    View* old_view = crashed_overlay_view_.view();
+    if (old_view->owned_by_client()) {
+      RemoveChildView(old_view);
+    } else {
+      std::move(return_crashed_overlay_to_owner_)
+          .Run(RemoveChildViewT(old_view));
+    }
+    // Show the hosted web contents view iff the crashed
+    // overlay is NOT showing, to ensure hit testing is
+    // correct on Mac. See https://crbug.com/896508
+    holder_->SetVisible(true);
+  }
+
+  crashed_overlay_view_.SetView(crashed_overlay_view);
+
+  if (crashed_overlay_view_.view()) {
+    CHECK(crashed_overlay_view_.view()->owned_by_client());
+    AddChildViewRaw(crashed_overlay_view_.view());
+    holder_->SetVisible(false);
+    crashed_overlay_view_.view()->SetBoundsRect(GetLocalBounds());
+  }
+
+  UpdateCrashedOverlayView();
+}
+
 void WebView::TakeCrashedOverlayViewImpl(
     std::unique_ptr<View> crashed_overlay_view,
     ReturnCrashOverlayToOwnerCallback return_to_owner) {
@@ -182,9 +213,21 @@ void WebView::TakeCrashedOverlayViewImpl(
     CHECK(!crashed_overlay_view->owned_by_client());
   }
 
+  // TODO(http://crbug.com/486052969): Remove code below that depends on a
+  // transitory set_owned_by_client and non-set_owned_by_client state after
+  // SadTabView drops set_owned_by_client().
+  if (crashed_overlay_view_.view() == crashed_overlay_view.get()) {
+    return;
+  }
+
   if (crashed_overlay_view_.view()) {
     View* old_view = crashed_overlay_view_.view();
-    std::move(return_crashed_overlay_to_owner_).Run(RemoveChildViewT(old_view));
+    if (old_view->owned_by_client()) {
+      RemoveChildView(old_view);
+    } else {
+      std::move(return_crashed_overlay_to_owner_)
+          .Run(RemoveChildViewT(old_view));
+    }
     // Show the hosted web contents view iff the crashed
     // overlay is NOT showing, to ensure hit testing is
     // correct on Mac. See https://crbug.com/896508
