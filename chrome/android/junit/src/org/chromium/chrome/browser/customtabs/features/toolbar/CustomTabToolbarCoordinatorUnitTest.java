@@ -19,7 +19,6 @@ import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.graphics.Rect;
-import android.os.Build;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -207,7 +206,7 @@ public class CustomTabToolbarCoordinatorUnitTest {
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.VANILLA_ICE_CREAM)
+    @Config(sdk = BaseRobolectricTestRunner.MAX_SDK)
     public void testWebAppEnterDW_HideMenuButton() {
         // Setup web app in fullscreen mode.
         when(env.intentDataProvider.getActivityType())
@@ -247,7 +246,7 @@ public class CustomTabToolbarCoordinatorUnitTest {
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.VANILLA_ICE_CREAM)
+    @Config(sdk = BaseRobolectricTestRunner.MAX_SDK)
     public void testWebAppExitDW_ShowMenuButton() {
         // Setup web app in desktop windowing mode.
         when(env.intentDataProvider.getActivityType())

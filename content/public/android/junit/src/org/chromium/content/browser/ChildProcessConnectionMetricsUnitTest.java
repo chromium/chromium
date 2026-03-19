@@ -5,7 +5,6 @@
 package org.chromium.content.browser;
 
 import android.content.ComponentName;
-import android.os.Build;
 
 import androidx.test.filters.SmallTest;
 
@@ -26,7 +25,7 @@ import java.util.ArrayList;
 
 /** Unit test for {@link ChildProcessConnectionMetrics}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, sdk = Build.VERSION_CODES.Q)
+@Config(manifest = Config.NONE, sdk = BaseRobolectricTestRunner.MIN_SDK)
 public class ChildProcessConnectionMetricsUnitTest {
     private ArrayList<ChildProcessConnection> mRanking;
     private BindingManager mBindingManager;

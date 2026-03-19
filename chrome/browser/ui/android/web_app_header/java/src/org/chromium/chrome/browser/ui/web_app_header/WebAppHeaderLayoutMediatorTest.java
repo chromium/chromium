@@ -15,7 +15,6 @@ import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 
 import android.graphics.Rect;
-import android.os.Build;
 import android.os.Looper;
 import android.view.View;
 
@@ -51,7 +50,7 @@ import org.chromium.ui.util.TokenHolder;
 import java.util.List;
 
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(sdk = Build.VERSION_CODES.VANILLA_ICE_CREAM)
+@Config(sdk = BaseRobolectricTestRunner.MAX_SDK)
 public class WebAppHeaderLayoutMediatorTest {
     private static final int SCREEN_WIDTH = 800;
     private static final int SCREEN_HEIGHT = 1600;

@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.download;
 
 import android.annotation.SuppressLint;
-import android.os.Build;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -54,7 +53,7 @@ public class DownloadDirectoryProviderUnitTest {
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.Q)
+    @Config(sdk = BaseRobolectricTestRunner.MIN_SDK)
     public void testGetSecondaryDownloadDirectoryOnQ() {
         PathUtils.setAllPrivateDownloadsDirectoriesForTesting(
                 new String[] {
@@ -76,7 +75,7 @@ public class DownloadDirectoryProviderUnitTest {
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.Q)
+    @Config(sdk = BaseRobolectricTestRunner.MIN_SDK)
     public void testIsDownloadOnSdCardOnQ() {
         PathUtils.setAllPrivateDownloadsDirectoriesForTesting(
                 new String[] {

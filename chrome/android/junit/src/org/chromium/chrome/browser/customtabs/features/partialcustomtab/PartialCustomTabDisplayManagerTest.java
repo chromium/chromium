@@ -28,7 +28,6 @@ import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider
 
 import android.app.Activity;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 
 import androidx.annotation.Px;
 
@@ -439,7 +438,7 @@ public class PartialCustomTabDisplayManagerTest {
         clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
     }
 
-    @Config(sdk = Build.VERSION_CODES.Q)
+    @Config(sdk = BaseRobolectricTestRunner.MIN_SDK)
     @Test
     public void transitionFromDividerSideSheetToBottomSheetWhenOrientationChangedToPortrait() {
         mPCCTTestRule.configLandscapeMode();

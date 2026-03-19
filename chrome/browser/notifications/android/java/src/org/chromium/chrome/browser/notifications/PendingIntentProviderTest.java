@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.notifications;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -33,7 +32,7 @@ public class PendingIntentProviderTest {
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.Q)
+    @Config(sdk = BaseRobolectricTestRunner.MIN_SDK)
     public void testPendingIntentFlags_AndroidQ() {
         Intent contentIntent = new Intent(TEST_ACTION);
 

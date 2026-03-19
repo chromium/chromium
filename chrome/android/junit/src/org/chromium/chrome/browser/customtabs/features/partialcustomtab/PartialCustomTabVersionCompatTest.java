@@ -13,7 +13,6 @@ import static org.chromium.chrome.browser.customtabs.features.partialcustomtab.P
 import android.app.Activity;
 import android.graphics.Point;
 import android.graphics.Rect;
-import android.os.Build;
 import android.view.Display;
 import android.view.DisplayCutout;
 import android.view.Surface;
@@ -32,7 +31,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 public class PartialCustomTabVersionCompatTest {
     @Rule public final PartialCustomTabTestRule mPCCTTestRule = new PartialCustomTabTestRule();
 
-    @Config(sdk = Build.VERSION_CODES.Q)
+    @Config(sdk = BaseRobolectricTestRunner.MIN_SDK)
     @Test
     public void getXOffset_cutoutWidthIsExcluded() {
         final int cutoutWidth = 200;

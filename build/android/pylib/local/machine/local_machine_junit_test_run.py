@@ -93,10 +93,17 @@ class LocalMachineJunitTestRun(test_run.TestRun):
       if resource_apk:
         z.writestr('com/android/tools/test_config.properties',
                    'android_resource_apk=%s\n' % resource_apk)
+      # These values must be kept in sync with BaseRobolectricTestRunner.java.
+      min_sdk = '29'
+      max_sdk = '36'
+
+      if self._test_instance.single_variant:
+        sdk_string = max_sdk
+      else:
+        sdk_string = f"{min_sdk},{max_sdk}"
       props = [
           'application = android.app.Application',
-          'sdk = %s' %
-          ('36' if self._test_instance.single_variant else '29,36'),
+          'sdk = %s' % sdk_string,
           ('shadows = org.chromium.testing.local.'
            'CustomShadowApplicationPackageManager'),
       ]

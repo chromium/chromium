@@ -98,7 +98,7 @@ public class MimeTypeUtilsTest {
     }
 
     @Test
-    @Config(sdk = VERSION_CODES.Q)
+    @Config(sdk = BaseRobolectricTestRunner.MIN_SDK)
     public void testPermissionForMimeTypePreAndroidT() {
         assertEquals(
                 "Wrong permission for audio mime type",

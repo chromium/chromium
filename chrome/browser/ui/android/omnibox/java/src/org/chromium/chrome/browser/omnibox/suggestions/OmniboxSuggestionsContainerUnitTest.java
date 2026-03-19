@@ -45,7 +45,7 @@ import org.chromium.chrome.browser.omnibox.test.R;
 
 /** Unit tests for {@link OmniboxSuggestionsContainer}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(sdk = 29)
+@Config(sdk = BaseRobolectricTestRunner.MIN_SDK)
 public class OmniboxSuggestionsContainerUnitTest {
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
     private @Mock OmniboxSuggestionsDropdown mDropdown;

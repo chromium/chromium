@@ -100,7 +100,7 @@ public class WebappIntentDataProviderTest {
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.VANILLA_ICE_CREAM)
+    @Config(sdk = BaseRobolectricTestRunner.MAX_SDK)
     public void testMinUiModeEnabled_ResolveToMinUI() {
         var intentDataProvider =
                 buildWebAppIntentDataProvider(mIntent, buildWebAppExtras(DisplayMode.MINIMAL_UI));
@@ -112,7 +112,7 @@ public class WebappIntentDataProviderTest {
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.VANILLA_ICE_CREAM)
+    @Config(sdk = BaseRobolectricTestRunner.MAX_SDK)
     public void testBrowserModeWithMinUiEnabled_ResolveToMinUi() {
         var intentDataProvider =
                 buildWebAppIntentDataProvider(mIntent, buildWebAppExtras(DisplayMode.BROWSER));

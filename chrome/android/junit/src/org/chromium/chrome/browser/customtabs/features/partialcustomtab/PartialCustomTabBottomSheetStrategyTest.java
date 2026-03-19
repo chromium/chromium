@@ -217,7 +217,7 @@ public class PartialCustomTabBottomSheetStrategyTest {
     }
 
     @Test
-    @Config(sdk = 29)
+    @Config(sdk = BaseRobolectricTestRunner.MIN_SDK)
     public void create_maxHeightWithStatusBar_landscape_Q() {
         configureStatusBarHeightForQ();
         mPCCTTestRule.configLandscapeMode();

@@ -792,7 +792,7 @@ public class StripLayoutHelperManagerTest {
     }
 
     @Test
-    @Config(sdk = VERSION_CODES.Q)
+    @Config(sdk = BaseRobolectricTestRunner.MIN_SDK)
     public void testDragDropInstances_MultiInstanceNotEnabled_ReturnsNull() {
         initializeTest();
         assertNull(

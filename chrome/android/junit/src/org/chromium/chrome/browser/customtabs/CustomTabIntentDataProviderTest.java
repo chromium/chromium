@@ -1782,14 +1782,14 @@ public class CustomTabIntentDataProviderTest {
     }
 
     @Test
-    @Config(sdk = {Build.VERSION_CODES.VANILLA_ICE_CREAM, 36})
+    @Config(sdk = {BaseRobolectricTestRunner.MAX_SDK})
     public void testTwaBrowserModeWithEnabledMinUI_ResolveToMinimalUi() {
         checkResolvedDisplayMode(
                 new TrustedWebActivityDisplayMode.BrowserMode(), null, DisplayMode.MINIMAL_UI);
     }
 
     @Test
-    @Config(sdk = {Build.VERSION_CODES.VANILLA_ICE_CREAM, 36})
+    @Config(sdk = {BaseRobolectricTestRunner.MAX_SDK})
     public void testTwaBrowserModeWithEnabledMinUI_ResolveDisplayOverrideToMinimalUi() {
         checkResolvedDisplayMode(
                 null,
@@ -1798,7 +1798,7 @@ public class CustomTabIntentDataProviderTest {
     }
 
     // Pinned to SDK 29 and 34 because it tests behavior specific to < SDK 35.
-    @Config(sdk = {29, 34})
+    @Config(sdk = {BaseRobolectricTestRunner.MIN_SDK, 34})
     @Test
     public void testTwaBrowserModeWithEnabledMinUiPreSdk35_ResolveToMinimalUi() {
         checkResolvedDisplayMode(
@@ -1806,7 +1806,7 @@ public class CustomTabIntentDataProviderTest {
     }
 
     @Test
-    @Config(sdk = {Build.VERSION_CODES.VANILLA_ICE_CREAM, 36})
+    @Config(sdk = {BaseRobolectricTestRunner.MAX_SDK})
     @DisableFeatures({ChromeFeatureList.ANDROID_WINDOW_CONTROLS_OVERLAY})
     public void testTwaBrowserModeWithDisabledWindowControlsOverlay_ResolveToStandalone() {
         checkResolvedDisplayMode(
@@ -1817,7 +1817,7 @@ public class CustomTabIntentDataProviderTest {
     }
 
     @Test
-    @Config(sdk = {Build.VERSION_CODES.VANILLA_ICE_CREAM, 36})
+    @Config(sdk = {BaseRobolectricTestRunner.MAX_SDK})
     @EnableFeatures({ChromeFeatureList.ANDROID_WINDOW_CONTROLS_OVERLAY})
     public void testTwaBrowserModeWithEnableWindowControlsOverlay_ResolveToWindowControlsOverlay() {
         checkResolvedDisplayMode(
@@ -1828,7 +1828,7 @@ public class CustomTabIntentDataProviderTest {
     }
 
     @Test
-    @Config(sdk = {Build.VERSION_CODES.VANILLA_ICE_CREAM, 36})
+    @Config(sdk = {BaseRobolectricTestRunner.MAX_SDK})
     @EnableFeatures({ChromeFeatureList.ANDROID_WINDOW_CONTROLS_OVERLAY})
     public void
             testTwaBrowserModeWithEnableWindowControlsOverlay_IgnoreWindowControlsOverlayNotInDisplayOverride() {
@@ -1937,7 +1937,7 @@ public class CustomTabIntentDataProviderTest {
     }
 
     @Test
-    @Config(sdk = {Build.VERSION_CODES.VANILLA_ICE_CREAM, 36})
+    @Config(sdk = {BaseRobolectricTestRunner.MAX_SDK})
     public void uiTypeTwa_withExperimentFlag_returnsWebAppMenu() {
         CustomTabsSession session =
                 CustomTabsSession.createMockSessionForTesting(

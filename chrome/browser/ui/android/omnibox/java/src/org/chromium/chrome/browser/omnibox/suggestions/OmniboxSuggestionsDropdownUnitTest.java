@@ -46,7 +46,7 @@ import org.chromium.components.omnibox.OmniboxFeatureList;
 
 /** Unit tests for {@link OmniboxSuggestionsDropdown}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(sdk = 29)
+@Config(sdk = BaseRobolectricTestRunner.MIN_SDK)
 public class OmniboxSuggestionsDropdownUnitTest {
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
     private @Mock Runnable mDropdownScrollListener;

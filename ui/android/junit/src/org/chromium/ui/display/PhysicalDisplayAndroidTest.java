@@ -308,7 +308,7 @@ public class PhysicalDisplayAndroidTest {
     }
 
     @Test
-    @Config(sdk = {Build.VERSION_CODES.S, 36})
+    @Config(sdk = {Build.VERSION_CODES.S, BaseRobolectricTestRunner.MAX_SDK})
     public void testPhysicalDisplayAndroidGeneralUpdateFromConfiguration() {
         final PhysicalDisplayAndroid physicalDisplayAndroid =
                 new PhysicalDisplayAndroid(mDisplay, null, false);
@@ -323,7 +323,7 @@ public class PhysicalDisplayAndroidTest {
     }
 
     @Test
-    @Config(sdk = {Build.VERSION_CODES.S, 36})
+    @Config(sdk = {Build.VERSION_CODES.S, BaseRobolectricTestRunner.MAX_SDK})
     public void testPhysicalDisplayAndroidUpdateFromConfigurationWithForcedDIPScale() {
         PhysicalDisplayAndroid.setHasForcedDIPScaleForTesting(TEST_FORCERD_DIP_SCALE);
 
@@ -340,7 +340,7 @@ public class PhysicalDisplayAndroidTest {
     }
 
     @Test
-    @Config(sdk = {Build.VERSION_CODES.S, 36})
+    @Config(sdk = {Build.VERSION_CODES.S, BaseRobolectricTestRunner.MAX_SDK})
     public void testPhysicalDisplayAndroidlUpdateFromConfigurationForAutomotive() {
         setupAutomotive();
 
@@ -357,7 +357,7 @@ public class PhysicalDisplayAndroidTest {
     }
 
     @Test
-    @Config(sdk = {Build.VERSION_CODES.S, 36})
+    @Config(sdk = {Build.VERSION_CODES.S, BaseRobolectricTestRunner.MAX_SDK})
     public void testPhysicalDisplayAndroidlUpdateFromConfigurationForXr() {
         setupXr();
 
@@ -374,7 +374,7 @@ public class PhysicalDisplayAndroidTest {
     }
 
     @Test
-    @Config(sdk = {Build.VERSION_CODES.S, 36})
+    @Config(sdk = {Build.VERSION_CODES.S, BaseRobolectricTestRunner.MAX_SDK})
     public void testPhysicalDisplayAndroidWithAbsoluteCoordinates() {
         final PhysicalDisplayAndroid physicalDisplayAndroid =
                 new PhysicalDisplayAndroid(mDisplay, TEST_DISPLAY_DIP_ABSOLUTE_COORDINATES, false);
@@ -389,7 +389,7 @@ public class PhysicalDisplayAndroidTest {
     }
 
     @Test
-    @Config(sdk = {Build.VERSION_CODES.S, 36})
+    @Config(sdk = {Build.VERSION_CODES.S, BaseRobolectricTestRunner.MAX_SDK})
     public void testPhysicalDisplayAndroidWithAbsoluteCoordinatesAndForcedDIPScale() {
         PhysicalDisplayAndroid.setHasForcedDIPScaleForTesting(TEST_FORCERD_DIP_SCALE);
 
@@ -406,7 +406,7 @@ public class PhysicalDisplayAndroidTest {
     }
 
     @Test
-    @Config(sdk = {Build.VERSION_CODES.S, 36})
+    @Config(sdk = {Build.VERSION_CODES.S, BaseRobolectricTestRunner.MAX_SDK})
     public void testPhysicalDisplayAndroidlWithAbsoluteCoordinatesForAutomotive() {
         setupAutomotive();
 
@@ -423,7 +423,7 @@ public class PhysicalDisplayAndroidTest {
     }
 
     @Test
-    @Config(sdk = {Build.VERSION_CODES.S, 36})
+    @Config(sdk = {Build.VERSION_CODES.S, BaseRobolectricTestRunner.MAX_SDK})
     public void testPhysicalDisplayAndroidlWithAbsoluteCoordinatesForXr() {
         setupXr();
 
@@ -440,7 +440,7 @@ public class PhysicalDisplayAndroidTest {
     }
 
     @Test
-    @Config(sdk = {Build.VERSION_CODES.S, 36})
+    @Config(sdk = {Build.VERSION_CODES.S, BaseRobolectricTestRunner.MAX_SDK})
     public void testPhysicalDisplayAndroidIsInternal() {
         final DeviceProductInfo deviceProductInfo = mock(DeviceProductInfo.class);
         doReturn(deviceProductInfo).when(mDisplay).getDeviceProductInfo();

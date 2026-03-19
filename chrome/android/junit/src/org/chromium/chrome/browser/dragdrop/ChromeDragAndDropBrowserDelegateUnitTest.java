@@ -171,7 +171,7 @@ public class ChromeDragAndDropBrowserDelegateUnitTest {
     }
 
     @Test
-    @Config(sdk = 29)
+    @Config(sdk = BaseRobolectricTestRunner.MIN_SDK)
     public void testDragAndDropBrowserDelegate_createLinkIntent_PreR() {
         Intent intent =
                 mDelegate.createUrlIntent(

@@ -502,7 +502,7 @@ public class FileUtilsTest {
     }
 
     // This test fails on SDK 36 due to a CloseGuard warning in Robolectric.
-    @Config(sdk = {29, 35})
+    @Config(sdk = {BaseRobolectricTestRunner.MIN_SDK, 35})
     @Test
     public void testQueryBitmapFromContentProvider() throws IOException {
         // Set up "org.chromium.test" provider.

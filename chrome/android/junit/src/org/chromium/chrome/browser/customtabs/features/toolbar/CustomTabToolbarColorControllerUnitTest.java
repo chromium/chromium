@@ -17,7 +17,6 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.Rect;
-import android.os.Build;
 import android.view.ContextThemeWrapper;
 
 import androidx.annotation.ColorInt;
@@ -215,7 +214,7 @@ public class CustomTabToolbarColorControllerUnitTest {
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.VANILLA_ICE_CREAM)
+    @Config(sdk = BaseRobolectricTestRunner.MAX_SDK)
     public void testDesktopWindowingModeMinUi_SetBrowserDefaultTheme() {
         // prepare web app in desktop windowing
         setupDesktopWindowing(/* isInDesktopWindow= */ true);
@@ -241,7 +240,7 @@ public class CustomTabToolbarColorControllerUnitTest {
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.VANILLA_ICE_CREAM)
+    @Config(sdk = BaseRobolectricTestRunner.MAX_SDK)
     public void testFullscreenModeMinUi_SetThemeFromProvider() {
         // prepare a web app in min ui mode
         setupDesktopWindowing(/* isInDesktopWindow= */ false);

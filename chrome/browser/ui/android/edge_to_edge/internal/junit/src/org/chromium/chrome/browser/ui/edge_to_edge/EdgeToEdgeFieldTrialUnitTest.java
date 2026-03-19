@@ -40,7 +40,7 @@ public class EdgeToEdgeFieldTrialUnitTest {
 
     // Pinned to SDK 29 because the test expects the feature to be
     // disabled below SDK 30.
-    @Config(sdk = 29)
+    @Config(sdk = BaseRobolectricTestRunner.MIN_SDK)
     @Test
     public void noOverrides_notMeetMinVersion() {
         assertFalse(
@@ -179,7 +179,7 @@ public class EdgeToEdgeFieldTrialUnitTest {
 
     // Pinned to SDK 29 because the test expects the feature to be
     // disabled below SDK 30.
-    @Config(sdk = 29)
+    @Config(sdk = BaseRobolectricTestRunner.MIN_SDK)
     @Test
     public void testInvalidInputs_unevenLength() {
         EdgeToEdgeFieldTrialImpl.setBottomChinOverridesForTesting("foobar", "1,2");
@@ -192,7 +192,7 @@ public class EdgeToEdgeFieldTrialUnitTest {
 
     // Pinned to SDK 29 because the test expects the feature to be
     // disabled below SDK 30.
-    @Config(sdk = 29)
+    @Config(sdk = BaseRobolectricTestRunner.MIN_SDK)
     @Test
     public void testInvalidInputs_unevenLength_2() {
         EdgeToEdgeFieldTrialImpl.setBottomChinOverridesForTesting("foo,bar", "1");
@@ -205,7 +205,7 @@ public class EdgeToEdgeFieldTrialUnitTest {
 
     // Pinned to SDK 29 because the test expects the feature to be
     // disabled below SDK 30.
-    @Config(sdk = 29)
+    @Config(sdk = BaseRobolectricTestRunner.MIN_SDK)
     @Test
     public void testInvalidInputs_versionInvalid() {
         EdgeToEdgeFieldTrialImpl.setBottomChinOverridesForTesting("foo,bar", "1,a");

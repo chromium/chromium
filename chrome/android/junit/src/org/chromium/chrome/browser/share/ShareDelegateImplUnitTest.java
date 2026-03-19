@@ -72,7 +72,7 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
         manifest = Config.NONE,
-        sdk = {29, 34})
+        sdk = {BaseRobolectricTestRunner.MIN_SDK, 34})
 public class ShareDelegateImplUnitTest {
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 
@@ -170,7 +170,7 @@ public class ShareDelegateImplUnitTest {
     }
 
     @Test
-    @Config(sdk = 29)
+    @Config(sdk = BaseRobolectricTestRunner.MIN_SDK)
     public void shareWithSharingHub() {
         // ShareHub is disabled on SDK 34+
 
@@ -190,7 +190,7 @@ public class ShareDelegateImplUnitTest {
     }
 
     @Test
-    @Config(sdk = 29)
+    @Config(sdk = BaseRobolectricTestRunner.MIN_SDK)
     public void shareLastUsedComponent() {
         // ShareHub is disabled on SDK 34+
 
@@ -234,7 +234,7 @@ public class ShareDelegateImplUnitTest {
     }
 
     @Test
-    @Config(sdk = 36)
+    @Config(sdk = BaseRobolectricTestRunner.MAX_SDK)
     public void share_withAndroidShareSheetForVPlus() {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()

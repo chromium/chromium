@@ -231,7 +231,7 @@ public class AppHeaderCoordinatorUnitTest {
     }
 
     @Test
-    @Config(sdk = 36)
+    @Config(sdk = BaseRobolectricTestRunner.MAX_SDK)
     public void enabledOnExternalDisplayForSamsung_PostApi36() {
         ReflectionHelpers.setStaticField(Build.class, "MANUFACTURER", "samsung");
         DisplayUtil.setIsOnDefaultDisplayForTesting(false);

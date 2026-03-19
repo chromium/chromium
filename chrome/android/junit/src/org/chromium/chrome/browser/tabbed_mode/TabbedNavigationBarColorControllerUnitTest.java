@@ -58,7 +58,7 @@ import java.util.HashSet;
 import java.util.List;
 
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, sdk = 29)
+@Config(manifest = Config.NONE, sdk = BaseRobolectricTestRunner.MIN_SDK)
 @DisableFeatures(ChromeFeatureList.NAV_BAR_COLOR_ANIMATION)
 public class TabbedNavigationBarColorControllerUnitTest {
     public @Rule MockitoRule mockitoRule = MockitoJUnit.rule();

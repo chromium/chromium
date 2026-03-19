@@ -453,7 +453,7 @@ public class MultiWindowUtilsUnitTest {
     }
 
     @Test
-    @Config(sdk = VERSION_CODES.Q)
+    @Config(sdk = BaseRobolectricTestRunner.MIN_SDK)
     public void
             testIsMoveOtherWindowSupported_InstanceSwitcherDisabledAndOpenInOtherWindowAllowed_ReturnsTrue() {
         mOverrideOpenInNewWindowSupported = true;

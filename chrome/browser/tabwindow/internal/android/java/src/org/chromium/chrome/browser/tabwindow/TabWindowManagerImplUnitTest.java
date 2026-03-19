@@ -728,7 +728,7 @@ public class TabWindowManagerImplUnitTest {
     }
 
     @Test
-    @Config(sdk = VERSION_CODES.Q)
+    @Config(sdk = BaseRobolectricTestRunner.MIN_SDK)
     public void testAssertIndicesMismatch() {
         ActivityController<Activity> activityController0 = createActivity();
         Activity activity0 = activityController0.get();
@@ -766,7 +766,7 @@ public class TabWindowManagerImplUnitTest {
     }
 
     @Test
-    @Config(sdk = VERSION_CODES.Q)
+    @Config(sdk = BaseRobolectricTestRunner.MIN_SDK)
     public void testWindowIdReassignmentWhenIndicesMismatch() {
         // Simulate successful window id mismatch handling, that will trigger reassignment.
         when(mMismatchedIndicesHandler1.handleMismatchedIndices(any(), anyBoolean(), anyBoolean()))
@@ -827,7 +827,7 @@ public class TabWindowManagerImplUnitTest {
     }
 
     @Test
-    @Config(sdk = VERSION_CODES.Q)
+    @Config(sdk = BaseRobolectricTestRunner.MIN_SDK)
     public void testWindowIdReassignmentSkipped() {
         // Simulate need for skipping reassignment.
         when(mMismatchedIndicesHandler1.skipIndexReassignment()).thenReturn(true);

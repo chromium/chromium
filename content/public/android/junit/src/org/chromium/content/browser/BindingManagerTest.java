@@ -14,7 +14,6 @@ import static com.google.common.truth.Truth.assertThat;
 import android.app.Activity;
 import android.app.Application;
 import android.content.ComponentName;
-import android.os.Build;
 import android.util.Pair;
 
 import org.junit.After;
@@ -43,7 +42,7 @@ import java.util.List;
  * policies are tested.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, sdk = Build.VERSION_CODES.Q)
+@Config(manifest = Config.NONE, sdk = BaseRobolectricTestRunner.MIN_SDK)
 public class BindingManagerTest {
     private static final int BINDING_COUNT_LIMIT = 5;
 

@@ -107,7 +107,7 @@ public class DimensionCompatUnitTest {
 
     @Test
     @Config(
-            sdk = Build.VERSION_CODES.Q,
+            sdk = BaseRobolectricTestRunner.MIN_SDK,
             shadows = {ShadowWindowMetrics.class},
             qualifiers = "w" + TEST_SCREEN_WIDTH + "dp-h" + TEST_SCREEN_HEIGHT + "dp")
     public void getDimensionsLegacy() {

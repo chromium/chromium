@@ -23,6 +23,10 @@ import java.lang.reflect.Method;
  * org.robolectric.RobolectricTestRunner} could be used directly.
  */
 public class BaseRobolectricTestRunner extends RobolectricTestRunner {
+    // These values must be kept in sync with local_machine_junit_test_run.py.
+    public static final int MIN_SDK = 29;
+    public static final int MAX_SDK = 36;
+
     static final long PER_TEST_TIMEOUT_MS = 30000L;
 
     /** Tracks whether tests pass / fail for use in BaseTestLifecycle. */

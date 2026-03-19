@@ -112,7 +112,7 @@ public class CustomTabActivityNavigationControllerTest {
 
     // Predictive back is enabled by default on SDK 36+. Pin to older SDKs to
     // test the legacy back navigation path.
-    @Config(sdk = {29, 35})
+    @Config(sdk = {BaseRobolectricTestRunner.MIN_SDK, 35})
     @Test
     public void finishes_IfBackNavigationClosesTheOnlyTabWithNoUnloadEvents() {
         HistogramWatcher histogramWatcher =
@@ -158,7 +158,7 @@ public class CustomTabActivityNavigationControllerTest {
 
     // Predictive back is enabled by default on SDK 36+. Pin to older SDKs to
     // test the legacy back navigation path.
-    @Config(sdk = {29, 35})
+    @Config(sdk = {BaseRobolectricTestRunner.MIN_SDK, 35})
     @Test
     public void finishes_IfBackNavigationClosesTheOnlyTabWithUnloadHandler_CctBeforeUnload() {
         HistogramWatcher histogramWatcher =
@@ -204,7 +204,7 @@ public class CustomTabActivityNavigationControllerTest {
 
     // Predictive back is enabled by default on SDK 36+. Pin to older SDKs to
     // test the legacy back navigation path.
-    @Config(sdk = {29, 35})
+    @Config(sdk = {BaseRobolectricTestRunner.MIN_SDK, 35})
     @Test
     public void doesntFinish_IfBackNavigationReplacesTabWithPreviousOne() {
         HistogramWatcher histogramWatcher =
@@ -379,7 +379,7 @@ public class CustomTabActivityNavigationControllerTest {
 
     // Predictive back is enabled by default on SDK 36+. Pin to older SDKs to
     // test the legacy back navigation path.
-    @Config(sdk = {29, 35})
+    @Config(sdk = {BaseRobolectricTestRunner.MIN_SDK, 35})
     @Test
     public void getVersionForTesting_ReturnsSetVersion() {
         assertFalse(CustomTabActivityNavigationController.supportsPredictiveBackGesture());

@@ -289,7 +289,7 @@ public class ContextMenuCoordinatorTest {
     // See: crbug.com/450954710
     @Test
     @EnableFeatures({ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU})
-    @Config(sdk = 29, qualifiers = "mdpi")
+    @Config(sdk = BaseRobolectricTestRunner.MIN_SDK, qualifiers = "mdpi")
     @CommandLineFlags.Add(ContextMenuSwitches.FORCE_CONTEXT_MENU_POPUP)
     public void testFocusAfterSubmenuNavigation() {
         final int triggeringTouchXDp = 100;

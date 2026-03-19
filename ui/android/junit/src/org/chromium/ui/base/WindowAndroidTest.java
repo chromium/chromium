@@ -40,7 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(sdk = Build.VERSION_CODES.VANILLA_ICE_CREAM)
+@Config(sdk = BaseRobolectricTestRunner.MAX_SDK)
 @EnableFeatures({UiAndroidFeatures.ANDROID_USE_CORRECT_WINDOW_BOUNDS})
 public class WindowAndroidTest {
 
@@ -92,7 +92,7 @@ public class WindowAndroidTest {
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.Q)
+    @Config(sdk = BaseRobolectricTestRunner.MIN_SDK)
     public void testGetBoundsInScreenCoordinates_whenApiLowerThanR_returnsNull() {
         assertNull("Should return null", mWindowAndroid.getBoundsInScreenCoordinates());
     }
@@ -151,7 +151,7 @@ public class WindowAndroidTest {
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.Q)
+    @Config(sdk = BaseRobolectricTestRunner.MIN_SDK)
     public void testOnWindowPositionChanged_doesNothingWhenApiLowerThanR() {
         dispatchInsetsChanged();
 
