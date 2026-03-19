@@ -597,8 +597,15 @@ void HTMLOptionElement::RemovedFrom(ContainerNode& insertion_point) {
 
   if (nearest_ancestor_select_ != old_ancestor_select) {
     // We should only get here if we are being removed from a <select>
-    CHECK(!nearest_ancestor_select_);
-    CHECK(old_ancestor_select);
+    DCHECK(!nearest_ancestor_select_);
+    DCHECK(old_ancestor_select);
+    if (!old_ancestor_select) {
+      // According to crash reporting, the above DCHECKs might not be true.
+      // TODO(crbug.com/488340471): Figure out the root cause, remove this
+      // return, and upgrade the above DCHECKs back to CHECKs.
+      return;
+    }
+
     const bool should_skip_option_removed =
         !parentNode() && insertion_point == old_ancestor_select;
     if (!RuntimeEnabledFeatures::SelectChildrenRemovedFixEnabled() ||
