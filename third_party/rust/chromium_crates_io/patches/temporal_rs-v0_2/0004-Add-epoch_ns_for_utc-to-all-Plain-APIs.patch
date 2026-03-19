@@ -1,0 +1,588 @@
+From 784fa3e25a4561e01c9407a41fe358843f7d22e7 Mon Sep 17 00:00:00 2001
+From: Manish Goregaokar <manishearth@google.com>
+Date: Thu, 19 Mar 2026 19:55:43 +0000
+Subject: [PATCH] Add epoch_ns_for_utc to all Plain APIs
+
+Uplifts https://github.com/boa-dev/temporal/pull/700
+
+Change-Id: I26038332ae438336e175245d2f4e58d6ba179cf4
+---
+ .../temporal_capi-v0_2/bindings/c/PlainDate.h    |  3 +++
+ .../bindings/c/PlainDateTime.h                   |  3 +++
+ .../bindings/c/PlainMonthDay.h                   |  3 +++
+ .../temporal_capi-v0_2/bindings/c/PlainTime.h    |  3 +++
+ .../bindings/c/PlainYearMonth.h                  |  3 +++
+ .../bindings/cpp/temporal_rs/PlainDate.d.hpp     |  2 ++
+ .../bindings/cpp/temporal_rs/PlainDate.hpp       |  8 ++++++++
+ .../bindings/cpp/temporal_rs/PlainDateTime.d.hpp |  2 ++
+ .../bindings/cpp/temporal_rs/PlainDateTime.hpp   |  8 ++++++++
+ .../bindings/cpp/temporal_rs/PlainMonthDay.d.hpp |  2 ++
+ .../bindings/cpp/temporal_rs/PlainMonthDay.hpp   |  8 ++++++++
+ .../bindings/cpp/temporal_rs/PlainTime.d.hpp     |  2 ++
+ .../bindings/cpp/temporal_rs/PlainTime.hpp       |  8 ++++++++
+ .../cpp/temporal_rs/PlainYearMonth.d.hpp         |  2 ++
+ .../bindings/cpp/temporal_rs/PlainYearMonth.hpp  |  8 ++++++++
+ .../vendor/temporal_capi-v0_2/src/plain_date.rs  | 13 +++++++++++++
+ .../temporal_capi-v0_2/src/plain_date_time.rs    | 12 ++++++++++++
+ .../temporal_capi-v0_2/src/plain_month_day.rs    | 12 ++++++++++++
+ .../vendor/temporal_capi-v0_2/src/plain_time.rs  | 12 ++++++++++++
+ .../temporal_capi-v0_2/src/plain_year_month.rs   | 12 ++++++++++++
+ .../src/builtins/core/plain_date.rs              | 13 +++++++++++++
+ .../src/builtins/core/plain_date_time.rs         | 10 ++++++++++
+ .../src/builtins/core/plain_month_day.rs         | 12 ++++++++++++
+ .../src/builtins/core/plain_time.rs              | 15 +++++++++++++++
+ .../src/builtins/core/plain_year_month.rs        | 16 +++++++++++++---
+ .../vendor/temporal_rs-v0_2/src/iso.rs           |  2 ++
+ 26 files changed, 191 insertions(+), 3 deletions(-)
+
+diff --git a/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/bindings/c/PlainDate.h b/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/bindings/c/PlainDate.h
+index d196dc30ab7a8..a7a3ccc89a1e4 100644
+--- a/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/bindings/c/PlainDate.h
++++ b/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/bindings/c/PlainDate.h
+@@ -138,6 +138,9 @@ temporal_rs_PlainDate_to_zoned_date_time_result temporal_rs_PlainDate_to_zoned_d
+ typedef struct temporal_rs_PlainDate_to_zoned_date_time_with_provider_result {union {ZonedDateTime* ok; TemporalError err;}; bool is_ok;} temporal_rs_PlainDate_to_zoned_date_time_with_provider_result;
+ temporal_rs_PlainDate_to_zoned_date_time_with_provider_result temporal_rs_PlainDate_to_zoned_date_time_with_provider(const PlainDate* self, TimeZone time_zone, const PlainTime* time, const Provider* p);
+ 
++typedef struct temporal_rs_PlainDate_epoch_ms_for_utc_result {union {int64_t ok; TemporalError err;}; bool is_ok;} temporal_rs_PlainDate_epoch_ms_for_utc_result;
++temporal_rs_PlainDate_epoch_ms_for_utc_result temporal_rs_PlainDate_epoch_ms_for_utc(const PlainDate* self);
++
+ void temporal_rs_PlainDate_to_ixdtf_string(const PlainDate* self, DisplayCalendar display_calendar, DiplomatWrite* write);
+ 
+ PlainDate* temporal_rs_PlainDate_clone(const PlainDate* self);
+diff --git a/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/bindings/c/PlainDateTime.h b/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/bindings/c/PlainDateTime.h
+index 32b5e35b80467..87e63d0a45767 100644
+--- a/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/bindings/c/PlainDateTime.h
++++ b/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/bindings/c/PlainDateTime.h
+@@ -147,6 +147,9 @@ temporal_rs_PlainDateTime_to_zoned_date_time_result temporal_rs_PlainDateTime_to
+ typedef struct temporal_rs_PlainDateTime_to_zoned_date_time_with_provider_result {union {ZonedDateTime* ok; TemporalError err;}; bool is_ok;} temporal_rs_PlainDateTime_to_zoned_date_time_with_provider_result;
+ temporal_rs_PlainDateTime_to_zoned_date_time_with_provider_result temporal_rs_PlainDateTime_to_zoned_date_time_with_provider(const PlainDateTime* self, TimeZone time_zone, Disambiguation disambiguation, const Provider* p);
+ 
++typedef struct temporal_rs_PlainDateTime_epoch_ms_for_utc_result {union {int64_t ok; TemporalError err;}; bool is_ok;} temporal_rs_PlainDateTime_epoch_ms_for_utc_result;
++temporal_rs_PlainDateTime_epoch_ms_for_utc_result temporal_rs_PlainDateTime_epoch_ms_for_utc(const PlainDateTime* self);
++
+ typedef struct temporal_rs_PlainDateTime_to_ixdtf_string_result {union { TemporalError err;}; bool is_ok;} temporal_rs_PlainDateTime_to_ixdtf_string_result;
+ temporal_rs_PlainDateTime_to_ixdtf_string_result temporal_rs_PlainDateTime_to_ixdtf_string(const PlainDateTime* self, ToStringRoundingOptions options, DisplayCalendar display_calendar, DiplomatWrite* write);
+ 
+diff --git a/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/bindings/c/PlainMonthDay.h b/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/bindings/c/PlainMonthDay.h
+index 64c5dfd732af1..fa6cc7b0f22a9 100644
+--- a/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/bindings/c/PlainMonthDay.h
++++ b/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/bindings/c/PlainMonthDay.h
+@@ -54,6 +54,9 @@ void temporal_rs_PlainMonthDay_month_code(const PlainMonthDay* self, DiplomatWri
+ typedef struct temporal_rs_PlainMonthDay_to_plain_date_result {union {PlainDate* ok; TemporalError err;}; bool is_ok;} temporal_rs_PlainMonthDay_to_plain_date_result;
+ temporal_rs_PlainMonthDay_to_plain_date_result temporal_rs_PlainMonthDay_to_plain_date(const PlainMonthDay* self, PartialDate_option year);
+ 
++typedef struct temporal_rs_PlainMonthDay_epoch_ms_for_utc_result {union {int64_t ok; TemporalError err;}; bool is_ok;} temporal_rs_PlainMonthDay_epoch_ms_for_utc_result;
++temporal_rs_PlainMonthDay_epoch_ms_for_utc_result temporal_rs_PlainMonthDay_epoch_ms_for_utc(const PlainMonthDay* self);
++
+ typedef struct temporal_rs_PlainMonthDay_epoch_ms_for_result {union {int64_t ok; TemporalError err;}; bool is_ok;} temporal_rs_PlainMonthDay_epoch_ms_for_result;
+ temporal_rs_PlainMonthDay_epoch_ms_for_result temporal_rs_PlainMonthDay_epoch_ms_for(const PlainMonthDay* self, TimeZone time_zone);
+ 
+diff --git a/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/bindings/c/PlainTime.h b/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/bindings/c/PlainTime.h
+index 0d897da90a9f4..059d2e37c107d 100644
+--- a/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/bindings/c/PlainTime.h
++++ b/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/bindings/c/PlainTime.h
+@@ -46,6 +46,9 @@ temporal_rs_PlainTime_from_epoch_nanoseconds_result temporal_rs_PlainTime_from_e
+ typedef struct temporal_rs_PlainTime_from_epoch_nanoseconds_with_provider_result {union {PlainTime* ok; TemporalError err;}; bool is_ok;} temporal_rs_PlainTime_from_epoch_nanoseconds_with_provider_result;
+ temporal_rs_PlainTime_from_epoch_nanoseconds_with_provider_result temporal_rs_PlainTime_from_epoch_nanoseconds_with_provider(I128Nanoseconds ns, TimeZone tz, const Provider* p);
+ 
++typedef struct temporal_rs_PlainTime_epoch_ms_for_utc_result {union {int64_t ok; TemporalError err;}; bool is_ok;} temporal_rs_PlainTime_epoch_ms_for_utc_result;
++temporal_rs_PlainTime_epoch_ms_for_utc_result temporal_rs_PlainTime_epoch_ms_for_utc(const PlainTime* self);
++
+ typedef struct temporal_rs_PlainTime_with_result {union {PlainTime* ok; TemporalError err;}; bool is_ok;} temporal_rs_PlainTime_with_result;
+ temporal_rs_PlainTime_with_result temporal_rs_PlainTime_with(const PlainTime* self, PartialTime partial, ArithmeticOverflow_option overflow);
+ 
+diff --git a/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/bindings/c/PlainYearMonth.h b/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/bindings/c/PlainYearMonth.h
+index 2283264e3ea98..572be318ff76c 100644
+--- a/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/bindings/c/PlainYearMonth.h
++++ b/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/bindings/c/PlainYearMonth.h
+@@ -85,6 +85,9 @@ int8_t temporal_rs_PlainYearMonth_compare(const PlainYearMonth* one, const Plain
+ typedef struct temporal_rs_PlainYearMonth_to_plain_date_result {union {PlainDate* ok; TemporalError err;}; bool is_ok;} temporal_rs_PlainYearMonth_to_plain_date_result;
+ temporal_rs_PlainYearMonth_to_plain_date_result temporal_rs_PlainYearMonth_to_plain_date(const PlainYearMonth* self, PartialDate_option day);
+ 
++typedef struct temporal_rs_PlainYearMonth_epoch_ms_for_utc_result {union {int64_t ok; TemporalError err;}; bool is_ok;} temporal_rs_PlainYearMonth_epoch_ms_for_utc_result;
++temporal_rs_PlainYearMonth_epoch_ms_for_utc_result temporal_rs_PlainYearMonth_epoch_ms_for_utc(const PlainYearMonth* self);
++
+ typedef struct temporal_rs_PlainYearMonth_epoch_ms_for_result {union {int64_t ok; TemporalError err;}; bool is_ok;} temporal_rs_PlainYearMonth_epoch_ms_for_result;
+ temporal_rs_PlainYearMonth_epoch_ms_for_result temporal_rs_PlainYearMonth_epoch_ms_for(const PlainYearMonth* self, TimeZone time_zone);
+ 
+diff --git a/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/bindings/cpp/temporal_rs/PlainDate.d.hpp b/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/bindings/cpp/temporal_rs/PlainDate.d.hpp
+index e586d7cebd4a7..62abc7e6c48b4 100644
+--- a/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/bindings/cpp/temporal_rs/PlainDate.d.hpp
++++ b/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/bindings/cpp/temporal_rs/PlainDate.d.hpp
+@@ -139,6 +139,8 @@ public:
+ 
+   inline temporal_rs::diplomat::result<std::unique_ptr<temporal_rs::ZonedDateTime>, temporal_rs::TemporalError> to_zoned_date_time_with_provider(temporal_rs::TimeZone time_zone, const temporal_rs::PlainTime* time, const temporal_rs::Provider& p) const;
+ 
++  inline temporal_rs::diplomat::result<int64_t, temporal_rs::TemporalError> epoch_ms_for_utc() const;
++
+   inline std::string to_ixdtf_string(temporal_rs::DisplayCalendar display_calendar) const;
+   template<typename W>
+   inline void to_ixdtf_string_write(temporal_rs::DisplayCalendar display_calendar, W& writeable_output) const;
+diff --git a/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/bindings/cpp/temporal_rs/PlainDate.hpp b/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/bindings/cpp/temporal_rs/PlainDate.hpp
+index 10673ade8f81f..4f643693d9e0f 100644
+--- a/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/bindings/cpp/temporal_rs/PlainDate.hpp
++++ b/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/bindings/cpp/temporal_rs/PlainDate.hpp
+@@ -141,6 +141,9 @@ namespace capi {
+     typedef struct temporal_rs_PlainDate_to_zoned_date_time_with_provider_result {union {temporal_rs::capi::ZonedDateTime* ok; temporal_rs::capi::TemporalError err;}; bool is_ok;} temporal_rs_PlainDate_to_zoned_date_time_with_provider_result;
+     temporal_rs_PlainDate_to_zoned_date_time_with_provider_result temporal_rs_PlainDate_to_zoned_date_time_with_provider(const temporal_rs::capi::PlainDate* self, temporal_rs::capi::TimeZone time_zone, const temporal_rs::capi::PlainTime* time, const temporal_rs::capi::Provider* p);
+ 
++    typedef struct temporal_rs_PlainDate_epoch_ms_for_utc_result {union {int64_t ok; temporal_rs::capi::TemporalError err;}; bool is_ok;} temporal_rs_PlainDate_epoch_ms_for_utc_result;
++    temporal_rs_PlainDate_epoch_ms_for_utc_result temporal_rs_PlainDate_epoch_ms_for_utc(const temporal_rs::capi::PlainDate* self);
++
+     void temporal_rs_PlainDate_to_ixdtf_string(const temporal_rs::capi::PlainDate* self, temporal_rs::capi::DisplayCalendar display_calendar, temporal_rs::diplomat::capi::DiplomatWrite* write);
+ 
+     temporal_rs::capi::PlainDate* temporal_rs_PlainDate_clone(const temporal_rs::capi::PlainDate* self);
+@@ -410,6 +413,11 @@ inline temporal_rs::diplomat::result<std::unique_ptr<temporal_rs::ZonedDateTime>
+     return result.is_ok ? temporal_rs::diplomat::result<std::unique_ptr<temporal_rs::ZonedDateTime>, temporal_rs::TemporalError>(temporal_rs::diplomat::Ok<std::unique_ptr<temporal_rs::ZonedDateTime>>(std::unique_ptr<temporal_rs::ZonedDateTime>(temporal_rs::ZonedDateTime::FromFFI(result.ok)))) : temporal_rs::diplomat::result<std::unique_ptr<temporal_rs::ZonedDateTime>, temporal_rs::TemporalError>(temporal_rs::diplomat::Err<temporal_rs::TemporalError>(temporal_rs::TemporalError::FromFFI(result.err)));
+ }
+ 
++inline temporal_rs::diplomat::result<int64_t, temporal_rs::TemporalError> temporal_rs::PlainDate::epoch_ms_for_utc() const {
++    auto result = temporal_rs::capi::temporal_rs_PlainDate_epoch_ms_for_utc(this->AsFFI());
++    return result.is_ok ? temporal_rs::diplomat::result<int64_t, temporal_rs::TemporalError>(temporal_rs::diplomat::Ok<int64_t>(result.ok)) : temporal_rs::diplomat::result<int64_t, temporal_rs::TemporalError>(temporal_rs::diplomat::Err<temporal_rs::TemporalError>(temporal_rs::TemporalError::FromFFI(result.err)));
++}
++
+ inline std::string temporal_rs::PlainDate::to_ixdtf_string(temporal_rs::DisplayCalendar display_calendar) const {
+     std::string output;
+     temporal_rs::diplomat::capi::DiplomatWrite write = temporal_rs::diplomat::WriteFromString(output);
+diff --git a/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/bindings/cpp/temporal_rs/PlainDateTime.d.hpp b/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/bindings/cpp/temporal_rs/PlainDateTime.d.hpp
+index f5052625fcfe9..c77f5303f783d 100644
+--- a/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/bindings/cpp/temporal_rs/PlainDateTime.d.hpp
++++ b/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/bindings/cpp/temporal_rs/PlainDateTime.d.hpp
+@@ -148,6 +148,8 @@ public:
+ 
+   inline temporal_rs::diplomat::result<std::unique_ptr<temporal_rs::ZonedDateTime>, temporal_rs::TemporalError> to_zoned_date_time_with_provider(temporal_rs::TimeZone time_zone, temporal_rs::Disambiguation disambiguation, const temporal_rs::Provider& p) const;
+ 
++  inline temporal_rs::diplomat::result<int64_t, temporal_rs::TemporalError> epoch_ms_for_utc() const;
++
+   inline temporal_rs::diplomat::result<std::string, temporal_rs::TemporalError> to_ixdtf_string(temporal_rs::ToStringRoundingOptions options, temporal_rs::DisplayCalendar display_calendar) const;
+   template<typename W>
+   inline temporal_rs::diplomat::result<std::monostate, temporal_rs::TemporalError> to_ixdtf_string_write(temporal_rs::ToStringRoundingOptions options, temporal_rs::DisplayCalendar display_calendar, W& writeable_output) const;
+diff --git a/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/bindings/cpp/temporal_rs/PlainDateTime.hpp b/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/bindings/cpp/temporal_rs/PlainDateTime.hpp
+index 2513e06d722aa..ecf67eaed8b73 100644
+--- a/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/bindings/cpp/temporal_rs/PlainDateTime.hpp
++++ b/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/bindings/cpp/temporal_rs/PlainDateTime.hpp
+@@ -150,6 +150,9 @@ namespace capi {
+     typedef struct temporal_rs_PlainDateTime_to_zoned_date_time_with_provider_result {union {temporal_rs::capi::ZonedDateTime* ok; temporal_rs::capi::TemporalError err;}; bool is_ok;} temporal_rs_PlainDateTime_to_zoned_date_time_with_provider_result;
+     temporal_rs_PlainDateTime_to_zoned_date_time_with_provider_result temporal_rs_PlainDateTime_to_zoned_date_time_with_provider(const temporal_rs::capi::PlainDateTime* self, temporal_rs::capi::TimeZone time_zone, temporal_rs::capi::Disambiguation disambiguation, const temporal_rs::capi::Provider* p);
+ 
++    typedef struct temporal_rs_PlainDateTime_epoch_ms_for_utc_result {union {int64_t ok; temporal_rs::capi::TemporalError err;}; bool is_ok;} temporal_rs_PlainDateTime_epoch_ms_for_utc_result;
++    temporal_rs_PlainDateTime_epoch_ms_for_utc_result temporal_rs_PlainDateTime_epoch_ms_for_utc(const temporal_rs::capi::PlainDateTime* self);
++
+     typedef struct temporal_rs_PlainDateTime_to_ixdtf_string_result {union { temporal_rs::capi::TemporalError err;}; bool is_ok;} temporal_rs_PlainDateTime_to_ixdtf_string_result;
+     temporal_rs_PlainDateTime_to_ixdtf_string_result temporal_rs_PlainDateTime_to_ixdtf_string(const temporal_rs::capi::PlainDateTime* self, temporal_rs::capi::ToStringRoundingOptions options, temporal_rs::capi::DisplayCalendar display_calendar, temporal_rs::diplomat::capi::DiplomatWrite* write);
+ 
+@@ -454,6 +457,11 @@ inline temporal_rs::diplomat::result<std::unique_ptr<temporal_rs::ZonedDateTime>
+     return result.is_ok ? temporal_rs::diplomat::result<std::unique_ptr<temporal_rs::ZonedDateTime>, temporal_rs::TemporalError>(temporal_rs::diplomat::Ok<std::unique_ptr<temporal_rs::ZonedDateTime>>(std::unique_ptr<temporal_rs::ZonedDateTime>(temporal_rs::ZonedDateTime::FromFFI(result.ok)))) : temporal_rs::diplomat::result<std::unique_ptr<temporal_rs::ZonedDateTime>, temporal_rs::TemporalError>(temporal_rs::diplomat::Err<temporal_rs::TemporalError>(temporal_rs::TemporalError::FromFFI(result.err)));
+ }
+ 
++inline temporal_rs::diplomat::result<int64_t, temporal_rs::TemporalError> temporal_rs::PlainDateTime::epoch_ms_for_utc() const {
++    auto result = temporal_rs::capi::temporal_rs_PlainDateTime_epoch_ms_for_utc(this->AsFFI());
++    return result.is_ok ? temporal_rs::diplomat::result<int64_t, temporal_rs::TemporalError>(temporal_rs::diplomat::Ok<int64_t>(result.ok)) : temporal_rs::diplomat::result<int64_t, temporal_rs::TemporalError>(temporal_rs::diplomat::Err<temporal_rs::TemporalError>(temporal_rs::TemporalError::FromFFI(result.err)));
++}
++
+ inline temporal_rs::diplomat::result<std::string, temporal_rs::TemporalError> temporal_rs::PlainDateTime::to_ixdtf_string(temporal_rs::ToStringRoundingOptions options, temporal_rs::DisplayCalendar display_calendar) const {
+     std::string output;
+     temporal_rs::diplomat::capi::DiplomatWrite write = temporal_rs::diplomat::WriteFromString(output);
+diff --git a/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/bindings/cpp/temporal_rs/PlainMonthDay.d.hpp b/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/bindings/cpp/temporal_rs/PlainMonthDay.d.hpp
+index 5638252ac2fd0..2b8a587d8bfa3 100644
+--- a/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/bindings/cpp/temporal_rs/PlainMonthDay.d.hpp
++++ b/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/bindings/cpp/temporal_rs/PlainMonthDay.d.hpp
+@@ -65,6 +65,8 @@ public:
+ 
+   inline temporal_rs::diplomat::result<std::unique_ptr<temporal_rs::PlainDate>, temporal_rs::TemporalError> to_plain_date(std::optional<temporal_rs::PartialDate> year) const;
+ 
++  inline temporal_rs::diplomat::result<int64_t, temporal_rs::TemporalError> epoch_ms_for_utc() const;
++
+   inline temporal_rs::diplomat::result<int64_t, temporal_rs::TemporalError> epoch_ms_for(temporal_rs::TimeZone time_zone) const;
+ 
+   inline temporal_rs::diplomat::result<int64_t, temporal_rs::TemporalError> epoch_ms_for_with_provider(temporal_rs::TimeZone time_zone, const temporal_rs::Provider& p) const;
+diff --git a/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/bindings/cpp/temporal_rs/PlainMonthDay.hpp b/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/bindings/cpp/temporal_rs/PlainMonthDay.hpp
+index 01e409f4ca5b1..1c0aa9c305179 100644
+--- a/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/bindings/cpp/temporal_rs/PlainMonthDay.hpp
++++ b/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/bindings/cpp/temporal_rs/PlainMonthDay.hpp
+@@ -57,6 +57,9 @@ namespace capi {
+     typedef struct temporal_rs_PlainMonthDay_to_plain_date_result {union {temporal_rs::capi::PlainDate* ok; temporal_rs::capi::TemporalError err;}; bool is_ok;} temporal_rs_PlainMonthDay_to_plain_date_result;
+     temporal_rs_PlainMonthDay_to_plain_date_result temporal_rs_PlainMonthDay_to_plain_date(const temporal_rs::capi::PlainMonthDay* self, temporal_rs::capi::PartialDate_option year);
+ 
++    typedef struct temporal_rs_PlainMonthDay_epoch_ms_for_utc_result {union {int64_t ok; temporal_rs::capi::TemporalError err;}; bool is_ok;} temporal_rs_PlainMonthDay_epoch_ms_for_utc_result;
++    temporal_rs_PlainMonthDay_epoch_ms_for_utc_result temporal_rs_PlainMonthDay_epoch_ms_for_utc(const temporal_rs::capi::PlainMonthDay* self);
++
+     typedef struct temporal_rs_PlainMonthDay_epoch_ms_for_result {union {int64_t ok; temporal_rs::capi::TemporalError err;}; bool is_ok;} temporal_rs_PlainMonthDay_epoch_ms_for_result;
+     temporal_rs_PlainMonthDay_epoch_ms_for_result temporal_rs_PlainMonthDay_epoch_ms_for(const temporal_rs::capi::PlainMonthDay* self, temporal_rs::capi::TimeZone time_zone);
+ 
+@@ -146,6 +149,11 @@ inline temporal_rs::diplomat::result<std::unique_ptr<temporal_rs::PlainDate>, te
+     return result.is_ok ? temporal_rs::diplomat::result<std::unique_ptr<temporal_rs::PlainDate>, temporal_rs::TemporalError>(temporal_rs::diplomat::Ok<std::unique_ptr<temporal_rs::PlainDate>>(std::unique_ptr<temporal_rs::PlainDate>(temporal_rs::PlainDate::FromFFI(result.ok)))) : temporal_rs::diplomat::result<std::unique_ptr<temporal_rs::PlainDate>, temporal_rs::TemporalError>(temporal_rs::diplomat::Err<temporal_rs::TemporalError>(temporal_rs::TemporalError::FromFFI(result.err)));
+ }
+ 
++inline temporal_rs::diplomat::result<int64_t, temporal_rs::TemporalError> temporal_rs::PlainMonthDay::epoch_ms_for_utc() const {
++    auto result = temporal_rs::capi::temporal_rs_PlainMonthDay_epoch_ms_for_utc(this->AsFFI());
++    return result.is_ok ? temporal_rs::diplomat::result<int64_t, temporal_rs::TemporalError>(temporal_rs::diplomat::Ok<int64_t>(result.ok)) : temporal_rs::diplomat::result<int64_t, temporal_rs::TemporalError>(temporal_rs::diplomat::Err<temporal_rs::TemporalError>(temporal_rs::TemporalError::FromFFI(result.err)));
++}
++
+ inline temporal_rs::diplomat::result<int64_t, temporal_rs::TemporalError> temporal_rs::PlainMonthDay::epoch_ms_for(temporal_rs::TimeZone time_zone) const {
+     auto result = temporal_rs::capi::temporal_rs_PlainMonthDay_epoch_ms_for(this->AsFFI(),
+         time_zone.AsFFI());
+diff --git a/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/bindings/cpp/temporal_rs/PlainTime.d.hpp b/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/bindings/cpp/temporal_rs/PlainTime.d.hpp
+index b4f01054eb44d..d4d8eb306cd54 100644
+--- a/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/bindings/cpp/temporal_rs/PlainTime.d.hpp
++++ b/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/bindings/cpp/temporal_rs/PlainTime.d.hpp
+@@ -53,6 +53,8 @@ public:
+ 
+   inline static temporal_rs::diplomat::result<std::unique_ptr<temporal_rs::PlainTime>, temporal_rs::TemporalError> from_epoch_nanoseconds_with_provider(temporal_rs::I128Nanoseconds ns, temporal_rs::TimeZone tz, const temporal_rs::Provider& p);
+ 
++  inline temporal_rs::diplomat::result<int64_t, temporal_rs::TemporalError> epoch_ms_for_utc() const;
++
+   inline temporal_rs::diplomat::result<std::unique_ptr<temporal_rs::PlainTime>, temporal_rs::TemporalError> with(temporal_rs::PartialTime partial, std::optional<temporal_rs::ArithmeticOverflow> overflow) const;
+ 
+   inline static temporal_rs::diplomat::result<std::unique_ptr<temporal_rs::PlainTime>, temporal_rs::TemporalError> from_utf8(std::string_view s);
+diff --git a/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/bindings/cpp/temporal_rs/PlainTime.hpp b/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/bindings/cpp/temporal_rs/PlainTime.hpp
+index b15878bcbbc62..6f765e3fdaf8f 100644
+--- a/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/bindings/cpp/temporal_rs/PlainTime.hpp
++++ b/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/bindings/cpp/temporal_rs/PlainTime.hpp
+@@ -49,6 +49,9 @@ namespace capi {
+     typedef struct temporal_rs_PlainTime_from_epoch_nanoseconds_with_provider_result {union {temporal_rs::capi::PlainTime* ok; temporal_rs::capi::TemporalError err;}; bool is_ok;} temporal_rs_PlainTime_from_epoch_nanoseconds_with_provider_result;
+     temporal_rs_PlainTime_from_epoch_nanoseconds_with_provider_result temporal_rs_PlainTime_from_epoch_nanoseconds_with_provider(temporal_rs::capi::I128Nanoseconds ns, temporal_rs::capi::TimeZone tz, const temporal_rs::capi::Provider* p);
+ 
++    typedef struct temporal_rs_PlainTime_epoch_ms_for_utc_result {union {int64_t ok; temporal_rs::capi::TemporalError err;}; bool is_ok;} temporal_rs_PlainTime_epoch_ms_for_utc_result;
++    temporal_rs_PlainTime_epoch_ms_for_utc_result temporal_rs_PlainTime_epoch_ms_for_utc(const temporal_rs::capi::PlainTime* self);
++
+     typedef struct temporal_rs_PlainTime_with_result {union {temporal_rs::capi::PlainTime* ok; temporal_rs::capi::TemporalError err;}; bool is_ok;} temporal_rs_PlainTime_with_result;
+     temporal_rs_PlainTime_with_result temporal_rs_PlainTime_with(const temporal_rs::capi::PlainTime* self, temporal_rs::capi::PartialTime partial, temporal_rs::capi::ArithmeticOverflow_option overflow);
+ 
+@@ -152,6 +155,11 @@ inline temporal_rs::diplomat::result<std::unique_ptr<temporal_rs::PlainTime>, te
+     return result.is_ok ? temporal_rs::diplomat::result<std::unique_ptr<temporal_rs::PlainTime>, temporal_rs::TemporalError>(temporal_rs::diplomat::Ok<std::unique_ptr<temporal_rs::PlainTime>>(std::unique_ptr<temporal_rs::PlainTime>(temporal_rs::PlainTime::FromFFI(result.ok)))) : temporal_rs::diplomat::result<std::unique_ptr<temporal_rs::PlainTime>, temporal_rs::TemporalError>(temporal_rs::diplomat::Err<temporal_rs::TemporalError>(temporal_rs::TemporalError::FromFFI(result.err)));
+ }
+ 
++inline temporal_rs::diplomat::result<int64_t, temporal_rs::TemporalError> temporal_rs::PlainTime::epoch_ms_for_utc() const {
++    auto result = temporal_rs::capi::temporal_rs_PlainTime_epoch_ms_for_utc(this->AsFFI());
++    return result.is_ok ? temporal_rs::diplomat::result<int64_t, temporal_rs::TemporalError>(temporal_rs::diplomat::Ok<int64_t>(result.ok)) : temporal_rs::diplomat::result<int64_t, temporal_rs::TemporalError>(temporal_rs::diplomat::Err<temporal_rs::TemporalError>(temporal_rs::TemporalError::FromFFI(result.err)));
++}
++
+ inline temporal_rs::diplomat::result<std::unique_ptr<temporal_rs::PlainTime>, temporal_rs::TemporalError> temporal_rs::PlainTime::with(temporal_rs::PartialTime partial, std::optional<temporal_rs::ArithmeticOverflow> overflow) const {
+     auto result = temporal_rs::capi::temporal_rs_PlainTime_with(this->AsFFI(),
+         partial.AsFFI(),
+diff --git a/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/bindings/cpp/temporal_rs/PlainYearMonth.d.hpp b/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/bindings/cpp/temporal_rs/PlainYearMonth.d.hpp
+index b6ea924834db0..74a36b5e9be0f 100644
+--- a/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/bindings/cpp/temporal_rs/PlainYearMonth.d.hpp
++++ b/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/bindings/cpp/temporal_rs/PlainYearMonth.d.hpp
+@@ -94,6 +94,8 @@ public:
+ 
+   inline temporal_rs::diplomat::result<std::unique_ptr<temporal_rs::PlainDate>, temporal_rs::TemporalError> to_plain_date(std::optional<temporal_rs::PartialDate> day) const;
+ 
++  inline temporal_rs::diplomat::result<int64_t, temporal_rs::TemporalError> epoch_ms_for_utc() const;
++
+   inline temporal_rs::diplomat::result<int64_t, temporal_rs::TemporalError> epoch_ms_for(temporal_rs::TimeZone time_zone) const;
+ 
+   inline temporal_rs::diplomat::result<int64_t, temporal_rs::TemporalError> epoch_ms_for_with_provider(temporal_rs::TimeZone time_zone, const temporal_rs::Provider& p) const;
+diff --git a/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/bindings/cpp/temporal_rs/PlainYearMonth.hpp b/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/bindings/cpp/temporal_rs/PlainYearMonth.hpp
+index 5f66d553e998e..c9ed91170b05e 100644
+--- a/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/bindings/cpp/temporal_rs/PlainYearMonth.hpp
++++ b/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/bindings/cpp/temporal_rs/PlainYearMonth.hpp
+@@ -88,6 +88,9 @@ namespace capi {
+     typedef struct temporal_rs_PlainYearMonth_to_plain_date_result {union {temporal_rs::capi::PlainDate* ok; temporal_rs::capi::TemporalError err;}; bool is_ok;} temporal_rs_PlainYearMonth_to_plain_date_result;
+     temporal_rs_PlainYearMonth_to_plain_date_result temporal_rs_PlainYearMonth_to_plain_date(const temporal_rs::capi::PlainYearMonth* self, temporal_rs::capi::PartialDate_option day);
+ 
++    typedef struct temporal_rs_PlainYearMonth_epoch_ms_for_utc_result {union {int64_t ok; temporal_rs::capi::TemporalError err;}; bool is_ok;} temporal_rs_PlainYearMonth_epoch_ms_for_utc_result;
++    temporal_rs_PlainYearMonth_epoch_ms_for_utc_result temporal_rs_PlainYearMonth_epoch_ms_for_utc(const temporal_rs::capi::PlainYearMonth* self);
++
+     typedef struct temporal_rs_PlainYearMonth_epoch_ms_for_result {union {int64_t ok; temporal_rs::capi::TemporalError err;}; bool is_ok;} temporal_rs_PlainYearMonth_epoch_ms_for_result;
+     temporal_rs_PlainYearMonth_epoch_ms_for_result temporal_rs_PlainYearMonth_epoch_ms_for(const temporal_rs::capi::PlainYearMonth* self, temporal_rs::capi::TimeZone time_zone);
+ 
+@@ -255,6 +258,11 @@ inline temporal_rs::diplomat::result<std::unique_ptr<temporal_rs::PlainDate>, te
+     return result.is_ok ? temporal_rs::diplomat::result<std::unique_ptr<temporal_rs::PlainDate>, temporal_rs::TemporalError>(temporal_rs::diplomat::Ok<std::unique_ptr<temporal_rs::PlainDate>>(std::unique_ptr<temporal_rs::PlainDate>(temporal_rs::PlainDate::FromFFI(result.ok)))) : temporal_rs::diplomat::result<std::unique_ptr<temporal_rs::PlainDate>, temporal_rs::TemporalError>(temporal_rs::diplomat::Err<temporal_rs::TemporalError>(temporal_rs::TemporalError::FromFFI(result.err)));
+ }
+ 
++inline temporal_rs::diplomat::result<int64_t, temporal_rs::TemporalError> temporal_rs::PlainYearMonth::epoch_ms_for_utc() const {
++    auto result = temporal_rs::capi::temporal_rs_PlainYearMonth_epoch_ms_for_utc(this->AsFFI());
++    return result.is_ok ? temporal_rs::diplomat::result<int64_t, temporal_rs::TemporalError>(temporal_rs::diplomat::Ok<int64_t>(result.ok)) : temporal_rs::diplomat::result<int64_t, temporal_rs::TemporalError>(temporal_rs::diplomat::Err<temporal_rs::TemporalError>(temporal_rs::TemporalError::FromFFI(result.err)));
++}
++
+ inline temporal_rs::diplomat::result<int64_t, temporal_rs::TemporalError> temporal_rs::PlainYearMonth::epoch_ms_for(temporal_rs::TimeZone time_zone) const {
+     auto result = temporal_rs::capi::temporal_rs_PlainYearMonth_epoch_ms_for(this->AsFFI(),
+         time_zone.AsFFI());
+diff --git a/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/src/plain_date.rs b/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/src/plain_date.rs
+index 7752e3bd68bf6..073e3fd2bd4ac 100644
+--- a/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/src/plain_date.rs
++++ b/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/src/plain_date.rs
+@@ -367,6 +367,19 @@ pub mod ffi {
+             .map(|x| Box::new(ZonedDateTime(x)))
+             .map_err(Into::into)
+         }
++
++        pub fn epoch_ms_for_utc(&self) -> Result<i64, TemporalError> {
++            let ns = self.0.epoch_ns_for_utc();
++
++            let ns_i128 = ns.as_i128();
++            let ms = ns_i128 / 1_000_000;
++            if let Ok(ms) = i64::try_from(ms) {
++                Ok(ms)
++            } else {
++                Err(TemporalError::assert("Found an out-of-range MonthDay"))
++            }
++        }
++
+         pub fn to_ixdtf_string(
+             &self,
+             display_calendar: DisplayCalendar,
+diff --git a/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/src/plain_date_time.rs b/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/src/plain_date_time.rs
+index b0800afdc6da8..ed89391baf25f 100644
+--- a/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/src/plain_date_time.rs
++++ b/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/src/plain_date_time.rs
+@@ -355,6 +355,18 @@ pub mod ffi {
+             .map_err(Into::into)
+         }
+ 
++        pub fn epoch_ms_for_utc(&self) -> Result<i64, TemporalError> {
++            let ns = self.0.epoch_ns_for_utc();
++
++            let ns_i128 = ns.as_i128();
++            let ms = ns_i128 / 1_000_000;
++            if let Ok(ms) = i64::try_from(ms) {
++                Ok(ms)
++            } else {
++                Err(TemporalError::assert("Found an out-of-range MonthDay"))
++            }
++        }
++
+         pub fn to_ixdtf_string(
+             &self,
+             options: ToStringRoundingOptions,
+diff --git a/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/src/plain_month_day.rs b/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/src/plain_month_day.rs
+index fe3878ab1fffa..b3f110df0bc63 100644
+--- a/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/src/plain_month_day.rs
++++ b/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/src/plain_month_day.rs
+@@ -107,6 +107,18 @@ pub mod ffi {
+                 .map_err(Into::into)
+         }
+ 
++        pub fn epoch_ms_for_utc(&self) -> Result<i64, TemporalError> {
++            let ns = self.0.epoch_ns_for_utc();
++
++            let ns_i128 = ns.as_i128();
++            let ms = ns_i128 / 1_000_000;
++            if let Ok(ms) = i64::try_from(ms) {
++                Ok(ms)
++            } else {
++                Err(TemporalError::assert("Found an out-of-range MonthDay"))
++            }
++        }
++
+         #[cfg(feature = "compiled_data")]
+         pub fn epoch_ms_for(&self, time_zone: TimeZone) -> Result<i64, TemporalError> {
+             self.epoch_ms_for_with_provider(time_zone, &Provider::compiled())
+diff --git a/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/src/plain_time.rs b/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/src/plain_time.rs
+index 3320d4513bcb8..b46debcf9a35d 100644
+--- a/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/src/plain_time.rs
++++ b/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/src/plain_time.rs
+@@ -100,6 +100,18 @@ pub mod ffi {
+             Ok(Box::new(Self(zdt.to_plain_time())))
+         }
+ 
++        pub fn epoch_ms_for_utc(&self) -> Result<i64, TemporalError> {
++            let ns = self.0.epoch_ns_for_utc();
++
++            let ns_i128 = ns.as_i128();
++            let ms = ns_i128 / 1_000_000;
++            if let Ok(ms) = i64::try_from(ms) {
++                Ok(ms)
++            } else {
++                Err(TemporalError::assert("Found an out-of-range MonthDay"))
++            }
++        }
++
+         pub fn with(
+             &self,
+             partial: PartialTime,
+diff --git a/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/src/plain_year_month.rs b/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/src/plain_year_month.rs
+index 066bbd77593aa..cdc86298af9fd 100644
+--- a/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/src/plain_year_month.rs
++++ b/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/src/plain_year_month.rs
+@@ -179,6 +179,18 @@ pub mod ffi {
+                 .map_err(Into::into)
+         }
+ 
++        pub fn epoch_ms_for_utc(&self) -> Result<i64, TemporalError> {
++            let ns = self.0.epoch_ns_for_utc();
++
++            let ns_i128 = ns.as_i128();
++            let ms = ns_i128 / 1_000_000;
++            if let Ok(ms) = i64::try_from(ms) {
++                Ok(ms)
++            } else {
++                Err(TemporalError::assert("Found an out-of-range MonthDay"))
++            }
++        }
++
+         #[cfg(feature = "compiled_data")]
+         pub fn epoch_ms_for(&self, time_zone: TimeZone) -> Result<i64, TemporalError> {
+             self.epoch_ms_for_with_provider(time_zone, &Provider::compiled())
+diff --git a/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_2/src/builtins/core/plain_date.rs b/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_2/src/builtins/core/plain_date.rs
+index 16db3492611aa..871a364619728 100644
+--- a/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_2/src/builtins/core/plain_date.rs
++++ b/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_2/src/builtins/core/plain_date.rs
+@@ -17,6 +17,7 @@ use crate::{
+     },
+     parsers::IxdtfStringBuilder,
+     provider::{NeverProvider, TimeZoneProvider},
++    unix_time::EpochNanoseconds,
+     MonthCode, TemporalError, TemporalResult, TimeZone,
+ };
+ use alloc::string::String;
+@@ -685,6 +686,18 @@ impl PlainDate {
+             epoch_ns.offset,
+         )
+     }
++
++    /// Gets the EpochNanoseconds represented by this PlainDate
++    /// (using noon time, and UTC timezone)
++    ///
++    // Useful for implementing HandleDateTimeTemporalYearMonth
++    pub fn epoch_ns_for_utc(&self) -> EpochNanoseconds {
++        // 2. Let isoDateTime be CombineISODateAndTimeRecord(temporalYearMonth.[[ISODate]], NoonTimeRecord()).
++        let iso = IsoDateTime::new(self.iso, IsoTime::noon());
++        debug_assert!(iso.is_ok());
++        // 3. Let epochNs be ? GetUTCEpochNanoseconds(isoDateTime).
++        iso.unwrap_or_default().as_nanoseconds()
++    }
+ }
+ 
+ // ==== Trait impls ====
+diff --git a/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_2/src/builtins/core/plain_date_time.rs b/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_2/src/builtins/core/plain_date_time.rs
+index 502ebd1cf60f6..102d54c367d48 100644
+--- a/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_2/src/builtins/core/plain_date_time.rs
++++ b/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_2/src/builtins/core/plain_date_time.rs
+@@ -19,6 +19,7 @@ use crate::{
+     parsers::IxdtfStringBuilder,
+     primitive::FiniteF64,
+     provider::{NeverProvider, TimeZoneProvider},
++    unix_time::EpochNanoseconds,
+     MonthCode, TemporalError, TemporalResult, TimeZone,
+ };
+ use alloc::string::String;
+@@ -907,6 +908,15 @@ impl PlainDateTime {
+         ))
+     }
+ 
++    /// Gets the EpochNanoseconds represented by this PlainDateTime
++    /// (using and UTC timezone)
++    ///
++    // Useful for implementing HandleDateTimeTemporalDateTime
++    pub fn epoch_ns_for_utc(&self) -> EpochNanoseconds {
++        // 3. Let epochNs be ? GetUTCEpochNanoseconds(isoDateTime).
++        self.iso.as_nanoseconds()
++    }
++
+     /// Create a [`PlainDate`] from the current `PlainDateTime`.
+     #[inline]
+     pub fn to_plain_date(&self) -> PlainDate {
+diff --git a/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_2/src/builtins/core/plain_month_day.rs b/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_2/src/builtins/core/plain_month_day.rs
+index 48728939d3a84..4084e3761a359 100644
+--- a/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_2/src/builtins/core/plain_month_day.rs
++++ b/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_2/src/builtins/core/plain_month_day.rs
+@@ -364,6 +364,18 @@ impl PlainMonthDay {
+             .ns)
+     }
+ 
++    /// Gets the EpochNanoseconds represented by this MonthDay
++    /// (using the reference year, noon time, and UTC timezone)
++    ///
++    // Useful for implementing HandleDateTimeTemporalYearMonth
++    pub fn epoch_ns_for_utc(&self) -> EpochNanoseconds {
++        // 2. Let isoDateTime be CombineISODateAndTimeRecord(temporalMonthDay.[[ISODate]], NoonTimeRecord()).
++        let iso = IsoDateTime::new(self.iso, IsoTime::noon());
++        debug_assert!(iso.is_ok());
++        // 3. Let epochNs be ? GetUTCEpochNanoseconds(isoDateTime).
++        iso.unwrap_or_default().as_nanoseconds()
++    }
++
+     /// Creates a RFC9557 IXDTF string from the current `PlainMonthDay`.
+     pub fn to_ixdtf_string(&self, display_calendar: DisplayCalendar) -> String {
+         self.to_ixdtf_writeable(display_calendar)
+diff --git a/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_2/src/builtins/core/plain_time.rs b/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_2/src/builtins/core/plain_time.rs
+index 017dffa005545..38d0cd4a3f568 100644
+--- a/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_2/src/builtins/core/plain_time.rs
++++ b/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_2/src/builtins/core/plain_time.rs
+@@ -7,11 +7,13 @@ use crate::{
+     },
+     error::ErrorMessage,
+     iso::IsoTime,
++    iso::{IsoDate, IsoDateTime},
+     options::{
+         DifferenceOperation, DifferenceSettings, Overflow, ResolvedRoundingOptions,
+         RoundingOptions, ToStringRoundingOptions, Unit, UnitGroup,
+     },
+     parsers::{parse_time, IxdtfStringBuilder},
++    unix_time::EpochNanoseconds,
+     TemporalError, TemporalResult,
+ };
+ use alloc::string::String;
+@@ -541,6 +543,19 @@ impl PlainTime {
+         let builder = IxdtfStringBuilder::default().with_time(result, resolved.precision);
+         Ok(builder)
+     }
++
++    /// Gets the EpochNanoseconds represented by this PlainTime
++    /// (using the Unix epoch, and UTC timezone)
++    ///
++    // Useful for implementing HandleDateTimeTemporalTime
++    pub fn epoch_ns_for_utc(&self) -> EpochNanoseconds {
++        // 1. Let isoDate be CreateISODateRecord(1970, 1, 1).
++        // 2. Let isoDateTime be CombineISODateAndTimeRecord(isoDate, temporalTime.[[Time]]).
++        let iso = IsoDateTime::new(IsoDate::UNIX_EPOCH, self.iso);
++        debug_assert!(iso.is_ok());
++        // 3. Let epochNs be ? GetUTCEpochNanoseconds(isoDateTime).
++        iso.unwrap_or_default().as_nanoseconds()
++    }
+ }
+ 
+ impl From<PlainDateTime> for PlainTime {
+diff --git a/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_2/src/builtins/core/plain_year_month.rs b/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_2/src/builtins/core/plain_year_month.rs
+index 98af6e8b571a0..2fc4b897f702c 100644
+--- a/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_2/src/builtins/core/plain_year_month.rs
++++ b/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_2/src/builtins/core/plain_year_month.rs
+@@ -598,9 +598,7 @@ impl PlainYearMonth {
+     }
+ 
+     /// Gets the epochMilliseconds represented by this YearMonth in the given timezone
+-    /// (using the reference year, and noon time)
+-    ///
+-    // Useful for implementing HandleDateTimeTemporalYearMonth
++    /// (using the reference day, and noon time)
+     pub fn epoch_ns_for_with_provider(
+         &self,
+         time_zone: TimeZone,
+@@ -614,6 +612,18 @@ impl PlainYearMonth {
+             .ns)
+     }
+ 
++    /// Gets the EpochNanoseconds represented by this YearMonth
++    /// (using the reference day, noon time, and UTC timezone)
++    ///
++    // Useful for implementing HandleDateTimeTemporalYearMonth
++    pub fn epoch_ns_for_utc(&self) -> EpochNanoseconds {
++        // 2. Let isoDateTime be CombineISODateAndTimeRecord(temporalYearMonth.[[ISODate]], NoonTimeRecord()).
++        let iso = IsoDateTime::new(self.iso, IsoTime::noon());
++        debug_assert!(iso.is_ok());
++        // 3. Let epochNs be ? GetUTCEpochNanoseconds(isoDateTime).
++        iso.unwrap_or_default().as_nanoseconds()
++    }
++
+     /// Returns a RFC9557 IXDTF string for the current `PlainYearMonth`
+     #[inline]
+     pub fn to_ixdtf_string(&self, display_calendar: DisplayCalendar) -> String {
+diff --git a/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_2/src/iso.rs b/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_2/src/iso.rs
+index 2abf720988d30..f8b383e39e073 100644
+--- a/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_2/src/iso.rs
++++ b/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_2/src/iso.rs
+@@ -264,6 +264,8 @@ pub struct IsoDate {
+ }
+ 
+ impl IsoDate {
++    pub(crate) const UNIX_EPOCH: Self = Self::new_unchecked(1970, 1, 1);
++
+     /// Creates a new `IsoDate` without determining the validity.
+     pub(crate) const fn new_unchecked(year: i32, month: u8, day: u8) -> Self {
+         Self { year, month, day }
+-- 
+2.53.0.959.g497ff81fa9-goog
+

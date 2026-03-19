@@ -179,6 +179,18 @@ pub mod ffi {
                 .map_err(Into::into)
         }
 
+        pub fn epoch_ms_for_utc(&self) -> Result<i64, TemporalError> {
+            let ns = self.0.epoch_ns_for_utc();
+
+            let ns_i128 = ns.as_i128();
+            let ms = ns_i128 / 1_000_000;
+            if let Ok(ms) = i64::try_from(ms) {
+                Ok(ms)
+            } else {
+                Err(TemporalError::assert("Found an out-of-range MonthDay"))
+            }
+        }
+
         #[cfg(feature = "compiled_data")]
         pub fn epoch_ms_for(&self, time_zone: TimeZone) -> Result<i64, TemporalError> {
             self.epoch_ms_for_with_provider(time_zone, &Provider::compiled())

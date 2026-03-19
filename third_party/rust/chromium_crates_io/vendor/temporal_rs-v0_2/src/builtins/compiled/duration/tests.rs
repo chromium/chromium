@@ -882,3 +882,25 @@ fn round_zero_duration() {
 
     assert_eq!(rounded_duration, d0);
 }
+
+#[test]
+fn round_increment_regression_test() {
+    let duration = Duration::new(0, 0, 0, 0, 48, 0, 0, 0, 0, 0).unwrap();
+    let relative_to = ZonedDateTime::try_new(0_i128, TimeZone::utc(), Calendar::ISO).unwrap();
+    let options = RoundingOptions {
+        smallest_unit: Some(Unit::Day),
+        increment: Some(RoundingIncrement::new_unchecked(
+            NonZeroU32::new(2).unwrap(),
+        )),
+        ..Default::default()
+    };
+
+    // let result = duration.round(options.clone(), None).unwrap();
+    // assert_eq!(result.days(), 2);
+
+    // The result should be same with a UTC relativeTo
+    let result = duration
+        .round(options, Some(RelativeTo::ZonedDateTime(relative_to)))
+        .unwrap();
+    assert_eq!(result.days(), 2);
+}

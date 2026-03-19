@@ -7,11 +7,13 @@ use crate::{
     },
     error::ErrorMessage,
     iso::IsoTime,
+    iso::{IsoDate, IsoDateTime},
     options::{
         DifferenceOperation, DifferenceSettings, Overflow, ResolvedRoundingOptions,
         RoundingOptions, ToStringRoundingOptions, Unit, UnitGroup,
     },
     parsers::{parse_time, IxdtfStringBuilder},
+    unix_time::EpochNanoseconds,
     TemporalError, TemporalResult,
 };
 use alloc::string::String;
@@ -541,6 +543,19 @@ impl PlainTime {
         let builder = IxdtfStringBuilder::default().with_time(result, resolved.precision);
         Ok(builder)
     }
+
+    /// Gets the EpochNanoseconds represented by this PlainTime
+    /// (using the Unix epoch, and UTC timezone)
+    ///
+    // Useful for implementing HandleDateTimeTemporalTime
+    pub fn epoch_ns_for_utc(&self) -> EpochNanoseconds {
+        // 1. Let isoDate be CreateISODateRecord(1970, 1, 1).
+        // 2. Let isoDateTime be CombineISODateAndTimeRecord(isoDate, temporalTime.[[Time]]).
+        let iso = IsoDateTime::new(IsoDate::UNIX_EPOCH, self.iso);
+        debug_assert!(iso.is_ok());
+        // 3. Let epochNs be ? GetUTCEpochNanoseconds(isoDateTime).
+        iso.unwrap_or_default().as_nanoseconds()
+    }
 }
 
 impl From<PlainDateTime> for PlainTime {
@@ -852,6 +867,15 @@ mod tests {
             "2019-10-01T09:00:00Z[UTC]",
             "09:00:00Z[UTC]",
             "09:00:00Z",
+            // built-ins/Temporal/PlainTime/from/argument-string-too-many-decimals
+            "1970-01-01T00:00:00.1234567891",
+            "1970-01-01T00:00:00.1234567890",
+            "1970-01-01T00+00:00:00.1234567891",
+            "1970-01-01T00+00:00:00.1234567890",
+            "00:00:00.1234567891",
+            "00:00:00.1234567890",
+            "00+00:00:00.1234567891",
+            "00+00:00:00.1234567890",
         ];
         for invalid_str in invalid_cases {
             let err = PlainTime::from_str(invalid_str);

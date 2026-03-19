@@ -85,6 +85,9 @@ int8_t temporal_rs_PlainYearMonth_compare(const PlainYearMonth* one, const Plain
 typedef struct temporal_rs_PlainYearMonth_to_plain_date_result {union {PlainDate* ok; TemporalError err;}; bool is_ok;} temporal_rs_PlainYearMonth_to_plain_date_result;
 temporal_rs_PlainYearMonth_to_plain_date_result temporal_rs_PlainYearMonth_to_plain_date(const PlainYearMonth* self, PartialDate_option day);
 
+typedef struct temporal_rs_PlainYearMonth_epoch_ms_for_utc_result {union {int64_t ok; TemporalError err;}; bool is_ok;} temporal_rs_PlainYearMonth_epoch_ms_for_utc_result;
+temporal_rs_PlainYearMonth_epoch_ms_for_utc_result temporal_rs_PlainYearMonth_epoch_ms_for_utc(const PlainYearMonth* self);
+
 typedef struct temporal_rs_PlainYearMonth_epoch_ms_for_result {union {int64_t ok; TemporalError err;}; bool is_ok;} temporal_rs_PlainYearMonth_epoch_ms_for_result;
 temporal_rs_PlainYearMonth_epoch_ms_for_result temporal_rs_PlainYearMonth_epoch_ms_for(const PlainYearMonth* self, TimeZone time_zone);
 

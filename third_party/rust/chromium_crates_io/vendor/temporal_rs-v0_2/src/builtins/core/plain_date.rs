@@ -17,6 +17,7 @@ use crate::{
     },
     parsers::IxdtfStringBuilder,
     provider::{NeverProvider, TimeZoneProvider},
+    unix_time::EpochNanoseconds,
     MonthCode, TemporalError, TemporalResult, TimeZone,
 };
 use alloc::string::String;
@@ -685,6 +686,18 @@ impl PlainDate {
             epoch_ns.offset,
         )
     }
+
+    /// Gets the EpochNanoseconds represented by this PlainDate
+    /// (using noon time, and UTC timezone)
+    ///
+    // Useful for implementing HandleDateTimeTemporalYearMonth
+    pub fn epoch_ns_for_utc(&self) -> EpochNanoseconds {
+        // 2. Let isoDateTime be CombineISODateAndTimeRecord(temporalYearMonth.[[ISODate]], NoonTimeRecord()).
+        let iso = IsoDateTime::new(self.iso, IsoTime::noon());
+        debug_assert!(iso.is_ok());
+        // 3. Let epochNs be ? GetUTCEpochNanoseconds(isoDateTime).
+        iso.unwrap_or_default().as_nanoseconds()
+    }
 }
 
 // ==== Trait impls ====
@@ -982,7 +995,7 @@ mod tests {
     // test262/test/built-ins/Temporal/Calendar/prototype/month/argument-string-invalid.js
     #[test]
     fn invalid_strings() {
-        const INVALID_STRINGS: [&str; 35] = [
+        const INVALID_STRINGS: &[&str] = &[
             // invalid ISO strings:
             "",
             "invalid iso8601",
@@ -1023,9 +1036,14 @@ mod tests {
             // valid, but outside the supported range:
             "-999999-01-01",
             "+999999-01-01",
+            // built-ins/Temporal/PlainDate/from/argument-string-too-many-decimals
+            "1970-01-01T00:00:00.1234567891",
+            "1970-01-01T00:00:00.1234567890",
+            "1970-01-01T00+00:00:00.1234567891",
+            "1970-01-01T00+00:00:00.1234567890",
         ];
         for s in INVALID_STRINGS {
-            assert!(PlainDate::from_str(s).is_err())
+            assert!(PlainDate::from_str(s).is_err(), "{} should not parse", s)
         }
     }
 

@@ -14,6 +14,7 @@ pub enum ResolutionType {
     Date,
     YearMonth,
     MonthDay,
+    MonthDayWithYear,
 }
 
 /// `ResolvedCalendarFields` represents the resolved field values necessary for
@@ -34,7 +35,9 @@ impl ResolvedIsoFields {
         overflow: Overflow,
         resolve_type: ResolutionType,
     ) -> TemporalResult<Self> {
-        fields.check_year_in_safe_arithmetical_range()?;
+        if resolve_type != ResolutionType::MonthDayWithYear {
+            fields.check_year_in_safe_arithmetical_range()?;
+        }
         // a. If type is date or year-month and fields.[[Year]] is unset, throw a TypeError exception.
         let arithmetic_year = if resolve_type == ResolutionType::MonthDay {
             1972

@@ -893,16 +893,16 @@ impl InternalDurationRecord {
         //
         // progress = dividend / divisor
         //
-        // 1. r1 + progress * increment * sign
-        // 2. r1 + (dividend / divisor) * increment * sign
+        // 1. total = r1 + progress * increment * sign
+        // 2. total = r1 + (dividend / divisor) * increment * sign
         //
         // Bring in increment and sign
         //
-        // 3. r1 + (dividend * increment * sign) / divisor
+        // 3. total = r1 + (dividend * increment * sign) / divisor
         //
         // Now also move the r1 into the progress fraction.
         //
-        // 4. ((r1 * divisor) + dividend * increment * sign) / divisor
+        // 4. total = ((r1 * divisor) + dividend * increment * sign) / divisor
         //
         // 14. Let progress be (destEpochNs - startEpochNs) / (endEpochNs - startEpochNs).
         // 15. Let total be r1 + progress × increment × sign.
@@ -910,10 +910,8 @@ impl InternalDurationRecord {
         let divisor = end_epoch_ns.0 - start_epoch_ns.0;
 
         // We add r1 to the dividend
-        let total_dividend = dividend
-            + (r1 * divisor)
-                * options.increment.get() as i128
-                * i128::from(sign.as_sign_multiplier());
+        let total_times_divisor = (r1 * divisor)
+            + dividend * options.increment.get() as i128 * i128::from(sign.as_sign_multiplier());
 
         // 16. NOTE: The above two steps cannot be implemented directly using floating-point arithmetic.
         // This division can be implemented as if constructing Normalized Time Duration Records for the denominator
@@ -937,8 +935,8 @@ impl InternalDurationRecord {
         // that there is no remainder caused by the calculation.
         //
         // 20. If progress = 1, then
-        let total_is_r2 =
-            total_dividend.div_euclid(divisor) == r2 && total_dividend.rem_euclid(divisor) == 0;
+        let total_is_r2 = total_times_divisor.div_euclid(divisor) == r2
+            && total_times_divisor.rem_euclid(divisor) == 0;
         let rounded_unit = if total_is_r2 {
             // a. Let roundedUnit be abs(r2).
             r2.abs()
@@ -947,7 +945,7 @@ impl InternalDurationRecord {
             // b. Let roundedUnit be ApplyUnsignedRoundingMode(abs(total), abs(r1), abs(r2), unsignedRoundingMode).
             // TODO: what happens to r2 here?
             unsigned_rounding_mode.apply(
-                total_dividend.unsigned_abs(),
+                total_times_divisor.unsigned_abs(),
                 divisor.unsigned_abs(),
                 r1.abs(),
                 r2.abs(),

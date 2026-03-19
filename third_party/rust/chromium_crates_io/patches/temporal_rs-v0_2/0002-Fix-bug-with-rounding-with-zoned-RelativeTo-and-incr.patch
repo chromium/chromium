@@ -1,0 +1,168 @@
+From c93310662d717b355decab602bd0adca762870d1 Mon Sep 17 00:00:00 2001
+From: Manish Goregaokar <manishearth@google.com>
+Date: Thu, 19 Mar 2026 16:46:07 +0000
+Subject: [PATCH 2/3] Fix bug with rounding with zoned RelativeTo and increment
+
+Uplifts https://github.com/boa-dev/temporal/pull/696
+
+Change-Id: I3a44115ee2a85acba7c9436e2d6002a619c092b9
+---
+ .../src/builtins/compiled/duration/tests.rs   | 22 ++++++++++++
+ .../src/builtins/core/duration/normalized.rs  | 20 +++++------
+ .../vendor/temporal_rs-v0_2/src/options.rs    | 34 ++++++++++---------
+ 3 files changed, 49 insertions(+), 27 deletions(-)
+
+diff --git a/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_2/src/builtins/compiled/duration/tests.rs b/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_2/src/builtins/compiled/duration/tests.rs
+index 28cb0a4e5b27a..83bdafc8fbc19 100644
+--- a/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_2/src/builtins/compiled/duration/tests.rs
++++ b/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_2/src/builtins/compiled/duration/tests.rs
+@@ -882,3 +882,25 @@ fn round_zero_duration() {
+ 
+     assert_eq!(rounded_duration, d0);
+ }
++
++#[test]
++fn round_increment_regression_test() {
++    let duration = Duration::new(0, 0, 0, 0, 48, 0, 0, 0, 0, 0).unwrap();
++    let relative_to = ZonedDateTime::try_new(0_i128, TimeZone::utc(), Calendar::ISO).unwrap();
++    let options = RoundingOptions {
++        smallest_unit: Some(Unit::Day),
++        increment: Some(RoundingIncrement::new_unchecked(
++            NonZeroU32::new(2).unwrap(),
++        )),
++        ..Default::default()
++    };
++
++    // let result = duration.round(options.clone(), None).unwrap();
++    // assert_eq!(result.days(), 2);
++
++    // The result should be same with a UTC relativeTo
++    let result = duration
++        .round(options, Some(RelativeTo::ZonedDateTime(relative_to)))
++        .unwrap();
++    assert_eq!(result.days(), 2);
++}
+diff --git a/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_2/src/builtins/core/duration/normalized.rs b/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_2/src/builtins/core/duration/normalized.rs
+index 7e8a472cd9fae..60c366aec64da 100644
+--- a/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_2/src/builtins/core/duration/normalized.rs
++++ b/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_2/src/builtins/core/duration/normalized.rs
+@@ -893,16 +893,16 @@ impl InternalDurationRecord {
+         //
+         // progress = dividend / divisor
+         //
+-        // 1. r1 + progress * increment * sign
+-        // 2. r1 + (dividend / divisor) * increment * sign
++        // 1. total = r1 + progress * increment * sign
++        // 2. total = r1 + (dividend / divisor) * increment * sign
+         //
+         // Bring in increment and sign
+         //
+-        // 3. r1 + (dividend * increment * sign) / divisor
++        // 3. total = r1 + (dividend * increment * sign) / divisor
+         //
+         // Now also move the r1 into the progress fraction.
+         //
+-        // 4. ((r1 * divisor) + dividend * increment * sign) / divisor
++        // 4. total = ((r1 * divisor) + dividend * increment * sign) / divisor
+         //
+         // 14. Let progress be (destEpochNs - startEpochNs) / (endEpochNs - startEpochNs).
+         // 15. Let total be r1 + progress × increment × sign.
+@@ -910,10 +910,8 @@ impl InternalDurationRecord {
+         let divisor = end_epoch_ns.0 - start_epoch_ns.0;
+ 
+         // We add r1 to the dividend
+-        let total_dividend = dividend
+-            + (r1 * divisor)
+-                * options.increment.get() as i128
+-                * i128::from(sign.as_sign_multiplier());
++        let total_times_divisor = (r1 * divisor)
++            + dividend * options.increment.get() as i128 * i128::from(sign.as_sign_multiplier());
+ 
+         // 16. NOTE: The above two steps cannot be implemented directly using floating-point arithmetic.
+         // This division can be implemented as if constructing Normalized Time Duration Records for the denominator
+@@ -937,8 +935,8 @@ impl InternalDurationRecord {
+         // that there is no remainder caused by the calculation.
+         //
+         // 20. If progress = 1, then
+-        let total_is_r2 =
+-            total_dividend.div_euclid(divisor) == r2 && total_dividend.rem_euclid(divisor) == 0;
++        let total_is_r2 = total_times_divisor.div_euclid(divisor) == r2
++            && total_times_divisor.rem_euclid(divisor) == 0;
+         let rounded_unit = if total_is_r2 {
+             // a. Let roundedUnit be abs(r2).
+             r2.abs()
+@@ -947,7 +945,7 @@ impl InternalDurationRecord {
+             // b. Let roundedUnit be ApplyUnsignedRoundingMode(abs(total), abs(r1), abs(r2), unsignedRoundingMode).
+             // TODO: what happens to r2 here?
+             unsigned_rounding_mode.apply(
+-                total_dividend.unsigned_abs(),
++                total_times_divisor.unsigned_abs(),
+                 divisor.unsigned_abs(),
+                 r1.abs(),
+                 r2.abs(),
+diff --git a/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_2/src/options.rs b/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_2/src/options.rs
+index 8461a8785d43b..2bb0cc915357f 100644
+--- a/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_2/src/options.rs
++++ b/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_2/src/options.rs
+@@ -850,9 +850,18 @@ impl RoundingMode {
+ 
+ impl UnsignedRoundingMode {
+     /// <https://tc39.es/proposal-temporal/#sec-applyunsignedroundingmode>
++    ///
++    /// We represent `x` as `dividend / divisor` so that we can perform math in integer space.
+     pub(crate) fn apply(self, dividend: u128, divisor: u128, r1: i128, r2: i128) -> i128 {
++        // In order to perform the math in integer space, we multiply by `divisor`.
++        //
++        // I think the math stays in range: dividend and divisor are nanosecond
++        // diffs, so they won't be larger than 2 * 8.64e21, which is 74 bits.
++        //
++        // r1 and r2 are calendar units, which aren't larger than 200,000,000.
++
+         // 1. If x = r1, return r1.
+-        if is_exact(dividend, divisor) {
++        if dividend as i128 == r1 * divisor as i128 {
+             return r1;
+         }
+         // 4. If unsignedRoundingMode is zero, return r1.
+@@ -861,9 +870,16 @@ impl UnsignedRoundingMode {
+         } else if self == UnsignedRoundingMode::Infinity {
+             return r2;
+         }
++
+         // 6. Let d1 be x – r1.
+         // 7. Let d2 be r2 – x.
+-        match compare_remainder(dividend, divisor) {
++
++        let d1_times_divisor = dividend as i128 - r1 * divisor as i128;
++        let d2_times_divisor = r2 * divisor as i128 - dividend as i128;
++        // 8. If d1 < d2, return r1.
++        // 9. If d2 < d1, return r2.
++        // 10. Assert: d1 is equal to d2.
++        match d1_times_divisor.cmp(&d2_times_divisor) {
+             Ordering::Less => r1,
+             Ordering::Greater => r2,
+             Ordering::Equal => {
+@@ -888,20 +904,6 @@ impl UnsignedRoundingMode {
+     }
+ }
+ 
+-fn is_exact(dividend: u128, divisor: u128) -> bool {
+-    dividend.rem_euclid(divisor) == 0
+-}
+-
+-fn compare_remainder(dividend: u128, divisor: u128) -> Ordering {
+-    let midway = divisor.div_euclid(2);
+-    let cmp = dividend.rem_euclid(divisor).cmp(&midway);
+-    if cmp == Ordering::Equal && divisor.rem_euclid(2) != 0 {
+-        Ordering::Less
+-    } else {
+-        cmp
+-    }
+-}
+-
+ impl FromStr for RoundingMode {
+     type Err = TemporalError;
+ 
+-- 
+2.53.0.959.g497ff81fa9-goog
+

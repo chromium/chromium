@@ -54,6 +54,9 @@ void temporal_rs_PlainMonthDay_month_code(const PlainMonthDay* self, DiplomatWri
 typedef struct temporal_rs_PlainMonthDay_to_plain_date_result {union {PlainDate* ok; TemporalError err;}; bool is_ok;} temporal_rs_PlainMonthDay_to_plain_date_result;
 temporal_rs_PlainMonthDay_to_plain_date_result temporal_rs_PlainMonthDay_to_plain_date(const PlainMonthDay* self, PartialDate_option year);
 
+typedef struct temporal_rs_PlainMonthDay_epoch_ms_for_utc_result {union {int64_t ok; TemporalError err;}; bool is_ok;} temporal_rs_PlainMonthDay_epoch_ms_for_utc_result;
+temporal_rs_PlainMonthDay_epoch_ms_for_utc_result temporal_rs_PlainMonthDay_epoch_ms_for_utc(const PlainMonthDay* self);
+
 typedef struct temporal_rs_PlainMonthDay_epoch_ms_for_result {union {int64_t ok; TemporalError err;}; bool is_ok;} temporal_rs_PlainMonthDay_epoch_ms_for_result;
 temporal_rs_PlainMonthDay_epoch_ms_for_result temporal_rs_PlainMonthDay_epoch_ms_for(const PlainMonthDay* self, TimeZone time_zone);
 

@@ -350,16 +350,71 @@ impl Calendar {
         // For example, constructing a PlainMonthDay for {year: 2025, month: 2, day: 29}
         // with overflow: constrain will produce 02-28 since it will constrain
         // the date to 2025-02-28 first, and only *then* will it construct an MD.
-        //
-        // This is specced partially in https://tc39.es/proposal-temporal/#sec-temporal-calendarmonthdaytoisoreferencedate
-        // notice that RegulateISODate is called with the passed-in year, but the reference year is used regardless
-        // of the passed in year in the final result.
-        //
-        // There may be more efficient ways to do this, but this works pretty well and doesn't require
-        // calendrical knowledge.
         if fields.year.is_some() || (fields.era.is_some() && fields.era_year.is_some()) {
-            let date = self.date_from_fields(fields, overflow)?;
-            fields = CalendarFields::from_date(&date);
+            // The ISO case is specified in <https://tc39.es/proposal-temporal/#sec-temporal-calendarmonthdaytoisoreferencedate>
+            // It does not perform any range checks, arbitrarily large year values can be used.
+            if self.is_iso() {
+                let resolved = ResolvedIsoFields::try_from_fields(
+                    &fields,
+                    overflow,
+                    ResolutionType::MonthDayWithYear,
+                )?;
+                fields = CalendarFields {
+                    year: Some(1972),
+                    month: Some(resolved.month),
+                    day: Some(resolved.day),
+                    ..Default::default()
+                };
+            } else {
+                // The non-ISO case is specified in <https://tc39.es/proposal-intl-era-monthcode/#sup-temporal-nonisomonthdaytoisoreferencedate>
+                //
+                let date_fields = DateFields::try_from(&fields)?;
+                {
+                    // This algorithm requires an early-check to ensure the year is *somewhat* valid:
+                    // > b. If there exists no combination of inputs such that ! CalendarIntegersToISO(calendar, fields.[[Year]], ..., ...) would
+                    // return an ISO Date Record isoDate for which ISODateWithinLimits(isoDate) is true, throw a RangeError exception.
+
+                    // We do this by using constrain with minimal and maximal month-day values to try and
+                    // see if either is in the ISO year range.
+                    //
+                    // This is complicated, it would be nice to not have to do this: <https://github.com/tc39/proposal-intl-era-monthcode/issues/127>
+                    let mut options = DateFromFieldsOptions::default();
+                    options.overflow = Some(IcuOverflow::Constrain);
+                    options.missing_fields_strategy = Some(MissingFieldsStrategy::Reject);
+
+                    let mut fields_min = fields.clone();
+                    let mut fields_max = fields.clone();
+                    fields_min.month = Some(1);
+                    fields_max.month = Some(15);
+                    fields_min.month_code = None;
+                    fields_max.month_code = None;
+                    fields_min.day = Some(1);
+                    fields_max.day = Some(40);
+                    let fields_min = DateFields::try_from(&fields_min)?;
+                    let fields_max = DateFields::try_from(&fields_max)?;
+                    let date_min = self.0.from_fields(fields_min, options)?;
+                    let date_max = self.0.from_fields(fields_max, options)?;
+                    let iso_min = IsoDate::from_icu4x(self.0.to_iso(&date_min));
+                    let iso_max = IsoDate::from_icu4x(self.0.to_iso(&date_max));
+
+                    // If *both* are an error, then no date in this year maps to the ISO year range.
+                    if iso_min.check_within_limits().is_err()
+                        && iso_max.check_within_limits().is_err()
+                    {
+                        return Err(TemporalError::range().with_enum(ErrorMessage::DateOutOfRange));
+                    }
+                }
+                let mut options = DateFromFieldsOptions::default();
+                options.overflow = Some(overflow.into());
+                options.missing_fields_strategy = Some(MissingFieldsStrategy::Reject);
+                let calendar_date = self.0.from_fields(date_fields, options)?;
+
+                fields = CalendarFields {
+                    month_code: Some(MonthCode(self.0.month(&calendar_date).standard_code.0)),
+                    day: Some(self.0.day_of_month(&calendar_date).0),
+                    ..Default::default()
+                };
+            }
         }
         if self.is_iso() {
             let resolved_fields =

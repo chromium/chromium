@@ -141,17 +141,6 @@ impl CalendarFields {
         }
     }
 
-    pub(crate) fn from_date(date: &PlainDate) -> Self {
-        Self {
-            year: Some(date.year()),
-            month: Some(date.month()),
-            month_code: Some(date.month_code()),
-            era: date.era().map(TinyAsciiStr::resize),
-            era_year: date.era_year(),
-            day: Some(date.day()),
-        }
-    }
-
     crate::impl_with_fallback_method!(with_fallback_date, CalendarFields, (with_day: day) PlainDate);
     crate::impl_with_fallback_method!(with_fallback_datetime, CalendarFields, (with_day:day) PlainDateTime);
     crate::impl_field_keys_to_ignore!((with_day:day));

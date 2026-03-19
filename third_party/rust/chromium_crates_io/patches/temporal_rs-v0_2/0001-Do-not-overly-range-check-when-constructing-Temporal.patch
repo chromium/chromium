@@ -1,0 +1,291 @@
+From 18e49280eee34912702df571b823589377678883 Mon Sep 17 00:00:00 2001
+From: Manish Goregaokar <manishearth@google.com>
+Date: Thu, 19 Mar 2026 16:44:23 +0000
+Subject: [PATCH 1/3] Do not overly range check when constructing Temporal
+ PlainMonthDay
+
+Uplift https://github.com/boa-dev/temporal/pull/695
+
+Change-Id: Id7dbd7fbc2924c83aefc01158e8df63a2a790151
+---
+ .../src/builtins/core/calendar.rs             | 73 ++++++++++++--
+ .../src/builtins/core/calendar/fields.rs      | 11 ---
+ .../src/builtins/core/calendar/types.rs       |  5 +-
+ .../src/builtins/core/plain_month_day.rs      | 95 +++++++++++++++++++
+ .../vendor/temporal_rs-v0_2/src/iso.rs        | 12 ++-
+ 5 files changed, 173 insertions(+), 23 deletions(-)
+
+diff --git a/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_2/src/builtins/core/calendar.rs b/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_2/src/builtins/core/calendar.rs
+index 97ac5a08e0f07..4af2e4a4b043a 100644
+--- a/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_2/src/builtins/core/calendar.rs
++++ b/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_2/src/builtins/core/calendar.rs
+@@ -350,16 +350,71 @@ impl Calendar {
+         // For example, constructing a PlainMonthDay for {year: 2025, month: 2, day: 29}
+         // with overflow: constrain will produce 02-28 since it will constrain
+         // the date to 2025-02-28 first, and only *then* will it construct an MD.
+-        //
+-        // This is specced partially in https://tc39.es/proposal-temporal/#sec-temporal-calendarmonthdaytoisoreferencedate
+-        // notice that RegulateISODate is called with the passed-in year, but the reference year is used regardless
+-        // of the passed in year in the final result.
+-        //
+-        // There may be more efficient ways to do this, but this works pretty well and doesn't require
+-        // calendrical knowledge.
+         if fields.year.is_some() || (fields.era.is_some() && fields.era_year.is_some()) {
+-            let date = self.date_from_fields(fields, overflow)?;
+-            fields = CalendarFields::from_date(&date);
++            // The ISO case is specified in <https://tc39.es/proposal-temporal/#sec-temporal-calendarmonthdaytoisoreferencedate>
++            // It does not perform any range checks, arbitrarily large year values can be used.
++            if self.is_iso() {
++                let resolved = ResolvedIsoFields::try_from_fields(
++                    &fields,
++                    overflow,
++                    ResolutionType::MonthDayWithYear,
++                )?;
++                fields = CalendarFields {
++                    year: Some(1972),
++                    month: Some(resolved.month),
++                    day: Some(resolved.day),
++                    ..Default::default()
++                };
++            } else {
++                // The non-ISO case is specified in <https://tc39.es/proposal-intl-era-monthcode/#sup-temporal-nonisomonthdaytoisoreferencedate>
++                //
++                let date_fields = DateFields::try_from(&fields)?;
++                {
++                    // This algorithm requires an early-check to ensure the year is *somewhat* valid:
++                    // > b. If there exists no combination of inputs such that ! CalendarIntegersToISO(calendar, fields.[[Year]], ..., ...) would
++                    // return an ISO Date Record isoDate for which ISODateWithinLimits(isoDate) is true, throw a RangeError exception.
++
++                    // We do this by using constrain with minimal and maximal month-day values to try and
++                    // see if either is in the ISO year range.
++                    //
++                    // This is complicated, it would be nice to not have to do this: <https://github.com/tc39/proposal-intl-era-monthcode/issues/127>
++                    let mut options = DateFromFieldsOptions::default();
++                    options.overflow = Some(IcuOverflow::Constrain);
++                    options.missing_fields_strategy = Some(MissingFieldsStrategy::Reject);
++
++                    let mut fields_min = fields.clone();
++                    let mut fields_max = fields.clone();
++                    fields_min.month = Some(1);
++                    fields_max.month = Some(15);
++                    fields_min.month_code = None;
++                    fields_max.month_code = None;
++                    fields_min.day = Some(1);
++                    fields_max.day = Some(40);
++                    let fields_min = DateFields::try_from(&fields_min)?;
++                    let fields_max = DateFields::try_from(&fields_max)?;
++                    let date_min = self.0.from_fields(fields_min, options)?;
++                    let date_max = self.0.from_fields(fields_max, options)?;
++                    let iso_min = IsoDate::from_icu4x(self.0.to_iso(&date_min));
++                    let iso_max = IsoDate::from_icu4x(self.0.to_iso(&date_max));
++
++                    // If *both* are an error, then no date in this year maps to the ISO year range.
++                    if iso_min.check_within_limits().is_err()
++                        && iso_max.check_within_limits().is_err()
++                    {
++                        return Err(TemporalError::range().with_enum(ErrorMessage::DateOutOfRange));
++                    }
++                }
++                let mut options = DateFromFieldsOptions::default();
++                options.overflow = Some(overflow.into());
++                options.missing_fields_strategy = Some(MissingFieldsStrategy::Reject);
++                let calendar_date = self.0.from_fields(date_fields, options)?;
++
++                fields = CalendarFields {
++                    month_code: Some(MonthCode(self.0.month(&calendar_date).standard_code.0)),
++                    day: Some(self.0.day_of_month(&calendar_date).0),
++                    ..Default::default()
++                };
++            }
+         }
+         if self.is_iso() {
+             let resolved_fields =
+diff --git a/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_2/src/builtins/core/calendar/fields.rs b/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_2/src/builtins/core/calendar/fields.rs
+index 9c19016349e4b..8463ea28c9bec 100644
+--- a/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_2/src/builtins/core/calendar/fields.rs
++++ b/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_2/src/builtins/core/calendar/fields.rs
+@@ -141,17 +141,6 @@ impl CalendarFields {
+         }
+     }
+ 
+-    pub(crate) fn from_date(date: &PlainDate) -> Self {
+-        Self {
+-            year: Some(date.year()),
+-            month: Some(date.month()),
+-            month_code: Some(date.month_code()),
+-            era: date.era().map(TinyAsciiStr::resize),
+-            era_year: date.era_year(),
+-            day: Some(date.day()),
+-        }
+-    }
+-
+     crate::impl_with_fallback_method!(with_fallback_date, CalendarFields, (with_day: day) PlainDate);
+     crate::impl_with_fallback_method!(with_fallback_datetime, CalendarFields, (with_day:day) PlainDateTime);
+     crate::impl_field_keys_to_ignore!((with_day:day));
+diff --git a/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_2/src/builtins/core/calendar/types.rs b/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_2/src/builtins/core/calendar/types.rs
+index ecac06e2f5c1a..77e77ec740396 100644
+--- a/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_2/src/builtins/core/calendar/types.rs
++++ b/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_2/src/builtins/core/calendar/types.rs
+@@ -14,6 +14,7 @@ pub enum ResolutionType {
+     Date,
+     YearMonth,
+     MonthDay,
++    MonthDayWithYear,
+ }
+ 
+ /// `ResolvedCalendarFields` represents the resolved field values necessary for
+@@ -34,7 +35,9 @@ impl ResolvedIsoFields {
+         overflow: Overflow,
+         resolve_type: ResolutionType,
+     ) -> TemporalResult<Self> {
+-        fields.check_year_in_safe_arithmetical_range()?;
++        if resolve_type != ResolutionType::MonthDayWithYear {
++            fields.check_year_in_safe_arithmetical_range()?;
++        }
+         // a. If type is date or year-month and fields.[[Year]] is unset, throw a TypeError exception.
+         let arithmetic_year = if resolve_type == ResolutionType::MonthDay {
+             1972
+diff --git a/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_2/src/builtins/core/plain_month_day.rs b/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_2/src/builtins/core/plain_month_day.rs
+index 39bdaee81da6d..48728939d3a84 100644
+--- a/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_2/src/builtins/core/plain_month_day.rs
++++ b/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_2/src/builtins/core/plain_month_day.rs
+@@ -646,4 +646,99 @@ mod tests {
+             );
+         }
+     }
++
++    #[test]
++    fn month_day_range_check_with_year_iso() {
++        // https://github.com/boa-dev/temporal/issues/688
++        let iso = IsoDate::new_unchecked(1972, 1, 1);
++        let md = PlainMonthDay::new_unchecked(iso, Calendar::ISO);
++        let mut partial = CalendarFields {
++            year: Some(-271821),
++            ..Default::default()
++        };
++        let _ = md.with(partial.clone(), None).expect("should not throw");
++
++        partial.year = Some(i32::MIN);
++
++        let _ = md.with(partial, None).expect("should not throw");
++        let fields = CalendarFields {
++            year: Some(-27182100),
++            month: Some(2),
++            day: Some(29),
++            ..Default::default()
++        };
++        let mut partial = PartialDate {
++            calendar_fields: fields,
++            calendar: Calendar::ISO,
++        };
++        let resolved = PlainMonthDay::from_partial(partial.clone(), Some(Overflow::Constrain))
++            .expect("should not throw");
++
++        assert_eq!(
++            resolved.day(),
++            28,
++            "Should use provided year for constraining"
++        );
++
++        partial.calendar_fields.year = Some(-27182400);
++        let resolved = PlainMonthDay::from_partial(partial.clone(), Some(Overflow::Constrain))
++            .expect("should not throw");
++        assert_eq!(
++            resolved.day(),
++            29,
++            "Should use provided year for constraining"
++        );
++    }
++
++    #[test]
++    fn month_day_range_check_with_year_non_iso() {
++        use crate::builtins::calendar::month_to_month_code;
++
++        // https://github.com/boa-dev/temporal/issues/688
++        // Here we need to actually make sure that years get range checked for the calendar,
++        // since the spec wants us to allow YMD inputs that are out of ISO range, *as long as*
++        // the year can produce in-ISO-range values for *some* MD values.
++
++        let fields = CalendarFields {
++            year: Some(-27182100),
++            month_code: Some(month_to_month_code(1).unwrap()),
++            day: Some(1),
++            ..Default::default()
++        };
++        let mut partial = PartialDate {
++            calendar_fields: fields,
++            calendar: Calendar::CHINESE,
++        };
++        let _ = PlainMonthDay::from_partial(partial.clone(), Some(Overflow::Constrain))
++            .expect_err("Should not allow far past dates");
++        PlainDate::from_partial(partial.clone(), Some(Overflow::Constrain))
++            .expect_err("PlainDate should not be as lenient");
++        partial.calendar_fields.year = Some(-271821);
++
++        let _ = PlainMonthDay::from_partial(partial.clone(), Some(Overflow::Constrain))
++            .expect("should not throw");
++        PlainDate::from_partial(partial.clone(), Some(Overflow::Constrain))
++            .expect_err("PlainDate should not be as lenient");
++
++        let fields = CalendarFields {
++            year: Some(27576000),
++            month_code: Some(month_to_month_code(12).unwrap()),
++            day: Some(30),
++            ..Default::default()
++        };
++        let mut partial = PartialDate {
++            calendar_fields: fields,
++            calendar: Calendar::CHINESE,
++        };
++        let _ = PlainMonthDay::from_partial(partial.clone(), Some(Overflow::Constrain))
++            .expect_err("Should not allow far future dates");
++        PlainDate::from_partial(partial.clone(), Some(Overflow::Constrain))
++            .expect_err("PlainDate should not be as lenient");
++        partial.calendar_fields.year = Some(275760);
++
++        let _ = PlainMonthDay::from_partial(partial.clone(), Some(Overflow::Constrain))
++            .expect("should not throw");
++        PlainDate::from_partial(partial.clone(), Some(Overflow::Constrain))
++            .expect_err("PlainDate should not be as lenient");
++    }
+ }
+diff --git a/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_2/src/iso.rs b/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_2/src/iso.rs
+index a36ca499b0248..2abf720988d30 100644
+--- a/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_2/src/iso.rs
++++ b/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_2/src/iso.rs
+@@ -40,7 +40,7 @@ use crate::{
+     unix_time::EpochNanoseconds,
+     utils, TemporalResult, TemporalUnwrap, NS_PER_DAY,
+ };
+-use icu_calendar::{Date as IcuDate, Iso};
++use icu_calendar::{Calendar as IcuCalendar, Date as IcuDate, Iso};
+ use num_traits::{cast::FromPrimitive, Euclid};
+ 
+ /// `IsoDateTime` is the record of the `IsoDate` and `IsoTime` internal slots.
+@@ -295,7 +295,7 @@ impl IsoDate {
+     /// <https://tc39.es/proposal-temporal/#sec-temporal-isodatetimewithinlimits>
+     pub fn check_within_limits(self) -> TemporalResult<()> {
+         if !iso_dt_within_valid_limits(self, &IsoTime::noon()) {
+-            return Err(TemporalError::range().with_message("IsoDate not within a valid range."));
++            return Err(TemporalError::range().with_enum(ErrorMessage::DateOutOfRange));
+         }
+         Ok(())
+     }
+@@ -509,6 +509,14 @@ impl IsoDate {
+         debug_assert!(d.is_ok(), "ICU4X ISODate conversion must not fail");
+         d.unwrap_or_else(|_| IcuDate::from_rata_die(icu_calendar::types::RataDie::new(0), Iso))
+     }
++
++    pub(crate) fn from_icu4x(date: <Iso as IcuCalendar>::DateInner) -> Self {
++        Self::new_unchecked(
++            Iso.extended_year(&date),
++            Iso.month(&date).ordinal,
++            Iso.day_of_month(&date).0,
++        )
++    }
+ }
+ 
+ // ==== `IsoTime` section ====
+-- 
+2.53.0.959.g497ff81fa9-goog
+
