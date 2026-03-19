@@ -417,53 +417,6 @@ void RecordDownloadVideoType(const std::string& mime_type_string) {
                             DOWNLOAD_VIDEO_MAX);
 }
 
-// These histograms summarize download mime-types. The same data is recorded in
-// a few places, as they exist to sanity-check and understand other metrics.
-const char* const kDownloadMetricsVerificationNameItemSecure =
-    "Download.InsecureBlocking.Verification.Item.Secure";
-const char* const kDownloadMetricsVerificationNameItemInsecure =
-    "Download.InsecureBlocking.Verification.Item.Insecure";
-const char* const kDownloadMetricsVerificationNameItemOther =
-    "Download.InsecureBlocking.Verification.Item.Other";
-const char* const kDownloadMetricsVerificationNameManagerSecure =
-    "Download.InsecureBlocking.Verification.Manager.Secure";
-const char* const kDownloadMetricsVerificationNameManagerInsecure =
-    "Download.InsecureBlocking.Verification.Manager.Insecure";
-const char* const kDownloadMetricsVerificationNameManagerOther =
-    "Download.InsecureBlocking.Verification.Manager.Other";
-
-const char* GetDownloadValidationMetricName(
-    const DownloadMetricsCallsite& callsite,
-    const DownloadConnectionSecurity& state) {
-  DCHECK(callsite == DownloadMetricsCallsite::kDownloadItem ||
-         callsite == DownloadMetricsCallsite::kMixContentDownloadBlocking);
-
-  switch (state) {
-    case DOWNLOAD_SECURE:
-    case DOWNLOAD_TARGET_BLOB:
-    case DOWNLOAD_TARGET_DATA:
-    case DOWNLOAD_TARGET_FILE:
-      if (callsite == DownloadMetricsCallsite::kDownloadItem)
-        return kDownloadMetricsVerificationNameItemSecure;
-      return kDownloadMetricsVerificationNameManagerSecure;
-    case DOWNLOAD_TARGET_INSECURE:
-    case DOWNLOAD_REDIRECT_INSECURE:
-    case DOWNLOAD_REDIRECT_TARGET_INSECURE:
-      if (callsite == DownloadMetricsCallsite::kDownloadItem)
-        return kDownloadMetricsVerificationNameItemInsecure;
-      return kDownloadMetricsVerificationNameManagerInsecure;
-    case DOWNLOAD_TARGET_OTHER:
-    case DOWNLOAD_TARGET_FILESYSTEM:
-    case DOWNLOAD_TARGET_FTP:
-      if (callsite == DownloadMetricsCallsite::kDownloadItem)
-        return kDownloadMetricsVerificationNameItemOther;
-      return kDownloadMetricsVerificationNameManagerOther;
-    case DOWNLOAD_CONNECTION_SECURITY_MAX:
-      NOTREACHED();
-  }
-  NOTREACHED();
-}
-
 }  // namespace
 
 DownloadContent DownloadContentFromMimeType(const std::string& mime_type_string,
@@ -598,13 +551,6 @@ DownloadConnectionSecurity CheckDownloadConnectionSecurity(
     state = DOWNLOAD_TARGET_FTP;
   }
   return state;
-}
-
-void RecordDownloadValidationMetrics(DownloadMetricsCallsite callsite,
-                                     DownloadConnectionSecurity state,
-                                     DownloadContent file_type) {
-  base::UmaHistogramEnumeration(
-      GetDownloadValidationMetricName(callsite, state), file_type);
 }
 
 void RecordDownloadHttpResponseCode(int response_code,

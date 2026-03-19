@@ -1693,11 +1693,6 @@ void DownloadItemImpl::Start(
                                         IsParallelDownloadEnabled());
     }
     RecordDownloadMimeType(mime_type_, transient_);
-    DownloadContent file_type = DownloadContentFromMimeType(mime_type_, false);
-    DownloadConnectionSecurity state = CheckDownloadConnectionSecurity(
-        new_create_info.url(), new_create_info.url_chain);
-    RecordDownloadValidationMetrics(DownloadMetricsCallsite::kDownloadItem,
-                                    state, file_type);
 
     if (!delegate_->IsOffTheRecord()) {
       RecordDownloadCountWithSource(NEW_DOWNLOAD_COUNT_NORMAL_PROFILE,

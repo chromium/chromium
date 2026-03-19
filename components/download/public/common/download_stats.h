@@ -243,15 +243,6 @@ enum DownloadConnectionSecurity {
   DOWNLOAD_CONNECTION_SECURITY_MAX
 };
 
-enum class DownloadMetricsCallsite {
-  // Called from within DownloadItem initialization.
-  kDownloadItem = 0,
-
-  // Called from within MixedContentDownloadBlocking (as part of
-  // ChromeDownloadManagerDelegate).
-  kMixContentDownloadBlocking,
-};
-
 enum class InputStreamReadError {
   // Reading the input stream cause a mojo input argument error.
   kInvalidArgument = 0,
@@ -269,14 +260,6 @@ enum class InputStreamReadError {
 COMPONENTS_DOWNLOAD_EXPORT DownloadConnectionSecurity
 CheckDownloadConnectionSecurity(const GURL& download_url,
                                 const std::vector<GURL>& url_chain);
-
-// Records a download's mime-type and security state. This is a short-lived
-// metric recorded in multiple callsites to investigate discrepancies in other
-// metrics.
-COMPONENTS_DOWNLOAD_EXPORT void RecordDownloadValidationMetrics(
-    DownloadMetricsCallsite callsite,
-    DownloadConnectionSecurity state,
-    DownloadContent file_type);
 
 COMPONENTS_DOWNLOAD_EXPORT void RecordDownloadConnectionSecurity(
     const GURL& download_url,

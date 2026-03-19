@@ -318,11 +318,6 @@ struct InsecureDownloadData {
                                     GetExtensionEnumFromString(extension_));
       base::UmaHistogramEnumeration(kInsecureDownloadHistogramName,
                                     security_status);
-      download::RecordDownloadValidationMetrics(
-          download::DownloadMetricsCallsite::kMixContentDownloadBlocking,
-          download::CheckDownloadConnectionSecurity(item->GetURL(),
-                                                    item->GetUrlChain()),
-          download::DownloadContentFromMimeType(item->GetMimeType(), false));
 
       // Mixed downloads are those initiated by a secure initiator but not
       // delivered securely.
