@@ -18,7 +18,7 @@ Check that the WebAuthn addVirtualAuthenticator command validates parameters
 {
     error : {
         code : -32602
-        message : Invalid CTAP version. Valid values are "ctap2_0" and "ctap2_1"
+        message : Invalid CTAP version.
     }
     id : <number>
     sessionId : <string>

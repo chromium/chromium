@@ -33,6 +33,23 @@ function parseAuthenticatorFlags(flags) {
   };
 }
 
+function parsePRF(extensions) {
+  let prf = {};
+  if ('enabled' in extensions.prf) {
+    prf.enabled = extensions.prf.enabled;
+  }
+  if ('results' in extensions.prf) {
+    prf.results = {
+      first: arrayBufferToBase64(extensions.prf.results.first),
+    };
+    if ('second' in extensions.prf.results) {
+      prf.results.second =
+          arrayBufferToBase64(extensions.prf.results.second);
+    }
+  }
+  return prf;
+}
+
 async function generateBase64Key() {
   let ecKey = await window.crypto.subtle.generateKey(
       { name: "ECDSA", namedCurve: "P-256" }, true /* extractable */, ["sign", "verify"]);
@@ -84,6 +101,9 @@ async function registerCredential(options = {}) {
     if ('credBlob' in extensions) {
       result.credBlob = extensions.credBlob;
     }
+    if ('prf' in extensions) {
+      result.prf = parsePRF(extensions);
+    }
     result.flags = parseAuthenticatorFlags(
       new Uint8Array(credential.response.getAuthenticatorData())[32]);
     return result;
@@ -106,9 +126,12 @@ async function getCredential(credential, options = {}) {
       status: "OK",
       attestation,
     };
-    if (attestation.getClientExtensionResults().largeBlob) {
-      result.blob = new TextDecoder().decode(
-        attestation.getClientExtensionResults().largeBlob.blob);
+    const extensions = attestation.getClientExtensionResults();
+    if (extensions.largeBlob) {
+      result.blob = new TextDecoder().decode(extensions.largeBlob.blob);
+    }
+    if ('prf' in extensions) {
+      result.prf = parsePRF(extensions);
     }
     result.flags = parseAuthenticatorFlags(
       new Uint8Array(attestation.response.authenticatorData)[32]);

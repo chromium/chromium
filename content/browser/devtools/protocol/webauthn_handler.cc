@@ -50,8 +50,7 @@ static constexpr char kErrorCreatingAuthenticator[] =
     "An error occurred when trying to create the authenticator";
 static constexpr char kHandleRequiredForResidentCredential[] =
     "The User Handle is required for Resident Credentials";
-static constexpr char kInvalidCtapVersion[] =
-    "Invalid CTAP version. Valid values are \"ctap2_0\" and \"ctap2_1\"";
+static constexpr char kInvalidCtapVersion[] = "Invalid CTAP version.";
 static constexpr char kInvalidProtocol[] = "The protocol is not valid";
 static constexpr char kInvalidTransport[] = "The transport is not valid";
 static constexpr char kInvalidUserHandle[] =
@@ -114,6 +113,9 @@ std::optional<device::Ctap2Version> ConvertToCtap2Version(
     return device::Ctap2Version::kCtap2_0;
   if (version == WebAuthn::Ctap2VersionEnum::Ctap2_1)
     return device::Ctap2Version::kCtap2_1;
+  if (version == WebAuthn::Ctap2VersionEnum::Ctap2_2) {
+    return device::Ctap2Version::kCtap2_2;
+  }
   return std::nullopt;
 }
 
@@ -219,6 +221,8 @@ Response WebAuthnHandler::AddVirtualAuthenticator(
   bool has_cred_blob = options->GetHasCredBlob(/*defaultValue=*/false);
   bool has_min_pin_length = options->GetHasMinPinLength(/*defaultValue=*/false);
   bool has_prf = options->GetHasPrf(/*defaultValue=*/false);
+  bool has_hmac_secret = options->GetHasHmacSecret(/*defaultValue=*/false);
+  bool has_hmac_secret_mc = options->GetHasHmacSecretMc(/*defaultValue=*/false);
   bool has_resident_key = options->GetHasResidentKey(/*defaultValue=*/false);
 
   if (has_large_blob && !has_resident_key)
@@ -261,6 +265,8 @@ Response WebAuthnHandler::AddVirtualAuthenticator(
       virt_auth_options.has_cred_blob = has_cred_blob;
       virt_auth_options.has_min_pin_length = has_min_pin_length;
       virt_auth_options.has_prf = has_prf;
+      virt_auth_options.has_hmac_secret = has_hmac_secret;
+      virt_auth_options.has_hmac_secret_mc = has_hmac_secret_mc;
       virt_auth_options.default_backup_eligibility =
           options->GetDefaultBackupEligibility(/*defaultValue=*/false);
       virt_auth_options.default_backup_state =

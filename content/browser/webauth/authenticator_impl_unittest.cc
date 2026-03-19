@@ -5683,6 +5683,7 @@ TEST_F(PINAuthenticatorImplTest, HmacSecretMcWithVirtualAuthenticator) {
   VirtualAuthenticator::Options virt_auth_options;
   virt_auth_options.protocol = device::ProtocolVersion::kCtap2;
   virt_auth_options.ctap2_version = device::Ctap2Version::kCtap2_2;
+  virt_auth_options.has_hmac_secret = true;
   virt_auth_options.has_hmac_secret_mc = true;
   VirtualAuthenticator* authenticator =
       virtual_authenticator_manager->AddAuthenticatorAndReturnNonOwningPointer(

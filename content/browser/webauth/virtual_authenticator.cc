@@ -34,6 +34,7 @@ VirtualAuthenticator::VirtualAuthenticator(const Options& options)
       has_cred_blob_(options.has_cred_blob),
       has_min_pin_length_(options.has_min_pin_length),
       has_prf_(options.has_prf),
+      has_hmac_secret_(options.has_hmac_secret),
       has_hmac_secret_mc_(options.has_hmac_secret_mc),
       unique_id_(base::Uuid::GenerateRandomV4().AsLowercaseString()),
       state_(base::MakeRefCounted<device::VirtualFidoDevice::State>()) {
@@ -169,6 +170,9 @@ VirtualAuthenticator::ConstructDevice() {
         // This is required when `prf_support` is set.
         config.internal_account_chooser = true;
       }
+      if (has_hmac_secret_) {
+        config.hmac_secret_support = true;
+      }
       if (has_hmac_secret_mc_) {
         config.hmac_secret_support = true;
         config.hmac_secret_mc_support = true;
@@ -178,9 +182,9 @@ VirtualAuthenticator::ConstructDevice() {
           // Writing a large blob requires obtaining a PinUvAuthToken with
           // permissions if the authenticator is protected by user verification.
           (has_large_blob_ && has_user_verification_) ||
-          // prf support and hmac-secret-mc support always requires PIN support
-          // because the exchange is encrypted.
-          has_prf_ || has_hmac_secret_mc_) {
+          // prf, hmac-secret, and hmac-secret-mc support always requires PIN
+          // support because the exchange is encrypted.
+          has_prf_ || has_hmac_secret_ || has_hmac_secret_mc_) {
         config.pin_uv_auth_token_support = true;
       }
       config.internal_uv_support = has_user_verification_;

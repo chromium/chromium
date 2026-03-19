@@ -70,6 +70,7 @@ class CONTENT_EXPORT VirtualAuthenticator
     bool has_cred_blob = false;
     bool has_min_pin_length = false;
     bool has_prf = false;
+    bool has_hmac_secret = false;
     bool has_hmac_secret_mc = false;
     bool default_backup_eligibility = false;
     bool default_backup_state = false;
@@ -210,6 +211,7 @@ class CONTENT_EXPORT VirtualAuthenticator
   const bool has_cred_blob_;
   const bool has_min_pin_length_;
   const bool has_prf_;
+  const bool has_hmac_secret_;
   const bool has_hmac_secret_mc_;
   bool is_user_verified_ = true;
   const std::string unique_id_;
