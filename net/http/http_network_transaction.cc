@@ -2096,7 +2096,6 @@ int HttpNetworkTransaction::HandleIOError(int error) {
             kMaxRetryAttemptsOnConnectionErrors) {
           base::UmaHistogramBoolean(
               "Net.NetworkTransaction.TooManyRetriesOnConnectionErrors", true);
-          base::debug::DumpWithoutCrashing();
           return ERR_TOO_MANY_RETRIES;
         }
         retry_attempts_on_connection_errors_++;
