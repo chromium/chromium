@@ -304,10 +304,6 @@ class Port(object):
         self._wpt_server = None
         self.server_process_constructor = server_process.ServerProcess  # This can be overridden for testing.
         self._dump_reader = None
-        # This is a map of the form dir->[all skipped tests in that dir]
-        # It is used to optimize looking up for a test, as it allows a quick look up of the test dir
-        # while still using the "startwith" function to match with a single entry
-        self._skip_base_test_map = defaultdict(list)
 
         # Configuration and target are always set by PortFactory so this is only
         # relevant in cases where a Port is created without it (testing mostly).
@@ -1877,8 +1873,7 @@ class Port(object):
                 or self.skipped_in_never_fix_tests(test)
                 or self.virtual_test_skipped_due_to_platform_config(test)
                 or self.virtual_test_skipped_due_to_disabled(test)
-                or self.skipped_due_to_exclusive_virtual_tests(test)
-                or self.skipped_due_to_skip_base_tests(test))
+                or self.skipped_due_to_exclusive_virtual_tests(test))
 
     @memoized
     def tests_from_file(self, filename: str) -> Set[str]:
@@ -2058,30 +2053,6 @@ class Port(object):
             wpt_dir: exclusive_tests_by_root[None, wpt_dir]
             for wpt_dir in (None, *self.wpt_dirs())
         }
-
-    @memoized
-    def skipped_due_to_skip_base_tests(self, test):
-        """Checks if the test should be skipped due to the skip_base_test rule
-        of any virtual suite.
-
-        If the test is not a virtual test, it will be skipped if it's in the
-        skip_base_test list of any virtual suite. If the test is a virtual
-        test, it will not be skipped.
-        """
-        # This check doesn't apply to virtual tests
-        if self.lookup_virtual_test_base(test):
-            return False
-
-        # Ensure that this was called at least once, to process all suites
-        # information
-        vts = self.virtual_test_suites()
-        # Our approach of using a map keyed on paths will only work if the test name is not a directory.
-        assert (not self._filesystem.isdir(test))
-        dirname, _ = self.split_test(test)
-        for skipped_base_test in self._skip_base_test_map.get(dirname, []):
-            if test.startswith(skipped_base_test):
-                return True
-        return False
 
     def name(self):
         """Returns a name that uniquely identifies this particular type of port.
@@ -2908,19 +2879,6 @@ class Port(object):
                         '{} contains entries with the same prefix: {!r}. Please combine them'
                         .format(path_to_virtual_test_suites, json_config))
                 virtual_test_suites.append(vts)
-                if self.operating_system() in vts.platforms:
-                    for entry in vts.skip_base_tests:
-                        normalized_base = self.normalize_test_name(entry)
-                        # Wpt js file can expand to multiple tests. Remove the "js"
-                        # suffix so that the startswith test can pass. This could
-                        # be inaccurate but is computationally cheap.
-                        if (self.is_wpt_test(normalized_base)
-                                and normalized_base.endswith(".js")):
-                            normalized_base = normalized_base[:-2]
-                        # Update _skip_base_test_map with tests from the current suite's list
-                        test_dir, _ = self.split_test(normalized_base)
-                        self._skip_base_test_map[test_dir].append(
-                            normalized_base)
 
         except ValueError as error:
             raise ValueError('{} is not a valid JSON file: {}'.format(
@@ -3022,7 +2980,6 @@ class VirtualTestSuite(object):
                  platforms=None,
                  bases=None,
                  exclusive_tests=None,
-                 skip_base_tests=None,
                  args=None,
                  owners=None,
                  expires=None,
@@ -3040,17 +2997,11 @@ class VirtualTestSuite(object):
             exclusive_tests = []
         assert isinstance(exclusive_tests, list)
 
-        if skip_base_tests == "ALL":
-            skip_base_tests = bases
-        elif skip_base_tests is None:
-            skip_base_tests = []
-        assert isinstance(skip_base_tests, list)
         self.prefix = prefix
         self.full_prefix = 'virtual/' + prefix + '/'
         self.platforms = [x.lower() for x in platforms]
         self.bases = bases
         self.exclusive_tests = exclusive_tests
-        self.skip_base_tests = skip_base_tests
         self.expires = expires
         self.disabled = disabled
         self.args = sorted(args)

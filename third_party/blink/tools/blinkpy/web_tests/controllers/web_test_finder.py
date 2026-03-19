@@ -265,9 +265,8 @@ class WebTestFinder(object):
             # always skipped and not affected by the --skip parameter
             if (self._port.skipped_due_to_manual_test(test)
                     or self._port.virtual_test_skipped_due_to_platform_config(
-                        test)
-                    or self._port.skipped_due_to_exclusive_virtual_tests(test)
-                    or self._port.skipped_due_to_skip_base_tests(test)):
+                        test) or
+                    self._port.skipped_due_to_exclusive_virtual_tests(test)):
                 tests_always_skipped.update({test})
                 continue
 
