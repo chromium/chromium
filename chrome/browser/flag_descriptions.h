@@ -1424,6 +1424,9 @@ inline constexpr char kGlicCaptureRegionName[] = "Glic Capture Region";
 inline constexpr char kGlicChromeStatusIconName[] = "Glic Chrome Status Icon";
 inline constexpr char kGlicChromeStatusIconDescription[] =
     "Use the Chrome logo as glic OS status bar icon on Mac.";
+inline constexpr char kGlicClientZoomControlName[] = "Glic Client Zoom Control";
+inline constexpr char kGlicClientZoomControlDescription[] =
+    "Enables the use of Chrome zoom keyboard controls in the Glic UI.";
 inline constexpr char kGlicDetachedName[] = "Glic detached-only mode";
 inline constexpr char kGlicDetachedDescription[] =
     "Detach only mode forces the Glic UI to always be floating";
