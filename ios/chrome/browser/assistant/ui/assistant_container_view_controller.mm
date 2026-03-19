@@ -561,8 +561,8 @@ NSInteger GetMediumDetentHeight(NSInteger absoluteMax) {
 
 // Converts a physical pixel height mathematically into an expansion percentage.
 - (CGFloat)expandPercentageForHeight:(CGFloat)height {
-  CGFloat minHeight = [self effectiveMinHeight];
-  CGFloat maxHeight = [self effectiveMaxHeight];
+  CGFloat minHeight = self.minimizedDetentHeight;
+  CGFloat maxHeight = [self absoluteMaxHeight];
   if (maxHeight <= minHeight) {
     return 0.0;
   }
