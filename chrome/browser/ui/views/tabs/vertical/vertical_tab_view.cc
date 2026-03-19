@@ -804,9 +804,15 @@ bool VerticalTabView::GetHitTestMask(SkPath* mask) const {
 }
 
 bool VerticalTabView::ShouldEnableMuteToggle(int required_width) {
-  // TODO(crbug.com/454686636): Determine if there is enough space to activate
-  // the tab in collapsed, pinned, or split states.
-  return true;
+  if (active_) {
+    return true;
+  }
+
+  if (!alert_indicator_->GetVisible()) {
+    return false;
+  }
+
+  return alert_indicator_->x() >= required_width;
 }
 
 void VerticalTabView::ToggleTabAudioMute() {
