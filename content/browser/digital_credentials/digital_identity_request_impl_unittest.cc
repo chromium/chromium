@@ -250,7 +250,149 @@ base::Value GenerateGetPhoneNumberOpenid4VpRequest() {
   return ParseJsonAndCheck(kJson);
 }
 
+base::Value GenerateDpcExample1() {
+  constexpr char kJson[] = R"({
+    "client_metadata": {
+      "vp_formats_supported": {
+        "dc+sd-jwt": {
+          "sd-jwt_alg_values": [
+            "ES256"
+          ]
+        }
+      }
+    },
+    "dcql_query": {
+      "credentials": [
+        {
+          "format": "dc+sd-jwt",
+          "id": "cred1",
+          "meta": {
+            "vct_values": [
+              "com.emvco.dpc"
+            ]
+          }
+        }
+      ]
+    },
+    "nonce": "VICJxZXdOrXSygevOEOe7Fwsh3u5PSIuEGUB_z4-1iE",
+    "response_mode": "dc_api",
+    "response_type": "vp_token",
+    "transaction_data": [
+      "eyJ0eXBlIjogInVybjpldWRpOnNjYTpwYXltZW50OjEiLCAiY3JlZGVudGlhbF9pZHMiOiBbImNyZWQxIl0sICJ0cmFuc2FjdGlvbl9kYXRhX2hhc2hlc19hbGciOiBbInNoYS0yNTYiXSwgInBheWxvYWQiOiB7ImFtb3VudCI6IDEyLjUsICJjdXJyZW5jeSI6ICJVU0QiLCAicGF5ZWUiOiB7Im5hbWUiOiAiUm9jayBMZWdlbmRzIiwgImlkIjogIlBheWVlLWlkLTEyMyJ9LCAidHJhbnNhY3Rpb25faWQiOiAiMTIzNDU2Nzg5MCJ9fQ=="
+    ]
+  })";
+  return ParseJsonAndCheck(kJson);
+}
 
+base::Value GenerateDpcExample2() {
+  constexpr char kJson[] = R"({
+    "client_metadata": {
+      "vp_formats_supported": {
+        "dc+sd-jwt": {
+          "sd-jwt_alg_values": [
+            "ES256"
+          ]
+        }
+      }
+    },
+    "dcql_query": {
+      "credentials": [
+        {
+          "format": "dc+sd-jwt",
+          "id": "cred1",
+          "meta": {
+            "vct_values": [
+              "dpc.cred.card"
+            ]
+          }
+        }
+      ]
+    },
+    "nonce": "Q3l91mQygPFDirjtQyvKbZ_K9MDJhr0e_gkBTYLmVv0",
+    "response_mode": "dc_api",
+    "response_type": "vp_token",
+    "transaction_data": [
+      "eyJ0eXBlIjogInVybjpldWRpOnNjYTpwYXltZW50OjEiLCAiY3JlZGVudGlhbF9pZHMiOiBbImNyZWQxIl0sICJ0cmFuc2FjdGlvbl9kYXRhX2hhc2hlc19hbGciOiBbInNoYS0yNTYiXSwgInBheWxvYWQiOiB7ImFtb3VudCI6IDEyLjUsICJjdXJyZW5jeSI6ICJVU0QiLCAicGF5ZWUiOiB7Im5hbWUiOiAiUm9jayBMZWdlbmRzIiwgImlkIjogIlBheWVlLWlkLTEyMyJ9LCAidHJhbnNhY3Rpb25faWQiOiAiMTIzNDU2Nzg5MCJ9fQ=="
+    ]
+  })";
+  return ParseJsonAndCheck(kJson);
+}
+
+base::Value GenerateDpcExample3() {
+  constexpr char kJson[] = R"({
+    "client_metadata": {
+      "vp_formats_supported": {
+        "mso_mdoc": {
+          "deviceauth_alg_values": [
+            -7
+          ],
+          "issuerauth_alg_values": [
+            -7
+          ]
+        }
+      }
+    },
+    "dcql_query": {
+      "credentials": [
+        {
+          "format": "mso_mdoc",
+          "id": "cred1",
+          "meta": {
+            "doctype_value": "com.emvco.dpc"
+          }
+        }
+      ]
+    },
+    "nonce": "JCK8iJuwBQyish5jmcCYIxNBT76ZYfVZliKzrcZMCTw",
+    "response_mode": "dc_api",
+    "response_type": "vp_token",
+    "transaction_data": [
+      "eyJ0eXBlIjogInVybjpldWRpOnNjYTpwYXltZW50OjEiLCAiY3JlZGVudGlhbF9pZHMiOiBbImNyZWQxIl0sICJ0cmFuc2FjdGlvbl9kYXRhX2hhc2hlc19hbGciOiBbInNoYS0yNTYiXSwgInBheWxvYWQiOiB7ImFtb3VudCI6IDEyLjUsICJjdXJyZW5jeSI6ICJVU0QiLCAicGF5ZWUiOiB7Im5hbWUiOiAiUm9jayBMZWdlbmRzIiwgImlkIjogIlBheWVlLWlkLTEyMyJ9LCAidHJhbnNhY3Rpb25faWQiOiAiMTIzNDU2Nzg5MCJ9fQ=="
+    ]
+  })";
+  return ParseJsonAndCheck(kJson);
+}
+
+base::Value GenerateDpcExample1WithOtherData() {
+  constexpr char kJson[] = R"({
+    "client_metadata": {
+      "vp_formats_supported": {
+        "dc+sd-jwt": {
+          "sd-jwt_alg_values": [
+            "ES256"
+          ]
+        }
+      }
+    },
+    "dcql_query": {
+      "credentials": [
+        {
+          "format": "dc+sd-jwt",
+          "id": "cred1",
+          "meta": {
+            "vct_values": [
+              "com.emvco.dpc"
+            ]
+          },
+          "claims": [
+            {
+              "path": [
+                "given_name"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "nonce": "VICJxZXdOrXSygevOEOe7Fwsh3u5PSIuEGUB_z4-1iE",
+    "response_mode": "dc_api",
+    "response_type": "vp_token",
+    "transaction_data": [
+      "eyJ0eXBlIjogInVybjpldWRpOnNjYTpwYXltZW50OjEiLCAiY3JlZGVudGlhbF9pZHMiOiBbImNyZWQxIl0sICJ0cmFuc2FjdGlvbl9kYXRhX2hhc2hlc19hbGciOiBbInNoYS0yNTYiXSwgInBheWxvYWQiOiB7ImFtb3VudCI6IDEyLjUsICJjdXJyZW5jeSI6ICJVU0QiLCAicGF5ZWUiOiB7Im5hbWUiOiAiUm9jayBMZWdlbmRzIiwgImlkIjogIlBheWVlLWlkLTEyMyJ9LCAidHJhbnNhY3Rpb25faWQiOiAiMTIzNDU2Nzg5MCJ9fQ=="
+    ]
+  })";
+  return ParseJsonAndCheck(kJson);
+}
 
 // Does depth-first traversal of nested dicts rooted at `root`. Returns first
 // matching base::Value with key `find_key`.
@@ -700,6 +842,31 @@ TEST_F(DigitalIdentityRequestImplInterstitialTest,
   EXPECT_EQ(ComputeInterstitialType(kOpenid4vpProtocol,
                                     GenerateGetPhoneNumberOpenid4VpRequest()),
             std::nullopt);
+}
+
+TEST_F(DigitalIdentityRequestImplInterstitialTest,
+       Openid4VpProtocolDCQL_ComputeInterstitialType_DpcExample1) {
+  EXPECT_EQ(ComputeInterstitialType(kOpenid4vpProtocol, GenerateDpcExample1()),
+            std::nullopt);
+}
+
+TEST_F(DigitalIdentityRequestImplInterstitialTest,
+       Openid4VpProtocolDCQL_ComputeInterstitialType_DpcExample2) {
+  EXPECT_EQ(ComputeInterstitialType(kOpenid4vpProtocol, GenerateDpcExample2()),
+            std::nullopt);
+}
+
+TEST_F(DigitalIdentityRequestImplInterstitialTest,
+       Openid4VpProtocolDCQL_ComputeInterstitialType_DpcExample3) {
+  EXPECT_EQ(ComputeInterstitialType(kOpenid4vpProtocol, GenerateDpcExample3()),
+            std::nullopt);
+}
+
+TEST_F(DigitalIdentityRequestImplInterstitialTest,
+       Openid4VpProtocolDCQL_ComputeInterstitialType_DpcExample1WithOtherData) {
+  EXPECT_EQ(ComputeInterstitialType(kOpenid4vpProtocol,
+                                    GenerateDpcExample1WithOtherData()),
+            InterstitialType::kLowRisk);
 }
 
 TEST_F(DigitalIdentityRequestImplInterstitialTest,
