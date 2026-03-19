@@ -684,6 +684,38 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, AddMultiple) {
   EXPECT_EQ(3ul, GetAllSubAppIds(parent_app_id_).size());
 }
 
+// Verify that Adding multiple sub-apps with overlapping scopes fails.
+IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, OverlappingScopes) {
+  content::RenderFrameHost* iwa_frame = InstallAndOpenParentIwaApp();
+  BindRemote(iwa_frame);
+
+  ExpectCallAdd({{webapps::ManifestId(GetURLFromPath(kSubAppPath)),
+                  SubAppsServiceResultCode::kSuccess},
+                 {webapps::ManifestId(GetURLFromPath("/sub1/page.html?alt")),
+                  SubAppsServiceResultCode::kFailure}},
+                {{kSubAppPath, kSubAppPath},
+                 {"/sub1/page.html?alt", "/sub1/page.html?alt"}});
+  EXPECT_EQ(1ul, GetAllSubAppIds(parent_app_id_).size());
+}
+
+// Verify that Adding a sub-app with overlapping scope to an already installed
+// sub-app fails.
+IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
+                       OverlappingScopeWithInstalled) {
+  content::RenderFrameHost* iwa_frame = InstallAndOpenParentIwaApp();
+  BindRemote(iwa_frame);
+
+  ExpectCallAdd({{webapps::ManifestId(GetURLFromPath(kSubAppPath)),
+                  SubAppsServiceResultCode::kSuccess}},
+                {{kSubAppPath, kSubAppPath}});
+  EXPECT_EQ(1ul, GetAllSubAppIds(parent_app_id_).size());
+
+  ExpectCallAdd({{webapps::ManifestId(GetURLFromPath("/sub1/page.html?alt")),
+                  SubAppsServiceResultCode::kFailure}},
+                {{"/sub1/page.html?alt", "/sub1/page.html?alt"}});
+  EXPECT_EQ(1ul, GetAllSubAppIds(parent_app_id_).size());
+}
+
 // Verify that Adding a mix of valid and invalid sub-apps works.
 IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
                        AddMultipleWithInvalidSubApps) {
