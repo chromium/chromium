@@ -137,10 +137,12 @@ bool ClearGoogleUpdateStrKey(const wchar_t* const name) {
                                                            : HKEY_CURRENT_USER,
                          install_static::GetClientStateKeyPath().c_str(),
                          KEY_QUERY_VALUE | KEY_SET_VALUE | KEY_WOW64_32KEY);
-  if (result == ERROR_PATH_NOT_FOUND || result == ERROR_FILE_NOT_FOUND)
+  if (result == ERROR_PATH_NOT_FOUND || result == ERROR_FILE_NOT_FOUND) {
     return true;  // The key doesn't exist; consider the value cleared.
-  if (result != ERROR_SUCCESS)
+  }
+  if (result != ERROR_SUCCESS) {
     return false;  // Failed to open the key.
+  }
 
   std::wstring value;
   result = key.ReadValue(name, &value);
@@ -158,10 +160,12 @@ bool RemoveUserGoogleUpdateStrKey(const wchar_t* const name) {
   auto result = key.Open(HKEY_CURRENT_USER,
                          install_static::GetClientStateKeyPath().c_str(),
                          KEY_QUERY_VALUE | KEY_SET_VALUE | KEY_WOW64_32KEY);
-  if (result == ERROR_PATH_NOT_FOUND || result == ERROR_FILE_NOT_FOUND)
+  if (result == ERROR_PATH_NOT_FOUND || result == ERROR_FILE_NOT_FOUND) {
     return true;  // The key doesn't exist; consider the value cleared.
-  if (result != ERROR_SUCCESS)
+  }
+  if (result != ERROR_SUCCESS) {
     return false;  // Failed to open the key.
+  }
 
   std::wstring value;
   return key.ReadValue(name, &value) == ERROR_FILE_NOT_FOUND ||
@@ -196,8 +200,8 @@ bool GetUpdatePolicyFromDword(
 // installs.
 google_update::Tristate GetCollectStatsConsentImpl(
     decltype(&install_static::GetClientStateKeyPath) state_key_fn_ptr,
-    decltype(
-        &install_static::GetClientStateMediumKeyPath) state_medium_key_fn_ptr) {
+    decltype(&install_static::GetClientStateMediumKeyPath)
+        state_medium_key_fn_ptr) {
   const bool system_install = install_static::IsSystemInstall();
   DWORD value = google_update::TRISTATE_NONE;
   bool have_value = false;
@@ -220,8 +224,9 @@ google_update::Tristate GetCollectStatsConsentImpl(
             ERROR_SUCCESS;
   }
 
-  if (!have_value)
+  if (!have_value) {
     return google_update::TRISTATE_NONE;
+  }
 
   return value == google_update::TRISTATE_TRUE ? google_update::TRISTATE_TRUE
                                                : google_update::TRISTATE_FALSE;
@@ -272,8 +277,9 @@ bool GoogleUpdateSettings::SetCollectStatsConsent(bool consented) {
   }
 
   // When opting out, clear registry backup of client id and related values.
-  if (result == ERROR_SUCCESS && !consented)
+  if (result == ERROR_SUCCESS && !consented) {
     StoreMetricsClientInfo(metrics::ClientInfo());
+  }
 
   return (result == ERROR_SUCCESS);
 }
@@ -376,11 +382,14 @@ bool GoogleUpdateSettings::SetEulaConsent(
 
 int GoogleUpdateSettings::GetLastRunTime() {
   std::wstring time_s;
-  if (!ReadUserGoogleUpdateStrKey(google_update::kRegLastRunTimeField, &time_s))
+  if (!ReadUserGoogleUpdateStrKey(google_update::kRegLastRunTimeField,
+                                  &time_s)) {
     return -1;
+  }
   int64_t time_i;
-  if (!base::StringToInt64(time_s, &time_i))
+  if (!base::StringToInt64(time_s, &time_i)) {
     return -1;
+  }
   base::TimeDelta td =
       base::Time::NowFromSystemTime() - base::Time::FromInternalValue(time_i);
   return td.InDays();
@@ -493,8 +502,9 @@ GoogleUpdateSettings::UpdatePolicy GoogleUpdateSettings::GetAppUpdatePolicy(
   }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-  if (is_overridden != nullptr)
+  if (is_overridden != nullptr) {
     *is_overridden = found_override;
+  }
 
   return update_policy;
 }
@@ -569,8 +579,9 @@ bool GoogleUpdateSettings::ReenableAutoupdates() {
         (!GetUpdatePolicyFromDword(value, &update_policy) ||
          update_policy != GoogleUpdateSettings::AUTOMATIC_UPDATES)) {
       ++needs_reset_count;
-      if (policy_key.DeleteValue(kUpdatePolicyValue) == ERROR_SUCCESS)
+      if (policy_key.DeleteValue(kUpdatePolicyValue) == ERROR_SUCCESS) {
         ++did_reset_count;
+      }
     }
 
     // Check the auto-update check period override. If it is 0 or exceeds
@@ -579,8 +590,10 @@ bool GoogleUpdateSettings::ReenableAutoupdates() {
             ERROR_SUCCESS &&
         (value == 0 || value > kCheckPeriodOverrideMinutesMax)) {
       ++needs_reset_count;
-      if (policy_key.DeleteValue(kCheckPeriodOverrideMinutes) == ERROR_SUCCESS)
+      if (policy_key.DeleteValue(kCheckPeriodOverrideMinutes) ==
+          ERROR_SUCCESS) {
         ++did_reset_count;
+      }
     }
 
     // Return whether the number of successful resets is the same as the
@@ -611,11 +624,13 @@ std::wstring GoogleUpdateSettings::GetDownloadPreference() {
           ERROR_SUCCESS) {
     // Validates that |value| matches `[a-zA-z]{0-32}`.
     const size_t kMaxValueLength = 32;
-    if (value.size() > kMaxValueLength)
+    if (value.size() > kMaxValueLength) {
       return std::wstring();
+    }
     for (auto ch : value) {
-      if (!base::IsAsciiAlpha(ch))
+      if (!base::IsAsciiAlpha(ch)) {
         return std::wstring();
+      }
     }
     return value;
   }

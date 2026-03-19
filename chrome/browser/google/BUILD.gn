@@ -76,13 +76,6 @@ source_set("google") {
       "//chrome/updater:tagging",
     ]
   }
-
-  if (is_posix) {
-    sources += [ "google_update_settings_posix.cc" ]
-  }
-  if (is_posix) {
-    deps += [ "//components/crash/core/app" ]
-  }
 }
 
 source_set("unit_tests") {

@@ -104,10 +104,13 @@ if (is_win) {
 static_library("with_no_strings") {
   public_deps = [ ":constants" ]
 
+  sources = [ "google_update_settings.h" ]
+
   deps = [
     "//base",
     "//chrome:strings",
     "//chrome/common:constants",
+    "//components/metrics:client_info",
     "//components/variations",
     "//third_party/abseil-cpp:absl",
   ]
@@ -117,7 +120,7 @@ static_library("with_no_strings") {
   allow_circular_includes_from = [ "//chrome/common:constants" ]
 
   if (is_win) {
-    sources = [
+    sources += [
       "additional_parameters.cc",
       "additional_parameters.h",
       "advanced_firewall_manager_win.cc",
@@ -134,8 +137,7 @@ static_library("with_no_strings") {
       "delete_old_versions.h",
       "firewall_manager_win.cc",
       "firewall_manager_win.h",
-      "google_update_settings.cc",
-      "google_update_settings.h",
+      "google_update_settings_win.cc",
       "google_update_util.cc",
       "google_update_util.h",
       "helper.cc",
@@ -185,7 +187,6 @@ static_library("with_no_strings") {
       "//chrome/install_static:install_static_util",
       "//components/app_launch_prefetch",
       "//components/base32",
-      "//components/metrics:client_info",
       "//components/version_info:channel",
       "//crypto",
       "//rlz/buildflags",
@@ -199,10 +200,13 @@ static_library("with_no_strings") {
 
     configs += [ "//build/config:precompiled_headers" ]
   } else {
-    sources = [
+    sources += [
+      "google_update_settings_posix.cc",
       "initial_preferences.cc",
       "initial_preferences.h",
     ]
+
+    deps += [ "//components/crash/core/app" ]
   }
 }
 
