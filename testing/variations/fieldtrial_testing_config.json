@@ -2242,7 +2242,20 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "AutofillAiWithDataSchema"
+                        "AutofillAiAvailableByDefault",
+                        "AutofillAiDedupeEntities",
+                        "AutofillAiReauthRequired",
+                        "AutofillAiServerModel",
+                        "AutofillAiVoteForFormatStringsForFlightNumbers",
+                        "AutofillAiWalletFlightReservation",
+                        "AutofillAiWalletVehicleRegistration",
+                        "AutofillAiWithDataSchema",
+                        "FormsClassificationsMqlsLogging",
+                        "IPH_AutofillAiValuables",
+                        "SyncAccountSettings",
+                        "SyncAutofillValuableMetadata",
+                        "SyncWalletFlightReservations",
+                        "SyncWalletVehicleRegistrations"
                     ]
                 }
             ]

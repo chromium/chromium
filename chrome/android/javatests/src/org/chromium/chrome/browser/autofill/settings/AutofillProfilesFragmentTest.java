@@ -1396,6 +1396,7 @@ public class AutofillProfilesFragmentTest {
         when(sEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
         when(sEntityDataManager.isEligibleToAutofillAi()).thenReturn(true);
         when(sEntityDataManager.getAutofillAiOptInStatus()).thenReturn(true);
+        when(sEntityDataManager.canEnableOrDisableAutofillAi()).thenReturn(true);
         EntityDataManagerFactory.setInstanceForTesting(sEntityDataManager);
 
         // Trigger a rebuild of the profile list to pick up the new mock entities.
