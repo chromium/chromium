@@ -1436,65 +1436,64 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
                               raster_context_provider->ContextSupport(),
                               std::move(destination_access));
     return true;
-  } else {
-    // Take the two-copy path:
-    // * Copy the source SharedImage to a single-planar SI that's usable by GL
-    // * Perform a direct texture-to-texture copy from the intermediate SI
-    //   to the destination GL texture
-    DCHECK_EQ(shared_image->surface_origin(), kTopLeft_GrSurfaceOrigin);
-    gpu::raster::RasterInterface* canvas_ri =
-        raster_context_provider->RasterInterface();
-    DCHECK(canvas_ri);
-
-    // Create the intermediate rgb shared image cache if not already present.
-    if (!rgb_shared_image_cache_) {
-      rgb_shared_image_cache_ = std::make_unique<VideoFrameSharedImageCache>();
-    }
-
-    // This SI is used to cache the VideoFrame. We copy the contents of the
-    // source VideoFrame into the cached SI over the raster interface and will
-    // eventually read out its contents into a destination GL texture via the
-    // GLES2 interface.
-    gpu::SharedImageUsageSet src_usage = gpu::SHARED_IMAGE_USAGE_GLES2_READ |
-                                         gpu::SHARED_IMAGE_USAGE_RASTER_WRITE;
-    auto [rgb_shared_image, rgb_sync_token, status] =
-        rgb_shared_image_cache_->GetOrCreateSharedImage(
-            video_frame.get(), raster_context_provider, src_usage,
-            SHARED_IMAGE_FORMAT, kPremul_SkAlphaType,
-            video_frame->CompatRGBColorSpace());
-    CHECK(rgb_shared_image);
-
-    // Copy the source video frame into the intermediate (cached) SI if
-    // necessary and generate the sync token that the following GL access of
-    // that cached SI will wait on.
-    gpu::SyncToken sync_token = rgb_sync_token;
-    if (status != VideoFrameSharedImageCache::Status::kMatchedVideoFrameId) {
-      // Cache miss: Copy the VideoFrame into the cached SI and ensure that the
-      // GL access below waits on the copy operation to complete.
-      sync_token =
-          CopyVideoFrameToSharedImage(raster_context_provider, video_frame,
-                                      rgb_shared_image, rgb_sync_token,
-                                      /*use_visible_rect=*/false);
-    }
-
-    // Wait for mailbox creation on canvas context before consuming it and
-    // copying from it on the consumer context.
-    gpu::SyncToken dest_sync_token =
-        destination_gl->CopySharedImageToGLTextureViaTextureCopy(
-            video_frame->visible_rect(), rgb_shared_image.get(), sync_token,
-            target, texture, internal_format, format, type, level,
-            dst_alpha_type, dst_origin);
-
-    // Update the `rgb_sync_token` to be waited upon based on gles tasks
-    // performed earlier.
-    rgb_shared_image_cache_->UpdateSyncToken(dest_sync_token);
-
-    // We do not need to synchronize video frame read here since it's already
-    // taken care of earlier.
-    // Kick off a timer to release the cache.
-    cache_deleting_timer_.Reset();
-    return true;
   }
+
+  // Take the two-copy path:
+  // * Copy the source SharedImage to a single-planar SI that's usable by GL
+  // * Perform a direct texture-to-texture copy from the intermediate SI
+  //   to the destination GL texture
+  DCHECK_EQ(shared_image->surface_origin(), kTopLeft_GrSurfaceOrigin);
+  gpu::raster::RasterInterface* canvas_ri =
+      raster_context_provider->RasterInterface();
+  DCHECK(canvas_ri);
+
+  // Create the intermediate rgb shared image cache if not already present.
+  if (!rgb_shared_image_cache_) {
+    rgb_shared_image_cache_ = std::make_unique<VideoFrameSharedImageCache>();
+  }
+
+  // This SI is used to cache the VideoFrame. We copy the contents of the
+  // source VideoFrame into the cached SI over the raster interface and will
+  // eventually read out its contents into a destination GL texture via the
+  // GLES2 interface.
+  gpu::SharedImageUsageSet src_usage =
+      gpu::SHARED_IMAGE_USAGE_GLES2_READ | gpu::SHARED_IMAGE_USAGE_RASTER_WRITE;
+  auto [rgb_shared_image, rgb_sync_token, status] =
+      rgb_shared_image_cache_->GetOrCreateSharedImage(
+          video_frame.get(), raster_context_provider, src_usage,
+          SHARED_IMAGE_FORMAT, kPremul_SkAlphaType,
+          video_frame->CompatRGBColorSpace());
+  CHECK(rgb_shared_image);
+
+  // Copy the source video frame into the intermediate (cached) SI if
+  // necessary and generate the sync token that the following GL access of
+  // that cached SI will wait on.
+  gpu::SyncToken sync_token = rgb_sync_token;
+  if (status != VideoFrameSharedImageCache::Status::kMatchedVideoFrameId) {
+    // Cache miss: Copy the VideoFrame into the cached SI and ensure that the
+    // GL access below waits on the copy operation to complete.
+    sync_token = CopyVideoFrameToSharedImage(
+        raster_context_provider, video_frame, rgb_shared_image, rgb_sync_token,
+        /*use_visible_rect=*/false);
+  }
+
+  // Wait for mailbox creation on canvas context before consuming it and
+  // copying from it on the consumer context.
+  gpu::SyncToken dest_sync_token =
+      destination_gl->CopySharedImageToGLTextureViaTextureCopy(
+          video_frame->visible_rect(), rgb_shared_image.get(), sync_token,
+          target, texture, internal_format, format, type, level, dst_alpha_type,
+          dst_origin);
+
+  // Update the `rgb_sync_token` to be waited upon based on gles tasks
+  // performed earlier.
+  rgb_shared_image_cache_->UpdateSyncToken(dest_sync_token);
+
+  // We do not need to synchronize video frame read here since it's already
+  // taken care of earlier.
+  // Kick off a timer to release the cache.
+  cache_deleting_timer_.Reset();
+  return true;
 }
 
 bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
