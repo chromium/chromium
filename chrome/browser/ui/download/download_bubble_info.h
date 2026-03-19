@@ -37,10 +37,8 @@ class DownloadBubbleInfo {
 
  protected:
   template <typename ObserverMethod, typename... Args>
-  void NotifyObservers(ObserverMethod&& method, Args&&... args) {
-    for (Observer& obs : observers_) {
-      std::invoke(method, obs, std::forward<Args>(args)...);
-    }
+  void NotifyObservers(ObserverMethod method, Args&&... args) {
+    observers_.Notify(method, std::forward<Args>(args)...);
   }
 
  private:

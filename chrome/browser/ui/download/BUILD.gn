@@ -60,6 +60,7 @@ source_set("impl") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "download_bubble_info_unittest.cc",
     "download_bubble_row_list_view_info_unittest.cc",
     "download_bubble_row_view_info_unittest.cc",
     "download_bubble_security_view_info_unittest.cc",
