@@ -372,9 +372,16 @@ No modifications.
     }
 
     static String make3ppFetch(Template fetchTemplate, ChromiumDepGraph.DependencyDescription dependency) {
+        String fileExt = dependency.extension
+        if (dependency.id == 'org_mockito_mockito_android') {
+            // In mockito-andorid 5.23, the artifact went from a jar to an aar, but 5.23 is a breaking change
+            // that we don't support yet. When we update our version to 5.23 we can remove this special case.
+            fileExt = 'aar'
+        }
         Map bindMap = [
                 copyrightHeader: COPYRIGHT_HEADER,
                 dependency: dependency,
+                fileExt: fileExt,
         ]
         return fetchTemplate.make(bindMap).toString()
     }
