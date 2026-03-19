@@ -440,7 +440,7 @@ bool GlicInstanceImpl::Toggle(ShowOptions&& options,
     return false;
   }
 
-  service_->metrics()->OnGlicWindowStartedOpening(/*attached=*/false, source);
+  service_->metrics()->OnInstanceOpened();
 
   // We assume that a toggle is user initiated so focus on show.
   options.focus_on_show = true;

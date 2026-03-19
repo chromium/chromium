@@ -341,6 +341,10 @@ class GlicMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   // ----Public API called by other glic classes-----
   // Called when the user completes the onboarding flow (consents).
   void OnTrustFirstOnboardingAccept();
+  // Called when any instance is opened. This method is used to track whether an
+  // FRE onboarding is going to be shown. If an FRE onboarding is already shown,
+  // this method is idempotent.
+  void OnInstanceOpened();
   // Called when any instance is closed. This method is idempotent. If
   // trust-first FRE was shown and not accepted, this metric logs a dismiss
   // metric, and then clears the bit tracking FRE open.
@@ -418,10 +422,10 @@ class GlicMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   void SetWebClientMode(mojom::WebClientMode mode);
 
  private:
-  // Called when any instance is opened. This method is used to track whether an
-  // FRE onboarding is going to be shown. If an FRE onboarding is already shown,
-  // this method is idempotent.
-  void OnInstanceOpened();
+  // Called when the "Trust-First Onboarding" flow is shown (side panel). This
+  // relies on the assumption that the logic governing when this method is
+  // called matches the logic for showing the trust-first FRE.
+  void OnTrustFirstOnboardingShown();
 
   // Called when `impression_timer_` fires.
   void OnImpressionTimerFired();
