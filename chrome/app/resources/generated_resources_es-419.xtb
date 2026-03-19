@@ -1041,7 +1041,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1686785653877010442">Por lo general, los sitios envían notificaciones sobre noticias de último momento o mensajes de chat.</translation>
 <translation id="168715261339224929">Activa la sincronización para que tus favoritos estén en todos tus dispositivos.</translation>
 <translation id="1688935057616748272">Escribe una letra</translation>
-<translation id="1689333818294560261">Sobrenombre</translation>
+<translation id="1689333818294560261">Alias</translation>
 <translation id="168991973552362966">Agregar una impresora cercana</translation>
 <translation id="1689945336726856614">Copiar &amp;URL</translation>
 <translation id="1690068335127678634">Configuración de pantalla dividida</translation>
@@ -4467,6 +4467,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">Calculando...</translation>
+<translation id="3971154761614127188">Es posible que algunas funciones ralenticen los sitios desconocidos.</translation>
 <translation id="3971355433478412726">Instrucciones para Gemini</translation>
 <translation id="3971764089670057203">Huellas digitales en esta llave de seguridad</translation>
 <translation id="3973005893595042880">El usuario no está habilitado</translation>
@@ -8443,7 +8444,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6745592621698551453">Actualizar ahora</translation>
 <translation id="6746124502594467657">Mover hacia abajo</translation>
 <translation id="67465227497040338">Mostrar contraseña de <ph name="DOMAIN" /></translation>
-<translation id="6746834324024491643">Para ver tus contraseñas y más en todos tus dispositivos, accede como <ph name="EMAIL" /></translation>
+<translation id="6746834324024491643">Para obtener tus contraseñas y más en todos tus dispositivos, accede como <ph name="EMAIL" /></translation>
 <translation id="6748980958975836188">Leí y acepté las <ph name="BEGIN_LINK1" />Condiciones del Servicio de Google<ph name="END_LINK1" /> y las <ph name="BEGIN_LINK2" />Condiciones del Servicio Adicionales de Chrome y ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="6749077623962119521">¿Deseas restablecer los permisos?</translation>
 <translation id="6749473226660745022">Fotos</translation>
@@ -10014,6 +10015,7 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="7800518121066352902">Girar &amp;a la izquierda</translation>
 <translation id="780301667611848630">No, gracias</translation>
 <translation id="7803657407897251194">Para continuar la configuración con tu dispositivo Android, conecta tu <ph name="DEVICE_TYPE" /> a una red</translation>
+<translation id="7803714812705886512">Google usa menos datos (por ejemplo, partes de URLs, información de descargas) para detectar amenazas.</translation>
 <translation id="7804072833593604762">Pestaña cerrada</translation>
 <translation id="7805371082115476536">Ligero</translation>
 <translation id="7805768142964895445">Estado</translation>
@@ -10038,6 +10040,7 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="7820400255539998692">Borra <ph name="FILENAME" /> para que las otras personas que usan este dispositivo no puedan ver tus contraseñas</translation>
 <translation id="7820561748632634942">¿Deseas asignar interruptores adicionales?</translation>
 <translation id="782057141565633384">Copiar dirección del video</translation>
+<translation id="7823975162954158194">Otorga una protección sólida.</translation>
 <translation id="7824665136384946951">Tu organización desactivó la Navegación segura</translation>
 <translation id="7824864914877854148">No se pudo completar la copia de seguridad debido a un error</translation>
 <translation id="7825289983414309119">Montaña</translation>
@@ -10183,7 +10186,7 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="792514962475806987">Nivel de zoom en vista acoplada:</translation>
 <translation id="7925285046818567682">Esperando <ph name="HOST_NAME" />...</translation>
 <translation id="7926423016278357561">No era yo.</translation>
-<translation id="7926975587469166629">Sobrenombre de la tarjeta</translation>
+<translation id="7926975587469166629">Alias de la tarjeta</translation>
 <translation id="7928175190925744466">¿Ya cambiaste esta contraseña?</translation>
 <translation id="7929468958996190828">Puedes <ph name="BEGIN_LINK" />actualizar ahora<ph name="END_LINK" /> o volver a intentarlo más tarde cuando abras nuevas pestañas similares</translation>
 <translation id="7929962904089429003">Abrir el menú</translation>
@@ -11196,6 +11199,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8601206103050338563">Autenticación de cliente TLS WWW</translation>
 <translation id="8602674530529411098">Apps (beta)</translation>
 <translation id="8602851771975208551">Otro programa en tu computadora agregó una app que puede cambiar el funcionamiento de Chrome.</translation>
+<translation id="8602867356511778172">Google usa más datos (por ejemplo, URLs, muestras de contenido de páginas, información del sistema) para detectar amenazas de forma más rápida y precisa.</translation>
 <translation id="860399903490378651">Cerrar esta vista</translation>
 <translation id="8605428685123651449">Memoria usada por SQLite</translation>
 <translation id="8607171490667464784">Mientras esté inactivo y usando la batería</translation>

@@ -81,7 +81,7 @@
 <translation id="1131264053432022307">您复制的图片</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> - 如需退出全屏模式，请从顶部拖动，然后轻触返回按钮</translation>
 <translation id="1133418583142946603">添加当前标签页</translation>
-<translation id="1137064693271855979">是否要与所有对话串分享打开的相关标签页，以获得更优质的回答？</translation>
+<translation id="1137064693271855979">是否要分享已打开的相关标签页，以便在所有对话中获得更优质的回答？</translation>
 <translation id="1138458427267715730">当网络中任一网站上的商品降价时，您会收到提醒</translation>
 <translation id="1142713751288681188">纸张类型</translation>
 <translation id="1142965388643537393">旅行信息</translation>
@@ -239,7 +239,7 @@
 <translation id="1363015776076529485">支付方式列表已按最大高度显示，选中一种支付方式即可继续付款。</translation>
 <translation id="1363028406613469049">跟踪</translation>
 <translation id="1364822246244961190">此政策已被禁用，其值也会被忽略。</translation>
-<translation id="1367909869526928761">选择 AI 模式如何使用打开的相关标签页</translation>
+<translation id="1367909869526928761">选择 AI 模式如何使用已打开的相关标签页</translation>
 <translation id="1368318639262510626">恐龙游戏。在这款游戏中，您要协助一头正在荒野中奔跑的像素化恐龙躲避仙人掌和翼手龙。您只需在听到提示音时按一下空格键，即可让恐龙跃过障碍物。</translation>
 <translation id="1374468813861204354">建议</translation>
 <translation id="1375198122581997741">关于版本</translation>
@@ -596,7 +596,7 @@
 <translation id="1945968466830820669">您可能会无法再访问所属组织的账号，或被他人盗用身份信息。Chromium 建议您立即更改密码。</translation>
 <translation id="1946849748901605102">12 x 15 英寸</translation>
 <translation id="1947454675006758438">钉装（右上角）</translation>
-<translation id="1950524225823308149">与每个对话串分享打开的标签页</translation>
+<translation id="1950524225823308149">允许所有对话访问已打开的标签页</translation>
 <translation id="1953729392594614704">屏蔽“<ph name="TOPIC" />”会同时屏蔽所有相关的主题，即使该主题处于活跃状态也是如此</translation>
 <translation id="1954847915560574887">A3x3</translation>
 <translation id="1955773397805078763">添加支付方式</translation>
@@ -649,7 +649,7 @@
 <translation id="2040894699575719559">已阻止获取位置信息</translation>
 <translation id="2041788246978549610">使用可用的麦克风（<ph name="MICS_COUNT" /> 个）</translation>
 <translation id="2042213636306070719">纸匣 7</translation>
-<translation id="2043091580538548438">即使标签页处于打开状态，系统也不会参考此处添加的网站来生成回答。</translation>
+<translation id="2043091580538548438">此处添加的网站即使处于打开状态，系统在生成回复时也不会将其作为参考。</translation>
 <translation id="2045871135676061132">Personal 信封</translation>
 <translation id="2046951263634619614">图书零售商</translation>
 <translation id="2048261947532620704">正在翻译网页</translation>
@@ -1131,7 +1131,7 @@
 <translation id="2768397283109119044">您试图访问 <ph name="DOMAIN" />，但服务器提供的为该名称颁发的证书无效。该名称是预留的 IP 地址或内部主机名。</translation>
 <translation id="2770159525358613612">尝试重新上传文件</translation>
 <translation id="277133753123645258">送货方式</translation>
-<translation id="2772464848856512911">是否要与每个对话串分享打开的标签页？</translation>
+<translation id="2772464848856512911">是否要允许所有对话访问已打开的标签页？</translation>
 <translation id="277499241957683684">缺少设备记录</translation>
 <translation id="2775884851269838147">最先打印的页面</translation>
 <translation id="277828055419948999">Chromium 可自动填充标准自动填充功能可能会遗漏的复杂字段</translation>
@@ -1266,7 +1266,7 @@
 <translation id="3005723025932146533">显示已保存的版本</translation>
 <translation id="300580149047131921">最近使用过</translation>
 <translation id="3006864083554020786">住址</translation>
-<translation id="3007110814003834680">排除的网站</translation>
+<translation id="3007110814003834680">排除网站</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />，按 Tab 键浏览可执行的操作，然后按 Enter 键执行选定的操作。</translation>
 <translation id="3010991137650052245">如要在此网站上使用您的<ph name="PERMISSION" />，请授予 <ph name="SHORT_PRODUCT_NAME" /> 访问权限</translation>
 <translation id="3013711734159931232">家居用品</translation>
@@ -1380,7 +1380,7 @@
       <ph name="PLATFORM_TEXT" /></translation>
 <translation id="317878711435188021">了解您何时在主动使用此设备</translation>
 <translation id="3180358318770512945">育儿</translation>
-<translation id="3181543705317761806">AI 会根据网页内容生成回答。</translation>
+<translation id="3181543705317761806">让 AI 结合网页内容，为您生成个性化回答。</translation>
 <translation id="3182185041786697613">要保存安全码吗？</translation>
 <translation id="3185635157430775689">计算机组件</translation>
 <translation id="3190736958609431397">取消跟踪</translation>
@@ -1591,7 +1591,7 @@
 <translation id="3532624859962632484">访问本地网络中的其他设备</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> 想使用您的麦克风</translation>
 <translation id="3533328374079021623">信箱 5</translation>
-<translation id="3535233022130619049">默认分享打开的标签页，可在每个对话串中更快获得更贴合需求的回答。您可以随时在 Chrome 设置中更改这项设置。</translation>
+<translation id="3535233022130619049">默认分享已打开的标签页，以便在所有对话中获得更快速、更贴合需求的回答。您可以随时在 Chrome 设置中更改这项设置。</translation>
 <translation id="3536227077203206203">这次可以使用</translation>
 <translation id="3537165859691846083">Letter Plus</translation>
 <translation id="353816159217417898">屏幕（分页）</translation>
@@ -1770,7 +1770,7 @@
 <translation id="3789841737615482174">安装</translation>
 <translation id="3791118028061680614">无需切换应用即可付款</translation>
 <translation id="3792100426446126328"><ph name="NAME" />（<ph name="WIDTH" /> x <ph name="HEIGHT" /> 英寸）</translation>
-<translation id="3792251736135878332">所有对话串会参考打开的相关标签页提供个性化回答</translation>
+<translation id="3792251736135878332">系统会参考已打开的相关标签页，以便在所有对话中提供个性化回答</translation>
 <translation id="3792826587784915501">邪典电影与独立电影</translation>
 <translation id="3793574014653384240">近期发生崩溃的次数和原因</translation>
 <translation id="3795624560191557077">您最近更改的密码已在某次公开数据泄露事件中外泄。如果您遇到问题，Google 密码管理工具可以帮助您登录。</translation>
@@ -1937,7 +1937,7 @@
 <translation id="406358100705415968">工作安全防护装备</translation>
 <translation id="4065429683324339709">Google Chrome 需要先验证您的身份，才能更改设置</translation>
 <translation id="4065659219963895623">餐馆</translation>
-<translation id="4065914898561361692">不自动分享打开的相关标签页（默认）</translation>
+<translation id="4065914898561361692">不自动分享已打开的相关标签页（默认）</translation>
 <translation id="4067774859633143413">若要退出全屏模式并查看下载内容，请按住 |<ph name="ACCELERATOR" />|</translation>
 <translation id="4067947977115446013">添加有效地址</translation>
 <translation id="4072486802667267160">处理您的订单时出错。请重试。</translation>
@@ -2511,7 +2511,7 @@
 <translation id="4968665849807487749">可以询问能否管理您的所有显示屏上的窗口</translation>
 <translation id="4969341057194253438">删除录屏</translation>
 <translation id="4973922308112707173">双孔（顶部）</translation>
-<translation id="4975266898030581282">正在参考打开的相关标签页</translation>
+<translation id="4975266898030581282">正在参考已打开的相关标签页</translation>
 <translation id="4976702386844183910">上次访问日期：<ph name="DATE" /></translation>
 <translation id="4983145717627482381">旅行团和陪同度假</translation>
 <translation id="498323057460789381">架构验证错误：<ph name="ERROR" /></translation>
@@ -2751,7 +2751,7 @@
 <translation id="5351548097010183514">建材和建筑用品</translation>
 <translation id="5354143049423063163">对冲基金</translation>
 <translation id="5355557959165512791">您目前无法访问 <ph name="SITE" />，因为此证书已被撤消。网络错误和攻击行为通常是暂时的，因此，此网页稍后可能会恢复正常。</translation>
-<translation id="5359752295193133096">默认分享打开的相关标签页，可以更快获得更贴合需求的回答。</translation>
+<translation id="5359752295193133096">默认分享已打开的相关标签页，即可获得更快速、更贴合需求的回答。</translation>
 <translation id="5360706051680403227">灯具及照明设备</translation>
 <translation id="536296301121032821">无法存储策略设置</translation>
 <translation id="5363148545938487338">Salesforce</translation>
@@ -2895,7 +2895,7 @@
 <translation id="5551890439174915351">100 x 200 毫米</translation>
 <translation id="5554520618550346933">如果 Chrome 发现您使用的某个密码已被发布到网上，就会发出警告。在这个过程中，您的密码和用户名始终加密，任何人员/任何一方（包括 Google）都无法读取。</translation>
 <translation id="5556459405103347317">重新加载</translation>
-<translation id="5556843284826862956">人工审核员可能会查看对话串，以改进 Google AI</translation>
+<translation id="5556843284826862956">人工审核员可能会查看对话，以改进 Google AI</translation>
 <translation id="5558083606899411167">空调</translation>
 <translation id="5558125320634132440">此网站已被屏蔽，因为它可能含有少儿不宜的内容</translation>
 <translation id="5559311991468302423">删除此地址</translation>
@@ -3134,7 +3134,7 @@
 <translation id="5968022600320704045">无搜索结果</translation>
 <translation id="5968400720580217226">AI 模式</translation>
 <translation id="5969199813874624822">保存并跟踪价格</translation>
-<translation id="5969933937005244170">只有在对话串中分享打开的相关标签页，系统才会使用这些标签页</translation>
+<translation id="5969933937005244170">只有当你在对话中分享了已打开的相关标签页时，系统才会使用这些标签页</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">第 6 卷</translation>
 <translation id="5975083100439434680">缩小</translation>
@@ -3364,7 +3364,7 @@
 <translation id="6327065120806001832">本地网络访问权限</translation>
 <translation id="6328639280570009161">请尝试停用网络联想查询功能</translation>
 <translation id="6329815962353376655">&lt;输入问题&gt;</translation>
-<translation id="6331597954316706229">为获得最贴合个人需求的回答，请允许所有对话串参考您打开的相关标签页。</translation>
+<translation id="6331597954316706229">为获得最贴合个人需求的回答，请允许所有对话参考您已打开的相关标签页。</translation>
 <translation id="633348045801643466">在结账时显示<ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />先买后付<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" />选项</translation>
 <translation id="6335029926534404762">运动鞋</translation>
 <translation id="6336948221660696475">不允许使用 VR</translation>
@@ -3393,7 +3393,7 @@
 <translation id="6366710531182496394">双钉（左侧）</translation>
 <translation id="6367196786591004737">删除条目</translation>
 <translation id="6370022303958842211">设备访问操作，例如登录（包括登录失败的原因）、退出、锁定和解锁</translation>
-<translation id="6372779601614872746">分享打开的相关标签页</translation>
+<translation id="6372779601614872746">分享已打开的相关标签页</translation>
 <translation id="6374469231428023295">重试</translation>
 <translation id="6374865374745447009">窗口管理</translation>
 <translation id="6376881782310775282">无法访问此应用的开发服务器</translation>
@@ -3413,7 +3413,7 @@
 <translation id="6390533465682072118">恢复</translation>
 <translation id="639068771471208680">多部分表单</translation>
 <translation id="6391700400718590966">“无匹配的安全付款凭证”表单已关闭</translation>
-<translation id="6391911601916058725">始终分享打开的相关标签页？</translation>
+<translation id="6391911601916058725">始终分享已打开的相关标签页？</translation>
 <translation id="6392799395081100092">纸（牛皮纸）</translation>
 <translation id="6393156038355142111">建议一个安全系数高的密码</translation>
 <translation id="6393310910507376797">商家不支持</translation>
@@ -3685,7 +3685,7 @@
 <translation id="6820143000046097424">串行端口</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6820949753458790123">轻松分期付款</translation>
-<translation id="6822745163454377107">与此对话串分享您打开的标签页，可以更快获得更贴合需求的回答。</translation>
+<translation id="6822745163454377107">允许本次对话访问您已打开的标签页，即可获得更快速、更贴合需求的回答。</translation>
 <translation id="6825578344716086703">您尝试访问的是 <ph name="DOMAIN" />，但是服务器出示的证书是使用弱签名算法（例如 SHA-1）签署的。这意味着服务器出示的安全凭据可能是伪造的，因此这可能并不是您想要访问的服务器（您可能正在与攻击者进行通信）。</translation>
 <translation id="6826993739343257035">允许 AR？</translation>
 <translation id="6828150717884939426">致电</translation>
@@ -3838,7 +3838,7 @@
 <translation id="7062344833049251424">若想在下次购物时更快捷地付款，请将您的付款卡信息和账单邮寄地址保存到 Google 钱包中</translation>
 <translation id="706295145388601875">在 Chrome 设置中添加和管理地址</translation>
 <translation id="7063157783216323487">绿色 2</translation>
-<translation id="7064111249130685461">为获得最贴合个人需求的回答，请允许此对话串参考您打开的标签页。</translation>
+<translation id="7064111249130685461">为获得最贴合个人需求的回答，请允许此对话参考您已打开的标签页。</translation>
 <translation id="7064443976734085921">紧凑型汽车</translation>
 <translation id="7064851114919012435">联系信息</translation>
 <translation id="7067633076996245366">灵魂乐与 R&amp;B</translation>
@@ -4160,7 +4160,7 @@
 <translation id="753714465667062283">登录后即可保存照片</translation>
 <translation id="7537536606612762813">强制</translation>
 <translation id="7543525346216957623">需要家长同意</translation>
-<translation id="7544639168115776013">默认分享打开的相关标签页，可在每个对话串中更快获得更贴合需求的回答。</translation>
+<translation id="7544639168115776013">默认分享已打开的相关标签页，即可在所有对话中获得更快速、更贴合需求的回答。</translation>
 <translation id="7546409722674205727">正在启动<ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">修正网络连接错误</translation>
 <translation id="7549584377607005141">此网页需要使用您之前输入的数据才能正常显示。您可以重新发送这些数据，不过，这么做会重复执行此网页之前执行过的所有操作。</translation>
@@ -4363,7 +4363,7 @@
 <translation id="7846161022626028328">出错了，请重试。</translation>
 <translation id="784623644169604270">近期无活动</translation>
 <translation id="7848926355794727168">自动浏览</translation>
-<translation id="7849695969708971789">所有对话串将参考打开的相关标签页提供个性化回答</translation>
+<translation id="7849695969708971789">系统将参考已打开的相关标签页，以便在所有对话中提供个性化回答</translation>
 <translation id="7853222852810008596">先买后付服务不支持此币种</translation>
 <translation id="785476343534277563">学院体育</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
@@ -4904,7 +4904,7 @@
 <translation id="8751426954251315517">请稍后重试</translation>
 <translation id="8753913772043329557">政策日志</translation>
 <translation id="8754546574216727970">靴子</translation>
-<translation id="8755119102172890580">自动分享打开的相关标签页</translation>
+<translation id="8755119102172890580">自动分享已打开的相关标签页</translation>
 <translation id="8755125092386286553">A4x9</translation>
 <translation id="875657606603537618">嵌入式内容</translation>
 <translation id="8757526089434340176">有可用的 Google Pay 优惠</translation>
@@ -5188,7 +5188,7 @@
 <translation id="9204089334327209740">上传完成后，您可以在<ph name="CLOUD_PROVIDER" />中修改文件。本地存储空间（包括回收站中的所有文件）将被自动移除。</translation>
 <translation id="9205078245616868884">您的数据已使用您的同步密码加密。输入该密码即可开始同步。</translation>
 <translation id="920643408853370361">旅行保险</translation>
-<translation id="9206639970165643781">是否要与此对话串分享打开的相关标签页，以获得更优质的回答？</translation>
+<translation id="9206639970165643781">是否要分享已打开的相关标签页，以便在此对话中获得更优质的回答？</translation>
 <translation id="9207861905230894330">无法添加文章。</translation>
 <translation id="9209339767782560829">使用您的登录证书时出现问题。</translation>
 <translation id="9210152531668884481">保存</translation>

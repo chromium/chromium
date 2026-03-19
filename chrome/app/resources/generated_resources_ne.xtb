@@ -4468,6 +4468,7 @@
 <translation id="3968739731834770921">काना</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">हिसाब गर्दै...</translation>
+<translation id="3971154761614127188">केही सुविधाहरूले अपरिचित साइटहरू सुस्त बनाउन सक्छन्</translation>
 <translation id="3971355433478412726">Gemini लाई दिइने निर्देशनहरू</translation>
 <translation id="3971764089670057203">यो सुरक्षा साँचोमा भएका फिंगरप्रिन्टहरू</translation>
 <translation id="3973005893595042880">यी प्रयोगकर्तालाई VM चलाउने अनुमति दिइएको छैन</translation>
@@ -10013,6 +10014,7 @@
 <translation id="7800518121066352902">वा&amp;मावर्त घुमाउनुहोस्</translation>
 <translation id="780301667611848630">पर्दैन, धन्यवाद</translation>
 <translation id="7803657407897251194">आफ्नो Android डिभाइस प्रयोग गरी सेटअप गर्ने प्रक्रिया जारी राख्न आफ्नो <ph name="DEVICE_TYPE" /> कुनै नेटवर्कमा कनेक्ट गर्नुहोस्</translation>
+<translation id="7803714812705886512">Google ले खतराहरू पत्ता लगाउन कम डेटा (जस्तै, URL का अंश, डाउनलोडसम्बन्धी जानकारी) प्रयोग गर्छ</translation>
 <translation id="7804072833593604762">ट्याब बन्द गरियो</translation>
 <translation id="7805371082115476536">हल्का</translation>
 <translation id="7805768142964895445">स्थिति</translation>
@@ -10037,6 +10039,7 @@
 <translation id="7820400255539998692">यो डिभाइस प्रयोग गर्ने अन्य व्यक्तिहरूले तपाईंको पासवर्ड देख्न नसकून् भन्नाका लागि <ph name="FILENAME" /> मेटाउनुहोस्</translation>
 <translation id="7820561748632634942">थप स्विचहरू असाइन गर्ने हो?</translation>
 <translation id="782057141565633384">भिडियो ठेगाना कपी गर्नुहोस्</translation>
+<translation id="7823975162954158194">भरपर्दो सुरक्षा प्रदान गर्छ</translation>
 <translation id="7824665136384946951">तपाईंको सङ्गठनले Safe Browsing अफ गरेको छ</translation>
 <translation id="7824864914877854148">कुनै त्रुटि भएकाले ब्याकअप पूरा गर्न सकिएन</translation>
 <translation id="7825289983414309119">हिमाल</translation>
@@ -11194,6 +11197,7 @@
 <translation id="8601206103050338563">TLS WWW ग्राहक प्रमाणीकरण</translation>
 <translation id="8602674530529411098">एपहरू (बिटा संस्करण)</translation>
 <translation id="8602851771975208551">आफ्नो कम्प्युटरमा रहेको अर्को कार्यक्रमले एउटा एप थपेको छ जसले Chrome ले काम गर्ने तरिकालाई बदल्न सक्छ।</translation>
+<translation id="8602867356511778172">Google ले खतराहरू अझ छिटो र अझ सटीक रूपमा पत्ता लगाउन थप जानकारी (जस्तै, URL, पेजमा भएको सामग्रीका नमुना, सिस्टमसम्बन्धी जानकारी) प्रयोग गर्छ</translation>
 <translation id="860399903490378651">यो भ्यू बन्द गर्नुहोस्</translation>
 <translation id="8605428685123651449">SQलाइट स्मृति</translation>
 <translation id="8607171490667464784">डिभाइस निष्क्रिय हुँदा र ब्याट्री प्रयोग भइरहेका बेला</translation>

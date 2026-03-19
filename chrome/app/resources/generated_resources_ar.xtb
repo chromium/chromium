@@ -4473,6 +4473,7 @@
 <translation id="3968739731834770921">كانا</translation>
 <translation id="3970114302595058915">رقم التعريف</translation>
 <translation id="397105322502079400">جارٍ الحساب...</translation>
+<translation id="3971154761614127188">قد تؤدي بعض الميزات إلى إبطاء سرعة بعض المواقع الإلكترونية غير المألوفة</translation>
 <translation id="3971355433478412726">‏تعليمات استخدام Gemini</translation>
 <translation id="3971764089670057203">بصمات الأصابع المُسجلة في مفتاح الأمان هذا</translation>
 <translation id="3973005893595042880">المستخدم الحالي غير مسموح به.</translation>
@@ -4994,7 +4995,7 @@
 <translation id="4340515029017875942"><ph name="ORIGIN" /> يريد التواصل مع التطبيق "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4340799661701629185">عدم السماح للمواقع الإلكترونية بإرسال الإشعارات</translation>
 <translation id="4341280816303414009">قد يتم تسجيل محتوى شاشتك</translation>
-<translation id="4341577178275615435">‏يمكنك استخدام الاختصار F7 لتفعيل ميزة "التصفُّح النصي بالمؤشر" أو إيقافها.</translation>
+<translation id="4341577178275615435">‏يفعّل الاختصار F7 ميزة "التصفُّح النصي بالمؤشر" أو يوقفها</translation>
 <translation id="4341905082470253054">‏جارٍ التحقّق من حالة وحدة TPM…</translation>
 <translation id="434198521554309404">سريع وآمن وسهل الاستخدام</translation>
 <translation id="4342417854108207000">المواقع الإلكترونية المسموح لها تعديل الملفات أو المجلدات على جهازك</translation>
@@ -10028,6 +10029,7 @@
 <translation id="7800518121066352902">تدوير ع&amp;كس اتجاه عقارب الساعة</translation>
 <translation id="780301667611848630">لا، شكرًا</translation>
 <translation id="7803657407897251194">‏لمواصلة إعداد جهازك باستخدام جهاز Android، يجب أن يكون جهاز <ph name="DEVICE_TYPE" /> متصلاً بالشبكة.</translation>
+<translation id="7803714812705886512">‏تستخدم Google بيانات أقل (مثل أجزاء من عناوين URL ومعلومات التنزيل) لرصد التهديدات</translation>
 <translation id="7804072833593604762">تم إغلاق علامة التبويب.</translation>
 <translation id="7805371082115476536">حساسية خفيفة</translation>
 <translation id="7805768142964895445">الحالة</translation>
@@ -10052,6 +10054,7 @@
 <translation id="7820400255539998692">يمكنك حذف "<ph name="FILENAME" />" لكي لا يتمكّن مستخدمو هذا الجهاز الآخرون من الاطّلاع على كلمات مرورك.</translation>
 <translation id="7820561748632634942">هل تريد تخصيص مفاتيح تحكّم إضافية؟</translation>
 <translation id="782057141565633384">نس&amp;خ عنوان الفيديو</translation>
+<translation id="7823975162954158194">يوفّر هذا الخيار حماية قوية</translation>
 <translation id="7824665136384946951">أوقفت مؤسستك ميزة "التصفُّح الآمن".</translation>
 <translation id="7824864914877854148">تعذَّر إكمال النسخ الاحتياطي بسبب حدوث خطأ</translation>
 <translation id="7825289983414309119">جبل</translation>
@@ -11211,6 +11214,7 @@
 <translation id="8601206103050338563">‏مصادقة TLS (بروتوكول أمان طبقة النقل) لشبكة الإنترنت العالمية (WWW)</translation>
 <translation id="8602674530529411098">التطبيقات (إصدار تجريبي)</translation>
 <translation id="8602851771975208551">‏أضاف برنامج آخر بجهاز الكمبيوتر تطبيقًا قد يؤدي إلى تغيير طريقة عمل Chrome.</translation>
+<translation id="8602867356511778172">‏تستخدم Google المزيد من البيانات (مثل عناوين URL وعيّنات من محتوى الصفحة ومعلومات النظام) لرصد التهديدات بشكل أسرع وأكثر دقة</translation>
 <translation id="860399903490378651">إغلاق هذا العرض</translation>
 <translation id="8605428685123651449">‏ذاكرة SQLite</translation>
 <translation id="8607171490667464784">عندما يكون الجهاز غير نشط أثناء التشغيل على البطارية</translation>

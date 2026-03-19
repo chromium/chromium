@@ -4485,6 +4485,7 @@
 <translation id="3968739731834770921">가나</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">계산 중...</translation>
+<translation id="3971154761614127188">일부 기능이 알려지지 않은 사이트의 속도를 제한할 수 있습니다.</translation>
 <translation id="3971355433478412726">Gemini 요청사항</translation>
 <translation id="3971764089670057203">보안 키의 지문</translation>
 <translation id="3973005893595042880">허용되지 않은 사용자입니다.</translation>
@@ -10030,6 +10031,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7800518121066352902">반시계 방향으로 회전(&amp;O)</translation>
 <translation id="780301667611848630">나중에</translation>
 <translation id="7803657407897251194">Android 기기로 설정을 계속하려면 <ph name="DEVICE_TYPE" /> 기기를 네트워크에 연결하세요</translation>
+<translation id="7803714812705886512">Google에서 위협을 감지하기 위해 더 적은 데이터(예: URL의 일부, 다운로드 정보)를 사용합니다.</translation>
 <translation id="7804072833593604762">탭 닫음</translation>
 <translation id="7805371082115476536">밝게</translation>
 <translation id="7805768142964895445">상태</translation>
@@ -10054,6 +10056,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7820400255539998692">이 기기를 사용하는 다른 사용자가 내 비밀번호를 볼 수 없도록 <ph name="FILENAME" /> 파일을 삭제하세요.</translation>
 <translation id="7820561748632634942">추가 스위치를 할당하시겠습니까?</translation>
 <translation id="782057141565633384">동영상 주소 복사(&amp;O)</translation>
+<translation id="7823975162954158194">강력한 보호 기능을 제공합니다.</translation>
 <translation id="7824665136384946951">조직에서 세이프 브라우징을 사용 중지했습니다.</translation>
 <translation id="7824864914877854148">오류로 인해 백업을 완료할 수 없습니다.</translation>
 <translation id="7825289983414309119">산</translation>
@@ -11213,6 +11216,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8601206103050338563">TLS WWW 클라이언트 인증</translation>
 <translation id="8602674530529411098">앱(베타)</translation>
 <translation id="8602851771975208551">컴퓨터의 다른 프로그램에서 Chrome 작동에 영향을 줄 수 있는 앱을 추가했습니다.</translation>
+<translation id="8602867356511778172">Google에서 위협을 더 빠르고 정확하게 감지하기 위해 더 많은 데이터(예: URL, 페이지 콘텐츠 샘플, 시스템 정보)를 사용합니다.</translation>
 <translation id="860399903490378651">이 뷰 닫기</translation>
 <translation id="8605428685123651449">SQLite 메모리</translation>
 <translation id="8607171490667464784">비활성 상태이며 배터리를 사용하는 동안</translation>

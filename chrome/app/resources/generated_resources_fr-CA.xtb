@@ -1344,7 +1344,7 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="189358972401248634">Autres langues</translation>
 <translation id="1895658205118569222">Arrêt</translation>
 <translation id="1896043844785689584">Pour configurer l'empreinte digitale, demandez à votre enfant de toucher le capteur d'empreintes digitales dans le coin inférieur droit du clavier. Les données liées à l'empreinte digitale de votre enfant sont stockées de façon sécurisée et ne quittent jamais ce <ph name="DEVICE_TYPE" />.</translation>
-<translation id="1897120393475391208">Utilisez un mot de passe fort</translation>
+<translation id="1897120393475391208">Utiliser un mot de passe fort</translation>
 <translation id="1897860317037652061">Échec de l'analyse</translation>
 <translation id="1898804291554630487">Posez une question à propos de cette page</translation>
 <translation id="1900305421498694955">Les applications de Google Play peuvent exiger un accès complet au système de fichiers pour lire et écrire des fichiers sur des périphériques de stockage externe. Les fichiers et les dossiers créés sur le périphérique sont visibles par tout utilisateur du disque externe. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
@@ -2353,7 +2353,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
 <translation id="2555855727505718984">Le remplissage automatique n'aura pas accès à ces données sur cet appareil en vue de remplir des formulaires</translation>
 <translation id="25568951186001797">Cadre restreint : <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="2561211427862644160">Voir tous vos favoris ici</translation>
-<translation id="2563924218974330506">Vous pouvez désormais gérer vos groupes d'onglets ici. Vous pouvez désépingler cette option à tout moment.</translation>
+<translation id="2563924218974330506">Vous pouvez désormais gérer vos groupes d'onglets ici. Vous pouvez annuler l'épinglage de cette option à tout moment.</translation>
 <translation id="2564520396658920462">L'exécution de JavaScript par AppleScript est désactivée. Vous pouvez l'activer à partir de la barre de menu en accédant à Affichage &gt; Développeur &gt; Autoriser JavaScript à partir des Événements Apple. Pour en savoir plus :
 https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Correcteur orthographique amélioré</translation>
@@ -4305,7 +4305,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
 <translation id="3856902135796972992">Ce site nécessite une action supplémentaire. Effectuez-la sur la page pour que la modification du mot de passe puisse se terminer.</translation>
 <translation id="3857807444929313943">Relever le doigt et toucher le capteur de nouveau</translation>
 <translation id="3858860766373142691">Nom</translation>
-<translation id="385939467708172187">Utilisez un mot de passe fort</translation>
+<translation id="385939467708172187">Utiliser un mot de passe fort</translation>
 <translation id="3859869403161297890">Envoyez vos commentaires sur les groupes d'onglets partagés ici.</translation>
 <translation id="3859987779882450877">Suggère et crée automatiquement des groupes à partir de vos onglets ouverts.</translation>
 <translation id="386009056910366930">Gérer le groupe d'onglets « <ph name="GROUP_NAME" /> »</translation>
@@ -6943,7 +6943,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5698878456427040674">Vérifiez si le compte sélectionné est pris en charge.</translation>
 <translation id="5698900765010620315">Sombre à contraste faible</translation>
 <translation id="5699227710146832453">À partir de votre</translation>
-<translation id="5700024700429259844">Vous pouvez désormais reprendre directement les clavardages Gemini et les fils du mode IA ici. Vous pouvez désépingler cette option à tout moment.</translation>
+<translation id="5700024700429259844">Vous pouvez désormais reprendre directement les clavardages Gemini et les fils du mode IA ici. Vous pouvez annuler l'épinglage de cette option à tout moment.</translation>
 <translation id="570043786759263127">Applications et services Google Play</translation>
 <translation id="5700761515355162635">Témoins tiers autorisés</translation>
 <translation id="5700836101007545240">Votre administrateur a désactivé l'ajout de connexion</translation>
@@ -9699,7 +9699,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="760197030861754408">Allez à l'adresse <ph name="LANDING_PAGE" /> pour vous connecter.</translation>
 <translation id="7602079150116086782">Pas d'onglets d'autres appareils</translation>
 <translation id="7602173054665172958">Gestion de l'impression</translation>
-<translation id="7602805861133750578">Vous pouvez désormais gérer vos groupes d'onglets, vos clavardages Gemini et vos fils de discussion en mode IA en un seul endroit. Vous pouvez le désépingler à tout moment.</translation>
+<translation id="7602805861133750578">Vous pouvez désormais gérer vos groupes d'onglets, vos clavardages Gemini et vos fils du mode IA en un seul endroit. Vous pouvez annuler l'épinglage de cette option à tout moment.</translation>
 <translation id="7602868996817972616">Poser des questions à Google à propos de cette page</translation>
 <translation id="7603785829538808504">Les sites indiqués ci-dessous suivent un paramètre personnalisé</translation>
 <translation id="7604543761927773395">{NUM_PASSWORDS,plural, =1{Un mot de passe non importé}one{{NUM_PASSWORDS} mot de passe non importé}other{{NUM_PASSWORDS} mots de passe non importés}}</translation>

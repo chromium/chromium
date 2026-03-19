@@ -4483,6 +4483,7 @@
 <translation id="3968739731834770921">কানা</translation>
 <translation id="3970114302595058915">আইডি</translation>
 <translation id="397105322502079400">গণনা করা হচ্ছে...</translation>
+<translation id="3971154761614127188">কিছু কিছু ফিচার অপরিচিত সাইটের স্পিড কমিয়ে দিতে পারে</translation>
 <translation id="3971355433478412726">Gemini-র জন্য নির্দেশাবলী</translation>
 <translation id="3971764089670057203">এই নিরাপত্তা কীতে এনরোল করা ফিঙ্গারপ্রিন্ট</translation>
 <translation id="3973005893595042880">ব্যবহারকারীর অনুমতি নেই</translation>
@@ -10034,6 +10035,7 @@
 <translation id="7800518121066352902">ঘড়ির কাঁটার &amp;বিপরীত দিকে ঘোরান</translation>
 <translation id="780301667611848630">না থাক</translation>
 <translation id="7803657407897251194">আপনার Android ডিভাইসে সেট-আপ করা চালিয়ে যেতে, কোনও নেটওয়ার্কের সাথে আপনার <ph name="DEVICE_TYPE" /> কানেক্ট করুন</translation>
+<translation id="7803714812705886512">ঝুঁকি শনাক্ত করতে Google কম ডেটা ব্যবহার করে (যেমন, URL-এর অংশ, ডাউনলোড সংক্রান্ত তথ্য)</translation>
 <translation id="7804072833593604762">ট্যাব বন্ধ করা হয়েছে</translation>
 <translation id="7805371082115476536">লাইট</translation>
 <translation id="7805768142964895445">স্থিতি</translation>
@@ -10058,6 +10060,7 @@
 <translation id="7820400255539998692"><ph name="FILENAME" /> মুছুন, যাতে এই ডিভাইসটি ব্যবহার করে অন্যরা আপনার পাসওয়ার্ড দেখতে না পারেন</translation>
 <translation id="7820561748632634942">অতিরিক্ত সুইচ অ্যাসাইন করতে চান?</translation>
 <translation id="782057141565633384">ভি&amp;ডিও ঠিকানা কপি করুন</translation>
+<translation id="7823975162954158194">শক্তিশালী সুরক্ষা প্রদান করে</translation>
 <translation id="7824665136384946951">আপনার সংগঠন Safe Browsing ফিচারটি বন্ধ করে দিয়েছে</translation>
 <translation id="7824864914877854148">কোনও সমস্যার জন্য সম্পূর্ণ ব্যাক-আপ নেওয়া যায়নি</translation>
 <translation id="7825289983414309119">পর্বত</translation>
@@ -11216,6 +11219,7 @@
 <translation id="8601206103050338563">TLS WWW ক্লায়েন্ট  যাচাইকরণ</translation>
 <translation id="8602674530529411098">অ্যাপ (বিটা)</translation>
 <translation id="8602851771975208551">আপনার কম্পিউটারের অন্য একটি প্রোগ্রাম একটি অ্যাপ্লিকেশন জুড়েছে যা Chrome এর কাজ করার পদ্ধতিকে পাল্টে দিতে পারে৷</translation>
+<translation id="8602867356511778172">আরও দ্রুত ও নির্ভুলভাবে ঝুঁকি শনাক্ত করতে Google আরও ডেটা (যেমন, URL, পৃষ্ঠার কন্টেন্টের নমুনা, সিস্টেম সংক্রান্ত তথ্য) ব্যবহার করে</translation>
 <translation id="860399903490378651">এই ভিউ বন্ধ করুন</translation>
 <translation id="8605428685123651449">SQLite মেমোরি</translation>
 <translation id="8607171490667464784">ডিভাইস পাওয়ার সোর্সে প্লাগ-ইন করা না থাকলে ও ব্যাটারির পাওয়ারে চললে</translation>

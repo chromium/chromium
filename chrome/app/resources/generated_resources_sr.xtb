@@ -4468,6 +4468,7 @@
 <translation id="3968739731834770921">кана</translation>
 <translation id="3970114302595058915">ИД</translation>
 <translation id="397105322502079400">Израчунавање...</translation>
+<translation id="3971154761614127188">Неке функције могу да успоре непознате сајтове</translation>
 <translation id="3971355433478412726">Упутства за Gemini</translation>
 <translation id="3971764089670057203">Отисци прстију на овом безбедносном кључу</translation>
 <translation id="3973005893595042880">Корисник није дозвољен</translation>
@@ -10018,6 +10019,7 @@
 <translation id="7800518121066352902">Окрећи у с&amp;меру супротном од кретања казаљке на сату</translation>
 <translation id="780301667611848630">Не, хвала</translation>
 <translation id="7803657407897251194">Да бисте наставили са подешавањем Android уређаја, повежите <ph name="DEVICE_TYPE" /> са мрежом</translation>
+<translation id="7803714812705886512">Google користи мање података (на пример, делове URL-ова, информације о преузимању) да би открио претње</translation>
 <translation id="7804072833593604762">Картица је затворена</translation>
 <translation id="7805371082115476536">Мала</translation>
 <translation id="7805768142964895445">Статус</translation>
@@ -10042,6 +10044,7 @@
 <translation id="7820400255539998692">Избришите фајл <ph name="FILENAME" /> да други људи који користе овај уређај не би могли да виде ваше лозинке</translation>
 <translation id="7820561748632634942">Желите да доделите додатне прекидаче?</translation>
 <translation id="782057141565633384">К&amp;опирај адресу видеа</translation>
+<translation id="7823975162954158194">Пружа снажну заштиту</translation>
 <translation id="7824665136384946951">Организација је искључила Безбедно прегледање</translation>
 <translation id="7824864914877854148">Нисмо успели да направимо резервну копију због грешке</translation>
 <translation id="7825289983414309119">Планина</translation>
@@ -11200,6 +11203,7 @@
 <translation id="8601206103050338563">TLS WWW потврда идентитета клијента</translation>
 <translation id="8602674530529411098">Апликације (бета)</translation>
 <translation id="8602851771975208551">Други програм на рачунару је додао апликацију која може да промени начин на који Chrome функционише.</translation>
+<translation id="8602867356511778172">Google користи више података (на пример, URL-ове, узорке садржаја странице, информације о систему) да би брже и прецизније откривао претње</translation>
 <translation id="860399903490378651">Затвори овај приказ</translation>
 <translation id="8605428685123651449">SQLite меморија</translation>
 <translation id="8607171490667464784">Док је неактиван и троши батерију</translation>

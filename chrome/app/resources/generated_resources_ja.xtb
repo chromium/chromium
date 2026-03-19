@@ -124,7 +124,7 @@
 <translation id="107278043869924952">パスワードに加えて PIN を使用する</translation>
 <translation id="107450319332239199">エラーが発生しました。ウィンドウを手動で開いてください。</translation>
 <translation id="1075920807995555452"><ph name="DEVICE_TYPE" /> 上で、企業が管理している環境でツール、エディタ、IDE を実行します。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
-<translation id="1076176485976385390">テキスト カーソルを使ってページ間を移動する</translation>
+<translation id="1076176485976385390">テキスト カーソルを使ってページ内を移動する</translation>
 <translation id="1076698951459398590">テーマを有効にする</translation>
 <translation id="1076730357641144594">保存したパスキーは <ph name="GOOGLE_PASSWORD_MANAGER" /> で確認、管理できます</translation>
 <translation id="1076766328672150609">お子様は PIN を使用してデバイスのロックを解除できます。</translation>
@@ -6597,7 +6597,7 @@
 <translation id="5468330507528805311">テザリング ステータス:</translation>
 <translation id="5468504405124548160">ボタン名を変更</translation>
 <translation id="5469540749878136997">使用状況に基づいてメモリを解放する</translation>
-<translation id="5469852975082458401">テキスト カーソルを使ってページ間を移動できます。オフにするには F7 キーを押します。</translation>
+<translation id="5469852975082458401">テキスト カーソルを使ってページ内を移動できます。オフにするには F7 キーを押します。</translation>
 <translation id="5470735824776589490">デバイスを Powerwash でリセットするにはまず再起動が必要です。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="5470741195701938302">数字</translation>
 <translation id="5471768120198416576">こんにちは。テキスト読み上げの音声です。</translation>
@@ -7484,7 +7484,7 @@
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - 名前のないグループの一部</translation>
 <translation id="6086004606538989567">確認を行ったアカウントにはこのデバイスにアクセスする権限がありません。</translation>
 <translation id="6086350918562605938">システムあたりのアップデータ</translation>
-<translation id="6086418630711763366">テキスト カーソルを使ってページ間を移動できます。オフにするには、Ctrl+<ph name="KEY" /> キーを押します。</translation>
+<translation id="6086418630711763366">テキスト カーソルを使ってページ内を移動できます。オフにするには、Ctrl+<ph name="KEY" /> キーを押します。</translation>
 <translation id="6086846494333236931">管理者によりインストールされています</translation>
 <translation id="6087286598828478206">ブロックしてグループから退出しますか？</translation>
 <translation id="6087960857463881712">エピック スマイリー</translation>

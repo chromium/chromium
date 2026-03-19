@@ -4372,7 +4372,7 @@ Het beleid kan worden gecombineerd met <ph name="POLICY_CLOUD_POLICY_OVERRIDES_P
 <translation id="3964298692570794635">Niet-beveiligde content op deze sites toestaan</translation>
 <translation id="3965027062205390679">Weergave van het introductiescherm voor Gemini aanzetten tijdens het inlogproces</translation>
 <translation id="3965339130942650562">Time-out tot de inactieve gebruiker is uitgelogd</translation>
-<translation id="396536755218079668">Gebruikers met beperkte rechten</translation>
+<translation id="396536755218079668">Gebruikers onder toezicht</translation>
 <translation id="3968218878014278212">Toestaan dat Eche wordt aangezet.</translation>
 <translation id="3971673686578912106">Als je het beleid toepast, wordt <ph name="PLUGIN_VM_NAME" /> voor het apparaat aangezet, zolang andere instellingen dit ook toestaan. <ph name="PLUGIN_VM_ALLOWED_POLICY_NAME" /> en <ph name="USER_PLUGIN_VM_ALLOWED_POLICY_NAME" /> moeten zijn ingesteld op Waar en <ph name="PLUGIN_VM_LICENSE_KEY_POLICY_NAME" /> of <ph name="PLUGIN_VM_USER_ID_POLICY_NAME" /> moet zijn ingesteld zodat <ph name="PLUGIN_VM_NAME" /> kan worden uitgevoerd.
 
@@ -4896,7 +4896,7 @@ Opmerking: Met dit beleid wordt het beleid <ph name="ARC_GLS_POLICY_NAME" /> be√
 
       Als je <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" /> niet instelt, wordt UTF-8 gebruikt.</translation>
 <translation id="4346542905412554336">Regels voor proxyoverschrijving</translation>
-<translation id="4347908978527632940">Als beleid 'True' is en de gebruiker een gebruiker met beperkte rechten is, kunnen andere Android-apps de internetbeperkingen van de gebruiker opvragen via de contentprovider.
+<translation id="4347908978527632940">Als beleid 'True' is en de gebruiker een gebruiker onder toezicht is, kunnen andere Android-apps de internetbeperkingen van de gebruiker opvragen via de contentprovider.
 
           Als het beleid 'False' of niet ingesteld is, retourneert de contentprovider geen informatie.</translation>
 <translation id="4349863629157433459">Integratie van het Google Developer Program aanzetten in <ph name="CHROME_DEVTOOLS_NAME" />, maar zonder toolgebruik te delen (voor het toekennen van badges).</translation>
@@ -5338,7 +5338,7 @@ Oud en verouderd gedrag: Als 'event.preventDefault()' wordt aangeroepen in 'befo
 <translation id="4624417808625504735">Voorkomen dat JavaScript op deze sites JIT kan gebruiken</translation>
 <translation id="46321462262887935">Toetsen op de bovenste rij gebruiken als functietoetsen, maar de gebruiker toestaan dit te wijzigen</translation>
 <translation id="4632343302005518762"><ph name="PRODUCT_FRAME_NAME" /> toestaan de vermelde soorten content te verwerken.</translation>
-<translation id="4636354638176939375">Gebruikers met beperkte rechten maken uitzetten</translation>
+<translation id="4636354638176939375">Gebruikers onder toezicht maken uitzetten</translation>
 <translation id="4637701328641064644">Met dit beleid bepaal je of blob-URL's worden gepartitioneerd tijdens ophalen en navigeren.
 Als je dit beleid toepast of niet instelt, worden blob-URL's gepartitioneerd.
 Als je dit beleid niet toepast, worden blob-URL's niet gepartitioneerd.
@@ -6565,9 +6565,9 @@ Vanaf <ph name="PRODUCT_NAME" /> versie 92 wordt dit beleid ook ondersteund in d
 <translation id="5362531528507578966">Hiermee wordt de standaardmodus voor afdrukken met achtergrondbeelden overschreven.</translation>
 <translation id="5365476955714838841">Opdrachtregelparameters voor de alternatieve browser.</translation>
 <translation id="5365946944967967336">Homepage-knop in de werkbalk tonen</translation>
-<translation id="5366977351895725771">Als dit is ingesteld op False, kunnen geen gebruikers met beperkte rechten worden gemaakt door deze gebruiker. Bestaande gebruikers met beperkte rechten blijven beschikbaar.
+<translation id="5366977351895725771">Als dit is ingesteld op False, kan deze gebruiker geen gebruikers onder toezicht maken. Bestaande gebruikers met beperkte rechten blijven beschikbaar.
 
-          Als dit is ingesteld op True of niet is ingesteld, kunnen gebruikers met beperkte rechten worden gemaakt en beheerd door deze gebruiker.</translation>
+          Als dit is ingesteld op True of niet is ingesteld, kunnen gebruikers onder toezicht worden gemaakt en beheerd door deze gebruiker.</translation>
 <translation id="5367255280764736002">Als <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> aanstaat en je daarna <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" /> instelt, worden de parameters aangegeven tijdens afbeeldingszoekopdrachten met POST. Deze bestaan uit door komma's gescheiden naam/waarde-paren. Als een waarde een templateparameter (zoals {imageThumbnail}) is, wordt de waarde vervangen door echte thumbnailgegevens.
 
       Als je <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" /> niet instelt, worden afbeeldingszoekopdrachten gestuurd met de GET-methode.
@@ -9630,7 +9630,7 @@ Als je dit beleid niet toepast of niet instelt, staan de instellingen voor Kerbe
       Als je deze instelling uitzet, mogen gebruikers Smart Lock niet gebruiken.
 
       Als dit beleid niet wordt ingesteld, geldt de standaardwaarde 'niet toegestaan' voor beheerde zakelijke gebruikers en 'toegestaan' voor niet-beheerde gebruikers.</translation>
-<translation id="7295019613773647480">Gebruikers met beperkte rechten aanzetten</translation>
+<translation id="7295019613773647480">Gebruikers onder toezicht aanzetten</translation>
 <translation id="7297476773981993405">Toestaan dat het ge√ºpdatete User-Agent GREASE-algoritme wordt uitgevoerd.</translation>
 <translation id="7298197471363105063">First-Party Sets overschrijven.</translation>
 <translation id="7300320787419338290">F11-/F12-instellingen gebruiken de sneltoets met de functietoetsen Ctrl en Shift</translation>
@@ -12280,7 +12280,7 @@ Opmerking: Als het apparaat opnieuw wordt opgestart, wordt het cachegeheugen gew
       Als je het beleid instelt op False of niet instelt, worden de gegevens niet gerapporteerd.
       Als je het beleid instelt op True, worden inlog-/uitloggebeurtenissen van het apparaat gerapporteerd.</translation>
 <translation id="9087652369391570821">Configuratiebeleid voor de Chrome Enterprise Connector OnFileTransfer</translation>
-<translation id="9088433379343318874">Contentprovider voor gebruiker met beperkte rechten gebruiken</translation>
+<translation id="9088433379343318874">Contentprovider voor gebruiker onder toezicht gebruiken</translation>
 <translation id="9088444059179765143">De methode voor automatische tijdzonedetectie configureren</translation>
 <translation id="9095599826504830315">Sta Tabbladen vergelijken niet toe.</translation>
 <translation id="9096772739225230999">Netwerkconfiguratie niet rapporteren</translation>

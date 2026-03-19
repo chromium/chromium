@@ -4484,6 +4484,7 @@
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">Се пресметува…</translation>
+<translation id="3971154761614127188">Некои функции може да ги забават непознатите сајтови</translation>
 <translation id="3971355433478412726">Инструкции за Gemini</translation>
 <translation id="3971764089670057203">Отпечатоци на овој безбедносен клуч</translation>
 <translation id="3973005893595042880">Корисникот не е дозволен</translation>
@@ -6615,6 +6616,7 @@
 <translation id="5460861858595506978">Инспирација</translation>
 <translation id="5461050611724244538">Врската со телефонот се прекина</translation>
 <translation id="5463275305984126951">Индекс на <ph name="LOCATION" /></translation>
+<translation id="5463348003600590648">Оневозможи ги предлозите</translation>
 <translation id="5463450804024056231">Регистрирајте се за е-пораки од <ph name="DEVICE_TYPE" /></translation>
 <translation id="5463625433003343978">Се бараат уреди…</translation>
 <translation id="5463856536939868464">Мени што содржи скриени обележувачи</translation>
@@ -10031,6 +10033,7 @@
 <translation id="7800518121066352902">Ротирај на&amp;лево</translation>
 <translation id="780301667611848630">Не, фала</translation>
 <translation id="7803657407897251194">За да продолжите со поставување со вашиот уред со Android, поврзете го вашиот <ph name="DEVICE_TYPE" /> на мрежа</translation>
+<translation id="7803714812705886512">Google користи помалку податоци (на пример, делови од URL-адреси, податоци за преземањето) за да открива закани</translation>
 <translation id="7804072833593604762">Картичката е затворена</translation>
 <translation id="7805371082115476536">Слаба</translation>
 <translation id="7805768142964895445">Статус</translation>
@@ -10055,6 +10058,7 @@
 <translation id="7820400255539998692">Избришете ја датотеката <ph name="FILENAME" /> за да не може другите лица што го користат уредов да ги видат вашите лозинки</translation>
 <translation id="7820561748632634942">Да се доделат дополнителни прекинувачи?</translation>
 <translation id="782057141565633384">К&amp;опирај ја адресата на видеото</translation>
+<translation id="7823975162954158194">Обезбедува силна заштита</translation>
 <translation id="7824665136384946951">Вашата организација го исклучи „Безбедното прелистување“</translation>
 <translation id="7824864914877854148">Бекапот не може да се заврши поради грешка</translation>
 <translation id="7825289983414309119">Планина</translation>
@@ -11215,6 +11219,7 @@
 <translation id="8601206103050338563">Автентикација на клиент за TLS WWW</translation>
 <translation id="8602674530529411098">Апликации (Бета)</translation>
 <translation id="8602851771975208551">Друга програма на компјутерот додаде апликација која може да промени како работи Chrome.</translation>
+<translation id="8602867356511778172">Google користи повеќе податоци (на пример, URL-адреси, примероци од содржините на страниците, системски податоци) за да открива закани побрзо и попрецизно</translation>
 <translation id="860399903490378651">Затвори го овој приказ</translation>
 <translation id="8605428685123651449">Меморија на SQLite</translation>
 <translation id="8607171490667464784">Додека е неактивен и работи на батерија</translation>

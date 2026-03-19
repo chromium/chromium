@@ -4459,6 +4459,7 @@
 <translation id="3968739731834770921">假名</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">正在计算...</translation>
+<translation id="3971154761614127188">某些功能可能会降低陌生网站的加载速度</translation>
 <translation id="3971355433478412726">向 Gemini 提供的指令</translation>
 <translation id="3971764089670057203">此安全密钥上的指纹</translation>
 <translation id="3973005893595042880">不允许此用户运行虚拟机</translation>
@@ -5273,7 +5274,7 @@
 <translation id="4542520061254486227">读取您在 <ph name="WEBSITE_1" /> 和 <ph name="WEBSITE_2" /> 上的数据</translation>
 <translation id="4543778593405494224">证书管理器</translation>
 <translation id="4544174279960331769">默认的蓝色头像</translation>
-<translation id="4544595896051435161">标签页搜索功能已移至其他位置</translation>
+<translation id="4544595896051435161">标签页搜索功能换位置啦</translation>
 <translation id="4545028762441890696">要重新启用它，请接受新权限：</translation>
 <translation id="4545759655004063573">因权限不足而无法保存。请保存到其他位置。</translation>
 <translation id="4546345569117159016">右键</translation>
@@ -10001,6 +10002,7 @@
 <translation id="7800518121066352902">逆时针旋转(&amp;O)</translation>
 <translation id="780301667611848630">不用了</translation>
 <translation id="7803657407897251194">如要使用 Android 设备继续设置，请将 <ph name="DEVICE_TYPE" /> 连接到网络</translation>
+<translation id="7803714812705886512">Google 采用更少数据（例如网址片段、下载信息）来检测威胁</translation>
 <translation id="7804072833593604762">已关闭标签页</translation>
 <translation id="7805371082115476536">轻</translation>
 <translation id="7805768142964895445">状态</translation>
@@ -10025,6 +10027,7 @@
 <translation id="7820400255539998692">请删除“<ph name="FILENAME" />”，以免使用此设备的他人看到您的密码</translation>
 <translation id="7820561748632634942">分配更多开关？</translation>
 <translation id="782057141565633384">复制视频地址(&amp;O)</translation>
+<translation id="7823975162954158194">提供强大的安全防护</translation>
 <translation id="7824665136384946951">您的组织已关闭“安全浏览”功能</translation>
 <translation id="7824864914877854148">发生错误，因此无法完成备份</translation>
 <translation id="7825289983414309119">高山</translation>
@@ -11183,6 +11186,7 @@
 <translation id="8601206103050338563">TLS WWW 客户端身份验证</translation>
 <translation id="8602674530529411098">应用（Beta 版）</translation>
 <translation id="8602851771975208551">您计算机上的其他程序添加了一个应用，该应用可能会改变 Chrome 的工作方式。</translation>
+<translation id="8602867356511778172">Google 采用更多数据（例如网址、网页内容样本、系统信息），以便更快、更准确地检测威胁</translation>
 <translation id="860399903490378651">关闭此视图</translation>
 <translation id="8605428685123651449">SQLite 内存</translation>
 <translation id="8607171490667464784">处于闲置状态且使用电池时</translation>

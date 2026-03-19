@@ -4483,6 +4483,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">Id</translation>
 <translation id="397105322502079400">Beräknar ...</translation>
+<translation id="3971154761614127188">Vissa funktioner kan göra okända webbplatser långsammare</translation>
 <translation id="3971355433478412726">Instruktioner för Gemini</translation>
 <translation id="3971764089670057203">Fingeravtryck på den här säkerhetsnyckeln</translation>
 <translation id="3973005893595042880">Otillåten användare</translation>
@@ -10030,6 +10031,7 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="7800518121066352902">Rotera m&amp;oturs</translation>
 <translation id="780301667611848630">Nej tack</translation>
 <translation id="7803657407897251194">Om du vill fortsätta med Android-enheten ansluter du <ph name="DEVICE_TYPE" /> till ett nätverk</translation>
+<translation id="7803714812705886512">Google använder mindre data (till exempel delar av webbadresser och nedladdningsinformation) för att upptäcka hot</translation>
 <translation id="7804072833593604762">Fliken har stängts</translation>
 <translation id="7805371082115476536">Lätt</translation>
 <translation id="7805768142964895445">Status</translation>
@@ -10054,6 +10056,7 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="7820400255539998692">Radera <ph name="FILENAME" /> så att andra som använder enheten inte kan se lösenorden</translation>
 <translation id="7820561748632634942">Vill du tilldela ytterligare brytare?</translation>
 <translation id="782057141565633384">K&amp;opiera videoadress</translation>
+<translation id="7823975162954158194">Ger starkt skydd</translation>
 <translation id="7824665136384946951">Organisationen har inaktiverat Säker webbsökning</translation>
 <translation id="7824864914877854148">Det gick inte att slutföra säkerhetskopieringen på grund av ett fel</translation>
 <translation id="7825289983414309119">Berg</translation>
@@ -11212,6 +11215,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8601206103050338563">TLS WWW-klientautentisering</translation>
 <translation id="8602674530529411098">Appar (beta)</translation>
 <translation id="8602851771975208551">Ett annat program i datorn har lagt till en app som kan ändra hur Chrome fungerar.</translation>
+<translation id="8602867356511778172">Google använder mer data (till exempel webbadresser, exempel på sidinnehåll och systeminformation) för att upptäcka hot snabbare och träffsäkrare</translation>
 <translation id="860399903490378651">Stäng den här vyn</translation>
 <translation id="8605428685123651449">SQLite-minne</translation>
 <translation id="8607171490667464784">När enheten är inaktiv och körs på batteri</translation>

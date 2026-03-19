@@ -4465,6 +4465,7 @@
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">Идентификатор</translation>
 <translation id="397105322502079400">Есептелуде…</translation>
+<translation id="3971154761614127188">Кейбір функциялар таныс емес сайттардың жұмысын баяулатуы мүмкін.</translation>
 <translation id="3971355433478412726">Gemini-ға арналған нұсқаулар</translation>
 <translation id="3971764089670057203">Осы қауіпсіздік кілтіндегі саусақ іздері</translation>
 <translation id="3973005893595042880">Пайдаланушыға рұқсат берілмеген.</translation>
@@ -10005,6 +10006,7 @@
 <translation id="7800518121066352902">С&amp;ағат тіліне қарсы айналдыру</translation>
 <translation id="780301667611848630">Жоқ, рақмет</translation>
 <translation id="7803657407897251194">Android құрылғыңызбен орнатуды жалғастыру үшін <ph name="DEVICE_TYPE" /> құрылғыңызды желіге қосыңыз</translation>
+<translation id="7803714812705886512">Google-да қауіптерді анықтау үшін азырақ деректер (мысалы, URL бөліктері, жүктеп алу туралы ақпарат) пайдаланылады.</translation>
 <translation id="7804072833593604762">Қойынды жабық</translation>
 <translation id="7805371082115476536">Аз мөлшерде</translation>
 <translation id="7805768142964895445">Күйі</translation>
@@ -10029,6 +10031,7 @@
 <translation id="7820400255539998692"><ph name="FILENAME" /> файлын осы құрылғыны пайдаланатын басқа адамдар құпия сөздеріңізді көре алмайтындай етіп жою</translation>
 <translation id="7820561748632634942">Қосымша ауыстырғыштар тағайындалсын ба?</translation>
 <translation id="782057141565633384">Бейне мекенжайын к&amp;өшіру</translation>
+<translation id="7823975162954158194">Ең күшті қорғау мүмкіндігін қамтамасыз етеді.</translation>
 <translation id="7824665136384946951">Ұйымыңыз Safe Browsing функциясын өшірді.</translation>
 <translation id="7824864914877854148">Сақтық көшірме жасалмады. Қате шықты.</translation>
 <translation id="7825289983414309119">Тау</translation>
@@ -11186,6 +11189,7 @@
 <translation id="8601206103050338563">TLS WWW клиент аутентификациясы</translation>
 <translation id="8602674530529411098">Қолданбалар (бета)</translation>
 <translation id="8602851771975208551">Компьютеріңіздегі басқа бір бағдарлама қолданба қосты, ол Chrome жұмысын өзгертуі мүмкін.</translation>
+<translation id="8602867356511778172">Google-да қауіптерді жылдам әрі дұрыс анықтау үшін көбірек деректер (мысалы, URL мекенжайлары, бет контентінің үлгілері, жүйе туралы ақпарат) пайдаланылады.</translation>
 <translation id="860399903490378651">Бұл көріністі жабу</translation>
 <translation id="8605428685123651449">SQLite жады</translation>
 <translation id="8607171490667464784">Әрекетсіз күйде болғанда және батарея салынған кезде</translation>
