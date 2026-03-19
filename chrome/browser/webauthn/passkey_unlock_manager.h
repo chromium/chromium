@@ -14,6 +14,7 @@
 #include "chrome/browser/webauthn/enclave_manager_interface.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sync/service/sync_service_observer.h"
+#include "components/trusted_vault/trusted_vault_connection.h"
 #include "components/webauthn/core/browser/passkey_model.h"
 #include "components/webauthn/core/browser/passkey_model_change.h"
 
@@ -189,6 +190,9 @@ class PasskeyUnlockManager : public KeyedService,
   // histogram needs to be recorded. Set to true iff histogram was already
   // recorded.
   bool gpm_pin_status_recorded_on_startup_ = false;
+
+  std::unique_ptr<trusted_vault::TrustedVaultConnection::Request>
+      download_account_state_request_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

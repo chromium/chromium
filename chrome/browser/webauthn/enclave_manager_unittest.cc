@@ -2241,7 +2241,7 @@ TEST_F(EnclaveManagerTest, CheckGpmPinAvailabilityWhenPinIsAvailable) {
   ASSERT_TRUE(manager_.has_wrapped_pin());
 
   base::test::TestFuture<EnclaveManager::GpmPinAvailability> future;
-  manager_.CheckGpmPinAvailability(future.GetCallback());
+  auto request = manager_.CheckGpmPinAvailability(future.GetCallback());
   EXPECT_TRUE(future.Wait());
   EXPECT_EQ(future.Get(),
             EnclaveManager::GpmPinAvailability::kGpmPinSetAndUsable);
@@ -2259,7 +2259,7 @@ TEST_F(EnclaveManagerTest, CheckGpmPinAvailabilityWhenPinIsUnusable) {
   security_domain_service_->MakePinMemberUnusable();
 
   base::test::TestFuture<EnclaveManager::GpmPinAvailability> future;
-  manager_.CheckGpmPinAvailability(future.GetCallback());
+  auto request = manager_.CheckGpmPinAvailability(future.GetCallback());
   EXPECT_TRUE(future.Wait());
   EXPECT_EQ(future.Get(),
             EnclaveManager::GpmPinAvailability::kGpmPinSetButNotUsable);
@@ -2269,7 +2269,7 @@ TEST_F(EnclaveManagerTest, CheckGpmPinAvailabilityWhenPinIsNotAvailable) {
   ASSERT_TRUE(Register());
 
   base::test::TestFuture<EnclaveManager::GpmPinAvailability> future;
-  manager_.CheckGpmPinAvailability(future.GetCallback());
+  auto request = manager_.CheckGpmPinAvailability(future.GetCallback());
   EXPECT_TRUE(future.Wait());
   EXPECT_EQ(future.Get(), EnclaveManager::GpmPinAvailability::kGpmPinUnset);
 }

@@ -202,7 +202,7 @@ void PasskeyUnlockManager::UpdateSyncState() {
 }
 
 void PasskeyUnlockManager::AsynchronouslyCheckGpmPinAvailability() {
-  enclave_manager()->CheckGpmPinAvailability(
+  download_account_state_request_ = enclave_manager()->CheckGpmPinAvailability(
       base::BindOnce(&PasskeyUnlockManager::OnHaveGpmPinAvailability,
                      weak_ptr_factory_.GetWeakPtr()));
 }

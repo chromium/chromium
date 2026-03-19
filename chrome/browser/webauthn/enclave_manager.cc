@@ -3798,30 +3798,27 @@ EnclaveManager::UvKeyState EnclaveManager::uv_key_state(
 #endif
 }
 
-void EnclaveManager::CheckGpmPinAvailability(
-    GpmPinAvailabilityCallback callback) {
+std::unique_ptr<trusted_vault::TrustedVaultConnection::Request>
+EnclaveManager::CheckGpmPinAvailability(GpmPinAvailabilityCallback callback) {
   CoreAccountInfo account_info =
       identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-  // TODO(crbug.com/485450318): calling this should not cancel ongoing requests.
-  download_account_state_request_ =
-      trusted_vault_conn_->DownloadAuthenticationFactorsRegistrationState(
-          account_info,
-          base::BindOnce(
-              [](GpmPinAvailabilityCallback callback,
-                 trusted_vault::
-                     DownloadAuthenticationFactorsRegistrationStateResult
-                         result) {
-                if (!result.gpm_pin_metadata) {
-                  std::move(callback).Run(GpmPinAvailability::kGpmPinUnset);
-                  return;
-                }
-                std::move(callback).Run(
-                    result.gpm_pin_metadata->usable_pin_metadata
-                        ? GpmPinAvailability::kGpmPinSetAndUsable
-                        : GpmPinAvailability::kGpmPinSetButNotUsable);
-              },
-              std::move(callback)),
-          base::DoNothing());
+  return trusted_vault_conn_->DownloadAuthenticationFactorsRegistrationState(
+      account_info,
+      base::BindOnce(
+          [](GpmPinAvailabilityCallback callback,
+             trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
+                 result) {
+            if (!result.gpm_pin_metadata) {
+              std::move(callback).Run(GpmPinAvailability::kGpmPinUnset);
+              return;
+            }
+            std::move(callback).Run(
+                result.gpm_pin_metadata->usable_pin_metadata
+                    ? GpmPinAvailability::kGpmPinSetAndUsable
+                    : GpmPinAvailability::kGpmPinSetButNotUsable);
+          },
+          std::move(callback)),
+      base::DoNothing());
 }
 
 // static

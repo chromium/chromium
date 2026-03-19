@@ -101,6 +101,8 @@ class PasskeyUnlockManagerTest : public testing::Test {
             [gpm_pin_status](
                 EnclaveManager::GpmPinAvailabilityCallback callback) {
               std::move(callback).Run(gpm_pin_status);
+              return std::make_unique<
+                  trusted_vault::TrustedVaultConnection::Request>();
             });
     EXPECT_CALL(*enclave_manager_mock, CheckGpmPinAvailability(_));
     return enclave_manager_mock;

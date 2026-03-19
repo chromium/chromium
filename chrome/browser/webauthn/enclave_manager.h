@@ -341,7 +341,8 @@ class EnclaveManager : public EnclaveManagerInterface {
   };
   UvKeyState uv_key_state(bool platform_has_biometrics) const;
 
-  void CheckGpmPinAvailability(GpmPinAvailabilityCallback callback) override;
+  std::unique_ptr<trusted_vault::TrustedVaultConnection::Request>
+  CheckGpmPinAvailability(GpmPinAvailabilityCallback callback) override;
 
   // Checks whether UserVerifyingKeyCreationCallback() is available to be
   // called, returning true if not. There should only be one key creation
@@ -592,9 +593,6 @@ class EnclaveManager : public EnclaveManagerInterface {
   base::ObserverList<Observer> observer_list_;
 
   std::optional<os_crypt_async::Encryptor> encryptor_;
-
-  std::unique_ptr<trusted_vault::TrustedVaultConnection::Request>
-      download_account_state_request_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

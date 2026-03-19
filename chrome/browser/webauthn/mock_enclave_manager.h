@@ -21,7 +21,7 @@ class MockEnclaveManager : public EnclaveManagerInterface {
   MOCK_METHOD(bool, IsRegistered, (), (const override));
   MOCK_METHOD(bool, IsLoaded, (), (const override));
   MOCK_METHOD(bool, IsReady, (), (const override));
-  MOCK_METHOD(void,
+  MOCK_METHOD(std::unique_ptr<trusted_vault::TrustedVaultConnection::Request>,
               CheckGpmPinAvailability,
               (EnclaveManagerInterface::GpmPinAvailabilityCallback),
               (override));
