@@ -6,6 +6,8 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/window_sizer/window_sizer_common_unittest.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace {
 const int kWindowTilePixels = WindowSizer::kWindowTilePixels;
@@ -96,6 +98,15 @@ TEST(WindowSizerTest, MAYBE_DefaultSizeCase) {
                         WindowSizer::kWindowMaxDefaultWidth,
                         1200 - kWindowTilePixels * 2),
               window_bounds);
+  }
+
+  {  // 4:3 monitor case, 1200x1600, portrait orientation
+    gfx::Rect window_bounds =
+        WindowSizerTestUtil().WithMonitorBounds(p1200x1600).GetWindowBounds();
+    EXPECT_EQ(window_bounds.origin(),
+              gfx::Point(kWindowTilePixels, kWindowTilePixels));
+    EXPECT_LE(window_bounds.width(), WindowSizer::kWindowMaxDefaultWidth);
+    EXPECT_GE(window_bounds.width(), window_bounds.height());
   }
 
   {  // 16:10 monitor case, 1680x1050

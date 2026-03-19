@@ -16,6 +16,7 @@ static const gfx::Rect p1280x1024(0, 0, 1280, 1024);
 static const gfx::Rect p1600x1200(0, 0, 1600, 1200);
 static const gfx::Rect p1680x1050(0, 0, 1680, 1050);
 static const gfx::Rect p1920x1200(0, 0, 1920, 1200);
+static const gfx::Rect p1200x1600(0, 0, 1200, 1600);
 
 // Represents a 1024x768 monitor that is the secondary monitor, arranged to
 // the immediate left of the primary 1024x768 monitor.

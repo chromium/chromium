@@ -346,6 +346,15 @@ gfx::Rect WindowSizer::GetDefaultWindowBounds(
         static_cast<int>(work_area.width() / 2. - 1.5 * kWindowTilePixels);
   }
 #endif  // !BUILDFLAG(IS_MAC)
+
+  // When starting Chrome on a monitor in portrait orientation the default
+  // browser window height is equal to monitor work area height which looks
+  // weird, see http://crbug.com/493633417. So check if this is the case and if
+  // so, set the default height for 4:3 aspect ratio.
+  if (!display.is_landscape() && default_height > default_width) {
+    default_height = (default_width / 4) * 3;
+  }
+
   return gfx::Rect(kWindowTilePixels + work_area.x(),
                    kWindowTilePixels + work_area.y(), default_width,
                    default_height);
