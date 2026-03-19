@@ -105,6 +105,18 @@ TEST_P(DataURLTest, Parse) {
       {"data:f(oo/bar;baz=1;charset=kk,boo", true, "text/plain", "US-ASCII",
        "boo"},
 
+      // Invalid mediatype with base64 encoding: the base64 body must still
+      // be decoded even when the MIME type is invalid.
+      // Regression test for https://crbug.com/492024623 - double type
+      // (image/image/jpeg) in MIME causes base64 to be dropped.
+      {"data:image/image/jpeg;base64,aGVsbG8gd29ybGQ=", true, "text/plain",
+       "US-ASCII", "hello world"},
+
+      // Regression test for https://crbug.com/493197121 - missing subtype
+      // (just "image") causes base64 to be dropped.
+      {"data:image;base64,aGVsbG8gd29ybGQ=", true, "text/plain", "US-ASCII",
+       "hello world"},
+
       {"data:text/html,%3Chtml%3E%3Cbody%3E%3Cb%3Ehello%20world"
        "%3C%2Fb%3E%3C%2Fbody%3E%3C%2Fhtml%3E",
        true, "text/html", "", "<html><body><b>hello world</b></body></html>"},
