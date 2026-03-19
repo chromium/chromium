@@ -328,6 +328,11 @@
     "expiry_milestone": 137
   },
   {
+    "name": "android-entra-sso",
+    "owners": ["ssolarewicz@chromium.com", "cec-growth-eng@google.com"],
+    "expiry_milestone": 154
+  },
+  {
     "name": "android-history-clustering",
     "owners": [ "wylieb@google.com", "clank-tab-dev@google.com" ],
     "expiry_milestone": 160

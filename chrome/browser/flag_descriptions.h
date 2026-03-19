@@ -8403,6 +8403,12 @@ inline constexpr char kEnableOktaSSOName[] =
 inline constexpr char kEnableOktaSSODescription[] =
     "Enables native support for Okta SSO on managed MacOS devices.";
 
+inline constexpr char kAndroidEntraSsoName[] =
+    "Enable Entra SSO for enterprise browsers.";
+inline constexpr char kAndroidEntraSsoDescription[] =
+    "Enables native support for Entra SSO on Android provided by selected "
+    "Authentication Brokers.";
+
 // ============================================================================
 // Don't just add flags to the end, put them in the alphabetical order.
 // ============================================================================

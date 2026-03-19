@@ -16665,6 +16665,7 @@ from previous Chrome versions.
   <int value="737195667" label="AutofillPageLanguageDetection:enabled"/>
   <int value="737421745" label="enable-accessibility-object-model"/>
   <int value="738325581" label="NtpMicrosoftAuthenticationModule:disabled"/>
+  <int value="738770668" label="AndroidEntraSSO:enabled"/>
   <int value="738868972" label="GdiTextPrinting:disabled"/>
   <int value="738962107" label="ExoOrdinalMotion:disabled"/>
   <int value="739906838" label="CrOSLateBootAudioFlexibleLoopback:disabled"/>
@@ -18409,6 +18410,7 @@ from previous Chrome versions.
   <int value="1321935981" label="CrosSafetyService:disabled"/>
   <int value="1322013438" label="CrOSLateBootGravedigger:enabled"/>
   <int value="1323010045" label="OpenXrSpatialEntities:enabled"/>
+  <int value="1323430093" label="AndroidEntraSSO:disabled"/>
   <int value="1323808967" label="PlaybackSpeedButton:disabled"/>
   <int value="1324043544" label="SyncSettingsCategorization:enabled"/>
   <int value="1324080668" label="VcControlsUi:disabled"/>

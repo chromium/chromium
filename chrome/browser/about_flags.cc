@@ -39,6 +39,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/default_browser/default_browser_features.h"
 #include "chrome/browser/devtools/features.h"
+#include "chrome/browser/enterprise/platform_auth/platform_auth_features.h"
 #include "chrome/browser/flag_descriptions.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/login_detection/login_detection_util.h"
@@ -13132,6 +13133,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kApb144Patch4Description, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kApb144Patch4)},
 #endif
+
+#if BUILDFLAG(IS_ANDROID)
+    {"android-entra-sso", flag_descriptions::kAndroidEntraSsoName,
+     flag_descriptions::kAndroidEntraSsoDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(enterprise_auth::kAndroidEntraSSO)},
+#endif
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
