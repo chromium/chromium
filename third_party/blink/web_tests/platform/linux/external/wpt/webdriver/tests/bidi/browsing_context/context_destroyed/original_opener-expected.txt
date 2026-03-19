@@ -1,0 +1,19 @@
+This is a wdspec test.
+[ERROR] test_window_open[None]
+  setup error: StopAsyncIteration
+[ERROR] test_window_open[]
+  setup error: StopAsyncIteration
+[ERROR] test_window_open[popup]
+  setup error: StopAsyncIteration
+[ERROR] test_window_open[noopener]
+  setup error: StopAsyncIteration
+[ERROR] test_window_open[noreferrer]
+  setup error: StopAsyncIteration
+[ERROR] test_different_origins[same_origin]
+  setup error: StopAsyncIteration
+[ERROR] test_different_origins[cross_origin]
+  setup error: StopAsyncIteration
+[ERROR] test_with_closed_original_context
+  setup error: StopAsyncIteration
+Harness: the test ran to completion.
+

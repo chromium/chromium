@@ -1,6 +1,7 @@
 This is a wdspec test.
 [FAIL] test_no_browsing_context
-  AssertionError: assert 'no such element' == 'no such window'
+  AssertionError
 [FAIL] test_no_such_element_with_shadow_root
-  assert 500 == 404
+  AssertionError
 Harness: the test ran to completion.
+

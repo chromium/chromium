@@ -7,10 +7,7 @@ from urllib.parse import urlunsplit
 
 import pytest
 import pytest_asyncio
-
-from tests.support.asserts import assert_pdf
-from tests.support.image import cm_to_px, png_dimensions, ImageDifference
-from tests.support.sync import AsyncPoll
+import webdriver
 from webdriver.bidi.error import (
     InvalidArgumentException,
     NoSuchFrameException,
@@ -30,6 +27,65 @@ from webdriver.bidi.modules.network import (
 from webdriver.bidi.modules.script import ContextTarget
 from webdriver.bidi.undefined import UNDEFINED
 from webdriver.error import TimeoutException
+
+import tests.support.fixtures as global_fixtures
+from tests.support import defaults
+from tests.support.asserts import assert_pdf
+from tests.support.classic.helpers import cleanup_session
+from tests.support.helpers import deep_update
+from tests.support.image import cm_to_px, png_dimensions, ImageDifference
+from tests.support.sync import AsyncPoll
+
+
+@pytest_asyncio.fixture(scope="function")
+async def bidi_session(capabilities, configuration):
+    """Create and start a bidi session.
+
+    Can be used for a test that does not itself test bidi session creation.
+
+    By default the session will stay open after each test, but we always try to start a
+    new one and assume that if that fails there is already a valid session. This makes it
+    possible to recover from some errors that might leave the session in a bad state, but
+    does not demand that we start a new session per test.
+    """
+    # Update configuration capabilities with custom ones from the
+    # capabilities fixture, which can be set by tests
+    caps = copy.deepcopy(configuration["capabilities"])
+    caps.update({"webSocketUrl": True})
+    deep_update(caps, capabilities)
+    caps = {"alwaysMatch": caps}
+
+    await global_fixtures.reset_current_session_if_necessary(caps)
+
+    if global_fixtures.get_current_session() is None:
+        global_fixtures.set_current_session(webdriver.Session(
+            configuration["host"],
+            configuration["port"],
+            capabilities=caps,
+            enable_bidi=True))
+
+    try:
+        session = global_fixtures.get_current_session()
+        session.start()
+
+        try:
+            await session.bidi_session.start()
+
+            # Enforce a fixed default window size and position
+            if session.capabilities.get("setWindowRect"):
+                session.window.size = defaults.WINDOW_SIZE
+                session.window.position = defaults.WINDOW_POSITION
+
+            yield session.bidi_session
+
+        finally:
+            await session.bidi_session.end()
+
+        cleanup_session(session)
+
+    except Exception:
+        # Make sure we end up in a known state if something goes wrong.
+        global_fixtures.get_current_session().end()
 
 
 @pytest_asyncio.fixture

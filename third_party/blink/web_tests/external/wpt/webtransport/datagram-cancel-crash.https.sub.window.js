@@ -4,7 +4,7 @@
 test(() => {
   const iframeTag = document.createElement('iframe');
   document.body.appendChild(iframeTag);
-  const wt = new iframeTag.contentWindow.WebTransport('https://example.com/');
+  const wt = new iframeTag.contentWindow.WebTransport('https://{{domains[nonexistent]}}/');
   iframeTag.remove();
   const datagrams = wt.datagrams;
   const reader = datagrams.readable;

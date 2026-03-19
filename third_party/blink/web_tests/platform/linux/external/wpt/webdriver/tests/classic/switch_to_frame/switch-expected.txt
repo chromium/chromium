@@ -1,6 +1,7 @@
 This is a wdspec test.
 [FAIL] test_no_browsing_context[0]
-  assert 200 == 404
+  AssertionError
 [FAIL] test_no_browsing_context[id2]
-  AssertionError: assert 'no such element' == 'no such window'
+  AssertionError
 Harness: the test ran to completion.
+

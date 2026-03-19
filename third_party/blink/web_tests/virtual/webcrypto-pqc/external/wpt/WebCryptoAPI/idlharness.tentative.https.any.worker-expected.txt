@@ -1,0 +1,18 @@
+This is a testharness.js-based test.
+Found 7 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] SubtleCrypto interface: operation getPublicKey(CryptoKey, sequence<KeyUsage>)
+  assert_own_property: interface prototype object missing non-static operation expected property "getPublicKey" missing
+[FAIL] SubtleCrypto interface: operation supports(DOMString, AlgorithmIdentifier, optional unsigned long?)
+  assert_own_property: interface object missing static operation expected property "supports" missing
+[FAIL] SubtleCrypto interface: operation supports(DOMString, AlgorithmIdentifier, AlgorithmIdentifier)
+  assert_own_property: interface object missing static operation expected property "supports" missing
+[FAIL] SubtleCrypto interface: crypto.subtle must inherit property "getPublicKey(CryptoKey, sequence<KeyUsage>)" with the proper type
+  assert_inherits: property "getPublicKey" not found in prototype chain
+[FAIL] SubtleCrypto interface: calling getPublicKey(CryptoKey, sequence<KeyUsage>) on crypto.subtle with too few arguments must throw TypeError
+  assert_inherits: property "getPublicKey" not found in prototype chain
+[FAIL] SubtleCrypto interface: calling supports(DOMString, AlgorithmIdentifier, optional unsigned long?) on crypto.subtle with too few arguments must throw TypeError
+  assert_own_property: interface object must have static operation as own property expected property "supports" missing
+[FAIL] SubtleCrypto interface: calling supports(DOMString, AlgorithmIdentifier, AlgorithmIdentifier) on crypto.subtle with too few arguments must throw TypeError
+  assert_own_property: interface object must have static operation as own property expected property "supports" missing
+Harness: the test ran to completion.
+

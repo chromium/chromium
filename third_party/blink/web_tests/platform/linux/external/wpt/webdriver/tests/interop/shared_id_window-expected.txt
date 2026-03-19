@@ -1,0 +1,13 @@
+This is a wdspec test.
+[ERROR] test_top_level_context_id_equals_window_handle
+  setup error: StopAsyncIteration
+[ERROR] test_web_window_reference_created_in_classic
+  setup error: StopAsyncIteration
+[ERROR] test_web_frame_reference_created_in_classic
+  setup error: StopAsyncIteration
+[ERROR] test_web_window_reference_created_in_bidi
+  setup error: StopAsyncIteration
+[ERROR] test_web_frame_reference_created_in_bidi
+  setup error: StopAsyncIteration
+Harness: the test ran to completion.
+

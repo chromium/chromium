@@ -1,0 +1,43 @@
+This is a wdspec test.
+[ERROR] test_unsubscribe
+  setup error: StopAsyncIteration
+[ERROR] test_subscribe
+  setup error: StopAsyncIteration
+[ERROR] test_timestamp
+  setup error: StopAsyncIteration
+[ERROR] test_basic_auth
+  setup error: StopAsyncIteration
+[ERROR] test_iframe
+  setup error: StopAsyncIteration
+[ERROR] test_nested_iframes
+  setup error: StopAsyncIteration
+[ERROR] test_same_document
+  setup error: StopAsyncIteration
+[ERROR] test_document_write[None]
+  setup error: StopAsyncIteration
+[ERROR] test_document_write[sandbox_1]
+  setup error: StopAsyncIteration
+[ERROR] test_base_element
+  setup error: StopAsyncIteration
+[ERROR] test_redirect_http_equiv
+  setup error: StopAsyncIteration
+[ERROR] test_redirect_navigation
+  setup error: StopAsyncIteration
+[ERROR] test_navigate_history_pushstate
+  setup error: StopAsyncIteration
+[ERROR] test_new_context[tab]
+  setup error: StopAsyncIteration
+[ERROR] test_new_context[window]
+  setup error: StopAsyncIteration
+[ERROR] test_navigate_to_about_blank
+  setup error: StopAsyncIteration
+[ERROR] test_window_open_with_about_blank[]
+  setup error: StopAsyncIteration
+[ERROR] test_window_open_with_about_blank[about:blank]
+  setup error: StopAsyncIteration
+[ERROR] test_window_open_with_about_blank[about:blank?test]
+  setup error: StopAsyncIteration
+[ERROR] test_window_open_with_url
+  setup error: StopAsyncIteration
+Harness: the test ran to completion.
+

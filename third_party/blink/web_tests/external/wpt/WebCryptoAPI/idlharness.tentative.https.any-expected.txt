@@ -1,0 +1,42 @@
+This is a testharness.js-based test.
+Found 19 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] SubtleCrypto interface: operation encapsulateKey(AlgorithmIdentifier, CryptoKey, AlgorithmIdentifier, boolean, sequence<KeyUsage>)
+  assert_own_property: interface prototype object missing non-static operation expected property "encapsulateKey" missing
+[FAIL] SubtleCrypto interface: operation encapsulateBits(AlgorithmIdentifier, CryptoKey)
+  assert_own_property: interface prototype object missing non-static operation expected property "encapsulateBits" missing
+[FAIL] SubtleCrypto interface: operation decapsulateKey(AlgorithmIdentifier, CryptoKey, BufferSource, AlgorithmIdentifier, boolean, sequence<KeyUsage>)
+  assert_own_property: interface prototype object missing non-static operation expected property "decapsulateKey" missing
+[FAIL] SubtleCrypto interface: operation decapsulateBits(AlgorithmIdentifier, CryptoKey, BufferSource)
+  assert_own_property: interface prototype object missing non-static operation expected property "decapsulateBits" missing
+[FAIL] SubtleCrypto interface: operation getPublicKey(CryptoKey, sequence<KeyUsage>)
+  assert_own_property: interface prototype object missing non-static operation expected property "getPublicKey" missing
+[FAIL] SubtleCrypto interface: operation supports(DOMString, AlgorithmIdentifier, optional unsigned long?)
+  assert_own_property: interface object missing static operation expected property "supports" missing
+[FAIL] SubtleCrypto interface: operation supports(DOMString, AlgorithmIdentifier, AlgorithmIdentifier)
+  assert_own_property: interface object missing static operation expected property "supports" missing
+[FAIL] SubtleCrypto interface: crypto.subtle must inherit property "encapsulateKey(AlgorithmIdentifier, CryptoKey, AlgorithmIdentifier, boolean, sequence<KeyUsage>)" with the proper type
+  assert_inherits: property "encapsulateKey" not found in prototype chain
+[FAIL] SubtleCrypto interface: calling encapsulateKey(AlgorithmIdentifier, CryptoKey, AlgorithmIdentifier, boolean, sequence<KeyUsage>) on crypto.subtle with too few arguments must throw TypeError
+  assert_inherits: property "encapsulateKey" not found in prototype chain
+[FAIL] SubtleCrypto interface: crypto.subtle must inherit property "encapsulateBits(AlgorithmIdentifier, CryptoKey)" with the proper type
+  assert_inherits: property "encapsulateBits" not found in prototype chain
+[FAIL] SubtleCrypto interface: calling encapsulateBits(AlgorithmIdentifier, CryptoKey) on crypto.subtle with too few arguments must throw TypeError
+  assert_inherits: property "encapsulateBits" not found in prototype chain
+[FAIL] SubtleCrypto interface: crypto.subtle must inherit property "decapsulateKey(AlgorithmIdentifier, CryptoKey, BufferSource, AlgorithmIdentifier, boolean, sequence<KeyUsage>)" with the proper type
+  assert_inherits: property "decapsulateKey" not found in prototype chain
+[FAIL] SubtleCrypto interface: calling decapsulateKey(AlgorithmIdentifier, CryptoKey, BufferSource, AlgorithmIdentifier, boolean, sequence<KeyUsage>) on crypto.subtle with too few arguments must throw TypeError
+  assert_inherits: property "decapsulateKey" not found in prototype chain
+[FAIL] SubtleCrypto interface: crypto.subtle must inherit property "decapsulateBits(AlgorithmIdentifier, CryptoKey, BufferSource)" with the proper type
+  assert_inherits: property "decapsulateBits" not found in prototype chain
+[FAIL] SubtleCrypto interface: calling decapsulateBits(AlgorithmIdentifier, CryptoKey, BufferSource) on crypto.subtle with too few arguments must throw TypeError
+  assert_inherits: property "decapsulateBits" not found in prototype chain
+[FAIL] SubtleCrypto interface: crypto.subtle must inherit property "getPublicKey(CryptoKey, sequence<KeyUsage>)" with the proper type
+  assert_inherits: property "getPublicKey" not found in prototype chain
+[FAIL] SubtleCrypto interface: calling getPublicKey(CryptoKey, sequence<KeyUsage>) on crypto.subtle with too few arguments must throw TypeError
+  assert_inherits: property "getPublicKey" not found in prototype chain
+[FAIL] SubtleCrypto interface: calling supports(DOMString, AlgorithmIdentifier, optional unsigned long?) on crypto.subtle with too few arguments must throw TypeError
+  assert_own_property: interface object must have static operation as own property expected property "supports" missing
+[FAIL] SubtleCrypto interface: calling supports(DOMString, AlgorithmIdentifier, AlgorithmIdentifier) on crypto.subtle with too few arguments must throw TypeError
+  assert_own_property: interface object must have static operation as own property expected property "supports" missing
+Harness: the test ran to completion.
+
