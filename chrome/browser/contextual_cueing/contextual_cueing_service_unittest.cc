@@ -16,9 +16,15 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_config.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/content_extraction/content/browser/inner_text.h"
+#include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
@@ -72,6 +78,7 @@ class ContextualCueingServiceTest : public testing::Test {
         &page_content_extraction_service_,
         mock_optimization_guide_keyed_service_.get(),
         /*loading_predictor=*/nullptr,
+        /*identity_manager=*/nullptr,
         /*pref_service=*/nullptr,
         /*template_url_service=*/nullptr);
   }
@@ -420,9 +427,7 @@ class ContextualCueingServiceTestZeroStateSuggestions : public testing::Test {
     prefs::RegisterProfilePrefs(pref_service_->registry());
   }
 
-  void TearDown() override {
-    loading_predictor_->Shutdown();
-  }
+  void TearDown() override { loading_predictor_->Shutdown(); }
 
   void SetGlicTabContextEnabled(bool enabled) {
     pref_service_->SetBoolean(glic::prefs::kGlicTabContextEnabled, enabled);
@@ -432,7 +437,30 @@ class ContextualCueingServiceTestZeroStateSuggestions : public testing::Test {
     service_ = std::make_unique<ContextualCueingService>(
         /*page_content_extraction_service=*/nullptr,
         mock_optimization_guide_keyed_service_, loading_predictor_.get(),
-        pref_service_.get(), /*template_url_service=*/nullptr);
+        IdentityManagerFactory::GetForProfile(&profile_), pref_service_.get(),
+        /*template_url_service=*/nullptr);
+  }
+
+  void SetAccountCapability(bool can_use_model_execution) {
+    AccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
+        "test@example.com", signin::ConsentLevel::kSignin);
+    AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
+    mutator.set_can_use_model_execution_features(can_use_model_execution);
+    identity_test_env_.UpdateAccountInfoForAccount(account_info);
+  }
+
+  void CompletePageContextExtraction() {
+    auto* zss_data = ZeroStateSuggestionsPageData::GetForPage(
+        web_contents()->GetPrimaryPage());
+    zss_data->inner_text_result_ =
+        std::make_unique<content_extraction::InnerTextResult>();
+    zss_data->inner_text_result_->inner_text = "test text";
+    zss_data->inner_text_done_ = true;
+    zss_data->annotated_page_content_done_ = true;
+    zss_data->optimization_metadata_done_ = true;
+    zss_data->optimization_decision_ =
+        optimization_guide::OptimizationGuideDecision::kTrue;
+    zss_data->InvokePageContextCallbacksIfComplete();
   }
 
   std::optional<optimization_guide::proto::ZeroStateSuggestionsRequest>
@@ -465,6 +493,7 @@ class ContextualCueingServiceTestZeroStateSuggestions : public testing::Test {
   content::RenderViewHostTestEnabler enabler;
   base::test::ScopedFeatureList scoped_feature_list_;
   TestingProfile profile_;
+  signin::IdentityTestEnvironment identity_test_env_;
   raw_ptr<MockOptimizationGuideKeyedService>
       mock_optimization_guide_keyed_service_;
   std::unique_ptr<content::WebContents> web_contents_;
@@ -472,6 +501,82 @@ class ContextualCueingServiceTestZeroStateSuggestions : public testing::Test {
   std::unique_ptr<sync_preferences::TestingPrefServiceSyncable> pref_service_;
   std::unique_ptr<ContextualCueingService> service_;
 };
+
+TEST_F(ContextualCueingServiceTestZeroStateSuggestions,
+       UsesPrivateAiWhenFeatureEnabledAndAccountHasCapability) {
+  base::test::ScopedFeatureList private_ai_feature;
+  private_ai_feature.InitAndEnableFeature(kZeroStateSuggestionsUsePrivateAi);
+  SetAccountCapability(/*can_use_model_execution=*/true);
+  SetGlicTabContextEnabled(true);
+  InitializeContextualCueingService();
+
+  EXPECT_CALL(
+      mock_optimization_guide_keyed_service(),
+      ExecuteModel(
+          _, _,
+          testing::Field(
+              &optimization_guide::ModelExecutionOptions::service_type,
+              optimization_guide::ModelExecutionServiceType::kPrivateAi),
+          _))
+      .Times(1);
+
+  base::test::TestFuture<std::vector<std::string>> future;
+  service()->GetContextualGlicZeroStateSuggestionsForFocusedTab(
+      web_contents(), /*is_fre=*/false, /*supported_tools=*/std::nullopt,
+      future.GetCallback());
+  CompletePageContextExtraction();
+}
+
+TEST_F(ContextualCueingServiceTestZeroStateSuggestions,
+       UsesDefaultAiWhenFeatureEnabledButAccountLacksCapability) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {switches::kGlicEligibilitySeparateAccountCapability,
+       kZeroStateSuggestionsUsePrivateAi},
+      {});
+  SetAccountCapability(/*can_use_model_execution=*/false);
+  SetGlicTabContextEnabled(true);
+  InitializeContextualCueingService();
+
+  EXPECT_CALL(
+      mock_optimization_guide_keyed_service(),
+      ExecuteModel(_, _,
+                   testing::Field(
+                       &optimization_guide::ModelExecutionOptions::service_type,
+                       optimization_guide::ModelExecutionServiceType::kDefault),
+                   _))
+      .Times(1);
+
+  base::test::TestFuture<std::vector<std::string>> future;
+  service()->GetContextualGlicZeroStateSuggestionsForFocusedTab(
+      web_contents(), /*is_fre=*/false, /*supported_tools=*/std::nullopt,
+      future.GetCallback());
+  CompletePageContextExtraction();
+}
+
+TEST_F(ContextualCueingServiceTestZeroStateSuggestions,
+       UsesDefaultAiWhenFeatureDisabled) {
+  base::test::ScopedFeatureList private_ai_feature;
+  private_ai_feature.InitAndDisableFeature(kZeroStateSuggestionsUsePrivateAi);
+  SetAccountCapability(/*can_use_model_execution=*/true);
+  SetGlicTabContextEnabled(true);
+  InitializeContextualCueingService();
+
+  EXPECT_CALL(
+      mock_optimization_guide_keyed_service(),
+      ExecuteModel(_, _,
+                   testing::Field(
+                       &optimization_guide::ModelExecutionOptions::service_type,
+                       optimization_guide::ModelExecutionServiceType::kDefault),
+                   _))
+      .Times(1);
+
+  base::test::TestFuture<std::vector<std::string>> future;
+  service()->GetContextualGlicZeroStateSuggestionsForFocusedTab(
+      web_contents(), /*is_fre=*/false, /*supported_tools=*/std::nullopt,
+      future.GetCallback());
+  CompletePageContextExtraction();
+}
 
 TEST_F(ContextualCueingServiceTestZeroStateSuggestions,
        PreconnectsWithContextEnabled) {
@@ -506,6 +611,7 @@ TEST_F(ContextualCueingServiceTestZeroStateSuggestions,
   service()->GetContextualGlicZeroStateSuggestionsForFocusedTab(
       web_contents(), /*is_fre=*/false, /*supported_tools=*/std::nullopt,
       future.GetCallback());
+  CompletePageContextExtraction();
 
   EXPECT_NE(nullptr, ZeroStateSuggestionsPageData::GetForPage(
                          web_contents()->GetPrimaryPage()));

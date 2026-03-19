@@ -25,6 +25,10 @@ class ModelQualityLogEntry;
 struct OptimizationGuideModelExecutionResult;
 }  // namespace optimization_guide
 
+namespace signin {
+class IdentityManager;
+}
+
 namespace contextual_cueing {
 
 enum class PageContextIneligibilityType;
@@ -35,6 +39,7 @@ class ZeroStateSuggestionsRequest {
  public:
   ZeroStateSuggestionsRequest(
       OptimizationGuideKeyedService* optimization_guide_keyed_service,
+      signin::IdentityManager* identity_manager,
       const optimization_guide::proto::ZeroStateSuggestionsRequest&
           pending_base_request,
       const std::vector<content::WebContents*>& requested_tabs,
@@ -92,6 +97,9 @@ class ZeroStateSuggestionsRequest {
 
   // Not owned. Guaranteed to outlive `this`.
   raw_ptr<OptimizationGuideKeyedService> optimization_guide_keyed_service_;
+
+  // Not owned. Guaranteed to outlive `this`.
+  raw_ptr<signin::IdentityManager> identity_manager_;
 
   base::WeakPtrFactory<ZeroStateSuggestionsRequest> weak_ptr_factory_{this};
 };
