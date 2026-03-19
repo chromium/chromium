@@ -9621,3 +9621,6 @@ crbug.com/482449299 [ Win11 ] virtual/webnn-service-with-gpu/external/wpt/webnn/
 crbug.com/40615943 [ Linux ] external/wpt/html/browsers/the-window-object/navigate-to-about-blank-while-initial-load-pending.html [ Pass Timeout ]
 crbug.com/40615943 [ Mac ] external/wpt/html/browsers/the-window-object/navigate-to-about-blank-while-initial-load-pending.html [ Pass Timeout ]
 
+# Gardener 2026-03-11
+crbug.com/478186112 external/wpt/pointerevents/pointerevent_attributes.optional.html?touch [ Pass Timeout ]
+crbug.com/478186112 external/wpt/pointerevents/pointerevent_attributes.html?touch [ Pass Timeout ]
