@@ -26,7 +26,7 @@ constexpr auto kCountryCodeAliases =
 
 // GetCountryCodes and GetCountryData compute the data for CountryDataMap
 // based on `kCountryAddressImportRequirementsData`.
-std::vector<std::string> GetCountryCodes() {
+std::vector<std::string> GetCountryCodeList() {
   return base::ToVector(
       kCountryAddressImportRequirementsData,
       [](const auto& static_data) { return std::string(static_data.first); });
@@ -66,7 +66,7 @@ CountryDataMap* CountryDataMap::GetInstance() {
 
 CountryDataMap::CountryDataMap()
     : required_fields_for_address_import_map_(GetCountryDataMap()),
-      country_codes_(GetCountryCodes()) {}
+      country_codes_(GetCountryCodeList()) {}
 
 CountryDataMap::~CountryDataMap() = default;
 

@@ -524,10 +524,7 @@ bool IsValidBasicCardIssuerNetwork(std::string_view basic_card_issuer_network) {
 }
 
 bool IsValidCountryCode(std::string_view country_code) {
-  if (country_code.size() != 2) {
-    return false;
-  }
-  return std::ranges::all_of(country_code, base::IsAsciiUpper<char>);
+  return GetCountryCodes().contains(country_code);
 }
 
 bool IsValidCountryCode(std::u16string_view country_code) {
