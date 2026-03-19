@@ -81,8 +81,8 @@ bool ShouldCreateAppWindowForAppName(Profile* profile,
   return apps::IsInstalledApp(profile, app_id);
 }
 
-sessions::LiveTabContext* GetLiveTabContext(Browser* browser) {
-  return browser && !browser->is_delete_scheduled()
+sessions::LiveTabContext* GetLiveTabContext(BrowserWindowInterface* browser) {
+  return browser && !browser->IsDeleteScheduled()
              ? browser->GetFeatures().live_tab_context()
              : nullptr;
 }
@@ -448,6 +448,7 @@ sessions::LiveTabContext* BrowserLiveTabContext::FindContextWithID(
 sessions::LiveTabContext* BrowserLiveTabContext::FindContextWithGroup(
     tab_groups::TabGroupId group,
     Profile* profile) {
-  Browser* const browser = chrome::FindBrowserWithGroup(group, profile);
+  BrowserWindowInterface* const browser =
+      chrome::FindBrowserWithGroup(group, profile);
   return GetLiveTabContext(browser);
 }
