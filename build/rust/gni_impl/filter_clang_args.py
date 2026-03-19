@@ -25,6 +25,8 @@ def filter_clang_args(clangargs):
           pass
         elif args[i].startswith('-plugin-arg'):
           i += 2
+      elif args[i] == '-ftime-trace':
+        pass
       else:
         yield args[i]
       i += 1
