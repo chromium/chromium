@@ -214,4 +214,7 @@ BASE_FEATURE(kSyncDeviceInfoUseWallClockTimer,
 
 BASE_FEATURE(kSyncValidateAccessToken, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSyncInvalidationsBypassScheduler,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace syncer

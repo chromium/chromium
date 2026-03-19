@@ -7,12 +7,14 @@
 #include <map>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "components/gcm_driver/gcm_driver.h"
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
+#include "components/sync/base/features.h"
 #include "components/sync/invalidations/fcm_registration_token_observer.h"
 #include "components/sync/invalidations/invalidations_listener.h"
 
@@ -214,10 +216,15 @@ void FCMHandler::StartTokenValidation() {
 }
 
 void FCMHandler::StartTokenFetch() {
+  std::set<instance_id::InstanceID::Flags> flags = {
+      instance_id::InstanceID::Flags::kIsLazy};
+  if (base::FeatureList::IsEnabled(kSyncInvalidationsBypassScheduler)) {
+    flags.insert(instance_id::InstanceID::Flags::kBypassScheduler);
+  }
+
   instance_id_driver_->GetInstanceID(app_id_)->GetToken(
       sender_id_, instance_id::kGCMScope,
-      /*time_to_live=*/base::Seconds(kInstanceIDTokenTTLSeconds),
-      /*flags=*/{instance_id::InstanceID::Flags::kIsLazy},
+      /*time_to_live=*/base::Seconds(kInstanceIDTokenTTLSeconds), flags,
       base::BindOnce(&FCMHandler::DidRetrieveToken,
                      weak_ptr_factory_.GetWeakPtr()));
 }
