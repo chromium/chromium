@@ -19,8 +19,6 @@ static_library("util") {
   sources = [
     "ftrl_optimizer.cc",
     "ftrl_optimizer.h",
-    "keyword_cache.cc",
-    "keyword_cache.h",
     "mrfu_cache.cc",
     "mrfu_cache.h",
     "score_normalizer.cc",
@@ -41,7 +39,6 @@ source_set("unit_tests") {
 
   sources = [
     "ftrl_optimizer_unittest.cc",
-    "keyword_cache_unittest.cc",
     "mrfu_cache_unittest.cc",
     "score_normalizer_unittest.cc",
   ]

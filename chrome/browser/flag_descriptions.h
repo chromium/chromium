@@ -7823,12 +7823,6 @@ inline constexpr char kWindowSplittingName[] = "CrOS Labs - Window splitting";
 inline constexpr char kWindowSplittingDescription[] =
     "Enables splitting windows by dragging one over another.";
 
-inline constexpr char kLauncherKeywordExtractionScoring[] =
-    "Query keyword extraction and scoring in launcher";
-inline constexpr char kLauncherKeywordExtractionScoringDescription[] =
-    "Enables extraction of keywords from query then calculate score from "
-    "extracted keyword in the launcher.";
-
 inline constexpr char kLauncherLocalImageSearchName[] =
     "Enable launcher local image search";
 inline constexpr char kLauncherLocalImageSearchDescription[] =

@@ -8559,11 +8559,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(ash::kLauncherItemSuggest,
                                     kLauncherItemSuggestVariations,
                                     "LauncherItemSuggest")},
-
-    {"launcher-keyword-extraction-scoring",
-     flag_descriptions::kLauncherKeywordExtractionScoring,
-     flag_descriptions::kLauncherKeywordExtractionScoringDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(search_features::kLauncherKeywordExtractionScoring)},
     {"launcher-local-image-search",
      flag_descriptions::kLauncherLocalImageSearchName,
      flag_descriptions::kLauncherLocalImageSearchDescription, kOsCrOS,

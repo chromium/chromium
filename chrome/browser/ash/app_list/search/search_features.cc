@@ -11,9 +11,6 @@
 
 namespace search_features {
 
-BASE_FEATURE(kLauncherKeywordExtractionScoring,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kLauncherImageSearch, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLauncherLocalImageSearchConfidence,
@@ -44,10 +41,6 @@ BASE_FEATURE(kLauncherSearchFileScan,
 bool IsLauncherGameSearchEnabled() {
   return chromeos::features::IsCloudGamingDeviceEnabled() ||
          chromeos::features::IsAlmanacLauncherPayloadEnabled();
-}
-
-bool IsLauncherKeywordExtractionScoringEnabled() {
-  return base::FeatureList::IsEnabled(kLauncherKeywordExtractionScoring);
 }
 
 bool IsLauncherImageSearchEnabled() {

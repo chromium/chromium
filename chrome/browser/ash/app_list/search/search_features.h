@@ -9,9 +9,6 @@
 
 namespace search_features {
 
-// Query key word extraction and scoring while search in the launcher.
-BASE_DECLARE_FEATURE(kLauncherKeywordExtractionScoring);
-
 // Enables image search in the launcher.
 BASE_DECLARE_FEATURE(kLauncherImageSearch);
 
@@ -44,7 +41,6 @@ BASE_DECLARE_FEATURE(kLauncherImageSearchDebug);
 BASE_DECLARE_FEATURE(kLauncherSearchFileScan);
 
 bool IsLauncherGameSearchEnabled();
-bool IsLauncherKeywordExtractionScoringEnabled();
 bool IsLauncherImageSearchEnabled();
 bool IsLauncherImageSearchIcaEnabled();
 bool IsLauncherImageSearchOcrEnabled();

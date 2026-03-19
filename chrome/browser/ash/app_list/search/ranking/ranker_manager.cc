@@ -9,14 +9,12 @@
 #include "chrome/browser/ash/app_list/search/ranking/continue_ranker.h"
 #include "chrome/browser/ash/app_list/search/ranking/filtering_ranker.h"
 #include "chrome/browser/ash/app_list/search/ranking/ftrl_ranker.h"
-#include "chrome/browser/ash/app_list/search/ranking/keyword_ranker.h"
 #include "chrome/browser/ash/app_list/search/ranking/mrfu_ranker.h"
 #include "chrome/browser/ash/app_list/search/ranking/query_highlighter.h"
 #include "chrome/browser/ash/app_list/search/ranking/removed_results.pb.h"
 #include "chrome/browser/ash/app_list/search/ranking/removed_results_ranker.h"
 #include "chrome/browser/ash/app_list/search/ranking/score_normalizing_ranker.h"
 #include "chrome/browser/ash/app_list/search/ranking/util.h"
-#include "chrome/browser/ash/app_list/search/search_features.h"
 #include "chrome/browser/ash/app_list/search/util/score_normalizer.h"
 #include "chrome/browser/ash/app_list/search/util/score_normalizer.pb.h"
 #include "chrome/browser/profiles/profile.h"
@@ -101,14 +99,6 @@ RankerManager::RankerManager(Profile* profile) {
       mrfu_category_params,
       ash::PersistentProto<MrfuCacheProto>(
           state_dir.AppendASCII("mrfu_categories.pb"), kStandardWriteDelay)));
-
-  // TODO(b/274921356): Temporarily comment out the `KeywordRanker` construction
-  // to avoid any possible crashes. Re-enable it when we make sure this problem
-  // has been fixed.
-  //
-  // if (search_features::IsLauncherKeywordExtractionScoringEnabled()) {
-  //   AddRanker(std::make_unique<KeywordRanker>());
-  // }
 
   // 5. Result post-processing.
   // Nb. the best match ranker relies on score normalization, and the answer
