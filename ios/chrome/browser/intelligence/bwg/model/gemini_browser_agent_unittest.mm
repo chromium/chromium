@@ -57,9 +57,10 @@ class GeminiBrowserAgentTest : public PlatformTest {
   GeminiBrowserAgentTest()
       : web_client_(std::make_unique<web::FakeWebClient>()),
         task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    feature_list_.InitWithFeatures({kPageContextExtractorRefactored,
-                                    kGeminiRefactoredFRE, kGeminiCopresence},
-                                   {});
+    feature_list_.InitWithFeatures(
+        {kPageActionMenu, kPageContextExtractorRefactored, kGeminiRefactoredFRE,
+         kGeminiCopresence},
+        {});
     static_cast<web::FakeWebClient*>(web_client_.Get())
         ->SetJavaScriptFeatures(
             {web::FindInPageJavaScriptFeature::GetInstance(),

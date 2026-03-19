@@ -781,7 +781,9 @@ TEST_F(BwgTabHelperTest,
 // Tests that Gemini is not available for a web state when the URL is an AIM
 // URL.
 TEST_F(BwgTabHelperTest, IsGeminiAvailableForWebState_WhenUrlIsAimUrl) {
-  feature_list_.InitWithFeatures({kGeminiCopresence}, {});
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/{kGeminiCopresence, kPageActionMenu},
+      /*disabled_features=*/{});
   web_state_ = std::make_unique<web::FakeWebState>();
   web_state_->SetBrowserState(profile_.get());
   web_state_->SetCurrentURL(
@@ -795,7 +797,9 @@ TEST_F(BwgTabHelperTest, IsGeminiAvailableForWebState_WhenUrlIsAimUrl) {
 // Tests that Gemini is not available for a web state when the URL is the Google
 // home page.
 TEST_F(BwgTabHelperTest, IsGeminiAvailableForWebState_WhenUrlIsGoogleHomePage) {
-  feature_list_.InitWithFeatures({kGeminiCopresence}, {});
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/{kGeminiCopresence, kPageActionMenu},
+      /*disabled_features=*/{});
   web_state_ = std::make_unique<web::FakeWebState>();
   web_state_->SetBrowserState(profile_.get());
   web_state_->SetCurrentURL(GURL("https://www.google.com"));
@@ -809,7 +813,9 @@ TEST_F(BwgTabHelperTest, IsGeminiAvailableForWebState_WhenUrlIsGoogleHomePage) {
 // Search URL but not an AIM URL.
 TEST_F(BwgTabHelperTest,
        IsGeminiAvailableForWebState_WhenUrlIsNotAimUrlButIsGoogleSearch) {
-  feature_list_.InitWithFeatures({kGeminiCopresence}, {});
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/{kGeminiCopresence, kPageActionMenu},
+      /*disabled_features=*/{});
   web_state_ = std::make_unique<web::FakeWebState>();
   web_state_->SetBrowserState(profile_.get());
   web_state_->SetCurrentURL(GURL("https://www.google.com/search?q=test"));
@@ -849,7 +855,9 @@ TEST_F(BwgTabHelperTest,
 // the AllPages flag is enabled.
 TEST_F(BwgTabHelperTest,
        IsGeminiAvailableForWebState_WhenUrlIsPdf_AllPagesEnabled) {
-  feature_list_.InitWithFeatures({kGeminiFloatyAllPages}, {});
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/{kGeminiFloatyAllPages, kPageActionMenu},
+      /*disabled_features=*/{});
   web_state_ = std::make_unique<web::FakeWebState>();
   web_state_->SetBrowserState(profile_.get());
   web_state_->SetCurrentURL(GURL("https://www.example.com/test.pdf"));

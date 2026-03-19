@@ -69,7 +69,9 @@ class BwgLinkOpeningHandlerTest : public PlatformTest {
 // URLLoadingAgent to load the correct URL.
 TEST_F(BwgLinkOpeningHandlerTest, TestOpenURLInNewTabWithCopresence) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kGeminiCopresence);
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{kGeminiCopresence, kPageActionMenu},
+      /*disabled_features=*/{});
 
   [link_opening_handler_ openURLInNewTab:@(kTestURL)];
 
