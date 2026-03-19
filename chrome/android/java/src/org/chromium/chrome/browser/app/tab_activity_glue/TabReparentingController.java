@@ -61,7 +61,6 @@ public class TabReparentingController {
      * ChromeTabCreator}.
      */
     public void prepareTabsForReparenting() {
-        // TODO(crbug.com/40124038): Make tab models detachable.
         TabModelSelector selector = mDelegate.getTabModelSelector();
 
         // Close tabs pending closure before saving params.
