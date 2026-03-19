@@ -100,8 +100,8 @@ interface OnDeviceTranslationService {
   // when the binary or the language packages are updated (or uninstalled).
   SetServiceConfig(OnDeviceTranslationServiceConfig config);
 
-  // Creates a `Translator` that could do translation from `source_lang` to
-  // `target_lang`. When succeeds, the result callback will be called with a
+  // Creates a `OnDeviceTranslator` that could do translation from `source_lang`
+  // to `target_lang`. When succeeds, the result callback will be called with a
   // true `kSuccess`. Otherwise, the result callback will be called with one of
   // the other error codes.
   // To detect the idle state of the service, this IPC is passing a
@@ -109,7 +109,7 @@ interface OnDeviceTranslationService {
   // https://crrev.com/c/5992971/comment/ca3edf7c_2ae4ca1a/ for more details.
   CreateTranslator(string source_lang,
                    string target_lang,
-                   pending_receiver<Translator> receiver)
+                   pending_receiver<OnDeviceTranslator> receiver)
       => (CreateTranslatorResult result);
 
   // Returns if the service could translate text from `source_lang` to

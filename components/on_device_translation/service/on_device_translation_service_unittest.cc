@@ -65,10 +65,10 @@ class OnDeviceTranslationServiceTest : public testing::Test {
 
   // Returns a remote to a translator for the given language pair or an invalid
   // remote if the language pair is not supported.
-  mojo::Remote<mojom::Translator> CreateTranslator(
+  mojo::Remote<mojom::OnDeviceTranslator> CreateTranslator(
       const std::string& source_lang,
       const std::string& target_lang) {
-    mojo::Remote<mojom::Translator> translator_remote;
+    mojo::Remote<mojom::OnDeviceTranslator> translator_remote;
     base::RunLoop run_loop;
     bool succeeded = false;
     service_remote_->CreateTranslator(
@@ -80,7 +80,7 @@ class OnDeviceTranslationServiceTest : public testing::Test {
         }));
     run_loop.Run();
     return succeeded ? std::move(translator_remote)
-                     : mojo::Remote<mojom::Translator>();
+                     : mojo::Remote<mojom::OnDeviceTranslator>();
   }
 
  private:
@@ -117,7 +117,7 @@ TEST_F(OnDeviceTranslationServiceTest, CreateTranslatorSuccess) {
       SendConfig({{"en", "ja"}}, {
                                      {"0/dict.dat", "En to Ja - "},
                                  });
-  mojo::Remote<mojom::Translator> translator_remote =
+  mojo::Remote<mojom::OnDeviceTranslator> translator_remote =
       CreateTranslator("en", "ja");
   ASSERT_TRUE(translator_remote);
 
@@ -148,7 +148,7 @@ TEST_F(OnDeviceTranslationServiceTest, TranslateFailure) {
       SendConfig({{"en", "ja"}}, {
                                      {"0/dict.dat", "En to Ja - "},
                                  });
-  mojo::Remote<mojom::Translator> translator_remote =
+  mojo::Remote<mojom::OnDeviceTranslator> translator_remote =
       CreateTranslator("en", "ja");
   ASSERT_TRUE(translator_remote);
 

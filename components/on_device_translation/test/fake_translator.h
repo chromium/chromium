@@ -11,21 +11,22 @@
 
 namespace on_device_translation {
 
-// A fake implementation of the on_device_translation::mojom::Translator mojo
-// interface for use in tests.
-class FakeTranslator : public on_device_translation::mojom::Translator {
+// A fake implementation of the on_device_translation::mojom::OnDeviceTranslator
+// mojo interface for use in tests.
+class FakeTranslator : public on_device_translation::mojom::OnDeviceTranslator {
  public:
   explicit FakeTranslator(
-      mojo::PendingReceiver<on_device_translation::mojom::Translator> receiver);
+      mojo::PendingReceiver<on_device_translation::mojom::OnDeviceTranslator>
+          receiver);
   ~FakeTranslator() override;
 
-  // on_device_translation::mojom::Translator:
+  // on_device_translation::mojom::OnDeviceTranslator:
   void Translate(const std::string& input, TranslateCallback callback) override;
   void SplitSentences(const std::string& input,
                       SplitSentencesCallback callback) override;
 
  private:
-  mojo::Receiver<on_device_translation::mojom::Translator> receiver_;
+  mojo::Receiver<on_device_translation::mojom::OnDeviceTranslator> receiver_;
 };
 
 }  // namespace on_device_translation

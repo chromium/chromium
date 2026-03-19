@@ -39,7 +39,8 @@ Translator::Translator(
     const base::RepeatingCallback<bool()>& can_translate_callback,
     const std::string& source_lang,
     const std::string& target_lang,
-    mojo::PendingRemote<on_device_translation::mojom::Translator> remote)
+    mojo::PendingRemote<on_device_translation::mojom::OnDeviceTranslator>
+        remote)
     : can_translate_callback_(can_translate_callback),
       source_lang_(source_lang),
       target_lang_(target_lang),

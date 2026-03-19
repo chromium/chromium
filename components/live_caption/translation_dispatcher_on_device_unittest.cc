@@ -87,7 +87,8 @@ TEST_F(TranslationDispatcherOnDeviceTest, GetTranslationSuccess) {
                     const std::string& target_lang,
                     OnDeviceTranslationController::CreateTranslatorCallback
                         callback) {
-        mojo::PendingRemote<on_device_translation::mojom::Translator> remote;
+        mojo::PendingRemote<on_device_translation::mojom::OnDeviceTranslator>
+            remote;
         auto receiver = remote.InitWithNewPipeAndPassReceiver();
         fake_translator_ =
             std::make_unique<on_device_translation::FakeTranslator>(

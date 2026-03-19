@@ -108,7 +108,7 @@ void TranslationDispatcherOnDevice::OnTranslationCreated(
     const std::string& result,
     TranslateEventCallback callback,
     base::expected<
-        mojo::PendingRemote<on_device_translation::mojom::Translator>,
+        mojo::PendingRemote<on_device_translation::mojom::OnDeviceTranslator>,
         OnDeviceTranslationController::CreateTranslatorError> translator) {
   creation_in_progress_ = false;
   if (!translator.has_value()) {

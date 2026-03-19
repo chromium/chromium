@@ -48,7 +48,7 @@ class TranslationDispatcherOnDevice : public TranslationDispatcher {
       const std::string& result,
       TranslateEventCallback callback,
       base::expected<
-          mojo::PendingRemote<on_device_translation::mojom::Translator>,
+          mojo::PendingRemote<on_device_translation::mojom::OnDeviceTranslator>,
           on_device_translation::OnDeviceTranslationController::
               CreateTranslatorError> translator);
 
@@ -68,7 +68,7 @@ class TranslationDispatcherOnDevice : public TranslationDispatcher {
 
   std::unique_ptr<on_device_translation::OnDeviceTranslationController>
       translation_controller_;
-  mojo::Remote<on_device_translation::mojom::Translator> translator_;
+  mojo::Remote<on_device_translation::mojom::OnDeviceTranslator> translator_;
   bool creation_in_progress_ = false;
   std::vector<std::pair<std::string, TranslateEventCallback>>
       pending_callbacks_;

@@ -18,7 +18,7 @@ namespace on_device_translation {
 namespace {
 // TranslateKitTranslator provides translation functionalities based on the
 // Translator from TranslateKitClient.
-class TranslateKitTranslator : public mojom::Translator {
+class TranslateKitTranslator : public mojom::OnDeviceTranslator {
  public:
   explicit TranslateKitTranslator(std::string source_lang,
                                   std::string target_lang,
@@ -33,7 +33,7 @@ class TranslateKitTranslator : public mojom::Translator {
   TranslateKitTranslator(const TranslateKitTranslator&) = delete;
   TranslateKitTranslator& operator=(const TranslateKitTranslator&) = delete;
 
-  // `mojom::Translator` overrides:
+  // `mojom::OnDeviceTranslator` overrides:
   void Translate(const std::string& input,
                  TranslateCallback translate_callback) override {
     RecordOnDeviceTranslationLength(source_lang_, target_lang_, input.size());
@@ -100,7 +100,8 @@ void OnDeviceTranslationService::SetServiceConfig(
 void OnDeviceTranslationService::CreateTranslator(
     const std::string& source_lang,
     const std::string& target_lang,
-    mojo::PendingReceiver<on_device_translation::mojom::Translator> receiver,
+    mojo::PendingReceiver<on_device_translation::mojom::OnDeviceTranslator>
+        receiver,
     CreateTranslatorCallback create_translator_callback) {
   auto maybe_translator = client_->GetTranslator(source_lang, target_lang);
   if (!maybe_translator.has_value()) {

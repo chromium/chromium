@@ -43,7 +43,8 @@ class OnDeviceTranslationService : public mojom::OnDeviceTranslationService {
   void CreateTranslator(
       const std::string& source_lang,
       const std::string& target_lang,
-      mojo::PendingReceiver<on_device_translation::mojom::Translator> receiver,
+      mojo::PendingReceiver<on_device_translation::mojom::OnDeviceTranslator>
+          receiver,
       CreateTranslatorCallback create_translator_callback) override;
   void CanTranslate(const std::string& source_lang,
                     const std::string& target_lang,
@@ -58,7 +59,7 @@ class OnDeviceTranslationService : public mojom::OnDeviceTranslationService {
   std::unique_ptr<TranslateKitClient> owning_client_for_testing_;
   raw_ptr<TranslateKitClient> client_;
 
-  mojo::UniqueReceiverSet<on_device_translation::mojom::Translator>
+  mojo::UniqueReceiverSet<on_device_translation::mojom::OnDeviceTranslator>
       translators_;
 };
 

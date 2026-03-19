@@ -25,7 +25,8 @@ class Translator : public blink::mojom::Translator {
       const base::RepeatingCallback<bool()>& can_translate_callback,
       const std::string& source_lang,
       const std::string& target_lang,
-      mojo::PendingRemote<on_device_translation::mojom::Translator> remote);
+      mojo::PendingRemote<on_device_translation::mojom::OnDeviceTranslator>
+          remote);
 
   Translator(const Translator&) = delete;
   Translator& operator=(const Translator&) = delete;
@@ -59,7 +60,8 @@ class Translator : public blink::mojom::Translator {
   base::RepeatingCallback<bool()> can_translate_callback_;
   const std::string source_lang_;
   const std::string target_lang_;
-  mojo::Remote<on_device_translation::mojom::Translator> translator_remote_;
+  mojo::Remote<on_device_translation::mojom::OnDeviceTranslator>
+      translator_remote_;
   mojo::RemoteSet<blink::mojom::ModelStreamingResponder> responder_set_;
   // The number of remaining Translate callbacks expected for each responder.
   base::flat_map<mojo::RemoteSetElementId, int> pending_translations_;

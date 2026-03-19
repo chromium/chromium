@@ -56,7 +56,7 @@ class OnDeviceTranslationController {
   };
 
   using CreateTranslatorCallback = base::OnceCallback<void(
-      base::expected<mojo::PendingRemote<mojom::Translator>,
+      base::expected<mojo::PendingRemote<mojom::OnDeviceTranslator>,
                      CreateTranslatorError>)>;
   using CanTranslateCallback = base::OnceCallback<void(CanTranslateResult)>;
 

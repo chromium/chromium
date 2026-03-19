@@ -12,7 +12,8 @@
 namespace on_device_translation {
 
 FakeTranslator::FakeTranslator(
-    mojo::PendingReceiver<on_device_translation::mojom::Translator> receiver)
+    mojo::PendingReceiver<on_device_translation::mojom::OnDeviceTranslator>
+        receiver)
     : receiver_(this, std::move(receiver)) {}
 
 FakeTranslator::~FakeTranslator() = default;

@@ -313,7 +313,7 @@ void TranslationManagerImpl::CreateTranslatorImpl(
     const std::string& target_language,
     std::unique_ptr<optimization_guide::OnDeviceModelDownloadProgressManager>
         model_download_progress_manager,
-    base::expected<mojo::PendingRemote<mojom::Translator>,
+    base::expected<mojo::PendingRemote<mojom::OnDeviceTranslator>,
                    OnDeviceTranslationController::CreateTranslatorError>
         result) {
   if (!client) {

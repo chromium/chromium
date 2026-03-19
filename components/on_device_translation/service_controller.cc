@@ -191,7 +191,7 @@ void OnDeviceTranslationServiceController::CreateTranslator(
     const std::string& source_lang,
     const std::string& target_lang,
     base::OnceCallback<
-        void(base::expected<mojo::PendingRemote<mojom::Translator>,
+        void(base::expected<mojo::PendingRemote<mojom::OnDeviceTranslator>,
                             CreateTranslatorError>)> callback) {
   std::optional<std::string> best_fit_source_language =
       GetBestFitLanguageCode(source_lang);
@@ -261,9 +261,9 @@ void OnDeviceTranslationServiceController::CreateTranslatorImpl(
     const std::string& source_lang,
     const std::string& target_lang,
     base::OnceCallback<
-        void(base::expected<mojo::PendingRemote<mojom::Translator>,
+        void(base::expected<mojo::PendingRemote<mojom::OnDeviceTranslator>,
                             CreateTranslatorError>)> callback) {
-  mojo::PendingRemote<mojom::Translator> pending_remote;
+  mojo::PendingRemote<mojom::OnDeviceTranslator> pending_remote;
   auto pending_receiver = pending_remote.InitWithNewPipeAndPassReceiver();
 
   if (!MaybeStartService()) {
@@ -280,9 +280,10 @@ void OnDeviceTranslationServiceController::CreateTranslatorImpl(
       mojo::WrapCallbackWithDropHandler(
           base::BindOnce(
               [](base::OnceCallback<void(
-                     base::expected<mojo::PendingRemote<mojom::Translator>,
-                                    CreateTranslatorError>)> callback,
-                 mojo::PendingRemote<mojom::Translator> pending_remote,
+                     base::expected<
+                         mojo::PendingRemote<mojom::OnDeviceTranslator>,
+                         CreateTranslatorError>)> callback,
+                 mojo::PendingRemote<mojom::OnDeviceTranslator> pending_remote,
                  CreateTranslatorResult result) {
                 if (result == CreateTranslatorResult::kSuccess) {
                   std::move(callback).Run(std::move(pending_remote));
