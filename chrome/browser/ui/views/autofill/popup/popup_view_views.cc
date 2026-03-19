@@ -324,6 +324,7 @@ bool PopupViewViews::Show(
   }
 
   MaybeAnnouncePasswordRecoveryPopup();
+  MaybeAnnounceLoadingState();
   MaybeA11yFocusInformationalSuggestion();
 
   return !CanActivate() || (GetWidget() && GetWidget()->IsActive());
@@ -747,6 +748,7 @@ void PopupViewViews::OnSuggestionsChanged(bool prefer_prev_arrow_side) {
   }
 
   MaybeAnnouncePasswordRecoveryPopup();
+  MaybeAnnounceLoadingState();
   MaybeA11yFocusInformationalSuggestion();
   ShowIPHFeaturePromos();
 }
@@ -944,6 +946,19 @@ void PopupViewViews::MaybeAnnouncePasswordRecoveryPopup() {
         l10n_util::GetStringUTF16(
             IDS_PASSWORD_MANAGER_UI_PASSWORD_RECOVERY_SHOWN_A11Y_ANNOUNCEMENT),
         /*polite=*/true);
+  }
+}
+
+void PopupViewViews::MaybeAnnounceLoadingState() {
+  if (!controller_ || controller_->GetSuggestions().empty()) {
+    return;
+  }
+
+  if (controller_->GetSuggestionAt(0).type ==
+      SuggestionType::kLoadingThrobber) {
+    a11y_announcer_.Run(l10n_util::GetStringUTF16(
+                            IDS_AUTOFILL_BNPL_PROGRESS_DIALOG_LOADING_MESSAGE),
+                        /*polite=*/true);
   }
 }
 

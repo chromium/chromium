@@ -2603,6 +2603,48 @@ TEST_F(PopupViewViewsTest,
   static_cast<AutofillPopupView&>(view()).OnSuggestionsChanged(false);
 }
 
+TEST_F(PopupViewViewsTest, Show_A11yAnnouncesLoadingState) {
+  controller().set_suggestions(
+      {SuggestionType::kLoadingThrobber, SuggestionType::kBnplFootnote});
+  CreateView();
+  base::MockCallback<base::RepeatingCallback<void(const std::u16string&, bool)>>
+      announcement;
+  test_api(view()).SetA11yAnnouncer(announcement.Get());
+
+  EXPECT_CALL(announcement,
+              Run(l10n_util::GetStringUTF16(
+                      IDS_AUTOFILL_BNPL_PROGRESS_DIALOG_LOADING_MESSAGE),
+                  true));
+  ShowView(&view(), widget());
+}
+
+TEST_F(PopupViewViewsTest, Show_A11yDoesNotAnnounceLoadingStateForOtherTypes) {
+  controller().set_suggestions({SuggestionType::kCreditCardEntry});
+  CreateView();
+  base::MockCallback<base::RepeatingCallback<void(const std::u16string&, bool)>>
+      announcement;
+  test_api(view()).SetA11yAnnouncer(announcement.Get());
+
+  EXPECT_CALL(announcement, Run).Times(0);
+  ShowView(&view(), widget());
+}
+
+TEST_F(PopupViewViewsTest, OnSuggestionsChanged_A11yAnnouncesLoadingState) {
+  controller().set_suggestions({SuggestionType::kCreditCardEntry});
+  CreateAndShowView();
+  base::MockCallback<base::RepeatingCallback<void(const std::u16string&, bool)>>
+      announcement;
+  test_api(view()).SetA11yAnnouncer(announcement.Get());
+
+  EXPECT_CALL(announcement,
+              Run(l10n_util::GetStringUTF16(
+                      IDS_AUTOFILL_BNPL_PROGRESS_DIALOG_LOADING_MESSAGE),
+                  true));
+  controller().set_suggestions(
+      {SuggestionType::kLoadingThrobber, SuggestionType::kBnplFootnote});
+  static_cast<AutofillPopupView&>(view()).OnSuggestionsChanged(false);
+}
+
 TEST_F(PopupViewViewsTest, SearchBar_RemainVisibleEvenWithNoSuggestions) {
   ON_CALL(controller(), GetAutofillSuggestionTriggerSource)
       .WillByDefault(Return(AutofillSuggestionTriggerSource::kAtMemory));

@@ -196,6 +196,9 @@ class PopupViewViews : public PopupBaseView,
   // user.
   void MaybeAnnouncePasswordRecoveryPopup();
 
+  // If the current suggestions are for loading, announces it to the user.
+  void MaybeAnnounceLoadingState();
+
   // Returns the `PopupRowView` at line number `index`. Assumes that there is
   // such a view at that line number - otherwise the underlying variant will
   // check false.

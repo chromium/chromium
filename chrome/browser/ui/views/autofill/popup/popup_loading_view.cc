@@ -35,9 +35,6 @@ PopupLoadingView::PopupLoadingView(int expected_number_of_suggestions) {
           .AddChild(views::Builder<views::Throbber>().CustomConfigure(
               base::BindOnce([](views::Throbber* throbber) {
                 throbber->Start();
-                throbber->GetViewAccessibility().AnnouncePolitely(
-                    l10n_util::GetStringUTF16(
-                        IDS_AUTOFILL_BNPL_PROGRESS_DIALOG_LOADING_MESSAGE));
               })))
           .Build());
 
