@@ -1774,7 +1774,7 @@ void ConfirmCookiesAfterMigrationTest(
                                     : base::Time());
   EXPECT_EQ(read_in_cookies[i]->ExpiryDate(),
             read_in_cookies[i]->CreationDate());
-  EXPECT_EQ(read_in_cookies[i]->SourceType(), CookieSourceType::kUnknown);
+  EXPECT_EQ(read_in_cookies[i]->SourceType(), CookieSourceType::kOther);
 
   i++;
   EXPECT_EQ("A", read_in_cookies[i]->Name());
@@ -1788,7 +1788,7 @@ void ConfirmCookiesAfterMigrationTest(
                                     : base::Time());
   EXPECT_EQ(read_in_cookies[i]->ExpiryDate(),
             read_in_cookies[i]->CreationDate() + base::Days(400));
-  EXPECT_EQ(read_in_cookies[i]->SourceType(), CookieSourceType::kUnknown);
+  EXPECT_EQ(read_in_cookies[i]->SourceType(), CookieSourceType::kOther);
 
   i++;
   EXPECT_EQ("A", read_in_cookies[i]->Name());
@@ -1802,7 +1802,7 @@ void ConfirmCookiesAfterMigrationTest(
                                     : base::Time());
   EXPECT_EQ(read_in_cookies[i]->ExpiryDate(),
             read_in_cookies[i]->CreationDate());
-  EXPECT_EQ(read_in_cookies[i]->SourceType(), CookieSourceType::kUnknown);
+  EXPECT_EQ(read_in_cookies[i]->SourceType(), CookieSourceType::kOther);
 
   i++;
   EXPECT_EQ("C", read_in_cookies[i]->Name());
@@ -1816,7 +1816,7 @@ void ConfirmCookiesAfterMigrationTest(
                                     : base::Time());
   EXPECT_EQ(read_in_cookies[i]->ExpiryDate(),
             read_in_cookies[i]->CreationDate());
-  EXPECT_EQ(read_in_cookies[i]->SourceType(), CookieSourceType::kUnknown);
+  EXPECT_EQ(read_in_cookies[i]->SourceType(), CookieSourceType::kOther);
 
   i++;
   EXPECT_EQ("C", read_in_cookies[i]->Name());
@@ -1833,7 +1833,7 @@ void ConfirmCookiesAfterMigrationTest(
             base::Time::Now() + base::Days(400));
   EXPECT_GE(read_in_cookies[i]->ExpiryDate(),
             base::Time::Now() + base::Days(400) - base::Minutes(1));
-  EXPECT_EQ(read_in_cookies[i]->SourceType(), CookieSourceType::kUnknown);
+  EXPECT_EQ(read_in_cookies[i]->SourceType(), CookieSourceType::kOther);
 
   i++;
   EXPECT_EQ("C", read_in_cookies[i]->Name());
@@ -1847,7 +1847,7 @@ void ConfirmCookiesAfterMigrationTest(
                                     : base::Time());
   EXPECT_EQ(read_in_cookies[i]->ExpiryDate(),
             read_in_cookies[i]->CreationDate() + base::Days(399));
-  EXPECT_EQ(read_in_cookies[i]->SourceType(), CookieSourceType::kUnknown);
+  EXPECT_EQ(read_in_cookies[i]->SourceType(), CookieSourceType::kOther);
 
   i++;
   EXPECT_EQ("D", read_in_cookies[i]->Name());
@@ -1861,7 +1861,7 @@ void ConfirmCookiesAfterMigrationTest(
                                     : base::Time());
   EXPECT_EQ(read_in_cookies[i]->ExpiryDate(),
             read_in_cookies[i]->CreationDate());
-  EXPECT_EQ(read_in_cookies[i]->SourceType(), CookieSourceType::kUnknown);
+  EXPECT_EQ(read_in_cookies[i]->SourceType(), CookieSourceType::kOther);
 }
 
 void ConfirmDatabaseVersionAfterMigration(const base::FilePath path,

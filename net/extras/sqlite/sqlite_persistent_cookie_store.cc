@@ -615,7 +615,9 @@ CookieSourceType DBCookieSourceTypeToCookieSourceType(
     DBCookieSourceType value) {
   switch (value) {
     case kDBCookieSourceTypeUnknown:
-      return CookieSourceType::kUnknown;
+      // TODO(b/493952650): Remove kDBCookieSourceTypeUnknown in a year
+      // or so, after it has had a chance to expire from client DBs.
+      return CookieSourceType::kOther;
     case kDBCookieSourceTypeHTTP:
       return CookieSourceType::kHTTP;
     case kDBCookieSourceTypeScript:
@@ -623,7 +625,7 @@ CookieSourceType DBCookieSourceTypeToCookieSourceType(
     case kDBCookieSourceTypeOther:
       return CookieSourceType::kOther;
     default:
-      return CookieSourceType::kUnknown;
+      return CookieSourceType::kOther;
   }
 }
 

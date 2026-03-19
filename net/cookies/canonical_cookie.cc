@@ -842,10 +842,10 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::CreateUnsafeCookieForTesting(
     bool httponly,
     CookieSameSite same_site,
     CookiePriority priority,
+    CookieSourceType source_type,
     std::optional<CookiePartitionKey> partition_key,
     CookieSourceScheme source_scheme,
-    int source_port,
-    CookieSourceType source_type) {
+    int source_port) {
   return std::make_unique<CanonicalCookie>(
       base::PassKey<CanonicalCookie>(), name, value, domain, path, creation,
       expiration, last_access, last_update, secure, httponly, same_site,
@@ -857,9 +857,9 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::CreateForTesting(
     const GURL& url,
     const std::string& cookie_line,
     base::Time creation_time,
+    CookieSourceType source_type,
     std::optional<base::Time> server_time,
     std::optional<CookiePartitionKey> cookie_partition_key,
-    CookieSourceType source_type,
     CookieInclusionStatus* status) {
   return CanonicalCookie::Create(url, cookie_line, creation_time, server_time,
                                  cookie_partition_key, source_type, status);

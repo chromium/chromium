@@ -376,7 +376,7 @@ enum class CookiesAllowedForUrlsUsage {
 //
 // Do not reorder or renumber. Used for metrics.
 enum class CookieSourceType {
-  // 'unknown' is used for tests or cookies set before this field was added.
+  // 'unknown' is used for tests or when the source is not known.
   kUnknown = 0,
   // 'http' is used for cookies set via HTTP Response Headers.
   kHTTP = 1,

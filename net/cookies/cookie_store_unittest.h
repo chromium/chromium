@@ -221,7 +221,7 @@ class CookieStoreTest : public testing::Test {
       std::optional<base::Time> server_time = std::nullopt,
       std::optional<base::Time> system_time = std::nullopt,
       std::optional<CookiePartitionKey> cookie_partition_key = std::nullopt,
-      CookieSourceType source_type = CookieSourceType::kUnknown) {
+      CookieSourceType source_type = CookieSourceType::kOther) {
     // Ensure a different Creation date to guarantee sort order for testing
     static base::Time last = base::Time::Min();
     last = base::Time::Now() == last ? last + base::Microseconds(1)
@@ -289,7 +289,7 @@ class CookieStoreTest : public testing::Test {
       const GURL& url,
       const std::string& cookie_line,
       std::optional<CookiePartitionKey> cookie_partition_key = std::nullopt,
-      CookieSourceType source_type = CookieSourceType::kUnknown) {
+      CookieSourceType source_type = CookieSourceType::kOther) {
     CookieOptions options;
     if (!CookieStoreTestTraits::supports_http_only)
       options.set_include_httponly();
@@ -306,7 +306,7 @@ class CookieStoreTest : public testing::Test {
     CookieInclusionStatus create_status;
     auto cookie = CanonicalCookie::Create(
         url, cookie_line, base::Time::Now(), /*server_time=*/std::nullopt,
-        /*cookie_partition_key=*/std::nullopt, CookieSourceType::kUnknown,
+        /*cookie_partition_key=*/std::nullopt, CookieSourceType::kOther,
         &create_status);
     if (!cookie)
       return create_status;
@@ -636,7 +636,7 @@ TYPED_TEST_P(CookieStoreTest, SetCanonicalCookieTest) {
   auto cookie = CanonicalCookie::Create(
       this->http_www_foo_.url(), "foo=1; Secure", base::Time::Now(),
       /*server_time=*/std::nullopt, /*cookie_partition_key=*/std::nullopt,
-      CookieSourceType::kUnknown, &status);
+      CookieSourceType::kOther, &status);
   EXPECT_TRUE(cookie->SecureAttribute());
   EXPECT_TRUE(status.IsInclude());
   EXPECT_TRUE(
@@ -685,11 +685,11 @@ TYPED_TEST_P(CookieStoreTest, SetCanonicalCookieTest) {
     // A HttpOnly cookie can be created, but is rejected
     // upon setting if the options do not specify include_httponly.
     CookieInclusionStatus create_status;
-    auto c = CanonicalCookie::Create(
-        this->http_www_foo_.url(), "bar=1; HttpOnly", base::Time::Now(),
-        /*server_time=*/std::nullopt,
-        /*cookie_partition_key=*/std::nullopt, CookieSourceType::kUnknown,
-        &create_status);
+    auto c = CanonicalCookie::Create(this->http_www_foo_.url(),
+                                     "bar=1; HttpOnly", base::Time::Now(),
+                                     /*server_time=*/std::nullopt,
+                                     /*cookie_partition_key=*/std::nullopt,
+                                     CookieSourceType::kOther, &create_status);
     EXPECT_TRUE(c->IsHttpOnly());
     EXPECT_TRUE(create_status.IsInclude());
     EXPECT_TRUE(

@@ -2621,11 +2621,11 @@ TEST_F(CookieMonsterTest, OverwriteSource) {
 
   // Set cookie with unknown source.
   EXPECT_TRUE(SetCookie(cm.get(), http_www_foo_.url(), "A=0", std::nullopt,
-                        CookieSourceType::kUnknown));
+                        CookieSourceType::kOther));
   CookieList cookies = GetAllCookies(cm.get());
   ASSERT_EQ(1u, cookies.size());
   EXPECT_EQ("0", cookies[0].Value());
-  EXPECT_EQ(CookieSourceType::kUnknown, cookies[0].SourceType());
+  EXPECT_EQ(CookieSourceType::kOther, cookies[0].SourceType());
 
   // Overwrite the cookie with the same value and an http source.
   EXPECT_TRUE(SetCookie(cm.get(), http_www_foo_.url(), "A=0", std::nullopt,
@@ -6664,11 +6664,10 @@ TEST_F(CookieMonsterTest, RejectCreatedSameSiteCookieOnSet) {
 
   CookieInclusionStatus status;
   // Cookie can be created successfully; SameSite is not checked on Creation.
-  auto cookie =
-      CanonicalCookie::CreateForTesting(url, cookie_line, base::Time::Now(),
-                                        /*server_time=*/std::nullopt,
-                                        /*cookie_partition_key=*/std::nullopt,
-                                        CookieSourceType::kUnknown, &status);
+  auto cookie = CanonicalCookie::CreateForTesting(
+      url, cookie_line, base::Time::Now(),
+      /*server_time=*/std::nullopt,
+      /*cookie_partition_key=*/std::nullopt, CookieSourceType::kOther, &status);
   ASSERT_TRUE(cookie != nullptr);
   ASSERT_TRUE(status.IsInclude());
 
@@ -6691,8 +6690,7 @@ TEST_F(CookieMonsterTest, RejectCreatedSecureCookieOnSet) {
   // on Create.
   auto cookie = CanonicalCookie::CreateForTesting(
       http_url, cookie_line, base::Time::Now(), /*server_time=*/std::nullopt,
-      /*cookie_partition_key=*/std::nullopt, CookieSourceType::kUnknown,
-      &status);
+      /*cookie_partition_key=*/std::nullopt, CookieSourceType::kOther, &status);
 
   ASSERT_TRUE(cookie != nullptr);
   ASSERT_TRUE(status.IsInclude());
@@ -6714,11 +6712,10 @@ TEST_F(CookieMonsterTest, RejectCreatedHttpOnlyCookieOnSet) {
   CookieMonster cm(nullptr, nullptr);
   CookieInclusionStatus status;
   // Cookie can be created successfully; HttpOnly is not checked on Create.
-  auto cookie =
-      CanonicalCookie::CreateForTesting(url, cookie_line, base::Time::Now(),
-                                        /*server_time=*/std::nullopt,
-                                        /*cookie_partition_key=*/std::nullopt,
-                                        CookieSourceType::kUnknown, &status);
+  auto cookie = CanonicalCookie::CreateForTesting(
+      url, cookie_line, base::Time::Now(),
+      /*server_time=*/std::nullopt,
+      /*cookie_partition_key=*/std::nullopt, CookieSourceType::kOther, &status);
 
   ASSERT_TRUE(cookie != nullptr);
   ASSERT_TRUE(status.IsInclude());
@@ -8584,8 +8581,7 @@ TEST_F(CookieMonsterTest, RejectsHiddenHttpPrefix) {
   std::unique_ptr<CanonicalCookie> cookie = CanonicalCookie::Create(
       https_www_foo_.url(), cookie_line, base::Time::Now(),
       /*server_time=*/std::nullopt,
-      /*cookie_partition_key=*/std::nullopt, CookieSourceType::kUnknown,
-      &status);
+      /*cookie_partition_key=*/std::nullopt, CookieSourceType::kOther, &status);
   EXPECT_FALSE(cookie);
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
       {CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_PREFIX}));
@@ -8606,8 +8602,7 @@ TEST_F(CookieMonsterTest, RejectsHiddenHostHttpPrefix) {
   std::unique_ptr<CanonicalCookie> cookie = CanonicalCookie::Create(
       https_www_foo_.url(), cookie_line, base::Time::Now(),
       /*server_time=*/std::nullopt,
-      /*cookie_partition_key=*/std::nullopt, CookieSourceType::kUnknown,
-      &status);
+      /*cookie_partition_key=*/std::nullopt, CookieSourceType::kOther, &status);
   EXPECT_FALSE(cookie);
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
       {CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_PREFIX}));
