@@ -10,7 +10,10 @@
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/history/core/browser/history_database_params.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/history_types.h"
+#include "components/history/core/test/test_history_database.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "content/public/browser/web_contents.h"
@@ -38,7 +41,10 @@ class MockHistoryService : public history::HistoryService {
 
 std::unique_ptr<KeyedService> BuildMockHistoryService(
     content::BrowserContext* context) {
-  return std::make_unique<MockHistoryService>();
+  TestingProfile* profile = static_cast<TestingProfile*>(context);
+  auto service = std::make_unique<MockHistoryService>();
+  service->Init(history::TestHistoryDatabaseParamsForPath(profile->GetPath()));
+  return service;
 }
 
 std::unique_ptr<KeyedService> BuildTestOptimizationGuideKeyedService(
