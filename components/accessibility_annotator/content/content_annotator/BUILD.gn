@@ -30,6 +30,7 @@ source_set("content_annotator") {
     "//components/page_content_annotations/content",
     "//components/page_content_annotations/content:page_embeddings",
     "//components/page_content_annotations/core",
+    "//components/passage_embeddings/core:passage_embeddings_types",
     "//components/translate/core/common",
     "//components/url_matcher",
     "//components/variations",

@@ -26,6 +26,8 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<!-- LINT.IfChange(AccessibilityAnnotatorClassifierResult) -->
+
 <enum name="AccessibilityAnnotatorClassifierResult">
   <summary>
     The hash of the possible outcomes for the value classifiers, generated using
@@ -42,10 +44,15 @@ chromium-metrics-reviews@google.com.
   <int value="-303333006" label="DidNotRun.MissingClassifierEmptyPageTitle"/>
   <int value="216070450" label="Category6"/>
   <int value="226934871" label="Category7"/>
+  <int value="620796122"
+      label="DidNotRun.MissingClassifierMissingPageTitleEmbedding"/>
   <int value="692387654" label="Category8"/>
+  <int value="709554054" label="DidNotRun.MissingPageTitleEmbedding"/>
   <int value="791220910" label="DidNotRun.InvalidUrl"/>
   <int value="1670867358" label="Category9"/>
 </enum>
+
+<!-- LINT.ThenChange() -->
 
 <!-- LINT.IfChange(ContentAnnotatorDependentInformationTypes) -->
 

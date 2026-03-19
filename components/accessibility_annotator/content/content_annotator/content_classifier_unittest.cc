@@ -6,21 +6,28 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
 #include "components/page_content_annotations/content/page_embeddings_service.h"
+#include "components/passage_embeddings/core/passage_embeddings_test_util.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/variations/hashing.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 namespace accessibility_annotator {
 
 namespace {
+
+using ::testing::Eq;
+using ::testing::Field;
+using ::testing::Optional;
 
 using ClassifierResultStatus = ContentClassifier::ClassifierResultStatus;
 
@@ -82,8 +89,10 @@ class ContentClassifierTest : public testing::Test {
     std::string title_keyword_rules;
     std::string url_match_rules;
     std::string relevance_values;
+    std::string semantic_match_rules;
     std::optional<double> sensitivity_threshold;
     std::optional<bool> language_check_enabled;
+    std::optional<double> semantic_match_threshold;
   };
 
   std::unique_ptr<ContentClassifier> CreateClassifier(
@@ -101,6 +110,10 @@ class ContentClassifierTest : public testing::Test {
       params[kContentAnnotatorClassifierRelevanceValues.name] =
           options.relevance_values;
     }
+    if (!options.semantic_match_rules.empty()) {
+      params[kContentAnnotatorClassifierSemanticMatchRules.name] =
+          options.semantic_match_rules;
+    }
 
     if (options.sensitivity_threshold.has_value()) {
       params[kContentAnnotatorSensitivityThreshold.name] =
@@ -112,8 +125,14 @@ class ContentClassifierTest : public testing::Test {
           *options.language_check_enabled ? "true" : "false";
     }
 
+    if (options.semantic_match_threshold.has_value()) {
+      params[kContentAnnotatorSemanticMatchThreshold.name] =
+          base::NumberToString(*options.semantic_match_threshold);
+    }
+
     feature_list_.InitAndEnableFeatureWithParameters(kContentAnnotator, params);
-    return ContentClassifier::Create();
+
+    return ContentClassifier::Create(&test_embedder_);
   }
 
   static ContentClassificationInput CreateDefaultInput() {
@@ -121,6 +140,8 @@ class ContentClassifierTest : public testing::Test {
     input.page_title = "Default Title";
     input.adopted_language = "en";
     input.sensitivity_score = 0.1f;
+    input.page_title_embedding =
+        passage_embeddings::Embedding({1.0f, 2.0f, 3.0f});
     return input;
   }
 
@@ -129,6 +150,7 @@ class ContentClassifierTest : public testing::Test {
     bool sensitivity_passed = true;
     std::string_view title_category = "";
     std::string_view url_category = "";
+    std::string_view semantic_category = "";
     int expected_input_count = 1;
     // The expected count for classifier results. If not set,
     // `expected_input_count` is used.
@@ -156,10 +178,16 @@ class ContentClassifierTest : public testing::Test {
           "AccessibilityAnnotator.UrlClassifierResult",
           variations::HashName(options.url_category), classifier_count);
     }
+    if (!options.semantic_category.empty()) {
+      histogram_tester.ExpectUniqueSample(
+          "AccessibilityAnnotator.SemanticClassifierResult",
+          variations::HashName(options.semantic_category), classifier_count);
+    }
   }
 
   base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_;
+  passage_embeddings::TestEmbedder test_embedder_;
 };
 
 TEST_F(ContentClassifierTest, Classify_AllClassifiersMatch) {
@@ -167,22 +195,34 @@ TEST_F(ContentClassifierTest, Classify_AllClassifiersMatch) {
   std::unique_ptr<ContentClassifier> classifier = CreateClassifier(
       {.title_keyword_rules =
            R"JSON({"category_1":["example 1","example 2","example 3"]})JSON",
-       .url_match_rules = R"JSON({"category_1":["/rule_1","/rule_2"]})JSON"});
+       .url_match_rules = R"JSON({"category_1":["/rule_1","/rule_2"]})JSON",
+       .semantic_match_rules = R"JSON({"category_1":["example 1"]})JSON"});
   ASSERT_TRUE(classifier);
+
   ContentClassificationInput input = CreateDefaultInput();
   input.url = GURL("https://example.com/rule_1");
   input.page_title = "This is example 1";
+  input.page_title_embedding = passage_embeddings::Embedding(
+      std::vector<float>(passage_embeddings::kEmbeddingsModelOutputSize, 1.0f));
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return classifier->IsSemanticClassifierReadyForTesting(); }));
 
   ContentClassificationResult result = classifier->Classify(input);
 
-  ASSERT_TRUE(result.title_keyword_result.has_value());
-  EXPECT_EQ(result.title_keyword_result->category, "category_1");
-
-  ASSERT_TRUE(result.url_match_result.has_value());
-  EXPECT_EQ(result.url_match_result->category, "category_1");
+  EXPECT_THAT(result.title_keyword_result,
+              Optional(Field(&ContentClassificationResult::Result::category,
+                             Optional(std::string("category_1")))));
+  EXPECT_THAT(result.semantic_match_result,
+              Optional(Field(&ContentClassificationResult::Result::category,
+                             Optional(std::string("category_1")))));
+  EXPECT_THAT(result.url_match_result,
+              Optional(Field(&ContentClassificationResult::Result::category,
+                             Optional(std::string("category_1")))));
 
   ExpectHistograms(histogram_tester, {.title_category = "category_1",
-                                      .url_category = "category_1"});
+                                      .url_category = "category_1",
+                                      .semantic_category = "category_1"});
 }
 
 TEST_F(ContentClassifierTest, Classify_TitleMatchOnlyEnabled) {
@@ -197,14 +237,19 @@ TEST_F(ContentClassifierTest, Classify_TitleMatchOnlyEnabled) {
 
   ContentClassificationResult result = classifier->Classify(input);
 
-  ASSERT_TRUE(result.title_keyword_result.has_value());
-  EXPECT_EQ(result.title_keyword_result->category, "category_1");
+  EXPECT_THAT(result.title_keyword_result,
+              Optional(Field(&ContentClassificationResult::Result::category,
+                             Optional(std::string("category_1")))));
 
   EXPECT_FALSE(result.url_match_result.has_value());
+
+  EXPECT_FALSE(result.semantic_match_result.has_value());
   ExpectHistograms(
       histogram_tester,
       {.title_category = "category_1",
        .url_category = ContentClassifier::ClassifierResultStatusToString(
+           ClassifierResultStatus::kDidNotRunMissingClassifier),
+       .semantic_category = ContentClassifier::ClassifierResultStatusToString(
            ClassifierResultStatus::kDidNotRunMissingClassifier)});
 }
 
@@ -221,13 +266,18 @@ TEST_F(ContentClassifierTest, Classify_UrlMatchOnlyEnabled) {
 
   EXPECT_FALSE(result.title_keyword_result.has_value());
 
-  ASSERT_TRUE(result.url_match_result.has_value());
-  EXPECT_EQ(result.url_match_result->category, "category_1");
+  EXPECT_THAT(result.url_match_result,
+              Optional(Field(&ContentClassificationResult::Result::category,
+                             Optional(std::string("category_1")))));
+
+  EXPECT_FALSE(result.semantic_match_result.has_value());
   ExpectHistograms(
       histogram_tester,
       {.title_category = ContentClassifier::ClassifierResultStatusToString(
            ClassifierResultStatus::kDidNotRunMissingClassifier),
-       .url_category = "category_1"});
+       .url_category = "category_1",
+       .semantic_category = ContentClassifier::ClassifierResultStatusToString(
+           ClassifierResultStatus::kDidNotRunMissingClassifier)});
 }
 
 TEST_F(ContentClassifierTest, Classify_NoMatch) {
@@ -235,8 +285,14 @@ TEST_F(ContentClassifierTest, Classify_NoMatch) {
   std::unique_ptr<ContentClassifier> classifier = CreateClassifier(
       {.title_keyword_rules =
            R"JSON({"category_1":["example 1","example 2","example 3"]})JSON",
-       .url_match_rules = R"JSON({"category_1":["/rule_1","/rule_2"]})JSON"});
+       .url_match_rules = R"JSON({"category_1":["/rule_1","/rule_2"]})JSON",
+       .semantic_match_rules =
+           R"JSON({"category_1":["example 1","example 2","example 3"]})JSON"});
   ASSERT_TRUE(classifier);
+
+  // Wait for semantic classifier to be ready.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return classifier->IsSemanticClassifierReadyForTesting(); }));
 
   {
     ContentClassificationInput input = CreateDefaultInput();
@@ -245,16 +301,23 @@ TEST_F(ContentClassifierTest, Classify_NoMatch) {
 
     ContentClassificationResult result = classifier->Classify(input);
 
-    ASSERT_TRUE(result.title_keyword_result.has_value());
-    EXPECT_FALSE(result.title_keyword_result->category.has_value());
-    ASSERT_TRUE(result.url_match_result.has_value());
-    EXPECT_FALSE(result.url_match_result->category.has_value());
+    EXPECT_THAT(result.title_keyword_result,
+                Optional(Field(&ContentClassificationResult::Result::category,
+                               Eq(std::nullopt))));
+    EXPECT_THAT(result.url_match_result,
+                Optional(Field(&ContentClassificationResult::Result::category,
+                               Eq(std::nullopt))));
+    EXPECT_THAT(result.semantic_match_result,
+                Optional(Field(&ContentClassificationResult::Result::category,
+                               Eq(std::nullopt))));
 
     ExpectHistograms(
         histogram_tester,
         {.title_category = ContentClassifier::ClassifierResultStatusToString(
              ClassifierResultStatus::kInconclusiveNoMatch),
          .url_category = ContentClassifier::ClassifierResultStatusToString(
+             ClassifierResultStatus::kInconclusiveNoMatch),
+         .semantic_category = ContentClassifier::ClassifierResultStatusToString(
              ClassifierResultStatus::kInconclusiveNoMatch)});
   }
   {
@@ -263,10 +326,12 @@ TEST_F(ContentClassifierTest, Classify_NoMatch) {
 
     ContentClassificationResult result = classifier->Classify(input);
 
-    ASSERT_TRUE(result.title_keyword_result.has_value());
-    EXPECT_FALSE(result.title_keyword_result->category.has_value());
-    ASSERT_TRUE(result.url_match_result.has_value());
-    EXPECT_FALSE(result.url_match_result->category.has_value());
+    EXPECT_THAT(result.title_keyword_result,
+                Optional(Field(&ContentClassificationResult::Result::category,
+                               Eq(std::nullopt))));
+    EXPECT_THAT(result.url_match_result,
+                Optional(Field(&ContentClassificationResult::Result::category,
+                               Eq(std::nullopt))));
 
     ExpectHistograms(
         histogram_tester,
@@ -274,17 +339,21 @@ TEST_F(ContentClassifierTest, Classify_NoMatch) {
              ClassifierResultStatus::kInconclusiveNoMatch),
          .url_category = ContentClassifier::ClassifierResultStatusToString(
              ClassifierResultStatus::kInconclusiveNoMatch),
+         .semantic_category = ContentClassifier::ClassifierResultStatusToString(
+             ClassifierResultStatus::kInconclusiveNoMatch),
          .expected_input_count = 2});
   }
   {
     ContentClassificationInput input = CreateDefaultInput();
     input.url = GURL("");
     input.page_title = "";
+    input.page_title_embedding.reset();
 
     ContentClassificationResult result = classifier->Classify(input);
 
     EXPECT_FALSE(result.title_keyword_result.has_value());
     EXPECT_FALSE(result.url_match_result.has_value());
+    EXPECT_FALSE(result.semantic_match_result.has_value());
 
     histogram_tester.ExpectBucketCount(
         "AccessibilityAnnotator.TitleKeywordClassifierResult",
@@ -300,6 +369,13 @@ TEST_F(ContentClassifierTest, Classify_NoMatch) {
         1);
     histogram_tester.ExpectTotalCount(
         "AccessibilityAnnotator.UrlClassifierResult", 3);
+    histogram_tester.ExpectBucketCount(
+        "AccessibilityAnnotator.SemanticClassifierResult",
+        variations::HashName(ContentClassifier::ClassifierResultStatusToString(
+            ClassifierResultStatus::kDidNotRunMissingPageTitleEmbedding)),
+        1);
+    histogram_tester.ExpectTotalCount(
+        "AccessibilityAnnotator.SemanticClassifierResult", 3);
   }
 }
 
@@ -342,19 +418,7 @@ TEST_F(ContentClassifierTest, Classify_LanguageCheck) {
     input.url = GURL("https://example.com/rule_1");
     input.adopted_language = "en";
     input.page_title = "";
-    ContentClassificationResult result = classifier->Classify(input);
-    EXPECT_TRUE(result.url_match_result.has_value());
-    ExpectHistograms(
-        histogram_tester,
-        {.title_category = ContentClassifier::ClassifierResultStatusToString(
-             ClassifierResultStatus::kDidNotRunMissingClassifierEmptyPageTitle),
-         .url_category = "category_1"});
-  }
-  {
-    ContentClassificationInput input = CreateDefaultInput();
-    input.url = GURL("https://example.com/rule_1");
-    input.adopted_language = "en-US";
-    input.page_title = "";
+    input.page_title_embedding.reset();
     ContentClassificationResult result = classifier->Classify(input);
     EXPECT_TRUE(result.url_match_result.has_value());
     ExpectHistograms(
@@ -362,6 +426,26 @@ TEST_F(ContentClassifierTest, Classify_LanguageCheck) {
         {.title_category = ContentClassifier::ClassifierResultStatusToString(
              ClassifierResultStatus::kDidNotRunMissingClassifierEmptyPageTitle),
          .url_category = "category_1",
+         .semantic_category = ContentClassifier::ClassifierResultStatusToString(
+             ClassifierResultStatus::
+                 kDidNotRunMissingClassifierMissingPageTitleEmbedding)});
+  }
+  {
+    ContentClassificationInput input = CreateDefaultInput();
+    input.url = GURL("https://example.com/rule_1");
+    input.adopted_language = "en-US";
+    input.page_title = "";
+    input.page_title_embedding.reset();
+    ContentClassificationResult result = classifier->Classify(input);
+    EXPECT_TRUE(result.url_match_result.has_value());
+    ExpectHistograms(
+        histogram_tester,
+        {.title_category = ContentClassifier::ClassifierResultStatusToString(
+             ClassifierResultStatus::kDidNotRunMissingClassifierEmptyPageTitle),
+         .url_category = "category_1",
+         .semantic_category = ContentClassifier::ClassifierResultStatusToString(
+             ClassifierResultStatus::
+                 kDidNotRunMissingClassifierMissingPageTitleEmbedding),
          .expected_input_count = 2});
   }
   {
@@ -422,7 +506,9 @@ TEST_F(ContentClassifierTest, Classify_SensitivityCheck) {
         histogram_tester,
         {.title_category = ContentClassifier::ClassifierResultStatusToString(
              ClassifierResultStatus::kDidNotRunMissingClassifierEmptyPageTitle),
-         .url_category = "category_1"});
+         .url_category = "category_1",
+         .semantic_category = ContentClassifier::ClassifierResultStatusToString(
+             ClassifierResultStatus::kDidNotRunMissingClassifier)});
   }
   {
     ContentClassificationInput input = CreateDefaultInput();
@@ -490,6 +576,72 @@ TEST_F(ContentClassifierTest, Classify_LogsUkm_NoMatch) {
   ukm_recorder.ExpectEntryMetric(entry, UkmEntry::kTitleKeywordResultName, 1);
   EXPECT_FALSE(
       ukm_recorder.GetEntryMetric(entry, UkmEntry::kUrlMatchResultName));
+}
+
+// Tests that the semantic classifier is initialized
+// when the embedder metadata is updated from the metadata provider.
+TEST_F(ContentClassifierTest, Classify_OnEmbedderModelChanged) {
+  base::HistogramTester histogram_tester;
+  // 1. Create with null embedder.
+  std::unique_ptr<ContentClassifier> classifier = CreateClassifier(
+      {.title_keyword_rules =
+           R"JSON({"category_1":["rule 1","rule 2","rule 3"]})JSON",
+       .url_match_rules = R"JSON({"category_1":["/rule_1","/rule_2"]})JSON",
+       .semantic_match_rules = R"JSON({"category_1":["rule 1"]})JSON"});
+  ASSERT_TRUE(classifier);
+
+  // 2. Try to classify - should be inconclusive for semantic.
+  ContentClassificationInput input = CreateDefaultInput();
+  input.page_title = "rule 1";
+  input.url = GURL("https://example.com/rule_1");
+  input.page_title_embedding = passage_embeddings::Embedding({1.0f, 0.0f});
+  ContentClassificationResult result = classifier->Classify(input);
+
+  // Other classifiers should match correctly.
+  EXPECT_THAT(result.title_keyword_result,
+              Optional(Field(&ContentClassificationResult::Result::category,
+                             Optional(std::string("category_1")))));
+  EXPECT_THAT(result.url_match_result,
+              Optional(Field(&ContentClassificationResult::Result::category,
+                             Optional(std::string("category_1")))));
+  EXPECT_FALSE(result.semantic_match_result.has_value());
+
+  ExpectHistograms(
+      histogram_tester,
+      {.title_category = "category_1",
+       .url_category = "category_1",
+       .semantic_category = ContentClassifier::ClassifierResultStatusToString(
+           ClassifierResultStatus::kDidNotRunMissingClassifier)});
+  ASSERT_FALSE(classifier->IsSemanticClassifierReadyForTesting());
+  // 3. Update Embedder model.
+  classifier->OnEmbedderModelChanged();
+
+  // 4. Classify again - should now succeed for semantic.
+  input.page_title_embedding = passage_embeddings::Embedding(
+      std::vector<float>(passage_embeddings::kEmbeddingsModelOutputSize, 1.0f));
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return classifier->IsSemanticClassifierReadyForTesting(); }));
+  result = classifier->Classify(input);
+
+  // All classifiers should match correctly.
+  EXPECT_THAT(result.title_keyword_result,
+              Optional(Field(&ContentClassificationResult::Result::category,
+                             Optional(std::string("category_1")))));
+  EXPECT_THAT(result.url_match_result,
+              Optional(Field(&ContentClassificationResult::Result::category,
+                             Optional(std::string("category_1")))));
+  EXPECT_THAT(result.semantic_match_result,
+              Optional(Field(&ContentClassificationResult::Result::category,
+                             Optional(std::string("category_1")))));
+
+  ExpectHistograms(histogram_tester, {.title_category = "category_1",
+                                      .url_category = "category_1",
+                                      .expected_input_count = 2});
+  histogram_tester.ExpectBucketCount(
+      "AccessibilityAnnotator.SemanticClassifierResult",
+      variations::HashName("category_1"), 1);
+  histogram_tester.ExpectTotalCount(
+      "AccessibilityAnnotator.SemanticClassifierResult", 2);
 }
 
 }  // namespace

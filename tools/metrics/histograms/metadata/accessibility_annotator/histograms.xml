@@ -23,6 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <variants name="AccessibilityAnnotator.ValueClassifierType">
+  <variant name="Semantic" summary="The semantic value classifier."/>
   <variant name="TitleKeyword" summary="The title keyword value classifier."/>
   <variant name="Url" summary="The URL value classifier."/>
 </variants>

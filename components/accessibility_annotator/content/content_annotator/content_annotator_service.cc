@@ -54,16 +54,19 @@ std::unique_ptr<ContentAnnotatorService> ContentAnnotatorService::Create(
     optimization_guide::RemoteModelExecutor&
         optimization_guide_remote_model_executor,
     page_content_annotations::PageEmbeddingsService& page_embeddings_service,
-    AccessibilityAnnotatorBackend& accessibility_annotator_backend) {
+    AccessibilityAnnotatorBackend& accessibility_annotator_backend,
+    passage_embeddings::Embedder* embedder,
+    passage_embeddings::EmbedderMetadataProvider* embedder_metadata_provider) {
   std::unique_ptr<ContentClassifier> content_classifier =
-      ContentClassifier::Create();
+      ContentClassifier::Create(embedder);
   if (!content_classifier) {
     return nullptr;
   }
   return base::WrapUnique(new ContentAnnotatorService(
       page_content_annotations_service, page_content_extraction_service,
       optimization_guide_remote_model_executor, page_embeddings_service,
-      accessibility_annotator_backend, std::move(content_classifier)));
+      accessibility_annotator_backend, embedder, embedder_metadata_provider,
+      std::move(content_classifier)));
 }
 
 ContentAnnotatorService::ContentAnnotatorService(
@@ -75,21 +78,26 @@ ContentAnnotatorService::ContentAnnotatorService(
         optimization_guide_remote_model_executor,
     page_content_annotations::PageEmbeddingsService& page_embeddings_service,
     AccessibilityAnnotatorBackend& accessibility_annotator_backend,
+    passage_embeddings::Embedder* embedder,
+    passage_embeddings::EmbedderMetadataProvider* embedder_metadata_provider,
     std::unique_ptr<ContentClassifier> content_classifier)
     : page_content_annotations_service_(page_content_annotations_service),
-      page_content_extraction_service_(page_content_extraction_service),
       optimization_guide_remote_model_executor_(
           optimization_guide_remote_model_executor),
       page_embeddings_service_(page_embeddings_service),
       accessibility_annotator_backend_(accessibility_annotator_backend),
+      embedder_(embedder),
       join_entries_(kContentAnnotatorMaxPendingUrls.Get()),
       content_classifier_(std::move(content_classifier)) {
   CHECK(content_classifier_);
   page_content_annotations_service_->AddObserver(
       page_content_annotations::AnnotationType::kContentVisibility, this);
   page_content_extraction_service_observation_.Observe(
-      &page_content_extraction_service_.get());
+      &page_content_extraction_service);
   page_embeddings_service_observation_.Observe(&page_embeddings_service_.get());
+  if (embedder_metadata_provider) {
+    embedder_metadata_observation_.Observe(embedder_metadata_provider);
+  }
 }
 
 ContentAnnotatorService::~ContentAnnotatorService() {
@@ -141,6 +149,18 @@ page_content_annotations::PageEmbeddingsService::UsageMode
 ContentAnnotatorService::GetUsageMode() const {
   return page_content_annotations::PageEmbeddingsService::UsageMode::
       kContinuous;
+}
+
+void ContentAnnotatorService::EmbedderMetadataUpdated(
+    passage_embeddings::EmbedderMetadata metadata) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (embedder_metadata_.IsValid() || !metadata.IsValid()) {
+    // TODO(crbug.com/489566579): Handle runtime model changes.
+    return;
+  }
+  embedder_metadata_ = metadata;
+  content_classifier_->OnEmbedderModelChanged();
 }
 
 void ContentAnnotatorService::OnPageEmbeddingsAvailable(content::Page& page) {
@@ -198,7 +218,8 @@ void ContentAnnotatorService::MaybeAnnotate(CacheIterator it) {
   // finds relevant content.
   bool reached_annotation =
       (HasClassifierCategory(result.title_keyword_result) ||
-       HasClassifierCategory(result.url_match_result)) &&
+       HasClassifierCategory(result.url_match_result) ||
+       HasClassifierCategory(result.semantic_match_result)) &&
       PassesSafetyChecks(result);
   base::UmaHistogramBoolean("AccessibilityAnnotator.FullAnnotationReached",
                             reached_annotation);
