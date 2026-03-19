@@ -7,10 +7,12 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_microtasks_scope.h"
 #include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_blink_audio_worklet_process_callback.h"
 #include "third_party/blink/renderer/core/messaging/message_port.h"
+#include "third_party/blink/renderer/core/typed_arrays/array_buffer/array_buffer_contents.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_buffer.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_worklet_global_scope.h"
@@ -73,6 +75,8 @@ bool PortTopologyMatches(
       return false;
     }
 
+    const size_t bus_length = audio_bus_1 ? audio_bus_1->length() : 0;
+
     // If the channel count of AudioBus1[i] and AudioBus2[i] matches, then
     // iterate all the channels in AudioBus1[i] and see if any AudioChannel
     // is detached. (i.e. transferred to a different thread)
@@ -84,8 +88,10 @@ bool PortTopologyMatches(
       }
       v8::Local<v8::Float32Array> float32_array = value.As<v8::Float32Array>();
 
-      // If any array is transferred, we need to rebuild them.
-      if (float32_array->ByteLength() == 0) {
+      // If the length of channel does not match, we need to rebuild the port.
+      // Also if any array is transferred, we need to rebuild them.
+      if (float32_array->Length() != bus_length ||
+          float32_array->ByteLength() == 0) {
         return false;
       }
     }
@@ -203,16 +209,19 @@ void CopyPortToArrayBuffers(v8::Isolate* isolate,
 
   for (uint32_t bus_index = 0; bus_index < audio_port.size(); ++bus_index) {
     const scoped_refptr<AudioBus>& audio_bus = audio_port[bus_index];
-    size_t bus_length = audio_bus ? audio_bus->length() : 0;
-    unsigned number_of_channels = audio_bus ? audio_bus->NumberOfChannels() : 0;
+    const size_t bus_length = audio_bus ? audio_bus->length() : 0;
+    const unsigned number_of_channels =
+        audio_bus ? audio_bus->NumberOfChannels() : 0;
     for (uint32_t channel_index = 0; channel_index < number_of_channels;
          ++channel_index) {
       auto backing_store = array_buffers[bus_index][channel_index]
                                .Get(isolate)
                                ->GetBackingStore();
-      UNSAFE_TODO(memcpy(backing_store->Data(),
-                         audio_bus->Channel(channel_index)->Data(),
-                         bus_length * sizeof(float)));
+      DCHECK_EQ(backing_store->ByteLength(), bus_length * sizeof(float));
+      base::subtle::reinterpret_span<float>(
+          ArrayBufferContents(std::move(backing_store)).ByteSpan())
+          .first(bus_length)
+          .copy_from(audio_bus->Channel(channel_index)->Span());
     }
   }
 }
@@ -236,11 +245,12 @@ void CopyArrayBuffersToPort(v8::Isolate* isolate,
       // An ArrayBuffer might be transferred. So we need to check the byte
       // length and silence the output buffer if needed.
       if (backing_store->ByteLength() == bus_length) {
-        UNSAFE_TODO(memcpy(audio_bus->Channel(channel_index)->MutableData(),
-                           backing_store->Data(), bus_length));
+        audio_bus->Channel(channel_index)
+            ->MutableSpan()
+            .copy_from(base::subtle::reinterpret_span<const float>(
+                ArrayBufferContents(std::move(backing_store)).ByteSpan()));
       } else {
-        UNSAFE_TODO(memset(audio_bus->Channel(channel_index)->MutableData(), 0,
-                           bus_length));
+        audio_bus->Channel(channel_index)->Zero();
       }
     }
   }
@@ -252,10 +262,11 @@ void ZeroArrayBuffers(v8::Isolate* isolate,
   for (const auto& array_buffer : array_buffers) {
     for (uint32_t channel_index = 0; channel_index < array_buffer.size();
          ++channel_index) {
-      auto backing_store =
-          array_buffer[channel_index].Get(isolate)->GetBackingStore();
-      UNSAFE_TODO(
-          memset(backing_store->Data(), 0, backing_store->ByteLength()));
+      std::ranges::fill(
+          ArrayBufferContents(
+              array_buffer[channel_index].Get(isolate)->GetBackingStore())
+              .ByteSpan(),
+          0);
     }
   }
 }
@@ -284,8 +295,7 @@ bool ParamValueMapMatchesToParamsObject(
     // AudioWorkletHandler.
     unsigned array_size = 1;
     for (unsigned k = 1; k < param_float_array->size(); ++k) {
-      if (UNSAFE_TODO(param_float_array->Data()[k]) !=
-          param_float_array->Data()[0]) {
+      if (param_float_array->at(k) != param_float_array->at(0)) {
         array_size = param_float_array->size();
         break;
       }
@@ -336,8 +346,7 @@ bool CloneParamValueMapToObject(
     // AudioWorkletHandler.
     unsigned array_size = 1;
     for (unsigned k = 1; k < param_float_array->size(); ++k) {
-      if (UNSAFE_TODO(param_float_array->Data()[k]) !=
-          param_float_array->Data()[0]) {
+      if (param_float_array->at(k) != param_float_array->at(0)) {
         array_size = param_float_array->size();
         break;
       }
@@ -400,8 +409,11 @@ bool CopyParamValueMapToObject(
       return false;
     }
 
-    UNSAFE_TODO(memcpy(float32_array->Buffer()->GetBackingStore()->Data(),
-                       param_array->Data(), array_length * sizeof(float)));
+    base::subtle::reinterpret_span<float>(
+        ArrayBufferContents(float32_array->Buffer()->GetBackingStore())
+            .ByteSpan()
+            .subspan(float32_array->ByteOffset(), array_length * sizeof(float)))
+        .copy_from(param_array->as_span().first(array_length));
   }
 
   return true;
