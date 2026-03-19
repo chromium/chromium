@@ -16,11 +16,6 @@ GLES2TraceImplementation::GLES2TraceImplementation(GLES2Interface* gl)
 
 GLES2TraceImplementation::~GLES2TraceImplementation() = default;
 
-bool GLES2TraceImplementation::CanCopySharedImageToGLTextureViaTextureCopy(
-    ClientSharedImage* shared_image) {
-  return gl_->CanCopySharedImageToGLTextureViaTextureCopy(shared_image);
-}
-
 bool GLES2TraceImplementation::CanCopySharedImageDirectlyToGLTexture(
     bool is_opaque,
     ClientSharedImage* shared_image,

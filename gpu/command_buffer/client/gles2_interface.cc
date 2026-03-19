@@ -9,11 +9,6 @@
 namespace gpu {
 namespace gles2 {
 
-bool GLES2Interface::CanCopySharedImageToGLTextureViaTextureCopy(
-    ClientSharedImage* shared_image) {
-  return false;
-}
-
 bool GLES2Interface::CanCopySharedImageDirectlyToGLTexture(
     bool is_opaque,
     ClientSharedImage* shared_image,

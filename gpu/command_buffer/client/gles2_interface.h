@@ -48,11 +48,6 @@ class GLES2Interface : public InterfaceBase {
   virtual ~GLES2Interface() = default;
 
   // Returns true if it's possible to do a copy of a SharedImage to a GL texture
-  // via CopyTexture().
-  virtual bool CanCopySharedImageToGLTextureViaTextureCopy(
-      ClientSharedImage* shared_image);
-
-  // Returns true if it's possible to do a copy of a SharedImage to a GL texture
   // directly.
   virtual bool CanCopySharedImageDirectlyToGLTexture(
       bool is_opaque,

@@ -195,6 +195,21 @@ void UpdateProgramInfo(base::span<const uint8_t>& data,
   manager->UpdateProgramInfo(program, info, type);
 }
 
+bool CanCopySharedImageToGLTextureViaTextureCopy(
+    ClientSharedImage* shared_image) {
+  const bool si_format_has_single_texture =
+      shared_image->format().is_single_plane() ||
+      shared_image->format().PrefersExternalSampler();
+  const bool si_usable_by_gles2_interface =
+      shared_image->GetTextureTarget() != 0;
+
+  // Copying the shared image to the destination texture via a direct
+  // texture-to-texture copy requires being able to obtain a client-side GL
+  // texture for the shared image, which in turn requires that the shared image
+  // be either single-plane or use external sampler and that it be usable by GL.
+  return si_format_has_single_texture && si_usable_by_gles2_interface;
+}
+
 }  // anonymous namespace
 
 GLES2Implementation::GLStaticState::GLStaticState() = default;
@@ -415,21 +430,6 @@ GLboolean GLES2Implementation::DidGpuSwitch(gl::GpuPreference* active_gpu) {
   GLboolean result = gpu_switched_ ? GL_TRUE : GL_FALSE;
   gpu_switched_ = false;
   return result;
-}
-
-bool GLES2Implementation::CanCopySharedImageToGLTextureViaTextureCopy(
-    ClientSharedImage* shared_image) {
-  const bool si_format_has_single_texture =
-      shared_image->format().is_single_plane() ||
-      shared_image->format().PrefersExternalSampler();
-  const bool si_usable_by_gles2_interface =
-      shared_image->GetTextureTarget() != 0;
-
-  // Copying the shared image to the destination texture via a direct
-  // texture-to-texture copy requires being able to obtain a client-side GL
-  // texture for the shared image, which in turn requires that the shared image
-  // be either single-plane or use external sampler and that it be usable by GL.
-  return si_format_has_single_texture && si_usable_by_gles2_interface;
 }
 
 bool GLES2Implementation::CanCopySharedImageDirectlyToGLTexture(

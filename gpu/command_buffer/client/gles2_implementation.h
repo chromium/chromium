@@ -122,8 +122,6 @@ class GLES2_IMPL_EXPORT GLES2Implementation : public GLES2Interface,
   // GLES2Interface implementation
   void FreeSharedMemory(void*) override;
   GLboolean DidGpuSwitch(gl::GpuPreference* active_gpu) final;
-  bool CanCopySharedImageToGLTextureViaTextureCopy(
-      ClientSharedImage* shared_image) override;
   bool CanCopySharedImageDirectlyToGLTexture(
       bool is_opaque,
       ClientSharedImage* shared_image,

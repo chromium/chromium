@@ -27,8 +27,6 @@ class GLES2_IMPL_EXPORT GLES2TraceImplementation : public GLES2Interface {
   void ShallowFlushCHROMIUM() override;
 
   // GLES2Interface implementation
-  bool CanCopySharedImageToGLTextureViaTextureCopy(
-      ClientSharedImage* shared_image) override;
   bool CanCopySharedImageDirectlyToGLTexture(
       bool is_opaque,
       ClientSharedImage* shared_image,
