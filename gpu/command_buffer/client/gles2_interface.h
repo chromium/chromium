@@ -58,17 +58,6 @@ class GLES2Interface : public InterfaceBase {
       int32_t dst_level,
       SkAlphaType dst_alpha_type);
 
-  // Returns true if it's possible to do a copy of a SharedImage to a GL texture
-  // via Skia.
-  virtual bool CanCopySharedImageToGLTextureViaSkia(
-      bool is_opaque,
-      uint32_t shared_image_target,
-      uint32_t dst_target,
-      uint32_t dst_internal_format,
-      uint32_t dst_type,
-      int32_t dst_level,
-      SkAlphaType dst_alpha_type);
-
   // Copies the contents of |source_shared_image| to |texture| of the current
   // context.
   virtual gpu::SyncToken CopySharedImageToGLTextureViaTextureCopy(

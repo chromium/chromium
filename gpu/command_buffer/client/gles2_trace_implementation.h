@@ -35,14 +35,6 @@ class GLES2_IMPL_EXPORT GLES2TraceImplementation : public GLES2Interface {
       uint32_t dst_type,
       int32_t dst_level,
       SkAlphaType dst_alpha_type) override;
-  bool CanCopySharedImageToGLTextureViaSkia(
-      bool is_opaque,
-      uint32_t shared_image_target,
-      uint32_t dst_target,
-      uint32_t dst_internal_format,
-      uint32_t dst_type,
-      int32_t dst_level,
-      SkAlphaType dst_alpha_type) override;
   gpu::SyncToken CopySharedImageToGLTextureViaTextureCopy(
       const gfx::Rect& src_rect,
       ClientSharedImage* source_shared_image,

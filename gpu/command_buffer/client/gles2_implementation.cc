@@ -210,6 +210,41 @@ bool CanCopySharedImageToGLTextureViaTextureCopy(
   return si_format_has_single_texture && si_usable_by_gles2_interface;
 }
 
+bool CanCopySharedImageToGLTextureViaSkia(bool is_opaque,
+                                          uint32_t shared_image_target,
+                                          uint32_t dst_target,
+                                          uint32_t dst_internal_format,
+                                          uint32_t dst_type,
+                                          int32_t dst_level,
+                                          SkAlphaType dst_alpha_type) {
+  // NOTE: CopySharedImageToGLTextureINTERNAL() is implemented only in the
+  // passthrough command decoder, which is not yet fully rolled out on Android.
+  // Hence, disable this codepath on Android.
+  // TODO(crbug.com/40075313): Enable on Android once the passthrough command
+  // decoder is used universally there.
+#if BUILDFLAG(IS_ANDROID)
+  return false;
+#else
+  bool si_usable_by_gles2_interface = shared_image_target != 0;
+  // Since skia always produces premultiply alpha outputs, trying direct
+  // uploading path when the source is opaque or premultiply alpha been
+  // requested.
+  // TODO(crbug.com/40159723): Figure out whether premultiply options here are
+  // accurate.
+  // TODO(crbug.com/492116792): Remove the `is_opaque` param by querying the
+  // SharedImage's format directly after verifying that this doesn't change
+  // behavior for any existing callers.
+  bool is_premul = is_opaque || dst_alpha_type == kPremul_SkAlphaType;
+  bool supports_one_copy_format = ValidFormatForDirectUploading(
+      static_cast<GLenum>(dst_internal_format), dst_type);
+  // dst texture mipLevel must be 0.
+  // TODO(crbug.com/40141173): Support more texture target, e.g.
+  // 2d array, 3d etc.
+  return si_usable_by_gles2_interface && dst_level == 0 && is_premul &&
+         dst_target == GL_TEXTURE_2D && supports_one_copy_format;
+#endif  // BUILDFLAG(IS_ANDROID)
+}
+
 }  // anonymous namespace
 
 GLES2Implementation::GLStaticState::GLStaticState() = default;
@@ -444,42 +479,6 @@ bool GLES2Implementation::CanCopySharedImageDirectlyToGLTexture(
          CanCopySharedImageToGLTextureViaSkia(
              is_opaque, shared_image->GetTextureTarget(), dst_target,
              dst_internal_format, dst_type, dst_level, dst_alpha_type);
-}
-
-bool GLES2Implementation::CanCopySharedImageToGLTextureViaSkia(
-    bool is_opaque,
-    uint32_t shared_image_target,
-    uint32_t dst_target,
-    uint32_t dst_internal_format,
-    uint32_t dst_type,
-    int32_t dst_level,
-    SkAlphaType dst_alpha_type) {
-  // NOTE: CopySharedImageToGLTextureINTERNAL() is implemented only in the
-  // passthrough command decoder, which is not yet fully rolled out on Android.
-  // Hence, disable this codepath on Android.
-  // TODO(crbug.com/40075313): Enable on Android once the passthrough command
-  // decoder is used universally there.
-#if BUILDFLAG(IS_ANDROID)
-  return false;
-#else
-  bool si_usable_by_gles2_interface = shared_image_target != 0;
-  // Since skia always produces premultiply alpha outputs, trying direct
-  // uploading path when the source is opaque or premultiply alpha been
-  // requested.
-  // TODO(crbug.com/40159723): Figure out whether premultiply options here are
-  // accurate.
-  // TODO(crbug.com/492116792): Remove the `is_opaque` param by querying the
-  // SharedImage's format directly after verifying that this doesn't change
-  // behavior for any existing callers.
-  bool is_premul = is_opaque || dst_alpha_type == kPremul_SkAlphaType;
-  bool supports_one_copy_format = ValidFormatForDirectUploading(
-      static_cast<GLenum>(dst_internal_format), dst_type);
-  // dst texture mipLevel must be 0.
-  // TODO(crbug.com/40141173): Support more texture target, e.g.
-  // 2d array, 3d etc.
-  return si_usable_by_gles2_interface && dst_level == 0 && is_premul &&
-         dst_target == GL_TEXTURE_2D && supports_one_copy_format;
-#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 gpu::SyncToken GLES2Implementation::CopySharedImageToGLTextureViaTextureCopy(

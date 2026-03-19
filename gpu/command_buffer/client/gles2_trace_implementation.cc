@@ -29,19 +29,6 @@ bool GLES2TraceImplementation::CanCopySharedImageDirectlyToGLTexture(
       dst_level, dst_alpha_type);
 }
 
-bool GLES2TraceImplementation::CanCopySharedImageToGLTextureViaSkia(
-    bool is_opaque,
-    uint32_t shared_image_target,
-    uint32_t dst_target,
-    uint32_t dst_internal_format,
-    uint32_t dst_type,
-    int32_t dst_level,
-    SkAlphaType dst_alpha_type) {
-  return gl_->CanCopySharedImageToGLTextureViaSkia(
-      is_opaque, shared_image_target, dst_target, dst_internal_format, dst_type,
-      dst_level, dst_alpha_type);
-}
-
 gpu::SyncToken
 GLES2TraceImplementation::CopySharedImageToGLTextureViaTextureCopy(
     const gfx::Rect& src_rect,
