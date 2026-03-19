@@ -16747,8 +16747,8 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_DESKTOP_MEDIA_PICKER_ALSO_SHARE_SYSTEM_AUDIO" desc="Text for the audio toggle in the window picker dialog which is displayed when attempting to share a screen.">
         Also share system audio
       </message>
-      <message name="IDS_DESKTOP_MEDIA_PICKER_ALSO_SHARE_APPLICATION_AUDIO" desc="Text for the audio toggle in the window picker dialog which is displayed when attempting to share a window. The last part in the text: (from all its windows) emphasizes that audio will be shared from all windows belonging to the same application.">
-        Also share application audio (from all its windows)
+      <message name="IDS_DESKTOP_MEDIA_PICKER_ALSO_SHARE_APPLICATION_AUDIO" desc="Text for the audio toggle in the window picker dialog which is displayed when attempting to share a window. The parenthetical text explains that sharing audio from a single window will also capture audio from all other windows belonging to that same application. For certain applications (like web browsers), this may also include audio from related versions (e.g., Beta or Canary) or Progressive Web Apps (PWAs) installed by the browser.">
+        Also share app audio (from all its windows and related apps)
       </message>
       <message name="IDS_DESKTOP_MEDIA_PICKER_ALSO_SHARE_ALL_AUDIO_OUTPUT" desc="Text for the audio toggle in the window picker dialog which is displayed when attempting to share a screen. This string is used when we share all output audio devices, rather than just the default device">
         Also share all audio outputs
