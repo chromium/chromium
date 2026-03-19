@@ -608,6 +608,8 @@ BASE_FEATURE(kRevokeMediaSourceObjectURLOnAttach,
 #if BUILDFLAG(ENABLE_SYMPHONIA)
 BASE_FEATURE(kSymphoniaAudioDecoding, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kSymphoniaMp3Decoding, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSymphoniaPcmDecoding, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSymphoniaVorbisDecoding, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // Forces D3D11VideoDecoder to use one decoder texture per picture buffer.
@@ -1161,8 +1163,7 @@ BASE_FEATURE(kLimitConcurrentDecoderInstances,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Use SequencedTaskRunner for VideoEncodeAccelerator
-BASE_FEATURE(kUseSequencedTaskRunnerForVEA,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kUseSequencedTaskRunnerForVEA, base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if defined(ARCH_CPU_ARM_FAMILY)
 // Experimental support for GL based scaling for NV12 on Trogdor.

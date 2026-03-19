@@ -4,6 +4,7 @@
 
 #include "media/test/pipeline_integration_test_base.h"
 
+#include <ios>
 #include <memory>
 #include <utility>
 
@@ -66,9 +67,9 @@ using ::testing::_;
 using ::testing::AnyNumber;
 using ::testing::AtLeast;
 using ::testing::AtMost;
+using ::testing::InSequence;
 using ::testing::Invoke;
 using ::testing::InvokeWithoutArgs;
-using ::testing::InSequence;
 using ::testing::Return;
 using ::testing::SaveArg;
 
@@ -157,16 +158,7 @@ const char kNullVideoHash[] =
     "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
 const char kNullAudioHash[] = "0.00,0.00,0.00,0.00,0.00,0.00,";
 
-PipelineIntegrationTestBase::PipelineIntegrationTestBase()
-    : hashing_enabled_(false),
-      clockless_playback_(false),
-      webaudio_attached_(false),
-      mono_output_(false),
-      fuzzing_(false),
-      ended_(false),
-      pipeline_status_(PIPELINE_OK),
-      last_video_frame_format_(PIXEL_FORMAT_UNKNOWN),
-      current_duration_(kInfiniteDuration) {
+PipelineIntegrationTestBase::PipelineIntegrationTestBase() {
   hash_context_.emplace(crypto::hash::kSha256);
   AddSupplementalCodecsForTesting();
 
@@ -182,8 +174,9 @@ PipelineIntegrationTestBase::PipelineIntegrationTestBase()
 }
 
 PipelineIntegrationTestBase::~PipelineIntegrationTestBase() {
-  if (pipeline_->IsRunning())
+  if (pipeline_->IsRunning()) {
     Stop();
+  }
 
   demuxer_.reset();
   pipeline_.reset();
@@ -203,10 +196,11 @@ void PipelineIntegrationTestBase::ParseTestTypeFlags(uint8_t flags) {
 void PipelineIntegrationTestBase::OnSeeked(base::TimeDelta seek_time,
                                            PipelineStatus status) {
   // When fuzzing, sometimes a seek to 0 results in an actual media time > 0.
-  if (fuzzing_)
+  if (fuzzing_) {
     EXPECT_LE(seek_time, pipeline_->GetMediaTime());
-  else
+  } else {
     EXPECT_EQ(seek_time, pipeline_->GetMediaTime());
+  }
 
   pipeline_status_ = status;
 
@@ -221,8 +215,9 @@ void PipelineIntegrationTestBase::OnStatusCallback(
     PipelineStatus status) {
   pipeline_status_ = status;
 
-  if (pipeline_status_ != PIPELINE_OK && pipeline_->IsRunning())
+  if (pipeline_status_ != PIPELINE_OK && pipeline_->IsRunning()) {
     pipeline_->Stop();
+  }
 
   quit_run_loop_closure.Run();
 }
@@ -252,8 +247,9 @@ void PipelineIntegrationTestBase::OnEnded() {
   DCHECK(!ended_);
   ended_ = true;
   pipeline_status_ = PIPELINE_OK;
-  if (on_ended_closure_)
+  if (on_ended_closure_) {
     std::move(on_ended_closure_).Run();
+  }
 }
 
 bool PipelineIntegrationTestBase::WaitUntilOnEnded() {
@@ -278,8 +274,9 @@ void PipelineIntegrationTestBase::OnError(PipelineStatus status) {
   DCHECK(status != PIPELINE_OK);
   pipeline_status_ = status;
   pipeline_->Stop();
-  if (on_error_closure_)
+  if (on_error_closure_) {
     std::move(on_error_closure_).Run();
+  }
 }
 
 void PipelineIntegrationTestBase::OnFallback(PipelineStatus status) {
@@ -402,8 +399,8 @@ PipelineStatus PipelineIntegrationTestBase::StartWithFile(
     CreateAudioDecodersCB prepend_audio_decoders_cb) {
   std::unique_ptr<FileDataSource> file_data_source(new FileDataSource());
   base::FilePath file_path(GetTestDataFilePath(filename));
-  CHECK(file_data_source->Initialize(file_path)) << "Is " << file_path.value()
-                                                 << " missing?";
+  CHECK(file_data_source->Initialize(file_path))
+      << "Is " << file_path.value() << " missing?";
   return StartInternal(std::move(file_data_source), cdm_context, test_type,
                        prepend_video_decoders_cb, prepend_audio_decoders_cb);
 }
@@ -586,8 +583,9 @@ void PipelineIntegrationTestBase::CreateDemuxer(
 
 std::unique_ptr<Renderer> PipelineIntegrationTestBase::CreateRenderer(
     std::optional<RendererType> renderer_type) {
-  if (create_renderer_cb_)
+  if (create_renderer_cb_) {
     return create_renderer_cb_.Run(renderer_type);
+  }
 
   return CreateRendererImpl(renderer_type);
 }
@@ -647,10 +645,11 @@ std::unique_ptr<Renderer> PipelineIntegrationTestBase::CreateRendererImpl(
                           prepend_audio_decoders_cb_),
       &media_log_, MediaPlayerLoggingID(0), nullptr);
   if (hashing_enabled_) {
-    if (clockless_playback_)
+    if (clockless_playback_) {
       clockless_audio_sink_->StartAudioHashForTesting();
-    else
+    } else {
       audio_sink_->StartAudioHashForTesting();
+    }
   }
 
   static_cast<AudioRendererImpl*>(audio_renderer.get())
@@ -664,8 +663,9 @@ std::unique_ptr<Renderer> PipelineIntegrationTestBase::CreateRendererImpl(
   // machine, valgrind).
   renderer_impl->DisableUnderflowForTesting();
 
-  if (clockless_playback_)
+  if (clockless_playback_) {
     renderer_impl->EnableClocklessVideoPlaybackForTesting();
+  }
 
   return renderer_impl;
 }
@@ -674,8 +674,9 @@ void PipelineIntegrationTestBase::OnVideoFramePaint(
     scoped_refptr<VideoFrame> frame) {
   last_video_frame_format_ = frame->format();
   last_video_frame_color_space_ = frame->ColorSpace();
-  if (!hashing_enabled_ || last_frame_ == frame)
+  if (!hashing_enabled_ || last_frame_ == frame) {
     return;
+  }
   DVLOG(3) << __func__ << " pts=" << frame->timestamp().InSecondsF();
   VideoFrame::UpdateHashWithFrameForTesting(*hash_context_, *frame);
   last_frame_ = std::move(frame);
@@ -708,8 +709,9 @@ std::string PipelineIntegrationTestBase::GetVideoHash() {
 const AudioHash& PipelineIntegrationTestBase::GetAudioHash() const {
   DCHECK(hashing_enabled_);
 
-  if (clockless_playback_)
+  if (clockless_playback_) {
     return clockless_audio_sink_->GetAudioHashForTesting();
+  }
   return audio_sink_->GetAudioHashForTesting();
 }
 

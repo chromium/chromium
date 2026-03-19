@@ -83,6 +83,10 @@ constexpr int kVP9WebMFileDurationMs = 2736;
 constexpr int kVP8AWebMFileDurationMs = 2733;
 
 constexpr char kSfxLosslessHash[] = "3.03,2.86,2.99,3.31,3.57,4.06,";
+constexpr char kBear320x240AudioHash[] = "-3.59,-2.06,-0.43,2.15,0.77,-0.95,";
+constexpr char kSfxMp3Hash[] = "1.30,2.72,4.56,5.08,3.74,2.03,";
+
+constexpr char kSfxMseMp3Hash[] = "1.01,2.71,4.18,4.32,3.04,1.12,";
 
 // Hash for a full playthrough of "opus-trimming-test.(webm|ogg)".
 constexpr char kOpusEndTrimmingHash_1[] =
@@ -225,8 +229,9 @@ class KeyProvidingApp : public FakeEncryptedMedia::AppBase {
                                 AesDecryptor* decryptor) override {
     // Since only 1 session is created, skip the request if the |init_data|
     // has been seen before (no need to add the same key again).
-    if (init_data == prev_init_data_)
+    if (init_data == prev_init_data_) {
       return;
+    }
     prev_init_data_ = init_data;
 
     if (current_session_id_.empty()) {
@@ -260,8 +265,9 @@ class RotatingKeyProvidingApp : public KeyProvidingApp {
                                 const std::vector<uint8_t>& init_data,
                                 AesDecryptor* decryptor) override {
     // Skip the request if the |init_data| has been seen.
-    if (init_data == prev_init_data_)
+    if (init_data == prev_init_data_) {
       return;
+    }
     prev_init_data_ = init_data;
     ++num_distinct_need_key_calls_;
 
@@ -357,12 +363,14 @@ class PipelineIntegrationTest : public testing::Test,
     }
 
     Play();
-    if (!WaitUntilCurrentTimeIsAfter(start_seek_time))
+    if (!WaitUntilCurrentTimeIsAfter(start_seek_time)) {
       return false;
+    }
 
     source.Seek(seek_time, seek_file_position, seek_append_size);
-    if (!Seek(seek_time))
+    if (!Seek(seek_time)) {
       return false;
+    }
 
     source.EndOfStream();
 
@@ -687,7 +695,7 @@ TEST_F(PipelineIntegrationTest, BasicPlaybackHashed) {
 
   EXPECT_EQ("a6dbca10f0730373ab948df04b4bc16d7bca6d3a1593dc989b6e376487544bf5",
             GetVideoHash());
-  EXPECT_AUDIO_HASH("-3.59,-2.06,-0.43,2.15,0.77,-0.95,");
+  EXPECT_AUDIO_HASH(kBear320x240AudioHash);
   EXPECT_TRUE(demuxer_->GetTimelineOffset().is_null());
 }
 
@@ -1247,7 +1255,7 @@ TEST_F(PipelineIntegrationTest, BasicPlaybackLive) {
 
   EXPECT_EQ("a6dbca10f0730373ab948df04b4bc16d7bca6d3a1593dc989b6e376487544bf5",
             GetVideoHash());
-  EXPECT_AUDIO_HASH("-3.59,-2.06,-0.43,2.15,0.77,-0.95,");
+  EXPECT_AUDIO_HASH(kBear320x240AudioHash);
   EXPECT_EQ(kLiveTimelineOffset(), demuxer_->GetTimelineOffset());
 }
 
@@ -1833,7 +1841,7 @@ TEST_F(PipelineIntegrationTest, BasicPlaybackHashed_MP3) {
   ASSERT_TRUE(WaitUntilOnEnded());
 
   // Verify codec delay and preroll are stripped.
-  EXPECT_AUDIO_HASH("1.30,2.72,4.56,5.08,3.74,2.03,");
+  EXPECT_AUDIO_HASH(kSfxMp3Hash);
 }
 
 TEST_F(PipelineIntegrationTest, BasicPlaybackHashed_FlacInMp4) {
@@ -1946,7 +1954,7 @@ TEST_F(PipelineIntegrationTest, MSE_MP3) {
   EXPECT_TRUE(WaitUntilOnEnded());
 
   // Verify that codec delay was stripped.
-  EXPECT_AUDIO_HASH("1.01,2.71,4.18,4.32,3.04,1.12,");
+  EXPECT_AUDIO_HASH(kSfxMseMp3Hash);
 }
 
 TEST_F(PipelineIntegrationTest, MSE_MP3_TimestampOffset) {
@@ -3091,5 +3099,71 @@ TEST_F(PipelineIntegrationTest, Fullrange_H264) {
 }
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 #endif  // BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
+
+#if BUILDFLAG(ENABLE_SYMPHONIA)
+class SymphoniaPipelineIntegrationTest : public testing::Test,
+                                         public PipelineIntegrationTestBase {
+ public:
+  SymphoniaPipelineIntegrationTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {kSymphoniaAudioDecoding, kSymphoniaMp3Decoding, kSymphoniaPcmDecoding,
+         kSymphoniaVorbisDecoding},
+        {} /*disabled_features=*/);
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(SymphoniaPipelineIntegrationTest, BasicPlaybackHashed_MP3) {
+  ASSERT_EQ(PIPELINE_OK, Start("sfx.mp3", kHashed));
+  Play();
+  ASSERT_TRUE(WaitUntilOnEnded());
+  EXPECT_AUDIO_HASH(kSfxMp3Hash);
+}
+
+TEST_F(SymphoniaPipelineIntegrationTest, BasicPlayback_Flac) {
+  ASSERT_EQ(PIPELINE_OK, Start("sfx-flac.mp4", kHashed));
+  Play();
+  ASSERT_TRUE(WaitUntilOnEnded());
+  EXPECT_AUDIO_HASH(kSfxLosslessHash);
+}
+
+TEST_F(SymphoniaPipelineIntegrationTest, BasicPlayback_Vorbis) {
+  ASSERT_EQ(PIPELINE_OK, Start("bear-320x240.webm", kHashed));
+  Play();
+  ASSERT_TRUE(WaitUntilOnEnded());
+  EXPECT_AUDIO_HASH(kBear320x240AudioHash);
+}
+
+TEST_F(SymphoniaPipelineIntegrationTest, BasicPlayback_S32LE) {
+  ASSERT_EQ(PIPELINE_OK, Start("sfx_s32le.wav", kHashed));
+  Play();
+  ASSERT_TRUE(WaitUntilOnEnded());
+  EXPECT_AUDIO_HASH(kSfxLosslessHash);
+}
+
+TEST_F(SymphoniaPipelineIntegrationTest, BasicPlayback_F32LE) {
+  ASSERT_EQ(PIPELINE_OK, Start("sfx_f32le.wav", kHashed));
+  Play();
+  ASSERT_TRUE(WaitUntilOnEnded());
+  EXPECT_AUDIO_HASH(kSfxLosslessHash);
+}
+
+TEST_F(SymphoniaPipelineIntegrationTest, BasicPlayback_FLAC_File) {
+  ASSERT_EQ(PIPELINE_OK, Start("sfx.flac", kHashed));
+  Play();
+  ASSERT_TRUE(WaitUntilOnEnded());
+  EXPECT_AUDIO_HASH(kSfxLosslessHash);
+}
+
+TEST_F(SymphoniaPipelineIntegrationTest, BasicPlayback_Vorbis_AudioOnly) {
+  ASSERT_EQ(PIPELINE_OK, Start("bear-320x240-audio-only.webm", kHashed));
+  Play();
+  ASSERT_TRUE(WaitUntilOnEnded());
+  EXPECT_AUDIO_HASH(kBear320x240AudioHash);
+}
+
+#endif  // BUILDFLAG(ENABLE_SYMPHONIA)
 
 }  // namespace media

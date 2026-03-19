@@ -241,6 +241,16 @@ ChannelLayout ChannelMaskToLayout(ChannelMask channel_mask) {
   return CHANNEL_LAYOUT_DISCRETE;
 }
 
+ChannelMask ChannelLayoutToMask(ChannelLayout channel_layout) {
+  for (const auto& entry : kChannelMaskToLayoutMap) {
+    if (entry.second == channel_layout) {
+      return entry.first;
+    }
+  }
+  // We should have a mask for every single channel layout.
+  NOTREACHED();
+}
+
 int ChannelOrder(ChannelLayout layout, Channels channel) {
   DCHECK_LT(static_cast<size_t>(layout), std::size(kChannelOrderings));
   DCHECK_LT(static_cast<size_t>(channel), std::size(kChannelOrderings[0]));

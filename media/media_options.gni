@@ -62,6 +62,7 @@ declare_args() {
   if (!use_blink) {
     media_use_ffmpeg = false
     media_use_libvpx = false
+    media_use_symphonia = false
   }
 
   # Enable usage of OpenH264 within the media library. Used for software based

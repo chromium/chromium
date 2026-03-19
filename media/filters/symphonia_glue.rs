@@ -42,7 +42,7 @@
 //! This bridge is built using the `cxx` crate, which automates the generation
 //! of safe FFI bindings between the two languages.
 
-use symphonia::core::audio::{AudioBufferRef, RawSampleBuffer};
+use symphonia::core::audio::{AudioBufferRef, Channels, RawSampleBuffer};
 use symphonia::core::codecs::CodecParameters;
 use symphonia::core::errors::Error;
 use symphonia::core::formats::Packet;
@@ -61,8 +61,23 @@ pub mod ffi {
     #[repr(i32)]
     #[derive(Debug, Clone, Copy)]
     enum SymphoniaAudioCodec {
+        Unknown,
         Flac,
-        Mp3
+        Mp3,
+        PcmAlaw,
+        PcmF32,
+        PcmF32Planar,
+        PcmMulaw,
+        PcmS16,
+        PcmS16be,
+        PcmS16Planar,
+        PcmS24,
+        PcmS24be,
+        PcmS32,
+        PcmS32Planar,
+        PcmU8,
+        PcmU8Planar,
+        Vorbis,
     }
 
     /// We currently only output interleaved data, and usually in F32. However,
@@ -86,6 +101,14 @@ pub mod ffi {
         extra_data: Vec<u8>,
         /// Expected bytes per sample from the container/config.
         bytes_per_sample: u8,
+
+        /// fields necessary for PCM decoders.
+        /// Maximum number of frames per packet.
+        max_frames_per_packet: u64,
+        /// Sample rate of the audio stream.
+        sample_rate: u32,
+        /// Channel mask of the audio stream.
+        channel_mask: u32,
     }
 
     /// Represents a single, encoded audio packet to be sent to the decoder.
@@ -112,7 +135,7 @@ pub mod ffi {
         /// The number of audio frames in the buffer.
         num_frames: usize,
         /// The number of channels.
-        channel_count: u32,
+        channel_count: usize,
         /// The channels, represented as a bit mask.
         channel_mask: u32,
     }
@@ -372,12 +395,26 @@ pub struct SymphoniaDecoder {
 fn to_symphonia_codec_type(
     codec: ffi::SymphoniaAudioCodec,
 ) -> Result<symphonia::core::codecs::CodecType, String> {
+    use symphonia::core::codecs::*; // to type
     match codec {
-        ffi::SymphoniaAudioCodec::Flac => Ok(symphonia::core::codecs::CODEC_TYPE_FLAC),
-        ffi::SymphoniaAudioCodec::Mp3 => Ok(symphonia::core::codecs::CODEC_TYPE_MP3),
-
-        // TODO(crbug.com/40074653): should support other formats.
-        _ => Err(format!("Unsupported codec provided. codec={:?}", codec)),
+        ffi::SymphoniaAudioCodec::Unknown => Err("Unknown codec provided".to_string()),
+        ffi::SymphoniaAudioCodec::Flac => Ok(CODEC_TYPE_FLAC),
+        ffi::SymphoniaAudioCodec::Mp3 => Ok(CODEC_TYPE_MP3),
+        ffi::SymphoniaAudioCodec::PcmAlaw => Ok(CODEC_TYPE_PCM_ALAW),
+        ffi::SymphoniaAudioCodec::PcmF32 => Ok(CODEC_TYPE_PCM_F32LE),
+        ffi::SymphoniaAudioCodec::PcmF32Planar => Ok(CODEC_TYPE_PCM_F32LE_PLANAR),
+        ffi::SymphoniaAudioCodec::PcmMulaw => Ok(CODEC_TYPE_PCM_MULAW),
+        ffi::SymphoniaAudioCodec::PcmS16 => Ok(CODEC_TYPE_PCM_S16LE),
+        ffi::SymphoniaAudioCodec::PcmS16be => Ok(CODEC_TYPE_PCM_S16BE),
+        ffi::SymphoniaAudioCodec::PcmS16Planar => Ok(CODEC_TYPE_PCM_S16LE_PLANAR),
+        ffi::SymphoniaAudioCodec::PcmS24 => Ok(CODEC_TYPE_PCM_S24LE),
+        ffi::SymphoniaAudioCodec::PcmS24be => Ok(CODEC_TYPE_PCM_S24BE),
+        ffi::SymphoniaAudioCodec::PcmS32 => Ok(CODEC_TYPE_PCM_S32LE),
+        ffi::SymphoniaAudioCodec::PcmS32Planar => Ok(CODEC_TYPE_PCM_S32LE_PLANAR),
+        ffi::SymphoniaAudioCodec::PcmU8 => Ok(CODEC_TYPE_PCM_U8),
+        ffi::SymphoniaAudioCodec::PcmU8Planar => Ok(CODEC_TYPE_PCM_U8_PLANAR),
+        ffi::SymphoniaAudioCodec::Vorbis => Ok(CODEC_TYPE_VORBIS),
+        _ => Err(format!("Unsupported codec value {:?} provided", codec)),
     }
 }
 
@@ -388,32 +425,129 @@ impl From<&ffi::SymphoniaPacket> for Packet {
     }
 }
 
+const XIPH_LACING_MAX_VALUE: u8 = 255;
+const VORBIS_NUM_HEADERS: u8 = 3;
+const VORBIS_NUM_LACED_HEADERS: u8 = VORBIS_NUM_HEADERS - 1;
+
+/// Unpacks Vorbis extradata packed in the Xiph lacing format.
+///
+/// WebM and Matroska containers use the Xiph lacing format for Vorbis
+/// extradata, where a single `CodecPrivate` buffer contains all three Vorbis
+/// headers: the Identification, Comment, and Setup headers.
+///
+/// Symphonia's `symphonia-codec-vorbis` decoder does not understand the Xiph
+/// packaging layer. It expects only the raw Identification and Setup headers
+/// laid out sequentially. This function unpacks the Xiph format and returns
+/// a new vector containing only those two required headers.
+pub fn unpack_xiph_vorbis_extradata(extradata: &[u8]) -> Result<Vec<u8>, String> {
+    // The first byte of the data block specifies the number of headers minus one.
+    if extradata.is_empty() {
+        return Err("extradata is empty".into());
+    }
+    if extradata[0] != VORBIS_NUM_LACED_HEADERS {
+        return Err(format!(
+            "expected {} headers but found {}",
+            VORBIS_NUM_LACED_HEADERS + 1,
+            extradata[0] + 1
+        ));
+    }
+
+    let mut offset = 1;
+    let mut lengths = Vec::new();
+
+    // The Identification and Comment headers have their lengths laced. The length
+    // of the Setup header is inferred from the remaining buffer size.
+    for _ in 0..VORBIS_NUM_LACED_HEADERS {
+        let mut length = 0;
+        let mut reached_end = false;
+        while offset < extradata.len() {
+            let val = extradata[offset];
+            offset += 1;
+            length += val as usize;
+
+            // Reached the final segment.
+            if val < XIPH_LACING_MAX_VALUE {
+                reached_end = true;
+                break;
+            }
+        }
+        if !reached_end {
+            return Err("truncated length lacing".into());
+        }
+        lengths.push(length);
+    }
+
+    if offset >= extradata.len() {
+        return Err("no data remains after reading lacing".into());
+    }
+
+    let ident_len = lengths[0];
+    let comment_len = lengths[1];
+    // Header contained invalid length.
+    if offset + ident_len + comment_len > extradata.len() {
+        return Err("header lengths exceed buffer size".into());
+    }
+
+    let setup_len = extradata.len() - offset - ident_len - comment_len;
+
+    let ident_start = offset;
+    let comment_start = ident_start + ident_len;
+    let setup_start = comment_start + comment_len;
+
+    let mut unpacked = Vec::with_capacity(ident_len + setup_len);
+    unpacked.extend_from_slice(&extradata[ident_start..ident_start + ident_len]);
+    unpacked.extend_from_slice(&extradata[setup_start..setup_start + setup_len]);
+
+    Ok(unpacked)
+}
+
 /// Converts an FFI `SymphoniaDecoderConfig` to Symphonia `CodecParameters`.
-/// Note that we provide the minimum amount of configuration possible, since
-/// most of the values should come directly from the bitstream and should not be
-/// needed here.
 impl TryFrom<&ffi::SymphoniaDecoderConfig> for CodecParameters {
     type Error = String;
 
     fn try_from(value: &ffi::SymphoniaDecoderConfig) -> Result<Self, Self::Error> {
+        let bits_per_sample: u32 = (value.bytes_per_sample as u32) * u8::BITS;
+        let mut extra_data = value.extra_data.clone();
+
+        // Chromium's demuxers often pack Vorbis extradata using the Xiph format, which
+        // is a byproduct of using FFmpeg.
+        //
+        // We unpack the Xiph format here if we detect it, dropping the comment
+        // header, as Symphonia expects only the raw identification and setup headers.
+        if value.codec == ffi::SymphoniaAudioCodec::Vorbis {
+            match unpack_xiph_vorbis_extradata(&extra_data) {
+                Ok(unpacked) => extra_data = unpacked,
+                Err(err) => {
+                    // It could be that this stream is not Xiph packed at all (which is fine,
+                    // Symphonia might handle it natively if it's already unwrapped). We only log
+                    // an error if we actually attempted to parse it as Xiph but failed.
+                    if !extra_data.is_empty() && extra_data[0] == VORBIS_NUM_LACED_HEADERS {
+                        return Err(format!("failed to unpack xiph vorbis extradata: {}", err));
+                    }
+                }
+            }
+        }
+
         Ok(CodecParameters {
             codec: to_symphonia_codec_type(value.codec)?,
-            sample_rate: None,
             time_base: Some(TimeBase::new(1_000_000, 1)), // Microsecond timebase
-            n_frames: None,
-            start_ts: 0,
-            sample_format: None,
-            bits_per_sample: None,
-            bits_per_coded_sample: None,
-            channels: None,
-            channel_layout: None,
-            delay: None,
-            padding: None,
-            max_frames_per_packet: None,
-            packet_data_integrity: false,
-            verification_check: None,
-            frames_per_block: None,
-            extra_data: Some(value.extra_data.clone().into_boxed_slice()),
+            extra_data: Some(extra_data.into_boxed_slice()),
+
+            bits_per_sample: Some(bits_per_sample),
+
+            // Symphonia needs the channel layout, at least for PCM.
+            channels: Some(Channels::from_bits_truncate(value.channel_mask)),
+            max_frames_per_packet: if value.max_frames_per_packet > 0 {
+                Some(value.max_frames_per_packet)
+            } else {
+                None
+            },
+            sample_rate: Some(value.sample_rate),
+
+            // We specify the minimum amount of configuration possible, since
+            // most of the values should come directly from the bitstream and
+            // should not be needed here.
+            ..Default::default()
         })
     }
 }
@@ -497,26 +631,57 @@ pub fn create_audio_buffer(
 ) -> Result<ffi::SymphoniaAudioBuffer, String> {
     let sample_rate = buffer_ref.spec().rate;
     let num_frames = buffer_ref.frames();
-    let channel_count = buffer_ref.spec().channels.count() as u32;
+    let channel_count = buffer_ref.spec().channels.count();
     let channel_mask = buffer_ref.spec().channels.bits();
+
+    // If there are no frames, avoid passing the buffer to Symphonia's
+    // `copy_interleaved_ref`. There is a bug in Symphonia's
+    // `copy_interleaved_typed` where if `n_channels > 2` and `n_frames == 0`,
+    // it will panic trying to slice a zero-length destination buffer with
+    // `dst_buf[ch..]`.
+    //
+    // Tracked upstream in https://github.com/pdeljanov/Symphonia/issues/455.
+    // When resolved upstream and a release is issued with the fix, we can
+    // remove this workaround.
+    if num_frames == 0 {
+        return Ok(ffi::SymphoniaAudioBuffer {
+            data: Vec::new(),
+            sample_format: sample_buffer.sample_format(),
+            sample_rate,
+            num_frames,
+            channel_count,
+            channel_mask,
+        });
+    }
 
     // Populate the sample byte buffer.
     sample_buffer.copy_from_buffer(buffer_ref);
     let mut sample_format = sample_buffer.sample_format();
 
     // Ensure we output S16 if requested (Symphonia outputs it as S32 regardless).
-    let should_shift = sample_format == ffi::SymphoniaSampleFormat::S32 && bytes_per_sample == 2;
-    let data = if should_shift {
+    let should_shift_down =
+        sample_format == ffi::SymphoniaSampleFormat::S32 && bytes_per_sample == 2;
+    let should_shift_up = sample_format == ffi::SymphoniaSampleFormat::S24;
+    let data = if should_shift_down {
         sample_format = ffi::SymphoniaSampleFormat::S16;
-        let s32_data = sample_buffer.as_bytes();
-        let mut s16_data = Vec::with_capacity(s32_data.len() / 2);
-        for chunk in s32_data.chunks_exact(4) {
-            let sample = i32::from_ne_bytes(chunk.try_into().unwrap());
-            // Shift right by 16 to get back the original 16 bits.
-            let downsampled = (sample >> 16) as i16;
-            s16_data.extend_from_slice(&downsampled.to_ne_bytes());
-        }
-        s16_data
+        sample_buffer
+            .as_bytes()
+            .chunks_exact(4)
+            .flat_map(|chunk| {
+                let sample = i32::from_ne_bytes(chunk.try_into().unwrap());
+                // Shift right by 16 to get back the original 16 bits.
+                ((sample >> 16) as i16).to_ne_bytes()
+            })
+            .collect()
+    } else if should_shift_up {
+        // Chromium's AudioBuffer expects 24-bit samples to be padded to 32 bits
+        // and shifted left by 8 bits to use the full 32-bit range.
+        // Chromium is always little-endian.
+        sample_buffer
+            .as_bytes()
+            .chunks_exact(3)
+            .flat_map(|chunk| [0, chunk[0], chunk[1], chunk[2]])
+            .collect()
     } else {
         sample_buffer.as_bytes().to_vec()
     };

@@ -308,6 +308,12 @@ AudioDecoder::MakeMediaAudioDecoderConfig(const ConfigType& config,
       return std::nullopt;
     }
     format = PcmCodecToSampleFormat(config.codec());
+
+    // Both FFmpeg and Symphonia exclusively output S16 decoded buffers for ALAW
+    // and MULAW.
+  } else if (audio_type->codec == media::AudioCodec::kPCM_ALAW ||
+             audio_type->codec == media::AudioCodec::kPCM_MULAW) {
+    format = media::SampleFormat::kSampleFormatS16;
   }
 
   media_config.Initialize(audio_type->codec, format, channel_layout,

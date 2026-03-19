@@ -21454,11 +21454,28 @@
             ]
         }
     ],
+    "SymphoniaAdditionalCodecs": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SymphoniaPcmDecoding",
+                        "SymphoniaVorbisDecoding"
+                    ]
+                }
+            ]
+        }
+    ],
     "SymphoniaAudioDecoding": [
         {
             "platforms": [
-                "android",
-                "android_webview",
                 "chromeos",
                 "linux",
                 "mac",

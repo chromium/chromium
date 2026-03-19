@@ -146,37 +146,33 @@ fn test_s16_conversion() {
     );
 }
 
-// Verify that we handle S24 correctly.
+// Verify that we handle S24 correctly (padding to 32 bits and shifting left by
+// 8).
 #[gtest(SymphoniaGlueTest, S24Conversion)]
 fn test_s24_conversion() {
-    use symphonia::core::sample::i24;
-    let samples: Vec<i24> = vec![i24(0), i24(0x7FFFFF), i24(-0x800000), i24(0x123456)];
+    let samples = vec![
+        symphonia::core::sample::i24(0),
+        symphonia::core::sample::i24(0x7FFFFF),
+        symphonia::core::sample::i24(-0x800000),
+        symphonia::core::sample::i24(0x123456),
+    ];
+    let expected: &[i32] = &[
+        0,
+        0x7FFFFF00,
+        -0x80000000, // min value for i32
+        0x12345600,
+    ];
     const SAMPLE_RATE: u32 = 48000;
-    const BYTES_PER_SAMPLE: u8 = 3;
+    const BYTES_PER_SAMPLE: u8 = 4; // Expected output bytes per sample (padded)
 
-    let spec = SignalSpec::new(SAMPLE_RATE, Layout::Mono.into_channels());
-    let mut audio_buf = AudioBuffer::<i24>::new(samples.len() as u64, spec);
-    audio_buf.render_reserved(Some(samples.len()));
-    audio_buf.chan_mut(0).copy_from_slice(&samples);
-
-    let buffer_ref = AudioBufferRef::S24(std::borrow::Cow::Borrowed(&audio_buf));
-    let mut sample_buffer = SymphoniaRawSampleBuffer::new_buffer_for(&buffer_ref).unwrap();
-
-    let result = create_audio_buffer(buffer_ref, &mut sample_buffer, BYTES_PER_SAMPLE).unwrap();
-
-    expect_eq!(result.sample_rate, SAMPLE_RATE);
-    expect_eq!(result.num_frames, samples.len());
-    expect_eq!(result.sample_format, ffi::SymphoniaSampleFormat::S24);
-
-    let data_u8 = result.data;
-    expect_eq!(data_u8.len(), samples.len() * 3);
-
-    for (i, expected) in samples.iter().enumerate() {
-        let start = i * 3;
-        let actual_bytes = &data_u8[start..start + 3];
-        let expected_bytes = expected.to_ne_bytes();
-        expect_eq!(actual_bytes, expected_bytes, "Mismatch at index {i}");
-    }
+    test_conversion(
+        &samples,
+        SAMPLE_RATE,
+        BYTES_PER_SAMPLE,
+        ffi::SymphoniaSampleFormat::S24,
+        expected,
+        |b| AudioBufferRef::S24(std::borrow::Cow::Borrowed(b)),
+    );
 }
 
 // Verify that we handle unsupported buffer types.
@@ -196,6 +192,9 @@ fn test_decoder_init_failure() {
         codec: ffi::SymphoniaAudioCodec::Flac,
         extra_data: vec![], // Empty extra data might be enough to fail some decoders.
         bytes_per_sample: 2,
+        channel_mask: 0,
+        max_frames_per_packet: 0,
+        sample_rate: 44100,
     };
     let result = init_symphonia_decoder(&config);
     // Even if it succeeds here (some decoders might be okay with empty extra data),
@@ -282,7 +281,10 @@ fn test_packet_conversion() {
 #[gtest(SymphoniaGlueTest, ZeroFrames)]
 fn test_zero_frames() {
     const SAMPLE_RATE: u32 = 44100;
-    let spec = SignalSpec::new(SAMPLE_RATE, Layout::Mono.into_channels());
+    // We use 5.1 channels (6 channels) to explicitly test the 3+ channels
+    // interleaving path in Symphonia, which had a bug where it panicked
+    // if num_frames == 0.
+    let spec = SignalSpec::new(SAMPLE_RATE, Layout::FivePointOne.into_channels());
     let audio_buf = AudioBuffer::<f32>::new(0, spec);
 
     let buffer_ref = AudioBufferRef::F32(std::borrow::Cow::Borrowed(&audio_buf));
@@ -291,4 +293,44 @@ fn test_zero_frames() {
 
     expect_eq!(result.num_frames, 0);
     expect_true!(result.data.is_empty());
+}
+
+#[gtest(SymphoniaGlueTest, UnpackXiphVorbisExtradata)]
+fn test_unpack_xiph_vorbis_extradata() {
+    use symphonia_glue::unpack_xiph_vorbis_extradata;
+
+    // A valid Xiph-packed buffer with 3 headers.
+    // [0]: number of headers - 1 (2)
+    // [1]: length of first header (3)
+    // [2]: length of second header (4)
+    // [3..6]: Header 1
+    // [6..10]: Header 2
+    // [10..]: Header 3
+    let valid_xiph: Vec<u8> = vec![
+        2, 3, 4, // Header information
+        1, 1, 1, // Header 1 (Identification)
+        2, 2, 2, 2, // Header 2 (Comment)
+        3, 3, 3, 3, 3, // Header 3 (Setup)
+    ];
+
+    let unpacked = unpack_xiph_vorbis_extradata(&valid_xiph).expect("Should successfully unpack");
+    // We expect Header 1 (Ident) and Header 3 (Setup) concatenated sequentially.
+    let expected: Vec<u8> = vec![1, 1, 1, 3, 3, 3, 3, 3];
+    expect_eq!(unpacked, expected);
+
+    // Empty extradata should return None.
+    expect_true!(unpack_xiph_vorbis_extradata(&[]).is_err());
+
+    // Not Xiph-lacing (first byte != 2) should return None.
+    let non_xiph: Vec<u8> = vec![1, 2, 3, 4, 5];
+    expect_true!(unpack_xiph_vorbis_extradata(&non_xiph).is_err());
+
+    // Truncated lengths (expecting more bytes than available) should return None.
+    let truncated_lengths: Vec<u8> = vec![2, 255, 255]; // Needs more bytes to finish length parsing
+    expect_true!(unpack_xiph_vorbis_extradata(&truncated_lengths).is_err());
+
+    // Truncated payload (lengths read fine, but payload is missing) should return
+    // None.
+    let truncated_payload: Vec<u8> = vec![2, 3, 4, 1, 1]; // Misses payload bytes
+    expect_true!(unpack_xiph_vorbis_extradata(&truncated_payload).is_err());
 }

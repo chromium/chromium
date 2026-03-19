@@ -82,7 +82,9 @@ void DefaultDecoderFactory::CreateAudioDecoders(
 
 #if BUILDFLAG(ENABLE_SYMPHONIA)
   if (base::FeatureList::IsEnabled(kSymphoniaAudioDecoding) ||
-      base::FeatureList::IsEnabled(kSymphoniaMp3Decoding)) {
+      base::FeatureList::IsEnabled(kSymphoniaMp3Decoding) ||
+      base::FeatureList::IsEnabled(kSymphoniaPcmDecoding) ||
+      base::FeatureList::IsEnabled(kSymphoniaVorbisDecoding)) {
     audio_decoders->push_back(
         std::make_unique<SymphoniaAudioDecoder>(task_runner, media_log));
   }

@@ -190,6 +190,7 @@ MEDIA_EXPORT ChannelLayout GuessChannelLayout(int channels);
 // channel layout.
 using ChannelMask = uint32_t;
 MEDIA_EXPORT ChannelLayout ChannelMaskToLayout(ChannelMask channel_mask);
+MEDIA_EXPORT ChannelMask ChannelLayoutToMask(ChannelLayout channel_layout);
 
 // Returns a string representation of the channel layout.
 MEDIA_EXPORT const char* ChannelLayoutToString(ChannelLayout layout);

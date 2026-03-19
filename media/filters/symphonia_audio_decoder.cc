@@ -18,6 +18,7 @@
 #include "base/logging.h"
 #include "base/memory/aligned_memory.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -39,6 +40,10 @@ namespace media {
 
 namespace {
 
+// PCM specific property for the maximum number of frames per packet. This
+// value covers up to ~85ms of audio per chunk.
+constexpr int kDefaultMaxFramesPerPcmPacket = 4096;
+
 // TODO(crbug.com/40074653): consider using a view type instead where possible.
 rust::Vec<uint8_t> ToRustVec(base::span<const uint8_t> data) {
   rust::Vec<uint8_t> vec;
@@ -49,28 +54,91 @@ rust::Vec<uint8_t> ToRustVec(base::span<const uint8_t> data) {
   return vec;
 }
 
-// Currently the Symphonia decoder only has FLAC audio support enabled. This
-// will be expanded in the future.
-SymphoniaAudioCodec ToSymphoniaCodec(AudioCodec codec) {
+SymphoniaAudioCodec ToSymphoniaCodec(AudioCodec codec,
+                                     SampleFormat sample_format) {
   switch (codec) {
+    case AudioCodec::kUnknown:
+      return SymphoniaAudioCodec::Unknown;
     case AudioCodec::kFLAC:
       return SymphoniaAudioCodec::Flac;
     case AudioCodec::kMP3:
       return SymphoniaAudioCodec::Mp3;
+    case AudioCodec::kPCM:
+      switch (sample_format) {
+        case SampleFormat::kUnknownSampleFormat:
+          return SymphoniaAudioCodec::Unknown;
+        case SampleFormat::kSampleFormatF32:
+          return SymphoniaAudioCodec::PcmF32;
+        case SampleFormat::kSampleFormatPlanarF32:
+          return SymphoniaAudioCodec::PcmF32Planar;
+        case SampleFormat::kSampleFormatS16:
+          return SymphoniaAudioCodec::PcmS16;
+        case SampleFormat::kSampleFormatPlanarS16:
+          return SymphoniaAudioCodec::PcmS16Planar;
+        case SampleFormat::kSampleFormatS24:
+          return SymphoniaAudioCodec::PcmS24;
+        case SampleFormat::kSampleFormatS32:
+          return SymphoniaAudioCodec::PcmS32;
+        case SampleFormat::kSampleFormatPlanarS32:
+          return SymphoniaAudioCodec::PcmS32Planar;
+        case SampleFormat::kSampleFormatU8:
+          return SymphoniaAudioCodec::PcmU8;
+        case SampleFormat::kSampleFormatPlanarU8:
+          return SymphoniaAudioCodec::PcmU8Planar;
+        default:
+          return SymphoniaAudioCodec::Unknown;
+      }
+    case AudioCodec::kPCM_ALAW:
+      return SymphoniaAudioCodec::PcmAlaw;
+    case AudioCodec::kPCM_MULAW:
+      return SymphoniaAudioCodec::PcmMulaw;
+    case AudioCodec::kPCM_S16BE:
+      return SymphoniaAudioCodec::PcmS16be;
+    case AudioCodec::kPCM_S24BE:
+      return SymphoniaAudioCodec::PcmS24be;
+    case AudioCodec::kVorbis:
+      return SymphoniaAudioCodec::Vorbis;
     default:
       NOTREACHED();
   }
 }
 
+bool IsPcm(AudioCodec codec) {
+  return codec == AudioCodec::kPCM || codec == AudioCodec::kPCM_MULAW ||
+         codec == AudioCodec::kPCM_S16BE || codec == AudioCodec::kPCM_S24BE ||
+         codec == AudioCodec::kPCM_ALAW;
+}
+
+constexpr int GetBytesPerSample(AudioCodec codec, SampleFormat sample_format) {
+  // Other than this special case, where Chrome pads 24-bit samples into 32-bit
+  // containers, the number of bytes per sample is the same as the bytes per
+  // channel. The padding is corrected on the output side in the rust glue
+  // code when creating the `symphonia::core::audio::AudioBuffer`.
+  // TODO(crbug.com/493720049): as a cleanup, handle the S24 case better.
+  if (sample_format == kSampleFormatS24 || codec == AudioCodec::kPCM_S24BE) {
+    return 3;
+  }
+  return SampleFormatToBytesPerChannel(sample_format);
+}
+
 // Helper to create a SymphoniaDecoderConfig from an AudioDecoderConfig.
 SymphoniaDecoderConfig ToSymphoniaConfig(const AudioDecoderConfig& config) {
-  SymphoniaDecoderConfig symphonia_config;
-  symphonia_config.codec = ToSymphoniaCodec(config.codec());
-  symphonia_config.extra_data = ToRustVec(config.extra_data());
-  symphonia_config.bytes_per_sample =
-      SampleFormatToBytesPerChannel(config.sample_format());
+  SymphoniaDecoderConfig out;
+  out.codec = ToSymphoniaCodec(config.codec(), config.sample_format());
+  out.extra_data = ToRustVec(config.extra_data());
+  out.bytes_per_sample =
+      GetBytesPerSample(config.codec(), config.sample_format());
+  out.channel_mask = ChannelLayoutToMask(config.channel_layout());
+  out.sample_rate = config.samples_per_second();
 
-  return symphonia_config;
+  // Symphonia needs to know the max frames per packet for PCM decoding, which
+  // is not something we know directly in Chrome. Set a safe limit here.
+  // If this limit is violated, Symphonia will return a DecodeError and audio
+  // decoding will fail. FFMpeg does not have this restriction because it
+  // dynamically derives the frames needed from the AVPacket size itself.
+  out.max_frames_per_packet =
+      IsPcm(config.codec()) ? kDefaultMaxFramesPerPcmPacket : 0;
+  return out;
 }
 
 // Helper to create a SymphoniaPacket from a DecoderBuffer.
@@ -223,6 +291,25 @@ void SymphoniaAudioDecoder::DecodeBuffer(scoped_refptr<DecoderBuffer> buffer,
     return;
   }
 
+  // Symphonia's PCM decoder requires a pre-configured max frames per packet.
+  // If an incoming packet yields more frames than the capacity, the decode
+  // will fail out of bounds. Since we don't know the max chunk bounds in
+  // advance, we lazily grow it here by tearing down and recreating the wrapper
+  // handle if necessary.
+  if (!is_eos && IsPcm(config_.codec())) {
+    const int bytes_per_frame =
+        config_.channels() *
+        GetBytesPerSample(config_.codec(), config_.sample_format());
+    const int frames_in_buffer = buffer->size() / bytes_per_frame;
+
+    if (frames_in_buffer > kDefaultMaxFramesPerPcmPacket) {
+      base::UmaHistogramCounts100000(
+          "Media.Audio.Decode.SymphoniaOversizedPcmPacket", frames_in_buffer);
+      std::move(decode_cb_bound).Run(DecoderStatus::Codes::kFailed);
+      return;
+    }
+  }
+
   // Pass the buffer to the Symphonia decoder.
   if (!SymphoniaDecode(*buffer)) {
     // SymphoniaDecode logs the error.
@@ -263,6 +350,12 @@ bool SymphoniaAudioDecoder::IsCodecSupported(AudioCodec codec) {
   if (codec == AudioCodec::kMP3) {
     return base::FeatureList::IsEnabled(kSymphoniaMp3Decoding);
   }
+  if (IsPcm(codec)) {
+    return base::FeatureList::IsEnabled(kSymphoniaPcmDecoding);
+  }
+  if (codec == AudioCodec::kVorbis) {
+    return base::FeatureList::IsEnabled(kSymphoniaVorbisDecoding);
+  }
   return false;
 }
 
@@ -284,6 +377,15 @@ bool SymphoniaAudioDecoder::SymphoniaDecode(const DecoderBuffer& buffer) {
     if (result.status == SymphoniaDecodeStatus::UnexpectedEndOfStream) {
       MEDIA_LOG(WARNING, media_log_) << "Reached an unexpected end of stream.";
     }
+
+    // Even if we didn't decode a frame, we should still send the packet
+    // to the discard helper for caching.
+    if (!buffer.end_of_stream()) {
+      const bool processed = discard_helper_->ProcessBuffers(
+          AudioDiscardHelper::TimeInfo::FromBuffer(buffer), nullptr);
+      DCHECK(!processed);
+    }
+
     return true;
   }
   // Sanity check: if Symphonia thinks things are OK and returned a valid
@@ -368,23 +470,21 @@ bool SymphoniaAudioDecoder::ConfigureDecoder(const AudioDecoderConfig& config) {
     return false;
   }
 
-  symphonia_decoder_ = std::move(result.decoder);
   ResetTimestampState(config);
+  symphonia_decoder_ = std::move(result.decoder);
   return true;
 }
 
-// TODO(crbug.com/40074653): determine if Symphonia needs the same discard
+// The Symphonia audio decoder implementation currently needs the same discard
 // help as FFMPEG does.
 void SymphoniaAudioDecoder::ResetTimestampState(
     const AudioDecoderConfig& config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // Symphonia should handle codec delay internally, so we pass zero here.
-  const int codec_delay = 0;
   discard_helper_ = std::make_unique<AudioDiscardHelper>(
-      config.samples_per_second(), codec_delay,
-      config.codec() == AudioCodec::kVorbis);  // Vorbis needs special handling?
-  discard_helper_->Reset(codec_delay);
+      config.samples_per_second(), config.codec_delay(),
+      /*delayed_discard=*/false);
+  discard_helper_->Reset(config.codec_delay());
 }
 
 }  // namespace media
