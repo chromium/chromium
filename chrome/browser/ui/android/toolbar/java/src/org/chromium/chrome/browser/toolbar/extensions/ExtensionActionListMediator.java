@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.toolbar.extensions;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -465,7 +464,8 @@ class ExtensionActionListMediator implements Destroyable {
     }
 
     private void showPopupOnAnchor(String actionId, ExtensionActionPopupContents contents) {
-        View buttonView = mRecyclerViewDelegate.getButtonViewForId(actionId);
+        ListMenuButton buttonView =
+                (ListMenuButton) mRecyclerViewDelegate.getButtonViewForId(actionId);
         if (buttonView == null) {
             contents.destroy();
             undoPopout();
@@ -477,6 +477,12 @@ class ExtensionActionListMediator implements Destroyable {
             contents.destroy();
             return;
         }
+
+        // We set the button state to "pressed" before showing the popup, because we want it to have
+        // the "pressed" look while loading the action popup too. For context menu {@link
+        // ListMenuButton} already handles this, but not for popup where we show the window
+        // ourselves.
+        buttonView.setIsPressed(true);
 
         assert mActionState instanceof ActionState.Idle;
         ExtensionActionPopup popup =
@@ -498,12 +504,22 @@ class ExtensionActionListMediator implements Destroyable {
             return;
         }
 
-        // Clear the popup now to avoid calling closePopup recursively via OnDismissListener.
-        ExtensionActionPopup popup = ((ActionState.PopupActive) mActionState).getPopup();
+        ActionState.PopupActive actionState = (ActionState.PopupActive) mActionState;
 
+        // Clear state now to avoid calling closePopup recursively via OnDismissListener.
         mActionState = new ActionState.Idle();
 
+        ExtensionActionPopup popup = actionState.getPopup();
+        ListMenuButton buttonView =
+                (ListMenuButton)
+                        mRecyclerViewDelegate.getButtonViewForId(actionState.getActionId());
+
         popup.destroy();
+
+        if (buttonView != null) {
+            buttonView.setIsPressed(false);
+        }
+
         undoPopout();
     }
 
