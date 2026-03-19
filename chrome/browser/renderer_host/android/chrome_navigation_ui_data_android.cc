@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/android/jni_android.h"
 #include "chrome/browser/renderer_host/chrome_navigation_ui_data.h"
+
+#include "base/android/jni_android.h"
 #include "content/public/browser/navigation_ui_data.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
