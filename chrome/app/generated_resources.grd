@@ -2890,7 +2890,7 @@ are declared in tools/grit/grit_args.gni.
           Stop/Reload
         </message>
         <message name="IDS_TOUCH_BAR_HOME_CUSTOMIZATION_LABEL"
-                   desc="Customization label for the home button in the touch bar.">
+        desc="Customization label for the home button in the touch bar." meaning="'home' as in an internet location, a 'home page'">
           Home
         </message>
         <message name="IDS_TOUCH_BAR_BOOKMARK_CUSTOMIZATION_LABEL"
@@ -10827,7 +10827,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_ACCNAME_FULLSCREEN_DISABLED" desc="The accessible name of the disabled fullscreen button in the new merged menu">
         Full screen disabled
       </message>
-      <message name="IDS_ACCNAME_HOME" desc="The accessible name for the home button">
+      <message name="IDS_ACCNAME_HOME" desc="The accessible name for the home button" meaning="'home' as in an internet location, a 'home page'">
         Home
       </message>
       <message name="IDS_ACCNAME_RELOAD" desc="The accessible name for the reload/stop button.">
@@ -16012,7 +16012,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
           Task Manager
         </message>
         <!-- History menu -->
-        <message name="IDS_HISTORY_HOME_MAC" desc="The Mac menu item for home in the history menu.">
+        <message name="IDS_HISTORY_HOME_MAC" desc="The Mac menu item for home in the history menu." meaning="'home' as in an internet location, a 'home page'">
           Home
         </message>
         <message name="IDS_HISTORY_BACK_MAC" desc="The Mac menu item for back in the history menu.">
@@ -16161,7 +16161,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
         </message>
 
         <!-- History menu -->
-        <message name="IDS_HISTORY_HOME_LINUX" desc="The Linux menu item for home in the history menu.">
+        <message name="IDS_HISTORY_HOME_LINUX" desc="The Linux menu item for home in the history menu." meaning="'home' as in an internet location, a 'home page'">
           Home
         </message>
         <message name="IDS_HISTORY_BACK_LINUX" desc="The Linux menu item for back in the history menu.">
@@ -19350,7 +19350,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_OVERFLOW_MENU_ITEM_TEXT_FORWARD" desc="Overflow menu item text of forward button">
       Forward
     </message>
-    <message name="IDS_OVERFLOW_MENU_ITEM_TEXT_HOME" desc="Text of overflow menu item of home button">
+    <message name="IDS_OVERFLOW_MENU_ITEM_TEXT_HOME" desc="Text of overflow menu item of home button" meaning="'home' as in an internet location, a 'home page'">
       Home
     </message>
     <message name="IDS_OVERFLOW_MENU_ITEM_TEXT_LABS" desc="Text of overflow menu item of labs button">

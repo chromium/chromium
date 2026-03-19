@@ -5710,7 +5710,7 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_PRIVACY_SAFE_BROWSING_TITLE" desc="Title for Privacy Safe Browsing table view.">
         Safe Browsing
       </message>
-      <message name="IDS_IOS_PROFILE_RECORD_TYPE_HOME" desc="Title for a profile with a Home record type.">
+      <message name="IDS_IOS_PROFILE_RECORD_TYPE_HOME" desc="Title for a profile with a Home record type." meaning="'home' as in the distinction between 'home' and 'work'">
         Home
       </message>
       <message name="IDS_IOS_PROFILE_RECORD_TYPE_WORK" desc="Title for a profile with a Work record type.">

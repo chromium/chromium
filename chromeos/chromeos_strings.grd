@@ -2947,7 +2947,7 @@
         <message name="IDS_PERSONALIZATION_APP_AVATAR_LAST_EXTERNAL_IMAGE" desc="Title for the existing photo from camera or file option.">
           Existing photo from camera or file
         </message>
-        <message name="IDS_PERSONALIZATION_APP_ARIA_LABEL_HOME" desc="Aria label for the home page of the hub.">
+        <message name="IDS_PERSONALIZATION_APP_ARIA_LABEL_HOME" desc="Aria label for the home page of the hub." meaning="'home' as in an internet location, a 'home page'">
           Home
         </message>
         <message name="IDS_PERSONALIZATION_APP_KEYBOARD_BACKLIGHT_TITLE" desc="Title for the keyboard backlight section of personalization hub.">

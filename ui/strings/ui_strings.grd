@@ -704,7 +704,7 @@ need to be translated for each locale.-->
       <message name="IDS_APP_INSERT_KEY" desc="Insert key">
         Ins
       </message>
-      <message name="IDS_APP_HOME_KEY" desc="Home key">
+      <message name="IDS_APP_HOME_KEY" desc="Home key" meaning="Home key on the keyboard">
         Home
       </message>
       <message name="IDS_APP_DELETE_KEY" desc="Delete key">

@@ -8619,7 +8619,7 @@ To shut down the device, press and hold the power button on the device again.
       <message name="IDS_ASH_DEVICE_SETTINGS_SIX_PACK_KEY_INSERT" desc="Label for the Insert 6-pack key.">
         insert
       </message>
-      <message name="IDS_ASH_DEVICE_SETTINGS_SIX_PACK_KEY_HOME" desc="Label for the Home 6-pack key.">
+      <message name="IDS_ASH_DEVICE_SETTINGS_SIX_PACK_KEY_HOME" desc="Label for the Home 6-pack key." meaning="Home key on the keyboard">
         home
       </message>
       <message name="IDS_ASH_DEVICE_SETTINGS_SIX_PACK_KEY_END" desc="Label for the End 6-pack key.">
