@@ -10,6 +10,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/strings/stringprintf.h"
 #include "base/syslog_logging.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -351,9 +352,20 @@ void ReportScheduler::GenerateAndUploadReport(ReportTrigger trigger) {
   }
 }
 
-void ReportScheduler::OnReportGenerated(ReportRequestQueue requests) {
+void ReportScheduler::OnReportGenerated(
+    base::expected<ReportRequestQueue, ReportGenerationError> result) {
   DCHECK_NE(active_report_generation_config_.report_trigger,
             ReportTrigger::kTriggerNone);
+  if (!result.has_value()) {
+    RecordReportGenerationErrorMetric(result.error());
+    SYSLOG(ERROR) << base::StringPrintf(
+        "Error generating the base reports with error %d. Retrying next cycle.",
+        result.error());
+    OnReportUploaded(ReportUploader::kTransientError);
+    return;
+  }
+
+  ReportRequestQueue requests = std::move(result).value();
   if (requests.empty()) {
     SYSLOG(ERROR)
         << "No cloud report can be generated. Likely the report is too large.";

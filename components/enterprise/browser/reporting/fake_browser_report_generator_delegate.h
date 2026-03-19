@@ -58,6 +58,11 @@ class FakeProfileReportGeneratorDelegate
 
   policy::CloudPolicyManager* GetCloudPolicyManager(
       bool is_machine_scope) override;
+
+  void SetInitResult(bool result);
+
+ private:
+  bool init_result_ = false;
 };
 
 class FakeBrowserReportGeneratorDelegate
@@ -106,8 +111,11 @@ class FakeReportingDelegateFactory : public ReportingDelegateFactory {
   std::unique_ptr<RealTimeReportController::Delegate>
   GetRealTimeReportControllerDelegate() const override;
 
+  void SetProfileInitResult(bool result);
+
  private:
   const std::string executable_path_;
+  bool profile_init_result_ = false;
 };
 
 }  // namespace enterprise_reporting::test

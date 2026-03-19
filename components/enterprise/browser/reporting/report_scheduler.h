@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "base/timer/wall_clock_timer.h"
 #include "components/enterprise/browser/reporting/report_uploader.h"
+#include "components/enterprise/browser/reporting/report_util.h"
 #include "components/enterprise/browser/reporting/user_security_signals_service.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -145,9 +146,10 @@ class ReportScheduler {
   // Starts report generation in response to |trigger|.
   void GenerateAndUploadReport(ReportTrigger trigger);
 
-  // Continues processing a report (contained in the |requests| collection) by
+  // Continues processing a report (contained in the |result| collection) by
   // sending it to the uploader.
-  void OnReportGenerated(ReportRequestQueue requests);
+  void OnReportGenerated(
+      base::expected<ReportRequestQueue, ReportGenerationError> result);
 
   // Finishes processing following report upload. |status| indicates the result
   // of the attempted upload.

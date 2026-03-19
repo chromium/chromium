@@ -17,6 +17,16 @@
 
 namespace enterprise_reporting {
 
+// Represents the error of a report generation attempt.
+// tools/metrics/histograms/metadata/enterprise/enums.xml.
+// LINT.IfChange(ReportGenerationError)
+enum class ReportGenerationError {
+  kProfileEmptyReport = 0,  // Profile report generation failed.
+  kBrowserEmptyReport,  // Browser report generation failed.
+  kMaxValue = kBrowserEmptyReport
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/enterprise/enums.xml:EnterpriseCloudReportingReportGenerationError)
+
 // Returns the obfusted `file_path` string with SHA256 algorithm.
 std::string ObfuscateFilePath(const std::string& file_path);
 
@@ -45,6 +55,8 @@ std::unique_ptr<enterprise_management::AntiVirusProduct> TranslateAvProduct(
 std::string GetSecuritySignalsInReport(
     const enterprise_management::ChromeProfileReportRequest&
         chrome_profile_report_request);
+
+void RecordReportGenerationErrorMetric(ReportGenerationError error);
 
 }  // namespace enterprise_reporting
 

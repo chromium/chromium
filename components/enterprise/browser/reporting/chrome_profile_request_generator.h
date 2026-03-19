@@ -17,6 +17,7 @@
 #include "components/enterprise/browser/reporting/profile_report_generator.h"
 #include "components/enterprise/browser/reporting/report_generation_config.h"
 #include "components/enterprise/browser/reporting/report_request.h"
+#include "components/enterprise/browser/reporting/report_util.h"
 #include "components/enterprise/device_attestation/common/device_attestation_types.h"
 #include "components/enterprise/device_attestation/device_attestation_service.h"
 
@@ -31,7 +32,8 @@ class ReportingDelegateFactory;
 // The top level generator that creates ChromeProfileRequest proto.
 class ChromeProfileRequestGenerator {
  public:
-  using ReportCallback = base::OnceCallback<void(ReportRequestQueue)>;
+  using ReportCallback = base::OnceCallback<void(
+      base::expected<ReportRequestQueue, ReportGenerationError>)>;
 
   ChromeProfileRequestGenerator(
       const base::FilePath& profile_path,

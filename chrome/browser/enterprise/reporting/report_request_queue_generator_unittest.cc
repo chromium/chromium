@@ -20,6 +20,7 @@
 #include "components/account_id/account_id.h"
 #include "components/enterprise/browser/reporting/browser_report_generator.h"
 #include "components/enterprise/browser/reporting/report_request.h"
+#include "components/enterprise/browser/reporting/report_util.h"
 #include "components/policy/core/common/mock_policy_service.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/sync_preferences/pref_service_syncable.h"
@@ -162,12 +163,14 @@ class ReportRequestQueueGeneratorTest : public ::testing::Test {
       std::unique_ptr<ReportRequest> request) {
     histogram_tester_ = std::make_unique<base::HistogramTester>();
 
-    base::test::TestFuture<std::queue<std::unique_ptr<ReportRequest>>>
+    base::test::TestFuture<base::expected<
+        std::queue<std::unique_ptr<ReportRequest>>, ReportGenerationError>>
         test_future;
     report_request_queue_generator_.Generate(std::move(request),
                                              test_future.GetCallback());
 
-    auto requests = test_future.Take();
+    auto results = test_future.Take();
+    ReportRequestQueue requests = std::move(results).value();
     std::vector<std::unique_ptr<ReportRequest>> result;
     while (!requests.empty()) {
       result.push_back(std::move(requests.front()));

@@ -70,7 +70,8 @@ void ReportRequestQueueGenerator::SetMaximumReportSizeForTesting(
 
 void ReportRequestQueueGenerator::Generate(
     std::unique_ptr<ReportRequest> basic_request,
-    base::OnceCallback<void(ReportRequestQueue)> callback) {
+    base::OnceCallback<void(
+        base::expected<ReportRequestQueue, ReportGenerationError>)> callback) {
   if (!basic_request) {
     OnAllProfileReportsGenerated(std::move(basic_request), std::move(callback),
                                  std::vector<IndexedProfileReport>());
@@ -123,7 +124,8 @@ void ReportRequestQueueGenerator::GenerateProfileReportWithIndex(
 
 void ReportRequestQueueGenerator::OnAllProfileReportsGenerated(
     std::unique_ptr<ReportRequest> basic_request,
-    base::OnceCallback<void(ReportRequestQueue)> callback,
+    base::OnceCallback<void(
+        base::expected<ReportRequestQueue, ReportGenerationError>)> callback,
     std::vector<IndexedProfileReport> indexed_reports) {
   ReportRequestQueue requests;
 

@@ -642,6 +642,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.CloudReportingReportGenerationError"
+    enum="EnterpriseCloudReportingReportGenerationError"
+    expires_after="2027-03-13">
+  <owner>hmare@google.com</owner>
+  <owner>cbe-eng@google.com</owner>
+  <summary>
+    The error status of an enterprise cloud report generation attempt.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.CloudReportingRequestCount" units="requests"
     expires_after="2026-12-01">
   <owner>zmin@chromium.org</owner>

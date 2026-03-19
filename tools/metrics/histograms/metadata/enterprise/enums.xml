@@ -464,6 +464,15 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Load token from file"/>
 </enum>
 
+<enum name="EnterpriseCloudReportingReportGenerationError">
+  <int value="0" label="kProfileEmptyReport">
+    Profile report generation failed.
+  </int>
+  <int value="1" label="kBrowserEmptyReport">
+    Browser report generation failed.
+  </int>
+</enum>
+
 <enum name="EnterpriseCloudReportingResponse">
   <summary>Result of uploading an enterprise report.</summary>
   <int value="0" label="Success"/>

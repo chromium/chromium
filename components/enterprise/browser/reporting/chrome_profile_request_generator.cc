@@ -160,6 +160,23 @@ void ChromeProfileRequestGenerator::OnBaseReportsReady(
     ReportGenerationConfig generation_config,
     std::unique_ptr<em::BrowserReport> browser_report,
     std::unique_ptr<em::ChromeUserProfileInfo> profile_report) {
+  // Safely abort if the base reports are empty.
+  if (!profile_report) {
+    VLOG_POLICY(1, REPORTING)
+        << "Aborting report generation: profile report is empty.";
+    std::move(callback).Run(
+        base::unexpected(ReportGenerationError::kProfileEmptyReport));
+    return;
+  }
+
+  if (!browser_report) {
+    VLOG_POLICY(1, REPORTING)
+        << "Aborting report generation: browser report is empty.";
+    std::move(callback).Run(
+        base::unexpected(ReportGenerationError::kBrowserEmptyReport));
+    return;
+  }
+
   if (generation_config.security_signals_mode ==
           SecuritySignalsMode::kNoSignals ||
       !signals_aggregator_) {

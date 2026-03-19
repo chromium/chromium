@@ -32,7 +32,11 @@ FakeProfileReportGeneratorDelegate::~FakeProfileReportGeneratorDelegate() =
     default;
 
 bool FakeProfileReportGeneratorDelegate::Init(const base::FilePath& path) {
-  return true;
+  return init_result_;
+}
+
+void FakeProfileReportGeneratorDelegate::SetInitResult(bool result) {
+  init_result_ = result;
 }
 
 void FakeProfileReportGeneratorDelegate::GetSigninUserInfo(
@@ -98,7 +102,7 @@ void FakeBrowserReportGeneratorDelegate::GenerateBuildStateInfo(
 
 FakeReportingDelegateFactory::FakeReportingDelegateFactory(
     std::string_view executable_path)
-    : executable_path_(executable_path) {}
+    : executable_path_(executable_path), profile_init_result_(true) {}
 
 FakeReportingDelegateFactory::~FakeReportingDelegateFactory() = default;
 
@@ -110,7 +114,9 @@ FakeReportingDelegateFactory::GetBrowserReportGeneratorDelegate() const {
 
 std::unique_ptr<ProfileReportGenerator::Delegate>
 FakeReportingDelegateFactory::GetProfileReportGeneratorDelegate() const {
-  return std::make_unique<FakeProfileReportGeneratorDelegate>();
+  auto delegate = std::make_unique<FakeProfileReportGeneratorDelegate>();
+  delegate->SetInitResult(profile_init_result_);
+  return delegate;
 }
 
 std::unique_ptr<ReportGenerator::Delegate>
@@ -131,6 +137,10 @@ FakeReportingDelegateFactory::GetRealTimeReportGeneratorDelegate() const {
 std::unique_ptr<RealTimeReportController::Delegate>
 FakeReportingDelegateFactory::GetRealTimeReportControllerDelegate() const {
   return nullptr;
+}
+
+void FakeReportingDelegateFactory::SetProfileInitResult(bool result) {
+  profile_init_result_ = result;
 }
 
 }  // namespace enterprise_reporting::test

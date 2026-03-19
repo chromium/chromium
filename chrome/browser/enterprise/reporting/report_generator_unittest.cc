@@ -21,6 +21,7 @@
 #include "components/account_id/account_id.h"
 #include "components/enterprise/browser/reporting/report_request.h"
 #include "components/enterprise/browser/reporting/report_type.h"
+#include "components/enterprise/browser/reporting/report_util.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -200,15 +201,20 @@ class ReportGeneratorTest : public ::testing::Test {
     histogram_tester_ = std::make_unique<base::HistogramTester>();
     base::RunLoop run_loop;
     std::vector<std::unique_ptr<ReportRequest>> rets;
-    generator_.Generate(report_type,
-                        base::BindLambdaForTesting(
-                            [&run_loop, &rets](ReportRequestQueue requests) {
-                              while (!requests.empty()) {
-                                rets.push_back(std::move(requests.front()));
-                                requests.pop();
-                              }
-                              run_loop.Quit();
-                            }));
+    generator_.Generate(
+        report_type,
+        base::BindLambdaForTesting(
+            [&run_loop, &rets](base::expected<ReportRequestQueue,
+                                              ReportGenerationError> result) {
+              if (result.has_value()) {
+                ReportRequestQueue requests = std::move(result).value();
+                while (!requests.empty()) {
+                  rets.push_back(std::move(requests.front()));
+                  requests.pop();
+                }
+              }
+              run_loop.Quit();
+            }));
     run_loop.Run();
     if (report_type == ReportType::kFull)
       VerifyMetrics(rets);  // Only generated for reports with profiles.
