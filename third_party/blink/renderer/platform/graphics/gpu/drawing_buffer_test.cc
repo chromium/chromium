@@ -733,14 +733,6 @@ TEST_F(
   auto gl = std::make_unique<GLES2InterfaceForTests>();
   auto provider =
       std::make_unique<WebGraphicsContext3DProviderForTests>(std::move(gl));
-#if BUILDFLAG(IS_WIN)
-  // As DrawingBuffer does not query LowLatencyUsageSupportedForWebGL() on
-  // Windows, ensure that the SI cap that it *does* query is enabled.
-  gpu::SharedImageCapabilities shared_image_caps;
-  shared_image_caps.shared_image_swap_chain = true;
-  provider->SharedImageInterface()->SetCapabilities(shared_image_caps);
-#endif
-
   GLES2InterfaceForTests* gl_ =
       static_cast<GLES2InterfaceForTests*>(provider->ContextGL());
 

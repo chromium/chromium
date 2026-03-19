@@ -622,9 +622,6 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
       viz::SinglePlaneFormat::kRGBA_8888;
 
   Platform::WebGLContextInfo context_info_;
-#if BUILDFLAG(IS_WIN)
-  const bool using_swap_chain_;
-#endif
   bool low_latency_enabled_ = false;
   bool has_implicit_stencil_buffer_ = false;
 

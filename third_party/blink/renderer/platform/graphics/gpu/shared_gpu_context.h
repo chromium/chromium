@@ -19,6 +19,10 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 
+namespace gpu {
+class SharedImageInterface;
+}
+
 namespace blink {
 
 class WebGraphicsContext3DProvider;
@@ -75,7 +79,7 @@ class PLATFORM_EXPORT SharedGpuContext {
 
   // Whether SharedImages used for WebGL content may be given usage optimized
   // for low-latency (SCANOUT and CONCURRENT_READ_WRITE).
-  static bool LowLatencyUsageSupportedForWebGL();
+  static bool LowLatencyUsageSupportedForWebGL(gpu::SharedImageInterface*);
 
   // Forces LowLatencyUsageSupportedForWebGL() to return the passed-in value.
   // Cleared on the next invocation of Reset() of the global context.

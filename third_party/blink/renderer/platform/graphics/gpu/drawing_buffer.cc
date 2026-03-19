@@ -282,13 +282,6 @@ DrawingBuffer::DrawingBuffer(
                                 : kOpaque_SkAlphaType),
       requested_format_(want_alpha_channel ? GL_RGBA8 : GL_RGB8),
       context_info_(context_info),
-#if BUILDFLAG(IS_WIN)
-      using_swap_chain_(ContextProvider()
-                            ->SharedImageInterface()
-                            ->GetCapabilities()
-                            .shared_image_swap_chain &&
-                        desynchronized),
-#endif
       low_latency_enabled_(desynchronized),
       want_depth_(want_depth),
       want_stencil_(want_stencil),
@@ -935,7 +928,11 @@ bool DrawingBuffer::Initialize(const gfx::Size& size, bool use_multisampling) {
 #if BUILDFLAG(IS_WIN)
   // We can't use anything other than explicit resolve for swap chain, as the
   // D3D11 texture backing the back buffer is single-sampled.
-  supports_implicit_resolve = supports_implicit_resolve && !using_swap_chain_;
+  supports_implicit_resolve =
+      supports_implicit_resolve &&
+      !(low_latency_enabled() &&
+        SharedGpuContext::LowLatencyUsageSupportedForWebGL(
+            ContextProvider()->SharedImageInterface()));
 #endif
 
   const auto& gpu_feature_info = ContextProvider()->GetGpuFeatureInfo();
@@ -2005,7 +2002,8 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
   // First see if creating a SharedImage that can be used as an overlay is
   // feasible.
 #if BUILDFLAG(IS_WIN)
-  if (using_swap_chain_) {
+  if (low_latency_enabled() &&
+      SharedGpuContext::LowLatencyUsageSupportedForWebGL(sii)) {
     usage = usage | gpu::SHARED_IMAGE_USAGE_SCANOUT;
     usage = usage | gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
   }
@@ -2029,7 +2027,7 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
     use_as_overlay = SharedGpuContext::UseOverlaysForWebGL();
     low_latency_usage_supported =
         low_latency_enabled() &&
-        SharedGpuContext::LowLatencyUsageSupportedForWebGL();
+        SharedGpuContext::LowLatencyUsageSupportedForWebGL(sii);
   }
   if (use_as_overlay || low_latency_usage_supported) {
 #if !BUILDFLAG(IS_ANDROID)

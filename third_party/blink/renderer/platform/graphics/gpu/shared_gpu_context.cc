@@ -10,6 +10,7 @@
 #include "build/build_config.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/client/raster_interface.h"
+#include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/config/gpu_driver_bug_workaround_type.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_finch_features.h"
@@ -371,7 +372,8 @@ bool SharedGpuContext::LowLatencyUsageSupportedForCanvas2D(
 #endif
 }
 
-bool SharedGpuContext::LowLatencyUsageSupportedForWebGL() {
+bool SharedGpuContext::LowLatencyUsageSupportedForWebGL(
+    gpu::SharedImageInterface* sii) {
   if (g_low_latency_usage_supported_for_webgl_for_testing) {
     return g_low_latency_usage_supported_for_webgl_for_testing.value();
   }
@@ -388,6 +390,8 @@ bool SharedGpuContext::LowLatencyUsageSupportedForWebGL() {
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           blink::switches::kEnableWebGLImageChromium);
   return enable_web_gl_image_chromium;
+#elif BUILDFLAG(IS_WIN)
+  return sii && sii->GetCapabilities().shared_image_swap_chain;
 #else
   // NOTE: crbug.com/41435781 would need to be resolved in order to support
   // low-latency usage on Mac (currently setting the desynchronized attribute
