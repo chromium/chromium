@@ -818,14 +818,12 @@ void NetworkService::SetRawHeadersAccess(
 }
 
 void NetworkService::SetMaxConnectionsPerProxyChain(uint32_t max_connections) {
-  // Clamp the value between min_limit and max_limit.
-  size_t max_limit = 99;
-  size_t min_limit = net::ClientSocketPoolManager::max_sockets_per_group(
-      net::HttpNetworkSession::SocketPoolType::kNormal);
-  size_t new_limit = std::clamp(base::saturated_cast<size_t>(max_connections),
-                                min_limit, max_limit);
-
-  // Assign the global limit.
+  // LINT.IfChange(SetMaxConnectionsPerProxyChain)
+  // We set out explicit limits here because they are hard coded in the
+  // enterprise policy MaxConnectionsPerProxy.
+  size_t new_limit =
+      base::saturated_cast<size_t>(std::clamp(max_connections, 6u, 256u));
+  // LINT.ThenChange(/net/socket/client_socket_pool_manager.cc:set_max_sockets_per_proxy_chain)
   net::ClientSocketPoolManager::set_max_sockets_per_proxy_chain(
       net::HttpNetworkSession::SocketPoolType::kNormal, new_limit);
 }

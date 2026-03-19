@@ -1,9 +1,20 @@
 caption: Maximal number of concurrent connections to the proxy server
 default: 32
 desc: |-
-  Setting the policy specifies the maximal number of simultaneous connections to the proxy server. Some proxy servers can't handle a high number of concurrent connections per client, which is solved by setting this policy to a lower value. The value should be lower than 100 and higher than 6. Some web apps are known to consume many connections with hanging GETs, so setting a value below 32 may lead to browser networking hangs if there are too many web apps with hanging connections open. Lower below the default at your own risk.
+  Setting the policy specifies the maximal number of simultaneous connections to the proxy server.
 
-        Leaving the policy unset means a default of 32 is used.
+  Leaving the policy unset means a default of 32 is used.
+
+  Some web apps are known to consume many connections with hanging GETs, so setting a value below 32 may lead to browser networking hangs if there are too many web apps with hanging connections open.
+  Some proxy servers can't handle a high number of concurrent connections per client, which is solved by setting this policy to a lower value.
+
+  The value should be equal to or higher than 6.
+  Setting a value below that limit will cause 6 to be used.
+  Lower below the default (32) at your own risk.
+
+  The value should be equal to or lower than 256 (99 in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> 147 and earlier).
+  Setting a value above that limit will cause 256 (99 in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> 147 and earlier) to be used.
+  Raise above the default (32) at your own risk.
 example_value: 32
 features:
   dynamic_refresh: false
@@ -14,6 +25,7 @@ future_on:
 owners:
 - file://components/policy/OWNERS
 - pastarmovj@chromium.org
+- arichiv@chromium.org
 schema:
   type: integer
 supported_on:

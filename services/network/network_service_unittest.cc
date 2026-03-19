@@ -1138,7 +1138,7 @@ static size_t GetGlobalMaxConnectionsPerProxyChain() {
 TEST_F(NetworkServiceTest, SetMaxConnectionsPerProxyChain) {
   const size_t kDefault = 32;
   const size_t kMin = 6;
-  const size_t kMax = 99;
+  const size_t kMax = 256;
 
   // Starts off at default value.
   EXPECT_EQ(kDefault, GetGlobalMaxConnectionsPerProxyChain());
